@@ -449,6 +449,8 @@
   .node-h:hover { stroke: var(--gold); stroke-width: 1.8; }
   .node-hline { stroke: #7d93bd; stroke-width: 1; stroke-dasharray: 2 2; pointer-events: none; }
   .node-marquee { fill: rgba(201,146,42,0.12); stroke: var(--gold); stroke-width: 1; stroke-dasharray: 4 3; pointer-events: none; }
+  /* Draw-mode Move tool: selected-stroke bounding boxes (token-driven — dark-mode safe) */
+  .draw-sel-box { fill: rgba(201,146,42,0.08); stroke: var(--gold); stroke-width: 1.2; stroke-dasharray: 5 4; pointer-events: none; }
   .node-xform { margin: 8px 0 4px; }
   .node-xform summary { cursor: pointer; font-size: 0.76rem; font-weight: 600; color: var(--text); user-select: none; }
   .node-xform summary:hover { color: var(--gold); }
@@ -6337,6 +6339,16 @@ async function renderStage() {
     }
   } else if (workMode === 'draw') {
     h += drawStrokesSVG(l);   // committed strokes over the reference ghost (the tracing paper)
+    if (_drawTool === 'move' && _drawSel.size && l.draw) {
+      [..._drawSel].forEach(i => { if (i >= l.draw.strokes.length) _drawSel.delete(i); });   // defensive — indices can go stale
+      _drawSel.forEach(i => {
+        const s = l.draw.strokes[i];
+        let bx0 = Infinity, bx1 = -Infinity, by0 = Infinity, by1 = -Infinity;
+        s.pts.forEach(q => { bx0 = Math.min(bx0, q[0]); bx1 = Math.max(bx1, q[0]); by0 = Math.min(by0, q[1]); by1 = Math.max(by1, q[1]); });
+        const pad = (s.w / 2) * (s.pr ? 1.65 : 1) + 6;   // covers the max pressure factor
+        h += `<rect class="draw-sel-box" data-si="${i}" x="${fx(bx0 - pad).toFixed(1)}" y="${fy(by1 + pad).toFixed(1)}" width="${((bx1 - bx0 + 2 * pad) * SC).toFixed(1)}" height="${((by1 - by0 + 2 * pad) * SC).toFixed(1)}"/>`;
+      });
+    }
     if (!(l.draw && l.draw.strokes.length))
       h += `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="13">${esc(_drawT('empty_hint', 'Draw the letter here — trace the gray reference.'))}</text>`;
   } else if (workMode === 'trace') {
@@ -6878,9 +6890,29 @@ function drawPointerDown(e) {
     status(_drawT('limit_toast', 'Stroke limit reached — erase or join strokes before adding more.'));
     return;   // refuse to start — a stroke beyond the cap would be dropped by sanitizeDraw on reload
   }
-  const label = (_drawTool === 'erase' ? 'erase strokes — ' : _drawTool === 'line' ? 'draw line — ' : 'draw stroke — ') + cl.name;
+  const label = (_drawTool === 'erase' ? 'erase strokes — ' : _drawTool === 'line' ? 'draw line — '
+               : _drawTool === 'move' ? 'move strokes — ' : 'draw stroke — ') + cl.name;
   const ud = udCapture([{ t: 'item', kind: 'letter', cp: curCp, withDraw: true }], label);
-  if (_drawTool === 'erase') {
+  if (_drawTool === 'move') {
+    const hit = drawHitStroke(cl, x, y);
+    if (hit >= 0) {
+      if (e.shiftKey) {   // Shift+click toggles membership — no drag starts
+        if (_drawSel.has(hit)) _drawSel.delete(hit); else _drawSel.add(hit);
+        renderStage(); renderControls();
+      } else {
+        if (!_drawSel.has(hit)) { _drawSel.clear(); _drawSel.add(hit); renderStage(); renderControls(); }
+        drawGesture = { tool: 'move', kind: 'drag', pointerId: e.pointerId, pointerType: e.pointerType,
+                        start: [x, y], dx: 0, dy: 0, ud };
+      }
+    } else {   // empty space → lasso (Shift adds to the selection)
+      const [msx, msy] = clientToStage(e);
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      el.setAttribute('class', 'node-marquee');
+      stage().appendChild(el);
+      drawGesture = { tool: 'move', kind: 'marquee', pointerId: e.pointerId, pointerType: e.pointerType,
+                      start: [msx, msy], cur: [msx, msy], add: e.shiftKey, el };
+    }
+  } else if (_drawTool === 'erase') {
     if (_drawEraseMode === 'partial') {
       // Live feedback is a luminance mask over #drawStrokes — ink visually disappears while the
       // stroke array stays untouched until pointerup (the data-di index invariant holds all gesture).
@@ -6961,6 +6993,27 @@ function drawPointerMove(e) {
   const tol = 3 / (((ctm && ctm.a) || 1) * SC);        // ≈3 screen px min-distance decimation, in font units
   const a = DRAW_SMOOTH_A[_drawSmoothing] || 0.35;
   const g = drawGesture, cl = curLetter();
+  if (g.tool === 'move') {   // drag = live transform on the selected elements; marquee = rubber rect
+    const ev = batch[batch.length - 1];
+    const pt = sv.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    const p = pt.matrixTransform(inv);
+    if (g.kind === 'marquee') {
+      g.cur = [p.x, p.y];
+      if (!g.el.isConnected) stage().appendChild(g.el);
+      g.el.setAttribute('x', Math.min(g.start[0], g.cur[0]).toFixed(1));
+      g.el.setAttribute('y', Math.min(g.start[1], g.cur[1]).toFixed(1));
+      g.el.setAttribute('width', Math.abs(g.cur[0] - g.start[0]).toFixed(1));
+      g.el.setAttribute('height', Math.abs(g.cur[1] - g.start[1]).toFixed(1));
+    } else {
+      g.dx = ifx(p.x) - g.start[0]; g.dy = ify(p.y) - g.start[1];
+      const tf = `translate(${(g.dx * SC).toFixed(1)} ${(-g.dy * SC).toFixed(1)})`;   // stage y is flipped
+      _drawSel.forEach(i => {
+        const se = sv.querySelector(`[data-di="${i}"]`); if (se) se.setAttribute('transform', tf);
+        const bb = sv.querySelector(`.draw-sel-box[data-si="${i}"]`); if (bb) bb.setAttribute('transform', tf);
+      });
+    }
+    e.preventDefault(); return;
+  }
   if (g.tool === 'line') {   // rubber line — only the batch's last position matters
     const ev = batch[batch.length - 1];
     const pt = sv.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
@@ -7027,6 +7080,31 @@ function drawPointerUp(e) {
     } else if (cl && cl.draw && g.kill.size) {
       cl.draw.strokes = cl.draw.strokes.filter((_, i) => !g.kill.has(i));   // single mutation at gesture end — indices stay valid throughout
       udPush(g.ud);
+    }
+  } else if (g.tool === 'move') {
+    if (g.kind === 'marquee') {
+      if (g.el) { try { g.el.remove(); } catch (err) {} }
+      const c = g.cur || g.start;
+      const bx0 = Math.min(g.start[0], c[0]), bx1 = Math.max(g.start[0], c[0]);
+      const by0 = Math.min(g.start[1], c[1]), by1 = Math.max(g.start[1], c[1]);
+      if (!g.add) _drawSel.clear();   // a plain tap on empty space deselects
+      if (cl && cl.draw && (bx1 - bx0 > 3 || by1 - by0 > 3)) {
+        cl.draw.strokes.forEach((s, i) => {   // any point inside selects — fat strokes feel touch-selectable
+          if (s.pts.some(q => { const qx = fx(q[0]), qy = fy(q[1]); return qx >= bx0 && qx <= bx1 && qy >= by0 && qy <= by1; })) _drawSel.add(i);
+        });
+      }
+    } else if (cl && cl.draw) {
+      const mdx = Math.round(g.dx), mdy = Math.round(g.dy);
+      if (mdx || mdy) {
+        _drawSel.forEach(i => {
+          const s = cl.draw.strokes[i]; if (!s) return;
+          s.pts.forEach(q => {   // clamp to sanitizeDraw's range so a reload can't shift placed ink
+            q[0] = Math.max(-2000, Math.min(3000, q[0] + mdx));
+            q[1] = Math.max(-2000, Math.min(3000, q[1] + mdy));
+          });
+        });
+        udPush(g.ud);
+      }
     }
   } else if (g.tool === 'line') {
     if (cl && cl.draw) {
@@ -7123,6 +7201,34 @@ function drawEraseSplit(cl, g) {
   cl.draw.strokes = out;
   udPush(g.ud);
   if (clipped) status(_drawT('limit_toast', 'Stroke limit reached — erase or join strokes before adding more.'));
+}
+function drawHitStroke(cl, x, y) {   // topmost stroke under the pointer (last→first = paint order), ~8 FU slop
+  if (!(cl && cl.draw)) return -1;
+  for (let i = cl.draw.strokes.length - 1; i >= 0; i--) {
+    const s = cl.draw.strokes[i], r = s.w / 2 + 8;
+    if (s.pts.length === 1) { if (Math.hypot(s.pts[0][0] - x, s.pts[0][1] - y) <= r) return i; continue; }
+    for (let k = 0; k < s.pts.length - 1; k++) if (_segDist(x, y, s.pts[k], s.pts[k + 1]) <= r) return i;
+  }
+  return -1;
+}
+function drawDeleteSelected() {   // move tool — remove the selected strokes (panel button + Delete key)
+  const cl = curLetter();
+  if (!cl || !(cl.draw && cl.draw.strokes.length) || !_drawSel.size) return;
+  udDo([{ t: 'item', kind: 'letter', cp: curCp, withDraw: true }], 'delete strokes — ' + cl.name, () => {
+    cl.draw.strokes = cl.draw.strokes.filter((_, i) => !_drawSel.has(i));
+  });
+  _drawSel.clear();
+  renderStage(); renderControls();
+}
+function drawNudgeSel(dx, dy) {   // arrow-key nudge — a run of taps coalesces into one undo entry
+  const cl = curLetter();
+  if (!cl || !(cl.draw && cl.draw.strokes.length) || !_drawSel.size) return;
+  udNudgeTick([{ t: 'item', kind: 'letter', cp: curCp, withDraw: true }], 'nudge strokes — ' + cl.name);
+  _drawSel.forEach(i => {
+    const s = cl.draw.strokes[i]; if (!s) return;
+    s.pts.forEach(q => { q[0] = Math.max(-2000, Math.min(3000, q[0] + dx)); q[1] = Math.max(-2000, Math.min(3000, q[1] + dy)); });
+  });
+  renderStage();
 }
 function drawClearCurrent() {   // strokes only — the committed outline/raster stays until the next Save
   const cl = curLetter();
@@ -11167,6 +11273,13 @@ function renderDrawLeft(L, l) {
     </select>`;
   } else if (_drawTool === 'line') {
     ctxHtml = brushRow + styleRow + penOnlyChk;
+  } else if (_drawTool === 'move') {
+    ctxHtml = `
+    <div class="hint" style="margin-top:4px;">${_drawT('move_hint', 'Drag a stroke to move it. Drag empty space to select several. Delete removes the selection; Esc clears it.')}</div>
+    <div class="ctl-row" style="margin-top:6px;">
+      <button class="ctl-btn" id="drawDeleteSelBtn" onclick="drawDeleteSelected()" ${_drawSel.size?'':'disabled'}>${_drawT('delete_sel', 'Delete selected')}</button>
+      <span class="readout">${_drawSel.size ? _drawT(_drawSel.size === 1 ? 'sel_count.one' : 'sel_count.other', _drawSel.size + ' selected', { count: _drawSel.size }) : ''}</span>
+    </div>`;
   } else if (_drawTool === 'erase') {
     ctxHtml = `
     <div class="side-slider-label">${_drawT('erase_size', 'Eraser size')} <span id="drawEraserVal" class="readout">${_drawEraser}</span></div>
@@ -11184,6 +11297,7 @@ function renderDrawLeft(L, l) {
       ${toolBtn('draw', 'drawToolDraw', _drawT('tool_draw', 'Draw'), 'D')}
       ${toolBtn('erase', 'drawToolErase', _drawT('tool_erase', 'Erase'), 'E')}
       ${toolBtn('line', 'drawToolLine', _drawT('tool_line', 'Line'), 'L')}
+      ${toolBtn('move', 'drawToolMove', _drawT('tool_move', 'Move'), 'V')}
     </div>` + ctxHtml + `
     <div class="ctl-row" style="margin-top:8px;">
       <button class="ctl-btn" onclick="drawClearCurrent()" ${nStrokes?'':'disabled'}>${_drawT('clear', 'Clear letter')}</button>
