@@ -6804,7 +6804,8 @@ function pressureOf(e) { return e.pointerType === 'pen' ? (e.pressure || 0.5) : 
 const DRAW_SMOOTH_A = { off: 1, low: 0.55, med: 0.35, high: 0.2 };   // EMA factor per smoothing level
 function drawRadiusAt(s, p) { return (s.w / 2) * (s.pr ? (0.35 + 1.3 * Math.min(1, Math.max(0.05, p))) : 1); }
 function drawHasPressure(s) { return !!s.pr && s.pts.some(q => q[2] !== 0.5); }
-function drawIsVar(s) { return !!s.nib || drawHasPressure(s); }   // needs the variable-width polygon path (chisel and/or pressure)
+function drawIsVar(s) { return !!s.st || drawHasPressure(s); }   // needs the variable-width polygon path (styled and/or pressure)
+const STYLE_ST = { chisel: 'c', brush: 'b', dotted: 'd', hollow: 'h' };   // pen-style pref → per-stroke st tag (absent = round)
 function _capArc(c, r, aFrom, steps) {   // half-circle cap, sweeping clockwise from aFrom
   const out = [];
   for (let k = 1; k < steps; k++) { const a = aFrom - Math.PI * k / steps; out.push([c[0] + Math.cos(a) * r, c[1] + Math.sin(a) * r]); }
@@ -6815,7 +6816,7 @@ function _capArc(c, r, aFrom, steps) {   // half-circle cap, sweeping clockwise 
    nonzero winding. 1-point strokes are handled by the callers (circle). */
 function drawStrokePoly(s) {
   const pts = s.pts, n = pts.length;
-  const nib = !!s.nib, naR = ((s.na != null ? s.na : 90) * Math.PI) / 180;
+  const nib = s.st === 'c', naR = ((s.na != null ? s.na : 90) * Math.PI) / 180;
   const sinNA = Math.sin(naR), cosNA = Math.cos(naR);
   // chisel width factor = |u × nib-edge| = |sin(θstroke − θnib)| — full width sweeping across the
   // edge, NIB_MIN sliding along it (na=90: thick horizontals / thin verticals — the sofer look)
@@ -6854,17 +6855,47 @@ function drawNibDotPoly(s, q) {   // 1-pt chisel tap — the nib's rectangular f
   return [[q[0] + ex + px, q[1] + ey + py], [q[0] + ex - px, q[1] + ey - py],
           [q[0] - ex - px, q[1] - ey - py], [q[0] - ex + px, q[1] - ey + py]];
 }
+/* ── Shared style-geometry layer ── the ONE place styled strokes become shapes. Consumed by
+   drawStrokesSVG, drawRenderCanvas, the live in-flight preview, and the brush-picker tiles, so
+   previews are structurally honest and SVG/canvas parity (drawEnsureRaster determinism) is
+   structural. Returns:
+     { fill: [poly, …] }              filled polygon(s) — chisel / brush
+     { fill: [outer, inner], eo: 1 }  evenodd ring pair — hollow
+     { dots: [[cx, cy, r], …] }       dot list — dotted
+     null                             no styled shape → caller uses its round fast paths */
+function drawStyleGeom(s) {
+  if (!s.st) return null;
+  if (s.st === 'c') {
+    const poly = s.pts.length === 1 ? drawNibDotPoly(s, s.pts[0]) : drawStrokePoly(s);
+    return poly.length > 2 ? { fill: [poly] } : null;
+  }
+  return null;   // 'b' | 'd' | 'h' land with the style implementations
+}
 /* Committed strokes as stage-px SVG. data-di = index into l.draw.strokes at render time (the erase
    gesture's kill-set addresses elements by it and only mutates the array once, at pointerup). */
+/* Style geometry → SVG path data (stage px). Dots become per-dot circle subpaths so a styled
+   stroke stays ONE element (the data-di erase-mask / move-transform contract). */
+function _drawGeomPathD(gm) {
+  if (gm.dots) return gm.dots.map(([cx, cy, r]) => {
+    const X = fx(cx), Y = fy(cy), R = Math.max(0.5, r * SC);
+    return `M ${(X + R).toFixed(1)} ${Y.toFixed(1)} A ${R.toFixed(2)} ${R.toFixed(2)} 0 1 1 ${(X - R).toFixed(1)} ${Y.toFixed(1)} A ${R.toFixed(2)} ${R.toFixed(2)} 0 1 1 ${(X + R).toFixed(1)} ${Y.toFixed(1)} Z`;
+  }).join(' ');
+  return gm.fill.filter(p => p.length > 2)
+    .map(poly => `M ${poly.map(q => fx(q[0]).toFixed(1) + ' ' + fy(q[1]).toFixed(1)).join(' L ')} Z`).join(' ');
+}
 function drawStrokesSVG(l) {
   if (!(l.draw && l.draw.strokes.length)) return '';
   const c = stageColors().ink;
   const pathOf = poly => `M ${poly.map(q => fx(q[0]).toFixed(1) + ' ' + fy(q[1]).toFixed(1)).join(' L ')} Z`;
   // The <g> wrapper is the partial-eraser's mask target ([data-di] lookups pierce it unchanged)
   return '<g id="drawStrokes">' + l.draw.strokes.map((s, i) => {
-    if (s.pts.length === 1) {
+    const gm = s.st ? drawStyleGeom(s) : null;
+    if (gm) {
+      const d = _drawGeomPathD(gm);
+      return d ? `<path data-di="${i}" d="${d}"${gm.eo ? ' fill-rule="evenodd"' : ''} fill="${c}"/>` : '';
+    }
+    if (s.pts.length === 1) {   // round dot (also styled 1-pt taps whose geometry degrades to a dot)
       const q = s.pts[0];
-      if (s.nib) return `<path data-di="${i}" d="${pathOf(drawNibDotPoly(s, q))}" fill="${c}"/>`;
       return `<circle data-di="${i}" cx="${fx(q[0]).toFixed(1)}" cy="${fy(q[1]).toFixed(1)}" r="${Math.max(0.5, drawRadiusAt(s, q[2]) * SC).toFixed(2)}" fill="${c}"/>`;
     }
     if (drawIsVar(s)) {
@@ -6905,11 +6936,19 @@ function drawRingUpdate(e) {
   _drawRingEl.setAttribute('r', (((erase ? _drawEraser : _drawBrush) / 2) * SC).toFixed(2));
   if (erase) _drawRingEl.setAttribute('stroke-dasharray', '4 3'); else _drawRingEl.removeAttribute('stroke-dasharray');
 }
-/* chisel live preview — rebuild the in-flight stroke's outline each move batch (O(n), n ≤ 2048) */
+function _drawApplyStyle(sk, g) {   // stamp the frozen style + its one param onto a committing stroke
+  if (!g.st) return;
+  sk.st = g.st;
+  if (g.st === 'c') sk.na = g.na;
+  else if (g.st === 'b') sk.tl = g.tl;
+  else if (g.st === 'd') sk.ds = g.ds;
+  else if (g.st === 'h') { sk.rim = g.rim; sk.pr = 0; }   // hollow is constant-width by contract
+}
+/* styled live preview — rebuild the in-flight stroke's shape each move batch (O(n), n ≤ 2048) */
 function _drawLivePathD(g) {
-  const s = { w: _drawBrush, pr: _drawPressure ? 1 : 0, nib: 1, na: g.na, pts: g.pts };
-  const poly = g.pts.length === 1 ? drawNibDotPoly(s, g.pts[0]) : drawStrokePoly(s);
-  return poly.length > 2 ? 'M ' + poly.map(q => fx(q[0]).toFixed(1) + ' ' + fy(q[1]).toFixed(1)).join(' L ') + ' Z' : '';
+  const s = { w: _drawBrush, pr: _drawPressure ? 1 : 0, st: g.st, na: g.na, tl: g.tl, ds: g.ds, rim: g.rim, pts: g.pts };
+  const gm = drawStyleGeom(s);
+  return gm ? _drawGeomPathD(gm) : '';
 }
 function drawPointerDown(e) {
   if (curKind !== 'letter') return;
@@ -6981,11 +7020,12 @@ function drawPointerDown(e) {
       drawEraseAt(cl, x, y);
     }
   } else if (_drawTool === 'line') {
-    const chisel = _drawStyle === 'chisel';
-    const el = document.createElementNS('http://www.w3.org/2000/svg', chisel ? 'path' : 'line');
+    const st = STYLE_ST[_drawStyle] || null;
+    const el = document.createElementNS('http://www.w3.org/2000/svg', st ? 'path' : 'line');
     el.setAttribute('class', 'draw-live');
-    if (chisel) {
+    if (st) {
       el.setAttribute('fill', stageColors().ink);
+      if (st === 'h') el.setAttribute('fill-rule', 'evenodd');
     } else {
       el.setAttribute('x1', fx(x).toFixed(1)); el.setAttribute('y1', fy(y).toFixed(1));
       el.setAttribute('x2', fx(x).toFixed(1)); el.setAttribute('y2', fy(y).toFixed(1));
@@ -6997,13 +7037,14 @@ function drawPointerDown(e) {
     stage().appendChild(el);
     drawGesture = { tool: 'line', pointerId: e.pointerId, pointerType: e.pointerType,
                     x0: Math.round(x), y0: Math.round(y), cur: [Math.round(x), Math.round(y)],
-                    chisel, na: _drawNibAngle, el, ud };
+                    st, na: _drawNibAngle, el, ud };
   } else {
-    const chisel = _drawStyle === 'chisel';   // style/angle freeze at gesture start (like w)
-    const el = document.createElementNS('http://www.w3.org/2000/svg', chisel ? 'path' : 'polyline');
+    const st = STYLE_ST[_drawStyle] || null;   // style + params freeze at gesture start (like w)
+    const el = document.createElementNS('http://www.w3.org/2000/svg', st ? 'path' : 'polyline');
     el.setAttribute('class', 'draw-live');
-    if (chisel) {
+    if (st) {
       el.setAttribute('fill', stageColors().ink);
+      if (st === 'h') el.setAttribute('fill-rule', 'evenodd');
     } else {
       el.setAttribute('points', fx(x).toFixed(1) + ',' + fy(y).toFixed(1));
       el.setAttribute('fill', 'none');
@@ -7015,8 +7056,8 @@ function drawPointerDown(e) {
     stage().appendChild(el);
     drawGesture = { tool: 'draw', pointerId: e.pointerId, pointerType: e.pointerType,
                     pts: [[Math.round(x), Math.round(y), pressureOf(e)]], sm: [x, y, pressureOf(e)],
-                    chisel, na: _drawNibAngle, el, ud };
-    if (chisel) el.setAttribute('d', _drawLivePathD(drawGesture));   // seed the tap footprint
+                    st, na: _drawNibAngle, el, ud };
+    if (st) el.setAttribute('d', _drawLivePathD(drawGesture));   // seed the tap footprint
   }
   try { stage().setPointerCapture(e.pointerId); } catch (err) {}   // synthetic test events have no active pointer — must not throw
   e.preventDefault();
@@ -7067,10 +7108,12 @@ function drawPointerMove(e) {
     }
     g.cur = [Math.round(x1), Math.round(y1)];
     if (!g.el.isConnected) stage().appendChild(g.el);
-    if (g.chisel) {
-      const s = { w: _drawBrush, pr: 0, nib: 1, na: g.na, pts: [[g.x0, g.y0, 0.5], [g.cur[0], g.cur[1], 0.5]] };
-      const poly = Math.hypot(g.cur[0] - g.x0, g.cur[1] - g.y0) < 2 ? drawNibDotPoly(s, [g.x0, g.y0, 0.5]) : drawStrokePoly(s);
-      g.el.setAttribute('d', poly.length > 2 ? 'M ' + poly.map(q => fx(q[0]).toFixed(1) + ' ' + fy(q[1]).toFixed(1)).join(' L ') + ' Z' : '');
+    if (g.st) {
+      const tap = Math.hypot(g.cur[0] - g.x0, g.cur[1] - g.y0) < 2;
+      const s = { w: _drawBrush, pr: 0, st: g.st, na: g.na, tl: g.tl, ds: g.ds, rim: g.rim,
+                  pts: tap ? [[g.x0, g.y0, 0.5]] : [[g.x0, g.y0, 0.5], [g.cur[0], g.cur[1], 0.5]] };
+      const gm = drawStyleGeom(s);
+      g.el.setAttribute('d', gm ? _drawGeomPathD(gm) : '');
     } else {
       g.el.setAttribute('x2', fx(g.cur[0]).toFixed(1));
       g.el.setAttribute('y2', fy(g.cur[1]).toFixed(1));
@@ -7101,7 +7144,7 @@ function drawPointerMove(e) {
     if (g.pts.length >= 2048) continue;                // hard cap — matches sanitizeDraw
     g.pts.push([Math.round(g.sm[0]), Math.round(g.sm[1]), g.sm[2]]);
     if (!g.el.isConnected) stage().appendChild(g.el);  // a stray async re-render wiped the SVG mid-stroke
-    if (g.chisel) g.el.setAttribute('d', _drawLivePathD(g));
+    if (g.st) g.el.setAttribute('d', _drawLivePathD(g));
     else g.el.setAttribute('points', g.el.getAttribute('points') + ' ' + fx(g.sm[0]).toFixed(1) + ',' + fy(g.sm[1]).toFixed(1));
   }
   e.preventDefault();
@@ -7148,15 +7191,15 @@ function drawPointerUp(e) {
   } else if (g.tool === 'line') {
     if (cl && cl.draw) {
       const tap = Math.hypot(g.cur[0] - g.x0, g.cur[1] - g.y0) < 2;   // zero-length rule → a dot, never a degenerate 2-pt stroke
-      const st = { w: _drawBrush, pr: 0, pts: tap ? [[g.x0, g.y0, 0.5]] : [[g.x0, g.y0, 0.5], [g.cur[0], g.cur[1], 0.5]] };
-      if (g.chisel) { st.nib = 1; st.na = g.na; }
-      cl.draw.strokes.push(st);
+      const sk = { w: _drawBrush, pr: 0, pts: tap ? [[g.x0, g.y0, 0.5]] : [[g.x0, g.y0, 0.5], [g.cur[0], g.cur[1], 0.5]] };
+      _drawApplyStyle(sk, g);
+      cl.draw.strokes.push(sk);
       udPush(g.ud);
     }
   } else if (cl && cl.draw) {
-    const st = { w: _drawBrush, pr: _drawPressure ? 1 : 0, pts: g.pts };
-    if (g.chisel) { st.nib = 1; st.na = g.na; }
-    cl.draw.strokes.push(st);
+    const sk = { w: _drawBrush, pr: _drawPressure ? 1 : 0, pts: g.pts };
+    _drawApplyStyle(sk, g);   // (hollow overrides pr to 0)
+    cl.draw.strokes.push(sk);
     udPush(g.ud);   // udPush marks dirty → the strokes autosave
   }
   renderStage(); renderControls();   // live polyline → committed shape; stroke-count readout
@@ -7232,7 +7275,9 @@ function drawEraseSplit(cl, g) {
       const step = r.length > 2048 ? Math.ceil(r.length / 2048) : 1;   // keep fragments inside sanitizeDraw's per-stroke cap
       const fr = step > 1 ? r.filter((_, i) => i % step === 0 || i === r.length - 1) : r;
       const o = { w: s.w, pr: s.pr, pts: fr };
-      if (s.nib) { o.nib = 1; o.na = s.na; }
+      if (s.st) { o.st = s.st;   // fragments keep the style + its one param
+        if (s.st === 'c') o.na = s.na; else if (s.st === 'b') o.tl = s.tl;
+        else if (s.st === 'd') o.ds = s.ds; else o.rim = s.rim; }
       out.push(o);
     }
   }
@@ -7302,19 +7347,28 @@ function drawRenderCanvas(d, fr) {
   ctx.setTransform(1, 0, 0, -1, -fr.x0, fr.y1);       // font units → canvas px (y-flip)
   ctx.fillStyle = ctx.strokeStyle = '#000';
   ctx.lineCap = ctx.lineJoin = 'round';
+  const tracePoly = poly => {
+    ctx.moveTo(poly[0][0], poly[0][1]);
+    for (let i = 1; i < poly.length; i++) ctx.lineTo(poly[i][0], poly[i][1]);
+    ctx.closePath();
+  };
   const fillPoly = poly => {
     if (poly.length < 3) return;
-    ctx.beginPath(); ctx.moveTo(poly[0][0], poly[0][1]);
-    for (let i = 1; i < poly.length; i++) ctx.lineTo(poly[i][0], poly[i][1]);
-    ctx.closePath(); ctx.fill();
+    ctx.beginPath(); tracePoly(poly); ctx.fill();
   };
   d.strokes.forEach(s => {
-    if (s.pts.length === 1) {   // tap/dot — a lone moveTo paints nothing, so draw a circle (chisel: the nib footprint)
+    const gm = s.st ? drawStyleGeom(s) : null;   // shared geometry layer = SVG/canvas parity (drawEnsureRaster determinism)
+    if (gm) {
+      if (gm.dots) { gm.dots.forEach(([cx, cy, r]) => { ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill(); }); return; }
+      if (gm.eo) { ctx.beginPath(); gm.fill.filter(p => p.length > 2).forEach(tracePoly); ctx.fill('evenodd'); return; }
+      gm.fill.forEach(fillPoly);
+      return;
+    }
+    if (s.pts.length === 1) {   // tap/dot — a lone moveTo paints nothing, so draw a circle
       const q = s.pts[0];
-      if (s.nib) { fillPoly(drawNibDotPoly(s, q)); return; }
       ctx.beginPath(); ctx.arc(q[0], q[1], drawRadiusAt(s, q[2]), 0, Math.PI * 2); ctx.fill();
     } else if (drawIsVar(s)) {
-      fillPoly(drawStrokePoly(s));   // shared poly builder = SVG/canvas parity (drawEnsureRaster determinism)
+      fillPoly(drawStrokePoly(s));
     } else {
       ctx.lineWidth = s.w;
       ctx.beginPath(); ctx.moveTo(s.pts[0][0], s.pts[0][1]);
@@ -14643,7 +14697,14 @@ function sanitizeDraw(d) {
     }
     if (pts.length) {
       const o = { w, pr: s.pr ? 1 : 0, pts };
-      if (s.nib) { o.nib = 1; o.na = Number.isFinite(+s.na) ? Math.min(179, Math.max(0, Math.round(+s.na))) : 90; }   // chisel strokes
+      const st = ['c','b','d','h'].includes(s.st) ? s.st : (s.nib ? 'c' : null);   // nib:1 = legacy preview-build chisel
+      if (st) {
+        o.st = st;
+        if (st === 'c') o.na  = Number.isFinite(+s.na)  ? Math.min(179, Math.max(0, Math.round(+s.na)))  : 90;
+        if (st === 'b') o.tl  = Number.isFinite(+s.tl)  ? Math.min(400, Math.max(20, Math.round(+s.tl))) : 120;
+        if (st === 'd') o.ds  = Number.isFinite(+s.ds)  ? Math.min(4, Math.max(1.25, Math.round(+s.ds * 100) / 100)) : 2;
+        if (st === 'h') { o.rim = Number.isFinite(+s.rim) ? Math.min(80, Math.max(8, Math.round(+s.rim))) : 22; o.pr = 0; }
+      }
       strokes.push(o);
     }
   }
