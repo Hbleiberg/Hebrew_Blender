@@ -2855,7 +2855,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.8</strong> — <strong>A full pencil case for Draw mode.</strong> The on-screen drawing step now has four tools instead of two. The eraser learned to erase for real: <span class="ui">Partial</span> mode rubs out just the ink under your eraser — splitting a stroke into pieces when you cut through it — while <span class="ui">Whole stroke</span> keeps the old one-touch removal, and the eraser finally has its own size. A new <span class="ui">Line</span> tool lays down perfectly straight strokes (hold Shift to snap to 0° / 45° / 90°), and a new <span class="ui">Chisel</span> pen style turns any stroke into broad-nib calligraphy — thick horizontals, thin verticals, with an adjustable nib angle — the way a sofer's pen writes. The <span class="ui">Move</span> tool drags a stroke (or a lasso-selected group) anywhere, with arrow-key nudging and Delete. A cursor ring previews your exact brush or eraser footprint, one-key shortcuts switch tools (D / E / L / V, X to swap, [ and ] to resize), and an <span class="ui">Undo</span> button sits right in the panel for tablet drawing. The pen itself grew a full brush kit: a visual pen-style picker with five live-preview tiles — <span class="ui">Round</span>, <span class="ui">Chisel</span>, <span class="ui">Brush</span> (strokes that taper at both ends), <span class="ui">Dotted</span> (a dotted tracing line), and <span class="ui">Hollow</span> (outlined letters) — each with its own dial (nib angle with one-tap 0° / 45° / 90° presets, taper length, dot spacing, outline thickness). Mouse and finger strokes can vary thickness with drawing speed the way a pen does with pressure, a tilting stylus can set the chisel's nib angle just by how you hold it, and a new <span class="ui">Stamp</span> tool places tagin crowns, dots, or serif feet — sized to your brush — as ordinary strokes you can move, erase, or undo. <span style="color:var(--muted);">(August 2026)</span></li>
+      <li><strong>v5.8</strong> — <strong>A full pencil case for Draw mode.</strong> The on-screen drawing step now has four tools instead of two. The eraser learned to erase for real: <span class="ui">Partial</span> mode rubs out just the ink under your eraser — splitting a stroke into pieces when you cut through it — while <span class="ui">Whole stroke</span> keeps the old one-touch removal, and the eraser finally has its own size. A new <span class="ui">Line</span> tool lays down perfectly straight strokes (hold Shift to snap to 0° / 45° / 90°), and a new <span class="ui">Chisel</span> pen style turns any stroke into broad-nib calligraphy — thick horizontals, thin verticals, with an adjustable nib angle — the way a sofer's pen writes. The <span class="ui">Move</span> tool drags a stroke (or a lasso-selected group) anywhere, with arrow-key nudging and Delete. A cursor ring previews your exact brush or eraser footprint, one-key shortcuts switch tools (D / E / L / V, X to swap, [ and ] to resize), and an <span class="ui">Undo</span> button sits right in the panel for tablet drawing. The pen itself grew a full brush kit: a visual pen-style picker with five live-preview tiles — <span class="ui">Round</span>, <span class="ui">Chisel</span>, <span class="ui">Brush</span> (strokes that taper at both ends), <span class="ui">Dotted</span> (a dotted tracing line), and <span class="ui">Hollow</span> (outlined letters) — each with its own dial (nib angle with one-tap 0° / 45° / 90° presets, taper length, dot spacing, outline thickness). Mouse and finger strokes can vary thickness with drawing speed the way a pen does with pressure, a tilting stylus can set the chisel's nib angle just by how you hold it, and a new <span class="ui">Stamp</span> tool places tagin crowns, dots, or serif feet — sized to your brush and drawn in your pen style — as ordinary strokes you can move, erase, or undo. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.7</strong> — <strong>A guided start — and now draw your letters right on screen.</strong> Starting a font opens a three-step setup: name your font and pick a license, choose Regular or Bold plus nikkud, trope and extra alphabets, then say how your letters will arrive — and the toolbar's <span class="ui">New</span> no longer wipes your current project until you actually create the new one (if you left a project mid-trace, the "Continue where you left off" prompt still appears before anything else). The biggest arrival is a brand-new <span class="ui">Draw</span> mode: pick <span class="ui">Draw letters on screen</span> and sketch each letter directly over the gray reference with a pen, finger, or mouse — pressure-sensitive stylus strokes, smoothing, a whole-stroke eraser, and a <span class="ui">Save letter &amp; next</span> button that runs the tracer and moves on, so a student can flow through all 27 letters with a stylus and one button. Drawings stay editable forever, drawn and photographed letters mix freely in one font, and everything downstream — points editing, nikkud, Bold, export — works unchanged. A "Show me around after setup" checkbox starts the tour the moment you land in your fresh editor. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.6</strong> — <strong>Your font, one click from a worksheet.</strong> Saving a font to <span class="ui">My IvritSuite Fonts</span> used to be the end of the road: the window told you to "pick them in any IvritSuite tool's font selector", but nothing took you there. Each saved font now has a <span class="ui">Use in Worksheet Generator</span> link that opens the generator with that font already chosen, so you can see your letters on a real worksheet straight away. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.5</strong> — <strong>Your dagesh customizations, really in the exported font.</strong> A deep export audit found three quiet bugs in one chain: the OpenType rules that compose dotted letters (בּ, וֹ, וּ and friends) were accidentally inheriting a filter meant only for שׁ/שׂ, so in modern apps they never fired; a shin's own custom dagesh had no composed שּׁ/שּׂ form at all; and the pre-download shaping check couldn't load its engine, so it silently skipped instead of catching any of this. All three are fixed: exports now build the real שּׁ/שּׂ characters (U+FB2C/U+FB2D) from your dotted shin plus your own dagesh, every dagesh combination composes even with a vowel between the letter and the dot in the typed text, a new שּׁ chip joins the <span class="ui">Spacing</span> test combos, and the shaping check now genuinely runs — verifying שּׁ, בּ and בָּ before your font downloads. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -3174,7 +3174,7 @@ function shortcutGroups() {
       ['Esc', t('sc_pen_discard')],
     ], 'pen'],
     [g('draw'), [
-      ['D  /  E  /  L  /  V  /  S', t('sc_draw_tools')],
+      ['D  /  L  /  V  /  S  /  E', t('sc_draw_tools')],
       ['X', t('sc_draw_swap')],
       ['B', t('sc_draw_style')],
       ['[  /  ]', t('sc_draw_size')],
@@ -6475,7 +6475,7 @@ function renderLegend() {
     const key = _drawTool === 'erase' ? 'legend_erase' : _drawTool === 'line' ? 'legend_line'
               : _drawTool === 'move' ? 'legend_move' : _drawTool === 'stamp' ? 'legend_stamp' : 'legend';
     const fall = {
-      legend: 'Draw with a pen, finger, or mouse · D / E / L / V / S switch tools · Save runs the tracer',
+      legend: 'Draw with a pen, finger, or mouse · D / L / V / S / E switch tools · Save runs the tracer',
       legend_erase: 'Partial rubs out ink under the eraser · Whole stroke removes an entire stroke in one touch',
       legend_line: 'Press and drag to place a straight stroke · hold Shift to snap to 0° / 45° / 90°',
       legend_move: 'Drag a stroke to move it · drag empty space to select several · Delete removes them',
@@ -6836,7 +6836,9 @@ function drawSetStamp(s) { _drawStamp = STAMP_DEFS[s] ? s : 'crown'; drawSavePre
    anchor [0,0] = the tap point; min def w is 26 so even at min brush 40 (k=0.4) the placed width
    10.4 stays above sanitizeDraw's floor of 10. */
 const STAMP_DEFS = {
-  crown: { strokes: [   // tagin crown — three stems with dot tips, slight outward splay (tap the letter's top)
+  crown: { noHollow: 1, strokes: [   // tagin crown — three stems with dot tips, slight outward splay (tap the letter's top).
+    // noHollow: the parts overlap, so per-part rings merge unpredictably in the tracer — under the
+    // Hollow style a crown places solid (real tagin are solid flags); other styles apply normally.
     { w: 26, pts: [[-55, 0], [-63, 88]] }, { w: 34, pts: [[-66, 105]] },
     { w: 26, pts: [[0, 0], [0, 100]] },    { w: 34, pts: [[0, 120]] },
     { w: 26, pts: [[55, 0], [63, 88]] },   { w: 34, pts: [[66, 105]] },
@@ -6844,7 +6846,7 @@ const STAMP_DEFS = {
   dot:   { strokes: [{ w: 60, pts: [[0, 0]] }] },
   serif: { strokes: [{ w: 30, pts: [[-80, 0], [80, 0]] }] },
 };
-function drawPlaceStamp(cl, x, y) {   // atomic: the whole stamp fits under the cap or nothing is placed; ONE undo entry
+function drawPlaceStamp(cl, x, y, e) {   // atomic: the whole stamp fits under the cap or nothing is placed; ONE undo entry
   const def = STAMP_DEFS[_drawStamp] || STAMP_DEFS.crown;
   if (cl.draw.strokes.length + def.strokes.length > DRAW_STROKE_MAX) {
     status(_drawT('limit_toast', 'Stroke limit reached — erase or join strokes before adding more.'));
@@ -6852,10 +6854,23 @@ function drawPlaceStamp(cl, x, y) {   // atomic: the whole stamp fits under the 
   }
   const k = _drawBrush / 100;
   const cc = v => Math.max(-2000, Math.min(3000, Math.round(v)));
+  const st = STYLE_ST[_drawStyle] || null;              // stamps follow the pen style, like Draw and Line
+  const na = st === 'c' ? _drawNaFor(e, st) : 0;        // tilt-aware chisel angle at the tap
   const ud = udCapture([{ t: 'item', kind: 'letter', cp: curCp, withDraw: true }], 'place stamp — ' + cl.name);
   def.strokes.forEach(ds => {
-    cl.draw.strokes.push({ w: Math.round(ds.w * k), pr: 0,
-      pts: ds.pts.map(([px, py]) => [cc(x + px * k), cc(y + py * k), 0.5]) });
+    const sw = Math.round(ds.w * k);
+    const o = { w: sw, pr: 0, pts: ds.pts.map(([px, py]) => [cc(x + px * k), cc(y + py * k), 0.5]) };
+    if (st === 'c') { o.st = 'c'; o.na = na; }
+    else if (st === 'b' && ds.pts.length > 1) { o.st = 'b'; o.tl = Math.max(20, Math.round(_drawTaper * k)); }   // taps have no taper
+    else if (st === 'd') { o.st = 'd'; o.ds = _drawDotSpacing; }
+    else if (st === 'h' && !def.noHollow) {
+      const rim = Math.max(8, Math.min(_drawRim, Math.round(sw * 0.5)));
+      const rI = sw / 2 - rim / 2;
+      // Hollow only when the hole survives tracing (measured): slot holes (2-pt parts) live from
+      // sw ≥ 22; small ROUND holes (taps) need inner radius ≥ 9 or RDP collapses the circle.
+      if (ds.pts.length > 1 ? sw >= 22 : rI >= 9) { o.st = 'h'; o.rim = rim; }
+    }
+    cl.draw.strokes.push(o);
   });
   udPush(ud);
   renderStage(); renderControls();
@@ -7114,7 +7129,7 @@ function drawPointerDown(e) {
   cl.draw = cl.draw || { v: 1, strokes: [] };
   const [x, y] = clientToFont(e);
   if (_drawTool === 'stamp') {   // placement is instantaneous — no gesture, own atomic cap check + undo entry
-    drawPlaceStamp(cl, x, y);
+    drawPlaceStamp(cl, x, y, e);
     e.preventDefault();
     return;
   }
@@ -11578,8 +11593,8 @@ function renderDrawLeft(L, l) {
       ${stampBtn('crown', 'stamp_crown', 'Tagin crown')}
       ${stampBtn('dot', 'stamp_dot', 'Dot')}
       ${stampBtn('serif', 'stamp_serif', 'Serif foot')}
-    </div>
-    <div class="hint" style="margin-top:4px;">${_drawT('stamp_hint', 'Tap the canvas to place the stamp — it scales with Brush size. Each placed part is a normal stroke: erase, move, or undo it like any other.')}</div>` + penOnlyChk;
+    </div>` + styleRow + `
+    <div class="hint" style="margin-top:4px;">${_drawT('stamp_hint', 'Tap the canvas to place the stamp — it scales with Brush size and is drawn in the current pen style. Each placed part is a normal stroke: erase, move, or undo it like any other.')}</div>` + penOnlyChk;
   } else if (_drawTool === 'move') {
     ctxHtml = `
     <div class="hint" style="margin-top:4px;">${_drawT('move_hint', 'Drag a stroke to move it. Drag empty space to select several. Delete removes the selection; Esc clears it.')}</div>
@@ -11602,10 +11617,10 @@ function renderDrawLeft(L, l) {
     <div class="ws-side-title">${_drawT('panel_title', 'Draw — {name}', { name: esc(gName(l.name)) })}</div>
     <div class="mode-toggle draw-tools">
       ${toolBtn('draw', 'drawToolDraw', _drawT('tool_draw', 'Draw'), 'D')}
-      ${toolBtn('erase', 'drawToolErase', _drawT('tool_erase', 'Erase'), 'E')}
       ${toolBtn('line', 'drawToolLine', _drawT('tool_line', 'Line'), 'L')}
       ${toolBtn('move', 'drawToolMove', _drawT('tool_move', 'Move'), 'V')}
       ${toolBtn('stamp', 'drawToolStamp', _drawT('tool_stamp', 'Stamp'), 'S')}
+      ${toolBtn('erase', 'drawToolErase', _drawT('tool_erase', 'Erase'), 'E')}
     </div>` + ctxHtml + `
     <div class="ctl-row" style="margin-top:8px;">
       <button class="ctl-btn" id="drawUndoBtn" onclick="undo()" title="${esc(I18n.t('fontmaker.toolbar.undo_title'))}" ${undoStack.length?'':'disabled'}>↶ ${I18n.t('fontmaker.toolbar.undo_aria')}</button>
