@@ -3157,6 +3157,15 @@ function shortcutGroups() {
       [`Backspace  or  ${M} + Z`, t('sc_pen_remove')],
       ['Esc', t('sc_pen_discard')],
     ], 'pen'],
+    [g('draw'), [
+      ['D  /  E  /  L  /  V', t('sc_draw_tools')],
+      ['X', t('sc_draw_swap')],
+      ['[  /  ]', t('sc_draw_size')],
+      ['Shift + Drag', t('sc_draw_snap')],
+      ['Delete  or  Backspace', t('sc_draw_delete')],
+      ['←  ↑  →  ↓', t('sc_draw_nudge')],
+      ['Esc', t('sc_draw_esc')],
+    ], 'draw'],
     [g('marks'), [
       ['←  ↑  →  ↓', t('sc_nudge_anchor')],
       ['Shift + arrows', t('sc_fine_nudge')],
@@ -11278,7 +11287,7 @@ function renderDrawLeft(L, l) {
     `<button class="mode-btn ${_drawTool===t?'active':''}" aria-pressed="${_drawTool===t}" id="${id}" onclick="drawSetTool('${t}')" title="${esc(label)} (${kbd})">${label}</button>`;
   const brushRow = `
     <div class="side-slider-label">${_drawT('brush', 'Brush size')} <span id="drawBrushVal" class="readout">${_drawBrush}</span></div>
-    <input type="range" class="side-slider" min="40" max="300" step="5" value="${_drawBrush}" oninput="drawSetBrush(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('brush', 'Brush size'))}">`;
+    <input type="range" class="side-slider" min="40" max="300" step="5" value="${_drawBrush}" oninput="drawSetBrush(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('brush', 'Brush size'))}" title="[ / ]">`;
   const styleRow = `
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('style', 'Pen style')}</div>
     <div class="mode-toggle">
@@ -11312,7 +11321,7 @@ function renderDrawLeft(L, l) {
   } else if (_drawTool === 'erase') {
     ctxHtml = `
     <div class="side-slider-label">${_drawT('erase_size', 'Eraser size')} <span id="drawEraserVal" class="readout">${_drawEraser}</span></div>
-    <input type="range" class="side-slider" min="20" max="300" step="5" value="${_drawEraser}" oninput="drawSetEraser(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('erase_size', 'Eraser size'))}">
+    <input type="range" class="side-slider" min="20" max="300" step="5" value="${_drawEraser}" oninput="drawSetEraser(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('erase_size', 'Eraser size'))}" title="[ / ]">
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('erase_mode', 'Eraser mode')}</div>
     <div class="mode-toggle">
       <button class="mode-btn ${_drawEraseMode==='partial'?'active':''}" aria-pressed="${_drawEraseMode==='partial'}" id="drawEraseModePartial" onclick="drawSetEraseMode('partial')">${_drawT('erase_partial', 'Partial')}</button>
@@ -11787,6 +11796,38 @@ document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === '[') { e.preventDefault(); stepLetter(-1); }
   else if (e.key === ']') { e.preventDefault(); stepLetter(1); }
+});
+/* Draw-mode shortcuts — D/E/L/V pick a tool, X swaps Draw⇄Erase, [ / ] resize the active tool's
+   brush/eraser, Delete removes the Move selection, arrows nudge it, Esc cancels/clears. (Ctrl+Z
+   stays with the global undo handler; Shift+drag line-snap is gesture-read, not a key handler.) */
+document.addEventListener('keydown', e => {
+  if (workMode !== 'draw') return;
+  if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key;
+  if (!e.shiftKey) {
+    const tool = { d: 'draw', e: 'erase', l: 'line', v: 'move', x: (_drawTool === 'erase' ? 'draw' : 'erase') }[k.toLowerCase()];
+    if (tool) { e.preventDefault(); drawSetTool(tool); return; }
+  }
+  if (k === '[' || k === ']') {
+    e.preventDefault();
+    const d = k === '[' ? -10 : 10;
+    if (_drawTool === 'erase') drawSetEraser(_drawEraser + d); else drawSetBrush(_drawBrush + d);
+    drawSavePrefs(); renderControls();   // sync the slider + readout (focus is on the stage, not the panel)
+    return;
+  }
+  if ((k === 'Delete' || k === 'Backspace') && _drawSel.size) { e.preventDefault(); drawDeleteSelected(); return; }
+  if (k === 'Escape') {
+    if (drawGesture) { e.preventDefault(); _drawAbandon(); }
+    else if (_drawSel.size) { e.preventDefault(); _drawSel.clear(); renderStage(); renderControls(); }
+    return;   // nothing to cancel → leave Esc for modal handlers
+  }
+  if (_drawSel.size && (k === 'ArrowLeft' || k === 'ArrowRight' || k === 'ArrowUp' || k === 'ArrowDown')) {
+    e.preventDefault();
+    const step = e.shiftKey ? 25 : 5;   // node-editor convention — strokes favor coarse jumps
+    drawNudgeSel(k === 'ArrowLeft' ? -step : k === 'ArrowRight' ? step : 0,
+                 k === 'ArrowUp' ? step : k === 'ArrowDown' ? -step : 0);
+  }
 });
 /* arrow-key nudge / Delete / Esc — node editor (Edit-points mode). Arrows = 5 units, Shift = 25
    (node editing favors coarse jumps; the anchor/align nudges above use Shift = fine). A run of taps groups into one undo entry. */
