@@ -1057,12 +1057,15 @@
   .preset-list {
     display: flex; flex-direction: column;
     gap: 6px;
-    max-height: 200px;
+    max-height: 300px;
     overflow-y: auto;
+    overflow-x: hidden;          /* classic (non-overlay) scrollbars shrink the rows — never answer with a horizontal bar */
+    scrollbar-gutter: stable;    /* reserve the lane so rows don't reflow when the bar appears */
     margin-top: 8px;
   }
   .preset-item {
     display: flex;
+    flex-wrap: wrap;             /* too narrow for one line (phones, deep folders) → actions flow below, nothing clips */
     align-items: center;
     gap: 6px;
     padding: 6px 10px;
@@ -1072,7 +1075,16 @@
     font-size: 0.82rem;
   }
   body.dark .preset-item { background: var(--navy-deep); }
+  /* Item names wrap inside their own column ("Mechina" / "C") instead of propping the row wider
+     than the list — every character stays visible, so similar names remain distinguishable */
+  .preset-item .ft-item-name { min-width: 0; overflow-wrap: anywhere; }
   .preset-name { flex: 1; font-weight: 600; }
+  /* Slim, theme-colored scrollbars for the drawer's scroll areas (the standard props win in new
+     browsers; the ::-webkit-* rules cover older Chromium where the classic bars look clunky in dark) */
+  .settings-body, .preset-list, .picker-chips { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+  .settings-body::-webkit-scrollbar, .preset-list::-webkit-scrollbar, .picker-chips::-webkit-scrollbar { width: 9px; height: 9px; }
+  .settings-body::-webkit-scrollbar-thumb, .preset-list::-webkit-scrollbar-thumb, .picker-chips::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+  .settings-body::-webkit-scrollbar-track, .preset-list::-webkit-scrollbar-track, .picker-chips::-webkit-scrollbar-track { background: transparent; }
 
   /* ───── Schedule Sync ───── */
   .schedule-time-input {
@@ -2747,6 +2759,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   let _wakeLock = null;
   let _activeEditable = null;
   let _inplacePrevFocus = null;
+  let _inplaceEditPreset = null;   // scheduled preset whose board is being edited in place (frozen at entry)
   let _fsStripTimer = null;
 
   /* ────────── FIRST-RUN SETUP + STARTER LAYOUTS ────────── */
@@ -7270,6 +7283,15 @@ else ivritInit();
     const disp = document.getElementById('dashTextDisplay');
     if (_activeEditable === disp) return;
     _inplacePrevFocus = document.activeElement;
+    // When Schedule Sync owns the board, the next boundary/reload re-applies the active preset —
+    // which would silently un-save this edit. Freeze that preset NOW (not at exit: the schedule's
+    // own exitInPlaceEdit call fires mid-switch, after the new period is already current) so the
+    // commit can be folded into it.
+    _inplaceEditPreset = null;
+    if (settings.scheduleEnabled) {
+      const st = computeScheduleState();
+      if (st.status === 'active' && st.currentEntry && presets[st.currentEntry.preset]) _inplaceEditPreset = st.currentEntry.preset;
+    }
     _activeEditable = disp;
     disp.classList.add('editing');
     disp.setAttribute('contenteditable', 'true');
@@ -7296,6 +7318,14 @@ else ivritInit();
     _activeEditable = null;
     if (commit) commitDisplayToEditor(); else commitEditorToDisplay();   // revert re-reads the untouched editor
     saveSettingsToStorage();
+    // Fold the committed text into the scheduled preset that owns the board — otherwise the next
+    // period change (or a reload inside this period) re-applies the preset's stored text and the
+    // teacher's "Done" quietly reverts.
+    if (commit && _inplaceEditPreset && presets[_inplaceEditPreset]) {
+      presets[_inplaceEditPreset].dashTextHTML = settings.dashTextHTML;
+      savePresetsStorage();
+    }
+    _inplaceEditPreset = null;
     if (_inplacePrevFocus && _inplacePrevFocus.focus) { try { _inplacePrevFocus.focus(); } catch (e) {} }
     _inplacePrevFocus = null;
   }
@@ -7681,6 +7711,9 @@ async function onUploadEngFontPick(input){
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') acquireWakeLock();
   });
+  // Refresh/close mid-edit must not eat the text: commit the in-place edit on the way out.
+  // pagehide (not beforeunload) so bfcache stays eligible; localStorage writes are sync-safe here.
+  window.addEventListener('pagehide', () => { if (_activeEditable) exitInPlaceEdit(true); });
   // Reveal the strip on any pointer activity while fullscreen; keep it up while hovered
   const _fsReveal = () => { if (document.body.classList.contains('fullscreen')) showFsStrip(); };
   document.addEventListener('pointermove', _fsReveal, { passive: true });
