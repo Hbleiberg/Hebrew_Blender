@@ -6360,7 +6360,7 @@ async function renderStage() {
         const s = l.draw.strokes[i];
         let bx0 = Infinity, bx1 = -Infinity, by0 = Infinity, by1 = -Infinity;
         s.pts.forEach(q => { bx0 = Math.min(bx0, q[0]); bx1 = Math.max(bx1, q[0]); by0 = Math.min(by0, q[1]); by1 = Math.max(by1, q[1]); });
-        const pad = (s.w / 2) * (s.pr ? 1.65 : 1) + 6;   // covers the max pressure factor
+        const pad = (s.w / 2) * (s.pr ? 1.65 : 1) + (s.st === 'h' ? (s.rim || 22) / 2 : 0) + 6;   // covers the max pressure factor + hollow rim
         h += `<rect class="draw-sel-box" data-si="${i}" x="${fx(bx0 - pad).toFixed(1)}" y="${fy(by1 + pad).toFixed(1)}" width="${((bx1 - bx0 + 2 * pad) * SC).toFixed(1)}" height="${((by1 - by0 + 2 * pad) * SC).toFixed(1)}"/>`;
       });
     }
@@ -6763,8 +6763,13 @@ let _drawSel = new Set();    // move tool: selected stroke indices — transient
 const DRAW_STROKE_MAX = 512; // runtime cap == sanitizeDraw's reload cap — a split/draw must never create strokes a reload would drop
 const NIB_MIN = 0.18;        // chisel thin-edge floor (≥7 font units at min brush 40 — always traceable)
 const ERASE_STEP = 12;       // partial-erase resample pitch (font units) — makes sparse strokes (2-pt lines) splittable
+const DOT_RMIN = 18;         // dotted-style dot-radius floor — ≈1018 FU² per dot, far above the tracer's 80 FU² contour floor
+const DOT_MAX = 1024;        // dots per stroke ceiling (pitch stretches rather than exceed it)
+const TAPER_STEP = 24;       // brush-style resample pitch (font units) — a 2-pt Line stroke tapers via interpolated samples
+const RING_RMIN = 2;         // inner-ring / taper radius floor (font units) — offsets never collapse or cross zero
 let _drawBrush = 90, _drawPressure = true, _drawSmoothing = 'med', _drawPenOnly = false;   // mirrors of uiPrefs (avoid per-stroke localStorage reads)
 let _drawEraser = 120, _drawEraseMode = 'partial', _drawStyle = 'round', _drawNibAngle = 90;   // more uiPrefs mirrors: eraser size/mode + pen style
+let _drawTaper = 120, _drawDotSpacing = 2, _drawRim = 22;   // per-style params (frozen onto strokes at commit, like w)
 function drawLoadPrefs() {
   const p = wsReadPrefs();
   _drawBrush = Number.isFinite(+p.drawBrush) ? Math.min(300, Math.max(40, +p.drawBrush)) : 90;
@@ -6773,13 +6778,17 @@ function drawLoadPrefs() {
   _drawPenOnly = p.drawPenOnly === true;
   _drawEraser = Number.isFinite(+p.drawEraser) ? Math.min(300, Math.max(20, +p.drawEraser)) : 120;
   _drawEraseMode = p.drawEraseMode === 'whole' ? 'whole' : 'partial';
-  _drawStyle = p.drawStyle === 'chisel' ? 'chisel' : 'round';
+  _drawStyle = ['round','chisel','brush','dotted','hollow'].includes(p.drawStyle) ? p.drawStyle : 'round';
   _drawNibAngle = Number.isFinite(+p.drawNibAngle) ? Math.min(170, Math.max(0, Math.round(+p.drawNibAngle))) : 90;
+  _drawTaper = Number.isFinite(+p.drawTaper) ? Math.min(400, Math.max(20, Math.round(+p.drawTaper))) : 120;
+  _drawDotSpacing = Number.isFinite(+p.drawDotSpacing) ? Math.min(4, Math.max(1.25, +p.drawDotSpacing)) : 2;
+  _drawRim = Number.isFinite(+p.drawRim) ? Math.min(80, Math.max(8, Math.round(+p.drawRim))) : 22;
 }
 function drawSavePrefs() {
   try { const p = wsReadPrefs();
     p.drawBrush = _drawBrush; p.drawPressure = _drawPressure; p.drawSmoothing = _drawSmoothing; p.drawPenOnly = _drawPenOnly;
     p.drawEraser = _drawEraser; p.drawEraseMode = _drawEraseMode; p.drawStyle = _drawStyle; p.drawNibAngle = _drawNibAngle;
+    p.drawTaper = _drawTaper; p.drawDotSpacing = _drawDotSpacing; p.drawRim = _drawRim;
     localStorage.setItem(WS_PREFS_KEY, JSON.stringify(p));
   } catch (e) { /* private mode / quota — non-fatal */ }
 }
@@ -6791,8 +6800,11 @@ function drawSetTool(t) {
 }
 function drawSetEraser(v) { _drawEraser = Math.min(300, Math.max(20, +v || 120)); const r = document.getElementById('drawEraserVal'); if (r) r.textContent = _drawEraser; }
 function drawSetEraseMode(m) { _drawEraseMode = m === 'whole' ? 'whole' : 'partial'; drawSavePrefs(); renderControls(); }
-function drawSetStyle(s) { _drawStyle = s === 'chisel' ? 'chisel' : 'round'; drawSavePrefs(); renderControls(); }
+function drawSetStyle(s) { _drawStyle = ['round','chisel','brush','dotted','hollow'].includes(s) ? s : 'round'; drawSavePrefs(); renderControls(); }
 function drawSetNibAngle(v) { _drawNibAngle = Math.min(170, Math.max(0, Math.round(+v) || 0)); const r = document.getElementById('drawNibAngleVal'); if (r) r.textContent = _drawNibAngle + '°'; }
+function drawSetTaper(v) { _drawTaper = Math.min(400, Math.max(20, Math.round(+v) || 120)); const r = document.getElementById('drawTaperVal'); if (r) r.textContent = _drawTaper; }
+function drawSetDotSpacing(v) { _drawDotSpacing = Math.min(4, Math.max(1.25, +v || 2)); const r = document.getElementById('drawDotSpacingVal'); if (r) r.textContent = _drawDotSpacing + '×'; }
+function drawSetRim(v) { _drawRim = Math.min(80, Math.max(8, Math.round(+v) || 22)); const r = document.getElementById('drawRimVal'); if (r) r.textContent = _drawRim; }
 function drawSetBrush(v) { _drawBrush = Math.min(300, Math.max(40, +v || 90)); const r = document.getElementById('drawBrushVal'); if (r) r.textContent = _drawBrush; }
 function drawSetPressure(on) { _drawPressure = !!on; drawSavePrefs(); }
 function drawSetSmoothing(v) { _drawSmoothing = ['off','low','med','high'].includes(v) ? v : 'med'; drawSavePrefs(); }
@@ -6814,14 +6826,11 @@ function _capArc(c, r, aFrom, steps) {   // half-circle cap, sweeping clockwise 
 /* Variable-width outline polygon of one stroke (font units). A plain closed polygon serves both
    the y-down canvas and the y-up stage SVG; self-intersections at sharp turns fill solid under
    nonzero winding. 1-point strokes are handled by the callers (circle). */
-function drawStrokePoly(s) {
-  const pts = s.pts, n = pts.length;
-  const nib = s.st === 'c', naR = ((s.na != null ? s.na : 90) * Math.PI) / 180;
-  const sinNA = Math.sin(naR), cosNA = Math.cos(naR);
-  // chisel width factor = |u × nib-edge| = |sin(θstroke − θnib)| — full width sweeping across the
-  // edge, NIB_MIN sliding along it (na=90: thick horizontals / thin verticals — the sofer look)
-  const nf = d => nib ? Math.max(NIB_MIN, Math.abs(d[0] * sinNA - d[1] * cosNA)) : 1;
-  const dirs = [];
+/* Generic variable-width offset outline (font units): per-point direction from neighbors, left/right
+   offsets by radiusAt(i, dir), optional round end caps (cap radius = radiusAt at the ends).
+   Callers guarantee pts.length ≥ 2. The Number.isFinite filter protects the canvas subpath. */
+function _drawOffsetPoly(pts, radiusAt, caps) {
+  const n = pts.length, dirs = [];
   for (let i = 0; i < n; i++) {
     const a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)];
     const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy);
@@ -6830,22 +6839,44 @@ function drawStrokePoly(s) {
   }
   const left = [], right = [];
   for (let i = 0; i < n; i++) {
-    const d = dirs[i];
-    const r = drawRadiusAt(s, pts[i][2]) * nf(d);
+    const d = dirs[i], r = radiusAt(i, d);
     const nx = -d[1] * r, ny = d[0] * r;
     left.push([pts[i][0] + nx, pts[i][1] + ny]);
     right.push([pts[i][0] - nx, pts[i][1] - ny]);
   }
-  if (nib) return left.concat(right.slice().reverse())               // butt ends — the chisel aesthetic (identical in SVG + canvas)
-    .filter(q => Number.isFinite(q[0]) && Number.isFinite(q[1]));
-  const rEnd = drawRadiusAt(s, pts[n - 1][2]), rStart = drawRadiusAt(s, pts[0][2]);
+  const fin = q => Number.isFinite(q[0]) && Number.isFinite(q[1]);
+  if (!caps) return left.concat(right.slice().reverse()).filter(fin);   // butt ends
+  const rEnd = radiusAt(n - 1, dirs[n - 1]), rStart = radiusAt(0, dirs[0]);
   const aEndL = Math.atan2(dirs[n - 1][0], -dirs[n - 1][1]);    // angle of the left normal at the end
   const aStartR = Math.atan2(-dirs[0][0], dirs[0][1]);          // angle of the right normal at the start
   return left
     .concat(_capArc(pts[n - 1], rEnd, aEndL, 16))
     .concat(right.slice().reverse())
     .concat(_capArc(pts[0], rStart, aStartR, 16))
-    .filter(q => Number.isFinite(q[0]) && Number.isFinite(q[1]));   // one bad vertex would drop the whole canvas subpath
+    .filter(fin);
+}
+function drawStrokePoly(s) {
+  const nib = s.st === 'c', naR = ((s.na != null ? s.na : 90) * Math.PI) / 180;
+  const sinNA = Math.sin(naR), cosNA = Math.cos(naR);
+  // chisel width factor = |u × nib-edge| = |sin(θstroke − θnib)| — full width sweeping across the
+  // edge, NIB_MIN sliding along it (na=90: thick horizontals / thin verticals — the sofer look)
+  const nf = d => nib ? Math.max(NIB_MIN, Math.abs(d[0] * sinNA - d[1] * cosNA)) : 1;
+  return _drawOffsetPoly(s.pts, (i, d) => drawRadiusAt(s, s.pts[i][2]) * nf(d), !nib);   // chisel = butt ends
+}
+function _drawResample(pts, step) {   // arc-length resample for geometry (lerp x, y, p; keeps vertices; ≤2048)
+  if (pts.length < 2) return pts;
+  const out = [pts[0]];
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i];
+    const k = Math.min(Math.floor(Math.hypot(b[0] - a[0], b[1] - a[1]) / step), Math.max(0, 2047 - out.length));
+    for (let j = 1; j <= k; j++) {
+      const t = j / (k + 1);
+      out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]);
+    }
+    out.push(b);
+    if (out.length >= 2048) break;
+  }
+  return out;
 }
 function drawNibDotPoly(s, q) {   // 1-pt chisel tap — the nib's rectangular footprint (shared by SVG + canvas renderers)
   const naR = ((s.na != null ? s.na : 90) * Math.PI) / 180;
@@ -6865,11 +6896,62 @@ function drawNibDotPoly(s, q) {   // 1-pt chisel tap — the nib's rectangular f
      null                             no styled shape → caller uses its round fast paths */
 function drawStyleGeom(s) {
   if (!s.st) return null;
-  if (s.st === 'c') {
+  if (s.st === 'c') {   // chisel — angle-dependent width, butt ends
     const poly = s.pts.length === 1 ? drawNibDotPoly(s, s.pts[0]) : drawStrokePoly(s);
     return poly.length > 2 ? { fill: [poly] } : null;
   }
-  return null;   // 'b' | 'd' | 'h' land with the style implementations
+  if (s.st === 'b') {   // brush — width tapers over `tl` FU of arc at both ends (pen lifting off)
+    if (s.pts.length < 2) return null;   // a tap degrades to the plain round dot
+    const tl = s.tl != null ? s.tl : 120;
+    const pts = _drawResample(s.pts, TAPER_STEP);   // interior samples so even a 2-pt Line stroke tapers
+    const L = [0];
+    for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    const Ltot = L[L.length - 1] || 1;
+    const poly = _drawOffsetPoly(pts, i =>
+      Math.max(RING_RMIN, drawRadiusAt(s, pts[i][2]) * Math.min(1, L[i] / tl, (Ltot - L[i]) / tl)), true);
+    return poly.length > 2 ? { fill: [poly] } : null;
+  }
+  if (s.st === 'd') {   // dotted — tracing dots at ds×w pitch along the path, tracer-safe radius floor
+    const rOf = p => Math.max(DOT_RMIN, drawRadiusAt(s, p));
+    if (s.pts.length === 1) return { dots: [[s.pts[0][0], s.pts[0][1], rOf(s.pts[0][2])]] };
+    let Ltot = 0;
+    for (let i = 1; i < s.pts.length; i++) Ltot += Math.hypot(s.pts[i][0] - s.pts[i - 1][0], s.pts[i][1] - s.pts[i - 1][1]);
+    let P = (s.ds != null ? s.ds : 2) * s.w;
+    if (Math.floor(Ltot / P) + 1 > DOT_MAX) P = Ltot / (DOT_MAX - 1);   // stretch pitch rather than exceed the cap
+    const dots = [[s.pts[0][0], s.pts[0][1], rOf(s.pts[0][2])]];
+    let target = P, acc = 0, lastAt = 0;
+    for (let i = 1; i < s.pts.length; i++) {
+      const a = s.pts[i - 1], b = s.pts[i];
+      const seg = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      while (target <= acc + seg && dots.length < DOT_MAX) {
+        const t = (target - acc) / (seg || 1);
+        dots.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, rOf(a[2] + (b[2] - a[2]) * t)]);
+        lastAt = target; target += P;
+      }
+      acc += seg;
+    }
+    if (Ltot - lastAt >= 0.5 * P && dots.length < DOT_MAX) {   // endpoint dot unless it would crowd the last one
+      const q = s.pts[s.pts.length - 1];
+      dots.push([q[0], q[1], rOf(q[2])]);
+    }
+    return { dots };
+  }
+  if (s.st === 'h') {   // hollow — evenodd ring pair (constant width; pr is forced 0 at commit).
+    // Known artifact: at hairpin turns the offset polys self-intersect and evenodd flips the overlap
+    // to small holes — identical in both renderers (parity holds); EMA smoothing suppresses most.
+    const rim = s.rim != null ? s.rim : 22;
+    const r = s.w / 2, rO = r + rim / 2, rI = Math.max(RING_RMIN, r - rim / 2);
+    if (s.pts.length === 1) {
+      const q = s.pts[0];
+      const circle = R => { const out = []; for (let k = 0; k < 24; k++) { const a = (k / 24) * 2 * Math.PI; out.push([q[0] + Math.cos(a) * R, q[1] + Math.sin(a) * R]); } return out; };
+      return { fill: [circle(rO), circle(rI)], eo: 1 };   // annulus
+    }
+    const outer = _drawOffsetPoly(s.pts, () => rO, true);
+    const inner = _drawOffsetPoly(s.pts, () => rI, true);
+    if (outer.length < 3) return null;
+    return inner.length > 2 ? { fill: [outer, inner], eo: 1 } : { fill: [outer] };
+  }
+  return null;
 }
 /* Committed strokes as stage-px SVG. data-di = index into l.draw.strokes at render time (the erase
    gesture's kill-set addresses elements by it and only mutates the array once, at pointerup). */
@@ -7037,7 +7119,7 @@ function drawPointerDown(e) {
     stage().appendChild(el);
     drawGesture = { tool: 'line', pointerId: e.pointerId, pointerType: e.pointerType,
                     x0: Math.round(x), y0: Math.round(y), cur: [Math.round(x), Math.round(y)],
-                    st, na: _drawNibAngle, el, ud };
+                    st, na: _drawNibAngle, tl: _drawTaper, ds: _drawDotSpacing, rim: _drawRim, el, ud };
   } else {
     const st = STYLE_ST[_drawStyle] || null;   // style + params freeze at gesture start (like w)
     const el = document.createElementNS('http://www.w3.org/2000/svg', st ? 'path' : 'polyline');
@@ -7056,7 +7138,7 @@ function drawPointerDown(e) {
     stage().appendChild(el);
     drawGesture = { tool: 'draw', pointerId: e.pointerId, pointerType: e.pointerType,
                     pts: [[Math.round(x), Math.round(y), pressureOf(e)]], sm: [x, y, pressureOf(e)],
-                    st, na: _drawNibAngle, el, ud };
+                    st, na: _drawNibAngle, tl: _drawTaper, ds: _drawDotSpacing, rim: _drawRim, el, ud };
     if (st) el.setAttribute('d', _drawLivePathD(drawGesture));   // seed the tap footprint
   }
   try { stage().setPointerCapture(e.pointerId); } catch (err) {}   // synthetic test events have no active pointer — must not throw
@@ -7209,7 +7291,7 @@ function drawEraseAt(cl, x, y) {   // whole-stroke removal: hit-test the pointer
   const R = _drawEraser / 2;
   cl.draw.strokes.forEach((s, i) => {
     if (g.kill.has(i)) return;
-    const r = s.w / 2 + R;
+    const r = s.w / 2 + (s.st === 'h' ? (s.rim || 22) / 2 : 0) + R;   // hollow ink reaches w/2 + rim/2
     const pts = s.pts;
     let hit = false;
     if (pts.length === 1) hit = Math.hypot(pts[0][0] - x, pts[0][1] - y) <= r;
@@ -7245,7 +7327,7 @@ function drawEraseSplit(cl, g) {
   const out = [];
   let changed = false, clipped = false;
   for (const s of cl.draw.strokes) {
-    const Rt = R + s.w / 2;
+    const Rt = R + s.w / 2 + (s.st === 'h' ? (s.rim || 22) / 2 : 0);   // hollow ink reaches w/2 + rim/2
     let sx0 = Infinity, sx1 = -Infinity, sy0 = Infinity, sy1 = -Infinity;   // bbox precheck — most strokes are nowhere near the path
     s.pts.forEach(q => { sx0 = Math.min(sx0, q[0]); sx1 = Math.max(sx1, q[0]); sy0 = Math.min(sy0, q[1]); sy1 = Math.max(sy1, q[1]); });
     if (sx0 > ex1 + Rt || sx1 < ex0 - Rt || sy0 > ey1 + Rt || sy1 < ey0 - Rt) { out.push(s); continue; }
@@ -7289,7 +7371,7 @@ function drawEraseSplit(cl, g) {
 function drawHitStroke(cl, x, y) {   // topmost stroke under the pointer (last→first = paint order), ~8 FU slop
   if (!(cl && cl.draw)) return -1;
   for (let i = cl.draw.strokes.length - 1; i >= 0; i--) {
-    const s = cl.draw.strokes[i], r = s.w / 2 + 8;
+    const s = cl.draw.strokes[i], r = s.w / 2 + (s.st === 'h' ? (s.rim || 22) / 2 : 0) + 8;
     if (s.pts.length === 1) { if (Math.hypot(s.pts[0][0] - x, s.pts[0][1] - y) <= r) return i; continue; }
     for (let k = 0; k < s.pts.length - 1; k++) if (_segDist(x, y, s.pts[k], s.pts[k + 1]) <= r) return i;
   }
@@ -7329,7 +7411,7 @@ function drawClearCurrent() {   // strokes only — the committed outline/raster
 function drawFrame(d) {
   const em = effMetrics();
   let ix0 = Infinity, ix1 = -Infinity, iy0 = Infinity, iy1 = -Infinity, maxW = 0;
-  d.strokes.forEach(s => { maxW = Math.max(maxW, s.w);
+  d.strokes.forEach(s => { maxW = Math.max(maxW, s.st === 'h' ? s.w + (s.rim || 22) : s.w);   // hollow's outer edge
     s.pts.forEach(q => { ix0 = Math.min(ix0, q[0]); ix1 = Math.max(ix1, q[0]);
                          iy0 = Math.min(iy0, q[1]); iy1 = Math.max(iy1, q[1]); }); });
   const pad = maxW * 0.85 + 4;   // covers the max pressure factor (1.65 × w/2) + AA margin — pads INK only, not the em box
