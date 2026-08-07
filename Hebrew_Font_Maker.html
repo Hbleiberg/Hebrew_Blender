@@ -6824,10 +6824,10 @@ function drawSetTool(t) {
 function drawSetEraser(v) { _drawEraser = Math.min(300, Math.max(20, +v || 120)); const r = document.getElementById('drawEraserVal'); if (r) r.textContent = _drawEraser; }
 function drawSetEraseMode(m) { _drawEraseMode = m === 'whole' ? 'whole' : 'partial'; drawSavePrefs(); renderControls(); }
 function drawSetStyle(s) { _drawStyle = ['round','chisel','brush','dotted','hollow'].includes(s) ? s : 'round'; drawSavePrefs(); renderControls(); }
-function drawSetNibAngle(v) { _drawNibAngle = Math.min(170, Math.max(0, Math.round(+v) || 0)); const r = document.getElementById('drawNibAngleVal'); if (r) r.textContent = _drawNibAngle + '°'; }
-function drawSetTaper(v) { _drawTaper = Math.min(400, Math.max(20, Math.round(+v) || 120)); const r = document.getElementById('drawTaperVal'); if (r) r.textContent = _drawTaper; }
-function drawSetDotSpacing(v) { _drawDotSpacing = Math.min(4, Math.max(1.25, +v || 2)); const r = document.getElementById('drawDotSpacingVal'); if (r) r.textContent = _drawDotSpacing + '×'; }
-function drawSetRim(v) { _drawRim = Math.min(80, Math.max(8, Math.round(+v) || 22)); const r = document.getElementById('drawRimVal'); if (r) r.textContent = _drawRim; }
+function drawSetNibAngle(v) { _drawNibAngle = Math.min(170, Math.max(0, Math.round(+v) || 0)); const r = document.getElementById('drawNibAngleVal'); if (r) r.textContent = _drawNibAngle + '°'; drawTilesRefresh(); }
+function drawSetTaper(v) { _drawTaper = Math.min(400, Math.max(20, Math.round(+v) || 120)); const r = document.getElementById('drawTaperVal'); if (r) r.textContent = _drawTaper; drawTilesRefresh(); }
+function drawSetDotSpacing(v) { _drawDotSpacing = Math.min(4, Math.max(1.25, +v || 2)); const r = document.getElementById('drawDotSpacingVal'); if (r) r.textContent = _drawDotSpacing + '×'; drawTilesRefresh(); }
+function drawSetRim(v) { _drawRim = Math.min(80, Math.max(8, Math.round(+v) || 22)); const r = document.getElementById('drawRimVal'); if (r) r.textContent = _drawRim; drawTilesRefresh(); }
 function drawSetSpeed(on) { _drawSpeed = !!on; drawSavePrefs(); }
 function drawSetTilt(on) { _drawTilt = !!on; drawSavePrefs(); }
 function drawSetStamp(s) { _drawStamp = STAMP_DEFS[s] ? s : 'crown'; drawSavePrefs(); renderControls(); }
@@ -6846,6 +6846,23 @@ const STAMP_DEFS = {
   dot:   { strokes: [{ w: 60, pts: [[0, 0]] }] },
   serif: { strokes: [{ w: 30, pts: [[-80, 0], [80, 0]] }] },
 };
+/* One styled stamp part at the tap-relative origin (unclamped, un-offset) — shared by placement
+   AND the stamp-tile previews, so what a tile shows is exactly what a tap places. */
+function _stampPartStroke(dsDef, k, st, na, noHollow) {
+  const sw = Math.round(dsDef.w * k);
+  const o = { w: sw, pr: 0, pts: dsDef.pts.map(([px, py]) => [px * k, py * k, 0.5]) };
+  if (st === 'c') { o.st = 'c'; o.na = na; }
+  else if (st === 'b' && dsDef.pts.length > 1) { o.st = 'b'; o.tl = Math.max(20, Math.round(_drawTaper * k)); }   // taps have no taper
+  else if (st === 'd') { o.st = 'd'; o.ds = _drawDotSpacing; }
+  else if (st === 'h' && !noHollow) {
+    const rim = Math.max(8, Math.min(_drawRim, Math.round(sw * 0.5)));
+    const rI = sw / 2 - rim / 2;
+    // Hollow only when the hole survives tracing (measured): slot holes (2-pt parts) live from
+    // sw ≥ 22; small ROUND holes (taps) need inner radius ≥ 9 or RDP collapses the circle.
+    if (dsDef.pts.length > 1 ? sw >= 22 : rI >= 9) { o.st = 'h'; o.rim = rim; }
+  }
+  return o;
+}
 function drawPlaceStamp(cl, x, y, e) {   // atomic: the whole stamp fits under the cap or nothing is placed; ONE undo entry
   const def = STAMP_DEFS[_drawStamp] || STAMP_DEFS.crown;
   if (cl.draw.strokes.length + def.strokes.length > DRAW_STROKE_MAX) {
@@ -6858,24 +6875,14 @@ function drawPlaceStamp(cl, x, y, e) {   // atomic: the whole stamp fits under t
   const na = st === 'c' ? _drawNaFor(e, st) : 0;        // tilt-aware chisel angle at the tap
   const ud = udCapture([{ t: 'item', kind: 'letter', cp: curCp, withDraw: true }], 'place stamp — ' + cl.name);
   def.strokes.forEach(ds => {
-    const sw = Math.round(ds.w * k);
-    const o = { w: sw, pr: 0, pts: ds.pts.map(([px, py]) => [cc(x + px * k), cc(y + py * k), 0.5]) };
-    if (st === 'c') { o.st = 'c'; o.na = na; }
-    else if (st === 'b' && ds.pts.length > 1) { o.st = 'b'; o.tl = Math.max(20, Math.round(_drawTaper * k)); }   // taps have no taper
-    else if (st === 'd') { o.st = 'd'; o.ds = _drawDotSpacing; }
-    else if (st === 'h' && !def.noHollow) {
-      const rim = Math.max(8, Math.min(_drawRim, Math.round(sw * 0.5)));
-      const rI = sw / 2 - rim / 2;
-      // Hollow only when the hole survives tracing (measured): slot holes (2-pt parts) live from
-      // sw ≥ 22; small ROUND holes (taps) need inner radius ≥ 9 or RDP collapses the circle.
-      if (ds.pts.length > 1 ? sw >= 22 : rI >= 9) { o.st = 'h'; o.rim = rim; }
-    }
+    const o = _stampPartStroke(ds, k, st, na, def.noHollow);
+    o.pts = o.pts.map(([px, py]) => [cc(x + px), cc(y + py), 0.5]);
     cl.draw.strokes.push(o);
   });
   udPush(ud);
   renderStage(); renderControls();
 }
-function drawSetBrush(v) { _drawBrush = Math.min(300, Math.max(40, +v || 90)); const r = document.getElementById('drawBrushVal'); if (r) r.textContent = _drawBrush; }
+function drawSetBrush(v) { _drawBrush = Math.min(300, Math.max(40, +v || 90)); const r = document.getElementById('drawBrushVal'); if (r) r.textContent = _drawBrush; drawTilesRefresh(); }
 function drawSetPressure(on) { _drawPressure = !!on; drawSavePrefs(); }
 function drawSetSmoothing(v) { _drawSmoothing = ['off','low','med','high'].includes(v) ? v : 'med'; drawSavePrefs(); }
 function drawSetPenOnly(on) { _drawPenOnly = !!on; drawSavePrefs(); }
@@ -11528,13 +11535,34 @@ function brushTileSVG(style) {
   else inner = `<path d="${pathD(gm.fill)}"${gm.eo ? ' fill-rule="evenodd"' : ''} fill="currentColor"/>`;
   return `<svg viewBox="0 0 76 44" aria-hidden="true">${inner}</svg>`;
 }
-function stampTileSVG(id) {   // stamp defs drawn as stroked polylines/circles into the same tile viewBox
+function stampTileSVG(id) {   // style-aware: previews the ACTUAL strokes a tap would place (shared _stampPartStroke).
+  // Styled at the REAL brush scale k (so hollow gating, rims, taper, dots are truthful), then drawn
+  // normalized so the shape fills the tile the same at any brush size.
   const def = STAMP_DEFS[id];
-  const k = 0.16, tx = x => (38 + x * k).toFixed(1), ty = y => (36 - y * k).toFixed(1);
-  const inner = def.strokes.map(s => s.pts.length === 1
-    ? `<circle cx="${tx(s.pts[0][0])}" cy="${ty(s.pts[0][1])}" r="${(s.w * k / 2).toFixed(1)}" fill="currentColor"/>`
-    : `<polyline points="${s.pts.map(q => tx(q[0]) + ',' + ty(q[1])).join(' ')}" fill="none" stroke="currentColor" stroke-width="${(s.w * k).toFixed(1)}" stroke-linecap="round"/>`).join('');
+  const k = _drawBrush / 100;
+  const st = STYLE_ST[_drawStyle] || null;
+  const s = 0.16 / k;
+  const tx = x => (38 + x * s).toFixed(1), ty = y => (36 - y * s).toFixed(1);
+  const pathOf = polys => polys.filter(p => p.length > 2)
+    .map(poly => `M ${poly.map(q => tx(q[0]) + ' ' + ty(q[1])).join(' L ')} Z`).join(' ');
+  const inner = def.strokes.map(ds => {
+    const o = _stampPartStroke(ds, k, st, st === 'c' ? _drawNibAngle : 0, def.noHollow);
+    const gm = o.st ? drawStyleGeom(o) : null;
+    if (gm && gm.dots) return gm.dots.map(([cx, cy, r]) => `<circle cx="${tx(cx)}" cy="${ty(cy)}" r="${Math.max(0.6, r * s).toFixed(2)}" fill="currentColor"/>`).join('');
+    if (gm) return `<path d="${pathOf(gm.fill)}"${gm.eo ? ' fill-rule="evenodd"' : ''} fill="currentColor"/>`;
+    if (o.pts.length === 1) return `<circle cx="${tx(o.pts[0][0])}" cy="${ty(o.pts[0][1])}" r="${Math.max(0.6, (o.w / 2) * s).toFixed(2)}" fill="currentColor"/>`;
+    return `<path d="${pathOf([_drawOffsetPoly(o.pts, () => o.w / 2, true)])}" fill="currentColor"/>`;
+  }).join('');
   return `<svg viewBox="0 0 76 44" aria-hidden="true">${inner}</svg>`;
+}
+/* Live tile re-preview during slider drags — swaps each tile's <svg> IN PLACE. Never rebuilds the
+   panel: replacing the slider mid-drag would end the user's drag. No-op when no tiles are visible. */
+function drawTilesRefresh() {
+  document.querySelectorAll('.brush-tile').forEach(tile => {
+    const svg = tile.querySelector('svg'); if (!svg || !tile.id) return;
+    if (tile.id.startsWith('drawStyle')) svg.outerHTML = brushTileSVG(tile.id.slice(9).toLowerCase());
+    else if (tile.id.startsWith('drawStamp')) svg.outerHTML = stampTileSVG(tile.id.slice(9).toLowerCase());
+  });
 }
 function renderDrawLeft(L, l) {
   const nStrokes = (l.draw && l.draw.strokes.length) || 0;
