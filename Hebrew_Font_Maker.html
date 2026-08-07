@@ -454,6 +454,20 @@
   .draw-sel-box { fill: rgba(201,146,42,0.08); stroke: var(--gold); stroke-width: 1.2; stroke-dasharray: 5 4; pointer-events: none; }
   /* Draw-mode cursor ring — brush/eraser footprint preview (eraser adds a dash inline) */
   .draw-cursor-ring { fill: none; stroke: var(--gold); stroke-width: 1.2; opacity: 0.85; pointer-events: none; }
+  /* Draw-mode tool row: 5 buttons — single row at the default 300px column, wraps 3+2 at the 220px min */
+  .mode-toggle.draw-tools { flex-wrap: wrap; }
+  .draw-tools .mode-btn { flex: 1 1 auto; min-width: 58px; }
+  /* Brush picker — tiles preview the REAL stroke engine output (currentColor recolors active/dark free) */
+  .brush-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 5px; margin-top: 4px; }
+  .brush-tile { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 5px 3px 4px; background: var(--white); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-family: inherit; }
+  .brush-tile svg { display: block; width: 100%; height: auto; }
+  .brush-tile-label { font-size: 0.66rem; font-weight: 600; line-height: 1.1; white-space: nowrap; }
+  .brush-tile:hover { border-color: var(--gold); }
+  .brush-tile.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  body.dark .brush-tile.active { background: #2a4070; border-color: #4a6aaa; }
+  /* nib-angle preset chips */
+  .draw-chips .ctl-btn[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
+  body.dark .draw-chips .ctl-btn[aria-pressed="true"] { background: #2a4070; border-color: #4a6aaa; }
   .node-xform { margin: 8px 0 4px; }
   .node-xform summary { cursor: pointer; font-size: 0.76rem; font-weight: 600; color: var(--text); user-select: none; }
   .node-xform summary:hover { color: var(--gold); }
@@ -544,7 +558,8 @@
     #nodeBar .ctl-btn { min-height: 44px; min-width: 44px; }   /* the horizontal bar's constraining touch dimension is width */
     #nodeBar .nb-snap { min-height: 44px; }
     #nodeHint .ctl-btn { min-height: 44px; min-width: 44px; }
-    .draw-tools .mode-btn { min-height: 44px; }   /* the 4-tool Draw row is a primary touch surface */
+    .draw-tools .mode-btn { min-height: 44px; }   /* the Draw tool row is a primary touch surface */
+    .brush-tile { min-height: 44px; }
   }
   /* ── Node-mode stage chrome: #nodeBar / #nodeStatus / #nodeHint — static DOM,
      synced by renderNodeChrome(); visible only under body.mode-nodes ── */
@@ -714,7 +729,7 @@
   .hint-link:hover { filter: brightness(1.1); }
   .hint-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
   /* Shared focus-visible ring for the custom controls (suite standard: 2px gold) */
-  .ltile:focus-visible, .wtab:focus-visible, .ctab:focus-visible, .tbtn:focus-visible, .mode-btn:focus-visible, .ctl-btn:focus-visible, .hbtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .ltile:focus-visible, .wtab:focus-visible, .ctab:focus-visible, .tbtn:focus-visible, .mode-btn:focus-visible, .ctl-btn:focus-visible, .hbtn:focus-visible, .brush-tile:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
   /* ── Clickable letter chips in the export-warning modals ── */
   .lchip-wrap { max-height: 46vh; overflow: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5px 8px; margin-top: 12px; }
@@ -11416,6 +11431,23 @@ function renderTraceUnder(U, l) {
 }
 
 /* ── DRAW (draw letters on screen with pen / touch / mouse) ── */
+/* Brush-picker tile previews — the sample stroke runs through the REAL drawStyleGeom with the
+   CURRENT pref params, so a tile always shows exactly what the pen will lay down. Pure string
+   math — renderControls re-runs constantly, so no DOM/layout reads in here. */
+const S_TILE = { w: 120, pr: 0, pts: [[120, 180, 0.5], [320, 300, 0.5], [520, 180, 0.5], [680, 280, 0.5]] };
+function brushTileSVG(style) {
+  const s = Object.assign({}, S_TILE, { st: STYLE_ST[style] || null,
+    na: _drawNibAngle, tl: _drawTaper, ds: _drawDotSpacing, rim: _drawRim });
+  const tx = x => (x * 0.1).toFixed(1), ty = y => ((430 - y) * 0.1).toFixed(1);
+  const pathD = polys => polys.filter(p => p.length > 2)
+    .map(poly => `M ${poly.map(q => tx(q[0]) + ' ' + ty(q[1])).join(' L ')} Z`).join(' ');
+  const gm = drawStyleGeom(s);
+  let inner;
+  if (!gm) inner = `<path d="${pathD([_drawOffsetPoly(s.pts, () => s.w / 2, true)])}" fill="currentColor"/>`;   // round
+  else if (gm.dots) inner = gm.dots.map(([cx, cy, r]) => `<circle cx="${tx(cx)}" cy="${ty(cy)}" r="${(r * 0.1).toFixed(2)}" fill="currentColor"/>`).join('');
+  else inner = `<path d="${pathD(gm.fill)}"${gm.eo ? ' fill-rule="evenodd"' : ''} fill="currentColor"/>`;
+  return `<svg viewBox="0 0 76 44" aria-hidden="true">${inner}</svg>`;
+}
 function renderDrawLeft(L, l) {
   const nStrokes = (l.draw && l.draw.strokes.length) || 0;
   // The input-mode switcher renders ONLY here in a draw project (Align is unreachable for drawable
@@ -11425,14 +11457,28 @@ function renderDrawLeft(L, l) {
   const brushRow = `
     <div class="side-slider-label">${_drawT('brush', 'Brush size')} <span id="drawBrushVal" class="readout">${_drawBrush}</span></div>
     <input type="range" class="side-slider" min="40" max="300" step="5" value="${_drawBrush}" oninput="drawSetBrush(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('brush', 'Brush size'))}" title="[ / ]">`;
+  const styleBtn = (sty, key, fallback) =>
+    `<button class="brush-tile ${_drawStyle===sty?'active':''}" aria-pressed="${_drawStyle===sty}" id="drawStyle${sty[0].toUpperCase()+sty.slice(1)}" onclick="drawSetStyle('${sty}')">${brushTileSVG(sty)}<span class="brush-tile-label">${_drawT(key, fallback)}</span></button>`;
   const styleRow = `
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('style', 'Pen style')}</div>
-    <div class="mode-toggle">
-      <button class="mode-btn ${_drawStyle==='round'?'active':''}" aria-pressed="${_drawStyle==='round'}" id="drawStyleRound" onclick="drawSetStyle('round')">${_drawT('style_round', 'Round')}</button>
-      <button class="mode-btn ${_drawStyle==='chisel'?'active':''}" aria-pressed="${_drawStyle==='chisel'}" id="drawStyleChisel" onclick="drawSetStyle('chisel')">${_drawT('style_chisel', 'Chisel (calligraphy)')}</button>
+    <div class="brush-grid">
+      ${styleBtn('round', 'style_round', 'Round')}
+      ${styleBtn('chisel', 'style_chisel', 'Chisel')}
+      ${styleBtn('brush', 'style_brush', 'Brush')}
+      ${styleBtn('dotted', 'style_dotted', 'Dotted')}
+      ${styleBtn('hollow', 'style_hollow', 'Hollow')}
     </div>` + (_drawStyle === 'chisel' ? `
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('nib_angle', 'Nib angle')} <span id="drawNibAngleVal" class="readout">${_drawNibAngle}°</span></div>
-    <input type="range" class="side-slider" min="0" max="170" step="10" value="${_drawNibAngle}" oninput="drawSetNibAngle(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('nib_angle', 'Nib angle'))}">` : '');
+    <input type="range" class="side-slider" min="0" max="170" step="10" value="${_drawNibAngle}" oninput="drawSetNibAngle(this.value)" onchange="drawSavePrefs();renderControls()" aria-label="${esc(_drawT('nib_angle', 'Nib angle'))}">
+    <div class="ctl-row draw-chips" style="margin-top:4px;">
+      ${[0, 45, 90].map(a => `<button class="ctl-btn" aria-pressed="${_drawNibAngle===a}" onclick="drawSetNibAngle(${a});drawSavePrefs();renderControls()">${a}°</button>`).join('')}
+    </div>` : _drawStyle === 'brush' ? `
+    <div class="side-slider-label" style="margin-top:6px;">${_drawT('taper', 'Taper length')} <span id="drawTaperVal" class="readout">${_drawTaper}</span></div>
+    <input type="range" class="side-slider" min="20" max="400" step="10" value="${_drawTaper}" oninput="drawSetTaper(this.value)" onchange="drawSavePrefs();renderControls()" aria-label="${esc(_drawT('taper', 'Taper length'))}">` : _drawStyle === 'dotted' ? `
+    <div class="side-slider-label" style="margin-top:6px;">${_drawT('dot_spacing', 'Dot spacing')} <span id="drawDotSpacingVal" class="readout">${_drawDotSpacing}×</span></div>
+    <input type="range" class="side-slider" min="1.25" max="4" step="0.25" value="${_drawDotSpacing}" oninput="drawSetDotSpacing(this.value)" onchange="drawSavePrefs();renderControls()" aria-label="${esc(_drawT('dot_spacing', 'Dot spacing'))}">` : _drawStyle === 'hollow' ? `
+    <div class="side-slider-label" style="margin-top:6px;">${_drawT('rim', 'Outline thickness')} <span id="drawRimVal" class="readout">${_drawRim}</span></div>
+    <input type="range" class="side-slider" min="8" max="80" step="2" value="${_drawRim}" oninput="drawSetRim(this.value)" onchange="drawSavePrefs();renderControls()" aria-label="${esc(_drawT('rim', 'Outline thickness'))}">` : '');
   const penOnlyChk = `
     <label class="chk"><input type="checkbox" ${_drawPenOnly?'checked':''} onchange="drawSetPenOnly(this.checked)"> ${_drawT('pen_only', 'Pen only (ignore finger touches)')}</label>`;
   let ctxHtml = '';
