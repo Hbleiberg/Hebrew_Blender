@@ -308,6 +308,7 @@
   .mode-toggle { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
   .mode-btn { flex: 1; padding: 6px 4px; border: none; background: var(--white); color: var(--text); font-family: inherit; font-size: 0.76rem; cursor: pointer; font-weight: 600; }
   .mode-btn.active { background: var(--navy); color: #fff; }
+  .mode-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }   /* parity with .npnl-mode-btn */
   /* vertical stack variant — used when the option labels are long (e.g. the sidebar "Add Letters" panel) */
   .mode-toggle-stack { flex-direction: column; margin-bottom: 10px; }
   .mode-toggle-stack .mode-btn { padding: 9px 8px; line-height: 1.25; }
@@ -451,6 +452,8 @@
   .node-marquee { fill: rgba(201,146,42,0.12); stroke: var(--gold); stroke-width: 1; stroke-dasharray: 4 3; pointer-events: none; }
   /* Draw-mode Move tool: selected-stroke bounding boxes (token-driven — dark-mode safe) */
   .draw-sel-box { fill: rgba(201,146,42,0.08); stroke: var(--gold); stroke-width: 1.2; stroke-dasharray: 5 4; pointer-events: none; }
+  /* Draw-mode cursor ring — brush/eraser footprint preview (eraser adds a dash inline) */
+  .draw-cursor-ring { fill: none; stroke: var(--gold); stroke-width: 1.2; opacity: 0.85; pointer-events: none; }
   .node-xform { margin: 8px 0 4px; }
   .node-xform summary { cursor: pointer; font-size: 0.76rem; font-weight: 600; color: var(--text); user-select: none; }
   .node-xform summary:hover { color: var(--gold); }
@@ -541,6 +544,7 @@
     #nodeBar .ctl-btn { min-height: 44px; min-width: 44px; }   /* the horizontal bar's constraining touch dimension is width */
     #nodeBar .nb-snap { min-height: 44px; }
     #nodeHint .ctl-btn { min-height: 44px; min-width: 44px; }
+    .draw-tools .mode-btn { min-height: 44px; }   /* the 4-tool Draw row is a primary touch surface */
   }
   /* ── Node-mode stage chrome: #nodeBar / #nodeStatus / #nodeHint — static DOM,
      synced by renderNodeChrome(); visible only under body.mode-nodes ── */
@@ -2203,7 +2207,7 @@ function afterUndo(msg) { updateUndoButtons(); if (workMode === 'nodes') { nodeM
 function updateUndoButtons() {   // top-toolbar + node-bar twins (bar buttons exist only after the DOM parses — null-guarded)
   const u = !undoStack.length, r = !redoStack.length;
   const focused = document.activeElement;
-  [['undoBtn', u], ['redoBtn', r], ['nodeUndoBtn', u], ['nodeRedoBtn', r]].forEach(([id, dis]) => {
+  [['undoBtn', u], ['redoBtn', r], ['nodeUndoBtn', u], ['nodeRedoBtn', r], ['drawUndoBtn', u]].forEach(([id, dis]) => {
     const b = document.getElementById(id); if (b) b.disabled = dis;
   });
   // keyboard flow: disabling the focused bar button would silently eject focus to <body> —
@@ -4410,6 +4414,7 @@ function _setWorkMode(mode) {
   cropDrag = null;                                       // drop any in-progress crop draft when the step changes
   drawGesture = null;                                    // abandon any in-flight draw stroke (its udCapture is never pushed)
   _drawSel.clear();                                      // draw-mode stroke selection is per-entry (indices are only valid against the current array)
+  drawRingHide();                                        // the cursor ring is draw-mode chrome
   if (mode !== 'anchors') precompTarget = null;   // leaving the placement step ends any precomposed-form edit
   if (mode === 'anchors') {   // keep anchorCat on an enabled category
     if (anchorCat === 'trop' && !project.font.trop.enabled) anchorCat = 'nikkud';
@@ -6867,6 +6872,29 @@ function _drawAbandon() {   // drop the in-flight gesture without pushing its un
   drawGesture = null;
   renderStage();   // restores erase-hidden elements / the strokes group's mask attribute / move transforms
 }
+/* Cursor size ring — the brush/eraser footprint under the pointer (hover + mid-gesture; touch has
+   no hover so it appears exactly while the finger is down). Imperative overlay, never part of the
+   renderStage innerHTML — recreated on demand after any wipe. */
+let _drawRingEl = null;
+function drawRingHide() { if (_drawRingEl) { try { _drawRingEl.remove(); } catch (e) {} } _drawRingEl = null; }
+function drawRingUpdate(e) {
+  if (workMode !== 'draw' || curKind !== 'letter' || _drawTool === 'move') { drawRingHide(); return; }   // Move has no footprint
+  const cl = curLetter(); if (!cl || cl.source.kind === 'svg') { drawRingHide(); return; }
+  const sv = stage();
+  if (!_drawRingEl || !_drawRingEl.isConnected) {
+    drawRingHide();
+    _drawRingEl = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    _drawRingEl.setAttribute('class', 'draw-cursor-ring');
+    _drawRingEl.setAttribute('vector-effect', 'non-scaling-stroke');
+    sv.appendChild(_drawRingEl);
+  }
+  const [rsx, rsy] = clientToStage(e);
+  const erase = _drawTool === 'erase';
+  _drawRingEl.setAttribute('cx', rsx.toFixed(1));
+  _drawRingEl.setAttribute('cy', rsy.toFixed(1));
+  _drawRingEl.setAttribute('r', (((erase ? _drawEraser : _drawBrush) / 2) * SC).toFixed(2));
+  if (erase) _drawRingEl.setAttribute('stroke-dasharray', '4 3'); else _drawRingEl.removeAttribute('stroke-dasharray');
+}
 /* chisel live preview — rebuild the in-flight stroke's outline each move batch (O(n), n ≤ 2048) */
 function _drawLivePathD(g) {
   const s = { w: _drawBrush, pr: _drawPressure ? 1 : 0, nib: 1, na: g.na, pts: g.pts };
@@ -6984,7 +7012,8 @@ function drawPointerDown(e) {
   e.preventDefault();
 }
 function drawPointerMove(e) {
-  if (e.pointerType === 'pen') { _drawPenSeen = true; _drawPenUntil = performance.now() + 500; }   // hover arms palm rejection
+  if (e.pointerType === 'pen') { _drawPenSeen = true; _drawPenUntil = performance.now() + 500; }   // hover arms palm rejection — keep first
+  drawRingUpdate(e);   // ring tracks hover too, so this sits before the gesture guard
   if (!drawGesture || e.pointerId !== drawGesture.pointerId) return;
   const evs = (e.getCoalescedEvents && e.getCoalescedEvents()) || [];
   const batch = evs.length ? evs : [e];   // coalesced events are a bonus, never a requirement
@@ -11300,6 +11329,7 @@ function renderDrawLeft(L, l) {
       ${toolBtn('move', 'drawToolMove', _drawT('tool_move', 'Move'), 'V')}
     </div>` + ctxHtml + `
     <div class="ctl-row" style="margin-top:8px;">
+      <button class="ctl-btn" id="drawUndoBtn" onclick="undo()" title="${esc(I18n.t('fontmaker.toolbar.undo_title'))}" ${undoStack.length?'':'disabled'}>↶ ${I18n.t('fontmaker.toolbar.undo_aria')}</button>
       <button class="ctl-btn" onclick="drawClearCurrent()" ${nStrokes?'':'disabled'}>${_drawT('clear', 'Clear letter')}</button>
       <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
       <span class="readout">${nStrokes ? _drawT(nStrokes === 1 ? 'stroke_count.one' : 'stroke_count.other', nStrokes + (nStrokes === 1 ? ' stroke' : ' strokes'), { count: nStrokes }) : ''}</span>
@@ -14955,7 +14985,7 @@ function init() {
   sv.addEventListener('pointercancel', onStagePointerUp);
   // status-bar coords clear when the pointer leaves the stage; !nodeDrag guards the spurious
   // boundary events pointer capture fires mid-drag (up runs before leave, so post-release clears work)
-  sv.addEventListener('pointerleave', () => { if (workMode === 'nodes' && !nodeDrag) nodeStatusCoords(null); });
+  sv.addEventListener('pointerleave', () => { if (workMode === 'nodes' && !nodeDrag) nodeStatusCoords(null); if (workMode === 'draw') drawRingHide(); });
   // "Edit shape" modal stage — its own persistent drag move/up (mirrors the inline editor, on #meStage)
   const meSv = document.getElementById('meStage');
   if (meSv) {
