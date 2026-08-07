@@ -468,6 +468,10 @@
   /* nib-angle preset chips */
   .draw-chips .ctl-btn[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
   body.dark .draw-chips .ctl-btn[aria-pressed="true"] { background: #2a4070; border-color: #4a6aaa; }
+  /* "Actual size" preview window — the pen/eraser/stamp at TRUE canvas scale, live while sliders drag */
+  .draw-preview { position: relative; margin-top: 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); overflow: hidden; }
+  .draw-preview svg { display: block; width: 100%; height: 76px; }
+  .draw-preview-tag { position: absolute; top: 3px; inset-inline-start: 6px; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.04em; pointer-events: none; background: var(--white); opacity: 0.88; border-radius: 3px; padding: 0 4px; }
   .node-xform { margin: 8px 0 4px; }
   .node-xform summary { cursor: pointer; font-size: 0.76rem; font-weight: 600; color: var(--text); user-select: none; }
   .node-xform summary:hover { color: var(--gold); }
@@ -2855,7 +2859,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.8</strong> — <strong>A full pencil case for Draw mode.</strong> The on-screen drawing step now has four tools instead of two. The eraser learned to erase for real: <span class="ui">Partial</span> mode rubs out just the ink under your eraser — splitting a stroke into pieces when you cut through it — while <span class="ui">Whole stroke</span> keeps the old one-touch removal, and the eraser finally has its own size. A new <span class="ui">Line</span> tool lays down perfectly straight strokes (hold Shift to snap to 0° / 45° / 90°), and a new <span class="ui">Chisel</span> pen style turns any stroke into broad-nib calligraphy — thick horizontals, thin verticals, with an adjustable nib angle — the way a sofer's pen writes. The <span class="ui">Move</span> tool drags a stroke (or a lasso-selected group) anywhere, with arrow-key nudging and Delete. A cursor ring previews your exact brush or eraser footprint, one-key shortcuts switch tools (D / E / L / V, X to swap, [ and ] to resize), and an <span class="ui">Undo</span> button sits right in the panel for tablet drawing. The pen itself grew a full brush kit: a visual pen-style picker with five live-preview tiles — <span class="ui">Round</span>, <span class="ui">Chisel</span>, <span class="ui">Brush</span> (strokes that taper at both ends), <span class="ui">Dotted</span> (a dotted tracing line), and <span class="ui">Hollow</span> (outlined letters) — each with its own dial (nib angle with one-tap 0° / 45° / 90° presets, taper length, dot spacing, outline thickness). Mouse and finger strokes can vary thickness with drawing speed the way a pen does with pressure, a tilting stylus can set the chisel's nib angle just by how you hold it, and a new <span class="ui">Stamp</span> tool places tagin crowns, dots, or serif feet — sized to your brush and drawn in your pen style — as ordinary strokes you can move, erase, or undo. <span style="color:var(--muted);">(August 2026)</span></li>
+      <li><strong>v5.8</strong> — <strong>A full pencil case for Draw mode.</strong> The on-screen drawing step now has four tools instead of two. The eraser learned to erase for real: <span class="ui">Partial</span> mode rubs out just the ink under your eraser — splitting a stroke into pieces when you cut through it — while <span class="ui">Whole stroke</span> keeps the old one-touch removal, and the eraser finally has its own size. A new <span class="ui">Line</span> tool lays down perfectly straight strokes (hold Shift to snap to 0° / 45° / 90°), and a new <span class="ui">Chisel</span> pen style turns any stroke into broad-nib calligraphy — thick horizontals, thin verticals, with an adjustable nib angle — the way a sofer's pen writes. The <span class="ui">Move</span> tool drags a stroke (or a lasso-selected group) anywhere, with arrow-key nudging and Delete. A cursor ring previews your exact brush or eraser footprint, one-key shortcuts switch tools (D / E / L / V, X to swap, [ and ] to resize), and an <span class="ui">Undo</span> button sits right in the panel for tablet drawing. The pen itself grew a full brush kit: a visual pen-style picker with five live-preview tiles — <span class="ui">Round</span>, <span class="ui">Chisel</span>, <span class="ui">Brush</span> (strokes that taper at both ends), <span class="ui">Dotted</span> (a dotted tracing line), and <span class="ui">Hollow</span> (outlined letters) — each with its own dial (nib angle with one-tap 0° / 45° / 90° presets, taper length, dot spacing, outline thickness). Mouse and finger strokes can vary thickness with drawing speed the way a pen does with pressure, a tilting stylus can set the chisel's nib angle just by how you hold it, and a new <span class="ui">Stamp</span> tool places tagin crowns, dots, or serif feet — sized to your brush and drawn in your pen style — as ordinary strokes you can move, erase, or undo. And under every size slider, an <span class="ui">Actual size</span> preview window shows your exact pen stroke, eraser circle, or stamp at true canvas scale — live, as you drag. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.7</strong> — <strong>A guided start — and now draw your letters right on screen.</strong> Starting a font opens a three-step setup: name your font and pick a license, choose Regular or Bold plus nikkud, trope and extra alphabets, then say how your letters will arrive — and the toolbar's <span class="ui">New</span> no longer wipes your current project until you actually create the new one (if you left a project mid-trace, the "Continue where you left off" prompt still appears before anything else). The biggest arrival is a brand-new <span class="ui">Draw</span> mode: pick <span class="ui">Draw letters on screen</span> and sketch each letter directly over the gray reference with a pen, finger, or mouse — pressure-sensitive stylus strokes, smoothing, a whole-stroke eraser, and a <span class="ui">Save letter &amp; next</span> button that runs the tracer and moves on, so a student can flow through all 27 letters with a stylus and one button. Drawings stay editable forever, drawn and photographed letters mix freely in one font, and everything downstream — points editing, nikkud, Bold, export — works unchanged. A "Show me around after setup" checkbox starts the tour the moment you land in your fresh editor. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.6</strong> — <strong>Your font, one click from a worksheet.</strong> Saving a font to <span class="ui">My IvritSuite Fonts</span> used to be the end of the road: the window told you to "pick them in any IvritSuite tool's font selector", but nothing took you there. Each saved font now has a <span class="ui">Use in Worksheet Generator</span> link that opens the generator with that font already chosen, so you can see your letters on a real worksheet straight away. <span style="color:var(--muted);">(July 2026)</span></li>
       <li><strong>v5.5</strong> — <strong>Your dagesh customizations, really in the exported font.</strong> A deep export audit found three quiet bugs in one chain: the OpenType rules that compose dotted letters (בּ, וֹ, וּ and friends) were accidentally inheriting a filter meant only for שׁ/שׂ, so in modern apps they never fired; a shin's own custom dagesh had no composed שּׁ/שּׂ form at all; and the pre-download shaping check couldn't load its engine, so it silently skipped instead of catching any of this. All three are fixed: exports now build the real שּׁ/שּׂ characters (U+FB2C/U+FB2D) from your dotted shin plus your own dagesh, every dagesh combination composes even with a vowel between the letter and the dot in the typed text, a new שּׁ chip joins the <span class="ui">Spacing</span> test combos, and the shaping check now genuinely runs — verifying שּׁ, בּ and בָּ before your font downloads. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -6821,7 +6825,7 @@ function drawSetTool(t) {
   _drawTool = next;
   renderStage(); renderControls();   // stage chrome (selection boxes, legend, cursor ring radius) is tool-dependent
 }
-function drawSetEraser(v) { _drawEraser = Math.min(300, Math.max(20, +v || 120)); const r = document.getElementById('drawEraserVal'); if (r) r.textContent = _drawEraser; }
+function drawSetEraser(v) { _drawEraser = Math.min(300, Math.max(20, +v || 120)); const r = document.getElementById('drawEraserVal'); if (r) r.textContent = _drawEraser; drawPreviewRefresh(); }
 function drawSetEraseMode(m) { _drawEraseMode = m === 'whole' ? 'whole' : 'partial'; drawSavePrefs(); renderControls(); }
 function drawSetStyle(s) { _drawStyle = ['round','chisel','brush','dotted','hollow'].includes(s) ? s : 'round'; drawSavePrefs(); renderControls(); }
 function drawSetNibAngle(v) { _drawNibAngle = Math.min(170, Math.max(0, Math.round(+v) || 0)); const r = document.getElementById('drawNibAngleVal'); if (r) r.textContent = _drawNibAngle + '°'; drawTilesRefresh(); }
@@ -11563,6 +11567,49 @@ function drawTilesRefresh() {
     if (tile.id.startsWith('drawStyle')) svg.outerHTML = brushTileSVG(tile.id.slice(9).toLowerCase());
     else if (tile.id.startsWith('drawStamp')) svg.outerHTML = stampTileSVG(tile.id.slice(9).toLowerCase());
   });
+  drawPreviewRefresh();
+}
+/* "Actual size" preview window — the pen stroke / eraser footprint / stamp at TRUE on-screen stage
+   scale (the tiles above are normalized: they show style, deliberately not size). The svg's viewBox
+   is measured so one preview unit renders at exactly one stage unit's screen size — what grows here
+   is what will land on the canvas, clipped honestly when it outgrows the box. In-place innerHTML
+   only, same no-rebuild rule as drawTilesRefresh. */
+function drawPreviewRefresh() {
+  const box = document.getElementById('drawPvBox'), svg = document.getElementById('drawPvSvg');
+  if (!box || !svg) return;
+  const stEl = document.getElementById('stage');
+  const stW = stEl ? stEl.getBoundingClientRect().width : 0;
+  const px = (stW || 660) / 600;                                  // screen px per stage unit
+  const vw = (box.clientWidth || 260) / px, vh = 76 / px;         // viewBox @ stage scale
+  svg.setAttribute('viewBox', `0 0 ${vw.toFixed(1)} ${vh.toFixed(1)}`);
+  if (_drawTool === 'erase') {
+    svg.innerHTML = `<circle class="draw-cursor-ring" vector-effect="non-scaling-stroke" stroke-dasharray="4 3" cx="${(vw / 2).toFixed(1)}" cy="${(vh / 2).toFixed(1)}" r="${((_drawEraser / 2) * SC).toFixed(2)}"/>`;
+    return;
+  }
+  const st = STYLE_ST[_drawStyle] || null;
+  let parts;
+  if (_drawTool === 'stamp') {
+    const def = STAMP_DEFS[_drawStamp] || STAMP_DEFS.crown;
+    parts = def.strokes.map(ds => _stampPartStroke(ds, _drawBrush / 100, st, st === 'c' ? _drawNibAngle : 0, def.noHollow));
+  } else {   // draw = a gentle full-width wave; line = the straight stroke that tool actually lays down
+    const half = Math.max(40, (vw / 2 - 8) / SC), amp = _drawTool === 'line' ? 0 : 9 / SC;
+    const pts = [];
+    for (let i = 0; i <= 23; i++) { const t = i / 23; pts.push([-half + 2 * half * t, Math.sin(t * 2 * Math.PI) * amp, 0.5]); }
+    parts = [{ w: _drawBrush, pr: 0, pts, st, na: _drawNibAngle, tl: _drawTaper, ds: _drawDotSpacing, rim: _drawRim }];
+  }
+  let yMin = 1e9, yMax = -1e9;   // center the ink's vertical extent (crowns grow upward, waves are symmetric)
+  parts.forEach(o => o.pts.forEach(p => { yMin = Math.min(yMin, p[1] - o.w / 2); yMax = Math.max(yMax, p[1] + o.w / 2); }));
+  const cy = (yMin + yMax) / 2;
+  const mx = x => (vw / 2 + x * SC).toFixed(1), my = y => (vh / 2 - (y - cy) * SC).toFixed(1);
+  const pathOf = polys => polys.filter(p => p.length > 2)
+    .map(poly => `M ${poly.map(q => mx(q[0]) + ' ' + my(q[1])).join(' L ')} Z`).join(' ');
+  svg.innerHTML = parts.map(o => {
+    const gm = o.st ? drawStyleGeom(o) : null;
+    if (gm && gm.dots) return gm.dots.map(([dx, dy, r]) => `<circle cx="${mx(dx)}" cy="${my(dy)}" r="${Math.max(0.5, r * SC).toFixed(2)}" fill="currentColor"/>`).join('');
+    if (gm) return `<path d="${pathOf(gm.fill)}"${gm.eo ? ' fill-rule="evenodd"' : ''} fill="currentColor"/>`;
+    if (o.pts.length === 1) return `<circle cx="${mx(o.pts[0][0])}" cy="${my(o.pts[0][1])}" r="${Math.max(0.5, (o.w / 2) * SC).toFixed(2)}" fill="currentColor"/>`;
+    return `<path d="${pathOf([_drawOffsetPoly(o.pts, () => o.w / 2, true)])}" fill="currentColor"/>`;
+  }).join('');
 }
 function renderDrawLeft(L, l) {
   const nStrokes = (l.draw && l.draw.strokes.length) || 0;
@@ -11573,6 +11620,8 @@ function renderDrawLeft(L, l) {
   const brushRow = `
     <div class="side-slider-label">${_drawT('brush', 'Brush size')} <span id="drawBrushVal" class="readout">${_drawBrush}</span></div>
     <input type="range" class="side-slider" min="40" max="300" step="5" value="${_drawBrush}" oninput="drawSetBrush(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('brush', 'Brush size'))}" title="[ / ]">`;
+  const pvBox = `
+    <div class="draw-preview" id="drawPvBox"><span class="draw-preview-tag">${_drawT('preview', 'Actual size')}</span><svg id="drawPvSvg" aria-hidden="true"></svg></div>`;
   const styleBtn = (sty, key, fallback) =>
     `<button class="brush-tile ${_drawStyle===sty?'active':''}" aria-pressed="${_drawStyle===sty}" id="drawStyle${sty[0].toUpperCase()+sty.slice(1)}" onclick="drawSetStyle('${sty}')">${brushTileSVG(sty)}<span class="brush-tile-label">${_drawT(key, fallback)}</span></button>`;
   const styleRow = `
@@ -11600,7 +11649,7 @@ function renderDrawLeft(L, l) {
     <label class="chk"><input type="checkbox" ${_drawPenOnly?'checked':''} onchange="drawSetPenOnly(this.checked)"> ${_drawT('pen_only', 'Pen only (ignore finger touches)')}</label>`;
   let ctxHtml = '';
   if (_drawTool === 'draw') {
-    ctxHtml = brushRow + styleRow + `
+    ctxHtml = brushRow + pvBox + styleRow + `
     <label class="chk"><input type="checkbox" ${_drawPressure?'checked':''} onchange="drawSetPressure(this.checked)"> ${_drawT('pressure', 'Pen pressure varies thickness')}</label>
     <label class="chk"><input type="checkbox" ${_drawSpeed?'checked':''} onchange="drawSetSpeed(this.checked)"> ${_drawT('speed', 'Speed varies thickness (mouse & finger)')}</label>` + penOnlyChk + `
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('smoothing', 'Smoothing')}</div>
@@ -11611,11 +11660,11 @@ function renderDrawLeft(L, l) {
       <option value="high" ${_drawSmoothing==='high'?'selected':''}>${_drawT('smoothing_high', 'High')}</option>
     </select>`;
   } else if (_drawTool === 'line') {
-    ctxHtml = brushRow + styleRow + penOnlyChk;
+    ctxHtml = brushRow + pvBox + styleRow + penOnlyChk;
   } else if (_drawTool === 'stamp') {
     const stampBtn = (id, key, fallback) =>
       `<button class="brush-tile ${_drawStamp===id?'active':''}" aria-pressed="${_drawStamp===id}" id="drawStamp${id[0].toUpperCase()+id.slice(1)}" onclick="drawSetStamp('${id}')">${stampTileSVG(id)}<span class="brush-tile-label">${_drawT(key, fallback)}</span></button>`;
-    ctxHtml = brushRow + `
+    ctxHtml = brushRow + pvBox + `
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('stamp_pick', 'Stamp shape')}</div>
     <div class="brush-grid">
       ${stampBtn('crown', 'stamp_crown', 'Tagin crown')}
@@ -11633,7 +11682,7 @@ function renderDrawLeft(L, l) {
   } else if (_drawTool === 'erase') {
     ctxHtml = `
     <div class="side-slider-label">${_drawT('erase_size', 'Eraser size')} <span id="drawEraserVal" class="readout">${_drawEraser}</span></div>
-    <input type="range" class="side-slider" min="20" max="300" step="5" value="${_drawEraser}" oninput="drawSetEraser(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('erase_size', 'Eraser size'))}" title="[ / ]">
+    <input type="range" class="side-slider" min="20" max="300" step="5" value="${_drawEraser}" oninput="drawSetEraser(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('erase_size', 'Eraser size'))}" title="[ / ]">` + pvBox + `
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('erase_mode', 'Eraser mode')}</div>
     <div class="mode-toggle">
       <button class="mode-btn ${_drawEraseMode==='partial'?'active':''}" aria-pressed="${_drawEraseMode==='partial'}" id="drawEraseModePartial" onclick="drawSetEraseMode('partial')">${_drawT('erase_partial', 'Partial')}</button>
@@ -11658,6 +11707,7 @@ function renderDrawLeft(L, l) {
     </div>
     <div class="hint">${_drawT('hint', 'Draw over the gray reference with a pen, finger, or mouse. Each stroke can be undone with Ctrl+Z. Save runs the tracer — fine-tune Detail and Corners in step 2.')}</div>` + metricsPanel();
   wireInputModeBlock();
+  drawPreviewRefresh();   // the pvBox svg renders empty — first paint needs the box's measured width
 }
 function renderDrawRight(R, l) {
   const tplPct = Math.round(project.template.opacity*100);
