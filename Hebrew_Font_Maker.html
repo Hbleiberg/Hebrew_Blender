@@ -609,8 +609,6 @@
   body.dark .node-hline-ghost { stroke: #46587c; }
   .legend:empty { display: none; }
   /* node mode: Letter Metrics adopts the panel's section rhythm (scoped so align/trace keep the stock look) */
-  #ctlLeft.npnl-host .metric-group { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; }
-  #ctlLeft.npnl-host .ws-side-title { font-size: 0.78rem; font-weight: 600; color: var(--text); text-transform: none; letter-spacing: 0; }
   .zoom-bar { display: flex; align-items: center; gap: 8px; max-width: 720px; margin: 0 auto 8px; font-size: 0.82rem; color: var(--muted); }
   .zoom-bar input[type=range] { flex: 1; accent-color: var(--gold); }
   .zoom-val { font-family: ui-monospace, Menlo, monospace; min-width: 44px; text-align: right; }
@@ -2859,7 +2857,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.9</strong> — <strong>A finer pen for the fine details.</strong> <span class="ui">Draw</span> mode's brush and eraser now go down to a hairline — the size sliders start at 10 instead of 40 (and 20), and move a unit at a time, so tagin, thin calligraphy strokes, and small serifs are drawable without fighting the slider. Along the way, two things that quietly broke at small sizes were fixed: the <span class="ui">Chisel</span> pen's thin edge used to thin out to nothing below the old minimum — a small chisel stroke could save as a blank letter — and <span class="ui">Dotted</span> strokes had a minimum dot size that made their dots wider than the brush itself. Both now hold a floor that stays crisp when your letter is traced. The <span class="ui">[</span> and <span class="ui">]</span> keys also resize in smaller jumps once the brush is small. <span style="color:var(--muted);">(August 2026)</span></li>
+      <li><strong>v5.9</strong> — <strong>A finer pen for the fine details.</strong> <span class="ui">Draw</span> mode's brush and eraser now go down to a hairline — the size sliders start at 10 instead of 40 (and 20), and move a unit at a time, so tagin, thin calligraphy strokes, and small serifs are drawable without fighting the slider. Along the way, two things that quietly broke at small sizes were fixed: the <span class="ui">Chisel</span> pen's thin edge used to thin out to nothing below the old minimum — a small chisel stroke could save as a blank letter — and <span class="ui">Dotted</span> strokes had a minimum dot size that made their dots wider than the brush itself. Both now hold a floor that stays crisp when your letter is traced. The <span class="ui">[</span> and <span class="ui">]</span> keys also resize in smaller jumps once the brush is small. Separately, <span class="ui">Letter Metrics</span> moved to the right-hand column, next to Guides — it belongs to the letter rather than to any one step, so it now sits in the same place on every screen instead of at the bottom of whichever tool panel you happened to be in. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.8</strong> — <strong>A full pencil case for Draw mode.</strong> The on-screen drawing step now has four tools instead of two. The eraser learned to erase for real: <span class="ui">Partial</span> mode rubs out just the ink under your eraser — splitting a stroke into pieces when you cut through it — while <span class="ui">Whole stroke</span> keeps the old one-touch removal, and the eraser finally has its own size. A new <span class="ui">Line</span> tool lays down perfectly straight strokes (hold Shift to snap to 0° / 45° / 90°), and a new <span class="ui">Chisel</span> pen style turns any stroke into broad-nib calligraphy — thick horizontals, thin verticals, with an adjustable nib angle — the way a sofer's pen writes. The <span class="ui">Move</span> tool drags a stroke (or a lasso-selected group) anywhere, with arrow-key nudging and Delete. A cursor ring previews your exact brush or eraser footprint, one-key shortcuts switch tools (D / E / L / V, X to swap, [ and ] to resize), and an <span class="ui">Undo</span> button sits right in the panel for tablet drawing. The pen itself grew a full brush kit: a visual pen-style picker with five live-preview tiles — <span class="ui">Round</span>, <span class="ui">Chisel</span>, <span class="ui">Brush</span> (strokes that taper at both ends), <span class="ui">Dotted</span> (a dotted tracing line), and <span class="ui">Hollow</span> (outlined letters) — each with its own dial (nib angle with one-tap 0° / 45° / 90° presets, taper length, dot spacing, outline thickness). Mouse and finger strokes can vary thickness with drawing speed the way a pen does with pressure, a tilting stylus can set the chisel's nib angle just by how you hold it, and a new <span class="ui">Stamp</span> tool places tagin crowns, dots, or serif feet — sized to your brush and drawn in your pen style — as ordinary strokes you can move, erase, or undo. And under every size slider, an <span class="ui">Actual size</span> preview window shows your exact pen stroke, eraser circle, or stamp at true canvas scale — live, as you drag. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.7</strong> — <strong>A guided start — and now draw your letters right on screen.</strong> Starting a font opens a three-step setup: name your font and pick a license, choose Regular or Bold plus nikkud, trope and extra alphabets, then say how your letters will arrive — and the toolbar's <span class="ui">New</span> no longer wipes your current project until you actually create the new one (if you left a project mid-trace, the "Continue where you left off" prompt still appears before anything else). The biggest arrival is a brand-new <span class="ui">Draw</span> mode: pick <span class="ui">Draw letters on screen</span> and sketch each letter directly over the gray reference with a pen, finger, or mouse — pressure-sensitive stylus strokes, smoothing, a whole-stroke eraser, and a <span class="ui">Save letter &amp; next</span> button that runs the tracer and moves on, so a student can flow through all 27 letters with a stylus and one button. Drawings stay editable forever, drawn and photographed letters mix freely in one font, and everything downstream — points editing, nikkud, Bold, export — works unchanged. A "Show me around after setup" checkbox starts the tour the moment you land in your fresh editor. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.6</strong> — <strong>Your font, one click from a worksheet.</strong> Saving a font to <span class="ui">My IvritSuite Fonts</span> used to be the end of the road: the window told you to "pick them in any IvritSuite tool's font selector", but nothing took you there. Each saved font now has a <span class="ui">Use in Worksheet Generator</span> link that opens the generator with that font already chosen, so you can see your letters on a real worksheet straight away. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -11317,7 +11315,6 @@ function renderControls() {
   if (!L || !R || !U) return;
   L.innerHTML = R.innerHTML = U.innerHTML = '';
   if (SB) SB.innerHTML = '';
-  L.classList.toggle('npnl-host', nodeChromeOn());   // scopes the node-mode Letter Metrics header restyle (off matters — #ctlLeft persists)
   if (!project) return;
   const l = curLetter();
   if (curKind !== 'letter') { renderMarkControls(L, l); return; }   // mark editor → left column (beside the stage)
@@ -11326,11 +11323,14 @@ function renderControls() {
   else if (workMode === 'trace') { renderTraceLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
   else if (workMode === 'nodes') { renderNodeLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
   else { renderAnchorLeft(L, l); renderAnchorRight(R, l); renderAnchorUnder(U, l); renderAnchorStageBelow(SB, l); }
-  R.insertAdjacentHTML('beforeend', guidesPanelHTML());   // persistent guides control, present in every letter-editing mode
+  // Letter Metrics + guides: the two panels that belong to the LETTER rather than to the step, so
+  // they live in the right column and stay put as you move between Align / Draw / Trace / Points /
+  // Nikkud — no hunting for the margin fields in a different place on each screen.
+  R.insertAdjacentHTML('beforeend', metricsPanel() + guidesPanelHTML());
   attachGuideSortable();                                   // re-bind drag-to-reorder on the guide cards each render
 }
 function renderNodeLeft(L, l) {
-  L.innerHTML = nodeEditPanelHTML(l) + metricsPanel();   // sticky panel header replaces the old ws-side-title line
+  L.innerHTML = nodeEditPanelHTML(l);   // Letter Metrics is appended to the RIGHT column by renderControls
 }
 
 /* ── Shared right-panel pieces (reference font + opacity sliders) ── */
@@ -11439,7 +11439,6 @@ function renderAlignLeft(L, l) {
       ${ l.contours ? `<button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear_outline')}</button>` : '' }
     </div>`;
   }
-  html += metricsPanel();   // Letter Metrics lives in the left column
   L.innerHTML = html;
   wireInputModeBlock();
   if (project.inputMode === 'single' && curKind === 'letter') {
@@ -11494,7 +11493,7 @@ function renderTraceRight(R, l) {
 }
 function renderTraceLeft(L, l) {
   if (project.inputMode === 'font') {   // width still editable for font-loaded glyphs; Edit points is the only way to reshape them
-    L.innerHTML = (l.contours ? '' : `<div class="ctl-row"><button class="ctl-btn primary" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${I18n.t('fontmaker.panels.draw_pen')}</button></div>`) + metricsPanel();   // Edit points now lives in the work-tabs header toggle
+    L.innerHTML = (l.contours ? '' : `<div class="ctl-row"><button class="ctl-btn primary" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${I18n.t('fontmaker.panels.draw_pen')}</button></div>`);   // Edit points now lives in the work-tabs header toggle
     return;
   }
   if (l.source && l.source.kind === 'svg') {   // imported vector — no raster trace controls, but allow point editing
@@ -11506,7 +11505,7 @@ function renderTraceLeft(L, l) {
         <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
         <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
         <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : '' }</span>
-      </div>` + metricsPanel();
+      </div>`;
     return;
   }
   const detail = Math.round(100 - l.epsilon*2.5);
@@ -11532,7 +11531,7 @@ function renderTraceLeft(L, l) {
       <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
       <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : '' }</span>
     </div>
-    <div class="hint">${_pT('trace_hint', 'Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.')}</div>` + metricsPanel();
+    <div class="hint">${_pT('trace_hint', 'Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.')}</div>`;
 }
 function renderTraceUnder(U, l) {
   const hint = (project.inputMode === 'font')
@@ -11732,7 +11731,7 @@ function renderDrawLeft(L, l) {
       <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
       <span class="readout">${nStrokes ? _drawT(nStrokes === 1 ? 'stroke_count.one' : 'stroke_count.other', nStrokes + (nStrokes === 1 ? ' stroke' : ' strokes'), { count: nStrokes }) : ''}</span>
     </div>
-    <div class="hint">${_drawT('hint', 'Draw over the gray reference with a pen, finger, or mouse. Each stroke can be undone with Ctrl+Z. Save runs the tracer — fine-tune Detail and Corners in step 2.')}</div>` + metricsPanel();
+    <div class="hint">${_drawT('hint', 'Draw over the gray reference with a pen, finger, or mouse. Each stroke can be undone with Ctrl+Z. Save runs the tracer — fine-tune Detail and Corners in step 2.')}</div>`;
   wireInputModeBlock();
   drawPreviewRefresh();   // the pvBox svg renders empty — first paint needs the box's measured width
 }
@@ -11955,7 +11954,7 @@ function renderAnchorLeft(L, l) {
     ${xy}
     ${coRow}
     ${formsSection}
-    ${metricsPanel()}`;   // Adjust-margins toggle + fields reachable on the Nikkud/Trop step too
+    `;
 }
 function renderAnchorRight(R, l) {
   const tplPct = Math.round(project.template.opacity*100), glyPct = Math.round(project.view.glyphOpacity*100);
