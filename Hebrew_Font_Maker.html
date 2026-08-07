@@ -2197,7 +2197,7 @@ function udApply(entry, useAfter) {
 }
 function undo() { udFlushPending(); const e = undoStack.pop(); if (!e) return; udApply(e, false); redoStack.push(e); afterUndo('Undo: ' + e.label); }
 function redo() { udFlushPending(); const e = redoStack.pop(); if (!e) return; udApply(e, true); undoStack.push(e); afterUndo('Redo: ' + e.label); }
-function afterUndo(msg) { updateUndoButtons(); if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   /* rebuild node model from restored curves */ renderGrids(); renderStage(); renderControls(); status(msg); markDirty(); }
+function afterUndo(msg) { updateUndoButtons(); if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   /* rebuild node model from restored curves */ _drawSel.clear();   /* undo/redo can restructure the stroke array — indices go stale */ renderGrids(); renderStage(); renderControls(); status(msg); markDirty(); }
 function updateUndoButtons() {   // top-toolbar + node-bar twins (bar buttons exist only after the DOM parses — null-guarded)
   const u = !undoStack.length, r = !redoStack.length;
   const focused = document.activeElement;
@@ -4407,6 +4407,7 @@ function _setWorkMode(mode) {
   _hiddenContours.clear(); _filletBase = null;          // per-entry too (disclosure open-states persist)
   cropDrag = null;                                       // drop any in-progress crop draft when the step changes
   drawGesture = null;                                    // abandon any in-flight draw stroke (its udCapture is never pushed)
+  _drawSel.clear();                                      // draw-mode stroke selection is per-entry (indices are only valid against the current array)
   if (mode !== 'anchors') precompTarget = null;   // leaving the placement step ends any precomposed-form edit
   if (mode === 'anchors') {   // keep anchorCat on an enabled category
     if (anchorCat === 'trop' && !project.font.trop.enabled) anchorCat = 'nikkud';
@@ -6722,22 +6723,41 @@ function _drawT(k, fallback, p) {   // fontmaker.draw.* with an English fallback
 let drawGesture = null;      // active stroke/erase: { tool, pointerId, pointerType, pts, sm, el, kill, ud }
 let _drawPenSeen = false;    // a pen has been seen this session → palm rejection arms
 let _drawPenUntil = 0;       // ignore touch until this timestamp (rolling +500ms on pen activity)
-let _drawTool = 'draw';      // 'draw' | 'erase' — session-only (always starts on Draw)
+let _drawTool = 'draw';      // 'draw' | 'erase' | 'line' | 'move' — session-only (always starts on Draw)
+let _drawSel = new Set();    // move tool: selected stroke indices — transient (indices go stale when the array changes; cleared in _setWorkMode / afterUndo / drawSetTool)
+const DRAW_STROKE_MAX = 512; // runtime cap == sanitizeDraw's reload cap — a split/draw must never create strokes a reload would drop
+const NIB_MIN = 0.18;        // chisel thin-edge floor (≥7 font units at min brush 40 — always traceable)
+const ERASE_STEP = 12;       // partial-erase resample pitch (font units) — makes sparse strokes (2-pt lines) splittable
 let _drawBrush = 90, _drawPressure = true, _drawSmoothing = 'med', _drawPenOnly = false;   // mirrors of uiPrefs (avoid per-stroke localStorage reads)
+let _drawEraser = 120, _drawEraseMode = 'partial', _drawStyle = 'round', _drawNibAngle = 90;   // more uiPrefs mirrors: eraser size/mode + pen style
 function drawLoadPrefs() {
   const p = wsReadPrefs();
   _drawBrush = Number.isFinite(+p.drawBrush) ? Math.min(300, Math.max(40, +p.drawBrush)) : 90;
   _drawPressure = p.drawPressure !== false;   // missing = ON
   _drawSmoothing = ['off','low','med','high'].includes(p.drawSmoothing) ? p.drawSmoothing : 'med';
   _drawPenOnly = p.drawPenOnly === true;
+  _drawEraser = Number.isFinite(+p.drawEraser) ? Math.min(300, Math.max(20, +p.drawEraser)) : 120;
+  _drawEraseMode = p.drawEraseMode === 'whole' ? 'whole' : 'partial';
+  _drawStyle = p.drawStyle === 'chisel' ? 'chisel' : 'round';
+  _drawNibAngle = Number.isFinite(+p.drawNibAngle) ? Math.min(170, Math.max(0, Math.round(+p.drawNibAngle))) : 90;
 }
 function drawSavePrefs() {
   try { const p = wsReadPrefs();
     p.drawBrush = _drawBrush; p.drawPressure = _drawPressure; p.drawSmoothing = _drawSmoothing; p.drawPenOnly = _drawPenOnly;
+    p.drawEraser = _drawEraser; p.drawEraseMode = _drawEraseMode; p.drawStyle = _drawStyle; p.drawNibAngle = _drawNibAngle;
     localStorage.setItem(WS_PREFS_KEY, JSON.stringify(p));
   } catch (e) { /* private mode / quota — non-fatal */ }
 }
-function drawSetTool(t) { _drawTool = t === 'erase' ? 'erase' : 'draw'; renderControls(); }
+function drawSetTool(t) {
+  const next = ['draw','erase','line','move'].includes(t) ? t : 'draw';
+  if (next !== 'move') _drawSel.clear();   // selection is a move-tool concept
+  _drawTool = next;
+  renderStage(); renderControls();   // stage chrome (selection boxes, legend, cursor ring radius) is tool-dependent
+}
+function drawSetEraser(v) { _drawEraser = Math.min(300, Math.max(20, +v || 120)); const r = document.getElementById('drawEraserVal'); if (r) r.textContent = _drawEraser; }
+function drawSetEraseMode(m) { _drawEraseMode = m === 'whole' ? 'whole' : 'partial'; drawSavePrefs(); renderControls(); }
+function drawSetStyle(s) { _drawStyle = s === 'chisel' ? 'chisel' : 'round'; drawSavePrefs(); renderControls(); }
+function drawSetNibAngle(v) { _drawNibAngle = Math.min(170, Math.max(0, Math.round(+v) || 0)); const r = document.getElementById('drawNibAngleVal'); if (r) r.textContent = _drawNibAngle + '°'; }
 function drawSetBrush(v) { _drawBrush = Math.min(300, Math.max(40, +v || 90)); const r = document.getElementById('drawBrushVal'); if (r) r.textContent = _drawBrush; }
 function drawSetPressure(on) { _drawPressure = !!on; drawSavePrefs(); }
 function drawSetSmoothing(v) { _drawSmoothing = ['off','low','med','high'].includes(v) ? v : 'med'; drawSavePrefs(); }
@@ -6749,6 +6769,7 @@ function pressureOf(e) { return e.pointerType === 'pen' ? (e.pressure || 0.5) : 
 const DRAW_SMOOTH_A = { off: 1, low: 0.55, med: 0.35, high: 0.2 };   // EMA factor per smoothing level
 function drawRadiusAt(s, p) { return (s.w / 2) * (s.pr ? (0.35 + 1.3 * Math.min(1, Math.max(0.05, p))) : 1); }
 function drawHasPressure(s) { return !!s.pr && s.pts.some(q => q[2] !== 0.5); }
+function drawIsVar(s) { return !!s.nib || drawHasPressure(s); }   // needs the variable-width polygon path (chisel and/or pressure)
 function _capArc(c, r, aFrom, steps) {   // half-circle cap, sweeping clockwise from aFrom
   const out = [];
   for (let k = 1; k < steps; k++) { const a = aFrom - Math.PI * k / steps; out.push([c[0] + Math.cos(a) * r, c[1] + Math.sin(a) * r]); }
@@ -6759,6 +6780,11 @@ function _capArc(c, r, aFrom, steps) {   // half-circle cap, sweeping clockwise 
    nonzero winding. 1-point strokes are handled by the callers (circle). */
 function drawStrokePoly(s) {
   const pts = s.pts, n = pts.length;
+  const nib = !!s.nib, naR = ((s.na != null ? s.na : 90) * Math.PI) / 180;
+  const sinNA = Math.sin(naR), cosNA = Math.cos(naR);
+  // chisel width factor = |u × nib-edge| = |sin(θstroke − θnib)| — full width sweeping across the
+  // edge, NIB_MIN sliding along it (na=90: thick horizontals / thin verticals — the sofer look)
+  const nf = d => nib ? Math.max(NIB_MIN, Math.abs(d[0] * sinNA - d[1] * cosNA)) : 1;
   const dirs = [];
   for (let i = 0; i < n; i++) {
     const a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)];
@@ -6768,11 +6794,14 @@ function drawStrokePoly(s) {
   }
   const left = [], right = [];
   for (let i = 0; i < n; i++) {
-    const r = drawRadiusAt(s, pts[i][2]), d = dirs[i];
+    const d = dirs[i];
+    const r = drawRadiusAt(s, pts[i][2]) * nf(d);
     const nx = -d[1] * r, ny = d[0] * r;
     left.push([pts[i][0] + nx, pts[i][1] + ny]);
     right.push([pts[i][0] - nx, pts[i][1] - ny]);
   }
+  if (nib) return left.concat(right.slice().reverse())               // butt ends — the chisel aesthetic (identical in SVG + canvas)
+    .filter(q => Number.isFinite(q[0]) && Number.isFinite(q[1]));
   const rEnd = drawRadiusAt(s, pts[n - 1][2]), rStart = drawRadiusAt(s, pts[0][2]);
   const aEndL = Math.atan2(dirs[n - 1][0], -dirs[n - 1][1]);    // angle of the left normal at the end
   const aStartR = Math.atan2(-dirs[0][0], dirs[0][1]);          // angle of the right normal at the start
@@ -6782,29 +6811,47 @@ function drawStrokePoly(s) {
     .concat(_capArc(pts[0], rStart, aStartR, 16))
     .filter(q => Number.isFinite(q[0]) && Number.isFinite(q[1]));   // one bad vertex would drop the whole canvas subpath
 }
+function drawNibDotPoly(s, q) {   // 1-pt chisel tap — the nib's rectangular footprint (shared by SVG + canvas renderers)
+  const naR = ((s.na != null ? s.na : 90) * Math.PI) / 180;
+  const R = drawRadiusAt(s, q[2]);
+  const ex = Math.cos(naR) * R,           ey = Math.sin(naR) * R;             // half-extent along the nib edge
+  const px = -Math.sin(naR) * R * NIB_MIN, py = Math.cos(naR) * R * NIB_MIN;  // half-thickness across it
+  return [[q[0] + ex + px, q[1] + ey + py], [q[0] + ex - px, q[1] + ey - py],
+          [q[0] - ex - px, q[1] - ey - py], [q[0] - ex + px, q[1] - ey + py]];
+}
 /* Committed strokes as stage-px SVG. data-di = index into l.draw.strokes at render time (the erase
    gesture's kill-set addresses elements by it and only mutates the array once, at pointerup). */
 function drawStrokesSVG(l) {
   if (!(l.draw && l.draw.strokes.length)) return '';
   const c = stageColors().ink;
-  return l.draw.strokes.map((s, i) => {
+  const pathOf = poly => `M ${poly.map(q => fx(q[0]).toFixed(1) + ' ' + fy(q[1]).toFixed(1)).join(' L ')} Z`;
+  // The <g> wrapper is the partial-eraser's mask target ([data-di] lookups pierce it unchanged)
+  return '<g id="drawStrokes">' + l.draw.strokes.map((s, i) => {
     if (s.pts.length === 1) {
       const q = s.pts[0];
+      if (s.nib) return `<path data-di="${i}" d="${pathOf(drawNibDotPoly(s, q))}" fill="${c}"/>`;
       return `<circle data-di="${i}" cx="${fx(q[0]).toFixed(1)}" cy="${fy(q[1]).toFixed(1)}" r="${Math.max(0.5, drawRadiusAt(s, q[2]) * SC).toFixed(2)}" fill="${c}"/>`;
     }
-    if (drawHasPressure(s)) {
+    if (drawIsVar(s)) {
       const poly = drawStrokePoly(s);
       if (poly.length < 3) return '';
-      return `<path data-di="${i}" d="M ${poly.map(q => fx(q[0]).toFixed(1) + ' ' + fy(q[1]).toFixed(1)).join(' L ')} Z" fill="${c}"/>`;
+      return `<path data-di="${i}" d="${pathOf(poly)}" fill="${c}"/>`;
     }
     return `<polyline data-di="${i}" points="${s.pts.map(q => fx(q[0]).toFixed(1) + ',' + fy(q[1]).toFixed(1)).join(' ')}" fill="none" stroke="${c}" stroke-width="${(s.w * SC).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"/>`;
-  }).join('');
+  }).join('') + '</g>';
 }
 function _drawAbandon() {   // drop the in-flight gesture without pushing its undo capture
   if (!drawGesture) return;
   if (drawGesture.el) { try { drawGesture.el.remove(); } catch (e) {} }
+  if (drawGesture.maskEl) { try { drawGesture.maskEl.remove(); } catch (e) {} }
   drawGesture = null;
-  renderStage();   // restores any erase-hidden elements
+  renderStage();   // restores erase-hidden elements / the strokes group's mask attribute / move transforms
+}
+/* chisel live preview — rebuild the in-flight stroke's outline each move batch (O(n), n ≤ 2048) */
+function _drawLivePathD(g) {
+  const s = { w: _drawBrush, pr: _drawPressure ? 1 : 0, nib: 1, na: g.na, pts: g.pts };
+  const poly = g.pts.length === 1 ? drawNibDotPoly(s, g.pts[0]) : drawStrokePoly(s);
+  return poly.length > 2 ? 'M ' + poly.map(q => fx(q[0]).toFixed(1) + ' ' + fy(q[1]).toFixed(1)).join(' L ') + ' Z' : '';
 }
 function drawPointerDown(e) {
   if (curKind !== 'letter') return;
@@ -6819,23 +6866,34 @@ function drawPointerDown(e) {
   if (e.pointerType === 'touch' && (_drawPenOnly || (_drawPenSeen && performance.now() < _drawPenUntil))) return;   // palm rejection; mouse always draws
   cl.draw = cl.draw || { v: 1, strokes: [] };
   const [x, y] = clientToFont(e);
+  if ((_drawTool === 'draw' || _drawTool === 'line') && cl.draw.strokes.length >= DRAW_STROKE_MAX) {
+    status(_drawT('limit_toast', 'Stroke limit reached — erase or join strokes before adding more.'));
+    return;   // refuse to start — a stroke beyond the cap would be dropped by sanitizeDraw on reload
+  }
   const label = (_drawTool === 'erase' ? 'erase strokes — ' : 'draw stroke — ') + cl.name;
   const ud = udCapture([{ t: 'item', kind: 'letter', cp: curCp, withDraw: true }], label);
   if (_drawTool === 'erase') {
     drawGesture = { tool: 'erase', pointerId: e.pointerId, pointerType: e.pointerType, kill: new Set(), ud };
     drawEraseAt(cl, x, y);
   } else {
-    const el = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    const chisel = _drawStyle === 'chisel';   // style/angle freeze at gesture start (like w)
+    const el = document.createElementNS('http://www.w3.org/2000/svg', chisel ? 'path' : 'polyline');
     el.setAttribute('class', 'draw-live');
-    el.setAttribute('points', fx(x).toFixed(1) + ',' + fy(y).toFixed(1));
-    el.setAttribute('fill', 'none');
-    el.setAttribute('stroke', stageColors().ink);
-    el.setAttribute('stroke-width', (_drawBrush * SC).toFixed(2));
-    el.setAttribute('stroke-linecap', 'round'); el.setAttribute('stroke-linejoin', 'round');
+    if (chisel) {
+      el.setAttribute('fill', stageColors().ink);
+    } else {
+      el.setAttribute('points', fx(x).toFixed(1) + ',' + fy(y).toFixed(1));
+      el.setAttribute('fill', 'none');
+      el.setAttribute('stroke', stageColors().ink);
+      el.setAttribute('stroke-width', (_drawBrush * SC).toFixed(2));
+      el.setAttribute('stroke-linecap', 'round'); el.setAttribute('stroke-linejoin', 'round');
+    }
     el.setAttribute('opacity', '0.9');
     stage().appendChild(el);
     drawGesture = { tool: 'draw', pointerId: e.pointerId, pointerType: e.pointerType,
-                    pts: [[Math.round(x), Math.round(y), pressureOf(e)]], sm: [x, y, pressureOf(e)], el, ud };
+                    pts: [[Math.round(x), Math.round(y), pressureOf(e)]], sm: [x, y, pressureOf(e)],
+                    chisel, na: _drawNibAngle, el, ud };
+    if (chisel) el.setAttribute('d', _drawLivePathD(drawGesture));   // seed the tap footprint
   }
   try { stage().setPointerCapture(e.pointerId); } catch (err) {}   // synthetic test events have no active pointer — must not throw
   e.preventDefault();
@@ -6861,7 +6919,8 @@ function drawPointerMove(e) {
     if (g.pts.length >= 2048) continue;                // hard cap — matches sanitizeDraw
     g.pts.push([Math.round(g.sm[0]), Math.round(g.sm[1]), g.sm[2]]);
     if (!g.el.isConnected) stage().appendChild(g.el);  // a stray async re-render wiped the SVG mid-stroke
-    g.el.setAttribute('points', g.el.getAttribute('points') + ' ' + fx(g.sm[0]).toFixed(1) + ',' + fy(g.sm[1]).toFixed(1));
+    if (g.chisel) g.el.setAttribute('d', _drawLivePathD(g));
+    else g.el.setAttribute('points', g.el.getAttribute('points') + ' ' + fx(g.sm[0]).toFixed(1) + ',' + fy(g.sm[1]).toFixed(1));
   }
   e.preventDefault();
 }
@@ -6877,7 +6936,9 @@ function drawPointerUp(e) {
       udPush(g.ud);
     }
   } else if (cl && cl.draw) {
-    cl.draw.strokes.push({ w: _drawBrush, pr: _drawPressure ? 1 : 0, pts: g.pts });
+    const st = { w: _drawBrush, pr: _drawPressure ? 1 : 0, pts: g.pts };
+    if (g.chisel) { st.nib = 1; st.na = g.na; }
+    cl.draw.strokes.push(st);
     udPush(g.ud);   // udPush marks dirty → the strokes autosave
   }
   renderStage(); renderControls();   // live polyline → committed shape; stroke-count readout
@@ -6937,15 +6998,19 @@ function drawRenderCanvas(d, fr) {
   ctx.setTransform(1, 0, 0, -1, -fr.x0, fr.y1);       // font units → canvas px (y-flip)
   ctx.fillStyle = ctx.strokeStyle = '#000';
   ctx.lineCap = ctx.lineJoin = 'round';
+  const fillPoly = poly => {
+    if (poly.length < 3) return;
+    ctx.beginPath(); ctx.moveTo(poly[0][0], poly[0][1]);
+    for (let i = 1; i < poly.length; i++) ctx.lineTo(poly[i][0], poly[i][1]);
+    ctx.closePath(); ctx.fill();
+  };
   d.strokes.forEach(s => {
-    if (s.pts.length === 1) {   // tap/dot — a lone moveTo paints nothing, so draw a circle
+    if (s.pts.length === 1) {   // tap/dot — a lone moveTo paints nothing, so draw a circle (chisel: the nib footprint)
       const q = s.pts[0];
+      if (s.nib) { fillPoly(drawNibDotPoly(s, q)); return; }
       ctx.beginPath(); ctx.arc(q[0], q[1], drawRadiusAt(s, q[2]), 0, Math.PI * 2); ctx.fill();
-    } else if (drawHasPressure(s)) {
-      const poly = drawStrokePoly(s);
-      if (poly.length > 2) { ctx.beginPath(); ctx.moveTo(poly[0][0], poly[0][1]);
-        for (let i = 1; i < poly.length; i++) ctx.lineTo(poly[i][0], poly[i][1]);
-        ctx.closePath(); ctx.fill(); }
+    } else if (drawIsVar(s)) {
+      fillPoly(drawStrokePoly(s));   // shared poly builder = SVG/canvas parity (drawEnsureRaster determinism)
     } else {
       ctx.lineWidth = s.w;
       ctx.beginPath(); ctx.moveTo(s.pts[0][0], s.pts[0][1]);
@@ -10915,24 +10980,42 @@ function renderDrawLeft(L, l) {
   const nStrokes = (l.draw && l.draw.strokes.length) || 0;
   // The input-mode switcher renders ONLY here in a draw project (Align is unreachable for drawable
   // letters) — omitting it would make draw mode a one-way trap. Clear-outline stays on the Trace tab.
-  L.innerHTML = `<div class="ws-side-title">${I18n.t('fontmaker.panels.add_letters')}</div>` + inputModeBlock() + `
-    <hr class="ctl-divider">
-    <div class="ws-side-title">${_drawT('panel_title', 'Draw — {name}', { name: esc(gName(l.name)) })}</div>
-    <div class="mode-toggle">
-      <button class="mode-btn ${_drawTool==='draw'?'active':''}" aria-pressed="${_drawTool==='draw'}" id="drawToolDraw" onclick="drawSetTool('draw')">${_drawT('tool_draw', 'Draw')}</button>
-      <button class="mode-btn ${_drawTool==='erase'?'active':''}" aria-pressed="${_drawTool==='erase'}" id="drawToolErase" onclick="drawSetTool('erase')">${_drawT('tool_erase', 'Erase')}</button>
-    </div>
+  const toolBtn = (t, id, label, kbd) =>
+    `<button class="mode-btn ${_drawTool===t?'active':''}" aria-pressed="${_drawTool===t}" id="${id}" onclick="drawSetTool('${t}')" title="${esc(label)} (${kbd})">${label}</button>`;
+  const brushRow = `
     <div class="side-slider-label">${_drawT('brush', 'Brush size')} <span id="drawBrushVal" class="readout">${_drawBrush}</span></div>
-    <input type="range" class="side-slider" min="40" max="300" step="5" value="${_drawBrush}" oninput="drawSetBrush(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('brush', 'Brush size'))}">
-    <label class="chk"><input type="checkbox" ${_drawPressure?'checked':''} onchange="drawSetPressure(this.checked)"> ${_drawT('pressure', 'Pen pressure varies thickness')}</label>
-    <label class="chk"><input type="checkbox" ${_drawPenOnly?'checked':''} onchange="drawSetPenOnly(this.checked)"> ${_drawT('pen_only', 'Pen only (ignore finger touches)')}</label>
+    <input type="range" class="side-slider" min="40" max="300" step="5" value="${_drawBrush}" oninput="drawSetBrush(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('brush', 'Brush size'))}">`;
+  const styleRow = `
+    <div class="side-slider-label" style="margin-top:6px;">${_drawT('style', 'Pen style')}</div>
+    <div class="mode-toggle">
+      <button class="mode-btn ${_drawStyle==='round'?'active':''}" aria-pressed="${_drawStyle==='round'}" id="drawStyleRound" onclick="drawSetStyle('round')">${_drawT('style_round', 'Round')}</button>
+      <button class="mode-btn ${_drawStyle==='chisel'?'active':''}" aria-pressed="${_drawStyle==='chisel'}" id="drawStyleChisel" onclick="drawSetStyle('chisel')">${_drawT('style_chisel', 'Chisel (calligraphy)')}</button>
+    </div>` + (_drawStyle === 'chisel' ? `
+    <div class="side-slider-label" style="margin-top:6px;">${_drawT('nib_angle', 'Nib angle')} <span id="drawNibAngleVal" class="readout">${_drawNibAngle}°</span></div>
+    <input type="range" class="side-slider" min="0" max="170" step="10" value="${_drawNibAngle}" oninput="drawSetNibAngle(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('nib_angle', 'Nib angle'))}">` : '');
+  const penOnlyChk = `
+    <label class="chk"><input type="checkbox" ${_drawPenOnly?'checked':''} onchange="drawSetPenOnly(this.checked)"> ${_drawT('pen_only', 'Pen only (ignore finger touches)')}</label>`;
+  let ctxHtml = '';
+  if (_drawTool === 'draw') {
+    ctxHtml = brushRow + styleRow + `
+    <label class="chk"><input type="checkbox" ${_drawPressure?'checked':''} onchange="drawSetPressure(this.checked)"> ${_drawT('pressure', 'Pen pressure varies thickness')}</label>` + penOnlyChk + `
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('smoothing', 'Smoothing')}</div>
     <select id="drawSmoothingSel" onchange="drawSetSmoothing(this.value)" aria-label="${esc(_drawT('smoothing', 'Smoothing'))}">
       <option value="off" ${_drawSmoothing==='off'?'selected':''}>${_drawT('smoothing_off', 'Off')}</option>
       <option value="low" ${_drawSmoothing==='low'?'selected':''}>${_drawT('smoothing_low', 'Low')}</option>
       <option value="med" ${_drawSmoothing==='med'?'selected':''}>${_drawT('smoothing_med', 'Medium')}</option>
       <option value="high" ${_drawSmoothing==='high'?'selected':''}>${_drawT('smoothing_high', 'High')}</option>
-    </select>
+    </select>`;
+  } else if (_drawTool === 'erase') {
+    ctxHtml = brushRow;   // eraser rides the brush size until the dedicated eraser controls land
+  }
+  L.innerHTML = `<div class="ws-side-title">${I18n.t('fontmaker.panels.add_letters')}</div>` + inputModeBlock() + `
+    <hr class="ctl-divider">
+    <div class="ws-side-title">${_drawT('panel_title', 'Draw — {name}', { name: esc(gName(l.name)) })}</div>
+    <div class="mode-toggle draw-tools">
+      ${toolBtn('draw', 'drawToolDraw', _drawT('tool_draw', 'Draw'), 'D')}
+      ${toolBtn('erase', 'drawToolErase', _drawT('tool_erase', 'Erase'), 'E')}
+    </div>` + ctxHtml + `
     <div class="ctl-row" style="margin-top:8px;">
       <button class="ctl-btn" onclick="drawClearCurrent()" ${nStrokes?'':'disabled'}>${_drawT('clear', 'Clear letter')}</button>
       <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
@@ -14191,7 +14274,7 @@ async function maybeRestoreAutosave() {
 function sanitizeDraw(d) {
   if (!d || typeof d !== 'object' || !Array.isArray(d.strokes)) return null;
   const strokes = [];
-  for (const s of d.strokes.slice(0, 256)) {
+  for (const s of d.strokes.slice(0, DRAW_STROKE_MAX)) {
     if (!s || !Array.isArray(s.pts)) continue;
     const w = Number.isFinite(+s.w) ? Math.min(400, Math.max(10, +s.w)) : 80;
     const pts = [];
@@ -14203,7 +14286,11 @@ function sanitizeDraw(d) {
       pts.push([Math.max(-2000, Math.min(3000, Math.round(x))), Math.max(-2000, Math.min(3000, Math.round(y))),
                 Math.min(1, Math.max(0, p))]);
     }
-    if (pts.length) strokes.push({ w, pr: s.pr ? 1 : 0, pts });
+    if (pts.length) {
+      const o = { w, pr: s.pr ? 1 : 0, pts };
+      if (s.nib) { o.nib = 1; o.na = Number.isFinite(+s.na) ? Math.min(179, Math.max(0, Math.round(+s.na))) : 90; }   // chisel strokes
+      strokes.push(o);
+    }
   }
   return { v: 1, strokes };
 }
