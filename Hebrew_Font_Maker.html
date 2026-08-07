@@ -13938,7 +13938,7 @@ function saveProjectAs() {
   const suggested = fmUniqueCopyName(project.font.familyName, style);
   askModal(I18n.t('fontmaker.modals.save_as_title'),
     `<p style="margin:0 0 10px;">${I18n.t('fontmaker.modals.save_as_body')}</p>` +
-    `<input id="saveAsNameInput" type="text" value="${esc(suggested)}" placeholder="${esc(I18n.t('fontmaker.modals.save_as_name_placeholder'))}" ` +
+    `<input id="saveAsNameInput" type="text" value="${esc(suggested)}" placeholder="${esc(I18n.t('fontmaker.modals.save_as_name_placeholder'))}" aria-label="${esc(I18n.t('fontmaker.modals.save_as_name_placeholder'))}" ` +
     `style="width:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--border);border-radius:6px;font-size:0.95rem;background:var(--white);color:var(--text);">`,
     [ {label:I18n.t('fontmaker.modals.save_copy_btn'), onClick: commitSaveAs},
       {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'} ]);

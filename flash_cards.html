@@ -4882,7 +4882,7 @@ function chooseProfileModal(opts) {
     }
     html += `<div style="font-size:0.82rem;font-weight:600;margin-bottom:5px;">${esc(I18n.t('flashcards.profile.new_profile_heading'))}</div>`
       + '<div style="display:flex;gap:6px;">'
-      + `<input type="text" id="newProfileNameInput" maxlength="40" placeholder="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" style="flex:1;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.88rem;">`
+      + `<input type="text" id="newProfileNameInput" maxlength="40" placeholder="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" aria-label="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" style="flex:1;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.88rem;">`
       + `<button data-act="create" style="padding:8px 12px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t(confirmKey))}</button>`
       + '</div>'
       + `<button data-act="cancel" style="width:100%;margin-top:14px;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('flashcards.profile.cancel'))}</button>`;
@@ -5149,7 +5149,7 @@ function askCardCount(defaultN, maxN) {
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
         <span style="font-size:0.82rem;opacity:0.9;">${esc(I18n.t('flashcards.weaknesses.custom_label'))}</span>
-        <input type="number" id="acCustom" min="1" ${maxN ? `max="${maxN}"` : ''} placeholder="#"
+        <input type="number" id="acCustom" min="1" ${maxN ? `max="${maxN}"` : ''} placeholder="#" aria-label="${esc(I18n.t('flashcards.weaknesses.custom_label'))}"
           style="flex:1;padding:7px 8px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.85rem;">
       </div>
       <div style="display:flex;gap:8px;">
