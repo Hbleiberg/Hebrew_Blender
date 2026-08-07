@@ -6429,7 +6429,15 @@ function renderLegend() {
     return;
   }
   if (workMode === 'draw') {
-    el.innerHTML = `<span>${esc(_drawT('legend', 'Draw with a pen, finger, or mouse · Erase removes a whole stroke · Save runs the tracer'))}</span>`;
+    const key = _drawTool === 'erase' ? 'legend_erase' : _drawTool === 'line' ? 'legend_line'
+              : _drawTool === 'move' ? 'legend_move' : 'legend';
+    const fall = {
+      legend: 'Draw with a pen, finger, or mouse · D / E / L / V switch tools · Save runs the tracer',
+      legend_erase: 'Partial rubs out ink under the eraser · Whole stroke removes an entire stroke in one touch',
+      legend_line: 'Press and drag to place a straight stroke · hold Shift to snap to 0° / 45° / 90°',
+      legend_move: 'Drag a stroke to move it · drag empty space to select several · Delete removes them',
+    }[key];
+    el.innerHTML = `<span>${esc(_drawT(key, fall))}</span>`;
     return;
   }
   if (workMode === 'anchors') {
@@ -6873,8 +6881,35 @@ function drawPointerDown(e) {
   const label = (_drawTool === 'erase' ? 'erase strokes — ' : 'draw stroke — ') + cl.name;
   const ud = udCapture([{ t: 'item', kind: 'letter', cp: curCp, withDraw: true }], label);
   if (_drawTool === 'erase') {
-    drawGesture = { tool: 'erase', pointerId: e.pointerId, pointerType: e.pointerType, kill: new Set(), ud };
-    drawEraseAt(cl, x, y);
+    if (_drawEraseMode === 'partial') {
+      // Live feedback is a luminance mask over #drawStrokes — ink visually disappears while the
+      // stroke array stays untouched until pointerup (the data-di index invariant holds all gesture).
+      const ns = 'http://www.w3.org/2000/svg';
+      const maskEl = document.createElementNS(ns, 'mask');
+      maskEl.setAttribute('id', 'fmEraseMask');
+      maskEl.setAttribute('maskUnits', 'userSpaceOnUse');
+      maskEl.setAttribute('x', '-600'); maskEl.setAttribute('y', '-600');
+      maskEl.setAttribute('width', '1800'); maskEl.setAttribute('height', '1800');   // covers the full clamped stroke range in stage px
+      const rect = document.createElementNS(ns, 'rect');
+      rect.setAttribute('x', '-600'); rect.setAttribute('y', '-600');
+      rect.setAttribute('width', '1800'); rect.setAttribute('height', '1800');
+      rect.setAttribute('fill', '#fff');   // luminance semantics (white keeps, black erases) — never theme-tokenize
+      const mp = document.createElementNS(ns, 'path');
+      mp.setAttribute('d', `M ${fx(x).toFixed(1)} ${fy(y).toFixed(1)} L ${fx(x).toFixed(1)} ${fy(y).toFixed(1)}`);   // M+L seed → a tap shows a round-cap dot immediately
+      mp.setAttribute('fill', 'none');
+      mp.setAttribute('stroke', '#000');
+      mp.setAttribute('stroke-width', (_drawEraser * SC).toFixed(2));
+      mp.setAttribute('stroke-linecap', 'round'); mp.setAttribute('stroke-linejoin', 'round');
+      maskEl.appendChild(rect); maskEl.appendChild(mp);
+      stage().appendChild(maskEl);
+      const grp = stage().querySelector('#drawStrokes');
+      if (grp) grp.setAttribute('mask', 'url(#fmEraseMask)');
+      drawGesture = { tool: 'erase', mode: 'partial', pointerId: e.pointerId, pointerType: e.pointerType,
+                      pts: [[Math.round(x), Math.round(y)]], maskEl, ud };
+    } else {
+      drawGesture = { tool: 'erase', mode: 'whole', pointerId: e.pointerId, pointerType: e.pointerType, kill: new Set(), ud };
+      drawEraseAt(cl, x, y);
+    }
   } else {
     const chisel = _drawStyle === 'chisel';   // style/angle freeze at gesture start (like w)
     const el = document.createElementNS('http://www.w3.org/2000/svg', chisel ? 'path' : 'polyline');
@@ -6912,7 +6947,20 @@ function drawPointerMove(e) {
     const pt = sv.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
     const p = pt.matrixTransform(inv);
     const x = ifx(p.x), y = ify(p.y), pr = pressureOf(ev);
-    if (g.tool === 'erase') { drawEraseAt(cl, x, y); continue; }
+    if (g.tool === 'erase') {
+      if (g.mode !== 'partial') { drawEraseAt(cl, x, y); continue; }
+      // partial: accumulate the erase path — no EMA (an eraser must track the finger exactly)
+      const lastE = g.pts[g.pts.length - 1];
+      if (Math.hypot(x - lastE[0], y - lastE[1]) < tol) continue;
+      if (g.pts.length >= 2048) continue;
+      g.pts.push([Math.round(x), Math.round(y)]);
+      if (!g.maskEl.isConnected) stage().appendChild(g.maskEl);   // an async re-render wiped the SVG mid-gesture
+      const grp = stage().querySelector('#drawStrokes');          // …and rebuilt the group without its mask attribute
+      if (grp && grp.getAttribute('mask') !== 'url(#fmEraseMask)') grp.setAttribute('mask', 'url(#fmEraseMask)');
+      const mp = g.maskEl.querySelector('path');
+      mp.setAttribute('d', mp.getAttribute('d') + ' L ' + fx(x).toFixed(1) + ' ' + fy(y).toFixed(1));
+      continue;
+    }
     g.sm[0] += a * (x - g.sm[0]); g.sm[1] += a * (y - g.sm[1]); g.sm[2] += a * (pr - g.sm[2]);   // EMA smoothing
     const last = g.pts[g.pts.length - 1];
     if (Math.hypot(g.sm[0] - last[0], g.sm[1] - last[1]) < tol) continue;
@@ -6931,7 +6979,10 @@ function drawPointerUp(e) {
   if (g.pointerType === 'pen') _drawPenUntil = performance.now() + 500;
   const cl = curLetter();
   if (g.tool === 'erase') {
-    if (cl && cl.draw && g.kill.size) {
+    if (g.mode === 'partial') {
+      if (g.maskEl) { try { g.maskEl.remove(); } catch (err) {} }   // renderStage below drops the group's mask attr with the rebuild
+      if (cl && cl.draw && cl.draw.strokes.length && g.pts.length) drawEraseSplit(cl, g);   // pushes g.ud only when ink changed
+    } else if (cl && cl.draw && g.kill.size) {
       cl.draw.strokes = cl.draw.strokes.filter((_, i) => !g.kill.has(i));   // single mutation at gesture end — indices stay valid throughout
       udPush(g.ud);
     }
@@ -6945,7 +6996,7 @@ function drawPointerUp(e) {
 }
 function drawEraseAt(cl, x, y) {   // whole-stroke removal: hit-test the pointer sample against each remaining stroke
   const g = drawGesture; if (!g || !cl || !cl.draw) return;
-  const R = _drawBrush / 2;
+  const R = _drawEraser / 2;
   cl.draw.strokes.forEach((s, i) => {
     if (g.kill.has(i)) return;
     const r = s.w / 2 + R;
@@ -6964,6 +7015,64 @@ function _segDist(px, py, a, b) {   // point-to-segment distance (font units)
   const L2 = dx * dx + dy * dy;
   const t = L2 ? Math.max(0, Math.min(1, ((px - a[0]) * dx + (py - a[1]) * dy) / L2)) : 0;
   return Math.hypot(px - (a[0] + t * dx), py - (a[1] + t * dy));
+}
+/* Partial erase — commit-time split. The gesture only accumulated an erase path (g.pts) and masked
+   the ink visually; here each stroke is resampled (ERASE_STEP pitch — a 2-pt Line stroke has no
+   interior samples otherwise), points within Rt = eraser R + w/2 of the path are dropped (survivor
+   caps then reach exactly to the eraser's edge, so the committed gap matches what the mask showed),
+   and the maximal survivor runs become fragments. ONE array replacement at the end; a fragment
+   budget keeps the result inside DRAW_STROKE_MAX so a reload's sanitizeDraw never drops ink. */
+function drawEraseSplit(cl, g) {
+  const E = g.pts, R = _drawEraser / 2;
+  let ex0 = Infinity, ex1 = -Infinity, ey0 = Infinity, ey1 = -Infinity;
+  E.forEach(q => { ex0 = Math.min(ex0, q[0]); ex1 = Math.max(ex1, q[0]); ey0 = Math.min(ey0, q[1]); ey1 = Math.max(ey1, q[1]); });
+  const near = (q, Rt) => {
+    if (E.length === 1) return Math.hypot(q[0] - E[0][0], q[1] - E[0][1]) <= Rt;
+    for (let k = 0; k < E.length - 1; k++) if (_segDist(q[0], q[1], E[k], E[k + 1]) <= Rt) return true;
+    return false;
+  };
+  let budget = Math.max(0, DRAW_STROKE_MAX - cl.draw.strokes.length);   // extra strokes the splits may create (a fully-erased stroke refunds one)
+  const out = [];
+  let changed = false, clipped = false;
+  for (const s of cl.draw.strokes) {
+    const Rt = R + s.w / 2;
+    let sx0 = Infinity, sx1 = -Infinity, sy0 = Infinity, sy1 = -Infinity;   // bbox precheck — most strokes are nowhere near the path
+    s.pts.forEach(q => { sx0 = Math.min(sx0, q[0]); sx1 = Math.max(sx1, q[0]); sy0 = Math.min(sy0, q[1]); sy1 = Math.max(sy1, q[1]); });
+    if (sx0 > ex1 + Rt || sx1 < ex0 - Rt || sy0 > ey1 + Rt || sy1 < ey0 - Rt) { out.push(s); continue; }
+    const pts = [];   // resampled working copy — used only if the stroke is actually cut
+    for (let i = 0; i < s.pts.length; i++) {
+      if (i) {
+        const a = s.pts[i - 1], b = s.pts[i];
+        const steps = Math.min(Math.floor(Math.hypot(b[0] - a[0], b[1] - a[1]) / ERASE_STEP), 4096 - pts.length);
+        for (let k = 1; k <= steps; k++) {
+          const t = k / (steps + 1);
+          pts.push([Math.round(a[0] + (b[0] - a[0]) * t), Math.round(a[1] + (b[1] - a[1]) * t), a[2] + (b[2] - a[2]) * t]);
+        }
+      }
+      pts.push(s.pts[i]);
+    }
+    const keep = pts.map(q => !near(q, Rt));
+    if (keep.every(Boolean)) { out.push(s); continue; }   // untouched — keep the original verbatim (never inflate)
+    changed = true;
+    const runs = [];
+    let run = null;
+    keep.forEach((k, i) => { if (k) (run = run || []).push(pts[i]); else if (run) { runs.push(run); run = null; } });
+    if (run) runs.push(run);
+    const frags = runs.filter(r => r.length >= 2 || s.pts.length === 1);   // 1-pt split slivers are dropped; a surviving dot stroke stays
+    if (frags.length - 1 > budget) { out.push(s); clipped = true; continue; }   // over budget → keep unsplit (ink is never silently deleted)
+    budget -= frags.length - 1;
+    for (const r of frags) {
+      const step = r.length > 2048 ? Math.ceil(r.length / 2048) : 1;   // keep fragments inside sanitizeDraw's per-stroke cap
+      const fr = step > 1 ? r.filter((_, i) => i % step === 0 || i === r.length - 1) : r;
+      const o = { w: s.w, pr: s.pr, pts: fr };
+      if (s.nib) { o.nib = 1; o.na = s.na; }
+      out.push(o);
+    }
+  }
+  if (!changed) { if (clipped) status(_drawT('limit_toast', 'Stroke limit reached — erase or join strokes before adding more.')); return; }
+  cl.draw.strokes = out;
+  udPush(g.ud);
+  if (clipped) status(_drawT('limit_toast', 'Stroke limit reached — erase or join strokes before adding more.'));
 }
 function drawClearCurrent() {   // strokes only — the committed outline/raster stays until the next Save
   const cl = curLetter();
@@ -11007,7 +11116,14 @@ function renderDrawLeft(L, l) {
       <option value="high" ${_drawSmoothing==='high'?'selected':''}>${_drawT('smoothing_high', 'High')}</option>
     </select>`;
   } else if (_drawTool === 'erase') {
-    ctxHtml = brushRow;   // eraser rides the brush size until the dedicated eraser controls land
+    ctxHtml = `
+    <div class="side-slider-label">${_drawT('erase_size', 'Eraser size')} <span id="drawEraserVal" class="readout">${_drawEraser}</span></div>
+    <input type="range" class="side-slider" min="20" max="300" step="5" value="${_drawEraser}" oninput="drawSetEraser(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('erase_size', 'Eraser size'))}">
+    <div class="side-slider-label" style="margin-top:6px;">${_drawT('erase_mode', 'Eraser mode')}</div>
+    <div class="mode-toggle">
+      <button class="mode-btn ${_drawEraseMode==='partial'?'active':''}" aria-pressed="${_drawEraseMode==='partial'}" id="drawEraseModePartial" onclick="drawSetEraseMode('partial')">${_drawT('erase_partial', 'Partial')}</button>
+      <button class="mode-btn ${_drawEraseMode==='whole'?'active':''}" aria-pressed="${_drawEraseMode==='whole'}" id="drawEraseModeWhole" onclick="drawSetEraseMode('whole')">${_drawT('erase_whole', 'Whole stroke')}</button>
+    </div>`;
   }
   L.innerHTML = `<div class="ws-side-title">${I18n.t('fontmaker.panels.add_letters')}</div>` + inputModeBlock() + `
     <hr class="ctl-divider">
