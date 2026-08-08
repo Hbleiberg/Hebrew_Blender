@@ -1039,6 +1039,9 @@ function eraseAllSettings() {
     'hebrewBlender_hebFontSize',
     'hebrewBlender_livePreview',
     'ivritSuite_wordLists',
+    // pwa.js's install-banner dismissal: a one-time UI flag, so export-exempt — but "erase" means a
+    // fresh start, and without this the Add-to-Home-Screen prompt stays suppressed forever.
+    'hebrewBlender_pwaDismissed',
     // legacy cleanup: purge orphaned data from the removed community-impact feature
     'ivritsuite-impact-v1',
     'ivritsuite-impact-optout',
