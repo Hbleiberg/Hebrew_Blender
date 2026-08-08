@@ -2553,6 +2553,7 @@
   "fontmaker.panels.tip_finer_move": "Tip: use the arrow keys for finer, exact movement.",
   "fontmaker.panels.trace_hint": "Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.",
   "fontmaker.panels.trace_info": "{count} contour(s) · adv {adv}",
+  "fontmaker.panels.trace_info_no_ink": "no ink detected",
   "fontmaker.panels.trace_title": "Trace — {name}",
   "fontmaker.panels.trace_under_font": "This letter came from a font file, so it's already vectorized — no tracing needed. Go to <b>Nikkud</b>.",
   "fontmaker.panels.trace_under_svg": "Imported from SVG — already vectorized. Fine-tune points if you like, then go to <b>Nikkud</b>.",

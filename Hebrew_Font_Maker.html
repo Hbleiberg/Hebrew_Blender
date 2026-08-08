@@ -9440,7 +9440,7 @@ function finalizeWithOutline(l, outerRaw, ras) {
 }
 function updateTraceInfo(l) {
   const ti = document.getElementById('traceInfo');
-  if (ti) ti.textContent = l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : 'no ink detected';
+  if (ti) ti.textContent = l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : _pT('trace_info_no_ink', 'no ink detected');
 }
 function traceCurrent() {   // warn-first wraps udDo (never nests an async confirm inside it)
   if (curItem().handEdited) { askModal(I18n.t('fontmaker.modals.retrace_title'), I18n.t('fontmaker.modals.retrace_body'), [{ label:I18n.t('fontmaker.modals.retrace'), onClick: _traceCurrentNow }, { label:I18n.t('fontmaker.modals.cancel'), cls:'ghost' }]); return; }
