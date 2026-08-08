@@ -3867,6 +3867,8 @@ worksheet.realwords.mix_blends,Mix with generated blends,ערבב עם צירו�
 worksheet.realwords.mix_blends_tooltip,"When on, real words are mixed in with randomly generated blends. Students won't know which are real — great for a ""find the real words"" activity.","כשמופעל, מילים אמיתיות מעורבבות עם צירופים שנוצרו אקראית. התלמידים לא יידעו אילו אמיתיות — מצוין לפעילות ״מצא את המילים האמיתיות״.",tooltip,
 worksheet.realwords.pool_imported.one,{count} word imported,מילה אחת יובאה,pool info,plural
 worksheet.realwords.pool_imported.other,{count} words imported,{count} מילים יובאו,pool info,plural
+worksheet.realwords.pool_load_failed,Couldn’t load the Hebrew words.,לא ניתן היה לטעון את המילים בעברית.,pool info — the lazy-loaded word corpus failed to load,
+worksheet.realwords.pool_loading,Loading Hebrew words…,טוען מילים בעברית…,pool info — the lazy-loaded word corpus is still in flight,
 worksheet.realwords.pool_matching,{count} matching words,{count} מילים תואמות,pool info,
 worksheet.realwords.pool_no_lists,No lists selected — pick one or more above.,לא נבחרו רשימות — בחרו אחת או יותר למעלה.,pool info,
 worksheet.realwords.pool_none_imported,No words imported yet — paste and Import above.,לא יובאו עדיין מילים — הדביקו וייבאו למעלה.,pool info,

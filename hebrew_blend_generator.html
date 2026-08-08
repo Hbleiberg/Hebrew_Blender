@@ -2817,7 +2817,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 </label>
               </div>
               <div id="rwLetterGrid" class="rw-letter-grid"></div>
-              <div id="rwPoolInfo" style="margin-top:6px;font-size:0.7rem;color:var(--muted);text-align:center;"></div>
+              <div id="rwPoolInfo" role="status" style="margin-top:6px;font-size:0.7rem;color:var(--muted);text-align:center;"></div>
             </div>
           </div>
 
@@ -10067,8 +10067,11 @@ let REAL_WORDS = [];
 // (bound-morpheme forms like "בְּ־"), which stay intact.
 const cleanRealWordHeb = s => String(s || '').replace(/\s+\.?\s*$/u, '');
 let _realWordsPromise = null;
+let _realWordsFailed = false;   // a load was ATTEMPTED and failed — distinct from "not attempted yet",
+                                // so the pool caption can say so instead of reporting a false zero
 function ensureRealWords() {
   if (_realWordsPromise) return _realWordsPromise;
+  _realWordsFailed = false;
   _realWordsPromise = fetch('data/hebrew_words.json?v=6')
     .then(r => r.json())
     .then(data => {
@@ -10087,7 +10090,11 @@ function ensureRealWords() {
       rebuildTranslitDisplay();
       updateRwPoolInfo();
     })
-    .catch(err => { console.warn('Failed to load hebrew_words.json:', err); _realWordsPromise = null; });
+    .catch(err => { console.warn('Failed to load hebrew_words.json:', err); _realWordsPromise = null; _realWordsFailed = true; updateRwPoolInfo(); });
+  // Every trigger path writes the pool caption BEFORE calling us (setRwSource → _syncRwSourceUI,
+  // applySettings, the ?s= restore), i.e. while "in flight" was not yet knowable. Refresh it here,
+  // once, so the caption reflects the download instead of a false zero until the corpus lands.
+  updateRwPoolInfo();
   return _realWordsPromise;
 }
 let rwDrillType = 'reading';
@@ -10753,8 +10760,16 @@ function getRwPool() {
 
 function updateRwPoolInfo() {
   _syncTileAria();
-  const pool = getRwPool();
   const el = document.getElementById('rwPoolInfo');
+  // The 2.9 MB corpus is lazy-loaded, so until it lands there is no pool to count. Reporting
+  // "0 matching words" here would assert something about the teacher's letter/vowel selection
+  // that isn't known yet — and on a failed load that false zero used to stay on screen forever,
+  // with no error anywhere. Say which it is instead. Only the 'all' source reads the corpus.
+  if (el && rwSource === 'all' && !REAL_WORDS.length && (_realWordsPromise || _realWordsFailed)) {
+    el.textContent = I18n.t(_realWordsFailed ? 'worksheet.realwords.pool_load_failed' : 'worksheet.realwords.pool_loading');
+    return;   // #rwListPoolInfo below is for the curated sources only, and is hidden under 'all'
+  }
+  const pool = getRwPool();
   if (el) el.textContent = I18n.t('worksheet.realwords.pool_matching', { count: pool.length });
   const le = document.getElementById('rwListPoolInfo');
   if (le) {

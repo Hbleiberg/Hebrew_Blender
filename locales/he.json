@@ -4144,6 +4144,8 @@
   "worksheet.realwords.mix_blends_tooltip": "כשמופעל, מילים אמיתיות מעורבבות עם צירופים שנוצרו אקראית. התלמידים לא יידעו אילו אמיתיות — מצוין לפעילות ״מצא את המילים האמיתיות״.",
   "worksheet.realwords.pool_imported.one": "מילה אחת יובאה",
   "worksheet.realwords.pool_imported.other": "{count} מילים יובאו",
+  "worksheet.realwords.pool_load_failed": "לא ניתן היה לטעון את המילים בעברית.",
+  "worksheet.realwords.pool_loading": "טוען מילים בעברית…",
   "worksheet.realwords.pool_matching": "{count} מילים תואמות",
   "worksheet.realwords.pool_no_lists": "לא נבחרו רשימות — בחרו אחת או יותר למעלה.",
   "worksheet.realwords.pool_none_imported": "לא יובאו עדיין מילים — הדביקו וייבאו למעלה.",
