@@ -14,6 +14,11 @@
  *     whitespace/formatting are left untouched.
  *   - Files with no git history are skipped (their existing <lastmod> stays).
  *   - Idempotent: a second run with no new commits produces no diff.
+ *   - REFUSES to run on a shallow clone. `git log -1` inside a shallow window returns the
+ *     boundary commit for every file not touched in that window, so the dates would all be
+ *     silently inflated to the boundary date while the script reported success. That artifact
+ *     has shipped twice (docs/IMPROVEMENT_LOG.md, S175 and S188), both times caught only by a
+ *     later audit — hence a hard stop here rather than another line of documentation.
  *
  * Standing end-of-session step (see CLAUDE.md, alongside the sw.js VERSION bump):
  * run this after your final content commit so the dates reflect that commit.
@@ -43,6 +48,28 @@ function gitLastDate(file) {
   } catch {
     return null;
   }
+}
+
+/** True when this clone's history is truncated, making every gitLastDate() answer untrustworthy. */
+function isShallowClone() {
+  try {
+    return execFileSync('git', ['rev-parse', '--is-shallow-repository'], {
+      cwd: repoRoot,
+      encoding: 'utf8',
+    }).trim() === 'true';
+  } catch {
+    return false;   // not a git repo / ancient git — gitLastDate() will skip everything anyway
+  }
+}
+
+if (isShallowClone()) {
+  console.error(
+    'update-sitemap: refusing to run — this is a SHALLOW clone.\n' +
+    '  Every <lastmod> would be silently inflated to the shallow boundary date, because\n' +
+    '  `git log -1` cannot see past it for files not touched inside the window.\n' +
+    '  Deepen the clone first, then re-run:  git fetch --unshallow'
+  );
+  process.exit(1);
 }
 
 const original = readFileSync(sitemapPath, 'utf8');

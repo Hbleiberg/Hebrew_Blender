@@ -1757,3 +1757,8 @@ push, is what updates the live site.
   that session's commit. It's idempotent (re-running with no new commits is a no-op) and produces
   per-file dates. When you add a new page, add its `<url>` block to `sitemap.xml` first, then run
   the script. Sits alongside the `sw.js VERSION` bump in the end-of-session checklist above.
+  **It refuses to run on a shallow clone** (exit 1, nothing written): `git log -1` returns the
+  shallow boundary commit for any file not touched inside the window, so on a `--depth 1` clone
+  every `<lastmod>` collapses to one inflated date while the script reports success. Run
+  `git fetch --unshallow` first — and treat the same caution as standing for **any** date-based
+  receipt from `git log`/`git diff` in this container.
