@@ -1328,6 +1328,7 @@
   "flashcards.weaknesses.view_title": "Weaknesses — {name}",
   "flashcards.wordlist.untitled": "Untitled list",
   "flashcards.words.emoji_load_failed": "Failed to load emoji data.",
+  "flashcards.words.emoji_loading": "Loading emoji…",
   "flashcards.words.load_failed": "Failed to load dictionary words.",
   "flashcards.words.loading_dict": "Loading dictionary…",
   "flashcards.words.pool_count.one": "{count} word in pool",

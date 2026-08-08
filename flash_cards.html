@@ -2610,6 +2610,7 @@ let selectedColors = new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
 const EMOJI_VISIBLE_CATEGORIES = ['Animal', 'Food'];
 let EMOJI_DATA = null;                  // { categories: [...], emojis: [...] } — filtered to visible categories
 let _emojiFetchP = null;               // in-flight fetch promise (~450KB file — never fetch it twice); null when idle/failed
+let _emojiFailed = false;              // a load was ATTEMPTED and failed — distinct from "not attempted yet"
 let _emojiAwaitingStart = false;       // guards the "Start clicked while emoji data still loading" wait-and-retry
 let emojiGender = 'both';               // 'masc' | 'fem' | 'both' (Show M/F Form)
 let emojiFront = 'emoji';               // 'emoji' | 'hebrew'
@@ -3353,7 +3354,7 @@ function syncOtherSubUI() {
   document.getElementById('colorOpts').classList.toggle('hide', otherSubMode !== 'colors');
   document.getElementById('emojiOpts').classList.toggle('hide', otherSubMode !== 'emoji');
   document.getElementById('wordsOpts').classList.toggle('hide', otherSubMode !== 'words');
-  if (otherSubMode === 'emoji' && !EMOJI_DATA) fetchEmojiData();
+  if (otherSubMode === 'emoji' && !EMOJI_DATA) { fetchEmojiData(); renderEmojiCatTree(); }
   if (otherSubMode === 'words') {
     syncWordsSourceUI();
     renderWordListPicker();
@@ -3365,6 +3366,7 @@ function syncOtherSubUI() {
 function fetchEmojiData() {
   if (EMOJI_DATA) return Promise.resolve();
   if (_emojiFetchP) return _emojiFetchP;   // reuse the in-flight fetch — the file is ~450KB, never load it twice
+  _emojiFailed = false;
   _emojiFetchP = fetch('data/hebrew_emojis.json?v=1')
     .then(r => r.json())
     .then(data => {
@@ -3386,9 +3388,12 @@ function fetchEmojiData() {
     })
     .catch(() => {
       _emojiFetchP = null;   // failed — let a later re-entry / Start retry the fetch
-      const tree = document.getElementById('emojiCatTree');
-      if (tree) tree.innerHTML = '<div style="color:var(--muted);font-size:0.78rem;">Failed to load emoji data.</div>';
+      _emojiFailed = true;
+      renderEmojiCatTree();
     });
+  // Paint the wait state now that the fetch exists: every caller reaches us from a UI sync that has
+  // already drawn the (empty) tree, so without this the panel sits blank for the whole download.
+  renderEmojiCatTree();
   return _emojiFetchP;
 }
 
@@ -3536,7 +3541,19 @@ function updateWordsCount() {
 
 function renderEmojiCatTree() {
   const tree = document.getElementById('emojiCatTree');
-  if (!tree || !EMOJI_DATA) return;
+  if (!tree) return;
+  // The emoji corpus is ~457 KB and lazy-loaded, so the tree is legitimately empty for a while.
+  // Say which state it is in from HERE — the render chokepoint — so applyI18n's syncOtherSubUI()
+  // re-resolves the line on a language switch instead of freezing it in the previous language.
+  // (The words sub-mode beside this one already does exactly this, via updateWordsCount.)
+  if (!EMOJI_DATA) {
+    tree.textContent = '';
+    const note = document.createElement('div');
+    note.style.cssText = 'color:var(--muted);font-size:0.78rem;';
+    note.textContent = I18n.t(_emojiFailed ? 'flashcards.words.emoji_load_failed' : 'flashcards.words.emoji_loading');
+    tree.appendChild(note);
+    return;
+  }
   // Pre-count entries per subcategory
   const subCounts = {};
   EMOJI_DATA.emojis.forEach(e => {

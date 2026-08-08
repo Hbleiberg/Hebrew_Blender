@@ -1328,6 +1328,7 @@
   "flashcards.weaknesses.view_title": "חולשות — {name}",
   "flashcards.wordlist.untitled": "רשימה ללא שם",
   "flashcards.words.emoji_load_failed": "טעינת נתוני האימוג׳י נכשלה.",
+  "flashcards.words.emoji_loading": "טוען אימוג׳י…",
   "flashcards.words.load_failed": "טעינת מילות המילון נכשלה.",
   "flashcards.words.loading_dict": "טוען מילון…",
   "flashcards.words.pool_count.one": "מילה אחת במאגר",

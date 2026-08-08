@@ -1232,6 +1232,7 @@ flashcards.weaknesses.tab_vowels,Vowels,תנועות,weakness-view tab,
 flashcards.weaknesses.view_title,Weaknesses — {name},חולשות — {name},weakness-view modal title,
 flashcards.wordlist.untitled,Untitled list,רשימה ללא שם,fallback word-list name,
 flashcards.words.emoji_load_failed,Failed to load emoji data.,טעינת נתוני האימוג׳י נכשלה.,emoji tree load error,
+flashcards.words.emoji_loading,Loading emoji…,טוען אימוג׳י…,emoji tree while the ~457 KB corpus is in flight,toast
 flashcards.words.load_failed,Failed to load dictionary words.,טעינת מילות המילון נכשלה.,words-pool load error,
 flashcards.words.loading_dict,Loading dictionary…,טוען מילון…,words-pool count while loading,toast
 flashcards.words.pool_count.one,{count} word in pool,מילה אחת במאגר,words-pool count,plural
