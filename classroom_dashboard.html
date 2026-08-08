@@ -3397,9 +3397,16 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     if (!block) return true;
     if (settings.hideWeather) { block.innerHTML = ''; return true; }
     const msg = _weatherStatus === 'not_found'
-      ? I18n.t('dashboard.weather.not_found', { location: esc(settings.location) })
-      : esc(I18n.t(_weatherStatus === 'loading' ? 'dashboard.weather.loading' : 'dashboard.weather.unavailable'));
-    block.innerHTML = '<div class="weather-loading">' + msg + '</div>';
+      ? I18n.t('dashboard.weather.not_found', { location: settings.location })
+      : I18n.t(_weatherStatus === 'loading' ? 'dashboard.weather.loading' : 'dashboard.weather.unavailable');
+    block.innerHTML = '<div class="weather-loading">' + esc(msg) + '</div>';
+    // This was the one busy/error line in the suite that no assistive tech was ever told about.
+    // #weatherBlock is deliberately NOT itself a live region: it also holds the temperature, which
+    // re-renders every 30-minute refresh and on a dark-mode toggle, so marking it live would
+    // announce the forecast over and over. Route just the status through the page's existing
+    // polite region instead — unescaped, since this one goes in as text.
+    const _sr = document.getElementById('a11yStatus');
+    if (_sr) _sr.textContent = msg;
     return true;
   }
 
