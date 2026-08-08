@@ -2172,6 +2172,17 @@ fetchJsonWithProgress('data/hebrew_words.json?v=6', updateDictLoadProgress)
   })
   .catch(() => {
     const bar = document.getElementById('loadBar'); if (bar) bar.style.display = 'none';
+    // Both count readouts start life saying "Loading…" (#resultCount carries the data-i18n for it),
+    // and every later render re-derived that text from !_wordsReady — so the count chip, which is
+    // this page's aria-live="polite" channel, announced "Loading…" for good. Record the failure so
+    // those renders stop claiming it, drop the now-false static key, and blank them for the case
+    // where no render follows. The failure itself is reported just below in #loadingText, which is
+    // a role="status" region too.
+    _wordsFailed = true;
+    ['resultCount', 'sidebarWordCount'].forEach(id => {
+      const c = document.getElementById(id);
+      if (c) { c.removeAttribute('data-i18n'); c.textContent = ''; }
+    });
     // This fetch starts at parse time, so a fast failure (blocked/offline network) can land
     // here BEFORE the deferred js/i18n.js has run — a bare I18n.t() then throws a
     // ReferenceError, killing the handler and leaving "Loading dictionary…" up for good.
@@ -2488,7 +2499,7 @@ function onFilter() {
     const n = emojiFiltered.length;
     // Same pre-data guard as the words branch: while the emoji corpus is in flight,
     // an empty result means "still loading", not "no emojis found".
-    const countText = n === 0 ? I18n.t(EMOJI_DATA ? 'dictionary.results.no_emojis_found' : 'dictionary.toolbar.loading')
+    const countText = n === 0 ? (EMOJI_DATA ? I18n.t('dictionary.results.no_emojis_found') : _countPendingText(_dictEmojiFailed))
       : I18n.t(n === 1 ? 'dictionary.results.count_emojis.one' : 'dictionary.results.count_emojis.other', { count: n.toLocaleString() });
     document.getElementById('resultCount').textContent = countText;
     document.getElementById('sidebarWordCount').textContent = countText;
@@ -2591,7 +2602,7 @@ function onFilter() {
   const n = filtered.length;
   // onFilter can run before the corpus fetch lands; a pre-data render must say "Loading…",
   // not "No words found" — on slow school networks the wrong text lasts the whole fetch.
-  const countText = n === 0 ? I18n.t(_wordsReady ? 'dictionary.results.no_words_found' : 'dictionary.toolbar.loading')
+  const countText = n === 0 ? (_wordsReady ? I18n.t('dictionary.results.no_words_found') : _countPendingText(_wordsFailed))
     : I18n.t(n === 1 ? 'dictionary.results.count_words.one' : 'dictionary.results.count_words.other', { count: n.toLocaleString() });
   document.getElementById('resultCount').textContent = countText;
   document.getElementById('sidebarWordCount').textContent = countText;
@@ -3776,6 +3787,7 @@ function fetchEmojiData() {
       }
     })
     .catch(() => {
+      _dictEmojiFailed = true;   // so the count readouts stop reporting "Loading…" on every render
       const tree = document.getElementById('emojiCatTree');
       if (tree) tree.innerHTML = `<div style="color:var(--muted);font-size:0.78rem;">${esc(I18n.t('dictionary.loading.emoji_failed'))}</div>`;
     });
@@ -4254,6 +4266,12 @@ function _dictB64Decode(b) { b = b.replace(/-/g,'+').replace(/_/g,'/'); return d
 
 // Restore/bootstrap coordination state.
 let _domReady = false, _wordsReady = false, _bootstrapped = false;
+// A ready flag has two states; a fetch has three. Without these, the "not ready" arm of every count
+// readout kept rendering "Loading…" after a load had definitively failed — for good, and refreshed
+// on every re-render and language switch. Blank is honest: the failure itself is reported in
+// #loadingMsg (words) and the category tree (emoji), both already localized.
+let _wordsFailed = false, _dictEmojiFailed = false;
+function _countPendingText(failed) { return failed ? '' : I18n.t('dictionary.toolbar.loading'); }
 let _pendingShareState = null, _pendingSessionState = null;
 let DICT_SHARE_DEFAULTS = null;
 
