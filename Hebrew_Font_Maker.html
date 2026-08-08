@@ -2857,7 +2857,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.9</strong> — <strong>A finer pen for the fine details.</strong> <span class="ui">Draw</span> mode's brush and eraser now go down to a hairline — the size sliders start at 10 instead of 40 (and 20), and move a unit at a time, so tagin, thin calligraphy strokes, and small serifs are drawable without fighting the slider. Along the way, two things that quietly broke at small sizes were fixed: the <span class="ui">Chisel</span> pen's thin edge used to thin out to nothing below the old minimum — a small chisel stroke could save as a blank letter — and <span class="ui">Dotted</span> strokes had a minimum dot size that made their dots wider than the brush itself. Both now hold a floor that stays crisp when your letter is traced. The <span class="ui">[</span> and <span class="ui">]</span> keys also resize in smaller jumps once the brush is small. Separately, <span class="ui">Letter Metrics</span> moved to the right-hand column, next to Guides — it belongs to the letter rather than to any one step, so it now sits in the same place on every screen instead of at the bottom of whichever tool panel you happened to be in. And you no longer have to remember to save a drawing before moving on: opening the <span class="ui">Trace</span> step now traces your drawing for you, the same way it already did for scanned letters. (A letter whose points you edited by hand is left alone and asks first, since re-tracing would replace those edits — and in that case the drawing is shown greyed on the canvas with a one-click button to re-trace.) <span style="color:var(--muted);">(August 2026)</span></li>
+      <li><strong>v5.9</strong> — <strong>A finer pen for the fine details.</strong> <span class="ui">Draw</span> mode's brush and eraser now go down to a hairline — the size sliders start at 10 instead of 40 (and 20), and move a unit at a time, so tagin, thin calligraphy strokes, and small serifs are drawable without fighting the slider. Along the way, two things that quietly broke at small sizes were fixed: the <span class="ui">Chisel</span> pen's thin edge used to thin out to nothing below the old minimum — a small chisel stroke could save as a blank letter — and <span class="ui">Dotted</span> strokes had a minimum dot size that made their dots wider than the brush itself. Both now hold a floor that stays crisp when your letter is traced. The <span class="ui">[</span> and <span class="ui">]</span> keys also resize in smaller jumps once the brush is small. Separately, <span class="ui">Letter Metrics</span> moved to the right-hand column, next to Guides — it belongs to the letter rather than to any one step, so it now sits in the same place on every screen instead of at the bottom of whichever tool panel you happened to be in. And you no longer have to remember to save a drawing before moving on: opening the <span class="ui">Trace</span> step now traces your drawing for you, the same way it already did for scanned letters. (A letter whose points you edited by hand is left alone and asks first, since re-tracing would replace those edits — and in that case the drawing is shown greyed on the canvas with a one-click button to re-trace.) The <span class="ui">Save</span> buttons now sit centred under the canvas instead of at the far bottom-right. And the eraser takes out what the cursor ring covers, no more: it used to remove half a stroke-width extra at each end, so a small eraser could bite three times its own size out of a thick stroke and take a whole segment when you meant to nick a detail — it also no longer cuts a stroke it only grazed. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.8</strong> — <strong>A full pencil case for Draw mode.</strong> The on-screen drawing step now has four tools instead of two. The eraser learned to erase for real: <span class="ui">Partial</span> mode rubs out just the ink under your eraser — splitting a stroke into pieces when you cut through it — while <span class="ui">Whole stroke</span> keeps the old one-touch removal, and the eraser finally has its own size. A new <span class="ui">Line</span> tool lays down perfectly straight strokes (hold Shift to snap to 0° / 45° / 90°), and a new <span class="ui">Chisel</span> pen style turns any stroke into broad-nib calligraphy — thick horizontals, thin verticals, with an adjustable nib angle — the way a sofer's pen writes. The <span class="ui">Move</span> tool drags a stroke (or a lasso-selected group) anywhere, with arrow-key nudging and Delete. A cursor ring previews your exact brush or eraser footprint, one-key shortcuts switch tools (D / E / L / V, X to swap, [ and ] to resize), and an <span class="ui">Undo</span> button sits right in the panel for tablet drawing. The pen itself grew a full brush kit: a visual pen-style picker with five live-preview tiles — <span class="ui">Round</span>, <span class="ui">Chisel</span>, <span class="ui">Brush</span> (strokes that taper at both ends), <span class="ui">Dotted</span> (a dotted tracing line), and <span class="ui">Hollow</span> (outlined letters) — each with its own dial (nib angle with one-tap 0° / 45° / 90° presets, taper length, dot spacing, outline thickness). Mouse and finger strokes can vary thickness with drawing speed the way a pen does with pressure, a tilting stylus can set the chisel's nib angle just by how you hold it, and a new <span class="ui">Stamp</span> tool places tagin crowns, dots, or serif feet — sized to your brush and drawn in your pen style — as ordinary strokes you can move, erase, or undo. And under every size slider, an <span class="ui">Actual size</span> preview window shows your exact pen stroke, eraser circle, or stamp at true canvas scale — live, as you drag. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.7</strong> — <strong>A guided start — and now draw your letters right on screen.</strong> Starting a font opens a three-step setup: name your font and pick a license, choose Regular or Bold plus nikkud, trope and extra alphabets, then say how your letters will arrive — and the toolbar's <span class="ui">New</span> no longer wipes your current project until you actually create the new one (if you left a project mid-trace, the "Continue where you left off" prompt still appears before anything else). The biggest arrival is a brand-new <span class="ui">Draw</span> mode: pick <span class="ui">Draw letters on screen</span> and sketch each letter directly over the gray reference with a pen, finger, or mouse — pressure-sensitive stylus strokes, smoothing, a whole-stroke eraser, and a <span class="ui">Save letter &amp; next</span> button that runs the tracer and moves on, so a student can flow through all 27 letters with a stylus and one button. Drawings stay editable forever, drawn and photographed letters mix freely in one font, and everything downstream — points editing, nikkud, Bold, export — works unchanged. A "Show me around after setup" checkbox starts the tour the moment you land in your fresh editor. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.6</strong> — <strong>Your font, one click from a worksheet.</strong> Saving a font to <span class="ui">My IvritSuite Fonts</span> used to be the end of the road: the window told you to "pick them in any IvritSuite tool's font selector", but nothing took you there. Each saved font now has a <span class="ui">Use in Worksheet Generator</span> link that opens the generator with that font already chosen, so you can see your letters on a real worksheet straight away. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -7476,13 +7476,26 @@ function _segDist(px, py, a, b) {   // point-to-segment distance (font units)
   return Math.hypot(px - (a[0] + t * dx), py - (a[1] + t * dy));
 }
 /* Partial erase — commit-time split. The gesture only accumulated an erase path (g.pts) and masked
-   the ink visually; here each stroke is resampled (ERASE_STEP pitch — a 2-pt Line stroke has no
-   interior samples otherwise), points within Rt = eraser R + w/2 of the path are dropped (survivor
-   caps then reach exactly to the eraser's edge, so the committed gap matches what the mask showed),
-   and the maximal survivor runs become fragments. ONE array replacement at the end; a fragment
-   budget keeps the result inside DRAW_STROKE_MAX so a reload's sanitizeDraw never drops ink. */
+   the ink visually; here each stroke is resampled, points the eraser passed over are dropped, and
+   the maximal survivor runs become fragments. ONE array replacement at the end; a fragment budget
+   keeps the result inside DRAW_STROKE_MAX so a reload's sanitizeDraw never drops ink.
+
+   The kill radius is the ERASER'S OWN radius, tested against the stroke's centreline. It used to be
+   R + w/2 — correct for "does the eraser touch any of this stroke's ink?", but wrong as the amount
+   to DELETE, because a killed sample takes the stroke's whole cross-section with it. That deleted a
+   run half a stroke-width longer than the eraser at each end, so the fatter the stroke (or the
+   smaller the eraser) the further the damage ran past the cursor ring: measured, a 40-wide eraser
+   took a 140-unit bite out of a 90-wide stroke (3.5×) and a 200-unit bite out of a 200-wide one —
+   and it cut strokes the eraser had only grazed, never having covered their centreline at all.
+   Erasing one detail therefore removed a whole segment. Now the bite matches the ring the cursor
+   shows, and grazing an edge leaves the stroke intact — erring toward keeping ink, which another
+   pass can always remove. (Nibbling a sliver off one side is not expressible: strokes carry a
+   single width, so a cut is always the full cross-section.) */
 function drawEraseSplit(cl, g) {
   const E = g.pts, R = _drawEraser / 2;
+  // Samples must be closer together than the eraser is wide, or a small eraser slips between two of
+  // them and cuts nothing. ERASE_STEP stays the pitch for any eraser wide enough to span it.
+  const STEP = Math.max(2, Math.min(ERASE_STEP, R));
   let ex0 = Infinity, ex1 = -Infinity, ey0 = Infinity, ey1 = -Infinity;
   E.forEach(q => { ex0 = Math.min(ex0, q[0]); ex1 = Math.max(ex1, q[0]); ey0 = Math.min(ey0, q[1]); ey1 = Math.max(ey1, q[1]); });
   const near = (q, Rt) => {
@@ -7494,15 +7507,16 @@ function drawEraseSplit(cl, g) {
   const out = [];
   let changed = false, clipped = false;
   for (const s of cl.draw.strokes) {
-    const Rt = R + s.w / 2 + (s.st === 'h' ? (s.rim || 22) / 2 : 0);   // hollow ink reaches w/2 + rim/2
+    const Rt = R;                                                      // what gets DELETED — the eraser's own footprint
+    const Rnear = R + s.w / 2 + (s.st === 'h' ? (s.rim || 22) / 2 : 0);   // what's worth CONSIDERING — ink reaches w/2 (+ rim/2 when hollow)
     let sx0 = Infinity, sx1 = -Infinity, sy0 = Infinity, sy1 = -Infinity;   // bbox precheck — most strokes are nowhere near the path
     s.pts.forEach(q => { sx0 = Math.min(sx0, q[0]); sx1 = Math.max(sx1, q[0]); sy0 = Math.min(sy0, q[1]); sy1 = Math.max(sy1, q[1]); });
-    if (sx0 > ex1 + Rt || sx1 < ex0 - Rt || sy0 > ey1 + Rt || sy1 < ey0 - Rt) { out.push(s); continue; }
+    if (sx0 > ex1 + Rnear || sx1 < ex0 - Rnear || sy0 > ey1 + Rnear || sy1 < ey0 - Rnear) { out.push(s); continue; }
     const pts = [];   // resampled working copy — used only if the stroke is actually cut
     for (let i = 0; i < s.pts.length; i++) {
       if (i) {
         const a = s.pts[i - 1], b = s.pts[i];
-        const steps = Math.min(Math.floor(Math.hypot(b[0] - a[0], b[1] - a[1]) / ERASE_STEP), 4096 - pts.length);
+        const steps = Math.min(Math.floor(Math.hypot(b[0] - a[0], b[1] - a[1]) / STEP), 4096 - pts.length);
         for (let k = 1; k <= steps; k++) {
           const t = k / (steps + 1);
           pts.push([Math.round(a[0] + (b[0] - a[0]) * t), Math.round(a[1] + (b[1] - a[1]) * t), a[2] + (b[2] - a[2]) * t]);
@@ -11356,7 +11370,7 @@ function renderControls() {
   const l = curLetter();
   if (curKind !== 'letter') { renderMarkControls(L, l); return; }   // mark editor → left column (beside the stage)
   if (workMode === 'align') { renderAlignLeft(L, l); renderAlignRight(R, l); renderAlignUnder(U, l); }
-  else if (workMode === 'draw') { renderDrawLeft(L, l); renderDrawRight(R, l); renderDrawUnder(U, l); }
+  else if (workMode === 'draw') { renderDrawLeft(L, l); renderDrawRight(R, l); renderDrawStageBelow(SB, l); }
   else if (workMode === 'trace') { renderTraceLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
   else if (workMode === 'nodes') { renderNodeLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
   else { renderAnchorLeft(L, l); renderAnchorRight(R, l); renderAnchorUnder(U, l); renderAnchorStageBelow(SB, l); }
@@ -11794,15 +11808,15 @@ function renderDrawRight(R, l) {
     </div>`;
   wireReferencePanel();
 }
-function renderDrawUnder(U, l) {
-  U.innerHTML = `
-    <div class="ws-under-row" style="align-items:center;">
-      <div class="ws-under-grow"></div>
-      <div class="under-spacer"></div>
-      <div class="ctl-row">
-        <button class="ctl-btn" onclick="drawCommit(false)">${_drawT('save_stay', 'Save & stay')}</button>
-        <button class="ctl-btn primary" onclick="drawCommit(true)">${_drawT('save_next', 'Save letter & next →')}</button>
-      </div>
+/* The two Save actions sit in #stageBelow (inside the centre column, right under the canvas) rather
+   than in the full-width under-region, so they stay with the drawing they act on instead of drifting
+   to the far bottom-right of the page. .stage-below already centres its children. */
+function renderDrawStageBelow(SB, l) {
+  if (!SB) return;
+  SB.innerHTML = `
+    <div class="ctl-row" style="justify-content:center;">
+      <button class="ctl-btn" onclick="drawCommit(false)">${_drawT('save_stay', 'Save & stay')}</button>
+      <button class="ctl-btn primary" onclick="drawCommit(true)">${_drawT('save_next', 'Save letter & next →')}</button>
     </div>`;
 }
 
