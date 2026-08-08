@@ -312,11 +312,11 @@ body.dark .tt-controls { background:var(--navy-deep); }
    .tt-jumpnav above; without this the share button stays visible when it cannot act. */
 #ttShareWrap[hidden] { display:none; }
 .tt-ctrl label { font-weight:600; color:var(--text); white-space:nowrap; }
-.tt-ctrl select, .tt-ctrl input[type="number"] {
+.tt-ctrl select, .tt-ctrl input[type="number"], .tt-ctrl input[type="text"] {
   border:1px solid var(--border); background:var(--white); color:var(--text);
   padding:5px 8px; border-radius:5px; font:inherit; font-size:0.82rem;
 }
-body.dark .tt-ctrl select, body.dark .tt-ctrl input[type="number"] {
+body.dark .tt-ctrl select, body.dark .tt-ctrl input[type="number"], body.dark .tt-ctrl input[type="text"] {
   background:var(--navy-deep); color:var(--text);
 }
 .tt-ctrl select { min-width:110px; }
@@ -380,6 +380,11 @@ body.dark .tt-handout-shem-note { color:var(--gold-light); }
 #ttCopyBulkPanel { display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; flex-basis:100%; }
 #ttCopyBulkPanel[hidden] { display:none; }
 #ttCopyBulkPanel .tt-copy-hintline { font-size:0.72rem; color:var(--muted); flex-basis:100%; white-space:normal; }
+/* Type-a-range picker: the refs field is Latin-numeric in both UI languages, so it stays LTR
+   while the surrounding bar mirrors; the note is a live region under it. */
+#ttCopyRange { inline-size:13ch; direction:ltr; text-align:start; }
+#ttCopyRangeNote { font-size:0.72rem; color:var(--muted); flex-basis:100%; white-space:normal; }
+#ttCopyRangeNote:empty { display:none; }
 .tt-copy-wysiwyg { font-size:0.72rem; color:var(--muted); max-width:420px; white-space:normal; }
 #ttCopyTextarea {
   flex-basis:100%; box-sizing:border-box; resize:vertical;
@@ -1475,6 +1480,14 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <span class="tt-ctrl" id="ttCopyCount" dir="auto">0 selected</span>
     <button class="btn btn-xs btn-secondary" onclick="clearBulkVerses()" type="button" data-i18n="torah.copy.clear">Clear</button>
     <button class="btn btn-xs btn-secondary" onclick="selectAllVerses()" type="button" data-i18n="torah.copy.select_all">Select all</button>
+    <span class="tt-ctrl">
+      <label for="ttCopyRange" data-i18n="torah.copy.range_label">Type verse numbers</label>
+      <input type="text" id="ttCopyRange" autocomplete="off" spellcheck="false" dir="ltr"
+             placeholder="2:16-2:20, 3:1" data-i18n-placeholder="torah.copy.range_placeholder"
+             aria-describedby="ttCopyRangeNote">
+      <button class="btn btn-xs btn-secondary" onclick="selectVerseRange()" type="button" data-i18n="torah.copy.range_add">Add</button>
+    </span>
+    <span id="ttCopyRangeNote" role="status" aria-live="polite" dir="auto"></span>
     <textarea id="ttCopyTextarea" readonly rows="5" dir="auto" aria-label="Selected verses (copy preview)" data-i18n-aria-label="torah.copy.textarea_aria"></textarea>
     <button class="btn btn-xs" onclick="copyAllSelected()" type="button" data-i18n="torah.copy.copy_all">Copy All</button>
   </span>
@@ -4953,6 +4966,10 @@ function wireSettingsForm() {
     saveSettings(); updateCopyTextarea();
   });
   document.getElementById('ttCopyBulkCb').addEventListener('change', e => toggleBulkSelectMode(e.target.checked));
+  // Enter in the refs field is the whole gesture — type, Enter, next range.
+  document.getElementById('ttCopyRange').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); selectVerseRange(); }
+  });
   // ESC closes drawer
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && document.getElementById('settingsModal').classList.contains('open')) closeSettings();
@@ -5401,18 +5418,73 @@ function toggleBulkSelectMode(on) {
   document.body.classList.toggle('tt-bulk-mode', on);
   const panel = document.getElementById('ttCopyBulkPanel');
   if (panel) panel.hidden = !on;
-  if (!on) { ttBulkSelected.clear(); syncBulkClasses(); }
+  if (!on) { ttBulkSelected.clear(); syncBulkClasses(); _setRangeNote(null); }
   updateCopyTextarea();
 }
 function toggleBulkVerse(vk) {
   if (ttBulkSelected.has(vk)) ttBulkSelected.delete(vk); else ttBulkSelected.add(vk);
   syncBulkClasses(); updateCopyTextarea();
 }
-function clearBulkVerses() { ttBulkSelected.clear(); syncBulkClasses(); updateCopyTextarea(); }
+function clearBulkVerses() { ttBulkSelected.clear(); syncBulkClasses(); updateCopyTextarea(); _setRangeNote(null); }
 function selectAllVerses() {
   if (!currentVerses) return;
   currentVerses.forEach(v => ttBulkSelected.add(`${v.chapter}:${v.verse}`));
   syncBulkClasses(); updateCopyTextarea();
+}
+// ── Type-a-range picker ──────────────────────────────────────────────────────
+// A teacher who already knows the references ("2:16-2:20, 3:1, 3:6") should not have to hunt
+// them down a 13,000 px page one click at a time. Ranges resolve by INDEX into currentVerses,
+// which is the loaded reading's own order — so a range spanning a chapter boundary needs no
+// chapter arithmetic, and anything outside this reading is reported instead of silently dropped.
+const TT_RANGE_MAX_TOKENS = 64;   // a pathological paste shouldn't spin the parser
+function parseVerseRangeSpec(spec) {
+  const keys = [], unknown = [];
+  const order = (currentVerses || []).map(v => `${v.chapter}:${v.verse}`);
+  if (!order.length) return { keys, unknown };
+  const tokens = String(spec).split(/[,;]+|\s+/).filter(Boolean).slice(0, TT_RANGE_MAX_TOKENS);
+  for (const tok of tokens) {
+    // C:V | C:V-C:V | C:V-V (same-chapter shorthand); hyphen or en-dash
+    const m = tok.match(/^(\d{1,3}):(\d{1,3})(?:[-–](?:(\d{1,3}):)?(\d{1,3}))?$/);
+    if (!m) { unknown.push(tok); continue; }
+    const i = order.indexOf(`${+m[1]}:${+m[2]}`);
+    if (i < 0) { unknown.push(tok); continue; }
+    if (m[4] === undefined) { keys.push(order[i]); continue; }
+    const j = order.indexOf(`${m[3] !== undefined ? +m[3] : +m[1]}:${+m[4]}`);
+    if (j < 0) { unknown.push(tok); continue; }
+    const [a, b] = i <= j ? [i, j] : [j, i];   // a reversed range is a typo, not an error
+    for (let k = a; k <= b; k++) keys.push(order[k]);
+  }
+  return { keys, unknown };
+}
+// The note follows a live language switch via the page's existing dataset.i18nKey healer
+// (S186's pattern) — params ride along as JSON so interpolated messages re-render too.
+function _setRangeNote(key, params) {
+  const el = document.getElementById('ttCopyRangeNote');
+  if (!el) return;
+  if (!key) { el.textContent = ''; delete el.dataset.i18nKey; delete el.dataset.i18nParams; return; }
+  el.dataset.i18nKey = key;
+  if (params) el.dataset.i18nParams = JSON.stringify(params); else delete el.dataset.i18nParams;
+  el.textContent = I18n.t(key, params);
+}
+function selectVerseRange() {
+  const inp = document.getElementById('ttCopyRange');
+  if (!inp) return;
+  const spec = inp.value.trim();
+  if (!spec) { _setRangeNote(null); inp.focus(); return; }
+  if (!currentVerses || !currentVerses.length) { _setRangeNote('torah.copy.range_no_reading'); return; }
+  const { keys, unknown } = parseVerseRangeSpec(spec);
+  const refs = unknown.slice(0, 3).map(t => t.slice(0, 12)).join(', ') + (unknown.length > 3 ? '…' : '');
+  const added = keys.filter(k => !ttBulkSelected.has(k));
+  keys.forEach(k => ttBulkSelected.add(k));
+  syncBulkClasses(); updateCopyTextarea();
+  const plural = added.length === 1 ? '.one' : '.other';
+  if (added.length && unknown.length)      _setRangeNote('torah.copy.range_added_some' + plural, { count: added.length, refs });
+  else if (added.length)                   _setRangeNote('torah.copy.range_added' + plural, { count: added.length });
+  else if (keys.length && !unknown.length) _setRangeNote('torah.copy.range_already');
+  else                                     _setRangeNote('torah.copy.range_no_match', { refs: refs || spec.slice(0, 24) });
+  // Take the teacher to the first newly-selected verse — the whole point is not scrolling to find it.
+  if (added.length) flashVerse(added[0]);
+  if (keys.length && !unknown.length) inp.value = '';
 }
 // Re-apply selection tint + checkbox state to a freshly-built #ttReading (renderText
 // rebuilds innerHTML, recreating the checkboxes; also reconciles the native checkbox
@@ -5641,6 +5713,14 @@ function applyI18n() {
     if (st && st.dataset.i18nKey) st.textContent = I18n.t(st.dataset.i18nKey);
     const ts = document.getElementById('optTranslitStatus');
     if (ts && ts.dataset.i18nKey) ts.textContent = I18n.t(ts.dataset.i18nKey);
+    // The range-picker note IS interpolated, so it also carries its params (own data, but read
+    // back through ivritSafeParse — the house rule for every parse that isn't a trusted literal).
+    const rn = document.getElementById('ttCopyRangeNote');
+    if (rn && rn.dataset.i18nKey) {
+      let p = null;
+      if (rn.dataset.i18nParams) { try { p = ivritSafeParse(rn.dataset.i18nParams); } catch (e) {} }
+      rn.textContent = I18n.t(rn.dataset.i18nKey, p);
+    }
   } catch (e) {}
   // Re-render the reading so row labels / aliyah markers / verse buttons translate — but NEVER
   // while audio is playing or looping (a renderText() rebuild would desync the karaoke data-twi
