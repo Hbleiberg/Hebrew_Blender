@@ -6148,7 +6148,7 @@ function renderMarkControls(c, it) {
       <div class="ctl-row">
         <button class="ctl-btn primary" onclick="traceCurrent()">${I18n.t('fontmaker.panels.retrace')}</button>
         <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
-        <span id="traceInfo" class="readout">${it.contours?I18n.t(it.contours.length===1?'fontmaker.panels.contours_count.one':'fontmaker.panels.contours_count.other',{count:it.contours.length}):''}</span>
+        <span id="traceInfo" class="readout">${it.contours?I18n.t(it.contours.length===1?'fontmaker.panels.contours_count.one':'fontmaker.panels.contours_count.other',{count:it.contours.length}):_pT('trace_info_no_ink', 'no ink detected')}</span>
       </div>`;
   } else {
     if (combined) {
@@ -11573,7 +11573,7 @@ function renderTraceLeft(L, l) {
         ${ l.contours ? '' : `<button class="ctl-btn primary" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${I18n.t('fontmaker.panels.draw_pen')}</button>` }
         <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
         <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
-        <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : '' }</span>
+        <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : _pT('trace_info_no_ink', 'no ink detected') }</span>
       </div>`;
     return;
   }
@@ -11598,7 +11598,7 @@ function renderTraceLeft(L, l) {
       <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
       ${ l.contours ? '' : `<button class="ctl-btn" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title2'))}">${I18n.t('fontmaker.panels.draw_pen')}</button>` }
       <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
-      <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : '' }</span>
+      <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : _pT('trace_info_no_ink', 'no ink detected') }</span>
     </div>
     <div class="hint">${_pT('trace_hint', 'Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.')}</div>`;
 }
