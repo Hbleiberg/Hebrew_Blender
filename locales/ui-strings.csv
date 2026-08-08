@@ -2015,7 +2015,7 @@ fontmaker.panels.combined_allowed_img,"Allowed: any image file — PNG, JPG, GIF
 fontmaker.panels.combined_count,{i} of {n},{i} מתוך {n},combined nav counter,
 fontmaker.panels.combined_drag_hint,"Click and drag a box around the letter on the sheet, then release to bring it into the editor. Keyboard: arrows move the box, +/− resize, Enter to crop.","לחצו וגררו תיבה סביב האות בדף, ואז שחררו כדי להביא אותה לעורך. מקלדת: חצים מזיזים את התיבה, +/− משנים גודל, Enter לחיתוך.",center empty state,
 fontmaker.panels.combined_drop_img,"Drop your sheet(s) here, or click to browse — add more than one for multi-page templates.","שחררו כאן את הדף/ים שלכם, או לחצו לעיון — הוסיפו יותר מאחד לתבניות רב-עמודיות.",drop zone,
-fontmaker.panels.combined_drop_svg,"Drop your SVG sheet(s) here, or click to browse — name elements like id=""uni05D0"" for auto-split, or box each letter.","שחררו כאן את דף/י ה-SVG שלכם, או לחצו לעיון — תנו לרכיבים שם כמו id=""uni05D0"" לפיצול אוטומטי, או תחמו כל אות.",drop zone,html
+fontmaker.panels.combined_drop_svg,"Drop your <b>SVG</b> sheet(s) here, or click to browse — name elements like <code>id=""uni05D0""</code> for auto-split, or box each letter.","שחררו כאן את דף/י ה-<b>SVG</b> שלכם, או לחצו לעיון — תנו לרכיבים שם כמו <code>id=""uni05D0""</code> לפיצול אוטומטי, או תחמו כל אות.",drop zone,html
 fontmaker.panels.combined_next,Next ›,הבא ›,combined nav button,
 fontmaker.panels.combined_prev,‹ Previous,‹ הקודם,combined nav button,
 fontmaker.panels.combined_remove_title,Remove this sheet from the set,הסר דף זה מהסט,button title,
@@ -4255,3 +4255,6 @@ fontmaker.draw.untraced_stage,This drawing has not been traced yet — press “
 fontmaker.panels.not_traced,Not traced yet.,עדיין לא הומר לקווי מתאר.,Trace stage caption when a letter has no outline,
 fontmaker.draw.untraced_handedited,"This letter’s points were edited by hand, so the drawing is not re-traced automatically — doing so would replace those edits. Re-trace only if you want the drawing to win.","הנקודות של האות הזו נערכו ידנית, ולכן הציור לא מומר לקווי מתאר אוטומטית — פעולה כזו הייתה מחליפה את העריכות. המירו מחדש רק אם אתם רוצים שהציור יגבר.",Trace step — why a hand-edited letter is not auto-traced,
 fontmaker.draw.untraced_stale_stage,The outline below is older than this drawing — re-trace to catch it up.,קווי המתאר שלמטה ישנים יותר מהציור הזה — המירו מחדש כדי לעדכן אותם.,Trace stage caption when an existing outline is older than the strokes,
+fontmaker.panels.align_imported_svg,Imported from SVG — set nikkud in step 3.,יובא מ-SVG — הגדירו את הניקוד בשלב 3.,Align stage caption for a vector glyph imported from an SVG,
+fontmaker.panels.align_loaded_font,Loaded from font — set nikkud in step 3.,נטען מגופן — הגדירו את הניקוד בשלב 3.,Align stage caption for a glyph imported from a font file,
+fontmaker.panels.align_no_image,No image yet — upload below.,עדיין אין תמונה — העלו למטה.,Align stage caption when the letter has no reference image yet,

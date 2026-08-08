@@ -3901,7 +3901,7 @@ function renderMarkPanel(cat) {
         if (um === 'combined') {
           const has = f.combinedImage && f.combinedImage.dataUrl;
           controls += `<div class="drop" id="${cat}SheetDrop">${_pT('mark_drop_combined', 'Drop a ' + (svgUploadOn()?'<b>SVG</b> ':'') + 'sheet of ' + label + ' symbols, or click to browse.', { svg: svgUploadOn()?'<b>SVG</b> ':'', label: labelL })}</div>
-            <div class="allowed">${svgUploadOn()?'Allowed: SVG only.':'Allowed: any image file — PNG, JPG, GIF, WebP.'}</div>
+            <div class="allowed">${svgUploadOn()?_pT('mark_allowed_svg','Allowed: SVG only.'):_pT('mark_allowed_img','Allowed: any image file — PNG, JPG, GIF, WebP.')}</div>
             <input type="file" id="${cat}SheetFile" accept="${svgUploadOn()?'.svg,image/svg+xml':'image/*'}" style="display:none;">
             <div class="hint">${ has ? _pT('mark_sheet_loaded', 'Sheet loaded ✓ — pick a symbol below, then drag a box around it on the canvas.') : _pT('mark_pick_then_box', 'Then pick a symbol below and drag a box around it on the canvas.') }</div>`;
         }
@@ -6377,11 +6377,13 @@ async function renderStage() {
       if (!metricAdjust) h += transformHandlesSVG(l);
     } else if (l.contours) {
       // vector glyph (font file OR imported SVG): outline already loaded, nothing to align
-      const cap = (l.source && l.source.kind === 'svg') ? 'Imported from SVG — set nikkud in step 3.' : 'Loaded from font — set nikkud in step 3.';
+      const cap = (l.source && l.source.kind === 'svg')
+        ? _pT('align_imported_svg', 'Imported from SVG — set nikkud in step 3.')
+        : _pT('align_loaded_font', 'Loaded from font — set nikkud in step 3.');
       h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-rule="nonzero"/>`;
-      h += `<text x="300" y="540" text-anchor="middle" fill="#9aa0aa" font-size="12">${cap}</text>`;
+      h += `<text x="300" y="540" text-anchor="middle" fill="#9aa0aa" font-size="12">${esc(cap)}</text>`;
     } else {
-      h += `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">No image yet — upload below.</text>`;
+      h += `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">${esc(_pT('align_no_image', 'No image yet — upload below.'))}</text>`;
     }
   } else if (workMode === 'draw') {
     h += drawStrokesSVG(l);   // committed strokes over the reference ghost (the tracing paper)
@@ -11458,11 +11460,11 @@ function renderAlignLeft(L, l) {
   if (project.inputMode === 'single' && curKind === 'letter') {
     const svg = svgUploadOn();
     html += `<div class="drop" id="letterDrop">Drop ${svg?'an <b>SVG</b>':'an image'} for <b>${esc(l.name)}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('letterFile').click()">browse</span>.</div>
-      <div class="allowed">${svg?'Allowed: SVG only — vectors import directly (no tracing).':'Allowed: any image file — PNG, JPG, GIF, WebP.'}</div>
+      <div class="allowed">${svg?_pT('letter_allowed_svg','Allowed: SVG only — vectors import directly (no tracing).'):_pT('mark_allowed_img','Allowed: any image file — PNG, JPG, GIF, WebP.')}</div>
       <input type="file" id="letterFile" accept="${svg?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
   } else if (project.inputMode === 'combined' && project.combinedSheets.length && curKind === 'letter') {
     html += (!l.source.dataUrl)
-      ? `<div class="hint">Pick a letter, then drag a box around it on the sheet to bring it into the editor. Keyboard: arrows move the box, +/− resize, Enter to crop.</div>`
+      ? `<div class="hint">${_pT('pick_then_box', 'Pick a letter, then drag a box around it on the sheet to bring it into the editor. Keyboard: arrows move the box, +/− resize, Enter to crop.')}</div>`
       : `<div class="hint">Region selected for <b>${esc(l.name)}</b>.</div>
          <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">↺ Re-select area</button></div>`;
   }
@@ -12100,14 +12102,14 @@ function inputModeBlock() {
     </div>
     <div id="combinedUploadRow" style="display:${project.inputMode==='combined'?'':'none'};">
       <div class="drop" id="combinedDrop">${ svg
-        ? 'Drop your <b>SVG</b> sheet(s) here, or click to browse — name elements like <code>id="uni05D0"</code> for auto-split, or box each letter.'
-        : 'Drop your sheet(s) here, or click to browse — add more than one for multi-page templates.' }</div>
-      <div class="allowed">${ svg ? 'Allowed: SVG only.' : 'Allowed: any image file — PNG, JPG, GIF, WebP. You can add several sheets and flip between them.' }</div>
+        ? _pT('combined_drop_svg', 'Drop your <b>SVG</b> sheet(s) here, or click to browse — name elements like <code>id="uni05D0"</code> for auto-split, or box each letter.')
+        : _pT('combined_drop_img', 'Drop your sheet(s) here, or click to browse — add more than one for multi-page templates.') }</div>
+      <div class="allowed">${ svg ? _pT('mark_allowed_svg', 'Allowed: SVG only.') : _pT('combined_allowed_img', 'Allowed: any image file — PNG, JPG, GIF, WebP. You can add several sheets and flip between them.') }</div>
       <input type="file" id="combinedFile" accept="${svg?'.svg,image/svg+xml':'image/*'}" multiple style="display:none;">
-      ${ svg && project.combinedSheets.length ? `<div class="ctl-row" style="margin-top:6px;"><button class="ctl-btn" onclick="autoSplitCombinedSvg()">Auto-split by name</button></div>` : '' }
+      ${ svg && project.combinedSheets.length ? `<div class="ctl-row" style="margin-top:6px;"><button class="ctl-btn" onclick="autoSplitCombinedSvg()">${_pT('autosplit_by_name', 'Auto-split by name')}</button></div>` : '' }
     </div>
     <div id="fontUploadRow" style="display:${(!svg && project.inputMode==='font')?'':'none'};">
-      <div class="drop" id="fontDrop">Drop a font (TTF/OTF) here, or click to browse.</div>
+      <div class="drop" id="fontDrop">${_pT('font_drop', 'Drop a font (TTF/OTF) here, or click to browse.')}</div>
       <div class="allowed">${I18n.t('fontmaker.panels.reference_upload_allowed')}</div>
       <input type="file" id="sourceFontFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
     </div>`;
