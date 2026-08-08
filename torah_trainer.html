@@ -3105,18 +3105,34 @@ async function fetchAndRender() {
     // can land on a book/range it doesn't cover). Rather than leave the English
     // blank, fall back to an available openly-licensed English version for this
     // book, preferring JPS 1917 (public domain, covers all of Tanach).
+    // There is a SECOND way to arrive here with no English, and it used to be a dead end:
+    // translationVersion is still '' because populateVersionDropdown — which is what assigns the
+    // JPS-1917 default — is async and the first fetchAndRender() can win the race. With no
+    // version, fetchSefariaText deliberately sends no `version` param (rather than risk
+    // Sefaria's copyrighted default), so the English comes back empty; the dropdown then fills
+    // in a version name a moment later, but only a user `change` event re-fetches. Result: a
+    // labelled, permanently empty English row beside a Version box that reads fine. Dropping the
+    // translationVersion requirement from this gate recovers both cases the same way.
     let fallbackNote = '';
-    if (settings.showTranslation && settings.translationVersion && verses._engCount === 0 && book) {
+    if (settings.showTranslation && verses._engCount === 0 && book) {
       const fb = await pickFallbackVersion(book, settings.translationVersion);
       if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch
       if (fb) {
         const alt = await fetchSefariaText(r.ref, true, fb);
         if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch
         if (alt._engCount > 0) {
-          fallbackNote = I18n.t('torah.status.fallback_version', { version: settings.translationVersion, other: fb });
+          // Only report a SWITCH when there was a version to switch away from. On the race path
+          // there is nothing to tell the teacher — the footer already names version + license.
+          if (settings.translationVersion) {
+            fallbackNote = I18n.t('torah.status.fallback_version', { version: settings.translationVersion, other: fb });
+          }
           settings.translationVersion = fb;
           saveSettings();
           verses = alt;
+          // Keep the Version box honest about which text is actually on screen (it may have
+          // finished loading with the old value while this fetch was in flight).
+          const _vs = document.getElementById('ttVersionSelect');
+          if (_vs && [..._vs.options].some(o => o.value === fb)) { _vs.value = fb; updateTransFooter(); }
         }
       }
     }
