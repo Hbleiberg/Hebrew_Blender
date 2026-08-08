@@ -5894,7 +5894,11 @@ function marginGuidesSVG() {
     return `<rect x="${a}" y="${vy1}" width="${b-a}" height="${vy2-vy1}" fill="${C.margin}" fill-opacity="0.12" stroke="${C.margin}" stroke-width="1" stroke-dasharray="3 4" opacity="0.9" pointer-events="none"/>`
       + `<text x="${cx}" y="${mcy}" transform="rotate(-90 ${cx} ${mcy})" text-anchor="middle" fill="${C.marginTxt}" font-size="12" font-family="'Source Sans 3',sans-serif" opacity="0.5" style="dominant-baseline:central;" pointer-events="none">${side} margin</text>`;
   };
-  let h = marginZone(0, letterLSB(L), 'left');             // left side bearing
+  // letterRSB already clamps its derived value with Math.max(0, …); letterLSB does NOT, so ink that
+  // starts left of the origin (trivial in draw mode — the canvas is wider than the glyph box) fed a
+  // NEGATIVE width into the rect below: an SVG error, and the browser drops the band entirely. Clamp
+  // to match the right side, whose own zone likewise collapses to nothing when the ink overhangs.
+  let h = marginZone(0, Math.max(0, letterLSB(L)), 'left'); // left side bearing
   h += marginZone(adv - letterRSB(L), adv, 'right');       // right side bearing
   const wx = fx(adv);
   h += `<line x1="${wx}" y1="${vy1}" x2="${wx}" y2="${vy2}" stroke="${C.margin}" stroke-width="1" stroke-dasharray="3 5" pointer-events="none"/>`;
@@ -5915,7 +5919,7 @@ function wideFormGuidesSVG(g) {
     return `<rect x="${a}" y="${vy1}" width="${b-a}" height="${vy2-vy1}" fill="${C.margin}" fill-opacity="0.12" stroke="${C.margin}" stroke-width="1" stroke-dasharray="3 4" opacity="0.9" pointer-events="none"/>`
       + `<text x="${cx}" y="${mcy}" transform="rotate(-90 ${cx} ${mcy})" text-anchor="middle" fill="${C.marginTxt}" font-size="12" font-family="'Source Sans 3',sans-serif" opacity="0.5" style="dominant-baseline:central;" pointer-events="none">${side} margin</text>`;
   };
-  let h = marginZone(0, g.minX, 'left');                   // composed ink-left (scale is anchored here)
+  let h = marginZone(0, Math.max(0, g.minX), 'left');      // composed ink-left (scale is anchored here); same negative-width clamp as marginGuidesSVG
   h += marginZone(inkR, g.advance, 'right');               // composed ink-right → exported advance
   const wx = fx(g.advance);
   h += `<line x1="${wx}" y1="${vy1}" x2="${wx}" y2="${vy2}" stroke="${C.margin}" stroke-width="1" stroke-dasharray="3 5" pointer-events="none"/>`;
