@@ -2857,7 +2857,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.9</strong> — <strong>A finer pen for the fine details.</strong> <span class="ui">Draw</span> mode's brush and eraser now go down to a hairline — the size sliders start at 10 instead of 40 (and 20), and move a unit at a time, so tagin, thin calligraphy strokes, and small serifs are drawable without fighting the slider. Along the way, two things that quietly broke at small sizes were fixed: the <span class="ui">Chisel</span> pen's thin edge used to thin out to nothing below the old minimum — a small chisel stroke could save as a blank letter — and <span class="ui">Dotted</span> strokes had a minimum dot size that made their dots wider than the brush itself. Both now hold a floor that stays crisp when your letter is traced. The <span class="ui">[</span> and <span class="ui">]</span> keys also resize in smaller jumps once the brush is small. Separately, <span class="ui">Letter Metrics</span> moved to the right-hand column, next to Guides — it belongs to the letter rather than to any one step, so it now sits in the same place on every screen instead of at the bottom of whichever tool panel you happened to be in. <span style="color:var(--muted);">(August 2026)</span></li>
+      <li><strong>v5.9</strong> — <strong>A finer pen for the fine details.</strong> <span class="ui">Draw</span> mode's brush and eraser now go down to a hairline — the size sliders start at 10 instead of 40 (and 20), and move a unit at a time, so tagin, thin calligraphy strokes, and small serifs are drawable without fighting the slider. Along the way, two things that quietly broke at small sizes were fixed: the <span class="ui">Chisel</span> pen's thin edge used to thin out to nothing below the old minimum — a small chisel stroke could save as a blank letter — and <span class="ui">Dotted</span> strokes had a minimum dot size that made their dots wider than the brush itself. Both now hold a floor that stays crisp when your letter is traced. The <span class="ui">[</span> and <span class="ui">]</span> keys also resize in smaller jumps once the brush is small. Separately, <span class="ui">Letter Metrics</span> moved to the right-hand column, next to Guides — it belongs to the letter rather than to any one step, so it now sits in the same place on every screen instead of at the bottom of whichever tool panel you happened to be in. And if you jump to <span class="ui">Trace</span> before saving a drawing, the drawing no longer seems to disappear: it shows on the canvas, greyed, with a note explaining that it has not been traced yet and a <span class="ui">Save drawing &amp; trace</span> button to do it in one click. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.8</strong> — <strong>A full pencil case for Draw mode.</strong> The on-screen drawing step now has four tools instead of two. The eraser learned to erase for real: <span class="ui">Partial</span> mode rubs out just the ink under your eraser — splitting a stroke into pieces when you cut through it — while <span class="ui">Whole stroke</span> keeps the old one-touch removal, and the eraser finally has its own size. A new <span class="ui">Line</span> tool lays down perfectly straight strokes (hold Shift to snap to 0° / 45° / 90°), and a new <span class="ui">Chisel</span> pen style turns any stroke into broad-nib calligraphy — thick horizontals, thin verticals, with an adjustable nib angle — the way a sofer's pen writes. The <span class="ui">Move</span> tool drags a stroke (or a lasso-selected group) anywhere, with arrow-key nudging and Delete. A cursor ring previews your exact brush or eraser footprint, one-key shortcuts switch tools (D / E / L / V, X to swap, [ and ] to resize), and an <span class="ui">Undo</span> button sits right in the panel for tablet drawing. The pen itself grew a full brush kit: a visual pen-style picker with five live-preview tiles — <span class="ui">Round</span>, <span class="ui">Chisel</span>, <span class="ui">Brush</span> (strokes that taper at both ends), <span class="ui">Dotted</span> (a dotted tracing line), and <span class="ui">Hollow</span> (outlined letters) — each with its own dial (nib angle with one-tap 0° / 45° / 90° presets, taper length, dot spacing, outline thickness). Mouse and finger strokes can vary thickness with drawing speed the way a pen does with pressure, a tilting stylus can set the chisel's nib angle just by how you hold it, and a new <span class="ui">Stamp</span> tool places tagin crowns, dots, or serif feet — sized to your brush and drawn in your pen style — as ordinary strokes you can move, erase, or undo. And under every size slider, an <span class="ui">Actual size</span> preview window shows your exact pen stroke, eraser circle, or stamp at true canvas scale — live, as you drag. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.7</strong> — <strong>A guided start — and now draw your letters right on screen.</strong> Starting a font opens a three-step setup: name your font and pick a license, choose Regular or Bold plus nikkud, trope and extra alphabets, then say how your letters will arrive — and the toolbar's <span class="ui">New</span> no longer wipes your current project until you actually create the new one (if you left a project mid-trace, the "Continue where you left off" prompt still appears before anything else). The biggest arrival is a brand-new <span class="ui">Draw</span> mode: pick <span class="ui">Draw letters on screen</span> and sketch each letter directly over the gray reference with a pen, finger, or mouse — pressure-sensitive stylus strokes, smoothing, a whole-stroke eraser, and a <span class="ui">Save letter &amp; next</span> button that runs the tracer and moves on, so a student can flow through all 27 letters with a stylus and one button. Drawings stay editable forever, drawn and photographed letters mix freely in one font, and everything downstream — points editing, nikkud, Bold, export — works unchanged. A "Show me around after setup" checkbox starts the tour the moment you land in your fresh editor. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.6</strong> — <strong>Your font, one click from a worksheet.</strong> Saving a font to <span class="ui">My IvritSuite Fonts</span> used to be the end of the road: the window told you to "pick them in any IvritSuite tool's font selector", but nothing took you there. Each saved font now has a <span class="ui">Use in Worksheet Generator</span> link that opens the generator with that font already chosen, so you can see your letters on a real worksheet straight away. <span style="color:var(--muted);">(July 2026)</span></li>
@@ -6388,7 +6388,15 @@ async function renderStage() {
   } else if (workMode === 'trace') {
     if (url) h += `<image href="${url}" x="0" y="0" transform="matrix(${l.transform.join(' ')})" opacity="${project.view.imgOpacityTrace}"/>`;
     if (l.contours) { const C = stageColors(); h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
-    else h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">Not traced yet.</text>`;
+    // An untraced drawing would leave this step looking EMPTY — the strokes are safe in l.draw, but
+    // nothing here renders them, and the threshold/detail controls have no raster to act on. Ghost
+    // the drawing so the work is visibly still there, and say what the missing step is.
+    const untraced = drawNeedsTrace(l);
+    if (untraced) h += `<g opacity="0.45" pointer-events="none">${drawStrokesSVG(l)}</g>`;
+    if (!l.contours || untraced)
+      h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">${esc(untraced
+        ? _drawT('untraced_stage', 'This drawing has not been traced yet — press “Save drawing & trace”.')
+        : _pT('not_traced', 'Not traced yet.'))}</text>`;
   } else if (workMode === 'anchors') {
     const pcW = precompTarget ? getPrecomp(precompTarget) : null;
     const wideMode = isWideForm(pcW);
@@ -7130,6 +7138,25 @@ function _drawApplyStyle(sk, g) {   // stamp the frozen style + its one param on
   else if (g.st === 'd') sk.ds = g.ds;
   else if (g.st === 'h') { sk.rim = g.rim; sk.pr = 0; }   // hollow is constant-width by contract
 }
+/* Has this drawing been through the tracer yet? Drawing lives in l.draw.strokes; the OUTLINE the
+   rest of the app works with only exists once Save runs the tracer. Structural signature (count +
+   per-stroke width/style/point-count/endpoints) rather than a full stringify — it catches new,
+   erased, moved and restyled strokes without walking every point on every render. */
+function drawSig(d) {
+  if (!(d && d.strokes && d.strokes.length)) return '';
+  return d.strokes.map(s => {
+    const a = s.pts[0] || [0, 0], b = s.pts[s.pts.length - 1] || [0, 0];
+    return s.w + (s.st || '') + '#' + s.pts.length + '@' + a[0] + ',' + a[1] + '>' + b[0] + ',' + b[1];
+  }).join('|');
+}
+function drawNeedsTrace(l) {
+  if (!(l && l.draw && l.draw.strokes.length)) return false;
+  // Projects saved before drawSig existed carry no signature, so staleness is unknowable there —
+  // flag only the certain case (strokes with no outline at all) rather than nag about a drawing
+  // that WAS traced. Anything saved from here on records the pair and gets the precise check.
+  if (l.drawSig == null) return !(l.contours && l.contours.length);
+  return drawSig(l.draw) !== l.drawSig;
+}
 /* A tap is a tiny ISLAND of ink, and the tracer discards those long before it discards a thin bar —
    the >80 FU² speck filter and the raster grid both work against a lone dot. Measured: a round tap
    vanishes at radius 5, and a chisel nib mark is ragged-unreliable until it is ~24 FU long (w16
@@ -7618,6 +7645,7 @@ async function _drawCommitNow(advance) {
     l.captureBox = null;
     l.flattenLighting = false;   // synthetic ink — nothing to flatten (exactly false: itemFlattenOn tests !== false)
     l.binThreshold = 128; l.thresholdUserSet = true; l.invert = false;   // pure black-on-white: 128 reproduces stroke width verbatim; block Otsu
+    l.drawSig = drawSig(l.draw);   // this outline now matches these strokes (undo restores the old pair together)
     l.contours = null; l.curves = null;   // anchors survive — same contract as a photo re-trace
     n = _traceCore(l);
   });
@@ -11492,12 +11520,24 @@ function renderTraceRight(R, l) {
   wireReferencePanel();
 }
 function renderTraceLeft(L, l) {
+  // Arriving here straight from Draw without saving is the easy mistake: the strokes are safe but
+  // untraced, so this step has no outline to show and its threshold/detail sliders act on nothing.
+  // Lead with the missing step and the one button that performs it (drawCommit keeps the
+  // hand-edited retrace confirm). Empty string when there is nothing pending, so nothing shifts.
+  const pending = drawNeedsTrace(l) ? `
+    <div class="hint" role="status" style="border:1px solid var(--gold);border-radius:6px;padding:7px 9px;margin-bottom:8px;">
+      ${_drawT('untraced_note', 'Your drawing has not been traced yet, so there is no outline to fine-tune here. The strokes are safe — they are still on the Draw step.')}
+    </div>
+    <div class="ctl-row" style="margin-bottom:8px;">
+      <button class="ctl-btn primary" onclick="drawCommit(false)">${_drawT('untraced_btn', 'Save drawing & trace')}</button>
+      <button class="ctl-btn" onclick="setWorkMode('draw')">${_drawT('untraced_back', 'Back to drawing')}</button>
+    </div>` : '';
   if (project.inputMode === 'font') {   // width still editable for font-loaded glyphs; Edit points is the only way to reshape them
-    L.innerHTML = (l.contours ? '' : `<div class="ctl-row"><button class="ctl-btn primary" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${I18n.t('fontmaker.panels.draw_pen')}</button></div>`);   // Edit points now lives in the work-tabs header toggle
+    L.innerHTML = pending + (l.contours ? '' : `<div class="ctl-row"><button class="ctl-btn primary" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${I18n.t('fontmaker.panels.draw_pen')}</button></div>`);   // Edit points now lives in the work-tabs header toggle
     return;
   }
   if (l.source && l.source.kind === 'svg') {   // imported vector — no raster trace controls, but allow point editing
-    L.innerHTML = `
+    L.innerHTML = pending + `
       <div class="ws-side-title">${I18n.t('fontmaker.panels.outline_title', {name: esc(gName(l.name))})}</div>
       <div class="hint">${_pT('svg_outline_hint', 'Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or re-upload under <b>Add Letters</b> to replace it.')}</div>
       <div class="ctl-row">
@@ -11510,7 +11550,7 @@ function renderTraceLeft(L, l) {
   }
   const detail = Math.round(100 - l.epsilon*2.5);
   const corner = (l.cornerAngle != null ? l.cornerAngle : 32);
-  L.innerHTML = `
+  L.innerHTML = pending + `
     <div class="ws-side-title">${I18n.t('fontmaker.panels.trace_title', {name: esc(gName(l.name))})}</div>
     <div class="side-slider-label">${I18n.t('fontmaker.panels.ink_threshold')} <span id="thV" class="readout">${l.binThreshold}</span></div>
     <input type="range" class="side-slider" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.ink_threshold'))}">
