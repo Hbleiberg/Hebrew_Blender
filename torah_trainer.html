@@ -772,6 +772,34 @@ body.dark .tt-trope-legend { background:var(--navy-deep); }
 }
 .tt-audio-bar.open { display:flex; }
 body.dark .tt-audio-bar { background:var(--navy-deep); }
+
+/* Sticky bulk-select dock — the selection count + Copy All, kept reachable while scrolling a long
+   reading. Borrows the audio bar's visual language (navy plate, gold top rule) so the two read as
+   one footer family. No transition: nothing to neutralize in the reduced-motion block. */
+#ttBulkDock {
+  position:fixed; inset-inline:0; bottom:0; z-index:60;
+  display:none; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px 14px;
+  padding:10px 18px; background:var(--navy); color:#fff;
+  border-top:3px solid var(--gold); box-shadow:0 -4px 16px rgba(0,0,0,0.18);
+}
+#ttBulkDock:not([hidden]) { display:flex; }
+body.dark #ttBulkDock { background:var(--navy-deep); }
+#ttBulkDockCount {
+  font-family:'Libre Baskerville',serif; font-size:0.8rem;
+  letter-spacing:0.05em; color:var(--gold-light); white-space:nowrap;
+}
+/* .btn-xs is 22px tall — fine in a dense settings row, too small for the one control a teacher
+   reaches for one-handed on a tablet. Scoped to the dock so no other button in the app changes. */
+#ttBulkDock .btn { padding:8px 15px; min-height:34px; font-size:0.78rem; }
+/* Clear the sticky karaoke bar while it is open. Its height is NOT a constant — it wraps to 77px at
+   1280, 107px at 800 and 167px on a phone — so a fixed offset overlaps it exactly where a tablet
+   lives (measured). --tt-audio-h is set from the bar's live height by a ResizeObserver; the 96px is
+   only a fallback for the case where the property never got set. */
+body.tt-karaoke-active #ttBulkDock { bottom:var(--tt-audio-h, 96px); }
+/* Keep the last verse clear of the dock while it is up. */
+body.tt-bulk-dock .tt-page { padding-bottom:76px; }
+/* Teacher-prep chrome: never over a projected reading. */
+body.fullscreen #ttBulkDock { display:none; }
 .tt-audio-bar audio { flex:1; min-width:240px; max-width:520px; }
 .tt-audio-bar .tt-audio-label {
   font-family:'Libre Baskerville',serif; font-size:0.78rem;
@@ -1101,7 +1129,7 @@ body.fullscreen #fsExitBtn { display: flex; }
    (e.g. the .tt-grid column collapse) beat the screen rules by source order (generator S30
    convention). !important rules don't care, but the layout overrides do. */
 @media print {
-  .tt-jumpnav, .tt-resume-chip, .tt-audio-bar, .tt-verse-buttons { display:none !important; }
+  .tt-jumpnav, .tt-resume-chip, .tt-audio-bar, .tt-verse-buttons, #ttBulkDock { display:none !important; }
   /* Bulk-select tint is a screen-only affordance — never ink. */
   .tt-bulk-selected { background:none !important; box-shadow:none !important; }
   .tt-bulk-cb { display:none !important; }   /* selection checkbox is a screen-only affordance */
@@ -1491,6 +1519,16 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <textarea id="ttCopyTextarea" readonly rows="5" dir="auto" aria-label="Selected verses (copy preview)" data-i18n-aria-label="torah.copy.textarea_aria"></textarea>
     <button class="btn btn-xs" onclick="copyAllSelected()" type="button" data-i18n="torah.copy.copy_all">Copy All</button>
   </span>
+</div>
+
+<!-- Sticky bulk-select dock. The count and Copy All live in the panel above, which on a full parsha
+     sits thousands of pixels above the verse being clicked — a teacher four verses in had no visible
+     confirmation and a long scroll back to the button. Shown only once something is selected, and
+     every control delegates to the same function the panel uses (no duplicated logic, no new state). -->
+<div id="ttBulkDock" role="group" data-i18n-aria-label="torah.copy.title" aria-label="Copy verses" hidden>
+  <span id="ttBulkDockCount" dir="auto"></span>
+  <button class="btn btn-xs" onclick="copyAllSelected()" type="button" data-i18n="torah.copy.copy_all">Copy All</button>
+  <button class="btn btn-xs btn-secondary" onclick="clearBulkVerses()" type="button" data-i18n="torah.copy.clear">Clear</button>
 </div>
 
 <div class="tt-page">
@@ -5523,6 +5561,33 @@ function updateCopyTextarea() {
   ta.value = lines.join((settings.copyIncludeTrans || settings.copyIncludeTranslit) ? '\n\n' : '\n');
   const c = document.getElementById('ttCopyCount');
   if (c) c.textContent = I18n.t('torah.copy.bulk_count', { count: ttBulkSelected.size });
+  _syncBulkDock();
+}
+// The dock mirrors the panel's count and its two most-wanted actions at the bottom of the viewport.
+// Derived state only — nothing new is persisted, so no getSettings/AllTools wiring. It hangs off
+// updateCopyTextarea because every selection path (verse click, Select all, Clear, the range picker,
+// leaving bulk mode) AND applyI18n already funnel through there, so both the number and the language
+// it is written in stay correct without a second listener.
+function _syncBulkDock() {
+  const dock = document.getElementById('ttBulkDock');
+  if (!dock) return;
+  const show = ttBulkMode && ttBulkSelected.size > 0;   // nothing selected yet = nothing to confirm
+  dock.hidden = !show;
+  document.body.classList.toggle('tt-bulk-dock', show);
+  if (!show) return;
+  const c = document.getElementById('ttBulkDockCount');
+  if (c) c.textContent = I18n.t('torah.copy.bulk_count', { count: ttBulkSelected.size });
+}
+// The karaoke bar is sticky at the same bottom edge as the dock, and its height changes with wrapping,
+// so the dock's clearance cannot be a constant. One observer on the bar covers every way that height
+// moves — opening, closing, collapsing, and a viewport reflow — and reports 0 while it is display:none,
+// which is exactly the offset the dock wants then.
+function _watchAudioBarHeight() {
+  const ab = document.getElementById('ttAudioBar');
+  if (!ab || !window.ResizeObserver) return;
+  new ResizeObserver(() => {
+    document.documentElement.style.setProperty('--tt-audio-h', ab.offsetHeight + 'px');
+  }).observe(ab);
 }
 function copyAllSelected() {
   const ta = document.getElementById('ttCopyTextarea');
@@ -5595,6 +5660,7 @@ async function goToCurrentParshah() {
 async function init() {
   initDark();
   loadSettings();
+  _watchAudioBarHeight();   // keeps the bulk dock clear of the sticky karaoke bar at any width
   const fsBtn = document.getElementById('fsBtn');
   if (fsBtn) fsBtn.innerHTML = FS_ENTER;
 
