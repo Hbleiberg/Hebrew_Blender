@@ -1261,7 +1261,11 @@
   body.dark .font-opt.active { background: rgba(224, 168, 50, 0.16); }
   .font-opt-preview { font-size: 1.4rem; direction: rtl; min-width: 44px; text-align: center; color: var(--text); }
   .font-opt-preview.ltr { direction: ltr; }   /* English picker previews render left-to-right */
-  .font-opt.active .font-opt-preview { color: var(--gold); }
+  /* --gold-text, not --gold: the raw gold on this tinted plate measured 2.39:1 in light mode,
+     under the 4.5 bar for 22.4px text (both the Hebrew and the English picker). --gold-text is the
+     suite token for exactly this (S63); in dark it resolves to var(--gold), where the body.dark
+     rule below wins anyway. */
+  .font-opt.active .font-opt-preview { color: var(--gold-text); }
   body.dark .font-opt.active .font-opt-preview { color: var(--gold-light); }
   .font-opt-name { font-size: 0.78rem; font-weight: 600; color: var(--text); }
 

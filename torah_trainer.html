@@ -1013,7 +1013,10 @@ body.dark .font-opt { background:#1e2535; border-color:var(--border); }
 .font-opt.active { border-color:var(--gold); background:rgba(201,146,42,0.12); }
 body.dark .font-opt.active { background:rgba(224,168,50,0.16); border-color:var(--gold-light); }
 .font-opt-preview { font-size:1.35rem; direction:rtl; line-height:1.2; color:var(--text); margin-bottom:1px; }
-.font-opt.active .font-opt-preview { color:var(--gold); }
+/* --gold-text, not --gold: the raw gold on this tinted plate measured 2.35:1 in light mode,
+   under the 4.5 bar for 21.6px text. --gold-text is the suite token that exists for exactly this
+   (S63); it resolves to var(--gold) in dark, where the body.dark rule below wins anyway. */
+.font-opt.active .font-opt-preview { color:var(--gold-text); }
 body.dark .font-opt.active .font-opt-preview { color:var(--gold-light); }
 .font-opt-info { display:flex; flex-direction:column; gap:0; width:100%; align-items:center; }
 .font-opt-name { font-size:0.66rem; font-weight:600; color:var(--text); line-height:1.15; word-break:break-word; }
