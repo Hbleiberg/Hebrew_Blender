@@ -709,7 +709,7 @@
   "dictionary.loading.emoji_failed": "Failed to load emoji data.",
   "dictionary.loading.emojis": "Loading emojis…",
   "dictionary.loading.emojis_pct": "Loading emojis… {pct}%",
-  "dictionary.loading.failed": "Failed to load. Open via a local server (not file://).",
+  "dictionary.loading.failed": "Couldn't load the word list. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.",
   "dictionary.modal.add_to_bulk": "➕ Add to bulk list",
   "dictionary.modal.add_to_wordlist": "➕ Add to Word List…",
   "dictionary.modal.close_aria": "Close details",

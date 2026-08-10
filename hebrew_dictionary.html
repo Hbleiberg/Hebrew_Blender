@@ -2194,7 +2194,7 @@ fetchJsonWithProgress('data/hebrew_words.json?v=6', updateDictLoadProgress)
     el.setAttribute('data-i18n', 'dictionary.loading.failed');
     el.textContent = window.I18n
       ? I18n.t('dictionary.loading.failed')
-      : 'Failed to load. Open via a local server (not file://).';
+      : "Couldn't load the word list. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.";
   });
 
 function setAllVowels(checked) {

@@ -709,7 +709,7 @@
   "dictionary.loading.emoji_failed": "טעינת נתוני האימוג׳ים נכשלה.",
   "dictionary.loading.emojis": "טוען אימוג׳ים…",
   "dictionary.loading.emojis_pct": "טוען אימוג׳ים… {pct}%",
-  "dictionary.loading.failed": "הטעינה נכשלה. פתחו דרך שרת מקומי (לא file://).",
+  "dictionary.loading.failed": "לא ניתן לטעון את אוצר המילים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז רעננו את הדף.",
   "dictionary.modal.add_to_bulk": "➕ הוספה לרשימה המרובה",
   "dictionary.modal.add_to_wordlist": "➕ הוספה לרשימת מילים…",
   "dictionary.modal.close_aria": "סגירת הפרטים",
