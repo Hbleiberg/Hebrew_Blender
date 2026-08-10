@@ -791,6 +791,17 @@ body.dark #ttBulkDock { background:var(--navy-deep); }
 /* .btn-xs is 22px tall — fine in a dense settings row, too small for the one control a teacher
    reaches for one-handed on a tablet. Scoped to the dock so no other button in the app changes. */
 #ttBulkDock .btn { padding:8px 15px; min-height:34px; font-size:0.78rem; }
+/* .btn-secondary is `color:var(--text)`, which is NAVY in light mode — the same navy this plate is
+   painted with, so Clear rendered as an empty outlined box at 1:1 contrast (measured; dark mode was
+   fine because --text inverts there). Every other control the suite puts on a navy surface uses the
+   literal-#fff + translucent-white idiom — the audio bar's buttons right below, the dashboard's
+   .settings-close — so match it rather than inventing a third treatment. */
+#ttBulkDock .btn-secondary {
+  background:rgba(255,255,255,0.12); color:#fff; border-color:rgba(255,255,255,0.35);
+}
+#ttBulkDock .btn-secondary:hover {
+  background:rgba(255,255,255,0.22); border-color:rgba(255,255,255,0.55);
+}
 /* Clear the sticky karaoke bar while it is open. Its height is NOT a constant — it wraps to 77px at
    1280, 107px at 800 and 167px on a phone — so a fixed offset overlaps it exactly where a tablet
    lives (measured). --tt-audio-h is set from the bar's live height by a ResizeObserver; the 96px is
