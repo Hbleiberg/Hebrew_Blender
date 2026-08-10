@@ -5582,12 +5582,31 @@ function updateCopyTextarea() {
 function _syncBulkDock() {
   const dock = document.getElementById('ttBulkDock');
   if (!dock) return;
-  const show = ttBulkMode && ttBulkSelected.size > 0;   // nothing selected yet = nothing to confirm
+  // Its own Clear empties the selection, which would hide the dock out from under the button the
+  // keyboard user is standing on — focus falls to <body>, so the next Tab restarts at the top of the
+  // page. That is precisely the long scroll back to your place the dock exists to prevent. Keep it
+  // up (reading "0 selected") while it holds focus; the focusout below retires it the moment the
+  // user leaves. The :focus-visible test is what keeps this from becoming a mouse-user regression —
+  // clicking a button focuses it in Chromium too, so `contains(activeElement)` alone left an empty
+  // dock sitting there after every mouse Clear (measured). Only a keyboard user has a focus ring to
+  // strand, and :focus-visible is exactly the platform's own answer to "did they use the keyboard".
+  const active = document.activeElement;
+  const holdsFocus = dock.contains(active) && active.matches(':focus-visible');
+  const show = ttBulkMode && (ttBulkSelected.size > 0 || holdsFocus);   // nothing selected yet = nothing to confirm
   dock.hidden = !show;
   document.body.classList.toggle('tt-bulk-dock', show);
   if (!show) return;
   const c = document.getElementById('ttBulkDockCount');
   if (c) c.textContent = I18n.t('torah.copy.bulk_count', { count: ttBulkSelected.size });
+}
+// One listener, wired at init: when focus leaves an emptied dock, re-run the same sync so it
+// retires itself. relatedTarget === null (focus went nowhere) also counts as leaving.
+function _watchBulkDockFocus() {
+  const dock = document.getElementById('ttBulkDock');
+  if (!dock) return;
+  dock.addEventListener('focusout', e => {
+    if (!dock.contains(e.relatedTarget)) _syncBulkDock();
+  });
 }
 // The karaoke bar is sticky at the same bottom edge as the dock, and its height changes with wrapping,
 // so the dock's clearance cannot be a constant. One observer on the bar covers every way that height
@@ -5672,6 +5691,7 @@ async function init() {
   initDark();
   loadSettings();
   _watchAudioBarHeight();   // keeps the bulk dock clear of the sticky karaoke bar at any width
+  _watchBulkDockFocus();    // stops the dock vanishing under a keyboard user's own Clear
   const fsBtn = document.getElementById('fsBtn');
   if (fsBtn) fsBtn.innerHTML = FS_ENTER;
 
