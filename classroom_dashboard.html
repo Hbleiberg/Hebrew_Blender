@@ -3237,15 +3237,29 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   // only runs the full date render on a day rollover. Settings/dark-mode changes still
   // call updateDateTimeDisplay() directly (a full render), so those are unaffected.
   let _lastDayKey = '';
+  // The 12/24-hr setting's Intl options — the single source of truth for EVERY wall-clock time
+  // the dashboard shows (the big clock, Shabbat candle/havdalah, and the schedule's period times).
+  function clockOpts() {
+    return settings.timeFmt === '24'
+      ? { hour: '2-digit', minute: '2-digit', hour12: false }
+      : { hour: 'numeric', minute: '2-digit', hour12: true };
+  }
+  // Formats a stored 24-hour "HH:MM" schedule string for DISPLAY per that setting. Schedule times
+  // are always STORED 24-hour, and the <input type="time"> editors render in the OS locale on their
+  // own — so only what gets shown to the room goes through here, never a stored or edited value.
+  function fmtClock(hhmm) {
+    if (!HHMM_RE.test(hhmm || '')) return hhmm || '';   // '', '—', '⋯' and half-filled rows pass through
+    if (settings.timeFmt === '24') return hhmm;         // already exactly the 24-hr rendering
+    const [h, m] = hhmm.split(':').map(Number);
+    return new Date(2000, 0, 1, h, m).toLocaleTimeString('en-US', clockOpts());
+  }
   function updateTimeOnly(now) {
     const timeEl = document.getElementById('currentTime');
     if (settings.hideTime) {
       timeEl.style.display = 'none';
     } else {
       timeEl.style.display = '';
-      const opts = settings.timeFmt === '24'
-        ? { hour: '2-digit', minute: '2-digit', hour12: false }
-        : { hour: 'numeric', minute: '2-digit', hour12: true };
+      const opts = clockOpts();
       if (settings.showSeconds) opts.second = '2-digit';
       timeEl.textContent = now.toLocaleTimeString('en-US', opts);
     }
@@ -3720,7 +3734,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     if (allowRefetch && havdalahPassed(items)) { fetchShabbat(true, true); return; }
     const candles = items.find(i => i.category === 'candles');
     const havdalah = items.find(i => i.category === 'havdalah');
-    const timeOpts = { hour: 'numeric', minute: '2-digit', hour12: true };
+    const timeOpts = clockOpts();
     const dayMonth = { weekday: 'long', month: 'long', day: 'numeric' };
     let html = '';
     if (candles && candles.date) {
@@ -6221,7 +6235,7 @@ else ivritInit();
     }
     cell.textContent = name || '';
     cell.setAttribute('aria-label', I18n.t('dashboard.schedule.cell_aria', {
-      day: dayName(d), start: per.start || '—', end: per.end || '—',
+      day: dayName(d), start: fmtClock(per.start) || '—', end: fmtClock(per.end) || '—',
       assignment: name || I18n.t('dashboard.schedule.free')
     }));
   }
@@ -6529,7 +6543,7 @@ else ivritInit();
       const timed = week.periods.map((p, i) => ({ start: p.start, end: p.end, n: i + 1 }))
         .filter(p => HHMM_RE.test(p.start) && HHMM_RE.test(p.end));
       for (let i = 1; i < timed.length; i++) {           // already sorted by start
-        if (timed[i].start === timed[i - 1].start) msgs.push(I18n.t('dashboard.schedule.warn_duplicate_time', { time: timed[i].start }));
+        if (timed[i].start === timed[i - 1].start) msgs.push(I18n.t('dashboard.schedule.warn_duplicate_time', { time: fmtClock(timed[i].start) }));
         else if (timeToMins(timed[i].start) < timeToMins(timed[i - 1].end)) msgs.push(I18n.t('dashboard.schedule.warn_overlap', { a: timed[i - 1].n, b: timed[i].n }));
       }
       const unknown = new Set();
@@ -6902,11 +6916,11 @@ else ivritInit();
         // applyI18n nulls the key so translated labels re-render on a language switch).
         const key = [st.currentIdx, st.currentEntry ? st.currentEntry.preset : '', st.timeStr,
                      st.targetEntry ? st.targetEntry.preset : '', st.targetEntry ? st.targetEntry.until : '',
-                     st.isTomorrow ? 1 : 0].join('\x1f');
+                     st.isTomorrow ? 1 : 0, settings.timeFmt].join('\x1f');
         if (key !== _lastNowNextKey) {
           _lastNowNextKey = key;
           const nextName = esc(st.targetEntry ? st.targetEntry.preset : '—');
-          const at = st.targetEntry && st.targetEntry.until ? esc(st.targetEntry.until) : '';
+          const at = st.targetEntry && st.targetEntry.until ? esc(fmtClock(st.targetEntry.until)) : '';
           const morrow = st.isTomorrow ? ' <span class="nn-morrow">' + esc(I18n.t('dashboard.schedule.suffix_tomorrow')) + '</span>' : '';
           const nowCol = st.currentEntry
             ? `<span class="nn-item"><span class="nn-lbl">${esc(I18n.t('dashboard.schedule.now_label'))}</span><span class="nn-val">${esc(st.currentEntry.preset)}</span><span class="nn-in">${esc(I18n.t('dashboard.schedule.time_left', { time: st.timeStr }))}</span></span>`
@@ -6945,7 +6959,8 @@ else ivritInit();
       if (settings.scheduleShowPeriods !== false && live) {
         const key = ['w', st.status, st.dayIdx, st.currentIdx, st.currentEntry ? st.currentEntry.preset : '',
                      st.nowLeftStr, st.targetEntry ? st.targetEntry.preset : '',
-                     st.targetEntry ? st.targetEntry.start : '', st.daysAhead, st.timeStr].join('\x1f');
+                     st.targetEntry ? st.targetEntry.start : '', st.daysAhead, st.timeStr,
+                     settings.timeFmt].join('\x1f');
         if (key !== _lastNowNextKey) {
           _lastNowNextKey = key;
           const nowItem = (val, sub) =>
@@ -6961,7 +6976,7 @@ else ivritInit();
           }   // before/after: the Now column is omitted — only Next renders
           const morrow = suffix ? ' <span class="nn-morrow">' + esc(suffix.trim()) + '</span>' : '';
           const nextCol = st.targetEntry
-            ? `<span class="nn-item"><span class="nn-lbl">${esc(I18n.t('dashboard.schedule.next_label'))}</span><span class="nn-val">${esc(st.targetEntry.preset)}</span><span class="nn-in">${I18n.t('dashboard.schedule.next_at', { time: esc(st.targetEntry.start) })}${morrow}</span></span>`
+            ? `<span class="nn-item"><span class="nn-lbl">${esc(I18n.t('dashboard.schedule.next_label'))}</span><span class="nn-val">${esc(st.targetEntry.preset)}</span><span class="nn-in">${I18n.t('dashboard.schedule.next_at', { time: esc(fmtClock(st.targetEntry.start)) })}${morrow}</span></span>`
             : '';
           nn.innerHTML = nowCol + nextCol;
         }
@@ -6982,7 +6997,7 @@ else ivritInit();
     // when nothing changed (only re-render on an actual edit or period switch), so a projector
     // running for hours isn't churning this DOM ~21,600 times a day. (Mirrors _lastScheduleKey.)
     const key = empty ? 'empty'
-      : sorted.map(e => e.until + '\x1f' + e.preset).join('\x1e') + '\x1d' + st.currentIdx;
+      : sorted.map(e => e.until + '\x1f' + e.preset).join('\x1e') + '\x1d' + st.currentIdx + '\x1d' + settings.timeFmt;
     if (key === _lastPreviewKey) return;
     _lastPreviewKey = key;
     if (empty) {
@@ -6994,7 +7009,7 @@ else ivritInit();
       const start = prev || '⋯';
       prev = e.until;
       const active = (i === st.currentIdx);
-      return `<span class="sched-seg${active ? ' sched-seg-active' : ''}">${esc(start)}–${esc(e.until)} · <b>${esc(e.preset)}</b></span>`;
+      return `<span class="sched-seg${active ? ' sched-seg-active' : ''}">${esc(fmtClock(start))}–${esc(fmtClock(e.until))} · <b>${esc(e.preset)}</b></span>`;
     });
     el.innerHTML = segs.join('<span class="sched-arrow">→</span>');
   }
@@ -7004,7 +7019,7 @@ else ivritInit();
   function renderWeekPreview(el, st) {
     const sorted = st.sorted || [];
     const dry = st.status === 'noschool' || !sorted.length;
-    const key = ['w', st.status, st.dayIdx, st.currentIdx,
+    const key = ['w', st.status, st.dayIdx, st.currentIdx, settings.timeFmt,
       sorted.map(e => e.start + e.until + (e.preset || '') + presetColor(e.preset)).join('\x1e')].join('\x1f');
     if (key === _lastPreviewKey) return;
     _lastPreviewKey = key;
@@ -7019,7 +7034,7 @@ else ivritInit();
       const style = e.preset ? ` style="background:${col};color:${contrastText(col)};"` : '';
       const label = e.preset ? esc(e.preset) : esc(I18n.t('dashboard.schedule.free'));
       const cls = 'sched-seg wk-seg' + (i === st.currentIdx ? ' sched-seg-active' : '') + (e.preset ? '' : ' wk-seg-free');
-      return `<span class="${cls}"${style}>${esc(e.start)}–${esc(e.until)} · <b>${label}</b></span>`;
+      return `<span class="${cls}"${style}>${esc(fmtClock(e.start))}–${esc(fmtClock(e.until))} · <b>${label}</b></span>`;
     });
     el.innerHTML = segs.join('<span class="sched-arrow">→</span>');
   }
