@@ -5011,7 +5011,18 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   function updateGroupNLabel() {
     const lbl = document.getElementById('groupNLabel');
-    if (lbl) lbl.textContent = (settings.groupMode === 'count') ? 'Number of groups (N)' : 'Group size (N)';
+    if (!lbl) return;
+    // Both labels are authored AND translated (group_count_label / group_size_label) — the count key
+    // had never been called, so the Hebrew UI showed the static binding translated and this line
+    // reverted it to English. Retargeting the binding (not just the text) is what makes a language
+    // switch land: applyI18n re-runs applyStaticI18n, which re-applies whichever key is bound now.
+    const k = (settings.groupMode === 'count') ? 'dashboard.picker.group_count_label' : 'dashboard.picker.group_size_label';
+    lbl.setAttribute('data-i18n', k);
+    // This block also runs pre-ready (its neighbour updatePickerRosterCount is documented as such in
+    // applyI18n), and t() returns the KEY before locales load — so keep the current text in that case
+    // rather than painting a raw dot-key on screen. applyStaticI18n corrects it once ready.
+    const v = window.I18n ? I18n.t(k) : k;
+    if (v && v !== k) lbl.textContent = v;
   }
   function updatePickerRosterCount() {
     const el = document.getElementById('pickerRosterCount');
