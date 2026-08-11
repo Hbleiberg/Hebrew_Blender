@@ -991,6 +991,8 @@ body.dark .btn-secondary:hover { background:#2a3349; }
   background:none; border:1px solid var(--border); border-radius:4px;
   padding:1px 6px; font-size:0.78rem; cursor:pointer;
   color:var(--muted); line-height:1.4; font-family:inherit;
+  /* same 30px floor .btn-xs carries above (S102, applied here S193) — these measured 24x21 */
+  min-height:30px; min-width:30px; display:inline-flex; align-items:center; justify-content:center;
 }
 .slider-row .sreset:hover { border-color:var(--gold); color:var(--gold); }
 
