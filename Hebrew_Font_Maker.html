@@ -7909,15 +7909,20 @@ function contoursOverlap(a, b) {   // edges of two separate contours cross (cont
    fills in some engines. Detection only — no auto-repair. Runs on QA open, never live. */
 function glyphOutlineScan() {
   const out = [];
+  const isOuter = c => (c.winding || 'cw') === 'cw';   // 'cw' is the documented default (see the mark normalizer)
   const check = (name, contours) => {
-    const polys = (contours || []).map(c => c.points).filter(p => p && p.length >= 3);
+    const polys = (contours || []).filter(c => c.points && c.points.length >= 3);
     if (polys.length < 1) return;
     const reasons = [];
-    if (polys.some(contourSelfIntersects)) reasons.push('outline crosses itself');
+    if (polys.some(c => contourSelfIntersects(c.points))) reasons.push('outline crosses itself');
+    // Two OUTER contours may overlap freely — that is deliberate construction (the comma's tail is
+    // tucked into its head) and the nonzero fill rule unions them, so nothing inverts. Only an
+    // outer/hole or hole/hole overlap cancels a region, which is the inversion this warning is about.
     overlap:
     for (let i = 0; i < polys.length; i++)
       for (let j = i + 1; j < polys.length; j++)
-        if (contoursOverlap(polys[i], polys[j])) { reasons.push('two outlines overlap'); break overlap; }
+        if (!(isOuter(polys[i]) && isOuter(polys[j])) && contoursOverlap(polys[i].points, polys[j].points))
+          { reasons.push('two outlines overlap'); break overlap; }
     if (reasons.length) out.push({ name: name || 'glyph', reasons });
   };
   (project.letters || []).forEach(l => { if (l.contours) check(l.name || ('U+' + l.codepoint), l.contours); });
