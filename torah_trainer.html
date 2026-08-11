@@ -1519,7 +1519,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   </span>
   <span id="ttCopyBulkPanel" hidden>
     <span class="tt-copy-hintline" data-i18n="torah.copy.bulk_hint">While Select verses is on, clicking a verse selects it (instead of playing its words).</span>
-    <span class="tt-ctrl" id="ttCopyCount" dir="auto">0 selected</span>
+    <span class="tt-ctrl" id="ttCopyCount" role="status" aria-live="polite" dir="auto">0 selected</span>
     <button class="btn btn-xs btn-secondary" onclick="clearBulkVerses()" type="button" data-i18n="torah.copy.clear">Clear</button>
     <button class="btn btn-xs btn-secondary" onclick="selectAllVerses()" type="button" data-i18n="torah.copy.select_all">Select all</button>
     <span class="tt-ctrl">
@@ -5573,8 +5573,19 @@ function updateCopyTextarea() {
     .filter(v => ttBulkSelected.has(`${v.chapter}:${v.verse}`))
     .map(verseCopyText);
   ta.value = lines.join((settings.copyIncludeTrans || settings.copyIncludeTranslit) ? '\n\n' : '\n');
+  // #ttCopyCount is the page's live region for the selection (role=status): Select all, Clear, a
+  // verse click and the range picker all land here, and it is the only one of the two counts that
+  // speaks — the dock below mirrors the same number silently, so a change is announced once, not
+  // twice. Write it ONLY when it actually changes: this function is also called by five display
+  // toggles (reference/translation/transliteration…) and by applyI18n, and an unguarded assignment
+  // re-fires the region every time, so "3 selected" would be announced for flipping a checkbox that
+  // did not touch the selection. A region that speaks when nothing happened is one users learn to
+  // tune out.
   const c = document.getElementById('ttCopyCount');
-  if (c) c.textContent = I18n.t('torah.copy.bulk_count', { count: ttBulkSelected.size });
+  if (c) {
+    const label = I18n.t('torah.copy.bulk_count', { count: ttBulkSelected.size });
+    if (c.textContent !== label) c.textContent = label;
+  }
   _syncBulkDock();
 }
 // The dock mirrors the panel's count and its two most-wanted actions at the bottom of the viewport.
