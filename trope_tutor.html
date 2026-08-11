@@ -527,6 +527,13 @@ body.dark .radio-group input:checked + label { background:#1e2535; color:var(--g
 }
 .slider-row .sreset:hover { border-color:var(--gold); color:var(--gold); }
 .settings-note { font-size:0.76rem; color:var(--muted); line-height:1.45; margin-top:6px; min-height:1em; }
+/* The About panel's two prose links are the only anchors inside the drawer, and `footer a` does not
+   reach them — so they fell back to the UA default #0000EE: 8.9:1 on the light card, but 2.0:1 on the
+   dark one, i.e. effectively invisible in dark. --gold-text is the page's link colour everywhere else
+   (.tu-intro a / .tu-card-links a / footer a) and is the token authored for readable small text in
+   BOTH themes. The UA underline is deliberately kept: these sit mid-sentence, so colour alone must
+   not be what marks them as links. */
+.settings-note a { color:var(--gold-text); font-weight:600; }
 .settings-note.error { color:#cc3333; font-weight:600; }
 body.dark .settings-note.error { color:#ff6666; }
 
