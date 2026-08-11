@@ -315,6 +315,10 @@ body.dark .tt-controls { background:var(--navy-deep); }
 .tt-ctrl select, .tt-ctrl input[type="number"], .tt-ctrl input[type="text"] {
   border:1px solid var(--border); background:var(--white); color:var(--text);
   padding:5px 8px; border-radius:5px; font:inherit; font-size:0.82rem;
+  /* same 30px floor .btn-xs and .sreset carry (S102, applied here S195) — these measured 29px.
+     Applied to the whole group so a select never ends up a different height than the input
+     beside it in the same row. */
+  min-height:30px;
 }
 body.dark .tt-ctrl select, body.dark .tt-ctrl input[type="number"], body.dark .tt-ctrl input[type="text"] {
   background:var(--navy-deep); color:var(--text);
@@ -923,6 +927,7 @@ body.dark .panel-title { background:#0a0f1c; }
   border:1px solid var(--border); background:var(--white); color:var(--text);
   padding:5px 8px; border-radius:4px; font:inherit; font-size:0.82rem;
   max-width:170px;
+  min-height:30px;   /* the 30px floor, as above — these measured 29px in the settings drawer */
 }
 body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .form-row input[type="number"] {
   background:var(--navy-deep); color:var(--text);
