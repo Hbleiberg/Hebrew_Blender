@@ -653,6 +653,27 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
 
 @media print {
   header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay { display:none !important; }
+  /* Print has to establish its own ink. The dialog drops background colours by default, so every
+     colour picked to sit ON a coloured plate has to be re-lit for white paper. Remapping the
+     tokens converges both themes on the light palette (the flash_cards S159 treatment); without
+     it dark mode prints the entire chart in --text #dde4f0 at 1.28:1 — a sheet that looks blank. */
+  html, html.dark-early, body, body.dark, html.dark-early body {
+    --gold:#c9922a; --gold-light:#f0d080; --gold-text:#7f5a13;
+    --cream:#fdf8ef; --warm-gray:#e8e0d0;
+    --text:#1a2744; --muted:#6b6050;
+    --border:#c8bfa8; --white:#ffffff;
+    background:#fff !important; color:#1a2744 !important;
+  }
+  /* Literals the remap cannot reach. The header sits on a navy plate that print drops, so its
+     white title and gold-light subtitle print white-on-white in BOTH themes — the chart loses
+     its own name. .mark-hit is the cluster carrying the trope, i.e. the point of every example.
+     (.star keeps brand --gold: it is a mark, not text — see the --gold-text token note above.) */
+  header, header h1 { color:var(--navy); }
+  header p { color:var(--muted); }
+  body.dark .mark-hit { color:#8a6216; }
+  /* These slabs only surface when the teacher turns background graphics ON to get the card
+     rules; then they print as solid blocks of ink. */
+  body.dark .tu-card, body.dark .tu-family-note, body.dark .tu-glyph { background:#fff; }
 }
 
 /* ───── Mobile ───── */
