@@ -297,6 +297,10 @@
   .chk { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; cursor: pointer; }
   .chk input { accent-color: var(--gold); width: 15px; height: 15px; }
   .hint { font-size: 0.7rem; color: var(--muted); line-height: 1.4; }
+  /* .hint's color does not cascade into its anchors — the UA's own `a` rule wins, leaving them
+     #0000EE, which measures 1.81:1 on the dark panel. `footer a` already uses this token; it just
+     never reached here. Underline kept: these sit inside running sentences. */
+  .hint a { color: var(--gold-text); }
   /* check-stacking verdict colors — ≥4.5:1 on the panel background in BOTH modes (the old inline
      #1a8a4a/#c0392b fell short even in light mode at these small hint sizes) */
   .co-ok { color: #116635; } .co-warn { color: #a32b1d; }
