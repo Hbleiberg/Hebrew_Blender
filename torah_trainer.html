@@ -971,7 +971,9 @@ body.dark .radio-group input:checked + label { background:#1e2535; color:var(--g
   font-weight:700; cursor:pointer; font-size:0.82rem; transition:all 0.15s;
 }
 .btn:hover { background:var(--gold-light); border-color:var(--gold-light); }
-.btn-xs { padding:4px 9px; font-size:0.72rem; }
+/* 30px floor — the suite's ratified touch-target size (S102, first applied in flash_cards.html;
+   WCAG 2.5.8 asks 24px). Padding alone left these at 22–24px. */
+.btn-xs { padding:4px 9px; font-size:0.72rem; min-height:30px; min-width:30px; display:inline-flex; align-items:center; justify-content:center; }
 .btn-secondary { background:transparent; color:var(--text); border-color:var(--border); }
 .btn-secondary:hover { background:var(--warm-gray); border-color:var(--muted); }
 body.dark .btn-secondary { color:var(--text); }

@@ -955,7 +955,11 @@
     transition: all 0.15s;
   }
   .btn:hover { background: var(--gold-light); border-color: var(--gold-light); }
-  .btn-xs { padding: 4px 9px; font-size: 0.75rem; }
+  /* 30px floor — the suite's ratified touch-target size (S102, first applied in flash_cards.html;
+     WCAG 2.5.8 asks 24px). Padding alone left these at 18–29px on a tool that is used on classroom
+     tablets. inline-flex + centering is what makes the min-height show as a taller box rather than
+     just taller text. */
+  .btn-xs { padding: 4px 9px; font-size: 0.75rem; min-height: 30px; min-width: 30px; display: inline-flex; align-items: center; justify-content: center; }
   .btn-secondary {
     background: transparent;
     color: var(--text);

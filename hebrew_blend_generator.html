@@ -564,9 +564,18 @@
   }
   #bingoCards::-webkit-inner-spin-button,
   #bingoCards::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  /* 30px floor — the suite's ratified touch-target size (S102, first applied in flash_cards.html;
+     WCAG 2.5.8 asks 24px). Padding alone left these at 20–27px, the smallest in the suite. The
+     inline-flex centering is what turns the min-height into a taller box instead of taller text;
+     the few .btn-xs that carry their own inline `display` (the Dagesh Tav label) keep it. */
   .btn-xs {
     font-size: 0.72rem;
     padding: 3px 8px;
+    min-height: 30px;
+    min-width: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid var(--border);
     border-radius: 4px;
     background: var(--white);

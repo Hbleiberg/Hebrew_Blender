@@ -417,7 +417,9 @@ body.dark .tu-mcell { background:var(--navy-deep); }
 .btn:hover { background:var(--gold-light); border-color:var(--gold-light); }
 .btn[aria-disabled="true"] { opacity:0.5; cursor:not-allowed; }
 .btn-lg { padding:10px 22px; font-size:0.95rem; }
-.btn-xs { padding:4px 9px; font-size:0.72rem; }
+/* 30px floor — the suite's ratified touch-target size (S102, first applied in flash_cards.html;
+   WCAG 2.5.8 asks 24px). Padding alone left these at exactly 24px. */
+.btn-xs { padding:4px 9px; font-size:0.72rem; min-height:30px; min-width:30px; display:inline-flex; align-items:center; justify-content:center; }
 .btn-secondary { background:transparent; color:var(--text); border-color:var(--border); }
 .btn-secondary:hover { background:var(--warm-gray); border-color:var(--muted); }
 body.dark .btn-secondary { color:var(--text); }
