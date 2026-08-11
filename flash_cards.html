@@ -6332,11 +6332,19 @@ function updateVowelPositionUI() {
   // Ensure at least one position <= mode is active
   if (![...vowelPositions].some(p => p >= 1 && p <= mode)) vowelPositions.add(mode);
   container.innerHTML = '';
-  const labels = ['1st', '2nd', '3rd'];
+  // flashcards.vowels.pos_1st/_2nd/_3rd are authored AND translated; the pills were built from a
+  // plain English array, so the translations had never been shown. Each button carries its own
+  // data-i18n so applyStaticI18n re-translates on a language switch — this function must NOT be
+  // added to applyI18n, which has to stay read-only (it mutates vowelPositions below).
+  const labelKeys = ['flashcards.vowels.pos_1st', 'flashcards.vowels.pos_2nd', 'flashcards.vowels.pos_3rd'];
+  const enFallback = ['1st', '2nd', '3rd'];
   for (let i = 1; i <= mode; i++) {
     const btn = document.createElement('button');
     btn.className = 'pill' + (vowelPositions.has(i) ? ' active' : '');
-    btn.textContent = labels[i - 1];
+    const lk = labelKeys[i - 1];
+    btn.setAttribute('data-i18n', lk);
+    const lv = window.I18n ? I18n.t(lk) : lk;
+    btn.textContent = (lv && lv !== lk) ? lv : enFallback[i - 1];   // t() returns the key pre-ready
     btn.addEventListener('click', () => {
       if (vowelPositions.has(i) && vowelPositions.size > 1) vowelPositions.delete(i);
       else vowelPositions.add(i);
