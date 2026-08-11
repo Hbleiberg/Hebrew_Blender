@@ -11258,7 +11258,13 @@ function openKernClass(id) {
   kernClassEditId = id || null;
   const c = id ? userKernClasses().find(x => x.id === id) : null;
   const sel = new Set(c ? c.members : []);
-  document.getElementById('kernClassTitle').textContent = c ? 'Edit kern class' : 'New kern class';
+  // Both titles are authored AND translated (kernclass_title_edit / _new) — the edit key had simply
+  // never been called, so the Hebrew UI showed the static binding translated and then reverted to
+  // English the moment this ran. Retarget the binding as well as the text (the flash_cards
+  // timerShowLabel idiom) so a language switch with the modal open re-applies the right one.
+  { const _kct = document.getElementById('kernClassTitle');
+    const _kk = c ? 'fontmaker.modals.kernclass_title_edit' : 'fontmaker.modals.kernclass_title_new';
+    _kct.setAttribute('data-i18n', _kk); _kct.textContent = I18n.t(_kk); }
   document.getElementById('kernClassName').value = c ? c.name : '';
   const host = document.getElementById('kernClassList'); host.innerHTML = '';
   LETTERS.filter(L => L.cat !== 'punct').forEach(L => {
