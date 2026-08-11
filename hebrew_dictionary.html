@@ -1200,6 +1200,23 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;',
 // to its localized form via the dictionary.glyphname.* keys. Falls back to the English name if no key.
 function glyphLetterName(n){ const k='dictionary.glyphname.letter_'+String(n).toLowerCase().replace(/[ \/]+/g,'_'); const v=I18n.t(k); return v===k?n:v; }
 function glyphVowelName(n){ const k='dictionary.glyphname.vowel_'+String(n).toLowerCase().replace(/[ \/]+/g,'_'); const v=I18n.t(k); return v===k?n:v; }
+// The vowel chips' second line ("AH sound", "short EH") is data, not markup, so it is not reachable
+// by data-i18n — it needs the same lookup the generator's identical VOWEL_DEFS already use. Keys are
+// shared (worksheet.vowels.sub.*), all nine exist and are translated; the map is copied verbatim from
+// hebrew_blend_generator.html so a new sound label only has to be added in one shape. Falls back to
+// the English source when I18n is not ready or a key is missing, exactly like glyphVowelName above.
+const VOWEL_SUB_KEY = {
+  'AH sound': 'ah', 'EH sound': 'eh', 'EY sound': 'ey', 'EE sound': 'ee',
+  'OH sound': 'oh', 'OO sound': 'oo', 'UH sound': 'uh', 'UH / silent': 'uh',
+  'short AH': 'short_ah', 'short EH': 'short_eh',
+};
+function vowelSub(sub) {
+  if (!sub || !window.I18n) return sub || '';
+  const slug = VOWEL_SUB_KEY[sub];
+  if (!slug) return sub;
+  const k = 'worksheet.vowels.sub.' + slug, v = I18n.t(k);
+  return v === k ? sub : v;
+}
 const CONSONANTS = [
   {h:'א',n:'Alef'},
   {h:'בּ',n:'Bet'},{h:'ב',n:'Vet'},
@@ -2263,7 +2280,7 @@ function initVowelFilter() {
         <input type="checkbox" data-u="${v.u}">
         <span style="display:flex;align-items:center;gap:6px;">
           <span lang="he" dir="rtl" style="font-family:var(--heb-font);font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.ex}</span>
-          <span><strong>${esc(glyphVowelName(v.label))}</strong><br><span style="color:var(--muted);font-size:0.72rem">${esc(v.sub)}</span></span>
+          <span><strong>${esc(glyphVowelName(v.label))}</strong><br><span class="vowel-chip-sub" style="color:var(--muted);font-size:0.72rem">${esc(vowelSub(v.sub))}</span></span>
         </span>`;
       const cb = chip.querySelector('input');
       cb.checked = true;
@@ -4175,7 +4192,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ===== i18n live-switch re-render ===== */
 // Update the vowel-filter chip labels in place (state-preserving — never rebuilds, so vowel
-// selections survive a language switch). The group headers/sub descriptors stay as-is.
+// selections survive a language switch). Both lines of each chip are relabelled: the name and the
+// sound descriptor below it. The group headers are handled by refreshDictVowelGroupColors().
 function relabelVowelFilter() {
   const grid = document.getElementById('vowelFilterGrid');
   if (!grid) return;
@@ -4185,6 +4203,7 @@ function relabelVowelFilter() {
     const inp = chip.querySelector('input'); if (!inp) return;
     const v = VOWEL_DEFS.find(x => x.u === inp.dataset.u); if (!v) return;
     const strong = chip.querySelector('strong'); if (strong) strong.textContent = glyphVowelName(v.label);
+    const sub = chip.querySelector('.vowel-chip-sub'); if (sub) sub.textContent = vowelSub(v.sub);
   });
 }
 // Translate all static [data-i18n*] chrome, then rebuild the dynamic pieces that bake translated
