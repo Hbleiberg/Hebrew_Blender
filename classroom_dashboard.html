@@ -1033,7 +1033,7 @@
   }
   .radio-group input:checked + label {
     background: var(--white);
-    color: var(--gold);
+    color: var(--gold-text);   /* raw --gold measured 2.75:1 on this white plate; dark keeps --gold-light below */
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
   body.dark .radio-group input:checked + label { background: #1e2535; color: var(--gold-light); }
@@ -1353,7 +1353,7 @@
   .fr-starter span { font-size: 0.72rem; color: var(--muted); line-height: 1.4; display: block; }
   .fr-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
   .fr-skip, .fr-tour { font-size: 0.8rem; color: var(--muted); text-decoration: none; cursor: pointer; }
-  .fr-tour { color: var(--gold); font-weight: 600; }
+  .fr-tour { color: var(--gold-text); font-weight: 600; }
   .fr-skip:hover, .fr-tour:hover { text-decoration: underline; }
   @media (max-width: 560px) { .fr-starters { grid-template-columns: 1fr; } }
 
@@ -2403,11 +2403,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div>
       <div style="font-family:'Libre Baskerville',serif;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px;">
-        <li><a href="hebrew_blend_generator.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">Generate printable Hebrew worksheets →</a></li>
-        <li><a href="flash_cards.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_flashcards">Practice with Hebrew flash cards →</a></li>
-        <li><a href="hebrew_dictionary.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Look up Hebrew words →</a></li>
-        <li><a href="trope_tutor.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_trope">Learn Torah trope (cantillation) →</a></li>
-        <li><a href="resources.html" style="color:var(--gold);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_resources">Hebrew teaching resources →</a></li>
+        <li><a href="hebrew_blend_generator.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">Generate printable Hebrew worksheets →</a></li>
+        <li><a href="flash_cards.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_flashcards">Practice with Hebrew flash cards →</a></li>
+        <li><a href="hebrew_dictionary.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Look up Hebrew words →</a></li>
+        <li><a href="trope_tutor.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_trope">Learn Torah trope (cantillation) →</a></li>
+        <li><a href="resources.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_resources">Hebrew teaching resources →</a></li>
       </ul>
     </div>
   </div>
