@@ -674,6 +674,11 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
   /* These slabs only surface when the teacher turns background graphics ON to get the card
      rules; then they print as solid blocks of ink. */
   body.dark .tu-card, body.dark .tu-family-note, body.dark .tu-glyph { background:#fff; }
+  /* A card is one self-contained reference unit — its mark, its name in both traditions, its
+     melody staff and its examples only mean anything together, so it must not be split across
+     sheets (the torah_trainer .tt-verse treatment). Best-effort: a card taller than the page
+     still breaks, but these run ~544px against a ~979px Letter content box. */
+  .tu-card { break-inside:avoid; page-break-inside:avoid; }
 }
 
 /* ───── Mobile ───── */
