@@ -356,6 +356,9 @@
   body.dark .lock-letter-tile:hover { border-color: var(--gold); }
   body.dark .vowel-chip { color: #dde4f0; }
   body.dark .vowel-chip:hover { background: rgba(255,255,255,0.06); }
+  /* not --muted: at 11.5px on the coloured group plates it bottoms out at 3.28:1 (Default) and
+     3.38:1 (TaL AM) — same 4.5:1-floor call as .rw-drill-btn below. Sized against BOTH schemes. */
+  body.dark .vowel-chip-sub { color: #adb6c9; }
   body.dark .btn-xs { background: #1e2535; color: #dde4f0; border-color: var(--border); }
   body.dark #bingoCards { background: #1e2535; color: #dde4f0; }
   body.dark #bingoCards + div button { background: #1e2535; color: #dde4f0; border-color: var(--border); }
@@ -555,6 +558,7 @@
   }
   .vowel-chip:hover { background: var(--warm-gray); }
   .vowel-chip input { accent-color: var(--gold); width: 14px; height: 14px; cursor: pointer; }
+  .vowel-chip-sub { color: var(--muted); font-size: 0.72rem; }
 
   /* Letter selector */
   .letter-controls {
@@ -4205,7 +4209,7 @@ function initVowels() {
           onchange="toggleVowel('${v.key}', this.checked)">
         <span style="display:flex;align-items:center;gap:6px;">
           <span lang="he" style="font-family:var(--heb-font);font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.nikud}</span>
-          <span><strong>${esc(glyphName(v.label))}</strong><br><span style="color:var(--muted);font-size:0.72rem">${esc(vowelSub(v.sub))}</span></span>
+          <span><strong>${esc(glyphName(v.label))}</strong><br><span class="vowel-chip-sub">${esc(vowelSub(v.sub))}</span></span>
         </span>
       `;
       chipsWrap.appendChild(chip);
