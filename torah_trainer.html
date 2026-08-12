@@ -600,6 +600,10 @@ body.fullscreen .tt-jumpnav { padding-right:84px; }   /* clear the fullscreen ex
   opacity:0; pointer-events:none; transition:opacity 0.25s ease, transform 0.25s ease;
 }
 .tt-hint-toast.show { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+/* Same measured problem #ttBulkDock has (see its rule): the sticky karaoke bar wraps to 107px at
+   800 and 167px on a phone, so this fixed 96px sits ON the bar exactly at tablet width. Ride the
+   same live --tt-audio-h; the 96px above stays the no-karaoke resting offset. */
+body.tt-karaoke-active .tt-hint-toast { bottom:var(--tt-audio-h, 96px); }
 body.dark .tt-hint-toast { background:#0a0f1c; }
 /* Accessible tooltip trigger: focus ring for keyboard users. */
 .tip-wrap:focus-visible { outline:2px solid var(--gold); outline-offset:2px; border-radius:50%; }
