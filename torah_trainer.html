@@ -3143,7 +3143,13 @@ async function fetchAndRender() {
     _bulkReadingKey = null;
     if (ttBulkSelected.size) { ttBulkSelected.clear(); updateCopyTextarea(); }
     renderEmptyReading();
-    setStatus(I18n.t('torah.status.pick_parsha'), false, 'torah.status.pick_parsha');
+    // parshiyotData is only still empty when init's static-data fetch failed, and this line
+    // runs after that catch — so "Pick a parsha to start." would replace the one message
+    // explaining why, and point at a picker holding only the local HOLIDAY_READINGS with
+    // all 54 parshiyot missing. Keep the diagnostic instead.
+    const noData = !parshiyotData.length;
+    const key = noData ? 'torah.status.data_load_failed' : 'torah.status.pick_parsha';
+    setStatus(I18n.t(key), noData, key);
     return;
   }
   _readingLoading = true;
@@ -5727,7 +5733,7 @@ async function init() {
     aliyahData = aj;
   } catch (e) {
     console.error('Failed to load data files', e);
-    setStatus(I18n.t('torah.status.data_load_failed'), true);
+    setStatus(I18n.t('torah.status.data_load_failed'), true, 'torah.status.data_load_failed');
   }
 
   // Build UI
