@@ -7197,6 +7197,20 @@ function _drawLivePathD(g) {
   const gm = drawStyleGeom(s);
   return gm ? _drawGeomPathD(gm) : '';
 }
+/* …but the move handler paints once per accepted SAMPLE, not once per batch, so an O(points)
+   rebuild makes a whole stroke O(n²): measured @4× CPU near the 2048-pt cap, the last samples of
+   a hollow stroke cost ~28 ms each (676 of 2000 over the 16.7 ms frame budget; chisel/brush ~12 ms).
+   Coalesce the repaint to one per frame — the screen cannot show more than that anyway — using the
+   same idiom as boldGenSet/nodeStatusCoords: no snapshot, the frame re-reads g.pts. The points array
+   is still appended every sample, so the committed stroke is unchanged. */
+function _drawLivePaint(g) {
+  if (g.raf) return;                          // a frame is already queued; it will read the latest pts
+  g.raf = requestAnimationFrame(() => {
+    g.raf = 0;
+    if (drawGesture !== g || !g.el) return;   // gesture ended/abandoned — pointerup's renderStage owns the final shape
+    g.el.setAttribute('d', _drawLivePathD(g));
+  });
+}
 function drawPointerDown(e) {
   if (curKind !== 'letter') return;
   const cl = curLetter(); if (!cl || cl.source.kind === 'svg') return;
@@ -7403,7 +7417,7 @@ function drawPointerMove(e) {
     if (g.pts.length >= 2048) continue;                // hard cap — matches sanitizeDraw
     g.pts.push([Math.round(g.sm[0]), Math.round(g.sm[1]), g.sm[2]]);
     if (!g.el.isConnected) stage().appendChild(g.el);  // a stray async re-render wiped the SVG mid-stroke
-    if (g.st) g.el.setAttribute('d', _drawLivePathD(g));
+    if (g.st) _drawLivePaint(g);
     else g.el.setAttribute('points', g.el.getAttribute('points') + ' ' + fx(g.sm[0]).toFixed(1) + ',' + fy(g.sm[1]).toFixed(1));
   }
   e.preventDefault();
