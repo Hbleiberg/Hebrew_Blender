@@ -3665,6 +3665,8 @@
   "trope.learn.next_family": "Next family →",
   "trope.learn.no_example": "No chanted example in this corpus.",
   "trope.learn.play_example_aria": "Play {name} example from {parsha} {ref}",
+  "trope.learn.print_chart": "🖨️ Print chart",
+  "trope.learn.print_chart_title": "Print all 26 marks as one reference chart",
   "trope.learn.rare_tag": "Rare",
   "trope.learn.ready_drill": "Ready? Try a drill →",
   "trope.learn.see_in_parsha": "See it in the parsha →",

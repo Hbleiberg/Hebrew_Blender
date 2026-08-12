@@ -313,7 +313,8 @@ body.dark .mark-hit { color:var(--gold-light); background:rgba(224,168,50,0.2); 
 .tu-card-links { padding:0 14px 12px; font-size:0.76rem; }
 .tu-card-links a { color:var(--gold-text); text-decoration:none; font-weight:600; }
 .tu-card-links a:hover { text-decoration:underline; }
-.tu-learn-nav { display:flex; justify-content:flex-end; margin-top:16px; }
+.tu-learn-nav { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; flex-wrap:wrap; }
+.tu-print-sheet { display:none; }   /* paper only — @media print reveals it */
 
 /* ───── Drill ───── */
 .tu-drill-head {
@@ -679,6 +680,18 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      sheets (the torah_trainer .tt-verse treatment). Best-effort: a card taller than the page
      still breaks, but these run ~544px against a ~979px Letter content box. */
   .tu-card { break-inside:avoid; page-break-inside:avoid; }
+  /* The screen studies ONE clause family at a time; the sheet is a wall chart, so paper swaps the
+     live view for the all-families copy buildPrintChart() assembles. That also retires the chrome
+     S195 found on the sheet — the family chips and "Next family →" are navigation for a view the
+     paper no longer has, and one chip carried a screen-only "✓". */
+  #tuFamilyChips, #tuFamilyNote, #tuCards, .tu-learn-nav { display:none !important; }
+  .tu-print-sheet { display:block !important; }
+  .tu-print-fam-title {
+    font-family:'Libre Baskerville', serif; font-size:0.95rem; letter-spacing:0.04em;
+    color:var(--navy); margin:16px 0 6px;
+    break-after:avoid; page-break-after:avoid;   /* never strand a family heading at a page foot */
+  }
+  .tu-print-fam:first-child .tu-print-fam-title { margin-top:0; }
 }
 
 /* ───── Mobile ───── */
@@ -756,8 +769,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <div class="tu-family-note" id="tuFamilyNote"></div>
     <div class="tu-cards" id="tuCards"></div>
     <div class="tu-learn-nav">
+      <button class="btn btn-secondary" id="tuPrintChart" onclick="printChart()" title="Print all 26 marks as one reference chart" data-i18n-title="trope.learn.print_chart_title" data-i18n="trope.learn.print_chart">🖨️ Print chart</button>
       <button class="btn" id="tuNextFamily" onclick="nextFamily()" data-i18n="trope.learn.next_family">Next family →</button>
     </div>
+    <!-- Built on demand by buildPrintChart() and shown only on paper — see the @media print block. -->
+    <div class="tu-print-sheet" id="tuPrintSheet" aria-hidden="true"></div>
   </section>
 
   <!-- ════════ DRILL ════════ -->
@@ -1739,7 +1755,9 @@ function renderLearn() {
   const fam = TROPE_FAMILY_DEFS.find(f => f.key === currentFamily) || TROPE_FAMILY_DEFS[0];
   currentFamily = fam.key;
   // Visiting a family counts as "seen" — persists to progress (families union on import).
-  if (!progress.families[fam.key]) { progress.families[fam.key] = true; saveProgress(); }
+  // Suppressed while buildPrintChart() walks every family: printing a reference sheet must never
+  // inflate a student's mastery record with families they have not actually studied.
+  if (!_chartPrintBuild && !progress.families[fam.key]) { progress.families[fam.key] = true; saveProgress(); }
   renderFamilyChips();
   document.getElementById('tuFamilyNote').textContent = I18n.t('trope.learn.family_note_' + fam.key);
 
@@ -1858,6 +1876,55 @@ function playLearnExample(t, ex, btn) {
     }
   });
 }
+/* ── Print: the whole chart, not just the open family ─────────────────────────────────────────
+   The Learn view is a one-family-at-a-time study surface, so Ctrl+P used to yield 5–6 of the 26
+   marks and a teacher wanting the full reference had to run six print jobs. The sheet is assembled
+   by walking every family through the REAL renderer and harvesting its cards, rather than by
+   duplicating renderLearn's card builder — that way the paper can never drift from the screen.
+   Two invariants make reusing the live renderer safe: _chartPrintBuild suppresses the
+   "family visited" progress write (see renderLearn), and the finally-block always restores the
+   family the teacher was actually on, even if a card builder throws. */
+let _chartPrintBuild = false;
+
+function buildPrintChart() {
+  const host = document.getElementById('tuPrintSheet');
+  const live = document.getElementById('tuCards');
+  if (!host || !live) return;
+  if (host.childElementCount) return;   // already assembled for this print job (button + beforeprint)
+  const keep = currentFamily;
+  _chartPrintBuild = true;
+  try {
+    for (const fam of TROPE_FAMILY_DEFS) {
+      currentFamily = fam.key;
+      renderLearn();
+      const sec = document.createElement('section');
+      sec.className = 'tu-print-fam';
+      const h = document.createElement('h2');
+      h.className = 'tu-print-fam-title';
+      h.textContent = I18n.t('trope.glyphname.family_' + fam.key);
+      sec.appendChild(h);
+      const note = document.createElement('div');
+      note.className = 'tu-family-note';
+      note.textContent = I18n.t('trope.learn.family_note_' + fam.key);
+      sec.appendChild(note);
+      const grid = document.createElement('div');
+      grid.className = 'tu-cards';
+      while (live.firstChild) grid.appendChild(live.firstChild);   // move, not clone: one DOM copy
+      sec.appendChild(grid);
+      host.appendChild(sec);
+    }
+  } finally {
+    currentFamily = keep;
+    _chartPrintBuild = false;
+    renderLearn();   // put the teacher's own family back on screen
+  }
+}
+/* Cleared after printing so the next job re-reads the live language and tradition. */
+function clearPrintChart() { const h = document.getElementById('tuPrintSheet'); if (h) h.innerHTML = ''; }
+function printChart() { buildPrintChart(); window.print(); }
+window.addEventListener('beforeprint', buildPrintChart);   // plain Ctrl+P gets the full chart too
+window.addEventListener('afterprint', clearPrintChart);
+
 function nextFamily() {
   const i = TROPE_FAMILY_DEFS.findIndex(f => f.key === currentFamily);
   if (i >= TROPE_FAMILY_DEFS.length - 1) { setMode('drill'); return; }
