@@ -4246,7 +4246,8 @@ function applyI18n() {
     if (step) {
       document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
       document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
-      document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: _tourIdx + 1, total: TOUR_STEPS.length });
+      const _tc = _tourCounter(_tourIdx);
+      document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: _tc.count, total: _tc.total });
       document.getElementById('tourNext').textContent = I18n.t((_tourIdx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
     }
   }
@@ -5046,6 +5047,23 @@ function _resolveStep(idx) {
   const el = step.target();
   return _tourVisible(el) ? el : null;
 }
+// The results-card step has no target when the word corpus didn't load (a school network blocking
+// data/, or an outage), so it is silently skipped and the raw array index made the counter JUMP:
+// "Step 4 of 7" straight to "Step 6 of 7", promising a step that never comes. Count by PRESENCE of
+// each target, never visibility — a step behind a collapsed panel is present and shows fine once
+// its reveal() runs, and probing visibility here would have to run EVERY step's reveal(), opening
+// the sidebar and expanding panels the tour hasn't reached yet.
+function _tourCounter(idx) {
+  let total = 0, count = 0;
+  for (let i = 0; i < TOUR_STEPS.length; i++) {
+    let el = null;
+    try { el = TOUR_STEPS[i].target(); } catch (e) {}
+    if (!el && i !== idx) continue;   // the step being shown always counts itself
+    total++;
+    if (i <= idx) count++;
+  }
+  return { count, total };
+}
 function _tourShow(idx, dir) {
   while (idx >= 0 && idx < TOUR_STEPS.length && !_resolveStep(idx)) idx += dir;
   if (idx < 0 || idx >= TOUR_STEPS.length) { tourEnd(dir > 0); return; }
@@ -5054,7 +5072,8 @@ function _tourShow(idx, dir) {
   try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
   document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
   document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKey);
-  document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: TOUR_STEPS.length });
+  const _tc = _tourCounter(idx);
+  document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: _tc.count, total: _tc.total });
   document.getElementById('tourBack').disabled = (idx === 0);
   document.getElementById('tourNext').textContent = I18n.t((idx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
   _tourReposition();
