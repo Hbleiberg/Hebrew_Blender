@@ -2563,6 +2563,9 @@ fontmaker.toolbar.redo_aria,Redo,בצע שוב,aria-label only,aria-label only
 fontmaker.toolbar.redo_title,Redo (Ctrl+Shift+Z),בצע שוב (Ctrl+Shift+Z),toolbar button title,
 fontmaker.toolbar.save_project,Save Project,שמירת פרויקט,toolbar button,
 fontmaker.toolbar.save_project_menu,Save Project ▾,שמירת פרויקט ▾,toolbar button,
+fontmaker.toolbar.tour_aria,Tour,סיור,toolbar Tour button,aria-label only
+fontmaker.toolbar.tour_btn,❓ Tour,❓ סיור,toolbar tour launcher button,leading-emoji
+fontmaker.toolbar.tour_title,Take a quick tour,צאו לסיור מהיר,toolbar button title,
 fontmaker.toolbar.undo_aria,Undo,בטל,aria-label only,aria-label only
 fontmaker.toolbar.undo_title,Undo (Ctrl+Z),בטל (Ctrl+Z),toolbar button title,
 fontmaker.workspace.categories_aria,Glyph category,קטגוריית תווים,glyph category tablist,aria-label only
