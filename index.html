@@ -216,6 +216,10 @@ body.dark .ie-modal-body textarea{background:#0d1220;}
 .ie-action-btn.secondary{background:var(--warm-gray);color:var(--text);border:1px solid var(--border);}
 .ie-action-btn.secondary:hover{border-color:var(--gold);color:var(--gold);}
 .ie-note{font-size:0.75rem;color:var(--muted);line-height:1.4;}
+/* .ie-note's colour does not reach an <a> inside it — the UA's own link rule wins — so the
+   My Fonts note's link kept UA blue: 9.4:1 on light but 1.63:1 on the dark modal. Same
+   treatment the footer links already use. Underline is left to the UA (not colour alone). */
+.ie-note a{color:var(--gold-text);}
 footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
 footer a{color:var(--gold-text);text-decoration:none;}
 .sefaria-attr{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;cursor:pointer;}
