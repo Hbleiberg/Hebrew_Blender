@@ -4206,6 +4206,7 @@ fontmaker.draw.nexthint_start,Pick a letter and draw it right on the canvas.,ב�
 fontmaker.tabs.step_draw,1 · Draw,1 · ציור,work-step tab,
 fontmaker.panels.input_draw,Draw letters on screen,ציור אותיות על המסך,input mode button,
 fontmaker.tour.step_2_body_draw,"Draw the letter right here with a pen, finger, or mouse — the gray reference letter is your tracing paper. Save runs the tracer and moves on to the next letter.","ציירו את האות ממש כאן בעט, באצבע או בעכבר — אות הייחוס האפורה היא נייר ההעתקה שלכם. שמירה מפעילה את העוקב ועוברת לאות הבאה.",tour step body (draw projects),
+fontmaker.tour.step_3_body_draw,Tracing turns your drawing into a real font outline. You can fine-tune every point.,המעקב הופך את הציור שלכם למתאר גופן אמיתי. אפשר לכוונן כל נקודה.,tour step body (draw projects),
 fontmaker.draw.tool_line,Line,קו,tool button,
 fontmaker.draw.tool_move,Move,הזזה,tool button,
 fontmaker.draw.erase_size,Eraser size,גודל מחק,slider label,

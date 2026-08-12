@@ -2812,6 +2812,7 @@
   "fontmaker.tour.step_2_body_draw": "Draw the letter right here with a pen, finger, or mouse — the gray reference letter is your tracing paper. Save runs the tracer and moves on to the next letter.",
   "fontmaker.tour.step_2_title": "Step 1 — Align",
   "fontmaker.tour.step_3_body": "Tracing turns your picture into a real font outline. You can fine-tune every point.",
+  "fontmaker.tour.step_3_body_draw": "Tracing turns your drawing into a real font outline. You can fine-tune every point.",
   "fontmaker.tour.step_3_title": "Step 2 — Trace",
   "fontmaker.tour.step_4_body": "Show each vowel where to sit under (or above) your letter.",
   "fontmaker.tour.step_4_title": "Step 3 — Place Nikkud",
