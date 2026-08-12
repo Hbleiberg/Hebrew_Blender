@@ -1345,8 +1345,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
   .tour-spot { transition: none !important; }
   .tt-hint-toast { transition: none !important; }
-  /* Drawer slide, panel-collapse caret, skip link: snap instead of animating. */
-  .settings-modal { transition: none !important; }
+  /* Drawer slide, panel-collapse caret, skip link: snap instead of animating.
+     The backdrop travels WITH the drawer, so it has to snap too — neutralizing only the modal
+     left a 0.25s opacity fade behind. Both other carriers of this drawer already group the pair
+     (classroom_dashboard, trope_tutor). */
+  .settings-modal, .settings-backdrop { transition: none !important; }
   .panel-title::after { transition: none !important; }
   .skip-link { transition: none !important; }
   /* Karaoke highlight + audio-bar caret: snap the color/transform change. */
