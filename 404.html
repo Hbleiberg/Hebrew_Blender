@@ -96,7 +96,10 @@ header .hright{margin-inline-start:auto;}
 .code-404{font-family:'Libre Baskerville',serif;font-weight:700;color:var(--gold);line-height:1;font-size:clamp(5rem,22vw,11rem);display:flex;align-items:center;justify-content:center;gap:0.04em;letter-spacing:0.02em;}
 .code-404 .lost-star{color:var(--gold-light);display:inline-block;animation:wander 6s ease-in-out infinite;}
 @keyframes wander{0%,100%{transform:translateY(0) rotate(-8deg);}25%{transform:translateY(-10px) rotate(6deg);}50%{transform:translateY(4px) rotate(-4deg);}75%{transform:translateY(-6px) rotate(8deg);}}
-@media (prefers-reduced-motion: reduce){.code-404 .lost-star{animation:none;}}
+/* .home-btn:hover lifts 2px (transform 0.15s) — motion the star's animation:none never covered.
+   !important is required, not stylistic: .home-btn's own transition is declared LATER in this
+   file at equal specificity, and a media query adds none, so without it source order wins. */
+@media (prefers-reduced-motion: reduce){.code-404 .lost-star{animation:none;}.home-btn{transition:none !important;}}
 
 .heb-404{font-family:'Frank Ruhl Libre',serif;direction:rtl;font-size:clamp(1.6rem,6vw,2.4rem);color:var(--text);margin:8px 0 4px;}
 .hero-title{font-family:'Libre Baskerville',serif;font-size:clamp(1.4rem,5vw,2rem);color:var(--text);margin:6px 0 14px;}

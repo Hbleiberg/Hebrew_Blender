@@ -1978,7 +1978,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     /* Drill card flip, the infinite "urgent" timer blink, and the section chevron all honor reduced motion. */
     .blend-cell.shuffling, .blend-cell-inv.shuffling { animation: none !important; }
     .timer-display.urgent { animation: none !important; }   /* keep the red colour, drop the blink */
-    .rw-section-header::before { transition: none !important; }
+    /* .vg-arrow rotates -90deg when a vowel group collapses, and carries its transition as an
+       INLINE style (built in initVowels), so this needs !important to win. hebrew_dictionary's
+       block already lists it; the generator, where the arrow originates, had missed it. */
+    .rw-section-header::before, .vg-arrow { transition: none !important; }
     .gen-fab { transition: none !important; }
   }
 

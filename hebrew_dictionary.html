@@ -605,7 +605,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   .load-bar.indeterminate .load-bar-fill{animation:none !important;}
   .load-bar-fill{transition:none !important;}
   .shoresh-flash{animation:none !important;}
-  .vg-arrow,.panel-title::after,.adv-section-title::after,.shoresh-patterns-title::after,.emoji-cat-arrow,.pos-arrow{transition:none !important;}
+  /* #fsBtn (the floating fullscreen button) scales to 1.08 on hover over 0.1s. */
+  .vg-arrow,.panel-title::after,.adv-section-title::after,.shoresh-patterns-title::after,.emoji-cat-arrow,.pos-arrow,#fsBtn{transition:none !important;}
   *{scroll-behavior:auto !important;}
 }
 .load-more-btn{background:var(--navy);color:var(--gold-light);border:none;border-radius:6px;padding:8px 28px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;}
