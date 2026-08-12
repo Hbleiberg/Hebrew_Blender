@@ -1775,6 +1775,9 @@ fontmaker.modals.markedit_upload_desc,Design this mark from an uploaded image (p
 fontmaker.modals.mobilewarn_body,"The Hebrew Font Maker uses precise tracing and a lot of fine controls — it's much easier on a desktop or laptop. You're welcome to keep going on this device, but it may feel cramped.","יוצר הגופנים העברי משתמש במעקב מדויק ובהרבה פקדים עדינים — קל בהרבה במחשב שולחני או נייד. אתם מוזמנים להמשיך במכשיר זה, אך זה עשוי להרגיש צפוף.",dialog body,
 fontmaker.modals.mobilewarn_dontshow,Don't show this warning again,אל תציג אזהרה זו שוב,checkbox label,
 fontmaker.modals.mobilewarn_goback,← Go back,← חזור,button,leading-emoji
+fontmaker.modals.mobilewarn_startdrawing,✍️ Start drawing,✍️ התחילו לצייר,button,leading-emoji
+fontmaker.modals.mobilewarn_tablet_body,Drawing letters with a stylus or your finger works well on a tablet this size.,ציור אותיות בעט או באצבע עובד היטב בטאבלט בגודל כזה.,dialog body,
+fontmaker.modals.mobilewarn_tablet_title,✍️ Great for drawing,✍️ מצוין לציור,dialog title,leading-emoji
 fontmaker.modals.mobilewarn_title,📱 Best on a computer,📱 הכי טוב במחשב,dialog title,leading-emoji
 fontmaker.modals.mobilewarn_viewanyway,View anyway,הצג בכל זאת,button,
 fontmaker.modals.myfonts_close,Close,סגור,dialog button,

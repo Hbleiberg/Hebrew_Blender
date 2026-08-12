@@ -655,6 +655,12 @@
   .modal h3 { font-family: 'Libre Baskerville', serif; margin: 0 0 10px; font-size: 1.05rem; }
   .modal p { font-size: 0.86rem; line-height: 1.5; }
   .modal .mbtns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
+  /* Mobile-warning tiers (see maybeShowMobileWarn): phones keep the "best on a computer" copy;
+     tablet-sized touch devices — the stylus-first audience Draw mode was built for — get the
+     drawing variant instead. Only ever HIDE the inactive tier, never force a display value on the
+     active one, so .tbtn/.chk keep whatever display their own rules give them. */
+  #mobileWarnOverlay:not(.mw-tablet) .mw-tablet-only { display: none; }
+  #mobileWarnOverlay.mw-tablet .mw-phone-only { display: none; }
 
   /* ── Guided "Take a tour" coach-mark ── */
   .tour-spot {
@@ -1437,13 +1443,16 @@
 <div class="overlay" id="mobileWarnOverlay">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mobileWarnTitle" style="max-width:430px;text-align:center;">
     <h3 id="mobileWarnTitle" data-i18n="fontmaker.modals.mobilewarn_title">📱 Best on a computer</h3>
-    <p data-i18n="fontmaker.modals.mobilewarn_body">The Hebrew Font Maker uses precise tracing and a lot of fine controls — it's much easier on a <strong>desktop or laptop</strong>. You're welcome to keep going on this device, but it may feel cramped.</p>
+    <p class="mw-phone-only" data-i18n="fontmaker.modals.mobilewarn_body">The Hebrew Font Maker uses precise tracing and a lot of fine controls — it's much easier on a <strong>desktop or laptop</strong>. You're welcome to keep going on this device, but it may feel cramped.</p>
+    <p class="mw-tablet-only" data-i18n="fontmaker.modals.mobilewarn_tablet_body">Drawing letters with a stylus or your finger works well on a tablet this size.</p>
     <label class="chk" style="justify-content:center;margin:14px 0 0;">
       <input type="checkbox" id="mobileWarnDontShow"> <span data-i18n="fontmaker.modals.mobilewarn_dontshow">Don't show this warning again</span>
     </label>
     <div class="mbtns" style="justify-content:center;">
       <button class="tbtn ghost" onclick="dismissMobileWarn(true)" data-i18n="fontmaker.modals.mobilewarn_goback">← Go back</button>
-      <button class="tbtn" onclick="dismissMobileWarn(false)" data-i18n="fontmaker.modals.mobilewarn_viewanyway">View anyway</button>
+      <button class="tbtn ghost mw-tablet-only" onclick="dismissMobileWarn(false)" data-i18n="fontmaker.modals.mobilewarn_viewanyway">View anyway</button>
+      <button class="tbtn mw-phone-only" onclick="dismissMobileWarn(false)" data-i18n="fontmaker.modals.mobilewarn_viewanyway">View anyway</button>
+      <button class="tbtn mw-tablet-only" onclick="startDrawingFromWarn()" data-i18n="fontmaker.modals.mobilewarn_startdrawing">✍️ Start drawing</button>
     </div>
   </div>
 </div>
@@ -15277,9 +15286,28 @@ function maybeShowMobileWarn(){
   try { if (localStorage.getItem('hebrewFontMaker_mobileWarnDismissed') === '1') return; } catch(e){}
   // Only warn on actual touch devices (phones/tablets). A narrow desktop window — non-maximized,
   // split-screen, side panel open, or zoomed — is NOT mobile, so require a coarse pointer too.
-  if (window.matchMedia && window.matchMedia('(max-width: 820px)').matches
-      && window.matchMedia('(pointer: coarse)').matches)
-    aOpenModal('mobileWarnOverlay', () => dismissMobileWarn(false));
+  if (!window.matchMedia || !window.matchMedia('(max-width: 820px)').matches
+      || !window.matchMedia('(pointer: coarse)').matches) return;
+  // Two tiers. Landscape tablets were already exempt (they clear 820px), but a PORTRAIT iPad is
+  // 768px and was being told "best on a computer… ← Go back" — the exact stylus-first audience
+  // Draw mode was built for. Above 560px, lead with drawing and offer a one-tap way into it.
+  const tablet = window.matchMedia('(min-width: 561px)').matches;
+  const ov = document.getElementById('mobileWarnOverlay');
+  ov.classList.toggle('mw-tablet', tablet);
+  // Swap the TITLE via its data-i18n binding, not textContent alone: applyStaticI18n re-reads the
+  // attribute on every language change, so a bare textContent write would revert to the phone copy.
+  const t = document.getElementById('mobileWarnTitle');
+  const tk = tablet ? 'fontmaker.modals.mobilewarn_tablet_title' : 'fontmaker.modals.mobilewarn_title';
+  t.setAttribute('data-i18n', tk);
+  t.textContent = I18n.t(tk);
+  aOpenModal('mobileWarnOverlay', () => dismissMobileWarn(false));
+}
+// Tablet tier's primary action. wizardOpen() already preselects the source tile from the saved
+// hebrewFontMaker_inputMode pref, so persisting 'draw' here is the whole mechanism — no new flag,
+// no second launch path to keep in sync with maybeRestoreAutosave.
+function startDrawingFromWarn(){
+  try { localStorage.setItem('hebrewFontMaker_inputMode', 'draw'); } catch(e){}
+  dismissMobileWarn(false);
 }
 function dismissMobileWarn(goBack){
   if (document.getElementById('mobileWarnDontShow').checked) {
