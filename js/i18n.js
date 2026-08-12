@@ -206,7 +206,10 @@
       '.i18n-switch select.i18n-select{appearance:none;-webkit-appearance:none;margin:0;cursor:pointer;' +
       'font-family:inherit;font-size:0.78rem;font-weight:600;line-height:1.3;direction:ltr;' +
       'color:var(--text,#1a2744);background:var(--white,#fff);' +
-      'border:1px solid var(--border,#c8bfa8);border-radius:6px;padding-block:4px;padding-inline:8px 24px;}' +
+      // min-height holds the suite's ratified 30px touch floor (S102). Padding alone left it at
+      // 26.2px on all 12 pages; the caret is centred off the wrapper, so it follows the taller box.
+      'border:1px solid var(--border,#c8bfa8);border-radius:6px;padding-block:4px;padding-inline:8px 24px;' +
+      'min-height:30px;box-sizing:border-box;}' +
       '.i18n-switch select.i18n-select:hover{background:var(--warm-gray,#e8e0d0);}' +
       '.i18n-switch select.i18n-select:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:1px;}';
     var el = document.createElement('style');
