@@ -905,7 +905,9 @@
   .guide-style-opt:hover { background: var(--cream, #fdf8ef); }
   .guide-style-opt.sel { background: rgba(201,146,42,0.14); }
   .ws-under-row { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
-  .ws-under-row .under-spacer { flex: 1 1 auto; }
+  /* Step actions under the canvas (Apply alignment… / Next: …) — centred, and wrapping to a second
+     centred line rather than overflowing when the centre column is narrow. */
+  .stage-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
   .ws-under-grow { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 9px; }
   /* vertical sliders, two side by side */
   .vslider-pair { display: flex; gap: 16px; justify-content: center; padding: 6px 0; }
@@ -2875,7 +2877,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.11</strong> — <strong>The guided tour is one click away again.</strong> The walk-through was only reachable from inside this Help window, so unless you happened to open Help and spot it, there was no way back to it once you had a project on the go. There is now a <span class="ui">&#10067; Tour</span> button in the toolbar, next to <span class="ui">&#10067; Help</span> &mdash; the same place every other tool on the site keeps it. <em>(August 2026)</em></li>
+      <li><strong>v5.11</strong> — <strong>The guided tour is one click away again.</strong> The walk-through was only reachable from inside this Help window, so unless you happened to open Help and spot it, there was no way back to it once you had a project on the go. There is now a <span class="ui">&#10067; Tour</span> button in the toolbar, next to <span class="ui">&#10067; Help</span> &mdash; the same place every other tool on the site keeps it. <strong>The step buttons moved under the canvas, too.</strong> <span class="ui">Apply alignment to other letters&hellip;</span>, <span class="ui">Next: Trace &rarr;</span> and <span class="ui">Next: Nikkud &rarr;</span> used to sit far off to the right, underneath the side panels &mdash; which on most screens put them below the bottom of the window, so you had to scroll past everything to find the button that moves you along. They now sit centred directly beneath the letter you are working on, where you are already looking. <em>(August 2026)</em></li>
       <li><strong>v5.10</strong> — <strong>A friendlier welcome on a tablet.</strong> If you opened the Font Maker on a tablet held upright, it used to greet you with &ldquo;Best on a computer&rdquo; and a <span class="ui">&larr; Go back</span> button &mdash; which was exactly backwards, because a tablet with a stylus is the device <span class="ui">Draw</span> mode was built for. (Tablets held sideways were already let through; upright ones are just narrow enough to trip the old check.) Now a tablet gets its own greeting that leads with drawing, plus a <span class="ui">&#9997;&#65039; Start drawing</span> button that opens the new-font setup with <span class="ui">Drawing mode</span> already chosen. Phones still see the original note &mdash; the fine tracing controls really are cramped on a phone. And in the guided tour, the <span class="ui">Trace</span> step no longer talks about turning &ldquo;your picture&rdquo; into an outline when you are drawing rather than uploading &mdash; it says &ldquo;your drawing&rdquo;, matching what you are actually looking at. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.9</strong> — <strong>A finer pen for the fine details.</strong> <span class="ui">Draw</span> mode's brush and eraser now go down to a hairline — the size sliders start at 10 instead of 40 (and 20), and move a unit at a time, so tagin, thin calligraphy strokes, and small serifs are drawable without fighting the slider. Along the way, two things that quietly broke at small sizes were fixed: the <span class="ui">Chisel</span> pen's thin edge used to thin out to nothing below the old minimum — a small chisel stroke could save as a blank letter — and <span class="ui">Dotted</span> strokes had a minimum dot size that made their dots wider than the brush itself. Both now hold a floor that stays crisp when your letter is traced. The <span class="ui">[</span> and <span class="ui">]</span> keys also resize in smaller jumps once the brush is small. Separately, <span class="ui">Letter Metrics</span> moved to the right-hand column, next to Guides — it belongs to the letter rather than to any one step, so it now sits in the same place on every screen instead of at the bottom of whichever tool panel you happened to be in. And you no longer have to remember to save a drawing before moving on: opening the <span class="ui">Trace</span> step now traces your drawing for you, the same way it already did for scanned letters. (A letter whose points you edited by hand is left alone and asks first, since re-tracing would replace those edits — and in that case the drawing is shown greyed on the canvas with a one-click button to re-trace.) The <span class="ui">Save</span> buttons now sit centred under the canvas instead of at the far bottom-right. And the eraser takes out what the cursor ring covers, no more: it used to remove half a stroke-width extra at each end, so a small eraser could bite three times its own size out of a thick stroke and take a whole segment when you meant to nick a detail — it also no longer cuts a stroke it only grazed. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.8</strong> — <strong>A full pencil case for Draw mode.</strong> The on-screen drawing step now has four tools instead of two. The eraser learned to erase for real: <span class="ui">Partial</span> mode rubs out just the ink under your eraser — splitting a stroke into pieces when you cut through it — while <span class="ui">Whole stroke</span> keeps the old one-touch removal, and the eraser finally has its own size. A new <span class="ui">Line</span> tool lays down perfectly straight strokes (hold Shift to snap to 0° / 45° / 90°), and a new <span class="ui">Chisel</span> pen style turns any stroke into broad-nib calligraphy — thick horizontals, thin verticals, with an adjustable nib angle — the way a sofer's pen writes. The <span class="ui">Move</span> tool drags a stroke (or a lasso-selected group) anywhere, with arrow-key nudging and Delete. A cursor ring previews your exact brush or eraser footprint, one-key shortcuts switch tools (D / E / L / V, X to swap, [ and ] to resize), and an <span class="ui">Undo</span> button sits right in the panel for tablet drawing. The pen itself grew a full brush kit: a visual pen-style picker with five live-preview tiles — <span class="ui">Round</span>, <span class="ui">Chisel</span>, <span class="ui">Brush</span> (strokes that taper at both ends), <span class="ui">Dotted</span> (a dotted tracing line), and <span class="ui">Hollow</span> (outlined letters) — each with its own dial (nib angle with one-tap 0° / 45° / 90° presets, taper length, dot spacing, outline thickness). Mouse and finger strokes can vary thickness with drawing speed the way a pen does with pressure, a tilting stylus can set the chisel's nib angle just by how you hold it, and a new <span class="ui">Stamp</span> tool places tagin crowns, dots, or serif feet — sized to your brush and drawn in your pen style — as ordinary strokes you can move, erase, or undo. And under every size slider, an <span class="ui">Actual size</span> preview window shows your exact pen stroke, eraser circle, or stamp at true canvas scale — live, as you drag. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -2976,7 +2978,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -2984,8 +2986,14 @@ function buildAboutBody() {
     const kk = 'fontmaker.changelog.' + v, s = T(kk);
     return (s && s !== kk) ? '<li>' + esc(s) + '</li>' : '';
   }).join('');
-  const cur = T('fontmaker.changelog.v5_9');   // newest release shown on top; older v5_x fall into the history list
-  const v5li = (cur && cur !== 'fontmaker.changelog.v5_9') ? '<li>' + esc(cur) + '</li>' : '';
+  // Newest release shown on top; older ones fall into the collapsed history list. Keep this key and
+  // CHANGELOG_ORDER moving together on every release. showHelpTab renders the authored English HTML
+  // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
+  // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
+  // Hebrew changelog while showing correctly in English.
+  const CUR_KEY = 'fontmaker.changelog.v5_11';
+  const cur = T(CUR_KEY);
+  const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
        + '<p>' + esc(T('fontmaker.about.special_thanks')) + '</p>'
        + '<h4>' + esc(T('fontmaker.about.changelog_heading')) + '</h4>'
@@ -11421,10 +11429,10 @@ function renderControls() {
   if (!project) return;
   const l = curLetter();
   if (curKind !== 'letter') { renderMarkControls(L, l); return; }   // mark editor → left column (beside the stage)
-  if (workMode === 'align') { renderAlignLeft(L, l); renderAlignRight(R, l); renderAlignUnder(U, l); }
+  if (workMode === 'align') { renderAlignLeft(L, l); renderAlignRight(R, l); renderAlignUnder(U, l); renderAlignStageBelow(SB, l); }
   else if (workMode === 'draw') { renderDrawLeft(L, l); renderDrawRight(R, l); renderDrawStageBelow(SB, l); }
-  else if (workMode === 'trace') { renderTraceLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
-  else if (workMode === 'nodes') { renderNodeLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); }
+  else if (workMode === 'trace') { renderTraceLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); renderTraceStageBelow(SB, l); }
+  else if (workMode === 'nodes') { renderNodeLeft(L, l); renderTraceRight(R, l); renderTraceUnder(U, l); renderTraceStageBelow(SB, l); }
   else { renderAnchorLeft(L, l); renderAnchorRight(R, l); renderAnchorUnder(U, l); renderAnchorStageBelow(SB, l); }
   // Letter Metrics + guides: the two panels that belong to the LETTER rather than to the step, so
   // they live in the right column and stay put as you move between Align / Draw / Trace / Points /
@@ -11571,17 +11579,20 @@ function renderAlignUnder(U, l) {
       ? _pT('align_svg_hint_loaded', 'Imported from SVG — no tracing needed. Set the <b>Width &amp; margins</b> below, then go to <b>Nikkud</b> to place the vowels.')
       : _pT('align_svg_hint_missing', 'Upload an SVG for this glyph under <b>Add Letters</b> on the left.') }</div>`;
   }
+  U.innerHTML = hint;   // the step's buttons live under the canvas — see renderAlignStageBelow
+}
+/* Align's two actions sit in #stageBelow (centre column, right under the canvas) for the same reason
+   the Confirm-placement button does: .ws-under spans the whole grid and starts below the TALLEST
+   column, so an under-strip button lands far-right AND below the fold — measured at y=1268 on a
+   1000px viewport, past the entire right-hand panel stack. .stage-below already centres its children. */
+function renderAlignStageBelow(SB, l) {
+  if (!SB) return;
   const nextBtn = isVectorGlyph(l)
     ? (l.contours && !isPunctItem() ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button>` : '')
     : (curImageUrl() ? `<button class="ctl-btn primary" onclick="setWorkMode('trace')">${_pT('next_trace', 'Next: Trace →')}</button>` : '');
   const applyBtn = (curKind === 'letter' && !isVectorGlyph(l) && curImageUrl())
     ? `<button class="ctl-btn" onclick="openApplyAlign()" title="${esc(window.I18n ? I18n.t('fontmaker.tip.apply_align_other') : "Copy this letter's position & scale onto other letters")}">${_pT('apply_alignment', 'Apply alignment to other letters…')}</button>` : '';
-  U.innerHTML = `
-    <div class="ws-under-row" style="align-items:center;">
-      <div class="ws-under-grow">${hint}</div>
-      <div class="under-spacer"></div>
-      <div>${applyBtn}${applyBtn && nextBtn ? ' ' : ''}${nextBtn}</div>
-    </div>`;
+  SB.innerHTML = (applyBtn || nextBtn) ? `<div class="stage-actions">${applyBtn}${nextBtn}</div>` : '';
 }
 
 /* ── TRACE ── */
@@ -11655,13 +11666,13 @@ function renderTraceUnder(U, l) {
     ? `<div class="hint">${_pT('trace_under_font', "This letter came from a font file, so it's already vectorized — no tracing needed. Go to <b>Nikkud</b>.")}</div>`
     : (l.source && l.source.kind === 'svg')
     ? `<div class="hint">${_pT('trace_under_svg', 'Imported from SVG — already vectorized. Fine-tune points if you like, then go to <b>Nikkud</b>.')}</div>` : '';
-  const nextBtn = (l.contours && !isPunctItem()) ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button>` : '';
-  U.innerHTML = `
-    <div class="ws-under-row" style="align-items:center;">
-      <div class="ws-under-grow">${hint}</div>
-      <div class="under-spacer"></div>
-      <div>${nextBtn}</div>
-    </div>`;
+  U.innerHTML = hint;   // the Next button lives under the canvas — see renderTraceStageBelow
+}
+/* Shared by Trace and Edit-points (both route through renderTraceUnder). */
+function renderTraceStageBelow(SB, l) {
+  if (!SB) return;
+  SB.innerHTML = (l.contours && !isPunctItem())
+    ? `<div class="stage-actions"><button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button></div>` : '';
 }
 
 /* ── DRAW (draw letters on screen with pen / touch / mouse) ── */
