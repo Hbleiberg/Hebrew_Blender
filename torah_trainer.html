@@ -474,6 +474,12 @@ body.dark .tt-looping { background: rgba(224,168,50,0.14); }
   -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
 body.dark .tt-bulk-selected { background: rgba(224,168,50,0.16); }
+/* That gold tint composites over the dark plate to rgb(54,50,43), which drops --muted
+   (#8a94a8) metadata to 4.18:1 at 11.2px — under the 4.5:1 small text needs, and only
+   once a verse is selected. Same lighter grey the generator already uses for small muted
+   text on a tinted dark plate (.vowel-chip-sub, S196). Light mode passes at 5.25:1. */
+body.dark .tt-bulk-selected .tt-verse-num,
+body.dark .tt-bulk-selected .tt-rowlabel { color:#adb6c9; }
 body.tt-bulk-mode #ttReading [data-vk] { cursor:pointer; }
 /* Per-verse bulk-select checkbox — hidden until "Select verses" mode is on
    (mirrors the dictionary's .wc-bulk-cb). Placement per layout: absolute
