@@ -497,9 +497,9 @@
   .ct-row.sel { outline: 2px solid var(--ct-tint, var(--gold)); outline-offset: -1px; border-radius: 6px; }
   .ct-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.25); }
   .ct-kind { flex-shrink: 0; font-size: 0.7rem; color: var(--muted); }
-  .ct-name { flex: 1; text-align: start; background: none; border: 1px solid transparent; border-radius: 5px; padding: 2px 6px; font: inherit; font-size: 0.76rem; color: var(--text); cursor: pointer; }
+  .ct-name { flex: 1; text-align: start; background: none; border: 1px solid transparent; border-radius: 5px; padding: 2px 6px; font: inherit; font-size: 0.76rem; color: var(--text); cursor: pointer; min-height: 30px; }
   .ct-name:hover { border-color: var(--gold); }
-  .ct-eye, .ct-del { background: none; border: 1px solid transparent; border-radius: 5px; padding: 1px 5px; font-size: 0.8rem; cursor: pointer; color: var(--text); flex-shrink: 0; }
+  .ct-eye, .ct-del { background: none; border: 1px solid transparent; border-radius: 5px; padding: 1px 5px; font-size: 0.8rem; cursor: pointer; color: var(--text); flex-shrink: 0; min-height: 30px; min-width: 30px; display: inline-flex; align-items: center; justify-content: center; }
   .ct-eye:hover, .ct-del:hover { border-color: var(--gold); }
   body.dark .node-pt { fill: #1e2535; stroke: #aeb9d0; }
   body.dark .node-pt.sel { fill: var(--gold); stroke: #fff; }
