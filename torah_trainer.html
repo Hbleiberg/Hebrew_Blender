@@ -728,7 +728,11 @@ body.dark .tt-word:hover {
 .nik-sh{--nik-c:var(--nikv-sh);--nik-h:var(--nikh-sh)}
 body.nik-mode-letter    .nik { color: var(--nik-c) !important; }
 body.nik-mode-highlight .nik { background-color: var(--nik-h) !important; border-radius:2px; }
-body.nik-mode-underline .nik { text-decoration: underline solid var(--nik-c) !important; text-decoration-thickness:2px; text-underline-offset:0.4em; }
+/* Longhands on purpose (the trope block's own idiom): the shorthand resets
+   text-decoration-thickness to auto, and with !important that reset beat the plain
+   longhand that followed — so the intended 2px never applied and the line grew with
+   type size until it matched the 4px trope clause line at handout 'xl'. */
+body.nik-mode-underline .nik { text-decoration-line:underline !important; text-decoration-style:solid !important; text-decoration-color:var(--nik-c) !important; text-decoration-thickness:2px !important; text-underline-offset:0.4em; }
 
 /* ───── Trope-family color coding ─────
    tokenizeHebrew emits trope-<family> classes on .tt-word while
