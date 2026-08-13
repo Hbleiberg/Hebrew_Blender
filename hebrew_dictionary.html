@@ -365,7 +365,10 @@ body.dark .mobile-filters-btn{background:var(--navy-deep);}
 .vowel-chip input{accent-color:var(--gold);width:14px;height:14px;cursor:pointer;flex-shrink:0;}
 .era-body{display:flex;gap:16px;}
 .panel-subhead{font-family:'Libre Baskerville',serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
-.pos-all-btn{flex:1;padding:3px 0;font-size:0.72rem;font-family:'Source Sans 3',sans-serif;background:var(--warm-gray);color:var(--text);border:1px solid var(--border);border-radius:4px;cursor:pointer;}
+/* Sized by padding alone, this shared class rendered 10 of its 12 buttons at 20-22px — under
+   the suite's 30px floor AND under WCAG 2.5.8's 24px. Same declarations flash_cards' .btn-xs
+   uses (S102): the inline-flex is what turns min-height into a taller BOX rather than taller text. */
+.pos-all-btn{flex:1;padding:3px 0;min-height:30px;display:inline-flex;align-items:center;justify-content:center;font-size:0.72rem;font-family:'Source Sans 3',sans-serif;background:var(--warm-gray);color:var(--text);border:1px solid var(--border);border-radius:4px;cursor:pointer;}
 .pos-all-btn:hover{border-color:var(--gold);color:var(--gold);}
 .color-mode-btn{flex:1;padding:4px 6px;font-size:0.72rem;border:none;background:var(--warm-gray);color:var(--muted);cursor:pointer;border-inline-end:1px solid var(--border);font-family:inherit;}
 .color-mode-btn:last-child{border-inline-end:none;}
