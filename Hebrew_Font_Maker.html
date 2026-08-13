@@ -3869,7 +3869,7 @@ function coreLetterLists() {
 function updateTracedReadout() {
   const el = document.getElementById('tracedReadout'); if (!el || !project) return;
   const s = coreLetterStats();
-  el.textContent = s.traced + ' / ' + s.total + ' letters traced';
+  el.textContent = I18n.t('fontmaker.panels.traced_readout', { traced: s.traced, total: s.total });
   el.style.color = (s.traced === s.total) ? 'var(--gold)' : 'var(--muted)';
   if (s.traced >= 1) maybePrefetchEngine();   // user has committed — warm the export engine in the background
 }
@@ -12914,7 +12914,8 @@ function qaRenderTabs() {
   const bar = document.getElementById('qaTabs');
   const customQaOn = project.font.addCustomGlyphs && customMarkCps().length > 0;   // custom marks attach even with built-in nikkud off — keep their QA columns reachable
   const have = { nikkud: project.font.nikkud.enabled || customQaOn, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled, pairs: project.font.nikkud.enabled };
-  bar.innerHTML = [['nikkud','Nikkud'],['trop','Trop'],['stacked','Stacked'],['pairs','Two marks']].map(([id,label]) => {
+  bar.innerHTML = [['nikkud','fontmaker.qa.tab_nikkud'],['trop','fontmaker.qa.tab_trop'],['stacked','fontmaker.qa.tab_stacked'],['pairs','fontmaker.qa.tab_pairs']].map(([id,key]) => {
+    const label = I18n.t(key);
     const n = qaResult ? qaResult.counts[id] : 0, badge = (have[id] && n) ? ` (${n})` : '';
     return have[id]
       ? `<button class="help-tab${qaTab===id?' active':''}" onclick="setQaTab('${id}')">${label}${badge}</button>`
@@ -12924,16 +12925,22 @@ function qaRenderTabs() {
 function qaRenderSummary() {
   const el = document.getElementById('qaSummary'); if (!el) return;
   if (!qaResult) { el.innerHTML = ''; return; }
-  let h = qaResult.total === 0
-    ? `<span class="qa-ok">✓ All placements clear.</span> Hover a cell for details; click any cell to jump to its anchor editor.`
-    : `<b>${qaResult.total}</b> placement${qaResult.total === 1 ? '' : 's'} need attention (red cells). Hover for the reason; click a cell to jump to its anchor editor.`;
+  let h;
+  if (qaResult.total === 0) {
+    // The key holds the whole sentence; keep the green ✓-clause emphasis by splitting at the first
+    // sentence break (works in EN + HE; a translation without one degrades to all-emphasized).
+    const txt = I18n.t('fontmaker.qa.summary_clear'), dot = txt.indexOf('. ');
+    h = dot > -1 ? `<span class="qa-ok">${txt.slice(0, dot + 1)}</span>${txt.slice(dot + 1)}` : `<span class="qa-ok">${txt}</span>`;
+  } else {
+    h = I18n.t(qaResult.total === 1 ? 'fontmaker.qa.summary_needs.one' : 'fontmaker.qa.summary_needs.other', { count: `<b>${qaResult.total}</b>` });
+  }
   if (qaResult.outline && qaResult.outline.length) {   // outline-health flag (self-intersection / overlap) — separate from placement collisions
     const names = qaResult.outline.map(o => esc(o.name)).join(', ');
-    h += `<span class="qa-tall">⚠ ${qaResult.outline.length} glyph${qaResult.outline.length === 1 ? '' : 's'} with self-intersecting or overlapping outlines: ${names}. These can fill incorrectly (inverted) in some apps — edit the nodes or re-trace to fix.</span>`;
+    h += `<span class="qa-tall">${I18n.t(qaResult.outline.length === 1 ? 'fontmaker.qa.outline_warn.one' : 'fontmaker.qa.outline_warn.other', { count: qaResult.outline.length, names })}</span>`;
   }
-  if (qaResult.tall) h += `<span class="qa-tall">⚠ Tall artwork — export will expand the clip box to ${qaResult.winAscent} / ${qaResult.winDescent} (asc/desc) so Word won't clip it.</span>`;
+  if (qaResult.tall) h += `<span class="qa-tall">${I18n.t('fontmaker.qa.tall_warn', { asc: qaResult.winAscent, desc: qaResult.winDescent })}</span>`;
   const notReady = qaBuildCheckForms().filter(pc => !qaFormReady(pc)).length;
-  if (notReady) h += `<span class="qa-tall" style="color:var(--muted);">${notReady} composed form${notReady === 1 ? '' : 's'} not yet ready — see the build check below.</span>`;
+  if (notReady) h += `<span class="qa-tall" style="color:var(--muted);">${I18n.t(notReady === 1 ? 'fontmaker.qa.notready.one' : 'fontmaker.qa.notready.other', { count: notReady })}</span>`;
   el.innerHTML = h;
 }
 function qaRenderGrid() {
@@ -12941,13 +12948,13 @@ function qaRenderGrid() {
   grid.style.color = (getComputedStyle(document.body).getPropertyValue('--text') || '').trim() || (document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744');   // one set → every child SVG's currentColor inherits it
   const cols = qaColumns(qaTab);
   const pairCtrl = qaTab === 'pairs' ? qaPairControlHtml() : '';
-  if (!cols.length) { grid.innerHTML = pairCtrl + `<p style="color:var(--muted);font-size:0.85rem;">No ${qaTab === 'stacked' ? 'stacking' : (qaTab === 'pairs' ? 'nikkud' : qaTab)} marks are enabled for this font.</p>` + qaBuildCheckHtml(); return; }
+  if (!cols.length) { const kind = I18n.t(qaTab === 'stacked' ? 'fontmaker.qa.tab_stacked' : (qaTab === 'trop' ? 'fontmaker.qa.tab_trop' : 'fontmaker.qa.tab_nikkud')); grid.innerHTML = pairCtrl + `<p style="color:var(--muted);font-size:0.85rem;">${I18n.t('fontmaker.qa.no_marks', { kind })}</p>` + qaBuildCheckHtml(); return; }
   let html = pairCtrl + '<table class="qa-table"><thead><tr><th></th>';
   cols.forEach(col => { html += `<th title="${esc(col.name)}"><span class="qa-colhead">${esc(col.head)}</span></th>`; });
   html += '</tr></thead><tbody>';
   let lastSection = null;
   qaRows().forEach(row => {
-    if (row.section && row.section !== lastSection) { lastSection = row.section; html += `<tr class="qa-section"><td class="qa-section-h" colspan="${cols.length + 1}">${row.section === 'special' ? 'Specialized (wide letters)' : 'Custom glyphs'}</td></tr>`; }
+    if (row.section && row.section !== lastSection) { lastSection = row.section; html += `<tr class="qa-section"><td class="qa-section-h" colspan="${cols.length + 1}">${I18n.t(row.section === 'special' ? 'fontmaker.qa.section_special' : 'fontmaker.qa.section_custom')}</td></tr>`; }
     const L = row.L, anc = qaAnchors(L);
     html += `<tr><td class="qa-rowlabel" title="${esc(row.name)}">${esc(row.labelCh)} <span style="color:var(--muted);">${esc(row.name)}</span></td>`;
     cols.forEach(col => {
@@ -12967,11 +12974,11 @@ function qaBuildCheckHtml() {
   const forms = qaBuildCheckForms();
   if (!forms.length) return '';
   const tplFont = (project.template && project.template.font) || 'serif';
-  let h = '<div class="qa-bc"><div class="qa-bc-title">Yiddish / Ladino composed forms — build check</div><div class="qa-bc-grid">';
+  let h = `<div class="qa-bc"><div class="qa-bc-title">${I18n.t('fontmaker.qa.buildcheck_title')}</div><div class="qa-bc-grid">`;
   forms.forEach(pc => {
     const ready = qaFormReady(pc);
     const need = (pc.bases || [pc.base]).filter(cp => { const L = project.letters.find(x => x.codepoint === cp); return !(L && L.contours); }).map(cp => qaCh(cp)).join(' ');
-    const status = ready ? '<span class="qa-bc-ok">✓ ready</span>' : `<span class="qa-bc-warn">⚠ needs ${esc(need || qaCh(precompBaseCp(pc)))}</span>`;
+    const status = ready ? `<span class="qa-bc-ok">${I18n.t('fontmaker.qa.buildcheck_ready')}</span>` : `<span class="qa-bc-warn">${I18n.t('fontmaker.qa.buildcheck_needs', { chars: esc(need || qaCh(precompBaseCp(pc))) })}</span>`;
     h += `<div class="qa-bc-item"><span class="qa-bc-glyph" style="font-family:${tplFont};direction:rtl;">${esc(precompComposed(pc))}</span>`
        + `<span class="qa-bc-name">${esc(pc.name || precompName(pc))}</span>${status}</div>`;
   });
@@ -13007,8 +13014,8 @@ function qaPairControlHtml() {
   const marks = (project.font.nikkud.enabled ? MARK_CPS : []).filter(cp => cp !== '05C1' && cp !== '05C2');   // dots live only in the FB2A/FB2B ligature — see qaColumns('pairs')
   const opts = marks.map(cp => `<option value="${cp}"${cp === qaPairA ? ' selected' : ''}>${esc(markName(cp))}</option>`).join('');
   return `<div style="margin-bottom:10px;font-size:0.82rem;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;">
-    <label>Stack <select onchange="setQaPairA(this.value)" style="font-size:0.82rem;">${opts}</select> with every other mark, on each letter.</label>
-    <span style="color:var(--muted);flex:1;min-width:220px;">Red = the two marks' ink overlaps. Same-class pairs (e.g. two below-vowels) share one anchor, so they always overlap — that's expected. Cross-class clashes (e.g. a raised dagesh meeting an above-vowel) are real and fixable by moving an anchor.</span>
+    <label>${I18n.t('fontmaker.qa.pair_stack')} <select onchange="setQaPairA(this.value)" style="font-size:0.82rem;">${opts}</select> ${I18n.t('fontmaker.qa.pair_with')}</label>
+    <span style="color:var(--muted);flex:1;min-width:220px;">${I18n.t('fontmaker.qa.pair_hint')}</span>
   </div>`;
 }
 function closeQA() { aCloseModal('qaOverlay'); }
@@ -15712,6 +15719,12 @@ function applyI18n() {
   try {
     const so = document.getElementById('shortcutsOverlay');
     if (so && so.classList.contains('open')) openShortcuts();
+  } catch (e) {}
+  // Re-render an open QA modal (tabs/summary/grid/build-check carry I18n.t strings).
+  // Read-only: reuses the existing qaResult — no rebuild, no state change.
+  try {
+    const qo = document.getElementById('qaOverlay');
+    if (qo && qo.classList.contains('open') && qaResult) { qaRenderTabs(); qaRenderSummary(); qaRenderGrid(); }
   } catch (e) {}
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
