@@ -292,7 +292,7 @@ header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
   font-family:inherit; font-size:0.82rem; font-weight:600;
   cursor:pointer; text-decoration:none;
   display:inline-flex; align-items:center; gap:6px;
-  transition:all 0.15s;
+  transition:background 0.15s, border-color 0.15s;
 }
 .hbtn:hover { background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.3); }
 .hbtn.icon-btn { padding:7px 10px; font-size:1rem; }
@@ -441,7 +441,7 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
 .tt-speak, .tt-chant, .tt-loop, .tt-copy {
   background:transparent; border:1px solid var(--border); border-radius:4px;
   padding:2px 7px; font-size:0.7rem; font-weight:600; cursor:pointer;
-  color:var(--muted); transition:all 0.15s; flex-shrink:0;
+  color:var(--muted); transition:border-color 0.15s, color 0.15s, background 0.15s, opacity 0.15s; flex-shrink:0;
   margin-top:2px; font-family:inherit; letter-spacing:0.02em;
 }
 .tt-speak:hover { border-color:var(--gold); color:var(--gold); }
@@ -537,7 +537,7 @@ body.dark .tt-jumpnav { background:var(--navy-deep); }
 .tt-jump-chip {
   min-width:26px; padding:3px 8px; font-size:0.78rem; font-weight:700;
   border:1px solid var(--border); border-radius:5px; background:transparent;
-  color:var(--text); cursor:pointer; font-family:inherit; transition:all 0.15s;
+  color:var(--text); cursor:pointer; font-family:inherit; transition:border-color 0.15s, color 0.15s, background 0.15s;
 }
 .tt-jump-chip:hover { border-color:var(--gold); color:var(--gold); }
 .tt-jump-chip.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
@@ -946,11 +946,11 @@ body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .f
 .toggle input { opacity:0; width:0; height:0; }
 .slider {
   position:absolute; inset:0; background:var(--border); border-radius:22px;
-  cursor:pointer; transition:0.2s;
+  cursor:pointer; transition:background 0.2s;
 }
 .slider::before {
   content:''; position:absolute; height:16px; width:16px; left:3px; top:3px;
-  background:white; border-radius:50%; transition:0.2s;
+  background:white; border-radius:50%; transition:transform 0.2s;
 }
 input:checked + .slider { background:var(--gold); }
 input:checked + .slider::before { transform:translateX(16px); }
@@ -970,7 +970,7 @@ body.dark .radio-group label { color:#99a2b8; }
 .radio-group label {
   text-align:center; padding:4px 10px; border-radius:3px;
   font-size:0.78rem; cursor:pointer; font-weight:600; color:var(--muted);
-  transition:0.15s; flex:none;
+  transition:background 0.15s, color 0.15s, box-shadow 0.15s; flex:none;
 }
 .radio-group input:checked + label {
   /* --gold on the white pill is 2.75:1 — darker gold literal (5.9:1), same
@@ -983,7 +983,7 @@ body.dark .radio-group input:checked + label { background:#1e2535; color:var(--g
 .btn {
   background:var(--gold); color:var(--navy); border:1px solid var(--gold);
   padding:7px 14px; border-radius:5px; font-family:inherit;
-  font-weight:700; cursor:pointer; font-size:0.82rem; transition:all 0.15s;
+  font-weight:700; cursor:pointer; font-size:0.82rem; transition:background 0.15s, border-color 0.15s;
 }
 .btn:hover { background:var(--gold-light); border-color:var(--gold-light); }
 /* 30px floor — the suite's ratified touch-target size (S102, first applied in flash_cards.html;
@@ -1051,7 +1051,7 @@ body.dark .font-opt.active .font-opt-preview { color:var(--gold-light); }
 /* ───── Vowel color-scheme selector (Default · TaL AM · Reset) ───── */
 .vowel-scheme-row { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:6px; }
 .vowel-scheme-btn { flex:1; padding:4px 8px; font-size:0.72rem; font-family:inherit; cursor:pointer;
-  border:1px solid var(--border); border-radius:5px; background:transparent; color:var(--text); transition:all 0.15s; }
+  border:1px solid var(--border); border-radius:5px; background:transparent; color:var(--text); transition:background 0.15s, color 0.15s, border-color 0.15s; }
 .vowel-scheme-btn:hover { background:var(--warm-gray); }
 .vowel-scheme-btn.active { background:var(--navy); color:#fff; border-color:var(--navy); }
 body.dark .vowel-scheme-btn.active { background:var(--gold); color:var(--navy-deep); border-color:var(--gold); }
@@ -1360,6 +1360,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   .skip-link { transition: none !important; }
   /* Karaoke highlight + audio-bar caret: snap the color/transform change. */
   .tt-word, .tt-audio-bar .tt-audio-collapse { transition: none !important; }
+  /* Toggle-switch knob: snap the slide (its transition is now transform-only). */
+  .slider::before { transition: none !important; }
 }
 </style>
 </head>
