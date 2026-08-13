@@ -290,12 +290,13 @@
   .row2 { display: flex; gap: 8px; }
   .row2 > * { flex: 1; min-width: 0; }
   .inline { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; font-weight: 600; }
-  .inline input[type=range] { flex: 1; accent-color: var(--gold); min-width: 0; }
+  .inline input[type=range] { flex: 1; accent-color: var(--gold); min-width: 0; height: 24px; /* operable box at the slider floor (3ae6891 pattern) — native default is ~16px */ }
   /* stacked slider for narrow side columns: label + value on one line, full-width track below */
   .side-slider-label { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; font-weight: 600; gap: 8px; }
-  .side-slider { width: 100%; min-width: 0; box-sizing: border-box; accent-color: var(--gold); margin: 2px 0 2px; }
-  .chk { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; cursor: pointer; }
+  .side-slider { width: 100%; min-width: 0; box-sizing: border-box; accent-color: var(--gold); margin: 2px 0 2px; height: 24px; /* operable box at the slider floor (3ae6891 pattern) — native default is ~16px */ }
+  .chk { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; cursor: pointer; min-height: 24px; /* checkbox row at the 24px touch floor (387a6a1 pattern) — line-height alone gave ~21px */ }
   .chk input { accent-color: var(--gold); width: 15px; height: 15px; }
+  #drawSmoothingSel { min-height: 24px; /* select at the 24px touch floor — native height was ~19px */ }
   .hint { font-size: 0.7rem; color: var(--muted); line-height: 1.4; }
   /* .hint's color does not cascade into its anchors — the UA's own `a` rule wins, leaving them
      #0000EE, which measures 1.81:1 on the dark panel. `footer a` already uses this token; it just
@@ -615,7 +616,7 @@
   .legend:empty { display: none; }
   /* node mode: Letter Metrics adopts the panel's section rhythm (scoped so align/trace keep the stock look) */
   .zoom-bar { display: flex; align-items: center; gap: 8px; max-width: 720px; margin: 0 auto 8px; font-size: 0.82rem; color: var(--muted); }
-  .zoom-bar input[type=range] { flex: 1; accent-color: var(--gold); }
+  .zoom-bar input[type=range] { flex: 1; accent-color: var(--gold); height: 24px; /* operable box at the slider floor (3ae6891 pattern) — native default is ~16px */ }
   .zoom-val { font-family: ui-monospace, Menlo, monospace; min-width: 44px; text-align: right; }
   .zoom-reset { padding: 3px 9px; font-size: 0.72rem; }
   .legend { display: flex; gap: 16px; padding: 8px 4px 2px; font-size: 0.74rem; color: var(--muted); flex-wrap: wrap; }
