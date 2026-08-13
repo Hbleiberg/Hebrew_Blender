@@ -4577,6 +4577,19 @@ function resetFontSize(which) {
 /* ══════════════════════════════════════════════════════
    NIKUD COLOR PICKERS
    ══════════════════════════════════════════════════════ */
+// The colour-picker rows are the last consumers of the glyphname key families. The CSV slugs
+// are named for the display names, and the three hataf rows ("H. Patach") don't slugify to
+// theirs — so map key → slug explicitly, the way the generator's VOWEL_SUB_KEY does.
+const VOWEL_NAME_KEY = { a:'kamatz', patah:'patach', hpatah:'hpatach', hkamatz:'hkamatz',
+  e:'segol', hsegol:'hsegol', tzere:'tzere', i:'chirik', o:'holam', vcholam:'vav_holam',
+  u:'kubutz', shuruk:'shuruk', sh:'shva' };
+function pickerName(prefix, slug, eng) {
+  if (!window.I18n) return eng;
+  const k = 'torah.glyphname.' + prefix + slug, v = I18n.t(k);
+  return v === k ? eng : v;
+}
+const vowelDefName = def => pickerName('vowel_', VOWEL_NAME_KEY[def.key] || def.key, def.name);
+const tropeDefName = def => pickerName('trope_', def.key, def.name);
 function initColorPickers() {
   const list = document.getElementById('colorPickerList');
   if (!list) return;
@@ -4587,10 +4600,11 @@ function initColorPickers() {
     const ex = document.createElement('span');
     ex.className = 'color-pick-ex'; ex.textContent = def.example;
     const lbl = document.createElement('span');
-    lbl.className = 'color-pick-label'; lbl.textContent = def.name;
+    const nm = vowelDefName(def);
+    lbl.className = 'color-pick-label'; lbl.textContent = nm;
     const inp = document.createElement('input');
     inp.type = 'color'; inp.className = 'color-pick-input';
-    inp.setAttribute('aria-label', I18n.t('torah.settings.color_for_aria', {name: def.name}));   // the name is a sibling span only; label the input for AT
+    inp.setAttribute('aria-label', I18n.t('torah.settings.color_for_aria', {name: nm}));   // the name is a sibling span only; label the input for AT
     inp.value = getNikudColor(def.key);
     inp.addEventListener('input', () => {
       if (!settings.nikudColorOverrides) settings.nikudColorOverrides = {};
@@ -4636,10 +4650,11 @@ function initTropeColorPickers() {
     const ex = document.createElement('span');
     ex.className = 'color-pick-ex'; ex.lang = 'he'; ex.textContent = def.example;
     const lbl = document.createElement('span');
-    lbl.className = 'color-pick-label'; lbl.textContent = def.name;
+    const nm = tropeDefName(def);
+    lbl.className = 'color-pick-label'; lbl.textContent = nm;
     const inp = document.createElement('input');
     inp.type = 'color'; inp.className = 'color-pick-input';
-    inp.setAttribute('aria-label', I18n.t('torah.settings.color_for_aria', {name: def.name}));
+    inp.setAttribute('aria-label', I18n.t('torah.settings.color_for_aria', {name: nm}));
     inp.value = getTropeColor(def.key);
     inp.addEventListener('input', () => {
       if (!settings.tropeColorOverrides) settings.tropeColorOverrides = {};
