@@ -691,6 +691,9 @@
 
   /* ── New-font onboarding wizard ── */
   .wiz-modal { max-width: 560px; max-height: 92vh; overflow-y: auto; }
+  /* ghost buttons sit on the modal surface, not the navy toolbar — same repair as .tour-card
+     (gold-light on the light modal is 1.5:1; Open a project / Back / Cancel were near-invisible) */
+  .wiz-modal .tbtn.ghost { color: var(--text); border-color: var(--border); }
   .wiz-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
   .wiz-head h3 { margin: 0; }
   .wiz-steps { display: flex; align-items: center; gap: 6px; margin: 12px 0 14px; }
