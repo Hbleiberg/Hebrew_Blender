@@ -1284,7 +1284,7 @@
 
   /* ───── Display size slider ───── */
   .size-row { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; margin-top: 8px; }
-  .size-row input[type=range] { flex: 1; accent-color: var(--gold); cursor: pointer; }
+  .size-row input[type=range] { flex: 1; accent-color: var(--gold); cursor: pointer; height: 24px; /* operable box at the slider floor (3ae6891 pattern) — native default is ~16px */ }
   .size-val { min-width: 36px; font-size: 0.75rem; color: var(--muted); }
 
   /* ───── Fullscreen ───── */
