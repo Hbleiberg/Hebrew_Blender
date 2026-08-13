@@ -1918,6 +1918,7 @@ const DEFAULTS = {
   ttsRate: 0.75,
   loopPauseMs: 0,            // silence between verse-loop repeats (0/500/1000/2000 ms)
   karaokeBarCollapsed: false,
+  panelsCollapsed: null,       // settings-drawer per-panel collapse map {key: bool}; null = markup defaults
   karaokeStyle: 'highlight',   // 'highlight' | 'outline' | 'underline' | 'none'
   karaokeFollow: 'hebrew',     // 'hebrew' | 'translit'
   // Student handout (print-flow options; the transient print override itself is never persisted)
@@ -1973,6 +1974,7 @@ function resetAllSettings() {
   if (!confirm(I18n.t('torah.confirm.reset_all'))) return;
   localStorage.removeItem(STORAGE_KEY);
   settings = JSON.parse(JSON.stringify(DEFAULTS));
+  applyPanelStates();   // panelsCollapsed is null again — back to the markup defaults
   syncFormToSettings();
   setHebFont(settings.hebFont);
   initColorPickers();
@@ -4716,8 +4718,38 @@ function syncPanelTitleAria() {
     if (t.getAttribute('role') === 'button') t.setAttribute('aria-expanded', t.parentElement.classList.contains('collapsed') ? 'false' : 'true');
   });
 }
-function expandAllMenus()   { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.remove('collapsed')); syncPanelTitleAria(); }
-function collapseAllMenus() { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.add('collapsed')); syncPanelTitleAria(); }
+function expandAllMenus()   { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.remove('collapsed')); syncPanelTitleAria(); savePanelStates(); }
+function collapseAllMenus() { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.add('collapsed')); syncPanelTitleAria(); savePanelStates(); }
+/* Persist which drawer panels are open. A panel is identified by the language-independent
+   tail of its title's data-i18n key (torah.settings.panel_<key>). settings.panelsCollapsed
+   stays null until the teacher first toggles a panel; a key missing from the stored map
+   keeps that panel's markup default, so a future new panel still opens per its own markup. */
+const PANEL_MARKUP_DEFAULTS = {};   // captured on the first applyPanelStates() call, pre-application
+function panelKeyOf(t) { return (t.dataset.i18n || '').replace('torah.settings.panel_', ''); }
+function savePanelStates() {
+  const map = {};
+  document.querySelectorAll('#settingsModal .panel-title').forEach(t => {
+    const k = panelKeyOf(t);
+    if (k) map[k] = t.parentElement.classList.contains('collapsed');
+  });
+  settings.panelsCollapsed = map;
+  saveSettings();
+}
+function applyPanelStates() {
+  document.querySelectorAll('#settingsModal .panel-title').forEach(t => {
+    const k = panelKeyOf(t);
+    if (k && !(k in PANEL_MARKUP_DEFAULTS)) PANEL_MARKUP_DEFAULTS[k] = t.parentElement.classList.contains('collapsed');
+  });
+  const map = settings.panelsCollapsed;
+  document.querySelectorAll('#settingsModal .panel-title').forEach(t => {
+    const k = panelKeyOf(t);
+    if (!k) return;
+    let collapsed = PANEL_MARKUP_DEFAULTS[k];
+    if (map && typeof map === 'object' && Object.prototype.hasOwnProperty.call(map, k)) collapsed = !!map[k];
+    if (collapsed !== undefined) t.parentElement.classList.toggle('collapsed', collapsed);
+  });
+  syncPanelTitleAria();
+}
 // Keyboard focus management for the drawer: focus moves in on open, Tab wraps inside the modal
 // while it's open, and focus returns to the opener (the gear) on close. Escape already closes it
 // (global keydown handler). Mirrors the dashboard's settings-drawer pattern.
@@ -5025,10 +5057,12 @@ function wireSettingsForm() {
     const toggle = () => {
       t.parentElement.classList.toggle('collapsed');
       t.setAttribute('aria-expanded', t.parentElement.classList.contains('collapsed') ? 'false' : 'true');
+      savePanelStates();
     };
     t.addEventListener('click', toggle);
     t.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
   });
+  applyPanelStates();   // restore the teacher's saved open/closed drawer panels
   // Student handout bar options → persisted handout* fields
   document.getElementById('ttHandoutHideNikkud').addEventListener('change', e => {
     settings.handoutHideNikkud = e.target.checked; saveSettings();
