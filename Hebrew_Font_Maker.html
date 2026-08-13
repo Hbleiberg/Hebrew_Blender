@@ -285,7 +285,7 @@
     font-size: 0.82rem; font-family: inherit; background: var(--white); color: var(--text); font-weight: 400;
     width: 100%; min-width: 0; box-sizing: border-box;
   }
-  .fld-help { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; background: var(--border); color: var(--muted); font-size: 0.66rem; font-weight: 700; cursor: pointer; text-decoration: none; vertical-align: middle; }
+  .fld-help { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border: none; padding: 0; border-radius: 50%; background: var(--border); color: var(--muted); font-family: inherit; font-size: 0.66rem; font-weight: 700; cursor: pointer; text-decoration: none; vertical-align: middle; }
   .fld-help:hover { background: var(--gold); color: #fff; }
   .row2 { display: flex; gap: 8px; }
   .row2 > * { flex: 1; min-width: 0; }
@@ -1066,7 +1066,7 @@
         <label class="fld"><span data-i18n="fontmaker.panels.author">Author</span>
           <input type="text" id="author" value="" placeholder="Your name" data-i18n-placeholder="fontmaker.panels.author_ph" oninput="onMetaChange()">
         </label>
-        <label class="fld"><span><span data-i18n="fontmaker.panels.license">License</span> <a class="fld-help" onclick="openHelp('licenses')" title="About these licenses" data-i18n-title="fontmaker.panels.license_help_title">?</a></span>
+        <label class="fld"><span><span data-i18n="fontmaker.panels.license">License</span> <button type="button" class="fld-help" onclick="openHelp('licenses')" title="About these licenses" data-i18n-title="fontmaker.panels.license_help_title" aria-label="About these licenses" data-i18n-aria-label="fontmaker.panels.license_help_title">?</button></span>
           <select id="license" onchange="onMetaChange()">
             <option value="cc0" data-i18n="fontmaker.panels.license_cc0">Public Domain (CC0) — most open</option>
             <option value="ofl" selected data-i18n="fontmaker.panels.license_ofl">SIL Open Font License 1.1 (recommended)</option>
@@ -1489,7 +1489,7 @@
       <label class="fld"><span data-i18n="fontmaker.panels.author">Author</span>
         <input type="text" id="wizAuthor" oninput="wizardValidateStep1()" placeholder="Your name" data-i18n-placeholder="fontmaker.panels.author_ph">
       </label>
-      <label class="fld"><span><span data-i18n="fontmaker.panels.license">License</span> <a class="fld-help" onclick="openHelp('licenses')" title="About these licenses" data-i18n-title="fontmaker.panels.license_help_title">?</a></span>
+      <label class="fld"><span><span data-i18n="fontmaker.panels.license">License</span> <button type="button" class="fld-help" onclick="openHelp('licenses')" title="About these licenses" data-i18n-title="fontmaker.panels.license_help_title" aria-label="About these licenses" data-i18n-aria-label="fontmaker.panels.license_help_title">?</button></span>
         <select id="wizLicense">
           <option value="cc0" data-i18n="fontmaker.panels.license_cc0">Public Domain (CC0) — most open</option>
           <option value="ofl" selected data-i18n="fontmaker.panels.license_ofl">SIL Open Font License 1.1 (recommended)</option>
