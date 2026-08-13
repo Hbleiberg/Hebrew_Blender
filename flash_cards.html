@@ -3268,6 +3268,16 @@ function setVowelScheme(s) {
   saveSettings();
   if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
 }
+// The English colour label carries a teaching mnemonic (<u>A</u>qua = "A for AH"); keep it
+// exactly when the translation IS the English word, else use the plain translated colour.
+// Same shape as the generator's vowelColorLabel — colorName is always one word, so
+// lowercasing IS the whole slugify its i18nName would do.
+function vowelColorLabel(g) {
+  if (!window.I18n) return g.colorHtml;
+  const k = 'flashcards.vowelgroup.color_' + g.colorName.toLowerCase();
+  const v = I18n.t(k);
+  return (v === k || v === g.colorName) ? g.colorHtml : esc(v);
+}
 function initVowels() {
   const host = document.getElementById('vowelHost');
   host.innerHTML = '';
@@ -3284,7 +3294,7 @@ function initVowels() {
       const head = document.createElement('div');
       head.className = 'vgroup-head';
       head.style.color = vowelHeaderColor(g, isDark());
-      head.innerHTML = window.I18n ? `<span>${I18n.t('flashcards.vowelgroup.header', {sound: g.sound, color: g.colorHtml})}</span>` : `<span>${g.sound} Sound – ${g.colorHtml}</span>`;
+      head.innerHTML = window.I18n ? `<span>${I18n.t('flashcards.vowelgroup.header', {sound: g.sound, color: vowelColorLabel(g)})}</span>` : `<span>${g.sound} Sound – ${g.colorHtml}</span>`;
       head.setAttribute('tabindex', '0');
       head.setAttribute('role', 'button');
       head.setAttribute('aria-expanded', 'true');
