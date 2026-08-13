@@ -805,9 +805,11 @@ whose text is majority-English (e.g. mixed `<option>` labels). Verify: `document
 
 ## Hebrew Font Maker (`Hebrew_Font_Maker.html`)
 
-The largest file in the repo (~13,900 lines, single-file app). **Line numbers drift constantly** —
-never trust remembered or previously-reported line numbers; locate everything by pattern
-(function names, marker comments, element ids).
+The largest file in the repo by a wide margin — a single-file app that was ~13,900 lines in
+2026-07 and **~15,700 as of 2026-08**, i.e. it grows by roughly a thousand lines a month, so
+treat any figure here as a dated snapshot rather than a current count. **Line numbers drift
+constantly** — never trust remembered or previously-reported line numbers; locate everything by
+pattern (function names, marker comments, element ids).
 
 ### Versioning + changelog (mirror of the sw.js/splash rules)
 `const FONT_MAKER_VERSION` — "bump on release; add a matching Changelog entry in the About tab."
