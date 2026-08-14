@@ -1615,7 +1615,7 @@
     <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;" data-i18n="fontmaker.modals.kernclass_desc">A named group of letters you can kern as a unit (e.g. all wide-top letters). Use it on either side of a pair; editing the class later updates every pair that uses it.</p>
     <label class="fld" style="font-size:0.84rem;"><span data-i18n="fontmaker.modals.kernclass_name">Class name</span> <input type="text" id="kernClassName" placeholder="e.g. Wide tops" data-i18n-placeholder="fontmaker.modals.kernclass_name_ph" style="width:100%;box-sizing:border-box;"></label>
     <div id="kernClassList" style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;max-height:42vh;overflow:auto;margin-top:8px;"></div>
-    <div class="mbtns"><button class="tbtn ghost" onclick="closeKernClass()">Cancel</button><button class="tbtn" onclick="saveKernClass()" data-i18n="fontmaker.modals.kernclass_save">Save class</button></div>
+    <div class="mbtns"><button class="tbtn ghost" onclick="closeKernClass()" data-i18n="fontmaker.modals.kernclass_cancel">Cancel</button><button class="tbtn" onclick="saveKernClass()" data-i18n="fontmaker.modals.kernclass_save">Save class</button></div>
   </div>
 </div>
 
@@ -4336,9 +4336,9 @@ function renderFormPanel(panelId, targets, intro) {
   if (!any) grid.innerHTML = `<div class="hint" style="grid-column:1/-1;direction:ltr;text-align:left;">${_pT('form_enable_tab', 'Enable this tab to add its forms.')}</div>`;
   a11yTiles(grid);
 }
-function renderSpecialFormsPanel() { renderFormPanel('specialFormsPanelBody', SPECIAL_TARGETS, 'Wide letterforms — <b>auto-composed from your traced letters</b>. Pick one, then use the <b>Width</b> slider (it both adds side space and stretches). Insert them by their Unicode code point.'); }
-function renderYiddishPanel()      { renderFormPanel('yiddishPanelBody', YIDDISH_TARGETS, 'Yiddish forms, composed from your traced letters: pasekh / komets alef, the rafe letters (בֿ כֿ פֿ), and the vov/yud digraphs (װ ױ ײ).'); }
-function renderLadinoPanel()       { renderFormPanel('ladinoPanelBody', LADINO_TARGETS, 'Ladino (Judeo-Spanish) forms: each base letter with the rafe / varika bar, composed from your traced letters.'); }
+function renderSpecialFormsPanel() { renderFormPanel('specialFormsPanelBody', SPECIAL_TARGETS, _pT('special_intro', 'Wide letterforms — <b>auto-composed from your traced letters</b>. Pick one, then use the <b>Width</b> slider (it both adds side space and stretches). Insert them by their Unicode code point.')); }
+function renderYiddishPanel()      { renderFormPanel('yiddishPanelBody', YIDDISH_TARGETS, _pT('yiddish_intro', 'Yiddish forms, composed from your traced letters: pasekh / komets alef, the rafe letters (בֿ כֿ פֿ), and the vov/yud digraphs (װ ױ ײ).')); }
+function renderLadinoPanel()       { renderFormPanel('ladinoPanelBody', LADINO_TARGETS, _pT('ladino_intro', 'Ladino (Judeo-Spanish) forms: each base letter with the rafe / varika bar, composed from your traced letters.')); }
 function pickPrecompForm(target) {
   const pc = getPrecomp(target); if (!pc) return;
   // A form can't be composed until EVERY base is traced (digraphs need both) — instead of opening a
@@ -15700,6 +15700,11 @@ function applyI18n() {
   // Re-render JS-built chrome (read-only) so any i18n it carries updates in place.
   try { renderControls(); } catch (e) {}
   try { renderGrids(); } catch (e) {}
+  // renderGrids re-renders only the custom-glyph GRID once the panel exists (its once-guard keeps
+  // normal renders from resetting the add-form), so the form's strings keep their build-time
+  // language. Rebuild the full panel on a language change — an unsent add-form resets, the same
+  // trade the open-Help re-render below makes.
+  try { if (document.getElementById('customGlyphsGrid')) renderCustomGlyphsPanel(); } catch (e) {}
   try { updateTabs(); } catch (e) {}     // step-tab labels (accents/nikkud pick) + tick aria strings
   // Category tab labels are built at init, before I18n.ready — rebuild them here. Read-only:
   // it re-derives the tab set from project.font and the active tab from catTab, mutating neither.
