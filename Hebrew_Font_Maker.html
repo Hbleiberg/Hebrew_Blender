@@ -14655,7 +14655,7 @@ async function generatePreviewPDF() {
         const { ctx, cv } = page(W, H);
         ctx.textBaseline = 'middle';
         ctx.fillStyle = '#1a2744'; ctx.direction = 'ltr'; ctx.font = "14px 'Libre Baskerville', serif";
-        ctx.fillText(title + (p > 0 ? ' (continued)' : ''), W / 2, 20);
+        ctx.fillText(title + (p > 0 ? I18n.t('fontmaker.canvas.continued') : ''), W / 2, 20);
         ctx.fillStyle = '#111'; ctx.direction = rtl ? 'rtl' : 'ltr'; ctx.font = HEB(glyphPx);
         slice.forEach((s, i) => { const r = Math.floor(i / cols), c = i % cols; ctx.fillText(s, 24 + c * cellW + cellW / 2, titleH + r * cellH + cellH / 2); });
         addPageCanvas(cv);
@@ -14669,15 +14669,15 @@ async function generatePreviewPDF() {
       ctx.font = HEB(16); ctx.measureText('שלום');   // warm up the font for canvas
       ctx.textBaseline = 'alphabetic'; let y = 66;
       ctx.fillStyle = '#1a2744'; ctx.font = "27px 'Libre Baskerville', serif";
-      ctx.fillText((project.font.familyName || 'My Font') + (fontIsBold() ? ' Bold' : ''), W/2, y); y += 22;
+      ctx.fillText((project.font.familyName || I18n.t('fontmaker.canvas.my_font')) + (fontIsBold() ? ' Bold' : ''), W/2, y); y += 22;
       ctx.fillStyle = '#666'; ctx.font = "12px 'Source Sans 3', sans-serif";
-      ctx.fillText('Hebrew Font Maker specimen · v' + (project.font.version || '1'), W/2, y); y += 18;
+      ctx.fillText(I18n.t('fontmaker.canvas.specimen_subtitle', { version: project.font.version || '1' }), W/2, y); y += 18;
       ctx.strokeStyle = '#1a2744'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(64, y); ctx.lineTo(W-64, y); ctx.stroke(); y += 76;
       ctx.fillStyle = '#111'; ctx.direction = 'rtl';
       ctx.font = HEB(52); ctx.fillText('שָׁלוֹם עוֹלָם', W/2, y); y += 80;
       ctx.font = HEB(27); ctx.fillText('הִנֵּה מַה טּוֹב וּמַה נָּעִים שֶׁבֶת אָחִים גַּם יַחַד', W/2, y); y += 66;
       ctx.direction = 'ltr'; ctx.fillStyle = '#666'; ctx.font = "12px 'Source Sans 3', sans-serif";
-      ctx.fillText('special & precomposed forms', W/2, y); y += 58;
+      ctx.fillText(I18n.t('fontmaker.canvas.special_forms'), W/2, y); y += 58;
       ctx.direction = 'rtl'; ctx.fillStyle = '#111'; ctx.font = HEB(40);
       ctx.fillText('שׁ  שׂ  וֹ  וּ  בּ  כּ  פּ  תּ', W/2, y);
       addPageCanvas(cv);
@@ -14692,7 +14692,7 @@ async function generatePreviewPDF() {
       const { ctx, cv } = page(W, H);
       ctx.textBaseline = 'middle';
       ctx.fillStyle = '#1a2744'; ctx.direction = 'ltr'; ctx.font = "14px 'Libre Baskerville', serif";
-      ctx.fillText('Letter × Nikkud' + (i>0 ? ' (continued)' : ''), W/2, 20);
+      ctx.fillText(I18n.t('fontmaker.canvas.letter_nikkud') + (i>0 ? I18n.t('fontmaker.canvas.continued') : ''), W/2, 20);
       const x0 = 20, tableW = W - 40, labelW = 92, cellW = (tableW - labelW) / CHART_COLS.length, top = titleH;
       const bottom = top + headH + chunk.length*rowH;
       ctx.strokeStyle = '#e2e2e2'; ctx.lineWidth = 1;
@@ -14701,7 +14701,7 @@ async function generatePreviewPDF() {
       for (let r = 0; r <= chunk.length; r++) { const gy = top + headH + r*rowH; ctx.beginPath(); ctx.moveTo(x0, gy); ctx.lineTo(x0+tableW, gy); ctx.stroke(); }
       ctx.beginPath(); ctx.moveTo(x0, top); ctx.lineTo(x0+tableW, top); ctx.stroke();
       ctx.fillStyle = '#666'; ctx.direction = 'ltr'; ctx.font = "10px 'Source Sans 3', sans-serif";
-      CHART_COLS.forEach((c, ci) => ctx.fillText(c.label, x0 + labelW + ci*cellW + cellW/2, top + headH/2));
+      CHART_COLS.forEach((c, ci) => ctx.fillText(I18n.t('fontmaker.canvas.chart_' + c.key), x0 + labelW + ci*cellW + cellW/2, top + headH/2));
       chunk.forEach((L, ri) => {
         const ry = top + headH + ri*rowH, cy = ry + rowH/2, ch = String.fromCodePoint(parseInt(L.cp,16));
         const lx = x0 + labelW/2, pl = project.letters.find(q => q.codepoint === L.cp), an = pl && pl.anchors;
@@ -14709,9 +14709,9 @@ async function generatePreviewPDF() {
         if (an && an.below && an.above && an.center) {
           ctx.fillText(L.name, lx, ry + 13);
           ctx.font = "7px 'Source Sans 3', sans-serif"; ctx.fillStyle = '#999';
-          ctx.fillText('below '  + an.below.x  + ',' + an.below.y,  lx, ry + 28);
-          ctx.fillText('above '  + an.above.x  + ',' + an.above.y,  lx, ry + 40);
-          ctx.fillText('center ' + an.center.x + ',' + an.center.y, lx, ry + 52);
+          ctx.fillText(I18n.t('fontmaker.canvas.anchor_below',  { x: an.below.x,  y: an.below.y }),  lx, ry + 28);
+          ctx.fillText(I18n.t('fontmaker.canvas.anchor_above',  { x: an.above.x,  y: an.above.y }),  lx, ry + 40);
+          ctx.fillText(I18n.t('fontmaker.canvas.anchor_center', { x: an.center.x, y: an.center.y }), lx, ry + 52);
         } else {
           ctx.fillText(L.name, lx, cy);
         }
@@ -14727,26 +14727,26 @@ async function generatePreviewPDF() {
     const pf = project.font;
     if (pf.addEnglishLetters) {
       const traced = ENGLISH_LETTERS.filter(e => { const L = project.letters.find(x => x.codepoint === e.cp); return L && L.contours && L.contours.length; });
-      if (traced.length) specimenPage('English letters', traced.map(e => cpChar(e.cp)), { rtl: false, cols: 9, glyphPx: 38 });
+      if (traced.length) specimenPage(I18n.t('fontmaker.canvas.section_english'), traced.map(e => cpChar(e.cp)), { rtl: false, cols: 9, glyphPx: 38 });
     }
     if (pf.addSpecialForms) {
       const chars = SPECIAL_TARGETS.map(t => cpChar(t)).filter(Boolean);
-      if (chars.length) specimenPage('Specialized — wide letterforms', chars, { rtl: true, cols: 8, glyphPx: 44 });
+      if (chars.length) specimenPage(I18n.t('fontmaker.canvas.section_specialized'), chars, { rtl: true, cols: 8, glyphPx: 44 });
     }
     if (pf.addYiddish) {
       const chars = YIDDISH_TARGETS.map(t => cpChar(t)).filter(Boolean);
-      if (chars.length) specimenPage('Yiddish forms', chars, { rtl: true, cols: 8, glyphPx: 42 });
+      if (chars.length) specimenPage(I18n.t('fontmaker.canvas.section_yiddish'), chars, { rtl: true, cols: 8, glyphPx: 42 });
     }
     if (pf.addLadino) {
       const chars = LADINO_TARGETS.map(t => cpChar(t)).filter(Boolean);
-      if (chars.length) specimenPage('Ladino forms', chars, { rtl: true, cols: 8, glyphPx: 42 });
+      if (chars.length) specimenPage(I18n.t('fontmaker.canvas.section_ladino'), chars, { rtl: true, cols: 8, glyphPx: 42 });
     }
     if (pf.addCustomGlyphs) {
       const mains = (project.letters || []).filter(l => l.custom && l.contours && l.contours.length).map(l => cpChar(l.codepoint));
       const cmStore = (pf.customMarks && pf.customMarks.custom) || {};
       const marks = Object.keys(cmStore).map(cp => cpChar(cp));
       const chars = mains.concat(marks).filter(Boolean);
-      if (chars.length) specimenPage('Custom glyphs', chars, { rtl: true, cols: 8, glyphPx: 42 });
+      if (chars.length) specimenPage(I18n.t('fontmaker.canvas.section_custom'), chars, { rtl: true, cols: 8, glyphPx: 42 });
     }
     pdf.save(((project.font.familyName||'font') + (fontIsBold() ? ' Bold' : '')).replace(/\s+/g,'_') + '_specimen.pdf');
     status(I18n.t('fontmaker.status.preview_pdf_saved'));
@@ -14759,16 +14759,18 @@ async function generatePreviewPDF() {
    ════════════════════════════════════════════════════════════════════════ */
 const TPL_PAGE = { w: 850, h: 1100, pad: 46 };   // US-Letter portrait (8.5:11 ratio), px
 const TPL_INK  = '#5aa9de';                       // light blue — prints visibly, ignored by the default ink tracer (luminance ≈151 > threshold 128)
+/* `title` stays English on purpose — it feeds the download-filename stem and the auto-detect
+   match label; the printed heading + toast localize via `titleKey` at display time. */
 const TEMPLATE_SPECS = {
-  letters: { kind:'letters', title:'Hebrew Letters',      cols:4, rowsPerPage:5,
+  letters: { kind:'letters', title:'Hebrew Letters',      titleKey:'fontmaker.canvas.tpl_letters', cols:4, rowsPerPage:5,
              items: LETTERS.filter(L => L.cat !== 'punct').map(L => ({ cp:L.cp, name:L.name, cls:null })) },  // 27 → 2 pages (roomy boxes)
-  nikkud:  { kind:'nikkud',  title:'Vowels (Nikkud)',     cols:4, rowsPerPage:5,
+  nikkud:  { kind:'nikkud',  title:'Vowels (Nikkud)',     titleKey:'fontmaker.canvas.tpl_nikkud', cols:4, rowsPerPage:5,
              items: NIKKUD_MARKS.map(m => ({ cp:m.cp, name:m.name, cls:m.cls })) },   // 17 → 1 page (20 slots)
-  trop:    { kind:'trop',    title:'Trop (Cantillation)', cols:5, rowsPerPage:7,
+  trop:    { kind:'trop',    title:'Trop (Cantillation)', titleKey:'fontmaker.canvas.tpl_trop', cols:5, rowsPerPage:7,
              items: TROP_DEFS.map(t => ({ cp:t[0], name:t[1], cls:t[2] })) },         // 31 → 1 page
-  punct:   { kind:'punct',   title:'Punctuation & More',  cols:5, rowsPerPage:6,
+  punct:   { kind:'punct',   title:'Punctuation & More',  titleKey:'fontmaker.canvas.tpl_punct', cols:5, rowsPerPage:6,
              items: LETTERS.filter(L => L.cat === 'punct').map(L => ({ cp:L.cp, name:L.name, cls:null })) },   // 27 → 1 page (30 slots)
-  englishletters: { kind:'latin', title:'English Letters', cols:6, rowsPerPage:5,
+  englishletters: { kind:'latin', title:'English Letters', titleKey:'fontmaker.canvas.tpl_english', cols:6, rowsPerPage:5,
              items: ENGLISH_LETTERS.map(E => ({ cp:E.cp, name:String.fromCodePoint(parseInt(E.cp,16)), cls:null })) },   // 52 → 2 pages
 };
 // One write-in box: colored border + a small corner label (ref glyph + name + U+code + class). Interior left blank.
@@ -14790,11 +14792,13 @@ function templateCellHTML(item, kind) {
 }
 // One US-Letter page DOM: heading + a grid that fills the page (no shrink-to-fit) so the boxes stay maximal.
 function buildTemplatePageHTML(spec, pageItems, idx, count) {
+  const tTitle = I18n.t(spec.titleKey);
+  const headLine = count > 1 ? I18n.t('fontmaker.canvas.tpl_page_of', { title: tTitle, n: idx + 1, total: count }) : tTitle;
   const head =
-    '<div style="text-align:center;font-family:\'Libre Baskerville\',serif;font-size:19px;color:' + TPL_INK + ';margin:0 0 3px;">'
-      + esc(spec.title) + (count > 1 ? ' · page ' + (idx + 1) + ' of ' + count : '') + '</div>'
-    + '<div style="text-align:center;font-family:\'Source Sans 3\',sans-serif;font-size:10.5px;color:' + TPL_INK + ';margin:0 0 12px;">'
-      + 'Write one glyph per box in DARK ink, kept inside the box — the light blue grid will not scan.</div>';
+    '<div dir="auto" style="text-align:center;font-family:\'Libre Baskerville\',serif;font-size:19px;color:' + TPL_INK + ';margin:0 0 3px;">'
+      + esc(headLine) + '</div>'
+    + '<div dir="auto" style="text-align:center;font-family:\'Source Sans 3\',sans-serif;font-size:10.5px;color:' + TPL_INK + ';margin:0 0 12px;">'
+      + esc(I18n.t('fontmaker.canvas.tpl_instruction')) + '</div>';
   const cells = pageItems.map(it => templateCellHTML(it, spec.kind)).join('');
   // Fixed row height sized to a FULL page, so a partial last page keeps the same box size instead of stretching to fill.
   const gap = 14, headReserve = 56, innerH = TPL_PAGE.h - 2 * TPL_PAGE.pad;
@@ -14829,7 +14833,7 @@ async function renderTemplateCanvases(kind) {
 async function downloadTemplate(kind, fmt) {
   const spec = TEMPLATE_SPECS[kind];
   if (!spec) return;
-  status(I18n.t('fontmaker.status.building_template', {title: spec.title}), true);
+  status(I18n.t('fontmaker.status.building_template', {title: I18n.t(spec.titleKey)}), true);
   try {
     const canvases = await renderTemplateCanvases(kind);
     const stem = spec.title.replace(/[^a-z0-9]+/gi, '_').replace(/^_|_$/g, '') + '_template';
