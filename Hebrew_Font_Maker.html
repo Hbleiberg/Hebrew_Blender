@@ -6530,7 +6530,7 @@ async function renderStage() {
 function renderLegend() {
   const el = document.getElementById('stageLegend');
   if (isCropSelect(curLetter())) {
-    el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;">${combinedNavHTML()}<span>Click and drag a box around the letter on the sheet, then release to bring it into the editor. <span style="opacity:0.75;">Keyboard: arrows move the box, +/− resize, Enter to crop.</span></span></div>`;
+    el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;">${combinedNavHTML()}<span>${_pT('combined_drag_hint', "Click and drag a box around the letter on the sheet, then release to bring it into the editor. <span style='opacity:0.75;'>Keyboard: arrows move the box, +/− resize, Enter to crop.</span>")}</span></div>`;
     return;
   }
   if (workMode === 'draw') {
@@ -11548,7 +11548,7 @@ function renderAlignLeft(L, l) {
   } else if (project.inputMode === 'combined' && project.combinedSheets.length && curKind === 'letter') {
     html += (!l.source.dataUrl)
       ? `<div class="hint">${_pT('pick_then_box', 'Pick a letter, then drag a box around it on the sheet to bring it into the editor. Keyboard: arrows move the box, +/− resize, Enter to crop.')}</div>`
-      : `<div class="hint">Region selected for <b>${esc(l.name)}</b>.</div>
+      : `<div class="hint">${_pT('region_selected', 'Region selected for <b>{name}</b>.', {name: esc(l.name)})}</div>
          <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">↺ Re-select area</button></div>`;
   }
   // Adjust tools appear once there's an image to move (never for already-vector glyphs: font / SVG)
@@ -11957,7 +11957,7 @@ function renderAnchorLeft(L, l) {
         <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.reset_vowel_height_title'))}" aria-label="${esc(I18n.t('fontmaker.panels.reset_vowel_height_title'))}" onclick="setMarkNudge(activeVowelCp(),0)">⟲</button>
         ${editBtn(activeBelowVowel)}
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">Height raises or lowers just ${esc(vName)} — on <b>every letter</b>. <b>Edit shape</b> redesigns its dots &amp; bars.</div>`;
+      <div class="hint" style="font-size:0.6rem;text-align:center;">${_pT('height_vowel_hint', 'Height raises or lowers just {name} — on <b>every letter</b>. <b>Edit shape</b> redesigns its dots &amp; bars.', {name: esc(vName)})}</div>`;
   } else if (cls === 'above') {
     const curAbove = aboveMarkFor(l);
     // One tile per above mark: the combined-form tile when this letter+mark composes to a form
@@ -12000,7 +12000,7 @@ function renderAnchorLeft(L, l) {
         <span id="vowelNudgeV" class="readout">${tNdy>0?'+':''}${tNdy}</span>
         <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.reset_mark_height_title'))}" aria-label="${esc(I18n.t('fontmaker.panels.reset_mark_height_title'))}" onclick="setMarkNudge(activeVowelCp(),0)">⟲</button>
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">Raises or lowers just <b>${tName}</b> on every letter — e.g. to separate two marks sharing a side.</div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">${_pT('height_trop_hint', 'Raises or lowers just <b>{name}</b> on every letter — e.g. to separate two marks sharing a side.', {name: esc(tName)})}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
         <span style="font-size:0.72rem;color:var(--muted);">${I18n.t('fontmaker.panels.horizontal')}</span>${halignBtns}
       </div>
@@ -12010,7 +12010,7 @@ function renderAnchorLeft(L, l) {
         <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.default_spread'))}">
         <span id="tropSpreadV" class="readout">${tOff}</span>
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).</div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;">${_pT('default_spread_hint', 'Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).')}</div>
       ${(nCustom => nCustom ? `
       <div class="hint" style="font-size:0.6rem;text-align:center;color:var(--gold);">${nCustom} letter${nCustom === 1 ? "'s" : "s'"} hand-tuned side positions kept — the slider only moves columns still at the default.</div>
       <div class="ctl-row" style="justify-content:center;margin-top:2px;"><button class="ctl-btn" onclick="resetTropSideColumns()" title="${esc((window.I18n ? I18n.t('fontmaker.panels.reset_side_positions_title') : "Re-seed every letter's Left/Right columns from its center ± spread (undoable)"))}">${_pT('reset_side_positions', 'Reset all side positions')}</button></div>` : '')(tropCustomSideCount())}
@@ -12036,7 +12036,7 @@ function renderAnchorLeft(L, l) {
   }
   const xyWhat = cls === 'below' ? _pT('xy_what_below', 'all under-vowels') : cls === 'above' ? _pT('xy_what_above', 'the above mark') : cls === 'center' ? _pT('xy_what_center', 'the dagesh') : _pT('xy_what_trop', "this mark's column");
   const xy = `<hr class="ctl-divider">
-    <div class="ws-side-title">${ANCHOR_LABEL[cls]} position — ${esc(l.name)} only</div>
+    <div class="ws-side-title">${esc(_pT('pos_title', '{class} position — {name} only', {class: anchorLabelT(cls), name: l.name}))}</div>
     <div class="anc-xy">
       <label>X <input type="number" id="ancX" value="${a.x}" oninput="setAnchorCoord('x',this.value)" onchange="udBurstCommit()"></label>
       <label>Y <input type="number" id="ancY" value="${a.y}" oninput="setAnchorCoord('y',this.value)" onchange="udBurstCommit()"></label>
@@ -12105,7 +12105,7 @@ function renderAnchorLeft(L, l) {
     </div>`;
   L.innerHTML = `
     ${navRow}
-    <div class="ws-side-title">${esc(l.name)}: place the…</div>
+    <div class="ws-side-title">${esc(_pT('place_the', '{name}: place the…', {name: l.name}))}</div>
     <div class="ctl-row">${classBtns}</div>
     ${ grid ? `<hr class="ctl-divider">${grid}` : '' }
     ${xy}

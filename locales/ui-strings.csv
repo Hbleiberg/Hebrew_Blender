@@ -2018,7 +2018,7 @@ fontmaker.panels.check_stacking_hint,Shows the chosen mark in grey beside the on
 fontmaker.panels.clear,Clear,נקה,button,
 fontmaker.panels.combined_allowed_img,"Allowed: any image file — PNG, JPG, GIF, WebP. You can add several sheets and flip between them.","מותר: כל קובץ תמונה — PNG, JPG, GIF, WebP. אפשר להוסיף כמה דפים ולעבור ביניהם.",allowed-files note,
 fontmaker.panels.combined_count,{i} of {n},{i} מתוך {n},combined nav counter,
-fontmaker.panels.combined_drag_hint,"Click and drag a box around the letter on the sheet, then release to bring it into the editor. Keyboard: arrows move the box, +/− resize, Enter to crop.","לחצו וגררו תיבה סביב האות בדף, ואז שחררו כדי להביא אותה לעורך. מקלדת: חצים מזיזים את התיבה, +/− משנים גודל, Enter לחיתוך.",center empty state,
+fontmaker.panels.combined_drag_hint,"Click and drag a box around the letter on the sheet, then release to bring it into the editor. <span style='opacity:0.75;'>Keyboard: arrows move the box, +/− resize, Enter to crop.</span>","לחצו וגררו תיבה סביב האות בדף, ואז שחררו כדי להביא אותה לעורך. <span style='opacity:0.75;'>מקלדת: חצים מזיזים את התיבה, +/− משנים גודל, Enter לחיתוך.</span>",center empty state,
 fontmaker.panels.combined_drop_img,"Drop your sheet(s) here, or click to browse — add more than one for multi-page templates.","שחררו כאן את הדף/ים שלכם, או לחצו לעיון — הוסיפו יותר מאחד לתבניות רב-עמודיות.",drop zone,
 fontmaker.panels.combined_drop_svg,"Drop your <b>SVG</b> sheet(s) here, or click to browse — name elements like <code>id=""uni05D0""</code> for auto-split, or box each letter.","שחררו כאן את דף/י ה-<b>SVG</b> שלכם, או לחצו לעיון — תנו לרכיבים שם כמו <code>id=""uni05D0""</code> לפיצול אוטומטי, או תחמו כל אות.",drop zone,html
 fontmaker.panels.combined_next,Next ›,הבא ›,combined nav button,
@@ -2119,8 +2119,8 @@ fontmaker.panels.halign_hint,Sets where {name} sits across every letter. Positio
 fontmaker.panels.halign_left,◀ Left,◀ שמאל,halign button,
 fontmaker.panels.halign_right,Right ▶,ימין ▶,halign button,
 fontmaker.panels.height,Height,גובה,control label,
-fontmaker.panels.height_trop_hint,Raises or lowers just {name} on every letter — e.g. to separate two marks sharing a side.,מעלה או מנמיך רק את {name} בכל אות — למשל כדי להפריד שני סימנים החולקים צד.,panel hint,
-fontmaker.panels.height_vowel_hint,Height raises or lowers just {name} — on every letter. Edit shape redesigns its dots & bars.,הגובה מעלה או מנמיך רק את {name} — בכל אות. עריכת צורה מעצבת מחדש את הנקודות והמוטות שלו.,panel hint,
+fontmaker.panels.height_trop_hint,Raises or lowers just <b>{name}</b> on every letter — e.g. to separate two marks sharing a side.,מעלה או מנמיך רק את <b>{name}</b> בכל אות — למשל כדי להפריד שני סימנים החולקים צד.,panel hint,
+fontmaker.panels.height_vowel_hint,Height raises or lowers just {name} — on <b>every letter</b>. <b>Edit shape</b> redesigns its dots &amp; bars.,הגובה מעלה או מנמיך רק את {name} — <b>בכל אות</b>. <b>עריכת צורה</b> מעצבת מחדש את הנקודות והמוטות שלו.,panel hint,
 fontmaker.panels.holam_size,Holam size,גודל חולם,slider label,
 fontmaker.panels.holam_vav_hint,Sizes the dot on every וֹ — the same Holam (vav) size control as the vav's Nikkud step. (The standalone holam on other letters is sized by Nikkud size.),קובע את גודל הנקודה על כל וֹ — אותו פקד גודל חולם (וו) כמו בשלב הניקוד של הוו. (החולם העצמאי על אותיות אחרות נקבע לפי גודל הניקוד.),panel hint,mixed UI+content — do not translate {…}
 fontmaker.panels.holam_vav_size,Holam (vav) size,גודל חולם (וו),slider label,
@@ -2292,7 +2292,7 @@ fontmaker.panels.reference_show,Show reference glyph behind,הצג גליף יי
 fontmaker.panels.reference_title,Reference,ייחוס,side title,
 fontmaker.panels.reference_upload,⬆ Upload your own reference font,⬆ העלו גופן ייחוס משלכם,button,leading-emoji
 fontmaker.panels.reference_upload_allowed,Allowed: TTF or OTF font files.,מותר: קובצי גופן TTF או OTF.,allowed-files note,
-fontmaker.panels.region_selected,Region selected for {name}.,נבחר אזור עבור {name}.,panel hint,
+fontmaker.panels.region_selected,Region selected for <b>{name}</b>.,נבחר אזור עבור <b>{name}</b>.,panel hint,
 fontmaker.panels.reselect_area,↺ Re-select area,↺ בחר אזור מחדש,button,leading-emoji
 fontmaker.panels.reserved_name,Reserved name,שם שמור,field label,
 fontmaker.panels.reset_all,Reset all,אפס הכל,button,
