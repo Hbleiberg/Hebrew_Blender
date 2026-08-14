@@ -389,12 +389,19 @@ body.dark .tt-handout-shem-note { color:var(--gold-light); }
 #ttCopyRange { inline-size:13ch; direction:ltr; text-align:start; }
 #ttCopyRangeNote { font-size:0.72rem; color:var(--muted); flex-basis:100%; white-space:normal; }
 #ttCopyRangeNote:empty { display:none; }
-.tt-copy-wysiwyg { font-size:0.72rem; color:var(--muted); max-width:420px; white-space:normal; }
+/* Copy All's inline "select a verse first" reason — the button is aria-disabled rather than
+   dead, and this states why (never an alert()). */
+#ttCopyAllNote:empty { display:none; }
+#ttCopyRichNote[hidden] { display:none; }   /* [hidden] must beat the flex row, as for #ttCopyBulkPanel */
+#ttCopyAllBtn[aria-disabled="true"], #ttBulkDockCopy[aria-disabled="true"] { opacity:0.55; cursor:not-allowed; }
 #ttCopyTextarea {
   flex-basis:100%; box-sizing:border-box; resize:vertical;
   border:1px solid var(--border); border-radius:5px; padding:6px 8px;
   background:var(--white); color:var(--text);
   font-family:var(--heb-font); font-size:0.9rem; text-align:start;
+  /* dir=rtl + plaintext: each LINE picks its own direction from its first strong character,
+     so a "1:1 <hebrew>" line and an English translation line both read correctly in one box. */
+  unicode-bidi:plaintext;
 }
 .tt-ref-hdr .tt-readall {
   font-size:0.78rem; padding:4px 10px;
@@ -1551,19 +1558,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
      Independent of the handout bar (siblings — both may be open). -->
 <div id="ttCopyBar" class="tt-controls" style="display:none;border-top:1px dashed var(--border);" role="group" aria-labelledby="ttCopyTitle">
   <span class="tt-ctrl"><strong id="ttCopyTitle" data-i18n="torah.copy.title">Copy verses</strong></span>
-  <span class="tt-ctrl">
-    <label for="ttCopyIncRef" data-i18n="torah.copy.inc_ref">Include verse numbers</label>
-    <label class="toggle"><input type="checkbox" id="ttCopyIncRef"><span class="slider"></span></label>
-  </span>
-  <span class="tt-ctrl">
-    <label for="ttCopyIncTranslit" data-i18n="torah.copy.inc_translit">Include transliteration</label>
-    <label class="toggle"><input type="checkbox" id="ttCopyIncTranslit"><span class="slider"></span></label>
-  </span>
-  <span class="tt-ctrl">
-    <label for="ttCopyIncTrans" data-i18n="torah.copy.inc_trans">Include translation</label>
-    <label class="toggle"><input type="checkbox" id="ttCopyIncTrans"><span class="slider"></span></label>
-  </span>
-  <span class="tt-ctrl tt-copy-wysiwyg" data-i18n="torah.copy.wysiwyg_hint">Nikkud and te'amim copy as shown on screen — change them with the display toggles.</span>
+  <button class="btn btn-xs btn-secondary" onclick="openSettingsAtPanel('copy')" type="button"
+          data-i18n="torah.copy.options_link" data-i18n-title="torah.copy.options_link_title"
+          title="Choose what a copy contains — marks, transliteration, translation, colors">Copy options…</button>
   <span class="tt-ctrl">
     <label for="ttCopyBulkCb" data-i18n="torah.copy.bulk_mode">Select verses</label>
     <label class="toggle"><input type="checkbox" id="ttCopyBulkCb"><span class="slider"></span></label>
@@ -1581,8 +1578,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <button class="btn btn-xs btn-secondary" onclick="selectVerseRange()" type="button" data-i18n="torah.copy.range_add">Add</button>
     </span>
     <span id="ttCopyRangeNote" role="status" aria-live="polite" dir="auto"></span>
-    <textarea id="ttCopyTextarea" readonly rows="5" dir="auto" aria-label="Selected verses (copy preview)" data-i18n-aria-label="torah.copy.textarea_aria"></textarea>
-    <button class="btn btn-xs" onclick="copyAllSelected()" type="button" data-i18n="torah.copy.copy_all">Copy All</button>
+    <textarea id="ttCopyTextarea" readonly rows="8" dir="rtl" aria-label="Selected verses (copy preview)" data-i18n-aria-label="torah.copy.textarea_aria"></textarea>
+    <span id="ttCopyRichNote" class="tt-copy-hintline" data-i18n="torah.copy.rich_preview_note" hidden>Colors are added when you paste — this preview shows the plain text.</span>
+    <button class="btn btn-xs" id="ttCopyAllBtn" onclick="copyAllSelected()" type="button" aria-describedby="ttCopyAllNote" data-i18n="torah.copy.copy_all">Copy All</button>
+    <span id="ttCopyAllNote" class="tt-copy-hintline" role="status" aria-live="polite" dir="auto"></span>
   </span>
 </div>
 
@@ -1592,7 +1591,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
      every control delegates to the same function the panel uses (no duplicated logic, no new state). -->
 <div id="ttBulkDock" role="group" data-i18n-aria-label="torah.copy.title" aria-label="Copy verses" hidden>
   <span id="ttBulkDockCount" dir="auto"></span>
-  <button class="btn btn-xs" onclick="copyAllSelected()" type="button" data-i18n="torah.copy.copy_all">Copy All</button>
+  <button class="btn btn-xs" id="ttBulkDockCopy" onclick="copyAllSelected()" type="button" data-i18n="torah.copy.copy_all">Copy All</button>
   <button class="btn btn-xs btn-secondary" onclick="clearBulkVerses()" type="button" data-i18n="torah.copy.clear">Clear</button>
 </div>
 
@@ -1710,6 +1709,71 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
             <input type="radio" name="optKarFollow" id="kfTranslit" value="translit"><label for="kfTranslit" data-i18n="torah.display.follow_translit">Translit</label>
             <input type="radio" name="optKarFollow" id="kfBoth"     value="both"><label for="kfBoth" data-i18n="torah.display.follow_both">Both</label>
           </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copy: everything that decides what the 📋 button and Copy All put on the clipboard.
+         The Copy bar below the reading owns only verse SELECTION now; format lives here so
+         one place answers "what will a copy contain?". -->
+    <div class="panel collapsed">
+      <div class="panel-title" data-i18n="torah.settings.panel_copy">Copy</div>
+      <div class="panel-body">
+        <div class="form-row">
+          <label for="ttCopyIncRef" data-i18n="torah.copy.inc_ref">Include verse numbers</label>
+          <label class="toggle"><input type="checkbox" id="ttCopyIncRef"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label for="ttCopyIncTranslit" data-i18n="torah.copy.inc_translit">Include transliteration</label>
+          <label class="toggle"><input type="checkbox" id="ttCopyIncTranslit"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label for="ttCopyIncTrans" data-i18n="torah.copy.inc_trans">Include translation</label>
+          <label class="toggle"><input type="checkbox" id="ttCopyIncTrans"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label><span id="lblCopyIncHeading" data-i18n="torah.copy.inc_heading">Include a heading line</span> <span class="tip-wrap" data-i18n-tip="torah.copy.inc_heading_tip" data-tip="Puts the reading's name and verse range on the first line of the copied text, so a pasted passage says where it came from."><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="ttCopyIncHeading" aria-labelledby="lblCopyIncHeading"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label><span id="lblCopyNikkud" data-i18n="torah.copy.nikkud_label">Nikkud</span> <span class="tip-wrap" data-i18n-tip="torah.copy.marks_tip" data-tip="Independent of the display toggles: read with the marks on screen and still copy a clean text for a quiz, or the reverse."><i class="tip-icon">?</i></span></label>
+          <span class="radio-group" role="group" aria-labelledby="lblCopyNikkud">
+            <input type="radio" name="optCopyNikkud" id="cnScreen" value="screen"><label for="cnScreen" data-i18n="torah.copy.mark_screen">As on screen</label>
+            <input type="radio" name="optCopyNikkud" id="cnOn"     value="on"><label for="cnOn" data-i18n="torah.copy.mark_on">Include</label>
+            <input type="radio" name="optCopyNikkud" id="cnOff"    value="off"><label for="cnOff" data-i18n="torah.copy.mark_off">Remove</label>
+          </span>
+        </div>
+        <div class="form-row">
+          <label id="lblCopyTeamim" data-i18n="torah.copy.teamim_label">Cantillation (te'amim)</label>
+          <span class="radio-group" role="group" aria-labelledby="lblCopyTeamim">
+            <input type="radio" name="optCopyTeamim" id="ctScreen" value="screen"><label for="ctScreen" data-i18n="torah.copy.mark_screen">As on screen</label>
+            <input type="radio" name="optCopyTeamim" id="ctOn"     value="on"><label for="ctOn" data-i18n="torah.copy.mark_on">Include</label>
+            <input type="radio" name="optCopyTeamim" id="ctOff"    value="off"><label for="ctOff" data-i18n="torah.copy.mark_off">Remove</label>
+          </span>
+        </div>
+        <div class="form-row">
+          <label><span id="lblCopyLayout" data-i18n="torah.copy.layout_label">Layout</span> <span class="tip-wrap" data-i18n-tip="torah.copy.layout_tip" data-tip="Verse by verse keeps each verse's Hebrew, transliteration and translation together. Grouped blocks puts all the Hebrew first, then all the transliteration, then all the translation."><i class="tip-icon">?</i></span></label>
+          <span class="radio-group" role="group" aria-labelledby="lblCopyLayout">
+            <input type="radio" name="optCopyLayout" id="clStacked" value="stacked"><label for="clStacked" data-i18n="torah.copy.layout_stacked">Verse by verse</label>
+            <input type="radio" name="optCopyLayout" id="clGrouped" value="grouped"><label for="clGrouped" data-i18n="torah.copy.layout_grouped">Grouped blocks</label>
+          </span>
+        </div>
+        <div class="form-row">
+          <label for="optCopyBlankLines"><span data-i18n="torah.copy.blank_lines">Blank lines after each verse</span> <span class="tip-wrap" data-i18n-tip="torah.copy.blank_lines_tip" data-tip="Adds empty lines under each verse — room for students to write their own translation or notes on a printed handout."><i class="tip-icon">?</i></span></label>
+          <select id="optCopyBlankLines">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label><span id="lblCopyColorCoding" data-i18n="torah.copy.color_coding">Copy color coding</span> <span class="tip-wrap" data-i18n-tip="torah.copy.color_coding_tip" data-tip="Copies the vowel and trope colors as formatted text, so they survive a paste into Google Docs, Word or Pages. Plain-text editors still receive clean unstyled text. Colors are copied in their light-mode shades so they stay readable on a white page."><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="ttCopyColorCoding" aria-labelledby="lblCopyColorCoding"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label><span id="lblCopyBulkRemember" data-i18n="torah.copy.bulk_remember">Remember Select verses mode</span> <span class="tip-wrap" data-i18n-tip="torah.copy.bulk_remember_tip" data-tip="The Copy bar opens with Select verses already on, and closing it keeps your selection instead of clearing it."><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="ttCopyBulkRemember" aria-labelledby="lblCopyBulkRemember"><span class="slider"></span></label>
         </div>
       </div>
     </div>
@@ -1958,10 +2022,19 @@ const DEFAULTS = {
   handoutHideNums: false,      // hide verse numbers on the printed handout
   handoutFontSize: 'large',    // 'normal' (screen size) | 'large' (2.2rem) | 'xl' (2.8rem)
   handoutGenizaMark: false,    // print a לגניזה footer when a divine name is detected
-  // Copy verses (clipboard) — format prefs persist; bulk-select mode/selection never do
+  // Copy verses (clipboard) — format prefs persist; bulk-select mode/selection are
+  // session-only unless copyBulkRemember is on. Every default below reproduces the
+  // pre-Copy-panel behavior exactly, so an upgrading teacher sees no change until they opt in.
   copyIncludeRef: true,        // prefix each copied verse with "C:V "
   copyIncludeTrans: false,     // append the plain-text translation line
   copyIncludeTranslit: false,  // append a transliteration line (uses settings.translitStyle)
+  copyIncludeHeading: false,   // first line = the reading's range label (currentRangeLabel)
+  copyNikkud: 'screen',        // 'screen' (follow the display toggle) | 'on' (force) | 'off' (strip)
+  copyTeamim: 'screen',        // 'screen' | 'on' | 'off'
+  copyLayout: 'stacked',       // 'stacked' (verse by verse) | 'grouped' (Hebrew/translit/translation blocks)
+  copyBlankLines: 0,           // 0-3 blank lines after each verse (handwriting room)
+  copyColorCoding: false,      // also write a text/html flavor carrying the vowel/trope colors
+  copyBulkRemember: false,     // open the Copy bar in Select-verses mode; keep the selection on close
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
 
@@ -2836,14 +2909,22 @@ function processHebrewForDisplay(s) {
 /* ══════════════════════════════════════════════════════
    TOKENIZE: split Hebrew text into per-word spans
    ══════════════════════════════════════════════════════ */
-function tokenizeHebrew(text, wordIdxStartRef) {
+function tokenizeHebrew(text, wordIdxStartRef, opts) {
   // Returns HTML with <span class="tt-word" data-twi="N">...</span> per Hebrew word.
   // wordIdxStartRef is a {value:N} object so karaoke can assign sequential indices
   // across consecutive verses. Split on whitespace AND maqaf (U+05BE "־") because
   // PocketTorah counts each side of a maqaf-joined pair as a separate sung word.
+  // opts (optional) overrides the four display reads below, so the clipboard builder can
+  // request marks/coloring that differ from what's on screen. Screen callers omit it and
+  // are unaffected. It exists because temporarily mutating `settings` would race the
+  // debounced saveSettings() and could persist the temporary values.
   if (!text) return '';
-  const cleaned = settings.showCantillation ? text : stripTeamim(text);
-  const finalText = settings.showNikkud ? cleaned : stripNikkud(cleaned);
+  const o = opts || null;
+  const showTeamim = o ? !!o.showCantillation : settings.showCantillation;
+  const showNik    = o ? !!o.showNikkud       : settings.showNikkud;
+  const colorNik   = o ? !!o.colorCodeNikkud  : settings.colorCodeNikkud;
+  const cleaned = showTeamim ? text : stripTeamim(text);
+  const finalText = showNik ? cleaned : stripNikkud(cleaned);
   const tokens = finalText.split(/(\s+|־)/);
   // Trope families are read from the ORIGINAL text: the display copy may have had
   // its te'amim stripped, and trope coloring must keep working with cantillation
@@ -2855,7 +2936,7 @@ function tokenizeHebrew(text, wordIdxStartRef) {
   // as a guard: a vanished separator always shrinks the array, and on mismatch
   // tropeRealignFamilies recovers each display word's family by letter-matching
   // (bailing to uncolored on any desync — no color, never wrong color).
-  const tropeOn = !!settings.colorCodeTrope;
+  const tropeOn = o ? !!o.colorCodeTrope : !!settings.colorCodeTrope;
   const rawTokens = tropeOn ? text.split(/(\s+|־)/) : null;
   const rawAligned = tropeOn && rawTokens.length === tokens.length;
   const famByTi = (tropeOn && !rawAligned) ? tropeRealignFamilies(tokens, rawTokens) : null;
@@ -2898,7 +2979,7 @@ function tokenizeHebrew(text, wordIdxStartRef) {
     if (tok === '־') { out.push(esc(tok)); continue; }   // maqaf separator, not a word
     if (/[א-ת]/.test(tok)) {
       const idx = wordIdxStartRef.value++;
-      const inner = (settings.colorCodeNikkud && settings.showNikkud)
+      const inner = (colorNik && showNik)
         ? colorizeHebrew(tok)
         : esc(tok);
       let tropeCls = '';
@@ -4914,6 +4995,27 @@ function syncFormToSettings() {
   document.getElementById('kfHebrew').checked    = kf === 'hebrew';
   document.getElementById('kfTranslit').checked  = kf === 'translit';
   applyKaraokeAppearance();
+  // Copy panel. ?? not || — copyBlankLines is legitimately 0, and `|| 0` would be a no-op
+  // today but the wrong habit for the next numeric option added here.
+  document.getElementById('ttCopyIncRef').checked      = !!settings.copyIncludeRef;
+  document.getElementById('ttCopyIncTrans').checked    = !!settings.copyIncludeTrans;
+  document.getElementById('ttCopyIncTranslit').checked = !!settings.copyIncludeTranslit;
+  document.getElementById('ttCopyIncHeading').checked  = !!settings.copyIncludeHeading;
+  const cn = settings.copyNikkud || 'screen';
+  const ct = settings.copyTeamim || 'screen';
+  document.getElementById('cnScreen').checked = cn === 'screen';
+  document.getElementById('cnOn').checked     = cn === 'on';
+  document.getElementById('cnOff').checked    = cn === 'off';
+  document.getElementById('ctScreen').checked = ct === 'screen';
+  document.getElementById('ctOn').checked     = ct === 'on';
+  document.getElementById('ctOff').checked    = ct === 'off';
+  const cl = settings.copyLayout || 'stacked';
+  document.getElementById('clStacked').checked = cl === 'stacked';
+  document.getElementById('clGrouped').checked = cl === 'grouped';
+  document.getElementById('optCopyBlankLines').value = String(settings.copyBlankLines ?? 0);
+  document.getElementById('ttCopyColorCoding').checked  = !!settings.copyColorCoding;
+  document.getElementById('ttCopyBulkRemember').checked = !!settings.copyBulkRemember;
+  updateCopyTextarea();
   // schedule radio
   const sd = document.getElementById('schedDiaspora');
   const si = document.getElementById('schedIsrael');
@@ -5199,6 +5301,28 @@ function wireSettingsForm() {
     // Translit toggle was never turned on (ensureLoaded is idempotent/cached).
     if (e.target.checked && window.HebrewTransliterator) window.HebrewTransliterator.ensureLoaded();
     saveSettings(); updateCopyTextarea();
+  });
+  document.getElementById('ttCopyIncHeading').addEventListener('change', e => {
+    settings.copyIncludeHeading = e.target.checked; saveSettings(); updateCopyTextarea();
+  });
+  document.querySelectorAll('input[name="optCopyNikkud"]').forEach(r => r.addEventListener('change', e => {
+    settings.copyNikkud = e.target.value; saveSettings(); updateCopyTextarea();
+  }));
+  document.querySelectorAll('input[name="optCopyTeamim"]').forEach(r => r.addEventListener('change', e => {
+    settings.copyTeamim = e.target.value; saveSettings(); updateCopyTextarea();
+  }));
+  document.querySelectorAll('input[name="optCopyLayout"]').forEach(r => r.addEventListener('change', e => {
+    settings.copyLayout = e.target.value; saveSettings(); updateCopyTextarea();
+  }));
+  document.getElementById('optCopyBlankLines').addEventListener('change', e => {
+    settings.copyBlankLines = parseInt(e.target.value, 10) || 0; saveSettings(); updateCopyTextarea();
+  });
+  document.getElementById('ttCopyColorCoding').addEventListener('change', e => {
+    // Format-only: the preview textarea can never show styling, so nothing to re-render.
+    settings.copyColorCoding = e.target.checked; saveSettings();
+  });
+  document.getElementById('ttCopyBulkRemember').addEventListener('change', e => {
+    settings.copyBulkRemember = e.target.checked; saveSettings();
   });
   document.getElementById('ttCopyBulkCb').addEventListener('change', e => toggleBulkSelectMode(e.target.checked));
   // Enter in the refs field is the whole gesture — type, Enter, next range.
@@ -5600,37 +5724,244 @@ function syncHandoutForm() {
 }
 /* ── Copy verses: per-verse 📋 button + bulk select-and-copy ──
    Mirrors hebrew_dictionary.html's bulk-copy pattern (pure builder, body-class
-   mode, Set of keys, verse-order output). Format prefs (copyIncludeRef/
-   copyIncludeTrans) persist; bulk mode + selection are session-only.
+   mode, Set of keys, verse-order output). Format prefs live in the settings
+   drawer's Copy panel (copyIncludeRef/Trans/Translit/Heading, copyNikkud,
+   copyTeamim, copyLayout, copyBlankLines, copyColorCoding); bulk mode +
+   selection are session-only unless copyBulkRemember is on.
    Copied Hebrew keeps the original Tetragrammaton — replaceTetragrammaton is
    TTS-pronunciation-only and must never touch clipboard text. */
 let ttBulkMode = false;
 const ttBulkSelected = new Set();      // vk strings "C:V"
 let _bulkReadingKey = null;            // selection is per-reading (vks like "1:1" repeat across parshiyot)
 
-// Pure builder — WYSIWYG: nikkud/te'amim follow the on-screen display toggles.
-function verseCopyText(v) {
+// 'screen' follows the display toggle; 'on'/'off' force it. v.hebrew always carries both
+// marks — the display toggles never reach the source data — so forcing "on" always works
+// even while the reading is showing stripped text.
+function _copyMark(pref, screenVal) {
+  return pref === 'on' ? true : pref === 'off' ? false : screenVal;
+}
+
+// One decision layer shared by the plain-text and the rich-HTML builders, so the two
+// flavors of a single copy can never disagree about what they contain.
+function verseCopyParts(v) {
+  const wantTeamim = _copyMark(settings.copyTeamim, settings.showCantillation);
+  const wantNik    = _copyMark(settings.copyNikkud,  settings.showNikkud);
   let heb = v.hebrew || '';
-  if (!settings.showCantillation) heb = stripTeamim(heb);
-  if (!settings.showNikkud)       heb = stripNikkud(heb);
-  let out = settings.copyIncludeRef ? `${v.chapter}:${v.verse} ${heb}` : heb;
-  if (settings.copyIncludeTranslit) {
-    // applyTranslit is synchronous and self-strips te'amim; it returns '' when the
-    // remote library isn't loaded yet (offline/headless) — skip the line in that case.
-    const tr = applyTranslit(v.hebrew);
-    if (tr) out += '\n' + tr;
-  }
+  if (!wantTeamim) heb = stripTeamim(heb);
+  if (!wantNik)    heb = stripNikkud(heb);
+  // applyTranslit is synchronous and self-strips te'amim; it returns '' when the
+  // remote library isn't loaded yet (offline/headless) — the line is skipped in that case.
+  const tr = settings.copyIncludeTranslit ? applyTranslit(v.hebrew) : '';
+  let en = '';
   if (settings.copyIncludeTrans && v.translation) {
     // v.translation may carry Sefaria HTML (stripHTML keeps <i> etc.) — plain-text it.
-    const t = new DOMParser().parseFromString(v.translation, 'text/html').body.textContent.trim();
-    if (t) out += '\n' + t;
+    en = new DOMParser().parseFromString(v.translation, 'text/html').body.textContent.trim();
   }
+  return {
+    ref: settings.copyIncludeRef ? `${v.chapter}:${v.verse}` : '',
+    heb, tr, en, wantTeamim, wantNik
+  };
+}
+
+// Single verse, stacked — the shape a per-verse 📋 has always produced.
+function verseCopyText(v) {
+  const p = verseCopyParts(v);
+  let out = p.ref ? `${p.ref} ${p.heb}` : p.heb;
+  if (p.tr) out += '\n' + p.tr;
+  if (p.en) out += '\n' + p.en;
   return out;
 }
-function ttCopyToClipboard(text, done) {
+
+// Assemble the plain-text payload for one or more verses, honoring heading / layout /
+// blank-lines. A single verse is always stacked (grouping one verse is identical).
+function buildCopyPlain(verses) {
+  if (!verses || !verses.length) return '';
+  const gap = '\n'.repeat(Math.max(0, Math.min(3, settings.copyBlankLines ?? 0)));
+  const parts = verses.map(verseCopyParts);
+  const head = (settings.copyIncludeHeading && currentRangeLabel) ? currentRangeLabel + '\n\n' : '';
+  if (settings.copyLayout === 'grouped' && verses.length > 1) {
+    const block = sel => parts.map(sel).filter(Boolean).join('\n' + gap).trim();
+    const blocks = [
+      block(p => p.ref ? `${p.ref} ${p.heb}` : p.heb),
+      block(p => p.tr),
+      block(p => p.en)
+    ].filter(Boolean);
+    return head + blocks.join('\n\n');
+  }
+  const lines = parts.map(p => {
+    let s = p.ref ? `${p.ref} ${p.heb}` : p.heb;
+    if (p.tr) s += '\n' + p.tr;
+    if (p.en) s += '\n' + p.en;
+    return s;
+  });
+  // Verses are separated by a blank line whenever a verse spans more than one line,
+  // matching the pre-panel behavior; copyBlankLines adds further room on top.
+  const multiline = settings.copyIncludeTranslit || settings.copyIncludeTrans;
+  return head + lines.join((multiline ? '\n\n' : '\n') + gap);
+}
+
+/* ── Rich-text clipboard payload ──
+   Carries the live vowel/trope colors as INLINE styles: the on-screen colors come from
+   --nikv-/--trope-* custom properties on <body>, and those do NOT survive a paste, so the
+   payload needs literal hexes. Everything in the payload is generated in-page —
+   tokenizeHebrew esc()s every Hebrew token and the Sefaria translation is flattened through
+   DOMParser→textContent and then esc()'d — so no untrusted markup ever reaches innerHTML. */
+// On screen the tints are translucent (the '50'/'59' alpha suffixes). Word's HTML importer
+// has no notion of transparency and drops an rgba() background outright — silently losing the
+// color the teacher asked to copy. The payload already forces the light palette, i.e. assumes
+// a white page, so pre-blending the alpha over white gives the identical appearance as an
+// OPAQUE color that every word processor understands. `a` is the same 0-255 byte used on screen.
+function _copyBlendOnWhite(hex, a) {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return hex;
+  const n = parseInt(m[1], 16), f = a / 255;
+  const mix = ch => Math.round(255 * (1 - f) + ch * f).toString(16).padStart(2, '0');
+  return '#' + mix((n >> 16) & 255) + mix((n >> 8) & 255) + mix(n & 255);
+}
+// Styles are written with setAttribute, not the CSSOM: assigning el.style.color normalizes a
+// hex to rgb(), and hex is the form that travels most reliably into other editors.
+function _copySetStyle(el, decls) {
+  const prev = el.getAttribute('style');
+  const all = (prev ? [prev] : []).concat(decls);
+  if (all.length) el.setAttribute('style', all.join(';'));
+}
+function _inlineCopyStyles(container) {
+  const mode = settings.colorCodingMode;
+  container.querySelectorAll('span.nik').forEach(sp => {
+    const key = (sp.className.match(/nik-([a-z]+)/) || [])[1];
+    const c = key ? getNikudColor(key) : null;
+    if (c) {
+      if (mode === 'highlight')      _copySetStyle(sp, [`background-color:${_copyBlendOnWhite(c, 0x50)}`]);
+      else if (mode === 'underline') _copySetStyle(sp, [`text-decoration:underline solid ${c}`, 'text-underline-offset:0.35em']);
+      else                           _copySetStyle(sp, [`color:${c}`]);
+    }
+    sp.removeAttribute('class');
+  });
+  // Same collision rule the screen uses: per-syllable highlights already paint backgrounds,
+  // so a word-level trope tint becomes a clause underline instead of stacking with them.
+  const fallback = document.body.classList.contains('trope-underline-fallback');
+  container.querySelectorAll('span.tt-word').forEach(sp => {
+    const fam = (sp.className.match(/trope-([a-z]+)/) || [])[1];
+    if (fam) {
+      const c = getTropeColor(fam);
+      if (fallback) _copySetStyle(sp, [`text-decoration:underline solid ${c}`,
+                                       'text-decoration-thickness:3px', 'text-underline-offset:0.6em']);
+      else          _copySetStyle(sp, [`background-color:${_copyBlendOnWhite(c, 0x59)}`]);
+    }
+    sp.removeAttribute('class');
+  });
+  // Final sweep: nothing may carry app state — or an event-capable attribute — into someone
+  // else's document. Keeping only style/dir/lang is also what makes the contenteditable
+  // fallback's innerHTML insertion safe, so it must run before the payload leaves this function.
+  container.querySelectorAll('*').forEach(el => {
+    [...el.attributes].forEach(a => {
+      const n = a.name.toLowerCase();
+      if (n !== 'style' && n !== 'dir' && n !== 'lang') el.removeAttribute(a.name);
+    });
+  });
+}
+
+function _copyHebHTML(v, opts) {
+  const div = document.createElement('div');
+  // A fresh local word-index ref — karaoke's running data-twi sequence is never touched.
+  div.innerHTML = tokenizeHebrew(v.hebrew || '', { value: 0 }, opts);
+  _inlineCopyStyles(div);
+  return div.innerHTML;
+}
+
+function buildCopyHTML(verses) {
+  if (!verses || !verses.length) return '';
+  // Force the light palette exactly the way beforeprint does — a pasted document is white,
+  // so a dark-mode teacher's near-white text would land invisible. Read-only: getNikudColor /
+  // getTropeColor consult the flag directly, so we must NOT call applyNikkudColors() /
+  // applyTropeColors() here — that would repaint the body vars and flash the live reading.
+  const prev = _printForceLight;
+  _printForceLight = true;
+  try {
+    const opts = {
+      showCantillation: _copyMark(settings.copyTeamim, settings.showCantillation),
+      showNikkud:       _copyMark(settings.copyNikkud,  settings.showNikkud),
+      colorCodeNikkud:  settings.colorCodeNikkud,
+      colorCodeTrope:   settings.colorCodeTrope
+    };
+    // esc() matters here: a My Fonts entry's family string carries a user-supplied font name.
+    const fontStack = (allFonts().find(f => f.name === settings.hebFont) || {}).family || 'serif';
+    // Word processors think in points, this page in rem. 1rem = 16px = 12pt; clamp so a slider
+    // at either extreme still pastes as readable body text.
+    const rem = parseFloat(settings.hebFontSize);
+    const pt = Math.max(8, Math.min(48, Math.round((isFinite(rem) ? rem : 1.5) * 12)));
+    // No text-align: dir="rtl" already does that job and Word ignores `start`.
+    const hebStyle = `font-family:${esc(fontStack)};font-size:${pt}pt;line-height:1.9;margin:0 0 4pt;`;
+    // An empty <p></p> is dropped by Word's importer and collapsed by Gmail; a &nbsp; one is not.
+    const gap = '<p style="margin:0">&nbsp;</p>'.repeat(Math.max(0, Math.min(3, settings.copyBlankLines ?? 0)));
+    const heb = v => `<p dir="rtl" lang="he" style="${hebStyle}">` +
+                     (settings.copyIncludeRef ? `<span dir="ltr" style="font-size:0.7em;">${v.chapter}:${v.verse}</span> ` : '') +
+                     _copyHebHTML(v, opts) + '</p>';
+    // stripHTML is this page's own sanitizer for exactly this string (8-tag allowlist, every
+    // attribute removed, parsed inert) — so JPS italics for supplied words survive the paste
+    // without widening the trust boundary past what #ttReading already renders.
+    const ltr = t => `<p dir="ltr" style="margin:0 0 4pt;">${t}</p>`;
+    const out = [];
+    if (settings.copyIncludeHeading && currentRangeLabel)
+      out.push(`<p dir="ltr" style="font-weight:bold;margin:0 0 8pt;">${esc(currentRangeLabel)}</p>`);
+    const rows = verses.map(v => {
+      const p = verseCopyParts(v);
+      return { v, tr: p.tr ? esc(p.tr) : '',
+               en: (settings.copyIncludeTrans && v.translation) ? stripHTML(v.translation) : '' };
+    });
+    if (settings.copyLayout === 'grouped' && verses.length > 1) {
+      rows.forEach(r => { out.push(heb(r.v)); out.push(gap); });
+      const tr = rows.map(r => r.tr).filter(Boolean);
+      const en = rows.map(r => r.en).filter(Boolean);
+      if (tr.length) { out.push(gap || '<p style="margin:0">&nbsp;</p>'); tr.forEach(t => { out.push(ltr(t)); out.push(gap); }); }
+      if (en.length) { out.push(gap || '<p style="margin:0">&nbsp;</p>'); en.forEach(t => { out.push(ltr(t)); out.push(gap); }); }
+    } else {
+      rows.forEach(r => {
+        out.push(heb(r.v));
+        if (r.tr) out.push(ltr(r.tr));
+        if (r.en) out.push(ltr(r.en));
+        out.push(gap);
+      });
+    }
+    return `<div>${out.join('')}</div>`;
+  } finally { _printForceLight = prev; }
+}
+
+// The single clipboard writer for the page. `html` is optional — when omitted (or when
+// color-coded copy is off) this is byte-for-byte the plain-text path it has always been.
+function ttCopyToClipboard(text, done, html) {
+  if (html && window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+    try {
+      const item = new ClipboardItem({
+        'text/html':  new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([text], { type: 'text/plain' })
+      });
+      navigator.clipboard.write([item]).then(done).catch(() => _ttCopyRichFallback(text, done, html));
+      return;
+    } catch (e) { /* ClipboardItem unavailable or blob-shape rejected — fall through */ }
+  }
+  if (html) { _ttCopyRichFallback(text, done, html); return; }
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(done).catch(() => _ttCopyFallback(text, done));
   } else { _ttCopyFallback(text, done); }
+}
+// Rich fallback for engines without ClipboardItem write support: selecting a hidden
+// contenteditable and running execCommand('copy') still puts a text/html flavor on the
+// clipboard. Degrades to the plain textarea path if the command reports failure.
+function _ttCopyRichFallback(text, done, html) {
+  const d = document.createElement('div');
+  d.setAttribute('contenteditable', 'true');
+  d.innerHTML = html;   // built in-page from esc()'d tokens — never raw remote markup
+  d.style.cssText = 'position:fixed;top:0;inset-inline-start:0;opacity:0;pointer-events:none;max-height:1px;overflow:hidden;';
+  document.body.appendChild(d);
+  const sel = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(d);
+  sel.removeAllRanges(); sel.addRange(range);
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) {}
+  sel.removeAllRanges(); d.remove();
+  if (ok) done(); else _ttCopyFallback(text, done);
 }
 function _ttCopyFallback(text, done) {
   const ta = document.createElement('textarea');
@@ -5643,17 +5974,24 @@ function _ttCopyFallback(text, done) {
 function copyVerse(numLabel) {
   const v = currentVerses && currentVerses.find(x => `${x.chapter}:${x.verse}` === numLabel);
   if (!v) return;
-  ttCopyToClipboard(verseCopyText(v), () => {
+  const html = settings.copyColorCoding ? buildCopyHTML([v]) : null;
+  ttCopyToClipboard(buildCopyPlain([v]), () => {
     flashVerse(numLabel);
     showHintToast(I18n.t('shared.toast.copied'));
-  });
+  }, html);
 }
-function toggleBulkSelectMode(on) {
+function toggleBulkSelectMode(on, keepSelection) {
   ttBulkMode = on;
   document.body.classList.toggle('tt-bulk-mode', on);
   const panel = document.getElementById('ttCopyBulkPanel');
   if (panel) panel.hidden = !on;
-  if (!on) { ttBulkSelected.clear(); syncBulkClasses(); _setRangeNote(null); }
+  // Leaving the mode normally discards the selection. copyBulkRemember keeps the SET so
+  // reopening the bar resumes where the teacher left off — but the MODE still ends with the
+  // bar, because an invisible bulk mode swallows word-clicks (the original divergence from
+  // the dictionary, still binding). Remembering the selection is safe; remembering the mode
+  // is not.
+  if (!on && !keepSelection) { ttBulkSelected.clear(); _setRangeNote(null); }
+  syncBulkClasses();   // also re-tints a preserved selection when the mode comes back on
   updateCopyTextarea();
 }
 function toggleBulkVerse(vk) {
@@ -5732,14 +6070,21 @@ function syncBulkClasses() {
     if (cb) cb.checked = sel;
   });
 }
-// Textarea/count refresh — output in currentVerses (reading) order, never click order.
+// The selected verses in currentVerses (reading) order, never click order.
+function selectedCopyVerses() {
+  return (currentVerses || []).filter(v => ttBulkSelected.has(`${v.chapter}:${v.verse}`));
+}
+// Textarea/count refresh. The preview always shows the PLAIN flavor — a textarea cannot
+// render the rich one — so with color-coded copy on it previews the text, not the styling.
 function updateCopyTextarea() {
   const ta = document.getElementById('ttCopyTextarea');
   if (!ta) return;
-  const lines = (currentVerses || [])
-    .filter(v => ttBulkSelected.has(`${v.chapter}:${v.verse}`))
-    .map(verseCopyText);
-  ta.value = lines.join((settings.copyIncludeTrans || settings.copyIncludeTranslit) ? '\n\n' : '\n');
+  ta.value = buildCopyPlain(selectedCopyVerses());
+  // A textarea can never show color, so say so rather than let the plain preview read as
+  // "the color-coding option didn't work".
+  const rn = document.getElementById('ttCopyRichNote');
+  if (rn) rn.hidden = !settings.copyColorCoding;
+  _syncCopyAllEnabled();
   // #ttCopyCount is the page's live region for the selection (role=status): Select all, Clear, a
   // verse click and the range picker all land here, and it is the only one of the two counts that
   // speaks — the dock below mirrors the same number silently, so a change is announced once, not
@@ -5800,15 +6145,31 @@ function _watchAudioBarHeight() {
     document.documentElement.style.setProperty('--tt-audio-h', ab.offsetHeight + 'px');
   }).observe(ab);
 }
+// Copy All used to open with a bare `if (!ta.value) return;` on a fully enabled, undimmed
+// button — a dead click with no explanation whenever nothing was selected. Both Copy All
+// buttons now carry aria-disabled and the panel states the reason inline (never an alert()).
+function _syncCopyAllEnabled() {
+  const empty = ttBulkSelected.size === 0;
+  ['ttCopyAllBtn', 'ttBulkDockCopy'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.setAttribute('aria-disabled', empty ? 'true' : 'false');
+  });
+  if (!empty) _setCopyAllNote(null);
+}
+// Stores the KEY as well as the text so applyI18n can re-render a note that is still on
+// screen when the language flips (the _setRangeNote idiom).
+function _setCopyAllNote(key) {
+  const n = document.getElementById('ttCopyAllNote');
+  if (!n) return;
+  if (key) { n.dataset.i18nKey = key; n.textContent = I18n.t(key); }
+  else { delete n.dataset.i18nKey; n.textContent = ''; }
+}
 function copyAllSelected() {
-  const ta = document.getElementById('ttCopyTextarea');
-  if (!ta || !ta.value) return;
-  // Same shape as the dictionary's copyBulkText: writeText, textarea-select fallback.
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(ta.value)
-      .then(() => showHintToast(I18n.t('shared.toast.copied')))
-      .catch(() => { ta.select(); document.execCommand('copy'); showHintToast(I18n.t('shared.toast.copied')); });
-  } else { ta.select(); document.execCommand('copy'); showHintToast(I18n.t('shared.toast.copied')); }
+  if (!ttBulkSelected.size) { _setCopyAllNote('torah.copy.none_selected'); return; }
+  const verses = selectedCopyVerses();
+  const html = settings.copyColorCoding ? buildCopyHTML(verses) : null;
+  _setCopyAllNote(null);
+  ttCopyToClipboard(buildCopyPlain(verses), () => showHintToast(I18n.t('shared.toast.copied')), html);
 }
 function toggleCopyBar() {
   const el = document.getElementById('ttCopyBar');
@@ -5816,22 +6177,45 @@ function toggleCopyBar() {
   el.style.display = opening ? '' : 'none';
   const btn = document.getElementById('ttCopyBtn');
   if (btn) btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
-  if (opening) syncCopyForm();
-  else if (ttBulkMode) {
+  if (opening) {
+    // copyBulkRemember: the teacher who selects verses every session shouldn't have to
+    // re-tick Select verses each time the bar opens. Any selection kept from the last close
+    // is still in the Set, so this resumes exactly where they left off.
+    if (settings.copyBulkRemember && !ttBulkMode) {
+      const cb = document.getElementById('ttCopyBulkCb');
+      if (cb) cb.checked = true;
+      toggleBulkSelectMode(true);
+    }
+    syncCopyForm();
+  } else if (ttBulkMode) {
     // Closing the bar must not strand an invisible mode that swallows word-clicks
     // (deliberate divergence from the dictionary, whose bulk checkbox lives in an
-    // always-visible sidebar).
+    // always-visible sidebar). That holds under copyBulkRemember too — it preserves the
+    // SELECTION across the close, never the mode.
     const cb = document.getElementById('ttCopyBulkCb');
     if (cb) cb.checked = false;
-    toggleBulkSelectMode(false);
+    toggleBulkSelectMode(false, !!settings.copyBulkRemember);
   }
 }
+// Owns only the bar's own state now — the three format toggles moved to the settings
+// drawer's Copy panel and are synced by syncFormToSettings(), so exactly one function
+// writes each control.
 function syncCopyForm() {
-  document.getElementById('ttCopyIncRef').checked   = !!settings.copyIncludeRef;
-  document.getElementById('ttCopyIncTrans').checked = !!settings.copyIncludeTrans;
-  document.getElementById('ttCopyIncTranslit').checked = !!settings.copyIncludeTranslit;
-  document.getElementById('ttCopyBulkCb').checked   = ttBulkMode;
+  document.getElementById('ttCopyBulkCb').checked = ttBulkMode;
+  _setCopyAllNote(null);
   updateCopyTextarea();
+}
+// Open the settings drawer with a given panel expanded and scrolled into view. Panels have
+// no ids — they are addressed by the tail of their title's data-i18n key, same as panelKeyOf.
+function openSettingsAtPanel(key) {
+  openSettings();
+  const title = [...document.querySelectorAll('#settingsModal .panel-title')]
+    .find(t => panelKeyOf(t) === key);
+  if (!title) return;
+  title.parentElement.classList.remove('collapsed');
+  syncPanelTitleAria();
+  savePanelStates();
+  title.scrollIntoView({ block: 'start' });
 }
 async function goToCurrentParshah() {
   const cur = await fetchCurrentParshah(settings.schedule !== 'israel');
@@ -6015,6 +6399,8 @@ function applyI18n() {
       if (rn.dataset.i18nParams) { try { p = ivritSafeParse(rn.dataset.i18nParams); } catch (e) {} }
       rn.textContent = I18n.t(rn.dataset.i18nKey, p);
     }
+    const can = document.getElementById('ttCopyAllNote');
+    if (can && can.dataset.i18nKey) can.textContent = I18n.t(can.dataset.i18nKey);
   } catch (e) {}
   // Re-render the reading so row labels / aliyah markers / verse buttons translate — but NEVER
   // while audio is playing or looping (a renderText() rebuild would desync the karaoke data-twi
