@@ -158,6 +158,8 @@
   "dashboard.editor.align_right": "יישור לימין (RTL)",
   "dashboard.editor.bold": "מודגש",
   "dashboard.editor.finish_editing": "סיום עריכה",
+  "dashboard.editor.font_title": "גופן — חל על הטקסט המסומן, או על כל ההודעה כשאין סימון",
+  "dashboard.editor.font_upload": "⬆ העלו גופן…",
   "dashboard.editor.insert_link": "הוספת קישור (או הסרה אם הסמן בתוך קישור)",
   "dashboard.editor.italic": "נטוי",
   "dashboard.editor.size_large": "גדול",

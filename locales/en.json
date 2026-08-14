@@ -158,6 +158,8 @@
   "dashboard.editor.align_right": "Align right (RTL)",
   "dashboard.editor.bold": "Bold",
   "dashboard.editor.finish_editing": "Finish editing",
+  "dashboard.editor.font_title": "Font — applies to the selected text, or to the whole message when nothing is selected",
+  "dashboard.editor.font_upload": "⬆ Upload a font…",
   "dashboard.editor.insert_link": "Insert link (or remove if cursor is inside one)",
   "dashboard.editor.italic": "Italic",
   "dashboard.editor.size_large": "Large",

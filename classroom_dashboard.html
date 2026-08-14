@@ -1205,6 +1205,11 @@
     padding: 3px 6px;
     font-size: 0.78rem;
   }
+  /* Font names need more room than "Normal"/"Large" — widen only this select, not the size one.
+     112px is the ceiling at which Font and Size still share a toolbar row in the 380px drawer
+     (a wider box pushes Size onto a line of its own); longer names ellipsize in the closed box the
+     way a word processor's font box does, and the open list always shows them in full. */
+  .ed-font-select { max-width: 112px; }
   .editor {
     border: 1px solid var(--border);
     background: var(--white);
@@ -1273,7 +1278,6 @@
   }
   body.dark .font-opt.active { background: rgba(224, 168, 50, 0.16); }
   .font-opt-preview { font-size: 1.4rem; direction: rtl; min-width: 44px; text-align: center; color: var(--text); }
-  .font-opt-preview.ltr { direction: ltr; }   /* English picker previews render left-to-right */
   /* --gold-text, not --gold: the raw gold on this tinted plate measured 2.39:1 in light mode,
      under the 4.5 bar for 22.4px text (both the Hebrew and the English picker). --gold-text is the
      suite token for exactly this (S63); in dark it resolves to var(--gold), where the body.dark
@@ -2286,15 +2290,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label data-i18n="dashboard.text.hide">Hide dashboard text</label>
       <label class="toggle"><input type="checkbox" id="hideDashText"><span class="slider"></span></label>
     </div>
-    <div class="sub-section" style="margin-top:12px;">
-      <div class="sub-section-hdr" data-i18n="dashboard.text.sub_font">English Font</div>
-      <div class="sub-section-body">
-        <div class="font-options" id="engFontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadEngFontPick(this)"></label>
-      </div>
-    </div>
   </div>
 </div>
+<!-- The English font picker lives in the editor toolbar (both copies of it), so its file input has
+     to sit outside — buildToolbar renders into two containers and would otherwise duplicate the id. -->
+<input type="file" id="engFontUploadInput" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadEngFontPick(this)" tabindex="-1" aria-hidden="true">
 
 <div class="panel collapsed" id="presetsPanel">
   <div class="panel-title" data-i18n="dashboard.settings.panel_presets">Presets</div>
@@ -2578,7 +2578,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     { section:'Cursive', name:'Shmulik CLM',         family:"'Shmulik CLM', cursive",            load:{type:'face',css:"@font-face{font-family:'Shmulik CLM';src:url('https://cdn.jsdelivr.net/gh/aharonium/fonts/Fonts/Hebrew%20Letters%20with%20Vowels%20(no%20cantillation)/Culmus%20Project%20(GPL%20and%20GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Shmulik%20CLM/ShmulikCLM.ttf') format('truetype');font-weight:normal;font-style:normal;}"} },
   ];
 
-  /* English/Latin fonts for the Dashboard Text message (see #engFontOptions picker + --eng-font).
+  /* English/Latin fonts for the Dashboard Text message (see the editor toolbar's font dropdown,
+     buildFontSelectOptions, + --eng-font for the message's base font).
      Same {section,name,family,load} shape as HEB_FONTS. load:null = already linked in <head>;
      {type:'gfonts',url} = lazy <link>. Source Sans 3 is the DEFAULT (the message's current font). */
   const ENG_FONTS = [
@@ -7384,9 +7385,11 @@ else ivritInit();
     { type:'btn', titleKey:'dashboard.editor.spoiler_title', htmlKey:'dashboard.editor.spoiler_button', run:() => insertSpoiler() },
     { type:'sep' },
     { type:'color', titleKey:'dashboard.editor.text_color', run:v => fmt('foreColor', v) },
+    { type:'font',  titleKey:'dashboard.editor.font_title', run:v => pickEditorFont(v) },
     { type:'size',  titleKey:'dashboard.editor.size_title', run:v => fmt('fontSize', v),
       options:[['2','dashboard.editor.size_small'],['3','dashboard.editor.size_normal'],['5','dashboard.editor.size_large'],['6','dashboard.editor.size_xl'],['7','dashboard.editor.size_xxl']] },
   ];
+  const ENG_FONT_UPLOAD = '__upload';
   function buildToolbar(container) {
     if (!container) return;
     container.innerHTML = '';
@@ -7400,6 +7403,11 @@ else ivritInit();
         node = document.createElement('select'); node.className = 'ed-select'; node.title = I18n.t(c.titleKey);
         node.innerHTML = c.options.map(([v, l]) => `<option value="${v}"${v === '3' ? ' selected' : ''}>${esc(I18n.t(l))}</option>`).join('');
         node.addEventListener('change', e => c.run(e.target.value));
+      } else if (c.type === 'font') {
+        node = document.createElement('select'); node.className = 'ed-select ed-font-select'; node.title = I18n.t(c.titleKey);
+        node.setAttribute('aria-label', node.title);
+        buildFontSelectOptions(node);
+        node.addEventListener('change', e => c.run(e.target.value));
       } else {
         node = document.createElement('button'); node.type = 'button'; node.className = 'ed-btn'; node.title = I18n.t(c.titleKey);
         node.innerHTML = c.htmlKey ? esc(I18n.t(c.htmlKey)) : c.html; node.addEventListener('click', c.run);
@@ -7408,6 +7416,82 @@ else ivritInit();
       }
       container.appendChild(node);
     });
+  }
+
+  /* ── The English font dropdown (replaces the old #engFontOptions button grid) ─────────────────
+     Word-processor semantics: a pick applies to the SELECTION; with nothing selected it sets the
+     message's base font (settings.engFont → --eng-font), which is all the old grid ever did. Both
+     toolbars are built from EDITOR_COMMANDS, so the control appears in the drawer AND in the
+     floating in-place toolbar with no extra wiring. */
+  function engFontSelects() { return [...document.querySelectorAll('.ed-font-select')]; }
+
+  function buildFontSelectOptions(sel) {
+    const prev = sel.value;
+    sel.innerHTML = '';
+    const fonts = allEngFonts();
+    [...new Set(fonts.map(f => f.section))].forEach(sec => {
+      const g = document.createElement('optgroup');
+      g.label = sec === 'My Fonts' ? I18n.t('shared.fonts.section_my_fonts')
+                                   : I18n.t('shared.fonts.section_generic', { section: sec });
+      fonts.filter(f => f.section === sec).forEach(font => {
+        const o = document.createElement('option');
+        o.value = font.name;
+        o.textContent = font.name;
+        o.style.fontFamily = font.family;   // desktop Chromium/Firefox draw each name in its own face
+        loadHebFont(font);                  // …which only works once the face is actually loaded
+        g.appendChild(o);
+      });
+      sel.appendChild(g);
+    });
+    const up = document.createElement('option');
+    up.value = ENG_FONT_UPLOAD;
+    up.textContent = I18n.t('dashboard.editor.font_upload');
+    sel.appendChild(up);
+    sel.value = (prev && prev !== ENG_FONT_UPLOAD) ? prev : (settings.engFont || ENG_FONTS[0].name);
+  }
+
+  function pickEditorFont(v) {
+    if (v === ENG_FONT_UPLOAD) {
+      syncFontSelect();                     // never leave the upload entry showing as the choice
+      const inp = document.getElementById('engFontUploadInput');
+      if (inp) inp.click();
+      return;
+    }
+    const font = allEngFonts().find(f => f.name === v);
+    if (!font) return;
+    // Judge "is there a selection?" from _savedEditorRange, not the live one: opening a native
+    // <select> moves focus out of the editor and collapses the DOM selection.
+    const r = _savedEditorRange;
+    const inEditor = r && activeEditor().contains(r.commonAncestorContainer);
+    if (inEditor && !r.collapsed) {
+      // Append the Hebrew family. .dash-text-display/.editor are `var(--eng-font), var(--heb-font)`,
+      // so a bare face="Nunito" would strip that fallback and leave Hebrew inside a restyled run in
+      // a browser default face. face= is a presentational attribute, so var() can't resolve there —
+      // the Hebrew family is baked in at apply time and won't follow a later Hebrew-font change.
+      const heb = (allFonts().find(f => f.name === settings.hebFont) || HEB_FONTS[0]).family;
+      fmt('fontName', font.family + ', ' + heb);
+    } else {
+      setEngFont(font.name);
+      // The old grid relied on the editor's blur to persist; this path is reachable without ever
+      // focusing the editor, so save here.
+      saveSettingsToStorage();
+    }
+    syncFontSelect();
+  }
+
+  // queryCommandValue returns the computed first family, quoted or not — match tolerantly.
+  function normFontName(s) { return String(s || '').split(',')[0].replace(/^\s*['"]|['"]\s*$/g, '').trim().toLowerCase(); }
+  function syncFontSelect() {
+    const sels = engFontSelects();
+    if (!sels.length) return;
+    let name = '';
+    try {
+      const q = normFontName(document.queryCommandValue('fontName'));
+      const hit = q && allEngFonts().find(f => normFontName(f.name) === q || normFontName(f.family) === q);
+      if (hit) name = hit.name;
+    } catch (e) {}
+    const val = name || settings.engFont || ENG_FONTS[0].name;
+    sels.forEach(s => { if (s.value !== val) s.value = val; });
   }
 
   /* ── Two-way sync + in-place editing on the dashboard ── */
@@ -7713,14 +7797,15 @@ async function onUploadEngFontPick(input){
     }
   }
 
-  /* Two font pickers share one renderer. HEB_PICKER reproduces the original Hebrew picker
-     byte-for-byte (previewLtr:false → no extra class, defaultName marks [DEFAULT], builtins[0]
-     is the fallback = Frank Ruhl Libre). ENG_PICKER drives the Dashboard Text message font. */
+  /* HEB_PICKER is the button-grid picker (defaultName marks [DEFAULT], builtins[0] is the fallback
+     = Frank Ruhl Libre). It is now renderFontPicker's only caller — the English picker became a
+     toolbar dropdown, so the old previewText/previewLtr parameters went with it. */
   const HEB_PICKER = { mountId:'fontOptions',    settingKey:'hebFont', cssVar:'--heb-font',
-                       previewText:'אֶרֶץ',       previewLtr:false, defaultName:'Frank Ruhl Libre',
+                       defaultName:'Frank Ruhl Libre',
                        fontsFn:allFonts,    builtins:HEB_FONTS };
-  const ENG_PICKER = { mountId:'engFontOptions', settingKey:'engFont', cssVar:'--eng-font',
-                       previewText:'Abc 123',    previewLtr:true,  defaultName:'Source Sans 3',
+  // ENG_PICKER no longer renders a grid — its dropdown lives in the editor toolbar (mode:'select'),
+  // so it keeps only the state half of the config that applyFontChoice needs.
+  const ENG_PICKER = { mode:'select',            settingKey:'engFont', cssVar:'--eng-font',
                        fontsFn:allEngFonts, builtins:ENG_FONTS };
 
   function renderFontPicker(cfg) {
@@ -7742,7 +7827,7 @@ async function onUploadEngFontPick(input){
         btn.setAttribute('aria-pressed', font.name === settings[cfg.settingKey] ? 'true' : 'false');
         btn.dataset.fontName = font.name;
         btn.innerHTML =
-          `<span class="font-opt-preview${cfg.previewLtr ? ' ltr' : ''}"${cfg.previewLtr ? '' : ' lang="he"'} style="font-family:${font.family};">${cfg.previewText}</span>` +
+          `<span class="font-opt-preview" lang="he" style="font-family:${font.family};">אֶרֶץ</span>` +
           `<span class="font-opt-name">${ivEsc(font.name)}${font.name === cfg.defaultName ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">' + ivEsc(I18n.t('shared.fonts.default_marker')) + '</span>' : ''}</span>`;
         btn.onclick = () => applyFontChoice(cfg, font.name);
         loadHebFont(font);
@@ -7756,6 +7841,7 @@ async function onUploadEngFontPick(input){
     settings[cfg.settingKey] = f.name;
     loadHebFont(f);
     document.documentElement.style.setProperty(cfg.cssVar, f.family);
+    if (cfg.mode === 'select') { engFontSelects().forEach(s => { s.value = f.name; }); return; }
     const mount = document.getElementById(cfg.mountId);
     if (mount) mount.querySelectorAll('.font-opt').forEach(el => {
       const on = el.dataset.fontName === f.name;
@@ -7766,7 +7852,7 @@ async function onUploadEngFontPick(input){
 
   /* Thin wrappers keep every existing call site (init, preset apply, uploader) working unchanged. */
   function initFontSelector() { renderFontPicker(HEB_PICKER); }
-  function initEngFontSelector() { renderFontPicker(ENG_PICKER); }
+  function initEngFontSelector() { engFontSelects().forEach(buildFontSelectOptions); }
   function setHebFont(name) { applyFontChoice(HEB_PICKER, name); }
   function setEngFont(name) { applyFontChoice(ENG_PICKER, name); }
 
@@ -8085,6 +8171,7 @@ async function onUploadEngFontPick(input){
     if (document.activeElement === activeEditor()) {
       const sel = window.getSelection();
       if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
+      syncFontSelect();   // the font dropdown follows the caret, like a word processor
     }
   });
 
