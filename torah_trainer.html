@@ -2795,6 +2795,28 @@ function tokenizeHebrew(text, wordIdxStartRef) {
       if (/[א-ת]/.test(tokens[i])) { lastHebIdx = i; break; }
     }
   }
+  // Resolve every Hebrew token's own clause family up front, so the maqaf pass can
+  // look ahead at a partner's family before any spans are emitted.
+  let famOf = null;
+  if (tropeOn) {
+    famOf = [];
+    for (let ti = 0; ti < tokens.length; ti++) {
+      if (!/[א-ת]/.test(tokens[ti] || '')) continue;
+      famOf[ti] = (ti === lastHebIdx) ? 'sofpasuk'
+                : rawAligned ? tropeFamilyOf(rawTokens[ti])
+                : (famByTi[ti] || null);
+    }
+    // A maqaf-joined proclitic carries no accent of its own — prosodically it belongs
+    // to its partner's clause — so it inherits the family of the word after the maqaf
+    // (split() guarantees [word,'־',word] adjacency). Backward walk resolves chains
+    // (אֶל־כׇּל־דִּבְרֵי) in one pass. Inherit-only: a token that has a family keeps
+    // it, and a partner with none (realign desync tail) contributes nothing — no
+    // color, never wrong color.
+    for (let ti = tokens.length - 1; ti >= 0; ti--) {
+      if (famOf[ti] || !/[א-ת]/.test(tokens[ti] || '')) continue;
+      if (tokens[ti + 1] === '־' && famOf[ti + 2]) famOf[ti] = famOf[ti + 2];
+    }
+  }
   const out = [];
   for (let ti = 0; ti < tokens.length; ti++) {
     const tok = tokens[ti];
@@ -2807,12 +2829,7 @@ function tokenizeHebrew(text, wordIdxStartRef) {
         ? colorizeHebrew(tok)
         : esc(tok);
       let tropeCls = '';
-      if (tropeOn) {
-        const fam = (ti === lastHebIdx) ? 'sofpasuk'
-                  : rawAligned ? tropeFamilyOf(rawTokens[ti])
-                  : (famByTi[ti] || null);
-        if (fam) tropeCls = ' trope-' + fam;   // fam ∈ TROPE_FAMILIES — internal constant, not user data
-      }
+      if (tropeOn && famOf[ti]) tropeCls = ' trope-' + famOf[ti];   // fam ∈ TROPE_FAMILIES — internal constant, not user data
       out.push(`<span class="tt-word${tropeCls}" data-twi="${idx}">${inner}</span>`);
     } else {
       out.push(esc(tok));
