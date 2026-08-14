@@ -254,7 +254,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: all 0.15s;
+    transition: background 0.15s, border-color 0.15s;
   }
   .hbtn:hover { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.3); }
   .hbtn.icon-btn { padding: 7px 10px; font-size: 1rem; }
@@ -952,7 +952,7 @@
     font-weight: 700;
     cursor: pointer;
     font-size: 0.85rem;
-    transition: all 0.15s;
+    transition: background 0.15s, border-color 0.15s;
   }
   .btn:hover { background: var(--gold-light); border-color: var(--gold-light); }
   /* 30px floor — the suite's ratified touch-target size (S102, first applied in flash_cards.html;
@@ -974,7 +974,7 @@
   .vowel-scheme-btn {
     flex: 1; padding: 4px 8px; font-size: 0.72rem; font-family: inherit; cursor: pointer;
     border: 1px solid var(--border); border-radius: 5px;
-    background: transparent; color: var(--text); transition: all 0.15s;
+    background: transparent; color: var(--text); transition: background 0.15s, color 0.15s, border-color 0.15s;
   }
   .vowel-scheme-btn:hover { background: var(--warm-gray); }
   .vowel-scheme-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
@@ -993,7 +993,7 @@
     position: absolute; inset: 0;
     background: var(--border);
     border-radius: 22px;
-    transition: 0.2s;
+    transition: background 0.2s;
     cursor: pointer;
   }
   .slider::before {
@@ -1003,7 +1003,7 @@
     left: 3px; top: 3px;
     background: white;
     border-radius: 50%;
-    transition: 0.2s;
+    transition: transform 0.2s;
   }
   input:checked + .slider { background: var(--gold); }
   input:checked + .slider::before { transform: translateX(16px); }
@@ -1028,7 +1028,7 @@
     cursor: pointer;
     font-weight: 600;
     color: var(--muted);
-    transition: 0.15s;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
     flex: none;
   }
   .radio-group input:checked + label {
@@ -1253,7 +1253,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    transition: all 0.15s;
+    transition: border-color 0.15s, background 0.15s;
     color: var(--text);
     text-align: start;
     width: 100%;
@@ -1553,6 +1553,8 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
     .timer-display.done, #timerCol.running, #timerCol.running.urgent { animation: none !important; }
     .pick-name.flicker, .pick-name.landed { animation: none !important; }
+    /* Toggle-switch knob: snap the slide (its transition is now transform-only). */
+    .slider::before { transition: none !important; }
   }
 
   /* ───── Responsive ───── */
