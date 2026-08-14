@@ -2257,7 +2257,9 @@ function initVowelFilter() {
     const chipsWrap = document.createElement('div');
     chipsWrap.className = 'vowel-group-chips';
     const header = document.createElement('div');
-    header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;';
+    // min-height 24px: the WCAG floor (touch-target haul) for this dense sidebar row — the bare
+    // 0.68rem flex line measured 229x14; align-items:center keeps the text + arrow centered.
+    header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;min-height:24px;';
     const hdrText = document.createElement('span');
     hdrText.innerHTML = window.I18n ? I18n.t('worksheet.vowels.group_header', {sound: i18nName('worksheet.vowels.sound.', group.sound), color: vowelColorLabel(group)}) : (group.sound + ' Sound – ' + group.colorHtml);
     const arrow = document.createElement('span');
