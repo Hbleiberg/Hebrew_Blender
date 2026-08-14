@@ -3008,7 +3008,7 @@ function renderText() {
       : ''}</span>
     <span style="display:flex;gap:6px;">
       <button class="tt-readall" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? esc(I18n.t('torah.reading.stop')) : esc(I18n.t('torah.reading.read_all'))}</button>
-      ${canChant ? `<button class="tt-readall tt-chantall" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? esc(I18n.t('torah.reading.chant_all_stop')) : esc(I18n.t('torah.reading.chant_all'))}</button>` : ''}
+      ${canChant ? `<button class="tt-readall tt-chantall${chantAllState.active ? ' active' : ''}" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? esc(I18n.t('torah.reading.chant_all_stop')) : esc(I18n.t('torah.reading.chant_all'))}</button>` : ''}
     </span>
   </div>`;
   // Aliyah landmarks (full-parsha only) — inline dividers + jump targets.
@@ -3657,6 +3657,10 @@ async function loopVerse(numLabel) {
 }
 function startLoop(numLabel, bounds) {
   if (ttsState.readAllActive) stopReadAll();
+  // Loop supersedes chant-all — the mirror of toggleChantAll's clearLoop(). Without it the
+  // ⏹ chant button stays lit after the loop, and a lingering chantAllState.active suppresses
+  // the verse-end stop for every later single-verse play (loadKaraoke reads it for stopAt).
+  if (chantAllState.active) stopChantAll();
   speechSynthesis.cancel();
   if (_loopPauseTimer) { clearTimeout(_loopPauseTimer); _loopPauseTimer = null; }
   _verseEndStopAt = null;   // loop supersedes the single-verse stop (mutually exclusive)
