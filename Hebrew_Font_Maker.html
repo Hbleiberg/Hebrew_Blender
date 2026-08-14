@@ -5150,6 +5150,14 @@ function _pT(k, fallback, p) {
   const v = I18n.t(key, p);
   return v === key ? fallback : v;
 }
+/* Drop-zone fragments. The "browse" word is the only click path into the file input
+   (wireDrop binds drag events only), so it travels as a {browse} param — the span and its
+   static onclick stay in code, never in the CSV. */
+function _dropKind(svg) { return svg ? _pT('drop_kind_svg', 'an <b>SVG</b>') : _pT('drop_kind_img', 'an image'); }
+function _dropBrowse(inputId) {
+  return '<span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById(\'' + inputId + '\').click()">'
+       + _pT('drop_browse', 'browse') + '</span>';
+}
 function _cgT(k, fallback) {
   const key = 'fontmaker.panels.custom_' + k;
   if (!window.I18n) return fallback;
@@ -6199,7 +6207,7 @@ function renderMarkControls(c, it) {
     } else {
       if (svgUploadOn() && it.source && it.source.kind === 'svg' && it.contours)
         h += `<div class="ctl-row" style="align-items:center;"><span class="hint" style="flex:1;">${I18n.t('fontmaker.panels.markctl_svg_imported')}</span><button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button></div>`;
-      h += `<div class="drop" id="markDrop">Drop ${svgUploadOn()?'an <b>SVG</b>':'an image'} of <b>${esc(it.name)}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('markFile').click()">browse</span>.</div>
+      h += `<div class="drop" id="markDrop">${_pT('markctl_drop', 'Drop ' + _dropKind(svgUploadOn()) + ' of <b>' + esc(it.name) + '</b>, or ' + _dropBrowse('markFile') + '.', { kind: _dropKind(svgUploadOn()), name: '<b>' + esc(it.name) + '</b>', browse: _dropBrowse('markFile') })}</div>
         <div class="allowed">${svgUploadOn()?I18n.t('fontmaker.panels.mark_allowed_svg'):I18n.t('fontmaker.panels.mark_allowed_img')}</div>
         <input type="file" id="markFile" accept="${svgUploadOn()?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
     }
@@ -11542,7 +11550,7 @@ function renderAlignLeft(L, l) {
   let html = `<div class="ws-side-title">${I18n.t('fontmaker.panels.add_letters')}</div>` + inputModeBlock();
   if (project.inputMode === 'single' && curKind === 'letter') {
     const svg = svgUploadOn();
-    html += `<div class="drop" id="letterDrop">Drop ${svg?'an <b>SVG</b>':'an image'} for <b>${esc(l.name)}</b>, or <span style="text-decoration:underline;cursor:pointer;" onclick="document.getElementById('letterFile').click()">browse</span>.</div>
+    html += `<div class="drop" id="letterDrop">${_pT('letter_drop', 'Drop ' + _dropKind(svg) + ' for <b>' + esc(l.name) + '</b>, or ' + _dropBrowse('letterFile') + '.', { kind: _dropKind(svg), name: '<b>' + esc(l.name) + '</b>', browse: _dropBrowse('letterFile') })}</div>
       <div class="allowed">${svg?_pT('letter_allowed_svg','Allowed: SVG only — vectors import directly (no tracing).'):_pT('mark_allowed_img','Allowed: any image file — PNG, JPG, GIF, WebP.')}</div>
       <input type="file" id="letterFile" accept="${svg?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
   } else if (project.inputMode === 'combined' && project.combinedSheets.length && curKind === 'letter') {
@@ -12012,7 +12020,7 @@ function renderAnchorLeft(L, l) {
       </div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">${_pT('default_spread_hint', 'Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).')}</div>
       ${(nCustom => nCustom ? `
-      <div class="hint" style="font-size:0.6rem;text-align:center;color:var(--gold);">${nCustom} letter${nCustom === 1 ? "'s" : "s'"} hand-tuned side positions kept — the slider only moves columns still at the default.</div>
+      <div class="hint" style="font-size:0.6rem;text-align:center;color:var(--gold);">${_pT('side_positions_kept.' + (nCustom === 1 ? 'one' : 'other'), nCustom + ' letter' + (nCustom === 1 ? "'s" : "s'") + ' hand-tuned side positions kept — the slider only moves columns still at the default.', { count: nCustom })}</div>
       <div class="ctl-row" style="justify-content:center;margin-top:2px;"><button class="ctl-btn" onclick="resetTropSideColumns()" title="${esc((window.I18n ? I18n.t('fontmaker.panels.reset_side_positions_title') : "Re-seed every letter's Left/Right columns from its center ± spread (undoable)"))}">${_pT('reset_side_positions', 'Reset all side positions')}</button></div>` : '')(tropCustomSideCount())}
       <hr class="ctl-divider">
       <div class="ws-side-title">${I18n.t('fontmaker.panels.pair_title')}</div>
