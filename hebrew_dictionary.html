@@ -306,7 +306,7 @@ header p{font-size:0.82rem;color:var(--gold-light);margin-top:2px;}
 header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px;}
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:4px 12px;font-size:0.78rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;}
 .dark-btn:hover{background:rgba(255,255,255,0.1);}
-.nav-btn{background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:4px 12px;font-size:0.78rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;}
+.nav-btn{background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:4px 12px;font-size:0.78rem;min-height:24px;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;}
 .nav-btn:hover{background:var(--gold-light);}
 /* i18n / RTL utilities — directional glyphs mirror under RTL; bidi-isolate protects number/Latin readouts */
 .dir-arrow{display:inline-block;}
@@ -315,9 +315,9 @@ header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px
 .app{display:flex;flex:1;overflow:hidden;}
 .sidebar{width:300px;flex-shrink:0;background:var(--white);border-inline-end:1px solid var(--border);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
 #appSidebar.hidden{display:none;}
-.sidebar-toggle-btn{position:fixed;inset-inline-start:300px;top:50vh;transform:translateY(-50%);width:16px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
+.sidebar-toggle-btn{position:fixed;inset-inline-start:300px;top:50vh;transform:translateY(-50%);width:24px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
 .sidebar-toggle-btn:hover{background:#0f1a33;}
-.sidebar-show-btn{position:fixed;inset-inline-start:0;top:50vh;transform:translateY(-50%);width:16px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:100;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
+.sidebar-show-btn{position:fixed;inset-inline-start:0;top:50vh;transform:translateY(-50%);width:24px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:100;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
 .sidebar-show-btn:hover{background:#0f1a33;}
 .search-wrap{position:relative;}
 .search-wrap input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);outline:none;box-sizing:border-box;}
@@ -626,6 +626,9 @@ footer a{color:var(--gold-text);text-decoration:none;}
 /* min-height 24px: the WCAG floor (touch-target haul) — the 0.8rem cross-tool nav links
    measured 15px bare; inline-flex centers the text without changing the wrapped layout. */
 footer nav a{display:inline-flex;align-items:center;min-height:24px;}
+/* Same floor for the footer FAQ/How-to disclosure rows (19-21px inline-styled) — min-height
+   is absent from their inline styles, so no !important; display stays list-item (marker kept). */
+footer summary{min-height:24px;}
 @media(max-width:680px){
   .app{flex-direction:column;overflow:visible;}
   /* Section 4: results (with the sticky search/mode bar) sit ABOVE the collapsed filter sidebar */
