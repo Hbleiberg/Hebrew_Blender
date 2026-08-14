@@ -473,10 +473,14 @@ body.dark .wm-act{background:var(--white);}
 body.bulk-mode .wc-bulk-cb{display:block;}
 body.bulk-mode .word-card,body.bulk-mode .emoji-card{cursor:pointer;}
 .emoji-card.bulk-selected{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,var(--white));}
-.wc-copy,.wc-search,.wc-speak{position:absolute;top:7px;background:none;border:1px solid var(--border);border-radius:4px;padding:3px;color:var(--muted);cursor:pointer;line-height:0;opacity:0.75;transition:opacity 0.15s,border-color 0.15s,color 0.15s;display:flex;align-items:center;justify-content:center;text-decoration:none;}
+/* min 24px = the WCAG 2.5.8 floor (S178 haul: these measured 21px, x300 cards). Deliberately NOT
+   the 30px house bar: the trio floats over the card corner where long Hebrew words already pass
+   beneath them, and 30px boxes would meaningfully deepen that zone. Offsets re-pitched for the
+   wider boxes (2px gaps, as before). */
+.wc-copy,.wc-search,.wc-speak{position:absolute;top:7px;background:none;border:1px solid var(--border);border-radius:4px;padding:3px;min-width:24px;min-height:24px;box-sizing:border-box;color:var(--muted);cursor:pointer;line-height:0;opacity:0.75;transition:opacity 0.15s,border-color 0.15s,color 0.15s;display:flex;align-items:center;justify-content:center;text-decoration:none;}
 .wc-copy{inset-inline-start:7px;}
-.wc-search{inset-inline-start:30px;}
-.wc-speak{inset-inline-start:53px;font-size:0.75rem;display:none;line-height:1;}
+.wc-search{inset-inline-start:33px;}
+.wc-speak{inset-inline-start:59px;font-size:0.75rem;display:none;line-height:1;}
 body.dict-audio-on .wc-speak{display:flex;}
 .wc-copy:hover,.wc-copy.copied,.wc-search:hover,.wc-speak:hover{border-color:var(--gold);color:var(--gold);opacity:1;}
 .wc-heb{font-family:var(--heb-font);font-size:var(--heb-font-size);direction:rtl;text-align:right;line-height:1.2;}
