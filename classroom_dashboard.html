@@ -1607,6 +1607,9 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     /* The screen zoom is an inline style on .dashboard — 160% on a SmartBoard must not
        print as 160% on Letter. */
     .dashboard { zoom: 1 !important; }
+    /* Never split a day row or a widget block across sheets (best-effort — a block
+       taller than the page still breaks; browser overrides). */
+    .day-item, .weather-block, .omer-block, .shabbat-block { break-inside: avoid; page-break-inside: avoid; }
   }
 /* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */
 .ft-tree { display:flex; flex-direction:column; gap:4px; }
