@@ -2164,6 +2164,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <label class="switch"><input type="checkbox" id="sheetDuplexToggle" onchange="setSheetDuplex(this.checked)"><span class="slider"></span></label>
     <span class="label has-tip" data-tip="Prints a matching answer page after each card page. Flip on the long edge so each answer lands behind its own card." data-i18n-tip="flashcards.sheet.duplex_tip" data-i18n="flashcards.sheet.duplex">Answer on the back (double-sided)</span>
   </div>
+  <div class="row" id="sheetPracticedRow" hidden>
+    <label class="switch"><input type="checkbox" id="sheetPracticedToggle" onchange="setSheetPracticed(this.checked)"><span class="slider"></span></label>
+    <span class="label has-tip" data-tip="Prints the exact cards from the practice run you just finished — same cards, same order — instead of a fresh random draw." data-i18n-tip="flashcards.sheet.practiced_tip" data-i18n="flashcards.sheet.practiced">Print the deck we just practiced</span>
+  </div>
   <button class="btn gold sm" id="sheetPrintBtn" type="button" onclick="printCardSheet()" data-i18n="flashcards.sheet.print_now">Print</button>
 </div>
 
@@ -4000,6 +4004,7 @@ function getSettings() {
     vowelLocks: Object.fromEntries(Object.entries(vowelLocks).map(([k, v]) => [k, { enabled: v.enabled, vowels: [...v.vowels] }])),
     translitStyle,
     sheetDuplex,
+    sheetPracticed,
   };
 }
 function applySettings(s) {
@@ -4183,6 +4188,9 @@ function applySettings(s) {
   sheetDuplex = s.sheetDuplex ?? false;          // ?? not || — a stored false must survive
   const sdT = document.getElementById('sheetDuplexToggle');
   if (sdT) sdT.checked = sheetDuplex;
+  sheetPracticed = s.sheetPracticed ?? false;    // ?? not || — a stored false must survive
+  const spT = document.getElementById('sheetPracticedToggle');
+  if (spT) spT.checked = sheetPracticed;
   // Always load the library so romanized fields on numbers/colors cards get populated
   window.HebrewTransliterator.ensureLoaded().then(() => {
     rebuildDeckTranslit();
@@ -6720,8 +6728,10 @@ function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
    page is followed by its answer page. Every card shape in the tool is {heb, translit, ...},
    so one builder covers Hebrew, numbers, colors, emoji and words alike. */
 let sheetDuplex = false;
+let sheetPracticed = false;
 const FCS_COLS = 3, FCS_PER_PAGE = 9;
 function setSheetDuplex(v) { sheetDuplex = !!v; saveSettings(); }
+function setSheetPracticed(v) { sheetPracticed = !!v; saveSettings(); }
 
 /* The duplex option belongs to the Print button, not to Flash Cards as a whole, so it lives in a
    drop-down that opens off that button instead of sitting in the CTA full-time. Mechanics mirror
@@ -6754,6 +6764,9 @@ function _sheetMenuKey(e) {
 }
 function openSheetMenu() {
   const btn = document.getElementById('printSheetBtn'), menu = document.getElementById('sheetMenu');
+  // The practiced-deck row only applies once a drill has run this visit (savedCards is in-memory
+  // only) — set its visibility before the menu is measured so the height is right.
+  document.getElementById('sheetPracticedRow').hidden = !savedCards.length;
   menu.hidden = false;                                   // unhide first — it must be measurable
   const rc = btn.getBoundingClientRect();
   let top = rc.top - menu.offsetHeight - 6;
@@ -6815,7 +6828,7 @@ function fcsCell(card, isBack) {
 }
 function printCardSheet() {
   closeSheetMenu();                      // never let the drop-down be on screen behind the dialog
-  const deck = generateDeck(cardCount);
+  const deck = (sheetPracticed && savedCards.length) ? savedCards.slice() : generateDeck(cardCount);
   if (!deck.length) {
     if (typeof showAppToast === 'function') showAppToast(I18n.t('flashcards.sheet.err_empty'));
     return;

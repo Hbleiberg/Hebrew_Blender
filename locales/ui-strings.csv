@@ -4094,6 +4094,8 @@ flashcards.sheet.duplex,Answer on the back (double-sided),תשובה בצד הש
 flashcards.sheet.duplex_tip,Prints a matching answer page after each card page. Flip on the long edge so each answer lands behind its own card.,מדפיס דף תשובות תואם אחרי כל דף כרטיסים. הפכו לאורך הצד הארוך כדי שכל תשובה תיפול מאחורי הכרטיס שלה.,card-sheet duplex tooltip,
 flashcards.sheet.err_empty,No cards to print — choose some letters and vowels first.,אין כרטיסים להדפסה — בחרו קודם אותיות ותנועות.,card-sheet empty-deck toast,
 flashcards.sheet.menu_title,Card sheet options,אפשרויות דף כרטיסים,card-sheet print drop-down heading,REVIEW: machine-drafted HE — confirm
+flashcards.sheet.practiced,Print the deck we just practiced,הדפסת החפיסה שתרגלנו זה עתה,card-sheet practiced-deck toggle,REVIEW: machine-drafted HE — confirm
+flashcards.sheet.practiced_tip,"Prints the exact cards from the practice run you just finished — same cards, same order — instead of a fresh random draw.","מדפיס בדיוק את הכרטיסים מסבב התרגול שסיימתם זה עתה — אותם כרטיסים, באותו סדר — במקום הגרלה אקראית חדשה.",card-sheet practiced toggle tip,REVIEW: machine-drafted HE — confirm
 flashcards.sheet.print_now,Print,הדפיסו,card-sheet drop-down print button,REVIEW: machine-drafted HE — confirm
 flashcards.ladder.card_title,🪜 Learning Path,🪜 מסלול הלמידה,Title on the setup-screen Learner Ladder entry card,leading-emoji
 flashcards.ladder.card_pitch,Not sure where to start? Follow a step-by-step path from letter names to full blends.,"לא בטוחים מאיפה להתחיל? עברו שלב אחר שלב, משמות האותיות ועד צירופים מלאים.",One-line pitch on the ladder entry card,

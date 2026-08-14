@@ -1224,6 +1224,8 @@
   "flashcards.sheet.duplex_tip": "מדפיס דף תשובות תואם אחרי כל דף כרטיסים. הפכו לאורך הצד הארוך כדי שכל תשובה תיפול מאחורי הכרטיס שלה.",
   "flashcards.sheet.err_empty": "אין כרטיסים להדפסה — בחרו קודם אותיות ותנועות.",
   "flashcards.sheet.menu_title": "אפשרויות דף כרטיסים",
+  "flashcards.sheet.practiced": "הדפסת החפיסה שתרגלנו זה עתה",
+  "flashcards.sheet.practiced_tip": "מדפיס בדיוק את הכרטיסים מסבב התרגול שסיימתם זה עתה — אותם כרטיסים, באותו סדר — במקום הגרלה אקראית חדשה.",
   "flashcards.sheet.print_now": "הדפיסו",
   "flashcards.start.button": "התחילו לתרגל! ✨",
   "flashcards.start.err_dict_loading": "המילון עדיין נטען — נסו שוב בעוד רגע.",
