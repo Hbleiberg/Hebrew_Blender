@@ -272,6 +272,10 @@ dashboard.preset.overwrite_confirm,"Overwrite preset ""{name}"" with current set
 dashboard.preset.overwrite_title,Overwrite with current settings,דרוס בהגדרות הנוכחיות,preset row button title,
 dashboard.preset.quickstart_button,✨ Quick-start layouts…,✨ פריסות התחלה מהירה…,presets panel button,leading-emoji
 dashboard.preset.quickstart_desc,Apply a ready-made setup — including a general-classroom layout — then tweak it and Save it as your own preset.,החילו הגדרה מוכנה — כולל פריסת כיתה כללית — ואז התאימו ושמרו אותה כתבנית משלכם.,presets panel prose,
+dashboard.preset.rename_exists,"A preset named ""{name}"" already exists.","כבר קיימת תבנית בשם ""{name}"".",toast when a rename collides with an existing preset,mixed UI+content — do not translate {…}
+dashboard.preset.rename_prompt,Rename preset:,שנה שם תבנית:,prompt dialog,
+dashboard.preset.rename_title,Rename,שנה שם,preset row button title,
+dashboard.preset.rename_toast,"Renamed to ""{name}"" — Schedule Sync updated.","השם שונה ל״{name}״ — סנכרון מערכת השעות עודכן.",toast after a rename that rewrote schedule references,mixed UI+content — do not translate {…}
 dashboard.preset.save,Save,שמור,preset save button,
 dashboard.preset.save_empty,Please enter a preset name.,אנא הזינו שם תבנית.,alert,
 dashboard.schedule.add_period,+ Add period,+ הוסף שיעור,weekly editor toolbar button,leading-emoji
@@ -329,6 +333,9 @@ dashboard.schedule.save_name_placeholder,Schedule name,שם מערכת שעות,
 dashboard.schedule.sched_delete_title,Delete,מחק,saved schedule row button title,
 dashboard.schedule.sched_duplicate_title,Duplicate,שכפול,saved schedule row button title,
 dashboard.schedule.sched_load,Load,טען,saved schedule row button,
+dashboard.schedule.sched_rename_exists,"A schedule named ""{name}"" already exists.","כבר קיימת מערכת שעות בשם ""{name}"".",toast when a rename collides with an existing saved schedule,mixed UI+content — do not translate {…}
+dashboard.schedule.sched_rename_prompt,Rename schedule:,שנה שם מערכת שעות:,prompt dialog,
+dashboard.schedule.sched_rename_title,Rename,שנה שם,saved schedule row button title,
 dashboard.schedule.show_countdown,Show countdown to next class,הצג ספירה לאחור לשיעור הבא,settings label,
 dashboard.schedule.show_nownext,Show Now / Next on dashboard,הצג עכשיו / הבא בלוח המחוונים,settings label,
 dashboard.schedule.show_preset_name,Show preset name,הצג שם תבנית,settings label,

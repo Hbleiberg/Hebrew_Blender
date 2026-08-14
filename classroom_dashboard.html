@@ -1082,9 +1082,16 @@
   }
   body.dark .preset-item { background: var(--navy-deep); }
   /* Item names wrap inside their own column ("Mechina" / "C") instead of propping the row wider
-     than the list — every character stays visible, so similar names remain distinguishable */
-  .preset-item .ft-item-name { min-width: 0; overflow-wrap: anywhere; }
-  .preset-name { flex: 1; font-weight: 600; }
+     than the list — every character stays visible, so similar names remain distinguishable.
+     The floor is load-bearing: the span is flex:1 1 0% (inline, from the shared block), so with a
+     0 minimum its hypothetical size is 0 — flex-wrap never fires, the rigid buttons take the whole
+     row, and overflow-wrap:anywhere then breaks the name after EVERY character (a vertical stack).
+     Reserving all but the drag handle's width gives every row the same shape — name on top, actions
+     wrapped below — instead of each row breaking at a different button. The 40px is a cushion, not a
+     measurement: anything above the handle+gap (~16px) and below the handle+gap+Load button (~70px)
+     produces that break. `anywhere` still keeps one long unbroken name from propping the row wider
+     than the list; the % scales down with .ft-folder-body's padding as rows nest. */
+  .preset-item .ft-item-name { min-inline-size: calc(100% - 40px); overflow-wrap: anywhere; }
   /* Slim, theme-colored scrollbars for the drawer's scroll areas (the standard props win in new
      browsers; the ::-webkit-* rules cover older Chromium where the classic bars look clunky in dark) */
   .settings-body, .preset-list, .picker-chips { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
@@ -5515,6 +5522,72 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     ftInsertAfter('hebrewDashboard_presetsFolders', name, nn);
     renderPresets();
   }
+
+  /* ── Rename ──────────────────────────────────────────────────────────────────────────────────
+     A saved name is a bare string key, so a rename is a rekey PLUS a sweep of every other place
+     that string is stored. Schedule Sync is the one that fails quietly: checkSchedule() guards on
+     presets[entry.preset], so a name it can no longer resolve simply stops applying the board —
+     no error, no toast, the previous board just stays up — while the grid hatches the cell. Miss
+     one store here and the teacher's week breaks invisibly, so keep the list below complete. */
+
+  // Rekey in place, preserving insertion order (it drives the palette chip order and the order
+  // assignPresetColors hands out colors in). Never rebind the object — callers hold the binding.
+  function _rekeyOrdered(obj, oldKey, newKey) {
+    const rebuilt = {};
+    Object.keys(obj).forEach(k => { rebuilt[k === oldKey ? newKey : k] = obj[k]; });
+    Object.keys(obj).forEach(k => delete obj[k]);
+    Object.assign(obj, rebuilt);
+  }
+  // Swap a preset name through one weekly grid (7 day columns × N periods). Returns cells changed.
+  function _swapWeekName(week, from, to) {
+    let n = 0;
+    if (!week || !week.cells) return n;
+    WEEK_KEYS.forEach(d => {
+      const col = week.cells[d];
+      if (!Array.isArray(col)) return;
+      col.forEach((nm, i) => { if (nm === from) { col[i] = to; n++; } });
+    });
+    return n;
+  }
+  // Rename the tree's item node in place so the item keeps its folder. Letting syncTree discover
+  // the change instead would prune the old node and re-append the new name at ROOT.
+  function _ftRenameNode(treeKey, oldName, newName) {
+    const tree = ftRead(treeKey);
+    const loc = ftLocate(tree, x => x.t === 'item' && x.name === oldName);
+    if (!loc) return;
+    loc.node.name = newName;
+    ftWrite(treeKey, tree);
+  }
+  function renamePreset(name) {
+    if (!presets[name]) return;
+    const raw = prompt(I18n.t('dashboard.preset.rename_prompt'), name);
+    if (raw === null) return;
+    const nn = raw.trim();
+    if (!nn || nn === name) return;
+    // Refused, not merged: a preset is a whole board snapshot, so overwriting would destroy one.
+    if (presets[nn]) { showAppToast(I18n.t('dashboard.preset.rename_exists', { name: nn })); return; }
+    // Commit an in-flight board edit FIRST — it writes back through _inplaceEditPreset, which is
+    // still the old name at this point.
+    if (_activeEditable) exitInPlaceEdit(true);
+    _rekeyOrdered(presets, name, nn);
+    savePresetsStorage();
+    if (settings.presetColors && settings.presetColors[name] !== undefined)
+      _rekeyOrdered(settings.presetColors, name, nn);          // the class color follows the name
+    let refs = _swapWeekName(settings.scheduleWeek, name, nn); // the live weekly grid
+    (settings.currentSchedule || []).forEach(e => { if (e && e.preset === name) { e.preset = nn; refs++; } });
+    let saved = 0;                                             // saved schedules, both shapes
+    Object.keys(savedSchedules).forEach(k => {
+      const entry = savedSchedules[k];
+      if (Array.isArray(entry)) entry.forEach(e => { if (e && e.preset === name) { e.preset = nn; saved++; } });
+      else if (entry && entry.week) saved += _swapWeekName(entry.week, name, nn);
+    });
+    if (saved) saveSchedulesStorage();   // else a later Load re-injects the dead name into the grid
+    _ftRenameNode('hebrewDashboard_presetsFolders', name, nn);
+    if (_armedChip === name) _armedChip = nn;
+    weekChanged();                       // saves settings, nulls the 3 caches, re-renders grid/palette/validation/summary/UI
+    renderPresets();
+    if (refs + saved) showAppToast(I18n.t('dashboard.preset.rename_toast', { name: nn }));
+  }
 /* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */
 /* Sidecar overlay: the preset/schedule/profile store stays a flat {name:...} object and is the
    source of truth for which items EXIST. This tree only organizes them (references items by name).
@@ -5726,6 +5799,7 @@ function mountFolderTree(cfg){
         f.appendChild(mk(I18n.t('dashboard.preset.load'), '', 'btn btn-xs', () => loadPreset(name)));
         f.appendChild(mk('↺', I18n.t('dashboard.preset.overwrite_title'), 'btn btn-xs btn-secondary', () => overwritePreset(name)));
         f.appendChild(mk('⧉', I18n.t('dashboard.preset.duplicate_title'), 'btn btn-xs btn-secondary', () => duplicatePreset(name)));
+        f.appendChild(mk('✎', I18n.t('dashboard.preset.rename_title'), 'btn btn-xs btn-secondary', () => renamePreset(name)));
         f.appendChild(mk('×', I18n.t('dashboard.preset.delete_title'), 'btn btn-xs btn-secondary', () => deletePreset(name)));
         return f;
       }
@@ -6856,6 +6930,7 @@ else ivritInit();
         f.appendChild(mk(I18n.t('dashboard.schedule.sched_load'), '', 'btn btn-xs', () => loadSavedSchedule(name)));
         f.appendChild(mk('↺', I18n.t('dashboard.schedule.overwrite_title'), 'btn btn-xs btn-secondary', () => overwriteSavedSchedule(name)));
         f.appendChild(mk('⧉', I18n.t('dashboard.schedule.sched_duplicate_title'), 'btn btn-xs btn-secondary', () => duplicateSavedSchedule(name)));
+        f.appendChild(mk('✎', I18n.t('dashboard.schedule.sched_rename_title'), 'btn btn-xs btn-secondary', () => renameSavedSchedule(name)));
         f.appendChild(mk('×', I18n.t('dashboard.schedule.sched_delete_title'), 'btn btn-xs btn-secondary', () => deleteSavedSchedule(name)));
         return f;
       }
@@ -6904,6 +6979,20 @@ else ivritInit();
     savedSchedules[nn] = JSON.parse(JSON.stringify(savedSchedules[name]));
     saveSchedulesStorage();
     ftInsertAfter('hebrewDashboard_schedulesFolders', name, nn);
+    renderSavedSchedules();
+  }
+  // Far simpler than renamePreset: a schedule name is its own namespace — nothing outside this
+  // store and its folder tree references it (the PRESET names live inside the entry, untouched).
+  function renameSavedSchedule(name) {
+    if (!savedSchedules[name]) return;
+    const raw = prompt(I18n.t('dashboard.schedule.sched_rename_prompt'), name);
+    if (raw === null) return;
+    const nn = raw.trim();
+    if (!nn || nn === name) return;
+    if (savedSchedules[nn]) { showAppToast(I18n.t('dashboard.schedule.sched_rename_exists', { name: nn })); return; }
+    _rekeyOrdered(savedSchedules, name, nn);
+    saveSchedulesStorage();
+    _ftRenameNode('hebrewDashboard_schedulesFolders', name, nn);
     renderSavedSchedules();
   }
 
