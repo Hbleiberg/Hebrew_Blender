@@ -1237,6 +1237,7 @@
   "flashcards.start.err_select_vowel": "Select at least one vowel.",
   "flashcards.start.err_select_wordlist": "Select at least one word list.",
   "flashcards.teachertools.copy_code": "📋 Copy Code",
+  "flashcards.teachertools.copy_link": "📎 Copy Link",
   "flashcards.teachertools.delete_button": "Delete",
   "flashcards.teachertools.generate_share": "Generate Share Code",
   "flashcards.teachertools.got_code": "Got a code from your teacher?",

@@ -1795,6 +1795,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div class="btn-row" style="margin-bottom:8px;">
           <button class="btn primary sm" id="generateShareBtn" data-i18n="flashcards.teachertools.generate_share">Generate Share Code</button>
           <button class="btn sm ghost" id="copyShareBtn" data-i18n="flashcards.teachertools.copy_code">📋 Copy Code</button>
+          <button class="btn sm ghost" id="copyShareLinkBtn" data-i18n="flashcards.teachertools.copy_link">📎 Copy Link</button>
         </div>
         <textarea class="share-out" id="shareCodeOutput" readonly placeholder="Tap “Generate Share Code” to create a code…" data-i18n-placeholder="flashcards.teachertools.share_output_placeholder" aria-label="Tap “Generate Share Code” to create a code…" data-i18n-aria-label="flashcards.teachertools.share_output_placeholder"></textarea>
 
@@ -4639,6 +4640,35 @@ function copyShareCode() {
   } else {
     out.select(); document.execCommand('copy'); done();
   }
+}
+// The ?s= URL twin of the paste code (house share-link convention): same payload, carried in the
+// URL with the URL-safe base64 alphabet shareCodeDecode already accepts, so a student just taps
+// the link — the ?s= init hook decodes it and auto-starts, exactly like pasting + Load.
+function copyShareLink() {
+  generateShareCode();   // fresh payload from current settings + the words-cap warning, same as Copy Code
+  const out = document.getElementById('shareCodeOutput');
+  if (!out || !out.value) return;
+  const url = location.origin + location.pathname + '?s=' + out.value.replace(/\+/g, '-').replace(/\//g, '_');
+  const done = () => {
+    announce(I18n.t('flashcards.share.copied'));
+    const btn = document.getElementById('copyShareLinkBtn');
+    if (!btn) return;
+    const orig = btn.textContent;
+    btn.textContent = I18n.t('flashcards.share.copied');
+    setTimeout(() => btn.textContent = orig, 1500);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(done).catch(() => copyViaTextarea(url, done));
+  } else {
+    copyViaTextarea(url, done);
+  }
+}
+// execCommand fallback for a value that lives in no on-page field (the share URL).
+function copyViaTextarea(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text; document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta); done();
 }
 function shareErr(msg) {
   const el = document.getElementById('shareCodeError');
@@ -7741,6 +7771,7 @@ function wireSetupScreen() {
   // Teacher share code
   document.getElementById('generateShareBtn').addEventListener('click', generateShareCode);
   document.getElementById('copyShareBtn').addEventListener('click', copyShareCode);
+  document.getElementById('copyShareLinkBtn').addEventListener('click', copyShareLink);
   document.getElementById('applyShareBtn').addEventListener('click', loadShareCode);
   document.getElementById('shareCodeInput').addEventListener('keydown', e => { if (e.key === 'Enter') loadShareCode(); });
   document.getElementById('shareCodeInput').addEventListener('input', () => shareErr(''));
@@ -7878,6 +7909,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (new URLSearchParams(location.search).get('path') !== null) {
       if (window.I18n) I18n.ready.then(() => openLadderMap());
       else openLadderMap();
+    }
+  } catch (e) {}
+
+  // Deep link: ?s=<code> — the share-code-as-URL twin of the paste box (house ?s= convention).
+  // Same decode → payload guard → apply → auto-start as loadShareCode, but silent on garbage:
+  // a broken or truncated link lands on normal setup instead of an error the student can't act
+  // on. I18n.ready-gated like ?path so the drill UI builds translated. The param is never
+  // stripped — parents bookmark the link, and a refresh re-entering the drill is the point.
+  try {
+    const sParam = new URLSearchParams(location.search).get('s');
+    if (sParam) {
+      const enterSharedDrill = () => {
+        try {
+          const payload = shareCodeDecode(sParam);
+          const data = payload && typeof payload === 'object' ? (payload.data || (payload.tool ? null : payload)) : null;
+          if (!data || typeof data !== 'object') return;
+          applySettings(data);
+          saveSettings();
+          startPractice();
+        } catch (e) {}
+      };
+      if (window.I18n) I18n.ready.then(enterSharedDrill);
+      else enterSharedDrill();
     }
   } catch (e) {}
 });

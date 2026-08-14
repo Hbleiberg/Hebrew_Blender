@@ -1146,6 +1146,7 @@ flashcards.start.err_select_letter,Select at least one letter.,בחרו לפחו
 flashcards.start.err_select_vowel,Select at least one vowel.,בחרו לפחות תנועה אחת.,start validation alert,
 flashcards.start.err_select_wordlist,Select at least one word list.,בחרו לפחות רשימת מילים אחת.,start validation alert,
 flashcards.teachertools.copy_code,📋 Copy Code,📋 העתק קוד,share-code copy button,leading-emoji
+flashcards.teachertools.copy_link,📎 Copy Link,📎 העתק קישור,share-link copy button (?s= URL twin of the code),leading-emoji
 flashcards.teachertools.delete_button,Delete,מחק,profile delete button,
 flashcards.actions.delete_aria,Delete {name},מחק את {name},icon-only ✕ delete button aria-label (preset / profile),aria-label only
 flashcards.teachertools.generate_share,Generate Share Code,צור קוד שיתוף,share-code button,
