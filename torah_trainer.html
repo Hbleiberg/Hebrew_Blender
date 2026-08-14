@@ -6349,6 +6349,20 @@ async function init() {
   // the moment the user toggles translit on (no flicker / empty rows).
   if (window.HebrewTransliterator) window.HebrewTransliterator.ensureLoaded();
 
+  // With translit on, a cold load used to build the whole reading TWICE: the first
+  // renderText ran while the esm.sh import was still in flight, so it painted no
+  // translit rows plus a false "Transliteration unavailable" chip, and the
+  // translitlibloaded handler then rebuilt everything. Give the import a bounded
+  // head start so the common case paints once. A genuinely blocked CDN still falls
+  // through to today's dead-path render (and its now-truthful chip) after the
+  // timeout, and ensureLoaded's own failure path resolves the race immediately.
+  if (settings.showTranslit && window.HebrewTransliterator) {
+    await Promise.race([
+      window.HebrewTransliterator.ensureLoaded(),
+      new Promise(r => setTimeout(r, 2000)),
+    ]);
+  }
+
   await fetchAndRender();
   if (deepVerse) flashVerse(deepVerse);   // scroll+flash the deep-linked verse (no-ops if not rendered)
 }
