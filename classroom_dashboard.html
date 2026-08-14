@@ -1570,6 +1570,44 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     .heb-date { font-size: 2rem; }
     .current-time { font-size: 2.6rem; }
   }
+
+  /* ───── Print (Ctrl+P) ───── */
+  @media print {
+    /* Chrome, overlays, and screen-only widgets never belong on paper — and the settings
+       drawer, editors, and pickers are position:fixed, so left alone they print OVER the page. */
+    header .hright, #zoomBar, #fsExitBtn, #fsStrip, .wake-dot, #layoutEditBar,
+    .settings-backdrop, .settings-modal, #pickOverlay, #tipFloat, #appToast,
+    .tour-spot, .tour-card, .dash-edit-pencil, #videoPanel, #timerCol, #pickerActions,
+    .fr-backdrop, .fr-modal, .swm-backdrop, .swm-modal,
+    #weatherBody button { display: none !important; }
+    /* Print establishes its own ink. The dialog drops background colours by default, so every
+       colour picked to sit ON a coloured plate is re-lit for white paper, and remapping the
+       tokens converges both themes on the light palette (the trope_tutor treatment) — without
+       it dark mode prints the whole board in --text #dde4f0 at 1.28:1, a near-blank sheet.
+       --gold-light maps to the TEXT gold: on paper it only ever colours text (its three
+       background uses are :hover states), and the dark theme leans on it for accents. */
+    html, html.dark-early, body, body.dark, html.dark-early body {
+      --gold: #c9922a; --gold-text: #7f5a13; --gold-light: #7f5a13;
+      --cream: #fdf8ef; --warm-gray: #e8e0d0;
+      --text: #1a2744; --muted: #6b6050;
+      --border: #c8bfa8; --white: #ffffff;
+      background: #fff !important; color: #1a2744 !important;
+    }
+    /* Literals the remap cannot reach — white text on the navy plates print drops, and the
+       dark theme's literal dark slabs (these surface only when the teacher prints with
+       background graphics ON). (.star keeps brand --gold: a mark, not text.) */
+    header, body.dark header { background: #fff; }
+    header h1 { color: var(--navy); }
+    header p { color: var(--muted); }
+    .col-title { color: var(--navy); background: #fff; border-block-end: 2px solid var(--gold); }
+    .day-item.colored { color: var(--text); }
+    .day-item.colored .day-eng { color: var(--muted); }
+    body.dark .dash-col { background: var(--white); box-shadow: none; }
+    body.dark .day-item:not(.colored) { background: var(--warm-gray); }
+    /* The screen zoom is an inline style on .dashboard — 160% on a SmartBoard must not
+       print as 160% on Letter. */
+    .dashboard { zoom: 1 !important; }
+  }
 /* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */
 .ft-tree { display:flex; flex-direction:column; gap:4px; }
 .ft-folder { border:1px solid var(--border,#c8bfa8); border-radius:6px; background:var(--white,#fff); }
