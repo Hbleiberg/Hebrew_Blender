@@ -1190,8 +1190,17 @@ body.fullscreen #fsExitBtn { display: flex; }
   #ttPrintBand .pbnd-chip { display:inline-flex; align-items:center; gap:3px; }
   #ttPrintBand .pbnd-sw { width:9px; height:9px; border-radius:2px;
     -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  /* Column labels for side-by-side sheets (built by buildPrintBand only when the parallel
+     grid is on the page): a full-width band row whose tracks mirror the reading grid —
+     same 1fr count (inline style), 20px gap, and the .tt-page 24px inline padding. */
+  #ttPrintBand .pbnd-cols { flex-basis:100%; display:grid; column-gap:20px;
+    padding-inline:24px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+    text-align:center; }
   .tt-ref-hdr, .tt-trope-legend { display:none !important; }
-  .tt-aliyah-divider { color:#555; }
+  /* break-after: an aliyah heading must not strand at a sheet foot with its aliyah overleaf
+     (unlike the geniza marker's refuted break-before, the divider's successor is a sibling
+     verse in the same flow, so the engine CAN pull the divider forward). */
+  .tt-aliyah-divider { color:#555; break-after:avoid; page-break-after:avoid; }
   /* The flanking rule-lines are 1px background fills, stripped by the print dialog's
      default "background graphics: off" — a border always prints. */
   .tt-aliyah-divider::before, .tt-aliyah-divider::after { background:none; height:0; border-top:1px solid #555; }
@@ -1199,6 +1208,9 @@ body.fullscreen #fsExitBtn { display: flex; }
      handler pauses playback + clears the class; this backstops the non-decoration styles
      (deliberately NOT touching text-decoration, which the trope print underline uses). */
   .tt-word.active { background:none !important; box-shadow:none !important; outline:none !important; color:inherit !important; }
+  /* The chapter drop-cap is TEXT (the verse's first letter), not a brand mark — brand
+     --gold prints at 2.75:1; the text-gold token keeps the gold look legible on paper. */
+  .tt-bible-dropcap { color:var(--gold-text); }
 
   /* Page chrome: only the reading belongs on paper (generator S30 hide-list pattern).
      .tt-controls also covers #ttCustomPicker; the fixed-position drawer/backdrop/toast/tour
@@ -2627,6 +2639,24 @@ function buildPrintBand() {
       chip.appendChild(document.createTextNode(window.I18n ? I18n.t('torah.glyphname.trope_' + def.key) : def.name));
       band.appendChild(chip);
     });
+  }
+  // Side-by-side sheets: the on-page column headers are grid-row:1, so they print on sheet 1
+  // only. Repeat them here as a full-width band row mirroring the grid's equal 1fr tracks
+  // (same column count, gap, and .tt-page inline padding — see .pbnd-cols in the print block),
+  // cloning the h3s' text and placement so labels, order, and direction match both UI languages.
+  const pgrid = document.querySelector('#ttReading .tt-grid.tt-print-parallel');
+  if (pgrid) {
+    const cols = document.createElement('span');
+    cols.className = 'pbnd-cols';
+    cols.style.gridTemplateColumns = 'repeat(' + (pgrid.dataset.printCols || 2) + ', 1fr)';
+    cols.dir = getComputedStyle(pgrid).direction === 'rtl' ? 'rtl' : 'ltr';
+    pgrid.querySelectorAll(':scope > .tt-grid-col > h3').forEach(h => {
+      const c = document.createElement('span');
+      c.textContent = h.textContent;
+      if (h.style.gridColumn) c.style.gridColumn = h.style.gridColumn;
+      cols.appendChild(c);
+    });
+    band.appendChild(cols);
   }
 }
 
