@@ -519,7 +519,7 @@ body.dark .radio-group input:checked + label { background:#1e2535; color:var(--g
 
 .slider-row { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
 .slider-row label { font-size:0.78rem; color:var(--muted); font-weight:600; white-space:nowrap; flex-shrink:0; }
-.slider-row input[type="range"] { flex:1; accent-color:var(--gold); cursor:pointer; height:4px; }
+.slider-row input[type="range"] { flex:1; accent-color:var(--gold); cursor:pointer; height:24px; /* operable box at the slider floor (3ae6891 pattern) — an explicit 4px shrank the hit area to a strip */ }
 .slider-row .sval {
   font-size:0.72rem; color:var(--muted); min-width:44px; text-align:right;
   font-variant-numeric:tabular-nums;
