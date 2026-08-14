@@ -1219,7 +1219,7 @@ flashcards.weaknesses.custom_label,Custom:,מותאם:,card-count modal custom i
 flashcards.weaknesses.mastered,No mistakes here — mastered! 🎉,אין טעויות כאן — בשליטה! 🎉,weakness tab all-correct note,leading-emoji
 flashcards.weaknesses.missed_ratio,missed {missed}/{seen},טעו {missed}/{seen},weakness row stat,
 flashcards.weaknesses.modal_title,Practice My Weaknesses,תרגלו את החולשות שלי,card-count modal title,
-flashcards.weaknesses.no_mistakes_alert,No mistakes saved yet for this profile. Save some drill results first.,אין עדיין טעויות שמורות לפרופיל זה. שמרו תחילה תוצאות תרגול.,alert,
+flashcards.weaknesses.no_mistakes_alert,No mistakes saved yet for this profile. Save some drill results first.,אין עדיין טעויות שמורות לפרופיל זה. שמרו תחילה תוצאות תרגול.,inline note under the weakness buttons (was an alert; key name kept),
 flashcards.weaknesses.not_enough_data,Not enough data yet — save more drill results.,אין עדיין מספיק נתונים — שמרו עוד תוצאות תרגול.,weakness tab empty state,empty state
 flashcards.weaknesses.other_colors,Colors,צבעים,weakness-view Other bucket label,
 flashcards.weaknesses.other_emojis,Emojis,אימוג׳י,weakness-view Other bucket label,

@@ -1835,6 +1835,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <button class="btn gold" id="weaknessesBtn" style="flex:1;" data-i18n="flashcards.teachertools.practice_weaknesses">🎯 Practice My Weak Cards</button>
             <button class="btn" id="viewWeaknessesBtn" style="flex:1;" data-i18n="flashcards.teachertools.view_weaknesses">📊 View Weaknesses</button>
           </div>
+          <p class="sub" id="weakNote" role="status" aria-live="polite" style="display:none;"></p>
           <div class="btn-row" style="margin-top:8px;">
             <button class="btn" id="progressReportBtn" style="flex:1;" title="Print a one-page progress report for this student" data-i18n-title="flashcards.report.button_title" data-i18n="flashcards.report.button">📄 Progress Report</button>
           </div>
@@ -4979,6 +4980,7 @@ function saveResultToProfile(name, result) {
   prof.results.push(result);
   if (prof.results.length > MAX_RESULTS_PER_PROFILE) prof.results = prof.results.slice(-MAX_RESULTS_PER_PROFILE);
   writeProfiles(db);
+  _setWeakNote(null);   // new results can change the answer — retire a stale "no mistakes" note
   renderProfiles();
   const btn = document.getElementById('saveResultsBtn');
   if (btn) { btn.textContent = I18n.t('flashcards.results.save_button_done', { name: name }); btn.disabled = true; }
@@ -5088,10 +5090,12 @@ function renderProfileHistory(name) {
       histList.appendChild(li);
     });
   }
-  // Enable weakness practice only when there are missed cards; the view is
-  // available whenever there's any saved result to analyze.
+  // Weakness practice needs missed cards; the view is available whenever there's any
+  // saved result to analyze. aria-disabled (not `disabled`) keeps the button focusable
+  // and clickable so the click can state the reason via the #weakNote inline note —
+  // the same shape as the Start button (see _setStartNote).
   const missed = collectMissedCards(name);
-  weakBtn.disabled = missed.length === 0;
+  weakBtn.setAttribute('aria-disabled', missed.length === 0 ? 'true' : 'false');
   const viewBtn = document.getElementById('viewWeaknessesBtn');
   if (viewBtn) viewBtn.disabled = results.length === 0;
   const reportBtn = document.getElementById('progressReportBtn');
@@ -5239,11 +5243,20 @@ function askCardCount(defaultN, maxN) {
   });
 }
 
+// Inline no-data note under the weakness buttons (house inline-validation rule — no alert()
+// dead-ends). Key-based like _setStartNote so a live language switch re-renders it translated.
+let _weakNoteKey = null;
+function _setWeakNote(key) {
+  _weakNoteKey = key || null;
+  const note = document.getElementById('weakNote');
+  if (note) { note.textContent = key ? I18n.t(key) : ''; note.style.display = key ? '' : 'none'; }
+}
 async function practiceWeaknesses(name) {
   name = name || getActiveProfile();
+  _setWeakNote(null);   // a fresh attempt retires the previous note
   // Total weakness cards available = distinct missed cards + synthesizable weak combos.
   const available = collectWeaknessDeck(name, Infinity);
-  if (available.length === 0) { alert(I18n.t('flashcards.weaknesses.no_mistakes_alert')); return; }
+  if (available.length === 0) { _setWeakNote('flashcards.weaknesses.no_mistakes_alert'); return; }
   const n = await askCardCount(cardCount, available.length);
   if (n == null) return; // cancelled
   // Keep priority order: most-missed real cards first, then synthesized weak combos.
@@ -7957,6 +7970,7 @@ function applyI18n() {
   syncOtherSubUI();
   updateWordsCount();
   if (_startNoteKeys.length) _setStartNote(_startNoteKeys);   // re-render a Start note still on screen
+  if (_weakNoteKey) _setWeakNote(_weakNoteKey);               // same for the weakness no-data note
   { const _tsl = document.getElementById('timerShowLabel');
     if (_tsl) { const _tk = timerMode === 'limit' ? 'flashcards.timer.show_countdown' : 'flashcards.timer.show_timer';
                 _tsl.setAttribute('data-i18n', _tk); _tsl.textContent = I18n.t(_tk); } }
