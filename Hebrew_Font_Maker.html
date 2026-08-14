@@ -6558,12 +6558,14 @@ function renderLegend() {
     const c = activeAnchorClass;
     const col = c==='below'?'var(--below)':(c==='above'?'var(--above)':'var(--center)');
     if (isWideForm(precompTarget ? getPrecomp(precompTarget) : null)) {   // wide forms have no draggable handle — their nikkud follows the base letter
-      el.innerHTML = `<span><span class="dot" style="background:var(--below)"></span>Nikkud preview — the position follows the base letter (edit it there).</span>`;
+      el.innerHTML = `<span><span class="dot" style="background:var(--below)"></span>${_pT('legend_wideform', 'Nikkud preview — the position follows the base letter (edit it there).')}</span>`;
     } else {
-      el.innerHTML = `<span><span class="dot" style="background:${col}"></span>Previewing the <b>${ANCHOR_LABEL[c]}</b> vowel — drag the handle, or use arrow keys (Shift = 1 unit).</span>`;
+      // anchorLabelT is the translated sibling of the raw ANCHOR_LABEL map — same pairing the
+      // side-panel titles use, so the class name follows the UI language with the banner.
+      el.innerHTML = `<span><span class="dot" style="background:${col}"></span>${_pT('legend_anchors', 'Previewing the <b>' + anchorLabelT(c) + '</b> vowel — drag the handle, or use arrow keys (Shift = 1 unit).', { name: '<b>' + anchorLabelT(c) + '</b>' })}</span>`;
     }
   } else if (workMode === 'align') {
-    el.innerHTML = `<span>Drag the letter to move · corner ◻ scales (keeps shape) · side ▭ squishes that direction · ● rotates.</span>`;
+    el.innerHTML = `<span>${_pT('legend_align', 'Drag the letter to move · corner ◻ scales (keeps shape) · side ▭ squishes that direction · ● rotates.')}</span>`;
   } else if (workMode === 'nodes') {
     // node mode: legend intentionally empty (.legend:empty hides it) — live position/count moved to
     // #nodeStatus, the per-state tip lives in the panel, and the full facts are in the ? cheat sheet

@@ -2227,6 +2227,9 @@ fontmaker.panels.markctl_drop,"Drop {kind} of {name}, or {browse}.","שחררו 
 fontmaker.panels.drop_kind_svg,an <b>SVG</b>,קובץ <b>SVG</b>,drop-zone file-kind fragment,
 fontmaker.panels.drop_kind_img,an image,תמונה,drop-zone file-kind fragment,
 fontmaker.panels.drop_browse,browse,עיינו,drop-zone browse link word,
+fontmaker.panels.legend_anchors,"Previewing the {name} vowel — drag the handle, or use arrow keys (Shift = 1 unit).","תצוגה מקדימה של תנועת {name} — גררו את הידית, או השתמשו במקשי החיצים (Shift = יחידה אחת).",workspace legend,HE REVIEW
+fontmaker.panels.legend_wideform,Nikkud preview — the position follows the base letter (edit it there).,תצוגה מקדימה של ניקוד — המיקום עוקב אחר אות הבסיס (ערכו אותו שם).,workspace legend,HE REVIEW
+fontmaker.panels.legend_align,Drag the letter to move · corner ◻ scales (keeps shape) · side ▭ squishes that direction · ● rotates.,גררו את האות להזזה · פינה ◻ משנה גודל (שומרת על הצורה) · צד ▭ מכווץ בכיוון זה · ● מסובב.,workspace legend,HE REVIEW
 fontmaker.panels.markctl_hint,"Click a piece to select; drag to move, drag the ◻ corner to resize. A bar's corner can be dragged for any width/thickness. Build the mark from dots & bars — it's seeded from the default shape.","לחצו על חלק לבחירה; גררו כדי להזיז, גררו את הפינה ◻ לשינוי גודל. אפשר לגרור את פינת המוט לכל רוחב/עובי. בנו את הסימן מנקודות ומוטות — הוא מוזרע מצורת ברירת המחדל.",panel hint,
 fontmaker.panels.markctl_label,{label}: {name},{label}: {name},mark editor control label,
 fontmaker.panels.markctl_letters,← Letters,← אותיות,button,leading-emoji
