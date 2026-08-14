@@ -2405,6 +2405,7 @@ fontmaker.status.building_font,Building font…,בונה גופן…,toast,
 fontmaker.status.building_font_preview,Building font for preview…,בונה גופן לתצוגה מקדימה…,toast,
 fontmaker.status.building_preview_pdf,Building preview PDF…,בונה PDF לתצוגה מקדימה…,toast,
 fontmaker.status.building_template,Building {title} template…,בונה תבנית {title}…,toast,
+fontmaker.status.template_saved,{title} template saved.,תבנית {title} נשמרה.,toast,REVIEW: machine-drafted HE — confirm
 fontmaker.status.building_ufo,Building UFO…,בונה UFO…,toast,
 fontmaker.status.compressing_woff2,Compressing WOFF2…,דוחס WOFF2…,toast,
 fontmaker.status.converted_main,Converted U+{cp} to a main glyph — set its width under Letter Metrics.,U+{cp} הומר לגליף ראשי — קבעו את רוחבו תחת מדדי האות.,toast,

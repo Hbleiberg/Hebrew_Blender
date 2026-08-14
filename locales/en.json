@@ -2744,6 +2744,7 @@
   "fontmaker.status.style_bold_detected": "This font is marked Bold — Style was set to Bold (see Font Details).",
   "fontmaker.status.svg_sheet_loaded": "SVG sheet loaded. Drag a box around a letter, or name elements like id=\"uni05D0\" and click Auto-split by name.",
   "fontmaker.status.template_font_loaded": "Template font “{name}” loaded.",
+  "fontmaker.status.template_saved": "{title} template saved.",
   "fontmaker.status.tile_aria": "{name} — {status}",
   "fontmaker.status.trace_first": "Trace at least one letter first.",
   "fontmaker.status.trace_first_jump": "Trace {name} first — it builds {form}. Jumped there.",

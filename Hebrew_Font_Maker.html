@@ -14854,7 +14854,7 @@ async function downloadTemplate(kind, fmt) {
         if (i < canvases.length - 1) await new Promise(r => setTimeout(r, 300));   // stagger so the browser keeps every file
       }
     }
-    status(spec.title + ' template saved.');
+    status(I18n.t('fontmaker.status.template_saved', { title: I18n.t(spec.titleKey) }));
   } catch (e) {
     console.error(e); status('');
     askModal(I18n.t('fontmaker.modals.template_error_title'), '<span class="warn">' + esc(e.message || String(e)) + '</span>', [{ label:I18n.t('fontmaker.modals.ok') }]);
