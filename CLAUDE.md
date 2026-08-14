@@ -97,7 +97,7 @@ content parsed before the tag — hence the placement right after `<meta charset
 ## Internationalization (i18n / RTL)
 
 The suite ships a full Hebrew UI (English default). Every page loads the shared runtime
-`js/i18n.js` (`window.I18n`) and mounts an EN/עברית switcher. **All 12 pages + `pwa.js` are localized;
+`js/i18n.js` (`window.I18n`) and mounts an EN/עברית switcher. **All 13 pages + `pwa.js` are localized;
 `locales/ui-strings.csv` is the single source of truth.** These rules are binding for every change —
 a new feature that hardcodes English or uses physical CSS silently breaks the Hebrew experience.
 Enforced by **`node scripts/check-i18n.js`** (run it before finishing; see rule 7).
@@ -138,7 +138,7 @@ a literal with an inline `i18n-ignore` comment so `check-i18n` skips it):
 - **Dashboard projected/student-facing widget content** (dates, days, weather, Omer, column titles, picker
   group labels) → the existing **`headerLang`/`dowLang`/`showOmerEnglish`** toggles, **independent of
   `I18n.lang`**. Only the teacher-facing settings drawer + chrome follow the UI language.
-- **Browser tab `<title>`s + `<meta name="description">`** stay English on all 12 pages (SEO — the
+- **Browser tab `<title>`s + `<meta name="description">`** stay English on all 13 pages (SEO — the
   statically-served source is what crawlers index; nothing writes `document.title`, and none of these
   carry `data-i18n`). A documented decision, not a gap.
 - Hebrew instructional/example content, transliteration, Sefaria/PocketTorah content, the taught
@@ -188,7 +188,7 @@ The pipeline is N-language-ready; Hebrew is just the first non-English locale. T
    list-driven — no other dir code); add a `SWITCHER_LANGS` entry (`{code, label, aria}`) — the switcher on
    every page grows the new button automatically.
 4. **The inline no-flash IIFE** in every production page `<head>` hardcodes the supported codes + the
-   `he`→`rtl` map (locate all copies by grepping `hebrewBlender_lang` → 13 root HTML files: the 12
+   `he`→`rtl` map (locate all copies by grepping `hebrewBlender_lang` → 14 root HTML files: the 13
    production pages + the non-production `i18n-test.html` harness; plus the template comment at the top of
    `js/i18n.js`) — update each copy to accept `X` (and map it to `rtl` if RTL).
 5. **`sw.js`** — add `/locales/X.json` to `CORE_ASSETS` and bump `VERSION`.
@@ -1632,9 +1632,9 @@ VERSION = "1.2"   # shown as "v{VERSION}" on the splash — bump whatever value 
 2. Run `python3 splash/gen_splash.py` — re-renders every `splash/splash-*.png`
    and rewrites `splash/apple-startup-links.html`.
 3. Only if `DEVICES` changed (NOT for a plain version bump): re-sync the
-   `apple-touch-startup-image` block in **all 12 HTML pages** (every root `*.html`: 404,
+   `apple-touch-startup-image` block in **all 13 HTML pages** (every root `*.html`: 404,
    Hebrew_Font_Maker, classroom_dashboard, contact, flash_cards, hebrew_blend_generator,
-   hebrew_dictionary, index, privacy, resources, torah_trainer, trope_tutor) from
+   hebrew_dictionary, index, privacy, resources, terms, torah_trainer, trope_tutor) from
    `splash/apple-startup-links.html` (the block is identical in each). A version
    bump alone keeps the same filenames, so the pages need no change.
 4. Commit & push.

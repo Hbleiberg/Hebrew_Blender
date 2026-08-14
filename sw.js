@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v491';
+const VERSION = 'v492';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -20,6 +20,7 @@ const CORE_ASSETS = [
   '/Hebrew_Font_Maker.html',
   '/resources.html',
   '/privacy.html',
+  '/terms.html',
   '/contact.html',
   '/404.html',
   '/fonts/FrankRuhlLibre-Regular.ttf',
