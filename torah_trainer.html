@@ -774,6 +774,7 @@ body.nik-mode-underline .nik { text-decoration-line:underline !important; text-d
 }
 body.dark .tt-trope-legend { background:var(--navy-deep); }
 .tt-trope-legend[hidden] { display:none; }  /* display:flex would beat the hidden attr */
+#ttPrintBand { display:none; }  /* print-only per-sheet identifier — see the print block + beforeprint */
 .tt-trope-chip { display:inline-flex; align-items:center; gap:5px; }
 .tt-trope-swatch { width:14px; height:14px; border-radius:4px; border:1px solid var(--border); flex-shrink:0; }
 .tt-trope-link { margin-left:auto; font-size:0.72rem; color:var(--muted); text-decoration:none; }
@@ -1170,16 +1171,26 @@ body.fullscreen #fsExitBtn { display: flex; }
   /* Bulk-select tint is a screen-only affordance — never ink. */
   .tt-bulk-selected { background:none !important; box-shadow:none !important; }
   .tt-bulk-cb { display:none !important; }   /* selection checkbox is a screen-only affordance */
-  /* Printed trope legend (S90): the reading prints its clause colors as underlines, so the
-     color->family key belongs on paper too. Flatten the on-screen card, force the swatch
-     backgrounds to print (print-color-adjust), and drop the interactive tutor link. The
-     legend stays [hidden] (→ display:none) unless trope coloring is on + a reading is loaded,
-     so it never prints spuriously; swatches read --trope-*-bg, re-resolved to the light
-     palette by the S89 beforeprint handler. */
-  .tt-trope-legend { box-shadow:none; border:1px solid #999; background:#fff; color:#1a2744;
-    font-size:0.68rem; padding:4px 8px; margin:0 0 8px; break-inside:avoid; page-break-inside:avoid; }
-  .tt-trope-swatch { -webkit-print-color-adjust:exact; print-color-adjust:exact; border-color:#888; }
-  .tt-trope-link { display:none !important; }
+  /* Per-sheet running identifier (supersedes the S90 in-flow legend print): the reading
+     prints its clause colors as underlines, so the color->family key belongs on paper — and
+     sheets 2..N need the reference label too, or a 5-8 sheet parsha is unidentified past
+     sheet 1. #ttPrintBand is populated by the beforeprint handler and re-stamped on EVERY
+     page by print's position:fixed repetition (the same mechanism the hide-list below
+     suppresses for the drawer/toast). top:-18mm sits inside the enlarged @page top margin,
+     so the band can never overlap content on any sheet. Swatches use the SOLID
+     --trope-*-line ink the underlines actually print with — the old in-flow card printed
+     the 35% -bg tint, which collapses into one grey band on a greyscale copier — and are
+     re-resolved to the light palette by the S89 beforeprint handler. The in-flow header +
+     legend card are print-hidden below: the band is their on-paper replacement. */
+  @page { margin-top: 22mm; }
+  #ttPrintBand:not([hidden]) { display:flex; position:fixed; top:-18mm; inset-inline:0;
+    align-items:center; flex-wrap:wrap; column-gap:10px; row-gap:2px;
+    font-size:8pt; line-height:1.2; color:#1a2744; }
+  #ttPrintBand .pbnd-ref { font-weight:700; font-size:9.5pt; }
+  #ttPrintBand .pbnd-chip { display:inline-flex; align-items:center; gap:3px; }
+  #ttPrintBand .pbnd-sw { width:9px; height:9px; border-radius:2px;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .tt-ref-hdr, .tt-trope-legend { display:none !important; }
   .tt-aliyah-divider { color:#555; }
   /* The flanking rule-lines are 1px background fills, stripped by the print dialog's
      default "background graphics: off" — a border always prints. */
@@ -1588,6 +1599,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
        Screen-hidden; shown only by the print block's body.tt-handout-geniza rule.
        Never contains the Tetragrammaton. -->
   <div id="ttGenizaMark" lang="he" dir="rtl">לגניזה</div>
+  <!-- Print-only per-sheet identifier (range label + compact clause key). Populated by the
+       beforeprint handler; the print block's position:fixed re-stamps it on every sheet. -->
+  <div id="ttPrintBand" hidden aria-hidden="true"></div>
 </div>
 </main>
 
@@ -2585,6 +2599,35 @@ function buildTropeLegend() {
     chip.appendChild(document.createTextNode(window.I18n ? I18n.t('torah.glyphname.trope_' + def.key) : def.name));
     legend.insertBefore(chip, tutorLink);
   });
+}
+
+// Fill the per-sheet print band: the range label, plus (with trope coloring on) a compact
+// clause key whose swatches use the SOLID --trope-*-line ink the printed underlines use.
+// DOM-built like buildTropeLegend; runs on every beforeprint so it always reflects the
+// current reading + palette. The print block re-stamps it on every printed page.
+function buildPrintBand() {
+  const band = document.getElementById('ttPrintBand');
+  if (!band) return;
+  band.textContent = '';
+  const has = !!(currentRangeLabel && currentVerses && currentVerses.length);
+  band.hidden = !has;
+  if (!has) return;
+  const ref = document.createElement('span');
+  ref.className = 'pbnd-ref';
+  ref.textContent = currentRangeLabel;
+  band.appendChild(ref);
+  if (settings.colorCodeTrope) {
+    TROPE_COLOR_DEFS.forEach(def => {
+      const chip = document.createElement('span');
+      chip.className = 'pbnd-chip';
+      const sw = document.createElement('span');
+      sw.className = 'pbnd-sw';
+      sw.style.background = 'var(--trope-' + def.key + '-line)';
+      chip.appendChild(sw);
+      chip.appendChild(document.createTextNode(window.I18n ? I18n.t('torah.glyphname.trope_' + def.key) : def.name));
+      band.appendChild(chip);
+    });
+  }
 }
 
 function stripTeamim(s)      { return s.replace(TEAMIM_RE, ''); }
@@ -5962,9 +6005,11 @@ window.addEventListener('beforeprint', () => {
   // the print-CSS token reset, so they'd print washed-out (e.g. tzere #aaaadd ≈1.9:1 on paper).
   // Re-resolve both to the LIGHT scheme for the snapshot; afterprint restores the dark palette.
   if (document.body.classList.contains('dark')) { _printForceLight = true; applyNikkudColors(); applyTropeColors(); }
+  buildPrintBand();   // after the palette force, so the band's swatch vars resolve light
 });
 window.addEventListener('afterprint', () => {
   if (_printForceLight) { _printForceLight = false; applyNikkudColors(); applyTropeColors(); }
+  const _pb = document.getElementById('ttPrintBand'); if (_pb) _pb.hidden = true;
 });
 // Handout restore — belt-and-braces alongside the try/finally in printHandout().
 // Idempotent; registered AFTER the palette-restore listener above so the exit

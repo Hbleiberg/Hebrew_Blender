@@ -1096,11 +1096,17 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   theme/picker changes recolor them for free. It shows only when trope coloring is on **and** a
   reading is loaded (hidden over the empty state). The "Learn the trope names →" link renders
   only when `const TROPE_TUTOR_URL` is non-null — set to `'trope_tutor.html'` since the Trope
-  Tutor shipped (see its section below). The legend **prints** (S90) — the reading carries its
-  clause colors onto paper as underlines, so the color→family key belongs there too; the `@media
-  print` block flattens the card, forces the swatches with `print-color-adjust`, and drops the
-  interactive tutor link. It still never prints spuriously, because it stays `[hidden]` unless
-  trope coloring is on **and** a reading is loaded. Do not "restore" it to print-hidden.
+  Tutor shipped (see its section below). On paper the color→family key travels via the **print
+  band** (S207, superseding the S90 in-flow legend print): `#ttPrintBand`, a print-only running
+  identifier (range label + compact clause key) populated by `buildPrintBand()` in the
+  beforeprint handler and re-stamped on **every** printed sheet via `position:fixed` inside the
+  print block's enlarged `@page` top margin — sheets 2..N used to be unidentified/un-decodable,
+  and the old card's 35%-tint (`--trope-<fam>-bg`) swatches collapsed into one grey band on a
+  greyscale copier, so the band's swatches use the SOLID `--trope-<fam>-line` ink the printed
+  underlines use. The in-flow legend card and `.tt-ref-hdr` are print-hidden (the band replaces
+  them on paper); on-screen legend behavior is unchanged. The band never prints spuriously —
+  beforeprint hides it when no reading is loaded, and its chips render only with trope coloring
+  on. Do not "restore" the printed key to sheet-1-only.
 
 ---
 
