@@ -421,6 +421,16 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
   position:relative;   /* anchors the interlinear bulk-select checkbox to the top-right corner */
 }
 .tt-verse:last-child { border-bottom:none; }
+/* A full parsha is ~4,300 .nik spans + ~1,000 trope-classed words, and every colour-picker
+   drag, font-size drag and dark toggle restyles all of them — the var-swap design keeps the
+   JS at ~0 ms, but the browser still walks the whole reading. Skipping the rendering work for
+   off-screen verses turns that into a viewport-sized job. Screen only: on paper every verse
+   IS on-screen, and skipping any would drop it from the printed sheet. `auto` in
+   contain-intrinsic-size makes each verse remember its real height once rendered, so scroll
+   position, jump-nav and the karaoke auto-scroll keep landing where they should. */
+@media screen {
+  #ttReading .tt-verse { content-visibility:auto; contain-intrinsic-size:auto 140px; }
+}
 .tt-verse-num {
   font-size:0.7rem; color:var(--muted); font-weight:700;
   letter-spacing:0.04em; min-width:48px;
