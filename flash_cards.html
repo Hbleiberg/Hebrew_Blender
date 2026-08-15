@@ -6601,6 +6601,15 @@ function buildEmojiPool() {
 function buildDeckContext() {
   const ctx = {};
   if (otherModeActive && otherSubMode === 'emoji') ctx.emojiPool = buildEmojiPool();
+  // Words resolve here for CORRECTNESS, not the speed reason the emoji pool is threaded through
+  // ctx — hence the module global rather than a ctx key: generateCard reads WORDS_POOL, and
+  // startPractice was its only writer. printCardSheet() calls generateDeck() directly, so a
+  // teacher who picked Words and went straight to the card sheet got an empty deck and the
+  // "no cards" toast every time, unless a practice run happened to have filled the pool earlier
+  // in the same page load. Resolving at the shared deck-building chokepoint fixes both callers
+  // at once; startPractice keeps its own assignment because it needs the pool BEFORE
+  // generateDeck, to validate and report why a deck would be empty.
+  if (otherModeActive && otherSubMode === 'words') WORDS_POOL = resolveWordsPool();
   return ctx;
 }
 
