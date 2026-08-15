@@ -709,7 +709,7 @@ dictionary.howto.summary,How To Use,איך להשתמש,footer how-to summary,
 dictionary.loading.dictionary,Loading dictionary…,טוען מילון…,loading text,toast
 dictionary.loading.dictionary_kb,Loading dictionary… {kb} KB,טוען מילון… {kb} KB,loading text with size,toast
 dictionary.loading.dictionary_pct,Loading dictionary… {pct}%,טוען מילון… {pct}%,loading text with percent,toast
-dictionary.loading.emoji_failed,Failed to load emoji data.,טעינת נתוני האימוג׳ים נכשלה.,emoji load error,
+dictionary.loading.emoji_failed,"Couldn't load emoji. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.","לא ניתן לטעון את האימוג׳ים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז רעננו את הדף.",emoji load error,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence with the emoji noun — confirm
 dictionary.loading.emojis,Loading emojis…,טוען אימוג׳ים…,emoji loading text,toast
 dictionary.loading.emojis_pct,Loading emojis… {pct}%,טוען אימוג׳ים… {pct}%,emoji loading text with percent,toast
 dictionary.loading.failed,"Couldn't load the word list. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.","לא ניתן לטעון את אוצר המילים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז רעננו את הדף.",dictionary load error,
@@ -1242,7 +1242,7 @@ flashcards.weaknesses.tab_other,Other,אחר,weakness-view tab,
 flashcards.weaknesses.tab_vowels,Vowels,תנועות,weakness-view tab,
 flashcards.weaknesses.view_title,Weaknesses — {name},חולשות — {name},weakness-view modal title,
 flashcards.wordlist.untitled,Untitled list,רשימה ללא שם,fallback word-list name,
-flashcards.words.emoji_load_failed,Failed to load emoji data.,טעינת נתוני האימוג׳י נכשלה.,emoji tree load error,
+flashcards.words.emoji_load_failed,"Couldn't load emoji. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.","לא ניתן לטעון את האימוג׳ים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז רעננו את הדף.",emoji tree load error,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence with the emoji noun — confirm
 flashcards.words.emoji_loading,Loading emoji…,טוען אימוג׳י…,emoji tree while the ~457 KB corpus is in flight,toast
 flashcards.words.load_failed,"Couldn't load the word list. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.","לא ניתן לטעון את רשימת המילים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז רעננו את הדף.",words-pool load error,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence — confirm
 flashcards.words.loading_dict,Loading dictionary…,טוען מילון…,words-pool count while loading,toast
