@@ -2631,6 +2631,9 @@ let wordsFront = 'hebrew';             // 'hebrew' | 'english'
 let wordsShowTranslit = false;
 let wordsMinLen = 1, wordsMaxLen = 20; // Hebrew-letter length filter (all-dict source)
 let ALL_WORDS_DATA = null;             // lazy-fetched hebrew_words.json (keyed by letter count)
+let _wordsLoadFailed = false;          // that fetch was ATTEMPTED and failed — distinct from "not
+                                       // attempted yet", so the caption can say so instead of a
+                                       // "Loading…" that will never resolve
 let WORDS_POOL = null;                 // resolved deck pool [{word,translit,translation}]
 let wordsInlinePool = null;            // words embedded in a loaded share code (takes precedence)
 let timerMode = 'off';       // 'off' | 'track' | 'limit'
@@ -3452,13 +3455,17 @@ function wlNamesForIds(ids) {
 }
 
 function fetchAllWordsData() {
+  _wordsLoadFailed = false;
   return fetch('data/hebrew_words.json?v=6')
     .then(r => r.json())
     .then(data => { ALL_WORDS_DATA = data; updateWordsCount(); })
     .catch(() => {
       ALL_WORDS_DATA = null;
-      const el = document.getElementById('wordsCount');
-      if (el) el.textContent = I18n.t('flashcards.words.load_failed');
+      _wordsLoadFailed = true;
+      // Report through the single caption chokepoint rather than writing the element here: a
+      // direct write was overwritten by the next routine re-render (a length tweak, a language
+      // switch), and it also showed a dictionary error to My-Word-Lists users, who never need it.
+      updateWordsCount();
     });
 }
 
@@ -3550,7 +3557,10 @@ function renderWordListPicker() {
 function updateWordsCount() {
   const el = document.getElementById('wordsCount');
   if (!el) return;
-  if (wordsSource === 'alldict' && !ALL_WORDS_DATA) { el.textContent = I18n.t('flashcards.words.loading_dict'); return; }
+  if (wordsSource === 'alldict' && !ALL_WORDS_DATA) {
+    el.textContent = I18n.t(_wordsLoadFailed ? 'flashcards.words.load_failed' : 'flashcards.words.loading_dict');
+    return;
+  }
   const n = resolveWordsPool().length;
   el.textContent = I18n.t('flashcards.words.pool_count.' + (n === 1 ? 'one' : 'other'), { count: n });
 }
