@@ -2089,7 +2089,7 @@ function resetAllSettings() {
   if (!confirm(I18n.t('torah.confirm.reset_all'))) return;
   localStorage.removeItem(STORAGE_KEY);
   settings = JSON.parse(JSON.stringify(DEFAULTS));
-  applyPanelStates();   // panelsCollapsed is null again — back to the markup defaults
+  panelMemApply();   // panelsCollapsed is null again — back to the markup defaults
   syncFormToSettings();
   setHebFont(settings.hebFont);
   initColorPickers();
@@ -4919,38 +4919,62 @@ function syncPanelTitleAria() {
     if (t.getAttribute('role') === 'button') t.setAttribute('aria-expanded', t.parentElement.classList.contains('collapsed') ? 'false' : 'true');
   });
 }
-function expandAllMenus()   { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.remove('collapsed')); syncPanelTitleAria(); savePanelStates(); }
-function collapseAllMenus() { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.add('collapsed')); syncPanelTitleAria(); savePanelStates(); }
-/* Persist which drawer panels are open. A panel is identified by the language-independent
-   tail of its title's data-i18n key (torah.settings.panel_<key>). settings.panelsCollapsed
-   stays null until the teacher first toggles a panel; a key missing from the stored map
-   keeps that panel's markup default, so a future new panel still opens per its own markup. */
-const PANEL_MARKUP_DEFAULTS = {};   // captured on the first applyPanelStates() call, pre-application
-function panelKeyOf(t) { return (t.dataset.i18n || '').replace('torah.settings.panel_', ''); }
-function savePanelStates() {
+function expandAllMenus()   { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.remove('collapsed')); syncPanelTitleAria(); panelMemSave(); }
+function collapseAllMenus() { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.add('collapsed')); syncPanelTitleAria(); panelMemSave(); }
+const PANEL_MEM_CFG = {
+  scope: '#settingsModal .panel-title',
+  // Maps written before the shared engine keyed panels by the tail of the data-i18n key alone;
+  // widen those on read so a teacher's saved layout survives the move to full-key identity.
+  read() {
+    const m = settings.panelsCollapsed;
+    if (!m || typeof m !== 'object') return null;
+    const out = {};
+    Object.keys(m).forEach(k => { out[k.includes('.') ? k : 'torah.settings.panel_' + k] = m[k]; });
+    return out;
+  },
+  write(map) { settings.panelsCollapsed = map; saveSettings(); },
+  afterApply() { syncPanelTitleAria(); }
+};
+/* ═══════════ IvritSuite panel-collapse memory (shared, identical across pages) ═══════════
+   Remembers which panels the teacher left open, so a drawer that was tidied once stays tidy on
+   the next visit. A panel is keyed by the data-i18n key on its title: language-independent,
+   unique per panel, and already present on every collapsible title in the suite — so there are
+   no ids to invent or keep in sync. WHERE the map is stored is per-page and lives in
+   PANEL_MEM_CFG (the settings blob on tools that have one, a dedicated key on the rest); this
+   engine never touches localStorage itself. A panel whose key is absent from the stored map
+   keeps its markup default, so a panel added in a later release opens or closes per its own
+   markup instead of inheriting whatever a neighbour happened to be doing. */
+const PANEL_MEM_DEFAULTS = {};   // markup defaults, captured once before the first restore
+function panelMemTitles() { return document.querySelectorAll(PANEL_MEM_CFG.scope); }
+function panelMemSave() {
   const map = {};
-  document.querySelectorAll('#settingsModal .panel-title').forEach(t => {
-    const k = panelKeyOf(t);
-    if (k) map[k] = t.parentElement.classList.contains('collapsed');
+  panelMemTitles().forEach(t => {
+    const p = t.closest('.panel'), k = t.dataset.i18n;
+    if (p && k) map[k] = p.classList.contains('collapsed');
   });
-  settings.panelsCollapsed = map;
-  saveSettings();
+  PANEL_MEM_CFG.write(map);
 }
-function applyPanelStates() {
-  document.querySelectorAll('#settingsModal .panel-title').forEach(t => {
-    const k = panelKeyOf(t);
-    if (k && !(k in PANEL_MARKUP_DEFAULTS)) PANEL_MARKUP_DEFAULTS[k] = t.parentElement.classList.contains('collapsed');
+function panelMemApply() {
+  panelMemTitles().forEach(t => {
+    const p = t.closest('.panel'), k = t.dataset.i18n;
+    if (p && k && !(k in PANEL_MEM_DEFAULTS)) PANEL_MEM_DEFAULTS[k] = p.classList.contains('collapsed');
   });
-  const map = settings.panelsCollapsed;
-  document.querySelectorAll('#settingsModal .panel-title').forEach(t => {
-    const k = panelKeyOf(t);
-    if (!k) return;
-    let collapsed = PANEL_MARKUP_DEFAULTS[k];
+  const map = PANEL_MEM_CFG.read();
+  panelMemTitles().forEach(t => {
+    const p = t.closest('.panel'), k = t.dataset.i18n;
+    if (!p || !k) return;
+    let collapsed = PANEL_MEM_DEFAULTS[k];
     if (map && typeof map === 'object' && Object.prototype.hasOwnProperty.call(map, k)) collapsed = !!map[k];
-    if (collapsed !== undefined) t.parentElement.classList.toggle('collapsed', collapsed);
+    if (collapsed !== undefined) p.classList.toggle('collapsed', collapsed);
   });
-  syncPanelTitleAria();
+  if (PANEL_MEM_CFG.afterApply) PANEL_MEM_CFG.afterApply();
 }
+/* ═══════════ end shared: panel-collapse memory ═══════════ */
+
+/* Drawer panels have no ids — openSettingsAtPanel addresses one by the tail of its title's
+   data-i18n key (torah.settings.panel_<key>). The open/closed map itself is kept by the shared
+   panel-collapse engine above, which uses the full key. */
+function panelKeyOf(t) { return (t.dataset.i18n || '').replace('torah.settings.panel_', ''); }
 // Keyboard focus management for the drawer: focus moves in on open, Tab wraps inside the modal
 // while it's open, and focus returns to the opener (the gear) on close. Escape already closes it
 // (global keydown handler). Mirrors the dashboard's settings-drawer pattern.
@@ -5279,12 +5303,12 @@ function wireSettingsForm() {
     const toggle = () => {
       t.parentElement.classList.toggle('collapsed');
       t.setAttribute('aria-expanded', t.parentElement.classList.contains('collapsed') ? 'false' : 'true');
-      savePanelStates();
+      panelMemSave();
     };
     t.addEventListener('click', toggle);
     t.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
   });
-  applyPanelStates();   // restore the teacher's saved open/closed drawer panels
+  panelMemApply();   // restore the teacher's saved open/closed drawer panels
   // Student handout bar options → persisted handout* fields
   document.getElementById('ttHandoutHideNikkud').addEventListener('change', e => {
     settings.handoutHideNikkud = e.target.checked; saveSettings();
@@ -6238,7 +6262,7 @@ function openSettingsAtPanel(key) {
   if (!title) return;
   title.parentElement.classList.remove('collapsed');
   syncPanelTitleAria();
-  savePanelStates();
+  panelMemSave();
   title.scrollIntoView({ block: 'start' });
 }
 async function goToCurrentParshah() {

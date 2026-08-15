@@ -27,7 +27,7 @@
 - [Hebrew Font UI](#hebrew-font-ui-classroom_dashboardhtml)
 - [Hebrew Font Maker](#hebrew-font-maker-hebrew_font_makerhtml)
 - [Nikkud Color Coding UI](#nikkud-color-coding-ui-classroom_dashboardhtml)
-- [Settings Drawer & Panel Collapse](#settings-drawer--panel-collapse-classroom_dashboardhtml)
+- [Settings Drawer & Panel Collapse](#settings-drawer--panel-collapse-classroom_dashboardhtml) (persistence: [Panel-collapse memory](#shared-ux-components--the-conventions-all-tools-are-converging-on))
 - [Tooltips](#tooltips-classroom_dashboardhtml)
 - [Letter Selector](#letter-selector-hebrew_blend_generatorhtml)
 - [Vowel Selector](#vowel-selector-hebrew_blend_generatorhtml)
@@ -46,6 +46,7 @@
 - [ ] Shipped a Font Maker feature? → bump `FONT_MAKER_VERSION` + prepend a matching changelog `<li>` in the About tab (one **combined** bump/entry per release, not per sub-feature).
 - [ ] Added an external script/font/fetch/wasm/iframe? → update that page's **CSP meta tag** (Security rule 3).
 - [ ] New UI control in a preset-bearing tool? → wire `getSettings()`/`applySettings()` (+ AllTools export/import/erase keys if it's a new localStorage store).
+- [ ] Added a collapsible `.panel`, or new code that writes `.collapsed`? → give the title a `data-i18n` key and call `panelMemSave()` from that writer (see Panel-collapse memory) — otherwise the drawer silently forgets that panel.
 - [ ] Added/changed a user-facing UI string or new CSS? → route the string through `I18n.t()`/`data-i18n*` (+ a key in `locales/ui-strings.csv`, then `node scripts/build-locales.js`); use **logical** CSS props (`*-inline-*`, `text-align:start/end`); run **`node scripts/check-i18n.js`** (must report no NEW violations). See Internationalization.
 - [ ] Verified headless with the **Playwright recipe** (see "Verifying changes" section): light + dark mode, desktop + ~800px.
 - [ ] Added or meaningfully changed a page's content? → run **`node scripts/update-sitemap.mjs`** as your last step so each `<lastmod>` reflects this change's commit date (see Deploy section). Idempotent; safe to run every session.
@@ -211,7 +212,7 @@ UI language does NOT add a printed/projected content language.)
 | `generatorPresets` | `hebrewBlender_presets` | Hebrew Blend Generator saved presets |
 | `dashboardPresets` | `hebrewDashboard_presets` | Classroom Dashboard saved presets |
 | `dashboardSchedules` | `hebrewDashboard_schedules` | Classroom Dashboard saved schedules (legacy single-day `[{preset,until}]` arrays AND v2 weekly entries `{v:2, week:{…}}` — both shapes coexist in the same map) |
-| `dashboardSettings` | `hebrewDashboard_settings` | All Classroom Dashboard settings (zoom, video URL, header size, Jewish-calendar widget toggles `showHolidayCountdown`/`showShabbatTimes` (Shabbat times reuse the weather `location`), Timer toggles `showTimer`/`showTimerFullscreen`, Omer toggles `showOmerCounter`/`showOmerEnglish`/`showOmerProgress`, the weekly Schedule Sync grid `scheduleWeek` (present only once a user builds/imports one — its presence selects the weekly engine) + the class-color map `presetColors`, etc.) |
+| `dashboardSettings` | `hebrewDashboard_settings` | All Classroom Dashboard settings (zoom, video URL, header size, Jewish-calendar widget toggles `showHolidayCountdown`/`showShabbatTimes` (Shabbat times reuse the weather `location`), Timer toggles `showTimer`/`showTimerFullscreen`, Omer toggles `showOmerCounter`/`showOmerEnglish`/`showOmerProgress`, the weekly Schedule Sync grid `scheduleWeek` (present only once a user builds/imports one — its presence selects the weekly engine) + the class-color map `presetColors`, the drawer's `panelsCollapsed` map, etc.) |
 | `flashCardPresets` | `hebrewFlashCards_presets` | Flash Cards saved presets |
 | `flashCardSettings` | `hebrewFlashCards_settings` | All Flash Cards live settings (mode, selected letters/vowels, color-coding, fonts, timer, number/color/emoji sub-modes, word-list selections, etc.); flat settings blob merged field-by-field via `ivritSafeAssign` |
 | `flashCardPbStreak` | `hebrewFlashCards_pbStreak` | Flash Cards personal-best streak (scalar string; imported as the **max** of existing vs incoming) |
@@ -227,6 +228,7 @@ UI language does NOT add a printed/projected content language.)
 | `hebFont` / `hebFontSize` | `hebrewBlender_hebFont` / `_hebFontSize` | Shared Generator+Dictionary display prefs (selected Hebrew font + size); scalar strings, empty = never-set (skipped on import) |
 | `livePreview` | `hebrewBlender_livePreview` | Generator live-preview toggle (`'1'`/`'0'`); scalar string, empty = never-set (skipped on import) |
 | `fmLastAuthor` | `hebrewFontMaker_lastAuthor` | Font Maker onboarding wizard's remembered author name; scalar string, empty = never-set (skipped on import) |
+| `generatorPanels` / `flashCardPanels` / `dictPanels` | `hebrewBlender_panels` / `hebrewFlashCards_panels` / `hebrewDictionary_panels` | Which collapsible panels the user left open, for the three tools with no settings blob of their own (the dashboard, Torah Trainer and Trope Tutor carry theirs as `panelsCollapsed` inside their own settings blob). Flat `{data-i18n key: bool}` maps merged via `ivritSafeAssign`; empty = never-set (skipped on import). See [Panel-collapse memory](#shared-ux-components--the-conventions-all-tools-are-converging-on) |
 
 ### Rule: any new tool with persistent data must be added here
 
@@ -801,6 +803,43 @@ whose text is majority-English (e.g. mixed `<option>` labels). Verify: `document
   example/question words, 2026-07-09).
 - **Rule:** any new Hebrew-rendering surface marks its output `lang="he"` at the chokepoint.
 
+### 9. Panel-collapse memory — a drawer that was tidied once stays tidy
+A teacher who collapses the panels they don't use should not have to do it again next lesson. Every
+collapsible `.panel` remembers its open/closed state across visits, via one `═══`-marked shared block
+(`/* ═══ IvritSuite panel-collapse memory ═══ */ … /* ═══ end shared: panel-collapse memory ═══ */`),
+byte-identical across all six carriers (sha-verified 2026-08-15: `b58130835987`) — copy it, don't
+rewrite it. It exposes `panelMemSave()` / `panelMemApply()` and depends only on a per-page
+**`PANEL_MEM_CFG`** (the `IVRIT_CFG` pattern):
+```js
+const PANEL_MEM_CFG = {
+  scope: '.panel-title',                 // '#settingsModal .panel-title' where the page has panels outside the drawer
+  read()      { return settings.panelsCollapsed; },              // or ivritSafeParse(localStorage…)
+  write(map)  { settings.panelsCollapsed = map; saveSettings(); },
+  afterApply() { syncPanelTitleAria(); }                          // the page's own aria-expanded sync
+};
+```
+- **Panels are keyed by the `data-i18n` key on their title**, so identity is language-independent (a
+  layout saved in English restores in Hebrew) and there are no ids to invent or keep in sync. Every
+  `.panel-title` in the suite already carries one; a title without one is simply not remembered.
+- **A key absent from the stored map keeps that panel's markup default** (captured once, pre-restore, in
+  `PANEL_MEM_DEFAULTS`) — so a panel added in a later release opens or closes per its own markup instead
+  of inheriting a neighbour's state. This is why the engine never treats "missing" as "expanded".
+- **Where the map lives is per-page, and the engine never touches localStorage itself.** Tools with a
+  settings blob keep it there as `settings.panelsCollapsed` (dashboard, torah, trope — so it rides the
+  existing AllTools entry for free); the other three use a dedicated `hebrew<Tool>_panels` key, read via
+  `ivritSafeParse` and registered in all five AllTools sites.
+- **Implemented on:** all six collapse carriers — `torah_trainer.html` (the origin; shipped as the S202
+  micro-feature and converged onto the shared block in 2026-08, with a read-side migration for its
+  older bare-tail keys), `classroom_dashboard.html`, `trope_tutor.html`,
+  `hebrew_blend_generator.html`, `flash_cards.html`, `hebrew_dictionary.html`. Sub-section headers
+  (`.sub-section-hdr`, `.adv-section-title`, `.pos-sec-hdr`, `.rw-section-header`) are **not** covered —
+  only `.panel`.
+- **Rule:** a new tool with collapsible panels ships this block + its `PANEL_MEM_CFG`, calls
+  `panelMemApply()` immediately after `initPanelCollapse()` at init, and calls `panelMemSave()` from
+  **every** writer of `.collapsed` — the click/keyboard toggle *and* any Expand-all / Collapse-all
+  button. Give each new `.panel-title` a `data-i18n` key (it needs one for translation anyway) and it
+  is remembered automatically; nothing else per-panel is required.
+
 ---
 
 ## Hebrew Font Maker (`Hebrew_Font_Maker.html`)
@@ -1278,11 +1317,14 @@ body.dark .panel-title { background: #0a0f1c; }
 ```js
 function initPanelCollapse() {
   document.querySelectorAll('.panel-title').forEach(t => {
-    t.addEventListener('click', () => t.parentElement.classList.toggle('collapsed'));
+    t.addEventListener('click', () => { t.parentElement.classList.toggle('collapsed'); panelMemSave(); });
   });
 }
 ```
-Called once at `DOMContentLoaded`. Toggling `.collapsed` on the `.panel` element hides `.panel-body` and swaps the `::after` arrow via CSS.
+Called once at `DOMContentLoaded`. Toggling `.collapsed` on the `.panel` element hides `.panel-body` and
+swaps the `::after` arrow via CSS. The `panelMemSave()` call — and the `panelMemApply()` that must follow
+`initPanelCollapse()` at init — are the shared panel-collapse memory; see
+[Shared UX components → Panel-collapse memory](#shared-ux-components--the-conventions-all-tools-are-converging-on).
 
 ---
 

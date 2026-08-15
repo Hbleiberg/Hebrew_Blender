@@ -1106,6 +1106,7 @@ const DEFAULTS = {
   drillHear: true,
   drillMelody: true,
   playbackRate: 1.0,
+  panelsCollapsed: null,        // settings-drawer per-panel collapse map {data-i18n key: bool}; null = markup defaults
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
 
@@ -2318,6 +2319,48 @@ function syncPanelTitleAria() {
     if (t.getAttribute('role') === 'button') t.setAttribute('aria-expanded', t.parentElement.classList.contains('collapsed') ? 'false' : 'true');
   });
 }
+const PANEL_MEM_CFG = {
+  scope: '.panel-title',
+  read() { return settings.panelsCollapsed; },
+  write(map) { settings.panelsCollapsed = map; saveSettings(); },
+  afterApply() { syncPanelTitleAria(); }
+};
+/* ═══════════ IvritSuite panel-collapse memory (shared, identical across pages) ═══════════
+   Remembers which panels the teacher left open, so a drawer that was tidied once stays tidy on
+   the next visit. A panel is keyed by the data-i18n key on its title: language-independent,
+   unique per panel, and already present on every collapsible title in the suite — so there are
+   no ids to invent or keep in sync. WHERE the map is stored is per-page and lives in
+   PANEL_MEM_CFG (the settings blob on tools that have one, a dedicated key on the rest); this
+   engine never touches localStorage itself. A panel whose key is absent from the stored map
+   keeps its markup default, so a panel added in a later release opens or closes per its own
+   markup instead of inheriting whatever a neighbour happened to be doing. */
+const PANEL_MEM_DEFAULTS = {};   // markup defaults, captured once before the first restore
+function panelMemTitles() { return document.querySelectorAll(PANEL_MEM_CFG.scope); }
+function panelMemSave() {
+  const map = {};
+  panelMemTitles().forEach(t => {
+    const p = t.closest('.panel'), k = t.dataset.i18n;
+    if (p && k) map[k] = p.classList.contains('collapsed');
+  });
+  PANEL_MEM_CFG.write(map);
+}
+function panelMemApply() {
+  panelMemTitles().forEach(t => {
+    const p = t.closest('.panel'), k = t.dataset.i18n;
+    if (p && k && !(k in PANEL_MEM_DEFAULTS)) PANEL_MEM_DEFAULTS[k] = p.classList.contains('collapsed');
+  });
+  const map = PANEL_MEM_CFG.read();
+  panelMemTitles().forEach(t => {
+    const p = t.closest('.panel'), k = t.dataset.i18n;
+    if (!p || !k) return;
+    let collapsed = PANEL_MEM_DEFAULTS[k];
+    if (map && typeof map === 'object' && Object.prototype.hasOwnProperty.call(map, k)) collapsed = !!map[k];
+    if (collapsed !== undefined) p.classList.toggle('collapsed', collapsed);
+  });
+  if (PANEL_MEM_CFG.afterApply) PANEL_MEM_CFG.afterApply();
+}
+/* ═══════════ end shared: panel-collapse memory ═══════════ */
+
 let _settingsOpener = null;
 function _settingsTrapKey(e) {
   if (e.key !== 'Tab') return;
@@ -2817,13 +2860,13 @@ async function init() {
   document.querySelectorAll('.panel-title').forEach(t => {
     t.tabIndex = 0;
     t.setAttribute('role', 'button');
-    const toggle = () => { t.parentElement.classList.toggle('collapsed'); syncPanelTitleAria(); };
+    const toggle = () => { t.parentElement.classList.toggle('collapsed'); syncPanelTitleAria(); panelMemSave(); };
     t.addEventListener('click', toggle);
     t.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
     });
   });
-  syncPanelTitleAria();
+  panelMemApply();   // restore the teacher's saved open/closed drawer panels (syncs aria too)
   // tablist arrow-key nav (APG): Left/Right/Home/End move focus + activate
   document.querySelector('.tu-tabs').addEventListener('keydown', e => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
