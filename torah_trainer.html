@@ -67,7 +67,7 @@
   "@type": "WebApplication",
   "name": "Torah Trainer",
   "url": "https://ivritsuite.com/torah_trainer.html",
-  "description": "Read the weekly Torah portion in Hebrew with toggleable transliteration, translations, vowel color-coding, trope-family clause coloring, cantillation marks, chanted-audio karaoke, and TTS.",
+  "description": "Read the weekly Torah portion in Hebrew with toggleable transliteration, translations, vowel color-coding, trope-family clause coloring, cantillation marks, chanted-audio karaoke, and TTS. Copy the color-coded passage out as formatted text, or print classroom sheets that repeat the reference and clause-color key on every page.",
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "Any (web browser)",
   "isAccessibleForFree": true,
@@ -92,12 +92,13 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    { "@type": "Question", "name": "What is the Torah Trainer?", "acceptedAnswer": { "@type": "Answer", "text": "A free Hebrew Torah reader. Pick a parsha and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, prose TTS, and chanted-audio karaoke that highlights words in time with the recording." } },
+    { "@type": "Question", "name": "What is the Torah Trainer?", "acceptedAnswer": { "@type": "Answer", "text": "A free Hebrew Torah reader. Pick a parsha and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, prose TTS, and chanted-audio karaoke that highlights words in time with the recording. When you are done reading, copy the passage out as formatted text or print it as a classroom sheet." } },
     { "@type": "Question", "name": "Does Torah Trainer include chanted-audio karaoke?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. PocketTorah's recordings of all 54 parshiyot and their haftarot stream on demand, with word-level highlighting synchronized to the audio. The audio bar lets you adjust playback speed without re-fetching." } },
     { "@type": "Question", "name": "Where do the Hebrew text and English translations come from?", "acceptedAnswer": { "@type": "Answer", "text": "Sefaria's public API. The translation dropdown is populated automatically and defaults to JPS 1985 when available." } },
     { "@type": "Question", "name": "Can I read without nikkud or cantillation marks?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The settings drawer has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). The cantillation strip uses Unicode range U+0591-U+05AF and leaves nikkud intact." } },
     { "@type": "Question", "name": "Can it color-code the Torah trope (cantillation) families?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Trope color coding tints each word by its cantillation clause family — Sof Pasuk, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings." } },
     { "@type": "Question", "name": "Does it work for both diaspora and Israel reading schedules?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The default is diaspora; flip the Reading Schedule toggle in settings to switch to the Israel schedule. The 'Jump to this week's parsha' button fetches the current parsha from Sefaria using the chosen schedule." } },
+    { "@type": "Question", "name": "Can I copy the Hebrew text out of the reader?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Copy panel in the Options drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting." } },
     { "@type": "Question", "name": "Is the Torah Trainer free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0." } }
   ]
 }
@@ -114,7 +115,8 @@
     { "@type": "HowToStep", "position": 2, "name": "Choose a layout", "text": "Switch between side-by-side (Hebrew + translation columns) and interlinear (stacked rows per verse). Toggle transliteration and translation independently." },
     { "@type": "HowToStep", "position": 3, "name": "Customize appearance", "text": "Open settings to pick a Hebrew font, color-code nikkud per vowel, and choose a transliteration scheme (Modern Israeli, Ashkenazi, SBL, Brill, or Simple Stressed)." },
     { "@type": "HowToStep", "position": 4, "name": "Listen and chant along", "text": "Enable karaoke in settings, then pick an aliyah from the Reading dropdown. PocketTorah audio streams on demand and highlights each word as it's chanted." },
-    { "@type": "HowToStep", "position": 5, "name": "Project fullscreen", "text": "Click the fullscreen button to expand the reading area for SmartBoard projection or focused study." }
+    { "@type": "HowToStep", "position": 5, "name": "Project fullscreen", "text": "Click the fullscreen button to expand the reading area for SmartBoard projection or focused study." },
+    { "@type": "HowToStep", "position": 6, "name": "Take it away", "text": "Copy the passage as color-coded rich text for a handout, or print it — every printed sheet repeats the reading's reference and the clause-color key." }
   ]
 }
 </script>
