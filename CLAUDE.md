@@ -50,6 +50,7 @@
 - [ ] Added/changed a user-facing UI string or new CSS? → route the string through `I18n.t()`/`data-i18n*` (+ a key in `locales/ui-strings.csv`, then `node scripts/build-locales.js`); use **logical** CSS props (`*-inline-*`, `text-align:start/end`); run **`node scripts/check-i18n.js`** (must report no NEW violations). See Internationalization.
 - [ ] Verified headless with the **Playwright recipe** (see "Verifying changes" section): light + dark mode, desktop + ~800px.
 - [ ] Added or meaningfully changed a page's content? → run **`node scripts/update-sitemap.mjs`** as your last step so each `<lastmod>` reflects this change's commit date (see Deploy section). Idempotent; safe to run every session.
+- [ ] Changed a page's `<title>`, `<meta name="description">` or JSON-LD, or added/removed a page? → run **`node scripts/update-llms-txt.mjs`** to regenerate `llms.txt` (see Deploy section). **Never hand-edit `llms.txt`** — it is generated, and the next run overwrites it. Idempotent; `--check` reports staleness without writing.
 - [ ] Committed + pushed directly to `main`, and the **Pages deploy run concluded `success`** (see Deploy section — code on `main` is not yet the live site).
 
 ## Security — REQUIRED patterns (safe JSON parse, `esc()`, CSP)
@@ -1824,3 +1825,21 @@ push, is what updates the live site.
   every `<lastmod>` collapses to one inflated date while the script reports success. Run
   `git fetch --unshallow` first — and treat the same caution as standing for **any** date-based
   receipt from `git log`/`git diff` in this container.
+- **`llms.txt` is GENERATED — regenerate it, never hand-edit it.** `node scripts/update-llms-txt.mjs`
+  (plain Node, no deps) rewrites `/llms.txt`, the curated plain-text site map for LLMs and fetching
+  agents ([llmstxt.org](https://llmstxt.org)). Nothing in it is authored twice: the tool list —
+  names, URLs, order, one-line descriptions — comes from **`index.html`'s JSON-LD `ItemList`**, the
+  page set and its order from **`sitemap.xml`**, and secondary-link text from each page's `<title>` /
+  `<meta name="description">` (with a page's JSON-LD `WebApplication` description as the per-tool
+  fallback). The **only** hand-maintained prose is the `SITE_INTRO` constant at the top of the script
+  — edit it there. Extractors read the **`<head>` slice only**, because the Font Maker's inline JS
+  contains `<title>${title}</title>` template literals that a whole-file regex mis-reads as the
+  document title. Idempotent; `--check` exits 1 on a stale file and writes nothing; a `<loc>` with no
+  file on disk warns and is skipped. Run it whenever a page's title/description/JSON-LD changes or a
+  page is added or removed. `llms.txt` is **not** precached (no `sw.js VERSION` bump needed) and is
+  **not** a `sitemap.xml` entry — sitemaps list indexable HTML pages.
+  **Set expectations honestly:** no major AI provider consumes `llms.txt` in production, and Google
+  Search explicitly ignores it (June 2026 docs; Illyes/Mueller confirmed no support and no plans).
+  It is a cheap forward hedge plus a readable inventory for an agent pointed at the site — **not** an
+  SEO mechanism, and not a reason to deprioritize the `sitemap.xml` + per-page JSON-LD that search
+  engines actually read (and that this script reads *from*).

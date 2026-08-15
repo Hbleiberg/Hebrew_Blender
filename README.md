@@ -160,6 +160,8 @@ How it works:
 | `manifest.webmanifest` | PWA manifest (name, icons, theme/background color) |
 | `THIRD_PARTY_LICENSES.md` | License terms for bundled/streamed third-party data (PocketTorah, Sefaria, fonts, etc.) |
 | `CNAME`, `robots.txt`, `sitemap.xml`, `.nojekyll`, `favicon.svg` | Static-site plumbing (custom domain, crawler hints, sitemap, Jekyll opt-out, favicon) |
+| `llms.txt` | Curated plain-text site map for LLMs / fetching agents ([llmstxt.org](https://llmstxt.org)) — **generated**, never hand-edited |
+| `scripts/update-llms-txt.mjs` | Regenerates `llms.txt` from `sitemap.xml` + each page's JSON-LD and `<head>` metadata (plain Node, zero deps; `--check` reports staleness) |
 | `data/hebrew_words.json` | Structured word data (~2.93 MB, 13,081 entries) loaded by the generator and dictionary via `fetch()` |
 | `source-data/hebrew_dictionary_4_19_2026.csv` | Pipeline-input CSV used to build `data/hebrew_words.json` (Hebrew w/ nikkud, transliteration, translation, POS, era); not served at runtime |
 | `data/hebrew_emojis.json` (+ `source-data/hebrew_emojis.csv` pipeline input) | Hebrew word ↔ emoji mappings used by the dictionary and flash-card emoji modes |
