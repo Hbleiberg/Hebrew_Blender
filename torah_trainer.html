@@ -291,6 +291,7 @@ header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
   background:rgba(255,255,255,0.08); color:#fff;
   border:1px solid rgba(255,255,255,0.18);
   padding:7px 12px; border-radius:6px;
+  min-height:30px;   /* suite touch floor — the <=720px block below trims this padding, which put ❓ Tour at 29px on a phone; set on the shared class so no sibling can drop under it later */
   font-family:inherit; font-size:0.82rem; font-weight:600;
   cursor:pointer; text-decoration:none;
   display:inline-flex; align-items:center; gap:6px;
