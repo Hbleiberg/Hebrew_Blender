@@ -1244,7 +1244,7 @@ flashcards.weaknesses.view_title,Weaknesses — {name},חולשות — {name},w
 flashcards.wordlist.untitled,Untitled list,רשימה ללא שם,fallback word-list name,
 flashcards.words.emoji_load_failed,Failed to load emoji data.,טעינת נתוני האימוג׳י נכשלה.,emoji tree load error,
 flashcards.words.emoji_loading,Loading emoji…,טוען אימוג׳י…,emoji tree while the ~457 KB corpus is in flight,toast
-flashcards.words.load_failed,Failed to load dictionary words.,טעינת מילות המילון נכשלה.,words-pool load error,
+flashcards.words.load_failed,"Couldn't load the word list. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.","לא ניתן לטעון את רשימת המילים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז רעננו את הדף.",words-pool load error,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence — confirm
 flashcards.words.loading_dict,Loading dictionary…,טוען מילון…,words-pool count while loading,toast
 flashcards.words.pool_count.one,{count} word in pool,מילה אחת במאגר,words-pool count,plural
 flashcards.words.pool_count.other,{count} words in pool,{count} מילים במאגר,words-pool count,plural
@@ -3272,7 +3272,7 @@ torah.status.audio_basename_missing,Audio basename missing in manifest.,שם ק�
 torah.status.audio_load_failed,Couldn't load the chanting audio. Check your connection — some school networks block it.,לא ניתן היה לטעון את שמע הקריאה. בדקו את החיבור — רשתות בית ספר חוסמות אותו לעיתים.,karaoke status + toast when the MP3 fails to load,
 torah.status.cant_determine_parsha,Could not determine the current parsha (Sefaria API unreachable).,לא ניתן לקבוע את הפרשה הנוכחית (ה-API של Sefaria לא נגיש).,status,
 torah.status.chant_unavailable,Chanting isn't available for this reading.,שירה אינה זמינה לקריאה זו.,status,
-torah.status.data_load_failed,"Failed to load static data files (data/parshiyot.json, data/pockettorah/*.json). The page may not work correctly.","טעינת קובצי הנתונים הסטטיים נכשלה (data/parshiyot.json, data/pockettorah/*.json). ייתכן שהעמוד לא יעבוד כראוי.",status,
+torah.status.data_load_failed,"Couldn't load the Torah readings. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.","לא ניתן לטעון את קריאות התורה. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז רעננו את הדף.",status,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence — confirm
 torah.status.failed_load,Failed to load {label}: {error}.,טעינת {label} נכשלה: {error}.,status,do-not-translate {label}/{error}
 torah.status.failed_timings,Failed to load timings: {error}.,טעינת התזמונים נכשלה: {error}.,karaoke status,do-not-translate {error}
 torah.status.fallback_version,"""{version}"" isn't available here — showing ""{other}"" instead.","""{version}"" אינו זמין כאן — מוצג ""{other}"" במקום.",status,do-not-translate {version}/{other}
@@ -3876,7 +3876,7 @@ worksheet.preview.dismiss,Dismiss,סגור,preview notice close button,aria-labe
 worksheet.preview.loading_word_list,Loading word list…,טוען רשימת מילים…,preview notice,
 worksheet.preview.settings_changed,Settings changed — Generate to apply.,ההגדרות השתנו — צרו כדי להחיל.,preview notice,
 worksheet.preview.waiting_selection,Waiting for a valid selection…,ממתין לבחירה תקינה…,preview notice,
-worksheet.preview.word_list_failed,Could not load the word list. Check your connection and try again.,לא ניתן לטעון את רשימת המילים. בדקו את החיבור ונסו שוב.,preview notice,
+worksheet.preview.word_list_failed,"Couldn't load the word list. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.","לא ניתן לטעון את רשימת המילים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז רעננו את הדף.",preview notice,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence — confirm
 worksheet.quickstart.class_bingo,Class Bingo (30 cards),בינגו כיתתי (30 כרטיסים),quick-start chip,
 worksheet.quickstart.drawer_summary,⚡ Quick start — ready-made worksheets,⚡ התחלה מהירה — דפי עבודה מוכנים,sidebar drawer summary,leading-emoji
 worksheet.quickstart.empty_label,Or start with a ready-made worksheet,או התחילו עם דף עבודה מוכן,empty-state label,
@@ -3953,7 +3953,7 @@ worksheet.realwords.mix_blends,Mix with generated blends,ערבב עם צירו�
 worksheet.realwords.mix_blends_tooltip,"When on, real words are mixed in with randomly generated blends. Students won't know which are real — great for a ""find the real words"" activity.","כשמופעל, מילים אמיתיות מעורבבות עם צירופים שנוצרו אקראית. התלמידים לא יידעו אילו אמיתיות — מצוין לפעילות ״מצא את המילים האמיתיות״.",tooltip,
 worksheet.realwords.pool_imported.one,{count} word imported,מילה אחת יובאה,pool info,plural
 worksheet.realwords.pool_imported.other,{count} words imported,{count} מילים יובאו,pool info,plural
-worksheet.realwords.pool_load_failed,Couldn’t load the Hebrew words.,לא ניתן היה לטעון את המילים בעברית.,pool info — the lazy-loaded word corpus failed to load,
+worksheet.realwords.pool_load_failed,"Couldn't load the Hebrew words. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.","לא ניתן לטעון את המילים בעברית. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז רעננו את הדף.",pool info — the lazy-loaded word corpus failed to load,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence — confirm
 worksheet.realwords.pool_loading,Loading Hebrew words…,טוען מילים בעברית…,pool info — the lazy-loaded word corpus is still in flight,
 worksheet.realwords.pool_matching,{count} matching words,{count} מילים תואמות,pool info,
 worksheet.realwords.pool_no_lists,No lists selected — pick one or more above.,לא נבחרו רשימות — בחרו אחת או יותר למעלה.,pool info,
