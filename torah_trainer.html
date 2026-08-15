@@ -309,6 +309,10 @@ body.dark .tt-controls { background:var(--navy-deep); }
 .tt-ctrl {
   display:inline-flex; align-items:center; gap:6px;
   font-size:0.82rem; color:var(--text);
+  /* A flex item's default min-width:auto refuses to shrink below its content, so the
+     parsha <select> (sized by its longest option) pushed the whole page wider than the
+     viewport on a phone — two-dimensional scrolling, WCAG 1.4.10. */
+  min-width:0;
 }
 /* [hidden] must beat .tt-ctrl's inline-flex — the same trap as #ttCopyBulkPanel and
    .tt-jumpnav above; without this the share button stays visible when it cannot act. */
@@ -325,7 +329,7 @@ body.dark .tt-controls { background:var(--navy-deep); }
 body.dark .tt-ctrl select, body.dark .tt-ctrl input[type="number"], body.dark .tt-ctrl input[type="text"] {
   background:var(--navy-deep); color:var(--text);
 }
-.tt-ctrl select { min-width:110px; }
+.tt-ctrl select { min-width:110px; max-width:100%; }
 .tt-ctrl select:focus, .tt-ctrl input:focus { outline:2px solid var(--gold); outline-offset:0; }
 .tt-stack-toggles { display:inline-flex; flex-direction:column; gap:4px; align-items:stretch; }
 .tt-stack-toggles .row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
