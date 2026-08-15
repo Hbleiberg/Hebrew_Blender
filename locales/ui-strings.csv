@@ -281,6 +281,9 @@ dashboard.preset.rename_toast,"Renamed to ""{name}"" — Schedule Sync updated."
 dashboard.preset.save,Save,שמור,preset save button,
 dashboard.preset.save_empty,Please enter a preset name.,אנא הזינו שם תבנית.,alert,
 dashboard.schedule.add_period,+ Add period,+ הוסף שיעור,weekly editor toolbar button,leading-emoji
+dashboard.schedule.print_week,🖨 Print week,🖨 הדפסת השבוע,weekly editor toolbar button — prints the grid as a reference sheet,leading-emoji; REVIEW: HE draft
+dashboard.schedule.print_week_title,"Print the weekly grid as a reference sheet — class colors included","הדפסת רשת השבוע כדף עזר — כולל צבעי הכיתות",print button tooltip,REVIEW: HE draft
+dashboard.schedule.print_heading,Weekly schedule,מערכת שבועית,title line on the PRINTED weekly grid — teacher-facing chrome so it follows the UI language,REVIEW: HE draft
 dashboard.schedule.cell_aria,"{day}, {start}–{end}: {assignment}","{day}, {start}–{end}: {assignment}",weekly grid cell accessible name,aria-label only — do not translate {…}
 dashboard.schedule.chip_color_aria,Change color for {name},שינוי צבע עבור {name},weekly palette swatch input,aria-label only; mixed UI+content — do not translate {…}
 dashboard.schedule.clear_day,Clear {day},נקה את {day},weekly day menu action,do not translate {…}

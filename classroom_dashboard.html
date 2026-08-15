@@ -1413,6 +1413,9 @@
   .swm-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 10px 0 8px; }
   .swm-weekend { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; cursor: pointer; color: var(--text); }
   .swm-weekend input { accent-color: var(--gold); width: 14px; height: 14px; cursor: pointer; }
+  .swm-toolbar-right { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  /* Screen-hidden; the print block below reveals it as the printed sheet's title. */
+  #swmPrintHead { display: none; }
   .swm-gridwrap { overflow-x: auto; }
   .swm-grid { display: grid; grid-template-columns: auto repeat(var(--swm-days, 5), minmax(88px, 1fr)) auto; gap: 3px; min-width: 540px; align-items: stretch; }
   .swm-grid, .swm-palette { user-select: none; }
@@ -1644,6 +1647,58 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     /* Never split a day row or a widget block across sheets (best-effort — a block
        taller than the page still breaks; browser overrides). */
     .day-item, .weather-block, .omer-block, .shabbat-block { break-inside: avoid; page-break-inside: avoid; }
+
+    /* ── Weekly-grid sheet ────────────────────────────────────────────────────────────────
+       The reference artifact a teacher wants on the desk is the week itself, and the editor
+       that draws it is a position:fixed modal the rule at the top of this block deliberately
+       hides — so the grid had no path to paper at all. `body.swm-printing` (set for the
+       duration of one print, never persisted) swaps which thing IS the page. */
+    body.swm-printing > header, body.swm-printing .dashboard,
+    body.swm-printing .swm-backdrop { display: none !important; }
+    /* body is `min-height:100vh; display:flex` for the board layout. On paper 100vh IS one sheet,
+       so the body stayed a full page tall no matter how short the grid was and every print came
+       out as two pages, the second blank. Release both for the sheet. */
+    body.swm-printing { min-height: 0; display: block; }
+    body.swm-printing .swm-modal {
+      display: block !important; position: static; transform: none; inset: auto;
+      width: auto; max-width: none; max-height: none; overflow: visible;
+      border: none; box-shadow: none; padding: 0; background: #fff; }
+    /* Editing chrome is not part of the artifact — only the grid and the line naming it. */
+    body.swm-printing .swm-modal > .fr-close, body.swm-printing .swm-modal > .fr-h,
+    body.swm-printing .swm-modal > .fr-sub, body.swm-printing .swm-modal > .sub-section,
+    body.swm-printing #swmImportCard, body.swm-printing #swmPalette,
+    body.swm-printing .swm-toolbar, body.swm-printing #swmValidation,
+    body.swm-printing .swm-footer, body.swm-printing .swm-daymenu-btn { display: none !important; }
+    /* The row-delete × is a GRID ITEM, not decoration inside one. `display:none` on it removes a
+       cell from the flow, so every following row slides one track left and the whole week
+       scrambles — the sheet printed with times mid-row and classes under the wrong days. Collapse
+       its track to zero and hide it in place instead, so the item count per row still matches the
+       column count. (The builder's empty header corner rides the same zero track.) */
+    body.swm-printing .swm-grid {
+      grid-template-columns: auto repeat(var(--swm-days, 5), minmax(0, 1fr)) 0; }
+    body.swm-printing .swm-rowdel {
+      visibility: hidden; width: 0; min-width: 0; padding: 0; margin: 0; border: 0; overflow: hidden; }
+    /* The time fields keep their value but drop the picker glyph. */
+    body.swm-printing .swm-time::-webkit-calendar-picker-indicator { display: none; }
+    body.swm-printing #swmPrintHead {
+      display: block; font-family: 'Libre Baskerville', serif; font-size: 1rem;
+      color: var(--navy); border-block-end: 2px solid var(--gold);
+      padding-block-end: 6px; margin-block-end: 10px; }
+    /* On screen the grid scrolls sideways (min-width + overflow-x). On paper it must fit the
+       sheet, and the sticky time column has nothing to stick to. */
+    body.swm-printing .swm-gridwrap { overflow: visible; }
+    body.swm-printing .swm-grid { min-width: 0; }
+    body.swm-printing .swm-timecell { position: static; }
+    /* The class colours ARE the information here — a greyscale grid cannot be read at a
+       glance, which is the whole point of the sheet. Opt them back in past the dialog's
+       drop-backgrounds default (the flash-cards card-sheet precedent, S162). */
+    body.swm-printing .swm-cell {
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      break-inside: avoid; page-break-inside: avoid; }
+    /* Period times print as text, not as form controls with borders and spinners. */
+    body.swm-printing .swm-time {
+      border: none; background: transparent; padding: 0;
+      font-size: 0.72rem; color: var(--text); width: auto; }
   }
 /* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */
 .ft-tree { display:flex; flex-direction:column; gap:4px; }
@@ -1846,8 +1901,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div id="swmPalette" class="swm-palette" role="toolbar" aria-label="Class palette" data-i18n-aria-label="dashboard.schedule.palette_aria"></div>
     <div class="swm-toolbar">
       <label class="swm-weekend"><input type="checkbox" id="swmWeekend" onchange="setWeekWeekend(this.checked)"><span data-i18n="dashboard.schedule.show_weekend">Show weekend</span></label>
-      <button class="btn-xs" id="swmAddPeriod" onclick="addWeekPeriod()" data-i18n="dashboard.schedule.add_period">+ Add period</button>
+      <div class="swm-toolbar-right">
+        <button class="btn-xs" id="swmAddPeriod" onclick="addWeekPeriod()" data-i18n="dashboard.schedule.add_period">+ Add period</button>
+        <button class="btn-xs" id="swmPrintBtn" onclick="printWeekGrid()" data-i18n="dashboard.schedule.print_week" data-i18n-title="dashboard.schedule.print_week_title" title="Print the weekly grid as a reference sheet — class colors included">🖨 Print week</button>
+      </div>
     </div>
+    <!-- Print-only sheet identifier: on paper the dialog's own "Set up Schedule Sync" heading is
+         hidden, so the grid would otherwise arrive on the desk with nothing naming it. -->
+    <div id="swmPrintHead" aria-hidden="true" data-i18n="dashboard.schedule.print_heading">Weekly schedule</div>
     <div class="swm-gridwrap">
       <div id="swmGrid" class="swm-grid" role="group" aria-label="Weekly schedule grid" data-i18n-aria-label="dashboard.schedule.grid_aria"></div>
     </div>
@@ -6950,6 +7011,33 @@ else ivritInit();
     renderSchedulePreview();
     const o = _swmOpener; _swmOpener = null;
     if (o && o.focus) { try { o.focus(); } catch (e) {} }
+  }
+
+  // Print the week as a designed reference sheet (the print CSS lives in the @media print block
+  // under body.swm-printing). The class is worn for the length of ONE print job and taken straight
+  // back off, so nothing here is state: no setting, no preset field, nothing for a .ivrit file or
+  // the AllTools blob to carry. `afterprint` is not guaranteed to fire everywhere, so a timer
+  // backs it up — a sheet that fails to print must not leave the editor stuck in print dress.
+  let _swmPrintArmed = false;
+  function printWeekGrid() {
+    if (_swmPrintArmed) return;                 // a double-click must not stack two teardowns
+    _swmPrintArmed = true;
+    closeWeekDayMenu();                         // a ⋯ menu is position:fixed and would print over the grid
+    document.body.classList.add('swm-printing');
+    const done = () => {
+      if (!_swmPrintArmed) return;
+      _swmPrintArmed = false;
+      document.body.classList.remove('swm-printing');
+      window.removeEventListener('afterprint', done);
+    };
+    window.addEventListener('afterprint', done);
+    // Fallback for browsers that never fire afterprint. Deliberately generous: where print() does
+    // NOT block, a short timer can undress the page while the sheet is still rendering — measured,
+    // a 4s timer tore down the grid between two captures of the same print. The class is inert on
+    // screen (every rule it drives is inside @media print), so the only cost of holding it longer
+    // is that a Ctrl+P in that window would print the sheet rather than the board.
+    setTimeout(done, 15000);
+    window.print();
   }
 
   function renderSavedSchedules() {
