@@ -161,6 +161,17 @@ countdowns, and the Omer count are fetched at runtime from the Hebcal REST API (
 place name (`nominatim.openstreetmap.org/reverse`). **Attribution:** ODbL requires the credit
 "© OpenStreetMap contributors".
 
+### YouTube
+
+- **Service:** https://www.youtube.com (Google LLC)
+- **Terms:** Proprietary hosted video service — [YouTube Terms of Service](https://www.youtube.com/t/terms). Embedded playback is additionally governed by the [YouTube API Services Terms](https://developers.google.com/youtube/terms/api-services-terms-of-service) and Google's [Privacy Policy](https://policies.google.com/privacy).
+
+**Used by `classroom_dashboard.html`:** when a teacher pastes a video URL into the dashboard settings,
+`applyVideoEmbed` extracts the 11-character id and points the video panel's `<iframe>` at
+`https://www.youtube.com/embed/<id>`. Nothing is embedded until a teacher supplies a URL, and no
+YouTube code is redistributed here. The page's CSP `frame-src` allows both `www.youtube.com` and
+`www.youtube-nocookie.com`; the shipped code emits the former.
+
 ### Web3Forms
 
 - **Service:** https://web3forms.com
