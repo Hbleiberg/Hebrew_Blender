@@ -12960,7 +12960,11 @@ function qaRenderGrid() {
   const pairCtrl = qaTab === 'pairs' ? qaPairControlHtml() : '';
   if (!cols.length) { const kind = I18n.t(qaTab === 'stacked' ? 'fontmaker.qa.tab_stacked' : (qaTab === 'trop' ? 'fontmaker.qa.tab_trop' : 'fontmaker.qa.tab_nikkud')); grid.innerHTML = pairCtrl + `<p style="color:var(--muted);font-size:0.85rem;">${I18n.t('fontmaker.qa.no_marks', { kind })}</p>` + qaBuildCheckHtml(); return; }
   let html = pairCtrl + '<table class="qa-table"><thead><tr><th></th>';
-  cols.forEach(col => { html += `<th title="${esc(col.name)}"><span class="qa-colhead">${esc(col.head)}</span></th>`; });
+  // The visible head is a mark on a U+25CC dotted-circle carrier, so name-from-content makes every
+  // column announce as "dotted circle" — the mark itself is unpronounceable and the name lives only
+  // in `title`, which ACCNAME ignores while there is content. aria-label names the column outright;
+  // the tooltip stays for sighted hover. (decorative-glyph-carrier class, registered S213.)
+  cols.forEach(col => { html += `<th title="${esc(col.name)}" aria-label="${esc(col.name)}"><span class="qa-colhead">${esc(col.head)}</span></th>`; });
   html += '</tr></thead><tbody>';
   let lastSection = null;
   qaRows().forEach(row => {
