@@ -2781,6 +2781,25 @@ function resetTtsRate() {
   if (sl) { sl.value = 0.75; onTtsRateChange(0.75); }
 }
 
+// The Part-of-Speech filter panel already maps every corpus `pos` value to an authored key
+// (value="proper noun" -> data-i18n="dictionary.pos.proper_noun"), so read the mapping out of
+// that markup instead of duplicating it — a badge then cannot disagree with the filter that
+// produced the result. A value with no filter row (proverb, definite article, adjective/noun,
+// adverbial phrase — 23 of 13,081 entries) falls back to the raw corpus string, exactly as the
+// era badge beside it falls back on an unrecognised era.
+let _posKeyMap = null;
+function posLabel(pos) {
+  if (!_posKeyMap) {
+    _posKeyMap = {};
+    document.querySelectorAll('#panelPos .pcb').forEach(cb => {
+      const lbl = cb.parentElement && cb.parentElement.querySelector('[data-i18n]');
+      if (lbl) _posKeyMap[cb.value] = lbl.getAttribute('data-i18n');
+    });
+  }
+  const k = _posKeyMap[pos];
+  return k && window.I18n ? I18n.t(k) : pos;
+}
+
 function buildWordCard(w) {
   const card = document.createElement('div');
   card.className = 'word-card';
@@ -2846,7 +2865,7 @@ function buildWordCard(w) {
     ${w.translit ? `<div class="wc-translit">${translitDisplayOf(w)}</div>` : ''}
     ${w.translation ? `<div class="wc-transl">${w.translation}</div>` : ''}
     <div class="wc-badges">
-      ${w.pos ? `<span class="badge b-pos">${w.pos}</span>` : ''}
+      ${w.pos ? `<span class="badge b-pos">${esc(posLabel(w.pos))}</span>` : ''}
       <span class="badge ${ec}">${el}</span>
       <span class="badge b-len">${w.len}L</span>
       ${showGematria ? `<span class="badge" style="background:var(--warm-gray);color:var(--muted);">&#x05D2; ${calcGematria(w.bare)}</span>` : ''}
@@ -4822,7 +4841,7 @@ function openWordModal(w) {
   if (w.translation) { const t = document.createElement('div'); t.className = 'wm-transl'; t.textContent = w.translation; b.appendChild(t); }
 
   const badges = document.createElement('div'); badges.className = 'wm-badges';
-  if (w.pos) badges.appendChild(_wmBadge('b-pos', w.pos));
+  if (w.pos) badges.appendChild(_wmBadge('b-pos', posLabel(w.pos)));
   badges.appendChild(_wmBadge(ec, el));
   badges.appendChild(_wmBadge('b-len', w.len + 'L'));
   const gb = _wmBadge('', 'ג ' + calcGematria(w.bare)); gb.style.background = 'var(--warm-gray)'; gb.style.color = 'var(--muted)'; badges.appendChild(gb);
