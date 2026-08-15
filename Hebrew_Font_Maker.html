@@ -6207,7 +6207,7 @@ function renderMarkControls(c, it) {
     } else {
       if (svgUploadOn() && it.source && it.source.kind === 'svg' && it.contours)
         h += `<div class="ctl-row" style="align-items:center;"><span class="hint" style="flex:1;">${I18n.t('fontmaker.panels.markctl_svg_imported')}</span><button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button></div>`;
-      h += `<div class="drop" id="markDrop">${_pT('markctl_drop', 'Drop ' + _dropKind(svgUploadOn()) + ' of <b>' + esc(it.name) + '</b>, or ' + _dropBrowse('markFile') + '.', { kind: _dropKind(svgUploadOn()), name: '<b>' + esc(it.name) + '</b>', browse: _dropBrowse('markFile') })}</div>
+      h += `<div class="drop" id="markDrop">${_pT('markctl_drop', 'Drop ' + _dropKind(svgUploadOn()) + ' of <b>' + esc(gName(it.name)) + '</b>, or ' + _dropBrowse('markFile') + '.', { kind: _dropKind(svgUploadOn()), name: '<b>' + esc(gName(it.name)) + '</b>', browse: _dropBrowse('markFile') })}</div>
         <div class="allowed">${svgUploadOn()?I18n.t('fontmaker.panels.mark_allowed_svg'):I18n.t('fontmaker.panels.mark_allowed_img')}</div>
         <input type="file" id="markFile" accept="${svgUploadOn()?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
     }
