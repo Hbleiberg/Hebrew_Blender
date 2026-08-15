@@ -4332,7 +4332,7 @@ function renderFormPanel(panelId, targets, intro) {
     const pv = traced ? formTilePreviewSVG(pc) : '';   // live composed outline (reflects the Width slider); font char until composable
     tile.innerHTML = `<span class="lt-dot ${traced ? 'traced' : ''}"></span>
       ${pv || `<span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${precompComposed(pc)}</span>`}
-      <span class="lt-name">${esc(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.custom_glyph_overrides', {t}) : 'You added a custom glyph at U+' + t + '; the exported font uses your custom outline, not this composed form.')}">${_pT('form_overrides', 'custom glyph overrides')}</span>` : traced ? '' : `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.trace_needs', {names: need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', ')}) : 'Trace ' + need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">${_pT('form_needs', 'needs ' + needChars, {chars: needChars})}</span>`}`;
+      <span class="lt-name">${esc(gName(precompName(pc)))}</span>${overridden ? `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.custom_glyph_overrides', {t}) : 'You added a custom glyph at U+' + t + '; the exported font uses your custom outline, not this composed form.')}">${_pT('form_overrides', 'custom glyph overrides')}</span>` : traced ? '' : `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.trace_needs', {names: need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', ')}) : 'Trace ' + need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">${_pT('form_needs', 'needs ' + needChars, {chars: needChars})}</span>`}`;
     tile.onclick = () => pickPrecompForm(t);
     grid.appendChild(tile);
   });
@@ -12967,7 +12967,12 @@ function qaRenderGrid() {
   // column announce as "dotted circle" — the mark itself is unpronounceable and the name lives only
   // in `title`, which ACCNAME ignores while there is content. aria-label names the column outright;
   // the tooltip stays for sighted hover. (decorative-glyph-carrier class, registered S213.)
-  cols.forEach(col => { html += `<th title="${esc(col.name)}" aria-label="${esc(col.name)}"><span class="qa-colhead">${esc(col.head)}</span></th>`; });
+  // aria-label fixes the HEADER's name, but the carrier span and its text node stay in the
+  // accessibility tree, so a reader browsing by content still meets "◌ְ" once per column on top of
+  // the name it already announced. The span is a pure visual duplicate of the aria-label — mark it
+  // decorative, exactly as the Trope Tutor's Learn cards do (f207a34). Hiding the only child is
+  // safe here precisely BECAUSE the name comes from aria-label, not from content.
+  cols.forEach(col => { html += `<th title="${esc(col.name)}" aria-label="${esc(col.name)}"><span class="qa-colhead" aria-hidden="true">${esc(col.head)}</span></th>`; });
   html += '</tr></thead><tbody>';
   let lastSection = null;
   qaRows().forEach(row => {

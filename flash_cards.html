@@ -1159,8 +1159,18 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   /* Cut-out card sheet: when printing the sheet, the whole app steps aside so only the
      grid reaches paper. Cell height is 2.6in x 3 rows = 7.8in, which clears the printable
      height of BOTH Letter (9in) and A4 (10.2in) with room for the header. */
-  body.fc-sheet-mode .screen, body.fc-sheet-mode .app-header, body.fc-sheet-mode footer { display:none !important; }
+  /* Hide the WRAPPER, not just .screen — the same lesson the report block below records, which
+     the card sheet (the older of the three print modes) predates: main.wrap carries
+     padding:14px 14px 100px, which survives its hidden children as 114px of dead space ABOVE
+     the grid. 7.8in of grid + 0.17in of head fits Letter at any sane margin; add 1.19in of dead
+     space and it needs 9.16in, which overflows Letter's 9in printable height at 1in margins —
+     exactly the budget this block's own comment assumes. The last row then lands alone on a
+     second sheet, and in duplex that puts a front grid and its mirrored back on different
+     sheets, so the two-sided alignment the mirroring exists for is lost. */
+  body.fc-sheet-mode .wrap, body.fc-sheet-mode .screen,
+  body.fc-sheet-mode .app-header, body.fc-sheet-mode footer { display:none !important; }
   body.fc-sheet-mode #fcSheet { display:block !important; }
+  body.fc-sheet-mode { min-height:0 !important; }
   .fcs-page { break-after:page; page-break-after:always; }
   .fcs-page:last-child { break-after:auto; page-break-after:auto; }
   .fcs-head { font-size:8pt; color:#5a6070; margin:0 0 4pt; display:flex; justify-content:space-between; }
@@ -6591,6 +6601,15 @@ function buildEmojiPool() {
 function buildDeckContext() {
   const ctx = {};
   if (otherModeActive && otherSubMode === 'emoji') ctx.emojiPool = buildEmojiPool();
+  // Words resolve here for CORRECTNESS, not the speed reason the emoji pool is threaded through
+  // ctx — hence the module global rather than a ctx key: generateCard reads WORDS_POOL, and
+  // startPractice was its only writer. printCardSheet() calls generateDeck() directly, so a
+  // teacher who picked Words and went straight to the card sheet got an empty deck and the
+  // "no cards" toast every time, unless a practice run happened to have filled the pool earlier
+  // in the same page load. Resolving at the shared deck-building chokepoint fixes both callers
+  // at once; startPractice keeps its own assignment because it needs the pool BEFORE
+  // generateDeck, to validate and report why a deck would be empty.
+  if (otherModeActive && otherSubMode === 'words') WORDS_POOL = resolveWordsPool();
   return ctx;
 }
 
