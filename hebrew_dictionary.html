@@ -607,6 +607,11 @@ body.dark .tour-card{background:var(--cream);}
 label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
 
 @media (prefers-reduced-motion: reduce){
+  /* Suite baseline: neutralize EVERY transition/animation, not only the ones enumerated below —
+     an enumeration silently misses each new declaration as the page grows. Same block index.html,
+     contact.html, resources.html and flash_cards.html already carry. 0.001ms rather than 0 so
+     animationend listeners still fire; the rules below out-specify it and keep their static cues. */
+  *,*::before,*::after{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;scroll-behavior:auto !important;}
   .pulse-attn{animation:none !important;box-shadow:0 0 0 3px rgba(201,146,42,0.6) !important;}
   .tour-spot{transition:none !important;}
   .load-bar.indeterminate .load-bar-fill{animation:none !important;}

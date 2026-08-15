@@ -1389,6 +1389,16 @@ body.fullscreen #fsExitBtn { display: flex; }
 label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Suite baseline: neutralize EVERY transition/animation, not only the ones enumerated below —
+     an enumeration silently misses each new declaration as the page grows. Same block index.html,
+     contact.html, resources.html and flash_cards.html already carry. 0.001ms rather than 0 so
+     animationend listeners still fire; the rules below out-specify it and keep their static cues. */
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
   .tt-looping { animation: none; box-shadow: inset 0 0 0 2px rgba(201,146,42,0.5); }
   /* No animated fade — a steady tint (removed by JS after ~1.6s) stands in. */
   .tt-flash { animation: none; background: rgba(201,146,42,0.28); border-radius:6px; }
