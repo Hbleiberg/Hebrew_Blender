@@ -700,7 +700,10 @@
   .wiz-head h3 { margin: 0; }
   .wiz-steps { display: flex; align-items: center; gap: 6px; margin: 12px 0 14px; }
   .wiz-dot { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; background: var(--warm-gray); color: var(--muted); border: 1px solid var(--border); }
-  .wiz-dot.active { background: var(--gold); color: #fff; border-color: var(--gold); }
+  /* Navy ink on the gold dot, the reverse of .done's white-on-navy: white-on-gold measured 2.75:1
+     light / 2.14:1 dark, and 11.5px bold is not WCAG "large text", so it needed 4.5:1. --navy is one
+     of the few tokens the dark block does NOT override, so one value serves both themes. */
+  .wiz-dot.active { background: var(--gold); color: var(--navy); border-color: var(--gold); }
   .wiz-dot.done { background: var(--navy); color: #fff; border-color: var(--navy); }
   .wiz-dot-sep { flex: 0 0 14px; height: 1px; background: var(--border); }
   .wiz-step-title { font-family: 'Libre Baskerville', serif; font-size: 0.92rem; margin: 0 0 12px; }
