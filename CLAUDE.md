@@ -745,10 +745,22 @@ anywhere — first-visit pulses, tour transitions, timer/omer pulsing, fades —
 - **Implemented on:** every page with any animation — `torah_trainer.html`,
   `hebrew_blend_generator.html`, `hebrew_dictionary.html`, `classroom_dashboard.html`,
   `Hebrew_Font_Maker.html`, `404.html`, `flash_cards.html`, `index.html`, `resources.html`,
-  `contact.html`, `trope_tutor.html` (**11 files**, complete as of 2026-07-09). (`privacy.html`
-  has zero animations/transitions, so a block there would be a no-op.)
+  `contact.html`, `trope_tutor.html` (**11 files**, complete; re-measured at runtime 2026-08-15).
+  (`privacy.html` and `terms.html` declare zero animations/transitions, so a block on either would
+  be a no-op — their reduced-motion result is *blind*, not clean, and proves nothing about coverage.)
+- **Two block shapes, and which to use.** Nine of the eleven open with the **universal neutralizer**
+  (`*, *::before, *::after { animation-duration: .001ms !important; … }`, then page-specific rules
+  below it) — prefer this for any new block: at (0,0,0) it loses to every class selector, so static
+  cues still win, and it cannot silently miss a declaration added later. `404.html` and
+  `trope_tutor.html` still **enumerate** their selectors; both measure 0 animating under `reduce`
+  today (controls: 2 and 67 animating with `reduce` off), so they are correct, not pending — but an
+  enumeration has to be extended by hand every time that page grows. Use `0.001ms`, never `0`: a
+  zero-duration animation never fires `animationend`, and cleanup code depends on it.
 - **Rule:** if you add an animation to a page, that page needs the reduced-motion block, and your
-  animation must honor it.
+  animation must honor it. Verify by **measuring the live page** under
+  `newContext({reducedMotion:'reduce'})`, not by grepping for the block — coverage is the property
+  that breaks, and a page can carry a block that no longer covers it. Always run the `reduce`-off
+  control too, so a zero that had nothing to neutralize is not mistaken for a zero that earned it.
 
 ### 5. Inline validation, never `alert()`
 Validation should surface as **inline notes in the owning panel** plus a short summary near the primary
