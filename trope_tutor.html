@@ -1469,6 +1469,9 @@ async function playClip(ex, cbs) {
    index-derived strings NEVER pass through innerHTML)
    ══════════════════════════════════════════════════════ */
 function tropeGlyphText(t) { return GLYPH_CARRIER + t.display; }
+// Marks a glyph span as decorative for assistive tech. Applied per call site, never inside
+// tropeGlyphSpan: whether a glyph duplicates a name already on screen depends on where it is.
+function _decorative(span) { span.setAttribute('aria-hidden', 'true'); return span; }
 function tropeGlyphSpan(t, cls) {
   const span = document.createElement('span');
   span.className = cls || '';
@@ -1682,7 +1685,7 @@ function buildMasteryGrid(container) {
         vh.textContent = I18n.t('trope.drill.mastered_vh');
         cell.appendChild(vh);
       }
-      cell.appendChild(tropeGlyphSpan(t, 'm-glyph'));
+      cell.appendChild(_decorative(tropeGlyphSpan(t, 'm-glyph')));   // the cell's title and .m-name both carry the name
       const nm = document.createElement('span');
       nm.className = 'm-name';
       nm.textContent = tropeName(t);
@@ -1772,7 +1775,12 @@ function renderLearn() {
 
     const head = document.createElement('div');
     head.className = 'tu-card-head';
-    head.appendChild(tropeGlyphSpan(t, 'tu-glyph'));
+    // Decorative here: the card prints the trope's name right beside the glyph, and a
+    // screen reader reads the glyph's carrier out as "dotted circle" (the combining mark
+    // itself is unpronounceable) — noise ahead of every one of the 26 names. Same reasoning
+    // the drill's symbol choices already apply with their aria-label. The DRILL QUESTION's
+    // glyph is deliberately NOT hidden: there it is the question, not a duplicate.
+    head.appendChild(_decorative(tropeGlyphSpan(t, 'tu-glyph')));
     const names = document.createElement('div');
     names.className = 'tu-names';
     const p1 = document.createElement('div');
