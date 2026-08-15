@@ -3379,6 +3379,8 @@
   "torah.copy.none_selected": "יש לבחור לפחות פסוק אחד.",
   "torah.copy.options_link": "אפשרויות העתקה…",
   "torah.copy.options_link_title": "בחירת מה כוללת העתקה — סימנים, תעתיק, תרגום וצבעים",
+  "torah.copy.prereq_trans": "התרגום מופעל, אך לקריאה זו אין טקסט באנגלית — הוא יושמט מההעתקה.",
+  "torah.copy.prereq_translit": "התעתיק מופעל, אך לא ניתן היה לטעון את הספרייה — הוא יושמט מההעתקה.",
   "torah.copy.range_add": "הוספה",
   "torah.copy.range_added.one": "פסוק אחד נוסף.",
   "torah.copy.range_added.other": "{count} פסוקים נוספו.",

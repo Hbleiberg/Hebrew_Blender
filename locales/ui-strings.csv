@@ -3101,6 +3101,8 @@ torah.copy.options_link,Copy options…,אפשרויות העתקה…,copy bar 
 torah.copy.options_link_title,"Choose what a copy contains — marks, transliteration, translation, colors","בחירת מה כוללת העתקה — סימנים, תעתיק, תרגום וצבעים",button title,
 torah.copy.none_selected,Select at least one verse first.,יש לבחור לפחות פסוק אחד.,inline reason shown when Copy All is pressed with an empty selection,
 torah.copy.rich_preview_note,Colors are added when you paste — this preview shows the plain text.,הצבעים נוספים בהדבקה — התצוגה המקדימה מציגה את הטקסט הרגיל.,note under the copy preview textarea while Copy color coding is on,
+torah.copy.prereq_translit,"Transliteration is on, but its library could not be loaded — it will be left out of the copy.","התעתיק מופעל, אך לא ניתן היה לטעון את הספרייה — הוא יושמט מההעתקה.",note in the copy bar when Include transliteration is on but its library is unavailable,REVIEW: machine-drafted HE — confirm
+torah.copy.prereq_trans,"Translation is on, but this reading has no English text — it will be left out of the copy.","התרגום מופעל, אך לקריאה זו אין טקסט באנגלית — הוא יושמט מההעתקה.",note in the copy bar when Include translation is on but no English text loaded,REVIEW: machine-drafted HE — confirm
 torah.copy.inc_heading,Include a heading line,כולל שורת כותרת,copy option toggle,
 torah.copy.inc_heading_tip,"Puts the reading's name and verse range on the first line of the copied text, so a pasted passage says where it came from.","מוסיף את שם הקריאה וטווח הפסוקים בשורה הראשונה של הטקסט המועתק, כך שקטע מודבק מציין מהיכן הגיע.",tooltip,
 torah.copy.nikkud_label,Nikkud,ניקוד,copy option — whether vowels are copied,

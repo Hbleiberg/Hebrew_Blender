@@ -393,6 +393,7 @@ body.dark .tt-handout-shem-note { color:var(--gold-light); }
    dead, and this states why (never an alert()). */
 #ttCopyAllNote:empty { display:none; }
 #ttCopyRichNote[hidden] { display:none; }   /* [hidden] must beat the flex row, as for #ttCopyBulkPanel */
+#ttCopyPrereqNote[hidden] { display:none; }   /* same trap */
 #ttCopyAllBtn[aria-disabled="true"], #ttBulkDockCopy[aria-disabled="true"] { opacity:0.55; cursor:not-allowed; }
 #ttCopyTextarea {
   flex-basis:100%; box-sizing:border-box; resize:vertical;
@@ -1590,6 +1591,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <span id="ttCopyRangeNote" role="status" aria-live="polite" dir="auto"></span>
     <textarea id="ttCopyTextarea" readonly rows="8" dir="rtl" aria-label="Selected verses (copy preview)" data-i18n-aria-label="torah.copy.textarea_aria"></textarea>
     <span id="ttCopyRichNote" class="tt-copy-hintline" data-i18n="torah.copy.rich_preview_note" hidden>Colors are added when you paste — this preview shows the plain text.</span>
+    <span id="ttCopyPrereqNote" class="tt-copy-hintline" role="status" aria-live="polite" dir="auto" hidden></span>
     <button class="btn btn-xs" id="ttCopyAllBtn" onclick="copyAllSelected()" type="button" aria-describedby="ttCopyAllNote" data-i18n="torah.copy.copy_all">Copy All</button>
     <span id="ttCopyAllNote" class="tt-copy-hintline" role="status" aria-live="polite" dir="auto"></span>
   </span>
@@ -4899,6 +4901,9 @@ function wireTranslit() {
     status.textContent = I18n.t('torah.trans.lib_loaded');
     status.dataset.i18nKey = 'torah.trans.lib_loaded';   // lets applyI18n heal a pre-ready raw key + follow language switches
     if (settings.showTranslit) renderText();
+    // The copy bar reads the same library: a late arrival has to clear its prerequisite note
+    // AND fill the transliteration back into the preview, neither of which renderText touches.
+    updateCopyTextarea();
   });
   window.addEventListener('translitlibfailed', () => {
     status.textContent = I18n.t('torah.trans.lib_failed');
@@ -6127,11 +6132,13 @@ function selectedCopyVerses() {
 function updateCopyTextarea() {
   const ta = document.getElementById('ttCopyTextarea');
   if (!ta) return;
-  ta.value = buildCopyPlain(selectedCopyVerses());
+  const verses = selectedCopyVerses();
+  ta.value = buildCopyPlain(verses);
   // A textarea can never show color, so say so rather than let the plain preview read as
   // "the color-coding option didn't work".
   const rn = document.getElementById('ttCopyRichNote');
   if (rn) rn.hidden = !settings.copyColorCoding;
+  _syncCopyPrereqNote(verses);
   _syncCopyAllEnabled();
   // #ttCopyCount is the page's live region for the selection (role=status): Select all, Clear, a
   // verse click and the range picker all land here, and it is the only one of the two counts that
@@ -6203,6 +6210,36 @@ function _syncCopyAllEnabled() {
     if (b) b.setAttribute('aria-disabled', empty ? 'true' : 'false');
   });
   if (!empty) _setCopyAllNote(null);
+}
+// A format toggle that is switched ON but cannot produce anything is the copy bar's one
+// silent failure: verseCopyParts just omits the line, so the teacher pastes Hebrew-only text
+// with all three toggles lit and nothing on screen says why. Both causes are decidable from
+// the current selection, so state them where the work is happening. The reading header
+// already tells half of this story for transliteration (the tt-notice-chip); the copy bar
+// needs its own, and the translation case had no notice anywhere.
+// .every() short-circuits on the first verse that DOES produce output, so when the library
+// is present this costs exactly one extra applyTranslit call — the renderText idiom.
+function _copyPrereqKeys(verses) {
+  const keys = [];
+  if (!verses.length) return keys;   // nothing selected: Copy All already states that reason
+  if (settings.copyIncludeTranslit && verses.every(v => !applyTranslit(v.hebrew)))
+    keys.push('torah.copy.prereq_translit');
+  if (settings.copyIncludeTrans && verses.every(v => !v.translation))
+    keys.push('torah.copy.prereq_trans');
+  return keys;
+}
+// Re-rendered from updateCopyTextarea, which every selection path AND applyI18n already
+// funnel through — so the note follows both the selection and the UI language with no second
+// listener. Written only when it actually changes: this is a live region called on every
+// checkbox flip, and one that speaks when nothing happened is one users learn to tune out
+// (the #ttCopyCount lesson).
+function _syncCopyPrereqNote(verses) {
+  const n = document.getElementById('ttCopyPrereqNote');
+  if (!n) return;
+  const keys = _copyPrereqKeys(verses);
+  const text = keys.map(k => I18n.t(k)).join(' ');
+  if (n.textContent !== text) n.textContent = text;
+  n.hidden = !keys.length;
 }
 // Stores the KEY as well as the text so applyI18n can re-render a note that is still on
 // screen when the language flips (the _setRangeNote idiom).

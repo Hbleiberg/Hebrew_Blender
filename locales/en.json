@@ -3379,6 +3379,8 @@
   "torah.copy.none_selected": "Select at least one verse first.",
   "torah.copy.options_link": "Copy options…",
   "torah.copy.options_link_title": "Choose what a copy contains — marks, transliteration, translation, colors",
+  "torah.copy.prereq_trans": "Translation is on, but this reading has no English text — it will be left out of the copy.",
+  "torah.copy.prereq_translit": "Transliteration is on, but its library could not be loaded — it will be left out of the copy.",
   "torah.copy.range_add": "Add",
   "torah.copy.range_added.one": "Added 1 verse.",
   "torah.copy.range_added.other": "Added {count} verses.",
