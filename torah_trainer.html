@@ -555,7 +555,10 @@ body.dark .tt-jumpnav { background:var(--navy-deep); }
 .tt-jump-label { font-size:0.68rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
 .tt-jump-chips { display:inline-flex; flex-wrap:wrap; gap:4px; }
 .tt-jump-chip {
-  min-width:26px; padding:3px 8px; font-size:0.78rem; font-weight:700;
+  /* Aliyah jump buttons sit in their own nav row, so WCAG 2.5.8's inline exception
+     does not cover them — they take the suite's 30px floor like every other control. */
+  min-height:30px; min-width:30px; display:inline-flex; align-items:center; justify-content:center;
+  padding:3px 8px; font-size:0.78rem; font-weight:700;
   border:1px solid var(--border); border-radius:5px; background:transparent;
   color:var(--text); cursor:pointer; font-family:inherit; transition:border-color 0.15s, color 0.15s, background 0.15s;
 }
