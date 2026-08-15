@@ -3783,6 +3783,16 @@ function clearLoop() {
 // each render so the loop survives a layout/font re-render of the same reading.
 function renderLoopState() {
   const active = loopState.active ? loopState.verseLabel : null;
+  // Nothing to apply and nothing stale to clear. Worth an early return because this runs after
+  // every renderText(), where the reading's own template has just built all 146 Loop buttons in
+  // exactly this state — same key, same verseRef (data-vk IS the numLabel the template used) —
+  // so the loop below would only re-dirty DOM the innerHTML write produced three statements
+  // earlier. Measured at 146 verses: 292 of a render's 301 mutation records came from here.
+  // The audio bar lives outside #ttReading and is cheap, so it still refreshes.
+  if (!active && !document.querySelector('#ttReading .tt-looping, #ttReading .tt-loop.active')) {
+    updateAudioBarLoopUi();
+    return;
+  }
   document.querySelectorAll('#ttReading .tt-looping').forEach(el => el.classList.remove('tt-looping'));
   if (active) {
     const verseEl = document.querySelector(`#ttReading [data-vk="${active}"]`);
@@ -6073,6 +6083,10 @@ function selectVerseRange() {
 // rebuilds innerHTML, recreating the checkboxes; also reconciles the native checkbox
 // flip after a click-through toggle so state always matches ttBulkSelected).
 function syncBulkClasses() {
+  // Same shape as renderLoopState above: with nothing selected and nothing still marked, the
+  // walk over every verse (plus a .tt-bulk-cb lookup each) can only re-assert what the template
+  // already built. A freshly rendered reading with an empty selection is exactly that case.
+  if (!ttBulkSelected.size && !document.querySelector('#ttReading .tt-bulk-selected')) return;
   document.querySelectorAll('#ttReading [data-vk]').forEach(el => {
     const sel = ttBulkSelected.has(el.dataset.vk);
     el.classList.toggle('tt-bulk-selected', sel);
