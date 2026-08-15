@@ -12967,7 +12967,12 @@ function qaRenderGrid() {
   // column announce as "dotted circle" — the mark itself is unpronounceable and the name lives only
   // in `title`, which ACCNAME ignores while there is content. aria-label names the column outright;
   // the tooltip stays for sighted hover. (decorative-glyph-carrier class, registered S213.)
-  cols.forEach(col => { html += `<th title="${esc(col.name)}" aria-label="${esc(col.name)}"><span class="qa-colhead">${esc(col.head)}</span></th>`; });
+  // aria-label fixes the HEADER's name, but the carrier span and its text node stay in the
+  // accessibility tree, so a reader browsing by content still meets "◌ְ" once per column on top of
+  // the name it already announced. The span is a pure visual duplicate of the aria-label — mark it
+  // decorative, exactly as the Trope Tutor's Learn cards do (f207a34). Hiding the only child is
+  // safe here precisely BECAUSE the name comes from aria-label, not from content.
+  cols.forEach(col => { html += `<th title="${esc(col.name)}" aria-label="${esc(col.name)}"><span class="qa-colhead" aria-hidden="true">${esc(col.head)}</span></th>`; });
   html += '</tr></thead><tbody>';
   let lastSection = null;
   qaRows().forEach(row => {
