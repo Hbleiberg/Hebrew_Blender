@@ -3469,7 +3469,7 @@ trope.learn.next_family,Next family →,המשפחה הבאה →,button,
 trope.learn.no_example,No chanted example in this corpus.,אין דוגמה מושרת בקורפוס זה.,card empty state,
 trope.learn.print_chart,🖨️ Print chart,🖨️ הדפסת הטבלה,button,leading-emoji
 trope.learn.print_chart_title,Print all 26 marks as one reference chart,הדפיסו את כל 26 הטעמים כטבלת עזר אחת,button title,
-trope.learn.play_example_aria,Play {name} example from {parsha} {ref},השמעת דוגמת {name} מ{parsha} {ref},example play button aria,aria-label only; do-not-translate {parsha}/{ref}
+trope.learn.play_example_aria,Play {name} example from {parsha} {ref},השמעת דוגמת {name} מ-{parsha} {ref},example play button aria,aria-label only; do-not-translate {parsha}/{ref}
 trope.learn.rare_tag,Rare,נדיר,card tag,
 trope.learn.ready_drill,Ready? Try a drill →,מוכנים? נסו תרגול →,button (on last family),
 trope.learn.see_in_parsha,See it in the parsha →,ראו אותו בפרשה →,card link,

@@ -3745,7 +3745,7 @@
   "trope.learn.name_sephardi_prefix": "ספרדי: {name}",
   "trope.learn.next_family": "המשפחה הבאה →",
   "trope.learn.no_example": "אין דוגמה מושרת בקורפוס זה.",
-  "trope.learn.play_example_aria": "השמעת דוגמת {name} מ{parsha} {ref}",
+  "trope.learn.play_example_aria": "השמעת דוגמת {name} מ-{parsha} {ref}",
   "trope.learn.print_chart": "🖨️ הדפסת הטבלה",
   "trope.learn.print_chart_title": "הדפיסו את כל 26 הטעמים כטבלת עזר אחת",
   "trope.learn.rare_tag": "נדיר",
