@@ -543,6 +543,19 @@
   }
   .day-item.colored { color: #fff; }
   .day-item.colored .day-eng { color: rgba(255,255,255,0.85); }
+  /* Six of the seven day plates are dark enough for white text; Tuesday's yellow is not
+     (2.48:1 for the day name, 2.19:1 for the English — and the plate is fixed, so unlike the
+     rest of the UI there is no theme in which it reads better). The day colours are a taught
+     convention students recognise, so the plate keeps its hue and the INK flips instead —
+     dark type on the light plate, the same trade the suite already makes for gold buttons.
+     .ink-dark is applied by luminance, so a future light plate is covered too. The badge keeps
+     its gold accent and deepens its scrim rather than going white, so the accent survives.
+     Screen only: print already flattens .colored to var(--text) over no plate. */
+  @media screen {
+    .day-item.colored.ink-dark { color: var(--navy-deep); }
+    .day-item.colored.ink-dark .day-eng { color: rgba(13,18,32,0.82); }
+    .day-item.colored.ink-dark .day-badge { background: rgba(0,0,0,0.45); }
+  }
   .day-item.day-today { box-shadow: 0 0 0 3px var(--gold); transform: scale(1.02); }
   body.dark .day-item:not(.colored) { background: #232b40; color: var(--text); }
   /* English mode: badge on left, text left-aligned */
@@ -2494,6 +2507,18 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     {heb:'יוֹם שַבָּת',    eng:'Saturday',  bg:'#6a1b9a'},
   ];
 
+  // Relative luminance of a #rrggbb plate, per WCAG. 0.30 is not a taste threshold: white text
+  // scores (1.0 + 0.05) / (L + 0.05), which crosses the 3:1 large-text bar at exactly L = 0.30.
+  // Above it, white is unreadable on the plate and the day item switches to dark ink. Of the
+  // seven day colours only Tuesday's yellow is above (0.373); Monday's orange, the next
+  // lightest, sits at 0.227 and keeps its white type.
+  function isLightPlate(hex) {
+    const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex || '');
+    if (!m) return false;
+    const f = v => { const c = parseInt(v, 16) / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+    return (0.2126 * f(m[1]) + 0.7152 * f(m[2]) + 0.0722 * f(m[3])) > 0.30;
+  }
+
   const DOW_EMOJI_SETS = {
     chick: { yest:'🥚',  today:'🐣',  tom:'🐔' },
     city:  { yest:'🌇',  today:'🏙️', tom:'🌃' },
@@ -3404,6 +3429,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       if (i === today) cls += ' day-today';
       const useColor = settings.colorDays !== false;
       if (useColor) cls += ' colored';
+      if (useColor && isLightPlate(day.bg)) cls += ' ink-dark';   // white text would fail on it
       if (useColor) item.style.background = day.bg;
 
       // Determine badge content
