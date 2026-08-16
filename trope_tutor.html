@@ -709,6 +709,12 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
   .tu-mfam { flex-direction:column; gap:4px; }
   .tu-mfam-label { border-right:none; padding-right:0; text-align:left; flex-basis:auto; padding-top:0; }
 }
+/* Phone widths: let the header button row wrap onto a second line instead of pushing the
+   page sideways (WCAG 1.4.10 reflow). max-width is the operative half — the row is
+   flex-shrink:0, so nothing makes it wrap until something caps its width. */
+@media (max-width: 430px) {
+  .hright { flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
+}
 
 /* ── Reduced motion: honor the OS "reduce motion" preference for everything this
    tool animates (tour spotlight, first-visit pulse, toast, drawer slide, panel caret,

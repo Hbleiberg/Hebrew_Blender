@@ -413,7 +413,9 @@ body.dark .app-header { background: var(--navy-deep); border-bottom: 1px solid v
   .app-header { gap: 4px; padding-inline: 8px; }
   .app-header h1 { font-size: 0.9rem; }
   .h-btn { width: 38px; height: 38px; font-size: 1.05rem; }
-  .h-right { gap: 4px; }
+  /* Let the header button row wrap onto a second line instead of pushing the page sideways.
+     max-width is the operative half: a flex row only wraps once something caps its width. */
+  .h-right { gap: 4px; flex-wrap: wrap; max-width: 100%; justify-content: flex-end; }
   #tourBtn { padding: 0 9px !important; font-size: 0.74rem !important; }
   .app-header .i18n-switch select { padding-block: 3px; font-size: 0.72rem; }
 }
