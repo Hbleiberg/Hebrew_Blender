@@ -364,6 +364,7 @@
   "dashboard.schedule.summary_periods.one": "שיעור אחד",
   "dashboard.schedule.summary_periods.other": "{count} שיעורים",
   "dashboard.schedule.time_left": "נותרו {time}",
+  "dashboard.schedule.touch_paint_hint": "החזיקו משבצת לרגע, ואז גררו כדי למלא שורה או עמודה.",
   "dashboard.schedule.warn_duplicate_time": "⚠ שני שיעורים מתחילים באותה שעה ({time}).",
   "dashboard.schedule.warn_end_before_start": "⚠ שיעור {n} מסתיים לפני שהוא מתחיל.",
   "dashboard.schedule.warn_missing_time": "⚠ לשיעור {n} חסרה שעת התחלה או סיום.",

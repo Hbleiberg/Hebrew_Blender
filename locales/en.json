@@ -364,6 +364,7 @@
   "dashboard.schedule.summary_periods.one": "{count} period",
   "dashboard.schedule.summary_periods.other": "{count} periods",
   "dashboard.schedule.time_left": "{time} left",
+  "dashboard.schedule.touch_paint_hint": "Hold a square for a moment, then drag to fill a row or a column.",
   "dashboard.schedule.warn_duplicate_time": "⚠ Two periods start at the same time ({time}).",
   "dashboard.schedule.warn_end_before_start": "⚠ Period {n} ends before it starts.",
   "dashboard.schedule.warn_missing_time": "⚠ Period {n} is missing a start or end time.",

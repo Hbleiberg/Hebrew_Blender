@@ -363,6 +363,7 @@ dashboard.schedule.warn_no_assignments,Nothing is assigned yet — pick a class 
 dashboard.schedule.warn_overlap,⚠ Periods {a} and {b} overlap.,⚠ שיעורים {a} ו-{b} חופפים.,validation warning,leading-emoji
 dashboard.schedule.warn_unknown_preset,⚠ Preset “{name}” doesn't exist — create it in Presets.,"⚠ התבנית ""{name}"" אינה קיימת — צרו אותה בתבניות.",validation warning,leading-emoji; mixed UI+content — do not translate {…}
 dashboard.schedule.need_presets_hint,Each block switches to a saved preset — create a couple in Presets first.,כל מקטע עובר לתבנית שמורה — צרו כמה בתבניות תחילה.,schedule builder hint shown when only the Default preset exists,
+dashboard.schedule.touch_paint_hint,"Hold a square for a moment, then drag to fill a row or a column.","החזיקו משבצת לרגע, ואז גררו כדי למלא שורה או עמודה.",schedule builder hint shown on touch devices only — long-press starts paint mode,REVIEW: HE draft
 dashboard.settings.close_aria,Close settings,סגור הגדרות,settings drawer close aria,aria-label only
 dashboard.settings.close_title,Close,סגור,settings drawer close title,
 dashboard.settings.drawer_aria,Dashboard settings,הגדרות לוח המחוונים,settings drawer aria-label,aria-label only
