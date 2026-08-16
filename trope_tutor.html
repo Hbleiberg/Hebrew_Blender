@@ -1147,6 +1147,17 @@ function saveSettings() {
     catch (e) { console.warn('saveSettings', e); }
   }, 300);
 }
+/* Last-chance write for a save still sitting in the 300 ms debounce. A teacher who changes a
+   setting and immediately leaves — swipes to another app on a tablet, closes the tab, clicks
+   through to another tool — loses the whole settings blob otherwise, because a discarded page
+   never runs its pending setTimeout. Wired to visibilitychange+pagehide at init, the same pair
+   Hebrew_Font_Maker.html uses for its autosave (unload/beforeunload are unreliable on mobile). */
+function saveSettingsFlush() {
+  if (!_saveTimer) return;
+  clearTimeout(_saveTimer); _saveTimer = null;
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); }
+  catch (e) { console.warn('saveSettingsFlush', e); }
+}
 function loadSettings() {
   try {
     const s = ivritSafeParse(localStorage.getItem(STORAGE_KEY));
@@ -2875,6 +2886,8 @@ async function init() {
     });
   });
   panelMemApply();   // restore the teacher's saved open/closed drawer panels (syncs aria too)
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveSettingsFlush(); });
+  window.addEventListener('pagehide', saveSettingsFlush);   // leaving the page → flush the debounced save
   // tablist arrow-key nav (APG): Left/Right/Home/End move focus + activate
   document.querySelector('.tu-tabs').addEventListener('keydown', e => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;

@@ -2099,6 +2099,17 @@ function saveSettings() {
     catch (e) { console.warn('saveSettings', e); }
   }, 300);
 }
+/* Last-chance write for a save still sitting in the 300 ms debounce. A teacher who changes a
+   setting and immediately leaves — swipes to another app on a tablet, closes the tab, clicks
+   through to another tool — loses the whole settings blob otherwise, because a discarded page
+   never runs its pending setTimeout. Wired to visibilitychange+pagehide at init, the same pair
+   Hebrew_Font_Maker.html uses for its autosave (unload/beforeunload are unreliable on mobile). */
+function saveSettingsFlush() {
+  if (_handoutActive || !_saveTimer) return;   // never persist the transient handout override
+  clearTimeout(_saveTimer); _saveTimer = null;
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); }
+  catch (e) { console.warn('saveSettingsFlush', e); }
+}
 // Parse JSON from possibly-imported input, dropping keys that could pollute Object.prototype.
 function ivritSafeParse(str) {
   return JSON.parse(str, (k, v) =>
@@ -5378,6 +5389,8 @@ function wireSettingsForm() {
     t.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
   });
   panelMemApply();   // restore the teacher's saved open/closed drawer panels
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveSettingsFlush(); });
+  window.addEventListener('pagehide', saveSettingsFlush);   // leaving the page → flush the debounced save
   // Student handout bar options → persisted handout* fields
   document.getElementById('ttHandoutHideNikkud').addEventListener('change', e => {
     settings.handoutHideNikkud = e.target.checked; saveSettings();
