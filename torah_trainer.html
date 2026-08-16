@@ -4792,7 +4792,12 @@ function initFontSelector() {
   });
 }
 function setHebFont(name) {
-  const f = allFonts().find(x => x.name === name) || HEB_FONTS[0];
+  // Unknown name (e.g. a persisted My Font before the async refreshMyFonts() has
+  // populated MY_FONTS at init) → bail WITHOUT falling back — the dictionary
+  // pattern. Falling back to HEB_FONTS[0] here would overwrite settings.hebFont
+  // and permanently clobber the saved user-font choice on every page load.
+  const f = allFonts().find(x => x.name === name);
+  if (!f) return;
   settings.hebFont = f.name;
   loadHebFont(f);
   document.documentElement.style.setProperty('--heb-font', f.family);
