@@ -6126,7 +6126,10 @@ function _certEnter(name) {
   host.dir = document.documentElement.dir || 'ltr';
   const st = document.createElement('style');
   st.id = 'fcCertPage';
-  st.textContent = '@page { size: letter landscape; margin: 0.5in; }'; // i18n-ignore — CSS, not UI copy
+  // Orientation only, deliberately no paper keyword: the certificate needs to be landscape, but it
+  // has no business overriding the paper the teacher picked. Naming `letter` here beat the print
+  // dialog's own A4 in every cell, so an A4-locale teacher got a Letter sheet scaled down to fit.
+  st.textContent = '@page { size: landscape; margin: 0.5in; }'; // i18n-ignore — CSS, not UI copy
   document.head.appendChild(st);
   document.body.classList.add('fc-cert-print');
   _certActive = true;
