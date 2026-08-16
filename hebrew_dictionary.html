@@ -4329,8 +4329,10 @@ function applyI18n() {
       onFilter();
     }
   } catch (e) {}
-  // Live-update the tour card if a tour is in progress.
-  if (_tourActive && _tourIdx >= 0) {
+  // Live-update the tour card if a tour is in progress. _tourActive is `let`-declared in a
+  // LATER <script> block, so an applyI18n() that runs before that block has executed hits the
+  // temporal dead zone — typeof is the only safe read from here.
+  if (typeof _tourActive !== 'undefined' && _tourActive && _tourIdx >= 0) {
     const step = TOUR_STEPS[_tourIdx];
     if (step) {
       document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
@@ -5010,6 +5012,10 @@ function dictActiveGroupCount() {
   }
   function updateMobileFiltersBtn() {
     if (!filtersBtn) return;
+    // enterMobile() runs at parse time when the media query already matches — before the
+    // deferred js/i18n.js has defined I18n. applyI18n() calls this again on I18n.ready, so
+    // skipping here defers the label by a tick instead of throwing past the rest of setup.
+    if (!window.I18n) return;
     const n = dictActiveGroupCount();
     filtersBtn.textContent = I18n.t('dictionary.filters.mobile_button') + (n ? ' (' + n + ')' : '');
   }
