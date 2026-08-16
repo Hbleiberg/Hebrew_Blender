@@ -6292,16 +6292,32 @@ else ivritInit();
   // Deterministic auto-assignment: walk presets in insertion order, give each unassigned preset the
   // first palette color not yet in use; when all are taken, cycle from the top. Returns whether
   // anything was assigned (callers persist only then).
+  // Presets that activate the same class share ONE color. The grid is read as "when do I have
+  // Grade 4?", so one class spread over three period presets should not burn three palette slots
+  // and three legend rows — and with a palette this size that is also what postpones the point
+  // where colors start repeating between genuinely different classes.
   function assignPresetColors() {
     if (!settings.presetColors) settings.presetColors = {};
     const used = new Set(Object.values(settings.presetColors));
+    // Seed each class from the color it already has, so a later sibling adopts it — including a
+    // color the teacher picked by hand. Insertion order makes "already has" deterministic.
+    const byClass = new Map();
+    Object.keys(presets).forEach(name => {
+      const cls = presetClassName(name), c = settings.presetColors[name];
+      if (cls && c && !byClass.has(cls)) byClass.set(cls, c);
+    });
     let changed = false, spill = 0;
     Object.keys(presets).forEach(name => {
       if (settings.presetColors[name]) return;
-      let c = PRESET_PALETTE.find(x => !used.has(x));
-      if (!c) c = PRESET_PALETTE[spill++ % PRESET_PALETTE.length];
+      const cls = presetClassName(name);
+      let c = cls ? byClass.get(cls) : '';        // a preset with no roster still gets its own color
+      if (!c) {
+        c = PRESET_PALETTE.find(x => !used.has(x));
+        if (!c) c = PRESET_PALETTE[spill++ % PRESET_PALETTE.length];
+        used.add(c);                              // only a NEW class consumes a palette slot
+        if (cls) byClass.set(cls, c);
+      }
       settings.presetColors[name] = c;
-      used.add(c);
       changed = true;
     });
     return changed;
