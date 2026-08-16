@@ -804,7 +804,14 @@ body.nik-mode-underline .nik { text-decoration-line:underline !important; text-d
 body.dark .tt-trope-legend { background:var(--navy-deep); }
 .tt-trope-legend[hidden] { display:none; }  /* display:flex would beat the hidden attr */
 #ttPrintBand { display:none; }  /* print-only per-sheet identifier — see the print block + beforeprint */
-.tt-trope-chip { display:inline-flex; align-items:center; gap:5px; }
+/* The chip is the tooltip trigger (bindTip adds tabindex/role/aria-expanded), so it takes
+   the suite's 30px touch floor and a visible focus ring rather than adding a ? icon. */
+.tt-trope-chip { display:inline-flex; align-items:center; gap:5px; min-height:30px; cursor:help; border-radius:5px; padding-inline:3px; }
+.tt-trope-chip:hover { background:var(--warm-gray); }
+body.dark .tt-trope-chip:hover { background:rgba(255,255,255,0.07); }
+.tt-trope-chip:focus-visible { outline:2px solid var(--gold); outline-offset:1px; }
+/* Sample mark on its alef carrier — the family's "what does this look like" cue. */
+.tt-trope-glyph { font-family:var(--heb-font); font-size:1.15rem; line-height:1; flex-shrink:0; }
 .tt-trope-swatch { width:14px; height:14px; border-radius:4px; border:1px solid var(--border); flex-shrink:0; }
 .tt-trope-link { margin-left:auto; font-size:0.72rem; color:var(--muted); text-decoration:none; }
 .tt-trope-link:hover { color:var(--gold); text-decoration:underline; }
@@ -2715,7 +2722,29 @@ function buildTropeLegend() {
     sw.className = 'tt-trope-swatch';
     sw.style.background = 'var(--trope-' + def.key + '-bg)';
     chip.appendChild(sw);
-    chip.appendChild(document.createTextNode(window.I18n ? I18n.t('torah.glyphname.trope_' + def.key) : def.name));
+    // The family's representative mark, on its alef carrier (already in TROPE_COLOR_DEFS).
+    // Hebrew content, so lang="he" at this rendering chokepoint.
+    const gl = document.createElement('span');
+    gl.className = 'tt-trope-glyph';
+    gl.lang = 'he';
+    gl.dir = 'rtl';
+    gl.textContent = def.example;
+    chip.appendChild(gl);
+    const label = window.I18n ? I18n.t('torah.glyphname.trope_' + def.key) : def.name;
+    chip.appendChild(document.createTextNode(label));
+    // "What's in this family" — the chip itself is the tooltip trigger, so the legend
+    // gains no extra sub-30px ? targets. Set aria-label FIRST: bindTip only supplies its
+    // generic "More information" fallback when one is absent, and that would replace the
+    // family name as the chip's accessible name. data-i18n-tip keeps a later
+    // applyStaticI18n sweep in sync; data-tip carries the live string right now.
+    const tipKey = 'torah.trope_legend.tip_' + def.key;
+    const tip = window.I18n ? I18n.t(tipKey) : tipKey;
+    if (tip && tip !== tipKey) {
+      chip.setAttribute('data-i18n-tip', tipKey);
+      chip.setAttribute('data-tip', tip);
+      chip.setAttribute('aria-label', label);
+      if (window.bindTip) bindTip(chip);
+    }
     legend.insertBefore(chip, tutorLink);
   });
 }
