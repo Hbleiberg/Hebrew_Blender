@@ -763,8 +763,9 @@ body.nik-mode-highlight .nik { background-color: var(--nik-h) !important; border
 body.nik-mode-underline .nik { text-decoration-line:underline !important; text-decoration-style:solid !important; text-decoration-color:var(--nik-c) !important; text-decoration-thickness:2px !important; text-underline-offset:0.4em; }
 
 /* ───── Trope-family color coding ─────
-   tokenizeHebrew emits trope-<family> classes on .tt-word while
-   settings.colorCodeTrope is on; applyTropeColors() resolves the six family colors
+   tokenizeHebrew emits trope-<family> classes on every .tt-word of the live reading
+   (unconditionally — these rules are what turn them on);
+   applyTropeColors() resolves the six family colors
    into --trope-<fam>-bg (hex+59 ≈ 35% tint) / --trope-<fam>-line vars on <body>.
    Every selector is :where()-wrapped to stay at (0,1,0) specificity so
    .tt-word:hover (0,2,0) and the karaoke-active rules (0,3,1) always win —
@@ -2969,7 +2970,13 @@ function tokenizeHebrew(text, wordIdxStartRef, opts) {
   // as a guard: a vanished separator always shrinks the array, and on mismatch
   // tropeRealignFamilies recovers each display word's family by letter-matching
   // (bailing to uncolored on any desync — no color, never wrong color).
-  const tropeOn = o ? !!o.colorCodeTrope : !!settings.colorCodeTrope;
+  // The LIVE reading always emits trope-<fam> classes, whether or not coloring is on:
+  // every trope rule is gated on body.trope-on (and the fallback class, which is only ever
+  // set alongside it), so the classes paint nothing while off — and the master toggle then
+  // becomes a body-class + CSS-var swap in applyTropeColors() instead of a full renderText()
+  // rebuild. The COPY path still honors its opts flag: _inlineCopyStyles reads these classes
+  // off the detached markup, so a teacher with coloring off must not get a colored paste.
+  const tropeOn = o ? !!o.colorCodeTrope : true;
   const rawTokens = tropeOn ? text.split(/(\s+|־)/) : null;
   const rawAligned = tropeOn && rawTokens.length === tokens.length;
   const famByTi = (tropeOn && !rawAligned) ? tropeRealignFamilies(tokens, rawTokens) : null;
@@ -5214,7 +5221,9 @@ function wireSettingsForm() {
   document.getElementById('optColorCodeTrope').addEventListener('change', e => {
     settings.colorCodeTrope = e.target.checked;
     toggleTropeOptionsVisibility(settings.colorCodeTrope);
-    saveSettings(); renderText();
+    // tokenizeHebrew emits the family classes unconditionally, so the toggle is a pure
+    // var+class swap — no reading rebuild, and the karaoke data-twi indices are untouched.
+    saveSettings(); applyTropeColors();
   });
   // TTS rate sliders — drawer + audio bar both write to settings.ttsRate and
   // mirror each other so the user sees the same value wherever they adjust.
