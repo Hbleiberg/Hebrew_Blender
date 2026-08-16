@@ -2395,6 +2395,7 @@
   "fontmaker.panels.legend_anchored": "מעוגן",
   "fontmaker.panels.legend_anchors": "תצוגה מקדימה של תנועת {name} — גררו את הידית, או השתמשו במקשי החיצים (Shift = יחידה אחת).",
   "fontmaker.panels.legend_image": "תמונה",
+  "fontmaker.panels.legend_trace": "כווננו סף והחלקה, ואז הריצו מעקב. הפינות נשארות חדות; החללים הפנימיים מנוקבים.",
   "fontmaker.panels.legend_traced": "נעקב",
   "fontmaker.panels.legend_wideform": "תצוגה מקדימה של ניקוד — המיקום עוקב אחר אות הבסיס (ערכו אותו שם).",
   "fontmaker.panels.letter_allowed_svg": "מותר: SVG בלבד — וקטורים מיובאים ישירות (ללא מעקב).",
