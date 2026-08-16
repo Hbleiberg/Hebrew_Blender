@@ -7978,7 +7978,12 @@ async function onUploadEngFontPick(input){
   }
 
   function applyFontChoice(cfg, name) {
-    const f = cfg.fontsFn().find(x => x.name === name) || cfg.builtins[0];
+    // Unknown name → bail, never fall back. At init the saved name is often a My Font the
+    // async IndexedDB read has not produced yet; writing cfg.builtins[0] into settings here
+    // destroys the saved choice, and refreshMyFonts can then never match it. The CSS
+    // --heb-font/--eng-font defaults supply the visual fallback meanwhile.
+    const f = cfg.fontsFn().find(x => x.name === name);
+    if (!f) return;
     settings[cfg.settingKey] = f.name;
     loadHebFont(f);
     document.documentElement.style.setProperty(cfg.cssVar, f.family);
