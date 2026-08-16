@@ -1049,6 +1049,12 @@ function eraseAllSettings() {
     'hebrewFontMaker_mobileWarnDismissed',
     'hebrewFontMaker_inputMode',
     'hebrewFontMaker_lastAuthor',
+    // The Font Maker's workspace blob is the other three tools' *_panels keys under a different name:
+    // column widths, the three node-panel disclosure states, and the Draw-mode tool settings. Every
+    // field has an inline default when absent, so clearing it restores the factory workspace — which
+    // is what "erase means fresh start" means everywhere else in this list. It holds NO project data;
+    // that lives in _autosave and _recentProjects, both deliberately preserved (see the note below).
+    'hebrewFontMaker_uiPrefs',
     'hebrewTorahTrainer_settings',
     'hebrewTropeTutor_settings',
     'hebrewTropeTutor_progress',
@@ -1066,7 +1072,8 @@ function eraseAllSettings() {
     // legacy cleanup: purge orphaned data from the removed community-impact feature
     'ivritsuite-impact-v1',
     'ivritsuite-impact-optout',
-    // deliberately NOT erased: hebrewFontMaker_autosave (+ the Font Maker's IndexedDB autosave) —
+    // deliberately NOT erased: hebrewFontMaker_autosave (+ the Font Maker's IndexedDB autosave) and
+    // hebrewFontMaker_recentProjects, which stores up to 6 FULL project payloads, not just names —
     // a settings erase must never wipe a teacher's in-progress font project; FM projects live
     // outside the AllTools payload and the .ivrit project file is their canonical save.
   ];

@@ -1419,6 +1419,10 @@
   .swm-gridwrap { overflow-x: auto; }
   .swm-grid { display: grid; grid-template-columns: auto repeat(var(--swm-days, 5), minmax(88px, 1fr)) auto; gap: 3px; min-width: 540px; align-items: stretch; }
   .swm-grid, .swm-palette { user-select: none; }
+  /* Paint mode is entered by a long press on touch; the ring is the only signal the finger has
+     that the grid has stopped panning and started painting. Static by design — no animation to
+     neutralize under prefers-reduced-motion. */
+  .swm-grid.swm-painting { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
   /* Sticky time column survives the horizontal grid scroll; logical inset → correct side in RTL */
   .swm-timecell { position: sticky; inset-inline-start: 0; z-index: 1; background: var(--white); }
   body.dark .swm-timecell { background: var(--navy-deep); }
@@ -6292,16 +6296,32 @@ else ivritInit();
   // Deterministic auto-assignment: walk presets in insertion order, give each unassigned preset the
   // first palette color not yet in use; when all are taken, cycle from the top. Returns whether
   // anything was assigned (callers persist only then).
+  // Presets that activate the same class share ONE color. The grid is read as "when do I have
+  // Grade 4?", so one class spread over three period presets should not burn three palette slots
+  // and three legend rows — and with a palette this size that is also what postpones the point
+  // where colors start repeating between genuinely different classes.
   function assignPresetColors() {
     if (!settings.presetColors) settings.presetColors = {};
     const used = new Set(Object.values(settings.presetColors));
+    // Seed each class from the color it already has, so a later sibling adopts it — including a
+    // color the teacher picked by hand. Insertion order makes "already has" deterministic.
+    const byClass = new Map();
+    Object.keys(presets).forEach(name => {
+      const cls = presetClassName(name), c = settings.presetColors[name];
+      if (cls && c && !byClass.has(cls)) byClass.set(cls, c);
+    });
     let changed = false, spill = 0;
     Object.keys(presets).forEach(name => {
       if (settings.presetColors[name]) return;
-      let c = PRESET_PALETTE.find(x => !used.has(x));
-      if (!c) c = PRESET_PALETTE[spill++ % PRESET_PALETTE.length];
+      const cls = presetClassName(name);
+      let c = cls ? byClass.get(cls) : '';        // a preset with no roster still gets its own color
+      if (!c) {
+        c = PRESET_PALETTE.find(x => !used.has(x));
+        if (!c) c = PRESET_PALETTE[spill++ % PRESET_PALETTE.length];
+        used.add(c);                              // only a NEW class consumes a palette slot
+        if (cls) byClass.set(cls, c);
+      }
       settings.presetColors[name] = c;
-      used.add(c);
       changed = true;
     });
     return changed;
@@ -6587,6 +6607,51 @@ else ivritInit();
       const cell = e.target.closest('.swm-cell');
       if (cell && paintCell(+cell.dataset.day, +cell.dataset.period, _swmDrag.value)) _swmDrag.painted = true;
     });
+    /* Touch: a tap still just applies the armed chip, so a finger can keep panning the grid
+       sideways — which is why v1 was tap-only. Hold ~300 ms without moving and the grid enters
+       paint mode; only THEN is touch-action suppressed, so the pan gesture is never stolen from
+       a teacher who was only scrolling. Moving before the timer fires cancels it: that was a pan. */
+    let _swmHold = null;
+    function _swmCancelHold() { if (_swmHold) clearTimeout(_swmHold.timer); _swmHold = null; }
+    function _swmEndTouchPaint() {
+      grid.classList.remove('swm-painting');
+      grid.style.touchAction = '';
+      try { if (_swmHold && _swmHold.captured) grid.releasePointerCapture(_swmHold.id); } catch (err) {}
+      _swmCancelHold();
+      _swmEndDrag();                                   // one save per gesture, as the mouse path does
+    }
+    grid.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'mouse' || _armedChip === null) return;
+      const cell = e.target.closest('.swm-cell');
+      if (!cell) return;
+      _swmCancelHold();
+      const hold = { id: e.pointerId, x: e.clientX, y: e.clientY, captured: false };
+      hold.timer = setTimeout(() => {
+        if (_swmHold !== hold) return;
+        _swmDrag = { value: _armedChip === SWM_ERASER ? null : _armedChip, painted: false };
+        if (paintCell(+cell.dataset.day, +cell.dataset.period, _swmDrag.value)) _swmDrag.painted = true;
+        grid.classList.add('swm-painting');
+        grid.style.touchAction = 'none';
+        try { grid.setPointerCapture(hold.id); hold.captured = true; } catch (err) {}
+        if (navigator.vibrate) { try { navigator.vibrate(15); } catch (err) {} }
+      }, 300);
+      _swmHold = hold;
+    });
+    grid.addEventListener('pointermove', e => {
+      if (e.pointerType === 'mouse' || !_swmHold) return;
+      if (!_swmDrag) {                                 // still deciding — any real movement means "pan"
+        if (Math.abs(e.clientX - _swmHold.x) > 10 || Math.abs(e.clientY - _swmHold.y) > 10) _swmCancelHold();
+        return;
+      }
+      e.preventDefault();
+      // Pointer capture routes every move to the grid itself, so pointerover never fires for the
+      // cells underneath — the cell under the finger has to be hit-tested.
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const cell = el && el.closest ? el.closest('.swm-cell') : null;
+      if (cell && paintCell(+cell.dataset.day, +cell.dataset.period, _swmDrag.value)) _swmDrag.painted = true;
+    });
+    grid.addEventListener('pointerup',     e => { if (e.pointerType !== 'mouse') _swmEndTouchPaint(); });
+    grid.addEventListener('pointercancel', e => { if (e.pointerType !== 'mouse') _swmEndTouchPaint(); });
     grid.addEventListener('keydown', e => {
       const cell = e.target.closest('.swm-cell');
       if (!cell) return;
@@ -6794,6 +6859,10 @@ else ivritInit();
     const hints = [];
     if (_swmImportedHint) hints.push(I18n.t('dashboard.schedule.import_review_hint'));
     if (Object.keys(presets).length <= 1) hints.push(I18n.t('dashboard.schedule.need_presets_hint'));
+    // Touch only: a long-press gesture nobody is told about is a gesture nobody uses, and on a
+    // mouse the drag needs no hint because it is the ordinary click-and-drag.
+    if (window.matchMedia && matchMedia('(pointer: coarse)').matches && week && week.periods.length)
+      hints.push(I18n.t('dashboard.schedule.touch_paint_hint'));
     hints.forEach(h => { const d = document.createElement('div'); d.className = 'sched-hint'; d.textContent = h; el.appendChild(d); });
     msgs.forEach(m => { const d = document.createElement('div'); d.className = 'sched-warn'; d.textContent = m; el.appendChild(d); });
     el.style.display = (hints.length || msgs.length) ? '' : 'none';
@@ -7962,7 +8031,12 @@ async function onUploadEngFontPick(input){
   }
 
   function applyFontChoice(cfg, name) {
-    const f = cfg.fontsFn().find(x => x.name === name) || cfg.builtins[0];
+    // Unknown name → bail, never fall back. At init the saved name is often a My Font the
+    // async IndexedDB read has not produced yet; writing cfg.builtins[0] into settings here
+    // destroys the saved choice, and refreshMyFonts can then never match it. The CSS
+    // --heb-font/--eng-font defaults supply the visual fallback meanwhile.
+    const f = cfg.fontsFn().find(x => x.name === name);
+    if (!f) return;
     settings[cfg.settingKey] = f.name;
     loadHebFont(f);
     document.documentElement.style.setProperty(cfg.cssVar, f.family);

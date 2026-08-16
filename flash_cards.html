@@ -2892,7 +2892,10 @@ function loadHebFont(font) {
   }
 }
 function setHebFont(name) {
-  const font = allFonts().find(f => f.name === name) || HEB_FONTS[0];
+  // An unknown name bails instead of falling back: at init it is a My Font the async store
+  // read has not returned yet, and falling back would write the default over the saved choice.
+  const font = allFonts().find(f => f.name === name);
+  if (!font) return;
   hebFontId = font.name;
   loadHebFont(font);
   document.documentElement.style.setProperty('--heb-font', font.stack);
@@ -2923,7 +2926,8 @@ function initFontSelector() {
 /* English / Latin card-text font picker — mirrors the Hebrew one above (shared loadHebFont + My Fonts),
    drives the --eng-font CSS var used by the English card faces. */
 function setEngFont(name) {
-  const font = allEngFonts().find(f => f.name === name) || ENG_FONTS.find(f => f.name === 'Libre Baskerville');
+  const font = allEngFonts().find(f => f.name === name);   // unknown → bail, as setHebFont does
+  if (!font) return;
   engFontId = font.name;
   loadHebFont(font);
   document.documentElement.style.setProperty('--eng-font', font.stack);
@@ -4104,14 +4108,15 @@ function applySettings(s) {
   nikudColorOverrides = { ...(s.nikudColorOverrides || {}) };
   vowelColorScheme = s.vowelColorScheme ?? 'default';
   const fontMigration = { frank:'Frank Ruhl Libre', david:'David Libre', noto:'Noto Serif Hebrew', heebo:'Heebo', assist:'Assistant' };
-  // Resolve against allFonts()/allEngFonts() (built-ins ∪ My Fonts), not the built-in lists
-  // alone — otherwise any mid-session settings round trip (preset load, .ivrit restore, a
-  // Learner Ladder exit) silently coerces an uploaded font back to the default. At first load
-  // MY_FONTS is still empty, so init behavior is unchanged (refreshMyFonts re-applies after).
+  // Keep an unrecognised name AS IS (only the legacy id migration rewrites it). At init the
+  // saved name is often a My Font that the async IndexedDB read has not produced yet, so
+  // coercing it to the default here — even "temporarily" — is what loses it: refreshMyFonts
+  // re-applies by matching hebFontId against MY_FONTS, and a coerced id can never match.
+  // setHebFont/setEngFont bail on a name they don't know rather than falling back, so an
+  // unresolved id renders through the CSS --heb-font default until the store answers.
   const rawFont = s.hebFontId ?? 'Frank Ruhl Libre';
-  hebFontId = fontMigration[rawFont] || (allFonts().find(f => f.name === rawFont) ? rawFont : 'Frank Ruhl Libre');
-  const rawEng = s.engFontId ?? 'Libre Baskerville';
-  engFontId = allEngFonts().find(f => f.name === rawEng) ? rawEng : 'Libre Baskerville';
+  hebFontId = fontMigration[rawFont] || rawFont;
+  engFontId = s.engFontId ?? 'Libre Baskerville';
   vowelPositions = new Set((s.vowelPositions || []).filter(p => p >= 1 && p <= (s.mode ?? 2)));
   if (vowelPositions.size === 0) vowelPositions.add(s.mode ?? 2);
   anyVowelLock = !!s.anyVowelLock;
@@ -6126,7 +6131,10 @@ function _certEnter(name) {
   host.dir = document.documentElement.dir || 'ltr';
   const st = document.createElement('style');
   st.id = 'fcCertPage';
-  st.textContent = '@page { size: letter landscape; margin: 0.5in; }'; // i18n-ignore — CSS, not UI copy
+  // Orientation only, deliberately no paper keyword: the certificate needs to be landscape, but it
+  // has no business overriding the paper the teacher picked. Naming `letter` here beat the print
+  // dialog's own A4 in every cell, so an A4-locale teacher got a Letter sheet scaled down to fit.
+  st.textContent = '@page { size: landscape; margin: 0.5in; }'; // i18n-ignore — CSS, not UI copy
   document.head.appendChild(st);
   document.body.classList.add('fc-cert-print');
   _certActive = true;
