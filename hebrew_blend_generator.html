@@ -1282,7 +1282,9 @@
   /* ── LANDSCAPE PRINT ── */
   @media print and (orientation: landscape) {
     .blends-grid { grid-template-columns: repeat(10, 1fr) !important; }
-    .blend-hebrew { font-size: 1.4rem; }
+    /* Scale the Hebrew-size slider to fit 10 columns; a literal pinned it and made the
+       slider a no-op on landscape prints. Multiplier = old literal ÷ the 2rem default. */
+    .blend-hebrew { font-size: calc(var(--heb-font-size) * 0.7); }
     .blend-cell { min-height: 44px; }
   }
   body.landscape-mode .blends-grid { grid-template-columns: repeat(10, 1fr) !important; }
@@ -1919,7 +1921,8 @@
     .ws-meta { align-items: flex-start; }
     .ws-title { font-size: 1.1rem; }
 
-    .blend-hebrew { font-size: 1.5rem; }
+    /* Scale, never restate — see the landscape-print note above. */
+    .blend-hebrew { font-size: calc(var(--heb-font-size) * 0.75); }
     .blend-cell { min-height: 52px; }
 
     .letter-grid { grid-template-columns: repeat(4, 1fr); }

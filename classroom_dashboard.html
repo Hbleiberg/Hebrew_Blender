@@ -561,7 +561,9 @@
   /* English mode: badge on left, text left-aligned */
   .day-item.badge-left .day-badge { order: -1; }
   .day-item.badge-left .day-main { align-items: flex-start; direction: ltr; }
-  .day-item.badge-left .badge-text { direction: ltr; font-family: inherit; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em; }
+  /* No font-size here: this rule's job is the LTR/English treatment, and a literal would
+     pin the badge text and kill the "Yesterday/Today/Tomorrow size" slider in English mode. */
+  .day-item.badge-left .badge-text { direction: ltr; font-family: inherit; font-weight: 700; letter-spacing: 0.03em; }
   /* Both mode: English sub-label under Hebrew badge text */
   .badge-text-eng { font-size: 0.6rem; color: var(--gold-light); margin-top: 2px; direction: ltr; line-height: 1.2; opacity: 0.85; }
   /* TTS tap-to-read: tappable areas */
@@ -657,7 +659,11 @@
   .timer-custom-row { display: flex; gap: 5px; align-items: center; }
   .timer-custom-row input { width: 72px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 5px;
     font-family: inherit; text-align: center; background: var(--white); color: var(--text); }
-  body.fullscreen #timerCol .timer-display { font-size: 5.5rem; }
+  /* Fullscreen/responsive size steps SCALE the teacher's slider value — they must never
+     restate it as a literal, or the Display-panel size sliders go dead in that mode (the
+     projected fullscreen board is exactly where sizing matters most). Multipliers are the
+     old literal ÷ the slider default, so the default rendering is unchanged. */
+  body.fullscreen #timerCol .timer-display { font-size: calc(var(--time-size) * 1.618); }
 
   /* Student Picker panel */
   #pickerCol .col-body { display: flex; flex-direction: column; gap: 10px; padding: 14px; }
@@ -1342,10 +1348,12 @@
   #fsExitBtn .fs-x { font-size: 1.5rem; line-height: 1; }
   #fsExitBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
   body.fullscreen #fsExitBtn { display: flex; }
-  body.fullscreen .heb-date { font-size: 3.2rem; }
-  body.fullscreen .current-time { font-size: 4.2rem; }
+  /* Scale, never restate — see the .timer-display note above. .weather-emoji has no slider,
+     so its literal is the whole story and stays. */
+  body.fullscreen .heb-date { font-size: calc(var(--heb-date-size) * 1.231); }
+  body.fullscreen .current-time { font-size: calc(var(--time-size) * 1.235); }
   body.fullscreen .weather-emoji { font-size: 4.2rem; }
-  body.fullscreen .weather-temp { font-size: 2.4rem; }
+  body.fullscreen .weather-temp { font-size: calc(var(--temp-size) * 1.2); }
 
   /* ── Screen Wake Lock indicator ── */
   .wake-dot { display: none; align-items: center; margin-inline-start: 2px; }
@@ -1608,8 +1616,9 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
   @media (max-width: 600px) {
     .hbtn { padding: 6px 8px; font-size: 0.78rem; }
     .hbtn .hbtn-label { display: none; }
-    .heb-date { font-size: 2rem; }
-    .current-time { font-size: 2.6rem; }
+    /* Scale, never restate — see the body.fullscreen note. */
+    .heb-date { font-size: calc(var(--heb-date-size) * 0.769); }
+    .current-time { font-size: calc(var(--time-size) * 0.765); }
   }
 
   /* ───── Print (Ctrl+P) ───── */
