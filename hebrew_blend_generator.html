@@ -1892,6 +1892,11 @@
 
     .sidebar {
       width: 100%;
+      /* content-box + width:100% + padding makes the stacked sidebar 24px WIDER than its parent,
+         which is the whole of this page's horizontal overflow at phone widths (344px in a 320px
+         viewport — WCAG 1.4.10 reflow). Scoped to this block on purpose: the desktop rule's fixed
+         320px + 20px padding is a deliberate 360px column, and border-box there would shrink it. */
+      box-sizing: border-box;
       border-right: none;
       border-bottom: 1px solid var(--border);
       padding: 12px;
