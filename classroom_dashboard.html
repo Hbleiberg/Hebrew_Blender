@@ -2582,16 +2582,19 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     {heb:'יוֹם שַבָּת',    eng:'Saturday',  bg:'#6a1b9a'},
   ];
 
-  // Relative luminance of a #rrggbb plate, per WCAG. 0.30 is not a taste threshold: white text
-  // scores (1.0 + 0.05) / (L + 0.05), which crosses the 3:1 large-text bar at exactly L = 0.30.
-  // Above it, white is unreadable on the plate and the day item switches to dark ink. Of the
-  // seven day colours only Tuesday's yellow is above (0.373); Monday's orange, the next
-  // lightest, sits at 0.227 and keeps its white type.
+  // Relative luminance of a #rrggbb plate, per WCAG. The threshold is not a taste value: white text
+  // scores (1.0 + 0.05) / (L + 0.05), so it crosses the 4.5:1 normal-text bar at exactly L = 0.1833.
+  // Above it, white is unreadable on the plate and the day item switches to dark ink.
+  // This used to be 0.30, the crossing for the 3:1 LARGE-text bar — but the day name renders at
+  // 21.6px / weight 500 by default, and WCAG large text starts at 24px (or 18.66px bold), so the
+  // normal-text bar is the one that applies. Only Monday's orange sits in the gap the old constant
+  // let through (L = 0.227): it was scoring 3.79:1 white, and takes dark ink at 4.83:1 instead.
+  // Tuesday's yellow (0.373) was already above; the other five are ≤ 0.155 and keep their white type.
   function isLightPlate(hex) {
     const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex || '');
     if (!m) return false;
     const f = v => { const c = parseInt(v, 16) / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
-    return (0.2126 * f(m[1]) + 0.7152 * f(m[2]) + 0.0722 * f(m[3])) > 0.30;
+    return (0.2126 * f(m[1]) + 0.7152 * f(m[2]) + 0.0722 * f(m[3])) > 0.1833;
   }
 
   const DOW_EMOJI_SETS = {
