@@ -839,13 +839,26 @@ function render() {
   }).join('');
 }
 
+/* Selector buttons mark the live choice with a CSS .active class, which says nothing to a screen
+   reader — all seven category filters announce identically and the user cannot tell which one is on.
+   Mirror .active into aria-pressed at every writer, the same convention the tool pages already use
+   (hebrew_blend_generator.html's setVowelScheme / ivrit-mode buttons). */
+function setPressed(btn, on) {
+  btn.classList.toggle('active', on);
+  btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+}
+/* Seed from the markup's own .active state rather than hand-writing 46 attributes, so a button
+   added later cannot drift out of sync. */
+document.querySelectorAll('.filter-btn, .view-toggle button, .sg-pill').forEach(b =>
+  b.setAttribute('aria-pressed', b.classList.contains('active') ? 'true' : 'false'));
+
 /* ── Filter buttons (Links view) ── */
 document.querySelectorAll('#linksRegion .filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const type  = btn.dataset.filter;
     const value = btn.dataset.value;
-    document.querySelectorAll(`#linksRegion .filter-btn[data-filter="${type}"]`).forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    document.querySelectorAll(`#linksRegion .filter-btn[data-filter="${type}"]`).forEach(b => setPressed(b, false));
+    setPressed(btn, true);
     if (type === 'cat') activeCat = value;
     else activeAge = value;
     render();
@@ -1021,8 +1034,8 @@ function fontFeatureOk(f) {
 document.querySelectorAll('#fontsRegion .filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const type = btn.dataset.filter, value = btn.dataset.value;
-    document.querySelectorAll(`#fontsRegion .filter-btn[data-filter="${type}"]`).forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    document.querySelectorAll(`#fontsRegion .filter-btn[data-filter="${type}"]`).forEach(b => setPressed(b, false));
+    setPressed(btn, true);
     if (type === 'ftype') activeFType = value;
     else if (type === 'ffeat') activeFFeat = value;
     else if (type === 'flic') activeFLic = value;
@@ -1071,7 +1084,7 @@ function renderFonts() {
 let activeView = 'links';
 function setView(v) {
   activeView = v;
-  document.querySelectorAll('.view-toggle button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  document.querySelectorAll('.view-toggle button').forEach(b => setPressed(b, b.dataset.view === v));
   document.getElementById('linksRegion').style.display = (v === 'fonts') ? 'none' : '';
   document.getElementById('fontsRegion').style.display = (v === 'fonts') ? '' : 'none';
   if (v === 'fonts') renderFonts();
@@ -1381,9 +1394,11 @@ function openSubmitFont(pf) {
   function wirePills(rowId, hiddenId, multi){
     const row = document.getElementById(rowId), hidden = document.getElementById(hiddenId);
     row.querySelectorAll('.sg-pill').forEach(function(btn){
+      // Seeded here, not with the filter buttons above: this markup is parsed after that script runs.
+      btn.setAttribute('aria-pressed', btn.classList.contains('active') ? 'true' : 'false');
       btn.addEventListener('click', function(){
-        if (multi){ btn.classList.toggle('active'); }
-        else { row.querySelectorAll('.sg-pill').forEach(function(b){ b.classList.remove('active'); }); btn.classList.add('active'); }
+        if (multi){ setPressed(btn, !btn.classList.contains('active')); }
+        else { row.querySelectorAll('.sg-pill').forEach(function(b){ setPressed(b, false); }); setPressed(btn, true); }
         hidden.value = [].slice.call(row.querySelectorAll('.sg-pill.active')).map(function(b){ return b.dataset.val; }).join(', ');
       });
     });
@@ -1436,7 +1451,7 @@ function openSubmitFont(pf) {
       const data = await r.json().catch(function(){ return {}; });
       if (r.ok && data.success){
         form.reset();
-        form.querySelectorAll('.sg-pill.active').forEach(function(b){ b.classList.remove('active'); });
+        form.querySelectorAll('.sg-pill.active').forEach(function(b){ setPressed(b, false); });
         ['sgCat','sgFormat','sgAge'].forEach(function(id){ document.getElementById(id).value = ''; });
         if (window.hcaptcha && hcId !== null){ try { window.hcaptcha.reset(hcId); } catch (_) {} }
         statusEl.style.color = 'var(--gold-text)';

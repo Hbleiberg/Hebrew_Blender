@@ -245,9 +245,9 @@ footer a{color:var(--gold-text);text-decoration:none;}
 
   <div class="pill-wrap">
     <div class="pill-group" id="payPills">
-      <button class="pill active" data-pay="paypal" onclick="showPay('paypal')" data-i18n="contact.donate.tab_paypal">PayPal</button>
-      <button class="pill" data-pay="venmo" onclick="showPay('venmo')" data-i18n="contact.donate.tab_venmo">Venmo</button>
-      <button class="pill" data-pay="zelle" onclick="showPay('zelle')" data-i18n="contact.donate.tab_zelle">Zelle</button>
+      <button class="pill active" data-pay="paypal" onclick="showPay('paypal')" aria-pressed="true" data-i18n="contact.donate.tab_paypal">PayPal</button>
+      <button class="pill" data-pay="venmo" onclick="showPay('venmo')" aria-pressed="false" data-i18n="contact.donate.tab_venmo">Venmo</button>
+      <button class="pill" data-pay="zelle" onclick="showPay('zelle')" aria-pressed="false" data-i18n="contact.donate.tab_zelle">Zelle</button>
     </div>
   </div>
 
@@ -291,7 +291,13 @@ function toggleDark() {
 
 // Donation tabs
 function showPay(which){
-  document.querySelectorAll('#payPills .pill').forEach(p => p.classList.toggle('active', p.dataset.pay === which));
+  // .active alone is invisible to a screen reader — all three tabs announce identically — so the
+  // live choice is mirrored into aria-pressed here and seeded in the markup below.
+  document.querySelectorAll('#payPills .pill').forEach(p => {
+    const on = p.dataset.pay === which;
+    p.classList.toggle('active', on);
+    p.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
   document.querySelectorAll('.donate-panel').forEach(p => p.classList.toggle('active', p.dataset.pay === which));
 }
 
