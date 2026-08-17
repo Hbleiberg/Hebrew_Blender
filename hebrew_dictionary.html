@@ -363,6 +363,12 @@ body.dark .mobile-filters-btn{background:var(--navy-deep);}
 .vowel-chip{display:flex;align-items:center;gap:4px;font-size:0.78rem;cursor:pointer;user-select:none;padding:4px;border-radius:4px;transition:background 0.15s;}
 .vowel-chip:hover{background:var(--warm-gray);}
 .vowel-chip input{accent-color:var(--gold);width:14px;height:14px;cursor:pointer;flex-shrink:0;}
+/* --muted sits on the vowel groups' coloured tints, which are dark enough in dark mode to drop the
+   sub-label to 3.3-4.5:1. Lifted to the same value hebrew_blend_generator.html already uses for the
+   identical chip, which clears 4.5:1 on every group tint. Kept in CSS rather than the inline style
+   the template used to carry, because an inline literal out-specifies any dark-mode rule. */
+.vowel-chip-sub{color:var(--muted);font-size:0.72rem;}
+body.dark .vowel-chip-sub{color:#adb6c9;}
 .era-body{display:flex;gap:16px;}
 .panel-subhead{font-family:'Libre Baskerville',serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
 /* Sized by padding alone, this shared class rendered 10 of its 12 buttons at 20-22px — under
@@ -2303,7 +2309,7 @@ function initVowelFilter() {
         <input type="checkbox" data-u="${v.u}">
         <span style="display:flex;align-items:center;gap:6px;">
           <span lang="he" dir="rtl" style="font-family:var(--heb-font);font-size:1.4rem;direction:rtl;min-width:24px;text-align:center;">${v.ex}</span>
-          <span><strong>${esc(glyphVowelName(v.label))}</strong><br><span class="vowel-chip-sub" style="color:var(--muted);font-size:0.72rem">${esc(vowelSub(v.sub))}</span></span>
+          <span><strong>${esc(glyphVowelName(v.label))}</strong><br><span class="vowel-chip-sub">${esc(vowelSub(v.sub))}</span></span>
         </span>`;
       const cb = chip.querySelector('input');
       cb.checked = true;
