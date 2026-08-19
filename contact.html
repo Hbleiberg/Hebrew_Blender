@@ -143,7 +143,13 @@ main strong{font-weight:700;}
 .btn-primary:disabled{opacity:0.55;cursor:default;}
 body.dark .btn-primary{background:#2a4070;}
 body.dark .btn-primary:hover{background:#345090;}
-.honey{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden;}
+/* Honeypot: must stay in the DOM and out of display:none so naive bots still fill it, while
+   being unreachable for people (the input also carries aria-hidden + tabindex=-1). It used to
+   park at left:-9999px, which is off-screen and unscrollable in LTR but REAL scrollable
+   overflow in RTL — the Hebrew UI scrolled 9999px sideways at every width. Clipping in place
+   is direction-neutral; a logical inset would only mirror the same bug into English. */
+.honey{position:absolute!important;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;}
 #formStatus{margin-top:12px;font-size:0.9rem;color:var(--muted);min-height:1.2em;}
 #formStatus a{color:var(--gold-text);}
 .email-line{margin-top:16px;font-size:0.92rem;color:var(--muted);}
