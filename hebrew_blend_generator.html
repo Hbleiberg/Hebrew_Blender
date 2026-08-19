@@ -2172,7 +2172,12 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   .font-opt-label { font-weight: 600; font-size: 0.62rem; line-height: 1.2; word-break: break-word; }
   .font-opt-attr { font-size: 0.52rem; color: var(--muted); line-height: 1.2;
     word-break: break-word; text-decoration: none; }
-  .font-opt-attr:hover { color: var(--gold); text-decoration: underline; }
+  /* --muted on the ACTIVE row's lighter dark surface (#2a3349) is 4.13:1 at 8.32px, under the
+     4.5:1 AA bar; the inactive rows clear it at 5.02:1. Same lift, same value, as the vowel-chip
+     sub-label above (S225). The hover rule below carries a dark twin because this override is
+     (0,2,1) and a bare :hover is (0,2,0) — specificity, not source order, decides. */
+  body.dark .font-opt-attr { color: #adb6c9; }
+  .font-opt-attr:hover, body.dark .font-opt-attr:hover { color: var(--gold); text-decoration: underline; }
   .font-section-hdr { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em;
     text-transform: uppercase; color: var(--muted); margin: 8px 0 4px;
     padding-bottom: 3px; border-bottom: 1px solid var(--border);
