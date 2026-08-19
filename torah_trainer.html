@@ -573,6 +573,7 @@ body.dark .tt-jumpnav { background:var(--navy-deep); }
 }
 .tt-jump-chip:hover { border-color:var(--gold); color:var(--gold); }
 .tt-jump-chip.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
+.tt-holiday-opt.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
 .tt-jump-pos { margin-left:auto; font-size:0.78rem; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums; }
 body.fullscreen .tt-jumpnav { padding-right:84px; }   /* clear the fullscreen exit button */
 
@@ -1548,6 +1549,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     </label>
   </span>
   <span class="tt-ctrl">
+    <button id="ttHolidayBtn" class="btn btn-xs btn-secondary" onclick="toggleHolidayPicker()" type="button"
+            aria-expanded="false" aria-controls="ttHolidayPicker" style="gap:5px;"><span aria-hidden="true">🕎</span><span data-i18n="torah.controls.holiday_group_label">Holiday Torah Readings</span></button>
+  </span>
+  <span class="tt-ctrl">
     <button id="ttPrintBtn" class="btn btn-xs btn-secondary" onclick="printReading()" type="button" data-i18n="torah.controls.print_button" data-i18n-title="torah.controls.print_title" title="Print this reading for students">🖨️ Print</button>
   </span>
   <span class="tt-ctrl">
@@ -1561,6 +1566,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   </span>
 </div>
 
+<div id="ttHolidayPicker" class="tt-controls" style="display:none;border-top:1px dashed var(--border);"
+     role="group" data-i18n-aria-label="torah.controls.holiday_group_label" aria-label="Holiday Torah Readings"></div>
 <div id="ttCustomPicker" class="tt-controls" style="display:none;border-top:1px dashed var(--border);">
   <span class="tt-ctrl">
     <label for="ttCustomBook" data-i18n="torah.custom.book_label">Book:</label>
@@ -5366,21 +5373,14 @@ function wireSettingsForm() {
     clearLoop();
     if (val.startsWith('holiday:')) {
       const h = holidayByKey(val.slice('holiday:'.length));
-      if (h) {
-        settings.holidayKey = h.key;
-        settings.customRef = h.ref;
-        settings.customLabel = `${h.name} — ${h.ref}`;
-        settings.scope = 'custom';
-        saveSettings();
-        fetchAndRender();
-        return;
-      }
+      if (h) { applyHolidayReading(h); return; }
     }
     settings.parshahKey = val;
     settings.holidayKey = null;
     settings.scope = settings.scope.startsWith('parsha-') ? settings.scope : 'parsha-full';
     settings.customLabel = null;
     saveSettings();
+    syncParshaSelect();
     fetchAndRender();
   });
   document.getElementById('scopeSelect').addEventListener('change', e => {
@@ -5518,6 +5518,7 @@ function syncParshaSelect() {
   } else if (settings.parshahKey) {
     sel.value = settings.parshahKey;
   }
+  syncHolidayPickerState();
 }
 // Format a verse range compactly: same chapter → "18:1–14", cross-chapter →
 // "18:1–19:38". Returns '' if any bound is missing.
@@ -5604,6 +5605,53 @@ function updateScopeSelectState() {
     scopeSel.removeAttribute('data-i18n-title');
     scopeSel.title = '';
   }
+}
+/* The 17 holiday readings already existed — as an <optgroup> 54 parshiyot down a closed
+   <select>, with the word "holiday" appearing nowhere on the page. This surfaces the same list
+   as a visible strip beside "Custom range…"; it adds no state and no storage key, and both
+   entry points now go through one apply path rather than two copies of the same four writes. */
+function applyHolidayReading(h) {
+  settings.holidayKey = h.key;
+  settings.customRef = h.ref;
+  settings.customLabel = `${h.name} — ${h.ref}`;
+  settings.scope = 'custom';
+  saveSettings();
+  syncParshaSelect();
+  fetchAndRender();
+}
+// Built once, on first open — then only the class and aria flip, so re-selecting a reading is a
+// state swap and not a rebuild of 17 buttons.
+function buildHolidayPicker() {
+  const el = document.getElementById('ttHolidayPicker');
+  if (!el || el.childElementCount) return;
+  for (const h of HOLIDAY_READINGS) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'btn btn-xs btn-secondary tt-holiday-opt';
+    b.dataset.holidayKey = h.key;
+    b.textContent = `${h.name} — ${h.ref}`;   // reading names are content, like the <option> labels
+    b.addEventListener('click', () => { clearLoop(); applyHolidayReading(h); });
+    el.appendChild(b);
+  }
+  syncHolidayPickerState();
+}
+function syncHolidayPickerState() {
+  const el = document.getElementById('ttHolidayPicker');
+  if (!el) return;
+  const on = settings.scope === 'custom' ? settings.holidayKey : null;
+  el.querySelectorAll('.tt-holiday-opt').forEach(b => {
+    const sel = b.dataset.holidayKey === on;
+    b.classList.toggle('active', sel);
+    b.setAttribute('aria-pressed', sel ? 'true' : 'false');
+  });
+}
+function toggleHolidayPicker() {
+  const el = document.getElementById('ttHolidayPicker');
+  const btn = document.getElementById('ttHolidayBtn');
+  const opening = el.style.display === 'none';
+  if (opening) buildHolidayPicker();
+  el.style.display = opening ? '' : 'none';
+  if (btn) btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
 }
 function toggleCustomPicker() {
   const el = document.getElementById('ttCustomPicker');
@@ -6411,7 +6459,7 @@ async function goToCurrentParshah() {
     settings.customLabel = null;
     settings.holidayKey = null;
     saveSettings();
-    document.getElementById('parshaSelect').value = match.en;
+    syncParshaSelect();
     document.getElementById('scopeSelect').value = 'parsha-full';
     fetchAndRender();
     return;
