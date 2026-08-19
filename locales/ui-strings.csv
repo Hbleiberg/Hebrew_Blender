@@ -744,9 +744,12 @@ dictionary.ordinal_4th,4th,רביעית,letter-position ordinal,
 dictionary.ordinal_5th,5th,חמישית,letter-position ordinal,
 dictionary.ordinal_6th,6th,שישית,letter-position ordinal,
 dictionary.pos.adjective,Adjective,שם תואר,part-of-speech filter label,
+dictionary.pos.adjective_noun,Adjective/Noun,שם תואר/שם עצם,part-of-speech filter label,REVIEW: HE draft
 dictionary.pos.adverb,Adverb,תואר הפועל,part-of-speech filter label,
+dictionary.pos.adverbial_phrase,Adverbial Phrase,צירוף תואר הפועל,part-of-speech filter label,REVIEW: HE draft
 dictionary.pos.article,Article,תווית,part-of-speech filter label,
 dictionary.pos.conjunction,Conjunction,מילת חיבור,part-of-speech filter label,
+dictionary.pos.definite_article,Definite Article,תווית יידוע,part-of-speech filter label,REVIEW: HE draft
 dictionary.pos.determiner,Determiner,מילת ייחוס,part-of-speech filter label,
 dictionary.pos.interjection,Interjection,מילת קריאה,part-of-speech filter label,
 dictionary.pos.name,Name,שם,part-of-speech filter label,
@@ -761,6 +764,7 @@ dictionary.pos.prep_phrase,Prep. Phrase,צירוף מילת יחס,part-of-speec
 dictionary.pos.preposition,Preposition,מילת יחס,part-of-speech filter label,
 dictionary.pos.pronoun,Pronoun,כינוי גוף,part-of-speech filter label,
 dictionary.pos.proper_noun,Proper Noun,שם פרטי,part-of-speech filter label,
+dictionary.pos.proverb,Proverb,פתגם,part-of-speech filter label,REVIEW: HE draft
 dictionary.pos.root,Root (שׁורש),שורש,part-of-speech filter label,mixed UI+content — do not translate {…}
 dictionary.pos.verb,Verb,פועל,part-of-speech filter label,
 dictionary.results.count_emojis.one,{count} emoji,אימוג׳י אחד,result count (emoji mode),plural

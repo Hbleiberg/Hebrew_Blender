@@ -864,6 +864,7 @@ footer summary{min-height:24px;}
           <label class="cb-label"><input type="checkbox" class="pcb" value="proper noun" checked> <span data-i18n="dictionary.pos.proper_noun">Proper Noun</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="verb" checked> <span data-i18n="dictionary.pos.verb">Verb</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="adjective" checked> <span data-i18n="dictionary.pos.adjective">Adjective</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="adjective/noun" checked> <span data-i18n="dictionary.pos.adjective_noun">Adjective/Noun</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="adverb" checked> <span data-i18n="dictionary.pos.adverb">Adverb</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="pronoun" checked> <span data-i18n="dictionary.pos.pronoun">Pronoun</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="preposition" checked> <span data-i18n="dictionary.pos.preposition">Preposition</span></label>
@@ -873,12 +874,15 @@ footer summary{min-height:24px;}
           <label class="cb-label"><input type="checkbox" class="pcb" value="numeral" checked> <span data-i18n="dictionary.pos.numeral">Numeral</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="particle" checked> <span data-i18n="dictionary.pos.particle">Particle</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="phrase" checked> <span data-i18n="dictionary.pos.phrase">Phrase</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="proverb" checked> <span data-i18n="dictionary.pos.proverb">Proverb</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="determiner" checked> <span data-i18n="dictionary.pos.determiner">Determiner</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="prepositional phrase" checked> <span data-i18n="dictionary.pos.prep_phrase">Prep. Phrase</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="adverbial phrase" checked> <span data-i18n="dictionary.pos.adverbial_phrase">Adverbial Phrase</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="postposition" checked> <span data-i18n="dictionary.pos.postposition">Postposition</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="name" checked> <span data-i18n="dictionary.pos.name">Name</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="name element" checked> <span data-i18n="dictionary.pos.name_element">Name Element</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="article" checked> <span data-i18n="dictionary.pos.article">Article</span></label>
+          <label class="cb-label"><input type="checkbox" class="pcb" value="definite article" checked> <span data-i18n="dictionary.pos.definite_article">Definite Article</span></label>
           <label class="cb-label"><input type="checkbox" class="pcb" value="other" checked> <span data-i18n="dictionary.pos.other">Other</span></label>
         </div>
         <hr style="border:none;border-top:1px solid var(--border);margin:12px 0 8px;">
@@ -1263,8 +1267,13 @@ const CONSONANTS = [
   {h:'ת', n:'Sav', savVariant:true},
 ];
 
-const POS_KNOWN = ['noun','proper noun','verb','adjective','adverb','pronoun','preposition','conjunction','root','interjection','numeral','particle','phrase','determiner','prepositional phrase','postposition','name','name element','article'];
+const POS_KNOWN = ['noun','proper noun','verb','adjective','adjective/noun','adverb','adverbial phrase','pronoun','preposition','conjunction','root','interjection','numeral','particle','phrase','proverb','determiner','prepositional phrase','postposition','name','name element','article','definite article'];
 const POS_KNOWN_SET = new Set(POS_KNOWN);   // O(1) membership for the hot filter path
+// Filter rows added after a saved state could have recorded them. A pre-existing lastState /
+// ?s= link lists only the values that had rows when it was written, and restoring it verbatim
+// would leave these unchecked — silently hiding words the teacher had visible. See the restore
+// path, which treats a state mentioning none of them as pre-dating them.
+const POS_ROWS_ADDED_LATER = ['adjective/noun', 'adverbial phrase', 'proverb', 'definite article'];
 
 const DICT_VOWEL_GROUPS = [
   {
@@ -4505,7 +4514,13 @@ function applyDictState(s) {
     // 7. part of speech
     if (Array.isArray(s.pos)) {
       const set = new Set(s.pos);
-      document.querySelectorAll('.pcb').forEach(cb => { cb.checked = set.has(cb.value); });
+      const knowsLaterRows = POS_ROWS_ADDED_LATER.some(v => set.has(v));
+      document.querySelectorAll('.pcb').forEach(cb => {
+        // A value this state never knew about keeps its markup default rather than reading
+        // as "the teacher unchecked it" — the same rule panel-collapse memory uses.
+        if (!knowsLaterRows && POS_ROWS_ADDED_LATER.includes(cb.value)) return;
+        cb.checked = set.has(cb.value);
+      });
     }
 
     // 7b. themes (opt-in filter; absent/empty array = filter off). Values are matched
