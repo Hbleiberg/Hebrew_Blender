@@ -206,6 +206,16 @@ footer a{color:var(--gold-text);text-decoration:none;}
   .filter-label{min-width:72px;}
   .resource-grid{grid-template-columns:1fr;}
 }
+/* Phone widths: let the header button row wrap onto a second line instead of pushing the
+   page sideways (WCAG 1.4.10 reflow). max-width is the operative half — nothing makes the row
+   wrap until something caps its width, and the header has to wrap too or the title block and
+   the button row keep competing for one line. Same lever and the same 430px scope as the
+   dashboard's header block, and measured inert above it — header heights at 480 through 1280
+   are identical with the rules forced on and with them off. */
+@media(max-width:430px){
+  header{flex-wrap:wrap;}
+  header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
+}
 
 /* ── Suggest a Resource: CTA button + modal ── */
 .filter-bar{position:relative;}
