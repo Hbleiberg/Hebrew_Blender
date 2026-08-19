@@ -3391,6 +3391,9 @@ trope.drill.reset_speed_aria,Reset playback speed,איפוס מהירות ההש
 trope.drill.reset_speed_title,Reset speed,איפוס מהירות,reset button title,
 trope.drill.results_heading,Session complete,המפגש הושלם,results heading,
 trope.drill.results_pb,🏆 New personal best!,🏆 שיא אישי חדש!,results banner,leading-emoji
+trope.drill.review_title.one,1 mark to review,סימן אחד לחזרה,heading above the missed-marks list on the drill results screen,plural; REVIEW: HE draft
+trope.drill.review_title.other,{count} marks to review,{count} סימנים לחזרה,heading above the missed-marks list on the drill results screen,plural; REVIEW: HE draft
+trope.drill.review_play_aria,Hear {name} again,השמעת {name} שוב,aria-label on the replay button in the missed-marks list,aria-label only; REVIEW: HE draft
 trope.drill.results_sub,{correct} / {total} correct · best streak this session: {best} 🔥 · personal best: {pb} 🔥,{correct} / {total} נכון · רצף שיא במפגש זה: {best} 🔥 · שיא אישי: {pb} 🔥,results subtitle,do-not-translate {correct}/{total}/{best}/{pb}
 trope.drill.start_button,Start drill,התחלת תרגול,button,
 trope.drill.streak_aria,"Streak {n}, personal best {best}","רצף {n}, שיא אישי {best}",drill streak aria,aria-label only; do-not-translate {n}/{best}

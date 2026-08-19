@@ -384,6 +384,23 @@ body.dark .tu-feedback .no { color:#ff6666; }
 .tu-note.error { color:#cc3333; font-weight:600; }
 body.dark .tu-note.error { color:#ff6666; }
 
+/* Missed-marks review (results screen) */
+.tu-review {
+  margin:12px auto 4px; max-width:460px; text-align:initial;
+  border:1px solid var(--border); border-radius:10px; background:var(--cream);
+  padding:12px 14px;
+}
+body.dark .tu-review { background:#131a29; }
+.tu-review-title { font-size:0.86rem; font-weight:700; color:var(--muted); margin:0 0 8px; }
+.tu-review-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
+.tu-review-row { display:flex; align-items:center; gap:10px; }
+.tu-review-glyph {
+  font-family:var(--heb-font); font-size:1.5rem; line-height:1.1; direction:rtl;
+  min-width:2ch; text-align:center; flex:none;
+}
+/* The name takes the slack so every ▶ lands on the same inline edge, LTR and RTL alike. */
+.tu-review-name { font-size:0.86rem; font-weight:600; color:var(--text); flex:1 1 auto; }
+
 /* Mastery grid */
 .tu-mgrid { display:flex; flex-direction:column; gap:8px; margin:14px auto 0; max-width:720px; text-align:initial; }
 .tu-mfam { display:flex; align-items:flex-start; gap:8px; }
@@ -816,6 +833,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <div class="big-pct" id="resPct"></div>
         <p class="tu-drill-sub" id="resSub"></p>
         <div class="tu-pb-banner" id="resPb" hidden data-i18n="trope.drill.results_pb">🏆 New personal best!</div>
+        <div class="tu-review" id="resReview" hidden>
+          <h3 class="tu-review-title" id="resReviewTitle"></h3>
+          <ul class="tu-review-list" id="resReviewList"></ul>
+        </div>
         <button class="btn btn-lg" onclick="startDrill()" data-i18n="trope.drill.drill_again">Drill again</button>
         <button class="btn btn-lg btn-secondary" onclick="setMode('learn')" data-i18n="trope.drill.back_to_learn">Back to Learn</button>
         <div class="tu-mgrid" id="masteryGridEnd" role="group" aria-label="Mastery by trope" data-i18n-aria-label="trope.drill.mastery_aria"></div>
@@ -2284,7 +2305,7 @@ function answer(q, pickedKey, btn) {
   recordAnswer(q.key, ok);
   if (ok) drill.correct++;
   if (sessionStreak > drill.best) drill.best = sessionStreak;
-  drill.results.push({ key: q.key, ok });
+  drill.results.push({ key: q.key, ok, ex: q.ex });   // ex: the clip the review list replays
   updateStreakLine();
 
   const choices = document.getElementById('qChoices');
@@ -2321,6 +2342,47 @@ function answer(q, pickedKey, btn) {
   if (q.type === 'identify') playClip(q.ex, { onError: () => {} });
 }
 
+/* ═══ Review what you missed ═══
+   The drill already recorded a verdict per question; showResults() used to clear that list
+   without anything ever reading it. This turns the score into a short practice list: the marks
+   missed this session, each with the clip that was playing when it was missed. Read-only —
+   it renders from _lastMissed and touches no progress, mastery or drill state, so re-rendering
+   it (a language or font change) can never alter what the student earned. */
+let _lastMissed = [];
+
+function buildMissedReview() {
+  const box = document.getElementById('resReview');
+  const list = document.getElementById('resReviewList');
+  if (!box || !list) return;
+  list.innerHTML = '';
+  box.hidden = !_lastMissed.length;
+  if (!_lastMissed.length) return;   // a clean sweep gets no list, not an empty one
+  document.getElementById('resReviewTitle').textContent =
+    I18n.t(_lastMissed.length === 1 ? 'trope.drill.review_title.one' : 'trope.drill.review_title.other',
+           { count: _lastMissed.length });
+  for (const miss of _lastMissed) {
+    const t = TROPE_BY_KEY[miss.key];
+    if (!t) continue;
+    const li = document.createElement('li');
+    li.className = 'tu-review-row';
+    li.appendChild(_decorative(tropeGlyphSpan(t, 'tu-review-glyph')));   // .tu-review-name carries the name
+    const name = document.createElement('span');
+    name.className = 'tu-review-name';
+    name.textContent = tropeNameLine(t);
+    li.appendChild(name);
+    if (miss.ex) {
+      const play = document.createElement('button');
+      play.type = 'button';
+      play.className = 'tu-ex-play';
+      play.textContent = '▶';
+      play.setAttribute('aria-label', I18n.t('trope.drill.review_play_aria', { name: tropeName(t) }));
+      play.onclick = () => playClip(miss.ex, { onError: () => showToast(I18n.t('trope.toast.clip_wont_load')) });
+      li.appendChild(play);
+    }
+    list.appendChild(li);
+  }
+}
+
 function showResults() {
   stopClip();
   drill.active = false;
@@ -2332,6 +2394,17 @@ function showResults() {
     I18n.t('trope.drill.results_sub', { correct: drill.correct, total: drill.qs.length, best: drill.best, pb: progress.pbStreak });
   document.getElementById('resPb').hidden = !(drill.best > (drill.pbAtStart ?? 0));
   buildMasteryGrid(document.getElementById('masteryGridEnd'));
+  // Distil this session's wrong answers BEFORE the line below discards them. First miss of a
+  // trope wins, so a mark missed twice is one row, and the row keeps the clip that was playing
+  // when it was missed.
+  _lastMissed = [];
+  const _seenMiss = new Set();
+  for (const r of drill.results) {
+    if (r.ok || _seenMiss.has(r.key)) continue;
+    _seenMiss.add(r.key);
+    _lastMissed.push(r);
+  }
+  buildMissedReview();
   drill.results = [];
   document.getElementById('resHeading').focus();   // the focused Finish button was just hidden with #drillQ — see renderQuestion
 }
@@ -2933,6 +3006,9 @@ function applyI18n() {
   try { initFontSelector(); } catch (e) {}                 // My Fonts section headers + [DEFAULT] marker
   try { if (!document.getElementById('learnView').hidden) renderLearn(); } catch (e) {}   // family/trope notes, name prefixes
   try { updateDrillStart(); } catch (e) {}                 // drill start summary + note
+  // The missed-marks list is JS-built from _lastMissed; re-render it only while the results
+  // view is actually showing, so a language change never repopulates a hidden panel.
+  try { if (!document.getElementById('drillResults').hidden) buildMissedReview(); } catch (e) {}
   // An in-flight drill question is NOT re-rendered — that would restart its audio clip; it
   // translates on the next question. The dark-toggle label is emoji-only, so no relabel needed.
 }
