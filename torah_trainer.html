@@ -1007,6 +1007,13 @@ input:focus-visible + .slider { outline:2px solid var(--gold); outline-offset:2p
 .radio-group {
   display:inline-flex; gap:3px; background:var(--warm-gray);
   border-radius:5px; padding:3px;
+  /* Phone widths: let the segments wrap onto a second line instead of pushing the page
+     sideways (WCAG 1.4.10 reflow). The labels are flex:none and several carry a non-breaking
+     space, so without this the track has no break point at all and the Layout group alone
+     ran 10.7px past a 320px viewport — the last horizontal scroll left in the suite. It is the
+     ENGLISH labels that overflow (265.4px vs Hebrew's 246.5), which is why an RTL-only check
+     never saw it. Inert above the wrap point: a row that already fits lays out identically. */
+  flex-wrap:wrap;
 }
 body.dark .radio-group { background:#2a3349; }
 /* Unselected options: --muted measures 4.13:1 on the dark #2a3349 track — below
