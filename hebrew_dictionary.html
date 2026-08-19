@@ -4197,6 +4197,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // the resulting state. Restore runs after, so a saved layout wins over the markup defaults.
   document.querySelectorAll('.panel-title').forEach(t => t.addEventListener('click', panelMemSave));
   panelMemApply();
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveDictSessionFlush(); });
+  window.addEventListener('pagehide', saveDictSessionFlush);   // leaving the page → flush the debounced save
   initVowelFilter();
   initPosFilters();
   // Section 1: capture the pristine filter baseline and parse restore sources NOW —
@@ -4629,6 +4631,16 @@ function scheduleDictSessionSave() { if (_sessSaveTimer) clearTimeout(_sessSaveT
 function saveDictSession() {
   if (!_bootstrapped) return;
   try { const st = getDictState(); delete st.q; localStorage.setItem('hebrewDictionary_lastState', JSON.stringify(st)); } catch (e) {}
+}
+/* A page discarded inside the 1s debounce window never runs the pending timer, so a teacher who
+   changes a filter and immediately closes the tab (or switches app on mobile) loses the whole
+   last-session state — silently, with nothing to catch. Wired to visibilitychange+pagehide at
+   init: the same pair torah_trainer/trope_tutor use, and Hebrew_Font_Maker before them
+   (unload/beforeunload are unreliable on mobile and must not be substituted). */
+function saveDictSessionFlush() {
+  if (!_sessSaveTimer) return;
+  clearTimeout(_sessSaveTimer); _sessSaveTimer = null;
+  saveDictSession();
 }
 
 // Toolbar sync: show the Reset button only when the view differs from defaults.
