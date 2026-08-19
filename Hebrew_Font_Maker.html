@@ -241,8 +241,11 @@
      divider is a left-border on adjacent groups, so it never orphans when the row wraps. */
   .tb-group { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
   .tb-group + .tb-group { border-inline-start: 1px solid rgba(240,208,128,0.3); padding-inline-start: 10px; }
+  /* The transparent border is load-bearing, not decoration: .ghost and .tbtn-select carry a
+     1.5px one, so a border-less filled variant renders 2px shorter and the toolbar row loses
+     its shared baseline (S225). It also keeps the filled button above the 30px touch floor. */
   .tbtn {
-    background: var(--gold); color: #1a1a1a; border: none; border-radius: 6px;
+    background: var(--gold); color: #1a1a1a; border: 1.5px solid transparent; border-radius: 6px;
     padding: 7px 13px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
     font-family: 'Source Sans 3', sans-serif;
   }
@@ -251,8 +254,8 @@
   .tbtn:disabled { opacity: 0.45; cursor: default; filter: none; }
   .tbtn-select {
     background: transparent; color: var(--gold-light); border: 1.5px solid var(--gold-light);
-    border-radius: 6px; padding: 7px 9px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
-    font-family: 'Source Sans 3', sans-serif;
+    border-radius: 6px; padding: 6px 9px; cursor: pointer; font-size: 0.82rem; font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;   /* 6px, not 7px: a select's line box is 2px taller than a button's */
   }
   /* Status line (export/save messages) — its own row below the toolbar, present only when there's a message. */
   #statusMsg { color: var(--gold-light); font-size: 0.78rem; padding: 5px 18px; background: var(--navy); }
