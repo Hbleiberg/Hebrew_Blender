@@ -270,7 +270,7 @@ Yes. In Learn mode, the Print chart button prints all 26 marks as one reference 
 
 https://ivritsuite.com/Hebrew_Font_Maker.html
 
-Make your own Hebrew fonts from your handwriting — trace letters, place nikkud and trop, and export TrueType, WOFF2, or UFO.
+Make your own Hebrew fonts from your handwriting — trace or draw your letters, place nikkud and trop, and export TrueType, WOFF2, or UFO.
 
 ### How to make a Hebrew font (about 20 minutes)
 
