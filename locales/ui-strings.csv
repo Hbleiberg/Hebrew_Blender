@@ -2887,7 +2887,10 @@ shared.folders.delete_folder,Delete folder (keeps items),מחק תיקייה (ש
 shared.folders.drag_folder,Drag folder,גרור תיקייה,Folder drag-handle title,shared
 shared.folders.drag_item,Drag to move,גרור כדי להעביר,Item drag-handle title,shared
 shared.folders.empty_folder,Empty — drop items here,ריקה — גררו פריטים לכאן,Empty folder placeholder,shared
-shared.folders.empty_list,No saved {noun}s yet.,אין עדיין פריטים שמורים.,Empty list placeholder,"mixed UI+content — {noun} = preset/profile/schedule/item; shared | REVIEW: generic ""no saved items"" (ignores the {noun} token)"
+shared.folders.empty_item,No saved items yet.,אין עדיין פריטים שמורים.,"Empty list placeholder — one row per list noun, because Hebrew cannot interpolate the noun (it must agree in gender and number with the adjective)",shared; HE noun follows the term the panels already use
+shared.folders.empty_preset,No saved presets yet.,אין עדיין הגדרות שמורות.,"Empty list placeholder — one row per list noun, because Hebrew cannot interpolate the noun (it must agree in gender and number with the adjective)",shared; HE noun follows the term the panels already use
+shared.folders.empty_profile,No saved profiles yet.,אין עדיין פרופילים שמורים.,"Empty list placeholder — one row per list noun, because Hebrew cannot interpolate the noun (it must agree in gender and number with the adjective)",shared; HE noun follows the term the panels already use
+shared.folders.empty_schedule,No saved schedules yet.,אין עדיין מערכות שעות שמורות.,"Empty list placeholder — one row per list noun, because Hebrew cannot interpolate the noun (it must agree in gender and number with the adjective)",shared; HE noun follows the term the panels already use
 shared.folders.move_button,Move ▾,העבר ▾,Preset/profile item move button,"shared (carriers: generator, dashboard, flash_cards)"
 shared.folders.move_folder,Move folder,העבר תיקייה,Folder-tree action (title on ↗ mini-button),shared
 shared.folders.move_path,📁 {path},📁 {path},Move-menu folder target,leading-emoji; mixed UI+content — do not translate {path}; shared

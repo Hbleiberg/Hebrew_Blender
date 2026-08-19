@@ -5288,7 +5288,7 @@ function mountFolderTree(cfg){
     closeMenu(); container.innerHTML = '';
     const wrap = document.createElement('div'); wrap.className='ft-tree';
     renderInto(tree.root, wrap);
-    if (tree.root.length === 0){ const em=document.createElement('div'); em.className='ft-empty-folder'; em.textContent=I18n.t('shared.folders.empty_list', { noun: cfg.noun||'item' }); wrap.appendChild(em); }
+    if (tree.root.length === 0){ const em=document.createElement('div'); em.className='ft-empty-folder'; const _n=['preset','profile','schedule'].indexOf(cfg.noun)>=0?cfg.noun:'item'; em.textContent=I18n.t('shared.folders.empty_'+_n); wrap.appendChild(em); }
     const rootDrop = document.createElement('div'); rootDrop.className='ft-root-drop';
     rootDrop.addEventListener('dragover', e => { if (!dragNode) return; e.preventDefault(); clearCues(); rootDrop.classList.add('ft-row-drop'); });
     rootDrop.addEventListener('drop', e => { if (!dragNode) return; e.preventDefault(); e.stopPropagation(); const dn=dragNode; ftRemove(tree, x=>x===dn); tree.root.push(dn); commit(); });
