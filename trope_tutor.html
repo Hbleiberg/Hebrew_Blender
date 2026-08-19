@@ -1823,7 +1823,14 @@ function renderLearn() {
     names.className = 'tu-names';
     const p1 = document.createElement('div');
     p1.className = 'tu-name-primary';
-    p1.textContent = tropeName(t);
+    // Label the big name with its own tradition, not just the small line under it. The card used
+    // to show a bare "Mercha" over "Sephardi: Ma'arich", so the only named tradition was the one
+    // the reader had NOT chosen — a first-time tutor had no way to tell what the headline was.
+    // The 11 marks whose two names are identical carry no second line and no ambiguity, so they
+    // stay bare; the prefixes are the same two keys the second line already uses.
+    p1.textContent = t.ashk === t.seph ? tropeName(t)
+      : (settings.tradition === 'seph' ? I18n.t('trope.learn.name_sephardi_prefix', { name: t.seph })
+                                       : I18n.t('trope.learn.name_ashkenazi_prefix', { name: t.ashk }));
     names.appendChild(p1);
     if (t.ashk !== t.seph) {
       const p2 = document.createElement('div');
