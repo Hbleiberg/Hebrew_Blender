@@ -3,14 +3,15 @@ name: improveloop
 description: >-
   Run one bounded, ledger-driven continuous-improvement session on the IvritSuite / Hebrew Blender
   codebase using the v2 improvement-loop protocol — read docs/IMPROVEMENT_LOG.md first, select the top
-  candidate under the variety governor, run the single stalest rotating discovery pass (A–L, incl.
-  the SEO & discoverability audit), make small single-concern verified fixes (up to a 5-iteration
-  budget, one commit each), optionally ship one micro-feature, pause at decision gates to ask the
-  maintainer, then update the ledger, bump sw.js VERSION once, and print a close-out summary. Use
-  this whenever the user invokes /improveloop, or asks to run, continue, resume, or "rerun" the
-  improvement loop / an improvement session / iteration / pass, run a discovery / SEO /
-  recurring-pattern sweep, or hunt-and-fix small verified issues across the suite — even loosely
-  phrased ("run the loop", "do an improvement pass", "improveloop").
+  candidate under the variety governor, run the single stalest rotating discovery pass (A–M, incl.
+  the SEO & discoverability audit and the aesthetics/beautification pass), make small single-concern
+  verified fixes (up to a 5-iteration budget, one commit each), optionally ship one micro-feature,
+  pause at decision gates to ask the maintainer, then update the ledger, bump sw.js VERSION once,
+  print a close-out summary, and compact the session context. Use this whenever the user invokes
+  /improveloop, or asks to run, continue, resume, or "rerun" the improvement loop / an improvement
+  session / iteration / pass, run a discovery / SEO / recurring-pattern / aesthetics-or-design
+  sweep, or hunt-and-fix small verified issues across the suite — even loosely phrased ("run the
+  loop", "do an improvement pass", "beautify the site a bit", "improveloop").
 ---
 
 # IvritSuite — Continuous Improvement Loop (v2)
@@ -18,7 +19,10 @@ description: >-
 You are running a bounded improvement loop on the IvritSuite codebase. This skill is reusable: every
 session follows the same protocol and persists its state, so any future session can resume without any
 prior session's context. The loop's value is many small, verified, isolated wins — not a grand
-refactor. v2 adds a variety governor, health metrics, and a narrow micro-feature track.
+refactor. v2 adds a variety governor, health metrics, and a narrow micro-feature track; two
+maintainer-requested additions (2026-08-19) are the aesthetics pass (M — slow beautification, with
+decision gate 3 and its screenshot rule) and mandatory end-of-session context compaction
+(close-out step 6).
 
 ## Authority split — this skill vs the ledger
 
@@ -98,6 +102,14 @@ the maintainer's, not the loop's: at each gate, stop and ask via the **AskUserQu
 - **Gate 2 — user-visible copy & SEO-facing text.** Before changing user-facing wording or default
   behavior beyond a small fix (renaming a button is gated; fixing its typo is not), and before ANY
   change to page titles, meta descriptions, OG copy, or JSON-LD claims — the site's public face.
+- **Gate 3 — dramatic aesthetic changes.** The aesthetics track (pass M) beautifies the site
+  slowly; small visual refinements (a spacing/alignment fix, a stray radius/shadow/border
+  inconsistency, converging one control on the suite's best existing look) stay autonomous. But any
+  visual change a returning teacher would immediately notice — a palette or font change, layout
+  restructuring, a component redesign, whole-page re-theming — is proposed, never shipped unasked:
+  capture the current state (screenshots, per pass M's screenshot rule), describe what would change
+  and why, then ask. Applies to ANY iteration that would dramatically change the site's look,
+  whichever pass surfaced it.
 
 **Batching:** collect gate questions at natural points — the post-discovery-pass selection moment,
 then iteration boundaries — up to 4 questions per AskUserQuestion call. Never gate small mechanical
@@ -105,7 +117,9 @@ fixes; a session with no gated work asks nothing.
 
 **Unattended fallback (skip & defer):** if no answer can arrive (a scheduled or otherwise
 unattended run), take the conservative default — gate 1: skip the micro-feature this session;
-gate 2: leave the copy unchanged and log the proposed change as a Candidate — and record each
+gate 2: leave the copy unchanged and log the proposed change as a Candidate; gate 3: don't ship
+the dramatic change — log the written proposal as a Candidate (note the current-state screenshots'
+paths in the entry) — and record each
 under **"Decisions deferred to maintainer"** in the `(SN close-out)` Done entry and the close-out
 summary, so the next attended session can ask. A gate must degrade gracefully; it never stalls or
 errors the session.
@@ -274,6 +288,29 @@ once-per-session rule. **Copy fixes to titles, descriptions, or JSON-LD claims a
 decisions** — the pass logs candidates and batches the questions; it never auto-rewrites SEO
 copy. Expect the first run to be mostly measure-and-log.
 
+**M. Aesthetics & visual-design pass (one surface per session)** — the slow-beautification track:
+the site should get gradually more refined without ever changing abruptly under a teacher's feet.
+Pick the least-recently-audited surface (the 7 tools plus the chrome pages — index, resources,
+contact, privacy/terms, 404; the rotation row's result notes track which surfaces are covered).
+Load it over local HTTP in the full matrix (light + dark × desktop + ~800px) and audit it like a
+designer: typography (scale, hierarchy, line-height, Hebrew/English pairing), spacing rhythm
+(consistent padding/gap/margin steps), alignment and grid discipline, color harmony, component
+consistency (buttons, inputs, panels, radii, shadows, focus states — judged against the suite's
+best existing implementation: convergence beats invention), visual hierarchy (does the eye land
+where it should), and dark-mode parity (nothing that only looks right in light mode). Log findings
+as Candidates — usually P4, P3 where the sloppiness impairs use; a contrast/readability failure
+keeps the severity pass C would give it. (Boundary with C: C owns accessibility *semantics* —
+keyboard, focus, ARIA, reduced-motion, contrast compliance; M owns visual *refinement*.) Small
+refinements may then be fixed as normal iterations this session; **anything dramatic is decision
+gate 3** — propose with current-state screenshots, never ship unasked; if approved but too big for
+the remaining budget, log it as an `approved <date>` candidate at the top of its priority band for
+the next session. **Screenshot rule (binding for every aesthetics-track change, gated or not):**
+capture BEFORE screenshots ahead of the edit and AFTER screenshots once verified — light + dark at
+the affected breakpoint(s) — saved under the session's scratchpad/temp dir, NEVER committed to the
+repo, and delivered to the maintainer at close-out (send them as files/attachments where the
+harness supports it; otherwise print their paths). New CSS obeys the hard rules like everything
+else (logical properties, both themes, the once-per-session `sw.js` bump).
+
 ## Micro-feature track
 Small user-visible enhancements are in scope, under tight fencing:
 
@@ -336,7 +373,8 @@ Tie-breakers, in order: (1) affects teachers' saved work, (2) affects the printe
 3. **Push** the session branch; ensure the draft PR exists/updated. Note that deploy verification
    (Pages run `success`) happens after the maintainer merges.
 4. **Print a summary:** iterations completed, pass run, patterns swept (hits/clean), micro-feature
-   shipped or split, top 3 remaining candidates + top feature seed, decision gates asked
+   shipped or split, before/after screenshots for any aesthetics-track changes (delivered per pass
+   M's screenshot rule), top 3 remaining candidates + top feature seed, decision gates asked
    (question → answer) and any decisions deferred to the maintainer, any protocol divergence flagged
    for this skill, and anything a human must do (starting with: merge the PR, then verify the deploy).
 5. **End with a plain-language recap.** Every loop run must finish with a short **"In simple terms, what
@@ -344,6 +382,18 @@ Tie-breakers, in order: (1) affects teachers' saved work, (2) affects the printe
    Write it in jargon-free language a non-technical teacher would understand (no pass letters, ledger
    terms, commit hashes, or version numbers): what visibly changed for people using the site, what was
    checked and found fine, and what the human needs to do next.
+6. **Compact the context — the session's standing final act, never skipped (early stops included).**
+   The loop is designed for repeated runs in one long-lived conversation, and every session restarts
+   from CLAUDE.md + the ledger, never from chat memory — so once the recap is printed, this
+   session's working context is disposable and must not pile up across runs. `/compact` is
+   user-initiated: no current harness lets the model execute built-in slash commands itself
+   (verified against the Claude Code docs, 2026-08), so the recap's "what to do next" list must END
+   with the instruction to run **`/compact` now, before the next loop session**, plus a one-line
+   reassurance that this is safe because the loop keeps all its state in the ledger, not the chat.
+   In a harness that compacts/summarizes context automatically with no `/compact` command (e.g. the
+   remote web environment), state that auto-compaction covers it instead of asking; if a future
+   harness ever exposes a model-invocable compaction mechanism, invoke it after the recap instead
+   of asking.
 
 ## First-session bootstrap (only if `docs/IMPROVEMENT_LOG.md` is absent)
 Create the ledger with the full v2 structure, then spend the whole session on discovery: run sweep A in full plus pass B, populate Candidates (expect 10–25 items), fix ONLY any P1s discovered, and close out. Fixing begins in earnest next session against a real backlog.
