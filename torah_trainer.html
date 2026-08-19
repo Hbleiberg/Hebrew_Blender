@@ -1509,7 +1509,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 <div class="tt-controls">
   <span class="tt-ctrl">
     <label for="parshaSelect" data-i18n="torah.controls.parsha_label">Parsha:</label>
+    <button class="btn btn-xs btn-secondary" id="ttWeekPrev" type="button" onclick="stepParsha(-1)"
+            title="Previous reading" data-i18n-title="torah.controls.week_prev"
+            aria-label="Previous reading" data-i18n-aria-label="torah.controls.week_prev"><span class="dir-arrow" aria-hidden="true">‹</span></button>
     <select id="parshaSelect"></select>
+    <button class="btn btn-xs btn-secondary" id="ttWeekNext" type="button" onclick="stepParsha(1)"
+            title="Next reading" data-i18n-title="torah.controls.week_next"
+            aria-label="Next reading" data-i18n-aria-label="torah.controls.week_next"><span class="dir-arrow" aria-hidden="true">›</span></button>
   </span>
   <span class="tt-ctrl">
     <button id="ttJumpWeekTop" class="btn btn-xs btn-secondary" onclick="goToCurrentParshah()" type="button" data-i18n="torah.schedule.jump_this_week">Jump to this week's parsha</button>
@@ -5526,6 +5532,43 @@ function syncParshaSelect() {
     sel.value = settings.parshahKey;
   }
   syncHolidayPickerState();
+  syncWeekStepLabels();
+}
+/* ═══ Week-step buttons ═══
+   "His reading is six weeks from now" was unanswerable from a 71-option dropdown with no dates
+   and no marker for the current week — the only jump the page had went to THIS week and nowhere
+   else. These step the annual cycle one reading at a time THROUGH THE PICKER'S OWN change
+   handler, so this is not a second source of truth: loop-clearing, settings, persistence and the
+   re-render all stay where they were. A holiday or custom range steps off the weekly parsha the
+   picker still remembers (choosing a holiday never clears parshahKey), and the cycle wraps at
+   the end, so neither button is ever a dead end. */
+function stepParsha(delta) {
+  if (!parshiyotData.length) return;
+  const cur = parshiyotData.findIndex(p => p.en === settings.parshahKey);
+  // No position yet (fresh profile): › opens the cycle, ‹ opens its end.
+  const to = cur === -1 ? (delta > 0 ? 0 : parshiyotData.length - 1)
+                        : (cur + delta + parshiyotData.length) % parshiyotData.length;
+  const sel = document.getElementById('parshaSelect');
+  if (!sel) return;
+  sel.value = parshiyotData[to].en;
+  sel.dispatchEvent(new Event('change'));
+}
+// Name the destination on each button, so hovering (or hearing) one answers "what's next?"
+// without pressing it. Called from syncParshaSelect — the existing chokepoint for every picker
+// state change — and from applyI18n, which re-applies the plain static labels first.
+function syncWeekStepLabels() {
+  if (!parshiyotData.length) return;
+  const cur = parshiyotData.findIndex(p => p.en === settings.parshahKey);
+  if (cur === -1) return;   // nothing to name yet — the static label stands
+  for (const [id, delta, key] of [['ttWeekPrev', -1, 'torah.controls.week_prev_named'],
+                                  ['ttWeekNext',  1, 'torah.controls.week_next_named']]) {
+    const btn = document.getElementById(id);
+    if (!btn) continue;
+    const name = parshiyotData[(cur + delta + parshiyotData.length) % parshiyotData.length].en;
+    const label = I18n.t(key, { name });
+    btn.title = label;
+    btn.setAttribute('aria-label', label);
+  }
 }
 // Format a verse range compactly: same chapter → "18:1–14", cross-chapter →
 // "18:1–19:38". Returns '' if any bound is missing.
@@ -6622,6 +6665,7 @@ function applyI18n() {
   try { buildTropeLegend(); } catch (e) {}          // family chips (glyphname keys)
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
   try { const og = document.querySelector('#parshaSelect optgroup'); if (og) og.label = I18n.t('torah.controls.holiday_group_label'); } catch (e) {}
+  try { syncWeekStepLabels(); } catch (e) {}        // week-step buttons name their destination
   try { updateTransFooter(); } catch (e) {}         // translation credit line
   try { syncTTSVoiceStatus(); } catch (e) {}        // TTS voice readout — written pre-ready, never re-rendered
   try { updateCopyTextarea(); } catch (e) {}        // re-localize the "{count} selected" line

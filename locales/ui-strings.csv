@@ -3135,6 +3135,10 @@ torah.copy.bulk_remember_tip,"The Copy bar opens with Select verses already on, 
 torah.reading.verse_copy,📋 Copy,📋 העתקה,per-verse button,leading-emoji
 torah.reading.verse_copy_aria,Copy verse {verseRef} to the clipboard,העתקת פסוק {verseRef} ללוח,per-verse button aria-label,aria-label only
 torah.controls.holiday_group_label,Holiday Torah Readings,קריאות התורה לחגים,Parsha-picker optgroup header,
+torah.controls.week_prev,Previous reading,הקריאה הקודמת,week-step button flanking the parsha picker (label before the destination is known),button title + aria-label; REVIEW: HE draft
+torah.controls.week_next,Next reading,הקריאה הבאה,week-step button flanking the parsha picker (label before the destination is known),button title + aria-label; REVIEW: HE draft
+torah.controls.week_prev_named,Previous reading: {name},הקריאה הקודמת: {name},week-step button title naming the parsha it steps to,do-not-translate {name} (a parsha name); REVIEW: HE draft
+torah.controls.week_next_named,Next reading: {name},הקריאה הבאה: {name},week-step button title naming the parsha it steps to,do-not-translate {name} (a parsha name); REVIEW: HE draft
 torah.controls.layout_interlinear,Interlinear,בין־שורתי,layout radio,
 torah.controls.layout_label,Layout:,פריסה:,control label,
 torah.controls.layout_page,Page view,תצוגת עמוד,layout radio,
