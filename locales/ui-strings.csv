@@ -838,7 +838,7 @@ dictionary.tour.share_body,Copy a link to exactly this filtered view and post it
 dictionary.tour.share_title,Share this view,שיתוף התצוגה הזו,tour step title,
 dictionary.tour.tools_body,"Switch between the word dictionary, an emoji picture-vocabulary deck, and the Shoresh root explorer.","עברו בין מילון המילים, חפיסת אוצר-מילים בתמונות אימוג׳י, וחוקר השורשים.",tour step body,
 dictionary.tour.tools_title,Three tools in one,שלושה כלים באחד,tour step title,
-dictionary.translit.credit,Powered by hebrew-transliteration by Charles Loder,"מופעל על ידי <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);text-decoration:none;"">hebrew-transliteration</a> מאת Charles Loder",transliteration attribution,html (contains link)
+dictionary.translit.credit,"Powered by <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);text-decoration:none;"">hebrew-transliteration</a> by Charles Loder","מופעל על ידי <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);text-decoration:none;"">hebrew-transliteration</a> מאת Charles Loder",transliteration attribution,html (contains link)
 dictionary.translit.head,Transliteration,תעתיק,advanced section title,
 dictionary.translit.load_failed,Library failed to load — using default style.,טעינת הספרייה נכשלה — נעשה שימוש בסגנון ברירת המחדל.,transliteration load status,
 dictionary.translit.loading,Loading library…,טוען ספרייה…,transliteration load status,toast

@@ -862,7 +862,7 @@
   "dictionary.tour.share_title": "Share this view",
   "dictionary.tour.tools_body": "Switch between the word dictionary, an emoji picture-vocabulary deck, and the Shoresh root explorer.",
   "dictionary.tour.tools_title": "Three tools in one",
-  "dictionary.translit.credit": "Powered by hebrew-transliteration by Charles Loder",
+  "dictionary.translit.credit": "Powered by <a href=\"https://github.com/charlesLoder/hebrew-transliteration\" target=\"_blank\" rel=\"noopener\" style=\"color:var(--gold-text);text-decoration:none;\">hebrew-transliteration</a> by Charles Loder",
   "dictionary.translit.head": "Transliteration",
   "dictionary.translit.load_failed": "Library failed to load — using default style.",
   "dictionary.translit.loading": "Loading library…",
