@@ -4290,6 +4290,9 @@ fontmaker.draw.smoothing_low,Low,נמוכה,smoothing option,
 fontmaker.draw.smoothing_med,Medium,בינונית,smoothing option,
 fontmaker.draw.smoothing_high,High,גבוהה,smoothing option,
 fontmaker.draw.clear,Clear letter,ניקוי האות,button,
+fontmaker.draw.replay,▶ Replay,▶ הדגמה,button — replays the drawn strokes in order,leading-emoji; REVIEW: HE draft
+fontmaker.draw.replay_title,Replay the strokes in the order they were drawn,הצגת הקווים בסדר שבו צוירו,replay button tooltip,REVIEW: HE draft
+fontmaker.draw.replay_reduced,"Reduced motion is on, so the strokes are shown all at once.","מצב תנועה מופחתת פעיל, ולכן הקווים מוצגים בבת אחת.",status line when the replay animation is suppressed,REVIEW: HE draft
 fontmaker.draw.stroke_count.one,{count} stroke,קו אחד,stroke count readout,plural
 fontmaker.draw.stroke_count.other,{count} strokes,{count} קווים,stroke count readout,plural
 fontmaker.draw.hint,"Draw over the gray reference with a pen, finger, or mouse. Each stroke can be undone with Ctrl+Z. Save runs the tracer — fine-tune Detail and Corners in step 2.","ציירו מעל אות הייחוס האפורה בעט, באצבע או בעכבר. כל קו ניתן לביטול עם Ctrl+Z. שמירה מפעילה את העוקב — כווננו פירוט ופינות בשלב 2.",draw panel hint,

@@ -2676,7 +2676,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.12';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.13';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2888,6 +2888,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.13</strong> &mdash; <strong>Watch a letter being written.</strong> In <span class="ui">Draw</span>, a new <span class="ui">&#9654; Replay</span> button plays your strokes back one at a time, in the order you actually drew them &mdash; so you can show a class the stroke order, or check your own before you trace. It is a viewing aid and nothing more: it changes no part of the letter, adds nothing to <span class="ui">Undo</span>, and stops the moment you touch the canvas again. Press it a second time to stop it early. If your device is set to reduce motion, the strokes simply appear together and the Font Maker says so. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.12</strong> — <strong>Click a point, see its contour.</strong> In <span class="ui">Edit points</span>, selecting a point now draws a dashed box around the whole contour it belongs to &mdash; in the same colour as that contour&rsquo;s swatch in the <span class="ui">Contours</span> list, where the matching row is outlined in that colour too. When a letter is a pile of overlapping contours, &ldquo;which contour did I just grab?&rdquo; used to mean squinting at the tint colours or hiding contours one by one; now the box on the canvas and the row in the list point at each other. Select points across several contours and each gets its own box. Like the contour colours themselves, the boxes are an editing aid only &mdash; they never appear in previews or the exported font. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.11</strong> — <strong>The guided tour is one click away again.</strong> The walk-through was only reachable from inside this Help window, so unless you happened to open Help and spot it, there was no way back to it once you had a project on the go. There is now a <span class="ui">&#10067; Tour</span> button in the toolbar, next to <span class="ui">&#10067; Help</span> &mdash; the same place every other tool on the site keeps it. <strong>The step buttons moved under the canvas, too.</strong> <span class="ui">Apply alignment to other letters&hellip;</span>, <span class="ui">Next: Trace &rarr;</span> and <span class="ui">Next: Nikkud &rarr;</span> used to sit far off to the right, underneath the side panels &mdash; which on most screens put them below the bottom of the window, so you had to scroll past everything to find the button that moves you along. They now sit centred directly beneath the letter you are working on, where you are already looking. <em>(August 2026)</em></li>
       <li><strong>v5.10</strong> — <strong>A friendlier welcome on a tablet.</strong> If you opened the Font Maker on a tablet held upright, it used to greet you with &ldquo;Best on a computer&rdquo; and a <span class="ui">&larr; Go back</span> button &mdash; which was exactly backwards, because a tablet with a stylus is the device <span class="ui">Draw</span> mode was built for. (Tablets held sideways were already let through; upright ones are just narrow enough to trip the old check.) Now a tablet gets its own greeting that leads with drawing, plus a <span class="ui">&#9997;&#65039; Start drawing</span> button that opens the new-font setup with <span class="ui">Drawing mode</span> already chosen. Phones still see the original note &mdash; the fine tracing controls really are cramped on a phone. And in the guided tour, the <span class="ui">Trace</span> step no longer talks about turning &ldquo;your picture&rdquo; into an outline when you are drawing rather than uploading &mdash; it says &ldquo;your drawing&rdquo;, matching what you are actually looking at. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -7167,6 +7168,49 @@ function drawStrokesSVG(l) {
     return `<polyline data-di="${i}" points="${s.pts.map(q => fx(q[0]).toFixed(1) + ',' + fy(q[1]).toFixed(1)).join(' ')}" fill="none" stroke="${c}" stroke-width="${(s.w * SC).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"/>`;
   }).join('') + '</g>';
 }
+/* ═══ Stroke replay — "watch this letter being written" ═══
+   Purely presentational, and deliberately so: it hides the stroke elements drawStrokesSVG has
+   ALREADY rendered and reveals them in index order, which is drawing order. It reads no project
+   state and writes none — no udDo, no markDirty, no renderStage — so it cannot touch undo or
+   autosave. The captured <g> doubles as a connectivity sentinel (the worksheet chunked-build
+   pattern): any real re-render replaces it, and the next tick stops rather than animating
+   detached nodes. */
+let _drawReplayTimer = null, _drawReplayG = null;
+function _drawReplayBtnState(on) {
+  const b = document.getElementById('drawReplayBtn');
+  if (b) b.setAttribute('aria-pressed', on ? 'true' : 'false');
+}
+function drawReplayStop() {
+  if (_drawReplayTimer) { clearTimeout(_drawReplayTimer); _drawReplayTimer = null; }
+  if (_drawReplayG && _drawReplayG.isConnected)
+    _drawReplayG.querySelectorAll('[data-di]').forEach(el => el.style.removeProperty('visibility'));
+  _drawReplayG = null;
+  _drawReplayBtnState(false);
+}
+function drawReplay() {
+  if (_drawReplayTimer) { drawReplayStop(); return; }   // pressing it again stops and restores
+  const g = document.getElementById('drawStrokes');
+  const els = g ? [...g.querySelectorAll('[data-di]')] : [];
+  if (!els.length) return;
+  // Reduced motion: the end state, immediately, and say why — the reveal IS the animation here,
+  // so there is nothing left to slow down honestly.
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    status(_drawT('replay_reduced', 'Reduced motion is on, so the strokes are shown all at once.'));
+    return;
+  }
+  els.forEach(el => el.style.visibility = 'hidden');
+  _drawReplayG = g;
+  _drawReplayBtnState(true);
+  const step = Math.max(90, Math.min(320, Math.round(2400 / els.length)));
+  let i = 0;
+  const tick = () => {
+    if (!g.isConnected) { _drawReplayTimer = null; _drawReplayG = null; _drawReplayBtnState(false); return; }
+    els[i].style.removeProperty('visibility');
+    if (++i >= els.length) { _drawReplayTimer = null; drawReplayStop(); return; }
+    _drawReplayTimer = setTimeout(tick, step);
+  };
+  tick();
+}
 function _drawAbandon() {   // drop the in-flight gesture without pushing its undo capture
   if (!drawGesture) return;
   if (drawGesture.el) { try { drawGesture.el.remove(); } catch (e) {} }
@@ -7261,6 +7305,7 @@ function _drawLivePaint(g) {
 }
 function drawPointerDown(e) {
   if (curKind !== 'letter') return;
+  if (_drawReplayTimer) drawReplayStop();   // never let a gesture land on hidden ink
   const cl = curLetter(); if (!cl || cl.source.kind === 'svg') return;
   if (e.pointerType === 'pen') { _drawPenSeen = true; _drawPenUntil = performance.now() + 500; }
   if (drawGesture) {
@@ -11900,6 +11945,7 @@ function renderDrawLeft(L, l) {
     </div>` + ctxHtml + `
     <div class="ctl-row" style="margin-top:8px;">
       <button class="ctl-btn" id="drawUndoBtn" onclick="undo()" title="${esc(I18n.t('fontmaker.toolbar.undo_title'))}" ${undoStack.length?'':'disabled'}>↶ ${I18n.t('fontmaker.toolbar.undo_aria')}</button>
+      <button class="ctl-btn" id="drawReplayBtn" onclick="drawReplay()" aria-pressed="false" title="${esc(_drawT('replay_title', 'Replay the strokes in the order they were drawn'))}" ${nStrokes?'':'disabled'}>${_drawT('replay', '\u25b6 Replay')}</button>
       <button class="ctl-btn" onclick="drawClearCurrent()" ${nStrokes?'':'disabled'}>${_drawT('clear', 'Clear letter')}</button>
       <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
       <span class="readout">${nStrokes ? _drawT(nStrokes === 1 ? 'stroke_count.one' : 'stroke_count.other', nStrokes + (nStrokes === 1 ? ' stroke' : ' strokes'), { count: nStrokes }) : ''}</span>
