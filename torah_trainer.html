@@ -1199,6 +1199,19 @@ body.fullscreen #fsExitBtn { display: flex; }
   .tt-cell.heb, .tt-heb { font-size:calc(var(--tt-heb-size, 1.5rem) * 0.9); }
 }
 
+/* Phone widths: let the header button row wrap onto a second line instead of pushing the
+   page sideways (WCAG 1.4.10 reflow). max-width is the operative half — the row is
+   flex-shrink:0, so nothing makes it wrap until something caps its width. This page needs
+   the header itself to wrap too: capping .hright alone leaves the title block and the button
+   row competing for one line. Scoped to 480px, not the 430px its sibling pages use: .hright's
+   right edge is 451.4px here, so the row still overflowed at 431-451. Measured inert from 480
+   up — header heights at 480/520/560/600/680/720/768/900/1024/1280 are identical with the rules
+   forced on and with them off. */
+@media (max-width: 480px) {
+  header { flex-wrap:wrap; }
+  .hright { flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
+}
+
 /* ── Reduced motion: honor the OS "reduce motion" preference for everything this
    tool animates (verse-loop pulse, resume/jump highlight flashes, tour spotlight,
    hint toast). Shared block — extended as sections are added. ── */

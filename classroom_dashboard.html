@@ -1621,6 +1621,17 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     .current-time { font-size: calc(var(--time-size) * 0.765); }
   }
 
+  /* Phone widths: let the header button row wrap onto a second line instead of pushing the
+     page sideways (WCAG 1.4.10 reflow). max-width is the operative half — the row is
+     flex-shrink:0, so nothing makes it wrap until something caps its width. This page needs
+     the header itself to wrap too: capping .hright alone leaves the title block and the button
+     row competing for one line. Scoped to 430px because unscoped it moves the header at
+     desktop widths (S223 lever matrix). */
+  @media (max-width: 430px) {
+    header { flex-wrap:wrap; }
+    .hright { flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
+  }
+
   /* ───── Print (Ctrl+P) ───── */
   @media print {
     /* Chrome, overlays, and screen-only widgets never belong on paper — and the settings
