@@ -253,13 +253,22 @@
     text-decoration: none;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
+    /* One height for the whole header row (pattern: row-siblings-with-mismatched-heights, S225).
+       Icon buttons render at 1rem and text buttons at 0.82rem, so the line box alone put the row
+       at 31 / 35 / 35 / 31. Set on the shared class, at the row's own tallest control, so nothing
+       shrinks and no sibling can drop under the 30px touch floor later. Matches torah_trainer. */
+    min-height: 35px;
     transition: background 0.15s, border-color 0.15s;
   }
   .hbtn:hover { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.3); }
   .hbtn.icon-btn { padding: 7px 10px; font-size: 1rem; }
   .hbtn svg { width: 16px; height: 16px; }
-  .fs-btn { flex-direction: column; gap: 1px; padding: 4px 10px; line-height: 1; }
+  /* .hbtn.fs-btn, not .fs-btn: #fsBtn carries BOTH classes, and .hbtn.icon-btn (0,2,0) outranks a
+     bare .fs-btn (0,1,0), so the stacked button was silently keeping icon-btn's 7px block padding
+     and rendering 41px against a 35px row. Specificity, not source order, decides. */
+  .hbtn.fs-btn { flex-direction: column; gap: 1px; padding: 4px 10px; line-height: 1; }
   .fs-btn .fs-ico { display: inline-flex; }
   .fs-btn .fs-cap { font-size: 0.5rem; font-weight: 600; letter-spacing: 0.03em; }
 

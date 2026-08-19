@@ -291,10 +291,14 @@ header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
   background:rgba(255,255,255,0.08); color:#fff;
   border:1px solid rgba(255,255,255,0.18);
   padding:7px 12px; border-radius:6px;
-  min-height:30px;   /* suite touch floor — the <=720px block below trims this padding, which put ❓ Tour at 29px on a phone; set on the shared class so no sibling can drop under it later */
+  min-height:35px;   /* The suite touch floor (30px, S102) AND the row's shared height (pattern:
+     row-siblings-with-mismatched-heights, S225): the <=720px block below trims this padding,
+     which put Tour at 29px on a phone, and 1rem icon buttons beside 0.82rem text ones ran the
+     row 31-35. Set on the shared class at the row's own tallest control, so nothing shrinks
+     and no sibling can drop under the floor later. */
   font-family:inherit; font-size:0.82rem; font-weight:600;
   cursor:pointer; text-decoration:none;
-  display:inline-flex; align-items:center; gap:6px;
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
   transition:background 0.15s, border-color 0.15s;
 }
 .hbtn:hover { background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.3); }

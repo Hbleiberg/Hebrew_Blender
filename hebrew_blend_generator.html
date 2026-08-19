@@ -398,6 +398,18 @@
     border-bottom: 4px solid var(--gold);
   }
   header .star { font-size: 28px; color: var(--gold); flex-shrink: 0; }
+  /* One height for every control in the header row (pattern: row-siblings-with-mismatched-
+     heights, S225). These four carry hand-rolled inline styles rather than one shared class,
+     so the row ran 29 / 29 / 33 / 35: font-size decides the line box, and both 0.8rem
+     buttons (Tour and Home) sat under the suite's ratified 30px touch floor (S102).
+     35px is the row's own tallest control, the stacked Full Screen button, so converging
+     up shrinks no glyph.
+     inline-flex is what lets min-height apply to the <a>; gap replaces the source whitespace
+     flex would otherwise collapse, the same 6px the .hbtn reference implementations use. */
+  header > a, header > button {
+    min-height: 35px; box-sizing: border-box;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  }
   /* i18n / RTL utilities — directional glyphs mirror under RTL; bidi-isolate protects number/Latin readouts */
   .dir-arrow { display: inline-block; }
   [dir="rtl"] .dir-arrow { transform: scaleX(-1); }
