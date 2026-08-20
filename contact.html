@@ -182,6 +182,13 @@ footer a{color:var(--gold-text);text-decoration:none;}
   main h1.page-title{font-size:1.5rem;}
   .pill-group .pill{padding:8px 16px;}
 }
+/* The PayPal/Venmo/Zelle capsule is the donate tile's min-content floor (238px with the 16px
+   pills): at 320px the tile painted 4px past its grid track — the one card sitting closer to
+   the screen edge than every other. Two fewer px per pill side frees 12px and the tile fits
+   with slack down to ~312px; scoped to ≤340px so nothing above the defect zone moves. */
+@media (max-width:340px){
+  .pill-group .pill{padding:8px 14px;}
+}
 /* Phone widths: let the header button row wrap onto a second line instead of pushing the
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — nothing makes the row
    wrap until something caps its width, and the header has to wrap too or the title block and
