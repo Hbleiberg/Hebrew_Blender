@@ -863,6 +863,8 @@
     transition: background 0.15s;
   }
   .settings-close:hover { background: rgba(255,255,255,0.22); }
+  .settings-hbtns { display: flex; gap: 6px; flex-shrink: 0; }
+  #drawerDarkBtn { font-size: 1rem; }
   .settings-body {
     flex: 1;
     overflow-y: auto;
@@ -2007,7 +2009,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-label="Dashboard settings" data-i18n-aria-label="dashboard.settings.drawer_aria">
   <div class="settings-header">
     <h2 data-i18n="dashboard.settings.header">⚙️  Dashboard Settings</h2>
-    <button class="settings-close" onclick="closeSettings()" title="Close" data-i18n-title="dashboard.settings.close_title" aria-label="Close settings" data-i18n-aria-label="dashboard.settings.close_aria">×</button>
+    <div class="settings-hbtns">
+      <!-- The open drawer covers the header's dark toggle, and the drawer's own color
+           pickers render dark-dependently — so the drawer offers the toggle itself
+           (torah convergence, S180 Pass H). Synced with #darkBtn by toggleDark()/initDark(). -->
+      <button class="settings-close" id="drawerDarkBtn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false">🌙</button>
+      <button class="settings-close" onclick="closeSettings()" title="Close" data-i18n-title="dashboard.settings.close_title" aria-label="Close settings" data-i18n-aria-label="dashboard.settings.close_aria">×</button>
+    </div>
   </div>
   <div class="settings-body">
 <div style="display:flex; gap:6px; margin-bottom:14px;">
@@ -8111,7 +8119,9 @@ async function onUploadEngFontPick(input){
     const _db = document.getElementById('darkBtn');
     _db.textContent = isDark ? '☀️' : '🌙';
     _db.setAttribute('aria-pressed', isDark ? 'true' : 'false');
-    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); updateOmerDisplay(); }
+    const _db2 = document.getElementById('drawerDarkBtn');
+    if (_db2) { _db2.textContent = _db.textContent; _db2.setAttribute('aria-pressed', _db.getAttribute('aria-pressed')); }
+    if (settings.colorCodeNikkud) { updateDateTimeDisplay(); renderDaysList(); renderWeather(); updateOmerDisplay(); initColorPickers(); }
   }
   function initDark() {
     const s = localStorage.getItem('hebrewBlender_darkMode');
@@ -8120,6 +8130,8 @@ async function onUploadEngFontPick(input){
       const _db = document.getElementById('darkBtn');
       _db.textContent = '☀️';
       _db.setAttribute('aria-pressed', 'true');
+      const _db2 = document.getElementById('drawerDarkBtn');
+      if (_db2) { _db2.textContent = '☀️'; _db2.setAttribute('aria-pressed', 'true'); }
     }
     document.documentElement.classList.remove('dark-early');
   }
