@@ -26,6 +26,29 @@
       "sha256": "3d1b662674f0e47657ba53a73230865cb4910b474b2e43ebf7f931d260f7e39b",
       "added": "2026-08-20",
       "nameTableFamily": "Ezra SIL SR"
+    },
+    {
+      "id": "taamey-frank-clm",
+      "file": "taamey-frank-clm/TaameyFrankCLM-Medium.ttf",
+      "displayName": "Taamey Frank CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Culmus%20Project%20(GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Taamey-Culmus/TaameyFrank/TaameyFrankCLM-Medium.ttf",
+      "licenseId": "GPL-with-font-exception",
+      "licenseName": "GNU GPL v2 with font exception",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "taamey-frank-clm/LICENSE.txt",
+      "copyright": "\"Taamey Frank CLM\" fonts are copyright (C) 2010 by Yoram Gnat (gyoramg@users.sourceforge.net). All rights reserved.",
+      "reservedFontNames": [
+        "Taamey Frank CLM"
+      ],
+      "designer": "Yoram Gnat",
+      "originalVersion": "0.110",
+      "hasNikkud": true,
+      "hasTrop": true,
+      "sha256": "f558d3564d385a6a512ce938705f47236e71457e8aa4ad9eaf6cebc3e17b991c",
+      "added": "2026-08-20"
     }
   ]
 }

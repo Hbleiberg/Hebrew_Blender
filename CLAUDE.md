@@ -972,6 +972,44 @@ pyodide v0.26.2 (+ fontTools), harfbuzzjs 0.4.6 (`hb.wasm` fetch — needs `'was
 `loadScript()`. The page CSP already allowlists these; any **new** external resource requires
 editing this page's CSP meta (Security rule 3 above).
 
+### Starting Fonts / partner onboarding (`?start=<id>` + `starting-fonts/`)
+The Open Siddur collaboration: a partner page links `Hebrew_Font_Maker.html?start=<id>`, which
+opens that font pre-imported into a fresh, **license-locked** project via a 3-step partner wizard.
+
+- **Data layer**: `starting-fonts/manifest.json` (`{"schema":1,"fonts":[...]}`) + one
+  `starting-fonts/<id>/{<Font>.ttf, LICENSE.txt}` per font — vendored same-origin copies, never
+  hotlinked. Every manifest value is **detected from the font's own name table / upstream license
+  text, never invented** (`nameTableFamily` records a stale embedded family name). Intake goes
+  through the **`/addOSFont` skill** → `scripts/add_os_font.py` (license allowlist: OFL-1.1,
+  GPL+font-exception, Apache-2.0, CC0; anything else refuses with printed evidence — a hard STOP,
+  maintainer decides). **Reserved Font Names are recorded for EVERY license** (Taamey Frank CLM
+  declares one under GPL) and any declared RFN forces a rename at runtime. Never hand-edit the
+  manifest or a staged LICENSE.txt.
+- **Runtime**: `init()` strips `?start` immediately (keeps `?lang`); `osStartBoot` runs inside
+  `maybeRestoreAutosave` after `_launchDecided` (deferral batons untouched; the no-param tail is
+  the verbatim extraction `_bootLaunchPrompt`). A restorable snapshot is arbitrated first ("Open
+  {font} / Continue") — `autosaveDiscard()` only on the explicit choice; every fetch/parse failure
+  lands in Retry / Continue-to-Font-Maker. `wizardOpen('osfont')` swaps in the static
+  `wizStepOs1–3` sections (gate/new untouched; chrome swaps via the data-i18n attribute-swap);
+  `wizardOsFinish` seeds `project.osFont` + `font.license='os-passthrough'` then calls the
+  existing `applyFontImport` headlessly (`{outlines,marks,anchors:true}`).
+- **Lock invariants** (`project.osFont` presence = partner-locked; belt-and-braces): `licenseText()`
+  dispatches to `osPassthroughText()` **before** reading `font.license`; `buildFontSpec` AND
+  `buildUfoFontInfo` carry independent partner branches (combined copyright, "designer; modified
+  by contributor", nameID 10 description, upstream license name/URL); `syncMetaToForm`/
+  `syncOsFontLock` disable the license select (hidden `os-passthrough` option) + make
+  `#reservedName` (upstream RFNs) read-only, and fully re-enable for normal projects;
+  `onMetaChange` never reads those two fields from the DOM when locked; `migrateProject`
+  re-asserts the lock from `data.osFont` and heals an orphaned `'os-passthrough'` back to `'ofl'`;
+  `saveProjectAs` keeps upstream RFNs on partner copies; `exportFont` opens with a **blocking**
+  RFN-collision guard (no export-anyway) → `exportJumpToFontDetails()`. The IvritSuite line on
+  partner exports is **informational only** — never phrased as required (OFL/GPL forbid added
+  restrictions); the required-line wording stays for born-in-tool fonts only.
+- **sw.js**: `/starting-fonts/manifest.json` is **network-first** (mirrors `/locales/`) so an
+  intake is visible without a VERSION bump; font binaries ride the cache-first catch-all; nothing
+  under `starting-fonts/` is ever precached. **Adding a font = no sw bump.** (Changing this
+  runtime's code still bumps VERSION like any precached-page edit.)
+
 ---
 
 ## Nikkud Color Coding UI (`classroom_dashboard.html`)

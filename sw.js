@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v523';
+const VERSION = 'v524';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -97,6 +97,25 @@ self.addEventListener('fetch', (event) => {
   // shows raw `page.feature.key` strings. `cache: 'no-store'` bypasses the browser HTTP cache;
   // falls back to the precached copy offline.
   if (url.pathname.startsWith('/locales/')) {
+    event.respondWith(
+      fetch(req, { cache: 'no-store' })
+        .then((res) => {
+          if (res && res.ok && res.type === 'basic') {
+            const copy = res.clone();
+            caches.open(CACHE).then((cache) => cache.put(req, copy));
+          }
+          return res;
+        })
+        .catch(() => caches.match(req, { ignoreSearch: true }))
+    );
+    return;
+  }
+
+  // Partner starting-font manifest: network-first like /locales/ so a newly intaken font is
+  // visible to returning users without a VERSION bump — the catch-all below would pin it in the
+  // versioned cache (and its ignoreSearch:true even defeats ?v= busters). The font binaries
+  // themselves stay in the catch-all: immutable vendored files, evicted on the next activate.
+  if (url.pathname === '/starting-fonts/manifest.json') {
     event.respondWith(
       fetch(req, { cache: 'no-store' })
         .then((res) => {
