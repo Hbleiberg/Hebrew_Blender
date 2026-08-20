@@ -1438,15 +1438,25 @@ fontmaker.glyphname.holam_haser,Holam Haser,חולם חסר,nikkud mark name,gly
 fontmaker.glyphname.hyphen,Hyphen,מקף,punct glyph name,glyph-name
 fontmaker.glyphname.kaf,Kaf,כף,letter tile/label name,glyph-name
 fontmaker.glyphname.kaf_sofit,Kaf sofit,כף סופית,letter tile/label name,glyph-name
-fontmaker.glyphname.lad_bet_rafe,Bet + rafe (בֿ),בית + רפה (בֿ),composed form name,glyph-name; mixed UI+content — do not translate {…}
-fontmaker.glyphname.lad_dalet_rafe,Dalet + rafe (דֿ),דלת + רפה (דֿ),composed form name,glyph-name; mixed UI+content — do not translate {…}
-fontmaker.glyphname.lad_gimel_rafe,Gimel + rafe (גֿ),גימל + רפה (גֿ),composed form name,glyph-name; mixed UI+content — do not translate {…}
-fontmaker.glyphname.lad_pe_rafe,Pe + rafe (פֿ),פא + רפה (פֿ),composed form name,glyph-name; mixed UI+content — do not translate {…}
-fontmaker.glyphname.lad_qof_rafe,Qof + rafe (קֿ),קוף + רפה (קֿ),composed form name,glyph-name; mixed UI+content — do not translate {…}
-fontmaker.glyphname.lad_shin,Shin (שׁ),שין (שׁ),composed form name,glyph-name; mixed UI+content — do not translate {…}
-fontmaker.glyphname.lad_sin,Sin (שׂ),סין (שׂ),composed form name,glyph-name; mixed UI+content — do not translate {…}
-fontmaker.glyphname.lad_tet_rafe,Tet + rafe (טֿ),טית + רפה (טֿ),composed form name,glyph-name; mixed UI+content — do not translate {…}
-fontmaker.glyphname.lad_zayin_rafe,Zayin + rafe (זֿ),זין + רפה (זֿ),composed form name,glyph-name; mixed UI+content — do not translate {…}
+fontmaker.glyphname.bet_rafe,Bet + rafe,בית + רפה,composed form name (re-keyed S237 from the dead lad_bet_rafe — gName slugs the sample-stripped name),glyph-name; name part only — precompName re-appends the Hebrew sample
+fontmaker.glyphname.dalet_rafe,Dalet + rafe,דלת + רפה,composed form name (re-keyed S237 from lad_dalet_rafe),glyph-name; name part only — precompName re-appends the Hebrew sample
+fontmaker.glyphname.fey,Fey,פא,Yiddish soft-letter name (same skeleton as Pe — the re-appended sample פֿ disambiguates),glyph-name | REVIEW: 'Fey' -> 'פא' — confirm
+fontmaker.glyphname.gimel_rafe,Gimel + rafe,גימל + רפה,composed form name (re-keyed S237 from lad_gimel_rafe),glyph-name; name part only — precompName re-appends the Hebrew sample
+fontmaker.glyphname.holam_vav,Holam (vav),חולם (וו),precomposed vav-holam form — the (vav) is part of the name (Latin parens; no Hebrew sample split),glyph-name
+fontmaker.glyphname.khof,Khof,כף,Yiddish soft-letter name (same skeleton as Kaf — the re-appended sample כֿ disambiguates),glyph-name | REVIEW: 'Khof' -> 'כף' — confirm
+fontmaker.glyphname.komets_alef,Komets Alef,קמץ אלף,Yiddish composed form name,glyph-name; name part only — precompName re-appends the Hebrew sample
+fontmaker.glyphname.mark,mark,סימן,precompName's last-resort fallback for an unnamed mark,glyph-name; lowercase in EN by design (matches the code literal)
+fontmaker.glyphname.pasekh_alef,Pasekh Alef,פתח אלף,Yiddish composed form name,glyph-name; name part only — precompName re-appends the Hebrew sample
+fontmaker.glyphname.pe_rafe,Pe + rafe,פא + רפה,composed form name (re-keyed S237 from lad_pe_rafe),glyph-name; name part only — precompName re-appends the Hebrew sample
+fontmaker.glyphname.qof_rafe,Qof + rafe,קוף + רפה,composed form name (re-keyed S237 from lad_qof_rafe),glyph-name; name part only — precompName re-appends the Hebrew sample
+fontmaker.glyphname.shuruk,Shuruk,שורוק,precomposed vav-dagesh form name,glyph-name
+fontmaker.glyphname.sin,Sin,סין,composed sin form name (re-keyed S237 from lad_sin; Ladino 'Sin (שׂ)' splits its sample and looks up the bare name),glyph-name; name part only — precompName re-appends the Hebrew sample
+fontmaker.glyphname.tet_rafe,Tet + rafe,טית + רפה,composed form name (re-keyed S237 from lad_tet_rafe),glyph-name; name part only — precompName re-appends the Hebrew sample
+fontmaker.glyphname.tsvey_vovn,Tsvey Vovn,צוויי וואוון,Yiddish digraph name,glyph-name; name part only — precompName re-appends the sample | REVIEW: 'Tsvey Vovn' -> 'צוויי וואוון' — confirm
+fontmaker.glyphname.tsvey_yudn,Tsvey Yudn,צוויי יודן,Yiddish digraph name,glyph-name; name part only — precompName re-appends the sample | REVIEW: 'Tsvey Yudn' -> 'צוויי יודן' — confirm
+fontmaker.glyphname.veys,Veys,ווית,Yiddish soft-letter name (YIVO spelling keeps Beys' tail),glyph-name | REVIEW: 'Veys' -> 'ווית' — confirm
+fontmaker.glyphname.vov_yud,Vov Yud,וואוו יוד,Yiddish digraph name,glyph-name; name part only — precompName re-appends the sample | REVIEW: 'Vov Yud' -> 'וואוו יוד' — confirm
+fontmaker.glyphname.zayin_rafe,Zayin + rafe,זין + רפה,composed form name (re-keyed S237 from lad_zayin_rafe),glyph-name; name part only — precompName re-appends the Hebrew sample
 fontmaker.glyphname.lamed,Lamed,למד,letter tile/label name,glyph-name
 fontmaker.glyphname.left_paren,Left Paren,סוגר שמאלי,punct glyph name,glyph-name
 fontmaker.glyphname.maqaf,Maqaf,מקף עברי,punct glyph name,glyph-name
