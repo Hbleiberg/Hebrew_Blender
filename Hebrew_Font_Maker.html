@@ -2470,6 +2470,46 @@ function markAttachOrigin(m) {
 function markNudgeDy(cp) {   // per-mark vertical fine-tune (font units, + = up); applied wherever the mark is drawn so preview == QA == export
   return (project.font && project.font.markNudge && project.font.markNudge[cp]) || 0;
 }
+/* Per-(letter × mark) pins (l.markAnchors = { cp: {x, y, key} }) — written by the fidelity autofix
+   for combos whose measured position a shared class anchor can't express (class residuals), and
+   hand-adjustable afterwards. A pin is an ABSOLUTE base-side attach point in font units; it applies
+   only while its stored key matches the key being read, so a later halign/class change strands it
+   harmlessly instead of fighting the new column. baseAnchorPosFor is the only sanctioned reader —
+   preview, QA, predict and export all flow through it, so every surface agrees. */
+function baseAnchorPosFor(l, key, cp) {
+  const p = cp && l && l.markAnchors && l.markAnchors[cp];
+  if (p && p.key === key && Number.isFinite(p.x) && Number.isFinite(p.y)) return p;
+  return l && l.anchors ? l.anchors[key] : null;
+}
+function markPinFor(l, key, cp) {   // the pin itself (never the class-anchor fallback), or null
+  const p = cp && l && l.markAnchors && l.markAnchors[cp];
+  return (p && p.key === key && Number.isFinite(p.x) && Number.isFinite(p.y)) ? p : null;
+}
+function letterHasPins(l) { return !!(l && l.markAnchors && Object.keys(l.markAnchors).length); }
+function pinKeyFor(cp) { return TROP_CLASS[cp] ? tropColKey(TROP_CLASS[cp], tropHalign(cp)) : MARK_CLASS[cp]; }   // the anchor key a mark currently reads
+function fidelityPinnedMarkCps() {
+  // Mark cps with ≥1 key-current pin on any letter. At export each of these leaves its shared
+  // markClass and gets its own GPOS subclass (@MC_<KEY>_<cp>) so bases can position THAT mark
+  // per-letter; buildFEA and buildUfoAnchors both partition from this one predicate.
+  const s = new Set();
+  (project.letters || []).forEach(l => { if (l.markAnchors) for (const cp in l.markAnchors) {
+    const p = l.markAnchors[cp];
+    if (p && Number.isFinite(p.x) && Number.isFinite(p.y) && p.key === pinKeyFor(cp)) s.add(cp);
+  } });
+  return s;
+}
+function moveClassAnchor(l, key, nx, ny) {
+  // Sanctioned writer for a letter's class anchor: same-key pins translate by the same delta, so a
+  // coarse manual adjustment carries the imported fine structure along instead of silently desyncing
+  // from it. (The fidelity autofix writes raw values instead — its pins are absolutes measured
+  // against the same shaping run, so translating them would corrupt them.)
+  const a = l.anchors && l.anchors[key]; if (!a) return;
+  const dx = nx - a.x, dy = ny - a.y;
+  a.x = nx; a.y = ny;
+  if ((dx || dy) && l.markAnchors) for (const cp in l.markAnchors) {
+    const p = l.markAnchors[cp]; if (p && p.key === key) { p.x += dx; p.y += dy; }
+  }
+}
 function markGlyphContours(kind, cp) {
   if (kind === 'accent') return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].glyph) || [];
   const dy = markNudgeDy(cp), sh = ps => dy ? ps.map(([x,y]) => [x, y + dy]) : ps;
@@ -3488,23 +3528,26 @@ function snapGuidesOn() { return !(project && project.view) || project.view.snap
 function setSnapGuides(on) { if (project && project.view) { project.view.snapGuides = !!on; markDirty(); } }
 function setAnchorCoord(axis,v){ if(!project||workMode!=='anchors') return;
   const l=curLetter(); if(!l.anchors) return; const n=Math.round(+v); if(!Number.isFinite(n)) return;
+  const key=activeAnchorKey(); const cur=baseAnchorPosFor(l,key,activeVowelCp()); if(!cur) return;
   udBurstBegin([itemScope()], 'anchor ' + axis + ' — ' + l.name);
-  l.anchors[activeAnchorKey()][axis]=n; noteAnchorMoved(l); renderStage(); }
+  writeActiveAnchor(l, key, axis==='x'?n:cur.x, axis==='y'?n:cur.y); noteAnchorMoved(l); renderStage(); }
 /* Quick-center the active anchor: ↔ halfway between the L/R margins, ↕ halfway between the top & bottom lines. */
 function centerAnchorH() {
   if (!project || workMode !== 'anchors') return;
-  const l = curLetter(); const a = l.anchors && l.anchors[activeAnchorKey()]; if (!a) return;
+  const l = curLetter(); const key = activeAnchorKey();
+  const a = baseAnchorPosFor(l, key, activeVowelCp()); if (!a) return;
   udDo([itemScope()], 'center anchor — ' + l.name, () => {
-    a.x = Math.round((letterLSB(l) + (letterAdvance(l) - letterRSB(l))) / 2);   // midpoint of the margin lines
+    writeActiveAnchor(l, key, Math.round((letterLSB(l) + (letterAdvance(l) - letterRSB(l))) / 2), a.y);   // midpoint of the margin lines
     noteAnchorMoved(l); renderStage(); renderControls();
   });
 }
 function centerAnchorV() {
   if (!project || workMode !== 'anchors') return;
-  const l = curLetter(); const a = l.anchors && l.anchors[activeAnchorKey()]; if (!a) return;
+  const l = curLetter(); const key = activeAnchorKey();
+  const a = baseAnchorPosFor(l, key, activeVowelCp()); if (!a) return;
   udDo([itemScope()], 'center anchor — ' + l.name, () => {
     const em = effMetrics();
-    a.y = Math.round((em.letterTop + em.baseline) / 2);                          // midpoint of the top (cap) and base (baseline) lines
+    writeActiveAnchor(l, key, a.x, Math.round((em.letterTop + em.baseline) / 2));                          // midpoint of the top (cap) and base (baseline) lines
     noteAnchorMoved(l); renderStage(); renderControls();
   });
 }
@@ -5689,6 +5732,7 @@ async function applyFontImport(file, font, bytes, opts) {
       const l = project.letters.find(x => x.codepoint === L.cp);
       const glyph = font.charToGlyph(String.fromCodePoint(parseInt(L.cp,16)));
       const hasGlyph = glyph && glyph.index !== 0;
+      if (opts.outlines || opts.anchors) delete l.markAnchors;   // a fresh outline/anchor import invalidates fidelity pins (mirrors importMarkGlyph dropping attachAnchor)
       if (opts.outlines) {
         l.source = { kind:'font', dataUrl:null, cropRect:null };
         if (!hasGlyph) { l.contours = null; l.curves = null; l.anchors = null; return; }
@@ -9932,6 +9976,14 @@ function activeAnchorKey() {
     return tropColKey(activeAnchorClass === 'tropAbove' ? 'above' : 'below', tropHalign(activeTropCp));
   return activeAnchorClass;
 }
+/* The one write path for the anchor editor (drag, X/Y fields, center buttons, arrow nudge): when the
+   previewed mark is pinned, edit the PIN — the drag edits what the stage shows — otherwise move the
+   class anchor (which carries same-key pins along, see moveClassAnchor). */
+function activePin(l) { return markPinFor(l, activeAnchorKey(), activeVowelCp()); }
+function writeActiveAnchor(l, key, nx, ny) {
+  const p = markPinFor(l, key, activeVowelCp());
+  if (p) { p.x = nx; p.y = ny; } else moveClassAnchor(l, key, nx, ny);
+}
 /* dx the ghost VOWEL shifts in the stacking-check preview: only when editing a CENTER-halign trop
    whose class is in vowelPair slide mode and the previewed 2nd mark is a same-class vowel (mirrors
    the FEA contextual rule; a dagesh/other-class ghost never slides). */
@@ -10014,14 +10066,15 @@ function markSelectRect(cp, ax, ay, scaleOverride, cls, col, extra) {
 function anchorHandlesSVG(l) {
   // Active class only: its vowel drawn in the class colour (clearly visible even over the
   // dark glyph), plus a draggable RING centered ON the vowel.
-  const cls = activeAnchorClass, key = activeAnchorKey(); const a = l.anchors[key];
+  const cls = activeAnchorClass, key = activeAnchorKey();
   const cp = activeVowelCp();
+  const a = baseAnchorPosFor(l, key, cp);   // a pinned previewed mark draws (and drags) at its pin
   const col = ANCHOR_COL[cls] || 'var(--below)';
   let h = '';
   const co = coPreviewFor(l, cp);   // effective ghost — same validity predicate as the dropdown + verdict (stale/self ghosts suppress)
-  if (co && l.anchors[MARK_CLASS[co]]) {   // grey ghost of the 2nd mark for the stacking-clash check (non-interactive; on trop classes too — trop-vs-vowel clashes are the common real-world failure)
+  if (co && baseAnchorPosFor(l, MARK_CLASS[co], co)) {   // grey ghost of the 2nd mark for the stacking-clash check (non-interactive; on trop classes too — trop-vs-vowel clashes are the common real-world failure)
     const gp = coStackGhostPlacement(l, co);   // a mark that composes to a form → the form's anchor + size (a baked ligature mark never slides)
-    const ga = gp || l.anchors[MARK_CLASS[co]];
+    const ga = gp || baseAnchorPosFor(l, MARK_CLASS[co], co);
     h += `<path d="${markPreviewPath(co, ga.x + (gp ? 0 : coGhostDx()), ga.y, gp ? gp.scale : undefined)}" fill="#888" fill-opacity="0.55"/>`;   // slide mode: the ghost vowel sits at its slid position
     if (gp && precompTakesHolam(gp.pc) && cls === 'above') {
       // ש + dot ghost: the exported FB2A/FB2B attach the active above-mark at the form's holam slot —
@@ -10041,7 +10094,7 @@ function attachAnchorDrag(l) {
     const cls = el.dataset.cls; let grab = null, pend = null;
     el.addEventListener('pointerdown', e => {
       el.setPointerCapture(e.pointerId);
-      const [fxp,fyp] = clientToFont(e); const a = l.anchors[cls]; grab = [a.x-fxp, a.y-fyp];
+      const [fxp,fyp] = clientToFont(e); const a = baseAnchorPosFor(l, cls, activeVowelCp()); grab = [a.x-fxp, a.y-fyp];
       pend = udCapture([itemScope()], 'anchor move — ' + l.name + ', ' + cls);
       showAncTip(e.clientX, e.clientY);
       e.preventDefault();
@@ -10049,7 +10102,8 @@ function attachAnchorDrag(l) {
     el.addEventListener('pointermove', e => {
       if (!grab) return;
       const [fxp,fyp] = clientToFont(e);
-      const a = l.anchors[cls] = { x: Math.round(fxp+grab[0]), y: Math.round(fyp+grab[1]) };
+      writeActiveAnchor(l, cls, Math.round(fxp+grab[0]), Math.round(fyp+grab[1]));
+      const a = baseAnchorPosFor(l, cls, activeVowelCp());
       // Update the mark + handle IN PLACE — a full renderStage() here would replace
       // this element and drop the pointer capture, ending the drag after one move.
       const mark = stage().querySelector('#ancMark'); if (mark) mark.setAttribute('d', markPreviewPath(activeVowelCp(), a.x, a.y));
@@ -10915,6 +10969,11 @@ function boldGenLetter(l, d, keepHeight) {
     a.x = Math.round(fin.minX + (a.x - pre.minX) * (fin.maxX - fin.minX) / preW);
     if (!keepHeight) a.y = Math.round(fin.minY + (a.y - pre.minY) * (fin.maxY - fin.minY) / preH);
   }
+  if (l.markAnchors && preW > 0 && preH > 0) for (const cp in l.markAnchors) {   // fidelity pins rescale exactly like the class anchors
+    const p = l.markAnchors[cp]; if (!p) continue;
+    p.x = Math.round(fin.minX + (p.x - pre.minX) * (fin.maxX - fin.minX) / preW);
+    if (!keepHeight) p.y = Math.round(fin.minY + (p.y - pre.minY) * (fin.maxY - fin.minY) / preH);
+  }
   const hadCurves = !!(l.curves && l.curves.length);
   l.curves = null;                                            // offset points would desync a parallel Bézier model
   return { ok: true, warn, hadCurves };
@@ -11171,7 +11230,7 @@ function _spacingCellMarks(cell) {   // place a glyph cell's stacked nikkud toge
   const vavHolamPc = (cell.cp === '05D5' && cps.includes('05B9')) ? getPrecomp('FB4B') : null;   // typed וֹ composes to FB4B in the font — bake at the form's dot anchor + Holam (vav) size
   cps.forEach(mcp => {
     const cls = MARK_CLASS[mcp]; if (!cls) return;
-    let ancPt = anc[cls], scale = nikScale(mcp);
+    let ancPt = qaAnchorFor(L, anc, cls, mcp), scale = nikScale(mcp);
     if (pc) {
       if (mcp === dotCp) { ancPt = precompAnchor(pc); scale = precompMarkScale(pc); }   // the baked dot
       else if (mcp === '05B9' || mcp === '05BA') ancPt = precompHolamAnchor(pc);         // holam → the form's holam slot
@@ -11688,7 +11747,7 @@ function maybeInheritAnchors(l) {
   // After one letter is left, the next letter opened in the placement step starts from those same
   // coordinates so consecutive letters needn't be positioned from scratch. Applied once per source
   // (WeakMap guard) and only to a not-yet-placed letter, so in-progress moves are never clobbered.
-  if (!lastSavedAnchors || curKind !== 'letter' || l.placementSaved || l.placementInherited || l.savedAnchors) return;
+  if (!lastSavedAnchors || curKind !== 'letter' || l.placementSaved || l.placementInherited || l.savedAnchors || letterHasPins(l)) return;   // a pinned letter is measured truth — never inherit-clobber it
   if (anchorInheritedFrom.get(l) === lastSavedAnchors) return;
   const ibb = l.contours ? glyphBBox(l.contours, true, letterMeta(l.codepoint)) : null;
   const floatUp = !!(ibb && Math.round(ibb.minY) > 120);   // yod-like: body floats well above the baseline
@@ -11717,7 +11776,7 @@ function _anchorCtx(l) {            // shared anchor-class computation (nik/trop
   const visCls = acat === 'trop' ? ['tropAbove','tropBelow'] : ['below','above','center'];
   if (!visCls.includes(activeAnchorClass)) activeAnchorClass = visCls[0];
   const cls = activeAnchorClass, isTrop = cls.indexOf('trop') === 0;
-  return { acat, visCls, cls, isTrop, want: cls === 'tropAbove' ? 'above' : 'below', a: l.anchors[activeAnchorKey()] };
+  return { acat, visCls, cls, isTrop, want: cls === 'tropAbove' ? 'above' : 'below', a: baseAnchorPosFor(l, activeAnchorKey(), activeVowelCp()) };   // a pinned previewed mark reports (and edits) its pin
 }
 
 /* ── ALIGN ── */
@@ -12237,14 +12296,14 @@ function renderAnchorLeft(L, l) {
     const co = coPreviewFor(l, acp);   // effective preview — the dropdown, stage ghost and verdict share this one predicate (stale/self ghosts suppress)
     const opts = `<option value="">${esc(I18n.t('fontmaker.panels.check_stacking_none'))}</option>` + MARK_CPS.filter(cp => cp !== acp && ((cp !== '05C1' && cp !== '05C2') || l.codepoint === '05E9')).map(cp => `<option value="${cp}"${cp===co?' selected':''}>${esc(gName(markName(cp)))}</option>`).join('');   // shin/sin dots only ever sit on ש
     let warn = '';
-    if (co && l.anchors[MARK_CLASS[co]]) {
+    if (co && baseAnchorPosFor(l, MARK_CLASS[co], co)) {
       const gp = coStackGhostPlacement(l, co);   // a mark that composes to a form (ש dots, וֹ) → the form's anchor + size (matches the stage ghost, _spacingCellMarks and the export)
       // ש + dot ghost: the exported FB2A/FB2B attach EVERY above-class mark (holam, rafe) at the
       // form's holam slot — so measure the active mark there, matching buildFEA's anchor relocation.
       const aboveOnForm = !!gp && precompTakesHolam(gp.pc) && !isTrop && MARK_CLASS[acp] === 'above';
-      const pa = isTrop ? qaPlace(l.anchors[activeAnchorKey()], 'trop', acp, tropScale(), l)
-                        : qaPlace(aboveOnForm ? precompHolamAnchor(gp.pc) : l.anchors[activeAnchorKey()], 'nikkud', acp, nikScale(acp), l);
-      const gAnc = gp || l.anchors[MARK_CLASS[co]], gdx = gp ? 0 : coGhostDx();   // slide mode: the ghost vowel is checked at its slid position (matches the stage ghost + the FEA)
+      const pa = isTrop ? qaPlace(baseAnchorPosFor(l, activeAnchorKey(), acp), 'trop', acp, tropScale(), l)
+                        : qaPlace(aboveOnForm ? precompHolamAnchor(gp.pc) : baseAnchorPosFor(l, activeAnchorKey(), acp), 'nikkud', acp, nikScale(acp), l);
+      const gAnc = gp || baseAnchorPosFor(l, MARK_CLASS[co], co), gdx = gp ? 0 : coGhostDx();   // slide mode: the ghost vowel is checked at its slid position (matches the stage ghost + the FEA)
       const pg = qaPlace({ x: gAnc.x + gdx, y: gAnc.y }, 'nikkud', co, gp ? gp.scale : nikScale(co), l);
       const overlaps = markPolysOverlap(pa, pg, QA_OVERLAP_TOL);
       const holamPair = aboveOnForm && (acp === '05B9' || acp === '05BA');
@@ -12514,8 +12573,9 @@ document.addEventListener('keydown', e => {
     renderStage(); renderControls(); return;
   }
   const l = curLetter(); if (!l.anchors) return;
+  const key = activeAnchorKey(), a = baseAnchorPosFor(l, key, activeVowelCp()); if (!a) return;
   udNudgeTick([itemScope()], 'nudge anchor — ' + l.name + ', ' + activeAnchorClass);
-  const a = l.anchors[activeAnchorKey()]; a.x += dx; a.y += dy;
+  writeActiveAnchor(l, key, a.x + dx, a.y + dy);
   dropPlacementConfirm(l);
   renderStage(); renderControls(); renderLetterGrid();
 });
@@ -12992,6 +13052,9 @@ function qaColumns(tab) {
     return { kind:'stack', cp, trop, side, name: markName(cp) + ' + ' + markName(trop), head: '◌' + qaCh(cp) + qaCh(trop) };
   }).filter(Boolean);
 }
+/* QA/preview anchor read: a fidelity pin (key-matched, on the real letter) wins over the — possibly
+   synthesized — qaAnchors overlay value, mirroring baseAnchorPosFor so QA == preview == export. */
+function qaAnchorFor(L, anc, key, cp) { return (L && markPinFor(L, key, cp)) || anc[key]; }
 /* The colored mark layer(s) to draw + test for one cell. */
 function qaCellLayers(L, anc, col) {
   const ms = markScale(), tms = tropScale(), ds = dageshScale();
@@ -13004,17 +13067,17 @@ function qaCellLayers(L, anc, col) {
       const g = coStackGhostPlacement(L, col.cp);
       if (g) return [{ polys: qaPlace({ x: g.x, y: g.y }, 'nikkud', col.cp, g.scale, L), color: QA_SIDE_COLOR[col.side] }];
     }
-    return [{ polys: qaPlace(anc[col.side], 'nikkud', col.cp, nikScale(col.cp), L), color: QA_SIDE_COLOR[col.side] }];
+    return [{ polys: qaPlace(qaAnchorFor(L, anc, col.side, col.cp), 'nikkud', col.cp, nikScale(col.cp), L), color: QA_SIDE_COLOR[col.side] }];
   }
-  if (col.kind === 'customMarks') return [{ polys: qaPlace(anc[col.side], 'customMarks', col.cp, col.side === 'center' ? ds : ms, L), color: QA_SIDE_COLOR[col.side] }];   // scale mirrors the export bake (center = dagesh scale)
-  if (col.kind === 'trop')   { const k = tropColKey(col.side, tropHalign(col.cp)); return [{ polys: qaPlace(anc[k], 'trop', col.cp, tms), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] }]; }
+  if (col.kind === 'customMarks') return [{ polys: qaPlace(anc[col.side], 'customMarks', col.cp, col.side === 'center' ? ds : ms, L), color: QA_SIDE_COLOR[col.side] }];   // scale mirrors the export bake (center = dagesh scale); custom marks are never pinned
+  if (col.kind === 'trop')   { const k = tropColKey(col.side, tropHalign(col.cp)); return [{ polys: qaPlace(qaAnchorFor(L, anc, k, col.cp), 'trop', col.cp, tms), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] }]; }
   if (col.kind === 'pair')   return [                                   // two nikkud marks on one letter, each at its own class anchor
-    { polys: qaPlace(anc[MARK_CLASS[col.a]],  'nikkud', col.a,  nikScale(col.a),  L), color: QA_SIDE_COLOR[MARK_CLASS[col.a]] },
-    { polys: qaPlace(anc[MARK_CLASS[col.cp]], 'nikkud', col.cp, nikScale(col.cp), L), color: QA_SIDE_COLOR[MARK_CLASS[col.cp]] } ];
-  const nikAnc = anc[col.side], pairCfg = vowelPairCfg(col.side);
+    { polys: qaPlace(qaAnchorFor(L, anc, MARK_CLASS[col.a], col.a),   'nikkud', col.a,  nikScale(col.a),  L), color: QA_SIDE_COLOR[MARK_CLASS[col.a]] },
+    { polys: qaPlace(qaAnchorFor(L, anc, MARK_CLASS[col.cp], col.cp), 'nikkud', col.cp, nikScale(col.cp), L), color: QA_SIDE_COLOR[MARK_CLASS[col.cp]] } ];
+  const nikAnc = qaAnchorFor(L, anc, col.side, col.cp), pairCfg = vowelPairCfg(col.side);
   if (pairCfg.mode === 'slide')   // slide mode mirrors the FEA: vowel shifts dx; trop attaches to the LETTER's center trop column
     return [ { polys: qaPlace({ x: nikAnc.x + pairCfg.dx, y: nikAnc.y }, 'nikkud', col.cp, ms, L), color: QA_SIDE_COLOR[col.side] },
-             { polys: qaPlace(anc[tropColKey(col.side, 'center')], 'trop', col.trop, tms), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] } ];
+             { polys: qaPlace(qaAnchorFor(L, anc, tropColKey(col.side, 'center'), col.trop), 'trop', col.trop, tms), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] } ];
   return [ { polys: qaPlace(nikAnc, 'nikkud', col.cp, ms, L), color: QA_SIDE_COLOR[col.side] },
            { polys: qaPlaceStackTrop(nikAnc, col.cp, col.trop), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] } ];
 }
@@ -13057,7 +13120,7 @@ function fontInkBounds() {
   letters.forEach(L => {
     if (!L.anchors) return;
     if (nikOn) MARK_CPS.forEach(cp => {
-      const cls = MARK_CLASS[cp], anc = L.anchors[cls]; if (!anc) return;
+      const cls = MARK_CLASS[cp], anc = baseAnchorPosFor(L, cls, cp); if (!anc) return;
       upd(polysBounds(qaPlace(anc, 'nikkud', cp, nikScale(cp), L)));
       if (tropOn && cls !== 'center' && vowelPairCfg(cls).mode !== 'slide') { const a = markMkmkAnchor(cp);   // slide mode: no mkmk stack — the letter-attached trop extents (below) already cover it
         if (cls === 'above' && tropTop != null) updTop(anc.y + a.above.y + tropTop);
@@ -13065,7 +13128,7 @@ function fontInkBounds() {
       }
     });
     if (tropOn) TROP_CPS.forEach(cp => {
-      const anc = L.anchors[TROP_CLASS[cp] === 'above' ? 'tropAbove' : 'tropBelow']; if (!anc) return;
+      const anc = baseAnchorPosFor(L, TROP_CLASS[cp] === 'above' ? 'tropAbove' : 'tropBelow', cp); if (!anc) return;
       upd(polysBounds(qaPlace(anc, 'trop', cp, tms)));
     });
   });
@@ -13384,7 +13447,7 @@ function buildFontSpec() {
       Object.keys(L.markShapes).forEach(cp => {
         const cls = MARK_CLASS[cp]; if (!cls) return;                  // nikkud marks only (MARK_CLASS is the nikkud set)
         if (builtPairs.has(L.codepoint + '|' + cp)) return;            // already covered by a precomposed form's bake
-        const anc = L.anchors && L.anchors[cls]; if (!anc) return;
+        const anc = baseAnchorPosFor(L, cls, cp); if (!anc) return;   // a fidelity pin positions the baked per-letter mark too
         const mc = markContoursFor(L, 'nikkud', cp); if (!mc || !mc.length) return;
         const mscale = nikScale(cp);
         const markPoly = mc.map(poly => poly.map(([x,y]) => [Math.round(x*mscale+anc.x), Math.round(y*mscale+anc.y)]));
@@ -13512,10 +13575,25 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   const shevaNaOn = nikOn && project.font.nikkud.shevaNa;
   if (shevaNaOn) byClass.below.push(SHEVA_NA_GLYPH);   // the bold sheva attaches like any below mark
   const nikMarks = [...byClass.below, ...byClass.above, ...byClass.center];
+  // ── fidelity pins → per-mark GPOS subclasses. A pinned mark leaves its shared markClass for its own
+  //    @MC_<KEY>_<cp> class, so each base positions THAT mark at its pin (unpinned bases keep the shared
+  //    anchor value — byte-identical output when no pins exist). The partition happens ONLY at these
+  //    emission points: byClass/tropGroups stay whole, because GDEF's mark list, the NIK_SLIDE filtering
+  //    sets and ss01 read them by glyph name and must keep every mark. ──
+  const pinnedMarkCps = fidelityPinnedMarkCps();
+  const pinnedG = new Set([...pinnedMarkCps].map(gname));
+  const nikShared = { below: byClass.below.filter(n => !pinnedG.has(n)),
+                      above: byClass.above.filter(n => !pinnedG.has(n)),
+                      center: byClass.center.filter(n => !pinnedG.has(n)) };
+  const nikSolo = { below: [], above: [], center: [] };
+  if (nikOn) MARK_CPS.forEach(cp => { if (pinnedMarkCps.has(cp)) nikSolo[MARK_CLASS[cp]].push(cp); });
   if (nikMarks.length) {
-    if (byClass.below.length)  f += `markClass [${byClass.below.join(' ')}] <anchor 0 0> @MC_BELOW;\n`;
-    if (byClass.above.length)  f += `markClass [${byClass.above.join(' ')}] <anchor 0 0> @MC_ABOVE;\n`;
-    if (byClass.center.length) f += `markClass [${byClass.center.join(' ')}] <anchor 0 0> @MC_CENTER;\n`;
+    if (nikShared.below.length)  f += `markClass [${nikShared.below.join(' ')}] <anchor 0 0> @MC_BELOW;\n`;
+    if (nikShared.above.length)  f += `markClass [${nikShared.above.join(' ')}] <anchor 0 0> @MC_ABOVE;\n`;
+    if (nikShared.center.length) f += `markClass [${nikShared.center.join(' ')}] <anchor 0 0> @MC_CENTER;\n`;
+    ['below','above','center'].forEach(cls => nikSolo[cls].forEach(cp => {
+      f += `markClass [${gname(cp)}] <anchor 0 0> @MC_${cls.toUpperCase()}_${cp};\n`;
+    }));
     f += '\n';
   }
   // ── trop mark classes — split by attachment class (above/below) AND horizontal placement
@@ -13529,10 +13607,18 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   const tropMarks = ['above','below'].flatMap(cls => HALIGNS.flatMap(h => tropGroups[cls][h]));
   const TROP_MC = { above: 'MC_TROP_ABOVE', below: 'MC_TROP_BELOW' };
   const HALIGN_SUFFIX = { center: '', left: '_L', right: '_R' };
+  // trop partition mirrors the nikkud one: shared holds glyph NAMES, solo holds pinned mark CPS
+  const tropShared = { above: { center:[], left:[], right:[] }, below: { center:[], left:[], right:[] } };
+  const tropSolo   = { above: { center:[], left:[], right:[] }, below: { center:[], left:[], right:[] } };
+  if (tropOn) TROP_CPS.forEach(cp => {
+    const cls = TROP_CLASS[cp], h = tropHalign(cp);
+    if (pinnedMarkCps.has(cp)) tropSolo[cls][h].push(cp); else tropShared[cls][h].push(gname(cp));
+  });
   if (tropMarks.length) {
     ['above','below'].forEach(cls => HALIGNS.forEach(h => {
-      const g = tropGroups[cls][h]; if (!g.length) return;
-      f += `markClass [${g.join(' ')}] <anchor 0 0> @${TROP_MC[cls]}${HALIGN_SUFFIX[h]};\n`;   // horizontal lives in the per-letter base anchor (tropColKey column)
+      const g = tropShared[cls][h];
+      if (g.length) f += `markClass [${g.join(' ')}] <anchor 0 0> @${TROP_MC[cls]}${HALIGN_SUFFIX[h]};\n`;   // horizontal lives in the per-letter base anchor (tropColKey column)
+      tropSolo[cls][h].forEach(cp => f += `markClass [${gname(cp)}] <anchor 0 0> @${TROP_MC[cls]}${HALIGN_SUFFIX[h]}_${cp};\n`);
     }));
     f += '\n';
   }
@@ -13577,19 +13663,26 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   }
   // ── mark-to-base — nikkud + trop, per-letter base anchors (skip if none; feaLib rejects empty blocks) ──
   let markLines = '';
-  const emitBaseAnchors = (nm, l, skipCls) => {   // skipCls: a class the baked-in precomposed mark already occupies
+  const emitBaseAnchors = (nm, l, skipCls) => {   // skipCls: a class the baked-in precomposed mark already occupies (shared line AND its pin subclasses)
     if (!l) return;
     seedAnchorsIfNeeded(l);   // never ship a base with no (or a partial) mark-to-base rule, or its nikkud drops to the baseline; idempotent when complete
     if (!l.anchors) return;
-    if (byClass.below.length  && skipCls !== 'below')  markLines += `  pos base ${nm} <anchor ${l.anchors.below.x} ${l.anchors.below.y}> mark @MC_BELOW;\n`;
-    if (byClass.above.length  && skipCls !== 'above')  markLines += `  pos base ${nm} <anchor ${l.anchors.above.x} ${l.anchors.above.y}> mark @MC_ABOVE;\n`;
-    if (byClass.center.length && skipCls !== 'center') markLines += `  pos base ${nm} <anchor ${l.anchors.center.x} ${l.anchors.center.y}> mark @MC_CENTER;\n`;
+    ['below','above','center'].forEach(cls => {   // every base needs a line per SUBCLASS too, or that mark goes unattached on it
+      if (skipCls === cls) return;
+      if (nikShared[cls].length) markLines += `  pos base ${nm} <anchor ${l.anchors[cls].x} ${l.anchors[cls].y}> mark @MC_${cls.toUpperCase()};\n`;
+      nikSolo[cls].forEach(cp => { const p = baseAnchorPosFor(l, cls, cp);
+        if (p) markLines += `  pos base ${nm} <anchor ${p.x} ${p.y}> mark @MC_${cls.toUpperCase()}_${cp};\n`; });
+    });
     if (tropMarks.length) {
       ensureTropAnchors(l);
       ['above','below'].forEach(cls => HALIGNS.forEach(h => {               // one base-anchor line per non-empty L/C/R column (horizontal now lives in the per-letter anchor)
-        if (!tropGroups[cls][h].length) return;
-        const a = l.anchors[tropColKey(cls, h)];
-        markLines += `  pos base ${nm} <anchor ${a.x} ${a.y}> mark @${TROP_MC[cls]}${HALIGN_SUFFIX[h]};\n`;
+        const key = tropColKey(cls, h);
+        if (tropShared[cls][h].length) {
+          const a = l.anchors[key];
+          markLines += `  pos base ${nm} <anchor ${a.x} ${a.y}> mark @${TROP_MC[cls]}${HALIGN_SUFFIX[h]};\n`;
+        }
+        tropSolo[cls][h].forEach(cp => { const p = baseAnchorPosFor(l, key, cp);
+          if (p) markLines += `  pos base ${nm} <anchor ${p.x} ${p.y}> mark @${TROP_MC[cls]}${HALIGN_SUFFIX[h]}_${cp};\n`; });
       }));
     }
   };
@@ -13603,13 +13696,20 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   // 'above' would strand a following holam at x=0 (the שֹׁ/שֹׂ bug). Give those targets a real above anchor
   // at the form's holam position (precompHolamAnchor) instead, so the holam attaches clear of / merged
   // with the baked dot per its default. Dagesh/vav-holam/rafe forms keep skipping their baked mark's class.
+  const dropKeyPins = (ma, key) => {   // a synthetic base that RELOCATES a class anchor (holam slot) must not carry that class's pins
+    if (!ma) return ma;
+    const out = {};
+    for (const cp in ma) if (ma[cp] && ma[cp].key !== key) out[cp] = ma[cp];
+    return out;
+  };
   builtPrecomposed.forEach(pc => {
     const base = project.letters.find(x => x.codepoint === pc.base);
     if (base && pc.base === '05E9' && (pc.mark === '05C1' || pc.mark === '05C2')) {
       seedAnchorsIfNeeded(base);
       if (base.anchors) {
         const ha = precompHolamAnchor(pc);
-        emitBaseAnchors(gname(pc.target), Object.assign({}, base, { anchors: Object.assign({}, base.anchors, { above: { x: ha.x, y: ha.y } }) }));
+        emitBaseAnchors(gname(pc.target), Object.assign({}, base, { anchors: Object.assign({}, base.anchors, { above: { x: ha.x, y: ha.y } }),
+                                                                    markAnchors: dropKeyPins(base.markAnchors, 'above') }));
         return;
       }
     }
@@ -13623,7 +13723,8 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     seedAnchorsIfNeeded(base);
     if (!base.anchors) return;
     const ha = precompHolamAnchor(sd.pc);
-    emitBaseAnchors(gname(sd.target), Object.assign({}, base, { anchors: Object.assign({}, base.anchors, { above: { x: ha.x, y: ha.y } }) }), 'center');
+    emitBaseAnchors(gname(sd.target), Object.assign({}, base, { anchors: Object.assign({}, base.anchors, { above: { x: ha.x, y: ha.y } }),
+                                                                markAnchors: dropKeyPins(base.markAnchors, 'above') }), 'center');
   });
   // per-letter baked glyphs are new bases too — a vowel/trop typed after one must still attach (skip the mark's own class)
   builtPerLetter.forEach(pc => emitBaseAnchors(pc.glyphName, project.letters.find(x => x.codepoint === pc.base), pc.cls));
@@ -13641,7 +13742,10 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     const mapA = a => a ? { x: wideX(a.x + off, g.minX, g.widthScale), y: a.y } : a;
     const anchors = {};
     Object.keys(donor.anchors).forEach(k => { anchors[k] = mapA(donor.anchors[k]); });
-    emitBaseAnchors(gname(pc.target), Object.assign({}, donor, { anchors }));   // no skipCls — wide forms carry no baked mark
+    let markAnchors;   // fidelity pins ride through the SAME ink transform as the anchors they refine
+    if (donor.markAnchors) { markAnchors = {}; Object.keys(donor.markAnchors).forEach(cp => {
+      const p = donor.markAnchors[cp]; markAnchors[cp] = { x: wideX(p.x + off, g.minX, g.widthScale), y: p.y, key: p.key }; }); }
+    emitBaseAnchors(gname(pc.target), Object.assign({}, donor, { anchors, markAnchors }));   // no skipCls — wide forms carry no baked mark
   });
   if (markLines) f += 'feature mark {\n' + markLines + '} mark;\n\n';
   // ── vowel+trop slide mode (vowelPair): when a CENTER-halign trop shares the letter with a vowel,
@@ -13676,11 +13780,18 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     let mkmkLines = '';
     MARK_CPS.forEach(cp => {
       const cls = MARK_CLASS[cp], a = markMkmkAnchor(cp), nm = gname(cp);
-      if (cls === 'above' && stackAbove && tropGroups.above.center.length)              // only CENTER trop stacks on a vowel; edge (Left/Right) marks attach to the letter edge instead
-        mkmkLines += `  pos mark ${nm} <anchor ${a.above.x} ${a.above.y}> mark @MC_TROP_ABOVE;\n`;
-      else if (cls === 'below' && stackBelow && tropGroups.below.center.length)
-        mkmkLines += `  pos mark ${nm} <anchor ${a.below.x} ${a.below.y}> mark @MC_TROP_BELOW;\n`;
-      // center marks (dagesh/shin/sin dot) carry no trop — trop stacks on the base letter instead
+      // center marks (dagesh/shin/sin dot) carry no trop — trop stacks on the base letter instead.
+      // Only CENTER trop stacks on a vowel; edge (Left/Right) marks attach to the letter edge instead.
+      // A PINNED center trop left the shared class for its own subclass, so it needs its own mkmk
+      // line (same anchor) or it would lose stacking entirely; the vowel's own class membership is
+      // irrelevant here — mkmk names the base-side mark by glyph.
+      const stack = cls === 'above' ? stackAbove : cls === 'below' ? stackBelow : false;
+      if (!stack || !tropGroups[cls] || !tropGroups[cls].center.length) return;
+      const anc = cls === 'above' ? a.above : a.below;
+      if (tropShared[cls].center.length)
+        mkmkLines += `  pos mark ${nm} <anchor ${anc.x} ${anc.y}> mark @${TROP_MC[cls]};\n`;
+      tropSolo[cls].center.forEach(tcp =>
+        mkmkLines += `  pos mark ${nm} <anchor ${anc.x} ${anc.y}> mark @${TROP_MC[cls]}_${tcp};\n`);
     });
     if (mkmkLines) f += 'feature mkmk {\n' + mkmkLines + '} mkmk;\n\n';
   }
@@ -13738,6 +13849,10 @@ function buildUfoSpec() {
 function buildUfoAnchors() {
   const nikOn = project.font.nikkud.enabled, tropOn = project.font.trop.enabled, out = {};
   const push = (nm, name, x, y) => { (out[nm] || (out[nm] = [])).push({ name, x: Math.round(x), y: Math.round(y) }); };
+  // A pinned mark's anchors mirror its FEA subclass split: the mark carries `_<key>_<cp>` instead of
+  // `_<key>`, and every base carries the matching `<key>_<cp>` at its pin ?? shared value. The UFO's
+  // features.fea (same buildFEA string) stays authoritative; these names just stay consistent with it.
+  const pinned = fidelityPinnedMarkCps();
   LETTERS.forEach(L => {
     const l = project.letters.find(x => x.codepoint === L.cp);
     if (!l || !l.anchors) return;
@@ -13746,16 +13861,21 @@ function buildUfoAnchors() {
                  if (a.above) push(nm, 'above', a.above.x, a.above.y);
                  if (a.center) push(nm, 'center', a.center.x, a.center.y); }
     if (tropOn) ['tropAbove','tropAboveL','tropAboveR','tropBelow','tropBelowL','tropBelowR'].forEach(k => { if (a[k]) push(nm, k, a[k].x, a[k].y); });
+    pinned.forEach(cp => {
+      if (TROP_CLASS[cp] ? !tropOn : !nikOn) return;
+      const key = pinKeyFor(cp), p = baseAnchorPosFor(l, key, cp);
+      if (p) push(nm, key + '_' + cp, p.x, p.y);
+    });
   });
   if (nikOn) MARK_CPS.forEach(cp => {
     const nm = gname(cp), cls = MARK_CLASS[cp];
-    push(nm, '_' + cls, 0, 0);
+    push(nm, '_' + cls + (pinned.has(cp) ? '_' + cp : ''), 0, 0);
     if (tropOn && cls !== 'center' && vowelPairCfg(cls).mode !== 'slide') { const a = markMkmkAnchor(cp);   // slide mode emits no mkmk, so the UFO source carries no stack attach point either
       if (cls === 'above') push(nm, 'tropAbove', a.above.x, a.above.y);
       else                 push(nm, 'tropBelow', a.below.x, a.below.y);
     }
   });
-  if (tropOn) TROP_CPS.forEach(cp => push(gname(cp), '_' + tropColKey(TROP_CLASS[cp], tropHalign(cp)), 0, 0));
+  if (tropOn) TROP_CPS.forEach(cp => push(gname(cp), '_' + tropColKey(TROP_CLASS[cp], tropHalign(cp)) + (pinned.has(cp) ? '_' + cp : ''), 0, 0));
   return out;
 }
 /* UFO fontinfo.plist. UFO ascender/descender + sTypo stay at the nominal design box (stable line
@@ -15819,6 +15939,16 @@ function sanitizeDraw(d) {
   }
   return { v: 1, strokes };
 }
+const ANCHOR_KEY_SET = new Set(['below','above','center','tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR']);
+function sanitizeMarkAnchors(l) {   // fidelity pins from a loaded save are untrusted — keep only well-formed entries; empty/junk → field absent (= no pins)
+  const ma = l.markAnchors; let clean = null;
+  if (ma && typeof ma === 'object') for (const cp in ma) {
+    const p = ma[cp];
+    if (p && Number.isFinite(p.x) && Number.isFinite(p.y) && ANCHOR_KEY_SET.has(p.key))
+      (clean || (clean = {}))[cp] = { x: Math.round(p.x), y: Math.round(p.y), key: p.key };
+  }
+  if (clean) l.markAnchors = clean; else delete l.markAnchors;
+}
 function migrateProject(data) {
   // ensure all 27 letters exist & fields present (forward-compatible)
   const byCp = {}; (data.letters||[]).forEach(l => byCp[l.codepoint] = l);
@@ -15843,6 +15973,7 @@ function migrateProject(data) {
     if (ex.flattenLighting == null) ex.flattenLighting = true;   // absent = ON — old items adopt lighting flattening on their next re-trace
     if (ex.thresholdUserSet == null) ex.thresholdUserSet = (ex.binThreshold !== 128);   // legacy non-default ⇒ hand-set
     if (ex.markShapes == null) ex.markShapes = {};   // per-letter custom mark shapes ("Apply to current letter"); empty = use global/default
+    sanitizeMarkAnchors(ex);                   // per-(letter × mark) fidelity pins; absent = none
     if (ex.lsb === undefined) ex.lsb = null;   // per-letter left side bearing (Letter Metrics)
     if (ex.rsb === undefined) ex.rsb = null;   // per-letter right margin (independent of Width)
     ex.draw = sanitizeDraw(ex.draw);           // Draw-mode strokes (untrusted — capped + clamped; absent → null)
@@ -15869,6 +16000,7 @@ function migrateProject(data) {
       if (l.lsb === undefined) l.lsb = null;
       if (l.rsb === undefined) l.rsb = null;
       l.draw = sanitizeDraw(l.draw);   // same hardening as the standard-27 loop
+      sanitizeMarkAnchors(l);
       data.letters.push(l);
     });
   }
@@ -16292,8 +16424,7 @@ function applyNikkudDo(){
       const tMid = anchorMidX(l);
       ANCHOR_CLASSES.forEach(([cls]) => {
         const sa = src.anchors[cls]; if (!sa) return;
-        l.anchors[cls] = keepCentered ? { x: Math.round(tMid + (sa.x - srcMid)), y: sa.y }
-                                      : { x: sa.x, y: sa.y };
+        moveClassAnchor(l, cls, keepCentered ? Math.round(tMid + (sa.x - srcMid)) : sa.x, sa.y);   // same-key pins ride along
       });
     });
     renderGrids(); renderStage(); renderControls();
