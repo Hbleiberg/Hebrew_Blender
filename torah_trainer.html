@@ -354,6 +354,7 @@ body.dark .tt-status.error { color:#ff6666; }
 .tt-empty h2 { font-family:'Libre Baskerville',serif; font-size:1.15rem; color:var(--navy); margin:0; }
 body.dark .tt-empty h2 { color:var(--gold-light); }
 .tt-empty p { font-size:0.88rem; max-width:340px; margin:0; line-height:1.5; }
+.tt-empty select { max-width:min(340px, 100%); }
 
 .tt-ref-hdr {
   font-family:'Libre Baskerville',serif; font-size:1.05rem;
@@ -3216,13 +3217,32 @@ function renderEmptyReading(failed) {   // friendly card shown in #ttReading whe
   // the on-screen variant instead of clobbering failure copy back to "Pick a parsha".
   const tKey = failed ? 'torah.reading.failed_title' : 'torah.reading.empty_title';
   const bKey = failed ? 'torah.reading.failed_body'  : 'torah.reading.empty_body';
+  // In-card parsha picker — the "real way to pick" half of the S180 seed (Retry shipped S233).
+  // Plain parsha options only (their strings are language-invariant; holidays stay in the toolbar
+  // picker); choosing drives the REAL #parshaSelect below, so every existing save/sync/fetch path
+  // runs unchanged. Hidden when the parshiyot corpus itself failed to load (no options to offer).
+  const canPick = Array.isArray(parshiyotData) && parshiyotData.length > 0;
+  const pickerHtml = canPick
+    ? `<select id="ttCardParsha" aria-label="${esc(I18n.t('torah.reading.card_pick_aria'))}" data-i18n-aria-label="torah.reading.card_pick_aria">` +
+      parshiyotData.map(p => `<option value="${esc(p.en)}">${esc(`${p.n}. ${p.en} (${p.he}) — ${p.ref}`)}</option>`).join('') +
+      `</select>`
+    : '';
   document.getElementById('ttReading').innerHTML =
     `<div class="tt-empty">
        <div class="tt-empty-star" aria-hidden="true">✡︎</div>
        <h2 data-i18n-key="${tKey}">${esc(I18n.t(tKey))}</h2>
        <p data-i18n-key="${bKey}">${esc(I18n.t(bKey))}</p>` +
     (failed ? `<button type="button" class="btn" id="ttRetryBtn" onclick="fetchAndRender()" data-i18n-key="torah.reading.retry_button">${esc(I18n.t('torah.reading.retry_button'))}</button>` : '') +
+    pickerHtml +
     `</div>`;
+  const cp = document.getElementById('ttCardParsha');
+  if (cp) {
+    const realSel = document.getElementById('parshaSelect');
+    if (settings.parshahKey && parshiyotData.some(p => p.en === settings.parshahKey)) cp.value = settings.parshahKey;
+    cp.addEventListener('change', () => {
+      if (realSel) { realSel.value = cp.value; realSel.dispatchEvent(new Event('change')); }
+    });
+  }
   _tourOnReadingChanged();   // no reading will arrive — release any tour reading-hold so it skips those steps
 }
 function renderText() {

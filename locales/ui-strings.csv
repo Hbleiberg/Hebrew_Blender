@@ -3250,7 +3250,8 @@ torah.jumpnav.aria,Jump to aliyah,קפיצה לעלייה,in-page nav aria-label
 torah.jumpnav.current_verse,Current verse,פסוק נוכחי,Jump-bar position readout label + title,
 torah.reading.chant_all,🎵 Chant all,🎵 שירת הכול,ref-header button,leading-emoji
 torah.reading.chant_all_stop,⏹ Stop chant,⏹ עצירת השירה,ref-header button,leading-emoji
-torah.reading.empty_body,"Choose a parsha from the dropdown above — the reading appears here with optional transliteration, translation, color-coded vowels, and chanted audio.","בחרו פרשה מהתפריט שלמעלה — הקריאה תופיע כאן עם תעתיק אופציונלי, תרגום, תנועות צבועות ושמע בטעמים.",empty state,
+torah.reading.empty_body,"Choose a parsha — the reading appears here with optional transliteration, translation, color-coded vowels, and chanted audio.","בחרו פרשה — הקריאה תופיע כאן עם תעתיק אופציונלי, תרגום, תנועות צבועות ושמע בטעמים.",empty state (in-card picker sits right below since S237),
+torah.reading.card_pick_aria,Choose a parsha,בחרו פרשה,in-card parsha picker on the empty/failed reading card,aria-label only
 torah.reading.empty_title,Pick a parsha to start,בחרו פרשה כדי להתחיל,empty state h2,print-adjacent empty state
 torah.reading.failed_body,"Check your internet connection, then try again — Sefaria, the text source, may be briefly unavailable.","בדקו את חיבור האינטרנט ונסו שוב — ייתכן ש-Sefaria, מקור הטקסט, אינו זמין כרגע.",failed-load empty state body,
 torah.reading.failed_title,This reading didn't load,הקריאה לא נטענה,failed-load empty state h2,
