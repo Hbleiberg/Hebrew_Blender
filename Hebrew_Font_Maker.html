@@ -15735,6 +15735,12 @@ async function maybeRestoreAutosave() {
     try { const raw = localStorage.getItem('hebrewFontMaker_autosave'); if (raw) { data = ivritSafeParse(raw); stripped = true; } } catch (e) {}
   }
   _launchDecided = true;
+  if (_osStartId) { const id = _osStartId; _osStartId = null; osStartBoot(id, data, rec, stripped); return; }   // ?start= deep link
+  _bootLaunchPrompt(data, rec, stripped);
+}
+// The normal launch decision (extracted verbatim from maybeRestoreAutosave so the ?start= path
+// can fall back to it): restorable snapshot → Continue / Start-fresh; otherwise the gate wizard.
+function _bootLaunchPrompt(data, rec, stripped) {
   if (!data || data.format !== 'hebrew-font-maker-project') { wizardOpen('gate'); return; }
   askModal(I18n.t('fontmaker.modals.continue_title'),
     I18n.t('fontmaker.modals.continue_body', {time: `<b>${_autosaveRelTime((rec && rec.savedAt) || data.savedAt)}</b>`})
@@ -15742,6 +15748,43 @@ async function maybeRestoreAutosave() {
     + '<br><span style="color:var(--muted);font-size:0.82rem;">' + I18n.t('fontmaker.modals.continue_untouched') + '</span>',
     [ { label: I18n.t('fontmaker.modals.continue'), onClick: async () => { if (await applyProjectData(data)) status(I18n.t('fontmaker.status.reopened_recent')); } },
       { label: I18n.t('fontmaker.modals.start_fresh'), cls: 'ghost', onClick: () => { autosaveDiscard(); wizardOpen('gate'); } } ]);
+}
+/* ── ?start=<id> deep link (partner starting fonts — see CLAUDE.md: Starting Fonts) ──
+   Runs INSIDE the boot launch decision (after the deferral guard and _launchDecided), so the
+   mobile-warn/tour batons and the one-shot behave exactly as on a normal boot. All fetches are
+   same-origin (starting-fonts/); any failure lands in a Retry / Continue-to-Font-Maker modal —
+   never a dead end — and the autosave snapshot is never touched without an explicit choice. */
+let _osStartId = null;   // consumed once per boot; Retry carries the id by argument
+async function osStartBoot(id, data, rec, stripped) {
+  status(I18n.t('fontmaker.osfont.boot_loading'), true);
+  let ctx = null;
+  try {
+    const m = ivritSafeParse(await (await fetch('starting-fonts/manifest.json')).text());
+    const entry = (m && Array.isArray(m.fonts)) ? m.fonts.find(f => f && f.id === id) : null;
+    if (!entry || !entry.file || !entry.displayName || !entry.licenseId) throw new Error('unknown starting font: ' + id);
+    const buf = await (await fetch('starting-fonts/' + entry.file)).arrayBuffer();
+    let licenseTxt = '';
+    try { licenseTxt = await (await fetch('starting-fonts/' + entry.licenseFile)).text(); } catch (e) {}   // soft — export has fallbacks
+    const ot = await ensureOpentype();
+    ctx = { entry, bytes: new Uint8Array(buf), font: ot.parse(buf), licenseText: licenseTxt };   // a corrupt font fails HERE, into the Retry modal
+  } catch (e) {
+    console.warn('starting-font boot failed', e);
+    status('');
+    askModal(I18n.t('fontmaker.osfont.boot_fail_title'),
+      I18n.t('fontmaker.osfont.boot_fail_body', {id: '<b>' + esc(id) + '</b>'}),
+      [ { label: I18n.t('fontmaker.osfont.boot_retry'), onClick: () => osStartBoot(id, data, rec, stripped) },
+        { label: I18n.t('fontmaker.osfont.boot_continue'), cls: 'ghost', onClick: () => _bootLaunchPrompt(data, rec, stripped) } ]);
+    return;
+  }
+  status('');
+  _osStartCtx = ctx;
+  if (!data || data.format !== 'hebrew-font-maker-project') { wizardOpen('osfont'); return; }
+  // A restorable snapshot exists — ask before anything is discarded (mirrors the Continue prompt).
+  askModal(I18n.t('fontmaker.osfont.boot_pick_title'),
+    I18n.t('fontmaker.osfont.boot_pick_body', {font: '<b>' + esc(ctx.entry.displayName) + '</b>', time: '<b>' + _autosaveRelTime((rec && rec.savedAt) || data.savedAt) + '</b>'})
+    + '<br><span style="color:var(--muted);font-size:0.82rem;">' + I18n.t('fontmaker.osfont.boot_pick_note') + '</span>',
+    [ { label: I18n.t('fontmaker.osfont.boot_open_font', {font: ctx.entry.displayName}), onClick: () => { autosaveDiscard(); wizardOpen('osfont'); } },
+      { label: I18n.t('fontmaker.modals.continue'), cls: 'ghost', onClick: async () => { _osStartCtx = null; if (await applyProjectData(data)) status(I18n.t('fontmaker.status.reopened_recent')); } } ]);
 }
 /* Draw-mode strokes arrive from disk like everything else — via ivritSafeParse, but shape/size are
    still untrusted. Hard caps + finite-only + clamps; anything malformed degrades to null (no strokes). */
@@ -16301,6 +16344,17 @@ function copyOutlineDo(){
   status(I18n.t('fontmaker.status.copied_outline', {name: gName(src.name)}));
 }
 function init() {
+  // ?start=<id> deep link (partner starting fonts): consume + strip it immediately so a refresh
+  // or bookmark of the editor never re-triggers the import over work in progress. Only the start
+  // param is removed — ?lang and the hash survive (the i18n.js replaceState precedent).
+  try {
+    const u = new URL(location.href);
+    if (u.searchParams.has('start')) {
+      _osStartId = (u.searchParams.get('start') || '').trim() || null;
+      u.searchParams.delete('start');
+      history.replaceState(null, '', u.toString());
+    }
+  } catch (e) {}
   initDark();
   maybeShowMobileWarn();   // small-screen "best on desktop" splash (once, unless dismissed)
   // stage drag move/up live once on the persistent <svg> (handles transform drag)

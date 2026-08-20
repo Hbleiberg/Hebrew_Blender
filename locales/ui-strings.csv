@@ -4433,3 +4433,12 @@ fontmaker.oswizard.step3_title,Step 3 of 3 — What to include,שלב 3 מתוך
 fontmaker.oswizard.latin_hint,Extra alphabets start empty — the original's Latin letters aren't imported.,אלפביתים נוספים מתחילים ריקים — האותיות הלטיניות של המקור אינן מיובאות.,step-3 hint,
 fontmaker.oswizard.start_editing,Start editing,התחלת עריכה,partner wizard finish button,
 fontmaker.oswizard.created_toast,Editing {font} — your version is called “{name}”.,עורכים את {font} — הגרסה שלכם נקראת ”{name}“.,toast after partner onboarding finishes,"params font, name"
+fontmaker.osfont.boot_loading,Loading the starting font…,טוען את גופן הפתיחה…,boot status while fetching a ?start= font,
+fontmaker.osfont.boot_fail_title,We couldn't load that starting font,לא הצלחנו לטעון את גופן הפתיחה הזה,deep-link failure modal title,
+fontmaker.osfont.boot_fail_body,"The starting font {id} couldn't be loaded — you may be offline, or the link may be out of date. Retry, or continue to the Font Maker as usual.","לא ניתן היה לטעון את גופן הפתיחה {id} — ייתכן שאתם במצב לא מקוון, או שהקישור אינו עדכני. נסו שוב, או המשיכו ליוצר הגופנים כרגיל.",deep-link failure modal body,param id (pre-bolded); html sink
+fontmaker.osfont.boot_retry,Retry,ניסיון חוזר,deep-link failure modal button,
+fontmaker.osfont.boot_continue,Continue to Font Maker,המשך ליוצר הגופנים,deep-link failure modal button,
+fontmaker.osfont.boot_pick_title,Open the starting font?,לפתוח את גופן הפתיחה?,deep link + existing autosave arbitration modal title,
+fontmaker.osfont.boot_pick_body,"Open {font}, or continue where you left off ({time})?","לפתוח את {font}, או להמשיך מהמקום שבו הפסקתם ({time})?",arbitration modal body,"params font, time (pre-bolded); html sink"
+fontmaker.osfont.boot_pick_note,Opening the starting font discards the unsaved snapshot; continuing keeps your work (this visit then skips the starting font).,פתיחת גופן הפתיחה מוחקת את הטיוטה שלא נשמרה; המשך שומר על העבודה שלכם (בביקור זה נדלג על גופן הפתיחה).,arbitration modal muted note,
+fontmaker.osfont.boot_open_font,Open {font},פתיחת {font},arbitration modal primary button,param font
