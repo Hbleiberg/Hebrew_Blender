@@ -1728,6 +1728,13 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     body.swm-printing .swm-cell {
       -webkit-print-color-adjust: exact; print-color-adjust: exact;
       break-inside: avoid; page-break-inside: avoid; }
+    /* A missing-class cell has no inline color to outrank the dark theme, so `body.dark .swm-cell`'s
+       navy-deep — which color-adjust faithfully ships to paper — buried the hatch stripe AND its
+       label (remapped-navy text on #0d1220, 1.1:1). Re-assert the hatch over a remapped light base;
+       same specificity as the dark rule, this one wins by order. Light-mode print is unchanged
+       (the stripe's gaps showed the cell's cream anyway). */
+    body.swm-printing .swm-cell-missing {
+      background: repeating-linear-gradient(45deg, var(--warm-gray), var(--warm-gray) 6px, transparent 6px, transparent 12px) var(--cream); }
     /* Period times print as text, not as form controls with borders and spinners. */
     body.swm-printing .swm-time {
       border: none; background: transparent; padding: 0;
