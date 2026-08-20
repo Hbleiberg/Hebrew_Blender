@@ -2136,6 +2136,7 @@ const DEFAULTS = {
   karaokeRate: 1.0,
   ttsRate: 0.75,
   loopPauseMs: 0,            // silence between verse-loop repeats (0/500/1000/2000 ms)
+  loopVerse: null,           // last-looped verse "C:V" — re-armed (never auto-played) on the next visit
   karaokeBarCollapsed: false,
   panelsCollapsed: null,       // settings-drawer per-panel collapse map {key: bool}; null = markup defaults
   karaokeStyle: 'highlight',   // 'highlight' | 'outline' | 'underline' | 'none'
@@ -3910,7 +3911,7 @@ async function loopVerse(numLabel) {
   // Otherwise auto-load the containing aliyah (same path as Chant), then loop.
   _navigateToVerseAliyahAndQueue(numLabel, 'loop');
 }
-function startLoop(numLabel, bounds) {
+function startLoop(numLabel, bounds, armOnly) {
   if (ttsState.readAllActive) stopReadAll();
   // Loop supersedes chant-all — the mirror of toggleChantAll's clearLoop(). Without it the
   // ⏹ chant button stays lit after the loop, and a lingering chantAllState.active suppresses
@@ -3920,12 +3921,16 @@ function startLoop(numLabel, bounds) {
   if (_loopPauseTimer) { clearTimeout(_loopPauseTimer); _loopPauseTimer = null; }
   _verseEndStopAt = null;   // loop supersedes the single-verse stop (mutually exclusive)
   loopState = { active: true, verseLabel: numLabel, startTime: bounds.startTime, stopAt: bounds.stopAt };
+  // Remember the practice verse across visits (rides the settings blob; restored at boot).
+  if (settings.loopVerse !== numLabel) { settings.loopVerse = numLabel; saveSettings(); }
   currentAudio.currentTime = bounds.startTime;
   if (lastHighlightedIdx >= 0) paintKaraokeIdx(lastHighlightedIdx, false);
   lastHighlightedIdx = -1;
   renderLoopState();
   setKaraokeStatus(I18n.t('torah.status.loop_verse', { verseRef: numLabel }));
-  if (currentAudio.paused) currentAudio.play().catch(() => {});
+  // armOnly (the boot restore): everything above is applied, but playback waits for ▶ —
+  // never rely on the autoplay policy to block play() (a daily student can earn autoplay).
+  if (!armOnly && currentAudio.paused) currentAudio.play().catch(() => {});
 }
 // Stop the loop and pause playback (what the active Loop button and the audio-bar
 // Stop control both do).
@@ -4010,6 +4015,7 @@ function _navigateToVerseAliyahAndQueue(numLabel, mode) {
   }
   if (mode === 'loop') { _pendingLoopVerse = numLabel; _pendingChantVerse = null; }
   else { _pendingChantVerse = numLabel; _pendingLoopVerse = null; }
+  _pendingLoopArmOnly = false;   // a click-driven queue always plays
   saveSettings();
   if (ttsState.readAllActive) stopReadAll();
   speechSynthesis.cancel();
@@ -4325,6 +4331,7 @@ const chantAllState = { active: false, queue: null, parsha: null };
 // hands-free. Mutually exclusive with the single-verse _verseEndStopAt stop.
 let loopState = { active: false, verseLabel: null, startTime: null, stopAt: null };
 let _pendingLoopVerse = null;   // verse to loop once loadKaraoke finishes (auto-load path)
+let _pendingLoopArmOnly = false; // boot restore: arm the pending loop without starting playback
 let _loopPauseTimer = null;     // pending "pause between repeats" resume
 let _audioBaseLabel = '';       // #ttAudioLabel text when not looping (aliyah name)
 const LOOP_EPS = 0.04;          // seconds of slack before the verse-end wrap
@@ -4473,12 +4480,14 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
     requestAnimationFrame(() => seekToTimingIndex(wi));
   } else if (_pendingLoopVerse) {
     const target = _pendingLoopVerse;
+    const armOnly = _pendingLoopArmOnly;
     _pendingLoopVerse = null;
+    _pendingLoopArmOnly = false;
     setStatus('', false);
     requestAnimationFrame(() => {
       const b = computeVerseAudioBounds(target);
-      if (b) startLoop(target, b);
-      else seekToVerseInLoadedAudio(target);   // fallback: at least chant it once
+      if (b) { startLoop(target, b, armOnly); if (armOnly) flashVerse(target); }
+      else if (!armOnly) seekToVerseInLoadedAudio(target);   // fallback: at least chant it once (a stale restore just drops)
     });
   } else if (_pendingChantVerse) {
     const target = _pendingChantVerse;
@@ -6721,6 +6730,15 @@ async function init() {
     ]);
   }
 
+  // Resume practice: re-arm the last-looped verse when its aliyah/haftarah scope is what's
+  // loading anyway — armed + scrolled, never auto-playing (S180 audio slice (b)). The regex is
+  // REQUIRED (the stored value flows into a querySelector, and imports are untrusted); an
+  // explicit ?v= deep link wins over the remembered loop.
+  if (!deepVerse && typeof settings.loopVerse === 'string' && /^\d+:\d+$/.test(settings.loopVerse)
+      && /^parsha-(aliyah-[1-7]|haftarah)$/.test(settings.scope || '')) {
+    _pendingLoopVerse = settings.loopVerse;
+    _pendingLoopArmOnly = true;
+  }
   await fetchAndRender();
   if (deepVerse) flashVerse(deepVerse);   // scroll+flash the deep-linked verse (no-ops if not rendered)
 }
