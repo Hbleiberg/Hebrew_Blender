@@ -909,6 +909,7 @@
     letter-spacing: 0.08em; color: var(--muted);
     display: flex; justify-content: space-between; align-items: center;
     cursor: pointer; user-select: none; padding: 2px 0 7px;
+    min-height: 24px;   /* WCAG 2.5.8 floor — collapse headers, per the S207 precedent */
   }
   .sub-section-hdr::after { content: '▾'; font-size: 0.75rem; transition: transform 0.2s; flex-shrink: 0; }
   .sub-section.collapsed .sub-section-hdr::after { transform: rotate(-90deg); }
@@ -1799,9 +1800,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 </header>
 <div id="zoomBar" style="background:var(--warm-gray);border-bottom:1px solid var(--border);padding:5px 20px;display:flex;align-items:center;gap:10px;font-size:0.78rem;color:var(--text);">
   <span id="zoomSliderLabel" style="font-weight:600;white-space:nowrap;" data-i18n="dashboard.display.zoom_label">🔍 Zoom</span>
-  <input type="range" id="zoomSlider" aria-labelledby="zoomSliderLabel" min="50" max="200" step="5" value="100" style="flex:1;accent-color:var(--gold);cursor:pointer;">
+  <input type="range" id="zoomSlider" aria-labelledby="zoomSliderLabel" min="50" max="200" step="5" value="100" style="flex:1;accent-color:var(--gold);cursor:pointer;height:24px;">
   <span id="zoomLabel" class="bidi-isolate" style="white-space:nowrap;min-width:36px;">100%</span>
-  <button onclick="applyZoom(100)" style="font-size:0.7rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);cursor:pointer;" data-i18n="dashboard.display.zoom_reset">Reset</button>
+  <button onclick="applyZoom(100)" class="btn-xs" style="font-size:0.7rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);cursor:pointer;" data-i18n="dashboard.display.zoom_reset">Reset</button>
   <span class="wake-dot zoom-wake-dot" role="img" title="Screen will stay awake" data-i18n-title="dashboard.display.wake_dot" aria-label="Screen will stay awake" data-i18n-aria-label="dashboard.display.wake_dot"></span>
 </div>
 <button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" data-i18n-title="shared.fullscreen.exit_title">
@@ -1870,7 +1871,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <div class="weather-loading" data-i18n="dashboard.weather.loading">Loading weather…</div>
         </div>
         <div style="text-align:center;margin-top:6px;">
-          <button onclick="renderWeather()" title="Refresh weather" data-i18n-title="dashboard.weather.refresh_title" data-i18n="dashboard.weather.refresh"
+          <button onclick="renderWeather()" class="btn-xs" title="Refresh weather" data-i18n-title="dashboard.weather.refresh_title" data-i18n="dashboard.weather.refresh"
             style="font-size:0.68rem;padding:2px 8px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--muted);cursor:pointer;">↺ Refresh</button>
         </div>
       </div>
