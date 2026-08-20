@@ -3226,13 +3226,20 @@ function renderEmptyReading(failed) {   // friendly card shown in #ttReading whe
       parshiyotData.map(p => `<option value="${esc(p.en)}">${esc(`${p.n}. ${p.en} (${p.he}) — ${p.ref}`)}</option>`).join('') +
       `</select>`
     : '';
+  // Corpus-register ↻ (converged retry model): when the parshiyot corpus itself failed there is
+  // no picker to offer and no reading to re-fetch — this button re-runs the static-data load
+  // instead. Mutually exclusive with the reading-failure button by construction: a reading fetch
+  // can't even resolve a selection while parshiyotData is empty, so `failed` is never set here.
+  const corpusRetryHtml = (!canPick && _staticDataFailed && !failed)
+    ? `<button type="button" class="btn" id="ttCorpusRetryBtn" onclick="retryStaticData()" data-i18n-key="torah.reading.retry_button">${esc(I18n.t('torah.reading.retry_button'))}</button>`
+    : '';
   document.getElementById('ttReading').innerHTML =
     `<div class="tt-empty">
        <div class="tt-empty-star" aria-hidden="true">✡︎</div>
        <h2 data-i18n-key="${tKey}">${esc(I18n.t(tKey))}</h2>
        <p data-i18n-key="${bKey}">${esc(I18n.t(bKey))}</p>` +
     (failed ? `<button type="button" class="btn" id="ttRetryBtn" onclick="fetchAndRender()" data-i18n-key="torah.reading.retry_button">${esc(I18n.t('torah.reading.retry_button'))}</button>` : '') +
-    pickerHtml +
+    pickerHtml + corpusRetryHtml +
     `</div>`;
   const cp = document.getElementById('ttCardParsha');
   if (cp) {
@@ -6635,15 +6642,8 @@ async function goToCurrentParshah() {
 /* ══════════════════════════════════════════════════════
    INIT
    ══════════════════════════════════════════════════════ */
-async function init() {
-  initDark();
-  loadSettings();
-  _watchAudioBarHeight();   // keeps the bulk dock clear of the sticky karaoke bar at any width
-  _watchBulkDockFocus();    // stops the dock vanishing under a keyboard user's own Clear
-  const fsBtn = document.getElementById('fsBtn');
-  if (fsBtn) fsBtn.innerHTML = FS_ENTER;
-
-  // Fetch static data files
+let _staticDataFailed = false;   // the corpus register's third state: fetched-and-failed (vs never/loaded)
+async function loadStaticData() {   // extracted from init so the empty card's ↻ can re-run it (converged retry model)
   try {
     const [pj, mj, aj] = await Promise.all([
       fetch('data/parshiyot.json').then(r => r.json()),
@@ -6653,10 +6653,34 @@ async function init() {
     parshiyotData = pj;
     manifestData = mj;
     aliyahData = aj;
+    _staticDataFailed = false;
+    return true;
   } catch (e) {
     console.error('Failed to load data files', e);
+    _staticDataFailed = true;
     setStatus(I18n.t('torah.status.data_load_failed'), true, 'torah.status.data_load_failed');
+    return false;
   }
+}
+async function retryStaticData() {   // in-card ↻ for a failed corpus load; on success, resume the normal flow
+  const b = document.getElementById('ttCorpusRetryBtn');
+  if (b) b.disabled = true;   // one in-flight attempt; loadStaticData re-reports failure and the card re-renders
+  if (!(await loadStaticData())) { if (b) b.disabled = false; return; }
+  populateParshaPicker();
+  if (!settings.parshahKey && parshiyotData.length) { settings.parshahKey = parshiyotData[0].en; saveSettings(); }
+  syncParshaSelect();
+  fetchAndRender();
+}
+async function init() {
+  initDark();
+  loadSettings();
+  _watchAudioBarHeight();   // keeps the bulk dock clear of the sticky karaoke bar at any width
+  _watchBulkDockFocus();    // stops the dock vanishing under a keyboard user's own Clear
+  const fsBtn = document.getElementById('fsBtn');
+  if (fsBtn) fsBtn.innerHTML = FS_ENTER;
+
+  // Fetch static data files (extracted; a failure renders the empty card's ↻ Try again)
+  await loadStaticData();
 
   // Build UI
   applyFontSizes();
