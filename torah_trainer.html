@@ -526,6 +526,15 @@ body.tt-bulk-mode .tt-verse > .tt-bulk-cb { display:block; }
   font-family:inherit; flex-shrink:0; letter-spacing:0.02em;
 }
 .tt-audio-loopstop:hover { filter:brightness(1.06); }
+/* Loop-pause mirror beside ⏹ Stop loop — label matches the rates-row language, the select
+   uses the bar's translucent-white secondary-control idiom (loopstop's gold = the primary). */
+.tt-audio-pause { display:flex; align-items:center; gap:6px; flex-shrink:0; font-size:0.72rem; }
+.tt-audio-pause label { color:var(--gold-light); font-weight:600; letter-spacing:0.02em; cursor:pointer; }
+.tt-audio-pause select {
+  background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.25);
+  border-radius:5px; padding:2px 4px; font-size:0.7rem; font-family:inherit; cursor:pointer;
+}
+.tt-audio-pause select option { color:var(--text); background:var(--white); }
 
 /* Resume chip — one-tap jump back to where a long reading was left off. */
 .tt-resume-chip {
@@ -917,6 +926,7 @@ body.fullscreen #ttBulkDock { display:none; }
 .tt-audio-bar.collapsed { padding:6px 14px; }
 .tt-audio-bar.collapsed audio,
 .tt-audio-bar.collapsed .tt-audio-rates,
+.tt-audio-bar.collapsed .tt-audio-pause,
 .tt-audio-bar.collapsed .tt-audio-credit { display:none; }
 .tt-audio-bar.collapsed .tt-audio-label { font-size:0.72rem; }
 
@@ -1703,6 +1713,17 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <button class="tt-audio-playpause" id="ttAudioPlayPauseBtn" onclick="toggleAudioPlay()" aria-label="Play or pause" title="Play / pause" data-i18n-aria-label="torah.audio.playpause_aria" data-i18n-title="torah.audio.playpause_title">▶</button>
   <span class="tt-audio-label" id="ttAudioLabel" data-i18n="torah.audio.karaoke_label">Karaoke</span>
   <button class="tt-audio-loopstop" id="ttLoopStopBtn" onclick="stopLoop()" aria-label="Stop looping" title="Stop looping" data-i18n-aria-label="torah.audio.loopstop_aria" data-i18n-title="torah.audio.loopstop_aria" style="display:none;" data-i18n="torah.audio.loopstop_text">⏹ Stop loop</button>
+  <!-- Loop-pause mirror of the drawer's #optLoopPause (same keys, same settings.loopPauseMs);
+       shown only while a loop runs — the one moment the setting matters (S180 H audio slice). -->
+  <span class="tt-audio-pause" id="ttLoopPauseRow" style="display:none;">
+    <label for="ttLoopPauseBar" data-i18n="torah.audio.loop_pause_label">Pause between repeats</label>
+    <select id="ttLoopPauseBar">
+      <option value="0" data-i18n="torah.audio.loop_pause_none">None</option>
+      <option value="500" data-i18n="torah.audio.loop_pause_half">0.5 seconds</option>
+      <option value="1000" data-i18n="torah.audio.loop_pause_1">1 second</option>
+      <option value="2000" data-i18n="torah.audio.loop_pause_2">2 seconds</option>
+    </select>
+  </span>
   <audio id="ttAudio" controls preload="none" aria-label="Chanted Torah audio" data-i18n-aria-label="torah.audio.element_aria"></audio>
   <span class="tt-audio-rates">
     <span class="row">
@@ -3934,6 +3955,8 @@ function updateAudioBarLoopUi() {
   const stopBtn = document.getElementById('ttLoopStopBtn');
   if (label) label.textContent = loopState.active ? I18n.t('torah.audio.looping_label', { verse: loopState.verseLabel }) : (_audioBaseLabel || I18n.t('torah.audio.karaoke_label'));
   if (stopBtn) stopBtn.style.display = loopState.active ? '' : 'none';
+  const pauseRow = document.getElementById('ttLoopPauseRow');
+  if (pauseRow) pauseRow.style.display = loopState.active ? '' : 'none';
 }
 // Shared auto-load tail: find the aliyah containing numLabel, switch scope, and
 // queue a chant or loop to run once its audio loads. mode: 'chant' | 'loop'.
@@ -5217,6 +5240,8 @@ function syncFormToSettings() {
   document.getElementById('optKaraokeRateVal').textContent = kR.toFixed(2) + '×';
   const loopPause = document.getElementById('optLoopPause');
   if (loopPause) loopPause.value = String(parseInt(settings.loopPauseMs, 10) || 0);
+  const loopPauseBar = document.getElementById('ttLoopPauseBar');
+  if (loopPauseBar) loopPauseBar.value = String(parseInt(settings.loopPauseMs, 10) || 0);
   // top-bar controls
   document.getElementById('ttShowTranslit').checked = !!settings.showTranslit;
   document.getElementById('ttShowTranslation').checked = !!settings.showTranslation;
@@ -5356,12 +5381,22 @@ function wireSettingsForm() {
     if (currentAudio) currentAudio.playbackRate = settings.karaokeRate;
     saveSettings();
   });
-  // Pause between verse-loop repeats
-  const loopPause = document.getElementById('optLoopPause');
-  if (loopPause) loopPause.addEventListener('change', e => {
-    settings.loopPauseMs = parseInt(e.target.value, 10) || 0;
+  // Pause between verse-loop repeats — the drawer select and the audio bar's loop-scoped
+  // mirror both write settings.loopPauseMs and sync each other (the applyTtsRate idiom).
+  // The loop reads the value live at each verse end, so a mid-loop change applies to the
+  // very next repeat.
+  function applyLoopPause(ms) {
+    settings.loopPauseMs = ms;
+    const d = document.getElementById('optLoopPause');
+    const b = document.getElementById('ttLoopPauseBar');
+    if (d) d.value = String(ms);
+    if (b) b.value = String(ms);
     saveSettings();
-  });
+  }
+  const loopPause = document.getElementById('optLoopPause');
+  if (loopPause) loopPause.addEventListener('change', e => applyLoopPause(parseInt(e.target.value, 10) || 0));
+  const loopPauseBar = document.getElementById('ttLoopPauseBar');
+  if (loopPauseBar) loopPauseBar.addEventListener('change', e => applyLoopPause(parseInt(e.target.value, 10) || 0));
   // Top-bar controls
   document.getElementById('ttShowTranslit').addEventListener('change', e => {
     settings.showTranslit = e.target.checked;
