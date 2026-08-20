@@ -941,6 +941,31 @@ selection changed) — `afterUndo` shows the canonical full refresh.
 - **Next-step hint**: `renderNextStepHint()` (called from `renderLetterGrid()`) — the "what's next?"
   line under the letter grid.
 
+### Imported-font mark fidelity (`m.attachAnchor`, v5.14)
+The app normalizes every mark to *attach-origin-at-(0,0)*: `markGlyphContours`/`markGlyphCurves`/
+`markContoursFor` translate mark geometry into mark-local space and `buildFEA` emits `<anchor 0 0>`
+for every markClass, so all positioning intelligence lives in per-letter base anchors. The origin
+comes from **`markAttachOrigin(m)` — the single choke point and the only sanctioned reader of
+`m.attachAnchor`**: a mark imported from a font (anchors option on) carries the source font's own
+GPOS `MarkAnchor` there (1000-UPM y-up, same space as its imported contours) and lands exactly
+where the original font put it; absent (traced / drawn / built-in marks, older projects) the bbox
+convention applies byte-for-byte. Lifecycle: `importMarkGlyph` drops any stale `attachAnchor`
+(re-set from the new font's GPOS by `applyFontImport`); `finalizeFromRaw` (the trace commit) and
+`assignSvgContours` drop it too; the Edit-shape modal carries it through upload-mode applies and
+drops it for editor-mode (pieces) applies; boldGen mutates contours in place and deliberately
+leaves it fixed. It rides autosave/`.hfm`/recent-projects for free (deep clones, no whitelists).
+`hfm_read_anchors` (v2) walks only mark/abvm/blwm-feature lookups, assigns each app key to its
+majority GPOS class (marks × Hebrew-letter bases; the old first-wins collapsed split classes), and
+folds near-constant per-class deltas into `markAttach` so marks in losing classes (shin dots,
+meteg, hataf classes) still land exactly; non-constant deltas become `notes[]` residuals. After a
+GPOS-bearing import, `runImportFidelityCheck` shapes every imported-mark × covered-letter pair
+against the ORIGINAL bytes with harfbuzzjs and reports measured max/mean (status line + a details
+modal listing >3-unit combos, with an Apply-per-combo-fixes button that pins flagged combos
+mapping onto exportable non-center combined forms via the existing `pc.anchor` override — a
+hand-set `pc.anchor` is user truth and is never touched). Fail-soft: no harfbuzz ⇒ the import
+stands and the status says the check was unavailable. Word-edge-halign trop columns are a
+deliberate app convention, skipped (and counted) rather than flagged.
+
 ### Lazy CDNs + CSP
 pyodide v0.26.2 (+ fontTools), harfbuzzjs 0.4.6 (`hb.wasm` fetch — needs `'wasm-unsafe-eval'` +
 `connect-src cdn.jsdelivr.net`), opentype.js 1.3.4 — all jsDelivr, all lazy-loaded via

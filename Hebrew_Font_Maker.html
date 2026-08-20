@@ -2398,6 +2398,14 @@ function renderGrids() {
    ATTACH origin is derived from the bbox + class. markGlyphContours() returns the
    mark-local polygon list (origin at the attach point) for preview + export. */
 function markAttachOrigin(m) {
+  // A mark imported from a font carries the source font's own GPOS MarkAnchor (m.attachAnchor,
+  // 1000-UPM y-up — the same space as its imported contours): the exact point the original font
+  // attached, which the bbox convention below can only approximate. Absent (traced / drawn /
+  // built-in marks, older projects) ⇒ the bbox convention, byte-for-byte as before. This function
+  // is the only sanctioned reader of attachAnchor — preview, QA, ghosts and export all flow
+  // through it, so replacing the origin here keeps every surface consistent.
+  const aa = m.attachAnchor;
+  if (aa && Number.isFinite(aa.x) && Number.isFinite(aa.y)) return { x: aa.x, y: aa.y };
   let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
   (m.contours||[]).forEach(c => c.points.forEach(([x,y]) => { minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y); }));
   if (minX>maxX) return { x:0, y:0 };
@@ -2676,7 +2684,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.13';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.14';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2888,6 +2896,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.14</strong> &mdash; <strong>Imported fonts keep their exact nikkud positions.</strong> When you import a TTF/OTF with <span class="ui">Import nikkud anchor positions</span> on, the Font Maker now also reads each mark's own <em>attachment point</em> from the font &mdash; not just the letters' anchors &mdash; so every vowel, dagesh and trop lands exactly where the original font put it, even in fonts that position, say, the sh'va and the holam through separate rules. And it doesn't just assume: right after the import, the original font is shaped with the same engine word processors use, and every letter+mark pair is <strong>measured</strong> against what the editor will produce. A status line reports the numbers, and if any combo is more than a few units off you get a detail list with a one-click <span class="ui">Apply per-combo fixes</span> button for the combined forms (&#1493;&#1465;, &#1513;&#1473;&hellip;). Traced, drawn and built-in marks are completely untouched. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.13</strong> &mdash; <strong>Watch a letter being written.</strong> In <span class="ui">Draw</span>, a new <span class="ui">&#9654; Replay</span> button plays your strokes back one at a time, in the order you actually drew them &mdash; so you can show a class the stroke order, or check your own before you trace. It is a viewing aid and nothing more: it changes no part of the letter, adds nothing to <span class="ui">Undo</span>, and stops the moment you touch the canvas again. Press it a second time to stop it early. If your device is set to reduce motion, the strokes simply appear together and the Font Maker says so. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.12</strong> — <strong>Click a point, see its contour.</strong> In <span class="ui">Edit points</span>, selecting a point now draws a dashed box around the whole contour it belongs to &mdash; in the same colour as that contour&rsquo;s swatch in the <span class="ui">Contours</span> list, where the matching row is outlined in that colour too. When a letter is a pile of overlapping contours, &ldquo;which contour did I just grab?&rdquo; used to mean squinting at the tint colours or hiding contours one by one; now the box on the canvas and the row in the list point at each other. Select points across several contours and each gets its own box. Like the contour colours themselves, the boxes are an editing aid only &mdash; they never appear in previews or the exported font. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.11</strong> — <strong>The guided tour is one click away again.</strong> The walk-through was only reachable from inside this Help window, so unless you happened to open Help and spot it, there was no way back to it once you had a project on the go. There is now a <span class="ui">&#10067; Tour</span> button in the toolbar, next to <span class="ui">&#10067; Help</span> &mdash; the same place every other tool on the site keeps it. <strong>The step buttons moved under the canvas, too.</strong> <span class="ui">Apply alignment to other letters&hellip;</span>, <span class="ui">Next: Trace &rarr;</span> and <span class="ui">Next: Nikkud &rarr;</span> used to sit far off to the right, underneath the side panels &mdash; which on most screens put them below the bottom of the window, so you had to scroll past everything to find the button that moves you along. They now sit centred directly beneath the letter you are working on, where you are already looking. <em>(August 2026)</em></li>
@@ -2991,7 +3000,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3004,7 +3013,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_11';
+  const CUR_KEY = 'fontmaker.changelog.v5_14';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -5528,9 +5537,10 @@ function importMarkGlyph(kind, cp, font) {
   if (!o.contours.length) return false;
   const m = customMark(kind, cp);
   m.contours = o.contours; m.curves = o.curves;   // real curves ride along (markGlyphCurves translates, export scales them)
-  m.designMode = 'upload';     // uses contours + bbox-derived attach origin, exactly like a traced mark
+  m.designMode = 'upload';     // uses contours + attach origin (imported attachAnchor, else bbox), exactly like a traced mark
   m.cls = markClassOf(kind, cp) || m.cls;
   m.placementSaved = false;
+  delete m.attachAnchor;       // shape replaced — a stale attach point must not survive; applyFontImport re-sets it from THIS font's GPOS when available
   return true;
 }
 /* Ask what to pull from the dropped font: outlines, mark shapes, and/or its real nikkud anchor positions. */
@@ -5571,7 +5581,7 @@ function askFontImportOptions(file, font, bytes) {
 async function applyFontImport(file, font, bytes, opts) {
   status(I18n.t('fontmaker.status.importing_font'), true);
   try {
-    let imported = null, hadGpos = false, anchorErr = false;
+    let imported = null, hadGpos = false, anchorErr = false, markAttach = null, markCoverage = null, anchorNotes = [];
     if (opts.anchors) {
       try {
         await ensurePyodide();
@@ -5580,7 +5590,7 @@ async function applyFontImport(file, font, bytes, opts) {
         pyodide.globals.set('hfm_anchor_classmap', JSON.stringify(anchorClassMapForImport()));
         const r = JSON.parse(pyodide.runPython('hfm_read_anchors(hfm_anchor_b64, hfm_anchor_classmap)'));
         if (r.error) { console.warn(r.error); anchorErr = true; }
-        else { imported = r.anchors || {}; hadGpos = !!r.hadGpos; }
+        else { imported = r.anchors || {}; hadGpos = !!r.hadGpos; markAttach = r.markAttach || null; markCoverage = r.coverage || null; anchorNotes = r.notes || []; }
       } catch (e) { console.warn('anchor import failed, will seed', e); anchorErr = true; }
     }
     const scale = 1000 / font.unitsPerEm;
@@ -5606,14 +5616,22 @@ async function applyFontImport(file, font, bytes, opts) {
       else if (opts.outlines) { l.anchors = null; seedAnchors(l); }
     });
     // Mark shapes (nikkud + trop): replace the built-in shapes with the font's own, like uploaded marks.
-    let markHits = 0, tropImported = 0;
+    let markHits = 0, tropImported = 0, attachCount = 0;
+    const importedMarks = [];   // [kind, cp] pairs whose shape came from THIS font — the fidelity-check domain
     if (opts.marks) {
       let nik = 0, trp = 0;
-      NIKKUD_MARKS.forEach(m => { if (importMarkGlyph('nikkud', m.cp, font)) nik++; });   // NIKKUD_MARKS holds {cp,name,cls} objects — passing the object made String.fromCodePoint throw and abort the whole import
-      TROP_MARKS.forEach(t => { if (importMarkGlyph('trop', t.cp, font)) trp++; });
+      NIKKUD_MARKS.forEach(m => { if (importMarkGlyph('nikkud', m.cp, font)) { nik++; importedMarks.push(['nikkud', m.cp]); } });   // NIKKUD_MARKS holds {cp,name,cls} objects — passing the object made String.fromCodePoint throw and abort the whole import
+      TROP_MARKS.forEach(t => { if (importMarkGlyph('trop', t.cp, font)) { trp++; importedMarks.push(['trop', t.cp]); } });
       if (nik) project.font.nikkud.mode = 'custom';
       if (trp) project.font.trop.mode = 'custom';
       markHits = nik + trp; tropImported = trp;
+      // D1: an imported mark attaches at the source font's own MarkAnchor, not its bbox — only when
+      // this import read anchors (markAttach non-null) AND replaced this mark's shape from the same
+      // bytes; anything else keeps the bbox convention (importMarkGlyph already dropped stale points).
+      if (markAttach) importedMarks.forEach(([kind, cp]) => {
+        const ma = markAttach[cp], m = project.font[kind].custom[cp];
+        if (m && ma && Number.isFinite(ma.x) && Number.isFinite(ma.y)) { m.attachAnchor = { x: ma.x, y: ma.y }; attachCount++; }
+      });
     }
     // Style prefill: a source font flagged bold (OS/2 fsSelection bit 5, usWeightClass ≥ 600, or
     // head.macStyle bit 0) makes this project the family's Bold style — the "import my bold TTF,
@@ -5642,6 +5660,9 @@ async function applyFontImport(file, font, bytes, opts) {
     if (opts.outlines && n && project.font.style !== 'bold' && !opts.boldAfter) msg += ' ' + I18n.t('fontmaker.status.boldgen_hint');
     status(msg);
     if (opts.boldAfter && opts.outlines && n) boldGenOpen(true);   // the no-Hebrew early return above bypasses this
+    // Mark fidelity report (D4): only for GPOS-bearing imports — measure the editor's predicted mark
+    // placements against the original bytes via harfbuzz. Async + fail-soft: never blocks the import.
+    if (hadGpos && imported) runImportFidelityCheck({ font, fontName: file.name, bytes, importedMarks, markCoverage, notes: anchorNotes, anchorHits, attachCount });
   } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.font_import_failed_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); }
 }
 
@@ -5824,6 +5845,7 @@ function assignSvgContours(it, kind, contours, sheetId, cropRect) {   // commit 
     it.anchors = null; seedAnchors(it);
   } else { it.advance = 0; it.anchors = null; it.designMode = 'upload'; }
   it.handEdited = false;
+  delete it.attachAnchor;   // an SVG upload replaces the shape — any imported attach point no longer matches it
 }
 async function uploadSvgForCurrent(file) {  // single-letter / per-mark SVG upload (replaces trace)
   let text;
@@ -9558,6 +9580,7 @@ function finalizeFromRaw(l, rawLoops) {
     l.curves = null;                                            // no ink → drop any stale curves (mirror l.contours)
   }
   l.handEdited = false;                                         // a fresh trace replaces any hand-edited points
+  delete l.attachAnchor;                                        // re-tracing an imported mark drops its imported attach point (origin re-derives from the new bbox)
   return out.length;
 }
 /* Outline-only inner wall: trace the ink eroded inward by lineWeight (font units → field px). */
@@ -10438,6 +10461,7 @@ function openMarkEdit(kind, cp, opts) {
     designMode: (src && src.designMode === 'upload') ? 'upload' : 'editor',
     pieces: (src && src.pieces && src.pieces.length) ? clone(src.pieces) : defaultPieces(kind, cp),
     contours: clone(src && src.contours), curves: clone(src && src.curves),
+    attachAnchor: clone(src && src.attachAnchor),   // imported attach point rides with the contours it belongs to
     source: clone(src && src.source) || { kind: 'single', dataUrl: null }
   };
   if (!meItem.pieces || !meItem.pieces.length) meItem.pieces = defaultPieces(kind, cp);
@@ -10679,6 +10703,7 @@ function meApply(scope) {
     pieces: isEd ? JSON.parse(JSON.stringify(meItem.pieces)) : null,
     contours: isEd ? null : (meItem.contours || null),
     curves: isEd ? null : (meItem.curves || null),
+    attachAnchor: isEd ? null : (meItem.attachAnchor || null),   // pieces are mark-local already; contours keep their imported attach point
     source: meItem.source || null, cls: meItem.cls
   };
   if (scope === 'all') {
@@ -10687,13 +10712,14 @@ function meApply(scope) {
       const it = store[cp];
       it.designMode = payload.designMode; it.pieces = payload.pieces;
       it.contours = payload.contours; it.curves = payload.curves; if (payload.source) it.source = payload.source;
+      if (payload.attachAnchor) it.attachAnchor = payload.attachAnchor; else delete it.attachAnchor;
       project.font[kind].mode = 'custom';
     });
   } else {
     const L = meGlobal ? null : curLetter(); if (!L) { closeMarkEdit(); return; }
     udDo([{ t:'item', kind:'letter', cp: L.codepoint }], 'edit shape on ' + L.name, () => {
       if (!L.markShapes) L.markShapes = {};
-      L.markShapes[cp] = { designMode: payload.designMode, pieces: payload.pieces, contours: payload.contours, curves: payload.curves, source: payload.source, cls: payload.cls };
+      L.markShapes[cp] = { designMode: payload.designMode, pieces: payload.pieces, contours: payload.contours, curves: payload.curves, attachAnchor: payload.attachAnchor, source: payload.source, cls: payload.cls };
     });
   }
   closeMarkEdit();
@@ -13802,8 +13828,21 @@ def hfm_ttf_to_woff2(ttf_b64):
 
 
 def hfm_read_anchors(ttf_b64, class_map_json):
-    # Read GPOS mark-to-base anchors from an existing font so the editor can show & fix them.
+    # Read GPOS mark-to-base data from an existing font so the editor can reproduce it exactly.
     # class_map_json maps "<unicode_int>" -> "below"|"above"|"center"|"tropAbove"|"tropBelow".
+    # v2 (mark fidelity): besides the per-letter BaseAnchors ("anchors", same shape as before), returns
+    #   markAttach: per-mark MarkAnchor {"<HEXCP>": {x,y}} — 1000-UPM, y-up, the same space as the
+    #               BaseAnchors and the imported contours (fontTools anchors need no y negation),
+    #   coverage:   per-mark list of base HEXCPs its GPOS class positions (the fidelity-check domain),
+    #   notes:      [{type:"classResidual", mark, letters, spread:{x,y}}] for marks whose own class
+    #               disagrees with their app key's winning class by a NON-constant per-letter delta.
+    # Class collapse is majority-wins per app key — the class with the largest positioning authority
+    # (marks x covered bases; tie -> more marks, then lowest class index, then walk order) instead of
+    # the old first-wins. (Plain mark-count would mis-pick tiny special classes: Ezra SIL's shin-dots
+    # class has 2 marks but covers ONE base, vs holam's 1 mark over all 76.) A mark whose class lost
+    # its key folds the base-averaged delta into its MarkAnchor when near-constant (stddev <= 3 units
+    # per axis), so it still lands exactly where the original font put it. Anchor-less marks /
+    # cmap-less glyphs skip as before.
     import io, base64, json
     from fontTools.ttLib import TTFont
     try:
@@ -13818,9 +13857,28 @@ def hfm_read_anchors(ttf_b64, class_map_json):
         for k, v in json.loads(class_map_json).items():
             class_map[int(k)] = v
         if "GPOS" not in f or f["GPOS"].table is None or f["GPOS"].table.LookupList is None:
-            return json.dumps({"ok": True, "hadGpos": False, "anchors": {}})
-        out = {}
-        for lk in f["GPOS"].table.LookupList.Lookup:
+            return json.dumps({"ok": True, "hadGpos": False, "anchors": {}, "markAttach": {}, "coverage": {}, "notes": []})
+        # Walk only the lookups the shaper applies by default for mark-to-base positioning: the ones
+        # referenced by the mark/abvm/blwm features. Contextual chains reference EXTRA MarkBasePos
+        # lookups that fire only in specific sequences (Ezra SIL carries 20+ such variant lookups) —
+        # counting those skews the class-majority vote badly. A GPOS with none of these features
+        # falls back to walking every lookup, like the v1 reader.
+        lookups = f["GPOS"].table.LookupList.Lookup
+        want = set()
+        fl = f["GPOS"].table.FeatureList
+        if fl is not None:
+            for fr in fl.FeatureRecord:
+                if fr.FeatureTag in ("mark", "abvm", "blwm"):
+                    want.update(fr.Feature.LookupListIndex)
+        idxs = sorted(i for i in want if i < len(lookups)) if want else range(len(lookups))
+        # one group per (app key, class index, mark set); subtables with the same signature merge
+        # (split base coverage), first value wins on any clash so base/mark anchors stay paired.
+        groups = []
+        by_sig = {}
+        mark_key = {}   # mark HEXCP -> its own app key (the class the EDITOR attaches it through)
+        HEB_LO, HEB_HI = 0x05D0, 0x05EA   # the 27 base letters — the domain the editor predicts on
+        for li in idxs:
+            lk = lookups[li]
             subs = []
             for st in (lk.SubTable or []):
                 ext = getattr(st, "ExtSubTable", None)
@@ -13830,33 +13888,108 @@ def hfm_read_anchors(ttf_b64, class_map_json):
                     continue
                 mark_glyphs = st.MarkCoverage.glyphs
                 base_glyphs = st.BaseCoverage.glyphs
-                cls_to_key = {}
+                by_ci = {}
                 for mi, mg in enumerate(mark_glyphs):
-                    ci = st.MarkArray.MarkRecord[mi].Class
+                    rec = st.MarkArray.MarkRecord[mi]
                     uni = g2u.get(mg)
                     if uni is None:
                         continue
                     key = class_map.get(uni)
-                    if key and ci not in cls_to_key:
-                        cls_to_key[ci] = key
-                for bi, bg in enumerate(base_glyphs):
-                    uni = g2u.get(bg)
-                    if uni is None:
+                    if not key:
                         continue
                     hexcp = format(uni, "04X")
-                    rec = st.BaseArray.BaseRecord[bi]
-                    for ci, anchor in enumerate(rec.BaseAnchor):
+                    mark_key.setdefault(hexcp, key)
+                    e = by_ci.setdefault(rec.Class, {"marks": {}, "keys": []})
+                    if hexcp not in e["marks"]:
+                        a = rec.MarkAnchor
+                        e["marks"][hexcp] = None if a is None else (a.XCoordinate * scale, a.YCoordinate * scale)
+                        e["keys"].append(key)
+                for ci, e in by_ci.items():
+                    tally = {}
+                    for k in e["keys"]:
+                        tally[k] = tally.get(k, 0) + 1
+                    key = max(tally, key=lambda k: (tally[k], -e["keys"].index(k)))   # class key = majority key of its marks
+                    sig = (key, ci, tuple(sorted(e["marks"])))
+                    g = by_sig.get(sig)
+                    if g is None:
+                        g = {"key": key, "ci": ci, "marks": dict(e["marks"]), "bases": {}}
+                        by_sig[sig] = g
+                        groups.append(g)
+                    else:
+                        for m, a in e["marks"].items():
+                            if g["marks"].get(m) is None and a is not None:
+                                g["marks"][m] = a
+                    for bi, bg in enumerate(base_glyphs):
+                        uni = g2u.get(bg)
+                        if uni is None:
+                            continue
+                        bh = format(uni, "04X")
+                        if bh in g["bases"]:
+                            continue
+                        rec = st.BaseArray.BaseRecord[bi]
+                        anchor = rec.BaseAnchor[ci] if ci < len(rec.BaseAnchor) else None
                         if anchor is None:
                             continue
-                        key = cls_to_key.get(ci)
-                        if not key:
-                            continue
-                        slot = out.setdefault(hexcp, {})
-                        if key in slot:
-                            continue
-                        slot[key] = {"x": round(anchor.XCoordinate * scale),
-                                     "y": round(anchor.YCoordinate * scale)}
-        return json.dumps({"ok": True, "hadGpos": True, "anchors": out})
+                        g["bases"][bh] = (anchor.XCoordinate * scale, anchor.YCoordinate * scale)
+        # majority-wins winner per app key: largest marks x HEBREW-letter-bases authority (Latin
+        # accent classes share GPOS classes with rafe and would win on raw base count), tie -> more
+        # marks, then lowest class index, then walk order
+        by_key = {}
+        for i, g in enumerate(groups):
+            nheb = sum(1 for bh in g["bases"] if HEB_LO <= int(bh, 16) <= HEB_HI)
+            by_key.setdefault(g["key"], []).append((-len(g["marks"]) * nheb, -len(g["marks"]), g["ci"], i, g))
+        winners = {}
+        for key, lst in by_key.items():
+            lst.sort(key=lambda t: (t[0], t[1], t[2], t[3]))
+            winners[key] = lst[0][4]
+        # per-letter anchors: the winner supplies each key; losing classes only fill letters the
+        # winner does not cover (better than a seeded default, and matches the old data-beats-seed rule)
+        out = {}
+        for key, lst in by_key.items():
+            for t in lst:
+                for bh, xy in t[4]["bases"].items():
+                    slot = out.setdefault(bh, {})
+                    if key in slot:
+                        continue
+                    slot[key] = {"x": round(xy[0]), "y": round(xy[1])}
+        # per-mark attach anchor + coverage; delta folding for marks whose own key's winner is another class
+        markAttach = {}
+        coverage = {}
+        notes = []
+        for m, mkey in mark_key.items():
+            in_groups = [g for g in groups if m in g["marks"]]
+            cov = []
+            for g in in_groups:
+                for bh in g["bases"]:
+                    if bh not in cov:
+                        cov.append(bh)
+            coverage[m] = cov
+            win = winners.get(mkey)
+            home = win if (win is not None and win["marks"].get(m) is not None) else None
+            if home is None:
+                home = next((g for g in in_groups if g["marks"][m] is not None), None)
+            if home is None:
+                continue   # NULL MarkAnchor everywhere -> no attach point (bbox fallback), as before
+            ax, ay = home["marks"][m]
+            if win is not None and home is not win:
+                ds = [(home["bases"][bh][0] - win["bases"][bh][0], home["bases"][bh][1] - win["bases"][bh][1])
+                      for bh in home["bases"] if bh in win["bases"] and HEB_LO <= int(bh, 16) <= HEB_HI]
+                if ds:
+                    n = float(len(ds))
+                    mx = sum(d[0] for d in ds) / n
+                    my = sum(d[1] for d in ds) / n
+                    sx = (sum((d[0] - mx) ** 2 for d in ds) / n) ** 0.5
+                    sy = (sum((d[1] - my) ** 2 for d in ds) / n) ** 0.5
+                    if sx <= 3 and sy <= 3:
+                        ax -= mx   # P = anchors[key] - attach = Base(win) - (Mark - mean(home-win)) = Base(home) - Mark
+                        ay -= my
+                    else:
+                        notes.append({"type": "classResidual", "mark": m,
+                                      "letters": sorted(bh for bh in home["bases"]
+                                                        if bh in win["bases"] and HEB_LO <= int(bh, 16) <= HEB_HI),
+                                      "spread": {"x": round(sx, 1), "y": round(sy, 1)}})
+            markAttach[m] = {"x": round(ax), "y": round(ay)}
+        return json.dumps({"ok": True, "hadGpos": True, "anchors": out, "markAttach": markAttach, "coverage": coverage, "notes": notes})
     except Exception as e:
         return json.dumps({"error": "anchor read failed: " + str(e)})
 
@@ -14683,6 +14816,165 @@ async function harfbuzzGate(bytes) {
     if (sawTwoGlyphs && !anyMarkOffset) return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_zero_offset') };
     return { ok: true };
   } catch (e) { console.warn('harfbuzz gate error', e); return { skipped: true }; }
+}
+
+/* ═══ Imported-font mark fidelity (v5.14) ═══
+   After a GPOS-bearing font import, measure where the editor will put each imported mark against
+   where the ORIGINAL bytes put it — harfbuzz-shaped ground truth, not assumption. The prediction
+   mirrors the exporter exactly: the mark's attach origin (markAttachOrigin — imported attachAnchor,
+   else bbox) lands on the letter's class anchor — or on the combined form's anchor for pairs that
+   bake into a precomposed glyph — with markNudgeDy applied after the origin translation. Combos more
+   than FIDELITY_TOL units off are listed in a details modal; the ones that map onto an exportable
+   non-center combined form (וֹ, שׁ …) get a one-click pc.anchor fix (a hand-set override always
+   wins and is never touched). Fail-soft: if harfbuzz can't load, the import stands and the status
+   line says the check was unavailable — never a blocked import. */
+const FIDELITY_TOL = 3;    // font units (1000 UPM); deviations at or under this count as exact
+let _fidelityLast = null;  // last report, for the Apply-fixes button (mirrored to the console)
+function fidelityPredictPair(l, kind, cp) {
+  // Where the editor/export puts mark `cp`'s outline origin on letter `l` (font units, relative to
+  // the letter's origin) — or a skip marker: {edge} for word-edge trop columns (a deliberate app
+  // convention, not the original's position), {userSet} for combined forms the user already pinned.
+  const m = project.font[kind] && project.font[kind].custom && project.font[kind].custom[cp];
+  const o = markAttachOrigin((l.markShapes && l.markShapes[cp]) || m || {});
+  const dy = markNudgeDy(cp);
+  const pc0 = kind === 'nikkud' ? precompFormFor(l, cp) : null;
+  const pc = (pc0 && precompExportable(pc0)) ? pc0 : null;
+  if (pc) {   // the typed pair bakes into a single glyph — the bake puts the attach origin at the form's anchor
+    if (markClassFor(cp) !== 'center' && pc.anchor && pc.anchor.x != null) return { userSet: true };
+    const a = precompAnchor(pc);
+    return { x: a.x - o.x, y: a.y - o.y + dy, pc, key: markClassFor(cp), fixable: markClassFor(cp) !== 'center', o, dy };
+  }
+  if (kind === 'trop' && tropHalign(cp) !== 'center') return { edge: true };
+  const key = kind === 'trop' ? tropColKey(TROP_CLASS[cp], 'center') : MARK_CLASS[cp];
+  seedAnchorsIfNeeded(l);
+  const a = l.anchors && l.anchors[key];
+  if (!a) return null;
+  return { x: a.x - o.x, y: a.y - o.y + dy, key, o, dy };
+}
+async function runImportFidelityCheck(ctx) {
+  // ctx: { font, fontName, bytes, importedMarks, markCoverage, notes, anchorHits, attachCount }
+  try {
+    if (!ctx.importedMarks.length || !ctx.markCoverage) {
+      status(I18n.t('fontmaker.fidelity.status_nocheck', { letters: ctx.anchorHits, marks: ctx.attachCount }));
+      return;
+    }
+    const H = await ensureHB();
+    const blob = H.createBlob(ctx.bytes), face = H.createFace(blob, 0), hbFont = H.createFont(face);
+    const scale = 1000 / (ctx.font.unitsPerEm || 1000);
+    const rows = [];
+    let skippedSubst = 0, skippedEdge = 0, skippedUser = 0, skippedOdd = 0;
+    try {
+      const letters = project.letters.filter(l => !l.custom && !l.eng && l.contours && l.contours.length
+        && (letterMeta(l.codepoint) || {}).cat !== 'punct');
+      ctx.importedMarks.forEach(([kind, cp]) => {
+        const cov = ctx.markCoverage[cp];
+        if (!cov || !cov.length) return;              // the font never GPOS-positions this mark — no ground truth
+        const covSet = new Set(cov);
+        letters.forEach(l => {
+          if (!covSet.has(l.codepoint)) return;
+          const pred = fidelityPredictPair(l, kind, cp);
+          if (!pred) return;
+          if (pred.userSet) { skippedUser++; return; }
+          if (pred.edge) { skippedEdge++; return; }
+          const buf = H.createBuffer();
+          buf.addText(String.fromCodePoint(parseInt(l.codepoint, 16)) + String.fromCodePoint(parseInt(cp, 16)));
+          buf.guessSegmentProperties();
+          H.shape(hbFont, buf);
+          const res = buf.json(hbFont);
+          buf.destroy();
+          if (res.length === 1) { skippedSubst++; return; }   // ccmp/precomposed substitution — GSUB territory, out of scope
+          if (res.length !== 2) { skippedOdd++; return; }
+          const mark = res.find(g => !(g.ax || 0)), base = res.find(g => (g.ax || 0));
+          if (!mark || !base) { skippedOdd++; return; }
+          let pen = 0, mx = 0, bx = 0;                        // pen-walk: glyph i draws at (Σ earlier advances + dx, dy)
+          res.forEach(g => { const x = pen + (g.dx || 0); if (g === mark) mx = x; else bx = x; pen += (g.ax || 0); });
+          const real = { x: Math.round((mx - bx) * scale), y: Math.round(((mark.dy || 0) - (base.dy || 0)) * scale) };
+          const dev = Math.max(Math.abs(pred.x - real.x), Math.abs(pred.y - real.y));
+          const row = { base: l.codepoint, baseName: l.name, cp, kind, key: pred.key, pred: { x: pred.x, y: pred.y }, real, dev };
+          if (pred.pc && pred.fixable) { row.pc = pred.pc; row.fix = { x: real.x + pred.o.x, y: real.y + pred.o.y - pred.dy }; }
+          rows.push(row);
+        });
+      });
+    } finally { hbFont.destroy(); face.destroy(); blob.destroy(); }
+    const flagged = rows.filter(r => r.dev > FIDELITY_TOL).sort((a, b) => b.dev - a.dev);
+    const fixable = flagged.filter(r => r.fix);
+    const max = rows.reduce((t, r) => Math.max(t, r.dev), 0);
+    const mean = rows.length ? Math.round(rows.reduce((t, r) => t + r.dev, 0) / rows.length * 10) / 10 : 0;
+    _fidelityLast = { rows, flagged, fixable, notes: ctx.notes || [], fontName: ctx.fontName,
+                      skipped: { subst: skippedSubst, edge: skippedEdge, user: skippedUser, odd: skippedOdd },
+                      anchorHits: ctx.anchorHits, attachCount: ctx.attachCount, max, mean };
+    console.table(rows.map(r => ({ combo: String.fromCodePoint(parseInt(r.base, 16)) + String.fromCodePoint(parseInt(r.cp, 16)),
+      base: r.baseName, mark: markName(r.cp), key: r.key, predX: r.pred.x, predY: r.pred.y, realX: r.real.x, realY: r.real.y, off: r.dev })));
+    status(I18n.t('fontmaker.fidelity.status', { letters: ctx.anchorHits, marks: ctx.attachCount, max, count: rows.length }));
+    // Auto-open the details only when there is something to act on — and never over another open modal
+    if ((flagged.length || _fidelityLast.notes.length) && !document.querySelector('.overlay.open')) openFidelityDetails();
+  } catch (e) {
+    console.warn('fidelity check unavailable', e);
+    status(I18n.t('fontmaker.fidelity.status_unavailable', { letters: ctx.anchorHits, marks: ctx.attachCount }));
+  }
+}
+function openFidelityDetails() {
+  const R = _fidelityLast; if (!R) return;
+  const T = (k, p) => I18n.t(k, p);
+  const heb = cp => String.fromCodePoint(parseInt(cp, 16));
+  let body = '<div style="max-height:min(58vh, 520px);overflow:auto;">';
+  body += '<p style="margin:0 0 8px;">' + esc(T('fontmaker.fidelity.summary',
+    { count: R.rows.length, name: R.fontName, max: R.max, mean: R.mean })) + '</p>';
+  const perKey = ['below', 'above', 'center', 'tropAbove', 'tropBelow'].map(k => {
+    const rs = R.rows.filter(r => r.key === k); if (!rs.length) return '';
+    return '<li>' + esc(T('fontmaker.fidelity.key_line', { key: anchorLabelT(k), count: rs.length, max: rs.reduce((t, r) => Math.max(t, r.dev), 0) })) + '</li>';
+  }).join('');
+  if (perKey) body += '<ul style="margin:0 0 8px;padding-inline-start:18px;font-size:.85rem;">' + perKey + '</ul>';
+  const sk = R.skipped;
+  if (sk.subst || sk.edge || sk.user || sk.odd)
+    body += '<p style="margin:0 0 8px;color:var(--muted);font-size:.85rem;">' + esc(T('fontmaker.fidelity.skipped',
+      { subst: sk.subst, edge: sk.edge, user: sk.user, odd: sk.odd })) + '</p>';
+  const resNotes = R.notes.filter(nt => nt.type === 'classResidual');
+  if (resNotes.length) {   // compact, scrollable — Ezra SIL alone produces 17 of these
+    body += '<p class="warn" style="margin:0 0 4px;font-size:.85rem;">' + esc(T('fontmaker.fidelity.residual_intro', { count: resNotes.length })) + '</p>'
+      + '<ul style="margin:0 0 8px;padding-inline-start:18px;font-size:.8rem;max-height:120px;overflow:auto;">';
+    resNotes.forEach(nt => {
+      const ls = (nt.letters || []).map(heb);
+      const sample = ls.slice(0, 8).join(' ') + (ls.length > 8 ? ' ‎+' + (ls.length - 8) : '');   // LRM keeps the +N count from bidi-flipping around the Hebrew run
+      body += '<li>' + esc(T('fontmaker.fidelity.residual', { mark: gName(markName(nt.mark)) || nt.mark, x: nt.spread.x, y: nt.spread.y, letters: sample })) + '</li>';
+    });
+    body += '</ul>';
+  }
+  if (R.flagged.length) {
+    body += '<p style="margin:0 0 4px;">' + esc(T('fontmaker.fidelity.flagged_intro', { tol: FIDELITY_TOL, count: R.flagged.length })) + '</p>';
+    body += '<div style="max-height:240px;overflow:auto;border:1px solid var(--border);border-radius:6px;">'
+      + '<table style="width:100%;border-collapse:collapse;font-size:.85rem;">'
+      + '<tr><th style="text-align:start;padding:4px 8px;">' + esc(T('fontmaker.fidelity.th_combo')) + '</th>'
+      + '<th style="text-align:start;padding:4px 8px;">' + esc(T('fontmaker.fidelity.th_off')) + '</th>'
+      + '<th style="text-align:center;padding:4px 8px;">' + esc(T('fontmaker.fidelity.th_fix')) + '</th></tr>';
+    R.flagged.slice(0, 40).forEach(r => {
+      body += '<tr><td style="padding:3px 8px;"><span lang="he" style="font-family:var(--heb-font);font-size:1.25rem;direction:rtl;display:inline-block;">'
+        + esc(heb(r.base) + heb(r.cp)) + '</span> <span style="color:var(--muted);font-size:.8rem;">'
+        + esc(gName(r.baseName) + ' + ' + gName(markName(r.cp))) + '</span></td>'
+        + '<td style="padding:3px 8px;white-space:nowrap;">' + esc((r.pred.x - r.real.x) + ' / ' + (r.pred.y - r.real.y)) + '</td>'
+        + '<td style="padding:3px 8px;text-align:center;">' + (r.fix ? '✓' : '—') + '</td></tr>';
+    });
+    body += '</table></div>';
+    if (R.flagged.length > 40)
+      body += '<p style="margin:6px 0 0;color:var(--muted);font-size:.8rem;">' + esc(T('fontmaker.fidelity.more_rows', { count: R.flagged.length - 40 })) + '</p>';
+  } else {
+    body += '<p style="margin:0;">' + esc(T('fontmaker.fidelity.all_clean', { tol: FIDELITY_TOL })) + '</p>';
+  }
+  body += '</div>';
+  const btns = [{ label: T('fontmaker.modals.ok') }];
+  if (R.fixable.length) btns.unshift({ label: T('fontmaker.fidelity.apply_fixes', { count: R.fixable.length }), onClick: fidelityApplyFixes });
+  askModal(T('fontmaker.fidelity.modal_title'), body, btns);
+}
+function fidelityApplyFixes() {
+  const R = _fidelityLast; if (!R) return;
+  // Re-check right before writing: a hand-set override (pc.anchor) is user truth and always wins (D3).
+  const items = R.fixable.filter(r => { const pc = getPrecomp(r.pc.target); return pc && !(pc.anchor && pc.anchor.x != null); });
+  if (!items.length) { status(I18n.t('fontmaker.fidelity.nothing_to_fix')); return; }
+  udDo(items.map(r => ({ t: 'precomp', target: r.pc.target })), 'fidelity fixes', () => {
+    items.forEach(r => { const pc = getPrecomp(r.pc.target); if (pc) pc.anchor = { x: r.fix.x, y: r.fix.y }; });
+    renderGrids(); renderStage(); renderControls();
+  });
+  status(I18n.t(items.length === 1 ? 'fontmaker.fidelity.fixes_applied.one' : 'fontmaker.fidelity.fixes_applied.other', { count: items.length }));
 }
 
 /* ════════════════════════════════════════════════════════════════════════
