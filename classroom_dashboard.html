@@ -1650,6 +1650,10 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     .tour-spot, .tour-card, .dash-edit-pencil, #videoPanel, #timerCol, #pickerActions,
     .fr-backdrop, .fr-modal, .swm-backdrop, .swm-modal,
     #weatherBody button { display: none !important; }
+    /* An instruction to click is an edit affordance, not board content — same reasoning as the
+       fullscreen suppression above (and the print-hidden .dash-edit-pencil). Selector mirrors the
+       base rule exactly so it ties on specificity and wins by order. */
+    #dashTextDisplay:empty:not(.editing)::before { content: none; }
     /* Print establishes its own ink. The dialog drops background colours by default, so every
        colour picked to sit ON a coloured plate is re-lit for white paper, and remapping the
        tokens converges both themes on the light palette (the trope_tutor treatment) — without
