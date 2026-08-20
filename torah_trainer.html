@@ -354,7 +354,13 @@ body.dark .tt-status.error { color:#ff6666; }
 .tt-empty h2 { font-family:'Libre Baskerville',serif; font-size:1.15rem; color:var(--navy); margin:0; }
 body.dark .tt-empty h2 { color:var(--gold-light); }
 .tt-empty p { font-size:0.88rem; max-width:340px; margin:0; line-height:1.5; }
-.tt-empty select { max-width:min(340px, 100%); }
+.tt-empty select {
+  max-width:min(340px, 100%);
+  /* Same 30px floor + look as the .tt-ctrl group rule (S195) — this select lives outside that
+     group, and rendered 19px on default styling. Both tokens flip with the theme. */
+  min-height:30px; padding:5px 8px; border-radius:5px; font:inherit; font-size:0.82rem;
+  background:var(--white); color:var(--text); border:1px solid var(--border); cursor:pointer;
+}
 
 .tt-ref-hdr {
   font-family:'Libre Baskerville',serif; font-size:1.05rem;
@@ -525,6 +531,8 @@ body.tt-bulk-mode .tt-verse > .tt-bulk-cb { display:block; }
   background:var(--gold); color:var(--navy); border:none; border-radius:6px;
   padding:4px 9px; font-size:0.72rem; font-weight:700; cursor:pointer;
   font-family:inherit; flex-shrink:0; letter-spacing:0.02em;
+  /* Touch floor (S102 shape): the inline-flex turns min-height into a taller box, not taller text. */
+  min-height:30px; display:inline-flex; align-items:center; justify-content:center;
 }
 .tt-audio-loopstop:hover { filter:brightness(1.06); }
 /* Loop-pause mirror beside ⏹ Stop loop — label matches the rates-row language, the select
@@ -534,6 +542,7 @@ body.tt-bulk-mode .tt-verse > .tt-bulk-cb { display:block; }
 .tt-audio-pause select {
   background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.25);
   border-radius:5px; padding:2px 4px; font-size:0.7rem; font-family:inherit; cursor:pointer;
+  min-height:30px;   /* the touch floor — this select sat outside the .tt-ctrl group rule at ~21px */
 }
 .tt-audio-pause select option { color:var(--text); background:var(--white); }
 
@@ -897,6 +906,7 @@ body.fullscreen #ttBulkDock { display:none; }
 }
 .tt-audio-bar .tt-audio-rates input[type="range"] {
   width:90px; accent-color:var(--gold); cursor:pointer;
+  height:24px;   /* operable box at the WCAG floor (same shape as .slider-row's sliders); visual track unchanged */
 }
 .tt-audio-bar .tt-audio-rates .val {
   color:#fff; min-width:44px; text-align:right;
@@ -914,7 +924,7 @@ body.fullscreen #ttBulkDock { display:none; }
 .tt-audio-bar .tt-audio-collapse,
 .tt-audio-bar .tt-audio-playpause {
   background:rgba(255,255,255,0.12); color:#fff; border:none; border-radius:4px;
-  width:28px; height:28px; cursor:pointer; font-size:1rem; line-height:1;
+  width:30px; height:30px; cursor:pointer; font-size:1rem; line-height:1;   /* 28→30: the touch floor */
   flex-shrink:0; padding:0;
 }
 .tt-audio-bar .tt-audio-collapse:hover,
@@ -935,9 +945,11 @@ body.fullscreen #ttBulkDock { display:none; }
   border:none; border-radius:4px; padding:3px 7px; margin-inline-start:2px;
   font-size:0.72rem; font-variant-numeric:tabular-nums; line-height:1;
   cursor:pointer; flex-shrink:0;
+  /* Touch floor: when shown it becomes inline-flex (below), so min-height grows the box only. */
+  min-height:30px; align-items:center; justify-content:center;
 }
 .tt-audio-bar .tt-audio-mini-rate:hover { background:rgba(255,255,255,0.22); }
-.tt-audio-bar.collapsed .tt-audio-mini-rate { display:inline-block; }
+.tt-audio-bar.collapsed .tt-audio-mini-rate { display:inline-flex; }
 
 /* ───── Settings drawer (lifted from classroom_dashboard.html:468-555) ───── */
 .settings-backdrop {
