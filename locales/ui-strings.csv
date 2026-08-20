@@ -3232,10 +3232,13 @@ torah.reading.chant_all,🎵 Chant all,🎵 שירת הכול,ref-header button,
 torah.reading.chant_all_stop,⏹ Stop chant,⏹ עצירת השירה,ref-header button,leading-emoji
 torah.reading.empty_body,"Choose a parsha from the dropdown above — the reading appears here with optional transliteration, translation, color-coded vowels, and chanted audio.","בחרו פרשה מהתפריט שלמעלה — הקריאה תופיע כאן עם תעתיק אופציונלי, תרגום, תנועות צבועות ושמע בטעמים.",empty state,
 torah.reading.empty_title,Pick a parsha to start,בחרו פרשה כדי להתחיל,empty state h2,print-adjacent empty state
+torah.reading.failed_body,"Check your internet connection, then try again — Sefaria, the text source, may be briefly unavailable.","בדקו את חיבור האינטרנט ונסו שוב — ייתכן ש-Sefaria, מקור הטקסט, אינו זמין כרגע.",failed-load empty state body,
+torah.reading.failed_title,This reading didn't load,הקריאה לא נטענה,failed-load empty state h2,
 torah.reading.jump_chip_aria,Jump to aliyah {n} ({label}),קפיצה לעלייה {n} ({label}),aliyah jump chip aria,aria-label only; mixed UI+content — do not translate {n}/{label}
 torah.reading.read_all,🔊 Read all,🔊 הקראת הכול,ref-header button,leading-emoji
 torah.reading.resume,Resume at {verse} →,המשך מ-{verse} →,resume chip,mixed UI+content — do not translate {verse}
 torah.reading.resume_dismiss_aria,Dismiss resume,ביטול ההמשך,resume chip dismiss aria,aria-label only
+torah.reading.retry_button,↻ Try again,↻ נסו שוב,failed-load empty state retry button,leading-emoji
 torah.reading.stop,⏹ Stop,⏹ עצירה,ref-header button (reading),leading-emoji
 torah.reading.verse_chant,🎵 Chant,🎵 שירה,per-verse button,leading-emoji
 torah.reading.verse_chant_aria,Chant verse {verseRef} (PocketTorah audio),שירת פסוק {verseRef} (שמע PocketTorah),per-verse button aria,aria-label only; mixed UI+content — do not translate {verseRef}

@@ -3164,13 +3164,20 @@ function tokenizeTranslit(translitText, firstTwi, hebWordCount) {
 /* ══════════════════════════════════════════════════════
    RENDERERS
    ══════════════════════════════════════════════════════ */
-function renderEmptyReading() {   // friendly card shown in #ttReading when no parsha/reading is loaded
+function renderEmptyReading(failed) {   // friendly card shown in #ttReading when no parsha/reading is loaded;
+  // `failed` = the load-failure variant: names the failure instead of re-instructing a pick the
+  // teacher already made, and offers a Try again that re-runs the same selection. Each text
+  // element carries its key as dataset.i18nKey (the #ttStatus idiom) so applyI18n re-resolves
+  // the on-screen variant instead of clobbering failure copy back to "Pick a parsha".
+  const tKey = failed ? 'torah.reading.failed_title' : 'torah.reading.empty_title';
+  const bKey = failed ? 'torah.reading.failed_body'  : 'torah.reading.empty_body';
   document.getElementById('ttReading').innerHTML =
     `<div class="tt-empty">
        <div class="tt-empty-star" aria-hidden="true">✡︎</div>
-       <h2>${esc(I18n.t('torah.reading.empty_title'))}</h2>
-       <p>${esc(I18n.t('torah.reading.empty_body'))}</p>
-     </div>`;
+       <h2 data-i18n-key="${tKey}">${esc(I18n.t(tKey))}</h2>
+       <p data-i18n-key="${bKey}">${esc(I18n.t(bKey))}</p>` +
+    (failed ? `<button type="button" class="btn" id="ttRetryBtn" onclick="fetchAndRender()" data-i18n-key="torah.reading.retry_button">${esc(I18n.t('torah.reading.retry_button'))}</button>` : '') +
+    `</div>`;
   _tourOnReadingChanged();   // no reading will arrive — release any tour reading-hold so it skips those steps
 }
 function renderText() {
@@ -3555,10 +3562,11 @@ async function fetchAndRender() {
     const netHint = netDone ? '' : ' ' + I18n.t('torah.status.net_hint');
     setStatus(I18n.t('torah.status.reading_load_failed', { label: r.label, error: e.message }) + netHint, true);
     // A failed FIRST load (e.g. offline / Sefaria down) would otherwise leave the
-    // reading pane blank — show the friendly empty card so the error status has
-    // context and the pane isn't dead. Guarded on currentVerses so a refetch
-    // failure (translation toggle, etc.) never wipes an already-displayed reading.
-    if (!currentVerses || !currentVerses.length) renderEmptyReading();
+    // reading pane blank — show the failed-load empty card (names the failure +
+    // Try again) so the pane isn't dead and doesn't re-instruct the pick the
+    // teacher just made. Guarded on currentVerses so a refetch failure
+    // (translation toggle, etc.) never wipes an already-displayed reading.
+    if (!currentVerses || !currentVerses.length) renderEmptyReading(true);
     _tourOnReadingChanged();   // a parked tour reading-step won't get its content — release it so it skips past
   }
 }
@@ -6677,9 +6685,9 @@ function applyI18n() {
   try {
     const emptyCard = document.querySelector('#ttReading .tt-empty');
     if (emptyCard) {
-      const h = emptyCard.querySelector('h2'), b = emptyCard.querySelector('p');
-      if (h) h.textContent = I18n.t('torah.reading.empty_title');
-      if (b) b.textContent = I18n.t('torah.reading.empty_body');
+      // Since the failed-load variant shipped, each element stamps its own key — resolve from
+      // the stamp so the on-screen variant (pick-a-parsha OR failed+retry) keeps its copy.
+      emptyCard.querySelectorAll('[data-i18n-key]').forEach(el => { el.textContent = I18n.t(el.dataset.i18nKey); });
     }
     // Re-resolve the status line from the key its writer recorded — this both heals a raw
     // key left by a pre-ready write AND keeps the line following later language switches.
