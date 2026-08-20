@@ -2504,15 +2504,33 @@ function markNudgeDy(cp) {   // per-mark vertical fine-tune (font units, + = up)
    harmlessly instead of fighting the new column. baseAnchorPosFor is the only sanctioned reader —
    preview, QA, predict and export all flow through it, so every surface agrees. */
 function baseAnchorPosFor(l, key, cp) {
-  const p = cp && l && l.markAnchors && l.markAnchors[cp];
-  if (p && p.key === key && Number.isFinite(p.x) && Number.isFinite(p.y)) return p;
-  return l && l.anchors ? l.anchors[key] : null;
+  return markPinFor(l, key, cp) || (l && l.anchors ? l.anchors[key] : null);
 }
 function markPinFor(l, key, cp) {   // the pin itself (never the class-anchor fallback), or null
+  if (key === 'center') return null;   // the dagesh keeps ONE home: precompAnchor ignores overrides for
+  // center, so honoring a center pin here would split the typed dagesh from every composed form (בּ, כּ…).
+  // The planner never creates one, but a hand-edited or corrupted save can carry one — refuse it at the
+  // single reader rather than trusting every writer.
   const p = cp && l && l.markAnchors && l.markAnchors[cp];
   return (p && p.key === key && Number.isFinite(p.x) && Number.isFinite(p.y)) ? p : null;
 }
 function letterHasPins(l) { return !!(l && l.markAnchors && Object.keys(l.markAnchors).length); }
+/* A SYNTHETIC base (a precomposed/wide target built from a real letter via Object.assign) inherits that
+   letter's pins by reference — so any synth that RELOCATES or TRANSFORMS a class anchor has to do the
+   same to the pins riding it, or QA and the export disagree. Both helpers are used by buildFEA and by
+   the matching qaSynth* row so the two can't drift. */
+function dropKeyPins(ma, key) {   // for a synth whose class anchor was relocated (the שׁ/שׂ holam slot)
+  if (!ma) return ma;
+  const out = {};
+  for (const cp in ma) if (ma[cp] && ma[cp].key !== key) out[cp] = ma[cp];
+  return out;
+}
+function mapPinsX(ma, fn) {       // for a synth whose ink was x-transformed (wide forms / digraphs)
+  if (!ma) return ma;
+  const out = {};
+  for (const cp in ma) { const p = ma[cp]; if (p) out[cp] = { x: Math.round(fn(p.x)), y: p.y, key: p.key }; }
+  return out;
+}
 function pinKeyFor(cp) { return TROP_CLASS[cp] ? tropColKey(TROP_CLASS[cp], tropHalign(cp)) : MARK_CLASS[cp]; }   // the anchor key a mark currently reads
 function fidelityPinnedMarkCps() {
   // Mark cps with ≥1 key-current pin on any letter. At export each of these leaves its shared
@@ -2521,7 +2539,7 @@ function fidelityPinnedMarkCps() {
   const s = new Set();
   (project.letters || []).forEach(l => { if (l.markAnchors) for (const cp in l.markAnchors) {
     const p = l.markAnchors[cp];
-    if (p && Number.isFinite(p.x) && Number.isFinite(p.y) && p.key === pinKeyFor(cp)) s.add(cp);
+    if (p && p.key !== 'center' && Number.isFinite(p.x) && Number.isFinite(p.y) && p.key === pinKeyFor(cp)) s.add(cp);
   } });
   return s;
 }
@@ -12433,7 +12451,10 @@ function renderAnchorLeft(L, l) {
     <div class="ws-side-title">${esc(I18n.t('fontmaker.panels.special_precomposed'))}</div>
     <div class="hint" style="font-size:0.66rem;">${esc(I18n.t('fontmaker.panels.special_precomposed_hint'))}</div>
     <div class="ctl-row" style="flex-wrap:wrap;gap:5px;">${forms.map(precompFormBtn).join('')}</div>` : '';
-  const nPins = l.markAnchors ? Object.keys(l.markAnchors).length : 0;
+  // Count only LIVE pins: one whose stored key no longer matches (a pinned trop whose halign moved to
+  // an edge column, a center pin from a foreign file) is inert everywhere, draws no ✎ badge and offers
+  // no Unpin — counting it would state a number the user can't act on. Clear pins still removes them.
+  const nPins = l.markAnchors ? Object.keys(l.markAnchors).filter(cp => markPinFor(l, pinKeyFor(cp), cp)).length : 0;
   const pinsSection = nPins ? `<hr class="ctl-divider">
     <div class="ctl-row" style="align-items:center;justify-content:space-between;gap:6px;">
       <span class="hint" style="font-size:0.64rem;color:var(--gold);">✎ ${esc(I18n.t(nPins === 1 ? 'fontmaker.fidelity.pins_row.one' : 'fontmaker.fidelity.pins_row.other', { count: nPins }))}</span>
@@ -12917,6 +12938,10 @@ function qaSynthPrecompRow(pc, baseMeta, label) {
     ? Object.assign({}, anc, { above: precompHolamAnchor(pc) }) : anc;
   const L = Object.assign({}, base, {
     anchors: rowAnchors,                                                // freeze anchors (vowels sit here); above → holam slot for שׁ/שׂ
+    // …and drop the above-key pins alongside that relocation, exactly as buildFEA does for these two
+    // targets: a pin wins over the frozen slot in qaAnchorFor, which would draw a following holam at
+    // the pin while the exported font puts it at the holam slot.
+    markAnchors: rowAnchors === anc ? base.markAnchors : dropKeyPins(base.markAnchors, 'above'),
     curves: null,                                                       // mixed bezier+polygon → render all as polygons
     contours: base.contours.concat(dotPolys.map(p => ({ points: p }))), // dot becomes part of the base ink
     _qaSynth: true                                                      // synth rows share the base codepoint — qaCellLayers must not re-route their mark cells through the form
@@ -12938,7 +12963,10 @@ function qaSynthWideRow(pc) {
                     tropAboveL: mapPt(baseAnc.tropAboveL), tropAboveR: mapPt(baseAnc.tropAboveR),
                     tropBelowL: mapPt(baseAnc.tropBelowL), tropBelowR: mapPt(baseAnc.tropBelowR) };
   const meta = letterMeta(baseCp);
-  const L = Object.assign({}, base, { anchors, curves: g.curves, advance: g.advance, contours: g.contours.map(p => ({ points: p })) });
+  // Pins ride the same x-transform as the anchors above — an untransformed pin wins in qaAnchorFor and
+  // would draw the mark at the un-widened x while the exported wide glyph puts it at the widened one.
+  const markAnchors = mapPinsX(base.markAnchors, x => wideX(x, g.minX, g.widthScale));
+  const L = Object.assign({}, base, { anchors, markAnchors, curves: g.curves, advance: g.advance, contours: g.contours.map(p => ({ points: p })) });
   return { cp: baseCp, name: precompName(pc), labelCh: qaCh(pc.target), desc: meta ? meta.desc : false, L };
 }
 /* Will a composed form bake? base(s) traced, and (base+mark) the mark anchor resolves — mirrors
@@ -13805,12 +13833,6 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   // 'above' would strand a following holam at x=0 (the שֹׁ/שֹׂ bug). Give those targets a real above anchor
   // at the form's holam position (precompHolamAnchor) instead, so the holam attaches clear of / merged
   // with the baked dot per its default. Dagesh/vav-holam/rafe forms keep skipping their baked mark's class.
-  const dropKeyPins = (ma, key) => {   // a synthetic base that RELOCATES a class anchor (holam slot) must not carry that class's pins
-    if (!ma) return ma;
-    const out = {};
-    for (const cp in ma) if (ma[cp] && ma[cp].key !== key) out[cp] = ma[cp];
-    return out;
-  };
   builtPrecomposed.forEach(pc => {
     const base = project.letters.find(x => x.codepoint === pc.base);
     if (base && pc.base === '05E9' && (pc.mark === '05C1' || pc.mark === '05C2')) {
@@ -13851,9 +13873,7 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     const mapA = a => a ? { x: wideX(a.x + off, g.minX, g.widthScale), y: a.y } : a;
     const anchors = {};
     Object.keys(donor.anchors).forEach(k => { anchors[k] = mapA(donor.anchors[k]); });
-    let markAnchors;   // fidelity pins ride through the SAME ink transform as the anchors they refine
-    if (donor.markAnchors) { markAnchors = {}; Object.keys(donor.markAnchors).forEach(cp => {
-      const p = donor.markAnchors[cp]; markAnchors[cp] = { x: wideX(p.x + off, g.minX, g.widthScale), y: p.y, key: p.key }; }); }
+    const markAnchors = mapPinsX(donor.markAnchors, x => wideX(x + off, g.minX, g.widthScale));   // pins ride the SAME ink transform as the anchors they refine
     emitBaseAnchors(gname(pc.target), Object.assign({}, donor, { anchors, markAnchors }));   // no skipCls — wide forms carry no baked mark
   });
   if (markLines) f += 'feature mark {\n' + markLines + '} mark;\n\n';
@@ -15307,7 +15327,9 @@ async function fidelityMeasure(ctx) {
                       o: pred.o, dy: pred.dy,
                       ancAt: { x: pred.anc.x, y: pred.anc.y },                        // measure-time anchor (or pin) value — the apply-time user-truth guard
                       pinAt: pred.pin ? { x: pred.pin.x, y: pred.pin.y } : null };
-        if (pred.pc) { row.pc = pred.pc; if (pred.fixable) row.fix = { x: real.x + pred.o.x, y: real.y + pred.o.y - pred.dy }; }
+        // Rounded for the same reason as fidelityFixPlan's implied(): a fractional pc.anchor reaches
+        // the FEA through precompHolamAnchor's shin/sin above-anchor and feaLib rejects the file.
+        if (pred.pc) { row.pc = pred.pc; if (pred.fixable) row.fix = { x: Math.round(real.x + pred.o.x), y: Math.round(real.y + pred.o.y - pred.dy) }; }
         rows.push(row);
       });
     });
@@ -15422,7 +15444,11 @@ function fidelityFixPlan(R) {
   // for a combined form, which pins can't reach). The center class is never pinned (the dagesh keeps
   // ONE home — precompAnchor ignores overrides for center by the same design), so an off-consensus
   // center row stays flagged instead.
-  const implied = r => ({ x: r.real.x + r.o.x, y: r.real.y + r.o.y - r.dy });
+  // ROUNDED, and it has to be: markAttachOrigin's bbox fallback returns midpoints, so `o` is
+  // fractional for any mark without an imported attachAnchor (12 of the built-ins already are).
+  // A fractional value here reaches buildFEA verbatim as `<anchor 250.5 -44.25>`, and feaLib
+  // rejects that outright ("Expected a number") — one bad combo would fail the WHOLE export.
+  const implied = r => ({ x: Math.round(r.real.x + r.o.x), y: Math.round(r.real.y + r.o.y - r.dy) });
   const cheb = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
   const plan = { forms: [], anchors: [], pins: [], unfixable: [], rowFix: new Map() };
   R.flagged.forEach(r => { if (r.fix) { plan.forms.push(r); plan.rowFix.set(r, 'form'); } });
@@ -16172,7 +16198,9 @@ function sanitizeDraw(d) {
   }
   return { v: 1, strokes };
 }
-const ANCHOR_KEY_SET = new Set(['below','above','center','tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR']);
+// 'center' is deliberately absent: a center pin is unreachable in-app and inert at every reader
+// (markPinFor refuses it), so drop it on load rather than persisting a value nothing will honor.
+const ANCHOR_KEY_SET = new Set(['below','above','tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR']);
 function sanitizeMarkAnchors(l) {   // fidelity pins from a loaded save are untrusted — keep only well-formed entries; empty/junk → field absent (= no pins)
   const ma = l.markAnchors; let clean = null;
   if (ma && typeof ma === 'object') for (const cp in ma) {
