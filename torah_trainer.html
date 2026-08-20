@@ -974,6 +974,8 @@ body.dark .settings-header { background:var(--navy-deep); }
   cursor:pointer; font-size:1.2rem; line-height:1; transition:background 0.15s;
 }
 .settings-close:hover { background:rgba(255,255,255,0.22); }
+.settings-hbtns { display:flex; gap:6px; flex-shrink:0; }
+#drawerDarkBtn { font-size:1rem; }
 .settings-body { flex:1; overflow-y:auto; padding:16px; }
 
 /* ───── Panel ───── */
@@ -1758,7 +1760,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 <div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="ttSettingsTitle">
   <div class="settings-header">
     <h2 id="ttSettingsTitle" data-i18n="torah.settings.title">⚙️&nbsp; Torah Trainer Settings</h2>
-    <button class="settings-close" onclick="closeSettings()" title="Close" data-i18n-title="torah.settings.close_title" aria-label="Close settings" data-i18n-aria-label="torah.settings.close_aria">×</button>
+    <div class="settings-hbtns">
+      <!-- The open drawer covers the header's dark toggle, and the drawer's own color
+           pickers render dark-dependently — so the drawer offers the toggle itself
+           (S180 Pass H). Synced with #darkBtn by toggleDark()/initDark(). -->
+      <button class="settings-close" id="drawerDarkBtn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false">🌙</button>
+      <button class="settings-close" onclick="closeSettings()" title="Close" data-i18n-title="torah.settings.close_title" aria-label="Close settings" data-i18n-aria-label="torah.settings.close_aria">×</button>
+    </div>
   </div>
   <div class="settings-body">
 
@@ -2245,6 +2253,8 @@ function toggleDark() {
   const _db = document.getElementById('darkBtn');
   _db.textContent = isDark ? '☀️' : '🌙';
   _db.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+  const _db2 = document.getElementById('drawerDarkBtn');
+  if (_db2) { _db2.textContent = _db.textContent; _db2.setAttribute('aria-pressed', _db.getAttribute('aria-pressed')); }
   // Both color layers are now pure CSS-var (the DOM classes are theme-independent), so a
   // dark toggle only needs to re-resolve the light/dark palettes into the body vars — no
   // reading rebuild. Nikkud and trope are independent, so refresh each that's on.
@@ -2258,6 +2268,8 @@ function initDark() {
     const _db = document.getElementById('darkBtn');
     _db.textContent = '☀️';
     _db.setAttribute('aria-pressed', 'true');
+    const _db2 = document.getElementById('drawerDarkBtn');
+    if (_db2) { _db2.textContent = '☀️'; _db2.setAttribute('aria-pressed', 'true'); }
   }
   document.documentElement.classList.remove('dark-early');
 }
