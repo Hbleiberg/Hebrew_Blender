@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "fonts": [
+    {
+      "id": "shlomo-semistam",
+      "file": "shlomo-semistam/ShlomoSemiStam.ttf",
+      "displayName": "Shlomo SemiStam",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20(OFL)/ShlomoSemiStam.ttf",
+      "licenseId": "OFL-1.1",
+      "licenseName": "SIL Open Font License 1.1",
+      "licenseUrl": "https://openfontlicense.org",
+      "licenseFile": "shlomo-semistam/LICENSE.txt",
+      "copyright": "Copyright (c) 1997-2007, SIL International (http://www.sil.org/), with Reserved Font Names \"SIL\" and \"Ezra\".\nCopyright (c) 2010-2011, additional Copyright Holder Shlomo Orbach (email: rsorbach@012.net.il), with additional Reserved Font Name Shlomo.",
+      "reservedFontNames": [
+        "SIL",
+        "Ezra",
+        "Shlomo"
+      ],
+      "designer": "Shlomo Orbach",
+      "originalVersion": "2.51",
+      "hasNikkud": true,
+      "hasTrop": true,
+      "sha256": "3d1b662674f0e47657ba53a73230865cb4910b474b2e43ebf7f931d260f7e39b",
+      "added": "2026-08-20",
+      "nameTableFamily": "Ezra SIL SR"
+    }
+  ]
+}
