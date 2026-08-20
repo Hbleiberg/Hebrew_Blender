@@ -941,6 +941,8 @@
   .mark-sq:hover { border-color: var(--gold); background: var(--warm-gray); }
   .mark-sq.active { border-color: var(--navy); box-shadow: inset 0 0 0 2px var(--navy); }
   .mark-sq .mark-prev { height: 30px; margin: 0; }
+  .mark-sq { position: relative; }
+  .mark-sq .pin-badge { position: absolute; top: 2px; inset-inline-end: 4px; color: var(--gold); font-size: 0.7rem; line-height: 1; }   /* fidelity pin — same ✎ user-truth badge as the form tiles */
   .ctl-divider { height: 1px; background: var(--border); margin: 8px 0; border: none; }
   .ctl-btn .arrows { font-weight: 400; opacity: 0.7; margin-inline-start: 4px; }
   /* editable X/Y anchor fields — read like a chip, become editable on click/focus */
@@ -2778,7 +2780,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.15';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.16';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -2997,6 +2999,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.16</strong> &mdash; <strong>The fidelity report's Auto-fix now fixes everything it measures.</strong> After importing a font with anchors, one click corrects every flagged letter+mark combo &mdash; not just the combined forms. Shared anchors move when a whole letter agrees, and the stubborn per-letter positions (the report's &ldquo;own positioning rule&rdquo; marks) get exact per-letter <em>pins</em>, marked with the gold &#9998; in the placement step. The report then <strong>re-measures against the original font</strong> and shows the after numbers, and a <span class="ui">Fidelity report</span> button in the Nikkud step reopens it any time. Pins stay yours: drag a pinned mark to fine-tune it, or <span class="ui">Unpin</span> / <span class="ui">Clear pins</span> to fall back to the shared anchor. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.15</strong> &mdash; <strong>Edit a partner's font from a link.</strong> Open Siddur Project <em>starting fonts</em> now open straight into the Font Maker from an <span class="ui">?start=</span> link: a short three-step onboarding imports the font's Hebrew letters, nikkud, trop, and mark positions into a fresh project of your own, with a live preview and full credit to the original. Your version automatically keeps the original's open license &mdash; the <span class="ui">License</span> box locks, reserved font names ask you for a name of your own, and every export's <span class="ui">LICENSE.txt</span> carries the original copyright plus your &ldquo;modified work&rdquo; line. A new <span class="ui">Partner fonts</span> help tab explains the why. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.14</strong> &mdash; <strong>Imported fonts keep their exact nikkud positions.</strong> When you import a TTF/OTF with <span class="ui">Import nikkud anchor positions</span> on, the Font Maker now also reads each mark's own <em>attachment point</em> from the font &mdash; not just the letters' anchors &mdash; so every vowel, dagesh and trop lands exactly where the original font put it, even in fonts that position, say, the sh'va and the holam through separate rules. And it doesn't just assume: right after the import, the original font is shaped with the same engine word processors use, and every letter+mark pair is <strong>measured</strong> against what the editor will produce. A status line reports the numbers, and if any combo is more than a few units off you get a detail list with a one-click <span class="ui">Apply per-combo fixes</span> button for the combined forms (&#1493;&#1465;, &#1513;&#1473;&hellip;). Traced, drawn and built-in marks are completely untouched. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.13</strong> &mdash; <strong>Watch a letter being written.</strong> In <span class="ui">Draw</span>, a new <span class="ui">&#9654; Replay</span> button plays your strokes back one at a time, in the order you actually drew them &mdash; so you can show a class the stroke order, or check your own before you trace. It is a viewing aid and nothing more: it changes no part of the letter, adds nothing to <span class="ui">Undo</span>, and stops the moment you touch the canvas again. Press it a second time to stop it early. If your device is set to reduce motion, the strokes simply appear together and the Font Maker says so. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3102,7 +3105,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3115,7 +3118,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_15';
+  const CUR_KEY = 'fontmaker.changelog.v5_16';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -3549,6 +3552,24 @@ function centerAnchorV() {
     const em = effMetrics();
     writeActiveAnchor(l, key, a.x, Math.round((em.letterTop + em.baseline) / 2));                          // midpoint of the top (cap) and base (baseline) lines
     noteAnchorMoved(l); renderStage(); renderControls();
+  });
+}
+/* Remove fidelity pins (see baseAnchorPosFor): the mark falls back to the letter's class anchor. */
+function unpinActiveMark() {
+  const l = curLetter(); if (!l) return;
+  const cp = activeVowelCp();
+  if (!markPinFor(l, activeAnchorKey(), cp)) return;
+  udDo([itemScope()], 'unpin mark — ' + l.name, () => {
+    delete l.markAnchors[cp];
+    if (!Object.keys(l.markAnchors).length) delete l.markAnchors;
+    renderGrids(); renderStage(); renderControls();
+  });
+}
+function clearLetterPins() {
+  const l = curLetter(); if (!l || !letterHasPins(l)) return;
+  udDo([itemScope()], 'clear pins — ' + l.name, () => {
+    delete l.markAnchors;
+    renderGrids(); renderStage(); renderControls();
   });
 }
 
@@ -5796,7 +5817,7 @@ async function applyFontImport(file, font, bytes, opts) {
     if (opts.boldAfter && opts.outlines && n) boldGenOpen(true);   // the no-Hebrew early return above bypasses this
     // Mark fidelity report (D4): only for GPOS-bearing imports — measure the editor's predicted mark
     // placements against the original bytes via harfbuzz. Async + fail-soft: never blocks the import.
-    if (hadGpos && imported) runImportFidelityCheck({ font, fontName: file.name, bytes, importedMarks, markCoverage, notes: anchorNotes, anchorHits, attachCount });
+    if (hadGpos && imported) runImportFidelityCheck({ upm: font.unitsPerEm, fontName: file.name, bytes, importedMarks, markCoverage, notes: anchorNotes, anchorHits, attachCount });
   } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.font_import_failed_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); }
 }
 
@@ -11740,8 +11761,11 @@ function vSlider(id, valId, label, pct, fn) {
     <input type="range" id="${id}" min="0" max="100" step="1" value="${pct}" oninput="${fn}(this.value)" aria-label="${esc(label)}">
     <span class="vsval" id="${valId}">${pct}%</span></div>`;
 }
-function squareMarkBtn(cat, cp, name, activeCp, fn, forLetter) {
-  return `<button type="button" class="mark-sq ${activeCp===cp?'active':''}" aria-pressed="${activeCp===cp}" onclick="${fn}('${cp}')">${markTilePreviewSVG(cat,cp,forLetter)}<span>${name}</span></button>`;
+function squareMarkBtn(cat, cp, name, activeCp, fn, forLetter, pinLetter) {
+  const pl = pinLetter || forLetter;   // pinLetter: badge-only letter for grids that deliberately render the GLOBAL mark shape (trop)
+  const pin = pl && markPinFor(pl, pinKeyFor(cp), cp);
+  const badge = pin ? `<span class="pin-badge" title="${esc(window.I18n ? I18n.t('fontmaker.fidelity.pinned_hint') : 'Pinned')}">✎</span>` : '';
+  return `<button type="button" class="mark-sq ${activeCp===cp?'active':''}" aria-pressed="${activeCp===cp}" onclick="${fn}('${cp}')">${badge}${markTilePreviewSVG(cat,cp,forLetter)}<span>${name}</span></button>`;
 }
 function maybeInheritAnchors(l) {
   // After one letter is left, the next letter opened in the placement step starts from those same
@@ -12234,7 +12258,7 @@ function renderAnchorLeft(L, l) {
     const tOff = project.font.tropSideOffset != null ? project.font.tropSideOffset : TROP_POS_SHIFT;
     const tNdy = markNudgeDy(activeTropCp);
     grid = `<div class="ws-side-title">${I18n.t('fontmaker.panels.preview_trop')}</div>
-      <div class="mark-grid2">` + TROP_MARKS.filter(m => m.cls === want).map(m => squareMarkBtn('trop', m.cp, m.name, activeTropCp, 'setTropCp')).join('') + `</div>
+      <div class="mark-grid2">` + TROP_MARKS.filter(m => m.cls === want).map(m => squareMarkBtn('trop', m.cp, m.name, activeTropCp, 'setTropCp', undefined, l)).join('') + `</div>
       <hr class="ctl-divider">
       <div class="ws-side-title">${I18n.t('fontmaker.panels.trop_every_letter', {name: esc(tName)})}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
@@ -12279,17 +12303,21 @@ function renderAnchorLeft(L, l) {
       <div class="hint" style="font-size:0.6rem;text-align:center;">${I18n.t('fontmaker.panels.pair_hint')}</div>`;
   }
   const xyWhat = cls === 'below' ? _pT('xy_what_below', 'all under-vowels') : cls === 'above' ? _pT('xy_what_above', 'the above mark') : cls === 'center' ? _pT('xy_what_center', 'the dagesh') : _pT('xy_what_trop', "this mark's column");
+  const actPin = activePin(l);   // the previewed mark is pinned → X/Y (and the drag) edit the pin
+  const pinHint = actPin ? `<div class="hint" style="font-size:0.62rem;text-align:center;margin-top:4px;color:var(--gold);">✎ ${esc(I18n.t('fontmaker.fidelity.pinned_hint'))}
+      <button class="ctl-btn" style="font-size:0.64rem;padding:1px 8px;margin-inline-start:4px;" onclick="unpinActiveMark()">${I18n.t('fontmaker.fidelity.unpin')}</button></div>` : '';
   const xy = `<hr class="ctl-divider">
     <div class="ws-side-title">${esc(_pT('pos_title', '{class} position — {name} only', {class: anchorLabelT(cls), name: l.name}))}</div>
     <div class="anc-xy">
       <label>X <input type="number" id="ancX" value="${a.x}" oninput="setAnchorCoord('x',this.value)" onchange="udBurstCommit()"></label>
       <label>Y <input type="number" id="ancY" value="${a.y}" oninput="setAnchorCoord('y',this.value)" onchange="udBurstCommit()"></label>
     </div>
+    ${pinHint}
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
       <button class="ctl-btn" onclick="centerAnchorH()" title="${esc(_pT('center_h_title', 'Center horizontally — halfway between the left and right margins'))}">${_pT('center_h', 'Center ↔')}</button>
       <button class="ctl-btn" onclick="centerAnchorV()" title="${esc(_pT('center_v_title', 'Center vertically — halfway between the top and base lines'))}">${_pT('center_v', 'Center ↕')}</button>
     </div>
-    <div class="hint" style="font-size:0.6rem;text-align:center;margin-top:5px;">${_pT('moves_xy_hint', 'Moves ' + xyWhat + ' on <b>' + esc(l.name) + '</b> only.', { what: xyWhat, name: '<b>' + esc(l.name) + '</b>' })}</div>`;
+    <div class="hint" style="font-size:0.6rem;text-align:center;margin-top:5px;">${actPin ? '' : _pT('moves_xy_hint', 'Moves ' + xyWhat + ' on <b>' + esc(l.name) + '</b> only.', { what: xyWhat, name: '<b>' + esc(l.name) + '</b>' })}</div>`;
   let coRow = '';
   if (l.anchors) {   // "Check stacking" — preview a 2nd (nikkud) mark on this letter + warn on overlap (Babylonian all-above / two-vowel letters; on trop classes: trop-vs-vowel clashes like holam under a Left-above mark)
     const acp = activeVowelCp();
@@ -12333,6 +12361,12 @@ function renderAnchorLeft(L, l) {
     <div class="ws-side-title">${esc(I18n.t('fontmaker.panels.special_precomposed'))}</div>
     <div class="hint" style="font-size:0.66rem;">${esc(I18n.t('fontmaker.panels.special_precomposed_hint'))}</div>
     <div class="ctl-row" style="flex-wrap:wrap;gap:5px;">${forms.map(precompFormBtn).join('')}</div>` : '';
+  const nPins = l.markAnchors ? Object.keys(l.markAnchors).length : 0;
+  const pinsSection = nPins ? `<hr class="ctl-divider">
+    <div class="ctl-row" style="align-items:center;justify-content:space-between;gap:6px;">
+      <span class="hint" style="font-size:0.64rem;color:var(--gold);">✎ ${esc(I18n.t(nPins === 1 ? 'fontmaker.fidelity.pins_row.one' : 'fontmaker.fidelity.pins_row.other', { count: nPins }))}</span>
+      <button class="ctl-btn" style="font-size:0.66rem;" onclick="clearLetterPins()">${I18n.t('fontmaker.fidelity.clear_pins')}</button>
+    </div>` : '';
   // Label Prev/Next with the actual neighbor glyph, computed from the SAME source stepLetter uses so they can't drift.
   const _cyc = _placementCycleCps();
   let _ci = _cyc.indexOf(curCp); if (_ci < 0) _ci = 0;
@@ -12355,6 +12389,7 @@ function renderAnchorLeft(L, l) {
     ${xy}
     ${coRow}
     ${formsSection}
+    ${pinsSection}
     `;
 }
 function renderAnchorRight(R, l) {
@@ -12385,9 +12420,10 @@ function renderAnchorUnder(U, l) {
   }
   const { cls, isTrop, want } = _anchorCtx(l);
   const applyBtn = `<button class="ctl-btn" onclick="openApplyNikkud()" title="${esc(I18n.t('fontmaker.panels.apply_positioning_title'))}">${I18n.t('fontmaker.panels.apply_positioning')}</button>`;
+  const fidBtn = _fidelityLast ? ` <button class="ctl-btn" onclick="openFidelityDetails()" title="${esc(I18n.t('fontmaker.fidelity.reopen_title'))}">${I18n.t('fontmaker.fidelity.reopen_btn')}</button>` : '';
   U.innerHTML = `
     <div class="ws-under-row" style="align-items:center;">
-      <div style="flex:1;min-width:0;">${applyBtn}</div>
+      <div style="flex:1;min-width:0;">${applyBtn}${fidBtn}</div>
     </div>
     <div class="hint" style="margin-top:8px;">${I18n.t('fontmaker.panels.drag_handle_hint', {class: anchorLabelT(cls).toLowerCase()})}${cls==='below'?' '+I18n.t('fontmaker.panels.all_under_share'):isTrop?' '+I18n.t('fontmaker.panels.all_trop_share', {want}):''}</div>`;
 }
@@ -15135,90 +15171,124 @@ function fidelityPredictPair(l, kind, cp) {
   // Where the editor/export puts mark `cp`'s outline origin on letter `l` (font units, relative to
   // the letter's origin) — or a skip marker: {edge} for word-edge trop columns (a deliberate app
   // convention, not the original's position), {userSet} for combined forms the user already pinned.
+  // Also carries the ingredients the fix planner inverts through: o/dy, the anchor value used (anc),
+  // and the pin if one supplied the prediction.
   const m = project.font[kind] && project.font[kind].custom && project.font[kind].custom[cp];
   const o = markAttachOrigin((l.markShapes && l.markShapes[cp]) || m || {});
   const dy = markNudgeDy(cp);
   const pc0 = kind === 'nikkud' ? precompFormFor(l, cp) : null;
   const pc = (pc0 && precompExportable(pc0)) ? pc0 : null;
   if (pc) {   // the typed pair bakes into a single glyph — the bake puts the attach origin at the form's anchor
-    if (markClassFor(cp) !== 'center' && pc.anchor && pc.anchor.x != null) return { userSet: true };
+    if (markClassFor(cp) !== 'center' && pc.anchor && pc.anchor.x != null
+        && !(_fidelityLast && _fidelityLast.appliedTargets && _fidelityLast.appliedTargets.has(pc.target)))
+      return { userSet: true };   // hand-set = user truth, never measured; this session's OWN applied fixes still re-verify
     const a = precompAnchor(pc);
-    return { x: a.x - o.x, y: a.y - o.y + dy, pc, key: markClassFor(cp), fixable: markClassFor(cp) !== 'center', o, dy };
+    return { x: a.x - o.x, y: a.y - o.y + dy, pc, key: markClassFor(cp),
+             fixable: markClassFor(cp) !== 'center' && !(pc.anchor && pc.anchor.x != null), o, dy, anc: a };
   }
   if (kind === 'trop' && tropHalign(cp) !== 'center') return { edge: true };
   const key = kind === 'trop' ? tropColKey(TROP_CLASS[cp], 'center') : MARK_CLASS[cp];
   seedAnchorsIfNeeded(l);
-  const a = l.anchors && l.anchors[key];
+  const a = baseAnchorPosFor(l, key, cp);
   if (!a) return null;
-  return { x: a.x - o.x, y: a.y - o.y + dy, key, o, dy };
+  return { x: a.x - o.x, y: a.y - o.y + dy, key, o, dy, anc: a, pin: markPinFor(l, key, cp) };
+}
+async function fidelityMeasure(ctx) {
+  // The pure measurement core: shape every imported-mark × covered-letter pair against the ORIGINAL
+  // bytes and compare with the app's prediction. ctx: { bytes, upm, importedMarks, markCoverage }.
+  // Runs on import AND again after Apply fixes / from the reopen button (fidelityRerun) — which is
+  // why the bytes ride the runtime-only _fidelityLast.ctx stash, never the project.
+  const H = await ensureHB();
+  const blob = H.createBlob(ctx.bytes), face = H.createFace(blob, 0), hbFont = H.createFont(face);
+  const scale = 1000 / (ctx.upm || 1000);
+  const rows = [];
+  let skippedSubst = 0, skippedEdge = 0, skippedUser = 0, skippedOdd = 0;
+  try {
+    const letters = project.letters.filter(l => !l.custom && !l.eng && l.contours && l.contours.length
+      && (letterMeta(l.codepoint) || {}).cat !== 'punct');
+    ctx.importedMarks.forEach(([kind, cp]) => {
+      const cov = ctx.markCoverage[cp];
+      if (!cov || !cov.length) return;              // the font never GPOS-positions this mark — no ground truth
+      const covSet = new Set(cov);
+      letters.forEach(l => {
+        if (!covSet.has(l.codepoint)) return;
+        const pred = fidelityPredictPair(l, kind, cp);
+        if (!pred) return;
+        if (pred.userSet) { skippedUser++; return; }
+        if (pred.edge) { skippedEdge++; return; }
+        const buf = H.createBuffer();
+        buf.addText(String.fromCodePoint(parseInt(l.codepoint, 16)) + String.fromCodePoint(parseInt(cp, 16)));
+        buf.guessSegmentProperties();
+        H.shape(hbFont, buf);
+        const res = buf.json(hbFont);
+        buf.destroy();
+        if (res.length === 1) { skippedSubst++; return; }   // ccmp/precomposed substitution — GSUB territory, out of scope
+        if (res.length !== 2) { skippedOdd++; return; }
+        const mark = res.find(g => !(g.ax || 0)), base = res.find(g => (g.ax || 0));
+        if (!mark || !base) { skippedOdd++; return; }
+        let pen = 0, mx = 0, bx = 0;                        // pen-walk: glyph i draws at (Σ earlier advances + dx, dy)
+        res.forEach(g => { const x = pen + (g.dx || 0); if (g === mark) mx = x; else bx = x; pen += (g.ax || 0); });
+        const real = { x: Math.round((mx - bx) * scale), y: Math.round(((mark.dy || 0) - (base.dy || 0)) * scale) };
+        const dev = Math.max(Math.abs(pred.x - real.x), Math.abs(pred.y - real.y));
+        const row = { base: l.codepoint, baseName: l.name, cp, kind, key: pred.key, pred: { x: pred.x, y: pred.y }, real, dev,
+                      o: pred.o, dy: pred.dy,
+                      ancAt: { x: pred.anc.x, y: pred.anc.y },                        // measure-time anchor (or pin) value — the apply-time user-truth guard
+                      pinAt: pred.pin ? { x: pred.pin.x, y: pred.pin.y } : null };
+        if (pred.pc) { row.pc = pred.pc; if (pred.fixable) row.fix = { x: real.x + pred.o.x, y: real.y + pred.o.y - pred.dy }; }
+        rows.push(row);
+      });
+    });
+  } finally { hbFont.destroy(); face.destroy(); blob.destroy(); }
+  const flagged = rows.filter(r => r.dev > FIDELITY_TOL).sort((a, b) => b.dev - a.dev);
+  const fixable = flagged.filter(r => r.fix);
+  const max = rows.reduce((t, r) => Math.max(t, r.dev), 0);
+  const mean = rows.length ? Math.round(rows.reduce((t, r) => t + r.dev, 0) / rows.length * 10) / 10 : 0;
+  return { rows, flagged, fixable, max, mean,
+           skipped: { subst: skippedSubst, edge: skippedEdge, user: skippedUser, odd: skippedOdd } };
 }
 async function runImportFidelityCheck(ctx) {
-  // ctx: { font, fontName, bytes, importedMarks, markCoverage, notes, anchorHits, attachCount }
+  // ctx: { upm, fontName, bytes, importedMarks, markCoverage, notes, anchorHits, attachCount }
   try {
     if (!ctx.importedMarks.length || !ctx.markCoverage) {
       status(I18n.t('fontmaker.fidelity.status_nocheck', { letters: ctx.anchorHits, marks: ctx.attachCount }));
       return;
     }
-    const H = await ensureHB();
-    const blob = H.createBlob(ctx.bytes), face = H.createFace(blob, 0), hbFont = H.createFont(face);
-    const scale = 1000 / (ctx.font.unitsPerEm || 1000);
-    const rows = [];
-    let skippedSubst = 0, skippedEdge = 0, skippedUser = 0, skippedOdd = 0;
-    try {
-      const letters = project.letters.filter(l => !l.custom && !l.eng && l.contours && l.contours.length
-        && (letterMeta(l.codepoint) || {}).cat !== 'punct');
-      ctx.importedMarks.forEach(([kind, cp]) => {
-        const cov = ctx.markCoverage[cp];
-        if (!cov || !cov.length) return;              // the font never GPOS-positions this mark — no ground truth
-        const covSet = new Set(cov);
-        letters.forEach(l => {
-          if (!covSet.has(l.codepoint)) return;
-          const pred = fidelityPredictPair(l, kind, cp);
-          if (!pred) return;
-          if (pred.userSet) { skippedUser++; return; }
-          if (pred.edge) { skippedEdge++; return; }
-          const buf = H.createBuffer();
-          buf.addText(String.fromCodePoint(parseInt(l.codepoint, 16)) + String.fromCodePoint(parseInt(cp, 16)));
-          buf.guessSegmentProperties();
-          H.shape(hbFont, buf);
-          const res = buf.json(hbFont);
-          buf.destroy();
-          if (res.length === 1) { skippedSubst++; return; }   // ccmp/precomposed substitution — GSUB territory, out of scope
-          if (res.length !== 2) { skippedOdd++; return; }
-          const mark = res.find(g => !(g.ax || 0)), base = res.find(g => (g.ax || 0));
-          if (!mark || !base) { skippedOdd++; return; }
-          let pen = 0, mx = 0, bx = 0;                        // pen-walk: glyph i draws at (Σ earlier advances + dx, dy)
-          res.forEach(g => { const x = pen + (g.dx || 0); if (g === mark) mx = x; else bx = x; pen += (g.ax || 0); });
-          const real = { x: Math.round((mx - bx) * scale), y: Math.round(((mark.dy || 0) - (base.dy || 0)) * scale) };
-          const dev = Math.max(Math.abs(pred.x - real.x), Math.abs(pred.y - real.y));
-          const row = { base: l.codepoint, baseName: l.name, cp, kind, key: pred.key, pred: { x: pred.x, y: pred.y }, real, dev };
-          if (pred.pc && pred.fixable) { row.pc = pred.pc; row.fix = { x: real.x + pred.o.x, y: real.y + pred.o.y - pred.dy }; }
-          rows.push(row);
-        });
-      });
-    } finally { hbFont.destroy(); face.destroy(); blob.destroy(); }
-    const flagged = rows.filter(r => r.dev > FIDELITY_TOL).sort((a, b) => b.dev - a.dev);
-    const fixable = flagged.filter(r => r.fix);
-    const max = rows.reduce((t, r) => Math.max(t, r.dev), 0);
-    const mean = rows.length ? Math.round(rows.reduce((t, r) => t + r.dev, 0) / rows.length * 10) / 10 : 0;
-    _fidelityLast = { rows, flagged, fixable, notes: ctx.notes || [], fontName: ctx.fontName,
-                      skipped: { subst: skippedSubst, edge: skippedEdge, user: skippedUser, odd: skippedOdd },
-                      anchorHits: ctx.anchorHits, attachCount: ctx.attachCount, max, mean };
-    console.table(rows.map(r => ({ combo: String.fromCodePoint(parseInt(r.base, 16)) + String.fromCodePoint(parseInt(r.cp, 16)),
+    const m = await fidelityMeasure(ctx);
+    _fidelityLast = Object.assign(m, { notes: ctx.notes || [], fontName: ctx.fontName,
+                      anchorHits: ctx.anchorHits, attachCount: ctx.attachCount,
+                      ctx: { bytes: ctx.bytes, upm: ctx.upm, importedMarks: ctx.importedMarks, markCoverage: ctx.markCoverage } });
+    console.table(m.rows.map(r => ({ combo: String.fromCodePoint(parseInt(r.base, 16)) + String.fromCodePoint(parseInt(r.cp, 16)),
       base: r.baseName, mark: markName(r.cp), key: r.key, predX: r.pred.x, predY: r.pred.y, realX: r.real.x, realY: r.real.y, off: r.dev })));
-    status(I18n.t('fontmaker.fidelity.status', { letters: ctx.anchorHits, marks: ctx.attachCount, max, count: rows.length }));
+    status(I18n.t('fontmaker.fidelity.status', { letters: ctx.anchorHits, marks: ctx.attachCount, max: m.max, count: m.rows.length }));
     // Auto-open the details only when there is something to act on — and never over another open modal
-    if ((flagged.length || _fidelityLast.notes.length) && !document.querySelector('.overlay.open')) openFidelityDetails();
+    if ((m.flagged.length || _fidelityLast.notes.length) && !document.querySelector('.overlay.open')) openFidelityDetails();
   } catch (e) {
     console.warn('fidelity check unavailable', e);
     status(I18n.t('fontmaker.fidelity.status_unavailable', { letters: ctx.anchorHits, marks: ctx.attachCount }));
   }
 }
+async function fidelityRerun() {
+  // Re-measure against the stashed original bytes (after Apply fixes, or from the reopen button) and
+  // fold the fresh numbers into _fidelityLast — notes/ctx/appliedTargets survive, rows/flagged renew.
+  const R = _fidelityLast; if (!R || !R.ctx) return false;
+  try {
+    const m = await fidelityMeasure(R.ctx);
+    Object.assign(R, m, { rerun: true });
+    status(I18n.t('fontmaker.fidelity.status_rerun', { flagged: m.flagged.length, count: m.rows.length, tol: FIDELITY_TOL, max: m.max }));
+    return true;
+  } catch (e) { console.warn('fidelity re-check unavailable', e); return false; }
+}
 function openFidelityDetails() {
   const R = _fidelityLast; if (!R) return;
   const T = (k, p) => I18n.t(k, p);
   const heb = cp => String.fromCodePoint(parseInt(cp, 16));
+  const plan = fidelityFixPlan(R);
+  const FIX_WORD = { form: T('fontmaker.fidelity.fix_form'), anchor: T('fontmaker.fidelity.fix_anchor'), pin: T('fontmaker.fidelity.fix_pin') };
   let body = '<div style="max-height:min(58vh, 520px);overflow:auto;">';
+  if (R.rerun) body += '<p style="margin:0 0 8px;font-weight:600;color:' + (R.flagged.length ? 'var(--warn, #b45309)' : '#10b981') + ';">'
+    + esc(T('fontmaker.fidelity.recheck_banner', { max: R.max, mean: R.mean, flagged: R.flagged.length })) + '</p>';
+  if (R.skippedChanged) body += '<p style="margin:0 0 8px;color:var(--muted);font-size:.85rem;">'
+    + esc(T('fontmaker.fidelity.skipped_changed', { count: R.skippedChanged })) + '</p>';
   body += '<p style="margin:0 0 8px;">' + esc(T('fontmaker.fidelity.summary',
     { count: R.rows.length, name: R.fontName, max: R.max, mean: R.mean })) + '</p>';
   const perKey = ['below', 'above', 'center', 'tropAbove', 'tropBelow'].map(k => {
@@ -15230,7 +15300,7 @@ function openFidelityDetails() {
   if (sk.subst || sk.edge || sk.user || sk.odd)
     body += '<p style="margin:0 0 8px;color:var(--muted);font-size:.85rem;">' + esc(T('fontmaker.fidelity.skipped',
       { subst: sk.subst, edge: sk.edge, user: sk.user, odd: sk.odd })) + '</p>';
-  const resNotes = R.notes.filter(nt => nt.type === 'classResidual');
+  const resNotes = R.rerun ? [] : R.notes.filter(nt => nt.type === 'classResidual');   // after fixes the pins ARE the answer to the residuals — the live table below is the truth
   if (resNotes.length) {   // compact, scrollable — Ezra SIL alone produces 17 of these
     body += '<p class="warn" style="margin:0 0 4px;font-size:.85rem;">' + esc(T('fontmaker.fidelity.residual_intro', { count: resNotes.length })) + '</p>'
       + '<ul style="margin:0 0 8px;padding-inline-start:18px;font-size:.8rem;max-height:120px;overflow:auto;">';
@@ -15249,33 +15319,112 @@ function openFidelityDetails() {
       + '<th style="text-align:start;padding:4px 8px;">' + esc(T('fontmaker.fidelity.th_off')) + '</th>'
       + '<th style="text-align:center;padding:4px 8px;">' + esc(T('fontmaker.fidelity.th_fix')) + '</th></tr>';
     R.flagged.slice(0, 40).forEach(r => {
+      const fw = FIX_WORD[plan.rowFix.get(r)];
       body += '<tr><td style="padding:3px 8px;"><span lang="he" style="font-family:var(--heb-font);font-size:1.25rem;direction:rtl;display:inline-block;">'
         + esc(heb(r.base) + heb(r.cp)) + '</span> <span style="color:var(--muted);font-size:.8rem;">'
         + esc(gName(r.baseName) + ' + ' + gName(markName(r.cp))) + '</span></td>'
         + '<td style="padding:3px 8px;white-space:nowrap;">' + esc((r.pred.x - r.real.x) + ' / ' + (r.pred.y - r.real.y)) + '</td>'
-        + '<td style="padding:3px 8px;text-align:center;">' + (r.fix ? '✓' : '—') + '</td></tr>';
+        + '<td style="padding:3px 8px;text-align:center;">' + (fw ? esc(fw) : '—') + '</td></tr>';
     });
     body += '</table></div>';
     if (R.flagged.length > 40)
       body += '<p style="margin:6px 0 0;color:var(--muted);font-size:.8rem;">' + esc(T('fontmaker.fidelity.more_rows', { count: R.flagged.length - 40 })) + '</p>';
+    if (plan.total) body += '<p style="margin:6px 0 0;color:var(--muted);font-size:.78rem;">' + T('fontmaker.fidelity.fix_legend') + '</p>';   // trusted CSV string (carries <b> tags)
   } else {
     body += '<p style="margin:0;">' + esc(T('fontmaker.fidelity.all_clean', { tol: FIDELITY_TOL })) + '</p>';
   }
   body += '</div>';
   const btns = [{ label: T('fontmaker.modals.ok') }];
-  if (R.fixable.length) btns.unshift({ label: T('fontmaker.fidelity.apply_fixes', { count: R.fixable.length }), onClick: fidelityApplyFixes });
+  if (plan.total) btns.unshift({ label: T('fontmaker.fidelity.apply_fixes', { count: plan.total }), onClick: fidelityApplyFixes });
   askModal(T('fontmaker.fidelity.modal_title'), body, btns);
 }
-function fidelityApplyFixes() {
+function fidelityFixPlan(R) {
+  // Decide the vehicle for every flagged combo. Three, in order of preference:
+  //   form   — pc.anchor on an exportable non-center combined form (the v5.14 fix, unchanged);
+  //   anchor — move the letter's shared class anchor when that helps the group as a whole;
+  //   pin    — a per-(letter × mark) markAnchors entry reproducing the measured truth exactly.
+  // A group aggregates ALL measured rows of one (letter × key) — greens included — because moving a
+  // shared anchor moves every mark of that class: it moves only when that strictly reduces the
+  // number of off-rows, and each row still off the chosen value gets a pin. The center class is
+  // never pinned (the dagesh keeps ONE home — precompAnchor ignores overrides for center by the
+  // same design), so an off-consensus center row stays flagged instead.
+  const implied = r => ({ x: r.real.x + r.o.x, y: r.real.y + r.o.y - r.dy });
+  const cheb = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+  const plan = { forms: [], anchors: [], pins: [], unfixable: [], rowFix: new Map() };
+  R.flagged.forEach(r => { if (r.fix) { plan.forms.push(r); plan.rowFix.set(r, 'form'); } });
+  const groups = new Map();   // base|key → every measured row that reads that class anchor (center precomp rows included)
+  R.rows.forEach(r => {
+    if (r.fix || !r.o) return;                       // form rows handled above; a row without o/dy can't be planned
+    if (r.pc && r.key !== 'center') return;          // non-center precomp rows are form territory (fixable or user-set)
+    const k = r.base + '|' + r.key;
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(r);
+  });
+  groups.forEach(rows => {
+    if (!rows.some(r => r.dev > FIDELITY_TOL)) return;
+    const pinned = rows.filter(r => r.pinAt), cls = rows.filter(r => !r.pinAt);
+    pinned.forEach(r => {   // a pinned row never joins the consensus — its attach doesn't read the class anchor; an off pin just updates
+      if (r.dev > FIDELITY_TOL) { plan.pins.push({ cp: r.base, mark: r.cp, key: r.key, to: implied(r), pinAt: r.pinAt, clsAt: null }); plan.rowFix.set(r, 'pin'); }
+    });
+    if (!cls.length) return;
+    const cur = { x: cls[0].ancAt.x, y: cls[0].ancAt.y };   // measure-time class anchor — identical across the group's class rows
+    const med = a => { const s = [...a].sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2); };
+    const cand = { x: med(cls.map(r => implied(r).x)), y: med(cls.map(r => implied(r).y)) };
+    const offAt = at => cls.filter(r => cheb(implied(r), at) > FIDELITY_TOL);
+    const chosen = offAt(cand).length < offAt(cur).length ? cand : cur;
+    if (chosen !== cur) {
+      plan.anchors.push({ cp: cls[0].base, key: cls[0].key, to: chosen, at: cur });
+      cls.forEach(r => { if (r.dev > FIDELITY_TOL && cheb(implied(r), chosen) <= FIDELITY_TOL) plan.rowFix.set(r, 'anchor'); });
+    }
+    offAt(chosen).forEach(r => {
+      if (r.key === 'center') { if (r.dev > FIDELITY_TOL) plan.unfixable.push(r); return; }
+      plan.pins.push({ cp: r.base, mark: r.cp, key: r.key, to: implied(r), pinAt: null, clsAt: cur });
+      plan.rowFix.set(r, 'pin');
+    });
+  });
+  plan.total = plan.forms.length + plan.anchors.length + plan.pins.length;
+  return plan;
+}
+async function fidelityApplyFixes() {
   const R = _fidelityLast; if (!R) return;
-  // Re-check right before writing: a hand-set override (pc.anchor) is user truth and always wins (D3).
-  const items = R.fixable.filter(r => { const pc = getPrecomp(r.pc.target); return pc && !(pc.anchor && pc.anchor.x != null); });
-  if (!items.length) { status(I18n.t('fontmaker.fidelity.nothing_to_fix')); return; }
-  udDo(items.map(r => ({ t: 'precomp', target: r.pc.target })), 'fidelity fixes', () => {
-    items.forEach(r => { const pc = getPrecomp(r.pc.target); if (pc) pc.anchor = { x: r.fix.x, y: r.fix.y }; });
+  const plan = fidelityFixPlan(R);
+  // Re-check right before writing: anything the user touched since the measurement is user truth and
+  // always wins (D3) — a hand-set pc.anchor, a moved class anchor (its whole group steps aside, pins
+  // included), a moved or removed pin.
+  const findL = cp => project.letters.find(x => x.codepoint === cp);
+  let skippedChanged = 0;
+  const forms = plan.forms.filter(r => { const pc = getPrecomp(r.pc.target); return pc && !(pc.anchor && pc.anchor.x != null); });
+  skippedChanged += plan.forms.length - forms.length;
+  const clsIntact = fx => { const l = findL(fx.cp); const a = l && l.anchors && l.anchors[fx.key];
+    return a && fx.at ? (a.x === fx.at.x && a.y === fx.at.y) : !!a; };
+  const anchors = plan.anchors.filter(fx => { const ok = clsIntact(fx); if (!ok) skippedChanged++; return ok; });
+  const pins = plan.pins.filter(fx => {
+    const l = findL(fx.cp); if (!l) { skippedChanged++; return false; }
+    const p = markPinFor(l, fx.key, fx.mark);
+    const ok = fx.pinAt ? (p && p.x === fx.pinAt.x && p.y === fx.pinAt.y)
+                        : (!p && clsIntact({ cp: fx.cp, key: fx.key, at: fx.clsAt }));
+    if (!ok) skippedChanged++;
+    return ok;
+  });
+  R.skippedChanged = skippedChanged;
+  if (!forms.length && !anchors.length && !pins.length) { status(I18n.t('fontmaker.fidelity.nothing_to_fix')); return; }
+  const scopes = forms.map(r => ({ t: 'precomp', target: r.pc.target }));
+  const touched = new Set(anchors.map(fx => fx.cp).concat(pins.map(fx => fx.cp)));
+  touched.forEach(cp => scopes.push({ t: 'item', kind: 'letter', cp }));
+  udDo(scopes, 'fidelity fixes', () => {
+    forms.forEach(r => { const pc = getPrecomp(r.pc.target); if (pc) pc.anchor = { x: r.fix.x, y: r.fix.y }; });
+    // Raw writes, deliberately NOT moveClassAnchor/writeActiveAnchor: every value below is an absolute
+    // measured against the same shaping run — translating pins with the anchor would corrupt them.
+    anchors.forEach(fx => { const l = findL(fx.cp), a = l && l.anchors && l.anchors[fx.key]; if (a) { a.x = fx.to.x; a.y = fx.to.y; } });
+    pins.forEach(fx => { const l = findL(fx.cp); if (!l) return;
+      (l.markAnchors || (l.markAnchors = {}))[fx.mark] = { x: fx.to.x, y: fx.to.y, key: fx.key }; });
+    touched.forEach(cp => dropPlacementConfirm(findL(cp)));
     renderGrids(); renderStage(); renderControls();
   });
-  status(I18n.t(items.length === 1 ? 'fontmaker.fidelity.fixes_applied.one' : 'fontmaker.fidelity.fixes_applied.other', { count: items.length }));
+  R.appliedTargets = new Set(forms.map(r => r.pc.target));   // these re-verify below instead of skipping as user-set
+  status(I18n.t('fontmaker.fidelity.fixes_applied_mixed', { forms: forms.length, anchors: anchors.length, pins: pins.length }));
+  await fidelityRerun();
+  if (!document.querySelector('.overlay.open')) openFidelityDetails();
 }
 
 /* ════════════════════════════════════════════════════════════════════════

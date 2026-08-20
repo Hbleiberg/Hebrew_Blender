@@ -960,11 +960,49 @@ folds near-constant per-class deltas into `markAttach` so marks in losing classe
 meteg, hataf classes) still land exactly; non-constant deltas become `notes[]` residuals. After a
 GPOS-bearing import, `runImportFidelityCheck` shapes every imported-mark × covered-letter pair
 against the ORIGINAL bytes with harfbuzzjs and reports measured max/mean (status line + a details
-modal listing >3-unit combos, with an Apply-per-combo-fixes button that pins flagged combos
-mapping onto exportable non-center combined forms via the existing `pc.anchor` override — a
-hand-set `pc.anchor` is user truth and is never touched). Fail-soft: no harfbuzz ⇒ the import
-stands and the status says the check was unavailable. Word-edge-halign trop columns are a
-deliberate app convention, skipped (and counted) rather than flagged.
+modal listing >3-unit combos). Fail-soft: no harfbuzz ⇒ the import stands and the status says the
+check was unavailable. Word-edge-halign trop columns are a deliberate app convention, skipped (and
+counted) rather than flagged. A hand-set `pc.anchor` is user truth and is never touched.
+
+**Fidelity autofix (v5.16) — three vehicles + re-verify.** The modal's Apply button
+(`fidelityApplyFixes`, planned by the pure `fidelityFixPlan`) fixes EVERY expressible flagged
+combo in one undoable `udDo` batch, then automatically re-measures against the stashed original
+bytes and reopens the report with the after numbers. Vehicles, in order: **form** (the v5.14
+`pc.anchor` write, unchanged); **anchor** — the letter's shared class anchor moves to the
+component-wise median of the group's implied anchors (`real + attachOrigin − markNudge`, over ALL
+measured rows of that letter × key, greens included) but only when that strictly reduces off-rows;
+**pin** — a NEW per-(letter × mark) override `l.markAnchors = { cp: {x, y, key} }` reproducing the
+measured truth exactly (this is what fixes the `classResidual` combos). Rules that keep it sound:
+- `baseAnchorPosFor(l, key, cp)` (pin ?? `l.anchors[key]`) is the ONLY sanctioned reader of
+  `markAnchors` — predict, stage preview, QA (`qaAnchorFor`), spacing preview, `fontInkBounds`,
+  the `builtPerLetter` bake, `buildFEA` and `buildUfoAnchors` all flow through it. A pin applies
+  only while its stored `key` matches the key being read (a halign/class change strands it
+  harmlessly). **Never pin the center class** — the dagesh keeps one home (`l.anchors.center`),
+  mirroring `precompAnchor` ignoring `pc.anchor` for center; off-consensus center rows stay
+  flagged instead.
+- Export: `buildFEA` splits each pinned mark into its own `@MC_<KEY>_<cp>` markClass with one
+  `pos base` line per base glyph (pin ?? shared value — byte-identical FEA when no pins exist).
+  The partition happens ONLY at the markClass/`emitBaseAnchors` emission points —
+  `byClass`/`tropGroups` stay whole because GDEF, the `NIK_SLIDE_*` filtering sets and `ss01`
+  read them by glyph name. A pinned center-halign trop gets its own mkmk lines too (else it
+  would lose stacking); wide forms map pins through the same `wideX` transform as anchors; the
+  shin/sin holam-slot synthetics drop `above`-key pins. `buildUfoAnchors` mirrors the split as
+  `_<key>_<cp>` / `<key>_<cp>` named anchors.
+- Lifecycle: manual class-anchor edits go through `moveClassAnchor` (same-key pins translate by
+  the same delta — the autofix itself writes RAW, its values being absolutes from one shaping
+  run); the anchor editor edits the PIN when the previewed mark is pinned (`writeActiveAnchor`,
+  gold ✎ badge, Unpin / Clear-pins, all undoable); a fresh outline/anchor import deletes pins;
+  `boldGenLetter` rescales them with the anchors; `maybeInheritAnchors` skips pinned letters;
+  `migrateProject` sanitizes them (`sanitizeMarkAnchors`). Pins ride undo/autosave/`.hfm` for
+  free (item deep-clones).
+- Re-verify: `_fidelityLast.ctx` stashes `{bytes, upm, importedMarks, markCoverage}`
+  RUNTIME-ONLY (never on `project` — autosave/`.hfm` would serialize the whole font);
+  `fidelityRerun()` re-measures from it, and `_fidelityLast.appliedTargets` lets THIS session's
+  own form fixes re-verify instead of being skipped as user-set. Apply-time user-truth guards
+  (D3): a form whose `pc.anchor` is now set, a group whose class anchor moved since measurement
+  (its pins step aside with it), or a pin the user moved/removed are skipped and counted in the
+  `skipped_changed` line. The **Fidelity report** button in the Nikkud-step under-strip reopens
+  the report while `_fidelityLast` exists.
 
 ### Lazy CDNs + CSP
 pyodide v0.26.2 (+ fontTools), harfbuzzjs 0.4.6 (`hb.wasm` fetch — needs `'wasm-unsafe-eval'` +
