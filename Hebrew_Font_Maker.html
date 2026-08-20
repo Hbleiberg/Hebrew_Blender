@@ -2400,6 +2400,7 @@ function newProject() {
     precomposed: PRECOMPOSED.map(p => ({ target: p.target, base: p.base, mark: p.mark, anchor: null, holam: null }))
   };
   udClear();                 // fresh project → drop any prior undo history / open bursts
+  _fidelityLast = null;      // and the previous project's fidelity report: its rows measured OTHER letters, and the reopen button would offer them here
   curKind = 'letter'; curCp = LETTER_ORDER[0]; workMode = 'align';
   syncMetaToForm(); renderGrids(); setWorkMode('align'); status(I18n.t('fontmaker.status.new_project'));
   _projectDirty = false; clearTimeout(_autosaveTimer);   // fresh project: not dirty (boot keeps any snapshot so the prompt can still offer prior work)
@@ -5802,6 +5803,7 @@ function askFontImportOptions(file, font, bytes) {
 async function applyFontImport(file, font, bytes, opts) {
   status(I18n.t('fontmaker.status.importing_font'), true);
   ipArm();   // cold engine ⇒ the modal appears; a warm one finishes first and it never shows
+  _fidelityLast = null;   // this import supersedes any previous report — and a GPOS-less font produces none, which would otherwise leave the old one reachable from the reopen button
   try {
     let imported = null, hadGpos = false, anchorErr = false, markAttach = null, markCoverage = null, anchorNotes = [];
     if (opts.anchors) {
@@ -15416,17 +15418,23 @@ function fidelityFixPlan(R) {
   //   pin    — a per-(letter × mark) markAnchors entry reproducing the measured truth exactly.
   // A group aggregates ALL measured rows of one (letter × key) — greens included — because moving a
   // shared anchor moves every mark of that class: it moves only when that strictly reduces the
-  // number of off-rows, and each row still off the chosen value gets a pin. The center class is
-  // never pinned (the dagesh keeps ONE home — precompAnchor ignores overrides for center by the
-  // same design), so an off-consensus center row stays flagged instead.
+  // number of off-rows, and each row still off the chosen value is decoupled (a pin, or a form fix
+  // for a combined form, which pins can't reach). The center class is never pinned (the dagesh keeps
+  // ONE home — precompAnchor ignores overrides for center by the same design), so an off-consensus
+  // center row stays flagged instead.
   const implied = r => ({ x: r.real.x + r.o.x, y: r.real.y + r.o.y - r.dy });
   const cheb = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
   const plan = { forms: [], anchors: [], pins: [], unfixable: [], rowFix: new Map() };
   R.flagged.forEach(r => { if (r.fix) { plan.forms.push(r); plan.rowFix.set(r, 'form'); } });
-  const groups = new Map();   // base|key → every measured row that reads that class anchor (center precomp rows included)
+  const groups = new Map();   // base|key → every measured row that reads that class anchor
   R.rows.forEach(r => {
-    if (r.fix || !r.o) return;                       // form rows handled above; a row without o/dy can't be planned
-    if (r.pc && r.key !== 'center') return;          // non-center precomp rows are form territory (fixable or user-set)
+    if (!r.o) return;                                // a row without o/dy can't be planned
+    if (plan.rowFix.has(r)) return;                  // already getting its own form fix, which decouples it from this anchor
+    // A combined form with no pc.anchor set reads precompAnchor(), which FALLS BACK to the letter's
+    // class anchor — so a GREEN one is still riding this group and has to constrain the move, or
+    // fixing a flagged sibling silently shifts a form that was landing exactly (the שׁ/שׂ dots when a
+    // holam or rafe on ש gets fixed). A user-set form is already decoupled and is never measured.
+    if (r.pc && r.key !== 'center' && !r.fix) return;
     const k = r.base + '|' + r.key;
     if (!groups.has(k)) groups.set(k, []);
     groups.get(k).push(r);
@@ -15448,6 +15456,10 @@ function fidelityFixPlan(R) {
       cls.forEach(r => { if (r.dev > FIDELITY_TOL && cheb(implied(r), chosen) <= FIDELITY_TOL) plan.rowFix.set(r, 'anchor'); });
     }
     offAt(chosen).forEach(r => {
+      // A combined form can't be pinned — precompAnchor never reads markAnchors — so decouple it with
+      // its own form fix at the position the original font measured. This is also what keeps the move
+      // honest for a green form the move would otherwise have broken un-fixed.
+      if (r.fix) { plan.forms.push(r); plan.rowFix.set(r, 'form'); return; }
       if (r.key === 'center') { if (r.dev > FIDELITY_TOL) plan.unfixable.push(r); return; }
       plan.pins.push({ cp: r.base, mark: r.cp, key: r.key, to: implied(r), pinAt: null, clsAt: cur });
       plan.rowFix.set(r, 'pin');
@@ -15901,6 +15913,7 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   project = migrateProject(data);
   udClear();                 // loaded project → reset undo history
   _flatCache = { url: null, canvas: null };   // don't pin a full-res flattened canvas from the previous project
+  _fidelityLast = null;      // nor its fidelity report — see newProject(); a stale one would let Apply write another project's measured anchors here
   // preload images
   const urls = [];
   (project.combinedSheets || []).forEach(s => { if (s.dataUrl) urls.push(s.dataUrl); });
