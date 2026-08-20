@@ -4336,7 +4336,7 @@ function renderFormPanel(panelId, targets, intro) {
     const pv = traced ? formTilePreviewSVG(pc) : '';   // live composed outline (reflects the Width slider); font char until composable
     tile.innerHTML = `<span class="lt-dot ${traced ? 'traced' : ''}"></span>
       ${pv || `<span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${precompComposed(pc)}</span>`}
-      <span class="lt-name">${esc(gName(precompName(pc)))}</span>${overridden ? `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.custom_glyph_overrides', {t}) : 'You added a custom glyph at U+' + t + '; the exported font uses your custom outline, not this composed form.')}">${_pT('form_overrides', 'custom glyph overrides')}</span>` : traced ? '' : `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.trace_needs', {names: need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', ')}) : 'Trace ' + need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">${_pT('form_needs', 'needs ' + needChars, {chars: needChars})}</span>`}`;
+      <span class="lt-name">${esc(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.custom_glyph_overrides', {t}) : 'You added a custom glyph at U+' + t + '; the exported font uses your custom outline, not this composed form.')}">${_pT('form_overrides', 'custom glyph overrides')}</span>` : traced ? '' : `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.trace_needs', {names: need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', ')}) : 'Trace ' + need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">${_pT('form_needs', 'needs ' + needChars, {chars: needChars})}</span>`}`;
     tile.onclick = () => pickPrecompForm(t);
     grid.appendChild(tile);
   });
@@ -9980,9 +9980,16 @@ function setCenterMark(cp) { activeCenterMark = cp; renderStage(); renderControl
 let precompTarget = null;   // active precomposed form's target codepoint (e.g. 'FB2A'), or null
 function getPrecomp(t) { return project.precomposed.find(p => p.target === t); }
 function precompName(pc) {
-  if (pc.name) return pc.name;
-  const st = PRECOMPOSED.find(p => p.target === pc.target && p.name);   // project seeds strip `name` (newProject copies an explicit field list) — recover it from the static table
-  return (st && st.name) || MARK_NAMES[pc.mark] || (LATIN_ACCENTS[pc.mark] && LATIN_ACCENTS[pc.mark].name) || 'mark';
+  const st = pc.name ? null : PRECOMPOSED.find(p => p.target === pc.target && p.name);   // project seeds strip `name` (newProject copies an explicit field list) — recover it from the static table
+  const raw = pc.name || (st && st.name) || MARK_NAMES[pc.mark] || (LATIN_ACCENTS[pc.mark] && LATIN_ACCENTS[pc.mark].name) || 'mark';
+  // Localize for display via the glyph-name table (gName returns the English unchanged when a
+  // key is missing). A name carrying an inline Hebrew sample — "Pasekh Alef (אַ)" — translates
+  // its name part and keeps the sample: the sample would be stripped by gName's slug anyway,
+  // and Ladino "Shin (שׁ)" must not collide into the bare letter key "shin" (which would drop
+  // the sample from the English label too). Every consumer is display-only (tiles, titles,
+  // status toasts, QA row labels) — export glyph naming never goes through precompName.
+  const m = raw.match(/^(.*\S)\s+(\([^)]*[\u0590-\u05FF][^)]*\))$/);
+  return m ? gName(m[1]) + ' ' + m[2] : gName(raw);
 }
 function precompComposed(pc) {
   if (pc.bases) return pc.bases.map(c => String.fromCodePoint(parseInt(c,16))).join('');   // digraph: show both bases
@@ -12647,7 +12654,7 @@ function qaSynthWideRow(pc) {
                     tropBelowL: mapPt(baseAnc.tropBelowL), tropBelowR: mapPt(baseAnc.tropBelowR) };
   const meta = letterMeta(baseCp);
   const L = Object.assign({}, base, { anchors, curves: g.curves, advance: g.advance, contours: g.contours.map(p => ({ points: p })) });
-  return { cp: baseCp, name: pc.name || precompName(pc), labelCh: qaCh(pc.target), desc: meta ? meta.desc : false, L };
+  return { cp: baseCp, name: precompName(pc), labelCh: qaCh(pc.target), desc: meta ? meta.desc : false, L };
 }
 /* Will a composed form bake? base(s) traced, and (base+mark) the mark anchor resolves — mirrors
    qaSynthPrecompRow / the picker-tile readiness. */
@@ -13051,7 +13058,7 @@ function qaBuildCheckHtml() {
     const need = (pc.bases || [pc.base]).filter(cp => { const L = project.letters.find(x => x.codepoint === cp); return !(L && L.contours); }).map(cp => qaCh(cp)).join(' ');
     const status = ready ? `<span class="qa-bc-ok">${I18n.t('fontmaker.qa.buildcheck_ready')}</span>` : `<span class="qa-bc-warn">${I18n.t('fontmaker.qa.buildcheck_needs', { chars: esc(need || qaCh(precompBaseCp(pc))) })}</span>`;
     h += `<div class="qa-bc-item"><span class="qa-bc-glyph" style="font-family:${tplFont};direction:rtl;">${esc(precompComposed(pc))}</span>`
-       + `<span class="qa-bc-name">${esc(pc.name || precompName(pc))}</span>${status}</div>`;
+       + `<span class="qa-bc-name">${esc(precompName(pc))}</span>${status}</div>`;
   });
   return h + '</div></div>';
 }
