@@ -1462,6 +1462,10 @@
   /* A cell naming a deleted preset: kept (recoverable), shown hatched + muted, flagged by validation */
   .swm-cell-missing { background: repeating-linear-gradient(45deg, var(--warm-gray), var(--warm-gray) 6px, transparent 6px, transparent 12px);
     color: var(--muted); border-style: dashed; font-weight: 400; }
+  /* `body.dark .swm-cell` above outranks the bare class, so without this the dark screen showed a
+     missing cell as solid navy-deep — dashed border + muted text only (the S231 print fix's screen
+     sibling; same tokens, remapped by the theme). Ties that dark rule and wins by order. */
+  body.dark .swm-cell-missing { background: repeating-linear-gradient(45deg, var(--warm-gray), var(--warm-gray) 6px, transparent 6px, transparent 12px) var(--navy-deep); }
   .swm-rowdel { align-self: center; }
   .swm-grid-empty { grid-column: 1 / -1; font-size: 0.78rem; color: var(--muted); font-style: italic; padding: 10px 4px; }
   .swm-import { border: 1.5px solid var(--gold); border-radius: 10px; padding: 14px 16px; margin: 6px 0 10px; background: rgba(201,146,42,0.07); }
