@@ -7033,6 +7033,10 @@ function startPractice() {
     issues.push('flashcards.start.err_select_color');
   }
   if (otherModeActive && otherSubMode === 'emoji') {
+    // A FAILED earlier load (fetchEmojiData nulls its promise on failure precisely so a later
+    // call retries) is re-attempted on this tap — Start is the retry affordance, like the
+    // generator's Generate and the Font Maker's Export. One fetch per tap, never a loop.
+    if (!EMOJI_DATA && !_emojiFetchP) fetchEmojiData();
     if (!EMOJI_DATA && _emojiFetchP) {
       // Emoji data (~450KB) may still be downloading if Start was tapped right after switching to
       // Emoji — on slow school wifi that window is real. Wait for the in-flight fetch and retry once
@@ -7040,16 +7044,31 @@ function startPractice() {
       if (!_emojiAwaitingStart) {
         _emojiAwaitingStart = true;
         if (typeof showAppToast === 'function') showAppToast(I18n.t('flashcards.start.err_emoji_loading'));
-        _emojiFetchP.then(() => { _emojiAwaitingStart = false; startPractice(); });
+        _emojiFetchP.then(() => {
+          _emojiAwaitingStart = false;
+          // Only auto-start when data actually arrived; a failed fetch used to re-enter and show
+          // "still loading — try again in a second", promising a self-heal that never comes.
+          if (EMOJI_DATA) startPractice();
+          else _setStartNote(['flashcards.words.emoji_load_failed']);
+        });
       }
       return;
     }
-    if (!EMOJI_DATA) issues.push('flashcards.start.err_emoji_loading');   // genuine load failure
+    if (!EMOJI_DATA) issues.push('flashcards.words.emoji_load_failed');   // genuine load failure
     else if (selectedEmojiSubs.size === 0) issues.push('flashcards.start.err_select_emoji');
   }
   if (otherModeActive && otherSubMode === 'words') {
     WORDS_POOL = resolveWordsPool();
-    if (wordsSource === 'alldict' && !ALL_WORDS_DATA) issues.push('flashcards.start.err_dict_loading');
+    if (wordsSource === 'alldict' && !ALL_WORDS_DATA) {
+      // Same Start-as-retry shape as emoji above. Only a FAILED load may re-fetch
+      // (fetchAllWordsData has no in-flight promise guard, so tap-spam mid-download must not
+      // stack fetches) — capture the flag first: fetchAllWordsData resets it synchronously.
+      // When the retry lands, re-enter like the emoji wait does; a still-down network leaves
+      // the failed note standing with no re-entry, so there is no offline retry loop.
+      const failed = _wordsLoadFailed;
+      if (failed) fetchAllWordsData().then(() => { if (ALL_WORDS_DATA) startPractice(); });
+      issues.push(failed ? 'flashcards.words.load_failed' : 'flashcards.start.err_dict_loading');
+    }
     else if (wordsSource === 'mylists' && selectedWordListIds.size === 0 && !(wordsInlinePool && wordsInlinePool.length))
       issues.push('flashcards.start.err_select_wordlist');
     else if (!WORDS_POOL || WORDS_POOL.length === 0) issues.push('flashcards.start.err_no_words');
