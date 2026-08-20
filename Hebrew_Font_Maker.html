@@ -737,6 +737,13 @@
   .tbtn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
   @keyframes wizFlash { 0%, 100% { box-shadow: 0 0 0 0 rgba(201,146,42,0); } 50% { box-shadow: 0 0 0 4px rgba(201,146,42,0.55); } }
   .wiz-flash { animation: wizFlash 0.85s ease-in-out 3; border-radius: 6px; }
+  /* Partner starting-font onboarding (mode 'osfont') */
+  .wiz-os-intro { font-size: 0.85rem; line-height: 1.45; margin: 0 0 6px; }
+  .wiz-os-preview { font-size: 2rem; line-height: 1.7; text-align: center; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--white); margin-block: 8px 12px; overflow-wrap: anywhere; }
+  .wiz-os-meta { display: flex; flex-direction: column; gap: 4px; margin-block-end: 4px; }
+  .wiz-os-row { display: flex; gap: 8px; font-size: 0.8rem; align-items: baseline; }
+  .wiz-os-row > span:first-child { color: var(--muted); min-inline-size: 100px; flex-shrink: 0; }
+  .wiz-os-row a { color: var(--gold); font-weight: 700; }
   @media (max-width: 640px) { .wiz-tiles { grid-template-columns: 1fr; } }
 
   /* ── Font-engine background-load badge (next to Export) ── */
@@ -1552,6 +1559,49 @@
         </div>
       </div>
       <label class="chk" style="margin-top:12px;"><input type="checkbox" id="wizTour"> <span data-i18n="fontmaker.wizard.tour_after">Show me around after setup</span></label>
+    </section>
+
+    <!-- Partner starting-font onboarding (mode 'osfont', opened by the ?start= boot flow) — these
+         three sections replace wizStep1–3 when active; see CLAUDE.md: Starting Fonts. -->
+    <section id="wizStepOs1" class="wiz-step" aria-labelledby="wizStepOs1Title" hidden>
+      <h4 id="wizStepOs1Title" class="wiz-step-title" data-i18n="fontmaker.oswizard.step1_title">Step 1 of 3 — A starting font from a partner</h4>
+      <p class="wiz-os-intro" id="osPrevIntro"></p>
+      <div class="wiz-os-preview" id="osPrev" lang="he" dir="rtl">אָלֶף בֵּית גִּימֶל דָּלֶת שָׁלוֹם</div>
+      <div class="wiz-os-meta">
+        <div class="wiz-os-row"><span data-i18n="fontmaker.oswizard.meta_font">Font</span><b id="osPrevName"></b></div>
+        <div class="wiz-os-row"><span data-i18n="fontmaker.oswizard.meta_designer">Designer</span><b id="osPrevDesigner"></b></div>
+        <div class="wiz-os-row"><span data-i18n="fontmaker.oswizard.meta_version">Version</span><b id="osPrevVersion"></b></div>
+        <div class="wiz-os-row"><span data-i18n="fontmaker.panels.license">License</span><a id="osPrevLicense" target="_blank" rel="noopener"></a></div>
+      </div>
+      <p class="wiz-foot-note" data-i18n="fontmaker.oswizard.honesty">Your edited font will be rebuilt by IvritSuite from the letters you see in the editor — the original's Hebrew letterforms, vowels, and mark positions come along; its Latin glyphs and hand-tuned extras don't.</p>
+    </section>
+
+    <section id="wizStepOs2" class="wiz-step" aria-labelledby="wizStepOs2Title" hidden>
+      <h4 id="wizStepOs2Title" class="wiz-step-title" data-i18n="fontmaker.oswizard.step2_title">Step 2 of 3 — Name your version</h4>
+      <label class="fld"><span data-i18n="fontmaker.oswizard.name_label">Your font's name</span>
+        <input type="text" id="wizOsName" oninput="wizardValidateOs()" autocomplete="off">
+      </label>
+      <span id="wizOsNameNote" class="wiz-note" aria-live="polite" hidden></span>
+      <label class="fld"><span data-i18n="fontmaker.oswizard.author_label">Your name (contributor)</span>
+        <input type="text" id="wizOsAuthor" oninput="wizardValidateOs()" placeholder="Your name" data-i18n-placeholder="fontmaker.panels.author_ph">
+      </label>
+      <div class="wiz-os-meta">
+        <div class="wiz-os-row"><span data-i18n="fontmaker.oswizard.orig_author">Original author</span><b id="wizOsOrigAuthor"></b></div>
+        <div class="wiz-os-row"><span data-i18n="fontmaker.panels.license">License</span><b id="wizOsLicensePill"></b> <button type="button" class="fld-help" onclick="openHelp('oslock')" title="Why is this locked?" data-i18n-title="fontmaker.osfont.lock_help_title" aria-label="Why is this locked?" data-i18n-aria-label="fontmaker.osfont.lock_help_title">?</button></div>
+      </div>
+    </section>
+
+    <section id="wizStepOs3" class="wiz-step" aria-labelledby="wizStepOs3Title" hidden>
+      <h4 id="wizStepOs3Title" class="wiz-step-title" data-i18n="fontmaker.oswizard.step3_title">Step 3 of 3 — What to include</h4>
+      <div class="wiz-field-label" data-i18n="fontmaker.wizard.marks_label">Marks</div>
+      <label class="chk"><input type="checkbox" id="wizOsNikkud"> <span data-i18n="fontmaker.wizard.nikkud_toggle">Nikkud (vowel points)</span></label>
+      <label class="chk"><input type="checkbox" id="wizOsTrop"> <span data-i18n="fontmaker.wizard.trope_toggle">Trope (cantillation marks)</span></label>
+      <div class="wiz-field-label" data-i18n="fontmaker.wizard.alphabets_label">Extra alphabets</div>
+      <label class="chk"><input type="checkbox" id="wizOsEnglish"> <span data-i18n="fontmaker.panels.adv_add_english">Add English letters</span></label>
+      <label class="chk"><input type="checkbox" id="wizOsYiddish"> <span data-i18n="fontmaker.panels.adv_add_yiddish">Add Yiddish glyphs</span></label>
+      <label class="chk"><input type="checkbox" id="wizOsLadino"> <span data-i18n="fontmaker.panels.adv_add_ladino">Add Ladino glyphs</span></label>
+      <p class="hint" data-i18n="fontmaker.oswizard.latin_hint">Extra alphabets start empty — the original's Latin letters aren't imported.</p>
+      <label class="chk" style="margin-top:12px;"><input type="checkbox" id="wizOsTour"> <span data-i18n="fontmaker.wizard.tour_after">Show me around after setup</span></label>
     </section>
 
     <div class="wiz-foot">
@@ -15900,28 +15950,47 @@ function dismissMobileWarn(goBack){
    project is only discarded when "Create font" runs. Wizard fields are wizard-local until then. */
 let _wizardMode = null, _wizardStep = 1, _wizardOpener = null;
 function wizardOpen(mode){
+  if (mode === 'osfont' && !_osStartCtx) mode = 'gate';   // deep-link context missing → normal gate
   _wizardMode = mode; _wizardOpener = document.activeElement;
-  // Prefill from a fresh project's defaults + the remembered author + the saved input-mode pref.
-  document.getElementById('wizName').value = '';
-  let author = '';
-  try { author = localStorage.getItem('hebrewFontMaker_lastAuthor') || ''; } catch(e){}
-  document.getElementById('wizAuthor').value = author;
-  document.getElementById('wizLicense').value = 'ofl';
-  document.getElementById('wizStyleRegular').checked = true;
-  document.getElementById('wizNikkud').checked = true;
-  ['wizTrop','wizEnglish','wizYiddish','wizLadino','wizTour'].forEach(id => { document.getElementById(id).checked = false; });
-  let im = null;
-  try { im = localStorage.getItem('hebrewFontMaker_inputMode'); } catch(e){}
-  if (im !== 'single' && im !== 'combined' && im !== 'font' && im !== 'draw') im = 'single';
-  document.getElementById({ single: 'wizSrcSingle', combined: 'wizSrcCombined', font: 'wizSrcFont', draw: 'wizSrcDraw' }[im]).checked = true;
-  document.getElementById('wizOpenProject').hidden = (mode !== 'gate');
-  document.getElementById('wizCancelBtn').hidden = (mode !== 'new');
-  aOpenModal('wizardOverlay', mode === 'new' ? wizardCancel : () => {});   // gate mode: Escape is inert
+  if (mode === 'osfont') {
+    wizardOsPrefill();
+  } else {
+    // Prefill from a fresh project's defaults + the remembered author + the saved input-mode pref.
+    document.getElementById('wizName').value = '';
+    let author = '';
+    try { author = localStorage.getItem('hebrewFontMaker_lastAuthor') || ''; } catch(e){}
+    document.getElementById('wizAuthor').value = author;
+    document.getElementById('wizLicense').value = 'ofl';
+    document.getElementById('wizStyleRegular').checked = true;
+    document.getElementById('wizNikkud').checked = true;
+    ['wizTrop','wizEnglish','wizYiddish','wizLadino','wizTour'].forEach(id => { document.getElementById(id).checked = false; });
+    let im = null;
+    try { im = localStorage.getItem('hebrewFontMaker_inputMode'); } catch(e){}
+    if (im !== 'single' && im !== 'combined' && im !== 'font' && im !== 'draw') im = 'single';
+    document.getElementById({ single: 'wizSrcSingle', combined: 'wizSrcCombined', font: 'wizSrcFont', draw: 'wizSrcDraw' }[im]).checked = true;
+  }
+  document.getElementById('wizOpenProject').hidden = (mode !== 'gate' && mode !== 'osfont');
+  document.getElementById('wizCancelBtn').hidden = (mode !== 'new' && mode !== 'osfont');
+  _wizSwapChrome(mode === 'osfont');
+  // gate mode: Escape is inert; osfont: Escape falls back to the gate wizard
+  aOpenModal('wizardOverlay', mode === 'new' ? wizardCancel : mode === 'osfont' ? wizardOsCancel : () => {});
   wizardShowStep(1);
+}
+// Title + finish-button labels differ in osfont mode. Swap the data-i18n attribute itself (the
+// mobileWarnTitle precedent) so applyStaticI18n keeps retranslating the right key on language switch.
+function _wizSwapChrome(isOs){
+  const t = document.getElementById('wizTitle'), c = document.getElementById('wizCreate');
+  t.setAttribute('data-i18n', isOs ? 'fontmaker.oswizard.title' : 'fontmaker.wizard.title');
+  c.setAttribute('data-i18n', isOs ? 'fontmaker.oswizard.start_editing' : 'fontmaker.wizard.create');
+  if (window.I18n) { t.textContent = I18n.t(t.getAttribute('data-i18n')); c.textContent = I18n.t(c.getAttribute('data-i18n')); }
 }
 function wizardShowStep(n){
   _wizardStep = n;
-  for (let i = 1; i <= 3; i++) document.getElementById('wizStep' + i).hidden = (i !== n);
+  const os = (_wizardMode === 'osfont');   // which 3-section family is live; the other stays hidden
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById('wizStep' + i).hidden = os || (i !== n);
+    document.getElementById('wizStepOs' + i).hidden = !os || (i !== n);
+  }
   document.querySelectorAll('#wizardOverlay .wiz-dot').forEach(d => {
     const s = +d.dataset.step;
     d.classList.toggle('active', s === n); d.classList.toggle('done', s < n);
@@ -15929,11 +15998,11 @@ function wizardShowStep(n){
   document.getElementById('wizBack').hidden = (n === 1);
   document.getElementById('wizNext').hidden = (n === 3);
   document.getElementById('wizCreate').hidden = (n !== 3);
-  wizardValidateStep1();
+  if (os) wizardValidateOs(); else wizardValidateStep1();
   // Focus the step's first control (the checked radio for the tile/segment steps) after
   // aOpenModal's own setTimeout(0) focus pass — the openShortcuts precedent.
   setTimeout(() => { try {
-    const sec = document.getElementById('wizStep' + n);
+    const sec = document.getElementById((os ? 'wizStepOs' : 'wizStep') + n);
     (sec.querySelector('input:checked') || sec.querySelector('input, select')).focus();
   } catch (e) {} }, 30);
 }
@@ -15946,11 +16015,13 @@ function wizardValidateStep1(){
   return ok;
 }
 function wizardNext(){
-  if (_wizardStep === 1 && !wizardValidateStep1()) { try { document.getElementById('wizName').focus(); } catch (e) {} return; }
+  if (_wizardMode === 'osfont') {
+    if (_wizardStep === 2 && !wizardValidateOs()) { try { document.getElementById('wizOsName').focus(); } catch (e) {} return; }
+  } else if (_wizardStep === 1 && !wizardValidateStep1()) { try { document.getElementById('wizName').focus(); } catch (e) {} return; }
   if (_wizardStep < 3) wizardShowStep(_wizardStep + 1);
 }
 function wizardBack(){ if (_wizardStep > 1) wizardShowStep(_wizardStep - 1); }
-function wizardBackdrop(){ if (_wizardMode === 'new') wizardCancel(); }   // gate mode: backdrop is inert
+function wizardBackdrop(){ if (_wizardMode === 'new') wizardCancel(); else if (_wizardMode === 'osfont') wizardOsCancel(); }   // gate mode: backdrop is inert
 function wizardCancel(){
   aCloseModal('wizardOverlay');
   _wizardMode = null;
@@ -15960,9 +16031,10 @@ function wizardCancel(){
 // _activeModal is a single slot, so the stacked modal's close would otherwise leave the
 // still-open wizard with no Escape/Tab handling. Called from aCloseModal.
 function wizardRearmTrap(){
-  _activeModal = { id: 'wizardOverlay', close: _wizardMode === 'new' ? wizardCancel : () => {}, opener: _wizardOpener };
+  _activeModal = { id: 'wizardOverlay', close: _wizardMode === 'new' ? wizardCancel : _wizardMode === 'osfont' ? wizardOsCancel : () => {}, opener: _wizardOpener };
 }
 function wizardCreate(){
+  if (_wizardMode === 'osfont') { wizardOsFinish(); return; }
   if (!wizardValidateStep1()) { wizardShowStep(1); return; }
   const name = document.getElementById('wizName').value.trim();
   const author = document.getElementById('wizAuthor').value.trim();
@@ -16006,6 +16078,116 @@ function wizardCreate(){
     el.classList.add('wiz-flash');
     setTimeout(() => el.classList.remove('wiz-flash'), 2700);
   } catch (e) {} }, 80);
+}
+
+/* ── Partner starting-font onboarding (mode 'osfont') — opened only by the ?start= boot flow,
+   with _osStartCtx = {entry, bytes, font, licenseText} already fetched and parsed. Cancellable:
+   Esc / backdrop / Cancel fall back to the normal gate wizard (the boot decision is already
+   made, so no deferral-baton resume). See CLAUDE.md: Starting Fonts. ── */
+let _osStartCtx = null;   // set by osStartBoot before wizardOpen('osfont')
+let _osPrevFace = null;   // FontFace registered for the step-1 live preview
+function wizardOsPrefill(){
+  const e = _osStartCtx.entry;
+  const T = (k, p) => window.I18n ? I18n.t(k, p) : k;
+  document.getElementById('osPrevIntro').textContent = T('fontmaker.oswizard.intro', { font: e.displayName || e.id, partner: e.partnerName || '' });
+  document.getElementById('osPrevName').textContent = e.displayName || '';
+  document.getElementById('osPrevDesigner').textContent = e.designer || '—';
+  document.getElementById('osPrevVersion').textContent = e.originalVersion ? 'v' + e.originalVersion : '—';
+  const lic = document.getElementById('osPrevLicense');
+  lic.textContent = e.licenseName || e.licenseId || '';
+  if (e.licenseUrl) lic.href = e.licenseUrl; else lic.removeAttribute('href');
+  // Live preview: register the fetched bytes under a throwaway family (uploadTemplateTTF precedent).
+  // Preview failure just leaves the fallback serif — the wizard proceeds regardless.
+  const prev = document.getElementById('osPrev');
+  prev.style.fontFamily = '';
+  if (window.FontFace && _osStartCtx.bytes) {
+    try {
+      const ff = new FontFace('HFMOsPreview', _osStartCtx.bytes.buffer ? _osStartCtx.bytes.buffer.slice(0) : _osStartCtx.bytes.slice(0));
+      ff.load().then(f => { document.fonts.add(f); _osPrevFace = f; prev.style.fontFamily = "'HFMOsPreview', serif"; }).catch(() => {});
+    } catch (err) {}
+  }
+  // Reserved Font Names force a rename, so no prefill there (a "{name} (modified)" default would
+  // fail its own validator whenever the display name contains a reserved name).
+  const rfns = e.reservedFontNames || [];
+  const nameEl = document.getElementById('wizOsName');
+  nameEl.value = rfns.length ? '' : (e.displayName ? T('fontmaker.oswizard.name_prefill', { font: e.displayName }) : '');
+  nameEl.placeholder = rfns.length ? T('fontmaker.oswizard.name_ph_rfn') : '';
+  let author = '';
+  try { author = localStorage.getItem('hebrewFontMaker_lastAuthor') || ''; } catch (err) {}
+  document.getElementById('wizOsAuthor').value = author;
+  document.getElementById('wizOsOrigAuthor').textContent = (e.designer ? e.designer + ' · ' : '') + (e.partnerName || '');
+  document.getElementById('wizOsLicensePill').textContent = e.licenseName || e.licenseId || '';
+  document.getElementById('wizOsNikkud').checked = e.hasNikkud !== false;
+  document.getElementById('wizOsTrop').checked = e.hasTrop !== false;
+  ['wizOsEnglish','wizOsYiddish','wizOsLadino','wizOsTour'].forEach(id => { document.getElementById(id).checked = false; });
+}
+function wizardValidateOs(){
+  if (_wizardMode !== 'osfont' || !_osStartCtx) return true;
+  const name = document.getElementById('wizOsName').value.trim();
+  const author = document.getElementById('wizOsAuthor').value.trim();
+  const rfns = _osStartCtx.entry.reservedFontNames || [];
+  const rfn = osfontNameConflict(name, rfns);
+  const ok = !!name && !!author && !rfn;
+  const T = (k, p) => window.I18n ? I18n.t(k, p) : k;
+  let msg = '';
+  if (_wizardStep === 2) {
+    if (name && rfn) msg = T('fontmaker.oswizard.rfn_note', { rfn, names: rfns.join(', ') });
+    else if (!name || !author) msg = T('fontmaker.oswizard.need_name_author');
+  }
+  const note = document.getElementById('wizOsNameNote');
+  note.textContent = msg;
+  note.hidden = !msg;
+  const blocked = (_wizardStep === 2 && !ok);
+  document.getElementById('wizNext').setAttribute('aria-disabled', blocked ? 'true' : 'false');
+  return ok;
+}
+function wizardOsCancel(){
+  aCloseModal('wizardOverlay');
+  _wizardMode = null; _osStartCtx = null;
+  if (_osPrevFace) { try { document.fonts.delete(_osPrevFace); } catch (e) {} _osPrevFace = null; }
+  wizardOpen('gate');   // fall back to the normal new-font gate
+}
+async function wizardOsFinish(){
+  if (!wizardValidateOs()) { wizardShowStep(2); try { document.getElementById('wizOsName').focus(); } catch (e) {} return; }
+  const ctx = _osStartCtx, e = ctx.entry;
+  const name = document.getElementById('wizOsName').value.trim();
+  const author = document.getElementById('wizOsAuthor').value.trim();
+  const nikkudOn = document.getElementById('wizOsNikkud').checked;
+  const tropOn = document.getElementById('wizOsTrop').checked;
+  const eng = document.getElementById('wizOsEnglish').checked;
+  const yid = document.getElementById('wizOsYiddish').checked;
+  const lad = document.getElementById('wizOsLadino').checked;
+  const tour = document.getElementById('wizOsTour').checked;
+  autosaveDiscard(); newProject();   // mirror 'new'-mode semantics (a no-op on boot's blank project)
+  project.osFont = {   // presence of this block = partner-locked project (see CLAUDE.md: Starting Fonts)
+    id: e.id, displayName: e.displayName || '', partner: e.partner || '', partnerName: e.partnerName || '',
+    partnerUrl: e.partnerUrl || '', upstream: e.upstream || '', licenseId: e.licenseId || '',
+    licenseName: e.licenseName || '', licenseUrl: e.licenseUrl || '', copyright: e.copyright || '',
+    reservedFontNames: (e.reservedFontNames || []).slice(), designer: e.designer || '',
+    originalVersion: e.originalVersion || '', licenseText: ctx.licenseText || ''
+  };
+  project.font.familyName = name;
+  project.font.reservedFontName = (e.reservedFontNames || []).join(', ');   // upstream RFNs, read-only in the UI
+  project.font.author = author;
+  project.font.license = 'os-passthrough';
+  try { localStorage.setItem('hebrewFontMaker_lastAuthor', author); } catch (err) {}
+  syncMetaToForm();
+  setMarkEnabled('nikkud', nikkudOn);
+  setMarkEnabled('trop', tropOn);
+  if (eng) setAddEnglishLetters(true);
+  if (yid) setAddYiddish(true);
+  if (lad) setAddLadino(true);
+  _launchDecided = true; _autosavePromptDeferred = false;
+  _wizardMode = null; _osStartCtx = null;
+  if (_osPrevFace) { try { document.fonts.delete(_osPrevFace); } catch (err) {} _osPrevFace = null; }
+  aCloseModal('wizardOverlay');   // close first — the import's status toasts belong on the workspace
+  await applyFontImport({ name: (e.file || '').split('/').pop() || e.displayName }, ctx.font, ctx.bytes,
+                        { outlines: true, marks: true, anchors: true, boldAfter: false });
+  setInputMode('font');   // applyFontImport stamps project.inputMode; this also persists the pref
+  setCatTab('letter');
+  status(I18n.t('fontmaker.oswizard.created_toast', { font: e.displayName || e.id, name }));
+  markDirty();   // applyFontImport never dirties — this makes the import tomorrow's "Continue" snapshot
+  if (tour) tourStart();
 }
 // Apply the current letter's alignment transform to other letters (one undoable batch).
 function openApplyAlign(){
