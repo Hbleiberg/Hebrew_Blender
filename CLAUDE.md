@@ -900,6 +900,19 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   It auto-closes before running `onClick`; to make elements inside the body interactive (like the
   export-warning letter chips), wire listeners on `#askBody` **after** the `askModal(...)` call.
 - **Toasts**: `status(msg, sticky)` — auto-clears in 4s unless `sticky`.
+- **Long waits**: `ipArm(delay)` / `ipClose()` — the `#importProgressOverlay` busy modal (the ONLY
+  modal in the file that isn't a decision point). `status()` mirrors into its phase line, so every
+  message the operation already emits shows where the eye is; `ipOpen` seeds from `#statusMsg`'s
+  current text, since the engine's phases fire before the modal opens. Use `ipArm`, never `ipOpen`:
+  the delay (default 400ms, and `ipArm(0)` on the partner `?start=` path where a cold engine is
+  guaranteed) is what stops a warm run from flashing a modal. It is button-less and Escape-inert
+  (cancelling mid-import would leave a half-imported project), so **every** exit path must close it
+  — `applyFontImport` does it in a `finally` plus explicitly the moment `renderGrids()` reveals the
+  glyphs, which is also what keeps it from suppressing the fidelity report's auto-open. Its
+  indeterminate bar carries a **component-local** `@media (prefers-reduced-motion)` neutralizer with
+  `animation: none`: a media query adds no specificity (an override in the global block near the top
+  of the file loses to the base rule below it), and the global block only shortens the duration —
+  an infinite animation never ends, so its keyframes would park the bar off-track.
   - Page-level toast helpers elsewhere in the suite (for the toast-adoption candidate): generator
     `showAppToast` (`hebrew_blend_generator.html`), torah `showHintToast` (`torah_trainer.html`),
     generator preview banner `showPreviewNotice`; plus the `.ivrit` engine's `ivritStatus` for

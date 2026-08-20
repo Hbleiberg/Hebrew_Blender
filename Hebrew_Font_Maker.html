@@ -660,6 +660,20 @@
   .modal h3 { font-family: 'Libre Baskerville', serif; margin: 0 0 10px; font-size: 1.05rem; }
   .modal p { font-size: 0.86rem; line-height: 1.5; }
   .modal .mbtns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
+  /* Import progress: an indeterminate bar (the engine download reports no bytes) + a live phase line. */
+  .ip-bar { height: 6px; border-radius: 3px; background: var(--warm-gray); overflow: hidden; margin: 12px 0 10px; }
+  .ip-bar-fill { height: 100%; width: 40%; border-radius: 3px; background: var(--gold); animation: ipIndet 1.2s ease-in-out infinite; }
+  @keyframes ipIndet { 0% { margin-inline-start: -40%; } 100% { margin-inline-start: 100%; } }
+  /* Component-local neutralizer (the app-toast block's pattern), and it MUST live here rather than in
+     the global reduced-motion block near the top: a media query adds no specificity, so an override
+     placed before the rule above simply loses the cascade. `animation: none` is required too — the
+     global block only shortens the duration, and an INFINITE animation never ends, so its keyframes
+     keep winning and park the bar off the end of its track, reading as "stalled". The phase LINE
+     carries "we're working", so a full static bar loses nothing. */
+  @media (prefers-reduced-motion: reduce) {
+    .ip-bar-fill { animation: none; width: 100%; margin-inline-start: 0; }
+  }
+  .ip-note { color: var(--muted); font-size: 0.78rem; margin: 0; }
   /* Mobile-warning tiers (see maybeShowMobileWarn): phones keep the "best on a computer" copy;
      tablet-sized touch devices — the stylus-first audience Draw mode was built for — get the
      drawing variant instead. Only ever HIDE the inactive tier, never force a display value on the
@@ -1391,6 +1405,16 @@
     <h3 id="askTitle" data-i18n="fontmaker.modals.ask_title">Notice</h3>
     <p id="askBody"></p>
     <div class="mbtns" id="askBtns"></div>
+  </div>
+</div>
+<!-- Import progress (see ipArm/ipOpen): deliberately button-less — there is nothing to decide until
+     the font is in, and cancelling mid-import would leave a half-imported project. -->
+<div class="overlay" id="importProgressOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ipTitle" aria-describedby="ipPhase" aria-busy="true" tabindex="-1" id="importProgressModal">
+    <h3 id="ipTitle" data-i18n="fontmaker.import_progress.title">Getting your font ready…</h3>
+    <p id="ipPhase" role="status"></p>
+    <div class="ip-bar" aria-hidden="true"><div class="ip-bar-fill"></div></div>
+    <p class="ip-note" id="ipNote" data-i18n="fontmaker.import_progress.note">The font engine downloads once (about 8 MB) and is reused every time after this.</p>
   </div>
 </div>
 
@@ -2651,8 +2675,51 @@ const M = {
 let _statusTimer = null;
 function status(msg, sticky) {
   document.getElementById('statusMsg').textContent = msg || '';
+  ipPhase(msg);   // while an import is running, the progress modal mirrors this strip — every phase it already emits shows up where the eye is
   if (_statusTimer) clearTimeout(_statusTimer);
   if (!sticky && msg) _statusTimer = setTimeout(() => { document.getElementById('statusMsg').textContent = ''; }, 4000);
+}
+/* ── Import progress modal ────────────────────────────────────────────────────────────────────
+   An anchors-on import waits on a COLD engine: ~8 MB of Pyodide + fontTools, then a synchronous
+   anchor read — tens of seconds on school Wi-Fi. The two existing affordances are a 0.78rem status
+   strip and the muted "engine loading…" badge tucked beside Export, i.e. the opposite corner from
+   where the user is looking; and the partner ?start= flow closes its wizard first, so the whole
+   wait plays out over an EMPTY workspace with 27 blank tiles. That reads as "it's broken".
+   This modal covers exactly that window: armed when the import starts, closed the instant the
+   glyphs render. It is button-less and Escape-inert on purpose (nothing to decide until the font
+   is in, and cancelling would leave a half-imported project) — so every exit path must close it,
+   which applyFontImport's finally guarantees. `ipArm` (not `ipOpen`) is the entry point: a warm
+   engine finishes in well under the delay and must never flash a modal. */
+let _ipOpen = false, _ipTimer = null;
+function ipArm(delay) {
+  if (_ipOpen || _ipTimer) return;   // an earlier, shorter arm (the partner flow's immediate one) wins
+  _ipTimer = setTimeout(ipOpen, delay == null ? 400 : delay);
+}
+function ipOpen() {
+  clearTimeout(_ipTimer); _ipTimer = null;
+  if (_ipOpen) return;
+  _ipOpen = true;
+  // Seed from whatever the strip says RIGHT NOW: the engine's own phase messages fire before this
+  // modal opens, so a hardcoded "Importing font…" would show a phase the import had already left.
+  const ph = document.getElementById('ipPhase');
+  const strip = document.getElementById('statusMsg');
+  if (ph) ph.textContent = (strip && strip.textContent) || I18n.t('fontmaker.status.importing_font');
+  aOpenModal('importProgressOverlay', () => {});
+  const m = document.getElementById('importProgressModal');
+  if (m) { try { m.focus(); } catch (e) {} }   // no focusable child — focus the dialog itself so the Tab trap and screen readers have an anchor
+}
+function ipPhase(msg) {
+  if (!_ipOpen || !msg) return;   // ignore the status('') clears — the last real phase should stay on screen
+  const ph = document.getElementById('ipPhase');
+  if (ph) ph.textContent = msg;
+}
+function ipClose() {
+  clearTimeout(_ipTimer); _ipTimer = null;
+  if (!_ipOpen) return;
+  _ipOpen = false;
+  const ph = document.getElementById('ipPhase');
+  if (ph) ph.textContent = '';
+  aCloseModal('importProgressOverlay');
 }
 function askModal(title, bodyHtml, buttons) {
   // buttons: [{label, cls, onClick}] — returns nothing; handlers close modal
@@ -2999,7 +3066,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.16</strong> &mdash; <strong>The fidelity report's Auto-fix now fixes everything it measures.</strong> After importing a font with anchors, one click corrects every flagged letter+mark combo &mdash; not just the combined forms. Shared anchors move when a whole letter agrees, and the stubborn per-letter positions (the report's &ldquo;own positioning rule&rdquo; marks) get exact per-letter <em>pins</em>, marked with the gold &#9998; in the placement step. The report then <strong>re-measures against the original font</strong> and shows the after numbers, and a <span class="ui">Fidelity report</span> button in the Nikkud step reopens it any time. Pins stay yours: drag a pinned mark to fine-tune it, or <span class="ui">Unpin</span> / <span class="ui">Clear pins</span> to fall back to the shared anchor. <span style="color:var(--muted);">(August 2026)</span></li>
+      <li><strong>v5.16</strong> &mdash; <strong>The fidelity report's Auto-fix now fixes everything it measures.</strong> After importing a font with anchors, one click corrects every flagged letter+mark combo &mdash; not just the combined forms. Shared anchors move when a whole letter agrees, and the stubborn per-letter positions (the report's &ldquo;own positioning rule&rdquo; marks) get exact per-letter <em>pins</em>, marked with the gold &#9998; in the placement step. The report then <strong>re-measures against the original font</strong> and shows the after numbers, and a <span class="ui">Fidelity report</span> button in the Nikkud step reopens it any time. Pins stay yours: drag a pinned mark to fine-tune it, or <span class="ui">Unpin</span> / <span class="ui">Clear pins</span> to fall back to the shared anchor. <strong>Importing a font now says what it is doing.</strong> The first import of a session has to fetch the font engine, which can take a while on school Wi-Fi &mdash; and an <span class="ui">Open Siddur</span> edit link used to spend that whole wait sitting on an empty workspace, looking broken. A progress window now names each step and closes the moment your letters appear. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.15</strong> &mdash; <strong>Edit a partner's font from a link.</strong> Open Siddur Project <em>starting fonts</em> now open straight into the Font Maker from an <span class="ui">?start=</span> link: a short three-step onboarding imports the font's Hebrew letters, nikkud, trop, and mark positions into a fresh project of your own, with a live preview and full credit to the original. Your version automatically keeps the original's open license &mdash; the <span class="ui">License</span> box locks, reserved font names ask you for a name of your own, and every export's <span class="ui">LICENSE.txt</span> carries the original copyright plus your &ldquo;modified work&rdquo; line. A new <span class="ui">Partner fonts</span> help tab explains the why. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.14</strong> &mdash; <strong>Imported fonts keep their exact nikkud positions.</strong> When you import a TTF/OTF with <span class="ui">Import nikkud anchor positions</span> on, the Font Maker now also reads each mark's own <em>attachment point</em> from the font &mdash; not just the letters' anchors &mdash; so every vowel, dagesh and trop lands exactly where the original font put it, even in fonts that position, say, the sh'va and the holam through separate rules. And it doesn't just assume: right after the import, the original font is shaped with the same engine word processors use, and every letter+mark pair is <strong>measured</strong> against what the editor will produce. A status line reports the numbers, and if any combo is more than a few units off you get a detail list with a one-click <span class="ui">Apply per-combo fixes</span> button for the combined forms (&#1493;&#1465;, &#1513;&#1473;&hellip;). Traced, drawn and built-in marks are completely untouched. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.13</strong> &mdash; <strong>Watch a letter being written.</strong> In <span class="ui">Draw</span>, a new <span class="ui">&#9654; Replay</span> button plays your strokes back one at a time, in the order you actually drew them &mdash; so you can show a class the stroke order, or check your own before you trace. It is a viewing aid and nothing more: it changes no part of the letter, adds nothing to <span class="ui">Undo</span>, and stops the moment you touch the canvas again. Press it a second time to stop it early. If your device is set to reduce motion, the strokes simply appear together and the Font Maker says so. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -5734,6 +5801,7 @@ function askFontImportOptions(file, font, bytes) {
 }
 async function applyFontImport(file, font, bytes, opts) {
   status(I18n.t('fontmaker.status.importing_font'), true);
+  ipArm();   // cold engine ⇒ the modal appears; a warm one finishes first and it never shows
   try {
     let imported = null, hadGpos = false, anchorErr = false, markAttach = null, markCoverage = null, anchorNotes = [];
     if (opts.anchors) {
@@ -5801,6 +5869,7 @@ async function applyFontImport(file, font, bytes, opts) {
     }
     if (opts.outlines) project.inputMode = 'font';
     syncMetaToForm(); renderGrids(); setWorkMode('anchors');
+    ipClose();   // the glyphs are on screen — that is the modal's whole contract, and it must be gone before the fidelity report can auto-open over it
     if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal(I18n.t('fontmaker.modals.no_hebrew_title'), I18n.t('fontmaker.modals.no_hebrew_body'), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
     let msg = opts.outlines ? `Loaded ${n}/27 letters${nPunct ? ` and ${nPunct} digit/punctuation glyph${nPunct===1?'':'s'}` : ''} from ${file.name}.` : 'Kept your current outlines.';
     if (opts.marks) {
@@ -5818,7 +5887,8 @@ async function applyFontImport(file, font, bytes, opts) {
     // Mark fidelity report (D4): only for GPOS-bearing imports — measure the editor's predicted mark
     // placements against the original bytes via harfbuzz. Async + fail-soft: never blocks the import.
     if (hadGpos && imported) runImportFidelityCheck({ upm: font.unitsPerEm, fontName: file.name, bytes, importedMarks, markCoverage, notes: anchorNotes, anchorHits, attachCount });
-  } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.font_import_failed_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); }
+  } catch (e) { console.error(e); ipClose(); status(''); askModal(I18n.t('fontmaker.modals.font_import_failed_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); }
+  finally { ipClose(); }   // belt-and-braces: a button-less modal must never survive its import, on any path
 }
 
 /* ════════ SVG import (Advanced → "Enable SVG uploading") ════════
@@ -12544,6 +12614,7 @@ function udShortcutBlocked() {
   if (document.getElementById('qaOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('adOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('wizardOverlay')?.classList.contains('open')) return true;   // esp. cancellable mode — Ctrl+Z must not mutate the project behind it
+  if (document.getElementById('importProgressOverlay')?.classList.contains('open')) return true;   // an import is mid-flight — no undo/redo into a half-imported project
   return false;
 }
 /* Ctrl/Cmd+Z = undo · Ctrl/Cmd+Shift+Z or Ctrl+Y = redo */
@@ -16506,6 +16577,10 @@ async function wizardOsFinish(){
   _wizardMode = null; _osStartCtx = null;
   if (_osPrevFace) { try { document.fonts.delete(_osPrevFace); } catch (err) {} _osPrevFace = null; }
   aCloseModal('wizardOverlay');   // close first — the import's status toasts belong on the workspace
+  // No delay on this path: a partner link lands on a BRAND-NEW project, so maybePrefetchEngine
+  // (gated on traced >= 1) can never have warmed the engine — the wait is guaranteed, and the
+  // workspace behind this modal is empty.
+  ipArm(0);
   await applyFontImport({ name: (e.file || '').split('/').pop() || e.displayName }, ctx.font, ctx.bytes,
                         { outlines: true, marks: true, anchors: true, boldAfter: false });
   setInputMode('font');   // applyFontImport stamps project.inputMode; this also persists the pref
