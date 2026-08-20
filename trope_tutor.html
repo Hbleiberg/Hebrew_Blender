@@ -379,6 +379,14 @@ body.dark .tu-feedback .no { color:#ff6666; }
 .tu-drill-center h2 { font-family:'Libre Baskerville',serif; font-size:1.15rem; margin:0 0 10px; color:var(--text); }
 .tu-drill-center .big-pct { font-size:2.6rem; font-weight:700; color:var(--gold-text); font-variant-numeric:tabular-nums; }
 .tu-drill-sub { font-size:0.9rem; color:var(--muted); margin:6px 0 14px; }
+.tu-scope-row { display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; margin:0 0 14px; font-size:0.85rem; }
+.tu-scope-row label { font-weight:600; color:var(--text); }
+.tu-scope-row select {
+  border:1px solid var(--border); background:var(--white); color:var(--text);
+  padding:5px 8px; border-radius:5px; font:inherit; font-size:0.82rem; min-height:30px; max-width:100%;
+}
+.tu-scope-row select:focus { outline:2px solid var(--gold); outline-offset:0; }
+body.dark .tu-scope-row select { background:var(--navy-deep); color:var(--text); }
 .tu-pb-banner { font-size:0.95rem; font-weight:700; color:var(--gold-text); margin:4px 0 10px; }
 .tu-note { font-size:0.82rem; color:var(--muted); margin-top:10px; min-height:1.4em; }
 .tu-note.error { color:#cc3333; font-weight:600; }
@@ -807,6 +815,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="tu-drill-center">
         <h2 data-i18n="trope.drill.heading">Drill: 10 questions per session</h2>
         <p class="tu-drill-sub" id="drillTypesSummary"></p>
+        <div class="tu-scope-row">
+          <label for="drillScopeSel" data-i18n="trope.drill.scope_label">Drill which marks?</label>
+          <select id="drillScopeSel" onchange="setDrillScope(this.value)"></select>
+        </div>
         <button class="btn btn-lg" id="drillStartBtn" onclick="startDrill()" data-i18n="trope.drill.start_button">Start drill</button>
         <div class="tu-note" id="drillStartNote" role="status"></div>
         <div class="tu-mgrid" id="masteryGridStart" role="group" aria-label="Mastery by trope" data-i18n-aria-label="trope.drill.mastery_aria"></div>
@@ -1132,6 +1144,7 @@ const DEFAULTS = {
   drillIdentify: true,
   drillHear: true,
   drillMelody: true,
+  drillScope: 'all',            // 'all' | a TROPE_FAMILY_DEFS key — answers-only filter (distractors stay global)
   playbackRate: 1.0,
   panelsCollapsed: null,        // settings-drawer per-panel collapse map {data-i18n key: bool}; null = markup defaults
 };
@@ -2005,6 +2018,40 @@ function enabledTypes() {
 function drillableTropes() {
   return TROPES.filter(t => examplesFor(t.key).length > 0);
 }
+/* ─── Drill scope: "drill only what you just taught" ───
+   Answers-only filter — pickDistractors stays global so a 3-mark family still fills
+   four choice buttons (it already weights same-family + confusables). The stored value
+   is validated on every read: settings blobs travel through AllTools imports. */
+function drillScope() {
+  const v = settings.drillScope;
+  return (v && v !== 'all' && TROPE_FAMILY_DEFS.some(f => f.key === v)) ? v : 'all';
+}
+function scopedDrillPool() {
+  const pool = drillableTropes();
+  const scope = drillScope();
+  return scope === 'all' ? pool : pool.filter(t => t.family === scope);
+}
+function buildDrillScopeSel() {
+  const sel = document.getElementById('drillScopeSel');
+  if (!sel) return;
+  sel.innerHTML = '';
+  const all = document.createElement('option');
+  all.value = 'all';
+  all.textContent = I18n.t('trope.drill.scope_all');
+  sel.appendChild(all);
+  for (const fam of TROPE_FAMILY_DEFS) {
+    const o = document.createElement('option');
+    o.value = fam.key;
+    o.textContent = I18n.t('trope.glyphname.family_' + fam.key);
+    sel.appendChild(o);
+  }
+  sel.value = drillScope();
+}
+function setDrillScope(v) {
+  settings.drillScope = v;
+  saveSettings();
+  updateDrillStart();
+}
 function updateDrillStart() {
   const types = enabledTypes();
   const names = { identify: I18n.t('trope.drill.type_identify'), hear: I18n.t('trope.drill.type_hear'), melody: I18n.t('trope.drill.type_melody') };
@@ -2013,12 +2060,15 @@ function updateDrillStart() {
   const btn = document.getElementById('drillStartBtn');
   const note = document.getElementById('drillStartNote');
   const pool = drillableTropes();
-  if (!INDEX || pool.length < 4) {
+  // Unreachable with today's index (every family has ≥3 drillable marks) — guards a
+  // future rebuild that empties one, so a scoped drill can never start with no answers.
+  const scopedEmpty = !scopedDrillPool().length;
+  if (!INDEX || pool.length < 4 || scopedEmpty) {
     btn.setAttribute('aria-disabled', 'true');
     note.classList.add('error');
-    note.textContent = INDEX
-      ? I18n.t('trope.drill.not_enough')
-      : I18n.t('trope.drill.index_not_loaded');
+    note.textContent = !INDEX ? I18n.t('trope.drill.index_not_loaded')
+      : pool.length < 4 ? I18n.t('trope.drill.not_enough')
+      : I18n.t('trope.drill.scope_not_enough');
   } else {
     btn.removeAttribute('aria-disabled');
     note.classList.remove('error');
@@ -2097,8 +2147,10 @@ function startDrill() {
   const btn = document.getElementById('drillStartBtn');
   if (btn.getAttribute('aria-disabled') === 'true') { updateDrillStart(); return; }
   const types = enabledTypes();
-  const tropePool = drillableTropes().map(t => t.key);
-  if (!types.length || tropePool.length < 4) { updateDrillStart(); return; }
+  const tropePool = scopedDrillPool().map(t => t.key);
+  // choices need ≥4 distinct marks GLOBALLY (distractors are unscoped); the scoped
+  // answer pool itself just needs to be non-empty — repeats are the point of a focused drill
+  if (!types.length || !tropePool.length || drillableTropes().length < 4) { updateDrillStart(); return; }
 
   const weightFn = k => {
     let w = 0.35 + (1 - masteryOf(k));
@@ -3012,6 +3064,7 @@ function applyI18n() {
   if (_statusState) setStatusKey(_statusState.key, _statusState.en, _statusState.isError);  // re-translate a visible status
   try { initFontSelector(); } catch (e) {}                 // My Fonts section headers + [DEFAULT] marker
   try { if (!document.getElementById('learnView').hidden) renderLearn(); } catch (e) {}   // family/trope notes, name prefixes
+  try { buildDrillScopeSel(); } catch (e) {}               // scope options: "All marks" + family names
   try { updateDrillStart(); } catch (e) {}                 // drill start summary + note
   // The missed-marks list is JS-built from _lastMissed; re-render it only while the results
   // view is actually showing, so a language change never repopulates a hidden panel.

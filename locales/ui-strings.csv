@@ -3402,6 +3402,9 @@ trope.drill.review_title.one,1 mark to review,סימן אחד לחזרה,heading
 trope.drill.review_title.other,{count} marks to review,{count} סימנים לחזרה,heading above the missed-marks list on the drill results screen,plural; REVIEW: HE draft
 trope.drill.review_play_aria,Hear {name} again,השמעת {name} שוב,aria-label on the replay button in the missed-marks list,aria-label only; REVIEW: HE draft
 trope.drill.results_sub,{correct} / {total} correct · best streak this session: {best} 🔥 · personal best: {pb} 🔥,{correct} / {total} נכון · רצף שיא במפגש זה: {best} 🔥 · שיא אישי: {pb} 🔥,results subtitle,do-not-translate {correct}/{total}/{best}/{pb}
+trope.drill.scope_all,All marks,כל הטעמים,drill scope select — the default option,REVIEW: HE draft
+trope.drill.scope_label,Drill which marks?,אילו טעמים לתרגל?,drill scope select label,REVIEW: HE draft
+trope.drill.scope_not_enough,"No playable examples in this family yet — pick another family, or All marks.",אין עדיין דוגמאות שמע במשפחה הזו — בחרו משפחה אחרת או את כל הטעמים.,drill start note when the scoped family has no drillable marks (unreachable with today's index),REVIEW: HE draft
 trope.drill.start_button,Start drill,התחלת תרגול,button,
 trope.drill.streak_aria,"Streak {n}, personal best {best}","רצף {n}, שיא אישי {best}",drill streak aria,aria-label only; do-not-translate {n}/{best}
 trope.drill.streak_line,🔥 {n}  ·  🏆 {best},🔥 {n}  ·  🏆 {best},drill streak display,leading-emoji; do-not-translate {n}/{best}
