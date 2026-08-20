@@ -1079,8 +1079,11 @@
             <option value="ofl" selected data-i18n="fontmaker.panels.license_ofl">SIL Open Font License 1.1 (recommended)</option>
             <option value="mit" data-i18n="fontmaker.panels.license_mit">MIT License</option>
             <option value="arr" data-i18n="fontmaker.panels.license_arr">All Rights Reserved — most strict</option>
+            <option value="os-passthrough" hidden disabled data-i18n="fontmaker.osfont.license_option">Same as the original font — locked</option>
           </select>
         </label>
+        <!-- Partner starting-font projects (project.osFont): the license is inherited + locked. -->
+        <div class="hint" id="osLicenseNote" style="display:none;"><span id="osLicenseNoteText"></span> <button type="button" class="fld-help" onclick="openHelp('oslock')" title="Why is this locked?" data-i18n-title="fontmaker.osfont.lock_help_title" aria-label="Why is this locked?" data-i18n-aria-label="fontmaker.osfont.lock_help_title">?</button></div>
         <div class="hint" data-i18n-html="fontmaker.panels.license_hint">Pick how others may use your font. Every export's <b>LICENSE.txt</b> lists your name as author and includes a required <b>Made with IvritSuite.com</b> line. The version ticks up each export — edit it anytime.</div>
       </div>
     </div>
@@ -2681,6 +2684,7 @@ const HELP_TABS = [
   ['ivritsuite','Use in IvritSuite'],
   ['templates','Download Templates'],
   ['licenses','Licenses'],
+  ['oslock','Partner fonts'],
   ['share','Share my font'],
   ['about','About'],
 ];
@@ -2862,6 +2866,13 @@ const HELP_CONTENT = {
     </ul>
     <div class="help-tip">💛 If you can, choose a more open license (CC0, OFL, or MIT). Open Hebrew fonts are a real gift for students, teachers, and anyone learning to read — they make your work usable in classrooms, siddurim, and projects you'll never even see.</div>
     <div class="help-tip">⚠️ Every license generated here includes a <strong>Made with IvritSuite.com</strong> attribution line. This line must stay in the LICENSE file — it's what keeps the tool free for everyone.</div>
+  `,
+  oslock: `
+    <h4>Partner fonts — why the license is locked</h4>
+    <p>Some projects start from an existing open-licensed font shared by a partner like <a href="https://opensiddur.org/help/fonts/" target="_blank" rel="noopener">the Open Siddur Project</a>. Your edited font is legally a <strong>modified version</strong> of that original — and open font licenses (like the SIL Open Font License and the GPL) require modified versions to stay under the <strong>same license</strong> as the original. That's not a limitation IvritSuite adds; it's the very rule that makes the original free for you to edit in the first place. So on these projects the <span class="ui">License</span> box is locked to the original's license, and every export's <span class="ui">LICENSE.txt</span> carries the original copyright plus your "modified work" line.</p>
+    <p><strong>Why you may need a new name.</strong> Many open fonts declare <strong>Reserved Font Names</strong> — names that only the original may use. A modified version must be renamed so nobody confuses it with the original. If the original reserves names, the <span class="ui">Family name</span> you pick can't contain them — add your own name or your school's instead (e.g. <i>"Kehilla SemiStam"</i>). The <span class="ui">Reserved name</span> field shows the original's reserved names, read-only.</p>
+    <p><strong>What actually carries over.</strong> Your export is rebuilt by IvritSuite from the letters in the editor: the original's Hebrew letterforms, vowels, cantillation marks, and mark positions come along; its Latin glyphs, hinting, kerning, and hand-tuned internals don't. The LICENSE.txt records exactly what your version is based on.</p>
+    <div class="help-tip">💛 The <i>"made with IvritSuite"</i> line on these exports is informational only — the original's license terms are the ones that apply, unchanged.</div>
   `,
   share: `
     <h4>Share your font</h4>
@@ -3299,15 +3310,43 @@ function syncMetaToForm() {
   document.getElementById('author').value = project.font.author || '';
   document.getElementById('license').value = project.font.license || 'ofl';
   document.getElementById('fontStyle').value = (project.font.style === 'bold') ? 'bold' : 'regular';
+  syncOsFontLock();
   // Reference-font / input-mode controls now live in the dynamically-rendered workspace
   // (renderControls), driven by project state — nothing to sync here.
 }
+/* Partner starting-font projects (project.osFont — see CLAUDE.md: Starting Fonts) inherit the
+   upstream license: the select locks to the hidden os-passthrough option and the upstream
+   Reserved Font Names sit read-only in the reserved-name field. The else branch matters just as
+   much — loading a normal project after a partner one must re-enable the form. */
+function syncOsFontLock() {
+  const locked = !!(project && project.osFont);
+  const lic = document.getElementById('license'), res = document.getElementById('reservedName');
+  const note = document.getElementById('osLicenseNote');
+  if (!lic || !res) return;
+  if (locked) lic.value = 'os-passthrough';
+  lic.disabled = locked;
+  res.readOnly = locked;
+  if (locked) {
+    res.title = window.I18n ? I18n.t('fontmaker.osfont.rfn_locked_title') : 'Reserved Font Names from the original font — read-only.';
+    lic.setAttribute('aria-describedby', 'osLicenseNote');
+  } else { res.removeAttribute('title'); lic.removeAttribute('aria-describedby'); }
+  if (note) {
+    note.style.display = locked ? '' : 'none';
+    if (locked) document.getElementById('osLicenseNoteText').textContent = window.I18n
+      ? I18n.t('fontmaker.osfont.lock_note', { license: project.osFont.licenseName || project.osFont.licenseId || '', font: project.osFont.displayName || '' })
+      : (project.osFont.licenseName || '');
+  }
+}
 function onMetaChange() {
   project.font.familyName = document.getElementById('familyName').value;
-  project.font.reservedFontName = document.getElementById('reservedName').value;
+  if (!project.osFont) {
+    project.font.reservedFontName = document.getElementById('reservedName').value;
+    project.font.license = document.getElementById('license').value;
+  } else {
+    project.font.license = 'os-passthrough';   // partner lock: license + reserved names are upstream truth, never read from the DOM
+  }
   project.font.version = document.getElementById('fontVersion').value;
   project.font.author = document.getElementById('author').value;
-  project.font.license = document.getElementById('license').value;
   project.font.style = document.getElementById('fontStyle').value === 'bold' ? 'bold' : 'regular';
   markDirty();   // meta edits autosave like every other edit
 }
@@ -13375,6 +13414,18 @@ function buildFontSpec() {
     licenseDescription: lic.name + ' — ' + lic.desc,     // nameID 13 — leads with the license name
     licenseInfoURL: lic.url                              // nameID 14
   };
+  if (project.osFont) {   // partner starting-font derivative: provenance-correct name table (see CLAUDE.md: Starting Fonts)
+    const os = project.osFont, contributor = (fnt.author || '').trim() || fam;
+    names.copyright = (os.copyright ? os.copyright.replace(/\s+/g, ' ').trim() + ' ' : '')
+                    + 'Modified work Copyright (c) ' + new Date().getFullYear() + ' ' + contributor + '.';
+    names.designer = (os.designer ? os.designer + '; modified by ' : 'Modified by ') + contributor;      // nameID 9
+    names.description = 'Derivative of ' + (os.displayName || 'an open-licensed font')
+                      + (os.originalVersion ? ' v' + os.originalVersion : '')
+                      + (os.partnerName ? ' (' + os.partnerName + ')' : '')
+                      + ', edited with IvritSuite Hebrew Font Maker.';                                    // nameID 10
+    names.licenseDescription = (os.licenseName || 'Upstream license') + ' — see LICENSE.txt for the full license and provenance.';
+    names.licenseInfoURL = os.licenseUrl || '';
+  }
   const _vf = parseFloat(fnt.version);
   const versionFloat = Number.isFinite(_vf) ? _vf : 1.0;   // ||-guard would promote a legal 0.x pre-release version to 1.x
   // Vertical metrics. sTypo (ascent/descent) stays at the nominal design box → stable line spacing.
@@ -13665,7 +13716,8 @@ function buildUfoFontInfo(spec) {
   const lic = LICENSES[project.font.license] || LICENSES.ofl, top = Math.round(effMetrics().letterTop);
   const asc = Math.round(spec.ascent), desc = Math.round(spec.descent), gap = Math.round(spec.lineGap || 0);
   const bold = !!spec.bold;
-  return {
+  const os = project.osFont;   // partner starting-font: mirror buildFontSpec's provenance branch (fontinfo is read independently)
+  const fi = {
     familyName: n.familyName, styleName: bold ? 'Bold' : 'Regular',
     styleMapFamilyName: n.familyName, styleMapStyleName: bold ? 'bold' : 'regular',
     versionMajor: major, versionMinor: minor, unitsPerEm: spec.unitsPerEm,
@@ -13682,9 +13734,12 @@ function buildUfoFontInfo(spec) {
     openTypeOS2VendorID: 'IVST', openTypeOS2CodePageRanges: [0, 5],
     copyright: n.copyright,
     openTypeNameDesigner: n.designer || 'Made with IvritSuite Hebrew Font Maker',
-    openTypeNameLicense: lic.desc, openTypeNameLicenseURL: lic.url,
+    openTypeNameLicense: os ? ((os.licenseName || 'Upstream license') + ' — see LICENSE.txt for the full license and provenance.') : lic.desc,
+    openTypeNameLicenseURL: os ? (os.licenseUrl || '') : lic.url,
     openTypeNameUniqueID: n.uniqueFontIdentifier, postscriptFontName: n.psName
   };
+  if (n.description) fi.openTypeNameDescription = n.description;   // partner derivative provenance (nameID 10); plists can't hold nulls, so only-when-present
+  return fi;
 }
 /* Paste-ready @font-face for the TTF + WOFF2 zip. `fam` = display family, `file` = the file stem.
    font-family stays the bare family for both styles so a Regular and a Bold block pair up in CSS. */
@@ -14119,7 +14174,7 @@ function shareThisFont() {   // open the font library (Fonts view) + a pre-fille
     view: 'fonts', submit: '1',
     name: ((f.familyName || '').trim() + (f.style === 'bold' ? ' Bold' : '')),
     author: (f.author || '').trim(),
-    license: licMap[f.license] || f.license || '',
+    license: project.osFont ? (project.osFont.licenseName || 'Upstream license (locked)') : (licMap[f.license] || f.license || ''),
     version: (f.version || '').trim(),
     nikkud: (f.nikkud && f.nikkud.enabled) ? 'Yes' : 'No',
     trop: (f.trop && f.trop.enabled) ? 'Yes' : 'No'
@@ -14159,9 +14214,31 @@ function customGlyphExportIssues() {
   const blanks = bases.filter(l => !l.contours || !l.contours.length);
   return blanks.length ? { kind: 'blank', blanks } : null;
 }
+function exportJumpToFontDetails() {   // land the user on the family-name field to pick a new name
+  setCatTab('fontdetails');
+  const el = document.getElementById('familyName');
+  if (!el) return;
+  el.scrollIntoView({ block: 'center' });
+  try { el.focus(); el.select(); } catch (e) {}
+  el.classList.add('wiz-flash');
+  setTimeout(() => el.classList.remove('wiz-flash'), 2700);
+}
 async function exportFont() {
   if (!project) return;
   const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
+  // Partner starting-font: a derivative may not use the upstream's Reserved Font Names — a
+  // BLOCKING guard (no export-anyway) ahead of every warning below; the license makes this
+  // non-optional. Same normalized-containment rule as the onboarding wizard's name check.
+  if (project.osFont) {
+    const rfn = osfontNameConflict(project.font.familyName, project.osFont.reservedFontNames);
+    if (rfn) {
+      askModal(I18n.t('fontmaker.osfont.rfn_export_title'),
+        I18n.t('fontmaker.osfont.rfn_export_body', {rfn: '<b>' + esc(rfn) + '</b>', font: esc(project.osFont.displayName || '')}),
+        [ {label: I18n.t('fontmaker.osfont.rfn_rename_btn'), onClick: exportJumpToFontDetails},
+          {label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost'} ]);
+      return;
+    }
+  }
   const nikOn = project.font.nikkud.enabled;
   const s = coreLetterStats();
   if (s.traced === 0) { status(I18n.t('fontmaker.status.trace_first')); return; }
@@ -14220,6 +14297,7 @@ async function doExport(fmt) {
       return;   // outer finally re-enables the button
     }
     _exportPreparing = false; onExportFormatChange();
+    await osEnsureLicenseText();   // partner projects: make sure LICENSE.txt can embed the upstream text
 
     // Bump the font version only now that the engine is ready — a failed engine download (the common,
     // repeatable failure) must no longer ratchet the version on every retry. A build error below rolls
@@ -14523,12 +14601,64 @@ function licenseCtx() {
   return { family, author, reserved, year: new Date().getFullYear() };
 }
 function licenseText() {            // the LICENSE.txt body for the chosen license
+  if (project.osFont) return osPassthroughText();   // partner lock wins over any (tampered) license key
   switch (project.font.license) {
     case 'cc0':  return cc0Text();
     case 'mit':  return mitText();
     case 'arr':  return arrText();
     default:     return oflText();   // 'ofl'
   }
+}
+/* ── Partner "starting fonts" (project.osFont — see CLAUDE.md: Starting Fonts) ──
+   A derivative of an open-licensed partner font keeps the UPSTREAM license: LICENSE.txt is a
+   provenance header + the upstream license text verbatim. The IvritSuite line here is
+   INFORMATIONAL only — OFL/GPL forbid adding restrictions to derivatives, so unlike IVRIT_LINE
+   it must never be phrased as required-to-keep. */
+function osfontNormName(s) { return String(s || '').toLowerCase().replace(/\s+/g, ''); }
+function osfontNameConflict(name, rfns) {   // → the offending Reserved Font Name, or null
+  const n = osfontNormName(name);
+  if (!n) return null;
+  for (const r of (rfns || [])) { const rr = osfontNormName(r); if (rr && n.includes(rr)) return r; }
+  return null;
+}
+function oflBody() {   // the static OFL 1.1 body exactly as normal exports emit it (slice, not copy — can't drift)
+  const t = oflText(); return t.slice(t.indexOf('-----'));
+}
+function osPassthroughText() {
+  const os = project.osFont, yr = new Date().getFullYear();
+  const contributor = (project.font.author || '').trim() || (project.font.familyName || 'the contributor');
+  const rfns = (os.reservedFontNames || []).filter(Boolean);
+  const L = [];
+  if (os.copyright) L.push(os.copyright.trim(), '');
+  if (rfns.length && !/reserved font name/i.test(os.copyright || ''))
+    L.push('Reserved Font Name' + (rfns.length > 1 ? 's' : '') + ': ' + rfns.map(r => '"' + r + '"').join(', ') + '.', '');
+  L.push('Modified work Copyright (c) ' + yr + ' ' + contributor + '.', '');
+  L.push('This is a modified version of "' + (os.displayName || 'the original font') + '"'
+       + (os.originalVersion ? ' v' + os.originalVersion : '') + (os.designer ? ' by ' + os.designer : '')
+       + (os.partnerName ? ', from ' + os.partnerName + (os.partnerUrl ? ' (' + os.partnerUrl + ')' : '') : '') + '.', '');
+  L.push('This modified version was made with the IvritSuite Hebrew Font Maker (https://ivritsuite.com).', '');
+  if (os.licenseId === 'GPL-with-font-exception')
+    L.push('Changes (GPL section 2a): Hebrew letterforms, vowel/cantillation marks and mark positioning '
+         + 'edited with the IvritSuite Hebrew Font Maker, ' + new Date().toISOString().slice(0, 10) + '.', '');
+  L.push('-----------------------------------------------------------', '');
+  if (os.licenseText) L.push(os.licenseText.trim());
+  else if (os.licenseId === 'OFL-1.1')
+    L.push('The original font is licensed under the SIL Open Font License, Version 1.1, copied below.', '', oflBody().trim());
+  else
+    L.push('The original font is licensed under ' + (os.licenseName || os.licenseId || 'its upstream license') + '.'
+         + (os.licenseUrl ? ' Full license text: ' + os.licenseUrl : ''));
+  return L.join('\n') + '\n';
+}
+async function osEnsureLicenseText() {   // best-effort backfill before export; failure is non-fatal (fallbacks above)
+  if (!project.osFont || project.osFont.licenseText) return;
+  try {
+    const m = ivritSafeParse(await (await fetch('starting-fonts/manifest.json')).text());
+    const entry = (m && Array.isArray(m.fonts)) ? m.fonts.find(f => f && f.id === project.osFont.id) : null;
+    if (entry && entry.licenseFile) {
+      const t = await (await fetch('starting-fonts/' + entry.licenseFile)).text();
+      if (t && t.length > 40) { project.osFont.licenseText = t; markDirty(); }
+    }
+  } catch (e) { console.warn('upstream license backfill failed', e); }
 }
 function cc0Text() {
   const c = licenseCtx();
@@ -15322,15 +15452,21 @@ function saveProjectAs() {
     const el = document.getElementById('saveAsNameInput');            // #askBody persists after close → readable here
     let name = ((el && el.value) || '').trim();
     if (!name) { status(I18n.t('fontmaker.status.save_as_need_name')); return; }
+    // Partner starting-font copies keep the lock — the new name may not use an upstream Reserved Font Name.
+    if (project.osFont) {
+      const rfn = osfontNameConflict(name, project.osFont.reservedFontNames);
+      if (rfn) { status(I18n.t('fontmaker.osfont.rfn_saveas_blocked', {rfn})); return; }
+    }
     // never let the copy's name collide with (and evict) the original we're about to save
     const original = fmDerivedProjectName(project.font.familyName, project.font.reservedFontName, project.font.style);
-    if (fmDerivedProjectName(name, name, style) === original) name = name + ' copy';
+    if (fmDerivedProjectName(name, project.osFont ? project.font.reservedFontName : name, style) === original) name = name + ' copy';
     // 1) preserve the current font in Recents
     project.savedAt = new Date().toISOString();
     pushRecentProject(project);
     // 2) build the renamed copy (familyName === reservedFontName, like a fresh project's seed)
     const copy = JSON.parse(JSON.stringify(project));
-    copy.font.familyName = name; copy.font.reservedFontName = name;
+    copy.font.familyName = name;
+    if (!copy.osFont) copy.font.reservedFontName = name;   // partner copies keep the upstream Reserved Font Names
     copy.savedAt = new Date().toISOString();
     pushRecentProject(copy);
     // 3) switch the editor to the copy via the shared load path (image/SVG cache, undo reset, render, autosave)
@@ -15664,6 +15800,13 @@ function migrateProject(data) {
     if (data.font.author === undefined) data.font.author = data.font.copyright || '';   // Copyright field → Author
     delete data.font.copyright;
     if (!data.font.license) data.font.license = 'ofl';
+    if (data.osFont && typeof data.osFont !== 'object') delete data.osFont;   // junk partner block → plain project
+    if (data.osFont) {   // partner starting-font (see CLAUDE.md: Starting Fonts): the license lock survives every load
+      data.font.license = 'os-passthrough';
+      if (!Array.isArray(data.osFont.reservedFontNames)) data.osFont.reservedFontNames = [];
+    } else if (data.font.license === 'os-passthrough') {
+      data.font.license = 'ofl';   // orphaned lock key with no provenance — heal to the safest normal default
+    }
     data.font.style = data.font.style === 'bold' ? 'bold' : 'regular';   // Regular/Bold family style — backfills old saves and coerces junk
     if (!data.font.metrics) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB };
     else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB'].forEach((k,i)=>{ if(data.font.metrics[k]==null) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB][i]; });
@@ -16070,6 +16213,7 @@ function applyI18n() {
   // Re-render JS-built chrome (read-only) so any i18n it carries updates in place.
   try { renderControls(); } catch (e) {}
   try { renderGrids(); } catch (e) {}
+  try { if (project) syncOsFontLock(); } catch (e) {}   // partner license-lock note text is I18n.t-built
   // renderGrids re-renders only the custom-glyph GRID once the panel exists (its once-guard keeps
   // normal renders from resetting the add-form), so the form's strings keep their build-time
   // language. Rebuild the full panel on a language change — an unsent add-form resets, the same
