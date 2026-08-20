@@ -11,6 +11,8 @@ declared Reserved Font Names force a rename.
 ```
 starting-fonts/
   manifest.json          ← {"schema":1,"fonts":[...]} — the runtime's source of truth
+  LINKS.md               ← GENERATED copy-paste sheet of every live ?start= link (never hand-edit;
+                            rebuilt on every intake, or via add_os_font.py --regen-links)
   <id>/
     <FontFile>.ttf       ← pinned upstream copy (same-origin; never hotlinked)
     LICENSE.txt          ← the upstream license text, verbatim (copyright + RFN lines included)

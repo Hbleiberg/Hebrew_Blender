@@ -984,7 +984,8 @@ opens that font pre-imported into a fresh, **license-locked** project via a 3-st
   GPL+font-exception, Apache-2.0, CC0; anything else refuses with printed evidence — a hard STOP,
   maintainer decides). **Reserved Font Names are recorded for EVERY license** (Taamey Frank CLM
   declares one under GPL) and any declared RFN forces a rename at runtime. Never hand-edit the
-  manifest or a staged LICENSE.txt.
+  manifest, a staged LICENSE.txt, or `starting-fonts/LINKS.md` (the copy-paste sheet of live
+  `?start=` links — regenerated from the manifest on every intake / `--regen-links`).
 - **Runtime**: `init()` strips `?start` immediately (keeps `?lang`); `osStartBoot` runs inside
   `maybeRestoreAutosave` after `_launchDecided` (deferral batons untouched; the no-param tail is
   the verbatim extraction `_bootLaunchPrompt`). A restorable snapshot is arbitrated first ("Open
