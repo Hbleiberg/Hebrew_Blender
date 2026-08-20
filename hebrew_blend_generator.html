@@ -2189,7 +2189,6 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
      sub-label above (S225). The hover rule below carries a dark twin because this override is
      (0,2,1) and a bare :hover is (0,2,0) — specificity, not source order, decides. */
   body.dark .font-opt-attr { color: #adb6c9; }
-  .font-opt-attr:hover, body.dark .font-opt-attr:hover { color: var(--gold); text-decoration: underline; }
   .font-section-hdr { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em;
     text-transform: uppercase; color: var(--muted); margin: 8px 0 4px;
     padding-bottom: 3px; border-bottom: 1px solid var(--border);
@@ -12597,9 +12596,10 @@ function initFontSelector() {
           '<span class="font-opt-preview" lang="he" style="font-family:' + font.stack + ';">אֶרֶץ</span>' +
           '<span class="font-opt-info">' +
             '<span class="font-opt-label">' + ivEsc(font.name) + (font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">' + ivEsc(window.I18n ? I18n.t('shared.fonts.default_marker') : '[DEFAULT]') + '</span>' : '') + '</span>' +
-            // A link may not nest inside a <button> (invalid interactive nesting; AT-unreliable) —
-            // the attribution stays a pointer-only shortcut; the button's action is the font pick.
-            (font.link ? '<span class="font-opt-attr" data-link="' + ivEsc(font.link) + '" onclick="event.stopPropagation();window.open(this.dataset.link,\'_blank\',\'noopener\')">' + ivEsc(font.attr) + '</span>' : '<span class="font-opt-attr">' + ivEsc(font.attr) + '</span>') +
+            // Attribution is display-only: the old pointer-only link shortcut made a near-miss on
+            // the tiny span PICK A FONT, and keyboard users could never reach it (a link may not
+            // nest inside a <button>) — dropped by maintainer decision, S237.
+            '<span class="font-opt-attr">' + ivEsc(font.attr) + '</span>' +
           '</span>';
         btn.onclick = () => setHebFont(font.name);
         loadHebFont(font);

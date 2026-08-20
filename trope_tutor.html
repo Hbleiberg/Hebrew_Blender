@@ -597,7 +597,6 @@ body.dark .font-opt.active .font-opt-preview { color:var(--gold-light); }
 .font-opt-info { display:flex; flex-direction:column; gap:0; width:100%; align-items:center; }
 .font-opt-name { font-size:0.66rem; font-weight:600; color:var(--text); line-height:1.15; word-break:break-word; }
 .font-opt-attr { font-size:0.54rem; color:var(--muted); line-height:1.2; word-break:break-word; text-decoration:none; margin-top:1px; }
-.font-opt-attr:hover { color:var(--gold); text-decoration:underline; }
 
 /* ───── Tooltip (house pattern) ───── */
 .tip-wrap { display:inline-flex; align-items:center; }
@@ -2772,13 +2771,10 @@ function initFontSelector() {
       btn.dataset.fontName = font.name;
       btn.type = 'button';
       const isDefault = font.name === 'Frank Ruhl Libre';
-      // A link may not nest inside a <button> (invalid interactive nesting; AT-unreliable) —
-      // the attribution stays a pointer-only shortcut; the button's action is the font pick.
-      const attrHTML = font.attr
-        ? (font.link
-            ? `<span class="font-opt-attr" data-link="${esc(font.link)}" onclick="event.stopPropagation();window.open(this.dataset.link,'_blank','noopener')">${esc(font.attr)}</span>`
-            : `<span class="font-opt-attr">${esc(font.attr)}</span>`)
-        : '';
+      // Attribution is display-only: the old pointer-only link shortcut made a near-miss on the
+      // tiny span PICK A FONT, and keyboard users could never reach it (a link may not nest
+      // inside a <button>) — dropped by maintainer decision, S237.
+      const attrHTML = font.attr ? `<span class="font-opt-attr">${esc(font.attr)}</span>` : '';
       btn.innerHTML =
         `<span class="font-opt-preview" lang="he" style="font-family:${font.family};">אֶרֶץ</span>` +
         `<span class="font-opt-info">` +
