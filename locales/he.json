@@ -3379,6 +3379,7 @@
   "torah.audio.looping_label": "🔁 לולאה על {verse}",
   "torah.audio.loopstop_aria": "עצירת הלולאה",
   "torah.audio.loopstop_text": "⏹ עצירת הלולאה",
+  "torah.audio.mini_rate_title": "מהירות השירה — הרחיבו את סרגל השמע לפקדי המהירות",
   "torah.audio.pause_aria": "השהה",
   "torah.audio.play_aria": "נגן",
   "torah.audio.playpause_aria": "נגן או השהה",

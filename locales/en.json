@@ -3379,6 +3379,7 @@
   "torah.audio.looping_label": "🔁 Looping {verse}",
   "torah.audio.loopstop_aria": "Stop looping",
   "torah.audio.loopstop_text": "⏹ Stop loop",
+  "torah.audio.mini_rate_title": "Chant speed — expand the audio bar for speed controls",
   "torah.audio.pause_aria": "Pause",
   "torah.audio.play_aria": "Play",
   "torah.audio.playpause_aria": "Play or pause",

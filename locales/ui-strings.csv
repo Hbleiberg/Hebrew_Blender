@@ -3057,6 +3057,7 @@ torah.audio.loop_pause_none,None,ללא,select option,
 torah.audio.loop_pause_tip,"When you loop a verse (🔁), wait this long before repeating it — handy for practicing along.","כשאתם חוזרים על פסוק בלולאה (🔁), המתינו זמן זה לפני החזרה — נוח לתרגול תוך כדי.",tooltip,
 torah.audio.loopstop_aria,Stop looping,עצירת הלולאה,loop-stop button aria + title,
 torah.audio.loopstop_text,⏹ Stop loop,⏹ עצירת הלולאה,loop-stop button text,leading-emoji
+torah.audio.mini_rate_title,Chant speed — expand the audio bar for speed controls,מהירות השירה — הרחיבו את סרגל השמע לפקדי המהירות,collapsed-bar speed chip title + aria,
 torah.audio.pause_aria,Pause,השהה,play/pause button aria (dynamic),aria-label only
 torah.audio.play_aria,Play,נגן,play/pause button aria (dynamic),aria-label only
 torah.audio.playpause_aria,Play or pause,נגן או השהה,play/pause button aria,aria-label only

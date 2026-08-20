@@ -929,6 +929,14 @@ body.fullscreen #ttBulkDock { display:none; }
 .tt-audio-bar.collapsed .tt-audio-pause,
 .tt-audio-bar.collapsed .tt-audio-credit { display:none; }
 .tt-audio-bar.collapsed .tt-audio-label { font-size:0.72rem; }
+.tt-audio-bar .tt-audio-mini-rate {
+  display:none; background:rgba(255,255,255,0.12); color:var(--gold-light);
+  border:none; border-radius:4px; padding:3px 7px; margin-inline-start:2px;
+  font-size:0.72rem; font-variant-numeric:tabular-nums; line-height:1;
+  cursor:pointer; flex-shrink:0;
+}
+.tt-audio-bar .tt-audio-mini-rate:hover { background:rgba(255,255,255,0.22); }
+.tt-audio-bar.collapsed .tt-audio-mini-rate { display:inline-block; }
 
 /* ───── Settings drawer (lifted from classroom_dashboard.html:468-555) ───── */
 .settings-backdrop {
@@ -1712,6 +1720,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <button class="tt-audio-collapse" id="ttAudioCollapseBtn" onclick="toggleAudioBarCollapse()" aria-label="Collapse audio bar" aria-expanded="true" title="Collapse / expand audio bar" data-i18n-aria-label="torah.audio.collapse_aria" data-i18n-title="torah.audio.collapse_title">▾</button>
   <button class="tt-audio-playpause" id="ttAudioPlayPauseBtn" onclick="toggleAudioPlay()" aria-label="Play or pause" title="Play / pause" data-i18n-aria-label="torah.audio.playpause_aria" data-i18n-title="torah.audio.playpause_title">▶</button>
   <span class="tt-audio-label" id="ttAudioLabel" data-i18n="torah.audio.karaoke_label">Karaoke</span>
+  <!-- Collapsed-only chant-speed chip — the collapsed strip's hint that the speed
+       controls live behind ▾ (S180 H audio slice (c)); click expands the bar. -->
+  <button class="tt-audio-mini-rate" id="ttMiniRate" onclick="toggleAudioBarCollapse()" aria-label="Chant speed — expand the audio bar for speed controls" title="Chant speed — expand the audio bar for speed controls" data-i18n-aria-label="torah.audio.mini_rate_title" data-i18n-title="torah.audio.mini_rate_title">1.00×</button>
   <button class="tt-audio-loopstop" id="ttLoopStopBtn" onclick="stopLoop()" aria-label="Stop looping" title="Stop looping" data-i18n-aria-label="torah.audio.loopstop_aria" data-i18n-title="torah.audio.loopstop_aria" style="display:none;" data-i18n="torah.audio.loopstop_text">⏹ Stop loop</button>
   <!-- Loop-pause mirror of the drawer's #optLoopPause (same keys, same settings.loopPauseMs);
        shown only while a loop runs — the one moment the setting matters (S180 H audio slice). -->
@@ -4428,6 +4439,7 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   const bar = document.getElementById('ttAudioBar');
   bar.classList.add('open');
   bar.classList.toggle('collapsed', !!settings.karaokeBarCollapsed);
+  syncMiniRate();
   document.getElementById('ttAudioCollapseBtn')?.setAttribute('aria-expanded', settings.karaokeBarCollapsed ? 'false' : 'true');
   document.body.classList.add('tt-karaoke-active');
   _audioBaseLabel = `${parshahEntry.en} · ${suffix === 'H' ? 'Haftarah' : 'Aliyah ' + suffix}`;
@@ -4580,10 +4592,15 @@ function closeKaraoke() {
   teardownKaraokeAudio();
 }
 
+function syncMiniRate() {
+  const el = document.getElementById('ttMiniRate');
+  if (el) el.textContent = (parseFloat(settings.karaokeRate) || 1.0).toFixed(2) + '×';
+}
 function toggleAudioBarCollapse() {
   const bar = document.getElementById('ttAudioBar');
   const collapsed = bar.classList.toggle('collapsed');
   settings.karaokeBarCollapsed = collapsed;
+  if (collapsed) syncMiniRate();
   saveSettings();
   const btn = document.getElementById('ttAudioCollapseBtn');
   if (btn) {
@@ -4703,6 +4720,7 @@ function resetKaraokeRate() {
   document.getElementById('optKaraokeRateVal').textContent = settings.karaokeRate.toFixed(2) + '×';
   document.getElementById('ttKaraokeRate').value = settings.karaokeRate;
   document.getElementById('ttKaraokeRateVal').textContent = settings.karaokeRate.toFixed(2) + '×';
+  syncMiniRate();
   if (currentAudio) currentAudio.playbackRate = settings.karaokeRate;
   saveSettings();
 }
@@ -5250,6 +5268,7 @@ function syncFormToSettings() {
   document.getElementById('ttLayoutBible').checked = settings.layout === 'biblepage';
   document.getElementById('ttKaraokeRate').value = settings.karaokeRate;
   document.getElementById('ttKaraokeRateVal').textContent = (parseFloat(settings.karaokeRate) || 1.0).toFixed(2) + '×';
+  syncMiniRate();
   document.getElementById('ttVersionWrap').style.display = settings.showTranslation ? '' : 'none';
 }
 function toggleColorOptionsVisibility(show) {
@@ -5368,6 +5387,7 @@ function wireSettingsForm() {
     document.getElementById('optKaraokeRateVal').textContent = settings.karaokeRate.toFixed(2) + '×';
     document.getElementById('ttKaraokeRate').value = settings.karaokeRate;
     document.getElementById('ttKaraokeRateVal').textContent = settings.karaokeRate.toFixed(2) + '×';
+    syncMiniRate();
     if (currentAudio) currentAudio.playbackRate = settings.karaokeRate;
     saveSettings();
   });
@@ -5378,6 +5398,7 @@ function wireSettingsForm() {
     document.getElementById('ttKaraokeRateVal').textContent = settings.karaokeRate.toFixed(2) + '×';
     document.getElementById('optKaraokeRate').value = settings.karaokeRate;
     document.getElementById('optKaraokeRateVal').textContent = settings.karaokeRate.toFixed(2) + '×';
+    syncMiniRate();
     if (currentAudio) currentAudio.playbackRate = settings.karaokeRate;
     saveSettings();
   });
