@@ -713,10 +713,10 @@ dictionary.howto.summary,How To Use,איך להשתמש,footer how-to summary,
 dictionary.loading.dictionary,Loading dictionary…,טוען מילון…,loading text,toast
 dictionary.loading.dictionary_kb,Loading dictionary… {kb} KB,טוען מילון… {kb} KB,loading text with size,toast
 dictionary.loading.dictionary_pct,Loading dictionary… {pct}%,טוען מילון… {pct}%,loading text with percent,toast
-dictionary.loading.emoji_failed,"Couldn't load emoji. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.","לא ניתן לטעון את האימוג׳ים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז רעננו את הדף.",emoji load error,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence with the emoji noun — confirm
+dictionary.loading.emoji_failed,"Couldn't load emoji. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then try again.","לא ניתן לטעון את האימוג׳ים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז נסו שוב.",emoji load error (in-place ↻ retry sits beside it since S238),REVIEW: HE recombines the reviewed dictionary.loading.failed sentence with the emoji noun — confirm
 dictionary.loading.emojis,Loading emojis…,טוען אימוג׳ים…,emoji loading text,toast
 dictionary.loading.emojis_pct,Loading emojis… {pct}%,טוען אימוג׳ים… {pct}%,emoji loading text with percent,toast
-dictionary.loading.failed,"Couldn't load the word list. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.","לא ניתן לטעון את אוצר המילים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז רעננו את הדף.",dictionary load error,
+dictionary.loading.failed,"Couldn't load the word list. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then try again.","לא ניתן לטעון את אוצר המילים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז נסו שוב.",dictionary load error (in-place ↻ retry sits beside it since S238),
 dictionary.modal.add_to_bulk,➕ Add to bulk list,➕ הוספה לרשימה המרובה,word modal bulk button,leading-emoji
 dictionary.modal.add_to_wordlist,➕ Add to Word List…,➕ הוספה לרשימת מילים…,word modal add-to-word-list button,leading-emoji
 dictionary.modal.close_aria,Close details,סגירת הפרטים,word modal close aria-label,aria-label only
@@ -2908,6 +2908,7 @@ resources.suggest.title,✚ Suggest a Resource,✚ הצעת משאב,modal heade
 resources.suggest.url_placeholder,https://…,https://…,input placeholder,
 resources.view.fonts,🔤 Fonts,🔤 גופנים,view toggle button,leading-emoji
 resources.view.links,📚 Links,📚 קישורים,view toggle button,leading-emoji
+shared.corpus.retry_button,↻ Try again,↻ נסו שוב,in-place retry for a failed corpus/data load (converged model; torah keeps its own torah.reading.retry_button),leading-emoji; mirrors torah.reading.retry_button
 shared.darkmode.label_dark,🌙 Dark,🌙 כהה,Dark-mode toggle label (shown when light),"leading-emoji; shared (labeled variant: 404, dictionary)"
 shared.darkmode.label_light,☀️ Light,☀️ בהיר,Dark-mode toggle label (shown when dark),"leading-emoji; shared (labeled variant: 404, dictionary)"
 shared.darkmode.toggle_title,Toggle dark mode,מצב כהה,Dark-mode toggle title/aria-label,shared

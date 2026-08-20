@@ -376,6 +376,11 @@ body.dark .vowel-chip-sub{color:#adb6c9;}
    uses (S102): the inline-flex is what turns min-height into a taller BOX rather than taller text. */
 .pos-all-btn{flex:1;padding:3px 0;min-height:30px;display:inline-flex;align-items:center;justify-content:center;font-size:0.72rem;font-family:'Source Sans 3',sans-serif;background:var(--warm-gray);color:var(--text);border:1px solid var(--border);border-radius:4px;cursor:pointer;}
 .pos-all-btn:hover{border-color:var(--gold);color:var(--gold);}
+/* In-place corpus-retry button (converged retry model) — same S102 floor declarations as above;
+   this file has no .btn-xs, so the retry sites carry their own class. Both tokens flip with the
+   theme, so no dark rule is needed. */
+.corpus-retry-btn{min-height:30px;min-width:30px;display:inline-flex;align-items:center;justify-content:center;padding:4px 12px;font-size:0.8rem;font-family:'Source Sans 3',sans-serif;background:var(--white);color:var(--text);border:1px solid var(--border);border-radius:5px;cursor:pointer;}
+.corpus-retry-btn:hover{border-color:var(--gold);color:var(--gold);}
 .color-mode-btn{flex:1;padding:4px 6px;font-size:0.72rem;border:none;background:var(--warm-gray);color:var(--muted);cursor:pointer;border-inline-end:1px solid var(--border);font-family:inherit;}
 .color-mode-btn:last-child{border-inline-end:none;}
 .color-mode-btn.active{background:var(--navy);color:var(--white);}
@@ -2152,7 +2157,8 @@ function updateDictLoadProgress(pct, received) {
   }
 }
 
-fetchJsonWithProgress('data/hebrew_words.json?v=6', updateDictLoadProgress)
+function loadWordCorpus() {   // callable (not a bare top-level chain) so the failure card's ↻ Try again can re-run it
+  return fetchJsonWithProgress('data/hebrew_words.json?v=6', updateDictLoadProgress)
   .then(data => {
     // Flatten in batches so slow devices don't block the main thread for the whole
     // ~13k-word pass (per-word calcGematria is the main cost). The loading UI stays up
@@ -2248,8 +2254,33 @@ fetchJsonWithProgress('data/hebrew_words.json?v=6', updateDictLoadProgress)
     el.setAttribute('data-i18n', 'dictionary.loading.failed');
     el.textContent = window.I18n
       ? I18n.t('dictionary.loading.failed')
-      : "Couldn't load the word list. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.";
+      : "Couldn't load the word list. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then try again.";
+    // In-place retry (converged model: torah's reading card). data-i18n + English fallback for the
+    // same pre-I18n window as the message above.
+    if (!document.getElementById('dictRetryBtn')) {
+      const btn = document.createElement('button');
+      btn.type = 'button'; btn.id = 'dictRetryBtn'; btn.className = 'corpus-retry-btn';
+      btn.style.marginTop = '8px';
+      btn.setAttribute('data-i18n', 'shared.corpus.retry_button');
+      btn.textContent = window.I18n ? I18n.t('shared.corpus.retry_button') : '↻ Try again';
+      btn.onclick = retryWordCorpus;
+      el.after(btn);
+    }
   });
+}
+loadWordCorpus();
+
+function retryWordCorpus() {   // restore the loading card, then re-run the same corpus load
+  _wordsFailed = false;
+  const btn = document.getElementById('dictRetryBtn'); if (btn) btn.remove();
+  const bar = document.getElementById('loadBar'); if (bar) bar.style.display = '';
+  const el = document.getElementById('loadingText');
+  if (el) {
+    el.setAttribute('data-i18n', 'dictionary.loading.dictionary');
+    el.textContent = window.I18n ? I18n.t('dictionary.loading.dictionary') : 'Loading dictionary…';
+  }
+  loadWordCorpus();
+}
 
 function setAllVowels(checked) {
   document.querySelectorAll('#vowelFilterGrid input[type="checkbox"]').forEach(cb => {
@@ -3908,8 +3939,19 @@ function fetchEmojiData() {
     .catch(() => {
       _dictEmojiFailed = true;   // so the count readouts stop reporting "Loading…" on every render
       const tree = document.getElementById('emojiCatTree');
-      if (tree) tree.innerHTML = `<div style="color:var(--muted);font-size:0.78rem;">${esc(I18n.t('dictionary.loading.emoji_failed'))}</div>`;
+      // In-place retry (converged model: torah's reading card); emoji loads only fire from user
+      // interaction, so I18n is ready here.
+      if (tree) tree.innerHTML =
+        `<div style="color:var(--muted);font-size:0.78rem;">${esc(I18n.t('dictionary.loading.emoji_failed'))}</div>` +
+        `<button type="button" class="corpus-retry-btn" style="margin-top:6px;" onclick="retryEmojiData()" data-i18n="shared.corpus.retry_button">${esc(I18n.t('shared.corpus.retry_button'))}</button>`;
     });
+}
+
+function retryEmojiData() {   // the emoji register's ↻ — re-runs the same load path the mode toggle uses
+  _dictEmojiFailed = false;
+  const tree = document.getElementById('emojiCatTree');
+  if (tree) tree.innerHTML = '';
+  fetchEmojiData().then(() => { renderEmojiCatTree(); onFilter(); });
 }
 
 function setEmojiGender(g) {
