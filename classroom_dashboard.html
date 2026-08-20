@@ -4223,7 +4223,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     modal.classList.add('open');
     modal.addEventListener('keydown', _settingsTrapKey);
     syncFormToSettings();
-    const c = modal.querySelector('.settings-close'); if (c) c.focus();
+    const c = modal.querySelector('.settings-close:not(#drawerDarkBtn)'); if (c) c.focus();
   }
   function closeSettings() {
     document.getElementById('settingsBackdrop').classList.remove('open');
