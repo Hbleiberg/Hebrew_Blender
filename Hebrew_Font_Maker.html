@@ -1975,10 +1975,11 @@ const LADINO_FORMS = [   // base + rafe/"varika" bar; PUA where Unicode has no p
 ];
 /* The rest of the FB1D-FB4F presentation block the app can compose from parts the user already has:
    every letter+dagesh/mapiq form beyond the four core BeGeD-KeFeT ones, plus yod+hiriq. They share the
-   Specialized tab (and its toggle), so a default project is unchanged. The six forms left out cannot be
-   expressed as base+mark and can only arrive whole from a source font: FB2C/FB2D (shin + dagesh + a dot,
-   three components), FB1F (a digraph plus a mark), FB20 and FB4F (their own designs), FB1E (varika,
-   which duplicates rafe 05BF). */
+   Specialized tab (and its toggle), so a default project is unchanged. Six forms are left out because
+   they are not base+mark pairs: FB2C/FB2D (shin + dagesh + a dot — three components, and already built
+   by their own pass from the dotted shin plus the letter's dagesh), FB1F (a digraph plus a mark), FB20
+   and FB4F (their own designs, so they could only ever be imported whole), and FB1E (varika, which
+   duplicates rafe 05BF). */
 const SPECIAL_MORE = [
   { target:'FB30', base:'05D0', mark:'05BC', tab:'special', name:'Alef Mapiq' },
   { target:'FB32', base:'05D2', mark:'05BC', tab:'special', name:'Dotted Gimel' },
@@ -2021,6 +2022,18 @@ function precompExportable(pc) {   // core forms always; opt-in forms only while
   return !ALL_EXTRA_TARGETS.has(pc.target) || activeExtraTargets().has(pc.target);
 }
 function isWideForm(pc) { return !!(pc && pc.wide); }
+/* A combined form the SOURCE FONT already drew (pc.src = {contours, curves, advance}), taken whole by an
+   import instead of rebuilt from base + mark. This is the only sanctioned reader: the export bake, the
+   tile preview, the editor stage and the QA build-check all go through it, so none of them can show or
+   ship something the others don't. null = compose from parts, exactly as before.
+   Wide letterforms and digraphs are deliberately NEVER imported this way: buildFEA derives their exported
+   mark anchors from the precise ink transform buildWideGlyph applied (per-base offset, then wideX about
+   the composed ink-left), so a foreign outline would leave every vowel typed after one attaching to
+   coordinates that no longer describe the glyph. */
+function precompSrcOutline(pc) {
+  const s = pc && pc.src;
+  return (s && Array.isArray(s.contours) && s.contours.length && !isWideForm(pc)) ? s : null;
+}
 function precompBaseCp(pc) { return pc.base || (pc.bases && pc.bases[0]); }
 function precompWidthScale(pc) { return (pc && pc.widthScale != null) ? pc.widthScale : 1; }
 function wideX(x, minX, w) { return Math.round(minX + (x - minX) * w); }   // shared X-scale-about-left-edge: buildWideGlyph + QA wide rows
@@ -2434,7 +2447,7 @@ function udSnap(s) {
   if (s.t === 'kernClasses') return JSON.parse(JSON.stringify(project.font.kernClasses || []));
   if (s.t === 'metrics') return JSON.parse(JSON.stringify(project.font.metrics));
   if (s.t === 'guides') return JSON.parse(JSON.stringify(project.guides || { show:true, items:[] }));
-  if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, holam: pc.holam ? JSON.parse(JSON.stringify(pc.holam)) : null, markScale: (pc.markScale != null ? pc.markScale : null), widthScale: (pc.widthScale != null ? pc.widthScale : null) } : null; }
+  if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, holam: pc.holam ? JSON.parse(JSON.stringify(pc.holam)) : null, markScale: (pc.markScale != null ? pc.markScale : null), widthScale: (pc.widthScale != null ? pc.widthScale : null), src: pc.src || null } : null; }   // src is written once by an import and never mutated in place, so the reference is shared rather than deep-cloned on every anchor drag
   if (s.t === 'tropTune') return JSON.parse(JSON.stringify({
     tropSideOffset: (project.font.tropSideOffset != null) ? project.font.tropSideOffset : null,
     halign: (project.font.trop && project.font.trop.halign) || {},
@@ -2460,7 +2473,7 @@ function udRestore(s, snap) {
   else if (s.t === 'kernClasses') project.font.kernClasses = JSON.parse(JSON.stringify(snap || []));
   else if (s.t === 'metrics') Object.assign(project.font.metrics, JSON.parse(JSON.stringify(snap || {})));
   else if (s.t === 'guides') project.guides = JSON.parse(JSON.stringify(snap || { show:true, items:[] }));
-  else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.holam = (snap && snap.holam) ? JSON.parse(JSON.stringify(snap.holam)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; } }
+  else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.holam = (snap && snap.holam) ? JSON.parse(JSON.stringify(snap.holam)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; if (snap && snap.src) pc.src = snap.src; else delete pc.src; } }
   else if (s.t === 'tropTune') { const sn = snap || {};
     if (sn.tropSideOffset != null) project.font.tropSideOffset = sn.tropSideOffset; else project.font.tropSideOffset = TROP_POS_SHIFT;
     if (!project.font.trop) project.font.trop = {};
@@ -3071,7 +3084,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.18';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.19';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3254,7 +3267,7 @@ const HELP_CONTENT = {
     <h4>Partner fonts — why the license is locked</h4>
     <p>Some projects start from an existing open-licensed font shared by a partner like <a href="https://opensiddur.org/help/fonts/" target="_blank" rel="noopener">the Open Siddur Project</a>. Your edited font is legally a <strong>modified version</strong> of that original — and open font licenses (like the SIL Open Font License and the GPL) require modified versions to stay under the <strong>same license</strong> as the original. That's not a limitation IvritSuite adds; it's the very rule that makes the original free for you to edit in the first place. So on these projects the <span class="ui">License</span> box is locked to the original's license, and every export's <span class="ui">LICENSE.txt</span> carries the original copyright plus your "modified work" line.</p>
     <p><strong>Why you may need a new name.</strong> Many open fonts declare <strong>Reserved Font Names</strong> — names that only the original may use. A modified version must be renamed so nobody confuses it with the original. If the original reserves names, the <span class="ui">Family name</span> you pick can't contain them — add your own name or your school's instead (e.g. <i>"Kehilla SemiStam"</i>). The <span class="ui">Reserved name</span> field shows the original's reserved names, read-only.</p>
-    <p><strong>What actually carries over.</strong> Your export is rebuilt by IvritSuite from the letters in the editor: the original's Hebrew letterforms, vowels, cantillation marks, mark positions and Latin letters come along; its hinting, kerning, and hand-tuned internals don't. The LICENSE.txt records exactly what your version is based on.</p>
+    <p><strong>What actually carries over.</strong> Your export is rebuilt by IvritSuite from the letters in the editor: the original's Hebrew letterforms, vowels, cantillation marks, mark positions, its ready-made combined forms (שׁ בּ אַ), Latin letters, punctuation, symbols and line metrics come along; its hinting, its Hebrew kerning pairs and hand-tuned internals don't. The LICENSE.txt records exactly what your version is based on.</p>
     <div class="help-tip">💛 The <i>"made with IvritSuite"</i> line on these exports is informational only — the original's license terms are the ones that apply, unchanged.</div>
   `,
   share: `
@@ -3290,6 +3303,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.19</strong> &mdash; <strong>An import now brings the whole font across, not just the letters.</strong> Importing a font used to stop at the alphabet: everything else a real page needs &mdash; the curly quote marks a word processor inserts for you, the en and em dashes, the ellipsis, the shekel and euro signs, <span class="ui">&copy; &deg; &laquo; &raquo; &times; &divide; &frac12;</span> &mdash; was read and thrown away, so an exported font still fell back to another face mid-sentence. Now it all comes too, along with the standalone Latin letters (<em>&AElig; &Oslash; &szlig; &OElig; &Scaron; &Zcaron;</em>) that have no accent to build from. <strong>Your combined letters come from the original.</strong> When the source font already draws <span lang="he" dir="rtl">&#1513;&#1473;</span>, <span lang="he" dir="rtl">&#1489;&#1468;</span>, <span lang="he" dir="rtl">&#1488;&#1463;</span> or <span lang="he" dir="rtl">&#1493;&#1465;</span> itself, the import takes that glyph <em>whole</em> instead of rebuilding it from your letter plus a dot &mdash; so the dot sits exactly where the original put it. A <span class="ui">Rebuild from my letters</span> button gives you the composed version back whenever you want it. <strong>The masoretic marks and the rest of the presentation forms.</strong> The masora circle and the upper and lower puncta join the <span class="ui">Trop</span> tab, the inverted nun and the Hebrew plus sign join <span class="ui">Punctuation</span>, and <span class="ui">Specialized letters</span> gains every remaining dagesh and mapiq form. <strong>And the line spacing matches.</strong> An import now carries the original's line metrics across, so text set in your font lines up the way the original did. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.18</strong> &mdash; <strong>Imported fonts now bring their English letters with them.</strong> Until now, importing a font took its Hebrew letters, vowels and cantillation marks &mdash; but quietly left every <span class="ui">A&ndash;Z</span> and <span class="ui">a&ndash;z</span> behind, so an exported font showed nothing when you typed in English. Now the import fills the <span class="ui">English</span> tab from the original's own Latin letters, turning the tab on for you when the font has a full alphabet, and it takes ready-made accented letters (<em>&aacute;, &eacute;, &ntilde;, &ccedil;</em>) whole when the original has them &mdash; falling back to building them from your letters plus accent marks when it doesn't. If you had already drawn English letters yourself, the import asks before touching them. <strong>And English letters finally survive saving.</strong> Reopening a project used to wipe every English letter you had traced, silently, and hand it back blank &mdash; that's fixed. <strong>Punctuation, digits and symbols come across too.</strong> The font's own digits and punctuation already imported &mdash; but they shipped even when you had never traced them, so typing <span class="ui">5</span> in an exported font produced nothing at all instead of falling back to another font. An untraced one is now simply left out, and 21 more symbols (<span class="ui">@ # $ % &amp; * + / &lt; = &gt; [ ] { } | \ ^ _ &#96; ~</span>) join the <span class="ui">Punctuation &amp; More</span> tab &mdash; so an imported font now covers everything on a keyboard. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.17</strong> &mdash; <strong>Partner font links land with their nikkud already in place.</strong> Opening an <span class="ui">Open Siddur</span> <span class="ui">?start=</span> edit link used to finish by handing you a fidelity report and an <span class="ui">Apply per-combo fixes</span> button to press before the vowels sat right. That check is now part of the loading: the progress window says <em>&ldquo;Checking where the nikkud and trop land in the original font&hellip;&rdquo;</em>, every fix it can express is applied for you, and the font is re-measured against the original before the workspace appears. The report only opens if something still missed &mdash; and it is still one click away from the <span class="ui">Fidelity report</span> button in the Nikkud step, with every fix undoable as a single step. Importing a font you picked yourself is unchanged: you still get the report and decide. <strong>And the tour now matches the font you actually have.</strong> A partner font arrives finished — letters drawn, vowels placed — so the from-scratch walkthrough was telling new arrivals to photograph and trace letters they already had. Partner projects now get their own seven-step tour: what came across, how to reshape a letter with <span class="ui">Edit points</span>, where the vowel positions came from, and which parts of <span class="ui">Font Details</span> are locked to the original's license and why. It is offered (pre-ticked) at the end of the partner setup, and the header <span class="ui">Tour</span> button gives the same one any time. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.16</strong> &mdash; <strong>The fidelity report's Auto-fix now fixes everything it measures.</strong> After importing a font with anchors, one click corrects every flagged letter+mark combo &mdash; not just the combined forms. Shared anchors move when a whole letter agrees, and the stubborn per-letter positions (the report's &ldquo;own positioning rule&rdquo; marks) get exact per-letter <em>pins</em>, marked with the gold &#9998; in the placement step. The report then <strong>re-measures against the original font</strong> and shows the after numbers, and a <span class="ui">Fidelity report</span> button in the Nikkud step reopens it any time. Pins stay yours: drag a pinned mark to fine-tune it, or <span class="ui">Unpin</span> / <span class="ui">Clear pins</span> to fall back to the shared anchor. <strong>Importing a font now says what it is doing.</strong> The first import of a session has to fetch the font engine, which can take a while on school Wi-Fi &mdash; and an <span class="ui">Open Siddur</span> edit link used to spend that whole wait sitting on an empty workspace, looking broken. A progress window now names each step and closes the moment your letters appear. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3398,7 +3412,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_17','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_18','v5_17','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3411,7 +3425,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_18';
+  const CUR_KEY = 'fontmaker.changelog.v5_19';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -4897,6 +4911,9 @@ function formTilePreviewSVG(pc) {
   if (isWideForm(pc)) {
     const g = buildWideGlyph(pc); if (!g) return '';
     cs = g.contours.map(pts => ({ points: pts })); curves = g.curves;
+  } else if (precompSrcOutline(pc)) {
+    const s = precompSrcOutline(pc);
+    cs = s.contours.map(pts => ({ points: pts })); curves = s.curves;
   } else {
     const baseL = project.letters.find(x => x.codepoint === pc.base);
     if (!baseL || !baseL.contours) return '';
@@ -4915,6 +4932,18 @@ function formTilePreviewSVG(pc) {
   minX -= pad; maxX += pad; minY -= pad; maxY += pad;
   return `<svg class="mark-prev" viewBox="${minX.toFixed(0)} ${(-maxY).toFixed(0)} ${(maxX-minX).toFixed(0)} ${(maxY-minY).toFixed(0)}" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="${glyphPathAt(cs, 0, 0, curves)}" fill="currentColor" fill-rule="nonzero"/></svg>`;
 }
+/* Drop the ready-made forms this tab imported so the export goes back to composing them from the
+   user's own letters + marks — the answer to "I redrew my shin, but שׁ still looks like the original
+   font's". Undoable: the precomp scope carries pc.src. */
+function precompRebuildForms(targets) {
+  const gone = (targets || []).map(getPrecomp).filter(pc => pc && precompSrcOutline(pc));
+  if (!gone.length) return;
+  if (!confirm(_pT('form_src_rebuild_confirm', 'Drop these ready-made forms and rebuild them from your own letters plus marks?', { count: gone.length }))) return;
+  udDo(gone.map(pc => ({ t: 'precomp', target: pc.target })), 'rebuild composed forms', () => {
+    gone.forEach(pc => { delete pc.src; });
+  });
+  renderGrids(); renderStage(); renderControls();
+}
 function renderFormPanel(panelId, targets, intro) {
   const el = document.getElementById(panelId); if (!el) return;
   const isTraced = cp => { const L = project.letters.find(x => x.codepoint === cp); return !!(L && L.contours); };
@@ -4925,7 +4954,13 @@ function renderFormPanel(panelId, targets, intro) {
   const summary = missing.size
     ? `<div class="form-need">${_pT('form_need_trace', 'Trace these base letters to fill in this tab:')} <span class="form-need-chars">${[...missing].map(chOf).join(' ')}</span></div>`
     : `<div class="form-ready">${_pT('form_ready', '✓ All base letters traced — ready.')}</div>`;
-  el.innerHTML = `<div class="hint" style="margin-bottom:8px;">${intro}</div>${summary}<div class="letter-grid" id="${panelId}Grid"></div>`;
+  const nSrc = targets.filter(t => { const pc = getPrecomp(t); return pc && precompSrcOutline(pc); }).length;
+  // The button is wired with addEventListener below, never an inline handler with data interpolated into it.
+  const srcNote = nSrc
+    ? `<div class="form-ready" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">${esc(_pT('form_src_note', 'These forms came ready-made from the imported font.', {count: nSrc}))}<button class="ctl-btn" type="button" id="${panelId}Rebuild" style="padding:3px 8px;font-size:0.7rem;">${esc(_pT('form_src_rebuild', 'Rebuild from my letters'))}</button></div>`
+    : '';
+  el.innerHTML = `<div class="hint" style="margin-bottom:8px;">${intro}</div>${summary}${srcNote}<div class="letter-grid" id="${panelId}Grid"></div>`;
+  if (nSrc) { const rb = document.getElementById(panelId + 'Rebuild'); if (rb) rb.addEventListener('click', () => precompRebuildForms(targets)); }
   const grid = document.getElementById(panelId + 'Grid'); if (!grid) return;
   let any = false;
   targets.forEach(t => {
@@ -6145,6 +6180,37 @@ function importLetterOutline(l, font, scale) {
 /* How much of A-Z/a-z the source font actually covers. A Hebrew face carrying a stray Latin glyph or
    two must not flip the English tab on by itself, so auto-enable applies a floor rather than >0.
    (Both shipped starting fonts are 52/52.) */
+/* One combined form's outline, taken whole from the source font. Same extraction as
+   importLetterOutline, but the result is stored on the precomposed entry (pc.src) rather than on a
+   letter item, and its contours are bare point arrays — the shape the export bake and the previews want. */
+/* pc.src is imported glyph data that reaches the exported font verbatim, and it arrives via .hfm /
+   autosave / recent-projects blobs, so it is shape-checked on load exactly like sanitizeDraw and
+   sanitizeMarkAnchors: finite rounded coordinates only, curves kept only while they stay 1:1 with the
+   contours (the export asserts that alignment), and anything malformed simply drops back to the bake. */
+function sanitizePrecompSrc(pc) {
+  const s = pc && pc.src;
+  if (!s) return;
+  const num = v => Number.isFinite(+v) ? Math.round(+v) : null;
+  const cs = Array.isArray(s.contours) ? s.contours.map(c => Array.isArray(c) ? c.map(pt => {
+    if (!Array.isArray(pt) || pt.length < 2) return null;
+    const x = num(pt[0]), y = num(pt[1]);
+    return (x == null || y == null) ? null : [x, y];
+  }).filter(Boolean) : []).filter(c => c.length >= 3) : [];
+  const adv = num(s.advance);
+  if (!cs.length || adv == null || adv < 0 || adv > 10000 || isWideForm(pc)) { delete pc.src; return; }
+  pc.src = { contours: cs, advance: adv,
+             curves: (Array.isArray(s.curves) && s.curves.length === cs.length) ? s.curves : null };
+}
+function importFormOutline(pc, font, scale) {
+  let ch; try { ch = String.fromCodePoint(parseInt(pc.target, 16)); } catch (e) { return null; }
+  const glyph = font.charToGlyph(ch);
+  if (!glyph || glyph.index === 0) return null;
+  const o = pathToOutline(glyph.getPath(0, 0, 1000));
+  if (!o.contours.length) return null;
+  let adv = Math.round((glyph.advanceWidth || 0) * scale);
+  if (!adv) { let mx = 0; o.contours.forEach(c => c.points.forEach(p => { mx = Math.max(mx, p[0]); })); adv = Math.round(mx + effMetrics().defaultRSB); }
+  return { contours: o.contours.map(c => c.points), curves: (o.curves && o.curves.length === o.contours.length) ? o.curves : null, advance: adv };
+}
 const ENG_IMPORT_MIN = 20;
 const KERN_IMPORT_CAP = 2000;   // a pathological kern table must not turn the Kerning panel into a 20,000-row list
 function fontLatinCoverage(font) {
@@ -6285,6 +6351,21 @@ async function applyFontImport(file, font, bytes, opts) {
         else if (isNew) project.letters.pop();   // no ink after all — don't leave a blank tile behind
       });
     }
+    // Combined Hebrew forms the source font already drew — שׁ שׂ אַ אָ בּ וּ כּ פּ תּ וֹ בֿ כֿ פֿ and the
+    // dagesh/mapiq set. Taking the glyph whole puts the dot exactly where the original font put it,
+    // instead of where the app's reconstruction lands it, and the ccmp rule still fires so typing
+    // base + mark reaches it. Every known target is seeded first so a form is captured now and becomes
+    // live if its tab is switched on later — precompExportable still decides what actually ships.
+    let nForms = 0;
+    if (opts.outlines) {
+      ensurePrecompSeeded(PRECOMPOSED); ensurePrecompSeeded(EXTRA_FORMS);
+      (project.precomposed || []).forEach(pc => {
+        if (isWideForm(pc) || catOfCp(pc.mark) === 'accent') return;   // wide forms: see precompSrcOutline. Latin accented forms ride the .eng path above.
+        delete pc.src;                                                 // this font supersedes the previous one's ready-made forms
+        const o = importFormOutline(pc, font, scale);
+        if (o) { pc.src = o; nForms++; }
+      });
+    }
     // Mark shapes (nikkud + trop): replace the built-in shapes with the font's own, like uploaded marks.
     let markHits = 0, tropImported = 0, attachCount = 0, accHits = 0;
     const importedMarks = [];   // [kind, cp] pairs whose shape came from THIS font — the fidelity-check domain
@@ -6400,6 +6481,7 @@ async function applyFontImport(file, font, bytes, opts) {
       msg += ' ' + (hadGpos ? pl('fontmaker.status.import_anchors_ok', anchorHits)
            : (anchorErr ? I18n.t('fontmaker.status.import_anchors_auto') : I18n.t('fontmaker.status.import_anchors_none')));
     } else if (!opts.marks) { msg += ' ' + I18n.t('fontmaker.status.import_set_nikkud'); }
+    if (nForms) msg += ' ' + pl('fontmaker.status.import_loaded_forms', nForms);
     if (metricsImported) msg += ' ' + I18n.t('fontmaker.status.import_metrics');
     if (nKern) msg += ' ' + pl('fontmaker.status.import_kerning', nKern);
     if (opts.outlines && project.font.style === 'bold') msg += ' ' + I18n.t('fontmaker.status.style_bold_detected');
@@ -7244,15 +7326,19 @@ async function renderStage() {
   } else if (workMode === 'anchors') {
     const pcW = precompTarget ? getPrecomp(precompTarget) : null;
     const wideMode = isWideForm(pcW);
+    const pcSrc = pcW ? precompSrcOutline(pcW) : null;   // an imported form is one outline: nothing to place
     let wideG = null;
     if (wideMode) {
       wideG = buildWideGlyph(pcW);   // live: shows the widened/combined outline as the slider moves
       if (wideG) h += `<path d="${contoursToPath(wideG.contours.map(pts => ({ points: pts })), wideG.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
       else h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="12">Trace the base letter(s) first to preview this form.</text>`;
+    } else if (pcSrc) {
+      h += `<path d="${contoursToPath(pcSrc.contours.map(pts => ({ points: pts })), pcSrc.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
     } else if (l.contours) h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
     if (l.contours || project.template.showOverlay) {
       // preview the vowel (or, in precomposed-form mode, that form's mark) on the glyph
-      if (precompTarget && !wideMode) { h += precompHandlesSVG(); }
+      if (pcSrc) { h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">${esc(_pT('form_src_stage', 'This form came ready-made from the imported font — there is no mark to place.'))}</text>`; }
+      else if (precompTarget && !wideMode) { h += precompHandlesSVG(); }
       else if (wideMode) { h += wideNikkudPreviewSVG(pcW, wideG); }   // read-only ghost of the derived below-vowel (position comes from the base letter)
       else if (isEng(l.codepoint)) { h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="12">${engSupportsAccents(l.codepoint) ? 'Pick an accented form on the left to place its accent.' : 'No accents for this letter.'}</text>`; }
       else { seedAnchorsIfNeeded(l); h += anchorHandlesSVG(l); }
@@ -7317,7 +7403,7 @@ async function renderStage() {
   attachGuideDrag();   // user guides are draggable in every letter-editing mode (no-op when none)
   if (workMode === 'align' && url) attachTransformDrag(l);   // image drag always available; metric dots (drawn on top) capture their own grabs
   if (showMetric) attachMetricDrag();
-  if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) { if (!isWideForm(getPrecomp(precompTarget))) attachPrecompDrag(); } else if (!isEng(l.codepoint)) attachAnchorDrag(l); }
+  if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) { const _p = getPrecomp(precompTarget); if (!isWideForm(_p) && !precompSrcOutline(_p)) attachPrecompDrag(); } else if (!isEng(l.codepoint)) attachAnchorDrag(l); }
   if (workMode === 'nodes') attachNodeEditor(l);
   renderLegend();
 }
@@ -13512,7 +13598,7 @@ function qaBuildCheckForms() {
       if (ORIG_PRECOMP_TARGETS.has(t)) return;                        // core forms handled by the matrix
       if (out.some(x => x.target === t)) return;                      // dedupe (FB4C/FB4E appear in both Yiddish & Ladino)
       const pc = (project.precomposed || []).find(p => p.target === t);
-      if (pc) out.push(pc);
+      if (pc && !precompSrcOutline(pc)) out.push(pc);   // an imported form has no separately-placed mark, so there is nothing to check for collision
     });
   });
   return out;
@@ -14062,7 +14148,19 @@ function buildFontSpec() {
     if (isWideForm(pc) || !precompExportable(pc)) return;           // wide forms bake below; opt-in forms only while their tab is on
     const baseL = project.letters.find(x => x.codepoint === pc.base);
     if (!baseL || !baseL.contours) return;                          // need a traced base (anchor may be a per-form override)
-    seedAnchorsIfNeeded(baseL);                                     // a never-seeded anchor must not silently skip the bake
+    seedAnchorsIfNeeded(baseL);
+    const _src = precompSrcOutline(pc);
+    if (_src) {                                                     // the source font drew this form itself — ship its outline, not our reconstruction
+      const _nm = gname(pc.target);
+      if (glyphs[_nm]) return;                                      // an explicit custom glyph still wins
+      glyphs[_nm] = { contours: _src.contours.map(c => c.map(p => p.slice())),
+                      advance: Math.max(50, Math.round(_src.advance) + fontSpacing().letterSpacing) };   // mirrors effLetterAdvance, so the Letter-spacing control still reaches composed forms
+      if (_src.curves && _src.curves.length === _src.contours.length) glyphs[_nm].curves = _src.curves;
+      glyphOrder.push(_nm); baseGlyphNames.push(_nm);
+      cmap[parseInt(pc.target,16)] = _nm;
+      built.push(pc);                                               // still a composed target: ccmp and its base anchors are emitted exactly as for a baked one
+      return;
+    }                                     // a never-seeded anchor must not silently skip the bake
     const cls = MARK_CLASS[pc.mark];
     const anc = (cls !== 'center' && pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[cls]); if (!anc) return;   // dagesh follows the letter's center anchor (unified with the live dagesh)
     const mscale = precompMarkScale(pc);                            // per-form dot size, or inherit the global mark scale
@@ -16862,6 +16960,7 @@ function migrateProject(data) {
   delete data.combinedImage;
   data.precomposed = data.precomposed || PRECOMPOSED.map(p => ({...p}));
   data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; if (pc.holam === undefined) pc.holam = null; });   // per-form mark anchor + holam-attach override
+  data.precomposed.forEach(sanitizePrecompSrc);   // a form outline taken whole from a source font — shape-checked because it becomes glyph data verbatim
   data.template = data.template || { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
   if (!Array.isArray(data.template.customFonts)) data.template.customFonts = [];   // uploaded tracing fonts (bytes) persist here
   data.view = data.view || { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
