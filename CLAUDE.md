@@ -48,6 +48,12 @@
 - [ ] New UI control in a preset-bearing tool? → wire `getSettings()`/`applySettings()` (+ AllTools export/import/erase keys if it's a new localStorage store).
 - [ ] Added a collapsible `.panel`, or new code that writes `.collapsed`? → give the title a `data-i18n` key and call `panelMemSave()` from that writer (see Panel-collapse memory) — otherwise the drawer silently forgets that panel.
 - [ ] Added/changed a user-facing UI string or new CSS? → route the string through `I18n.t()`/`data-i18n*` (+ a key in `locales/ui-strings.csv`, then `node scripts/build-locales.js`); use **logical** CSS props (`*-inline-*`, `text-align:start/end`); run **`node scripts/check-i18n.js`** (must report no NEW violations). See Internationalization.
+- [ ] Edited any inline `<script>` in a root HTML page? → run **`node --experimental-vm-modules scripts/check-inline-js.mjs`**.
+      Every page is a single-file app, so ONE syntax error kills that page's entire JavaScript while the static
+      HTML still renders — it looks like a CSS glitch, not a dead page. This is not hypothetical: a literal
+      backtick inside `HELP_CONTENT.about` (a JS template literal) closed the string early and took the whole
+      Font Maker down in production on 2026-08-21. **Never put a raw `` ` ``, `${`, or `</script>` inside authored
+      HTML that lives in a template literal — use `&#96;`, `&#36;{`, and `<\/script>`.**
 - [ ] Verified headless with the **Playwright recipe** (see "Verifying changes" section): light + dark mode, desktop + ~800px.
 - [ ] Added or meaningfully changed a page's content? → run **`node scripts/update-sitemap.mjs`** as your last step so each `<lastmod>` reflects this change's commit date (see Deploy section). Idempotent; safe to run every session.
 - [ ] Changed a page's `<title>`, `<meta name="description">` or JSON-LD (incl. its `HowTo` steps or `FAQPage` Q&A), or added/removed a page? → run **`node scripts/update-llms-txt.mjs`** to regenerate `llms.txt` + `llms-full.txt` (see Deploy section). **Never hand-edit either file** — they are generated, and the next run overwrites them. Idempotent; `--check` reports staleness without writing.
