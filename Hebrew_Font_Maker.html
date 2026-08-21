@@ -13637,7 +13637,7 @@ function qaRows() {
   if (project.font.addSpecialForms) {                                  // Specialized single-base wide letters → full collision rows
     SPECIAL_TARGETS.forEach(t => {
       const pc = (project.precomposed || []).find(p => p.target === t);
-      if (!pc || !precompExportable(pc)) return;
+      if (!pc || !isWideForm(pc) || !precompExportable(pc)) return;   // SPECIAL_MORE dagesh/mapiq forms are NOT wide — qaSynthWideRow on one fabricates a row whose ink is the plain undotted base letter
       const r = qaSynthWideRow(pc);
       if (r) { r.section = 'special'; rows.push(r); }
     });
@@ -17032,6 +17032,13 @@ function migrateProject(data) {
     if (data.font.svgUpload == null) data.font.svgUpload = false;
     if (data.font.addEnglishLetters == null) data.font.addEnglishLetters = false;
     if (data.font.addEnglishLetters) ensureEnglishSeeded(data);
+    // A tab that is ON must carry its full CURRENT form set — a release can grow a tab's table
+    // (SPECIAL_MORE joined SPECIAL_FORMS in v5.19), and without this an old project with the tab
+    // already enabled would silently miss the new forms forever (toggle-off/on was the only path).
+    // ensurePrecompSeeded dedupes by target, so re-seeding an up-to-date project is a no-op.
+    if (data.font.addSpecialForms) ensurePrecompSeeded(SPECIAL_FORMS, data);
+    if (data.font.addYiddish)      ensurePrecompSeeded(YIDDISH_FORMS, data);
+    if (data.font.addLadino)       ensurePrecompSeeded(LADINO_FORMS, data);
     if (!data.font.customMarks) data.font.customMarks = { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } };
     if (!data.font.customMarks.custom) data.font.customMarks.custom = {};
     if (!data.font.customMarks.combinedImage) data.font.customMarks.combinedImage = { dataUrl: null };
