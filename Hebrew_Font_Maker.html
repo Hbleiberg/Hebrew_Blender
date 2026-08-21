@@ -2447,7 +2447,7 @@ function udSnap(s) {
   if (s.t === 'kernClasses') return JSON.parse(JSON.stringify(project.font.kernClasses || []));
   if (s.t === 'metrics') return JSON.parse(JSON.stringify(project.font.metrics));
   if (s.t === 'guides') return JSON.parse(JSON.stringify(project.guides || { show:true, items:[] }));
-  if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, holam: pc.holam ? JSON.parse(JSON.stringify(pc.holam)) : null, markScale: (pc.markScale != null ? pc.markScale : null), widthScale: (pc.widthScale != null ? pc.widthScale : null), src: pc.src || null } : null; }   // src is written once by an import and never mutated in place, so the reference is shared rather than deep-cloned on every anchor drag
+  if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, holam: pc.holam ? JSON.parse(JSON.stringify(pc.holam)) : null, markScale: (pc.markScale != null ? pc.markScale : null), widthScale: (pc.widthScale != null ? pc.widthScale : null), src: pc.src || null, srcDagesh: pc.srcDagesh || null } : null; }   // src/srcDagesh are written once by an import and never mutated in place, so the references are shared rather than deep-cloned on every anchor drag
   if (s.t === 'tropTune') return JSON.parse(JSON.stringify({
     tropSideOffset: (project.font.tropSideOffset != null) ? project.font.tropSideOffset : null,
     halign: (project.font.trop && project.font.trop.halign) || {},
@@ -2476,7 +2476,7 @@ function udRestore(s, snap) {
     Object.assign(project.font.metrics, JSON.parse(JSON.stringify(snap || {})));
   }
   else if (s.t === 'guides') project.guides = JSON.parse(JSON.stringify(snap || { show:true, items:[] }));
-  else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.holam = (snap && snap.holam) ? JSON.parse(JSON.stringify(snap.holam)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; if (snap && snap.src) pc.src = snap.src; else delete pc.src; } }
+  else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.holam = (snap && snap.holam) ? JSON.parse(JSON.stringify(snap.holam)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; if (snap && snap.src) pc.src = snap.src; else delete pc.src; if (snap && snap.srcDagesh) pc.srcDagesh = snap.srcDagesh; else delete pc.srcDagesh; } }
   else if (s.t === 'tropTune') { const sn = snap || {};
     if (sn.tropSideOffset != null) project.font.tropSideOffset = sn.tropSideOffset; else project.font.tropSideOffset = TROP_POS_SHIFT;
     if (!project.font.trop) project.font.trop = {};
@@ -4944,11 +4944,11 @@ function formTilePreviewSVG(pc) {
    user's own letters + marks — the answer to "I redrew my shin, but שׁ still looks like the original
    font's". Undoable: the precomp scope carries pc.src. */
 function precompRebuildForms(targets) {
-  const gone = (targets || []).map(getPrecomp).filter(pc => pc && precompSrcOutline(pc));
+  const gone = (targets || []).map(getPrecomp).filter(pc => pc && (precompSrcOutline(pc) || pc.srcDagesh));
   if (!gone.length) return;
   if (!confirm(_pT('form_src_rebuild_confirm', 'Drop these ready-made forms and rebuild them from your own letters plus marks?', { count: gone.length }))) return;
   udDo(gone.map(pc => ({ t: 'precomp', target: pc.target })), 'rebuild composed forms', () => {
-    gone.forEach(pc => { delete pc.src; });
+    gone.forEach(pc => { delete pc.src; delete pc.srcDagesh; });
   });
   renderGrids(); renderStage(); renderControls();
 }
@@ -6196,18 +6196,24 @@ function importLetterOutline(l, font, scale) {
    sanitizeMarkAnchors: finite rounded coordinates only, curves kept only while they stay 1:1 with the
    contours (the export asserts that alignment), and anything malformed simply drops back to the bake. */
 function sanitizePrecompSrc(pc) {
-  const s = pc && pc.src;
-  if (!s) return;
-  const num = v => Number.isFinite(+v) ? Math.round(+v) : null;
-  const cs = Array.isArray(s.contours) ? s.contours.map(c => Array.isArray(c) ? c.map(pt => {
-    if (!Array.isArray(pt) || pt.length < 2) return null;
-    const x = num(pt[0]), y = num(pt[1]);
-    return (x == null || y == null) ? null : [x, y];
-  }).filter(Boolean) : []).filter(c => c.length >= 3) : [];
-  const adv = num(s.advance);
-  if (!cs.length || adv == null || adv < 0 || adv > 10000 || isWideForm(pc)) { delete pc.src; return; }
-  pc.src = { contours: cs, advance: adv,
+  const clean = s => {   // one shape-check for both stores: finite rounded points, ≥3-point contours, sane advance
+    if (!s) return null;
+    const num = v => Number.isFinite(+v) ? Math.round(+v) : null;
+    const cs = Array.isArray(s.contours) ? s.contours.map(c => Array.isArray(c) ? c.map(pt => {
+      if (!Array.isArray(pt) || pt.length < 2) return null;
+      const x = num(pt[0]), y = num(pt[1]);
+      return (x == null || y == null) ? null : [x, y];
+    }).filter(Boolean) : []).filter(c => c.length >= 3) : [];
+    const adv = num(s.advance);
+    if (!cs.length || adv == null || adv < 0 || adv > 10000) return null;
+    return { contours: cs, advance: adv,
              curves: (Array.isArray(s.curves) && s.curves.length === cs.length) ? s.curves : null };
+  };
+  if (!pc) return;
+  const s = clean(pc.src);
+  if (!s || isWideForm(pc)) delete pc.src; else pc.src = s;
+  const sd = clean(pc.srcDagesh);   // rides only FB2A/FB2B, but the shape rule is store-agnostic
+  if (!sd || isWideForm(pc)) delete pc.srcDagesh; else pc.srcDagesh = sd;
 }
 function importFormOutline(pc, font, scale) {
   let ch; try { ch = String.fromCodePoint(parseInt(pc.target, 16)); } catch (e) { return null; }
@@ -6369,9 +6375,18 @@ async function applyFontImport(file, font, bytes, opts) {
       ensurePrecompSeeded(PRECOMPOSED); ensurePrecompSeeded(EXTRA_FORMS);
       (project.precomposed || []).forEach(pc => {
         if (isWideForm(pc) || catOfCp(pc.mark) === 'accent') return;   // wide forms: see precompSrcOutline. Latin accented forms ride the .eng path above.
-        delete pc.src;                                                 // this font supersedes the previous one's ready-made forms
+        delete pc.src; delete pc.srcDagesh;                            // this font supersedes the previous one's ready-made forms
         const o = importFormOutline(pc, font, scale);
         if (o) { pc.src = o; nForms++; }
+        // שּׁ/שּׂ (FB2C/FB2D) have no pc entry of their own — three components, reached via ccmp_dagesh on
+        // the dotted shin — so their ready-made outline rides the FB2A/FB2B entry. Captured only when the
+        // dotted form itself came whole: mixing the source's שּׁ with a rebuilt user שׁ would put two ink
+        // families in one glyph chain. Measured before this existed: the synthesized dagesh sat (59,41)
+        // units off the source font's own placement inside an otherwise bbox-identical glyph.
+        if (o && (pc.target === 'FB2A' || pc.target === 'FB2B')) {
+          const od = importFormOutline({ target: pc.target === 'FB2A' ? 'FB2C' : 'FB2D' }, font, scale);
+          if (od) { pc.srcDagesh = od; nForms++; }
+        }
       });
     }
     // Mark shapes (nikkud + trop): replace the built-in shapes with the font's own, like uploaded marks.
@@ -11864,12 +11879,12 @@ function boldGenApply() {
   // bold), and no exportable gate: a tab turned on later must not ship stale-weight ink. Undo restores
   // the imported outlines via the precomp scopes (src rides the snapshot by reference — deleted, never
   // mutated in place, so sharing is safe).
-  const srcForms = (project.precomposed || []).filter(pc => precompSrcOutline(pc));
+  const srcForms = (project.precomposed || []).filter(pc => precompSrcOutline(pc) || pc.srcDagesh);
   const scopes = letters.map(l => ({ t: 'item', kind: 'letter', cp: l.codepoint }))
     .concat(markCps.map(([kind, cp]) => ({ t: 'item', kind, cp })))
     .concat(srcForms.map(pc => ({ t: 'precomp', target: pc.target })));
   udDo(scopes, 'generate bold', () => {
-    srcForms.forEach(pc => { delete pc.src; });
+    srcForms.forEach(pc => { delete pc.src; delete pc.srcDagesh; });
     letters.forEach(l => {
       if (l.contours && l.contours.length) boldGenLetter(l, d, keepHeight);
       if (withMarks && l.markShapes) Object.keys(l.markShapes).forEach(cp => {
@@ -14285,10 +14300,22 @@ function buildFontSpec() {
     const shinL = project.letters.find(x => x.codepoint === pc.base);
     const anc = shinL && shinL.anchors && shinL.anchors.center; if (!anc) return;   // seeded above when FB2A baked
     const srcG = glyphs[gname(src)];
-    const ds2 = nikScale('05BC');                                    // dagesh size — matches the per-letter & precomposed dagesh bakes
-    const markPoly = markContoursFor(shinL, 'nikkud', '05BC').map(poly => poly.map(([x,y]) => [Math.round(x*ds2+anc.x), Math.round(y*ds2+anc.y)]));
     const nm = gname(target);
     if (glyphs[nm]) return;                                          // an explicit custom glyph already owns this cp — never clobber it
+    const _sd = pc.srcDagesh;
+    if (_sd && Array.isArray(_sd.contours) && _sd.contours.length && precompSrcOutline(pc)) {
+      // the source font drew שּׁ/שּׂ itself and the dotted form shipped whole — ship this whole too, so the
+      // interior dagesh sits exactly where the original put it instead of at our reconstructed anchor
+      glyphs[nm] = { contours: _sd.contours.map(c => c.map(p => p.slice())),
+                     advance: Math.max(50, Math.round(_sd.advance) + fontSpacing().letterSpacing) };
+      if (_sd.curves && _sd.curves.length === _sd.contours.length) glyphs[nm].curves = _sd.curves;
+      glyphOrder.push(nm); baseGlyphNames.push(nm);
+      cmap[parseInt(target,16)] = nm;
+      builtShinDagesh.push({ pc, target });
+      return;
+    }
+    const ds2 = nikScale('05BC');                                    // dagesh size — matches the per-letter & precomposed dagesh bakes
+    const markPoly = markContoursFor(shinL, 'nikkud', '05BC').map(poly => poly.map(([x,y]) => [Math.round(x*ds2+anc.x), Math.round(y*ds2+anc.y)]));
     glyphs[nm] = { contours: srcG.contours.concat(markPoly), advance: srcG.advance };
     if (srcG.curves) glyphs[nm].curves = srcG.curves.concat(markPoly.map(() => null));
     glyphOrder.push(nm); baseGlyphNames.push(nm);
