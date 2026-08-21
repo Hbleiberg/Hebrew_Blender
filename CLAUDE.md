@@ -1004,11 +1004,15 @@ measured truth exactly (this is what fixes the `classResidual` combos). Rules th
 - Lifecycle: manual class-anchor edits go through `moveClassAnchor` (same-key pins translate by
   the same delta — the autofix itself writes RAW, its values being absolutes from one shaping
   run); the anchor editor edits the PIN when the previewed mark is pinned (`writeActiveAnchor`,
-  gold ✎ badge, Unpin / Clear-pins, all undoable); a fresh outline/anchor import deletes pins;
+  gold ✎ badge, Unpin / Clear-pins, all undoable); a fresh outline/anchor import deletes pins —
+  gated on the import's OUTCOME, not its checkboxes (per letter, `opts.outlines || imp`), so an
+  anchors-only import whose read yielded nothing changes nothing;
   `boldGenLetter` rescales them with the anchors; `maybeInheritAnchors` skips pinned letters;
   `migrateProject` sanitizes them (`sanitizeMarkAnchors`). Pins ride undo/autosave/`.hfm` for
   free (item deep-clones).
-- **Values are ROUNDED at the source** (`implied()` and `row.fix`). `markAttachOrigin`'s bbox
+- **Values are ROUNDED at the source** (`implied()`, `row.fix`, and `fidelityMeasure`'s `dev` —
+  one lattice, or a row lands flagged in (TOL, TOL+0.5] with every vehicle computing it as already
+  on-target: flagged combos no fix is offered for). `markAttachOrigin`'s bbox
   fallback returns midpoints, so a mark with no imported `attachAnchor` yields a fractional origin
   (12 built-ins already do); a fractional value reaches `buildFEA` verbatim and **feaLib rejects the
   whole file** ("Expected a number"). Never write an un-rounded coordinate anywhere near an anchor.
@@ -1020,7 +1024,9 @@ measured truth exactly (this is what fixes the `classResidual` combos). Rules th
 - **`pc.anchor` carries provenance**: the autofix writes `{x, y, auto: true}`, every manual writer
   builds a fresh object (so a hand-edit promotes it to user truth), and a fresh outlines/anchors
   import discards the still-`auto` ones — otherwise one font's measured form positions survive into
-  the next as untouchable "user truth". `appliedTargets` is UNIONed, never replaced.
+  the next as untouchable "user truth". Same outcome gate as the pins (`opts.outlines || (imported
+  && hadGpos)`), and it sits INSIDE `applyFontImport`'s `try`, so a failed import destroys nothing.
+  `appliedTargets` is UNIONed, never replaced.
 - The ss01 Sheva Na alternate has no codepoint, so the name-based pin partition would strand it in
   the shared class: `buildFEA` adds `SHEVA_NA_GLYPH` to the sheva's subclass whenever `05B0` is
   pinned, or one vowel would render in two places.
@@ -1031,7 +1037,10 @@ measured truth exactly (this is what fixes the `classResidual` combos). Rules th
   (D3): a form whose `pc.anchor` is now set, a group whose class anchor moved since measurement
   (its pins step aside with it), or a pin the user moved/removed are skipped and counted in the
   `skipped_changed` line. The **Fidelity report** button in the Nikkud-step under-strip reopens
-  the report while `_fidelityLast` exists.
+  the report while `_fidelityLast` exists. Undoing the `'fidelity fixes'` batch clears the report
+  (it would otherwise show a green "0 still flagged" over a project that deviates again) by
+  **stashing it on the undo entry**, so redo hands the same report — and its runtime-only `ctx`
+  bytes — back; the stacks are runtime-only, so nothing reaches autosave.
 
 ### Lazy CDNs + CSP
 pyodide v0.26.2 (+ fontTools), harfbuzzjs 0.4.6 (`hb.wasm` fetch — needs `'wasm-unsafe-eval'` +

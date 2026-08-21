@@ -2331,9 +2331,11 @@ function udApply(entry, useAfter) {
 function undo() { udFlushPending(); const e = undoStack.pop(); if (!e) return; udApply(e, false); redoStack.push(e);
   // The report describes the state the fixes produced; undoing them makes it a lie, and the reopen
   // button would still offer its green "0 combos still flagged" over a project that deviates again.
-  if (e.label === 'fidelity fixes') _fidelityLast = null;
+  if (e.label === 'fidelity fixes') { e._fidStash = _fidelityLast; _fidelityLast = null; }   // stashed on the entry (undo/redo stacks are runtime-only, so the ctx bytes stay off `project`) so redo can hand it back
   afterUndo('Undo: ' + e.label); }
-function redo() { udFlushPending(); const e = redoStack.pop(); if (!e) return; udApply(e, true); undoStack.push(e); afterUndo('Redo: ' + e.label); }
+function redo() { udFlushPending(); const e = redoStack.pop(); if (!e) return; udApply(e, true); undoStack.push(e);
+  if (e._fidStash) { _fidelityLast = e._fidStash; e._fidStash = null; }   // the fixes are back, so their report describes the project again
+  afterUndo('Redo: ' + e.label); }
 function afterUndo(msg) { updateUndoButtons(); if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   /* rebuild node model from restored curves */ _drawSel.clear();   /* undo/redo can restructure the stroke array — indices go stale */ renderGrids(); renderStage(); renderControls(); status(msg); markDirty(); }
 function updateUndoButtons() {   // top-toolbar + node-bar twins (bar buttons exist only after the DOM parses — null-guarded)
   const u = !undoStack.length, r = !redoStack.length;
@@ -5835,10 +5837,6 @@ async function applyFontImport(file, font, bytes, opts) {
   status(I18n.t('fontmaker.status.importing_font'), true);
   ipArm();   // cold engine ⇒ the modal appears; a warm one finishes first and it never shows
   _fidelityLast = null;   // this import supersedes any previous report — and a GPOS-less font produces none, which would otherwise leave the old one reachable from the reopen button
-  // …and with it the appliedTargets exemption, so drop the form overrides the autofix wrote for the
-  // PREVIOUS font too: measured against those bytes, they would otherwise survive as untouchable
-  // "user truth" and silently hold this font's combined forms at the old font's positions.
-  if (opts.outlines || opts.anchors) (project.precomposed || []).forEach(pc => { if (pc.anchor && pc.anchor.auto) pc.anchor = null; });
   try {
     let imported = null, hadGpos = false, anchorErr = false, markAttach = null, markCoverage = null, anchorNotes = [];
     if (opts.anchors) {
@@ -5852,13 +5850,20 @@ async function applyFontImport(file, font, bytes, opts) {
         else { imported = r.anchors || {}; hadGpos = !!r.hadGpos; markAttach = r.markAttach || null; markCoverage = r.coverage || null; anchorNotes = r.notes || []; }
       } catch (e) { console.warn('anchor import failed, will seed', e); anchorErr = true; }
     }
+    // …and with it the appliedTargets exemption, so drop the form overrides the autofix wrote for the
+    // PREVIOUS font: measured against those bytes, they would otherwise survive as untouchable "user
+    // truth" holding this font's combined forms at the old font's positions. Gated on the import's
+    // OUTCOME, not its checkboxes — an anchors-only import whose read yielded nothing (offline engine,
+    // or a font with no GPOS) changes nothing else, so it must not discard still-valid measured work.
+    if (opts.outlines || (imported && hadGpos)) (project.precomposed || []).forEach(pc => { if (pc.anchor && pc.anchor.auto) pc.anchor = null; });
     const scale = 1000 / font.unitsPerEm;
     let n = 0, nPunct = 0, anchorHits = 0;
     LETTERS.forEach(L => {
       const l = project.letters.find(x => x.codepoint === L.cp);
       const glyph = font.charToGlyph(String.fromCodePoint(parseInt(L.cp,16)));
       const hasGlyph = glyph && glyph.index !== 0;
-      if (opts.outlines || opts.anchors) delete l.markAnchors;   // a fresh outline/anchor import invalidates fidelity pins (mirrors importMarkGlyph dropping attachAnchor)
+      const imp = (opts.anchors && imported) ? imported[L.cp] : null;
+      if (opts.outlines || imp) delete l.markAnchors;   // a fresh outline/anchor import invalidates this letter's fidelity pins (mirrors importMarkGlyph dropping attachAnchor) — but only if it actually got one
       if (opts.outlines) {
         l.source = { kind:'font', dataUrl:null, cropRect:null };
         if (!hasGlyph) { l.contours = null; l.curves = null; l.anchors = null; return; }
@@ -5871,7 +5876,6 @@ async function applyFontImport(file, font, bytes, opts) {
         l.advance = adv;
         if (L.cat === 'punct') nPunct++; else n++;   // digits/punctuation counted separately (the toast said "N/27 letters" while counting them)
       }
-      const imp = (opts.anchors && imported) ? imported[L.cp] : null;
       if (imp) { applyImportedAnchors(l, imp); anchorHits++; }
       else if (opts.outlines) { l.anchors = null; seedAnchors(l); }
     });
@@ -12468,13 +12472,17 @@ function renderAnchorLeft(L, l) {
     <div class="ws-side-title">${esc(I18n.t('fontmaker.panels.special_precomposed'))}</div>
     <div class="hint" style="font-size:0.66rem;">${esc(I18n.t('fontmaker.panels.special_precomposed_hint'))}</div>
     <div class="ctl-row" style="flex-wrap:wrap;gap:5px;">${forms.map(precompFormBtn).join('')}</div>` : '';
-  // Count only LIVE pins: one whose stored key no longer matches (a pinned trop whose halign moved to
-  // an edge column, a center pin from a foreign file) is inert everywhere, draws no ✎ badge and offers
-  // no Unpin — counting it would state a number the user can't act on. Clear pins still removes them.
-  const nPins = l.markAnchors ? Object.keys(l.markAnchors).filter(cp => markPinFor(l, pinKeyFor(cp), cp)).length : 0;
-  const pinsSection = nPins ? `<hr class="ctl-divider">
+  // The COUNT is live pins only: one whose stored key no longer matches (a pinned trop whose halign
+  // moved to an edge column, a center pin from a foreign file) is inert everywhere, draws no ✎ badge
+  // and offers no Unpin — stating a number the user can't act on would be a lie. But the SECTION is
+  // gated on stored pins, so Clear pins stays reachable for a letter whose pins have all gone stale:
+  // they are still in the file, still ride autosave, and a halign change back would make them live
+  // again — an inert pin must never become unremovable.
+  const nStored = l.markAnchors ? Object.keys(l.markAnchors).length : 0;
+  const nPins = nStored ? Object.keys(l.markAnchors).filter(cp => markPinFor(l, pinKeyFor(cp), cp)).length : 0;
+  const pinsSection = nStored ? `<hr class="ctl-divider">
     <div class="ctl-row" style="align-items:center;justify-content:space-between;gap:6px;">
-      <span class="hint" style="font-size:0.64rem;color:var(--gold);">✎ ${esc(I18n.t(nPins === 1 ? 'fontmaker.fidelity.pins_row.one' : 'fontmaker.fidelity.pins_row.other', { count: nPins }))}</span>
+      ${nPins ? `<span class="hint" style="font-size:0.64rem;color:var(--gold);">✎ ${esc(I18n.t(nPins === 1 ? 'fontmaker.fidelity.pins_row.one' : 'fontmaker.fidelity.pins_row.other', { count: nPins }))}</span>` : '<span></span>'}
       <button class="ctl-btn" style="font-size:0.66rem;" onclick="clearLetterPins()">${I18n.t('fontmaker.fidelity.clear_pins')}</button>
     </div>` : '';
   // Label Prev/Next with the actual neighbor glyph, computed from the SAME source stepLetter uses so they can't drift.
@@ -15348,7 +15356,11 @@ async function fidelityMeasure(ctx) {
         let pen = 0, mx = 0, bx = 0;                        // pen-walk: glyph i draws at (Σ earlier advances + dx, dy)
         res.forEach(g => { const x = pen + (g.dx || 0); if (g === mark) mx = x; else bx = x; pen += (g.ax || 0); });
         const real = { x: Math.round((mx - bx) * scale), y: Math.round(((mark.dy || 0) - (base.dy || 0)) * scale) };
-        const dev = Math.max(Math.abs(pred.x - real.x), Math.abs(pred.y - real.y));
+        // Rounded, and in THIS operand order: implied() rounds (real + o), and cur is an integer, so
+        // round(real − pred) === implied − cur exactly. Measuring dev on a finer lattice than the
+        // planner's would flag rows in (TOL, TOL+0.5] that every vehicle then computes as already
+        // on-target — flagged combos with no fix offered, and an Apply button that can vanish.
+        const dev = Math.max(Math.abs(Math.round(real.x - pred.x)), Math.abs(Math.round(real.y - pred.y)));
         const row = { base: l.codepoint, baseName: l.name, cp, kind, key: pred.key, pred: { x: pred.x, y: pred.y }, real, dev,
                       o: pred.o, dy: pred.dy,
                       ancAt: { x: pred.anc.x, y: pred.anc.y },                        // measure-time anchor (or pin) value — the apply-time user-truth guard
