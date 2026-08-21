@@ -1627,7 +1627,7 @@
       <label class="chk"><input type="checkbox" id="wizOsYiddish"> <span data-i18n="fontmaker.panels.adv_add_yiddish">Add Yiddish glyphs</span></label>
       <label class="chk"><input type="checkbox" id="wizOsLadino"> <span data-i18n="fontmaker.panels.adv_add_ladino">Add Ladino glyphs</span></label>
       <p class="hint" data-i18n="fontmaker.oswizard.latin_hint">Extra alphabets start empty — the original's Latin letters aren't imported.</p>
-      <label class="chk" style="margin-top:12px;"><input type="checkbox" id="wizOsTour"> <span data-i18n="fontmaker.wizard.tour_after">Show me around after setup</span></label>
+      <label class="chk" style="margin-top:12px;"><input type="checkbox" id="wizOsTour"> <span data-i18n="fontmaker.oswizard.tour_after">Show me around this font when it opens</span></label>
     </section>
 
     <div class="wiz-foot">
@@ -3100,7 +3100,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.17</strong> &mdash; <strong>Partner font links land with their nikkud already in place.</strong> Opening an <span class="ui">Open Siddur</span> <span class="ui">?start=</span> edit link used to finish by handing you a fidelity report and an <span class="ui">Apply per-combo fixes</span> button to press before the vowels sat right. That check is now part of the loading: the progress window says <em>&ldquo;Checking where the nikkud and trop land in the original font&hellip;&rdquo;</em>, every fix it can express is applied for you, and the font is re-measured against the original before the workspace appears. The report only opens if something still missed &mdash; and it is still one click away from the <span class="ui">Fidelity report</span> button in the Nikkud step, with every fix undoable as a single step. Importing a font you picked yourself is unchanged: you still get the report and decide. <span style="color:var(--muted);">(August 2026)</span></li>
+      <li><strong>v5.17</strong> &mdash; <strong>Partner font links land with their nikkud already in place.</strong> Opening an <span class="ui">Open Siddur</span> <span class="ui">?start=</span> edit link used to finish by handing you a fidelity report and an <span class="ui">Apply per-combo fixes</span> button to press before the vowels sat right. That check is now part of the loading: the progress window says <em>&ldquo;Checking where the nikkud and trop land in the original font&hellip;&rdquo;</em>, every fix it can express is applied for you, and the font is re-measured against the original before the workspace appears. The report only opens if something still missed &mdash; and it is still one click away from the <span class="ui">Fidelity report</span> button in the Nikkud step, with every fix undoable as a single step. Importing a font you picked yourself is unchanged: you still get the report and decide. <strong>And the tour now matches the font you actually have.</strong> A partner font arrives finished — letters drawn, vowels placed — so the from-scratch walkthrough was telling new arrivals to photograph and trace letters they already had. Partner projects now get their own seven-step tour: what came across, how to reshape a letter with <span class="ui">Edit points</span>, where the vowel positions came from, and which parts of <span class="ui">Font Details</span> are locked to the original's license and why. It is offered (pre-ticked) at the end of the partner setup, and the header <span class="ui">Tour</span> button gives the same one any time. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.16</strong> &mdash; <strong>The fidelity report's Auto-fix now fixes everything it measures.</strong> After importing a font with anchors, one click corrects every flagged letter+mark combo &mdash; not just the combined forms. Shared anchors move when a whole letter agrees, and the stubborn per-letter positions (the report's &ldquo;own positioning rule&rdquo; marks) get exact per-letter <em>pins</em>, marked with the gold &#9998; in the placement step. The report then <strong>re-measures against the original font</strong> and shows the after numbers, and a <span class="ui">Fidelity report</span> button in the Nikkud step reopens it any time. Pins stay yours: drag a pinned mark to fine-tune it, or <span class="ui">Unpin</span> / <span class="ui">Clear pins</span> to fall back to the shared anchor. <strong>Importing a font now says what it is doing.</strong> The first import of a session has to fetch the font engine, which can take a while on school Wi-Fi &mdash; and an <span class="ui">Open Siddur</span> edit link used to spend that whole wait sitting on an empty workspace, looking broken. A progress window now names each step and closes the moment your letters appear. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.15</strong> &mdash; <strong>Edit a partner's font from a link.</strong> Open Siddur Project <em>starting fonts</em> now open straight into the Font Maker from an <span class="ui">?start=</span> link: a short three-step onboarding imports the font's Hebrew letters, nikkud, trop, and mark positions into a fresh project of your own, with a live preview and full credit to the original. Your version automatically keeps the original's open license &mdash; the <span class="ui">License</span> box locks, reserved font names ask you for a name of your own, and every export's <span class="ui">LICENSE.txt</span> carries the original copyright plus your &ldquo;modified work&rdquo; line. A new <span class="ui">Partner fonts</span> help tab explains the why. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.14</strong> &mdash; <strong>Imported fonts keep their exact nikkud positions.</strong> When you import a TTF/OTF with <span class="ui">Import nikkud anchor positions</span> on, the Font Maker now also reads each mark's own <em>attachment point</em> from the font &mdash; not just the letters' anchors &mdash; so every vowel, dagesh and trop lands exactly where the original font put it, even in fonts that position, say, the sh'va and the holam through separate rules. And it doesn't just assume: right after the import, the original font is shaped with the same engine word processors use, and every letter+mark pair is <strong>measured</strong> against what the editor will produce. A status line reports the numbers, and if any combo is more than a few units off you get a detail list with a one-click <span class="ui">Apply per-combo fixes</span> button for the combined forms (&#1493;&#1465;, &#1513;&#1473;&hellip;). Traced, drawn and built-in marks are completely untouched. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3289,10 +3289,66 @@ const TOUR_STEPS = [
 ];
 
 let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourUncollapsed = null, _tourRepoTimer = null;
+/* Partner starting-font tour (project.osFont — see CLAUDE.md: Starting Fonts). Same spotlight engine,
+   a different story to tell: nothing here was photographed or traced by the user, so the from-scratch
+   "upload a picture" / "tracing turns your picture into an outline" steps describe an event that never
+   happened — and the one thing unique to this audience, an inherited license they cannot change, has no
+   step at all in the generic tour. Steps 5 and 6 deliberately REUSE the generic copy: the spacing
+   preview and the QA check read identically for both audiences.
+   Read-only, like every tour: setCatTab is this file's own view-only tab switch (tourEnd restores the
+   tab the user was on) and nothing below touches workMode, undo, or project state. */
+const _osTourFont = () => ({ font: (project && project.osFont && project.osFont.displayName)
+                                   || I18n.t('fontmaker.ostour.original_fallback') });
+// Tabbed is the only layout: a .cat-panel is display:none unless it is .cat-active, and while a
+// settings tab is active .work-tabs is hidden — so every step has to name the tab it needs. reveal()
+// runs on each evaluation in BOTH directions, which is what makes Back across this boundary work.
+const _osTourTab = cat => () => setCatTab(cat);
+const OS_TOUR_STEPS = [
+  { target: () => document.getElementById('letterGrid'),
+    reveal: _osTourTab('letter'), params: _osTourFont,
+    titleKey: 'fontmaker.ostour.step_1_title',
+    bodyKey: 'fontmaker.ostour.step_1_body' },
+  { target: () => document.getElementById('tabTrace'),
+    reveal: _osTourTab('letter'),
+    titleKey: 'fontmaker.ostour.step_2_title',
+    bodyKey: 'fontmaker.ostour.step_2_body' },   // for inputMode 'font', Edit points is the ONLY way to reshape a glyph (see renderTraceLeft)
+  { target: () => document.getElementById('tabAnchors'),
+    reveal: _osTourTab('letter'), params: _osTourFont,
+    titleKey: 'fontmaker.ostour.step_3_title',
+    bodyKey: 'fontmaker.ostour.step_3_body' },   // the Fidelity report button lives in this step — naming it beats targeting it (it needs anchors mode on a letter)
+  // .cat-panel, not a bare [data-cat] — renderCatTabs builds a .ctab carrying the same attribute, and it
+  // wins document order, so the bare selector spotlights the tab button while the card covers the very
+  // fields this step is about.
+  { target: () => document.querySelector('.cat-panel[data-cat="fontdetails"]'),
+    reveal: _osTourTab('fontdetails'), params: _osTourFont,
+    titleKey: 'fontmaker.ostour.step_4_title',
+    bodyKey: 'fontmaker.ostour.step_4_body' },
+  { target: () => document.querySelector('.cat-panel[data-cat="spacing"]'),
+    reveal: _osTourTab('spacing'),
+    titleKey: 'fontmaker.tour.step_5_title',     // reused verbatim — the spacing preview reads the same either way
+    bodyKey: 'fontmaker.tour.step_5_body' },
+  { target: () => document.querySelector('button[onclick="openQA()"]'),
+    reveal: _osTourTab('letter'),                // back to the workspace — a settings tab hides .work-tabs/.ws-grid,
+    titleKey: 'fontmaker.tour.step_6_title',     // and these last two spotlight toolbar buttons, so the font should be behind them
+    bodyKey: 'fontmaker.tour.step_6_body' },     // (copy reused verbatim)
+  { target: () => document.getElementById('exportBtn'),
+    reveal: _osTourTab('letter'), params: _osTourFont,
+    titleKey: 'fontmaker.ostour.step_7_title',
+    bodyKey: 'fontmaker.ostour.step_7_body' },
+];
+
+let _tourSteps = TOUR_STEPS;   // which list is live — chosen once per run in tourStart
+let _tourCatTab = null;        // the category tab the user was on, put back by tourEnd (see the setCatTab reveals)
 
 function tourStart() {
   if (_tourActive) return;
+  // A partner starting-font project (project.osFont) gets its own narrative: the letters arrived
+  // traced and the vowels already placed, so the from-scratch "photograph and trace" steps would be
+  // telling it a story that never happened. Choosing here — not at the call sites — is what makes
+  // the header Tour button, both Help-modal launchers and the onboarding checkbox agree.
+  _tourSteps = (project && project.osFont) ? OS_TOUR_STEPS : TOUR_STEPS;
   _tourActive = true; _tourIdx = -1; _tourUncollapsed = null;
+  _tourCatTab = catTab;
   _tourOpener = document.activeElement;
   document.getElementById('tourSpot').hidden = false;
   document.getElementById('tourCard').hidden = false;
@@ -3304,7 +3360,7 @@ function tourStart() {
 
 // Resolve a step's target, running its reveal() first; returns null if it can't be shown.
 function _resolveStep(idx) {
-  const step = TOUR_STEPS[idx];
+  const step = _tourSteps[idx];
   if (!step) return null;
   if (step.reveal) { try { step.reveal(); } catch (e) {} }
   const el = step.target();
@@ -3313,16 +3369,19 @@ function _resolveStep(idx) {
 
 function _tourShow(idx, dir) {
   // Skip any step whose target can't be shown, continuing in the current direction.
-  while (idx >= 0 && idx < TOUR_STEPS.length && !_resolveStep(idx)) idx += dir;
-  if (idx < 0 || idx >= TOUR_STEPS.length) { tourEnd(dir > 0); return; }
+  while (idx >= 0 && idx < _tourSteps.length && !_resolveStep(idx)) idx += dir;
+  if (idx < 0 || idx >= _tourSteps.length) { tourEnd(dir > 0); return; }
   _tourIdx = idx;
-  const step = TOUR_STEPS[idx], el = step.target();
+  const step = _tourSteps[idx], el = step.target();
   try { el.scrollIntoView({ block: 'center', inline: 'center' }); } catch (e) {}
-  document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey);
-  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKeyDraw && project && project.inputMode === 'draw' ? step.bodyKeyDraw : step.bodyKey);
-  document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: TOUR_STEPS.length });
+  // step.params() is optional — I18n's substitute() short-circuits on a falsy second argument, so
+  // every step that doesn't define one behaves exactly as before.
+  const p = step.params ? step.params() : null;
+  document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey, p);
+  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKeyDraw && project && project.inputMode === 'draw' ? step.bodyKeyDraw : step.bodyKey, p);
+  document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: _tourSteps.length });
   document.getElementById('tourBack').disabled = (idx === 0);
-  document.getElementById('tourNext').textContent = I18n.t((idx === TOUR_STEPS.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
+  document.getElementById('tourNext').textContent = I18n.t((idx === _tourSteps.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
   _tourReposition();
   if (_tourRepoTimer) clearTimeout(_tourRepoTimer);
   _tourRepoTimer = setTimeout(_tourReposition, 350);   // re-measure after scroll settles
@@ -3342,6 +3401,10 @@ function tourEnd(completed) {
   document.getElementById('tourSpot').hidden = true;
   document.getElementById('tourCard').hidden = true;
   if (_tourUncollapsed) { _tourUncollapsed.classList.add('collapsed'); _tourUncollapsed = null; }
+  // Tabbed is the only layout, so a step on a .cat-panel can only be SEEN through setCatTab (view-only,
+  // like the un-collapse above) — hand the user back the tab they were on.
+  if (_tourCatTab !== null && _tourCatTab !== catTab) setCatTab(_tourCatTab);
+  _tourCatTab = null;
   if (completed) { try { localStorage.setItem('hebrewFontMaker_tourDone', '1'); } catch (e) {} }
   const opener = _tourOpener; _tourOpener = null;
   if (opener && opener.focus) { try { opener.focus(); } catch (e) {} }
@@ -3350,7 +3413,7 @@ function tourEnd(completed) {
 
 function _tourReposition() {
   if (!_tourActive) return;
-  const step = TOUR_STEPS[_tourIdx];
+  const step = _tourSteps[_tourIdx];
   if (!step) return;
   const el = step.target();
   if (!el || el.offsetParent === null) return;
@@ -16638,7 +16701,11 @@ function wizardOsPrefill(){
   document.getElementById('wizOsLicensePill').textContent = e.licenseName || e.licenseId || '';
   document.getElementById('wizOsNikkud').checked = e.hasNikkud !== false;
   document.getElementById('wizOsTrop').checked = e.hasTrop !== false;
-  ['wizOsEnglish','wizOsYiddish','wizOsLadino','wizOsTour'].forEach(id => { document.getElementById(id).checked = false; });
+  ['wizOsEnglish','wizOsYiddish','wizOsLadino'].forEach(id => { document.getElementById(id).checked = false; });
+  // Pre-checked, unlike the from-scratch wizard: a partner arrival came straight from someone else's
+  // page and has never seen this tool, so the walkthrough is the expected next beat. Still a checkbox —
+  // the tour never launches on its own (CLAUDE.md, Shared UX §1).
+  document.getElementById('wizOsTour').checked = true;
 }
 function wizardValidateOs(){
   if (_wizardMode !== 'osfont' || !_osStartCtx) return true;
