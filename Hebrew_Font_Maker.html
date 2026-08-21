@@ -13883,6 +13883,17 @@ function fontInkBounds() {
   if (project.font.addEnglishLetters) (project.letters || []).forEach(L => {
     if (L.eng && L.contours && L.contours.length) upd(polysBounds(L.contours.map(c => c.points)));
   });
+  // Traced punctuation/symbol ink ships too (letterShips — the exact export predicate), and so do
+  // custom MAIN glyphs; both were invisible to the clip box, so a tall traced bracket or custom glyph
+  // could clip in Word while winAscent claimed to cover the true ink.
+  LETTERS.forEach(M => {
+    if (M.cat !== 'punct') return;
+    const l = project.letters.find(x => x.codepoint === M.cp);
+    if (letterShips(M, l)) upd(polysBounds(l.contours.map(c => c.points)));
+  });
+  if (project.font.addCustomGlyphs) customBaseLetters().forEach(l => {
+    if (l.contours && l.contours.length) upd(polysBounds(l.contours.map(c => c.points)));
+  });
   let tropTop = null, tropBot = null;   // worst-case trop extents for the stack contribution
   if (tropOn) TROP_CPS.forEach(cp => {
     const b = polysBounds(markGlyphContours('trop', cp).map(poly => poly.map(([x,y]) => [x*tms, y*tms])));
@@ -13905,12 +13916,20 @@ function fontInkBounds() {
       upd(polysBounds(qaPlace(anc, 'trop', cp, tms)));
     });
   });
+  // Precomposed forms — mirror the BAKE's gate order exactly (accent skip → wide/exportable → base
+  // traced → src early-add → per-form scale), so the clip box measures precisely the glyphs that ship:
+  // a non-exportable form with a stray pc.anchor must not inflate winAscent for a glyph the export
+  // skips, an imported src outline ships verbatim so its ink counts, and the dot is sized by
+  // precompMarkScale(pc) like the bake — not the global markScale.
   if (nikOn) (project.precomposed || []).forEach(pc => {
+    if (catOfCp(pc.mark) === 'accent' || isWideForm(pc) || !precompExportable(pc)) return;
     const baseL = project.letters.find(x => x.codepoint === pc.base);
     if (!baseL || !baseL.contours) return;
+    const _src = precompSrcOutline(pc);
+    if (_src) { upd(polysBounds(_src.contours)); return; }
     const anc = (MARK_CLASS[pc.mark] !== 'center' && pc.anchor && pc.anchor.x != null) ? pc.anchor : (baseL.anchors && baseL.anchors[MARK_CLASS[pc.mark]]);   // dagesh follows the base's center anchor (unified)
     if (!anc) return;
-    upd(polysBounds(qaPlace(anc, 'nikkud', pc.mark, ms, baseL)));
+    upd(polysBounds(qaPlace(anc, 'nikkud', pc.mark, precompMarkScale(pc), baseL)));
   });
   if (top < bottom) { top = effMetrics().letterTop; bottom = 0; }   // no ink → nominal box
   return { top, bottom };
