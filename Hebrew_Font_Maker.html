@@ -1149,8 +1149,10 @@
         <div class="mode-toggle" style="margin-bottom:10px;">
           <button class="mode-btn" id="engCaseUpper" onclick="setEnglishCase('upper')" aria-pressed="true" data-i18n="fontmaker.panels.eng_case_upper">Uppercase A–Z</button>
           <button class="mode-btn" id="engCaseLower" onclick="setEnglishCase('lower')" aria-pressed="false" data-i18n="fontmaker.panels.eng_case_lower">Lowercase a–z</button>
+          <button class="mode-btn" id="engCaseAccent" onclick="setEnglishCase('accent')" aria-pressed="false" style="display:none;" data-i18n="fontmaker.panels.eng_case_accent">Accented</button>
         </div>
         <div class="letter-grid" id="englishGrid"></div>
+        <div id="englishAccentNote" style="display:none;margin-top:9px;font-size:0.72rem;color:var(--muted);line-height:1.5;"></div>
       </div>
     </div>
     <div class="panel collapsed cat-panel" data-cat="specialforms">
@@ -1599,7 +1601,7 @@
         <div class="wiz-os-row"><span data-i18n="fontmaker.oswizard.meta_version">Version</span><b id="osPrevVersion"></b></div>
         <div class="wiz-os-row"><span data-i18n="fontmaker.panels.license">License</span><a id="osPrevLicense" target="_blank" rel="noopener"></a></div>
       </div>
-      <p class="wiz-foot-note" data-i18n="fontmaker.oswizard.honesty">Your edited font will be rebuilt by IvritSuite from the letters you see in the editor — the original's Hebrew letterforms, vowels, and mark positions come along; its Latin glyphs and hand-tuned extras don't.</p>
+      <p class="wiz-foot-note" data-i18n="fontmaker.oswizard.honesty">Your edited font will be rebuilt by IvritSuite from the letters you see in the editor — the original's Hebrew letterforms, vowels, mark positions and Latin letters come along; its hinting and hand-tuned internals don't.</p>
     </section>
 
     <section id="wizStepOs2" class="wiz-step" aria-labelledby="wizStepOs2Title" hidden>
@@ -1626,7 +1628,7 @@
       <label class="chk"><input type="checkbox" id="wizOsEnglish"> <span data-i18n="fontmaker.panels.adv_add_english">Add English letters</span></label>
       <label class="chk"><input type="checkbox" id="wizOsYiddish"> <span data-i18n="fontmaker.panels.adv_add_yiddish">Add Yiddish glyphs</span></label>
       <label class="chk"><input type="checkbox" id="wizOsLadino"> <span data-i18n="fontmaker.panels.adv_add_ladino">Add Ladino glyphs</span></label>
-      <p class="hint" data-i18n="fontmaker.oswizard.latin_hint">Extra alphabets start empty — the original's Latin letters aren't imported.</p>
+      <p class="hint" id="wizOsLatinHint">Yiddish and Ladino forms start empty; English letters come across when the original has them.</p>
       <label class="chk" style="margin-top:12px;"><input type="checkbox" id="wizOsTour"> <span data-i18n="fontmaker.oswizard.tour_after">Show me around this font when it opens</span></label>
     </section>
 
@@ -1954,9 +1956,6 @@ const ENGLISH_LETTERS = (() => {
   for (let c = 0x61; c <= 0x7A; c++) out.push({ cp: c.toString(16).toUpperCase().padStart(4,'0'), name: String.fromCharCode(c) + ' (lowercase)', case: 'lower' });
   return out;
 })();
-const ENGLISH_CPS = ENGLISH_LETTERS.map(l => l.cp);
-function isEng(cp) { return ENGLISH_CPS.indexOf(cp) >= 0; }
-function engMeta(cp) { return ENGLISH_LETTERS.find(l => l.cp === cp); }
 
 /* ── Latin accent marks (default shapes, font units, attach-anchor at origin 0,0; 'above' sits up,
    'below' hangs down). Positioned on the supporting base letter via the precomposed-forms UI, then
@@ -1988,6 +1987,31 @@ const LATIN_PRECOMPOSED = [
   {target:'00D9',base:'0055',mark:'0300'},{target:'00DA',base:'0055',mark:'0301'},{target:'00DB',base:'0055',mark:'0302'},{target:'00DC',base:'0055',mark:'0308'},
   {target:'00DD',base:'0059',mark:'0301'},{target:'0178',base:'0059',mark:'0308'}
 ];
+/* Ready-made accented forms (á, é, ñ, ç…). Metadata only — NOTHING seeds these: they exist as
+   project.letters items solely when a font import found the whole glyph, so a hand-tracer never faces
+   51 empty tiles. When one exists, export pass 3 emits it and the base+accent bake below skips itself
+   (`if (glyphs[nm]) return;`), so a font without them keeps baking exactly as before. */
+const LATIN_ACCENTED = LATIN_PRECOMPOSED.map(p => ({
+  cp: p.target, base: p.base, mark: p.mark, case: 'accent',
+  name: String.fromCodePoint(parseInt(p.target,16)) + ' (' + String.fromCodePoint(parseInt(p.base,16))
+        + ' + ' + (LATIN_ACCENTS[p.mark] ? LATIN_ACCENTS[p.mark].name : p.mark) + ')'
+}));
+const LATIN_ACCENTED_CPS = new Set(LATIN_ACCENTED.map(e => e.cp));
+/* ENGLISH_CPS spans BOTH bands, because its only consumer is isEng() — the predicate that routes an
+   item to the English tab and keeps the Hebrew nikkud-anchor UI off it (_selectItem, udNavTo,
+   renderStage's attachAnchorDrag). An accented form left out of it would open in the Hebrew grid with
+   vowel anchor handles. Latin-coverage counting deliberately uses ENGLISH_LETTERS instead. */
+const ENGLISH_CPS = ENGLISH_LETTERS.map(l => l.cp).concat(LATIN_ACCENTED.map(l => l.cp));
+function isEng(cp) { return ENGLISH_CPS.indexOf(cp) >= 0; }
+function engMeta(cp) { return ENGLISH_LETTERS.find(l => l.cp === cp) || LATIN_ACCENTED.find(l => l.cp === cp); }
+/* Did the user make this English letter themselves? An OR of independent evidence, so no writer has to
+   remember to clear a provenance flag. NOTE source.kind is NOT usable here: setInputMode stamps it on
+   every letter, .eng included, so one mode switch would make hand-drawn letters look imported. A stale
+   engSource can only ever cost an extra prompt — never a silent overwrite. */
+function engUserMade(l) {
+  return !!(l && l.contours && l.contours.length
+    && (l.handEdited || l.draw || (l.source && l.source.dataUrl) || l.engSource !== 'import'));
+}
 const _ENG_ACCENT_BASES = new Set(LATIN_PRECOMPOSED.map(p => p.base));
 function engSupportsAccents(cp) { return _ENG_ACCENT_BASES.has(cp); }
 function markClassFor(cp) { return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].cls) || MARK_CLASS[cp] || TROP_CLASS[cp]; }
@@ -2387,6 +2411,7 @@ function newProject() {
       nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, shevaNa: false },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'; shevaNa: bold sheva-na alternate
       trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, halign: {}, vowelPair: { below: { mode: 'stack', dx: 70 }, above: { mode: 'stack', dx: 70 } } },
       customMarks: { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // user-defined nikkud marks added via the Custom glyphs tab
+      accent: { mode: 'custom', custom: {} },   // Latin accent shapes taken from an imported font; empty = the built-in LATIN_ACCENTS outlines
       metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB },
       spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם', kernTarget: 40 },
       includeDigitsPunct: true,
@@ -2424,8 +2449,10 @@ function curItem() {
 function curLetter() { return curItem(); }
 function letterMeta(cp) { return LETTERS.find(l => l.cp === cp) || engMeta(cp); }
 function curMeta() { return curKind === 'letter' ? letterMeta(curCp) : null; }
-function markName(cp) { return MARK_NAMES[cp] || TROP_NAMES[cp] || cp; }
-function markClassOf(kind, cp) { return kind === 'trop' ? TROP_CLASS[cp] : MARK_CLASS[cp]; }
+function markName(cp) { return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].name) || MARK_NAMES[cp] || TROP_NAMES[cp] || cp; }
+// kind 'accent' must resolve through LATIN_ACCENTS: MARK_CLASS has no entry, so cedilla would fall to
+// markItem's 'above' default and markAttachOrigin would take its TOP edge as the attach point.
+function markClassOf(kind, cp) { return kind === 'accent' ? (LATIN_ACCENTS[cp] || {}).cls : (kind === 'trop' ? TROP_CLASS[cp] : MARK_CLASS[cp]); }
 function markItem(kind, cp) {
   return {
     codepoint: cp, name: markName(cp), cls: markClassOf(kind, cp) || 'above',
@@ -2562,7 +2589,14 @@ function moveClassAnchor(l, key, nx, ny) {
   }
 }
 function markGlyphContours(kind, cp) {
-  if (kind === 'accent') return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].glyph) || [];
+  if (kind === 'accent') {
+    const am = project.font.accent && project.font.accent.custom && project.font.accent.custom[cp];
+    const acs = am && (am.contours || []).map(c => c.points);
+    // Imported accents are translated to mark-local (attach origin at 0,0) exactly like uploaded nikkud;
+    // accents take no markNudge, so there is no dy term here.
+    if (acs && acs.length) { const o = markAttachOrigin(am); return acs.map(pts => pts.map(([x,y]) => [x - o.x, y - o.y])); }
+    return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].glyph) || [];
+  }
   const dy = markNudgeDy(cp), sh = ps => dy ? ps.map(([x,y]) => [x, y + dy]) : ps;
   const f = project.font[kind];
   if (f && f.mode === 'custom') {
@@ -2881,7 +2915,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.17';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.18';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3064,7 +3098,7 @@ const HELP_CONTENT = {
     <h4>Partner fonts — why the license is locked</h4>
     <p>Some projects start from an existing open-licensed font shared by a partner like <a href="https://opensiddur.org/help/fonts/" target="_blank" rel="noopener">the Open Siddur Project</a>. Your edited font is legally a <strong>modified version</strong> of that original — and open font licenses (like the SIL Open Font License and the GPL) require modified versions to stay under the <strong>same license</strong> as the original. That's not a limitation IvritSuite adds; it's the very rule that makes the original free for you to edit in the first place. So on these projects the <span class="ui">License</span> box is locked to the original's license, and every export's <span class="ui">LICENSE.txt</span> carries the original copyright plus your "modified work" line.</p>
     <p><strong>Why you may need a new name.</strong> Many open fonts declare <strong>Reserved Font Names</strong> — names that only the original may use. A modified version must be renamed so nobody confuses it with the original. If the original reserves names, the <span class="ui">Family name</span> you pick can't contain them — add your own name or your school's instead (e.g. <i>"Kehilla SemiStam"</i>). The <span class="ui">Reserved name</span> field shows the original's reserved names, read-only.</p>
-    <p><strong>What actually carries over.</strong> Your export is rebuilt by IvritSuite from the letters in the editor: the original's Hebrew letterforms, vowels, cantillation marks, and mark positions come along; its Latin glyphs, hinting, kerning, and hand-tuned internals don't. The LICENSE.txt records exactly what your version is based on.</p>
+    <p><strong>What actually carries over.</strong> Your export is rebuilt by IvritSuite from the letters in the editor: the original's Hebrew letterforms, vowels, cantillation marks, mark positions and Latin letters come along; its hinting, kerning, and hand-tuned internals don't. The LICENSE.txt records exactly what your version is based on.</p>
     <div class="help-tip">💛 The <i>"made with IvritSuite"</i> line on these exports is informational only — the original's license terms are the ones that apply, unchanged.</div>
   `,
   share: `
@@ -3100,6 +3134,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.18</strong> &mdash; <strong>Imported fonts now bring their English letters with them.</strong> Until now, importing a font took its Hebrew letters, vowels and cantillation marks &mdash; but quietly left every <span class="ui">A&ndash;Z</span> and <span class="ui">a&ndash;z</span> behind, so an exported font showed nothing when you typed in English. Now the import fills the <span class="ui">English</span> tab from the original's own Latin letters, turning the tab on for you when the font has a full alphabet, and it takes ready-made accented letters (<em>&aacute;, &eacute;, &ntilde;, &ccedil;</em>) whole when the original has them &mdash; falling back to building them from your letters plus accent marks when it doesn't. If you had already drawn English letters yourself, the import asks before touching them. <strong>And English letters finally survive saving.</strong> Reopening a project used to wipe every English letter you had traced, silently, and hand it back blank &mdash; that's fixed. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.17</strong> &mdash; <strong>Partner font links land with their nikkud already in place.</strong> Opening an <span class="ui">Open Siddur</span> <span class="ui">?start=</span> edit link used to finish by handing you a fidelity report and an <span class="ui">Apply per-combo fixes</span> button to press before the vowels sat right. That check is now part of the loading: the progress window says <em>&ldquo;Checking where the nikkud and trop land in the original font&hellip;&rdquo;</em>, every fix it can express is applied for you, and the font is re-measured against the original before the workspace appears. The report only opens if something still missed &mdash; and it is still one click away from the <span class="ui">Fidelity report</span> button in the Nikkud step, with every fix undoable as a single step. Importing a font you picked yourself is unchanged: you still get the report and decide. <strong>And the tour now matches the font you actually have.</strong> A partner font arrives finished — letters drawn, vowels placed — so the from-scratch walkthrough was telling new arrivals to photograph and trace letters they already had. Partner projects now get their own seven-step tour: what came across, how to reshape a letter with <span class="ui">Edit points</span>, where the vowel positions came from, and which parts of <span class="ui">Font Details</span> are locked to the original's license and why. It is offered (pre-ticked) at the end of the partner setup, and the header <span class="ui">Tour</span> button gives the same one any time. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.16</strong> &mdash; <strong>The fidelity report's Auto-fix now fixes everything it measures.</strong> After importing a font with anchors, one click corrects every flagged letter+mark combo &mdash; not just the combined forms. Shared anchors move when a whole letter agrees, and the stubborn per-letter positions (the report's &ldquo;own positioning rule&rdquo; marks) get exact per-letter <em>pins</em>, marked with the gold &#9998; in the placement step. The report then <strong>re-measures against the original font</strong> and shows the after numbers, and a <span class="ui">Fidelity report</span> button in the Nikkud step reopens it any time. Pins stay yours: drag a pinned mark to fine-tune it, or <span class="ui">Unpin</span> / <span class="ui">Clear pins</span> to fall back to the shared anchor. <strong>Importing a font now says what it is doing.</strong> The first import of a session has to fetch the font engine, which can take a while on school Wi-Fi &mdash; and an <span class="ui">Open Siddur</span> edit link used to spend that whole wait sitting on an empty workspace, looking broken. A progress window now names each step and closes the moment your letters appear. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.15</strong> &mdash; <strong>Edit a partner's font from a link.</strong> Open Siddur Project <em>starting fonts</em> now open straight into the Font Maker from an <span class="ui">?start=</span> link: a short three-step onboarding imports the font's Hebrew letters, nikkud, trop, and mark positions into a fresh project of your own, with a live preview and full credit to the original. Your version automatically keeps the original's open license &mdash; the <span class="ui">License</span> box locks, reserved font names ask you for a name of your own, and every export's <span class="ui">LICENSE.txt</span> carries the original copyright plus your &ldquo;modified work&rdquo; line. A new <span class="ui">Partner fonts</span> help tab explains the why. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3207,7 +3242,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_17','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3220,7 +3255,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_17';
+  const CUR_KEY = 'fontmaker.changelog.v5_18';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -4209,14 +4244,32 @@ function updateTracedReadout() {
   if (s.traced >= 1) maybePrefetchEngine();   // user has committed — warm the export engine in the background
 }
 let englishCase = 'upper';
-function setEnglishCase(c) { englishCase = (c === 'lower') ? 'lower' : 'upper'; renderEnglishGrid(); }
+function setEnglishCase(c) { englishCase = (c === 'lower' || c === 'accent') ? c : 'upper'; renderEnglishGrid(); }
+/* The accented forms that actually exist — only an import creates them, so this is empty for a
+   hand-tracer and the Accented button stays hidden rather than opening 52 blank tiles. */
+function engAccentedItems() { return LATIN_ACCENTED.filter(A => project.letters.some(x => x.codepoint === A.cp && x.eng)); }
+/* Drop the imported ready-made forms so export pass 11 resumes baking them from the user's own base
+   letters + accents — the answer to "I redrew my a, but á still looks like the original font's". */
+function engRebuildAccents() {
+  const gone = project.letters.filter(l => l.eng && l.case === 'accent' && l.engSource === 'import');
+  if (!gone.length) return;
+  if (!confirm(I18n.t('fontmaker.panels.eng_accent_rebuild_confirm', {count: gone.length}))) return;
+  project.letters = project.letters.filter(l => gone.indexOf(l) < 0);
+  if (curKind === 'letter' && !project.letters.some(x => x.codepoint === curCp)) _selectItem('letter', LETTER_ORDER[0]);
+  englishCase = 'upper';
+  markDirty(); renderGrids();
+}
 function renderEnglishGrid() {
   const grid = document.getElementById('englishGrid'); if (!grid) return;
-  const up = document.getElementById('engCaseUpper'), lo = document.getElementById('engCaseLower');
-  if (up) { up.classList.toggle('active', englishCase === 'upper'); up.setAttribute('aria-pressed', englishCase === 'upper'); }
-  if (lo) { lo.classList.toggle('active', englishCase === 'lower'); lo.setAttribute('aria-pressed', englishCase === 'lower'); }
+  const acc = engAccentedItems(), accBtn = document.getElementById('engCaseAccent');
+  if (accBtn) accBtn.style.display = acc.length ? '' : 'none';
+  if (englishCase === 'accent' && !acc.length) englishCase = 'upper';
+  [['engCaseUpper','upper'],['engCaseLower','lower'],['engCaseAccent','accent']].forEach(([id, v]) => {
+    const b = document.getElementById(id); if (!b) return;
+    b.classList.toggle('active', englishCase === v); b.setAttribute('aria-pressed', englishCase === v);
+  });
   grid.innerHTML = ''; let done = 0, total = 0;
-  ENGLISH_LETTERS.filter(E => E.case === englishCase).forEach(E => {
+  (englishCase === 'accent' ? acc : ENGLISH_LETTERS.filter(E => E.case === englishCase)).forEach(E => {
     const l = project.letters.find(x => x.codepoint === E.cp && x.eng); if (!l) return;
     total++;
     const st = letterStatus(l); if (st === 'traced' || st === 'anchored') done++;
@@ -4230,6 +4283,20 @@ function renderEnglishGrid() {
     grid.appendChild(tile);
   });
   a11yTiles(grid);
+  const note = document.getElementById('englishAccentNote');
+  if (note) {
+    const imported = acc.filter(A => { const l = project.letters.find(x => x.codepoint === A.cp && x.eng); return l && l.engSource === 'import'; }).length;
+    note.style.display = (englishCase === 'accent' && imported) ? '' : 'none';
+    if (englishCase === 'accent' && imported) {
+      note.textContent = '';
+      note.appendChild(document.createTextNode(I18n.t('fontmaker.panels.eng_accent_note', {count: imported}) + ' '));
+      const b = document.createElement('button');
+      b.className = 'ctl-btn'; b.type = 'button'; b.style.cssText = 'padding:3px 8px;font-size:0.7rem;margin-top:4px;';
+      b.textContent = I18n.t('fontmaker.panels.eng_accent_rebuild');
+      b.onclick = engRebuildAccents;
+      note.appendChild(b);
+    }
+  }
   const prog = document.getElementById('englishProgress'); if (prog) prog.textContent = total ? _pT('eng_progress', `(${done}/${total})`, {done, total}) : '';
 }
 /* ── Nikkud / Trop sidebar panels (shared, parametrised by category) ── */
@@ -5848,6 +5915,32 @@ async function uploadSourceFont(file) {
   } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.font_read_failed_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
   askFontImportOptions(file, font, bytes);
 }
+/* Pull one glyph's outline + advance out of the source font onto a letter item, in the font's own
+   1000-UPM y-up space. Shared by the Hebrew LETTERS pass and the English/Latin pass in
+   applyFontImport so the two can't drift. Blanks the item and returns false when the font has no ink
+   for that codepoint — the caller's `return` on false is what skips the anchor step too. */
+function importLetterOutline(l, font, scale) {
+  const glyph = font.charToGlyph(String.fromCodePoint(parseInt(l.codepoint,16)));
+  l.source = { kind:'font', dataUrl:null, cropRect:null };
+  const blank = () => { l.contours = null; l.curves = null; l.anchors = null; return false; };
+  if (!glyph || glyph.index === 0) return blank();
+  const o = pathToOutline(glyph.getPath(0, 0, 1000));
+  if (!o.contours.length) return blank();
+  l.contours = o.contours; l.curves = o.curves; l.handEdited = false;   // font's own Beziers preserved; a fresh import resets any prior hand-edits
+  let adv = Math.round((glyph.advanceWidth || 0) * scale);
+  if (!adv) { const em=effMetrics(); let mx=0, mn=1e9; o.contours.forEach(c=>c.points.forEach(p=>{mx=Math.max(mx,p[0]);mn=Math.min(mn,p[0]);})); adv = Math.round(mx + em.defaultRSB + Math.max(0, em.defaultLSB - mn)); }
+  l.advance = adv;
+  return true;
+}
+/* How much of A-Z/a-z the source font actually covers. A Hebrew face carrying a stray Latin glyph or
+   two must not flip the English tab on by itself, so auto-enable applies a floor rather than >0.
+   (Both shipped starting fonts are 52/52.) */
+const ENG_IMPORT_MIN = 20;
+function fontLatinCoverage(font) {
+  let n = 0;
+  ENGLISH_LETTERS.forEach(E => { const g = font.charToGlyph(String.fromCodePoint(parseInt(E.cp,16))); if (g && g.index !== 0) n++; });
+  return n;
+}
 /* Pull one mark glyph's outline from an imported font into project.font[kind].custom — like an uploaded mark. */
 function importMarkGlyph(kind, cp, font) {
   const glyph = font.charToGlyph(String.fromCodePoint(parseInt(cp,16)));
@@ -5884,15 +5977,29 @@ function askFontImportOptions(file, font, bytes) {
         const bEl = document.getElementById('impBoldAfter');   // defaults OFF — gv()'s missing→true default is wrong here
         const opts = { outlines: gv('impOutlines'), marks: gv('impMarks'), anchors: gv('impAnchors'), boldAfter: !!(bEl && bEl.checked) };
         if (!opts.outlines && !opts.marks && !opts.anchors) { status(I18n.t('fontmaker.status.nothing_selected')); return; }
+        const run = () => applyFontImport(file, font, bytes, opts);
+        // English letters the user made themselves get their own question — they are a separate alphabet
+        // and "replace my Hebrew outlines" never asked about them. Only when this font could fill them.
+        const engRisk = (opts.outlines && fontLatinCoverage(font) >= ENG_IMPORT_MIN)
+                      ? project.letters.filter(l => l.eng && engUserMade(l)).length : 0;
+        const askEng = next => {
+          if (!engRisk) return next();
+          askModal(I18n.t('fontmaker.modals.replace_english_title'),
+            I18n.t(engRisk===1?'fontmaker.modals.replace_english_body.one':'fontmaker.modals.replace_english_body.other', {count: '<b>' + engRisk + '</b>'}),
+            [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' },
+             { label: I18n.t('fontmaker.modals.keep_my_english'), onClick: () => { opts.engMode = 'blanks'; next(); } },
+             { label: I18n.t('fontmaker.modals.replace_english'), onClick: () => { opts.engMode = 'replace'; next(); } }]);
+        };
         // Confirm before overwriting letters the user has already drawn (only when replacing outlines).
-        const existing = opts.outlines ? project.letters.filter(x => x.contours && x.contours.length).length : 0;
+        // .eng items are excluded here — askEng owns them, and counting them twice asks twice.
+        const existing = opts.outlines ? project.letters.filter(x => x.contours && x.contours.length && !x.eng).length : 0;
         if (existing > 0) {
           askModal(I18n.t('fontmaker.modals.replace_letters_title'),
             I18n.t(existing===1?'fontmaker.modals.replace_letters_body.one':'fontmaker.modals.replace_letters_body.other', {count: '<b>' + existing + '</b>'}),
             [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' },
-             { label: I18n.t('fontmaker.modals.replace_import'), onClick: () => applyFontImport(file, font, bytes, opts) }]);
+             { label: I18n.t('fontmaker.modals.replace_import'), onClick: () => askEng(run) }]);
         } else {
-          applyFontImport(file, font, bytes, opts);
+          askEng(run);
         }
     } }
   ]);
@@ -5924,27 +6031,51 @@ async function applyFontImport(file, font, bytes, opts) {
     let n = 0, nPunct = 0, anchorHits = 0;
     LETTERS.forEach(L => {
       const l = project.letters.find(x => x.codepoint === L.cp);
-      const glyph = font.charToGlyph(String.fromCodePoint(parseInt(L.cp,16)));
-      const hasGlyph = glyph && glyph.index !== 0;
       const imp = (opts.anchors && imported) ? imported[L.cp] : null;
       if (opts.outlines || imp) delete l.markAnchors;   // a fresh outline/anchor import invalidates this letter's fidelity pins (mirrors importMarkGlyph dropping attachAnchor) — but only if it actually got one
       if (opts.outlines) {
-        l.source = { kind:'font', dataUrl:null, cropRect:null };
-        if (!hasGlyph) { l.contours = null; l.curves = null; l.anchors = null; return; }
-        const o = pathToOutline(glyph.getPath(0, 0, 1000));
-        if (!o.contours.length) { l.contours = null; l.curves = null; l.anchors = null; return; }
-        l.contours = o.contours; l.curves = o.curves; l.handEdited = false;   // font's own Béziers preserved; a fresh import resets any prior hand-edits
-        const contours = o.contours;
-        let adv = Math.round((glyph.advanceWidth || 0) * scale);
-        if (!adv) { const em=effMetrics(); let mx=0, mn=1e9; contours.forEach(c=>c.points.forEach(p=>{mx=Math.max(mx,p[0]);mn=Math.min(mn,p[0]);})); adv = Math.round(mx + em.defaultRSB + Math.max(0, em.defaultLSB - mn)); }
-        l.advance = adv;
+        if (!importLetterOutline(l, font, scale)) return;   // no ink for this codepoint — blanked, and the anchor step below is skipped with it
         if (L.cat === 'punct') nPunct++; else n++;   // digits/punctuation counted separately (the toast said "N/27 letters" while counting them)
       }
       if (imp) { applyImportedAnchors(l, imp); anchorHits++; }
       else if (opts.outlines) { l.anchors = null; seedAnchors(l); }
     });
+    // English (Latin) letters — A-Z/a-z live in project.letters flagged .eng, deliberately kept out of
+    // LETTERS (which is Hebrew-specific), so the pass above never reaches them. Without this the English
+    // tab stays blank after an import and all 52 have to be drawn by hand — while OS/2 already advertises
+    // cp1252, so the exported font promised a Latin alphabet it did not carry.
+    // opts.english: true/false = an explicit choice (the partner wizard's checkbox); undefined = auto,
+    // which turns the tab on only when the font really carries a Latin alphabet (ENG_IMPORT_MIN).
+    let nEng = 0, nEngAcc = 0;
+    const engCoverage = opts.outlines ? fontLatinCoverage(font) : 0;
+    if (opts.outlines && opts.english !== false && (opts.english === true || engCoverage >= ENG_IMPORT_MIN)) {
+      const keepMine = opts.engMode === 'blanks';   // the import modal's "Keep mine — fill only blanks"
+      project.font.addEnglishLetters = true;
+      ensureEnglishSeeded();   // the UI half of setAddEnglishLetters is the renderGrids() below — no redundant mid-import rebuild
+      // A fresh import supersedes the PREVIOUS one's ready-made accented forms: drawn against the old
+      // font's design, they would otherwise sit untouchable over this font's letters (the same rule as
+      // the pc.anchor.auto drop above). Anything the user has since edited is user truth and survives.
+      project.letters = project.letters.filter(l => !(l.eng && l.case === 'accent' && !engUserMade(l)));
+      if (curKind === 'letter' && !project.letters.some(x => x.codepoint === curCp)) _selectItem('letter', LETTER_ORDER[0]);   // the editor can't stay open on a form we just dropped
+      ENGLISH_LETTERS.forEach(E => {
+        const l = project.letters.find(x => x.codepoint === E.cp && x.eng);
+        if (!l || (keepMine && engUserMade(l))) return;
+        if (importLetterOutline(l, font, scale)) { l.engSource = 'import'; nEng++; }
+      });
+      // Ready-made accented forms (á, é, ñ, ç…), taken WHOLE when the font carries them — the source
+      // font's own accent design and placement ride along inside the glyph, so nothing is reconstructed.
+      // A font without them (Taamey Frank CLM has none) simply keeps baking base+accent as before.
+      LATIN_ACCENTED.forEach(A => {
+        let l = project.letters.find(x => x.codepoint === A.cp && x.eng);
+        if (l && keepMine && engUserMade(l)) return;
+        const isNew = !l;
+        if (isNew) { l = blankLetter(A); l.eng = true; l.case = 'accent'; project.letters.push(l); }
+        if (importLetterOutline(l, font, scale)) { l.engSource = 'import'; nEngAcc++; }
+        else if (isNew) project.letters.pop();   // no ink after all — don't leave a blank tile behind
+      });
+    }
     // Mark shapes (nikkud + trop): replace the built-in shapes with the font's own, like uploaded marks.
-    let markHits = 0, tropImported = 0, attachCount = 0;
+    let markHits = 0, tropImported = 0, attachCount = 0, accHits = 0;
     const importedMarks = [];   // [kind, cp] pairs whose shape came from THIS font — the fidelity-check domain
     if (opts.marks) {
       let nik = 0, trp = 0;
@@ -5960,6 +6091,11 @@ async function applyFontImport(file, font, bytes, opts) {
         const ma = markAttach[cp], m = project.font[kind].custom[cp];
         if (m && ma && Number.isFinite(ma.x) && Number.isFinite(ma.y)) { m.attachAnchor = { x: ma.x, y: ma.y }; attachCount++; }
       });
+      // Latin accent shapes — deliberately NOT pushed into importedMarks: that array is the fidelity-check
+      // domain, and shaping an accent against a Hebrew letter base is meaningless. They also take no
+      // GPOS attachAnchor (their classes are shared with rafe, which would skew the majority vote in
+      // hfm_read_anchors) — the bbox convention traced marks already use is right for them.
+      Object.keys(LATIN_ACCENTS).forEach(cp => { if (importMarkGlyph('accent', cp, font)) accHits++; });
     }
     // Style prefill: a source font flagged bold (OS/2 fsSelection bit 5, usWeightClass ≥ 600, or
     // head.macStyle bit 0) makes this project the family's Bold style — the "import my bold TTF,
@@ -5980,19 +6116,24 @@ async function applyFontImport(file, font, bytes, opts) {
     // and the finally below covers every other exit) — closing and re-arming here would flash a frame
     // of the workspace with the unfixed placements.
     if (!opts.autofix) ipClose();
-    if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal(I18n.t('fontmaker.modals.no_hebrew_title'), I18n.t('fontmaker.modals.no_hebrew_body'), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
-    let msg = opts.outlines ? `Loaded ${n}/27 letters${nPunct ? ` and ${nPunct} digit/punctuation glyph${nPunct===1?'':'s'}` : ''} from ${file.name}.` : 'Kept your current outlines.';
+    const pl = (k, c, o) => I18n.t(k + (c === 1 ? '.one' : '.other'), Object.assign({count: c}, o || {}));
+    if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal(I18n.t('fontmaker.modals.no_hebrew_title'), I18n.t('fontmaker.modals.no_hebrew_body') + (nEng ? ' ' + pl('fontmaker.status.import_loaded_english', nEng) : ''), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
+    let msg = opts.outlines ? I18n.t('fontmaker.status.import_loaded_letters', {n: n, file: file.name}) : I18n.t('fontmaker.status.import_kept_outlines');
+    if (opts.outlines && nPunct) msg += ' ' + pl('fontmaker.status.import_loaded_punct', nPunct);
+    if (opts.outlines && nEng)    msg += ' ' + pl('fontmaker.status.import_loaded_english', nEng);
+    if (opts.outlines && nEngAcc) msg += ' ' + pl('fontmaker.status.import_loaded_accented', nEngAcc);
     if (opts.marks) {
-      msg += markHits ? ` Replaced ${markHits} nikkud/trop mark shape${markHits===1?'':'s'}.` : ' (No mark glyphs found to import.)';
-      if (tropImported && !project.font.trop.enabled) msg += ' Turn on Trop to use its cantillation marks.';
+      msg += ' ' + (markHits ? pl('fontmaker.status.import_replaced_marks', markHits) : I18n.t('fontmaker.status.import_no_marks'));
+      if (tropImported && !project.font.trop.enabled) msg += ' ' + I18n.t('fontmaker.status.import_turn_on_trop');
     }
     if (opts.anchors) {
-      msg += hadGpos ? ` Anchors imported for ${anchorHits} letter${anchorHits===1?'':'s'} — fix any that look off, then export.`
-           : (anchorErr ? ' Anchors placed automatically (couldn’t read the font’s).' : ' No anchor data in the font — anchors placed automatically.');
-    } else if (!opts.marks) { msg += ' Set nikkud, then export.'; }
+      msg += ' ' + (hadGpos ? pl('fontmaker.status.import_anchors_ok', anchorHits)
+           : (anchorErr ? I18n.t('fontmaker.status.import_anchors_auto') : I18n.t('fontmaker.status.import_anchors_none')));
+    } else if (!opts.marks) { msg += ' ' + I18n.t('fontmaker.status.import_set_nikkud'); }
     if (opts.outlines && project.font.style === 'bold') msg += ' ' + I18n.t('fontmaker.status.style_bold_detected');
     if (opts.outlines && n && project.font.style !== 'bold' && !opts.boldAfter) msg += ' ' + I18n.t('fontmaker.status.boldgen_hint');
     status(msg);
+    markDirty();   // applyFontImport mutates project directly (a bulk import is a deliberate udDo exception) and used to leave _projectDirty false, so nothing scheduled an autosave
     if (opts.boldAfter && opts.outlines && n) boldGenOpen(true);   // the no-Hebrew early return above bypasses this
     // Mark fidelity report (D4): only for GPOS-bearing imports — measure the editor's predicted mark
     // placements against the original bytes via harfbuzz. Async + fail-soft: never blocks the import.
@@ -13350,6 +13491,12 @@ function fontInkBounds() {
   const nikOn = project.font.nikkud.enabled, tropOn = project.font.trop.enabled;
   const letters = qaLetters().map(meta => project.letters.find(x => x.codepoint === meta.cp)).filter(Boolean);
   letters.forEach(L => { if (L.contours && L.contours.length) upd(polysBounds(L.contours.map(c => c.points))); });
+  // Latin ink counts toward the clip box too, or capitals and the g/p/y descenders get clipped in Word.
+  // qaLetters() stays Hebrew-only on purpose — it is the mark-collision domain feeding the QA grid and
+  // the practice sheets, and Latin rows have no business there.
+  if (project.font.addEnglishLetters) (project.letters || []).forEach(L => {
+    if (L.eng && L.contours && L.contours.length) upd(polysBounds(L.contours.map(c => c.points)));
+  });
   let tropTop = null, tropBot = null;   // worst-case trop extents for the stack contribution
   if (tropOn) TROP_CPS.forEach(cp => {
     const b = polysBounds(markGlyphContours('trop', cp).map(poly => poly.map(([x,y]) => [x*tms, y*tms])));
@@ -13586,8 +13733,9 @@ function buildFontSpec() {
   // English (Latin) base letters (A–Z, a–z) — flagged entries in project.letters; only when enabled, only traced ones
   if (project.font.addEnglishLetters) (project.letters || []).filter(l => l.eng && l.contours && l.contours.length).forEach(l => {
     const nm = gname(l.codepoint);
+    if (glyphs[nm]) return;                                         // an explicit custom glyph already owns this cp — never clobber it (mirrors the precomposed passes)
     const contours = l.contours.map(c => c.points);
-    const exists = !!glyphs[nm];
+    const exists = false;
     glyphs[nm] = { contours, advance: effLetterAdvance(l), lsb: (l.lsb != null ? l.lsb : null) };
     if (l.curves && l.curves.length === contours.length) glyphs[nm].curves = l.curves;
     if (!exists) { glyphOrder.push(nm); baseGlyphNames.push(nm); cmap[parseInt(l.codepoint,16)] = nm; }
@@ -14260,6 +14408,13 @@ def hfm_build(spec_json):
     _os2 = fb.font["OS/2"]
     _os2.ulCodePageRange1 = (1 << 0) | (1 << 5)
     _os2.ulCodePageRange2 = 0
+    # Unicode ranges were never set, so the font advertised cp1252 while declaring no Unicode coverage.
+    # Derive them from the cmap we actually shipped. Fail-soft: an older fontTools without the helper
+    # just leaves the defaults, exactly as before.
+    try:
+        _os2.recalcUnicodeRanges(fb.font)
+    except Exception:
+        pass
     if spec.get("bold"):
         # BOLD (bit 5); clear italic (bit 0) + regular (bit 6); keep USE_TYPO_METRICS (bit 7).
         _os2.fsSelection = (_os2.fsSelection & ~0x41) | 0x20 | 0x80
@@ -16410,6 +16565,15 @@ function migrateProject(data) {
       if (l.rsb === undefined) l.rsb = null;
       l.draw = sanitizeDraw(l.draw);   // same hardening as the standard-27 loop
       sanitizeMarkAnchors(l);
+      if (l.eng) {
+        // Untrusted blob (.hfm / autosave / recents). These codepoints reach gname() and
+        // cmap[parseInt(cp,16)], and the Python builder does int(k) on every cmap key — a junk one
+        // becomes cmap[NaN], serializes as "NaN" and fails the whole export with no explanation.
+        if (typeof l.codepoint !== 'string' || !isEng(l.codepoint)) return;
+        l.case = (l.case === 'lower' || l.case === 'accent') ? l.case : 'upper';
+        if (l.engSource !== 'import') delete l.engSource;           // closed domain; junk here is inert but pointless
+        if (!l.name) l.name = (engMeta(l.codepoint) || {}).name || ('U+' + l.codepoint);
+      }
       data.letters.push(l);
     });
   }
@@ -16478,6 +16642,21 @@ function migrateProject(data) {
     if (!data.font.customMarks.custom) data.font.customMarks.custom = {};
     if (!data.font.customMarks.combinedImage) data.font.customMarks.combinedImage = { dataUrl: null };
     data.font.customMarks.mode = 'custom';
+    if (!data.font.accent || typeof data.font.accent !== 'object') data.font.accent = { mode: 'custom', custom: {} };
+    if (!data.font.accent.custom || typeof data.font.accent.custom !== 'object') data.font.accent.custom = {};
+    data.font.accent.mode = 'custom';
+    // Untrusted blob (.hfm / autosave / recents): the accent key space is closed — six combining marks —
+    // and markAttachOrigin hands attachAnchor straight through to the export, where a non-finite or
+    // fractional coordinate makes feaLib reject the whole FEA file. Keep the domain closed and integral.
+    Object.keys(data.font.accent.custom).forEach(cp => {
+      const m = data.font.accent.custom[cp];
+      if (!LATIN_ACCENTS[cp] || !m || typeof m !== 'object') { delete data.font.accent.custom[cp]; return; }
+      m.cls = LATIN_ACCENTS[cp].cls;
+      m.designMode = (m.designMode === 'editor') ? 'editor' : 'upload';
+      const a = m.attachAnchor;
+      if (a && Number.isFinite(a.x) && Number.isFinite(a.y)) m.attachAnchor = { x: Math.round(a.x), y: Math.round(a.y) };
+      else delete m.attachAnchor;
+    });
     if (!data.font.spacing) data.font.spacing = { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם', kernTarget:40 };
     else { const sp = data.font.spacing; if (sp.letterSpacing==null) sp.letterSpacing=0; if (sp.wordSpacing==null) sp.wordSpacing=260; if (sp.lineSpacing==null) sp.lineSpacing=0; if (!sp.sample) sp.sample='שלום עולם'; if (sp.kernTarget==null) sp.kernTarget=40; }
     if (!Array.isArray(data.font.kerning)) data.font.kerning = [];
@@ -16704,7 +16883,16 @@ function wizardOsPrefill(){
   document.getElementById('wizOsLicensePill').textContent = e.licenseName || e.licenseId || '';
   document.getElementById('wizOsNikkud').checked = e.hasNikkud !== false;
   document.getElementById('wizOsTrop').checked = e.hasTrop !== false;
-  ['wizOsEnglish','wizOsYiddish','wizOsLadino'].forEach(id => { document.getElementById(id).checked = false; });
+  ['wizOsYiddish','wizOsLadino'].forEach(id => { document.getElementById(id).checked = false; });
+  // English is pre-checked when the font has a Latin alphabet to bring across (mirrors hasNikkud/hasTrop
+  // above) — that is what makes an un-tick an explicit choice the import has to respect.
+  const osLatin = _osStartCtx.font ? fontLatinCoverage(_osStartCtx.font) : 0;
+  document.getElementById('wizOsEnglish').checked = osLatin >= ENG_IMPORT_MIN;
+  const osHint = document.getElementById('wizOsLatinHint');
+  // Swap the KEY, not just the text, so a language change re-renders it through applyStaticI18n
+  // (the wizard's chrome uses the same data-i18n attribute-swap).
+  if (osHint) { const k = osLatin >= ENG_IMPORT_MIN ? 'fontmaker.oswizard.latin_hint_yes' : 'fontmaker.oswizard.latin_hint_no';
+                osHint.setAttribute('data-i18n', k); osHint.textContent = I18n.t(k); }
   // Pre-checked, unlike the from-scratch wizard: a partner arrival came straight from someone else's
   // page and has never seen this tool, so the walkthrough is the expected next beat. Still a checkbox —
   // the tour never launches on its own (CLAUDE.md, Shared UX §1).
@@ -16775,7 +16963,7 @@ async function wizardOsFinish(){
   // workspace behind this modal is empty.
   ipArm(0);
   await applyFontImport({ name: (e.file || '').split('/').pop() || e.displayName }, ctx.font, ctx.bytes,
-                        { outlines: true, marks: true, anchors: true, boldAfter: false, autofix: true });
+                        { outlines: true, marks: true, anchors: true, boldAfter: false, autofix: true, english: eng });
   setInputMode('font');   // applyFontImport stamps project.inputMode; this also persists the pref
   setCatTab('letter');
   status(I18n.t('fontmaker.oswizard.created_toast', { font: e.displayName || e.id, name }));
