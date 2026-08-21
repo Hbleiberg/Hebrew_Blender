@@ -10717,9 +10717,16 @@ function coPreviewFor(l, acp) {
 /* The precomposed form a letter+mark pair composes to via ccmp (shin+dot → FB2A/FB2B, vav+holam →
    FB4B, bet+dagesh → FB31, …), or null. Wide/digraph forms carry pc.bases and no pc.mark, so they
    never match. */
+/* Only EXPORTABLE forms route a letter+mark pair — the import seeds every known form (to capture
+   pc.src while the font bytes are in hand), so an ungated find here would let a seeded-but-off
+   Yiddish/Ladino/Specialized form delete the generic Dagesh/Rafe tiles and re-route QA cells for a
+   glyph buildFontSpec skips. Each (base, mark) pair resolves to exactly one target across all the
+   form tables, so gating cannot mask an exportable sibling. find-then-check, no array allocation —
+   this runs inside render loops and the QA cell sweep. */
 function precompFormFor(l, cp) {
   if (!l || !project || !project.precomposed) return null;
-  return project.precomposed.find(pc => pc.base === l.codepoint && pc.mark === cp) || null;
+  const pc = project.precomposed.find(pc => pc.base === l.codepoint && pc.mark === cp) || null;
+  return (pc && precompExportable(pc)) ? pc : null;
 }
 /* A mark whose letter+mark pair composes to a precomposed form routes through that form: the "check
    stacking" ghost and overlap check must draw it at the FORM's anchor + size — matching
@@ -10919,7 +10926,7 @@ function precompSquareTile(pc) {
    precompSquareTile instead, so this row is empty for them. */
 function precompJumpRow(l, cls, gridCps) {
   const forms = (project.precomposed || []).filter(pc =>
-    pc.base === l.codepoint && markClassFor(pc.mark) === cls && !gridCps.includes(pc.mark));
+    pc.base === l.codepoint && markClassFor(pc.mark) === cls && !gridCps.includes(pc.mark) && precompExportable(pc));
   if (!forms.length) return '';
   return `<div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
     <span style="font-size:0.72rem;color:var(--muted);">${I18n.t('fontmaker.panels.combined_forms_label')}</span>${forms.map(precompFormBtn).join('')}</div>`;
@@ -12874,7 +12881,7 @@ function renderDrawStageBelow(SB, l) {
 
 /* ── ANCHORS (Nikkud / Trop) ── */
 function renderEngAccentLeft(l) {   // English letters: accent placement = pick a precomposed accented form, then drag its accent
-  const forms = project.precomposed.filter(pc => pc.base === l.codepoint);
+  const forms = project.precomposed.filter(pc => pc.base === l.codepoint);   // Latin accent targets are never in ALL_EXTRA_TARGETS, so precompExportable is vacuously true here — deliberately ungated
   if (!forms.length) return `<div class="ws-side-title">${esc(gName(l.name))}</div><div class="hint">${I18n.t('fontmaker.panels.eng_no_accents')}</div>`;
   return `<div class="ws-side-title">${I18n.t('fontmaker.panels.eng_place_accents', {name: esc(gName(l.name))})}</div>
     <div class="hint" style="font-size:0.66rem;">${I18n.t('fontmaker.panels.eng_accents_hint')}</div>
@@ -13048,7 +13055,7 @@ function renderAnchorLeft(L, l) {
       </label>${warn}
       <div class="hint" style="font-size:0.6rem;">${esc(I18n.t('fontmaker.panels.check_stacking_hint'))}</div>`;
   }
-  const forms = project.precomposed.filter(pc => pc.base === l.codepoint);
+  const forms = project.precomposed.filter(pc => pc.base === l.codepoint && precompExportable(pc));   // seeded-but-off forms get no editor: the export skips them
   const formsSection = forms.length ? `<hr class="ctl-divider">
     <div class="ws-side-title">${esc(I18n.t('fontmaker.panels.special_precomposed'))}</div>
     <div class="hint" style="font-size:0.66rem;">${esc(I18n.t('fontmaker.panels.special_precomposed_hint'))}</div>
