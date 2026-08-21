@@ -11961,6 +11961,21 @@ function _spacingCellMarks(cell) {   // place a glyph cell's stacked nikkud toge
   const dotCp = (cell.cp === '05E9') ? cps.find(m => m === '05C1' || m === '05C2') : null;
   const pc = dotCp ? getPrecomp(dotCp === '05C1' ? 'FB2A' : 'FB2B') : null;
   const vavHolamPc = (cell.cp === '05D5' && cps.includes('05B9')) ? getPrecomp('FB4B') : null;   // typed וֹ composes to FB4B in the font — bake at the form's dot anchor + Holam (vav) size
+  // An imported ready-made form replaces the WHOLE cell: the typed sequence composes to the src glyph
+  // in the exported font, so the preview shows that glyph (its own ink, its own advance — the caller
+  // re-sums total) and the routed mark is consumed by it. Remaining marks still stack on the form at
+  // the (frozen-equivalent) class/holam anchors. Only the two routings above exist today; a dagesh
+  // form cell (typed בּ) is un-routed and keeps the class-anchor approximation.
+  const _subst = (routedPc, routedCp) => {
+    const s = precompSrcOutline(routedPc); if (!s) return false;
+    cell.contours = s.contours.map(p => ({ points: p }));
+    cell.curves = (s.curves && s.curves.length === s.contours.length) ? s.curves : null;
+    cell.w = Math.max(50, Math.round(s.advance) + fontSpacing().letterSpacing);   // the export's advance formula
+    const i = cps.indexOf(routedCp); if (i >= 0) cps.splice(i, 1);
+    return true;
+  };
+  if (pc && _subst(pc, dotCp)) { /* dot consumed by the src glyph; holam below still routes to the form's holam slot */ }
+  else if (vavHolamPc && cps.includes('05B9') && _subst(vavHolamPc, '05B9')) { /* וֹ shown as the source font drew it */ }
   cps.forEach(mcp => {
     const cls = MARK_CLASS[mcp]; if (!cls) return;
     let ancPt = qaAnchorFor(L, anc, cls, mcp), scale = nikScale(mcp);
@@ -12005,7 +12020,8 @@ function spacingPreviewLayout() {   // shared by the big preview and the waterfa
     const cell = { type:'glyph', cp, w, contours: l && l.contours, curves: l && l.curves, letter: l };
     cells.push(cell); base = cell;
   }
-  cells.forEach(c => { if (c.type === 'glyph' && c._markCps) _spacingCellMarks(c); });   // place stacked marks (precomposed-aware)
+  cells.forEach(c => { if (c.type === 'glyph' && c._markCps) _spacingCellMarks(c); });   // place stacked marks (precomposed-aware, src-aware — a substituted cell also updates its own w)
+  total = cells.reduce((a, c) => a + c.w, 0);   // a src substitution changes the cell's advance, so re-sum after the mark pass
   // pair kerning between adjacent glyphs (reading order) — matches the exported `kern` feature & the kern-panel preview
   const gaps = cells.map((c, i) => { const n = cells[i+1]; return (c.type === 'glyph' && n && n.type === 'glyph') ? kernPreviewValue(c.cp, n.cp) : 0; });
   gaps.forEach(g => total += g);
@@ -13557,9 +13573,27 @@ function qaSynthPrecompRow(pc, baseMeta, label) {
   const base = project.letters.find(x => x.codepoint === pc.base);
   if (!base || !base.contours || !base.contours.length) return null;   // need a traced base letter
   const anc = qaAnchors(base);
+  const _src = precompSrcOutline(pc);
+  // An imported ready-made form ships the SOURCE outline whole (the bake's src early-return precedes
+  // its anchor lookup, so the row must exist even when no dot anchor resolves). The row's ink is the
+  // src glyph with NO separate dot layer — the dot is already part of the ink — and its advance is the
+  // export's own formula, so the collision columns measure exactly the glyph that ships.
+  if (_src) {
+    const rowAnchors = (pc.base === '05E9' && (pc.mark === '05C1' || pc.mark === '05C2'))
+      ? Object.assign({}, anc, { above: precompHolamAnchor(pc) }) : anc;   // same holam-slot freeze as the bake — buildFEA relocates the above anchor for src forms too
+    const L = Object.assign({}, base, {
+      anchors: rowAnchors,
+      markAnchors: rowAnchors === anc ? base.markAnchors : dropKeyPins(base.markAnchors, 'above'),
+      advance: Math.max(50, Math.round(_src.advance) + fontSpacing().letterSpacing),   // mirrors the bake
+      curves: (_src.curves && _src.curves.length === _src.contours.length) ? _src.curves : null,
+      contours: _src.contours.map(p => ({ points: p })),
+      _qaSynth: true
+    });
+    return { cp: pc.base, name: label, labelCh: qaCh(pc.base) + qaCh(pc.mark), desc: baseMeta.desc, L };
+  }
   const dotAnc = (MARK_CLASS[pc.mark] !== 'center' && pc.anchor && pc.anchor.x != null) ? pc.anchor : anc[MARK_CLASS[pc.mark]];   // dagesh follows the base's center anchor (unified)
   if (!dotAnc) return null;                                            // unknown anchor class → skip (shouldn't happen for nikkud)
-  const dotPolys = qaPlace(dotAnc, 'nikkud', pc.mark, precompMarkScale(pc));   // per-form dot size, same translate as export
+  const dotPolys = qaPlace(dotAnc, 'nikkud', pc.mark, precompMarkScale(pc));   // per-form dot size, same translate as export — placed EXACTLY like the exporter bakes a non-imported form (an imported one took the src branch above)
   // Shin/sin (שׁ/שׂ) bake an above-class dot, so the export relocates the above anchor to the form's holam
   // slot (clear of / merged with the dot). Freeze the QA row's above anchor to match, so the holam column
   // sits where the exported font puts it — not piled on the baked dot. (dotAnc was captured above, so the
