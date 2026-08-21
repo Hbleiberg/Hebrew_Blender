@@ -444,6 +444,38 @@
   body.layout-tabbed.cat-settings #catHost .cat-panel.cat-active .panel-body { max-height: none; }
   .stage-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-width: 720px; margin: 0 auto; overflow: auto; max-height: 74vh; }
   #stage { width: 100%; height: auto; display: block; touch-action: none; user-select: none; -webkit-user-select: none; background: var(--white); border-radius: 6px; }
+  /* ════════ Canvas rulers (view-only chrome; see the ruler module in the script below) ════════
+     A ZERO-SIZE sticky layer pins both bars to the scrollport of .stage-wrap — the same trick
+     .node-hint-wrap uses. width:100%/height:0 keeps the layer out of flow, so #stage's containing
+     block (and therefore applyZoom's `width: <pct>%`) is untouched. The bars OVERLAY the canvas
+     edge instead of reserving padding: padding on a scroll container changes clientWidth, which is
+     exactly what that percentage resolves against — so reserving space would rescale the view every
+     time rulers were toggled. Physical top/left are deliberate here: this subtree is pinned
+     direction:ltr because a glyph coordinate system must not mirror in Hebrew (the documented
+     logical-property exception in CLAUDE.md). .rl-v/.rl-preview heights come from JS (the layer
+     has no height of its own to inherit). */
+  .rl-layer { --rl-w: 22px; display: none; position: sticky; top: 0; left: 0; width: 100%; height: 0; z-index: 6; pointer-events: none; }
+  body.rulers-on .rl-layer { display: block; }
+  .rl-bar { position: absolute; background: var(--cream); color: var(--muted); overflow: hidden; pointer-events: auto; touch-action: none; }
+  .rl-h { top: 0; left: var(--rl-w); right: 0; height: var(--rl-w); border-bottom: 1px solid var(--border); cursor: ns-resize; }
+  .rl-v { top: var(--rl-w); left: 0; width: var(--rl-w); border-right: 1px solid var(--border); cursor: ew-resize; }
+  .rl-bar svg { display: block; }
+  .rl-corner { position: absolute; top: 0; left: 0; width: var(--rl-w); height: var(--rl-w); padding: 0; display: flex; align-items: center; justify-content: center;
+               background: var(--cream); color: var(--muted); border: none; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+               font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 8.5px; line-height: 1; letter-spacing: -0.03em; cursor: pointer; pointer-events: auto; }
+  .rl-corner.static { cursor: default; pointer-events: none; }
+  .rl-corner:hover { background: var(--warm-gray); color: var(--text); }
+  .rl-corner:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+  /* cursor position marker — moved with transform on pointermove (cheap), never re-rendered with the ticks */
+  .rl-cursor { position: absolute; background: var(--gold); pointer-events: none; opacity: 0; }
+  .rl-h .rl-cursor { top: 0; bottom: 0; width: 1px; }
+  .rl-v .rl-cursor { left: 0; right: 0; height: 1px; }
+  .rl-cursor.on { opacity: 1; }
+  /* drag-out guide preview — a full-canvas line following the pointer until release */
+  .rl-preview { position: absolute; display: none; background: var(--gold); opacity: 0.9; pointer-events: none; z-index: 7; }
+  /* mark-edit stage: no scroller and no zoom, so the layer pins to the host box instead of a scrollport */
+  .me-stage-host { position: relative; direction: ltr; }
+  .me-stage-host .rl-layer { position: absolute; }
   /* Placement step: below the canvas, size sliders (stacked) on the left, a Confirm/Reset panel on the right. */
   .stage-below { max-width: 720px; margin: 8px auto 0; display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; justify-content: center; }
   .stage-below:empty { display: none; }
@@ -1217,6 +1249,14 @@
             <div class="hint" data-i18n-html="fontmaker.panels.adv_svg_hint">Upload <strong>SVG</strong> files instead of images — vector paths become the glyph outlines <strong>directly, with no tracing</strong>. In this mode the upload zones accept SVG only. <a href="#" onclick="openSvgGuide();return false;">SVG Upload Guide →</a></div>
           </div>
         </div>
+        <div class="adv-group-title adv-group-gap" data-i18n="fontmaker.panels.adv_canvas">Canvas</div>
+        <div class="col-split adv-grid">
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_rulers_label">Rulers</div>
+            <label class="chk" title="Show rulers along the top and left of the editing canvas (Shift + R)" data-i18n-title="fontmaker.panels.adv_rulers_title"><input type="checkbox" id="showRulersChk" checked onchange="setRulersShown(this.checked)" aria-label="Show rulers along the top and left of the editing canvas (Shift + R)" data-i18n-aria-label="fontmaker.panels.adv_rulers_title"> <span data-i18n="fontmaker.panels.adv_show_rulers">Show canvas rulers</span></label>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_rulers_hint">Numbered rulers along the top and left of the editing canvas, measured in <strong>font units</strong> &mdash; zero sits at the letter's origin and on the baseline. A marker on each ruler follows your pointer, and the corner box shows the zoom (click it to snap back to 100%). <strong>Drag off a ruler</strong> onto the canvas to drop a new guide. Shortcut: <strong>Shift + R</strong>.</div>
+          </div>
+        </div>
       </div>
     </div>
     </div>
@@ -1276,6 +1316,12 @@
               <button class="ctl-btn nb-btn" onclick="openShortcuts('nodes')" aria-label="All point-editing shortcuts" data-i18n-aria-label="fontmaker.node_editor.node_hint_shortcuts_aria">?</button>
               <button class="ctl-btn nb-btn" onclick="dismissNodeHint()" aria-label="Dismiss this hint" data-i18n-aria-label="fontmaker.node_editor.node_hint_dismiss_aria">✕</button>
             </div>
+          </div>
+          <div class="rl-layer" data-stage="stage">
+            <div class="rl-bar rl-h" aria-hidden="true"><svg></svg><i class="rl-cursor"></i></div>
+            <div class="rl-bar rl-v" aria-hidden="true"><svg></svg><i class="rl-cursor"></i></div>
+            <i class="rl-preview"></i>
+            <button type="button" class="rl-corner" id="rulerCorner" onclick="setZoom(1)" title="Zoom — click to reset to 100%" data-i18n-title="fontmaker.rulers.corner_title" aria-label="Zoom — click to reset to 100%" data-i18n-aria-label="fontmaker.rulers.corner_title">100%</button>
           </div>
           <svg id="stage" viewBox="0 150 600 410"></svg>
         </div>
@@ -1352,7 +1398,15 @@
         <button class="ctl-btn" id="meUndoBtn" onclick="meDoUndo()" title="Undo (Ctrl/Cmd+Z)" data-i18n-title="fontmaker.modals.markedit_undo_title" disabled data-i18n="fontmaker.modals.markedit_undo">↶ Undo</button>
         <button class="ctl-btn" id="meRedoBtn" onclick="meDoRedo()" title="Redo (Ctrl/Cmd+Shift+Z)" data-i18n-title="fontmaker.modals.markedit_redo_title" disabled data-i18n="fontmaker.modals.markedit_redo">↷ Redo</button>
       </div>
-      <svg id="meStage" dir="ltr" viewBox="0 150 600 410" style="width:100%;height:280px;background:var(--cream);border:1px solid var(--border);border-radius:8px;touch-action:none;"></svg>
+      <div class="me-stage-host">
+        <div class="rl-layer" data-stage="meStage">
+            <div class="rl-bar rl-h" aria-hidden="true"><svg></svg><i class="rl-cursor"></i></div>
+            <div class="rl-bar rl-v" aria-hidden="true"><svg></svg><i class="rl-cursor"></i></div>
+            <i class="rl-preview"></i>
+            <div class="rl-corner static" aria-hidden="true"></div>
+        </div>
+        <svg id="meStage" dir="ltr" viewBox="0 150 600 410" style="width:100%;height:280px;background:var(--cream);border:1px solid var(--border);border-radius:8px;touch-action:none;"></svg>
+      </div>
       <div id="mePieceList" class="me-piece-list"></div>
       <div id="mePieceCtl"></div>
       <div class="hint" data-i18n="fontmaker.modals.markedit_hint">Click a piece (here or in the list) to select; drag it to move, drag the ◻ corner to resize. Bars can be any width/thickness. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>
@@ -3087,7 +3141,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.19';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.20';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3306,6 +3360,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.20</strong> &mdash; <strong>Rulers along the edges of the canvas.</strong> The editing canvas showed you a letter and its guide lines, but nothing about <em>where</em> anything sat &mdash; so matching a stroke width across two letters, or checking that a vowel cleared the baseline by the amount you meant, came down to reading numbers out of the side panels and guessing. Now numbered rulers run along the top and left edges, measured in the same <strong>font units</strong> the rest of the app uses: zero sits at the letter's origin and on the baseline, and the numbers re-space themselves as you zoom so they never crowd together. A marker on each ruler tracks your pointer, so you can always see exactly where you are. <strong>Guides you can pull off a ruler.</strong> Drag from either ruler onto the canvas and you get a guide &mdash; the same guides as before, so it is instantly draggable, renameable, and remembered with your project. <strong>And a corner that resets the zoom.</strong> The little box where the two rulers meet shows the current zoom; click it to snap straight back to 100%. Rulers start switched on &mdash; turn them off under <span class="ui">Advanced Settings &rarr; Canvas</span>, or press <span class="ui">Shift + R</span> at any time. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.19</strong> &mdash; <strong>An import now brings the whole font across, not just the letters.</strong> Importing a font used to stop at the alphabet: everything else a real page needs &mdash; the curly quote marks a word processor inserts for you, the en and em dashes, the ellipsis, the shekel and euro signs, <span class="ui">&copy; &deg; &laquo; &raquo; &times; &divide; &frac12;</span> &mdash; was read and thrown away, so an exported font still fell back to another face mid-sentence. Now it all comes too, along with the standalone Latin letters (<em>&AElig; &Oslash; &szlig; &OElig; &Scaron; &Zcaron;</em>) that have no accent to build from. <strong>Your combined letters come from the original.</strong> When the source font already draws <span lang="he" dir="rtl">&#1513;&#1473;</span>, <span lang="he" dir="rtl">&#1489;&#1468;</span>, <span lang="he" dir="rtl">&#1488;&#1463;</span> or <span lang="he" dir="rtl">&#1493;&#1465;</span> itself, the import takes that glyph <em>whole</em> instead of rebuilding it from your letter plus a dot &mdash; so the dot sits exactly where the original put it (the dotted-shin pair <span lang="he" dir="rtl">&#64300;/&#64301;</span> comes whole too, and the no-break space your word processor types is covered). A <span class="ui">Rebuild from my letters</span> button gives you the composed version back whenever you want it. <strong>The masoretic marks and the rest of the presentation forms.</strong> The masora circle and the upper and lower puncta join the <span class="ui">Trop</span> tab, the inverted nun and the Hebrew plus sign join <span class="ui">Punctuation</span>, and <span class="ui">Specialized letters</span> gains every remaining dagesh and mapiq form. <strong>And the line spacing matches.</strong> An import now carries the original's line metrics across, so text set in your font lines up the way the original did. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.18</strong> &mdash; <strong>Imported fonts now bring their English letters with them.</strong> Until now, importing a font took its Hebrew letters, vowels and cantillation marks &mdash; but quietly left every <span class="ui">A&ndash;Z</span> and <span class="ui">a&ndash;z</span> behind, so an exported font showed nothing when you typed in English. Now the import fills the <span class="ui">English</span> tab from the original's own Latin letters, turning the tab on for you when the font has a full alphabet, and it takes ready-made accented letters (<em>&aacute;, &eacute;, &ntilde;, &ccedil;</em>) whole when the original has them &mdash; falling back to building them from your letters plus accent marks when it doesn't. If you had already drawn English letters yourself, the import asks before touching them. <strong>And English letters finally survive saving.</strong> Reopening a project used to wipe every English letter you had traced, silently, and hand it back blank &mdash; that's fixed. <strong>Punctuation, digits and symbols come across too.</strong> The font's own digits and punctuation already imported &mdash; but they shipped even when you had never traced them, so typing <span class="ui">5</span> in an exported font produced nothing at all instead of falling back to another font. An untraced one is now simply left out, and 21 more symbols (<span class="ui">@ # $ % &amp; * + / &lt; = &gt; [ ] { } | \ ^ _ &#96; ~</span>) join the <span class="ui">Punctuation &amp; More</span> tab &mdash; so an imported font now covers everything on a keyboard. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.17</strong> &mdash; <strong>Partner font links land with their nikkud already in place.</strong> Opening an <span class="ui">Open Siddur</span> <span class="ui">?start=</span> edit link used to finish by handing you a fidelity report and an <span class="ui">Apply per-combo fixes</span> button to press before the vowels sat right. That check is now part of the loading: the progress window says <em>&ldquo;Checking where the nikkud and trop land in the original font&hellip;&rdquo;</em>, every fix it can express is applied for you, and the font is re-measured against the original before the workspace appears. The report only opens if something still missed &mdash; and it is still one click away from the <span class="ui">Fidelity report</span> button in the Nikkud step, with every fix undoable as a single step. Importing a font you picked yourself is unchanged: you still get the report and decide. <strong>And the tour now matches the font you actually have.</strong> A partner font arrives finished — letters drawn, vowels placed — so the from-scratch walkthrough was telling new arrivals to photograph and trace letters they already had. Partner projects now get their own seven-step tour: what came across, how to reshape a letter with <span class="ui">Edit points</span>, where the vowel positions came from, and which parts of <span class="ui">Font Details</span> are locked to the original's license and why. It is offered (pre-ticked) at the end of the partner setup, and the header <span class="ui">Tour</span> button gives the same one any time. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3415,7 +3470,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_18','v5_17','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_19','v5_18','v5_17','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3428,7 +3483,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_19';
+  const CUR_KEY = 'fontmaker.changelog.v5_20';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -3668,6 +3723,7 @@ function shortcutGroups() {
       [`${M} + Z`, t('sc_undo')],
       [`${M} + Shift + Z  or  ${M} + Y`, t('sc_redo')],
       ['Esc', t('sc_esc')],
+      ['Shift + R', t('sc_rulers')],
     ], 'everywhere'],
     [g('nav'), [
       ['[', t('sc_prev_letter')],
@@ -4157,9 +4213,9 @@ function attachGuideDrag(){
     });
   });
 }
-function addGuide(axis){
+function addGuide(axis, pos){
   const g = ensureGuides();
-  const pos = axis === 'v'
+  if (pos == null) pos = axis === 'v'                                            // absent ⇒ the panel's default placement
     ? Math.round((dispAdvance(curLetter()) || effMetrics().letterTop*0.7) / 2)   // mid-width
     : Math.round(effMetrics().letterTop / 2);                                    // mid cap-height
   const n = g.items.filter(x => x.axis === axis).length + 1;   // per-axis numbering for the default name
@@ -7191,6 +7247,7 @@ function applyZoom() {
     wrap.scrollLeft = fx * wrap.scrollWidth - wrap.clientWidth / 2;
     wrap.scrollTop  = fy * wrap.scrollHeight - wrap.clientHeight / 2;
   }
+  renderRulers();   // new scale + scroll offset ⇒ new tick positions and corner %
 }
 /* ════════ Resizable workspace side columns (CSS-var driven; center is a fluid 1fr) ════════ */
 const WS_PREFS_KEY = 'hebrewFontMaker_uiPrefs';
@@ -7432,6 +7489,7 @@ async function renderStage() {
   if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) { const _p = getPrecomp(precompTarget); if (!isWideForm(_p) && (!precompSrcOutline(_p) || precompTakesHolam(_p))) attachPrecompDrag(); } else if (!isEng(l.codepoint)) attachAnchorDrag(l); }
   if (workMode === 'nodes') attachNodeEditor(l);
   renderLegend();
+  renderRulers();   // ticks follow the (possibly wide-form widened) viewBox this render just set
 }
 function renderLegend() {
   const el = document.getElementById('stageLegend');
@@ -9833,6 +9891,188 @@ document.addEventListener('click', e => {   // outside-click closes the delete m
   if (e.target.closest('.npnl-del')) return;
   npnlDelCloseAll();
 });
+/* ═══════════════════ Canvas rulers (shared by #stage and #meStage) ═══════════════════
+   Numbered ruler bars along the top/left of an editing canvas, a live cursor marker, and
+   drag-out guides. View-only chrome: it never touches project data except by calling the
+   existing addGuide() once a drag completes — so it stays outside the undo/dirty contract.
+
+   GEOMETRY: every position is derived from the stage SVG's live getScreenCTM(), never from a
+   private copy of the zoom math. That matrix already folds in applyZoom's CSS width scale, the
+   .stage-wrap scroll offset, preserveAspectRatio letterboxing (the mark stage) and the widened
+   viewBox a wide form sets — so ticks cannot drift out of step with the glyph beneath them:
+       screen_x = m.a * mapX(u) + m.e        screen_y = m.d * fy(v) + m.f
+   mapX is fx on #stage and ex on #meStage (whose x origin is the mark centre, not the pen
+   origin). Bar-local coordinates come from each bar's own getBoundingClientRect(), so no
+   reasoning about the scroll container's padding or scrollbar gutter is needed. */
+const RL_W = 22;                                            // ruler thickness — mirrors --rl-w in the CSS
+const RL_STEPS = [1,2,5,10,20,25,50,100,200,250,500,1000,2000,5000];
+const RL_MIN_LABEL_PX = 52;                                 // smallest on-screen gap between labelled ticks
+let _rulersOn = wsReadPrefs().rulersOff !== true;           // absent ⇒ shown (stored inverted, per nodeGuidesOff)
+let _rlRaf = 0, _rlPt = null, _rlDrawRaf = 0, _rlDrag = null;
+
+function setRulersShown(on) {   // view-state only — never project data, no undo entry, no markDirty
+  _rulersOn = !!on;
+  npnlSaveOpen('rulersOff', !_rulersOn);
+  document.body.classList.toggle('rulers-on', _rulersOn);
+  const c = document.getElementById('showRulersChk'); if (c) c.checked = _rulersOn;
+  if (!_rulersOn) rlEndDrag(true);
+  renderRulers();
+}
+function rlStages() {   // the layers whose stage is actually on screen right now
+  const out = [];
+  document.querySelectorAll('.rl-layer').forEach(layer => {
+    const sv = document.getElementById(layer.dataset.stage);
+    if (!sv || !sv.getScreenCTM() || sv.getBoundingClientRect().width < 1) return;   // hidden (cat-settings, closed modal)
+    const mark = layer.dataset.stage === 'meStage';
+    out.push({ sv, layer, mark, mapX: mark ? ex : fx, invX: mark ? iex : ifx });
+  });
+  return out;
+}
+function rlNiceStep(pxPerUnit) {   // smallest step whose labels clear RL_MIN_LABEL_PX apart
+  for (let i = 0; i < RL_STEPS.length; i++) if (RL_STEPS[i] * pxPerUnit >= RL_MIN_LABEL_PX) return RL_STEPS[i];
+  return RL_STEPS[RL_STEPS.length - 1];
+}
+function rlTickSVG(bar, len, thick, isH, uAt, posAt) {
+  const step = rlNiceStep(Math.abs(posAt(1) - posAt(0)));
+  const div = step >= 5 ? 5 : 1;                       // minor ticks at step/5 where that stays integral
+  const minor = step / div;
+  const a = uAt(0), b = uAt(len);
+  const i0 = Math.floor(Math.min(a, b) / minor), i1 = Math.ceil(Math.max(a, b) / minor);
+  let lines = '', texts = '';
+  for (let i = i0; i <= i1; i++) {
+    const u = i * minor, p = posAt(u);
+    if (p < -1 || p > len + 1) continue;
+    const major = (i % div === 0), t = major ? 7 : 4, q = p.toFixed(1);
+    lines += isH ? `<line x1="${q}" y1="${thick}" x2="${q}" y2="${thick - t}"/>`
+                 : `<line x1="${thick}" y1="${q}" x2="${thick - t}" y2="${q}"/>`;
+    if (major) texts += isH ? `<text x="${(p + 2).toFixed(1)}" y="9">${Math.round(u)}</text>`
+                            : `<text x="2" y="${(p - 2).toFixed(1)}">${Math.round(u)}</text>`;
+  }
+  const sv = bar.querySelector('svg');
+  const w = isH ? Math.round(len) : thick, h = isH ? thick : Math.round(len);
+  sv.setAttribute('width', w); sv.setAttribute('height', h); sv.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  // numeric labels only — nothing here is user- or network-supplied, so no esc() is needed
+  sv.innerHTML = `<g stroke="currentColor" stroke-width="1" shape-rendering="crispEdges">${lines}</g>`
+               + `<g fill="currentColor" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="8">${texts}</g>`;
+}
+function rlDrawOne(st) {
+  const m = st.sv.getScreenCTM(); if (!m || !m.a || !m.d) return;
+  const host = st.layer.parentElement;
+  const hBar = st.layer.querySelector('.rl-h'), vBar = st.layer.querySelector('.rl-v');
+  vBar.style.height = Math.max(0, host.clientHeight - RL_W) + 'px';
+  const hr = hBar.getBoundingClientRect(), vr = vBar.getBoundingClientRect();
+  if (hr.width >= 1) rlTickSVG(hBar, hr.width, RL_W, true,
+      px => st.invX((px + hr.left - m.e) / m.a),  u => m.a * st.mapX(u) + m.e - hr.left);
+  if (vr.height >= 1) rlTickSVG(vBar, vr.height, RL_W, false,
+      px => ify((px + vr.top - m.f) / m.d),       v => m.d * fy(v) + m.f - vr.top);
+}
+function renderRulers() {
+  document.body.classList.toggle('rulers-on', _rulersOn);
+  if (!_rulersOn) return;
+  rlStages().forEach(rlDrawOne);
+  const c = document.getElementById('rulerCorner');
+  if (c) c.textContent = Math.round(stageZoom * 100) + '%';
+}
+function rlSchedule() {   // scroll/resize fire in bursts — coalesce to one redraw per frame
+  if (_rlDrawRaf) return;
+  _rlDrawRaf = requestAnimationFrame(() => { _rlDrawRaf = 0; renderRulers(); });
+}
+/* ── cursor position marker (rAF-throttled, mirroring nodeStatusCoords) ── */
+function rlCursor(sv, pt) {
+  if (!_rulersOn || !sv) return;
+  _rlPt = { id: sv.id, pt };
+  if (_rlRaf) return;
+  _rlRaf = requestAnimationFrame(() => {
+    _rlRaf = 0;
+    const cur = _rlPt; if (!cur) return;
+    const st = rlStages().find(s => s.sv.id === cur.id); if (!st) return;
+    const m = st.sv.getScreenCTM(); if (!m) return;
+    const hBar = st.layer.querySelector('.rl-h'), vBar = st.layer.querySelector('.rl-v');
+    const hc = hBar.querySelector('.rl-cursor'), vc = vBar.querySelector('.rl-cursor');
+    if (!cur.pt) { hc.classList.remove('on'); vc.classList.remove('on'); return; }
+    const hr = hBar.getBoundingClientRect(), vr = vBar.getBoundingClientRect();
+    const x = m.a * st.mapX(cur.pt[0]) + m.e - hr.left, y = m.d * fy(cur.pt[1]) + m.f - vr.top;
+    hc.style.transform = 'translateX(' + x.toFixed(1) + 'px)';
+    vc.style.transform = 'translateY(' + y.toFixed(1) + 'px)';
+    hc.classList.toggle('on', x >= 0 && x <= hr.width);
+    vc.classList.toggle('on', y >= 0 && y <= vr.height);
+  });
+}
+function rlFontPt(sv, e) { const [sx, sy] = clientToSvg(sv, e); return sv.id === 'meStage' ? [iex(sx), ify(sy)] : [ifx(sx), ify(sy)]; }
+/* ── drag-out guides: pull a real project guide off a ruler (letter stage only — project.guides
+      are letter-space lines drawn by userGuidesSVG via fx/fy, and the mark stage never draws them) ── */
+function rlBeginDrag(e, layer, which) {
+  if (!_rulersOn || layer.dataset.stage !== 'stage') return;
+  if (e.button != null && e.button !== 0) return;
+  if (!project || !curLetter()) return;
+  const bar = e.currentTarget;
+  _rlDrag = { axis: which === 'h' ? 'h' : 'v', layer, bar, pos: 0, out: false };
+  try { bar.setPointerCapture(e.pointerId); } catch (err) {}
+  e.preventDefault(); e.stopPropagation();
+}
+function rlDragMove(e) {
+  if (!_rlDrag) return;
+  const sv = stage(); if (!sv) return;
+  const [fxp, fyp] = rlFontPt(sv, e);
+  _rlDrag.pos = _rlDrag.axis === 'h' ? fyp : fxp;
+  const br = _rlDrag.bar.getBoundingClientRect();
+  _rlDrag.out = _rlDrag.axis === 'h' ? e.clientY > br.bottom : e.clientX > br.right;   // pulled onto the canvas
+  const prev = _rlDrag.layer.querySelector('.rl-preview');
+  const host = _rlDrag.layer.parentElement, m = sv.getScreenCTM();
+  const lr = _rlDrag.layer.getBoundingClientRect();
+  if (!_rlDrag.out || !m) { prev.style.display = 'none'; return; }
+  const S = prev.style;
+  S.display = 'block';
+  if (_rlDrag.axis === 'h') {
+    S.left = RL_W + 'px'; S.right = '0'; S.top = '0'; S.width = 'auto'; S.height = '1px';
+    S.transform = 'translateY(' + (m.d * fy(_rlDrag.pos) + m.f - lr.top).toFixed(1) + 'px)';
+  } else {
+    S.top = RL_W + 'px'; S.left = '0'; S.right = 'auto'; S.width = '1px';
+    S.height = Math.max(0, host.clientHeight - RL_W) + 'px';
+    S.transform = 'translateX(' + (m.a * fx(_rlDrag.pos) + m.e - lr.left).toFixed(1) + 'px)';
+  }
+}
+function rlEndDrag(cancel, e) {
+  const d = _rlDrag; _rlDrag = null;
+  if (!d) return;
+  const prev = d.layer.querySelector('.rl-preview'); if (prev) prev.style.display = 'none';
+  if (e) { try { d.bar.releasePointerCapture(e.pointerId); } catch (err) {} }
+  if (cancel || !d.out) return;                      // released back over the ruler ⇒ no guide
+  addGuide(d.axis, Math.round(d.pos));               // a normal project guide: undoable, named, saved
+}
+function initRulers() {
+  document.body.classList.toggle('rulers-on', _rulersOn);
+  const chk = document.getElementById('showRulersChk'); if (chk) chk.checked = _rulersOn;
+  document.querySelectorAll('.rl-layer').forEach(layer => {
+    layer.querySelectorAll('.rl-bar').forEach(bar => {
+      bar.addEventListener('pointerdown', e => rlBeginDrag(e, layer, bar.classList.contains('rl-h') ? 'h' : 'v'));
+      bar.addEventListener('pointermove', rlDragMove);
+      bar.addEventListener('pointerup', e => rlEndDrag(false, e));
+      bar.addEventListener('pointercancel', e => rlEndDrag(true, e));
+    });
+    const sv = document.getElementById(layer.dataset.stage);
+    if (sv) {   // a separate listener, so the stage's own pointermove handlers stay untouched
+      sv.addEventListener('pointermove', e => { if (_rulersOn && !_rlDrag) rlCursor(sv, rlFontPt(sv, e)); });
+      sv.addEventListener('pointerleave', () => rlCursor(sv, null));
+    }
+  });
+  const wrap = stage() && stage().closest('.stage-wrap');
+  if (wrap) {
+    wrap.addEventListener('scroll', rlSchedule, { passive: true });
+    if (window.ResizeObserver) new ResizeObserver(rlSchedule).observe(wrap);
+  }
+  window.addEventListener('resize', rlSchedule);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && _rlDrag) { rlEndDrag(true); e.stopPropagation(); return; }   // abandon a half-pulled guide
+    if (e.key !== 'R' && e.key !== 'r') return;
+    if (!e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+    e.preventDefault();
+    setRulersShown(!_rulersOn);
+    status(I18n.t(_rulersOn ? 'fontmaker.rulers.on' : 'fontmaker.rulers.off'));
+  });
+  renderRulers();
+}
 /* ── Node-mode stage chrome: #nodeBar / #nodeStatus / #nodeHint sync ──
    The bar, status line, and hint are static DOM written once in the page markup;
    renderNodeChrome() (called first from renderControls()) only syncs attributes/
@@ -11443,6 +11683,7 @@ function meRenderStage() {
     meDrag = { mode:'resize', start: clientToSvg(sv, e), p0: JSON.parse(JSON.stringify(meItem.pieces[editorSel])) };
     sv.setPointerCapture(e.pointerId); e.stopPropagation(); e.preventDefault();
   });
+  renderRulers();   // the modal has just been laid out, so the stage CTM is finally measurable
 }
 function meRenderList() {
   const wrap = document.getElementById('mePieceList'); if (!wrap) return;
@@ -17673,6 +17914,7 @@ function init() {
   loadColWidths();        // restore saved side-column widths (clamped to this viewport)
   attachColResizers();    // wire the two splitter drag handles (once; they survive renderControls)
   drawLoadPrefs();        // Draw-mode brush/pressure/smoothing/pen-only mirrors from hebrewFontMaker_uiPrefs
+  initRulers();           // canvas rulers: bar/stage listeners, scroll+resize redraw, Shift+R (hebrewFontMaker_uiPrefs)
   window.addEventListener('beforeunload', e => { if (_projectDirty) { e.preventDefault(); e.returnValue = ''; } });   // warn before losing unsaved work
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushAutosave(); });   // tab hidden → flush the debounced autosave now
   window.addEventListener('pagehide', flushAutosave);   // closing/navigating away → last-chance flush
