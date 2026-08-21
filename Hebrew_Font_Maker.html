@@ -2471,7 +2471,10 @@ function udRestore(s, snap) {
   else if (s.t === 'spacing') Object.assign(project.font.spacing, JSON.parse(JSON.stringify(snap || {})));
   else if (s.t === 'kerning') project.font.kerning = JSON.parse(JSON.stringify(snap || []));
   else if (s.t === 'kernClasses') project.font.kernClasses = JSON.parse(JSON.stringify(snap || []));
-  else if (s.t === 'metrics') Object.assign(project.font.metrics, JSON.parse(JSON.stringify(snap || {})));
+  else if (s.t === 'metrics') {   // REPLACE contents, never merge: resetMetrics legitimately deletes keys (the imported typo box), and an Object.assign redo would resurrect them. Identity preserved — effMetrics reads fresh each call, but cheap insurance.
+    Object.keys(project.font.metrics).forEach(k => delete project.font.metrics[k]);
+    Object.assign(project.font.metrics, JSON.parse(JSON.stringify(snap || {})));
+  }
   else if (s.t === 'guides') project.guides = JSON.parse(JSON.stringify(snap || { show:true, items:[] }));
   else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.holam = (snap && snap.holam) ? JSON.parse(JSON.stringify(snap.holam)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; if (snap && snap.src) pc.src = snap.src; else delete pc.src; } }
   else if (s.t === 'tropTune') { const sn = snap || {};
