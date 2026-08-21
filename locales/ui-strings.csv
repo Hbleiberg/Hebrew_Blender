@@ -1404,6 +1404,7 @@ fontmaker.glyphname.accent_circumflex,Circumflex,צירקומפלקס,latin acce
 fontmaker.glyphname.accent_diaeresis,Diaeresis,דיאירזיס,latin accent name,glyph-name | REVIEW: 'Diaeresis' -> 'דיאירזיס' — confirm
 fontmaker.glyphname.accent_grave,Grave,אקסן גרב,latin accent name,glyph-name | REVIEW: 'Grave' -> 'אקסן גרב' — confirm
 fontmaker.glyphname.accent_tilde,Tilde,טילדה,latin accent name,glyph-name | REVIEW: 'Tilde' -> 'טילדה' — confirm
+fontmaker.glyphname.acute_accent_symbol,Acute Accent Symbol,סימן אקוט,punct glyph name,glyph-name | REVIEW: transliteration
 fontmaker.glyphname.alef,Alef,אלף,letter tile/label name,glyph-name
 fontmaker.glyphname.ampersand,Ampersand,אמפרסנד,punct glyph name,glyph-name
 fontmaker.glyphname.apostrophe,Apostrophe,אפוסטרוף,punct glyph name,glyph-name
@@ -1413,11 +1414,29 @@ fontmaker.glyphname.ayin,Ayin,עין,letter tile/label name,glyph-name
 fontmaker.glyphname.backslash,Backslash,לוכסן הפוך,punct glyph name,glyph-name
 fontmaker.glyphname.backtick,Backtick,גרש הפוך,punct glyph name,glyph-name
 fontmaker.glyphname.bet,Bet,בית,letter tile/label name,glyph-name
+fontmaker.glyphname.broken_bar,Broken Bar,קו אנכי שבור,punct glyph name,glyph-name
+fontmaker.glyphname.bullet,Bullet,תבליט,punct glyph name,glyph-name
+fontmaker.glyphname.bullet_operator,Bullet Operator,אופרטור נקודה,punct glyph name,glyph-name | REVIEW: term
+fontmaker.glyphname.capital_a_with_ring,Capital A with Ring,A רבתי עם טבעת,extra latin letter name,glyph-name
+fontmaker.glyphname.capital_ae,Capital AE,AE רבתי,extra latin letter name,glyph-name
+fontmaker.glyphname.capital_eth,Capital Eth,Eth רבתי,extra latin letter name,glyph-name | REVIEW: letter name kept in Latin
+fontmaker.glyphname.capital_o_with_stroke,Capital O with Stroke,O רבתי עם לוכסן,extra latin letter name,glyph-name
+fontmaker.glyphname.capital_oe,Capital OE,OE רבתי,extra latin letter name,glyph-name
+fontmaker.glyphname.capital_s_with_caron,Capital S with Caron,S רבתי עם האצ׳ק,extra latin letter name,glyph-name | REVIEW: transliteration
+fontmaker.glyphname.capital_thorn,Capital Thorn,Thorn רבתי,extra latin letter name,glyph-name | REVIEW: letter name kept in Latin
+fontmaker.glyphname.capital_z_with_caron,Capital Z with Caron,Z רבתי עם האצ׳ק,extra latin letter name,glyph-name | REVIEW: transliteration
 fontmaker.glyphname.caret,Caret,גגון,punct glyph name,glyph-name
+fontmaker.glyphname.cedilla_symbol,Cedilla Symbol,סימן סדיליה,punct glyph name,glyph-name | REVIEW: transliteration
+fontmaker.glyphname.cent_sign,Cent Sign,סימן סנט,punct glyph name,glyph-name
 fontmaker.glyphname.colon,Colon,נקודתיים,punct glyph name,glyph-name
 fontmaker.glyphname.comma,Comma,פסיק,punct glyph name,glyph-name
+fontmaker.glyphname.copyright_sign,Copyright Sign,סימן זכויות יוצרים,punct glyph name,glyph-name
+fontmaker.glyphname.currency_sign,Currency Sign,סימן מטבע,punct glyph name,glyph-name
 fontmaker.glyphname.dagesh,Dagesh,דגש,nikkud mark name,glyph-name
+fontmaker.glyphname.dagger,Dagger,פגיון,punct glyph name,glyph-name | REVIEW: typographic term
 fontmaker.glyphname.dalet,Dalet,דלת,letter tile/label name,glyph-name
+fontmaker.glyphname.degree_sign,Degree Sign,סימן מעלות,punct glyph name,glyph-name
+fontmaker.glyphname.diaeresis_symbol,Diaeresis Symbol,סימן דיארזיס,punct glyph name,glyph-name | REVIEW: transliteration
 fontmaker.glyphname.digit_0,Digit 0,ספרה 0,punct glyph name,glyph-name
 fontmaker.glyphname.digit_1,Digit 1,ספרה 1,punct glyph name,glyph-name
 fontmaker.glyphname.digit_2,Digit 2,ספרה 2,punct glyph name,glyph-name
@@ -1428,10 +1447,17 @@ fontmaker.glyphname.digit_6,Digit 6,ספרה 6,punct glyph name,glyph-name
 fontmaker.glyphname.digit_7,Digit 7,ספרה 7,punct glyph name,glyph-name
 fontmaker.glyphname.digit_8,Digit 8,ספרה 8,punct glyph name,glyph-name
 fontmaker.glyphname.digit_9,Digit 9,ספרה 9,punct glyph name,glyph-name
+fontmaker.glyphname.division_sign,Division Sign,סימן חילוק,punct glyph name,glyph-name
 fontmaker.glyphname.dollar,Dollar,דולר,punct glyph name,glyph-name
+fontmaker.glyphname.double_dagger,Double Dagger,פגיון כפול,punct glyph name,glyph-name | REVIEW: typographic term
+fontmaker.glyphname.ellipsis,Ellipsis,שלוש נקודות,punct glyph name,glyph-name
 fontmaker.glyphname.em_dash,Em Dash,קו מפריד ארוך,punct glyph name,glyph-name
+fontmaker.glyphname.en_dash,En Dash,קו מפריד קצר,punct glyph name,glyph-name
 fontmaker.glyphname.equals,Equals,שווה,punct glyph name,glyph-name
+fontmaker.glyphname.euro_sign,Euro Sign,סימן אירו,punct glyph name,glyph-name
 fontmaker.glyphname.exclamation,Exclamation,סימן קריאה,punct glyph name,glyph-name
+fontmaker.glyphname.feminine_ordinal,Feminine Ordinal,סיומת סודרת נקבה,punct glyph name,glyph-name | REVIEW: term
+fontmaker.glyphname.florin,Florin,פלורין,extra latin letter name,glyph-name | REVIEW: transliteration
 fontmaker.glyphname.geresh,Geresh,גרש,punct glyph name,glyph-name
 fontmaker.glyphname.gershayim,Gershayim,גרשיים,punct glyph name,glyph-name
 fontmaker.glyphname.gimel,Gimel,גימל,letter tile/label name,glyph-name
@@ -1445,6 +1471,8 @@ fontmaker.glyphname.hiriq,Hiriq,חיריק,nikkud mark name,glyph-name
 fontmaker.glyphname.holam,Holam,חולם,nikkud mark name,glyph-name
 fontmaker.glyphname.holam_haser,Holam Haser,חולם חסר,nikkud mark name,glyph-name
 fontmaker.glyphname.hyphen,Hyphen,מקף,punct glyph name,glyph-name
+fontmaker.glyphname.inverted_exclamation,Inverted Exclamation,סימן קריאה הפוך,punct glyph name,glyph-name
+fontmaker.glyphname.inverted_question,Inverted Question,סימן שאלה הפוך,punct glyph name,glyph-name
 fontmaker.glyphname.kaf,Kaf,כף,letter tile/label name,glyph-name
 fontmaker.glyphname.kaf_sofit,Kaf sofit,כף סופית,letter tile/label name,glyph-name
 fontmaker.glyphname.bet_rafe,Bet + rafe,בית + רפה,composed form name (re-keyed S237 from the dead lad_bet_rafe — gName slugs the sample-stripped name),glyph-name; name part only — precompName re-appends the Hebrew sample
@@ -1454,29 +1482,72 @@ fontmaker.glyphname.gimel_rafe,Gimel + rafe,גימל + רפה,composed form name
 fontmaker.glyphname.holam_vav,Holam (vav),חולם (וו),precomposed vav-holam form — the (vav) is part of the name (Latin parens; no Hebrew sample split),glyph-name
 fontmaker.glyphname.khof,Khof,כף,Yiddish soft-letter name (same skeleton as Kaf — the re-appended sample כֿ disambiguates),glyph-name | REVIEW: 'Khof' -> 'כף' — confirm
 fontmaker.glyphname.komets_alef,Komets Alef,קמץ אלף,Yiddish composed form name,glyph-name; name part only — precompName re-appends the Hebrew sample
+fontmaker.glyphname.left_angle_quote,Left Angle Quote,מרכאה זוויתית שמאלית,punct glyph name,glyph-name
 fontmaker.glyphname.left_brace,Left Brace,סוגר מסולסל שמאלי,punct glyph name,glyph-name
 fontmaker.glyphname.left_bracket,Left Bracket,סוגר מרובע שמאלי,punct glyph name,glyph-name
+fontmaker.glyphname.left_double_quote,Left Double Quote,מרכאות פותחות,punct glyph name,glyph-name
+fontmaker.glyphname.left_guillemet,Left Guillemet,מרכאה משולשת שמאלית,punct glyph name,glyph-name
+fontmaker.glyphname.left_single_quote,Left Single Quote,גרש פותח,punct glyph name,glyph-name
 fontmaker.glyphname.less_than,Less Than,קטן מ,punct glyph name,glyph-name
+fontmaker.glyphname.low_double_quote,Low Double Quote,מרכאות תחתונות,punct glyph name,glyph-name
+fontmaker.glyphname.low_single_quote,Low Single Quote,גרש תחתון,punct glyph name,glyph-name
+fontmaker.glyphname.macron,Macron,מקרון,punct glyph name,glyph-name | REVIEW: transliteration
 fontmaker.glyphname.mark,mark,סימן,precompName's last-resort fallback for an unnamed mark,glyph-name; lowercase in EN by design (matches the code literal)
+fontmaker.glyphname.masculine_ordinal,Masculine Ordinal,סיומת סודרת זכר,punct glyph name,glyph-name | REVIEW: term
+fontmaker.glyphname.micro_sign,Micro Sign,סימן מיקרו,punct glyph name,glyph-name
+fontmaker.glyphname.middle_dot,Middle Dot,נקודה אמצעית,punct glyph name,glyph-name
+fontmaker.glyphname.minus_sign,Minus Sign,סימן מינוס,punct glyph name,glyph-name
+fontmaker.glyphname.multiplication_sign,Multiplication Sign,סימן כפל,punct glyph name,glyph-name
+fontmaker.glyphname.non_breaking_hyphen,Non-Breaking Hyphen,מקף לא מפריד,punct glyph name,glyph-name
+fontmaker.glyphname.not_sign,Not Sign,סימן שלילה,punct glyph name,glyph-name
 fontmaker.glyphname.number_sign,Number Sign,סימן מספר,punct glyph name,glyph-name
+fontmaker.glyphname.one_half,One Half,חצי,punct glyph name,glyph-name
+fontmaker.glyphname.one_quarter,One Quarter,רבע,punct glyph name,glyph-name
 fontmaker.glyphname.pasekh_alef,Pasekh Alef,פתח אלף,Yiddish composed form name,glyph-name; name part only — precompName re-appends the Hebrew sample
 fontmaker.glyphname.pe_rafe,Pe + rafe,פא + רפה,composed form name (re-keyed S237 from lad_pe_rafe),glyph-name; name part only — precompName re-appends the Hebrew sample
+fontmaker.glyphname.per_mille,Per Mille,סימן פרומיל,punct glyph name,glyph-name
 fontmaker.glyphname.percent,Percent,אחוז,punct glyph name,glyph-name
+fontmaker.glyphname.pilcrow_sign,Pilcrow Sign,סימן פסקה,punct glyph name,glyph-name
 fontmaker.glyphname.plus,Plus,פלוס,punct glyph name,glyph-name
+fontmaker.glyphname.plus_minus,Plus Minus,פלוס מינוס,punct glyph name,glyph-name
+fontmaker.glyphname.pound_sign,Pound Sign,סימן לירה שטרלינג,punct glyph name,glyph-name
 fontmaker.glyphname.qof_rafe,Qof + rafe,קוף + רפה,composed form name (re-keyed S237 from lad_qof_rafe),glyph-name; name part only — precompName re-appends the Hebrew sample
+fontmaker.glyphname.registered_sign,Registered Sign,סימן רשום,punct glyph name,glyph-name
+fontmaker.glyphname.right_angle_quote,Right Angle Quote,מרכאה זוויתית ימנית,punct glyph name,glyph-name
 fontmaker.glyphname.right_brace,Right Brace,סוגר מסולסל ימני,punct glyph name,glyph-name
 fontmaker.glyphname.right_bracket,Right Bracket,סוגר מרובע ימני,punct glyph name,glyph-name
+fontmaker.glyphname.right_double_quote,Right Double Quote,מרכאות סוגרות,punct glyph name,glyph-name
+fontmaker.glyphname.right_guillemet,Right Guillemet,מרכאה משולשת ימנית,punct glyph name,glyph-name
+fontmaker.glyphname.right_single_quote,Right Single Quote,גרש סוגר,punct glyph name,glyph-name
+fontmaker.glyphname.section_sign,Section Sign,סימן סעיף,punct glyph name,glyph-name
+fontmaker.glyphname.sharp_s,Sharp S,S חדה (ß),extra latin letter name,glyph-name
+fontmaker.glyphname.shekel_sign,Shekel Sign,סימן שקל,punct glyph name,glyph-name
 fontmaker.glyphname.shuruk,Shuruk,שורוק,precomposed vav-dagesh form name,glyph-name
 fontmaker.glyphname.sin,Sin,סין,composed sin form name (re-keyed S237 from lad_sin; Ladino 'Sin (שׂ)' splits its sample and looks up the bare name),glyph-name; name part only — precompName re-appends the Hebrew sample
 fontmaker.glyphname.slash,Slash,לוכסן,punct glyph name,glyph-name
+fontmaker.glyphname.small_a_with_ring,Small A with Ring,a קטנה עם טבעת,extra latin letter name,glyph-name
+fontmaker.glyphname.small_ae,Small AE,ae קטנה,extra latin letter name,glyph-name
+fontmaker.glyphname.small_eth,Small Eth,eth קטנה,extra latin letter name,glyph-name | REVIEW: letter name kept in Latin
+fontmaker.glyphname.small_o_with_stroke,Small O with Stroke,o קטנה עם לוכסן,extra latin letter name,glyph-name
+fontmaker.glyphname.small_oe,Small OE,oe קטנה,extra latin letter name,glyph-name
+fontmaker.glyphname.small_s_with_caron,Small S with Caron,s קטנה עם האצ׳ק,extra latin letter name,glyph-name | REVIEW: transliteration
+fontmaker.glyphname.small_thorn,Small Thorn,thorn קטנה,extra latin letter name,glyph-name | REVIEW: letter name kept in Latin
+fontmaker.glyphname.small_z_with_caron,Small Z with Caron,z קטנה עם האצ׳ק,extra latin letter name,glyph-name | REVIEW: transliteration
+fontmaker.glyphname.superscript_one,Superscript One,אחת עילית,punct glyph name,glyph-name
+fontmaker.glyphname.superscript_three,Superscript Three,שלוש עילית,punct glyph name,glyph-name
+fontmaker.glyphname.superscript_two,Superscript Two,שתיים עילית,punct glyph name,glyph-name
 fontmaker.glyphname.tet_rafe,Tet + rafe,טית + רפה,composed form name (re-keyed S237 from lad_tet_rafe),glyph-name; name part only — precompName re-appends the Hebrew sample
+fontmaker.glyphname.three_quarters,Three Quarters,שלושה רבעים,punct glyph name,glyph-name
 fontmaker.glyphname.tilde_symbol,Tilde Symbol,טילדה,punct glyph name,glyph-name
+fontmaker.glyphname.trade_mark,Trade Mark,סימן מסחרי,punct glyph name,glyph-name
 fontmaker.glyphname.tsvey_vovn,Tsvey Vovn,צוויי וואוון,Yiddish digraph name,glyph-name; name part only — precompName re-appends the sample | REVIEW: 'Tsvey Vovn' -> 'צוויי וואוון' — confirm
 fontmaker.glyphname.tsvey_yudn,Tsvey Yudn,צוויי יודן,Yiddish digraph name,glyph-name; name part only — precompName re-appends the sample | REVIEW: 'Tsvey Yudn' -> 'צוויי יודן' — confirm
+fontmaker.glyphname.typographic_hyphen,Typographic Hyphen,מקף טיפוגרפי,punct glyph name,glyph-name
 fontmaker.glyphname.underscore,Underscore,קו תחתון,punct glyph name,glyph-name
 fontmaker.glyphname.vertical_bar,Vertical Bar,קו אנכי,punct glyph name,glyph-name
 fontmaker.glyphname.veys,Veys,ווית,Yiddish soft-letter name (YIVO spelling keeps Beys' tail),glyph-name | REVIEW: 'Veys' -> 'ווית' — confirm
 fontmaker.glyphname.vov_yud,Vov Yud,וואוו יוד,Yiddish digraph name,glyph-name; name part only — precompName re-appends the sample | REVIEW: 'Vov Yud' -> 'וואוו יוד' — confirm
+fontmaker.glyphname.yen_sign,Yen Sign,סימן ין,punct glyph name,glyph-name
 fontmaker.glyphname.zayin_rafe,Zayin + rafe,זין + רפה,composed form name (re-keyed S237 from lad_zayin_rafe),glyph-name; name part only — precompName re-appends the Hebrew sample
 fontmaker.glyphname.lamed,Lamed,למד,letter tile/label name,glyph-name
 fontmaker.glyphname.left_paren,Left Paren,סוגר שמאלי,punct glyph name,glyph-name
@@ -2167,10 +2238,10 @@ fontmaker.panels.edit_shape_square,"✎ Edit shape (square, dots & bars)","✎ �
 fontmaker.panels.edit_shape_square_hint,Make the dot a square or redesign it. Applies to this form (via its base letter); choose “all letters” in the editor to change it everywhere.,"הפכו את הנקודה לריבוע או עצבו אותה מחדש. חל על צורה זו (דרך אות הבסיס שלה); בחרו ""כל האותיות"" בעורך כדי לשנות אותה בכל מקום.",panel hint,
 fontmaker.panels.eng_accent_drag_hint,"Pick an accented form on the left, then drag the orange dot to position the accent. Accents are baked into precomposed letters (á, é, ñ, ç…) when you export.","בחרו צורה מוטעמת משמאל, ואז גררו את הנקודה הכתומה כדי למקם את סימן ההטעמה. סימני ההטעמה נצרבים לאותיות מורכבות מראש (á, é, ñ, ç…) בעת הייצוא.",anchor under hint,
 fontmaker.panels.eng_accents_hint,"Pick an accented form, then drag the accent into place on the canvas (or type X / Y). Each is baked into the exported font.","בחרו צורה מוטעמת, ואז גררו את סימן ההטעמה למקומו על הבד (או הקלידו X / Y). כל אחד נצרב לגופן המיוצא.",panel hint,
-fontmaker.panels.eng_accent_note,{count} of these came ready-made from the imported font.,{count} מהצורות האלה הגיעו מוכנות מהגופן שיובא.,note under the Accented grid,
+fontmaker.panels.eng_accent_note,These came ready-made from the imported font. {count} of them can be rebuilt from your own letters plus accent marks.,הצורות האלה הגיעו מוכנות מהגופן שיובא. אפשר לבנות {count} מהן מחדש מהאותיות שלכם ומסימני ההטעמה.,note under the Accented grid,
 fontmaker.panels.eng_accent_rebuild,Rebuild from my letters,בנו מחדש מהאותיות שלי,button under the Accented grid,
 fontmaker.panels.eng_accent_rebuild_confirm,Drop {count} ready-made accented forms and rebuild them from your own letters plus accent marks?,להסיר {count} צורות מוטעמות מוכנות ולבנות אותן מחדש מהאותיות שלכם ומסימני ההטעמה?,confirm before dropping imported accented forms,
-fontmaker.panels.eng_case_accent,Accented,מוטעמות,third case button in the English panel,
+fontmaker.panels.eng_case_accent,Accented & extra,מוטעמות ונוספות,third case button in the English panel,
 fontmaker.panels.eng_case_lower,Lowercase a–z,אותיות קטנות a–z,toggle button,
 fontmaker.panels.eng_case_upper,Uppercase A–Z,אותיות רישיות A–Z,toggle button,
 fontmaker.panels.eng_no_accents,This letter has no accented forms — it's ready once traced.,לאות זו אין צורות מוטעמות — היא מוכנה לאחר המעקב.,accent panel,
@@ -4469,6 +4540,11 @@ fontmaker.draw.untraced_stale_stage,The outline below is older than this drawing
 fontmaker.panels.align_imported_svg,Imported from SVG — set nikkud in step 3.,יובא מ-SVG — הגדירו את הניקוד בשלב 3.,Align stage caption for a vector glyph imported from an SVG,
 fontmaker.panels.align_loaded_font,Loaded from font — set nikkud in step 3.,נטען מגופן — הגדירו את הניקוד בשלב 3.,Align stage caption for a glyph imported from a font file,
 fontmaker.panels.align_no_image,No image yet — upload below.,עדיין אין תמונה — העלו למטה.,Align stage caption when the letter has no reference image yet,
+fontmaker.punct.grp_basic,Basic (ASCII),בסיסי (ASCII),punctuation picker band label,
+fontmaker.punct.grp_currency,Currency & math,מטבע ומתמטיקה,punctuation picker band label,
+fontmaker.punct.grp_hebrew,Hebrew,עברית,punctuation picker band label,
+fontmaker.punct.grp_symbols,Symbols,סמלים,punctuation picker band label,
+fontmaker.punct.grp_typographic,Typographic,טיפוגרפי,punctuation picker band label,
 fontmaker.osfont.license_option,Same as the original font — locked,זהה לגופן המקורי — נעול,"Font Details license select, hidden option for partner starting-font projects",
 fontmaker.osfont.lock_help_title,Why is this locked?,למה זה נעול?,help ? button beside the locked license note,
 fontmaker.osfont.lock_note,License: {license} — inherited from “{font}” and locked for this project.,רישיון: {license} — עובר בירושה מ”{font}“ ונעול בפרויקט זה.,note under the locked license select,"params license, font"

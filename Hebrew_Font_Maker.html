@@ -328,6 +328,12 @@
 
   /* ── Letter grid ── */
   .letter-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; direction: rtl; }
+  /* Band label inside the Punctuation picker. The grid itself is pinned direction:rtl for the Hebrew
+     tiles, so the label re-asserts the UI direction rather than inheriting the tiles'. */
+  .punct-grp { grid-column: 1 / -1; direction: ltr; text-align: start; font-size: 0.58rem; font-weight: 700;
+    letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); margin: 9px 0 0; }
+  .punct-grp:first-child { margin-top: 0; }
+  [dir="rtl"] .punct-grp { direction: rtl; }
   .ltile {
     position: relative; display: flex; flex-direction: column; align-items: center; gap: 1px;
     padding: 6px 2px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer;
@@ -1794,7 +1800,6 @@ const LETTERS = [
   { cp:'0028', name:'Left Paren',  cat:'punct' },
   { cp:'0029', name:'Right Paren', cat:'punct' },
   { cp:'002D', name:'Hyphen',      cat:'punct' },
-  { cp:'2014', name:'Em Dash',     cat:'punct' },
   { cp:'0030', name:'Digit 0',     cat:'punct' },
   { cp:'0031', name:'Digit 1',     cat:'punct' },
   { cp:'0032', name:'Digit 2',     cat:'punct' },
@@ -1829,6 +1834,65 @@ const LETTERS = [
   { cp:'007C', name:'Vertical Bar',   cat:'punct' },
   { cp:'007D', name:'Right Brace',    cat:'punct' },
   { cp:'007E', name:'Tilde Symbol',   cat:'punct' },
+  /* ── Beyond ASCII: the typographic marks, symbols and currency a real page needs. Same contract as
+     the block above — no PUNCT_DEFAULTS shape, so each stays blank until a font import fills it, and
+     letterShips() keeps a blank one out of the export. Both starting fonts carry the smart quotes and
+     the shekel sign; Shlomo carries the whole Latin-1 set. The picker groups these by punctGroup(),
+     which derives the group from the codepoint — so keep this table in group order. ── */
+  { cp:'00A1', name:'Inverted Exclamation', cat:'punct' },
+  { cp:'00A2', name:'Cent Sign',            cat:'punct' },
+  { cp:'00A3', name:'Pound Sign',           cat:'punct' },
+  { cp:'00A4', name:'Currency Sign',        cat:'punct' },
+  { cp:'00A5', name:'Yen Sign',             cat:'punct' },
+  { cp:'00A6', name:'Broken Bar',           cat:'punct' },
+  { cp:'00A7', name:'Section Sign',         cat:'punct' },
+  { cp:'00A8', name:'Diaeresis Symbol',     cat:'punct' },
+  { cp:'00A9', name:'Copyright Sign',       cat:'punct' },
+  { cp:'00AA', name:'Feminine Ordinal',     cat:'punct' },
+  { cp:'00AB', name:'Left Guillemet',       cat:'punct' },
+  { cp:'00AC', name:'Not Sign',             cat:'punct' },
+  { cp:'00AE', name:'Registered Sign',      cat:'punct' },
+  { cp:'00AF', name:'Macron',               cat:'punct' },
+  { cp:'00B0', name:'Degree Sign',          cat:'punct' },
+  { cp:'00B1', name:'Plus Minus',           cat:'punct' },
+  { cp:'00B2', name:'Superscript Two',      cat:'punct' },
+  { cp:'00B3', name:'Superscript Three',    cat:'punct' },
+  { cp:'00B4', name:'Acute Accent Symbol',  cat:'punct' },
+  { cp:'00B5', name:'Micro Sign',           cat:'punct' },
+  { cp:'00B6', name:'Pilcrow Sign',         cat:'punct' },
+  { cp:'00B7', name:'Middle Dot',           cat:'punct' },
+  { cp:'00B8', name:'Cedilla Symbol',       cat:'punct' },
+  { cp:'00B9', name:'Superscript One',      cat:'punct' },
+  { cp:'00BA', name:'Masculine Ordinal',    cat:'punct' },
+  { cp:'00BB', name:'Right Guillemet',      cat:'punct' },
+  { cp:'00BC', name:'One Quarter',          cat:'punct' },
+  { cp:'00BD', name:'One Half',             cat:'punct' },
+  { cp:'00BE', name:'Three Quarters',       cat:'punct' },
+  { cp:'00BF', name:'Inverted Question',    cat:'punct' },
+  { cp:'00D7', name:'Multiplication Sign',  cat:'punct' },
+  { cp:'00F7', name:'Division Sign',        cat:'punct' },
+  { cp:'2010', name:'Typographic Hyphen',   cat:'punct' },
+  { cp:'2011', name:'Non-Breaking Hyphen',  cat:'punct' },
+  { cp:'2013', name:'En Dash',              cat:'punct' },
+  { cp:'2014', name:'Em Dash',              cat:'punct' },
+  { cp:'2018', name:'Left Single Quote',    cat:'punct' },
+  { cp:'2019', name:'Right Single Quote',   cat:'punct' },
+  { cp:'201A', name:'Low Single Quote',     cat:'punct' },
+  { cp:'201C', name:'Left Double Quote',    cat:'punct' },
+  { cp:'201D', name:'Right Double Quote',   cat:'punct' },
+  { cp:'201E', name:'Low Double Quote',     cat:'punct' },
+  { cp:'2020', name:'Dagger',               cat:'punct' },
+  { cp:'2021', name:'Double Dagger',        cat:'punct' },
+  { cp:'2022', name:'Bullet',               cat:'punct' },
+  { cp:'2026', name:'Ellipsis',             cat:'punct' },
+  { cp:'2030', name:'Per Mille',            cat:'punct' },
+  { cp:'2039', name:'Left Angle Quote',     cat:'punct' },
+  { cp:'203A', name:'Right Angle Quote',    cat:'punct' },
+  { cp:'20AA', name:'Shekel Sign',          cat:'punct' },
+  { cp:'20AC', name:'Euro Sign',            cat:'punct' },
+  { cp:'2122', name:'Trade Mark',           cat:'punct' },
+  { cp:'2212', name:'Minus Sign',           cat:'punct' },
+  { cp:'2219', name:'Bullet Operator',      cat:'punct' },
 ];
 const LETTER_ORDER = LETTERS.map(l => l.cp);
 
@@ -2021,13 +2085,40 @@ const LATIN_ACCENTED = LATIN_PRECOMPOSED.map(p => ({
         + ' + ' + (LATIN_ACCENTS[p.mark] ? LATIN_ACCENTS[p.mark].name : p.mark) + ')'
 }));
 const LATIN_ACCENTED_CPS = new Set(LATIN_ACCENTED.map(e => e.cp));
+/* Standalone Latin letters with no base+mark decomposition — Æ Ø ß Œ Š Ž and friends. They share the
+   'accent' case (and so the same import-only, never-seeded contract) because they are the same KIND of
+   item: present exactly when the source font carried the whole glyph. They deliberately stay OUT of
+   LATIN_PRECOMPOSED, so export pass 11 never tries to bake one from parts it does not have. */
+const LATIN_EXTRA = [
+  { cp:'00C5', case:'accent', name:'Capital A with Ring'   },
+  { cp:'00C6', case:'accent', name:'Capital AE'            },
+  { cp:'00D0', case:'accent', name:'Capital Eth'           },
+  { cp:'00D8', case:'accent', name:'Capital O with Stroke' },
+  { cp:'00DE', case:'accent', name:'Capital Thorn'         },
+  { cp:'00DF', case:'accent', name:'Sharp S'               },
+  { cp:'00E5', case:'accent', name:'Small A with Ring'     },
+  { cp:'00E6', case:'accent', name:'Small AE'              },
+  { cp:'00F0', case:'accent', name:'Small Eth'             },
+  { cp:'00F8', case:'accent', name:'Small O with Stroke'   },
+  { cp:'00FE', case:'accent', name:'Small Thorn'           },
+  { cp:'0152', case:'accent', name:'Capital OE'            },
+  { cp:'0153', case:'accent', name:'Small OE'              },
+  { cp:'0160', case:'accent', name:'Capital S with Caron'  },
+  { cp:'0161', case:'accent', name:'Small S with Caron'    },
+  { cp:'017D', case:'accent', name:'Capital Z with Caron'  },
+  { cp:'017E', case:'accent', name:'Small Z with Caron'    },
+  { cp:'0192', case:'accent', name:'Florin'                },
+];
+/* Everything an import may add to the English tab beyond A-Z/a-z. One list, so the import loop, the
+   grid and isEng() cannot drift apart. */
+const LATIN_IMPORT_ONLY = LATIN_ACCENTED.concat(LATIN_EXTRA);
 /* ENGLISH_CPS spans BOTH bands, because its only consumer is isEng() — the predicate that routes an
    item to the English tab and keeps the Hebrew nikkud-anchor UI off it (_selectItem, udNavTo,
    renderStage's attachAnchorDrag). An accented form left out of it would open in the Hebrew grid with
    vowel anchor handles. Latin-coverage counting deliberately uses ENGLISH_LETTERS instead. */
-const ENGLISH_CPS = ENGLISH_LETTERS.map(l => l.cp).concat(LATIN_ACCENTED.map(l => l.cp));
+const ENGLISH_CPS = ENGLISH_LETTERS.map(l => l.cp).concat(LATIN_IMPORT_ONLY.map(l => l.cp));
 function isEng(cp) { return ENGLISH_CPS.indexOf(cp) >= 0; }
-function engMeta(cp) { return ENGLISH_LETTERS.find(l => l.cp === cp) || LATIN_ACCENTED.find(l => l.cp === cp); }
+function engMeta(cp) { return ENGLISH_LETTERS.find(l => l.cp === cp) || LATIN_IMPORT_ONLY.find(l => l.cp === cp); }
 /* Did the user make this English letter themselves? An OR of independent evidence, so no writer has to
    remember to clear a provenance flag. NOTE source.kind is NOT usable here: setInputMode stamps it on
    every letter, .eng included, so one mode switch would make hand-drawn letters look imported. A stale
@@ -3099,12 +3190,12 @@ const HELP_CONTENT = {
         <button class="tbtn ghost" onclick="downloadTemplate('trop','png')">Picture (PNG)</button>
       </div>
       <div id="punctTplRow" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <span style="flex:1 1 150px;font-weight:600;">Punctuation &amp; More <span style="font-weight:400;color:var(--muted);">· digits, punctuation &amp; symbols · 2 pages</span></span>
+        <span style="flex:1 1 150px;font-weight:600;">Punctuation &amp; More <span style="font-weight:400;color:var(--muted);">· digits, punctuation &amp; symbols · 4 pages</span></span>
         <button class="tbtn" onclick="downloadTemplate('punct','pdf')">PDF</button>
         <button class="tbtn ghost" onclick="downloadTemplate('punct','png')">Picture (PNG)</button>
       </div>
     </div>
-    <div class="help-tip">⚠️ The Letters and English Letters sheets are two pages each — each downloads as a 2-page PDF, or as two numbered images (…_1.png, …_2.png) when you choose Picture.</div>
+    <div class="help-tip">⚠️ The Letters and English Letters sheets are two pages each, and Punctuation &amp; More is four — each downloads as a multi-page PDF, or as numbered images (…_1.png, …_2.png) when you choose Picture.</div>
   `,
   licenses: `
     <h4>Choosing a license</h4>
@@ -4271,11 +4362,11 @@ let englishCase = 'upper';
 function setEnglishCase(c) { englishCase = (c === 'lower' || c === 'accent') ? c : 'upper'; renderEnglishGrid(); }
 /* The accented forms that actually exist — only an import creates them, so this is empty for a
    hand-tracer and the Accented button stays hidden rather than opening 52 blank tiles. */
-function engAccentedItems() { return LATIN_ACCENTED.filter(A => project.letters.some(x => x.codepoint === A.cp && x.eng)); }
+function engAccentedItems() { return LATIN_IMPORT_ONLY.filter(A => project.letters.some(x => x.codepoint === A.cp && x.eng)); }
 /* Drop the imported ready-made forms so export pass 11 resumes baking them from the user's own base
    letters + accents — the answer to "I redrew my a, but á still looks like the original font's". */
 function engRebuildAccents() {
-  const gone = project.letters.filter(l => l.eng && l.case === 'accent' && l.engSource === 'import');
+  const gone = project.letters.filter(l => l.eng && l.case === 'accent' && l.engSource === 'import' && LATIN_ACCENTED_CPS.has(l.codepoint));   // LATIN_EXTRA has no base+mark to rebuild FROM, so it is never dropped here
   if (!gone.length) return;
   if (!confirm(I18n.t('fontmaker.panels.eng_accent_rebuild_confirm', {count: gone.length}))) return;
   project.letters = project.letters.filter(l => gone.indexOf(l) < 0);
@@ -4309,7 +4400,7 @@ function renderEnglishGrid() {
   a11yTiles(grid);
   const note = document.getElementById('englishAccentNote');
   if (note) {
-    const imported = acc.filter(A => { const l = project.letters.find(x => x.codepoint === A.cp && x.eng); return l && l.engSource === 'import'; }).length;
+    const imported = acc.filter(A => LATIN_ACCENTED_CPS.has(A.cp) && (l => l && l.engSource === 'import')(project.letters.find(x => x.codepoint === A.cp && x.eng))).length;   // only rebuildable forms count toward the rebuild offer
     note.style.display = (englishCase === 'accent' && imported) ? '' : 'none';
     if (englishCase === 'accent' && imported) {
       note.textContent = '';
@@ -4448,6 +4539,17 @@ function letterShips(L, l) {
   if (L.cat !== 'punct') return true;
   return includePunct() && !!(l && l.contours && l.contours.length);
 }
+/* Which band of the Punctuation picker a glyph belongs to. Derived from the codepoint rather than a
+   table field, so a new row needs no extra bookkeeping — but the LETTERS punct rows must stay in this
+   group order, or the headers interleave. */
+function punctGroup(cp) {
+  const c = parseInt(cp, 16);
+  if (c >= 0x0590 && c <= 0x05FF) return 'hebrew';
+  if (c < 0x0080) return 'basic';
+  if (c < 0x0100) return 'symbols';
+  if (c < 0x2070) return 'typographic';
+  return 'currency';
+}
 function isPunctItem()  { return curKind === 'letter' && curMeta() && curMeta().cat === 'punct'; }
 function renderPunctPanel() {
   const on = includePunct();
@@ -4463,7 +4565,18 @@ function renderPunctPanel() {
 function renderPunctGrid() {
   const grid = document.getElementById('punctGrid'); if (!grid) return;
   grid.innerHTML = '';
+  let grp = null;
   LETTERS.filter(L => L.cat === 'punct').forEach(L => {
+    const g = punctGroup(L.cp);
+    if (g !== grp) {   // 102 undifferentiated tiles is a wall; one full-width label per band makes it scannable
+      grp = g;
+      const h = document.createElement('div');
+      h.className = 'punct-grp';
+      const k = 'fontmaker.punct.grp_' + g;
+      h.setAttribute('data-i18n', k);
+      h.textContent = window.I18n ? I18n.t(k) : g;   // renderGrids can run before the deferred i18n runtime lands
+      grid.appendChild(h);
+    }
     const l = project.letters.find(x => x.codepoint === L.cp);
     const st = letterStatus(l);
     const tile = document.createElement('div');
@@ -6102,7 +6215,7 @@ async function applyFontImport(file, font, bytes, opts) {
       // Ready-made accented forms (á, é, ñ, ç…), taken WHOLE when the font carries them — the source
       // font's own accent design and placement ride along inside the glyph, so nothing is reconstructed.
       // A font without them (Taamey Frank CLM has none) simply keeps baking base+accent as before.
-      LATIN_ACCENTED.forEach(A => {
+      LATIN_IMPORT_ONLY.forEach(A => {
         let l = project.letters.find(x => x.codepoint === A.cp && x.eng);
         if (l && keepMine && engUserMade(l)) return;
         const isNew = !l;
@@ -16035,7 +16148,7 @@ const TEMPLATE_SPECS = {
   trop:    { kind:'trop',    title:'Trop (Cantillation)', titleKey:'fontmaker.canvas.tpl_trop', cols:5, rowsPerPage:7,
              items: TROP_DEFS.map(t => ({ cp:t[0], name:t[1], cls:t[2] })) },         // 31 → 1 page
   punct:   { kind:'punct',   title:'Punctuation & More',  titleKey:'fontmaker.canvas.tpl_punct', cols:5, rowsPerPage:6,
-             items: LETTERS.filter(L => L.cat === 'punct').map(L => ({ cp:L.cp, name:L.name, cls:null })) },   // 48 → 2 pages (30 slots each)
+             items: LETTERS.filter(L => L.cat === 'punct').map(L => ({ cp:L.cp, name:L.name, cls:null })) },   // 101 → 4 pages (30 slots each)
   englishletters: { kind:'latin', title:'English Letters', titleKey:'fontmaker.canvas.tpl_english', cols:6, rowsPerPage:5,
              items: ENGLISH_LETTERS.map(E => ({ cp:E.cp, name:String.fromCodePoint(parseInt(E.cp,16)), cls:null })) },   // 52 → 2 pages
 };
