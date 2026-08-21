@@ -3950,6 +3950,11 @@ function clearLetterPins() {
 function _clampMetric(key, n) {
   if (!Number.isFinite(n)) return null;
   if (key==='advance' || key==='lsb' || key==='rsb') return Math.max(0, Math.round(n));
+  // Imported line box: same bounds as the import gate and the load sanitizer. Out-of-range is REJECTED
+  // (null = no write), not clamped — a 0/positive-descent box exports degenerate line spacing, and the
+  // next load's sanitizer would then silently delete BOTH keys, losing the imported box for good.
+  if (key==='typoAscent')  return (n >= 1 && n <= 3000)   ? Math.round(n) : null;
+  if (key==='typoDescent') return (n >= -1500 && n <= -1) ? Math.round(n) : null;
   return Math.round(n);   // baseline / top / descender / lamed may be negative
 }
 function syncMetricInputs() {
