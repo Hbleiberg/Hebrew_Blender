@@ -16385,10 +16385,13 @@ function migrateProject(data) {
     ex.draw = sanitizeDraw(ex.draw);           // Draw-mode strokes (untrusted — capped + clamped; absent → null)
     return ex;
   });
-  // custom MAIN glyphs (Custom glyphs tab) live in project.letters flagged .custom — preserve any beyond the standard 27
+  // Non-LETTERS items that live in project.letters — custom MAIN glyphs (.custom) and English/Latin
+  // letters (.eng) — are rebuilt away by the LETTERS.map above, so preserve any beyond the standard 27.
+  // .eng used to be dropped here and re-seeded BLANK by ensureEnglishSeeded below, which silently
+  // destroyed traced/imported Latin on every save→reload and autosave restore.
   { const stdCps = new Set(LETTERS.map(L => L.cp));
     Object.values(byCp).forEach(l => {
-      if (!l || !l.custom || stdCps.has(l.codepoint)) return;
+      if (!l || !(l.custom || l.eng) || stdCps.has(l.codepoint)) return;
       l.source = l.source || { kind: data.inputMode || 'single', dataUrl: null, cropRect: null, sheetId: null };
       if (l.source.sheetId === undefined) l.source.sheetId = null;
       if (!l.transform) l.transform = [1,0,0,1,0,0];
