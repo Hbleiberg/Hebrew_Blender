@@ -11837,9 +11837,18 @@ function boldGenApply() {
   const letters = project.letters.filter(l => (l.contours && l.contours.length) || (withMarks && l.markShapes && Object.keys(l.markShapes).length));
   const markCps = withMarks ? boldGenMarkCps() : [];
   markCps.forEach(([kind, cp]) => customMark(kind, cp));       // create BEFORE the undo snapshot, so undo restores them
+  // Imported ready-made forms (pc.src) carry the SOURCE font's weight — left alone, every שׁ בּ וֹ would
+  // ship original-weight inside a font stamped bold. Dropping src makes them fall back to the bake from
+  // the parts this very pass is about to bolden. Any strength counts (thin stales src exactly like
+  // bold), and no exportable gate: a tab turned on later must not ship stale-weight ink. Undo restores
+  // the imported outlines via the precomp scopes (src rides the snapshot by reference — deleted, never
+  // mutated in place, so sharing is safe).
+  const srcForms = (project.precomposed || []).filter(pc => precompSrcOutline(pc));
   const scopes = letters.map(l => ({ t: 'item', kind: 'letter', cp: l.codepoint }))
-    .concat(markCps.map(([kind, cp]) => ({ t: 'item', kind, cp })));
+    .concat(markCps.map(([kind, cp]) => ({ t: 'item', kind, cp })))
+    .concat(srcForms.map(pc => ({ t: 'precomp', target: pc.target })));
   udDo(scopes, 'generate bold', () => {
+    srcForms.forEach(pc => { delete pc.src; });
     letters.forEach(l => {
       if (l.contours && l.contours.length) boldGenLetter(l, d, keepHeight);
       if (withMarks && l.markShapes) Object.keys(l.markShapes).forEach(cp => {
