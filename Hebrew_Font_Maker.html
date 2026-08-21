@@ -2881,7 +2881,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.16';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.17';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3100,6 +3100,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.17</strong> &mdash; <strong>Partner font links land with their nikkud already in place.</strong> Opening an <span class="ui">Open Siddur</span> <span class="ui">?start=</span> edit link used to finish by handing you a fidelity report and an <span class="ui">Apply per-combo fixes</span> button to press before the vowels sat right. That check is now part of the loading: the progress window says <em>&ldquo;Checking where the nikkud and trop land in the original font&hellip;&rdquo;</em>, every fix it can express is applied for you, and the font is re-measured against the original before the workspace appears. The report only opens if something still missed &mdash; and it is still one click away from the <span class="ui">Fidelity report</span> button in the Nikkud step, with every fix undoable as a single step. Importing a font you picked yourself is unchanged: you still get the report and decide. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.16</strong> &mdash; <strong>The fidelity report's Auto-fix now fixes everything it measures.</strong> After importing a font with anchors, one click corrects every flagged letter+mark combo &mdash; not just the combined forms. Shared anchors move when a whole letter agrees, and the stubborn per-letter positions (the report's &ldquo;own positioning rule&rdquo; marks) get exact per-letter <em>pins</em>, marked with the gold &#9998; in the placement step. The report then <strong>re-measures against the original font</strong> and shows the after numbers, and a <span class="ui">Fidelity report</span> button in the Nikkud step reopens it any time. Pins stay yours: drag a pinned mark to fine-tune it, or <span class="ui">Unpin</span> / <span class="ui">Clear pins</span> to fall back to the shared anchor. <strong>Importing a font now says what it is doing.</strong> The first import of a session has to fetch the font engine, which can take a while on school Wi-Fi &mdash; and an <span class="ui">Open Siddur</span> edit link used to spend that whole wait sitting on an empty workspace, looking broken. A progress window now names each step and closes the moment your letters appear. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.15</strong> &mdash; <strong>Edit a partner's font from a link.</strong> Open Siddur Project <em>starting fonts</em> now open straight into the Font Maker from an <span class="ui">?start=</span> link: a short three-step onboarding imports the font's Hebrew letters, nikkud, trop, and mark positions into a fresh project of your own, with a live preview and full credit to the original. Your version automatically keeps the original's open license &mdash; the <span class="ui">License</span> box locks, reserved font names ask you for a name of your own, and every export's <span class="ui">LICENSE.txt</span> carries the original copyright plus your &ldquo;modified work&rdquo; line. A new <span class="ui">Partner fonts</span> help tab explains the why. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.14</strong> &mdash; <strong>Imported fonts keep their exact nikkud positions.</strong> When you import a TTF/OTF with <span class="ui">Import nikkud anchor positions</span> on, the Font Maker now also reads each mark's own <em>attachment point</em> from the font &mdash; not just the letters' anchors &mdash; so every vowel, dagesh and trop lands exactly where the original font put it, even in fonts that position, say, the sh'va and the holam through separate rules. And it doesn't just assume: right after the import, the original font is shaped with the same engine word processors use, and every letter+mark pair is <strong>measured</strong> against what the editor will produce. A status line reports the numbers, and if any combo is more than a few units off you get a detail list with a one-click <span class="ui">Apply per-combo fixes</span> button for the combined forms (&#1493;&#1465;, &#1513;&#1473;&hellip;). Traced, drawn and built-in marks are completely untouched. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3206,7 +3207,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3219,7 +3220,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_16';
+  const CUR_KEY = 'fontmaker.changelog.v5_17';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -5910,7 +5911,12 @@ async function applyFontImport(file, font, bytes, opts) {
     }
     if (opts.outlines) project.inputMode = 'font';
     syncMetaToForm(); renderGrids(); setWorkMode('anchors');
-    ipClose();   // the glyphs are on screen — that is the modal's whole contract, and it must be gone before the fidelity report can auto-open over it
+    // The glyphs are on screen — that is the modal's whole contract, and it must be gone before the
+    // fidelity report can auto-open over it. On the autofix path the load is not over until the marks
+    // land, so the modal stays up across the check (runImportFidelityCheck closes it before any report,
+    // and the finally below covers every other exit) — closing and re-arming here would flash a frame
+    // of the workspace with the unfixed placements.
+    if (!opts.autofix) ipClose();
     if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal(I18n.t('fontmaker.modals.no_hebrew_title'), I18n.t('fontmaker.modals.no_hebrew_body'), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
     let msg = opts.outlines ? `Loaded ${n}/27 letters${nPunct ? ` and ${nPunct} digit/punctuation glyph${nPunct===1?'':'s'}` : ''} from ${file.name}.` : 'Kept your current outlines.';
     if (opts.marks) {
@@ -5927,7 +5933,16 @@ async function applyFontImport(file, font, bytes, opts) {
     if (opts.boldAfter && opts.outlines && n) boldGenOpen(true);   // the no-Hebrew early return above bypasses this
     // Mark fidelity report (D4): only for GPOS-bearing imports — measure the editor's predicted mark
     // placements against the original bytes via harfbuzz. Async + fail-soft: never blocks the import.
-    if (hadGpos && imported) runImportFidelityCheck({ upm: font.unitsPerEm, fontName: file.name, bytes, importedMarks, markCoverage, notes: anchorNotes, anchorHits, attachCount });
+    if (hadGpos && imported) {
+      const fid = { upm: font.unitsPerEm, fontName: file.name, bytes, importedMarks, markCoverage,
+                    notes: anchorNotes, anchorHits, attachCount, autofix: !!opts.autofix };
+      // opts.autofix (the partner ?start= path): the check IS part of the load, so hold the progress
+      // modal across it — the import is not finished until the marks land, and re-arming with no delay
+      // means the unfixed placements never get a frame on screen. Every other import stays
+      // fire-and-forget: a hand-picked font must not have its import blocked on a CDN wasm fetch.
+      if (opts.autofix) { status(I18n.t('fontmaker.fidelity.status_checking'), true); ipArm(0); await runImportFidelityCheck(fid); }
+      else runImportFidelityCheck(fid);
+    }
   } catch (e) { console.error(e); ipClose(); status(''); askModal(I18n.t('fontmaker.modals.font_import_failed_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); }
   finally { ipClose(); }   // belt-and-braces: a button-less modal must never survive its import, on any path
 }
@@ -15380,7 +15395,7 @@ async function fidelityMeasure(ctx) {
            skipped: { subst: skippedSubst, edge: skippedEdge, user: skippedUser, odd: skippedOdd } };
 }
 async function runImportFidelityCheck(ctx) {
-  // ctx: { upm, fontName, bytes, importedMarks, markCoverage, notes, anchorHits, attachCount }
+  // ctx: { upm, fontName, bytes, importedMarks, markCoverage, notes, anchorHits, attachCount, autofix }
   try {
     if (!ctx.importedMarks.length || !ctx.markCoverage) {
       status(I18n.t('fontmaker.fidelity.status_nocheck', { letters: ctx.anchorHits, marks: ctx.attachCount }));
@@ -15393,8 +15408,18 @@ async function runImportFidelityCheck(ctx) {
     console.table(m.rows.map(r => ({ combo: String.fromCodePoint(parseInt(r.base, 16)) + String.fromCodePoint(parseInt(r.cp, 16)),
       base: r.baseName, mark: markName(r.cp), key: r.key, predX: r.pred.x, predY: r.pred.y, realX: r.real.x, realY: r.real.y, off: r.dev })));
     status(I18n.t('fontmaker.fidelity.status', { letters: ctx.anchorHits, marks: ctx.attachCount, max: m.max, count: m.rows.length }));
-    // Auto-open the details only when there is something to act on — and never over another open modal
-    if ((m.flagged.length || _fidelityLast.notes.length) && !document.querySelector('.overlay.open')) openFidelityDetails();
+    // ctx.autofix: apply every expressible fix NOW rather than parking it behind an Apply button, so a
+    // deep-linked font opens with its marks already where the original font put them. Apply re-measures
+    // and folds the fresh rows into _fidelityLast, so the decision below reads the POST-fix truth.
+    if (ctx.autofix && m.flagged.length && fidelityFixPlan(_fidelityLast).total) await fidelityApplyFixes({ quiet: true });
+    const R = _fidelityLast;
+    // Auto-open the details only when there is something to act on — and never over another open modal.
+    // After an autofix run the class residuals ARE the pins it just wrote (the report suppresses them
+    // once R.rerun), so only combos that still missed can raise the modal.
+    if (R.flagged.length || (!R.rerun && R.notes.length)) {
+      ipClose();   // the autofix path holds the progress modal across the check — it has to be gone, or the guard below would swallow the report
+      if (!document.querySelector('.overlay.open')) openFidelityDetails();
+    }
   } catch (e) {
     console.warn('fidelity check unavailable', e);
     status(I18n.t('fontmaker.fidelity.status_unavailable', { letters: ctx.anchorHits, marks: ctx.attachCount }));
@@ -15536,7 +15561,10 @@ function fidelityFixPlan(R) {
   plan.total = plan.forms.length + plan.anchors.length + plan.pins.length;
   return plan;
 }
-async function fidelityApplyFixes() {
+async function fidelityApplyFixes(opts) {
+  // opts.quiet: the import-time autofix decides for itself whether the post-fix report is worth a modal
+  // (usually it is not). askModal's button handler calls this with no argument, so the manual path is
+  // exactly as before.
   const R = _fidelityLast; if (!R) return;
   const plan = fidelityFixPlan(R);
   // Re-check right before writing: anything the user touched since the measurement is user truth and
@@ -15587,7 +15615,7 @@ async function fidelityApplyFixes() {
   R.appliedTargets = new Set([...(R.appliedTargets || []), ...forms.map(r => r.pc.target)]);   // these re-verify below instead of skipping as user-set
   status(I18n.t('fontmaker.fidelity.fixes_applied_mixed', { forms: forms.length, anchors: anchors.length, pins: pins.length }));
   await fidelityRerun();
-  if (!document.querySelector('.overlay.open')) openFidelityDetails();
+  if (!(opts && opts.quiet) && !document.querySelector('.overlay.open')) openFidelityDetails();
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -16677,12 +16705,23 @@ async function wizardOsFinish(){
   // workspace behind this modal is empty.
   ipArm(0);
   await applyFontImport({ name: (e.file || '').split('/').pop() || e.displayName }, ctx.font, ctx.bytes,
-                        { outlines: true, marks: true, anchors: true, boldAfter: false });
+                        { outlines: true, marks: true, anchors: true, boldAfter: false, autofix: true });
   setInputMode('font');   // applyFontImport stamps project.inputMode; this also persists the pref
   setCatTab('letter');
   status(I18n.t('fontmaker.oswizard.created_toast', { font: e.displayName || e.id, name }));
   markDirty();   // applyFontImport never dirties — this makes the import tomorrow's "Continue" snapshot
-  if (tour) tourStart();
+  if (tour) tourStartWhenClear();
+}
+// The import's fidelity autofix can leave a report open over the finished project (only when some
+// mark still missed). Spotlighting the workspace underneath a modal helps nobody, so wait the modal
+// out — one self-disconnecting observer, no polling, and no wait at all in the usual clean case.
+function tourStartWhenClear(){
+  if (!document.querySelector('.overlay.open')) { tourStart(); return; }
+  const mo = new MutationObserver(() => {
+    if (document.querySelector('.overlay.open')) return;
+    mo.disconnect(); tourStart();
+  });
+  document.querySelectorAll('.overlay').forEach(o => mo.observe(o, { attributes: true, attributeFilter: ['class'] }));
 }
 // Apply the current letter's alignment transform to other letters (one undoable batch).
 function openApplyAlign(){
