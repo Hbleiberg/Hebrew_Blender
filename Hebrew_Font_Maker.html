@@ -2328,7 +2328,11 @@ function udApply(entry, useAfter) {
   const oneItem = entry.slices.filter(sl => sl.scope.t === 'item').length === 1;   // navigate only for single-item entries
   entry.slices.forEach(sl => { udRestore(sl.scope, useAfter ? sl.after : sl.before); if (oneItem) udNavTo(sl.scope); });
 }
-function undo() { udFlushPending(); const e = undoStack.pop(); if (!e) return; udApply(e, false); redoStack.push(e); afterUndo('Undo: ' + e.label); }
+function undo() { udFlushPending(); const e = undoStack.pop(); if (!e) return; udApply(e, false); redoStack.push(e);
+  // The report describes the state the fixes produced; undoing them makes it a lie, and the reopen
+  // button would still offer its green "0 combos still flagged" over a project that deviates again.
+  if (e.label === 'fidelity fixes') _fidelityLast = null;
+  afterUndo('Undo: ' + e.label); }
 function redo() { udFlushPending(); const e = redoStack.pop(); if (!e) return; udApply(e, true); undoStack.push(e); afterUndo('Redo: ' + e.label); }
 function afterUndo(msg) { updateUndoButtons(); if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   /* rebuild node model from restored curves */ _drawSel.clear();   /* undo/redo can restructure the stroke array — indices go stale */ renderGrids(); renderStage(); renderControls(); status(msg); markDirty(); }
 function updateUndoButtons() {   // top-toolbar + node-bar twins (bar buttons exist only after the DOM parses — null-guarded)
@@ -2838,7 +2842,16 @@ document.addEventListener('keydown', e => {
   if (am && am.classList.contains('open')) {
     if (e.key === 'Escape') { e.preventDefault(); _activeModal.close(); return; }
     if (e.key === 'Tab') {
-      const f = _focusables(am); if (!f.length) return;
+      const f = _focusables(am);
+      if (!f.length) {
+        // A modal with nothing focusable is still modal: the import-progress dialog has no controls
+        // by design, and surrendering Tab here would let the keyboard walk the workspace BEHIND a
+        // dialog that exists precisely because that workspace is mid-import. Hold focus on the
+        // dialog itself (it carries tabindex="-1", which _focusables deliberately excludes).
+        e.preventDefault();
+        try { (am.querySelector('[tabindex="-1"]') || am).focus(); } catch (err) {}
+        return;
+      }
       const first = f[0], last = f[f.length - 1];
       if (!am.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
       else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -5822,6 +5835,10 @@ async function applyFontImport(file, font, bytes, opts) {
   status(I18n.t('fontmaker.status.importing_font'), true);
   ipArm();   // cold engine ⇒ the modal appears; a warm one finishes first and it never shows
   _fidelityLast = null;   // this import supersedes any previous report — and a GPOS-less font produces none, which would otherwise leave the old one reachable from the reopen button
+  // …and with it the appliedTargets exemption, so drop the form overrides the autofix wrote for the
+  // PREVIOUS font too: measured against those bytes, they would otherwise survive as untouchable
+  // "user truth" and silently hold this font's combined forms at the old font's positions.
+  if (opts.outlines || opts.anchors) (project.precomposed || []).forEach(pc => { if (pc.anchor && pc.anchor.auto) pc.anchor = null; });
   try {
     let imported = null, hadGpos = false, anchorErr = false, markAttach = null, markCoverage = null, anchorNotes = [];
     if (opts.anchors) {
@@ -13719,6 +13736,11 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   //    sets and ss01 read them by glyph name and must keep every mark. ──
   const pinnedMarkCps = fidelityPinnedMarkCps();
   const pinnedG = new Set([...pinnedMarkCps].map(gname));
+  // The Sheva Na alternate is the SAME vowel at a heavier weight, substituted by ss01 — so it has to
+  // ride the sheva's pin too. It has no codepoint of its own, so the name-based partition would leave
+  // it in the shared class and the two renderings of one vowel would sit in different places.
+  const shevaNaPinned = shevaNaOn && pinnedMarkCps.has('05B0');
+  if (shevaNaPinned) pinnedG.add(SHEVA_NA_GLYPH);
   const nikShared = { below: byClass.below.filter(n => !pinnedG.has(n)),
                       above: byClass.above.filter(n => !pinnedG.has(n)),
                       center: byClass.center.filter(n => !pinnedG.has(n)) };
@@ -13729,7 +13751,8 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     if (nikShared.above.length)  f += `markClass [${nikShared.above.join(' ')}] <anchor 0 0> @MC_ABOVE;\n`;
     if (nikShared.center.length) f += `markClass [${nikShared.center.join(' ')}] <anchor 0 0> @MC_CENTER;\n`;
     ['below','above','center'].forEach(cls => nikSolo[cls].forEach(cp => {
-      f += `markClass [${gname(cp)}] <anchor 0 0> @MC_${cls.toUpperCase()}_${cp};\n`;
+      const members = gname(cp) + (cp === '05B0' && shevaNaPinned ? ' ' + SHEVA_NA_GLYPH : '');   // ss01's alternate shares the sheva's pin
+      f += `markClass [${members}] <anchor 0 0> @MC_${cls.toUpperCase()}_${cp};\n`;
     }));
     f += '\n';
   }
@@ -14000,8 +14023,11 @@ function buildUfoAnchors() {
     const nm = gname(cp), cls = MARK_CLASS[cp];
     push(nm, '_' + cls + (pinned.has(cp) ? '_' + cp : ''), 0, 0);
     if (tropOn && cls !== 'center' && vowelPairCfg(cls).mode !== 'slide') { const a = markMkmkAnchor(cp);   // slide mode emits no mkmk, so the UFO source carries no stack attach point either
-      if (cls === 'above') push(nm, 'tropAbove', a.above.x, a.above.y);
-      else                 push(nm, 'tropBelow', a.below.x, a.below.y);
+      const mkKey = cls === 'above' ? 'tropAbove' : 'tropBelow', pt = cls === 'above' ? a.above : a.below;
+      push(nm, mkKey, pt.x, pt.y);
+      // A pinned CENTER trop left the shared class, so buildFEA emits it its own mkmk line — mirror that
+      // here or a UFO consumer rebuilding GPOS from the named anchors loses stacking for exactly those.
+      pinned.forEach(tcp => { if (TROP_CLASS[tcp] === cls && tropHalign(tcp) === 'center') push(nm, mkKey + '_' + tcp, pt.x, pt.y); });
     }
   });
   if (tropOn) TROP_CPS.forEach(cp => push(gname(cp), '_' + tropColKey(TROP_CLASS[cp], tropHalign(cp)) + (pinned.has(cp) ? '_' + cp : ''), 0, 0));
@@ -15450,7 +15476,7 @@ function fidelityFixPlan(R) {
   // rejects that outright ("Expected a number") — one bad combo would fail the WHOLE export.
   const implied = r => ({ x: Math.round(r.real.x + r.o.x), y: Math.round(r.real.y + r.o.y - r.dy) });
   const cheb = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
-  const plan = { forms: [], anchors: [], pins: [], unfixable: [], rowFix: new Map() };
+  const plan = { forms: [], anchors: [], pins: [], unfixable: [], rowFix: new Map(), formGuard: new Map() };
   R.flagged.forEach(r => { if (r.fix) { plan.forms.push(r); plan.rowFix.set(r, 'form'); } });
   const groups = new Map();   // base|key → every measured row that reads that class anchor
   R.rows.forEach(r => {
@@ -15485,7 +15511,11 @@ function fidelityFixPlan(R) {
       // A combined form can't be pinned — precompAnchor never reads markAnchors — so decouple it with
       // its own form fix at the position the original font measured. This is also what keeps the move
       // honest for a green form the move would otherwise have broken un-fixed.
-      if (r.fix) { plan.forms.push(r); plan.rowFix.set(r, 'form'); return; }
+      // A rider is only off-target BECAUSE this group's anchor moves, so its decoupling is
+      // CONDITIONAL on that move actually landing: record the guard, or a move skipped at apply time
+      // (the user nudged that anchor after the measurement) would still leave the form permanently
+      // pinned by an override it never needed.
+      if (r.fix) { plan.forms.push(r); plan.rowFix.set(r, 'form'); plan.formGuard.set(r, { cp: cls[0].base, key: cls[0].key, at: cur }); return; }
       if (r.key === 'center') { if (r.dev > FIDELITY_TOL) plan.unfixable.push(r); return; }
       plan.pins.push({ cp: r.base, mark: r.cp, key: r.key, to: implied(r), pinAt: null, clsAt: cur });
       plan.rowFix.set(r, 'pin');
@@ -15502,10 +15532,15 @@ async function fidelityApplyFixes() {
   // included), a moved or removed pin.
   const findL = cp => project.letters.find(x => x.codepoint === cp);
   let skippedChanged = 0;
-  const forms = plan.forms.filter(r => { const pc = getPrecomp(r.pc.target); return pc && !(pc.anchor && pc.anchor.x != null); });
-  skippedChanged += plan.forms.length - forms.length;
   const clsIntact = fx => { const l = findL(fx.cp); const a = l && l.anchors && l.anchors[fx.key];
     return a && fx.at ? (a.x === fx.at.x && a.y === fx.at.y) : !!a; };
+  const forms = plan.forms.filter(r => {
+    const pc = getPrecomp(r.pc.target);
+    if (!pc || (pc.anchor && pc.anchor.x != null)) { skippedChanged++; return false; }
+    const g = plan.formGuard.get(r);          // a rider: only decouple it if its group's move is still going ahead
+    if (g && !clsIntact(g)) { skippedChanged++; return false; }
+    return true;
+  });
   const anchors = plan.anchors.filter(fx => { const ok = clsIntact(fx); if (!ok) skippedChanged++; return ok; });
   const pins = plan.pins.filter(fx => {
     const l = findL(fx.cp); if (!l) { skippedChanged++; return false; }
@@ -15521,7 +15556,11 @@ async function fidelityApplyFixes() {
   const touched = new Set(anchors.map(fx => fx.cp).concat(pins.map(fx => fx.cp)));
   touched.forEach(cp => scopes.push({ t: 'item', kind: 'letter', cp }));
   udDo(scopes, 'fidelity fixes', () => {
-    forms.forEach(r => { const pc = getPrecomp(r.pc.target); if (pc) pc.anchor = { x: r.fix.x, y: r.fix.y }; });
+    // auto:true marks this as the APP's override, not the user's. A hand-edit replaces the object
+    // (every manual writer builds a fresh one), so touching it promotes it to user truth — and a
+    // fresh import discards what is still app-owned instead of carrying one font's measured
+    // positions into the next as untouchable "user truth".
+    forms.forEach(r => { const pc = getPrecomp(r.pc.target); if (pc) pc.anchor = { x: r.fix.x, y: r.fix.y, auto: true }; });
     // Raw writes, deliberately NOT moveClassAnchor/writeActiveAnchor: every value below is an absolute
     // measured against the same shaping run — translating pins with the anchor would corrupt them.
     anchors.forEach(fx => { const l = findL(fx.cp), a = l && l.anchors && l.anchors[fx.key]; if (a) { a.x = fx.to.x; a.y = fx.to.y; } });
@@ -15530,7 +15569,10 @@ async function fidelityApplyFixes() {
     touched.forEach(cp => dropPlacementConfirm(findL(cp)));
     renderGrids(); renderStage(); renderControls();
   });
-  R.appliedTargets = new Set(forms.map(r => r.pc.target));   // these re-verify below instead of skipping as user-set
+  // UNION, not replace: a second Apply (after some fixes were skipped as changed) writes no form rows,
+  // and replacing would drop the first Apply's targets — the re-verify would then skip exactly the
+  // forms the autofix wrote, silently reporting them as untouched user truth.
+  R.appliedTargets = new Set([...(R.appliedTargets || []), ...forms.map(r => r.pc.target)]);   // these re-verify below instead of skipping as user-set
   status(I18n.t('fontmaker.fidelity.fixes_applied_mixed', { forms: forms.length, anchors: anchors.length, pins: pins.length }));
   await fidelityRerun();
   if (!document.querySelector('.overlay.open')) openFidelityDetails();

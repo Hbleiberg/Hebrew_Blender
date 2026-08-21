@@ -1008,6 +1008,22 @@ measured truth exactly (this is what fixes the `classResidual` combos). Rules th
   `boldGenLetter` rescales them with the anchors; `maybeInheritAnchors` skips pinned letters;
   `migrateProject` sanitizes them (`sanitizeMarkAnchors`). Pins ride undo/autosave/`.hfm` for
   free (item deep-clones).
+- **Values are ROUNDED at the source** (`implied()` and `row.fix`). `markAttachOrigin`'s bbox
+  fallback returns midpoints, so a mark with no imported `attachAnchor` yields a fractional origin
+  (12 built-ins already do); a fractional value reaches `buildFEA` verbatim and **feaLib rejects the
+  whole file** ("Expected a number"). Never write an un-rounded coordinate anywhere near an anchor.
+- **A synthetic base must carry pins the way it carries anchors.** `qaSynth*` rows and the `buildFEA`
+  precomp/wide branches build a fake letter with `Object.assign({}, base, …)`, which inherits
+  `markAnchors` by reference — so a synth that RELOCATES a class anchor drops that key's pins
+  (`dropKeyPins`, the שׁ/שׂ holam slot) and one that TRANSFORMS the ink maps them (`mapPinsX`, wide
+  forms). Both helpers are shared by the export and its QA mirror precisely so the two can't drift.
+- **`pc.anchor` carries provenance**: the autofix writes `{x, y, auto: true}`, every manual writer
+  builds a fresh object (so a hand-edit promotes it to user truth), and a fresh outlines/anchors
+  import discards the still-`auto` ones — otherwise one font's measured form positions survive into
+  the next as untouchable "user truth". `appliedTargets` is UNIONed, never replaced.
+- The ss01 Sheva Na alternate has no codepoint, so the name-based pin partition would strand it in
+  the shared class: `buildFEA` adds `SHEVA_NA_GLYPH` to the sheva's subclass whenever `05B0` is
+  pinned, or one vowel would render in two places.
 - Re-verify: `_fidelityLast.ctx` stashes `{bytes, upm, importedMarks, markCoverage}`
   RUNTIME-ONLY (never on `project` — autosave/`.hfm` would serialize the whole font);
   `fidelityRerun()` re-measures from it, and `_fidelityLast.appliedTargets` lets THIS session's
