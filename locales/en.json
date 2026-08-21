@@ -2554,6 +2554,7 @@
   "fontmaker.panels.form_needs": "needs {chars}",
   "fontmaker.panels.form_overrides": "custom glyph overrides",
   "fontmaker.panels.form_ready": "✓ All base letters traced — ready.",
+  "fontmaker.panels.form_src_ctl_hint": "This form came ready-made from the imported font — its dot is part of the glyph, so there is nothing to place or size here.",
   "fontmaker.panels.form_src_note": "{count} of these came ready-made from the imported font.",
   "fontmaker.panels.form_src_rebuild": "Rebuild from my letters",
   "fontmaker.panels.form_src_rebuild_confirm": "Drop {count} ready-made forms and rebuild them from your own letters plus marks?",

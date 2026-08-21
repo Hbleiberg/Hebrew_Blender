@@ -2554,6 +2554,7 @@
   "fontmaker.panels.form_needs": "חסר {chars}",
   "fontmaker.panels.form_overrides": "עקיפות גליף מותאם",
   "fontmaker.panels.form_ready": "✓ כל אותיות הבסיס נעקבו — מוכן.",
+  "fontmaker.panels.form_src_ctl_hint": "הצורה הזו הגיעה מוכנה מהגופן שיובא — הנקודה שלה היא חלק מהגליף, כך שאין כאן מה להציב או לשנות בגודל.",
   "fontmaker.panels.form_src_note": "{count} מהצורות האלה הגיעו מוכנות מהגופן שיובא.",
   "fontmaker.panels.form_src_rebuild": "בנו מחדש מהאותיות שלי",
   "fontmaker.panels.form_src_rebuild_confirm": "להסיר {count} צורות מוכנות ולבנות אותן מחדש מהאותיות שלכם ומהסימנים?",

@@ -7345,7 +7345,8 @@ async function renderStage() {
     } else if (l.contours) h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
     if (l.contours || project.template.showOverlay) {
       // preview the vowel (or, in precomposed-form mode, that form's mark) on the glyph
-      if (pcSrc) { h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">${esc(_pT('form_src_stage', 'This form came ready-made from the imported font — there is no mark to place.'))}</text>`; }
+      if (pcSrc) { h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">${esc(_pT('form_src_stage', 'This form came ready-made from the imported font — there is no mark to place.'))}</text>`;
+        if (precompTakesHolam(pcW)) h += precompHandlesSVG(); }   // the blue holam-slot handle only (precompHandlesSVG skips the dot half for src forms) — the slot still ships
       else if (precompTarget && !wideMode) { h += precompHandlesSVG(); }
       else if (wideMode) { h += wideNikkudPreviewSVG(pcW, wideG); }   // read-only ghost of the derived below-vowel (position comes from the base letter)
       else if (isEng(l.codepoint)) { h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="12">${engSupportsAccents(l.codepoint) ? 'Pick an accented form on the left to place its accent.' : 'No accents for this letter.'}</text>`; }
@@ -7411,7 +7412,9 @@ async function renderStage() {
   attachGuideDrag();   // user guides are draggable in every letter-editing mode (no-op when none)
   if (workMode === 'align' && url) attachTransformDrag(l);   // image drag always available; metric dots (drawn on top) capture their own grabs
   if (showMetric) attachMetricDrag();
-  if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) { const _p = getPrecomp(precompTarget); if (!isWideForm(_p) && !precompSrcOutline(_p)) attachPrecompDrag(); } else if (!isEng(l.codepoint)) attachAnchorDrag(l); }
+  // src forms attach drag only when they take a holam — the .pcanc dot handle is absent from their SVG,
+  // so attachPrecompDrag wires just the blue holam handle there.
+  if (workMode === 'anchors' && (l.contours || project.template.showOverlay)) { if (precompTarget) { const _p = getPrecomp(precompTarget); if (!isWideForm(_p) && (!precompSrcOutline(_p) || precompTakesHolam(_p))) attachPrecompDrag(); } else if (!isEng(l.codepoint)) attachAnchorDrag(l); }
   if (workMode === 'nodes') attachNodeEditor(l);
   renderLegend();
 }
@@ -11057,9 +11060,13 @@ function precompHandlesSVG() {
   const pc = getPrecomp(precompTarget); if (!pc) return '';
   const sc = precompMarkScale(pc);
   const a = precompAnchor(pc), col = '#e0731f';
-  const mark = `<path id="pcMark" d="${markPreviewPath(pc.mark, a.x, a.y, sc)}" fill="${col}"/>`;
+  // An imported form's dot is part of its src ink — no orange dot preview/handle. The blue HOLAM handle
+  // below still renders for שׁ/שׂ: precompHolamAnchor ships regardless of src, and dragging the holam
+  // over the src outline IS the stacking check for an imported shin.
+  const srcOnly = !!precompSrcOutline(pc);
+  const mark = srcOnly ? '' : `<path id="pcMark" d="${markPreviewPath(pc.mark, a.x, a.y, sc)}" fill="${col}"/>`;
   if (markClassFor(pc.mark) === 'center') return mark;   // dagesh follows the letter's center anchor — static preview, not draggable here
-  let out = mark + markSelectRect(pc.mark, a.x, a.y, sc, 'pcanc', col, '');
+  let out = mark + (srcOnly ? '' : markSelectRect(pc.mark, a.x, a.y, sc, 'pcanc', col, ''));
   if (precompTakesHolam(pc)) {   // שׁ/שׂ: preview + drag where a following holam attaches — both dots visible IS the stacking check for this case
     const ha = precompHolamAnchor(pc), hcol = '#2a86d6', hsc = nikScale('05B9');
     out += `<path id="pcHolamMark" d="${markPreviewPath('05B9', ha.x, ha.y, hsc)}" fill="${hcol}" fill-opacity="0.85"/>`;
@@ -11116,9 +11123,22 @@ function renderPrecompControls(l) {
   const pc = getPrecomp(precompTarget);
   if (!pc || precompBaseCp(pc) !== l.codepoint) { precompTarget = null; return ''; }
   if (isWideForm(pc)) return renderWideFormControls(pc);   // wide letterforms / digraphs → Width slider
+  const _src = precompSrcOutline(pc);
+  // The compact src block shared by both branches below: an imported form has no dot of ours to place
+  // or size — the whole glyph came from the source font — so the dot controls are replaced by the note
+  // + a per-form Rebuild (undoable, confirm-guarded; drops src so the bake from the user's parts
+  // resumes). The holam-slot block stays: precompHolamAnchor still SHIPS for שׁ/שׂ regardless of src.
+  const srcBlock = _src ? `<div class="hint" style="font-size:0.68rem;">${esc(I18n.t('fontmaker.panels.form_src_ctl_hint'))}</div>
+    <div class="ctl-row" style="margin-top:6px;justify-content:center;">
+      <button class="ctl-btn" onclick="precompRebuildForms(['${pc.target}'])">${esc(_pT('form_src_rebuild', 'Rebuild from my letters'))}</button>
+    </div>` : '';
   if (markClassFor(pc.mark) === 'center') {   // dagesh: unified with the letter's own Dagesh (Center) — size adjustable here, position follows the letter
     const g = `<span style="font-family:var(--heb-font);direction:rtl;">${esc(precompComposed(pc))}</span>`;
     const dagPct = Math.round(dageshScale() * 100);
+    if (_src) return `<div class="ws-side-title">${I18n.t('fontmaker.panels.place_precomp_title', {glyph: '<span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">'+esc(precompComposed(pc))+'</span>', name: esc(precompName(pc))})}</div>
+    ${srcBlock}
+    <hr class="ctl-divider">
+    <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${I18n.t('fontmaker.panels.back_to_vowels')}</button>`;
     return `<div class="ws-side-title">${I18n.t('fontmaker.panels.place_precomp_title', {glyph: '<span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">'+esc(precompComposed(pc))+'</span>', name: esc(precompName(pc))})}</div>
     <div class="hint" style="font-size:0.68rem;">${I18n.t('fontmaker.panels.dagesh_follows_hint', {glyph: g})}</div>
     <hr class="ctl-divider">
@@ -11144,8 +11164,7 @@ function renderPrecompControls(l) {
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
       ${isScaleOverride ? `<button class="ctl-btn" onclick="resetPrecompMarkScale()">${I18n.t('fontmaker.panels.reset_auto_size')}</button>` : `<span class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.auto_size_hint')}</span>`}
     </div>`;
-  return `<div class="ws-side-title">${I18n.t('fontmaker.panels.place_precomp_title', {glyph: '<span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">'+esc(precompComposed(pc))+'</span>', name: esc(precompName(pc))})}</div>
-    <div class="hint" style="font-size:0.66rem;">${I18n.t('fontmaker.panels.precomp_where_hint')}</div>
+  const dotBlock = _src ? srcBlock : `<div class="hint" style="font-size:0.66rem;">${I18n.t('fontmaker.panels.precomp_where_hint')}</div>
     <hr class="ctl-divider">
     <div class="anc-xy">
       <label>X <input type="number" id="pcX" value="${a.x}" oninput="setPrecompCoord('x',this.value)" onchange="udBurstCommit()"></label>
@@ -11153,7 +11172,9 @@ function renderPrecompControls(l) {
     </div>
     <div class="ctl-row" style="margin-top:8px;justify-content:center;">
       ${isOverride ? `<button class="ctl-btn" onclick="resetPrecompAnchor()">${I18n.t('fontmaker.panels.reset_to_auto')}</button>` : `<span class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.auto_position_hint')}</span>`}
-    </div>${takesHolam ? `
+    </div>`;
+  return `<div class="ws-side-title">${I18n.t('fontmaker.panels.place_precomp_title', {glyph: '<span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">'+esc(precompComposed(pc))+'</span>', name: esc(precompName(pc))})}</div>
+    ${dotBlock}${takesHolam ? `
     <hr class="ctl-divider">
     <div class="ws-side-title">${I18n.t('fontmaker.panels.precomp_holam_title')}</div>
     <div class="hint" style="font-size:0.64rem;">${I18n.t('fontmaker.panels.precomp_holam_hint')}</div>
@@ -11163,12 +11184,12 @@ function renderPrecompControls(l) {
     </div>
     <div class="ctl-row" style="margin-top:8px;justify-content:center;">
       ${isHolamOverride ? `<button class="ctl-btn" onclick="resetPrecompHolam()">${I18n.t('fontmaker.panels.reset_to_auto')}</button>` : `<span class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.auto_position_hint')}</span>`}
-    </div>` : ''}
+    </div>` : ''}${_src ? '' : `
     <hr class="ctl-divider">
     ${sizeBlock}
     <hr class="ctl-divider">
     <button class="ctl-btn" style="width:100%;" onclick="openMarkEdit('nikkud','${pc.mark}')">${I18n.t('fontmaker.panels.edit_shape_btn')}</button>
-    <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.edit_shape_square_hint')}</div>
+    <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.edit_shape_square_hint')}</div>`}
     <hr class="ctl-divider">
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${I18n.t('fontmaker.panels.back_to_vowels')}</button>`;
 }
