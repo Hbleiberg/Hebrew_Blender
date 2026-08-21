@@ -2365,6 +2365,10 @@ function effMetrics() {
     letterTop:     m.letterTop     != null ? m.letterTop     : LETTER_TOP,
     lamedAscender: m.lamedAscender != null ? m.lamedAscender : LAMED_TOP,
     descender:     m.descender     != null ? m.descender     : DESCENDER,
+    // The source font's own sTypo line box, scaled to 1000 UPM by an import. null = never imported,
+    // and nominalBox() derives the box from the Hebrew design measurements exactly as before.
+    typoAscent:    m.typoAscent    != null ? m.typoAscent    : null,
+    typoDescent:   m.typoDescent   != null ? m.typoDescent   : null,
     defaultLSB:    m.defaultLSB    != null ? m.defaultLSB     : DEF_LSB,
     defaultRSB:    m.defaultRSB    != null ? m.defaultRSB     : DEF_RSB
   };
@@ -3935,6 +3939,7 @@ function syncMetricInputs() {
   const l = curLetter(), m = effMetrics();
   const set = (id,v) => { const e = document.getElementById(id); if (e && document.activeElement !== e) e.value = v; };
   set('mTop', m.letterTop); set('mBase', m.baseline); set('mDesc', m.descender); set('mLamed', m.lamedAscender);
+  if (m.typoAscent != null) { set('mTypoAsc', m.typoAscent); set('mTypoDesc', m.typoDescent); }
   set('mAdv', letterAdvance(l)); set('mLsb', letterLSB(l)); set('mRsb', letterRSB(l));
 }
 function setMetric(key, v, noRender) {            // font-wide metrics
@@ -3942,6 +3947,17 @@ function setMetric(key, v, noRender) {            // font-wide metrics
   const n = _clampMetric(key, +v); if (n==null) return;
   project.font.metrics[key] = n; syncMetricInputs();
   if (!noRender) renderStage();                   // NOT renderControls → keeps the number input focused while typing
+}
+/* The exported font's nominal (sTypo) line box — what decides line spacing in Word and friends.
+   An import brings the source font's own box across; otherwise it is derived from the Hebrew design
+   measurements, byte-for-byte as before. Used at the three places that MEAN "the exported line box":
+   buildFontSpec, its QA mirror, and the spacing preview's line height. The remaining viewBox users
+   (boldGen row, kern pair, QA cell) frame a single glyph row for drawing and stay on the design
+   measurements, which is what the editor's own guides show. */
+function nominalBox() {
+  const m = effMetrics();
+  return { asc:  m.typoAscent  != null ? m.typoAscent  : m.lamedAscender + 100,
+           desc: m.typoDescent != null ? m.typoDescent : m.descender - 50 };
 }
 function setLetterMetric(key, v, noRender) {       // per-letter — Width sets the advance (keeping the right-margin LINE put; the gap absorbs it); Right margin sets its gap; Left margin SLIDES the whole letter (so it also shifts the right gap when that's auto)
   if (!noRender) udBurstBegin([itemScope()], 'metric — ' + key);
@@ -4010,6 +4026,11 @@ function metricsPanel() {
     `<label class="fld metric-fld">${label}
        <input type="number" id="${id}" class="metric-num" value="${val}" step="10" oninput="${fn}('${key}', this.value)" onchange="udBurstCommit()"></label>`;
   const lamed = (meta && meta.asc) ? f('mLamed',I18n.t('fontmaker.panels.metric_lamed_asc'), m.lamedAscender, 'setMetric','lamedAscender') : '';
+  // Shown only once an import has set them — with no imported box there is nothing to edit, because the
+  // box is derived from the three measurements above.
+  const typo = m.typoAscent != null
+    ? f('mTypoAsc',  I18n.t('fontmaker.panels.metric_typo_asc'),  m.typoAscent,  'setMetric','typoAscent')
+    + f('mTypoDesc', I18n.t('fontmaker.panels.metric_typo_desc'), m.typoDescent, 'setMetric','typoDescent') : '';
   return `
   <div class="metric-group" id="metricGroup">
     <div class="ws-side-title">${I18n.t('fontmaker.panels.metrics_title')}</div>
@@ -4020,6 +4041,7 @@ function metricsPanel() {
         ${f('mBase',I18n.t('fontmaker.panels.metric_baseline'),  m.baseline,  'setMetric','baseline')}
         ${f('mDesc',I18n.t('fontmaker.panels.metric_descender'), m.descender, 'setMetric','descender')}
         ${lamed}
+        ${typo}
       </div>
       <div class="metric-col">
         <div class="metric-sub">${I18n.t('fontmaker.panels.metric_this_letter', {name: l ? esc(gName(l.name)) : ''})}</div>
@@ -6124,6 +6146,7 @@ function importLetterOutline(l, font, scale) {
    two must not flip the English tab on by itself, so auto-enable applies a floor rather than >0.
    (Both shipped starting fonts are 52/52.) */
 const ENG_IMPORT_MIN = 20;
+const KERN_IMPORT_CAP = 2000;   // a pathological kern table must not turn the Kerning panel into a 20,000-row list
 function fontLatinCoverage(font) {
   let n = 0;
   ENGLISH_LETTERS.forEach(E => { const g = font.charToGlyph(String.fromCodePoint(parseInt(E.cp,16))); if (g && g.index !== 0) n++; });
@@ -6296,6 +6319,65 @@ async function applyFontImport(file, font, bytes, opts) {
                            || (head && ((head.macStyle || 0) & 0x01))) ? 'bold' : 'regular';
       } catch (e) {}
     }
+    // Vertical metrics: the source font's own nominal line box + line gap, scaled to 1000 UPM, so the
+    // exported font sets text at the original's line spacing. sTypo is the box Word and friends use
+    // (this app already sets USE_TYPO_METRICS); hhea is the fallback for a font that leaves sTypo at 0.
+    // Only on an outlines import, and only when the numbers are sane — a broken table must not be able
+    // to collapse or explode a project's line box.
+    let metricsImported = false;
+    if (opts.outlines) {
+      try {
+        const os2 = (font.tables && font.tables.os2) || {}, hh = (font.tables && font.tables.hhea) || {};
+        const pick = (a, b) => (Number.isFinite(a) && a !== 0) ? a : b;
+        const asc  = Math.round(pick(os2.sTypoAscender,  hh.ascender)  * scale);
+        const desc = Math.round(pick(os2.sTypoDescender, hh.descender) * scale);
+        const gap  = Math.round((pick(os2.sTypoLineGap,  hh.lineGap) || 0) * scale);
+        if (Number.isFinite(asc) && Number.isFinite(desc) && asc > 0 && desc < 0 && asc <= 3000 && desc >= -1500) {
+          project.font.metrics.typoAscent = asc;
+          project.font.metrics.typoDescent = desc;
+          if (Number.isFinite(gap)) fontSpacing().lineSpacing = Math.max(0, Math.min(500, gap));   // the same field the Line spacing slider writes, same clamp
+          metricsImported = true;
+        }
+      } catch (e) {}
+    }
+    // Kerning, LTR pairs only. opentype.js exposes the legacy `kern` table as { "gidL,gidR": value }.
+    // For a left-to-right run that order is unambiguous and buildFEA emits it unchanged. For Hebrew it is
+    // NOT: the table is visual-order by spec while most tools write logical order, and — measured with
+    // HarfBuzz against a purpose-built probe font — a legacy `kern` table is applied for LTR runs and
+    // IGNORED ENTIRELY for RTL ones (Latin AV kerned -55, the same font's alef+bet kerned 0 in RTL and
+    // -80 only when the run was forced LTR). So a Hebrew font's `kern` pairs have never reached a reader
+    // through any modern shaper: they are dormant data of unknown order, and reviving them would be
+    // inventing spacing rather than preserving it. They are skipped, and the count is logged rather than
+    // dropped silently. GPOS pair positioning — which is unambiguous — is not read: opentype.js does not
+    // expose it, so it would need the Pyodide path.
+    let nKern = 0;
+    if (opts.outlines) {
+      try {
+        const kp = font.kerningPairs || {}, keys = Object.keys(kp);
+        if (keys.length) {
+          const known = new Set(project.letters.map(l => l.codepoint)), cpOf = {};
+          for (let i = 0; i < font.glyphs.length; i++) {
+            const g = font.glyphs.get(i);
+            if (!g || !Number.isFinite(g.unicode)) continue;
+            const h = g.unicode.toString(16).toUpperCase().padStart(4, '0');
+            if (known.has(h)) cpOf[i] = h;
+          }
+          const isHebCp = h => { const c = parseInt(h, 16); return (c >= 0x0590 && c <= 0x05FF) || (c >= 0xFB1D && c <= 0xFB4F); };
+          const out = []; let skippedRtl = 0;
+          for (const k of keys) {
+            const p = k.split(','), a = cpOf[+p[0]], b = cpOf[+p[1]];
+            if (!a || !b) continue;
+            if (isHebCp(a) || isHebCp(b)) { skippedRtl++; continue; }   // see above — order is unknowable, so it is not guessed
+            const v = Math.round(kp[k] * scale);
+            if (!v) continue;                                  // a 0 pair is a no-op the exporter drops anyway
+            if (out.length >= KERN_IMPORT_CAP) { console.warn('kern import: stopped at ' + KERN_IMPORT_CAP + ' pairs'); break; }
+            out.push({ left: [a], right: [b], value: v });
+          }
+          if (skippedRtl) console.warn('kern import: skipped ' + skippedRtl + ' pair(s) touching Hebrew — the legacy kern table is not applied to RTL runs, so their order is unknowable');
+          if (out.length) { project.font.kerning = out; nKern = out.length; }   // a font with no usable pairs must not wipe the pairs the user tuned
+        }
+      } catch (e) {}
+    }
     if (opts.outlines) project.inputMode = 'font';
     syncMetaToForm(); renderGrids(); setWorkMode('anchors');
     // The glyphs are on screen — that is the modal's whole contract, and it must be gone before the
@@ -6318,6 +6400,8 @@ async function applyFontImport(file, font, bytes, opts) {
       msg += ' ' + (hadGpos ? pl('fontmaker.status.import_anchors_ok', anchorHits)
            : (anchorErr ? I18n.t('fontmaker.status.import_anchors_auto') : I18n.t('fontmaker.status.import_anchors_none')));
     } else if (!opts.marks) { msg += ' ' + I18n.t('fontmaker.status.import_set_nikkud'); }
+    if (metricsImported) msg += ' ' + I18n.t('fontmaker.status.import_metrics');
+    if (nKern) msg += ' ' + pl('fontmaker.status.import_kerning', nKern);
     if (opts.outlines && project.font.style === 'bold') msg += ' ' + I18n.t('fontmaker.status.style_bold_detected');
     if (opts.outlines && n && project.font.style !== 'bold' && !opts.boldAfter) msg += ' ' + I18n.t('fontmaker.status.boldgen_hint');
     status(msg);
@@ -11779,8 +11863,12 @@ function _spacingCellMarks(cell) {   // place a glyph cell's stacked nikkud toge
   });
 }
 function spacingPreviewLayout() {   // shared by the big preview and the waterfall — cells, kern gaps, line metrics
-  const em = effMetrics(), sp = fontSpacing(), ascender = em.lamedAscender + 100, descender = em.descender - 50;
-  const lineH = (ascender - descender) + sp.lineSpacing;
+  const em = effMetrics(), sp = fontSpacing(), nb = nominalBox();
+  // Frame by the LARGER of the editor's design box and the exported line box, so an imported font with a
+  // tighter sTypo box cannot clip the preview; the line HEIGHT is the exported box, which is the number
+  // this panel exists to judge.
+  const ascender = Math.max(em.lamedAscender + 100, nb.asc), descender = Math.min(em.descender - 50, nb.desc);
+  const lineH = (nb.asc - nb.desc) + sp.lineSpacing;
   // Combining marks (U+0591–U+05C7, plus custom marks) have zero advance, so they don't affect the RTL
   // spacing layout — but instead of stripping them we attach each nikkud to its preceding base letter and
   // stack it via the export-faithful QA kernel (qaAnchors + qaPlace), so the preview shows vowel points
@@ -13729,7 +13817,7 @@ function qaBuild() {
     });
     counts[t] = n; total += n;
   });
-  const aAsc = effMetrics().lamedAscender + 100, aDesc = effMetrics().descender - 50, ink = fontInkBounds();
+  const _nb = nominalBox(), aAsc = _nb.asc, aDesc = _nb.desc, ink = fontInkBounds();
   const winAscent = Math.max(aAsc, Math.ceil(ink.top)), winDescent = Math.max(-aDesc, Math.ceil(-ink.bottom));
   qaResult = { counts, total, outline: glyphOutlineScan(), winAscent, winDescent, tall: (ink.top > aAsc || ink.bottom < aDesc) };
 }
@@ -14122,7 +14210,7 @@ function buildFontSpec() {
   // The clip box (OS/2 usWin + hhea) expands to cover the TRUE tallest/lowest ink so tall stacked
   // marks don't clip in Word. Floor on the live nominal box (not literals) → when the ink already
   // fits, winAscent/winDescent equal the nominal values → byte-identical metrics for normal fonts.
-  const aAsc = effMetrics().lamedAscender + 100, aDesc = effMetrics().descender - 50, ink = fontInkBounds();
+  const _nb = nominalBox(), aAsc = _nb.asc, aDesc = _nb.desc, ink = fontInkBounds();
   const winAscent = Math.max(aAsc, Math.ceil(ink.top)), winDescent = Math.max(-aDesc, Math.ceil(-ink.bottom));
   return {
     unitsPerEm: UPM, glyphOrder, glyphs, cmap, fea, names, bold: bold,
@@ -16797,6 +16885,10 @@ function migrateProject(data) {
     data.font.style = data.font.style === 'bold' ? 'bold' : 'regular';   // Regular/Bold family style — backfills old saves and coerces junk
     if (!data.font.metrics) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB };
     else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB'].forEach((k,i)=>{ if(data.font.metrics[k]==null) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB][i]; });
+    { const _m = data.font.metrics, _ok = (v, lo, hi) => Number.isFinite(v) && v >= lo && v <= hi;   // imported line box: an .hfm / autosave blob is untrusted, and a bad value here collapses or explodes every line
+      if (_m.typoAscent  != null) { if (_ok(+_m.typoAscent,  1, 3000))   _m.typoAscent  = Math.round(+_m.typoAscent);  else delete _m.typoAscent; }
+      if (_m.typoDescent != null) { if (_ok(+_m.typoDescent, -1500, -1)) _m.typoDescent = Math.round(+_m.typoDescent); else delete _m.typoDescent; }
+      if ((_m.typoAscent == null) !== (_m.typoDescent == null)) { delete _m.typoAscent; delete _m.typoDescent; } }   // half a box is not a box
     if (data.font.tropScale == null) data.font.tropScale = 1.0;
     if (data.font.tropSideOffset == null) data.font.tropSideOffset = TROP_POS_SHIFT;   // default Left/Right trop spread
     if (data.font.dageshScale == null) data.font.dageshScale = (data.font.markScale != null ? data.font.markScale : 1.0);   // seed to the old unified size so existing saves look unchanged

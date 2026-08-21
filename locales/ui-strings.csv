@@ -2238,6 +2238,8 @@ fontmaker.panels.dagesh_size,Dagesh size,גודל דגש,slider label,
 fontmaker.panels.dagesh_size_hint,Sizes the dot for this form only — the regular vowel dot on other letters stays the same.,קובע את גודל הנקודה עבור צורה זו בלבד — נקודת התנועה הרגילה על אותיות אחרות נשארת זהה.,panel hint,
 fontmaker.panels.default_spread,Default spread,פיזור ברירת מחדל,control label,
 fontmaker.panels.default_spread_hint,"Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).","המרחק שסימני שמאל/ימין זזים מהמרכז כברירת מחדל, בכל האותיות (כוונונים לכל אות מגיעים אחר כך).",panel hint,
+fontmaker.panels.metric_typo_asc,Line box top,ראש תיבת השורה,whole-font metric field; shown only after a font import sets it,
+fontmaker.panels.metric_typo_desc,Line box bottom,תחתית תיבת השורה,whole-font metric field; shown only after a font import sets it,
 fontmaker.panels.pair_title,When a letter has both a vowel and a trop,כשאות נושאת גם ניקוד וגם טעם,trop placement panel — vowel+trop pairing control,
 fontmaker.panels.pair_stack,Stack them,צמודים,trop placement panel — vowel+trop pairing control,
 fontmaker.panels.pair_slide_left,Vowel slides ◀,הניקוד זז ◀,trop placement panel — vowel+trop pairing control,
@@ -2599,6 +2601,9 @@ fontmaker.status.building_font,Building font…,בונה גופן…,toast,
 fontmaker.status.building_font_preview,Building font for preview…,בונה גופן לתצוגה מקדימה…,toast,
 fontmaker.status.building_preview_pdf,Building preview PDF…,בונה PDF לתצוגה מקדימה…,toast,
 fontmaker.status.building_template,Building {title} template…,בונה תבנית {title}…,toast,
+fontmaker.status.import_kerning.one,Kept 1 kerning pair.,נשמר זוג ריווח אחד.,toast fragment after font import,plural
+fontmaker.status.import_kerning.other,Kept {count} kerning pairs.,נשמרו {count} זוגות ריווח.,toast fragment after font import,plural
+fontmaker.status.import_metrics,Line metrics came from the font too.,גם מידות השורה הגיעו מהגופן.,toast fragment after font import,
 fontmaker.status.template_saved,{title} template saved.,תבנית {title} נשמרה.,toast,REVIEW: machine-drafted HE — confirm
 fontmaker.status.building_ufo,Building UFO…,בונה UFO…,toast,
 fontmaker.status.compressing_woff2,Compressing WOFF2…,דוחס WOFF2…,toast,
