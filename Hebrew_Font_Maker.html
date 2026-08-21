@@ -475,6 +475,7 @@
   .rl-preview { position: absolute; display: none; background: var(--gold); opacity: 0.9; pointer-events: none; z-index: 7; }
   /* mark-edit stage: no scroller and no zoom, so the layer pins to the host box instead of a scrollport */
   .me-stage-host { position: relative; direction: ltr; }
+  .me-stage-host .rl-bar { cursor: default; }   /* drag-out is letter-stage-only (rlBeginDrag bails here) */
   .me-stage-host .rl-layer { position: absolute; }
   /* Placement step: below the canvas, size sliders (stacked) on the left, a Confirm/Reset panel on the right. */
   .stage-below { max-width: 720px; margin: 8px auto 0; display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; justify-content: center; }
@@ -644,6 +645,7 @@
   @media (max-width: 480px) { .ns-coords { display: none; } }
   /* first-run hint — zero-height sticky wrapper floats the card over the stage top edge without taking layout space */
   .node-hint-wrap { display: none; position: sticky; top: 2px; height: 0; z-index: 5; }
+  body.rulers-on .node-hint-wrap { top: 26px; }   /* clear the 22px ruler bar (z6 — it would occlude the card) */
   body.mode-nodes .node-hint-wrap { display: block; }
   .node-hint { display: flex; align-items: center; gap: 8px; width: max-content; max-width: 96%; margin: 0 auto; background: var(--white); border: 1px solid var(--gold); border-radius: 8px; padding: 3px 6px 3px 10px; font-size: 0.76rem; color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.15); pointer-events: none; }
   .node-hint .ctl-btn { pointer-events: auto; }   /* only the ?/✕ buttons intercept clicks — the card never blocks stage hits beneath it */
