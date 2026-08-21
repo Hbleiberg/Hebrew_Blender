@@ -14111,6 +14111,7 @@ function buildFontSpec() {
   // space (U+0020) — without a real space glyph, words render with no gaps
   glyphs['space'] = { contours: [], advance: wordAdvance() };
   glyphOrder.push('space'); cmap[0x20] = 'space';
+  cmap[0xA0] = 'space';   // NBSP — word processors insert it constantly, and a font without it falls back to another face mid-line; same width as space (many-to-one cmap is fine in TTF and UFO alike)
 
   // base letters
   LETTERS.forEach(L => {
@@ -15311,7 +15312,7 @@ async function doExport(fmt) {
     if (res.error) { status(''); _setVersion(_prevVersion); askModal(I18n.t('fontmaker.modals.build_fail_title'), '<span class="warn">'+res.error+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
     // Glyphs whose curves couldn't convert to quadratics shipped faceted (straight edges) — map their
     // internal names to the visible Hebrew characters via the spec cmap so the success screen can warn.
-    const _n2c = {}; for (const cp in spec.cmap) _n2c[spec.cmap[cp]] = String.fromCodePoint(+cp);
+    const _n2c = {}; for (const cp in spec.cmap) _n2c[spec.cmap[cp]] = String.fromCodePoint(+cp);   // many-to-one entries (space/NBSP) keep the last codepoint — harmless: an empty-contour glyph can never fall back
     window._lastFellBack = (res.fellBack || []).map(n => _n2c[n] || n);
     const bytes = b64ToBytes(res.ttf_b64);
 
