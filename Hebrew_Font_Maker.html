@@ -1789,6 +1789,8 @@ const LETTERS = [
   { cp:'05C3', name:'Sof Pasuq',   cat:'punct' },
   { cp:'05F3', name:'Geresh',      cat:'punct' },
   { cp:'05F4', name:'Gershayim',   cat:'punct' },
+  { cp:'05C6', name:'Nun Hafukha', cat:'punct' },   // inverted nun — a real character (not combining), so it belongs with the letter-flow glyphs
+  { cp:'FB29', name:'Hebrew Plus', cat:'punct' },   // ﬩ the alternative plus sign Hebrew typesetting uses in place of +
   { cp:'002E', name:'Period',      cat:'punct' },
   { cp:'002C', name:'Comma',       cat:'punct' },
   { cp:'003A', name:'Colon',       cat:'punct' },
@@ -1971,8 +1973,35 @@ const LADINO_FORMS = [   // base + rafe/"varika" bar; PUA where Unicode has no p
   { target:'FB2A', base:'05E9', mark:'05C1', tab:'ladino', name:'Shin (שׁ)' },
   { target:'FB2B', base:'05E9', mark:'05C2', tab:'ladino', name:'Sin (שׂ)' },
 ];
-const EXTRA_FORMS    = [].concat(WIDE_LETTERS, YIDDISH_FORMS, LADINO_FORMS);
-const SPECIAL_TARGETS = WIDE_LETTERS.map(f => f.target);
+/* The rest of the FB1D-FB4F presentation block the app can compose from parts the user already has:
+   every letter+dagesh/mapiq form beyond the four core BeGeD-KeFeT ones, plus yod+hiriq. They share the
+   Specialized tab (and its toggle), so a default project is unchanged. The six forms left out cannot be
+   expressed as base+mark and can only arrive whole from a source font: FB2C/FB2D (shin + dagesh + a dot,
+   three components), FB1F (a digraph plus a mark), FB20 and FB4F (their own designs), FB1E (varika,
+   which duplicates rafe 05BF). */
+const SPECIAL_MORE = [
+  { target:'FB30', base:'05D0', mark:'05BC', tab:'special', name:'Alef Mapiq' },
+  { target:'FB32', base:'05D2', mark:'05BC', tab:'special', name:'Dotted Gimel' },
+  { target:'FB33', base:'05D3', mark:'05BC', tab:'special', name:'Dotted Dalet' },
+  { target:'FB34', base:'05D4', mark:'05BC', tab:'special', name:'He Mapiq' },
+  { target:'FB36', base:'05D6', mark:'05BC', tab:'special', name:'Dotted Zayin' },
+  { target:'FB38', base:'05D8', mark:'05BC', tab:'special', name:'Dotted Tet' },
+  { target:'FB39', base:'05D9', mark:'05BC', tab:'special', name:'Dotted Yod' },
+  { target:'FB3A', base:'05DA', mark:'05BC', tab:'special', name:'Dotted Final Kaf' },
+  { target:'FB3C', base:'05DC', mark:'05BC', tab:'special', name:'Dotted Lamed' },
+  { target:'FB3E', base:'05DE', mark:'05BC', tab:'special', name:'Dotted Mem' },
+  { target:'FB40', base:'05E0', mark:'05BC', tab:'special', name:'Dotted Nun' },
+  { target:'FB41', base:'05E1', mark:'05BC', tab:'special', name:'Dotted Samekh' },
+  { target:'FB43', base:'05E3', mark:'05BC', tab:'special', name:'Dotted Final Pe' },
+  { target:'FB46', base:'05E6', mark:'05BC', tab:'special', name:'Dotted Tsadi' },
+  { target:'FB47', base:'05E7', mark:'05BC', tab:'special', name:'Dotted Qof' },
+  { target:'FB48', base:'05E8', mark:'05BC', tab:'special', name:'Dotted Resh' },
+  { target:'FB49', base:'05E9', mark:'05BC', tab:'special', name:'Dotted Shin' },
+  { target:'FB1D', base:'05D9', mark:'05B4', tab:'special', name:'Yod with Hiriq' },
+];
+const SPECIAL_FORMS  = [].concat(WIDE_LETTERS, SPECIAL_MORE);
+const EXTRA_FORMS    = [].concat(SPECIAL_FORMS, YIDDISH_FORMS, LADINO_FORMS);
+const SPECIAL_TARGETS = SPECIAL_FORMS.map(f => f.target);
 const YIDDISH_TARGETS = YIDDISH_FORMS.map(f => f.target);
 const LADINO_TARGETS  = LADINO_FORMS.map(f => f.target);
 const EXTRA_TAB_FLAG  = { special:'addSpecialForms', yiddish:'addYiddish', ladino:'addLadino' };
@@ -2208,6 +2237,14 @@ const TROP_DEFS = [
   ['05AD','Dehi','below', [ _tdia(-40,-40,40,-150,16) ]],
   ['05AE','Zinor','above', [ _tdia(-60,60,0,120,12), _tdia(0,120,60,60,12) ], 'postpositive'],
   ['05BD','Meteg','below', [ _tvb(0,-30,-160,14) ]],
+  /* Masoretic scribal marks. Not cantillation, but they are combining marks that attach at the same
+     above/below class anchors and have no other home in the model — so they ride the Trop category
+     (and its opt-in toggle) rather than the vowel picker. Placeholders are geometric like every other
+     built-in trop shape; the masora circle is drawn filled because a hollow ring needs an opposite-wound
+     inner contour, which circlePts cannot produce. */
+  ['05AF','Masora Circle','above', [ circlePts(0,120,34) ]],
+  ['05C4','Upper Dot','above',     [ circlePts(0,90,26) ]],
+  ['05C5','Lower Dot','below',     [ circlePts(0,-70,26) ]],
 ];
 const TROP_GLYPHS = {}, TROP_CLASS = {}, TROP_NAMES = {}, TROP_POS = {};
 TROP_DEFS.forEach(([cp,name,cls,polys,pos]) => { TROP_GLYPHS[cp]=polys; TROP_CLASS[cp]=cls; TROP_NAMES[cp]=name; TROP_POS[cp]=pos||'normal'; });
@@ -3185,7 +3222,7 @@ const HELP_CONTENT = {
         <button class="tbtn ghost" onclick="downloadTemplate('nikkud','png')">Picture (PNG)</button>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <span style="flex:1 1 150px;font-weight:600;">Trop (Cantillation) <span style="font-weight:400;color:var(--muted);">· 31 marks · 1 page</span></span>
+        <span style="flex:1 1 150px;font-weight:600;">Trop (Cantillation) <span style="font-weight:400;color:var(--muted);">· 34 marks · 1 page</span></span>
         <button class="tbtn" onclick="downloadTemplate('trop','pdf')">PDF</button>
         <button class="tbtn ghost" onclick="downloadTemplate('trop','png')">Picture (PNG)</button>
       </div>
@@ -4545,6 +4582,7 @@ function letterShips(L, l) {
 function punctGroup(cp) {
   const c = parseInt(cp, 16);
   if (c >= 0x0590 && c <= 0x05FF) return 'hebrew';
+  if (c >= 0xFB1D && c <= 0xFB4F) return 'hebrew';   // Hebrew presentation forms sit with the Hebrew band, not with the trailing symbols
   if (c < 0x0080) return 'basic';
   if (c < 0x0100) return 'symbols';
   if (c < 0x2070) return 'typographic';
@@ -4583,7 +4621,7 @@ function renderPunctGrid() {
     tile.className = 'ltile' + (curKind === 'letter' && L.cp === curCp ? ' sel' : '');
     // Only the five Hebrew punctuation marks are Hebrew content. Tagging ASCII lang="he" misreads it to a
     // screen reader, and leaving it bidi-neutral makes ( [ { mirror in the Hebrew UI — so pin those LTR.
-    const heb = (cpn => cpn >= 0x0590 && cpn <= 0x05FF)(parseInt(L.cp,16));   // the Hebrew block only — U+2014 em dash is above 0x0590 but is not Hebrew
+    const heb = punctGroup(L.cp) === 'hebrew';   // the same band test as the headers: the Hebrew block plus its presentation forms, and nothing else (U+2014 em dash is above 0x0590 but is not Hebrew)
     tile.innerHTML = `<span class="lt-dot ${st}"></span>
       <span class="lt-heb"${heb ? ' lang="he"' : ''} style="font-family:${esc(project.template.font)};${heb ? '' : 'direction:ltr;'}">${String.fromCodePoint(parseInt(L.cp,16))}</span>
       <span class="lt-name">${gName(L.name)}</span>`;
@@ -4716,7 +4754,7 @@ function ensurePrecompSeeded(forms, p) {
 }
 function setAddSpecialForms(on) {
   project.font.addSpecialForms = !!on;
-  if (on) ensurePrecompSeeded(WIDE_LETTERS);
+  if (on) ensurePrecompSeeded(SPECIAL_FORMS);
   else if (precompTarget && SPECIAL_TARGETS.indexOf(precompTarget) >= 0) clearPrecompTarget();
   renderGrids();
 }
@@ -16146,9 +16184,9 @@ const TEMPLATE_SPECS = {
   nikkud:  { kind:'nikkud',  title:'Vowels (Nikkud)',     titleKey:'fontmaker.canvas.tpl_nikkud', cols:4, rowsPerPage:5,
              items: NIKKUD_MARKS.map(m => ({ cp:m.cp, name:m.name, cls:m.cls })) },   // 17 → 1 page (20 slots)
   trop:    { kind:'trop',    title:'Trop (Cantillation)', titleKey:'fontmaker.canvas.tpl_trop', cols:5, rowsPerPage:7,
-             items: TROP_DEFS.map(t => ({ cp:t[0], name:t[1], cls:t[2] })) },         // 31 → 1 page
+             items: TROP_DEFS.map(t => ({ cp:t[0], name:t[1], cls:t[2] })) },         // 34 → 1 page (35 slots)
   punct:   { kind:'punct',   title:'Punctuation & More',  titleKey:'fontmaker.canvas.tpl_punct', cols:5, rowsPerPage:6,
-             items: LETTERS.filter(L => L.cat === 'punct').map(L => ({ cp:L.cp, name:L.name, cls:null })) },   // 101 → 4 pages (30 slots each)
+             items: LETTERS.filter(L => L.cat === 'punct').map(L => ({ cp:L.cp, name:L.name, cls:null })) },   // 103 → 4 pages (30 slots each)
   englishletters: { kind:'latin', title:'English Letters', titleKey:'fontmaker.canvas.tpl_english', cols:6, rowsPerPage:5,
              items: ENGLISH_LETTERS.map(E => ({ cp:E.cp, name:String.fromCodePoint(parseInt(E.cp,16)), cls:null })) },   // 52 → 2 pages
 };
