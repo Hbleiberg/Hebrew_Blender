@@ -4471,6 +4471,7 @@ function setInputMode(mode) {
   // step-1 surface immediately (_setWorkMode promotes align⇄draw and re-renders stage+controls).
   if (curKind === 'letter' && (workMode === 'align' || workMode === 'draw')) _setWorkMode('align');
   else { renderControls(); renderStage(); }
+  renderNextStepHint();   // its draw/upload branch reads project.inputMode, and it only re-runs from renderLetterGrid()
 }
 
 /* ════════ Letter grid ════════ */
