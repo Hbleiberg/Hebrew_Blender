@@ -602,7 +602,9 @@
   }
   .btn-xs:hover { background: var(--warm-gray); }
 
-  .color-mode-btn { flex:1; padding:4px 6px; font-size:0.72rem; border:none; background:var(--white); color:var(--muted); cursor:pointer; border-right:1px solid var(--border); font-family:inherit; }
+  .color-mode-btn { flex:1; padding:4px 6px; font-size:0.72rem; border:none; background:var(--white); color:var(--muted); cursor:pointer; border-right:1px solid var(--border); font-family:inherit;
+    /* same 30px floor .btn-xs carries (S102) — these measured 20px */
+    min-height:30px; display:inline-flex; align-items:center; justify-content:center; }
   .color-mode-btn:last-child { border-right:none; }
   .color-mode-btn.active { background:var(--navy); color:var(--white); }
   body.dark .color-mode-btn { background:var(--white); color:var(--muted); }
@@ -2164,7 +2166,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   .font-size-row .fs-label { font-size:0.72rem; color:var(--muted); font-weight:600; white-space:nowrap; }
   .font-size-row input[type=range] { flex:1; accent-color:var(--gold); cursor:pointer; height:24px; }
   .font-size-row .fs-val { font-size:0.68rem; color:var(--muted); min-width:38px; text-align:right; font-variant-numeric:tabular-nums; }
-  .font-size-row .fs-reset { background:none; border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:0.78rem; cursor:pointer; color:var(--muted); line-height:1.4; font-family:inherit; }
+  .font-size-row .fs-reset { background:none; border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:0.78rem; cursor:pointer; color:var(--muted); line-height:1.4; font-family:inherit;
+    /* same 30px floor torah's identical .sreset got in S193/S195 — these measured 21.5px */
+    min-height:30px; min-width:30px; display:inline-flex; align-items:center; justify-content:center; }
   .font-size-row .fs-reset:hover { border-color:var(--gold); color:var(--gold); }
   .font-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
   .font-opt {
