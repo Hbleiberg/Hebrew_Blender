@@ -1060,17 +1060,21 @@
 
   /* Fullscreen (matches torah_trainer.html / classroom_dashboard.html) */
   body.fullscreen header, body.fullscreen footer { display: none; }
-  #fsExitBtn {
+  #fsExitBtn, #fsPanelsBtn {
     display: none; position: fixed; top: 14px; inset-inline-end: 16px; z-index: 200;
     background: rgba(13,18,32,0.55); color: #fff; border: 1.5px solid rgba(255,255,255,0.2);
     border-radius: 10px; padding: 8px 10px 6px; width: 60px; cursor: pointer;
     backdrop-filter: blur(6px); opacity: 0.45; transition: opacity 0.2s, background 0.2s;
     flex-direction: column; align-items: center; gap: 2px;
   }
-  #fsExitBtn:hover { opacity: 1; background: rgba(13,18,32,0.82); }
-  #fsExitBtn .fs-x { font-size: 1.5rem; line-height: 1; }
-  #fsExitBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
+  #fsExitBtn:hover, #fsPanelsBtn:hover { opacity: 1; background: rgba(13,18,32,0.82); }
+  #fsExitBtn .fs-x, #fsPanelsBtn .fs-x { font-size: 1.5rem; line-height: 1; }
+  #fsExitBtn .fs-label, #fsPanelsBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
   body.fullscreen #fsExitBtn { display: flex; }
+  /* Sits directly under Exit, in the same floating stack — only while the canvas-focused
+     draw layout is actually in effect, which is the only thing it has to undo. */
+  #fsPanelsBtn { top: 78px; }
+  body.fullscreen.mode-draw #fsPanelsBtn { display: flex; }
 
   @media (max-width: 820px) {
     .app { flex-direction: column; align-items: stretch; }
@@ -1098,27 +1102,27 @@
      workspace exactly, with no JS teardown. The areas are physical, so RTL mirrors them for free.
      dvh (with a vh fallback beneath it) is deliberate here: on a phone/tablet browser 100vh is
      taller than the visible viewport while the URL bar is expanded, which would push Save off. */
-  body.fullscreen.mode-draw .ws-right,
-  body.fullscreen.mode-draw .ws-under { display: none; }
-  body.fullscreen.mode-draw .ws-left { max-width: none; margin: 0; }
-  body.fullscreen.mode-draw .ws-center .stage-wrap { max-width: none; }
+  body.fullscreen.mode-draw:not(.fs-panels) .ws-right,
+  body.fullscreen.mode-draw:not(.fs-panels) .ws-under { display: none; }
+  body.fullscreen.mode-draw:not(.fs-panels) .ws-left { max-width: none; margin: 0; }
+  body.fullscreen.mode-draw:not(.fs-panels) .ws-center .stage-wrap { max-width: none; }
   /* Wide enough for two columns — the pen tools move BESIDE the canvas. Gated on the workspace's
      OWN 1181px stacking boundary rather than a new breakpoint: below it there is not enough width
      for both, and forcing it measured 720px → 408px on an iPad in portrait — narrower than doing
      nothing. Stacked widths keep the single column and simply get the taller canvas below. */
   @media (min-width: 1181px) {
-    body.fullscreen.mode-draw .ws-split { display: none; }
-    body.fullscreen.mode-draw .ws-grid {
+    body.fullscreen.mode-draw:not(.fs-panels) .ws-split { display: none; }
+    body.fullscreen.mode-draw:not(.fs-panels) .ws-grid {
       grid-template-columns: minmax(0, 1fr) minmax(240px, 22rem);
       grid-template-areas: "center left";
       gap: 10px;
     }
-    body.fullscreen.mode-draw .ws-left {
+    body.fullscreen.mode-draw:not(.fs-panels) .ws-left {
       max-height: calc(100vh - 24px);
       max-height: calc(100dvh - 24px);
       overflow-y: auto;
     }
-    body.fullscreen.mode-draw .ws-center .stage-wrap {
+    body.fullscreen.mode-draw:not(.fs-panels) .ws-center .stage-wrap {
       max-height: calc(100vh - 96px);
       max-height: calc(100dvh - 96px);
     }
@@ -1126,7 +1130,7 @@
   /* Stacked widths (tablets in portrait, split-screen): the canvas still grows, but only to the
      point where the pen tools stay just below it instead of being pushed off the screen. */
   @media (max-width: 1180px) {
-    body.fullscreen.mode-draw .ws-center .stage-wrap {
+    body.fullscreen.mode-draw:not(.fs-panels) .ws-center .stage-wrap {
       max-height: calc(100vh - 300px);
       max-height: calc(100dvh - 300px);
     }
@@ -1137,7 +1141,7 @@
        paper-cut this mode exists to remove. Sticky keeps the row in reach without moving, hiding or
        reordering anything, and .ws-center is its containing block so it unpins normally at the end
        of the column. Gated to the stacked arm, so at 1181px and up desktop is untouched. */
-    body.fullscreen.mode-draw #stageBelow {
+    body.fullscreen.mode-draw:not(.fs-panels) #stageBelow {
       position: sticky;
       bottom: 0;
       z-index: 5;
@@ -1168,6 +1172,13 @@
 <button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" data-i18n-title="shared.fullscreen.exit_title" aria-label="Exit fullscreen" data-i18n-aria-label="shared.fullscreen.toggle_aria">
   <span class="fs-x">✕</span>
   <span class="fs-label" data-i18n="shared.fullscreen.exit_label">Exit Fullscreen</span>
+</button>
+<button id="fsPanelsBtn" onclick="fsTogglePanels()" aria-pressed="false"
+        title="Show or hide the settings panels without leaving fullscreen"
+        data-i18n-title="fontmaker.fullscreen.panels_title"
+        aria-label="Toggle settings panels" data-i18n-aria-label="fontmaker.fullscreen.panels_aria">
+  <span class="fs-x">▤</span>
+  <span class="fs-label" data-i18n="fontmaker.fullscreen.panels_show">Show Panels</span>
 </button>
 
 <div class="toolbar">
@@ -1904,6 +1915,33 @@ function toggleFullscreen() {
 document.addEventListener('fullscreenchange', () => {
   document.body.classList.toggle('fullscreen', !!document.fullscreenElement);
 });
+/* Fullscreen draw mode gives the canvas the whole screen by folding the settings column away
+   (v5.25). That is the right default for drawing, but not for the moments mid-letter when you
+   need a pen width or a guide — and leaving fullscreen to reach them is exactly the round trip
+   the mode exists to remove. So the fold is a preference, not a law: every rule in the block is
+   scoped :not(.fs-panels), and this button is the only thing that sets it. Remembered per device
+   in hebrewFontMaker_uiPrefs (wsSavePref), so a teacher who always wants the panels sets it once.
+   Pure UI state — no project mutation, so no udDo and no markDirty. */
+function fsTogglePanels() {
+  const show = !document.body.classList.contains('fs-panels');
+  document.body.classList.toggle('fs-panels', show);
+  wsSavePref('fsDrawPanels', show);
+  syncFsPanelsBtn();
+}
+function syncFsPanelsBtn() {
+  const b = document.getElementById('fsPanelsBtn');
+  if (!b) return;
+  const show = document.body.classList.contains('fs-panels');
+  b.setAttribute('aria-pressed', show ? 'true' : 'false');
+  const lab = b.querySelector('.fs-label');
+  if (lab) lab.textContent = window.I18n
+    ? I18n.t(show ? 'fontmaker.fullscreen.panels_hide' : 'fontmaker.fullscreen.panels_show')
+    : (show ? 'Hide Panels' : 'Show Panels');
+}
+function initFsPanels() {
+  try { if (wsReadPrefs().fsDrawPanels) document.body.classList.add('fs-panels'); } catch (e) {}
+  syncFsPanelsBtn();
+}
 function initDark() {
   const saved = localStorage.getItem('hebrewBlender_darkMode');
   const dark = saved === '1' || (saved === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);   // OS default when unset; explicit choice wins
@@ -3498,7 +3536,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.25</strong> &mdash; <strong>Fullscreen finally means &ldquo;just the canvas&rdquo; while you draw.</strong> Fullscreen already hid the header and footer, but the drawing canvas still shared the screen with every settings panel &mdash; on a tablet it stayed capped at a small box with the pen tools somewhere below the fold, so a stylus meant scrolling between a stroke and its Save. Now, whenever you are actually on the <span class="ui">Draw</span> step in fullscreen, the settings column folds away and the canvas takes the screen &mdash; and on a wide screen the pen tools move to sit right beside it. On a tablet, where the screen is too short for that, the two Save buttons instead stay pinned to the bottom edge while you draw, so finishing a letter never means scrolling off to look for them. Leave fullscreen, or move to another step, and your normal workspace comes straight back exactly as it was. <em>(August 2026)</em></li>
+      <li><strong>v5.25</strong> &mdash; <strong>Fullscreen finally means &ldquo;just the canvas&rdquo; while you draw.</strong> Fullscreen already hid the header and footer, but the drawing canvas still shared the screen with every settings panel &mdash; on a tablet it stayed capped at a small box with the pen tools somewhere below the fold, so a stylus meant scrolling between a stroke and its Save. Now, whenever you are actually on the <span class="ui">Draw</span> step in fullscreen, the settings column folds away and the canvas takes the screen &mdash; and on a wide screen the pen tools move to sit right beside it. On a tablet, where the screen is too short for that, the two Save buttons instead stay pinned to the bottom edge while you draw, so finishing a letter never means scrolling off to look for them. And if you need a pen width or a guide mid&#8209;letter, a <span class="ui">Show Panels</span> button in the corner brings the settings back without leaving fullscreen &mdash; the Font Maker remembers which way you like it. Leave fullscreen, or move to another step, and your normal workspace comes straight back exactly as it was. <em>(August 2026)</em></li>
       <li><strong>v5.24</strong> &mdash; <strong>Yiddish gets its pasekh tsvey yudn (<span lang="he" dir="rtl">&#1522;&#1463;</span>).</strong> The <span class="ui">Yiddish</span> tab covered the two-yud digraph but not the one Yiddish actually writes most: <span lang="he" dir="rtl">&#1522;&#1463;</span>, the standard spelling of the <em>ay</em> sound. Old Yiddish text stores it as a single character, and a font built here had nothing at that slot, so those words came out as empty boxes. Now the form is built from your own letters and ships with the tab &mdash; and typing the two-yud digraph followed by a pasekh composes to the very same glyph, so both spellings look identical. <strong>It also picks up your own pasekh.</strong> If you drew your own pasekh shape, it used to be quietly swapped for the standard one here; it now carries through, exactly as your own dagesh already does on <span lang="he" dir="rtl">&#1513;&#1468;&#1473;</span>. (August 2026)</li>
       <li><strong>v5.23</strong> &mdash; <strong>The grid now follows you in and out.</strong> The grid held one fixed spacing at every zoom, which meant it was only ever right at one zoom level: zoom out and the lines crowded together until they vanished, zoom in and they drifted so far apart there was nothing to measure against just when you were doing the finest work. Now it re-spaces itself the way the ruler numbers do. Zoom in and it fills in finer lines between the ones you set; zoom out and it steps back to coarser ones instead of disappearing. At ordinary zooms it shows exactly the <span class="ui">Spacing</span> you typed, and the heavier every-Nth line holds the rhythm you chose until you zoom out far enough that even that would crowd, when it steps up along with everything else. Either way the grid always agrees with the number you typed &mdash; the extra lines only ever divide it evenly or multiply it whole, never landing on some fraction in between. <strong>And you snap to what you can see.</strong> The lines it fills in are real targets, so at high zoom you can place a point on a finer division without retyping the spacing. When the grid is showing something other than your typed number, it says so right next to the field, so you always know what a drag will land on. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.22</strong> &mdash; <strong>Graph paper for the canvas.</strong> The rulers told you where you were, but nothing told you how far it was from here to there. So the everyday questions &mdash; is this stem the same width as the one on the letter before it, did this vowel land the same distance under the baseline as the last one, are these two strokes actually parallel &mdash; came down to squinting, or to dropping a guide on the canvas and deleting it again afterwards. Now you can switch on a <strong>grid</strong> across the editing canvas, measured in the same <strong>font units</strong> as everything else: zero sits on the letter's origin and on the baseline, so a line always falls exactly there. <strong>You decide how it looks and behaves.</strong> Set the spacing, how often a heavier line comes along to help you count, and how strongly the whole thing shows through &mdash; all in the new <span class="ui">Grid</span> panel beside the canvas, so you can watch it change as you adjust it. Zoom far out and the finest lines quietly step aside rather than smearing into a grey block. <strong>And your points can stick to it.</strong> Switch on <span class="ui">Snap to grid</span> and dragged points, curve handles, whole selections, pen clicks, nikkud anchors and the margin dots all settle onto the nearest grid line, exactly the way points already settle onto guides &mdash; hold <span class="ui">Alt</span> to slip past it for one move. The grid is a drawing aid only; it never becomes part of your font, and it is remembered on this device rather than saved into the project. It starts switched off &mdash; turn it on from the node toolbar, under <span class="ui">Settings &rarr; Canvas</span>, or with <span class="ui">Shift + G</span> at any time. <strong>Advanced Settings is now just Settings.</strong> Same tab in the same place, shorter name, with a gear on it. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -18330,6 +18368,7 @@ function init() {
     }
   } catch (e) {}
   initDark();
+  initFsPanels();   // restore the remembered fullscreen-draw panel choice + sync the toggle's label
   maybeShowMobileWarn();   // small-screen "best on desktop" splash (once, unless dismissed)
   // stage drag move/up live once on the persistent <svg> (handles transform drag)
   const sv = stage();
@@ -18422,6 +18461,7 @@ function applyI18n() {
     const _dt = document.getElementById('darkToggle');
     if (_dt) _dt.textContent = I18n.t(document.body.classList.contains('dark') ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark');
   } catch (e) {}
+  try { syncFsPanelsBtn(); } catch (e) {}   // state-dependent label, same as the dark toggle above
   // Re-render JS-built chrome (read-only) so any i18n it carries updates in place.
   try { renderControls(); } catch (e) {}
   try { renderGrids(); } catch (e) {}
