@@ -808,7 +808,7 @@ footer summary{min-height:24px;}
   <aside class="sidebar" id="appSidebar">
 
     <div class="search-wrap">
-      <input type="text" id="searchInput" aria-label="Search Hebrew, transliteration, or English" data-i18n-aria-label="dictionary.search.aria" placeholder="Search Hebrew, translit, or English…" data-i18n-placeholder="dictionary.search.placeholder" oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearDictSearch();}">
+      <input type="text" id="searchInput" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Search Hebrew, transliteration, or English" data-i18n-aria-label="dictionary.search.aria" placeholder="Search Hebrew, translit, or English…" data-i18n-placeholder="dictionary.search.placeholder" oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearDictSearch();}">
       <button class="search-clear" id="searchClear" onclick="clearDictSearch()" aria-label="Clear search" title="Clear search" data-i18n-aria-label="dictionary.search.clear_title" data-i18n-title="dictionary.search.clear_title">✕</button>
     </div>
 
@@ -1139,7 +1139,7 @@ footer summary{min-height:24px;}
       <div id="shoreshControls">
         <label style="display:block;font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:6px;" data-i18n="dictionary.shoresh.enter_label">Enter a שׁורש (root)</label>
         <div class="shoresh-input-row">
-          <input type="text" id="shoreshInput" aria-label="Enter a Hebrew root" data-i18n-aria-label="dictionary.shoresh.enter_label" placeholder="e.g. כ-ת-ב" data-i18n-placeholder="dictionary.shoresh.input_placeholder" oninput="onShoreshInput()" onkeydown="onShoreshKey(event)">
+          <input type="text" id="shoreshInput" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Enter a Hebrew root" data-i18n-aria-label="dictionary.shoresh.enter_label" placeholder="e.g. כ-ת-ב" data-i18n-placeholder="dictionary.shoresh.input_placeholder" oninput="onShoreshInput()" onkeydown="onShoreshKey(event)">
           <button class="shoresh-lookup-btn" onclick="runShoreshLookup(document.getElementById('shoreshInput').value)" data-i18n="dictionary.shoresh.lookup_button">Look up</button>
         </div>
         <div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px;" data-i18n="dictionary.shoresh.browse_roots">Browse roots (alef→tav) — click to look up:</div>
