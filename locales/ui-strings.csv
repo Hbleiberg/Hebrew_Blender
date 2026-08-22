@@ -4769,3 +4769,41 @@ fontmaker.undolabel.trop_side,trop side,צד הטעם,undo action name,REVIEW: H
 fontmaker.undolabel.unpin_mark,unpin mark,ביטול נעיצת הסימן,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.copy_outline_from,copy outline from,העתקת קו המתאר מ־,undo action name; a glyph name follows,REVIEW: HE authored S243
 fontmaker.undolabel.edit_shape_on,edit shape on,עריכת הצורה על,undo action name; a glyph name follows,REVIEW: HE authored S243
+fontmaker.undolabel.anchor_move,anchor move,הזזת העוגן,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.anchor_x,anchor x,עוגן x,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.anchor_y,anchor y,עוגן y,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.dagesh_size,dagesh size,גודל הדגש,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.dot_size,dot size,גודל הנקודה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.edit_mark,edit mark,עריכת הסימן,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.guide_weight,guide weight,עובי קו העזר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.holam_vav_size,holam (vav) size,גודל החולם (וו),undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.holam_anchor_move,holam anchor move,הזזת עוגן החולם,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.holam_anchor_x,holam anchor x,עוגן החולם x,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.holam_anchor_y,holam anchor y,עוגן החולם y,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.holam_size,holam size,גודל החולם,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.kern_tightness,kern tightness,הידוק הקרנינג,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.letter_spacing,letter spacing,ריווח האותיות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.line_spacing,line spacing,ריווח השורות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.mark_anchor_move,mark anchor move,הזזת עוגן הסימן,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.mark_anchor_x,mark anchor x,עוגן הסימן x,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.mark_anchor_y,mark anchor y,עוגן הסימן y,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.mark_size,mark size,גודל הסימן,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.metric,metric,מידה,undo action name; a metric name follows,REVIEW: HE authored S243
+fontmaker.undolabel.move_guide,move guide,הזזת קו העזר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.move_handle,move handle,הזזת הידית,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.move_image,move image,הזזת התמונה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.move_points,move points,הזזת נקודות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.nikkud_size,nikkud size,גודל הניקוד,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.nudge_anchor,nudge anchor,כוונון העוגן,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.nudge_mark_anchor,nudge mark anchor,כוונון עוגן הסימן,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.nudge_piece,nudge piece,כוונון החלק,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.nudge_strokes,nudge strokes,כוונון המשיכות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.place_stamp,place stamp,מיקום החותמת,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.sample_text,sample text,טקסט לדוגמה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.scale_points,scale points,שינוי גודל הנקודות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.trace,trace,עקיבה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.trop_size,trop size,גודל הטעם,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.trop_spread,trop spread,פריסת הטעמים,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.vowel_slide_distance,vowel slide distance,מרחק הזזת הניקוד,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.width,width,רוחב,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.word_spacing,word spacing,ריווח המילים,undo action name,REVIEW: HE authored S243
