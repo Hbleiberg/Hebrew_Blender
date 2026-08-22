@@ -2734,14 +2734,40 @@ function udApply(entry, useAfter) {
   const oneItem = entry.slices.filter(sl => sl.scope.t === 'item').length === 1;   // navigate only for single-item entries
   entry.slices.forEach(sl => { udRestore(sl.scope, useAfter ? sl.after : sl.before); if (oneItem) udNavTo(sl.scope); });
 }
+/* Undo labels are STORED raw ("tidy strokes — Alef") and stay that way: undo() compares
+   e.label against 'fidelity fixes', so the stored string is a sentinel, not display text.
+   They are translated here instead, at the one place they are shown — the same split gName()
+   makes ("used only at DISPLAY sites; internal undo labels keep the raw name"). A stem with no
+   key falls back to its own English, so a udDo() label added later degrades to English rather
+   than printing a raw key at the user. */
+function undoLabelText(label) {
+  if (!window.I18n || !label) return label;
+  let stem = label, tail = '';
+  const dash = label.indexOf(' \u2014 ');
+  if (dash > -1) { stem = label.slice(0, dash); tail = ' \u2014 ' + gName(label.slice(dash + 3)); }
+  else {
+    const m = label.match(/^(copy outline from|edit shape on) (.+)$/);
+    if (m) { stem = m[1]; tail = ' ' + gName(m[2]); }
+  }
+  const num = stem.match(/\d+/);                        // "apply alignment to 12 letters" -> one {n} key
+  const norm = num ? stem.replace(/\d+/, '{n}') : stem;
+  const k = 'fontmaker.undolabel.' + norm.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  const v = num ? I18n.t(k, { n: num[0] }) : I18n.t(k);
+  return (v === k ? stem : v) + tail;
+}
+function undoToast(kind, label) {   // kind: 'undone' | 'redone'
+  const what = undoLabelText(label);
+  return window.I18n ? I18n.t('fontmaker.undo.' + kind, { what })
+                     : (kind === 'undone' ? 'Undo: ' : 'Redo: ') + what;
+}
 function undo() { udFlushPending(); const e = undoStack.pop(); if (!e) return; udApply(e, false); redoStack.push(e);
   // The report describes the state the fixes produced; undoing them makes it a lie, and the reopen
   // button would still offer its green "0 combos still flagged" over a project that deviates again.
   if (e.label === 'fidelity fixes') { e._fidStash = _fidelityLast; _fidelityLast = null; }   // stashed on the entry (undo/redo stacks are runtime-only, so the ctx bytes stay off `project`) so redo can hand it back
-  afterUndo('Undo: ' + e.label); }
+  afterUndo(undoToast('undone', e.label)); }
 function redo() { udFlushPending(); const e = redoStack.pop(); if (!e) return; udApply(e, true); undoStack.push(e);
   if (e._fidStash) { _fidelityLast = e._fidStash; e._fidStash = null; }   // the fixes are back, so their report describes the project again
-  afterUndo('Redo: ' + e.label); }
+  afterUndo(undoToast('redone', e.label)); }
 function afterUndo(msg) { updateUndoButtons(); if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   /* rebuild node model from restored curves */ _drawSel.clear();   /* undo/redo can restructure the stroke array — indices go stale */ renderGrids(); renderStage(); renderControls(); status(msg); markDirty(); }
 function updateUndoButtons() {   // top-toolbar + node-bar twins (bar buttons exist only after the DOM parses — null-guarded)
   const u = !undoStack.length, r = !redoStack.length;

@@ -4685,3 +4685,87 @@ fontmaker.changelog.v5_21,"v5.21 — Control handles stay the same size as you z
 fontmaker.changelog.v5_20,"v5.20 — Rulers along the edges of the canvas. The editing canvas showed you a letter and its guide lines, but nothing about where anything sat — so matching a stroke width across two letters, or checking that a vowel cleared the baseline by the amount you meant, came down to reading numbers out of the side panels and guessing. Now numbered rulers run along the top and left edges, measured in the same font units the rest of the app uses: zero sits at the letter's origin and on the baseline, and the numbers re-space themselves as you zoom so they never crowd together. A marker on each ruler tracks your pointer, so you can always see exactly where you are. Guides you can pull off a ruler. Drag from either ruler onto the canvas and you get a guide — the same guides as before, so it is instantly draggable, renameable, and remembered with your project. And a corner that resets the zoom. The little box where the two rulers meet shows the current zoom; click it to snap straight back to 100%. Rulers start switched on — turn them off under Settings → Canvas, or press Shift + R at any time. (August 2026)","v5.20 — סרגלים בשולי הקנבס. אזור העריכה הראה לכם אות וקווי עזר, אבל שום דבר על המיקום שלהם — כך שהתאמת עובי קו בין שתי אותיות, או בדיקה שתנועה מתרחקת מקו הבסיס בדיוק כפי שרציתם, הסתכמה בקריאת מספרים מתוך הפאנלים הצדדיים ובניחוש. עכשיו סרגלים ממוספרים רצים לאורך השוליים העליונים והשמאליים, ביחידות הגופן שבהן משתמשת כל שאר האפליקציה: האפס יושב בנקודת המוצא של האות ועל קו הבסיס, והמספרים מתפזרים מחדש ככל שאתם מתקרבים או מתרחקים, כך שהם לעולם אינם נדחסים זה לזה. מחוון על כל סרגל עוקב אחרי המצביע שלכם, כך שתמיד תדעו היכן בדיוק אתם נמצאים. קווי עזר שאפשר למשוך מתוך סרגל. גררו מאחד הסרגלים אל הקנבס ותקבלו קו עזר — אותם קווי עזר כמו קודם, כך שהוא מיד ניתן לגרירה, לשינוי שם, ונשמר עם הפרויקט שלכם. ופינה שמאפסת את הזום. התיבה הקטנה שבה נפגשים שני הסרגלים מציגה את הזום הנוכחי; לחצו עליה כדי לחזור מיד ל-100%. הסרגלים מתחילים מוצגים — כבו אותם תחת הגדרות ← קנבס, או לחצו Shift + R בכל רגע. (אוגוסט 2026)",About tab changelog,
 fontmaker.changelog.v5_17,"v5.17 — Partner font links land with their nikkud already in place. Opening an Open Siddur ?start= edit link used to finish by handing you a fidelity report and an Apply per-combo fixes button to press before the vowels sat right. That check is now part of the loading: the progress window says “Checking where the nikkud and trop land in the original font…”, every fix it can express is applied for you, and the font is re-measured against the original before the workspace appears. The report only opens if something still missed — and it is still one click away from the Fidelity report button in the Nikkud step, with every fix undoable as a single step. Importing a font you picked yourself is unchanged: you still get the report and decide. And the tour now matches the font you actually have. A partner font arrives finished — letters drawn, vowels placed — so the from-scratch walkthrough was telling new arrivals to photograph and trace letters they already had. Partner projects now get their own seven-step tour: what came across, how to reshape a letter with Edit points, where the vowel positions came from, and which parts of Font Details are locked to the original's license and why. It is offered (pre-ticked) at the end of the partner setup, and the header Tour button gives the same one any time. (August 2026)","v5.17 — קישורי גופן משותף נוחתים כשהניקוד כבר במקומו. פתיחת קישור עריכה ?start= של אתר הסידור הפתוח הייתה מסתיימת עד כה בדוח נאמנות ובכפתור “החלת תיקונים לכל צירוף” שהיה צריך ללחוץ עליו כדי שהתנועות יישבו נכון. הבדיקה הזו היא כעת חלק מהטעינה: חלון ההתקדמות מציג “בודקים היכן נוחתים הנקודות והטעמים בגופן המקורי…”, כל תיקון שניתן לבטא מוחל עבורכם, והגופן נמדד שוב מול המקור לפני שסביבת העבודה נפתחת. הדוח נפתח רק אם משהו עדיין החטיא — והוא עדיין במרחק לחיצה אחת מכפתור “דוח נאמנות” בשלב הניקוד, וכל התיקונים ניתנים לביטול כצעד אחד. ייבוא גופן שבחרתם בעצמכם לא השתנה: אתם עדיין מקבלים את הדוח ומחליטים. וגם הסיור מותאם עכשיו לגופן שבאמת יש לכם. גופן משותף מגיע מוגמר — האותיות מצוירות, התנועות במקומן — ולכן הסיור ״מאפס״ הנחה מצטרפים חדשים לצלם ולעקוב אחרי אותיות שכבר היו להם. פרויקטים משותפים מקבלים כעת סיור בן שבעה שלבים משלהם: מה הגיע, איך משנים צורת אות באמצעות ״עריכת נקודות״, מהיכן הגיעו מיקומי התנועות, ואילו חלקים ב״פרטי הגופן״ נעולים לרישיון המקורי ומדוע. הוא מוצע (מסומן מראש) בסוף ההתקנה של הגופן המשותף, וכפתור ״סיור״ בכותרת מציג את אותו סיור בכל עת. (אוגוסט 2026)",About tab changelog entry,
 fontmaker.changelog.v5_16,"v5.16 — The fidelity report's Auto-fix now fixes everything it measures. After importing a font with anchors, one click corrects every flagged letter+mark combo — not just the combined forms: shared anchors move when a whole letter agrees, and the stubborn per-letter positions get exact per-letter pins, marked with the gold ✎ in the placement step. The report then re-measures against the original font and shows the after numbers, and a Fidelity report button in the Nikkud step reopens it any time. Pins stay yours: drag a pinned mark to fine-tune it, or Unpin / Clear pins to fall back to the shared anchor. Importing a font now says what it is doing: the first import of a session has to fetch the font engine, which can take a while on school Wi-Fi — and an Open Siddur edit link used to spend that whole wait sitting on an empty workspace, looking broken. A progress window now names each step and closes the moment your letters appear. (August 2026)","v5.16 — התיקון האוטומטי של דוח הנאמנות מתקן כעת את כל מה שהוא מודד. אחרי ייבוא גופן עם עוגנים, לחיצה אחת מתקנת כל צירוף אות+סימן מסומן — לא רק את הצורות המשולבות: עוגנים משותפים זזים כשהאות כולה מסכימה, והמיקומים העקשניים לכל אות מקבלים נעצים מדויקים לכל אות, המסומנים ב-✎ הזהוב בשלב המיקום. הדוח מודד מחדש מול הגופן המקורי ומציג את המספרים שאחרי, וכפתור דוח נאמנות בשלב הניקוד פותח אותו מחדש בכל עת. הנעצים נשארים שלכם: גררו סימן ננעץ לכוונון עדין, או ביטול נעץ / ניקוי נעצים כדי לחזור לעוגן המשותף. ייבוא גופן מסביר כעת מה קורה: הייבוא הראשון בכל מפגש צריך להוריד את מנוע הגופנים, מה שעשוי לקחת זמן ברשת בית הספר — וקישור עריכה של הסידור הפתוח היה מבלה את כל ההמתנה הזו על סביבת עבודה ריקה, שנראתה תקולה. חלון התקדמות מציג כעת כל שלב ונסגר ברגע שהאותיות שלכם מופיעות. (אוגוסט 2026)",changelog entry,plain-text mirror of the About-tab li
+fontmaker.undo.undone,Undo: {what},ביטול: {what},"Toast after Ctrl+Z; {what} is the localized action name",REVIEW: HE authored S243
+fontmaker.undo.redone,Redo: {what},ביצוע מחדש: {what},"Toast after Ctrl+Shift+Z; {what} is the localized action name",REVIEW: HE authored S243
+fontmaker.undolabel.add_guide,add guide,הוספת קו עזר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.apply_outline_to_all_letters,apply outline to all letters,החלת קו המתאר על כל האותיות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.clear_guides,clear guides,ניקוי קווי העזר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.confirm_placement,confirm placement,אישור המיקום,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.delete_guide,delete guide,מחיקת קו עזר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.delete_kern_class,delete kern class,מחיקת מחלקת קרנינג,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.delete_kerning_pair,delete kerning pair,מחיקת זוג קרנינג,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.fidelity_fixes,fidelity fixes,תיקוני נאמנות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.generate_bold,generate bold,יצירת גרסה מודגשת,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.guide_color,guide color,צבע קו העזר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.guide_position,guide position,מיקום קו העזר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.guide_style,guide style,סגנון קו העזר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.hide_guides,hide guides,הסתרת קווי העזר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.kern_class,kern class,מחלקת קרנינג,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.kerning_pair,kerning pair,זוג קרנינג,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.rebuild_composed_forms,rebuild composed forms,בנייה מחדש של הצורות המורכבות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.rename_guide,rename guide,שינוי שם קו העזר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.reorder_guides,reorder guides,סידור קווי העזר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.reset_all_anchors,reset all anchors,איפוס כל העוגנים,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.reset_holam_anchor,reset holam anchor,איפוס עוגן החולם,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.reset_mark_anchor,reset mark anchor,איפוס עוגן הסימן,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.reset_mark_size,reset mark size,איפוס גודל הסימן,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.reset_metrics,reset metrics,איפוס המידות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.reset_spacing,reset spacing,איפוס הריווח,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.reset_trop_side_columns,reset trop side columns,איפוס עמודות צד הטעמים,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.reset_width,reset width,איפוס הרוחב,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.show_guides,show guides,הצגת קווי העזר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.suggest_kerning_pairs,suggest kerning pairs,הצעת זוגות קרנינג,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.vowel_trop_pairing,vowel + trop pairing,שיוך ניקוד וטעם,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.auto_detect_letters_n,auto-detect letters ({n}),זיהוי אוטומטי של אותיות ({n}),undo action name; {n} is a count,REVIEW: HE authored S243
+fontmaker.undolabel.auto_split_svg_n,auto-split SVG ({n}),פיצול אוטומטי של SVG ({n}),undo action name; {n} is a count,REVIEW: HE authored S243
+fontmaker.undolabel.apply_alignment_to_n_letters,apply alignment to {n} letters,החלת היישור על {n} אותיות,undo action name; {n} is a count,REVIEW: HE authored S243
+fontmaker.undolabel.apply_nikkud_positioning_to_n_letters,apply nikkud positioning to {n} letters,החלת מיקום הניקוד על {n} אותיות,undo action name; {n} is a count,REVIEW: HE authored S243
+fontmaker.undolabel.add_bar,add bar,הוספת מוט,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.add_dot,add dot,הוספת נקודה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.bar_shape,bar shape,צורת המוט,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.center_anchor,center anchor,מרכוז העוגן,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.center_image,center image,מרכוז התמונה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.clear_drawing,clear drawing,ניקוי הציור,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.clear_pins,clear pins,ניקוי הנעצים,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.clear_trace,clear trace,ניקוי העקיבה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.corner_points,corner points,נקודות פינתיות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.crop_svg,crop SVG,חיתוך SVG,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.delete_contour,delete contour,מחיקת קו מתאר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.delete_outline,delete outline,מחיקת המתאר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.delete_piece,delete piece,מחיקת חלק,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.delete_points,delete points,מחיקת נקודות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.delete_strokes,delete strokes,מחיקת משיכות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.dot_shape,dot shape,צורת הנקודה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.draw_letter,draw letter,ציור האות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.edit_shape,edit shape,עריכת הצורה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.fit_margins,fit margins,התאמת השוליים,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.flip_horizontal,flip horizontal,היפוך אופקי,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.flip_vertical,flip vertical,היפוך אנכי,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.import_svg,import SVG,ייבוא SVG,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.insert_point,insert point,הוספת נקודה למתאר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.mark_height,mark height,גובה הסימן,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.mark_mode,mark mode,מצב הסימן,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.paste_points,paste points,הדבקת נקודות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.pen_contour,pen contour,קו מתאר בעט,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.re_trace,re-trace,עקיבה מחדש,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.reduce_points,reduce points,צמצום נקודות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.remove_specks,remove specks,הסרת כתמים,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.reset_anchors,reset anchors,איפוס העוגנים,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.retract_handles,retract handles,כיווץ הידיות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.rotate,rotate,סיבוב,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.rotate_image,rotate image,סיבוב התמונה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.round_corners,round corners,עיגול הפינות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.scale,scale,שינוי גודל,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.scale_image,scale image,שינוי גודל התמונה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.segment_to_curve,segment to curve,הפיכת מקטע לעקומה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.segment_to_line,segment to line,הפיכת מקטע לקו ישר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.segments_to_curve,segments to curve,הפיכת מקטעים לעקומה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.segments_to_line,segments to line,הפיכת מקטעים לקו ישר,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.skew_image,skew image,הטיית התמונה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.smooth_points,smooth points,נקודות חלקות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.smooth_corner,smooth/corner,חלקה/פינתית,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.tidy_strokes,tidy strokes,סידור המשיכות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.trop_side,trop side,צד הטעם,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.unpin_mark,unpin mark,ביטול נעיצת הסימן,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.copy_outline_from,copy outline from,העתקת קו המתאר מ־,undo action name; a glyph name follows,REVIEW: HE authored S243
+fontmaker.undolabel.edit_shape_on,edit shape on,עריכת הצורה על,undo action name; a glyph name follows,REVIEW: HE authored S243
