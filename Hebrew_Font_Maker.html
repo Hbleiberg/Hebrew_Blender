@@ -3183,7 +3183,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.22';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.23';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3402,6 +3402,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.23</strong> &mdash; <strong>The grid now follows you in and out.</strong> The grid held one fixed spacing at every zoom, which meant it was only ever right at one zoom level: zoom out and the lines crowded together until they vanished, zoom in and they drifted so far apart there was nothing to measure against just when you were doing the finest work. Now it re-spaces itself the way the ruler numbers do. Zoom in and it fills in finer lines between the ones you set; zoom out and it steps back to coarser ones instead of disappearing. At ordinary zooms it shows exactly the <span class="ui">Spacing</span> you typed, and the heavier every-Nth line holds the rhythm you chose until you zoom out far enough that even that would crowd, when it steps up along with everything else. Either way the grid always agrees with the number you typed &mdash; the extra lines only ever divide it evenly or multiply it whole, never landing on some fraction in between. <strong>And you snap to what you can see.</strong> The lines it fills in are real targets, so at high zoom you can place a point on a finer division without retyping the spacing. When the grid is showing something other than your typed number, it says so right next to the field, so you always know what a drag will land on. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.22</strong> &mdash; <strong>Graph paper for the canvas.</strong> The rulers told you where you were, but nothing told you how far it was from here to there. So the everyday questions &mdash; is this stem the same width as the one on the letter before it, did this vowel land the same distance under the baseline as the last one, are these two strokes actually parallel &mdash; came down to squinting, or to dropping a guide on the canvas and deleting it again afterwards. Now you can switch on a <strong>grid</strong> across the editing canvas, measured in the same <strong>font units</strong> as everything else: zero sits on the letter's origin and on the baseline, so a line always falls exactly there. <strong>You decide how it looks and behaves.</strong> Set the spacing, how often a heavier line comes along to help you count, and how strongly the whole thing shows through &mdash; all in the new <span class="ui">Grid</span> panel beside the canvas, so you can watch it change as you adjust it. Zoom far out and the finest lines quietly step aside rather than smearing into a grey block. <strong>And your points can stick to it.</strong> Switch on <span class="ui">Snap to grid</span> and dragged points, curve handles, whole selections, pen clicks, nikkud anchors and the margin dots all settle onto the nearest grid line, exactly the way points already settle onto guides &mdash; hold <span class="ui">Alt</span> to slip past it for one move. The grid is a drawing aid only; it never becomes part of your font, and it is remembered on this device rather than saved into the project. It starts switched off &mdash; turn it on from the node toolbar, under <span class="ui">Settings &rarr; Canvas</span>, or with <span class="ui">Shift + G</span> at any time. <strong>Advanced Settings is now just Settings.</strong> Same tab in the same place, shorter name, with a gear on it. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.21</strong> &mdash; <strong>Control handles stay the same size as you zoom in.</strong> Zooming in is how you do the fussy work &mdash; nudging a point onto a curve, lining a vowel up under a letter. But every dot, square and circle on the canvas used to grow along with the letter, so by 400% the handles were fat blobs sitting on top of the very outline you were trying to see, and neighbouring points ran into each other. Now they hold their size on screen no matter how far you zoom, the way they do in professional font and drawing programs: the letter gets bigger, the handles stay put, and there is far more room between them to work. Zoomed out past 50% they gently grow instead, so they never shrink away to nothing. Nothing to switch on &mdash; it just behaves this way now. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.20</strong> &mdash; <strong>Rulers along the edges of the canvas.</strong> The editing canvas showed you a letter and its guide lines, but nothing about <em>where</em> anything sat &mdash; so matching a stroke width across two letters, or checking that a vowel cleared the baseline by the amount you meant, came down to reading numbers out of the side panels and guessing. Now numbered rulers run along the top and left edges, measured in the same <strong>font units</strong> the rest of the app uses: zero sits at the letter's origin and on the baseline, and the numbers re-space themselves as you zoom so they never crowd together. A marker on each ruler tracks your pointer, so you can always see exactly where you are. <strong>Guides you can pull off a ruler.</strong> Drag from either ruler onto the canvas and you get a guide &mdash; the same guides as before, so it is instantly draggable, renameable, and remembered with your project. <strong>And a corner that resets the zoom.</strong> The little box where the two rulers meet shows the current zoom; click it to snap straight back to 100%. Rulers start switched on &mdash; turn them off under <span class="ui">Settings &rarr; Canvas</span>, or press <span class="ui">Shift + R</span> at any time. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3514,7 +3515,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3527,7 +3528,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_22';
+  const CUR_KEY = 'fontmaker.changelog.v5_23';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -4341,6 +4342,7 @@ function gridPanelHTML(){
       <input class="guide-pos" id="gridStepInp" type="number" min="1" max="1000" step="1" value="${_gridStep}" onchange="setGridStep(this.value)" onkeydown="if(event.key==='Enter')this.blur()" title="${esc(t('grid_step_title'))}">
       <span class="guide-lbl">${t('grid_major')}</span>
       <input class="guide-pos" id="gridMajorInp" type="number" min="0" max="100" step="1" value="${_gridMajor}" onchange="setGridMajor(this.value)" onkeydown="if(event.key==='Enter')this.blur()" title="${esc(t('grid_major_title'))}">
+      <span class="guide-lbl" id="gridEffNote" style="display:none;font-style:italic;"></span>
     </div>
     <div class="ctl-row" style="margin-top:5px;">
       <span class="guide-lbl">${t('grid_opacity')}</span>
@@ -10181,9 +10183,26 @@ function initRulers() {
    vector-effect="non-scaling-stroke": zoom is a CSS width scale over a FIXED viewBox, so a plain
    0.5-unit stroke would render as a 2px slab at 400% (same reasoning as the .anc/.pcanc rule).
 
-   DENSITY GUARD: a tier whose on-screen gap falls under GRID_MIN_PX is dropped rather than drawn,
-   or a zoomed-out canvas renders as a flat grey wash instead of a grid. */
-const GRID_MIN_PX = 4;                       // smallest on-screen gap worth drawing a tier at
+   ADAPTIVE DENSITY: the fine tier is not pinned to the typed spacing — it is the finest rung of a
+   ladder built from that spacing whose on-screen gap still clears GRID_TARGET_PX, so the texture
+   stays readable at every zoom instead of washing out when zoomed out and going sparse when zoomed
+   in. The heavy tier stays on the typed rhythm (spacing x bold-every), coarsened to a MULTIPLE of
+   the fine tier when even that would crowd, so heavy lines always land on fine lines.
+
+   THE LADDER IS INTEGER-ONLY, AND THAT IS LOAD-BEARING: snapping follows the DISPLAYED tier
+   (gridEffectiveStep), and a snapped value reaches anchors. A fractional coordinate near an anchor
+   is what feaLib rejects outright ("Expected a number") — so subdivisions are admitted only when
+   they divide the spacing evenly, and coarsenings are whole multiples. A prime spacing simply does
+   not subdivide, which is the honest outcome rather than a rounded lie. */
+/* Three thresholds, each with one job. The typed spacing is used VERBATIM while its on-screen gap
+   sits in the readable band, so at ordinary zooms you see the number you typed; the ladder only
+   takes over past either edge. (Measured: ctm.a ≈ 1.0 at 100%, so the default 50 gives ~16px and a
+   deliberately fine 25 gives ~8px — the floor has to stay under that or a typed 25 would be refused.) */
+const GRID_MIN_PX = 7;                       // below this a tier is unreadable — step up to a multiple
+const GRID_MAX_PX = 64;                      // above this the spacing has gone sparse — step down to a division
+const GRID_SUB_PX = 20;                      // ...but a division must still be at least this far apart
+const GRID_SUB = [10, 5, 4, 2];              // subdivision denominators, finest first (integer results only)
+const GRID_MUL = [2, 4, 5, 10, 20, 50, 100]; // coarsening multipliers
 const GRID_STEP_DEF = 50, GRID_MAJOR_DEF = 4, GRID_OPACITY_DEF = 0.5;
 function clampGridStep(v)    { v = Math.round(+v); return isFinite(v) ? Math.min(1000, Math.max(1, v)) : GRID_STEP_DEF; }
 function clampGridMajor(v)   { v = Math.round(+v); return isFinite(v) ? Math.min(100, Math.max(0, v)) : GRID_MAJOR_DEF; }   // 0 ⇒ no heavy line; 1 ⇒ every line heavy
@@ -10221,10 +10240,37 @@ function setGridMajor(v) {
 function setGridOpacity(v) { _gridOpacity = clampGridOpacity(v); wsSavePref('gridOpacity', _gridOpacity); gridRefresh(); }
 
 /* ── renderer ── */
-function gridTiers(ctmA) {   // which tiers clear GRID_MIN_PX at the current zoom (0 = don't draw that tier)
+function gridLadder() {   // integer steps derived from the typed spacing, ascending
+  const S = _gridStep, out = [];
+  GRID_SUB.forEach(d => { if (S % d === 0) out.push(S / d); });   // finer — only where it divides evenly
+  out.push(S);
+  GRID_MUL.forEach(m => out.push(S * m));                        // coarser — always whole multiples
+  return [...new Set(out)].sort((a, b) => a - b);
+}
+function gridTiers(ctmA) {   // the two step sizes to draw at this zoom (0 = don't draw that tier)
   const px = u => u * SC * (ctmA || 1);
-  return { minor: px(_gridStep) >= GRID_MIN_PX ? _gridStep : 0,
-           major: (_gridMajor >= 1 && px(_gridStep * _gridMajor) >= GRID_MIN_PX) ? _gridStep * _gridMajor : 0 };
+  let minor = 0;
+  const base = px(_gridStep);
+  if (base < GRID_MIN_PX) {          // zoomed out: the finest readable whole multiple
+    for (const step of gridLadder()) if (px(step) >= GRID_MIN_PX) { minor = step; break; }
+  } else if (base > GRID_MAX_PX) {   // zoomed in: the finest comfortable even division
+    for (const step of gridLadder()) if (px(step) >= GRID_SUB_PX) { minor = step; break; }
+  } else minor = _gridStep;          // in the readable band: exactly what was typed
+  if (!minor) return { minor: 0, major: 0 };   // nothing on the ladder is readable ⇒ draw nothing at all
+  let major = 0;
+  if (_gridMajor >= 1) {
+    // Holds the typed rhythm wherever the fine tier is finer than it; once zoomed out past that,
+    // it rides up with the fine tier (still a whole multiple of the spacing, so never off-grid).
+    major = Math.ceil(Math.max(_gridStep * _gridMajor, minor) / minor) * minor;
+  }
+  return { minor, major };
+}
+/* The step snapping actually uses — the DISPLAYED fine tier, per the chosen behavior. Reads the
+   letter stage: every grid-snapped drag (nodes, handles, anchors, metric dots) lives on #stage. */
+function gridEffectiveStep() {
+  const sv = stage(); if (!sv) return _gridStep;
+  const ctm = sv.getScreenCTM();
+  return gridTiers((ctm && ctm.a) || 1).minor || _gridStep;
 }
 const GRID_MAX_LINES = 600;   // backstop: a tier that would exceed this is dropped rather than serialized every frame
 function _gridPathD(step, mapX, x0, x1, y0, y1, sx0, sx1, sy0, sy1) {
@@ -10272,8 +10318,9 @@ function gridSnapHitSVG(mapX, rightX) {
 /* ── snap: the grid is unbounded, so it can't join collectSnapTargets()'s finite {xs,ys} list —
       it contributes a computed candidate that snapAxis weighs against the stored targets. ── */
 function gridSnapCandidate(v, tol) {
-  if (!_gridOn || !_gridSnapOn || !_gridStep) return null;
-  const q = Math.round(v / _gridStep) * _gridStep, d = Math.abs(q - v);
+  if (!_gridOn || !_gridSnapOn) return null;
+  const step = gridEffectiveStep(); if (!step) return null;   // integer by construction ⇒ q is integer
+  const q = Math.round(v / step) * step, d = Math.abs(q - v);
   return d <= tol ? { t: { v: q, kind: 'grid' }, d } : null;
 }
 function snapAxis(list, v, tol) {   // nearest of the metric/guide targets and the grid, or null
@@ -10292,11 +10339,19 @@ function gridSnapPt(x, y, alt) {   // grid-only capture for the drags the finite
    renderStage — swap just the .cgrid paths so the guard stays honest and the opacity slider stays
    cheap. rAF-coalesced like rlSchedule; renderStage rebuilding first is harmless (paths re-swap). */
 let _gridRefRaf = 0;
+function gridSyncEffNote() {   // spacing adapts to zoom AND drives snapping, so say which step is live
+  const el = document.getElementById('gridEffNote'); if (!el) return;
+  const eff = _gridOn ? gridEffectiveStep() : 0;
+  const show = !!eff && eff !== _gridStep;
+  el.textContent = show ? I18n.t('fontmaker.panels.grid_eff', { step: eff }) : '';
+  el.style.display = show ? '' : 'none';
+}
 function gridRefresh() {
   if (_gridRefRaf) return;
   _gridRefRaf = requestAnimationFrame(() => {
     _gridRefRaf = 0;
     if (!project) return;
+    gridSyncEffNote();
     [[stage(), fx, ifx], [document.getElementById('meStage'), ex, iex]].forEach(([sv, mapX, invX]) => {
       if (!sv) return;
       const had = sv.querySelectorAll('path.cgrid');
@@ -12992,6 +13047,7 @@ function renderControls() {
   // they live in the right column and stay put as you move between Align / Draw / Trace / Points /
   // Nikkud — no hunting for the margin fields in a different place on each screen.
   R.insertAdjacentHTML('beforeend', metricsPanel() + gridPanelHTML() + guidesPanelHTML());
+  gridSyncEffNote();   // the panel was just rebuilt blank; restate which step is live
   attachGuideSortable();                                   // re-bind drag-to-reorder on the guide cards each render
 }
 function renderNodeLeft(L, l) {
