@@ -289,6 +289,9 @@
     width: 100%; min-width: 0; box-sizing: border-box;
   }
   .fld-help { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border: none; padding: 0; border-radius: 50%; background: var(--border); color: var(--muted); font-family: inherit; font-size: 0.66rem; font-weight: 700; cursor: pointer; text-decoration: none; vertical-align: middle; }
+  /* 24px operable box without repainting the 15px badge — the ::after is the pointer target (WCAG 2.5.8); painted size unchanged. */
+  .fld-help { position: relative; }
+  .fld-help::after { content: ''; position: absolute; inset: -4.5px; }
   .fld-help:hover { background: var(--gold); color: #fff; }
   .row2 { display: flex; gap: 8px; }
   .row2 > * { flex: 1; min-width: 0; }
@@ -1019,7 +1022,7 @@
   .vslider-pair { display: flex; gap: 16px; justify-content: center; padding: 6px 0; }
   .vslider-col { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 0.7rem; font-weight: 600; color: var(--muted); text-align: center; }
   .vslider-col .vslabel { max-width: 84px; line-height: 1.2; min-height: 2.4em; display: flex; align-items: flex-end; justify-content: center; text-align: center; }
-  .vslider-col input[type=range] { writing-mode: vertical-lr; direction: rtl; width: 22px; height: 150px; accent-color: var(--gold); }
+  .vslider-col input[type=range] { writing-mode: vertical-lr; direction: rtl; width: 24px; height: 150px; accent-color: var(--gold); /* operable box at the slider floor (3ae6891 pattern, rotated — width is the cross axis here); native was 22px */ }
   .vslider-col .vsval { font-family: ui-monospace, Menlo, monospace; color: var(--text); }
   /* 2-col square preview buttons (vowels / trop) */
   .mark-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
