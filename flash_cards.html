@@ -1406,6 +1406,12 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
   .letter-tile { font-size: 1.5rem; min-height: 50px; }
   .vtile .vheb { font-size: 1.3rem; }
   .count-grid { grid-template-columns: repeat(5, 1fr); }
+  /* A nowrap pill row wider than its panel is CLIPPED, not scrolled: .panel is overflow:hidden
+     (it clips .panel-title to the rounded corners), so on a 320px phone the 4 Mode pills ran
+     20px past the panel and "Other" lost the tail of its label. Wrapping is the robust fix —
+     it can't clip whatever a label translates to — and it is what #timerModePills and
+     #timeLimitPills already do inline. Groups that fit still stay on one line. */
+  .pill-group { flex-wrap: wrap; }
 }
 /* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */
 .ft-tree { display:flex; flex-direction:column; gap:4px; }
