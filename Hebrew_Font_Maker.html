@@ -1190,6 +1190,21 @@
 .hk-util .hk-key{flex:1;min-height:34px;font-size:0.72rem;font-weight:600;}
 @media (prefers-reduced-motion: reduce){.hk-toggle,.hk-tab,.hk-layout,.hk-key{transition-duration:0.001ms!important;}}
 /* ═══ end shared: hebrew-keyboard CSS ═══════════════════════════════════════ */
+
+/* ═══ shared: test-phrases CSS ═══════════════════════════════════════════════
+   Ready-made Hebrew sample phrases for a font-preview field. Copy this block
+   verbatim alongside the matching JS block (keep byte-identical across
+   carriers; carriers: resources.html, Hebrew_Font_Maker.html). Colors ride the
+   suite tokens (with fallbacks), so dark mode needs no extra rules; the
+   reduced-motion tail is self-contained so the block stays portable to pages
+   without a universal neutralizer. ═══════════════════════════════════════ */
+.tp-row{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-block-start:10px;}
+.tp-row:empty{display:none;}
+.tp-label{font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted,#6b6050);}
+.tp-chip{font-family:inherit;font-size:0.72rem;line-height:1.4;padding:4px 11px;min-height:24px;border:1px solid var(--border,#c8bfa8);border-radius:999px;background:var(--white,#fff);color:var(--text,#1a2744);cursor:pointer;transition:border-color 0.15s,color 0.15s;}
+.tp-chip:hover{border-color:var(--gold,#c9922a);color:var(--gold,#c9922a);}
+@media (prefers-reduced-motion: reduce){.tp-chip{transition-duration:0.001ms!important;}}
+/* ═══ end shared: test-phrases CSS ═══════════════════════════════════════ */
 </style>
 </head>
 <body>
@@ -3602,7 +3617,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.28</strong> &mdash; <strong>Type your sample text without a Hebrew keyboard.</strong> The <span class="ui">Sample text</span> box in the <span class="ui">Spacing</span> tab is where you check how your letters sit together &mdash; but it quietly assumed you could type Hebrew in the first place. Without a Hebrew layout installed you were stuck with whatever was already in the box, and even with one, nikkud and trop are close to untypeable. A new <span class="ui">&#9000; Show Hebrew Keyboard</span> button under the field opens a full on-screen keyboard: every letter (in alef-bet order or the Israeli layout, whichever you prefer), all thirteen vowels plus the dots, and the complete set of cantillation marks. Keys type into the box <strong>at your cursor</strong>, so you can drop a vowel onto a letter you already typed, and Backspace peels off one mark at a time &mdash; exactly what you want when you are testing how a holam sits above a shin. And if your font is not set up for nikkud or trop, the matching tab says so, instead of leaving you wondering why nothing shows up in the preview. <span style="color:var(--muted);">(August 2026)</span></li>
+      <li><strong>v5.28</strong> &mdash; <strong>Type your sample text without a Hebrew keyboard.</strong> The <span class="ui">Sample text</span> box in the <span class="ui">Spacing</span> tab is where you check how your letters sit together &mdash; but it quietly assumed you could type Hebrew in the first place. Without a Hebrew layout installed you were stuck with whatever was already in the box, and even with one, nikkud and trop are close to untypeable. A new <span class="ui">&#9000; Show Hebrew Keyboard</span> button under the field opens a full on-screen keyboard: every letter (in alef-bet order or the Israeli layout, whichever you prefer), all thirteen vowels plus the dots, and the complete set of cantillation marks. Keys type into the box <strong>at your cursor</strong>, so you can drop a vowel onto a letter you already typed, and Backspace peels off one mark at a time &mdash; exactly what you want when you are testing how a holam sits above a shin. And if your font is not set up for nikkud or trop, the matching tab says so, instead of leaving you wondering why nothing shows up in the preview. <strong>And a row of ready-made samples sits beside it.</strong> Shalom, a pangram that uses every letter, the whole alef-bet with its final forms, every vowel in turn, a cantillated verse, and Hebrew next to digits and Latin &mdash; one click each, so checking your font against the hard cases stops being a typing exercise. The same row is on the font gallery&rsquo;s preview, for trying a font before you download it. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.27</strong> &mdash; <strong>The graph paper is already out when you sit down.</strong> The canvas grid did everything it promised &mdash; but only for people who already knew it was there. It started hidden, so the everyday measuring questions it was built for (is this stem the same width as the last one, did this vowel clear the baseline by the amount I meant) went on being answered by eye unless you went hunting for a checkbox. It now starts <strong>switched on</strong>: open a letter and the graph paper is waiting, measured in font units from the origin and the baseline. <strong>And nothing sticks to it.</strong> A grid you did not ask for should not quietly move your work, so <span class="ui">Snap to grid</span> now starts <strong>off</strong> &mdash; the lines are there to measure against, and your points land exactly where you put them until you switch snapping on yourself. Both toggles are where they always were: the <span class="ui">Grid</span> panel beside the canvas, <span class="ui">Settings &rarr; Canvas</span>, or <span class="ui">Shift + G</span> for the grid at any time &mdash; and whichever way you set them is remembered on this device. If you had already chosen for yourself, your choice is kept. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.26</strong> &mdash; <strong>Tidy up a drawn letter without losing your hand.</strong> Drawing with a finger or a stylus leaves strokes that are nearly straight but not quite, and stems that stop a hair above the baseline instead of sitting on it. A new <span class="ui">Tidy strokes</span> button in the <span class="ui">Draw</span> panel fixes those two things and nothing else: a stroke that is already almost a straight line becomes one, and a loose end resting just beside a guide or the baseline moves onto it. It runs only when you press it &mdash; nothing shifts under your pen while you are drawing &mdash; and the whole tidy is a single undo, so if it smoothed away something you meant to keep, one Ctrl+Z gives your handwriting back exactly as it was. <em>(August 2026)</em></li>
       <li><strong>v5.25</strong> &mdash; <strong>Fullscreen finally means &ldquo;just the canvas&rdquo; while you draw.</strong> Fullscreen already hid the header and footer, but the drawing canvas still shared the screen with every settings panel &mdash; on a tablet it stayed capped at a small box with the pen tools somewhere below the fold, so a stylus meant scrolling between a stroke and its Save. Now, whenever you are actually on the <span class="ui">Draw</span> step in fullscreen, the settings column folds away and the canvas takes the screen &mdash; and on a wide screen the pen tools move to sit right beside it. On a tablet, where the screen is too short for that, the two Save buttons instead stay pinned to the bottom edge while you draw, so finishing a letter never means scrolling off to look for them. And if you need a pen width or a guide mid&#8209;letter, a <span class="ui">Show Panels</span> button in the corner brings the settings back without leaving fullscreen &mdash; the Font Maker remembers which way you like it. Leave fullscreen, or move to another step, and your normal workspace comes straight back exactly as it was. <em>(August 2026)</em></li>
@@ -12754,6 +12769,7 @@ function renderSpacingPanel() {
     <label class="fld">${I18n.t('fontmaker.panels.sample_text')} <input type="text" id="spacingSample" dir="rtl" value="${esc(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
     ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" onclick="insertSampleGlyph('${l.codepoint}')" title="${esc(window.I18n ? I18n.t('fontmaker.tip.add_glyph_sample', {name: l.name || ('U+' + l.codepoint)}) : "Add " + (l.name || ('U+' + l.codepoint)) + " to the sample text (it can't be typed on a keyboard)")}">${esc(_pT('add_glyph_sample', '+ ' + (l.name || ('U+' + l.codepoint)), {name: l.name || ('U+' + l.codepoint)}))}</button>`).join('')}</div>` : ''}
     ${project.font.nikkud.enabled ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;align-items:center;"><span class="hint" style="font-size:0.66rem;">${I18n.t('fontmaker.panels.test_combos_label')}</span>${SAMPLE_TEST_COMBOS.map(c => { const s = sampleComboStr(c); return `<button class="ctl-btn" style="padding:2px 8px;font-size:0.8rem;" onclick="insertSampleCombo('${c}')" title="${esc(I18n.t('fontmaker.panels.test_combos_tip', { combo: s }))}">+ <span lang="he" style="font-family:var(--heb-font);direction:rtl;">${s}</span></button>`; }).join('')}</div>` : ''}
+    <div class="tp-row" id="fmPhrases"></div>
     <button type="button" class="hk-toggle" id="fmKbdToggle" aria-expanded="false" aria-controls="fmKbdPanel">⌨ Show Hebrew Keyboard</button>
     <div class="hk-panel" id="fmKbdPanel" hidden></div>
     <div class="hint">${I18n.t('fontmaker.panels.spacing_hint')}</div>
@@ -12769,6 +12785,7 @@ function renderSpacingPanel() {
   renderSpacingPreview();
   renderKerningSection();
   mountSampleKeyboard(kbd);
+  mountSamplePhrases();
 }
 function setLetterSpacing(v) { udBurstBegin([{t:'spacing'}], 'letter spacing'); fontSpacing().letterSpacing = Math.max(-40, Math.min(200, +v||0)); const s = document.getElementById('lsV'); if (s) s.textContent = fontSpacing().letterSpacing; renderSpacingPreview(); }
 function setWordSpacing(v)   { udBurstBegin([{t:'spacing'}], 'word spacing'); fontSpacing().wordSpacing   = Math.max(80,  Math.min(600, +v||0)); const s = document.getElementById('wsV'); if (s) s.textContent = fontSpacing().wordSpacing;   renderSpacingPreview(); }
@@ -16634,6 +16651,86 @@ function mountHebrewKeyboard(cfg) {
   };
 }
 /* ═══ end shared: hebrew-keyboard ════════════════════════════════════════════ */
+
+/* ═══ shared: test-phrases ═══════════════════════════════════════════════════
+   One-click Hebrew sample phrases for a font-preview field. Copy this block
+   verbatim, together with the matching `shared: test-phrases CSS` block (keep
+   both byte-identical across carriers; carriers: resources.html,
+   Hebrew_Font_Maker.html), then mount per page:
+
+     tp = mountTestPhrases({ container, getInput, onChange });
+
+   - container: an empty <div class="tp-row">; getInput() → the field to fill
+     (the same one the on-screen keyboard types into, where a page has both).
+   - onChange() runs after the field is filled — a scripted value change fires
+     NO 'input' event, so the host re-renders through this callback, exactly as
+     it does for the keyboard. A chip REPLACES the field's contents.
+   - Returned controller: { applyI18n() }. Call it from the page's applyI18n()
+     (pure re-render, read-only); a host that rebuilds its own markup re-mounts
+     instead — the row holds no state.
+
+   Each phrase isolates ONE thing, so a font builder can tell which part of the
+   font a problem is in. The phrases are Hebrew CONTENT and are deliberately
+   never translated (i18n-ignore); only the chip labels and their title tips
+   are, under shared.phrases.* in locales/ui-strings.csv — so adopting the
+   block adds no CSV rows. All identifiers are TP_/tp-prefixed so the block
+   drops safely into a page that already defines its own helpers. ══════════ */
+const TP_PHRASES = [
+  ['shalom',  'שָׁלוֹם עוֹלָם'],                              // the suite's own default sample, pointed
+  ['pangram', 'דג סקרן שט בים מאוכזב ולפתע מצא חברה'],       // real words touching every letter
+  ['alefbet', 'אבגדהוזחטיכלמנסעפצקרשת ךםןףץ'],               // all 22 in order, then the five finals
+  ['nikkud',  'אַ אָ אֶ אֵ אִ אֹ אֻ אוּ אְ אֲ אֳ אֱ'],              // every vowel on one carrier letter
+  ['trop',    'וַיְהִ֣י ׀ בִּימֵ֣י אֲחַשְׁוֵר֑וֹשׁ'],                    // Esther 1:1 — nikkud and trop stacked
+  ['mixed',   'שָׁלוֹם 1234 Aa']                              // Hebrew beside digits and Latin
+];
+function tpT(key) { return window.I18n ? I18n.t(key) : key.slice(key.lastIndexOf('.') + 1); }
+function mountTestPhrases(cfg) {
+  const box = cfg.container;
+
+  function render() {
+    box.textContent = '';
+    const lab = document.createElement('span');
+    lab.className = 'tp-label';
+    lab.textContent = tpT('shared.phrases.label');
+    box.appendChild(lab);
+    TP_PHRASES.forEach(p => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'tp-chip'; b.dataset.tp = p[0];
+      b.textContent = tpT('shared.phrases.' + p[0]);
+      b.title = tpT('shared.phrases.' + p[0] + '_tip');
+      box.appendChild(b);
+    });
+  }
+
+  box.addEventListener('pointerdown', e => e.preventDefault());   // chips never steal focus from the field
+  box.addEventListener('click', e => {
+    const btn = e.target.closest('[data-tp]');
+    if (!btn || !box.contains(btn)) return;
+    const inp = cfg.getInput(); if (!inp) return;
+    const hit = TP_PHRASES.find(p => p[0] === btn.dataset.tp); if (!hit) return;
+    inp.value = hit[1];
+    if (inp.setSelectionRange) inp.setSelectionRange(inp.value.length, inp.value.length);
+    inp.focus();
+    if (cfg.onChange) cfg.onChange();   // a scripted value change fires no 'input' event
+  });
+
+  render();
+  return { applyI18n: render };
+}
+/* ═══ end shared: test-phrases ═══════════════════════════════════════════ */
+
+/* Same field and same commit path as the keyboard above; stateless, so the rebuild
+   just re-mounts it. A chip REPLACES the sample text — one undo entry, so Ctrl+Z
+   (once focus leaves the field) puts the previous sample back. */
+function mountSamplePhrases() {
+  const row = document.getElementById('fmPhrases');
+  if (!row) return;
+  mountTestPhrases({
+    container: row,
+    getInput: () => document.getElementById('spacingSample'),
+    onChange: () => { const i = document.getElementById('spacingSample'); if (!i) return; setSpacingSample(i.value); udBurstCommit(); }
+  });
+}
 
 /* ── page wiring: the Spacing tab's sample-text field ───────────────────────
    This host is not static like the other carriers: renderSpacingPanel()

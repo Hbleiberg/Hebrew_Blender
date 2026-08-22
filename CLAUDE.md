@@ -26,6 +26,7 @@
 - [Dark Mode](#dark-mode-classroom_dashboardhtml)
 - [Hebrew Font UI](#hebrew-font-ui-classroom_dashboardhtml)
 - [On-Screen Hebrew Keyboard — shared component](#on-screen-hebrew-keyboard--shared-component-resourceshtml)
+- [Test-phrase chips — shared component](#test-phrase-chips--shared-component-font-pages-only)
 - [Hebrew Font Maker](#hebrew-font-maker-hebrew_font_makerhtml)
 - [Nikkud Color Coding UI](#nikkud-color-coding-ui-classroom_dashboardhtml)
 - [Settings Drawer & Panel Collapse](#settings-drawer--panel-collapse-classroom_dashboardhtml) (persistence: [Panel-collapse memory](#shared-ux-components--the-conventions-all-tools-are-converging-on))
@@ -796,6 +797,57 @@ shared component so any tool can adopt it.
   component stays correct on a page without the universal neutralizer.
 - **Coverage hint:** when `getFontFlags()` reports `nikkud:false`/`trop:false`, the matching tab shows
   a `shared.kbd.hint_no_nikkud`/`_no_trop` note naming the font ({name} param); keys stay enabled.
+
+---
+
+## Test-phrase chips — shared component (font pages only)
+
+A row of one-click Hebrew sample phrases that fill a font-preview field: **Shalom · Pangram ·
+Alef-bet · Nikkud · Trop · Mixed**. Each phrase isolates **one** thing, so a font builder can tell
+which part of a font a problem is in — letters vs. vowels vs. cantillation vs. mixed script —
+instead of squinting at one sentence that mixes them. Modeled on the Open Siddur catalogue's
+"Test your text in every font" popup.
+
+### Rule: add these ONLY when asked
+They belong on pages *about fonts*, where the field feeds a type specimen. A search box, a worksheet
+title or a video URL has no specimen to show, and a row of chips there is noise — so this is not a
+pattern new tools adopt by default, unlike the `.ivrit` engine or panel-collapse memory. Current
+carriers: **`Hebrew_Font_Maker.html`** (the Spacing tab's sample-text field) and **`resources.html`**
+(the font-download page's preview modal). Deliberately **not** on `hebrew_dictionary.html`, which
+carries the on-screen keyboard on its search box but has nothing to specimen.
+
+### The two shared blocks (byte-identical, like the keyboard)
+`/* ═══ shared: test-phrases CSS ═══ … */` (the `.tp-*` rules) and
+`/* ═══ shared: test-phrases ═══ … */` (`TP_PHRASES` + `mountTestPhrases`). **Copy both verbatim;
+never rewrite.** When a page adopts them, re-true the carrier list in the marker comments of **all**
+carriers and re-verify byte-identity by sha. Everything is `TP_`/`tp`-prefixed and the DOM is built
+with `createElement`/`textContent`, so the block drops safely into any page; per-page wiring lives
+**below** the end marker.
+
+### Host contract
+```js
+tp = mountTestPhrases({ container, getInput, onChange });   // container: an empty <div class="tp-row">
+```
+- On a page that also carries the keyboard, **pass the same `getInput`/`onChange`** — the two
+  components edit one field and re-render through one callback.
+- `onChange` is **required**, for the same reason it is on the keyboard: a scripted `input.value =`
+  fires **no `input` event**, so the host's own `oninput` never runs.
+- A chip **replaces** the field's contents (a phrase is a whole specimen, not an insertion), parks
+  the caret at the end, and refocuses the field.
+- Call `tp.applyI18n()` from the page's `applyI18n()`; a host that rebuilds its own markup
+  re-mounts instead (the row holds no state — see the keyboard's re-mount rule, step 4).
+- Where the field feeds an undo-tracked model, `onChange` closes the burst the same way the keyboard
+  does (`setSpacingSample(v); udBurstCommit();`), so one chip is one undoable step.
+
+### Data + i18n rules
+- **The phrases are Hebrew content and are never translated** (`i18n-ignore`) — only the chip labels
+  and their `title` tips are, under `shared.phrases.*`. Those **13 rows are already in the CSV, so
+  adopting the block adds none.**
+- Vav-holam/shuruk stay **decomposed** inside the phrase strings, like everywhere else in the suite;
+  never an FB-block precomposed codepoint.
+- Adding or changing a phrase means adding its `shared.phrases.<key>` **and** `<key>_tip` rows (en
+  **and** he, so Check B stays clean), and keeping the one-phrase-one-purpose split — don't fold
+  trop into the nikkud sample or the tester stops localizing faults.
 
 ---
 

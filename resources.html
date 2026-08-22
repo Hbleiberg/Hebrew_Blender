@@ -326,6 +326,21 @@ body.dark .fp-no{color:#e06b5b;}
 @media (prefers-reduced-motion: reduce){.hk-toggle,.hk-tab,.hk-layout,.hk-key{transition-duration:0.001ms!important;}}
 /* ═══ end shared: hebrew-keyboard CSS ═══════════════════════════════════════ */
 
+/* ═══ shared: test-phrases CSS ═══════════════════════════════════════════════
+   Ready-made Hebrew sample phrases for a font-preview field. Copy this block
+   verbatim alongside the matching JS block (keep byte-identical across
+   carriers; carriers: resources.html, Hebrew_Font_Maker.html). Colors ride the
+   suite tokens (with fallbacks), so dark mode needs no extra rules; the
+   reduced-motion tail is self-contained so the block stays portable to pages
+   without a universal neutralizer. ═══════════════════════════════════════ */
+.tp-row{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-block-start:10px;}
+.tp-row:empty{display:none;}
+.tp-label{font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted,#6b6050);}
+.tp-chip{font-family:inherit;font-size:0.72rem;line-height:1.4;padding:4px 11px;min-height:24px;border:1px solid var(--border,#c8bfa8);border-radius:999px;background:var(--white,#fff);color:var(--text,#1a2744);cursor:pointer;transition:border-color 0.15s,color 0.15s;}
+.tp-chip:hover{border-color:var(--gold,#c9922a);color:var(--gold,#c9922a);}
+@media (prefers-reduced-motion: reduce){.tp-chip{transition-duration:0.001ms!important;}}
+/* ═══ end shared: test-phrases CSS ═══════════════════════════════════════ */
+
 /* ── Toast (Use-in-IvritSuite feedback) ── */
 #fontToast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:8px;font-size:0.86rem;box-shadow:0 6px 24px rgba(0,0,0,0.32);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s;max-width:90vw;text-align:center;}
 #fontToast.show{opacity:1;}
@@ -946,6 +961,7 @@ function applyI18n() {
   render();
   renderFonts();
   if (_hk) _hk.applyI18n();   // read-only re-render of the on-screen keyboard labels
+  if (_tp) _tp.applyI18n();   // …and of the test-phrase chip labels (the phrases stay Hebrew)
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -973,6 +989,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } catch(e) {}
   initHebrewKeyboard();   // must run at DOM-ready: the modal markup is parsed after this script
+  initTestPhrases();
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
 });
 
@@ -1256,6 +1273,73 @@ function mountHebrewKeyboard(cfg) {
 }
 /* ═══ end shared: hebrew-keyboard ════════════════════════════════════════════ */
 
+/* ═══ shared: test-phrases ═══════════════════════════════════════════════════
+   One-click Hebrew sample phrases for a font-preview field. Copy this block
+   verbatim, together with the matching `shared: test-phrases CSS` block (keep
+   both byte-identical across carriers; carriers: resources.html,
+   Hebrew_Font_Maker.html), then mount per page:
+
+     tp = mountTestPhrases({ container, getInput, onChange });
+
+   - container: an empty <div class="tp-row">; getInput() → the field to fill
+     (the same one the on-screen keyboard types into, where a page has both).
+   - onChange() runs after the field is filled — a scripted value change fires
+     NO 'input' event, so the host re-renders through this callback, exactly as
+     it does for the keyboard. A chip REPLACES the field's contents.
+   - Returned controller: { applyI18n() }. Call it from the page's applyI18n()
+     (pure re-render, read-only); a host that rebuilds its own markup re-mounts
+     instead — the row holds no state.
+
+   Each phrase isolates ONE thing, so a font builder can tell which part of the
+   font a problem is in. The phrases are Hebrew CONTENT and are deliberately
+   never translated (i18n-ignore); only the chip labels and their title tips
+   are, under shared.phrases.* in locales/ui-strings.csv — so adopting the
+   block adds no CSV rows. All identifiers are TP_/tp-prefixed so the block
+   drops safely into a page that already defines its own helpers. ══════════ */
+const TP_PHRASES = [
+  ['shalom',  'שָׁלוֹם עוֹלָם'],                              // the suite's own default sample, pointed
+  ['pangram', 'דג סקרן שט בים מאוכזב ולפתע מצא חברה'],       // real words touching every letter
+  ['alefbet', 'אבגדהוזחטיכלמנסעפצקרשת ךםןףץ'],               // all 22 in order, then the five finals
+  ['nikkud',  'אַ אָ אֶ אֵ אִ אֹ אֻ אוּ אְ אֲ אֳ אֱ'],              // every vowel on one carrier letter
+  ['trop',    'וַיְהִ֣י ׀ בִּימֵ֣י אֲחַשְׁוֵר֑וֹשׁ'],                    // Esther 1:1 — nikkud and trop stacked
+  ['mixed',   'שָׁלוֹם 1234 Aa']                              // Hebrew beside digits and Latin
+];
+function tpT(key) { return window.I18n ? I18n.t(key) : key.slice(key.lastIndexOf('.') + 1); }
+function mountTestPhrases(cfg) {
+  const box = cfg.container;
+
+  function render() {
+    box.textContent = '';
+    const lab = document.createElement('span');
+    lab.className = 'tp-label';
+    lab.textContent = tpT('shared.phrases.label');
+    box.appendChild(lab);
+    TP_PHRASES.forEach(p => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'tp-chip'; b.dataset.tp = p[0];
+      b.textContent = tpT('shared.phrases.' + p[0]);
+      b.title = tpT('shared.phrases.' + p[0] + '_tip');
+      box.appendChild(b);
+    });
+  }
+
+  box.addEventListener('pointerdown', e => e.preventDefault());   // chips never steal focus from the field
+  box.addEventListener('click', e => {
+    const btn = e.target.closest('[data-tp]');
+    if (!btn || !box.contains(btn)) return;
+    const inp = cfg.getInput(); if (!inp) return;
+    const hit = TP_PHRASES.find(p => p[0] === btn.dataset.tp); if (!hit) return;
+    inp.value = hit[1];
+    if (inp.setSelectionRange) inp.setSelectionRange(inp.value.length, inp.value.length);
+    inp.focus();
+    if (cfg.onChange) cfg.onChange();   // a scripted value change fires no 'input' event
+  });
+
+  render();
+  return { applyI18n: render };
+}
+/* ═══ end shared: test-phrases ═══════════════════════════════════════════ */
+
 /* ── On-screen Hebrew keyboard wiring (this page: the font-preview modal input).
    Per-page, below the end marker — the shared block stays byte-identical. ── */
 let _hk = null;
@@ -1268,6 +1352,18 @@ function initHebrewKeyboard() {
     getInput: () => document.getElementById('fontPreviewInput'),
     onChange: updateFontPreview,
     getFontFlags: () => _fpFont ? { nikkud: !!_fpFont.nikkud, trop: !!_fpFont.trop, name: _fpFont.name } : null
+  });
+}
+
+/* ── Test-phrase chips: same field, same re-render callback as the keyboard. ── */
+let _tp = null;
+function initTestPhrases() {
+  const row = document.getElementById('fpPhrases');
+  if (!row) return;
+  _tp = mountTestPhrases({
+    container: row,
+    getInput: () => document.getElementById('fontPreviewInput'),
+    onChange: updateFontPreview
   });
 }
 
@@ -1678,6 +1774,7 @@ function openSubmitFont(pf) {
     <div class="sg-modal-body">
       <label for="fontPreviewInput" class="sg-hint" style="display:block;margin-bottom:6px;" data-i18n="resources.preview.input_label">Type Hebrew (or anything) to preview in this font:</label>
       <input type="text" id="fontPreviewInput" dir="rtl" lang="he" oninput="updateFontPreview()" value="שָׁלוֹם עוֹלָם">
+      <div class="tp-row" id="fpPhrases"></div>
       <!-- On-screen Hebrew keyboard: label is state-dependent (Show/Hide), so JS owns it — no data-i18n
            (applyStaticI18n would stomp the expanded-state label); the English text is the pre-I18n fallback. -->
       <button type="button" class="hk-toggle" id="fpKbdToggle" aria-expanded="false" aria-controls="fpKbdPanel">⌨ Show Hebrew Keyboard</button>
