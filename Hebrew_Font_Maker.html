@@ -1368,7 +1368,7 @@
           </div>
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_grid_label">Grid</div>
-            <label class="chk" title="Show graph-paper grid lines across the editing canvas (Shift + G)" data-i18n-title="fontmaker.panels.adv_grid_title"><input type="checkbox" id="showGridChk" onchange="setGridShown(this.checked)" aria-label="Show graph-paper grid lines across the editing canvas (Shift + G)" data-i18n-aria-label="fontmaker.panels.adv_grid_title"> <span data-i18n="fontmaker.panels.adv_show_grid">Show canvas grid</span></label>
+            <label class="chk" title="Show graph-paper grid lines across the editing canvas (Shift + G)" data-i18n-title="fontmaker.panels.adv_grid_title"><input type="checkbox" id="showGridChk" checked onchange="setGridShown(this.checked)" aria-label="Show graph-paper grid lines across the editing canvas (Shift + G)" data-i18n-aria-label="fontmaker.panels.adv_grid_title"> <span data-i18n="fontmaker.panels.adv_show_grid">Show canvas grid</span></label>
             <div class="hint" data-i18n-html="fontmaker.panels.adv_grid_hint">Graph paper across the editing canvas, spaced in <strong>font units</strong> like the rulers &mdash; handy for matching stroke widths and keeping vowels a consistent distance from the baseline. Spacing, the heavier every-Nth line, opacity and <strong>snapping</strong> live in the <span class="ui">Grid</span> panel beside the canvas, where you can see them change. Shortcut: <strong>Shift + G</strong>.</div>
           </div>
         </div>
@@ -1422,7 +1422,7 @@
           <span class="nb-sep" aria-hidden="true"></span>
           <button class="ctl-btn nb-btn nb-toggle" id="nodeHandlesBtn" aria-pressed="false" onclick="setNodeHandlesAll(!_nodeHandlesAll)" title="Show curve handles on every point (off: selected points only)" data-i18n-title="fontmaker.node_editor.handles_title" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">⌖</span> <span class="nb-label" data-i18n="fontmaker.node_editor.handles">Handles</span></button>
           <button class="ctl-btn nb-btn nb-toggle" id="nodeGuidesBtn" aria-pressed="true" onclick="setNodeGuidesShown(!_nodeGuidesOn)" title="Show guide and metric lines (view only — snapping is unaffected)" data-i18n-title="fontmaker.node_editor.guides_title" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">▦</span> <span class="nb-label" data-i18n="fontmaker.node_editor.guides">Guides</span></button>
-          <button class="ctl-btn nb-btn nb-toggle" id="nodeGridBtn" aria-pressed="false" onclick="setGridShown(!_gridOn)" title="Show the canvas grid (Shift + G)" data-i18n-title="fontmaker.node_editor.grid_title" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">⊞</span> <span class="nb-label" data-i18n="fontmaker.node_editor.grid">Grid</span></button>
+          <button class="ctl-btn nb-btn nb-toggle" id="nodeGridBtn" aria-pressed="true" onclick="setGridShown(!_gridOn)" title="Show the canvas grid (Shift + G)" data-i18n-title="fontmaker.node_editor.grid_title" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">⊞</span> <span class="nb-label" data-i18n="fontmaker.node_editor.grid">Grid</span></button>
           <label class="chk nb-snap" title="Snap dragged points to guides, metric lines and the grid (Alt bypasses)" data-i18n-title="fontmaker.node_editor.snap_title"><input type="checkbox" id="nodeSnapChk" onchange="setSnapGuides(this.checked)" onkeydown="nodeBarKey(event, this)" tabindex="-1" aria-label="Snap dragged points to guides, metric lines and the grid (Alt bypasses)" data-i18n-aria-label="fontmaker.node_editor.snap_title"> <span class="nb-glyph" aria-hidden="true">🧲</span><span class="nb-label" data-i18n="fontmaker.node_editor.snap">Snap</span></label>
         </div>
         <div class="stage-wrap" dir="ltr">
@@ -3342,7 +3342,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.26';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.27';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3562,6 +3562,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.27</strong> &mdash; <strong>The graph paper is already out when you sit down.</strong> The canvas grid did everything it promised &mdash; but only for people who already knew it was there. It started hidden, so the everyday measuring questions it was built for (is this stem the same width as the last one, did this vowel clear the baseline by the amount I meant) went on being answered by eye unless you went hunting for a checkbox. It now starts <strong>switched on</strong>: open a letter and the graph paper is waiting, measured in font units from the origin and the baseline. <strong>And nothing sticks to it.</strong> A grid you did not ask for should not quietly move your work, so <span class="ui">Snap to grid</span> now starts <strong>off</strong> &mdash; the lines are there to measure against, and your points land exactly where you put them until you switch snapping on yourself. Both toggles are where they always were: the <span class="ui">Grid</span> panel beside the canvas, <span class="ui">Settings &rarr; Canvas</span>, or <span class="ui">Shift + G</span> for the grid at any time &mdash; and whichever way you set them is remembered on this device. If you had already chosen for yourself, your choice is kept. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.26</strong> &mdash; <strong>Tidy up a drawn letter without losing your hand.</strong> Drawing with a finger or a stylus leaves strokes that are nearly straight but not quite, and stems that stop a hair above the baseline instead of sitting on it. A new <span class="ui">Tidy strokes</span> button in the <span class="ui">Draw</span> panel fixes those two things and nothing else: a stroke that is already almost a straight line becomes one, and a loose end resting just beside a guide or the baseline moves onto it. It runs only when you press it &mdash; nothing shifts under your pen while you are drawing &mdash; and the whole tidy is a single undo, so if it smoothed away something you meant to keep, one Ctrl+Z gives your handwriting back exactly as it was. <em>(August 2026)</em></li>
       <li><strong>v5.25</strong> &mdash; <strong>Fullscreen finally means &ldquo;just the canvas&rdquo; while you draw.</strong> Fullscreen already hid the header and footer, but the drawing canvas still shared the screen with every settings panel &mdash; on a tablet it stayed capped at a small box with the pen tools somewhere below the fold, so a stylus meant scrolling between a stroke and its Save. Now, whenever you are actually on the <span class="ui">Draw</span> step in fullscreen, the settings column folds away and the canvas takes the screen &mdash; and on a wide screen the pen tools move to sit right beside it. On a tablet, where the screen is too short for that, the two Save buttons instead stay pinned to the bottom edge while you draw, so finishing a letter never means scrolling off to look for them. And if you need a pen width or a guide mid&#8209;letter, a <span class="ui">Show Panels</span> button in the corner brings the settings back without leaving fullscreen &mdash; the Font Maker remembers which way you like it. Leave fullscreen, or move to another step, and your normal workspace comes straight back exactly as it was. <em>(August 2026)</em></li>
       <li><strong>v5.24</strong> &mdash; <strong>Yiddish gets its pasekh tsvey yudn (<span lang="he" dir="rtl">&#1522;&#1463;</span>).</strong> The <span class="ui">Yiddish</span> tab covered the two-yud digraph but not the one Yiddish actually writes most: <span lang="he" dir="rtl">&#1522;&#1463;</span>, the standard spelling of the <em>ay</em> sound. Old Yiddish text stores it as a single character, and a font built here had nothing at that slot, so those words came out as empty boxes. Now the form is built from your own letters and ships with the tab &mdash; and typing the two-yud digraph followed by a pasekh composes to the very same glyph, so both spellings look identical. <strong>It also picks up your own pasekh.</strong> If you drew your own pasekh shape, it used to be quietly swapped for the standard one here; it now carries through, exactly as your own dagesh already does on <span lang="he" dir="rtl">&#1513;&#1468;&#1473;</span>. (August 2026)</li>
@@ -3678,7 +3679,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3691,7 +3692,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_26';
+  const CUR_KEY = 'fontmaker.changelog.v5_27';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -10450,8 +10451,8 @@ const GRID_STEP_DEF = 50, GRID_MAJOR_DEF = 4, GRID_OPACITY_DEF = 0.5;
 function clampGridStep(v)    { v = Math.round(+v); return isFinite(v) ? Math.min(1000, Math.max(1, v)) : GRID_STEP_DEF; }
 function clampGridMajor(v)   { v = Math.round(+v); return isFinite(v) ? Math.min(100, Math.max(0, v)) : GRID_MAJOR_DEF; }   // 0 ⇒ no heavy line; 1 ⇒ every line heavy
 function clampGridOpacity(v) { v = +v; return isFinite(v) ? Math.min(1, Math.max(0.05, v)) : GRID_OPACITY_DEF; }
-let _gridOn      = wsReadPrefs().gridOn === true;        // absent ⇒ off (unlike the rulers, this draws OVER the glyph)
-let _gridSnapOn  = wsReadPrefs().gridSnapOff !== true;   // stored inverted, per nodeGuidesOff/rulersOff ⇒ absent means snap
+let _gridOn      = wsReadPrefs().gridOn !== false;       // absent ⇒ shown (an explicit off is still honoured)
+let _gridSnapOn  = wsReadPrefs().gridSnapOff === false;  // stored inverted, but absent ⇒ NO snap: the grid now shows by default, so sticking to it stays opt-in
 let _gridStep    = clampGridStep(wsReadPrefs().gridStep);
 let _gridMajor   = clampGridMajor(wsReadPrefs().gridMajor);
 let _gridOpacity = clampGridOpacity(wsReadPrefs().gridOpacity);
