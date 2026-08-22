@@ -3230,7 +3230,7 @@ const HELP_CONTENT = {
     </p>
     <p>Here's the whole journey, start to finish:</p>
     <ol>
-      <li><strong>Upload</strong> a clear picture of each letter.</li>
+      <li><strong>Add your letters</strong> — upload a clear picture of each one, or draw them right on screen.</li>
       <li><strong>Trace</strong> — the tool turns each picture into a clean outline.</li>
       <li><strong>Anchor</strong> — show where the vowel dots sit on each letter.</li>
       <li><strong>Spacing</strong> — fine-tune the gaps between letters and words.</li>
@@ -3242,11 +3242,12 @@ const HELP_CONTENT = {
   `,
   upload: `
     <h4>Uploading your letters</h4>
-    <p>You'll bring in a picture of each of the 27 Hebrew letters. Clear <strong>dark ink on white paper</strong> works best. Pick how you want to add them in the <span class="ui">Add Letters</span> panel on the left:</p>
+    <p>You'll add each of the 27 Hebrew letters — from a picture, from a font file, or by drawing them on screen. If you're using pictures, clear <strong>dark ink on white paper</strong> works best. Pick how you want to add them in the <span class="ui">Add Letters</span> panel on the left:</p>
     <ul>
       <li><span class="ui">One letter per image</span> — upload one photo per letter. Simplest if you're scanning or photographing letters one at a time.</li>
       <li><span class="ui">One image with all letters</span> — upload <em>one</em> photo of a whole sheet of letters, then pick a letter and drag a box around it to cut it out.</li>
       <li><span class="ui">Existing font file</span> — already have a font file? Import it and the letters come in ready-made, so you can skip tracing entirely.</li>
+      <li><span class="ui">Draw letters on screen</span> — no scanner needed: draw each letter with a pen, finger, or mouse, right on the canvas over a faint reference letter.</li>
     </ul>
     <p><strong>Allowed files:</strong> any image — PNG, JPG, GIF or WebP. Transparent PNGs and letters drawn on a plain white background also work great. (For the <span class="ui">Existing font file</span> option, a TTF or OTF font file.)</p>
     <div class="help-tip">✒️ <strong>Have vector artwork?</strong> Turn on <span class="ui">Enable SVG uploading</span> under <span class="ui">Settings → Input mode</span> to drop in <strong>SVG</strong> files — their vector paths become the glyph outlines <strong>directly, with no tracing</strong>. See the <span class="ui">SVG Upload Guide</span> there for naming one sheet so its letters auto-split.</div>
@@ -3610,6 +3611,7 @@ const TOUR_STEPS = [
     },
     titleKey: 'fontmaker.tour.step_2_title',
     bodyKey: 'fontmaker.tour.step_2_body',
+    titleKeyDraw: 'fontmaker.tour.step_2_title_draw',   // … and the tab it spotlights reads "1 · Draw", not "Align"
     bodyKeyDraw: 'fontmaker.tour.step_2_body_draw' },   // draw projects: the upload copy is wrong — step 1 is the drawing canvas
   { target: () => document.getElementById('tabTrace'),
     titleKey: 'fontmaker.tour.step_3_title',
@@ -3722,8 +3724,9 @@ function _tourShow(idx, dir) {
   // step.params() is optional — I18n's substitute() short-circuits on a falsy second argument, so
   // every step that doesn't define one behaves exactly as before.
   const p = step.params ? step.params() : null;
-  document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey, p);
-  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKeyDraw && project && project.inputMode === 'draw' ? step.bodyKeyDraw : step.bodyKey, p);
+  const _drawProj = project && project.inputMode === 'draw';
+  document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKeyDraw && _drawProj ? step.titleKeyDraw : step.titleKey, p);
+  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKeyDraw && _drawProj ? step.bodyKeyDraw : step.bodyKey, p);
   document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: _tourSteps.length });
   document.getElementById('tourBack').disabled = (idx === 0);
   document.getElementById('tourNext').textContent = I18n.t((idx === _tourSteps.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
