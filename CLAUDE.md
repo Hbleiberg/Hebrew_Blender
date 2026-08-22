@@ -25,6 +25,7 @@
 - [Preset Lists — Drag-to-Reorder](#preset-lists--drag-to-reorder-superseded-for-the-six-foldered-lists-above)
 - [Dark Mode](#dark-mode-classroom_dashboardhtml)
 - [Hebrew Font UI](#hebrew-font-ui-classroom_dashboardhtml)
+- [On-Screen Hebrew Keyboard — shared component](#on-screen-hebrew-keyboard--shared-component-resourceshtml)
 - [Hebrew Font Maker](#hebrew-font-maker-hebrew_font_makerhtml)
 - [Nikkud Color Coding UI](#nikkud-color-coding-ui-classroom_dashboardhtml)
 - [Settings Drawer & Panel Collapse](#settings-drawer--panel-collapse-classroom_dashboardhtml) (persistence: [Panel-collapse memory](#shared-ux-components--the-conventions-all-tools-are-converging-on))
@@ -234,6 +235,7 @@ UI language does NOT add a printed/projected content language.)
 | `inputMode` | `hebrewBlender_inputMode` | Backup UI preference: `'auto'` (.ivrit file) or `'manual'` (text block) — see ".ivrit Save Files" below |
 | `hebFont` / `hebFontSize` | `hebrewBlender_hebFont` / `_hebFontSize` | Shared Generator+Dictionary display prefs (selected Hebrew font + size); scalar strings, empty = never-set (skipped on import) |
 | `livePreview` | `hebrewBlender_livePreview` | Generator live-preview toggle (`'1'`/`'0'`); scalar string, empty = never-set (skipped on import) |
+| `kbdLayout` | `hebrewBlender_kbdLayout` | On-screen Hebrew keyboard letter-layout choice (`'abc'` \| `'qwerty'`), site-wide across every keyboard carrier; scalar string, empty = never-set (skipped on import) |
 | `fmLastAuthor` | `hebrewFontMaker_lastAuthor` | Font Maker onboarding wizard's remembered author name; scalar string, empty = never-set (skipped on import) |
 | `generatorPanels` / `flashCardPanels` / `dictPanels` | `hebrewBlender_panels` / `hebrewFlashCards_panels` / `hebrewDictionary_panels` | Which collapsible panels the user left open, for the three tools with no settings blob of their own (the dashboard, Torah Trainer and Trope Tutor carry theirs as `panelsCollapsed` inside their own settings blob). Flat `{data-i18n key: bool}` maps merged via `ivritSafeAssign`; empty = never-set (skipped on import). See [Panel-collapse memory](#shared-ux-components--the-conventions-all-tools-are-converging-on) |
 
@@ -694,6 +696,82 @@ It **must**: (1) paste the shared `ivritsuite-fonts` block, (2) implement the co
 **"My Fonts"** group appears and `refreshMyFonts()` runs at init, and (3) paste the **My Fonts uploader**
 block + the "Upload your own font?" control below its picker. Custom fonts then work and upload everywhere
 automatically.
+
+---
+
+## On-Screen Hebrew Keyboard — shared component (`resources.html`)
+
+A collapsible click-to-type Hebrew keyboard (Letters / Nikkud / Trop tabs) that inserts characters
+into a host text input at the caret — for users with no Hebrew layout installed (and for nikkud/trop,
+which almost nobody can type). First shipped in the `resources.html` font-preview modal; built as a
+shared component so any tool can adopt it.
+
+### The two shared blocks (byte-identical, like the `.ivrit` engine)
+- `/* ═══ shared: hebrew-keyboard CSS ═══ … ═══ end shared: hebrew-keyboard CSS ═══ */` — all `.hk-*`
+  rules — and `/* ═══ shared: hebrew-keyboard ═══ … ═══ end shared: hebrew-keyboard ═══ */` — data
+  tables + `mountHebrewKeyboard(cfg)`. **Copy both verbatim; never rewrite.** Current carriers:
+  `resources.html`. When a page adopts the keyboard, re-true the carrier list in the marker comments
+  of **all** carriers (same rule as the app-toast block).
+- Everything is `HK_`/`hk`-prefixed and self-contained (own `hkSetPressed`, own `HK_GLYPH_CARRIER`),
+  so the block drops safely into pages that already define `GLYPH_CARRIER`, `setPressed`, `esc`, etc.
+  Per-page wiring lives **below** the end marker (the My-Fonts-uploader convention).
+
+### Adding it to another tool (the whole recipe)
+1. Copy the CSS block into the page `<style>` and the JS block into the inline script.
+2. Add the two host elements next to the target input:
+   `<button type="button" class="hk-toggle" id="…Toggle" aria-expanded="false" aria-controls="…Panel">⌨ Show Hebrew Keyboard</button>`
+   + `<div class="hk-panel" id="…Panel" hidden></div>`. The button carries **no `data-i18n`** — its
+   label is state-dependent (Show/Hide), JS owns it; the English text is only the pre-`I18n.ready`
+   fallback (`applyStaticI18n` would stomp the expanded-state label on language switch).
+3. From inside `DOMContentLoaded`, mount and keep the controller:
+   ```js
+   _hk = mountHebrewKeyboard({
+     container: panelEl, toggleBtn: buttonEl,
+     getInput: () => inputEl,          // target <input>/<textarea>
+     onChange: reRenderPreview,        // REQUIRED: setRangeText fires NO 'input' event — the host
+                                       // re-renders through this callback, never via input listeners
+     getFontFlags: () => null          // or () => ({nikkud, trop, name}) to enable the coverage hint
+   });
+   ```
+4. Call `_hk.applyI18n()` from the page's `applyI18n()` (pure re-render, read-only — safe), and
+   `_hk.refresh()` whenever what `getFontFlags()` reports may have changed.
+5. The keyboard needs **no CSP change** (no external resources) and **no new CSV rows** — all strings
+   are `shared.kbd.*` (~99 rows, already translated). The page must load a Hebrew font named
+   `'Frank Ruhl Libre'` (every tool already does) — key glyphs render in it, deliberately NOT in any
+   user-selected/previewed font, so keys stay legible even when the previewed font has gaps.
+6. Finish per the Definition of done: the page is precached → **bump `sw.js` VERSION**; run
+   `check-inline-js.mjs` + `check-i18n.js`; verify headless light+dark / desktop+~800px / EN+HE.
+
+### Behavior contract (don't regress these when touching the block)
+- **Focus/caret:** the panel's delegated `pointerdown` calls `preventDefault()` so clicking keys never
+  steals focus or collapses the caret (the standard on-screen-keyboard trick); keyboard activation
+  (Tab + Enter) still works — every edit ends with `input.focus()`. Selection is read live with a
+  remembered `{s,e}` fallback (tracked on `input/click/keyup/select/focus`), clamped to the value.
+- **Backspace deletes ONE UTF-16 code unit** (all Hebrew letters/marks are BMP) — so it peels a single
+  nikkud/trop mark off a pointed letter, which is the desired teaching behavior; a surrogate-pair
+  guard keeps emoji whole. With a selection, it deletes the selection.
+- **Layout toggle** (Letters tab only): alef-bet grid (`direction:rtl`, finals adjacent) vs Israeli
+  SI-1452 rows (`ק ר א ט ו ן ם פ / ש ד ג כ ע י ח ל ך ף / ז ס ב ה נ מ צ ת ץ`). The qwerty rows are
+  **pinned `direction:ltr` even in the Hebrew UI** — a physical layout is a coordinate system and
+  must not mirror (same documented exception as the Font-Maker stage; don't "fix" it in an RTL sweep).
+  The choice persists in `localStorage['hebrewBlender_kbdLayout']` (`'abc'` default | `'qwerty'`) —
+  **site-wide and already registered at all five AllTools sites in `index.html`; adopters must NOT
+  re-register it.** Panel open/closed state is deliberately NOT persisted (collapsed on page load,
+  retained across modal reopens within the session).
+- **Character-set rules:** vav-holam/shuruk insert **decomposed** two-char strings (`ו`+mark — the
+  suite-wide "stored decomposed" rule; never FB-block precomposed codepoints). Trop covers the full
+  Unicode range U+0591–U+05AF + meteg (32 keys, family-ordered, rare/poetic in a labeled row); there
+  is deliberately **no sof-pasuk trop key** — Unicode unifies siluk with meteg (U+05BD), and the `׃`
+  terminator lives in the Letters-tab punctuation row. Lone marks render on `HK_GLYPH_CARRIER = '◌'`
+  (flip to `'א'` if a carrier font floats marks); glyph spans carry `lang="he" dir="rtl"`, and every
+  key gets an `aria-label` with its localized name (glyph shapes mean nothing to a screen reader).
+- **DOM-built rendering** (`createElement`/`textContent`, zero `innerHTML`), plain string concat
+  (zero template literals — inline-script safety), colors via `var(--token, fallback)` only (dark
+  mode = the token swap, no `body.dark` rules), logical CSS properties, keys ≥40px tall (34px utility
+  row; ≥24px floor), and a **self-contained** reduced-motion tail inside the CSS block so the
+  component stays correct on a page without the universal neutralizer.
+- **Coverage hint:** when `getFontFlags()` reports `nikkud:false`/`trop:false`, the matching tab shows
+  a `shared.kbd.hint_no_nikkud`/`_no_trop` note naming the font ({name} param); keys stay enabled.
 
 ---
 
