@@ -6147,6 +6147,16 @@ function showPreviewNotice(text, opts = {}) {
   const span = document.createElement('span');
   span.textContent = text;
   el.appendChild(span);
+  if (opts.retry) {
+    const rb = document.createElement('button');
+    rb.type = 'button';
+    rb.className = 'btn-xs';
+    rb.style.marginInlineStart = '8px';
+    rb.setAttribute('data-i18n', 'shared.corpus.retry_button');
+    rb.textContent = I18n.t('shared.corpus.retry_button');
+    rb.addEventListener('click', () => { hidePreviewNotice(); opts.retry(); });
+    el.appendChild(rb);
+  }
   if (opts.dismissible) {
     const btn = document.createElement('button');
     btn.className = 'pn-close';
@@ -10858,6 +10868,27 @@ function getRwPool() {
   });
 }
 
+// In-place retry for the lazy-loaded real-words corpus (the converged model — the dictionary's
+// and torah's failure cards do the same). ensureRealWords() clears _realWordsPromise on failure,
+// so simply calling it again re-fetches. Reuses .btn-xs rather than the dictionary's bespoke
+// .corpus-retry-btn, since this page already carries .btn-xs at the same 30px floor.
+function syncRwRetryBtn(show) {
+  const el = document.getElementById('rwPoolInfo');
+  if (!el) return;
+  let btn = document.getElementById('rwRetryBtn');
+  if (!show) { if (btn) btn.remove(); return; }
+  if (btn) return;
+  btn = document.createElement('button');
+  btn.type = 'button';
+  btn.id = 'rwRetryBtn';
+  btn.className = 'btn-xs';
+  btn.style.marginTop = '6px';
+  btn.setAttribute('data-i18n', 'shared.corpus.retry_button');
+  btn.textContent = I18n.t('shared.corpus.retry_button');
+  btn.addEventListener('click', () => { btn.remove(); ensureRealWords(); updateRwPoolInfo(); });
+  el.after(btn);
+}
+
 function updateRwPoolInfo() {
   _syncTileAria();
   const el = document.getElementById('rwPoolInfo');
@@ -10867,8 +10898,10 @@ function updateRwPoolInfo() {
   // with no error anywhere. Say which it is instead. Only the 'all' source reads the corpus.
   if (el && rwSource === 'all' && !REAL_WORDS.length && (_realWordsPromise || _realWordsFailed)) {
     el.textContent = I18n.t(_realWordsFailed ? 'worksheet.realwords.pool_load_failed' : 'worksheet.realwords.pool_loading');
+    syncRwRetryBtn(_realWordsFailed);
     return;   // #rwListPoolInfo below is for the curated sources only, and is hidden under 'all'
   }
+  syncRwRetryBtn(false);
   const pool = getRwPool();
   if (el) el.textContent = I18n.t('worksheet.realwords.pool_matching', { count: pool.length });
   const le = document.getElementById('rwListPoolInfo');
@@ -10952,7 +10985,7 @@ function generateRealWords(reuse) {
   if (rwSource === 'all' && !REAL_WORDS.length) {           // corpus not loaded yet — fetch, then re-render
     showPreviewNotice(I18n.t('worksheet.preview.loading_word_list'), { kind: 'wait' });
     ensureRealWords().then(() => {
-      if (!REAL_WORDS.length) { showPreviewNotice(I18n.t('worksheet.preview.word_list_failed'), { kind: 'warn', dismissible: true }); return; }
+      if (!REAL_WORDS.length) { showPreviewNotice(I18n.t('worksheet.preview.word_list_failed'), { kind: 'warn', dismissible: true, retry: () => { ensureRealWords(); } }); return; }
       if (!document.getElementById('realWordsToggle')?.checked) return;  // user left Real Words meanwhile
       hidePreviewNotice();
       generateRealWords(reuse);

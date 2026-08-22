@@ -4130,7 +4130,7 @@ worksheet.preview.dismiss,Dismiss,סגור,preview notice close button,aria-labe
 worksheet.preview.loading_word_list,Loading word list…,טוען רשימת מילים…,preview notice,
 worksheet.preview.settings_changed,Settings changed — Generate to apply.,ההגדרות השתנו — צרו כדי להחיל.,preview notice,
 worksheet.preview.waiting_selection,Waiting for a valid selection…,ממתין לבחירה תקינה…,preview notice,
-worksheet.preview.word_list_failed,"Couldn't load the word list. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.","לא ניתן לטעון את רשימת המילים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז רעננו את הדף.",preview notice,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence — confirm
+worksheet.preview.word_list_failed,"Couldn't load the word list. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then try again.","לא ניתן לטעון את רשימת המילים. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז נסו שוב.",preview notice,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence — confirm
 worksheet.quickstart.class_bingo,Class Bingo (30 cards),בינגו כיתתי (30 כרטיסים),quick-start chip,
 worksheet.quickstart.drawer_summary,⚡ Quick start — ready-made worksheets,⚡ התחלה מהירה — דפי עבודה מוכנים,sidebar drawer summary,leading-emoji
 worksheet.quickstart.empty_label,Or start with a ready-made worksheet,או התחילו עם דף עבודה מוכן,empty-state label,
@@ -4207,7 +4207,7 @@ worksheet.realwords.mix_blends,Mix with generated blends,ערבב עם צירו�
 worksheet.realwords.mix_blends_tooltip,"When on, real words are mixed in with randomly generated blends. Students won't know which are real — great for a ""find the real words"" activity.","כשמופעל, מילים אמיתיות מעורבבות עם צירופים שנוצרו אקראית. התלמידים לא יידעו אילו אמיתיות — מצוין לפעילות ״מצא את המילים האמיתיות״.",tooltip,
 worksheet.realwords.pool_imported.one,{count} word imported,מילה אחת יובאה,pool info,plural
 worksheet.realwords.pool_imported.other,{count} words imported,{count} מילים יובאו,pool info,plural
-worksheet.realwords.pool_load_failed,"Couldn't load the Hebrew words. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then reload the page.","לא ניתן לטעון את המילים בעברית. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז רעננו את הדף.",pool info — the lazy-loaded word corpus failed to load,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence — confirm
+worksheet.realwords.pool_load_failed,"Couldn't load the Hebrew words. Check your internet connection, or ask your school's IT to allow ivritsuite.com — then try again.","לא ניתן לטעון את המילים בעברית. בדקו את חיבור האינטרנט, או בקשו מצוות המחשוב של בית הספר לאפשר גישה ל-ivritsuite.com — ואז נסו שוב.",pool info — the lazy-loaded word corpus failed to load,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence — confirm
 worksheet.realwords.pool_loading,Loading Hebrew words…,טוען מילים בעברית…,pool info — the lazy-loaded word corpus is still in flight,
 worksheet.realwords.pool_matching,{count} matching words,{count} מילים תואמות,pool info,
 worksheet.realwords.pool_no_lists,No lists selected — pick one or more above.,לא נבחרו רשימות — בחרו אחת או יותר למעלה.,pool info,
