@@ -710,7 +710,8 @@ shared component so any tool can adopt it.
 - `/* ═══ shared: hebrew-keyboard CSS ═══ … ═══ end shared: hebrew-keyboard CSS ═══ */` — all `.hk-*`
   rules — and `/* ═══ shared: hebrew-keyboard ═══ … ═══ end shared: hebrew-keyboard ═══ */` — data
   tables + `mountHebrewKeyboard(cfg)`. **Copy both verbatim; never rewrite.** Current carriers:
-  `resources.html` (font-preview modal), `hebrew_dictionary.html` (search box). When a page adopts
+  `resources.html` (font-preview modal), `hebrew_dictionary.html` (search box),
+  `Hebrew_Font_Maker.html` (the Spacing tab's sample-text field). When a page adopts
   the keyboard, re-true the carrier list in the marker comments of **all** carriers (same rule as
   the app-toast block) — and re-verify byte-identity by sha, don't eyeball it.
 - Everything is `HK_`/`hk`-prefixed and self-contained (own `hkSetPressed`, own `HK_GLYPH_CARRIER`),
@@ -734,14 +735,36 @@ shared component so any tool can adopt it.
      getFontFlags: () => null          // or () => ({nikkud, trop, name}) to enable the coverage hint
    });
    ```
-4. Call `_hk.applyI18n()` from the page's `applyI18n()` (pure re-render, read-only — safe), and
-   `_hk.refresh()` whenever what `getFontFlags()` reports may have changed.
-5. The keyboard needs **no CSP change** (no external resources) and **no new CSV rows** — all strings
+4. **If the host rebuilds its own markup, re-mount — don't mount once.** `resources.html` and the
+   dictionary hold static toggle/panel/input nodes, so a single `DOMContentLoaded` mount lasts the
+   page's life. The Font Maker's Spacing panel does not: `renderSpacingPanel()` replaces
+   `#spacingBody.innerHTML` (and `renderGrids()` calls it on nearly every state change), discarding
+   all three nodes and stranding the controller. There, read the state **before** the rebuild and
+   re-mount at the tail of the render:
+   ```js
+   function renderSpacingPanel() {
+     const kbd = hkSampleState();   // {open, tab} — read BEFORE innerHTML discards the old nodes
+     body.innerHTML = '… hk-toggle button + empty hk-panel …';
+     mountSampleKeyboard(kbd);      // mount, then setOpen(kbd.open) + re-click the saved tab
+   }
+   ```
+   Mounting is cheap (the panel body only builds while open). Such a page needs **no**
+   `_hk.applyI18n()` hook: `setOpen()` re-runs the toggle label through I18n, so
+   `applyI18n()` → `renderGrids()` → `renderSpacingPanel()` → re-mount already re-localizes.
+   Where the field feeds an undo-tracked model, `onChange` must also route through the field's own
+   setter and **close the burst** (`setSpacingSample(v); udBurstCommit();`) — an open burst blocks
+   Ctrl+Z, and the input's `change` event never fires for a programmatic `setRangeText` edit.
+5. Call `_hk.applyI18n()` from the page's `applyI18n()` (pure re-render, read-only — safe; skip it
+   on a re-mounting host per step 4), and `_hk.refresh()` whenever what `getFontFlags()` reports may
+   have changed.
+6. The keyboard needs **no CSP change** (no external resources) and **no new CSV rows** — all strings
    are `shared.kbd.*` (~99 rows, already translated). The page must load a Hebrew font named
    `'Frank Ruhl Libre'` (every tool already does) — key glyphs render in it, deliberately NOT in any
    user-selected/previewed font, so keys stay legible even when the previewed font has gaps.
-6. Finish per the Definition of done: the page is precached → **bump `sw.js` VERSION**; run
+7. Finish per the Definition of done: the page is precached → **bump `sw.js` VERSION**; run
    `check-inline-js.mjs` + `check-i18n.js`; verify headless light+dark / desktop+~800px / EN+HE.
+   (Adopting it into the Font Maker is a shipped feature → also bump `FONT_MAKER_VERSION` + add the
+   changelog entry, in both `HELP_CONTENT.about` and the `fontmaker.changelog.*` CSV/`CUR_KEY` pair.)
 
 ### Behavior contract (don't regress these when touching the block)
 - **Focus/caret:** the panel's delegated `pointerdown` calls `preventDefault()` so clicking keys never

@@ -288,10 +288,10 @@ body.dark .fp-no{color:#e06b5b;}
 /* ═══ shared: hebrew-keyboard CSS ═══════════════════════════════════════════
    On-screen Hebrew keyboard styles. Copy this block verbatim alongside the
    matching JS block (keep byte-identical across carriers; carriers:
-   resources.html, hebrew_dictionary.html). Colors ride the suite tokens (with
-   fallbacks), so dark mode needs no extra rules; the reduced-motion tail is
-   self-contained so the block stays portable to pages without a universal
-   neutralizer. ══════════════════════════════════════════════════════════════ */
+   resources.html, hebrew_dictionary.html, Hebrew_Font_Maker.html). Colors
+   ride the suite tokens (with fallbacks), so dark mode needs no extra rules;
+   the reduced-motion tail is self-contained so the block stays portable to
+   pages without a universal neutralizer. ═══════════════════════════════════ */
 .hk-toggle{display:inline-flex;align-items:center;gap:6px;margin-block-start:10px;font-size:0.8rem;font-weight:600;padding:6px 14px;border:1.5px solid var(--border,#c8bfa8);border-radius:20px;background:transparent;color:var(--text,#1a2744);cursor:pointer;font-family:inherit;transition:border-color 0.15s,color 0.15s;}
 .hk-toggle:hover{border-color:var(--gold,#c9922a);color:var(--gold,#c9922a);}
 .hk-toggle[aria-expanded="true"]{background:var(--navy,#1a2744);border-color:var(--navy,#1a2744);color:#fff;}
@@ -1032,8 +1032,8 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
    On-screen Hebrew keyboard (letters + nikkud + trop) that types into a host
    text input. Copy this block verbatim, together with the matching
    `shared: hebrew-keyboard CSS` block (keep both byte-identical across
-   carriers; carriers: resources.html, hebrew_dictionary.html), then mount per
-   page:
+   carriers; carriers: resources.html, hebrew_dictionary.html,
+   Hebrew_Font_Maker.html), then mount per page:
 
      kbd = mountHebrewKeyboard({ container, toggleBtn, getInput, onChange, getFontFlags });
 
@@ -1046,7 +1046,8 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
      coverage hint on the Nikkud/Trop tabs, or null for no hint.
    - Returned controller: { refresh(), applyI18n(), setOpen(on) }. Call
      applyI18n() from the page's applyI18n() (pure re-render, read-only);
-     call refresh() when the previewed font changes.
+     call refresh() when the previewed font changes. A host that rebuilds its
+     own markup must re-mount, then re-assert state with setOpen(wasOpen).
 
    Strings live under shared.kbd.* in locales/ui-strings.csv (all carriers
    share them — adopting a page adds zero rows). The letter-layout choice
