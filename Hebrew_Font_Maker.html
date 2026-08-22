@@ -548,6 +548,40 @@
   body.dark .node-pt.sel { fill: var(--gold); stroke: #fff; }
   body.dark .node-h { fill: #1e2535; stroke: #8aa0c8; }
   body.dark .node-hline { stroke: #5b6e94; }
+  /* ── Screen-constant control handles (always on) ──────────────────────────────────────────
+     applyZoom() writes --hk = 1 / clamp(stageZoom, 0.5, 4) onto #stage, so every knob below keeps
+     its 100%-zoom SIZE at any zoom. Zoom is `stage().style.width = <pct>%` on a FIXED viewBox, so
+     without this every handle grows 1:1 with zoom — at 400% a node point is a ~21px blob sitting on
+     the outline you are trying to place it on, which is the opposite of what zooming in is for.
+     Scaling the geometry scales the HIT AREA with it, which is correct: hit-testing here IS the
+     rendered geometry (attach*Drag bind pointerdown on the elements; nothing reads getBBox /
+     getBoundingClientRect / getCTM on a handle — positions come from the ROOT svg's CTM, which a
+     child transform cannot affect). Stroke widths ride the transform, so they go screen-constant
+     for free. Each handle is symmetric about its logical point, so fill-box centre == that point.
+     @supports gates the whole block: without transform-box:fill-box, transform-origin:center would
+     resolve against the SVG VIEWPORT and fling every handle to the middle of the stage. Falling
+     back to today's zoom-proportional handles is the only acceptable failure mode — same doctrine
+     as the #adStage note above ("nothing that can silently fail", after a Firefox SVG quirk).
+     #stage-scoped: #meStage ("Edit shape") is deliberately never zoomed, and var(--hk,1)=1 there.
+     DELIBERATELY EXCLUDED — these must keep hugging real geometry, not stay screen-constant:
+       .anc/.pcanc/.pcholam (markSelectRect bounds the MARK'S INK), .node-bb-fill (the drag surface
+       IS the selection bbox), .node-bb-outline/.ct-selbox/.draw-sel-box/.node-marquee,
+       .node-hline(-ghost) (tangent lines A->B — scaling about a midpoint detaches both ends),
+       .node-glyph/.epiece/.pen-path/#penRubber, .draw-cursor-ring (it IS the brush footprint in
+       font units), the unclassed .th-rotate arm <line>, and #penCross — whose transform is a
+       JS-written PRESENTATION ATTRIBUTE (onStagePointerMove), which any CSS transform rule would
+       silently clobber, parking it at the origin. Same trap guards the draw strokes [data-di]. */
+  @supports (transform-box: fill-box) {
+    #stage .node-pt, #stage .node-h, #stage .node-h-ghost, #stage .seg-mid,
+    #stage .node-bb-h, #stage .th-corner, #stage .th-edge, #stage .th-rotate,
+    #stage .metric-h, #stage .guide-h, #stage .ehandle, #stage .pen-pt,
+    #stage .metric-h-lbl, #stage .guide-h-lbl {
+      transform-box: fill-box; transform-origin: center; transform: scale(var(--hk, 1));
+    }
+    /* The mark-anchor boxes keep their SIZE (they bound the ink) — only the outline goes
+       screen-constant, via the same idiom .draw-cursor-ring already uses. */
+    #stage .anc, #stage .pcanc, #stage .pcholam { vector-effect: non-scaling-stroke; }
+  }
   /* ── Edit-points panel (npnl-*) — panel-scoped; no shared classes modified ── */
   .npnl-head { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--warm-gray); padding: 8px 0 7px; margin-bottom: 4px; border-bottom: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.06); }
   body.dark .npnl-head { box-shadow: 0 2px 5px rgba(0,0,0,0.25); }
@@ -3143,7 +3177,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.20';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.21';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3362,6 +3396,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.21</strong> &mdash; <strong>Control handles stay the same size as you zoom in.</strong> Zooming in is how you do the fussy work &mdash; nudging a point onto a curve, lining a vowel up under a letter. But every dot, square and circle on the canvas used to grow along with the letter, so by 400% the handles were fat blobs sitting on top of the very outline you were trying to see, and neighbouring points ran into each other. Now they hold their size on screen no matter how far you zoom, the way they do in professional font and drawing programs: the letter gets bigger, the handles stay put, and there is far more room between them to work. Zoomed out past 50% they gently grow instead, so they never shrink away to nothing. Nothing to switch on &mdash; it just behaves this way now. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.20</strong> &mdash; <strong>Rulers along the edges of the canvas.</strong> The editing canvas showed you a letter and its guide lines, but nothing about <em>where</em> anything sat &mdash; so matching a stroke width across two letters, or checking that a vowel cleared the baseline by the amount you meant, came down to reading numbers out of the side panels and guessing. Now numbered rulers run along the top and left edges, measured in the same <strong>font units</strong> the rest of the app uses: zero sits at the letter's origin and on the baseline, and the numbers re-space themselves as you zoom so they never crowd together. A marker on each ruler tracks your pointer, so you can always see exactly where you are. <strong>Guides you can pull off a ruler.</strong> Drag from either ruler onto the canvas and you get a guide &mdash; the same guides as before, so it is instantly draggable, renameable, and remembered with your project. <strong>And a corner that resets the zoom.</strong> The little box where the two rulers meet shows the current zoom; click it to snap straight back to 100%. Rulers start switched on &mdash; turn them off under <span class="ui">Advanced Settings &rarr; Canvas</span>, or press <span class="ui">Shift + R</span> at any time. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.19</strong> &mdash; <strong>An import now brings the whole font across, not just the letters.</strong> Importing a font used to stop at the alphabet: everything else a real page needs &mdash; the curly quote marks a word processor inserts for you, the en and em dashes, the ellipsis, the shekel and euro signs, <span class="ui">&copy; &deg; &laquo; &raquo; &times; &divide; &frac12;</span> &mdash; was read and thrown away, so an exported font still fell back to another face mid-sentence. Now it all comes too, along with the standalone Latin letters (<em>&AElig; &Oslash; &szlig; &OElig; &Scaron; &Zcaron;</em>) that have no accent to build from. <strong>Your combined letters come from the original.</strong> When the source font already draws <span lang="he" dir="rtl">&#1513;&#1473;</span>, <span lang="he" dir="rtl">&#1489;&#1468;</span>, <span lang="he" dir="rtl">&#1488;&#1463;</span> or <span lang="he" dir="rtl">&#1493;&#1465;</span> itself, the import takes that glyph <em>whole</em> instead of rebuilding it from your letter plus a dot &mdash; so the dot sits exactly where the original put it (the dotted-shin pair <span lang="he" dir="rtl">&#64300;/&#64301;</span> comes whole too, and the no-break space your word processor types is covered). A <span class="ui">Rebuild from my letters</span> button gives you the composed version back whenever you want it. <strong>The masoretic marks and the rest of the presentation forms.</strong> The masora circle and the upper and lower puncta join the <span class="ui">Trop</span> tab, the inverted nun and the Hebrew plus sign join <span class="ui">Punctuation</span>, and <span class="ui">Specialized letters</span> gains every remaining dagesh and mapiq form. <strong>And the line spacing matches.</strong> An import now carries the original's line metrics across, so text set in your font lines up the way the original did. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.18</strong> &mdash; <strong>Imported fonts now bring their English letters with them.</strong> Until now, importing a font took its Hebrew letters, vowels and cantillation marks &mdash; but quietly left every <span class="ui">A&ndash;Z</span> and <span class="ui">a&ndash;z</span> behind, so an exported font showed nothing when you typed in English. Now the import fills the <span class="ui">English</span> tab from the original's own Latin letters, turning the tab on for you when the font has a full alphabet, and it takes ready-made accented letters (<em>&aacute;, &eacute;, &ntilde;, &ccedil;</em>) whole when the original has them &mdash; falling back to building them from your letters plus accent marks when it doesn't. If you had already drawn English letters yourself, the import asks before touching them. <strong>And English letters finally survive saving.</strong> Reopening a project used to wipe every English letter you had traced, silently, and hand it back blank &mdash; that's fixed. <strong>Punctuation, digits and symbols come across too.</strong> The font's own digits and punctuation already imported &mdash; but they shipped even when you had never traced them, so typing <span class="ui">5</span> in an exported font produced nothing at all instead of falling back to another font. An untraced one is now simply left out, and 21 more symbols (<span class="ui">@ # $ % &amp; * + / &lt; = &gt; [ ] { } | \ ^ _ &#96; ~</span>) join the <span class="ui">Punctuation &amp; More</span> tab &mdash; so an imported font now covers everything on a keyboard. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3472,7 +3507,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3485,7 +3520,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_20';
+  const CUR_KEY = 'fontmaker.changelog.v5_21';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -4144,7 +4179,7 @@ function metricHandlesSVG() {
   const vy1 = fy(m.letterTop + 80), vy2 = fy(m.descender - 30), mid = (vy1+vy2)/2;
   const dot = (key,axis,cx,cy,col,label,title) =>
     `<circle class="metric-h" data-metric="${key}" data-axis="${axis}" cx="${(+cx).toFixed(1)}" cy="${(+cy).toFixed(1)}" r="7" fill="${col}" stroke="#fff" stroke-width="3" paint-order="stroke" style="cursor:${axis==='y'?'ns-resize':'ew-resize'};filter:drop-shadow(0 0 1px rgba(0,0,0,0.55));"><title>${title}</title></circle>`
-    + (label ? `<text x="${(+cx).toFixed(1)}" y="${(+cy-12).toFixed(1)}" text-anchor="middle" fill="${col}" font-size="9" font-weight="700" font-family="'Source Sans 3',sans-serif" pointer-events="none">${label}</text>` : '');
+    + (label ? `<text class="metric-h-lbl" x="${(+cx).toFixed(1)}" y="${(+cy-12).toFixed(1)}" text-anchor="middle" fill="${col}" font-size="9" font-weight="700" font-family="'Source Sans 3',sans-serif" pointer-events="none">${label}</text>` : '');
   let h = dot('letterTop','y', 488, fy(m.letterTop), C.top, '', _pT('metric_top_drag', 'Top (cap height) — drag to set'))
         + dot('baseline','y', 488, fy(m.baseline), C.base, '', _pT('metric_baseline_drag', 'Baseline — drag to set'));
   if (meta && meta.desc) h += dot('descender','y', 488, fy(m.descender), C.desc, '', _pT('metric_descender_drag', 'Descender — drag to set'));
@@ -4193,12 +4228,12 @@ function userGuidesSVG(){
       const x = fx(it.pos);
       h += `<line x1="${x.toFixed(1)}" y1="152" x2="${x.toFixed(1)}" y2="556" stroke="${col}" stroke-width="${w}"${dash} opacity="${op}" pointer-events="none"/>`;
       h += `<circle class="guide-h" data-guide-id="${it.id}" cx="${x.toFixed(1)}" cy="162" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ew-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>Guide x=${Math.round(it.pos)} — drag</title></circle>`;
-      h += `<text x="${(x+8).toFixed(1)}" y="166" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
+      h += `<text class="guide-h-lbl" x="${(x+8).toFixed(1)}" y="166" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
     } else {                                     // horizontal line — drag up/down (font Y)
       const y = fy(it.pos);
       h += `<line x1="8" y1="${y.toFixed(1)}" x2="592" y2="${y.toFixed(1)}" stroke="${col}" stroke-width="${w}"${dash} opacity="${op}" pointer-events="none"/>`;
       h += `<circle class="guide-h" data-guide-id="${it.id}" cx="18" cy="${y.toFixed(1)}" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ns-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>Guide y=${Math.round(it.pos)} — drag</title></circle>`;
-      h += `<text x="30" y="${(y-5).toFixed(1)}" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
+      h += `<text class="guide-h-lbl" x="30" y="${(y-5).toFixed(1)}" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
     }
   });
   return h;
@@ -7241,6 +7276,12 @@ function applyZoom() {
   }
   const pct = Math.round(stageZoom * 100);
   stage().style.width = pct + '%';
+  // Screen-constant handles: the reciprocal of the (clamped) zoom, consumed by the #stage handle
+  // rules in the CSS. The lower clamp 0.5 makes handles TAPER when zoomed out instead of exploding —
+  // it is also what keeps the .th-rotate knob (r=6 x --hk) clear of its fixed 30-unit arm.
+  // Safe across renders: style.width above is the only other stage().style write, so --hk survives
+  // every renderStage() innerHTML rebuild.
+  stage().style.setProperty('--hk', (1 / Math.min(Math.max(stageZoom, 0.5), 4)).toFixed(4));
   const r = document.getElementById('zoomRange'); if (r) r.value = pct;
   const v = document.getElementById('zoomVal'); if (v) v.textContent = pct + '%';
   const nv = document.getElementById('nodeZoomVal'); if (nv) nv.textContent = pct + '%';   // node-bar readout stays live from every zoom source
