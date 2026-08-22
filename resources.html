@@ -288,13 +288,15 @@ body.dark .fp-no{color:#e06b5b;}
 /* ═══ shared: hebrew-keyboard CSS ═══════════════════════════════════════════
    On-screen Hebrew keyboard styles. Copy this block verbatim alongside the
    matching JS block (keep byte-identical across carriers; carriers:
-   resources.html). Colors ride the suite tokens (with fallbacks), so dark
-   mode needs no extra rules; the reduced-motion tail is self-contained so the
-   block stays portable to pages without a universal neutralizer. ═══════════ */
+   resources.html, hebrew_dictionary.html). Colors ride the suite tokens (with
+   fallbacks), so dark mode needs no extra rules; the reduced-motion tail is
+   self-contained so the block stays portable to pages without a universal
+   neutralizer. ══════════════════════════════════════════════════════════════ */
 .hk-toggle{display:inline-flex;align-items:center;gap:6px;margin-block-start:10px;font-size:0.8rem;font-weight:600;padding:6px 14px;border:1.5px solid var(--border,#c8bfa8);border-radius:20px;background:transparent;color:var(--text,#1a2744);cursor:pointer;font-family:inherit;transition:border-color 0.15s,color 0.15s;}
 .hk-toggle:hover{border-color:var(--gold,#c9922a);color:var(--gold,#c9922a);}
 .hk-toggle[aria-expanded="true"]{background:var(--navy,#1a2744);border-color:var(--navy,#1a2744);color:#fff;}
-.hk-panel{margin-block-start:10px;border:1px solid var(--border,#c8bfa8);border-radius:8px;background:var(--cream,#fdf8ef);padding:8px;}
+/* Height cap keeps the panel usable inside a short viewport or a sticky mobile bar. */
+.hk-panel{margin-block-start:10px;border:1px solid var(--border,#c8bfa8);border-radius:8px;background:var(--cream,#fdf8ef);padding:8px;max-height:min(46vh,340px);overflow-y:auto;}
 .hk-panel[hidden]{display:none!important;}
 .hk-tabs{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-block-end:8px;}
 .hk-tab{font-size:0.74rem;font-weight:600;padding:4px 12px;border:1.5px solid var(--border,#c8bfa8);border-radius:16px;background:var(--white,#fff);color:var(--text,#1a2744);cursor:pointer;font-family:inherit;transition:border-color 0.15s,background 0.15s,color 0.15s;}
@@ -308,9 +310,11 @@ body.dark .fp-no{color:#e06b5b;}
 /* SI-1452 physical-keyboard rows: pinned LTR on purpose — a physical layout is
    a coordinate system and must NOT mirror under dir=rtl (same exception as the
    Font Maker glyph stage; see CLAUDE.md i18n rule 5). */
-.hk-rows{direction:ltr;display:flex;flex-direction:column;gap:4px;}
+.hk-rows{direction:ltr;display:flex;flex-direction:column;gap:4px;overflow-x:auto;}
 .hk-row{display:flex;gap:4px;}
-.hk-row .hk-key{flex:1;min-width:0;}
+/* Grow to fill a wide host, but never shrink a key under the 24px touch floor —
+   in a narrow host (a ~300px sidebar) the row scrolls instead of crushing. */
+.hk-row .hk-key{flex:1 0 26px;}
 .hk-key{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:40px;padding:3px 2px;border:1px solid var(--border,#c8bfa8);border-radius:5px;background:var(--white,#fff);color:var(--text,#1a2744);cursor:pointer;font-family:inherit;user-select:none;transition:border-color 0.15s,background 0.15s;}
 .hk-key:hover{border-color:var(--gold,#c9922a);}
 .hk-key:active{background:var(--warm-gray,#e8e0d0);}
@@ -1028,7 +1032,8 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
    On-screen Hebrew keyboard (letters + nikkud + trop) that types into a host
    text input. Copy this block verbatim, together with the matching
    `shared: hebrew-keyboard CSS` block (keep both byte-identical across
-   carriers; carriers: resources.html), then mount per page:
+   carriers; carriers: resources.html, hebrew_dictionary.html), then mount per
+   page:
 
      kbd = mountHebrewKeyboard({ container, toggleBtn, getInput, onChange, getFontFlags });
 

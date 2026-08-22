@@ -710,8 +710,9 @@ shared component so any tool can adopt it.
 - `/* ═══ shared: hebrew-keyboard CSS ═══ … ═══ end shared: hebrew-keyboard CSS ═══ */` — all `.hk-*`
   rules — and `/* ═══ shared: hebrew-keyboard ═══ … ═══ end shared: hebrew-keyboard ═══ */` — data
   tables + `mountHebrewKeyboard(cfg)`. **Copy both verbatim; never rewrite.** Current carriers:
-  `resources.html`. When a page adopts the keyboard, re-true the carrier list in the marker comments
-  of **all** carriers (same rule as the app-toast block).
+  `resources.html` (font-preview modal), `hebrew_dictionary.html` (search box). When a page adopts
+  the keyboard, re-true the carrier list in the marker comments of **all** carriers (same rule as
+  the app-toast block) — and re-verify byte-identity by sha, don't eyeball it.
 - Everything is `HK_`/`hk`-prefixed and self-contained (own `hkSetPressed`, own `HK_GLYPH_CARRIER`),
   so the block drops safely into pages that already define `GLYPH_CARRIER`, `setPressed`, `esc`, etc.
   Per-page wiring lives **below** the end marker (the My-Fonts-uploader convention).
