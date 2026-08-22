@@ -386,7 +386,7 @@
   .wtab.active[data-tick="done"]::after { color: #5fe0a8; }
   .wtab.active[data-tick="todo"]::after { color: #f0d080; opacity: 1; }
   .wtab.active[data-tick="na"]::after   { color: rgba(255,255,255,0.75); }
-  /* ── Tabbed layout: Letters/Nikkud/Trop pickers as top tabs (Advanced Settings → Layout) ── */
+  /* ── Tabbed layout: Letters/Nikkud/Trop pickers as top tabs (Settings → Layout) ── */
   #catTabs, #catHost { display: none; }
   .cat-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0; }
   .ctab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 7px 7px 0 0; background: var(--cream); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
@@ -421,13 +421,13 @@
   body.layout-tabbed #catHost .col-split > div { flex: 1 1 320px; padding-inline-end: 24px; }
   body.layout-tabbed #catHost .col-split > div:last-child { padding-inline-end: 0; }
   body.layout-tabbed #catHost .col-split > div + div { border-top: none; padding-top: 0; border-inline-start: 1px solid var(--border); padding-inline-start: 24px; }
-  /* Advanced Settings grid: even columns separated by gaps (not per-item dividers),
+  /* Settings grid: even columns separated by gaps (not per-item dividers),
      so wrapped rows don't leave a stray vertical line at the left edge. */
   body.layout-tabbed #catHost .col-split.adv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 30px; align-items: start; }
   body.layout-tabbed #catHost .col-split.adv-grid > div { flex: none; border: none; padding: 0; }
   @media (max-width: 1024px) { body.layout-tabbed #catHost .col-split.adv-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 640px)  { body.layout-tabbed #catHost .col-split.adv-grid { grid-template-columns: 1fr; } }
-  /* Advanced Settings group headings — a level above the per-toggle .ctl-label */
+  /* Settings group headings — a level above the per-toggle .ctl-label */
   .adv-group-title { font-family: 'Libre Baskerville', serif; font-size: 0.8rem; color: var(--text); padding-bottom: 4px; border-bottom: 1px solid var(--border); margin-bottom: 2px; }
   .adv-group-gap { margin-top: 12px; }
   /* Tabbed: the work-mode steps (Align/Trace/Nikkud/Trop) drop below the picker, just above the stage */
@@ -1247,7 +1247,7 @@
     </div>
 
     <div class="panel cat-panel" data-cat="advanced">
-      <div class="panel-title" data-i18n="fontmaker.panels.advanced">Advanced Settings</div>
+      <div class="panel-title" data-i18n="fontmaker.panels.advanced">⚙️ Settings</div>
       <div class="panel-body">
         <div class="adv-group-title" data-i18n="fontmaker.panels.adv_add_glyphs">Add glyphs &amp; languages</div>
         <div class="col-split adv-grid">
@@ -1291,6 +1291,11 @@
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_rulers_label">Rulers</div>
             <label class="chk" title="Show rulers along the top and left of the editing canvas (Shift + R)" data-i18n-title="fontmaker.panels.adv_rulers_title"><input type="checkbox" id="showRulersChk" checked onchange="setRulersShown(this.checked)" aria-label="Show rulers along the top and left of the editing canvas (Shift + R)" data-i18n-aria-label="fontmaker.panels.adv_rulers_title"> <span data-i18n="fontmaker.panels.adv_show_rulers">Show canvas rulers</span></label>
             <div class="hint" data-i18n-html="fontmaker.panels.adv_rulers_hint">Numbered rulers along the top and left of the editing canvas, measured in <strong>font units</strong> &mdash; zero sits at the letter's origin and on the baseline. A marker on each ruler follows your pointer, and the corner box shows the zoom (click it to snap back to 100%). <strong>Drag off a ruler</strong> onto the canvas to drop a new guide. Shortcut: <strong>Shift + R</strong>.</div>
+          </div>
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_grid_label">Grid</div>
+            <label class="chk" title="Show graph-paper grid lines across the editing canvas (Shift + G)" data-i18n-title="fontmaker.panels.adv_grid_title"><input type="checkbox" id="showGridChk" onchange="setGridShown(this.checked)" aria-label="Show graph-paper grid lines across the editing canvas (Shift + G)" data-i18n-aria-label="fontmaker.panels.adv_grid_title"> <span data-i18n="fontmaker.panels.adv_show_grid">Show canvas grid</span></label>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_grid_hint">Graph paper across the editing canvas, spaced in <strong>font units</strong> like the rulers &mdash; handy for matching stroke widths and keeping vowels a consistent distance from the baseline. Spacing, the heavier every-Nth line, opacity and <strong>snapping</strong> live in the <span class="ui">Grid</span> panel beside the canvas, where you can see them change. Shortcut: <strong>Shift + G</strong>.</div>
           </div>
         </div>
       </div>
@@ -1343,7 +1348,8 @@
           <span class="nb-sep" aria-hidden="true"></span>
           <button class="ctl-btn nb-btn nb-toggle" id="nodeHandlesBtn" aria-pressed="false" onclick="setNodeHandlesAll(!_nodeHandlesAll)" title="Show curve handles on every point (off: selected points only)" data-i18n-title="fontmaker.node_editor.handles_title" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">⌖</span> <span class="nb-label" data-i18n="fontmaker.node_editor.handles">Handles</span></button>
           <button class="ctl-btn nb-btn nb-toggle" id="nodeGuidesBtn" aria-pressed="true" onclick="setNodeGuidesShown(!_nodeGuidesOn)" title="Show guide and metric lines (view only — snapping is unaffected)" data-i18n-title="fontmaker.node_editor.guides_title" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">▦</span> <span class="nb-label" data-i18n="fontmaker.node_editor.guides">Guides</span></button>
-          <label class="chk nb-snap" title="Snap dragged points to guides and metric lines (Alt bypasses)" data-i18n-title="fontmaker.node_editor.snap_title"><input type="checkbox" id="nodeSnapChk" onchange="setSnapGuides(this.checked)" onkeydown="nodeBarKey(event, this)" tabindex="-1" aria-label="Snap dragged points to guides and metric lines (Alt bypasses)" data-i18n-aria-label="fontmaker.node_editor.snap_title"> <span class="nb-glyph" aria-hidden="true">🧲</span><span class="nb-label" data-i18n="fontmaker.node_editor.snap">Snap</span></label>
+          <button class="ctl-btn nb-btn nb-toggle" id="nodeGridBtn" aria-pressed="false" onclick="setGridShown(!_gridOn)" title="Show the canvas grid (Shift + G)" data-i18n-title="fontmaker.node_editor.grid_title" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">⊞</span> <span class="nb-label" data-i18n="fontmaker.node_editor.grid">Grid</span></button>
+          <label class="chk nb-snap" title="Snap dragged points to guides, metric lines and the grid (Alt bypasses)" data-i18n-title="fontmaker.node_editor.snap_title"><input type="checkbox" id="nodeSnapChk" onchange="setSnapGuides(this.checked)" onkeydown="nodeBarKey(event, this)" tabindex="-1" aria-label="Snap dragged points to guides, metric lines and the grid (Alt bypasses)" data-i18n-aria-label="fontmaker.node_editor.snap_title"> <span class="nb-glyph" aria-hidden="true">🧲</span><span class="nb-label" data-i18n="fontmaker.node_editor.snap">Snap</span></label>
         </div>
         <div class="stage-wrap" dir="ltr">
           <div class="node-hint-wrap">
@@ -1638,7 +1644,7 @@
           <option value="arr" data-i18n="fontmaker.panels.license_arr">All Rights Reserved — most strict</option>
         </select>
       </label>
-      <p class="wiz-foot-note" data-i18n="fontmaker.wizard.later_footnote">You can change any of this later — it all lives in Font Details and Advanced Settings.</p>
+      <p class="wiz-foot-note" data-i18n="fontmaker.wizard.later_footnote">You can change any of this later — it all lives in Font Details and Settings.</p>
     </section>
 
     <section id="wizStep2" class="wiz-step" aria-labelledby="wizStep2Title" hidden>
@@ -1658,7 +1664,7 @@
       <label class="chk"><input type="checkbox" id="wizEnglish"> <span data-i18n="fontmaker.panels.adv_add_english">Add English letters</span></label>
       <label class="chk"><input type="checkbox" id="wizYiddish"> <span data-i18n="fontmaker.panels.adv_add_yiddish">Add Yiddish glyphs</span></label>
       <label class="chk"><input type="checkbox" id="wizLadino"> <span data-i18n="fontmaker.panels.adv_add_ladino">Add Ladino glyphs</span></label>
-      <p class="wiz-foot-note" data-i18n="fontmaker.wizard.later_footnote">You can change any of this later — it all lives in Font Details and Advanced Settings.</p>
+      <p class="wiz-foot-note" data-i18n="fontmaker.wizard.later_footnote">You can change any of this later — it all lives in Font Details and Settings.</p>
     </section>
 
     <section id="wizStep3" class="wiz-step" aria-labelledby="wizStep3Title" hidden>
@@ -2444,7 +2450,7 @@ function nikScale(cp) {   // size factor for a standard nikkud cp: dagesh, stand
   if (cp === '05B9' || cp === '05BA') return holamScale();
   return markScale();
 }
-/* SVG upload mode (Advanced Settings): uploads are SVG-only and import directly as vectors (no trace). */
+/* SVG upload mode (Settings): uploads are SVG-only and import directly as vectors (no trace). */
 function svgUploadOn() { return !!(project && project.font && project.font.svgUpload); }
 /* A glyph whose outline is already vector (from a font file OR an imported SVG) — skips Align/Trace. */
 function isVectorGlyph(l) { return project.inputMode === 'font' || !!(l && l.source && l.source.kind === 'svg'); }
@@ -3177,7 +3183,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.21';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.22';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3207,7 +3213,7 @@ const HELP_CONTENT = {
       <li><span class="ui">Existing font file</span> — already have a font file? Import it and the letters come in ready-made, so you can skip tracing entirely.</li>
     </ul>
     <p><strong>Allowed files:</strong> any image — PNG, JPG, GIF or WebP. Transparent PNGs and letters drawn on a plain white background also work great. (For the <span class="ui">Existing font file</span> option, a TTF or OTF font file.)</p>
-    <div class="help-tip">✒️ <strong>Have vector artwork?</strong> Turn on <span class="ui">Enable SVG uploading</span> under <span class="ui">Advanced Settings → Input mode</span> to drop in <strong>SVG</strong> files — their vector paths become the glyph outlines <strong>directly, with no tracing</strong>. See the <span class="ui">SVG Upload Guide</span> there for naming one sheet so its letters auto-split.</div>
+    <div class="help-tip">✒️ <strong>Have vector artwork?</strong> Turn on <span class="ui">Enable SVG uploading</span> under <span class="ui">Settings → Input mode</span> to drop in <strong>SVG</strong> files — their vector paths become the glyph outlines <strong>directly, with no tracing</strong>. See the <span class="ui">SVG Upload Guide</span> there for naming one sheet so its letters auto-split.</div>
     <p><strong>Tracing guide:</strong> a faint reference letter shows behind yours so you can line things up. On the <strong>right</strong> of the canvas, dial the <span class="ui">Reference letter opacity</span> slider (or untick <span class="ui">Show reference glyph behind</span> to hide it), and use <span class="ui">Imported image opacity</span> to fade your own photo in or out.</p>
     <p><strong>Position it</strong> (the <span class="ui">1 · Align</span> step): click a letter in the grid on the left, then use the adjustment buttons on the <strong>left</strong> of the canvas — Wider, Taller, Rotate, Skew — to sit your letter neatly on the guide lines. The little dot on that letter turns <strong style="color:#d08c2a;">orange</strong> once it has an image.</p>
     <div class="help-tip">🖨️ Don't have letters to scan yet? The <a href="#" onclick="openHelp('templates');return false;" style="color:var(--gold);font-weight:700;">Download Templates</a> tab gives you printable sheets — handwrite each letter in the boxes, scan or photograph the page, then bring it in here with <span class="ui">One image with all letters</span>.</div>
@@ -3396,8 +3402,9 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.22</strong> &mdash; <strong>Graph paper for the canvas.</strong> The rulers told you where you were, but nothing told you how far it was from here to there. So the everyday questions &mdash; is this stem the same width as the one on the letter before it, did this vowel land the same distance under the baseline as the last one, are these two strokes actually parallel &mdash; came down to squinting, or to dropping a guide on the canvas and deleting it again afterwards. Now you can switch on a <strong>grid</strong> across the editing canvas, measured in the same <strong>font units</strong> as everything else: zero sits on the letter's origin and on the baseline, so a line always falls exactly there. <strong>You decide how it looks and behaves.</strong> Set the spacing, how often a heavier line comes along to help you count, and how strongly the whole thing shows through &mdash; all in the new <span class="ui">Grid</span> panel beside the canvas, so you can watch it change as you adjust it. Zoom far out and the finest lines quietly step aside rather than smearing into a grey block. <strong>And your points can stick to it.</strong> Switch on <span class="ui">Snap to grid</span> and dragged points, whole selections and pen clicks settle onto the nearest grid line exactly the way they already settle onto guides &mdash; hold <span class="ui">Alt</span> to slip past it for one move. The grid is a drawing aid only; it never becomes part of your font, and it is remembered on this device rather than saved into the project. It starts switched off &mdash; turn it on from the node toolbar, under <span class="ui">Settings &rarr; Canvas</span>, or with <span class="ui">Shift + G</span> at any time. <strong>Advanced Settings is now just Settings.</strong> Same tab in the same place, shorter name, with a gear on it. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.21</strong> &mdash; <strong>Control handles stay the same size as you zoom in.</strong> Zooming in is how you do the fussy work &mdash; nudging a point onto a curve, lining a vowel up under a letter. But every dot, square and circle on the canvas used to grow along with the letter, so by 400% the handles were fat blobs sitting on top of the very outline you were trying to see, and neighbouring points ran into each other. Now they hold their size on screen no matter how far you zoom, the way they do in professional font and drawing programs: the letter gets bigger, the handles stay put, and there is far more room between them to work. Zoomed out past 50% they gently grow instead, so they never shrink away to nothing. Nothing to switch on &mdash; it just behaves this way now. <span style="color:var(--muted);">(August 2026)</span></li>
-      <li><strong>v5.20</strong> &mdash; <strong>Rulers along the edges of the canvas.</strong> The editing canvas showed you a letter and its guide lines, but nothing about <em>where</em> anything sat &mdash; so matching a stroke width across two letters, or checking that a vowel cleared the baseline by the amount you meant, came down to reading numbers out of the side panels and guessing. Now numbered rulers run along the top and left edges, measured in the same <strong>font units</strong> the rest of the app uses: zero sits at the letter's origin and on the baseline, and the numbers re-space themselves as you zoom so they never crowd together. A marker on each ruler tracks your pointer, so you can always see exactly where you are. <strong>Guides you can pull off a ruler.</strong> Drag from either ruler onto the canvas and you get a guide &mdash; the same guides as before, so it is instantly draggable, renameable, and remembered with your project. <strong>And a corner that resets the zoom.</strong> The little box where the two rulers meet shows the current zoom; click it to snap straight back to 100%. Rulers start switched on &mdash; turn them off under <span class="ui">Advanced Settings &rarr; Canvas</span>, or press <span class="ui">Shift + R</span> at any time. <span style="color:var(--muted);">(August 2026)</span></li>
+      <li><strong>v5.20</strong> &mdash; <strong>Rulers along the edges of the canvas.</strong> The editing canvas showed you a letter and its guide lines, but nothing about <em>where</em> anything sat &mdash; so matching a stroke width across two letters, or checking that a vowel cleared the baseline by the amount you meant, came down to reading numbers out of the side panels and guessing. Now numbered rulers run along the top and left edges, measured in the same <strong>font units</strong> the rest of the app uses: zero sits at the letter's origin and on the baseline, and the numbers re-space themselves as you zoom so they never crowd together. A marker on each ruler tracks your pointer, so you can always see exactly where you are. <strong>Guides you can pull off a ruler.</strong> Drag from either ruler onto the canvas and you get a guide &mdash; the same guides as before, so it is instantly draggable, renameable, and remembered with your project. <strong>And a corner that resets the zoom.</strong> The little box where the two rulers meet shows the current zoom; click it to snap straight back to 100%. Rulers start switched on &mdash; turn them off under <span class="ui">Settings &rarr; Canvas</span>, or press <span class="ui">Shift + R</span> at any time. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.19</strong> &mdash; <strong>An import now brings the whole font across, not just the letters.</strong> Importing a font used to stop at the alphabet: everything else a real page needs &mdash; the curly quote marks a word processor inserts for you, the en and em dashes, the ellipsis, the shekel and euro signs, <span class="ui">&copy; &deg; &laquo; &raquo; &times; &divide; &frac12;</span> &mdash; was read and thrown away, so an exported font still fell back to another face mid-sentence. Now it all comes too, along with the standalone Latin letters (<em>&AElig; &Oslash; &szlig; &OElig; &Scaron; &Zcaron;</em>) that have no accent to build from. <strong>Your combined letters come from the original.</strong> When the source font already draws <span lang="he" dir="rtl">&#1513;&#1473;</span>, <span lang="he" dir="rtl">&#1489;&#1468;</span>, <span lang="he" dir="rtl">&#1488;&#1463;</span> or <span lang="he" dir="rtl">&#1493;&#1465;</span> itself, the import takes that glyph <em>whole</em> instead of rebuilding it from your letter plus a dot &mdash; so the dot sits exactly where the original put it (the dotted-shin pair <span lang="he" dir="rtl">&#64300;/&#64301;</span> comes whole too, and the no-break space your word processor types is covered). A <span class="ui">Rebuild from my letters</span> button gives you the composed version back whenever you want it. <strong>The masoretic marks and the rest of the presentation forms.</strong> The masora circle and the upper and lower puncta join the <span class="ui">Trop</span> tab, the inverted nun and the Hebrew plus sign join <span class="ui">Punctuation</span>, and <span class="ui">Specialized letters</span> gains every remaining dagesh and mapiq form. <strong>And the line spacing matches.</strong> An import now carries the original's line metrics across, so text set in your font lines up the way the original did. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.18</strong> &mdash; <strong>Imported fonts now bring their English letters with them.</strong> Until now, importing a font took its Hebrew letters, vowels and cantillation marks &mdash; but quietly left every <span class="ui">A&ndash;Z</span> and <span class="ui">a&ndash;z</span> behind, so an exported font showed nothing when you typed in English. Now the import fills the <span class="ui">English</span> tab from the original's own Latin letters, turning the tab on for you when the font has a full alphabet, and it takes ready-made accented letters (<em>&aacute;, &eacute;, &ntilde;, &ccedil;</em>) whole when the original has them &mdash; falling back to building them from your letters plus accent marks when it doesn't. If you had already drawn English letters yourself, the import asks before touching them. <strong>And English letters finally survive saving.</strong> Reopening a project used to wipe every English letter you had traced, silently, and hand it back blank &mdash; that's fixed. <strong>Punctuation, digits and symbols come across too.</strong> The font's own digits and punctuation already imported &mdash; but they shipped even when you had never traced them, so typing <span class="ui">5</span> in an exported font produced nothing at all instead of falling back to another font. An untraced one is now simply left out, and 21 more symbols (<span class="ui">@ # $ % &amp; * + / &lt; = &gt; [ ] { } | \ ^ _ &#96; ~</span>) join the <span class="ui">Punctuation &amp; More</span> tab &mdash; so an imported font now covers everything on a keyboard. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.17</strong> &mdash; <strong>Partner font links land with their nikkud already in place.</strong> Opening an <span class="ui">Open Siddur</span> <span class="ui">?start=</span> edit link used to finish by handing you a fidelity report and an <span class="ui">Apply per-combo fixes</span> button to press before the vowels sat right. That check is now part of the loading: the progress window says <em>&ldquo;Checking where the nikkud and trop land in the original font&hellip;&rdquo;</em>, every fix it can express is applied for you, and the font is re-measured against the original before the workspace appears. The report only opens if something still missed &mdash; and it is still one click away from the <span class="ui">Fidelity report</span> button in the Nikkud step, with every fix undoable as a single step. Importing a font you picked yourself is unchanged: you still get the report and decide. <strong>And the tour now matches the font you actually have.</strong> A partner font arrives finished — letters drawn, vowels placed — so the from-scratch walkthrough was telling new arrivals to photograph and trace letters they already had. Partner projects now get their own seven-step tour: what came across, how to reshape a letter with <span class="ui">Edit points</span>, where the vowel positions came from, and which parts of <span class="ui">Font Details</span> are locked to the original's license and why. It is offered (pre-ticked) at the end of the partner setup, and the header <span class="ui">Tour</span> button gives the same one any time. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3507,7 +3514,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3520,7 +3527,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_21';
+  const CUR_KEY = 'fontmaker.changelog.v5_22';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -3761,6 +3768,7 @@ function shortcutGroups() {
       [`${M} + Shift + Z  or  ${M} + Y`, t('sc_redo')],
       ['Esc', t('sc_esc')],
       ['Shift + R', t('sc_rulers')],
+      ['Shift + G', t('sc_grid')],
     ], 'everywhere'],
     [g('nav'), [
       ['[', t('sc_prev_letter')],
@@ -4317,6 +4325,28 @@ function attachGuideSortable(){
       reorderGuides(ids);
     });
   });
+}
+/* Canvas grid controls. These live beside the stage rather than in Settings → Canvas
+   because that tab HIDES the stage (body.cat-settings), so a spacing field there could not be
+   tuned by eye. renderControls() rebuilds this innerHTML wholesale, so every value is derived
+   from its mirror variable inside the template — there is no separate re-sync pass. */
+function gridPanelHTML(){
+  const t = k => I18n.t('fontmaker.panels.' + k);
+  return `
+    <div class="ws-side-title" style="margin-top:12px;">${t('grid')}</div>
+    <label class="chk"><input type="checkbox" ${_gridOn?'checked':''} onchange="setGridShown(this.checked)" title="${esc(t('adv_grid_title'))}"> ${t('grid_show')}</label>
+    <label class="chk"><input type="checkbox" id="gridSnapChk" ${_gridSnapOn?'checked':''} onchange="setGridSnap(this.checked)" title="${esc(t('grid_snap_title'))}"> ${t('grid_snap')}</label>
+    <div class="ctl-row" style="margin-top:5px;">
+      <span class="guide-lbl">${t('grid_step')}</span>
+      <input class="guide-pos" id="gridStepInp" type="number" min="1" max="1000" step="1" value="${_gridStep}" onchange="setGridStep(this.value)" onkeydown="if(event.key==='Enter')this.blur()" title="${esc(t('grid_step_title'))}">
+      <span class="guide-lbl">${t('grid_major')}</span>
+      <input class="guide-pos" id="gridMajorInp" type="number" min="0" max="100" step="1" value="${_gridMajor}" onchange="setGridMajor(this.value)" onkeydown="if(event.key==='Enter')this.blur()" title="${esc(t('grid_major_title'))}">
+    </div>
+    <div class="ctl-row" style="margin-top:5px;">
+      <span class="guide-lbl">${t('grid_opacity')}</span>
+      <input class="guide-size" type="range" min="0.05" max="1" step="0.05" value="${_gridOpacity}" oninput="setGridOpacity(this.value)" title="${esc(t('grid_opacity_title'))}">
+    </div>
+    <div class="hint" style="margin-top:4px;">${t('grid_hint')}</div>`;
 }
 function guidesPanelHTML(){
   const g = ensureGuides();
@@ -5261,7 +5291,7 @@ function gotoAnchors(cat) {
 }
 /* expand/collapse-all menus removed with the Sidebar layout */
 
-/* ════════ Layout (Sidebar / Tabbed) — Advanced Settings ════════ */
+/* ════════ Layout (Sidebar / Tabbed) — Settings ════════ */
 function setCatTab(cat) {            // tabbed layout: choose which category picker is shown (view-only)
   catTab = cat;
   syncCatTabs();
@@ -5287,7 +5317,7 @@ function renderCatTabs() {
   const sf = document.getElementById('addSpecialFormsChk'); if (sf && project && project.font) sf.checked = !!project.font.addSpecialForms;
   const yi = document.getElementById('addYiddishChk');      if (yi && project && project.font) yi.checked = !!project.font.addYiddish;
   const la = document.getElementById('addLadinoChk');       if (la && project && project.font) la.checked = !!project.font.addLadino;
-  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', english: 'English', customglyphs: 'Custom glyphs', specialforms: 'Specialized letters', yiddish: 'Yiddish', ladino: 'Ladino', spacing: 'Spacing', advanced: 'Advanced Settings' };
+  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', english: 'English', customglyphs: 'Custom glyphs', specialforms: 'Specialized letters', yiddish: 'Yiddish', ladino: 'Ladino', spacing: 'Spacing', advanced: '⚙️ Settings' };
   const cats = ['fontdetails', 'letter', 'nikkud', 'trop', 'punct', 'spacing', 'advanced'];
   if (project && project.font && project.font.addCustomGlyphs) cats.splice(cats.indexOf('punct') + 1, 0, 'customglyphs');   // appears right after Punctuation
   if (project && project.font && project.font.addEnglishLetters) cats.splice(cats.indexOf('punct') + 1, 0, 'english');   // English tab right after Punctuation (before Custom glyphs)
@@ -6885,10 +6915,12 @@ function finalizeCropSvg(l, parsed, im, rect, csh) {
 function stageColors() {
   return document.body.classList.contains('dark') ? {
     ink:'#d6deec', inkFill:'rgba(214,222,236,0.92)', inkStroke:'#aeb9d0',
-    top:'#6aa6dd', base:'#9aa4b4', desc:'#d68a8a', margin:'#cf9d9d', marginTxt:'#dcaeae'
+    top:'#6aa6dd', base:'#9aa4b4', desc:'#d68a8a', margin:'#cf9d9d', marginTxt:'#dcaeae',
+    grid:'#4a5468', gridSnap:'#e0a832'
   } : {
     ink:'#3a4150', inkFill:'rgba(26,39,68,0.85)', inkStroke:'#1a2744',
-    top:'#3b6ea5', base:'#888', desc:'#a55', margin:'#c99', marginTxt:'#a05a5a'
+    top:'#3b6ea5', base:'#888', desc:'#a55', margin:'#c99', marginTxt:'#a05a5a',
+    grid:'#b9c0cc', gridSnap:'#c9922a'
   };
 }
 function guideLinesSVG(rightX) {   // rightX (stage px): extend the reference lines under a wide form so they span its full width
@@ -7002,11 +7034,11 @@ function renderMarkStage(it) {
   }
   if (!combined && it.designMode === 'editor') {
     ensureMarkPieces(it);
-    sv.innerHTML = markGuidesSVG() + editorStageSVG(it);
+    sv.innerHTML = gridLinesSVG(sv, fx, ifx, null) + markGuidesSVG() + editorStageSVG(it);
     attachEditorDrag(it); renderLegend(); return;
   }
   // upload path — reuse the image align/trace rendering (also used by combined after cropping)
-  let h = markGuidesSVG();
+  let h = gridLinesSVG(sv, fx, ifx, null) + markGuidesSVG();
   const cb = captureBoxFont(it);
   h += `<rect x="${fx(cb.x0)}" y="${fy(cb.y1)}" width="${fx(cb.x1)-fx(cb.x0)}" height="${fy(cb.y0)-fy(cb.y1)}" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.7"/>`;
   const url = curImageUrl();
@@ -7298,6 +7330,10 @@ const WS_MIN = 220, WS_MAX = 460, WS_CENTER_MIN = 360, WS_HANDLE_W = 10, WS_DEFA
 function wsGrid() { return document.querySelector('.ws-grid'); }
 function wsClampN(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 function wsReadPrefs() { try { return JSON.parse(localStorage.getItem(WS_PREFS_KEY) || '{}') || {}; } catch (e) { return {}; } }
+function wsSavePref(key, val) {   // one device pref → hebrewFontMaker_uiPrefs (numbers, strings, booleans alike)
+  try { const p = wsReadPrefs(); p[key] = val; localStorage.setItem(WS_PREFS_KEY, JSON.stringify(p)); }
+  catch (e) { /* private mode / quota — non-fatal */ }
+}
 function saveColWidths(left, right) {
   try { const p = wsReadPrefs();
     if (left  != null) p.wsLeft  = Math.round(left);
@@ -7507,6 +7543,10 @@ async function renderStage() {
   // (collectSnapTargets reads the guide DATA, not this rendering).
   const noGuides = workMode === 'nodes' && !_nodeGuidesOn;
   const showMetric = metricAdjust && !wg;   // draggable margin dots: available in every letter-editing step (not wide-form placement)
+  // Graph paper goes UNDER everything, so it is prepended rather than appended — and it is built
+  // here, not at the top, because wideRight (the widened viewBox) is only known in this tail.
+  // Its own toggle, deliberately independent of the node-mode Guides switch.
+  if (_gridOn) { h = gridLinesSVG(sv, fx, ifx, wideRight) + h; h += gridSnapHitSVG(fx, wideRight); }
   if (!noGuides) h += guideLinesSVG(wideRight);    // extend the top/base reference lines under a wide form
   if (workMode !== 'anchors') {
     const cb = captureBoxFont(l);
@@ -7658,16 +7698,14 @@ function onStagePointerMove(e) {
     const l = curLetter();
     if (nodeDrag.type === 'nodes') {
       const [fxp,fyp] = clientToFont(e); let dx = fxp - nodeDrag.startFont[0], dy = fyp - nodeDrag.startFont[1];
-      // Snap the ANCHOR node (the grabbed marker) to nearby guide/metric lines; the other selected
-      // nodes follow by the same delta. Hold Alt to bypass. Independent X/Y capture.
+      // Snap the ANCHOR node (the grabbed marker) to nearby guide/metric lines and grid lines; the
+      // other selected nodes follow by the same delta. Hold Alt to bypass. Independent X/Y capture.
       let hit = null;
       if (nodeDrag.snap && snapGuidesOn() && !e.altKey) {
         const o = nodeDrag.orig.get(nodeDrag.anchorKey);
         if (o) {
           const tol = snapTolFont(), ax = o.x + dx, ay = o.y + dy;
-          let bx = null, by = null;
-          nodeDrag.snap.xs.forEach(t => { const d = Math.abs(t.v - ax); if (d <= tol && (!bx || d < bx.d)) bx = { t, d }; });
-          nodeDrag.snap.ys.forEach(t => { const d = Math.abs(t.v - ay); if (d <= tol && (!by || d < by.d)) by = { t, d }; });
+          const bx = snapAxis(nodeDrag.snap.xs, ax, tol), by = snapAxis(nodeDrag.snap.ys, ay, tol);
           if (bx) dx += bx.t.v - ax;
           if (by) dy += by.t.v - ay;
           if (bx || by) hit = { x: bx && bx.t, y: by && by.t };
@@ -7701,8 +7739,8 @@ function onStagePointerMove(e) {
       if (nodeDrag.snap && snapGuidesOn() && !e.altKey) {
         const tol = snapTolFont(), b0 = nodeDrag.bbox0;
         let bx = null, by = null;
-        [b0.x0 + dx, b0.x1 + dx].forEach(edge => nodeDrag.snap.xs.forEach(t => { const d = Math.abs(t.v - edge); if (d <= tol && (!bx || d < bx.d)) bx = { t, d, adj: t.v - edge }; }));
-        [b0.y0 + dy, b0.y1 + dy].forEach(edge => nodeDrag.snap.ys.forEach(t => { const d = Math.abs(t.v - edge); if (d <= tol && (!by || d < by.d)) by = { t, d, adj: t.v - edge }; }));
+        [b0.x0 + dx, b0.x1 + dx].forEach(edge => { const c = snapAxis(nodeDrag.snap.xs, edge, tol); if (c && (!bx || c.d < bx.d)) bx = { t: c.t, d: c.d, adj: c.t.v - edge }; });
+        [b0.y0 + dy, b0.y1 + dy].forEach(edge => { const c = snapAxis(nodeDrag.snap.ys, edge, tol); if (c && (!by || c.d < by.d)) by = { t: c.t, d: c.d, adj: c.t.v - edge }; });
         if (bx) dx += bx.adj;
         if (by) dy += by.adj;
         if (bx || by) hit = { x: bx && bx.t, y: by && by.t };
@@ -10116,6 +10154,134 @@ function initRulers() {
   });
   renderRulers();
 }
+
+/* ═══════════════════ Canvas grid (shared by #stage and #meStage) ═══════════════════
+   Graph paper across the editing canvas, in the same FONT UNITS the rulers are measured in, with
+   an optional magnetic snap. The sibling of the ruler module above and built to the same contract:
+   view-only chrome that never touches project data — no udDo, no markDirty, no undo entry — with
+   every setting a per-device pref in hebrewFontMaker_uiPrefs.
+
+   GEOMETRY: lines sit at integer multiples of the step, so x=0 (the pen origin) and y=0 (the
+   baseline) are always ON the grid — the same zero the rulers label. Extents are read back out of
+   the viewBox the caller is about to use, because a wide form widens it past STAGE_VB.w; mapX is
+   fx on #stage and ex on #meStage (whose x origin is the mark centre), exactly as in rlStages().
+
+   TWO PATHS, NOT N LINES: renderStage() re-serializes the whole stage on every pointermove during
+   a drag, so the grid is emitted as one <path> per tier (minor, then major painted over it —
+   overdraw is invisible and far cheaper than filtering the minors). Both carry
+   vector-effect="non-scaling-stroke": zoom is a CSS width scale over a FIXED viewBox, so a plain
+   0.5-unit stroke would render as a 2px slab at 400% (same reasoning as the .anc/.pcanc rule).
+
+   DENSITY GUARD: a tier whose on-screen gap falls under GRID_MIN_PX is dropped rather than drawn,
+   or a zoomed-out canvas renders as a flat grey wash instead of a grid. */
+const GRID_MIN_PX = 4;                       // smallest on-screen gap worth drawing a tier at
+const GRID_STEP_DEF = 50, GRID_MAJOR_DEF = 4, GRID_OPACITY_DEF = 0.5;
+function clampGridStep(v)    { v = Math.round(+v); return (isFinite(v) && v >= 1) ? Math.min(1000, v) : GRID_STEP_DEF; }
+function clampGridMajor(v)   { v = Math.round(+v); return (isFinite(v) && v >= 0) ? Math.min(100, v) : GRID_MAJOR_DEF; }   // 0 or 1 ⇒ no heavy line
+function clampGridOpacity(v) { v = +v; return (isFinite(v) && v >= 0.05 && v <= 1) ? v : GRID_OPACITY_DEF; }
+let _gridOn      = wsReadPrefs().gridOn === true;        // absent ⇒ off (unlike the rulers, this draws OVER the glyph)
+let _gridSnapOn  = wsReadPrefs().gridSnapOff !== true;   // stored inverted, per nodeGuidesOff/rulersOff ⇒ absent means snap
+let _gridStep    = clampGridStep(wsReadPrefs().gridStep);
+let _gridMajor   = clampGridMajor(wsReadPrefs().gridMajor);
+let _gridOpacity = clampGridOpacity(wsReadPrefs().gridOpacity);
+
+/* ── setters: view-state only — never project data, no undo entry, no markDirty (cf. setRulersShown) ── */
+function setGridShown(on) {
+  _gridOn = !!on;
+  wsSavePref('gridOn', _gridOn);
+  const c = document.getElementById('showGridChk'); if (c) c.checked = _gridOn;
+  const b = document.getElementById('nodeGridBtn'); if (b) b.setAttribute('aria-pressed', _gridOn ? 'true' : 'false');
+  renderStage(); renderControls();
+}
+/* The three below sync their own control instead of calling renderControls(), so typing in a field
+   or dragging the slider doesn't rebuild the panel out from under the pointer. */
+function setGridSnap(on) {
+  _gridSnapOn = !!on; wsSavePref('gridSnapOff', !_gridSnapOn);
+  const el = document.getElementById('gridSnapChk'); if (el) el.checked = _gridSnapOn;
+}
+function setGridStep(v) {
+  _gridStep = clampGridStep(v); wsSavePref('gridStep', _gridStep);
+  const el = document.getElementById('gridStepInp'); if (el) el.value = _gridStep;   // show the clamped value back
+  renderStage();
+}
+function setGridMajor(v) {
+  _gridMajor = clampGridMajor(v); wsSavePref('gridMajor', _gridMajor);
+  const el = document.getElementById('gridMajorInp'); if (el) el.value = _gridMajor;
+  renderStage();
+}
+function setGridOpacity(v) { _gridOpacity = clampGridOpacity(v); wsSavePref('gridOpacity', _gridOpacity); renderStage(); }
+
+/* ── renderer ── */
+function gridTiers(ctmA) {   // which tiers clear GRID_MIN_PX at the current zoom (0 = don't draw that tier)
+  const px = u => u * SC * (ctmA || 1);
+  return { minor: px(_gridStep) >= GRID_MIN_PX ? _gridStep : 0,
+           major: (_gridMajor > 1 && px(_gridStep * _gridMajor) >= GRID_MIN_PX) ? _gridStep * _gridMajor : 0 };
+}
+const GRID_MAX_LINES = 600;   // backstop: a tier that would exceed this is dropped rather than serialized every frame
+function _gridPathD(step, mapX, x0, x1, y0, y1, sx0, sx1, sy0, sy1) {
+  const iv0 = Math.ceil(x0 / step), iv1 = Math.floor(x1 / step);
+  const ih0 = Math.ceil(y0 / step), ih1 = Math.floor(y1 / step);
+  if ((iv1 - iv0) + (ih1 - ih0) + 2 > GRID_MAX_LINES) return '';
+  let d = '';
+  for (let i = iv0; i <= iv1; i++) { const p = mapX(i * step).toFixed(1); d += `M${p} ${sy0}V${sy1}`; }
+  for (let i = ih0; i <= ih1; i++) { const p = fy(i * step).toFixed(1);   d += `M${sx0} ${p}H${sx1}`; }
+  return d;
+}
+function gridLinesSVG(sv, mapX, invX, rightX) {
+  if (!_gridOn || !sv) return '';
+  const ctm = sv.getScreenCTM();
+  const t = gridTiers((ctm && ctm.a) || 1);
+  if (!t.minor && !t.major) return '';                 // too dense to read at this zoom — draw nothing
+  // Span the viewBox the caller is ABOUT to use: renderStage widens it for a stretched wide form.
+  const sx0 = STAGE_VB.x, sy0 = STAGE_VB.y, sy1 = STAGE_VB.y + STAGE_VB.h;
+  const sx1 = Math.max(STAGE_VB.x + STAGE_VB.w, rightX != null ? Math.round(rightX + 52) : 0);
+  const x0 = invX(sx0), x1 = invX(sx1), y0 = ify(sy1), y1 = ify(sy0);   // ify flips: sy1 is the LOW font y
+  const C = stageColors();
+  const pathFor = (step, w, op) => {
+    const d = _gridPathD(step, mapX, x0, x1, y0, y1, sx0, sx1, sy0, sy1);
+    return d ? `<path class="cgrid" d="${d}" fill="none" stroke="${C.grid}" stroke-width="${w}" stroke-opacity="${op.toFixed(3)}" vector-effect="non-scaling-stroke" pointer-events="none" shape-rendering="crispEdges"/>` : '';
+  };
+  let h = '';
+  if (t.minor) h += pathFor(t.minor, 1,    _gridOpacity * 0.5);
+  if (t.major) h += pathFor(t.major, 1.75, _gridOpacity);    // heavier + fuller, painted over the minors it coincides with
+  return h;
+}
+/* A grid snap capture has no stored line to brighten (cf. userGuidesSVG / guideLinesSVG reading
+   _snapHit), so the captured column/row is drawn as its own overlay for the duration of the drag. */
+function gridSnapHitSVG(mapX, rightX) {
+  if (!_snapHit || !_gridOn) return '';
+  const C = stageColors();
+  const sx1 = Math.max(STAGE_VB.x + STAGE_VB.w, rightX != null ? Math.round(rightX + 52) : 0);
+  const ln = (a, b, c, d) => `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="${C.gridSnap}" stroke-width="1.5" vector-effect="non-scaling-stroke" opacity="0.9" pointer-events="none"/>`;
+  let h = '';
+  if (_snapHit.x && _snapHit.x.kind === 'grid') { const p = mapX(_snapHit.x.v).toFixed(1); h += ln(p, STAGE_VB.y, p, STAGE_VB.y + STAGE_VB.h); }
+  if (_snapHit.y && _snapHit.y.kind === 'grid') { const p = fy(_snapHit.y.v).toFixed(1);   h += ln(STAGE_VB.x, p, sx1, p); }
+  return h;
+}
+/* ── snap: the grid is unbounded, so it can't join collectSnapTargets()'s finite {xs,ys} list —
+      it contributes a computed candidate that snapAxis weighs against the stored targets. ── */
+function gridSnapCandidate(v, tol) {
+  if (!_gridOn || !_gridSnapOn || !_gridStep) return null;
+  const q = Math.round(v / _gridStep) * _gridStep, d = Math.abs(q - v);
+  return d <= tol ? { t: { v: q, kind: 'grid' }, d } : null;
+}
+function snapAxis(list, v, tol) {   // nearest of the metric/guide targets and the grid, or null
+  let best = null;
+  list.forEach(t => { const d = Math.abs(t.v - v); if (d <= tol && (!best || d < best.d)) best = { t, d }; });
+  const g = gridSnapCandidate(v, tol);
+  return (g && (!best || g.d < best.d)) ? g : best;
+}
+function initGrid() {
+  const chk = document.getElementById('showGridChk'); if (chk) chk.checked = _gridOn;
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'G' && e.key !== 'g') return;
+    if (!e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+    e.preventDefault();
+    setGridShown(!_gridOn);
+    status(I18n.t(_gridOn ? 'fontmaker.grid.on' : 'fontmaker.grid.off'));
+  });
+}
 /* ── Node-mode stage chrome: #nodeBar / #nodeStatus / #nodeHint sync ──
    The bar, status line, and hint are static DOM written once in the page markup;
    renderNodeChrome() (called first from renderControls()) only syncs attributes/
@@ -10173,6 +10339,8 @@ function renderNodeChrome() {   // pure sync — safe to call from any render pa
   if (hb) hb.setAttribute('aria-pressed', _nodeHandlesAll ? 'true' : 'false');
   const gb = document.getElementById('nodeGuidesBtn');
   if (gb) gb.setAttribute('aria-pressed', _nodeGuidesOn ? 'true' : 'false');
+  const gr = document.getElementById('nodeGridBtn');
+  if (gr) gr.setAttribute('aria-pressed', _gridOn ? 'true' : 'false');
   const sc = document.getElementById('nodeSnapChk');
   if (sc) sc.checked = snapGuidesOn();   // re-syncs after project load / undo restoring project.view
   // status bar — glyph identity via textContent (letter names can be user-authored)
@@ -10232,11 +10400,9 @@ function _nodeCursorPt(e) {   // what the coords readout shows outside a drag (d
 function penPointerDown(e) {
   const [rx, ry] = clientToFont(e);
   let p = [rx, ry];
-  if (snapGuidesOn() && !e.altKey) {                  // pen clicks snap to guides/metrics (Alt bypasses; Alt also = quick-curve)
+  if (snapGuidesOn() && !e.altKey) {                  // pen clicks snap to guides/metrics/grid (Alt bypasses; Alt also = quick-curve)
     const tg = collectSnapTargets(), tol = snapTolFont();
-    let bx = null, by = null;
-    tg.xs.forEach(t => { const d = Math.abs(t.v - p[0]); if (d <= tol && (!bx || d < bx.d)) bx = { t, d }; });
-    tg.ys.forEach(t => { const d = Math.abs(t.v - p[1]); if (d <= tol && (!by || d < by.d)) by = { t, d }; });
+    const bx = snapAxis(tg.xs, p[0], tol), by = snapAxis(tg.ys, p[1], tol);
     if (bx) p[0] = bx.t.v;
     if (by) p[1] = by.t.v;
   }
@@ -11713,7 +11879,7 @@ function meRenderStage() {
   const ay = fy(0);
   const guide = `<line x1="35" y1="${ay}" x2="565" y2="${ay}" stroke="#c8bfa8" stroke-width="1" stroke-dasharray="5 4"/>`
     + `<text x="300" y="${meItem.cls==='above'?ay+20:ay-10}" text-anchor="middle" fill="#9aa0aa" font-size="11">letter baseline</text>`;
-  sv.innerHTML = guide + editorStageSVG(meItem);
+  sv.innerHTML = gridLinesSVG(sv, ex, iex, null) + guide + editorStageSVG(meItem);   // x origin here is the mark centre, not the pen origin
   sv.querySelectorAll('.epiece').forEach(el => el.addEventListener('pointerdown', e => {
     editorSel = +el.dataset.i;
     meBeginEdit();
@@ -12379,7 +12545,7 @@ function renderSpacingPreview() {
 const WATERFALL_SIZES = [14, 18, 24, 36, 48];
 function waterfallOpenPref() { return wsReadPrefs().waterfallOpen === true; }   // missing = collapsed
 function npnlSaveOpen(key, open) {   // node-panel disclosure open-states (nodeXformOpen / nodeFilletOpen / nodeReduceOpen / nodeContoursOpen)
-  try { const p = wsReadPrefs(); p[key] = !!open; localStorage.setItem(WS_PREFS_KEY, JSON.stringify(p)); } catch (e) { /* private mode / quota — non-fatal */ }
+  wsSavePref(key, !!open);           // boolean-coercing wrapper around the generic device-pref writer
 }
 function setWaterfallOpen(open) {
   try { const p = wsReadPrefs(); p.waterfallOpen = !!open; localStorage.setItem(WS_PREFS_KEY, JSON.stringify(p)); } catch (e) {}
@@ -12782,7 +12948,7 @@ function renderControls() {
   // Letter Metrics + guides: the two panels that belong to the LETTER rather than to the step, so
   // they live in the right column and stay put as you move between Align / Draw / Trace / Points /
   // Nikkud — no hunting for the margin fields in a different place on each screen.
-  R.insertAdjacentHTML('beforeend', metricsPanel() + guidesPanelHTML());
+  R.insertAdjacentHTML('beforeend', metricsPanel() + gridPanelHTML() + guidesPanelHTML());
   attachGuideSortable();                                   // re-bind drag-to-reorder on the guide cards each render
 }
 function renderNodeLeft(L, l) {
@@ -17958,6 +18124,7 @@ function init() {
   attachColResizers();    // wire the two splitter drag handles (once; they survive renderControls)
   drawLoadPrefs();        // Draw-mode brush/pressure/smoothing/pen-only mirrors from hebrewFontMaker_uiPrefs
   initRulers();           // canvas rulers: bar/stage listeners, scroll+resize redraw, Shift+R (hebrewFontMaker_uiPrefs)
+  initGrid();             // canvas grid: checkbox sync + Shift+G (hebrewFontMaker_uiPrefs)
   window.addEventListener('beforeunload', e => { if (_projectDirty) { e.preventDefault(); e.returnValue = ''; } });   // warn before losing unsaved work
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushAutosave(); });   // tab hidden → flush the debounced autosave now
   window.addEventListener('pagehide', flushAutosave);   // closing/navigating away → last-chance flush
