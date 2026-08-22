@@ -14856,7 +14856,7 @@ function qaRenderGrid() {
   qaRows().forEach(row => {
     if (row.section && row.section !== lastSection) { lastSection = row.section; html += `<tr class="qa-section"><td class="qa-section-h" colspan="${cols.length + 1}">${I18n.t(row.section === 'special' ? 'fontmaker.qa.section_special' : 'fontmaker.qa.section_custom')}</td></tr>`; }
     const L = row.L, anc = qaAnchors(L);
-    html += `<tr><td class="qa-rowlabel" title="${esc(row.name)}">${esc(row.labelCh)} <span style="color:var(--muted);">${esc(row.name)}</span></td>`;
+    html += `<tr><td class="qa-rowlabel" title="${esc(gName(row.name))}">${esc(row.labelCh)} <span style="color:var(--muted);">${esc(gName(row.name))}</span></td>`;
     cols.forEach(col => {
       const layers = qaCellLayers(L, anc, col);
       const reasons = qaCellReasons(L, row, col, layers);
