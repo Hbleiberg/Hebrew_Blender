@@ -1087,6 +1087,49 @@
     .ws-center .zoom-bar   { max-width: 100%; }
     .ws-center #nodeBar, .ws-center #nodeStatus { max-width: 100%; }
   }
+
+  /* ════════ Fullscreen drawing canvas — tablet-first ════════
+     Fullscreen already drops the header and footer. While a letter is actually being DRAWN it now
+     also gives the canvas the screen: the settings column folds away and the pen tools sit BESIDE
+     the canvas instead of stacking below it, so a stylus user stops scrolling between a stroke and
+     its Save. The desktop caps (720px wide / 74vh tall) waste most of a tablet. Scoped to
+     body.fullscreen.mode-draw — exiting fullscreen or leaving the Draw step restores the normal
+     workspace exactly, with no JS teardown. The areas are physical, so RTL mirrors them for free.
+     dvh (with a vh fallback beneath it) is deliberate here: on a phone/tablet browser 100vh is
+     taller than the visible viewport while the URL bar is expanded, which would push Save off. */
+  body.fullscreen.mode-draw .ws-right,
+  body.fullscreen.mode-draw .ws-under { display: none; }
+  body.fullscreen.mode-draw .ws-left { max-width: none; margin: 0; }
+  body.fullscreen.mode-draw .ws-center .stage-wrap { max-width: none; }
+  /* Wide enough for two columns — the pen tools move BESIDE the canvas. Gated on the workspace's
+     OWN 1181px stacking boundary rather than a new breakpoint: below it there is not enough width
+     for both, and forcing it measured 720px → 408px on an iPad in portrait — narrower than doing
+     nothing. Stacked widths keep the single column and simply get the taller canvas below. */
+  @media (min-width: 1181px) {
+    body.fullscreen.mode-draw .ws-split { display: none; }
+    body.fullscreen.mode-draw .ws-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 22rem);
+      grid-template-areas: "center left";
+      gap: 10px;
+    }
+    body.fullscreen.mode-draw .ws-left {
+      max-height: calc(100vh - 24px);
+      max-height: calc(100dvh - 24px);
+      overflow-y: auto;
+    }
+    body.fullscreen.mode-draw .ws-center .stage-wrap {
+      max-height: calc(100vh - 96px);
+      max-height: calc(100dvh - 96px);
+    }
+  }
+  /* Stacked widths (tablets in portrait, split-screen): the canvas still grows, but only to the
+     point where the pen tools stay just below it instead of being pushed off the screen. */
+  @media (max-width: 1180px) {
+    body.fullscreen.mode-draw .ws-center .stage-wrap {
+      max-height: calc(100vh - 300px);
+      max-height: calc(100dvh - 300px);
+    }
+  }
 </style>
 </head>
 <body>
@@ -3219,7 +3262,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.24';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.25';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3439,6 +3482,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.25</strong> &mdash; <strong>Fullscreen finally means &ldquo;just the canvas&rdquo; while you draw.</strong> Fullscreen already hid the header and footer, but the drawing canvas still shared the screen with every settings panel &mdash; on a tablet it stayed capped at a small box with the pen tools somewhere below the fold, so a stylus meant scrolling between a stroke and its Save. Now, whenever you are actually on the <span class="ui">Draw</span> step in fullscreen, the settings column folds away and the canvas takes the screen &mdash; and on a wide screen the pen tools move to sit right beside it. Leave fullscreen, or move to another step, and your normal workspace comes straight back exactly as it was. <em>(August 2026)</em></li>
       <li><strong>v5.24</strong> &mdash; <strong>Yiddish gets its pasekh tsvey yudn (<span lang="he" dir="rtl">&#1522;&#1463;</span>).</strong> The <span class="ui">Yiddish</span> tab covered the two-yud digraph but not the one Yiddish actually writes most: <span lang="he" dir="rtl">&#1522;&#1463;</span>, the standard spelling of the <em>ay</em> sound. Old Yiddish text stores it as a single character, and a font built here had nothing at that slot, so those words came out as empty boxes. Now the form is built from your own letters and ships with the tab &mdash; and typing the two-yud digraph followed by a pasekh composes to the very same glyph, so both spellings look identical. <strong>It also picks up your own pasekh.</strong> If you drew your own pasekh shape, it used to be quietly swapped for the standard one here; it now carries through, exactly as your own dagesh already does on <span lang="he" dir="rtl">&#1513;&#1468;&#1473;</span>. (August 2026)</li>
       <li><strong>v5.23</strong> &mdash; <strong>The grid now follows you in and out.</strong> The grid held one fixed spacing at every zoom, which meant it was only ever right at one zoom level: zoom out and the lines crowded together until they vanished, zoom in and they drifted so far apart there was nothing to measure against just when you were doing the finest work. Now it re-spaces itself the way the ruler numbers do. Zoom in and it fills in finer lines between the ones you set; zoom out and it steps back to coarser ones instead of disappearing. At ordinary zooms it shows exactly the <span class="ui">Spacing</span> you typed, and the heavier every-Nth line holds the rhythm you chose until you zoom out far enough that even that would crowd, when it steps up along with everything else. Either way the grid always agrees with the number you typed &mdash; the extra lines only ever divide it evenly or multiply it whole, never landing on some fraction in between. <strong>And you snap to what you can see.</strong> The lines it fills in are real targets, so at high zoom you can place a point on a finer division without retyping the spacing. When the grid is showing something other than your typed number, it says so right next to the field, so you always know what a drag will land on. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.22</strong> &mdash; <strong>Graph paper for the canvas.</strong> The rulers told you where you were, but nothing told you how far it was from here to there. So the everyday questions &mdash; is this stem the same width as the one on the letter before it, did this vowel land the same distance under the baseline as the last one, are these two strokes actually parallel &mdash; came down to squinting, or to dropping a guide on the canvas and deleting it again afterwards. Now you can switch on a <strong>grid</strong> across the editing canvas, measured in the same <strong>font units</strong> as everything else: zero sits on the letter's origin and on the baseline, so a line always falls exactly there. <strong>You decide how it looks and behaves.</strong> Set the spacing, how often a heavier line comes along to help you count, and how strongly the whole thing shows through &mdash; all in the new <span class="ui">Grid</span> panel beside the canvas, so you can watch it change as you adjust it. Zoom far out and the finest lines quietly step aside rather than smearing into a grey block. <strong>And your points can stick to it.</strong> Switch on <span class="ui">Snap to grid</span> and dragged points, curve handles, whole selections, pen clicks, nikkud anchors and the margin dots all settle onto the nearest grid line, exactly the way points already settle onto guides &mdash; hold <span class="ui">Alt</span> to slip past it for one move. The grid is a drawing aid only; it never becomes part of your font, and it is remembered on this device rather than saved into the project. It starts switched off &mdash; turn it on from the node toolbar, under <span class="ui">Settings &rarr; Canvas</span>, or with <span class="ui">Shift + G</span> at any time. <strong>Advanced Settings is now just Settings.</strong> Same tab in the same place, shorter name, with a gear on it. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3553,7 +3597,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3566,7 +3610,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_24';
+  const CUR_KEY = 'fontmaker.changelog.v5_25';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -13082,6 +13126,7 @@ function updateNodeEditToggle() {   // one persistent Edit points ⇄ Done editi
 }
 function renderControls() {
   renderNodeChrome();   // node-mode stage toolbar/status/hint — self-guarding, must run on every path (incl. early-outs) so the chrome hides
+  document.body.classList.toggle('mode-draw', !!project && workMode === 'draw' && curKind === 'letter');   // fullscreen canvas focus — same self-guarding contract as renderNodeChrome
   updateCurrentGlyphLabel();
   updateNodeEditToggle();   // keep the header toggle's label/visibility current on every render
   updateStepTicks();   // keep the per-glyph step checklist current on every render (trace/confirm route through here)
