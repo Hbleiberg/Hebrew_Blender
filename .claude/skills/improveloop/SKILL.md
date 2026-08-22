@@ -3,15 +3,17 @@ name: improveloop
 description: >-
   Run one bounded, ledger-driven continuous-improvement session on the IvritSuite / Hebrew Blender
   codebase using the v2 improvement-loop protocol — read docs/IMPROVEMENT_LOG.md first, select the top
-  candidate under the variety governor, run the single stalest rotating discovery pass (A–M, incl.
-  the SEO & discoverability audit and the aesthetics/beautification pass), make small single-concern
-  verified fixes (up to a 5-iteration budget, one commit each), optionally ship one micro-feature,
-  pause at decision gates to ask the maintainer, then update the ledger, bump sw.js VERSION once,
-  print a close-out summary, and compact the session context. Use this whenever the user invokes
+  candidate under the variety governor, run the single stalest rotating discovery pass (A–N, incl.
+  the SEO & discoverability audit, the aesthetics/beautification pass and the mobile & touch-device
+  pass), make small single-concern verified fixes (up to a 5-iteration budget, one commit each),
+  optionally ship one micro-feature, pause at decision gates to ask the maintainer, then update
+  the ledger, bump sw.js VERSION once, print a close-out summary, and compact the session context.
+  Use this whenever the user invokes
   /improveloop, or asks to run, continue, resume, or "rerun" the improvement loop / an improvement
-  session / iteration / pass, run a discovery / SEO / recurring-pattern / aesthetics-or-design
-  sweep, or hunt-and-fix small verified issues across the suite — even loosely phrased ("run the
-  loop", "do an improvement pass", "beautify the site a bit", "improveloop").
+  session / iteration / pass, run a discovery / SEO / recurring-pattern / aesthetics-or-design /
+  mobile-or-touch sweep, or hunt-and-fix small verified issues across the suite — even loosely
+  phrased ("run the loop", "do an improvement pass", "beautify the site a bit", "check how it looks
+  on a phone", "improveloop").
 ---
 
 # IvritSuite — Continuous Improvement Loop (v2)
@@ -22,7 +24,9 @@ prior session's context. The loop's value is many small, verified, isolated wins
 refactor. v2 adds a variety governor, health metrics, and a narrow micro-feature track; two
 maintainer-requested additions (2026-08-19) are the aesthetics pass (M — slow beautification, with
 decision gate 3 and its screenshot rule) and mandatory end-of-session context compaction
-(close-out step 6).
+(close-out step 6). A third (2026-08-22) is the mobile & touch-device pass (N — one surface per
+session on real device emulation, with decision gate 4 and a screenshot rule stricter than M's:
+a phone contact sheet ships even when the run finds nothing).
 
 ## Authority split — this skill vs the ledger
 
@@ -110,6 +114,18 @@ the maintainer's, not the loop's: at each gate, stop and ask via the **AskUserQu
   capture the current state (screenshots, per pass M's screenshot rule), describe what would change
   and why, then ask. Applies to ANY iteration that would dramatically change the site's look,
   whichever pass surfaced it.
+- **Gate 4 — mobile restructuring & desktop-affecting mobile fixes.** The mobile track (pass N)
+  fixes phones the way M beautifies: a change scoped *inside* a phone-width media query — a wrap, a
+  stacked row, a bigger tap box, an `inputmode`, a safe-area pad — stays autonomous. Ask before:
+  (a) anything that changes what **desktop** users see in service of phones; (b) restructuring,
+  reordering, or **hiding** content at phone widths — what a teacher can reach on a phone is an
+  information-architecture call, not a CSS one; (c) a new touch-only interaction (swipe,
+  long-press, pull-to-refresh) or a phone-specific warning/blocking screen, incl. declaring any
+  surface desktop-only (the Font Maker's `hebrewFontMaker_mobileWarnDismissed` notice is the one
+  existing precedent — it is not a licence to add more); (d) a page-wide unit or breakpoint
+  migration (`100vh` → `dvh` across a page, retuning a shared breakpoint). Propose with the
+  current-state phone screenshots, state what changes on phone AND on desktop, then ask. Applies to
+  ANY iteration that would do one of those, whichever pass surfaced it.
 
 **Batching:** collect gate questions at natural points — the post-discovery-pass selection moment,
 then iteration boundaries — up to 4 questions per AskUserQuestion call. Never gate small mechanical
@@ -119,7 +135,8 @@ fixes; a session with no gated work asks nothing.
 unattended run), take the conservative default — gate 1: skip the micro-feature this session;
 gate 2: leave the copy unchanged and log the proposed change as a Candidate; gate 3: don't ship
 the dramatic change — log the written proposal as a Candidate (note the current-state screenshots'
-paths in the entry) — and record each
+paths in the entry); gate 4: same — don't ship, log the proposal as a Candidate with its phone
+screenshots' paths (the pass's own measure-and-log arms still run in full) — and record each
 under **"Decisions deferred to maintainer"** in the `(SN close-out)` Done entry and the close-out
 summary, so the next attended session can ask. A gate must degrade gracefully; it never stalls or
 errors the session.
@@ -311,6 +328,91 @@ repo, and delivered to the maintainer at close-out (send them as files/attachmen
 harness supports it; otherwise print their paths). New CSS obeys the hard rules like everything
 else (logical properties, both themes, the once-per-session `sw.js` bump).
 
+**N. Mobile & touch-device pass (one surface per session)** — the suite installs as a PWA, and
+teachers reach for it on a phone between classes and on school-issued tablets; but every other pass
+measures it on a desktop with a mouse. Pick the least-recently-audited surface
+(the 7 tools plus the chrome pages — index, resources, contact, privacy/terms, 404; the rotation
+row's result notes track which surfaces are covered).
+
+**Recipe delta — a resized window is NOT a phone (binding).** CLAUDE.md's Playwright recipe applies
+unchanged (serve over local HTTP, route-abort external origins, `serviceWorkers:'block'` for any
+failure path, assert `pageerror === 0`, dismiss auto-open modals), plus a **real device descriptor**:
+```js
+const { chromium, devices } = pkg;                       // devices is on the CJS default export
+const ctx = await browser.newContext({ ...devices['iPhone 13'], serviceWorkers: 'block' });
+```
+The descriptor — not the viewport size — is what flips `(pointer: coarse)` and `(hover: none)` to
+true and sets `maxTouchPoints`/DPR. Measured here 2026-08-22: `devices['iPhone 13']` →
+`coarse:true, hoverNone:true, dpr:3, maxTouchPoints:1`; a plain 390px-wide desktop context →
+`false, false, 1, 0`. **Resizing alone silently misses every hover-only and coarse-pointer
+finding.** Use `page.tap()` (requires `hasTouch`) when the question is whether *touch* works.
+Descriptors present in this container: `iPhone SE` (320×568), `iPhone 13` (390×664), `Pixel 7`
+(412×839), `iPhone 13 landscape` (750×342), `iPad (gen 7)` (810×1080) — 143 in total.
+
+Arms (run what the surface has; log what you skip and why):
+- **1. Reflow & overflow** at 320 / 390 / 412 portrait plus one landscape, **both themes, EN and
+  HE** (Hebrew labels run longer — narrow width is where they break): `scrollWidth <= innerWidth`,
+  nothing clipped by an `overflow:hidden` ancestor, no sticky/fixed bar covering the primary
+  action, modals and drawers fitting the screen with their close control reachable.
+- **2. Viewport & zoom contract** — one viewport-meta shape per page (there are **three** spellings
+  across the 14 root HTML files as of 2026-08-22); never `user-scalable=no` or a `maximum-scale`
+  under 5 (clean today — keep the check as the control that proves the detector can fire);
+  `viewport-fit=cover` and `env(safe-area-inset-*)` present together or not at all (today only
+  `flash_cards.html` has either, and it has both).
+- **3. Dynamic browser chrome** — `100vh` is taller than the *visible* viewport while iOS Safari's
+  URL bar is expanded, stranding whatever sits at the bottom of a full-height surface. **Headless
+  cannot measure this** (no collapsing chrome: the probe above measured `visualViewport.height ===
+  innerHeight`), so audit it **statically** and reason about it: 13 pages use `100vh`, none use
+  `dvh`/`svh`. For the surface under audit, decide per use site whether it paints a full-height
+  sheet (drawer, overlay, stage) whose bottom control a phone would hide. One use site swapped to
+  `dvh` is a fix; a page-wide migration is gate 4.
+- **4. Touch-only interaction parity** — walk the surface's whole interaction inventory with taps
+  only: no hover-to-reveal as the only affordance, no HTML5 drag-and-drop as the only path (DnD
+  does not fire on touch — the folder tree's "Move ▾" menu is the sanctioned precedent in
+  CLAUDE.md), sliders draggable by finger, canvas/stage gestures usable, and the accessible-tooltip
+  tap contract actually firing under `hasTouch`. As of 2026-08-22 only 3 root files carry any touch
+  handler and CLAUDE.md records that no tool ships touch-gesture equivalents — so *absence* is the
+  expected finding; the pass's job is to say which absences actually cost a teacher something.
+- **5. On-screen-keyboard ergonomics** — `type`/`inputmode` on numeric fields (a number pad beats a
+  full keyboard), `autocapitalize`/`autocorrect`/`spellcheck` on Hebrew and name fields, and whether
+  the focused field stays visible once the keyboard covers the bottom ~45% (emulate by shrinking the
+  context's viewport height and re-reading the focused element's rect). Give `prompt()`-driven flows
+  (folder rename / new folder) a real tap-through.
+- **6. Standalone / PWA reality** — installed to a home screen there is **no browser back button**:
+  hunt dead ends (a modal with no ✕, a view escapable only by browser-back), plus notch/safe-area
+  treatment and an orientation flip mid-session.
+- **7. Phone-grade performance** — one throttled arm (4× CPU, slow network) on the surface's
+  heaviest path; the `data/` corpora are multi-MB and school phones are slow. Boundary: **D** owns
+  desktop profiling and anything deeper — N runs the phone arm and hands off.
+
+**Boundaries.** **C** owns accessibility *semantics* (keyboard, focus, ARIA, reduced motion,
+contrast) **and** the WCAG 2.5.8 touch-target *size* rule with its registered `sub-floor touch
+target` pattern — N never re-files a size finding; it files *reachability* and *operability* ones.
+**M** owns visual refinement — a phone-width finding that is purely aesthetic becomes an M
+candidate. **B**/**I** own load-time gates at narrow widths (both have run 375px load arms); N
+starts after load, in interaction, in the second theme and the second language. **G** owns paper.
+When in doubt the pass that owns the *pattern* keeps it; N logs the finding and points at it.
+
+**Screenshot rule (binding, and stricter than M's — this is what the pass delivers):** every run
+ships a **phone contact sheet even when it finds nothing** — the audited surface captured
+full-page at the portrait width(s) run, every major view/tab it has, light + dark, EN + HE — plus
+BEFORE/AFTER pairs at the affected width
+(and orientation, where the finding is orientation-dependent) for every fix. Saved under the
+session's scratchpad/temp dir, **NEVER committed to the repo**, and delivered to the maintainer at
+close-out (send them as files/attachments where the harness supports it; otherwise print their
+paths). A clean run with no screenshots is not a run: "it's fine on a phone" is a claim the
+maintainer has to be able to *see*.
+
+**Fixes** this pass finds verify at the phone width(s) where they were found **in addition to** the
+standard matrix (light + dark × desktop + ~800px) — a mobile fix that regresses the desktop layout
+is a net loss. New CSS obeys every hard rule (logical properties, both themes, the once-per-session
+`sw.js` bump), and prefers extending a page's existing phone media query over inventing a
+breakpoint: the suite already carries **42 distinct `max-width` values, 35 of them under 1000px**
+(measured 2026-08-22), so converge, don't multiply.
+**Anything dramatic is decision gate 4** — propose with the current-state phone screenshots, never
+ship unasked; if approved but too big for the remaining budget, log it as an `approved <date>`
+candidate at the top of its priority band for the next session.
+
 ## Micro-feature track
 Small user-visible enhancements are in scope, under tight fencing:
 
@@ -373,8 +475,10 @@ Tie-breakers, in order: (1) affects teachers' saved work, (2) affects the printe
 3. **Push** the session branch; ensure the draft PR exists/updated. Note that deploy verification
    (Pages run `success`) happens after the maintainer merges.
 4. **Print a summary:** iterations completed, pass run, patterns swept (hits/clean), micro-feature
-   shipped or split, before/after screenshots for any aesthetics-track changes (delivered per pass
-   M's screenshot rule), top 3 remaining candidates + top feature seed, decision gates asked
+   shipped or split, before/after screenshots for any aesthetics-track changes (per pass M's
+   screenshot rule) and the phone contact sheet + before/after pairs for any mobile-track run (per
+   pass N's, which ships even on a clean run), top 3 remaining candidates + top feature seed,
+   decision gates asked
    (question → answer) and any decisions deferred to the maintainer, any protocol divergence flagged
    for this skill, and anything a human must do (starting with: merge the PR, then verify the deploy).
 5. **End with a plain-language recap.** Every loop run must finish with a short **"In simple terms, what

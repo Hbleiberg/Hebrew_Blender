@@ -863,9 +863,10 @@ const PANEL_MEM_CFG = {
 
 ## Hebrew Font Maker (`Hebrew_Font_Maker.html`)
 
-The largest file in the repo by a wide margin — a single-file app that was ~13,900 lines in
-2026-07 and **~15,700 as of 2026-08**, i.e. it grows by roughly a thousand lines a month, so
-treat any figure here as a dated snapshot rather than a current count. **Line numbers drift
+The largest file in the repo by a wide margin — a single-file app that measured ~13,900 lines in
+2026-07, ~15,700 on 2026-08-13 and **~18,400 on 2026-08-22**. Growth is fast and *uneven* — that
+last 2,700 lines landed in nine days — so do not extrapolate from any figure here; if a count
+actually matters, measure it (`wc -l Hebrew_Font_Maker.html`). **Line numbers drift
 constantly** — never trust remembered or previously-reported line numbers; locate everything by
 pattern (function names, marker comments, element ids).
 

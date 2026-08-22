@@ -75,7 +75,7 @@
   "@type": "WebApplication",
   "name": "Hebrew Font Maker",
   "url": "https://ivritsuite.com/Hebrew_Font_Maker.html",
-  "description": "Make your own Hebrew fonts from your handwriting — trace or draw your letters, place nikkud and trop, and export TrueType, WOFF2, or UFO.",
+  "description": "Make your own Hebrew fonts from your handwriting — trace or draw your letters — or open an existing font and edit it; place nikkud and trop, and export TrueType, WOFF2, or UFO.",
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "Any (web browser)",
   "isAccessibleForFree": true,
@@ -101,6 +101,7 @@
   "mainEntity": [
     { "@type": "Question", "name": "Is the Hebrew Font Maker free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Hebrew Font Maker is completely free — make and download as many Hebrew fonts as you like, with no account or sign-up." } },
     { "@type": "Question", "name": "How do I make my own Hebrew font?", "acceptedAnswer": { "@type": "Answer", "text": "Upload or scan a picture of each Hebrew letter — or draw it right in the browser — then trace it into an outline, place the nikkud and trop anchors, and export a real font you can install." } },
+    { "@type": "Question", "name": "Can I open and edit an existing Hebrew font?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Import a TTF or OTF and the Font Maker brings across its letters, nikkud and trop — including each mark's own attachment position from the font's OpenType data — along with its English letters, punctuation and symbols. Edit what you like and export a new TrueType, WOFF2, or UFO file. Check the original font's license before redistributing anything based on it." } },
     { "@type": "Question", "name": "Can I make free Hebrew fonts with nikkud and trop?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The free Hebrew Font Maker positions nikkud (vowels) and cantillation (trop) automatically using OpenType mark positioning." } },
     { "@type": "Question", "name": "What font formats can I export?", "acceptedAnswer": { "@type": "Answer", "text": "TrueType (TTF), WOFF2 for the web, and editable UFO source — each with a license you choose (CC0, OFL, MIT, or All Rights Reserved)." } },
     { "@type": "Question", "name": "Do I need to install any software?", "acceptedAnswer": { "@type": "Answer", "text": "No. The Hebrew Font Maker runs entirely in your browser; the font engine loads only when you export." } },
@@ -289,6 +290,9 @@
     width: 100%; min-width: 0; box-sizing: border-box;
   }
   .fld-help { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border: none; padding: 0; border-radius: 50%; background: var(--border); color: var(--muted); font-family: inherit; font-size: 0.66rem; font-weight: 700; cursor: pointer; text-decoration: none; vertical-align: middle; }
+  /* 24px operable box without repainting the 15px badge — the ::after is the pointer target (WCAG 2.5.8); painted size unchanged. */
+  .fld-help { position: relative; }
+  .fld-help::after { content: ''; position: absolute; inset: -4.5px; }
   .fld-help:hover { background: var(--gold); color: #fff; }
   .row2 { display: flex; gap: 8px; }
   .row2 > * { flex: 1; min-width: 0; }
@@ -675,6 +679,7 @@
   .ns-glyph #nsGlyph { font-size: 0.95rem; color: var(--text); }
   .ns-coords { font-family: ui-monospace, Menlo, monospace; min-width: 14ch; }   /* fixed width so live updates don't jitter the row */
   .ns-sel { margin-inline-start: auto; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+  .a11y-live { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }   /* announced, never painted */
   @media (max-width: 640px) { #nsCp { display: none; } }
   @media (max-width: 480px) { .ns-coords { display: none; } }
   /* first-run hint — zero-height sticky wrapper floats the card over the stage top edge without taking layout space */
@@ -1019,7 +1024,7 @@
   .vslider-pair { display: flex; gap: 16px; justify-content: center; padding: 6px 0; }
   .vslider-col { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 0.7rem; font-weight: 600; color: var(--muted); text-align: center; }
   .vslider-col .vslabel { max-width: 84px; line-height: 1.2; min-height: 2.4em; display: flex; align-items: flex-end; justify-content: center; text-align: center; }
-  .vslider-col input[type=range] { writing-mode: vertical-lr; direction: rtl; width: 22px; height: 150px; accent-color: var(--gold); }
+  .vslider-col input[type=range] { writing-mode: vertical-lr; direction: rtl; width: 24px; height: 150px; accent-color: var(--gold); /* operable box at the slider floor (3ae6891 pattern, rotated — width is the cross axis here); native was 22px */ }
   .vslider-col .vsval { font-family: ui-monospace, Menlo, monospace; color: var(--text); }
   /* 2-col square preview buttons (vowels / trop) */
   .mark-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
@@ -1055,17 +1060,21 @@
 
   /* Fullscreen (matches torah_trainer.html / classroom_dashboard.html) */
   body.fullscreen header, body.fullscreen footer { display: none; }
-  #fsExitBtn {
+  #fsExitBtn, #fsPanelsBtn {
     display: none; position: fixed; top: 14px; inset-inline-end: 16px; z-index: 200;
     background: rgba(13,18,32,0.55); color: #fff; border: 1.5px solid rgba(255,255,255,0.2);
     border-radius: 10px; padding: 8px 10px 6px; width: 60px; cursor: pointer;
     backdrop-filter: blur(6px); opacity: 0.45; transition: opacity 0.2s, background 0.2s;
     flex-direction: column; align-items: center; gap: 2px;
   }
-  #fsExitBtn:hover { opacity: 1; background: rgba(13,18,32,0.82); }
-  #fsExitBtn .fs-x { font-size: 1.5rem; line-height: 1; }
-  #fsExitBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
+  #fsExitBtn:hover, #fsPanelsBtn:hover { opacity: 1; background: rgba(13,18,32,0.82); }
+  #fsExitBtn .fs-x, #fsPanelsBtn .fs-x { font-size: 1.5rem; line-height: 1; }
+  #fsExitBtn .fs-label, #fsPanelsBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
   body.fullscreen #fsExitBtn { display: flex; }
+  /* Sits directly under Exit, in the same floating stack — only while the canvas-focused
+     draw layout is actually in effect, which is the only thing it has to undo. */
+  #fsPanelsBtn { top: 78px; }
+  body.fullscreen.mode-draw #fsPanelsBtn { display: flex; }
 
   @media (max-width: 820px) {
     .app { flex-direction: column; align-items: stretch; }
@@ -1082,6 +1091,64 @@
     .ws-center .stage-wrap { max-width: 100%; max-height: 80vh; }
     .ws-center .zoom-bar   { max-width: 100%; }
     .ws-center #nodeBar, .ws-center #nodeStatus { max-width: 100%; }
+  }
+
+  /* ════════ Fullscreen drawing canvas — tablet-first ════════
+     Fullscreen already drops the header and footer. While a letter is actually being DRAWN it now
+     also gives the canvas the screen: the settings column folds away and the pen tools sit BESIDE
+     the canvas instead of stacking below it, so a stylus user stops scrolling between a stroke and
+     its Save. The desktop caps (720px wide / 74vh tall) waste most of a tablet. Scoped to
+     body.fullscreen.mode-draw — exiting fullscreen or leaving the Draw step restores the normal
+     workspace exactly, with no JS teardown. The areas are physical, so RTL mirrors them for free.
+     dvh (with a vh fallback beneath it) is deliberate here: on a phone/tablet browser 100vh is
+     taller than the visible viewport while the URL bar is expanded, which would push Save off. */
+  body.fullscreen.mode-draw:not(.fs-panels) .ws-right,
+  body.fullscreen.mode-draw:not(.fs-panels) .ws-under { display: none; }
+  body.fullscreen.mode-draw:not(.fs-panels) .ws-left { max-width: none; margin: 0; }
+  body.fullscreen.mode-draw:not(.fs-panels) .ws-center .stage-wrap { max-width: none; }
+  /* Wide enough for two columns — the pen tools move BESIDE the canvas. Gated on the workspace's
+     OWN 1181px stacking boundary rather than a new breakpoint: below it there is not enough width
+     for both, and forcing it measured 720px → 408px on an iPad in portrait — narrower than doing
+     nothing. Stacked widths keep the single column and simply get the taller canvas below. */
+  @media (min-width: 1181px) {
+    body.fullscreen.mode-draw:not(.fs-panels) .ws-split { display: none; }
+    body.fullscreen.mode-draw:not(.fs-panels) .ws-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 22rem);
+      grid-template-areas: "center left";
+      gap: 10px;
+    }
+    body.fullscreen.mode-draw:not(.fs-panels) .ws-left {
+      max-height: calc(100vh - 24px);
+      max-height: calc(100dvh - 24px);
+      overflow-y: auto;
+    }
+    body.fullscreen.mode-draw:not(.fs-panels) .ws-center .stage-wrap {
+      max-height: calc(100vh - 96px);
+      max-height: calc(100dvh - 96px);
+    }
+  }
+  /* Stacked widths (tablets in portrait, split-screen): the canvas still grows, but only to the
+     point where the pen tools stay just below it instead of being pushed off the screen. */
+  @media (max-width: 1180px) {
+    body.fullscreen.mode-draw:not(.fs-panels) .ws-center .stage-wrap {
+      max-height: calc(100vh - 300px);
+      max-height: calc(100dvh - 300px);
+    }
+    /* ...and the two Save actions ride the bottom edge instead of sitting below the fold. Capping
+       the canvas is not enough on a tablet: the category tabs, letter grid and step tabs above the
+       workspace take ~277px before the canvas starts, so #stageBelow measured y=926..1048 in
+       viewports only 768..1024 tall - "draw a stroke, then Save" still meant scrolling, the exact
+       paper-cut this mode exists to remove. Sticky keeps the row in reach without moving, hiding or
+       reordering anything, and .ws-center is its containing block so it unpins normally at the end
+       of the column. Gated to the stacked arm, so at 1181px and up desktop is untouched. */
+    body.fullscreen.mode-draw:not(.fs-panels) #stageBelow {
+      position: sticky;
+      bottom: 0;
+      z-index: 5;
+      background: var(--warm-gray);
+      padding-block: 6px 2px;
+      box-shadow: 0 -6px 10px -6px rgba(0,0,0,0.28);
+    }
   }
 </style>
 </head>
@@ -1105,6 +1172,13 @@
 <button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" data-i18n-title="shared.fullscreen.exit_title" aria-label="Exit fullscreen" data-i18n-aria-label="shared.fullscreen.toggle_aria">
   <span class="fs-x">✕</span>
   <span class="fs-label" data-i18n="shared.fullscreen.exit_label">Exit Fullscreen</span>
+</button>
+<button id="fsPanelsBtn" onclick="fsTogglePanels()" aria-pressed="false"
+        title="Show or hide the settings panels without leaving fullscreen"
+        data-i18n-title="fontmaker.fullscreen.panels_title"
+        aria-label="Toggle settings panels" data-i18n-aria-label="fontmaker.fullscreen.panels_aria">
+  <span class="fs-x">▤</span>
+  <span class="fs-label" data-i18n="fontmaker.fullscreen.panels_show">Show Panels</span>
 </button>
 
 <div class="toolbar">
@@ -1373,6 +1447,9 @@
           <span id="nsCoords" class="ns-coords"></span>
           <span id="nsSel" class="ns-sel" aria-live="polite"></span>
         </div>
+        <!-- draw-mode selection count — persistent for the same reason #nsSel above is: renderDrawLeft
+             rebuilds its visible readout via innerHTML, so that span can never be the live region -->
+        <span id="drawSelLive" class="a11y-live" aria-live="polite"></span>
         <div class="legend" id="stageLegend"></div>
         <div class="stage-below" id="stageBelow"></div>
       </div>
@@ -1838,6 +1915,33 @@ function toggleFullscreen() {
 document.addEventListener('fullscreenchange', () => {
   document.body.classList.toggle('fullscreen', !!document.fullscreenElement);
 });
+/* Fullscreen draw mode gives the canvas the whole screen by folding the settings column away
+   (v5.25). That is the right default for drawing, but not for the moments mid-letter when you
+   need a pen width or a guide — and leaving fullscreen to reach them is exactly the round trip
+   the mode exists to remove. So the fold is a preference, not a law: every rule in the block is
+   scoped :not(.fs-panels), and this button is the only thing that sets it. Remembered per device
+   in hebrewFontMaker_uiPrefs (wsSavePref), so a teacher who always wants the panels sets it once.
+   Pure UI state — no project mutation, so no udDo and no markDirty. */
+function fsTogglePanels() {
+  const show = !document.body.classList.contains('fs-panels');
+  document.body.classList.toggle('fs-panels', show);
+  wsSavePref('fsDrawPanels', show);
+  syncFsPanelsBtn();
+}
+function syncFsPanelsBtn() {
+  const b = document.getElementById('fsPanelsBtn');
+  if (!b) return;
+  const show = document.body.classList.contains('fs-panels');
+  b.setAttribute('aria-pressed', show ? 'true' : 'false');
+  const lab = b.querySelector('.fs-label');
+  if (lab) lab.textContent = window.I18n
+    ? I18n.t(show ? 'fontmaker.fullscreen.panels_hide' : 'fontmaker.fullscreen.panels_show')
+    : (show ? 'Hide Panels' : 'Show Panels');
+}
+function initFsPanels() {
+  try { if (wsReadPrefs().fsDrawPanels) document.body.classList.add('fs-panels'); } catch (e) {}
+  syncFsPanelsBtn();
+}
 function initDark() {
   const saved = localStorage.getItem('hebrewBlender_darkMode');
   const dark = saved === '1' || (saved === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);   // OS default when unset; explicit choice wins
@@ -2630,14 +2734,40 @@ function udApply(entry, useAfter) {
   const oneItem = entry.slices.filter(sl => sl.scope.t === 'item').length === 1;   // navigate only for single-item entries
   entry.slices.forEach(sl => { udRestore(sl.scope, useAfter ? sl.after : sl.before); if (oneItem) udNavTo(sl.scope); });
 }
+/* Undo labels are STORED raw ("tidy strokes — Alef") and stay that way: undo() compares
+   e.label against 'fidelity fixes', so the stored string is a sentinel, not display text.
+   They are translated here instead, at the one place they are shown — the same split gName()
+   makes ("used only at DISPLAY sites; internal undo labels keep the raw name"). A stem with no
+   key falls back to its own English, so a udDo() label added later degrades to English rather
+   than printing a raw key at the user. */
+function undoLabelText(label) {
+  if (!window.I18n || !label) return label;
+  let stem = label, tail = '';
+  const dash = label.indexOf(' \u2014 ');
+  if (dash > -1) { stem = label.slice(0, dash); tail = ' \u2014 ' + gName(label.slice(dash + 3)); }
+  else {
+    const m = label.match(/^(copy outline from|edit shape on) (.+)$/);
+    if (m) { stem = m[1]; tail = ' ' + gName(m[2]); }
+  }
+  const num = stem.match(/\d+/);                        // "apply alignment to 12 letters" -> one {n} key
+  const norm = num ? stem.replace(/\d+/, '{n}') : stem;
+  const k = 'fontmaker.undolabel.' + norm.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  const v = num ? I18n.t(k, { n: num[0] }) : I18n.t(k);
+  return (v === k ? stem : v) + tail;
+}
+function undoToast(kind, label) {   // kind: 'undone' | 'redone'
+  const what = undoLabelText(label);
+  return window.I18n ? I18n.t('fontmaker.undo.' + kind, { what })
+                     : (kind === 'undone' ? 'Undo: ' : 'Redo: ') + what;
+}
 function undo() { udFlushPending(); const e = undoStack.pop(); if (!e) return; udApply(e, false); redoStack.push(e);
   // The report describes the state the fixes produced; undoing them makes it a lie, and the reopen
   // button would still offer its green "0 combos still flagged" over a project that deviates again.
   if (e.label === 'fidelity fixes') { e._fidStash = _fidelityLast; _fidelityLast = null; }   // stashed on the entry (undo/redo stacks are runtime-only, so the ctx bytes stay off `project`) so redo can hand it back
-  afterUndo('Undo: ' + e.label); }
+  afterUndo(undoToast('undone', e.label)); }
 function redo() { udFlushPending(); const e = redoStack.pop(); if (!e) return; udApply(e, true); undoStack.push(e);
   if (e._fidStash) { _fidelityLast = e._fidStash; e._fidStash = null; }   // the fixes are back, so their report describes the project again
-  afterUndo('Redo: ' + e.label); }
+  afterUndo(undoToast('redone', e.label)); }
 function afterUndo(msg) { updateUndoButtons(); if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   /* rebuild node model from restored curves */ _drawSel.clear();   /* undo/redo can restructure the stroke array — indices go stale */ renderGrids(); renderStage(); renderControls(); status(msg); markDirty(); }
 function updateUndoButtons() {   // top-toolbar + node-bar twins (bar buttons exist only after the DOM parses — null-guarded)
   const u = !undoStack.length, r = !redoStack.length;
@@ -3212,7 +3342,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.24';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.26';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3223,7 +3353,7 @@ const HELP_CONTENT = {
     </p>
     <p>Here's the whole journey, start to finish:</p>
     <ol>
-      <li><strong>Upload</strong> a clear picture of each letter.</li>
+      <li><strong>Add your letters</strong> — upload a clear picture of each one, or draw them right on screen.</li>
       <li><strong>Trace</strong> — the tool turns each picture into a clean outline.</li>
       <li><strong>Anchor</strong> — show where the vowel dots sit on each letter.</li>
       <li><strong>Spacing</strong> — fine-tune the gaps between letters and words.</li>
@@ -3235,11 +3365,12 @@ const HELP_CONTENT = {
   `,
   upload: `
     <h4>Uploading your letters</h4>
-    <p>You'll bring in a picture of each of the 27 Hebrew letters. Clear <strong>dark ink on white paper</strong> works best. Pick how you want to add them in the <span class="ui">Add Letters</span> panel on the left:</p>
+    <p>You'll add each of the 27 Hebrew letters — from a picture, from a font file, or by drawing them on screen. If you're using pictures, clear <strong>dark ink on white paper</strong> works best. Pick how you want to add them in the <span class="ui">Add Letters</span> panel on the left:</p>
     <ul>
       <li><span class="ui">One letter per image</span> — upload one photo per letter. Simplest if you're scanning or photographing letters one at a time.</li>
       <li><span class="ui">One image with all letters</span> — upload <em>one</em> photo of a whole sheet of letters, then pick a letter and drag a box around it to cut it out.</li>
       <li><span class="ui">Existing font file</span> — already have a font file? Import it and the letters come in ready-made, so you can skip tracing entirely.</li>
+      <li><span class="ui">Draw letters on screen</span> — no scanner needed: draw each letter with a pen, finger, or mouse, right on the canvas over a faint reference letter.</li>
     </ul>
     <p><strong>Allowed files:</strong> any image — PNG, JPG, GIF or WebP. Transparent PNGs and letters drawn on a plain white background also work great. (For the <span class="ui">Existing font file</span> option, a TTF or OTF font file.)</p>
     <div class="help-tip">✒️ <strong>Have vector artwork?</strong> Turn on <span class="ui">Enable SVG uploading</span> under <span class="ui">Settings → Input mode</span> to drop in <strong>SVG</strong> files — their vector paths become the glyph outlines <strong>directly, with no tracing</strong>. See the <span class="ui">SVG Upload Guide</span> there for naming one sheet so its letters auto-split.</div>
@@ -3431,6 +3562,8 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.26</strong> &mdash; <strong>Tidy up a drawn letter without losing your hand.</strong> Drawing with a finger or a stylus leaves strokes that are nearly straight but not quite, and stems that stop a hair above the baseline instead of sitting on it. A new <span class="ui">Tidy strokes</span> button in the <span class="ui">Draw</span> panel fixes those two things and nothing else: a stroke that is already almost a straight line becomes one, and a loose end resting just beside a guide or the baseline moves onto it. It runs only when you press it &mdash; nothing shifts under your pen while you are drawing &mdash; and the whole tidy is a single undo, so if it smoothed away something you meant to keep, one Ctrl+Z gives your handwriting back exactly as it was. <em>(August 2026)</em></li>
+      <li><strong>v5.25</strong> &mdash; <strong>Fullscreen finally means &ldquo;just the canvas&rdquo; while you draw.</strong> Fullscreen already hid the header and footer, but the drawing canvas still shared the screen with every settings panel &mdash; on a tablet it stayed capped at a small box with the pen tools somewhere below the fold, so a stylus meant scrolling between a stroke and its Save. Now, whenever you are actually on the <span class="ui">Draw</span> step in fullscreen, the settings column folds away and the canvas takes the screen &mdash; and on a wide screen the pen tools move to sit right beside it. On a tablet, where the screen is too short for that, the two Save buttons instead stay pinned to the bottom edge while you draw, so finishing a letter never means scrolling off to look for them. And if you need a pen width or a guide mid&#8209;letter, a <span class="ui">Show Panels</span> button in the corner brings the settings back without leaving fullscreen &mdash; the Font Maker remembers which way you like it. Leave fullscreen, or move to another step, and your normal workspace comes straight back exactly as it was. <em>(August 2026)</em></li>
       <li><strong>v5.24</strong> &mdash; <strong>Yiddish gets its pasekh tsvey yudn (<span lang="he" dir="rtl">&#1522;&#1463;</span>).</strong> The <span class="ui">Yiddish</span> tab covered the two-yud digraph but not the one Yiddish actually writes most: <span lang="he" dir="rtl">&#1522;&#1463;</span>, the standard spelling of the <em>ay</em> sound. Old Yiddish text stores it as a single character, and a font built here had nothing at that slot, so those words came out as empty boxes. Now the form is built from your own letters and ships with the tab &mdash; and typing the two-yud digraph followed by a pasekh composes to the very same glyph, so both spellings look identical. <strong>It also picks up your own pasekh.</strong> If you drew your own pasekh shape, it used to be quietly swapped for the standard one here; it now carries through, exactly as your own dagesh already does on <span lang="he" dir="rtl">&#1513;&#1468;&#1473;</span>. (August 2026)</li>
       <li><strong>v5.23</strong> &mdash; <strong>The grid now follows you in and out.</strong> The grid held one fixed spacing at every zoom, which meant it was only ever right at one zoom level: zoom out and the lines crowded together until they vanished, zoom in and they drifted so far apart there was nothing to measure against just when you were doing the finest work. Now it re-spaces itself the way the ruler numbers do. Zoom in and it fills in finer lines between the ones you set; zoom out and it steps back to coarser ones instead of disappearing. At ordinary zooms it shows exactly the <span class="ui">Spacing</span> you typed, and the heavier every-Nth line holds the rhythm you chose until you zoom out far enough that even that would crowd, when it steps up along with everything else. Either way the grid always agrees with the number you typed &mdash; the extra lines only ever divide it evenly or multiply it whole, never landing on some fraction in between. <strong>And you snap to what you can see.</strong> The lines it fills in are real targets, so at high zoom you can place a point on a finer division without retyping the spacing. When the grid is showing something other than your typed number, it says so right next to the field, so you always know what a drag will land on. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.22</strong> &mdash; <strong>Graph paper for the canvas.</strong> The rulers told you where you were, but nothing told you how far it was from here to there. So the everyday questions &mdash; is this stem the same width as the one on the letter before it, did this vowel land the same distance under the baseline as the last one, are these two strokes actually parallel &mdash; came down to squinting, or to dropping a guide on the canvas and deleting it again afterwards. Now you can switch on a <strong>grid</strong> across the editing canvas, measured in the same <strong>font units</strong> as everything else: zero sits on the letter's origin and on the baseline, so a line always falls exactly there. <strong>You decide how it looks and behaves.</strong> Set the spacing, how often a heavier line comes along to help you count, and how strongly the whole thing shows through &mdash; all in the new <span class="ui">Grid</span> panel beside the canvas, so you can watch it change as you adjust it. Zoom far out and the finest lines quietly step aside rather than smearing into a grey block. <strong>And your points can stick to it.</strong> Switch on <span class="ui">Snap to grid</span> and dragged points, curve handles, whole selections, pen clicks, nikkud anchors and the margin dots all settle onto the nearest grid line, exactly the way points already settle onto guides &mdash; hold <span class="ui">Alt</span> to slip past it for one move. The grid is a drawing aid only; it never becomes part of your font, and it is remembered on this device rather than saved into the project. It starts switched off &mdash; turn it on from the node toolbar, under <span class="ui">Settings &rarr; Canvas</span>, or with <span class="ui">Shift + G</span> at any time. <strong>Advanced Settings is now just Settings.</strong> Same tab in the same place, shorter name, with a gear on it. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3545,7 +3678,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3558,7 +3691,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_24';
+  const CUR_KEY = 'fontmaker.changelog.v5_26';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -3603,6 +3736,7 @@ const TOUR_STEPS = [
     },
     titleKey: 'fontmaker.tour.step_2_title',
     bodyKey: 'fontmaker.tour.step_2_body',
+    titleKeyDraw: 'fontmaker.tour.step_2_title_draw',   // … and the tab it spotlights reads "1 · Draw", not "Align"
     bodyKeyDraw: 'fontmaker.tour.step_2_body_draw' },   // draw projects: the upload copy is wrong — step 1 is the drawing canvas
   { target: () => document.getElementById('tabTrace'),
     titleKey: 'fontmaker.tour.step_3_title',
@@ -3715,8 +3849,9 @@ function _tourShow(idx, dir) {
   // step.params() is optional — I18n's substitute() short-circuits on a falsy second argument, so
   // every step that doesn't define one behaves exactly as before.
   const p = step.params ? step.params() : null;
-  document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKey, p);
-  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKeyDraw && project && project.inputMode === 'draw' ? step.bodyKeyDraw : step.bodyKey, p);
+  const _drawProj = project && project.inputMode === 'draw';
+  document.getElementById('tourCardTitle').textContent = I18n.t(step.titleKeyDraw && _drawProj ? step.titleKeyDraw : step.titleKey, p);
+  document.getElementById('tourCardBody').textContent = I18n.t(step.bodyKeyDraw && _drawProj ? step.bodyKeyDraw : step.bodyKey, p);
   document.getElementById('tourStep').textContent = I18n.t('shared.tour.step_counter', { count: idx + 1, total: _tourSteps.length });
   document.getElementById('tourBack').disabled = (idx === 0);
   document.getElementById('tourNext').textContent = I18n.t((idx === _tourSteps.length - 1) ? 'shared.tour.done' : 'shared.tour.next');
@@ -4464,6 +4599,7 @@ function setInputMode(mode) {
   // step-1 surface immediately (_setWorkMode promotes align⇄draw and re-renders stage+controls).
   if (curKind === 'letter' && (workMode === 'align' || workMode === 'draw')) _setWorkMode('align');
   else { renderControls(); renderStage(); }
+  renderNextStepHint();   // its draw/upload branch reads project.inputMode, and it only re-runs from renderLetterGrid()
 }
 
 /* ════════ Letter grid ════════ */
@@ -7090,7 +7226,7 @@ function renderMarkStage(it) {
   if (workMode === 'trace') {
     if (url) h += `<image href="${url}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.28"/>`;
     if (it.contours) { const C = stageColors(); h += `<path d="${contoursToPath(it.contours, it.curves)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
-    else h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">Not traced yet.</text>`;
+    else h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">${esc(_pT('not_traced', 'Not traced yet.'))}</text>`;
   } else {
     if (url) { h += `<image href="${url}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.92"/>`; h += transformHandlesSVG(it); }
     else h += `<text x="300" y="300" text-anchor="middle" fill="#9aa0aa" font-size="14">Upload an image of this mark below.</text>`;
@@ -8777,6 +8913,70 @@ function drawNudgeSel(dx, dy) {   // arrow-key nudge — a run of taps coalesces
     s.pts.forEach(q => { q[0] = Math.max(-2000, Math.min(3000, q[0] + dx)); q[1] = Math.max(-2000, Math.min(3000, q[1] + dy)); });
   });
   renderStage();
+}
+/* ════════ Tidy strokes — opt-in cleanup of what is already drawn ════════
+   The seed that asked for this set its own guard rail: a child's handwriting must not be
+   sterilized. So this is deliberately NOT live snapping — nothing shifts under the pen while you
+   draw. It is one button, pressed when you want it, producing ONE undo entry, so Ctrl+Z hands the
+   handwriting back exactly as it was. Both passes are no-ops unless the stroke was already almost
+   there: a stroke whose every point lies within 4.5% of its own length of the straight line
+   between its ends becomes that line, and an endpoint lying within TIDY_SNAP_TOL of a metric line
+   or a user guide moves onto it.
+   Draw points are ALREADY in font units — drawFrame compares them to em.descender directly and
+   drawRenderCanvas transforms at scale 1 with only a y-flip — so collectSnapTargets' values need
+   no conversion. The tolerance is a CONSTANT rather than snapTolFont(): that one is ~6 screen px,
+   which would make the same button do different things at different zoom levels, and an undoable
+   batch action has to be reproducible. l.drawSig is left stale on purpose — that is the existing
+   "these strokes no longer match the traced outline" signal, and it is what re-arms Save. */
+const TIDY_STRAIGHT_TOL = 0.045;   // max distance from the chord, as a fraction of chord length
+const TIDY_MIN_LEN = 40;           // font units — shorter than this is a dot or a tick, not a line
+const TIDY_SNAP_TOL = 24;          // font units (2.4% of the em) — deliberate, zoom-independent
+
+function _tidyStraighten(pts) {    // → straightened copy, or null when the stroke is not near-straight
+  if (pts.length < 3) return null;
+  const a = pts[0], b = pts[pts.length - 1];
+  const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy);
+  if (len < TIDY_MIN_LEN) return null;              // also rejects loops — their chord is ~0
+  let dev = 0;
+  for (const q of pts) dev = Math.max(dev, Math.abs((q[0] - a[0]) * dy - (q[1] - a[1]) * dx) / len);
+  return dev <= TIDY_STRAIGHT_TOL * len ? [a.slice(), b.slice()] : null;
+}
+function _tidySnapEnds(pts, tgt) {   // endpoints onto a nearby metric/guide → how many moved
+  let n = 0;
+  const ends = pts.length > 1 ? [pts[0], pts[pts.length - 1]] : [pts[0]];
+  for (const q of ends) {
+    const near = (list, i) => {
+      let best = null, bd = TIDY_SNAP_TOL;
+      for (const t of list) { const d = Math.abs(q[i] - t.v); if (d > 0 && d <= bd) { bd = d; best = t; } }
+      return best;
+    };
+    const gy = near(tgt.ys, 1); if (gy) { q[1] = Math.round(gy.v); n++; }
+    const gx = near(tgt.xs, 0); if (gx) { q[0] = Math.round(gx.v); n++; }
+  }
+  return n;
+}
+function drawTidyStrokes() {
+  const l = curLetter();
+  if (!l || !(l.draw && l.draw.strokes.length)) return;
+  const tgt = collectSnapTargets();
+  // Planned on COPIES first: a press that changes nothing must not push an undo entry, and must
+  // not report work it did not do.
+  let nStraight = 0, nSnap = 0;
+  const plan = l.draw.strokes.map(s => {
+    const pts = s.pts.map(q => q.slice());
+    const straight = _tidyStraighten(pts);
+    const use = straight || pts;
+    const snapped = _tidySnapEnds(use, tgt);
+    if (straight) nStraight++;
+    nSnap += snapped;
+    return (straight || snapped) ? use : null;
+  });
+  if (!nStraight && !nSnap) { status(I18n.t('fontmaker.draw.tidy_none')); return; }
+  udDo([{ t: 'item', kind: 'letter', cp: curCp, withDraw: true }], 'tidy strokes — ' + l.name, () => {
+    plan.forEach((pts, i) => { if (pts) l.draw.strokes[i].pts = pts; });
+  });
+  status(I18n.t('fontmaker.draw.tidy_done', { straight: nStraight, snap: nSnap }));
+  renderStage(); renderControls();
 }
 function drawClearCurrent() {   // strokes only — the committed outline/raster stays until the next Save
   const cl = curLetter();
@@ -12020,7 +12220,7 @@ function meRenderStage() {
   labelStage(sv, gName(meItem.name));   // accessible name for the "Edit shape" modal canvas
   const ay = fy(0);
   const guide = `<line x1="35" y1="${ay}" x2="565" y2="${ay}" stroke="#c8bfa8" stroke-width="1" stroke-dasharray="5 4"/>`
-    + `<text x="300" y="${meItem.cls==='above'?ay+20:ay-10}" text-anchor="middle" fill="#9aa0aa" font-size="11">letter baseline</text>`;
+    + `<text x="300" y="${meItem.cls==='above'?ay+20:ay-10}" text-anchor="middle" fill="#9aa0aa" font-size="11">${esc(window.I18n ? I18n.t('fontmaker.me.baseline_label') : 'letter baseline')}</text>`;
   sv.innerHTML = gridLinesSVG(sv, ex, iex, null) + guide + editorStageSVG(meItem);   // x origin here is the mark centre, not the pen origin
   sv.querySelectorAll('.epiece').forEach(el => el.addEventListener('pointerdown', e => {
     editorSel = +el.dataset.i;
@@ -12054,7 +12254,7 @@ function meRenderList() {
       +   size
       + `</span>`
       + `<button class="me-del" title="${esc(window.I18n ? I18n.t('fontmaker.me.delete_piece_title') : 'Delete this piece')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.me.delete_piece_title') : 'Delete this piece')}" onclick="event.stopPropagation();meDeletePiece(${i})">✕</button></div>`;
-  }).join('') || `<div class="hint">No pieces yet — add a dot or bar above.</div>`;
+  }).join('') || `<div class="hint">${esc(window.I18n ? I18n.t('fontmaker.me.no_pieces') : 'No pieces yet — add a dot or bar above.')}</div>`;
 }
 function meRenderControls() {
   const wrap = document.getElementById('mePieceCtl'); if (!wrap) return;
@@ -13071,6 +13271,7 @@ function updateNodeEditToggle() {   // one persistent Edit points ⇄ Done editi
 }
 function renderControls() {
   renderNodeChrome();   // node-mode stage toolbar/status/hint — self-guarding, must run on every path (incl. early-outs) so the chrome hides
+  document.body.classList.toggle('mode-draw', !!project && workMode === 'draw' && curKind === 'letter');   // fullscreen canvas focus — same self-guarding contract as renderNodeChrome
   updateCurrentGlyphLabel();
   updateNodeEditToggle();   // keep the header toggle's label/visibility current on every render
   updateStepTicks();   // keep the per-glyph step checklist current on every render (trace/confirm route through here)
@@ -13513,6 +13714,7 @@ function renderDrawLeft(L, l) {
     <div class="ctl-row" style="margin-top:8px;">
       <button class="ctl-btn" id="drawUndoBtn" onclick="undo()" title="${esc(I18n.t('fontmaker.toolbar.undo_title'))}" ${undoStack.length?'':'disabled'}>↶ ${I18n.t('fontmaker.toolbar.undo_aria')}</button>
       <button class="ctl-btn" id="drawReplayBtn" onclick="drawReplay()" aria-pressed="false" title="${esc(_drawT('replay_title', 'Replay the strokes in the order they were drawn'))}" ${nStrokes?'':'disabled'}>${_drawT('replay', '\u25b6 Replay')}</button>
+      <button class="ctl-btn" id="drawTidyBtn" onclick="drawTidyStrokes()" title="${esc(_drawT('tidy_title', 'Straighten strokes that are nearly straight and snap loose ends onto a guide — one press, one undo'))}" ${nStrokes?'':'disabled'}>${_drawT('tidy', 'Tidy strokes')}</button>
       <button class="ctl-btn" onclick="drawClearCurrent()" ${nStrokes?'':'disabled'}>${_drawT('clear', 'Clear letter')}</button>
       <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
       <span class="readout">${nStrokes ? _drawT(nStrokes === 1 ? 'stroke_count.one' : 'stroke_count.other', nStrokes + (nStrokes === 1 ? ' stroke' : ' strokes'), { count: nStrokes }) : ''}</span>
@@ -13520,6 +13722,14 @@ function renderDrawLeft(L, l) {
     <div class="hint">${_drawT('hint', 'Draw over the gray reference with a pen, finger, or mouse. Each stroke can be undone with Ctrl+Z. Save runs the tracer — fine-tune Detail and Corners in step 2.')}</div>`;
   wireInputModeBlock();
   drawPreviewRefresh();   // the pvBox svg renders empty — first paint needs the box's measured width
+  // move-tool selection count — diff-guarded so unrelated re-renders never re-announce (#nsSel idiom)
+  const dsl = document.getElementById('drawSelLive');
+  if (dsl) {
+    const selTxt = (_drawTool === 'move' && _drawSel.size)
+      ? _drawT(_drawSel.size === 1 ? 'sel_count.one' : 'sel_count.other', _drawSel.size + ' selected', { count: _drawSel.size })
+      : '';
+    if (dsl.textContent !== selTxt) dsl.textContent = selTxt;
+  }
 }
 function renderDrawRight(R, l) {
   const tplPct = Math.round(project.template.opacity*100);
@@ -14672,7 +14882,7 @@ function qaRenderGrid() {
   qaRows().forEach(row => {
     if (row.section && row.section !== lastSection) { lastSection = row.section; html += `<tr class="qa-section"><td class="qa-section-h" colspan="${cols.length + 1}">${I18n.t(row.section === 'special' ? 'fontmaker.qa.section_special' : 'fontmaker.qa.section_custom')}</td></tr>`; }
     const L = row.L, anc = qaAnchors(L);
-    html += `<tr><td class="qa-rowlabel" title="${esc(row.name)}">${esc(row.labelCh)} <span style="color:var(--muted);">${esc(row.name)}</span></td>`;
+    html += `<tr><td class="qa-rowlabel" title="${esc(gName(row.name))}">${esc(row.labelCh)} <span style="color:var(--muted);">${esc(gName(row.name))}</span></td>`;
     cols.forEach(col => {
       const layers = qaCellLayers(L, anc, col);
       const reasons = qaCellReasons(L, row, col, layers);
@@ -18250,6 +18460,7 @@ function init() {
     }
   } catch (e) {}
   initDark();
+  initFsPanels();   // restore the remembered fullscreen-draw panel choice + sync the toggle's label
   maybeShowMobileWarn();   // small-screen "best on desktop" splash (once, unless dismissed)
   // stage drag move/up live once on the persistent <svg> (handles transform drag)
   const sv = stage();
@@ -18342,6 +18553,7 @@ function applyI18n() {
     const _dt = document.getElementById('darkToggle');
     if (_dt) _dt.textContent = I18n.t(document.body.classList.contains('dark') ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark');
   } catch (e) {}
+  try { syncFsPanelsBtn(); } catch (e) {}   // state-dependent label, same as the dark toggle above
   // Re-render JS-built chrome (read-only) so any i18n it carries updates in place.
   try { renderControls(); } catch (e) {}
   try { renderGrids(); } catch (e) {}
