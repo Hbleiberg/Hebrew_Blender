@@ -2089,7 +2089,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <input type="radio" name="videoLayout" id="vlSidebar" value="sidebar" style="accent-color:var(--gold);"> <span data-i18n="dashboard.video.layout_sidebar">In sidebar</span>
         </label>
       </div>
-      <input type="text" id="videoUrlInput" placeholder="Paste YouTube URL…" data-i18n-placeholder="dashboard.video.url_placeholder" aria-label="Paste YouTube URL…" data-i18n-aria-label="dashboard.video.url_placeholder" style="width:100%;box-sizing:border-box;">
+      <input type="url" id="videoUrlInput" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Paste YouTube URL…" data-i18n-placeholder="dashboard.video.url_placeholder" aria-label="Paste YouTube URL…" data-i18n-aria-label="dashboard.video.url_placeholder" style="width:100%;box-sizing:border-box;">
       <button class="btn btn-xs" onclick="updateVideoEmbed()" data-i18n="dashboard.video.update_button">Update Video</button>
     </div>
   </div>
