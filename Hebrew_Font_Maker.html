@@ -3402,7 +3402,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.22</strong> &mdash; <strong>Graph paper for the canvas.</strong> The rulers told you where you were, but nothing told you how far it was from here to there. So the everyday questions &mdash; is this stem the same width as the one on the letter before it, did this vowel land the same distance under the baseline as the last one, are these two strokes actually parallel &mdash; came down to squinting, or to dropping a guide on the canvas and deleting it again afterwards. Now you can switch on a <strong>grid</strong> across the editing canvas, measured in the same <strong>font units</strong> as everything else: zero sits on the letter's origin and on the baseline, so a line always falls exactly there. <strong>You decide how it looks and behaves.</strong> Set the spacing, how often a heavier line comes along to help you count, and how strongly the whole thing shows through &mdash; all in the new <span class="ui">Grid</span> panel beside the canvas, so you can watch it change as you adjust it. Zoom far out and the finest lines quietly step aside rather than smearing into a grey block. <strong>And your points can stick to it.</strong> Switch on <span class="ui">Snap to grid</span> and dragged points, whole selections and pen clicks settle onto the nearest grid line exactly the way they already settle onto guides &mdash; hold <span class="ui">Alt</span> to slip past it for one move. The grid is a drawing aid only; it never becomes part of your font, and it is remembered on this device rather than saved into the project. It starts switched off &mdash; turn it on from the node toolbar, under <span class="ui">Settings &rarr; Canvas</span>, or with <span class="ui">Shift + G</span> at any time. <strong>Advanced Settings is now just Settings.</strong> Same tab in the same place, shorter name, with a gear on it. <span style="color:var(--muted);">(August 2026)</span></li>
+      <li><strong>v5.22</strong> &mdash; <strong>Graph paper for the canvas.</strong> The rulers told you where you were, but nothing told you how far it was from here to there. So the everyday questions &mdash; is this stem the same width as the one on the letter before it, did this vowel land the same distance under the baseline as the last one, are these two strokes actually parallel &mdash; came down to squinting, or to dropping a guide on the canvas and deleting it again afterwards. Now you can switch on a <strong>grid</strong> across the editing canvas, measured in the same <strong>font units</strong> as everything else: zero sits on the letter's origin and on the baseline, so a line always falls exactly there. <strong>You decide how it looks and behaves.</strong> Set the spacing, how often a heavier line comes along to help you count, and how strongly the whole thing shows through &mdash; all in the new <span class="ui">Grid</span> panel beside the canvas, so you can watch it change as you adjust it. Zoom far out and the finest lines quietly step aside rather than smearing into a grey block. <strong>And your points can stick to it.</strong> Switch on <span class="ui">Snap to grid</span> and dragged points, curve handles, whole selections, pen clicks, nikkud anchors and the margin dots all settle onto the nearest grid line, exactly the way points already settle onto guides &mdash; hold <span class="ui">Alt</span> to slip past it for one move. The grid is a drawing aid only; it never becomes part of your font, and it is remembered on this device rather than saved into the project. It starts switched off &mdash; turn it on from the node toolbar, under <span class="ui">Settings &rarr; Canvas</span>, or with <span class="ui">Shift + G</span> at any time. <strong>Advanced Settings is now just Settings.</strong> Same tab in the same place, shorter name, with a gear on it. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.21</strong> &mdash; <strong>Control handles stay the same size as you zoom in.</strong> Zooming in is how you do the fussy work &mdash; nudging a point onto a curve, lining a vowel up under a letter. But every dot, square and circle on the canvas used to grow along with the letter, so by 400% the handles were fat blobs sitting on top of the very outline you were trying to see, and neighbouring points ran into each other. Now they hold their size on screen no matter how far you zoom, the way they do in professional font and drawing programs: the letter gets bigger, the handles stay put, and there is far more room between them to work. Zoomed out past 50% they gently grow instead, so they never shrink away to nothing. Nothing to switch on &mdash; it just behaves this way now. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.20</strong> &mdash; <strong>Rulers along the edges of the canvas.</strong> The editing canvas showed you a letter and its guide lines, but nothing about <em>where</em> anything sat &mdash; so matching a stroke width across two letters, or checking that a vowel cleared the baseline by the amount you meant, came down to reading numbers out of the side panels and guessing. Now numbered rulers run along the top and left edges, measured in the same <strong>font units</strong> the rest of the app uses: zero sits at the letter's origin and on the baseline, and the numbers re-space themselves as you zoom so they never crowd together. A marker on each ruler tracks your pointer, so you can always see exactly where you are. <strong>Guides you can pull off a ruler.</strong> Drag from either ruler onto the canvas and you get a guide &mdash; the same guides as before, so it is instantly draggable, renameable, and remembered with your project. <strong>And a corner that resets the zoom.</strong> The little box where the two rulers meet shows the current zoom; click it to snap straight back to 100%. Rulers start switched on &mdash; turn them off under <span class="ui">Settings &rarr; Canvas</span>, or press <span class="ui">Shift + R</span> at any time. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.19</strong> &mdash; <strong>An import now brings the whole font across, not just the letters.</strong> Importing a font used to stop at the alphabet: everything else a real page needs &mdash; the curly quote marks a word processor inserts for you, the en and em dashes, the ellipsis, the shekel and euro signs, <span class="ui">&copy; &deg; &laquo; &raquo; &times; &divide; &frac12;</span> &mdash; was read and thrown away, so an exported font still fell back to another face mid-sentence. Now it all comes too, along with the standalone Latin letters (<em>&AElig; &Oslash; &szlig; &OElig; &Scaron; &Zcaron;</em>) that have no accent to build from. <strong>Your combined letters come from the original.</strong> When the source font already draws <span lang="he" dir="rtl">&#1513;&#1473;</span>, <span lang="he" dir="rtl">&#1489;&#1468;</span>, <span lang="he" dir="rtl">&#1488;&#1463;</span> or <span lang="he" dir="rtl">&#1493;&#1465;</span> itself, the import takes that glyph <em>whole</em> instead of rebuilding it from your letter plus a dot &mdash; so the dot sits exactly where the original put it (the dotted-shin pair <span lang="he" dir="rtl">&#64300;/&#64301;</span> comes whole too, and the no-break space your word processor types is covered). A <span class="ui">Rebuild from my letters</span> button gives you the composed version back whenever you want it. <strong>The masoretic marks and the rest of the presentation forms.</strong> The masora circle and the upper and lower puncta join the <span class="ui">Trop</span> tab, the inverted nun and the Hebrew plus sign join <span class="ui">Punctuation</span>, and <span class="ui">Specialized letters</span> gains every remaining dagesh and mapiq form. <strong>And the line spacing matches.</strong> An import now carries the original's line metrics across, so text set in your font lines up the way the original did. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -7323,6 +7323,7 @@ function applyZoom() {
     wrap.scrollTop  = fy * wrap.scrollHeight - wrap.clientHeight / 2;
   }
   renderRulers();   // new scale + scroll offset ⇒ new tick positions and corner %
+  gridRefresh();    // and re-judge the grid tiers at the new px density (the zoomed-out fine tier must drop out)
 }
 /* ════════ Resizable workspace side columns (CSS-var driven; center is a fluid 1fr) ════════ */
 const WS_PREFS_KEY = 'hebrewFontMaker_uiPrefs';
@@ -7723,9 +7724,11 @@ function onStagePointerMove(e) {
     if (nodeDrag.type === 'handle') {
       const [fxp,fyp] = clientToFont(e), nd = nodeModel.contours[nodeDrag.ci]?.nodes[nodeDrag.ni]; if (!nd) return;
       const which = nodeDrag.which, other = which === 'out' ? 'in' : 'out';
-      nd[which] = [fxp, fyp];
+      const gh = gridSnapPt(fxp, fyp, e.altKey);           // handles capture on the GRID only (guides never applied to handles)
+      _snapHit = gh.hit;
+      nd[which] = [gh.x, gh.y];
       if (nd.type === 'smooth' && nd[other]) {             // keep opposite handle collinear (preserve its length)
-        let dir = _vNorm([fxp-nd.x, fyp-nd.y]);
+        let dir = _vNorm([gh.x-nd.x, gh.y-nd.y]);
         if (!dir[0] && !dir[1]) dir = _vNorm([nd.x-nd[other][0], nd.y-nd[other][1]]);   // dragged handle collapsed onto the node → hold the existing tangent line so the opposite handle doesn't go stale / flip / spike
         const L = Math.hypot(nd[other][0]-nd.x, nd[other][1]-nd.y) || 1;
         if (dir[0] || dir[1]) nd[other] = [nd.x - dir[0]*L, nd.y - dir[1]*L];
@@ -7798,7 +7801,13 @@ function onStagePointerMove(e) {
   }
   if (metricDrag) {
     const [fxp,fyp] = clientToFont(e);
-    const raw = (metricDrag.axis==='y' ? fyp : fxp) + metricDrag.grab;
+    let raw = (metricDrag.axis==='y' ? fyp : fxp) + metricDrag.grab;
+    let mHit = null;                                       // metric dots capture on the GRID only (they ARE the metric targets)
+    if (!e.altKey && snapGuidesOn()) {
+      const gm = gridSnapCandidate(raw, snapTolFont());
+      if (gm) { raw = gm.t.v; mHit = metricDrag.axis==='y' ? { x: null, y: gm.t } : { x: gm.t, y: null }; }
+    }
+    _snapHit = mHit;
     writeMetric(metricDrag.key, raw); renderStage(); return;
   }
   if (guideDrag) {
@@ -7855,7 +7864,7 @@ function onStagePointerUp(e) {   // also serves pointercancel — a cancelled dr
     }
     nodeDrag = null;
   }
-  if (metricDrag) { udPush(metricDrag.ud); metricDrag = null; renderControls(); return; }
+  if (metricDrag) { _snapHit = null; udPush(metricDrag.ud); metricDrag = null; renderControls(); return; }
   if (guideDrag) { udPush(guideDrag.ud); guideDrag = null; renderControls(); return; }
   if (workMode === 'draw') { drawPointerUp(e); return; }
   if (eDrag) { udPush(eDrag.ud); eDrag = null; renderGrids(); renderControls(); return; }
@@ -10176,9 +10185,9 @@ function initRulers() {
    or a zoomed-out canvas renders as a flat grey wash instead of a grid. */
 const GRID_MIN_PX = 4;                       // smallest on-screen gap worth drawing a tier at
 const GRID_STEP_DEF = 50, GRID_MAJOR_DEF = 4, GRID_OPACITY_DEF = 0.5;
-function clampGridStep(v)    { v = Math.round(+v); return (isFinite(v) && v >= 1) ? Math.min(1000, v) : GRID_STEP_DEF; }
-function clampGridMajor(v)   { v = Math.round(+v); return (isFinite(v) && v >= 0) ? Math.min(100, v) : GRID_MAJOR_DEF; }   // 0 or 1 ⇒ no heavy line
-function clampGridOpacity(v) { v = +v; return (isFinite(v) && v >= 0.05 && v <= 1) ? v : GRID_OPACITY_DEF; }
+function clampGridStep(v)    { v = Math.round(+v); return isFinite(v) ? Math.min(1000, Math.max(1, v)) : GRID_STEP_DEF; }
+function clampGridMajor(v)   { v = Math.round(+v); return isFinite(v) ? Math.min(100, Math.max(0, v)) : GRID_MAJOR_DEF; }   // 0 ⇒ no heavy line; 1 ⇒ every line heavy
+function clampGridOpacity(v) { v = +v; return isFinite(v) ? Math.min(1, Math.max(0.05, v)) : GRID_OPACITY_DEF; }
 let _gridOn      = wsReadPrefs().gridOn === true;        // absent ⇒ off (unlike the rulers, this draws OVER the glyph)
 let _gridSnapOn  = wsReadPrefs().gridSnapOff !== true;   // stored inverted, per nodeGuidesOff/rulersOff ⇒ absent means snap
 let _gridStep    = clampGridStep(wsReadPrefs().gridStep);
@@ -10191,7 +10200,7 @@ function setGridShown(on) {
   wsSavePref('gridOn', _gridOn);
   const c = document.getElementById('showGridChk'); if (c) c.checked = _gridOn;
   const b = document.getElementById('nodeGridBtn'); if (b) b.setAttribute('aria-pressed', _gridOn ? 'true' : 'false');
-  renderStage(); renderControls();
+  gridRefresh(); renderControls();
 }
 /* The three below sync their own control instead of calling renderControls(), so typing in a field
    or dragging the slider doesn't rebuild the panel out from under the pointer. */
@@ -10202,20 +10211,20 @@ function setGridSnap(on) {
 function setGridStep(v) {
   _gridStep = clampGridStep(v); wsSavePref('gridStep', _gridStep);
   const el = document.getElementById('gridStepInp'); if (el) el.value = _gridStep;   // show the clamped value back
-  renderStage();
+  gridRefresh();
 }
 function setGridMajor(v) {
   _gridMajor = clampGridMajor(v); wsSavePref('gridMajor', _gridMajor);
   const el = document.getElementById('gridMajorInp'); if (el) el.value = _gridMajor;
-  renderStage();
+  gridRefresh();
 }
-function setGridOpacity(v) { _gridOpacity = clampGridOpacity(v); wsSavePref('gridOpacity', _gridOpacity); renderStage(); }
+function setGridOpacity(v) { _gridOpacity = clampGridOpacity(v); wsSavePref('gridOpacity', _gridOpacity); gridRefresh(); }
 
 /* ── renderer ── */
 function gridTiers(ctmA) {   // which tiers clear GRID_MIN_PX at the current zoom (0 = don't draw that tier)
   const px = u => u * SC * (ctmA || 1);
   return { minor: px(_gridStep) >= GRID_MIN_PX ? _gridStep : 0,
-           major: (_gridMajor > 1 && px(_gridStep * _gridMajor) >= GRID_MIN_PX) ? _gridStep * _gridMajor : 0 };
+           major: (_gridMajor >= 1 && px(_gridStep * _gridMajor) >= GRID_MIN_PX) ? _gridStep * _gridMajor : 0 };
 }
 const GRID_MAX_LINES = 600;   // backstop: a tier that would exceed this is dropped rather than serialized every frame
 function _gridPathD(step, mapX, x0, x1, y0, y1, sx0, sx1, sy0, sy1) {
@@ -10234,7 +10243,9 @@ function gridLinesSVG(sv, mapX, invX, rightX) {
   if (!t.minor && !t.major) return '';                 // too dense to read at this zoom — draw nothing
   // Span the viewBox the caller is ABOUT to use: renderStage widens it for a stretched wide form.
   const sx0 = STAGE_VB.x, sy0 = STAGE_VB.y, sy1 = STAGE_VB.y + STAGE_VB.h;
-  const sx1 = Math.max(STAGE_VB.x + STAGE_VB.w, rightX != null ? Math.round(rightX + 52) : 0);
+  const vb = sv.viewBox && sv.viewBox.baseVal;   // rightX==null ⇒ in-place refresh: keep the width the last render set (wide forms)
+  const sx1 = rightX != null ? Math.max(STAGE_VB.x + STAGE_VB.w, Math.round(rightX + 52))
+            : Math.max(STAGE_VB.x + STAGE_VB.w, (vb && vb.width) ? Math.round(vb.x + vb.width) : 0);
   const x0 = invX(sx0), x1 = invX(sx1), y0 = ify(sy1), y1 = ify(sy0);   // ify flips: sy1 is the LOW font y
   const C = stageColors();
   const pathFor = (step, w, op) => {
@@ -10242,7 +10253,7 @@ function gridLinesSVG(sv, mapX, invX, rightX) {
     return d ? `<path class="cgrid" d="${d}" fill="none" stroke="${C.grid}" stroke-width="${w}" stroke-opacity="${op.toFixed(3)}" vector-effect="non-scaling-stroke" pointer-events="none" shape-rendering="crispEdges"/>` : '';
   };
   let h = '';
-  if (t.minor) h += pathFor(t.minor, 1,    _gridOpacity * 0.5);
+  if (t.minor && t.minor !== t.major) h += pathFor(t.minor, 1, _gridOpacity * 0.5);
   if (t.major) h += pathFor(t.major, 1.75, _gridOpacity);    // heavier + fuller, painted over the minors it coincides with
   return h;
 }
@@ -10271,6 +10282,32 @@ function snapAxis(list, v, tol) {   // nearest of the metric/guide targets and t
   const g = gridSnapCandidate(v, tol);
   return (g && (!best || g.d < best.d)) ? g : best;
 }
+function gridSnapPt(x, y, alt) {   // grid-only capture for the drags the finite target list never covered (handles, anchors, metric dots)
+  if (alt || !snapGuidesOn()) return { x, y, hit: null };
+  const tol = snapTolFont();
+  const gx = gridSnapCandidate(x, tol), gy = gridSnapCandidate(y, tol);
+  return { x: gx ? gx.t.v : x, y: gy ? gy.t.v : y, hit: (gx || gy) ? { x: gx && gx.t, y: gy && gy.t } : null };
+}
+/* In-place refresh: zoom and container resizes change px density (the tier guard's input) without a
+   renderStage — swap just the .cgrid paths so the guard stays honest and the opacity slider stays
+   cheap. rAF-coalesced like rlSchedule; renderStage rebuilding first is harmless (paths re-swap). */
+let _gridRefRaf = 0;
+function gridRefresh() {
+  if (_gridRefRaf) return;
+  _gridRefRaf = requestAnimationFrame(() => {
+    _gridRefRaf = 0;
+    if (!project) return;
+    [[stage(), fx, ifx], [document.getElementById('meStage'), ex, iex]].forEach(([sv, mapX, invX]) => {
+      if (!sv) return;
+      const had = sv.querySelectorAll('path.cgrid');
+      const it = curItem();
+      if (sv.id === 'stage' && it && isCropSelect(it)) { had.forEach(pp => pp.remove()); return; }   // crop screens stay grid-less
+      const h = _gridOn ? gridLinesSVG(sv, mapX, invX, null) : '';
+      had.forEach(pp => pp.remove());
+      if (h) sv.insertAdjacentHTML('afterbegin', h);   // same z-slot renderStage gives it: under everything
+    });
+  });
+}
 function initGrid() {
   const chk = document.getElementById('showGridChk'); if (chk) chk.checked = _gridOn;
   document.addEventListener('keydown', e => {
@@ -10281,6 +10318,11 @@ function initGrid() {
     setGridShown(!_gridOn);
     status(I18n.t(_gridOn ? 'fontmaker.grid.on' : 'fontmaker.grid.off'));
   });
+  // Density inputs change without a renderStage: container resizes (splitter drags, window) — zoom
+  // goes through applyZoom, which calls gridRefresh alongside renderRulers.
+  const wrap = stage() && stage().closest('.stage-wrap');
+  if (wrap && window.ResizeObserver) new ResizeObserver(gridRefresh).observe(wrap);
+  window.addEventListener('resize', gridRefresh);
 }
 /* ── Node-mode stage chrome: #nodeBar / #nodeStatus / #nodeHint sync ──
    The bar, status line, and hint are static DOM written once in the page markup;
@@ -11293,7 +11335,8 @@ function attachAnchorDrag(l) {
     el.addEventListener('pointermove', e => {
       if (!grab) return;
       const [fxp,fyp] = clientToFont(e);
-      writeActiveAnchor(l, cls, Math.round(fxp+grab[0]), Math.round(fyp+grab[1]));
+      const ga = gridSnapPt(fxp+grab[0], fyp+grab[1], e.altKey);   // anchors capture on the GRID only (in-place render — no highlight overlay)
+      writeActiveAnchor(l, cls, Math.round(ga.x), Math.round(ga.y));
       const a = baseAnchorPosFor(l, cls, activeVowelCp());
       // Update the mark + handle IN PLACE — a full renderStage() here would replace
       // this element and drop the pointer capture, ending the drag after one move.
