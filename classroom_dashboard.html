@@ -2553,7 +2553,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label style="font-size:0.78rem;font-weight:600;"><span id="ttsRateSliderLabel" data-i18n="dashboard.color.tts_speed_label">Hebrew TTS Reading Speed</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="dashboard.common.beta_badge">BETA</span></label>
       <div style="display:flex;align-items:center;gap:6px;">
         <span style="font-size:0.65rem;color:var(--muted);" data-i18n="dashboard.color.tts_slow">Slow</span>
-        <input type="range" id="ttsRateSlider" aria-labelledby="ttsRateSliderLabel" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);"
+        <input type="range" id="ttsRateSlider" aria-labelledby="ttsRateSliderLabel" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);cursor:pointer;height:24px;"
                oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
         <span id="ttsRateVal" style="font-size:0.72rem;color:var(--text);min-width:36px;text-align:right;">0.75×</span>
         <button class="btn btn-xs btn-secondary" style="padding:2px 6px;font-size:0.65rem;"
