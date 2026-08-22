@@ -1264,7 +1264,7 @@
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_yiddish_label">Yiddish</div>
             <label class="chk"><input type="checkbox" id="addYiddishChk" onchange="setAddYiddish(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_yiddish">Add Yiddish glyphs</span></label>
-            <div class="hint" data-i18n-html="fontmaker.panels.adv_yiddish_hint">Adds a <strong>Yiddish</strong> tab: pasekh/komets alef (אַ אָ), the rafe letters (בֿ כֿ פֿ), and the digraphs tsvey vovn / vov-yud / tsvey yudn (װ ױ ײ) — all composed from your traced letters.</div>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_yiddish_hint">Adds a <strong>Yiddish</strong> tab: pasekh/komets alef (אַ אָ), the rafe letters (בֿ כֿ פֿ), the digraphs tsvey vovn / vov-yud / tsvey yudn (װ ױ ײ), and pasekh tsvey yudn (ײַ) — all composed from your traced letters.</div>
           </div>
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_ladino_label">Ladino</div>
@@ -2058,6 +2058,15 @@ const YIDDISH_FORMS = [
   { target:'05F1', bases:['05D5','05D9'], wide:true, tab:'yiddish', name:'Vov Yud (ױ)' },
   { target:'05F2', bases:['05D9','05D9'], wide:true, tab:'yiddish', name:'Tsvey Yudn (ײ)' },
 ];
+/* ײַ (U+FB1F) — a digraph PLUS a mark, so it is neither a base+mark pair nor a wide form and has no
+   YIDDISH_FORMS row: a fourth entry shape would have to be threaded through extraTargetsFor, the tile
+   renderer, the anchor editor and the Width slider. It is built by its OWN bake pass from the baked ײ
+   plus the letter's own pasekh — exactly as FB2C/FB2D are built from the dotted shin plus its dagesh —
+   and deliberately never enters project.precomposed (a {bases,mark,wide} entry there would be caught by
+   the builtWide pass and baked WITHOUT the mark). `bases` is carried only so the shared readiness/tile
+   helpers (qaFormReady, the "needs …" badge) work on it unchanged. */
+const YID_PASEKH = { target:'FB1F', from:'05F2', mark:'05B7', bases:['05D9','05D9'],
+                     name:'Pasekh Tsvey Yudn (ײַ)' };
 const LADINO_FORMS = [   // base + rafe/"varika" bar; PUA where Unicode has no precomposed form
   { target:'FB4C', base:'05D1', mark:'05BF', tab:'ladino', name:'Bet + rafe (בֿ)' },
   { target:'E0C1', base:'05D2', mark:'05BF', tab:'ladino', name:'Gimel + rafe (גֿ)' },
@@ -2073,8 +2082,9 @@ const LADINO_FORMS = [   // base + rafe/"varika" bar; PUA where Unicode has no p
    every letter+dagesh/mapiq form beyond the four core BeGeD-KeFeT ones, plus yod+hiriq. They share the
    Specialized tab (and its toggle), so a default project is unchanged. Six forms are left out because
    they are not base+mark pairs: FB2C/FB2D (shin + dagesh + a dot — three components, and already built
-   by their own pass from the dotted shin plus the letter's dagesh), FB1F (a digraph plus a mark), FB20
-   and FB4F (their own designs, so they could only ever be imported whole), and FB1E (varika, which
+   by their own pass from the dotted shin plus the letter's dagesh), FB1F (a digraph plus a mark —
+   likewise built by its own pass, from the baked ײ plus the letter's pasekh; see YID_PASEKH above),
+   FB20 and FB4F (their own designs, so they could only ever be imported whole), and FB1E (varika, which
    duplicates rafe 05BF). */
 const SPECIAL_MORE = [
   { target:'FB30', base:'05D0', mark:'05BC', tab:'special', name:'Alef Mapiq' },
@@ -2832,6 +2842,25 @@ function mapPinsX(ma, fn) {       // for a synth whose ink was x-transformed (wi
   for (const cp in ma) { const p = ma[cp]; if (p) out[cp] = { x: Math.round(fn(p.x)), y: p.y, key: p.key }; }
   return out;
 }
+/* The donor letter's anchors AND pins mapped through a wide form's ink transform (per-base x offset,
+   then wideX about the composed ink-left). For a digraph the donor is the logically-LAST base — drawn
+   leftmost at offset 0 — since the mark follows the digraph char. Shared by buildFEA's builtWide anchor
+   emission and the FB1F bake, so a mark baked INTO a composed glyph lands exactly where GPOS would have
+   put the same mark typed after it. ensureTropAnchors runs BEFORE the mapping so every trop L/C/R key
+   exists at map time — otherwise emitBaseAnchors would back-fill them UNMAPPED on the synthetic base. */
+function wideDonorAnchors(pc, g) {
+  const bases = pc.bases || [pc.base];
+  const donor = project.letters.find(x => x.codepoint === bases[bases.length - 1]);
+  if (!donor) return null;
+  seedAnchorsIfNeeded(donor);
+  if (!donor.anchors) return null;
+  ensureTropAnchors(donor);
+  const off = (g.offsets && g.offsets.length) ? g.offsets[g.offsets.length - 1] : 0;
+  const tx = x => wideX(x + off, g.minX, g.widthScale);
+  const anchors = {};
+  Object.keys(donor.anchors).forEach(k => { const a = donor.anchors[k]; anchors[k] = a ? { x: tx(a.x), y: a.y } : a; });
+  return { donor, anchors, markAnchors: mapPinsX(donor.markAnchors, tx) };   // pins ride the SAME ink transform as the anchors they refine
+}
 function pinKeyFor(cp) { return TROP_CLASS[cp] ? tropColKey(TROP_CLASS[cp], tropHalign(cp)) : MARK_CLASS[cp]; }   // the anchor key a mark currently reads
 function fidelityPinnedMarkCps() {
   // Mark cps with ≥1 key-current pin on any letter. At export each of these leaves its shared
@@ -3183,7 +3212,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.23';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.24';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3402,6 +3431,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.24</strong> &mdash; <strong>Yiddish gets its pasekh tsvey yudn (<span lang="he" dir="rtl">&#1522;&#1463;</span>).</strong> The <span class="ui">Yiddish</span> tab covered the two-yud digraph but not the one Yiddish actually writes most: <span lang="he" dir="rtl">&#1522;&#1463;</span>, the standard spelling of the <em>ay</em> sound. Old Yiddish text stores it as a single character, and a font built here had nothing at that slot, so those words came out as empty boxes. Now the form is built from your own letters and ships with the tab &mdash; and typing the two-yud digraph followed by a pasekh composes to the very same glyph, so both spellings look identical. <strong>It also picks up your own pasekh.</strong> If you drew your own pasekh shape, it used to be quietly swapped for the standard one here; it now carries through, exactly as your own dagesh already does on <span lang="he" dir="rtl">&#1513;&#1468;&#1473;</span>. (August 2026)</li>
       <li><strong>v5.23</strong> &mdash; <strong>The grid now follows you in and out.</strong> The grid held one fixed spacing at every zoom, which meant it was only ever right at one zoom level: zoom out and the lines crowded together until they vanished, zoom in and they drifted so far apart there was nothing to measure against just when you were doing the finest work. Now it re-spaces itself the way the ruler numbers do. Zoom in and it fills in finer lines between the ones you set; zoom out and it steps back to coarser ones instead of disappearing. At ordinary zooms it shows exactly the <span class="ui">Spacing</span> you typed, and the heavier every-Nth line holds the rhythm you chose until you zoom out far enough that even that would crowd, when it steps up along with everything else. Either way the grid always agrees with the number you typed &mdash; the extra lines only ever divide it evenly or multiply it whole, never landing on some fraction in between. <strong>And you snap to what you can see.</strong> The lines it fills in are real targets, so at high zoom you can place a point on a finer division without retyping the spacing. When the grid is showing something other than your typed number, it says so right next to the field, so you always know what a drag will land on. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.22</strong> &mdash; <strong>Graph paper for the canvas.</strong> The rulers told you where you were, but nothing told you how far it was from here to there. So the everyday questions &mdash; is this stem the same width as the one on the letter before it, did this vowel land the same distance under the baseline as the last one, are these two strokes actually parallel &mdash; came down to squinting, or to dropping a guide on the canvas and deleting it again afterwards. Now you can switch on a <strong>grid</strong> across the editing canvas, measured in the same <strong>font units</strong> as everything else: zero sits on the letter's origin and on the baseline, so a line always falls exactly there. <strong>You decide how it looks and behaves.</strong> Set the spacing, how often a heavier line comes along to help you count, and how strongly the whole thing shows through &mdash; all in the new <span class="ui">Grid</span> panel beside the canvas, so you can watch it change as you adjust it. Zoom far out and the finest lines quietly step aside rather than smearing into a grey block. <strong>And your points can stick to it.</strong> Switch on <span class="ui">Snap to grid</span> and dragged points, curve handles, whole selections, pen clicks, nikkud anchors and the margin dots all settle onto the nearest grid line, exactly the way points already settle onto guides &mdash; hold <span class="ui">Alt</span> to slip past it for one move. The grid is a drawing aid only; it never becomes part of your font, and it is remembered on this device rather than saved into the project. It starts switched off &mdash; turn it on from the node toolbar, under <span class="ui">Settings &rarr; Canvas</span>, or with <span class="ui">Shift + G</span> at any time. <strong>Advanced Settings is now just Settings.</strong> Same tab in the same place, shorter name, with a gear on it. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.21</strong> &mdash; <strong>Control handles stay the same size as you zoom in.</strong> Zooming in is how you do the fussy work &mdash; nudging a point onto a curve, lining a vowel up under a letter. But every dot, square and circle on the canvas used to grow along with the letter, so by 400% the handles were fat blobs sitting on top of the very outline you were trying to see, and neighbouring points ran into each other. Now they hold their size on screen no matter how far you zoom, the way they do in professional font and drawing programs: the letter gets bigger, the handles stay put, and there is far more room between them to work. Zoomed out past 50% they gently grow instead, so they never shrink away to nothing. Nothing to switch on &mdash; it just behaves this way now. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3515,7 +3545,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3528,7 +3558,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_23';
+  const CUR_KEY = 'fontmaker.changelog.v5_24';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -5041,7 +5071,17 @@ function renderCustomGlyphsGrid() {
    template-font character. Same y-flip/viewBox conventions as markTilePreviewSVG. */
 function formTilePreviewSVG(pc) {
   let cs = null, curves = null;
-  if (isWideForm(pc)) {
+  if (pc.bases && pc.mark) {                                        // ײַ: the wide digraph plus its baked mark
+    const from = getPrecomp(pc.from); if (!from) return '';
+    const g = buildWideGlyph(from); if (!g) return '';
+    const m = wideDonorAnchors(from, g); if (!m) return '';
+    const anc = baseAnchorPosFor({ anchors: m.anchors, markAnchors: m.markAnchors }, MARK_CLASS[pc.mark], pc.mark);
+    if (!anc) return '';
+    const ms2 = nikScale(pc.mark);                                  // same anchor + scale the export bake uses
+    const markPoly = markContoursFor(m.donor, 'nikkud', pc.mark).map(poly => poly.map(([x, y]) => [Math.round(x*ms2 + anc.x), Math.round(y*ms2 + anc.y)]));
+    cs = g.contours.map(pts => ({ points: pts })).concat(markPoly.map(p => ({ points: p })));
+    curves = null;                                                  // mixed bezier+polygon → render all as polygons
+  } else if (isWideForm(pc)) {
     const g = buildWideGlyph(pc); if (!g) return '';
     cs = g.contours.map(pts => ({ points: pts })); curves = g.curves;
   } else if (precompSrcOutline(pc)) {
@@ -5077,7 +5117,8 @@ function precompRebuildForms(targets) {
   });
   renderGrids(); renderStage(); renderControls();
 }
-function renderFormPanel(panelId, targets, intro) {
+function renderFormPanel(panelId, targets, intro, extras) {
+  extras = extras || [];   // pseudo-pcs with no project.precomposed entry (ײַ) — rendered as tiles, but never seeded or gated by extraTargetsFor
   const el = document.getElementById(panelId); if (!el) return;
   const isTraced = cp => { const L = project.letters.find(x => x.codepoint === cp); return !!(L && L.contours); };
   const chOf = cp => { try { return String.fromCodePoint(parseInt(cp, 16)); } catch (e) { return ''; } };
@@ -5096,8 +5137,9 @@ function renderFormPanel(panelId, targets, intro) {
   if (nSrc) { const rb = document.getElementById(panelId + 'Rebuild'); if (rb) rb.addEventListener('click', () => precompRebuildForms(targets)); }
   const grid = document.getElementById(panelId + 'Grid'); if (!grid) return;
   let any = false;
-  targets.forEach(t => {
-    const pc = getPrecomp(t); if (!pc) return;
+  targets.map(getPrecomp).concat(extras).forEach(pc => {
+    if (!pc) return;
+    const t = pc.target;
     any = true;
     const bases = pc.bases || [pc.base];
     const need = bases.filter(cp => !isTraced(cp));
@@ -5110,14 +5152,15 @@ function renderFormPanel(panelId, targets, intro) {
     tile.innerHTML = `<span class="lt-dot ${traced ? 'traced' : ''}"></span>
       ${pv || `<span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${precompComposed(pc)}</span>`}
       <span class="lt-name">${esc(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.custom_glyph_overrides', {t}) : 'You added a custom glyph at U+' + t + '; the exported font uses your custom outline, not this composed form.')}">${_pT('form_overrides', 'custom glyph overrides')}</span>` : traced ? '' : `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.trace_needs', {names: need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', ')}) : 'Trace ' + need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">${_pT('form_needs', 'needs ' + needChars, {chars: needChars})}</span>`}`;
-    tile.onclick = () => pickPrecompForm(t);
+    tile.onclick = () => pickPrecompForm(pc.from || t);   // ײַ has no editor of its own — it follows ײ, which follows yud
     grid.appendChild(tile);
   });
   if (!any) grid.innerHTML = `<div class="hint" style="grid-column:1/-1;direction:ltr;text-align:left;">${_pT('form_enable_tab', 'Enable this tab to add its forms.')}</div>`;
   a11yTiles(grid);
 }
 function renderSpecialFormsPanel() { renderFormPanel('specialFormsPanelBody', SPECIAL_TARGETS, _pT('special_intro', 'Wide letterforms — <b>auto-composed from your traced letters</b>. Pick one, then use the <b>Width</b> slider (it both adds side space and stretches). Insert them by their Unicode code point.')); }
-function renderYiddishPanel()      { renderFormPanel('yiddishPanelBody', YIDDISH_TARGETS, _pT('yiddish_intro', 'Yiddish forms, composed from your traced letters: pasekh / komets alef, the rafe letters (בֿ כֿ פֿ), and the vov/yud digraphs (װ ױ ײ).')); }
+function renderYiddishPanel()      { renderFormPanel('yiddishPanelBody', YIDDISH_TARGETS, _pT('yiddish_intro', 'Yiddish forms, composed from your traced letters: pasekh / komets alef, the rafe letters (בֿ כֿ פֿ), the vov/yud digraphs (װ ױ ײ), and pasekh tsvey yudn (ײַ).'),
+                                                     project.font.nikkud.enabled ? [YID_PASEKH] : []); }   // ײַ needs a pasekh — same gate the bake uses, so the tab never promises a glyph that will not ship
 function renderLadinoPanel()       { renderFormPanel('ladinoPanelBody', LADINO_TARGETS, _pT('ladino_intro', 'Ladino (Judeo-Spanish) forms: each base letter with the rafe / varika bar, composed from your traced letters.')); }
 function pickPrecompForm(target) {
   const pc = getPrecomp(target); if (!pc) return;
@@ -11448,7 +11491,8 @@ function precompName(pc) {
   return m ? gName(m[1]) + ' ' + m[2] : gName(raw);
 }
 function precompComposed(pc) {
-  if (pc.bases) return pc.bases.map(c => String.fromCodePoint(parseInt(c,16))).join('');   // digraph: show both bases
+  if (pc.bases) return pc.bases.map(c => String.fromCodePoint(parseInt(c,16))).join('')                  // digraph: show both bases…
+    + (pc.mark ? String.fromCodePoint(parseInt(pc.mark,16)) : '');                                       // …plus its mark for ײַ (no other form carries both)
   const b = pc.base ? String.fromCodePoint(parseInt(pc.base,16)) : '';
   const m = pc.mark ? String.fromCodePoint(parseInt(pc.mark,16)) : '';                     // wide letters have no mark
   return b + m;
@@ -14244,6 +14288,10 @@ function qaBuildCheckForms() {
       if (pc && !precompSrcOutline(pc)) out.push(pc);   // an imported form has no separately-placed mark, so there is nothing to check for collision
     });
   });
+  // ײַ has no project.precomposed entry (see YID_PASEKH) but ships with the Yiddish tab, under the same
+  // nikkud gate the bake applies. qaFormReady reads it as a digraph — pc.bases is set, so its
+  // `pc.mark && !pc.bases` anchor branch is correctly skipped and only the traced-bases check runs.
+  if (project.font[EXTRA_TAB_FLAG.yiddish] && project.font.nikkud.enabled) out.push(YID_PASEKH);
   return out;
 }
 /* The grid's row list: every consonant, with each dotted precomposed form injected right after its
@@ -14914,6 +14962,34 @@ function buildFontSpec() {
     builtWide.push({ pc, g });
   });
 
+  // Pasekh tsvey yudn (ײַ → real U+FB1F): 05F2 is a NEW base, so a pasekh typed after ײ could only ever
+  // attach as the GLOBAL uni05B7 glyph — silently dropping a per-letter custom pasekh, exactly the gap
+  // the shin+dagesh pass above closes for FB2C/FB2D. Bake the full form (the baked ײ plus the donor
+  // letter's own pasekh at the SAME mapped anchor buildFEA hands 05F2, so the composed glyph and a
+  // GPOS-positioned pair are indistinguishable). Reached by cmap for raw legacy/OCR text — U+FB1F is on
+  // the composition-exclusion list, so NFC DECOMPOSES it and normalized text never contains it — and by
+  // the plain ccmp rule in buildFEA for the typed sequence. Runs after builtWide: it consumes ײ's glyph.
+  const builtYiddishPasekh = [];
+  if (nikOn) (() => {
+    const bw = builtWide.find(b => b.pc.target === YID_PASEKH.from); if (!bw) return;   // ײ not baked (base untraced / Yiddish tab off) → no glyph and no ccmp rule
+    const nm = gname(YID_PASEKH.target);
+    if (glyphs[nm]) return;                                          // an explicit custom glyph already owns this cp — never clobber it
+    const srcG = glyphs[gname(YID_PASEKH.from)]; if (!srcG) return;
+    const m = wideDonorAnchors(bw.pc, bw.g); if (!m) return;
+    const anc = baseAnchorPosFor({ anchors: m.anchors, markAnchors: m.markAnchors }, MARK_CLASS[YID_PASEKH.mark], YID_PASEKH.mark);
+    if (!anc) return;                                                // pin-aware, so a fidelity pin moves the baked mark exactly as it moves the GPOS one
+    const mc = markContoursFor(m.donor, 'nikkud', YID_PASEKH.mark); if (!mc || !mc.length) return;
+    const ms2 = nikScale(YID_PASEKH.mark);                           // no per-form pc exists, so the global mark size
+    const markPoly = mc.map(poly => poly.map(([x,y]) => [Math.round(x*ms2+anc.x), Math.round(y*ms2+anc.y)]));
+    glyphs[nm] = { contours: srcG.contours.concat(markPoly), advance: srcG.advance };   // a below-mark adds no width
+    if (srcG.curves) glyphs[nm].curves = srcG.curves.concat(markPoly.map(() => null));
+    // deliberately no lsb: builtWide leaves it null for a digraph, and the appended mark can reach past
+    // the base's left edge — let the compiler derive it from the real ink.
+    glyphOrder.push(nm); baseGlyphNames.push(nm);
+    cmap[parseInt(YID_PASEKH.target,16)] = nm;
+    builtYiddishPasekh.push({ pc: bw.pc, g: bw.g, target: YID_PASEKH.target });
+  })();
+
   // precomposed accented Latin letters (á, é, ñ, ç…): bake base + accent at the placed anchor — glyphs + cmap only (no ccmp/GPOS)
   if (project.font.addEnglishLetters) project.precomposed.forEach(pc => {
     if (catOfCp(pc.mark) !== 'accent') return;
@@ -14945,7 +15021,7 @@ function buildFontSpec() {
   });
 
   // FEA
-  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh);
+  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh);
 
   // name table — nameID 1 stays the bare family for both styles (that's the RIBBI link);
   // only nameID 2/3/4/6 carry the Regular/Bold distinction.
@@ -14995,10 +15071,11 @@ function buildFontSpec() {
 /* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp (incl. the mark-filtered
    ccmp_dagesh lookup), mark-to-base, mkmk, contextual vowel-slide lookups (vowelPair slide mode), GDEF.
    Nikkud blocks emit only when nikOn; trop blocks only when tropOn. A letters-only font skips both. */
-function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh) {
+function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh) {
   builtPerLetter = builtPerLetter || [];
   builtWide = builtWide || [];
   builtShinDagesh = builtShinDagesh || [];
+  builtYiddishPasekh = builtYiddishPasekh || [];
   let f = '';
   f += 'languagesystem DFLT dflt;\n';
   f += 'languagesystem hebr dflt;\n\n';
@@ -15065,7 +15142,7 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     }));
     f += '\n';
   }
-  if (builtPrecomposed.length || builtPerLetter.length) {
+  if (builtPrecomposed.length || builtPerLetter.length || builtYiddishPasekh.length) {
     f += 'feature ccmp {\n';
     // Shin/sin precomposition (שׁ/שׂ) must fire even when a holam shares the letter. HarfBuzz canonically
     // reorders combining marks by combining class before GSUB (holam ccc19 < shin-dot ccc24), so a typed
@@ -15088,6 +15165,12 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     const isDagesh = pc => pc.mark === '05BC';
     builtPrecomposed.filter(pc => !isShinSin(pc) && !isDagesh(pc)).forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${gname(pc.target)};\n`; });
     builtPerLetter.filter(pc => !isDagesh(pc)).forEach(pc => { f += `  sub ${gname(pc.base)} ${gname(pc.mark)} by ${pc.glyphName};\n`; });   // per-letter custom shapes
+    // ײ + pasekh → ײַ. A PLAIN adjacent rule, deliberately not a mark-filtered lookup: pasekh is ccc18 and
+    // the only marks sorting before it (sheva, the hatafs, hiriq, tsere, segol — ccc10-16) are all vowels,
+    // which ײַ never carries a second of. Everything that legitimately follows — cantillation (ccc220/230),
+    // dagesh, meteg, rafe — sorts AFTER, so the pair stays adjacent. (ccmp_dagesh/ccmp_shinsin need a
+    // filtering set precisely because dagesh ccc21 and the shin dots ccc24 sit ABOVE the vowel range.)
+    builtYiddishPasekh.forEach(yp => { f += `  sub ${gname(yp.pc.target)} ${gname(YID_PASEKH.mark)} by ${gname(yp.target)};\n`; });
     // Dagesh composition (בּ/כּ/פּ/תּ/וּ, per-letter dagesh shapes, and שּׁ/שּׂ → FB2C/FB2D) lives in ONE
     // mark-filtered lookup so the rules still match when a canonically-earlier vowel sits between the
     // letter and the dagesh (typed בָּ = bet, qamats ccc18, dagesh ccc21 — a plain adjacent rule never
@@ -15171,16 +15254,18 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   // the same math qaSynthWideRow uses, so the QA grid and the exported font agree. For digraphs the
   // donor is the logically-LAST base (drawn leftmost, offset 0), since the mark follows the digraph char.
   builtWide.forEach(bw => {
-    const pc = bw.pc, g = bw.g, bases = pc.bases || [pc.base];
-    const donor = project.letters.find(x => x.codepoint === bases[bases.length - 1]); if (!donor) return;
-    seedAnchorsIfNeeded(donor); if (!donor.anchors) return;
-    if (tropMarks.length) ensureTropAnchors(donor);                 // fill trop L/C/R on the donor BEFORE mapping, so every key maps
-    const off = (g.offsets && g.offsets.length) ? g.offsets[g.offsets.length - 1] : 0;
-    const mapA = a => a ? { x: wideX(a.x + off, g.minX, g.widthScale), y: a.y } : a;
-    const anchors = {};
-    Object.keys(donor.anchors).forEach(k => { anchors[k] = mapA(donor.anchors[k]); });
-    const markAnchors = mapPinsX(donor.markAnchors, x => wideX(x + off, g.minX, g.widthScale));   // pins ride the SAME ink transform as the anchors they refine
-    emitBaseAnchors(gname(pc.target), Object.assign({}, donor, { anchors, markAnchors }));   // no skipCls — wide forms carry no baked mark
+    const m = wideDonorAnchors(bw.pc, bw.g); if (!m) return;
+    emitBaseAnchors(gname(bw.pc.target), Object.assign({}, m.donor, { anchors: m.anchors, markAnchors: m.markAnchors }));   // no skipCls — wide forms carry no baked mark
+  });
+  // ײַ (FB1F) is a new base too — a trop mark or a second vowel typed after it must attach to the WIDENED
+  // outline, not fall to x=0. Same mapped anchors ײ gets, minus the below class its baked pasekh occupies;
+  // the below-key pins go with it, since the synth inherits markAnchors by reference and a pin beats the
+  // class anchor in baseAnchorPosFor. 05F2's OWN anchors are left untouched: if ccmp does not fire (an
+  // intervening mark broke adjacency) GPOS must still place the pasekh.
+  builtYiddishPasekh.forEach(yp => {
+    const m = wideDonorAnchors(yp.pc, yp.g); if (!m) return;
+    const cls = MARK_CLASS[YID_PASEKH.mark];
+    emitBaseAnchors(gname(yp.target), Object.assign({}, m.donor, { anchors: m.anchors, markAnchors: dropKeyPins(m.markAnchors, cls) }), cls);
   });
   if (markLines) f += 'feature mark {\n' + markLines + '} mark;\n\n';
   // ── vowel+trop slide mode (vowelPair): when a CENTER-halign trop shares the letter with a vowel,
