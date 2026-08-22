@@ -1003,6 +1003,8 @@
     background: none; border: none; cursor: pointer; font-family: inherit;
     font-size: 0.82rem; font-weight: 600; color: var(--gold-text);
     text-decoration: underline; padding: 2px 6px;
+    /* same 30px floor .btn-xs carries (S102) — this measured 19px */
+    min-height: 30px; display: inline-flex; align-items: center; justify-content: center;
   }
   /* Hover darkens toward body text rather than lightening — --gold-light on a
      light surface drops to ~1.5:1, so the old hover was the least readable state. */
@@ -1063,6 +1065,12 @@
     padding: 0;
     line-height: 1;
     box-shadow: 2px 0 6px rgba(0,0,0,0.15);
+  }
+  /* 24px operable width without moving the visual: the tab stays a 16px edge sliver and a
+     transparent ::after carries the pointer target 8px inward. Logical insets, so it mirrors
+     in RTL, and inward-only keeps the whole target on-screen for the edge-pinned show-btn. */
+  .sidebar-toggle-btn::after, .sidebar-show-btn::after {
+    content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; inset-inline-end: -8px;
   }
   .sidebar-toggle-btn:hover { background: #0f1a33; }
 
@@ -4218,7 +4226,7 @@ function initVowels() {
     if (vowelColorScheme !== 'talam') {
       const header = document.createElement('div');
       header.className = 'vowel-group-header';
-      header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;';
+      header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;min-height:24px;';   // 24px = the WCAG 2.5.8 floor; the 30px house bar is for the .btn-xs family, not a full-width collapse header
       const hdrText = document.createElement('span');
       hdrText.innerHTML = window.I18n ? I18n.t('worksheet.vowels.group_header', {sound: i18nName('worksheet.vowels.sound.', group.sound), color: vowelColorLabel(group)}) : (group.sound + ' Sound – ' + group.colorHtml);
       const arrow = document.createElement('span');
