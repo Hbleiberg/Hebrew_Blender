@@ -3801,7 +3801,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       ${settings.hideWeatherDesc ? '' : `<div class="weather-label ${isHe ? '' : 'ltr'}">${label}</div>`}
       <div class="weather-descriptor ${isHe ? '' : 'ltr'}">${descriptor}</div>
       <div class="weather-city">${esc(place.name)}${place.country ? ', ' + esc(place.country) : ''}</div>
-      <div class="weather-attr" style="font-size:0.6rem;color:var(--muted);margin-top:4px;opacity:0.85;">Weather © Open-Meteo · © OpenStreetMap contributors</div><!-- i18n-ignore: attribution credit (Open-Meteo CC BY 4.0 + Nominatim/OSM ODbL); stays English like footer brand credits -->
+      <div class="weather-attr" style="font-size:0.6rem;color:var(--muted);margin-top:4px;">Weather © Open-Meteo · © OpenStreetMap contributors</div><!-- i18n-ignore: attribution credit (Open-Meteo CC BY 4.0 + Nominatim/OSM ODbL); stays English like footer brand credits -->
     `;
     if (ttsOn) {
       const labelEl = block.querySelector('.weather-label');
