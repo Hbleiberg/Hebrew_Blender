@@ -1773,7 +1773,7 @@ function openSubmitFont(pf) {
     </div>
     <div class="sg-modal-body">
       <label for="fontPreviewInput" class="sg-hint" style="display:block;margin-bottom:6px;" data-i18n="resources.preview.input_label">Type Hebrew (or anything) to preview in this font:</label>
-      <input type="text" id="fontPreviewInput" dir="rtl" lang="he" oninput="updateFontPreview()" value="שָׁלוֹם עוֹלָם">
+      <input type="text" id="fontPreviewInput" autocapitalize="off" autocorrect="off" spellcheck="false" dir="rtl" lang="he" oninput="updateFontPreview()" value="שָׁלוֹם עוֹלָם">
       <div class="tp-row" id="fpPhrases"></div>
       <!-- On-screen Hebrew keyboard: label is state-dependent (Show/Hide), so JS owns it — no data-i18n
            (applyStaticI18n would stomp the expanded-state label); the English text is the pre-I18n fallback. -->
