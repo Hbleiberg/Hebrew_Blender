@@ -86,7 +86,7 @@ header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-it
 header .star{font-size:32px;color:var(--gold);flex-shrink:0;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.8rem;letter-spacing:0.01em;}
 header p{font-size:0.88rem;color:var(--gold-light);margin-top:3px;}
-header .hright{margin-inline-start:auto;}
+header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;min-height:30px;display:inline-flex;align-items:center;justify-content:center;}
 .dark-btn:hover{background:rgba(255,255,255,0.1);}
 
@@ -99,6 +99,16 @@ header .hright{margin-inline-start:auto;}
 /* .home-btn:hover lifts 2px (transform 0.15s) — motion the star's animation:none never covered.
    !important is required, not stylistic: .home-btn's own transition is declared LATER in this
    file at equal specificity, and a media query adds none, so without it source order wins. */
+/* Phone widths: let the header button row wrap onto a second line instead of pushing the
+   page sideways (WCAG 1.4.10 reflow). max-width is the operative half — nothing makes the row
+   wrap until something caps its width, and the header has to wrap too or the title block and
+   the button row keep competing for one line. Same lever and the same 430px scope as the
+   dashboard's header block, and measured inert above it — header heights at 480 through 1280
+   are identical with the rules forced on and with them off. */
+@media (max-width:430px){
+  header{flex-wrap:wrap;}
+  header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
+}
 @media (prefers-reduced-motion: reduce){.code-404 .lost-star{animation:none;}.home-btn{transition:none !important;}}
 
 .heb-404{font-family:'Frank Ruhl Libre',serif;direction:rtl;font-size:clamp(1.6rem,6vw,2.4rem);color:var(--text);margin:8px 0 4px;}

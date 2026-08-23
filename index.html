@@ -172,7 +172,7 @@ header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-it
 header .star{font-size:32px;color:var(--gold);flex-shrink:0;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.8rem;letter-spacing:0.01em;}
 header p{font-size:0.88rem;color:var(--gold-light);margin-top:3px;}
-header .hright{margin-inline-start:auto;}
+header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
 .dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;min-height:30px;display:inline-flex;align-items:center;justify-content:center;}
 .dark-btn:hover{background:rgba(255,255,255,0.1);}
 
@@ -238,6 +238,17 @@ body.dark .sefaria-attr .sefaria-dark{display:inline-block;}
    but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
 .vh-file { position:absolute; width:1px; height:1px; opacity:0; }
 label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
+
+/* Phone widths: let the header button row wrap onto a second line instead of pushing the
+   page sideways (WCAG 1.4.10 reflow). max-width is the operative half — nothing makes the row
+   wrap until something caps its width, and the header has to wrap too or the title block and
+   the button row keep competing for one line. Same lever and the same 430px scope as the
+   dashboard's header block, and measured inert above it — header heights at 480 through 1280
+   are identical with the rules forced on and with them off. */
+@media (max-width:430px){
+  header{flex-wrap:wrap;}
+  header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
