@@ -689,7 +689,13 @@
     background: var(--gold);
     color: var(--navy);
   }
-  .btn-primary:hover { background: #b8821e; color: var(--white); }
+  /* Hover BRIGHTENS rather than darkening, matching this file's own .tbtn:hover and the six
+     other gold-button carriers suite-wide. The old darken-plus-flip-to-white pair measured
+     3.36:1 in light mode — the primary action was HARDER to read hovered (5.38:1) than at
+     rest. Leaving the text colour alone keeps the rest-state pairing, so contrast can only
+     improve: 6.04:1 light, 7.77:1 dark. (var(--white) is #1e2535 in dark, which is why only
+     light mode failed — see CLAUDE.md's --white pitfall.) */
+  .btn-primary:hover { filter: brightness(1.06); }
 
   /* Frozen "Generate" footer: keeps the primary action reachable without scrolling the tall
      controls sidebar (S130 Pass-H friction; user-directed). A full-width bar with a centered
