@@ -6970,8 +6970,18 @@ window.addEventListener('afterprint', _handoutExit);
     wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
     wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(wrap); });
     wrap.addEventListener('click', e => { e.stopPropagation(); isShown(wrap) ? hide(wrap) : show(wrap); });
-    wrap.addEventListener('focus', () => show(wrap));
-    wrap.addEventListener('blur', () => hide(wrap));
+    // Focus opens the tip for KEYBOARD users only. A pointer press focuses this tabindex-bearing
+    // wrap BEFORE its own click lands, so an unguarded focus handler re-created one layer down the
+    // very race the pointerType guard above closes. Traced under a device descriptor, one tap ran:
+    //   focus -> show(wrap)                 [bubble display:block, aria-expanded="true"]
+    //   click -> isShown(wrap) -> hide(wrap) [bubble display:none,  aria-expanded="false"]
+    // so the tip could not be opened by tapping at all — and on a phone, where (hover:none) is true,
+    // tapping is the only way in. Flagging pointer-driven focus keeps Tab-to-tip working while
+    // letting a tap toggle. (S248 Pass N arm 4; the fix classroom_dashboard.html took in S247.)
+    let ptrFocus = false;
+    wrap.addEventListener('pointerdown', () => { ptrFocus = true; });
+    wrap.addEventListener('focus', () => { if (ptrFocus) { ptrFocus = false; return; } show(wrap); });
+    wrap.addEventListener('blur', () => { ptrFocus = false; hide(wrap); });
     wrap.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); isShown(wrap) ? hide(wrap) : show(wrap); }
       else if (e.key === 'Escape') { hide(wrap); wrap.blur(); }
