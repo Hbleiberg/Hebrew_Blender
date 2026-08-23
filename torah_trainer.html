@@ -479,6 +479,19 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
   padding:2px 7px; font-size:0.7rem; font-weight:600; cursor:pointer;
   color:var(--muted); transition:border-color 0.15s, color 0.15s, background 0.15s, opacity 0.15s; flex-shrink:0;
   margin-top:2px; font-family:inherit; letter-spacing:0.02em;
+  position:relative;   /* carries the ::after touch target below */
+}
+/* WCAG 2.5.8 touch floor (pattern: sub-floor touch target). These four chips paint
+   at 19px and repeat 4x per verse down a whole parsha, so growing the paint would
+   restyle the entire reading — the sanctioned second vehicle applies instead (S240):
+   a transparent ::after carries the pointer target to 25px with the paint untouched.
+   BLOCK AXIS ONLY — siblings sit 4px apart on the inline axis, so an inline
+   expansion would overlap the neighbouring chip. -4px, not -3px: insets resolve
+   against the PADDING box, so the 1px border eats 1px per side and -3px measured
+   a 23px target — one short of the floor. It clears the tappable Hebrew words
+   below (measured 7px away), which stay hit-testable as themselves. */
+.tt-speak::after, .tt-chant::after, .tt-loop::after, .tt-copy::after {
+  content:''; position:absolute; inset-inline:0; inset-block:-4px;
 }
 .tt-speak:hover { border-color:var(--gold); color:var(--gold); }
 .tt-speak.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
@@ -488,7 +501,12 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
 .tt-loop.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
 .tt-copy:hover { border-color:var(--gold); color:var(--gold); }
 .tt-verse-buttons {
-  display:inline-flex; gap:4px; margin-inline-start:6px;
+  display:inline-flex; margin-inline-start:6px;
+  /* row-gap > column-gap: the chips' 25px touch targets each reach 3px past their
+     paint, so two wrapped lines need 6px between them or the targets overlap by 2px
+     and the lower chip swallows taps meant for the upper one. Inert wherever the row
+     does not wrap, i.e. everywhere but the narrowest phones. */
+  column-gap:4px; row-gap:6px;
   /* wrap: at 320px the four actions (Read/Chant/Loop/Copy) measure wider than the
      row, and .tt-verse clips rather than scrolls, so Copy was cut mid-label on every
      verse (18px off in EN, 30px in HE, where the labels are longer). nowrap is the
