@@ -1646,6 +1646,16 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
   @media (max-width: 430px) {
     header { flex-wrap:wrap; }
     .hright { flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
+    /* Segmented controls wrap on phones. .panel is overflow:hidden and .form-row does not wrap, so
+       a group wider than the drawer is CLIPPED with no scrollbar and no way to reach it: at 320px
+       the "Long" date format measured 0% visible and elementFromPoint returned null, i.e. the
+       option could not be selected at all (same in Hebrew, and "Both" on the Hebrew-date row was
+       cut too). Scoped to this breakpoint rather than set on .radio-group outright, because
+       unscoped it also wraps the date-format group on DESKTOP (277x29 -> 265x55) — allowing wrap
+       lets flex-shrink shrink the group below its max-content width, which is a desktop change in
+       service of phones. 430px is this page's existing phone breakpoint and covers 320/390/412.
+       (S247 Pass N) */
+    .radio-group { flex-wrap: wrap; }
   }
 
   /* ───── Print (Ctrl+P) ───── */
