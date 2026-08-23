@@ -878,7 +878,15 @@ body.dark .fc-back  { background: #0e1e36; border-color: #2a4060; }
    keep the app's theme background (both themes flow through --bg). Only the RUNNING
    deck's card is enlarged for projection; the setup/results screens are untouched. */
 html:fullscreen, :root:fullscreen, :-webkit-full-screen { background: var(--bg); }
-body.fc-fullscreen #screenCard.active .fc-perspective { width: min(80vw, 96vh, 1000px); }
+/* The projected card outgrows the 760px-max content column, and the base rule's `margin: 0 auto`
+   cannot centre a box wider than its parent — over-constrained, the auto margins collapse to 0 and
+   the card overflows to the inline-end. Measured at 1920x1080: card 594->1594 while the progress
+   bar, stats bar, card counter and nav row all ran 594->1326, so the biggest object on a classroom
+   projector was the only thing off-centre, by 134px (66px at 1280). Symmetric negative margins
+   re-centre it on the column — and so on the screen — with no size change, and go positive to
+   behave exactly like `auto` whenever the card does fit. `80vw` caps the width, so the overhang
+   can never reach a screen edge. (S249 Pass M) */
+body.fc-fullscreen #screenCard.active .fc-perspective { --fc-fs-w: min(80vw, 96vh, 1000px); width: var(--fc-fs-w); margin-inline: calc((100% - var(--fc-fs-w)) / 2); }
 body.fc-fullscreen #screenCard.active .fc-card        { height: min(60vh, 620px); }
 body.fc-fullscreen #screenCard.active .fc-heb         { font-size: clamp(4rem, 22vh, 14rem); }
 body.fc-fullscreen #screenCard.active .fc-translit    { font-size: clamp(2rem, 9vh, 4rem); }
