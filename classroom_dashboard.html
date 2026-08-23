@@ -1341,7 +1341,16 @@
     position: fixed;
     top: 14px; right: 16px;
     z-index: 200;
-    background: rgba(13,18,32,0.55);
+    /* The plate carries the restraint; a GROUP opacity cannot. `opacity: 0.45` faded the white
+       glyph toward whatever is behind the button, so on the cream board it rendered LIGHTER than
+       the page it sits on: measured from rendered pixels, ink (253,248,239) on (178,173,165) =
+       2.11:1 — the only visible way out of a projected fullscreen lesson, effectively invisible.
+       Dark mode fades toward dark and so passed at 4.46:1 (the same light-fails/dark-passes
+       inversion as the S247 Generate-button hover). Converged on `.fs-strip-inner` below — this
+       file's own always-on-a-cream-or-dark-board overlay — which solves it with a 0.72 plate and
+       no group opacity at all. Same ink, same border and blur idiom; the button stays quiet by
+       being 60px in a corner, not by being unreadable. (S248 Pass M) */
+    background: rgba(13,18,32,0.72);
     color: #fff;
     border: 1.5px solid rgba(255,255,255,0.2);
     border-radius: 10px;
@@ -1349,14 +1358,13 @@
     width: 60px;
     cursor: pointer;
     backdrop-filter: blur(6px);
-    opacity: 0.45;
-    transition: opacity 0.2s, background 0.2s;
+    transition: background 0.2s;
     display: none;
     flex-direction: column;
     align-items: center;
     gap: 2px;
   }
-  #fsExitBtn:hover { opacity: 1; background: rgba(13,18,32,0.82); }
+  #fsExitBtn:hover { background: rgba(13,18,32,0.88); }
   #fsExitBtn .fs-x { font-size: 1.5rem; line-height: 1; }
   #fsExitBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
   body.fullscreen #fsExitBtn { display: flex; }
