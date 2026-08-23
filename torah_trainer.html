@@ -487,7 +487,16 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
 .tt-loop:hover:not(:disabled) { border-color:var(--gold); color:var(--gold); }
 .tt-loop.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
 .tt-copy:hover { border-color:var(--gold); color:var(--gold); }
-.tt-verse-buttons { display:inline-flex; gap:4px; margin-left:6px; }
+.tt-verse-buttons {
+  display:inline-flex; gap:4px; margin-inline-start:6px;
+  /* wrap: at 320px the four actions (Read/Chant/Loop/Copy) measure wider than the
+     row, and .tt-verse clips rather than scrolls, so Copy was cut mid-label on every
+     verse (18px off in EN, 30px in HE, where the labels are longer). nowrap is the
+     flex default, so this only engages where there is no room — wider screens lay
+     out unchanged. margin-inline-start, not margin-left, so the gap sits after the
+     verse number in Hebrew too. */
+  flex-wrap:wrap;
+}
 
 /* Verse loop (practice mode): the looping verse row gets a tinted background and
    a gently pulsing gold ring so it's obvious which verse is repeating. */
