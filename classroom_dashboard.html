@@ -8644,10 +8644,23 @@ function panelMemApply() {
       icon.setAttribute('aria-label', _tipAria === 'shared.tip.aria_more_info' ? 'More information' : _tipAria);
       icon.setAttribute('aria-expanded', 'false');
       icon.setAttribute('aria-describedby', 'tipFloat');
-      wrap.addEventListener('mouseenter', () => show(wrap));
-      wrap.addEventListener('mouseleave', () => { if (openWrap === wrap) hide(); });
-      icon.addEventListener('focus', () => show(wrap));
-      icon.addEventListener('blur', () => { if (openWrap === wrap) hide(); });
+      // Hover is for MICE only. On a touch device a tap fires a synthetic mouseenter before the
+      // click, so raw mouse listeners made the bubble open on mouseenter and then immediately
+      // close again on click (openWrap === wrap -> hide) and once more on mouseleave — net effect,
+      // a tap did nothing and all three tips were unreachable on a phone, where (hover:none) is
+      // true and there is no other way in. Gating on pointerType adopts the form
+      // hebrew_dictionary.html's bindTip already uses; mouse hover behaviour is unchanged.
+      // (S247 Pass N arm 4)
+      wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
+      wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(); });
+      // Focus opens the tip for KEYBOARD users only. A pointer/touch press focuses the icon before
+      // its own click lands, so an unguarded focus handler re-created the same race the pointerType
+      // guard above just closed: focus opened the bubble, then click saw openWrap === wrap and shut
+      // it. Flagging pointer-driven focus keeps Tab-to-icon working while letting tap toggle.
+      let ptrFocus = false;
+      icon.addEventListener('pointerdown', () => { ptrFocus = true; });
+      icon.addEventListener('focus', () => { if (ptrFocus) { ptrFocus = false; return; } show(wrap); });
+      icon.addEventListener('blur', () => { ptrFocus = false; if (openWrap === wrap) hide(); });
       icon.addEventListener('click', e => { e.stopPropagation(); openWrap === wrap ? hide() : show(wrap); });
       icon.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWrap === wrap ? hide() : show(wrap); }
