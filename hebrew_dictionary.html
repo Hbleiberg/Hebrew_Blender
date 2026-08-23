@@ -5441,8 +5441,20 @@ function dictActiveGroupCount() {
     wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
     wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(); });
     wrap.addEventListener('click', e => { e.stopPropagation(); isShown(wrap) ? hide() : show(wrap); });
-    wrap.addEventListener('focus', () => show(wrap));
-    wrap.addEventListener('blur', () => hide());
+    // Focus opens the tip for KEYBOARD users only. A pointer press focuses this tabindex-bearing
+    // wrap BEFORE its own click lands, so an unguarded focus handler re-created one layer down the
+    // very race the pointerType guard above closes. Traced under a device descriptor, one tap ran:
+    //   focus -> show(wrap)        [#tipFloat display:block, aria-expanded="true"]
+    //   click -> isShown -> hide() [#tipFloat display:none,  aria-expanded="false"]
+    // so the tip could not be opened by tapping at all — and on a phone, where (hover:none) is true,
+    // tapping is the only way in. Flagging pointer-driven focus keeps Tab-to-tip working while
+    // letting a tap toggle. Third carrier of the shape (trope_tutor + torah_trainer took it in
+    // S248); this one hid behind TWO `display:none !important` collapse layers — the .panel and the
+    // inner .adv-section — which is why it measured zero-width then. (S249 Pass N)
+    let ptrFocus = false;
+    wrap.addEventListener('pointerdown', () => { ptrFocus = true; });
+    wrap.addEventListener('focus', () => { if (ptrFocus) { ptrFocus = false; return; } show(wrap); });
+    wrap.addEventListener('blur', () => { ptrFocus = false; hide(); });
     wrap.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); isShown(wrap) ? hide() : show(wrap); }
       else if (e.key === 'Escape') { hide(); wrap.blur(); }
