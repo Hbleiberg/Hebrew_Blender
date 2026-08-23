@@ -197,8 +197,11 @@ header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
      row-siblings-with-mismatched-heights, S225): the <=720px block below trims this padding,
      which put Tour at 29px on a phone, and the 1rem icon buttons beside the 0.82rem text ones
      ran the row 30-36 (the SVG-bearing #fsBtn was the short one). Same declaration torah_trainer
-     and the dashboard took in db37a54 — this page's header is a copy of torah's and was outside
-     that sweep's 10-page census, so it kept the ragged row a year longer. */
+     and the dashboard took in db37a54, which closed the class. This page WAS in that census and
+     was recorded clean — a false negative: grouping controls by round(top/6) split this one row
+     into two buckets (Home/dark/gear at 34.38-35, Tour/fullscreen at 30-31), each internally
+     consistent, so a 5px row read as two tidy ones. Census every child of the row, not the
+     detector's buckets. */
   font-family:inherit; font-size:0.82rem; font-weight:600;
   cursor:pointer; text-decoration:none;
   display:inline-flex; align-items:center; gap:6px;
