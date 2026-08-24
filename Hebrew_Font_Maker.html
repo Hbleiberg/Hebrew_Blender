@@ -3464,7 +3464,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.30';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.31';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3684,6 +3684,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.31</strong> &mdash; <strong>An eraser that takes off only the ink you touch.</strong> The eraser in <span class="ui">Draw</span> mode could remove a whole stroke, or cut a stroke clean in two &mdash; but it could never shave a sliver off one side, because a stroke has one thickness all the way along and a cut always went through all of it. A stem that came out a little too fat, or a corner that wanted rounding, meant erasing the stroke and drawing it over again. The eraser now has a <span class="ui">Sculpt</span> mode that rubs away just the ink under it: round off a corner, thin a stem, take a bite out of an edge &mdash; and the rest of the stroke stays exactly as you drew it. It is what the eraser does by default now; <span class="ui">Partial</span> (cut one stroke into two you can move separately) and <span class="ui">Whole stroke</span> are still there under <span class="ui">Eraser mode</span>, and each one now says in a line what it does. What you rub away is a hole in the paper rather than a change to the stroke &mdash; so if you later <span class="ui">Move</span> that stroke out from under it, the stroke comes back whole, exactly as it would if you slid the paper out from under a real eraser. Press <span class="ui">Save drawing &amp; trace</span> as usual and the sculpted shape is what lands in your outline, and in the font you export. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.30</strong> &mdash; <strong>Imported fonts keep their kerning, their exact spacing, and their dagesh.</strong> Importing a font &mdash; the Open Siddur starting fonts included &mdash; now brings its <span class="ui">kerning</span> along: the pair-spacing rules modern fonts keep in their GPOS table, the ones browsers and word processors actually apply, land in the Kerning panel with every Hebrew pair intact, editable like pairs you made yourself. <span class="ui">Word spacing</span> now matches the original font&rsquo;s own space width instead of a one-size default. The <span class="ui">dagesh</span> finally sits where the original puts it on <em>every</em> letter: most Hebrew fonts record the dagesh position only inside their ready-made combined letters (בּ כּ תּ), so letters outside that set used to get a best-guess spot that left the dot floating near the top of the letter &mdash; the position is now read out of those combined letterforms themselves, and the typed form in the Spacing preview shows the original&rsquo;s own combined glyph, at its own width, just like the exported font. And imported vowels can no longer come in bigger than the original drew them: the mark size sliders reset to true size when a font&rsquo;s own marks arrive, instead of silently re-scaling the new shapes by a factor tuned for the old ones. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.29</strong> &mdash; <strong>Letters from an imported font are no longer cut off at the top or the bottom.</strong> Plenty of Hebrew fonts draw the <span class="ui">lamed</span> right up into the ascender, taller than the editing canvas was ever built to show &mdash; Shlomo SemiStam&rsquo;s climbs well past it. Import one of those and the top of the letter was simply gone: clipped off the edge of the workspace, with no zoom level and no amount of scrolling that would bring it back, and no way to grab the points up there and edit them. The canvas now grows in whichever direction it needs to &mdash; a letter that reaches into the ascender, one whose tail drops below where the canvas used to stop, or a <span class="ui">Descender</span> line you set lower yourself &mdash; so the whole letter stays visible and editable, and the graph paper, the guides and the rulers all follow it. Letters that already fitted look exactly as they did. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.28</strong> &mdash; <strong>Type your sample text without a Hebrew keyboard.</strong> The <span class="ui">Sample text</span> box in the <span class="ui">Spacing</span> tab is where you check how your letters sit together &mdash; but it quietly assumed you could type Hebrew in the first place. Without a Hebrew layout installed you were stuck with whatever was already in the box, and even with one, nikkud and trop are close to untypeable. A new <span class="ui">&#9000; Show Hebrew Keyboard</span> button under the field opens a full on-screen keyboard: every letter (in alef-bet order or the Israeli layout, whichever you prefer), all thirteen vowels plus the dots, and the complete set of cantillation marks. Keys type into the box <strong>at your cursor</strong>, so you can drop a vowel onto a letter you already typed, and Backspace peels off one mark at a time &mdash; exactly what you want when you are testing how a holam sits above a shin. And if your font is not set up for nikkud or trop, the matching tab says so, instead of leaving you wondering why nothing shows up in the preview. <strong>And a row of ready-made samples sits beside it.</strong> Shalom, a pangram that uses every letter, the whole alef-bet with its final forms, every vowel in turn, a cantillated verse, and Hebrew next to digits and Latin &mdash; one click each, so checking your font against the hard cases stops being a typing exercise. The same row is on the font gallery&rsquo;s preview, for trying a font before you download it. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3804,7 +3805,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3817,7 +3818,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_30';
+  const CUR_KEY = 'fontmaker.changelog.v5_31';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -7945,7 +7946,7 @@ function renderLegend() {
               : _drawTool === 'move' ? 'legend_move' : _drawTool === 'stamp' ? 'legend_stamp' : 'legend';
     const fall = {
       legend: 'Draw with a pen, finger, or mouse · D / L / V / S / E switch tools · Save runs the tracer',
-      legend_erase: 'Partial rubs out ink under the eraser · Whole stroke removes an entire stroke in one touch',
+      legend_erase: 'Sculpt rubs away just the ink under the eraser · Partial cuts a stroke in two · Whole stroke removes one in a touch',
       legend_line: 'Press and drag to place a straight stroke · hold Shift to snap to 0° / 45° / 90°',
       legend_move: 'Drag a stroke to move it · drag empty space to select several · Delete removes them',
       legend_stamp: 'Tap to place the stamp · size follows Brush size · placed parts are normal strokes',
@@ -8255,6 +8256,7 @@ let _drawPenUntil = 0;       // ignore touch until this timestamp (rolling +500m
 let _drawTool = 'draw';      // 'draw' | 'erase' | 'line' | 'move' — session-only (always starts on Draw)
 let _drawSel = new Set();    // move tool: selected stroke indices — transient (indices go stale when the array changes; cleared in _setWorkMode / afterUndo / drawSetTool)
 const DRAW_STROKE_MAX = 512; // runtime cap == sanitizeDraw's reload cap — a split/draw must never create strokes a reload would drop
+const DRAW_CARVE_MAX = 256;  // sculpt-erase cap == sanitizeDraw's reload cap for carves (same reason: never store what a reload drops)
 /* Measured tracer floors (probe: commit a stroke through _drawCommitNow, count the contours it
    keeps). A 400-FU horizontal bar VANISHES at w=6, survives thin at w=8, and reproduces its width
    exactly from w=10 up — so 10 is both the smallest honest brush and sanitizeDraw's reload floor
@@ -8264,12 +8266,18 @@ const NIB_MIN = 0.18;        // chisel thin-edge factor (the sofer look: thin ed
 const NIB_EDGE_MIN = 4;      // …but never thinner than 8 FU across: at brush 20 the 3.6-FU edge traced to NOTHING
 const NIB_TAP_MIN = 12;      // chisel TAP half-length — nib marks trace raggedly below ~24 FU long (see _drawTapFloor)
 const ERASE_STEP = 12;       // partial-erase resample pitch (font units) — makes sparse strokes (2-pt lines) splittable
+/* The three eraser modes, and the one line that says what separates them: 'whole' removes a whole
+   stroke, 'partial' CUTS a stroke (always through its full cross-section — strokes carry one width),
+   and 'sculpt' takes ink away without touching the stroke array at all: it records a hole in the
+   paper (l.draw.carves) that the stage masks out and drawRenderCanvas paints white, so the tracer
+   sees the carved shape. It is the only mode that can shave a sliver off ONE side of a stroke. */
+const ERASE_MODES = ['sculpt', 'partial', 'whole'];
 const DOT_RMIN = 9;          // dotted-style dot-radius floor — measured: r=5 vanishes, r=7 survives, 9 keeps margin
 const DOT_MAX = 1024;        // dots per stroke ceiling (pitch stretches rather than exceed it)
 const TAPER_STEP = 24;       // brush-style resample pitch (font units) — a 2-pt Line stroke tapers via interpolated samples
 const RING_RMIN = 2;         // inner-ring / taper radius floor (font units) — offsets never collapse or cross zero
 let _drawBrush = 90, _drawPressure = true, _drawSmoothing = 'med', _drawPenOnly = false;   // mirrors of uiPrefs (avoid per-stroke localStorage reads)
-let _drawEraser = 120, _drawEraseMode = 'partial', _drawStyle = 'round', _drawNibAngle = 90;   // more uiPrefs mirrors: eraser size/mode + pen style
+let _drawEraser = 120, _drawEraseMode = 'sculpt', _drawStyle = 'round', _drawNibAngle = 90;   // more uiPrefs mirrors: eraser size/mode + pen style
 let _drawTaper = 120, _drawDotSpacing = 2, _drawRim = 22;   // per-style params (frozen onto strokes at commit, like w)
 let _drawSpeed = false, _drawTilt = false;   // dynamics: mouse/finger speed → pseudo-pressure; stylus tilt → chisel angle
 let _drawStamp = 'crown';                    // stamp tool's active shape (uiPrefs mirror)
@@ -8280,7 +8288,7 @@ function drawLoadPrefs() {
   _drawSmoothing = ['off','low','med','high'].includes(p.drawSmoothing) ? p.drawSmoothing : 'med';
   _drawPenOnly = p.drawPenOnly === true;
   _drawEraser = Number.isFinite(+p.drawEraser) ? Math.min(300, Math.max(DRAW_W_MIN, +p.drawEraser)) : 120;
-  _drawEraseMode = p.drawEraseMode === 'whole' ? 'whole' : 'partial';
+  _drawEraseMode = ERASE_MODES.includes(p.drawEraseMode) ? p.drawEraseMode : 'sculpt';   // missing = the new default; a saved choice always wins
   _drawStyle = ['round','chisel','brush','dotted','hollow'].includes(p.drawStyle) ? p.drawStyle : 'round';
   _drawNibAngle = Number.isFinite(+p.drawNibAngle) ? Math.min(170, Math.max(0, Math.round(+p.drawNibAngle))) : 90;
   _drawTaper = Number.isFinite(+p.drawTaper) ? Math.min(400, Math.max(20, Math.round(+p.drawTaper))) : 120;
@@ -8306,7 +8314,7 @@ function drawSetTool(t) {
   renderStage(); renderControls();   // stage chrome (selection boxes, legend, cursor ring radius) is tool-dependent
 }
 function drawSetEraser(v) { _drawEraser = Math.min(300, Math.max(DRAW_W_MIN, +v || 120)); const r = document.getElementById('drawEraserVal'); if (r) r.textContent = _drawEraser; drawPreviewRefresh(); }
-function drawSetEraseMode(m) { _drawEraseMode = m === 'whole' ? 'whole' : 'partial'; drawSavePrefs(); renderControls(); }
+function drawSetEraseMode(m) { _drawEraseMode = ERASE_MODES.includes(m) ? m : 'sculpt'; drawSavePrefs(); renderControls(); }
 function drawSetStyle(s) { _drawStyle = ['round','chisel','brush','dotted','hollow'].includes(s) ? s : 'round'; drawSavePrefs(); renderControls(); }
 function drawSetNibAngle(v) { _drawNibAngle = Math.min(170, Math.max(0, Math.round(+v) || 0)); const r = document.getElementById('drawNibAngleVal'); if (r) r.textContent = _drawNibAngle + '°'; drawTilesRefresh(); }
 function drawSetTaper(v) { _drawTaper = Math.min(400, Math.max(20, Math.round(+v) || 120)); const r = document.getElementById('drawTaperVal'); if (r) r.textContent = _drawTaper; drawTilesRefresh(); }
@@ -8543,12 +8551,62 @@ function _drawGeomPathD(gm) {
   return gm.fill.filter(p => p.length > 2)
     .map(poly => `M ${poly.map(q => fx(q[0]).toFixed(1) + ' ' + fy(q[1]).toFixed(1)).join(' L ')} Z`).join(' ');
 }
+/* One carve → its stage-px path data. A mask strokes this at the carve's own width with round
+   caps and joins, which is exactly the footprint the cursor ring showed while it was swept; a
+   1-point carve seeds M+L so the round cap paints a dot. Shared by the persistent mask
+   drawStrokesSVG emits and the live mask a gesture builds, so the two can never disagree. */
+function _carvePathD(c) {
+  const pts = c.pts;
+  let d = 'M ' + fx(pts[0][0]).toFixed(1) + ' ' + fy(pts[0][1]).toFixed(1);
+  for (let i = pts.length > 1 ? 1 : 0; i < pts.length; i++) d += ' L ' + fx(pts[i][0]).toFixed(1) + ' ' + fy(pts[i][1]).toFixed(1);
+  return d;
+}
+/* The in-flight erase mask (sculpt + partial). Luminance semantics: the white rect keeps everything,
+   black paths erase. Committed carves are re-emitted underneath the live path because this mask
+   REPLACES the persistent #fmCarveMask on the group while the pointer is down — without them, every
+   hole already sculpted would fill back in for the duration of the gesture. */
+function _drawEraseMaskEl(l, x, y) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const maskEl = document.createElementNS(ns, 'mask');
+  maskEl.setAttribute('id', 'fmEraseMask');
+  maskEl.setAttribute('maskUnits', 'userSpaceOnUse');
+  maskEl.setAttribute('x', '-600'); maskEl.setAttribute('y', '-600');
+  maskEl.setAttribute('width', '1800'); maskEl.setAttribute('height', '1800');   // covers the full clamped stroke range in stage px
+  const rect = document.createElementNS(ns, 'rect');
+  rect.setAttribute('x', '-600'); rect.setAttribute('y', '-600');
+  rect.setAttribute('width', '1800'); rect.setAttribute('height', '1800');
+  rect.setAttribute('fill', '#fff');   // luminance semantics (white keeps, black erases) — never theme-tokenize
+  maskEl.appendChild(rect);
+  const cut = (d, w) => {
+    const el = document.createElementNS(ns, 'path');
+    el.setAttribute('d', d);
+    el.setAttribute('fill', 'none');
+    el.setAttribute('stroke', '#000');
+    el.setAttribute('stroke-width', (w * SC).toFixed(2));
+    el.setAttribute('stroke-linecap', 'round'); el.setAttribute('stroke-linejoin', 'round');
+    maskEl.appendChild(el);
+    return el;
+  };
+  ((l && l.draw && l.draw.carves) || []).forEach(c => cut(_carvePathD(c), c.w));
+  const seed = 'M ' + fx(x).toFixed(1) + ' ' + fy(y).toFixed(1) + ' L ' + fx(x).toFixed(1) + ' ' + fy(y).toFixed(1);   // M+L seed → a tap shows a round-cap dot immediately
+  return { maskEl, live: cut(seed, _drawEraser) };
+}
 function drawStrokesSVG(l) {
   if (!(l.draw && l.draw.strokes.length)) return '';
   const c = stageColors().ink;
   const pathOf = poly => `M ${poly.map(q => fx(q[0]).toFixed(1) + ' ' + fy(q[1]).toFixed(1)).join(' L ')} Z`;
-  // The <g> wrapper is the partial-eraser's mask target ([data-di] lookups pierce it unchanged)
-  return '<g id="drawStrokes">' + l.draw.strokes.map((s, i) => {
+  // Sculpted holes, as a luminance mask on the whole group — the persistent twin of the in-flight
+  // #fmEraseMask. Only ONE of this function's two call sites runs per render (draw step vs. the
+  // ghost on the trace step are exclusive branches), so the id is never emitted twice.
+  const carves = l.draw.carves || [];
+  const maskSvg = carves.length
+    ? '<mask id="fmCarveMask" maskUnits="userSpaceOnUse" x="-600" y="-600" width="1800" height="1800">'
+      + '<rect x="-600" y="-600" width="1800" height="1800" fill="#fff"/>'
+      + carves.map(cv => `<path d="${_carvePathD(cv)}" fill="none" stroke="#000" stroke-width="${(cv.w * SC).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"/>`).join('')
+      + '</mask>'
+    : '';
+  // The <g> wrapper is the erasers' mask target ([data-di] lookups pierce it unchanged)
+  return maskSvg + '<g id="drawStrokes"' + (carves.length ? ' mask="url(#fmCarveMask)"' : '') + '>' + l.draw.strokes.map((s, i) => {
     const gm = s.st ? drawStyleGeom(s) : null;
     if (gm) {
       const d = _drawGeomPathD(gm);
@@ -8653,9 +8711,17 @@ function _drawApplyStyle(sk, g) {   // stamp the frozen style + its one param on
    erased, moved and restyled strokes without walking every point on every render. */
 function drawSig(d) {
   if (!(d && d.strokes && d.strokes.length)) return '';
-  return d.strokes.map(s => {
+  const sig = d.strokes.map(s => {
     const a = s.pts[0] || [0, 0], b = s.pts[s.pts.length - 1] || [0, 0];
     return s.w + (s.st || '') + '#' + s.pts.length + '@' + a[0] + ',' + a[1] + '>' + b[0] + ',' + b[1];
+  }).join('|');
+  // Sculpted holes are part of the drawing, so they belong in its signature — but the tail is
+  // appended ONLY when there are any, so every project saved before sculpt existed keeps a
+  // byte-identical signature and can't be nagged into a re-trace it doesn't need.
+  if (!(d.carves && d.carves.length)) return sig;
+  return sig + '|E' + d.carves.map(c => {
+    const a = c.pts[0] || [0, 0], b = c.pts[c.pts.length - 1] || [0, 0];
+    return c.w + '#' + c.pts.length + '@' + a[0] + ',' + a[1] + '>' + b[0] + ',' + b[1];
   }).join('|');
 }
 function drawNeedsTrace(l) {
@@ -8747,34 +8813,21 @@ function drawPointerDown(e) {
                       start: [msx, msy], cur: [msx, msy], add: e.shiftKey, el };
     }
   } else if (_drawTool === 'erase') {
-    if (_drawEraseMode === 'partial') {
-      // Live feedback is a luminance mask over #drawStrokes — ink visually disappears while the
-      // stroke array stays untouched until pointerup (the data-di index invariant holds all gesture).
-      const ns = 'http://www.w3.org/2000/svg';
-      const maskEl = document.createElementNS(ns, 'mask');
-      maskEl.setAttribute('id', 'fmEraseMask');
-      maskEl.setAttribute('maskUnits', 'userSpaceOnUse');
-      maskEl.setAttribute('x', '-600'); maskEl.setAttribute('y', '-600');
-      maskEl.setAttribute('width', '1800'); maskEl.setAttribute('height', '1800');   // covers the full clamped stroke range in stage px
-      const rect = document.createElementNS(ns, 'rect');
-      rect.setAttribute('x', '-600'); rect.setAttribute('y', '-600');
-      rect.setAttribute('width', '1800'); rect.setAttribute('height', '1800');
-      rect.setAttribute('fill', '#fff');   // luminance semantics (white keeps, black erases) — never theme-tokenize
-      const mp = document.createElementNS(ns, 'path');
-      mp.setAttribute('d', `M ${fx(x).toFixed(1)} ${fy(y).toFixed(1)} L ${fx(x).toFixed(1)} ${fy(y).toFixed(1)}`);   // M+L seed → a tap shows a round-cap dot immediately
-      mp.setAttribute('fill', 'none');
-      mp.setAttribute('stroke', '#000');
-      mp.setAttribute('stroke-width', (_drawEraser * SC).toFixed(2));
-      mp.setAttribute('stroke-linecap', 'round'); mp.setAttribute('stroke-linejoin', 'round');
-      maskEl.appendChild(rect); maskEl.appendChild(mp);
-      stage().appendChild(maskEl);
-      const grp = stage().querySelector('#drawStrokes');
-      if (grp) grp.setAttribute('mask', 'url(#fmEraseMask)');
-      drawGesture = { tool: 'erase', mode: 'partial', pointerId: e.pointerId, pointerType: e.pointerType,
-                      pts: [[Math.round(x), Math.round(y)]], maskEl, ud };
-    } else {
+    if (_drawEraseMode === 'whole') {
       drawGesture = { tool: 'erase', mode: 'whole', pointerId: e.pointerId, pointerType: e.pointerType, kill: new Set(), ud };
       drawEraseAt(cl, x, y);
+    } else {
+      // Live feedback is a luminance mask over #drawStrokes — ink visually disappears while the
+      // stroke array stays untouched until pointerup (the data-di index invariant holds all gesture).
+      // Sculpt and Partial are identical under the pointer and differ only in what pointerup commits,
+      // so they share this branch; the eraser width freezes here the way a stroke's w does, or a
+      // mid-gesture [ / ] resize would retroactively rewrite the whole swept path.
+      const em = _drawEraseMaskEl(cl, x, y);
+      stage().appendChild(em.maskEl);
+      const grp = stage().querySelector('#drawStrokes');
+      if (grp) grp.setAttribute('mask', 'url(#fmEraseMask)');
+      drawGesture = { tool: 'erase', mode: _drawEraseMode, pointerId: e.pointerId, pointerType: e.pointerType,
+                      pts: [[Math.round(x), Math.round(y)]], ew: _drawEraser, maskEl: em.maskEl, mp: em.live, ud };
     }
   } else if (_drawTool === 'line') {
     const st = STYLE_ST[_drawStyle] || null;
@@ -8884,8 +8937,8 @@ function drawPointerMove(e) {
     const p = pt.matrixTransform(inv);
     const x = ifx(p.x), y = ify(p.y);
     if (g.tool === 'erase') {
-      if (g.mode !== 'partial') { drawEraseAt(cl, x, y); continue; }
-      // partial: accumulate the erase path — no EMA (an eraser must track the finger exactly)
+      if (g.mode === 'whole') { drawEraseAt(cl, x, y); continue; }
+      // sculpt / partial: accumulate the erase path — no EMA (an eraser must track the finger exactly)
       const lastE = g.pts[g.pts.length - 1];
       if (Math.hypot(x - lastE[0], y - lastE[1]) < tol) continue;
       if (g.pts.length >= 2048) continue;
@@ -8893,7 +8946,7 @@ function drawPointerMove(e) {
       if (!g.maskEl.isConnected) stage().appendChild(g.maskEl);   // an async re-render wiped the SVG mid-gesture
       const grp = stage().querySelector('#drawStrokes');          // …and rebuilt the group without its mask attribute
       if (grp && grp.getAttribute('mask') !== 'url(#fmEraseMask)') grp.setAttribute('mask', 'url(#fmEraseMask)');
-      const mp = g.maskEl.querySelector('path');
+      const mp = g.mp;   // the LIVE path — not maskEl's first, which is now a committed carve
       mp.setAttribute('d', mp.getAttribute('d') + ' L ' + fx(x).toFixed(1) + ' ' + fy(y).toFixed(1));
       continue;
     }
@@ -8920,9 +8973,10 @@ function drawPointerUp(e) {
   if (g.pointerType === 'pen') _drawPenUntil = performance.now() + 500;
   const cl = curLetter();
   if (g.tool === 'erase') {
-    if (g.mode === 'partial') {
+    if (g.mode !== 'whole') {
       if (g.maskEl) { try { g.maskEl.remove(); } catch (err) {} }   // renderStage below drops the group's mask attr with the rebuild
-      if (cl && cl.draw && cl.draw.strokes.length && g.pts.length) drawEraseSplit(cl, g);   // pushes g.ud only when ink changed
+      if (cl && cl.draw && cl.draw.strokes.length && g.pts.length)
+        (g.mode === 'sculpt' ? drawCarveCommit : drawEraseSplit)(cl, g);   // both push g.ud only when ink actually changed
     } else if (cl && cl.draw && g.kill.size) {
       cl.draw.strokes = cl.draw.strokes.filter((_, i) => !g.kill.has(i));   // single mutation at gesture end — indices stay valid throughout
       udPush(g.ud);
@@ -9063,6 +9117,70 @@ function drawEraseSplit(cl, g) {
   cl.draw.strokes = out;
   udPush(g.ud);
   if (clipped) status(_drawT('limit_toast', 'Stroke limit reached — erase or join strokes before adding more.'));
+}
+/* Sculpt erase — commit-time carve. Where Partial CUTS a stroke (always through its full
+   cross-section, because a stroke carries one width), this takes ink away without touching the
+   stroke array at all: the swept path is recorded as a hole in the paper, drawStrokesSVG masks it
+   out of the stage, and drawRenderCanvas paints it white before the tracer runs — so the outline,
+   the QA sheet and the exported font all get the carved shape. It is the only mode that can shave a
+   sliver off ONE side of a stroke, which is the whole reason it exists.
+
+   A carve is fixed in letter space, NOT attached to a stroke: Move a stroke out from under one and
+   that stroke comes back whole, exactly like sliding paper out from under an eraser. A carve over
+   blank paper subtracts nothing, so a stranded one leaves no mark that needs explaining. */
+function drawCarveCommit(cl, g) {
+  const E = g.pts, R = (g.ew || _drawEraser) / 2;
+  let ex0 = Infinity, ex1 = -Infinity, ey0 = Infinity, ey1 = -Infinity;
+  E.forEach(q => { ex0 = Math.min(ex0, q[0]); ex1 = Math.max(ex1, q[0]); ey0 = Math.min(ey0, q[1]); ey1 = Math.max(ey1, q[1]); });
+  const near = (q, Rt) => {
+    if (Rt <= 0) return false;
+    if (E.length === 1) return Math.hypot(q[0] - E[0][0], q[1] - E[0][1]) <= Rt;
+    for (let k = 0; k < E.length - 1; k++) if (_segDist(q[0], q[1], E[k], E[k + 1]) <= Rt) return true;
+    return false;
+  };
+  // The centreline at ERASE_STEP pitch, short-circuiting on the first true. Testing the stored
+  // points alone would miss a long straight stroke crossed in the middle — the same reason
+  // drawEraseSplit resamples before it decides anything.
+  const STEP = Math.max(2, Math.min(ERASE_STEP, R));
+  const walk = (s, fn) => {
+    for (let i = 0; i < s.pts.length; i++) {
+      if (i) {
+        const a = s.pts[i - 1], b = s.pts[i];
+        const steps = Math.min(Math.floor(Math.hypot(b[0] - a[0], b[1] - a[1]) / STEP), 4096);
+        for (let k = 1; k <= steps; k++) {
+          const t = k / (steps + 1);
+          if (fn([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t])) return true;
+        }
+      }
+      if (fn(s.pts[i])) return true;
+    }
+    return false;
+  };
+  const halfInk = s => (s.w / 2) * (s.pr ? 1.65 : 1) + (s.st === 'h' ? (s.rim || 22) / 2 : 0);   // how far this stroke's ink reaches from its centreline
+  let touched = false;
+  const keep = [];
+  for (const s of cl.draw.strokes) {
+    const hi = halfInk(s);
+    let sx0 = Infinity, sx1 = -Infinity, sy0 = Infinity, sy1 = -Infinity;   // bbox precheck — most strokes are nowhere near the path
+    s.pts.forEach(q => { sx0 = Math.min(sx0, q[0]); sx1 = Math.max(sx1, q[0]); sy0 = Math.min(sy0, q[1]); sy1 = Math.max(sy1, q[1]); });
+    if (sx0 > ex1 + R + hi || sx1 < ex0 - R - hi || sy0 > ey1 + R + hi || sy1 < ey0 - R - hi) { keep.push(s); continue; }
+    if (!walk(s, q => near(q, R + hi))) { keep.push(s); continue; }   // the discs never overlap — this stroke's ink is untouched
+    touched = true;
+    // A stroke lying everywhere deeper than its own half-width inside the hole is entirely gone, so
+    // drop it and keep the stroke count and the DRAW_STROKE_MAX budget honest. Deliberately
+    // conservative — it can never remove ink that would still have been visible.
+    if (s.pts.length && !walk(s, q => !near(q, R - hi))) continue;
+    keep.push(s);
+  }
+  if (!touched) return;   // a swipe across blank paper stores nothing and leaves no undo entry behind
+  const carves = cl.draw.carves || (cl.draw.carves = []);
+  if (carves.length >= DRAW_CARVE_MAX) {   // never store what sanitizeDraw would drop on reload
+    status(_drawT('carve_limit_toast', 'Erase limit reached for this letter — press “Save drawing & trace” to bake in what you have erased so far.'));
+    return;
+  }
+  carves.push({ w: Math.round(g.ew || _drawEraser), pts: E });
+  cl.draw.strokes = keep;
+  udPush(g.ud);
 }
 function drawHitStroke(cl, x, y) {   // topmost stroke under the pointer (last→first = paint order), ~8 FU slop
   if (!(cl && cl.draw)) return -1;
@@ -9217,6 +9335,19 @@ function drawRenderCanvas(d, fr) {
       for (let i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i][0], s.pts[i][1]);
       ctx.stroke();
     }
+  });
+  // Sculpted holes go on last, in the paper's own colour — the canvas is opaque white by contract,
+  // so painting white IS erasing, and the tracer's 128 threshold reads it back as paper. This is the
+  // whole export story for sculpt: both the commit path (_drawCommitNow) and the autosave-restore
+  // path (drawEnsureRaster) rasterize through here, so the carve reaches the outline, the QA sheet
+  // and the exported font with nothing else to wire up.
+  (d.carves || []).forEach(cv => {
+    ctx.fillStyle = ctx.strokeStyle = '#fff';
+    if (cv.pts.length === 1) { ctx.beginPath(); ctx.arc(cv.pts[0][0], cv.pts[0][1], cv.w / 2, 0, Math.PI * 2); ctx.fill(); return; }
+    ctx.lineWidth = cv.w;
+    ctx.beginPath(); ctx.moveTo(cv.pts[0][0], cv.pts[0][1]);
+    for (let i = 1; i < cv.pts.length; i++) ctx.lineTo(cv.pts[i][0], cv.pts[i][1]);
+    ctx.stroke();
   });
   return cv;
 }
@@ -13884,14 +14015,25 @@ function renderDrawLeft(L, l) {
       <span class="readout">${_drawSel.size ? _drawT(_drawSel.size === 1 ? 'sel_count.one' : 'sel_count.other', _drawSel.size + ' selected', { count: _drawSel.size }) : ''}</span>
     </div>`;
   } else if (_drawTool === 'erase') {
+    const eraseBtn = (m, id, key, fallback) =>
+      `<button class="mode-btn ${_drawEraseMode===m?'active':''}" aria-pressed="${_drawEraseMode===m}" id="${id}" onclick="drawSetEraseMode('${m}')">${_drawT(key, fallback)}</button>`;
+    // One line per mode rather than one line about all three: the difference between Sculpt and
+    // Partial is the subtle one, and it is easiest to learn at the moment you pick between them.
+    const eraseHint = {
+      sculpt:  ['erase_hint_sculpt',  'Rubs away just the ink under the eraser — round a corner, thin a stem, shave an edge. The rest of the stroke stays exactly as you drew it.'],
+      partial: ['erase_hint_partial', 'Cuts right through a stroke where you rub, leaving two separate strokes you can move on their own.'],
+      whole:   ['erase_hint_whole',   'Removes a whole stroke in one touch, however long it is.'],
+    }[_drawEraseMode] || ['erase_hint_sculpt', ''];
     ctxHtml = `
     <div class="side-slider-label">${_drawT('erase_size', 'Eraser size')} <span id="drawEraserVal" class="readout">${_drawEraser}</span></div>
     <input type="range" class="side-slider" min="${DRAW_W_MIN}" max="300" step="1" value="${_drawEraser}" oninput="drawSetEraser(this.value)" onchange="drawSavePrefs()" aria-label="${esc(_drawT('erase_size', 'Eraser size'))}" title="[ / ]">` + pvBox + `
     <div class="side-slider-label" style="margin-top:6px;">${_drawT('erase_mode', 'Eraser mode')}</div>
     <div class="mode-toggle">
-      <button class="mode-btn ${_drawEraseMode==='partial'?'active':''}" aria-pressed="${_drawEraseMode==='partial'}" id="drawEraseModePartial" onclick="drawSetEraseMode('partial')">${_drawT('erase_partial', 'Partial')}</button>
-      <button class="mode-btn ${_drawEraseMode==='whole'?'active':''}" aria-pressed="${_drawEraseMode==='whole'}" id="drawEraseModeWhole" onclick="drawSetEraseMode('whole')">${_drawT('erase_whole', 'Whole stroke')}</button>
-    </div>`;
+      ${eraseBtn('sculpt',  'drawEraseModeSculpt',  'erase_sculpt',  'Sculpt')}
+      ${eraseBtn('partial', 'drawEraseModePartial', 'erase_partial', 'Partial')}
+      ${eraseBtn('whole',   'drawEraseModeWhole',   'erase_whole',   'Whole stroke')}
+    </div>
+    <div class="hint" style="margin-top:4px;">${_drawT(eraseHint[0], eraseHint[1])}</div>`;
   }
   L.innerHTML = `<div class="ws-side-title">${I18n.t('fontmaker.panels.add_letters')}</div>` + inputModeBlock() + `
     <hr class="ctl-divider">
@@ -18563,7 +18705,22 @@ function sanitizeDraw(d) {
       strokes.push(o);
     }
   }
-  return { v: 1, strokes };
+  const carves = [];   // sculpted holes — same clamps as a stroke's points, minus pressure and style
+  for (const c of (Array.isArray(d.carves) ? d.carves : []).slice(0, DRAW_CARVE_MAX)) {
+    if (!c || !Array.isArray(c.pts)) continue;
+    const w = Number.isFinite(+c.w) ? Math.min(300, Math.max(DRAW_W_MIN, Math.round(+c.w))) : 120;   // 300 == the eraser slider's own ceiling
+    const pts = [];
+    for (const q of c.pts.slice(0, 2048)) {
+      if (!Array.isArray(q)) continue;
+      const x = +q[0], y = +q[1];
+      if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+      pts.push([Math.max(-2000, Math.min(3000, Math.round(x))), Math.max(-2000, Math.min(3000, Math.round(y)))]);
+    }
+    if (pts.length) carves.push({ w, pts });
+  }
+  const out = { v: 1, strokes };
+  if (carves.length) out.carves = carves;   // absent when there are none, so an untouched drawing keeps its old shape
+  return out;
 }
 // 'center' is deliberately absent: a center pin is unreachable in-app and inert at every reader
 // (markPinFor refuses it), so drop it on load rather than persisting a value nothing will honor.
