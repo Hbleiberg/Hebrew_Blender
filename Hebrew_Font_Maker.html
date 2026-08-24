@@ -3464,7 +3464,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.29';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.30';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3648,7 +3648,7 @@ const HELP_CONTENT = {
     <h4>Partner fonts — why the license is locked</h4>
     <p>Some projects start from an existing open-licensed font shared by a partner like <a href="https://opensiddur.org/help/fonts/" target="_blank" rel="noopener">the Open Siddur Project</a>. Your edited font is legally a <strong>modified version</strong> of that original — and open font licenses (like the SIL Open Font License and the GPL) require modified versions to stay under the <strong>same license</strong> as the original. That's not a limitation IvritSuite adds; it's the very rule that makes the original free for you to edit in the first place. So on these projects the <span class="ui">License</span> box is locked to the original's license, and every export's <span class="ui">LICENSE.txt</span> carries the original copyright plus your "modified work" line.</p>
     <p><strong>Why you may need a new name.</strong> Many open fonts declare <strong>Reserved Font Names</strong> — names that only the original may use. A modified version must be renamed so nobody confuses it with the original. If the original reserves names, the <span class="ui">Family name</span> you pick can't contain them — add your own name or your school's instead (e.g. <i>"Kehilla SemiStam"</i>). The <span class="ui">Reserved name</span> field shows the original's reserved names, read-only.</p>
-    <p><strong>What actually carries over.</strong> Your export is rebuilt by IvritSuite from the letters in the editor: the original's Hebrew letterforms, vowels, cantillation marks, mark positions, its ready-made combined forms (שׁ בּ אַ), Latin letters, punctuation, symbols and line metrics come along; its hinting, its Hebrew kerning pairs and hand-tuned internals don't. The LICENSE.txt records exactly what your version is based on.</p>
+    <p><strong>What actually carries over.</strong> Your export is rebuilt by IvritSuite from the letters in the editor: the original's Hebrew letterforms, vowels, cantillation marks, mark positions, its ready-made combined forms (שׁ בּ אַ), Latin letters, punctuation, symbols, line metrics and kerning pairs come along; its hinting and hand-tuned internals don't. The LICENSE.txt records exactly what your version is based on.</p>
     <div class="help-tip">💛 The <i>"made with IvritSuite"</i> line on these exports is informational only — the original's license terms are the ones that apply, unchanged.</div>
   `,
   share: `
@@ -3684,6 +3684,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.30</strong> &mdash; <strong>Imported fonts keep their kerning, their exact spacing, and their dagesh.</strong> Importing a font &mdash; the Open Siddur starting fonts included &mdash; now brings its <span class="ui">kerning</span> along: the pair-spacing rules modern fonts keep in their GPOS table, the ones browsers and word processors actually apply, land in the Kerning panel with every Hebrew pair intact, editable like pairs you made yourself. <span class="ui">Word spacing</span> now matches the original font&rsquo;s own space width instead of a one-size default. The <span class="ui">dagesh</span> finally sits where the original puts it on <em>every</em> letter: most Hebrew fonts record the dagesh position only inside their ready-made combined letters (בּ כּ תּ), so letters outside that set used to get a best-guess spot that left the dot floating near the top of the letter &mdash; the position is now read out of those combined letterforms themselves, and the typed form in the Spacing preview shows the original&rsquo;s own combined glyph, at its own width, just like the exported font. And imported vowels can no longer come in bigger than the original drew them: the mark size sliders reset to true size when a font&rsquo;s own marks arrive, instead of silently re-scaling the new shapes by a factor tuned for the old ones. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.29</strong> &mdash; <strong>Letters from an imported font are no longer cut off at the top or the bottom.</strong> Plenty of Hebrew fonts draw the <span class="ui">lamed</span> right up into the ascender, taller than the editing canvas was ever built to show &mdash; Shlomo SemiStam&rsquo;s climbs well past it. Import one of those and the top of the letter was simply gone: clipped off the edge of the workspace, with no zoom level and no amount of scrolling that would bring it back, and no way to grab the points up there and edit them. The canvas now grows in whichever direction it needs to &mdash; a letter that reaches into the ascender, one whose tail drops below where the canvas used to stop, or a <span class="ui">Descender</span> line you set lower yourself &mdash; so the whole letter stays visible and editable, and the graph paper, the guides and the rulers all follow it. Letters that already fitted look exactly as they did. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.28</strong> &mdash; <strong>Type your sample text without a Hebrew keyboard.</strong> The <span class="ui">Sample text</span> box in the <span class="ui">Spacing</span> tab is where you check how your letters sit together &mdash; but it quietly assumed you could type Hebrew in the first place. Without a Hebrew layout installed you were stuck with whatever was already in the box, and even with one, nikkud and trop are close to untypeable. A new <span class="ui">&#9000; Show Hebrew Keyboard</span> button under the field opens a full on-screen keyboard: every letter (in alef-bet order or the Israeli layout, whichever you prefer), all thirteen vowels plus the dots, and the complete set of cantillation marks. Keys type into the box <strong>at your cursor</strong>, so you can drop a vowel onto a letter you already typed, and Backspace peels off one mark at a time &mdash; exactly what you want when you are testing how a holam sits above a shin. And if your font is not set up for nikkud or trop, the matching tab says so, instead of leaving you wondering why nothing shows up in the preview. <strong>And a row of ready-made samples sits beside it.</strong> Shalom, a pangram that uses every letter, the whole alef-bet with its final forms, every vowel in turn, a cantillated verse, and Hebrew next to digits and Latin &mdash; one click each, so checking your font against the hard cases stops being a typing exercise. The same row is on the font gallery&rsquo;s preview, for trying a font before you download it. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.27</strong> &mdash; <strong>The graph paper is already out when you sit down.</strong> The canvas grid did everything it promised &mdash; but only for people who already knew it was there. It started hidden, so the everyday measuring questions it was built for (is this stem the same width as the last one, did this vowel clear the baseline by the amount I meant) went on being answered by eye unless you went hunting for a checkbox. It now starts <strong>switched on</strong>: open a letter and the graph paper is waiting, measured in font units from the origin and the baseline. <strong>And nothing sticks to it.</strong> A grid you did not ask for should not quietly move your work, so <span class="ui">Snap to grid</span> now starts <strong>off</strong> &mdash; the lines are there to measure against, and your points land exactly where you put them until you switch snapping on yourself. Both toggles are where they always were: the <span class="ui">Grid</span> panel beside the canvas, <span class="ui">Settings &rarr; Canvas</span>, or <span class="ui">Shift + G</span> for the grid at any time &mdash; and whichever way you set them is remembered on this device. If you had already chosen for yourself, your choice is kept. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3803,7 +3804,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3816,7 +3817,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_29';
+  const CUR_KEY = 'fontmaker.changelog.v5_30';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -6830,6 +6831,14 @@ async function applyFontImport(file, font, bytes, opts) {
       TROP_MARKS.forEach(t => { if (importMarkGlyph('trop', t.cp, font)) { trp++; importedMarks.push(['trop', t.cp]); } });
       if (nik) project.font.nikkud.mode = 'custom';
       if (trp) project.font.trop.mode = 'custom';
+      // Imported mark outlines are already true-to-source size (getPath's 1000-UPM normalization —
+      // the same scale the letters get), so any leftover scale multiplier was tuned for the marks
+      // this import just REPLACED and would silently inflate or shrink the new ones — the classic
+      // "my vowels import bigger than they were" report. Reset the family that covers the kinds
+      // actually replaced; per-form overrides (pc.markScale) are deliberate per-form decisions and
+      // src-shipped forms ignore scales entirely, so they stay.
+      if (nik) { project.font.markScale = 1; project.font.dageshScale = 1; project.font.holamScale = 1; project.font.cholamScale = 1; }
+      if (trp) project.font.tropScale = 1;
       markHits = nik + trp; tropImported = trp;
       // D1: an imported mark attaches at the source font's own MarkAnchor, not its bbox — only when
       // this import read anchors (markAttach non-null) AND replaced this mark's shape from the same
@@ -6874,20 +6883,49 @@ async function applyFontImport(file, font, bytes, opts) {
           if (Number.isFinite(gap)) fontSpacing().lineSpacing = Math.max(0, Math.min(500, gap));   // the same field the Line spacing slider writes, same clamp
           metricsImported = true;
         }
+        // Word gaps are spacing too: the source font's own space-glyph advance, not the app default
+        // (260 vs e.g. Shlomo's 342 — a 24% tighter word gap would read as "spacing not preserved").
+        // Same field + clamp as the Word spacing slider; export emits it as the space glyph's advance.
+        const spGlyph = font.charToGlyph(' ');
+        if (spGlyph && spGlyph.index !== 0 && Number.isFinite(spGlyph.advanceWidth) && spGlyph.advanceWidth > 0) {
+          fontSpacing().wordSpacing = Math.max(80, Math.min(600, Math.round(spGlyph.advanceWidth * scale)));
+        }
       } catch (e) {}
     }
-    // Kerning, LTR pairs only. opentype.js exposes the legacy `kern` table as { "gidL,gidR": value }.
-    // For a left-to-right run that order is unambiguous and buildFEA emits it unchanged. For Hebrew it is
-    // NOT: the table is visual-order by spec while most tools write logical order, and — measured with
-    // HarfBuzz against a purpose-built probe font — a legacy `kern` table is applied for LTR runs and
-    // IGNORED ENTIRELY for RTL ones (Latin AV kerned -55, the same font's alef+bet kerned 0 in RTL and
-    // -80 only when the run was forced LTR). So a Hebrew font's `kern` pairs have never reached a reader
-    // through any modern shaper: they are dormant data of unknown order, and reviving them would be
-    // inventing spacing rather than preserving it. They are skipped, and the count is logged rather than
-    // dropped silently. GPOS pair positioning — which is unambiguous — is not read: opentype.js does not
-    // expose it, so it would need the Pyodide path.
+    // Kerning, two tiers. GPOS pair positioning (the `kern` feature) is the authoritative source and
+    // is LOGICAL-order by spec — unambiguous for RTL — so it is read first, through the engine the
+    // anchors step already loaded (hfm_read_kern: PairPos format 1 + 2, Extension-wrapped included;
+    // opentype.js cannot see Extension lookups, hence the Pyodide path). Class pairs land as class
+    // rows, matching buildFEA's singles-before-classes emission and kernBetween's first-match read.
+    // The legacy `kern` table is the fallback, LTR pairs only. For a left-to-right run that order is
+    // unambiguous and buildFEA emits it unchanged. For Hebrew it is NOT: the table is visual-order by
+    // spec while most tools write logical order, and — measured with HarfBuzz against a purpose-built
+    // probe font — a legacy `kern` table is applied for LTR runs and IGNORED ENTIRELY for RTL ones
+    // (Latin AV kerned -55, the same font's alef+bet kerned 0 in RTL and -80 only when the run was
+    // forced LTR). So a Hebrew font's legacy pairs have never reached a reader through any modern
+    // shaper: they are dormant data of unknown order, and reviving them would be inventing spacing
+    // rather than preserving it. They are still skipped, and the count logged rather than dropped
+    // silently — a Hebrew font's real kerning is its GPOS, which now comes along.
     let nKern = 0;
-    if (opts.outlines) {
+    if (opts.outlines && typeof pyodide !== 'undefined' && pyodide && opts.anchors) {
+      try {   // hfm_anchor_b64 was set by the anchors read above; a failed read throws here and falls to legacy
+        const kr = JSON.parse(pyodide.runPython('hfm_read_kern(hfm_anchor_b64, ' + KERN_IMPORT_CAP + ')'));
+        if (kr.error) console.warn(kr.error);
+        else if (kr.pairs && kr.pairs.length) {
+          const known = new Set(project.letters.map(l => l.codepoint));
+          const out = [];
+          for (const p of kr.pairs) {
+            const L = (p.left || []).filter(c => known.has(c)), R = (p.right || []).filter(c => known.has(c));
+            if (!L.length || !R.length || !p.value) continue;   // sides trimmed to glyphs this project has letters for
+            if (out.length >= KERN_IMPORT_CAP) break;
+            out.push({ left: L, right: R, value: p.value });
+          }
+          if (out.length) { project.font.kerning = out; nKern = out.length; }
+        }
+        if (kr.skipped) console.warn('kern import: ' + kr.skipped + ' GPOS pair(s) skipped (placement-only, or an open-ended class-0 side)');
+      } catch (e) { console.warn('GPOS kern read failed, falling back to the legacy kern table', e); }
+    }
+    if (opts.outlines && !nKern) {
       try {
         const kp = font.kerningPairs || {}, keys = Object.keys(kp);
         if (keys.length) {
@@ -12936,11 +12974,17 @@ function _spacingCellMarks(cell) {   // place a glyph cell's stacked nikkud toge
   const dotCp = (cell.cp === '05E9') ? cps.find(m => m === '05C1' || m === '05C2') : null;
   const pc = dotCp ? getPrecomp(dotCp === '05C1' ? 'FB2A' : 'FB2B') : null;
   const vavHolamPc = (cell.cp === '05D5' && cps.includes('05B9')) ? getPrecomp('FB4B') : null;   // typed וֹ composes to FB4B in the font — bake at the form's dot anchor + Holam (vav) size
+  // A dagesh form cell (typed בּ) routes the same way: the exported font ccmp-composes it to the
+  // FB3x glyph, whose src advance can differ from the bare letter's (Shlomo: betdagesh 641 vs bet
+  // 665) — without the routing the preview showed the wrong width AND the class-anchor dot on a
+  // letter the source font never mark-attaches. Skipped on the shin cell (its dot routing owns the
+  // FB2C/FB2D triple story) and when a holam already routed the vav (וֹ beats וּ on a degenerate cell).
+  const dagPc = (!dotCp && !(vavHolamPc && cps.includes('05B9')) && cps.includes('05BC'))
+    ? (project.precomposed || []).find(e => e.base === cell.cp && e.mark === '05BC' && !e.wide) : null;
   // An imported ready-made form replaces the WHOLE cell: the typed sequence composes to the src glyph
   // in the exported font, so the preview shows that glyph (its own ink, its own advance — the caller
   // re-sums total) and the routed mark is consumed by it. Remaining marks still stack on the form at
-  // the (frozen-equivalent) class/holam anchors. Only the two routings above exist today; a dagesh
-  // form cell (typed בּ) is un-routed and keeps the class-anchor approximation.
+  // the (frozen-equivalent) class/holam anchors.
   const _subst = (routedPc, routedCp) => {
     const s = precompSrcOutline(routedPc); if (!s) return false;
     cell.contours = s.contours.map(p => ({ points: p }));
@@ -12951,6 +12995,7 @@ function _spacingCellMarks(cell) {   // place a glyph cell's stacked nikkud toge
   };
   if (pc && _subst(pc, dotCp)) { /* dot consumed by the src glyph; holam below still routes to the form's holam slot */ }
   else if (vavHolamPc && cps.includes('05B9') && _subst(vavHolamPc, '05B9')) { /* וֹ shown as the source font drew it */ }
+  else if (dagPc && _subst(dagPc, '05BC')) { /* בּ shown as the source font drew it — its own ink, its own advance */ }
   cps.forEach(mcp => {
     const cls = MARK_CLASS[mcp]; if (!cls) return;
     let ancPt = qaAnchorFor(L, anc, cls, mcp), scale = nikScale(mcp);
@@ -16102,9 +16147,195 @@ def hfm_read_anchors(ttf_b64, class_map_json):
                                                         if bh in win["bases"] and HEB_LO <= int(bh, 16) <= HEB_HI),
                                       "spread": {"x": round(sx, 1), "y": round(sy, 1)}})
             markAttach[m] = {"x": round(ax), "y": round(ay)}
+        # v3: letters the font composes instead of mark-attaching get NO base anchor from the walk
+        # above — most Hebrew fonts ship dagesh via ccmp -> precomposed glyphs, so 20+ letters have
+        # no GPOS dagesh anchor at all. The seeded editor default is in the WRONG CONVENTION for
+        # imported marks (their ink keeps its designed absolute height; markAttach is the origin), so
+        # a dagesh would float ~350 units above its true spot. The font itself still records the
+        # exact position: a precomposed glyph is usually a glyf COMPOSITE [base at (bx,by), mark at
+        # (mx,my)], and the editor anchor that reproduces it is markAttach + (mx-bx, my-by). Fills
+        # ONLY keys the GPOS walk left empty — read data always beats derivation.
+        try:
+            HFM_DECOMP = {
+                0xFB1D: (0x05D9, 0x05B4), 0xFB2A: (0x05E9, 0x05C1), 0xFB2B: (0x05E9, 0x05C2),
+                0xFB2C: (0x05E9, 0x05BC), 0xFB2D: (0x05E9, 0x05BC),
+                0xFB30: (0x05D0, 0x05BC), 0xFB31: (0x05D1, 0x05BC), 0xFB32: (0x05D2, 0x05BC),
+                0xFB33: (0x05D3, 0x05BC), 0xFB34: (0x05D4, 0x05BC), 0xFB35: (0x05D5, 0x05BC),
+                0xFB36: (0x05D6, 0x05BC), 0xFB38: (0x05D8, 0x05BC), 0xFB39: (0x05D9, 0x05BC),
+                0xFB3A: (0x05DA, 0x05BC), 0xFB3B: (0x05DB, 0x05BC), 0xFB3C: (0x05DC, 0x05BC),
+                0xFB3E: (0x05DE, 0x05BC), 0xFB40: (0x05E0, 0x05BC), 0xFB41: (0x05E1, 0x05BC),
+                0xFB43: (0x05E3, 0x05BC), 0xFB44: (0x05E4, 0x05BC), 0xFB46: (0x05E6, 0x05BC),
+                0xFB47: (0x05E7, 0x05BC), 0xFB48: (0x05E8, 0x05BC), 0xFB49: (0x05E9, 0x05BC),
+                0xFB4A: (0x05EA, 0x05BC), 0xFB4B: (0x05D5, 0x05B9),
+                0xFB4C: (0x05D1, 0x05BF), 0xFB4D: (0x05DB, 0x05BF), 0xFB4E: (0x05E4, 0x05BF),
+            }
+            glyf = f["glyf"] if "glyf" in f else None
+            if glyf is not None:
+                for pc_uni, bm in HFM_DECOMP.items():
+                    b_uni, m_uni = bm
+                    key = class_map.get(m_uni)
+                    mhex = format(m_uni, "04X")
+                    if not key or mhex not in markAttach:
+                        continue           # bbox-convention mark -> the seeded anchor is already right
+                    bhex = format(b_uni, "04X")
+                    if key in out.get(bhex, {}):
+                        continue
+                    pg = cmap.get(pc_uni)
+                    bg = cmap.get(b_uni)
+                    mg = cmap.get(m_uni)
+                    if not pg or not bg or not mg or pg not in glyf:
+                        continue
+                    g = glyf[pg]
+                    if not g.isComposite():
+                        continue
+                    bc = None
+                    mc = None
+                    for c in g.components:
+                        if getattr(c, "x", None) is None or hasattr(c, "transform"):
+                            continue       # point-matched or scaled component — offsets not comparable
+                        if c.glyphName == bg and bc is None:
+                            bc = c
+                        elif c.glyphName == mg and mc is None:
+                            mc = c
+                    if bc is None or mc is None:
+                        continue
+                    att = markAttach[mhex]
+                    out.setdefault(bhex, {})[key] = {
+                        "x": att["x"] + int(round((mc.x - bc.x) * scale)),
+                        "y": att["y"] + int(round((mc.y - bc.y) * scale)),
+                    }
+            # Letters STILL without a center anchor (no coverage, no composite) get an ink-derived
+            # one in the imported marks' convention: x centers the dagesh on the letter, y keeps the
+            # mark's own designed height (markAttach IS the origin) — never the seeded mid-letter y,
+            # which assumes bbox-convention marks and would double the height.
+            dhex = "05BC"
+            if glyf is not None and dhex in markAttach and class_map.get(0x05BC) == "center":
+                dg = cmap.get(0x05BC)
+                dgl = glyf[dg] if dg and dg in glyf else None
+                if dgl is not None and dgl.numberOfContours != 0 and hasattr(dgl, "xMin"):
+                    dmid = (dgl.xMin + dgl.xMax) / 2.0 * scale
+                    att = markAttach[dhex]
+                    for uni in range(0x05D0, 0x05EB):
+                        bhex2 = format(uni, "04X")
+                        if "center" in out.get(bhex2, {}):
+                            continue
+                        bg2 = cmap.get(uni)
+                        bgl = glyf[bg2] if bg2 and bg2 in glyf else None
+                        if bgl is None or bgl.numberOfContours == 0 or not hasattr(bgl, "xMin"):
+                            continue
+                        bmid = (bgl.xMin + bgl.xMax) / 2.0 * scale
+                        out.setdefault(bhex2, {})["center"] = {
+                            "x": int(round(bmid - dmid)) + att["x"], "y": att["y"]}
+        except Exception:
+            pass   # derivation is best-effort — v2 behavior (GPOS-read anchors only) stands
         return json.dumps({"ok": True, "hadGpos": True, "anchors": out, "markAttach": markAttach, "coverage": coverage, "notes": notes})
     except Exception as e:
         return json.dumps({"error": "anchor read failed: " + str(e)})
+
+def hfm_read_kern(ttf_b64, cap):
+    # Read GPOS pair kerning (the 'kern' feature: PairPos format 1 + 2, Extension-wrapped included)
+    # from an existing font, as the editor's model rows [{left:[HEXCP..], right:[HEXCP..], value}] in
+    # LOGICAL order. GPOS pair order is logical by spec, so this is unambiguous for RTL — unlike the
+    # legacy kern table the JS import deliberately skips for Hebrew. value = the pair's total
+    # x-advance delta (Value1 + Value2), scaled to 1000 UPM; zero rows dropped. Placement-only pairs
+    # and class-2-index-0 ("any other glyph" — unboundable as an explicit list) are counted in
+    # "skipped" rather than guessed. Walk order = LookupList order = shaper application order, and
+    # the first definition of a pair signature wins, matching kernBetween's first-match read.
+    import io, base64, json
+    from fontTools.ttLib import TTFont
+    try:
+        f = TTFont(io.BytesIO(base64.b64decode(ttf_b64)))
+        upm = f["head"].unitsPerEm or 1000
+        scale = 1000.0 / upm
+        cmap = (f.getBestCmap() if "cmap" in f else None) or {}
+        g2u = {}
+        for uni, gname in cmap.items():
+            g2u.setdefault(gname, uni)
+        if "GPOS" not in f or f["GPOS"].table is None or f["GPOS"].table.LookupList is None:
+            return json.dumps({"ok": True, "pairs": [], "skipped": 0})
+        gpos = f["GPOS"].table
+        lookups = gpos.LookupList.Lookup
+        want = set()
+        if gpos.FeatureList is not None:
+            for fr in gpos.FeatureList.FeatureRecord:
+                if fr.FeatureTag == "kern":
+                    want.update(fr.Feature.LookupListIndex)
+        def xadv(v):
+            return (getattr(v, "XAdvance", 0) or 0) if v is not None else 0
+        def xplc(v):
+            return (getattr(v, "XPlacement", 0) or 0) if v is not None else 0
+        def hexes(gl):
+            return [format(g2u[g], "04X") for g in gl if g in g2u]
+        pairs, seen = [], set()
+        skipped = 0
+        for li in sorted(i for i in want if i < len(lookups)):
+            for st in (lookups[li].SubTable or []):
+                ext = getattr(st, "ExtSubTable", None)
+                if ext is not None:
+                    st = ext
+                if type(st).__name__ != "PairPos":
+                    continue
+                cov = st.Coverage.glyphs if st.Coverage else []
+                if st.Format == 1:
+                    for i, ps in enumerate(st.PairSet or []):
+                        first = cov[i] if i < len(cov) else None
+                        if first is None or first not in g2u:
+                            continue
+                        for pvr in (ps.PairValueRecord or []):
+                            if pvr.SecondGlyph not in g2u:
+                                continue
+                            v = xadv(pvr.Value1) + xadv(pvr.Value2)
+                            if not v:
+                                if xplc(pvr.Value1) or xplc(pvr.Value2):
+                                    skipped += 1
+                                continue
+                            a = format(g2u[first], "04X")
+                            b = format(g2u[pvr.SecondGlyph], "04X")
+                            sig = (a, b)
+                            if sig in seen:
+                                continue
+                            seen.add(sig)
+                            v1000 = int(round(v * scale))
+                            if v1000:
+                                pairs.append({"left": [a], "right": [b], "value": v1000})
+                elif st.Format == 2:
+                    cd1 = st.ClassDef1.classDefs if st.ClassDef1 else {}
+                    cd2 = st.ClassDef2.classDefs if st.ClassDef2 else {}
+                    by1 = {}
+                    for g in cov:
+                        by1.setdefault(cd1.get(g, 0), []).append(g)
+                    by2 = {}
+                    for g, c in cd2.items():
+                        if c:
+                            by2.setdefault(c, []).append(g)
+                    for ci, c1r in enumerate(st.Class1Record or []):
+                        for cj, c2r in enumerate(c1r.Class2Record or []):
+                            v = xadv(c2r.Value1) + xadv(c2r.Value2)
+                            if not v:
+                                if xplc(c2r.Value1) or xplc(c2r.Value2):
+                                    skipped += 1
+                                continue
+                            if cj == 0:
+                                skipped += 1
+                                continue
+                            L = hexes(by1.get(ci, []))
+                            R = hexes(by2.get(cj, []))
+                            if not L or not R:
+                                continue
+                            sig = (tuple(L), tuple(R))
+                            if sig in seen:
+                                continue
+                            seen.add(sig)
+                            v1000 = int(round(v * scale))
+                            if v1000:
+                                pairs.append({"left": L, "right": R, "value": v1000})
+                if len(pairs) >= cap:
+                    break
+            if len(pairs) >= cap:
+                break
+        return json.dumps({"ok": True, "pairs": pairs[:cap], "skipped": skipped})
+    except Exception as e:
+        return json.dumps({"error": "kern read failed: " + str(e)})
 
 
 def hfm_zip(entries_json):

@@ -1138,6 +1138,28 @@ modal listing >3-unit combos). Fail-soft: no harfbuzz ⇒ the import stands and 
 check was unavailable. Word-edge-halign trop columns are a deliberate app convention, skipped (and
 counted) rather than flagged. A hand-set `pc.anchor` is user truth and is never touched.
 
+**Import fidelity v5.30 — composite-derived anchors, GPOS kerning, spacing, scale reset.** The
+anchors read gained a v3 tail: letters the source font composes via ccmp instead of mark-attaching
+(dagesh on 20+ letters in typical Hebrew fonts — both partner fonts cover only het/finals/ayin in
+the dagesh mark lookup) get their missing base anchors **derived from the precomposed glyf
+COMPOSITES** (`anchor = markAttach + (markComponent − baseComponent)`, table-driven over the
+FB1D–FB4E decompositions; for letters with neither coverage nor composite, an ink-centred x with
+y = `markAttach.y` — the mark's own convention, never the seeded mid-letter y). This is what stopped the imported dagesh floating ~350 units high on bet — the
+seeded `center` default assumes bbox-convention marks and is the wrong convention once
+`attachAnchor` is present. Read-data always beats derivation (fills only missing keys); the whole
+tail is try/except best-effort. Same release: `hfm_read_kern` (same PY_BUILDER, same engine trip,
+reusing `hfm_anchor_b64`) reads **GPOS pair kerning** — PairPos fmt 1 + 2, Extension-wrapped
+included, logical order so RTL-safe — into `project.font.kerning` (class rows stay class rows;
+placement-only and open-class-0 pairs are skipped + counted; gated on `opts.anchors` since it
+needs the engine). The legacy `kern` table remains the LTR-only fallback and its Hebrew-pair skip
+stays (order genuinely unknowable there). `applyFontImport` also now imports the source space
+glyph's advance into `spacing.wordSpacing` (same clamp as the slider) and **resets
+markScale/dagesh/holam/cholamScale (nikkud) and tropScale (trop) to 1 when that kind's marks were
+imported** — imported shapes are true-size, and a stale multiplier tuned for the replaced marks
+was the "vowels import bigger" report. The Spacing preview routes a typed letter+dagesh cell
+through its `pc.src` form (same `_subst` as shin-dots/vav-holam) so the preview shows the source's
+own combined glyph at its own advance, like the export.
+
 **Fidelity autofix (v5.16) — three vehicles + re-verify.** The modal's Apply button
 (`fidelityApplyFixes`, planned by the pure `fidelityFixPlan`) fixes EVERY expressible flagged
 combo in one undoable `udDo` batch, then automatically re-measures against the stashed original
