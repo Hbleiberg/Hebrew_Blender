@@ -3173,6 +3173,38 @@ const fx = x => PADX + x * SC;
 const fy = y => BY - y * SC;
 const ifx = px => (px - PADX) / SC;       // stage px → font x
 const ify = py => (BY - py) / SC;         // stage px → font y
+/* The stage GROWS UPWARD for a glyph taller than the default window. An imported font keeps its own
+   proportions — many Hebrew fonts draw lamed right into the ascender, past the font y ≈ 921.9 that
+   STAGE_VB.y caps — and zoom is a CSS width scale over this viewBox with no pan, so clipped ink is
+   unreachable at ANY zoom or scroll. Same shape as the wide-form width growth, on the other axis.
+   Ceiling is stage px 0 (font y 1390): the field drawFrame documents the tracer as rasterizing. */
+// HARD CEILING 39: the default box already carries fy(LAMED_TOP) - STAGE_VB.y = 189 - 150 = 39 units
+// of air above the lamed line, so a pad past that would shift the window for EVERY ordinary lamed and
+// break "unchanged for glyphs that fit today". Floor ~35: .rl-h is a 22px sticky bar over the top of
+// the scrollport, which is 34.7 viewBox units at 50% zoom — below that the apex tucks under the ruler.
+const STAGE_PAD = 36;                 // viewBox units of air above the tallest content
+let _stageVB = { x: STAGE_VB.x, y: STAGE_VB.y, w: STAGE_VB.w, h: STAGE_VB.h };   // the box the LAST render used
+let _stageVBTop = STAGE_VB.y;         // last letter-path top, held steady while a drag is open
+function stageExtentTop(l) {           // tallest content that must stay reachable, in FONT units
+  const em = effMetrics(), meta = curMeta();
+  let top = (meta && meta.asc) ? em.lamedAscender : em.letterTop;   // the metric guides + their drag dots
+  // c.points is the FLATTENED polyline pathToOutline builds alongside the segments, so this is a close
+  // under-approximation of true ink that STAGE_PAD absorbs. Cubic CONTROL points are deliberately not
+  // unioned in — they can sit well outside the ink and would over-grow the canvas.
+  if (l && l.contours && l.contours.length) top = Math.max(top, glyphBBox(l.contours, false, meta).maxY);
+  return top;
+}
+/* renderStage re-serializes the stage on every pointermove during a drag, and raising the top edge
+   shifts all content DOWN in the page (~85px for a lamed) — a jump under the cursor mid-gesture. So
+   the top is recomputed only when no continuous gesture is open, and held otherwise. */
+function stageVBTop(l) {
+  // metricDrag is listed on its own: the dot drag calls setMetric(..., noRender) which SKIPS
+  // udBurstBegin, so _burst stays null for the whole gesture. Any future per-pointermove drag that
+  // moves l.contours or project.font.metrics must be added here, or the growth feeds back on itself.
+  if (!(nodeDrag || metricDrag || _burst))
+    _stageVBTop = Math.max(0, Math.min(STAGE_VB.y, Math.floor(fy(stageExtentTop(l)) - STAGE_PAD)));
+  return _stageVBTop;
+}
 // Mark editor coords: x=0 (mark center) maps to the horizontal middle of the stage.
 const EDX = 300;
 const ex = x => EDX + x * SC;
@@ -3397,7 +3429,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.28';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.29';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3617,6 +3649,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.29</strong> &mdash; <strong>Tall letters from an imported font are no longer cut off.</strong> Plenty of Hebrew fonts draw the <span class="ui">lamed</span> right up into the ascender &mdash; taller than the editing canvas was ever built to show. Import one of those and the top of the letter was simply gone: clipped off the top edge of the workspace, with no zoom level and no amount of scrolling that would bring it back, and no way to grab the points up there and edit them. The canvas now grows to fit whatever you are working on, so the whole letter is visible and editable however tall it is &mdash; and the graph paper, the guides and the rulers all follow it up. Letters that already fitted look exactly as they did. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.28</strong> &mdash; <strong>Type your sample text without a Hebrew keyboard.</strong> The <span class="ui">Sample text</span> box in the <span class="ui">Spacing</span> tab is where you check how your letters sit together &mdash; but it quietly assumed you could type Hebrew in the first place. Without a Hebrew layout installed you were stuck with whatever was already in the box, and even with one, nikkud and trop are close to untypeable. A new <span class="ui">&#9000; Show Hebrew Keyboard</span> button under the field opens a full on-screen keyboard: every letter (in alef-bet order or the Israeli layout, whichever you prefer), all thirteen vowels plus the dots, and the complete set of cantillation marks. Keys type into the box <strong>at your cursor</strong>, so you can drop a vowel onto a letter you already typed, and Backspace peels off one mark at a time &mdash; exactly what you want when you are testing how a holam sits above a shin. And if your font is not set up for nikkud or trop, the matching tab says so, instead of leaving you wondering why nothing shows up in the preview. <strong>And a row of ready-made samples sits beside it.</strong> Shalom, a pangram that uses every letter, the whole alef-bet with its final forms, every vowel in turn, a cantillated verse, and Hebrew next to digits and Latin &mdash; one click each, so checking your font against the hard cases stops being a typing exercise. The same row is on the font gallery&rsquo;s preview, for trying a font before you download it. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.27</strong> &mdash; <strong>The graph paper is already out when you sit down.</strong> The canvas grid did everything it promised &mdash; but only for people who already knew it was there. It started hidden, so the everyday measuring questions it was built for (is this stem the same width as the last one, did this vowel clear the baseline by the amount I meant) went on being answered by eye unless you went hunting for a checkbox. It now starts <strong>switched on</strong>: open a letter and the graph paper is waiting, measured in font units from the origin and the baseline. <strong>And nothing sticks to it.</strong> A grid you did not ask for should not quietly move your work, so <span class="ui">Snap to grid</span> now starts <strong>off</strong> &mdash; the lines are there to measure against, and your points land exactly where you put them until you switch snapping on yourself. Both toggles are where they always were: the <span class="ui">Grid</span> panel beside the canvas, <span class="ui">Settings &rarr; Canvas</span>, or <span class="ui">Shift + G</span> for the grid at any time &mdash; and whichever way you set them is remembered on this device. If you had already chosen for yourself, your choice is kept. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.26</strong> &mdash; <strong>Tidy up a drawn letter without losing your hand.</strong> Drawing with a finger or a stylus leaves strokes that are nearly straight but not quite, and stems that stop a hair above the baseline instead of sitting on it. A new <span class="ui">Tidy strokes</span> button in the <span class="ui">Draw</span> panel fixes those two things and nothing else: a stroke that is already almost a straight line becomes one, and a loose end resting just beside a guide or the baseline moves onto it. It runs only when you press it &mdash; nothing shifts under your pen while you are drawing &mdash; and the whole tidy is a single undo, so if it smoothed away something you meant to keep, one Ctrl+Z gives your handwriting back exactly as it was. <em>(August 2026)</em></li>
@@ -3735,7 +3768,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3748,7 +3781,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_28';
+  const CUR_KEY = 'fontmaker.changelog.v5_29';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -4446,6 +4479,9 @@ function userGuidesSVG(){
   const g = project.guides;
   if (!g || !g.show || !g.items || !g.items.length) return '';
   let h = '';
+  // A vertical guide spans the stage top-to-bottom, so its endpoints follow the effective viewBox
+  // (raised for a tall glyph) rather than the default box these numbers were once inlined from.
+  const gy1 = _stageVB.y + 2, gy2 = _stageVB.y + _stageVB.h - 4, gyh = _stageVB.y + 12;
   g.items.forEach(it => {
     const col = it.color || '#19b3c6';
     const snapped = _snapHit && ((_snapHit.x && _snapHit.x.id === it.id) || (_snapHit.y && _snapHit.y.id === it.id));   // a node drag is captured on this guide → brighten it
@@ -4457,9 +4493,9 @@ function userGuidesSVG(){
                : ` stroke-dasharray="${w*2} ${w*2}"`;   // dashed
     if (it.axis === 'v') {                       // vertical line — drag left/right (font X)
       const x = fx(it.pos);
-      h += `<line x1="${x.toFixed(1)}" y1="152" x2="${x.toFixed(1)}" y2="556" stroke="${col}" stroke-width="${w}"${dash} opacity="${op}" pointer-events="none"/>`;
-      h += `<circle class="guide-h" data-guide-id="${it.id}" cx="${x.toFixed(1)}" cy="162" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ew-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>Guide x=${Math.round(it.pos)} — drag</title></circle>`;
-      h += `<text class="guide-h-lbl" x="${(x+8).toFixed(1)}" y="166" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
+      h += `<line x1="${x.toFixed(1)}" y1="${gy1}" x2="${x.toFixed(1)}" y2="${gy2}" stroke="${col}" stroke-width="${w}"${dash} opacity="${op}" pointer-events="none"/>`;
+      h += `<circle class="guide-h" data-guide-id="${it.id}" cx="${x.toFixed(1)}" cy="${gyh}" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ew-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>Guide x=${Math.round(it.pos)} — drag</title></circle>`;
+      h += `<text class="guide-h-lbl" x="${(x+8).toFixed(1)}" y="${gyh + 4}" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
     } else {                                     // horizontal line — drag up/down (font Y)
       const y = fy(it.pos);
       h += `<line x1="8" y1="${y.toFixed(1)}" x2="592" y2="${y.toFixed(1)}" stroke="${col}" stroke-width="${w}"${dash} opacity="${op}" pointer-events="none"/>`;
@@ -7661,7 +7697,8 @@ function contoursToPath(contours, curves) {
 }
 async function renderStage() {
   const sv = stage(); if (!project) return;
-  sv.setAttribute('viewBox', `${STAGE_VB.x} ${STAGE_VB.y} ${STAGE_VB.w} ${STAGE_VB.h}`);   // default window; the wide-form tail widens it so a stretched form isn't clipped
+  _stageVB = { x: STAGE_VB.x, y: STAGE_VB.y, w: STAGE_VB.w, h: STAGE_VB.h };   // the mark + crop-select returns below inherit the default box
+  sv.setAttribute('viewBox', `${STAGE_VB.x} ${STAGE_VB.y} ${STAGE_VB.w} ${STAGE_VB.h}`);   // default window; the wide-form tail widens it, and the letter path raises its top for a tall glyph
   labelStageForMode(sv);   // accessible name for SR users (the canvas itself carries no visible label; draw mode overrides)
   const l = curLetter();
   updateTabs();
@@ -7675,6 +7712,14 @@ async function renderStage() {
     renderLegend();
     return;
   }
+  // Raise the top edge for a glyph taller than the default window — BEFORE h is built, because
+  // gridLinesSVG spans the box this render is about to use.
+  const _vy = stageVBTop(l);
+  if (_vy !== _stageVB.y) {
+    _stageVB = { x: STAGE_VB.x, y: _vy, w: STAGE_VB.w, h: STAGE_VB.y + STAGE_VB.h - _vy };
+    sv.setAttribute('viewBox', `${_stageVB.x} ${_stageVB.y} ${_stageVB.w} ${_stageVB.h}`);
+  }
+
   let h = templateGlyphSVG();   // faint reference glyph sits behind the image
 
   const url = curImageUrl();
@@ -7801,7 +7846,10 @@ async function renderStage() {
   if (showMetric) h += metricHandlesSVG();   // draggable metric guide dots (every letter-editing step)
   // A stretched wide form can exceed the default stage window — widen the viewBox so the whole
   // composed glyph + its right margin/width line fit (the stage height is auto, so the box reshapes).
-  if (wideRight != null) sv.setAttribute('viewBox', `${STAGE_VB.x} ${STAGE_VB.y} ${Math.max(STAGE_VB.w, Math.round(wideRight + 52 - STAGE_VB.x))} ${STAGE_VB.h}`);
+  if (wideRight != null) {
+    _stageVB.w = Math.max(STAGE_VB.w, Math.round(wideRight + 52 - STAGE_VB.x));
+    sv.setAttribute('viewBox', `${_stageVB.x} ${_stageVB.y} ${_stageVB.w} ${_stageVB.h}`);
+  }
   sv.innerHTML = h;
   attachGuideDrag();   // user guides are draggable in every letter-editing mode (no-op when none)
   if (workMode === 'align' && url) attachTransformDrag(l);   // image drag always available; metric dots (drawn on top) capture their own grabs
@@ -10587,8 +10635,9 @@ function gridLinesSVG(sv, mapX, invX, rightX) {
   const ctm = sv.getScreenCTM();
   const t = gridTiers((ctm && ctm.a) || 1);
   if (!t.minor && !t.major) return '';                 // too dense to read at this zoom — draw nothing
-  // Span the viewBox the caller is ABOUT to use: renderStage widens it for a stretched wide form.
-  const sx0 = STAGE_VB.x, sy0 = STAGE_VB.y, sy1 = STAGE_VB.y + STAGE_VB.h;
+  // Span the viewBox the caller is ABOUT to use: renderStage widens it for a stretched wide form and
+  // raises its top for a tall glyph, so the vertical span reads the effective box, not the default.
+  const sx0 = STAGE_VB.x, sy0 = _stageVB.y, sy1 = _stageVB.y + _stageVB.h;
   const vb = sv.viewBox && sv.viewBox.baseVal;   // rightX==null ⇒ in-place refresh: keep the width the last render set (wide forms)
   const sx1 = rightX != null ? Math.max(STAGE_VB.x + STAGE_VB.w, Math.round(rightX + 52))
             : Math.max(STAGE_VB.x + STAGE_VB.w, (vb && vb.width) ? Math.round(vb.x + vb.width) : 0);
@@ -10611,7 +10660,7 @@ function gridSnapHitSVG(mapX, rightX) {
   const sx1 = Math.max(STAGE_VB.x + STAGE_VB.w, rightX != null ? Math.round(rightX + 52) : 0);
   const ln = (a, b, c, d) => `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="${C.gridSnap}" stroke-width="1.5" vector-effect="non-scaling-stroke" opacity="0.9" pointer-events="none"/>`;
   let h = '';
-  if (_snapHit.x && _snapHit.x.kind === 'grid') { const p = mapX(_snapHit.x.v).toFixed(1); h += ln(p, STAGE_VB.y, p, STAGE_VB.y + STAGE_VB.h); }
+  if (_snapHit.x && _snapHit.x.kind === 'grid') { const p = mapX(_snapHit.x.v).toFixed(1); h += ln(p, _stageVB.y, p, _stageVB.y + _stageVB.h); }
   if (_snapHit.y && _snapHit.y.kind === 'grid') { const p = fy(_snapHit.y.v).toFixed(1);   h += ln(STAGE_VB.x, p, sx1, p); }
   return h;
 }
