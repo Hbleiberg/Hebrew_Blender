@@ -3173,37 +3173,72 @@ const fx = x => PADX + x * SC;
 const fy = y => BY - y * SC;
 const ifx = px => (px - PADX) / SC;       // stage px → font x
 const ify = py => (BY - py) / SC;         // stage px → font y
-/* The stage GROWS UPWARD for a glyph taller than the default window. An imported font keeps its own
-   proportions — many Hebrew fonts draw lamed right into the ascender, past the font y ≈ 921.9 that
-   STAGE_VB.y caps — and zoom is a CSS width scale over this viewBox with no pan, so clipped ink is
-   unreachable at ANY zoom or scroll. Same shape as the wide-form width growth, on the other axis.
-   Ceiling is stage px 0 (font y 1390): the field drawFrame documents the tracer as rasterizing. */
-// HARD CEILING 39: the default box already carries fy(LAMED_TOP) - STAGE_VB.y = 189 - 150 = 39 units
-// of air above the lamed line, so a pad past that would shift the window for EVERY ordinary lamed and
-// break "unchanged for glyphs that fit today". Floor ~35: .rl-h is a 22px sticky bar over the top of
-// the scrollport, which is 34.7 viewBox units at 50% zoom — below that the apex tucks under the ruler.
-const STAGE_PAD = 36;                 // viewBox units of air above the tallest content
+/* The stage GROWS to contain a glyph that outruns the default window, in BOTH directions. An imported
+   font keeps its own proportions — plenty of Hebrew fonts draw lamed into the ascender past the font
+   y ≈ 921.9 that STAGE_VB.y caps (ShlomoSemiStam's reaches 1056) — and zoom is a CSS width scale over
+   this viewBox with no pan, so clipped ink is unreachable at ANY zoom or scroll. Same shape as the
+   wide-form width growth, on the other two edges.
+   The BOTTOM edge is the mirror, and it is symmetry rather than a measured font: NEITHER shipped
+   starting font has a LETTER below the font y ≈ -359.4 floor (Shlomo's deepest, qof, stops at -330).
+   Its marks do go deeper — qubuts -423, qamats qatan -403 — but markGlyphContours re-origins every
+   mark to attach-origin-at-(0,0), so none of them ever reaches a stage at its font-space depth; do
+   not cite them as the bottom case. What does reach it: a deeper-drawn descender in some other font,
+   a `descender` metric the user sets lower, a node dragged past the floor, an imported src form.
+   CLAMPS are the mirror of each other: stage px 0 and 710, i.e. 468.75 font units of travel beyond
+   the default ceiling and floor alike. The top one is also what drawFrame documents the tracer as
+   rasterizing (font y 1390).
+   NOTE the input pipelines are deliberately NOT widened with the view: rasterizeCurrent traces a
+   fixed 600x560 stage-px canvas and drawFrame clamps committed strokes to font y >= -359, so neither
+   tracing nor drawing can PRODUCE ink below the default floor — only an import (or a node dragged
+   there) can, which is exactly the case this growth exists to show. A trace image parked below the
+   old floor is now visible but still won't rasterize; that limit is unchanged, not newly introduced. */
+// The pads apply ONLY to an edge that actually has to move (see stageVBBox): padding unconditionally
+// would pull the window out for ink that already fits but happens to sit within a pad of the frame —
+// Shlomo's qof, ink at font y -330, is 9.4 units clear of the default floor and must not move it.
+// They differ because the two edges do. The top wants to be large: .rl-h is a 22px sticky bar over the
+// top of the scrollport (34.7 viewBox units at 50% zoom), so ink revealed under it reads as clipped all
+// over again. No ruler bar hangs at the bottom, so less air costs nothing there.
+const STAGE_PAD_TOP = 36, STAGE_PAD_BOT = 24;   // viewBox units of clear air past newly-revealed content
+const STAGE_VB_FLOOR = STAGE_VB.y + STAGE_VB.h + 150;   // 710 — mirrors the 150 units above the default top
 let _stageVB = { x: STAGE_VB.x, y: STAGE_VB.y, w: STAGE_VB.w, h: STAGE_VB.h };   // the box the LAST render used
-let _stageVBTop = STAGE_VB.y;         // last letter-path top, held steady while a drag is open
-function stageExtentTop(l) {           // tallest content that must stay reachable, in FONT units
+let _stageVBEdges = { top: STAGE_VB.y, bot: STAGE_VB.y + STAGE_VB.h };   // held steady while a drag is open
+function stageExtent(l) {              // outermost content that must stay reachable, in FONT units
   const em = effMetrics(), meta = curMeta();
-  let top = (meta && meta.asc) ? em.lamedAscender : em.letterTop;   // the metric guides + their drag dots
+  // Seeded with the margin band's own ends, the outermost chrome marginGuidesSVG/wideFormGuidesSVG
+  // draw unconditionally; the lamed line (and its draggable dot) can sit higher, and _clampMetric puts
+  // no upper bound on it, so an off-window dot would be an unreachable control.
+  let top = em.letterTop + 80, bot = Math.min(em.descender - 30, em.baseline);
+  if (meta && meta.asc) top = Math.max(top, em.lamedAscender);
   // c.points is the FLATTENED polyline pathToOutline builds alongside the segments, so this is a close
-  // under-approximation of true ink that STAGE_PAD absorbs. Cubic CONTROL points are deliberately not
+  // under-approximation of true ink that the pads absorb. Cubic CONTROL points are deliberately not
   // unioned in — they can sit well outside the ink and would over-grow the canvas.
-  if (l && l.contours && l.contours.length) top = Math.max(top, glyphBBox(l.contours, false, meta).maxY);
-  return top;
+  if (l && l.contours && l.contours.length) {
+    const bb = glyphBBox(l.contours, false, meta);
+    top = Math.max(top, bb.maxY); bot = Math.min(bot, bb.minY);
+  }
+  return { top, bot };
 }
-/* renderStage re-serializes the stage on every pointermove during a drag, and raising the top edge
-   shifts all content DOWN in the page (~85px for a lamed) — a jump under the cursor mid-gesture. So
-   the top is recomputed only when no continuous gesture is open, and held otherwise. */
-function stageVBTop(l) {
+/* renderStage re-serializes the stage on every pointermove during a drag, and raising the TOP edge
+   shifts all content DOWN in the page (~85px for a lamed) — not merely a jump under the cursor but
+   positive feedback, since the same screen point then maps to a higher font y and the grabbed node
+   runs away to the clamp. (Lowering the BOTTOM edge shifts nothing — the top edge stays put and the
+   canvas simply gets taller — but both edges are held together so one gesture can't move half a box.)
+   So the edges are recomputed only when no continuous gesture is open, and held otherwise. */
+function stageVBBox(l) {
   // metricDrag is listed on its own: the dot drag calls setMetric(..., noRender) which SKIPS
   // udBurstBegin, so _burst stays null for the whole gesture. Any future per-pointermove drag that
   // moves l.contours or project.font.metrics must be added here, or the growth feeds back on itself.
-  if (!(nodeDrag || metricDrag || _burst))
-    _stageVBTop = Math.max(0, Math.min(STAGE_VB.y, Math.floor(fy(stageExtentTop(l)) - STAGE_PAD)));
-  return _stageVBTop;
+  if (!(nodeDrag || metricDrag || _burst)) {
+    const ex = stageExtent(l), bot0 = STAGE_VB.y + STAGE_VB.h;
+    const t = fy(ex.top), b = fy(ex.bot);   // fy is y-DOWN: t < STAGE_VB.y means the content is ABOVE the frame
+    _stageVBEdges = {
+      // An edge moves only for content that genuinely falls outside the default window — everything
+      // that fits keeps the box byte-identical, however close to the frame it sits.
+      top: t < STAGE_VB.y ? Math.max(0,              Math.floor(t - STAGE_PAD_TOP)) : STAGE_VB.y,
+      bot: b > bot0       ? Math.min(STAGE_VB_FLOOR, Math.ceil (b + STAGE_PAD_BOT)) : bot0
+    };
+  }
+  return { y: _stageVBEdges.top, h: _stageVBEdges.bot - _stageVBEdges.top };
 }
 // Mark editor coords: x=0 (mark center) maps to the horizontal middle of the stage.
 const EDX = 300;
@@ -3649,7 +3684,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.29</strong> &mdash; <strong>Tall letters from an imported font are no longer cut off.</strong> Plenty of Hebrew fonts draw the <span class="ui">lamed</span> right up into the ascender &mdash; taller than the editing canvas was ever built to show. Import one of those and the top of the letter was simply gone: clipped off the top edge of the workspace, with no zoom level and no amount of scrolling that would bring it back, and no way to grab the points up there and edit them. The canvas now grows to fit whatever you are working on, so the whole letter is visible and editable however tall it is &mdash; and the graph paper, the guides and the rulers all follow it up. Letters that already fitted look exactly as they did. <span style="color:var(--muted);">(August 2026)</span></li>
+      <li><strong>v5.29</strong> &mdash; <strong>Letters from an imported font are no longer cut off at the top or the bottom.</strong> Plenty of Hebrew fonts draw the <span class="ui">lamed</span> right up into the ascender, taller than the editing canvas was ever built to show &mdash; Shlomo SemiStam&rsquo;s climbs well past it. Import one of those and the top of the letter was simply gone: clipped off the edge of the workspace, with no zoom level and no amount of scrolling that would bring it back, and no way to grab the points up there and edit them. The canvas now grows in whichever direction it needs to &mdash; a letter that reaches into the ascender, one whose tail drops below where the canvas used to stop, or a <span class="ui">Descender</span> line you set lower yourself &mdash; so the whole letter stays visible and editable, and the graph paper, the guides and the rulers all follow it. Letters that already fitted look exactly as they did. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.28</strong> &mdash; <strong>Type your sample text without a Hebrew keyboard.</strong> The <span class="ui">Sample text</span> box in the <span class="ui">Spacing</span> tab is where you check how your letters sit together &mdash; but it quietly assumed you could type Hebrew in the first place. Without a Hebrew layout installed you were stuck with whatever was already in the box, and even with one, nikkud and trop are close to untypeable. A new <span class="ui">&#9000; Show Hebrew Keyboard</span> button under the field opens a full on-screen keyboard: every letter (in alef-bet order or the Israeli layout, whichever you prefer), all thirteen vowels plus the dots, and the complete set of cantillation marks. Keys type into the box <strong>at your cursor</strong>, so you can drop a vowel onto a letter you already typed, and Backspace peels off one mark at a time &mdash; exactly what you want when you are testing how a holam sits above a shin. And if your font is not set up for nikkud or trop, the matching tab says so, instead of leaving you wondering why nothing shows up in the preview. <strong>And a row of ready-made samples sits beside it.</strong> Shalom, a pangram that uses every letter, the whole alef-bet with its final forms, every vowel in turn, a cantillated verse, and Hebrew next to digits and Latin &mdash; one click each, so checking your font against the hard cases stops being a typing exercise. The same row is on the font gallery&rsquo;s preview, for trying a font before you download it. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.27</strong> &mdash; <strong>The graph paper is already out when you sit down.</strong> The canvas grid did everything it promised &mdash; but only for people who already knew it was there. It started hidden, so the everyday measuring questions it was built for (is this stem the same width as the last one, did this vowel clear the baseline by the amount I meant) went on being answered by eye unless you went hunting for a checkbox. It now starts <strong>switched on</strong>: open a letter and the graph paper is waiting, measured in font units from the origin and the baseline. <strong>And nothing sticks to it.</strong> A grid you did not ask for should not quietly move your work, so <span class="ui">Snap to grid</span> now starts <strong>off</strong> &mdash; the lines are there to measure against, and your points land exactly where you put them until you switch snapping on yourself. Both toggles are where they always were: the <span class="ui">Grid</span> panel beside the canvas, <span class="ui">Settings &rarr; Canvas</span>, or <span class="ui">Shift + G</span> for the grid at any time &mdash; and whichever way you set them is remembered on this device. If you had already chosen for yourself, your choice is kept. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.26</strong> &mdash; <strong>Tidy up a drawn letter without losing your hand.</strong> Drawing with a finger or a stylus leaves strokes that are nearly straight but not quite, and stems that stop a hair above the baseline instead of sitting on it. A new <span class="ui">Tidy strokes</span> button in the <span class="ui">Draw</span> panel fixes those two things and nothing else: a stroke that is already almost a straight line becomes one, and a loose end resting just beside a guide or the baseline moves onto it. It runs only when you press it &mdash; nothing shifts under your pen while you are drawing &mdash; and the whole tidy is a single undo, so if it smoothed away something you meant to keep, one Ctrl+Z gives your handwriting back exactly as it was. <em>(August 2026)</em></li>
@@ -7712,11 +7747,11 @@ async function renderStage() {
     renderLegend();
     return;
   }
-  // Raise the top edge for a glyph taller than the default window — BEFORE h is built, because
+  // Grow the window for a glyph that outruns the default one — BEFORE h is built, because
   // gridLinesSVG spans the box this render is about to use.
-  const _vy = stageVBTop(l);
-  if (_vy !== _stageVB.y) {
-    _stageVB = { x: STAGE_VB.x, y: _vy, w: STAGE_VB.w, h: STAGE_VB.y + STAGE_VB.h - _vy };
+  const _vb = stageVBBox(l);
+  if (_vb.y !== _stageVB.y || _vb.h !== _stageVB.h) {
+    _stageVB = { x: STAGE_VB.x, y: _vb.y, w: STAGE_VB.w, h: _vb.h };
     sv.setAttribute('viewBox', `${_stageVB.x} ${_stageVB.y} ${_stageVB.w} ${_stageVB.h}`);
   }
 
