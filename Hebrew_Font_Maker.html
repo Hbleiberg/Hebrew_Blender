@@ -1364,6 +1364,10 @@
       <div class="panel-title" data-i18n="fontmaker.panels.specialforms">Specialized letters</div>
       <div class="panel-body" id="specialFormsPanelBody"></div>
     </div>
+    <div class="panel collapsed cat-panel" data-cat="wideforms">
+      <div class="panel-title" data-i18n="fontmaker.panels.wideforms">Wide letterforms</div>
+      <div class="panel-body" id="wideFormsPanelBody"></div>
+    </div>
     <div class="panel collapsed cat-panel" data-cat="yiddish">
       <div class="panel-title" data-i18n="fontmaker.panels.yiddish">Yiddish</div>
       <div class="panel-body" id="yiddishPanelBody"></div>
@@ -1391,6 +1395,11 @@
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_special_label">Specialized letters</div>
             <label class="chk"><input type="checkbox" id="addSpecialFormsChk" onchange="setAddSpecialForms(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_special">Add specialized letters</span></label>
             <div class="hint" data-i18n-html="fontmaker.panels.adv_special_hint">Adds a <strong>Specialized letters</strong> tab with the <strong>wide letterforms</strong> (wide alef, dalet, he, kaf, lamed, final mem, resh, tav) — <strong>auto-composed from your traced letters</strong>, each with a <strong>Width</strong> slider that adds space &amp; stretches.</div>
+          </div>
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_wide_label">Wide letterforms</div>
+            <label class="chk"><input type="checkbox" id="addWideFormsChk" onchange="setAddWideForms(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_wide">Add wide letterforms</span></label>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_wide_hint">Adds a <strong>Wide letterforms</strong> tab with a wide variant of <strong>every letter</strong> — <strong>auto-stretched from your traced letters</strong> (150% to start, each with its own <strong>Width</strong> slider), and convertible to a fully <strong>editable glyph</strong> when a stretch needs hand-fixing. The exported font also gets a <strong>Wide letterforms stylistic set (ss02)</strong> that swaps normal letters for wide ones in apps that support it.</div>
           </div>
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_yiddish_label">Yiddish</div>
@@ -2200,14 +2209,17 @@ const PRECOMPOSED = [
   { target:'FB4A', base:'05EA', mark:'05BC' }, // dotted tav
 ];
 
-/* ── Opt-in extra forms (Advanced toggles): Specialized letters / Yiddish / Ladino.
+/* ── Opt-in extra forms (Advanced toggles): Specialized letters / Wide letterforms / Yiddish / Ladino.
    Every form AUTO-COMPOSES from the user's already-traced base letter(s) — nothing is redrawn.
    Three shapes of entry:
      • base+mark   {target, base, mark}            → reuses the precomposed bake (cmap + ccmp + QA)
      • wide letter {target, base, wide:true}        → one base, widened, + a Width slider (new bake)
      • digraph     {target, bases:[…], wide:true}   → bases laid side-by-side, + a Width slider (new bake)
-   Targets use the real Unicode code point where one exists; Private-Use (E0Cx) for the Ladino
-   rafe letters that have none. `tab` marks the owning tab (a target may be surfaced by more than one). */
+   Wide entries may carry `defWidth` — the width the form STARTS at (and Reset returns to) before the
+   user touches its slider; precompWidthScale reads widthScale ?? defWidth ?? 1.
+   Targets use the real Unicode code point where one exists; Private-Use (E0Cx/E0Dx) for the Ladino
+   rafe letters and the all-letters wide variants that have none. `tab` marks the owning tab (a target
+   may be surfaced by more than one). */
 const WIDE_LETTERS = [   // Specialized tab — the 8 Unicode wide letterforms (the "wide ligatures")
   { target:'FB21', base:'05D0', wide:true, tab:'special', name:'Wide Alef' },
   { target:'FB22', base:'05D3', wide:true, tab:'special', name:'Wide Dalet' },
@@ -2217,6 +2229,46 @@ const WIDE_LETTERS = [   // Specialized tab — the 8 Unicode wide letterforms (
   { target:'FB26', base:'05DD', wide:true, tab:'special', name:'Wide Final Mem' },
   { target:'FB27', base:'05E8', wide:true, tab:'special', name:'Wide Resh' },
   { target:'FB28', base:'05EA', wide:true, tab:'special', name:'Wide Tav' },
+];
+/* Wide letterforms tab — a wide variant of EVERY letter (finals included), for makers who want the
+   whole alef-bet available wide. The 8 letters Unicode encodes reuse their FB2x presentation-form
+   code points (shared with the Specialized tab — ensurePrecompSeeded dedupes by target, so ONE
+   project.precomposed entry serves both tabs); the other 19 live in Private Use E0D0–E0E2 (clear of
+   Sheva Na E0B0 and the Ladino rafe block E0C1–E0C5). `defWidth` makes these START at 150% — the
+   tab's whole point is wideness, and 100% would export 27 pointless clones — while a user-set
+   widthScale always wins and Reset lands back on the 150% default. Because the FB2x entries are
+   shared, enabling this tab gives those 8 the 150% default in the Specialized tab too (one glyph
+   ships once — one default; setAddWideForms backfills defWidth on already-seeded entries). Export
+   also emits an ss02 "Wide letterforms" stylistic set (sub letter → wide) so the PUA forms are
+   reachable in ordinary apps, not only by pasting their code points. */
+const WIDE_ALL_FORMS = [
+  { target:'FB21', base:'05D0', wide:true, tab:'wide', defWidth:1.5, name:'Wide Alef' },
+  { target:'E0D0', base:'05D1', wide:true, tab:'wide', defWidth:1.5, name:'Wide Bet' },
+  { target:'E0D1', base:'05D2', wide:true, tab:'wide', defWidth:1.5, name:'Wide Gimel' },
+  { target:'FB22', base:'05D3', wide:true, tab:'wide', defWidth:1.5, name:'Wide Dalet' },
+  { target:'FB23', base:'05D4', wide:true, tab:'wide', defWidth:1.5, name:'Wide He' },
+  { target:'E0D2', base:'05D5', wide:true, tab:'wide', defWidth:1.5, name:'Wide Vav' },
+  { target:'E0D3', base:'05D6', wide:true, tab:'wide', defWidth:1.5, name:'Wide Zayin' },
+  { target:'E0D4', base:'05D7', wide:true, tab:'wide', defWidth:1.5, name:'Wide Het' },
+  { target:'E0D5', base:'05D8', wide:true, tab:'wide', defWidth:1.5, name:'Wide Tet' },
+  { target:'E0D6', base:'05D9', wide:true, tab:'wide', defWidth:1.5, name:'Wide Yod' },
+  { target:'FB24', base:'05DB', wide:true, tab:'wide', defWidth:1.5, name:'Wide Kaf' },
+  { target:'E0D7', base:'05DA', wide:true, tab:'wide', defWidth:1.5, name:'Wide Final Kaf' },
+  { target:'FB25', base:'05DC', wide:true, tab:'wide', defWidth:1.5, name:'Wide Lamed' },
+  { target:'E0D8', base:'05DE', wide:true, tab:'wide', defWidth:1.5, name:'Wide Mem' },
+  { target:'FB26', base:'05DD', wide:true, tab:'wide', defWidth:1.5, name:'Wide Final Mem' },
+  { target:'E0D9', base:'05E0', wide:true, tab:'wide', defWidth:1.5, name:'Wide Nun' },
+  { target:'E0DA', base:'05DF', wide:true, tab:'wide', defWidth:1.5, name:'Wide Final Nun' },
+  { target:'E0DB', base:'05E1', wide:true, tab:'wide', defWidth:1.5, name:'Wide Samekh' },
+  { target:'E0DC', base:'05E2', wide:true, tab:'wide', defWidth:1.5, name:'Wide Ayin' },
+  { target:'E0DD', base:'05E4', wide:true, tab:'wide', defWidth:1.5, name:'Wide Pe' },
+  { target:'E0DE', base:'05E3', wide:true, tab:'wide', defWidth:1.5, name:'Wide Final Pe' },
+  { target:'E0DF', base:'05E6', wide:true, tab:'wide', defWidth:1.5, name:'Wide Tsadi' },
+  { target:'E0E0', base:'05E5', wide:true, tab:'wide', defWidth:1.5, name:'Wide Final Tsadi' },
+  { target:'E0E1', base:'05E7', wide:true, tab:'wide', defWidth:1.5, name:'Wide Qof' },
+  { target:'FB27', base:'05E8', wide:true, tab:'wide', defWidth:1.5, name:'Wide Resh' },
+  { target:'E0E2', base:'05E9', wide:true, tab:'wide', defWidth:1.5, name:'Wide Shin' },
+  { target:'FB28', base:'05EA', wide:true, tab:'wide', defWidth:1.5, name:'Wide Tav' },
 ];
 const YIDDISH_FORMS = [
   { target:'FB2E', base:'05D0', mark:'05B7', tab:'yiddish', name:'Pasekh Alef (אַ)' },
@@ -2277,19 +2329,20 @@ const SPECIAL_MORE = [
   { target:'FB1D', base:'05D9', mark:'05B4', tab:'special', name:'Yod with Hiriq' },
 ];
 const SPECIAL_FORMS  = [].concat(WIDE_LETTERS, SPECIAL_MORE);
-const EXTRA_FORMS    = [].concat(SPECIAL_FORMS, YIDDISH_FORMS, LADINO_FORMS);
+const EXTRA_FORMS    = [].concat(SPECIAL_FORMS, YIDDISH_FORMS, LADINO_FORMS, WIDE_ALL_FORMS);   // WIDE_ALL last: find-by-target keeps first-wins on the shared FB2x rows
 const SPECIAL_TARGETS = SPECIAL_FORMS.map(f => f.target);
 const YIDDISH_TARGETS = YIDDISH_FORMS.map(f => f.target);
 const LADINO_TARGETS  = LADINO_FORMS.map(f => f.target);
-const EXTRA_TAB_FLAG  = { special:'addSpecialForms', yiddish:'addYiddish', ladino:'addLadino' };
+const WIDE_ALL_TARGETS = WIDE_ALL_FORMS.map(f => f.target);
+const EXTRA_TAB_FLAG  = { special:'addSpecialForms', yiddish:'addYiddish', ladino:'addLadino', wide:'addWideForms' };
 const ORIG_PRECOMP_TARGETS = new Set(PRECOMPOSED.map(p => p.target));   // always-baked core forms (never gated)
 function extraTargetsFor(tab) {   // this tab's targets, minus any that are core PRECOMPOSED (those bake regardless)
   return EXTRA_FORMS.filter(f => f.tab === tab && !ORIG_PRECOMP_TARGETS.has(f.target)).map(f => f.target);
 }
-const ALL_EXTRA_TARGETS = new Set([].concat(extraTargetsFor('special'), extraTargetsFor('yiddish'), extraTargetsFor('ladino')));
+const ALL_EXTRA_TARGETS = new Set([].concat(extraTargetsFor('special'), extraTargetsFor('yiddish'), extraTargetsFor('ladino'), extraTargetsFor('wide')));
 function activeExtraTargets() {   // union of the target sets for the tabs currently switched on
   const s = new Set();
-  ['special','yiddish','ladino'].forEach(tab => {
+  ['special','yiddish','ladino','wide'].forEach(tab => {
     if (project && project.font && project.font[EXTRA_TAB_FLAG[tab]]) extraTargetsFor(tab).forEach(t => s.add(t));
   });
   return s;
@@ -2311,7 +2364,11 @@ function precompSrcOutline(pc) {
   return (s && Array.isArray(s.contours) && s.contours.length && !isWideForm(pc)) ? s : null;
 }
 function precompBaseCp(pc) { return pc.base || (pc.bases && pc.bases[0]); }
-function precompWidthScale(pc) { return (pc && pc.widthScale != null) ? pc.widthScale : 1; }
+function precompWidthScale(pc) {   // user-set width wins; else the form's own default (wide-tab forms seed defWidth 1.5); else 1
+  if (!pc) return 1;
+  if (pc.widthScale != null) return pc.widthScale;
+  return Number.isFinite(pc.defWidth) ? pc.defWidth : 1;
+}
 function wideX(x, minX, w) { return Math.round(minX + (x - minX) * w); }   // shared X-scale-about-left-edge: buildWideGlyph + QA wide rows
 /* Compose a wide letterform or digraph from the traced base letter(s): lay the bases left-to-right,
    then scale X about the left edge by widthScale AND scale the advance by the same factor — i.e. the
@@ -2351,6 +2408,22 @@ function buildWideGlyph(pc) {
   return { contours, curves, advance: Math.max(50, Math.round(total * w) + fontSpacing().letterSpacing),
            minX, widthScale: w, offsets,
            lsb: (Ls.length === 1 && Ls[0].lsb != null) ? Ls[0].lsb : null };
+}
+
+/* ── Editable wide-form overrides ("Convert to editable glyph") ──
+   A wide form is normally recomputed from its base letter(s) on every read. When the linear stretch
+   makes a letter wonky, the maker can MATERIALIZE the current generated outline into a real
+   project.letters item flagged {wideGlyph:true} at the form's own code point: the full letter
+   pipeline (node editor, metrics, anchors) then works on it, and the export ships the item instead
+   of the auto-stretch (the builtWide bake skips code points that already own a glyph). Deliberately
+   NOT a .custom glyph — custom MAIN glyphs export only while addCustomGlyphs is on, and they route
+   the editor to the Custom-glyphs tab. A materialized form is detached: it no longer follows its
+   base letter; "Revert to auto-generated" (revertWideFormEdit) deletes it and live generation
+   resumes. wideGlyphItemFor is the single sanctioned reader of the flag. */
+function wideGlyphItemFor(cp) { return (project.letters || []).find(l => l.wideGlyph && l.codepoint === cp) || null; }
+function wideGlyphShips(cp) {   // the materialized item the export will actually ship, or null
+  const it = wideGlyphItemFor(cp);
+  return (it && it.contours && it.contours.length && activeExtraTargets().has(cp)) ? it : null;
 }
 
 /* ── English (Latin) letters — A–Z and a–z, added on demand via the "Add English letters" advanced toggle.
@@ -2892,7 +2965,7 @@ function newProject() {
       addCustomGlyphs: false,
       svgUpload: false,
       addEnglishLetters: false,
-      addSpecialForms: false, addYiddish: false, addLadino: false,   // opt-in extra glyph tabs
+      addSpecialForms: false, addYiddish: false, addLadino: false, addWideForms: false,   // opt-in extra glyph tabs
       kerning: [],
       kernClasses: []
     },
@@ -2954,6 +3027,8 @@ function _selectItem(kind, cp) {
   udFlushPending();          // commit any open slider burst / pending nudge before navigating away (while identity is still the OUTGOING item)
   curKind = kind; curCp = cp;
   catTab = (kind === 'letter' && isEng(cp)) ? 'english'
+         : (kind === 'letter' && wideGlyphItemFor(cp)) ? (project.font.addWideForms ? 'wideforms'   // a materialized wide form lives in whichever tab surfaces it
+             : (project.font.addSpecialForms && SPECIAL_TARGETS.indexOf(cp) >= 0) ? 'specialforms' : 'letter')
          : isCustomCp(cp) ? 'customglyphs'
          : (kind === 'letter' && letterMeta(cp) && letterMeta(cp).cat === 'punct') ? 'punct' : kind;   // keep the picker on the edited item's category (English → English tab; custom → Custom glyphs; punct → Punctuation)
   renderGrids();
@@ -2976,6 +3051,7 @@ function renderGrids() {
   }
   if (document.getElementById('englishGrid')) renderEnglishGrid();
   if (document.getElementById('specialFormsPanelBody')) renderSpecialFormsPanel();
+  if (document.getElementById('wideFormsPanelBody')) renderWideFormsPanel();
   if (document.getElementById('yiddishPanelBody')) renderYiddishPanel();
   if (document.getElementById('ladinoPanelBody')) renderLadinoPanel();
   renderCatTabs();   // also (re)builds the tab bar so the Custom glyphs / English / Specialized / Yiddish / Ladino tabs appear/disappear with their toggles
@@ -3475,7 +3551,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.32';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.33';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3695,6 +3771,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.33</strong> &mdash; <strong>Wide letterforms for every letter.</strong> Torah scrolls and fine Hebrew typesetting stretch certain letters to fill out a line &mdash; but until now the Font Maker offered only the eight wide forms Unicode encodes, in the <span class="ui">Specialized letters</span> tab. A new Settings toggle, <span class="ui">Add wide letterforms</span>, adds a tab with a wide variant of <em>every</em> letter, auto-stretched from your traced letters &mdash; 150% to start, each with its own <span class="ui">Width</span> slider. If a stretch turns out wonky, convert that form to a fully <span class="ui">editable glyph</span> and fix its outline point by point (you can revert to the automatic version any time). Exported fonts include the wide letters at their code points and in a new &ldquo;Wide letterforms&rdquo; stylistic set (ss02), so apps that support stylistic sets can swap normal letters for wide ones with one switch. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.32</strong> &mdash; <strong>Choose exactly what a font import brings along.</strong> Importing a font &mdash; a TTF you upload or an <span class="ui">Open Siddur</span> starting-font link &mdash; used to be close to all-or-nothing: one switch for the letters, one for every vowel and cantillation shape together, one for all their positions, and the kerning came along on its own. If you wanted the original&rsquo;s letters but planned to place the vowels yourself, there was no way to say so. The import options now name each part separately: the <span class="ui">letter shapes</span>; the <span class="ui">nikkud shapes</span> and, on their own switch, their <span class="ui">placement</span>; the <span class="ui">trop shapes</span> and <em>their</em> <span class="ui">placement</span>; and the <span class="ui">kerning &amp; spacing</span> (letter-pair kerning, word gap and line spacing). Everything starts switched on, so a plain import behaves exactly as before &mdash; un-tick the parts you mean to redo yourself and only the rest comes across. The partner wizard&rsquo;s <span class="ui">What to include</span> step offers the same choices, and what you keep stays yours: a part you left un-ticked keeps the positions you dragged and the fine-tuned pins the import would otherwise replace, and the after-import placement check only measures the parts you actually took. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.31</strong> &mdash; <strong>An eraser that takes off only the ink you touch.</strong> The eraser in <span class="ui">Draw</span> mode could remove a whole stroke, or cut a stroke clean in two &mdash; but it could never shave a sliver off one side, because a stroke has one thickness all the way along and a cut always went through all of it. A stem that came out a little too fat, or a corner that wanted rounding, meant erasing the stroke and drawing it over again. The eraser now has a <span class="ui">Sculpt</span> mode that rubs away just the ink under it: round off a corner, thin a stem, take a bite out of an edge &mdash; and the rest of the stroke stays exactly as you drew it. It is what the eraser does by default now; <span class="ui">Partial</span> (cut one stroke into two you can move separately) and <span class="ui">Whole stroke</span> are still there under <span class="ui">Eraser mode</span>, and each one now says in a line what it does. What you rub away is a hole in the paper rather than a change to the stroke &mdash; so if you later <span class="ui">Move</span> that stroke out from under it, the stroke comes back whole, exactly as it would if you slid the paper out from under a real eraser. Press <span class="ui">Save drawing &amp; trace</span> as usual and the sculpted shape is what lands in your outline, and in the font you export. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.30</strong> &mdash; <strong>Imported fonts keep their kerning, their exact spacing, and their dagesh.</strong> Importing a font &mdash; the Open Siddur starting fonts included &mdash; now brings its <span class="ui">kerning</span> along: the pair-spacing rules modern fonts keep in their GPOS table, the ones browsers and word processors actually apply, land in the Kerning panel with every Hebrew pair intact, editable like pairs you made yourself. <span class="ui">Word spacing</span> now matches the original font&rsquo;s own space width instead of a one-size default. The <span class="ui">dagesh</span> finally sits where the original puts it on <em>every</em> letter: most Hebrew fonts record the dagesh position only inside their ready-made combined letters (בּ כּ תּ), so letters outside that set used to get a best-guess spot that left the dot floating near the top of the letter &mdash; the position is now read out of those combined letterforms themselves, and the typed form in the Spacing preview shows the original&rsquo;s own combined glyph, at its own width, just like the exported font. And imported vowels can no longer come in bigger than the original drew them: the mark size sliders reset to true size when a font&rsquo;s own marks arrive, instead of silently re-scaling the new shapes by a factor tuned for the old ones. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3817,7 +3894,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -3830,7 +3907,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_32';
+  const CUR_KEY = 'fontmaker.changelog.v5_33';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -5225,6 +5302,7 @@ function ensurePrecompSeeded(forms, p) {
     if (f.bases) e.bases = f.bases.slice();
     if (f.mark)  e.mark  = f.mark;
     if (f.wide)  e.wide  = true;
+    if (f.defWidth != null) e.defWidth = f.defWidth;   // the width the form starts at (precompWidthScale fallback)
     if (f.name)  e.name  = f.name;
     p.precomposed.push(e);
   });
@@ -5245,6 +5323,24 @@ function setAddLadino(on) {
   project.font.addLadino = !!on;
   if (on) ensurePrecompSeeded(LADINO_FORMS);
   else if (precompTarget && LADINO_TARGETS.indexOf(precompTarget) >= 0) clearPrecompTarget();
+  renderGrids();
+}
+function setAddWideForms(on) {
+  project.font.addWideForms = !!on;
+  if (on) {
+    ensurePrecompSeeded(WIDE_ALL_FORMS);
+    // Backfill the 150% starting width onto wide-table entries that were seeded WITHOUT it — the
+    // 8 FB2x forms the Specialized tab (or a font import) seeded first. defWidth is only the
+    // slider's default and its Reset target; a user-set widthScale always wins, so this never
+    // moves a width the maker chose.
+    WIDE_ALL_FORMS.forEach(f => {
+      const pc = getPrecomp(f.target);
+      if (pc && pc.defWidth == null) pc.defWidth = f.defWidth;
+    });
+  } else {
+    if (precompTarget && WIDE_ALL_TARGETS.indexOf(precompTarget) >= 0) clearPrecompTarget();
+    if (curKind === 'letter' && wideGlyphItemFor(curCp)) selectItem('letter', LETTER_ORDER[0]);   // leave the wide-glyph editor if it was open
+  }
   renderGrids();
 }
 function setSvgUpload(on) {
@@ -5349,7 +5445,11 @@ function renderCustomGlyphsGrid() {
    template-font character. Same y-flip/viewBox conventions as markTilePreviewSVG. */
 function formTilePreviewSVG(pc) {
   let cs = null, curves = null;
-  if (pc.bases && pc.mark) {                                        // ײַ: the wide digraph plus its baked mark
+  const wgi = isWideForm(pc) ? wideGlyphItemFor(pc.target) : null;   // materialized wide form — show the maker's edited ink (what actually exports)
+  if (wgi && wgi.contours && wgi.contours.length) {
+    cs = wgi.contours;
+    curves = (wgi.curves && wgi.curves.length === wgi.contours.length) ? wgi.curves : null;
+  } else if (pc.bases && pc.mark) {                                        // ײַ: the wide digraph plus its baked mark
     const from = getPrecomp(pc.from); if (!from) return '';
     const g = buildWideGlyph(from); if (!g) return '';
     const m = wideDonorAnchors(from, g); if (!m) return '';
@@ -5421,27 +5521,32 @@ function renderFormPanel(panelId, targets, intro, extras) {
     any = true;
     const bases = pc.bases || [pc.base];
     const need = bases.filter(cp => !isTraced(cp));
-    const traced = need.length === 0;
+    const edited = isWideForm(pc) ? wideGlyphItemFor(t) : null;   // materialized wide form — its own ink ships, so untraced bases no longer lock it
+    const traced = need.length === 0 || !!edited;
     const needChars = esc(need.map(chOf).join(' '));
     const overridden = isCustomCp(t);   // a custom glyph at this code point wins at export — say so instead of pretending this form will ship
     const tile = document.createElement('div');
-    tile.className = 'ltile' + (precompTarget === t ? ' sel' : '') + (traced ? '' : ' locked');
+    const sel = precompTarget === t || (edited && curKind === 'letter' && curCp === t);
+    tile.className = 'ltile' + (sel ? ' sel' : '') + (traced ? '' : ' locked');
     const pv = traced ? formTilePreviewSVG(pc) : '';   // live composed outline (reflects the Width slider); font char until composable
     tile.innerHTML = `<span class="lt-dot ${traced ? 'traced' : ''}"></span>
       ${pv || `<span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${precompComposed(pc)}</span>`}
-      <span class="lt-name">${esc(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.custom_glyph_overrides', {t}) : 'You added a custom glyph at U+' + t + '; the exported font uses your custom outline, not this composed form.')}">${_pT('form_overrides', 'custom glyph overrides')}</span>` : traced ? '' : `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.trace_needs', {names: need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', ')}) : 'Trace ' + need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">${_pT('form_needs', 'needs ' + needChars, {chars: needChars})}</span>`}`;
-    tile.onclick = () => pickPrecompForm(pc.from || t);   // ײַ has no editor of its own — it follows ײ, which follows yud
+      <span class="lt-name">${esc(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.custom_glyph_overrides', {t}) : 'You added a custom glyph at U+' + t + '; the exported font uses your custom outline, not this composed form.')}">${_pT('form_overrides', 'custom glyph overrides')}</span>` : edited ? `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.wide_edited') : 'You converted this wide form to an editable glyph — the exported font ships your edited outline. Click to open it in the editor.')}">${_pT('form_edited', 'edited by hand')}</span>` : traced ? '' : `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.trace_needs', {names: need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', ')}) : 'Trace ' + need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">${_pT('form_needs', 'needs ' + needChars, {chars: needChars})}</span>`}`;
+    tile.onclick = edited ? (() => openWideGlyphEditor(t))                // an edited wide form opens ITS editor — from any tab that surfaces it
+                          : (() => pickPrecompForm(pc.from || t));        // ײַ has no editor of its own — it follows ײ, which follows yud
     grid.appendChild(tile);
   });
   if (!any) grid.innerHTML = `<div class="hint" style="grid-column:1/-1;direction:ltr;text-align:left;">${_pT('form_enable_tab', 'Enable this tab to add its forms.')}</div>`;
   a11yTiles(grid);
 }
 function renderSpecialFormsPanel() { renderFormPanel('specialFormsPanelBody', SPECIAL_TARGETS, _pT('special_intro', 'Wide letterforms — <b>auto-composed from your traced letters</b>. Pick one, then use the <b>Width</b> slider (it both adds side space and stretches). Insert them by their Unicode code point.')); }
+function renderWideFormsPanel()    { renderFormPanel('wideFormsPanelBody', WIDE_ALL_TARGETS, _pT('wide_intro', 'A wide variant of every letter — <b>auto-stretched from your traced letters</b> (150% to start). Pick one to adjust its <b>Width</b> slider, or convert it to an <b>editable glyph</b> if the stretch needs hand-fixing. The exported font includes them at their code points and in the <b>ss02 “Wide letterforms”</b> stylistic set.')); }
 function renderYiddishPanel()      { renderFormPanel('yiddishPanelBody', YIDDISH_TARGETS, _pT('yiddish_intro', 'Yiddish forms, composed from your traced letters: pasekh / komets alef, the rafe letters (בֿ כֿ פֿ), the vov/yud digraphs (װ ױ ײ), and pasekh tsvey yudn (ײַ).'),
                                                      project.font.nikkud.enabled ? [YID_PASEKH] : []); }   // ײַ needs a pasekh — same gate the bake uses, so the tab never promises a glyph that will not ship
 function renderLadinoPanel()       { renderFormPanel('ladinoPanelBody', LADINO_TARGETS, _pT('ladino_intro', 'Ladino (Judeo-Spanish) forms: each base letter with the rafe / varika bar, composed from your traced letters.')); }
 function pickPrecompForm(target) {
   const pc = getPrecomp(target); if (!pc) return;
+  if (isWideForm(pc) && wideGlyphItemFor(target)) { openWideGlyphEditor(target); return; }   // converted wide form → its own editor, never the generated view
   // A form can't be composed until EVERY base is traced (digraphs need both) — instead of opening a
   // dead-end editor, jump to the first untraced base so the user can trace it, and say why.
   const untraced = (pc.bases || [pc.base]).find(cp => { const L = project.letters.find(x => x.codepoint === cp); return !(L && L.contours); });
@@ -5461,6 +5566,9 @@ function addCustomGlyph() {
   const cp = normalizeCp(document.getElementById('cgCp').value);
   if (!cp) { askModal(I18n.t('fontmaker.modals.enter_codepoint_title'), I18n.t('fontmaker.modals.enter_codepoint_body'), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
   if (isCustomCp(cp)) { askModal(I18n.t('fontmaker.modals.glyph_exists_title'), I18n.t('fontmaker.modals.glyph_exists_body', {cp: esc(cp)}), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
+  // A converted wide letterform also owns its cp as a real project.letters item — two items at one
+  // code point would break every find-by-cp (and migrateProject's byCp map keeps only one).
+  if (wideGlyphItemFor(cp)) { askModal(I18n.t('fontmaker.modals.glyph_exists_title'), I18n.t('fontmaker.modals.wide_owns_cp_body', {cp: esc(cp)}), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
   const who = whoHasCp(cp);
   if (who && !confirm(I18n.t('fontmaker.modals.confirm_replace_cp', { cp: cp, who: who }))) return;
   const name = (document.getElementById('cgName').value || '').trim();
@@ -5638,14 +5746,16 @@ function renderCatTabs() {
   const en = document.getElementById('addEnglishLettersChk');
   if (en && project && project.font) en.checked = !!project.font.addEnglishLetters;
   const sf = document.getElementById('addSpecialFormsChk'); if (sf && project && project.font) sf.checked = !!project.font.addSpecialForms;
+  const wf = document.getElementById('addWideFormsChk');    if (wf && project && project.font) wf.checked = !!project.font.addWideForms;
   const yi = document.getElementById('addYiddishChk');      if (yi && project && project.font) yi.checked = !!project.font.addYiddish;
   const la = document.getElementById('addLadinoChk');       if (la && project && project.font) la.checked = !!project.font.addLadino;
-  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', english: 'English', customglyphs: 'Custom glyphs', specialforms: 'Specialized letters', yiddish: 'Yiddish', ladino: 'Ladino', spacing: 'Spacing', advanced: '⚙️ Settings' };
+  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', english: 'English', customglyphs: 'Custom glyphs', specialforms: 'Specialized letters', wideforms: 'Wide letterforms', yiddish: 'Yiddish', ladino: 'Ladino', spacing: 'Spacing', advanced: '⚙️ Settings' };
   const cats = ['fontdetails', 'letter', 'nikkud', 'trop', 'punct', 'spacing', 'advanced'];
   if (project && project.font && project.font.addCustomGlyphs) cats.splice(cats.indexOf('punct') + 1, 0, 'customglyphs');   // appears right after Punctuation
   if (project && project.font && project.font.addEnglishLetters) cats.splice(cats.indexOf('punct') + 1, 0, 'english');   // English tab right after Punctuation (before Custom glyphs)
-  if (project && project.font && project.font.addLadino)       cats.splice(cats.indexOf('punct') + 1, 0, 'ladino');        // Specialized / Yiddish / Ladino sit right after Punctuation
+  if (project && project.font && project.font.addLadino)       cats.splice(cats.indexOf('punct') + 1, 0, 'ladino');        // Specialized / Wide / Yiddish / Ladino sit right after Punctuation
   if (project && project.font && project.font.addYiddish)      cats.splice(cats.indexOf('punct') + 1, 0, 'yiddish');
+  if (project && project.font && project.font.addWideForms)    cats.splice(cats.indexOf('punct') + 1, 0, 'wideforms');     // later splices land earlier on screen — this line's position keeps Wide right after Specialized
   if (project && project.font && project.font.addSpecialForms) cats.splice(cats.indexOf('punct') + 1, 0, 'specialforms');
   // NAMES is the pre-ready / no-I18n fallback only; the fontmaker.tabs.cat_* keys are the source
   // of truth and are keyed to these same category ids. applyI18n re-runs this on a language switch.
@@ -11073,10 +11183,11 @@ function renderNodeChrome() {   // pure sync — safe to call from any render pa
   const l = curLetter();
   if (curCp !== _nsGlyphKey) { _nsGlyphKey = curCp; nodeStatusCoords(null); }
   const g = document.getElementById('nsGlyph');
-  g.textContent = isCustomCp(curCp) ? '' : String.fromCodePoint(parseInt(curCp, 16));
+  const _noGlyphChar = isCustomCp(curCp) || !!wideGlyphItemFor(curCp);   // custom / converted-wide PUA codepoints render tofu
+  g.textContent = _noGlyphChar ? '' : String.fromCodePoint(parseInt(curCp, 16));
   g.style.fontFamily = project.template.font;
-  document.getElementById('nsName').textContent = l ? (isCustomCp(curCp) ? '' : ' · ') + l.name : '';
-  document.getElementById('nsCp').textContent = isCustomCp(curCp) ? '' : ' · U+' + String(curCp).toUpperCase();
+  document.getElementById('nsName').textContent = l ? (_noGlyphChar ? '' : ' · ') + l.name : '';
+  document.getElementById('nsCp').textContent = _noGlyphChar ? '' : ' · U+' + String(curCp).toUpperCase();
   // selection count — diff-guarded so unrelated re-renders never re-announce (this is the only aria-live region)
   const txt = _penMode ? I18n.t('fontmaker.node_editor.placing_points')
     : nodeSel.size ? I18n.t(nodeSel.size === 1 ? 'fontmaker.node_editor.points_selected.one' : 'fontmaker.node_editor.points_selected.other', {count: nodeSel.size})
@@ -11483,8 +11594,8 @@ function nodeEditPanelHTML(l) {
   const dis2 = cnt >= 2 ? '' : 'disabled';
   const totalPts = nodeModel ? nodeModel.contours.reduce((t, ct) => t + ct.nodes.length, 0) : 0;   // Reduce-points readout
   const segWhy = cnt >= 2 ? '' : ' ' + I18n.t('fontmaker.node_editor.seg_why');
-  // glyph preview in the header — same guard as updateCurrentGlyphLabel (custom PUA codepoints render tofu)
-  const glyph = isCustomCp(curCp) ? '' :
+  // glyph preview in the header — same guard as updateCurrentGlyphLabel (custom / converted-wide PUA codepoints render tofu)
+  const glyph = (isCustomCp(curCp) || wideGlyphItemFor(curCp)) ? '' :
     `<span class="npnl-glyph" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(curCp, 16))}</span> — `;
   const tip = _penMode
     ? I18n.t('fontmaker.node_editor.tip_pen')
@@ -12141,6 +12252,7 @@ function precompFormBtn(pc) {
 }
 function setPrecompTarget(t) {
   const pc = getPrecomp(t); if (!pc) return;
+  if (isWideForm(pc) && wideGlyphItemFor(t)) { openWideGlyphEditor(t); return; }   // converted wide form → its own editor, never the generated view
   precompTarget = t; curKind = 'letter'; curCp = precompBaseCp(pc);
   renderGrids(); renderStage(); renderControls();
 }
@@ -12219,7 +12331,64 @@ function gotoBaseNikkud(cp) {   // leave the wide-form editor and place nikkud o
   anchorCat = 'nikkud'; activeAnchorClass = 'below'; precompTarget = null;
   selectItem('letter', cp);   // in-anchors path re-renders the base letter's full nikkud step
 }
+function openWideGlyphEditor(target) {   // open a materialized wide form in the node editor
+  if (!wideGlyphItemFor(target)) return;
+  selectItem('letter', target);
+  _setWorkMode('nodes');   // the shape is why the maker converted — land on the outline, not the anchors
+}
+/* Materialize the CURRENT generated wide outline into an editable letter item (see the
+   wideGlyphItemFor block for the model). Direct-mutation CRUD mirroring add/deleteCustomGlyph —
+   not undo-backed; markDirty() drives autosave. */
+function convertWideToEditable(target) {
+  const pc = getPrecomp(target); if (!pc || !isWideForm(pc)) return;
+  if (wideGlyphItemFor(target)) { openWideGlyphEditor(target); return; }   // already converted — just open it
+  if (isCustomCp(target)) return;   // an explicit custom glyph owns this cp; its badge explains
+  const g = buildWideGlyph(pc); if (!g) return;
+  // g.contours are bare point rings; windings ride along in buildWideGlyph's own push order
+  // (bases in order, each base's contours in order), and the X-only scale never flips orientation.
+  const windings = [];
+  (pc.bases || [pc.base]).forEach(cp => {
+    const L = project.letters.find(x => x.codepoint === cp);
+    if (L && L.contours) L.contours.forEach(c => windings.push(c.winding));
+  });
+  const it = blankLetter({ cp: target, name: pc.name || ('Wide U+' + target) });
+  it.wideGlyph = true;
+  it.contours = g.contours.map((pts, i) => ({ winding: windings[i] || 'cw', points: pts.map(p => p.slice()) }));
+  it.curves = g.curves ? JSON.parse(JSON.stringify(g.curves)) : null;
+  // g.advance already includes the global letter-spacing; the letter export path re-adds it via
+  // effLetterAdvance, so store the raw advance or every materialized form would carry it twice.
+  it.advance = Math.max(50, g.advance - fontSpacing().letterSpacing);
+  it.lsb = g.lsb;
+  const m = wideDonorAnchors(pc, g);   // vowels keep landing where the generated form put them — now maker-adjustable
+  if (m) {
+    it.anchors = JSON.parse(JSON.stringify(m.anchors));
+    if (m.markAnchors && Object.keys(m.markAnchors).length) it.markAnchors = JSON.parse(JSON.stringify(m.markAnchors));
+  }
+  project.letters.push(it);
+  markDirty();
+  openWideGlyphEditor(target);
+  status(I18n.t('fontmaker.status.wide_converted', { name: gName(pc.name) || target }));
+}
+function revertWideFormEdit(target) {
+  const it = wideGlyphItemFor(target); if (!it) return;
+  const pc = getPrecomp(target);
+  if (!confirm(I18n.t('fontmaker.modals.confirm_revert_wide', { name: gName((pc && pc.name) || it.name) || target }))) return;
+  project.letters = project.letters.filter(l => !(l.wideGlyph && l.codepoint === target));
+  markDirty();
+  if (curCp === target && curKind === 'letter') pickPrecompForm(target);   // back to the live-generated view
+  else renderGrids();
+  status(I18n.t('fontmaker.status.wide_reverted', { name: gName((pc && pc.name) || it.name) || target }));
+}
 function renderWideFormControls(pc) {
+  const wgi = wideGlyphItemFor(pc.target);
+  if (wgi) {   // materialized — the maker's edited item is what ships; edit or revert, no Width slider
+    return `<div class="ws-side-title">${esc(precompName(pc))}</div>
+      <div class="hint" style="font-size:0.66rem;">${_pT('wide_edited_hint', 'Converted to an editable glyph — the exported font ships your edited outline, and this form no longer follows its base letter. Revert to return to the auto-stretched version.')}</div>
+      <button class="ctl-btn primary" style="width:100%;margin-top:8px;" onclick="openWideGlyphEditor('${pc.target}')">${_pT('wide_edit_glyph', '✎ Edit the glyph →')}</button>
+      <button class="ctl-btn" style="width:100%;margin-top:6px;" onclick="revertWideFormEdit('${pc.target}')">${_pT('wide_revert', 'Revert to auto-generated…')}</button>
+      <hr class="ctl-divider">
+      <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${_pT('back', '← Back')}</button>`;
+  }
   const wPct = Math.round(precompWidthScale(pc) * 100), isOver = (pc.widthScale != null);
   const bases = (pc.bases || [pc.base]).map(cp => { const L = project.letters.find(x => x.codepoint === cp); return L ? (L.name || cp) : cp; });
   const donorCp = precompDonorCp(pc), donorName = (letterMeta(donorCp) && letterMeta(donorCp).name) || ('U+' + donorCp);
@@ -12237,6 +12406,10 @@ function renderWideFormControls(pc) {
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
       ${isOver ? `<button class="ctl-btn" onclick="resetPrecompWidth()">${_pT('reset_width', 'Reset width')}</button>` : `<span class="hint" style="font-size:0.62rem;">${_pT('default_width_hint', 'Default width — drag the slider to customize.')}</span>`}
     </div>
+    ${isCustomCp(pc.target) ? '' : `<div class="ctl-row" style="margin-top:8px;">
+      <button class="ctl-btn" style="width:100%;" onclick="convertWideToEditable('${pc.target}')">${_pT('wide_convert', 'Convert to editable glyph…')}</button>
+    </div>
+    <div class="hint" style="font-size:0.6rem;margin-top:4px;">${_pT('wide_convert_hint', 'Stretch looking wonky? Convert this form into a real glyph you can edit point by point. It stops following the base letter — you can revert anytime.')}</div>`}
     <hr class="ctl-divider">
     <div class="ws-side-title">${_pT('nikkud_side', 'Nikkud')}</div>
     <div class="hint" style="font-size:0.62rem;">${_pT('wide_nikkud_hint', "Vowels on this wide form follow <b>" + esc(donorName) + "</b>'s placement, stretched to fit — so they stay consistent with the plain letter. Preview one below; to move it, edit the nikkud on <b>" + esc(donorName) + "</b>.", { name: '<b>' + esc(donorName) + '</b>' })}</div>
@@ -13652,7 +13825,7 @@ function updateCurrentGlyphLabel() {   // persistent "Editing: <glyph> — <name
   const name = esc(it.name || '');
   // Only real letters get a glyph preview: a custom Private-Use codepoint renders a tofu box, and a
   // lone combining mark (nikkud/trop) renders as a floating diacritic — show the name only for those.
-  if (curKind !== 'letter' || isCustomCp(curCp)) { el.innerHTML = window.I18n ? I18n.t('fontmaker.workspace.editing', {name: name}) : ('Editing: ' + name); return; }
+  if (curKind !== 'letter' || isCustomCp(curCp) || wideGlyphItemFor(curCp)) { el.innerHTML = window.I18n ? I18n.t('fontmaker.workspace.editing', {name: name}) : ('Editing: ' + name); return; }
   const glyph = `<span class="wc-glyph" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(curCp,16))}</span>`;
   el.innerHTML = window.I18n ? I18n.t('fontmaker.workspace.editing_glyph', {glyph: glyph, name: name}) : ('Editing: ' + glyph + ' — ' + name);
 }
@@ -14174,6 +14347,7 @@ function renderEngAccentLeft(l) {   // English letters: accent placement = pick 
 function _placementCycleCps() {
   if (isEng(curCp)) return (project.letters || []).filter(x => x.eng && x.contours && x.contours.length).map(x => x.codepoint);
   if (isCustomCp(curCp)) return (project.letters || []).filter(x => x.custom).map(x => x.codepoint);
+  if (wideGlyphItemFor(curCp)) return (project.letters || []).filter(x => x.wideGlyph).map(x => x.codepoint);   // cycle the converted wide forms
   return LETTER_ORDER.filter(cp => { const m = letterMeta(cp); return !(m && m.cat === 'punct'); });
 }
 function stepLetter(dir) {   // dir = -1 (prev) | +1 (next); selectItem keeps us on the placement page + guards unsaved moves
@@ -14360,7 +14534,7 @@ function renderAnchorLeft(L, l) {
   let _ci = _cyc.indexOf(curCp); if (_ci < 0) _ci = 0;
   const _clen = _cyc.length, _single = _clen <= 1;
   const _navChar = cp => {
-    if (isCustomCp(cp)) { const it = (project.letters || []).find(x => x.codepoint === cp); return esc(((it && it.name) ? it.name[0] : '') || '?'); }
+    if (isCustomCp(cp) || wideGlyphItemFor(cp)) { const it = (project.letters || []).find(x => x.codepoint === cp); return esc(((it && it.name) ? it.name[0] : '') || '?'); }
     return `<span lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${String.fromCodePoint(parseInt(cp,16))}</span>`;
   };
   const _prevLbl = _single ? _pT('prev', '◀ Prev') : _pT('prev_char', '◀ Prev (' + _navChar(_cyc[(_ci - 1 + _clen) % _clen]) + ')', { char: _navChar(_cyc[(_ci - 1 + _clen) % _clen]) });
@@ -14934,10 +15108,36 @@ function qaRows() {
     SPECIAL_TARGETS.forEach(t => {
       const pc = (project.precomposed || []).find(p => p.target === t);
       if (!pc || !isWideForm(pc) || !precompExportable(pc)) return;   // SPECIAL_MORE dagesh/mapiq forms are NOT wide — qaSynthWideRow on one fabricates a row whose ink is the plain undotted base letter
+      if (wideGlyphShips(t)) return;                                  // converted — the maker's item ships; its real row is pushed below
       const r = qaSynthWideRow(pc);
       if (r) { r.section = 'special'; rows.push(r); }
     });
   }
+  if (project.font.addWideForms) {                                     // Wide-letterforms tab → full collision rows for the generated forms
+    WIDE_ALL_TARGETS.forEach(t => {
+      if (project.font.addSpecialForms && SPECIAL_TARGETS.indexOf(t) >= 0) return;   // the shared FB2x rows were already emitted above — never duplicate
+      const pc = (project.precomposed || []).find(p => p.target === t);
+      if (!pc || !isWideForm(pc) || !precompExportable(pc)) return;
+      if (wideGlyphShips(t)) return;                                  // converted — the maker's item ships; its real row is pushed below
+      const r = qaSynthWideRow(pc);
+      if (r) {
+        r.section = 'wide';
+        if (!/^FB/i.test(t)) r.labelCh = qaCh(precompBaseCp(pc));     // PUA cps render tofu in the UI font — label with the base char (the name column says "Wide X")
+        rows.push(r);
+      }
+    });
+  }
+  // Converted wide forms (wideGlyph items) are exported bases with their OWN anchors → real collision
+  // rows, whenever they actually ship (any owning tab on) — outside the addWideForms gate because the
+  // Specialized tab alone can ship a converted FB2x form.
+  (project.letters || []).forEach(l => {
+    if (!l.wideGlyph || !wideGlyphShips(l.codepoint)) return;
+    const pcOf = getPrecomp(l.codepoint);
+    const baseCp = pcOf ? precompBaseCp(pcOf) : null;
+    rows.push({ cp: l.codepoint, name: l.name || ('Wide U+' + l.codepoint),
+                labelCh: qaCh(baseCp || l.codepoint),
+                desc: !!(baseCp && letterMeta(baseCp) && letterMeta(baseCp).desc), L: l, section: 'wide' });
+  });
   if (project.font.addCustomGlyphs) {                                  // custom MAIN glyphs are exported bases (with anchors) → full collision rows
     (project.letters || []).filter(l => l.custom).forEach(l => {
       rows.push({ cp: l.codepoint, name: l.name || ('Custom U+' + l.codepoint),
@@ -15181,6 +15381,11 @@ function fontInkBounds() {
   if (project.font.addCustomGlyphs) customBaseLetters().forEach(l => {
     if (l.contours && l.contours.length) upd(polysBounds(l.contours.map(c => c.points)));
   });
+  // Converted wide letterforms ship their own (possibly hand-edited) ink — a node edit can move it
+  // vertically, so count it or it clips. Generated wide forms stay skipped: X-only scale, no Y change.
+  (project.letters || []).forEach(l => {
+    if (l.wideGlyph && wideGlyphShips(l.codepoint)) upd(polysBounds(l.contours.map(c => c.points)));
+  });
   let tropTop = null, tropBot = null;   // worst-case trop extents for the stack contribution
   if (tropOn) TROP_CPS.forEach(cp => {
     const b = polysBounds(markGlyphContours('trop', cp).map(poly => poly.map(([x,y]) => [x*tms, y*tms])));
@@ -15290,7 +15495,7 @@ function qaRenderGrid() {
   html += '</tr></thead><tbody>';
   let lastSection = null;
   qaRows().forEach(row => {
-    if (row.section && row.section !== lastSection) { lastSection = row.section; html += `<tr class="qa-section"><td class="qa-section-h" colspan="${cols.length + 1}">${I18n.t(row.section === 'special' ? 'fontmaker.qa.section_special' : 'fontmaker.qa.section_custom')}</td></tr>`; }
+    if (row.section && row.section !== lastSection) { lastSection = row.section; const secKey = { special: 'fontmaker.qa.section_special', wide: 'fontmaker.qa.section_wide', custom: 'fontmaker.qa.section_custom' }[row.section] || 'fontmaker.qa.section_custom'; html += `<tr class="qa-section"><td class="qa-section-h" colspan="${cols.length + 1}">${I18n.t(secKey)}</td></tr>`; }
     const L = row.L, anc = qaAnchors(L);
     html += `<tr><td class="qa-rowlabel" title="${esc(gName(row.name))}">${esc(row.labelCh)} <span style="color:var(--muted);">${esc(gName(row.name))}</span></td>`;
     cols.forEach(col => {
@@ -15422,6 +15627,23 @@ function buildFontSpec() {
     if (l.curves && l.curves.length === contours.length) glyphs[nm].curves = l.curves;
     if (!exists) { glyphOrder.push(nm); baseGlyphNames.push(nm); cmap[parseInt(l.codepoint,16)] = nm; }
   });
+
+  // converted wide letterforms (wideGlyph items) — the maker's hand-edited overrides of the auto-
+  // stretched wide forms. Shipped while an owning tab is on (activeExtraTargets covers the FB2x
+  // forms the Specialized tab shares); the builtWide bake below skips any code point that already
+  // owns a glyph, so an item here cleanly replaces its auto-stretch — and an explicit custom glyph
+  // at the same cp (the pass above) still wins, matching the tile badge.
+  const builtWideGlyphItems = [];
+  { const activeT = activeExtraTargets();
+    (project.letters || []).filter(l => l.wideGlyph && l.contours && l.contours.length).forEach(l => {
+      if (!activeT.has(l.codepoint)) return;
+      const nm = gname(l.codepoint);
+      if (glyphs[nm]) return;
+      glyphs[nm] = { contours: l.contours.map(c => c.points), advance: effLetterAdvance(l), lsb: (l.lsb != null ? l.lsb : null) };
+      if (l.curves && l.curves.length === l.contours.length) glyphs[nm].curves = l.curves;
+      glyphOrder.push(nm); baseGlyphNames.push(nm); cmap[parseInt(l.codepoint,16)] = nm;
+      builtWideGlyphItems.push(l);
+    }); }
 
   // English (Latin) base letters (A–Z, a–z) — flagged entries in project.letters; only when enabled, only traced ones
   if (project.font.addEnglishLetters) (project.letters || []).filter(l => l.eng && l.contours && l.contours.length).forEach(l => {
@@ -15641,7 +15863,7 @@ function buildFontSpec() {
   });
 
   // FEA
-  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh);
+  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh, builtWideGlyphItems);
 
   // name table — nameID 1 stays the bare family for both styles (that's the RIBBI link);
   // only nameID 2/3/4/6 carry the Regular/Bold distinction.
@@ -15691,11 +15913,12 @@ function buildFontSpec() {
 /* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp (incl. the mark-filtered
    ccmp_dagesh lookup), mark-to-base, mkmk, contextual vowel-slide lookups (vowelPair slide mode), GDEF.
    Nikkud blocks emit only when nikOn; trop blocks only when tropOn. A letters-only font skips both. */
-function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh) {
+function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh, builtWideGlyphItems) {
   builtPerLetter = builtPerLetter || [];
   builtWide = builtWide || [];
   builtShinDagesh = builtShinDagesh || [];
   builtYiddishPasekh = builtYiddishPasekh || [];
+  builtWideGlyphItems = builtWideGlyphItems || [];
   let f = '';
   f += 'languagesystem DFLT dflt;\n';
   f += 'languagesystem hebr dflt;\n\n';
@@ -15807,6 +16030,22 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   if (shevaNaOn) {   // "Sheva Na" stylistic set — turn any sheva into the bold sheva to mark it mobile
     f += `feature ss01 {\n  featureNames { name "Sheva Na (mobile sheva)"; };\n  sub ${gname('05B0')} by ${SHEVA_NA_GLYPH};\n} ss01;\n\n`;
   }
+  // ss02 "Wide letterforms" — one-tap normal → wide in apps that expose stylistic sets; the 19 PUA
+  // wide forms are otherwise reachable only by pasting private-use code points. Wide-tab feature
+  // only (single-base entries — the Yiddish digraphs are many-to-one ligature forms, not a per-
+  // letter width alternate), and each sub is emitted only when both glyphs actually shipped
+  // (whether the wide side came from the auto-bake or a converted wideGlyph item).
+  if (project.font.addWideForms) {
+    const wideSubs = [];
+    WIDE_ALL_FORMS.forEach(w => {
+      if (!w.base) return;
+      const bn = gname(w.base), wn = gname(w.target);
+      if (!baseGlyphNames.includes(bn)) return;
+      if (builtWide.some(bw => bw.pc.target === w.target) || builtWideGlyphItems.some(l => l.codepoint === w.target))
+        wideSubs.push(`  sub ${bn} by ${wn};`);
+    });
+    if (wideSubs.length) f += 'feature ss02 {\n  featureNames { name "Wide letterforms"; };\n' + wideSubs.join('\n') + '\n} ss02;\n\n';
+  }
   // ── mark-to-base — nikkud + trop, per-letter base anchors (skip if none; feaLib rejects empty blocks) ──
   let markLines = '';
   const emitBaseAnchors = (nm, l, skipCls) => {   // skipCls: a class the baked-in precomposed mark already occupies (shared line AND its pin subclasses)
@@ -15877,6 +16116,10 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     const m = wideDonorAnchors(bw.pc, bw.g); if (!m) return;
     emitBaseAnchors(gname(bw.pc.target), Object.assign({}, m.donor, { anchors: m.anchors, markAnchors: m.markAnchors }));   // no skipCls — wide forms carry no baked mark
   });
+  // Converted wide letterforms are real items with their OWN anchors (seeded from the donor mapping
+  // at conversion, maker-adjustable since) — emit them directly so vowels/trop attach to the EDITED
+  // outline. Only shipped items reach this list: an anchor rule for an absent glyph is a feaLib error.
+  builtWideGlyphItems.forEach(l => emitBaseAnchors(gname(l.codepoint), l));
   // ײַ (FB1F) is a new base too — a trop mark or a second vowel typed after it must attach to the WIDENED
   // outline, not fall to x=0. Same mapped anchors ײ gets, minus the below class its baked pasekh occupies;
   // the below-key pins go with it, since the synth inherits markAnchors by reference and a pin beats the
@@ -17849,7 +18092,7 @@ async function fidelityMeasure(ctx) {
   const rows = [];
   let skippedSubst = 0, skippedEdge = 0, skippedUser = 0, skippedOdd = 0;
   try {
-    const letters = project.letters.filter(l => !l.custom && !l.eng && l.contours && l.contours.length
+    const letters = project.letters.filter(l => !l.custom && !l.eng && !l.wideGlyph && l.contours && l.contours.length
       && (letterMeta(l.codepoint) || {}).cat !== 'punct');
     ctx.importedMarks.forEach(([kind, cp]) => {
       const cov = ctx.markCoverage[cp];
@@ -18246,6 +18489,10 @@ async function generatePreviewPDF() {
     if (pf.addSpecialForms) {
       const chars = SPECIAL_TARGETS.map(t => cpChar(t)).filter(Boolean);
       if (chars.length) specimenPage(I18n.t('fontmaker.canvas.section_specialized'), chars, { rtl: true, cols: 8, glyphPx: 44 });
+    }
+    if (pf.addWideForms) {
+      const chars = WIDE_ALL_TARGETS.map(t => cpChar(t)).filter(Boolean);
+      if (chars.length) specimenPage(I18n.t('fontmaker.canvas.section_wide'), chars, { rtl: true, cols: 8, glyphPx: 44 });
     }
     if (pf.addYiddish) {
       const chars = YIDDISH_TARGETS.map(t => cpChar(t)).filter(Boolean);
@@ -18840,13 +19087,14 @@ function migrateProject(data) {
     ex.draw = sanitizeDraw(ex.draw);           // Draw-mode strokes (untrusted — capped + clamped; absent → null)
     return ex;
   });
-  // Non-LETTERS items that live in project.letters — custom MAIN glyphs (.custom) and English/Latin
-  // letters (.eng) — are rebuilt away by the LETTERS.map above, so preserve any beyond the standard 27.
+  // Non-LETTERS items that live in project.letters — custom MAIN glyphs (.custom), English/Latin
+  // letters (.eng) and converted wide letterforms (.wideGlyph) — are rebuilt away by the LETTERS.map
+  // above, so preserve any beyond the standard 27.
   // .eng used to be dropped here and re-seeded BLANK by ensureEnglishSeeded below, which silently
   // destroyed traced/imported Latin on every save→reload and autosave restore.
   { const stdCps = new Set(LETTERS.map(L => L.cp));
     Object.values(byCp).forEach(l => {
-      if (!l || !(l.custom || l.eng) || stdCps.has(l.codepoint)) return;
+      if (!l || !(l.custom || l.eng || l.wideGlyph) || stdCps.has(l.codepoint)) return;
       l.source = l.source || { kind: data.inputMode || 'single', dataUrl: null, cropRect: null, sheetId: null };
       if (l.source.sheetId === undefined) l.source.sheetId = null;
       if (!l.transform) l.transform = [1,0,0,1,0,0];
@@ -18873,6 +19121,13 @@ function migrateProject(data) {
         l.case = (l.case === 'lower' || l.case === 'accent') ? l.case : 'upper';
         if (l.engSource !== 'import') delete l.engSource;           // closed domain; junk here is inert but pointless
         if (!l.name) l.name = (engMeta(l.codepoint) || {}).name || ('U+' + l.codepoint);
+      }
+      if (l.wideGlyph && !l.custom && !l.eng) {
+        // Same cp-hygiene as .eng: a converted wide letterform is only meaningful at a wide-table
+        // target — anything else is dropped and the auto-generated form takes over again.
+        if (typeof l.codepoint !== 'string' || WIDE_ALL_TARGETS.indexOf(l.codepoint) < 0) return;
+        l.wideGlyph = true;   // normalize truthy junk from the blob
+        if (!l.name) l.name = ((EXTRA_FORMS.find(f => f.target === l.codepoint) || {}).name) || ('Wide U+' + l.codepoint);
       }
       data.letters.push(l);
     });
@@ -18950,6 +19205,13 @@ function migrateProject(data) {
     if (data.font.addSpecialForms) ensurePrecompSeeded(SPECIAL_FORMS, data);
     if (data.font.addYiddish)      ensurePrecompSeeded(YIDDISH_FORMS, data);
     if (data.font.addLadino)       ensurePrecompSeeded(LADINO_FORMS, data);
+    if (data.font.addWideForms) {
+      ensurePrecompSeeded(WIDE_ALL_FORMS, data);
+      WIDE_ALL_FORMS.forEach(f => {   // same defWidth backfill as setAddWideForms — the shared FB2x entries (and any table growth) may predate this tab; idempotent, and it never touches a user-set widthScale
+        const pc = (data.precomposed || []).find(p => p.target === f.target);
+        if (pc && pc.defWidth == null) pc.defWidth = f.defWidth;
+      });
+    }
     if (!data.font.customMarks) data.font.customMarks = { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } };
     if (!data.font.customMarks.custom) data.font.customMarks.custom = {};
     if (!data.font.customMarks.combinedImage) data.font.customMarks.combinedImage = { dataUrl: null };

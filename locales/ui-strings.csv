@@ -1319,6 +1319,7 @@ fontmaker.canvas.section_custom,Custom glyphs,גליפים מותאמים,canvas
 fontmaker.canvas.section_english,English letters,אותיות אנגליות,canvas — specimen section title,canvas
 fontmaker.canvas.section_ladino,Ladino forms,צורות לדינו,canvas — specimen section title,canvas
 fontmaker.canvas.section_specialized,Specialized — wide letterforms,מיוחדות — צורות אותיות רחבות,canvas — specimen section title,canvas
+fontmaker.canvas.section_wide,Wide letterforms,צורות אותיות רחבות,canvas — specimen section title,canvas
 fontmaker.canvas.section_yiddish,Yiddish forms,צורות יידיש,canvas — specimen section title,canvas
 fontmaker.canvas.special_forms,special & precomposed forms,צורות מיוחדות ומורכבות מראש,canvas — specimen cover label,canvas
 fontmaker.canvas.specimen_subtitle,Hebrew Font Maker specimen · v{version},דוגמית יוצר הגופנים העברי · v{version},canvas — specimen cover subtitle,canvas
@@ -1329,6 +1330,7 @@ fontmaker.canvas.tpl_nikkud,Vowels (Nikkud),תנועות (ניקוד),canvas —
 fontmaker.canvas.tpl_page_of,{title} · page {n} of {total},{title} · עמוד {n} מתוך {total},canvas — printable template page suffix,canvas
 fontmaker.canvas.tpl_punct,Punctuation & More,פיסוק ועוד,canvas — printable template title,canvas
 fontmaker.canvas.tpl_trop,Trop (Cantillation),טעמים (טעמי המקרא),canvas — printable template title,canvas
+fontmaker.changelog.v5_33,"v5.33 — Wide letterforms for every letter. Torah scrolls and fine Hebrew typesetting stretch certain letters to fill out a line — but until now the Font Maker offered only the eight wide forms Unicode encodes, in the Specialized letters tab. A new Settings toggle, Add wide letterforms, adds a tab with a wide variant of every letter, auto-stretched from your traced letters — 150% to start, each with its own Width slider. If a stretch turns out wonky, convert that form to a fully editable glyph and fix its outline point by point (you can revert to the automatic version any time). Exported fonts include the wide letters at their code points and in a new “Wide letterforms” stylistic set (ss02), so apps that support stylistic sets can swap normal letters for wide ones with one switch. (August 2026)","v5.33 — צורות אותיות רחבות לכל אות. ספרי תורה וסידור עברי משובח מותחים אותיות מסוימות כדי למלא שורה — אבל עד כה הציע יוצר הגופנים רק את שמונה הצורות הרחבות שיוניקוד מקודד, בלשונית האותיות המיוחדות. מתג הגדרות חדש, הוסף אותיות רחבות, מוסיף לשונית עם גרסה רחבה של כל אות, הנמתחת אוטומטית מהאותיות העקובות שלכם — 150% בתור התחלה, לכל אחת מחוון רוחב משלה. אם מתיחה יוצאת עקומה, המירו את הצורה לגליף הניתן לעריכה מלאה ותקנו את קו המתאר שלה נקודה-נקודה (אפשר לשחזר לגרסה האוטומטית בכל עת). גופנים מיוצאים כוללים את האותיות הרחבות בנקודות הקוד שלהן ובסט סגנוני חדש ״אותיות רחבות״ (ss02), כך שיישומים שתומכים בסטים סגנוניים יכולים להחליף אותיות רגילות ברחבות במתג אחד. (אוגוסט 2026)",changelog entry,plain-text mirror of the About-tab li
 "fontmaker.changelog.v5_32","v5.32 — Choose exactly what a font import brings along. Importing a font — a TTF you upload or an Open Siddur starting-font link — used to be close to all-or-nothing: one switch for the letters, one for every vowel and cantillation shape together, one for all their positions, and the kerning came along on its own. If you wanted the original's letters but planned to place the vowels yourself, there was no way to say so. The import options now name each part separately: the letter shapes; the nikkud shapes and, on their own switch, their placement; the trop shapes and their placement; and the kerning & spacing (letter-pair kerning, word gap and line spacing). Everything starts switched on, so a plain import behaves exactly as before — un-tick the parts you mean to redo yourself and only the rest comes across. The partner wizard's What to include step offers the same choices, and what you keep stays yours: a part you left un-ticked keeps the positions you dragged and the fine-tuned pins the import would otherwise replace, and the after-import placement check only measures the parts you actually took. (August 2026)","v5.32 — בחרו בדיוק מה ייבוא גופן מביא איתו. ייבוא גופן — קובץ TTF שאתם מעלים או קישור גופן פתיחה של הסידור הפתוח — היה עד כה כמעט הכול-או-כלום: מתג אחד לאותיות, אחד לכל צורות הניקוד והטעמים יחד, אחד לכל המיקומים שלהם, והקרנינג הגיע מעצמו. אם רציתם את אותיות המקור אבל תכננתם למקם את התנועות בעצמכם, לא הייתה דרך לומר זאת. אפשרויות הייבוא מציינות כעת כל חלק בנפרד: צורות האותיות; צורות הניקוד, ובמתג משלהן — המיקום שלהן; צורות הטעמים והמיקום שלהם; והקרנינג והריווח (קרנינג זוגות אותיות, רווח מילים וריווח שורות). הכול מתחיל מופעל, כך שייבוא רגיל מתנהג בדיוק כמו קודם — בטלו את סימון החלקים שבכוונתכם לעשות מחדש בעצמכם, ורק השאר יעבור. שלב ״מה לכלול״ של אשף השותפים מציע את אותן בחירות, ומה ששמרתם נשאר שלכם: חלק שהשארתם לא מסומן שומר על המיקומים שגררתם ועל הנעצים המכווננים שהייבוא היה מחליף אחרת, ובדיקת המיקום שאחרי הייבוא מודדת רק את החלקים שבאמת לקחתם. (אוגוסט 2026)",changelog entry,plain-text mirror of the About-tab li
 "fontmaker.changelog.v5_31","v5.31 — An eraser that takes off only the ink you touch. The eraser in Draw mode could remove a whole stroke, or cut a stroke clean in two — but it could never shave a sliver off one side, because a stroke has one thickness all the way along and a cut always went through all of it. The eraser now has a Sculpt mode that rubs away just the ink under it: round off a corner, thin a stem, take a bite out of an edge — and the rest of the stroke stays exactly as you drew it. It is what the eraser does by default now; Partial (cut one stroke into two you can move separately) and Whole stroke are still there under Eraser mode, and each one now says in a line what it does. What you rub away is a hole in the paper rather than a change to the stroke — so if you later Move that stroke out from under it, the stroke comes back whole. Press Save drawing & trace as usual and the sculpted shape is what lands in your outline, and in the font you export. (August 2026)","v5.31 — מחק שמסיר רק את הדיו שנגעתם בו. המחק במצב ציור ידע להסיר קו שלם, או לחתוך קו לשניים — אבל הוא מעולם לא ידע לגלח שכבה דקה מצד אחד, משום שלקו יש עובי אחד לכל אורכו והחיתוך תמיד עבר דרך כולו. קו שיצא קצת עבה מדי, או פינה שרצתה עיגול, חייבו למחוק את הקו ולצייר אותו מחדש. למחק יש עכשיו מצב פיסול שמוחק רק את הדיו שמתחתיו: לעגל פינה, להצר קו, לנגוס בקצה — ושאר הקו נשאר בדיוק כפי שציירתם. זו ברירת המחדל של המחק מעתה; מחיקה חלקית (חיתוך קו אחד לשני קווים שאפשר להזיז בנפרד) וקו שלם עדיין נמצאים תחת מצב מחיקה, ולכל אחד מהם יש כעת שורה שמסבירה מה הוא עושה. מה שנמחק הוא חור בנייר ולא שינוי בקו — כך שאם תזיזו אחר כך את הקו מתחתיו, הקו יחזור שלם. לחצו על שמירת הציור והמרה לקווי מתאר כרגיל, והצורה המפוסלת היא זו שתגיע לקווי המתאר שלכם, ולגופן שתייצאו. (August 2026)",changelog entry,changelog; html-stripped
 fontmaker.changelog.v5_1,"v5.1 — Dotted shin and sin now stack correctly with a holam. When a dotted shin or sin also carries a holam, the vowel dot now lands where it should — to the left of the shin-dot (two dots) or merged onto the sin-dot (one dot) — in the live preview, the QA sheet, and the exported font. You can fine-tune where the holam sits in Special & precomposed forms. (July 2026)","v5.1 — שׁין ושׂין מנוקדות מסתדרות כעת נכון עם חולם. כאשר שׁ או שׂ נושאת גם חולם, נקודת התנועה יושבת כעת במקום הנכון — משמאל לנקודת השׁין (שתי נקודות) או ממוזגת עם נקודת השׂין (נקודה אחת) — בתצוגה המקדימה, בגיליון ה-QA, ובגופן המיוצא. אפשר לכוונן היכן יושב החולם על שׁ/שׂ באזור צורות מיוחדות ומורכבות מראש. (July 2026)",changelog entry,changelog; html-stripped
@@ -1648,13 +1650,32 @@ fontmaker.glyphname.tsadi_sofit,Tsadi sofit,צדי סופית,letter tile/label 
 fontmaker.glyphname.tsere,Tsere,צירה,nikkud mark name,glyph-name
 fontmaker.glyphname.vav,Vav,וו,letter tile/label name,glyph-name
 fontmaker.glyphname.wide_alef,Wide Alef,אלף רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_ayin,Wide Ayin,עין רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_bet,Wide Bet,בית רחבה,composed form name,glyph-name
 fontmaker.glyphname.wide_dalet,Wide Dalet,דלת רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_final_kaf,Wide Final Kaf,כף סופית רחבה,composed form name,glyph-name
 fontmaker.glyphname.wide_final_mem,Wide Final Mem,מם סופית רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_final_nun,Wide Final Nun,נון סופית רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_final_pe,Wide Final Pe,פא סופית רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_final_tsadi,Wide Final Tsadi,צדי סופית רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_gimel,Wide Gimel,גימל רחבה,composed form name,glyph-name
 fontmaker.glyphname.wide_he,Wide He,הא רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_het,Wide Het,חית רחבה,composed form name,glyph-name
 fontmaker.glyphname.wide_kaf,Wide Kaf,כף רחבה,composed form name,glyph-name
 fontmaker.glyphname.wide_lamed,Wide Lamed,למד רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_mem,Wide Mem,מם רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_nun,Wide Nun,נון רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_pe,Wide Pe,פא רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_qof,Wide Qof,קוף רחבה,composed form name,glyph-name
 fontmaker.glyphname.wide_resh,Wide Resh,ריש רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_samekh,Wide Samekh,סמך רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_shin,Wide Shin,שין רחבה,composed form name,glyph-name
 fontmaker.glyphname.wide_tav,Wide Tav,תו רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_tet,Wide Tet,טית רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_tsadi,Wide Tsadi,צדי רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_vav,Wide Vav,וו רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_yod,Wide Yod,יוד רחבה,composed form name,glyph-name
+fontmaker.glyphname.wide_zayin,Wide Zayin,זין רחבה,composed form name,glyph-name
 fontmaker.glyphname.yid_fey,Fey (פֿ),פיי (פֿ),composed form name,glyph-name; mixed UI+content — do not translate {…} | REVIEW: 'Fey (פֿ)' -> 'פיי (פֿ)' — confirm
 fontmaker.glyphname.yid_khof,Khof (כֿ),כוף (כֿ),composed form name,glyph-name; mixed UI+content — do not translate {…} | REVIEW: 'Khof (כֿ)' -> 'כוף (כֿ)' — confirm
 fontmaker.glyphname.yid_komets_alef,Komets Alef (אָ),קמץ אלף (אָ),composed form name,glyph-name; mixed UI+content — do not translate {…}
@@ -1822,6 +1843,7 @@ fontmaker.modals.confirm_apply_outline_all,Apply this letter's outline setting a
 fontmaker.modals.confirm_clear_guides,Remove all guides?,להסיר את כל קווי העזר?,confirm dialog,
 fontmaker.modals.confirm_convert_mark,Convert this mark to a main glyph? It becomes a standalone glyph with its own adjustable width and no longer attaches to letters. This cannot be undone.,להמיר סימן זה לגליף ראשי? הוא הופך לגליף עצמאי עם רוחב מתכוונן משלו ואינו מתחבר עוד לאותיות. אי אפשר לבטל זאת.,confirm dialog,
 fontmaker.modals.confirm_delete_custom,Delete this custom glyph (U+{cp})? This cannot be undone.,למחוק גליף מותאם זה (U+{cp})? אי אפשר לבטל זאת.,confirm dialog,
+fontmaker.modals.confirm_revert_wide,Revert {name} to the auto-generated stretch? Your hand edits to this glyph will be deleted.,לשחזר את {name} למתיחה האוטומטית? העריכות הידניות שלכם לגליף הזה יימחקו.,confirm dialog,
 fontmaker.modals.confirm_delete_guide,"Delete ""{name}""?","למחוק את ""{name}""?",confirm dialog,
 fontmaker.modals.confirm_delete_kernclass,Delete kern class “{name}”? Pairs that use it keep their current letters.,"למחוק את מחלקת הקרנינג ""{name}""? זוגות המשתמשים בה שומרים על האותיות הנוכחיות שלהם.",confirm dialog,
 fontmaker.modals.confirm_replace_cp,U+{cp} is already {who}. Adding this will REPLACE it in your exported font. Continue?,U+{cp} הוא כבר {who}. הוספת זה תחליף אותו בגופן המיוצא שלכם. להמשיך?,confirm dialog,
@@ -1884,6 +1906,7 @@ fontmaker.modals.exported_title,Exported ✓,יוצא ✓,dialog title,leading-e
 fontmaker.modals.font_import_failed_title,Font import failed,ייבוא הגופן נכשל,dialog title,
 fontmaker.modals.font_read_failed_title,Font read failed,קריאת הגופן נכשלה,dialog title,
 fontmaker.modals.glyph_exists_body,You already have a custom glyph at U+{cp}.,כבר יש לכם גליף מותאם ב-U+{cp}.,dialog body,
+fontmaker.modals.wide_owns_cp_body,U+{cp} is your converted wide letterform. Edit it from the Wide letterforms tab — or revert it there first to free this code point.,U+{cp} היא צורת האות הרחבה שהמרתם. ערכו אותה מלשונית האותיות הרחבות — או שחזרו אותה שם תחילה כדי לפנות את נקודת הקוד.,modal body,
 fontmaker.modals.glyph_exists_title,Glyph already exists,הגליף כבר קיים,dialog title,
 fontmaker.modals.gotit,Got it,הבנתי,dialog button,
 fontmaker.modals.help_close,Close,סגור,help dialog button,
@@ -2159,6 +2182,7 @@ fontmaker.panels.adv_add_english,Add English letters,הוסף אותיות אנ�
 fontmaker.panels.adv_add_glyphs,Add glyphs & languages,הוסף גליפים ושפות,advanced group title,
 fontmaker.panels.adv_add_ladino,Add Ladino glyphs,הוסף גליפי לדינו,checkbox label,
 fontmaker.panels.adv_add_special,Add specialized letters,הוסף אותיות מיוחדות,checkbox label,
+fontmaker.panels.adv_add_wide,Add wide letterforms,הוסף אותיות רחבות,checkbox label,
 fontmaker.panels.adv_add_yiddish,Add Yiddish glyphs,הוסף גליפי יידיש,checkbox label,
 fontmaker.panels.adv_custom_hint,Adds a <strong>Custom glyphs</strong> tab (after Punctuation) where you can define glyphs at any Unicode code point — a main letter or a nikkud mark. Tip: for brand-new shapes use the Private-Use range <b>U+E000–U+F8FF</b> so they don't collide with standard characters.,מוסיף לשונית <strong>גליפים מותאמים</strong> (אחרי הפיסוק) שבה תוכלו להגדיר גליפים בכל נקודת קוד Unicode — אות ראשית או סימן ניקוד. טיפ: עבור צורות חדשות לגמרי השתמשו בטווח השימוש-הפרטי <b>U+E000–U+F8FF</b> כדי שלא יתנגשו עם תווים סטנדרטיים.,advanced hint,html
 fontmaker.panels.adv_custom_label,Custom glyphs,גליפים מותאמים,advanced control label,
@@ -2201,6 +2225,8 @@ fontmaker.panels.adv_special_hint,"Adds a <strong>Specialized letters</strong> t
 fontmaker.panels.adv_special_label,Specialized letters,אותיות מיוחדות,advanced control label,
 fontmaker.panels.adv_svg_hint,"Upload <strong>SVG</strong> files instead of images — vector paths become the glyph outlines <strong>directly, with no tracing</strong>. In this mode the upload zones accept SVG only. <a href=""#"" onclick=""openSvgGuide();return false;"">SVG Upload Guide →</a>","העלו קובצי <strong>SVG</strong> במקום תמונות — נתיבים וקטוריים הופכים למתארי הגליפים <strong>ישירות, ללא מעקב</strong>. במצב זה אזורי ההעלאה מקבלים SVG בלבד. <a href=""#"" onclick=""openSvgGuide();return false;"">מדריך העלאת SVG →</a>",advanced hint,html
 fontmaker.panels.adv_svg_label,SVG uploading,העלאת SVG,advanced control label,
+fontmaker.panels.adv_wide_hint,"Adds a <strong>Wide letterforms</strong> tab with a wide variant of <strong>every letter</strong> — <strong>auto-stretched from your traced letters</strong> (150% to start, each with its own <strong>Width</strong> slider), and convertible to a fully <strong>editable glyph</strong> when a stretch needs hand-fixing. The exported font also gets a <strong>Wide letterforms stylistic set (ss02)</strong> that swaps normal letters for wide ones in apps that support it.","מוסיף לשונית <strong>אותיות רחבות</strong> עם גרסה רחבה של <strong>כל אות</strong> — <strong>נמתחת אוטומטית מהאותיות העקובות שלכם</strong> (150% בתור התחלה, לכל אחת מחוון <strong>רוחב</strong> משלה), וניתנת להמרה ל<strong>גליף הניתן לעריכה</strong> כשמתיחה זקוקה לתיקון ידני. הגופן המיוצא מקבל גם <strong>סט סגנוני של אותיות רחבות (ss02)</strong> שמחליף אותיות רגילות ברחבות ביישומים שתומכים בכך.",advanced hint,html
+fontmaker.panels.adv_wide_label,Wide letterforms,אותיות רחבות,advanced control label,
 fontmaker.panels.adv_yiddish_hint,"Adds a <strong>Yiddish</strong> tab: pasekh/komets alef (אַ אָ), the rafe letters (בֿ כֿ פֿ), the digraphs tsvey vovn / vov-yud / tsvey yudn (װ ױ ײ), and pasekh tsvey yudn (ײַ) — all composed from your traced letters.","מוסיף לשונית <strong>יידיש</strong>: פתח/קמץ אלף (אַ אָ), אותיות הרפה (בֿ כֿ פֿ), הדיגרפים צוויי וון / וו-יוד / צוויי יודן (װ ױ ײ), ופתח צוויי יודן (ײַ) — כולם מורכבים מהאותיות העקובות שלכם.",advanced hint,html; mixed UI+content — keep the Hebrew examples
 fontmaker.panels.adv_yiddish_label,Yiddish,יידיש,advanced control label,
 fontmaker.panels.advanced,⚙️ Settings,⚙️ הגדרות,panel title,
@@ -2328,6 +2354,7 @@ fontmaker.panels.font_details,Font Details,פרטי הגופן,panel title,
 fontmaker.panels.font_drop,"Drop a font (TTF/OTF) here, or click to browse.","שחררו כאן גופן (TTF/OTF), או לחצו לעיון.",drop zone,
 fontmaker.panels.form_enable_tab,Enable this tab to add its forms.,הפעילו לשונית זו כדי להוסיף את הצורות שלה.,empty state,
 fontmaker.panels.form_need_trace,Trace these base letters to fill in this tab:,עקבו אחר אותיות הבסיס האלה כדי למלא לשונית זו:,composed-form summary,
+fontmaker.panels.form_edited,edited by hand,נערכה ידנית,tile badge,
 fontmaker.panels.form_needs,needs {chars},חסר {chars},tile badge,
 fontmaker.panels.form_overrides,custom glyph overrides,עקיפות גליף מותאם,tile badge,
 fontmaker.panels.form_ready,✓ All base letters traced — ready.,✓ כל אותיות הבסיס נעקבו — מוכן.,composed-form summary,leading-emoji
@@ -2594,8 +2621,15 @@ fontmaker.panels.version_title,Edit it freely — also ticks up on each export.,
 fontmaker.panels.vowel_every_letter,{name} — every letter,{name} — כל אות,side title,
 fontmaker.panels.waterfall_summary,Waterfall — sample at several sizes,מפל — דוגמה בכמה גדלים,disclosure summary,
 fontmaker.panels.wide_auto_hint,Auto-composed from your traced {bases}. The <b>Width</b> slider both adds side space and stretches the outline — saved automatically.,מורכב אוטומטית מ-{bases} העקובות שלכם. מחוון <b>הרוחב</b> גם מוסיף מרווח צד וגם מותח את המתאר — נשמר אוטומטית.,panel hint,
+fontmaker.panels.wide_convert,Convert to editable glyph…,המרה לגליף הניתן לעריכה…,wide-form action button,
+fontmaker.panels.wide_convert_hint,Stretch looking wonky? Convert this form into a real glyph you can edit point by point. It stops following the base letter — you can revert anytime.,המתיחה נראית עקומה? המירו את הצורה לגליף אמיתי שאפשר לערוך נקודה-נקודה. היא תפסיק לעקוב אחרי אות הבסיס — ואפשר לשחזר בכל עת.,wide-form hint,
+fontmaker.panels.wide_edit_glyph,✎ Edit the glyph →,✎ עריכת הגליף ←,wide-form action button,
+fontmaker.panels.wide_edited_hint,"Converted to an editable glyph — the exported font ships your edited outline, and this form no longer follows its base letter. Revert to return to the auto-stretched version.","הומרה לגליף הניתן לעריכה — הגופן המיוצא כולל את קו המתאר שערכתם, והצורה כבר אינה עוקבת אחרי אות הבסיס שלה. שחזרו כדי לחזור לגרסה הנמתחת אוטומטית.",wide-form hint,
+fontmaker.panels.wide_intro,"A wide variant of every letter — <b>auto-stretched from your traced letters</b> (150% to start). Pick one to adjust its <b>Width</b> slider, or convert it to an <b>editable glyph</b> if the stretch needs hand-fixing. The exported font includes them at their code points and in the <b>ss02 “Wide letterforms”</b> stylistic set.","גרסה רחבה של כל אות — <b>נמתחת אוטומטית מהאותיות העקובות שלכם</b> (150% בתור התחלה). בחרו אות כדי לכוון את מחוון ה<b>רוחב</b> שלה, או המירו אותה ל<b>גליף הניתן לעריכה</b> אם המתיחה זקוקה לתיקון ידני. הגופן המיוצא כולל אותן בנקודות הקוד שלהן ובסט הסגנוני <b>ss02 ״אותיות רחבות״</b>.",panel intro,html
 fontmaker.panels.wide_nikkud_hint,"Vowels on this wide form follow {name}'s placement, stretched to fit — so they stay consistent with the plain letter. Preview one below; to move it, edit the nikkud on {name}.","תנועות על צורה רחבה זו עוקבות אחר המיקום של {name}, נמתחות כדי להתאים — כך שהן נשארות עקביות עם האות הרגילה. הציגו אחת למטה; כדי להזיז אותה, ערכו את הניקוד על {name}.",panel hint,
+fontmaker.panels.wide_revert,Revert to auto-generated…,שחזור לגרסה האוטומטית…,wide-form action button,
 fontmaker.panels.wide_vowels_follow,"This wide form's vowels follow its base letter — size it with the Width slider on the left, and edit the vowel positions on the base letter.","התנועות של צורה רחבה זו עוקבות אחר אות הבסיס שלה — קבעו את גודלה עם מחוון הרוחב משמאל, וערכו את מיקומי התנועות על אות הבסיס.",anchor under hint,
+fontmaker.panels.wideforms,Wide letterforms,אותיות רחבות,panel title,
 fontmaker.panels.wider,Wider,רחב יותר,adjust button,
 fontmaker.panels.width,Width,רוחב,slider label,
 fontmaker.panels.word_spacing,Word spacing,ריווח מילים,slider label,
@@ -2619,6 +2653,7 @@ fontmaker.qa.pair_stack,Stack,שילוב,QA pair control label,REVIEW: 'Stack' -
 fontmaker.qa.pair_with,"with every other mark, on each letter.","עם כל סימן אחר, על כל אות.",QA pair control,
 fontmaker.qa.section_custom,Custom glyphs,גליפים מותאמים,QA section header,
 fontmaker.qa.section_special,Specialized (wide letters),מיוחדות (אותיות רחבות),QA section header,
+fontmaker.qa.section_wide,Wide letterforms,אותיות רחבות,QA section header,
 fontmaker.qa.summary_clear,✓ All placements clear. Hover a cell for details; click any cell to jump to its anchor editor.,✓ כל המיקומים תקינים. רחפו מעל תא לפרטים; לחצו על תא כלשהו כדי לקפוץ לעורך העוגנים שלו.,QA summary,leading-emoji
 fontmaker.qa.summary_needs.one,{count} placement needs attention (red cells). Hover for the reason; click a cell to jump to its anchor editor.,{count} מיקום דורש תשומת לב (תאים אדומים). רחפו לסיבה; לחצו על תא כדי לקפוץ לעורך העוגנים שלו.,QA summary,plural
 fontmaker.qa.summary_needs.other,{count} placements need attention (red cells). Hover for the reason; click a cell to jump to its anchor editor.,{count} מיקומים דורשים תשומת לב (תאים אדומים). רחפו לסיבה; לחצו על תא כדי לקפוץ לעורך העוגנים שלו.,QA summary,plural
@@ -2665,6 +2700,8 @@ fontmaker.status.crop_box_help,Crop box — arrows move · +/− resize · Enter
 fontmaker.status.deleted_contours.one,Deleted {count} contour.,נמחק {count} קו מתאר.,toast,plural
 fontmaker.status.deleted_contours.other,Deleted {count} contours.,נמחקו {count} קווי מתאר.,toast,plural
 fontmaker.status.deleted_custom_glyph,Deleted custom glyph U+{cp}.,נמחק גליף מותאם U+{cp}.,toast,
+fontmaker.status.wide_converted,{name} is now an editable glyph — it no longer follows its base letter.,{name} היא כעת גליף הניתן לעריכה — היא כבר אינה עוקבת אחרי אות הבסיס.,toast,
+fontmaker.status.wide_reverted,{name} reverted to the auto-generated stretch.,{name} שוחזרה למתיחה האוטומטית.,toast,
 fontmaker.status.detecting_letters,Detecting letters…,מזהה אותיות…,toast,
 fontmaker.status.drew_contour,Drew a {count}-point contour.,צויר קו מתאר בן {count} נקודות.,toast,
 fontmaker.status.drew_contour_hole,"It landed inside another contour, so it punched out as a hole.","הוא נחת בתוך קו מתאר אחר, ולכן נוקב כחור.",toast fragment,
@@ -2781,6 +2818,7 @@ fontmaker.tabs.cat_nikkud,Nikkud,ניקוד,category tab,
 fontmaker.tabs.cat_punct,Punctuation,פיסוק,category tab,
 fontmaker.tabs.cat_spacing,Spacing,ריווח,category tab,
 fontmaker.tabs.cat_specialforms,Specialized letters,אותיות מיוחדות,category tab,
+fontmaker.tabs.cat_wideforms,Wide letterforms,אותיות רחבות,category tab,
 fontmaker.tabs.cat_trop,Trop,טעמים,category tab,
 fontmaker.tabs.cat_yiddish,Yiddish,יידיש,category tab,
 fontmaker.tabs.step_accents,3 · Place Accent Marks,3 · הצבת סימני הטעמה,workflow tab (english),
@@ -4516,6 +4554,7 @@ fontmaker.tip.convert_to_main,Convert to a main glyph (gives it its own adjustab
 fontmaker.tip.apply_align_other,Copy this letter's position & scale onto other letters,העתקת המיקום והקנה־מידה של האות הזו לאותיות אחרות,FM alignment,title
 fontmaker.tip.edit_mark_shape,"Redesign this mark's shape from dots & bars (or an image), then apply it to this letter or all letters","עיצוב מחדש של צורת הסימן מנקודות ומקווים (או מתמונה), והחלתה על אות זו או על כל האותיות",FM edit mark shape,title
 fontmaker.tip.custom_glyph_overrides,"You added a custom glyph at U+{t}; the exported font uses your custom outline, not this composed form.","הוספתם גליף מותאם אישית ב־U+{t}; הגופן המיוצא משתמש בקו המתאר שלכם, ולא בצורה המורכבת הזו.",FM precomp override chip; {t}=codepoint,title
+fontmaker.tip.wide_edited,You converted this wide form to an editable glyph — the exported font ships your edited outline. Click to open it in the editor.,המרתם את הצורה הרחבה הזו לגליף הניתן לעריכה — הגופן המיוצא כולל את קו המתאר שערכתם. לחצו כדי לפתוח אותה בעורך.,tile badge tooltip,
 fontmaker.tip.trace_needs,Trace {names},שרטטו את {names},FM needs chip; {names}=letter names,title
 fontmaker.tip.place_mark_for,Place the {mark} for {composed},מקמו את {mark} עבור {composed},FM precomp target; {mark}{composed},title
 fontmaker.tip.add_glyph_sample,Add {name} to the sample text (it can't be typed on a keyboard),הוסיפו את {name} לטקסט הדוגמה (לא ניתן להקלידה במקלדת),FM sample text; {name},title
