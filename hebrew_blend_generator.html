@@ -1017,6 +1017,10 @@
   .quick-tour-link:hover { color: var(--text); }
 
   /* Sidebar Quick Start drawer */
+  .last-setup-bar { display:none; align-items:center; gap:8px; flex-wrap:wrap;
+    margin-bottom:10px; padding:7px 10px; border:1px solid var(--border); border-radius:6px;
+    background:var(--warm-gray); color:var(--text); font-size:0.74rem; line-height:1.35; }
+  .last-setup-bar .btn-xs { margin-inline-start:auto; flex-shrink:0; }
   .quick-start-drawer {
     margin-bottom: 12px; border: 1.5px solid var(--gold);
     border-radius: 8px; background: rgba(201,146,42,0.08); overflow: hidden;
@@ -2273,6 +2277,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   <!-- ══ SIDEBAR ══ -->
   <aside class="sidebar" id="appSidebar">
+
+    <div id="lastSetupBar" class="last-setup-bar" role="status">
+      <span data-i18n="worksheet.lastsetup.restored">Your last worksheet setup is back.</span>
+      <button type="button" class="btn-xs" onclick="startFreshSetup()" title="Forget the saved setup and start from the defaults" data-i18n="worksheet.lastsetup.start_fresh" data-i18n-title="worksheet.lastsetup.start_fresh_title">↺ Start fresh</button>
+    </div>
 
     <details class="quick-start-drawer" id="quickStartDrawer">
       <summary data-i18n="worksheet.quickstart.drawer_summary">⚡ Quick start — ready-made worksheets</summary>
@@ -5397,7 +5406,7 @@ const IVRIT_CFG = {
     const inFolders = data.presetFolders || data.generatorPresetFolders;
     if (inFolders) ftImportTree('hebrewBlender_presetsFolders', inFolders, mode === 'replace');
     if (incoming || inFolders) renderPresets();
-    if (data.liveState) applySettings(data.liveState);
+    if (data.liveState) { applySettings(data.liveState); rememberSetup(); }
   }
 };
 
@@ -8883,6 +8892,7 @@ function autoCols(count) {
 
 function generate(animate = false) {
   _setGenerateNote(null);   // a fresh attempt clears the previous "can't generate yet" note
+  rememberSetup();          // this setup is what the next visit reopens
   classSetSheets = null;  // reset; only the standard multi-version path sets it
   if (document.getElementById('nameTheLetterToggle')?.checked) {
     generateNameTheLetter();
@@ -12954,6 +12964,52 @@ function renderAnswerKeyView(akStr) {
   return true;
 }
 
+/* ── Remember the last worksheet setup across visits (S254 micro-feature) ──────────────────
+   The generator used to throw a teacher's whole configuration away on reload: this week's
+   letters, vowels, title and drill all reset to the 28-letter default set. It now persists
+   getSettings() — the same complete snapshot presets and .ivrit files already use, so every
+   control is covered with no per-control wiring — and re-applies it when the page opens with
+   no link of its own to honour.
+
+   Precedence is deliberate and one-way: ?ak= / ?wl= / ?s= are an EXPLICIT request for a
+   specific worksheet, so a link always beats the remembered setup. restoreLastSetup() runs
+   only on the no-param path, and only AFTER SHARE_DEFAULTS is captured — that baseline must
+   stay the pristine defaults or every share link built afterwards would diff against the
+   remembered state and travel incomplete. */
+const LAST_SETUP_KEY = 'hebrewBlender_lastState';
+let _lastSetupRestoring = false;   // suppress saves while a restore (or a deliberate reset) is in flight
+
+function rememberSetup() {
+  if (_lastSetupRestoring) return;
+  try { localStorage.setItem(LAST_SETUP_KEY, JSON.stringify(getSettings())); } catch (e) {}
+}
+
+function restoreLastSetup() {
+  let saved = null;
+  try { saved = ivritSafeParse(localStorage.getItem(LAST_SETUP_KEY) || 'null'); } catch (e) { return; }
+  if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return;
+  _lastSetupRestoring = true;
+  let ok = true;
+  try { applySettings(saved); } catch (e) { ok = false; }
+  _lastSetupRestoring = false;
+  // A snapshot this page can no longer apply (an older shape, a hand-edited key) is dropped
+  // rather than retried on every future load.
+  if (!ok) { try { localStorage.removeItem(LAST_SETUP_KEY); } catch (e2) {} return; }
+  const bar = document.getElementById('lastSetupBar');
+  if (bar) bar.style.display = 'flex';
+}
+
+// "Start fresh" — forget the remembered setup and reload the pristine defaults. The flag stops
+// the pagehide save below from writing the current (non-default) state straight back.
+function startFreshSetup() {
+  _lastSetupRestoring = true;
+  try { localStorage.removeItem(LAST_SETUP_KEY); } catch (e) {}
+  location.replace(location.pathname);
+}
+
+// Un-generated tweaks count too: a teacher who configures and then reloads should not lose it.
+window.addEventListener('pagehide', rememberSetup);
+
 // Read ?s= on load, restore controls, and auto-generate. Degrades silently.
 function restoreFromURL() {
   // Answer-key view (?ak=) takes precedence over ?s= — a scanned worksheet QR.
@@ -12980,7 +13036,7 @@ function restoreFromURL() {
   try { SHARE_DEFAULTS = getSettings(); } catch(e) { return; } // pristine baseline for diffing
   let s;
   try { s = new URLSearchParams(location.search).get('s'); } catch(e) { return; }
-  if (!s) return;                                          // no param → keep defaults
+  if (!s) { restoreLastSetup(); return; }                  // no link to honour → the remembered setup
   let diff;
   try { diff = ivritSafeParse(shareB64Decode(s)); } catch(e) { return; } // garbage → ignore
   if (!diff || typeof diff !== 'object') return;

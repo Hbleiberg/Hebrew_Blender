@@ -907,6 +907,7 @@ function exportAllSettings() {
     dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate') || '0.75',
     dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
     dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
+    blenderLastState:    lsJSON('hebrewBlender_lastState', {}),
     torahTrainerSettings: lsJSON('hebrewTorahTrainer_settings', {}),
     tropeTutorSettings:  lsJSON('hebrewTropeTutor_settings', {}),
     tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress', {}),
@@ -989,6 +990,10 @@ async function importAllSettings() {
       const existing = ivritSafeParse(localStorage.getItem('hebrewDictionary_lastState') || '{}');
       localStorage.setItem('hebrewDictionary_lastState', JSON.stringify(ivritSafeAssign(existing, parsed.dictLastState)));
     }
+    if (parsed.blenderLastState && Object.keys(parsed.blenderLastState).length) {
+      const existing = ivritSafeParse(localStorage.getItem('hebrewBlender_lastState') || '{}');
+      localStorage.setItem('hebrewBlender_lastState', JSON.stringify(ivritSafeAssign(existing, parsed.blenderLastState)));
+    }
     if (parsed.torahTrainerSettings) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewTorahTrainer_settings') || '{}');
       localStorage.setItem('hebrewTorahTrainer_settings', JSON.stringify(ivritSafeAssign(existing, parsed.torahTrainerSettings)));
@@ -1041,6 +1046,7 @@ function eraseAllSettings() {
   if (!confirm(I18n.t('home.alltools.erase_confirm2'))) return;
   const keys = [
     'hebrewBlender_presets',
+    'hebrewBlender_lastState',
     'hebrewDashboard_presets',
     'hebrewDashboard_schedules',
     'hebrewDashboard_settings',
@@ -1129,6 +1135,7 @@ const IVRIT_CFG = {
       dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate')       || '0.75',
       dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
       dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
+      blenderLastState:    lsJSON('hebrewBlender_lastState',    {}),
       torahTrainerSettings:lsJSON('hebrewTorahTrainer_settings',    {}),
       tropeTutorSettings:  lsJSON('hebrewTropeTutor_settings',      {}),
       tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress',      {}),
@@ -1173,6 +1180,7 @@ const IVRIT_CFG = {
     }
     if (data.dictEmojiSettings)   { mergeObj('hebrewDictionary_emojiSettings', data.dictEmojiSettings);  touched = true; }
     if (data.dictLastState && Object.keys(data.dictLastState).length) { mergeObj('hebrewDictionary_lastState', data.dictLastState); touched = true; }
+    if (data.blenderLastState && Object.keys(data.blenderLastState).length) { mergeObj('hebrewBlender_lastState', data.blenderLastState); touched = true; }
     if (data.torahTrainerSettings){ mergeObj('hebrewTorahTrainer_settings',   data.torahTrainerSettings); touched = true; }
     if (data.tropeTutorSettings && Object.keys(data.tropeTutorSettings).length) { mergeObj('hebrewTropeTutor_settings', data.tropeTutorSettings); touched = true; }
     if (data.tropeTutorProgress && Object.keys(data.tropeTutorProgress).length) { tropeProgressMerge(data.tropeTutorProgress, mode === 'replace'); touched = true; }

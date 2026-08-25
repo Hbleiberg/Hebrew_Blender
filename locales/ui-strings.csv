@@ -4310,6 +4310,9 @@ worksheet.quickstart.kamatz_patach,Kamatz & Patach drill,תרגול קמץ ופ�
 worksheet.quickstart.loaded_notice,Loaded “{name}” — tweak anything on the left; the preview updates live.,נטען ״{name}״ — שנו כל דבר משמאל; התצוגה המקדימה מתעדכנת בזמן אמת.,preview notice toast,mixed UI+content — do not translate {…}
 worksheet.quickstart.name_letter,Alef-Bet: Name the Letter,אלף-בית: שם האות,quick-start chip,
 worksheet.quickstart.numbers,Numbers 0–20,מספרים 0–20,quick-start chip,
+worksheet.lastsetup.restored,Your last worksheet setup is back.,המערך האחרון שלכם חזר.,sidebar notice shown when the previous visit's configuration was restored,REVIEW: HE draft
+worksheet.lastsetup.start_fresh,↺ Start fresh,↺ להתחיל מחדש,button that forgets the remembered setup and reloads the defaults,leading-glyph; REVIEW: HE draft
+worksheet.lastsetup.start_fresh_title,Forget the saved setup and start from the defaults,שכחו את המערך השמור והתחילו מברירת המחדל,tooltip for the Start fresh button,REVIEW: HE draft
 worksheet.realwords.bingo.title,Bingo Options,אפשרויות בינגו,rw section header,
 worksheet.realwords.clear_btn,✕ Clear,✕ נקה,button,leading-emoji
 worksheet.realwords.clear_confirm,Clear the imported word list?,לנקות את רשימת המילים שיובאה?,confirm dialog,
