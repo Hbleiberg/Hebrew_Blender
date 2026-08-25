@@ -809,8 +809,14 @@ footer summary{min-height:24px;}
     --era-bib-bg:#e8f0ff; --era-bib-text:#2a4080; --era-mod-bg:#e8f5e8; --era-mod-text:#1a5c1a;
     background:#fff !important; color:#1a2744 !important;
   }
-  header, footer, .sidebar, #mobileBar, .toolbar, .filter-chips, .load-more-btn,
-  #fsBtn, .sidebar-toggle-btn, .sidebar-show-btn, #tipFloat, #shoreshControls,
+  /* `#appSidebar` is listed BY ID, not just as `.sidebar` (S252 Pass G): the print layout width is
+     the paper width, so at any margin over ~0.5in Letter/A4 lands under 680px and the mobile rule
+     `#appSidebar{display:flex!important}` fires — an ID (1,0,0) that outranks `.sidebar` (0,1,0)
+     even with !important on both. The whole filter sidebar, navy panel plates included, printed.
+     `#appToast` is position:fixed, so a toast still on screen at print time repeats its box-shadow
+     slab on EVERY sheet; the dashboard and flash cards already hide it — this converges on them. */
+  header, footer, .sidebar, #appSidebar, #mobileBar, .toolbar, .filter-chips, .load-more-btn,
+  #fsBtn, .sidebar-toggle-btn, .sidebar-show-btn, #tipFloat, #shoreshControls, #appToast,
   .wc-copy, .wc-search, .wc-speak, .wm-overlay, .tour-spot, .tour-card { display:none !important; }
   .app, .main, .content { overflow:visible !important; }
   .word-card, .emoji-card { break-inside:avoid; }
