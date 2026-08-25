@@ -3689,7 +3689,7 @@
   "shared.fullscreen.label": "מסך מלא",
   "shared.fullscreen.toggle_aria": "החלף מסך מלא",
   "shared.ivrit.browse_button": "עיון…",
-  "shared.ivrit.drop_hint": "גררו כאן קובץ ‎.ivrit",
+  "shared.ivrit.drop_hint": "גררו כאן קובץ <b>‎.ivrit</b>",
   "shared.ivrit.err_read": "לא ניתן לקרוא את הקובץ הזה.",
   "shared.ivrit.err_restore_failed": "השחזור נכשל: {error}",
   "shared.ivrit.err_unreadable": "לא ניתן היה לקרוא את הקובץ כקובץ שמירה ‎.ivrit‏.",

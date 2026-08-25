@@ -3689,7 +3689,7 @@
   "shared.fullscreen.label": "Full Screen",
   "shared.fullscreen.toggle_aria": "Toggle fullscreen",
   "shared.ivrit.browse_button": "Browse…",
-  "shared.ivrit.drop_hint": "Drop a .ivrit file here",
+  "shared.ivrit.drop_hint": "Drop a <b>.ivrit</b> file here",
   "shared.ivrit.err_read": "Could not read that file.",
   "shared.ivrit.err_restore_failed": "Restore failed: {error}",
   "shared.ivrit.err_unreadable": "That file could not be read as a .ivrit save file.",

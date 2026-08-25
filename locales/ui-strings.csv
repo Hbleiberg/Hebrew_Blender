@@ -3196,7 +3196,7 @@ shared.fullscreen.toggle_aria,Toggle fullscreen,החלף מסך מלא,Fullscree
 shared.fullscreen.label,Full Screen,מסך מלא,Fullscreen button label (enter),leading-none; shared (labeled variant: generator)
 shared.fullscreen.exit_label,Exit Full Screen,יציאה ממסך מלא,Fullscreen exit-strip label,shared (labeled variant: generator/dashboard)
 shared.ivrit.browse_button,Browse…,עיון…,Backup drop-zone button,shared
-shared.ivrit.drop_hint,Drop a .ivrit file here,גררו כאן קובץ ‎.ivrit,Backup drop-zone hint,shared; '.ivrit' bold in UI
+shared.ivrit.drop_hint,Drop a <b>.ivrit</b> file here,גררו כאן קובץ <b>‎.ivrit</b>,Backup drop-zone hint,shared; carries <b> markup — read via data-i18n-html on all three carriers
 shared.ivrit.err_read,Could not read that file.,לא ניתן לקרוא את הקובץ הזה.,Restore error alert,shared
 shared.ivrit.err_restore_failed,Restore failed: {error},השחזור נכשל: {error},Restore error alert,mixed UI+content — do not translate {error}; shared
 shared.ivrit.err_unreadable,That file could not be read as a .ivrit save file.,לא ניתן היה לקרוא את הקובץ כקובץ שמירה ‎.ivrit‏.,Restore error alert,shared
