@@ -1210,7 +1210,9 @@ body.fullscreen .tt-controls,
 body.fullscreen #ttCustomPicker,
 body.fullscreen footer { display: none; }
 body.fullscreen .tt-page {
-  max-width: none; padding: 30px 48px;
+  /* The extra bottom padding keeps the last verse clear of #ttFsBar, the same way
+     body.tt-bulk-dock .tt-page reserves room for the bulk dock. */
+  max-width: none; padding: 30px 48px 92px;
 }
 /* Sizes stay the teacher's: every reading element in all three layouts already reads
    --tt-heb-size / --tt-translit-size / --tt-english-size, which applyFontSizes() sets from
@@ -1258,6 +1260,69 @@ body.fullscreen .tt-status { font-size: 1rem; }
 #fsExitBtn .fs-x { font-size: 1.5rem; line-height: 1; }
 #fsExitBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
 body.fullscreen #fsExitBtn { display: flex; }
+
+/* ── Fullscreen presentation toolbar ──────────────────────────────────────────
+   Fullscreen is the projector mode and was the one place nothing could be changed:
+   `body.fullscreen` hides header / .tt-controls / footer above, and #gearBtn — the
+   ONLY caller of openSettings() in this file — lives inside that hidden header. So
+   the drawer, and with it every font-size slider, had no route in; the teacher's
+   only option was Exit → adjust → re-enter, in front of the class.
+   A−/A+ only WORK because S180 removed the literal font-size from this block (see
+   the comment above): they move --tt-heb-size, which every reading element reads.
+   Deliberately NOT modelled on #fsExitBtn's old `opacity: 0.45`: a group opacity
+   composites the ink toward the page behind it rather than toward its own plate
+   (measured 1.78:1 on the cream board before 206a0e6 fixed it). Restraint is carried
+   by the 0.72 plate alone — the model classroom_dashboard's .fs-strip-inner uses over
+   these same two backdrops.
+   Bottom-centre because top-right is #fsExitBtn's and the top edge is the sticky
+   .tt-jumpnav's; karaoke clearance rides --tt-audio-h, the live ResizeObserver value
+   #ttBulkDock and .tt-hint-toast already use (the bar wraps to 77/107/167px by width,
+   so a constant offset is wrong exactly where a tablet lives). */
+#ttFsBar {
+  display: none;
+  position: fixed; inset-inline: 0; bottom: 18px; z-index: 200;
+  justify-content: center; align-items: center;
+  /* The wrapper spans the full width, so without this it would swallow every click in a
+     ~58px strip along the bottom edge — directly over tap-a-word-to-chant, this tool's
+     core interaction. The plate takes the events back. */
+  pointer-events: none;
+  opacity: 0; transition: opacity 0.25s;
+}
+/* Two-stage gate, like the dashboard's #fsStrip: `display` follows fullscreen, opacity
+   and pointer-events follow the idle timer, so a faded-out bar can never eat a word-click. */
+body.fullscreen #ttFsBar { display: flex; }
+body.fullscreen #ttFsBar.visible { opacity: 1; }
+body.fullscreen #ttFsBar.visible .tt-fs-plate { pointer-events: auto; }
+.tt-fs-plate {
+  pointer-events: none;
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(13,18,32,0.72); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.18); border-radius: 14px;
+  padding: 7px 9px; box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+.tt-fs-btn {
+  min-width: 44px; min-height: 44px;   /* a projector control — well over the 30px floor (S102) */
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.08); color: #fff;
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 10px;
+  font-family: inherit; font-size: 1.05rem; font-weight: 700; line-height: 1;
+  cursor: pointer; transition: background 0.15s, border-color 0.15s;
+}
+.tt-fs-btn:hover { background: rgba(255,255,255,0.2); border-color: var(--gold); }
+.tt-fs-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+/* aria-disabled, never the `disabled` attribute — that would drop the button out of the tab
+   order and the stated reason could never be read. Same convention (and value) as
+   #ttCopyAllBtn[aria-disabled="true"] above. This opacity is NOT the anti-pattern the header
+   comment warns about: it composites toward the plate the button sits on, and reading as
+   unavailable is the entire point. */
+.tt-fs-btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+.tt-fs-btn[aria-disabled="true"]:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+.tt-fs-sep { width: 1px; align-self: stretch; background: rgba(255,255,255,0.18); margin: 2px 3px; }
+body.fullscreen.tt-karaoke-active #ttFsBar { bottom: calc(var(--tt-audio-h, 96px) + 12px); }
+/* The toast's resting offset is normally the karaoke bar's; in fullscreen this bar is what it
+   has to clear. Same specificity as the .tt-karaoke-active rule above and later in source
+   order, so it wins in both karaoke states. */
+body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
 
 /* ───── Mobile (matches existing tools' breakpoint) ───── */
 @media (max-width: 720px) {
@@ -1346,7 +1411,7 @@ body.fullscreen #fsExitBtn { display: flex; }
      .tt-controls also covers #ttCustomPicker; the fixed-position drawer/backdrop/toast/tour
      otherwise re-stamp on EVERY printed page (position:fixed repeats per page in print). */
   header, .tt-controls, #ttStatus, .tt-readall, .tt-chantall, footer, .tt-empty,
-  .settings-modal, .settings-backdrop, #tipFloat, .tt-hint-toast, .tour-spot, .tour-card, #fsExitBtn, .tt-shem-chip, .tt-notice-chip { display:none !important; }
+  .settings-modal, .settings-backdrop, #tipFloat, .tt-hint-toast, .tour-spot, .tour-card, #fsExitBtn, #ttFsBar, .tt-shem-chip, .tt-notice-chip { display:none !important; }
 
   /* Never split a verse (or a side-by-side row) across a page break; best-effort —
      a verse taller than the page still breaks (browser overrides). */
@@ -1555,6 +1620,44 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <span class="fs-x">✕</span>
   <span class="fs-label" data-i18n="shared.fullscreen.exit_label">Exit Fullscreen</span>
 </button>
+
+<!-- Fullscreen presentation toolbar. Static markup, not JS-injected: initDark() runs first in
+     init() and syncs every dark toggle by id, so a bar built later would start out of sync.
+     role="group" rather than "toolbar" — APG expects a toolbar to support roving arrow-key
+     navigation, and ArrowLeft/ArrowRight already mean "next/previous word" inside the reading
+     (onReadingKeydown). Six real <button>s are Tab-reachable and Enter/Space-operable anyway;
+     Escape exits fullscreen natively. #fsExitBtn stays the exit — this bar never duplicates it. -->
+<div id="ttFsBar" role="group" aria-label="Presentation controls" data-i18n-aria-label="torah.fspresent.bar_aria">
+  <!-- dir="ltr" on the A−/A+ glyphs only: the sign is bidi-neutral, so in the Hebrew UI it
+       reordered to −A/+A. The label's internal order carries the meaning ("A, smaller"), the
+       same reason #ttCopyRange pins its direction. The BUTTONS still mirror; only the two
+       glyphs are pinned. -->
+  <div class="tt-fs-plate">
+    <button type="button" class="tt-fs-btn" id="ttFsSizeDown" onclick="stepFsSize(-1)"
+            title="Smaller Hebrew text" aria-label="Smaller Hebrew text"
+            data-i18n-title="torah.fspresent.size_down" data-i18n-aria-label="torah.fspresent.size_down"><span dir="ltr">A&#8722;</span></button>
+    <button type="button" class="tt-fs-btn" id="ttFsSizeUp" onclick="stepFsSize(1)"
+            title="Larger Hebrew text" aria-label="Larger Hebrew text"
+            data-i18n-title="torah.fspresent.size_up" data-i18n-aria-label="torah.fspresent.size_up"><span dir="ltr">A+</span></button>
+    <span class="tt-fs-sep" aria-hidden="true"></span>
+    <button type="button" class="tt-fs-btn" id="ttFsAliyahPrev" onclick="stepFsAliyah(-1)"
+            title="Previous aliyah" aria-label="Previous aliyah"
+            data-i18n-title="torah.fspresent.aliyah_prev" data-i18n-aria-label="torah.fspresent.aliyah_prev"
+            aria-disabled="true"><span class="dir-arrow" aria-hidden="true">&#8249;</span></button>
+    <button type="button" class="tt-fs-btn" id="ttFsAliyahNext" onclick="stepFsAliyah(1)"
+            title="Next aliyah" aria-label="Next aliyah"
+            data-i18n-title="torah.fspresent.aliyah_next" data-i18n-aria-label="torah.fspresent.aliyah_next"
+            aria-disabled="true"><span class="dir-arrow" aria-hidden="true">&#8250;</span></button>
+    <span class="tt-fs-sep" aria-hidden="true"></span>
+    <button type="button" class="tt-fs-btn" id="ttFsDark" onclick="toggleDark()"
+            title="Toggle dark mode" aria-label="Toggle dark mode"
+            data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title"
+            aria-pressed="false">&#127768;</button>
+    <button type="button" class="tt-fs-btn" id="ttFsSettings" onclick="openSettings()"
+            title="Settings" aria-label="Settings"
+            data-i18n-title="torah.header.settings_title" data-i18n-aria-label="torah.header.settings_title">&#9881;&#65039;</button>
+  </div>
+</div>
 
 <!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
 <div class="tour-spot" id="tourSpot" hidden></div>
@@ -2287,21 +2390,147 @@ document.addEventListener('fullscreenchange', () => {
   document.body.classList.toggle('fullscreen', isFs);
   const btn = document.getElementById('fsBtn');
   if (btn) btn.innerHTML = isFs ? FS_EXIT : FS_ENTER;
+  if (isFs) { syncFsBar(); showFsBar(); }
+  else {
+    if (_fsBarTimer) { clearTimeout(_fsBarTimer); _fsBarTimer = null; }
+    const bar = document.getElementById('ttFsBar');
+    if (bar) bar.classList.remove('visible');
+    // The bar's five buttons leave the a11y tree with it, so a keyboard user who pressed Escape
+    // while standing on one lands on <body>. Hand focus back to the control that got them here —
+    // but only if focus was on the fullscreen chrome, never stealing it from a reader.
+    const ae = document.activeElement;
+    if (btn && (!ae || ae === document.body || (ae.closest && ae.closest('#ttFsBar, #fsExitBtn')))) btn.focus();
+  }
 });
+
+/* ══════════════════════════════════════════════════════
+   FULLSCREEN PRESENTATION TOOLBAR  (#ttFsBar)
+   The projector mode's only in-place controls. Auto-hiding, on the model of
+   classroom_dashboard's #fsStrip: a 4 s idle timer, revealed by any pointer activity,
+   pinned while hovered or focused so a keyboard user is never timed out mid-Tab.
+   ══════════════════════════════════════════════════════ */
+const FS_BAR_IDLE_MS = 4000;
+let _fsBarTimer = null;
+function showFsBar() {
+  if (!document.body.classList.contains('fullscreen')) return;
+  const bar = document.getElementById('ttFsBar');
+  if (!bar) return;
+  bar.classList.add('visible');
+  if (_fsBarTimer) clearTimeout(_fsBarTimer);
+  _fsBarTimer = setTimeout(hideFsBar, FS_BAR_IDLE_MS);
+}
+function hideFsBar() {
+  // Stay up while the drawer this bar opened is on screen — hiding the opener behind the thing
+  // it opened reads as the bar having vanished.
+  const modal = document.getElementById('settingsModal');
+  if (modal && modal.classList.contains('open')) return;
+  const bar = document.getElementById('ttFsBar');
+  if (bar) bar.classList.remove('visible');
+}
+/* A−/A+ move the Hebrew row only: it is the row a class reads across a room, and the three
+   sliders are independent by design in the drawer — silently coupling them here would
+   contradict that. 0.10rem is two slider notches; 0.05 is invisible from the back of a room.
+   Goes through setFontSize, so the drawer slider and readout stay in step. */
+function stepFsSize(dir) {
+  setFontSize('heb', (parseFloat(settings.hebFontSize) || DEFAULTS.hebFontSize) + dir * 0.1);
+  showFsBar();
+}
+/* Which aliyah SECTION the viewport is showing, as an index into _aliyahStarts.
+   Deliberately NOT aliyahNumForLabel(_currentVerseLabel): that answers a different question —
+   which verse the reader is on — and the two genuinely disagree at a boundary. jumpToAliyah
+   centres the divider, and the IntersectionObserver then reports the verse just ABOVE it (jump
+   to aliyah 2 and _currentVerseLabel reads 2:3, the last verse of aliyah 1), so stepping from
+   it recomputed the same target forever and › could never get past the first divider. The
+   dividers' own positions answer the section question directly, and stay right when the teacher
+   scrolls by hand instead of pressing the button. Aliyah 1 has no visible divider — its id sits
+   on the first verse — so every entry resolves. */
+function fsAliyahIndexAtViewport() {
+  if (!_aliyahStarts || !_aliyahStarts.length) return 0;
+  const mid = window.innerHeight / 2;
+  let idx = 0;
+  for (let i = 0; i < _aliyahStarts.length; i++) {
+    const el = document.getElementById('tt-aliyah-' + _aliyahStarts[i].num);
+    if (!el) continue;
+    // +2px of tolerance: a centred divider lands ON the midline, not measurably above it.
+    if (el.getBoundingClientRect().top <= mid + 2) idx = i; else break;
+  }
+  return idx;
+}
+/* ‹ / › step the aliyah, and what that MEANS depends on what is loaded:
+   • a full parsha → scroll to the previous/next aliyah divider. No fetch, no re-render, so a
+     running karaoke's data-twi indices are untouched.
+   • a single aliyah (parsha-aliyah-N) → step the Reading picker to N∓1 and let it re-fetch.
+     Done by dispatching 'change' on #scopeSelect, exactly as stepParsha does for the weekly
+     cycle: that inherits clearLoop(), the holiday/custom clearing, saveSettings() and
+     fetchAndRender() instead of becoming a second source of truth. Clamped to 1..7 — it
+     deliberately does NOT chain into the neighbouring parsha, which the ‹/› week-step buttons
+     already own.
+   • anything else (haftarah, holiday, custom, or a parsha with no aliyah data) → aria-disabled,
+     with the reason on the button and in a toast. Never an alert().
+   Indices, not num ± 1: computeAliyahStarts only pushes aliyot present in the data, so
+   _aliyahStarts can have gaps and its length is not guaranteed to be 7. */
+function stepFsAliyah(dir) {
+  const btn = document.getElementById(dir < 0 ? 'ttFsAliyahPrev' : 'ttFsAliyahNext');
+  if (btn && btn.getAttribute('aria-disabled') === 'true') {
+    showHintToast(I18n.t('torah.fspresent.aliyah_unavailable'));
+    showFsBar();
+    return;
+  }
+  showFsBar();
+  if (_aliyahStarts && _aliyahStarts.length) {
+    const i = fsAliyahIndexAtViewport();
+    const j = Math.max(0, Math.min(_aliyahStarts.length - 1, i + dir));
+    jumpToAliyah(_aliyahStarts[j].num);
+    return;
+  }
+  const m = (settings.scope || '').match(/^parsha-aliyah-([1-7])$/);
+  if (!m) return;
+  const n = Math.max(1, Math.min(7, parseInt(m[1], 10) + dir));
+  const sel = document.getElementById('scopeSelect');
+  if (!sel || sel.disabled) return;
+  sel.value = 'parsha-aliyah-' + n;
+  sel.dispatchEvent(new Event('change'));
+}
+/* Recompute what the bar can currently do. Read-only with respect to settings, audio and the
+   reading, so applyI18n can call it safely. applyStaticI18n rewrites title/aria-label from the
+   data-i18n-* attributes on every language switch, which would wipe a disabled reason — hence
+   the applyI18n hook, the same shape syncWeekStepLabels uses. */
+function syncFsBar() {
+  const scopeN = (settings.scope || '').match(/^parsha-aliyah-([1-7])$/);
+  const canStep = !!(_aliyahStarts && _aliyahStarts.length) || !!scopeN;
+  for (const [id, key] of [['ttFsAliyahPrev', 'torah.fspresent.aliyah_prev'],
+                           ['ttFsAliyahNext', 'torah.fspresent.aliyah_next']]) {
+    const b = document.getElementById(id);
+    if (!b) continue;
+    b.setAttribute('aria-disabled', canStep ? 'false' : 'true');
+    const label = I18n.t(canStep ? key : 'torah.fspresent.aliyah_unavailable');
+    b.title = label;
+    b.setAttribute('aria-label', label);
+  }
+  syncDarkButtons(document.body.classList.contains('dark'));
+}
 
 /* ══════════════════════════════════════════════════════
    DARK MODE
    ══════════════════════════════════════════════════════ */
+/* Three carriers now: the header, the drawer header (which covers the header's), and the
+   fullscreen bar (where the header is display:none). One loop instead of the same two lines
+   copied per button per function — and every read is guarded, which the old header-button
+   dereference was not. */
+const DARK_BTN_IDS = ['darkBtn', 'drawerDarkBtn', 'ttFsDark'];
+function syncDarkButtons(isDark) {
+  const glyph = isDark ? '☀️' : '🌙', pressed = isDark ? 'true' : 'false';
+  for (const id of DARK_BTN_IDS) {
+    const b = document.getElementById(id);
+    if (b) { b.textContent = glyph; b.setAttribute('aria-pressed', pressed); }
+  }
+}
 function toggleDark() {
   document.documentElement.classList.remove('dark-early');
   document.body.classList.toggle('dark');
   const isDark = document.body.classList.contains('dark');
   localStorage.setItem(DARK_KEY, isDark ? '1' : '0');
-  const _db = document.getElementById('darkBtn');
-  _db.textContent = isDark ? '☀️' : '🌙';
-  _db.setAttribute('aria-pressed', isDark ? 'true' : 'false');
-  const _db2 = document.getElementById('drawerDarkBtn');
-  if (_db2) { _db2.textContent = _db.textContent; _db2.setAttribute('aria-pressed', _db.getAttribute('aria-pressed')); }
+  syncDarkButtons(isDark);
   // Both color layers are now pure CSS-var (the DOM classes are theme-independent), so a
   // dark toggle only needs to re-resolve the light/dark palettes into the body vars — no
   // reading rebuild. Nikkud and trope are independent, so refresh each that's on.
@@ -2312,11 +2541,7 @@ function initDark() {
   const s = localStorage.getItem(DARK_KEY);
   if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
     document.body.classList.add('dark');
-    const _db = document.getElementById('darkBtn');
-    _db.textContent = '☀️';
-    _db.setAttribute('aria-pressed', 'true');
-    const _db2 = document.getElementById('drawerDarkBtn');
-    if (_db2) { _db2.textContent = '☀️'; _db2.setAttribute('aria-pressed', 'true'); }
+    syncDarkButtons(true);
   }
   document.documentElement.classList.remove('dark-early');
 }
@@ -3340,6 +3565,7 @@ function renderText() {
   </div>`;
   // Aliyah landmarks (full-parsha only) — inline dividers + jump targets.
   _aliyahStarts = computeAliyahStarts();
+  try { syncFsBar(); } catch (e) {}   // the fullscreen steppers key off exactly this
   const aStartByLabel = {};
   if (_aliyahStarts) for (const a of _aliyahStarts) aStartByLabel[a.label] = a.num;
   const wordIdxRef = { value: 0 };
@@ -3809,6 +4035,17 @@ function jumpToAliyah(n) {
   // the first verse element instead; flashVerse resolves the id either way.
   flashVerse('tt-aliyah-' + n);
 }
+// The aliyah number containing a "C:V" label, or null. Pure — reads _aliyahStarts, touches no
+// DOM. Lifted out of updateJumpNavState so the chip highlight and the fullscreen steppers
+// cannot drift apart on what "the aliyah you are in" means.
+function aliyahNumForLabel(label) {
+  if (!_aliyahStarts) return null;
+  const m = label && label.match(/^(\d+):(\d+)$/);
+  if (!m) return null;
+  const c = +m[1], v = +m[2];
+  for (const a of _aliyahStarts) if (verseInRange(c, v, a.range)) return a.num;
+  return null;
+}
 // Reflect the current verse: highlight the active aliyah chip + update the readout.
 function updateJumpNavState() {
   const nav = document.getElementById('ttJumpNav');
@@ -3817,12 +4054,7 @@ function updateJumpNavState() {
   const pos = document.getElementById('ttJumpPos');
   if (pos) pos.textContent = cur || '';
   if (!_aliyahStarts) return;
-  let activeNum = null;
-  const m = cur && cur.match(/^(\d+):(\d+)$/);
-  if (m) {
-    const c = +m[1], v = +m[2];
-    for (const a of _aliyahStarts) { if (verseInRange(c, v, a.range)) { activeNum = a.num; break; } }
-  }
+  const activeNum = aliyahNumForLabel(cur);
   nav.querySelectorAll('.tt-jump-chip').forEach(btn =>
     btn.classList.toggle('active', parseInt(btn.dataset.aliyah, 10) === activeNum));
 }
@@ -5018,19 +5250,38 @@ function applyKaraokeAppearance() {
   ['hebrew','translit','both'].forEach(s =>
     body.classList.toggle('kar-follow-' + s, settings.karaokeFollow === s));
 }
-function resetFontSize(which) {
-  const map = { heb: ['hebFontSize', 'optHebSize', 'optHebSizeVal'],
-                translit: ['translitFontSize', 'optTranslitSize', 'optTranslitSizeVal'],
-                english: ['englishFontSize', 'optEnglishSize', 'optEnglishSizeVal'] };
-  const [key, slId, valId] = map[which] || [];
+/* One map, three former copies (resetFontSize, syncFormToSettings' sizeMap, the wireSize call
+   list). Keyed by the argument the ↺ buttons already pass in their onclick=. */
+const FONT_SIZE_UI = {
+  heb:      ['hebFontSize',      'optHebSize',      'optHebSizeVal'],
+  translit: ['translitFontSize', 'optTranslitSize', 'optTranslitSizeVal'],
+  english:  ['englishFontSize',  'optEnglishSize',  'optEnglishSizeVal'],
+};
+/* THE single writer for a font size, whatever drives it — the drawer slider, the ↺ reset, or
+   the fullscreen A−/A+. The clamp reads the slider's own min/max attributes rather than
+   restating them, so the bar can never leave the drawer's range and retuning the markup moves
+   both paths at once; the value is snapped to the slider's 0.05 grid so `sl.value = safe` is a
+   no-op mid-drag and the step attribute is never violated. syncFormToSettings stays the sole
+   settings→form reader and deliberately does NOT route through here (it must not save). */
+function setFontSize(which, v) {
+  const [key, slId, valId] = FONT_SIZE_UI[which] || [];
   if (!key) return;
-  settings[key] = DEFAULTS[key];
   const sl  = document.getElementById(slId);
   const val = document.getElementById(valId);
-  if (sl)  sl.value = settings[key];
-  if (val) val.textContent = settings[key].toFixed(2) + 'rem';
+  const lo  = sl ? parseFloat(sl.min) : 0.5;
+  const hi  = sl ? parseFloat(sl.max) : 3.5;
+  let safe = isFinite(v) ? v : DEFAULTS[key];
+  safe = Math.round(Math.min(hi, Math.max(lo, safe)) * 20) / 20;
+  settings[key] = safe;
+  if (sl)  sl.value = safe;
+  if (val) val.textContent = safe.toFixed(2) + 'rem';
   applyFontSizes();
   saveSettings();
+}
+function resetFontSize(which) {
+  const entry = FONT_SIZE_UI[which];
+  if (!entry) return;
+  setFontSize(which, DEFAULTS[entry[0]]);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -5273,13 +5524,8 @@ function syncFormToSettings() {
   const ca = settings.clickAction || 'chant';
   document.getElementById('caChant').checked = ca === 'chant';
   document.getElementById('caRead').checked  = ca === 'read';
-  // Per-row font sizes (sliders + value displays)
-  const sizeMap = [
-    ['hebFontSize',      'optHebSize',      'optHebSizeVal'],
-    ['translitFontSize', 'optTranslitSize', 'optTranslitSizeVal'],
-    ['englishFontSize',  'optEnglishSize',  'optEnglishSizeVal'],
-  ];
-  sizeMap.forEach(([key, slId, valId]) => {
+  // Per-row font sizes (sliders + value displays). Reads only — never setFontSize(), which saves.
+  Object.values(FONT_SIZE_UI).forEach(([key, slId, valId]) => {
     const v = parseFloat(settings[key]);
     const safe = isFinite(v) ? v : DEFAULTS[key];
     const sl = document.getElementById(slId);
@@ -5391,22 +5637,12 @@ function wireSettingsForm() {
       if (e.target.checked) { settings.clickAction = e.target.value; saveSettings(); }
     });
   });
-  // Per-row font-size sliders (Hebrew / Translit / English)
-  function wireSize(slId, valId, key) {
-    const sl = document.getElementById(slId);
-    const val = document.getElementById(valId);
-    if (!sl) return;
-    sl.addEventListener('input', e => {
-      const v = parseFloat(e.target.value);
-      settings[key] = v;
-      val.textContent = v.toFixed(2) + 'rem';
-      applyFontSizes();
-      saveSettings();
-    });
-  }
-  wireSize('optHebSize',      'optHebSizeVal',      'hebFontSize');
-  wireSize('optTranslitSize', 'optTranslitSizeVal', 'translitFontSize');
-  wireSize('optEnglishSize',  'optEnglishSizeVal',  'englishFontSize');
+  // Per-row font-size sliders (Hebrew / Translit / English). Both directions now traverse
+  // setFontSize, so a slider cannot go stale while the teacher steps size in fullscreen.
+  Object.keys(FONT_SIZE_UI).forEach(which => {
+    const sl = document.getElementById(FONT_SIZE_UI[which][1]);
+    if (sl) sl.addEventListener('input', e => setFontSize(which, parseFloat(e.target.value)));
+  });
   // Karaoke style + follow
   document.querySelectorAll('input[name="optKarStyle"]').forEach(r => {
     r.addEventListener('change', e => {
@@ -5578,6 +5814,17 @@ function wireSettingsForm() {
     t.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
   });
   panelMemApply();   // restore the teacher's saved open/closed drawer panels
+  // Fullscreen bar: any pointer activity reveals it; hovering or tabbing into it pins it open.
+  const _fsBarReveal = () => { if (document.body.classList.contains('fullscreen')) showFsBar(); };
+  document.addEventListener('pointermove', _fsBarReveal, { passive: true });
+  document.addEventListener('pointerdown', _fsBarReveal, { passive: true });
+  const _fsBar = document.getElementById('ttFsBar');
+  if (_fsBar) {
+    _fsBar.addEventListener('pointerenter', () => { if (_fsBarTimer) { clearTimeout(_fsBarTimer); _fsBarTimer = null; } });
+    _fsBar.addEventListener('pointerleave', showFsBar);
+    _fsBar.addEventListener('focusin',      () => { if (_fsBarTimer) { clearTimeout(_fsBarTimer); _fsBarTimer = null; } });
+    _fsBar.addEventListener('focusout',     showFsBar);
+  }
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveSettingsFlush(); });
   window.addEventListener('pagehide', saveSettingsFlush);   // leaving the page → flush the debounced save
   // Student handout bar options → persisted handout* fields
@@ -6846,6 +7093,7 @@ function applyI18n() {
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
   try { const og = document.querySelector('#parshaSelect optgroup'); if (og) og.label = I18n.t('torah.controls.holiday_group_label'); } catch (e) {}
   try { syncWeekStepLabels(); } catch (e) {}        // week-step buttons name their destination
+  try { syncFsBar(); } catch (e) {}                // fullscreen bar: aliyah state + disabled reason
   try { updateTransFooter(); } catch (e) {}         // translation credit line
   try { syncTTSVoiceStatus(); } catch (e) {}        // TTS voice readout — written pre-ready, never re-rendered
   try { updateCopyTextarea(); } catch (e) {}        // re-localize the "{count} selected" line

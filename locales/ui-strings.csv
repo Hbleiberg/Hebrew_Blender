@@ -3538,6 +3538,12 @@ torah.footer.cantillation_credit,Cantillation audio: PocketTorah · CC BY-SA 4.0
 torah.footer.license_note,"Only translations whose license permits redistribution are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).","מוצעים רק תרגומים שרישיונם מתיר הפצה מחדש (נחלת הכלל, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).",footer note,
 torah.footer.sefaria_credit,Hebrew text via Sefaria · public domain,טקסט עברי דרך Sefaria · נחלת הכלל,footer data-source credit,html
 torah.footer.translation_static,Translation: (none selected),תרגום: (לא נבחר),footer credit,
+torah.fspresent.bar_aria,Presentation controls,בקרות הקרנה,fullscreen presentation toolbar group label,aria-label only; REVIEW: HE draft
+torah.fspresent.size_down,Smaller Hebrew text,הקטנת הטקסט העברי,fullscreen toolbar A− button,button title + aria-label; REVIEW: HE draft
+torah.fspresent.size_up,Larger Hebrew text,הגדלת הטקסט העברי,fullscreen toolbar A+ button,button title + aria-label; REVIEW: HE draft
+torah.fspresent.aliyah_prev,Previous aliyah,העלייה הקודמת,fullscreen toolbar ‹ button — steps back one aliyah,button title + aria-label; REVIEW: HE draft
+torah.fspresent.aliyah_next,Next aliyah,העלייה הבאה,fullscreen toolbar › button — steps forward one aliyah,button title + aria-label; REVIEW: HE draft
+torah.fspresent.aliyah_unavailable,Aliyah steps need a parsha reading,מעבר בין עליות דורש קריאת פרשה,"reason shown on the fullscreen aliyah steppers when they are aria-disabled — haftarah, holiday or custom reading","disabled-state reason (title + aria-label + toast); REVIEW: HE draft"
 torah.glyphname.trope_geresh,Geresh group,גרש,trope-family legend + picker label,glyph-name; scope-ambiguous
 torah.glyphname.trope_katon,Zakef Katon clause,זקף קטון,trope-family legend + picker label,glyph-name; scope-ambiguous
 torah.glyphname.trope_rare,Rare marks,טעמים נדירים,trope-family legend + picker label,glyph-name; scope-ambiguous
