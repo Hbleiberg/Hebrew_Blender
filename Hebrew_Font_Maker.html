@@ -4364,7 +4364,7 @@ function onTemplateChange() {
     return;
   }
   if (wrap) wrap.style.display = 'none';       // a real font chosen → hide the upload button again
-  project.template.font = sel.value;
+  project.template.font = sel.value; markDirty();
   const f = fontByFamily(sel.value); if (f) loadHebFont(f);
   renderStage(); renderLetterGrid();   // letter-grid tiles preview in the chosen reference font
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (project) { renderStage(); renderLetterGrid(); } });
@@ -5185,12 +5185,12 @@ function renderPunctGrid() {
   a11yTiles(grid);
 }
 function setIncludePunct(on) {
-  project.font.includeDigitsPunct = !!on;
+  project.font.includeDigitsPunct = !!on; markDirty();
   renderPunctPanel();
   if (isPunctItem()) renderStage();
 }
 function setMarkEnabled(cat, on) {
-  project.font[cat].enabled = on;
+  project.font[cat].enabled = on; markDirty();
   if (!on && curKind === cat) { selectItem('letter', LETTER_ORDER[0]); return; }   // leave the now-disabled mark editor
   // keep the placement step on a valid category (or drop back to Align if neither is on)
   if (workMode === 'anchors' && curKind === 'letter') {
@@ -5202,11 +5202,11 @@ function setMarkEnabled(cat, on) {
   updateTabs();   // show/hide the Nikkud / Trop placement tabs right away
 }
 function setShevaNa(on) {   // optional heavier sheva for Sheva Na (export-only alternate, no editor mark)
-  project.font.nikkud.shevaNa = !!on;
+  project.font.nikkud.shevaNa = !!on; markDirty();
   renderNikkudPanel();
 }
 function setMarkMode(cat, mode) {
-  project.font[cat].mode = mode;
+  project.font[cat].mode = mode; markDirty();
   if (mode !== 'custom' && curKind === cat) { selectItem('letter', LETTER_ORDER[0]); return; }
   renderGrids();
 }
@@ -5214,7 +5214,7 @@ function setMarkMode(cat, mode) {
    crop-from-sheet workspace (like the letters' Combined mode); Per Symbol keeps the
    Simple editor / single-image upload per mark. */
 function setMarkUploadMode(cat, mode) {
-  project.font[cat].uploadMode = mode;
+  project.font[cat].uploadMode = mode; markDirty();
   renderMarkPanel(cat);
   if (curKind === cat) setWorkMode('align');   // re-show the workspace as crop-select or per-symbol
 }
@@ -5266,12 +5266,12 @@ function normalizeCp(raw) {        // "U+05D0" | "0x05D0" | "05D0" | a pasted ch
   return n.toString(16).toUpperCase().padStart(4, '0');
 }
 function setAddCustomGlyphs(on) {
-  project.font.addCustomGlyphs = !!on;
+  project.font.addCustomGlyphs = !!on; markDirty();
   if (!on && isCustomCp(curCp)) selectItem('letter', LETTER_ORDER[0]);   // leave the custom editor if it was open
   renderGrids();   // rebuilds the tab bar (renderCatTabs) → shows/hides the Custom glyphs tab
 }
 function setAddEnglishLetters(on) {
-  project.font.addEnglishLetters = !!on;
+  project.font.addEnglishLetters = !!on; markDirty();
   if (on) ensureEnglishSeeded();
   else if (isEng(curCp)) selectItem('letter', LETTER_ORDER[0]);   // leave the English editor if it was open
   renderGrids();   // rebuilds the tab bar (renderCatTabs) → shows/hides the English tab
@@ -5308,25 +5308,25 @@ function ensurePrecompSeeded(forms, p) {
   });
 }
 function setAddSpecialForms(on) {
-  project.font.addSpecialForms = !!on;
+  project.font.addSpecialForms = !!on; markDirty();
   if (on) ensurePrecompSeeded(SPECIAL_FORMS);
   else if (precompTarget && SPECIAL_TARGETS.indexOf(precompTarget) >= 0) clearPrecompTarget();
   renderGrids();
 }
 function setAddYiddish(on) {
-  project.font.addYiddish = !!on;
+  project.font.addYiddish = !!on; markDirty();
   if (on) ensurePrecompSeeded(YIDDISH_FORMS);
   else if (precompTarget && YIDDISH_TARGETS.indexOf(precompTarget) >= 0) clearPrecompTarget();
   renderGrids();
 }
 function setAddLadino(on) {
-  project.font.addLadino = !!on;
+  project.font.addLadino = !!on; markDirty();
   if (on) ensurePrecompSeeded(LADINO_FORMS);
   else if (precompTarget && LADINO_TARGETS.indexOf(precompTarget) >= 0) clearPrecompTarget();
   renderGrids();
 }
 function setAddWideForms(on) {
-  project.font.addWideForms = !!on;
+  project.font.addWideForms = !!on; markDirty();
   if (on) {
     ensurePrecompSeeded(WIDE_ALL_FORMS);
     // Backfill the 150% starting width onto wide-table entries that were seeded WITHOUT it — the
@@ -5344,7 +5344,7 @@ function setAddWideForms(on) {
   renderGrids();
 }
 function setSvgUpload(on) {
-  project.font.svgUpload = !!on;
+  project.font.svgUpload = !!on; markDirty();
   renderGrids(); renderStage(); renderControls();   // re-render the upload zones (SVG-only accept + text), tabs, and stage
 }
 function openSvgGuide() {
