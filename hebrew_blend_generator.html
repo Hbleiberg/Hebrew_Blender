@@ -3444,6 +3444,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <button class="btn btn-outline" id="pdfBtn" onclick="exportPDF()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;margin-top:8px;" data-i18n="worksheet.actions.export_pdf">⬇ Export PDF</button>
       <button class="btn btn-outline" id="shareBtn" onclick="copyShareLink('shareBtn')" style="margin-top:8px;" data-i18n="worksheet.actions.copy_link">📋 Copy shareable link</button>
       <div id="shareNotice" role="status" style="display:none;margin-top:6px;font-size:0.72rem;color:var(--muted);text-align:center;line-height:1.4;"></div>
+      <button class="btn btn-outline" id="fcHandoffBtn" onclick="openInFlashCards()" style="margin-top:6px;" title="Open these letters and vowels as a Flash Cards drill" data-i18n="worksheet.actions.practice_flashcards" data-i18n-title="worksheet.actions.practice_flashcards_title">🃏 Practice these in Flash Cards</button>
       <div class="print-tip" id="printTip" style="display:none;margin-top:8px;font-size:0.72rem;color:var(--muted);background:var(--warm-gray);border-radius:5px;padding:7px 9px;line-height:1.4;" data-i18n="worksheet.actions.print_tip">
         💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.
       </div>
@@ -12985,6 +12986,35 @@ function restoreFromURL() {
 // "📋 Copy shareable link" — sync the address bar, copy the URL, flash the button.
 // Announce a transient message to screen readers via the hidden #a11yStatus live region.
 function announce(msg) { const s = document.getElementById('a11yStatus'); if (s) s.textContent = msg; }
+/* ── Hand the worksheet's letters + vowels to Flash Cards (S252 micro-feature) ──────────────
+   The lesson's second half had no answer: a teacher who had just picked this week's letters and
+   vowels here had to re-pick every one of them by hand in flash cards. The consumer side needs
+   ZERO new code — flash_cards' ?s= boot handler already decodes url-safe base64 JSON (its
+   shareCodeDecode restores -/_ and the padding shareB64Encode trims) and calls applySettings()
+   on these exact key names. Only two differ across the boundary, so only two are renamed here.
+   Deliberately partial: everything a worksheet knows that a drill does not (layout, answer key,
+   timer, locks) is left out, so flash cards applies its own defaults for the rest. */
+const FC_BLEND_MODE = { one: 1, two: 2, three: 3 };
+function openInFlashCards() {
+  let s;
+  try { s = getSettings(); } catch (e) { return; }
+  if (!s.selectedLetters.length || !s.selectedVowels.length) {
+    _setShareNotice(I18n.t('worksheet.flashcards.need_selection'));
+    announce(I18n.t('worksheet.flashcards.need_selection'));
+    return;
+  }
+  _setShareNotice('');
+  const payload = {
+    selectedLetters:  s.selectedLetters,
+    selectedVowels:   s.selectedVowels,
+    dageshTavEnabled: s.dageshTav,                     // generator calls it dageshTav
+    mode:             FC_BLEND_MODE[s.blendType] || 2, // 'one'|'two'|'three' → 1|2|3
+    inverse:          s.inverse,
+    vavAsLetter:      vavAsLetter
+  };
+  window.open('flash_cards.html?s=' + shareB64Encode(JSON.stringify(payload)), '_blank', 'noopener');
+}
+
 function copyShareLink(btnId) {
   const url = serializeSettings();
   try { history.replaceState(null, '', url); } catch(e) {}
