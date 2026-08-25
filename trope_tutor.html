@@ -246,7 +246,7 @@ body.dark .tu-status.error { color:#ff6666; }
 .tu-chip {
   display:inline-flex; align-items:center; gap:6px;
   padding:6px 12px; font:inherit; font-size:0.8rem; font-weight:700;
-  border:1px solid var(--border); border-left:5px solid var(--border);
+  border:1px solid var(--border); border-inline-start:5px solid var(--border);
   border-radius:6px; background:transparent; color:var(--text);
   cursor:pointer; transition:all 0.15s;
 }
@@ -254,12 +254,12 @@ body.dark .tu-status.error { color:#ff6666; }
 .tu-chip.active { background:var(--warm-gray); border-color:var(--gold); }
 .tu-chip:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
 .tu-chip .visited { color:var(--gold-text); font-weight:700; }
-.tu-chip.fam-sofpasuk { border-left-color:var(--trope-sofpasuk-line); }
-.tu-chip.fam-katon    { border-left-color:var(--trope-katon-line); }
-.tu-chip.fam-segol    { border-left-color:var(--trope-segol-line); }
-.tu-chip.fam-revia    { border-left-color:var(--trope-revia-line); }
-.tu-chip.fam-geresh   { border-left-color:var(--trope-geresh-line); }
-.tu-chip.fam-rare     { border-left-color:var(--trope-rare-line); }
+.tu-chip.fam-sofpasuk { border-inline-start-color:var(--trope-sofpasuk-line); }
+.tu-chip.fam-katon    { border-inline-start-color:var(--trope-katon-line); }
+.tu-chip.fam-segol    { border-inline-start-color:var(--trope-segol-line); }
+.tu-chip.fam-revia    { border-inline-start-color:var(--trope-revia-line); }
+.tu-chip.fam-geresh   { border-inline-start-color:var(--trope-geresh-line); }
+.tu-chip.fam-rare     { border-inline-start-color:var(--trope-rare-line); }
 
 .tu-family-note {
   font-size:0.9rem; line-height:1.55; color:var(--text);
@@ -424,14 +424,14 @@ body.dark .tu-review { background:#131a29; }
 .tu-mfam-label {
   flex:0 0 118px; font-size:0.7rem; font-weight:700; letter-spacing:0.04em;
   text-transform:uppercase; color:var(--muted); padding-top:8px;
-  border-right:4px solid transparent; padding-right:8px; text-align:right;
+  border-inline-end:4px solid transparent; padding-inline-end:8px; text-align:end;
 }
-.tu-mfam.fam-sofpasuk .tu-mfam-label { border-right-color:var(--trope-sofpasuk-line); }
-.tu-mfam.fam-katon    .tu-mfam-label { border-right-color:var(--trope-katon-line); }
-.tu-mfam.fam-segol    .tu-mfam-label { border-right-color:var(--trope-segol-line); }
-.tu-mfam.fam-revia    .tu-mfam-label { border-right-color:var(--trope-revia-line); }
-.tu-mfam.fam-geresh   .tu-mfam-label { border-right-color:var(--trope-geresh-line); }
-.tu-mfam.fam-rare     .tu-mfam-label { border-right-color:var(--trope-rare-line); }
+.tu-mfam.fam-sofpasuk .tu-mfam-label { border-inline-end-color:var(--trope-sofpasuk-line); }
+.tu-mfam.fam-katon    .tu-mfam-label { border-inline-end-color:var(--trope-katon-line); }
+.tu-mfam.fam-segol    .tu-mfam-label { border-inline-end-color:var(--trope-segol-line); }
+.tu-mfam.fam-revia    .tu-mfam-label { border-inline-end-color:var(--trope-revia-line); }
+.tu-mfam.fam-geresh   .tu-mfam-label { border-inline-end-color:var(--trope-geresh-line); }
+.tu-mfam.fam-rare     .tu-mfam-label { border-inline-end-color:var(--trope-rare-line); }
 .tu-mcells { display:flex; flex-wrap:wrap; gap:5px; flex:1; }
 .tu-mcell {
   display:flex; flex-direction:column; align-items:center; gap:1px;
@@ -689,7 +689,10 @@ footer a:hover { text-decoration:underline; }
 footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-content:center; align-items:center; }
 
 @media print {
-  header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay { display:none !important; }
+  /* `.tu-toast` is position:fixed, so a toast still on screen at print time repeats on EVERY
+     sheet — measured S253 at 14 of 14 pages of a Learn-tab print, text and shadow both. Same
+     shape the dictionary closed in S252; torah_trainer already hides its `.tt-hint-toast` here. */
+  header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay, .tu-toast { display:none !important; }
   /* Print has to establish its own ink. The dialog drops background colours by default, so every
      colour picked to sit ON a coloured plate has to be re-lit for white paper. Remapping the
      tokens converges both themes on the light palette (the flash_cards S159 treatment); without
@@ -742,7 +745,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
   .tu-cards { grid-template-columns:1fr; }
   .tu-choices { grid-template-columns:1fr; }
   .tu-mfam { flex-direction:column; gap:4px; }
-  .tu-mfam-label { border-right:none; padding-right:0; text-align:left; flex-basis:auto; padding-top:0; }
+  .tu-mfam-label { border-inline-end:none; padding-inline-end:0; text-align:start; flex-basis:auto; padding-top:0; }
 }
 /* Phone widths: let the header button row wrap onto a second line instead of pushing the
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — the row is

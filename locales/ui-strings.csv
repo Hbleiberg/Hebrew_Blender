@@ -813,6 +813,8 @@ dictionary.toolbar.copy_link_title,Copy a link to this exact filtered view,הע�
 dictionary.toolbar.loading,Loading…,טוען…,result count while loading,toast
 dictionary.toolbar.print_button,🖨️ Print,🖨️ הדפסה,toolbar print button,leading-emoji
 dictionary.toolbar.print_empty,No words to print — search first.,אין מילים להדפסה — חפשו קודם.,print empty-state SR announce,
+dictionary.toolbar.print_large_emojis,This will print all {count} emojis. Narrow your filters to print fewer.,פעולה זו תדפיס את כל {count} האימוג'ים. צמצמו את הסינון כדי להדפיס פחות.,print-size heads-up beside the Print button (emoji mode),
+dictionary.toolbar.print_large_words,This will print all {count} words. Narrow your filters to print fewer.,פעולה זו תדפיס את כל {count} המילים. צמצמו את הסינון כדי להדפיס פחות.,print-size heads-up beside the Print button,
 dictionary.toolbar.print_title,Print the current results,הדפסת התוצאות הנוכחיות,toolbar print button title,
 dictionary.toolbar.wordlists_title,View and manage your saved Word Lists,צפייה וניהול של רשימות המילים השמורות,toolbar word-lists button title,
 dictionary.toolbar.reset_filters,↺ Reset filters,↺ איפוס מסננים,toolbar reset button,leading-emoji
@@ -3928,6 +3930,8 @@ worksheet.actions.export_pdf,⬇ Export PDF,⬇ ייצא PDF,action button,leadi
 worksheet.actions.generate,⬡ Generate Worksheet,⬡ צור דף עבודה,primary action button,leading-emoji
 worksheet.actions.generate_mob,⬡ Generate,⬡ צור,mobile FAB button,leading-emoji
 worksheet.actions.pdf_mob,⬇ PDF,⬇ PDF,mobile FAB button,leading-emoji
+worksheet.actions.practice_flashcards,🃏 Practice these in Flash Cards,🃏 תרגלו את אלה בכרטיסיות,generator hand-off button to flash cards,leading-emoji
+worksheet.actions.practice_flashcards_title,Open these letters and vowels as a Flash Cards drill,פתיחת האותיות והתנועות האלה כתרגול כרטיסיות,generator hand-off button title/aria,aria-label only
 worksheet.actions.print,🖨 Print,🖨 הדפס,action button,leading-emoji
 worksheet.actions.print_tip,"💡 Print tip: In the print dialog, uncheck Headers and footers to remove the URL and date.","💡 טיפ להדפסה: בתיבת ההדפסה, בטלו את הסימון של כותרות עליונות ותחתונות כדי להסיר את הכתובת והתאריך.",tip box,leading-emoji;html
 worksheet.actions.regenerate,↺ Regenerate,↺ צור מחדש,action button,leading-emoji
@@ -4034,6 +4038,7 @@ worksheet.empty.select_letters_vowels,Please select letters and vowels.,בחרו
 worksheet.empty.select_more_letters,Please select more letters.,בחרו עוד אותיות.,worksheet empty state,print-adjacent empty state
 worksheet.empty.select_vowel,Please select at least one vowel.,בחרו לפחות תנועה אחת.,worksheet empty state,print-adjacent empty state
 worksheet.empty.too_few_intersect,Too few words intersect — try a larger grid or more words.,מעט מדי מילים מצטלבות — נסו רשת גדולה יותר או יותר מילים.,worksheet empty state,print-adjacent empty state
+worksheet.flashcards.need_selection,Pick at least one letter and one vowel to practice.,בחרו לפחות אות אחת ותנועה אחת כדי לתרגל.,inline note when the flash-cards hand-off has nothing to send,
 worksheet.faq.a1,"A Hebrew blend worksheet pairs Hebrew letters with vowels (nikkud) so students can practice decoding syllables one, two, or three letters at a time.","דף צירופים בעברית משלב אותיות עבריות עם תנועות (ניקוד) כדי שהתלמידים יוכלו לתרגל פענוח הברות — אות, שתיים או שלוש בכל פעם.",footer FAQ answer,
 worksheet.faq.a2,Yes. All worksheets are free under CC BY-NC-SA 4.0 for non-commercial educational use.,כן. כל דפי העבודה חינמיים תחת רישיון CC BY-NC-SA 4.0 לשימוש חינוכי לא-מסחרי.,footer FAQ answer,
 worksheet.faq.a3,Yes. The generator outputs print-ready PDFs sized for standard letter and A4 paper.,כן. המחולל מפיק קובצי PDF מוכנים להדפסה בגודל נייר Letter ו-A4 סטנדרטי.,footer FAQ answer,
@@ -4935,3 +4940,8 @@ fontmaker.undolabel.trop_spread,trop spread,פריסת הטעמים,undo action 
 fontmaker.undolabel.vowel_slide_distance,vowel slide distance,מרחק הזזת הניקוד,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.width,width,רוחב,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.word_spacing,word spacing,ריווח המילים,undo action name,REVIEW: HE authored S243
+flashcards.worksheet.head,Make a Worksheet,יצירת דף עבודה,teacher-tools sub-heading above the worksheet hand-off,
+flashcards.worksheet.button,📄 Print these as a worksheet,📄 הדפיסו את אלה כדף עבודה,flash-cards hand-off button to the worksheet generator,leading-emoji
+flashcards.worksheet.button_title,Open these letters and vowels as a printable worksheet,פתיחת האותיות והתנועות האלה כדף עבודה להדפסה,flash-cards hand-off button title/aria,aria-label only
+flashcards.worksheet.need_selection,Pick at least one letter and one vowel to make a worksheet.,בחרו לפחות אות אחת ותנועה אחת כדי ליצור דף עבודה.,inline note when the worksheet hand-off has nothing to send,
+flashcards.worksheet.other_mode,Worksheets cover letters and vowels. Turn off Other mode first.,דפי עבודה מיועדים לאותיות ולתנועות. כבו תחילה את מצב "אחר".,inline note when the deck is drilling numbers/colours/emojis instead of blends,

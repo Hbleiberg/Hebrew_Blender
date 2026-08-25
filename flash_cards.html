@@ -1837,6 +1837,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
       <hr class="soft" />
 
+      <!-- Worksheet hand-off (mirror of the generator's "Practice these in Flash Cards") -->
+      <div class="label adv-subhead" data-i18n="flashcards.worksheet.head">Make a Worksheet</div>
+      <div class="adv-subbody">
+        <button class="btn sm ghost" id="wsHandoffBtn" data-i18n="flashcards.worksheet.button" data-i18n-title="flashcards.worksheet.button_title" title="Open these letters and vowels as a printable worksheet">📄 Print these as a worksheet</button>
+        <p class="share-err" id="wsHandoffNote" role="status" aria-live="polite"></p>
+      </div>
+
+      <hr class="soft" />
+
       <!-- Profiles & Results -->
       <div class="label adv-subhead" id="profilesHeadLbl" data-i18n="flashcards.teachertools.profiles_head">Profiles &amp; Results</div>
       <div class="adv-subbody">
@@ -4755,6 +4764,51 @@ function copyShareLink() {
   } else {
     copyViaTextarea(url, done);
   }
+}
+/* ── Hand this deck's letters + vowels to the Worksheet Generator (S253 micro-feature) ─────
+   The mirror of the generator's "Practice these in Flash Cards" (S252), and like it this is
+   EMIT-SIDE ONLY. The generator's ?s= reader already ivritSafeParse-s the payload,
+   ivritSafeAssign-s it over a pristine getSettings() baseline and calls applySettings(), so a
+   generator-SHAPED object needs no consumer code there — only the two name changes that leg
+   needed, in reverse: dageshTavEnabled → dageshTav, and mode 1|2|3 → blendType one|two|three.
+   Base64 is url-safe-encoded with the same alphabet copyShareLink uses, because the generator's
+   shareB64Decode restores -/_ and a raw + in a query string would arrive as a space.
+   Deliberately partial: everything a drill knows that a worksheet does not (card count, timer,
+   listening, locks, profiles) is left out, so the generator applies its own defaults. */
+const WS_BLEND_TYPE = { 1: 'one', 2: 'two', 3: 'three' };
+function _setWsHandoffNote(msg) {
+  const el = document.getElementById('wsHandoffNote');
+  if (!el) return;
+  el.textContent = msg || '';
+  el.style.display = msg ? '' : 'none';
+}
+function openInWorksheet() {
+  let s;
+  try { s = getSettings(); } catch (e) { return; }
+  // The "Other" sub-modes drill numbers/colours/emojis/word-lists, not letter+vowel blends,
+  // so there is nothing a blend worksheet could carry over.
+  if (s.otherModeActive) {
+    _setWsHandoffNote(I18n.t('flashcards.worksheet.other_mode'));
+    announce(I18n.t('flashcards.worksheet.other_mode'));
+    return;
+  }
+  if (!s.selectedLetters.length || !s.selectedVowels.length) {
+    _setWsHandoffNote(I18n.t('flashcards.worksheet.need_selection'));
+    announce(I18n.t('flashcards.worksheet.need_selection'));
+    return;
+  }
+  _setWsHandoffNote('');
+  const payload = {
+    selectedLetters: s.selectedLetters,
+    selectedVowels:  s.selectedVowels,
+    dageshTav:       s.dageshTavEnabled,              // generator calls it dageshTav
+    blendType:       WS_BLEND_TYPE[s.mode] || 'two',  // 1|2|3 → 'one'|'two'|'three'
+    inverse:         s.inverse,
+    vavAsLetter:     s.vavAsLetter
+  };
+  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  window.open('hebrew_blend_generator.html?s=' + b64, '_blank', 'noopener');
 }
 // execCommand fallback for a value that lives in no on-page field (the share URL).
 function copyViaTextarea(text, done) {
@@ -7913,6 +7967,7 @@ function wireSetupScreen() {
   document.getElementById('generateShareBtn').addEventListener('click', generateShareCode);
   document.getElementById('copyShareBtn').addEventListener('click', copyShareCode);
   document.getElementById('copyShareLinkBtn').addEventListener('click', copyShareLink);
+  document.getElementById('wsHandoffBtn').addEventListener('click', openInWorksheet);
   document.getElementById('applyShareBtn').addEventListener('click', loadShareCode);
   document.getElementById('shareCodeInput').addEventListener('keydown', e => { if (e.key === 'Enter') loadShareCode(); });
   document.getElementById('shareCodeInput').addEventListener('input', () => shareErr(''));
