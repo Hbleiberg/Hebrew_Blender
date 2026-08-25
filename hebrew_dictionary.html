@@ -2857,7 +2857,16 @@ window.addEventListener('beforeprint', () => {
 window.addEventListener('afterprint', () => {
   if (_printExpandedFrom == null) return;
   const grid = document.getElementById('resultsGrid');
-  while (grid.children.length > _printExpandedFrom) grid.removeChild(grid.lastChild);
+  // Collapse in ONE live mutation, not ~13,000 (S253 Pass D). Removing the print-expanded cards
+  // one at a time measured 3.8s at 1x CPU and 35.8s at 4x for the default 13,081-card expansion —
+  // a frozen tab AFTER the teacher has dismissed the print dialog and wants their page back. The
+  // survivors are MOVED into a fragment (identity and listeners intact, order preserved) and one
+  // replaceChildren drops the rest: 165ms at 1x, 846ms at 4x. Measured `.childElementCount` +
+  // `.remove()` first — same 3.5s/38s, so the cost is the per-node live removal, not the
+  // live-collection read. No argument spread: `_printExpandedFrom` is user-driven and unbounded.
+  const keptFrag = document.createDocumentFragment();
+  for (let i = 0; i < _printExpandedFrom && grid.firstChild; i++) keptFrag.appendChild(grid.firstChild);
+  grid.replaceChildren(keptFrag);
   shown = _printExpandedFrom;
   const total = emojiMode ? emojiFiltered.length : filtered.length;
   document.getElementById('loadMoreWrap').style.display = shown < total ? 'block' : 'none';
