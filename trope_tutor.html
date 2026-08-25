@@ -689,7 +689,10 @@ footer a:hover { text-decoration:underline; }
 footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-content:center; align-items:center; }
 
 @media print {
-  header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay { display:none !important; }
+  /* `.tu-toast` is position:fixed, so a toast still on screen at print time repeats on EVERY
+     sheet — measured S253 at 14 of 14 pages of a Learn-tab print, text and shadow both. Same
+     shape the dictionary closed in S252; torah_trainer already hides its `.tt-hint-toast` here. */
+  header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay, .tu-toast { display:none !important; }
   /* Print has to establish its own ink. The dialog drops background colours by default, so every
      colour picked to sit ON a coloured plate has to be re-lit for white paper. Remapping the
      tokens converges both themes on the light palette (the flash_cards S159 treatment); without

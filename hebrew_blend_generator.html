@@ -2069,8 +2069,15 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   /* ── PRINT ── */
   @page { margin: 0.35in; }
   @media print {
+    /* `#appToast` is position:fixed, so a toast still on screen at print time repeats on EVERY
+       sheet, and its box-shadow renders as a DRAWING that `printBackground:false` cannot drop.
+       Measured S253: a `.ivrit` restore toast — which fires exactly when a teacher loads presets
+       and prints — put "Presets restored from file." plus a 168x58 black slab on the worksheet.
+       The dashboard, flash cards and dictionary already list it; this converges on them. Hide it
+       here, in this page's own print list — never in the shared app-toast CSS block, which must
+       stay byte-identical across its four carriers. */
     .sidebar, header, footer, .mobile-fab, .zoom-bar, .print-tip, .main-toolbar,
-    .sidebar-toggle-btn, .sidebar-show-btn, #fsBtn, #previewNotice,
+    .sidebar-toggle-btn, .sidebar-show-btn, #fsBtn, #previewNotice, #appToast,
     .score-bar, .self-check-controls, .timer-bar { display: none !important; }
     .app { display: block; min-height: unset; }
     .main { padding: 0; overflow: visible; }
