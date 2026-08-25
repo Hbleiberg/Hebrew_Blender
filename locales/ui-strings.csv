@@ -4940,3 +4940,8 @@ fontmaker.undolabel.trop_spread,trop spread,פריסת הטעמים,undo action 
 fontmaker.undolabel.vowel_slide_distance,vowel slide distance,מרחק הזזת הניקוד,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.width,width,רוחב,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.word_spacing,word spacing,ריווח המילים,undo action name,REVIEW: HE authored S243
+flashcards.worksheet.head,Make a Worksheet,יצירת דף עבודה,teacher-tools sub-heading above the worksheet hand-off,
+flashcards.worksheet.button,📄 Print these as a worksheet,📄 הדפיסו את אלה כדף עבודה,flash-cards hand-off button to the worksheet generator,leading-emoji
+flashcards.worksheet.button_title,Open these letters and vowels as a printable worksheet,פתיחת האותיות והתנועות האלה כדף עבודה להדפסה,flash-cards hand-off button title/aria,aria-label only
+flashcards.worksheet.need_selection,Pick at least one letter and one vowel to make a worksheet.,בחרו לפחות אות אחת ותנועה אחת כדי ליצור דף עבודה.,inline note when the worksheet hand-off has nothing to send,
+flashcards.worksheet.other_mode,Worksheets cover letters and vowels. Turn off Other mode first.,דפי עבודה מיועדים לאותיות ולתנועות. כבו תחילה את מצב "אחר".,inline note when the deck is drilling numbers/colours/emojis instead of blends,
