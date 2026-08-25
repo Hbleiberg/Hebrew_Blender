@@ -2482,9 +2482,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div style="font-size:0.72rem;color:var(--muted);line-height:1.4;margin-bottom:8px;" data-i18n-html="dashboard.backup.auto_explainer">Save all your presets, saved schedules, and current settings to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.</div>
       <button class="btn btn-xs btn-secondary" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;" data-i18n="shared.ivrit.save_button">⬇ Save to .ivrit file</button>
       <div id="ivritDrop" class="ivrit-drop">
-        <div style="font-size:0.78rem;" data-i18n-html="shared.ivrit.drop_hint">Drop a <b>.ivrit</b> file here</div>
-        <div style="font-size:0.7rem;color:var(--muted);margin:4px 0;" data-i18n="shared.ivrit.or_divider">— or —</div>
         <button class="btn btn-xs btn-secondary" type="button" onclick="document.getElementById('ivritFileInput').click()" data-i18n="shared.ivrit.browse_button">Browse…</button>
+        <div style="font-size:0.7rem;color:var(--muted);margin:4px 0;" data-i18n="shared.ivrit.or_divider">— or —</div>
+        <div style="font-size:0.78rem;" data-i18n-html="shared.ivrit.drop_hint">Drop a <b>.ivrit</b> file here</div>
         <input type="file" id="ivritFileInput" accept=".ivrit,application/json,text/plain" style="display:none;">
       </div>
       <div id="ivritStatus" role="status" style="font-size:0.7rem;color:var(--muted);margin-top:8px;min-height:1em;text-align:center;"></div>

@@ -2001,9 +2001,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div class="sub" style="margin-bottom:8px;" data-i18n="flashcards.advanced.backup_intro">Save your data to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it. Use the toggle below to choose what's included.</div>
         <button class="btn sm" type="button" onclick="flashBackupSave()" style="width:100%;margin-bottom:10px;" data-i18n="shared.ivrit.save_button">⬇ Save to .ivrit file</button>
         <div id="ivritDrop" class="ivrit-drop">
-          <div style="font-size:0.85rem;" data-i18n="shared.ivrit.drop_hint">Drop a <b>.ivrit</b> file here</div>
-          <div class="sub" style="margin:4px 0;" data-i18n="shared.ivrit.or_divider">— or —</div>
           <button class="btn sm" type="button" onclick="document.getElementById('ivritFileInput').click()" data-i18n="shared.ivrit.browse_button">Browse…</button>
+          <div class="sub" style="margin:4px 0;" data-i18n="shared.ivrit.or_divider">— or —</div>
+          <div style="font-size:0.85rem;" data-i18n="shared.ivrit.drop_hint">Drop a <b>.ivrit</b> file here</div>
           <input type="file" id="ivritFileInput" accept=".ivrit,application/json,text/plain" style="display:none;">
         </div>
         <div id="ivritStatus" role="status" class="sub" style="margin-top:8px;min-height:1em;text-align:center;"></div>
