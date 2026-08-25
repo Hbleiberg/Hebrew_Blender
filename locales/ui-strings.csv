@@ -813,6 +813,8 @@ dictionary.toolbar.copy_link_title,Copy a link to this exact filtered view,הע�
 dictionary.toolbar.loading,Loading…,טוען…,result count while loading,toast
 dictionary.toolbar.print_button,🖨️ Print,🖨️ הדפסה,toolbar print button,leading-emoji
 dictionary.toolbar.print_empty,No words to print — search first.,אין מילים להדפסה — חפשו קודם.,print empty-state SR announce,
+dictionary.toolbar.print_large_emojis,This will print all {count} emojis. Narrow your filters to print fewer.,פעולה זו תדפיס את כל {count} האימוג'ים. צמצמו את הסינון כדי להדפיס פחות.,print-size heads-up beside the Print button (emoji mode),
+dictionary.toolbar.print_large_words,This will print all {count} words. Narrow your filters to print fewer.,פעולה זו תדפיס את כל {count} המילים. צמצמו את הסינון כדי להדפיס פחות.,print-size heads-up beside the Print button,
 dictionary.toolbar.print_title,Print the current results,הדפסת התוצאות הנוכחיות,toolbar print button title,
 dictionary.toolbar.wordlists_title,View and manage your saved Word Lists,צפייה וניהול של רשימות המילים השמורות,toolbar word-lists button title,
 dictionary.toolbar.reset_filters,↺ Reset filters,↺ איפוס מסננים,toolbar reset button,leading-emoji

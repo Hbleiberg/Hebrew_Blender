@@ -837,6 +837,8 @@
   "dictionary.toolbar.loading": "טוען…",
   "dictionary.toolbar.print_button": "🖨️ הדפסה",
   "dictionary.toolbar.print_empty": "אין מילים להדפסה — חפשו קודם.",
+  "dictionary.toolbar.print_large_emojis": "פעולה זו תדפיס את כל {count} האימוג'ים. צמצמו את הסינון כדי להדפיס פחות.",
+  "dictionary.toolbar.print_large_words": "פעולה זו תדפיס את כל {count} המילים. צמצמו את הסינון כדי להדפיס פחות.",
   "dictionary.toolbar.print_title": "הדפסת התוצאות הנוכחיות",
   "dictionary.toolbar.reset_filters": "↺ איפוס מסננים",
   "dictionary.toolbar.reset_filters_title": "איפוס כל המסננים לברירת המחדל",

@@ -417,6 +417,13 @@ body.dark #fsBtn{background:#0d1220;}
 body.fullscreen header{display:none !important;}
 body.fullscreen .app{height:100vh;min-height:unset;}
 .result-count{font-size:0.85rem;color:var(--muted);flex:1;}
+/* Print-size heads-up (S252 Pass G): an unfiltered Print is every word in the corpus — 13,081
+   of them, ~840 sheets. Inline note in the owning row, never an alert() or a blocked click
+   (CLAUDE.md's inline-validation rule); --gold-text is the WCAG-safe small-gold token in both
+   themes. It lives inside .toolbar, which the print stylesheet already hides, so it never
+   prints itself. */
+.print-size-note{font-size:0.74rem;line-height:1.35;color:var(--gold-text);border-inline-start:3px solid var(--gold);padding-inline-start:7px;max-width:24em;}
+.print-size-note[hidden]{display:none;}
 /* min-height, not padding, holds the suite's ratified 30px touch floor (S102) — and it is also
    what puts the select and the three tool buttons on one baseline in this row (S225). */
 .sort-sel{padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-size:0.8rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;min-height:30px;box-sizing:border-box;}
@@ -1187,6 +1194,7 @@ footer summary{min-height:24px;}
       </select>
       <button class="dict-tool-btn" id="dictShareBtn" onclick="copyDictShareLink(this)" title="Copy a link to this exact filtered view" data-i18n="dictionary.toolbar.copy_link" data-i18n-title="dictionary.toolbar.copy_link_title">🔗 Copy link</button>
       <button class="dict-tool-btn" id="dictPrintBtn" onclick="printDictionary()" title="Print the current results" data-i18n="dictionary.toolbar.print_button" data-i18n-title="dictionary.toolbar.print_title">🖨️ Print</button>
+      <span class="print-size-note" id="printSizeNote" role="status" aria-live="polite" hidden></span>
       <button class="dict-tool-btn" id="dictWordListsBtn" onclick="wlOpenManager()" title="View and manage your saved Word Lists" data-i18n="dictionary.wordlists.manager_button" data-i18n-title="dictionary.toolbar.wordlists_title">📚 Word Lists</button>
       <button class="dict-tool-btn" id="dictResetBtn" onclick="resetDictFilters()" title="Reset all filters to their defaults" style="display:none;" data-i18n="dictionary.toolbar.reset_filters" data-i18n-title="dictionary.toolbar.reset_filters_title">↺ Reset filters</button>
     </div>
@@ -2815,6 +2823,22 @@ function printDictionary() {
   if (!filtered || !filtered.length) { announce(I18n.t('dictionary.toolbar.print_empty')); return; }
   window.print();
 }
+// Print-size heads-up (S252 Pass G). The beforeprint handler below materializes EVERY filtered
+// row, so an unfiltered Print is the whole corpus: 13,081 words measured at ~840 sheets / 22 MB.
+// The count that matters is the one beforeprint will expand — shoresh renders everything already
+// and is skipped there, so it is skipped here too. Note only, never a blocked click: the set is
+// legitimately printable, the teacher just deserves to know how big it is before the freeze.
+const PRINT_NOTE_MIN = 500;
+function updatePrintSizeNote() {
+  const el = document.getElementById('printSizeNote');
+  if (!el || !window.I18n) return;
+  const shoresh = typeof shoreshMode !== 'undefined' && shoreshMode;
+  const n = shoresh ? 0 : (emojiMode ? (emojiFiltered || []).length : (filtered || []).length);
+  if (n < PRINT_NOTE_MIN) { el.hidden = true; el.textContent = ''; return; }
+  el.textContent = I18n.t(emojiMode ? 'dictionary.toolbar.print_large_emojis' : 'dictionary.toolbar.print_large_words',
+    { count: n.toLocaleString() });
+  el.hidden = false;
+}
 // Print completeness (S127 Pass G): results are lazy-paginated (PAGE=100), but window.print()
 // snapshots the live DOM — so a filtered set >100 printed silently truncated to the loaded page,
 // with no on-paper cue (the "Show more" button, result count, and sidebar count are all
@@ -3095,6 +3119,9 @@ function setDictMode(mode) {
     document.body.classList.remove('shoresh-mode');
     toggleEmojiMode(mode === 'emojis');
   }
+  // The shoresh branch stops at enterShoresh() and never reaches dictAfterFilter, so without this
+  // the print-size note would keep showing the words-mode count in a mode that prints a root family.
+  updatePrintSizeNote();
 }
 
 function enterShoresh() {
@@ -4673,6 +4700,7 @@ function applyI18n() {
   initPosFilters();
   initFontSelector();
   updateExportState();   // export count is built via t() at init (pre-ready), so it needs a re-render here
+  updatePrintSizeNote();   // t()-built too, and the wlFilterOverride branch below never reaches dictAfterFilter
   if (typeof window._updateMobileFiltersBtn === 'function') window._updateMobileFiltersBtn();
   if (_hk) _hk.applyI18n();   // read-only re-render of the on-screen keyboard labels
   rebuildFilterChips();
@@ -5008,6 +5036,7 @@ function saveDictSessionFlush() {
 function updateDictToolbar() {
   const rb = document.getElementById('dictResetBtn');
   if (rb) rb.style.display = (serializeDictState().indexOf('?s=') !== -1) ? '' : 'none';
+  updatePrintSizeNote();
 }
 
 // Called at every non-suppressed onFilter exit (words/emoji/shoresh).

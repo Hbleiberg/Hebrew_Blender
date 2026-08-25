@@ -837,6 +837,8 @@
   "dictionary.toolbar.loading": "Loading…",
   "dictionary.toolbar.print_button": "🖨️ Print",
   "dictionary.toolbar.print_empty": "No words to print — search first.",
+  "dictionary.toolbar.print_large_emojis": "This will print all {count} emojis. Narrow your filters to print fewer.",
+  "dictionary.toolbar.print_large_words": "This will print all {count} words. Narrow your filters to print fewer.",
   "dictionary.toolbar.print_title": "Print the current results",
   "dictionary.toolbar.reset_filters": "↺ Reset filters",
   "dictionary.toolbar.reset_filters_title": "Reset all filters to their defaults",
