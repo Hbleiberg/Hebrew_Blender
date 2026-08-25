@@ -1279,14 +1279,14 @@
       <div class="panel-title" data-i18n="fontmaker.panels.font_details">Font Details</div>
       <div class="panel-body">
         <label class="fld"><span data-i18n="fontmaker.panels.family_name">Family name</span>
-          <input type="text" id="familyName" value="My Hebrew Hand" oninput="onMetaChange()">
+          <input type="text" id="familyName" autocapitalize="words" autocorrect="off" spellcheck="false" value="My Hebrew Hand" oninput="onMetaChange()">
         </label>
         <div class="row2">
           <label class="fld"><span data-i18n="fontmaker.panels.reserved_name">Reserved name</span>
-            <input type="text" id="reservedName" value="My Hebrew Hand" oninput="onMetaChange()">
+            <input type="text" id="reservedName" autocapitalize="off" autocorrect="off" spellcheck="false" value="My Hebrew Hand" oninput="onMetaChange()">
           </label>
           <label class="fld"><span data-i18n="fontmaker.panels.version">Version</span>
-            <input type="text" id="fontVersion" value="1.000" oninput="onMetaChange()" title="Edit it freely — also ticks up on each export." data-i18n-title="fontmaker.panels.version_title">
+            <input type="text" id="fontVersion" autocapitalize="off" autocorrect="off" spellcheck="false" value="1.000" oninput="onMetaChange()" title="Edit it freely — also ticks up on each export." data-i18n-title="fontmaker.panels.version_title">
           </label>
         </div>
         <label class="fld"><span data-i18n="fontmaker.panels.style">Style</span>
@@ -1299,7 +1299,7 @@
           <button class="ctl-btn" id="boldGenBtn" onclick="boldGenOpen(false)" title="Thicken (or lighten) every traced outline to create a Bold weight — with a live preview before anything changes." data-i18n="fontmaker.panels.boldgen_open" data-i18n-title="fontmaker.panels.boldgen_open_title">Generate Bold…</button>
         </div>
         <label class="fld"><span data-i18n="fontmaker.panels.author">Author</span>
-          <input type="text" id="author" value="" placeholder="Your name" data-i18n-placeholder="fontmaker.panels.author_ph" oninput="onMetaChange()">
+          <input type="text" id="author" autocapitalize="words" autocorrect="off" spellcheck="false" value="" placeholder="Your name" data-i18n-placeholder="fontmaker.panels.author_ph" oninput="onMetaChange()">
         </label>
         <label class="fld"><span><span data-i18n="fontmaker.panels.license">License</span> <button type="button" class="fld-help" onclick="openHelp('licenses')" title="About these licenses" data-i18n-title="fontmaker.panels.license_help_title" aria-label="About these licenses" data-i18n-aria-label="fontmaker.panels.license_help_title">?</button></span>
           <select id="license" onchange="onMetaChange()">
@@ -1774,10 +1774,10 @@
     <section id="wizStep1" class="wiz-step" aria-labelledby="wizStep1Title">
       <h4 id="wizStep1Title" class="wiz-step-title" data-i18n="fontmaker.wizard.step1_title">Step 1 of 3 — Name your font</h4>
       <label class="fld"><span data-i18n="fontmaker.wizard.name_label">Font name</span>
-        <input type="text" id="wizName" oninput="wizardValidateStep1()" placeholder="My Hebrew Hand" data-i18n-placeholder="fontmaker.wizard.name_ph">
+        <input type="text" id="wizName" autocapitalize="words" autocorrect="off" spellcheck="false" oninput="wizardValidateStep1()" placeholder="My Hebrew Hand" data-i18n-placeholder="fontmaker.wizard.name_ph">
       </label>
       <label class="fld"><span data-i18n="fontmaker.panels.author">Author</span>
-        <input type="text" id="wizAuthor" oninput="wizardValidateStep1()" placeholder="Your name" data-i18n-placeholder="fontmaker.panels.author_ph">
+        <input type="text" id="wizAuthor" autocapitalize="words" autocorrect="off" spellcheck="false" oninput="wizardValidateStep1()" placeholder="Your name" data-i18n-placeholder="fontmaker.panels.author_ph">
       </label>
       <label class="fld"><span><span data-i18n="fontmaker.panels.license">License</span> <button type="button" class="fld-help" onclick="openHelp('licenses')" title="About these licenses" data-i18n-title="fontmaker.panels.license_help_title" aria-label="About these licenses" data-i18n-aria-label="fontmaker.panels.license_help_title">?</button></span>
         <select id="wizLicense">
@@ -1852,11 +1852,11 @@
     <section id="wizStepOs2" class="wiz-step" aria-labelledby="wizStepOs2Title" hidden>
       <h4 id="wizStepOs2Title" class="wiz-step-title" data-i18n="fontmaker.oswizard.step2_title">Step 2 of 3 — Name your version</h4>
       <label class="fld"><span data-i18n="fontmaker.oswizard.name_label">Your font's name</span>
-        <input type="text" id="wizOsName" oninput="wizardValidateOs()" autocomplete="off">
+        <input type="text" id="wizOsName" autocapitalize="words" autocorrect="off" spellcheck="false" oninput="wizardValidateOs()" autocomplete="off">
       </label>
       <span id="wizOsNameNote" class="wiz-note" aria-live="polite" hidden></span>
       <label class="fld"><span data-i18n="fontmaker.oswizard.author_label">Your name (contributor)</span>
-        <input type="text" id="wizOsAuthor" oninput="wizardValidateOs()" placeholder="Your name" data-i18n-placeholder="fontmaker.panels.author_ph">
+        <input type="text" id="wizOsAuthor" autocapitalize="words" autocorrect="off" spellcheck="false" oninput="wizardValidateOs()" placeholder="Your name" data-i18n-placeholder="fontmaker.panels.author_ph">
       </label>
       <div class="wiz-os-meta">
         <div class="wiz-os-row"><span data-i18n="fontmaker.oswizard.orig_author">Original author</span><b id="wizOsOrigAuthor"></b></div>
@@ -1954,7 +1954,7 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="kernClassTitle" style="max-width:480px;">
     <h3 id="kernClassTitle" data-i18n="fontmaker.modals.kernclass_title_new">New kern class</h3>
     <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;" data-i18n="fontmaker.modals.kernclass_desc">A named group of letters you can kern as a unit (e.g. all wide-top letters). Use it on either side of a pair; editing the class later updates every pair that uses it.</p>
-    <label class="fld" style="font-size:0.84rem;"><span data-i18n="fontmaker.modals.kernclass_name">Class name</span> <input type="text" id="kernClassName" placeholder="e.g. Wide tops" data-i18n-placeholder="fontmaker.modals.kernclass_name_ph" style="width:100%;box-sizing:border-box;"></label>
+    <label class="fld" style="font-size:0.84rem;"><span data-i18n="fontmaker.modals.kernclass_name">Class name</span> <input type="text" id="kernClassName" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="e.g. Wide tops" data-i18n-placeholder="fontmaker.modals.kernclass_name_ph" style="width:100%;box-sizing:border-box;"></label>
     <div id="kernClassList" style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;max-height:42vh;overflow:auto;margin-top:8px;"></div>
     <div class="mbtns"><button class="tbtn ghost" onclick="closeKernClass()" data-i18n="fontmaker.modals.kernclass_cancel">Cancel</button><button class="tbtn" onclick="saveKernClass()" data-i18n="fontmaker.modals.kernclass_save">Save class</button></div>
   </div>
@@ -5376,8 +5376,8 @@ function renderCustomGlyphsPanel() {
     <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
       <div style="font-weight:700;font-size:0.82rem;margin-bottom:6px;">${_cgT('add_new', "+ Add a new glyph")}</div>
       <div class="row2">
-        <label class="fld">${_cgT('codepoint', "Code point")} <input type="text" id="cgCp" placeholder="${esc(_cgT('codepoint_ph', "E000 or U+05D0"))}"></label>
-        <label class="fld">${_cgT('name', "Name")} <input type="text" id="cgName" placeholder="${esc(_cgT('name_ph', "My glyph"))}"></label>
+        <label class="fld">${_cgT('codepoint', "Code point")} <input type="text" id="cgCp" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${esc(_cgT('codepoint_ph', "E000 or U+05D0"))}"></label>
+        <label class="fld">${_cgT('name', "Name")} <input type="text" id="cgName" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="${esc(_cgT('name_ph', "My glyph"))}"></label>
       </div>
       <div class="mode-toggle" style="margin-top:6px;">
         <button class="mode-btn active" id="cgTypeBase" onclick="cgSetType('base')" aria-pressed="true">${_cgT('type_main', "Main glyph")}</button>
@@ -13525,7 +13525,7 @@ function renderKerningSection() {
     return `
     <div style="flex:1;min-width:0;">
       <div class="metric-sub" style="margin-bottom:3px;">${sideLabel}</div>
-      <input type="text" dir="rtl" maxlength="2" ${s.cls ? 'disabled' : ''} value="${esc(kernSideDisplay(s))}"
+      <input type="text" dir="rtl" maxlength="2" autocapitalize="off" autocorrect="off" spellcheck="false" ${s.cls ? 'disabled' : ''} value="${esc(kernSideDisplay(s))}"
         oninput="setKernGlyph('${which}', this.value)" placeholder="–" aria-label="${esc(sideLabel)}"
         style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:5px;padding:5px;font-size:1.2rem;text-align:center;background:var(--white);color:var(--text);font-family:var(--heb-font);">
       <select onchange="setKernClass('${which}', this.value)" aria-label="${esc(sideLabel)}" style="width:100%;box-sizing:border-box;margin-top:4px;border:1px solid var(--border);border-radius:5px;padding:4px;font-size:0.72rem;background:var(--white);color:var(--text);">
@@ -18700,7 +18700,7 @@ function saveProjectAs() {
   const suggested = fmUniqueCopyName(project.font.familyName, style);
   askModal(I18n.t('fontmaker.modals.save_as_title'),
     `<p style="margin:0 0 10px;">${I18n.t('fontmaker.modals.save_as_body')}</p>` +
-    `<input id="saveAsNameInput" type="text" value="${esc(suggested)}" placeholder="${esc(I18n.t('fontmaker.modals.save_as_name_placeholder'))}" aria-label="${esc(I18n.t('fontmaker.modals.save_as_name_placeholder'))}" ` +
+    `<input id="saveAsNameInput" autocapitalize="words" autocorrect="off" spellcheck="false" type="text" value="${esc(suggested)}" placeholder="${esc(I18n.t('fontmaker.modals.save_as_name_placeholder'))}" aria-label="${esc(I18n.t('fontmaker.modals.save_as_name_placeholder'))}" ` +
     `style="width:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--border);border-radius:6px;font-size:0.95rem;background:var(--white);color:var(--text);">`,
     [ {label:I18n.t('fontmaker.modals.save_copy_btn'), onClick: commitSaveAs},
       {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'} ]);
