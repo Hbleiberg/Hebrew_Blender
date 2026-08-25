@@ -1822,7 +1822,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <button class="btn btn-xs btn-secondary" onclick="selectAllVerses()" type="button" data-i18n="torah.copy.select_all">Select all</button>
     <span class="tt-ctrl">
       <label for="ttCopyRange" data-i18n="torah.copy.range_label">Type verse numbers</label>
-      <input type="text" id="ttCopyRange" autocomplete="off" spellcheck="false" dir="ltr"
+      <input type="text" id="ttCopyRange" autocomplete="off" spellcheck="false"
+             autocapitalize="off" autocorrect="off" dir="ltr"
              placeholder="2:16-2:20, 3:1" data-i18n-placeholder="torah.copy.range_placeholder"
              aria-describedby="ttCopyRangeNote">
       <button class="btn btn-xs btn-secondary" onclick="selectVerseRange()" type="button" data-i18n="torah.copy.range_add">Add</button>
