@@ -424,14 +424,14 @@ body.dark .tu-review { background:#131a29; }
 .tu-mfam-label {
   flex:0 0 118px; font-size:0.7rem; font-weight:700; letter-spacing:0.04em;
   text-transform:uppercase; color:var(--muted); padding-top:8px;
-  border-right:4px solid transparent; padding-right:8px; text-align:right;
+  border-inline-end:4px solid transparent; padding-inline-end:8px; text-align:end;
 }
-.tu-mfam.fam-sofpasuk .tu-mfam-label { border-right-color:var(--trope-sofpasuk-line); }
-.tu-mfam.fam-katon    .tu-mfam-label { border-right-color:var(--trope-katon-line); }
-.tu-mfam.fam-segol    .tu-mfam-label { border-right-color:var(--trope-segol-line); }
-.tu-mfam.fam-revia    .tu-mfam-label { border-right-color:var(--trope-revia-line); }
-.tu-mfam.fam-geresh   .tu-mfam-label { border-right-color:var(--trope-geresh-line); }
-.tu-mfam.fam-rare     .tu-mfam-label { border-right-color:var(--trope-rare-line); }
+.tu-mfam.fam-sofpasuk .tu-mfam-label { border-inline-end-color:var(--trope-sofpasuk-line); }
+.tu-mfam.fam-katon    .tu-mfam-label { border-inline-end-color:var(--trope-katon-line); }
+.tu-mfam.fam-segol    .tu-mfam-label { border-inline-end-color:var(--trope-segol-line); }
+.tu-mfam.fam-revia    .tu-mfam-label { border-inline-end-color:var(--trope-revia-line); }
+.tu-mfam.fam-geresh   .tu-mfam-label { border-inline-end-color:var(--trope-geresh-line); }
+.tu-mfam.fam-rare     .tu-mfam-label { border-inline-end-color:var(--trope-rare-line); }
 .tu-mcells { display:flex; flex-wrap:wrap; gap:5px; flex:1; }
 .tu-mcell {
   display:flex; flex-direction:column; align-items:center; gap:1px;
@@ -742,7 +742,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
   .tu-cards { grid-template-columns:1fr; }
   .tu-choices { grid-template-columns:1fr; }
   .tu-mfam { flex-direction:column; gap:4px; }
-  .tu-mfam-label { border-right:none; padding-right:0; text-align:left; flex-basis:auto; padding-top:0; }
+  .tu-mfam-label { border-inline-end:none; padding-inline-end:0; text-align:start; flex-basis:auto; padding-top:0; }
 }
 /* Phone widths: let the header button row wrap onto a second line instead of pushing the
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — the row is
