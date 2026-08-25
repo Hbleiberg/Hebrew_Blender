@@ -386,9 +386,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div id="ivritAuto">
         <button class="ie-action-btn primary" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;" data-i18n="home.alltools.save_button">⬇ Save All Settings to .ivrit file</button>
         <div id="ivritDrop" class="ivrit-drop">
-          <div style="font-size:0.92rem;" data-i18n-html="home.alltools.drop_text">Drop an <b>AllTools .ivrit</b> file here to restore everything</div>
-          <div style="margin:6px 0;opacity:0.7;" data-i18n="shared.ivrit.or_divider">— or —</div>
           <button class="ie-action-btn secondary" type="button" onclick="document.getElementById('ivritFileInput').click()" data-i18n="shared.ivrit.browse_button">Browse…</button>
+          <div style="margin:6px 0;opacity:0.7;" data-i18n="shared.ivrit.or_divider">— or —</div>
+          <div style="font-size:0.82rem;opacity:0.8;" data-i18n-html="home.alltools.drop_text">Drop an <b>AllTools .ivrit</b> file here to restore everything</div>
           <input type="file" id="ivritFileInput" accept=".ivrit,application/json,text/plain" style="display:none;">
         </div>
         <div id="ivritStatus" role="status" style="margin-top:8px;min-height:1em;text-align:center;opacity:0.75;font-size:0.82rem;"></div>
