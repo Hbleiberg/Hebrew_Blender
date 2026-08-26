@@ -210,6 +210,17 @@
       // 26.2px on all 12 pages; the caret is centred off the wrapper, so it follows the taller box.
       'border:1px solid var(--border,#c8bfa8);border-radius:6px;padding-block:4px;padding-inline:8px 24px;' +
       'min-height:30px;box-sizing:border-box;}' +
+      // …and stretch to whatever THIS host's header row is, so one shared control doesn't have to
+      // guess a height that fits 13 different rows. Measured 2026-08-26 across 10 pages x EN/HE:
+      // neighbours run 44px (flash_cards), 41px (generator), 35px (torah/trope/dashboard), 30px
+      // (index/resources/contact), 29px (font maker) and 24-25px (dictionary) — total row spread
+      // 94px at a fixed 30, and 98px at a fixed 35 (worse than doing nothing). Stretching gives 30px.
+      // min-height above still wins where the row is SHORTER than the touch floor (the dictionary),
+      // so this can never push the switcher back under it. Degrades to today's 30px on any host
+      // whose slot is not a flex item, since align-self is simply ignored there.
+      '.i18n-switch{align-self:stretch;}' +
+      '[data-i18n-switcher]{align-self:stretch;display:flex;}' +
+      '.i18n-switch select.i18n-select{height:100%;}' +
       '.i18n-switch select.i18n-select:hover{background:var(--warm-gray,#e8e0d0);}' +
       '.i18n-switch select.i18n-select:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:1px;}';
     var el = document.createElement('style');
