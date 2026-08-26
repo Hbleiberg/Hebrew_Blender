@@ -8250,10 +8250,16 @@ async function onUploadEngFontPick(input){
   });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') acquireWakeLock();
+    else saveSettingsToStorage();   // see the pagehide note below
   });
   // Refresh/close mid-edit must not eat the text: commit the in-place edit on the way out.
   // pagehide (not beforeunload) so bfcache stays eligible; localStorage writes are sync-safe here.
-  window.addEventListener('pagehide', () => { if (_activeEditable) exitInPlaceEdit(true); });
+  // The settings write is the same last-chance save torah_trainer/trope_tutor make (saveSettingsFlush):
+  // the drawer persists on CLOSE, so a teacher who tunes a size, recolours a vowel or taps Restore
+  // default and then just shuts the lid or swipes to another app loses it. Both events are wired
+  // because pagehide alone is unreliable on mobile. Snapshotting here is safe mid-edit: the editable
+  // is #dashTextDisplay while saveSettingsToStorage reads the untouched #dashEditor source.
+  window.addEventListener('pagehide', () => { if (_activeEditable) exitInPlaceEdit(true); saveSettingsToStorage(); });
   // Reveal the strip on any pointer activity while fullscreen; keep it up while hovered
   const _fsReveal = () => { if (document.body.classList.contains('fullscreen')) showFsStrip(); };
   document.addEventListener('pointermove', _fsReveal, { passive: true });
