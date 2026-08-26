@@ -600,7 +600,7 @@ dictionary.faq.a_free,Yes. Free under CC BY-NC-SA 4.0; word data sourced from Ka
 dictionary.faq.a_keyboard,"Yes. Click <strong>⌨ Show Hebrew Keyboard</strong> by the search bar and click out letters, nikkud, and trop marks — nothing needs to be installed on your computer.","כן. לחצו על <strong>⌨ הצג מקלדת עברית</strong> ליד שורת החיפוש והקליקו אותיות, ניקוד וטעמים — אין צורך להתקין דבר במחשב.",footer FAQ answer,carries <strong> markup — read via data-i18n-html
 dictionary.faq.a_lookup,"Type the Hebrew word (with or without nikkud), or use filters to browse by theme, length, part of speech, era, or letter position.","הקלידו את המילה בעברית (עם או בלי ניקוד), או השתמשו במסננים לעיון לפי נושא, אורך, חלק דיבר, תקופה או מיקום אות.",footer FAQ answer,
 dictionary.faq.a_pos,"Yes. Filter by noun, verb, adjective, adverb, and others, combined with length and era filters.","כן. סננו לפי שם עצם, פועל, שם תואר, תואר הפועל ועוד, בשילוב עם מסנני אורך ותקופה.",footer FAQ answer,
-dictionary.faq.a_share,Yes. Click 🔗 Copy link in the results toolbar to copy a link that reopens this exact filtered view — send it to your class. Your last-used filters also come back automatically on your next visit. New here? Click ❓ Tour in the header for a quick 7-step walkthrough.,כן. לחצו על 🔗 העתקת קישור בסרגל התוצאות כדי להעתיק קישור שפותח מחדש בדיוק את התצוגה המסוננת הזו — שלחו אותו לכיתה שלכם. המסננים האחרונים שלכם גם חוזרים אוטומטית בביקור הבא. חדשים כאן? לחצו על ❓ סיור בכותרת לסיור מודרך בן 7 שלבים.,footer FAQ answer,html; leading-emoji
+dictionary.faq.a_share,Yes. Click <strong>🔗 Copy link</strong> in the results toolbar to copy a link that reopens this exact filtered view — send it to your class. Your last-used filters also come back automatically on your next visit. New here? Click <strong>❓ Tour</strong> in the header for a quick 7-step walkthrough.,כן. לחצו על <strong>🔗 העתקת קישור</strong> בסרגל התוצאות כדי להעתיק קישור שפותח מחדש בדיוק את התצוגה המסוננת הזו — שלחו אותו לכיתה שלכם. המסננים האחרונים שלכם גם חוזרים אוטומטית בביקור הבא. חדשים כאן? לחצו על <strong>❓ סיור</strong> בכותרת לסיור מודרך בן 7 שלבים.,footer FAQ answer,html; leading-emoji
 dictionary.faq.q_era,Modern and biblical Hebrew?,עברית מודרנית ומקראית?,footer FAQ question,
 dictionary.faq.q_free,Is it free?,האם זה חינמי?,footer FAQ question,
 dictionary.faq.q_keyboard,Can I type Hebrew without a Hebrew keyboard?,אפשר להקליד עברית בלי מקלדת עברית?,footer FAQ question,
@@ -1858,7 +1858,7 @@ fontmaker.modals.continue_title,Continue where you left off?,להמשיך מהמ
 fontmaker.modals.continue_untouched,Your saved files are untouched either way.,הקבצים השמורים שלכם אינם משתנים כך או כך.,dialog body fragment,
 fontmaker.modals.copyoutline_cancel,Cancel,ביטול,button,
 fontmaker.modals.copyoutline_copy,Copy outline,העתק מתאר,button,
-fontmaker.modals.copyoutline_desc,"Drops a letter's traced outline into this letter as a starting point — then reshape it (e.g. copy Tav and delete the toe to make Het, He or Resh) with ✎ Edit points. The current letter's width & spacing stay as they are. You can undo it.","מכניס מתאר עקוב של אות לאות זו כנקודת התחלה — ואז עצבו אותו מחדש (למשל העתיקו תו ומחקו את הרגל כדי ליצור חית, הא או ריש) עם ✎ עריכת נקודות. הרוחב והריווח של האות הנוכחית נשארים כפי שהם. אפשר לבטל.",dialog body,html
+fontmaker.modals.copyoutline_desc,"Drops a letter's traced outline into <b>this letter</b> as a starting point — then reshape it (e.g. copy <b>Tav</b> and delete the toe to make <b>Het</b>, <b>He</b> or <b>Resh</b>) with <b>✎ Edit points</b>. The current letter's width & spacing stay as they are. You can undo it.","מכניס מתאר עקוב של אות ל<b>אות זו</b> כנקודת התחלה — ואז עצבו אותו מחדש (למשל העתיקו <b>תו</b> ומחקו את הרגל כדי ליצור <b>חית</b>, <b>הא</b> או <b>ריש</b>) עם <b>✎ עריכת נקודות</b>. הרוחב והריווח של האות הנוכחית נשארים כפי שהם. אפשר לבטל.",dialog body,html
 fontmaker.modals.copyoutline_target,this letter,אות זו,dialog body inline default,
 fontmaker.modals.copyoutline_title,Copy outline from another letter,העתקת מתאר מאות אחרת,dialog title,
 fontmaker.modals.copyoutline_width,Also copy width & side bearings,העתק גם רוחב ומרווחי צד,checkbox label,
@@ -2439,7 +2439,7 @@ fontmaker.panels.license,License,רישיון,field label,
 fontmaker.panels.license_arr,All Rights Reserved — most strict,All Rights Reserved — המחמיר ביותר,license option,
 fontmaker.panels.license_cc0,Public Domain (CC0) — most open,נחלת הכלל (CC0) — הפתוח ביותר,license option,
 fontmaker.panels.license_help_title,About these licenses,אודות רישיונות אלה,help icon title,
-fontmaker.panels.license_hint,Pick how others may use your font. Every export's LICENSE.txt lists your name as author and includes a required Made with IvritSuite.com line. The version ticks up each export — edit it anytime.,בחרו כיצד אחרים רשאים להשתמש בגופן שלכם. קובץ ה-LICENSE.txt של כל ייצוא מציין את שמכם כמחבר וכולל שורת Made with IvritSuite.com נדרשת. הגרסה עולה בכל ייצוא — ערכו אותה בכל עת.,panel hint,html
+fontmaker.panels.license_hint,Pick how others may use your font. Every export's <b>LICENSE.txt</b> lists your name as author and includes a required <b>Made with IvritSuite.com</b> line. The version ticks up each export — edit it anytime.,בחרו כיצד אחרים רשאים להשתמש בגופן שלכם. קובץ ה-<b>LICENSE.txt</b> של כל ייצוא מציין את שמכם כמחבר וכולל שורת <b>Made with IvritSuite.com</b> נדרשת. הגרסה עולה בכל ייצוא — ערכו אותה בכל עת.,panel hint,html
 fontmaker.panels.license_mit,MIT License,MIT License,license option,
 fontmaker.panels.license_ofl,SIL Open Font License 1.1 (recommended),SIL Open Font License 1.1 (מומלץ),license option,
 fontmaker.panels.line_spacing,Line spacing,ריווח שורות,slider label,
@@ -4006,7 +4006,7 @@ worksheet.advanced.translit.default,Default (built-in),ברירת מחדל (מו
 worksheet.advanced.translit.modern,Modern Israeli,עברית מודרנית,translit-style option,
 worksheet.advanced.translit.sbl,SBL Academic,SBL אקדמי,translit-style option,
 worksheet.advanced.translit.simple,Simple Stressed,מודגש פשוט,translit-style option,
-worksheet.advanced.translit_credit,Powered by hebrew-transliteration by Charles Loder,מופעל על ידי hebrew-transliteration מאת Charles Loder,credit line,html
+worksheet.advanced.translit_credit,"Powered by <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);text-decoration:none;"">hebrew-transliteration</a> by Charles Loder","מופעל על ידי <a href=""https://github.com/charlesLoder/hebrew-transliteration"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);text-decoration:none;"">hebrew-transliteration</a> מאת Charles Loder",credit line,html
 worksheet.advanced.translit_failed,Library failed to load — using default style.,טעינת הספרייה נכשלה — משתמשים בסגנון ברירת המחדל.,status,
 worksheet.advanced.translit_loading,Loading library…,טוען ספרייה…,status,
 worksheet.advanced.translit_style,Style,סגנון,select label,
@@ -4364,13 +4364,13 @@ worksheet.realwords.idpos_section,Parts of Speech,חלקי דיבר,rw sub-secti
 worksheet.realwords.import_btn,⬇ Import,⬇ ייבא,button,leading-emoji
 worksheet.realwords.import_detected.one,{count} word detected,זוהתה מילה אחת,import count note,plural
 worksheet.realwords.import_detected.other,{count} words detected,זוהו {count} מילים,import count note,plural
-worksheet.realwords.import_instructions,"In the Word Lookup dictionary, enable Bulk Copy Mode and set Copy Mode to All info. Select your words, copy, then paste below. Plain Hebrew (one per line) also works.","במילון חיפוש המילים, הפעילו מצב העתקה מרובה והגדירו את מצב ההעתקה ל׳כל המידע׳. בחרו את המילים שלכם, העתיקו, ואז הדביקו למטה. גם עברית פשוטה (אחת בכל שורה) עובדת.",instructions,html
+worksheet.realwords.import_instructions,"In the <strong>Word Lookup</strong> dictionary, enable <strong>Bulk Copy Mode</strong> and set Copy Mode to <strong>All info</strong>. Select your words, copy, then paste below. Plain Hebrew (one per line) also works.","במילון <strong>חיפוש המילים</strong>, הפעילו <strong>מצב העתקה מרובה</strong> והגדירו את מצב ההעתקה ל׳<strong>כל המידע</strong>׳. בחרו את המילים שלכם, העתיקו, ואז הדביקו למטה. גם עברית פשוטה (אחת בכל שורה) עובדת.",instructions,html
 worksheet.realwords.import_success.one,✓ {count} word imported,✓ מילה אחת יובאה,import status,plural;leading-emoji
 worksheet.realwords.import_success.other,✓ {count} words imported,✓ {count} מילים יובאו,import status,plural;leading-emoji
 worksheet.realwords.import_textarea_aria,Paste imported word list,הדביקו רשימת מילים מיובאת,textarea aria-label,aria-label only
 worksheet.realwords.letterfilter.hint,Only show words using these letters,הצג רק מילים המשתמשות באותיות אלה,filter hint,
 worksheet.realwords.letterfilter.title,Letter Filter,מסנן אותיות,rw section header,
-worksheet.realwords.list_empty,"No word lists yet. Create word lists in the Dictionary, then come back to drill them here.","אין עדיין רשימות מילים. צרו רשימות מילים במילון, ואז חזרו לכאן כדי לתרגל אותן.",empty state,html
+worksheet.realwords.list_empty,"No word lists yet. <a href=""hebrew_dictionary.html"">Create word lists in the Dictionary</a>, then come back to drill them here.","אין עדיין רשימות מילים. <a href=""hebrew_dictionary.html"">צרו רשימות מילים במילון</a>, ואז חזרו לכאן כדי לתרגל אותן.",empty state,html
 worksheet.realwords.match.emoji,Emoji,אימוג׳י,match-target button,
 worksheet.realwords.match.translation,Translation,תרגום,match-target button,
 worksheet.realwords.match.versions,Versions,גרסאות,rw match label,
