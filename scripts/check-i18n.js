@@ -12,13 +12,26 @@
  *     - HTML title="…" / aria-label="…" / placeholder="…" attributes with no paired data-i18n-* sibling.
  * Check B (debt report): lists locales/ui-strings.csv keys with an empty cell in any non-`en`
  *   language column (the CSV schema is column-driven — see build-locales.js).
+ * Check C (corpus gate): the localization corpus is DATA, and data-i18n-html writes it straight
+ *   into innerHTML, so two shapes are blocking —
+ *     C1: a cell carrying an inline event handler (onclick=…) or a javascript: URL. The corpus is
+ *         trusted, so this is not an XSS today; it is CLAUDE.md Security rule 2's carve-out ("rebuild
+ *         that spot with addEventListener") and it puts executable JS in a translator's file, where
+ *         localizing an argument silently breaks a working control.
+ *     C2: a data-i18n-html key whose value interpolates a {placeholder} — interpolated content would
+ *         reach innerHTML. (The binding safety gate registered alongside the pattern below.)
+ *   …plus a warn-only markup-parity report (the `i18n-html-markup-only-in-fallback` pattern): a
+ *   data-i18n-html fallback whose tag multiset disagrees with a built value, and a plain data-i18n
+ *   element carrying markup — applyStaticI18n sets textContent there, so the tags are dropped
+ *   unconditionally and the CSV cannot rescue them; such a site must become data-i18n-html.
  *
  * A literal is only linguistic if it contains an ASCII letter (pure symbol/emoji/number/computed
  * strings like '✕', '⠿', '0.75×', '(' + n + ')' are skipped). RHS/args that contain I18n.t( are
  * compliant; concatenations with a variable are treated as content-derived. Suppress a legitimate
  * literal with a same-line `i18n-ignore` comment.
  *
- * Exit 1 only on un-suppressed Check-A violations (Check B is warn-only). Plain Node, zero deps.
+ * Exit 1 on un-suppressed Check-A violations or any Check-C1/C2 finding (Check B and the C markup-
+ * parity report are warn-only). Plain Node, zero deps.
  * Run: node scripts/check-i18n.js
  */
 
@@ -200,6 +213,102 @@ function checkDebt() {
   return debt;
 }
 
+// ── Check C ──
+// Column-driven like Check B, so a new language column is covered with no edit here.
+const EVENT_ATTR_RE = /\son(?:click|dblclick|change|input|submit|load|error|focus|blur|scroll|wheel|contextmenu|mouse[a-z]+|key[a-z]+|touch[a-z]+|pointer[a-z]+|drag[a-z]*|drop)\s*=/i;
+const JS_URL_RE = /(?:href|src|action)\s*=\s*"?\s*javascript:/i;
+// Tag multiset of a markup string, order-independent: <strong>x</strong> → 'strong,strong'.
+const tagMultiset = (s) => (String(s).match(/<\/?([a-zA-Z][\w-]*)/g) || [])
+  .map(t => t.replace(/[<\/]/g, '').toLowerCase()).sort().join(',');
+// Tags a plain data-i18n element may still carry: applyStaticI18n drops everything, but <br>/<wbr>
+// in a fallback is a deliberate pre-load line break, not lost emphasis.
+const BARE_TAG_OK = new Set(['br', 'wbr']);
+
+// Shallow element reader: every element carrying `attrRe`, with its inner HTML and 1-based line.
+function elementsWithAttr(html, attrRe) {
+  const out = [];
+  const openRe = /<([a-zA-Z][\w-]*)\b([^>]*)>/g;
+  let m;
+  while ((m = openRe.exec(html))) {
+    const [, tag, attrs] = m;
+    attrRe.lastIndex = 0;
+    if (!attrRe.test(attrs)) continue;
+    const scan = new RegExp('<(/?)' + tag + '\\b[^>]*>', 'gi');
+    scan.lastIndex = openRe.lastIndex;
+    let depth = 1, end = -1, mm;
+    while ((mm = scan.exec(html))) {
+      if (mm[1] === '/') { if (--depth === 0) { end = mm.index; break; } }
+      else if (!/\/>$/.test(mm[0])) depth++;
+    }
+    if (end < 0) continue;
+    out.push({ attrs, inner: html.slice(openRe.lastIndex, end), line: lineNoAt(html, m.index) });
+  }
+  return out;
+}
+
+function checkCorpus(targets) {
+  const rows = parseCSV(fs.readFileSync(CSV_PATH, 'utf8'));
+  const header = rows[0] || [];
+  const langs = header.slice(1, Math.max(1, header.length - 2));
+  const values = {};                                  // key -> { lang: value }
+  rows.slice(1).forEach((r) => {
+    if (!r[0]) return;
+    const byLang = {};
+    langs.forEach((lang, i) => { if (r.length > 1 + i) byLang[lang] = r[1 + i]; });
+    values[r[0]] = byLang;
+  });
+
+  const rel = f => path.relative(ROOT, f);
+  const c1 = [], c2 = [], parity = [];
+
+  // C1 — executable JS anywhere in the corpus, in any language column.
+  for (const key of Object.keys(values)) {
+    for (const [lang, v] of Object.entries(values[key])) {
+      if (!v) continue;
+      if (EVENT_ATTR_RE.test(v)) c1.push({ key, lang, why: 'inline event handler' });
+      else if (JS_URL_RE.test(v)) c1.push({ key, lang, why: 'javascript: URL' });
+    }
+  }
+
+  const htmlKeysSeen = new Set();
+  for (const file of targets) {
+    if (!file.endsWith('.html')) continue;
+    const html = fs.readFileSync(file, 'utf8');
+
+    for (const el of elementsWithAttr(html, /\bdata-i18n-html\s*=/)) {
+      const key = (el.attrs.match(/\bdata-i18n-html\s*=\s*"([^"]+)"/) || [])[1];
+      if (!key) continue;
+      htmlKeysSeen.add(key);
+      const fb = tagMultiset(el.inner);
+      for (const [lang, v] of Object.entries(values[key] || {})) {
+        if (v === undefined || v === '') continue;     // empty cell falls back to `en` (Check B owns it)
+        if (tagMultiset(v) !== fb) {
+          parity.push({ file: rel(file), line: el.line, key, msg: 'fallback markup differs from the `' + lang + '` value (fallback [' + fb + '] vs [' + tagMultiset(v) + '])' });
+        }
+      }
+    }
+
+    for (const el of elementsWithAttr(html, /\bdata-i18n(?![-\w])\s*=/)) {
+      const key = (el.attrs.match(/\bdata-i18n(?![-\w])\s*=\s*"([^"]+)"/) || [])[1];
+      if (!key) continue;
+      const tags = [...new Set((el.inner.match(/<\/?([a-zA-Z][\w-]*)/g) || [])
+        .map(t => t.replace(/[<\/]/g, '').toLowerCase()))].filter(t => !BARE_TAG_OK.has(t));
+      if (tags.length) {
+        parity.push({ file: rel(file), line: el.line, key, msg: 'plain data-i18n element carries <' + tags.join('>, <') + '> — applyStaticI18n sets textContent, so the markup is dropped; use data-i18n-html' });
+      }
+    }
+  }
+
+  // C2 — a data-i18n-html key must not interpolate; {placeholder} content would reach innerHTML.
+  for (const key of htmlKeysSeen) {
+    for (const [lang, v] of Object.entries(values[key] || {})) {
+      if (v && /\{\w+\}/.test(v)) c2.push({ key, lang });
+    }
+  }
+
+  return { c1, c2, parity, keys: Object.keys(values).length, langs };
+}
+
 function main() {
   // Targets: every root *.html (minus the harness) + pwa.js.
   const targets = fs.readdirSync(ROOT)
@@ -261,8 +370,27 @@ function main() {
     console.log('check-i18n: Check B clean — every ui-strings.csv key is translated in every language column (allowlisted exceptions aside).');
   }
 
-  if (!fresh.length) console.log('\ncheck-i18n: clean (no new blocking violations).');
-  process.exit(fresh.length ? 1 : 0);
+  // Check C — corpus gate (C1/C2 blocking) + markup-parity report (warn-only).
+  const corpus = checkCorpus(targets);
+  if (corpus.c1.length) {
+    console.error('\ncheck-i18n: ' + corpus.c1.length + ' localization cell(s) contain executable JavaScript — rebuild the site with addEventListener (CLAUDE.md Security rule 2):');
+    corpus.c1.forEach(v => console.error('  ' + v.key + '  [' + v.lang + ']  ' + v.why));
+  }
+  if (corpus.c2.length) {
+    console.error('\ncheck-i18n: ' + corpus.c2.length + ' data-i18n-html key(s) interpolate a {placeholder} into innerHTML — split the interpolated part out, or use plain data-i18n:');
+    corpus.c2.forEach(v => console.error('  ' + v.key + '  [' + v.lang + ']'));
+  }
+  if (!corpus.c1.length && !corpus.c2.length) {
+    console.log('check-i18n: Check C clean — no executable JS in ' + corpus.keys + ' key(s) × ' + corpus.langs.length + ' language column(s), and no data-i18n-html key interpolates.');
+  }
+  if (corpus.parity.length) {
+    console.warn('\ncheck-i18n: WARNING — ' + corpus.parity.length + ' data-i18n markup-parity finding(s) (the `i18n-html-markup-only-in-fallback` pattern):');
+    corpus.parity.sort(byLoc).forEach(v => console.warn('  ' + v.file + ':' + v.line + '  ' + v.key + ' — ' + v.msg));
+  }
+
+  const blocking = fresh.length + corpus.c1.length + corpus.c2.length;
+  if (!blocking) console.log('\ncheck-i18n: clean (no new blocking violations).');
+  process.exit(blocking ? 1 : 0);
 }
 
 main();

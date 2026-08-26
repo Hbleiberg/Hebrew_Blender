@@ -181,6 +181,15 @@ currently only the permanent printed answer-key / QR-caption output (the initial
 backlog was wired up in the first **Pass K** run, 2026-07-12; see `docs/IMPROVEMENT_LOG.md`). To accept a
 new intentional non-translatable literal, prefer a same-line **`i18n-ignore`** comment; reserve the baseline
 for genuinely-permanent printed-output cases (regenerate with `--update-baseline`, then re-apply its header).
+**Check C (corpus gate, added S261)** treats the localization corpus as data that `data-i18n-html` writes
+straight into `innerHTML`, and is **blocking** on two shapes: **C1** a cell containing an inline event
+handler or a `javascript:` URL (Security rule 2's carve-out — rebuild the site with `addEventListener`;
+never put executable JS where a translator edits), and **C2** a `data-i18n-html` key whose value
+interpolates a `{placeholder}`. It also prints a warn-only **markup-parity** report for the
+`i18n-html-markup-only-in-fallback` pattern: a `data-i18n-html` fallback whose tag multiset disagrees with a
+built value, and a plain `data-i18n` element carrying markup (`applyStaticI18n` sets `textContent` there, so
+tags are dropped unconditionally and the CSV cannot rescue them — such a site must become
+`data-i18n-html`). Column-driven like Check B, so a new language column is covered with no script edit.
 **Known blind spot:** Check A only sees plain-literal JS assignments and static markup (script regions are
 blanked), so an English `title=`/`aria-label=` built inside a JS **template literal** (or passed as a plain
 function argument) escapes it — don't treat a green gate as proof there are zero untranslated tooltips. The
