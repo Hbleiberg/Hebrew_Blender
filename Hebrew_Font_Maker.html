@@ -4818,6 +4818,7 @@ function setInputMode(mode) {
   // letters reference the shared sheet in combined mode; leave already-imported SVG vectors untouched
   // (contours/dataUrl/draw all survive this stamp — switching modes is lossless)
   project.letters.forEach(l => { if (!(l.source && l.source.kind === 'svg')) l.source.kind = mode; });
+  markDirty();   // both mutations above are real project edits — arm the autosave (boot restore clears this; see init)
   // Re-route through the mode normalizer so switching to/from 'draw' on a letter lands on the right
   // step-1 surface immediately (_setWorkMode promotes align⇄draw and re-renders stage+controls).
   if (curKind === 'letter' && (workMode === 'align' || workMode === 'draw')) _setWorkMode('align');
@@ -19751,9 +19752,13 @@ function init() {
   });
   buildTemplateFontSelect();   // populate the grouped font menu before the project sets its value
   newProject();
-  // restore input-mode pref
+  // Restore input-mode pref. This is a boot-time restore, not an edit — but setInputMode() marks the
+  // project dirty for every real caller (the four mode buttons, the wizard, applyFontImport), so clear
+  // it here rather than teaching the setter to recognise booting. markClean(), not a hand-rolled reset:
+  // it KEEPS the autosave snapshot, which maybeRestoreAutosave() needs to offer "continue where you
+  // left off" a few lines below. Without this, every cold load would warn on exit and autosave a blank.
   const im = localStorage.getItem('hebrewFontMaker_inputMode');
-  if (im === 'combined' || im === 'font' || im === 'draw') setInputMode(im);
+  if (im === 'combined' || im === 'font' || im === 'draw') { setInputMode(im); markClean(); }
   // global file inputs
   document.getElementById('projFile').addEventListener('change', e => { if (e.target.files[0]) loadProjectFile(e.target.files[0]); e.target.value=''; });
   // The combined-sheet, source-font and reference-font inputs (+ their drop zones) are now created
