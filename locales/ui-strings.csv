@@ -809,6 +809,7 @@ dictionary.sidebar.collapse_all,Collapse all menus,כיווץ כל התפריט�
 dictionary.sidebar.expand_all,Expand all menus,הרחבת כל התפריטים,sidebar toolbar button,
 dictionary.sidebar.hide_title,Hide sidebar,הסתרת הסרגל,sidebar hide button title,aria-label only
 dictionary.sidebar.show_title,Show sidebar,הצגת הסרגל,sidebar show button title,aria-label only
+dictionary.sidebar.resize_title,Drag to resize the sidebar (double-click to reset),גרירה לשינוי רוחב הסרגל (לחיצה כפולה לאיפוס),sidebar resize splitter,title + aria-label
 dictionary.toolbar.active_filters_aria,Active filters,מסננים פעילים,filter chips container aria-label,aria-label only
 dictionary.toolbar.copy_link,🔗 Copy link,🔗 העתקת קישור,toolbar share button,leading-emoji
 dictionary.toolbar.copy_link_title,Copy a link to this exact filtered view,העתקת קישור לתצוגה המסוננת הזו בדיוק,toolbar share button title,aria-label only

@@ -314,9 +314,25 @@ header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px
 [dir="rtl"] .dir-arrow{transform:scaleX(-1);}
 .bidi-isolate{unicode-bidi:isolate;}
 .app{display:flex;flex:1;overflow:hidden;}
-.sidebar{width:300px;flex-shrink:0;background:var(--white);border-inline-end:1px solid var(--border);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
+/* The filter sidebar is drag-resizable (see initSidebarResize). Its width lives in ONE custom
+   property so a single write moves the panel, the splitter and the fixed collapse tab together —
+   the tab is position:fixed and can't inherit the flex layout's width any other way. */
+:root{--dict-sidebar-w:300px;}
+.sidebar{width:var(--dict-sidebar-w);flex-shrink:0;background:var(--white);border-inline-end:1px solid var(--border);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
 #appSidebar.hidden{display:none;}
-.sidebar-toggle-btn{position:fixed;inset-inline-start:300px;top:50vh;transform:translateY(-50%);width:24px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
+/* Drag-to-resize splitter, sitting between the sidebar and the results column. Visual language
+   mirrors the Font Maker's .ws-split: invisible at rest (the sidebar's own border-inline-end is
+   the resting hairline), thickening to gold on hover/focus/drag. The negative inline-start margin
+   straddles that border so the grab zone is centered on the seam the user sees. */
+.sidebar-split{flex:0 0 7px;align-self:stretch;position:relative;cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;margin-inline-start:-3px;z-index:5;}
+.sidebar-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
+.sidebar-split:hover::before,.sidebar-split:focus-visible::before,.sidebar-split.dragging::before{width:4px;background:var(--gold);}
+.sidebar-split:focus-visible{outline:2px solid var(--gold);outline-offset:-1px;}
+#appSidebar.hidden + .sidebar-split{display:none;}
+/* Offset by the splitter's outer half so the two never overlap: the tab sits at 50vh, which is
+   exactly where a hand reaches for the edge, and a fixed 24px button over the 7px grab zone
+   would swallow the drag there (it out-stacks the splitter's z-index:5). 4px is invisible. */
+.sidebar-toggle-btn{position:fixed;inset-inline-start:calc(var(--dict-sidebar-w) + 4px);top:50vh;transform:translateY(-50%);width:24px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
 .sidebar-toggle-btn:hover{background:#0f1a33;}
 .sidebar-show-btn{position:fixed;inset-inline-start:0;top:50vh;transform:translateY(-50%);width:24px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:100;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
 .sidebar-show-btn:hover{background:#0f1a33;}
@@ -705,7 +721,7 @@ footer summary{min-height:24px;}
   #mobileBar{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:var(--cream);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
   #mobileBar .search-wrap{margin:0;}
   .content{overflow-y:visible;padding:14px 12px;}
-  .sidebar-toggle-btn,.sidebar-show-btn,#fsBtn{display:none!important;}
+  .sidebar-toggle-btn,.sidebar-show-btn,#fsBtn,.sidebar-split{display:none!important;}
   body{overflow-y:auto;}
   .results-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
   header{padding:10px 12px;gap:10px;border-bottom-width:3px;}
@@ -824,7 +840,7 @@ footer summary{min-height:24px;}
      `#appToast` is position:fixed, so a toast still on screen at print time repeats its box-shadow
      slab on EVERY sheet; the dashboard and flash cards already hide it — this converges on them. */
   header, footer, .sidebar, #appSidebar, #mobileBar, .toolbar, .filter-chips, .load-more-btn,
-  #fsBtn, .sidebar-toggle-btn, .sidebar-show-btn, #tipFloat, #shoreshControls, #appToast,
+  #fsBtn, .sidebar-toggle-btn, .sidebar-show-btn, .sidebar-split, #tipFloat, #shoreshControls, #appToast,
   .wc-copy, .wc-search, .wc-speak, .wm-overlay, .tour-spot, .tour-card { display:none !important; }
   .app, .main, .content { overflow:visible !important; }
   .word-card, .emoji-card { break-inside:avoid; }
@@ -1178,6 +1194,13 @@ footer summary{min-height:24px;}
     <div id="sidebarWordCount" style="text-align:center;font-size:0.75rem;color:var(--muted);padding:4px 0 2px;"></div>
 
   </aside>
+
+  <div class="sidebar-split" id="sidebarSplit" role="separator" aria-orientation="vertical"
+       tabindex="0" aria-valuemin="240" aria-valuemax="620" aria-valuenow="300"
+       title="Drag to resize the sidebar (double-click to reset)"
+       aria-label="Drag to resize the sidebar (double-click to reset)"
+       data-i18n-title="dictionary.sidebar.resize_title"
+       data-i18n-aria-label="dictionary.sidebar.resize_title"></div>
 
   <div class="main">
     <div id="mobileBar"></div>
@@ -3437,6 +3460,97 @@ function toggleSidebar() {
   hide.style.display = c ? 'none' : 'flex';
 }
 
+/* ── Adjustable filter sidebar ────────────────────────────────────────────────
+   The on-screen Hebrew keyboard's SI-1452 rows deliberately scroll rather than crush their
+   keys below the 24px touch floor, which at the old fixed 300px meant a permanent horizontal
+   scrollbar under the letter rows. Rather than shrink the keys, let the teacher widen the
+   sidebar — which also gives the theme/POS filter grids room.
+   The width is a PER-DEVICE pref (it tracks the monitor, not the teacher), so like
+   hebrewBlender_zoom it is export/import-exempt but IS cleared by Erase All Settings. */
+const SB_KEY = 'hebrewDictionary_sidebarW';
+const SB_MIN = 240, SB_MAX = 620, SB_DEFAULT = 300, SB_MAIN_MIN = 320;
+let _sbResizeT = null;
+let _sbDesired = SB_DEFAULT;   // the user's chosen width, pre-clamp — see the resize handler
+/* Upper bound is dynamic: the results column never drops below SB_MAIN_MIN, so a narrow
+   window caps the sidebar tighter than SB_MAX. Never returns less than SB_MIN. */
+function sbMaxWidth() { return Math.max(SB_MIN, Math.min(SB_MAX, window.innerWidth - SB_MAIN_MIN)); }
+function sbCurWidth() {
+  const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dict-sidebar-w'));
+  return Number.isFinite(v) && v > 0 ? v : SB_DEFAULT;
+}
+function setSidebarWidth(px, persist) {
+  const hi = sbMaxWidth();
+  const w = Math.round(Math.max(SB_MIN, Math.min(hi, px)));
+  document.documentElement.style.setProperty('--dict-sidebar-w', w + 'px');
+  const h = document.getElementById('sidebarSplit');
+  if (h) { h.setAttribute('aria-valuenow', String(w)); h.setAttribute('aria-valuemax', String(hi)); }
+  if (persist) {
+    _sbDesired = w;
+    try { localStorage.setItem(SB_KEY, String(w)); } catch (e) { /* private mode / quota */ }
+  }
+  return w;
+}
+function initSidebarResize() {
+  const handle = document.getElementById('sidebarSplit');
+  if (!handle) return;
+  let saved = NaN;
+  try { saved = parseFloat(localStorage.getItem(SB_KEY)); } catch (e) { /* private mode */ }
+  // Seed the aria-value* pair even with no stored pref, so the splitter reports live numbers.
+  _sbDesired = Number.isFinite(saved) ? saved : SB_DEFAULT;
+  setSidebarWidth(_sbDesired, false);
+
+  let startX = 0, startW = 0, active = false;
+  const onMove = (e) => {
+    if (!active) return;
+    // The flex row mirrors under RTL, so the physical delta flips (same rule as the Font
+    // Maker's .ws-split; see CLAUDE.md i18n rule 5).
+    const dx = (e.clientX - startX) * (document.documentElement.dir === 'rtl' ? -1 : 1);
+    setSidebarWidth(startW + dx, false);
+    if (e.cancelable) e.preventDefault();
+  };
+  const onUp = () => {
+    if (!active) return;
+    active = false;
+    handle.classList.remove('dragging');
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    window.removeEventListener('pointercancel', onUp);
+    setSidebarWidth(sbCurWidth(), true);          // one write to storage per drag, not per frame
+  };
+  handle.addEventListener('pointerdown', (e) => {
+    if (e.button != null && e.button !== 0) return;
+    if (getComputedStyle(handle).display === 'none') return;   // stacked (<=680px) guard
+    active = true; startX = e.clientX; startW = sbCurWidth();
+    handle.classList.add('dragging');
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+    if (e.cancelable) e.preventDefault();
+  });
+  handle.addEventListener('dblclick', () => setSidebarWidth(SB_DEFAULT, true));
+  // Keyboard parity (CLAUDE.md shared-UX rule 7): a focusable separator is an APG window
+  // splitter, so arrows resize, Home/End jump to the bounds, Enter/Space restores the default.
+  handle.addEventListener('keydown', (e) => {
+    const step = e.shiftKey ? 48 : 16;
+    const rtl = document.documentElement.dir === 'rtl' ? -1 : 1;
+    let w;
+    if      (e.key === 'ArrowLeft')  w = sbCurWidth() - step * rtl;
+    else if (e.key === 'ArrowRight') w = sbCurWidth() + step * rtl;
+    else if (e.key === 'Home')       w = SB_MIN;
+    else if (e.key === 'End')        w = sbMaxWidth();
+    else if (e.key === 'Enter' || e.key === ' ') w = SB_DEFAULT;
+    else return;
+    e.preventDefault();
+    setSidebarWidth(w, true);
+  });
+  // A shrinking window tightens sbMaxWidth(). Re-clamp from _sbDesired rather than from the
+  // live width, so a squeeze is temporary: widen the window again and the chosen width returns.
+  window.addEventListener('resize', () => {
+    clearTimeout(_sbResizeT);
+    _sbResizeT = setTimeout(() => setSidebarWidth(_sbDesired, false), 150);
+  });
+}
+
 const FS_ENTER_ICON = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg>`;
 const FS_EXIT_ICON  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5,0.5 4.5,4.5 0.5,4.5"/><polyline points="13.5,4.5 9.5,4.5 9.5,0.5"/><polyline points="9.5,13.5 9.5,9.5 13.5,9.5"/><polyline points="0.5,9.5 4.5,9.5 4.5,13.5"/></svg>`;
 function toggleFullscreen() {
@@ -4670,6 +4784,7 @@ document.addEventListener('DOMContentLoaded', () => {
   _domReady = true;   // Section 1: DOM/UI built — restore may now proceed once words are ready too
   maybeBootstrap();
   initHebrewKeyboard();
+  initSidebarResize();
   // i18n: register the live re-render here (inside DOMContentLoaded) so the deferred /js/i18n.js has
   // executed and window.I18n exists — a top-level registration would run before i18n.js and be skipped.
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }

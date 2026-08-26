@@ -815,6 +815,7 @@
   "dictionary.sidebar.collapse_all": "Collapse all menus",
   "dictionary.sidebar.expand_all": "Expand all menus",
   "dictionary.sidebar.hide_title": "Hide sidebar",
+  "dictionary.sidebar.resize_title": "Drag to resize the sidebar (double-click to reset)",
   "dictionary.sidebar.show_title": "Show sidebar",
   "dictionary.themes.animals": "Animals",
   "dictionary.themes.body": "Body Parts",
