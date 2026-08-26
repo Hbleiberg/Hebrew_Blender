@@ -220,23 +220,35 @@ Fonts for Scholars: the Cardo Font
 
  
 
+
  
 
  
 
  The Cardo Font 
 
- 
+
+
+
+
+
+
 
  
+
+
+ 
+
 
  NEWS ABOUT CARDO 
+
 
  5/25/10 version
 .99 of Cardo is posted. This is mainly
 an update for the license information, as explained on the main page of this
 site, although a couple of small items are also fixed. The manual is still at version .98; ignore
 the license information contained in it. 
+
 
  11/02/04 version
 .98 of Cardo has been released! This is
@@ -254,18 +266,27 @@ Word version as well, but it�s better to standardize on one cross-platform
 format. There are also new test
 documents for users of Adobe InDesign and Mellel. 
 
+
  
+
 
  Note: links to download the font are found at
 the bottom of this page , as is a more detailed update history. 
 
+
  
+
 
  
 
  
+
+
+
+
 
  GENERAL INFORMATION ABOUT CARDO 
+
 
  Cardo is a large
 Unicode font specifically designed for the needs of classicists, Biblical
@@ -277,7 +298,9 @@ and a variety of punctuation and space characters. It may also be used to docume
 the features of Unicode that are applicable to the these disciplines, as we
 work to help colleagues understand the value (and limitations) of Unicode. 
 
+
  
+
 
  Cardo is freely
 available (subject to the terms of use below). 
@@ -287,9 +310,12 @@ tell me about what you are doing with the font.
  Knowing that people are using Cardo makes the time and effort I put into
 it worthwhile. 
 
+
  
 
+
  ORIGIN & DESIGN 
+
 
  This font is my
 version of a typeface cut for the Renaissance printer Aldus Manutius and first
@@ -303,18 +329,27 @@ characters useful to scholars. The
 Hebrew characters are designed to match those used in the Biblia Hebraica
 Stuttgartensia as closely as possible and so have no claim to originality. 
 
+
  
+
 
  
 
  
+
+
+
+
 
  SYSTEM REQUIREMENTS 
+
 
  This is a large
 Unicode font. 
 
+
  
+
 
  For Windows, you
 need at least Windows 95 and a word processor that can handle Unicode-based
@@ -327,7 +362,9 @@ characters; either Word�s Insert/Symbol, a Unicode editor such as UniPad (plai
 right-to-left fashion, you must have Word 2000 or XP running under Windows 2000
 or XP; OpenOffice does not yet handle right-to-left scripts. 
 
+
  
+
 
  On the Mac, you
 need OS X plus a Unicode-aware editor or keyboard utility. Mac Word 2004 handles Unicode well; Word 2001
@@ -342,28 +379,39 @@ Apple�s TextEdit (installed as part of a default OS X installation). If you ar
 that is designed for Unicode, you can use the Unicode Hex entry method or the
 Extended Roman keyboard. 
 
+
  
+
 
  For Unix/Linux
 systems: Cardo has been extensively tested on Mandrake 10.1 (with the 2.6.9
 kernel and Kde 2.3.2). I have also had
 some other reports of success on Linux but do not have details. 
 
+
  
+
 
  If you are not
 clear about what all this means, see my booklet about word processing issues
 for scholars, which provides a good introduction to Unicode and other font
 issues. 
 
+
  
+
 
  
 
  
+
+
+
+
 
  FEATURES
 OF THE CURRENT RELEASE 
+
 
  Cardo is still a
 work in progress; there are a number of characters I want to add, and there are
@@ -373,39 +421,49 @@ people to think that Cardo was not a good, usable font. Therefore, in recognitio
 of new characters and the length of time that Cardo has been in development, I
 have decided to call the current release version 1.0. 
 
+
  
+
 
  Compared to the
 previous release (.71), version .98 has the following new characters: 
+
 
  
  all the
  Greek characters proposed for Unicode by the Thesaurus Linguae Graecae:
  metrical symbols, acrophonic numerals, editorial signs and punctuation,
  musical characters, along with glyph variants of these characters 
+
  a very
  large number of glyph variants of Greek capitals; these will be of
  particular interest to epigraphers and numismatists 
+
  all the
  characters found in the TLG database that are so rare that they were not
  proposed for Unicode; it should be possible to represent any TLG text
  using this version of Cardo. These
  rare characters in the Supplemental Private Use Area-A. 
+
  all the
  characters contained in the recommendation of the Medieval Unicode Font
  Initiative, version 1.0 (mostly in the Private Use Area) 
+
  the Old
  Italic block of Unicode (no glyph variants yet; scheduled for next
  release) 
+
  miscellaneous
  characters: Lunate Sigma, Sho/sho, and San/san (all part of Unicode 4.0)
  and some additional Greek precomposed characters in the Private Use Area;
  some new IPA characters such as click symbols, arrows, and length marks,
  plus the entire Spacing Modifier Letters range; the medievalist diacritic
  marks missing from version .71 have been added 
+
  a set of
  true small capitals has been created, which is a real enhancement for
  those who care about quality typography. 
+
  OpenType
  tables to access glyph variants have been created. As of October 2004 only InDesign and
  other products from Adobe Systems plus Mellel can take advantage of these
@@ -415,108 +473,158 @@ previous release (.71), version .98 has the following new characters:
  next version of Windows (referred to as Longhorn, scheduled for
  2006). Longhorn will support OT
  features at the system level. 
+
  numerous
  small improvements and corrections. 
+
  
 
  
+
 
  See below for a
 complete update history. 
 
+
  
 
+
  COVERAGE 
+
 
  The following
 Unicode ranges are included (complete coverage unless otherwise noted): 
 
+
  
  Basic
  Latin 
+
  Latin-1 Supplement 
+
  Latin Extended-A 
+
  Latin Extended-B (selected
  characters for European languages) 
+
  IPA Extensions 
+
  Spacing Modifier Letters 
+
  Combining Diacritical Marks 
+
  General Punctuation (selected
  characters) 
+
  Superscripts and Subscripts 
+
  Latin Extended Additional (selected
  characters) 
+
  Greek and Coptic 
+
  Greek Extended 
+
  Hebrew 
+
  Alphabetic Presentation Forms
  (Armenian characters omitted) 
+
  Miscellaneous Technical (selection
  including metrical characters) 
+
  Supplemental Punctuation (New
  Testament critical signs, ancient editorial signs, etc.) 
+
  Miscellaneous Symbols (signs of the
  zodiac etc.) 
+
  Old Italic 
+
  Ancient Greek Numbers 
+
  Ancient Greek Musical Notation 
+
  
 
  
+
 
  There
 are also many additional Unicode characters that are useful for scholars, such
 as double brackets, angle brackets, etc. that come from different areas of
 Unicode. 
 
+
  
+
 
  Cardo also
 contains the following glyphs in the Private Use Area (i.e., they are not a
 part of the Unicode standard but may be useful to scholars or to those who want
 high-quality typography): 
 
+
  
  text
  figures (also known as old-style numerals) 
+
  a complete set of true small
  capitals 
+
  additional Latin ligatures (Th, ct,
  several with long s) 
+
  additional ancient Greek symbols and
  characters 
+
  
 
  
+
 
  IN THE PIPELINE 
+
 
  Characters
 planned for future releases of Cardo include the following: 
 
+
  
  characters added to the Spacing
  Modifier Letters block in the Unicode 4.0 
+
  the Phonetic Extensions block added
  to Unicode 4.0 (I�m not sure about this; if anybody thinks it would be
  useful, please let me know) 
+
  the remainder of the Runic block
  (those required by MUFI 1.0 are already done) 
+
  glyph variants for the Old Italic
  characters 
+
  Gothic (if there is a demand for it) 
+
  updates to the Coptic characters,
  once a new proposal for Coptic is approved by Unicode (maybe; this will be
  a large undertaking) 
- 
 
  
 
  
 
+
  
+
+ 
+
+
+
+
 
  LIMITATIONS 
+
 
  Cardo is still a
 work in progress. The character design
@@ -529,7 +637,9 @@ the screen. On screen at text sizes some
 stems will look uneven and so forth. A
 future release will have better hinting. 
 
+
  
+
 
  On rare
 occasions in Hebrew one needs to use two cantillation marks over a single base
@@ -537,7 +647,9 @@ character. As of August 2004, this is
 not possible in Windows; this is a problem with Windows, not with Cardo. Microsoft is aware of this and will fix the
 problem in a future release of Windows. 
 
+
  
+
 
  Word 2000
 running under Win2000 does not like the Hebrew characters in Cardo .56. If you try to use them it substitutes Times
@@ -547,9 +659,12 @@ fine in WordPad under Win2000 as well as in Word XP with either WordPad or Word
 Middle Eastern version on Mac OS X does not like Cardo at all (western versions
 are OK). 
 
+
  
 
+
  CARDO ON MAC OS 8 AND 9 
+
 
  
 
@@ -562,9 +677,12 @@ support it. My limited time is better
 used to support newer systems on which Cardo can work well and to add the many
 characters that are in the pipeline. 
 
+
  
 
+
  TERMS OF USE 
+
 
  
  
@@ -593,29 +711,40 @@ Open Font License, version 1.1. The text
 of the license appears below; click the graphic at the left for additional
 information about this license. 
 
+
  
+
 
  Copyright (c) 2004�2010,
 David J. Perry, with Reserved Font Name Cardo. 
 
+
  This Font
 Software is licensed under the SIL Open Font License, Version 1.1. 
+
 
  This license is
 copied below, and is also available with a FAQ at: http://scripts.sil.org/OFL 
 
+
  
 
+
  ---------------------------------------------------------------------------- 
+
 
  SIL
 OPEN FONT LICENSE Version 1.1 - 26 February 2007 
 
+
  ---------------------------------------------------------------------------- 
+
 
  
 
+
  PREAMBLE 
+
 
  The
 goals of the Open Font License (OFL) are to stimulate worldwide development of
@@ -623,7 +752,9 @@ collaborative font projects, to support the font creation efforts of academic
 and linguistic communities, and to provide a free and open framework in which
 fonts may be shared and improved in partnership with others. 
 
+
  
+
 
  The
 OFL allows the licensed fonts to be used, studied, modified and redistributed
@@ -634,28 +765,37 @@ fonts and derivatives, however, cannot be released under any other type of
 license. The requirement for fonts to remain under this license does not apply to
 any document created using the fonts or their derivatives. 
 
+
  
 
+
  DEFINITIONS 
+
 
  "Font
 Software" refers to the set of files released by the Copyright Holder(s)
 under this license and clearly marked as such. This may include source files,
 build scripts and documentation. 
 
+
  
+
 
  "Reserved
 Font Name" refers to any names specified as such after the copyright
 statement(s). 
 
+
  
+
 
  "Original
 Version" refers to the collection of Font Software components as distributed
 by the Copyright Holder(s). 
 
+
  
+
 
  "Modified
 Version" refers to any derivative made by adding to, deleting, or
@@ -663,16 +803,21 @@ substituting -- in part or in whole -- any of the components of the Original
 Version, by changing formats or by porting the Font Software to a new
 environment. 
 
+
  
+
 
  "Author"
 refers to any designer, engineer, programmer, technical writer or other person
 who contributed to the Font Software. 
 
+
  
+
 
  PERMISSION
 & CONDITIONS 
+
 
  Permission
 is hereby granted, free of charge, to any person obtaining a copy of the Font
@@ -680,13 +825,17 @@ Software, to use, study, copy, merge, embed, modify, redistribute, and sell
 modified and unmodified copies of the Font Software, subject to the following
 conditions: 
 
+
  
+
 
  1)
 Neither the Font Software nor any of its individual components, in Original or
 Modified Versions, may be sold by itself. 
 
+
  
+
 
  2)
 Original or Modified Versions of the Font Software may be bundled, redistributed
@@ -696,7 +845,9 @@ text files, human-readable headers or in the appropriate machine-readable
 metadata fields within text or binary files as long as those fields can be
 easily viewed by the user. 
 
+
  
+
 
  3)
 No Modified Version of the Font Software may use the Reserved Font Name(s)
@@ -704,7 +855,9 @@ unless explicit written permission is granted by the corresponding Copyright
 Holder. This restriction only applies to the primary font name as presented to
 the users. 
 
+
  
+
 
  4)
 The name(s) of the Copyright Holder(s) or the Author(s) of the Font Software
@@ -712,7 +865,9 @@ shall not be used to promote, endorse or advertise any Modified Version, except
 to acknowledge the contribution(s) of the Copyright Holder(s) and the Author(s)
 or with their explicit written permission. 
 
+
  
+
 
  5)
 The Font Software, modified or unmodified, in part or in whole, must be distributed
@@ -720,16 +875,22 @@ entirely under this license, and must not be distributed under any other
 license. The requirement for fonts to remain under this license does not apply
 to any document created using the Font Software. 
 
+
  
 
+
  TERMINATION 
+
 
  This
 license becomes null and void if any of the above conditions are not met. 
 
+
  
 
+
  DISCLAIMER 
+
 
  THE
 FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
@@ -741,13 +902,20 @@ INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, WHETHER IN AN ACTION OF
 CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF THE USE OR INABILITY TO USE
 THE FONT SOFTWARE OR FROM OTHER DEALINGS IN THE FONT SOFTWARE. 
 
+
  
+
 
  
 
  
+
+
+
+
 
  HOW TO DOWNLOAD AND INSTALL 
+
 
  
 
@@ -761,7 +929,9 @@ entirely legible under Reader 5. Go to this page to update your version of Adobe
 I have left the earlier versions here: cardo98.zip , cardo71.zip and cardo56.zip 
 . 
 
+
  
+
 
  For those who
 want to test the OpenType features such as stylistic alternates, there are two
@@ -771,7 +941,9 @@ later. (It does not work with the Middle
 Eastern Mac InDesign.) For Mellel, you
 need 1.8.1 or more recent. 
 
+
  
+
 
  Downloading and
 installing the font indicates your acceptance of the terms of use, which are
@@ -782,34 +954,47 @@ of the usual unzip utilities and install the font as you would any TrueType
 font. See the readme file if you aren�t
 sure how to install fonts. 
 
+
  
+
 
  Note to Mac
 folks: recent versions of StuffIt Expander can open .zip files as well as .sit
 files, so try just downloading from the link above. If anybody really needs a .sit archive, email
 me and I will post one. 
 
+
  
+
 
  
 
  
+
+
+
+
 
  UPDATE
 HISTORY 
 
+
  5/25/10 version
 .99 of Cardo posted 
+
 
  11/06/04 version
 .98 of Cardo posted; see above for list of new features. 
 
+
  4/5/03 Mac
 OS 8/9 version no longer available 
+
 
  11/18/02 an
 Adobe Acrobat (PDF) version of the Cardo manual is now available. This will be particularly useful for Mac and
 Linux users, or Windows users who don�t have Microsoft Word. 
+
 
  8/27/02 version
 .71 of Cardo posted. This adds the
@@ -818,39 +1003,50 @@ complete block of Unicode combining marks
 versions). Cardo now includes OpenType
 support for Hebrew . 
 
+
  8/23/02 Mac
 OS 8/9 version of Cardo posted 
+
 
  8/20/02: version
 .70 posted. This is a minor upgrade that
 adds a few Unicode space and formatting characters and fixes one bug in the
 Hebrew OT tables. 
 
+
  8/13/02: version
 .59 which fixed a bug in v. 58 and which
 may provide better-looking outlines on some systems. In terms of characters and features, this is
 the same as version .58. 
+
 
  7/28/02: an
 italic version of Cardo is in the works! 
  Several users have asked for this. It will make Cardo much more useful
 for academics, who require italic for book titles and so forth. 
 
+
  7/28/02: first
 version (.58) with OpenType support for Hebrew and OpenType tables for advanced
 Latin typography 
 
+
  4/26/02: first
 version of Cardo (.56) that includes Hebrew characters posted 
 
- 
 
  
+
+
+ 
+
 
  Last updated
 November 18, 2004 
 
+
  
+
 
  Back to Fonts for
 Scholars

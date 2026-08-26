@@ -300,18 +300,25 @@ or substituting — in part or in whole — any of the components of the Origina
  Word-final Zinor ( U+05AE HEBREW ACCENT ZINOR ) is always to the left. When it occurs word-medial, it is also to the left, unless that position is 
 obstructed by a sin dot, holam or lamed, in which case it is centred. 
 This is the same behaviour as for U+0599 HEBREW ACCENT PASHTA .
+
  When U+0592 HEBREW ACCENT SEGOL and U+05A9 HEBREW ACCENT TELISHA QETANA occur word-medial, they are centred unless followed by U+200C ZERO WIDTH NON-JOINER , in which case they move to the left.
+
  When U+05A0 HEBREW ACCENT TELISHA GEDOLA is word-medial, it is centred unless 
 the consonant is preceded by U+200C ZERO WIDTH NON-JOINER , in which case it moves to the right.
+
  There have been a few minor positional adjustments.
+
  
  
  Ezra SIL SR 2.51
 
  
  U+05AE HEBREW ACCENT ZINOR is always to the left, whether it is word-final or word-medial.
+
  When U+0592 HEBREW ACCENT SEGOL , U+05A9 HEBREW ACCENT TELISHA QETANA and U+05A0 HEBREW ACCENT TELISHA GEDOLA occur word-medial, they are always centred.
+
  There have been a few minor positional adjustments.
+
  
  
  
@@ -455,8 +462,11 @@ If you are uncertain what to do with a .zip file, see Decompression Utilities, D
 
  
  Carefully read all the documentation provided with the fonts, including the documentation installed by the installation program. 
+
  Check out all the links on the web pages for these font packages, and read all the information and instructions they contain. 
+
  Review the list of Frequently Asked Questions to see if your question has already been answered. Additional information is also available on the general Font FAQ page .
+
  
  If that fails to answer your question, or for more information, contact:
 
