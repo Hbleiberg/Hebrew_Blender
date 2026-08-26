@@ -55,7 +55,7 @@ The tool is designed for emerging Hebrew readers — typically elementary studen
 
 https://ivritsuite.com/hebrew_dictionary.html
 
-Browse and filter a Hebrew dictionary by theme, word length, part of speech, era, and letter position.
+Browse and filter a Hebrew dictionary by theme, word length, part of speech, era, and letter position, and type Hebrew with the built-in on-screen keyboard — no Hebrew layout required.
 
 ### How to look up a Hebrew word
 
@@ -84,6 +84,10 @@ Yes. Words can be filtered by era, including biblical, mishnaic, medieval, and m
 **Can I share my filtered view or take a tour?**
 
 Yes. Click the Copy link button in the results toolbar to copy a shareable link that reopens your exact filtered view, and your last-used filters return automatically on your next visit. Click the Tour button in the header for a quick 7-step walkthrough.
+
+**Can I type Hebrew without a Hebrew keyboard?**
+
+Yes. Click Show Hebrew Keyboard by the search bar to click out Hebrew letters, nikkud, and trop marks — no Hebrew keyboard layout needs to be installed on your computer.
 
 ---
 

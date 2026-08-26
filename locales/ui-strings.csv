@@ -597,11 +597,13 @@ dictionary.export.instructions,Anki: import via File → Import. Quizlet: use Im
 dictionary.export.quizlet_button,⬇ Export for Quizlet,⬇ ייצוא ל-Quizlet,export button,leading-emoji
 dictionary.faq.a_era,"Yes. Filter by era — biblical, mishnaic, medieval, and modern Hebrew.","כן. סננו לפי תקופה — עברית מקראית, משנאית, ימי-ביניימית ומודרנית.",footer FAQ answer,
 dictionary.faq.a_free,Yes. Free under CC BY-NC-SA 4.0; word data sourced from Kaikki.org.,כן. חינמי תחת רישיון CC BY-NC-SA 4.0; נתוני המילים ממקור Kaikki.org.,footer FAQ answer,
+dictionary.faq.a_keyboard,"Yes. Click <strong>⌨ Show Hebrew Keyboard</strong> by the search bar and click out letters, nikkud, and trop marks — nothing needs to be installed on your computer.","כן. לחצו על <strong>⌨ הצג מקלדת עברית</strong> ליד שורת החיפוש והקליקו אותיות, ניקוד וטעמים — אין צורך להתקין דבר במחשב.",footer FAQ answer,carries <strong> markup — read via data-i18n-html
 dictionary.faq.a_lookup,"Type the Hebrew word (with or without nikkud), or use filters to browse by theme, length, part of speech, era, or letter position.","הקלידו את המילה בעברית (עם או בלי ניקוד), או השתמשו במסננים לעיון לפי נושא, אורך, חלק דיבר, תקופה או מיקום אות.",footer FAQ answer,
 dictionary.faq.a_pos,"Yes. Filter by noun, verb, adjective, adverb, and others, combined with length and era filters.","כן. סננו לפי שם עצם, פועל, שם תואר, תואר הפועל ועוד, בשילוב עם מסנני אורך ותקופה.",footer FAQ answer,
 dictionary.faq.a_share,Yes. Click 🔗 Copy link in the results toolbar to copy a link that reopens this exact filtered view — send it to your class. Your last-used filters also come back automatically on your next visit. New here? Click ❓ Tour in the header for a quick 7-step walkthrough.,כן. לחצו על 🔗 העתקת קישור בסרגל התוצאות כדי להעתיק קישור שפותח מחדש בדיוק את התצוגה המסוננת הזו — שלחו אותו לכיתה שלכם. המסננים האחרונים שלכם גם חוזרים אוטומטית בביקור הבא. חדשים כאן? לחצו על ❓ סיור בכותרת לסיור מודרך בן 7 שלבים.,footer FAQ answer,html; leading-emoji
 dictionary.faq.q_era,Modern and biblical Hebrew?,עברית מודרנית ומקראית?,footer FAQ question,
 dictionary.faq.q_free,Is it free?,האם זה חינמי?,footer FAQ question,
+dictionary.faq.q_keyboard,Can I type Hebrew without a Hebrew keyboard?,אפשר להקליד עברית בלי מקלדת עברית?,footer FAQ question,
 dictionary.faq.q_lookup,How do I look up a Hebrew word?,איך מחפשים מילה בעברית?,footer FAQ question,
 dictionary.faq.q_pos,Can I filter by part of speech?,האם ניתן לסנן לפי חלק דיבר?,footer FAQ question,
 dictionary.faq.q_share,Can I share or save my filters?,האם ניתן לשתף או לשמור את המסננים שלי?,footer FAQ question,
