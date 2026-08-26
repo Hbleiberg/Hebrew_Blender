@@ -157,7 +157,13 @@ def classify_license(text, name=''):
         if ver not in ('3.0', '4.0'):
             return None, 'CC BY version %s is not allowlisted — ask the maintainer.' % ver
         found.append('CC-BY-%s' % ver); evidence.append('CC BY %s marker' % ver)
-    if re.search(r'GNU (?:General |)Public License', t, re.I):
+    # A GRANT, not a mention. The LPPL's own prose discusses "distributing LaTeX under the GNU
+    # General Public License (GPL)", which a loose search reads as a GPL grant and turns into a
+    # bogus multi-license ambiguity. Require the license document's own heading, or a real
+    # granting sentence.
+    if (re.search(r'GNU GENERAL PUBLIC LICENSE', t)                       # the document's own heading
+            or re.search(r'under the terms of (?:the )?GNU (?:General |)Public License', t, re.I)
+            or re.search(r'licen[cs]ed under[^.]{0,40}GNU (?:General |)Public License', t, re.I)):
         ok, why = exception_scoped_to(name, text)
         if ok:
             found.append('GPL-with-font-exception'); evidence.append(why)

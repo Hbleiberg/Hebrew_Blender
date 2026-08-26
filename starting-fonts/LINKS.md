@@ -1037,25 +1037,31 @@ was deliberately NOT staged and why.
 - Designer: Philipp H. Poll · upstream version 0.6.1 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Linux-Biolinum-Keyboard/Linux-Biolinum-Keyboard.zip>
 
-## Not staged
+## Mekorot Rashi
 
-Requested partner fonts deliberately kept OUT of `manifest.json`. Reviewed 2026-08-26 against https://opensiddur.org/help/fonts/.
-Generated from `not-staged.json` — do not hand-edit.
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=mekorot-rashi>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=mekorot-rashi">Edit this font using IvritSuite</a>`
+- License: LaTeX Project Public License 1.3c
+- Designer: Alan Hoenig/Omega Makor (corrections by Yoram Gnat) · upstream version 000.003 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Mekorot-Rashi/Mekorot-Rashi.zip>
 
-### Declared license, but no license text obtainable (1)
+## Proto-Canaanite Alt2
 
-The Open Siddur Project declared this font's license, but neither the distribution nor the pack carries the license text and the canonical source was unreachable from the build environment. Everything else in that position was staged with the standard body for its declared license (licenseSource: partner-declared); this one is held back only because no copy of the text exists.
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=proto-canaanite-alt2>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=proto-canaanite-alt2">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Proto-Canaanite-alt2/Proto-Canaanite-alt2.zip>
 
-- **Mekorot-Rashi** · page says LPPL 1.3c — Declared LPPL 1.3c. No LPPL text ships anywhere in the font pack, and latex-project.org and ctan.org are both blocked by this environment's network policy. Add an LPPL 1.3c text to the distribution (or the pack) and it stages immediately.
+## Proto-Canaanite Alt3
 
-### Not obtainable (2)
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=proto-canaanite-alt3>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=proto-canaanite-alt3">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Proto-Canaanite-alt3/Proto-Canaanite-alt3.zip>
 
-The fonts page links these downloads, but the folders are absent from aharonium/opensiddur.org and opensiddur.org itself was unreachable.
-
-- **Proto-Canaanite-alt2** · page says GPL+FE — Download folder missing from the mirror.
-- **Proto-Canaanite-alt3** · page says GPL+FE — Download folder missing from the mirror.
-
-## Staged on a declared license (14)
+## Staged on a declared license (17)
 
 These archives ship no license file. The partner declared the license, so the staged
 `LICENSE.txt` is the standard body for that license plus the font's own name-table
@@ -1072,7 +1078,10 @@ copyright — recorded in the manifest as `licenseSource: partner-declared`.
 - **Linux-Biolinum-Outline** (`linux-biolinum-outline`) — SIL Open Font License 1.1
 - **Linux-Biolinum-Shadow** (`linux-biolinum-shadow`) — SIL Open Font License 1.1
 - **Mashkit** (`mashkit`) — GNU GPL v2 with font exception
+- **Mekorot-Rashi** (`mekorot-rashi`) — LaTeX Project Public License 1.3c
 - **Nachlaot** (`nachlaot`) — GNU GPL v2 with font exception
+- **Proto-Canaanite-alt2** (`proto-canaanite-alt2`) — GNU GPL v2 with font exception
+- **Proto-Canaanite-alt3** (`proto-canaanite-alt3`) — GNU GPL v2 with font exception
 - **Refoyl** (`refoyl`) — GNU GPL v2 with font exception
 - **SquarishSansCT** (`squarish-sans-ct`) — SIL Open Font License 1.1
 
