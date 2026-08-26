@@ -32,7 +32,7 @@ except ImportError:
     print("fontTools is required: pip install fonttools", file=sys.stderr)
     sys.exit(2)
 
-import argparse, datetime, hashlib, json, re, shutil
+import argparse, datetime, hashlib, json, re, shutil, unicodedata
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -217,10 +217,19 @@ def copyright_block(license_text, name_copyright):
         if keep:
             return '\n'.join(keep)
     first = (name_copyright or '').replace('\r\n', '\n').split('\n\n')[0]
-    return re.sub(r'\s+', ' ', first).strip()
+    first = re.sub(r'\s+', ' ', first).strip()
+    # Name-table ID 0 is not always a copyright: fonts put a license name there ("SIL Open Font
+    # License (OFL)"), a FontForge creation note, or literally "copyright missing". Recording any
+    # of those as `copyright` would be worse than recording nothing — an absent copyright is
+    # honestly absent (nesher-gadol/-katon already are).
+    if not re.search(r'copyright|\(c\)|\u00a9', first, re.I) or re.match(r'^copyright missing$', first, re.I):
+        return ''
+    return first
 
 
 def slugify(s):
+    # Fold accents first, or "Máshkit" slugs to "m-shkit" and "Le patin helvète" to "helv-te".
+    s = unicodedata.normalize('NFKD', s or '').encode('ascii', 'ignore').decode()
     s = re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
     return re.sub(r'-{2,}', '-', s) or 'font'
 
@@ -256,6 +265,15 @@ def not_staged_section():
                 if f.get('conflict'):
                     L.append('  - ⚠ **Conflict:** %s' % f['conflict'])
             L.append('')
+    dec = d.get('partnerDeclared') or []
+    if dec:
+        L += ['## Staged on a declared license (%d)' % len(dec), '',
+              'These archives ship no license file. The partner declared the license, so the staged',
+              '`LICENSE.txt` is the standard body for that license plus the font\'s own name-table',
+              'copyright — recorded in the manifest as `licenseSource: partner-declared`.', '']
+        for f in dec:
+            L.append('- **%s** (`%s`) — %s' % (f.get('name','?'), f.get('id','?'), f.get('license','?')))
+        L.append('')
     disc = d.get('discrepancies') or []
     if disc:
         L += ['## License discrepancies (staged fonts)', '',
@@ -315,6 +333,11 @@ def main():
     ap.add_argument('--name', help='display name override (when the embedded family name is stale)')
     ap.add_argument('--designer', help='designer override (cite your source; else name-table ID 9)')
     ap.add_argument('--partner', default='opensiddur', choices=sorted(PARTNERS))
+    ap.add_argument('--license-source', choices=('shipped', 'partner-declared'), default='shipped',
+                    help="'shipped' (default) = LICENSE.txt is the text that came WITH the font. "
+                         "'partner-declared' = the distribution shipped no license file and the partner "
+                         "declared the license; the staged text is then the standard body for that license "
+                         "plus the font's own copyright line. Recorded in the manifest either way.")
     ap.add_argument('--force', action='store_true', help='replace an existing manifest id')
     ap.add_argument('--dry-run', action='store_true', help='report + print the entry, stage nothing')
     a = ap.parse_args()
@@ -390,6 +413,11 @@ def main():
         entry['obligations'] = list(obligations)
     if 'rename' in obligations:
         entry['renameRequired'] = True
+    if a.license_source != 'shipped':
+        # Provenance matters: this font's archive carried no license file, so the license is the
+        # partner's declaration and the body below is the standard text, not a byte-lift.
+        entry['licenseSource'] = a.license_source
+        entry['licenseDeclaredBy'] = partner['partnerName']
     if names['family'] and names['family'] != display:
         entry['nameTableFamily'] = names['family']
 
@@ -405,6 +433,9 @@ def main():
         print('  NOTE: embedded family name is %r — recorded as nameTableFamily.' % names['family'])
     if not a.license_file:
         print('  WARNING: no --license-file; LICENSE.txt will hold the embedded name-table license text.')
+    if a.license_source != 'shipped':
+        print('  NOTE: license recorded as %s by %s — the archive shipped no license file.'
+              % (a.license_source, partner['partnerName']))
 
     manifest = {'schema': 1, 'fonts': []}
     if MANIFEST.is_file():

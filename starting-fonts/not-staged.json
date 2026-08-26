@@ -1,0 +1,164 @@
+{
+  "schema": 1,
+  "note": "Requested partner fonts NOT in manifest.json, fonts staged on a declared (not shipped) license, and license discrepancies between the Open Siddur fonts page and a font's own distribution. Rendered into LINKS.md by scripts/add_os_font.py. The gate asks only whether a license permits MODIFICATION, so nothing is held back for being copyleft.",
+  "source": "https://opensiddur.org/help/fonts/",
+  "reviewed": "2026-08-26",
+  "categories": [
+    {
+      "key": "no-license-text",
+      "title": "Declared license, but no license text obtainable",
+      "note": "The Open Siddur Project declared this font's license, but neither the distribution nor the pack carries the license text and the canonical source was unreachable from the build environment. Everything else in that position was staged with the standard body for its declared license (licenseSource: partner-declared); this one is held back only because no copy of the text exists."
+    },
+    {
+      "key": "unobtainable",
+      "title": "Not obtainable",
+      "note": "The fonts page links these downloads, but the folders are absent from aharonium/opensiddur.org and opensiddur.org itself was unreachable."
+    }
+  ],
+  "notStaged": [
+    {
+      "name": "Mekorot-Rashi",
+      "pageLicense": "LPPL 1.3c",
+      "category": "no-license-text",
+      "reason": "Declared LPPL 1.3c. No LPPL text ships anywhere in the font pack, and latex-project.org and ctan.org are both blocked by this environment's network policy. Add an LPPL 1.3c text to the distribution (or the pack) and it stages immediately.",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/Mekorot-Rashi/Mekorot-Rashi.zip"
+    },
+    {
+      "name": "Proto-Canaanite-alt2",
+      "pageLicense": "GPL+FE",
+      "category": "unobtainable",
+      "reason": "Download folder missing from the mirror.",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/Proto-Canaanite-alt2/Proto-Canaanite-alt2.zip"
+    },
+    {
+      "name": "Proto-Canaanite-alt3",
+      "pageLicense": "GPL+FE",
+      "category": "unobtainable",
+      "reason": "Download folder missing from the mirror.",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/Proto-Canaanite-alt3/Proto-Canaanite-alt3.zip"
+    }
+  ],
+  "partnerDeclared": [
+    {
+      "name": "4Q416",
+      "id": "4q416",
+      "license": "SIL Open Font License 1.1",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    },
+    {
+      "name": "4Q417",
+      "id": "4q417",
+      "license": "SIL Open Font License 1.1",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    },
+    {
+      "name": "4Q418",
+      "id": "4q418",
+      "license": "SIL Open Font License 1.1",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    },
+    {
+      "name": "4Q503",
+      "id": "4q503",
+      "license": "SIL Open Font License 1.1",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    },
+    {
+      "name": "CrypticA-HaifaUni",
+      "id": "cryptic-a",
+      "license": "SIL Open Font License 1.1",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    },
+    {
+      "name": "FiraGO",
+      "id": "firago-hebrew",
+      "license": "SIL Open Font License 1.1",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    },
+    {
+      "name": "Hebrew-Samaritan",
+      "id": "hebrew-square-samaritan",
+      "license": "GNU GPL v2 with font exception",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    },
+    {
+      "name": "Linux-Biolinum-Keyboard",
+      "id": "linux-biolinum-keyboard",
+      "license": "SIL Open Font License 1.1",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    },
+    {
+      "name": "Linux-Biolinum-Outline",
+      "id": "linux-biolinum-outline",
+      "license": "SIL Open Font License 1.1",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    },
+    {
+      "name": "Linux-Biolinum-Shadow",
+      "id": "linux-biolinum-shadow",
+      "license": "SIL Open Font License 1.1",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    },
+    {
+      "name": "Mashkit",
+      "id": "mashkit",
+      "license": "GNU GPL v2 with font exception",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    },
+    {
+      "name": "Nachlaot",
+      "id": "nachlaot",
+      "license": "GNU GPL v2 with font exception",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    },
+    {
+      "name": "Refoyl",
+      "id": "refoyl",
+      "license": "GNU GPL v2 with font exception",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    },
+    {
+      "name": "SquarishSansCT",
+      "id": "squarish-sans-ct",
+      "license": "SIL Open Font License 1.1",
+      "note": "Archive ships no license file. Staged under the license the Open Siddur Project declared for it, with the standard body for that license and the font's own name-table copyright."
+    }
+  ],
+  "discrepancies": [
+    {
+      "name": "FreeSans",
+      "id": "freesans",
+      "pageLicense": "GPL 3.0",
+      "staged": "GPL-with-font-exception",
+      "note": "The fonts page lists this as GPL 3.0, but the license text shipped in the distribution states the font exception verbatim, so it is staged as GPL+FE. Primary text wins; the page label is coarser."
+    },
+    {
+      "name": "FreeSerif",
+      "id": "freeserif",
+      "pageLicense": "GPL 3.0",
+      "staged": "GPL-with-font-exception",
+      "note": "The fonts page lists this as GPL 3.0, but the license text shipped in the distribution states the font exception verbatim, so it is staged as GPL+FE. Primary text wins; the page label is coarser."
+    },
+    {
+      "name": "Shuneet_Classic_v2",
+      "id": "shuneet-classic",
+      "pageLicense": "SIL OFL 1.1",
+      "staged": "CC-BY-SA-3.0",
+      "note": "The fonts page declares SIL OFL 1.1, but the License.html shipped with the distribution states CC BY-SA 3.0 — the font author's own page against the distributor's catalogue. Staged under the shipped text. Both permit editing; worth reconciling upstream."
+    },
+    {
+      "name": "Shuneet_Square_v2",
+      "id": "shuneet-square",
+      "pageLicense": "SIL OFL 1.1",
+      "staged": "CC-BY-SA-3.0",
+      "note": "The fonts page declares SIL OFL 1.1, but the License.html shipped with the distribution states CC BY-SA 3.0 — the font author's own page against the distributor's catalogue. Staged under the shipped text. Both permit editing; worth reconciling upstream."
+    },
+    {
+      "name": "Tnua-Libre",
+      "id": "tnua-libre",
+      "pageLicense": "GPL 3.0",
+      "staged": "GPL-with-font-exception",
+      "note": "The fonts page lists this as GPL 3.0, but the license text shipped in the distribution states the font exception verbatim, so it is staged as GPL+FE. Primary text wins; the page label is coarser."
+    }
+  ]
+}

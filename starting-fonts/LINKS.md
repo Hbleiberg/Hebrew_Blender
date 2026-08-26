@@ -924,3 +924,165 @@ was deliberately NOT staged and why.
 - License: GNU GPL v2 with font exception
 - Designer: Yoram Gnat · upstream version 0.06-1 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Proto-Canaanite/Proto-Canaanite.zip>
+
+## 4Q416
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=4q416>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=4q416">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Eshbal Ratson and Einat Tamir · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/4Q416/4Q416.zip>
+
+## 4Q417
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=4q417>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=4q417">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Einat Tamir · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/4Q417/4Q417.zip>
+
+## 4Q418
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=4q418>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=4q418">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Einat Tamir · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/4Q418/4Q418.zip>
+
+## 4Q503
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=4q503>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=4q503">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Antony Perrot · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/4Q503/4Q503.zip>
+
+## Cryptic A
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=cryptic-a>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=cryptic-a">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Nir Yenni · upstream version 1.000 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/CrypticA-HaifaUni/CrypticA-HaifaUni.zip>
+
+## FiraGO Hebrew
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=firago-hebrew>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=firago-hebrew">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Fira
+- Designer: Natalie Rauch · upstream version 1.001 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/FiraGO/FiraGO.zip>
+
+## Squarish Sans CT
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=squarish-sans-ct>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=squarish-sans-ct">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Squarish
+- Designer: Christtrekker · upstream version 0.9 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/SquarishSansCT/SquarishSansCT.zip>
+
+## Hebrew Square Samaritan
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-square-samaritan>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-square-samaritan">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat (edited by Uri DeYoung) · upstream version 0.200 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Hebrew-Samaritan/Hebrew-Samaritan.zip>
+
+## Máshkit
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=mashkit>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=mashkit">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Raphael Finkel · upstream version 001.000 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Mashkit/Mashkit.zip>
+
+## Nachlaot
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=nachlaot>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=nachlaot">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Raphael Finkel · upstream version Converted from F:\ALLTYPE\DAVKA\NACHLAOT.TF1 by ALLTYPE · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Nachlaot/Nachlaot.zip>
+
+## Refoyl
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=refoyl>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=refoyl">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Raphael Finkel · upstream version 001.001 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Refoyl/Refoyl.zip>
+
+## Linux Biolinum Outline
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=linux-biolinum-outline>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=linux-biolinum-outline">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Linux Libertine, Biolinum
+- Designer: Philipp H. Poll · upstream version 1.1.0 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Linux-Biolinum-Outline/Linux-Biolinum-Outline.zip>
+
+## Linux Biolinum Shadow
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=linux-biolinum-shadow>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=linux-biolinum-shadow">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Linux Libertine, Biolinum
+- Designer: Philipp H. Poll · upstream version 1.1.0 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Linux-Biolinum-Shadow/Linux-Biolinum-Shadow.zip>
+
+## Linux Biolinum Keyboard
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=linux-biolinum-keyboard>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=linux-biolinum-keyboard">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Linux Libertine, Biolinum
+- Designer: Philipp H. Poll · upstream version 0.6.1 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Linux-Biolinum-Keyboard/Linux-Biolinum-Keyboard.zip>
+
+## Not staged
+
+Requested partner fonts deliberately kept OUT of `manifest.json`. Reviewed 2026-08-26 against https://opensiddur.org/help/fonts/.
+Generated from `not-staged.json` — do not hand-edit.
+
+### Declared license, but no license text obtainable (1)
+
+The Open Siddur Project declared this font's license, but neither the distribution nor the pack carries the license text and the canonical source was unreachable from the build environment. Everything else in that position was staged with the standard body for its declared license (licenseSource: partner-declared); this one is held back only because no copy of the text exists.
+
+- **Mekorot-Rashi** · page says LPPL 1.3c — Declared LPPL 1.3c. No LPPL text ships anywhere in the font pack, and latex-project.org and ctan.org are both blocked by this environment's network policy. Add an LPPL 1.3c text to the distribution (or the pack) and it stages immediately.
+
+### Not obtainable (2)
+
+The fonts page links these downloads, but the folders are absent from aharonium/opensiddur.org and opensiddur.org itself was unreachable.
+
+- **Proto-Canaanite-alt2** · page says GPL+FE — Download folder missing from the mirror.
+- **Proto-Canaanite-alt3** · page says GPL+FE — Download folder missing from the mirror.
+
+## Staged on a declared license (14)
+
+These archives ship no license file. The partner declared the license, so the staged
+`LICENSE.txt` is the standard body for that license plus the font's own name-table
+copyright — recorded in the manifest as `licenseSource: partner-declared`.
+
+- **4Q416** (`4q416`) — SIL Open Font License 1.1
+- **4Q417** (`4q417`) — SIL Open Font License 1.1
+- **4Q418** (`4q418`) — SIL Open Font License 1.1
+- **4Q503** (`4q503`) — SIL Open Font License 1.1
+- **CrypticA-HaifaUni** (`cryptic-a`) — SIL Open Font License 1.1
+- **FiraGO** (`firago-hebrew`) — SIL Open Font License 1.1
+- **Hebrew-Samaritan** (`hebrew-square-samaritan`) — GNU GPL v2 with font exception
+- **Linux-Biolinum-Keyboard** (`linux-biolinum-keyboard`) — SIL Open Font License 1.1
+- **Linux-Biolinum-Outline** (`linux-biolinum-outline`) — SIL Open Font License 1.1
+- **Linux-Biolinum-Shadow** (`linux-biolinum-shadow`) — SIL Open Font License 1.1
+- **Mashkit** (`mashkit`) — GNU GPL v2 with font exception
+- **Nachlaot** (`nachlaot`) — GNU GPL v2 with font exception
+- **Refoyl** (`refoyl`) — GNU GPL v2 with font exception
+- **SquarishSansCT** (`squarish-sans-ct`) — SIL Open Font License 1.1
+
+## License discrepancies (staged fonts)
+
+Fonts that ARE staged, where the partner page's label differs from the license text shipped
+in the font's own distribution. The shipped text decides; this records the difference.
+
+- **FreeSans** — page: GPL 3.0 · staged as: GPL-with-font-exception. The fonts page lists this as GPL 3.0, but the license text shipped in the distribution states the font exception verbatim, so it is staged as GPL+FE. Primary text wins; the page label is coarser.
+- **FreeSerif** — page: GPL 3.0 · staged as: GPL-with-font-exception. The fonts page lists this as GPL 3.0, but the license text shipped in the distribution states the font exception verbatim, so it is staged as GPL+FE. Primary text wins; the page label is coarser.
+- **Shuneet_Classic_v2** — page: SIL OFL 1.1 · staged as: CC-BY-SA-3.0. The fonts page declares SIL OFL 1.1, but the License.html shipped with the distribution states CC BY-SA 3.0 — the font author's own page against the distributor's catalogue. Staged under the shipped text. Both permit editing; worth reconciling upstream.
+- **Shuneet_Square_v2** — page: SIL OFL 1.1 · staged as: CC-BY-SA-3.0. The fonts page declares SIL OFL 1.1, but the License.html shipped with the distribution states CC BY-SA 3.0 — the font author's own page against the distributor's catalogue. Staged under the shipped text. Both permit editing; worth reconciling upstream.
+- **Tnua-Libre** — page: GPL 3.0 · staged as: GPL-with-font-exception. The fonts page lists this as GPL 3.0, but the license text shipped in the distribution states the font exception verbatim, so it is staged as GPL+FE. Primary text wins; the page label is coarser.
