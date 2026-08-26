@@ -322,7 +322,10 @@
   --shadow-sm: 0 1px 2px rgba(20, 30, 50, 0.06), 0 1px 1px rgba(20, 30, 50, 0.04);
   --shadow-md: 0 6px 14px rgba(20, 30, 50, 0.08), 0 2px 4px rgba(20, 30, 50, 0.05);
   --shadow-lg: 0 18px 40px rgba(20, 30, 50, 0.16), 0 6px 12px rgba(20, 30, 50, 0.08);
-  --radius: 14px;
+  /* Container radius. 12px is what this file's bordered boxes already use (.stats-bar,
+     .tour-card); .fc-card's 16px is the deliberate hero step above it. This token used to be
+     14px and had exactly one consumer (.panel), which made it a third value doing one job. */
+  --radius: 12px;
   --heb-font: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
   --serif: 'Libre Baskerville', Georgia, serif;
   --eng-font: var(--serif);   /* English/Latin card-text face — user-selectable; defaults to the serif look */
