@@ -3460,6 +3460,10 @@ function _a11yDecorateTile(tile) {
   tile.setAttribute('role', 'button');
   if (!tile.hasAttribute('tabindex')) tile.tabIndex = tile.classList.contains('locked') ? -1 : 0;
   tile.setAttribute('aria-label', (name || 'item') + ' — ' + ltStatusWord(status));
+  // `.sel` is the only cue for "this is the glyph the whole workspace is editing", and it is purely
+  // visual (navy plate + white text). Without this every tile in the grid announces identically.
+  // Synced here rather than at the seven build sites so the class and the ARIA cannot drift apart.
+  tile.setAttribute('aria-pressed', tile.classList.contains('sel') ? 'true' : 'false');
 }
 function a11yTiles(grid) { if (grid) grid.querySelectorAll('.ltile').forEach(_a11yDecorateTile); }
 
