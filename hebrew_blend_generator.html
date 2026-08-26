@@ -5959,18 +5959,27 @@ function initDarkMode() {
 }
 
 // ── SIDEBAR COLLAPSE ──
+// The tab's operable box: the 16px visual sliver plus the 8px transparent ::after that carries
+// the pointer target inward. The clamp below measures against this, not the sliver alone.
+const SIDEBAR_TAB_HIT = 24;
 function positionSidebarTab() {
   const sidebar = document.getElementById('appSidebar');
   const btn = document.getElementById('sidebarToggleBtn');
   if (!sidebar.classList.contains('hidden')) {
     const rect = sidebar.getBoundingClientRect();
-    // Pin the hide-tab to the sidebar's INNER edge — right of it in LTR, left of it in RTL.
+    // Pin the hide-tab to the sidebar's INNER edge — right of it in LTR, left of it in RTL —
+    // but never past the viewport. At phone widths the stacked sidebar is full-width, so its
+    // inner edge IS the screen edge and the unclamped tab lands entirely off-screen. It is
+    // position:fixed, so it never widens scrollWidth: the page reports no overflow at all while
+    // the only control that collapses the sidebar sits where no finger can reach it.
+    // No-op on desktop, where the 320px column leaves the tab far inside the clamp.
+    const maxInset = Math.max(0, window.innerWidth - SIDEBAR_TAB_HIT);
     if (document.documentElement.dir === 'rtl') {
       btn.style.left = 'auto';
-      btn.style.right = (window.innerWidth - rect.left) + 'px';
+      btn.style.right = Math.min(window.innerWidth - rect.left, maxInset) + 'px';
     } else {
       btn.style.right = 'auto';
-      btn.style.left = rect.right + 'px';
+      btn.style.left = Math.min(rect.right, maxInset) + 'px';
     }
   }
 }
