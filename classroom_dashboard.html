@@ -819,7 +819,10 @@
     top: 0; inset-inline-end: 0;
     width: 380px;
     max-width: 92vw;
+    /* dvh wins where supported: vh units are taller than the VISIBLE viewport while a
+       phone URL bar is expanded, stranding the tail of this scroll container. */
     height: 100vh;
+    height: 100dvh;
     background: var(--white);
     border-inline-start: 1px solid var(--border);
     box-shadow: var(--shadow-lg);
