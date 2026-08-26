@@ -55,7 +55,7 @@ The tool is designed for emerging Hebrew readers — typically elementary studen
 
 https://ivritsuite.com/hebrew_dictionary.html
 
-Browse and filter a Hebrew dictionary by theme, word length, part of speech, era, and letter position, and type Hebrew with the built-in on-screen keyboard — no Hebrew layout required.
+Browse and filter a Hebrew dictionary by theme, word length, part of speech, era, and letter position, type Hebrew with the built-in on-screen keyboard, and print the filtered word list — no Hebrew layout required.
 
 ### How to look up a Hebrew word
 
@@ -88,6 +88,10 @@ Yes. Click the Copy link button in the results toolbar to copy a shareable link 
 **Can I type Hebrew without a Hebrew keyboard?**
 
 Yes. Click Show Hebrew Keyboard by the search bar to click out Hebrew letters, nikkud, and trop marks — no Hebrew keyboard layout needs to be installed on your computer.
+
+**Can I print the Hebrew word list?**
+
+Yes. Click Print in the results toolbar to print the Hebrew words you have filtered to, on paper or to PDF. Every matching word prints, not only the rows currently on screen, and above 500 words the page tells you how large the printout will be first.
 
 ---
 
