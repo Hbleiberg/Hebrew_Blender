@@ -904,7 +904,7 @@ dictionary.wordlists.save_button,⭑ Save as Word List…,⭑ שמירה כרש�
 flashcards.advanced.audio_label,Audio,שמע,advanced toggle label,
 flashcards.advanced.backup_head,Backup Presets,גיבוי הגדרות,advanced subheading,
 flashcards.advanced.backup_include_label,Include in backup:,כלול בגיבוי:,backup scope label,
-flashcards.advanced.backup_intro,Save your data to a .ivrit file on your device. Restore by dropping the file below or browsing for it. Use the toggle below to choose what's included.,"שמרו את הנתונים שלכם לקובץ ‎.ivrit במכשיר. לשחזור, גררו את הקובץ למטה או עיינו אליו. השתמשו במתג למטה כדי לבחור מה כלול.",backup area intro,
+flashcards.advanced.backup_intro,Save your data to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it. Use the toggle below to choose what's included.,"שמרו את הנתונים שלכם לקובץ <b>‎.ivrit</b> במכשיר. לשחזור, גררו את הקובץ למטה או עיינו אליו. השתמשו במתג למטה כדי לבחור מה כלול.",backup area intro,
 flashcards.advanced.backup_manual_placeholder,Exported preset JSON appears here…,קובץ JSON מיוצא של ההגדרות יופיע כאן…,manual backup textarea placeholder,placeholder
 flashcards.advanced.backup_scope_both,Both,שניהם,backup scope button,
 flashcards.advanced.backup_scope_presets,Presets,הגדרות,backup scope button,
@@ -1018,7 +1018,7 @@ flashcards.header.tour_button_title,Take a quick tour,סיור קצר,header tou
 flashcards.howto.step1,"Choose 1, 2, or 3 letters per card.","בחרו 1, 2 או 3 אותיות לכרטיס.",footer how-to step,
 flashcards.howto.step2,Select Hebrew letters and vowels to drill.,בחרו אותיות ותנועות לתרגול.,footer how-to step,
 flashcards.howto.step3,Set the number of cards in the deck.,קבעו את מספר הכרטיסים בחפיסה.,footer how-to step,
-flashcards.howto.step4,Click Start to begin.,לחצו על “התחל” כדי להתחיל.,footer how-to step,html
+flashcards.howto.step4,Click <strong>Start</strong> to begin.,לחצו על “<strong>התחל</strong>” כדי להתחיל.,footer how-to step,html
 flashcards.howto.step5,Tap a card to reveal it; mark right or wrong.,הקישו על כרטיס כדי לחשוף אותו; סמנו נכון או לא נכון.,footer how-to step,
 flashcards.howto.summary,How To Use,איך להשתמש,footer how-to summary,
 flashcards.letters.all,All,הכל,letter select button,
@@ -1182,13 +1182,13 @@ flashcards.teachertools.practice_weaknesses,🎯 Practice My Weak Cards,🎯 ת�
 flashcards.teachertools.preset_name_placeholder,Preset name…,שם ההגדרה…,preset name input placeholder,placeholder
 flashcards.teachertools.presets_head,Presets,הגדרות שמורות,teacher-tools subheading,
 flashcards.teachertools.profiles_head,Profiles & Results,פרופילים ותוצאות,teacher-tools subheading,
-flashcards.teachertools.profiles_intro,"Save drill results to a named profile to track progress over time. After a drill, tap Save Results on the results screen.","שמרו תוצאות תרגול לפרופיל בשם כדי לעקוב אחר ההתקדמות לאורך זמן. לאחר תרגול, הקישו “שמור תוצאות” במסך התוצאות.",profiles intro prose,
+flashcards.teachertools.profiles_intro,"Save drill results to a named profile to track progress over time. After a drill, tap <b>Save Results</b> on the results screen.","שמרו תוצאות תרגול לפרופיל בשם כדי לעקוב אחר ההתקדמות לאורך זמן. לאחר תרגול, הקישו “<b>שמור תוצאות</b>” במסך התוצאות.",profiles intro prose,
 flashcards.teachertools.rename_button,Rename,שנה שם,profile rename button,
 flashcards.teachertools.results_history_heading,Results History — {name},היסטוריית תוצאות — {name},profile detail heading,
 flashcards.teachertools.save_button,Save,שמור,save preset button,
 flashcards.teachertools.share_head,Teacher Share Code,קוד שיתוף למורה,teacher-tools subheading,
 flashcards.teachertools.share_input_placeholder,Paste share code here…,הדביקו קוד שיתוף כאן…,share input placeholder,placeholder
-flashcards.teachertools.share_intro,"Generate a code that captures every current setting. Share it with students — when they paste it and tap Load, the deck opens with your exact setup.","צרו קוד שלוכד את כל ההגדרות הנוכחיות. שתפו אותו עם התלמידים — כשהם מדביקים אותו ומקישים טען, החפיסה נפתחת עם ההגדרה המדויקת שלכם.",share-code intro prose,
+flashcards.teachertools.share_intro,"Generate a code that captures every current setting. Share it with students — when they paste it and tap <b>Load</b>, the deck opens with your exact setup.","צרו קוד שלוכד את כל ההגדרות הנוכחיות. שתפו אותו עם התלמידים — כשהם מדביקים אותו ומקישים <b>טען</b>, החפיסה נפתחת עם ההגדרה המדויקת שלכם.",share-code intro prose,
 flashcards.teachertools.share_output_placeholder,Tap “Generate Share Code” to create a code…,הקישו “צור קוד שיתוף” כדי ליצור קוד…,share output textarea placeholder,placeholder
 flashcards.teachertools.view_weaknesses,📊 View Weaknesses,📊 צפה בחולשות,teacher-tools button,leading-emoji
 flashcards.timer.mode_limit,Time Limit,מגבלת זמן,timer mode pill,
@@ -1825,7 +1825,7 @@ fontmaker.modals.apply_mark_title,Apply mark shape,החל צורת סימן,dial
 fontmaker.modals.apply_to,Apply to {name},החל על {name},dialog button,
 fontmaker.modals.applyalign_apply,Apply,החל,button,
 fontmaker.modals.applyalign_cancel,Cancel,ביטול,button,
-fontmaker.modals.applyalign_desc,"Copies the current letter's position & scale (its image transform — not its traced outline) onto the letters you pick, overwriting their current alignment. You can undo it.","מעתיק את המיקום והקנה מידה של האות הנוכחית (הטרנספורמציה של התמונה שלה — לא המתאר העקוב) אל האותיות שתבחרו, ודורס את היישור הנוכחי שלהן. אפשר לבטל.",dialog body,
+fontmaker.modals.applyalign_desc,"Copies the current letter's position & scale (its image transform — <b>not</b> its traced outline) onto the letters you pick, overwriting their current alignment. You can undo it.","מעתיק את המיקום והקנה מידה של האות הנוכחית (הטרנספורמציה של התמונה שלה — <b>לא</b> המתאר העקוב) אל האותיות שתבחרו, ודורס את היישור הנוכחי שלהן. אפשר לבטל.",dialog body,
 fontmaker.modals.applyalign_none,None,ללא,button,
 fontmaker.modals.applyalign_select_all,Select all,בחר הכל,button,
 fontmaker.modals.applyalign_title,Apply this alignment to other letters,החל יישור זה על אותיות אחרות,dialog title,
@@ -1989,8 +1989,8 @@ fontmaker.modals.markedit_title,Edit mark shape,עריכת צורת סימן,mar
 fontmaker.modals.markedit_title_named,Edit shape — {name},עריכת צורה — {name},mark-edit dialog title (with mark name),
 fontmaker.modals.markedit_undo,↶ Undo,↶ ביטול,mark-edit button,leading-emoji
 fontmaker.modals.markedit_undo_title,Undo (Ctrl/Cmd+Z),ביטול (Ctrl/Cmd+Z),mark-edit button title,
-fontmaker.modals.markedit_upload_desc,Design this mark from an uploaded image (per-symbol or from a combined sheet) on its own editing tab — the full align & trace tools live there. Uploaded mark shapes apply to all letters.,עצבו את הסימן הזה מתמונה שהועלתה (לכל סמל או מדף משולב) בלשונית העריכה שלו — כלי היישור והמעקב המלאים נמצאים שם. צורות סימן שהועלו חלות על כל האותיות.,mark-edit upload section,
-fontmaker.modals.mobilewarn_body,"The Hebrew Font Maker uses precise tracing and a lot of fine controls — it's much easier on a desktop or laptop. You're welcome to keep going on this device, but it may feel cramped.","יוצר הגופנים העברי משתמש במעקב מדויק ובהרבה פקדים עדינים — קל בהרבה במחשב שולחני או נייד. אתם מוזמנים להמשיך במכשיר זה, אך זה עשוי להרגיש צפוף.",dialog body,
+fontmaker.modals.markedit_upload_desc,Design this mark from an uploaded image (per-symbol or from a combined sheet) on its own editing tab — the full align & trace tools live there. Uploaded mark shapes apply to <b>all letters</b>.,עצבו את הסימן הזה מתמונה שהועלתה (לכל סמל או מדף משולב) בלשונית העריכה שלו — כלי היישור והמעקב המלאים נמצאים שם. צורות סימן שהועלו חלות על <b>כל האותיות</b>.,mark-edit upload section,
+fontmaker.modals.mobilewarn_body,"The Hebrew Font Maker uses precise tracing and a lot of fine controls — it's much easier on a <strong>desktop or laptop</strong>. You're welcome to keep going on this device, but it may feel cramped.","יוצר הגופנים העברי משתמש במעקב מדויק ובהרבה פקדים עדינים — קל בהרבה ב<strong>מחשב שולחני או נייד</strong>. אתם מוזמנים להמשיך במכשיר זה, אך זה עשוי להרגיש צפוף.",dialog body,
 fontmaker.modals.mobilewarn_dontshow,Don't show this warning again,אל תציג אזהרה זו שוב,checkbox label,
 fontmaker.modals.mobilewarn_goback,← Go back,← חזור,button,leading-emoji
 fontmaker.modals.mobilewarn_startdrawing,✍️ Start drawing,✍️ התחילו לצייר,button,leading-emoji
@@ -2113,7 +2113,7 @@ fontmaker.node_editor.mode_pen_title,Pen — draw a new contour point by point (
 fontmaker.node_editor.mode_select,Select,בחירה,node-mode button,
 fontmaker.node_editor.mode_select_title,Select — click and drag points (Esc leaves marquee or pen),בחירה — לחצו וגררו נקודות (Esc יוצא ממלבן הבחירה או מהעט),node-mode button title,
 fontmaker.node_editor.more_delete_aria,More delete options,אפשרויות מחיקה נוספות,button aria-label,aria-label only
-fontmaker.node_editor.node_hint,Drag points to reshape · ? for all shortcuts,גררו נקודות כדי לעצב מחדש · ? לכל הקיצורים,node hint bar,
+fontmaker.node_editor.node_hint,Drag points to reshape · <b>?</b> for all shortcuts,גררו נקודות כדי לעצב מחדש · <b>?</b> לכל הקיצורים,node hint bar,
 fontmaker.node_editor.node_hint_dismiss_aria,Dismiss this hint,סגור רמז זה,button aria-label,aria-label only
 fontmaker.node_editor.node_hint_shortcuts_aria,All point-editing shortcuts,כל קיצורי עריכת הנקודות,button aria-label,aria-label only
 fontmaker.node_editor.paste,Paste,הדבק,button,
@@ -3977,9 +3977,9 @@ worksheet.actions.pdf_mob,⬇ PDF,⬇ PDF,mobile FAB button,leading-emoji
 worksheet.actions.practice_flashcards,🃏 Practice these in Flash Cards,🃏 תרגלו את אלה בכרטיסיות,generator hand-off button to flash cards,leading-emoji
 worksheet.actions.practice_flashcards_title,Open these letters and vowels as a Flash Cards drill,פתיחת האותיות והתנועות האלה כתרגול כרטיסיות,generator hand-off button title/aria,aria-label only
 worksheet.actions.print,🖨 Print,🖨 הדפס,action button,leading-emoji
-worksheet.actions.print_tip,"💡 Print tip: In the print dialog, uncheck Headers and footers to remove the URL and date.","💡 טיפ להדפסה: בתיבת ההדפסה, בטלו את הסימון של כותרות עליונות ותחתונות כדי להסיר את הכתובת והתאריך.",tip box,leading-emoji;html
+worksheet.actions.print_tip,"💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.","💡 <strong>טיפ להדפסה:</strong> בתיבת ההדפסה, בטלו את הסימון של <em>כותרות עליונות ותחתונות</em> כדי להסיר את הכתובת והתאריך.",tip box,leading-emoji;html
 worksheet.actions.regenerate,↺ Regenerate,↺ צור מחדש,action button,leading-emoji
-worksheet.advanced.backup_auto_explainer,Save all your presets and current settings to a .ivrit save file on your device. Restore later by dropping the file below or browsing for it.,"שמרו את כל ההגדרות השמורות וההגדרות הנוכחיות שלכם לקובץ שמירה .ivrit במכשיר. לשחזור מאוחר יותר, גררו את הקובץ למטה או עיינו אליו.",backup panel explainer,html
+worksheet.advanced.backup_auto_explainer,Save all your presets and current settings to a <b>.ivrit</b> save file on your device. Restore later by dropping the file below or browsing for it.,"שמרו את כל ההגדרות השמורות וההגדרות הנוכחיות שלכם לקובץ שמירה <b>.ivrit</b> במכשיר. לשחזור מאוחר יותר, גררו את הקובץ למטה או עיינו אליו.",backup panel explainer,html
 worksheet.advanced.backup_manual_explainer,Export your saved presets as text you can copy and store. Paste it back to restore.,ייצאו את ההגדרות השמורות שלכם כטקסט שאפשר להעתיק ולשמור. הדביקו אותו בחזרה כדי לשחזר.,backup panel explainer,
 worksheet.advanced.backup_placeholder,Paste backup here to import…,הדביקו כאן גיבוי כדי לייבא…,textarea placeholder,
 worksheet.advanced.backup_title,Backup Presets,גיבוי הגדרות,sub-panel title,
@@ -4075,7 +4075,7 @@ worksheet.empty.no_words_match_title,No words match.,אין מילים תואמ�
 worksheet.empty.not_enough_words,Not enough words to match.,אין מספיק מילים להתאמה.,worksheet empty state,print-adjacent empty state
 worksheet.empty.pick_direction_body,Word Search needs somewhere to hide the words — enable at least one arrow under Drill Options → Directions.,תפזורת צריכה מקום להסתיר בו את המילים — הפעילו לפחות חץ אחד תחת אפשרויות תרגול ← כיוונים.,worksheet empty state,print-adjacent empty state
 worksheet.empty.pick_direction_title,Pick at least one direction.,בחרו לפחות כיוון אחד.,worksheet empty state,print-adjacent empty state
-worksheet.empty.ready_body,"Select your letters and vowels on the left, then click Generate Worksheet.","בחרו את האותיות והתנועות שלכם משמאל, ואז לחצו על צור דף עבודה.",main empty-state,html
+worksheet.empty.ready_body,"Select your letters and vowels on the left, then click <strong>Generate Worksheet</strong>.","בחרו את האותיות והתנועות שלכם משמאל, ואז לחצו על <strong>צור דף עבודה</strong>.",main empty-state,html
 worksheet.empty.ready_title,Ready to Generate,מוכן ליצירה,main empty-state h2,
 worksheet.empty.select_letter,Please select at least one letter.,בחרו לפחות אות אחת.,worksheet empty state,print-adjacent empty state
 worksheet.empty.select_letters_vowels,Please select letters and vowels.,בחרו אותיות ותנועות.,worksheet empty state,print-adjacent empty state
@@ -4141,8 +4141,8 @@ worksheet.home_link,Home,בית,header nav button,arrow supplied separately by a
 worksheet.howto.step1,"Pick a practice type (1, 2, or 3 letters).","בחרו סוג תרגול (1, 2 או 3 אותיות).",footer how-to step,
 worksheet.howto.step2,Select the Hebrew letters to include.,בחרו את האותיות העבריות לכלול.,footer how-to step,
 worksheet.howto.step3,Select the nikkud (vowels) to include.,בחרו את הניקוד (התנועות) לכלול.,footer how-to step,
-worksheet.howto.step4,Click Generate Worksheet.,לחצו על צור דף עבודה.,footer how-to step,html
-worksheet.howto.step5,Click Print or Export PDF to download.,לחצו על הדפס או ייצא PDF כדי להוריד.,footer how-to step,html
+worksheet.howto.step4,Click <strong>Generate Worksheet</strong>.,לחצו על <strong>צור דף עבודה</strong>.,footer how-to step,html
+worksheet.howto.step5,Click <strong>Print</strong> or <strong>Export PDF</strong> to download.,לחצו על <strong>הדפס</strong> או <strong>ייצא PDF</strong> כדי להוריד.,footer how-to step,html
 worksheet.howto.title,How To Use,איך להשתמש,footer section heading,
 worksheet.layout.class_set,Class Set,סט כיתתי,layout option label,
 worksheet.layout.class_set_versions_aria,Class set versions,גרסאות סט כיתתי,input aria-label,
@@ -4185,7 +4185,7 @@ worksheet.modes.bingo.tooltip,"Generates unique randomized bingo cards using Heb
 worksheet.modes.fill_vowels,Fill in the Vowels (students add nikkud),מילוי התנועות (התלמידים מוסיפים ניקוד),toggle-row label,
 worksheet.modes.gematria.answer_key,Answer Key,מפתח תשובות,gematria toggle,
 worksheet.modes.gematria.label,Gematria Mode,מצב גימטריה,toggle-row label,
-worksheet.modes.gematria.tooltip,"Students write the total Gematria value below each word or blend. Enable Self Check for flip cards, or Answer Key to print a teacher copy on the second page.","התלמידים כותבים את ערך הגימטריה הכולל מתחת לכל מילה או צירוף. הפעילו בדיקה עצמית לכרטיסים מתהפכים, או מפתח תשובות כדי להדפיס עותק למורה בעמוד השני.",tooltip,html
+worksheet.modes.gematria.tooltip,"Students write the total Gematria value below each word or blend. Enable <strong>Self Check</strong> for flip cards, or <strong>Answer Key</strong> to print a teacher copy on the second page.","התלמידים כותבים את ערך הגימטריה הכולל מתחת לכל מילה או צירוף. הפעילו <strong>בדיקה עצמית</strong> לכרטיסים מתהפכים, או <strong>מפתח תשובות</strong> כדי להדפיס עותק למורה בעמוד השני.",tooltip,html
 worksheet.modes.help.bingo,Generates printable bingo cards from your blends.,מפיק כרטיסי בינגו להדפסה מהצירופים שלכם.,worksheet-type help line,
 worksheet.modes.help.fillvowels,Hebrew with no nikkud — students add the vowel marks.,עברית ללא ניקוד — התלמידים מוסיפים את סימני הניקוד.,worksheet-type help line,
 worksheet.modes.help.gematria,Students calculate the Gematria value of each word.,התלמידים מחשבים את ערך הגימטריה של כל מילה.,worksheet-type help line,
@@ -4466,7 +4466,7 @@ worksheet.vowels.color.purple,Purple,סגול,vowel group color name,
 worksheet.vowels.color.red,Red,אדום,vowel group color name,
 worksheet.vowels.color.yellow,Yellow,צהוב,vowel group color name,
 worksheet.vowels.count_vav,Count וֹ/וּ as a letter,ספור וֹ/וּ כאות,vowel option checkbox,RTL / hebDisplay
-worksheet.vowels.count_vav_tooltip,"When unchecked (default), vav-holam (וֹ) and shuruk (וּ) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked, they appear as standalone וֹ and וּ — the Vav itself is the letter.","כשלא מסומן (ברירת מחדל), וו-חולם (וֹ) ושורוק (וּ) מופיעים לצד עיצור — הוו הוא סימן התנועה, ולא נספר כאות. כשמסומן, הם מופיעים כ-וֹ ו-וּ עצמאיים — הוו עצמו הוא האות.",tooltip,RTL / hebDisplay;html
+worksheet.vowels.count_vav_tooltip,"When unchecked (default), vav-holam (<span style=""font-family:var(--heb-font);"">וֹ</span>) and shuruk (<span style=""font-family:var(--heb-font);"">וּ</span>) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked, they appear as standalone <span style=""font-family:var(--heb-font);"">וֹ</span> and <span style=""font-family:var(--heb-font);"">וּ</span> — the Vav itself is the letter.","כשלא מסומן (ברירת מחדל), וו-חולם (<span style=""font-family:var(--heb-font);"">וֹ</span>) ושורוק (<span style=""font-family:var(--heb-font);"">וּ</span>) מופיעים לצד עיצור — הוו הוא סימן התנועה, ולא נספר כאות. כשמסומן, הם מופיעים כ-<span style=""font-family:var(--heb-font);"">וֹ</span> ו-<span style=""font-family:var(--heb-font);"">וּ</span> עצמאיים — הוו עצמו הוא האות.",tooltip,RTL / hebDisplay;html
 worksheet.vowels.group_header,{sound} Sound – {color},צליל {sound} – {color},vowel group header template,mixed UI+content — do not translate {…}
 worksheet.vowels.lock_vowels,Lock Vowels,נעילת תנועות,section label,
 worksheet.vowels.lock_vowels_tooltip,"When on, generated blends use only the locked vowels — a quick way to drill a single vowel sound (or a small set) without changing the main vowel selection above.","כשמופעל, הצירופים שנוצרים משתמשים רק בתנועות הנעולות — דרך מהירה לתרגל תנועה בודדת (או קבוצה קטנה) בלי לשנות את בחירת התנועות הראשית למעלה.",tooltip,

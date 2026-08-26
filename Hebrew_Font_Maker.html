@@ -1496,7 +1496,7 @@
         <div class="stage-wrap" dir="ltr">
           <div class="node-hint-wrap">
             <div id="nodeHint" class="node-hint" role="status" hidden>
-              <span data-i18n="fontmaker.node_editor.node_hint">Drag points to reshape · <b>?</b> for all shortcuts</span>
+              <span data-i18n-html="fontmaker.node_editor.node_hint">Drag points to reshape · <b>?</b> for all shortcuts</span>
               <button class="ctl-btn nb-btn" onclick="openShortcuts('nodes')" aria-label="All point-editing shortcuts" data-i18n-aria-label="fontmaker.node_editor.node_hint_shortcuts_aria">?</button>
               <button class="ctl-btn nb-btn" onclick="dismissNodeHint()" aria-label="Dismiss this hint" data-i18n-aria-label="fontmaker.node_editor.node_hint_dismiss_aria">✕</button>
             </div>
@@ -1599,7 +1599,7 @@
       <div class="hint" data-i18n="fontmaker.modals.markedit_hint">Click a piece (here or in the list) to select; drag it to move, drag the ◻ corner to resize. Bars can be any width/thickness. Build the mark from dots &amp; bars — it's seeded from the default shape.</div>
     </div>
     <div id="meUploadSection" style="display:none;">
-      <p style="font-size:0.84rem;color:var(--muted);line-height:1.5;" data-i18n="fontmaker.modals.markedit_upload_desc">Design this mark from an uploaded image (per-symbol or from a combined sheet) on its own editing tab — the full align &amp; trace tools live there. Uploaded mark shapes apply to <b>all letters</b>.</p>
+      <p style="font-size:0.84rem;color:var(--muted);line-height:1.5;" data-i18n-html="fontmaker.modals.markedit_upload_desc">Design this mark from an uploaded image (per-symbol or from a combined sheet) on its own editing tab — the full align &amp; trace tools live there. Uploaded mark shapes apply to <b>all letters</b>.</p>
       <div class="ctl-row"><button class="ctl-btn primary" onclick="meOpenUploadEditor()" data-i18n="fontmaker.modals.markedit_open_upload">Open image editor for this mark →</button></div>
     </div>
     <div class="hint" id="meScopeNote" style="margin-top:8px;"></div>
@@ -1746,7 +1746,7 @@
 <div class="overlay" id="mobileWarnOverlay">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mobileWarnTitle" style="max-width:430px;text-align:center;">
     <h3 id="mobileWarnTitle" data-i18n="fontmaker.modals.mobilewarn_title">📱 Best on a computer</h3>
-    <p class="mw-phone-only" data-i18n="fontmaker.modals.mobilewarn_body">The Hebrew Font Maker uses precise tracing and a lot of fine controls — it's much easier on a <strong>desktop or laptop</strong>. You're welcome to keep going on this device, but it may feel cramped.</p>
+    <p class="mw-phone-only" data-i18n-html="fontmaker.modals.mobilewarn_body">The Hebrew Font Maker uses precise tracing and a lot of fine controls — it's much easier on a <strong>desktop or laptop</strong>. You're welcome to keep going on this device, but it may feel cramped.</p>
     <p class="mw-tablet-only" data-i18n="fontmaker.modals.mobilewarn_tablet_body">Drawing letters with a stylus or your finger works well on a tablet this size.</p>
     <label class="chk" style="justify-content:center;margin:14px 0 0;">
       <input type="checkbox" id="mobileWarnDontShow"> <span data-i18n="fontmaker.modals.mobilewarn_dontshow">Don't show this warning again</span>
@@ -1917,7 +1917,7 @@
 <div class="overlay" id="applyAlignOverlay" onclick="if(event.target===this)closeApplyAlign()">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="applyAlignTitle" style="max-width:480px;">
     <h3 id="applyAlignTitle" data-i18n="fontmaker.modals.applyalign_title">Apply this alignment to other letters</h3>
-    <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;" data-i18n="fontmaker.modals.applyalign_desc">Copies the current letter's position &amp; scale (its image transform — <b>not</b> its traced outline) onto the letters you pick, overwriting their current alignment. You can undo it.</p>
+    <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;" data-i18n-html="fontmaker.modals.applyalign_desc">Copies the current letter's position &amp; scale (its image transform — <b>not</b> its traced outline) onto the letters you pick, overwriting their current alignment. You can undo it.</p>
     <div style="display:flex;gap:8px;margin:6px 0 8px;">
       <button class="ctl-btn" onclick="applyAlignCheckAll(true)" data-i18n="fontmaker.modals.applyalign_select_all">Select all</button>
       <button class="ctl-btn" onclick="applyAlignCheckAll(false)" data-i18n="fontmaker.modals.applyalign_none">None</button>

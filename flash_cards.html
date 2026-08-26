@@ -1822,7 +1822,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <!-- Teacher Share Code -->
       <div class="label adv-subhead" data-i18n="flashcards.teachertools.share_head">Teacher Share Code</div>
       <div class="adv-subbody">
-        <p class="sub" style="margin-top:0;" data-i18n="flashcards.teachertools.share_intro">Generate a code that captures every current setting. Share it with students — when they paste it and tap <b>Load</b>, the deck opens with your exact setup.</p>
+        <p class="sub" style="margin-top:0;" data-i18n-html="flashcards.teachertools.share_intro">Generate a code that captures every current setting. Share it with students — when they paste it and tap <b>Load</b>, the deck opens with your exact setup.</p>
         <div class="btn-row" style="margin-bottom:8px;">
           <button class="btn primary sm" id="generateShareBtn" data-i18n="flashcards.teachertools.generate_share">Generate Share Code</button>
           <button class="btn sm ghost" id="copyShareBtn" data-i18n="flashcards.teachertools.copy_code">📋 Copy Code</button>
@@ -1854,7 +1854,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <!-- Profiles & Results -->
       <div class="label adv-subhead" id="profilesHeadLbl" data-i18n="flashcards.teachertools.profiles_head">Profiles &amp; Results</div>
       <div class="adv-subbody">
-        <p class="sub" style="margin-top:0;" data-i18n="flashcards.teachertools.profiles_intro">Save drill results to a named profile to track progress over time. After a drill, tap <b>Save Results</b> on the results screen.</p>
+        <p class="sub" style="margin-top:0;" data-i18n-html="flashcards.teachertools.profiles_intro">Save drill results to a named profile to track progress over time. After a drill, tap <b>Save Results</b> on the results screen.</p>
 
         <div class="preset-row" style="margin-bottom:8px;">
           <select id="activeProfileSelect" class="preset-input" aria-labelledby="profilesHeadLbl" style="flex:1;"></select>
@@ -2003,7 +2003,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <button type="button" id="ivritModeManual" class="ivrit-mode-btn" aria-pressed="false" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
       </div>
       <div id="ivritAuto">
-        <div class="sub" style="margin-bottom:8px;" data-i18n="flashcards.advanced.backup_intro">Save your data to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it. Use the toggle below to choose what's included.</div>
+        <div class="sub" style="margin-bottom:8px;" data-i18n-html="flashcards.advanced.backup_intro">Save your data to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it. Use the toggle below to choose what's included.</div>
         <button class="btn sm" type="button" onclick="flashBackupSave()" style="width:100%;margin-bottom:10px;" data-i18n="shared.ivrit.save_button">⬇ Save to .ivrit file</button>
         <div id="ivritDrop" class="ivrit-drop">
           <button class="btn sm" type="button" onclick="document.getElementById('ivritFileInput').click()" data-i18n="shared.ivrit.browse_button">Browse…</button>
@@ -2144,7 +2144,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <li data-i18n="flashcards.howto.step1">Choose 1, 2, or 3 letters per card.</li>
           <li data-i18n="flashcards.howto.step2">Select Hebrew letters and vowels to drill.</li>
           <li data-i18n="flashcards.howto.step3">Set the number of cards in the deck.</li>
-          <li data-i18n="flashcards.howto.step4">Click <strong>Start</strong> to begin.</li>
+          <li data-i18n-html="flashcards.howto.step4">Click <strong>Start</strong> to begin.</li>
           <li data-i18n="flashcards.howto.step5">Tap a card to reveal it; mark right or wrong.</li>
         </ol>
       </details>

@@ -2650,7 +2650,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div class="toggle-row" id="rowGematria" style="margin-top:4px;">
           <span><span data-i18n="worksheet.modes.gematria.label">Gematria Mode</span>
             <span class="tooltip-wrap">?
-              <span class="tooltip-box" data-i18n="worksheet.modes.gematria.tooltip">Students write the total Gematria value below each word or blend. Enable <strong>Self Check</strong> for flip cards, or <strong>Answer Key</strong> to print a teacher copy on the second page.</span>
+              <span class="tooltip-box" data-i18n-html="worksheet.modes.gematria.tooltip">Students write the total Gematria value below each word or blend. Enable <strong>Self Check</strong> for flip cards, or <strong>Answer Key</strong> to print a teacher copy on the second page.</span>
             </span>
           </span>
           <label class="toggle">
@@ -3400,7 +3400,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:pointer;user-select:none;">
             <input type="checkbox" id="vavAsLetterCheck" onchange="setVavAsLetter(this.checked)" checked style="accent-color:var(--gold);width:13px;height:13px;">
             Count <span style="font-family:var(--heb-font);direction:rtl;">וֹ/וּ</span> as a letter
-            <span class="tooltip-wrap" style="font-size:0.6rem;">?<span class="tooltip-box" data-i18n="worksheet.vowels.count_vav_tooltip">When unchecked (default), vav-holam (<span style="font-family:var(--heb-font);">וֹ</span>) and shuruk (<span style="font-family:var(--heb-font);">וּ</span>) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked, they appear as standalone <span style="font-family:var(--heb-font);">וֹ</span> and <span style="font-family:var(--heb-font);">וּ</span> — the Vav itself is the letter.</span></span>
+            <span class="tooltip-wrap" style="font-size:0.6rem;">?<span class="tooltip-box" data-i18n-html="worksheet.vowels.count_vav_tooltip">When unchecked (default), vav-holam (<span style="font-family:var(--heb-font);">וֹ</span>) and shuruk (<span style="font-family:var(--heb-font);">וּ</span>) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked, they appear as standalone <span style="font-family:var(--heb-font);">וֹ</span> and <span style="font-family:var(--heb-font);">וּ</span> — the Vav itself is the letter.</span></span>
           </label>
         </div>
         <!-- Lock Vowels -->
@@ -3467,7 +3467,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <button class="btn btn-outline" id="shareBtn" onclick="copyShareLink('shareBtn')" style="margin-top:8px;" data-i18n="worksheet.actions.copy_link">📋 Copy shareable link</button>
       <div id="shareNotice" role="status" style="display:none;margin-top:6px;font-size:0.72rem;color:var(--muted);text-align:center;line-height:1.4;"></div>
       <button class="btn btn-outline" id="fcHandoffBtn" onclick="openInFlashCards()" style="margin-top:6px;" title="Open these letters and vowels as a Flash Cards drill" data-i18n="worksheet.actions.practice_flashcards" data-i18n-title="worksheet.actions.practice_flashcards_title">🃏 Practice these in Flash Cards</button>
-      <div class="print-tip" id="printTip" style="display:none;margin-top:8px;font-size:0.72rem;color:var(--muted);background:var(--warm-gray);border-radius:5px;padding:7px 9px;line-height:1.4;" data-i18n="worksheet.actions.print_tip">
+      <div class="print-tip" id="printTip" style="display:none;margin-top:8px;font-size:0.72rem;color:var(--muted);background:var(--warm-gray);border-radius:5px;padding:7px 9px;line-height:1.4;" data-i18n-html="worksheet.actions.print_tip">
         💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.
       </div>
     </div>
@@ -3596,7 +3596,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               </div>
 
               <div id="ivritAuto">
-                <div style="font-size:0.72rem;color:var(--muted);line-height:1.4;margin-bottom:8px;" data-i18n="worksheet.advanced.backup_auto_explainer">Save all your presets and current settings to a <b>.ivrit</b> save file on your device. Restore later by dropping the file below or browsing for it.</div>
+                <div style="font-size:0.72rem;color:var(--muted);line-height:1.4;margin-bottom:8px;" data-i18n-html="worksheet.advanced.backup_auto_explainer">Save all your presets and current settings to a <b>.ivrit</b> save file on your device. Restore later by dropping the file below or browsing for it.</div>
                 <button class="btn-xs" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;" data-i18n="shared.ivrit.save_button">⬇ Save to .ivrit file</button>
                 <div id="ivritDrop" class="ivrit-drop">
                   <button class="btn-xs" type="button" onclick="document.getElementById('ivritFileInput').click()" data-i18n="shared.ivrit.browse_button">Browse…</button>
@@ -3689,7 +3689,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div class="empty-state">
           <div class="star">✡︎</div>
           <h2 data-i18n="worksheet.empty.ready_title">Ready to Generate</h2>
-          <p data-i18n="worksheet.empty.ready_body">Select your letters and vowels on the left, then click <strong>Generate Worksheet</strong>.</p>
+          <p data-i18n-html="worksheet.empty.ready_body">Select your letters and vowels on the left, then click <strong>Generate Worksheet</strong>.</p>
           <div class="quick-starts" id="emptyQuickStarts">
             <div class="quick-starts-label" data-i18n="worksheet.quickstart.empty_label">Or start with a ready-made worksheet</div>
             <div class="quick-starts-row" id="emptyQuickStartsRow"></div>
@@ -3727,8 +3727,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <li data-i18n="worksheet.howto.step1">Pick a practice type (1, 2, or 3 letters).</li>
           <li data-i18n="worksheet.howto.step2">Select the Hebrew letters to include.</li>
           <li data-i18n="worksheet.howto.step3">Select the nikkud (vowels) to include.</li>
-          <li data-i18n="worksheet.howto.step4">Click <strong>Generate Worksheet</strong>.</li>
-          <li data-i18n="worksheet.howto.step5">Click <strong>Print</strong> or <strong>Export PDF</strong> to download.</li>
+          <li data-i18n-html="worksheet.howto.step4">Click <strong>Generate Worksheet</strong>.</li>
+          <li data-i18n-html="worksheet.howto.step5">Click <strong>Print</strong> or <strong>Export PDF</strong> to download.</li>
         </ol>
       </details>
     </div>
