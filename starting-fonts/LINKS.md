@@ -19,3 +19,843 @@ ready to paste into an email or the partner's page.
 - License: GNU GPL v2 with font exception · reserved names honored: Taamey Frank CLM
 - Designer: Yoram Gnat · upstream version 0.110 · added 2026-08-20
 - Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Culmus%20Project%20(GPL%2BFE)/Yoram%20Gnat%20(GPL%2BFE)/Taamey-Culmus/TaameyFrank/TaameyFrankCLM-Medium.ttf>
+
+## Shlomo Stam
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=shlomo-stam>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=shlomo-stam">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: SIL, Ezra, Shlomo
+- Designer: Development by SIL's NRSI team. OpenType tables by Ralph Hancock ( hancock@dircon.co.uk ). · upstream version 2.51 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20%28OFL%29/ShlomoStam.ttf>
+
+## Keter Aram Tsova
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=keter-aram-tsova>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=keter-aram-tsova">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception · reserved names honored: Keter
+- Designer: Yoram Gnat · upstream version 0.103yg · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Culmus%20Project%20%28GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Taamey-Culmus/KeterAramTsova/KeterAramTsova.ttf>
+
+## Keter YG
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=keter-yg>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=keter-yg">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception · reserved names honored: Keter
+- Designer: Yoram Gnat · upstream version 0.103yg · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Culmus%20Project%20%28GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Taamey-Culmus/KeterYG/KeterYG-Medium.ttf>
+
+## Shofar
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=shofar>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=shofar">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 1.6 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Culmus%20Project%20%28GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Taamey-Culmus/Shofar/ShofarRegular.ttf>
+
+## Taamey Ashkenaz
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=taamey-ashkenaz>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=taamey-ashkenaz">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.150yg · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Culmus%20Project%20%28GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Taamey-Culmus/TaameyAshkenaz/TTF/TaameyAshkenaz-Medium.ttf>
+
+## Cardo
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=cardo>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=cardo">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Cardo
+- Designer: David J. Perry · upstream version 1.045 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Fonts%20for%20scholars%20%28OFL%29/Cardo/Cardo-regular_104s.ttf>
+
+## Noto Serif Hebrew
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=noto-serif-hebrew>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=noto-serif-hebrew">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Monotype Design Team · upstream version 2.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Google%20%28OFL%29/NotoSerifHebrew/NotoSerifHebrew-Regular.ttf>
+
+## Ezra SIL SR
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=ezra-sil-sr>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=ezra-sil-sr">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: SIL, Ezra
+- Designer: Development by SIL's NRSI team. OpenType tables by Ralph Hancock ( hancock@dircon.co.uk ). · upstream version 2.51 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/SIL%20%28OFL%29/Ezra%20SIL/SILEOTSR.ttf>
+
+## Shlomo
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=shlomo>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=shlomo">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: SIL, Ezra, Shlomo
+- Designer: Development by SIL's NRSI team. OpenType tables by Ralph Hancock ( hancock@dircon.co.uk ). · upstream version 2.51 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Shlomo%20Orbach%20%28OFL%29/Shlomo.ttf>
+
+## Noto Rashi Hebrew
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=noto-rashi-hebrew>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=noto-rashi-hebrew">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Borys Kosmynka · upstream version 1.001 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Google%20%28OFL%29/NotoRashiHebrew/static/NotoRashiHebrew-Regular.ttf>
+
+## Dyslexia Hebrew
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=dyslexia-hebrew>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=dyslexia-hebrew">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Jake Shoag · upstream version 1.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Shoag%2C%20Jake%20%28OFL%29/DyslexiaHebrew-Regular.otf>
+
+## Taamey David CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=taamey-david-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=taamey-david-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception · reserved names honored: Tamey
+- Designer: Yoram Gnat · upstream version 0.110 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Culmus%20Project%20%28GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Taamey-Culmus/TaameyDavid/TaameyDavidCLM-Medium.ttf>
+
+## Drugulin CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=drugulin-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=drugulin-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Basic%20Fonts/Drugulin/DrugulinCLM-Bold.otf>
+
+## Frank CurledLamed
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=frank-curledlamed>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=frank-curledlamed">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 001.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%29/FrankRuehl%20%28Curled%20Lamed%29/FrankCurledLamed.ttf>
+
+## Linux Libertine
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=linux-libertine>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=linux-libertine">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Philipp H. Poll · upstream version 5.3.0 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Linux%20Libertine%20%28OFL%29/Linux%20Libertine/LinuxLibertine.ttf>
+
+## Frank Ruhl Libre
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=frank-ruhl-libre>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=frank-ruhl-libre">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Yanek Iontef · upstream version 5.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Yanek%20Iontef%20%28OFL%29/Frank_Ruhl_Libre/FrankRuhlLibre-Regular.ttf>
+
+## Liberation Serif
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=liberation-serif>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=liberation-serif">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Liberation
+- Designer: Steve Matteson · upstream version 2.00.1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Non-Hebrew%20Scripts/Steve%20Matteson%20%28OFL%29/Liberation%20Serif/LiberationSerif-Regular.ttf>
+
+## FreeSerif
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=freeserif>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=freeserif">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- upstream version 0412.2263 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/GNU%20FreeFont%20%28GPL%29/FreeSerif.otf>
+
+## Tinos
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=tinos>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=tinos">Edit this font using IvritSuite</a>`
+- License: Apache License 2.0
+- Designer: Steve Matteson · upstream version 1.23 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Steve%20Matteson%20%28Apache%29/Tinos/Tinos-Regular.ttf>
+
+## Hadasim CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hadasim-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hadasim-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Basic%20Fonts/Hadasim/HadasimCLM-Regular.otf>
+
+## Shmulik CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=shmulik-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=shmulik-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.120 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Shmulik%20CLM/ShmulikCLM.ttf>
+
+## Dorian CLM Italic
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=dorian-clm-italic>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=dorian-clm-italic">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 2.1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Fancy%20Fonts/dorian/DorianCLM-BookItalic.ttf>
+
+## Gveret Levin AlefAlefAlef
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=gveret-levin-alefalefalef>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=gveret-levin-alefalefalef">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Gili Levin & Shavit Yaacov · upstream version 1.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Shavit%20Yaacov%20%28OFL%29/GveretLevinAlefAlefAlef.otf>
+
+## FreeMono
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=freemono>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=freemono">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- upstream version 0412.2268 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/GNU%20FreeFont%20%28GPL%29/FreeMono.otf>
+
+## Cousine
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=cousine>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=cousine">Edit this font using IvritSuite</a>`
+- License: Apache License 2.0
+- Designer: Steve Matteson · upstream version 1.21 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Steve%20Matteson%20%28Apache%29/Cousine/Cousine-Regular.ttf>
+
+## Open Sans Hebrew
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=open-sans-hebrew>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=open-sans-hebrew">Edit this font using IvritSuite</a>`
+- License: Apache License 2.0
+- Designer: Yanek Iontef · upstream version 2.001 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Yanek%20Iontef%20%28Apache%29/Open%20Sans%20Hebrew/OpenSansHebrew-Regular.ttf>
+
+## Aharoni CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=aharoni-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=aharoni-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Basic%20Fonts/Aharoni/AharoniCLM-Book.otf>
+
+## David CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=david-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=david-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Basic%20Fonts/David/DavidCLM-Medium.otf>
+
+## David Libre
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=david-libre>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=david-libre">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Hadash, Gentium, SIL
+- Designer: Ismar David, J. Victor Gaultney, Annie Olsen and Meir Sadan · upstream version 1.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Meir%20Sadan%20%28OFL%29/David_Libre/DavidLibre-Regular.ttf>
+
+## Arimo
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=arimo>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=arimo">Edit this font using IvritSuite</a>`
+- License: Apache License 2.0
+- Designer: Steve Matteson · upstream version 1.23 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Steve%20Matteson%20%28Apache%29/Arimo/Arimo-Regular.ttf>
+
+## Heebo
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=heebo>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=heebo">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Oded Ezer · upstream version 2.001 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Meir%20Sadan%20%28OFL%29/Heebo/Heebo-Regular.ttf>
+
+## Varela Round
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=varela-round>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=varela-round">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Joe Prince, Avraham Cornfeld · upstream version 3.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Avraham%20Cornfeld%20%28OFL%29/Varela_Round/VarelaRound-Regular.ttf>
+
+## Miriam CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=miriam-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=miriam-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Basic%20Fonts/Miriam/MiriamCLM-Book.otf>
+
+## Miriam Libre
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=miriam-libre>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=miriam-libre">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Michal Sahar · upstream version 1.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Michal%20Sahar%20%28OFL%29/Miriam_Libre/MiriamLibre-Regular.ttf>
+
+## Assistant
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=assistant>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=assistant">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Source
+- Designer: Hebrew By Ben Nathan, Latin by Paul Hunt · upstream version 2.001 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Ben%20Nathan%20%28OFL%29/Assistant/Assistant-Regular.ttf>
+
+## IBM Plex Sans Hebrew
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=ibm-plex-sans-hebrew>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=ibm-plex-sans-hebrew">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Plex
+- Designer: Mike Abbink, Paul van der Laan, Pieter van Rosmalen, Yanek Iontef · upstream version 1.1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Mike%20Abbink%2C%20Paul%20van%20der%20Laan%2C%20Piter%20van%20Rosmalen%2C%20Yanek%20Iontef%20%28OFL%29/IBMPlexSansHebrew/ttf/IBMPlexSansHebrew-Regular.ttf>
+
+## Simple CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=simple-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=simple-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Basic%20Fonts/Simple/SimpleCLM-Medium.ttf>
+
+## Alef
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=alef>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=alef">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Alef
+- Designer: Hagilda Tel Aviv · upstream version 1.001 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/HaGilda%20and%20Mushon%20Zer-Aviv%20%28OFL%29/Alef/TTF/Alef-regular.ttf>
+
+## Bellefair
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=bellefair>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=bellefair">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Nick Shinn, Liron Lavi Turkenic · upstream version 1.003 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Nick%20Shinn%2C%20Liron%20Lavi%20Turkenic%20%28OFL%29/Bellefair/Bellefair.ttf>
+
+## Carmela
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=carmela>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=carmela">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Nir Yenni · upstream version 1.001 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Nir%20Yenni%20%28OFL%29/Carmela/carmelaregular.ttf>
+
+## Secular One
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=secular-one>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=secular-one">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Michal Sahar · upstream version 1.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Michal%20Sahar%20%28OFL%29/Secular_One/SecularOne-Regular.ttf>
+
+## Suez One
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=suez-one>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=suez-one">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Michal Sahar · upstream version 1.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Michal%20Sahar%20%28OFL%29/Suez_One/SuezOne-Regular.ttf>
+
+## FreeSans
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=freesans>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=freesans">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- upstream version 0412.2268 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/GNU%20FreeFont%20%28GPL%29/FreeSans.otf>
+
+## Liberation Sans
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=liberation-sans>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=liberation-sans">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Liberation
+- Designer: Steve Matteson · upstream version 2.00.1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Non-Hebrew%20Scripts/Steve%20Matteson%20%28OFL%29/Liberation%20Sans/LiberationSans-Regular.ttf>
+
+## PtilWide
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=ptilwide>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=ptilwide">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Ptil
+- Designer: Amos Jerbi · upstream version 1.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Amos%20Jerbi%20%28OFL%29/Ptil/ptilwide-regular-webfont.ttf>
+
+## PtilNarrow
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=ptilnarrow>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=ptilnarrow">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Ptil
+- Designer: Amos Jerbi · upstream version 1.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Amos%20Jerbi%20%28OFL%29/Ptil/ptilnarrow-regular-webfont.ttf>
+
+## Amatic SC
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=amatic-sc>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=amatic-sc">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Multiple Designers · upstream version 2.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Vernon%20Adams%2C%20Ben%20Nathan%2C%20Thomas%20Jockin%20%28OFL%29/Amatic_SC/AmaticSC-Regular.ttf>
+
+## Dorian CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=dorian-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=dorian-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 2.1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Fancy%20Fonts/dorian/DorianCLM-Book.ttf>
+
+## Makabi YG
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=makabi-yg>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=makabi-yg">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 1.03 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Makabi%20YG%20%28Isaiah%20Scroll%2C%20modernized%29/MakabiYG.ttf>
+
+## Linux Biolinum
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=linux-biolinum>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=linux-biolinum">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Philipp H. Poll · upstream version 1.1.8 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Linux%20Libertine%20%28OFL%29/Linux%20Libertine/Linux-Biolinum.ttf>
+
+## Romm Vilna
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=romm-vilna>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=romm-vilna">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Cinzel, Romm Vilna
+- Designer: Ilan Elovitz · upstream version 1.001 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Ilan%20Elovitz%20%28OFL%29/RommVilna/RommVilna-Regular.ttf>
+
+## Noto Sans Hebrew
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=noto-sans-hebrew>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=noto-sans-hebrew">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Monotype Design Team · upstream version 2.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20and%20Cantillation/Google%20%28OFL%29/NotoSansHebrew/NotoSansHebrew-Regular.ttf>
+
+## Rubik
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=rubik>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=rubik">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Hubert and Fischer · upstream version 2.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Meir%20Sadan%20%28OFL%29/Rubik/Rubik-Regular.ttf>
+
+## Mplus 1p
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=mplus-1p>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=mplus-1p">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Coji Morishita · upstream version 1.061 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Coji%20Morishita%20%28OFL%29/M_PLUS_1p/MPLUS1p-Regular.ttf>
+
+## Felix007
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=felix007>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=felix007">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: felix007 · upstream version 1.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Felix%20Wasserstein%20%28OFL%29/felix007/felix007-medium.ttf>
+
+## OSP_Le-patin-helvete
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=osp-le-patin-helvete>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=osp-le-patin-helvete">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Ludivine Loiseau · upstream version 0.9 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Ludivine%20Loiseau%20%28GPL%2BFE%29/OSP%20Le%20Patin%20Helv%C3%A8te/Le-patin-helvete.ttf>
+
+## Fredoka One
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=fredoka-one>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=fredoka-one">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Milena B. Brandão, Ben Nathan · upstream version 2.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Ben%20Nathan%20%28OFL%29/FredokaOne/FredokaOne.ttf>
+
+## Noot
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=noot>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=noot">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Noot
+- Designer: Amos Jerbi · upstream version 1.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Amos%20Jerbi%20%28OFL%29/Noot/Noot.otf>
+
+## Stam Ashkenaz CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=stam-ashkenaz-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=stam-ashkenaz-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.110 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Sofer%20Stam/Sofer%20Stam%20Ashkenaz/StamAshkenazCLM.ttf>
+
+## Stam Sefarad CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=stam-sefarad-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=stam-sefarad-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.110 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Sofer%20Stam/Sofer%20Stam%20Sefarad/StamSefaradCLM.ttf>
+
+## Lulav CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=lulav-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=lulav-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Fancy%20Fonts/lulav/LulavCLM.otf>
+
+## Farissol CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=farissol-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=farissol-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 0.102 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Fancy%20Fonts/farissol/FarissolCLM-BoldItalic.otf>
+
+## E_Yehoash_Esther
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=e-yehoash-esther>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=e-yehoash-esther">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: E_Yehoash_Esther
+- Designer: Marnie Manning · upstream version 001.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Marnie%20Manning%20%28OFL%29/E_Yehoash_Esther.ttf>
+
+## Pfennig
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=pfennig>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=pfennig">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Pfennig
+- Designer: Daniel Johnson · upstream version 20120410 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Daniel%20Johnson%20%28OFL%29/pfennig/Pfennig.ttf>
+
+## Carmelit
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=carmelit>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=carmelit">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Noot
+- Designer: Amos Jerbi  Yenni · upstream version 1.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Amos%20Jerbi%20%28OFL%29/Carmelit/carmelitregular.ttf>
+
+## Hillel CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hillel-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hillel-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Fancy%20Fonts/hillel/HillelCLM-Medium.ttf>
+
+## Ellinia CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=ellinia-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=ellinia-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Basic%20Fonts/Ellinia/ElliniaCLM-Light.otf>
+
+## Dragon
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=dragon>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=dragon">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: MigdalHaemeq
+- Designer: Printer Killer · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Printer%20Killer%20%28OFL%29/dragon/Dragon.ttf>
+
+## Journal CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=journal-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=journal-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 0.105 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Fancy%20Fonts/journal/JournalCLM-Light.ttf>
+
+## Tnua-Libre
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=tnua-libre>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=tnua-libre">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: tnua-libre · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Elad%20Mordechai%20Mizrahi%20%28GPL%20and%20OFL%29/tnua-libre%20%28GPL%29/Tnua-Libre.ttf>
+
+## Gan CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=gan-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=gan-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 1.01 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Fancy%20Fonts/gan/GanCLM-Bold.ttf>
+
+## Gladia CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=gladia-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=gladia-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 1.02 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Fancy%20Fonts/gladia/GladiaCLM-Bold.ttf>
+
+## Horev CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=horev-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=horev-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Fancy%20Fonts/horev/HorevCLM-Heavy.ttf>
+
+## Ozrad CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=ozrad-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=ozrad-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 1.02 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Fancy%20Fonts/ozrad/OzradCLM-Bold.ttf>
+
+## Trashim CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=trashim-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=trashim-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Fancy%20Fonts/trashim/TrashimCLM-Bold.otf>
+
+## Asakim
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=asakim>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=asakim">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: MigdalHaemeq
+- Designer: Printer Killer · upstream version 3.00 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Printer%20Killer%20%28OFL%29/asakim/Asakim%20Bold.ttf>
+
+## Paskol
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=paskol>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=paskol">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: MigdalHaemeq
+- Designer: Printer Killer · upstream version 2.00 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Printer%20Killer%20%28OFL%29/paskol/Paskol.ttf>
+
+## MigdalHaemeq
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=migdalhaemeq>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=migdalhaemeq">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: MigdalHaemeq
+- Designer: migdal-haemeq · upstream version 001.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Elad%20Mordechai%20Mizrahi%20%28GPL%20and%20OFL%29/migdal-haemeq%20%28OFL%29/MigdalFontwin.ttf>
+
+## Retro Perspective
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=retro-perspective>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=retro-perspective">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Retro
+- Designer: retro-perspective · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Elad%20Mordechai%20Mizrahi%20%28GPL%20and%20OFL%29/retro-perspective%20%28OFL%29/RetPer.ttf>
+
+## Stopmotion
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=stopmotion>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=stopmotion">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Stopmotion
+- Designer: stop-motion · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Elad%20Mordechai%20Mizrahi%20%28GPL%20and%20OFL%29/stop-motion%20%28OFL%29/Stopmotion.ttf>
+
+## Looks Like S'pht
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=looks-like-s-pht>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=looks-like-s-pht">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Looks
+- Designer: Christtrekker · upstream version 0.3 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Christtrekker%20%28OFL%29/lookslikespht/Looks%20Like%20S%27pht.ttf>
+
+## Nehama
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=nehama>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=nehama">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: MigdalHaemeq
+- Designer: Printer Killer · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Printer%20Killer%20%28OFL%29/nehama/Nehama.ttf>
+
+## Miri
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=miri>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=miri">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Miri
+- Designer: miri · upstream version 001.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Elad%20Mordechai%20Mizrahi%20%28GPL%20and%20OFL%29/miri%20%28OFL%29/Miriwin.ttf>
+
+## Yehuda CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=yehuda-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=yehuda-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Basic%20Fonts/Yehuda/YehudaCLM-Light.otf>
+
+## Amatica SC
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=amatica-sc>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=amatica-sc">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Vernon Adams, Ben Nathan · upstream version 2.000 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Vernon%20Adams%2C%20Ben%20Nathan%2C%20Thomas%20Jockin%20%28OFL%29/Amatica_SC/AmaticaSC-Regular.ttf>
+
+## Ktav Yad CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=ktav-yad-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=ktav-yad-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 0.91 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Fancy%20Fonts/ktav-yad/KtavYadCLM-MediumItalic.ttf>
+
+## Ellinia CLM Italic
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=ellinia-clm-italic>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=ellinia-clm-italic">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Basic%20Fonts/Ellinia/ElliniaCLM-LightItalic.otf>
+
+## Anka CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=anka-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=anka-clm">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Maxim Iorsh · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Maxim%20Iorsh%20%28GPL%29/Fancy%20Fonts/anka/AnkaCLM-Bold.ttf>
+
+## Solitreo
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=solitreo>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=solitreo">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Nathan Gross, Bryan Kirschen, Binghamton University · upstream version 1.100 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20with%20Vowels%20%28no%20cantillation%29/Nathan%20Gross%20%28OFL%29/Solitreo.ttf>
+
+## Nesher Gadol
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=nesher-gadol>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=nesher-gadol">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Isaac Gantwerk Mayer · upstream version 001.008 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Isaac%20Gantwerk%20Mayer%20%28OFL%29/Nesher%20Gadol/NesherGadol.ttf>
+
+## Nesher Katon
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=nesher-katon>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=nesher-katon">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1
+- Designer: Isaac Gantwerk Mayer · upstream version 001.001 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Isaac%20Gantwerk%20Mayer%20%28OFL%29/Nesher%20Katon/NesherKaton.ttf>
+
+## Bet Shearim
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=bet-shearim>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=bet-shearim">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.05-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Hebrew%20Square%20Bet%20Shearim/BETSHEAR.TTF>
+
+## Hebrew Square BenKosba
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-square-benkosba>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-square-benkosba">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.05-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Hebrew%20Square%20Ben%20Kosba/BENKOSBA.TTF>
+
+## Hebrew Square Habakkuk
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-square-habakkuk>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-square-habakkuk">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.06-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Hebrew%20Square%20Habakuk/HABAKKUK.TTF>
+
+## Hebrew Square Isaiah
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-square-isaiah>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-square-isaiah">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.05-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Hebrew%20Square%20Isaiah/ISAIAH.TTF>
+
+## Hebrew Paleo Qumran
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-paleo-qumran>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-paleo-qumran">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.06-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Hebrew%20Paleo%20Qumran/QUMRAN.TTF>
+
+## Aramaic Imperial Yeb
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=aramaic-imperial-yeb>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=aramaic-imperial-yeb">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.06-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Aramaic%20Imperial%20Yeb/YEB.TTF>
+
+## Hebrew Paleo Lachish
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-paleo-lachish>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-paleo-lachish">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.06-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Hebrew%20Paleo%20Lakhish/LACHISH.TTF>
+
+## Aramaic VIIBCE
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=aramaic-viibce>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=aramaic-viibce">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.06-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Aramaic%20VIIBCE/AVIIBCE.TTF>
+
+## Hebrew Paleo Siloam
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-paleo-siloam>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-paleo-siloam">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.06-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Hebrew%20Paleo%20Siloam/SILOAM.TTF>
+
+## Aramaic Early Bar Raqib
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=aramaic-early-bar-raqib>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=aramaic-early-bar-raqib">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.06-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Aramaic%20Early%20Bar-Raqib/BR_RKB.TTF>
+
+## Hebrew Paleo Mesha
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-paleo-mesha>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-paleo-mesha">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.06-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Hebrew%20Paleo%20Mesha/MESHA.TTF>
+
+## Hebrew Paleo Gezer
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-paleo-gezer>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hebrew-paleo-gezer">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.06-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Hebrew%20Paleo%20Gezer/GEZER.TTF>
+
+## Phoenician Ahiram
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=phoenician-ahiram>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=phoenician-ahiram">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.06-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Phoenician%20Ahiram/AHIRAM.TTF>
+
+## Proto Canaanite
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=proto-canaanite>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=proto-canaanite">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception
+- Designer: Yoram Gnat · upstream version 0.06-1 · added 2026-08-26
+- Upstream source: <https://github.com/aharonium/fonts/blob/master/Fonts/Hebrew%20Letters%20only/Culmus%20Project%20%28GPL%20and%20GPL%2BFE%29/Yoram%20Gnat%20%28GPL%2BFE%29/Ancient-Semitic-Scripts-0.06-1/Proto%20Canaanite/PROTOCN.TTF>

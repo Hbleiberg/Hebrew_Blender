@@ -1,0 +1,492 @@
+Ezra SIL Hebrew Unicode Fonts Download 
+
+ 
+ 
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+
+ 
+
+ 
+
+ 
+ 
+ 
+ 
+
+ Home 
+
+ Contact Us 
+
+ General 
+
+ Initiative B@bel 
+
+ WSI Guidelines 
+
+ Encoding 
+
+ Principles 
+
+ Unicode 
+
+ Training 
+
+ Tutorials 
+
+ PUA 
+
+ Conversion 
+
+ Resources 
+
+ Utilities 
+
+ TECkit 
+
+ Maps 
+
+ Resources 
+
+ Input 
+
+ Principles 
+
+ Utilities 
+
+ Tutorials 
+
+ Resources 
+
+ Type Design 
+
+ Principles 
+
+ Design Tools 
+
+ Formats 
+
+ Resources 
+
+ Font Downloads 
+
+ Gentium 
+
+ Doulos 
+
+ IPA 
+
+ Rendering 
+
+ Principles 
+
+ Technologies 
+
+ OpenType 
+
+ Graphite 
+
+ Resources 
+
+ Font FAQ 
+
+ Links 
+
+ Glossary 
+
+ 
+
+ 
+
+ 
+ 
+ NRSI: Computers & Writing Systems
+
+ 
+
+ 
+ 
+ 
+ SIL HOME 
+ | CONTACT US 
+ 
+ 
+ Select Language Afrikaans Albanian Arabic Belarusian Bulgarian Catalan Chinese (Simplified) Chinese (Traditional) Croatian Czech Danish Dutch Estonian Filipino Finnish French Galician German Greek Haitian Creole Hebrew Hindi Hungarian Icelandic Indonesian Irish Italian Japanese Korean Latvian Lithuanian Macedonian Malay Maltese Norwegian Persian Polish Portuguese Romanian Russian Serbian Slovak Slovenian Spanish Swahili Swedish Thai Turkish Ukrainian Vietnamese Welsh Yiddish 
+Powered by Translate 
+
+ 
+ 
+ 
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+
+ 
+ You are here: Type Design > Resources > Font Downloads 
+
+ Short URL: http://scripts.sil.org/SILHebrUnic2 
+
+ 
+ 
+ 
+ 
+ Site unavailability
+ 
+
+ 
+ Due to essential repairs, this website may be unavailable at times during September 6 (Tue) and 7 (Wed). We apologize for the inconvenience.
+ 
+
+-->
+ Ezra SIL Hebrew Unicode Fonts Download
+
+ NRSI staff, 2009-02-16; 194214 reads 
+ Ezra SIL Font Pages 
+
+ Ezra SIL Home 
+
+ Documentation 
+
+ Known Issues 
+
+ Office 2000/XP FAQ 
+
+ Office 2003 FAQ 
+
+ Support 
+
+ Download 
+
+ 
+ 
+
+ 
+
+ Related Information 
+
+ Reversed Nun in the BHS 
+
+ Puncta in the BHS 
+
+ Meteg and Siluq in the BHS 
+
+ Right-to-left scripts in Microsoft Office 
+
+ 
+
+ 
+
+ Obsolete versions 
+
+ Ezra SIL ver. 1&2 
+
+ Known Issues for Ezra SIL ver. 1&2 
+
+ 
+
+ 
+
+ 
+
+ Table of Contents for this web page:
+
+ License 
+
+ Fonts Download 
+
+ Release History 
+
+ Related Packages 
+
+ Other Resources 
+
+ Support 
+
+ 
+
+ 
+ License
+
+ License details:
+ Hebrew layout intelligence copyright (c) 2003 & 2007 Ralph Hancock and John Hudson, and licensed under the MIT/X11 License (copied below).
+
+ All other font software is copyright (c) 1997-2007, SIL International ( http://www.sil.org/ ), with Reserved Font Names "SIL" and "Ezra", and is licensed under the SIL Open Font License, Version 1.1. This license is copied below, and is also available with a FAQ at: http://scripts.sil.org/OFL 
+
+ 
+ MIT/X11 License (only for Hebrew layout intelligence)
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+ 
+ SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+
+ 
+ PREAMBLE
+
+ The goals of the Open Font License (OFL) are to stimulate worldwide development of collaborative font projects, to support the font creation efforts of academic and linguistic communities, and to provide a free and open framework in which fonts may be shared and improved in partnership with others.
+
+ The OFL allows the licensed fonts to be used, studied, modified and redistributed freely as long as they are not sold by themselves. The fonts, including any derivative works, can be bundled, embedded, redistributed and/or sold with any software provided that any reserved names are not used by derivative works. The fonts and derivatives, however, cannot be released under any other type of license. The requirement for fonts to remain under this license does not apply to any document created using the fonts or their derivatives.
+
+ 
+ DEFINITIONS
+
+ "Font Software" refers to the set of files released by the Copyright Holder(s) under this license and clearly marked as such. This may include source files, build scripts and documentation. 
+
+ "Reserved Font Name" refers to any names specified as such after the copyright statement(s).
+
+ "Original Version" refers to the collection of Font Software components as distributed by the Copyright Holder(s).
+
+ "Modified Version" refers to any derivative made by adding to, deleting, 
+
+or substituting — in part or in whole — any of the components of the Original Version, by changing formats or by porting the Font Software to a new environment.
+
+ "Author" refers to any designer, engineer, programmer, technical writer or other person who contributed to the Font Software.
+
+ 
+ PERMISSION & CONDITIONS
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy of the Font Software, to use, study, copy, merge, embed, modify, redistribute, and sell modified and unmodified copies of the Font Software, subject to the following conditions:
+
+ 1) Neither the Font Software nor any of its individual components, in Original or Modified Versions, may be sold by itself.
+
+ 2) Original or Modified Versions of the Font Software may be bundled, redistributed and/or sold with any software, provided that each copy contains the above copyright notice and this license. These can be included either as stand-alone text files, human-readable headers or in the appropriate machine-readable metadata fields within text or binary files as long as those fields can be easily viewed by the user.
+
+ 3) No Modified Version of the Font Software may use the Reserved Font Name(s) unless explicit written permission is granted by the corresponding Copyright Holder. This restriction only applies to the primary font name as presented to the users.
+
+ 4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font Software shall not be used to promote, endorse or advertise any Modified Version, except to acknowledge the contribution(s) of the Copyright Holder(s) and the Author(s) or with their explicit written permission.
+
+ 5) The Font Software, modified or unmodified, in part or in whole, must be distributed entirely under this license, and must not be distributed under any other license. The requirement for fonts to remain under this license does not apply to any document created using the Font Software.
+
+ 
+ TERMINATION
+
+ This license becomes null and void if any of the above conditions are not met.
+
+ DISCLAIMER THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM OTHER DEALINGS IN THE FONT SOFTWARE.
+
+ 
+ 
+ Fonts Download
+
+ If you agree to the above licensing restrictions, please continue on to the Fonts Download instructions. 
+
+ Please note
+ Text typed for version 2.0 of the fonts will display legibly using version 2.5 (or 2.51), with only minor errors, but text typed for version 2.5 will not display acceptably using version 2.0 fonts.
+
+ There is an updated mapping and instructions in the package.
+
+ 
+ Changes from Ezra SIL 2.5
+
+ 
+ Ezra SIL 2.51
+
+ 
+ Word-final Zinor ( U+05AE HEBREW ACCENT ZINOR ) is always to the left. When it occurs word-medial, it is also to the left, unless that position is 
+obstructed by a sin dot, holam or lamed, in which case it is centred. 
+This is the same behaviour as for U+0599 HEBREW ACCENT PASHTA .
+ When U+0592 HEBREW ACCENT SEGOL and U+05A9 HEBREW ACCENT TELISHA QETANA occur word-medial, they are centred unless followed by U+200C ZERO WIDTH NON-JOINER , in which case they move to the left.
+ When U+05A0 HEBREW ACCENT TELISHA GEDOLA is word-medial, it is centred unless 
+the consonant is preceded by U+200C ZERO WIDTH NON-JOINER , in which case it moves to the right.
+ There have been a few minor positional adjustments.
+ 
+ 
+ Ezra SIL SR 2.51
+
+ 
+ U+05AE HEBREW ACCENT ZINOR is always to the left, whether it is word-final or word-medial.
+ When U+0592 HEBREW ACCENT SEGOL , U+05A9 HEBREW ACCENT TELISHA QETANA and U+05A0 HEBREW ACCENT TELISHA GEDOLA occur word-medial, they are always centred.
+ There have been a few minor positional adjustments.
+ 
+ 
+ 
+ Download Ezra SIL 2.51 package
+
+ The Ezra SIL Hebrew Unicode Font package is available as a self-extracting archive, zip, or kmp (Keyman package) file. To download:
+
+ 
+ 
+ 
+ Downloads Installation and Use 
+
+ Ezra SIL 2.51 fonts release (Zip file) 
+NRSI staff, 2007-10-04
+ Download "EzraSIL251.zip" , ZIP archive, 619KB [51596 downloads] 
+ 
+ This download contains the fonts, documentation for installing the fonts, documentation for mapping files and mapping files. It does not contain any keyboards. In addition to downloading this font package, if you need a keyboard you can download the Keyman package below or another keyboard such as an Israeli keyboard layout (using Microsoft's MSKLC) which is available from here: http://www.sbl-site.org/educational/biblicalfonts.aspx .
+
+ If you are uncertain what to do with a .zip file, see Decompression Utilities, Downloading & Installation Tips . Within the archive is the font file and documentation.
+
+This font can be installed using standard font installation procedures for the given operating-system platform. Note that certain applications may not see the new font immediately. You may have to quit and restart the application for the font to become available. 
+
+ Ezra SIL 2.51 fonts release - Windows installer 
+NRSI staff, 2008-05-08
+ Download "EzraSIL251.exe" , Windows application, 670KB [20110 downloads] 
+ 
+ This package contains the same files as EzraSIL251.zip . This installer is only for Windows users. Once the package has been downloaded, you can double-click on it to install the font file and documentation. After installing, you can read the documentation files at Start / All programs / SIL / Fonts / EzraSIL . You will find the mapping files at C:\Program Files\SIL\Fonts\EzraSIL\mappings (unless you chose a different location).
+
+Note that certain applications may not see the new font immediately. You may have to quit and restart the application for the font to become available. 
+
+ Ezra SIL Unicode 2.4 keyboard and Ezra SIL 2.51 fonts (Keyman package) 
+NRSI staff, 2007-10-04
+ Download "EzraSIL251.kmp" , Keyman keyboard package, 751KB [9559 downloads] 
+ 
+ This package contains the same files as EzraSIL251.zip plus the Keyman keyboard and documentation files for the keyboard layout. The Keyman keyboard is version 2.4. It will work with Keyman 6 or 7.
+
+ This keyboard was developed for keyboarding biblical Hebrew. For guidelines on who can use Keyman and for downloading, go to: http://www.tavultesoft.com . The “Ezra SIL Unicode 2.4” keyboard is designed to work with the Ezra SIL font which is a part of this package. However, you can use this keyboard with any Hebrew Unicode font. 
+
+ If you download this package, you must have Keyman already installed. You can just double-click EzraSIL251.kmp to install the keyboard package and font. Once installed, documentation can be found at Start / All Programs / Ezra SIL Unicode 2.4 . Other files (including documentation and mapping files) will be found here (or a similar path): C:\Documents and Settings\All Users\Application Data\Tavultesoft\Keyman\Keyboard\_Package\EzraSIL251 . 
+
+ This version of the keyboard contains a fix for the problem of fast typing reordering keystrokes when using Keyman with TSF. The basic effect of this is to make Keyman do all text input using TSF, rather than a mixture of TSF and ordinary keyboard events. If you use FieldWorks you should upgrade to this version of the keyboard.
+
+An Israeli keyboard layout (using Microsoft's MSKLC) is available from here: http://www.sbl-site.org/educational/BiblicalFonts_SBLHebrew.aspx . 
+
+ Ezra SIL 2.51 source and font release (Zip file) 
+NRSI staff, 2007-10-04
+ Download "EzraSIL251_Src.zip" , ZIP archive, 1006KB [4701 downloads] 
+ 
+ This package contains the same files as EzraSIL251.zip plus the FontLab, VOLT, Word, Excel and Keyman source files. However, it does not contain the pdf files since the source files are included.
+
+ If you are uncertain what to do with a .zip file, see Decompression Utilities, Downloading & Installation Tips . Within the archive is the font file and documentation.
+
+This font can be installed using standard font installation procedures for the given operating-system platform. Note that certain applications may not see the new font immediately. You may have to quit and restart the application for the font to become available. 
+
+ Ezra SIL 2.51 fonts release (Debian package, GNU/Linux) 
+NRSI, 2007-10-08
+ Download "ttf-sil-ezra_2.51-2_all.deb" , Debian Linux Package, 196KB [2699 downloads] 
+ 
+ This Ubuntu package contains the fonts, licensing information and source files. The installation procedure is simple: go to the folder where you have downloaded the .deb package, type sudo dpkg --install ttf-sil-ezra* , then type in your password and everything will get neatly installed (on newer versions of Ubuntu you can now simply double-click on a deb and it will launch the installer). Further information can be found here: SIL repository for Ubuntu 
+
+ Mapping files for SIL Ezra (ver. 2.51) encoded files to Unicode (Zip file) 
+NRSI staff, 2010-08-24
+ Download "EzraSIL251MappingFiles.zip" , ZIP archive, 251KB [206 downloads] 
+ 
+ This package contains just the mapping files and Conversion documentation. Although the above packages also have the mapping files, there have been minor enhancements to the mapping files in this download.
+
+If you are uncertain what to do with a .zip file, see Decompression Utilities, Downloading & Installation Tips . 
+
+ Hebrew and Greek Unicode Transliteration Package 
+Todd Hoatson and Christopher Samuel, 2007-06-27
+ Download "HebGrkUniTrans.zip" , ZIP archive, 109KB [5683 downloads] 
+ 
+ This package provides resources for Hebrew and Greek Unicode Transliteration. It comes with no claim for completeness and only limited documentation and support. We will try to act, however, on error reports. 
+
+ The package contains a Keyman keyboard for Hebrew and Greek transliteration. Please read HebGrkTransUni.txt for an explanation of the scope and HebGrkTransUni.pdf for a list of keystrokes. 
+
+ The package also contains a TECkit mapping which provides support for conversion between Hebrew Unicode & Transliterated Hebrew Unicode (Note that this conversion is not round-trip, i.e. converting from transliteration to Hebrew will not produce cantillation or punctuation, nor will it restore final-Shewa, the vowels in the divine name, or dagesh on initial consonants or after silent Shewa.) Disclaimer: This mapping is not perfect; no rule-based conversion could be. However, it achieves results at least as good as the change tables distributed with the SIL Ezra font.
+
+If you are uncertain what to do with a .zip file, see Decompression Utilities, Downloading & Installation Tips . Within the archive is the keyboard, keyboard chart and mapping file. 
+
+ 
+
+ 
+
+ 
+ Older versions
+
+ For older versions of this font, go to: Ezra SIL Hebrew Unicode Fonts Download — Obsolete Versions .
+
+ 
+
+ 
+ Release History
+
+ 2008-05-08 added Windows intaller
+
+2007-10-03 Windows OpenType Unicode Version 2.51.
+
+2007-06-27 Transliteration package.
+
+2007-06-15 Windows OpenType Unicode Version 2.5.
+
+2004-01-08 Windows OpenType Unicode Version 2.0.
+
+2002-09-30 Windows OpenType Unicode Version 1.1. Minor documentation changes only. 
+
+2002-09-11 Windows OpenType Unicode Version 1.0.
+
+ 
+ Related Packages
+
+ Windows XP, Windows Vista and Mac OS X provide a Hebrew keyboard as part of the operating system. Those keyboards provide for modern Hebrew input and not biblical Hebrew. General instructions for installing Microsoft keyboards can be found here . Mac OS X keyboards can be accessed through System Preferences / International .
+
+ Society of Biblical Literature Hebrew fonts and keyboards - an Israeli keyboard layout (using Microsoft's MSKLC) is available from here as well as another MSKLC keyboard which closely follows the SIL Keyman layout.
+
+ Tavultesoft Keyman Joan Wardell, 2007-04-23; 118554 reads 
+ Keyman is a keyboard management utility that makes it practical to input many different languages in almost any Windows application. Keyman allows you to have arbitrarily long input sequences and to have diacritics typed after the base character.
+
+ TECkit Downloads Jonathan Kew, 2008-04-07; 30692 reads 
+ Here is where the current version of TECkit can be obtained. Version 2.5.1, released 7 April 2008, updates the supported character repertoire (for normalization and character names) to Unicode 5.1.
+
+ 
+ Other Resources
+
+ Free Adobe Acrobat Reader 
+
+ One user's experiences in installing Biblical Hebrew input method support for Ubuntu Hardy Heron 
+
+ The Westminster Leningrad Codex — Complete Hebrew Bible 
+
+ 
+ 
+ 
+ Support
+
+ As these fonts and utilities are distributed at no cost, we are unable to provide a commercial level of personal technical support. This is the final release of these fonts.
+
+ Please note that these fonts are intended for use by experienced computer users. Installing and using these fonts is not a trivial matter. The most effective technical support is usually provided by an experienced computer user who can personally sit down with you at your computer to troubleshoot the problem.
+
+ Before requesting technical support, please:
+
+ 
+ Carefully read all the documentation provided with the fonts, including the documentation installed by the installation program. 
+ Check out all the links on the web pages for these font packages, and read all the information and instructions they contain. 
+ Review the list of Frequently Asked Questions to see if your question has already been answered. Additional information is also available on the general Font FAQ page .
+ 
+ If that fails to answer your question, or for more information, contact:
+
+ User Support 
+
+SIL International 
+
+Non-Roman Script Initiative 
+
+7500 W. Camp Wisdom Rd. 
+
+Dallas, TX 75236 
+
+USA
+
+ 
+
+ Email: SIL_fonts@sil.org 
+
+ 
+
+ 
+ Backlinks (20 most popular; affiliated sites and popular search engines removed) 
+ http://www.mechon-mamre.org/c/c.htm 
+ http://homepages.paradise.net.nz/bet_yaakov/torahread.htm 
+ http://courses.moody.edu/bin/common/course.pl?course_id=_1360_1 
+ http://kd.mysearch.myway.com/jsp/GGmain.jsp?st=bar&ptnrS=KD&searchfor=hebrew+... 
+
+ 
+ 
+ © 2003-2010 SIL International , all rights reserved, unless otherwise noted elsewhere on this page.
+
+ Provided by SIL's Non-Roman Script Initiative. Contact us at nrsi@sil.org .
