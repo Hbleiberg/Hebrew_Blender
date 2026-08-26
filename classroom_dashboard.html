@@ -7666,9 +7666,11 @@ else ivritInit();
       if (c.type === 'sep') { node = document.createElement('span'); node.className = 'ed-sep'; }
       else if (c.type === 'color') {
         node = document.createElement('input'); node.type = 'color'; node.className = 'ed-color'; node.title = I18n.t(c.titleKey);
+        node.setAttribute('aria-label', node.title);
         node.addEventListener('change', e => c.run(e.target.value));
       } else if (c.type === 'size') {
         node = document.createElement('select'); node.className = 'ed-select'; node.title = I18n.t(c.titleKey);
+        node.setAttribute('aria-label', node.title);
         node.innerHTML = c.options.map(([v, l]) => `<option value="${v}"${v === '3' ? ' selected' : ''}>${esc(I18n.t(l))}</option>`).join('');
         node.addEventListener('change', e => c.run(e.target.value));
       } else if (c.type === 'font') {
