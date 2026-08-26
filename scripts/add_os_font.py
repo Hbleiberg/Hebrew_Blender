@@ -13,8 +13,13 @@ Prints the live URL + a paste-ready <a> snippet for the partner's page.
 Requires Python 3 + fontTools (`pip install fonttools`). Run from anywhere; paths are
 resolved against the repo root (this script's parent's parent).
 
-License allowlist (anything else is REFUSED — stop and ask the maintainer):
-  OFL-1.1 · GPL-with-font-exception (bare GPL refused) · Apache-2.0 · CC0-1.0 / public domain
+The gate asks ONE question: does the license permit MODIFICATION? A partner font exists to be
+edited in the Font Maker and re-exported, so every license that allows derivatives is allowlisted,
+each carrying its own obligations (copyleft, rename, state-changes, attribution) into the export.
+Refused: no license found, or a license that forbids derivatives (CC *-ND, all-rights-reserved).
+
+NOTE the font exception is NOT about editing — it only stops a DOCUMENT that embeds the font from
+inheriting the GPL. Bare GPL fonts are fully editable; the derivative is simply GPL too.
 
 Exit codes: 0 ok · 2 missing fontTools · 3 license refused/ambiguous · 4 coverage refused ·
 5 duplicate id (use --force) · 1 other error.
@@ -40,11 +45,25 @@ PARTNERS = {
     'opensiddur': {'partnerName': 'the Open Siddur Project', 'partnerUrl': 'https://opensiddur.org/help/fonts/'},
 }
 
+# id -> (display name, canonical URL, obligations the DERIVATIVE inherits)
+#   copyleft   the derivative must carry this same license
+#   changes    the modifier must state that they changed it, and when (GPL s2a)
+#   source     the modifier must offer the corresponding source (GPL) — the UFO export is it
+#   rename     the derivative MUST NOT keep the original family name (enforced like a Reserved Font Name)
+#   attribution  credit the original author in the derivative
 LICENSE_IDS = {
-    'OFL-1.1':                 ('SIL Open Font License 1.1', 'https://openfontlicense.org'),
-    'GPL-with-font-exception': ('GNU GPL v2 with font exception', 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.html'),
-    'Apache-2.0':              ('Apache License 2.0', 'https://www.apache.org/licenses/LICENSE-2.0'),
-    'CC0-1.0':                 ('CC0 1.0 (public domain)', 'https://creativecommons.org/publicdomain/zero/1.0/'),
+    'OFL-1.1':                 ('SIL Open Font License 1.1', 'https://openfontlicense.org', ('copyleft',)),
+    'GPL-with-font-exception': ('GNU GPL v2 with font exception', 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.html', ('copyleft', 'changes')),
+    'GPL-2.0':                 ('GNU General Public License v2', 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.html', ('copyleft', 'changes', 'source')),
+    'GPL-3.0':                 ('GNU General Public License v3', 'https://www.gnu.org/licenses/gpl-3.0.html', ('copyleft', 'changes', 'source')),
+    'Apache-2.0':              ('Apache License 2.0', 'https://www.apache.org/licenses/LICENSE-2.0', ('changes', 'attribution')),
+    'CC0-1.0':                 ('CC0 1.0 (public domain)', 'https://creativecommons.org/publicdomain/zero/1.0/', ()),
+    'UFL-1.0':                 ('Ubuntu Font Licence 1.0', 'https://ubuntu.com/legal/font-licence', ('copyleft', 'rename')),
+    'LPPL-1.3c':               ('LaTeX Project Public License 1.3c', 'https://www.latex-project.org/lppl/lppl-1-3c/', ('copyleft', 'rename', 'changes')),
+    'CC-BY-SA-4.0':            ('Creative Commons Attribution-ShareAlike 4.0', 'https://creativecommons.org/licenses/by-sa/4.0/', ('copyleft', 'attribution', 'changes')),
+    'CC-BY-SA-3.0':            ('Creative Commons Attribution-ShareAlike 3.0', 'https://creativecommons.org/licenses/by-sa/3.0/', ('copyleft', 'attribution', 'changes')),
+    'CC-BY-4.0':               ('Creative Commons Attribution 4.0', 'https://creativecommons.org/licenses/by/4.0/', ('attribution', 'changes')),
+    'CC-BY-3.0':               ('Creative Commons Attribution 3.0', 'https://creativecommons.org/licenses/by/3.0/', ('attribution', 'changes')),
 }
 
 BASE_RANGE = range(0x05D0, 0x05EB)                       # alef..tav incl. finals = 27 cps
@@ -59,10 +78,63 @@ def read_names(font):
             'designer': get(9), 'license': get(13), 'licenseUrl': get(14)}
 
 
-def classify_license(text):
-    """Return (licenseId, evidence) from the allowlist, or (None, reason) on refusal.
-    `text` = upstream license file + name-table license/copyright strings, combined."""
+SECTION_RE = re.compile(r'\n(?=[A-Z][^\n]{0,70}?(?:font|fonts|family)[^\n]{0,45}?(?:is|are)\s+[Cc]opyright)')
+EXCEPTION_RE = re.compile(r'[Aa]s a special exception')
+
+
+def _norm(s):
+    return re.sub(r'[^a-z0-9]', '', (s or '').lower())
+
+
+def exception_scoped_to(name, text):
+    """Is the GPL font-exception clause actually attached to THIS font?
+
+    Culmus ships ONE license covering 13 families in which the clause sits in Yoram Gnat's
+    sections only. A whole-file search wrongly clears all 13 — it did once, and 21 bare-GPL fonts
+    were staged as GPL+FE. In a combined file the clause counts only inside this font's own
+    copyright section. Returns (bool, evidence).
+    """
+    if not EXCEPTION_RE.search(text):
+        return False, 'no font-exception clause'
+    sections = SECTION_RE.split(text)[1:]
+    if len(sections) <= 1:
+        return True, 'font-exception clause (single-scope license)'
+    target = _norm(name)
+    # Each section opens "<Family> font family is copyright ..." — match on that family, and let the
+    # LONGEST match win so "Miriam Mono" beats "Miriam". Substring either way, because the staged
+    # display name and the license's own wording differ at both ends ("Sofer Stam Ashkenaz" vs
+    # "Stam Ashkenaz"; "Drugulin CLM" vs "Drugulin").
+    best = None
+    for sec in sections:
+        head = sec.strip().split('\n')[0]
+        fam = _norm(re.split(r'\s+(?:font|fonts|family)\b', head, 1)[0])
+        if not fam:
+            continue
+        if fam in target or target in fam:
+            if best is None or len(fam) > len(best[0]):
+                best = (fam, sec, head)
+    if best:
+        if EXCEPTION_RE.search(best[1]):
+            return True, 'font-exception clause in its own section: "%s"' % best[2][:60]
+        return False, 'combined license: this font\'s own section carries NO exception ("%s")' % best[2][:60]
+    return False, 'combined license covering %d families; this font is not named in any of them' % len(sections)
+
+
+def classify_license(text, name=''):
+    """Return (licenseId, evidence), or (None, reason) when the license forbids derivatives or
+    none was found. `text` = upstream license file + name-table license/copyright strings.
+    `name` scopes the GPL exception check to this font inside a combined license file."""
     t = re.sub(r'\s+', ' ', text)
+    # HTML-derived text splits words across tags ("Attribution-Sha re Alike"), and a license URL
+    # is often the only unambiguous marker, so match the CC family on a space-stripped copy too.
+    tight = re.sub(r'\s+', '', text).lower()
+
+    # Hard refusal first: a license that forbids modification is useless for a font editor.
+    nd = (re.search(r'NoDerivat\w*|/by-n[cd][\w-]*-nd|Attribution-N\w*-?NoDerivs?|No Derivative Works', t, re.I)
+          or re.search(r'noderivat|licenses/by-[a-z-]*nd[-/]', tight))
+    if nd:
+        return None, 'license forbids derivative works ("%s") — a partner font must be editable.' % nd.group(0)[:40]
+
     found, evidence = [], []
     if re.search(r'SIL OPEN FONT LICENSE|SIL Open Font License', t):
         m = re.search(r'Open Font License[ ,]*(?:\(OFL\)[ ,]*)?Version 1\.1|OPEN FONT LICENSE Version 1\.1', t)
@@ -70,25 +142,51 @@ def classify_license(text):
             found.append('OFL-1.1'); evidence.append('OFL 1.1 marker: "%s"' % m.group(0))
         else:
             return None, 'OFL marker found but not version 1.1 — refusing (ask the maintainer).'
+    if re.search(r'UBUNTU FONT LICENCE|Ubuntu Font Licence', t, re.I):
+        found.append('UFL-1.0'); evidence.append('Ubuntu Font Licence marker')
+    if re.search(r'LaTeX Project Public License', t, re.I):
+        found.append('LPPL-1.3c'); evidence.append('LaTeX Project Public License marker')
+    m = re.search(r'attribution-?sharealike(\d\.\d)?|creativecommons\.org/licenses/by-sa/(\d\.\d)', tight)
+    if m:
+        ver = next((g for g in m.groups() if g), None) or ('3.0' if '3.0unported' in tight else '4.0')
+        if ver not in ('3.0', '4.0'):
+            return None, 'CC BY-SA version %s is not allowlisted — ask the maintainer.' % ver
+        found.append('CC-BY-SA-%s' % ver); evidence.append('CC BY-SA %s marker' % ver)
+    elif re.search(r'creativecommons\.org/licenses/by/(\d\.\d)', tight):
+        ver = re.search(r'creativecommons\.org/licenses/by/(\d\.\d)', tight).group(1)
+        if ver not in ('3.0', '4.0'):
+            return None, 'CC BY version %s is not allowlisted — ask the maintainer.' % ver
+        found.append('CC-BY-%s' % ver); evidence.append('CC BY %s marker' % ver)
     if re.search(r'GNU (?:General |)Public License', t, re.I):
-        fe = re.search(r'[Aa]s a special exception.{0,300}?embed (?:this|the) font', t)
-        if fe:
-            found.append('GPL-with-font-exception'); evidence.append('GPL + font-exception clause: "As a special exception… embed this font…"')
-        elif not found:
-            return None, 'GPL detected WITHOUT a font-exception clause — bare GPL is not allowlisted (ask the maintainer).'
+        ok, why = exception_scoped_to(name, text)
+        if ok:
+            found.append('GPL-with-font-exception'); evidence.append(why)
+        else:
+            # Bare GPL is ALLOWED: it permits modification. The derivative is simply GPL too.
+            ver = '3.0' if re.search(r'GNU GENERAL PUBLIC LICENSE\s*,?\s*Version 3|Public License[^.]{0,40}version 3', t, re.I) else '2.0'
+            found.append('GPL-%s' % ver)
+            evidence.append('bare GPL %s (%s) — modification permitted; the derivative stays GPL' % (ver, why))
     if re.search(r'Apache License[ ,]*Version 2\.0', t):
         found.append('Apache-2.0'); evidence.append('Apache 2.0 marker')
     if re.search(r'CC0|creativecommons\.org/publicdomain/zero|public domain dedication', t, re.I):
         found.append('CC0-1.0'); evidence.append('CC0 / public-domain marker')
     if not found:
-        return None, 'No allowlisted license detected (OFL-1.1 / GPL+FE / Apache-2.0 / CC0). Ask the maintainer.'
+        return None, 'No license detected. Ask the maintainer.'
     if len(set(found)) > 1:
-        # Prefer the explicit "This Font Software is licensed under …" declaration.
+        # Prefer the explicit "This Font Software is licensed under ..." declaration.
         decl = re.search(r'This Font Software is licensed under the ([^.]{0,80})', t)
         if decl and 'Open Font License' in decl.group(1):
             return 'OFL-1.1', 'declaration sentence: "%s"' % decl.group(0)
-        if decl and re.search(r'GNU|GPL', decl.group(1)) and 'GPL-with-font-exception' in found:
-            return 'GPL-with-font-exception', 'declaration sentence: "%s"' % decl.group(0)
+        if decl and re.search(r'GNU|GPL', decl.group(1)):
+            gpl = [f for f in found if f.startswith('GPL')]
+            if gpl:
+                return gpl[0], 'declaration sentence: "%s"' % decl.group(0)
+        # Dual-licensed (e.g. Libertine ships GPL+FE and OFL): take the most permissive for a
+        # derivative — OFL over copyleft-GPL — and say so.
+        for pref in ('CC0-1.0', 'OFL-1.1', 'Apache-2.0', 'GPL-with-font-exception'):
+            if pref in found:
+                return pref, 'dual-licensed (%s); taking %s as the most permissive for a derivative' % (
+                    ', '.join(sorted(set(found))), pref)
         return None, 'Multiple license candidates (%s) and no clear declaration — ask the maintainer.' % ', '.join(sorted(set(found)))
     return found[0], '; '.join(evidence)
 
@@ -242,13 +340,14 @@ def main():
     if a.license_file:
         license_text = Path(a.license_file).read_text(encoding='utf-8', errors='replace')
 
-    lic_id, evidence = classify_license('\n'.join([license_text, names['license'], names['copyright']]))
+    scope_name = a.name or names['family'] or src.stem
+    lic_id, evidence = classify_license('\n'.join([license_text, names['license'], names['copyright']]), scope_name)
     if not lic_id:
         print('LICENSE GATE REFUSED — nothing staged.\n  Reason: %s' % evidence, file=sys.stderr)
         print('  name-table ID 0: %r' % names['copyright'][:300], file=sys.stderr)
         print('  name-table ID 13: %r' % names['license'][:300], file=sys.stderr)
         return 3
-    lic_name, lic_url = LICENSE_IDS[lic_id]
+    lic_name, lic_url, obligations = LICENSE_IDS[lic_id]
 
     cmap = font.getBestCmap()
     base = sum(1 for cp in BASE_RANGE if cp in cmap)
@@ -285,6 +384,12 @@ def main():
         'sha256': hashlib.sha256(data).hexdigest(),
         'added': datetime.date.today().isoformat(),
     }
+    # What the DERIVATIVE inherits. The runtime reads these to build the exported LICENSE.txt and
+    # to decide whether the family name must change.
+    if obligations:
+        entry['obligations'] = list(obligations)
+    if 'rename' in obligations:
+        entry['renameRequired'] = True
     if names['family'] and names['family'] != display:
         entry['nameTableFamily'] = names['family']
 
@@ -292,6 +397,10 @@ def main():
     print('  license evidence: %s' % evidence)
     print('  copyright: %s' % entry['copyright'].replace('\n', ' | '))
     print('  reserved font names: %s' % (', '.join(rfns) or '(none declared)'))
+    print('  derivative obligations: %s' % (', '.join(obligations) or '(none)'))
+    if 'rename' in obligations:
+        print('  NOTE: this license REQUIRES the derivative to be renamed — the original family name '
+              'is enforced like a Reserved Font Name.')
     if 'nameTableFamily' in entry:
         print('  NOTE: embedded family name is %r — recorded as nameTableFamily.' % names['family'])
     if not a.license_file:

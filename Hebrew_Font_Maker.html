@@ -3557,7 +3557,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.33';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.34';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3777,6 +3777,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.34</strong> &mdash; <strong>Many more starting fonts to edit.</strong> The partner starting-font library grew from 2 fonts to 115, drawn from the Open Siddur Project&rsquo;s Hebrew font collection. The bigger change is which fonts qualify: a font now counts as a starting font whenever its license lets you <em>edit</em> it &mdash; which is nearly all of them. Previously anything under a plain GPL was turned away, which was the wrong test: the &ldquo;font exception&rdquo; those licenses sometimes add only governs documents that <em>embed</em> a font, and has nothing to do with editing one. That reopened the whole Culmus family &mdash; David, Miriam, Frank Ruehl, Drugulin, Ellinia, Yehuda and the decorative faces &mdash; plus fonts under the Ubuntu Font Licence and Creative Commons. Your exported LICENSE.txt now spells out what the original license asks of <em>your</em> version: that it stays under the same license, that you note you changed it and when, that you offer your source if the license requires it, and who to credit. Where a license requires a derivative to be renamed, the Font Maker holds you to it the same way it already guards Reserved Font Names. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.33</strong> &mdash; <strong>Wide letterforms for every letter.</strong> Torah scrolls and fine Hebrew typesetting stretch certain letters to fill out a line &mdash; but until now the Font Maker offered only the eight wide forms Unicode encodes, in the <span class="ui">Specialized letters</span> tab. A new Settings toggle, <span class="ui">Add wide letterforms</span>, adds a tab with a wide variant of <em>every</em> letter, auto-stretched from your traced letters &mdash; 150% to start, each with its own <span class="ui">Width</span> slider. If a stretch turns out wonky, convert that form to a fully <span class="ui">editable glyph</span> and fix its outline point by point (you can revert to the automatic version any time). Exported fonts include the wide letters at their code points and in a new &ldquo;Wide letterforms&rdquo; stylistic set (ss02), so apps that support stylistic sets can swap normal letters for wide ones with one switch. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.32</strong> &mdash; <strong>Choose exactly what a font import brings along.</strong> Importing a font &mdash; a TTF you upload or an <span class="ui">Open Siddur</span> starting-font link &mdash; used to be close to all-or-nothing: one switch for the letters, one for every vowel and cantillation shape together, one for all their positions, and the kerning came along on its own. If you wanted the original&rsquo;s letters but planned to place the vowels yourself, there was no way to say so. The import options now name each part separately: the <span class="ui">letter shapes</span>; the <span class="ui">nikkud shapes</span> and, on their own switch, their <span class="ui">placement</span>; the <span class="ui">trop shapes</span> and <em>their</em> <span class="ui">placement</span>; and the <span class="ui">kerning &amp; spacing</span> (letter-pair kerning, word gap and line spacing). Everything starts switched on, so a plain import behaves exactly as before &mdash; un-tick the parts you mean to redo yourself and only the rest comes across. The partner wizard&rsquo;s <span class="ui">What to include</span> step offers the same choices, and what you keep stays yours: a part you left un-ticked keeps the positions you dragged and the fine-tuned pins the import would otherwise replace, and the after-import placement check only measures the parts you actually took. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.31</strong> &mdash; <strong>An eraser that takes off only the ink you touch.</strong> The eraser in <span class="ui">Draw</span> mode could remove a whole stroke, or cut a stroke clean in two &mdash; but it could never shave a sliver off one side, because a stroke has one thickness all the way along and a cut always went through all of it. A stem that came out a little too fat, or a corner that wanted rounding, meant erasing the stroke and drawing it over again. The eraser now has a <span class="ui">Sculpt</span> mode that rubs away just the ink under it: round off a corner, thin a stem, take a bite out of an edge &mdash; and the rest of the stroke stays exactly as you drew it. It is what the eraser does by default now; <span class="ui">Partial</span> (cut one stroke into two you can move separately) and <span class="ui">Whole stroke</span> are still there under <span class="ui">Eraser mode</span>, and each one now says in a line what it does. What you rub away is a hole in the paper rather than a change to the stroke &mdash; so if you later <span class="ui">Move</span> that stroke out from under it, the stroke comes back whole, exactly as it would if you slid the paper out from under a real eraser. Press <span class="ui">Save drawing &amp; trace</span> as usual and the sculpted shape is what lands in your outline, and in the font you export. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -3917,7 +3918,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_33';
+  const CUR_KEY = 'fontmaker.changelog.v5_34';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -16999,7 +17000,7 @@ async function exportFont() {
   // BLOCKING guard (no export-anyway) ahead of every warning below; the license makes this
   // non-optional. Same normalized-containment rule as the onboarding wizard's name check.
   if (project.osFont) {
-    const rfn = osfontNameConflict(project.font.familyName, project.osFont.reservedFontNames);
+    const rfn = osfontNameConflict(project.font.familyName, osEffectiveRfns());
     if (rfn) {
       askModal(I18n.t('fontmaker.osfont.rfn_export_title'),
         I18n.t('fontmaker.osfont.rfn_export_body', {rfn: '<b>' + esc(rfn) + '</b>', font: esc(project.osFont.displayName || '')}),
@@ -17729,6 +17730,20 @@ function licenseText() {            // the LICENSE.txt body for the chosen licen
    INFORMATIONAL only — OFL/GPL forbid adding restrictions to derivatives, so unlike IVRIT_LINE
    it must never be phrased as required-to-keep. */
 function osfontNormName(s) { return String(s || '').toLowerCase().replace(/\s+/g, ''); }
+function osHasObligation(k, os) {
+  const o = (os || project.osFont); return !!(o && (o.obligations || []).indexOf(k) >= 0);
+}
+/* Names the derivative may NOT use. Declared Reserved Font Names always; PLUS the original family
+   name when the upstream license REQUIRES a rename (Ubuntu Font Licence, LPPL). Folding it in here
+   means the wizard check, Save-As and the export guard all enforce it with no extra code. */
+function osEffectiveRfns(os) {
+  const o = os || project.osFont;
+  if (!o) return [];
+  const list = (o.reservedFontNames || []).filter(Boolean);
+  if ((o.renameRequired || osHasObligation('rename', o)) && o.displayName
+      && !list.some(r => osfontNormName(r) === osfontNormName(o.displayName))) list.push(o.displayName);
+  return list;
+}
 function osfontNameConflict(name, rfns) {   // → the offending Reserved Font Name, or null
   const n = osfontNormName(name);
   if (!n) return null;
@@ -17751,9 +17766,29 @@ function osPassthroughText() {
        + (os.originalVersion ? ' v' + os.originalVersion : '') + (os.designer ? ' by ' + os.designer : '')
        + (os.partnerName ? ', from ' + os.partnerName + (os.partnerUrl ? ' (' + os.partnerUrl + ')' : '') : '') + '.', '');
   L.push('This modified version was made with the IvritSuite Hebrew Font Maker (https://ivritsuite.com).', '');
-  if (os.licenseId === 'GPL-with-font-exception')
-    L.push('Changes (GPL section 2a): Hebrew letterforms, vowel/cantillation marks and mark positioning '
-         + 'edited with the IvritSuite Hebrew Font Maker, ' + new Date().toISOString().slice(0, 10) + '.', '');
+  /* Obligations the derivative inherits, from the manifest's `obligations` (add_os_font.py).
+     Older partner projects predate the field — fall back to the licenseId so their exports keep
+     the statement they already had. A bare-GPL font is just as editable as a GPL+FE one; the
+     exception only governs DOCUMENTS that embed the font, so it changes nothing here. */
+  const isGpl = /^GPL/.test(os.licenseId || '');
+  const has = k => osHasObligation(k, os) || (!(os.obligations || []).length && k === 'changes' && isGpl);
+  if (has('changes'))
+    L.push('Changes' + (isGpl ? ' (GPL section 2a)' : '') + ': Hebrew letterforms, vowel/cantillation marks '
+         + 'and mark positioning edited with the IvritSuite Hebrew Font Maker, '
+         + new Date().toISOString().slice(0, 10) + '.', '');
+  if (has('source'))
+    L.push('Source: this font\'s editable source is the IvritSuite project file it was built from. '
+         + 'If you distribute this font you must also make that source available — export it from the '
+         + 'Font Maker as UFO (Export ▾ → UFO source) or share the .hfm project.', '');
+  if (has('rename'))
+    L.push('Renamed: the upstream license requires a derivative to carry a different name. This font is '
+         + '"' + (project.font.familyName || '') + '", not "' + (os.displayName || '') + '".', '');
+  if (has('attribution') && os.designer)
+    L.push('Attribution: original design by ' + os.designer + '.', '');
+  if (has('copyleft'))
+    L.push('This modified version is distributed under the SAME license as the original, '
+         + (os.licenseName || os.licenseId || 'shown below') + '. You may edit and redistribute it under '
+         + 'those terms.', '');
   L.push('-----------------------------------------------------------', '');
   if (os.licenseText) L.push(os.licenseText.trim());
   else if (os.licenseId === 'OFL-1.1')
@@ -18734,7 +18769,7 @@ function saveProjectAs() {
     if (!name) { status(I18n.t('fontmaker.status.save_as_need_name')); return; }
     // Partner starting-font copies keep the lock — the new name may not use an upstream Reserved Font Name.
     if (project.osFont) {
-      const rfn = osfontNameConflict(name, project.osFont.reservedFontNames);
+      const rfn = osfontNameConflict(name, osEffectiveRfns());
       if (rfn) { status(I18n.t('fontmaker.osfont.rfn_saveas_blocked', {rfn})); return; }
     }
     // never let the copy's name collide with (and evict) the original we're about to save
@@ -19178,6 +19213,8 @@ function migrateProject(data) {
     if (data.osFont) {   // partner starting-font (see CLAUDE.md: Starting Fonts): the license lock survives every load
       data.font.license = 'os-passthrough';
       if (!Array.isArray(data.osFont.reservedFontNames)) data.osFont.reservedFontNames = [];
+      if (!Array.isArray(data.osFont.obligations)) data.osFont.obligations = [];
+      data.osFont.renameRequired = !!data.osFont.renameRequired;
     } else if (data.font.license === 'os-passthrough') {
       data.font.license = 'ofl';   // orphaned lock key with no provenance — heal to the safest normal default
     }
@@ -19509,7 +19546,7 @@ function wizardValidateOs(){
   if (_wizardMode !== 'osfont' || !_osStartCtx) return true;
   const name = document.getElementById('wizOsName').value.trim();
   const author = document.getElementById('wizOsAuthor').value.trim();
-  const rfns = _osStartCtx.entry.reservedFontNames || [];
+  const rfns = osEffectiveRfns(_osStartCtx.entry);
   const rfn = osfontNameConflict(name, rfns);
   const ok = !!name && !!author && !rfn;
   const T = (k, p) => window.I18n ? I18n.t(k, p) : k;
@@ -19555,7 +19592,9 @@ async function wizardOsFinish(){
     partnerUrl: e.partnerUrl || '', upstream: e.upstream || '', licenseId: e.licenseId || '',
     licenseName: e.licenseName || '', licenseUrl: e.licenseUrl || '', copyright: e.copyright || '',
     reservedFontNames: (e.reservedFontNames || []).slice(), designer: e.designer || '',
-    originalVersion: e.originalVersion || '', licenseText: ctx.licenseText || ''
+    originalVersion: e.originalVersion || '', licenseText: ctx.licenseText || '',
+    obligations: (e.obligations || []).slice(),        // what the DERIVATIVE inherits — see LICENSES/obligations in add_os_font.py
+    renameRequired: !!e.renameRequired                 // UFL/LPPL: the derivative may not keep the original family name
   };
   project.font.familyName = name;
   project.font.reservedFontName = (e.reservedFontNames || []).join(', ');   // upstream RFNs, read-only in the UI

@@ -61,6 +61,14 @@ was deliberately NOT staged and why.
 - Designer: Yoram Gnat · upstream version 0.150yg · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/TaameyAshkenaz/TaameyAshkenaz.zip>
 
+## Frank Ruehl CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=frank-ruehl-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=frank-ruehl-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/FrankRuehlCLM/FrankRuehlCLM.zip>
+
 ## Cardo
 
 - Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=cardo>
@@ -101,6 +109,14 @@ was deliberately NOT staged and why.
 - Designer: Borys Kosmynka · upstream version 1.001 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/NotoRashiHebrew/NotoRashiHebrew.zip>
 
+## Miriam Mono CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=miriam-mono-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=miriam-mono-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/MiriamMonoCLM/MiriamMonoCLM.zip>
+
 ## DyslexiaHebrew
 
 - Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=dyslexiahebrew>
@@ -116,6 +132,30 @@ was deliberately NOT staged and why.
 - License: GNU GPL v2 with font exception · reserved names honored: Tamey
 - Designer: Yoram Gnat · upstream version 0.110 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/TaameyDavidCLM/TaameyDavidCLM.zip>
+
+## Nachlieli CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=nachlieli-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=nachlieli-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/NachlieliCLM/NachlieliCLM.zip>
+
+## Drugulin CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=drugulin-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=drugulin-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/DrugulinCLM/DrugulinCLM.zip>
+
+## Frank CurledLamed CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=frank-curledlamed-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=frank-curledlamed-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh, adapted by Yoram Gnat · upstream version 001.000 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/FrankCurledLamed/FrankCurledLamed.zip>
 
 ## Linux Libertine
 
@@ -173,6 +213,22 @@ was deliberately NOT staged and why.
 - Designer: Yoram Gnat · upstream version 0.120 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/ShmulikCLM/ShmulikCLM.zip>
 
+## BenOr Rashi
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=benor-rashi>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=benor-rashi">Edit this font using IvritSuite</a>`
+- License: Ubuntu Font Licence 1.0
+- Designer: David ben Or · upstream version 1.023 Wed Oct 11 19:56:42 2017 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/BenOrRashi/BenOrRashi.zip>
+
+## Dorian CLM Italic
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=dorian-clm-italic>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=dorian-clm-italic">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 2.1 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/DorianCLM-Italic/DorianCLM-Italic.zip>
+
 ## Gveret Levin AlefAlefAlef
 
 - Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=gveret-levin-alefalefalef>
@@ -205,6 +261,22 @@ was deliberately NOT staged and why.
 - Designer: Yanek Iontef · upstream version 2.001 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/OpenSansHebrew/OpenSansHebrew.zip>
 
+## Aharoni CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=aharoni-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=aharoni-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/AharoniCLM/AharoniCLM.zip>
+
+## David CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=david-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=david-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/DavidCLM/DavidCLM.zip>
+
 ## David Libre
 
 - Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=david-libre>
@@ -236,6 +308,14 @@ was deliberately NOT staged and why.
 - License: SIL Open Font License 1.1
 - Designer: Joe Prince · upstream version 3.000 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/VarelaRound/VarelaRound.zip>
+
+## Miriam CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=miriam-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=miriam-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/MiriamCLM/MiriamCLM.zip>
 
 ## Miriam Libre
 
@@ -293,6 +373,22 @@ was deliberately NOT staged and why.
 - Designer: Nir Yenni · upstream version 1.001 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Carmela/Carmela.zip>
 
+## Shuneet Square
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=shuneet-square>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=shuneet-square">Edit this font using IvritSuite</a>`
+- License: Creative Commons Attribution-ShareAlike 3.0
+- Designer: Michael Cunliffe Thompson · upstream version 2.0 August 28. 2012 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Shuneet_Square_v2/Shuneet_Square_v2.zip>
+
+## Shuneet Classic
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=shuneet-classic>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=shuneet-classic">Edit this font using IvritSuite</a>`
+- License: Creative Commons Attribution-ShareAlike 3.0
+- Designer: Michael Cunliffe Thompson · upstream version 2.0 August 28. 2012 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Shuneet_Classic_v2/Shuneet_Classic_v2.zip>
+
 ## Secular One
 
 - Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=secular-one>
@@ -348,6 +444,14 @@ was deliberately NOT staged and why.
 - License: SIL Open Font License 1.1
 - Designer: Ben Nathan, Vernon Adams · upstream version 2.000 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/AmaticSC/AmaticSC.zip>
+
+## Dorian CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=dorian-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=dorian-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 2.1 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/DorianCLM/DorianCLM.zip>
 
 ## Reuben
 
@@ -453,6 +557,22 @@ was deliberately NOT staged and why.
 - Designer: Yoram Gnat · upstream version 0.110 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/StamSefaradCLM/StamSefaradCLM.zip>
 
+## Lulav CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=lulav-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=lulav-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/LulavCLM/LulavCLM.zip>
+
+## Farissol CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=farissol-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=farissol-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 0.102 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/FarissolCLM/FarissolCLM.zip>
+
 ## Evelyn Yehoash’s Esther
 
 - Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=evelyn-yehoash-s-esther>
@@ -477,6 +597,30 @@ was deliberately NOT staged and why.
 - Designer: Amos Jerbi (based on Nir Yenni's Carmela) · upstream version 1.000 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Carmelit/Carmelit.zip>
 
+## Hillel CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hillel-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hillel-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/HillelCLM/HillelCLM.zip>
+
+## Ellinia CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=ellinia-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=ellinia-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/ElliniaCLM/ElliniaCLM.zip>
+
+## Comix No2 CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=comix-no2-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=comix-no2-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Richard Schoeller, Maxim Iorsh · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/ComixNo2CLM/ComixNo2CLM.zip>
+
 ## Dragon
 
 - Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=dragon>
@@ -485,6 +629,14 @@ was deliberately NOT staged and why.
 - Designer: Printer Killer · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Dragon/Dragon.zip>
 
+## Journal CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=journal-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=journal-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 0.105 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/JournalCLM/JournalCLM.zip>
+
 ## Tnua Libre
 
 - Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=tnua-libre>
@@ -492,6 +644,46 @@ was deliberately NOT staged and why.
 - License: GNU GPL v2 with font exception
 - Designer: Elad Mordechai Mizrahi · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Tnua-Libre/Tnua-Libre.zip>
+
+## GanCLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=ganclm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=ganclm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 1.01 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/GanCLM/GanCLM.zip>
+
+## Gladia CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=gladia-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=gladia-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 1.02 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/GladiaCLM/GladiaCLM.zip>
+
+## Horev CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=horev-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=horev-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/HorevCLM/HorevCLM.zip>
+
+## Ozrad CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=ozrad-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=ozrad-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 1.02 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/OzradCLM/OzradCLM.zip>
+
+## Trashim CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=trashim-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=trashim-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/TrashimCLM/TrashimCLM.zip>
 
 ## Asakim
 
@@ -557,6 +749,14 @@ was deliberately NOT staged and why.
 - Designer: Elad Mordechai Mizrahi · upstream version 001.000 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Miri/Miri.zip>
 
+## Yehuda CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=yehuda-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=yehuda-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/YehudaCLM/YehudaCLM.zip>
+
 ## Amatica SC
 
 - Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=amatica-sc>
@@ -564,6 +764,30 @@ was deliberately NOT staged and why.
 - License: SIL Open Font License 1.1
 - Designer: Ben Nathan, Vernon Adams, Thomas Jockin · upstream version 2.000 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/AmaticaSC/AmaticaSC.zip>
+
+## Ktav-Yad CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=ktav-yad-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=ktav-yad-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 0.91 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/KtavYadCLM/KtavYadCLM.zip>
+
+## Ellinia CLM Italic
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=ellinia-clm-italic>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=ellinia-clm-italic">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 0.140 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/ElliniaCLM-Italic/ElliniaCLM-Italic.zip>
+
+## Anka CLM
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=anka-clm>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=anka-clm">Edit this font using IvritSuite</a>`
+- License: GNU General Public License v2
+- Designer: Maxim Iorsh · upstream version 1.0 · added 2026-08-26
+- Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/AnkaCLM/AnkaCLM.zip>
 
 ## Solitreo
 
@@ -700,79 +924,3 @@ was deliberately NOT staged and why.
 - License: GNU GPL v2 with font exception
 - Designer: Yoram Gnat · upstream version 0.06-1 · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Proto-Canaanite/Proto-Canaanite.zip>
-
-## Not staged
-
-Requested partner fonts deliberately kept OUT of `manifest.json`. Reviewed 2026-08-26 against https://opensiddur.org/help/fonts/.
-Generated from `not-staged.json` — do not hand-edit.
-
-### License not on the partner allowlist (29)
-
-Most of these are Culmus fonts. Culmus ships ONE combined LICENSE covering 13 families, and the font exception in that file sits in Yoram Gnat's sections only — it does not reach Maxim Iorsh's families or the Fancy Fonts. Matching each font to its own section is what separates them; a whole-file search wrongly clears all 13. The fonts page agrees on every font listed here.
-
-- **AharoniCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **AnkaCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **BenOrRashi** · page says UFL 1.0 — Ubuntu Font License 1.0 — not on the allowlist.
-- **ComixNo2CLM** · page says GPL 2.0 — Bare GPL 2.0 — no font exception in its distribution.
-- **DavidCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **DorianCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **DorianCLM-Italic** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **DrugulinCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **ElliniaCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **ElliniaCLM-Italic** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **FarissolCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **FrankCurledLamed** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **FrankRuehlCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **GanCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **GladiaCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **HillelCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **HorevCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **JournalCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **KtavYadCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **LulavCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **Mekorot-Rashi** · page says LPPL 1.3c — LaTeX Project Public License 1.3c — not on the allowlist.
-- **MiriamCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **MiriamMonoCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **NachlieliCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **OzradCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **Shuneet_Classic_v2** · page says SIL OFL 1.1 — Creative Commons Attribution-ShareAlike 3.0 — not on the allowlist.
-  - ⚠ **Conflict:** The fonts page declares SIL OFL 1.1, but the License/License.html shipped with the distribution states CC BY-SA 3.0. The two sources disagree, and neither the page's claim nor the shipped text can be staged as it stands.
-- **Shuneet_Square_v2** · page says SIL OFL 1.1 — Creative Commons Attribution-ShareAlike 3.0 — not on the allowlist.
-  - ⚠ **Conflict:** The fonts page declares SIL OFL 1.1, but the License/License.html shipped with the distribution states CC BY-SA 3.0. The two sources disagree, and neither the page's claim nor the shipped text can be staged as it stands.
-- **TrashimCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-- **YehudaCLM** · page says GPL 2.0 — Bare GPL 2.0 — exception not scoped to this font.
-
-### Declared allowlisted upstream, but no license text ships (14)
-
-The fonts page declares these allowlisted, but their distributions carry no license text, so no byte-faithful LICENSE.txt can be staged. Maintainer decision 2026-08-26: leave them out rather than compose one.
-
-- **4Q416** · page says SIL OFL 1.1 — No license text in the distribution.
-- **4Q417** · page says SIL OFL 1.1 — No license text in the distribution.
-- **4Q418** · page says SIL OFL 1.1 — No license text in the distribution.
-- **4Q503** · page says SIL OFL 1.1 — No license text in the distribution.
-- **CrypticA-HaifaUni** · page says SIL OFL 1.1 — No license text in the distribution.
-- **FiraGO** · page says SIL OFL 1.1 — No license text in the distribution.
-- **Hebrew-Samaritan** · page says GPL+FE — No license text in the distribution.
-- **Linux-Biolinum-Keyboard** · page says GPL & SIL OFL 1.1 — No license text in the distribution.
-- **Linux-Biolinum-Outline** · page says GPL & SIL OFL 1.1 — No license text in the distribution.
-- **Linux-Biolinum-Shadow** · page says GPL & SIL OFL 1.1 — No license text in the distribution.
-- **Mashkit** · page says GPL+FE — No license text in the distribution.
-- **Nachlaot** · page says GPL+FE — No license text in the distribution.
-- **Refoyl** · page says GPL+FE — No license text in the distribution.
-- **SquarishSansCT** · page says SIL OFL 1.1 — No license text in the distribution.
-
-### Not obtainable (2)
-
-The fonts page links these downloads, but the folders are absent from aharonium/opensiddur.org and opensiddur.org itself was unreachable.
-
-- **Proto-Canaanite-alt2** · page says GPL+FE — Download folder missing from the mirror.
-- **Proto-Canaanite-alt3** · page says GPL+FE — Download folder missing from the mirror.
-
-## License discrepancies (staged fonts)
-
-Fonts that ARE staged, where the partner page's label differs from the license text shipped
-in the font's own distribution. The shipped text decides; this records the difference.
-
-- **FreeSans** — page: GPL 3.0 · staged as: GPL-with-font-exception. The license text shipped in the distribution states the font exception verbatim.
-- **FreeSerif** — page: GPL 3.0 · staged as: GPL-with-font-exception. The license text shipped in the distribution states the font exception verbatim.
-- **Tnua-Libre** — page: GPL 3.0 · staged as: GPL-with-font-exception. The license text shipped in the distribution states the font exception verbatim.

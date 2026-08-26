@@ -33,9 +33,12 @@ The workhorse is `scripts/add_os_font.py` (Python 3 + fontTools; if it exits 2, 
    is stale/wrong for the distribution (the script records the embedded one as
    `nameTableFamily`); pass `--designer` only with a cited source (folder attribution, README,
    copyright line).
-3. **License gate — a hard STOP, never bypass it.** Allowlist: OFL-1.1, GPL v2/v3 **with** font
-   exception, Apache-2.0, CC0/public domain. If the script refuses (bare GPL, LPPL, UFL,
-   unknown, OFL≠1.1, ambiguous multi-license) or anything about the provenance looks off
+3. **License gate — one question: does the license permit MODIFICATION?** A starting font exists to
+   be edited, so everything that allows derivatives is allowlisted: OFL-1.1, GPL v2/v3 with **or
+   without** the font exception, Apache-2.0, CC0, UFL-1.0, LPPL-1.3c, CC BY / CC BY-SA. **The font
+   exception is NOT an editing gate** — it only governs documents that *embed* a font. Refused: no
+   license text, or a license forbidding derivatives (CC `*-ND`). If the script refuses, or the
+   provenance looks off
    (filename/folder disagrees with embedded metadata and you can't resolve it from the
    distribution's own docs): **stop and ask the maintainer**, printing exactly what was found
    and, if upstream info is missing, a suggested email to send Aharon. Do not stage, do not

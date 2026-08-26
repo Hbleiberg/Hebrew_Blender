@@ -74,6 +74,9 @@
       "hasTrop": true,
       "sha256": "07cf495dba6f7b8331833a1404ef75f6f2b66074f080774225cd5b348f0a7d35",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "Ezra SIL SR"
     },
     {
@@ -98,6 +101,10 @@
       "hasTrop": true,
       "sha256": "f662b1b1d3676b445cc0c611a0d335717ed83aa92bb00f1e63b0eb76763e3d8d",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ],
       "nameTableFamily": "Keter Aram Tsova"
     },
     {
@@ -121,7 +128,11 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "8932f09803d78a0bd8de9eff9b39972c7d73d94dd27091d6ddb27ad6d1648034",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "shofar",
@@ -142,7 +153,11 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "7913fdd35fa1446d836f1cb9bc119a922ff075ec2fee7fa0eb39f43a89fc17c5",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "taamey-ashkenaz",
@@ -163,7 +178,37 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "a182e8405501e532ca5907fd31059916901ce4d1db9fba3955565e0e14c7b7e2",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
+    },
+    {
+      "id": "frank-ruehl-clm",
+      "file": "frank-ruehl-clm/FrankRuehlCLM-Medium.otf",
+      "displayName": "Frank Ruehl CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/FrankRuehlCLM/FrankRuehlCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "frank-ruehl-clm/LICENSE.txt",
+      "copyright": "Simple font family is copyright 2007-2010 by Yoram Gnat (yoram-gnat@homeil.com). Latin glyphs, digits and punctuation copyright 1999 by (URW)++ Design & Development. All rights reserved. Hebrew vowel marks positioning algorithms Copyright 2010 by Yoram Gnat 2010. (yoram.gnat@gmail.com. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version. Modification by Aharon Varady (aharon@opensiddur.org) in 2022 for the Culmus Project: Excepting U+00a3 (already present), all glyphs from U+1e00 to U+2740, U+00a1 to U+058a, and U+2E17 are copied over from FreeSans (GNU FreeFont project). FreeSans U+014a was substituted with its alternate form (\"ending\") in the Private Use Area. Moon phase symbols, U+1F4D, U+1F4DC, U+1F4E, U+1F56F,U+1F7CC, U+26ea, U+2721, U+263e, U+263d copied from Caladings CLM, copyright (c) 2003-2018 by Maxim Iorsh (GPL 2.0). Allother symbols copied over from NimbusSans L (Copyright (URW),Copyright 2014 by (URW) Design & Development). All changes made in FontForge (Element > Transformations (Origin: Glyph Origin, Scale Uniformly: 187.9%). Copyleft 2002, 2003, 2005, 2008, 2009, 2010 Free Software Foundation.\nShofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "0.140",
+      "hasNikkud": true,
+      "hasTrop": true,
+      "sha256": "6c0ab8bb2fb605160dbb348abad5de33e47719ab1af7b5df3324c9c338afad58",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
     },
     {
       "id": "cardo",
@@ -186,7 +231,10 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "ae8106855283d1bbe70f7367d6168b9f8c71ec1eccf63789e593dd48993f8d9c",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "notoserifhebrew",
@@ -208,6 +256,9 @@
       "hasTrop": true,
       "sha256": "66ad7193b38dafdf6ece416deddf2bdcd82e310cab146454a3b43b9be1add0e8",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "Noto Serif Hebrew"
     },
     {
@@ -232,7 +283,10 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "9794bf85dfe22ed7c87a3765b647987e1b87f11b6b082711d64567855ed61b35",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "shlomo",
@@ -258,6 +312,9 @@
       "hasTrop": true,
       "sha256": "f19f888cc910b4f548f0f5928dfab80aacc461ad715e0d05196e8e00055d960c",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "Ezra SIL SR"
     },
     {
@@ -280,7 +337,36 @@
       "hasTrop": true,
       "sha256": "858bde2e8901626216d4bba050c2134f94e5bf5259acdc54f1f887768d5ab362",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "Noto Rashi Hebrew"
+    },
+    {
+      "id": "miriam-mono-clm",
+      "file": "miriam-mono-clm/MiriamMonoCLM-Book.ttf",
+      "displayName": "Miriam Mono CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/MiriamMonoCLM/MiriamMonoCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "miriam-mono-clm/LICENSE.txt",
+      "copyright": "Simple font family is copyright 2007-2010 by Yoram Gnat (yoram-gnat@homeil.com). Latin glyphs, digits and punctuation copyright 1999 by (URW)++ Design & Development. All rights reserved. Hebrew vowel marks positioning algorithms Copyright 2010 by Yoram Gnat 2010. (yoram.gnat@gmail.com. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version. Modification by Aharon Varady (aharon@opensiddur.org) in 2022 for the Culmus Project: Excepting U+00a3 (already present), all glyphs from U+1e00 to U+2740, U+00a1 to U+058a, and U+2E17 are copied over from FreeSans (GNU FreeFont project). FreeSans U+014a was substituted with its alternate form (\"ending\") in the Private Use Area. Moon phase symbols, U+1F4D, U+1F4DC, U+1F4E, U+1F56F,U+1F7CC, U+26ea, U+2721, U+263e, U+263d copied from Caladings CLM, copyright (c) 2003-2018 by Maxim Iorsh (GPL 2.0). Allother symbols copied over from NimbusSans L (Copyright (URW),Copyright 2014 by (URW) Design & Development). All changes made in FontForge (Element > Transformations (Origin: Glyph Origin, Scale Uniformly: 187.9%). Copyleft 2002, 2003, 2005, 2008, 2009, 2010 Free Software Foundation.\nShofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "0.140",
+      "hasNikkud": true,
+      "hasTrop": true,
+      "sha256": "8fc659fa1a7ffd7ec78ed0b061267adc9e08ff57873f21d7487af7c07f5d37bd",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
     },
     {
       "id": "dyslexiahebrew",
@@ -302,6 +388,9 @@
       "hasTrop": true,
       "sha256": "c2d491fce9f38f348c6d72e9778ccedd134e2048e0de3142c56adf5e18a434f3",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "dyslexia-hebrew-extended"
     },
     {
@@ -325,7 +414,90 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "2f668ae127a2bd17e9f312d8c9908daeb2298b79f84bce42711a0095bc5263b6",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
+    },
+    {
+      "id": "nachlieli-clm",
+      "file": "nachlieli-clm/NachlieliCLM-Light.otf",
+      "displayName": "Nachlieli CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/NachlieliCLM/NachlieliCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "nachlieli-clm/LICENSE.txt",
+      "copyright": "Simple font family is copyright 2007-2010 by Yoram Gnat (yoram-gnat@homeil.com). Latin glyphs, digits and punctuation copyright 1999 by (URW)++ Design & Development. All rights reserved. Hebrew vowel marks positioning algorithms Copyright 2010 by Yoram Gnat 2010. (yoram.gnat@gmail.com. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version. Modification by Aharon Varady (aharon@opensiddur.org) in 2022 for the Culmus Project: Excepting U+00a3 (already present), all glyphs from U+1e00 to U+2740, U+00a1 to U+058a, and U+2E17 are copied over from FreeSans (GNU FreeFont project). FreeSans U+014a was substituted with its alternate form (\"ending\") in the Private Use Area. Moon phase symbols, U+1F4D, U+1F4DC, U+1F4E, U+1F56F,U+1F7CC, U+26ea, U+2721, U+263e, U+263d copied from Caladings CLM, copyright (c) 2003-2018 by Maxim Iorsh (GPL 2.0). Allother symbols copied over from NimbusSans L (Copyright (URW),Copyright 2014 by (URW) Design & Development). All changes made in FontForge (Element > Transformations (Origin: Glyph Origin, Scale Uniformly: 187.9%). Copyleft 2002, 2003, 2005, 2008, 2009, 2010 Free Software Foundation.\nShofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "0.140",
+      "hasNikkud": true,
+      "hasTrop": true,
+      "sha256": "41a9ea4e896702036c2cae75368fcde2ac3042611eefb38d22f92463098a64a7",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
+    },
+    {
+      "id": "drugulin-clm",
+      "file": "drugulin-clm/DrugulinCLM-Bold.otf",
+      "displayName": "Drugulin CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/DrugulinCLM/DrugulinCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "drugulin-clm/LICENSE.txt",
+      "copyright": "Simple font family is copyright 2007-2010 by Yoram Gnat (yoram-gnat@homeil.com). Latin glyphs, digits and punctuation copyright 1999 by (URW)++ Design & Development. All rights reserved. Hebrew vowel marks positioning algorithms Copyright 2010 by Yoram Gnat 2010. (yoram.gnat@gmail.com. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version. Modification by Aharon Varady (aharon@opensiddur.org) in 2022 for the Culmus Project: Excepting U+00a3 (already present), all glyphs from U+1e00 to U+2740, U+00a1 to U+058a, and U+2E17 are copied over from FreeSans (GNU FreeFont project). FreeSans U+014a was substituted with its alternate form (\"ending\") in the Private Use Area. Moon phase symbols, U+1F4D, U+1F4DC, U+1F4E, U+1F56F,U+1F7CC, U+26ea, U+2721, U+263e, U+263d copied from Caladings CLM, copyright (c) 2003-2018 by Maxim Iorsh (GPL 2.0). Allother symbols copied over from NimbusSans L (Copyright (URW),Copyright 2014 by (URW) Design & Development). All changes made in FontForge (Element > Transformations (Origin: Glyph Origin, Scale Uniformly: 187.9%). Copyleft 2002, 2003, 2005, 2008, 2009, 2010 Free Software Foundation.\nShofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "0.140",
+      "hasNikkud": true,
+      "hasTrop": true,
+      "sha256": "baa8ddad5e6f012844cf9300eabdb3ca6702930608746576bbec60e3ffa9601e",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
+    },
+    {
+      "id": "frank-curledlamed-clm",
+      "file": "frank-curledlamed-clm/FrankCurledLamed.ttf",
+      "displayName": "Frank CurledLamed CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/FrankCurledLamed/FrankCurledLamed.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "frank-curledlamed-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh, adapted by Yoram Gnat",
+      "originalVersion": "001.000",
+      "hasNikkud": true,
+      "hasTrop": true,
+      "sha256": "66a89c97dd763696e41089fbc99e8c3f5f216079bd003a9359ff32af24bc4871",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ],
+      "nameTableFamily": "Frank CurledLamed"
     },
     {
       "id": "linux-libertine",
@@ -349,7 +521,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "06e2b67aa9a899e71f78b91da21cd0bba0fb1c5791fd3b58752ea25a4b9b79d7",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "frank-ruhl-libre",
@@ -370,7 +545,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "7bcf96b3c2c27ed3cca754740d9139063293a9930444ebeec3e727bde0b32233",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "liberation-serif",
@@ -393,7 +571,10 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "26cd653d3312cee66f1d4f2c1065ba2ad324abd411b298f771bf7057e213d723",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "freeserif",
@@ -414,7 +595,11 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "aab33b5d0efd450d3ac3153b176f542315e171db79e494aa287cd940ae16231b",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "tinos",
@@ -435,7 +620,11 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "ff4deb395ff2426bbd08db74cb005b22326175df00f0a156b87e6d2aef1ef508",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "changes",
+        "attribution"
+      ]
     },
     {
       "id": "hadasim-clm",
@@ -456,7 +645,11 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "950cbb40f332b2dfaa36d71461caa385245a4f33ae3478ef03c7e6bb0d960a0c",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "shmulik-clm",
@@ -477,7 +670,64 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "82a7502cb0296159e80acc50c8783e94b0d9b1a2a2d9705e1a5b9eb1db36c02d",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
+    },
+    {
+      "id": "benor-rashi",
+      "file": "benor-rashi/BenOrRashiRegular.ttf",
+      "displayName": "BenOr Rashi",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/BenOrRashi/BenOrRashi.zip",
+      "licenseId": "UFL-1.0",
+      "licenseName": "Ubuntu Font Licence 1.0",
+      "licenseUrl": "https://ubuntu.com/legal/font-licence",
+      "licenseFile": "benor-rashi/LICENSE.txt",
+      "copyright": "© 2011–2016 Canonical Ltd. Ubuntu and Canonical are registered trademarks of Canonical Ltd.",
+      "reservedFontNames": [],
+      "designer": "David ben Or",
+      "originalVersion": "1.023 Wed Oct 11 19:56:42 2017",
+      "hasNikkud": true,
+      "hasTrop": false,
+      "sha256": "c914e8a5a5b47377de41414a603851942fedd64bf4049535beef85e0f2125b50",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "rename"
+      ],
+      "renameRequired": true
+    },
+    {
+      "id": "dorian-clm-italic",
+      "file": "dorian-clm-italic/DorianCLM-BookItalic.ttf",
+      "displayName": "Dorian CLM Italic",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/DorianCLM-Italic/DorianCLM-Italic.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "dorian-clm-italic/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "2.1",
+      "hasNikkud": true,
+      "hasTrop": false,
+      "sha256": "dbf842d35a01bfe58e41efcc2080a6134f1660d745f3d0053718dc89602cae5d",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ],
+      "nameTableFamily": "Dorian CLM"
     },
     {
       "id": "gveret-levin-alefalefalef",
@@ -498,7 +748,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "3fdadd4e05277b097f75d92e541c9271bac0e2f486e434c2d16837d7bf8f3257",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "freemono",
@@ -519,7 +772,11 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "daf720e115bc462f721cdf3065697b75fea033bf46d4598d3a727fce4b036032",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "cousine",
@@ -540,7 +797,11 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "26b8e175baaf6c81ec2da35541e0e8f4bc8fb8948d78f8706359ddb664fb81ef",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "changes",
+        "attribution"
+      ]
     },
     {
       "id": "open-sans-hebrew",
@@ -561,7 +822,63 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "2f8c1725ed7b1f25e38c74ff23543fa0de7dc4dff732aec766029b5e63352cac",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "changes",
+        "attribution"
+      ]
+    },
+    {
+      "id": "aharoni-clm",
+      "file": "aharoni-clm/AharoniCLM-Book.otf",
+      "displayName": "Aharoni CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/AharoniCLM/AharoniCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "aharoni-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "0.140",
+      "hasNikkud": true,
+      "hasTrop": false,
+      "sha256": "3a54754753e6937aa82004674f7875aabac937046fa75a743c7d1b0226a8e729",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
+    },
+    {
+      "id": "david-clm",
+      "file": "david-clm/DavidCLM-Medium.otf",
+      "displayName": "David CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/DavidCLM/DavidCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "david-clm/LICENSE.txt",
+      "copyright": "Simple font family is copyright 2007-2010 by Yoram Gnat (yoram-gnat@homeil.com). Latin glyphs, digits and punctuation copyright 1999 by (URW)++ Design & Development. All rights reserved. Hebrew vowel marks positioning algorithms Copyright 2010 by Yoram Gnat 2010. (yoram.gnat@gmail.com. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version. Modification by Aharon Varady (aharon@opensiddur.org) in 2022 for the Culmus Project: Excepting U+00a3 (already present), all glyphs from U+1e00 to U+2740, U+00a1 to U+058a, and U+2E17 are copied over from FreeSans (GNU FreeFont project). FreeSans U+014a was substituted with its alternate form (\"ending\") in the Private Use Area. Moon phase symbols, U+1F4D, U+1F4DC, U+1F4E, U+1F56F,U+1F7CC, U+26ea, U+2721, U+263e, U+263d copied from Caladings CLM, copyright (c) 2003-2018 by Maxim Iorsh (GPL 2.0). Allother symbols copied over from NimbusSans L (Copyright (URW),Copyright 2014 by (URW) Design & Development). All changes made in FontForge (Element > Transformations (Origin: Glyph Origin, Scale Uniformly: 187.9%). Copyleft 2002, 2003, 2005, 2008, 2009, 2010 Free Software Foundation.\nShofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "0.140",
+      "hasNikkud": true,
+      "hasTrop": false,
+      "sha256": "5122bf1c6351da6c5ceddad533c473082a3bd2e48c3e875c952b235419097c5d",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
     },
     {
       "id": "david-libre",
@@ -586,7 +903,10 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "a19224d2fa7f05c119a8b0baf3491bf64aedb19f22de38a277cce4425f10fa48",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "arimo",
@@ -607,7 +927,11 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "423a4c14d32d2846d5b54d9ba192eca17d1d56ee431601ddec09a76c6bc54692",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "changes",
+        "attribution"
+      ]
     },
     {
       "id": "heebo",
@@ -628,7 +952,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "469438909322389b2e083d53cde9bd6d44c5485aa78b732b8d20dee0e0647dff",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "varela-round",
@@ -649,7 +976,36 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "9a366a28b9fc548132c93c06d35569f0e900ea83a38d9cdecb3123bedda146b1",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
+    },
+    {
+      "id": "miriam-clm",
+      "file": "miriam-clm/MiriamCLM-Book.otf",
+      "displayName": "Miriam CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/MiriamCLM/MiriamCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "miriam-clm/LICENSE.txt",
+      "copyright": "Simple font family is copyright 2007-2010 by Yoram Gnat (yoram-gnat@homeil.com). Latin glyphs, digits and punctuation copyright 1999 by (URW)++ Design & Development. All rights reserved. Hebrew vowel marks positioning algorithms Copyright 2010 by Yoram Gnat 2010. (yoram.gnat@gmail.com. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version. Modification by Aharon Varady (aharon@opensiddur.org) in 2022 for the Culmus Project: Excepting U+00a3 (already present), all glyphs from U+1e00 to U+2740, U+00a1 to U+058a, and U+2E17 are copied over from FreeSans (GNU FreeFont project). FreeSans U+014a was substituted with its alternate form (\"ending\") in the Private Use Area. Moon phase symbols, U+1F4D, U+1F4DC, U+1F4E, U+1F56F,U+1F7CC, U+26ea, U+2721, U+263e, U+263d copied from Caladings CLM, copyright (c) 2003-2018 by Maxim Iorsh (GPL 2.0). Allother symbols copied over from NimbusSans L (Copyright (URW),Copyright 2014 by (URW) Design & Development). All changes made in FontForge (Element > Transformations (Origin: Glyph Origin, Scale Uniformly: 187.9%). Copyleft 2002, 2003, 2005, 2008, 2009, 2010 Free Software Foundation.\nShofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "0.140",
+      "hasNikkud": true,
+      "hasTrop": false,
+      "sha256": "b6bf0af80cf77817ce47b687bad28e11ecc9f3f7a07ff0f0bfbbee2f44be9b5c",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
     },
     {
       "id": "miriam-libre",
@@ -670,7 +1026,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "a67ea8ad7b6de0f354d57e26c586a189655a716fbfad371660b087ea9d858c09",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "assistant",
@@ -693,7 +1052,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "1adbd912ae27d038491f9db1c7e6a007b8043c4a1f423009a351b03258756453",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "ibmplex-sanshebrew",
@@ -717,6 +1079,9 @@
       "hasTrop": false,
       "sha256": "25d9de0ab45de0239225ec37365054ff09b621d61a31572a530f8469fc97f2cb",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "IBM Plex Sans Hebrew"
     },
     {
@@ -738,7 +1103,11 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "74a04735bcee04b1c0a5f00afec84d805b4d69c70eb43f45ec806e6344e7240c",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "alef",
@@ -761,7 +1130,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "06f81a18d0f856ba3d1eb264b994b0aab288cf35d245afebf1373c3957d0262f",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "bellefair",
@@ -782,7 +1154,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "5c0cd4d526e6dfcb189106af6b5e6ec99a54efb6d458dfd61626ce6dc0f03026",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "carmela",
@@ -803,7 +1178,62 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "a08adc57397e5f8398fb47db5859001eb816dcb2dd05d6fe7b6e1d59c7f24f7b",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
+    },
+    {
+      "id": "shuneet-square",
+      "file": "shuneet-square/shuneet_square_v2.otf",
+      "displayName": "Shuneet Square",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/Shuneet_Square_v2/Shuneet_Square_v2.zip",
+      "licenseId": "CC-BY-SA-3.0",
+      "licenseName": "Creative Commons Attribution-ShareAlike 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "licenseFile": "shuneet-square/LICENSE.txt",
+      "copyright": "Copyright 2006 Michael Cunliffe Thompson. Formerly the font was named MikeHebrew. This work is licensed under the Creative Commons Attribution-Share Alike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/",
+      "reservedFontNames": [],
+      "designer": "Michael Cunliffe Thompson",
+      "originalVersion": "2.0 August 28. 2012",
+      "hasNikkud": true,
+      "hasTrop": false,
+      "sha256": "81e806af313d9f9abbdfc161325f7d65397a2ea72d67795bc34708dfb6921d65",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "attribution",
+        "changes"
+      ]
+    },
+    {
+      "id": "shuneet-classic",
+      "file": "shuneet-classic/shuneet_classic_v2.otf",
+      "displayName": "Shuneet Classic",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/Shuneet_Classic_v2/Shuneet_Classic_v2.zip",
+      "licenseId": "CC-BY-SA-3.0",
+      "licenseName": "Creative Commons Attribution-ShareAlike 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "licenseFile": "shuneet-classic/LICENSE.txt",
+      "copyright": "Copyright 2006 Michael Cunliffe Thompson. Formerly the font was named MikeHebrew. This work is licensed under the Creative Commons Attribution-Share Alike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/",
+      "reservedFontNames": [],
+      "designer": "Michael Cunliffe Thompson",
+      "originalVersion": "2.0 August 28. 2012",
+      "hasNikkud": true,
+      "hasTrop": false,
+      "sha256": "8ecf85b0a8a0419c67823de3da29223882868449e0496721797e9e5e8fde08e6",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "attribution",
+        "changes"
+      ]
     },
     {
       "id": "secular-one",
@@ -824,7 +1254,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "a4a6792520d1b126dbe6bf030d14c49651406fb303f1b14b04e26b8df3c653b2",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "suez-one",
@@ -845,7 +1278,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "22181a43009c4887b28a186215237a20136a275482256c9f8bd81c79e3e0f2ef",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "freesans",
@@ -866,7 +1302,11 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "d3e9138ccf76ef516cc6af867e4e7ed8776331947235824f924c5886186b0c80",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "liberation-sans",
@@ -889,7 +1329,10 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "e5b0af421ea2bfbc1ac8d251d647268087ae82786234c57f757d1f0b90fa8b49",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "ptil-wide",
@@ -913,6 +1356,9 @@
       "hasTrop": false,
       "sha256": "e5cca4612c498f0acf30cc314fb662b5fa311b411be1ab6a04a4ea24b679a07b",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "PtilWide"
     },
     {
@@ -937,6 +1383,9 @@
       "hasTrop": false,
       "sha256": "eefce1b8cb4b1228f22dbb83827ce00564df5e0b776783a7f8bda19a8156e642",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "PtilNarrow"
     },
     {
@@ -958,7 +1407,36 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "95ea38520ec49bcd2efd3d98172afcab5bef03bf7b0fa5af3d94ce3b90a985ee",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
+    },
+    {
+      "id": "dorian-clm",
+      "file": "dorian-clm/DorianCLM-Book.ttf",
+      "displayName": "Dorian CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/DorianCLM/DorianCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "dorian-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "2.1",
+      "hasNikkud": true,
+      "hasTrop": false,
+      "sha256": "aad4506d806054822ade1c039bbdc2f7ba52178558a7b732def36cf1c67e5c55",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
     },
     {
       "id": "reuben",
@@ -981,7 +1459,10 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "af7de6d8c0495d1da0bc69295e263ca7171689eaee9c87b2b675c806943f914b",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "makabi-yg",
@@ -1002,7 +1483,11 @@
       "hasNikkud": true,
       "hasTrop": true,
       "sha256": "6c7427bd197501423e9b11c3eb4d60ca4aba4aa36508e3933087aac0a7e9f02d",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "linux-biolinum",
@@ -1026,7 +1511,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "f7140084369db686c71e522f0e8de148f0f3f429310376d5f52325a9f0955ba5",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "rommvilna",
@@ -1051,6 +1539,9 @@
       "hasTrop": true,
       "sha256": "04916a69a19089996ba2905038cf66ce90d58c4033a2f03361ec39701daefa2e",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "Romm Vilna"
     },
     {
@@ -1073,6 +1564,9 @@
       "hasTrop": true,
       "sha256": "53e23a1875281723ba8b079ac4db459a6f515014f261a60a47c0398170cbdf1b",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "Noto Sans Hebrew"
     },
     {
@@ -1094,7 +1588,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "702154fc326c4de096506a414019176aebd0979f2c907a507fe77ad608956ef3",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "mplus1p",
@@ -1116,6 +1613,9 @@
       "hasTrop": true,
       "sha256": "8243df1d5d794ef1a6aefad610d2b9945a448c1697273d9add9f69b04380a607",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "Mplus 1p"
     },
     {
@@ -1138,6 +1638,9 @@
       "hasTrop": true,
       "sha256": "c6a619d064d8c520f5ed23322a37ad5c2f8cb520b65ec7e321082bc7ccf86091",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "felix007 Medium"
     },
     {
@@ -1160,6 +1663,10 @@
       "hasTrop": false,
       "sha256": "319c5c36ffcb0d9d5c6c308a5131de4b67cc6cb5b9307ccde59b46d664ec9caf",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ],
       "nameTableFamily": "OSP_Le-patin-helvete"
     },
     {
@@ -1182,6 +1689,9 @@
       "hasTrop": false,
       "sha256": "a6e9aba8aa562573e3092dade2366d723023c7de9a9cca50d924c6dea3ed4db5",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "Fredoka One"
     },
     {
@@ -1205,7 +1715,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "782c1f0517cf270d3651a575d2274419e7e41d6a463caaeb1781be5080d4aa33",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "sofer-stam-ashkenaz",
@@ -1227,6 +1740,10 @@
       "hasTrop": true,
       "sha256": "18aec29cd0f3e2f31049224712e740468fc893344289ceb1c86b02b619854ca6",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ],
       "nameTableFamily": "Stam Ashkenaz CLM"
     },
     {
@@ -1249,7 +1766,63 @@
       "hasTrop": true,
       "sha256": "0a07a15927e5288b19d8d408a269fde21746b53f24d1085abab0df311fb94cbe",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ],
       "nameTableFamily": "Stam Sefarad CLM"
+    },
+    {
+      "id": "lulav-clm",
+      "file": "lulav-clm/LulavCLM-Bold.otf",
+      "displayName": "Lulav CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/LulavCLM/LulavCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "lulav-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "1.0",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "3c32276ae21d372f1a1f08e4fd53c37afd96eabecc7b3623d3984613d2f5b78d",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
+    },
+    {
+      "id": "farissol-clm",
+      "file": "farissol-clm/FarissolCLM-BoldItalic.otf",
+      "displayName": "Farissol CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/FarissolCLM/FarissolCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "farissol-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "0.102",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "8c8a482b78e393de33d7c0a807b7a5f5cfd2c0998ebe8d8e62c81672453abcca",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
     },
     {
       "id": "evelyn-yehoash-s-esther",
@@ -1273,6 +1846,9 @@
       "hasTrop": false,
       "sha256": "944da76a727d93663454ecfbbb814e457075e135e8a8981bd90c663811c4b786",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "E_Yehoash_Esther"
     },
     {
@@ -1296,7 +1872,10 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "739f8a3fae1afd49f42f17f0b36e7ff6306f940901ad5ec20e0d8076e8890bbc",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "carmelit",
@@ -1320,7 +1899,88 @@
       "hasTrop": false,
       "sha256": "1efb2accb46de6e4abd6b7c2e17648b1f2491024249d2e81fb154ffdc4e9ee32",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "Carmelit Regular"
+    },
+    {
+      "id": "hillel-clm",
+      "file": "hillel-clm/HillelCLM-Medium.ttf",
+      "displayName": "Hillel CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/HillelCLM/HillelCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "hillel-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "1.0",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "69a8ad06cc4f2d663c0de607d97d7200e7eb8a84feb3c07df538789310c13a9b",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
+    },
+    {
+      "id": "ellinia-clm",
+      "file": "ellinia-clm/ElliniaCLM-Light.otf",
+      "displayName": "Ellinia CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/ElliniaCLM/ElliniaCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "ellinia-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "0.140",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "2a32ee44d31346e705141cfaf90390d9c2135bba5ee230d7caa42365d9e86e9a",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
+    },
+    {
+      "id": "comix-no2-clm",
+      "file": "comix-no2-clm/ComixNo2CLM-Medium.ttf",
+      "displayName": "Comix No2 CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/ComixNo2CLM/ComixNo2CLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "comix-no2-clm/LICENSE.txt",
+      "copyright": "Copyright .51 2004 by Maxim Iorsh (iorsh@math.technion.ac.il). Distributed under the terms of GNU General Public License version 2(http://www.gnu.org/licenses/gpl.html). All rights reserved.",
+      "reservedFontNames": [],
+      "designer": "Richard Schoeller, Maxim Iorsh",
+      "originalVersion": "1.0",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "eb0812482d5a79e25bd07d889fb241ad6cad01e0ae5917a0ef667f7b9617715b",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
     },
     {
       "id": "dragon",
@@ -1343,7 +2003,36 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "608b784b17b8cea058739d12c94ba5471494335795eee6fb26a48ea646d69e0a",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
+    },
+    {
+      "id": "journal-clm",
+      "file": "journal-clm/JournalCLM-Light.ttf",
+      "displayName": "Journal CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/JournalCLM/JournalCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "journal-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "0.105",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "5a0244c947de41e11eb107150c37d9fd4961839eec3c953ff9eadf8d34e43f90",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
     },
     {
       "id": "tnua-libre",
@@ -1365,7 +2054,142 @@
       "hasTrop": false,
       "sha256": "20713a0a015913b703033080af0285893585d5d2a9fe2476142c031de5a25704",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ],
       "nameTableFamily": "Tnua-Libre"
+    },
+    {
+      "id": "ganclm",
+      "file": "ganclm/GanCLM-Bold.ttf",
+      "displayName": "GanCLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/GanCLM/GanCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "ganclm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "1.01",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "c336a5c2ac45b2a40c78d4df287afe49077ee7adf30cc8699fed8dd3f4efa509",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ],
+      "nameTableFamily": "Gan CLM"
+    },
+    {
+      "id": "gladia-clm",
+      "file": "gladia-clm/GladiaCLM-Bold.ttf",
+      "displayName": "Gladia CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/GladiaCLM/GladiaCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "gladia-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "1.02",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "23888b280c5dfce3b9a7ed511290399cfac99f0bb8241fa2fe80e35f83a0e19b",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
+    },
+    {
+      "id": "horev-clm",
+      "file": "horev-clm/HorevCLM-Heavy.ttf",
+      "displayName": "Horev CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/HorevCLM/HorevCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "horev-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "1.0",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "61d7d74d1b755b9e6f2027a191dc137c6dae6066daeb0aae0ef9c357d262ad48",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
+    },
+    {
+      "id": "ozrad-clm",
+      "file": "ozrad-clm/OzradCLM-Bold.ttf",
+      "displayName": "Ozrad CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/OzradCLM/OzradCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "ozrad-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "1.02",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "8122feb86bf8c926b47bb486b402f6c6ba14907a439650c798d4f0ab575c1885",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
+    },
+    {
+      "id": "trashim-clm",
+      "file": "trashim-clm/TrashimCLM-Bold.otf",
+      "displayName": "Trashim CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/TrashimCLM/TrashimCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "trashim-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "1.0",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "3b660913c663b3e8bfda8a6050edc937dfb5817e3a1323df677623a415ae2c92",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
     },
     {
       "id": "asakim",
@@ -1388,7 +2212,10 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "a79df800702cc129501b9b6e88deac61c55d6e70bbc71a76113fb77406ce94b6",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "paskol",
@@ -1411,7 +2238,10 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "5cd2c4e03ebea28ea086ee19f33e5be0a07251a3d6da38f0ebaac942d8fa2cb9",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "migdal-haemeq",
@@ -1435,6 +2265,9 @@
       "hasTrop": false,
       "sha256": "4c9e76e7052284646592d38af3bb2430f5ecfb626e2e218dd6bfad764adf47aa",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "MigdalHaemeq"
     },
     {
@@ -1458,7 +2291,10 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "25351adec50b4df44934022b8ab047f084d19fe0c60b990b13e855aaf859b639",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "stop-motion",
@@ -1482,6 +2318,9 @@
       "hasTrop": false,
       "sha256": "765dcd8020bf451af78be1920024533d5d4274804af35a14f233499554e0543a",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "Stopmotion"
     },
     {
@@ -1506,6 +2345,9 @@
       "hasTrop": false,
       "sha256": "c9c5639b5405c6fdcd667727dab3936a36db26d3eb6fa02310299967ea8cb086",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ],
       "nameTableFamily": "Looks Like S'pht"
     },
     {
@@ -1529,7 +2371,10 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "a14a3087aff66584330fd05c88e92483d07230ef4745e54c8e44202fcff66566",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "miri",
@@ -1552,7 +2397,36 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "52ee2e9dfe0b8ab2a5e2b5cbeeac24c0dcb69bb2623e0fb32897594de8e53c25",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
+    },
+    {
+      "id": "yehuda-clm",
+      "file": "yehuda-clm/YehudaCLM-Light.otf",
+      "displayName": "Yehuda CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/YehudaCLM/YehudaCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "yehuda-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "0.140",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "a992ef79048e005988636366ac28fc1e1d0a8ce0d061c5e238fce49e49777ffd",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
     },
     {
       "id": "amatica-sc",
@@ -1573,7 +2447,90 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "cac1b716ab4dbda1d9c94c55cebe02f0be8fbf455000db02e78f34c252f92707",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
+    },
+    {
+      "id": "ktav-yad-clm",
+      "file": "ktav-yad-clm/KtavYadCLM-MediumItalic.ttf",
+      "displayName": "Ktav-Yad CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/KtavYadCLM/KtavYadCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "ktav-yad-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "0.91",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "b4e7d6b1e544f23cc58375112783ce382c2a353f2b3df0fc6d97bb3102fcbdf0",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ],
+      "nameTableFamily": "Ktav Yad CLM"
+    },
+    {
+      "id": "ellinia-clm-italic",
+      "file": "ellinia-clm-italic/ElliniaCLM-LightItalic.otf",
+      "displayName": "Ellinia CLM Italic",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/ElliniaCLM-Italic/ElliniaCLM-Italic.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "ellinia-clm-italic/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "0.140",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "9f923732ceff569c77e33a47be28df34df74e0ec072d5e7faf3685c50f4d1211",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ],
+      "nameTableFamily": "Ellinia CLM"
+    },
+    {
+      "id": "anka-clm",
+      "file": "anka-clm/AnkaCLM-Bold.ttf",
+      "displayName": "Anka CLM",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://opensiddur.org/wp-content/uploads/fonts/AnkaCLM/AnkaCLM.zip",
+      "licenseId": "GPL-2.0",
+      "licenseName": "GNU General Public License v2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "anka-clm/LICENSE.txt",
+      "copyright": "Shofar font family is Copyright 2011-2012 by Yoram Gnat (yoram.gnat@gmail.com) Latin glyphs and punctuation Copyright (URW)++,Copyright 1999 by (URW)++ Design & Development; Hebrew Cantillation marks GSUB and GPOS OpenType positioning rules copyright (c) 2010 by Yoram Gnat (yoram.gnat@gmail.com) Inspired by the Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson published under the MIT License. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.\nKeter YG font family is Copyright 2009 by Yoram Gnat (yoram.gnat@gmail.com) Hebrew OpenType Layout logic copyright (c) 2003 & 2007, Ralph Hancock & John Hudson. This layout logic for Biblical Hebrew is open source software under the MIT License; for details contact copyright holders at <license@tiro.com>. As a special exception, if you create a document which uses this font, and embed this font or unaltered portions of this font into the document, this font does not by itself cause the resulting document to be covered by the GNU General Public License. This exception does not however invalidate any other reasons why the document might be covered by the GNU General Public License. If you modify this font, you may extend this exception to your version of the font, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.",
+      "reservedFontNames": [],
+      "designer": "Maxim Iorsh",
+      "originalVersion": "1.0",
+      "hasNikkud": false,
+      "hasTrop": false,
+      "sha256": "20bed6b32d29a6603631484e75e852128a53b097afda9dace5d6939528bea75d",
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes",
+        "source"
+      ]
     },
     {
       "id": "solitreo",
@@ -1594,7 +2551,10 @@
       "hasNikkud": true,
       "hasTrop": false,
       "sha256": "b7eb97c57fa72ea399ea8ff260404e0770c74d8381e2f7d5ad14fa260ae96773",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "nesher-gadol",
@@ -1615,7 +2575,10 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "d116a48ff3914f4c099444307489320492662c95874d1e848779c8c3bf31834d",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "nesher-katon",
@@ -1636,7 +2599,10 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "279a8380d0f7bc2e35754d3ccdfa0e897b98d74f9192e11dbc9b5287bd2062fb",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft"
+      ]
     },
     {
       "id": "hebrew-square-bet-shearim",
@@ -1657,7 +2623,11 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "f7a4518d84843eb3dab673c76b8caf3b7aa8175550f5ce59bd4d963ff5e5301b",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "hebrew-square-ben-kosba",
@@ -1679,6 +2649,10 @@
       "hasTrop": false,
       "sha256": "e8d4b10085821cb4e699acb4a4af700a956f4c3cafc3dd162c4a65561b5016bd",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ],
       "nameTableFamily": "Hebrew Square BenKosba"
     },
     {
@@ -1700,7 +2674,11 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "564af99aea05f993cf2a72bf90182886a8ae455a349d719ca0ba8cf79e87b12c",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "hebrew-square-isaiah",
@@ -1721,7 +2699,11 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "565da32402dd198837d4f5c810e1197aef3e9a06bee7ccbad579526b114579c9",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "hebrew-paleo-qumran",
@@ -1742,7 +2724,11 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "09f57d68095946ab9f724132b46ba744a28b4eaa21a478bbe2af6919a4862c26",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "aramaic-imperial-yeb",
@@ -1763,7 +2749,11 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "d6d3e6bc13218f4d2486320602540ff18646408cbb8db94c6c2e085a5323bc9e",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "hebrew-paleo-lakhish",
@@ -1785,6 +2775,10 @@
       "hasTrop": false,
       "sha256": "311261e5321848316c42b21f5195d45558df470852a2bba23e78bc040856b877",
       "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ],
       "nameTableFamily": "Hebrew Paleo Lachish"
     },
     {
@@ -1806,7 +2800,11 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "cd3f4969b18ebef83e0dc2dc23856ddf128452908617ab51e4d2ef3b75bc8d0e",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "hebrew-paleo-siloam",
@@ -1827,7 +2825,11 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "906b4915bebb067365e671d8af945d3d9bfe8345ffd033d939270e4d7ac70280",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "aramaic-early-br-rkb",
@@ -1848,7 +2850,11 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "cc798ea9b34d13de4f79d84cff8e44eec908c5273686c770c4469220c5dfd4b8",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "hebrew-paleo-mesha",
@@ -1869,7 +2875,11 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "b28703487a171f2fdb0390b7a48f2f9b0b237bc34e1c6a067c386bdeb96f76ae",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "hebrew-paleo-gezer",
@@ -1890,7 +2900,11 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "7bebbe6631d15c9a6c1fe4ca97b2c8571d23bf5fab88ef286be70c6669cc3d3b",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "phoenician-ahiram",
@@ -1911,7 +2925,11 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "22790cd588598f836b0e5a00ce348389a46b1c8cbe423756ef403a0f0fa42d4d",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     },
     {
       "id": "proto-canaanite",
@@ -1932,7 +2950,11 @@
       "hasNikkud": false,
       "hasTrop": false,
       "sha256": "dd5a1e0a4e4bc9db180f76fd845ae93c538629ad1a9871578ea028f187f2537f",
-      "added": "2026-08-26"
+      "added": "2026-08-26",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
     }
   ]
 }

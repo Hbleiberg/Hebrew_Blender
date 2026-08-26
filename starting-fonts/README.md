@@ -11,12 +11,8 @@ declared Reserved Font Names force a rename.
 ```
 starting-fonts/
   manifest.json          ← {"schema":1,"fonts":[...]} — the runtime's source of truth
-  LINKS.md               ← GENERATED: copy-paste sheet of every live ?start= link, plus the
-                            not-staged record (never hand-edit; rebuilt on every intake, or via
-                            add_os_font.py --regen-links)
-  not-staged.json        ← requested fonts deliberately REFUSED, with the reason, plus any place
-                            the partner's font page and a font's own distribution disagree about
-                            its license. Rendered into LINKS.md; edit this, never LINKS.md.
+  LINKS.md               ← GENERATED copy-paste sheet of every live ?start= link (never hand-edit;
+                            rebuilt on every intake, or via add_os_font.py --regen-links)
   <id>/
     <FontFile>.ttf       ← pinned upstream copy (same-origin; never hotlinked)
     LICENSE.txt          ← the upstream license text, verbatim (copyright + RFN lines included)
@@ -36,15 +32,21 @@ Use the **`/addOSFont`** Claude Code skill (`.claude/skills/addOSFont/SKILL.md`)
 anything else, stages the files, appends the manifest, and prints the live URL + `<a>` snippet
 to send the partner. Never hand-edit `manifest.json` or a staged `LICENSE.txt`.
 
-**License allowlist:** OFL-1.1 · GPL v2/v3 **with** font exception · Apache-2.0 · CC0 / public
-domain. Bare GPL (no font exception), LPPL, UFL, and unknown/ambiguous licenses are refused —
-those go case-by-case with the maintainer and the partner.
+**The gate asks one question: does the license permit MODIFICATION?** A starting font exists to be
+edited and re-exported, so every license that allows derivatives is allowlisted — OFL-1.1, GPL v2/v3
+(with **or** without the font exception), Apache-2.0, CC0, Ubuntu Font Licence 1.0, LPPL 1.3c and
+CC BY / CC BY-SA. Refused: no license text at all, or a license that forbids derivatives (any CC
+`*-ND`). Anything ambiguous goes case-by-case with the maintainer and the partner.
 
-**A combined license file must be read per-font.** Culmus ships ONE `LICENSE` covering 13
-families in which the font-exception clause appears only in some sections; a whole-file search
-for "As a special exception" wrongly clears all 13. The exception counts only when it sits in
-that font's own copyright section — otherwise the font is bare GPL and is refused. Record every
-refusal in `not-staged.json` so the next intake doesn't re-litigate it.
+**The font exception is NOT about editing.** It only stops a *document* that embeds the font from
+inheriting the GPL; it says nothing about whether you may modify the font. Bare-GPL fonts are fully
+editable — the derivative is simply GPL too. Treating the exception as an editing gate wrongly
+excluded the entire Culmus library once; don't reintroduce that test.
+
+Each license records the **obligations the derivative inherits** (`obligations` in the manifest:
+`copyleft`, `changes`, `source`, `rename`, `attribution`). The Font Maker reads them to build the
+exported `LICENSE.txt` and, for `rename`, to enforce a new family name the same way it enforces a
+Reserved Font Name.
 
 ## Serving / caching
 
