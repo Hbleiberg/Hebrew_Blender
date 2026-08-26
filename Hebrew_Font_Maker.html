@@ -1391,7 +1391,7 @@
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_english_label">English letters</div>
             <label class="chk"><input type="checkbox" id="addEnglishLettersChk" onchange="setAddEnglishLetters(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_english">Add English letters</span></label>
-            <div class="hint" data-i18n-html="fontmaker.panels.adv_english_hint">Adds an <strong>English</strong> tab to design <strong>A–Z and a–z</strong> (with an uppercase/lowercase switch). Accent-supporting letters can carry accents (á, é, ñ, ç…). Template: <a href="#" onclick="downloadTemplate('englishletters','pdf');return false;">PDF</a> · <a href="#" onclick="downloadTemplate('englishletters','png');return false;">PNG</a></div>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_english_hint">Adds an <strong>English</strong> tab to design <strong>A–Z and a–z</strong> (with an uppercase/lowercase switch). Accent-supporting letters can carry accents (á, é, ñ, ç…). Template: <a href="#" data-fmact="tpl-english-pdf">PDF</a> · <a href="#" data-fmact="tpl-english-png">PNG</a></div>
           </div>
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_special_label">Specialized letters</div>
@@ -1424,7 +1424,7 @@
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_svg_label">SVG uploading</div>
             <label class="chk"><input type="checkbox" id="svgUploadChk" onchange="setSvgUpload(this.checked)"> <span data-i18n="fontmaker.panels.adv_enable_svg">Enable SVG uploading</span></label>
-            <div class="hint" data-i18n-html="fontmaker.panels.adv_svg_hint">Upload <strong>SVG</strong> files instead of images — vector paths become the glyph outlines <strong>directly, with no tracing</strong>. In this mode the upload zones accept SVG only. <a href="#" onclick="openSvgGuide();return false;">SVG Upload Guide →</a></div>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_svg_hint">Upload <strong>SVG</strong> files instead of images — vector paths become the glyph outlines <strong>directly, with no tracing</strong>. In this mode the upload zones accept SVG only. <a href="#" data-fmact="svg-guide">SVG Upload Guide →</a></div>
           </div>
         </div>
         <div class="adv-group-title adv-group-gap" data-i18n="fontmaker.panels.adv_canvas">Canvas</div>
@@ -5363,6 +5363,18 @@ function setSvgUpload(on) {
 function openSvgGuide() {
   askModal(I18n.t('fontmaker.modals.svgguide_title'), `<div class="hint" style="text-align:start;line-height:1.6;">${I18n.t('fontmaker.modals.svgguide_body')}</div>`, [{ label: I18n.t('fontmaker.modals.svgguide_gotit') }]);
 }
+// The two Advanced hints that carry links are data-i18n-html, so applyStaticI18n rewrites their
+// innerHTML on every language switch — a listener bound to the <a> would not survive it, and an
+// inline onclick would put executable JS in the translatable CSV cell. Delegate on data-fmact.
+document.addEventListener('click', e => {
+  const a = e.target.closest('[data-fmact]');
+  if (!a) return;
+  e.preventDefault();
+  const act = a.getAttribute('data-fmact');
+  if (act === 'tpl-english-pdf')      downloadTemplate('englishletters', 'pdf');
+  else if (act === 'tpl-english-png') downloadTemplate('englishletters', 'png');
+  else if (act === 'svg-guide')       openSvgGuide();
+});
 function cgSetType(t) {
   cgType = t;
   const _cgB = document.getElementById('cgTypeBase'), _cgM = document.getElementById('cgTypeMark');
