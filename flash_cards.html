@@ -411,7 +411,12 @@ body.dark .app-header { background: var(--navy-deep); border-bottom: 1px solid v
    (and the title) to keep everything on one row without horizontal overflow. */
 @media (max-width: 440px) {
   .app-header { gap: 4px; padding-inline: 8px; }
-  .app-header h1 { font-size: 0.9rem; }
+  /* The title shares a grid row with the Home button and the whole right-hand cluster, so at
+     phone widths its 1fr column collapses to ~53px and the h1 breaks into six lines — 21.5%
+     of a 320px screen, held the whole time because the header is sticky. Drop it onto its own
+     full-width row instead: one line, 78px header. grid-column 1/-1 is direction-agnostic, so
+     this mirrors correctly in the Hebrew UI. */
+  .app-header h1 { grid-column: 1 / -1; grid-row: 2; font-size: 0.85rem; line-height: 1.2; }
   .h-btn { width: 38px; height: 38px; font-size: 1.05rem; }
   /* Let the header button row wrap onto a second line instead of pushing the page sideways.
      max-width is the operative half: a flex row only wraps once something caps its width. */
