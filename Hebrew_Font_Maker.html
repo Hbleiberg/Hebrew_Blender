@@ -1687,7 +1687,7 @@
       <button class="tbtn" onclick="closeHelp(); tourStart();" data-i18n="fontmaker.modals.help_take_tour">▶ Take a tour</button>
       <button class="tbtn ghost" onclick="closeHelp(); openShortcuts();" data-i18n="fontmaker.modals.help_shortcuts">⌨ Shortcuts</button>
     </div>
-    <div class="help-tabs" id="helpTabs"></div>
+    <div class="help-tabs" id="helpTabs" role="tablist" aria-labelledby="helpTitle"></div>
     <div class="help-body" id="helpBody"></div>
     <div class="mbtns"><button class="tbtn" onclick="closeHelp()" data-i18n="fontmaker.modals.help_close">Close</button></div>
   </div>
@@ -3891,7 +3891,11 @@ function buildHelpTabs() {
     const tk = 'fontmaker.help.tab_' + id, tt = window.I18n ? I18n.t(tk) : tk;
     b.textContent = (tt !== tk) ? tt : label;
     b.dataset.tab = id;
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-selected', 'false');   // _syncTablist owns the live value
+    b.tabIndex = -1;
     b.onclick = () => showHelpTab(id);
+    b.onkeydown = e => _tabKeydown(e, b);
     bar.appendChild(b);
   });
 }
@@ -3923,6 +3927,7 @@ function buildAboutBody() {
 }
 function showHelpTab(id) {
   document.querySelectorAll('#helpTabs .help-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+  _syncTablist(document.getElementById('helpTabs'));   // .active alone is invisible to a screen reader
   const body = document.getElementById('helpBody');
   // English shows the original richly-formatted authored HTML (HELP_CONTENT); other languages get the
   // translated body (plain, from the i18n keys / buildAboutBody) — keeps Hebrew translated, restores English formatting.
