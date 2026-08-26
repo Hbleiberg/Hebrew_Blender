@@ -1006,8 +1006,10 @@
   .guide-del:hover { color: #c0392b; border-color: #c0392b; }
   .guide-card-body { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; padding: 2px 8px 8px 8px; }
   .guide-lbl { font-size: 0.7rem; color: var(--muted); }
-  .guide-size { width: 84px; accent-color: var(--gold, #c9922a); }
-  .guide-pos { width: 58px; }
+  /* min-height, not height: these render 16-21px tall from their UA defaults, under the 24px
+     touch floor (WCAG 2.5.8). Height-only misses, so the widths stay as they are. */
+  .guide-size { width: 84px; min-height: 24px; accent-color: var(--gold, #c9922a); }
+  .guide-pos { width: 58px; min-height: 24px; }
   /* visual line-style dropdown */
   .guide-style-dd { position: relative; flex-shrink: 0; }
   .guide-style-trig { display: flex; align-items: center; gap: 3px; background: var(--white); border: 1px solid var(--border); border-radius: 4px; padding: 2px 5px; cursor: pointer; }
