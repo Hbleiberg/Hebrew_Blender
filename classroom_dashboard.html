@@ -646,7 +646,7 @@
   .shabbat-block .shabbat-loading { color: var(--muted); font-size: 0.82rem; }
 
   /* Timer panel */
-  #timerCol .col-body { display: flex; flex-direction: column; align-items: center; gap: 11px; padding: 16px 14px; }
+  #timerCol .col-body { display: flex; flex-direction: column; align-items: center; gap: 11px; }
   /* ID-specificity override so collapse beats the flex rule above */
   #timerCol.collapsed .col-body { display: none; }
   .timer-display { font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: var(--time-size);
@@ -675,7 +675,7 @@
   body.fullscreen #timerCol .timer-display { font-size: calc(var(--time-size) * 1.618); }
 
   /* Student Picker panel */
-  #pickerCol .col-body { display: flex; flex-direction: column; gap: 10px; padding: 14px; }
+  #pickerCol .col-body { display: flex; flex-direction: column; gap: 10px; }
   #pickerCol.collapsed .col-body { display: none; }
   .picker-chips { display: flex; flex-wrap: wrap; gap: 5px; max-height: 220px; overflow-y: auto; }
   .picker-chip { font-family: var(--heb-font); direction: rtl; unicode-bidi: plaintext;
