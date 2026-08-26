@@ -2495,7 +2495,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <button class="btn btn-xs btn-secondary" onclick="importPresets()" style="flex:1;" data-i18n="shared.ivrit.manual_import">Import</button>
       </div>
       <div style="position:relative;">
-        <textarea id="presetBackupBox" placeholder="Paste backup JSON here, or click Export…" data-i18n-placeholder="dashboard.backup.placeholder" aria-label="Paste backup JSON here, or click Export…" data-i18n-aria-label="dashboard.backup.placeholder" style="height:80px;font-family:monospace;font-size:0.72rem;width:100%;"></textarea>
+        <textarea id="presetBackupBox" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Paste backup JSON here, or click Export…" data-i18n-placeholder="dashboard.backup.placeholder" aria-label="Paste backup JSON here, or click Export…" data-i18n-aria-label="dashboard.backup.placeholder" style="height:80px;font-family:monospace;font-size:0.72rem;width:100%;"></textarea>
         <button onclick="copyPresetBackup()" id="presetCopyBtn" title="Copy" data-i18n-title="shared.ivrit.manual_copy" data-i18n="shared.ivrit.manual_copy" style="position:absolute;top:5px;right:5px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.65rem;color:var(--muted);cursor:pointer;">Copy</button>
       </div>
     </div>
