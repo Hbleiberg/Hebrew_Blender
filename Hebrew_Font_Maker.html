@@ -1709,7 +1709,7 @@
   <div class="modal help-modal qa-modal" role="dialog" aria-modal="true" aria-labelledby="qaTitle">
     <h3 id="qaTitle" data-i18n="fontmaker.modals.qa_title">QA Check — placement collisions</h3>
     <div id="qaSummary"></div>
-    <div class="help-tabs" id="qaTabs"></div>
+    <div class="help-tabs" id="qaTabs" role="tablist" aria-labelledby="qaTitle"></div>
     <div class="help-body" id="qaGrid"></div>
     <div class="mbtns"><button class="tbtn" onclick="closeQA()" data-i18n="fontmaker.modals.qa_close">Close</button></div>
   </div>
@@ -15456,15 +15456,22 @@ function qaBuild() {
 }
 function qaRenderTabs() {
   const bar = document.getElementById('qaTabs');
+  const hadFocus = bar.contains(document.activeElement);   // the innerHTML below discards the focused tab
   const customQaOn = project.font.addCustomGlyphs && customMarkCps().length > 0;   // custom marks attach even with built-in nikkud off — keep their QA columns reachable
   const have = { nikkud: project.font.nikkud.enabled || customQaOn, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled, pairs: project.font.nikkud.enabled };
   bar.innerHTML = [['nikkud','fontmaker.qa.tab_nikkud'],['trop','fontmaker.qa.tab_trop'],['stacked','fontmaker.qa.tab_stacked'],['pairs','fontmaker.qa.tab_pairs']].map(([id,key]) => {
     const label = I18n.t(key);
     const n = qaResult ? qaResult.counts[id] : 0, badge = (have[id] && n) ? ` (${n})` : '';
     return have[id]
-      ? `<button class="help-tab${qaTab===id?' active':''}" onclick="setQaTab('${id}')">${label}${badge}</button>`
-      : `<button class="help-tab" disabled style="opacity:0.4;cursor:default;">${label}</button>`;
+      ? `<button class="help-tab${qaTab===id?' active':''}" role="tab" aria-selected="false" tabindex="-1" onclick="setQaTab('${id}')" onkeydown="_tabKeydown(event,this)">${label}${badge}</button>`
+      : `<button class="help-tab" disabled style="opacity:0.4;cursor:default;">${label}</button>`;   // no role=tab: _tabKeydown's ring filters on visibility, not disabled
   }).join('');
+  _syncTablist(bar);   // .active alone is invisible to a screen reader
+  // onkeydown is per-button, not the global role=tab dispatcher: that handler returns early
+  // while a modal is open, so a tablist inside one must bind its own (as buildHelpTabs does).
+  // showHelpTab retoggles classes in place; this bar re-renders, so arrow nav would drop to
+  // <body> after one press. Hand focus back to the tab the arrow key just selected.
+  if (hadFocus) bar.querySelector('[role=tab][aria-selected="true"]')?.focus();
 }
 function qaRenderSummary() {
   const el = document.getElementById('qaSummary'); if (!el) return;
