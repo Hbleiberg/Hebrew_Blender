@@ -4056,8 +4056,14 @@ function updateJumpNavState() {
   if (pos) pos.textContent = cur || '';
   if (!_aliyahStarts) return;
   const activeNum = aliyahNumForLabel(cur);
-  nav.querySelectorAll('.tt-jump-chip').forEach(btn =>
-    btn.classList.toggle('active', parseInt(btn.dataset.aliyah, 10) === activeNum));
+  nav.querySelectorAll('.tt-jump-chip').forEach(btn => {
+    const on = parseInt(btn.dataset.aliyah, 10) === activeNum;
+    btn.classList.toggle('active', on);
+    // Expose which aliyah the reader is in (the gold chip is CSS-only) — same treatment the
+    // karaoke word gets in setKaraokeActive.
+    if (on) btn.setAttribute('aria-current', 'true');
+    else btn.removeAttribute('aria-current');
+  });
 }
 function scheduleLastPosSave() {
   if (_lastPosSaveTimer) clearTimeout(_lastPosSaveTimer);
