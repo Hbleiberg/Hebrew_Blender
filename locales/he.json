@@ -2502,7 +2502,7 @@
   "fontmaker.panels.adv_input_mode": "מצב קלט",
   "fontmaker.panels.adv_ladino_hint": "מוסיף לשונית <strong>לדינו</strong> (ספרדית-יהודית): אותיות הרפה / הווריקה (בֿ גֿ דֿ זֿ טֿ פֿ קֿ) בתוספת שׁ / שׂ — מורכבות מהאותיות העקובות שלכם.",
   "fontmaker.panels.adv_ladino_label": "לדינו",
-  "fontmaker.panels.adv_rulers_hint": "סרגלים ממוספרים בראש אזור העריכה ובצדו השמאלי, ביחידות הגופן &mdash; האפס יושב בנקודת המוצא של האות ועל קו הבסיס. מחוון על כל סרגל עוקב אחרי מיקום המצביע, ותיבת הפינה מציגה את הזום (לחצו עליה כדי לחזור ל-100%). <strong>גררו מתוך סרגל</strong> אל הקנבס כדי להוסיף קו עזר חדש. קיצור: <strong>Shift + R</strong>.",
+  "fontmaker.panels.adv_rulers_hint": "סרגלים ממוספרים בראש אזור העריכה ובצדו השמאלי, <strong>ביחידות הגופן</strong> &mdash; האפס יושב בנקודת המוצא של האות ועל קו הבסיס. מחוון על כל סרגל עוקב אחרי מיקום המצביע, ותיבת הפינה מציגה את הזום (לחצו עליה כדי לחזור ל-100%). <strong>גררו מתוך סרגל</strong> אל הקנבס כדי להוסיף קו עזר חדש. קיצור: <strong>Shift + R</strong>.",
   "fontmaker.panels.adv_rulers_label": "סרגלים",
   "fontmaker.panels.adv_rulers_title": "הצג סרגלים בראש אזור העריכה ובצדו השמאלי (Shift + R)",
   "fontmaker.panels.adv_show_grid": "הצג רשת בקנבס",
