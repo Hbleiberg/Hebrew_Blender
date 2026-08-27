@@ -811,7 +811,6 @@ dictionary.sidebar.collapse_all,Collapse all menus,כיווץ כל התפריט�
 dictionary.sidebar.expand_all,Expand all menus,הרחבת כל התפריטים,sidebar toolbar button,
 dictionary.sidebar.hide_title,Hide sidebar,הסתרת הסרגל,sidebar hide button title,aria-label only
 dictionary.sidebar.show_title,Show sidebar,הצגת הסרגל,sidebar show button title,aria-label only
-dictionary.sidebar.resize_title,Drag to resize the sidebar (double-click to reset),גרירה לשינוי רוחב הסרגל (לחיצה כפולה לאיפוס),sidebar resize splitter,title + aria-label
 dictionary.toolbar.active_filters_aria,Active filters,מסננים פעילים,filter chips container aria-label,aria-label only
 dictionary.toolbar.copy_link,🔗 Copy link,🔗 העתקת קישור,toolbar share button,leading-emoji
 dictionary.toolbar.copy_link_title,Copy a link to this exact filtered view,העתקת קישור לתצוגה המסוננת הזו בדיוק,toolbar share button title,aria-label only
@@ -3345,6 +3344,9 @@ shared.nav.link_resources,free Hebrew teaching resources →,משאבים חינ
 shared.nav.link_torah,Torah reading practice →,תרגול קריאה בתורה ←,Related-tools nav link,shared
 shared.nav.link_trope,learn Torah trope (cantillation) →,למדו טעמי המקרא ←,Related-tools nav link,shared
 shared.nav.link_worksheets,printable Hebrew worksheets →,דפי עבודה להדפסה בעברית ←,Related-tools nav link,shared
+shared.resize.sidebar_title,Drag to resize the sidebar (double-click to reset),גרירה לשינוי רוחב הסרגל (לחיצה כפולה לאיפוס),Sidebar resize splitter — title + aria-label,"shared (carriers: dictionary, generator)"
+shared.resize.drawer_title,Drag to resize the settings drawer (double-click to reset),גרירה לשינוי רוחב חלונית ההגדרות (לחיצה כפולה לאיפוס),Settings-drawer resize handle — title + aria-label,"shared (carriers: dashboard, torah, trope)"
+shared.resize.rail_title,Drag to resize this column (double-click to reset),גרירה לשינוי רוחב העמודה הזו (לחיצה כפולה לאיפוס),Dashboard rail resize handle — title + aria-label,shared (carrier: dashboard)
 shared.toast.copied,Copied!,הועתק!,Copy-button feedback,shared
 shared.toast.copied_check,✓ Copied!,✓ הועתק!,Copy-button feedback,leading-emoji; shared
 shared.toast.imported,Imported successfully.,הייבוא הצליח.,Import success toast,shared
