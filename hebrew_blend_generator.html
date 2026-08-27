@@ -9802,7 +9802,11 @@ function appendStandardBlendSheets(ws, arr, ctx, versionLabel) {
   const verHtml = versionLabel ? `<div class="ws-version-label">${versionLabel}</div>` : '';
 
   const studentSheet = document.createElement('div');
-  studentSheet.className = 'sheet';
+  // Every sheet after the first starts a new printed page (the matching/trace multi-sheet
+  // convention). Keyed on child count, not a version index, because chunked Class Set
+  // builds append later versions from queued thunks — and Key sheets count too, so
+  // Version B breaks after Key A exactly like it does after Version A.
+  studentSheet.className = 'sheet' + (ws.childElementCount ? ' trace-page-break' : '');
   const header = document.createElement('div');
   header.className = 'ws-header';
   header.innerHTML = `
