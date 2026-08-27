@@ -1166,7 +1166,14 @@
     position: fixed;
     top: 14px; right: 16px;
     z-index: 200;
-    background: rgba(13,18,32,0.55);
+    /* The plate carries the restraint; a GROUP opacity cannot. `opacity: 0.45` faded the white
+       glyph toward whatever is behind the button, so on the cream worksheet it composited toward
+       the PAGE rather than toward its own plate: measured here at 1.78:1 light -- the only visible
+       way out of a projected fullscreen worksheet, effectively invisible. Same fix
+       classroom_dashboard.html took in d31788c (S248) and torah_trainer.html in 206a0e6, the
+       `legibility-destroyed-by-a-second-dimming-layer` pattern; this page was the last carrier.
+       The button stays quiet by being small and in a corner, not by being unreadable. */
+    background: rgba(13,18,32,0.72);
     color: #fff;
     border: 1.5px solid rgba(255,255,255,0.2);
     border-radius: 10px;
@@ -1174,13 +1181,12 @@
     min-width: 60px;   /* not `width`: the label is i18n text and overflowed this plate (S263) */
     cursor: pointer;
     backdrop-filter: blur(6px);
-    opacity: 0.45;
-    transition: opacity 0.2s, background 0.2s;
+    transition: background 0.2s;
     flex-direction: column;
     align-items: center;
     gap: 2px;
   }
-  #fsExitBtn:hover { opacity: 1; background: rgba(13,18,32,0.82); }
+  #fsExitBtn:hover { background: rgba(13,18,32,0.88); }
   #fsExitBtn .fs-x { font-size: 1.5rem; line-height: 1; }
   #fsExitBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
   body.fullscreen #fsExitBtn { display: flex; }
