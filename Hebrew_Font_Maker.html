@@ -1998,6 +1998,14 @@ function toggleDark() {
   if (bgState) boldGenRender();   // recolor the Generate Bold preview if its modal is open
 }
 /* ── Fullscreen (matches torah_trainer.html / classroom_dashboard.html) ── */
+// iPhone Safari has no element-fullscreen API, so this tap would reject silently — hide the
+// button wherever the unprefixed API this page calls is absent (no dead clicks, CLAUDE.md UX 5).
+(function () {
+  if (document.fullscreenEnabled) return;
+  const hide = () => { const b = document.getElementById('fsBtn'); if (b) b.style.display = 'none'; };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hide);
+  else hide();
+})();
 function toggleFullscreen() {
   if (!document.fullscreenElement) {
     if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();

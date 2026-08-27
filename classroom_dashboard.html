@@ -8452,6 +8452,14 @@ async function onUploadEngFontPick(input){
   }
   function fsStripText() { enterInPlaceEdit(); }
 
+  // iPhone Safari has no element-fullscreen API, so this tap would reject silently — hide the
+  // button wherever the unprefixed API this page calls is absent (no dead clicks, CLAUDE.md UX 5).
+  (function () {
+    if (document.fullscreenEnabled) return;
+    const hide = () => { const b = document.getElementById('fsBtn'); if (b) b.style.display = 'none'; };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hide);
+    else hide();
+  })();
   function toggleFullscreen() {
     if (!document.fullscreenElement) document.documentElement.requestFullscreen();
     else document.exitFullscreen();

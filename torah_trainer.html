@@ -2405,6 +2405,14 @@ function resetAllSettings() {
    ══════════════════════════════════════════════════════ */
 const FS_ENTER = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>';
 const FS_EXIT  = '<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
+// iPhone Safari has no element-fullscreen API, so this tap would reject silently — hide the
+// button wherever the unprefixed API this page calls is absent (no dead clicks, CLAUDE.md UX 5).
+(function () {
+  if (document.fullscreenEnabled) return;
+  const hide = () => { const b = document.getElementById('fsBtn'); if (b) b.style.display = 'none'; };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hide);
+  else hide();
+})();
 function toggleFullscreen() {
   if (!document.fullscreenElement) {
     if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();

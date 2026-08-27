@@ -8054,6 +8054,14 @@ function wireResultsScreen() {
    source of truth, so the button stays in sync with native Escape / OS chrome. */
 function _fsElement() { return document.fullscreenElement || document.webkitFullscreenElement || null; }
 function _fsSupported() { const el = document.documentElement; return !!(el.requestFullscreen || el.webkitRequestFullscreen); }
+// iPhone Safari has no element-fullscreen API, so this tap would reject silently — hide the
+// button where neither flavor toggleFullscreen() calls (unprefixed or webkit) exists.
+(function () {
+  if (document.fullscreenEnabled || document.webkitFullscreenEnabled) return;
+  const hide = () => { const b = document.getElementById('fsBtn'); if (b) b.style.display = 'none'; };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hide);
+  else hide();
+})();
 function toggleFullscreen() {
   try {
     if (_fsElement()) {
