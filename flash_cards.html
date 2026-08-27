@@ -3931,8 +3931,15 @@ function initPanelCollapse() {
     el.setAttribute('aria-describedby', 'tipFloat');
     el.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(el); });
     el.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openEl === el) hide(); });
-    el.addEventListener('focus', () => show(el));
-    el.addEventListener('blur', () => hide());
+    // Focus opens the tip for KEYBOARD users only. A pointer/touch press focuses the trigger
+    // before its own click lands, so an unguarded focus handler re-created the same race the
+    // pointerType guard above just closed: focus opened the bubble, then click saw it shown and
+    // shut it — one tap (or mouse click) could never open a tip. Flagging pointer-driven focus
+    // keeps Tab-to-tip working while letting tap toggle.
+    let ptrFocus = false;
+    el.addEventListener('pointerdown', () => { ptrFocus = true; });
+    el.addEventListener('focus', () => { if (ptrFocus) { ptrFocus = false; return; } show(el); });
+    el.addEventListener('blur', () => { ptrFocus = false; hide(); });
     // Natively interactive triggers (e.g. the emoji-gender <button>) keep their own click
     // action: tooltip on hover/focus only. Plain spans get the full toggle wiring.
     if (el.tagName === 'BUTTON') return;
