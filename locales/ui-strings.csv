@@ -1243,6 +1243,7 @@ flashcards.vowels.pos_3rd,3rd,שלישית,vowel-position pill / lock ordinal,
 flashcards.vowels.pos_4th,4th,רביעית,lock ordinal,
 flashcards.vowels.vowel_lock_label,Vowel Lock,נעילת תנועה,vowel lock toggle label,
 flashcards.vowels.vowel_on_letter_label,Vowel on letter:,תנועה על האות:,vowel position row label,
+flashcards.vowels.vowel_on_letter_tip,"The vowel goes on the chosen letter; the other letters take a shva (as in בְבָ) — that's how a blend is pointed, even when shva isn't in your vowel selection.","התנועה נופלת על האות שנבחרה; שאר האותיות מקבלות שווא (כמו בְבָ) — כך מנקדים צירוף אותיות, גם אם שווא לא נבחר ברשימת התנועות.",tooltip on the vowel-position row explaining the implied shva,REVIEW: HE draft; pointed example inline
 flashcards.weaknesses.cancel,Cancel,ביטול,card-count modal cancel button,
 flashcards.weaknesses.count_prompt,How many cards do you want to practice?,כמה כרטיסים אתם רוצים לתרגל?,card-count modal prompt,
 flashcards.weaknesses.count_prompt_max,Up to {count} weakness cards available. How many do you want to practice?,עד {count} כרטיסי חולשה זמינים. כמה אתם רוצים לתרגל?,card-count modal prompt,html

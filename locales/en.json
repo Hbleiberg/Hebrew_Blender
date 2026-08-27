@@ -1340,6 +1340,7 @@
   "flashcards.vowels.pos_4th": "4th",
   "flashcards.vowels.vowel_lock_label": "Vowel Lock",
   "flashcards.vowels.vowel_on_letter_label": "Vowel on letter:",
+  "flashcards.vowels.vowel_on_letter_tip": "The vowel goes on the chosen letter; the other letters take a shva (as in בְבָ) — that's how a blend is pointed, even when shva isn't in your vowel selection.",
   "flashcards.weaknesses.cancel": "Cancel",
   "flashcards.weaknesses.close_aria": "Close",
   "flashcards.weaknesses.count_prompt": "How many cards do you want to practice?",

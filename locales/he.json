@@ -1340,6 +1340,7 @@
   "flashcards.vowels.pos_4th": "רביעית",
   "flashcards.vowels.vowel_lock_label": "נעילת תנועה",
   "flashcards.vowels.vowel_on_letter_label": "תנועה על האות:",
+  "flashcards.vowels.vowel_on_letter_tip": "התנועה נופלת על האות שנבחרה; שאר האותיות מקבלות שווא (כמו בְבָ) — כך מנקדים צירוף אותיות, גם אם שווא לא נבחר ברשימת התנועות.",
   "flashcards.weaknesses.cancel": "ביטול",
   "flashcards.weaknesses.close_aria": "סגור",
   "flashcards.weaknesses.count_prompt": "כמה כרטיסים אתם רוצים לתרגל?",
