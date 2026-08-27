@@ -1138,6 +1138,22 @@
       max-height: calc(100vh - 300px);
       max-height: calc(100dvh - 300px);
     }
+    /* Bind the workspace to the viewport so the PAGE stops scrolling under a stylus drag
+       (measured +781px before; the pen-tool column scrolls in place instead). Safe to make
+       .ws-left a clipping context here: in fullscreen Draw the guide-style popovers live in
+       .ws-right, which this mode display:nones, and the Draw left column's only abs-positioned
+       descendant is the preview tile's own caption chip (audited S265) — the same overflow-y
+       rule the ≥1181px arm has shipped since v5.25. */
+    body.fullscreen.mode-draw:not(.fs-panels) .ws-grid {
+      height: calc(100vh - 24px);
+      height: calc(100dvh - 24px);
+      grid-template-rows: auto minmax(0, 1fr) 0 0;
+    }
+    body.fullscreen.mode-draw:not(.fs-panels) .ws-left {
+      align-self: stretch;
+      min-height: 0;
+      overflow-y: auto;
+    }
     /* ...and the two Save actions ride the bottom edge instead of sitting below the fold. Capping
        the canvas is not enough on a tablet: the category tabs, letter grid and step tabs above the
        workspace take ~277px before the canvas starts, so #stageBelow measured y=926..1048 in
