@@ -29,6 +29,7 @@
 - [Test-phrase chips — shared component](#test-phrase-chips--shared-component-font-pages-only)
 - [Hebrew Font Maker](#hebrew-font-maker-hebrew_font_makerhtml)
 - [Nikkud Color Coding UI](#nikkud-color-coding-ui-classroom_dashboardhtml)
+- [Resizable panels (sidebars, drawers, rails) — shared component](#resizable-panels-sidebars-drawers-rails--shared-component)
 - [Settings Drawer & Panel Collapse](#settings-drawer--panel-collapse-classroom_dashboardhtml) (persistence: [Panel-collapse memory](#shared-ux-components--the-conventions-all-tools-are-converging-on))
 - [Tooltips](#tooltips-classroom_dashboardhtml)
 - [Letter Selector](#letter-selector-hebrew_blend_generatorhtml)
@@ -299,8 +300,9 @@ Not every key belongs in the three AllTools functions. Split them:
   `*_welcomeSeen`, `*_hintSeen`, `*_mobileWarnDismissed`, and similar dismissals. Backing these up would
   just re-suppress first-run help on a fresh machine, so they stay out of export/import — but **erase
   means fresh start**, so add them to `eraseAllSettings`. (Per-device UI prefs like `hebrewBlender_zoom`,
-  `hebrewBlender_hideZoomBar`, and transient caches like `hebrewDashboard_shabbatCache` are also legitimately
-  export-exempt.)
+  `hebrewBlender_hideZoomBar`, the resizable-panel width keys (`hebrew<Tool>_<thing>W` — see
+  [Resizable panels](#resizable-panels-sidebars-drawers-rails--shared-component), all erase-registered),
+  and transient caches like `hebrewDashboard_shabbatCache` are also legitimately export-exempt.)
 
 Reconcile whenever you touch storage: every key a tool writes should be *either* registered in all three
 functions *or* consciously in the exempt set above. Treat a key that is real data yet missing from
@@ -1553,6 +1555,121 @@ from `torah_trainer.html`.
 
 ---
 
+## Resizable panels (sidebars, drawers, rails) — shared component
+
+Every fixed-width side panel is drag-resizable through one shared engine: grab the seam (or focus
+it and use arrow keys) to scale the panel; double-click or Enter restores the default. Current
+surfaces: the **Dictionary + Generator options sidebars**, the **settings drawers** on the
+Dashboard / Torah Trainer / Trope Tutor, and the **Dashboard's two widget rails**. The Font
+Maker's `.ws-split` workspace rails predate this block and deliberately stay on their own engine
+(pointer-only) — don't fold them in as a drive-by.
+
+### The two shared blocks (byte-identical, like the keyboard)
+`/* ═══ shared: sidebar-resize ═══ … */` (JS — `mountSidebarResize(cfg)`) and
+`/* ═══ shared: sidebar-resize CSS ═══ … */` (the `.sbr-*` rules). **Copy both verbatim; never
+rewrite.** Carriers: `hebrew_dictionary.html`, `hebrew_blend_generator.html`,
+`classroom_dashboard.html`, `torah_trainer.html`, `trope_tutor.html`. When a page adopts them,
+re-true the carrier list in the marker comments of **all** carriers and re-verify byte-identity
+by sha (same rule as the keyboard/app-toast blocks). Per-page wiring — the cfg object inside a
+small `init…Resize()` mount call — lives **below** the end marker. The CSS block is
+self-contained including its own reduced-motion tail, so a page whose reduced-motion block
+enumerates selectors (the Trope Tutor) needs no extra entry.
+
+### Host contract
+```js
+mountSidebarResize({
+  handle,      // the .sbr-split element (canonical markup below)
+  cssVar,      // '--tool-sidebar-w' — always written on document.documentElement, so fixed
+               //   cousins (collapse tabs, grid templates) follow one write
+  storageKey,  // bare per-device key 'hebrew<Tool>_<thing>W' (registration rule below)
+  anchor,      // 'start' | 'end' — the inline edge the PANEL is anchored to
+  min, dflt,   // px floor + the dblclick / Enter-Space reset width
+  max,         // number, or () => px for a dynamic ceiling (keep the neighbor column usable)
+  onChange     // optional; fires with the width on every apply, drag frames included
+}) → { set(px, persist), refresh() } | null
+```
+- Drag sign = `(anchor==='end' ? -1 : 1) × (dir==='rtl' ? -1 : 1)`, applied to pointer deltas
+  **and** ArrowLeft/Right — the seam always follows the pointer/arrow *visually*. Keyboard is the
+  APG window-splitter set: Arrow ±16, Shift+Arrow ±48, Home/End = bounds, Enter/Space = default.
+- **One storage write per drag** (on pointerup), never per frame. A window resize re-clamps
+  (debounced 150ms) from the user's pre-clamp *desired* width, so a squeeze is temporary.
+- Pointer deltas divide by the handle's visual/layout scale (`getBoundingClientRect().width ÷
+  offsetWidth`), so a zoomed ancestor (the dashboard's `style.zoom`) still tracks 1:1.
+  `refresh()` re-applies the desired width — call it when a dynamic max's inputs change
+  (`updateDashboardGrid` does, for the rails).
+
+### Canonical handle markup
+```html
+<div class="sbr-split sbr-flex" id="sidebarSplit" role="separator" aria-orientation="vertical"
+     tabindex="0" aria-valuemin="260" aria-valuemax="640" aria-valuenow="320"
+     title="Drag to resize the sidebar (double-click to reset)"
+     aria-label="Drag to resize the sidebar (double-click to reset)"
+     data-i18n-title="shared.resize.sidebar_title"
+     data-i18n-aria-label="shared.resize.sidebar_title"></div>
+```
+The three CSV keys already exist — `shared.resize.sidebar_title` / `.drawer_title` /
+`.rail_title` — so adopting the component adds **no** rows. The `aria-value*` numbers are just
+seeds; the mount rewrites them live. The inline English `title`/`aria-label` stay as pre-i18n
+fallbacks beside their `data-i18n-*` siblings (standard pattern).
+
+### Three geometry recipes — and what stays per-page
+Every carrier keeps per-page: the `:root { --…-w: Npx; }` seed, the panel's
+`width: var(--…-w, Npx)`, the handle's placement rule, and the kill rules (stacked media query,
+print list, collapse interplay, ak-view-style overrides).
+1. **In-flow sidebar** (dictionary, generator): handle class `sbr-split sbr-flex`, inserted as
+   the aside's **immediate next sibling** — the collapse rule
+   `#appSidebar.hidden + .sbr-split { display:none; }` depends on that adjacency. `anchor:'start'`.
+   Dynamic max keeps the main column usable: `() => Math.min(HARD_MAX, window.innerWidth - MAIN_MIN)`.
+   Add `.sbr-split` to the stacked-breakpoint kill and to any print / `body.ak-view` hide list.
+   (Generator extra: `positionSidebarTab` is the `onChange`, and the fixed hide-tab sits at the
+   seam's inline-end **+4px** so it never swallows drags — the dictionary's collapse tab bakes the
+   same 4px into its `inset-inline-start: calc(var(--dict-sidebar-w) + 4px)`.)
+2. **Settings drawer** (dashboard, torah, trope): handle class `sbr-split sbr-abs`, **first child**
+   of `#settingsModal`, page rule `#settingsResize { inset-inline-start:-4px; }` (straddles the
+   border seam; the handle intercepts its own pointerdowns, so a drag start never reaches the
+   backdrop's click-to-close). `anchor:'end'`;
+   `max: () => Math.min(640, Math.round(window.innerWidth * 0.92))` mirrors the CSS
+   `max-width:92vw`. Hide it ≤560px (a `touch-action:none` edge strip would eat phone swipes).
+   The `%`-based `translateX` closed state works at any width, and the `_settingsTrapKey` focus
+   trap picks the handle up automatically (`[tabindex]:not([tabindex="-1"])`).
+3. **Layout rail** (dashboard zones): handle class `sbr-split sbr-abs` as the zone's **last
+   child** (stable under `renderPanelLayout`'s reparenting), positioned into the grid gap
+   (`#zoneLeft > .sbr-split { inset-inline-end:-19px; width:14px; }` — a 14px strip centered in
+   the 24px gap; left rail `anchor:'start'`, right rail `anchor:'end'`). Rail widths flow through
+   custom properties referenced by the base `.dashboard` template AND every `.cols-*` variant —
+   **never an inline `grid-template-columns`** (it would beat the ≤980px single-column query).
+   Because the handle lives inside the zone, `updateDashboardGrid`'s `display:none` on an empty
+   zone hides it for free; that function's tail calls `refresh()` on both rails so the survivor's
+   dynamic max re-clamps. Rail max math measures **layout px** (`clientWidth` + computed
+   padding/gap), never `window.innerWidth` — the dashboard's `style.zoom` scales the visual box
+   only.
+
+### Collapse / close interplay
+Resize never touches the collapse machinery — `toggleSidebar()`, `openSettings()`/
+`closeSettings()`, Escape and backdrop behavior are unchanged, and whole-sidebar collapse state
+stays deliberately unpersisted. The obligation runs the other way: a collapsed or hidden panel
+must hide its handle (the `+` adjacency rule, the in-zone containment, the ak-view/print lists),
+and the engine's pointerdown guard (`getComputedStyle(handle).display === 'none'`) makes a hidden
+handle inert regardless.
+
+### Per-device width keys — erase-only registration
+Every width key is `hebrew<Tool>_<thing>W`, a bare scalar holding the px number. It **tracks the
+monitor, not the teacher**, so register it ONLY in `index.html` `eraseAllSettings()` (next to the
+existing per-device comment) — never in `exportAllSettings`/`importAllSettings`/`IVRIT_CFG`, and
+never inside a tool's settings blob or `getSettings()`. Current keys:
+`hebrewDictionary_sidebarW`, `hebrewBlender_sidebarW`, `hebrewDashboard_drawerW`,
+`hebrewDashboard_railLeftW`, `hebrewDashboard_railRightW`, `hebrewTorahTrainer_drawerW`,
+`hebrewTropeTutor_drawerW`.
+
+### Rule for any new tool
+A new fixed-width options sidebar, settings drawer, or layout rail ships drag-resize via these
+two blocks + a cfg — never a hand-rolled resizer. Pick the matching geometry recipe, mint the
+width key per the rule above, and finish per the Definition of done (the page is precached →
+**bump `sw.js` VERSION**; run `check-inline-js.mjs` + `check-i18n.js`; verify headless light+dark
+/ EN+HE / desktop+stacked, including one RTL drag).
+
+---
+
 ## Settings Drawer & Panel Collapse (`classroom_dashboard.html`)
 
 ### Drawer structure
@@ -1561,7 +1678,7 @@ The settings UI is a slide-in modal from the right edge. Three elements:
 | Element | Role |
 |---|---|
 | `.settings-backdrop` | Full-screen dark overlay; click closes drawer |
-| `.settings-modal` | The 380px panel (`max-width: 92vw`); slides in via `transform: translateX` |
+| `.settings-modal` | The panel (`width: var(--drawer-w, 380px)`, `max-width: 92vw`); slides in via `transform: translateX`; drag-resizable from its inline-start edge — see [Resizable panels](#resizable-panels-sidebars-drawers-rails--shared-component) |
 | `.settings-header` | Navy bar with title + close button (`×`) |
 | `.settings-body` | Scrollable content area holding all `.panel` blocks |
 
@@ -1592,10 +1709,10 @@ Settings are saved to `localStorage` on close.
 .settings-backdrop.open { opacity: 1; pointer-events: auto; }
 
 .settings-modal {
-  position: fixed; top: 0; right: 0;
-  width: 380px; max-width: 92vw; height: 100vh;
+  position: fixed; top: 0; inset-inline-end: 0;
+  width: var(--drawer-w, 380px); max-width: 92vw; height: 100vh;
   background: var(--white);
-  border-left: 1px solid var(--border);
+  border-inline-start: 1px solid var(--border);
   box-shadow: var(--shadow-lg);
   z-index: 100;
   transform: translateX(100%);

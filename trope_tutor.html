@@ -469,7 +469,9 @@ body.dark .btn-secondary:hover { background:#2a3349; }
 .settings-backdrop.open { opacity:1; pointer-events:auto; }
 .settings-modal {
   position:fixed; top:0; inset-inline-end:0;   /* right in LTR, left in RTL (drawer flips to the inline-end edge) */
-  width:380px; max-width:92vw;
+  /* Drag-resizable from its inline-start edge (see the shared sidebar-resize block); the 92vw
+     clamp still wins on phones, and the % translateX keeps closed correct at any width. */
+  width:var(--drawer-w, 380px); max-width:92vw;
   height:100vh; height:100dvh;   /* dvh wins where supported: 100vh is taller than the VISIBLE
      viewport while a phone URL bar is expanded, stranding the tail of this scroll container */
   background:var(--white); border-inline-start:1px solid var(--border);
@@ -482,6 +484,21 @@ body.dark .btn-secondary:hover { background:#2a3349; }
 /* RTL: drawer anchors to the left edge; the CLOSED slide-out goes the other way. [dir=rtl] .settings-modal
    ties specificity with .settings-modal.open (attr+class), so the OPEN state needs its own [dir=rtl] rule. */
 [dir="rtl"] .settings-modal { transform:translateX(-100%); }
+/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/trope_tutor — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
+.sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
+.sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
+.sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
+.sbr-split:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:-1px;}
+/* placement variants — the block styles the handle, the page positions it: */
+.sbr-flex{flex:0 0 7px;align-self:stretch;position:relative;margin-inline-start:-3px;}   /* in-flow seam between a sidebar and its main column */
+.sbr-abs{position:absolute;top:0;bottom:0;width:9px;}                                    /* edge handle (drawers, rails); page CSS sets the inset */
+@media (prefers-reduced-motion: reduce){ .sbr-split::before{transition:none !important;} }
+/* ═══ end shared: sidebar-resize CSS ═══ */
+/* Drawer resize handle: straddles the border-inline-start seam (4px over the backdrop — the
+   handle intercepts its own pointerdowns, so a drag start never reaches the backdrop's
+   click-to-close). Hidden on phones, where max-width:92vw pins the width anyway. */
+#settingsResize { inset-inline-start:-4px; }
+@media (max-width:560px) { .settings-modal .sbr-split { display:none; } }
 [dir="rtl"] .settings-modal.open { transform:translateX(0); }
 .settings-header {
   padding:14px 20px; background:var(--navy); color:#fff;
@@ -930,6 +947,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 <!-- Settings drawer -->
 <div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
 <div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-label="Trope Tutor settings" data-i18n-aria-label="trope.settings.aria">
+  <!-- Drawer resize handle on the inline-start edge (see the shared sidebar-resize block) -->
+  <div class="sbr-split sbr-abs" id="settingsResize" role="separator" aria-orientation="vertical"
+       tabindex="0" aria-valuemin="320" aria-valuemax="640" aria-valuenow="380"
+       title="Drag to resize the settings drawer (double-click to reset)"
+       aria-label="Drag to resize the settings drawer (double-click to reset)"
+       data-i18n-title="shared.resize.drawer_title"
+       data-i18n-aria-label="shared.resize.drawer_title"></div>
   <div class="settings-header">
     <h2 data-i18n="trope.settings.title">⚙ Settings</h2>
     <div class="settings-hbtns">
@@ -2542,6 +2566,139 @@ function panelMemApply() {
   if (PANEL_MEM_CFG.afterApply) PANEL_MEM_CFG.afterApply();
 }
 /* ═══════════ end shared: panel-collapse memory ═══════════ */
+
+/* ═══ shared: sidebar-resize ═════════════════════════════════════════════════
+   Drag/keyboard-resizable panel widths — in-flow sidebars, settings drawers,
+   dashboard rails. Copy this block verbatim, together with the matching
+   `shared: sidebar-resize CSS` block (keep both byte-identical across
+   carriers; carriers: hebrew_dictionary.html, hebrew_blend_generator.html,
+   classroom_dashboard.html, torah_trainer.html, trope_tutor.html), then
+   mount per handle from the page's own init (below the end marker):
+
+     mountSidebarResize({
+       handle: el,                   // .sbr-split element (role="separator",
+                                     //   aria-orientation="vertical", tabindex="0")
+       cssVar: '--tool-sidebar-w',   // width var, written on document.documentElement
+       storageKey: 'hebrewTool_sidebarW',   // bare per-device key (erase-only registration)
+       anchor: 'start',              // inline edge the PANEL is anchored to:
+                                     //   'start' (sidebar, left rail) | 'end' (drawer, right rail)
+       min: 240, dflt: 300,          // px floor + the dblclick / Enter-Space reset width
+       max: () => px,                // px ceiling — a number, or a function for dynamic bounds
+       onChange: (w) => {}           // optional: runs after every applied width, drag frames too
+     }) → { set(px, persist), refresh() } | null   (null when the handle is absent)
+
+   The width is a PER-DEVICE pref (it tracks the monitor, not the teacher), so
+   like hebrewBlender_zoom its key is export/import-exempt but IS cleared by
+   Erase All Settings — see CLAUDE.md "Resizable panels". One storage write per
+   drag (on pointerup), never per frame. Pointer deltas are divided by the
+   handle's visual/layout scale, so a zoomed ancestor (the dashboard's
+   style.zoom) still tracks the pointer 1:1. */
+function mountSidebarResize(cfg) {
+  const handle = cfg.handle;
+  if (!handle) return null;
+  /* Upper bound may be dynamic (a function): never returns less than cfg.min. */
+  const hiNow = () => {
+    const m = (typeof cfg.max === 'function') ? cfg.max() : cfg.max;
+    return Math.max(cfg.min, Math.round(m));
+  };
+  const cur = () => {
+    const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(cfg.cssVar));
+    return Number.isFinite(v) && v > 0 ? v : cfg.dflt;
+  };
+  /* 'end'-anchored panels (drawers, a right rail) grow toward inline-start, so the
+     physical delta flips — and flips AGAIN under RTL, where the whole row mirrors
+     (same rule as the Font Maker's .ws-split; see CLAUDE.md i18n rule 5). */
+  const sign = () =>
+    (cfg.anchor === 'end' ? -1 : 1) * (document.documentElement.dir === 'rtl' ? -1 : 1);
+  let desired = cfg.dflt;   // the user's chosen width, pre-clamp — see the resize handler
+  let resizeT = null;
+  const set = (px, persist) => {
+    const hi = hiNow();
+    const w = Math.round(Math.max(cfg.min, Math.min(hi, px)));
+    document.documentElement.style.setProperty(cfg.cssVar, w + 'px');
+    handle.setAttribute('aria-valuenow', String(w));
+    handle.setAttribute('aria-valuemax', String(hi));
+    if (persist) {
+      desired = w;
+      try { localStorage.setItem(cfg.storageKey, String(w)); } catch (e) { /* private mode / quota */ }
+    }
+    if (cfg.onChange) cfg.onChange(w);
+    return w;
+  };
+  let saved = NaN;
+  try { saved = parseFloat(localStorage.getItem(cfg.storageKey)); } catch (e) { /* private mode */ }
+  // Seed the aria-value* trio even with no stored pref, so the splitter reports live numbers.
+  handle.setAttribute('aria-valuemin', String(cfg.min));
+  desired = Number.isFinite(saved) ? saved : cfg.dflt;
+  set(desired, false);
+
+  let startX = 0, startW = 0, scale = 1, active = false;
+  const onMove = (e) => {
+    if (!active) return;
+    set(startW + ((e.clientX - startX) / scale) * sign(), false);
+    if (e.cancelable) e.preventDefault();
+  };
+  const onUp = () => {
+    if (!active) return;
+    active = false;
+    handle.classList.remove('dragging');
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    window.removeEventListener('pointercancel', onUp);
+    set(cur(), true);          // one write to storage per drag, not per frame
+  };
+  handle.addEventListener('pointerdown', (e) => {
+    if (e.button != null && e.button !== 0) return;
+    if (getComputedStyle(handle).display === 'none') return;   // stacked-layout guard
+    active = true; startX = e.clientX; startW = cur();
+    /* Visual px → layout px: inside a zoomed ancestor the rect is scaled while offsetWidth
+       is not. The 0.05 dead zone absorbs offsetWidth's integer rounding at scale 1. */
+    const r = handle.getBoundingClientRect().width / (handle.offsetWidth || 1);
+    scale = (Number.isFinite(r) && r > 0 && Math.abs(r - 1) >= 0.05) ? r : 1;
+    handle.classList.add('dragging');
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+    if (e.cancelable) e.preventDefault();
+  });
+  handle.addEventListener('dblclick', () => set(cfg.dflt, true));
+  // Keyboard parity (CLAUDE.md shared-UX rule 7): a focusable separator is an APG window
+  // splitter, so arrows resize, Home/End jump to the bounds, Enter/Space restores the default.
+  handle.addEventListener('keydown', (e) => {
+    const step = (e.shiftKey ? 48 : 16) * sign();
+    let w;
+    if      (e.key === 'ArrowLeft')  w = cur() - step;
+    else if (e.key === 'ArrowRight') w = cur() + step;
+    else if (e.key === 'Home')       w = cfg.min;
+    else if (e.key === 'End')        w = hiNow();
+    else if (e.key === 'Enter' || e.key === ' ') w = cfg.dflt;
+    else return;
+    e.preventDefault();
+    set(w, true);
+  });
+  // A shrinking window tightens the max. Re-clamp from `desired` rather than the live
+  // width, so a squeeze is temporary: widen the window again and the chosen width returns.
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(() => set(desired, false), 150);
+  });
+  return { set: set, refresh: () => set(desired, false) };
+}
+/* ═══ end shared: sidebar-resize ═════════════════════════════════════════════ */
+
+/* Settings-drawer resize wiring (per-page; the engine is the shared block above). */
+function initDrawerResize() {
+  mountSidebarResize({
+    handle: document.getElementById('settingsResize'),
+    cssVar: '--drawer-w',
+    storageKey: 'hebrewTropeTutor_drawerW',
+    anchor: 'end',
+    min: 320, dflt: 380,
+    max: () => Math.min(640, Math.round(window.innerWidth * 0.92))
+  });
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initDrawerResize);
+else initDrawerResize();
 
 let _settingsOpener = null;
 function _settingsTrapKey(e) {

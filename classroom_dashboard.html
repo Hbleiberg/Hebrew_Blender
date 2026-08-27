@@ -280,9 +280,13 @@
   .bidi-isolate { unicode-bidi: isolate; }
 
   /* ───── Dashboard grid ───── */
+  /* Rail widths are drag-resizable (see the shared sidebar-resize block + initRailResize).
+     They live in custom properties so the templates stay CLASS-driven — never write an inline
+     grid-template-columns; it would beat the ≤980px single-column media query. */
+  :root { --dash-rail-l: 290px; --dash-rail-r: 290px; }
   .dashboard {
     display: grid;
-    grid-template-columns: 290px 1fr 290px;
+    grid-template-columns: var(--dash-rail-l, 290px) 1fr var(--dash-rail-r, 290px);
     grid-template-rows: 1fr;
     gap: 24px;
     padding: 28px;
@@ -304,12 +308,22 @@
     background: #1e2535;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
-  /* Side rails — the "left"/"right" panelLayout zones (renderPanelLayout reparents panels here) */
+  /* Side rails — the "left"/"right" panelLayout zones (renderPanelLayout reparents panels here).
+     position:relative anchors each rail's absolute .sbr-split resize handle (kept INSIDE the
+     zone so updateDashboardGrid's display:none on an empty zone hides its handle for free). */
   .zone-col {
     display: flex;
     flex-direction: column;
     gap: 16px;
     min-width: 0;
+    position: relative;
+  }
+  /* Rail resize handles: a 14px grab strip centered in the 24px grid gap, invisible at rest
+     (nothing shows in the projected view until hover/drag). */
+  #zoneLeft > .sbr-split  { inset-inline-end: -19px; width: 14px; }
+  #zoneRight > .sbr-split { inset-inline-start: -19px; width: 14px; }
+  @media (max-width: 980px) {
+    .zone-col > .sbr-split { display: none; }   /* stacked layout: nothing to resize */
   }
   /* Cards size to content and top-align in any rail (position-independent, so a moved panel
      never balloons); only the video panel stretches to fill (see below). */
@@ -355,8 +369,8 @@
   /* Zone-emptiness column collapse — class-driven and desktop-scoped so the ≤980px
      single-column media query always wins (an inline grid-template would beat it). */
   @media (min-width: 981px) {
-    .dashboard.cols-no-left  { grid-template-columns: 1fr 290px; }
-    .dashboard.cols-no-right { grid-template-columns: 290px 1fr; }
+    .dashboard.cols-no-left  { grid-template-columns: 1fr var(--dash-rail-r, 290px); }
+    .dashboard.cols-no-right { grid-template-columns: var(--dash-rail-l, 290px) 1fr; }
     .dashboard.cols-center-only { grid-template-columns: 1fr; }
   }
 
@@ -817,7 +831,9 @@
   .settings-modal {
     position: fixed;
     top: 0; inset-inline-end: 0;
-    width: 380px;
+    /* Drag-resizable from its inline-start edge (see the shared sidebar-resize block); the
+       92vw clamp still wins on phones, and the % translateX keeps closed correct at any width. */
+    width: var(--drawer-w, 380px);
     max-width: 92vw;
     /* dvh wins where supported: vh units are taller than the VISIBLE viewport while a
        phone URL bar is expanded, stranding the tail of this scroll container. */
@@ -838,6 +854,22 @@
      The .open rule is repeated at [dir=rtl] specificity so it wins the attr+class tie against the base. */
   [dir="rtl"] .settings-modal { transform: translateX(-100%); }
   [dir="rtl"] .settings-modal.open { transform: translateX(0); }
+/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/trope_tutor — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
+.sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
+.sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
+.sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
+.sbr-split:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:-1px;}
+/* placement variants — the block styles the handle, the page positions it: */
+.sbr-flex{flex:0 0 7px;align-self:stretch;position:relative;margin-inline-start:-3px;}   /* in-flow seam between a sidebar and its main column */
+.sbr-abs{position:absolute;top:0;bottom:0;width:9px;}                                    /* edge handle (drawers, rails); page CSS sets the inset */
+@media (prefers-reduced-motion: reduce){ .sbr-split::before{transition:none !important;} }
+/* ═══ end shared: sidebar-resize CSS ═══ */
+  /* Drawer resize handle: straddles the border-inline-start seam (4px over the backdrop — the
+     handle intercepts its own pointerdowns, so a drag start never reaches the backdrop's
+     click-to-close). Hidden on phones, where max-width:92vw pins the width anyway and a
+     touch-action:none edge strip would only eat swipes. */
+  #settingsResize { inset-inline-start: -4px; }
+  @media (max-width: 560px) { .settings-modal .sbr-split { display: none; } }
   .settings-header {
     padding: 14px 20px;
     background: var(--navy);
@@ -1871,6 +1903,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="omer-block" id="omerPanel" style="display:none;"></div>
     </div>
   </div>
+  <!-- Rail resize handle — stays the zone's LAST child (renderPanelLayout reparents panels
+       with insertBefore, and a trailing handle converges back to the tail) -->
+  <div class="sbr-split sbr-abs" id="railLeftSplit" role="separator" aria-orientation="vertical"
+       tabindex="0" aria-valuemin="220" aria-valuemax="480" aria-valuenow="290"
+       title="Drag to resize this column (double-click to reset)"
+       aria-label="Drag to resize this column (double-click to reset)"
+       data-i18n-title="shared.resize.rail_title"
+       data-i18n-aria-label="shared.resize.rail_title"></div>
   </div><!-- CENTER: Date / Time / Custom Text (fixed — not a movable panel) --><div class="dash-col dash-center">
     <div id="dateTimeBlock" style="width:100%;">
       <div class="eng-date" id="engDate"></div>
@@ -1930,6 +1970,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div class="picker-progress" id="pickerProgress"></div>
       </div>
     </div>
+  <!-- Rail resize handle — stays the zone's LAST child (see #railLeftSplit) -->
+  <div class="sbr-split sbr-abs" id="railRightSplit" role="separator" aria-orientation="vertical"
+       tabindex="0" aria-valuemin="220" aria-valuemax="480" aria-valuenow="290"
+       title="Drag to resize this column (double-click to reset)"
+       aria-label="Drag to resize this column (double-click to reset)"
+       data-i18n-title="shared.resize.rail_title"
+       data-i18n-aria-label="shared.resize.rail_title"></div>
   </div>
 </div>
 <!-- Below zone (panelLayout zone "below") — full-width panels live INSIDE this container -->
@@ -2029,6 +2076,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <span id="a11yStatus" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;"></span>
 <!-- ───── Settings drawer ───── --><div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
 <div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-label="Dashboard settings" data-i18n-aria-label="dashboard.settings.drawer_aria">
+  <!-- Drawer resize handle on the inline-start edge (see the shared sidebar-resize block) -->
+  <div class="sbr-split sbr-abs" id="settingsResize" role="separator" aria-orientation="vertical"
+       tabindex="0" aria-valuemin="320" aria-valuemax="640" aria-valuenow="380"
+       title="Drag to resize the settings drawer (double-click to reset)"
+       aria-label="Drag to resize the settings drawer (double-click to reset)"
+       data-i18n-title="shared.resize.drawer_title"
+       data-i18n-aria-label="shared.resize.drawer_title"></div>
   <div class="settings-header">
     <h2 data-i18n="dashboard.settings.header">⚙️  Dashboard Settings</h2>
     <div class="settings-hbtns">
@@ -4483,6 +4537,174 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     dashboard.classList.toggle('cols-no-left', !leftShown && rightShown);
     dashboard.classList.toggle('cols-no-right', leftShown && !rightShown);
     dashboard.classList.toggle('cols-center-only', !leftShown && !rightShown);
+    // A rail's ceiling depends on whether the OTHER rail is showing (dynamic max in
+    // initResizeHandles) — re-clamp both whenever zone visibility may have changed.
+    if (_railMounts.left)  _railMounts.left.refresh();
+    if (_railMounts.right) _railMounts.right.refresh();
+  }
+
+/* ═══ shared: sidebar-resize ═════════════════════════════════════════════════
+   Drag/keyboard-resizable panel widths — in-flow sidebars, settings drawers,
+   dashboard rails. Copy this block verbatim, together with the matching
+   `shared: sidebar-resize CSS` block (keep both byte-identical across
+   carriers; carriers: hebrew_dictionary.html, hebrew_blend_generator.html,
+   classroom_dashboard.html, torah_trainer.html, trope_tutor.html), then
+   mount per handle from the page's own init (below the end marker):
+
+     mountSidebarResize({
+       handle: el,                   // .sbr-split element (role="separator",
+                                     //   aria-orientation="vertical", tabindex="0")
+       cssVar: '--tool-sidebar-w',   // width var, written on document.documentElement
+       storageKey: 'hebrewTool_sidebarW',   // bare per-device key (erase-only registration)
+       anchor: 'start',              // inline edge the PANEL is anchored to:
+                                     //   'start' (sidebar, left rail) | 'end' (drawer, right rail)
+       min: 240, dflt: 300,          // px floor + the dblclick / Enter-Space reset width
+       max: () => px,                // px ceiling — a number, or a function for dynamic bounds
+       onChange: (w) => {}           // optional: runs after every applied width, drag frames too
+     }) → { set(px, persist), refresh() } | null   (null when the handle is absent)
+
+   The width is a PER-DEVICE pref (it tracks the monitor, not the teacher), so
+   like hebrewBlender_zoom its key is export/import-exempt but IS cleared by
+   Erase All Settings — see CLAUDE.md "Resizable panels". One storage write per
+   drag (on pointerup), never per frame. Pointer deltas are divided by the
+   handle's visual/layout scale, so a zoomed ancestor (the dashboard's
+   style.zoom) still tracks the pointer 1:1. */
+function mountSidebarResize(cfg) {
+  const handle = cfg.handle;
+  if (!handle) return null;
+  /* Upper bound may be dynamic (a function): never returns less than cfg.min. */
+  const hiNow = () => {
+    const m = (typeof cfg.max === 'function') ? cfg.max() : cfg.max;
+    return Math.max(cfg.min, Math.round(m));
+  };
+  const cur = () => {
+    const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(cfg.cssVar));
+    return Number.isFinite(v) && v > 0 ? v : cfg.dflt;
+  };
+  /* 'end'-anchored panels (drawers, a right rail) grow toward inline-start, so the
+     physical delta flips — and flips AGAIN under RTL, where the whole row mirrors
+     (same rule as the Font Maker's .ws-split; see CLAUDE.md i18n rule 5). */
+  const sign = () =>
+    (cfg.anchor === 'end' ? -1 : 1) * (document.documentElement.dir === 'rtl' ? -1 : 1);
+  let desired = cfg.dflt;   // the user's chosen width, pre-clamp — see the resize handler
+  let resizeT = null;
+  const set = (px, persist) => {
+    const hi = hiNow();
+    const w = Math.round(Math.max(cfg.min, Math.min(hi, px)));
+    document.documentElement.style.setProperty(cfg.cssVar, w + 'px');
+    handle.setAttribute('aria-valuenow', String(w));
+    handle.setAttribute('aria-valuemax', String(hi));
+    if (persist) {
+      desired = w;
+      try { localStorage.setItem(cfg.storageKey, String(w)); } catch (e) { /* private mode / quota */ }
+    }
+    if (cfg.onChange) cfg.onChange(w);
+    return w;
+  };
+  let saved = NaN;
+  try { saved = parseFloat(localStorage.getItem(cfg.storageKey)); } catch (e) { /* private mode */ }
+  // Seed the aria-value* trio even with no stored pref, so the splitter reports live numbers.
+  handle.setAttribute('aria-valuemin', String(cfg.min));
+  desired = Number.isFinite(saved) ? saved : cfg.dflt;
+  set(desired, false);
+
+  let startX = 0, startW = 0, scale = 1, active = false;
+  const onMove = (e) => {
+    if (!active) return;
+    set(startW + ((e.clientX - startX) / scale) * sign(), false);
+    if (e.cancelable) e.preventDefault();
+  };
+  const onUp = () => {
+    if (!active) return;
+    active = false;
+    handle.classList.remove('dragging');
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    window.removeEventListener('pointercancel', onUp);
+    set(cur(), true);          // one write to storage per drag, not per frame
+  };
+  handle.addEventListener('pointerdown', (e) => {
+    if (e.button != null && e.button !== 0) return;
+    if (getComputedStyle(handle).display === 'none') return;   // stacked-layout guard
+    active = true; startX = e.clientX; startW = cur();
+    /* Visual px → layout px: inside a zoomed ancestor the rect is scaled while offsetWidth
+       is not. The 0.05 dead zone absorbs offsetWidth's integer rounding at scale 1. */
+    const r = handle.getBoundingClientRect().width / (handle.offsetWidth || 1);
+    scale = (Number.isFinite(r) && r > 0 && Math.abs(r - 1) >= 0.05) ? r : 1;
+    handle.classList.add('dragging');
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+    if (e.cancelable) e.preventDefault();
+  });
+  handle.addEventListener('dblclick', () => set(cfg.dflt, true));
+  // Keyboard parity (CLAUDE.md shared-UX rule 7): a focusable separator is an APG window
+  // splitter, so arrows resize, Home/End jump to the bounds, Enter/Space restores the default.
+  handle.addEventListener('keydown', (e) => {
+    const step = (e.shiftKey ? 48 : 16) * sign();
+    let w;
+    if      (e.key === 'ArrowLeft')  w = cur() - step;
+    else if (e.key === 'ArrowRight') w = cur() + step;
+    else if (e.key === 'Home')       w = cfg.min;
+    else if (e.key === 'End')        w = hiNow();
+    else if (e.key === 'Enter' || e.key === ' ') w = cfg.dflt;
+    else return;
+    e.preventDefault();
+    set(w, true);
+  });
+  // A shrinking window tightens the max. Re-clamp from `desired` rather than the live
+  // width, so a squeeze is temporary: widen the window again and the chosen width returns.
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(() => set(desired, false), 150);
+  });
+  return { set: set, refresh: () => set(desired, false) };
+}
+/* ═══ end shared: sidebar-resize ═════════════════════════════════════════════ */
+
+  /* Resize wiring (per-page; the engine is the shared block above): the settings drawer plus
+     the two dashboard rails. Rail ceilings are dynamic and measured in LAYOUT px —
+     .dashboard carries style.zoom, and clientWidth / the width vars share its pre-zoom
+     coordinate space (the shared block's pointer-scale correction bridges the visual side) —
+     so the center column keeps ≥300px at any zoom, whatever the other rail is doing. */
+  let _railMounts = { left: null, right: null };
+  function _railMaxFor(otherVar, otherZone) {
+    const dash = document.querySelector('.dashboard');
+    if (!dash) return 480;
+    const cs = getComputedStyle(dash);
+    const pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+    const gap = parseFloat(cs.columnGap) || 24;
+    const otherShown = !!otherZone && otherZone.style.display !== 'none';
+    const otherW = otherShown
+      ? (parseFloat(getComputedStyle(document.documentElement).getPropertyValue(otherVar)) || 290)
+      : 0;
+    return Math.min(480, dash.clientWidth - pad - gap * (otherShown ? 2 : 1) - otherW - 300);
+  }
+  function initResizeHandles() {
+    mountSidebarResize({
+      handle: document.getElementById('settingsResize'),
+      cssVar: '--drawer-w',
+      storageKey: 'hebrewDashboard_drawerW',
+      anchor: 'end',
+      min: 320, dflt: 380,
+      max: () => Math.min(640, Math.round(window.innerWidth * 0.92))
+    });
+    _railMounts.left = mountSidebarResize({
+      handle: document.getElementById('railLeftSplit'),
+      cssVar: '--dash-rail-l',
+      storageKey: 'hebrewDashboard_railLeftW',
+      anchor: 'start',
+      min: 220, dflt: 290,
+      max: () => _railMaxFor('--dash-rail-r', document.getElementById('zoneRight'))
+    });
+    _railMounts.right = mountSidebarResize({
+      handle: document.getElementById('railRightSplit'),
+      cssVar: '--dash-rail-r',
+      storageKey: 'hebrewDashboard_railRightW',
+      anchor: 'end',
+      min: 220, dflt: 290,
+      max: () => _railMaxFor('--dash-rail-l', document.getElementById('zoneLeft'))
+    });
   }
 
   /* ────────── MOVE-PANELS EDIT MODE ────────── */
@@ -8423,6 +8645,7 @@ function panelMemApply() {
     initTimer();
     initOmer();
     initStudentPicker();
+    initResizeHandles();     // drawer + rail drag resizers (shared sidebar-resize block); before updateDashboardGrid so its refresh() re-clamp sees live mounts
     updateDashboardGrid();   // initTimer/initStudentPicker set timer/picker display — recompute zone collapse now that visibility is final
     renderPresets();
     checkSchedule();

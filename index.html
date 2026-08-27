@@ -1068,6 +1068,14 @@ function eraseAllSettings() {
     // Dictionary sidebar width: a per-device layout pref like hebrewBlender_zoom (it tracks the
     // monitor, not the teacher), so export/import-exempt — but erase restores the 300px default.
     'hebrewDictionary_sidebarW',
+    // Same per-device rule for every other resizable panel width (the shared sidebar-resize
+    // block — see CLAUDE.md "Resizable panels"): export/import-exempt, erased to defaults.
+    'hebrewBlender_sidebarW',
+    'hebrewDashboard_drawerW',
+    'hebrewDashboard_railLeftW',
+    'hebrewDashboard_railRightW',
+    'hebrewTorahTrainer_drawerW',
+    'hebrewTropeTutor_drawerW',
     'hebrewFlashCards_tourSeen',
     // one-time UI flags: export-exempt, but "erase means fresh start" clears them all
     'hebrewBlender_tourSeen',

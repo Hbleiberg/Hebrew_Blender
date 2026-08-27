@@ -321,15 +321,17 @@ header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px
 :root{--dict-sidebar-w:300px;}
 .sidebar{width:var(--dict-sidebar-w);flex-shrink:0;background:var(--white);border-inline-end:1px solid var(--border);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
 #appSidebar.hidden{display:none;}
-/* Drag-to-resize splitter, sitting between the sidebar and the results column. Visual language
-   mirrors the Font Maker's .ws-split: invisible at rest (the sidebar's own border-inline-end is
-   the resting hairline), thickening to gold on hover/focus/drag. The negative inline-start margin
-   straddles that border so the grab zone is centered on the seam the user sees. */
-.sidebar-split{flex:0 0 7px;align-self:stretch;position:relative;cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;margin-inline-start:-3px;z-index:5;}
-.sidebar-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
-.sidebar-split:hover::before,.sidebar-split:focus-visible::before,.sidebar-split.dragging::before{width:4px;background:var(--gold);}
-.sidebar-split:focus-visible{outline:2px solid var(--gold);outline-offset:-1px;}
-#appSidebar.hidden + .sidebar-split{display:none;}
+/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/trope_tutor — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
+.sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
+.sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
+.sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
+.sbr-split:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:-1px;}
+/* placement variants — the block styles the handle, the page positions it: */
+.sbr-flex{flex:0 0 7px;align-self:stretch;position:relative;margin-inline-start:-3px;}   /* in-flow seam between a sidebar and its main column */
+.sbr-abs{position:absolute;top:0;bottom:0;width:9px;}                                    /* edge handle (drawers, rails); page CSS sets the inset */
+@media (prefers-reduced-motion: reduce){ .sbr-split::before{transition:none !important;} }
+/* ═══ end shared: sidebar-resize CSS ═══ */
+#appSidebar.hidden + .sbr-split{display:none;}
 /* Offset by the splitter's outer half so the two never overlap: the tab sits at 50vh, which is
    exactly where a hand reaches for the edge, and a fixed 24px button over the 7px grab zone
    would swallow the drag there (it out-stacks the splitter's z-index:5). 4px is invisible. */
@@ -722,7 +724,7 @@ footer summary{min-height:24px;}
   #mobileBar{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:var(--cream);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
   #mobileBar .search-wrap{margin:0;}
   .content{overflow-y:visible;padding:14px 12px;}
-  .sidebar-toggle-btn,.sidebar-show-btn,#fsBtn,.sidebar-split{display:none!important;}
+  .sidebar-toggle-btn,.sidebar-show-btn,#fsBtn,.sbr-split{display:none!important;}
   body{overflow-y:auto;}
   .results-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
   header{padding:10px 12px;gap:10px;border-bottom-width:3px;}
@@ -841,7 +843,7 @@ footer summary{min-height:24px;}
      `#appToast` is position:fixed, so a toast still on screen at print time repeats its box-shadow
      slab on EVERY sheet; the dashboard and flash cards already hide it — this converges on them. */
   header, footer, .sidebar, #appSidebar, #mobileBar, .toolbar, .filter-chips, .load-more-btn,
-  #fsBtn, .sidebar-toggle-btn, .sidebar-show-btn, .sidebar-split, #tipFloat, #shoreshControls, #appToast,
+  #fsBtn, .sidebar-toggle-btn, .sidebar-show-btn, .sbr-split, #tipFloat, #shoreshControls, #appToast,
   .wc-copy, .wc-search, .wc-speak, .wm-overlay, .tour-spot, .tour-card { display:none !important; }
   .app, .main, .content { overflow:visible !important; }
   .word-card, .emoji-card { break-inside:avoid; }
@@ -1196,12 +1198,12 @@ footer summary{min-height:24px;}
 
   </aside>
 
-  <div class="sidebar-split" id="sidebarSplit" role="separator" aria-orientation="vertical"
+  <div class="sbr-split sbr-flex" id="sidebarSplit" role="separator" aria-orientation="vertical"
        tabindex="0" aria-valuemin="240" aria-valuemax="620" aria-valuenow="300"
        title="Drag to resize the sidebar (double-click to reset)"
        aria-label="Drag to resize the sidebar (double-click to reset)"
-       data-i18n-title="dictionary.sidebar.resize_title"
-       data-i18n-aria-label="dictionary.sidebar.resize_title"></div>
+       data-i18n-title="shared.resize.sidebar_title"
+       data-i18n-aria-label="shared.resize.sidebar_title"></div>
 
   <div class="main">
     <div id="mobileBar"></div>
@@ -3462,52 +3464,75 @@ function toggleSidebar() {
   hide.style.display = c ? 'none' : 'flex';
 }
 
-/* ── Adjustable filter sidebar ────────────────────────────────────────────────
-   The on-screen Hebrew keyboard's SI-1452 rows deliberately scroll rather than crush their
-   keys below the 24px touch floor, which at the old fixed 300px meant a permanent horizontal
-   scrollbar under the letter rows. Rather than shrink the keys, let the teacher widen the
-   sidebar — which also gives the theme/POS filter grids room.
-   The width is a PER-DEVICE pref (it tracks the monitor, not the teacher), so like
-   hebrewBlender_zoom it is export/import-exempt but IS cleared by Erase All Settings. */
-const SB_KEY = 'hebrewDictionary_sidebarW';
-const SB_MIN = 240, SB_MAX = 620, SB_DEFAULT = 300, SB_MAIN_MIN = 320;
-let _sbResizeT = null;
-let _sbDesired = SB_DEFAULT;   // the user's chosen width, pre-clamp — see the resize handler
-/* Upper bound is dynamic: the results column never drops below SB_MAIN_MIN, so a narrow
-   window caps the sidebar tighter than SB_MAX. Never returns less than SB_MIN. */
-function sbMaxWidth() { return Math.max(SB_MIN, Math.min(SB_MAX, window.innerWidth - SB_MAIN_MIN)); }
-function sbCurWidth() {
-  const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dict-sidebar-w'));
-  return Number.isFinite(v) && v > 0 ? v : SB_DEFAULT;
-}
-function setSidebarWidth(px, persist) {
-  const hi = sbMaxWidth();
-  const w = Math.round(Math.max(SB_MIN, Math.min(hi, px)));
-  document.documentElement.style.setProperty('--dict-sidebar-w', w + 'px');
-  const h = document.getElementById('sidebarSplit');
-  if (h) { h.setAttribute('aria-valuenow', String(w)); h.setAttribute('aria-valuemax', String(hi)); }
-  if (persist) {
-    _sbDesired = w;
-    try { localStorage.setItem(SB_KEY, String(w)); } catch (e) { /* private mode / quota */ }
-  }
-  return w;
-}
-function initSidebarResize() {
-  const handle = document.getElementById('sidebarSplit');
-  if (!handle) return;
-  let saved = NaN;
-  try { saved = parseFloat(localStorage.getItem(SB_KEY)); } catch (e) { /* private mode */ }
-  // Seed the aria-value* pair even with no stored pref, so the splitter reports live numbers.
-  _sbDesired = Number.isFinite(saved) ? saved : SB_DEFAULT;
-  setSidebarWidth(_sbDesired, false);
+/* ═══ shared: sidebar-resize ═════════════════════════════════════════════════
+   Drag/keyboard-resizable panel widths — in-flow sidebars, settings drawers,
+   dashboard rails. Copy this block verbatim, together with the matching
+   `shared: sidebar-resize CSS` block (keep both byte-identical across
+   carriers; carriers: hebrew_dictionary.html, hebrew_blend_generator.html,
+   classroom_dashboard.html, torah_trainer.html, trope_tutor.html), then
+   mount per handle from the page's own init (below the end marker):
 
-  let startX = 0, startW = 0, active = false;
+     mountSidebarResize({
+       handle: el,                   // .sbr-split element (role="separator",
+                                     //   aria-orientation="vertical", tabindex="0")
+       cssVar: '--tool-sidebar-w',   // width var, written on document.documentElement
+       storageKey: 'hebrewTool_sidebarW',   // bare per-device key (erase-only registration)
+       anchor: 'start',              // inline edge the PANEL is anchored to:
+                                     //   'start' (sidebar, left rail) | 'end' (drawer, right rail)
+       min: 240, dflt: 300,          // px floor + the dblclick / Enter-Space reset width
+       max: () => px,                // px ceiling — a number, or a function for dynamic bounds
+       onChange: (w) => {}           // optional: runs after every applied width, drag frames too
+     }) → { set(px, persist), refresh() } | null   (null when the handle is absent)
+
+   The width is a PER-DEVICE pref (it tracks the monitor, not the teacher), so
+   like hebrewBlender_zoom its key is export/import-exempt but IS cleared by
+   Erase All Settings — see CLAUDE.md "Resizable panels". One storage write per
+   drag (on pointerup), never per frame. Pointer deltas are divided by the
+   handle's visual/layout scale, so a zoomed ancestor (the dashboard's
+   style.zoom) still tracks the pointer 1:1. */
+function mountSidebarResize(cfg) {
+  const handle = cfg.handle;
+  if (!handle) return null;
+  /* Upper bound may be dynamic (a function): never returns less than cfg.min. */
+  const hiNow = () => {
+    const m = (typeof cfg.max === 'function') ? cfg.max() : cfg.max;
+    return Math.max(cfg.min, Math.round(m));
+  };
+  const cur = () => {
+    const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(cfg.cssVar));
+    return Number.isFinite(v) && v > 0 ? v : cfg.dflt;
+  };
+  /* 'end'-anchored panels (drawers, a right rail) grow toward inline-start, so the
+     physical delta flips — and flips AGAIN under RTL, where the whole row mirrors
+     (same rule as the Font Maker's .ws-split; see CLAUDE.md i18n rule 5). */
+  const sign = () =>
+    (cfg.anchor === 'end' ? -1 : 1) * (document.documentElement.dir === 'rtl' ? -1 : 1);
+  let desired = cfg.dflt;   // the user's chosen width, pre-clamp — see the resize handler
+  let resizeT = null;
+  const set = (px, persist) => {
+    const hi = hiNow();
+    const w = Math.round(Math.max(cfg.min, Math.min(hi, px)));
+    document.documentElement.style.setProperty(cfg.cssVar, w + 'px');
+    handle.setAttribute('aria-valuenow', String(w));
+    handle.setAttribute('aria-valuemax', String(hi));
+    if (persist) {
+      desired = w;
+      try { localStorage.setItem(cfg.storageKey, String(w)); } catch (e) { /* private mode / quota */ }
+    }
+    if (cfg.onChange) cfg.onChange(w);
+    return w;
+  };
+  let saved = NaN;
+  try { saved = parseFloat(localStorage.getItem(cfg.storageKey)); } catch (e) { /* private mode */ }
+  // Seed the aria-value* trio even with no stored pref, so the splitter reports live numbers.
+  handle.setAttribute('aria-valuemin', String(cfg.min));
+  desired = Number.isFinite(saved) ? saved : cfg.dflt;
+  set(desired, false);
+
+  let startX = 0, startW = 0, scale = 1, active = false;
   const onMove = (e) => {
     if (!active) return;
-    // The flex row mirrors under RTL, so the physical delta flips (same rule as the Font
-    // Maker's .ws-split; see CLAUDE.md i18n rule 5).
-    const dx = (e.clientX - startX) * (document.documentElement.dir === 'rtl' ? -1 : 1);
-    setSidebarWidth(startW + dx, false);
+    set(startW + ((e.clientX - startX) / scale) * sign(), false);
     if (e.cancelable) e.preventDefault();
   };
   const onUp = () => {
@@ -3517,39 +3542,63 @@ function initSidebarResize() {
     window.removeEventListener('pointermove', onMove);
     window.removeEventListener('pointerup', onUp);
     window.removeEventListener('pointercancel', onUp);
-    setSidebarWidth(sbCurWidth(), true);          // one write to storage per drag, not per frame
+    set(cur(), true);          // one write to storage per drag, not per frame
   };
   handle.addEventListener('pointerdown', (e) => {
     if (e.button != null && e.button !== 0) return;
-    if (getComputedStyle(handle).display === 'none') return;   // stacked (<=680px) guard
-    active = true; startX = e.clientX; startW = sbCurWidth();
+    if (getComputedStyle(handle).display === 'none') return;   // stacked-layout guard
+    active = true; startX = e.clientX; startW = cur();
+    /* Visual px → layout px: inside a zoomed ancestor the rect is scaled while offsetWidth
+       is not. The 0.05 dead zone absorbs offsetWidth's integer rounding at scale 1. */
+    const r = handle.getBoundingClientRect().width / (handle.offsetWidth || 1);
+    scale = (Number.isFinite(r) && r > 0 && Math.abs(r - 1) >= 0.05) ? r : 1;
     handle.classList.add('dragging');
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
     window.addEventListener('pointercancel', onUp);
     if (e.cancelable) e.preventDefault();
   });
-  handle.addEventListener('dblclick', () => setSidebarWidth(SB_DEFAULT, true));
+  handle.addEventListener('dblclick', () => set(cfg.dflt, true));
   // Keyboard parity (CLAUDE.md shared-UX rule 7): a focusable separator is an APG window
   // splitter, so arrows resize, Home/End jump to the bounds, Enter/Space restores the default.
   handle.addEventListener('keydown', (e) => {
-    const step = e.shiftKey ? 48 : 16;
-    const rtl = document.documentElement.dir === 'rtl' ? -1 : 1;
+    const step = (e.shiftKey ? 48 : 16) * sign();
     let w;
-    if      (e.key === 'ArrowLeft')  w = sbCurWidth() - step * rtl;
-    else if (e.key === 'ArrowRight') w = sbCurWidth() + step * rtl;
-    else if (e.key === 'Home')       w = SB_MIN;
-    else if (e.key === 'End')        w = sbMaxWidth();
-    else if (e.key === 'Enter' || e.key === ' ') w = SB_DEFAULT;
+    if      (e.key === 'ArrowLeft')  w = cur() - step;
+    else if (e.key === 'ArrowRight') w = cur() + step;
+    else if (e.key === 'Home')       w = cfg.min;
+    else if (e.key === 'End')        w = hiNow();
+    else if (e.key === 'Enter' || e.key === ' ') w = cfg.dflt;
     else return;
     e.preventDefault();
-    setSidebarWidth(w, true);
+    set(w, true);
   });
-  // A shrinking window tightens sbMaxWidth(). Re-clamp from _sbDesired rather than from the
-  // live width, so a squeeze is temporary: widen the window again and the chosen width returns.
+  // A shrinking window tightens the max. Re-clamp from `desired` rather than the live
+  // width, so a squeeze is temporary: widen the window again and the chosen width returns.
   window.addEventListener('resize', () => {
-    clearTimeout(_sbResizeT);
-    _sbResizeT = setTimeout(() => setSidebarWidth(_sbDesired, false), 150);
+    clearTimeout(resizeT);
+    resizeT = setTimeout(() => set(desired, false), 150);
+  });
+  return { set: set, refresh: () => set(desired, false) };
+}
+/* ═══ end shared: sidebar-resize ═════════════════════════════════════════════ */
+
+/* ── Adjustable filter sidebar (wiring for the shared sidebar-resize block above) ─────────────
+   The on-screen Hebrew keyboard's SI-1452 rows deliberately scroll rather than crush their
+   keys below the 24px touch floor, which at the old fixed 300px meant a permanent horizontal
+   scrollbar under the letter rows. Rather than shrink the keys, let the teacher widen the
+   sidebar — which also gives the theme/POS filter grids room. Bounds and the storage key
+   predate the shared block, so previously saved widths carry over unchanged. */
+function initSidebarResize() {
+  mountSidebarResize({
+    handle: document.getElementById('sidebarSplit'),
+    cssVar: '--dict-sidebar-w',
+    storageKey: 'hebrewDictionary_sidebarW',
+    anchor: 'start',
+    min: 240, dflt: 300,
+    /* Dynamic ceiling: the results column never drops below 320px, so a narrow window caps
+       the sidebar tighter than the 620px hard max. */
+    max: () => Math.min(620, window.innerWidth - 320)
   });
 }
 
