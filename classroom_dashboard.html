@@ -1390,7 +1390,7 @@
     border: 1.5px solid rgba(255,255,255,0.2);
     border-radius: 10px;
     padding: 8px 10px 6px;
-    width: 60px;
+    min-width: 60px;   /* not `width`: the label is i18n text and overflowed this plate (S263) */
     cursor: pointer;
     backdrop-filter: blur(6px);
     transition: background 0.2s;
