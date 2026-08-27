@@ -1129,6 +1129,8 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   margin-top: 16px;
 }
 .results-actions .btn { padding: 14px; font-size: 1rem; font-weight: 600; }
+.results-savedeck { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.results-savedeck .preset-row[hidden] { display: none; } /* .preset-row's flex beats the UA hidden rule */
 
 /* ============== GUIDED TOUR (ported from hebrew_blend_generator.html) ============== */
 @keyframes attnPulse {
@@ -2117,6 +2119,15 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div class="panel-body">
       <ul class="results-list" id="resultsList"></ul>
     </div>
+  </div>
+
+  <div class="results-savedeck" id="resultsSaveDeck">
+    <button class="btn ghost" id="saveDeckBtn" data-i18n="flashcards.results.save_deck">📌 Save This Card Set as a Preset</button>
+    <div class="preset-row" id="saveDeckRow" hidden>
+      <input type="text" class="preset-input" id="saveDeckName" placeholder="Preset name…" data-i18n-placeholder="flashcards.teachertools.preset_name_placeholder" aria-label="Preset name…" data-i18n-aria-label="flashcards.teachertools.preset_name_placeholder" maxlength="40" autocapitalize="words" autocomplete="off" />
+      <button class="btn primary sm" id="saveDeckConfirmBtn" data-i18n="flashcards.teachertools.save_button">Save</button>
+    </div>
+    <p class="sub" id="saveDeckNote" role="status" aria-live="polite" style="display:none;"></p>
   </div>
 
   <div class="results-actions">
@@ -4363,6 +4374,26 @@ function savePreset() {
   writePresets(presets);
   nameInput.value = '';
   renderPresets();
+}
+/* Results-screen "save this card set" — savePreset()'s twin: same store, same validation
+   vehicle, its own input/note elements (the setup panel is a screen away when the urge hits). */
+function _setSaveDeckNote(msg) {
+  const note = document.getElementById('saveDeckNote');
+  if (note) { note.textContent = msg || ''; note.style.display = msg ? '' : 'none'; }
+}
+function saveDeckFromResults() {
+  const input = document.getElementById('saveDeckName');
+  const name = (input.value || '').trim();
+  if (!name) { _setSaveDeckNote(I18n.t('flashcards.teachertools.preset_name_required')); input.focus(); return; }
+  const presets = readPresets();
+  if (presets[name] && !confirm(I18n.t('flashcards.teachertools.preset_overwrite_confirm', { name: name }))) return;
+  presets[name] = { settings: getSettings(), order: Date.now() };
+  writePresets(presets);
+  renderPresets();
+  input.value = '';
+  document.getElementById('saveDeckRow').hidden = true;
+  _setSaveDeckNote(I18n.t('flashcards.results.deck_saved', { name: name }));
+  showAppToast(I18n.t('flashcards.results.deck_saved', { name: name }));
 }
 function loadPreset(name) {
   const presets = readPresets();
@@ -7663,6 +7694,15 @@ function showResults() {
   }
 
   renderLadderStrip(pct);   // no-op unless a Learner Ladder level is running
+  // Save-this-card-set resets each visit, and hides during a ladder level: getSettings()
+  // would snapshot the ladder's temporary overrides, not the teacher's own deck.
+  const sd = document.getElementById('resultsSaveDeck');
+  if (sd) {
+    sd.hidden = !!_ladderActive;
+    document.getElementById('saveDeckRow').hidden = true;
+    document.getElementById('saveDeckName').value = '';
+    _setSaveDeckNote('');
+  }
   showScreen('screenResults');
 }
 
@@ -7964,6 +8004,14 @@ function wireSetupScreen() {
 
   // Presets
   document.getElementById('savePresetBtn').addEventListener('click', savePreset);
+  document.getElementById('saveDeckBtn').addEventListener('click', () => {
+    const row = document.getElementById('saveDeckRow');
+    row.hidden = !row.hidden;
+    if (!row.hidden) document.getElementById('saveDeckName').focus();
+  });
+  document.getElementById('saveDeckConfirmBtn').addEventListener('click', saveDeckFromResults);
+  document.getElementById('saveDeckName').addEventListener('keydown', e => { if (e.key === 'Enter') saveDeckFromResults(); });
+  document.getElementById('saveDeckName').addEventListener('input', () => _setSaveDeckNote(''));
   document.getElementById('presetName').addEventListener('keydown', e => { if (e.key === 'Enter') savePreset(); });
   document.getElementById('presetName').addEventListener('input', () => {
     const has = document.getElementById('presetName').value.trim();

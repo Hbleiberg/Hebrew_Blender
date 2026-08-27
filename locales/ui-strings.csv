@@ -1152,6 +1152,8 @@ flashcards.results.practice_mistakes,Practice This Drill's Mistakes,תרגלו �
 flashcards.results.redo,Redo This Card Set,חזרו על סדרת הכרטיסים,results action button,
 flashcards.results.return_to_options,Return to Options,חזרה לאפשרויות,results action button,
 flashcards.results.save_button,💾 Save Results,💾 שמור תוצאות,results action button,leading-emoji
+flashcards.results.save_deck,📌 Save This Card Set as a Preset,📌 שמרו את סדרת הכרטיסים כהגדרה שמורה,results-screen button that reveals the save-as-preset row,leading-emoji; REVIEW: HE draft
+flashcards.results.deck_saved,"Saved as ""{name}"". It's in your Presets list.","נשמר בשם ""{name}"". נמצא ברשימת ההגדרות השמורות.",inline note + toast after saving the card set as a preset,has {name}; REVIEW: HE draft
 flashcards.results.save_button_done,✓ Saved to {name},✓ נשמר אל {name},save-results confirmation label,leading-emoji
 flashcards.results.summary.one,Best streak: {streak} 🔥 · Accuracy {pct}% · {count} card answered,רצף שיא: {streak} 🔥 · דיוק {pct}% · כרטיס {count} נענה,results end-of-session summary,plural; leading-emoji
 flashcards.results.summary.other,Best streak: {streak} 🔥 · Accuracy {pct}% · {count} cards answered,רצף שיא: {streak} 🔥 · דיוק {pct}% · {count} כרטיסים נענו,results end-of-session summary,plural; leading-emoji
