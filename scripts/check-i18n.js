@@ -20,6 +20,17 @@
  *         localizing an argument silently breaks a working control.
  *     C2: a data-i18n-html key whose value interpolates a {placeholder} — interpolated content would
  *         reach innerHTML. (The binding safety gate registered alongside the pattern below.)
+ * Check D (quoting gate): every value cell must be valid RFC-4180. Both parseCSV copies (here and
+ *   in build-locales.js) are LENIENT in one specific way: a `"` met outside quote mode flips into
+ *   quote mode WITHOUT being appended, so any quote that is not part of a properly-doubled pair is
+ *   silently DELETED from the built value. Two shapes are blocking —
+ *     D1: a bare `"` inside an unquoted field (the quotes vanish from the shipped string).
+ *     D2: a quoted field whose closing quote is followed by anything but a comma / newline / EOF,
+ *         i.e. an undoubled inner quote closed the field early. A strict reader (Excel, Sheets, a
+ *         CAT tool, Python csv) truncates such a row and scatters the remainder into later columns,
+ *         so a maintainer round-tripping this file through a spreadsheet would destroy it.
+ *   Registered after S281 found three carriers, all of them Hebrew cells quoting a UI control's
+ *   name ("Show panels", "Tidy strokes", "Other" mode) — the quotes had been stripped in output.
  *   …plus a warn-only markup-parity report (the `i18n-html-markup-only-in-fallback` pattern): a
  *   data-i18n-html fallback whose tag multiset disagrees with a built value, and a plain data-i18n
  *   element carrying markup — applyStaticI18n sets textContent there, so the tags are dropped
@@ -78,6 +89,52 @@ function parseCSV(text) {
   }
   if (field !== '' || row.length > 0) { row.push(field); rows.push(row); }
   return rows.filter(r => !(r.length === 1 && r[0] === ''));
+}
+
+// ── Check D: RFC-4180 quoting integrity ──
+// parseCSV above drops any `"` that isn't a doubled pair inside a quoted field, so a malformed cell
+// loses its quotes SILENTLY rather than failing the build. This scan is the strict reader that says
+// so. Returns [{line, col, key, shape, excerpt}] — see the Check D note in the header comment.
+function findQuotingViolations(text) {
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const out = [];
+  let line = 1, col = 0, field = '', firstField = '', inQuotes = false, quoted = false;
+  const near = (i) => text.slice(Math.max(0, i - 28), i + 28).replace(/\n/g, '\\n');
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; continue; }
+        inQuotes = false;
+        const nx = text[i + 1];
+        // D2: the field closed here, so only a delimiter, a newline or EOF may follow.
+        if (nx !== undefined && nx !== ',' && nx !== '\n' && nx !== '\r') {
+          out.push({ line, col, key: firstField, shape: 'D2', excerpt: near(i) });
+        }
+      } else { field += c; }
+      continue;
+    }
+    if (c === '"') {
+      // D1: a quote may only OPEN a field. Mid-field it is a bare quote in an unquoted cell.
+      if (field !== '') out.push({ line, col, key: firstField, shape: 'D1', excerpt: near(i) });
+      else quoted = true;
+      inQuotes = true;
+    } else if (c === ',') {
+      if (col === 0) firstField = field;
+      col++; field = ''; quoted = false;
+    } else if (c === '\n') {
+      line++; col = 0; field = ''; firstField = ''; quoted = false;
+    } else if (c !== '\r') { field += c; }
+  }
+  // One malformed pair trips both shapes (the opening quote is D1, its closing quote D2); collapse
+  // them so a site is reported once, keeping every shape that fired.
+  const seen = new Map();
+  for (const v of out) {
+    const id = v.line + ':' + v.col;
+    if (seen.has(id)) { const p = seen.get(id); if (!p.shape.includes(v.shape)) p.shape += '+' + v.shape; }
+    else seen.set(id, Object.assign({}, v));
+  }
+  return [...seen.values()];
 }
 
 // ── helpers ──
@@ -388,7 +445,16 @@ function main() {
     corpus.parity.sort(byLoc).forEach(v => console.warn('  ' + v.file + ':' + v.line + '  ' + v.key + ' — ' + v.msg));
   }
 
-  const blocking = fresh.length + corpus.c1.length + corpus.c2.length;
+  // Check D — CSV quoting integrity (blocking). A malformed cell loses its quotes silently.
+  const quoting = findQuotingViolations(fs.readFileSync(CSV_PATH, 'utf8'));
+  if (quoting.length) {
+    console.error('\ncheck-i18n: ' + quoting.length + ' malformed CSV quoting site(s) in locales/ui-strings.csv — double the inner quote ("" per RFC-4180), or the value ships without it:');
+    quoting.forEach(v => console.error('  line ' + v.line + ' col ' + v.col + '  [' + v.shape + ']  ' + v.key + '  …' + v.excerpt + '…'));
+  } else {
+    console.log('check-i18n: Check D clean — locales/ui-strings.csv is valid RFC-4180 (no quote is silently dropped from a built value).');
+  }
+
+  const blocking = fresh.length + corpus.c1.length + corpus.c2.length + quoting.length;
   if (!blocking) console.log('\ncheck-i18n: clean (no new blocking violations).');
   process.exit(blocking ? 1 : 0);
 }

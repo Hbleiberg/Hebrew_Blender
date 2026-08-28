@@ -191,6 +191,16 @@ interpolates a `{placeholder}`. It also prints a warn-only **markup-parity** rep
 built value, and a plain `data-i18n` element carrying markup (`applyStaticI18n` sets `textContent` there, so
 tags are dropped unconditionally and the CSV cannot rescue them — such a site must become
 `data-i18n-html`). Column-driven like Check B, so a new language column is covered with no script edit.
+**Check D (quoting gate, added S281)** is blocking and enforces RFC-4180 on `ui-strings.csv`. Both
+`parseCSV` copies (`check-i18n.js` and `build-locales.js`) are lenient in one specific way — a `"` met
+outside quote mode flips into quote mode **without being appended** — so any quote that is not part of a
+properly-doubled pair is **silently deleted from the built value**, and nothing fails. Two shapes are
+blocking: **D1** a bare `"` inside an unquoted field, and **D2** a quoted field whose closing quote is
+followed by anything but a comma/newline/EOF (an undoubled inner quote closed it early — a strict reader
+like Excel, Sheets, a CAT tool or Python's `csv` then truncates that row and scatters the remainder into
+the later columns, so a spreadsheet round-trip destroys it). Always write an inner quote doubled (`""`)
+inside a quoted cell. Registered after S281 found four carriers — three of them Hebrew cells quoting a UI
+control's name, whose quotes had been stripped in the shipped output.
 **Known blind spot:** Check A only sees plain-literal JS assignments and static markup (script regions are
 blanked), so an English `title=`/`aria-label=` built inside a JS **template literal** (or passed as a plain
 function argument) escapes it — don't treat a green gate as proof there are zero untranslated tooltips. The
