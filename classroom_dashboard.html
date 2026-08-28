@@ -1763,7 +1763,7 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     /* Editing chrome is not part of the artifact — only the grid and the line naming it. */
     body.swm-printing .swm-modal > .fr-close, body.swm-printing .swm-modal > .fr-h,
     body.swm-printing .swm-modal > .fr-sub, body.swm-printing .swm-modal > .sub-section,
-    body.swm-printing #swmImportCard, body.swm-printing #swmPalette,
+    body.swm-printing #swmImportCard, body.swm-printing #swmIcalCard, body.swm-printing #swmPalette,
     body.swm-printing .swm-toolbar, body.swm-printing #swmValidation,
     body.swm-printing .swm-footer, body.swm-printing .swm-daymenu-btn { display: none !important; }
     /* The row-delete × is a GRID ITEM, not decoration inside one. `display:none` on it removes a
@@ -2022,9 +2022,12 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label class="swm-weekend"><input type="checkbox" id="swmWeekend" onchange="setWeekWeekend(this.checked)"><span data-i18n="dashboard.schedule.show_weekend">Show weekend</span></label>
       <div class="swm-toolbar-right">
         <button class="btn-xs" id="swmAddPeriod" onclick="addWeekPeriod()" data-i18n="dashboard.schedule.add_period">+ Add period</button>
+        <button class="btn-xs" id="swmIcalBtn" onclick="pickIcalFile()" data-i18n="dashboard.schedule.ical_btn" data-i18n-title="dashboard.schedule.ical_btn_title" title="Import class times from a calendar export (.ics) or a spreadsheet (.csv)">📅 Import calendar</button>
         <button class="btn-xs" id="swmPrintBtn" onclick="printWeekGrid()" data-i18n="dashboard.schedule.print_week" data-i18n-title="dashboard.schedule.print_week_title" title="Print the weekly grid as a reference sheet — class colors included">🖨 Print week</button>
       </div>
     </div>
+    <input type="file" id="swmIcalFile" accept=".ics,.csv,text/calendar,text/csv" style="display:none;" onchange="onIcalFilePick(this)">
+    <div id="swmIcalCard" class="swm-import" style="display:none;"></div>
     <!-- Print-only sheet identifier: on paper the dialog's own "Set up Schedule Sync" heading is
          hidden, so the grid would otherwise arrive on the desk with nothing naming it. -->
     <div id="swmPrintHead" aria-hidden="true" data-i18n="dashboard.schedule.print_heading">Weekly schedule</div>
@@ -6663,6 +6666,11 @@ else ivritInit();
   // import offer (grid hidden until the teacher chooses); neither → the blank-state editor.
   function renderWeekEditor() {
     if (!weekEditorOpen()) return;
+    // A pending calendar-file preview never survives a mode re-render — its counts were computed
+    // against the grid state at pick time (apply re-plans, but a stale card would still mislead).
+    const icalCard = document.getElementById('swmIcalCard');
+    if (icalCard) { icalCard.style.display = 'none'; icalCard.textContent = ''; }
+    _swmIcalPending = null;
     const offerMode = !settings.scheduleWeek &&
       (settings.currentSchedule || []).some(e => e && e.preset && e.until);
     document.getElementById('swmImportCard').style.display = offerMode ? '' : 'none';
@@ -7157,6 +7165,7 @@ else ivritInit();
     }
     const hints = [];
     if (_swmImportedHint) hints.push(I18n.t('dashboard.schedule.import_review_hint'));
+    if (_swmIcalHint) hints.push(I18n.t('dashboard.schedule.ical_review_hint'));
     if (Object.keys(presets).length <= 1) hints.push(I18n.t('dashboard.schedule.need_presets_hint'));
     // Touch only: a long-press gesture nobody is told about is a gesture nobody uses, and on a
     // mouse the drag needs no hint because it is the ordinary click-and-drag.
@@ -7240,6 +7249,297 @@ else ivritInit();
     _swmImportedHint = true;
     weekChanged();
     renderWeekEditor();
+  }
+
+  /* ── Calendar-file import (.ics / .csv → the weekly grid) ──
+        A calendar export carries the whole timetable: Google/Outlook .ics (weekly-RRULE VEVENTs,
+        or one plain event per occurrence — identical slots dedupe), or a spreadsheet CSV with
+        Day, Start, End, Class columns. Events become {day, start, end, title} slots; the planner
+        maps each distinct time onto the bell schedule (exact start match, then containment in an
+        existing period, then a new period row) and is PREVIEWED — fills / new rows / overwrites /
+        skips — before anything is written. Titles and filenames are untrusted text: every render
+        here is createElement/textContent, and titles are length-capped. Times are the school's
+        wall clock: floating/TZID .ics values are taken as written; only trailing-Z (UTC) values
+        are converted through the browser's zone. ── */
+  const SWM_FILE_MAX = 2 * 1024 * 1024;   // read cap — a full school-year .ics is well under 2 MB
+  const SWM_EVENTS_MAX = 4000;            // raw event/row cap before dedupe (runaway-file guard)
+  const ICS_DAY = { SU: 0, MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6 };
+  let _swmIcalPending = null;             // { slots, skipped, name } while the preview card is up
+  let _swmIcalHint = false;               // review nudge after an applied file import (one editing session, like _swmImportedHint)
+
+  function _swmHHMM(mins) {
+    return String(Math.floor(mins / 60)).padStart(2, '0') + ':' + String(mins % 60).padStart(2, '0');
+  }
+  // RFC 5545 date-time. All-day VALUE=DATE forms fail the match, so the event lands skipped.
+  function icsTime(v) {
+    const m = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?(Z?)/.exec(String(v || '').trim());
+    if (!m) return null;
+    if (m[7]) {   // UTC-stamped → the viewer's wall clock
+      const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0)));
+      return { day: d.getDay(), mins: d.getHours() * 60 + d.getMinutes() };
+    }
+    return { day: new Date(+m[1], +m[2] - 1, +m[3]).getDay(), mins: +m[4] * 60 + +m[5] };
+  }
+  function icsText(v) {
+    return String(v || '').replace(/\\n/gi, ' ').replace(/\\([\\;,])/g, '$1')
+      .replace(/\s+/g, ' ').trim().slice(0, 60);
+  }
+  function parseIcsSchedule(text) {
+    // Unfold first (RFC 5545 folds long lines as CRLF + one space/tab), then walk VEVENT blocks.
+    const lines = text.replace(/\r?\n[ \t]/g, '').split(/\r?\n/);
+    const slots = [];
+    let skipped = 0, ev = null, seen = 0;
+    const flush = () => {
+      const st = ev.start;
+      const endMins = ev.end ? (ev.end.day === st.day ? ev.end.mins : -1)
+                    : (ev.durMins ? st.mins + ev.durMins : -1);
+      const title = icsText(ev.summary);
+      let days = [st.day];
+      if (ev.rrule) {
+        const f = (/FREQ=([A-Z]+)/.exec(ev.rrule) || [])[1] || '';
+        const bd = /BYDAY=([^;]+)/.exec(ev.rrule);
+        if (bd) days = bd[1].split(',')
+          .map(s => ICS_DAY[(/([A-Z]{2})$/.exec(s.trim()) || [])[1]])
+          .filter(d => d !== undefined);
+        else if (f === 'DAILY') days = [1, 2, 3, 4, 5];   // "every day" at school = the school week
+        // A monthly/yearly recurrence is not a weekly class — importing it weekly would be wrong.
+        if ((f && f !== 'WEEKLY' && f !== 'DAILY') || !days.length) { skipped++; return; }
+      }
+      if (!title || endMins <= st.mins) { skipped++; return; }
+      days.forEach(d => slots.push({ day: d, start: _swmHHMM(st.mins), end: _swmHHMM(endMins), title: title }));
+    };
+    for (const line of lines) {
+      if (/^BEGIN:VEVENT/i.test(line)) { ev = {}; continue; }
+      if (/^END:VEVENT/i.test(line)) {
+        if (ev) { if (++seen > SWM_EVENTS_MAX) break; if (ev.start) flush(); else skipped++; }
+        ev = null; continue;
+      }
+      if (!ev) continue;
+      const ci = line.indexOf(':');
+      if (ci < 0) continue;
+      const name = line.slice(0, ci).split(';')[0].toUpperCase();
+      const val = line.slice(ci + 1);
+      if (name === 'DTSTART') ev.start = icsTime(val);
+      else if (name === 'DTEND') ev.end = icsTime(val);
+      else if (name === 'SUMMARY') ev.summary = val;
+      else if (name === 'RRULE') ev.rrule = val.toUpperCase();
+      else if (name === 'DURATION') {
+        const dm = /T(?:(\d+)H)?(?:(\d+)M)?/.exec(val);
+        if (dm) ev.durMins = (+(dm[1] || 0)) * 60 + +(dm[2] || 0);
+      }
+    }
+    return { slots: slots, skipped: skipped };
+  }
+
+  // One CSV record → cells, quote-aware ("Math, Grade 4" survives its comma).
+  function csvCells(line) {
+    const out = [];
+    let cur = '', q = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (q) { if (c === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+      else if (c === '"') q = true;
+      else if (c === ',') { out.push(cur); cur = ''; }
+      else cur += c;
+    }
+    out.push(cur);
+    return out.map(s => s.trim());
+  }
+  const CSV_DAYS_EN = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];               // i18n-ignore — parsed file data, not UI
+  const CSV_DAYS_HE = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];      // i18n-ignore — parsed file data, not UI
+  function csvDay(s) {
+    const t = String(s || '').trim().toLowerCase().replace(/^יום\s*/, '');
+    let i = CSV_DAYS_EN.findIndex(d => t.startsWith(d));
+    if (i < 0) i = CSV_DAYS_HE.indexOf(t);
+    return i;
+  }
+  function csvTime(s) {
+    s = String(s || '').trim();
+    let m = /^(\d{1,2}):(\d{2})\s*([AaPp])\.?\s*[Mm]?\.?$/.exec(s);
+    if (m && +m[2] < 60 && +m[1] >= 1 && +m[1] <= 12)
+      return _swmHHMM((+m[1] % 12 + (/p/i.test(m[3]) ? 12 : 0)) * 60 + +m[2]);
+    m = /^(\d{1,2}):(\d{2})$/.exec(s);
+    if (m && +m[1] < 24 && +m[2] < 60) return _swmHHMM(+m[1] * 60 + +m[2]);
+    return null;
+  }
+  function parseCsvSchedule(text) {
+    const lines = text.split(/\r?\n/).filter(l => l.trim());
+    const slots = [];
+    let skipped = 0, cols = { d: 0, s: 1, e: 2, t: 3 }, from = 0;
+    if (lines.length) {   // a header row's named columns win over the positional default
+      const heads = csvCells(lines[0]).map(c => c.toLowerCase());
+      const di = heads.findIndex(h => /\bday\b|יום/.test(h));
+      const si = heads.findIndex(h => /start|begin|from|התחלה/.test(h));
+      if (di >= 0 && si >= 0) {
+        const ei = heads.findIndex(h => /end|until|\bto\b|finish|סיום|עד/.test(h));
+        const ti = heads.findIndex(h => /class|preset|subject|course|title|name|שיעור|כיתה|מקצוע/.test(h));
+        cols = { d: di, s: si, e: ei >= 0 ? ei : si + 1, t: ti >= 0 ? ti : (ei >= 0 ? ei : si + 1) + 1 };
+        from = 1;
+      }
+    }
+    for (let i = from; i < lines.length && slots.length + skipped < SWM_EVENTS_MAX; i++) {
+      const c = csvCells(lines[i]);
+      const day = csvDay(c[cols.d]);
+      const start = csvTime(c[cols.s]), end = csvTime(c[cols.e]);
+      const title = icsText(c[cols.t]);
+      if (day < 0 || !start || !end || !title || timeToMins(end) <= timeToMins(start)) { skipped++; continue; }
+      slots.push({ day: day, start: start, end: end, title: title });
+    }
+    return { slots: slots, skipped: skipped };
+  }
+
+  // Pure planner — maps slots onto the CURRENT grid without writing anything. Import wins over an
+  // already-painted cell (the file is the fresher truth); the preview states every replacement.
+  // Titles are matched to preset names case-insensitively so an imported "grade 4" paints the
+  // saved "Grade 4" preset; a title with no preset keeps its own text and rides the existing
+  // unknown-preset validation (the cell recovers the moment a preset with that name is saved).
+  function planCalendarImport(slots) {
+    const cur = settings.scheduleWeek || null;
+    const periods = cur ? cur.periods.map(p => ({ start: p.start, end: p.end })) : [];
+    const baseLen = periods.length;
+    const slotPeriod = new Map();   // 'start|end' → period index
+    [...new Map(slots.map(s => [s.start + '|' + s.end, s])).values()]
+      .sort((a, b) => timeToMins(a.start) - timeToMins(b.start))
+      .forEach(s => {
+        let idx = periods.findIndex(p => p.start === s.start);
+        if (idx < 0) idx = periods.findIndex(p => HHMM_RE.test(p.start) && HHMM_RE.test(p.end) &&
+          timeToMins(p.start) <= timeToMins(s.start) && timeToMins(s.start) < timeToMins(p.end));
+        if (idx < 0) { periods.push({ start: s.start, end: s.end }); idx = periods.length - 1; }
+        slotPeriod.set(s.start + '|' + s.end, idx);
+      });
+    const canon = new Map(Object.keys(presets).map(n => [n.toLowerCase(), n]));
+    const writes = new Map();       // 'day|period' → title
+    const unmatched = new Set();
+    let conflicts = 0;
+    slots.forEach(s => {
+      const key = s.day + '|' + slotPeriod.get(s.start + '|' + s.end);
+      const title = canon.get(s.title.toLowerCase()) || s.title;
+      if (writes.has(key)) { if (writes.get(key) !== title) conflicts++; return; }   // first slot wins
+      writes.set(key, title);
+      if (!canon.has(title.toLowerCase())) unmatched.add(title);
+    });
+    let overwrites = 0;
+    const daysTouched = new Set();
+    writes.forEach((title, key) => {
+      const dp = key.split('|');
+      daysTouched.add(+dp[0]);
+      const before = cur && +dp[1] < baseLen ? cur.cells[WEEK_KEYS[+dp[0]]][+dp[1]] : null;
+      if (before && before !== title) overwrites++;
+    });
+    return { periods: periods, baseLen: baseLen, writes: writes, newPeriods: periods.length - baseLen,
+             conflicts: conflicts, overwrites: overwrites, unmatched: [...unmatched],
+             fills: writes.size, days: daysTouched.size,
+             weekend: !!(cur && cur.weekend) || [...daysTouched].some(d => d === 0 || d === 6) };
+  }
+
+  function _swmIcalLine(card, cls, text) {
+    const d = document.createElement('div');
+    d.className = cls;
+    d.textContent = text;
+    card.appendChild(d);
+  }
+  // One card, two states: an inline error line, or the parsed preview + Import/Cancel.
+  function renderIcalCard(error) {
+    const card = document.getElementById('swmIcalCard');
+    if (!card) return;
+    card.textContent = '';
+    card.style.display = '';
+    if (error) {
+      _swmIcalLine(card, 'sched-warn', error);
+    } else {
+      const pend = _swmIcalPending;
+      const plan = planCalendarImport(pend.slots);
+      const h = document.createElement('h3');
+      h.className = 'swm-import-title';
+      h.textContent = I18n.t('dashboard.schedule.ical_preview_title', { file: pend.name });
+      card.appendChild(h);
+      _swmIcalLine(card, 'swm-import-body', I18n.t('dashboard.schedule.ical_preview_sum',
+        { cells: plan.fills, days: plan.days, periods: plan.periods.length, fresh: plan.newPeriods }));
+      if (plan.overwrites) _swmIcalLine(card, 'sched-warn',
+        I18n.t(plan.overwrites === 1 ? 'dashboard.schedule.ical_preview_overwrite.one' : 'dashboard.schedule.ical_preview_overwrite.other', { n: plan.overwrites }));
+      if (plan.conflicts) _swmIcalLine(card, 'sched-warn',
+        I18n.t(plan.conflicts === 1 ? 'dashboard.schedule.ical_preview_conflict.one' : 'dashboard.schedule.ical_preview_conflict.other', { n: plan.conflicts }));
+      if (pend.skipped) _swmIcalLine(card, 'sched-hint',
+        I18n.t(pend.skipped === 1 ? 'dashboard.schedule.ical_preview_skipped.one' : 'dashboard.schedule.ical_preview_skipped.other', { n: pend.skipped }));
+      if (plan.unmatched.length) {
+        const names = plan.unmatched.slice(0, 3).join(' · ') + (plan.unmatched.length > 3 ? ' …' : '');
+        _swmIcalLine(card, 'sched-hint',
+          I18n.t(plan.unmatched.length === 1 ? 'dashboard.schedule.ical_preview_unmatched.one' : 'dashboard.schedule.ical_preview_unmatched.other', { n: plan.unmatched.length, names: names }));
+      }
+    }
+    const btns = document.createElement('div');
+    btns.className = 'swm-import-btns';
+    if (!error) {
+      const go = document.createElement('button');
+      go.type = 'button';
+      go.className = 'btn';
+      go.textContent = I18n.t('dashboard.schedule.ical_apply_btn');
+      go.addEventListener('click', applyCalendarImport);
+      btns.appendChild(go);
+    }
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'btn btn-secondary';
+    cancel.textContent = I18n.t(error ? 'dashboard.schedule.ical_close_btn' : 'dashboard.schedule.ical_cancel_btn');
+    cancel.addEventListener('click', () => { _swmIcalPending = null; card.style.display = 'none'; card.textContent = ''; });
+    btns.appendChild(cancel);
+    card.appendChild(btns);
+    const first = btns.querySelector('button');
+    if (first) first.focus();   // the file dialog just closed — land the keyboard on the decision
+  }
+  function pickIcalFile() { document.getElementById('swmIcalFile').click(); }
+  function onIcalFilePick(input) {
+    const file = input.files && input.files[0];
+    input.value = '';   // re-picking the same file must fire change again
+    if (!file) return;
+    _swmIcalPending = null;   // a previous preview never outlives a new pick
+    if (file.size > SWM_FILE_MAX) { renderIcalCard(I18n.t('dashboard.schedule.ical_err_big')); return; }
+    const reader = new FileReader();
+    reader.onerror = () => renderIcalCard(I18n.t('dashboard.schedule.ical_err_read'));
+    reader.onload = () => {
+      const text = String(reader.result || '');
+      const parsed = (/BEGIN:VCALENDAR/i.test(text.slice(0, 2000)) || /\.ics$/i.test(file.name))
+        ? parseIcsSchedule(text) : parseCsvSchedule(text);
+      const seen = new Set();   // a week of plain per-occurrence events collapses to its pattern
+      const slots = parsed.slots.filter(s => {
+        const k = s.day + '|' + s.start + '|' + s.end + '|' + s.title.toLowerCase();
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
+      if (!slots.length) {
+        renderIcalCard(I18n.t('dashboard.schedule.ical_err_none', { file: file.name }));
+        return;
+      }
+      _swmIcalPending = { slots: slots, skipped: parsed.skipped, name: file.name };
+      renderIcalCard(null);
+    };
+    reader.readAsText(file);
+  }
+  function applyCalendarImport() {
+    const pend = _swmIcalPending;
+    if (!pend || !pend.slots.length) return;
+    const plan = planCalendarImport(pend.slots);   // re-plan fresh — the grid may have changed since the preview
+    const cur = settings.scheduleWeek || null;
+    const cells = {};
+    WEEK_KEYS.forEach((k, d) => {
+      cells[k] = Array.from({ length: plan.periods.length },
+        (_, p) => (cur && p < plan.baseLen ? cur.cells[k][p] : null));
+    });
+    plan.writes.forEach((title, key) => {
+      const dp = key.split('|');
+      cells[WEEK_KEYS[+dp[0]]][+dp[1]] = title;
+    });
+    const wk = normalizeScheduleWeek({ v: 1, periods: plan.periods, weekend: plan.weekend, cells: cells });
+    if (!wk) return;
+    settings.scheduleWeek = wk;
+    _swmIcalPending = null;
+    const card = document.getElementById('swmIcalCard');
+    if (card) { card.style.display = 'none'; card.textContent = ''; }
+    _swmIcalHint = true;   // not _swmImportedHint — that hint's wording is about the legacy format's missing gaps
+    weekChanged();
+    renderWeekEditor();
+    showAppToast(I18n.t(plan.fills === 1 ? 'dashboard.schedule.ical_done_toast.one' : 'dashboard.schedule.ical_done_toast.other', { n: plan.fills }));
   }
 
   /* ── Saved schedules: v2 entries {v:2, week} carry the whole grid; legacy arrays remain and
@@ -7371,7 +7671,8 @@ else ivritInit();
   }
   function closeWeekEditor() {
     closeWeekDayMenu();
-    _swmImportedHint = false;   // the review nudge lives for one editing session
+    _swmImportedHint = false;   // the review nudges live for one editing session
+    _swmIcalHint = false;
     document.getElementById('swmBackdrop').classList.remove('open');
     document.getElementById('swmModal').classList.remove('open');
     document.removeEventListener('keydown', weekEditorKey, true);
