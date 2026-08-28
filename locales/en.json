@@ -400,7 +400,7 @@
   "dashboard.schedule.warn_missing_time": "⚠ Period {n} is missing a start or end time.",
   "dashboard.schedule.warn_no_assignments": "Nothing is assigned yet — pick a class and paint the grid.",
   "dashboard.schedule.warn_overlap": "⚠ Periods {a} and {b} overlap.",
-  "dashboard.schedule.warn_unknown_preset": "⚠ Preset “{name}” doesn't exist — create it in Presets.",
+  "dashboard.schedule.warn_unknown_preset": "⚠ No preset named “{name}” yet.",
   "dashboard.settings.close_aria": "Close settings",
   "dashboard.settings.close_title": "Close",
   "dashboard.settings.collapse_all": "Collapse all menus",

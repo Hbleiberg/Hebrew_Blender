@@ -400,7 +400,7 @@
   "dashboard.schedule.warn_missing_time": "⚠ לשיעור {n} חסרה שעת התחלה או סיום.",
   "dashboard.schedule.warn_no_assignments": "עדיין לא שובץ דבר — בחרו כיתה וצבעו את הרשת.",
   "dashboard.schedule.warn_overlap": "⚠ שיעורים {a} ו-{b} חופפים.",
-  "dashboard.schedule.warn_unknown_preset": "⚠ התבנית \"{name}\" אינה קיימת — צרו אותה בתבניות.",
+  "dashboard.schedule.warn_unknown_preset": "⚠ עדיין אין תבנית בשם \"{name}\".",
   "dashboard.settings.close_aria": "סגור הגדרות",
   "dashboard.settings.close_title": "סגור",
   "dashboard.settings.collapse_all": "כווץ את כל התפריטים",
