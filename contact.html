@@ -287,12 +287,14 @@ footer a { display: inline-block; padding-block: 5px; }
   </div>
 
   <div class="donate-panel active" data-pay="paypal">
-    <div class="donate-handle">@HarrisonBleiberg</div>
+    <!-- dir=ltr: a payment handle is inherently LTR data — in the RTL (Hebrew) UI the leading
+         @ is a bidi neutral and flips to the wrong side ("HarrisonBleiberg@") without it -->
+    <div class="donate-handle" dir="ltr">@HarrisonBleiberg</div>
     <div class="donate-sub">PayPal</div>
     <a class="donate-btn" href="https://www.paypal.me/HarrisonBleiberg" target="_blank" rel="noopener" data-i18n="contact.donate.open_paypal">Open PayPal →</a>
   </div>
   <div class="donate-panel" data-pay="venmo">
-    <div class="donate-handle">@Harrison-Bleiberg</div>
+    <div class="donate-handle" dir="ltr">@Harrison-Bleiberg</div>
     <div class="donate-sub">Venmo</div>
     <a class="donate-btn" href="https://venmo.com/u/Harrison-Bleiberg" target="_blank" rel="noopener" data-i18n="contact.donate.open_venmo">Open Venmo →</a>
   </div>
