@@ -131,7 +131,7 @@ Yes. The Hebrew (Jewish) date and the corresponding Gregorian date are shown liv
 
 **Can the classroom dashboard switch layouts by time of day?**
 
-Yes. Schedule Sync lets you build a weekly grid — paint each class across your periods and days — and the dashboard reconfigures itself through the day with a live Now/Next display and a countdown.
+Yes. Schedule Sync lets you build a weekly grid — paint each class across your periods and days, or import the whole grid from your school calendar's .ics or .csv export — and the dashboard reconfigures itself through the day with a live Now/Next display and a countdown.
 
 **How do I keep the classroom display from going to sleep?**
 
