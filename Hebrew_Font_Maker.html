@@ -6029,7 +6029,7 @@ function cropSelectSVG(l) {
   const sh = curCombinedSheet();
   const sheetUrl = sh && sh.dataUrl;
   const im = imgCache[sheetUrl];
-  if (!im) return `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">Loading sheet…</text>`;
+  if (!im) return `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">${esc(_pT('loading_sheet', 'Loading sheet…'))}</text>`;
   cropFit = computeCropFit(im); const f = cropFit;
   const V = STAGE_VB;
   let h = `<rect x="${V.x}" y="${V.y}" width="${V.w}" height="${V.h}" fill="var(--cream)"/>`;
@@ -7544,7 +7544,7 @@ function marginGuidesSVG() {
   h += marginZone(adv - letterRSB(L), adv, 'right');       // right side bearing
   const wx = fx(adv);
   h += `<line x1="${wx}" y1="${vy1}" x2="${wx}" y2="${vy2}" stroke="${C.margin}" stroke-width="1" stroke-dasharray="3 5" pointer-events="none"/>`;
-  h += `<text x="${wx}" y="${vy2+13}" text-anchor="middle" fill="${C.margin}" font-size="9" font-family="monospace" pointer-events="none">letter width</text>`;
+  h += `<text x="${wx}" y="${vy2+13}" text-anchor="middle" fill="${C.margin}" font-size="9" font-family="monospace" pointer-events="none">${esc(_pT('guide_letter_width', 'letter width'))}</text>`;
   return h;
 }
 /* Wide-form variant: margins/width derived from the COMPOSED glyph (buildWideGlyph result), not the
@@ -7565,7 +7565,7 @@ function wideFormGuidesSVG(g) {
   h += marginZone(inkR, g.advance, 'right');               // composed ink-right → exported advance
   const wx = fx(g.advance);
   h += `<line x1="${wx}" y1="${vy1}" x2="${wx}" y2="${vy2}" stroke="${C.margin}" stroke-width="1" stroke-dasharray="3 5" pointer-events="none"/>`;
-  h += `<text x="${wx}" y="${vy2+13}" text-anchor="middle" fill="${C.margin}" font-size="9" font-family="monospace" pointer-events="none">form width</text>`;
+  h += `<text x="${wx}" y="${vy2+13}" text-anchor="middle" fill="${C.margin}" font-size="9" font-family="monospace" pointer-events="none">${esc(_pT('guide_form_width', 'form width'))}</text>`;
   return h;
 }
 function captureBoxFont(l) {
@@ -7598,11 +7598,11 @@ function markGuidesSVG() {
   const ay = fy(0);   // attach line = letter baseline level
   const C = stageColors();
   let h = `<line x1="35" y1="${ay}" x2="498" y2="${ay}" stroke="${C.base}" stroke-width="1" stroke-dasharray="5 4"/>`;
-  h += `<text x="502" y="${ay+3.5}" fill="${C.base}" font-size="10" font-family="monospace">baseline</text>`;
-  const note = cls==='above' ? 'Above-vowel — draw it ABOVE the line (sits over the letter).'
-             : cls==='center' ? 'Center mark — draw it ON the line (sits in the letter body).'
-             : 'Under-vowel — draw it BELOW the line (sits under the letter).';
-  h += `<text x="300" y="${cls==='above'?ay+22:ay-12}" text-anchor="middle" fill="#9aa0aa" font-size="11">${note}</text>`;
+  h += `<text x="502" y="${ay+3.5}" fill="${C.base}" font-size="10" font-family="monospace">${esc(_pT('guide_baseline', 'baseline'))}</text>`;
+  const note = cls==='above' ? _pT('markstage_above', 'Above-vowel — draw it ABOVE the line (sits over the letter).')
+             : cls==='center' ? _pT('markstage_center', 'Center mark — draw it ON the line (sits in the letter body).')
+             : _pT('markstage_under', 'Under-vowel — draw it BELOW the line (sits under the letter).');
+  h += `<text x="300" y="${cls==='above'?ay+22:ay-12}" text-anchor="middle" fill="#9aa0aa" font-size="11">${esc(note)}</text>`;
   return h;
 }
 function renderMarkStage(it) {
@@ -7631,7 +7631,7 @@ function renderMarkStage(it) {
     else h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">${esc(_pT('not_traced', 'Not traced yet.'))}</text>`;
   } else {
     if (url) { h += `<image href="${url}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.92"/>`; h += transformHandlesSVG(it); }
-    else h += `<text x="300" y="300" text-anchor="middle" fill="#9aa0aa" font-size="14">Upload an image of this mark below.</text>`;
+    else h += `<text x="300" y="300" text-anchor="middle" fill="#9aa0aa" font-size="14">${esc(_pT('upload_mark_below', 'Upload an image of this mark below.'))}</text>`;
   }
   sv.innerHTML = h;
   if (workMode === 'align' && url) attachTransformDrag(it);
@@ -8083,7 +8083,7 @@ async function renderStage() {
     if (wideMode) {
       wideG = buildWideGlyph(pcW);   // live: shows the widened/combined outline as the slider moves
       if (wideG) h += `<path d="${contoursToPath(wideG.contours.map(pts => ({ points: pts })), wideG.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
-      else h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="12">Trace the base letter(s) first to preview this form.</text>`;
+      else h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="12">${esc(_pT('trace_base_first', 'Trace the base letter(s) first to preview this form.'))}</text>`;
     } else if (pcSrc) {
       h += `<path d="${contoursToPath(pcSrc.contours.map(pts => ({ points: pts })), pcSrc.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
     } else if (l.contours) h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
@@ -10515,11 +10515,11 @@ function nodeSelBBoxSVG() {
   const hs = 6, corners = [['tl',X0,Y0,'nwse-resize'],['tr',X1,Y0,'nesw-resize'],['br',X1,Y1,'nwse-resize'],['bl',X0,Y1,'nesw-resize']];
   let over = '';
   corners.forEach(([k,x,y,cur]) => {
-    over += `<rect class="node-bb-h" data-c="${k}" x="${x-hs}" y="${y-hs}" width="${hs*2}" height="${hs*2}" fill="#fff" stroke="var(--navy)" stroke-width="1.4" style="cursor:${cur}"><title>Scale (Shift = uniform)</title></rect>`;
+    over += `<rect class="node-bb-h" data-c="${k}" x="${x-hs}" y="${y-hs}" width="${hs*2}" height="${hs*2}" fill="#fff" stroke="var(--navy)" stroke-width="1.4" style="cursor:${cur}"><title>${esc(_pT('bb_scale_title', 'Scale (Shift = uniform)'))}</title></rect>`;
   });
   const mx = (X0+X1)/2, my = (Y0+Y1)/2;
   [['t',mx,Y0,'ns-resize',9,5],['b',mx,Y1,'ns-resize',9,5],['l',X0,my,'ew-resize',5,9],['r',X1,my,'ew-resize',5,9]].forEach(([k,x,y,cur,ew,eh]) => {
-    over += `<rect class="node-bb-h" data-c="${k}" x="${x-ew}" y="${y-eh}" width="${ew*2}" height="${eh*2}" rx="2" fill="var(--gold)" stroke="#fff" stroke-width="1.2" style="cursor:${cur}"><title>Scale one axis (Shift = uniform)</title></rect>`;
+    over += `<rect class="node-bb-h" data-c="${k}" x="${x-ew}" y="${y-eh}" width="${ew*2}" height="${eh*2}" rx="2" fill="var(--gold)" stroke="#fff" stroke-width="1.2" style="cursor:${cur}"><title>${esc(_pT('bb_scale_axis_title', 'Scale one axis (Shift = uniform)'))}</title></rect>`;
   });
   return { under, over };
 }

@@ -4808,6 +4808,17 @@ fontmaker.draw.untraced_stale_stage,The outline below is older than this drawing
 fontmaker.panels.align_imported_svg,Imported from SVG — set nikkud in step 3.,יובא מ-SVG — הגדירו את הניקוד בשלב 3.,Align stage caption for a vector glyph imported from an SVG,
 fontmaker.panels.align_loaded_font,Loaded from font — set nikkud in step 3.,נטען מגופן — הגדירו את הניקוד בשלב 3.,Align stage caption for a glyph imported from a font file,
 fontmaker.panels.align_no_image,No image yet — upload below.,עדיין אין תמונה — העלו למטה.,Align stage caption when the letter has no reference image yet,
+fontmaker.panels.loading_sheet,Loading sheet…,טוען גיליון…,Combined-sheet stage caption while the sheet image loads,REVIEW: HE draft
+fontmaker.panels.guide_letter_width,letter width,רוחב האות,on-stage reference-line caption under the letter stage,REVIEW: HE draft
+fontmaker.panels.guide_form_width,form width,רוחב הצורה,on-stage reference-line caption under a wide form,REVIEW: HE draft
+fontmaker.panels.guide_baseline,baseline,קו בסיס,on-stage attach-line caption (mark stage),REVIEW: HE draft
+fontmaker.panels.markstage_above,Above-vowel — draw it ABOVE the line (sits over the letter).,תנועה עליונה — ציירו אותה מעל הקו (יושבת מעל האות).,mark stage class legend,REVIEW: HE draft
+fontmaker.panels.markstage_center,Center mark — draw it ON the line (sits in the letter body).,סימן מרכזי — ציירו אותו על הקו (יושב בגוף האות).,mark stage class legend,REVIEW: HE draft
+fontmaker.panels.markstage_under,Under-vowel — draw it BELOW the line (sits under the letter).,תנועה תחתונה — ציירו אותה מתחת לקו (יושבת מתחת לאות).,mark stage class legend,REVIEW: HE draft
+fontmaker.panels.upload_mark_below,Upload an image of this mark below.,העלו למטה תמונה של הסימן הזה.,Mark stage caption when the mark has no image,REVIEW: HE draft
+fontmaker.panels.trace_base_first,Trace the base letter(s) first to preview this form.,המירו תחילה את אותיות הבסיס לקווי מתאר כדי להציג את הצורה הזו.,Precomposed-form stage caption before the base is traced,REVIEW: HE draft
+fontmaker.panels.bb_scale_title,Scale (Shift = uniform),שינוי גודל (Shift = אחיד),bounding-box corner handle title,REVIEW: HE draft
+fontmaker.panels.bb_scale_axis_title,Scale one axis (Shift = uniform),שינוי גודל בציר אחד (Shift = אחיד),bounding-box edge handle title,REVIEW: HE draft
 fontmaker.punct.grp_basic,Basic (ASCII),בסיסי (ASCII),punctuation picker band label,
 fontmaker.punct.grp_currency,Currency & math,מטבע ומתמטיקה,punctuation picker band label,
 fontmaker.punct.grp_hebrew,Hebrew,עברית,punctuation picker band label,
