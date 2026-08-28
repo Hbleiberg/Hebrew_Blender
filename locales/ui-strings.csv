@@ -1207,7 +1207,7 @@ flashcards.start.err_select_letter,Select at least one letter.,בחרו לפחו
 flashcards.start.err_select_vowel,Select at least one vowel.,בחרו לפחות תנועה אחת.,start validation alert,
 flashcards.start.err_select_wordlist,Select at least one word list.,בחרו לפחות רשימת מילים אחת.,start validation alert,
 flashcards.teachertools.copy_code,📋 Copy Code,📋 העתק קוד,share-code copy button,leading-emoji
-flashcards.teachertools.copy_link,📎 Copy Link,📎 העתק קישור,share-link copy button (?s= URL twin of the code),leading-emoji
+flashcards.teachertools.copy_link,🔗 Copy Link,🔗 העתק קישור,share-link copy button (?s= URL twin of the code),leading-emoji
 flashcards.teachertools.delete_button,Delete,מחק,profile delete button,
 flashcards.actions.delete_aria,Delete {name},מחק את {name},icon-only ✕ delete button aria-label (preset / profile),aria-label only
 flashcards.teachertools.generate_share,Generate Share Code,צור קוד שיתוף,share-code button,
@@ -4012,7 +4012,7 @@ trope.tradition.primary_label,Primary trope names,שמות הטעמים העיק
 trope.tradition.primary_tip,"Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'.","שני השמות מוצגים תמיד בכל כרטיס; כאן בוחרים איזה מהם מוביל. שימו לב להתנגשות הקלאסית: 'פשטא' האשכנזי הוא 'קדמא' הספרדי, בעוד 'קדמא' האשכנזי הוא 'אזלא' הספרדי.",tooltip,
 trope.tradition.sephardi,Sephardi,ספרדי,radio label,
 trope.a11y.skip_to_tutor,Skip to the tutor,דלגו למאמן,Skip-link (a11y),aria/skip-link
-worksheet.actions.copy_link,📋 Copy shareable link,📋 העתק קישור לשיתוף,action button,leading-emoji
+worksheet.actions.copy_link,🔗 Copy shareable link,🔗 העתק קישור לשיתוף,action button,leading-emoji
 worksheet.actions.copy_link_title,Copy shareable link,העתק קישור לשיתוף,mobile FAB button title,aria-label only
 worksheet.actions.disabled_hint,Generate a worksheet first,צרו קודם דף עבודה,disabled-button title + FAB toast,
 worksheet.actions.export_pdf,⬇ Export PDF,⬇ ייצא PDF,action button,leading-emoji
