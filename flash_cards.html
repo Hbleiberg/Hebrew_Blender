@@ -1169,8 +1169,13 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   }
   .app-header, footer, nav, .stats-bar, .progress, .fc-hint, .fc-back-q,
   #tourBtn, #fsBtn, #darkToggle, .i18n-select, #tipFloat, #appToast, #sheetMenu,
-  #prevBtn, #flipBtn, #nextBtn, #endEarlyBtn, #fcSpeakBtn,
+  #prevBtn, #flipBtn, #nextBtn, #endEarlyBtn, #fcSpeakBtn, #markYes, #markNo,
   .tour-spot, .tour-card, .overlay, details { display:none !important; }
+  /* A box-shadow is a DRAWING, not a background, so printBackground:false never drops it — the
+     dark theme's .panel shadow (rgba(0,0,0,.4)) printed as a 7in slab of 40% black behind the
+     results screen's auto-expanded per-card list. Shadows are a screen affordance with no paper
+     meaning: kill them all, so no future carrier can print one either. */
+  * { box-shadow:none !important; }
   /* The setup screen is teacher-side configuration, never a printable artifact. */
   #screenSetup { display:none !important; }
   /* The answer face is a solid navy fill on screen; on paper the fill is stripped, so it needs
