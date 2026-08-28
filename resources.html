@@ -194,6 +194,9 @@ body.dark .card-link{color:#aab8d8;}
 .resource-card:hover .card-link{opacity:1;}
 .resource-card:hover .card-link::after{transform:translateX(3px);}
 .card-link::after{content:'→';display:inline-block;transition:transform 0.15s;}
+/* RTL: the arrow glyph is not bidi-mirrored, so point and nudge it in reading direction */
+[dir="rtl"] .card-link::after{content:'←';}
+[dir="rtl"] .resource-card:hover .card-link::after{transform:translateX(-3px);}
 
 /* ── Empty state ── */
 .empty-state{text-align:center;padding:60px 24px;color:var(--muted);}
@@ -360,6 +363,7 @@ body.dark #fontToast{background:#2a4070;}
   }
   .resource-card:hover { transform: none; }
   .resource-card:hover .card-link::after { transform: none; }
+  [dir="rtl"] .resource-card:hover .card-link::after { transform: none; }
 }
 </style>
 </head>
