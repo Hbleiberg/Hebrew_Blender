@@ -2103,7 +2103,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
 <!-- ============== RESULTS SCREEN ============== -->
 <section id="screenResults" class="screen">
-  <div class="results-hero" role="status" aria-live="polite">
+  <div class="results-hero" id="resultsHero" role="status" aria-live="polite" tabindex="-1">
     <p class="pct bidi-isolate" id="resultsPct">0%</p>
     <p class="frac bidi-isolate" id="resultsFrac">0 / 0 correct</p>
     <p id="resultsTime" class="bidi-isolate" style="display:none;font-size:0.85rem;color:var(--muted);margin:4px 0 0;"></p>
@@ -7721,6 +7721,11 @@ function showResults() {
     _setSaveDeckNote('');
   }
   showScreen('screenResults');
+  // Land the keyboard on the score, not on BODY: the control the learner arrived from
+  // (End Early / the last mark button) just vanished with the card screen. Mirrors the
+  // Trope Tutor's #resHeading focus; the hero's live region wrote while hidden, so this
+  // focus-read is also what reliably announces the result to a screen reader.
+  document.getElementById('resultsHero').focus();
 }
 
 function redoSameSet() {
