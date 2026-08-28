@@ -1231,15 +1231,18 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   /* body carries min-height:100vh for the app shell; in print that pins the body to a full page
      box and pushes a blank second sheet out of a report that otherwise fits on one. */
   body.fc-report-print { min-height:0 !important; }
-  /* 1.4 (was 1.45): pays for the Learning Path line. The one-page Letter budget had ~4px of
-     slack and the line costs ~23px; 0.05 less leading across the sheet buys it back invisibly
-     without shrinking any element or the handwriting space. */
-  #fcReportSheet { font-size:10pt; line-height:1.4; color:#1a2a47; }
-  .fcr-head { border-block-end:2pt solid #1a2a47; padding-block-end:6pt; margin-block-end:10pt; }
+  /* 1.3 (was 1.45 -> 1.4): the one-page Letter budget is measured against REAL print-dialog
+     margins (Chrome ~0.39in, Firefox 0.5in), not the margin-0 default page.pdf gave the original
+     calibration — at real margins a maximal report (6 focus + 6 strengths + 8 drills + cap +
+     Learning Path lines) ran 732pt and stranded the signature footer on a second sheet. This
+     leading plus the pt-trims below bring it to ~686pt: one page at up to 0.5in margins.
+     0.75in+ margins are a deliberate teacher choice and may run two pages. */
+  #fcReportSheet { font-size:10pt; line-height:1.3; color:#1a2a47; }
+  .fcr-head { border-block-end:2pt solid #1a2a47; padding-block-end:5pt; margin-block-end:8pt; }
   .fcr-title { font-family:var(--serif); font-size:13pt; margin:0 0 3pt; }
   .fcr-name { font-size:16pt; font-weight:700; margin:0 0 3pt; }
   .fcr-meta { font-size:9pt; color:#3d4a63; display:flex; flex-wrap:wrap; gap:4pt 14pt; }
-  .fcr-sec { margin-block-end:8pt; break-inside:avoid; page-break-inside:avoid; }
+  .fcr-sec { margin-block-end:6pt; break-inside:avoid; page-break-inside:avoid; }
   .fcr-h2 { font-family:var(--serif); font-size:11pt; margin:0 0 5pt;
     border-block-end:1pt solid #8d8570; padding-block-end:2pt; }
   .fcr-sum { display:flex; flex-wrap:wrap; gap:6pt; }
@@ -1262,14 +1265,14 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   .fcr-table td { padding:1.8pt 4pt; border-block-end:0.5pt solid #c8bfa8; }
   .fcr-table tr { break-inside:avoid; page-break-inside:avoid; }
   .fcr-mark { font-size:11pt; width:1.5em; text-align:center; }
-  .fcr-foot { margin-block-start:9pt; break-inside:avoid; page-break-inside:avoid; }
-  .fcr-rule { border-block-end:0.75pt solid #1a2a47; height:14pt; margin-block-end:2pt; }
-  .fcr-sign { display:flex; gap:16pt; margin-block-start:9pt; }
+  .fcr-foot { margin-block-start:7pt; break-inside:avoid; page-break-inside:avoid; }
+  .fcr-rule { border-block-end:0.75pt solid #1a2a47; height:12pt; margin-block-end:2pt; }
+  .fcr-sign { display:flex; gap:16pt; margin-block-start:7pt; }
   .fcr-sign > div { flex:1; }
-  .fcr-sign-line { border-block-end:0.75pt solid #1a2a47; height:15pt; }
+  .fcr-sign-line { border-block-end:0.75pt solid #1a2a47; height:13pt; }
   .fcr-sign-lbl, .fcr-foot-lbl { font-size:8pt; color:#3d4a63; }
-  .fcr-privacy { font-size:7.5pt; color:#5a6070; margin-block-start:7pt;
-    border-block-start:0.5pt solid #c8bfa8; padding-block-start:4pt; }
+  .fcr-privacy { font-size:7.5pt; color:#5a6070; margin-block-start:5pt;
+    border-block-start:0.5pt solid #c8bfa8; padding-block-start:3pt; }
 
   /* Learning Path completion certificate: landscape Letter via the injected #fcCertPage @page
      style (see _certEnter — @page can't be scoped by a body class); the app steps aside exactly
