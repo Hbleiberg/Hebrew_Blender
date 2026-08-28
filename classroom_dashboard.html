@@ -7139,6 +7139,37 @@ else ivritInit();
     syncArmedChips();
   }
 
+  /* ── One-click fix for an unknown-preset warning ──
+     After a calendar import a real timetable can leave 3-6 names with no preset, and clearing each
+     one by hand costs a full drawer round-trip (close the editor -> expand Presets -> retype the
+     name EXACTLY -> Save). The grid already knows the name, so the button hands it to the SAME
+     snapshot path savePreset() uses — no new semantics, no new storage. Additive, so no confirm. */
+  function createPresetForName(name) {
+    if (!name || presets[name]) return;                 // the row only renders for unknown names
+    presets[name] = getSettings({ forPreset: true });   // rosters are shared — snapshot only activeRosterId
+    savePresetsStorage();
+    renderPresets();
+    weekChanged();          // clears this warning, adds the palette chip (+ its auto colour), refreshes the board
+    // Keep the keyboard in the fix-the-warnings flow: the row that held focus is gone, so land on
+    // the next one; when that was the last warning, land on the new class's palette chip instead.
+    const next = document.querySelector('#swmValidation .swm-mk-preset');
+    if (next) { next.focus(); return; }
+    const chip = [...document.querySelectorAll('#swmPalette .swm-chip')].find(c => c._swmValue === name);
+    const arm = chip && chip.querySelector('.swm-chip-arm');
+    if (arm) arm.focus();
+  }
+  function mkCreatePresetBtn(name) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'btn-xs swm-mk-preset';
+    b.textContent = I18n.t('dashboard.schedule.create_preset_btn');
+    const tip = I18n.t('dashboard.schedule.create_preset_title', { name: name });
+    b.title = tip;
+    b.setAttribute('aria-label', tip);                  // "Create preset" x N is ambiguous without the name
+    b.addEventListener('click', () => createPresetForName(name));
+    return b;
+  }
+
   // Validation strip — reuses the .schedule-validation / .sched-warn / .sched-hint vocabulary
   // (shared with #locNote — never restyle those classes here). No Sort button: sorting is automatic.
   function renderWeekValidation() {
@@ -7161,7 +7192,8 @@ else ivritInit();
       }
       const unknown = new Set();
       WEEK_KEYS.forEach(d => week.cells[d].forEach(nm => { if (nm && !presets[nm]) unknown.add(nm); }));
-      unknown.forEach(nm => msgs.push(I18n.t('dashboard.schedule.warn_unknown_preset', { name: nm })));
+      // Carried as {text, name} so the row can offer the one-click fix below; every other msg stays a string.
+      unknown.forEach(nm => msgs.push({ text: I18n.t('dashboard.schedule.warn_unknown_preset', { name: nm }), name: nm }));
       if (week.periods.length && !WEEK_KEYS.some(d => week.cells[d].some(Boolean)))
         msgs.push(I18n.t('dashboard.schedule.warn_no_assignments'));
     }
@@ -7174,7 +7206,13 @@ else ivritInit();
     if (window.matchMedia && matchMedia('(pointer: coarse)').matches && week && week.periods.length)
       hints.push(I18n.t('dashboard.schedule.touch_paint_hint'));
     hints.forEach(h => { const d = document.createElement('div'); d.className = 'sched-hint'; d.textContent = h; el.appendChild(d); });
-    msgs.forEach(m => { const d = document.createElement('div'); d.className = 'sched-warn'; d.textContent = m; el.appendChild(d); });
+    msgs.forEach(m => {
+      const d = document.createElement('div');
+      d.className = 'sched-warn';
+      d.textContent = typeof m === 'string' ? m : m.text;
+      if (m && m.name) d.appendChild(mkCreatePresetBtn(m.name));   // .sched-warn is already flex+wrap
+      el.appendChild(d);
+    });
     el.style.display = (hints.length || msgs.length) ? '' : 'none';
   }
 

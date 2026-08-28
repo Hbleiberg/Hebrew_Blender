@@ -296,6 +296,8 @@
   "dashboard.schedule.copy_to_day": "Copy to {day}",
   "dashboard.schedule.countdown_next_generic": "Next class in {time}",
   "dashboard.schedule.countdown_next_named": "Next: {preset} in {time}",
+  "dashboard.schedule.create_preset_btn": "Create preset",
+  "dashboard.schedule.create_preset_title": "Create a preset named “{name}” from the current board settings",
   "dashboard.schedule.day_menu_aria": "Options for {day}",
   "dashboard.schedule.delete_confirm": "Delete schedule \"{name}\"?",
   "dashboard.schedule.editor_button": "Set up Schedule Sync…",

@@ -296,6 +296,8 @@
   "dashboard.schedule.copy_to_day": "העתק אל {day}",
   "dashboard.schedule.countdown_next_generic": "השיעור הבא בעוד {time}",
   "dashboard.schedule.countdown_next_named": "הבא: {preset} בעוד {time}",
+  "dashboard.schedule.create_preset_btn": "צרו תבנית",
+  "dashboard.schedule.create_preset_title": "צרו תבנית בשם \"{name}\" מהגדרות הלוח הנוכחיות",
   "dashboard.schedule.day_menu_aria": "אפשרויות עבור {day}",
   "dashboard.schedule.delete_confirm": "למחוק את מערכת השעות \"{name}\"?",
   "dashboard.schedule.editor_button": "הגדרת סנכרון מערכת שעות…",
