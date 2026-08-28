@@ -158,6 +158,10 @@ footer a{color:var(--gold-text);text-decoration:none;}
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }
+/* Footer links are the page's smallest tap targets (12-15px line boxes ~19px apart —
+   under the WCAG 2.5.8 24px floor with no qualifying spacing). inline-block + block
+   padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
+footer a { display: inline-block; padding-block: 5px; }
 </style>
 </head>
 <body>
