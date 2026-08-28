@@ -1029,8 +1029,8 @@ const PANEL_MEM_CFG = {
 ## Hebrew Font Maker (`Hebrew_Font_Maker.html`)
 
 The largest file in the repo by a wide margin — a single-file app that measured ~13,900 lines in
-2026-07, ~15,700 on 2026-08-13 and **~18,400 on 2026-08-22**. Growth is fast and *uneven* — that
-last 2,700 lines landed in nine days — so do not extrapolate from any figure here; if a count
+2026-07, ~15,700 on 2026-08-13, ~18,400 on 2026-08-22 and **~19,900 on 2026-08-28**. Growth is
+fast and *uneven* — 2,700 of those lines once landed in nine days — so do not extrapolate from any figure here; if a count
 actually matters, measure it (`wc -l Hebrew_Font_Maker.html`). **Line numbers drift
 constantly** — never trust remembered or previously-reported line numbers; locate everything by
 pattern (function names, marker comments, element ids).
@@ -1250,9 +1250,16 @@ opens that font pre-imported into a fresh, **license-locked** project via a 3-st
   `starting-fonts/<id>/{<Font>.ttf, LICENSE.txt}` per font — vendored same-origin copies, never
   hotlinked. Every manifest value is **detected from the font's own name table / upstream license
   text, never invented** (`nameTableFamily` records a stale embedded family name). Intake goes
-  through the **`/addOSFont` skill** → `scripts/add_os_font.py` (license allowlist: OFL-1.1,
-  GPL+font-exception, Apache-2.0, CC0; anything else refuses with printed evidence — a hard STOP,
-  maintainer decides). **Reserved Font Names are recorded for EVERY license** (Taamey Frank CLM
+  through the **`/addOSFont` skill** → `scripts/add_os_font.py`, whose license gate asks ONE
+  question: does the license permit MODIFICATION? Every derivative-permitting license is
+  allowlisted (12 ids as of the 2026-08 132-font intake wave: OFL-1.1, GPL-with-font-exception,
+  bare GPL-2.0/3.0, Apache-2.0, CC0-1.0, UFL-1.0, LPPL-1.3c, CC-BY-SA-3.0/4.0, CC-BY-3.0/4.0),
+  each carrying its own obligations (copyleft, rename, state-changes, attribution) into the
+  export; a font with no license, or one forbidding derivatives (CC *-ND, all-rights-reserved),
+  refuses with printed evidence — a hard STOP, maintainer decides. The maintainer's intake-review
+  record lives in `starting-fonts/not-staged.json` (refusals + partner-page/distribution license
+  discrepancies; the script only reads it, rendering it into LINKS.md). **Reserved Font Names are
+  recorded for EVERY license** (Taamey Frank CLM
   declares one under GPL) and any declared RFN forces a rename at runtime. Never hand-edit the
   manifest, a staged LICENSE.txt, or `starting-fonts/LINKS.md` (the copy-paste sheet of live
   `?start=` links — regenerated from the manifest on every intake / `--regen-links`).
