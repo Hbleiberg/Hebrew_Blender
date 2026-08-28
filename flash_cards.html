@@ -535,6 +535,10 @@ body.dark .panel-title {
 /* ============== TOGGLES ============== */
 .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
 .row .label { color: var(--ink-soft); font-size: 0.92rem; }
+/* Tooltip-trigger labels are real tap targets (bindTip: role=button, tap/Enter opens the tip) —
+   give the box the 24px touch floor. inline-flex turns min-height into a taller BOX, not taller
+   text (the S102 .btn-xs recipe); the row's align-items:center keeps neighbours centered. */
+.row .label.has-tip { display: inline-flex; align-items: center; min-height: 24px; }
 .switch {
   position: relative;
   display: inline-block;
