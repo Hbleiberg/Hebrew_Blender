@@ -7641,8 +7641,16 @@ function showResults() {
   const total = idxs.length;
   const correctCount = idxs.filter(i => scores[i] === true).length;
   const pct = total ? Math.round((correctCount / total) * 100) : 0;
-  document.getElementById('resultsPct').textContent = pct + '%';
-  document.getElementById('resultsFrac').textContent = I18n.t('flashcards.results.frac', { correct: correctCount, total: total });
+  // Hero scores only the cards the student was actually assessed on: an early-ended 2-of-3
+  // must not read as a giant 20% over an "Accuracy 67%" line. The deck-wide `pct` stays the
+  // number the ladder gate and the saved-result record use — unassessed cards may not pass a
+  // ladder level, but they aren't "wrong" either. answered===0 keeps the deck-wide zeros
+  // ("0 / 0 correct" reads broken); a fully-marked drill is unchanged by construction.
+  const answered = idxs.filter(i => scores[i] === true || scores[i] === false).length;
+  const heroDen = (answered > 0 && answered < total) ? answered : total;
+  const heroPct = heroDen ? Math.round((correctCount / heroDen) * 100) : 0;
+  document.getElementById('resultsPct').textContent = heroPct + '%';
+  document.getElementById('resultsFrac').textContent = I18n.t('flashcards.results.frac', { correct: correctCount, total: heroDen });
   const timeEl = document.getElementById('resultsTime');
   if (timerMode === 'track') {
     timeEl.style.display = '';
