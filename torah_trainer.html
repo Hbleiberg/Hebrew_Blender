@@ -6528,6 +6528,14 @@ function _handoutEnter() {
   b.classList.toggle('tt-handout-size-xl', fs === 'xl');
   b.classList.toggle('tt-handout-geniza', !!(settings.handoutGenizaMark && _readingHasShem));
   renderText();
+  // Print the geniza marker as the last verse's tail: its static predecessor #ttReading is one
+  // block already fragmented across pages, so break-before:avoid has nothing to pull back and
+  // the marker can strand alone on its own sheet (S182). .tt-verse / .tt-grid-row carry
+  // break-inside:avoid in the print block, so verse + marker become one unbreakable group.
+  // _handoutExit re-homes it before its renderText() would otherwise wipe it with #ttReading.
+  const gm = document.getElementById('ttGenizaMark');
+  const rows = document.querySelectorAll('#ttReading .tt-verse, #ttReading .tt-col-heb .tt-grid-row');
+  if (gm && rows.length) rows[rows.length - 1].appendChild(gm);
 }
 function _handoutExit() {
   if (!_handoutActive) return;
@@ -6540,6 +6548,9 @@ function _handoutExit() {
   }
   document.body.classList.remove('tt-handout-print', 'tt-handout-hidenums',
     'tt-handout-size-large', 'tt-handout-size-xl', 'tt-handout-geniza');
+  const gm = document.getElementById('ttGenizaMark');   // back to its static home before the
+  const band = document.getElementById('ttPrintBand');  // re-render wipes #ttReading's subtree
+  if (gm && band && band.parentNode) band.parentNode.insertBefore(gm, band);
   renderText();   // no saveSettings — the persisted settings never changed
 }
 function printHandout() {
