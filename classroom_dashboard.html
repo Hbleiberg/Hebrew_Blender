@@ -1763,7 +1763,7 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     /* Editing chrome is not part of the artifact — only the grid and the line naming it. */
     body.swm-printing .swm-modal > .fr-close, body.swm-printing .swm-modal > .fr-h,
     body.swm-printing .swm-modal > .fr-sub, body.swm-printing .swm-modal > .sub-section,
-    body.swm-printing #swmImportCard, body.swm-printing #swmIcalCard, body.swm-printing #swmPalette,
+    body.swm-printing #swmImportCard, body.swm-printing #swmIcalCard, body.swm-printing #swmPurgeCard, body.swm-printing #swmPalette,
     body.swm-printing .swm-toolbar, body.swm-printing #swmValidation,
     body.swm-printing .swm-footer, body.swm-printing .swm-daymenu-btn { display: none !important; }
     /* The row-delete × is a GRID ITEM, not decoration inside one. `display:none` on it removes a
@@ -2035,6 +2035,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div id="swmGrid" class="swm-grid" role="group" aria-label="Weekly schedule grid" data-i18n-aria-label="dashboard.schedule.grid_aria"></div>
     </div>
     <div id="swmValidation" class="schedule-validation" style="display:none;"></div>
+    <div id="swmPurgeCard" class="swm-import" style="display:none;"></div>
   </div>
   <div class="sub-section" style="margin-top:14px;">
     <div class="sub-section-hdr" data-i18n="dashboard.schedule.sub_saved">Saved Schedules</div>
@@ -6681,6 +6682,7 @@ else ivritInit();
       renderWeekPalette();
       renderWeekGrid();
       renderWeekValidation();
+      renderPurgeNudge();
     }
     renderSavedSchedules();
   }
@@ -7249,6 +7251,61 @@ else ivritInit();
     _swmImportedHint = true;
     weekChanged();
     renderWeekEditor();
+  }
+
+  /* ── Legacy-schedule purge nudge ──
+        Migrated teachers keep their old daily rows forever: the import deliberately never deletes
+        them (weekly mode just ignores them), so they ride every backup as inert weight. Offer a
+        one-time cleanup — only while the weekly grid is the active engine, never in the same
+        editor session as the import itself (the _swmImportedHint window), and never again after
+        "Keep them" (a one-time UI flag: erase-cleared, deliberately not exported). */
+  function renderPurgeNudge() {
+    const card = document.getElementById('swmPurgeCard');
+    if (!card) return;
+    card.textContent = '';
+    let dismissed = false;
+    try { dismissed = localStorage.getItem('hebrewDashboard_purgeDismissed') === '1'; } catch (e) {}
+    const n = legacyRowsSorted().length;
+    const show = !!settings.scheduleWeek && n > 0 && !dismissed && !_swmImportedHint;
+    card.style.display = show ? '' : 'none';
+    if (!show) return;
+    const h = document.createElement('h3');
+    h.className = 'swm-import-title';
+    h.textContent = I18n.t('dashboard.schedule.purge_title');
+    card.appendChild(h);
+    const p = document.createElement('p');
+    p.className = 'swm-import-body';
+    p.textContent = I18n.t(n === 1 ? 'dashboard.schedule.purge_body.one' : 'dashboard.schedule.purge_body.other', { n: n });
+    card.appendChild(p);
+    const btns = document.createElement('div');
+    btns.className = 'swm-import-btns';
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'btn';
+    del.textContent = I18n.t('dashboard.schedule.purge_delete_btn');
+    del.onclick = purgeLegacySchedule;
+    btns.appendChild(del);
+    const keep = document.createElement('button');
+    keep.type = 'button';
+    keep.className = 'btn btn-secondary';
+    keep.textContent = I18n.t('dashboard.schedule.purge_keep_btn');
+    keep.onclick = dismissPurgeNudge;
+    btns.appendChild(keep);
+    card.appendChild(btns);
+    // No focus steal: unlike the calendar-import card, this renders on editor open rather than
+    // in response to a user action.
+  }
+  function purgeLegacySchedule() {
+    if (!confirm(I18n.t('dashboard.schedule.purge_confirm'))) return;
+    settings.currentSchedule = [];
+    _lastScheduleKey = null;
+    saveSettingsToStorage();
+    renderPurgeNudge();
+    showAppToast(I18n.t('dashboard.schedule.purge_done_toast'));
+  }
+  function dismissPurgeNudge() {
+    try { localStorage.setItem('hebrewDashboard_purgeDismissed', '1'); } catch (e) {}
+    renderPurgeNudge();
   }
 
   /* ── Calendar-file import (.ics / .csv → the weekly grid) ──

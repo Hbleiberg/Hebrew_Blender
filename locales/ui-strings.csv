@@ -284,6 +284,13 @@ dashboard.schedule.add_period,+ Add period,+ הוסף שיעור,weekly editor t
 dashboard.schedule.print_week,🖨 Print week,🖨 הדפסת השבוע,weekly editor toolbar button — prints the grid as a reference sheet,leading-emoji; REVIEW: HE draft
 dashboard.schedule.print_week_title,"Print the weekly grid as a reference sheet — class colors included","הדפסת רשת השבוע כדף עזר — כולל צבעי הכיתות",print button tooltip,REVIEW: HE draft
 dashboard.schedule.print_heading,Weekly schedule,מערכת שבועית,title line on the PRINTED weekly grid — teacher-facing chrome so it follows the UI language,REVIEW: HE draft
+dashboard.schedule.purge_body.one,"You're on the weekly grid now, but 1 row from the old daily schedule is still stored. The weekly schedule ignores it — it just rides along in every backup.","עברתם ללוח השבועי, אבל שורה אחת מלוח הזמנים היומי הישן עדיין שמורה. הלוח השבועי מתעלם ממנה — היא רק תופסת מקום בכל גיבוי.",purge-nudge card body (1 legacy row),plural; REVIEW: HE draft
+dashboard.schedule.purge_body.other,"You're on the weekly grid now, but {n} rows from the old daily schedule are still stored. The weekly schedule ignores them — they just ride along in every backup.","עברתם ללוח השבועי, אבל {n} שורות מלוח הזמנים היומי הישן עדיין שמורות. הלוח השבועי מתעלם מהן — הן רק תופסות מקום בכל גיבוי.",purge-nudge card body,plural; do not translate {…}; REVIEW: HE draft
+dashboard.schedule.purge_confirm,"Delete the old daily schedule rows? Your weekly grid, presets, and saved schedules are not affected.","למחוק את שורות לוח הזמנים היומי הישן? הלוח השבועי, התבניות והמערכות השמורות לא יושפעו.",destructive confirm() before the purge,REVIEW: HE draft
+dashboard.schedule.purge_delete_btn,Delete old rows,מחיקת השורות הישנות,purge-nudge affirmative button (confirm-guarded),REVIEW: HE draft
+dashboard.schedule.purge_done_toast,Old daily schedule removed.,לוח הזמנים היומי הישן נמחק.,toast after a successful purge,REVIEW: HE draft
+dashboard.schedule.purge_keep_btn,Keep them,להשאיר אותן,purge-nudge dismiss button — never shows the card again,REVIEW: HE draft
+dashboard.schedule.purge_title,Clean up the old daily schedule?,לנקות את לוח הזמנים היומי הישן?,purge-nudge card title,REVIEW: HE draft
 dashboard.schedule.cell_aria,"{day}, {start}–{end}: {assignment}","{day}, {start}–{end}: {assignment}",weekly grid cell accessible name,aria-label only — do not translate {…}
 dashboard.schedule.chip_color_aria,Change color for {name},שינוי צבע עבור {name},weekly palette swatch input,aria-label only; mixed UI+content — do not translate {…}
 dashboard.schedule.clear_day,Clear {day},נקה את {day},weekly day menu action,do not translate {…}
