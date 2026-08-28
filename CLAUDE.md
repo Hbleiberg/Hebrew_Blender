@@ -913,13 +913,27 @@ auto-hide timer. The trigger carries `tabindex="0"`, `role="button"`, `aria-expa
 ### 3. Share links (`?s=` state in the URL)
 Serialize the tool's shareable state as a **diff against a pristine-defaults baseline** (so the URL stays
 short), URL-safe-encode it into a **`?s=`** param, and restore it on init with **silent failure on garbage**.
-Writing a link uses `history.replaceState` (never a navigation); loading a link **never clobbers** the
-user's saved presets/profiles — it only sets the live view.
-- **Implemented on:** `hebrew_dictionary.html` (`serializeDictState`/`applyDictState`, also persists
-  `hebrewDictionary_lastState`) and `hebrew_blend_generator.html` (`shareB64Encode`, auto-restores on load).
-  `flash_cards.html` ships a **paste-in teacher "share code"** (`shareCodeEncode`/`shareCodeDecode`) rather
-  than a URL param — the two mechanisms coexist and both are fine where they already are.
-- **Rule:** any tool that gains shareable state uses `?s=` (a paste code may coexist where one already does).
+Writing a link **never navigates**; loading a link **never clobbers** the user's saved presets/profiles
+— it only sets the live view (that clobber-guard re-measured clean on all four carriers, S282).
+- **Implemented on: FOUR tools, measured 2026-08-28 (S282)** — this line was stale for two of them, so
+  verify by grep before trusting it again. `hebrew_dictionary.html`
+  (`serializeDictState`/`applyDictState`, also persists `hebrewDictionary_lastState`) and
+  `hebrew_blend_generator.html` (`shareB64Encode`, auto-restores on load) both write `?s=` **and** mirror
+  it into the address bar with `history.replaceState`. `flash_cards.html` ships **both** mechanisms — the
+  paste-in teacher share code (`shareCodeEncode`/`shareCodeDecode`) **and** a `?s=` URL twin
+  (`copyShareLink`, S206) read back at init; it is NOT paste-code-only, as this line used to claim.
+  `torah_trainer.html`'s practice link (`copyPracticeLink`/`practiceLinkURL`, S180) deliberately uses
+  **readable params** (`?parsha=&scope=&v=`) rather than an opaque blob — a link a student can read —
+  and only a parsha reading has a URL form, so `syncShareBtn` HIDES the button (never disables it) for
+  holiday and custom-range scopes.
+- **`replaceState` is NOT universal:** the generator and dictionary mirror the link into the address bar;
+  `torah_trainer` and `flash_cards` copy to the clipboard and leave it alone. Measured and deliberately
+  LEFT as-is at S282 (both persist their state independently, so a refresh loses nothing, and the
+  flash-cards payload would fill the bar with a long blob) — do not "converge" it without asking.
+- **Rule:** any tool that gains shareable state uses `?s=` (a paste code may coexist where one already
+  does; readable params are acceptable where the link is meant to be human-legible, as torah's is).
+- **Button label:** the affordance is **🔗**-prefixed on all four carriers (converged S282) — not a
+  clipboard or paperclip glyph, which read as "copy text" and "attachment" rather than "link".
 
 ### 4. Reduced motion
 Every page must carry a `@media (prefers-reduced-motion: reduce)` block, and **every** animation added
