@@ -198,6 +198,14 @@ footer a{color:var(--gold-text);text-decoration:none;}
 @media (max-width:430px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
+  /* hCaptcha containment belt: the standard widget is a fixed 303px-wide iframe; below 389px
+     the tile's content box (viewport − 86px of paddings/borders) can't hold it, and the 1fr
+     grid track's min-content floor inflates the whole page into horizontal pan/zoom-out.
+     min-width:0 removes that floor; overflow-x:auto lets an oversize widget scroll inside the
+     card instead of widening the page. Inert at 389–430px (the widget fits, nothing scrolls) —
+     the primary fix is the compact-size request in the script below. */
+  .cs-tile{min-width:0;}
+  .h-captcha{overflow-x:auto;}
 }
 
 /* Honor reduced-motion: neutralize all transitions */
@@ -342,6 +350,16 @@ document.querySelectorAll('a.eml').forEach(function(a){
   a.href = 'mailto:' + emailAddr() + (a.dataset.subject ? ('?subject=' + encodeURIComponent(a.dataset.subject)) : '');
   if (!a.textContent.trim()) a.textContent = emailAddr();
 });
+
+// hCaptcha's standard checkbox is a fixed 303px-wide iframe. Below 389px of viewport the
+// contact tile's content box (viewport − 86px of paddings/borders) is narrower than that, and
+// the widget inflates the page into horizontal pan/zoom-out. Ask for the compact variant
+// (164px — hCaptcha's own narrow-container size) before the async Web3Forms helper renders it;
+// the ≤430px CSS containment rules stay as the belt if the attribute is ever ignored.
+if (matchMedia('(max-width: 388px)').matches) {
+  const _hc = document.querySelector('.h-captcha');
+  if (_hc && !_hc.hasAttribute('data-size')) _hc.setAttribute('data-size', 'compact');
+}
 
 // Contact form → Web3Forms (AJAX, JSON) with hCaptcha. Delivers to the contact address (assembled at runtime).
 const form = document.getElementById('contactForm');
