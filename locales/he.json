@@ -4299,6 +4299,7 @@
   "torah.trans.unavailable_chip": "אין תעתיק",
   "torah.trans.unavailable_tip": "התעתיק מופעל, אך לא ניתן היה לטעון את הספרייה — לרוב אין חיבור, או שרשת בית הספר חוסמת אותה. העמודה מושמטת במקום להידפס ריקה.",
   "torah.trans.version_opt": "{title} — {license}",
+  "torah.trope_legend.enable_chip": "🎨 צביעת טעמים",
   "torah.trope_legend.tip_geresh": "טעמי קישוט המפצלים משפט ארוך: גרש, גרשיים, קדמא, תלישא קטנה, תלישא גדולה ופזר.",
   "torah.trope_legend.tip_katon": "ההפסקה הנפוצה ביותר בתוך הפסוק, על זקף קטון או זקף גדול, ולפניהם מהפך, פשטא ויתיב.",
   "torah.trope_legend.tip_rare": "טעמים המופיעים רק פעמים בודדות בכל התורה: מרכא כפולה, קרני פרה וירח בן יומו.",

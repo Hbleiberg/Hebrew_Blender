@@ -4299,6 +4299,7 @@
   "torah.trans.unavailable_chip": "No transliteration",
   "torah.trans.unavailable_tip": "Transliteration is switched on, but its library could not be loaded — often no connection, or a school network blocking it. The column is left out rather than printed empty.",
   "torah.trans.version_opt": "{title} — {license}",
+  "torah.trope_legend.enable_chip": "🎨 Color-code the trope",
   "torah.trope_legend.tip_geresh": "Ornament marks that break up a long clause: geresh, gershayim, kadma, telisha ketana, telisha gedola and pazer.",
   "torah.trope_legend.tip_katon": "The most common mid-verse pause, built on zakef katon or zakef gadol, with mahpach, pashta and yetiv leading in.",
   "torah.trope_legend.tip_rare": "Marks that appear only a handful of times in the whole Torah: mercha kefula, karnei parah and yerach ben yomo.",

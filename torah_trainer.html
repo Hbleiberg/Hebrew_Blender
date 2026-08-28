@@ -854,6 +854,8 @@ body.nik-mode-underline .nik { text-decoration-line:underline !important; text-d
 }
 body.dark .tt-trope-legend { background:var(--navy-deep); }
 .tt-trope-legend[hidden] { display:none; }  /* display:flex would beat the hidden attr */
+#ttTropeChip { margin:0 0 12px; }
+#ttTropeChip[hidden] { display:none; }  /* .btn-xs display:inline-flex would beat the hidden attr */
 #ttPrintBand { display:none; }  /* print-only per-sheet identifier — see the print block + beforeprint */
 /* The chip is the tooltip trigger (bindTip adds tabindex/role/aria-expanded), so it takes
    the suite's 30px touch floor and a visible focus ring rather than adding a ? icon. */
@@ -1410,7 +1412,7 @@ body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
   #ttPrintBand .pbnd-cols { flex-basis:100%; display:grid; column-gap:20px;
     padding-inline:24px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
     text-align:center; }
-  .tt-ref-hdr, .tt-trope-legend { display:none !important; }
+  .tt-ref-hdr, .tt-trope-legend, #ttTropeChip { display:none !important; }
   /* break-after: an aliyah heading must not strand at a sheet foot with its aliyah overleaf
      (unlike the geniza marker's refuted break-before, the divider's successor is a sibling
      verse in the same flow, so the engine CAN pull the divider forward). */
@@ -1870,6 +1872,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <div class="tt-status" id="ttStatus" role="status" aria-live="polite"></div>
   <!-- In-page nav: aliyah jump chips + "you are here" readout (long readings). -->
   <div class="tt-jumpnav" id="ttJumpNav" role="navigation" aria-label="Jump to aliyah" data-i18n-aria-label="torah.jumpnav.aria" hidden></div>
+  <!-- One-way discoverability chip: trope coloring is otherwise invisible until found inside
+       the drawer. Shown only while a reading is loaded AND coloring is off — the legend takes
+       its place once on (applyTropeColors owns both). Turning it off stays in the drawer. -->
+  <button class="btn btn-xs" id="ttTropeChip" type="button" onclick="tropeChipEnable()" hidden data-i18n="torah.trope_legend.enable_chip">🎨 Color-code the trope</button>
   <!-- Trope-family legend — shown while trope color coding is on AND a reading is
        loaded (applyTropeColors). Chips are generated at init from TROPE_COLOR_DEFS
        so the family list lives in one place. -->
@@ -3110,6 +3116,21 @@ function applyTropeColors() {
   // empty state and while a fetch is in flight (renderText re-syncs after load).
   const legend = document.getElementById('ttTropeLegend');
   if (legend) legend.hidden = !(on && currentVerses && currentVerses.length > 0);
+  // The discoverability chip is the legend's complement: same loaded-reading guard, opposite
+  // `on` — so exactly one of the pair shows over a reading, and neither over the empty state.
+  const chip = document.getElementById('ttTropeChip');
+  if (chip) chip.hidden = !(!on && currentVerses && currentVerses.length > 0);
+}
+
+// The chip's turn-ON is the drawer checkbox's change handler verbatim, with the checkbox
+// mirrored so the drawer agrees; applyTropeColors then swaps chip → legend. Off stays in
+// the drawer (once coloring is visible, the drawer's full controls are discoverable).
+function tropeChipEnable() {
+  settings.colorCodeTrope = true;
+  const cb = document.getElementById('optColorCodeTrope');
+  if (cb) cb.checked = true;
+  toggleTropeOptionsVisibility(true);
+  saveSettings(); applyTropeColors();
 }
 
 // Build (or rebuild, on a language switch) the trope-legend family chips from TROPE_COLOR_DEFS.
