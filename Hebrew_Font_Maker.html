@@ -1244,13 +1244,13 @@ footer a { display: inline-block; padding-block: 5px; }
     <button id="darkToggle" class="hbtn" onclick="toggleDark()" title="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" aria-pressed="false" data-i18n="shared.darkmode.label_dark">🌙 Dark</button>
     <button id="fsBtn" class="hbtn" onclick="toggleFullscreen()" title="Fullscreen" data-i18n-title="shared.fullscreen.enter_title" aria-label="Toggle fullscreen" data-i18n-aria-label="shared.fullscreen.toggle_aria" style="display:inline-flex;align-items:center;gap:5px;">
       <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px;"><path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zM4 14h2v4h4v2H4v-6zm14 0h2v6h-6v-2h4v-4z"/></svg>
-      <span data-i18n="shared.fullscreen.label">Fullscreen</span>
+      <span data-i18n="shared.fullscreen.label">Full Screen</span>
     </button>
   </div>
 </header>
-<button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" data-i18n-title="shared.fullscreen.exit_title" aria-label="Exit fullscreen" data-i18n-aria-label="shared.fullscreen.toggle_aria">
+<button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" data-i18n-title="shared.fullscreen.exit_title" aria-label="Toggle fullscreen" data-i18n-aria-label="shared.fullscreen.toggle_aria">
   <span class="fs-x">✕</span>
-  <span class="fs-label" data-i18n="shared.fullscreen.exit_label">Exit Fullscreen</span>
+  <span class="fs-label" data-i18n="shared.fullscreen.exit_label">Exit Full Screen</span>
 </button>
 <button id="fsPanelsBtn" onclick="fsTogglePanels()" aria-pressed="false"
         title="Show or hide the settings panels without leaving fullscreen"
@@ -1376,7 +1376,7 @@ footer a { display: inline-block; padding-block: 5px; }
         <div class="mode-toggle" style="margin-bottom:10px;">
           <button class="mode-btn" id="engCaseUpper" onclick="setEnglishCase('upper')" aria-pressed="true" data-i18n="fontmaker.panels.eng_case_upper">Uppercase A–Z</button>
           <button class="mode-btn" id="engCaseLower" onclick="setEnglishCase('lower')" aria-pressed="false" data-i18n="fontmaker.panels.eng_case_lower">Lowercase a–z</button>
-          <button class="mode-btn" id="engCaseAccent" onclick="setEnglishCase('accent')" aria-pressed="false" style="display:none;" data-i18n="fontmaker.panels.eng_case_accent">Accented</button>
+          <button class="mode-btn" id="engCaseAccent" onclick="setEnglishCase('accent')" aria-pressed="false" style="display:none;" data-i18n="fontmaker.panels.eng_case_accent">Accented &amp; extra</button>
         </div>
         <div class="letter-grid" id="englishGrid"></div>
         <div id="englishAccentNote" style="display:none;margin-top:9px;font-size:0.72rem;color:var(--muted);line-height:1.5;"></div>
@@ -1555,7 +1555,7 @@ footer a { display: inline-block; padding-block: 5px; }
         <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;" data-i18n="fontmaker.about.faq_heading">Frequently Asked Questions</summary>
         <div style="padding:4px 0;">
           <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="fontmaker.about.faq_q_free">Is the Hebrew Font Maker free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="fontmaker.about.faq_a_free">Yes. The Hebrew Font Maker is completely free — make and download as many Hebrew fonts as you like, with no account or sign-up.</p></details>
-          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="fontmaker.about.faq_q_how">How do I make my own Hebrew font?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="fontmaker.about.faq_a_how">Upload or scan a picture of each Hebrew letter, trace it into an outline, place the nikkud and trop anchors, then export a real font you can install.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="fontmaker.about.faq_q_how">How do I make my own Hebrew font?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="fontmaker.about.faq_a_how">Upload or scan a picture of each Hebrew letter — or draw it right in the browser — then trace it into an outline, place the nikkud and trop anchors, and export a real font you can install.</p></details>
           <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="fontmaker.about.faq_q_nikkudtrop">Can I make free Hebrew fonts with nikkud and trop?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="fontmaker.about.faq_a_nikkudtrop">Yes. The free Hebrew Font Maker positions nikkud (vowels) and cantillation (trop) automatically using OpenType mark positioning.</p></details>
           <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="fontmaker.about.faq_q_formats">What font formats can I export?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="fontmaker.about.faq_a_formats">TrueType (TTF), WOFF2 for the web, and editable UFO source — each with a license you choose (CC0, OFL, MIT, or All Rights Reserved).</p></details>
           <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="fontmaker.about.faq_q_software">Do I need to install any software?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="fontmaker.about.faq_a_software">No. The Hebrew Font Maker runs entirely in your browser; the font engine loads only when you export.</p></details>
@@ -1868,7 +1868,7 @@ footer a { display: inline-block; padding-block: 5px; }
         <div class="wiz-os-row"><span data-i18n="fontmaker.oswizard.meta_version">Version</span><b id="osPrevVersion"></b></div>
         <div class="wiz-os-row"><span data-i18n="fontmaker.panels.license">License</span><a id="osPrevLicense" target="_blank" rel="noopener"></a></div>
       </div>
-      <p class="wiz-foot-note" data-i18n="fontmaker.oswizard.honesty">Your edited font will be rebuilt by IvritSuite from the letters you see in the editor — the original's Hebrew letterforms, vowels, mark positions and Latin letters come along; its hinting and hand-tuned internals don't.</p>
+      <p class="wiz-foot-note" data-i18n="fontmaker.oswizard.honesty">Your edited font will be rebuilt by IvritSuite from the letters you see in the editor — the original's Hebrew letterforms, vowels, mark positions, combined forms, Latin letters, punctuation, line metrics and kerning come along; its hinting and hand-tuned internals don't.</p>
     </section>
 
     <section id="wizStepOs2" class="wiz-step" aria-labelledby="wizStepOs2Title" hidden>

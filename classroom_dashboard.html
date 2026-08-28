@@ -1848,7 +1848,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false">🌙</button>
     <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings" data-i18n-title="dashboard.header.settings_btn" aria-label="Settings" data-i18n-aria-label="dashboard.header.settings_btn">⚙️</button>
     <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour" data-i18n-title="dashboard.header.tour_btn_title"><span>❓</span><span class="hbtn-label" data-i18n="dashboard.header.tour_btn">Tour</span></button>
-    <button id="fsBtn" class="hbtn icon-btn fs-btn" onclick="toggleFullscreen()" title="Fullscreen" data-i18n-title="shared.fullscreen.enter_title"><span class="fs-ico"></span><span class="fs-cap" data-i18n="shared.fullscreen.label">Fullscreen</span></button>
+    <button id="fsBtn" class="hbtn icon-btn fs-btn" onclick="toggleFullscreen()" title="Present fullscreen" data-i18n-title="shared.fullscreen.enter_title"><span class="fs-ico"></span><span class="fs-cap" data-i18n="shared.fullscreen.label">Full Screen</span></button>
   </div>
 </header>
 <div id="zoomBar" style="background:var(--warm-gray);border-bottom:1px solid var(--border);padding:5px 20px;display:flex;align-items:center;gap:10px;font-size:0.78rem;color:var(--text);">
@@ -1860,7 +1860,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 </div>
 <button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" data-i18n-title="shared.fullscreen.exit_title">
   <span class="fs-x">✕</span>
-  <span class="fs-label" data-i18n="shared.fullscreen.exit_label">Exit Fullscreen</span>
+  <span class="fs-label" data-i18n="shared.fullscreen.exit_label">Exit Full Screen</span>
 </button>
 <span class="wake-dot wake-dot-fs" role="img" title="Screen will stay awake" data-i18n-title="dashboard.display.wake_dot" aria-label="Screen will stay awake" data-i18n-aria-label="dashboard.display.wake_dot"></span>
 <div id="fsStrip" role="toolbar" aria-label="Fullscreen controls" data-i18n-aria-label="dashboard.fs.controls_aria">
@@ -2012,7 +2012,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <!-- ───── Weekly Schedule Sync editor ───── -->
 <div class="swm-backdrop" id="swmBackdrop" onclick="closeWeekEditor()"></div>
 <div class="swm-modal" id="swmModal" role="dialog" aria-modal="true" aria-labelledby="swmTitle">
-  <button class="fr-close" onclick="closeWeekEditor()" aria-label="Close" data-i18n-aria-label="dashboard.schedule.editor_close_aria">✕</button>
+  <button class="fr-close" onclick="closeWeekEditor()" aria-label="Close schedule editor" data-i18n-aria-label="dashboard.schedule.editor_close_aria">✕</button>
   <h2 class="fr-h" id="swmTitle" data-i18n="dashboard.schedule.editor_title">Set up Schedule Sync</h2>
   <p class="fr-sub" data-i18n="dashboard.schedule.editor_sub">Pick a class below, then click or drag across the grid to paint its periods. Changes save automatically.</p>
   <div id="swmImportCard" class="swm-import" style="display:none;"></div>
@@ -2677,11 +2677,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div>
       <div style="font-family:'Libre Baskerville',serif;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
       <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px;">
-        <li><a href="hebrew_blend_generator.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">Generate printable Hebrew worksheets →</a></li>
-        <li><a href="flash_cards.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_flashcards">Practice with Hebrew flash cards →</a></li>
-        <li><a href="hebrew_dictionary.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Look up Hebrew words →</a></li>
-        <li><a href="trope_tutor.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_trope">Learn Torah trope (cantillation) →</a></li>
-        <li><a href="resources.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_resources">Hebrew teaching resources →</a></li>
+        <li><a href="hebrew_blend_generator.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
+        <li><a href="flash_cards.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_flashcards">Hebrew alphabet flash cards →</a></li>
+        <li><a href="hebrew_dictionary.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
+        <li><a href="trope_tutor.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
+        <li><a href="resources.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
       </ul>
     </div>
   </div>
