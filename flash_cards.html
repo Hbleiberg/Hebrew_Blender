@@ -7773,6 +7773,14 @@ function wireCardScreen() {
   });
   document.addEventListener('keydown', e => {
     if (!document.getElementById('screenCard').classList.contains('active')) return;
+    // Enter keeps its activation meaning on a focused control — the preventDefault below
+    // would otherwise make every button and link on this screen keyboard-inert (End Practice
+    // Early's confirm never fires; the header dark/fullscreen/tour buttons and even the nav
+    // links go dead — the card flips instead). #fcCard stays exempt: it IS the drill surface.
+    // Space deliberately stays the global flip everywhere: it's the taught key, and a mouse
+    // user who just clicked Next (focus now on that button) expects Space to flip, not re-Next.
+    const tgt = e.target instanceof Element && e.target.closest('a,button,input,select,textarea,summary,[role="button"],[tabindex]');
+    if (e.key === 'Enter' && tgt && tgt.id !== 'fcCard') return;
     if (isListeningActive()) {
       // Listening rounds: no flip / no y-n grading (would corrupt the round).
       if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); document.getElementById('lcReplay').click(); }
