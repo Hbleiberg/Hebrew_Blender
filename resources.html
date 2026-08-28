@@ -1824,7 +1824,13 @@ function openSubmitFont(pf) {
     const box = document.getElementById('sgHcaptcha');
     if (hcId !== null || !box || box.querySelector('iframe')) return;
     if (window.hcaptcha && window.hcaptcha.render){
-      try { hcId = window.hcaptcha.render(box, { sitekey: HCAPTCHA_SITEKEY }); } catch (_) {}
+      // The standard widget is a fixed 303px-wide iframe; below ~356px of viewport the modal
+      // body's content box (min(560px, 96vw) − 38px of border+padding) can't hold it, and the
+      // widget clips behind an in-modal horizontal scrollbar — in RTL the clipped side is the
+      // checkbox's. Ask for hCaptcha's compact variant (164px) there.
+      const hcOpts = { sitekey: HCAPTCHA_SITEKEY };
+      if (matchMedia('(max-width: 355px)').matches) hcOpts.size = 'compact';
+      try { hcId = window.hcaptcha.render(box, hcOpts); } catch (_) {}
     } else {
       setTimeout(ensureCaptcha, 300); // hCaptcha API not loaded yet
     }
