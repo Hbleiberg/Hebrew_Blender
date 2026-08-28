@@ -7501,29 +7501,32 @@ else ivritInit();
     if (!card) return;
     card.textContent = '';
     card.style.display = '';
+    const lines = document.createElement('div');
+    lines.id = 'swmIcalLines';
     if (error) {
-      _swmIcalLine(card, 'sched-warn', error);
+      _swmIcalLine(lines, 'sched-warn', error);
     } else {
       const pend = _swmIcalPending;
       const plan = planCalendarImport(pend.slots);
       const h = document.createElement('h3');
       h.className = 'swm-import-title';
       h.textContent = I18n.t('dashboard.schedule.ical_preview_title', { file: pend.name });
-      card.appendChild(h);
-      _swmIcalLine(card, 'swm-import-body', I18n.t('dashboard.schedule.ical_preview_sum',
+      lines.appendChild(h);
+      _swmIcalLine(lines, 'swm-import-body', I18n.t('dashboard.schedule.ical_preview_sum',
         { cells: plan.fills, days: plan.days, periods: plan.periods.length, fresh: plan.newPeriods }));
-      if (plan.overwrites) _swmIcalLine(card, 'sched-warn',
+      if (plan.overwrites) _swmIcalLine(lines, 'sched-warn',
         I18n.t(plan.overwrites === 1 ? 'dashboard.schedule.ical_preview_overwrite.one' : 'dashboard.schedule.ical_preview_overwrite.other', { n: plan.overwrites }));
-      if (plan.conflicts) _swmIcalLine(card, 'sched-warn',
+      if (plan.conflicts) _swmIcalLine(lines, 'sched-warn',
         I18n.t(plan.conflicts === 1 ? 'dashboard.schedule.ical_preview_conflict.one' : 'dashboard.schedule.ical_preview_conflict.other', { n: plan.conflicts }));
-      if (pend.skipped) _swmIcalLine(card, 'sched-hint',
+      if (pend.skipped) _swmIcalLine(lines, 'sched-hint',
         I18n.t(pend.skipped === 1 ? 'dashboard.schedule.ical_preview_skipped.one' : 'dashboard.schedule.ical_preview_skipped.other', { n: pend.skipped }));
       if (plan.unmatched.length) {
         const names = plan.unmatched.slice(0, 3).join(' · ') + (plan.unmatched.length > 3 ? ' …' : '');
-        _swmIcalLine(card, 'sched-hint',
+        _swmIcalLine(lines, 'sched-hint',
           I18n.t(plan.unmatched.length === 1 ? 'dashboard.schedule.ical_preview_unmatched.one' : 'dashboard.schedule.ical_preview_unmatched.other', { n: plan.unmatched.length, names: names }));
       }
     }
+    card.appendChild(lines);
     const btns = document.createElement('div');
     btns.className = 'swm-import-btns';
     if (!error) {
@@ -7542,7 +7545,9 @@ else ivritInit();
     btns.appendChild(cancel);
     card.appendChild(btns);
     const first = btns.querySelector('button');
-    if (first) first.focus();   // the file dialog just closed — land the keyboard on the decision
+    // aria-describedby (read on focus) instead of a live region: the card is freshly built, so a
+    // just-created live region may not announce, and a card-wide region would re-announce the buttons.
+    if (first) { first.setAttribute('aria-describedby', 'swmIcalLines'); first.focus(); }   // the file dialog just closed — land the keyboard on the decision
   }
   function pickIcalFile() { document.getElementById('swmIcalFile').click(); }
   function onIcalFilePick(input) {
