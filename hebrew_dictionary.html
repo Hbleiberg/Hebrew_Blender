@@ -773,6 +773,14 @@ footer summary{min-height:24px;}
   .font-opt-label { font-weight: 600; font-size: 0.62rem; line-height: 1.2; word-break: break-word; }
   .font-opt-attr { font-size: 0.52rem; color: var(--muted); line-height: 1.2;
     word-break: break-word; text-decoration: none; }
+  /* --muted on the ACTIVE row's lighter dark surface (#2a3349) measures 4.13:1, under the 4.5:1
+     AA bar; the inactive rows clear it at 5.02:1 on #1e2535 — the plate decides, not the token.
+     Same lift and same value as the generator's twin picker (S225 / S285). (S286 Pass A) */
+  body.dark .font-opt-attr { color: #adb6c9; }
+  /* The [DEFAULT] marker sits in that same active row and failed identically; it was an INLINE
+     style, which no body.dark rule can override, so it is promoted to a class here. */
+  .font-opt-default { font-size: 0.6rem; color: var(--muted); font-weight: 400; }
+  body.dark .font-opt-default { color: #adb6c9; }
   .font-section-hdr { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em;
     text-transform: uppercase; color: var(--muted); margin: 8px 0 4px;
     padding-bottom: 3px; border-bottom: 1px solid var(--border);
@@ -4364,7 +4372,7 @@ function initFontSelector() {
         btn.innerHTML =
           '<span class="font-opt-preview" lang="he" style="font-family:' + font.stack + ';">אֶרֶץ</span>' +
           '<span class="font-opt-info">' +
-            '<span class="font-opt-label">' + ivEsc(font.name) + (font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">' + ivEsc(I18n.t('shared.fonts.default_marker')) + '</span>' : '') + '</span>' +
+            '<span class="font-opt-label">' + ivEsc(font.name) + (font.name === 'Frank Ruhl Libre' ? ' <span class="font-opt-default">' + ivEsc(I18n.t('shared.fonts.default_marker')) + '</span>' : '') + '</span>' +
             // Attribution is display-only: the old pointer-only link shortcut made a near-miss on
             // the tiny span PICK A FONT, and keyboard users could never reach it (a link may not
             // nest inside a <button>) — dropped by maintainer decision, S237.
