@@ -99,10 +99,13 @@
   --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
   --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
   --gold-text:#7f5a13;   /* readable gold for small text on light surfaces (WCAG ≥4.5:1) */
+  --gold-text-hover:#5c4010;  /* hover DARKENS on a light ground. This used to be --gold-light,
+     which is the DARK-mode gold: #f0d080 on cream is 1.41:1, so hovering a prose link made it
+     unreadable in light mode only. Dark mode keeps --gold-light (12.23:1) below. */
 }
 html.dark-early body,body.dark {
   --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
-  --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;--gold-text:var(--gold);
+  --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;--gold-text:var(--gold);--gold-text-hover:var(--gold-light);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
@@ -125,7 +128,7 @@ main p,main li{font-size:0.95rem;line-height:1.65;color:var(--text);margin-botto
 main ul{padding-inline-start:24px;margin-bottom:12px;}
 main li{margin-bottom:6px;}
 main a{color:var(--gold-text);text-decoration:underline;}
-main a:hover{color:var(--gold-light);}
+main a:hover{color:var(--gold-text-hover);}
 main strong{font-weight:700;}
 
 footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
