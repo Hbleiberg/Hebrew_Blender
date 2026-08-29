@@ -19571,6 +19571,35 @@ function sanitizeDraw(d) {
 // 'center' is deliberately absent: a center pin is unreachable in-app and inert at every reader
 // (markPinFor refuses it), so drop it on load rather than persisting a value nothing will honor.
 const ANCHOR_KEY_SET = new Set(['below','above','tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR']);
+/* A .hfm or autosave blob is untrusted text, and `1e999` is VALID JSON that parses to Infinity.
+   Math.round is a no-op on a non-finite, so such a value flows through metegGap()/fontSpacing()
+   straight into buildFEA, where feaLib rejects the WHOLE file ("Expected a number") — one bad
+   number kills the entire export. Every setter already clamps its input, so only a loaded file
+   can carry one; clamp each numeric setting to the range its own setter enforces. A field whose
+   default is null (metegGap = Auto) keeps a non-number untouched, so the auto path still runs. */
+function sanitizeFontNumbers(f) {
+  if (!f) return;
+  const fix = (o, k, lo, hi, dflt) => {          // absent stays absent — the caller's own default fills it
+    if (!o || o[k] == null) return;
+    const v = +o[k];
+    o[k] = Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : dflt;
+  };
+  [['markScale', 0.3, 2, 1.0], ['tropScale', 0.3, 2, 1.0], ['dageshScale', 0.3, 2, 1.0],
+   ['cholamScale', 0.3, 2, 1.0], ['holamScale', 0.3, 2, 1.0],
+   ['tropSideOffset', 0, 600, TROP_POS_SHIFT]].forEach(a => fix(f, a[0], a[1], a[2], a[3]));
+  [['letterSpacing', -40, 200, 0], ['wordSpacing', 80, 600, 260],
+   ['lineSpacing', 0, 500, 0], ['kernTarget', -40, 160, 40]].forEach(a => fix(f.spacing, a[0], a[1], a[2], a[3]));
+  if (f.nikkud && typeof f.nikkud.metegGap === 'number')   // typeof Infinity === 'number', which is the hole
+    f.nikkud.metegGap = Number.isFinite(f.nikkud.metegGap)
+      ? Math.max(0, Math.min(200, Math.round(f.nikkud.metegGap))) : null;
+  if (f.markNudge) for (const cp of Object.keys(f.markNudge)) {   // per-mark dy: junk is dropped, not defaulted
+    const v = +f.markNudge[cp];
+    if (Number.isFinite(v)) f.markNudge[cp] = Math.max(-200, Math.min(200, Math.round(v)));
+    else delete f.markNudge[cp];
+  }
+  if (f.trop && f.trop.vowelPair) for (const cls of Object.keys(f.trop.vowelPair))
+    fix(f.trop.vowelPair[cls], 'dx', -300, 300, 70);         // signed: magnitude clamps at the slider's 300
+}
 function sanitizeMarkAnchors(l) {   // fidelity pins from a loaded save are untrusted — keep only well-formed entries; empty/junk → field absent (= no pins)
   const ma = l.markAnchors; let clean = null;
   if (ma && typeof ma === 'object') for (const cp in ma) {
@@ -19741,6 +19770,7 @@ function migrateProject(data) {
     }
     delete data.font.trop.halign['05BD'];   // meteg is no longer a trop; its halign slot is meaningless
     if (data.font.nikkud.metegGap === undefined) data.font.nikkud.metegGap = null;   // null = Auto (gap measured from the hataf) — see metegGap()
+    sanitizeFontNumbers(data.font);   // untrusted numerics from the file — clamp before anything reads them
     if (data.font.addCustomGlyphs == null) data.font.addCustomGlyphs = false;
     if (data.font.svgUpload == null) data.font.svgUpload = false;
     if (data.font.addEnglishLetters == null) data.font.addEnglishLetters = false;
