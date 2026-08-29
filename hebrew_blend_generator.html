@@ -2252,6 +2252,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
      sub-label above (S225). The hover rule below carries a dark twin because this override is
      (0,2,1) and a bare :hover is (0,2,0) — specificity, not source order, decides. */
   body.dark .font-opt-attr { color: #adb6c9; }
+  /* The [DEFAULT] marker sits in that same active row and failed for the same reason, but was
+     missed by the S225 lift because it was an INLINE style — which no body.dark rule can override.
+     Same plate, same 4.13:1, so the same lift; as a class it can now take one. (S285 Pass C) */
+  .font-opt-default { font-size: 0.6rem; color: var(--muted); font-weight: 400; }
+  body.dark .font-opt-default { color: #adb6c9; }
   .font-section-hdr { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em;
     text-transform: uppercase; color: var(--muted); margin: 8px 0 4px;
     padding-bottom: 3px; border-bottom: 1px solid var(--border);
@@ -12868,7 +12873,7 @@ function initFontSelector() {
         btn.innerHTML =
           '<span class="font-opt-preview" lang="he" style="font-family:' + font.stack + ';">אֶרֶץ</span>' +
           '<span class="font-opt-info">' +
-            '<span class="font-opt-label">' + ivEsc(font.name) + (font.name === 'Frank Ruhl Libre' ? ' <span style="font-size:0.6rem;color:var(--muted);font-weight:400;">' + ivEsc(window.I18n ? I18n.t('shared.fonts.default_marker') : '[DEFAULT]') + '</span>' : '') + '</span>' +
+            '<span class="font-opt-label">' + ivEsc(font.name) + (font.name === 'Frank Ruhl Libre' ? ' <span class="font-opt-default">' + ivEsc(window.I18n ? I18n.t('shared.fonts.default_marker') : '[DEFAULT]') + '</span>' : '') + '</span>' +
             // Attribution is display-only: the old pointer-only link shortcut made a near-miss on
             // the tiny span PICK A FONT, and keyboard users could never reach it (a link may not
             // nest inside a <button>) — dropped by maintainer decision, S237.
