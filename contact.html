@@ -164,7 +164,13 @@ body.dark .btn-primary:hover{background:#345090;}
 .pill-group .pill:hover{color:var(--text);}
 .pill-group .pill.active{background:var(--navy);color:var(--gold-light);}
 body.dark .pill-group .pill.active{background:#2a4070;color:var(--gold-light);}
-.donate-panel{display:none;text-align:center;padding:14px 4px 6px;min-height:250px;}
+/* min-height is the anti-jump floor for the three payment panels — without it the card
+   resized on every tab click. 250px covered PayPal and Venmo (121px of natural content
+   each) but sat 29px UNDER the Zelle panel, which the QR image makes 279px — so the one
+   tab the floor existed to cover was the one that still moved the card. 280px clears all
+   three. Natural heights measure an invariant [121,121,279] across EN/HE, both themes and
+   1280/800/420px, so this is a fixed floor rather than a per-locale guess. */
+.donate-panel{display:none;text-align:center;padding:14px 4px 6px;min-height:280px;}
 .donate-panel.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .donate-handle{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:var(--text);margin:2px 0 2px;}
 .donate-sub{font-size:0.82rem;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;}
