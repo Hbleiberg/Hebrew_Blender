@@ -2321,6 +2321,7 @@
   "fontmaker.modals.shaping_fail_body": "זה בדרך כלל אומר שעוגני הסימנים לא נקלטו. עדיין תוכלו להוריד, אך התנועות/הטעמים עשויים להיות במקום שגוי.",
   "fontmaker.modals.shaping_fail_dagesh_plain": "אות + דגש שהוקלדו (בּ) לא התרכבו לצורה הדגושה ({n} גליפים) — ייתכן שחסר כלל ה־ccmp של הדגש.",
   "fontmaker.modals.shaping_fail_dagesh_vowel": "אות דגושה עם תנועה (בָּ) לא התרכבה לצורה הדגושה ({n} גליפים) — ייתכן שחסרה קבוצת הסינון של כלל ה־ccmp של הדגש.",
+  "fontmaker.modals.shaping_fail_meteg_pair": "בדיקת צימוד המתג נכשלה עבור {vowel}: היה צפוי שהתנועה תוזז ב־{dv} והמתג ב־{dm}, אך התקבל {gotv} / {gotm}.",
   "fontmaker.modals.shaping_fail_shin_dagesh": "שין + דגש + נקודה שהוקלדו לא התרכבו לצורת שּׁ/שּׂ ({n} גליפים) — ייתכן שחסר כלל ה־ccmp של הדגש.",
   "fontmaker.modals.shaping_fail_shin_dagesh_vowel": "תנועה על שין דגושה (שָּׁ) לא עוצבה לצורה המורכבת + תנועה ({n} גליפים) — ייתכן שכלל ה־ccmp של הדגש מוגדר בטווח שגוי.",
   "fontmaker.modals.shaping_fail_shin_dagesh_vowel_pos": "התנועה על שין דגושה (שָּׁ) נצמדה ב־x=0 — ייתכן שלצורת שּׁ חסרות נקודות העיגון שלה.",

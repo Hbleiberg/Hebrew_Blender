@@ -2321,6 +2321,7 @@
   "fontmaker.modals.shaping_fail_body": "This usually means the mark anchors didn't take. You can still download, but vowels/trop may be misplaced.",
   "fontmaker.modals.shaping_fail_dagesh_plain": "A typed letter + dagesh (בּ) did not compose into its dotted form ({n} glyphs) — the dagesh ccmp lookup may be missing.",
   "fontmaker.modals.shaping_fail_dagesh_vowel": "A dagesh letter with a vowel (בָּ) did not compose into its dotted form ({n} glyphs) — the dagesh ccmp filtering set may be missing.",
+  "fontmaker.modals.shaping_fail_meteg_pair": "Meteg pairing check failed for {vowel}: expected the vowel to shift {dv} and the meteg {dm}, got {gotv} / {gotm}.",
   "fontmaker.modals.shaping_fail_shin_dagesh": "A typed shin + dagesh + dot did not compose into the שּׁ/שּׂ form ({n} glyphs) — the dagesh ccmp lookup may be missing.",
   "fontmaker.modals.shaping_fail_shin_dagesh_vowel": "A vowel on a dagesh shin (שָּׁ) did not shape to the composed form + vowel ({n} glyphs) — the dagesh ccmp lookup may be mis-scoped.",
   "fontmaker.modals.shaping_fail_shin_dagesh_vowel_pos": "The vowel on a dagesh shin (שָּׁ) attached at x=0 — the שּׁ form may be missing its base anchors.",

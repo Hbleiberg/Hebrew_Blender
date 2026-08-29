@@ -2686,6 +2686,66 @@ function vowelPairCfg(cls) {   // cls: 'below' | 'above'; absent/partial data �
 }
 function vowelSlideDx(cls) { const c = vowelPairCfg(cls); return c.mode === 'slide' ? c.dx : 0; }
 
+/* ── Vowel + meteg pairing (font-wide). Meteg sits BESIDE its vowel on the vowel row — logical
+   <vowel, meteg> puts the meteg visually LEFT of the vowel — and the PAIR is centered under the
+   letter's below anchor. Per-VOWEL-GLYPH and letter-independent (fidelity pins move the base
+   anchor, not the mark's width): contextual single-pos GPOS adds dv on the vowel and dm on the
+   meteg, computed from scaled ink widths/centers so that the meteg's right ink edge + gap G ==
+   the vowel's left ink edge and the pair's combined ink is centered on the anchor. Emitted in
+   buildFEA (NIK_METEG_*), mirrored by the QA pair cells, the stage ghost, the spacing preview
+   and the export shaping gate — metegPairFor() is the ONE math chokepoint they all read.
+   The approach is after Maxim Iorsh's Culmus FontForge scripts (AddHebrewContextualGPOS.py's
+   pair-width math, GuessMarkToMarkGaps.py's hataf-derived gap), re-expressed for this app's
+   attach-origin-at-(0,0) mark model; no Culmus code text is copied. */
+function _metegInk(t) {   // scaled ink extents of a below vowel cp, '05BD', or 'shevana' — {W,cx} or null
+  const sheva = t === SHEVA_NA_GLYPH;
+  const s = sheva ? SHEVA_NA_SCALE * markScale() : nikScale(t);
+  const polys = markGlyphContours('nikkud', sheva ? '05B0' : t);
+  let mn = 1e9, mx = -1e9;
+  polys.forEach(poly => poly.forEach(([x]) => { mn = Math.min(mn, x * s); mx = Math.max(mx, x * s); }));
+  if (mn > mx) return null;
+  return { W: mx - mn, cx: (mn + mx) / 2 };
+}
+/* The Culmus GuessGapsFromHataf heuristic: a hataf already IS "vowel beside sheva dots", so the
+   x-gap inside the user's own hataf drawing is the designer's spacing taste. Two rightmost
+   contours (by center-x) = the sheva dots — sanity-checked to overlap each other in x; everything
+   else is the vowel body; gap = dots' left ink edge − body's right ink edge. 05B1 (hataf segol)
+   is probed LAST: the built-in draws its dots inside the segol row, so it measures loose. */
+function metegGapMeasured() {
+  for (const cp of ['05B2', '05B3', '05B1']) {
+    const s = nikScale(cp);
+    const boxes = markGlyphContours('nikkud', cp).map(poly => {
+      let mn = 1e9, mx = -1e9;
+      poly.forEach(([x]) => { mn = Math.min(mn, x * s); mx = Math.max(mx, x * s); });
+      return { mn, mx, c: (mn + mx) / 2 };
+    }).filter(b => b.mn <= b.mx);
+    if (boxes.length < 3) continue;
+    boxes.sort((a, b) => a.c - b.c);
+    const dots = boxes.slice(-2), body = boxes.slice(0, -2);
+    if (!(dots[0].mx >= dots[1].mn && dots[1].mx >= dots[0].mn)) continue;   // sheva dots sit in one column
+    const gap = Math.min(dots[0].mn, dots[1].mn) - Math.max(...body.map(b => b.mx));
+    if (Number.isFinite(gap) && gap >= 0) return Math.round(gap);
+  }
+  return null;
+}
+function metegGap() {   // effective gap: the user's number, else the measured hataf gap clamped
+  const v = project && project.font && project.font.nikkud ? project.font.nikkud.metegGap : null;
+  if (typeof v === 'number') return Math.round(v);
+  const m = metegGapMeasured();
+  // The clamp floor is load-bearing: the BUILT-IN hataf patach measures ~5 units (bar edge 115,
+  // dot edge 120) — far too tight for a meteg pair. Don't "fix" the heuristic; the floor is the fix.
+  return Math.max(30, Math.min(150, m == null ? 50 : m));
+}
+function metegPairFor(t) {   // {dv, dm} for below vowel cp / SHEVA_NA_GLYPH, or null (no pairing)
+  if (t === '05BD') return null;
+  const v = _metegInk(t), g = _metegInk('05BD');
+  if (!v || !g) return null;
+  const G = metegGap();
+  // Meteg-left: dv shifts the vowel right of center, dm parks the meteg left of it. Rounded at
+  // the source — an un-rounded coordinate anywhere near the FEA makes feaLib reject the file.
+  return { dv: Math.round((g.W + G) / 2 - v.cx), dm: Math.round(-(v.W + G) / 2 - g.cx) };
+}
+
 /* ── Punctuation & More: default outlines (font units; baseline 0, letter-top 600).
    Each factory returns { contours:[{winding,points}], advance }. Digits 0–9 are ABSENT →
    seeded blank (traced like letters). Shapes are deliberately simple — the user re-traces. */
@@ -2839,6 +2899,7 @@ function udSnap(s) {
     tropSideOffset: (project.font.tropSideOffset != null) ? project.font.tropSideOffset : null,
     halign: (project.font.trop && project.font.trop.halign) || {},
     vowelPair: (project.font.trop && project.font.trop.vowelPair) || null,
+    metegGap: (project.font.nikkud && typeof project.font.nikkud.metegGap === 'number') ? project.font.nikkud.metegGap : null,   // null = Auto
     markNudge: project.font.markNudge || {},
     markScale:   (project.font.markScale   != null) ? project.font.markScale   : null,
     dageshScale: (project.font.dageshScale != null) ? project.font.dageshScale : null,
@@ -2869,6 +2930,7 @@ function udRestore(s, snap) {
     if (!project.font.trop) project.font.trop = {};
     project.font.trop.halign = JSON.parse(JSON.stringify(sn.halign || {}));
     if (sn.vowelPair) project.font.trop.vowelPair = JSON.parse(JSON.stringify(sn.vowelPair)); else delete project.font.trop.vowelPair;   // readers go through vowelPairCfg, so absent ⇒ stack
+    if (project.font.nikkud) project.font.nikkud.metegGap = (typeof sn.metegGap === 'number') ? sn.metegGap : null;   // null = Auto (metegGap() re-measures)
     project.font.markNudge = JSON.parse(JSON.stringify(sn.markNudge || {}));
     ['markScale','dageshScale','cholamScale','holamScale','tropScale'].forEach(k => {
       if (sn[k] != null) project.font[k] = sn[k]; else delete project.font[k]; }); }
@@ -2993,7 +3055,7 @@ function newProject() {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', author: '', license: 'ofl',
       style: 'regular',   // 'regular' | 'bold' — exported as the family's Regular or Bold member
       version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0, dageshScale: 1.0, cholamScale: 1.0, holamScale: 1.0, markNudge: {}, tropSideOffset: TROP_POS_SHIFT,
-      nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, shevaNa: false },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'; shevaNa: bold sheva-na alternate
+      nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, shevaNa: false, metegGap: null },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'; shevaNa: bold sheva-na alternate; metegGap: null = Auto (see metegGap())
       trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, halign: {}, vowelPair: { below: { mode: 'stack', dx: 70 }, above: { mode: 'stack', dx: 70 } } },
       customMarks: { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // user-defined nikkud marks added via the Custom glyphs tab
       accent: { mode: 'custom', custom: {} },   // Latin accent shapes taken from an imported font; empty = the built-in LATIN_ACCENTS outlines
@@ -12076,6 +12138,22 @@ function coGhostDx() {
   if (!coPreviewCp || MARK_CLASS[coPreviewCp] !== cls) return 0;
   return vowelSlideDx(cls);
 }
+/* dx the GHOST shifts when the active mark + ghost form a vowel+meteg pair: the active mark stays
+   on its anchor handle (draggable truth) and only the ghost moves by the RELATIVE pair offset —
+   ghost meteg at +(dm−dv) beside an active vowel, ghost vowel at +(dv−dm) beside an active meteg.
+   Relative placement is exact; absolute centering is QA's job (pair overlap is translation-
+   invariant, so the verdict below stays exact too). 0 in every non-pair case, so adding it to
+   coGhostDx() at the two consumer sites is always safe. */
+function metegGhostDx(activeCp, ghostCp) {
+  if (activeAnchorClass !== 'below' || !ghostCp) return 0;
+  let vowel = null;
+  if (activeCp === '05BD' && MARK_CLASS[ghostCp] === 'below' && ghostCp !== '05BD') vowel = ghostCp;
+  else if (ghostCp === '05BD' && MARK_CLASS[activeCp] === 'below' && activeCp !== '05BD') vowel = activeCp;
+  else return 0;
+  const pr = metegPairFor(vowel);
+  if (!pr) return 0;
+  return activeCp === '05BD' ? (pr.dv - pr.dm) : (pr.dm - pr.dv);
+}
 /* Effective 2nd-mark preview for "check stacking". The dropdown, the stage ghost, and the overlap
    verdict must share this ONE validity predicate so the three surfaces can never disagree. Null when:
    nothing is previewed; the previewed mark IS the active mark (a base takes one mark per class — the
@@ -12164,7 +12242,7 @@ function anchorHandlesSVG(l) {
   if (co && baseAnchorPosFor(l, MARK_CLASS[co], co)) {   // grey ghost of the 2nd mark for the stacking-clash check (non-interactive; on trop classes too — trop-vs-vowel clashes are the common real-world failure)
     const gp = coStackGhostPlacement(l, co);   // a mark that composes to a form → the form's anchor + size (a baked ligature mark never slides)
     const ga = gp || baseAnchorPosFor(l, MARK_CLASS[co], co);
-    h += `<path d="${markPreviewPath(co, ga.x + (gp ? 0 : coGhostDx()), ga.y, gp ? gp.scale : undefined)}" fill="#888" fill-opacity="0.55"/>`;   // slide mode: the ghost vowel sits at its slid position
+    h += `<path d="${markPreviewPath(co, ga.x + (gp ? 0 : coGhostDx() + metegGhostDx(cp, co)), ga.y, gp ? gp.scale : undefined)}" fill="#888" fill-opacity="0.55"/>`;   // slide mode: the ghost vowel sits at its slid position; vowel+meteg pair: the ghost sits at its RELATIVE pair offset (active mark stays on the handle)
     if (gp && precompTakesHolam(gp.pc) && cls === 'above') {
       // ש + dot ghost: the exported FB2A/FB2B attach the active above-mark at the form's holam slot —
       // the verdict measures it there, so draw it there too (the precomp editor's blue). The colored
@@ -13437,6 +13515,16 @@ function _spacingCellMarks(cell) {   // place a glyph cell's stacked nikkud toge
   if (pc && _subst(pc, dotCp)) { /* dot consumed by the src glyph; holam below still routes to the form's holam slot */ }
   else if (vavHolamPc && cps.includes('05B9') && _subst(vavHolamPc, '05B9')) { /* וֹ shown as the source font drew it */ }
   else if (dagPc && _subst(dagPc, '05BC')) { /* בּ shown as the source font drew it — its own ink, its own advance */ }
+  // A typed vowel+meteg pair mirrors the exported NIK_METEG rules (dv on the vowel, dm on the
+  // meteg — metegPairFor, the shared math chokepoint): both are nikkud marks now, so without this
+  // they'd pile on one anchor, breaking this block's preview == font doctrine. Exactly one below
+  // vowel + the meteg qualifies; odd clusters fall back to raw anchors, like the shaper's no-match.
+  const pairOff = {};
+  if (cps.includes('05BD')) {
+    const bv = cps.filter(m => MARK_CLASS[m] === 'below' && m !== '05BD');
+    const pr = bv.length === 1 ? metegPairFor(bv[0]) : null;
+    if (pr) { pairOff[bv[0]] = pr.dv; pairOff['05BD'] = pr.dm; }
+  }
   cps.forEach(mcp => {
     const cls = MARK_CLASS[mcp]; if (!cls) return;
     let ancPt = qaAnchorFor(L, anc, cls, mcp), scale = nikScale(mcp);
@@ -13444,6 +13532,7 @@ function _spacingCellMarks(cell) {   // place a glyph cell's stacked nikkud toge
       if (mcp === dotCp) { ancPt = precompAnchor(pc); scale = precompMarkScale(pc); }   // the baked dot
       else if (mcp === '05B9' || mcp === '05BA') ancPt = precompHolamAnchor(pc);         // holam → the form's holam slot
     } else if (vavHolamPc && mcp === '05B9') { ancPt = precompAnchor(vavHolamPc); scale = precompMarkScale(vavHolamPc); }   // the FB4B dot (cholamScale + any dot-position override)
+    if (mcp in pairOff) ancPt = { x: ancPt.x + pairOff[mcp], y: ancPt.y };   // vowel+meteg spread (never mutate the shared anchor object)
     const polys = qaPlace(ancPt, 'nikkud', mcp, scale, L);
     if (polys && polys.length) (cell.marks = cell.marks || []).push(polys);
   });
@@ -14547,7 +14636,7 @@ function renderAnchorLeft(L, l) {
       const aboveOnForm = !!gp && precompTakesHolam(gp.pc) && !isTrop && MARK_CLASS[acp] === 'above';
       const pa = isTrop ? qaPlace(baseAnchorPosFor(l, activeAnchorKey(), acp), 'trop', acp, tropScale(), l)
                         : qaPlace(aboveOnForm ? precompHolamAnchor(gp.pc) : baseAnchorPosFor(l, activeAnchorKey(), acp), 'nikkud', acp, nikScale(acp), l);
-      const gAnc = gp || baseAnchorPosFor(l, MARK_CLASS[co], co), gdx = gp ? 0 : coGhostDx();   // slide mode: the ghost vowel is checked at its slid position (matches the stage ghost + the FEA)
+      const gAnc = gp || baseAnchorPosFor(l, MARK_CLASS[co], co), gdx = gp ? 0 : coGhostDx() + metegGhostDx(acp, co);   // slide mode: the ghost vowel is checked at its slid position; vowel+meteg pair: at its relative pair offset (matches the stage ghost + the FEA — pair overlap is translation-invariant)
       const pg = qaPlace({ x: gAnc.x + gdx, y: gAnc.y }, 'nikkud', co, gp ? gp.scale : nikScale(co), l);
       const overlaps = markPolysOverlap(pa, pg, QA_OVERLAP_TOL);
       const holamPair = aboveOnForm && (acp === '05B9' || acp === '05BA');
@@ -15388,9 +15477,20 @@ function qaCellLayers(L, anc, col) {
   }
   if (col.kind === 'customMarks') return [{ polys: qaPlace(anc[col.side], 'customMarks', col.cp, col.side === 'center' ? ds : ms, L), color: QA_SIDE_COLOR[col.side] }];   // scale mirrors the export bake (center = dagesh scale); custom marks are never pinned
   if (col.kind === 'trop')   { const k = tropColKey(col.side, tropHalign(col.cp)); return [{ polys: qaPlace(qaAnchorFor(L, anc, k, col.cp), 'trop', col.cp, tms), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] }]; }
-  if (col.kind === 'pair')   return [                                   // two nikkud marks on one letter, each at its own class anchor
-    { polys: qaPlace(qaAnchorFor(L, anc, MARK_CLASS[col.a], col.a),   'nikkud', col.a,  nikScale(col.a),  L), color: QA_SIDE_COLOR[MARK_CLASS[col.a]] },
-    { polys: qaPlace(qaAnchorFor(L, anc, MARK_CLASS[col.cp], col.cp), 'nikkud', col.cp, nikScale(col.cp), L), color: QA_SIDE_COLOR[MARK_CLASS[col.cp]] } ];
+  if (col.kind === 'pair') {                                            // two nikkud marks on one letter, each at its own class anchor
+    // A vowel+meteg pair mirrors the exported NIK_METEG rules: the vowel draws at anchor.x + dv,
+    // the meteg at anchor.x + dm (metegPairFor — the shared math chokepoint), so the QA verdict
+    // judges the real side-by-side pair, not the raw shared-anchor pile-up.
+    const off = { [col.a]: 0, [col.cp]: 0 };
+    const marks = [col.a, col.cp];
+    if (marks.includes('05BD')) {
+      const other = marks.find(m => m !== '05BD');
+      const pr = (other && MARK_CLASS[other] === 'below') ? metegPairFor(other) : null;
+      if (pr) { off[other] = pr.dv; off['05BD'] = pr.dm; }
+    }
+    return marks.map(m => { const a2 = qaAnchorFor(L, anc, MARK_CLASS[m], m);
+      return { polys: qaPlace({ x: a2.x + off[m], y: a2.y }, 'nikkud', m, nikScale(m), L), color: QA_SIDE_COLOR[MARK_CLASS[m]] }; });
+  }
   const nikAnc = qaAnchorFor(L, anc, col.side, col.cp), pairCfg = vowelPairCfg(col.side);
   if (pairCfg.mode === 'slide')   // slide mode mirrors the FEA: vowel shifts dx; trop attaches to the LETTER's center trop column
     return [ { polys: qaPlace({ x: nikAnc.x + pairCfg.dx, y: nikAnc.y }, 'nikkud', col.cp, ms, L), color: QA_SIDE_COLOR[col.side] },
@@ -16237,10 +16337,58 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     if (!vowels.length || !trops.length) return;
     const NAME = 'NIK_SLIDE_' + cls.toUpperCase();
     slideDefs += `lookup ${NAME}_ADJ {\n  pos [${vowels.join(' ')}] <${cfg.dx} 0 0 0>;\n} ${NAME}_ADJ;\n\n`;
-    slideDefs += `lookup ${NAME} {\n  lookupflag UseMarkFilteringSet [${vowels.concat(trops).join(' ')}];\n  pos [${vowels.join(' ')}]' lookup ${NAME}_ADJ [${trops.join(' ')}];\n} ${NAME};\n\n`;
+    // A meteg between the vowel and the trop (below class only — vowels includes uni05BD, so the
+    // plain rule slides the METEG): without the extra longer rule the VOWEL's position would see
+    // meteg-not-trop in the filtered lookahead and never slide — only the meteg would move. With
+    // it, both marks slide by dx and the pair stays together. Most-specific rule first.
+    const metegBetween = cls === 'below' && vowels.includes(gname('05BD'))
+      ? `  pos [${vowels.join(' ')}]' lookup ${NAME}_ADJ [${gname('05BD')}] [${trops.join(' ')}];\n` : '';
+    slideDefs += `lookup ${NAME} {\n  lookupflag UseMarkFilteringSet [${vowels.concat(trops).join(' ')}];\n${metegBetween}  pos [${vowels.join(' ')}]' lookup ${NAME}_ADJ [${trops.join(' ')}];\n} ${NAME};\n\n`;
     slideRefs += `  lookup ${NAME};\n`;
   });
   if (slideRefs) f += slideDefs + 'feature mark {\n' + slideRefs + '} mark;\n\n';
+  // ── vowel+meteg pairing (NIK_METEG): logical <vowel, meteg> renders the meteg BESIDE the vowel
+  //    (visually left of it), the pair centered under the letter's below anchor — dv shifts the
+  //    vowel, dm the meteg, both from metegPairFor() (the ONE math chokepoint the QA pair cells,
+  //    stage ghost, spacing preview and shaping gate share). Vowels grouped by identical (dv,dm)
+  //    so the output stays small. The UseMarkFilteringSet (paired vowels + meteg — the marked
+  //    glyph itself MUST be in the set or the shaper skips it) keeps the pair adjacent even with
+  //    a dagesh between them in canonical order (bet, qamats ccc18, dagesh ccc21, meteg ccc22);
+  //    ccmp usually composes the dagesh away first, but a holam or a trop between them is the
+  //    same shape of problem. Custom-store marks are deliberately NOT paired (no meteg
+  //    semantics). Same ORDER-MATTERS dependency as the slide block: these single-pos ADDS only
+  //    ride on top of mark-to-base attachment from a higher lookup index — defs emitted after
+  //    slideDefs, registered via one more merged `feature mark` block. Emitted after NIK_SLIDE
+  //    so a slid vowel+meteg pair spreads around its slid position (single-pos values from
+  //    different lookups accumulate; order between the two adds is immaterial). ──
+  if (nikOn && byClass.below.includes(gname('05BD'))) {
+    const pairGroups = new Map();   // "dv,dm" -> [vowel glyph names]
+    const addPair = (t, name) => {
+      const pr = metegPairFor(t);
+      if (!pr) return;
+      const k = pr.dv + ',' + pr.dm;
+      if (!pairGroups.has(k)) pairGroups.set(k, []);
+      pairGroups.get(k).push(name);
+    };
+    MARK_CPS.forEach(cp => { if (MARK_CLASS[cp] === 'below' && cp !== '05BD') addPair(cp, gname(cp)); });
+    if (shevaNaOn) addPair(SHEVA_NA_GLYPH, SHEVA_NA_GLYPH);   // the ss01 alternate is wider — its own (dv,dm) group
+    if (pairGroups.size) {
+      const meteg = gname('05BD');
+      let pairDefs = '', pairRules = '', gi = 0;
+      const pairedVowels = [];
+      pairGroups.forEach((names, k) => {
+        gi++;
+        const [dv, dm] = k.split(',');
+        pairedVowels.push(...names);
+        pairDefs += `lookup NIK_METEG_V_${gi} {\n  pos [${names.join(' ')}] <${dv} 0 0 0>;\n} NIK_METEG_V_${gi};\n\n`;
+        pairDefs += `lookup NIK_METEG_M_${gi} {\n  pos [${meteg}] <${dm} 0 0 0>;\n} NIK_METEG_M_${gi};\n\n`;
+        pairRules += `  pos [${names.join(' ')}]' lookup NIK_METEG_V_${gi} [${meteg}];\n`;
+        pairRules += `  pos [${names.join(' ')}] [${meteg}]' lookup NIK_METEG_M_${gi};\n`;
+      });
+      f += pairDefs + `lookup NIK_METEG_PAIR {\n  lookupflag UseMarkFilteringSet [${pairedVowels.concat([meteg]).join(' ')}];\n${pairRules}} NIK_METEG_PAIR;\n\n` +
+           'feature mark {\n  lookup NIK_METEG_PAIR;\n} mark;\n\n';
+    }
+  }
   // ── mark-to-mark — stack trop above/below a nikkud vowel (only when both categories are on;
   //    a class in vowelPair slide mode is skipped — its trop attaches to the letter instead) ──
   if (nikOn && tropMarks.length) {
@@ -18121,6 +18269,55 @@ async function harfbuzzGate(bytes) {
         if ((vp.dx || 0) - (vowel.dx || 0) !== cfg.dx) {
           font.destroy(); face.destroy(); blob.destroy();
           return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_vowel_slide', { class: cls, dx: cfg.dx }) };
+        }
+      }
+    }
+    // Vowel+meteg pairing probe: between "letter+vowel" / "letter+meteg" and "letter+vowel+meteg"
+    // the vowel's x_offset must grow by exactly dv and the meteg's by exactly dm — computed from
+    // metegPairFor, the same chokepoint the FEA emission used. Marks identified by GLYPH ID from
+    // the pair-less shapes (the zero-advance glyph), never by index (RTL returns marks first).
+    // The dagesh variant (בָּֽ — dagesh sits BETWEEN the pair in canonical order, ccc 18/21/22)
+    // re-runs the qamats case through the composed FB3x form, proving the UseMarkFilteringSet.
+    // Unexpected glyph counts skip rather than guess — same resilient philosophy as above.
+    if (project.font.nikkud.enabled) {
+      const shapeIt = t => { const buf = H.createBuffer(); buf.addText(t); buf.guessSegmentProperties(); H.shape(font, buf); const r = buf.json(font); buf.destroy(); return r; };
+      const metegAlone = shapeIt('בֽ');
+      const metegG = metegAlone.length === 2 ? metegAlone.find(g => !(g.ax || 0)) : null;
+      if (metegG) {
+        for (const [vcp, withDagesh] of [['05B8', false], ['05B8', true], ['05B0', false], ['05B2', false]]) {   // qamats (bare + through dagesh), sheva, hataf patach — three width groups
+          const pr = metegPairFor(vcp);
+          if (!pr) continue;
+          const seq = 'ב' + (withDagesh ? String.fromCodePoint(0x05BC) : '') + String.fromCodePoint(parseInt(vcp, 16));
+          const alone = shapeIt(seq), pair = shapeIt(seq + String.fromCodePoint(0x05BD));
+          if (alone.length !== 2 || pair.length !== 3) continue;   // composition differs (e.g. no FB31 in this font) → skip, don't guess
+          const vowelG = alone.find(g => !(g.ax || 0));
+          const vIn = vowelG && pair.find(g => g.g === vowelG.g), mIn = pair.find(g => g.g === metegG.g);
+          if (!vowelG || !vIn || !mIn) continue;
+          const gotv = (vIn.dx || 0) - (vowelG.dx || 0), gotm = (mIn.dx || 0) - (metegG.dx || 0);
+          if (gotv !== pr.dv || gotm !== pr.dm) {
+            font.destroy(); face.destroy(); blob.destroy();
+            return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_meteg_pair', { vowel: gName(markName(vcp)), dv: pr.dv, dm: pr.dm, gotv, gotm }) };
+          }
+        }
+        // Stack-mode mkmk guard: with a center below-trop on the cluster, the trop must keep the
+        // exact dy it has WITHOUT the meteg (it stacked on the VOWEL — the mkmk filtering set
+        // skipped the meteg) while riding the vowel's dv sideways via attach-offset propagation.
+        if (project.font.trop.enabled && vowelPairCfg('below').mode !== 'slide') {
+          const tcp = TROP_CPS.find(cp => TROP_CLASS[cp] === 'below' && tropHalign(cp) === 'center');
+          const pr = metegPairFor('05B8');
+          if (tcp && pr) {
+            const tch = String.fromCodePoint(parseInt(tcp, 16));
+            const tAlone = shapeIt('ב' + tch);
+            const tropG = tAlone.length === 2 ? tAlone.find(g => !(g.ax || 0)) : null;
+            const base = shapeIt('בָ' + tch), withMeteg = shapeIt('בָֽ' + tch);
+            if (tropG && base.length === 3 && withMeteg.length === 4) {
+              const tB = base.find(g => g.g === tropG.g), tM = withMeteg.find(g => g.g === tropG.g);
+              if (tB && tM && ((tM.dy || 0) !== (tB.dy || 0) || (tM.dx || 0) - (tB.dx || 0) !== pr.dv)) {
+                font.destroy(); face.destroy(); blob.destroy();
+                return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_meteg_pair', { vowel: gName(markName(tcp)), dv: pr.dv, dm: tB.dy || 0, gotv: (tM.dx || 0) - (tB.dx || 0), gotm: tM.dy || 0 }) };
+              }
+            }
+          }
         }
       }
     }
