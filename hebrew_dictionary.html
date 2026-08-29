@@ -879,7 +879,7 @@ footer summary{min-height:24px;}
 </head>
 <body>
 
-<button id="fsBtn" onclick="toggleFullscreen()" title="Full screen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
+<button id="fsBtn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
 
 <header>
   <span class="star">✡︎</span>
@@ -1250,7 +1250,7 @@ footer summary{min-height:24px;}
       <div id="shoreshControls">
         <label style="display:block;font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:6px;" data-i18n="dictionary.shoresh.enter_label">Enter a שׁורש (root)</label>
         <div class="shoresh-input-row">
-          <input type="text" id="shoreshInput" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Enter a Hebrew root" data-i18n-aria-label="dictionary.shoresh.enter_label" placeholder="e.g. כ-ת-ב" data-i18n-placeholder="dictionary.shoresh.input_placeholder" oninput="onShoreshInput()" onkeydown="onShoreshKey(event)">
+          <input type="text" id="shoreshInput" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Enter a שׁורש (root)" data-i18n-aria-label="dictionary.shoresh.enter_label" placeholder="e.g. כ-ת-ב" data-i18n-placeholder="dictionary.shoresh.input_placeholder" oninput="onShoreshInput()" onkeydown="onShoreshKey(event)">
           <button class="shoresh-lookup-btn" onclick="runShoreshLookup(document.getElementById('shoreshInput').value)" data-i18n="dictionary.shoresh.lookup_button">Look up</button>
         </div>
         <div style="font-size:0.7rem;color:var(--muted);margin-bottom:4px;" data-i18n="dictionary.shoresh.browse_roots">Browse roots (alef→tav) — click to look up:</div>
