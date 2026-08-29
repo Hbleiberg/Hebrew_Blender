@@ -586,6 +586,13 @@ body.dict-audio-on .ec-speak{display:inline-flex;}
 .tip-wrap{display:inline-flex;align-items:center;vertical-align:middle;}
 .tip-icon{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:var(--muted);color:#fff;font-size:0.62rem;font-weight:700;font-style:normal;cursor:help;margin-inline-start:5px;flex-shrink:0;line-height:1;}
 .tip-wrap.tip-gold .tip-icon{background:var(--gold);color:var(--navy);}
+/* Dark mode lightens --muted (#6b6050 -> #8a94a8), so this filled badge's plate goes LIGHT while
+   its ink stayed #fff: 6.15:1 in light collapsed to 3.05:1 in dark (WCAG 1.4.3 needs 4.5). The
+   other three .tip-icon carriers (torah, trope, dashboard) all ship a body.dark rule; this page was
+   the only one without one. Flipping the ink to --navy on the light plate is this file's OWN
+   pairing for a light-toned badge (see .tip-gold above) -> 4.86:1, and the inverted-badge look the
+   dictionary deliberately uses in light mode is preserved. (S285 Pass C) */
+body.dark .tip-icon{color:var(--navy);}
 .tip-wrap:focus-visible{outline:none;}
 .tip-wrap:focus-visible .tip-icon{outline:2px solid var(--gold);outline-offset:1px;}
 #tipFloat{display:none;position:fixed;background:var(--navy);color:#fff;font-size:0.72rem;font-weight:400;line-height:1.45;padding:6px 9px;border-radius:6px;max-width:220px;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,0.3);pointer-events:none;}
