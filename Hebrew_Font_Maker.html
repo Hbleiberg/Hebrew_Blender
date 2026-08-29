@@ -2220,6 +2220,12 @@ const MARK_CLASS = {
 // code point so a mobile (na) sheva can be shown distinctly from a silent (nach) one. It's not a
 // separate editor mark; it's scaled from the user's own sheva at export (see buildFont / buildFEA).
 const SHEVA_NA_GLYPH = 'shevana', SHEVA_NA_CP = 0xE0B0, SHEVA_NA_SCALE = 1.35;
+// Unicode meteg conventions (v5.36) — PUA forms built at export, reached via ccmp:
+//   <U+05BD, U+034F CGJ, vowel>  → uniE0B1 (right-side meteg; CGJ blocks canonical reordering)
+//   <hataf, U+200D ZWJ, U+05BD> → uniE0B2..E0B4 (meteg spliced between the hataf's vowel body
+//   and its sheva dots — Culmus's CustomPrecomp sequences). Not editor marks; no cp in MARK_CLASS.
+const METEG_RIGHT_CP = 0xE0B1;
+const HATAF_METEG_CPS = { '05B2': 0xE0B2, '05B3': 0xE0B3, '05B1': 0xE0B4 };   // hataf patach / qamats / segol
 /* Nikkud chart columns for the preview PDF (bare first, then the 9 marks). */
 const CHART_COLS = [
   { key:'bare',  cp:null,   label:'bare'   },
@@ -2710,21 +2716,30 @@ function _metegInk(t) {   // scaled ink extents of a below vowel cp, '05BD', or 
    x-gap inside the user's own hataf drawing is the designer's spacing taste. Two rightmost
    contours (by center-x) = the sheva dots — sanity-checked to overlap each other in x; everything
    else is the vowel body; gap = dots' left ink edge − body's right ink edge. 05B1 (hataf segol)
-   is probed LAST: the built-in draws its dots inside the segol row, so it measures loose. */
+   is probed LAST: the built-in draws its dots inside the segol row, so it measures loose.
+   hatafSplit is shared with the v5.36 medial-meteg bake (buildFontSpec), which splices the meteg
+   bar into exactly this body/dots split — the measurer and the baker can't drift. */
+function hatafSplit(cp) {   // a hataf's SCALED contours split into vowel body vs sheva dots — or null (no clean split)
+  const s = nikScale(cp);
+  const polys = markGlyphContours('nikkud', cp).map(poly => poly.map(([x, y]) => [x * s, y * s]));
+  const boxes = polys.map((pts, i) => {
+    let mn = 1e9, mx = -1e9;
+    pts.forEach(([x]) => { mn = Math.min(mn, x); mx = Math.max(mx, x); });
+    return { i, mn, mx, c: (mn + mx) / 2 };
+  }).filter(b => b.mn <= b.mx);
+  if (boxes.length < 3) return null;
+  boxes.sort((a, b) => a.c - b.c);
+  const dots = boxes.slice(-2), body = boxes.slice(0, -2);
+  if (!(dots[0].mx >= dots[1].mn && dots[1].mx >= dots[0].mn)) return null;   // sheva dots sit in one column
+  const bodyMaxX = Math.max(...body.map(b => b.mx)), dotsMinX = Math.min(dots[0].mn, dots[1].mn);
+  const gap = dotsMinX - bodyMaxX;
+  if (!Number.isFinite(gap) || gap < 0) return null;
+  return { polys, dotIdx: new Set(dots.map(b => b.i)), bodyMaxX, dotsMinX, gap };
+}
 function metegGapMeasured() {
   for (const cp of ['05B2', '05B3', '05B1']) {
-    const s = nikScale(cp);
-    const boxes = markGlyphContours('nikkud', cp).map(poly => {
-      let mn = 1e9, mx = -1e9;
-      poly.forEach(([x]) => { mn = Math.min(mn, x * s); mx = Math.max(mx, x * s); });
-      return { mn, mx, c: (mn + mx) / 2 };
-    }).filter(b => b.mn <= b.mx);
-    if (boxes.length < 3) continue;
-    boxes.sort((a, b) => a.c - b.c);
-    const dots = boxes.slice(-2), body = boxes.slice(0, -2);
-    if (!(dots[0].mx >= dots[1].mn && dots[1].mx >= dots[0].mn)) continue;   // sheva dots sit in one column
-    const gap = Math.min(dots[0].mn, dots[1].mn) - Math.max(...body.map(b => b.mx));
-    if (Number.isFinite(gap) && gap >= 0) return Math.round(gap);
+    const sp = hatafSplit(cp);
+    if (sp) return Math.round(sp.gap);
   }
   return null;
 }
@@ -2744,6 +2759,13 @@ function metegPairFor(t) {   // {dv, dm} for below vowel cp / SHEVA_NA_GLYPH, or
   // Meteg-left: dv shifts the vowel right of center, dm parks the meteg left of it. Rounded at
   // the source — an un-rounded coordinate anywhere near the FEA makes feaLib reject the file.
   return { dv: Math.round((g.W + G) / 2 - v.cx), dm: Math.round(-(v.W + G) / 2 - g.cx) };
+}
+function metegPairRightFor(t) {   // the CGJ right-side form's mirror of metegPairFor — RECOMPUTED, never sign-flipped (the cx terms don't negate)
+  if (t === '05BD') return null;
+  const v = _metegInk(t), g = _metegInk('05BD');
+  if (!v || !g) return null;
+  const G = metegGap();
+  return { dv: Math.round(-(g.W + G) / 2 - v.cx), dm: Math.round((v.W + G) / 2 - g.cx) };
 }
 
 /* ── Punctuation & More: default outlines (font units; baseline 0, letter-top 600).
@@ -3655,7 +3677,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.35';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.36';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3876,6 +3898,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.36</strong> &mdash; <strong>Right-side and mid-hataf meteg.</strong> The two Unicode spellings that move a meteg somewhere other than the left of its vowel now work: meteg + CGJ + vowel puts the meteg on the right, and hataf + ZWJ + meteg tucks the meteg between the hataf&rsquo;s vowel and its sheva dots &mdash; spaced by the same gap as the side-by-side pair. Nothing to set up; type the sequence and the font does the rest. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.35</strong> &mdash; <strong>Meteg, finally on the vowel line.</strong> Meteg is now a nikkud mark, not a cantillation mark: it sits beside its vowel (to the left, as Unicode expects), the pair is centered under the letter for every vowel width from hiriq to hataf, and the gap between them is read from the spacing inside your own hataf patach &mdash; or set it yourself with the new <span class="ui">Gap</span> slider. Works without cantillation, so siddur fonts get it too. Older projects that drew a meteg as a trop keep their shape. The Hebrew changelog also regained the missing v5.33 entry. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.34</strong> &mdash; <strong>Many more starting fonts to edit.</strong> The partner starting-font library grew from 2 fonts to 132, drawn from the Open Siddur Project&rsquo;s Hebrew font collection. The bigger change is which fonts qualify: a font now counts as a starting font whenever its license lets you <em>edit</em> it &mdash; which is nearly all of them. Previously anything under a plain GPL was turned away, which was the wrong test: the &ldquo;font exception&rdquo; those licenses sometimes add only governs documents that <em>embed</em> a font, and has nothing to do with editing one. That reopened the whole Culmus family &mdash; David, Miriam, Frank Ruehl, Drugulin, Ellinia, Yehuda and the decorative faces &mdash; plus fonts under the Ubuntu Font Licence and Creative Commons. Your exported LICENSE.txt now spells out what the original license asks of <em>your</em> version: that it stays under the same license, that you note you changed it and when, that you offer your source if the license requires it, and who to credit. Where a license requires a derivative to be renamed, the Font Maker holds you to it the same way it already guards Reserved Font Names. <span style="color:var(--muted);">(August 2026)</span></li>
       <li><strong>v5.33</strong> &mdash; <strong>Wide letterforms for every letter.</strong> Torah scrolls and fine Hebrew typesetting stretch certain letters to fill out a line &mdash; but until now the Font Maker offered only the eight wide forms Unicode encodes, in the <span class="ui">Specialized letters</span> tab. A new Settings toggle, <span class="ui">Add wide letterforms</span>, adds a tab with a wide variant of <em>every</em> letter, auto-stretched from your traced letters &mdash; 150% to start, each with its own <span class="ui">Width</span> slider. If a stretch turns out wonky, convert that form to a fully <span class="ui">editable glyph</span> and fix its outline point by point (you can revert to the automatic version any time). Exported fonts include the wide letters at their code points and in a new &ldquo;Wide letterforms&rdquo; stylistic set (ss02), so apps that support stylistic sets can swap normal letters for wide ones with one switch. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -4005,7 +4028,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4018,7 +4041,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_35';
+  const CUR_KEY = 'fontmaker.changelog.v5_36';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -5366,6 +5389,9 @@ function whoHasCp(cp) {            // label of the existing glyph occupying cp, 
   if (xf) return xf.name + ' (an optional composed form)';
   if (cp === '0020') return 'the space';
   if (cp === 'E0B0') return 'the Sheva Na slot';
+  if (cp === 'E0B1') return 'the right-side meteg form';           // v5.36 PUA bakes (see METEG_RIGHT_CP / HATAF_METEG_CPS)
+  if (cp === 'E0B2' || cp === 'E0B3' || cp === 'E0B4') return 'a hataf + meteg form';
+  if (cp === '034F' || cp === '200D') return 'a joiner the meteg spellings need';
   return '';
 }
 function normalizeCp(raw) {        // "U+05D0" | "0x05D0" | "05D0" | a pasted char → 4-digit UPPER hex (BMP), or null
@@ -15905,6 +15931,58 @@ function buildFontSpec() {
     cmap[SHEVA_NA_CP] = SHEVA_NA_GLYPH;
   }
 
+  // Unicode meteg conventions (v5.36) — the two spellings that move a meteg off the left of its
+  // vowel, reached via ccmp subs wired in buildFEA:
+  //   right-side  <U+05BD, U+034F CGJ, vowel>  → uniE0B1, a copy of the meteg glyph positioned by
+  //                                              mirrored pair rules (metegPairRightFor);
+  //   mid-hataf   <hataf, U+200D ZWJ, U+05BD> → uniE0B2..4, the hataf with the meteg bar SPLICED
+  //                                              between its vowel body and its sheva dots, gap G
+  //                                              on each side (hatafSplit — the same split the gap
+  //                                              measurer uses, so the two can't drift).
+  // The joiners themselves need cmapped glyphs (empty, zero-advance) or GSUB never sees them; a
+  // custom hataf with no clean body/dots split skips its baked form + ccmp rule (fail-soft).
+  const builtMetegForms = { right: null, hataf: [] };
+  if (nikOn) {
+    ['uni034F', 'uni200D'].forEach((nm, i) => {
+      glyphs[nm] = { contours: [], advance: 0 };
+      glyphOrder.push(nm); markGlyphNames.push(nm);
+      cmap[i === 0 ? 0x034F : 0x200D] = nm;
+    });
+    const metegNm = gname('05BD');
+    if (glyphs[metegNm]) {
+      glyphs['uniE0B1'] = { contours: glyphs[metegNm].contours.map(poly => poly.map(p => p.slice())), advance: 0 };
+      if (glyphs[metegNm].curves) glyphs['uniE0B1'].curves = JSON.parse(JSON.stringify(glyphs[metegNm].curves));
+      glyphOrder.push('uniE0B1'); markGlyphNames.push('uniE0B1');
+      cmap[METEG_RIGHT_CP] = 'uniE0B1';
+      builtMetegForms.right = 'uniE0B1';
+    }
+    const gInk = _metegInk('05BD');
+    Object.keys(HATAF_METEG_CPS).forEach(hcp => {
+      const sp = hatafSplit(hcp);
+      if (!sp || !gInk) return;   // no clean split (unusual custom hataf) → no baked form, no ccmp rule, typed sequence falls back to the side-by-side pair
+      const G = metegGap(), gs = nikScale('05BD');
+      const gPolys = markGlyphContours('nikkud', '05BD').map(poly => poly.map(([x, y]) => [x * gs, y * gs]));
+      let gMinX = 1e9; gPolys.forEach(poly => poly.forEach(([x]) => { gMinX = Math.min(gMinX, x); }));
+      const gShift = sp.bodyMaxX + G - gMinX;                      // meteg's left ink edge lands at bodyMaxX + G
+      const dotShift = (sp.bodyMaxX + 2 * G + gInk.W) - sp.dotsMinX;   // dots' left ink edge lands after the meteg + G
+      const nm = 'uni' + HATAF_METEG_CPS[hcp].toString(16).toUpperCase();
+      const contours = sp.polys.map((poly, i) => poly.map(([x, y]) => [Math.round(x + (sp.dotIdx.has(i) ? dotShift : 0)), Math.round(y)]))
+        .concat(gPolys.map(poly => poly.map(([x, y]) => [Math.round(x + gShift), Math.round(y)])));
+      glyphs[nm] = { contours, advance: 0 };
+      // carry the hataf's curves (x-shift dots), the spliced bar stays polygonal
+      const hs = nikScale(hcp), hcv = markGlyphCurves('nikkud', hcp);
+      if (hcv && hcv.length === sp.polys.length) {
+        const shiftCv = (cv, dx) => cv ? { winding: cv.winding, start: [Math.round(cv.start[0] + dx), Math.round(cv.start[1])],
+          segments: cv.segments.map(seg => ({ type: seg.type, pts: seg.pts.map(p => [Math.round(p[0] + dx), Math.round(p[1])]) })) } : null;
+        glyphs[nm].curves = hcv.map((cv, i) => shiftCv(cv ? scaleRoundCurve(cv, hs) : null, sp.dotIdx.has(i) ? dotShift : 0))
+          .concat(gPolys.map(() => null));
+      }
+      glyphOrder.push(nm); markGlyphNames.push(nm);
+      cmap[HATAF_METEG_CPS[hcp]] = nm;
+      builtMetegForms.hataf.push({ cp: hcp, name: nm });
+    });
+  }
+
   // precomposed glyphs (Nikkud only): base contours + mark contours at base's matching anchor
   const built = [];
   if (nikOn) project.precomposed.forEach(pc => {
@@ -16074,7 +16152,7 @@ function buildFontSpec() {
   });
 
   // FEA
-  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh, builtWideGlyphItems);
+  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh, builtWideGlyphItems, builtMetegForms);
 
   // name table — nameID 1 stays the bare family for both styles (that's the RIBBI link);
   // only nameID 2/3/4/6 carry the Regular/Bold distinction.
@@ -16124,12 +16202,13 @@ function buildFontSpec() {
 /* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp (incl. the mark-filtered
    ccmp_dagesh lookup), mark-to-base, mkmk, contextual vowel-slide lookups (vowelPair slide mode), GDEF.
    Nikkud blocks emit only when nikOn; trop blocks only when tropOn. A letters-only font skips both. */
-function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh, builtWideGlyphItems) {
+function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh, builtWideGlyphItems, builtMetegForms) {
   builtPerLetter = builtPerLetter || [];
   builtWide = builtWide || [];
   builtShinDagesh = builtShinDagesh || [];
   builtYiddishPasekh = builtYiddishPasekh || [];
   builtWideGlyphItems = builtWideGlyphItems || [];
+  builtMetegForms = builtMetegForms || { right: null, hataf: [] };   // the v5.36 PUA meteg forms buildFontSpec actually shipped (buildFEA can't see `glyphs`)
   let f = '';
   f += 'languagesystem DFLT dflt;\n';
   f += 'languagesystem hebr dflt;\n\n';
@@ -16145,6 +16224,12 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   Object.keys(cgMarkStore).forEach(cp => { const c = (cgMarkStore[cp] || {}).cls || 'below'; if (byClass[c]) byClass[c].push(gname(cp)); });
   const shevaNaOn = nikOn && project.font.nikkud.shevaNa;
   if (shevaNaOn) byClass.below.push(SHEVA_NA_GLYPH);   // the bold sheva attaches like any below mark
+  // The v5.36 PUA meteg forms join the below class here — one push buys markClass membership,
+  // GDEF mark classification, mark-to-base attachment on every letter, and NIK_SLIDE coverage.
+  // Deliberately NOT in MARK_CLASS (that would drag them into the MARK_CPS loops / QA / charts),
+  // and the baked hataf forms are plain standalone below vowels, never pairable with a 2nd meteg.
+  if (builtMetegForms.right) byClass.below.push(builtMetegForms.right);
+  builtMetegForms.hataf.forEach(h => byClass.below.push(h.name));
   const nikMarks = [...byClass.below, ...byClass.above, ...byClass.center];
   // ── fidelity pins → per-mark GPOS subclasses. A pinned mark leaves its shared markClass for its own
   //    @MC_<KEY>_<cp> class, so each base positions THAT mark at its pin (unpinned bases keep the shared
@@ -16199,7 +16284,8 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     }));
     f += '\n';
   }
-  if (builtPrecomposed.length || builtPerLetter.length || builtYiddishPasekh.length) {
+  const metegCcmpOn = !!(builtMetegForms.right || builtMetegForms.hataf.length);
+  if (builtPrecomposed.length || builtPerLetter.length || builtYiddishPasekh.length || metegCcmpOn) {
     f += 'feature ccmp {\n';
     // Shin/sin precomposition (שׁ/שׂ) must fire even when a holam shares the letter. HarfBuzz canonically
     // reorders combining marks by combining class before GSUB (holam ccc19 < shin-dot ccc24), so a typed
@@ -16228,6 +16314,13 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     // dagesh, meteg, rafe — sorts AFTER, so the pair stays adjacent. (ccmp_dagesh/ccmp_shinsin need a
     // filtering set precisely because dagesh ccc21 and the shin dots ccc24 sit ABOVE the vowel range.)
     builtYiddishPasekh.forEach(yp => { f += `  sub ${gname(yp.pc.target)} ${gname(YID_PASEKH.mark)} by ${gname(yp.target)};\n`; });
+    // Unicode meteg spellings (v5.36) — PLAIN adjacent rules, safe for the same reason as the
+    // pasekh rule above: CGJ and ZWJ are ccc 0, so canonical reordering never moves marks across
+    // them and the typed sequences arrive exactly as written (<meteg, CGJ, vowel> stays meteg-
+    // first; <hataf, ZWJ, meteg> stays hataf-first). Consuming the joiner is the point — an
+    // unconsumed default-ignorable is hidden by the shaper anyway.
+    if (builtMetegForms.right) f += `  sub ${gname('05BD')} uni034F by ${builtMetegForms.right};\n`;
+    builtMetegForms.hataf.forEach(h => { f += `  sub ${gname(h.cp)} uni200D ${gname('05BD')} by ${h.name};\n`; });
     // Dagesh composition (בּ/כּ/פּ/תּ/וּ, per-letter dagesh shapes, and שּׁ/שּׂ → FB2C/FB2D) lives in ONE
     // mark-filtered lookup so the rules still match when a canonically-earlier vowel sits between the
     // letter and the dagesh (typed בָּ = bet, qamats ccc18, dagesh ccc21 — a plain adjacent rule never
@@ -16371,7 +16464,11 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     // it, both marks slide by dx and the pair stays together. Most-specific rule first.
     const metegBetween = cls === 'below' && vowels.includes(gname('05BD'))
       ? `  pos [${vowels.join(' ')}]' lookup ${NAME}_ADJ [${gname('05BD')}] [${trops.join(' ')}];\n` : '';
-    slideDefs += `lookup ${NAME} {\n  lookupflag UseMarkFilteringSet [${vowels.concat(trops).join(' ')}];\n${metegBetween}  pos [${vowels.join(' ')}]' lookup ${NAME}_ADJ [${trops.join(' ')}];\n} ${NAME};\n\n`;
+    // The CGJ right-meteg form PRECEDES its vowel, so neither rule above fires at its position —
+    // it needs its own longer rule (vowel then trop in the filtered lookahead) to slide with the pair.
+    const rightBetween = cls === 'below' && builtMetegForms.right && vowels.includes(builtMetegForms.right)
+      ? `  pos [${builtMetegForms.right}]' lookup ${NAME}_ADJ [${vowels.join(' ')}] [${trops.join(' ')}];\n` : '';
+    slideDefs += `lookup ${NAME} {\n  lookupflag UseMarkFilteringSet [${vowels.concat(trops).join(' ')}];\n${rightBetween}${metegBetween}  pos [${vowels.join(' ')}]' lookup ${NAME}_ADJ [${trops.join(' ')}];\n} ${NAME};\n\n`;
     slideRefs += `  lookup ${NAME};\n`;
   });
   if (slideRefs) f += slideDefs + 'feature mark {\n' + slideRefs + '} mark;\n\n';
@@ -16390,30 +16487,43 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   //    so a slid vowel+meteg pair spreads around its slid position (single-pos values from
   //    different lookups accumulate; order between the two adds is immaterial). ──
   if (nikOn && byClass.below.includes(gname('05BD'))) {
-    const pairGroups = new Map();   // "dv,dm" -> [vowel glyph names]
+    const pairGroups = new Map();   // "dv,dm" -> { names: [vowel glyph names], rep: a member's cp/SHEVA_NA_GLYPH }
     const addPair = (t, name) => {
       const pr = metegPairFor(t);
       if (!pr) return;
       const k = pr.dv + ',' + pr.dm;
-      if (!pairGroups.has(k)) pairGroups.set(k, []);
-      pairGroups.get(k).push(name);
+      if (!pairGroups.has(k)) pairGroups.set(k, { names: [], rep: t });
+      pairGroups.get(k).names.push(name);
     };
     MARK_CPS.forEach(cp => { if (MARK_CLASS[cp] === 'below' && cp !== '05BD') addPair(cp, gname(cp)); });
     if (shevaNaOn) addPair(SHEVA_NA_GLYPH, SHEVA_NA_GLYPH);   // the ss01 alternate is wider — its own (dv,dm) group
     if (pairGroups.size) {
-      const meteg = gname('05BD');
+      const meteg = gname('05BD'), rightNm = builtMetegForms.right;
       let pairDefs = '', pairRules = '', gi = 0;
       const pairedVowels = [];
-      pairGroups.forEach((names, k) => {
+      pairGroups.forEach((g, k) => {
         gi++;
         const [dv, dm] = k.split(',');
-        pairedVowels.push(...names);
-        pairDefs += `lookup NIK_METEG_V_${gi} {\n  pos [${names.join(' ')}] <${dv} 0 0 0>;\n} NIK_METEG_V_${gi};\n\n`;
+        pairedVowels.push(...g.names);
+        pairDefs += `lookup NIK_METEG_V_${gi} {\n  pos [${g.names.join(' ')}] <${dv} 0 0 0>;\n} NIK_METEG_V_${gi};\n\n`;
         pairDefs += `lookup NIK_METEG_M_${gi} {\n  pos [${meteg}] <${dm} 0 0 0>;\n} NIK_METEG_M_${gi};\n\n`;
-        pairRules += `  pos [${names.join(' ')}]' lookup NIK_METEG_V_${gi} [${meteg}];\n`;
-        pairRules += `  pos [${names.join(' ')}] [${meteg}]' lookup NIK_METEG_M_${gi};\n`;
+        pairRules += `  pos [${g.names.join(' ')}]' lookup NIK_METEG_V_${gi} [${meteg}];\n`;
+        pairRules += `  pos [${g.names.join(' ')}] [${meteg}]' lookup NIK_METEG_M_${gi};\n`;
+        // The CGJ right-side form (v5.36): <uniE0B1, vowel> — the meteg glyph precedes its vowel in
+        // the stream, mirrored values RECOMPUTED per group (same (dv,dm) partition implies the same
+        // (W,cx), so the group's representative stands for every member; the cx terms don't negate).
+        if (rightNm) {
+          const rr = metegPairRightFor(g.rep);
+          if (rr) {
+            pairDefs += `lookup NIK_METEG_VR_${gi} {\n  pos [${g.names.join(' ')}] <${rr.dv} 0 0 0>;\n} NIK_METEG_VR_${gi};\n\n`;
+            pairDefs += `lookup NIK_METEG_MR_${gi} {\n  pos [${rightNm}] <${rr.dm} 0 0 0>;\n} NIK_METEG_MR_${gi};\n\n`;
+            pairRules += `  pos [${rightNm}]' lookup NIK_METEG_MR_${gi} [${g.names.join(' ')}];\n`;
+            pairRules += `  pos [${rightNm}] [${g.names.join(' ')}]' lookup NIK_METEG_VR_${gi};\n`;
+          }
+        }
       });
-      f += pairDefs + `lookup NIK_METEG_PAIR {\n  lookupflag UseMarkFilteringSet [${pairedVowels.concat([meteg]).join(' ')}];\n${pairRules}} NIK_METEG_PAIR;\n\n` +
+      const filterSet = pairedVowels.concat([meteg]).concat(rightNm ? [rightNm] : []);
+      f += pairDefs + `lookup NIK_METEG_PAIR {\n  lookupflag UseMarkFilteringSet [${filterSet.join(' ')}];\n${pairRules}} NIK_METEG_PAIR;\n\n` +
            'feature mark {\n  lookup NIK_METEG_PAIR;\n} mark;\n\n';
     }
   }
@@ -16484,8 +16594,12 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     f += '# kern: pair in logical (reading) order; value = first-glyph x-advance (− tightens, + loosens)\n';
     f += 'feature kern {\n' + kernLines + '} kern;\n\n';
   }
-  // explicit GDEF (base=1, mark=3); empty mark slot when letters-only
-  const allMarks = [...nikMarks, ...tropMarks];
+  // explicit GDEF (base=1, mark=3); empty mark slot when letters-only. The CGJ/ZWJ joiner glyphs
+  // (shipped whenever nikOn — see the v5.36 block in buildFontSpec) are classed as MARKS: a stray
+  // unconsumed joiner classed as a base would become the attachment target for a following vowel's
+  // mark-to-base lookback; as an unclassed-into-any-markClass mark it is skipped, and the shaper
+  // hides default ignorables anyway.
+  const allMarks = [...nikMarks, ...tropMarks, ...(nikOn ? ['uni034F', 'uni200D'] : [])];
   f += 'table GDEF {\n';
   f += `  GlyphClassDef [${baseGlyphNames.join(' ')}], , ${allMarks.length ? `[${allMarks.join(' ')}]` : ''}, ;\n`;
   f += '} GDEF;\n';
@@ -18325,6 +18439,38 @@ async function harfbuzzGate(bytes) {
           if (gotv !== pr.dv || gotm !== pr.dm) {
             font.destroy(); face.destroy(); blob.destroy();
             return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_meteg_pair', { vowel: gName(markName(vcp)), dv: pr.dv, dm: pr.dm, gotv, gotm }) };
+          }
+        }
+        // v5.36 Unicode spellings. Right-side <meteg, CGJ, vowel>: ccmp folds meteg+CGJ into the
+        // uniE0B1 form, positioned by the MIRRORED pair values — the vowel's delta must equal
+        // dv_r, and the meteg form must sit dm_r − dv_r from the vowel (it never shapes alone, so
+        // it is measured relative to the vowel). Mid-hataf <hataf, ZWJ, meteg>: composes to one
+        // baked glyph with a real offset. Both continue on unexpected counts (a form that wasn't
+        // built — e.g. a custom hataf with no clean split — simply doesn't compose).
+        {
+          const rr = metegPairRightFor('05B8');
+          const qAlone = shapeIt('בָ'), qG = qAlone.length === 2 ? qAlone.find(g => !(g.ax || 0)) : null;
+          if (rr && qG) {
+            const rSeq = shapeIt('ב' + String.fromCodePoint(0x05BD) + String.fromCodePoint(0x034F) + String.fromCodePoint(0x05B8));
+            if (rSeq.length === 3) {
+              const qIn = rSeq.find(g => g.g === qG.g);
+              const eIn = rSeq.find(g => !(g.ax || 0) && g.g !== qG.g);
+              if (qIn && eIn) {
+                const gotv = (qIn.dx || 0) - (qG.dx || 0), gotm = (eIn.dx || 0) - (qIn.dx || 0);
+                if (gotv !== rr.dv || gotm !== rr.dm - rr.dv) {
+                  font.destroy(); face.destroy(); blob.destroy();
+                  return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_meteg_right', { vowel: gName(markName('05B8')), dv: rr.dv, dm: rr.dm - rr.dv, gotv, gotm }) };
+                }
+              }
+            }
+          }
+          const hAlone = shapeIt('בֲ'), hG = hAlone.length === 2 ? hAlone.find(g => !(g.ax || 0)) : null;
+          if (hG && hatafSplit('05B2')) {   // the medial form only ships when the hataf splits cleanly
+            const mSeq = shapeIt('ב' + String.fromCodePoint(0x05B2) + String.fromCodePoint(0x200D) + String.fromCodePoint(0x05BD));
+            if (mSeq.length !== 2 || !mSeq.some(g => !(g.ax || 0) && g.g !== hG.g && (Math.abs(g.dx || 0) > 0 || Math.abs(g.dy || 0) > 0))) {
+              font.destroy(); face.destroy(); blob.destroy();
+              return { fail: true, msg: I18n.t('fontmaker.modals.shaping_fail_meteg_medial', { hataf: gName(markName('05B2')), n: mSeq.length }) };
+            }
           }
         }
         // Stack-mode mkmk guard: with a center below-trop on the cluster, the trop must keep the
