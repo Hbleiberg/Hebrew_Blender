@@ -869,7 +869,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .lchip-name { color: var(--muted); }
 
   /* ── Keyboard-shortcut cheat sheet ── */
-  kbd { display: inline-block; font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 0.72rem; line-height: 1; padding: 3px 6px; min-width: 1.1em; text-align: center; background: var(--cream); color: var(--text); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; white-space: nowrap; }
+  kbd { direction: ltr; unicode-bidi: isolate; display: inline-block; font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 0.72rem; line-height: 1; padding: 3px 6px; min-width: 1.1em; text-align: center; background: var(--cream); color: var(--text); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; white-space: nowrap; }
   .sc-group { margin: 0 0 16px; }
   .sc-group h4 { font-family: 'Libre Baskerville', serif; font-size: 0.82rem; margin: 0 0 8px; color: var(--gold); }
   .sc-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px dashed var(--border); }
@@ -1348,6 +1348,9 @@ footer a { display: inline-block; padding-block: 5px; }
           <span id="tracedReadout" style="margin-inline-start:auto;font-weight:700;white-space:nowrap;color:var(--muted);" title="Core Hebrew letters with an outline traced" data-i18n-title="fontmaker.panels.traced_readout_title"></span>
         </div>
         <div id="nextStepHint" class="next-hint" aria-live="polite"></div>
+        <button type="button" id="unfinishedBtn" class="hint-link" style="display:none;margin-top:5px;"
+          onclick="stepUnfinished(1)" title="Jump to the next letter still missing an outline or its anchors (Shift + ], or Shift + [ to go back)"
+          data-i18n="fontmaker.panels.unfinished_btn" data-i18n-title="fontmaker.panels.unfinished_btn_title">Next unfinished letter</button>
       </div>
     </div>
 
@@ -3682,7 +3685,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.36';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.37';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3903,6 +3906,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.37</strong> &mdash; <strong>Jump straight to the next unfinished letter.</strong> A new button under the letter grid &mdash; and Shift+] / Shift+[ from anywhere in the workspace &mdash; hops to the next letter still missing its outline, or, once you are placing nikkud, still missing its anchors. It follows the same list the Next up hint and the export warnings already use, so you can work through what is left without hunting the grid for the gaps. (August 2026)</li>
       <li><strong>v5.36</strong> &mdash; <strong>Right-side and mid-hataf meteg.</strong> The two Unicode spellings that move a meteg somewhere other than the left of its vowel now work: meteg + CGJ + vowel puts the meteg on the right, and hataf + ZWJ + meteg tucks the meteg between the hataf&rsquo;s vowel and its sheva dots &mdash; spaced by the same gap as the side-by-side pair. Nothing to set up; type the sequence and the font does the rest. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.35</strong> &mdash; <strong>Meteg, finally on the vowel line.</strong> Meteg is now a nikkud mark, not a cantillation mark: it sits beside its vowel (to the left, as Unicode expects), the pair is centered under the letter for every vowel width from hiriq to hataf, and the gap between them is read from the spacing inside your own hataf patach &mdash; or set it yourself with the new <span class="ui">Gap</span> slider. Works without cantillation, so siddur fonts get it too. Older projects that drew a meteg as a trop keep their shape. The Hebrew changelog also regained the missing v5.33 entry. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.34</strong> &mdash; <strong>Many more starting fonts to edit.</strong> The partner starting-font library grew from 2 fonts to 132, drawn from the Open Siddur Project&rsquo;s Hebrew font collection. The bigger change is which fonts qualify: a font now counts as a starting font whenever its license lets you <em>edit</em> it &mdash; which is nearly all of them. Previously anything under a plain GPL was turned away, which was the wrong test: the &ldquo;font exception&rdquo; those licenses sometimes add only governs documents that <em>embed</em> a font, and has nothing to do with editing one. That reopened the whole Culmus family &mdash; David, Miriam, Frank Ruehl, Drugulin, Ellinia, Yehuda and the decorative faces &mdash; plus fonts under the Ubuntu Font Licence and Creative Commons. Your exported LICENSE.txt now spells out what the original license asks of <em>your</em> version: that it stays under the same license, that you note you changed it and when, that you offer your source if the license requires it, and who to credit. Where a license requires a derivative to be renamed, the Font Maker holds you to it the same way it already guards Reserved Font Names. <span style="color:var(--muted);">(August 2026)</span></li>
@@ -4033,7 +4037,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4046,7 +4050,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_36';
+  const CUR_KEY = 'fontmaker.changelog.v5_37';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -4295,6 +4299,8 @@ function shortcutGroups() {
     [g('nav'), [
       ['[', t('sc_prev_letter')],
       [']', t('sc_next_letter')],
+      ['Shift + ]', t('sc_next_unfinished')],
+      ['Shift + [', t('sc_prev_unfinished')],
       ['Enter  or  Space', t('sc_open_tile')],
       ['←  /  →  /  Home  /  End', t('sc_move_tabs')],
     ], 'nav'],
@@ -5039,6 +5045,7 @@ function renderLetterGrid() {
 // One dynamic "what should I do next?" line under the letter grid. Names are focusable links that
 // jump to the letter in the right work mode (shares the guard-free navigation used by the QA grid).
 function renderNextStepHint() {
+  syncUnfinishedBtn();
   const host = document.getElementById('nextStepHint'); if (!host || !project) return;
   host.textContent = '';
   const s = coreLetterStats(), lists = coreLetterLists();
@@ -5082,6 +5089,34 @@ function coreLetterLists() {
     else if (!l.anchors) unanchored.push({ cp: L.cp, name: L.name });
   });
   return { blanks, unanchored };
+}
+/* The unfinished-letter queue: every core letter still missing an outline, then — once nikkud is on
+   — every traced letter still missing its anchors. Deliberately the SAME classification and the same
+   order the next-step hint and the export warnings already use, so all three agree about what
+   "unfinished" means and the queue can never disagree with the hint above it. */
+function unfinishedQueue() {
+  if (!project) return [];
+  const lists = coreLetterLists();
+  const q = lists.blanks.map(o => ({ cp: o.cp, name: o.name, mode: 'align' }));
+  if (project.font.nikkud.enabled) lists.unanchored.forEach(o => q.push({ cp: o.cp, name: o.name, mode: 'nikkud' }));
+  return q;
+}
+/* Shift+] / Shift+[ and the Letters-panel button. Pure navigation through exportJumpToLetter — the
+   guard-free path the QA grid and export warnings use — so it touches no project state: no undo
+   entry, nothing to autosave. Stepping from a letter that is already finished enters at the queue's
+   near end rather than landing in an arbitrary middle. */
+function stepUnfinished(dir) {
+  const q = unfinishedQueue();
+  if (!q.length) { status(I18n.t('fontmaker.panels.unfinished_none')); return; }
+  const i = q.findIndex(o => o.cp === curCp);
+  const next = (i < 0) ? (dir > 0 ? q[0] : q[q.length - 1]) : q[(i + dir + q.length) % q.length];
+  exportJumpToLetter(next.cp, next.mode);
+  status(I18n.t('fontmaker.panels.unfinished_jump', { name: gName(next.name), count: q.length }));
+}
+// Hidden while there is nothing left to jump to — including before a project exists.
+function syncUnfinishedBtn() {
+  const b = document.getElementById('unfinishedBtn'); if (!b) return;
+  b.style.display = unfinishedQueue().length ? '' : 'none';
 }
 function updateTracedReadout() {
   const el = document.getElementById('tracedReadout'); if (!el || !project) return;
@@ -15000,6 +15035,16 @@ document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === '[') { e.preventDefault(); stepLetter(-1); }
   else if (e.key === ']') { e.preventDefault(); stepLetter(1); }
+});
+/* Shift+] / Shift+[ — the plain brackets' big brother: those step through every letter on the
+   placement step, these skip straight to the ones still needing work, from anywhere in the
+   workspace. On a US layout Shift+] is `}`, which no other handler claims, so this collides with
+   neither the letter-step brackets above nor draw mode's brush-size brackets below. */
+document.addEventListener('keydown', e => {
+  if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === '}') { e.preventDefault(); stepUnfinished(1); }
+  else if (e.key === '{') { e.preventDefault(); stepUnfinished(-1); }
 });
 /* Draw-mode shortcuts — D/E/L/V pick a tool, X swaps Draw⇄Erase, [ / ] resize the active tool's
    brush/eraser, Delete removes the Move selection, arrows nudge it, Esc cancels/clears. (Ctrl+Z
