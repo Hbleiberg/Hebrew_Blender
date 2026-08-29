@@ -2978,6 +2978,11 @@ function udDo(scopes, label, fn) { const p = udCapture(scopes, label); fn(); udP
 let _burst = null;
 function udBurstBegin(scopes, label) { if (!_burst && project) _burst = udCapture(scopes, label); }
 function udBurstCommit() { if (_burst) { flushTrace(); const p = _burst; _burst = null; udPush(p); } }
+/* Commit a slider whose panel is rebuilt on release. renderControls() replaces the panel's
+   innerHTML, which destroys the focused <input> — so an arrow-key user got exactly ONE step and
+   every later press landed on <body>. Re-focus the fresh node by id after the rebuild; a mouse
+   drag is unaffected (change fires once, on release, and never had focus to lose). */
+function udSliderCommit(id) { udBurstCommit(); renderControls(); const el = document.getElementById(id); if (el) el.focus(); }
 function udBurstCancel() {   // drop an open burst and restore its `before` state — for live previews released at neutral
   if (!_burst) return;       // (udPush's no-op compare can't catch these: a live writeThrough sets handEdited + re-flattens points)
   const p = _burst; _burst = null;
@@ -14579,7 +14584,7 @@ function renderAnchorLeft(L, l) {
       <div class="ws-side-title">${I18n.t('fontmaker.panels.meteg_title')}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">${I18n.t('fontmaker.panels.meteg_gap')}</span>
-        <input type="range" id="metegGapSlider" min="0" max="200" step="5" value="${metegGap()}" oninput="setMetegGap(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.meteg_gap'))}">
+        <input type="range" id="metegGapSlider" min="0" max="200" step="5" value="${metegGap()}" oninput="setMetegGap(this.value)" onchange="udSliderCommit('metegGapSlider')" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.meteg_gap'))}">
         <span id="metegGapV" class="readout">${metegGap()}</span>
         <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.meteg_auto_title'))}" onclick="setMetegGapAuto()">${I18n.t('fontmaker.panels.meteg_auto')}</button>
       </div>
@@ -14634,7 +14639,7 @@ function renderAnchorLeft(L, l) {
       <div class="hint" style="font-size:0.6rem;text-align:center;">${_pT('halign_hint', 'Sets where <b>' + esc(tName) + '</b> sits across every letter. Position tweaks belong to the column (Left / Center / Right) — and stay with it if you switch sides.', { name: '<b>' + esc(tName) + '</b>' })}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">${I18n.t('fontmaker.panels.default_spread')}</span>
-        <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.default_spread'))}">
+        <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udSliderCommit('tropSpread')" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.default_spread'))}">
         <span id="tropSpreadV" class="readout">${tOff}</span>
       </div>
       <div class="hint" style="font-size:0.6rem;text-align:center;">${_pT('default_spread_hint', 'Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).')}</div>
@@ -14655,7 +14660,7 @@ function renderAnchorLeft(L, l) {
       </div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">${I18n.t('fontmaker.panels.pair_distance')}</span>
-        <input type="range" id="vowelPairDx" min="0" max="300" step="10" value="${Math.abs(pcfg.dx)}" oninput="setVowelPairDx(this.value)" onchange="udBurstCommit();renderControls()" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.pair_distance'))}">
+        <input type="range" id="vowelPairDx" min="0" max="300" step="10" value="${Math.abs(pcfg.dx)}" oninput="setVowelPairDx(this.value)" onchange="udSliderCommit('vowelPairDx')" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.pair_distance'))}">
         <span id="vowelPairDxV" class="readout">${Math.abs(pcfg.dx)}</span>` : '');
         })(vowelPairCfg(want))}
       </div>
