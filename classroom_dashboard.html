@@ -828,6 +828,23 @@
     transition: opacity 0.25s;
   }
   .settings-backdrop.open { opacity: 1; pointer-events: auto; }
+
+  /* Presenter blackout — hides the projected board mid-lesson without closing anything (the
+     PowerPoint-B / IWB-freeze affordance). Above EVERY other layer, tooltips and the confirm
+     overlay included, so nothing leaks onto the projector; click, Esc and B all dismiss it, so
+     sitting on top can never trap. The hint is deliberately small and grey: legible to the
+     teacher at the laptop, invisible from the back of a room — do not "fix" it brighter. */
+  #blackout {
+    position: fixed; inset: 0; background: #000;
+    z-index: 100000;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s;
+    display: flex; align-items: flex-end; justify-content: center;
+  }
+  #blackout.open { opacity: 1; pointer-events: auto; cursor: pointer; }
+  #blackout .bo-hint {
+    color: #8a8a8a; font-size: 0.8rem; padding-block-end: 24px; user-select: none;
+  }
   .settings-modal {
     position: fixed;
     top: 0; inset-inline-end: 0;
@@ -1849,6 +1866,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings" data-i18n-title="dashboard.header.settings_btn" aria-label="Settings" data-i18n-aria-label="dashboard.header.settings_btn">⚙️</button>
     <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour" data-i18n-title="dashboard.header.tour_btn_title"><span>❓</span><span class="hbtn-label" data-i18n="dashboard.header.tour_btn">Tour</span></button>
     <button id="fsBtn" class="hbtn icon-btn fs-btn" onclick="toggleFullscreen()" title="Present fullscreen" data-i18n-title="shared.fullscreen.enter_title"><span class="fs-ico"></span><span class="fs-cap" data-i18n="shared.fullscreen.label">Full Screen</span></button>
+    <button id="blackoutBtn" class="hbtn icon-btn" onclick="toggleBlackout()" title="Blank the screen (B)" data-i18n-title="dashboard.header.blackout_btn" aria-label="Blank the screen (B)" data-i18n-aria-label="dashboard.header.blackout_btn" aria-pressed="false">⬛</button>
   </div>
 </header>
 <div id="zoomBar" style="background:var(--warm-gray);border-bottom:1px solid var(--border);padding:5px 20px;display:flex;align-items:center;gap:10px;font-size:0.78rem;color:var(--text);">
@@ -1883,8 +1901,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button class="fs-strip-btn" type="button" id="fsPickBtn" onclick="fsStripPickToggle()"><span class="fss-ico">🎲</span><span data-i18n="dashboard.fs.strip_pick">Pick</span></button>
     <button class="fs-strip-btn" type="button" onclick="fsStripText()"><span class="fss-ico">✎</span><span data-i18n="dashboard.fs.strip_text">Text</span></button>
     <button class="fs-strip-btn" type="button" onclick="fsStripVideo()"><span class="fss-ico">📺</span><span data-i18n="dashboard.fs.strip_video">Video</span></button>
+    <button class="fs-strip-btn" type="button" onclick="toggleBlackout()"><span class="fss-ico">⬛</span><span data-i18n="dashboard.fs.strip_blackout">Blank</span></button>
   </div>
 </div>
+<div id="blackout" aria-hidden="true" onclick="setBlackout(false)"><span class="bo-hint" data-i18n="dashboard.blackout.hint">Tap, or press Esc, to return</span></div>
 <div id="pickOverlay" role="dialog" aria-modal="true" aria-label="Student picker" data-i18n-aria-label="dashboard.picker.overlay_aria" style="display:none;">
   <button class="pick-close" type="button" onclick="closePickOverlay()" aria-label="Close" data-i18n-aria-label="dashboard.picker.close_aria">✕</button>
   <div class="pick-note" id="pickNote"></div>
@@ -8865,6 +8885,37 @@ async function onUploadEngFontPick(input){
     if (!document.fullscreenElement) document.documentElement.requestFullscreen();
     else document.exitFullscreen();
   }
+
+  /* Presenter blackout. Deliberately TRANSIENT — no storage key, because a blackout that
+     survived a reload would read as a broken dashboard. Both entry points (header button and
+     the fullscreen strip) call the same toggle; the header is display:none in fullscreen,
+     which is exactly when a teacher needs this, hence the second button. */
+  function setBlackout(on) {
+    const ov = document.getElementById('blackout');
+    if (!ov) return;
+    ov.classList.toggle('open', on);
+    ov.setAttribute('aria-hidden', on ? 'false' : 'true');
+    const b = document.getElementById('blackoutBtn');
+    if (b) b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  function toggleBlackout() {
+    const ov = document.getElementById('blackout');
+    setBlackout(!(ov && ov.classList.contains('open')));
+  }
+  // Bare-letter shortcut, so it must yield to every text surface the dashboard has (the panel
+  // editors are contenteditable, not inputs) and to the tour's own key handling.
+  document.addEventListener('keydown', e => {
+    const ov = document.getElementById('blackout');
+    const on = !!(ov && ov.classList.contains('open'));
+    if (e.key === 'Escape') { if (on) { setBlackout(false); e.stopImmediatePropagation(); } return; }   // topmost layer wins: don't also close the drawer underneath
+    if (e.key !== 'b' && e.key !== 'B') return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    if (typeof _tourActive !== 'undefined' && _tourActive) return;
+    e.preventDefault();
+    setBlackout(!on);
+  });
   document.addEventListener('fullscreenchange', () => {
     const isFs = !!document.fullscreenElement;
     document.body.classList.toggle('fullscreen', isFs);

@@ -5073,3 +5073,6 @@ flashcards.worksheet.button,📄 Print these as a worksheet,📄 הדפיסו א
 flashcards.worksheet.button_title,Open these letters and vowels as a printable worksheet,פתיחת האותיות והתנועות האלה כדף עבודה להדפסה,flash-cards hand-off button title/aria,aria-label only
 flashcards.worksheet.need_selection,Pick at least one letter and one vowel to make a worksheet.,בחרו לפחות אות אחת ותנועה אחת כדי ליצור דף עבודה.,inline note when the worksheet hand-off has nothing to send,
 flashcards.worksheet.other_mode,Worksheets cover letters and vowels. Turn off Other mode first.,"דפי עבודה מיועדים לאותיות ולתנועות. כבו תחילה את מצב ""אחר"".",inline note when the deck is drilling numbers/colours/emojis instead of blends,
+dashboard.header.blackout_btn,Blank the screen (B),החשכת המסך ⁦(B)⁩,Dashboard header button that blacks out the projected board,Keep the U+2066/U+2069 isolates around (B) — a lone paren is a mirrorable neutral in RTL
+dashboard.fs.strip_blackout,Blank,החשכה,Fullscreen-strip button label for the presenter blackout,
+dashboard.blackout.hint,"Tap, or press Esc, to return","הקישו, או לחצו ⁦Esc⁩, כדי לחזור",Dim hint shown on the blackout overlay itself,
