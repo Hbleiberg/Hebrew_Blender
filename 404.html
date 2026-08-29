@@ -75,10 +75,18 @@
   --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
   --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
   --gold-text:#7f5a13;   /* readable gold for small text on light surfaces (WCAG ≥4.5:1) */
+  /* 404 hero. Dark mode makes the star the BRIGHTEST element (12.23:1) against numerals at
+     7.96:1 — the star is the emphasis. Light mode used the same two tokens, where 'lighter'
+     means weaker, not brighter: numerals 2.6:1 and star 1.41:1, both under the 3:1 large-text
+     floor and the emphasis inverted. These mirror the dark relationship instead of copying its
+     values: the star is the DARKER of the pair on a light ground, and the 1.52x contrast ratio
+     between them matches dark's 1.54x. */
+  --hero-num:#a5741a;    /* 3.88:1 on cream */
+  --hero-star:#7f5a13;   /* 5.88:1 on cream — the emphasis, as in dark */
 }
 html.dark-early body,body.dark {
   --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
-  --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;--gold-text:var(--gold);
+  --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;--gold-text:var(--gold);--hero-num:var(--gold);--hero-star:var(--gold-light);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
@@ -93,8 +101,8 @@ header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center
 .hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;}
 
 /* Big 404 with a wandering Star of David standing in for the 0 */
-.code-404{font-family:'Libre Baskerville',serif;font-weight:700;color:var(--gold);line-height:1;font-size:clamp(5rem,22vw,11rem);display:flex;align-items:center;justify-content:center;gap:0.04em;letter-spacing:0.02em;}
-.code-404 .lost-star{color:var(--gold-light);display:inline-block;animation:wander 6s ease-in-out infinite;}
+.code-404{font-family:'Libre Baskerville',serif;font-weight:700;color:var(--hero-num);line-height:1;font-size:clamp(5rem,22vw,11rem);display:flex;align-items:center;justify-content:center;gap:0.04em;letter-spacing:0.02em;}
+.code-404 .lost-star{color:var(--hero-star);display:inline-block;animation:wander 6s ease-in-out infinite;}
 @keyframes wander{0%,100%{transform:translateY(0) rotate(-8deg);}25%{transform:translateY(-10px) rotate(6deg);}50%{transform:translateY(4px) rotate(-4deg);}75%{transform:translateY(-6px) rotate(8deg);}}
 /* .home-btn:hover lifts 2px (transform 0.15s) — motion the star's animation:none never covered.
    !important is required, not stylistic: .home-btn's own transition is declared LATER in this
