@@ -48,6 +48,7 @@
 - [ ] Edited a precached file (any root HTML page, `pwa.js`, an icon, the manifest)? → **bump `VERSION` in `sw.js`** (see Service Worker section). This is the most-missed step — the live site serves stale copies until it's done.
 - [ ] Shipped a Font Maker feature? → bump `FONT_MAKER_VERSION` + prepend a matching changelog `<li>` in the About tab (one **combined** bump/entry per release, not per sub-feature).
 - [ ] Added an external script/font/fetch/wasm/iframe? → update that page's **CSP meta tag** (Security rule 3).
+- [ ] Edited a file under `data/`? → **bump that corpus's `?v=N` at every page that fetches it** (same value on all of them). The `/data/` cache is cache-first and exact-URL-keyed, so without a bump the edit reaches nobody who has already visited — silently and permanently (see Service Worker section).
 - [ ] New UI control in a preset-bearing tool? → wire `getSettings()`/`applySettings()` (+ AllTools export/import/erase keys if it's a new localStorage store).
 - [ ] Added a collapsible `.panel`, or new code that writes `.collapsed`? → give the title a `data-i18n` key and call `panelMemSave()` from that writer (see Panel-collapse memory) — otherwise the drawer silently forgets that panel.
 - [ ] Added/changed a user-facing UI string or new CSS? → route the string through `I18n.t()`/`data-i18n*` (+ a key in `locales/ui-strings.csv`, then `node scripts/build-locales.js`); use **logical** CSS props (`*-inline-*`, `text-align:start/end`); run **`node scripts/check-i18n.js`** (must report no NEW violations). See Internationalization.
@@ -2196,6 +2197,17 @@ Notes:
   the ~7 MB of dictionary/emoji/parshiyot/pockettorah data, so users don't
   re-download it on every deploy. Bump the `DATA_CACHE` name only if the
   `/data/` eviction semantics themselves change.
+- **Every `/data/` fetch MUST carry a `?v=N`, and editing a corpus means bumping it.**
+  The `/data/` branch is cache-first and keyed on the **exact URL** (`if (cached) return
+  cached;`), and its eviction loop drops a sibling entry only when `k.url !== req.url` — so a
+  changed `?v=` is the *only* thing that can refresh a corpus in a returning user's browser.
+  A fetch with no `?v=` is **permanently unrefreshable**: the edit ships, the deploy succeeds,
+  and every existing visitor keeps the old bytes forever with nothing to see. Where two pages
+  fetch the same corpus they must use the **same** value (mismatched ones evict each other's
+  copy on alternate visits — measured S287). Current: `hebrew_words.json?v=6`,
+  `trope/trope_index.json?v=2`, `trope/trope_motifs.json?v=2`, `hebrew_emojis.json?v=1`,
+  `parshiyot.json?v=1`, `pockettorah/manifest.json?v=1`, `pockettorah/aliyah.json?v=1`
+  (the last four version-busted at S287 — they had shipped with no buster at all).
 - Cross-origin requests (Google Fonts, Analytics, Sefaria, PocketTorah) bypass
   the worker, so those resources are **not** available offline.
 
