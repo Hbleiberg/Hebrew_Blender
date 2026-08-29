@@ -5062,7 +5062,17 @@ function onReadingClick(e) {
   if (ttBulkMode) {
     if (!e.target.closest('button')) {
       const bulkEl = e.target.closest('[data-vk]');
-      if (bulkEl) toggleBulkVerse(bulkEl.dataset.vk);
+      if (bulkEl) {
+        if (e.shiftKey && _bulkAnchorVk) {
+          extendBulkVerseTo(bulkEl.dataset.vk);
+          // A shift-click also drags the browser's own text selection across the range;
+          // drop it so the tinted verses are the only selection the teacher sees.
+          const sel = window.getSelection && window.getSelection();
+          if (sel) sel.removeAllRanges();
+        } else {
+          toggleBulkVerse(bulkEl.dataset.vk);
+        }
+      }
     }
     return;
   }
@@ -6590,6 +6600,7 @@ function syncHandoutForm() {
 let ttBulkMode = false;
 const ttBulkSelected = new Set();      // vk strings "C:V"
 let _bulkReadingKey = null;            // selection is per-reading (vks like "1:1" repeat across parshiyot)
+let _bulkAnchorVk = null;              // last plainly-toggled verse — the anchor a shift-click extends FROM
 
 // 'screen' follows the display toggle; 'on'/'off' force it. v.hebrew always carries both
 // marks — the display toggles never reach the source data — so forcing "on" always works
@@ -6853,9 +6864,23 @@ function toggleBulkSelectMode(on, keepSelection) {
 }
 function toggleBulkVerse(vk) {
   if (ttBulkSelected.has(vk)) ttBulkSelected.delete(vk); else ttBulkSelected.add(vk);
+  _bulkAnchorVk = vk;              // a plain click (re)sets the anchor; shift-click never moves it
   syncBulkClasses(); updateCopyTextarea();
 }
-function clearBulkVerses() { ttBulkSelected.clear(); syncBulkClasses(); updateCopyTextarea(); _setRangeNote(null); }
+// Shift-click range extend: "verses 16-20" was five separate clicks down a 13,000 px page.
+// Resolves by INDEX into currentVerses — the loaded reading's own order — exactly as the
+// type-a-range picker does, so a range spanning a chapter boundary needs no chapter
+// arithmetic. Extending only ADDS (the near-universal shift-click convention), and if the
+// anchor is gone (a new reading loaded) it degrades to a plain toggle rather than guessing.
+function extendBulkVerseTo(vk) {
+  const list = currentVerses || [];
+  const idx = v => list.findIndex(x => `${x.chapter}:${x.verse}` === v);
+  const a = idx(_bulkAnchorVk), b = idx(vk);
+  if (a < 0 || b < 0) { toggleBulkVerse(vk); return; }
+  for (let i = Math.min(a, b); i <= Math.max(a, b); i++) ttBulkSelected.add(`${list[i].chapter}:${list[i].verse}`);
+  syncBulkClasses(); updateCopyTextarea();
+}
+function clearBulkVerses() { ttBulkSelected.clear(); _bulkAnchorVk = null; syncBulkClasses(); updateCopyTextarea(); _setRangeNote(null); }
 function selectAllVerses() {
   if (!currentVerses) return;
   currentVerses.forEach(v => ttBulkSelected.add(`${v.chapter}:${v.verse}`));
