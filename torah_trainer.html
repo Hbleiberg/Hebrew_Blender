@@ -7149,9 +7149,9 @@ let _staticDataFailed = false;   // the corpus register's third state: fetched-a
 async function loadStaticData() {   // extracted from init so the empty card's ↻ can re-run it (converged retry model)
   try {
     const [pj, mj, aj] = await Promise.all([
-      fetch('data/parshiyot.json').then(r => r.json()),
-      fetch('data/pockettorah/manifest.json').then(r => r.json()),
-      fetch('data/pockettorah/aliyah.json').then(r => r.json()),
+      fetch('data/parshiyot.json?v=1').then(r => r.json()),
+      fetch('data/pockettorah/manifest.json?v=1').then(r => r.json()),
+      fetch('data/pockettorah/aliyah.json?v=1').then(r => r.json()),
     ]);
     parshiyotData = pj;
     manifestData = mj;

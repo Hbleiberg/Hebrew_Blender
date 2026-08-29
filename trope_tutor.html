@@ -1391,7 +1391,7 @@ async function loadData() {
       // ?v= is the DATA_CACHE refresh mechanism (sw.js serves /data/ cache-first,
       // matched by exact URL) — bump it whenever the committed index is rebuilt.
       fetch('data/trope/trope_index.json?v=2'),
-      fetch('data/pockettorah/manifest.json'),
+      fetch('data/pockettorah/manifest.json?v=1'),
       // ?v= bump rule applies here too (on every trope_motifs.json change).
       fetch('data/trope/trope_motifs.json?v=2').catch(() => null),
     ]);
