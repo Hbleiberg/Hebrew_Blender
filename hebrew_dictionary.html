@@ -5665,7 +5665,14 @@ function dictActiveGroupCount() {
     }
     wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
     wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(); });
-    wrap.addEventListener('click', e => { e.stopPropagation(); isShown(wrap) ? hide() : show(wrap); });
+    // preventDefault is load-bearing, not defensive: 6 of this page's tips sit INSIDE a <label>
+    // that wraps a radio/checkbox, and a label forwards its activation click to that control.
+    // Tapping the ? therefore fired a SECOND click on the input, which the outside-click handler
+    // read as "outside" and hid the tip — so on a phone (where hover doesn't exist and tapping is
+    // the only way in) the tip flashed shut AND the teacher's setting silently flipped. Measured
+    // on iPhone 13: 3 of 5 probed tips closed on tap, all 3 toggling copyMode / the gematria-sort
+    // checkbox. Suppressing the label's default keeps the ? a help affordance, not a switch. (S284)
+    wrap.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); isShown(wrap) ? hide() : show(wrap); });
     // Focus opens the tip for KEYBOARD users only. A pointer press focuses this tabindex-bearing
     // wrap BEFORE its own click lands, so an unguarded focus handler re-created one layer down the
     // very race the pointerType guard above closes. Traced under a device descriptor, one tap ran:

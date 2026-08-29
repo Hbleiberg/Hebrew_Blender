@@ -9312,7 +9312,7 @@ function panelMemApply() {
       icon.addEventListener('pointerdown', () => { ptrFocus = true; });
       icon.addEventListener('focus', () => { if (ptrFocus) { ptrFocus = false; return; } show(wrap); });
       icon.addEventListener('blur', () => { ptrFocus = false; if (openWrap === wrap) hide(); });
-      icon.addEventListener('click', e => { e.stopPropagation(); openWrap === wrap ? hide() : show(wrap); });
+      icon.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); openWrap === wrap ? hide() : show(wrap); });
       icon.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWrap === wrap ? hide() : show(wrap); }
         else if (e.key === 'Escape') { hide(); icon.blur(); }

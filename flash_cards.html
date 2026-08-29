@@ -3966,7 +3966,7 @@ function initPanelCollapse() {
     el.setAttribute('role', 'button');
     el.setAttribute('aria-expanded', 'false');
     if (!el.getAttribute('aria-label')) { el.setAttribute('aria-label', 'More information'); el.setAttribute('data-i18n-aria-label', 'shared.tip.aria_more_info'); }
-    el.addEventListener('click', e => { e.stopPropagation(); isShown(el) ? hide() : show(el); });
+    el.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); isShown(el) ? hide() : show(el); });
     el.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); isShown(el) ? hide() : show(el); }
       else if (e.key === 'Escape') { hide(); el.blur(); }

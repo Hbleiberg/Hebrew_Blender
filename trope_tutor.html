@@ -3073,7 +3073,7 @@ function dismissToast() {
     // otherwise show-then-toggle-off immediately).
     wrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(wrap); });
     wrap.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && openWrap === wrap) hide(wrap); });
-    wrap.addEventListener('click', e => { e.stopPropagation(); isShown(wrap) ? hide(wrap) : show(wrap); });
+    wrap.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); isShown(wrap) ? hide(wrap) : show(wrap); });
     // Focus opens the tip for KEYBOARD users only. A pointer press focuses this tabindex-bearing
     // wrap BEFORE its own click lands, so an unguarded focus handler re-created one layer down the
     // very race the pointerType guard above closes. Traced under a device descriptor, one tap ran:
