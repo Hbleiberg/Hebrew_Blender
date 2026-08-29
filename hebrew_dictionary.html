@@ -529,8 +529,18 @@ body.bulk-mode .word-card,body.bulk-mode .emoji-card{cursor:pointer;}
 body.dict-audio-on .wc-speak{display:flex;}
 .wc-copy:hover,.wc-copy.copied,.wc-search:hover,.wc-speak:hover{border-color:var(--gold);color:var(--gold);opacity:1;}
 .wc-heb{font-family:var(--heb-font);font-size:var(--heb-font-size);direction:rtl;text-align:right;line-height:1.2;}
-.wc-translit{font-size:0.76rem;color:var(--muted);font-style:italic;text-align:right;}
-.wc-transl{font-size:0.8rem;line-height:1.35;margin-top:2px;}
+/* Glosses and transliterations are English content inside an RTL page, so they inherited the
+   page's direction and pushed their terminal period (and a leading apostrophe on roots like
+   'a-b) to the visual START — ".Related to paternity, fatherhood" on 2,296 of the 13,081
+   entries. unicode-bidi:plaintext resolves each line's direction from its own first strong
+   character, so English glosses order LTR and the 3 corpus entries that genuinely START with
+   Hebrew keep ordering RTL. The alignment pin below is PHYSICAL on purpose: under plaintext,
+   start/end follow each line's own resolved direction, so the English glosses would left-align
+   away from the Hebrew card they belong to. It is scoped to the RTL UI because .wc-transl ships
+   with no text-align — left-aligned in the English UI — and that must not move. */
+.wc-translit{font-size:0.76rem;color:var(--muted);font-style:italic;text-align:right;unicode-bidi:plaintext;}
+.wc-transl{font-size:0.8rem;line-height:1.35;margin-top:2px;unicode-bidi:plaintext;}
+[dir="rtl"] .wc-transl{text-align:right;}
 .wc-badges{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px;}
 .badge{font-size:0.63rem;padding:2px 5px;border-radius:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.03em;white-space:nowrap;}
 .b-pos{background:var(--warm-gray);color:var(--muted);}
