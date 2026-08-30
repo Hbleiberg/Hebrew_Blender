@@ -617,6 +617,7 @@ dictionary.empty.clear_search,Clear search,ניקוי החיפוש,empty state b
 dictionary.empty.no_emojis_match,No emojis match these filters,אין אימוג׳ים התואמים למסננים אלו,empty state,empty state
 dictionary.empty.no_words_match,No words match these filters,אין מילים התואמות למסננים אלו,empty state,empty state
 dictionary.empty.reset_all,Reset all filters,איפוס כל המסננים,empty state button,
+dictionary.empty.search_without_vowels,Search without vowels,חיפוש ללא ניקוד,empty state button,
 dictionary.export.anki_button,⬇ Export for Anki,⬇ ייצוא ל-Anki,export button,leading-emoji
 dictionary.export.count.one,{count} word selected for export.,מילה אחת נבחרה לייצוא.,export count,plural
 dictionary.export.count.other,{count} words selected for export.,{count} מילים נבחרו לייצוא.,export count,plural

@@ -5393,6 +5393,23 @@ function renderDictEmptyState(isEmoji) {
   msg.textContent = isEmoji ? I18n.t('dictionary.empty.no_emojis_match') : I18n.t('dictionary.empty.no_words_match');
   wrap.appendChild(msg);
   const actions = document.createElement('div'); actions.className = 'empty-actions';
+  // A pointed query one mark off the stored form dead-ends at zero even though the same word is
+  // right there unpointed (S292 Pass H measured כתב→24, כָּתַב→2, כָתַב→0). Offer the
+  // unpointed search as a recovery rather than loosening the filter itself: matching a stripped
+  // query against `bare` would hand a teacher who typed full pointing 24 hits instead of 2 and
+  // throw away the precision they were buying. Gated on the strip actually changing the query AND
+  // actually matching something — a button leading to a second empty state is the worse dead end.
+  if (q && !isEmoji) {
+    const bare = stripDictNikud(q);
+    const lower = bare.toLowerCase();
+    if (bare && bare !== q && ALL_WORDS.some(w => w.word.includes(lower) || w.bare.includes(lower) ||
+        w.translitLower.includes(lower) || w.translationLower.includes(lower))) {
+      const v = document.createElement('button'); v.className = 'empty-btn';
+      v.textContent = I18n.t('dictionary.empty.search_without_vowels');
+      v.addEventListener('click', () => { document.getElementById('searchInput').value = bare; onFilter(); });
+      actions.appendChild(v);
+    }
+  }
   if (q) {
     const b = document.createElement('button'); b.className = 'empty-btn'; b.textContent = I18n.t('dictionary.empty.clear_search');
     b.addEventListener('click', () => { document.getElementById('searchInput').value = ''; onFilter(); });

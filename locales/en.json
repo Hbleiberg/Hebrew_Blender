@@ -627,6 +627,7 @@
   "dictionary.empty.no_emojis_match": "No emojis match these filters",
   "dictionary.empty.no_words_match": "No words match these filters",
   "dictionary.empty.reset_all": "Reset all filters",
+  "dictionary.empty.search_without_vowels": "Search without vowels",
   "dictionary.export.anki_button": "⬇ Export for Anki",
   "dictionary.export.count.one": "{count} word selected for export.",
   "dictionary.export.count.other": "{count} words selected for export.",

@@ -627,6 +627,7 @@
   "dictionary.empty.no_emojis_match": "אין אימוג׳ים התואמים למסננים אלו",
   "dictionary.empty.no_words_match": "אין מילים התואמות למסננים אלו",
   "dictionary.empty.reset_all": "איפוס כל המסננים",
+  "dictionary.empty.search_without_vowels": "חיפוש ללא ניקוד",
   "dictionary.export.anki_button": "⬇ ייצוא ל-Anki",
   "dictionary.export.count.one": "מילה אחת נבחרה לייצוא.",
   "dictionary.export.count.other": "{count} מילים נבחרו לייצוא.",
