@@ -2220,6 +2220,18 @@ function calcGematria(word) {
   return sum;
 }
 let filtered = [];
+// Words that pass every ACTIVE filter except the search text (built only while a query is set).
+// The empty state's "Search without vowels" gate tests the stripped query against THIS, not the
+// whole corpus: with e.g. a gematria filter on, the corpus can text-match a word the filters
+// exclude, and the button would then lead to a second empty state — the exact dead end it exists
+// to prevent.
+let _dictPreQuery = [];
+// The one text-match predicate. Both the filter pass and the empty-state gate call it, so the
+// two can never drift apart (they were hand-copied, and had).
+function dictTextMatch(w, s) {
+  return w.word.includes(s) || w.bare.includes(s) ||
+         w.translitLower.includes(s) || w.translationLower.includes(s);
+}
 let shown = 0;
 const PAGE = 100;
 let wlFilterOverride = null; // when set, results show a fixed Word List instead of ALL_WORDS; cleared by any real filter change
@@ -2781,6 +2793,7 @@ function onFilter() {
   updateThemeVisibility(checkedPos);   // sync theme panel to the current POS BEFORE reading the theme set (may uncheck now-hidden themes)
   const themeSel = new Set([...document.querySelectorAll('.tcb:checked')].map(c => c.value));   // empty = theme filter off
   { const _tb = document.getElementById('themeSaveWlBtn'); if (_tb) _tb.style.display = themeSel.size ? '' : 'none'; }   // surface the one-click save only while a theme is active
+  _dictPreQuery = [];
   filtered = ALL_WORDS.filter(w => {
     if (!checkedLen.has(w.lenKey)) return false;
 
@@ -2825,9 +2838,8 @@ function onFilter() {
     if (hideNoVowels && !w.hasVowel) return false;
 
     if (q) {
-      if (!w.word.includes(q) && !w.bare.includes(q) &&
-          !w.translitLower.includes(q) &&
-          !w.translationLower.includes(q)) return false;
+      _dictPreQuery.push(w);   // passed everything but the text — the gate's real candidate set
+      if (!dictTextMatch(w, q)) return false;
     }
     return true;
   });
@@ -2837,14 +2849,16 @@ function onFilter() {
   if (gft !== 'none') {
     const v1 = parseInt(document.getElementById('gematriaVal1').value) || 0;
     const v2 = parseInt(document.getElementById('gematriaVal2').value) || 0;
-    filtered = filtered.filter(w => {
+    const gemPass = w => {
       const g = w.gem;
       if (gft === 'exact') return g === v1;
       if (gft === 'gte')   return g >= v1;
       if (gft === 'lte')   return g <= v1;
       if (gft === 'range') return g >= v1 && g <= v2;
       return true;
-    });
+    };
+    filtered = filtered.filter(gemPass);
+    _dictPreQuery = _dictPreQuery.filter(gemPass);   // keep the gate's set under the same filters
   }
 
   const sort = document.getElementById('sortSel').value;
@@ -5402,8 +5416,7 @@ function renderDictEmptyState(isEmoji) {
   if (q && !isEmoji) {
     const bare = stripDictNikud(q);
     const lower = bare.toLowerCase();
-    if (bare && bare !== q && ALL_WORDS.some(w => w.word.includes(lower) || w.bare.includes(lower) ||
-        w.translitLower.includes(lower) || w.translationLower.includes(lower))) {
+    if (bare && bare !== q && _dictPreQuery.some(w => dictTextMatch(w, lower))) {
       const v = document.createElement('button'); v.className = 'empty-btn';
       v.textContent = I18n.t('dictionary.empty.search_without_vowels');
       v.addEventListener('click', () => { document.getElementById('searchInput').value = bare; onFilter(); });
