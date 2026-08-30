@@ -16852,7 +16852,12 @@ def hfm_build(spec_json):
                 # OS/2 v4: USE_TYPO_METRICS (fsSelection bit 7, set below) is only DEFINED from
                 # version 4 up. Left at fontTools' default 3, a conforming consumer ignores the bit
                 # and lays out with the win/hhea metrics instead of the typo ones we ask for.
-                version=4)
+                version=4,
+                # Installable Embedding. fontTools defaults fsType to 4 (Preview & Print), which
+                # blocks editable embedding -- a restriction none of the licenses this tool can
+                # produce imposes (CC0 / OFL / MIT, and partner passthrough of upstream OFL/GPL,
+                # which forbid adding restrictions at all).
+                fsType=0)
     # Declare Hebrew (cp1255) + Latin-1 (cp1252) code pages so Office/Word recognizes the font for
     # Hebrew. Without this, Word substitutes a fallback (e.g. Aptos) and won't apply it to Hebrew text.
     _os2 = fb.font["OS/2"]
