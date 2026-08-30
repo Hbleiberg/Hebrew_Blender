@@ -956,7 +956,7 @@ body.dark .lc-replay { color: var(--gold-light); }
 .lc-hint { font-size: 0.92rem; color: var(--ink-soft); text-align: center; min-height: 1.2em; }
 .lc-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .lc-tile {
-  min-height: 82px; padding: 12px 10px;
+  min-height: 82px; padding: 12px 10px; position: relative;   /* anchors the .lc-key number badge */
   border: 2px solid var(--border-strong); border-radius: 14px;
   background: var(--white); color: var(--ink); cursor: pointer;
   display: flex; align-items: center; justify-content: center; text-align: center;
@@ -967,6 +967,26 @@ body.dark .lc-replay { color: var(--gold-light); }
 .lc-tile:disabled { cursor: default; }
 .lc-tile.good { background: var(--good-soft); border-color: var(--good); }
 .lc-tile.bad  { background: var(--bad-soft);  border-color: var(--bad); }
+/* Keyboard hints — the visible home for the drill's shortcuts (see #fcKeyHintsNormal). Both the
+   hint rows and the tiles' number badges are gated on (pointer: fine): a touch-only device has no
+   keys to press, so the hint would be noise on a phone and on the projected board's touch panel. */
+.fc-kh-set { display: none; flex-wrap: wrap; justify-content: center; gap: 5px 16px;
+             margin: 12px 0 0; font-size: 0.72rem; color: var(--ink-soft); }
+.fc-kh { display: inline-flex; align-items: center; gap: 5px; }
+.fc-kh-set kbd, .lc-key {
+  direction: ltr; unicode-bidi: isolate;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  line-height: 1; text-align: center; white-space: nowrap;
+  background: var(--paper); border: 1px solid var(--border-strong);
+  border-bottom-width: 2px; border-radius: 4px;
+}
+.fc-kh-set kbd { display: inline-block; font-size: 0.68rem; padding: 3px 6px; min-width: 1.1em; color: var(--ink); }
+.lc-key { display: none; position: absolute; inset-block-start: 5px; inset-inline-start: 7px;
+          font-size: 0.66rem; padding: 2px 5px; color: var(--ink-soft); }
+@media (pointer: fine) {
+  .fc-kh-set:not([hidden]) { display: flex; }
+  .lc-key { display: block; }
+}
 .lc-heb { font-family: var(--heb-font); direction: rtl; font-size: clamp(1.8rem, 8vw, 3rem); line-height: 1.15; }
 .lc-num { font-family: var(--eng-font); direction: ltr; font-size: clamp(2rem, 9vw, 3.2rem); font-weight: 700; }
 
@@ -2110,6 +2130,23 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button class="nav-btn" id="prevBtn" title="Previous card (←)" data-i18n-title="flashcards.card.prev_key_title"><span class="dir-arrow" aria-hidden="true">‹</span> <span data-i18n="flashcards.card.prev">Prev</span></button>
     <button class="nav-btn flip" id="flipBtn" title="Flip the card (Space or Enter)" aria-label="Flip" data-i18n-aria-label="flashcards.card.flip_title" data-i18n-title="flashcards.card.flip_key_title">↺</button>
     <button class="nav-btn" id="nextBtn" title="Next card (→)" data-i18n-title="flashcards.card.next_key_title"><span data-i18n="flashcards.card.next">Next</span> <span class="dir-arrow" aria-hidden="true">›</span></button>
+  </div>
+
+  <!-- Keyboard hints. The drill's shortcuts were documented only in the buttons' hover title=,
+       which is invisible on a projected board, to the keyboard-only student who most needs them,
+       and on touch — and 1–9 (pick a listening tile) had no home at all. Shown only where there
+       is a keyboard to press (CLAUDE.md keyboard/touch parity). The arrows carry .dir-arrow, the
+       page's own mirroring convention, so the RTL UI shows the RIGHT arrow as "previous" — which
+       is what _rtlNav() actually does and what the nav buttons' own tooltips already say. -->
+  <div class="fc-kh-set" id="fcKeyHintsNormal">
+    <span class="fc-kh"><kbd data-i18n="flashcards.card.kbd_space">Space</kbd><span data-i18n="flashcards.card.kbd_flip">Flip the card</span></span>
+    <span class="fc-kh"><kbd class="dir-arrow">←</kbd><kbd class="dir-arrow">→</kbd><span data-i18n="flashcards.card.kbd_nav">Previous / Next</span></span>
+    <span class="fc-kh"><kbd>Y</kbd><kbd>N</kbd><span data-i18n="flashcards.card.kbd_grade">Got it / Missed it</span></span>
+  </div>
+  <div class="fc-kh-set" id="fcKeyHintsListen" hidden>
+    <span class="fc-kh"><kbd data-i18n="flashcards.card.kbd_space">Space</kbd><span data-i18n="flashcards.card.kbd_replay">Play it again</span></span>
+    <span class="fc-kh"><kbd class="dir-arrow">←</kbd><kbd class="dir-arrow">→</kbd><span data-i18n="flashcards.card.kbd_nav">Previous / Next</span></span>
+    <span class="fc-kh"><kbd>1–9</kbd><span data-i18n="flashcards.card.kbd_pick">Pick an answer</span></span>
   </div>
 
   <div style="text-align:center; margin-top:18px;">
@@ -7558,6 +7595,11 @@ function setListenChrome(on) {
   if (markRow) markRow.classList.toggle('hide', on);
   if (flipBtn) flipBtn.style.display = on ? 'none' : '';
   if (nav) nav.classList.toggle('listen-nav', on);   // center Prev/Next (no flip button in this view)
+  // The two rounds take different keys (no flip / no Y-N grading in a listening round), so the
+  // hint row swaps with the chrome rather than listing shortcuts that would corrupt the round.
+  const khN = document.getElementById('fcKeyHintsNormal'), khL = document.getElementById('fcKeyHintsListen');
+  if (khN) khN.hidden = on;
+  if (khL) khL.hidden = !on;
 }
 function choiceFace(card) {
   // Numbers speak the Hebrew number-words; the identify face follows numberFront
@@ -7599,12 +7641,20 @@ function renderListeningCard(card) {
   const replay = document.getElementById('lcReplay');
   currentListenChoices = sampleChoices(card, listeningChoices);
   grid.innerHTML = '';
-  currentListenChoices.forEach(c => {
+  currentListenChoices.forEach((c, i) => {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'lc-tile';
     b.dataset.heb = c.heb;
     b.innerHTML = choiceFace(c);
+    // The 1–9 shortcut keys off tile ORDER, so the badge is the only thing that makes the fastest
+    // path through a round discoverable. aria-hidden: the tile's accessible name stays the word
+    // itself — the number is already announced by the hint row and by DOM order.
+    if (i < 9) {
+      const k = document.createElement('span');
+      k.className = 'lc-key'; k.setAttribute('aria-hidden', 'true'); k.textContent = String(i + 1);
+      b.appendChild(k);
+    }
     b.addEventListener('click', () => chooseTile(c, card, b));
     grid.appendChild(b);
   });

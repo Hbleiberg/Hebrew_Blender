@@ -989,8 +989,14 @@ they show **once** and never again; never a modal wall, never an auto-launching 
 Documented keyboard shortcuts get visible `<kbd>` hint rows (surfaced on keyboard-capable devices);
 touch-primary tools get gesture equivalents; every new interactive element must be keyboard-operable.
 - **Implemented on:** only `Hebrew_Font_Maker.html` carries the full treatment (global shortcut handler +
-  `?` cheat sheet via `shortcutGroups()`/`openShortcuts()` + `<kbd>` hints). **No tool currently ships
-  touch-gesture equivalents** (no `touchstart`/swipe handlers anywhere — Flash Cards flips on plain tap).
+  `?` cheat sheet via `shortcutGroups()`/`openShortcuts()` + `<kbd>` hints). `flash_cards.html` carries
+  **`<kbd>` hint rows without a cheat sheet** (2026-08-30): two `.fc-kh-set` rows under the card nav that
+  swap with `setListenChrome()`, because a listening round takes different keys (no flip, no Y/N), plus
+  numbered `.lc-key` badges on the listening tiles — the first home the 1–9 tile keys ever had. Both are
+  gated `@media (pointer: fine)` (a touch device has no keys to press) and the arrow caps carry the page's
+  own `.dir-arrow` mirroring, so RTL shows the RIGHT arrow as "previous" like `_rtlNav()` does. **No tool
+  currently ships touch-gesture equivalents** (no `touchstart`/swipe handlers anywhere — Flash Cards flips
+  on plain tap).
   Beyond that shortcut treatment, `trope_tutor.html` applies APG-standard **widget** keyboard operability
   (S51–S55): roving arrow-key nav on its `role="tablist"` plus `aria-pressed`/`role="radiogroup"` toggles —
   an application of the keyboard-operability rule below, not a documented shortcut with a `<kbd>` hint.
