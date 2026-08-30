@@ -825,6 +825,7 @@
   "dictionary.search.aria": "חיפוש עברית, תעתיק או אנגלית",
   "dictionary.search.clear_title": "ניקוי החיפוש",
   "dictionary.search.placeholder": "חיפוש עברית, תעתיק או אנגלית…",
+  "dictionary.search.slash_hint": "הקישו / כדי לקפוץ לכאן — Esc מנקה",
   "dictionary.shoresh.browse_roots": "עיון בשורשים (אלף→תו) — לחצו לחיפוש:",
   "dictionary.shoresh.enter_label": "הזינו שׁורש",
   "dictionary.shoresh.enter_root_count": "הזינו שורש",

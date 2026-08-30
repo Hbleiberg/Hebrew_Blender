@@ -815,6 +815,7 @@ dictionary.results.no_words_in_list,No words in this list,אין מילים בר
 dictionary.search.aria,"Search Hebrew, transliteration, or English","חיפוש עברית, תעתיק או אנגלית",search input aria-label,aria-label only
 dictionary.search.clear_title,Clear search,ניקוי החיפוש,search clear button title/aria,aria-label only
 dictionary.search.placeholder,"Search Hebrew, translit, or English…","חיפוש עברית, תעתיק או אנגלית…",search input placeholder,placeholder
+dictionary.search.slash_hint,Press / to jump here — Esc clears it,הקישו / כדי לקפוץ לכאן — Esc מנקה,search input title (keyboard shortcut),title only
 dictionary.shoresh.browse_roots,Browse roots (alef→tav) — click to look up:,עיון בשורשים (אלף→תו) — לחצו לחיפוש:,shoresh chips label,
 dictionary.shoresh.enter_label,Enter a שׁורש (root),הזינו שׁורש,shoresh input label,mixed UI+content — do not translate {…}
 dictionary.shoresh.enter_root_count,Enter a root,הזינו שורש,result count in empty shoresh,

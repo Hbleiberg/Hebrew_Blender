@@ -354,6 +354,14 @@ header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px
 .search-clear:hover{background:var(--gold);color:#fff;}
 .search-clear.show{display:inline-flex;}
 .search-wrap input.has-clear{padding-inline-end:30px;}
+/* "/" jumps to the search box (see the handler by clearDictSearch). The hint sits exactly where
+   the ✕ sits, which is safe because the two are never both present: ✕ shows only with content,
+   the hint only while the field is empty AND unfocused. Gated on a fine pointer so a phone is
+   never shown a key it has no way to press. */
+.search-kbd-hint{position:absolute;inset-inline-end:7px;top:50%;transform:translateY(-50%);display:none;pointer-events:none;}
+@media (pointer:fine){.search-row:not(:focus-within) .search-kbd-hint{display:block;}}
+.search-wrap input.has-clear ~ .search-kbd-hint{display:none;}
+.search-kbd-hint kbd{direction:ltr;unicode-bidi:isolate;display:inline-block;font-family:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;font-size:0.68rem;line-height:1;padding:2px 5px;min-width:1.1em;text-align:center;background:var(--cream);color:var(--muted);border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;}
 /* Section 4: mobile sticky bar (populated by JS at ≤680px) */
 #mobileBar{display:none;}
 .mobile-bar-row{display:flex;gap:8px;align-items:stretch;}
@@ -915,8 +923,9 @@ footer summary{min-height:24px;}
       <!-- .search-row is the positioning context for the absolutely-placed ✕: without it the
            button's top:50% would centre on the whole wrap and drop into the keyboard panel. -->
       <div class="search-row">
-        <input type="text" id="searchInput" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Search Hebrew, transliteration, or English" data-i18n-aria-label="dictionary.search.aria" placeholder="Search Hebrew, translit, or English…" data-i18n-placeholder="dictionary.search.placeholder" oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearDictSearch();}">
+        <input type="text" id="searchInput" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Search Hebrew, transliteration, or English" data-i18n-aria-label="dictionary.search.aria" placeholder="Search Hebrew, translit, or English…" data-i18n-placeholder="dictionary.search.placeholder" title="Press / to jump here — Esc clears it" data-i18n-title="dictionary.search.slash_hint" oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearDictSearch();}">
         <button class="search-clear" id="searchClear" onclick="clearDictSearch()" aria-label="Clear search" title="Clear search" data-i18n-aria-label="dictionary.search.clear_title" data-i18n-title="dictionary.search.clear_title">✕</button>
+        <span class="search-kbd-hint" aria-hidden="true"><kbd>/</kbd></span>
       </div>
       <!-- On-screen Hebrew keyboard: inside .search-wrap so it travels with the input when the
            mobile bar adopts it at ≤680px, and hides with it in Shoresh mode. Label is
@@ -5572,6 +5581,33 @@ function toggleEmojiBulk(e, btn) {
 /* ===== Section 4: search clear + mobile sticky bar ===== */
 
 function onSearchInput() { filterDebounced(); updateSearchClear(); }
+// "/" focuses the search field from anywhere on the page. The dictionary's whole job is a fast
+// lookup, yet its only search field could not be reached without tabbing past the header — and
+// this page had no global key handling at all beyond the tour's. Guarded like the Font Maker's
+// udShortcutBlocked(): never while typing (an input/textarea/select or contenteditable owns the
+// key), never while the tour or a .wm-overlay modal owns the keyboard — wlOpenManager and the
+// word card both route through _openWordModal, so that one class covers every modal on the page.
+// Escape-to-clear already lives on the input's own onkeydown, so it is deliberately not repeated.
+// In Shoresh mode .search-wrap is display:none, so the root field is the target instead of a
+// dead shortcut.
+function _dictSearchTarget() {
+  const si = document.getElementById('searchInput');
+  if (si && si.offsetParent !== null) return si;
+  const sh = document.getElementById('shoreshInput');
+  return (sh && sh.offsetParent !== null) ? sh : null;
+}
+document.addEventListener('keydown', e => {
+  if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (typeof _tourActive !== 'undefined' && _tourActive) return;
+  if (document.querySelector('.wm-overlay.open')) return;
+  const t = e.target;
+  if (t && (t.isContentEditable || t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return;
+  const el = _dictSearchTarget();
+  if (!el) return;
+  e.preventDefault();
+  el.focus();
+  el.select();
+});
 function clearDictSearch() {
   const si = document.getElementById('searchInput');
   if (si) { si.value = ''; onFilter(); si.focus(); }
