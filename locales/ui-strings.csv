@@ -3257,7 +3257,7 @@ shared.footer.license_note,Free to use and adapt for non-commercial educational 
 shared.footer.privacy_link,Privacy Policy,מדיניות פרטיות,Footer link (landing pages),shared
 shared.footer.terms_link,Terms of Use,תנאי שימוש,Footer link (landing pages),shared (HE REVIEW)
 shared.footer.word_data,Word Data from Kaikki.org,נתוני מילים מ-Kaikki.org,Footer credit (data source),mixed UI+content — do not translate 'Kaikki.org'; shared
-shared.fullscreen.enter_title,Present fullscreen,מצב מסך מלא,Fullscreen button title (enter),shared; variant: 'Full screen' (dictionary)
+shared.fullscreen.enter_title,Present fullscreen,מצב מסך מלא,Fullscreen button title (enter),shared by all 7 tools with one value everywhere; the old note claimed a dictionary variant that no longer exists
 shared.fullscreen.exit_title,Exit fullscreen,צא ממסך מלא,Fullscreen button title (exit),shared
 shared.fullscreen.toggle_aria,Toggle fullscreen,החלף מסך מלא,Fullscreen button aria-label,aria-label; shared
 shared.fullscreen.label,Full Screen,מסך מלא,Fullscreen button label (enter),leading-none; shared (labeled variant: generator)
