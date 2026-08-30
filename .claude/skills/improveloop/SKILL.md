@@ -88,7 +88,8 @@ passes preamble) is required and is not "normalizing". A ledgered removal or SKI
 - **Variety governor (hard rules):** the caps exist so one hot spot can't eat a whole session while
   the rest of the suite goes stale.
   - Max **2 iterations per session** on the same recurring-pattern class.
-  - Max **2 iterations per session** touching the same tool (index.html counts as a tool).
+  - Max **2 iterations per session** touching the same tool — and **each chrome page counts as its
+    own tool** (index, resources, contact, privacy, terms, 404), not one shared "chrome" bucket.
   - If the top candidate violates a cap, take the highest-priority candidate that doesn't. Priority
     still wins across sessions — the cap only reorders within a session.
   - Prefer, as a tie-breaker, tools and pattern classes untouched in the last 2 sessions (check the
@@ -213,6 +214,17 @@ read cheaply every session.
    rest of the recipe (abort external origins, `pageerror==0`, modal dismissal, the light/dark ×
    desktop/800px matrix) applies unchanged. Anything touching save data: `.ivrit` round-trip. Anything
    touching export paths (fonts, share links, CSVs, printables): produce the artifact and inspect it.
+
+   **Run a firing control before trusting any zero (S294/S295).** A measurement of "nothing happened"
+   is worthless until you have shown the same probe reporting something when something *does* happen.
+   Two hard-won specifics: (a) **drive a longtask control with a real `page.click`** — a busy loop
+   inside `page.evaluate` produces no longtask entry at all, and S294 lost a whole round of zeros to
+   that; (b) **a silent control means DIAGNOSE the silence, not abandon the arm.** It has two causes
+   and only one condemns the arm: a *bad control* (S295's control string used a namespace outside the
+   detector's own prefix list, so nothing could ever match it — the arm was fine and its 26-load zero
+   stood) versus a *blind detector* (S295's dictionary probe used selectors the markup does not have —
+   that one was correctly discarded). Taken literally without this distinction, the rule throws away
+   good arms.
 5. **Commit** with a message naming the pattern if it's a recurring one.
 6. **Log:** move the item to Done with date, commit hash, and verification method; update Pattern
    health if a sweep-class fix.
@@ -226,6 +238,9 @@ intelligence is a successful iteration; a half-verified change left in the tree 
 Run exactly one per session, as the session's first act. The pass letters below are the protocol
 definitions; the **ledger's rotation table is the authoritative member list** — if it tracks a pass
 this skill doesn't define (added after this writing), run it the way its ledger entries describe.
+**When you re-derive a pass's per-tool history ("which tool is stalest for D?"), grep
+`docs/IMPROVEMENT_ARCHIVE.md` as well** — each rotation row keeps only a short recent window, so the
+table alone will hand you a target that was audited 40 sessions ago (S292).
 **Rotation bootstrap (the inverse):** if this skill defines a pass the table lacks, and the ledger
 nowhere records its removal or a SKIP note for it, add a row
 `- <letter> <name>: never run — registered <date> (skill update)` at session start, before picking
@@ -259,7 +274,7 @@ time and they re-sweep cheaply. Retired patterns are re-checked only in pass A2.
 
 **F. Cross-tool consistency** — one UX affordance per session (empty states, share-link buttons, dark-mode toggles, Hebrew font pickers, error toasts) compared across **all seven tools** (generator, dashboard, flash cards, dictionary, torah trainer, trope tutor, font maker — plus the chrome pages where the affordance exists there); converge on the best existing implementation.
 
-**G. Print & export fidelity (one tool per session)** — the printed page is the product a student actually holds. Print-preview (and print-to-PDF) every printable/exportable surface in one tool: margins, page breaks mid-item, nikkud clipping at print resolution, dark-mode ink bleed (nothing should print with dark backgrounds), header/footer junk, RTL alignment on paper. Compare on Letter and A4 page sizes. Log divergences as candidates (usually P2 — silently wrong artifact).
+**G. Print & export fidelity (one tool per session)** — the printed page is the product a student actually holds, **and so is a compiled font binary**: G's artifacts are paper *and* every exported file (the Font Maker's `.ttf`/`.otf`/UFO output, `.ivrit` saves, PDFs, CSVs, share links). Inspect the artifact itself — an FM font export went unaudited for 124 sessions because this text read as paper-only (S293). Print-preview (and print-to-PDF) every printable/exportable surface in one tool: margins, page breaks mid-item, nikkud clipping at print resolution, dark-mode ink bleed (nothing should print with dark backgrounds), header/footer junk, RTL alignment on paper. Compare on Letter and A4 page sizes. Log divergences as candidates (usually P2 — silently wrong artifact).
 
 **H. Teacher walkthrough / paper-cuts (one tool per session)** — role-play a teacher preparing an actual lesson end-to-end in one tool (e.g., "make Tuesday's aleph-bet worksheet and a matching flashcard deck"). Note every friction point: extra clicks, missing defaults, unclear copy, dead-end states, things that require re-entering data another tool already has. Small frictions become Candidates (P3); missing small affordances become **Feature seeds**. This is the primary intake for the micro-feature track. Before logging new seeds, check the ledger's struck-seeds note — never re-log a seed the maintainer has explicitly struck.
 
@@ -351,7 +366,11 @@ Descriptors present in this container: `iPhone SE` (320×568), `iPhone 13` (390�
 
 Arms (run what the surface has; log what you skip and why):
 - **1. Reflow & overflow** at 320 / 390 / 412 portrait plus one landscape, **both themes, EN and
-  HE** (Hebrew labels run longer — narrow width is where they break): `scrollWidth <= innerWidth`,
+  HE** (Hebrew labels run longer — narrow width is where they break):
+  `documentElement.scrollWidth <= documentElement.clientWidth` — **NOT `window.innerWidth`**, which on
+  a device descriptor includes the scrollbar-free visual viewport and makes the comparison
+  structurally blind (measured S290: the check could not fire on the very descriptors this pass
+  mandates),
   nothing clipped by an `overflow:hidden` ancestor, no sticky/fixed bar covering the primary
   action, modals and drawers fitting the screen with their close control reachable.
 - **2. Viewport & zoom contract** — one viewport-meta shape per page (there are **three** spellings
