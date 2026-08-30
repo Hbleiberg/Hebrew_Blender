@@ -407,8 +407,10 @@ maintainer has to be able to *see*.
 standard matrix (light + dark × desktop + ~800px) — a mobile fix that regresses the desktop layout
 is a net loss. New CSS obeys every hard rule (logical properties, both themes, the once-per-session
 `sw.js` bump), and prefers extending a page's existing phone media query over inventing a
-breakpoint: the suite already carries **42 distinct `max-width` values, 35 of them under 1000px**
-(measured 2026-08-22), so converge, don't multiply.
+breakpoint: the suite already carries **44 distinct `max-width` values, 37 of them under 1000px**
+(re-measured 2026-08-30, S294: `grep -ho 'max-width: *[0-9]*px' *.html` over the root HTML, distinct
+values — note this counts ALL `max-width` declarations, not just `@media` breakpoints, of which
+there are 19 / 17), so converge, don't multiply.
 **Anything dramatic is decision gate 4** — propose with the current-state phone screenshots, never
 ship unasked; if approved but too big for the remaining budget, log it as an `approved <date>`
 candidate at the top of its priority band for the next session.
