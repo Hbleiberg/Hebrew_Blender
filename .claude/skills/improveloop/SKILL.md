@@ -473,7 +473,14 @@ Tie-breakers, in order: (1) affects teachers' saved work, (2) affects the printe
 2. **Repo definition-of-done:** `node scripts/check-i18n.js` clean (no NEW violations);
    `node scripts/build-locales.js` if any CSV keys were added; `sw.js` VERSION bumped once in the
    final commit if any precached file changed; `node scripts/update-sitemap.mjs` as the **last** step
-   if page content changed.
+   if page content changed. **And after editing the ledger — especially after archiving — run
+   `node scripts/check-ledger.mjs --vs origin/main`** (added S296). It asserts the ledger still
+   carries all 11 required sections and a single `**Next session**` pointer, and that archiving was
+   *conservative*: content the ledger lost must have been absorbed by the archive rather than
+   deleted. This is not hypothetical bookkeeping — the S295 close-out archived five Done entries
+   correctly while silently destroying 993 further lines (the whole Metrics section, Pattern health
+   with every pattern's detection definition, and the rotation table), and nothing caught it for a
+   session. Both of the script's checks fire on that commit.
 3. **Push** the session branch; ensure the draft PR exists/updated. Note that deploy verification
    (Pages run `success`) happens after the maintainer merges.
 4. **Print a summary:** iterations completed, pass run, patterns swept (hits/clean), micro-feature
