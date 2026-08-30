@@ -5917,6 +5917,7 @@ function gotoAnchors(cat) {
 function setCatTab(cat) {            // tabbed layout: choose which category picker is shown (view-only)
   catTab = cat;
   syncCatTabs();
+  if (cat === 'spacing') renderSpacingPanel();   // it skips its rebuild while hidden — build it on show
 }
 function syncCatTabs() {
   document.querySelectorAll('#catPanelGroup .cat-panel').forEach(p =>
@@ -13486,6 +13487,12 @@ function boldGenApply() {
 /* ════════ Spacing panel + live preview ════════ */
 function renderSpacingPanel() {
   const body = document.getElementById('spacingBody'); if (!body) return;
+  // Tabbed layout: an inactive .cat-panel is display:none, so this rebuild is invisible work —
+  // and it is the priciest one renderGrids() does, because it rebuilds every kerning row (a real
+  // imported GPOS table runs to ~700). renderGrids() fires on nearly every state change, so on a
+  // slow machine that was a visible hitch on every letter click. Skip while hidden; setCatTab()
+  // rebuilds on show, and it is the only writer of catTab.
+  if (catTab !== 'spacing') return;
   const kbd = hkSampleState();   // the on-screen keyboard is inside the markup this rebuilds — carry its state over
   const sp = fontSpacing();
   body.innerHTML = `
