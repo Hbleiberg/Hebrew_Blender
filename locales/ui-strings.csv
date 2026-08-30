@@ -4011,6 +4011,7 @@ trope.settings.reset_size_aria,Reset Hebrew size,איפוס גודל עברית,
 trope.settings.reset_size_title,Reset size,איפוס גודל,reset button title,
 trope.settings.title,⚙ Settings,⚙ הגדרות,settings drawer header,leading-emoji
 trope.status.index_unavailable,Example clips unavailable (couldn’t load the trope index) — Learn mode still shows every mark.,קטעי הדוגמה אינם זמינים (טעינת מפתח הטעמים נכשלה) — מצב הלימוד עדיין מציג כל טעם.,status,
+trope.status.retry_button,↻ Try again,↻ נסו שוב,retry button beside the index-load failure status,he mirrors torah.reading.retry_button
 trope.status.loading_audio,Loading audio…,טוען שמע…,status,
 trope.status.loading_index,Loading the trope index…,טוען את מפתח הטעמים…,status,
 trope.status.tap_to_hear,Tap ▶ to hear the melody.,הקישו על ▶ כדי לשמוע את המנגינה.,status,

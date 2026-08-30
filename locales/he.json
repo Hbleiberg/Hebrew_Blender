@@ -4528,6 +4528,7 @@
   "trope.status.index_unavailable": "קטעי הדוגמה אינם זמינים (טעינת מפתח הטעמים נכשלה) — מצב הלימוד עדיין מציג כל טעם.",
   "trope.status.loading_audio": "טוען שמע…",
   "trope.status.loading_index": "טוען את מפתח הטעמים…",
+  "trope.status.retry_button": "↻ נסו שוב",
   "trope.status.tap_to_hear": "הקישו על ▶ כדי לשמוע את המנגינה.",
   "trope.tabs.aria": "מצב המאמן",
   "trope.tabs.drill": "🎯 תרגול",

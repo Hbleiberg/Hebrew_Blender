@@ -4528,6 +4528,7 @@
   "trope.status.index_unavailable": "Example clips unavailable (couldn’t load the trope index) — Learn mode still shows every mark.",
   "trope.status.loading_audio": "Loading audio…",
   "trope.status.loading_index": "Loading the trope index…",
+  "trope.status.retry_button": "↻ Try again",
   "trope.status.tap_to_hear": "Tap ▶ to hear the melody.",
   "trope.tabs.aria": "Tutor mode",
   "trope.tabs.drill": "🎯 Drill",

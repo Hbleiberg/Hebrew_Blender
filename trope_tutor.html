@@ -241,6 +241,12 @@ body.dark .tu-view { background:var(--navy-deep); }
 .tu-status:empty { display:none; }   /* collapse when empty so the card sits flush under the tabs */
 .tu-status.error { color:#cc3333; font-weight:600; }
 body.dark .tu-status.error { color:#ff6666; }
+/* The retry button carries .btn-xs, which sets `display:inline-flex` — an AUTHOR display beats
+   the UA's `[hidden] { display:none }`, so without this the button renders on every successful
+   load, offering a retry for a failure that never happened. Same trap the trope legend documents
+   in torah_trainer (`display:flex would beat the hidden attr`); any `hidden` element whose class
+   sets a display needs this line. */
+#tuRetryBtn[hidden] { display:none; }
 .tu-intro { font-size:0.9rem; color:var(--muted); margin:0 0 14px; line-height:1.5; }
 .tu-intro a { color:var(--gold-text); font-weight:600; text-decoration:none; }
 .tu-intro a:hover { text-decoration:underline; }
@@ -825,6 +831,14 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 
 <main class="tu-page" id="tuMain" tabindex="-1">
   <div class="tu-status" id="tuStatus" role="status"></div>
+  <!-- Corpus-failure retry. The status above tells the user to check their connection, which is
+       only actionable if something lets them try again without reloading the page — the dictionary
+       and Torah Trainer both ship an in-place retry (torah's `retryStaticData()` is the model this
+       follows). loadData() is idempotent and re-reports its own outcome, so a retry is just
+       re-calling it and re-rendering what depends on INDEX. Kept OUTSIDE #tuStatus so the
+       `.tu-status:empty` collapse rule still works. -->
+  <button class="btn btn-xs btn-secondary" id="tuRetryBtn" type="button" hidden
+          onclick="retryLoadData()" data-i18n="trope.status.retry_button">&#8635; Try again</button>
 
   <!-- ════════ LEARN ════════ -->
   <section class="tu-view" id="learnView" role="tabpanel" aria-labelledby="tabLearn">
@@ -1410,11 +1424,29 @@ async function loadData() {
       }
     } catch (e) { console.warn('trope motifs load failed', e); }
     setStatus('');
+    _setRetryVisible(false);
   } catch (e) {
     console.warn('trope index load failed', e);
     INDEX = null; MANIFEST = null;
+    _setRetryVisible(true);
     setStatusKey('trope.status.index_unavailable', 'Example clips unavailable (couldn’t load the trope index) — Learn mode still shows every mark.', true);
   }
+}
+function _setRetryVisible(on) {
+  const b = document.getElementById('tuRetryBtn');
+  if (b) { b.hidden = !on; b.disabled = false; }
+}
+// In-place retry for a failed index load, mirroring torah_trainer's retryStaticData(): one
+// in-flight attempt, and on success resume the normal post-load flow (init's own tail) so Learn
+// gets its examples back and Drill re-enables. loadData() re-reports failure itself, so a still-
+// down network simply leaves the message standing — no retry loop, nothing to undo.
+async function retryLoadData() {
+  const b = document.getElementById('tuRetryBtn');
+  if (b) b.disabled = true;
+  await loadData();
+  if (!INDEX) { if (b) b.disabled = false; return; }
+  renderLearn();
+  updateDrillStart();
 }
 function examplesFor(key) {
   return (INDEX && INDEX.tropes && INDEX.tropes[key]) || [];
