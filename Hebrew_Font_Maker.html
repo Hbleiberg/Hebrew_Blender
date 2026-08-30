@@ -16848,7 +16848,11 @@ def hfm_build(spec_json):
                 sTypoLineGap=int(spec.get("lineGap", 0)),
                 usWinAscent=_winAsc, usWinDescent=_winDesc,
                 usWeightClass=(700 if spec.get("bold") else 400),
-                achVendID="IVST")
+                achVendID="IVST",
+                # OS/2 v4: USE_TYPO_METRICS (fsSelection bit 7, set below) is only DEFINED from
+                # version 4 up. Left at fontTools' default 3, a conforming consumer ignores the bit
+                # and lays out with the win/hhea metrics instead of the typo ones we ask for.
+                version=4)
     # Declare Hebrew (cp1255) + Latin-1 (cp1252) code pages so Office/Word recognizes the font for
     # Hebrew. Without this, Word substitutes a fallback (e.g. Aptos) and won't apply it to Hebrew text.
     _os2 = fb.font["OS/2"]
