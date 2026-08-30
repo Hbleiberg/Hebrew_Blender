@@ -923,7 +923,7 @@ footer summary{min-height:24px;}
       <!-- .search-row is the positioning context for the absolutely-placed ✕: without it the
            button's top:50% would centre on the whole wrap and drop into the keyboard panel. -->
       <div class="search-row">
-        <input type="text" id="searchInput" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Search Hebrew, transliteration, or English" data-i18n-aria-label="dictionary.search.aria" placeholder="Search Hebrew, translit, or English…" data-i18n-placeholder="dictionary.search.placeholder" title="Press / to jump here — Esc clears it" data-i18n-title="dictionary.search.slash_hint" oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearDictSearch();}">
+        <input type="text" id="searchInput" autocapitalize="off" autocorrect="off" spellcheck="false" aria-keyshortcuts="/" aria-label="Search Hebrew, transliteration, or English" data-i18n-aria-label="dictionary.search.aria" placeholder="Search Hebrew, translit, or English…" data-i18n-placeholder="dictionary.search.placeholder" title="Press / to jump here — Esc clears it" data-i18n-title="dictionary.search.slash_hint" oninput="onSearchInput()" onkeydown="if(event.key==='Escape'){clearDictSearch();}">
         <button class="search-clear" id="searchClear" onclick="clearDictSearch()" aria-label="Clear search" title="Clear search" data-i18n-aria-label="dictionary.search.clear_title" data-i18n-title="dictionary.search.clear_title">✕</button>
         <span class="search-kbd-hint" aria-hidden="true"><kbd>/</kbd></span>
       </div>

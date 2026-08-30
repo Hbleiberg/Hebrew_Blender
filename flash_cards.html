@@ -2122,8 +2122,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   </div>
 
   <div class="fc-mark-row">
-    <button class="fc-mark-no"  id="markNo" title="Mark wrong (N)" data-i18n-title="flashcards.card.mark_no_key_title" data-i18n="flashcards.card.mark_no">✗ No</button>
-    <button class="fc-mark-yes" id="markYes" title="Mark correct (Y)" data-i18n-title="flashcards.card.mark_yes_key_title" data-i18n="flashcards.card.mark_yes">✓ Yes</button>
+    <button class="fc-mark-no"  id="markNo" aria-keyshortcuts="N" title="Mark wrong (N)" data-i18n-title="flashcards.card.mark_no_key_title" data-i18n="flashcards.card.mark_no">✗ No</button>
+    <button class="fc-mark-yes" id="markYes" aria-keyshortcuts="Y" title="Mark correct (Y)" data-i18n-title="flashcards.card.mark_yes_key_title" data-i18n="flashcards.card.mark_yes">✓ Yes</button>
   </div>
 
   <div class="fc-nav">
@@ -7654,6 +7654,10 @@ function renderListeningCard(card) {
       const k = document.createElement('span');
       k.className = 'lc-key'; k.setAttribute('aria-hidden', 'true'); k.textContent = String(i + 1);
       b.appendChild(k);
+      // The badge is aria-hidden to keep the accessible name the word itself, which left the
+      // key discoverable to sighted users only. aria-keyshortcuts states it without touching
+      // that name — the standard attribute for exactly this, and the Font Maker's own idiom.
+      b.setAttribute('aria-keyshortcuts', String(i + 1));
     }
     b.addEventListener('click', () => chooseTile(c, card, b));
     grid.appendChild(b);
