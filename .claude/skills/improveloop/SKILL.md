@@ -225,6 +225,18 @@ read cheaply every session.
    stood) versus a *blind detector* (S295's dictionary probe used selectors the markup does not have —
    that one was correctly discarded). Taken literally without this distinction, the rule throws away
    good arms.
+
+   **And assert the probe's HANDLE resolves before its result counts (S297).** The control rule above
+   catches a detector that cannot fire; this catches one that never *ran*. A probe that calls a
+   function which does not exist, or queries a selector that matches nothing, does not error — it
+   returns a clean, quiet, **falsely reassuring** zero, which is worse than a false positive because
+   it silently closes a question you believe you asked. S297 hit this **five times in one session**
+   (`loadWords()`, `generateWorksheet()`, `loadRealWordsPool()` — none exist; an `index.html` gear
+   selector and a `.heb` worksheet selector — neither matches). Cheap guards, in order of strength:
+   `if (typeof fn !== 'function') return 'MISSING <fn>'` before calling it; assert
+   `document.querySelector(sel)` is non-null; and best of all **count the side effect** — a
+   `page.route` counter proving the fetch was actually attempted is what exposed three of S297's
+   five. Any arm reporting "nothing happened" must also report *that it happened at all*.
 5. **Commit** with a message naming the pattern if it's a recurring one.
 6. **Log:** move the item to Done with date, commit hash, and verification method; update Pattern
    health if a sweep-class fix.
