@@ -988,20 +988,43 @@ they show **once** and never again; never a modal wall, never an auto-launching 
 ### 7. Keyboard / touch parity
 Documented keyboard shortcuts get visible `<kbd>` hint rows (surfaced on keyboard-capable devices);
 touch-primary tools get gesture equivalents; every new interactive element must be keyboard-operable.
-- **Implemented on:** only `Hebrew_Font_Maker.html` carries the full treatment (global shortcut handler +
-  `?` cheat sheet via `shortcutGroups()`/`openShortcuts()` + `<kbd>` hints). `flash_cards.html` carries
-  **`<kbd>` hint rows without a cheat sheet** (2026-08-30): two `.fc-kh-set` rows under the card nav that
-  swap with `setListenChrome()`, because a listening round takes different keys (no flip, no Y/N), plus
-  numbered `.lc-key` badges on the listening tiles — the first home the 1–9 tile keys ever had. Both are
-  gated `@media (pointer: fine)` (a touch device has no keys to press) and the arrow caps carry the page's
-  own `.dir-arrow` mirroring, so RTL shows the RIGHT arrow as "previous" like `_rtlNav()` does. **No tool
-  currently ships touch-gesture equivalents** (no `touchstart`/swipe handlers anywhere — Flash Cards flips
-  on plain tap).
-  Beyond that shortcut treatment, `trope_tutor.html` applies APG-standard **widget** keyboard operability
-  (S51–S55): roving arrow-key nav on its `role="tablist"` plus `aria-pressed`/`role="radiogroup"` toggles —
-  an application of the keyboard-operability rule below, not a documented shortcut with a `<kbd>` hint.
-- **Rule:** any new shortcut is registered in the cheat sheet **and** the triggering control's `title`, and
-  shown as a `<kbd>` hint; any new interactive element is reachable and operable by keyboard.
+- **Implemented on** (census re-measured 2026-08-30, S296 Pass F, across all seven tools):
+  **One heavy surface.** `Hebrew_Font_Maker.html` carries the full treatment — global shortcut handler +
+  `?` cheat sheet via `shortcutGroups()`/`openShortcuts()` + `<kbd>` hints + 5 `aria-keyshortcuts`
+  (the three node-panel mode buttons — `Escape`/`M`/`P` — plus undo `Control+Z` and redo
+  `Control+Shift+Z Control+Y`). The right shape for a tool with dozens of shortcuts, and the only one.
+  **Three light surfaces, all `<kbd>` hint rows without a cheat sheet.** `flash_cards.html` (2026-08-30):
+  two `.fc-kh-set` rows under the card nav that swap with `setListenChrome()`, because a listening round
+  takes different keys (no flip, no Y/N), plus numbered `.lc-key` badges on the listening tiles — the
+  first home the 1–9 tile keys ever had. `torah_trainer.html` (2026-08-30, S296): one `.tt-key-hints`
+  row under `#ttReading` documenting the reading rover's five keys (Enter/Space play a word, arrows move
+  word by word, Home/End jump to the ends), which had been implemented since the rover shipped and
+  surfaced **nowhere** — no `<kbd>`, no `aria-keyshortcuts`, no `title`, no visible copy.
+  `hebrew_dictionary.html`: a single inline `<kbd>/</kbd>` beside the search box.
+  All are gated `@media (pointer: fine)` — a touch device has no keys to press.
+  **⚑ The arrow caps do NOT mirror the same way in the two carriers that have them, and that is
+  deliberate.** Flash cards' caps carry `.dir-arrow` because its nav follows *visual* direction via
+  `_rtlNav()`, so RTL shows the RIGHT arrow as "previous". Torah Trainer's caps deliberately do **not**:
+  its rover follows the *Hebrew*, which is always RTL, so `onReadingKeydown` hardcodes ArrowLeft = next
+  word — measured identical in the EN and HE UIs. Mirroring those caps would make the hint state the
+  opposite of what the keys do. Do not "converge" them in an RTL sweep.
+  **`aria-keyshortcuts` is the suite's way of exposing a shortcut whose visible badge is `aria-hidden`**
+  (S296): the dictionary's `/`, and flash cards' Y/N buttons and 1–9 listening tiles. It states the key
+  without touching the element's accessible name. Not added where the key is a role's *default*
+  activation (Space/Enter on a `role="button"`), per ARIA authoring practice.
+  **Nothing surfaced in the other three, and that is correct, not a gap:** `hebrew_blend_generator.html`,
+  `classroom_dashboard.html` and `trope_tutor.html` have no documented *global* shortcuts to surface.
+  Their document-level handlers bind only Escape-to-close (dashboard, trope) and, in the generator,
+  Escape plus Enter/Space — and that Enter/Space is default activation on a focused tooltip trigger,
+  not a shortcut. Nothing there is a key a user must be told about. Beyond that,
+  `trope_tutor.html` applies APG-standard **widget** keyboard operability (S51–S55): roving arrow-key nav
+  on its `role="tablist"` plus `aria-pressed`/`role="radiogroup"` toggles — an application of the
+  keyboard-operability rule below, not a documented shortcut needing a `<kbd>` hint.
+  **No tool currently ships touch-gesture equivalents** (no `touchstart`/swipe handlers anywhere —
+  Flash Cards flips on plain tap).
+- **Rule:** any new shortcut is shown as a `<kbd>` hint (and registered in the cheat sheet on the one tool
+  that has one) **and** named in the triggering control's `title`; if its visible badge is `aria-hidden`,
+  it also carries `aria-keyshortcuts`. Any new interactive element is reachable and operable by keyboard.
 
 ### 8. Hebrew text carries `lang="he"` (at rendering chokepoints)
 Hebrew content must be marked `lang="he"` so screen readers switch to a Hebrew voice instead of
