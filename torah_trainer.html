@@ -873,6 +873,27 @@ body.dark .tt-trope-chip:hover { background:rgba(255,255,255,0.07); }
 .tt-trope-link { margin-left:auto; font-size:0.72rem; color:var(--muted); text-decoration:none; }
 .tt-trope-link:hover { color:var(--gold); text-decoration:underline; }
 
+/* Reading keyboard hints. The reading rover implements five keys and surfaced NONE of them:
+   no <kbd>, no aria-keyshortcuts, no title, no visible copy anywhere on the page (Pass F,
+   S296). Converges on the flash-cards `.fc-kh-set` model — the suite's other light-surface
+   carrier — rather than the Font Maker's `?` cheat sheet, which is sized for a tool with
+   dozens of shortcuts. Shown only where there is a keyboard to press (CLAUDE.md keyboard/
+   touch parity) and only over a loaded reading (renderText owns `hidden`, same guard as the
+   legend above). */
+.tt-key-hints { display:none; flex-wrap:wrap; justify-content:center; gap:5px 16px;
+                margin:10px 0 0; font-size:0.72rem; color:var(--muted); }
+.tt-key-hints[hidden] { display:none; }   /* display:flex below would beat the hidden attr */
+.tt-kh { display:inline-flex; align-items:center; gap:5px; }
+.tt-key-hints kbd {
+  display:inline-block; direction:ltr; unicode-bidi:isolate;
+  font-family:ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size:0.68rem; line-height:1; text-align:center; white-space:nowrap;
+  padding:3px 6px; min-width:1.1em; color:var(--text);
+  background:var(--white); border:1px solid var(--border);
+  border-bottom-width:2px; border-radius:4px;
+}
+@media (pointer: fine) { .tt-key-hints:not([hidden]) { display:flex; } }
+
 /* ───── Karaoke audio bar (sticky bottom) ───── */
 .tt-audio-bar {
   position:sticky; bottom:0; left:0; right:0;
@@ -1416,7 +1437,7 @@ body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
   #ttPrintBand .pbnd-cols { flex-basis:100%; display:grid; column-gap:20px;
     padding-inline:24px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
     text-align:center; }
-  .tt-ref-hdr, .tt-trope-legend, #ttTropeChip { display:none !important; }
+  .tt-ref-hdr, .tt-trope-legend, #ttTropeChip, .tt-key-hints { display:none !important; }
   /* break-after: an aliyah heading must not strand at a sheet foot with its aliyah overleaf
      (unlike the geniza marker's refuted break-before, the divider's successor is a sibling
      verse in the same flow, so the engine CAN pull the divider forward). */
@@ -1887,6 +1908,21 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <a class="tt-trope-link" id="ttTropeTutorLink" hidden data-i18n="torah.trope_legend.tutor_link">Learn the trope names →</a>
   </div>
   <div class="tt-reading" id="ttReading" tabindex="-1"></div>
+  <!-- Reading keyboard hints. onReadingKeydown gives every word five keys — Enter/Space play it,
+       arrows move word by word, Home/End jump to the ends — and initReadingRover() puts tabindex=0
+       on the first word of every render, so the reading really is Tab-reachable. None of that was
+       documented anywhere on the page. renderText owns `hidden`, on the legend's loaded-reading guard.
+       /!\ THE ARROW CAPS DELIBERATELY DO NOT CARRY .dir-arrow. That class mirrors with the UI
+       direction, which is right for the flash-cards row (its nav follows visual direction via
+       _rtlNav). Here the rover follows the HEBREW, which is always RTL: onReadingKeydown hardcodes
+       ArrowLeft = next word, and that was measured identical in both the EN and HE UIs. Mirroring
+       these caps would make the hint state the opposite of what the keys do. Do not "fix" in an
+       RTL sweep -- same documented exception as the Font-Maker stage and the qwerty keyboard rows. -->
+  <div class="tt-key-hints" id="ttKeyHints" hidden>
+    <span class="tt-kh"><kbd>&#8592;</kbd><kbd>&#8594;</kbd><span data-i18n="torah.reading.kbd_nav">Move word by word</span></span>
+    <span class="tt-kh"><kbd data-i18n="torah.reading.kbd_enter">Enter</kbd><kbd data-i18n="torah.reading.kbd_space">Space</kbd><span data-i18n="torah.reading.kbd_play">Play this word</span></span>
+    <span class="tt-kh"><kbd data-i18n="torah.reading.kbd_home">Home</kbd><kbd data-i18n="torah.reading.kbd_end">End</kbd><span data-i18n="torah.reading.kbd_ends">First / last word</span></span>
+  </div>
   <!-- i18n-ignore: printed handout output — pinned Hebrew content, not UI chrome.
        Screen-hidden; shown only by the print block's body.tt-handout-geniza rule.
        Never contains the Tetragrammaton. -->
@@ -3587,6 +3623,11 @@ function renderText() {
   // also re-syncs the trope body classes/vars/legend AND the nikkud vars/mode-class here.
   applyTropeColors();
   applyNikkudColors();
+  // The keyboard-hint row documents the reading rover, so it follows the reading itself — the
+  // same loaded-reading guard the legend uses. Set before the empty-state return: a hint over
+  // the empty card would point at keys that have no words to move between.
+  const _kh = document.getElementById('ttKeyHints');
+  if (_kh) _kh.hidden = !(currentVerses && currentVerses.length > 0);
   if (!currentVerses || !currentVerses.length) {
     renderEmptyReading();
     return;

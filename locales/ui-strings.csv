@@ -3694,6 +3694,13 @@ torah.reading.empty_title,Pick a parsha to start,בחרו פרשה כדי להת
 torah.reading.failed_body,"Check your internet connection, then try again — Sefaria, the text source, may be briefly unavailable.","בדקו את חיבור האינטרנט ונסו שוב — ייתכן ש-Sefaria, מקור הטקסט, אינו זמין כרגע.",failed-load empty state body,
 torah.reading.failed_title,This reading didn't load,הקריאה לא נטענה,failed-load empty state h2,
 torah.reading.jump_chip_aria,Jump to aliyah {n} ({label}),קפיצה לעלייה {n} ({label}),aliyah jump chip aria,aria-label only; mixed UI+content — do not translate {n}/{label}
+torah.reading.kbd_nav,Move word by word,מעבר בין מילים,reading keyboard hint row label for the arrow keys,ARROWS DO NOT MIRROR: the rover follows the always-RTL Hebrew so ArrowLeft is next word in both UIs
+torah.reading.kbd_enter,Enter,Enter,name of the Enter key in the reading keyboard hint row,key cap - Israeli keyboards print this in Latin
+torah.reading.kbd_space,Space,רווח,name of the space bar in the reading keyboard hint row,he mirrors flashcards.card.kbd_space
+torah.reading.kbd_play,Play this word,השמעת המילה,reading keyboard hint row label for Enter/Space,
+torah.reading.kbd_home,Home,Home,name of the Home key in the reading keyboard hint row,key cap - Israeli keyboards print this in Latin
+torah.reading.kbd_end,End,End,name of the End key in the reading keyboard hint row,key cap - Israeli keyboards print this in Latin
+torah.reading.kbd_ends,First / last word,מילה ראשונה / אחרונה,reading keyboard hint row label for Home and End,
 torah.reading.read_all,🔊 Read all,🔊 הקראת הכול,ref-header button,leading-emoji
 torah.reading.resume,Resume at {verse} →,המשך מ-{verse} →,resume chip,mixed UI+content — do not translate {verse}
 torah.reading.resume_dismiss_aria,Dismiss resume,ביטול ההמשך,resume chip dismiss aria,aria-label only
