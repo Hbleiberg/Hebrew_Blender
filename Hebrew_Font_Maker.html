@@ -13491,7 +13491,11 @@ function renderSpacingPanel() {
   // and it is the priciest one renderGrids() does, because it rebuilds every kerning row (a real
   // imported GPOS table runs to ~700). renderGrids() fires on nearly every state change, so on a
   // slow machine that was a visible hitch on every letter click. Skip while hidden; setCatTab()
-  // rebuilds on show, and it is the only writer of catTab.
+  // rebuilds on show. Two things make that safe, and both are needed — catTab has three writers
+  // (setCatTab, _selectItem, udNavTo), so "setCatTab owns it" is NOT the reason: (1) only
+  // setCatTab can produce 'spacing' (the other two write a kind/category), and it calls this
+  // directly; (2) renderGrids() ends with renderCatTabs() → syncCatTabs(), which runs AFTER this
+  // guard, so a skipped rebuild is always a panel that ends up hidden anyway.
   if (catTab !== 'spacing') return;
   const kbd = hkSampleState();   // the on-screen keyboard is inside the markup this rebuilds — carry its state over
   const sp = fontSpacing();
