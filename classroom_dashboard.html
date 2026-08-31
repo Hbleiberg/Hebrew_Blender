@@ -991,6 +991,20 @@
     cursor: default; margin-inline-start: 5px; flex-shrink: 0; line-height: 1;
   }
   body.dark .tip-icon { background: var(--warm-gray); color: var(--muted); }
+  /* WCAG 2.5.8 touch floor (registered pattern: sub-floor touch target). The badge paints
+     at 15x15 and its wrapper measures 20x15 — under the 24px floor on every carrier, which
+     undercuts the whole point of the suite's tap-to-open tooltip contract (shared UX rule 2):
+     the affordance a teacher is meant to TAP was the smallest target on the page. The paint
+     must stay 15px — it sits inline in a settings-row label, so growing it would reflow every
+     row — so the sanctioned second vehicle applies (S240, as used on the torah per-verse
+     chips): a transparent ::after carries the POINTER target to 25px with the paint untouched.
+     Safe inside a <label>: bindTip's click handler calls preventDefault() (the S284 fix for
+     help-affordance-inside-a-label-forwards-its-tap), so a tap on the enlarged target cannot
+     forward to the labelled control. The pseudo belongs to .tip-icon, so it works for both
+     binding shapes in the suite — the wrapper-bound carriers (torah, trope) still receive the
+     click by bubbling, and the icon-bound one (dashboard) receives it directly. */
+  .tip-icon { position: relative; }
+  .tip-icon::after { content: ''; position: absolute; inset: -5px; }
   #tipFloat {
     display: none; position: fixed;
     background: var(--navy); color: #fff;
