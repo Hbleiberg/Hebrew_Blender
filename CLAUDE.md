@@ -2244,7 +2244,11 @@ Notes:
   copy on alternate visits — measured S287). Current: `hebrew_words.json?v=6`,
   `trope/trope_index.json?v=2`, `trope/trope_motifs.json?v=2`, `hebrew_emojis.json?v=1`,
   `parshiyot.json?v=1`, `pockettorah/manifest.json?v=1`, `pockettorah/aliyah.json?v=1`
-  (the last four version-busted at S287 — they had shipped with no buster at all).
+  (the last four version-busted at S287 — they had shipped with no buster at all), and the
+  ~380-file `pockettorah/timings/*.txt` corpus via **`POCKET_TIMINGS_V`** in `torah_trainer.html`
+  (`?v=1`, added S300 — the URL is built by concatenation, so the buster is a named constant
+  next to `POCKET_TIMINGS_BASE` rather than a literal in the fetch; it is the one `/data/` family
+  this list used to omit, and it had shipped unbustable since the corpus landed).
 - Cross-origin requests (Google Fonts, Analytics, Sefaria, PocketTorah) bypass
   the worker, so those resources are **not** available offline.
 

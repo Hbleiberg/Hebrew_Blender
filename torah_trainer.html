@@ -2340,6 +2340,7 @@ const DARK_KEY    = 'hebrewBlender_darkMode';   // shared across all IvritSuite 
 const SEFARIA_API = 'https://www.sefaria.org/api';
 const POCKET_AUDIO_BASE = 'https://raw.githubusercontent.com/rneiss/PocketTorah/master/data/audio/';
 const POCKET_TIMINGS_BASE = 'data/pockettorah/timings/';
+const POCKET_TIMINGS_V = '?v=1';   // cache-buster for the timings corpus — bump when a timings file changes
 const TORAH_BOOK_CHAPTERS = { Genesis:50, Exodus:40, Leviticus:27, Numbers:36, Deuteronomy:34 };
 
 const DEFAULTS = {
@@ -4807,10 +4808,12 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   if (!labelFile) { const _au = I18n.t('torah.status.aliyah_audio_unavailable', { n: suffix }); setKaraokeStatus(_au); showHintToast(_au); return; }
   const audioBase = m.audioBase;
   if (!audioBase) { setKaraokeStatus(I18n.t('torah.status.audio_basename_missing')); return; }
-  // Fetch timing file
+  // Fetch timing file. The ?v= is REQUIRED: /data/ is cache-first and keyed on the exact
+  // URL, so without it a corrected timings file could never reach a returning visitor.
+  // Bump POCKET_TIMINGS_V whenever anything under data/pockettorah/timings/ changes.
   let timings;
   try {
-    const r = await fetch(POCKET_TIMINGS_BASE + encodeURIComponent(labelFile));
+    const r = await fetch(POCKET_TIMINGS_BASE + encodeURIComponent(labelFile) + POCKET_TIMINGS_V);
     if (!r.ok) throw new Error(`timings ${r.status}`);
     const txt = await r.text();
     timings = txt.trim().split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
