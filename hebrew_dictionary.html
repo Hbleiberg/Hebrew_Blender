@@ -2561,6 +2561,24 @@ function _hdrExpanded(hdr) {
   return true;
 }
 const PANEL_MEM_KEY = 'hebrewDictionary_panels';
+// Set once by the phone layout's enterMobile(), which collapses the whole sidebar so the filter
+// stack does not sit between the teacher and their results. That is a LAYOUT adaptation, not a
+// preference — but it writes the very class the memory watches, so a wholesale panelMemSave()
+// afterwards would store "everything closed" as the teacher's choice and carry it back to their
+// desktop (measured: a desktop layout of 4-of-6 panels open became 1-of-6 after one phone visit).
+// Never cleared: once this page-load's sidebar has been auto-collapsed, per-panel recording is
+// the honest mode for the rest of it, whichever way the device is then turned.
+let _panelsAutoCollapsed = false;
+// The teacher's own toggle. Records ONLY the panel they touched while the adaptation is in force,
+// so the other panels keep whatever they last chose (or their markup default).
+function onPanelToggle(t) {
+  if (!_panelsAutoCollapsed) { panelMemSave(); return; }
+  const p = t.closest('.panel'), k = t.dataset.i18n;
+  if (!p || !k) return;
+  const map = PANEL_MEM_CFG.read() || {};
+  map[k] = p.classList.contains('collapsed');
+  PANEL_MEM_CFG.write(map);
+}
 const PANEL_MEM_CFG = {
   scope: '.panel-title',
   read() { try { return ivritSafeParse(localStorage.getItem(PANEL_MEM_KEY) || 'null'); } catch (e) { return null; } },
@@ -4816,7 +4834,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.panel-title, .adv-section-title').forEach(bindHdrA11y);
   // The titles toggle via an inline onclick (which runs first), so this listener only records
   // the resulting state. Restore runs after, so a saved layout wins over the markup defaults.
-  document.querySelectorAll('.panel-title').forEach(t => t.addEventListener('click', panelMemSave));
+  document.querySelectorAll('.panel-title').forEach(t => t.addEventListener('click', () => onPanelToggle(t)));
   panelMemApply();
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveDictSessionFlush(); });
   window.addEventListener('pagehide', saveDictSessionFlush);   // leaving the page → flush the debounced save
@@ -5694,6 +5712,7 @@ function dictActiveGroupCount() {
       document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.add('collapsed'));
       syncCollapseAria();
       collapsedOnce = true;
+      _panelsAutoCollapsed = true;   // this collapse is the layout's, not the teacher's
     }
     updateMobileFiltersBtn();
   }
