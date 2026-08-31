@@ -298,7 +298,8 @@ body.dark .fp-no{color:#e06b5b;}
 /* ═══ shared: hebrew-keyboard CSS ═══════════════════════════════════════════
    On-screen Hebrew keyboard styles. Copy this block verbatim alongside the
    matching JS block (keep byte-identical across carriers; carriers:
-   resources.html, hebrew_dictionary.html, Hebrew_Font_Maker.html). Colors
+   resources.html, hebrew_dictionary.html, Hebrew_Font_Maker.html,
+   classroom_dashboard.html). Colors
    ride the suite tokens (with fallbacks), so dark mode needs no extra rules;
    the reduced-motion tail is self-contained so the block stays portable to
    pages without a universal neutralizer. ═══════════════════════════════════ */
@@ -1062,7 +1063,7 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
    text input. Copy this block verbatim, together with the matching
    `shared: hebrew-keyboard CSS` block (keep both byte-identical across
    carriers; carriers: resources.html, hebrew_dictionary.html,
-   Hebrew_Font_Maker.html), then mount per page:
+   Hebrew_Font_Maker.html, classroom_dashboard.html), then mount per page:
 
      kbd = mountHebrewKeyboard({ container, toggleBtn, getInput, onChange, getFontFlags });
 

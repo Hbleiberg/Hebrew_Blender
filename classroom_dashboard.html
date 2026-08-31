@@ -881,6 +881,48 @@
 .sbr-abs{position:absolute;top:0;bottom:0;width:9px;}                                    /* edge handle (drawers, rails); page CSS sets the inset */
 @media (prefers-reduced-motion: reduce){ .sbr-split::before{transition:none !important;} }
 /* ═══ end shared: sidebar-resize CSS ═══ */
+
+/* ═══ shared: hebrew-keyboard CSS ═══════════════════════════════════════════
+   On-screen Hebrew keyboard styles. Copy this block verbatim alongside the
+   matching JS block (keep byte-identical across carriers; carriers:
+   resources.html, hebrew_dictionary.html, Hebrew_Font_Maker.html,
+   classroom_dashboard.html). Colors
+   ride the suite tokens (with fallbacks), so dark mode needs no extra rules;
+   the reduced-motion tail is self-contained so the block stays portable to
+   pages without a universal neutralizer. ═══════════════════════════════════ */
+.hk-toggle{display:inline-flex;align-items:center;gap:6px;margin-block-start:10px;font-size:0.8rem;font-weight:600;padding:6px 14px;border:1.5px solid var(--border,#c8bfa8);border-radius:20px;background:transparent;color:var(--text,#1a2744);cursor:pointer;font-family:inherit;transition:border-color 0.15s,color 0.15s;}
+.hk-toggle:hover{border-color:var(--gold,#c9922a);color:var(--gold,#c9922a);}
+.hk-toggle[aria-expanded="true"]{background:var(--navy,#1a2744);border-color:var(--navy,#1a2744);color:#fff;}
+/* Height cap keeps the panel usable inside a short viewport or a sticky mobile bar. */
+.hk-panel{margin-block-start:10px;border:1px solid var(--border,#c8bfa8);border-radius:8px;background:var(--cream,#fdf8ef);padding:8px;max-height:min(46vh,340px);overflow-y:auto;}
+.hk-panel[hidden]{display:none!important;}
+.hk-tabs{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-block-end:8px;}
+.hk-tab{font-size:0.74rem;font-weight:600;padding:4px 12px;border:1.5px solid var(--border,#c8bfa8);border-radius:16px;background:var(--white,#fff);color:var(--text,#1a2744);cursor:pointer;font-family:inherit;transition:border-color 0.15s,background 0.15s,color 0.15s;}
+.hk-tab:hover{border-color:var(--gold,#c9922a);}
+.hk-tab.active{background:var(--navy,#1a2744);border-color:var(--navy,#1a2744);color:#fff;}
+.hk-layout{margin-inline-start:auto;font-size:0.68rem;padding:3px 9px;border:1px solid var(--border,#c8bfa8);border-radius:12px;background:transparent;color:var(--muted,#6b6050);cursor:pointer;font-family:inherit;transition:border-color 0.15s,color 0.15s;}
+.hk-layout:hover{border-color:var(--gold,#c9922a);color:var(--gold,#c9922a);}
+.hk-hint{font-size:0.72rem;color:var(--muted,#6b6050);margin-block-end:8px;}
+.hk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:4px;}
+.hk-rtl{direction:rtl;}
+/* SI-1452 physical-keyboard rows: pinned LTR on purpose — a physical layout is
+   a coordinate system and must NOT mirror under dir=rtl (same exception as the
+   Font Maker glyph stage; see CLAUDE.md i18n rule 5). */
+.hk-rows{direction:ltr;display:flex;flex-direction:column;gap:4px;overflow-x:auto;}
+.hk-row{display:flex;gap:4px;}
+/* Grow to fill a wide host, but never shrink a key under the 24px touch floor —
+   in a narrow host (a ~300px sidebar) the row scrolls instead of crushing. */
+.hk-row .hk-key{flex:1 0 26px;}
+.hk-key{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:40px;padding:3px 2px;border:1px solid var(--border,#c8bfa8);border-radius:5px;background:var(--white,#fff);color:var(--text,#1a2744);cursor:pointer;font-family:inherit;user-select:none;transition:border-color 0.15s,background 0.15s;}
+.hk-key:hover{border-color:var(--gold,#c9922a);}
+.hk-key:active{background:var(--warm-gray,#e8e0d0);}
+.hk-key-glyph{font-family:'Frank Ruhl Libre',serif;font-size:1.2rem;line-height:1.25;}
+.hk-key-name{font-size:0.5rem;line-height:1.15;opacity:0.75;text-align:center;overflow-wrap:anywhere;}
+.hk-subhead{font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted,#6b6050);margin-block:8px 4px;}
+.hk-util{display:flex;gap:4px;margin-block-start:8px;}
+.hk-util .hk-key{flex:1;min-height:34px;font-size:0.72rem;font-weight:600;}
+@media (prefers-reduced-motion: reduce){.hk-toggle,.hk-tab,.hk-layout,.hk-key{transition-duration:0.001ms!important;}}
+/* ═══ end shared: hebrew-keyboard CSS ═══════════════════════════════════════ */
   /* Drawer resize handle: straddles the border-inline-start seam (4px over the backdrop — the
      handle intercepts its own pointerdowns, so a drag start never reaches the backdrop's
      click-to-close). Hidden on phones, where max-width:92vw pins the width anyway and a
@@ -2411,6 +2453,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label for="pickerRoster" id="pickerRosterLabel" data-i18n="dashboard.picker.roster_label">Roster — one name per line</label>
       <textarea id="pickerRoster" autocapitalize="words" autocorrect="off" spellcheck="false" rows="6" placeholder="e.g. Ava&#10;Noah&#10;&#1491;&#1464;&#1493;&#1460;&#1491;&#10;&#1502;&#1463;&#1497;&#1464;&#1492;" style="width:100%;resize:vertical;font-family:inherit;"></textarea><!-- i18n-ignore: roster placeholder is example student names (mixed EN/HE) with encoded newlines — illustrative content, not translatable chrome -->
       <span id="pickerRosterCount" style="font-size:0.72rem;color:var(--muted);">0 names</span>
+      <!-- On-screen Hebrew keyboard for the roster. This field's own placeholder is already
+           Hebrew names, but the teacher typing it is — per the component's founding rationale —
+           often on a school-managed device with no Hebrew layout installed. The toggle carries
+           NO data-i18n: its label is state-dependent (Show/Hide) and JS owns it, so the English
+           text here is only the pre-I18n.ready fallback; applyStaticI18n would otherwise stomp
+           the expanded-state label on a language switch. -->
+      <button type="button" class="hk-toggle" id="rosterKbdToggle" aria-expanded="false" aria-controls="rosterKbdPanel">&#9000; Show Hebrew Keyboard</button>
+      <div class="hk-panel" id="rosterKbdPanel" hidden></div>
     </div>
     <div class="form-row" id="pickerRosterHint" style="margin-top:2px;">
       <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.picker.roster_hint">Presets and Schedule Sync remember which class is active — rosters themselves are shared, so editing a list updates it everywhere.</span>
@@ -5059,6 +5109,7 @@ function mountSidebarResize(cfg) {
     if (schedEnabled) renderWeekSummary();
   }
 
+  let _rosterKbd = null;   // shared Hebrew-keyboard controller for #pickerRoster
   function wireFormListeners() {
     const refreshAll = () => { updateDateTimeDisplay(); renderDaysList(); renderWeather(); };
     document.getElementById('showHolidayCountdown').addEventListener('change', e => {
@@ -5128,6 +5179,19 @@ function mountSidebarResize(cfg) {
     });
     document.getElementById('pickerRoster').addEventListener('input', updatePickerRosterCount);
     document.getElementById('pickerRoster').addEventListener('blur', commitRosterFromTextarea);
+    // Shared on-screen Hebrew keyboard on the roster field. onChange is REQUIRED, not optional:
+    // the engine types via setRangeText, which fires NO 'input' event, so without it the name
+    // count would silently stop updating as the teacher types. It runs the count ONLY —
+    // commitRosterFromTextarea rewrites ta.value (to re-join the parsed names) and would destroy
+    // the caret mid-word; blur still commits, exactly as before. The roster markup is static, so
+    // one mount lasts the page's life (no re-mount needed — see the block's own header).
+    _rosterKbd = mountHebrewKeyboard({
+      container: document.getElementById('rosterKbdPanel'),
+      toggleBtn: document.getElementById('rosterKbdToggle'),
+      getInput: () => document.getElementById('pickerRoster'),
+      onChange: updatePickerRosterCount,
+      getFontFlags: () => null   // a roster is names, not a font specimen — no coverage hint
+    });
     document.querySelectorAll('input[name="engDateFmt"]').forEach(r =>
       r.addEventListener('change', () => { settings.engDateFmt = r.value; updateDateTimeDisplay(); saveSettingsToStorage(); }));
     document.getElementById('showEngDOW').addEventListener('change', e => { settings.showEngDOW = e.target.checked; updateDateTimeDisplay(); saveSettingsToStorage(); });
@@ -6342,6 +6406,234 @@ function showAppToast(msg, ms = 2600) {
   _appToastTimer = setTimeout(() => t.classList.remove('show'), ms);
 }
 /* ═══ end shared: app-toast ═══ */
+
+/* ═══ shared: hebrew-keyboard ════════════════════════════════════════════════
+   On-screen Hebrew keyboard (letters + nikkud + trop) that types into a host
+   text input. Copy this block verbatim, together with the matching
+   `shared: hebrew-keyboard CSS` block (keep both byte-identical across
+   carriers; carriers: resources.html, hebrew_dictionary.html,
+   Hebrew_Font_Maker.html, classroom_dashboard.html), then mount per page:
+
+     kbd = mountHebrewKeyboard({ container, toggleBtn, getInput, onChange, getFontFlags });
+
+   - container: an empty <div class="hk-panel" hidden>; toggleBtn: a
+     <button aria-expanded aria-controls> whose label JS owns (no data-i18n).
+   - getInput() → the target <input>/<textarea>. onChange() runs after every
+     edit — setRangeText fires NO 'input' event, so the host must re-render
+     its preview through this callback, never via an input listener alone.
+   - getFontFlags() (optional) → {nikkud:bool, trop:bool, name} for the
+     coverage hint on the Nikkud/Trop tabs, or null for no hint.
+   - Returned controller: { refresh(), applyI18n(), setOpen(on) }. Call
+     applyI18n() from the page's applyI18n() (pure re-render, read-only);
+     call refresh() when the previewed font changes. A host that rebuilds its
+     own markup must re-mount, then re-assert state with setOpen(wasOpen).
+
+   Strings live under shared.kbd.* in locales/ui-strings.csv (all carriers
+   share them — adopting a page adds zero rows). The letter-layout choice
+   ('abc' | 'qwerty') persists site-wide in localStorage
+   hebrewBlender_kbdLayout, already registered in the index.html AllTools
+   functions — adopters must not re-register it. All identifiers are HK_/hk-
+   prefixed so the block can land in pages that define GLYPH_CARRIER etc. ═══ */
+const HK_GLYPH_CARRIER = '◌';   // dotted-circle carrier for lone marks; flip to 'א' if a font floats them (same convention as the Trope Tutor)
+const HK_LETTERS = [            // alef-bet order, finals adjacent; plain forms only — dagesh/shin/sin dots are Nikkud-tab keys
+  ['א','alef'],['ב','bet'],['ג','gimel'],['ד','dalet'],['ה','heh'],['ו','vav'],['ז','zayin'],
+  ['ח','chet'],['ט','tet'],['י','yud'],['כ','kaf'],['ך','chaf_sofit'],['ל','lamed'],
+  ['מ','mem'],['ם','mem_sofit'],['נ','nun'],['ן','nun_sofit'],['ס','samech'],['ע','ayin'],
+  ['פ','peh'],['ף','feh_sofit'],['צ','tzadi'],['ץ','tzadi_sofit'],['ק','koof'],['ר','resh'],
+  ['ש','shin'],['ת','tav']];
+const HK_QWERTY_ROWS = [        // SI-1452 physical rows, left→right — rendered in an LTR-pinned container
+  ['ק','ר','א','ט','ו','ן','ם','פ'],
+  ['ש','ד','ג','כ','ע','י','ח','ל','ך','ף'],
+  ['ז','ס','ב','ה','נ','מ','צ','ת','ץ']];
+const HK_PUNCT = [['־','maqaf'],['׃','sof_pasuk'],['׀','paseq'],['׳','geresh'],['״','gershayim']];
+const HK_NIKKUD = [             // 13 teaching vowels; the two vav forms are standalone (flag 1): inserted as DECOMPOSED
+  ['ָ','kamatz'],['ַ','patach'],['ֲ','hataf_patach'],['ֳ','hataf_kamatz'],   // two-char strings (vav + mark), never the FB-block precomposed codepoints (suite rule — the
+  ['ֶ','segol'],['ֱ','hataf_segol'],['ֵ','tzere'],['ִ','chirik'],            // Font Maker's SAMPLE_TEST_COMBOS documents "stored decomposed"), and rendered without the carrier
+  ['ֹ','holam'],['וֹ','vav_holam',1],['ֻ','kubutz'],['וּ','shuruk',1],
+  ['ְ','shva']];
+const HK_NIKKUD_EXTRAS = [['ּ','dagesh'],['ׁ','shin_dot'],['ׂ','sin_dot'],['ׇ','kamatz_katan'],['ֺ','holam_haser'],['ֿ','rafe']];
+/* Full trop coverage U+0591–U+05AF (+ meteg/siluk U+05BD), family-ordered like the Trope Tutor's
+   TROPES table. Deliberately NO sof-pasuk key: Unicode unifies siluk with meteg (U+05BD), and the
+   ׃ terminator lives in HK_PUNCT. U+05AE is the corpus-dominant zarka form; U+0598 (Unicode's
+   swapped-name twin) is offered in the rare row as "Zarka (alt)". */
+const HK_TROP = [
+  ['֥','mercha'],['֖','tipcha'],['֣','munach'],['֑','etnachta'],
+  ['֤','mahpach'],['֙','pashta'],['֚','yetiv'],['֔','zakef_katon'],['֕','zakef_gadol'],
+  ['֮','zarka'],['֒','segol'],['֓','shalshelet'],
+  ['֗','revia'],['֧','darga'],['֛','tevir'],
+  ['֨','kadma'],['֜','geresh'],['֝','geresh_muqdam'],['֞','gershayim'],
+  ['֩','telisha_ketana'],['֠','telisha_gedola'],['֡','pazer']];
+const HK_TROP_RARE = [
+  ['֦','mercha_kefula'],['֟','karnei_parah'],['֪','yerach_ben_yomo'],
+  ['֢','atnach_hafukh'],['֫','ole'],['֬','iluy'],['֭','dehi'],
+  ['֘','zarka_alt'],['֯','masora_circle'],['ֽ','meteg']];
+
+function hkT(key, params) { return window.I18n ? I18n.t(key, params) : key.slice(key.lastIndexOf('.') + 1); }
+function hkGlyphName(prefix, slug) { return hkT('shared.kbd.glyphname.' + prefix + '_' + slug); }
+function hkSetPressed(btn, on) { btn.classList.toggle('active', on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+function hkReadLayout() { try { return localStorage.getItem('hebrewBlender_kbdLayout') === 'qwerty' ? 'qwerty' : 'abc'; } catch (e) { return 'abc'; } }
+function hkSaveLayout(v) { try { localStorage.setItem('hebrewBlender_kbdLayout', v); } catch (e) {} }
+
+function mountHebrewKeyboard(cfg) {
+  let open = false, tab = 'letters', layout = hkReadLayout();
+  let sel = null;                 // remembered {s,e} caret on the target input (keyboard-activation fallback)
+  const panel = cfg.container, toggle = cfg.toggleBtn;
+
+  const rememberSel = () => {
+    const inp = cfg.getInput();
+    if (inp && typeof inp.selectionStart === 'number') sel = { s: inp.selectionStart, e: inp.selectionEnd };
+  };
+  { const inp = cfg.getInput();
+    if (inp) ['input', 'click', 'keyup', 'select', 'focus'].forEach(ev => inp.addEventListener(ev, rememberSel)); }
+
+  function hkEdit(action, text) {
+    const inp = cfg.getInput(); if (!inp) return;
+    const len = inp.value.length;
+    let s = (typeof inp.selectionStart === 'number') ? inp.selectionStart : (sel ? sel.s : len);
+    let e = (typeof inp.selectionEnd === 'number') ? inp.selectionEnd : (sel ? sel.e : len);
+    s = Math.max(0, Math.min(s, len)); e = Math.max(s, Math.min(e, len));
+    const apply = (txt, a, b) => {
+      if (typeof inp.setRangeText === 'function') inp.setRangeText(txt, a, b, 'end');
+      else {
+        inp.value = inp.value.slice(0, a) + txt + inp.value.slice(b);
+        if (inp.setSelectionRange) inp.setSelectionRange(a + txt.length, a + txt.length);
+      }
+      sel = { s: a + txt.length, e: a + txt.length };
+    };
+    if (action === 'ins') apply(text, s, e);
+    else if (action === 'space') apply(' ', s, e);
+    else if (action === 'bksp') {
+      if (e > s) apply('', s, e);
+      else if (s > 0) {
+        // One UTF-16 unit = one Hebrew mark (all letters/nikkud/trop are BMP), so backspace
+        // peels a single mark off a pointed letter; the guard keeps surrogate pairs whole.
+        const c = inp.value.charCodeAt(s - 1);
+        const n = (c >= 0xDC00 && c <= 0xDFFF && s > 1) ? 2 : 1;
+        apply('', s - n, s);
+      }
+    } else if (action === 'clear') { inp.value = ''; if (inp.setSelectionRange) inp.setSelectionRange(0, 0); sel = { s: 0, e: 0 }; }
+    inp.focus();
+    if (cfg.onChange) cfg.onChange();   // setRangeText fires no 'input' event — the host re-renders here
+  }
+
+  const el = (tag, cls, txt) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (txt !== undefined) n.textContent = txt;
+    return n;
+  };
+  function renderKey(ch, slug, prefix, bare) {
+    const b = el('button', 'hk-key');
+    b.type = 'button'; b.dataset.hk = 'ins'; b.dataset.ins = ch;
+    const name = hkGlyphName(prefix, slug);
+    const g = el('span', 'hk-key-glyph', bare ? ch : HK_GLYPH_CARRIER + ch);
+    g.setAttribute('lang', 'he'); g.dir = 'rtl';
+    b.setAttribute('aria-label', name);   // glyph shapes mean nothing to a screen reader
+    b.appendChild(g);
+    b.appendChild(el('span', 'hk-key-name', name));
+    return b;
+  }
+  function renderPanel() {
+    panel.textContent = '';
+    panel.setAttribute('role', 'group');
+    panel.setAttribute('aria-label', hkT('shared.kbd.panel_aria'));
+    const tabs = el('div', 'hk-tabs');
+    [['letters', 'tab_letters'], ['nikkud', 'tab_nikkud'], ['trop', 'tab_trop']].forEach(t => {
+      const b = el('button', 'hk-tab', hkT('shared.kbd.' + t[1]));
+      b.type = 'button'; b.dataset.hk = 'tab'; b.dataset.tab = t[0];
+      hkSetPressed(b, tab === t[0]);
+      tabs.appendChild(b);
+    });
+    if (tab === 'letters') {
+      const lay = el('button', 'hk-layout', hkT(layout === 'abc' ? 'shared.kbd.layout_qwerty' : 'shared.kbd.layout_abc'));
+      lay.type = 'button'; lay.dataset.hk = 'layout';                    // label names the layout it switches TO
+      lay.setAttribute('aria-pressed', layout === 'qwerty' ? 'true' : 'false');
+      tabs.appendChild(lay);
+    }
+    panel.appendChild(tabs);
+    const flags = cfg.getFontFlags ? cfg.getFontFlags() : null;
+    if (flags && tab === 'nikkud' && flags.nikkud === false)
+      panel.appendChild(el('div', 'hk-hint', hkT('shared.kbd.hint_no_nikkud', { name: flags.name || '' })));
+    if (flags && tab === 'trop' && flags.trop === false)
+      panel.appendChild(el('div', 'hk-hint', hkT('shared.kbd.hint_no_trop', { name: flags.name || '' })));
+    const body = el('div', 'hk-body');
+    if (tab === 'letters') {
+      if (layout === 'abc') {
+        const g = el('div', 'hk-grid hk-rtl');
+        HK_LETTERS.forEach(L => g.appendChild(renderKey(L[0], L[1], 'letter', true)));
+        body.appendChild(g);
+      } else {
+        const slugOf = {}; HK_LETTERS.forEach(L => { slugOf[L[0]] = L[1]; });
+        const rows = el('div', 'hk-rows');
+        HK_QWERTY_ROWS.forEach(r => {
+          const row = el('div', 'hk-row');
+          r.forEach(ch => row.appendChild(renderKey(ch, slugOf[ch], 'letter', true)));
+          rows.appendChild(row);
+        });
+        body.appendChild(rows);
+      }
+      body.appendChild(el('div', 'hk-subhead', hkT('shared.kbd.row_punct')));
+      const pg = el('div', 'hk-grid hk-rtl');
+      HK_PUNCT.forEach(P => pg.appendChild(renderKey(P[0], P[1], 'punct', true)));
+      body.appendChild(pg);
+    } else if (tab === 'nikkud') {
+      const g = el('div', 'hk-grid hk-rtl');
+      HK_NIKKUD.forEach(V => g.appendChild(renderKey(V[0], V[1], 'vowel', !!V[2])));
+      body.appendChild(g);
+      body.appendChild(el('div', 'hk-subhead', hkT('shared.kbd.row_dots')));
+      const xg = el('div', 'hk-grid hk-rtl');
+      HK_NIKKUD_EXTRAS.forEach(M => xg.appendChild(renderKey(M[0], M[1], 'mark', false)));
+      body.appendChild(xg);
+    } else {
+      const g = el('div', 'hk-grid hk-rtl');
+      HK_TROP.forEach(T => g.appendChild(renderKey(T[0], T[1], 'trop', false)));
+      body.appendChild(g);
+      body.appendChild(el('div', 'hk-subhead', hkT('shared.kbd.row_rare')));
+      const rg = el('div', 'hk-grid hk-rtl');
+      HK_TROP_RARE.forEach(T => rg.appendChild(renderKey(T[0], T[1], 'trop', false)));
+      body.appendChild(rg);
+    }
+    panel.appendChild(body);
+    const util = el('div', 'hk-util');
+    [['space', 'key_space', ''], ['bksp', 'key_backspace', '⌫ '], ['clear', 'key_clear', '']].forEach(u => {
+      const b = el('button', 'hk-key', u[2] + hkT('shared.kbd.' + u[1]));
+      b.type = 'button'; b.dataset.hk = u[0];
+      util.appendChild(b);
+    });
+    panel.appendChild(util);
+  }
+
+  function syncToggle() {
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.textContent = '⌨ ' + hkT(open ? 'shared.kbd.hide_toggle' : 'shared.kbd.show_toggle');
+  }
+  function setOpen(on) {
+    open = !!on;
+    if (open) renderPanel();            // always fresh: labels, layout, capability hint
+    panel.hidden = !open;
+    syncToggle();
+    if (open) { try { panel.scrollIntoView({ block: 'nearest' }); } catch (e) {} }
+  }
+
+  panel.addEventListener('pointerdown', e => e.preventDefault());   // keys never steal focus/caret from the input (standard on-screen-keyboard trick)
+  panel.addEventListener('click', e => {
+    const btn = e.target.closest('[data-hk]');
+    if (!btn || !panel.contains(btn)) return;
+    const kind = btn.dataset.hk;
+    if (kind === 'ins') hkEdit('ins', btn.dataset.ins);
+    else if (kind === 'tab') { tab = btn.dataset.tab; renderPanel(); }
+    else if (kind === 'layout') { layout = (layout === 'abc') ? 'qwerty' : 'abc'; hkSaveLayout(layout); renderPanel(); }
+    else hkEdit(kind);                  // space | bksp | clear
+  });
+  toggle.addEventListener('click', () => setOpen(!open));
+
+  return {
+    refresh() { if (open) renderPanel(); },
+    applyI18n() { syncToggle(); if (open) renderPanel(); },
+    setOpen
+  };
+}
+/* ═══ end shared: hebrew-keyboard ════════════════════════════════════════════ */
 
 /* ═══════════ IvritSuite .ivrit save-file engine (shared, identical across pages) ═══════════ */
 function ivritSafeParse(str) {
@@ -9159,6 +9451,7 @@ function panelMemApply() {
       try { if (_swmSaveNoteKey) _setWeekSaveNote(_swmSaveNoteKey); } catch (e) {}     // ditto for the weekly save-as note
       try { buildToolbar(document.getElementById('drawerToolbar')); } catch (e) {}      // editor toolbar titles/labels build via t()
       try { buildToolbar(document.getElementById('inplaceToolbarCmds')); } catch (e) {}
+      try { if (_rosterKbd) _rosterKbd.applyI18n(); } catch (e) {}   // key names/tips are shared.kbd.* strings
       try { updateColTitles(); } catch (e) {}
       try { updateDateTimeDisplay(); } catch (e) {}
       try { renderDaysList(); } catch (e) {}
