@@ -389,6 +389,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       </div>
       <div id="ivritAuto">
         <button class="ie-action-btn primary" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;" data-i18n="home.alltools.save_button">⬇ Save All Settings to .ivrit file</button>
+        <div id="ivritInventory" style="margin:-4px 0 10px;text-align:center;opacity:0.75;font-size:0.82rem;line-height:1.4;"></div>
         <div id="ivritDrop" class="ivrit-drop">
           <button class="ie-action-btn secondary" type="button" onclick="document.getElementById('ivritFileInput').click()" data-i18n="shared.ivrit.browse_button">Browse…</button>
           <div style="margin:6px 0;opacity:0.7;" data-i18n="shared.ivrit.or_divider">— or —</div>
@@ -579,6 +580,7 @@ function openIEModal() {
   const backdrop = document.getElementById('ieBackdrop');
   backdrop.classList.add('open');
   if (window.indexedDB) { renderMyFontsManager(); refreshFontsBackupCache(); }
+  renderIvritInventory();
   const closeBtn = backdrop.querySelector('.ie-modal-close');
   if (closeBtn) closeBtn.focus();   // move focus into the dialog (a11y)
 }
@@ -1261,6 +1263,37 @@ function setIvritMode(mode) {
   if (mn) mn.style.display = mode === 'manual' ? '' : 'none';
   try { localStorage.setItem('hebrewBlender_inputMode', mode); } catch (e) {}
 }
+/* What a backup actually holds, in plain words — the trust gap this modal used to have
+   at both ends. The body text read identically whether you had nothing saved or a term's
+   work, and the restore side was the same blindness from the other direction: the success
+   message never said what had just come back, so a teacher could not tell whether the file
+   they dropped was the right one. Counts are taken straight off the payload the Save writes
+   (or the file the Restore read), so the summary can never disagree with what actually
+   travelled, and nothing new is stored to produce it. */
+const IVRIT_INV_PARTS = [
+  ['presets',   d => Object.keys(d.generatorPresets   || {}).length],
+  ['layouts',   d => Object.keys(d.dashboardPresets   || {}).length],
+  ['schedules', d => Object.keys(d.dashboardSchedules || {}).length],
+  ['decks',     d => Object.keys(d.flashCardPresets   || {}).length],
+  ['profiles',  d => Object.keys((d.flashCardProfiles || {}).profiles || {}).length],
+  ['wordlists', d => Object.keys((d.wordLists || {}).lists || {}).length],
+  ['fonts',     d => ((d.userFonts || []).length)]
+];
+function ivritInventory(data) {
+  if (!window.I18n || !data || typeof data !== 'object') return '';
+  const parts = [];
+  for (const [name, count] of IVRIT_INV_PARTS) {
+    let n = 0;
+    try { n = count(data) || 0; } catch (e) { n = 0; }   // a malformed imported blob must not break the summary
+    if (n > 0) parts.push(I18n.t('home.alltools.inv.' + name + (n === 1 ? '.one' : '.other'), { count: n }));
+  }
+  return parts.length ? parts.join(' \u00b7 ') : I18n.t('home.alltools.inv.empty');
+}
+function renderIvritInventory() {
+  const el = document.getElementById('ivritInventory');
+  if (!el || !window.I18n) return;
+  el.textContent = I18n.t('home.alltools.inv.will_contain', { summary: ivritInventory(IVRIT_CFG.gather()) });
+}
 function ivritSaveFile() {
   const payload = { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: IVRIT_CFG.tool, savedAt: new Date().toISOString(), data: IVRIT_CFG.gather() };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -1318,7 +1351,9 @@ async function ivritRestore(text, sourceName) {
   catch (e) { alert(I18n.t('shared.ivrit.err_restore_failed', {error: e.message})); return; }
   if (!IVRIT_CFG.needsReload) {
     ivritStatus(I18n.t('shared.ivrit.status_restored', { source: sourceName || 'file' }));
-    alert(I18n.t('home.alltools.restore_reload'));
+    alert(I18n.t('home.alltools.restore_reload') + '\n\n' +
+          I18n.t('home.alltools.inv.restored', { summary: ivritInventory(payload.data || {}) }));
+    renderIvritInventory();   // the modal is still open behind the alert; keep its line true
   }
 }
 function ivritReadFile(file) {
@@ -1371,6 +1406,7 @@ function applyI18n() {
   I18n.applyStaticI18n();
   try { const _db = document.getElementById('darkBtn'); if (_db) _db.textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
   try { if (typeof renderMyFontsManager === 'function' && document.getElementById('myFontsList')) renderMyFontsManager(); } catch (e) {}
+  try { renderIvritInventory(); } catch (e) {}
 }
 document.addEventListener('DOMContentLoaded', () => {
   try {

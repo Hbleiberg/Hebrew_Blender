@@ -2976,6 +2976,23 @@ home.alltools.import_err_json,Invalid JSON — please paste the full export bloc
 home.alltools.import_err_notexport,This doesn't look like a Hebrew Blender export. Make sure you copied the full block.,זה לא נראה כמו ייצוא של Hebrew Blender. ודאו שהעתקתם את הבלוק המלא.,alert,
 home.alltools.import_failed,Import failed: {message},הייבוא נכשל: {message},alert,template
 home.alltools.import_success,Import successful! Reload the Dashboard to apply all settings.,הייבוא הצליח! טענו מחדש את לוח המחוונים כדי להחיל את כל ההגדרות.,alert,
+home.alltools.inv.presets.one,{count} worksheet preset,תבנית דף עבודה אחת,backup inventory part,plural; do not translate {…}
+home.alltools.inv.presets.other,{count} worksheet presets,{count} תבניות דף עבודה,backup inventory part,plural; do not translate {…}
+home.alltools.inv.layouts.one,{count} dashboard layout,פריסת לוח כיתה אחת,backup inventory part,plural; do not translate {…}
+home.alltools.inv.layouts.other,{count} dashboard layouts,{count} פריסות לוח כיתה,backup inventory part,plural; do not translate {…}
+home.alltools.inv.schedules.one,{count} saved schedule,מערכת שעות שמורה אחת,backup inventory part,plural; do not translate {…}
+home.alltools.inv.schedules.other,{count} saved schedules,{count} מערכות שעות שמורות,backup inventory part,plural; do not translate {…}
+home.alltools.inv.decks.one,{count} flash-card deck,סדרת כרטיסיות אחת,backup inventory part,plural; do not translate {…}
+home.alltools.inv.decks.other,{count} flash-card decks,{count} סדרות כרטיסיות,backup inventory part,plural; do not translate {…}
+home.alltools.inv.profiles.one,{count} flash-card profile,פרופיל כרטיסיות אחד,backup inventory part,plural; do not translate {…}
+home.alltools.inv.profiles.other,{count} flash-card profiles,{count} פרופילי כרטיסיות,backup inventory part,plural; do not translate {…}
+home.alltools.inv.wordlists.one,{count} word list,רשימת מילים אחת,backup inventory part,plural; do not translate {…}
+home.alltools.inv.wordlists.other,{count} word lists,{count} רשימות מילים,backup inventory part,plural; do not translate {…}
+home.alltools.inv.fonts.one,{count} custom font,גופן מותאם אחד,backup inventory part,plural; do not translate {…}
+home.alltools.inv.fonts.other,{count} custom fonts,{count} גופנים מותאמים,backup inventory part,plural; do not translate {…}
+home.alltools.inv.empty,no saved items yet,אין עדיין פריטים שמורים,backup inventory when every count is zero,
+home.alltools.inv.will_contain,This file will contain: {summary},הקובץ הזה יכיל: {summary},live line under the Save button,do not translate {…}
+home.alltools.inv.restored,This file contained: {summary},הקובץ הזה הכיל: {summary},appended to the restore success alert,do not translate {…}
 home.alltools.restore_reload,Restored successfully. Reload any open tool pages to apply.,השחזור הצליח. טענו מחדש את דפי הכלים הפתוחים כדי להחיל.,restore success alert,
 home.alltools.modal_title,⚙ Import / Export All Settings,⚙ ייבוא / ייצוא כל ההגדרות,modal header title,leading-emoji
 home.alltools.modal_close_aria,Close,סגור,alltools modal close button aria,aria-label only
