@@ -1498,6 +1498,15 @@ footer a { display: inline-block; padding-block: 5px; }
     vertical-align: middle;
     flex-shrink: 0;
   }
+  /* WCAG 2.5.8 touch floor (registered pattern: sub-floor touch target). This badge IS the
+     15x15 circle, so it was the smallest target on the page — the affordance a teacher is
+     meant to TAP. The paint must stay 15px (it sits inline beside a label), so the sanctioned
+     second vehicle applies (S240): a transparent ::after carries the pointer target to 25px
+     with the paint untouched. It cannot swallow the bubble: .tooltip-box opens at
+     top:calc(100% + 8px), i.e. 8px below the badge, while this reaches only 5px. Unlike the
+     .tip-icon carriers this badge is NOT inside a <label>, so there is no activation to
+     forward — see help-affordance-inside-a-label-forwards-its-tap. */
+  .tooltip-wrap::after { content: ''; position: absolute; inset: -5px; }
   .tooltip-wrap .tooltip-box {
     display: none;
     position: absolute;
