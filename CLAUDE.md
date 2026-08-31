@@ -206,6 +206,13 @@ control's name, whose quotes had been stripped in the shipped output.
 blanked), so an English `title=`/`aria-label=` built inside a JS **template literal** (or passed as a plain
 function argument) escapes it — don't treat a green gate as proof there are zero untranslated tooltips. The
 remaining backlog of that shape (Font-Maker-heavy) is tracked for Pass K run 2 in `docs/IMPROVEMENT_LOG.md`.
+A **third** sub-shape, the **ternary** (`x.title = cond ? '' : 'English'` — an ordinary-looking assignment
+whose RHS simply doesn't start with a quote), hid two live untranslated strings through every gate run until
+S302 found them by hand; **rule 2b closes it for `.textContent`/`.placeholder`/`.title`** (S303). Its
+exemptions are structural rather than a list — a ternary routing through `I18n.t()` is the pre-ready fallback
+shape, a branch not starting with a plain quote is not a literal, backtick branches build markup, and a
+ternary that is one fragment of a concatenation is content-derived. `setAttribute` (rule 3) is NOT yet
+widened to ternaries.
 
 ### 8. Adding a new UI language
 The pipeline is N-language-ready; Hebrew is just the first non-English locale. To add language `X`

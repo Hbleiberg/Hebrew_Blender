@@ -8900,7 +8900,7 @@ else ivritInit();
     const vLabel = document.getElementById('videoHeaderLabel');
     if (vLabel) {
       const isHebV = (settings.headerLang || 'he') === 'he';
-      vLabel.textContent = isHebV ? 'וִידֵאוֹ' : 'Video';
+      vLabel.textContent = isHebV ? 'וִידֵאוֹ' : 'Video';   // i18n-ignore — projected widget CONTENT: follows headerLang, not I18n.lang
       vLabel.style.direction = isHebV ? 'rtl' : '';
     }
   }

@@ -12,3 +12,5 @@ hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	br
 hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	cap.textContent = '📱 Scan for answer key';
 hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	meta.textContent = 'Answer Key — scan to self-check';
 hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	numBar.textContent = 'CARD';
+hebrew_blend_generator.html	.textContent assigned a hardcoded English literal in a ternary branch	akBanner.textContent = versionLabel ? `✦ Answer Key — ${versionLabel} ✦` : '✦ Answer Key ✦';
+hebrew_blend_generator.html	.textContent assigned a hardcoded English literal in a ternary branch	banner.textContent = verLabel ? ('✦ Answer Key — ' + verLabel + ' ✦') : '✦ Answer Key ✦';

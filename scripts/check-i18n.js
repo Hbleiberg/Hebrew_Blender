@@ -168,6 +168,20 @@ const lineNoAt = (text, idx) => text.slice(0, idx).split('\n').length;
 // A plain quoted literal is "structural, not prose" if it looks like HTML/markup (a `<` tag).
 const looksLikeHtml = (s) => /<[a-zA-Z!/]/.test(s);
 
+// True when index `idx` on `line` sits after a `//` that is NOT inside a string (so a rule can
+// skip commented-out code — the worked example of this very blind spot lives in a comment in
+// hebrew_blend_generator.html and would otherwise flag itself).
+function inLineComment(line, idx) {
+  let q = null;
+  for (let i = 0; i < idx; i++) {
+    const c = line[i];
+    if (q) { if (c === '\\') i++; else if (c === q) q = null; continue; }
+    if (c === '"' || c === "'" || c === '`') { q = c; continue; }
+    if (c === '/' && line[i + 1] === '/') return true;
+  }
+  return false;
+}
+
 // ── Check A ──
 // errors  = high-confidence hardcoded-literal violations (fail the build).
 // warnings = the static-HTML tooltip-attribute backlog (advisory; a code fix routes it through
@@ -206,6 +220,35 @@ function scanFile(file, errors, warnings) {
       const after = rhs.slice(lit.end + 1).replace(/^\s*/, '');
       if (after.startsWith('+')) continue;                 // concatenated with a variable → content-derived
       push(errors, ln, '.' + m[1] + ' assigned a hardcoded English literal', line);
+    }
+
+    // 2b) The SAME three sinks, but behind a TERNARY. `x.title = cond ? '' : 'English'` reads as an
+    //     ordinary assignment, yet rule 2 needs a quote immediately after the `=` — so the whole
+    //     class was invisible, and two live untranslated strings had survived every gate run behind
+    //     it (S302: a disabled-button reason and the generator's own primary action button).
+    //     Exemptions are structural, not a list: a ternary that routes through I18n.t() anywhere is
+    //     the documented pre-ready fallback shape; a branch starting with anything but a plain
+    //     quote (a _pT(key, fallback) wrapper, a variable) is not a literal; backtick branches stay
+    //     out for the same reason rule 2 skips them — they build markup; and a ternary that is one
+    //     fragment of a concatenation is content-derived, which is rule 2's existing test moved a
+    //     level out (it is what excuses `'⌨ ' + hkT(open ? 'shared.kbd.hide_toggle' : …)`, whose
+    //     branches are translation KEYS, and `'@page { size: ' + (… ? 'A4' : 'letter')`, which is CSS).
+    const condRe = /\.(textContent|placeholder|title)\s*=\s*(?!['"])([^;]*\?(?![.?])[^;]*)/g;
+    while ((m = condRe.exec(line))) {
+      if (inLineComment(line, m.index)) continue;
+      if (goesThroughI18n(m[2])) continue;
+      if (m[2].slice(0, m[2].indexOf('?')).includes('+')) continue;   // one fragment of a concatenation → content-derived, as in rule 2
+      const branchRe = /[?:]\s*(?=['"])/g;
+      let b;
+      while ((b = branchRe.exec(m[2]))) {
+        const rhs = m[2].slice(b.index + b[0].length);
+        const lit = readLeadingLiteral(rhs);
+        if (!lit || !hasLetters(lit.text) || looksLikeHtml(lit.text)) continue;
+        const after = rhs.slice(lit.end + 1).replace(/^\s*/, '');
+        if (after.startsWith('+')) continue;               // concatenated with a variable
+        push(errors, ln, '.' + m[1] + ' assigned a hardcoded English literal in a ternary branch', line);
+        break;                                             // one finding per assignment
+      }
     }
 
     // 3) setAttribute('aria-label'|'title'|'placeholder', '<plain literal>').
