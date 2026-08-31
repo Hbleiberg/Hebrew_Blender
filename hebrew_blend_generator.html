@@ -728,6 +728,24 @@ footer a { display: inline-block; padding-block: 5px; }
   body.dark .gen-fab { background: #1e2535; }
   .gen-fab .btn { width: auto; min-width: 200px; margin: 0; }
   .gen-fab.gen-fab-hidden { opacity: 0; pointer-events: none; }
+  /* Post-Generate actions ride the bar that is ALREADY pinned, rather than adding a second
+     fixed element: after Generate, Print / PDF sat ~2,500px down the options sidebar while the
+     worksheet rendered at viewport top (measured S299 at 1280 and 800 — #printBtn at 2472/2525
+     against a 900px viewport, roughly three screens). Sidebar-scoped, so the print rule that
+     hides .sidebar hides these too — no new print-list entry. */
+  .gen-fab-actions { display: none; gap: 6px; }
+  .gen-fab.has-actions { gap: 8px; }
+  .gen-fab.has-actions .gen-fab-actions { display: flex; }
+  /* Beat the bar's own 200px min-width so three controls fit the 320px default sidebar. */
+  /* min-height, not padding alone: at phone widths the inherited font-size left these at 37px,
+     under the suite's 40px touch floor (the registered sub-floor touch target pattern). */
+  .gen-fab-actions .btn { width: auto; min-width: 0; margin: 0; padding: 9px 12px;
+    min-height: 40px; white-space: nowrap; }
+  .gen-fab.has-actions .gen-fab-primary .btn { min-width: 0; }
+  /* Still never two Generate buttons at once. Pre-worksheet the whole bar hides while the inline
+     Generate is on screen (unchanged); once actions exist the bar stays and only the duplicate
+     Generate steps aside, so the actions remain reachable from anywhere on the page. */
+  .gen-fab.has-actions.inline-gen-visible .gen-fab-primary { display: none; }
   /* Reserve room so the fixed footer never hides the last slice of sidebar content. */
   .sidebar { padding-bottom: 70px; }
   @media (max-width: 700px) {
@@ -3684,8 +3702,16 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
     <!-- Frozen "Generate" footer (desktop) — always-reachable primary action; sticks to the sidebar bottom -->
     <div class="gen-fab" id="genFab">
-      <button class="btn btn-primary" onclick="generate()" title="⬡ Generate Worksheet" data-i18n="worksheet.actions.generate_mob" data-i18n-title="worksheet.actions.generate">⬡ Generate</button>
+      <div class="gen-fab-primary">
+        <button class="btn btn-primary" onclick="generate()" title="⬡ Generate Worksheet" data-i18n="worksheet.actions.generate_mob" data-i18n-title="worksheet.actions.generate">⬡ Generate</button>
+      </div>
       <div class="gen-note" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
+      <!-- Post-Generate actions: revealed by enableButtons() once a worksheet exists, so the
+           thing a teacher wants next isn't ~2,500px down the options sidebar. -->
+      <div class="gen-fab-actions" id="genFabActions">
+        <button class="btn btn-secondary" onclick="window.print()" data-i18n="worksheet.actions.print">🖨 Print</button>
+        <button class="btn btn-outline" onclick="exportPDF()" data-i18n="worksheet.actions.pdf_mob">⬇ PDF</button>
+      </div>
     </div>
 
   </aside>
@@ -6365,7 +6391,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // whenever the inline Generate button is itself on screen.
     if ('IntersectionObserver' in window) {
       const io = new IntersectionObserver(es => {
-        fab.classList.toggle('gen-fab-hidden', es[0].isIntersecting);
+        const inlineVisible = es[0].isIntersecting;
+        fab.classList.toggle('inline-gen-visible', inlineVisible);
+        // Hide the WHOLE bar only while it has nothing but a duplicate Generate to offer;
+        // once the post-Generate actions are in it, CSS hides just the duplicate button.
+        fab.classList.toggle('gen-fab-hidden', inlineVisible && !fab.classList.contains('has-actions'));
       }, { root: null, threshold: 0.2 });
       io.observe(inline);
     }
@@ -8759,6 +8789,14 @@ function enableButtons() {
   });
   const tip = document.getElementById('printTip');
   if (tip) tip.style.display = 'block';
+  // Reveal the frozen footer's post-Generate actions (Print / PDF) now that a worksheet exists.
+  const _fab = document.getElementById('genFab');
+  if (_fab) {
+    _fab.classList.add('has-actions');
+    // The bar may be sitting hidden from before the first Generate; the observer only
+    // re-evaluates on an intersection change, so clear it here.
+    _fab.classList.remove('gen-fab-hidden');
+  }
   if (typeof onGenerateSettled === 'function') onGenerateSettled();
 }
 
