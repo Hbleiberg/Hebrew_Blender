@@ -734,9 +734,17 @@ shared component so any tool can adopt it.
   rules — and `/* ═══ shared: hebrew-keyboard ═══ … ═══ end shared: hebrew-keyboard ═══ */` — data
   tables + `mountHebrewKeyboard(cfg)`. **Copy both verbatim; never rewrite.** Current carriers:
   `resources.html` (font-preview modal), `hebrew_dictionary.html` (search box),
-  `Hebrew_Font_Maker.html` (the Spacing tab's sample-text field). When a page adopts
+  `Hebrew_Font_Maker.html` (the Spacing tab's sample-text field), and
+  `classroom_dashboard.html` (the student-picker roster textarea, 2026-08-31 — the field whose
+  own placeholder is already Hebrew names). When a page adopts
   the keyboard, re-true the carrier list in the marker comments of **all** carriers (same rule as
   the app-toast block) — and re-verify byte-identity by sha, don't eyeball it.
+  **⚑ Use a multi-line anchor when you re-true it.** `resources.html` and `Hebrew_Font_Maker.html`
+  each carry the **test-phrases** block too, whose header repeats the same
+  "…byte-identical across carriers; carriers: …), then mount per page:" sentence with a *different*
+  carrier set — so a one-line search-and-replace silently edits the wrong block's list (measured
+  S299: 2 matches per file). Anchor on the carrier line **plus** its predecessor, and sha-verify
+  both blocks afterwards, not just the one you meant to touch.
 - Everything is `HK_`/`hk`-prefixed and self-contained (own `hkSetPressed`, own `HK_GLYPH_CARRIER`),
   so the block drops safely into pages that already define `GLYPH_CARRIER`, `setPressed`, `esc`, etc.
   Per-page wiring lives **below** the end marker (the My-Fonts-uploader convention).
