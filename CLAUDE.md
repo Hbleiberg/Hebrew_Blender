@@ -1588,6 +1588,32 @@ from `torah_trainer.html`.
   commit both files together, AND bump the `?v=` on the page's index fetch (the sw.js `DATA_CACHE`
   matches exact URLs — the `?v=` bump is what refreshes returning users) whenever the taxonomy or
   selection rules change.
+- **Melody motifs**: `data/trope/trope_motifs.json` — `{v:1, system:"torah", built, license,
+  tropes:{<key>:{notes:[{p,d}], verified}}}`, where `p` = pitch in semitones relative to the clip's
+  final sustained tone (rendered as B on the treble middle line) and `d` = relative duration 1–4.
+  It feeds the drill's **Melody** questions and is fetched `?v=2`. Built offline by
+  **`node scripts/build-trope-motifs.mjs`** `[--force] [--only=<tropeKey>]`, which pitch-tracks
+  (YIN) the same PocketTorah clips the Learn cards play and takes the medoid contour across 2–3
+  examples; it rewrites `docs/trope_motifs_report.md`, so **commit both files together and bump the
+  `?v=` on the page's motifs fetch**, exactly as for the index above. Three things that make this
+  builder unlike every other script here:
+  - **`verified:true` entries are HUMAN work and the default run preserves them verbatim.** Every
+    emitted motif starts `verified:false` (a machine draft); a person auditions it via the page's
+    `?debug=motifs` mode, hand-corrects the JSON, and flips the flag. **`--force` re-analyzes
+    verified entries too and will silently discard those corrections** — it is the one destructive
+    flag in `scripts/`. Prefer `--only=<tropeKey>`, which carries every other entry through untouched.
+    (As of 2026-08-31 **0 of the 25 entries are verified**, so `--force` currently destroys nothing —
+    but that is a fact about today's data, not a property of the flag. 25, not 26: `geresh_muqdam`
+    has no corpus occurrence to analyze.)
+  - **It is the ONE builder with an npm dependency** — a deliberate, documented exception to the
+    repo's zero-dep rule: MP3 decoding needs `mpg123-decoder` (`npm install` it at the repo root;
+    `node_modules/`, `package.json`, `package-lock.json` are gitignored, so nothing is committed).
+    Downloads go through `curl` because Node's `fetch` ignores `HTTPS_PROXY`; MP3s cache in
+    gitignored `source-data/motif-cache/`, so re-runs are offline and byte-identical.
+  - **Its output is CC BY-SA 4.0**, not the repo's license — the transcriptions derive from
+    PocketTorah recordings (© Russel Neiss & Rabbi Charlie Schwartz). Both the JSON and the report
+    carry that notice; keep it on anything derived from them.
+  The script exits non-zero if a smoke test fails — never commit its output without a green run.
 - **`TROPES` taxonomy** — one `═══`-marked table (26 entries — zarka is a single entry carrying
   both codepoints: key, chars, display, Ashkenazi +
   Sephardi names, family, rare flag) kept **byte-identical** between `scripts/build-trope-index.mjs`
