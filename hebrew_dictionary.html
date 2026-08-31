@@ -336,6 +336,11 @@ header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px
 @media (prefers-reduced-motion: reduce){ .sbr-split::before{transition:none !important;} }
 /* ═══ end shared: sidebar-resize CSS ═══ */
 #appSidebar.hidden + .sbr-split{display:none;}
+/* The seam is a full-document-height strip of touch-action:none, so on a finger-only device it is
+   dead scroll rather than an affordance. The layout kill above fires too late to help there: a phone
+   in LANDSCAPE is 750px, above it. Killed at 760px instead — under a landscape phone, over an iPad
+   (810px), which keeps drag-resize deliberately. Width, not (pointer:coarse), is the chosen lever. */
+@media(max-width:760px){.sbr-split{display:none;}}
 /* Offset by the splitter's outer half so the two never overlap: the tab sits at 50vh, which is
    exactly where a hand reaches for the edge, and a fixed 24px button over the 7px grab zone
    would swallow the drag there (it out-stacks the splitter's z-index:5). 4px is invisible. */

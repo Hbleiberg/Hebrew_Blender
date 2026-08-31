@@ -1119,6 +1119,11 @@ footer a { display: inline-block; padding-block: 5px; }
 
   #appSidebar.hidden { display: none; }
   #appSidebar.hidden + .sbr-split { display: none; }   /* collapsed sidebar: nothing to resize */
+/* The seam is a full-document-height strip of touch-action:none, so on a finger-only device it is
+   dead scroll rather than an affordance. The layout kill above fires too late to help there: a phone
+   in LANDSCAPE is 750px, above it. Killed at 760px instead — under a landscape phone, over an iPad
+   (810px), which keeps drag-resize deliberately. Width, not (pointer:coarse), is the chosen lever. */
+  @media (max-width: 760px) { .sbr-split { display: none; } }
 /* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/trope_tutor — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
 .sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
 .sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
