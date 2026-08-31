@@ -2360,7 +2360,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     </div>
 
     <!-- Mode -->
-    <div class="panel">
+    <div class="panel" id="panelModes">
       <div class="panel-title" data-i18n="worksheet.modes.panel_title">Worksheet Mode</div>
       <div class="panel-body toggle-wrap">
 
@@ -6670,12 +6670,15 @@ function _tourExpandPanel(id) {
   if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _syncPanelHdrAria(p); _tourUncollapsed.add(p); }
 }
 const TOUR_STEPS = [
+  // Both targets live in the Worksheet Mode panel, so the reveal must expand it as the
+  // letters/vowels/presets steps expand theirs — otherwise _resolveStep finds them hidden and
+  // _tourShow skips the tour's first two steps wherever that panel starts collapsed.
   { target: () => document.getElementById('blendTypeSelector'),
-    reveal: () => _tourOpenSidebar(),
+    reveal: () => { _tourOpenSidebar(); _tourExpandPanel('panelModes'); },
     titleKey: 'worksheet.tour.practice_type.title',
     bodyKey: 'worksheet.tour.practice_type.body' },
   { target: () => document.getElementById('worksheetTypeSelector'),
-    reveal: () => _tourOpenSidebar(),
+    reveal: () => { _tourOpenSidebar(); _tourExpandPanel('panelModes'); },
     titleKey: 'worksheet.tour.worksheet_type.title',
     bodyKey: 'worksheet.tour.worksheet_type.body' },
   { target: () => document.getElementById('letterGrid'),
