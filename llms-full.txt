@@ -108,7 +108,7 @@ Live Hebrew date, time, weather, and days of the week for classroom SmartBoards 
 3. **Customize Hebrew** — Pick a Hebrew font and nikkud display style.
 4. **Project fullscreen** — Click the fullscreen button to project to your SmartBoard.
 5. **Save a preset** — Save your setup as a preset, or start from a Quick-start layout in the Presets panel.
-6. **Use fullscreen quick controls** — In fullscreen, move the mouse to reveal quick controls for settings, timer, text, and video.
+6. **Use fullscreen quick controls** — In fullscreen, move the mouse to reveal quick controls for settings, timer, student picker, text, video, and screen blanking.
 7. **Edit text on the board** — Click the pencil on the dashboard message to edit it in place.
 
 ### Questions
