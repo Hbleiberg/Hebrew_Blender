@@ -2761,8 +2761,11 @@ function updatePB(i) {
   document.getElementById(`pb${i}`).innerHTML = [...posFilters[i]].map(h => `<span class="pbadge">${h}</span>`).join('');
 }
 
-function expandAllMenus()   { document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.remove('collapsed')); syncCollapseAria(); }
-function collapseAllMenus() { document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.add('collapsed')); syncCollapseAria(); }
+// Tidying the sidebar is a preference, so both remember it (panel-collapse memory's rule: every
+// writer of .collapsed saves). `remember` is opt-out for the ONE caller that is a layout
+// adaptation rather than a teacher's choice — the phone Filters button below.
+function expandAllMenus(remember = true)   { document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.remove('collapsed')); syncCollapseAria(); if (remember) panelMemSave(); }
+function collapseAllMenus(remember = true) { document.querySelectorAll('#appSidebar .panel, #appSidebar .adv-section').forEach(p => p.classList.add('collapsed')); syncCollapseAria(); if (remember) panelMemSave(); }
 function onFilter() {
   if (_applyingDictState) return;  // Section 1: applyDictState() renders once itself at the end
   wlHideActiveBanner();  // any genuine filter change leaves the "Load as filter" view
@@ -5676,7 +5679,7 @@ function dictActiveGroupCount() {
         filtersBtn.id = 'mobileFiltersBtn'; filtersBtn.className = 'mobile-filters-btn'; filtersBtn.type = 'button';
         filtersBtn.addEventListener('click', () => {
           const sb = document.getElementById('appSidebar');
-          if (typeof expandAllMenus === 'function') expandAllMenus();
+          if (typeof expandAllMenus === 'function') expandAllMenus(false);
           if (sb) sb.scrollIntoView({ behavior: _scrollBehavior(), block: 'start' });
         });
       }

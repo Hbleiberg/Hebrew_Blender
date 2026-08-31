@@ -8808,8 +8808,8 @@ function enableButtons() {
 }
 
 // Collapsible panels on mobile
-function expandAllMenus()   { document.querySelectorAll('.panel').forEach(p => p.classList.remove('collapsed')); }
-function collapseAllMenus() { document.querySelectorAll('.panel').forEach(p => p.classList.add('collapsed')); }
+function expandAllMenus()   { document.querySelectorAll('.panel').forEach(p => p.classList.remove('collapsed')); panelMemSave(); }
+function collapseAllMenus() { document.querySelectorAll('.panel').forEach(p => p.classList.add('collapsed')); panelMemSave(); }
 /* Keyboard operability for click-only collapse headers (Pass C): focusable with button
    semantics, Enter/Space toggles, aria-expanded tracks state. Register the aria-sync
    click listener AFTER the toggle handler so it reads post-toggle state. */

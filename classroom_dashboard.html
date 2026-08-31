@@ -9262,8 +9262,8 @@ async function onUploadEngFontPick(input){
   document.getElementById('fsStrip').addEventListener('focusin', () => { if (_fsStripTimer) clearTimeout(_fsStripTimer); });
 
   /* ────────── PANEL COLLAPSE ────────── */
-  function expandAllMenus()   { document.querySelectorAll('.panel, .sub-section').forEach(p => p.classList.remove('collapsed')); }
-  function collapseAllMenus() { document.querySelectorAll('.panel, .sub-section').forEach(p => p.classList.add('collapsed')); }
+  function expandAllMenus()   { document.querySelectorAll('.panel, .sub-section').forEach(p => p.classList.remove('collapsed')); panelMemSave(); }
+  function collapseAllMenus() { document.querySelectorAll('.panel, .sub-section').forEach(p => p.classList.add('collapsed')); panelMemSave(); }
   // Keyboard operability for the click-only collapse headers (Pass C): focusable with
   // button semantics, Enter/Space toggles, aria-expanded tracks state. Register the
   // aria-sync click listener AFTER the toggle listener so it reads post-toggle state.
