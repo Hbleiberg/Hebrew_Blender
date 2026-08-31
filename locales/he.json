@@ -4798,6 +4798,7 @@
   "worksheet.modes.inverse_mode": "מצב הפוך (אנגלית ← כתיבת עברית)",
   "worksheet.modes.matching.label": "התאמה",
   "worksheet.modes.matching.num_pairs_tooltip": "כמה זוגות צירוף↔צליל להכניס לדף ההתאמה. נשמר קטן כדי שהכול ייכנס לעמוד מודפס אחד.",
+  "worksheet.modes.ntl.disabled_title": "עברו לתרגול אות אחת כדי להשתמש ב“שם האות”",
   "worksheet.modes.ntl.inverse": "הפוך (הצג שם אות)",
   "worksheet.modes.ntl.label": "שם האות",
   "worksheet.modes.ntl.tooltip": "תרגול שמות האותיות העבריות. התלמידים רואים אות עברית וכותבים את שמה (אלף, בית…). הפעילו הפוך כדי להחליף: השם מוצג והתלמיד כותב את האות העברית.",

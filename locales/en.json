@@ -4798,6 +4798,7 @@
   "worksheet.modes.inverse_mode": "Inverse Mode (English → write Hebrew)",
   "worksheet.modes.matching.label": "Matching",
   "worksheet.modes.matching.num_pairs_tooltip": "How many blend↔sound pairs to put on the matching worksheet. Kept small so everything fits one printed page.",
+  "worksheet.modes.ntl.disabled_title": "Switch to 1-Letter practice to use Name the Letter",
   "worksheet.modes.ntl.inverse": "Inverse (show letter name)",
   "worksheet.modes.ntl.label": "Name the Letter",
   "worksheet.modes.ntl.tooltip": "Drill Hebrew letter names. Students see a Hebrew letter and write its name (Alef, Bet…). Turn on Inverse to flip it: the name is shown and the student writes the Hebrew letter.",

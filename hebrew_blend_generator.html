@@ -7056,7 +7056,11 @@ function updateModeVisibility() {
     ntlBtn.disabled = !enabled;
     ntlBtn.style.opacity = enabled ? '' : '0.4';
     ntlBtn.style.cursor  = enabled ? '' : 'not-allowed';
-    ntlBtn.title = enabled ? '' : 'Switch to 1-Letter practice to use Name the Letter';
+    // The English literal sat behind a ternary, which is why Check A never saw it: the gate reads
+    // plain-literal assignments, and `x.title = c ? '' : 'English'` is not one. applyI18n re-runs
+    // this function so a language switch re-localizes the reason.
+    ntlBtn.title = enabled ? '' : (window.I18n ? I18n.t('worksheet.modes.ntl.disabled_title')
+                                              : 'Switch to 1-Letter practice to use Name the Letter');
   }
 
   // Inside the Real Words section, hide the non-drill-type sections when the
@@ -13373,6 +13377,8 @@ function applyI18n() {
   try { renderQuickStarts(); } catch (e) {}
   try { if (_genNoteKey) _setGenerateNote(_genNoteKey); } catch (e) {}   // re-render a Generate note still on screen
   try { updateCombosCount(); } catch (e) {}
+  try { updateModeVisibility(); } catch (e) {}   // re-localizes the Name-the-Letter disabled reason;
+                                                 // pure view-sync from computeModeState(), no state writes
   try { refreshVowelGroupColors(); } catch (e) {}   // re-localize the vowel-group "Sound" headers
   // Letter/vowel names resolve at build time, so these three must rebuild on a language switch.
   // All three read their selection from live state (selectedLetters / selectedVowels /
