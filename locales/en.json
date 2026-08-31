@@ -4563,6 +4563,7 @@
   "worksheet.actions.disabled_hint": "Generate a worksheet first",
   "worksheet.actions.export_pdf": "⬇ Export PDF",
   "worksheet.actions.generate": "⬡ Generate Worksheet",
+  "worksheet.actions.generate_class_set": "⬡ Generate Class Set ({count} versions)",
   "worksheet.actions.generate_mob": "⬡ Generate",
   "worksheet.actions.pdf_generating": "⏳ Generating...",
   "worksheet.actions.pdf_mob": "⬇ PDF",

@@ -4563,6 +4563,7 @@
   "worksheet.actions.disabled_hint": "צרו קודם דף עבודה",
   "worksheet.actions.export_pdf": "⬇ ייצא PDF",
   "worksheet.actions.generate": "⬡ צור דף עבודה",
+  "worksheet.actions.generate_class_set": "⬡ צור סט כיתתי ({count} גרסאות)",
   "worksheet.actions.generate_mob": "⬡ צור",
   "worksheet.actions.pdf_generating": "⏳ יוצר...",
   "worksheet.actions.pdf_mob": "⬇ PDF",

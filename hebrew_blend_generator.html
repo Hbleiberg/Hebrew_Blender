@@ -10599,7 +10599,12 @@ function rwSelectedListUnion() {
 function onClassSetChange() {
   const n = Math.max(1, Math.min(40, parseInt(document.getElementById('classSetCount')?.value) || 1));
   const btn = document.getElementById('generateBtn');
-  if (btn) btn.textContent = n > 1 ? `⬡ Generate Class Set (${n} versions)` : '⬡ Generate Worksheet';
+  // Both branches were English literals behind a ternary — the shape Check A cannot see — so the
+  // primary button reverted to English the moment a Hebrew-UI teacher touched the Class Set count.
+  if (btn) btn.textContent = window.I18n
+    ? (n > 1 ? I18n.t('worksheet.actions.generate_class_set', { count: n })
+             : I18n.t('worksheet.actions.generate'))
+    : (n > 1 ? `⬡ Generate Class Set (${n} versions)` : '⬡ Generate Worksheet');
 }
 
 function setCwClueLang(lang) {
@@ -13377,6 +13382,9 @@ function applyI18n() {
   try { renderQuickStarts(); } catch (e) {}
   try { if (_genNoteKey) _setGenerateNote(_genNoteKey); } catch (e) {}   // re-render a Generate note still on screen
   try { updateCombosCount(); } catch (e) {}
+  // MUST run after applyStaticI18n: that sweep refills #generateBtn from its data-i18n key, which
+  // would drop the "(N versions)" a class-set build is showing. This puts the right label back.
+  try { onClassSetChange(); } catch (e) {}
   try { updateModeVisibility(); } catch (e) {}   // re-localizes the Name-the-Letter disabled reason;
                                                  // pure view-sync from computeModeState(), no state writes
   try { refreshVowelGroupColors(); } catch (e) {}   // re-localize the vowel-group "Sound" headers

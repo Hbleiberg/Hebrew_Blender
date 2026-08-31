@@ -4049,6 +4049,7 @@ worksheet.actions.copy_link_title,Copy shareable link,העתק קישור לשי
 worksheet.actions.disabled_hint,Generate a worksheet first,צרו קודם דף עבודה,disabled-button title + FAB toast,
 worksheet.actions.export_pdf,⬇ Export PDF,⬇ ייצא PDF,action button,leading-emoji
 worksheet.actions.generate,⬡ Generate Worksheet,⬡ צור דף עבודה,primary action button,leading-emoji
+worksheet.actions.generate_class_set,⬡ Generate Class Set ({count} versions),⬡ צור סט כיתתי ({count} גרסאות),primary action button when Class Set > 1,leading-emoji
 worksheet.actions.generate_mob,⬡ Generate,⬡ צור,mobile FAB button,leading-emoji
 worksheet.actions.pdf_mob,⬇ PDF,⬇ PDF,mobile FAB button,leading-emoji
 worksheet.actions.practice_flashcards,🃏 Practice these in Flash Cards,🃏 תרגלו את אלה בכרטיסיות,generator hand-off button to flash cards,leading-emoji

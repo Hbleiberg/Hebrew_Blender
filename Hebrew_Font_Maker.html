@@ -13851,7 +13851,10 @@ function setKernGlyph(which, v) {
   renderKernPreview();
   renderSpacingPreview();   // live: typing a glyph also updates the big sample preview
   const btn = document.getElementById('kernAddBtn');        // refresh label without re-rendering (keeps input focus)
-  if (btn) btn.textContent = kernPairIndex(kernSideCps(e.left), kernSideCps(e.right)) >= 0 ? 'Update pair' : 'Add pair';
+  // fontmaker.panels.kern_update / kern_add have shipped translated since the panel landed; the
+  // ternary here just never asked for them.
+  if (btn) btn.textContent = kernPairIndex(kernSideCps(e.left), kernSideCps(e.right)) >= 0
+    ? _pT('kern_update', 'Update pair') : _pT('kern_add', 'Add pair');
 }
 function setKernClass(which, cls) {
   const e = kernEnsureEdit();
