@@ -48,7 +48,7 @@ dashboard.about.howto_2,Pick which panels to show in <em>Display Options</em>.,�
 dashboard.about.howto_3,Customize the Hebrew font and nikkud display.,התאימו את הגופן העברי ותצוגת הניקוד.,how-to step,
 dashboard.about.howto_4,Use the fullscreen button to project to your SmartBoard.,השתמשו בכפתור מסך מלא כדי להקרין ללוח החכם.,how-to step,
 dashboard.about.howto_5,Save your setup as a preset — or start from a Quick-start layout in the Presets panel.,שמרו את ההגדרה שלכם כתבנית — או התחילו מפריסת התחלה מהירה בפאנל התבניות.,how-to step,
-dashboard.about.howto_6,"In fullscreen, move the mouse to reveal quick controls (settings, timer, text, video).","במסך מלא, הזיזו את העכבר כדי לחשוף פקדים מהירים (הגדרות, טיימר, טקסט, וידאו).",how-to step,
+dashboard.about.howto_6,"In fullscreen, move the mouse to reveal quick controls (settings, timer, student picker, text, video, blank screen).","במסך מלא, הזיזו את העכבר כדי לחשוף פקדים מהירים (הגדרות, טיימר, הגרלה, טקסט, וידאו, החשכה).",how-to step,
 dashboard.about.howto_7,Click the ✎ on the dashboard message to edit it right on the board.,לחצו על ה-✎ בהודעת הלוח כדי לערוך אותה ישירות על הלוח.,how-to step,
 dashboard.about.howto_summary,How To Use,איך להשתמש,how-to section summary,
 dashboard.backup.auto_explainer,"Save all your presets, saved schedules, and current settings to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.","שמרו את כל התבניות, מערכות השעות השמורות וההגדרות הנוכחיות שלכם לקובץ <b>.ivrit</b> במכשיר שלכם. שחזרו על ידי גרירת הקובץ למטה או איתורו בעיון.",backup panel explainer,html
