@@ -1040,6 +1040,15 @@ function applyI18n() {
   // The preview modal's by-line and coverage/licence row are JS-built, so applyStaticI18n
   // cannot reach them — re-render them for the font currently open. Read-only.
   if (_fpFont) fillFontPreviewMeta(_fpFont);
+  // …and the header title, which openFontPreview overwrites with the font's NAME. It still
+  // carries data-i18n="resources.preview.title", so applyStaticI18n re-applies the generic
+  // "Preview" over it: switching language with the modal open RENAMES the font the teacher is
+  // reading. Restore it only while the modal is actually up, so a closed modal still reopens
+  // on the generic title. A font name is a proper noun — content, never translated.
+  const _fpBd = document.getElementById('fontPreviewBackdrop');
+  if (_fpFont && _fpBd && _fpBd.classList.contains('open')) {
+    document.getElementById('fontPreviewTitle').textContent = _fpFont.name;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
