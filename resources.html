@@ -1052,7 +1052,8 @@ document.addEventListener('DOMContentLoaded', () => {
           version:q.get('version'), nikkud:q.get('nikkud'), trop:q.get('trop') };
         openSubmitFont();
       }
-      history.replaceState({}, '', location.pathname);   // clean the URL so a refresh doesn't re-fire
+      // setView() -> syncViewUrl() has already rewritten the URL: it drops the submit prefill so a
+      // refresh cannot re-fire the modal, and KEEPS ?view=fonts so the address stays shareable.
     }
   } catch(e) {}
   initHebrewKeyboard();   // must run at DOM-ready: the modal markup is parsed after this script
@@ -1575,6 +1576,26 @@ function setView(v) {
   document.getElementById('linksRegion').style.display = (v === 'fonts') ? 'none' : '';
   document.getElementById('fontsRegion').style.display = (v === 'fonts') ? '' : 'none';
   if (v === 'fonts') renderFonts();
+  syncViewUrl();
+}
+/* Half this page is the font gallery, and it had no address of its own: setView never wrote the
+   URL, and init actively cleaned `?view=fonts` away right after reading it. So a teacher who
+   found the right font and copied the address sent their tech coordinator to the Links view --
+   the read side existed and worked, and the write side did not. This mirrors the live view into
+   the address bar the way the generator and dictionary already mirror `?s=` (CLAUDE.md shared-UX
+   3). replaceState, never pushState: switching views is not a navigation, and one history entry
+   per toggle would turn the Back button into an undo stack for a segmented control. */
+function syncViewUrl() {
+  try {
+    const q = new URLSearchParams(location.search);
+    // The Font Maker's "Share this font" deep link carries the submission prefill. Those params
+    // must never survive into a shareable URL -- they re-open the submit modal on every refresh,
+    // which is exactly why init used to wipe the whole query string.
+    ['submit', 'name', 'author', 'license', 'version', 'nikkud', 'trop'].forEach(k => q.delete(k));
+    if (activeView === 'fonts') q.set('view', 'fonts'); else q.delete('view');
+    const qs = q.toString();
+    history.replaceState({}, '', location.pathname + (qs ? '?' + qs : ''));
+  } catch (e) {}
 }
 
 /* ── Font preview modal ── */
