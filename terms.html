@@ -167,6 +167,14 @@ footer a { display: inline-block; padding-block: 5px; }
     --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#fff;--gold-text:#7f5a13;--gold-text-hover:#5c4010;
     background:#fff !important; color:#1a2744 !important;
   }
+  /* Of everything on this page, the policy is the part that gets printed and filed -- a school
+     district asks for it, a teacher prints it and hands it over. Three controls rode along onto
+     that document: a "<-- Back" link, the EN/HE switcher, and a "Dark" toggle button, all of them
+     inert on paper. They share one container, so the header keeps its identity (the star, the
+     document title and its tagline -- which a filed page WANTS) and loses only the controls.
+     Deliberately scoped to the two policy documents: the other chrome pages are app screens, where
+     a stray printed button costs nothing, so this is not a suite-wide sweep. */
+  header .hright { display: none !important; }
 }
 </style>
 </head>
