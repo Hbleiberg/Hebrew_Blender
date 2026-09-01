@@ -171,6 +171,17 @@ main{flex:1;padding:32px 24px;max-width:1160px;margin:0 auto;width:100%;}
 .filter-btn:hover{border-color:var(--gold);color:var(--gold);}
 .filter-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
 body.dark .filter-btn.active{background:#2a3f6a;border-color:#4a6aaa;}
+/* Live yield on every filter chip, so a filter that can match nothing says so BEFORE it is tapped
+   rather than after, on a blank screen. Delivered as a data-* ATTRIBUTE read by ::after, never as a
+   child node: the chip's label comes from data-i18n, and applyStaticI18n writes that with
+   textContent — which would wipe any child element on every language switch, while leaving
+   attributes untouched. Digits need no CSV row, and generated content is part of the button's
+   accessible name, so the count is announced too. The opacity is set by MEASUREMENT, not by eye:
+   at 12.16px the count is small text under WCAG 1.4.3, and 0.55 composites to 3.55:1 on a light
+   inactive chip and 4.40:1 on a dark active one — both failing. 0.65 is the first value that clears
+   4.5:1 in all four theme x active states; 0.7 is taken for headroom (worst case 5.59:1) and still
+   reads well under the label's 14.81:1. */
+.filter-btn[data-count]::after{content:"\00a0" attr(data-count);margin-inline-start:3px;opacity:0.7;font-variant-numeric:tabular-nums;}
 
 /* ── Results count ── */
 .results-count{font-size:0.8rem;color:var(--muted);margin-bottom:14px;}
@@ -888,7 +899,23 @@ let activeCat = 'all';
 let activeAge = 'all';
 
 /* ── Render ── */
+/* How many resources a chip would yield if it were the live choice in its own row, with the OTHER
+   row left as the user set it — the faceted-search convention, so the numbers stay true as the
+   teacher narrows instead of describing an unfiltered corpus they are no longer looking at. */
+function linksMatching(cat, age) {
+  return RESOURCES.filter(r => (cat === 'all' || r.cat === cat) &&
+                               (age === 'all' || r.ages.includes(age))).length;
+}
+function refreshLinkCounts() {
+  document.querySelectorAll('#linksRegion .filter-btn').forEach(b => {
+    const v = b.dataset.value;
+    b.dataset.count = b.dataset.filter === 'cat' ? linksMatching(v, activeAge)
+                                                 : linksMatching(activeCat, v);
+  });
+}
+
 function render() {
+  refreshLinkCounts();
   const filtered = RESOURCES.filter(r => {
     const catOk = activeCat === 'all' || r.cat === activeCat;
     const ageOk = activeAge === 'all' || r.ages.includes(activeAge);
@@ -1438,12 +1465,30 @@ function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;
 
 /* ── Fonts filter state + buttons ── */
 let activeFType = 'all', activeFFeat = 'all', activeFLic = 'all';
-function fontFeatureOk(f) {
-  if (activeFFeat === 'all') return true;
-  if (activeFFeat === 'nikkud') return !!f.nikkud;
-  if (activeFFeat === 'trop') return !!f.trop;
-  if (activeFFeat === 'letters') return !f.nikkud && !f.trop;
+/* `feat` defaults to the live choice, so every existing call site is unchanged; the counter below
+   passes a hypothetical one instead. */
+function fontFeatureOk(f, feat) {
+  const k = feat === undefined ? activeFFeat : feat;
+  if (k === 'all') return true;
+  if (k === 'nikkud') return !!f.nikkud;
+  if (k === 'trop') return !!f.trop;
+  if (k === 'letters') return !f.nikkud && !f.trop;
   return true;
+}
+/* The fonts twin of linksMatching/refreshLinkCounts — same faceted convention across three rows
+   instead of two: each chip counts itself against the other two rows as the user left them. */
+function fontsMatching(type, feat, lic) {
+  return FONTS.filter(f => (type === 'all' || f.type === type) &&
+                           fontFeatureOk(f, feat) &&
+                           (lic === 'all' || String(f.license).toLowerCase() === lic)).length;
+}
+function refreshFontCounts() {
+  document.querySelectorAll('#fontsRegion .filter-btn').forEach(b => {
+    const v = b.dataset.value, t = b.dataset.filter;
+    b.dataset.count = fontsMatching(t === 'ftype' ? v : activeFType,
+                                    t === 'ffeat' ? v : activeFFeat,
+                                    t === 'flic'  ? v : activeFLic);
+  });
 }
 document.querySelectorAll('#fontsRegion .filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -1458,6 +1503,7 @@ document.querySelectorAll('#fontsRegion .filter-btn').forEach(btn => {
 });
 
 function renderFonts() {
+  refreshFontCounts();
   const grid = document.getElementById('fontGrid'), empty = document.getElementById('fontEmpty'), count = document.getElementById('fontCount');
   const filtered = FONTS.filter(f =>
     (activeFType === 'all' || f.type === activeFType) &&
