@@ -3191,6 +3191,9 @@ resources.modal.close_aria,Close,סגירה,modal close button (both modals),ari
 resources.page_heading,Resources,משאבים,page heading,
 resources.page_sub,"A curated directory of free Hebrew learning resources, worksheets, dictionaries, and Jewish education tools for teachers and students.","מדריך אוצר של משאבים חינמיים ללימוד עברית, דפי עבודה, מילונים וכלים לחינוך יהודי עבור מורים ותלמידים.",page subheading,
 resources.preview.back_button,‹ Back,‹ חזרה,button,leading-symbol
+resources.preview.next_font,Next font,הגופן הבא,font preview modal — step to the next font in the filtered gallery,ARROW MIRRORS BY DESIGN: the ‹/› glyph is scaleX(-1) flipped under [dir=rtl] because the nav follows visual direction like the gallery grid it steps through
+resources.preview.position,{n} of {total},{n} מתוך {total},font preview modal — which font of the filtered set is on screen,
+resources.preview.prev_font,Previous font,הגופן הקודם,font preview modal — step to the previous font in the filtered gallery,ARROW MIRRORS BY DESIGN: see next_font
 resources.preview.input_label,Type Hebrew (or anything) to preview in this font:,הקלידו עברית (או כל דבר) לתצוגה מקדימה בגופן זה:,input label,
 resources.preview.title,Preview,תצוגה מקדימה,font preview modal title,
 resources.results_count,Showing {count} of {total} resources,מציג {count} מתוך {total} משאבים,results count,template

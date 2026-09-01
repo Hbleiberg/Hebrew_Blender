@@ -257,6 +257,18 @@ footer a{color:var(--gold-text);text-decoration:none;}
 body.dark .sg-modal-hdr{background:var(--navy-deep);}
 .sg-modal-close{background:rgba(255,255,255,0.12);color:#fff;border:none;border-radius:4px;width:28px;height:28px;cursor:pointer;font-size:1.1rem;line-height:1;flex-shrink:0;}
 .sg-modal-close:hover{background:rgba(255,255,255,0.22);}
+/* Stepper for the font preview. Same translucent-on-navy vocabulary as the close button
+   beside it. The ‹ / › glyphs mirror under RTL because this nav follows VISUAL direction —
+   it steps through the gallery grid, which is itself laid out in the UI's direction (the
+   flash-cards precedent, not the torah rover's, whose Hebrew is always RTL). Flex order
+   mirrors on its own; only the glyph needs the flip. */
+.fp-nav{display:flex;align-items:center;gap:6px;}
+.fp-nav-btn{background:rgba(255,255,255,0.12);color:#fff;border:none;border-radius:4px;width:28px;height:28px;cursor:pointer;font-size:1.1rem;line-height:1;flex-shrink:0;}
+.fp-nav-btn:hover:not(:disabled){background:rgba(255,255,255,0.22);}
+.fp-nav-btn:disabled{opacity:0.35;cursor:default;}
+.fp-nav-arrow{display:inline-block;}
+[dir="rtl"] .fp-nav-arrow{transform:scaleX(-1);}
+.fp-nav-pos{font-size:0.72rem;color:#fff;opacity:0.8;white-space:nowrap;}
 .sg-modal-body{padding:18px;overflow-y:auto;flex:1;}
 #suggestForm{display:flex;flex-direction:column;gap:14px;}
 .sg-intro{font-size:0.86rem;color:var(--muted);margin:0 0 4px;}
@@ -1048,6 +1060,7 @@ function applyI18n() {
   const _fpBd = document.getElementById('fontPreviewBackdrop');
   if (_fpFont && _fpBd && _fpBd.classList.contains('open')) {
     document.getElementById('fontPreviewTitle').textContent = _fpFont.name;
+    syncFpNav();   // the "{n} of {total}" line is param-built, so applyStaticI18n cannot reach it
   }
 }
 
@@ -1556,13 +1569,20 @@ document.querySelectorAll('#fontsRegion .filter-btn').forEach(btn => {
   });
 });
 
-function renderFonts() {
-  refreshFontCounts();
-  const grid = document.getElementById('fontGrid'), empty = document.getElementById('fontEmpty'), count = document.getElementById('fontCount');
-  const filtered = FONTS.filter(f =>
+/* The one definition of "which fonts are on screen right now". The gallery grid and the
+   preview's stepper both read it, so the modal can never step to a font the filters have
+   hidden — or stop short of one they have not. */
+function filteredFonts() {
+  return FONTS.filter(f =>
     (activeFType === 'all' || f.type === activeFType) &&
     fontFeatureOk(f) &&
     (activeFLic === 'all' || String(f.license).toLowerCase() === activeFLic));
+}
+
+function renderFonts() {
+  refreshFontCounts();
+  const grid = document.getElementById('fontGrid'), empty = document.getElementById('fontEmpty'), count = document.getElementById('fontCount');
+  const filtered = filteredFonts();
   if (!filtered.length) {
     grid.innerHTML = ''; empty.style.display = ''; count.textContent = '';
     return;
@@ -1626,7 +1646,7 @@ function syncViewUrl() {
 
 /* ── Font preview modal ── */
 let _fpFamily = 'serif', _fpDefault = FONT_SAMPLE, _fpFont = null, _fpIdx = -1;
-function openFontPreview(i) {
+function openFontPreview(i, keepFocus) {
   const f = FONTS[i]; if (!f) return;
   ensureGalleryFont(f);
   _fpFamily = "'" + f.family + "', serif";
@@ -1643,8 +1663,49 @@ function openFontPreview(i) {
   _fpDefault = sample;
   updateFontPreview();
   if (_hk) _hk.refresh();   // keyboard capability hint tracks the newly previewed font
+  syncFpNav();
   document.getElementById('fontPreviewBackdrop').classList.add('open');
-  setTimeout(() => { inp.focus(); inp.select(); }, 60);
+  // Stepping between fonts must NOT grab-and-select the sample field: the teacher is holding
+  // a chevron to compare, and selecting their typed text means the next keystroke wipes it.
+  if (!keepFocus) setTimeout(() => { inp.focus(); inp.select(); }, 60);
+}
+
+/* Comparing two fonts used to mean Back → hunt the grid → Preview again, for every candidate.
+   The chevrons walk the CURRENT FILTERED set (filteredFonts), so the comparison stays inside
+   whatever the teacher narrowed to. Ends are disabled rather than wrapping: a bounded set is
+   worth knowing about, and wrapping silently re-shows a font already rejected. */
+function fpStep(delta) {
+  const list = filteredFonts();
+  const pos = list.indexOf(_fpFont);
+  if (pos < 0) return;
+  const next = pos + delta;
+  if (next < 0 || next >= list.length) return;
+  openFontPreview(FONTS.indexOf(list[next]), true);
+}
+
+function syncFpNav() {
+  const nav = document.getElementById('fpNav');
+  const prev = document.getElementById('fpPrevBtn'), next = document.getElementById('fpNextBtn');
+  const posEl = document.getElementById('fpNavPos');
+  if (!nav || !prev || !next || !posEl) return;
+  const list = filteredFonts();
+  const pos = list.indexOf(_fpFont);
+  // Nothing to step to (a single-font filter, or a font not in the current set): hide the whole
+  // group rather than show two dead chevrons.
+  nav.style.display = (pos < 0 || list.length < 2) ? 'none' : '';
+  if (pos < 0 || list.length < 2) return;
+  posEl.textContent = I18n.t('resources.preview.position', {n: pos + 1, total: list.length});
+  const setOff = (btn, off) => {
+    btn.disabled = off;
+    btn.setAttribute('aria-disabled', off ? 'true' : 'false');
+  };
+  // Read focus BEFORE disabling: a disabled button drops out of the tab order, so a teacher
+  // stepping by keyboard to either end would lose focus to <body> mid-comparison.
+  const had = document.activeElement;
+  setOff(prev, pos === 0);
+  setOff(next, pos === list.length - 1);
+  if (had === prev && prev.disabled) next.focus();
+  else if (had === next && next.disabled) prev.focus();
 }
 function updateFontPreview() {
   const txt = document.getElementById('fontPreviewInput').value || _fpDefault;
@@ -1921,6 +1982,17 @@ function openSubmitFont(pf) {
   <div class="sg-modal" role="dialog" aria-modal="true" aria-labelledby="fontPreviewTitle" onclick="event.stopPropagation()">
     <div class="sg-modal-hdr">
       <h3 id="fontPreviewTitle" data-i18n="resources.preview.title">Preview</h3>
+      <div class="fp-nav" id="fpNav">
+        <button type="button" class="fp-nav-btn" id="fpPrevBtn" onclick="fpStep(-1)"
+                title="Previous font" aria-label="Previous font"
+                data-i18n-title="resources.preview.prev_font"
+                data-i18n-aria-label="resources.preview.prev_font"><span class="fp-nav-arrow">&lsaquo;</span></button>
+        <span class="fp-nav-pos" id="fpNavPos"></span>
+        <button type="button" class="fp-nav-btn" id="fpNextBtn" onclick="fpStep(1)"
+                title="Next font" aria-label="Next font"
+                data-i18n-title="resources.preview.next_font"
+                data-i18n-aria-label="resources.preview.next_font"><span class="fp-nav-arrow">&rsaquo;</span></button>
+      </div>
       <button class="sg-modal-close" onclick="closeFontPreview()" aria-label="Close" data-i18n-aria-label="resources.modal.close_aria">×</button>
     </div>
     <div class="sg-modal-body">
