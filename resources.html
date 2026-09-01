@@ -1050,10 +1050,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (q.has('submit')) {
         _fontSubmitPrefill = { name:q.get('name'), author:q.get('author'), license:q.get('license'),
           version:q.get('version'), nikkud:q.get('nikkud'), trop:q.get('trop') };
-        openSubmitFont();
+        // openSubmitFont builds the mail draft's subject and body entirely out of I18n.t() calls,
+        // and DOMContentLoaded fires BEFORE the locale JSON has resolved -- so calling it straight
+        // from here handed the font author a draft whose every line was a raw dotted key
+        // ("resources.fonts.submit.subject: Alef"). Wait for the strings, the way the dictionary
+        // gates its own deep-link opener. The toolbar button is unaffected: by the time anyone can
+        // click it I18n has long been ready, which is why this only ever broke the deep link.
+        (window.I18n && I18n.ready) ? I18n.ready.then(() => openSubmitFont()) : openSubmitFont();
       }
       // setView() -> syncViewUrl() has already rewritten the URL: it drops the submit prefill so a
-      // refresh cannot re-fire the modal, and KEEPS ?view=fonts so the address stays shareable.
+      // refresh cannot re-open the mail draft, and KEEPS ?view=fonts so the address stays shareable.
     }
   } catch(e) {}
   initHebrewKeyboard();   // must run at DOM-ready: the modal markup is parsed after this script
