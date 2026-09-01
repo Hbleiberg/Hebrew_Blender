@@ -154,6 +154,20 @@ footer a{color:var(--gold-text);text-decoration:none;}
    under the WCAG 2.5.8 24px floor with no qualifying spacing). inline-block + block
    padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
 footer a { display: inline-block; padding-block: 5px; }
+/* The chrome pages had no print stylesheet at all, so a dark-mode teacher printing one got the
+   DARK tokens on paper. Measured over 24 real PDFs (S306 pass G): with background graphics on,
+   92.6-95.6% of every sheet printed near-black; with them off (the print dialog's default),
+   Chromium's print colour adjustment turned the near-white body copy into #90949c, i.e. 3.04:1 on
+   white paper where light mode gives 14.81:1 -- under the 4.5:1 WCAG 1.4.3 needs, on the very
+   documents a school administrator asks a teacher to print and file. This re-declares the light
+   tokens for print exactly as all seven tools already do; nothing on screen changes. */
+@media print {
+  body, body.dark, html.dark-early body {
+    --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fff;
+    --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#fff;--gold-text:#7f5a13;--gold-text-hover:#5c4010;
+    background:#fff !important; color:#1a2744 !important;
+  }
+}
 </style>
 </head>
 <body>
