@@ -296,6 +296,7 @@ body.dark .view-toggle button.active{background:#2a3f6a;border-color:#4a6aaa;}
 body.dark .font-actions a,body.dark .font-actions button{color:#aab8d8;}
 .font-actions a:hover,.font-actions button:hover{color:var(--gold);text-decoration:underline;}
 .font-meta-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:0.74rem;color:var(--muted);margin-top:2px;}
+.fp-decide{display:flex;flex-direction:column;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);}
 .font-badge{font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:2px 9px;border-radius:10px;background:rgba(26,39,68,0.09);color:var(--navy);white-space:nowrap;}
 body.dark .font-badge{background:rgba(221,228,240,0.1);color:#aab8d8;}
 .fp-yes{color:#2e9e5b;font-weight:700;}
@@ -1029,6 +1030,9 @@ function applyI18n() {
   renderFonts();
   if (_hk) _hk.applyI18n();   // read-only re-render of the on-screen keyboard labels
   if (_tp) _tp.applyI18n();   // …and of the test-phrase chip labels (the phrases stay Hebrew)
+  // The preview modal's by-line and coverage/licence row are JS-built, so applyStaticI18n
+  // cannot reach them — re-render them for the font currently open. Read-only.
+  if (_fpFont) fillFontPreviewMeta(_fpFont);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1605,12 +1609,14 @@ function syncViewUrl() {
 }
 
 /* ── Font preview modal ── */
-let _fpFamily = 'serif', _fpDefault = FONT_SAMPLE, _fpFont = null;
+let _fpFamily = 'serif', _fpDefault = FONT_SAMPLE, _fpFont = null, _fpIdx = -1;
 function openFontPreview(i) {
   const f = FONTS[i]; if (!f) return;
   ensureGalleryFont(f);
   _fpFamily = "'" + f.family + "', serif";
   _fpFont = f;
+  _fpIdx = i;
+  fillFontPreviewMeta(f);
   document.getElementById('fontPreviewTitle').textContent = f.name;
   const inp = document.getElementById('fontPreviewInput');
   inp.style.fontFamily = _fpFamily;
@@ -1632,6 +1638,23 @@ function updateFontPreview() {
   sizes.style.fontFamily = _fpFamily; sizes.innerHTML = '';
   [20, 30, 44].forEach(px => { const d = document.createElement('div'); d.style.fontSize = px + 'px'; d.textContent = txt; sizes.appendChild(d); });
 }
+/* The preview modal's decision footer: who made the font, what it covers, how it is
+   licensed. Same markup vocabulary and same CSV keys as the gallery card (see
+   renderFonts) so the two screens cannot drift apart. */
+function fillFontPreviewMeta(f) {
+  const yn = b => b ? '<span class="fp-yes">✓</span>' : '<span class="fp-no">✗</span>';
+  const authorHtml = f.authorUrl
+    ? '<a href="' + esc(f.authorUrl) + '" target="_blank" rel="noopener">' + esc(f.author) + '</a>'
+    : esc(f.author);
+  document.getElementById('fontPreviewBy').innerHTML = I18n.t('resources.fonts.by_prefix', {author: authorHtml});
+  document.getElementById('fontPreviewMeta').innerHTML =
+    '<span>' + esc(I18n.t('resources.fonts.nikkud_label')) + ' ' + yn(f.nikkud) + '</span>' +
+    '<span>' + esc(I18n.t('resources.fonts.trop_label')) + ' ' + yn(f.trop) + '</span>' +
+    '<span class="font-badge">' + esc(f.license) + '</span>';
+}
+/* Thin wrappers so the modal's buttons need no interpolated index in their markup. */
+function fpDownload()   { if (_fpIdx >= 0) downloadFont(_fpIdx); }
+function fpUseInSuite() { if (_fpIdx >= 0) useFontInIvritSuite(_fpIdx); }
 function closeFontPreview(e) {
   const bd = document.getElementById('fontPreviewBackdrop');
   if (e && e.target !== bd) return;
@@ -1894,6 +1917,17 @@ function openSubmitFont(pf) {
       <div class="hk-panel" id="fpKbdPanel" hidden></div>
       <div class="fp-render" id="fontPreviewRender" lang="he"></div>
       <div class="fp-sizes" id="fontPreviewSizes" lang="he"></div>
+      <!-- The preview is where a teacher DECIDES, so it carries the same two actions and the same
+           licence/coverage facts as the gallery card behind it — reusing the card's own classes and
+           CSV keys rather than inventing a second vocabulary. Filled per font by fillFontPreviewMeta(). -->
+      <div class="fp-decide">
+        <div class="font-by" id="fontPreviewBy"></div>
+        <div class="font-actions">
+          <button type="button" onclick="fpDownload()" data-i18n="resources.fonts.download_action">⬇ Download</button>
+          <button type="button" onclick="fpUseInSuite()" data-i18n="resources.fonts.use_action">★ Use in IvritSuite</button>
+        </div>
+        <div class="font-meta-row" id="fontPreviewMeta"></div>
+      </div>
       <button class="sg-btn-primary" style="margin-top:16px;" onclick="closeFontPreview()" data-i18n="resources.preview.back_button">‹ Back</button>
     </div>
   </div>
