@@ -331,13 +331,16 @@ Yes. As you build each letter you can anchor its nikkud and trop marks, and the 
 
 https://ivritsuite.com/resources.html
 
-Curated directory of external Hebrew and Jewish education resources, tools, and references.
+Curated directory of external Hebrew and Jewish education resources, tools, and references, plus a gallery of free Hebrew fonts to preview, download, or use directly in the IvritSuite tools.
 
-### How to find Hebrew teaching resources
+### How to find Hebrew teaching resources and Hebrew fonts
 
 1. **Pick a category** — Choose a category — Lesson Planning, Printables, Tanakh, Hebrew, Culture, or Miscellaneous.
 2. **Pick an age group** — Filter by age group — K-2, 3-5, 6-12, or Adult/Teacher.
 3. **Open a resource** — Click any resource card to open it in a new tab.
+4. **Switch to Fonts** — Use the Links / Fonts toggle at the top of the page to open the Hebrew font gallery.
+5. **Filter the fonts** — Narrow by type (Block, Cursive, Torah), by nikkud and trop support, or by license. Every filter shows how many fonts it will give you.
+6. **Preview, download, or use a font** — Preview a font with your own Hebrew text, download it as a zip with its license, or add it to the IvritSuite tools under My Fonts.
 
 ### Questions
 
@@ -352,6 +355,10 @@ Most listed resources are free; some link to paid or premium services. Each card
 **Who is this directory for?**
 
 Hebrew and Jewish-studies teachers, day-school faculty, supplementary-school teachers, parents, and adult learners looking for vetted Hebrew learning materials.
+
+**Can I download Hebrew fonts here?**
+
+Yes. The Fonts view is a gallery of free Hebrew fonts. You can preview any of them with your own Hebrew text, download one as a zip with its license file included, or add it straight to the IvritSuite tools under My Fonts without installing anything on your computer.
 
 ---
 

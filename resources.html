@@ -75,7 +75,7 @@
   "@type": "CollectionPage",
   "name": "Hebrew Teaching Resources",
   "url": "https://ivritsuite.com/resources.html",
-  "description": "Curated directory of external Hebrew and Jewish education resources, tools, and references.",
+  "description": "Curated directory of external Hebrew and Jewish education resources, tools, and references, plus a gallery of free Hebrew fonts to preview, download, or use directly in the IvritSuite tools.",
   "inLanguage": "en",
   "isPartOf": { "@type": "WebSite", "name": "IvritSuite", "url": "https://ivritsuite.com/" },
   "publisher": { "@type": "Organization", "name": "IvritSuite", "url": "https://ivritsuite.com/" }
@@ -98,7 +98,8 @@
   "mainEntity": [
     { "@type": "Question", "name": "What's in the Hebrew teaching resources directory?", "acceptedAnswer": { "@type": "Answer", "text": "A curated set of websites, printables, lesson-planning tools, Tanakh references, Hebrew language sites, and Jewish culture resources, filterable by category and age group." } },
     { "@type": "Question", "name": "Are all the linked resources free?", "acceptedAnswer": { "@type": "Answer", "text": "Most listed resources are free; some link to paid or premium services. Each card notes if a resource requires registration or payment." } },
-    { "@type": "Question", "name": "Who is this directory for?", "acceptedAnswer": { "@type": "Answer", "text": "Hebrew and Jewish-studies teachers, day-school faculty, supplementary-school teachers, parents, and adult learners looking for vetted Hebrew learning materials." } }
+    { "@type": "Question", "name": "Who is this directory for?", "acceptedAnswer": { "@type": "Answer", "text": "Hebrew and Jewish-studies teachers, day-school faculty, supplementary-school teachers, parents, and adult learners looking for vetted Hebrew learning materials." } },
+    { "@type": "Question", "name": "Can I download Hebrew fonts here?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Fonts view is a gallery of free Hebrew fonts. You can preview any of them with your own Hebrew text, download one as a zip with its license file included, or add it straight to the IvritSuite tools under My Fonts without installing anything on your computer." } }
   ]
 }
 </script>
@@ -106,13 +107,16 @@
 {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  "name": "How to find Hebrew teaching resources",
-  "description": "Browse a curated directory of Hebrew and Jewish education resources.",
+  "name": "How to find Hebrew teaching resources and Hebrew fonts",
+  "description": "Browse a curated directory of Hebrew and Jewish education resources, and a gallery of free Hebrew fonts.",
   "totalTime": "PT30S",
   "step": [
     { "@type": "HowToStep", "position": 1, "name": "Pick a category", "text": "Choose a category — Lesson Planning, Printables, Tanakh, Hebrew, Culture, or Miscellaneous." },
     { "@type": "HowToStep", "position": 2, "name": "Pick an age group", "text": "Filter by age group — K-2, 3-5, 6-12, or Adult/Teacher." },
-    { "@type": "HowToStep", "position": 3, "name": "Open a resource", "text": "Click any resource card to open it in a new tab." }
+    { "@type": "HowToStep", "position": 3, "name": "Open a resource", "text": "Click any resource card to open it in a new tab." },
+    { "@type": "HowToStep", "position": 4, "name": "Switch to Fonts", "text": "Use the Links / Fonts toggle at the top of the page to open the Hebrew font gallery." },
+    { "@type": "HowToStep", "position": 5, "name": "Filter the fonts", "text": "Narrow by type (Block, Cursive, Torah), by nikkud and trop support, or by license. Every filter shows how many fonts it will give you." },
+    { "@type": "HowToStep", "position": 6, "name": "Preview, download, or use a font", "text": "Preview a font with your own Hebrew text, download it as a zip with its license, or add it to the IvritSuite tools under My Fonts." }
   ]
 }
 </script>
@@ -483,14 +487,23 @@ body.dark #fontToast{background:#2a4070;}
           <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="resources.faq.q1">What's in the directory?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="resources.faq.a1">A curated set of websites, printables, lesson-planning tools, Tanakh references, Hebrew language sites, and Jewish culture resources.</p></details>
           <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="resources.faq.q2">Are the resources free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="resources.faq.a2">Most are free; some link to paid services. Each card notes when registration or payment is required.</p></details>
           <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="resources.faq.q3">Who is this for?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="resources.faq.a3">Hebrew and Jewish-studies teachers, day-school faculty, supplementary-school teachers, parents, and adult learners.</p></details>
+          <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:3px 0;" data-i18n="resources.faq.q4">Can I download Hebrew fonts here?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="resources.faq.a4">Yes. The Fonts view is a gallery of free Hebrew fonts. Preview one with your own text, download it as a zip with its license, or add it to the IvritSuite tools under My Fonts — no installing.</p></details>
         </div>
       </details>
       <details style="margin-top:6px;">
         <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;" data-i18n="resources.faq.howto_title">How To Use</summary>
-        <ol style="padding:6px 0 4px 20px;margin:0;font-size:0.78rem;line-height:1.55;">
+        <ol style="padding:6px 0 4px;padding-inline-start:20px;margin:0;font-size:0.78rem;line-height:1.55;">
           <li data-i18n="resources.faq.howto_step1">Pick a category (Lesson Planning, Printables, Tanakh, Hebrew, Culture, Misc).</li>
           <li data-i18n="resources.faq.howto_step2">Pick an age group (K–2, 3–5, 6–12, Adult/Teacher).</li>
           <li data-i18n="resources.faq.howto_step3">Click any resource card to open it in a new tab.</li>
+        </ol>
+      </details>
+      <details style="margin-top:6px;">
+        <summary style="cursor:pointer;font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;" data-i18n="resources.faq.fonts_title">Finding A Font</summary>
+        <ol style="padding:6px 0 4px;padding-inline-start:20px;margin:0;font-size:0.78rem;line-height:1.55;">
+          <li data-i18n="resources.faq.fonts_step1">Switch to Fonts with the Links / Fonts toggle at the top of the page.</li>
+          <li data-i18n="resources.faq.fonts_step2">Narrow by type, nikkud and trop support, or license — every filter shows how many fonts it will give you.</li>
+          <li data-i18n="resources.faq.fonts_step3">Preview a font with your own Hebrew text, then download it or add it straight to the IvritSuite tools.</li>
         </ol>
       </details>
     </div>
