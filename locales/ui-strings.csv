@@ -4268,7 +4268,6 @@ worksheet.layout.subtitle_placeholder,Optional instructions...,הוראות לא
 worksheet.layout.subtitle_aria,Worksheet subtitle,כותרת משנה של דף העבודה,input aria-label,
 worksheet.layout.title,Title,כותרת,layout option label,
 worksheet.layout.title_aria,Worksheet title,כותרת דף העבודה,input aria-label,
-worksheet.layout.title_default,Hebrew Blends,,worksheet title input default,
 worksheet.layout.total_blends,Total Blends,סך הצירופים,layout option label,
 worksheet.layout.versions,versions,גרסאות,count suffix,
 worksheet.letters.combos,{count} possible combinations,{count} צירופים אפשריים,letters panel count,

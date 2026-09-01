@@ -60,7 +60,13 @@ const BASELINE_PATH = path.join(__dirname, 'check-i18n-baseline.txt');
 // Files whose *.html we deliberately do NOT scan (the i18n dev harness).
 const SKIP_HTML = new Set(['i18n-test.html']);
 // Keys whose empty cell is intentional English (Check B allowlist — applies to every language column).
-const EMPTY_ALLOW = new Set(['worksheet.layout.title_default']);
+// Currently empty, and that is the healthy state: the corpus has no untranslated cell to excuse.
+// `worksheet.layout.title_default` sat here from the first localization pass until S308, which
+// found it referenced NOWHERE — every other worksheet.layout.* key has exactly one use site, that
+// one had zero, and no code builds the key dynamically. It was minted for the worksheet title's
+// default value, which is printed output and so deliberately stays a literal in the markup (see
+// CLAUDE.md's translate-vs-content boundary). Key and entry both removed.
+const EMPTY_ALLOW = new Set([]);
 
 // ── RFC-4180 CSV parser (copied verbatim from build-locales.js — house style: copy shared logic) ──
 function parseCSV(text) {
