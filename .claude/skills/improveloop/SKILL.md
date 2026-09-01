@@ -467,7 +467,7 @@ there are 19 / 17), so converge, don't multiply.
 ship unasked; if approved but too big for the remaining budget, log it as an `approved <date>`
 candidate at the top of its priority band for the next session.
 
-**O. Deslop — AI-design-tell sweep (one surface per session; powered by the Impeccable skill).**
+**O. Deslop — AI-design-tell sweep (one surface per session; powered by the Impeccable detector).**
 M asks *is this beautiful?* O asks a narrower, more answerable question: **does this look like
 nobody chose it?** A "tell" is a reflex, not a flaw — a default reached for because it was the path
 of least resistance (a 4px accent bar on a card, a hairline border under a wide soft shadow, a
@@ -477,17 +477,24 @@ it accumulates them silently; nothing else in the rotation is looking for them.
 
 **Tooling — the Impeccable detector (third-party, Apache-2.0, `pbakaus/impeccable`).** The pass is
 built on its anti-pattern registry (~60 curated rules) rather than on your own eye, so findings are
-re-measurable next session and a Pattern-health line can hold them. Resolve the detector in this
-order and **record which one you used and its version** — the registry differs between majors, and a
-silent downgrade would move the goalposts under the rotation row:
-1. the installed plugin's skill dir (`/plugin marketplace add pbakaus/impeccable`, then the
-   `impeccable` skill's `scripts/detector/detect-antipatterns.mjs`) — preferred;
-2. a shallow clone into the session scratchpad (**never** into the repo, never committed);
-3. `npx impeccable detect` — **last resort and check the version**: npm lagged the GitHub repo by a
-   full major at registration (npm `latest` 3.6.0 vs repo 4.1.2, measured 2026-09-01).
+re-measurable next session and a Pattern-health line can hold them.
 
-Two arms, both verified in this container 2026-09-01. `DET` = the resolved
-`.../detector/detect-antipatterns.mjs`.
+**Get it by cloning it. The pass deliberately does NOT depend on the Impeccable plugin or skill being
+installed** — `/plugin` is unavailable in the remote web environment where these sessions usually run,
+and requiring it would make the pass unrunnable there. Shallow-clone the repo into the **session
+scratchpad** (never into the repo, never committed) and call the detector script directly:
+```bash
+git clone --depth 1 https://github.com/pbakaus/impeccable.git "$SCRATCH/impeccable"
+DET="$SCRATCH/impeccable/plugin/skills/impeccable/scripts/detector/detect-antipatterns.mjs"
+```
+That is the path both arms below were verified on. `npx impeccable detect` is a fallback if cloning
+is blocked, but **check the version**: npm lagged the GitHub repo by a full major at registration
+(npm `latest` 3.6.0 vs repo 4.1.2, measured 2026-09-01). If the plugin *is* installed in some future
+session, its skill dir carries the same script and is fine to use. Either way **record which source
+you used and its version** — the registry differs between majors, and a silent downgrade would move
+the goalposts under the rotation row.
+
+Two arms, both verified in this container 2026-09-01, against the cloned `$DET` above.
 - **Static arm (the workhorse).** `node "$DET" <page>.html` — reads the file, so it needs no server
   and covers every single-file page directly. Flags: `--json` (machine-readable, for diffing sweeps),
   `--no-advisory`, `--scope type,layout`, `--quiet`.
