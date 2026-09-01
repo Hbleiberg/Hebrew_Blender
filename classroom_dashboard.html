@@ -187,6 +187,12 @@
     --muted: #8a94a8;
     --border: #2a3349;
     --white: #1e2535;
+    /* A navy-tinted shadow is invisible on a dark surface: composited over --cream it lands
+       within 3/255 of the background, so only the 1px border separates an elevated panel.
+       Re-tint to black at the same alphas flash_cards.html already uses; geometry unchanged. */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.40);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
