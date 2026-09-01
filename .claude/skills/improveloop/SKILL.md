@@ -3,17 +3,18 @@ name: improveloop
 description: >-
   Run one bounded, ledger-driven continuous-improvement session on the IvritSuite / Hebrew Blender
   codebase using the v2 improvement-loop protocol — read docs/IMPROVEMENT_LOG.md first, select the top
-  candidate under the variety governor, run the single stalest rotating discovery pass (A–N, incl.
-  the SEO & discoverability audit, the aesthetics/beautification pass and the mobile & touch-device
-  pass), make small single-concern verified fixes (up to a 5-iteration budget, one commit each),
+  candidate under the variety governor, run the single stalest rotating discovery pass (A–O, incl.
+  the SEO & discoverability audit, the aesthetics/beautification pass, the mobile & touch-device
+  pass and the Deslop AI-design-tell sweep), make small single-concern verified fixes (up to a
+  5-iteration budget, one commit each),
   optionally ship one micro-feature, pause at decision gates to ask the maintainer, then update
   the ledger, bump sw.js VERSION once, print a close-out summary, and compact the session context.
   Use this whenever the user invokes
   /improveloop, or asks to run, continue, resume, or "rerun" the improvement loop / an improvement
   session / iteration / pass, run a discovery / SEO / recurring-pattern / aesthetics-or-design /
-  mobile-or-touch sweep, or hunt-and-fix small verified issues across the suite — even loosely
-  phrased ("run the loop", "do an improvement pass", "beautify the site a bit", "check how it looks
-  on a phone", "improveloop").
+  mobile-or-touch / deslop sweep, or hunt-and-fix small verified issues across the suite — even
+  loosely phrased ("run the loop", "do an improvement pass", "beautify the site a bit", "check how it
+  looks on a phone", "deslop the site", "make it look less AI-generated", "improveloop").
 ---
 
 # IvritSuite — Continuous Improvement Loop (v2)
@@ -26,7 +27,11 @@ maintainer-requested additions (2026-08-19) are the aesthetics pass (M — slow 
 decision gate 3 and its screenshot rule) and mandatory end-of-session context compaction
 (close-out step 6). A third (2026-08-22) is the mobile & touch-device pass (N — one surface per
 session on real device emulation, with decision gate 4 and a screenshot rule stricter than M's:
-a phone contact sheet ships even when the run finds nothing).
+a phone contact sheet ships even when the run finds nothing). A fourth (2026-09-01) is the **Deslop**
+pass (O — an AI-design-tell sweep powered by the third-party **Impeccable** skill's anti-pattern
+detector, with decision gate 5 and a screenshot rule stricter again than N's: every proposal is
+presented to the maintainer as a rendered **before/after** pair *before* it ships, so the design
+decision is the maintainer's).
 
 ## Authority split — this skill vs the ledger
 
@@ -127,6 +132,19 @@ the maintainer's, not the loop's: at each gate, stop and ask via the **AskUserQu
   migration (`100vh` → `dvh` across a page, retuning a shared breakpoint). Propose with the
   current-state phone screenshots, state what changes on phone AND on desktop, then ask. Applies to
   ANY iteration that would do one of those, whichever pass surfaced it.
+- **Gate 5 — every Deslop proposal, before it ships.** The Deslop track (pass O) is the one pass
+  with **no autonomous fix path**: the maintainer asked for its proposals "in the form of a
+  before/after screenshot so I can make design decisions as part of the improve loop"
+  (2026-09-01), so a rendered before/after pair and an explicit answer are the *entry* conditions
+  for shipping, not the write-up afterwards. Gate every change O originates that alters rendered
+  output — including the ones M would have waved through as small, and including a decision to
+  **waive** a finding as brand truth (an inline `impeccable-disable`, which settles the site's
+  identity and is as much a design decision as a fix). The only ungated O work is what renders
+  identically: ledger writes, and a `.impeccable/` config or ignore record whose wording the
+  maintainer already approved. Batch the session's proposals into ONE contact sheet and ONE
+  AskUserQuestion where the budget allows — five separate interruptions is not "part of the improve
+  loop", it is an interrogation. An approved proposal too big for the remaining budget is logged as
+  an `approved <date>` candidate at the top of its priority band, with its screenshot paths.
 
 **Batching:** collect gate questions at natural points — the post-discovery-pass selection moment,
 then iteration boundaries — up to 4 questions per AskUserQuestion call. Never gate small mechanical
@@ -137,7 +155,10 @@ unattended run), take the conservative default — gate 1: skip the micro-featur
 gate 2: leave the copy unchanged and log the proposed change as a Candidate; gate 3: don't ship
 the dramatic change — log the written proposal as a Candidate (note the current-state screenshots'
 paths in the entry); gate 4: same — don't ship, log the proposal as a Candidate with its phone
-screenshots' paths (the pass's own measure-and-log arms still run in full) — and record each
+screenshots' paths (the pass's own measure-and-log arms still run in full); gate 5: ship nothing
+and waive nothing — O degrades to a **pure measure-and-log run**, and because its whole output is a
+question, an unattended O still produces its full finding list and its before/after pairs (the
+proposals the next attended session will ask), logged as Candidates with those paths — and record each
 under **"Decisions deferred to maintainer"** in the `(SN close-out)` Done entry and the close-out
 summary, so the next attended session can ask. A gate must degrade gracefully; it never stalls or
 errors the session.
@@ -446,6 +467,140 @@ there are 19 / 17), so converge, don't multiply.
 ship unasked; if approved but too big for the remaining budget, log it as an `approved <date>`
 candidate at the top of its priority band for the next session.
 
+**O. Deslop — AI-design-tell sweep (one surface per session; powered by the Impeccable skill).**
+M asks *is this beautiful?* O asks a narrower, more answerable question: **does this look like
+nobody chose it?** A "tell" is a reflex, not a flaw — a default reached for because it was the path
+of least resistance (a 4px accent bar on a card, a hairline border under a wide soft shadow, a
+gradient headline, 8px functional text). Each one is individually defensible and collectively they
+are the reason generated interfaces are recognizable on sight. The suite is largely AI-authored, so
+it accumulates them silently; nothing else in the rotation is looking for them.
+
+**Tooling — the Impeccable detector (third-party, Apache-2.0, `pbakaus/impeccable`).** The pass is
+built on its anti-pattern registry (~60 curated rules) rather than on your own eye, so findings are
+re-measurable next session and a Pattern-health line can hold them. Resolve the detector in this
+order and **record which one you used and its version** — the registry differs between majors, and a
+silent downgrade would move the goalposts under the rotation row:
+1. the installed plugin's skill dir (`/plugin marketplace add pbakaus/impeccable`, then the
+   `impeccable` skill's `scripts/detector/detect-antipatterns.mjs`) — preferred;
+2. a shallow clone into the session scratchpad (**never** into the repo, never committed);
+3. `npx impeccable detect` — **last resort and check the version**: npm lagged the GitHub repo by a
+   full major at registration (npm `latest` 3.6.0 vs repo 4.1.2, measured 2026-09-01).
+
+Two arms, both verified in this container 2026-09-01. `DET` = the resolved
+`.../detector/detect-antipatterns.mjs`.
+- **Static arm (the workhorse).** `node "$DET" <page>.html` — reads the file, so it needs no server
+  and covers every single-file page directly. Flags: `--json` (machine-readable, for diffing sweeps),
+  `--no-advisory`, `--scope type,layout`, `--quiet`.
+  **It needs four parser modules — `htmlparser2 css-select css-tree domutils` — and without them it
+  prints `DEGRADED … findings are an undercount, not a clean bill of health` and falls back to
+  regex.** Install them in the **scratchpad**, not the repo (CLAUDE.md's zero-dep rule; `npm install`
+  beside the resolved detector is enough — resolution walks up from its own path).
+  **Binding: never record a clean sweep, a hit count, or a Pattern-health streak from a DEGRADED
+  run.** Fix the install or report the arm as not-run. This is the same rule as pass N's "a resized
+  window is not a phone": a detector that cannot see is not a detector that found nothing.
+- **Browser arm (runtime truth: computed cascade, custom properties, real contrast).**
+  Serve the repo root per CLAUDE.md's Playwright recipe, then point the detector at the URL. It
+  drives **Puppeteer**, which the container does not ship — but it honors `PUPPETEER_EXECUTABLE_PATH`,
+  so reuse the preinstalled Playwright Chromium instead of downloading another:
+  ```bash
+  npm install --ignore-scripts puppeteer        # in the scratchpad; --ignore-scripts skips the Chrome download
+  CHROME=$(ls -d /opt/pw-browsers/chromium-*/chrome-linux/chrome | head -1)   # DISCOVER it; the build number drifts
+  CI=1 PUPPETEER_EXECUTABLE_PATH="$CHROME" NO_PROXY='*' no_proxy='*' \
+    node "$DET" http://localhost:8099/<page>.html
+  ```
+  `CI=1` is load-bearing, not cargo cult: it is the only switch that adds `--no-sandbox`, and Chrome
+  refuses to start as root without it. Never hardcode the Chromium path — it carries a build number
+  (`chromium-1194` at registration) that changes with the container image. `--viewport 390x844` gives a phone-width detector run (URL
+  mode only — the flag does nothing on the static arm).
+  **Known blind spot: the browser arm only ever sees the light theme.** There is no dark-mode flag,
+  and the suite's dark mode is driven by `localStorage`/`dark-early`, so a dark-only tell is
+  invisible to both arms. Audit dark by eye against the same rule ids, using the normal Playwright
+  recipe, and say in the rotation row that you did — do not let a light-only sweep be recorded as a
+  whole-surface one.
+
+**The brand-truth rule — the guardrail that makes this pass safe, and the reason it is gated.**
+IvritSuite has a *deliberate* identity: navy/gold/parchment, Frank Ruhl Libre and Libre Baskerville,
+a siddur/beit-midrash feel chosen for a Jewish elementary classroom. Impeccable's registry is tuned
+for generic product surfaces, so several of its highest-confidence rules fire on precisely the
+choices that make this site not generic. Measured at registration: **`cream-palette` fires on
+`--cream: #fdf8ef`** — the parchment ground the entire suite is built on — with the note "choose a
+background that comes from a deliberate palette, not the safe warm off-white". It *is* a deliberate
+palette. **A finding that contradicts a documented, chosen identity is a false positive, and
+"fixing" it is the actual slop:** converging on the detector's median taste would make the site more
+generic, not less. So the pass's first question about every finding is **was this chosen?** — check
+CLAUDE.md's design sections and the ledger before treating a rule id as a defect.
+Where the answer is yes, **record it permanently** so it is not re-litigated every sweep, using an
+inline ignore committed next to the choice — the reason travels with the code, shows up in review,
+and sits exactly where the next session looks:
+```css
+/* impeccable-disable-line cream-palette -- parchment ground: deliberate siddur identity, ratified S3xx */
+```
+(`impeccable-disable` waives a whole file, `-line`/`-next-line` one site; `<!-- … -->` in HTML,
+`/* … */` in CSS; comma-separate rule ids.) Prefer inline over `.impeccable/config.json`, and treat
+the waiver itself as a **gate-5 decision** — deciding what is brand and what is slop is the
+maintainer's call, not the loop's.
+
+**Scope: one surface per session** (the 7 tools plus the chrome pages — index, resources, contact,
+privacy/terms, 404), least-recently-audited first; the rotation row's result notes track coverage,
+exactly like M and N. Run both arms over that surface, then triage every finding into one of four
+buckets — and **log the triage, not just the hits**, since a rule ruled out is knowledge the next
+sweep should not have to rediscover:
+1. **Tell — O's to fix** (gated): the AI-signature rules — `side-tab`, `gpt-thin-border-wide-shadow`,
+   `gradient-text`, `ai-color-palette`, `nested-cards`, `monotonous-spacing`, `hero-eyebrow-chip`,
+   `kicker-above-heading`, `icon-tile-stack`, `pulsing-dot`, `bounce-easing`, `codex-grid-background`,
+   `repeating-stripes-gradient`, `em-dash-overuse` (advisory), and the rest of that family.
+2. **Brand truth** — waive with an inline ignore + reason (gated).
+3. **Another pass's finding** — file it there, do not fix it here (see Boundaries).
+4. **Detector wrong about this codebase** — an RTL/Hebrew-specific false positive, a rule that
+   misreads a single-file page. Record the rule id and *why*, so it is triaged in one line next time.
+
+**Boundaries — O owns tells, not quality in general.** The detector emits far more than tells, and
+absorbing all of it would quietly make O a second copy of three other passes:
+- **`low-contrast` → pass C.** C owns contrast *compliance* (and already owns the touch-target size
+  rule). O files the finding with its measured ratio and moves on. Registration measured real
+  failures here (`#c9922a` gold on `#e8e0d0` at 2.1:1) — they are C's, and they are not tells.
+- **`tiny-text` / `undersized-ui-text` / `tight-leading` / `cramped-padding` → C if the finding is
+  legibility, M if it is refinement.** CLAUDE.md's audience note decides severity: these tools are
+  projected for young students, so sub-11px functional text is a real defect, not taste.
+- **`layout-transition`, `image-hover-transform` → pass D** (main-thread cost).
+- **`--viewport 390x844` findings → pass N** for reachability/operability; O keeps only the tells.
+- **M vs O, the tiebreak that matters:** M is taste and audits like a designer; O is tells and runs a
+  fixed registry. When both could claim a finding, **the detector rule id wins it for O**; anything
+  with no rule id behind it is M's. O never opens a general beautification of a surface — that is M's
+  slot, and doubling it would burn the variety governor's per-tool cap on one page.
+
+**Screenshot rule — the before/after proposal gate (binding; this is what the pass delivers).**
+M and N screenshot to *document* a change; O screenshots to *ask for* one. Every proposal reaches the
+maintainer as a rendered pair before anything ships:
+1. **BEFORE** — capture on a clean tree (`git status --short` empty), light **and** dark, at the
+   affected breakpoint(s), per CLAUDE.md's Playwright recipe.
+2. **APPLY** the candidate edit in the working tree. **Never commit it.**
+3. **AFTER** — capture the same frames, same viewport, same theme, same scroll position. Only the
+   edit may differ; a pair that also moved the crop is not evidence.
+4. **REVERT** — `git checkout -- <file>` — and **prove it**: `git status --short` must come back
+   empty before you present anything. The proposal is a question, so the tree ends the way it started.
+5. **PRESENT** — one **side-by-side composite per proposal** (before | after, labeled, same scale),
+   delivered with `SendUserFile` where the harness supports it and by path otherwise, then the
+   decision asked via `AskUserQuestion`. Build the composite with no new dependency: write a tiny
+   HTML page that `<img>`s the two PNGs side by side with captions and screenshot *that* with the
+   Playwright already in use.
+6. **Ship only what came back approved**, then re-run the detector arm to confirm the rule id is
+   actually gone — a fix that does not clear its own finding is not a fix.
+
+**Never present an AFTER you did not actually render.** No mockups, no CSS diffs captioned as
+screenshots, no "it would look like…". The entire value of this gate is that the maintainer is
+looking at the real thing; a described after-state silently converts a design decision back into the
+loop's decision. A proposal that cannot be rendered is logged as a Candidate with that stated
+reason, not presented.
+
+**Fixes** verify in the standard matrix (light + dark × desktop + ~800px) **plus** a re-run of the
+arm that found them, and obey every hard rule — logical CSS properties, both themes, the
+once-per-session `sw.js` bump, `check-inline-js.mjs` and `check-i18n.js` where they apply. Because
+O's changes are visual and suite-wide by nature, prefer converging a token or a shared block over
+patching one call site: a tell that appears on all 13 pages (`side-tab` did, at registration) is one
+shared-component decision, not thirteen.
+
+
 ## Micro-feature track
 Small user-visible enhancements are in scope, under tight fencing:
 
@@ -517,7 +672,11 @@ Tie-breakers, in order: (1) affects teachers' saved work, (2) affects the printe
 4. **Print a summary:** iterations completed, pass run, patterns swept (hits/clean), micro-feature
    shipped or split, before/after screenshots for any aesthetics-track changes (per pass M's
    screenshot rule) and the phone contact sheet + before/after pairs for any mobile-track run (per
-   pass N's, which ships even on a clean run), top 3 remaining candidates + top feature seed,
+   pass N's, which ships even on a clean run); for a Deslop run (pass O), the detector + version and
+   which arms ran (flagging any DEGRADED or light-only arm as not-run), the finding triage by
+   bucket, every before/after composite with the maintainer's answer beside it, and any inline
+   `impeccable-disable` waivers added — a waiver is a ratified statement about the site's identity
+   and belongs in the summary, not just the diff. Then: top 3 remaining candidates + top feature seed,
    decision gates asked
    (question → answer) and any decisions deferred to the maintainer, any protocol divergence flagged
    for this skill, and anything a human must do (starting with: merge the PR, then verify the deploy).
