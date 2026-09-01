@@ -914,6 +914,13 @@ function tropeProgressMerge(incoming, replace) {
   localStorage.setItem('hebrewTropeTutor_progress', JSON.stringify(out));
 }
 
+/* An imported UI language must be one the runtime can actually serve. Read the live list from
+   js/i18n.js so a future language needs no edit here; fall back to the two shipped codes if the
+   deferred script has not landed yet. */
+function _ivLangOk(l) {
+  const sup = (window.I18n && Array.isArray(I18n.supported)) ? I18n.supported : ['en', 'he'];
+  return sup.indexOf(l) !== -1;
+}
 function exportAllSettings() {
   const blob = {
     _hebrewBlenderExport: 1,
@@ -945,6 +952,10 @@ function exportAllSettings() {
     livePreview:         localStorage.getItem('hebrewBlender_livePreview') || '',
     fmLastAuthor:        localStorage.getItem('hebrewFontMaker_lastAuthor') || '',
     kbdLayout:           localStorage.getItem('hebrewBlender_kbdLayout') || '',
+    // Identity prefs, not per-device ones: the UI language especially — of everything here it is
+    // the pref a Hebrew-reading teacher would most notice losing on a new machine.
+    uiLang:              localStorage.getItem('hebrewBlender_lang') || '',
+    darkMode:            localStorage.getItem('hebrewBlender_darkMode') || '',
     // Which drawer/sidebar panels are left open, for the three tools with no settings blob of
     // their own — the other three carry theirs inside dashboardSettings / torahTrainerSettings /
     // tropeTutorSettings, so the layout backs up for all six either way.
@@ -1044,6 +1055,12 @@ async function importAllSettings() {
     if (parsed.livePreview) localStorage.setItem('hebrewBlender_livePreview', parsed.livePreview);
     if (parsed.fmLastAuthor) localStorage.setItem('hebrewFontMaker_lastAuthor', parsed.fmLastAuthor);
     if (parsed.kbdLayout) localStorage.setItem('hebrewBlender_kbdLayout', parsed.kbdLayout);
+    // UI language + dark mode. Validated against what the runtime actually supports rather than
+    // written through: this is import-target data, and every page's no-flash <head> IIFE reads the
+    // stored language UNVALIDATED (js/i18n.js itself guards, the IIFE does not). '0' is a non-empty
+    // string, so a stored light-mode choice survives the truthiness tests around it.
+    if (parsed.uiLang && _ivLangOk(parsed.uiLang)) localStorage.setItem('hebrewBlender_lang', parsed.uiLang);
+    if (parsed.darkMode === '1' || parsed.darkMode === '0') localStorage.setItem('hebrewBlender_darkMode', parsed.darkMode);
     // Panel memory: flat {data-i18n key: bool} maps. Empty = never set, skip.
     [['generatorPanels', 'hebrewBlender_panels'], ['flashCardPanels', 'hebrewFlashCards_panels'],
      ['dictPanels', 'hebrewDictionary_panels']].forEach(([blobKey, lsKey]) => {
@@ -1131,6 +1148,8 @@ function eraseAllSettings() {
     'hebrewBlender_hebFontSize',
     'hebrewBlender_livePreview',
     'hebrewBlender_kbdLayout',
+    'hebrewBlender_lang',
+    'hebrewBlender_darkMode',
     'hebrewBlender_panels',
     'hebrewFlashCards_panels',
     'hebrewDictionary_panels',
@@ -1185,6 +1204,10 @@ const IVRIT_CFG = {
       livePreview:         localStorage.getItem('hebrewBlender_livePreview') || '',
       fmLastAuthor:        localStorage.getItem('hebrewFontMaker_lastAuthor') || '',
       kbdLayout:           localStorage.getItem('hebrewBlender_kbdLayout') || '',
+      // Identity prefs, not per-device ones: the UI language especially — of everything here it is
+      // the pref a Hebrew-reading teacher would most notice losing on a new machine.
+      uiLang:              localStorage.getItem('hebrewBlender_lang') || '',
+      darkMode:            localStorage.getItem('hebrewBlender_darkMode') || '',
       generatorPanels:     lsJSON('hebrewBlender_panels', {}),
       flashCardPanels:     lsJSON('hebrewFlashCards_panels', {}),
       dictPanels:          lsJSON('hebrewDictionary_panels', {}),
@@ -1235,6 +1258,8 @@ const IVRIT_CFG = {
     if (data.livePreview) { localStorage.setItem('hebrewBlender_livePreview', data.livePreview); touched = true; }
     if (data.fmLastAuthor) { localStorage.setItem('hebrewFontMaker_lastAuthor', data.fmLastAuthor); touched = true; }
     if (data.kbdLayout) { localStorage.setItem('hebrewBlender_kbdLayout', data.kbdLayout); touched = true; }
+    if (data.uiLang && _ivLangOk(data.uiLang)) { localStorage.setItem('hebrewBlender_lang', data.uiLang); touched = true; }
+    if (data.darkMode === '1' || data.darkMode === '0') { localStorage.setItem('hebrewBlender_darkMode', data.darkMode); touched = true; }
     if (data.generatorPanels && Object.keys(data.generatorPanels).length) { mergeObj('hebrewBlender_panels',      data.generatorPanels); touched = true; }
     if (data.flashCardPanels && Object.keys(data.flashCardPanels).length) { mergeObj('hebrewFlashCards_panels',   data.flashCardPanels); touched = true; }
     if (data.dictPanels      && Object.keys(data.dictPanels).length)      { mergeObj('hebrewDictionary_panels',   data.dictPanels);      touched = true; }
