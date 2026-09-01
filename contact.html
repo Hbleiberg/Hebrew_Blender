@@ -243,6 +243,13 @@ footer a { display: inline-block; padding-block: 5px; }
     --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#fff;--gold-text:#7f5a13;--gold-text-hover:#5c4010;
     background:#fff !important; color:#1a2744 !important;
   }
+  /* Nothing on paper can be clicked, so the header's controls -- the "Back" link, the EN/HE
+     switcher and the Dark Mode toggle -- are inert ink wherever this suite prints. They share
+     one container, so hiding it drops all three while the header keeps its identity: the star,
+     the page title and its tagline, which is what a printed sheet wants at the top.
+     Suite-wide across all six chrome pages (privacy + terms took it first at 44bd07c) -- the
+     rule is the same on every one, so a future page copies one line, not a judgement call. */
+  header .hright { display: none !important; }
 }
 </style>
 </head>
