@@ -2453,7 +2453,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <button type="button" class="btn-xs" title="Rename class" aria-label="Rename class" data-i18n-aria-label="dashboard.picker.rename_class_title" data-i18n-title="dashboard.picker.rename_class_title" onclick="renameClass()">✏️</button>
         <button type="button" class="btn-xs" title="Delete class" aria-label="Delete class" data-i18n-aria-label="dashboard.picker.delete_class_title" data-i18n-title="dashboard.picker.delete_class_title" onclick="deleteClass()">🗑</button>
       </div>
-      <span id="pickerClassNote" style="font-size:0.72rem;color:var(--gold);display:none;"></span>
+      <span id="pickerClassNote" style="font-size:0.72rem;color:var(--gold-text);display:none;"></span>
     </div>
     <div class="form-row" style="flex-direction:column;align-items:stretch;gap:4px;">
       <label for="pickerRoster" id="pickerRosterLabel" data-i18n="dashboard.picker.roster_label">Roster — one name per line</label>
@@ -2615,7 +2615,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <input type="text" id="presetName" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="Preset name" data-i18n-placeholder="dashboard.preset.name_placeholder" aria-label="Preset name" data-i18n-aria-label="dashboard.preset.name_placeholder" style="max-width:200px;" oninput="onPresetNameInput()">
       <button class="btn btn-xs" id="savePresetBtn" onclick="savePreset()" data-i18n="dashboard.preset.save">Save</button>
     </div>
-    <div id="presetNameNote" role="status" aria-live="polite" style="display:none;font-size:0.72rem;color:var(--gold);margin:-4px 0 8px;"></div>
+    <div id="presetNameNote" role="status" aria-live="polite" style="display:none;font-size:0.72rem;color:var(--gold-text);margin:-4px 0 8px;"></div>
     <div class="preset-list" id="presetList"></div>
     <hr>
     <style>
