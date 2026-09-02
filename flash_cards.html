@@ -535,6 +535,9 @@ body.dark .panel-title {
   background: var(--navy); color: var(--gold-light);
   box-shadow: var(--shadow-sm);
 }
+/* Pointer feedback on the unselected pills — the page's own .btn:hover idiom (one surface step),
+   pattern control-class-without-a-hover-state. The selected pill keeps its navy. */
+.pill-group .pill:hover:not(.active) { background: var(--white); }
 
 /* ============== TOGGLES ============== */
 .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
@@ -726,6 +729,7 @@ body.dark .slider::before { background: #d8dde9; }
 .count-btn.active {
   background: var(--navy); color: var(--gold-light); border-color: var(--navy);
 }
+.count-btn:hover:not(.active) { background: var(--paper); }
 /* Custom card-count input — sits in the count grid, styled like a .count-btn. */
 .count-custom {
   grid-column: span 2;
