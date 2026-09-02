@@ -230,7 +230,7 @@ header p { font-size:0.78rem; color:var(--gold-light); margin-top:2px; }
   border:1px solid var(--border); border-bottom:none; border-radius:8px 8px 0 0;
   background:transparent; color:var(--muted); cursor:pointer; transition:all 0.15s;
 }
-.tu-tab:hover { color:var(--gold); }
+.tu-tab:hover { color:var(--gold-text); }
 .tu-tab[aria-selected="true"] { background:var(--white); color:var(--text); border-color:var(--gold); border-bottom:2px solid var(--white); margin-bottom:-1px; }
 body.dark .tu-tab[aria-selected="true"] { border-bottom-color:var(--white); }
 .tu-tab:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
@@ -600,7 +600,7 @@ body.dark .radio-group input:checked + label { background:#1e2535; color:var(--g
   padding:6px 10px; font-size:0.78rem; cursor:pointer;
   color:var(--muted); line-height:1.4; font-family:inherit;
 }
-.slider-row .sreset:hover { border-color:var(--gold); color:var(--gold); }
+.slider-row .sreset:hover { border-color:var(--gold); color:var(--gold-text); }
 .settings-note { font-size:0.76rem; color:var(--muted); line-height:1.45; margin-top:6px; min-height:1em; }
 /* The About panel's two prose links are the only anchors inside the drawer, and `footer a` does not
    reach them — so they fell back to the UA default #0000EE: 8.9:1 on the light card, but 2.0:1 on the
