@@ -879,8 +879,8 @@ footer a { display: inline-block; padding-block: 5px; }
   }
   .blend-answer.hidden { visibility: hidden; }
   .gematria-blank { width: 52px; height: 1px; background: var(--border); margin-top: 8px; align-self: center; }
-  .gematria-value { font-size: 0.85rem; font-weight: 700; color: var(--gold); margin-top: 6px; }
-  .ntl-ak-name { color: var(--gold); }   /* Name-the-Letter answer-key letter name; darkened for print (see @media print) */
+  .gematria-value { font-size: 0.85rem; font-weight: 700; color: var(--gold-text); margin-top: 6px; }
+  .ntl-ak-name { color: var(--gold-text); }   /* Name-the-Letter answer-key letter name; darkened for print (see @media print) */
 
   /* ── Tracing worksheet ──
      Tuned against Frank Ruhl Libre + uploaded My Fonts at --trace-font-size.
@@ -1431,7 +1431,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .ws-wordbank-item { display: flex; flex-direction: column; }
   .ws-wordbank-heb { font-family: var(--heb-font); font-size: 1.15rem; direction: rtl; color: var(--text); }
   .ws-wordbank-tr  { font-size: 0.72rem; color: var(--muted); font-style: italic; }
-  .ws-wordbank-tn  { font-size: 0.78rem; color: var(--gold); font-weight: 600; }
+  .ws-wordbank-tn  { font-size: 0.78rem; color: var(--gold-text); font-weight: 600; }
 
   /* Class Set version label */
   .ws-version-label { font-size: 0.85rem; font-weight: 700; color: var(--gold); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 2px; }
@@ -1448,7 +1448,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .cw-clues { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
   .cw-clue-title { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 3px; margin-bottom: 5px; }
   .cw-clue { font-size: 0.82rem; line-height: 1.5; }
-  .cw-clue-num { font-weight: 700; color: var(--gold); }
+  .cw-clue-num { font-weight: 700; color: var(--gold-text); }
   .cw-unplaced { margin-top: 12px; font-size: 0.78rem; color: var(--muted); font-style: italic; }
 
   /* Flip cards for vocab drill */
@@ -1634,7 +1634,7 @@ footer a { display: inline-block; padding-block: 5px; }
   }
   .rw-heb { font-family: var(--heb-font); font-size: 2rem; direction: rtl; color: var(--text); line-height: 1.2; }
   .rw-translit { font-size: 0.72rem; color: var(--muted); font-style: italic; }
-  .rw-translation { font-size: 0.75rem; color: var(--gold); font-weight: 600; min-height: 14px; }
+  .rw-translation { font-size: 0.75rem; color: var(--gold-text); font-weight: 600; min-height: 14px; }
   .rw-pos-tag { position: absolute; top: 4px; right: 6px; font-size: 0.58rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
   .rw-num { position: absolute; top: 4px; left: 6px; font-size: 0.6rem; color: var(--muted); }
   .rw-grid { display: grid; gap: 10px; direction: ltr; }
@@ -1655,7 +1655,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .match-ak-list { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; max-width: 520px; }
   .match-ak-row { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
   .match-ak-row .match-num { min-width: 30px; text-align: left; }
-  .match-ak-row .match-ak-let { font-weight: 700; color: var(--gold); min-width: 20px; }
+  .match-ak-row .match-ak-let { font-weight: 700; color: var(--gold-text); min-width: 20px; }
   .match-ak-row .match-ak-heb { font-family: var(--heb-font); font-size: 1.3rem; direction: rtl; color: var(--navy); }
   body.dark .match-item { background: #252d3e; border-color: var(--border); }
   body.dark .match-heb, body.dark .match-label, body.dark .match-num, body.dark .match-ak-heb { color: #dde4f0; }
@@ -2250,7 +2250,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
        numbers stay legible on a monochrome printer. After the dark-reset, so it
        wins in both light and dark print by source order; non-!important so
        intentional inline nikkud color-coding still overrides. */
-    .gematria-value, .blend-answer, .rw-translation, .ws-wordbank-tn, .cw-clue-num, .ntl-ak-name { color:#6b4e12; }
+    .gematria-value, .blend-answer, .rw-translation, .ws-wordbank-tn, .cw-clue-num, .ntl-ak-name, .match-ak-row .match-ak-let { color:#6b4e12; }
     /* The "…Answer Key — Teacher Copy" subtitles wear an inline gold on screen
        (both themes). An inline color beats any class selector, so darkening it
        for B/W print needs !important — scoped to this teacher-copy-only class,
