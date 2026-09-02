@@ -196,11 +196,11 @@ header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center
 
 .beta-tag{display:inline-block;background:var(--gold);color:var(--navy);font-size:0.55rem;font-weight:700;letter-spacing:0.08em;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-inline-start:6px;text-transform:uppercase;}
 .bookmark-btn{margin-top:28px;display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--border);border-radius:7px;padding:7px 18px;font-size:0.82rem;font-family:'Source Sans 3',sans-serif;color:var(--muted);cursor:pointer;transition:border-color 0.15s,color 0.15s;}
-.bookmark-btn:hover{border-color:var(--gold);color:var(--gold);}
+.bookmark-btn:hover{border-color:var(--gold);color:var(--gold-text);}
 .bookmark-tip{margin-top:10px;font-size:0.78rem;color:var(--muted);text-align:center;opacity:0;transition:opacity 0.25s;pointer-events:none;}
 .bookmark-tip.show{opacity:1;}
 .ie-btn{margin-top:10px;display:inline-flex;align-items:center;justify-content:center;gap:5px;background:none;border:none;font-size:0.75rem;font-family:'Source Sans 3',sans-serif;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:5px;transition:color 0.15s;min-height:30px;}
-.ie-btn:hover{color:var(--gold);}
+.ie-btn:hover{color:var(--gold-text);}
 
 /* Import/Export modal */
 .ie-backdrop{display:none;position:fixed;inset:0;background:rgba(13,18,32,0.5);z-index:200;align-items:center;justify-content:center;}
@@ -227,7 +227,7 @@ body.dark .ie-modal-body textarea{background:#0d1220;}
 .ie-action-btn.primary{background:var(--navy);color:#fff;}
 .ie-action-btn.primary:hover{background:var(--gold);color:var(--navy);}
 .ie-action-btn.secondary{background:var(--warm-gray);color:var(--text);border:1px solid var(--border);}
-.ie-action-btn.secondary:hover{border-color:var(--gold);color:var(--gold);}
+.ie-action-btn.secondary:hover{border-color:var(--gold);color:var(--gold-text);}
 .ie-note{font-size:0.75rem;color:var(--muted);line-height:1.4;}
 /* .ie-note's colour does not reach an <a> inside it — the UA's own link rule wins — so the
    My Fonts note's link kept UA blue: 9.4:1 on light but 1.63:1 on the dark modal. Same

@@ -287,7 +287,7 @@ footer a { display: inline-block; padding-block: 5px; }
 <style>
 :root {
   --navy:#1a2744;--navy-deep:#0d1220;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
-  --gold-text:#87681d;   /* darker gold for small gold TEXT on light bg — meets WCAG 4.5:1 where --gold (#c9922a ≈2.5:1) fails; NOT the suite --gold */
+  --gold-text:#7f5a13;   /* darker gold for small gold TEXT on light bg — meets WCAG 4.5:1 where --gold (#c9922a ≈2.5:1) fails; NOT the suite --gold */
   --danger-text:#a93226; /* danger/error text — theme-aware where literal #c0392b fails dark (and is marginal on warm-gray light) */
   --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
   --era-bib-bg:#e8f0ff;--era-bib-text:#2a4080;
@@ -413,12 +413,12 @@ body.dark .vowel-chip-sub{color:#adb6c9;}
    the suite's 30px floor AND under WCAG 2.5.8's 24px. Same declarations flash_cards' .btn-xs
    uses (S102): the inline-flex is what turns min-height into a taller BOX rather than taller text. */
 .pos-all-btn{flex:1;padding:3px 0;min-height:30px;display:inline-flex;align-items:center;justify-content:center;font-size:0.72rem;font-family:'Source Sans 3',sans-serif;background:var(--warm-gray);color:var(--text);border:1px solid var(--border);border-radius:4px;cursor:pointer;}
-.pos-all-btn:hover{border-color:var(--gold);color:var(--gold);}
+.pos-all-btn:hover{border-color:var(--gold);color:var(--gold-text);}
 /* In-place corpus-retry button (converged retry model) — same S102 floor declarations as above;
    this file has no .btn-xs, so the retry sites carry their own class. Both tokens flip with the
    theme, so no dark rule is needed. */
 .corpus-retry-btn{min-height:30px;min-width:30px;display:inline-flex;align-items:center;justify-content:center;padding:4px 12px;font-size:0.8rem;font-family:'Source Sans 3',sans-serif;background:var(--white);color:var(--text);border:1px solid var(--border);border-radius:5px;cursor:pointer;}
-.corpus-retry-btn:hover{border-color:var(--gold);color:var(--gold);}
+.corpus-retry-btn:hover{border-color:var(--gold);color:var(--gold-text);}
 .color-mode-btn{flex:1;padding:4px 6px;font-size:0.72rem;border:none;background:var(--warm-gray);color:var(--muted);cursor:pointer;border-inline-end:1px solid var(--border);font-family:inherit;}
 .color-mode-btn:last-child{border-inline-end:none;}
 .color-mode-btn.active{background:var(--navy);color:var(--white);}
@@ -433,7 +433,7 @@ body.dark .color-mode-btn.active{background:#2a4070;color:#dde4f0;}
 .pos-badges{display:flex;gap:2px;flex-wrap:wrap;}
 .pbadge{background:var(--navy);color:var(--gold-light);border-radius:3px;padding:1px 5px;font-size:0.7rem;font-family:var(--heb-font);}
 .pos-clear{background:none;border:none;color:var(--muted);font-size:0.75rem;cursor:pointer;padding:0 2px;line-height:1;min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center;} /* 24px WCAG floor (touch-target haul) — the ✕ is nested inside the clickable section header, so a bigger box also cuts clear-vs-toggle misfires */
-.pos-clear:hover{color:var(--gold);}
+.pos-clear:hover{color:var(--gold-text);}
 .pos-arrow{color:var(--muted);font-size:0.65rem;transition:transform 0.15s;flex-shrink:0;}
 .pos-sec.open .pos-arrow{transform:rotate(0deg);}
 .pos-sec:not(.open) .pos-arrow{transform:rotate(-90deg);}
@@ -521,7 +521,7 @@ body.dark .wm-act{background:var(--white);}
 .wm-root-btn:hover{background:var(--gold-light);color:var(--navy);}
 .wm-footer{border-top:1px solid var(--border);padding-top:10px;text-align:center;}
 .wm-google{color:var(--muted);font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;min-height:24px;}
-.wm-google:hover{color:var(--gold);text-decoration:underline;}
+.wm-google:hover{color:var(--gold-text);text-decoration:underline;}
 .content{flex:1;overflow-y:auto;padding:18px 20px;}
 .results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:16px;}
 .word-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;cursor:default;transition:border-color 0.15s,box-shadow 0.15s;position:relative;}
@@ -540,7 +540,7 @@ body.bulk-mode .word-card,body.bulk-mode .emoji-card{cursor:pointer;}
 .wc-search{inset-inline-start:33px;}
 .wc-speak{inset-inline-start:59px;font-size:0.75rem;display:none;line-height:1;}
 body.dict-audio-on .wc-speak{display:flex;}
-.wc-copy:hover,.wc-copy.copied,.wc-search:hover,.wc-speak:hover{border-color:var(--gold);color:var(--gold);opacity:1;}
+.wc-copy:hover,.wc-copy.copied,.wc-search:hover,.wc-speak:hover{border-color:var(--gold);color:var(--gold-text);opacity:1;}
 .wc-heb{font-family:var(--heb-font);font-size:var(--heb-font-size);direction:rtl;text-align:right;line-height:1.2;}
 /* Glosses and transliterations are English content inside an RTL page, so they inherited the
    page's direction and pushed their terminal period (and a leading apostrophe on roots like
@@ -600,7 +600,7 @@ body.dark .ec-gender.fem{color:#ec88bb;}
 .ec-heb{font-family:var(--heb-font);font-size:var(--heb-font-size);direction:rtl;line-height:1.2;}
 .ec-translit{font-size:0.76rem;color:var(--muted);font-style:italic;}
 .ec-speak{display:none;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.78rem;cursor:pointer;color:var(--muted);line-height:1;opacity:0.75;transition:opacity 0.15s,border-color 0.15s,color 0.15s;}
-.ec-speak:hover{border-color:var(--gold);color:var(--gold);opacity:1;}
+.ec-speak:hover{border-color:var(--gold);color:var(--gold-text);opacity:1;}
 body.dict-audio-on .ec-speak{display:inline-flex;}
 .ec-tags{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
 .ec-tag{font-size:0.62rem;padding:2px 6px;border-radius:3px;background:var(--warm-gray);color:var(--muted);font-weight:600;letter-spacing:0.03em;text-transform:uppercase;}
@@ -778,7 +778,7 @@ footer summary{min-height:24px;}
   .font-size-row input[type=range] { flex:1; accent-color:var(--gold); cursor:pointer; height:24px; }
   .font-size-row .fs-val { font-size:0.68rem; color:var(--muted); min-width:38px; text-align:end; font-variant-numeric:tabular-nums; }
   .font-size-row .fs-reset { background:none; border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:0.78rem; cursor:pointer; color:var(--muted); line-height:1.4; font-family:inherit; }
-  .font-size-row .fs-reset:hover { border-color:var(--gold); color:var(--gold); }
+  .font-size-row .fs-reset:hover { border-color:var(--gold); color:var(--gold-text); }
   .font-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
   .font-opt {
     display: flex; flex-direction: column; align-items: center; text-align: center;
@@ -874,7 +874,7 @@ footer summary{min-height:24px;}
    for both themes, hide chrome, and let the results flow across pages. */
 @media print {
   body, body.dark, html.dark-early body {
-    --navy:#1a2744; --gold:#c9922a; --gold-light:#f0d080; --cream:#fff; --gold-text:#87681d; --danger-text:#a93226;
+    --navy:#1a2744; --gold:#c9922a; --gold-light:#f0d080; --cream:#fff; --gold-text:#7f5a13; --danger-text:#a93226;
     --warm-gray:#e8e0d0; --text:#1a2744; --muted:#6b6050; --border:#c8bfa8; --white:#fff;
     --era-bib-bg:#e8f0ff; --era-bib-text:#2a4080; --era-mod-bg:#e8f5e8; --era-mod-text:#1a5c1a;
     background:#fff !important; color:#1a2744 !important;

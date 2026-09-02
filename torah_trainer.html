@@ -503,13 +503,13 @@ body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
 .tt-speak::after, .tt-chant::after, .tt-loop::after, .tt-copy::after {
   content:''; position:absolute; inset-inline:0; inset-block:-4px;
 }
-.tt-speak:hover { border-color:var(--gold); color:var(--gold); }
+.tt-speak:hover { border-color:var(--gold); color:var(--gold-text); }
 .tt-speak.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
-.tt-chant:hover:not(:disabled) { border-color:var(--gold); color:var(--gold); }
+.tt-chant:hover:not(:disabled) { border-color:var(--gold); color:var(--gold-text); }
 .tt-chant:disabled { opacity:0.45; cursor:not-allowed; }
-.tt-loop:hover:not(:disabled) { border-color:var(--gold); color:var(--gold); }
+.tt-loop:hover:not(:disabled) { border-color:var(--gold); color:var(--gold-text); }
 .tt-loop.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
-.tt-copy:hover { border-color:var(--gold); color:var(--gold); }
+.tt-copy:hover { border-color:var(--gold); color:var(--gold-text); }
 .tt-verse-buttons {
   display:inline-flex; margin-inline-start:6px;
   /* row-gap > column-gap: the chips' 25px touch targets each reach 3px past their
@@ -627,7 +627,7 @@ body.dark .tt-jumpnav { background:var(--navy-deep); }
   border:1px solid var(--border); border-radius:5px; background:transparent;
   color:var(--text); cursor:pointer; font-family:inherit; transition:border-color 0.15s, color 0.15s, background 0.15s;
 }
-.tt-jump-chip:hover { border-color:var(--gold); color:var(--gold); }
+.tt-jump-chip:hover { border-color:var(--gold); color:var(--gold-text); }
 .tt-jump-chip.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
 .tt-holiday-opt.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
 .tt-jump-pos { margin-left:auto; font-size:0.78rem; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums; }
@@ -877,7 +877,7 @@ body.dark .tt-trope-chip:hover { background:rgba(255,255,255,0.07); }
 .tt-trope-glyph { font-family:var(--heb-font); font-size:1.15rem; line-height:1; flex-shrink:0; }
 .tt-trope-swatch { width:14px; height:14px; border-radius:4px; border:1px solid var(--border); flex-shrink:0; }
 .tt-trope-link { margin-left:auto; font-size:0.72rem; color:var(--muted); text-decoration:none; }
-.tt-trope-link:hover { color:var(--gold); text-decoration:underline; }
+.tt-trope-link:hover { color:var(--gold-text); text-decoration:underline; }
 
 /* Reading keyboard hints. The reading rover implements five keys and surfaced NONE of them:
    no <kbd>, no aria-keyshortcuts, no title, no visible copy anywhere on the page (Pass F,
@@ -1174,7 +1174,7 @@ body.dark .btn-secondary:hover { background:#2a3349; }
   /* same 30px floor .btn-xs carries above (S102, applied here S193) — these measured 24x21 */
   min-height:30px; min-width:30px; display:inline-flex; align-items:center; justify-content:center;
 }
-.slider-row .sreset:hover { border-color:var(--gold); color:var(--gold); }
+.slider-row .sreset:hover { border-color:var(--gold); color:var(--gold-text); }
 
 /* ───── Font selector (two-column grid, matches hebrew_blend_generator.html:1699-1721) ───── */
 .font-options { display:grid; grid-template-columns:1fr 1fr; gap:4px; }
