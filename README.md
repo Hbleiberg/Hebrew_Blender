@@ -80,7 +80,7 @@ An interactive tutor for the Torah cantillation marks (trope / te'amim) — the 
 - Hebrew font picker (incl. My Fonts), dark mode, guided tour, playback-speed control
 
 ### Hebrew Font Maker (`Hebrew_Font_Maker.html`) — Beta
-Turn your own handwritten Hebrew letters into a real, installable font — entirely in the browser. (Currently v5.5.)
+Turn your own handwritten Hebrew letters into a real, installable font — entirely in the browser. (The current version is shown in the tool's About tab.)
 
 - **Trace from images** — upload one letter per image, one sheet of all letters (marquee-crop each), or import an existing TTF/OTF; sub-pixel marching-squares tracing with cubic-Bézier fitting and a point editor
 - **Nikkud & trop anchors** — place vowel and cantillation marks per letter; exports real GPOS mark-to-base (nikkud) and mark-to-mark (trop) positioning, plus pair kerning
@@ -111,6 +111,7 @@ Home page with navigation cards to all the tools above. Also hosts the global **
 These work the same across the tools (all pages are served from one origin, so shared browser storage is visible everywhere):
 
 - **Dark mode** — a no-flash dark theme remembered site-wide (`localStorage`), toggled from any page.
+- **Hebrew interface** — every page has an EN / עברית switcher (`js/i18n.js` + `locales/`); in Hebrew the UI mirrors to right-to-left, while worksheets, cards and projected content keep their own language settings.
 - **`.ivrit` save files** — portable backups (see the next section).
 - **AllTools backup** — the gear modal on the landing page bundles every tool's settings into one export/import/erase, either as an `.ivrit` file or a JSON blob.
 - **My Fonts** — custom fonts made (or uploaded) in the Hebrew Font Maker are stored in the browser and appear in **every** tool's font picker automatically; you can upload your own `.ttf`/`.otf`/`.woff`/`.woff2` from any picker.
@@ -154,14 +155,21 @@ How it works:
 | `resources.html` | Curated directory of external Hebrew / Jewish-education resources |
 | `contact.html` | Contact / feedback form (web3forms + hCaptcha) |
 | `privacy.html` | Privacy policy |
+| `terms.html` | Terms of use |
 | `404.html` | Custom not-found page |
+| `i18n-test.html` | Developer harness for the i18n runtime (not indexed, not precached) |
 | `pwa.js` | Service-worker registration + install-prompt handling |
 | `sw.js` | Service worker — precaches the app shell for offline use (cache `ivritsuite-v<VERSION>`) |
 | `manifest.webmanifest` | PWA manifest (name, icons, theme/background color) |
+| `js/i18n.js` | Shared i18n runtime (`window.I18n`) loaded by every page — the EN / עברית switcher, `data-i18n*` filling, RTL flip |
+| `locales/ui-strings.csv`, `locales/<lang>.json` | UI strings — the CSV is the single source of truth; `scripts/build-locales.js` compiles the committed per-language JSON |
+| `scripts/check-i18n.js` (+ `check-i18n-baseline.txt`) | Gate for hardcoded UI strings, physical CSS and CSV quoting; the baseline lists accepted findings |
+| `scripts/check-inline-js.mjs` | Parses every inline `<script>` in every root page — one syntax error kills a page's whole app while the HTML still renders |
 | `THIRD_PARTY_LICENSES.md` | License terms for bundled/streamed third-party data (PocketTorah, Sefaria, fonts, etc.) |
 | `CNAME`, `robots.txt`, `sitemap.xml`, `.nojekyll`, `favicon.svg` | Static-site plumbing (custom domain, crawler hints, sitemap, Jekyll opt-out, favicon) |
 | `llms.txt`, `llms-full.txt` | Curated plain-text site map for LLMs / fetching agents ([llmstxt.org](https://llmstxt.org)) — the short index and its expanded companion (how-to steps + Q&A). **Generated**, never hand-edited |
 | `scripts/update-llms-txt.mjs` | Regenerates both from `sitemap.xml` + each page's JSON-LD and `<head>` metadata (plain Node, zero deps; `--check` reports staleness) |
+| `scripts/update-sitemap.mjs` | Refreshes every `<lastmod>` in `sitemap.xml` from each page's last git commit (refuses to run on a shallow clone) |
 | `data/hebrew_words.json` | Structured word data (~2.93 MB, 13,081 entries) loaded by the generator and dictionary via `fetch()` |
 | `source-data/hebrew_dictionary_4_19_2026.csv` | Pipeline-input CSV used to build `data/hebrew_words.json` (Hebrew w/ nikkud, transliteration, translation, POS, era); not served at runtime |
 | `data/hebrew_emojis.json` (+ `source-data/hebrew_emojis.csv` pipeline input) | Hebrew word ↔ emoji mappings used by the dictionary and flash-card emoji modes |
@@ -172,9 +180,17 @@ How it works:
 | `data/trope/trope_index.json` | Pre-built Trope Tutor index — example words + audio clip bounds per cantillation mark (~75 KB) |
 | `scripts/build-trope-index.mjs` | Offline builder for the trope index (plain Node, zero deps); writes `docs/trope_index_report.md` |
 | `docs/trope_index_report.md` | Build report for the trope index — per-trope counts, excluded aliyot, zarka codepoint finding |
+| `data/trope/trope_motifs.json` | Pre-built melodic motif (Western notation) per cantillation mark, shown on the Trope Tutor's Learn cards |
+| `scripts/build-trope-motifs.mjs` | Offline builder for the motifs — pitch-tracks the same PocketTorah clips; writes `docs/trope_motifs_report.md` (`--force` discards human-verified motifs; prefer `--only=<key>`) |
+| `docs/trope_motifs_report.md` | Build report for the motifs — per-mark confidence and the hand-verified overrides |
 | `docs/phonotactic_blending_filter_spec.md` | Linguistic specification for the phonotactic validity filter used by the generator |
+| `docs/theme_tagging_report.md` | Build report for the dictionary's `themes` tags (an offline, LLM-assisted pipeline with adversarial review); the spot-check surface — to fix a word, edit its `themes` array in `data/hebrew_words.json` and bump the `?v=` |
+| `docs/reference/` | How each component works (storage, i18n, shared blocks, Font Maker, dashboard, generator, Torah/trope, ops) — indexed from `CLAUDE.md` |
+| `docs/IMPROVEMENT_LOG.md`, `docs/IMPROVEMENT_ARCHIVE.md`, `docs/reference/loop-findings.md` | The improvement loop's ledger (current state), its history, and its measurements; guarded by `scripts/check-ledger.mjs`, compacted by `scripts/compact-ledger.mjs`, limits in `scripts/ledger-rules.mjs` |
 | `splash/` | iOS launch/splash screens + `gen_splash.py` generator (and its bundled Libre Baskerville fonts) |
-| `icons/`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `og-card.png` | PWA / home-screen / social-card icons |
+| `starting-fonts/` + `scripts/add_os_font.py` | Partner "starting fonts" behind `Hebrew_Font_Maker.html?start=<id>` (manifest + each font's upstream license), staged by the intake script |
+| `icons/`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `og-card.png`, `og-fontmaker.png` | PWA / home-screen icons and the social cards (the suite's, and the Font Maker's own) |
+| `zelle-qr.jpg` | Donation QR code shown on the contact page |
 | `fonts/` | Bundled Hebrew display fonts (Frank Ruhl Libre, Lakhish Bold, Reuben, TzviScript, TzviScript Stroke Guide) + their license files |
 | `LICENSE` | CC BY-NC-SA 4.0 |
 | `CLAUDE.md` | Instructions for the AI coding assistant used during development |
@@ -209,6 +225,7 @@ Top-level keys are consonant counts. There are **13,081 entries** across keys ra
 - `pos` — part of speech (`noun`, `proper noun`, `verb`, `adjective`, `adverb`, `pronoun`, etc.)
 - `translit` — romanized transliteration
 - `era` — `"Biblical"`, `"Modern"`, or `"Both"`
+- `themes` — optional; thematic tags (`animals`, `food`, `body`, `colors`, …) on about 1,400 nouns, used by the dictionary's theme filter (see `docs/theme_tagging_report.md`)
 
 ---
 
