@@ -574,6 +574,7 @@ body:not(.emoji-mode) .emoji-cat-controls{display:none;}
 .emoji-gender-btn{flex:1;padding:5px 8px;background:var(--white);color:var(--text);border:none;font-size:0.74rem;font-family:inherit;cursor:pointer;border-inline-end:1px solid var(--border);transition:background 0.15s;}
 .emoji-gender-btn:last-child{border-inline-end:none;}
 .emoji-gender-btn:hover{background:var(--warm-gray);}
+body.dark .emoji-gender-btn:hover{background:#2a3349;}   /* dark --warm-gray equals dark --white (the rest colour); pattern dark-hover-resolves-to-the-rest-colour */
 .emoji-gender-btn.active{background:var(--navy);color:#fff;}
 body.dark .emoji-gender-btn.active{background:#0a0f1c;}
 #emojiCatTree{display:grid;grid-template-columns:1fr 1fr;column-gap:8px;align-items:start;}

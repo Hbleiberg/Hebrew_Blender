@@ -725,6 +725,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .ctl-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .ctl-btn { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 6px 11px; font-size: 0.78rem; cursor: pointer; font-family: inherit; color: var(--text); font-weight: 600; }
   .ctl-btn:hover { background: var(--warm-gray); }
+  body.dark .ctl-btn:hover { background: #2a3349; }   /* dark --warm-gray equals dark --white (the rest colour); pattern dark-hover-resolves-to-the-rest-colour */
   .ctl-btn.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
   /* Align tools: each opposing pair stacked vertically, pairs sit side by side (wrap on narrow) */
   .scale-pairs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
