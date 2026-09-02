@@ -337,7 +337,7 @@ body.dark .tu-ex-play:focus-visible { outline-color:var(--gold-light); }
 .mark-hit { color:#8a6216; background:rgba(201,146,42,0.16); border-radius:4px; }
 body.dark .mark-hit { color:var(--gold-light); background:rgba(224,168,50,0.2); }
 .tu-card-links { padding:0 14px 12px; font-size:0.76rem; }
-.tu-card-links a { color:var(--gold-text); text-decoration:none; font-weight:600; }
+.tu-card-links a { color:var(--gold-text); text-decoration:none; font-weight:600; padding-block:5px; }   /* inline: vertical padding grows the hit box (14px → 24px, WCAG 2.5.8) without moving the line box */
 .tu-card-links a:hover { text-decoration:underline; }
 .tu-learn-nav { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; flex-wrap:wrap; }
 .tu-print-sheet { display:none; }   /* paper only — @media print reveals it */
