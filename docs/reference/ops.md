@@ -223,13 +223,27 @@ Every page's `<meta http-equiv="Content-Security-Policy">` sits right after `<me
 script/style) and uses `script-src 'unsafe-inline'` (all app JS is inline by design). Its job is blocking
 remote script injection, `object-src`, `base-uri` hijacks, and unexpected `connect-src`/`frame-src`
 origins. Meta CSP can't express `frame-ancestors` or `report-uri` and doesn't cover content parsed
-before the tag — hence the placement. Origins currently allowlisted:
+before the tag — hence the placement. Origins currently allowlisted (re-true this list from the
+pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.html`):
 
-- **Everywhere:** Google Fonts + gtag.
-- **Generator, Flash Cards, Dictionary, Torah Trainer:** `esm.sh` / `cdn.jsdelivr.net` (transliteration ESM + Ezra SIL font).
-- **Generator, Font Maker:** `cdnjs.cloudflare.com` (html2canvas / jspdf).
-- **Font Maker:** `'wasm-unsafe-eval'` + `cdn.jsdelivr.net` (HarfBuzz WASM, pyodide, opentype.js).
-- **Dashboard:** `hebcal.com`, `api.open-meteo.com`, `geocoding-api.open-meteo.com`, `nominatim.openstreetmap.org`; `youtube.com` in `frame-src`.
-- **Torah Trainer:** `sefaria.org`; `raw.githubusercontent.com` in `media-src`. (The Trope Tutor deliberately has neither `sefaria.org` nor `esm.sh`.)
-- **Contact / Resources:** `web3forms.com` / `api.web3forms.com`, `*.hcaptcha.com`.
-- `data:` / `blob:` stay in `img-src` (and `media-src`) for PDF/PNG/`.ivrit` export.
+- **Everywhere:** Google Fonts (`fonts.googleapis.com` / `fonts.gstatic.com`) + gtag (`www.googletagmanager.com`
+  in `script-src`, `*.analytics.google.com` in `connect-src`); `data:` / `blob:` in `img-src` for PDF/PNG/`.ivrit`
+  export. (`i18n-test.html`, the dev harness, carries no gtag and allows only `data:` images.)
+- **All seven tools:** `cdn.jsdelivr.net` in `font-src` — the self-hosted `aharonium/fonts` faces (Ezra SIL, Shlomo,
+  Dyslexia Hebrew, the Culmus faces) every Hebrew font picker offers.
+- **Generator, Flash Cards, Dictionary, Torah Trainer:** `esm.sh` + `cdn.jsdelivr.net` in `script-src` and
+  `connect-src` (the transliteration ESM).
+- **Generator, Font Maker:** `cdnjs.cloudflare.com` in `script-src` (html2canvas / jspdf).
+- **Font Maker:** `'wasm-unsafe-eval'` + `cdn.jsdelivr.net` in `script-src` and `connect-src` (HarfBuzz WASM,
+  pyodide, opentype.js).
+- **Dashboard:** `www.hebcal.com`, `api.open-meteo.com`, `geocoding-api.open-meteo.com`, `nominatim.openstreetmap.org`
+  in `connect-src`; `www.youtube.com` + `www.youtube-nocookie.com` in `frame-src`.
+- **Torah Trainer:** `www.sefaria.org` in `connect-src`; `raw.githubusercontent.com` + `blob:` in `media-src`
+  (PocketTorah audio).
+- **Trope Tutor:** `raw.githubusercontent.com` + `blob:` in `media-src` only — deliberately neither `sefaria.org`
+  nor `esm.sh` (its index and clips are pre-built).
+- **Home, Torah Trainer:** `files.readme.io` in `img-src` — the host of Sefaria's attribution wordmark (hot-linked,
+  documented in `THIRD_PARTY_LICENSES.md`).
+- **Contact / Resources:** `js.hcaptcha.com` + `*.hcaptcha.com` in `script-src` (Contact also `web3forms.com`, its
+  client script); `*.hcaptcha.com` in `style-src`, `img-src` and `frame-src`; `api.web3forms.com` + `*.hcaptcha.com`
+  in `connect-src`; `api.web3forms.com` in `form-action`.
