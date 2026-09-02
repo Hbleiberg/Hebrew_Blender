@@ -606,6 +606,7 @@ body.dark .slider::before { background: #d8dde9; }
 /* Keep the switch and its label on one line — the label is long enough to wrap under the switch
    at the menu's width, which reads as two unrelated controls. It wraps its own text instead. */
 .sheet-menu .row { margin: 6px 0 10px; flex-wrap: nowrap; }
+.sheet-menu .row[hidden] { display: none; }   /* .row is display:flex, which beats the UA [hidden] rule (same trap as .preset-row) */
 .sheet-menu .row .label { flex: 1; min-width: 0; }
 .sheet-menu #sheetPrintBtn { width: 100%; }
 
