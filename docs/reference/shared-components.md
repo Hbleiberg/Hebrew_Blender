@@ -328,6 +328,26 @@ width key per the rule above, and finish per the Definition of done (the page is
 
 ---
 
+## Fullscreen idle-hide — shared block (every fullscreen-capable tool)
+The exit-fullscreen control is only shown while the presenter is moving the mouse: after 3 s without
+pointer, key, touch or wheel activity in fullscreen the block sets `body.fs-idle`; the next activity
+clears it, and leaving fullscreen clears it. Nothing is saved.
+- **Carriers (byte-identical JS, `/* ═══ shared: fullscreen idle-hide ═══ */`):** `Hebrew_Font_Maker.html`,
+  `classroom_dashboard.html`, `flash_cards.html`, `hebrew_blend_generator.html`, `hebrew_dictionary.html`,
+  `torah_trainer.html`, `trope_tutor.html` (7). Pasted directly above each page's `toggleFullscreen()`;
+  sha-verify after touching it.
+- **Host contract (per-page CSS, deliberately not identical):** one rule
+  `body.fs-idle <exit control>:not(:focus-visible) { opacity: 0; pointer-events: none; }` plus `opacity`
+  in that control's `transition`, and a component-local `@media (prefers-reduced-motion: reduce)`
+  neutralizer for it. The `:focus-visible` exception is what keeps a keyboard user from being timed out;
+  `pointer-events: none` is what makes the first tap on a touch device reveal rather than activate.
+  What fades: the floating `#fsExitBtn` (Font Maker also `#fsPanelsBtn`; dashboard/generator/torah), the
+  dictionary's floating `#fsBtn`, and on flash cards / Trope Tutor (whose header stays visible in
+  fullscreen) the header `#fsBtn`. The dashboard strip and torah `#ttFsBar` keep their own 4 s show/hide.
+- **Verify** with a stubbed Fullscreen API (headless Chromium cannot enter real fullscreen): define
+  `document.fullscreenElement` as a getter, dispatch `fullscreenchange`, then measure the control at
+  t=0, after 3.3 s idle, after a `page.mouse.move`, while focused past the idle time, and after exit.
+
 ## Shared UX components — the conventions all tools are converging on
 
 These are the cross-tool UX patterns the suite is standardizing, documented the same way as the

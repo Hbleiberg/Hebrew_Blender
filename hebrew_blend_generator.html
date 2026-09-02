@@ -1212,7 +1212,7 @@ footer a { display: inline-block; padding-block: 5px; }
     min-width: 60px;   /* not `width`: the label is i18n text and overflowed this plate (S263) */
     cursor: pointer;
     backdrop-filter: blur(6px);
-    transition: background 0.2s;
+    transition: background 0.2s, opacity 0.25s;
     flex-direction: column;
     align-items: center;
     gap: 2px;
@@ -1221,6 +1221,10 @@ footer a { display: inline-block; padding-block: 5px; }
   #fsExitBtn .fs-x { font-size: 1.5rem; line-height: 1; }
   #fsExitBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
   body.fullscreen #fsExitBtn { display: flex; }
+  /* Idle-hide (shared fullscreen idle-hide block): fades after 3s without pointer activity, returns on the next move,
+     never hides while keyboard-focused. */
+  body.fs-idle #fsExitBtn:not(:focus-visible) { opacity: 0; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { #fsExitBtn { transition-duration: 0.001ms !important; } }
   body.fullscreen header,
   body.fullscreen footer { display: none !important; }
   body.fullscreen { overflow: hidden; }
@@ -6825,6 +6829,26 @@ const FS_EXIT_ICON  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="non
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hide);
   else hide();
 })();
+/* ═══ shared: fullscreen idle-hide ═══ (byte-identical across Hebrew_Font_Maker / classroom_dashboard / flash_cards /
+   hebrew_blend_generator / hebrew_dictionary / torah_trainer / trope_tutor — paste verbatim, wire the CSS per page)
+   While the page is fullscreen, `body.fs-idle` is set after FS_IDLE_MS with no pointer, key, touch or wheel activity
+   and cleared by the next one; leaving fullscreen clears it. The per-page CSS decides what fades — the exit-fullscreen
+   control, always with a :focus-visible exception so a keyboard user is never timed out. Pure UI state, nothing saved. */
+(function () {
+  const FS_IDLE_MS = 3000;
+  let t = null;
+  const fs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+  const idle = () => { t = null; if (fs()) document.body.classList.add('fs-idle'); };
+  const wake = () => {
+    document.body.classList.remove('fs-idle');
+    if (t) clearTimeout(t);
+    t = fs() ? setTimeout(idle, FS_IDLE_MS) : null;
+  };
+  ['pointermove', 'pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(ev =>
+    document.addEventListener(ev, () => { if (t || fs()) wake(); }, { passive: true }));
+  ['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, wake));
+})();
+/* ═══ end shared: fullscreen idle-hide ═══ */
 function toggleFullscreen() {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(() => {});
