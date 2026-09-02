@@ -8,15 +8,19 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S312 Pass C — the REST-STATE half of the S309 low-contrast backlog; the hover half shipped in `5ac0fbd`**) | classroom_dashboard.html, flash_cards.html, Hebrew_Font_Maker.html, hebrew_blend_generator.html | **Text still painted brand `--gold` (#c9922a) on light grounds at rest — 2.6:1 on white/cream, 2.1:1 on `--warm-gray`.** The ones a teacher must READ: the dashboard's two …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P3 (**NEW S313 Pass F — the pass's largest leftover, held back only by the 2-per-pattern cap**) | flash_cards.html | **The mode pills (`.pill-group .pill`, 4) and the ten card-count buttons (`.count-btn`) have no hover rule at all** — the page's own `.btn:hover` uses `background:var(--paper)`, and every sibling chip class in the suite hovers (generator `.blend-type-btn`, dictionary …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P3 (**NEW S313 Pass F**) | hebrew_blend_generator.html | **The header's `← Home` link, `#darkToggle` and `#fsBtn` are inline-styled (`border:1.5px solid var(--gold-light)`) with no hover rule** — the only tool whose header buttons give no pointer feedback; dashboard/torah/trope `.hbtn:hover` (white .18 + border .3), flash `.h-btn`, dictionary `.dark-btn`/`#fsBtn` all hover. Fix = one CSS …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P4 (**NEW S313 Pass F**) | classroom_dashboard.html | **`.btn-xs` (Reset, ↺ Refresh) carries no `.btn` class so `.btn:hover` never reaches it, and the `.spoiler` toggle and the weather "links" anchor have no hover rule either** — the drawer's local idiom is `.timer-preset-btn:hover{border-color:var(--gold)}`. Three small rules; drawer chrome, so P4. Pattern …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P3 (**S312 Pass C rest-state gold, REDUCED — the three `role=status` notes shipped in `9cf8942`**) | Hebrew_Font_Maker.html, hebrew_blend_generator.html | **Text still painted brand `--gold` on light grounds at rest (2.6:1):** the Font Maker's `.hint-link`, `.wiz-os-row a`, `.sc-group h4`, `.pin-badge`, `.lt-need` (0.5rem); the generator's …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P3 (**NEW S312 Pass C — the S309 backlog's SMALLEST string, measured at RUNTIME**) | classroom_dashboard.html | **"Full Screen" under the header's fullscreen icon renders at 8px** (`.fs-btn .fs-cap` 0.5rem, 1280 and 800px alike) — the suite's smallest functional label, on the PROJECTED tool. The constraint is arithmetic, and a comment at `.hbtn.fs-btn` records why: icon 16 + gap 1 + cap 8 + …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S312 Pass C**; trope_tutor was at its ×2 cap this session, so it is the first thing a trope-touching session should take) | trope_tutor.html | **The mastery grid names its 26 tropes at 9.6px** (`.tu-mcell .m-name` 0.6rem) with the ✓/✗ stat at 9.92px (`.m-stat` 0.62rem) on the drill-start AND results screens — the only sub-11px functional strings on the page at runtime (EN + HE, 1280 + 800). The name is how a student reads their own mastery. A 0.7rem floor (11.2px) needs a wrap check across the 26-cell grid at 800px in both languages. | found S312
-
 - [ ] P4 (**NEW S312 Pass C** — settings-drawer chrome, not projected content, so P4; four sibling carriers, converge together) | trope_tutor.html + torah_trainer.html (+ hebrew_blend_generator.html, hebrew_dictionary.html at 0.52rem) | **The font picker's attribution line renders at 8.64px and its `[DEFAULT]` marker at 8.8px** (`.font-opt-attr` 0.54rem; the inline `font-size:0.55rem` span in …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**NEW S312 Pass C** — one extra Tab stop on a two-tab strip; APG divergence, not a blocker) | trope_tutor.html | **Both Learn/Drill tabs are Tab stops** — neither carries `tabindex`, so the unselected tab is reachable by Tab as well as by arrows, where the APG tabs pattern puts only the selected tab in the Tab sequence (`tabindex="-1"` on the rest; arrows/Home/End already move + …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S312 Pass C** — one extra Tab stop on a two-tab strip; APG divergence, not a blocker) | trope_tutor.html | **Both Learn/Drill tabs are Tab stops** — neither carries `tabindex`, so the unselected tab is reachable by Tab as well as by arrows, where the APG tabs pattern puts only the selected tab in the Tab sequence (`tabindex="-1"` on the rest; arrows/Home/End already move + …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S311 Pass O — filed OUT of O per the pass's own boundaries; O keeps only tells**) | `Hebrew_Font_Maker.html`, the help popup | Three findings the popup sweep surfaced that belong to other passes. **To M:** `line-length` fires on all 14 tabs, but the detector's "~86 chars" is wrong — **measured 78 chars** at the real 592px body width and 13.76px type, i.e. just inside the 80 …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -82,6 +86,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-02 | (S313 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-rzsgeu` → draft PR #218**, verified via the API first (`open, draft, merged:false, mergeable_state:clean`, head `8104f23`, base `facfbb6`). **Drift check: ZERO outside-loop drift** — `origin/main` still `facfbb6`, `sw.js` v631, `FONT_MAKER_VERSION` 5.37; clone still shallow. **`sw.js` …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-02 | `fc93f8f` | trope_tutor.html | (**S313 iter 5 — the S312 P3 the pointer named first for a trope-touching session**) **The mastery grid's 26 names (9.6px) and ✓/✗ stats (9.92px) move to 0.7rem = 11.2px**, the page's only sub-11px functional strings. | Measured before/after at 1280 + 800, EN + HE (names are transliteration, identical in both): 0/26 names wrap, no overflow, cells …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-02 | `9cf8942` | classroom_dashboard.html, flash_cards.html | (**S313 iter 4 — the rest-state half of the S309 gold backlog, the three `role=status` VALIDATION notes**) `#pickerClassNote`, `#presetNameNote` (dashboard) and `#startNote` (flash cards) painted `--gold` at rest, 2.6:1 on light — text a teacher must read to fix an error. Inline `color:var(--gold)` → `var(--gold-text)`, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-02 | `6c93749` | Hebrew_Font_Maker.html | (**S313 iter 3 — pattern `control-class-without-a-hover-state`, 2nd of 2 this session**) **14 unselected controls with no hover rule: 3 wizard `.wtab`, 7 category `.ctab`, 4 `.mode-btn` segments.** Tabs converge on the file's own `.ltile:hover` border-gold + `--text`; mode buttons on the generator's chip `--warm-gray` with an …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-02 | `8fef206` | index.html, resources.html, contact.html, privacy.html, terms.html, 404.html | (**S313 iter 2 — pattern `control-class-without-a-hover-state`, 1st of 2**) **The footer links had no hover rule on ANY chrome page** — gold, `text-decoration:none`, nothing changes under the pointer. One rule per page, `footer a:hover{text-decoration:underline}`, the idiom the 404 …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-09-02 | (S312 close-out) | branch/deploy note | **Branch/PR: NEW `claude/improve-loop-rzsgeu` → draft PR #218**, cut exactly where the S312 pointer said — but the pointer's expected base (`74573fa`) had moved: `origin/main` was force-updated to `facfbb6` before the session (`+ d3e299a...facfbb6 main -> origin/main (forced update)` on fetch), and the branch started AT `facfbb6`, so the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-02 | `5ac0fbd` | index.html, resources.html, hebrew_blend_generator.html, hebrew_dictionary.html, classroom_dashboard.html, torah_trainer.html, Hebrew_Font_Maker.html | (**S312 iter 4 — the S309 low-contrast backlog's hover half, suite-wide; pattern `contrast-inverted-by-a-hover-or-active-state`, colour-only shape**) **26 `:hover` rules on seven pages painted text `var(--gold)` on …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -118,19 +132,11 @@ _(none)_
 
 - [x] 2026-09-01 | S309 iter 1 (**Pass O — deslop / AI-design-tell sweep, REGISTERED AND FIRST-EVER RUN; the pass itself, no code change**) | `index.html` then `classroom_dashboard.html`, with the static arm run over all 13 root pages for context | **Detector: Impeccable 4.1.2, shallow-cloned to the scratchpad; static arm NOT degraded (all four parser modules present) and browser arm live via …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-01 | (S308 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-097lu1` → draft PR #215**, verified via the API BEFORE any work (`state:open, draft:true, merged:false, mergeable_state:clean`, head `fbc6d68`) exactly as the S308 pointer demanded — so no fresh branch and no new PR. `origin/main` still `eb6cc19`; **zero outside-loop drift for the FIFTEENTH …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-01 | `6025bfc` | locales/ui-strings.csv + locales/{en,he}.json + scripts/check-i18n.js | (**S308 iter 5 — CLOSES the S259 standing measurement, and the fix was the opposite of the one that measurement implied**) | **The suite's last untranslated cell was a key nothing has ever read.** S259 (Pass E) measured Hebrew debt at exactly one cell in ~5,000 — `worksheet.layout.title_default` …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-01 | `53ab419` | resources.html + locales/ui-strings.csv + locales/{en,he}.json | (**S308 iters 3–4 — THE MICRO-FEATURE; GATE 1 ASKED and the maintainer chose this seed, the pointer's own first offer**) | **Comparing two fonts no longer means leaving the preview.** Two chevrons in the font-preview header step through the gallery, so the decision happens where the specimen, the …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-01 | `4ed31d9` | resources.html | (**S308 iter 2 — a live i18n defect found while grounding the micro-feature, fixed FIRST so the feature landed on correct ground; the S305 blast-radius lesson applied**) | **Switching the UI language renamed the font you were looking at.** `#fontPreviewTitle` carries `data-i18n="resources.preview.title"` and `openFontPreview` overwrites it with the …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-01 | S308 iter 1 (**Pass I — first-load & empty-state, 24th run; the pass itself, no code change**) | the whole suite, weighted onto S307's two freshly-shipped surfaces exactly as the S308 pointer directed | **CLEAN IN EVERY ARM, and it ANSWERED the pointer's open question rather than just re-running the gates.** **Mechanical gates clean an ELEVENTH consecutive run:** 26 …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-02 | **S313** | iters: 1 pass (**F**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: index, resources, contact, privacy, terms, 404 **×1 each** (`8fef206`), Hebrew_Font_Maker ×1 (`6c93749`), classroom_dashboard ×1 + flash_cards ×1 (`9cf8942`), trope_tutor ×1 (`fc93f8f`) | patterns …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-09-02 | **S312** | iters: 1 pass (**C**) + 3 fixes = **4 of 5** (the 5th deliberately unspent — trope's remaining P3s sit behind its cap, the dashboard caption is a header-rhythm decision, nothing else above P4 was verified-safe inside the caps) | tools touched: trope_tutor **×2 (AT CAP**: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -170,13 +176,13 @@ _(none)_
 
 - 2026-08-30 | **S293** | iters: 1 pass (**G**) + 2 fixes + 2 (micro-feature) = **5 (FULL BUDGET — the first full session since S290, and it broke the two-session short streak by doing exactly what the S293 pointer prescribed: weighting the discovery pass onto a surface that would actually yield)** …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-08-30 | **S292** | iters: 1 pass (**H**) + 2 (micro-feature) + 1 fix = **4 of 5 (short on BACKLOG EXHAUSTION, not on caps — the opposite of S291's reason, and worth distinguishing: NEITHER touched tool reached its ×2 cap (dictionary ×1, Font Maker ×1), but a full re-scan confirmed 0 P1 / 0 …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S312 (2026-09-02):** trope_tutor **2026-09-02 (×2, AT CAP** — `3b98338` tab + slider-reset hover gold, `56d85ad` the card-link hit box**)**; index, resources, hebrew_dictionary, hebrew_blend_generator, classroom_dashboard, torah_trainer, Hebrew_Font_Maker **2026-09-02 (×1 each, all inside `5ac0fbd`, the suite-wide hover-gold swap)**; flash_cards **2026-09-02 (S311 `88f4940`)**; `locales/` 2026-09-02 (S311); contact / privacy / terms / 404 untouched this session (contact last S291, privacy + terms S304, 404 — see the archive).
+- **S313 (2026-09-02):** index, resources, contact, privacy, terms, 404 **2026-09-02 (×1 each, `8fef206` footer hover)**; Hebrew_Font_Maker **2026-09-02 (×1, `6c93749` tab/mode-button hover)**; classroom_dashboard + flash_cards **2026-09-02 (×1 each, `9cf8942` validation-note gold)**; trope_tutor **2026-09-02 (×1, `fc93f8f` mastery-grid floor)**; hebrew_dictionary, hebrew_blend_generator, torah_trainer 2026-09-02 (S312 `5ac0fbd`); `locales/` 2026-09-02 (S311).
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`control-class-without-a-hover-state`** (**NEW, registered 2026-09-02 (S313 Pass F) — 20 carriers on 7 pages fixed in 2 commits (`8fef206`, `6c93749`), 3 classes logged as Candidates (flash `.pill`/`.count-btn`, generator header trio, dashboard `.btn-xs`/spoiler/links). …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`elevation-cue-doubled-or-dead`**: **re-swept 2026-09-02 (S311 Pass O, `Hebrew_Font_Maker.html` help popup) — hits: 14, ALL FIXED. Clean streak: 0 — ACTIVE.** Two shapes this sweep, and the second is the more interesting: **(a) 4 DEAD SELECTION CUES** (`0c86195`) — …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -190,7 +196,7 @@ _(none)_
 
 - **`invisible-rebuild-on-a-hot-render-path`**: **re-swept 2026-08-31 (S299 Pass A) — hits: 0. Clean streak: 1 — ACTIVE.** Swept on the exact four surfaces the S294 registration named as unswept (dashboard settings drawer, flash-cards setup, torah + trope drawers), by the …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`sub-floor touch target`**: **re-swept 2026-09-02 (S312 Pass C, `trope_tutor.html`, pseudo-aware) — hits: 1 class (the 5 `.tu-card-links a` at 14px tall), FIXED `56d85ad`; clean streak: 0 — ACTIVE.** S298's tooltip fix HOLDS (`.tip-icon::after { inset:-5px }` = 25×25; …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`sub-floor touch target`**: **re-swept 2026-09-02 (S312 Pass C, `trope_tutor.html`, pseudo-aware) — hits: 1 class (the 5 `.tu-card-links a` at 14px tall), FIXED `56d85ad`; clean streak: 0 — ACTIVE.** S298's tooltip fix HOLDS (`.tip-icon::after { inset:-5px }` = 25×25; …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`author-display-defeats-the-hidden-attribute`** (**NEW, registered 2026-08-30 (S297) — 1 carrier found and fixed, then the whole suite swept CLEAN**): an element carrying the `hidden` **attribute** whose CSS also sets a `display`. The UA stylesheet's `[hidden] { display:none …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -254,7 +260,7 @@ _(none)_
 
 - **hover-only-affordance-under-a-synthetic-mouse-event**: **re-swept 2026-08-23 (S249 Pass N arm 4) — hits: 1, the THIRD and FINAL carrier (`hebrew_dictionary.html`), fixed `383aa2a`; clean streak: 0 — ACTIVE.** **The class is now fully swept: all three `bindTip` carriers are …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **contrast-inverted-by-a-hover-or-active-state**: **re-swept 2026-09-02 (S312 Pass C + iters 2 + 4, suite-wide at RUNTIME) — hits: 28 `:hover` rules on 8 pages, ALL FIXED (`3b98338` trope, `5ac0fbd` the other seven); clean streak: 0 — ACTIVE (consequence-critical: a …[full text: IMPROVEMENT_ARCHIVE.md]
+- **contrast-inverted-by-a-hover-or-active-state**: **re-swept 2026-09-02 (S312 Pass C + iters 2 + 4, suite-wide at RUNTIME) — hits: 28 `:hover` rules on 8 pages, ALL FIXED (`3b98338` trope, `5ac0fbd` the other seven); clean streak: 0 — ACTIVE (consequence-critical: a …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **contrast-below-AA-on-a-tinted-or-coloured-plate**: **re-swept 2026-08-23 (S249 Pass M, `flash_cards.html` — card front AND back, results screen, and setup screen with every `.panel`/`<details>` force-expanded) — hits: 0 across 20 cells; clean streak: 1 — ACTIVE …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -484,9 +490,9 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - **S163 (2026-07-26): two NEW patterns registered and swept to zero.** (1) `placeholder-as-only-accessible-name` — the S161 P4 recorded 2 instances; the real class was **17 across 6 tools**, found by computing the ACCNAME precedence chain …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- modal-focus-trap: **first sweep 2026-07-26 (S161, Pass I)** — all **9** `aria-modal="true"` dialogs in the suite, each opened through its genuine opener and tab-cycled in both directions. **7 trapped, 2 not** (both …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+- modal-focus-trap: **first sweep 2026-07-26 (S161, Pass I)** — all **9** `aria-modal="true"` dialogs in the suite, each opened through its genuine opener and tab-cycled in both directions. **7 trapped, 2 not** (both …[full text: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **S158 (Pass A, 2026-07-25): 5 of 6 ACTIVE classes clean, 1 real hit (fixed)** over `0dc1e50..HEAD` (S148–S157, never A-swept). **Clean:** localStorage-vs-AllTools (0 new localStorage calls at all in the delta), …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S158 (Pass A, 2026-07-25): 5 of 6 ACTIVE classes clean, 1 real hit (fixed)** over `0dc1e50..HEAD` (S148–S157, never A-swept). **Clean:** localStorage-vs-AllTools (0 new localStorage calls at all in the delta), …[full text: …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **S136 (Pass A, 2026-07-22): CLEAN, 0 hits** across the 3 active consequence-critical classes over the delta `0ccaa7c..HEAD` (the surface changed since S126's A sweep, none of it A-swept since: design-call batch c1591a8 + S127/S129 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -504,7 +510,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - slider-commit (Font Maker `oninput` sliders lacking `onchange="udBurstCommit()"`): re-verified clean 2026-07-06 — every project-data slider commits; the kern-value slider (staging draft) and opacity view-prefs are correctly outside the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- workMode/step reachability (controls reachable in only one workMode while the workflow steers past it): swept 2026-07-06 — CLEAN. Letter Metrics now renders in Align, Trace, AND Nodes; the Trace tab (with the SVG-only …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+- workMode/step reachability (controls reachable in only one workMode while the workflow steers past it): swept 2026-07-06 — CLEAN. Letter Metrics now renders in Align, Trace, AND Nodes; the Trace tab (with the SVG-only …[full text: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - localStorage-vs-AllTools (keys written by a tool but missing from index.html gather/import/erase or the owning `.ivrit`): re-swept 2026-07-06 **S17** — all cross-machine data keys registered; `hebrewFontMaker_inputMode` (UI-flag class) …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -566,12 +572,12 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - E freshness/site-health: 2026-08-31 (**S300 — 25th run, its first since S287 (~13 sessions); E was the single stalest by BOTH date and session number and the S300 pointer named it AND all three of its weighted arms. EIGHT arms; 2 findings, BOTH FIXED THIS SESSION; 6 clean.** Headline: **the ~380-file `pockettorah/timings/*.txt` corpus was the ONE `/data/` family fetched with no `?v=`** — …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- F cross-tool consistency: 2026-08-30 (**S296 — 24th run, its first since S282 (~14 sessions); F was the single stalest by BOTH date and session number and the S296 pointer named it AND its affordance. Affordance: THE KEYBOARD-SHORTCUT AFFORDANCE — how a tool tells a user its keys exist — which none of F's 23 prior runs had swept.** Method: static census of every document-level `keydown` handler …[full text: IMPROVEMENT_ARCHIVE.md]
+- F cross-tool consistency: 2026-09-02 (**S313 — 25th run, its first since S296 (~17 sessions); F was the single stalest by BOTH date and session number and the S313 pointer named it AND the affordance: THE HOVER/PRESSED-STATE COLOUR LANGUAGE.** Method: every `:hover`/`:active` rule on all 13 pages tallied by the properties it sets, then EVERY visible control hovered with a real `page.mouse` and …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S313):** **BRANCH/PR: CONTINUE on `claude/improve-loop-rzsgeu` → draft PR #218** (opened at the S312 close-out; base = `facfbb6`, which WAS `origin/main` at S312 start after a forced update the S311 pointer could not know about). VERIFY via the API first: if #218 is still open and unmerged, continue on it; if merged, cut a fresh branch off latest `origin/main` and open a new draft PR at close-out. No `.github/workflows`, so **0 check runs on a PR is correct**; deploy is verifiable only AFTER a merge. **⚑ `git rev-parse --is-shallow-repository` was TRUE at S312** (FALSE at S310/S311) — `git fetch --unshallow` before `update-sitemap.mjs`. **Drift note: `sw.js` is now v631, `FONT_MAKER_VERSION` stays 5.37** — re-read both from the files. **S312 found the FIRST outside-loop landing in 19 sessions** — `dc41123` (CLAUDE.md → `docs/reference/*.md`) and `facfbb6` (the improveloop skill rewrite + ledger tooling): docs and scripts only, no page bytes — so read the fetch line for a forced update, not just the page files.
+**Next session (S314):** **BRANCH/PR: CONTINUE on `claude/improve-loop-rzsgeu` → draft PR #218** (S312 + S313 both on it; base `facfbb6` = `origin/main` at S313 start, ZERO drift). VERIFY via the API first: open + unmerged → continue; merged → fresh branch off latest `origin/main`, new draft PR at close-out. No `.github/workflows`, so 0 check runs is correct; deploy is verifiable only AFTER a merge. **⚑ clone still shallow** — `git fetch --unshallow` before `update-sitemap.mjs`. **Drift note: `sw.js` is now v632, `FONT_MAKER_VERSION` stays 5.37** — re-read both.
 
-**⚑ THE STALEST PASS IS F (2026-08-30, S296), THEN B (S297).** C ran this session; both F and B tie by date and F is older by session number, so run F. Affordance suggestion, from what S312 measured: **the hover/pressed-state colour language.** Three idioms coexist — a text-colour flip to `--gold-text` (now 28 rules on 8 pages), `filter: brightness(1.06/1.08)` on gold-filled buttons, and `.active` overrides that silently out-rank the hover rule (resources' filter chips, the dashboard's pencil). F can census which idiom each tool uses per control class and converge on one per class. Fallback affordance: the ↺ reset control (`.sreset` / `.fs-reset`, 4 carriers).
+**⚑ THE STALEST PASS IS B (2026-08-30, S297), THEN A (S299), E (S300).** F ran this session. B's last five runs were clean on the happy path; point it at what changed since S297: the 8 pages the S312/S313 hover work touched plus the dashboard's first-run modal path (S313 found `.fr-modal.open` covering every control on a virgin load — B's basic-interaction arm should open the drawer THROUGH that modal, not around it). Reuse S297's failure-path arm (`serviceWorkers:'block'` + aborted `/data/`).
 
-**⚑ THE STRONGEST UNTAKEN CANDIDATE IS THE REST-STATE HALF OF THE GOLD BACKLOG (new top P3).** The dashboard's `#pickerClassNote`/`#presetNameNote` and flash cards' `#startNote` are `role=status` VALIDATION copy at 2.6:1 in light — text a teacher must read to fix an error. Same one-token swap, TEXT colour only, measured at runtime first (recipe in the `contrast-inverted…` health row). The generator's worksheet tokens PRINT — check its `@media print` darkening before touching them. Trope's two P3s (mastery-grid 9.6px names; both tabs as Tab stops is the P4) are the first things a trope-touching session should take; the generator is now C's stalest target with a ready backlog.
+**⚑ THE STRONGEST UNTAKEN CANDIDATES ARE THE THREE `control-class-without-a-hover-state` LEFTOVERS** (flash `.pill`/`.count-btn` — 14 controls, P3; generator header trio, P3; dashboard `.btn-xs`, P4) — all one-rule fixes with `verifyHover.mjs` ready in the scratchpad recipe (real `page.mouse` hover, diff computed props, light + dark × 1280 + 800). The pattern cap allows 2 per session. Then the reduced rest-state gold candidate (FM `.hint-link` etc.; generator worksheet tokens need the print check first).
 
-**/!\ THE S312 METHOD LESSONS.** (a) **A touch-target census must read the pseudo vehicle on the element that carries it** — `.tip-icon::after`, not the tabbable `.tip-wrap` — or confirm with `elementFromPoint` ±11px; otherwise every S298 fix re-files as a 15px hit (it did, for one census, before the control caught it). (b) **After a token swap, re-running the detector reports the SHAPE count (0 rules) — that is not a contrast measurement.** Re-measure with the NEW token: that is how the dictionary's `--gold-text` was caught at 3.97:1 on warm-gray. (c) **`padding-block` on an inline anchor is a layout-neutral hit-box vehicle** (line box untouched, measured) — prefer it to `::after` for text links. (d) A `git stash` inside a `cd`-ed subshell operates on the wrong directory — use `git -C <repo>` for stash/pop when the script lives in the scratchpad.
+**/!\ THE S313 METHOD LESSONS.** (a) **A hover census is only as good as its overlay dismissal** — the dashboard's `.fr-backdrop.open`/`.fr-modal.open` first-run modal is NOT `.overlay.open`; 23 controls read as dead until `elementFromPoint` showed the backdrop on top. Any runtime probe must assert `elementFromPoint(centre) === el || el.contains(...)` before trusting a no-change. (b) **A diff-based hover probe counts an expected no-change as a failure** — read `FAILS` against the selected-state controls you deliberately included. (c) **Dark `--warm-gray` equals dark `--white` in the Font Maker** (#1e2535 both) — a light-mode bg hover on a `--white` control needs its own dark value. (d) A perl `s|...|` replacement that ends a CSS comment must carry the `*/` INSIDE the replacement — an unterminated comment silently ate the next rule until the count of `/*` vs `*/` was compared against HEAD.
