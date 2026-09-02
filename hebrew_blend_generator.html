@@ -4843,6 +4843,11 @@ function getSettings() {
   };
 }
 
+// The selectable universe: every LETTERS row's heb (and its sofit form, which the grid offers as its
+// own tile) and every VOWELS key — the values initLetters()/initVowels() hand to the tiles.
+const KNOWN_LETTER_KEYS = new Set(LETTERS.flatMap(l => l.sofit ? [l.heb, l.sofit] : [l.heb]));
+function isKnownLetterKey(k) { return typeof k === 'string' && KNOWN_LETTER_KEYS.has(k); }
+function isKnownVowelKey(k)  { return typeof k === 'string' && VOWELS.some(v => v.key === k); }
 function applySettings(s) {
   // Letters
   if (s.dageshTav !== undefined) {
@@ -4851,8 +4856,12 @@ function applySettings(s) {
     const grid = document.getElementById('letterGrid');
     if (grid) { grid.innerHTML = ''; initLetters(); }
   }
-  selectedLetters = new Set(s.selectedLetters || []);
-  selectedVowels  = new Set(s.selectedVowels  || []);
+  // Keep only keys this build knows. A share link, preset or .ivrit file carrying anything else
+  // (a hand-edited payload, a key a later build renamed) used to survive into the remembered setup,
+  // where getLetter() returns undefined inside generate() — a thrown error and a blank worksheet on
+  // every Generate until the teacher re-picked. Unknown entries are dropped, never the whole set.
+  selectedLetters = new Set(Array.isArray(s.selectedLetters) ? s.selectedLetters.filter(isKnownLetterKey) : []);
+  selectedVowels  = new Set(Array.isArray(s.selectedVowels)  ? s.selectedVowels.filter(isKnownVowelKey)  : []);
   // Vowel color scheme governs the picker grouping/order — set before rebuilding the grid.
   if (s.vowelColorScheme !== undefined) vowelColorScheme = s.vowelColorScheme ?? 'default';
   initVowels(); // rebuild picker in the active scheme; reads selectedVowels for checked state
