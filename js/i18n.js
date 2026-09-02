@@ -222,6 +222,10 @@
       '[data-i18n-switcher]{align-self:stretch;display:flex;}' +
       '.i18n-switch select.i18n-select{height:100%;}' +
       '.i18n-switch select.i18n-select:hover{background:var(--warm-gray,#e8e0d0);}' +
+      // Dark --warm-gray equals dark --white (#1e2535) on every host page, so the token hover resolved to the
+      // rest colour; the literal is the suite's dark hover pair (generator .blend-type-btn, S314).
+      // Pattern dark-hover-resolves-to-the-rest-colour.
+      'body.dark .i18n-switch select.i18n-select:hover{background:#2a3349;}' +
       '.i18n-switch select.i18n-select:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:1px;}';
     var el = document.createElement('style');
     el.id = STYLE_ID;
