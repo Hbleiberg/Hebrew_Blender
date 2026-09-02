@@ -264,7 +264,7 @@ npx serve .
 2. Run whatever processing script converts the CSV to `data/hebrew_words.json`
 3. Bump the cache-busting version in **all three** files that fetch the JSON — `hebrew_blend_generator.html`, `hebrew_dictionary.html`, and `flash_cards.html`:
    ```js
-   fetch('data/hebrew_words.json?v=5')   // increment v= each time the JSON changes
+   fetch('data/hebrew_words.json?v=6')   // increment v= each time the JSON changes
    ```
 4. Commit both the new JSON and the HTML version bumps together. (If you edited any precached file, also bump `VERSION` in `sw.js` — see `CLAUDE.md`.)
 

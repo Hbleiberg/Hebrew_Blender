@@ -53,7 +53,9 @@ passes preamble) is required and is not "normalizing". A ledgered removal or SKI
 ## Session start (in order, before selecting anything)
 
 1. **Read `CLAUDE.md`** — it is the constitution; every binding rule there (security patterns, i18n,
-   preset wiring, AllTools registration, sw.js versioning, deploy) applies to every iteration.
+   preset wiring, AllTools registration, sw.js versioning, deploy) applies to every iteration. Then
+   read the `docs/reference/<topic>.md` file for each area you touch (CLAUDE.md's reference index
+   maps topics to files) — that is where component contracts and "implemented on" censuses live.
 2. **Read the ledger — with the long-line method.** The ledger's lines are extremely long; a raw
    `Read` of the whole file blows context. Map it first (`grep -n '^## \|^### ' docs/IMPROVEMENT_LOG.md`),
    then read sections via `sed -n 'A,Bp' docs/IMPROVEMENT_LOG.md | cut -c1-400`, widening the cut only
@@ -303,7 +305,7 @@ time and they re-sweep cheaply. Retired patterns are re-checked only in pass A2.
 
 **D. Performance snapshot (one tool per session)** — cold load + one heavy interaction; log main-thread blocks >200 ms with profile evidence.
 
-**E. Freshness & site health** — sitemap `lastmod` vs git history (`node scripts/update-sitemap.mjs`), broken internal links, SW precache list vs actual files, THIRD_PARTY_LICENSES.md vs deps, README/CLAUDE.md accuracy. **Boundary with pass L:** E owns *mechanical freshness/integrity* (lastmod-vs-git, precache both directions, licenses, broken links, robots/CNAME present-and-parses); L owns *indexability semantics* (canonical/OG/JSON-LD/title-description correctness, robots intent, sitemap↔canonical agreement). E's older ledgered runs also covered robots/sitemap coverage — after L's first run, record the handoff in both rotation rows.
+**E. Freshness & site health** — sitemap `lastmod` vs git history (`node scripts/update-sitemap.mjs`), broken internal links, SW precache list vs actual files, THIRD_PARTY_LICENSES.md vs deps, README / CLAUDE.md / `docs/reference/*` accuracy. **Boundary with pass L:** E owns *mechanical freshness/integrity* (lastmod-vs-git, precache both directions, licenses, broken links, robots/CNAME present-and-parses); L owns *indexability semantics* (canonical/OG/JSON-LD/title-description correctness, robots intent, sitemap↔canonical agreement). E's older ledgered runs also covered robots/sitemap coverage — after L's first run, record the handoff in both rotation rows.
 
 **F. Cross-tool consistency** — one UX affordance per session (empty states, share-link buttons, dark-mode toggles, Hebrew font pickers, error toasts) compared across **all seven tools** (generator, dashboard, flash cards, dictionary, torah trainer, trope tutor, font maker — plus the chrome pages where the affordance exists there); converge on the best existing implementation.
 

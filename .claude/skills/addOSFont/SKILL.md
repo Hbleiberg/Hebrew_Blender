@@ -72,7 +72,7 @@ The workhorse is `scripts/add_os_font.py` (Python 3 + fontTools; if it exits 2, 
    intake can see what was already decided instead of re-litigating it.
 7. **Ship.** `git add starting-fonts/ && git commit` per the repo's git rules. **No `sw.js`
    VERSION bump is needed for an intake** — the manifest is served network-first and font
-   binaries are fetched on demand (see CLAUDE.md → Starting Fonts). Append a one-liner to
+   binaries are fetched on demand (see `docs/reference/font-maker.md` → Starting Fonts). Append a one-liner to
    `docs/IMPROVEMENT_LOG.md` noting the intake.
 
 ## Invariants (from the runtime's contract — do not break)
