@@ -1500,7 +1500,9 @@ footer a { display: inline-block; padding-block: 5px; }
   .blend-type-btn[disabled]:hover { background: var(--white); color: var(--muted); }
   body.dark .blend-type-btn { background: var(--white); color: var(--muted); }
   body.dark .blend-type-btn.active { background: #2a4070; color: #dde4f0; }
-  body.dark .blend-type-btn:hover { background: var(--warm-gray); }
+  /* Dark --warm-gray equals dark --white (#1e2535), so the token hover was invisible; use the file's own
+     dark hover pair (.rw-drill-btn:hover). Pattern dark-hover-resolves-to-the-rest-colour (S313 lesson c). */
+  body.dark .blend-type-btn:hover { background: #2a3349; color: #dde4f0; }
   body.dark .blend-type-btn[disabled]:hover { background: var(--white); }
   /* Multi-row grid layouts (Worksheet Type) need a grid gap so row 1 and
      row 2 are visually separated; the per-button border-right pattern only
