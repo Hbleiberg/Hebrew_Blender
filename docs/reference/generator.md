@@ -233,3 +233,6 @@ version 0 synchronously, then streams the remaining versions in `setTimeout(0)` 
 
 ---
 
+## Settings restore guard
+
+`applySettings()` keeps only known letter/vowel keys (`isKnownLetterKey`/`isKnownVowelKey`, built from `LETTERS` heb + sofit and `VOWELS` keys) when it rebuilds `selectedLetters`/`selectedVowels`; unknown members from a share link, preset or `.ivrit` file are dropped one by one, never the whole set, so `getLetter()` can't return undefined inside `generate()`.
