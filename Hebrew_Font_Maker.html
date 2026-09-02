@@ -983,22 +983,23 @@ footer a { display: inline-block; padding-block: 5px; }
 
   footer { border-top: 1px solid var(--border); background: var(--white); color: var(--muted); padding: 12px 18px; font-size: 0.74rem; line-height: 1.5; }
   footer a { color: var(--gold-text); text-decoration: none; }
-  /* Compact footer bar (see the <footer> comment): at rest it is two short rows — disclosures +
-     credits, then the related-tool links — instead of a three-column block as tall as a panel.
-     An opened disclosure takes the whole row so FAQ answers get prose width, capped for reading. */
-  .ft-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 24px; }
-  .ft-info { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 22px; flex: 1 1 auto; min-width: 0; }
+  /* Compact footer bar (see the <footer> comment): at rest it is ONE row — the FAQ, About and
+     Related-tools disclosures, then the credits at the end — instead of a three-column block as
+     tall as a panel. An opened disclosure takes the whole row so its body gets prose width. */
+  .ft-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 24px; }
+  .ft-info { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 26px; flex: 1 1 auto; min-width: 0; }
   .ft-dt { min-width: 0; max-width: 100%; }
   .ft-dt[open] { flex: 1 1 100%; }
-  .ft-h { font-family: 'Libre Baskerville', serif; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 2px 0; }
+  .ft-h { font-family: 'Libre Baskerville', serif; font-size: 0.74rem; line-height: 1.4; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 3px 0; white-space: nowrap; }
   summary.ft-h { cursor: pointer; }
-  .ft-dt-body { max-width: 720px; padding: 4px 0; }
+  summary.ft-h:hover { color: var(--text); }
+  .ft-dt-body { max-width: 720px; padding: 4px 0 6px; }
   .ft-dt-body p { font-size: 0.78rem; line-height: 1.5; margin: 4px 0 6px; }
   .ft-faq { margin: 4px 0; }
   .ft-faq-q { cursor: pointer; font-weight: 600; font-size: 0.8rem; color: var(--text); padding: 3px 0; }
-  .ft-credits { font-size: 0.72rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; text-align: end; }
-  .ft-nav { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; margin-block-start: 2px; }
-  .ft-nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 2px 14px; }
+  .ft-credits { font-size: 0.72rem; line-height: 1.4; display: flex; flex-wrap: wrap; align-items: center; gap: 0 6px; margin-inline-start: auto; }
+  .ft-nav { padding: 4px 0 6px; }
+  .ft-nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 2px 18px; }
   .ft-nav a { font-size: 0.8rem; }
   .warn { color: #c0392b; font-weight: 600; }
   body.dark .warn { color: #ff8a7a; }
@@ -1582,8 +1583,8 @@ footer a { display: inline-block; padding-block: 5px; }
 </div>
 
 <footer>
-  <!-- Compact footer bar: one row of fold-open disclosures + credits, one row of related-tool links.
-       The FAQ and About copy is unchanged (it also feeds the FAQPage JSON-LD above) — only folded. -->
+  <!-- Compact footer bar: ONE row — three fold-open disclosures (FAQ, About, Related tools) and the
+       credits. The FAQ and About copy is unchanged (it also feeds the FAQPage JSON-LD above) — only folded. -->
   <div class="ft-row">
     <div class="ft-info">
       <details class="ft-dt">
@@ -1604,6 +1605,20 @@ footer a { display: inline-block; padding-block: 5px; }
         <summary class="ft-h" data-i18n="fontmaker.about.footer_about_heading">About</summary>
         <div class="ft-dt-body"><p data-i18n="fontmaker.about.footer_about_body">A free, experimental IvritSuite tool. Builds real fonts entirely client-side (the font engine loads on first export), with GPOS mark positioning for nikkud (mark-to-base) and cantillation/trop (mark-to-mark). Exports TrueType (TTF), WOFF2 and editable UFO source.</p></div>
       </details>
+      <details class="ft-dt">
+        <summary class="ft-h" data-i18n="shared.nav.header">Related Hebrew Tools</summary>
+        <nav class="ft-nav" aria-label="Related Hebrew Tools" data-i18n-aria-label="shared.nav.header">
+          <ul>
+          <li><a href="hebrew_blend_generator.html" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
+          <li><a href="flash_cards.html" data-i18n="shared.nav.link_flashcards">Hebrew alphabet flash cards →</a></li>
+          <li><a href="hebrew_dictionary.html" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
+          <li><a href="classroom_dashboard.html" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
+          <li><a href="torah_trainer.html" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
+          <li><a href="trope_tutor.html" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
+          <li><a href="resources.html" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
+          </ul>
+        </nav>
+      </details>
     </div>
     <div class="ft-credits">
       <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI -->
@@ -1616,18 +1631,6 @@ footer a { display: inline-block; padding-block: 5px; }
       <span data-i18n="fontmaker.about.footer_desktop_note">Desktop browser recommended.</span>
     </div>
   </div>
-  <nav class="ft-nav" aria-label="Related Hebrew Tools" data-i18n-aria-label="shared.nav.header">
-    <span class="ft-h" data-i18n="shared.nav.header">Related Hebrew Tools</span>
-    <ul>
-      <li><a href="hebrew_blend_generator.html" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
-      <li><a href="flash_cards.html" data-i18n="shared.nav.link_flashcards">Hebrew alphabet flash cards →</a></li>
-      <li><a href="hebrew_dictionary.html" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
-      <li><a href="classroom_dashboard.html" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
-      <li><a href="torah_trainer.html" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
-      <li><a href="trope_tutor.html" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
-      <li><a href="resources.html" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
-    </ul>
-  </nav>
 </footer>
 
 <!-- "Edit shape" — build a nikkud/mark from dots & bars (or upload), apply to this letter or all -->
@@ -3959,7 +3962,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.38</strong> &mdash; <strong>A slimmer footer.</strong> The strip under the workspace used to be a three-column block &mdash; the questions, a paragraph about the tool and a tall list of related tools &mdash; that stood taller than most panels. It is now a two-line bar: <span class="ui">Frequently Asked Questions</span> and <span class="ui">About</span> fold open on a click, the credits sit on the same line, and the related-tool links run along one row beneath. Nothing was removed; it just stopped taking a fifth of the screen. <em>(September 2026)</em></li>
+      <li><strong>v5.38</strong> &mdash; <strong>A slimmer footer.</strong> The strip under the workspace used to be a three-column block &mdash; the questions, a paragraph about the tool and a tall list of related tools &mdash; that stood taller than most panels. It is now a single line: <span class="ui">Frequently Asked Questions</span>, <span class="ui">About</span> and <span class="ui">Related Hebrew Tools</span> each fold open on a click, and the credits sit at the end of the same line. Nothing was removed; it just stopped taking a fifth of the screen. <em>(September 2026)</em></li>
       <li><strong>v5.37</strong> &mdash; <strong>Jump straight to the next unfinished letter.</strong> A new button under the letter grid &mdash; and Shift+] / Shift+[ from anywhere in the workspace &mdash; hops to the next letter still missing its outline, or, once you are placing nikkud, still missing its anchors. It follows the same list the Next up hint and the export warnings already use, so you can work through what is left without hunting the grid for the gaps. (August 2026)</li>
       <li><strong>v5.36</strong> &mdash; <strong>Right-side and mid-hataf meteg.</strong> The two Unicode spellings that move a meteg somewhere other than the left of its vowel now work: meteg + CGJ + vowel puts the meteg on the right, and hataf + ZWJ + meteg tucks the meteg between the hataf&rsquo;s vowel and its sheva dots &mdash; spaced by the same gap as the side-by-side pair. Nothing to set up; type the sequence and the font does the rest. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.35</strong> &mdash; <strong>Meteg, finally on the vowel line.</strong> Meteg is now a nikkud mark, not a cantillation mark: it sits beside its vowel (to the left, as Unicode expects), the pair is centered under the letter for every vowel width from hiriq to hataf, and the gap between them is read from the spacing inside your own hataf patach &mdash; or set it yourself with the new <span class="ui">Gap</span> slider. Works without cantillation, so siddur fonts get it too. Older projects that drew a meteg as a trop keep their shape. The Hebrew changelog also regained the missing v5.33 entry. <span style="color:var(--muted);">(September 2026)</span></li>
