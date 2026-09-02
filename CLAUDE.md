@@ -11,8 +11,10 @@ index below) — read the file for the area you are touching before you touch it
 - **A binding rule** → one sentence here, with its "why" in one clause.
 - **How a component works** (contracts, markup, carrier lists, "implemented on" censuses) → the
   matching `docs/reference/<topic>.md`.
-- **History, measurements, session ids, dates, digests, line numbers** → `docs/IMPROVEMENT_LOG.md`
-  only. Never in this file or in `docs/reference/`.
+- **History, session ids, dates, digests, line numbers** → the improvement loop's files only
+  (`docs/IMPROVEMENT_LOG.md` for current state, `docs/IMPROVEMENT_ARCHIVE.md` for history,
+  `docs/reference/loop-findings.md` for measurements and refutations). Never in this file or in
+  the other `docs/reference/` files.
 - Reference docs are plain pointers, never `@`-imports (an import is inlined into every session).
 
 ## Reference index — read before touching
@@ -26,6 +28,7 @@ index below) — read the file for the area you are touching before you touch it
 | `hebrew_blend_generator.html` selectors or worksheet build | `docs/reference/generator.md` |
 | `torah_trainer.html` / `trope_tutor.html`, vowel color schemes, trope coloring | `docs/reference/torah-and-trope.md` |
 | `sw.js`, `splash/`, deploy, sitemap/`llms.txt`, the Playwright recipe | `docs/reference/ops.md` |
+| The improvement loop (`/improveloop`), its ledger, its size rules | `.claude/skills/improveloop/SKILL.md`, `scripts/ledger-rules.mjs` |
 
 ## Definition of done — check EVERY item before finishing a change
 - [ ] Edited a precached file (any root HTML page, `pwa.js`, an icon, the manifest)? → **bump `VERSION` in `sw.js`**. The most-missed step — the live site serves stale copies until it's done.

@@ -2,710 +2,251 @@
 name: improveloop
 description: >-
   Run one bounded, ledger-driven continuous-improvement session on the IvritSuite / Hebrew Blender
-  codebase using the v2 improvement-loop protocol — read docs/IMPROVEMENT_LOG.md first, select the top
-  candidate under the variety governor, run the single stalest rotating discovery pass (A–O, incl.
-  the SEO & discoverability audit, the aesthetics/beautification pass, the mobile & touch-device
-  pass and the Deslop AI-design-tell sweep), make small single-concern verified fixes (up to a
-  5-iteration budget, one commit each),
-  optionally ship one micro-feature, pause at decision gates to ask the maintainer, then update
-  the ledger, bump sw.js VERSION once, print a close-out summary, and compact the session context.
-  Use this whenever the user invokes
-  /improveloop, or asks to run, continue, resume, or "rerun" the improvement loop / an improvement
-  session / iteration / pass, run a discovery / SEO / recurring-pattern / aesthetics-or-design /
-  mobile-or-touch / deslop sweep, or hunt-and-fix small verified issues across the suite — even
-  loosely phrased ("run the loop", "do an improvement pass", "beautify the site a bit", "check how it
-  looks on a phone", "deslop the site", "make it look less AI-generated", "improveloop").
+  codebase: read the ledger, run the stalest discovery pass (A–O), ship up to four small verified
+  fixes (one commit each), optionally one micro-feature, ask the maintainer at decision gates, update
+  the ledger, close out. Use whenever the user invokes /improveloop, or asks to run, continue, resume
+  or "rerun" the improvement loop / an improvement session / pass / sweep, or to hunt-and-fix small
+  verified issues across the suite — even loosely phrased ("run the loop", "do an improvement pass",
+  "beautify the site a bit", "check how it looks on a phone", "deslop the site", "improveloop").
 ---
 
-# IvritSuite — Continuous Improvement Loop (v2)
+# IvritSuite — Continuous Improvement Loop
 
-You are running a bounded improvement loop on the IvritSuite codebase. This skill is reusable: every
-session follows the same protocol and persists its state, so any future session can resume without any
-prior session's context. The loop's value is many small, verified, isolated wins — not a grand
-refactor. v2 adds a variety governor, health metrics, and a narrow micro-feature track; two
-maintainer-requested additions (2026-08-19) are the aesthetics pass (M — slow beautification, with
-decision gate 3 and its screenshot rule) and mandatory end-of-session context compaction
-(close-out step 6). A third (2026-08-22) is the mobile & touch-device pass (N — one surface per
-session on real device emulation, with decision gate 4 and a screenshot rule stricter than M's:
-a phone contact sheet ships even when the run finds nothing). A fourth (2026-09-01) is the **Deslop**
-pass (O — an AI-design-tell sweep powered by the third-party **Impeccable** skill's anti-pattern
-detector, with decision gate 5 and a screenshot rule stricter again than N's: every proposal is
-presented to the maintainer as a rendered **before/after** pair *before* it ships, so the design
-decision is the maintainer's).
+A bounded session that persists all of its state in `docs/IMPROVEMENT_LOG.md` (the **ledger**), so any
+future session resumes with no prior chat context. The loop's value is many small, verified, isolated
+wins — never a grand refactor.
 
-## Authority split — this skill vs the ledger
+**Authority split.** This skill owns *protocol*; the ledger owns *state* (session numbers, rotation
+rows, which patterns are active, candidate priorities). Where a template here disagrees with the live
+ledger, the ledger wins — except that a pass this skill defines and the rotation table lacks (with no
+ledgered removal or SKIP note) is registered as a never-run row, not ignored. If the ledger records a
+ratified protocol convention this skill contradicts, follow the ledger and flag it in the close-out.
 
-This skill is the authority on **protocol** (how a session runs). The live ledger
-`docs/IMPROVEMENT_LOG.md` is the authority on **state**: session numbers, pass-rotation membership and
-dates, which sweep patterns are ACTIVE vs retired, section names and structure, candidate priorities,
-and struck seeds. The loop has run ~140 sessions and its state has evolved past any snapshot this skill
-could carry — so where a list or template below disagrees with the live ledger, **the ledger wins**.
-(Example of why: the rotation gained a Pass K and the pattern-retirement rule gained a carve-out after
-the original protocol was written; a session trusting a stale snapshot would have scheduled the wrong
-pass and retired security sweeps.) If the ledger records a ratified *protocol* convention this skill
-contradicts, follow the ledger and flag the divergence in your close-out summary so the maintainer can
-update this skill. Never "normalize" the ledger back to this skill's templates. **One additive
-exception:** a discovery pass this skill defines that the ledger's rotation table lacks — with no
-ledgered removal, retirement, or SKIP note for it anywhere — is ledger *lag*, not ledger
-disagreement; registering a never-run row for it (per the rotation bootstrap rule in the Discovery
-passes preamble) is required and is not "normalizing". A ledgered removal or SKIP note still wins.
-
-## Session start (in order, before selecting anything)
-
-1. **Read `CLAUDE.md`** — it is the constitution; every binding rule there (security patterns, i18n,
-   preset wiring, AllTools registration, sw.js versioning, deploy) applies to every iteration. Then
-   read the `docs/reference/<topic>.md` file for each area you touch (CLAUDE.md's reference index
-   maps topics to files) — that is where component contracts and "implemented on" censuses live.
-2. **Read the ledger — with the long-line method.** The ledger's lines are extremely long; a raw
-   `Read` of the whole file blows context. Map it first (`grep -n '^## \|^### ' docs/IMPROVEMENT_LOG.md`),
-   then read sections via `sed -n 'A,Bp' docs/IMPROVEMENT_LOG.md | cut -c1-400`, widening the cut only
-   for lines you act on (Candidates you select, the rotation table, the last close-out entry).
-3. **Number this session.** Sessions are numbered S1, S2, … The ledger's trailing
-   `**Next session (SN):**` pointer names yours — take that N and tag everything you write (Done
-   entries, the per-session metrics line, rotation notes) with it. That pointer is also the
-   authoritative tie-break when two passes look equally stale.
-4. **Outside-loop drift check.** The maintainer ships work between sessions. Compare against the last
-   `(SN close-out)` Done entry: `origin/main`'s position (new merges/PRs?), `sw.js` `VERSION`, and
-   `FONT_MAKER_VERSION`. If anything landed outside the loop, note what and the version moves
-   (vNNN→vNNN, FM x.y→x.y) — recent outside-loop surface is prime discovery-pass territory, and sweep
-   passes should cover it. Never trust the previous close-out's version note without checking.
-5. **Branch & PR protocol.** Loop sessions run on a `claude/*` branch feeding a **draft PR** — never
-   push directly to `main` unless the maintainer explicitly authorizes it in-session (there is one
-   ledgered precedent, S78). If the previous loop branch's draft PR is still **open and unmerged**,
-   continue on that branch and PR (no branch restart, no new PR); if it **merged**, cut a fresh branch
-   off latest `origin/main` and open a new draft PR at close-out. For loop sessions this supersedes
-   CLAUDE.md's "commit directly to main" Git rule — the ratified practice since S76 (see the ledger's
-   branch/deploy close-out notes); consequence: GitHub Pages deploys only on merge to `main`, so
-   deploy `success` is verified **after merge**, not in-session.
-6. Then enter the iteration protocol below — its first act is the stalest discovery pass.
+## Session start (in order)
+1. **Read `CLAUDE.md`**, then the `docs/reference/<topic>.md` for each area you touch (its index maps
+   topics to files). Every binding rule there applies to every iteration.
+2. **Read the ledger — bounded.** `grep -n '^## \|^### ' docs/IMPROVEMENT_LOG.md` to map it, then read
+   only: the `**Next session (SN):**` handoff (the pointer and the `⚑`/`/!\` notes under it), the top
+   ~15 Candidates, `### Discovery-pass rotation`, `### Pattern health`, the last `(SN close-out)` Done
+   entry, and the last 5 per-session lines. Lines carry `…[full text: IMPROVEMENT_ARCHIVE.md]` when
+   they were cut — grep the archive for the full entry only for items you act on. Before auditing a
+   file, `grep docs/reference/loop-findings.md` for it: measurements and refutations already made
+   live there so no session re-derives them or re-files a refuted "defect".
+3. **Number this session** from the pointer's `SN`; tag everything you write with it. The pointer is
+   the tie-break when two passes look equally stale.
+4. **Outside-loop drift check.** Compare against the last close-out entry: `origin/main` position,
+   `sw.js` `VERSION`, `FONT_MAKER_VERSION`. Note what landed outside the loop (version moves included);
+   that surface is prime discovery territory. Never trust the previous close-out's numbers unread.
+5. **Branch & PR.** Loop sessions run on a `claude/*` branch feeding a draft PR — never push to `main`
+   unless the maintainer explicitly authorizes it in-session. If the previous loop PR is open and
+   unmerged, continue on it; if merged, cut a fresh branch off latest `origin/main` and open a new draft
+   PR at close-out. This supersedes CLAUDE.md's "commit directly to main" rule for loop sessions; Pages
+   deploys only on merge, so deploy `success` is verified after merge, not in-session.
+6. Enter the iteration protocol; its first act is the stalest discovery pass.
 
 ## Session parameters
-- **Budget:** up to **5 iterations** per session — small enough that every change stays individually
-  verified and the ledger stays current. Stop earlier if verification debt accumulates: a step-4 check
-  you could not actually run (an export not producible headless, a check deferred "for later"). At most
-  one such unverified aspect may be outstanding — resolve it or revert that commit before the next
-  iteration; if a second would accumulate, end the session. Never leave the repo mid-change at session
-  end.
-- **Ledger:** `docs/IMPROVEMENT_LOG.md` is the loop's memory. Read it FIRST every session (see the
-  reading method above). If a v2 section (Metrics, Feature seeds, pass rotation) is genuinely missing
-  — no equivalently-purposed section under any name — add it in this session's first commit; never add
-  a duplicate of a section that exists under a different heading.
-- **Scope guard:** one concern per iteration, one commit per iteration. If a fix reveals a second
-  problem, log it as a candidate — do not chase it now.
-- **Variety governor (hard rules):** the caps exist so one hot spot can't eat a whole session while
-  the rest of the suite goes stale.
-  - Max **2 iterations per session** on the same recurring-pattern class.
-  - Max **2 iterations per session** touching the same tool — and **each chrome page counts as its
-    own tool** (index, resources, contact, privacy, terms, 404), not one shared "chrome" bucket.
-  - If the top candidate violates a cap, take the highest-priority candidate that doesn't. Priority
-    still wins across sessions — the cap only reorders within a session.
-  - Prefer, as a tie-breaker, tools and pattern classes untouched in the last 2 sessions (check the
-    Metrics section).
+| Parameter | Rule |
+|---|---|
+| Budget | **5 iterations**: 1 discovery pass + up to 4 fixes. A micro-feature costs 2. |
+| Scope guard | One concern per iteration, one commit per iteration. A fix that reveals a second problem logs it as a candidate — never chase it now. |
+| Verification debt | At most one unverified aspect outstanding; resolve or revert it before the next iteration, and end the session rather than accumulate a second. Never leave the tree mid-change. |
+| Variety governor | Max 2 iterations/session on one recurring-pattern class; max 2 touching one tool (each chrome page — index, resources, contact, privacy, terms, 404 — is its own tool). The pass charges the budget but not the caps. If the top candidate breaks a cap, take the highest-priority one that doesn't; priority still wins across sessions. Tie-break toward tools and patterns untouched in the last 2 sessions. |
 
-## Decision gates — ask the maintainer
+## Decision gates — ask the maintainer (AskUserQuestion, concise options, a recommended default)
+Small verified fixes stay autonomous. These decisions are the maintainer's:
+1. **Micro-feature selection** — which Feature seed to build, or skip this session.
+2. **User-visible copy & SEO text** — any wording or default-behavior change beyond a small fix
+   (renaming a button is gated; fixing its typo is not), and ANY change to titles, meta descriptions,
+   OG copy or JSON-LD claims.
+3. **Dramatic aesthetics** (pass M) — anything a returning teacher would immediately notice: palette,
+   font, layout restructuring, component redesign, re-theming. Small refinements stay autonomous.
+   Propose with current-state screenshots.
+4. **Mobile restructuring** (pass N) — a fix scoped inside a phone-width media query stays autonomous.
+   Ask before anything that changes what desktop users see, hides or reorders content at phone widths,
+   adds a touch-only interaction or a phone-specific blocking screen, or migrates a unit/breakpoint
+   page-wide. Propose with current-state phone screenshots, stating what changes on phone AND desktop.
+5. **Every Deslop proposal** (pass O) — O has no autonomous fix path: each change that alters rendered
+   output, and each waiver of a finding as brand truth, ships only after the maintainer sees a rendered
+   before/after pair and answers. Batch into ONE contact sheet and ONE question per session.
 
-Small verified fixes stay autonomous — that's the loop's whole value. But the decisions below are
-the maintainer's, not the loop's: at each gate, stop and ask via the **AskUserQuestion tool**
-(concise options, mark a recommended default) before acting. Read this section before iteration 1
-— the discovery pass itself can trip gate 2.
-
-- **Gate 1 — micro-feature selection.** Before building any Feature seed: ask which seed to build,
-  or whether to skip the micro-feature this session.
-- **Gate 2 — user-visible copy & SEO-facing text.** Before changing user-facing wording or default
-  behavior beyond a small fix (renaming a button is gated; fixing its typo is not), and before ANY
-  change to page titles, meta descriptions, OG copy, or JSON-LD claims — the site's public face.
-- **Gate 3 — dramatic aesthetic changes.** The aesthetics track (pass M) beautifies the site
-  slowly; small visual refinements (a spacing/alignment fix, a stray radius/shadow/border
-  inconsistency, converging one control on the suite's best existing look) stay autonomous. But any
-  visual change a returning teacher would immediately notice — a palette or font change, layout
-  restructuring, a component redesign, whole-page re-theming — is proposed, never shipped unasked:
-  capture the current state (screenshots, per pass M's screenshot rule), describe what would change
-  and why, then ask. Applies to ANY iteration that would dramatically change the site's look,
-  whichever pass surfaced it.
-- **Gate 4 — mobile restructuring & desktop-affecting mobile fixes.** The mobile track (pass N)
-  fixes phones the way M beautifies: a change scoped *inside* a phone-width media query — a wrap, a
-  stacked row, a bigger tap box, an `inputmode`, a safe-area pad — stays autonomous. Ask before:
-  (a) anything that changes what **desktop** users see in service of phones; (b) restructuring,
-  reordering, or **hiding** content at phone widths — what a teacher can reach on a phone is an
-  information-architecture call, not a CSS one; (c) a new touch-only interaction (swipe,
-  long-press, pull-to-refresh) or a phone-specific warning/blocking screen, incl. declaring any
-  surface desktop-only (the Font Maker's `hebrewFontMaker_mobileWarnDismissed` notice is the one
-  existing precedent — it is not a licence to add more); (d) a page-wide unit or breakpoint
-  migration (`100vh` → `dvh` across a page, retuning a shared breakpoint). Propose with the
-  current-state phone screenshots, state what changes on phone AND on desktop, then ask. Applies to
-  ANY iteration that would do one of those, whichever pass surfaced it.
-- **Gate 5 — every Deslop proposal, before it ships.** The Deslop track (pass O) is the one pass
-  with **no autonomous fix path**: the maintainer asked for its proposals "in the form of a
-  before/after screenshot so I can make design decisions as part of the improve loop"
-  (2026-09-01), so a rendered before/after pair and an explicit answer are the *entry* conditions
-  for shipping, not the write-up afterwards. Gate every change O originates that alters rendered
-  output — including the ones M would have waved through as small, and including a decision to
-  **waive** a finding as brand truth (an inline `impeccable-disable`, which settles the site's
-  identity and is as much a design decision as a fix). The only ungated O work is what renders
-  identically: ledger writes, and a `.impeccable/` config or ignore record whose wording the
-  maintainer already approved. Batch the session's proposals into ONE contact sheet and ONE
-  AskUserQuestion where the budget allows — five separate interruptions is not "part of the improve
-  loop", it is an interrogation. An approved proposal too big for the remaining budget is logged as
-  an `approved <date>` candidate at the top of its priority band, with its screenshot paths.
-
-**Batching:** collect gate questions at natural points — the post-discovery-pass selection moment,
-then iteration boundaries — up to 4 questions per AskUserQuestion call. Never gate small mechanical
-fixes; a session with no gated work asks nothing.
-
-**Unattended fallback (skip & defer):** if no answer can arrive (a scheduled or otherwise
-unattended run), take the conservative default — gate 1: skip the micro-feature this session;
-gate 2: leave the copy unchanged and log the proposed change as a Candidate; gate 3: don't ship
-the dramatic change — log the written proposal as a Candidate (note the current-state screenshots'
-paths in the entry); gate 4: same — don't ship, log the proposal as a Candidate with its phone
-screenshots' paths (the pass's own measure-and-log arms still run in full); gate 5: ship nothing
-and waive nothing — O degrades to a **pure measure-and-log run**, and because its whole output is a
-question, an unattended O still produces its full finding list and its before/after pairs (the
-proposals the next attended session will ask), logged as Candidates with those paths — and record each
-under **"Decisions deferred to maintainer"** in the `(SN close-out)` Done entry and the close-out
-summary, so the next attended session can ask. A gate must degrade gracefully; it never stalls or
-errors the session.
-
-Gates complement, never replace, the existing explicit-direction rules (pass skip, direct-to-main
-authorization).
-
-## Ledger structure (bootstrap template — the live ledger's own structure wins)
-
-Use this template ONLY when creating a missing ledger or section. An existing ledger's section names,
-ordering, and extra sections (e.g. `## Recurring-pattern sweep status` with its `### Discovery-pass
-rotation` table nested under it, the trailing `**Next session (SN):**` pointer) are authoritative —
-match them, don't restructure them.
-
-```
-# IvritSuite Improvement Log
-
-## Candidates (prioritized, top = next)
-- [ ] P1 | <file> | <one-line description> | <found: date, how>
-
-## Feature seeds (micro-features only; see Micro-feature track)
-- [ ] S | <tool> | <one-line description> | <est. size S/M> | <found: date, how>
-
-## In progress
-
-## Done (last 5 sessions only — older entries move to docs/IMPROVEMENT_ARCHIVE.md)
-- [x] <date> | <commit> | <file> | <description> | <verified how>
-- [x] <date> | (SN close-out) | branch/deploy note | <branch/PR state; drift-check result;
-      SW vNNN→vNNN + which precached files changed; FM bump-or-not with reason; i18n/sitemap runs>
-
-## Metrics
-### Per-session log (one line per session)
-- <date> | SN | iters: N | tools touched: … | patterns fixed: … | pass run: <letter> | SW: vNNN→vNNN
-### Tool coverage (last-touched date per tool)
-- generator | dashboard | flash-cards | dictionary | torah-trainer | trope-tutor | font-maker | index/chrome
-### Pattern health (per recurring pattern: last swept, hits found that sweep, consecutive clean sweeps)
-- <pattern>: swept <date>, hits: N, clean streak: N — ACTIVE|retired
-### Retired patterns
-- <pattern> | retired <date> | reason
-
-## Recurring-pattern sweep status
-- <pattern>: <last sweep's date, surface covered, and detection method / result detail>
-
-### Discovery-pass rotation (run one per session, stalest first)
-- <letter> <name>: <date> (<SN>: <one-line result>)
-
-**Next session (SN+1):** <what this session ran and what looks stalest next>
-```
-
-**Ledger hygiene:** at close-out, if Done exceeds 5 sessions of entries, move the overflow to
-`docs/IMPROVEMENT_ARCHIVE.md` (append-only, same format). The working ledger must stay small enough to
-read cheaply every session.
+**Batching:** collect gate questions at the post-pass selection moment and at iteration boundaries, up
+to 4 per call. Never gate small mechanical fixes; a session with no gated work asks nothing.
+**Unattended fallback (no answer can arrive):** gate 1 — skip the micro-feature; gates 2–4 — ship
+nothing dramatic, log the proposal as a Candidate with its screenshot paths; gate 5 — **do not run O
+at all**: write `needs an attended session` in O's rotation row and take the next-stalest pass. Record
+every deferral under "Decisions deferred to maintainer" in the close-out entry. A gate degrades
+gracefully; it never stalls the session.
 
 ## Iteration protocol (repeat up to budget)
-1. **Discover, then select.** Run the single stalest discovery pass FIRST (per the ledger's rotation
-   table; the `**Next session**` pointer resolves ties), logging everything found as Candidates /
-   Feature seeds before fixing anything. The pass consumes **1 iteration** — a full session is
-   `1 pass + 4 fixes = 5`, and the per-session Metrics line records it that way. The pass charges the
-   iteration budget but NOT the variety governor's per-tool/per-pattern caps — fixing what the pass
-   just found in its own tool is the point. Skip the pass only on explicit user direction, recording
-   `pass run: — (skipped; <X> stays stalest)`. Then select the top candidate from the ledger that
-   satisfies the variety governor.
-2. **Ground:** open the file, grep the exact anchors, read the surrounding conventions (strict
-   single-file HTML; match local style exactly). Line numbers in ledger entries drift — locate by
-   pattern, not by remembered line.
-3. **Fix minimally.** Smallest diff that resolves the issue. No drive-by cleanups, no reformatting
-   neighboring code.
-4. **Verify** per the CLAUDE.md Playwright recipe (light + dark, desktop + ~800 px) plus an
-   issue-specific check you design before coding — **but serve the repo over local HTTP**
-   (e.g. `python3 -m http.server 8080` from the repo root) and point Playwright at
-   `http://localhost:8080/...`, not `file://`: every page loads `/js/i18n.js` root-absolute, so
-   `file://` leaves `I18n` undefined and render paths throw (ledgered at S85; all recent passes run
-   over local HTTP). Extend the recipe's route-abort predicate to allow your localhost origin; the
-   rest of the recipe (abort external origins, `pageerror==0`, modal dismissal, the light/dark ×
-   desktop/800px matrix) applies unchanged. Anything touching save data: `.ivrit` round-trip. Anything
-   touching export paths (fonts, share links, CSVs, printables): produce the artifact and inspect it.
+1. **Discover, then select.** Run the single stalest pass first (rotation table; pointer breaks ties),
+   logging everything found as Candidates / Feature seeds before fixing anything. Skip the pass only on
+   explicit user direction, recording `pass run: — (skipped; <X> stays stalest)`. Then select the top
+   candidate the variety governor allows.
+2. **Ground.** Open the file, grep the exact anchors, read the surrounding conventions (strict
+   single-file HTML; match local style). Ledger line numbers drift — locate by pattern.
+3. **Fix minimally.** Smallest diff that resolves the issue; no drive-by cleanups or reformatting.
+4. **Verify** per CLAUDE.md's Playwright recipe (light + dark × desktop + ~800px) plus an
+   issue-specific check designed before coding. Save data → `.ivrit` round-trip; export paths → produce
+   the artifact and inspect it. Three measurement rules for any probe: **fire a control before trusting
+   a zero** (drive it with a real `page.click`, not a loop inside `page.evaluate`); **a silent control
+   means diagnose, not discard** (a bad control string is not a blind detector); **assert the probe's
+   handle resolves before its result counts** — a missing function or an unmatched selector returns a
+   falsely reassuring zero, so guard with `typeof fn === 'function'`, a non-null `querySelector`, and
+   best of all a counted side effect (e.g. a `page.route` hit counter).
+5. **Commit**, naming the pattern if it's a recurring one.
+6. **Log.** Move the item to Done (date, commit, verification method); update Pattern health for a
+   sweep-class fix.
 
-   **Run a firing control before trusting any zero (S294/S295).** A measurement of "nothing happened"
-   is worthless until you have shown the same probe reporting something when something *does* happen.
-   Two hard-won specifics: (a) **drive a longtask control with a real `page.click`** — a busy loop
-   inside `page.evaluate` produces no longtask entry at all, and S294 lost a whole round of zeros to
-   that; (b) **a silent control means DIAGNOSE the silence, not abandon the arm.** It has two causes
-   and only one condemns the arm: a *bad control* (S295's control string used a namespace outside the
-   detector's own prefix list, so nothing could ever match it — the arm was fine and its 26-load zero
-   stood) versus a *blind detector* (S295's dictionary probe used selectors the markup does not have —
-   that one was correctly discarded). Taken literally without this distinction, the rule throws away
-   good arms.
+**When a fix fails:** if the correct fix isn't small or the diff balloons past one concern — revert
+cleanly, re-log the candidate with what you learned, record "attempted, reverted" in Done. A clean
+revert with better intelligence is a successful iteration; a half-verified change in the tree is not.
 
-   **And assert the probe's HANDLE resolves before its result counts (S297).** The control rule above
-   catches a detector that cannot fire; this catches one that never *ran*. A probe that calls a
-   function which does not exist, or queries a selector that matches nothing, does not error — it
-   returns a clean, quiet, **falsely reassuring** zero, which is worse than a false positive because
-   it silently closes a question you believe you asked. S297 hit this **five times in one session**
-   (`loadWords()`, `generateWorksheet()`, `loadRealWordsPool()` — none exist; an `index.html` gear
-   selector and a `.heb` worksheet selector — neither matches). Cheap guards, in order of strength:
-   `if (typeof fn !== 'function') return 'MISSING <fn>'` before calling it; assert
-   `document.querySelector(sel)` is non-null; and best of all **count the side effect** — a
-   `page.route` counter proving the fetch was actually attempted is what exposed three of S297's
-   five. Any arm reporting "nothing happened" must also report *that it happened at all*.
-5. **Commit** with a message naming the pattern if it's a recurring one.
-6. **Log:** move the item to Done with date, commit hash, and verification method; update Pattern
-   health if a sweep-class fix.
+## Discovery passes (strict rotation — one per session, the stalest first)
+The ledger's rotation table is the authoritative member list. Re-deriving per-tool history ("which
+tool is stalest for D?") means grepping `docs/IMPROVEMENT_ARCHIVE.md` too — rows keep only the last
+run. A pass defined here but absent from the table (no ledgered removal or SKIP) gets a row
+`- <letter> <name>: never run — registered <date>` at session start; never-run rows are stalest.
+"One tool/surface per session" passes pick the least-recently-audited of the 7 tools + chrome pages
+(index, resources, contact, privacy/terms, 404); the row's result note tracks coverage.
 
-**When a fix fails:** if verification fails and the correct fix isn't small, or the diff balloons past
-the one-concern scope — revert cleanly, re-log the candidate with what you learned (often a priority or
-size correction), and record it in Done as "attempted, reverted". A clean revert plus better
-intelligence is a successful iteration; a half-verified change left in the tree is not.
+- **A. Recurring-pattern sweep** — sweep every pattern marked ACTIVE in Pattern health, by the
+  detection definition its row carries (tuned greps, exemptions, what counts as a hit); never re-derive
+  a weaker one. Focus on surface changed since that pattern's last sweep, outside-loop landings
+  included. A fix that reveals a new recurring shape registers it with its own health row. Retirement:
+  3 consecutive clean sweeps, **unless consequence-critical** (security, data loss — those stay ACTIVE).
+  **A2** (every 6th A, or when all patterns are retired): spot-check retired patterns; a hit un-retires.
+- **B. Console & error audit** — load every page headless; capture console errors/warnings and failed
+  requests on load and one basic interaction per tool.
+- **C. Accessibility (one tool)** — keyboard-only walkthrough: focus order and visibility,
+  Escape/Enter on modals, `aria-` on interactive SVG/canvas, reduced motion, contrast in both themes,
+  touch-target size (WCAG 2.5.8 — C owns the `sub-floor touch target` pattern). These tools are
+  projected and used by young students on school-managed devices.
+- **D. Performance snapshot (one tool)** — cold load + one heavy interaction; log main-thread blocks
+  >200 ms with profile evidence.
+- **E. Freshness & site health** — sitemap `lastmod` vs git, broken internal links, SW precache list vs
+  files (both directions), THIRD_PARTY_LICENSES vs deps, robots/CNAME present and parsing, README /
+  CLAUDE.md / `docs/reference/*` accuracy. Indexability *semantics* are L's.
+- **F. Cross-tool consistency** — one UX affordance (empty states, share buttons, dark toggles, font
+  pickers, toasts…) compared across all seven tools and the chrome pages; converge on the best
+  existing implementation.
+- **G. Print & export fidelity (one tool)** — the artifact a student holds: paper AND every exported
+  file (`.ttf`/`.otf`/UFO, `.ivrit`, PDF, CSV, share links). Print-preview every printable surface on
+  Letter and A4: margins, mid-item page breaks, nikkud clipping, dark-mode ink bleed, header/footer
+  junk, RTL alignment. Inspect exported files themselves. Divergences are usually P2.
+- **H. Teacher walkthrough (one tool)** — role-play preparing a real lesson end-to-end; log every
+  friction (extra clicks, missing defaults, unclear copy, dead ends, re-entering data another tool
+  has). Frictions → P3 Candidates; missing small affordances → Feature seeds (the micro-feature
+  intake). Never re-log a seed the maintainer struck.
+- **I. First-load & empty-state** — every tool in a fresh context (empty localStorage AND IndexedDB):
+  instructive empty states, no crash on absent keys, demo data paths, onboarding copy matches the UI.
+- **K. i18n audit** — `node scripts/check-i18n.js`: Check A stays clean; Check B's backlog is the
+  burndown (prefer sites whose CSV keys exist). Then probe its blind spot: English built in template
+  literals or passed as plain arguments. Respect the translate-vs-content boundary in CLAUDE.md.
+- **L. SEO & discoverability** — audit the static HTML source, offline: unique `<title>` (~50–60) and
+  description (~150–160) per page; `rel=canonical` = `https://ivritsuite.com/<page>.html` (homepage:
+  bare root); `404.html` and `i18n-test.html` stay out of the indexable set; OG/Twitter parity and
+  `og:image` resolving (strip `?v=`); every JSON-LD block parses and its claims match the visible UI;
+  sitemap = indexable set, sitemap↔canonical agreement; crawl-graph from the homepage via static
+  `<a href>`; one `h1`, alt text on content images. Titles and descriptions stay English; never propose
+  clean-URL restructuring; copy fixes are gate 2 — the pass logs and batches questions.
+- **M. Aesthetics (one surface)** — audit like a designer in the full matrix: typography (scale,
+  hierarchy, Hebrew/English pairing), spacing rhythm, alignment, color harmony, component consistency
+  (judged against the suite's best existing implementation — convergence beats invention), hierarchy,
+  dark-mode parity. Usually P4, P3 where sloppiness impairs use; contrast keeps C's severity. Small
+  refinements ship as normal iterations; anything dramatic is gate 3. **Screenshot rule:** BEFORE and
+  AFTER, light + dark at the affected breakpoints, saved in the scratchpad (never committed) and
+  delivered at close-out.
+- **N. Mobile & touch (one surface)** — use a **real device descriptor**, not a resized window:
+  `browser.newContext({ ...devices['iPhone 13'], serviceWorkers: 'block' })` (this is what flips
+  `pointer: coarse` / `hover: none` and sets `maxTouchPoints`); `page.tap()` needs `hasTouch`. Arms
+  (run what the surface has, log what you skip): **1** reflow/overflow at 320/390/412 + one landscape,
+  both themes, EN and HE (`scrollWidth <= clientWidth` on `documentElement`, nothing clipped, no fixed
+  bar over the primary action, modals fit with their close reachable); **2** viewport meta contract (one
+  shape per page; never `user-scalable=no`; `viewport-fit=cover` with `safe-area-inset` or neither);
+  **3** dynamic browser chrome — `100vh` vs `dvh` audited statically per use site (headless can't
+  measure it; one site swapped is a fix, page-wide is gate 4); **4** touch-only parity (no hover-only
+  or DnD-only path — the folder tree's "Move ▾" is the sanctioned precedent — sliders by finger,
+  tooltip tap contract under `hasTouch`); **5** on-screen keyboard ergonomics (`inputmode`,
+  `autocapitalize`/`autocorrect` on Hebrew/name fields, focused field visible with the keyboard up);
+  **6** standalone/PWA dead ends (no browser back: every view escapable, safe-area, orientation flip);
+  **7** phone-grade performance (4× CPU, slow network) on the heaviest path — deeper is D's.
+  Boundaries: C owns a11y semantics and target size; M owns pure aesthetics; B/I own load gates; G owns
+  paper. Fixes verify at the found phone width **plus** the standard matrix; extend an existing phone
+  media query rather than inventing a breakpoint. **Screenshot rule:** every run ships a phone contact
+  sheet even when clean (every major view, light + dark, EN + HE) plus BEFORE/AFTER pairs per fix.
+- **O. Deslop — AI-design-tell sweep (one surface; attended sessions only)** — asks "does this look
+  like nobody chose it?" using the Impeccable anti-pattern detector; how to run both arms, the DEGRADED
+  rule, waiver syntax and rule-id ownership: `docs/reference/deslop-detector.md`. Triage every finding
+  into: **tell** (O's, gated), **brand truth** (waive inline with the reason — gated: the site's
+  navy/gold/parchment, Frank Ruhl Libre, siddur identity is deliberate, and a finding that contradicts
+  a documented choice is a false positive), **another pass's** (file it there), or **detector wrong
+  here** (record the rule id and why). O owns tells, not quality in general: contrast and legibility
+  → C, refinement → M, main-thread cost → D, phone reachability → N; when both M and O could claim a
+  finding, a detector rule id wins it for O. Never a general beautification. **Proposal gate:** BEFORE
+  on a clean tree → apply, never commit → AFTER (same frame) → revert and prove `git status` empty →
+  present one side-by-side composite per proposal → ship only what came back approved, then re-run the
+  arm to confirm the rule id is gone. Never present an AFTER you did not render. Prefer converging a
+  token or shared block over patching call sites.
 
-## Discovery passes (STRICT rotation — always run the stalest per the ledger's rotation table; record it)
-Run exactly one per session, as the session's first act. The pass letters below are the protocol
-definitions; the **ledger's rotation table is the authoritative member list** — if it tracks a pass
-this skill doesn't define (added after this writing), run it the way its ledger entries describe.
-**When you re-derive a pass's per-tool history ("which tool is stalest for D?"), grep
-`docs/IMPROVEMENT_ARCHIVE.md` as well** — each rotation row keeps only a short recent window, so the
-table alone will hand you a target that was audited 40 sessions ago (S292).
-**Rotation bootstrap (the inverse):** if this skill defines a pass the table lacks, and the ledger
-nowhere records its removal or a SKIP note for it, add a row
-`- <letter> <name>: never run — registered <date> (skill update)` at session start, before picking
-the stalest pass. Never-run rows are stalest (an explicit per-row SKIP note, like J's, still
-excludes a pass from being picked). This is additive registration, not "normalizing" — see the
-Authority split section.
-
-**A. Recurring-pattern sweep** — sweep the patterns marked **ACTIVE in the ledger's Pattern health
-section** (not a fixed list — patterns get registered and retired over time; the founding registry
-included falsy-zero numerics, Font-Maker undo/slider wiring, workMode reachability,
-localStorage-vs-AllTools, unescaped-input/unsafe-parse, JSON-LD parity (now owned by pass L), and
-destructive-bulk, several of which are now retired). Each pattern's ledger lines (Pattern health, the Recurring-pattern sweep
-status log, Retired patterns) carry its detection definition — the tuned greps, the exemption list,
-what counts as a hit. Sweep by that definition; don't re-derive a weaker one. Focus each sweep on surface changed since that pattern's last sweep —
-including outside-loop landings found in the drift check. When a fix reveals a NEW recurring shape,
-register it as a pattern with its own health line. After the sweep, update Pattern health.
-**Retirement:** a pattern retires after 3 consecutive clean sweeps **unless it is
-consequence-critical** (security or data-loss — e.g. unescaped-input, backup completeness,
-destructive-bulk): those stay ACTIVE regardless of streak, because new code can reintroduce them any
-time and they re-sweep cheaply. Retired patterns are re-checked only in pass A2.
-
-**A2. Retired-pattern spot check (counts as pass A when A is stalest and all patterns are retired, or every 6th A):** one quick sweep of retired patterns to confirm they stayed dead; any hit un-retires the pattern. (A retired pattern subsumed by a dedicated pass — currently JSON-LD parity → pass L — is checked there instead **once that pass has its first ledgered run**; until then A2 keeps it, so coverage never goes ownerless.)
-
-**B. Console & error audit** — load every page headless, capture console errors/warnings and failed requests on load and one basic interaction per tool.
-
-**C. Accessibility pass (one tool per session)** — keyboard-only walkthrough: focus order, focus visibility, Escape/Enter on modals, `aria-` on interactive SVG/canvas, `prefers-reduced-motion`, contrast in both themes. These tools are projected and used by young students and teachers on school-managed devices — touch targets and keyboard parity are not optional.
-
-**D. Performance snapshot (one tool per session)** — cold load + one heavy interaction; log main-thread blocks >200 ms with profile evidence.
-
-**E. Freshness & site health** — sitemap `lastmod` vs git history (`node scripts/update-sitemap.mjs`), broken internal links, SW precache list vs actual files, THIRD_PARTY_LICENSES.md vs deps, README / CLAUDE.md / `docs/reference/*` accuracy. **Boundary with pass L:** E owns *mechanical freshness/integrity* (lastmod-vs-git, precache both directions, licenses, broken links, robots/CNAME present-and-parses); L owns *indexability semantics* (canonical/OG/JSON-LD/title-description correctness, robots intent, sitemap↔canonical agreement). E's older ledgered runs also covered robots/sitemap coverage — after L's first run, record the handoff in both rotation rows.
-
-**F. Cross-tool consistency** — one UX affordance per session (empty states, share-link buttons, dark-mode toggles, Hebrew font pickers, error toasts) compared across **all seven tools** (generator, dashboard, flash cards, dictionary, torah trainer, trope tutor, font maker — plus the chrome pages where the affordance exists there); converge on the best existing implementation.
-
-**G. Print & export fidelity (one tool per session)** — the printed page is the product a student actually holds, **and so is a compiled font binary**: G's artifacts are paper *and* every exported file (the Font Maker's `.ttf`/`.otf`/UFO output, `.ivrit` saves, PDFs, CSVs, share links). Inspect the artifact itself — an FM font export went unaudited for 124 sessions because this text read as paper-only (S293). Print-preview (and print-to-PDF) every printable/exportable surface in one tool: margins, page breaks mid-item, nikkud clipping at print resolution, dark-mode ink bleed (nothing should print with dark backgrounds), header/footer junk, RTL alignment on paper. Compare on Letter and A4 page sizes. Log divergences as candidates (usually P2 — silently wrong artifact).
-
-**H. Teacher walkthrough / paper-cuts (one tool per session)** — role-play a teacher preparing an actual lesson end-to-end in one tool (e.g., "make Tuesday's aleph-bet worksheet and a matching flashcard deck"). Note every friction point: extra clicks, missing defaults, unclear copy, dead-end states, things that require re-entering data another tool already has. Small frictions become Candidates (P3); missing small affordances become **Feature seeds**. This is the primary intake for the micro-feature track. Before logging new seeds, check the ledger's struck-seeds note — never re-log a seed the maintainer has explicitly struck.
-
-**I. First-load & empty-state pass** — visit every tool as a brand-new user (a fresh browser context: empty localStorage AND IndexedDB): is the empty state instructive, does anything crash on absent keys, do sample/demo data paths work, does onboarding copy match current UI? New-teacher experience is invisible to you (your localStorage is always full) unless deliberately audited.
-
-**J. Metrics-informed pass (only if the impact-metrics dashboard/Worker is live)** — pull usage data: which tools/features see real traffic, where do sessions end abruptly, which pages 404. Reprioritize Candidates and Feature seeds against actual usage; log anomalies (a heavily-used tool with zero export events suggests a broken or undiscoverable export). If metrics aren't live yet, skip in rotation and note it.
-
-**K. i18n / localization audit** — run `node scripts/check-i18n.js`: Check A (hardcoded English) is a
-hard gate and must stay clean; Check B's untranslated-attribute backlog is the burndown list — fix a
-slice, preferring sites where CSV keys already exist (`node scripts/build-locales.js` only when adding
-keys). Then probe Check A's documented blind spot: English UI strings built inside JS **template
-literals** or passed as plain function arguments escape the gate — grep for them in recently-changed
-surface and localize what's user-visible. Respect the translate-vs-content scope boundary in
-CLAUDE.md's Internationalization section (printed output, `headerLang` content, and tab titles stay
-untranslated by design).
-
-**L. SEO & discoverability audit** — audit the **static HTML source**, not the rendered DOM
-(crawlers index the statically-served source; nothing writes `document.title` — see CLAUDE.md's
-i18n scope boundary): grep/parse the raw HTML, and JSON-parse every extracted
-`application/ld+json` block via a small node script; go headless only for the crawl-graph and
-og:image-existence checks. Fully offline — never call external validator services. Checks:
-- Per-page unique `<title>` + `<meta name="description">`: length sanity (title ~50–60 chars,
-  description ~150–160), no cross-page duplicates.
-- `rel=canonical` = `https://ivritsuite.com/<page>.html` — **except the homepage, whose canonical
-  is the bare root `https://ivritsuite.com/`**. `404.html` (`noindex, follow`) and
-  `i18n-test.html` (`noindex`) are **deliberately excluded** from the indexable set (= the 11
-  sitemap pages) — never "fix" them into it.
-- OG/Twitter tag parity with title/description/canonical; `og:image` resolves to a real file
-  (strip the `?v=` query string before checking).
-- Every JSON-LD block parses, and its FAQ/HowTo/ItemList claims match the visible UI. **This
-  subsumes the retired JSON-LD-parity pattern** — on this pass's first run, amend the ledger's
-  Retired-patterns line for it (re-checks move from A2 to here).
-- sitemap.xml covers exactly the indexable set, sitemap↔canonical agreement, robots.txt intent
-  (mechanical robots/CNAME/lastmod checks stay pass E — see the E/L boundary there).
-- Crawl-graph: every indexable page reachable from the homepage via plain static `<a href>` links.
-- One `h1` per page; alt text on content images (crawler-facing view only — deep a11y stays pass C).
-
-Guardrails: browser-tab titles and meta descriptions stay **English** (a documented decision —
-never "localize" them); **never** propose clean-URL/subfolder restructuring (evaluated and
-rejected — see CLAUDE.md's Deploy section); no keyword stuffing — JSON-LD must match visible
-content; any `<head>` edit is a precached-file edit → `sw.js` VERSION bump per the existing
-once-per-session rule. **Copy fixes to titles, descriptions, or JSON-LD claims are gate-2
-decisions** — the pass logs candidates and batches the questions; it never auto-rewrites SEO
-copy. Expect the first run to be mostly measure-and-log.
-
-**M. Aesthetics & visual-design pass (one surface per session)** — the slow-beautification track:
-the site should get gradually more refined without ever changing abruptly under a teacher's feet.
-Pick the least-recently-audited surface (the 7 tools plus the chrome pages — index, resources,
-contact, privacy/terms, 404; the rotation row's result notes track which surfaces are covered).
-Load it over local HTTP in the full matrix (light + dark × desktop + ~800px) and audit it like a
-designer: typography (scale, hierarchy, line-height, Hebrew/English pairing), spacing rhythm
-(consistent padding/gap/margin steps), alignment and grid discipline, color harmony, component
-consistency (buttons, inputs, panels, radii, shadows, focus states — judged against the suite's
-best existing implementation: convergence beats invention), visual hierarchy (does the eye land
-where it should), and dark-mode parity (nothing that only looks right in light mode). Log findings
-as Candidates — usually P4, P3 where the sloppiness impairs use; a contrast/readability failure
-keeps the severity pass C would give it. (Boundary with C: C owns accessibility *semantics* —
-keyboard, focus, ARIA, reduced-motion, contrast compliance; M owns visual *refinement*.) Small
-refinements may then be fixed as normal iterations this session; **anything dramatic is decision
-gate 3** — propose with current-state screenshots, never ship unasked; if approved but too big for
-the remaining budget, log it as an `approved <date>` candidate at the top of its priority band for
-the next session. **Screenshot rule (binding for every aesthetics-track change, gated or not):**
-capture BEFORE screenshots ahead of the edit and AFTER screenshots once verified — light + dark at
-the affected breakpoint(s) — saved under the session's scratchpad/temp dir, NEVER committed to the
-repo, and delivered to the maintainer at close-out (send them as files/attachments where the
-harness supports it; otherwise print their paths). New CSS obeys the hard rules like everything
-else (logical properties, both themes, the once-per-session `sw.js` bump).
-
-**N. Mobile & touch-device pass (one surface per session)** — the suite installs as a PWA, and
-teachers reach for it on a phone between classes and on school-issued tablets; but every other pass
-measures it on a desktop with a mouse. Pick the least-recently-audited surface
-(the 7 tools plus the chrome pages — index, resources, contact, privacy/terms, 404; the rotation
-row's result notes track which surfaces are covered).
-
-**Recipe delta — a resized window is NOT a phone (binding).** CLAUDE.md's Playwright recipe applies
-unchanged (serve over local HTTP, route-abort external origins, `serviceWorkers:'block'` for any
-failure path, assert `pageerror === 0`, dismiss auto-open modals), plus a **real device descriptor**:
-```js
-const { chromium, devices } = pkg;                       // devices is on the CJS default export
-const ctx = await browser.newContext({ ...devices['iPhone 13'], serviceWorkers: 'block' });
-```
-The descriptor — not the viewport size — is what flips `(pointer: coarse)` and `(hover: none)` to
-true and sets `maxTouchPoints`/DPR. Measured here 2026-08-22: `devices['iPhone 13']` →
-`coarse:true, hoverNone:true, dpr:3, maxTouchPoints:1`; a plain 390px-wide desktop context →
-`false, false, 1, 0`. **Resizing alone silently misses every hover-only and coarse-pointer
-finding.** Use `page.tap()` (requires `hasTouch`) when the question is whether *touch* works.
-Descriptors present in this container: `iPhone SE` (320×568), `iPhone 13` (390×664), `Pixel 7`
-(412×839), `iPhone 13 landscape` (750×342), `iPad (gen 7)` (810×1080) — 143 in total.
-
-Arms (run what the surface has; log what you skip and why):
-- **1. Reflow & overflow** at 320 / 390 / 412 portrait plus one landscape, **both themes, EN and
-  HE** (Hebrew labels run longer — narrow width is where they break):
-  `documentElement.scrollWidth <= documentElement.clientWidth` — **NOT `window.innerWidth`**, which on
-  a device descriptor includes the scrollbar-free visual viewport and makes the comparison
-  structurally blind (measured S290: the check could not fire on the very descriptors this pass
-  mandates),
-  nothing clipped by an `overflow:hidden` ancestor, no sticky/fixed bar covering the primary
-  action, modals and drawers fitting the screen with their close control reachable.
-- **2. Viewport & zoom contract** — one viewport-meta shape per page (there are **three** spellings
-  across the 14 root HTML files as of 2026-08-22); never `user-scalable=no` or a `maximum-scale`
-  under 5 (clean today — keep the check as the control that proves the detector can fire);
-  `viewport-fit=cover` and `env(safe-area-inset-*)` present together or not at all (today only
-  `flash_cards.html` has either, and it has both).
-- **3. Dynamic browser chrome** — `100vh` is taller than the *visible* viewport while iOS Safari's
-  URL bar is expanded, stranding whatever sits at the bottom of a full-height surface. **Headless
-  cannot measure this** (no collapsing chrome: the probe above measured `visualViewport.height ===
-  innerHeight`), so audit it **statically** and reason about it: 13 pages use `100vh`, none use
-  `dvh`/`svh`. For the surface under audit, decide per use site whether it paints a full-height
-  sheet (drawer, overlay, stage) whose bottom control a phone would hide. One use site swapped to
-  `dvh` is a fix; a page-wide migration is gate 4.
-- **4. Touch-only interaction parity** — walk the surface's whole interaction inventory with taps
-  only: no hover-to-reveal as the only affordance, no HTML5 drag-and-drop as the only path (DnD
-  does not fire on touch — the folder tree's "Move ▾" menu is the sanctioned precedent in
-  CLAUDE.md), sliders draggable by finger, canvas/stage gestures usable, and the accessible-tooltip
-  tap contract actually firing under `hasTouch`. As of 2026-08-22 only 3 root files carry any touch
-  handler and CLAUDE.md records that no tool ships touch-gesture equivalents — so *absence* is the
-  expected finding; the pass's job is to say which absences actually cost a teacher something.
-- **5. On-screen-keyboard ergonomics** — `type`/`inputmode` on numeric fields (a number pad beats a
-  full keyboard), `autocapitalize`/`autocorrect`/`spellcheck` on Hebrew and name fields, and whether
-  the focused field stays visible once the keyboard covers the bottom ~45% (emulate by shrinking the
-  context's viewport height and re-reading the focused element's rect). Give `prompt()`-driven flows
-  (folder rename / new folder) a real tap-through.
-- **6. Standalone / PWA reality** — installed to a home screen there is **no browser back button**:
-  hunt dead ends (a modal with no ✕, a view escapable only by browser-back), plus notch/safe-area
-  treatment and an orientation flip mid-session.
-- **7. Phone-grade performance** — one throttled arm (4× CPU, slow network) on the surface's
-  heaviest path; the `data/` corpora are multi-MB and school phones are slow. Boundary: **D** owns
-  desktop profiling and anything deeper — N runs the phone arm and hands off.
-
-**Boundaries.** **C** owns accessibility *semantics* (keyboard, focus, ARIA, reduced motion,
-contrast) **and** the WCAG 2.5.8 touch-target *size* rule with its registered `sub-floor touch
-target` pattern — N never re-files a size finding; it files *reachability* and *operability* ones.
-**M** owns visual refinement — a phone-width finding that is purely aesthetic becomes an M
-candidate. **B**/**I** own load-time gates at narrow widths (both have run 375px load arms); N
-starts after load, in interaction, in the second theme and the second language. **G** owns paper.
-When in doubt the pass that owns the *pattern* keeps it; N logs the finding and points at it.
-
-**Screenshot rule (binding, and stricter than M's — this is what the pass delivers):** every run
-ships a **phone contact sheet even when it finds nothing** — the audited surface captured
-full-page at the portrait width(s) run, every major view/tab it has, light + dark, EN + HE — plus
-BEFORE/AFTER pairs at the affected width
-(and orientation, where the finding is orientation-dependent) for every fix. Saved under the
-session's scratchpad/temp dir, **NEVER committed to the repo**, and delivered to the maintainer at
-close-out (send them as files/attachments where the harness supports it; otherwise print their
-paths). A clean run with no screenshots is not a run: "it's fine on a phone" is a claim the
-maintainer has to be able to *see*.
-
-**Fixes** this pass finds verify at the phone width(s) where they were found **in addition to** the
-standard matrix (light + dark × desktop + ~800px) — a mobile fix that regresses the desktop layout
-is a net loss. New CSS obeys every hard rule (logical properties, both themes, the once-per-session
-`sw.js` bump), and prefers extending a page's existing phone media query over inventing a
-breakpoint: the suite already carries **44 distinct `max-width` values, 37 of them under 1000px**
-(re-measured 2026-08-30, S294: `grep -ho 'max-width: *[0-9]*px' *.html` over the root HTML, distinct
-values — note this counts ALL `max-width` declarations, not just `@media` breakpoints, of which
-there are 19 / 17), so converge, don't multiply.
-**Anything dramatic is decision gate 4** — propose with the current-state phone screenshots, never
-ship unasked; if approved but too big for the remaining budget, log it as an `approved <date>`
-candidate at the top of its priority band for the next session.
-
-**O. Deslop — AI-design-tell sweep (one surface per session; powered by the Impeccable detector).**
-M asks *is this beautiful?* O asks a narrower, more answerable question: **does this look like
-nobody chose it?** A "tell" is a reflex, not a flaw — a default reached for because it was the path
-of least resistance (a 4px accent bar on a card, a hairline border under a wide soft shadow, a
-gradient headline, 8px functional text). Each one is individually defensible and collectively they
-are the reason generated interfaces are recognizable on sight. The suite is largely AI-authored, so
-it accumulates them silently; nothing else in the rotation is looking for them.
-
-**Tooling — the Impeccable detector (third-party, Apache-2.0, `pbakaus/impeccable`).** The pass is
-built on its anti-pattern registry (~60 curated rules) rather than on your own eye, so findings are
-re-measurable next session and a Pattern-health line can hold them.
-
-**Get it by cloning it. The pass deliberately does NOT depend on the Impeccable plugin or skill being
-installed** — `/plugin` is unavailable in the remote web environment where these sessions usually run,
-and requiring it would make the pass unrunnable there. Shallow-clone the repo into the **session
-scratchpad** (never into the repo, never committed) and call the detector script directly:
-```bash
-git clone --depth 1 https://github.com/pbakaus/impeccable.git "$SCRATCH/impeccable"
-DET="$SCRATCH/impeccable/plugin/skills/impeccable/scripts/detector/detect-antipatterns.mjs"
-```
-That is the path both arms below were verified on. `npx impeccable detect` is a fallback if cloning
-is blocked, but **check the version**: npm lagged the GitHub repo by a full major at registration
-(npm `latest` 3.6.0 vs repo 4.1.2, measured 2026-09-01). If the plugin *is* installed in some future
-session, its skill dir carries the same script and is fine to use. Either way **record which source
-you used and its version** — the registry differs between majors, and a silent downgrade would move
-the goalposts under the rotation row.
-
-Two arms, both verified in this container 2026-09-01, against the cloned `$DET` above.
-- **Static arm (the workhorse).** `node "$DET" <page>.html` — reads the file, so it needs no server
-  and covers every single-file page directly. Flags: `--json` (machine-readable, for diffing sweeps),
-  `--no-advisory`, `--scope type,layout`, `--quiet`.
-  **It needs four parser modules — `htmlparser2 css-select css-tree domutils` — and without them it
-  prints `DEGRADED … findings are an undercount, not a clean bill of health` and falls back to
-  regex.** Install them in the **scratchpad**, not the repo (CLAUDE.md's zero-dep rule; `npm install`
-  beside the resolved detector is enough — resolution walks up from its own path).
-  **Binding: never record a clean sweep, a hit count, or a Pattern-health streak from a DEGRADED
-  run.** Fix the install or report the arm as not-run. This is the same rule as pass N's "a resized
-  window is not a phone": a detector that cannot see is not a detector that found nothing.
-- **Browser arm (runtime truth: computed cascade, custom properties, real contrast).**
-  Serve the repo root per CLAUDE.md's Playwright recipe, then point the detector at the URL. It
-  drives **Puppeteer**, which the container does not ship — but it honors `PUPPETEER_EXECUTABLE_PATH`,
-  so reuse the preinstalled Playwright Chromium instead of downloading another:
-  ```bash
-  npm install --ignore-scripts puppeteer        # in the scratchpad; --ignore-scripts skips the Chrome download
-  CHROME=$(ls -d /opt/pw-browsers/chromium-*/chrome-linux/chrome | head -1)   # DISCOVER it; the build number drifts
-  CI=1 PUPPETEER_EXECUTABLE_PATH="$CHROME" NO_PROXY='*' no_proxy='*' \
-    node "$DET" http://localhost:8099/<page>.html
-  ```
-  `CI=1` is load-bearing, not cargo cult: it is the only switch that adds `--no-sandbox`, and Chrome
-  refuses to start as root without it. Never hardcode the Chromium path — it carries a build number
-  (`chromium-1194` at registration) that changes with the container image. `--viewport 390x844` gives a phone-width detector run (URL
-  mode only — the flag does nothing on the static arm).
-  **Known blind spot: the browser arm only ever sees the light theme.** There is no dark-mode flag,
-  and the suite's dark mode is driven by `localStorage`/`dark-early`, so a dark-only tell is
-  invisible to both arms. Audit dark by eye against the same rule ids, using the normal Playwright
-  recipe, and say in the rotation row that you did — do not let a light-only sweep be recorded as a
-  whole-surface one.
-
-**The brand-truth rule — the guardrail that makes this pass safe, and the reason it is gated.**
-IvritSuite has a *deliberate* identity: navy/gold/parchment, Frank Ruhl Libre and Libre Baskerville,
-a siddur/beit-midrash feel chosen for a Jewish elementary classroom. Impeccable's registry is tuned
-for generic product surfaces, so several of its highest-confidence rules fire on precisely the
-choices that make this site not generic. Measured at registration: **`cream-palette` fires on
-`--cream: #fdf8ef`** — the parchment ground the entire suite is built on — with the note "choose a
-background that comes from a deliberate palette, not the safe warm off-white". It *is* a deliberate
-palette. **A finding that contradicts a documented, chosen identity is a false positive, and
-"fixing" it is the actual slop:** converging on the detector's median taste would make the site more
-generic, not less. So the pass's first question about every finding is **was this chosen?** — check
-CLAUDE.md's design sections and the ledger before treating a rule id as a defect.
-Where the answer is yes, **record it permanently** so it is not re-litigated every sweep, using an
-inline ignore committed next to the choice — the reason travels with the code, shows up in review,
-and sits exactly where the next session looks:
-```css
-/* impeccable-disable-line cream-palette -- parchment ground: deliberate siddur identity, ratified S3xx */
-```
-(`impeccable-disable` waives a whole file, `-line`/`-next-line` one site; `<!-- … -->` in HTML,
-`/* … */` in CSS; comma-separate rule ids.) Prefer inline over `.impeccable/config.json`, and treat
-the waiver itself as a **gate-5 decision** — deciding what is brand and what is slop is the
-maintainer's call, not the loop's.
-
-**Scope: one surface per session** (the 7 tools plus the chrome pages — index, resources, contact,
-privacy/terms, 404), least-recently-audited first; the rotation row's result notes track coverage,
-exactly like M and N. Run both arms over that surface, then triage every finding into one of four
-buckets — and **log the triage, not just the hits**, since a rule ruled out is knowledge the next
-sweep should not have to rediscover:
-1. **Tell — O's to fix** (gated): the AI-signature rules — `side-tab`, `gpt-thin-border-wide-shadow`,
-   `gradient-text`, `ai-color-palette`, `nested-cards`, `monotonous-spacing`, `hero-eyebrow-chip`,
-   `kicker-above-heading`, `icon-tile-stack`, `pulsing-dot`, `bounce-easing`, `codex-grid-background`,
-   `repeating-stripes-gradient`, `em-dash-overuse` (advisory), and the rest of that family.
-2. **Brand truth** — waive with an inline ignore + reason (gated).
-3. **Another pass's finding** — file it there, do not fix it here (see Boundaries).
-4. **Detector wrong about this codebase** — an RTL/Hebrew-specific false positive, a rule that
-   misreads a single-file page. Record the rule id and *why*, so it is triaged in one line next time.
-
-**Boundaries — O owns tells, not quality in general.** The detector emits far more than tells, and
-absorbing all of it would quietly make O a second copy of three other passes:
-- **`low-contrast` → pass C.** C owns contrast *compliance* (and already owns the touch-target size
-  rule). O files the finding with its measured ratio and moves on. Registration measured real
-  failures here (`#c9922a` gold on `#e8e0d0` at 2.1:1) — they are C's, and they are not tells.
-- **`tiny-text` / `undersized-ui-text` / `tight-leading` / `cramped-padding` → C if the finding is
-  legibility, M if it is refinement.** CLAUDE.md's audience note decides severity: these tools are
-  projected for young students, so sub-11px functional text is a real defect, not taste.
-- **`layout-transition`, `image-hover-transform` → pass D** (main-thread cost).
-- **`--viewport 390x844` findings → pass N** for reachability/operability; O keeps only the tells.
-- **M vs O, the tiebreak that matters:** M is taste and audits like a designer; O is tells and runs a
-  fixed registry. When both could claim a finding, **the detector rule id wins it for O**; anything
-  with no rule id behind it is M's. O never opens a general beautification of a surface — that is M's
-  slot, and doubling it would burn the variety governor's per-tool cap on one page.
-
-**Screenshot rule — the before/after proposal gate (binding; this is what the pass delivers).**
-M and N screenshot to *document* a change; O screenshots to *ask for* one. Every proposal reaches the
-maintainer as a rendered pair before anything ships:
-1. **BEFORE** — capture on a clean tree (`git status --short` empty), light **and** dark, at the
-   affected breakpoint(s), per CLAUDE.md's Playwright recipe.
-2. **APPLY** the candidate edit in the working tree. **Never commit it.**
-3. **AFTER** — capture the same frames, same viewport, same theme, same scroll position. Only the
-   edit may differ; a pair that also moved the crop is not evidence.
-4. **REVERT** — `git checkout -- <file>` — and **prove it**: `git status --short` must come back
-   empty before you present anything. The proposal is a question, so the tree ends the way it started.
-5. **PRESENT** — one **side-by-side composite per proposal** (before | after, labeled, same scale),
-   delivered with `SendUserFile` where the harness supports it and by path otherwise, then the
-   decision asked via `AskUserQuestion`. Build the composite with no new dependency: write a tiny
-   HTML page that `<img>`s the two PNGs side by side with captions and screenshot *that* with the
-   Playwright already in use.
-6. **Ship only what came back approved**, then re-run the detector arm to confirm the rule id is
-   actually gone — a fix that does not clear its own finding is not a fix.
-
-**Never present an AFTER you did not actually render.** No mockups, no CSS diffs captioned as
-screenshots, no "it would look like…". The entire value of this gate is that the maintainer is
-looking at the real thing; a described after-state silently converts a design decision back into the
-loop's decision. A proposal that cannot be rendered is logged as a Candidate with that stated
-reason, not presented.
-
-**Fixes** verify in the standard matrix (light + dark × desktop + ~800px) **plus** a re-run of the
-arm that found them, and obey every hard rule — logical CSS properties, both themes, the
-once-per-session `sw.js` bump, `check-inline-js.mjs` and `check-i18n.js` where they apply. Because
-O's changes are visual and suite-wide by nature, prefer converging a token or a shared block over
-patching one call site: a tell that appears on all 13 pages (`side-tab` did, at registration) is one
-shared-component decision, not thirteen.
-
+(J, the metrics-informed pass, is permanently SKIP in the rotation: its feature was removed.)
 
 ## Micro-feature track
-Small user-visible enhancements are in scope, under tight fencing:
+- **Source:** only the ledger's Feature seeds (from pass H or explicit human request). Never invent one.
+- **Micro:** one tool (a declared cross-tool handshake pair is the sole exception), ≤ ~150 lines of
+  diff, no dependencies, no build step, no `data/` edits, storage keys reconciled per CLAUDE.md in the
+  same commit, both themes, single-file conventions.
+- **Budget:** max 1 per session, costs 2 iterations (1 per touched tool against the caps). Skip when a
+  P1 exists. Selection is gate 1; unattended default is skip and log.
+- **Verification:** the full step 4 plus a fresh-profile check and a `.ivrit` round-trip if state was
+  added. Prefer dual-audience seeds (Hebrew and secular use) at equal size.
+- **Abort:** diff trending past ~150 lines or outside the declared scope → revert, split the seed in
+  the ledger, log "attempted, split."
 
-- **Source:** only from the **Feature seeds** ledger section (populated mainly by pass H, or by explicit human request noted in the ledger). Never invent a feature mid-session.
-- **Definition of "micro":** one tool — sole exception: a cross-tool **handshake seed** (emit in one
-  tool, consume in the other, like the shipped S72 `?wl=` deep-link) may touch exactly its declared
-  tool pair — ≤ ~150 lines of combined diff, no new dependencies, no build step, no `data/` edits.
-  New localStorage keys must be reconciled per CLAUDE.md's localStorage flag guidance **in the same
-  commit**: real cross-machine data registers in all three AllTools functions + the owning tool's
-  `.ivrit` payload; one-time UI flags (`*_seen`/`*_dismissed`) go in `eraseAllSettings` only. Fits
-  existing single-file HTML conventions and both themes.
-- **Budget:** max **1 micro-feature per session**, and it costs **2 iterations** of the 5-iteration
-  budget — its stricter verification is roughly a second iteration of work. Against the variety
-  governor's per-tool cap it charges 1 iteration to each tool it touches. Skip it entirely in any
-  session where a P1 exists.
-- **Selection:** prefer seeds that serve both the Hebrew tools and secular uses (number practice, timers, student picker, English font support) — dual-audience seeds outrank single-audience at equal size. The final seed choice (or skipping the micro-feature) is **decision gate 1**, confirmed at the post-pass batch point; unattended default = skip this session and log the deferral.
-- **Verification is stricter:** everything in step 4 of the protocol, plus a fresh-profile check (pass-I style: fresh browser context, empty localStorage AND IndexedDB) and a `.ivrit` round-trip if any state was added.
-- **Abort rule:** if the diff is trending past ~150 lines or touching any tool outside the seed's declared scope, stop, revert cleanly, and split the seed into smaller seeds in the ledger. A reverted attempt is logged in Done as "attempted, split."
+## Prioritization rubric
+P1 data loss, security, broken core function, export corruption · P2 silently wrong output, undo holes,
+a11y blockers · P3 performance, dead UI, confusing copy, consistency, paper-cuts · P4 polish.
+Tie-breakers: (1) teachers' saved work, (2) the printed/exported artifact, (3) dual-audience beats
+single, (4) untouched in the last 2 sessions, (5) smallest diff.
 
-## Prioritization rubric (for ordering Candidates)
-P1: data loss, security, broken core function, export corruption.
-P2: silently wrong output (misplaced marks, wrong answers, print artifacts that mislead), undo holes, accessibility blockers.
-P3: performance, dead UI, confusing copy, consistency divergences, paper-cuts.
-P4: polish.
-Tie-breakers, in order: (1) affects teachers' saved work, (2) affects the printed/exported artifact a student receives, (3) dual-audience (Hebrew **and** secular use) beats single-audience, (4) untouched in the last 2 sessions (variety), (5) smallest diff.
-
-## Hard rules (non-negotiable; CLAUDE.md is the full text — these are the ones loop sessions hit most)
-- `ivritSafeParse`/`ivritSafeAssign` for all untrusted JSON; `esc()` for all user-input rendering; any
-  new external resource requires updating that page's CSP meta tag — and only then: never loosen or
-  edit a page's CSP otherwise, and note the added directive in the commit message. (Plus SRI on any
-  **new** external script — a loop-local rule stricter than CLAUDE.md; don't retrofit existing CDN
-  loads as a drive-by.)
-- Single-file HTML conventions preserved; no build step introduced.
-- Every new/changed user-facing UI string routes through `I18n.t()`/`data-i18n*` (+ CSV key +
-  `node scripts/build-locales.js`); new CSS uses logical properties; `node scripts/check-i18n.js` must
-  report no NEW violations before the session ends.
-- Any new control in a preset-bearing tool is wired into `getSettings()`/`applySettings()` (restores
-  use `??`, never `||`, for numeric/boolean fields — the falsy-zero rule).
-- A Font Maker **feature** requires one combined `FONT_MAKER_VERSION` bump + About-tab changelog entry
-  per release (not per sub-feature; pure fixes/token swaps don't bump — the ledger's close-outs show
-  the call being made each session).
-- Isolated commits per concern, on the session's `claude/*` branch per the Branch & PR protocol above.
-- `sw.js` `VERSION` (the `const VERSION = 'vNNN'` at the top — locate by pattern) bumped **once per
-  session**, in the final commit, whenever any precached file changed. Deploy runs on merge to `main`;
-  the close-out notes that deploy `success` is verified after merge.
-- Never edit `data/` corpus files as part of an improvement iteration — data fixes are their own project.
+## Ledger schema and size rules
+The ledger is **current state**; history goes to `docs/IMPROVEMENT_ARCHIVE.md` (append-only, grep-only)
+and measurements/refutations to `docs/reference/loop-findings.md`. `scripts/check-ledger.mjs` fails a
+close-out that breaks these; `node scripts/compact-ledger.mjs --apply` moves overflow verbatim to the
+archive. Limits live in `scripts/ledger-rules.mjs`:
+- Whole ledger ≤ 100 KB; any line ≤ 600 chars (the current handoff's lines ≤ 1500). Write the
+  headline; detail that matters goes to the archive entry, not the ledger line.
+- `## Candidates`: `- [ ] P<n> | <file> | <one-sentence defect> | found S<N>`. Open, fixable work only.
+  A measurement, refutation, method note or "recorded so nobody re-derives it" is not a candidate —
+  it goes straight to `loop-findings.md`. Striking a candidate moves it to Done, never to a `[x]` line.
+- `## Feature seeds`: open seeds only; shipped or struck ones move to the archive.
+- `## Done`: last 5 sessions. Entry: `- [x] <date> | <commit> | <file> | <what> | <verified how>`; plus
+  one `(SN close-out) | branch/deploy note` per session (branch/PR state, drift check, `sw.js`
+  vNNN→vNNN + files, FM bump-or-not with reason, scripts run, decisions deferred).
+- `### Per-session log`: last 20 rows,
+  `- <date> | SN | iters: N | tools: … | patterns fixed: … | pass run: <letter> | SW: vNNN→vNNN`.
+- `### Tool coverage`: ONE snapshot row (every tool with its last-touched date), rewritten in place.
+- `### Pattern health`: one row per pattern, updated in place: name, ACTIVE|retired, last swept, hits,
+  clean streak, and the detection definition (grep + exemptions).
+- `### Discovery-pass rotation`: one row per pass `- <letter> <name>: <date> (SN: <one-line result +
+  surface covered>)`, updated in place — no `_(prior)_` chains. Then the single
+  `**Next session (SN+1):**` handoff: the pointer plus at most a few `⚑` notes (branch/PR state, what
+  is stalest, the strongest untaken candidate, the seed bench). The previous handoff moves to the archive.
 
 ## Session close-out (always, even on early stop)
-1. **Ledger updated:** Done entries complete; Candidates and Feature seeds re-prioritized; Pattern
-   health, Tool coverage, the rotation table, and the Per-session metrics line (with SN) updated; Done
-   overflow archived. Write the `(SN close-out) | branch/deploy note` Done entry: branch/PR state,
-   drift-check result, `sw.js` vNNN→vNNN + which precached files changed, the FONT_MAKER_VERSION
-   bump-or-not call with reason, which repo scripts ran, and any decisions deferred to the
-   maintainer. Update the trailing
-   `**Next session (SN+1):**` pointer with what ran and what looks stalest next.
-2. **Repo definition-of-done:** `node scripts/check-i18n.js` clean (no NEW violations);
-   `node scripts/build-locales.js` if any CSV keys were added; `sw.js` VERSION bumped once in the
-   final commit if any precached file changed; `node scripts/update-sitemap.mjs` as the **last** step
-   if page content changed. **And after editing the ledger — especially after archiving — run
-   `node scripts/check-ledger.mjs --vs origin/main`** (added S296). It asserts the ledger still
-   carries all 11 required sections and a single `**Next session**` pointer, and that archiving was
-   *conservative*: content the ledger lost must have been absorbed by the archive rather than
-   deleted. This is not hypothetical bookkeeping — the S295 close-out archived five Done entries
-   correctly while silently destroying 993 further lines (the whole Metrics section, Pattern health
-   with every pattern's detection definition, and the rotation table), and nothing caught it for a
-   session. Both of the script's checks fire on that commit.
-3. **Push** the session branch; ensure the draft PR exists/updated. Note that deploy verification
-   (Pages run `success`) happens after the maintainer merges.
-4. **Print a summary:** iterations completed, pass run, patterns swept (hits/clean), micro-feature
-   shipped or split, before/after screenshots for any aesthetics-track changes (per pass M's
-   screenshot rule) and the phone contact sheet + before/after pairs for any mobile-track run (per
-   pass N's, which ships even on a clean run); for a Deslop run (pass O), the detector + version and
-   which arms ran (flagging any DEGRADED or light-only arm as not-run), the finding triage by
-   bucket, every before/after composite with the maintainer's answer beside it, and any inline
-   `impeccable-disable` waivers added — a waiver is a ratified statement about the site's identity
-   and belongs in the summary, not just the diff. Then: top 3 remaining candidates + top feature seed,
-   decision gates asked
-   (question → answer) and any decisions deferred to the maintainer, any protocol divergence flagged
-   for this skill, and anything a human must do (starting with: merge the PR, then verify the deploy).
-5. **End with a plain-language recap.** Every loop run must finish with a short **"In simple terms, what
-   did this loop session do?"** section — the very last thing printed, after the technical summary above.
-   Write it in jargon-free language a non-technical teacher would understand (no pass letters, ledger
-   terms, commit hashes, or version numbers): what visibly changed for people using the site, what was
-   checked and found fine, and what the human needs to do next.
-6. **Compact the context — the session's standing final act, never skipped (early stops included).**
-   The loop is designed for repeated runs in one long-lived conversation, and every session restarts
-   from CLAUDE.md + the ledger, never from chat memory — so once the recap is printed, this
-   session's working context is disposable and must not pile up across runs. `/compact` is
-   user-initiated: no current harness lets the model execute built-in slash commands itself
-   (verified against the Claude Code docs, 2026-08), so the recap's "what to do next" list must END
-   with the instruction to run **`/compact` now, before the next loop session**, plus a one-line
-   reassurance that this is safe because the loop keeps all its state in the ledger, not the chat.
-   In a harness that compacts/summarizes context automatically with no `/compact` command (e.g. the
-   remote web environment), state that auto-compaction covers it instead of asking; if a future
-   harness ever exposes a model-invocable compaction mechanism, invoke it after the recap instead
-   of asking.
+1. **Ledger:** Done entries, the close-out entry, Candidates/Feature seeds re-prioritized, Pattern
+   health, Tool coverage, the rotation row, the per-session line, the new handoff pointer.
+2. **Compact and check:** `node scripts/compact-ledger.mjs --apply`, then
+   `node scripts/check-ledger.mjs --vs origin/main` — both must be clean.
+3. **Repo definition of done** per CLAUDE.md (check-i18n, build-locales if keys were added, `sw.js`
+   VERSION bumped once in the final commit if any precached file changed, update-sitemap last if page
+   content changed).
+4. **Push** the session branch; ensure the draft PR exists or is updated.
+5. **Summary**, then the recap. Summary: iterations, pass run and its result, patterns swept
+   (hits/clean), micro-feature shipped/split, screenshots delivered (M/N/O rules), gates asked → answers,
+   decisions deferred, protocol divergences to fold into this skill, and what a human must do (merge
+   the PR, verify the deploy). Then **"In simple terms, what did this loop session do?"** — a short,
+   jargon-free recap for a teacher: what visibly changed, what was checked and found fine, what to do
+   next — ending with "run `/compact` now before the next session" (or, in a harness that
+   auto-compacts, that this is covered). The loop keeps its state in the ledger, not the chat.
 
-## First-session bootstrap (only if `docs/IMPROVEMENT_LOG.md` is absent)
-Create the ledger with the full v2 structure, then spend the whole session on discovery: run sweep A in full plus pass B, populate Candidates (expect 10–25 items), fix ONLY any P1s discovered, and close out. Fixing begins in earnest next session against a real backlog.
+If the ledger is missing, stop and ask the maintainer — never bootstrap a new one silently.
