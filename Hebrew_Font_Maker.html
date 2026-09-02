@@ -326,6 +326,8 @@ footer a { display: inline-block; padding-block: 5px; }
   .mode-btn.active { background: var(--navy); color: #fff; }
   body.dark .mode-btn.active { background: #2a4070; }
   .mode-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }   /* parity with .npnl-mode-btn */
+  .mode-btn:hover:not(.active) { background: var(--warm-gray); }   /* hover feedback on the unselected segments (S313 pass F); the generator's chip idiom */
+  body.dark .mode-btn:hover:not(.active) { background: rgba(255,255,255,0.06); }   /* dark --warm-gray equals the dark --white surface, so it needs its own value */
   /* vertical stack variant — used when the option labels are long (e.g. the sidebar "Add Letters" panel) */
   .mode-toggle-stack { flex-direction: column; margin-bottom: 10px; }
   .mode-toggle-stack .mode-btn { padding: 9px 8px; line-height: 1.25; }
@@ -402,6 +404,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .ctab { padding: 7px 16px; border: 1px solid var(--border); border-radius: 7px 7px 0 0; background: var(--cream); cursor: pointer; font-size: 0.84rem; font-weight: 700; color: var(--muted); }
   .ctab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
   body.dark .ctab.active { background: #2a4070; border-color: #4a6aaa; }
+  .wtab:hover:not(.active), .ctab:hover:not(.active) { border-color: var(--gold); color: var(--text); }   /* the step and category tabs had no hover state (S313 pass F); border-gold is this file's idiom (.ltile:hover) */
   #catPanelGroup { display: flex; flex-direction: column; gap: 14px; }
   body.layout-tabbed #catTabs { display: flex; }
   body.layout-tabbed #catHost { display: block; }
