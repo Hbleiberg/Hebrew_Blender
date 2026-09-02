@@ -87,6 +87,12 @@ export-warning chips) legitimately use the `_` versions plus `gotoAnchors('nikku
 After mutating state, call `renderStage(); renderControls();` (+ `renderGrids()` if tile status or
 selection changed) — `afterUndo` shows the canonical full refresh.
 
+### Page chrome — the footer bar
+The `<footer>` is deliberately a two-row bar, not the three-column block the other chrome pages use:
+row one holds the FAQ and About `<details>` (folded; an open one takes the full row, prose-capped at
+720px) beside the credits, row two is the related-tools nav in one wrapping line. Same i18n keys and
+the same FAQ copy as the head's FAQPage JSON-LD — restyle, don't re-column it.
+
 ### v2.0 extension points
 - **Guided tour**: `TOUR_STEPS` array + `tourStart()`/`tourEnd()` — non-modal spotlight; steps have
   `target()` (+ optional `reveal()`) and skip gracefully when hidden; must never change project state.
