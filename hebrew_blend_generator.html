@@ -4909,11 +4909,11 @@ function applySettings(s) {
   // Focus letters
   if (s.focusOn !== undefined)   document.getElementById('focusToggle').checked = s.focusOn;
   if (s.lock1Active !== undefined) { document.getElementById('lock1Active').checked = s.lock1Active; toggleLockSection(1, s.lock1Active); }
-  if (s.lock1Letters) { lockLetters[0] = new Set(s.lock1Letters); document.querySelectorAll('#lockGrid1 .lock-letter-tile').forEach(t => t.classList.toggle('selected', lockLetters[0].has(t.dataset.heb))); }
+  if (s.lock1Letters) { lockLetters[0] = new Set(Array.isArray(s.lock1Letters) ? s.lock1Letters.filter(isKnownLetterKey) : []); document.querySelectorAll('#lockGrid1 .lock-letter-tile').forEach(t => t.classList.toggle('selected', lockLetters[0].has(t.dataset.heb))); }
   if (s.lock2Active !== undefined) { document.getElementById('lock2Active').checked = s.lock2Active; toggleLockSection(2, s.lock2Active); }
-  if (s.lock2Letters) { lockLetters[1] = new Set(s.lock2Letters); document.querySelectorAll('#lockGrid2 .lock-letter-tile').forEach(t => t.classList.toggle('selected', lockLetters[1].has(t.dataset.heb))); }
+  if (s.lock2Letters) { lockLetters[1] = new Set(Array.isArray(s.lock2Letters) ? s.lock2Letters.filter(isKnownLetterKey) : []); document.querySelectorAll('#lockGrid2 .lock-letter-tile').forEach(t => t.classList.toggle('selected', lockLetters[1].has(t.dataset.heb))); }
   if (s.lock3Active !== undefined) { document.getElementById('lock3Active').checked = s.lock3Active; toggleLockSection(3, s.lock3Active); }
-  if (s.lock3Letters) { lockLetters[2] = new Set(s.lock3Letters); document.querySelectorAll('#lockGrid3 .lock-letter-tile').forEach(t => t.classList.toggle('selected', lockLetters[2].has(t.dataset.heb))); }
+  if (s.lock3Letters) { lockLetters[2] = new Set(Array.isArray(s.lock3Letters) ? s.lock3Letters.filter(isKnownLetterKey) : []); document.querySelectorAll('#lockGrid3 .lock-letter-tile').forEach(t => t.classList.toggle('selected', lockLetters[2].has(t.dataset.heb))); }
   if (s.vowelLockOn !== undefined) {
     document.getElementById('vowelLockToggle').checked = !!s.vowelLockOn;
     toggleVowelLockUI();
