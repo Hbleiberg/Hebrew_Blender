@@ -207,6 +207,9 @@ dashboard.layout.move_down_aria,Move {name} down,העברת {name} למטה,pane
 dashboard.layout.move_out_below_aria,Move {name} back up to a side column,החזרת {name} למעלה לעמודה צדדית,panel move button aria-label + title,do not translate {…}
 dashboard.layout.move_panels_button,↔ Move panels,↔ הזזת פאנלים,settings Display Options button,leading-emoji
 dashboard.layout.move_panels_label,Panel arrangement,סידור הפאנלים,settings row label,
+dashboard.layout.lock_widths_label,Lock panel widths,נעילת רוחב הלוחות,Settings toggle: freeze the draggable column/drawer edges,
+dashboard.layout.lock_widths_hint,"Freezes the draggable edges between the columns and on the settings drawer, so a stray touch can't resize them. Widths you already set stay exactly as they are.","מקפיאה את הקצוות הניתנים לגרירה שבין העמודות ובמגירת ההגדרות, כך שנגיעה מקרית לא תשנה את רוחבם. הרוחב שכבר הגדרתם נשאר בדיוק כפי שהוא.",Hint under the lock toggle,
+dashboard.layout.lock_widths_handle_title,Panel widths are locked (Settings → Display Options),רוחב הלוחות נעול (הגדרות ← אפשרויות תצוגה),Tooltip on a resize handle while the lock is on,
 dashboard.layout.move_up_aria,Move {name} up,העברת {name} למעלה,panel move button aria-label + title,do not translate {…}
 dashboard.layout.moved_announce,"{panel} moved to {zone}, position {pos} of {count}","הפאנל {panel} הועבר אל {zone}, מיקום {pos} מתוך {count}",screen-reader move announcement (#a11yStatus),do not translate {…}
 dashboard.layout.panel_dow,Days of the Week,ימות השבוע,panel name in move-panels chrome,

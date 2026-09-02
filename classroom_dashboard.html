@@ -877,6 +877,12 @@
      The .open rule is repeated at [dir=rtl] specificity so it wins the attr+class tie against the base. */
   [dir="rtl"] .settings-modal { transform: translateX(-100%); }
   [dir="rtl"] .settings-modal.open { transform: translateX(0); }
+  /* Panel-width lock (Settings -> Display Options): a resize handle is deliberately easy to
+     grab, which on a classroom board also makes it easy to nudge by accident. applyPanelWidthLock()
+     is the gate; these rules just stop a frozen seam from inviting the drag it will not accept. */
+  body.widths-locked .sbr-split { cursor: default; }
+  body.widths-locked .sbr-split::before { width: 2px !important; background: transparent !important; }
+
 /* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/trope_tutor — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
 .sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
 .sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
@@ -2218,6 +2224,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <button class="btn btn-xs" id="movePanelsBtn" onclick="enterLayoutEdit()" data-i18n="dashboard.layout.move_panels_button">↔ Move panels</button>
     </div>
     <div class="form-row">
+      <label for="lockPanelWidths" data-i18n="dashboard.layout.lock_widths_label">Lock panel widths</label>
+      <label class="toggle"><input type="checkbox" id="lockPanelWidths"><span class="slider"></span></label>
+    </div>
+    <div style="padding-left:18px;margin:-4px 0 8px;">
+      <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.layout.lock_widths_hint">Freezes the draggable edges between the columns and on the settings drawer, so a stray touch can't resize them. Widths you already set stay exactly as they are.</span>
+    </div>
+    <div class="form-row">
       <label data-i18n="dashboard.display.column_headers">Column headers</label>
       <div class="radio-group">
         <input type="radio" name="headerLang" id="hl-he" value="he"><label for="hl-he">עִבְרִית</label>
@@ -3116,6 +3129,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     currentSchedule: [],
     presetColors: {},                 // preset name → '#rrggbb' class color for the weekly grid. (settings.scheduleWeek is deliberately absent here — its presence is what selects the weekly engine.)
     showTextSizeOptions: false,
+    lockPanelWidths: false,
     engDateSize: 1.35,
     hebDateSize: 2.6,
     timeSize: 3.4,
@@ -4783,6 +4797,39 @@ function mountSidebarResize(cfg) {
       : 0;
     return Math.min(480, dash.clientWidth - pad - gap * (otherShown ? 2 : 1) - otherW - 300);
   }
+  /* ── Panel-width lock (settings.lockPanelWidths) ───────────────────────────────
+     Teacher-facing guard for shared boards: the seams stay mounted and keep their widths, we
+     just refuse the interactions. One capture-phase listener at the document swallows them
+     BEFORE the handle's own listeners run, so the shared sidebar-resize block stays untouched
+     (and un-forked) — and 'click' is in the list so a swallowed press on the drawer's edge
+     handle still can't reach the backdrop's click-to-close. */
+  function panelWidthsLocked() { return !!settings.lockPanelWidths; }
+  ['pointerdown', 'click', 'dblclick', 'keydown'].forEach(type => {
+    document.addEventListener(type, e => {
+      if (!panelWidthsLocked()) return;
+      const h = e.target && e.target.closest ? e.target.closest('.sbr-split') : null;
+      if (!h) return;
+      e.stopPropagation();
+      if (type !== 'keydown') e.preventDefault();   // a swallowed keydown must still let Tab/Escape through
+    }, true);
+  });
+  /* Read-only: reads settings and rewrites handle chrome only — safe to call from applyI18n,
+     which re-applies each handle's data-i18n-title over the locked wording. */
+  function applyPanelWidthLock() {
+    const locked = panelWidthsLocked();
+    document.body.classList.toggle('widths-locked', locked);
+    document.querySelectorAll('.sbr-split').forEach(h => {
+      h.setAttribute('aria-disabled', locked ? 'true' : 'false');
+      h.setAttribute('tabindex', locked ? '-1' : '0');   // also drops it out of the drawer's focus trap
+      const tip = locked
+        ? (window.I18n ? I18n.t('dashboard.layout.lock_widths_handle_title') : 'Panel widths are locked (Settings → Display Options)')
+        : (window.I18n && h.dataset.i18nTitle ? I18n.t(h.dataset.i18nTitle) : h.getAttribute('title') || '');
+      h.setAttribute('title', tip);
+      h.setAttribute('aria-label', tip);
+    });
+    if (locked && document.activeElement && document.activeElement.classList
+        && document.activeElement.classList.contains('sbr-split')) document.activeElement.blur();
+  }
   function initResizeHandles() {
     mountSidebarResize({
       handle: document.getElementById('settingsResize'),
@@ -5076,6 +5123,8 @@ function mountSidebarResize(cfg) {
     const showTso = !!settings.showTextSizeOptions;
     $('showTextSizeOptions').checked = showTso;
     toggleTextSizeOptions(showTso);
+    $('lockPanelWidths').checked = !!settings.lockPanelWidths;
+    applyPanelWidthLock();
     setEngDateSize(settings.engDateSize ?? 1.35);
     setHebDateSize(settings.hebDateSize ?? 2.6);
     setTimeSize(settings.timeSize ?? 3.4);
@@ -5285,6 +5334,11 @@ function mountSidebarResize(cfg) {
     document.getElementById('showTextSizeOptions').addEventListener('change', e => {
       settings.showTextSizeOptions = e.target.checked;
       toggleTextSizeOptions(e.target.checked);
+      saveSettingsToStorage();
+    });
+    document.getElementById('lockPanelWidths').addEventListener('change', e => {
+      settings.lockPanelWidths = e.target.checked;
+      applyPanelWidthLock();
       saveSettingsToStorage();
     });
     document.getElementById('engDateSizeSlider').addEventListener('input', e => { setEngDateSize(e.target.value); saveSettingsToStorage(); });
@@ -9499,6 +9553,7 @@ function panelMemApply() {
       try { renderSavedSchedules(); } catch (e) {}
       try { renderPresets(); } catch (e) {}
       try { renderScheduleUI(); } catch (e) {}
+      try { applyPanelWidthLock(); } catch (e) {}   // applyStaticI18n just restored each handle's unlocked title
       try { refreshLayoutEditChrome(); } catch (e) {}   // move-panels strips/badges re-label (read-only, focus-restoring)
       try { fetchShabbat(false); } catch (e) {}   // re-render Shabbat widget (status strings via t())
       try { fetchHolidays(); } catch (e) {}       // re-render holiday countdown (framing via t(); cache-first, no refetch)

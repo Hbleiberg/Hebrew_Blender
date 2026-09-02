@@ -166,6 +166,17 @@ When toggling `colorCodeNikkud` on, always call `initColorPickers()` to populate
 
 ---
 
+### Panel-width lock (`settings.lockPanelWidths`)
+An opt-in teacher guard, off by default: **Settings → Display Options → Lock panel widths**.
+`applyPanelWidthLock()` puts `body.widths-locked` on, flips every `.sbr-split` to
+`aria-disabled="true" tabindex="-1"` with the locked tooltip, and blurs a focused handle; one
+capture-phase document listener (`pointerdown`/`click`/`dblclick`/`keydown`) swallows the
+interaction before the handle's own listeners see it — **the shared sidebar-resize block is never
+forked or modified**, and the mounts keep serving their stored widths. `click` is in that list so
+a press on the drawer's edge handle still can't fall through to the backdrop's click-to-close.
+Being a `settings` field it rides presets, share codes and `.ivrit` files; `applyI18n` re-calls
+the apply so a language switch can't restore an unlocked tooltip on a locked seam.
+
 ## Settings Drawer & Panel Collapse (`classroom_dashboard.html`)
 
 ### Drawer structure
