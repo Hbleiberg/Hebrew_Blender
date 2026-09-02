@@ -1105,6 +1105,10 @@
      tablets. inline-flex + centering is what makes the min-height show as a taller box rather than
      just taller text. */
   .btn-xs { padding: 4px 9px; font-size: 0.75rem; min-height: 30px; min-width: 30px; display: inline-flex; align-items: center; justify-content: center; }
+  /* The two bare .btn-xs (Reset, ↺ Refresh) carried background:var(--white) inline, which no :hover can beat; the
+     background lives here now and the hover is the drawer's own .timer-preset-btn idiom. Pattern control-class-without-a-hover-state. */
+  .btn-xs:not(.btn) { background: var(--white); }
+  .btn-xs:not(.btn):hover { border-color: var(--gold); }
   .btn-secondary {
     background: transparent;
     color: var(--text);
@@ -1380,6 +1384,7 @@
     transition: background 0.25s, color 0.25s;
     display: inline-block;
   }
+  .spoiler:not(.revealed):hover { background: #333; }
   .spoiler.revealed { background: rgba(0,0,0,0.08); color: inherit; }
   body.dark .spoiler.revealed { background: rgba(255,255,255,0.08); }
   /* In the editor, always show spoiler text so teacher can read/edit it */
@@ -1935,7 +1940,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <span id="zoomSliderLabel" style="font-weight:600;white-space:nowrap;" data-i18n="dashboard.display.zoom_label">🔍 Zoom</span>
   <input type="range" id="zoomSlider" aria-labelledby="zoomSliderLabel" min="50" max="200" step="5" value="100" style="flex:1;accent-color:var(--gold);cursor:pointer;height:24px;">
   <span id="zoomLabel" class="bidi-isolate" style="white-space:nowrap;min-width:36px;">100%</span>
-  <button onclick="applyZoom(100)" class="btn-xs" style="font-size:0.7rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--text);cursor:pointer;" data-i18n="dashboard.display.zoom_reset">Reset</button>
+  <button onclick="applyZoom(100)" class="btn-xs" style="font-size:0.7rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;color:var(--text);cursor:pointer;" data-i18n="dashboard.display.zoom_reset">Reset</button>
   <span class="wake-dot zoom-wake-dot" role="img" title="Screen will stay awake" data-i18n-title="dashboard.display.wake_dot" aria-label="Screen will stay awake" data-i18n-aria-label="dashboard.display.wake_dot"></span>
 </div>
 <button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" data-i18n-title="shared.fullscreen.exit_title">
@@ -2015,7 +2020,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         </div>
         <div style="text-align:center;margin-top:6px;">
           <button onclick="renderWeather()" class="btn-xs" title="Refresh weather" data-i18n-title="dashboard.weather.refresh_title" data-i18n="dashboard.weather.refresh"
-            style="font-size:0.68rem;padding:2px 8px;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--muted);cursor:pointer;">↺ Refresh</button>
+            style="font-size:0.68rem;padding:2px 8px;border:1px solid var(--border);border-radius:4px;color:var(--muted);cursor:pointer;">↺ Refresh</button>
         </div>
       </div>
     </div>
