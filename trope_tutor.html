@@ -846,7 +846,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 
 <div class="tu-tabs" role="tablist" aria-label="Tutor mode" data-i18n-aria-label="trope.tabs.aria">
   <button class="tu-tab" id="tabLearn" role="tab" aria-selected="true" aria-controls="learnView" onclick="setMode('learn')" data-i18n="trope.tabs.learn">📖 Learn</button>
-  <button class="tu-tab" id="tabDrill" role="tab" aria-selected="false" aria-controls="drillView" onclick="setMode('drill')" data-i18n="trope.tabs.drill">🎯 Drill</button>
+  <button class="tu-tab" id="tabDrill" role="tab" aria-selected="false" tabindex="-1" aria-controls="drillView" onclick="setMode('drill')" data-i18n="trope.tabs.drill">🎯 Drill</button>
 </div>
 
 <main class="tu-page" id="tuMain" tabindex="-1">
@@ -1873,6 +1873,9 @@ function setMode(mode) {
   const learn = mode === 'learn';
   document.getElementById('tabLearn').setAttribute('aria-selected', learn ? 'true' : 'false');
   document.getElementById('tabDrill').setAttribute('aria-selected', learn ? 'false' : 'true');
+  // Roving tabindex (APG tabs): only the selected tab sits in the Tab sequence; arrows move between tabs.
+  document.getElementById('tabLearn').tabIndex = learn ? 0 : -1;
+  document.getElementById('tabDrill').tabIndex = learn ? -1 : 0;
   document.getElementById('learnView').hidden = !learn;
   document.getElementById('drillView').hidden = learn;
   if (!learn) {
