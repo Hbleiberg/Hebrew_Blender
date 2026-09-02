@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- impeccable-disable gpt-thin-border-wide-shadow -- hairline + soft shadow on .tour-card/.wm-dialog is the suite's ratified floating-surface convention (S311, re-ratified S315); the static arm reports CSS findings at line 0, so a per-line waiver cannot match -->
 <!-- Content-Security-Policy (defense-in-depth). Placed right after <meta charset> so it applies before
      any script/style loads. script-src keeps 'unsafe-inline' because all app JS is inline by design; the
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
@@ -459,7 +460,7 @@ body.fullscreen .app{height:100vh;min-height:unset;}
    (CLAUDE.md's inline-validation rule); --gold-text is the WCAG-safe small-gold token in both
    themes. It lives inside .toolbar, which the print stylesheet already hides, so it never
    prints itself. */
-.print-size-note{font-size:0.74rem;line-height:1.35;color:var(--gold-text);border-inline-start:3px solid var(--gold);padding-inline-start:7px;max-width:24em;}
+.print-size-note{font-size:0.74rem;line-height:1.35;color:var(--gold-text);border-inline-start:3px solid var(--gold);padding-inline-start:7px;max-width:24em;}/* impeccable-disable-line side-tab -- 3px gold accent bar: the suite's callout convention, ratified as brand S315 */
 .print-size-note[hidden]{display:none;}
 /* min-height, not padding, holds the suite's ratified 30px touch floor (S102) — and it is also
    what puts the select and the three tool buttons on one baseline in this row (S225). */
@@ -479,7 +480,7 @@ body.fullscreen .app{height:100vh;min-height:unset;}
 .fchip-x:hover{background:var(--gold);color:#fff;}
 /* "Load as filter" active-list banner — makes the saved-list view visible (and exitable)
    so it no longer silently vanishes when the next filter change clears wlFilterOverride. */
-#wlActiveBanner{align-items:center;gap:10px;margin:8px 20px 0;padding:7px 12px;background:var(--warm-gray);border:1px solid var(--border);border-inline-start:3px solid var(--gold);border-radius:8px;font-size:0.82rem;}
+#wlActiveBanner{align-items:center;gap:10px;margin:8px 20px 0;padding:7px 12px;background:var(--warm-gray);border:1px solid var(--border);border-inline-start:3px solid var(--gold);border-radius:8px;font-size:0.82rem;}/* impeccable-disable-line side-tab -- 3px gold accent bar: the suite's callout convention, ratified as brand S315 */
 .wl-active-label{color:var(--text);font-weight:600;}
 .wl-active-exit{margin-inline-start:auto;background:var(--white);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:0.74rem;padding:3px 10px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:border-color 0.15s,background 0.15s;}
 .wl-active-exit:hover{border-color:var(--gold);background:var(--gold);color:#fff;}
@@ -495,7 +496,7 @@ body.dark .fchip-reset{background:var(--navy-deep);}
 /* Section 3: word / emoji detail modal */
 .wm-overlay{display:none;position:fixed;inset:0;background:rgba(13,18,32,0.55);z-index:1000;align-items:center;justify-content:center;padding:20px;}
 .wm-overlay.open{display:flex;}
-.wm-dialog{background:var(--white);border:1px solid var(--border);border-radius:12px;max-width:440px;width:100%;max-height:88vh;overflow-y:auto;position:relative;box-shadow: 0 7px 16px rgba(0,0,0,0.30);padding:26px 22px 20px;}
+.wm-dialog{background:var(--white);border:1px solid var(--border);border-radius:12px;max-width:440px;width:100%;max-height:88vh;overflow-y:auto;position:relative;box-shadow: 0 7px 16px rgba(0,0,0,0.30);padding:26px 22px 20px;}/* impeccable-disable-line gpt-thin-border-wide-shadow -- hairline + soft shadow is the suite's ratified floating-surface convention (S311 88f4940, re-ratified S315) */
 body.dark .wm-dialog{background:var(--cream);}
 .wm-close{position:absolute;top:10px;inset-inline-end:10px;width:30px;height:30px;border-radius:6px;border:none;background:var(--warm-gray);color:var(--muted);font-size:1rem;cursor:pointer;line-height:1;}
 .wm-close:hover{background:var(--gold);color:#fff;}
@@ -692,7 +693,7 @@ body.dark #appToast { background: #0a0f1c; }
 .tbtn:hover{filter:brightness(1.06);}
 .tbtn:disabled{opacity:0.4;cursor:default;filter:none;}
 .tour-spot{position:fixed;top:0;left:0;width:0;height:0;border-radius:8px;pointer-events:none;z-index:1400;box-shadow:0 0 0 9999px rgba(13,18,32,0.62),0 0 0 3px var(--gold);transition:top 0.25s ease,left 0.25s ease,width 0.25s ease,height 0.25s ease;}
-.tour-card{position:fixed;z-index:1500;width:300px;max-width:92vw;background:var(--white);color:var(--text);border:1px solid var(--border);border-radius:12px;box-shadow: 0 6px 16px rgba(0,0,0,0.34);padding:16px 18px 14px;}
+.tour-card{position:fixed;z-index:1500;width:300px;max-width:92vw;background:var(--white);color:var(--text);border:1px solid var(--border);border-radius:12px;box-shadow: 0 6px 16px rgba(0,0,0,0.34);padding:16px 18px 14px;}/* impeccable-disable-line gpt-thin-border-wide-shadow -- hairline + soft shadow is the suite's ratified floating-surface convention (S311 88f4940, re-ratified S315) */
 body.dark .tour-card{background:var(--cream);}
 .tour-card h4{font-family:'Libre Baskerville',serif;margin:0 26px 8px 0;font-size:0.98rem;color:var(--text);}
 .tour-card p{font-size:0.84rem;line-height:1.5;margin:0 0 12px;color:var(--text);}
