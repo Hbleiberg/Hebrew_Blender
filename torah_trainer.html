@@ -1088,6 +1088,8 @@ body.dark .panel { background:var(--navy-deep); }
 body.dark .panel-title { background:#0a0f1c; }
 .panel-title::after { content:'▾'; color:var(--gold-light); font-size:1rem; transition:transform 0.2s; flex-shrink:0; }
 .panel.collapsed .panel-title::after { transform:rotate(-90deg); }
+.panel-title:hover { background:#24345c; }   /* the suite's navy-control hover (contact/resources/FM primary); a collapse bar had no hover state (S317 → F S328) */
+body.dark .panel-title:hover { background:var(--navy); }   /* one step up from the dark bar's #0a0f1c */
 .panel-body { padding:14px; }
 .panel.collapsed .panel-body { display:none; }
 

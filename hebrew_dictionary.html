@@ -384,6 +384,8 @@ body.dark .mobile-filters-btn{background:var(--navy-deep);}
 .panel-title{background:var(--navy);color:#fff;font-family:'Libre Baskerville',serif;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;padding:8px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;border-radius:8px 8px 0 0;}
 .panel-title::after{content:'▾';font-size:1rem;color:var(--gold-light);transition:transform 0.2s;}
 .panel.collapsed .panel-title::after{transform:rotate(-90deg);}
+.panel-title:hover{background:#24345c;}   /* the suite's navy-control hover pair (contact/resources/FM primary); a collapse bar had no hover state (S317 → F S328) */
+body.dark .panel-title:hover{background:#345090;}
 .panel.collapsed .panel-body{display:none !important;}
 .panel-body{padding:12px;}
 .adv-section{border:1px solid var(--border);border-radius:6px;margin-bottom:8px;}
@@ -863,6 +865,8 @@ footer summary{min-height:24px;}
     user-select: none; display: flex; justify-content: space-between; align-items: center; }
   .shoresh-patterns-title::after { content: '▾'; color: var(--gold-light); transition: transform 0.2s; }
   .shoresh-patterns-wrap.collapsed .shoresh-patterns-title::after { transform: rotate(-90deg); }
+  .shoresh-patterns-title:hover { background: #24345c; }   /* same navy-bar hover as .panel-title */
+  body.dark .shoresh-patterns-title:hover { background: #345090; }
   .shoresh-patterns-body { padding: 12px; }
   .shoresh-patterns-wrap.collapsed .shoresh-patterns-body { display: none; }
   .shoresh-pat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }

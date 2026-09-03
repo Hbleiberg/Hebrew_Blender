@@ -485,6 +485,8 @@ footer a { display: inline-block; padding-block: 5px; }
   .panel.collapsed .panel-title::after {
     transform: rotate(-90deg);
   }
+  .panel-title:hover { background: #24345c; }   /* the suite's navy-control hover (contact/resources/FM primary); a collapse bar had no hover state (S317 → F S328) */
+  body.dark .panel-title:hover { background: var(--navy); }   /* one step up from the dark bar's #0d1220 */
   .panel.collapsed .panel-body {
     display: none;
   }
