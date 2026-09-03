@@ -437,7 +437,9 @@ footer a { display: inline-block; padding-block: 5px; }
   /* Drag-resizable (see the shared sidebar-resize block + initSidebarResize). The width lives
      in ONE custom property so a single write moves the panel, the splitter, the fixed Generate
      footer (via its ResizeObserver) and the JS-positioned collapse tab together. */
-  :root { --gen-sidebar-w: 320px; }
+  /* Registered non-inherited: the drag writes it on .sidebar (its only consumer), so a frame restyles
+     one element instead of the whole page; browsers without @property keep the var() default below. */
+  @property --gen-sidebar-w { syntax: '<length>'; inherits: false; initial-value: 320px; }
   .sidebar {
     width: var(--gen-sidebar-w, 320px);
     flex-shrink: 0;
@@ -6199,6 +6201,7 @@ function initSidebarResize() {
   mountSidebarResize({
     handle: document.getElementById('sidebarSplit'),
     cssVar: '--gen-sidebar-w',
+    scope: document.querySelector('.sidebar'),   // the var's only consumer; a root write restyled all ~8.7k nodes per frame
     storageKey: 'hebrewBlender_sidebarW',
     anchor: 'start',
     min: 260, dflt: 320,
