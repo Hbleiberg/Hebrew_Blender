@@ -6172,7 +6172,7 @@ async function uploadForCurrent(file) {
   l.transform = defaultFitTransform(im);   // fit height to letter-top, left at LSB
   l.contours = null; l.anchors = null;
   renderLetterGrid(); renderStage(); renderControls();
-  status(I18n.t('fontmaker.status.loaded_image', {name: l.name}));
+  status(I18n.t('fontmaker.status.loaded_image', {name: gName(l.name)}));
 }
 async function uploadCombined(files) {
   const list = files == null ? [] : (files.length !== undefined ? Array.from(files) : [files]);
@@ -6284,7 +6284,7 @@ async function finalizeCrop(l, stageBox) {
   l.transform = defaultFitTransform(cim);
   l.contours = null; l.anchors = null;
   renderGrids(); renderStage(); renderControls();
-  status(I18n.t('fontmaker.status.area_selected', {name: l.name}));
+  status(I18n.t('fontmaker.status.area_selected', {name: gName(l.name)}));
 }
 function reselectArea() {
   const l = curLetter();
@@ -7640,7 +7640,7 @@ async function uploadSvgForCurrent(file) {  // single-letter / per-mark SVG uplo
   udDo([itemScope()], 'import SVG — ' + it.name, () => { assignSvgContours(it, kind, contours, null, null); });
   renderGrids(); renderStage(); renderControls();
   if (kind === 'letter') setWorkMode('anchors');   // land on Nikkud, bypassing Align/Trace
-  status(I18n.t('fontmaker.status.imported_svg', {name: it.name}));
+  status(I18n.t('fontmaker.status.imported_svg', {name: gName(it.name)}));
 }
 /* Auto-split a single combined SVG by element id / inkscape:label → glyph. */
 function buildSvgNameMap() {
@@ -7701,7 +7701,7 @@ function finalizeCropSvg(l, parsed, im, rect, csh) {
   udDo([itemScope()], 'crop SVG — ' + l.name, () => { assignSvgContours(l, kind, contours, csh && csh.id, rect); });
   renderGrids(); renderStage(); renderControls();
   if (kind === 'letter') setWorkMode('anchors');
-  status(I18n.t('fontmaker.status.vector_selected', {name: l.name}));
+  status(I18n.t('fontmaker.status.vector_selected', {name: gName(l.name)}));
 }
 
 /* ════════ Stage rendering ════════ */
@@ -13019,13 +13019,13 @@ function openMarkEdit(kind, cp, opts) {
   };
   if (!meItem.pieces || !meItem.pieces.length) meItem.pieces = defaultPieces(kind, cp);
   editorSel = 0;
-  document.getElementById('meTitle').textContent = I18n.t('fontmaker.modals.markedit_title_named', { name: meItem.name });
+  document.getElementById('meTitle').textContent = I18n.t('fontmaker.modals.markedit_title_named', { name: gName(meItem.name) });
   const curBtn = document.getElementById('meApplyCur');
   curBtn.style.display = meGlobal ? 'none' : '';   // modal DOM persists across opens — set display explicitly BOTH ways
   if (meGlobal) {
-    document.getElementById('meScopeNote').innerHTML = I18n.t('fontmaker.modals.markedit_scope_all', { name: esc(meItem.name) });
+    document.getElementById('meScopeNote').innerHTML = I18n.t('fontmaker.modals.markedit_scope_all', { name: esc(gName(meItem.name)) });
   } else {
-    const lname = L ? L.name : 'this letter';
+    const lname = L ? gName(L.name) : I18n.t('fontmaker.modals.this_letter');
     curBtn.textContent = I18n.t('fontmaker.modals.markedit_apply_current_named', { name: lname });
     document.getElementById('meScopeNote').innerHTML = I18n.t('fontmaker.modals.markedit_scope_letter', { name: esc(lname) });
   }
@@ -13224,10 +13224,10 @@ function meOpenUploadEditor() {                 // hand off to the existing per-
 }
 function meConfirmApply(scope) {
   if (meGlobal && scope !== 'all') return;   // grid launch: no letter context (the button is hidden; this is a guard)
-  const lname = scope === 'all' ? '' : (((curLetter() || {}).name) || I18n.t('fontmaker.modals.this_letter'));
+  const lname = scope === 'all' ? '' : (gName((curLetter() || {}).name) || I18n.t('fontmaker.modals.this_letter'));
   const msg = scope === 'all'
-    ? I18n.t('fontmaker.modals.apply_mark_all', {name: '<b>' + esc(meItem.name) + '</b>'})
-    : I18n.t('fontmaker.modals.apply_mark_letter', {name: '<b>' + esc(meItem.name) + '</b>', letter: esc(lname)});
+    ? I18n.t('fontmaker.modals.apply_mark_all', {name: '<b>' + esc(gName(meItem.name)) + '</b>'})
+    : I18n.t('fontmaker.modals.apply_mark_letter', {name: '<b>' + esc(gName(meItem.name)) + '</b>', letter: esc(lname)});
   askModal(I18n.t('fontmaker.modals.apply_mark_title'), msg, [
     { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' },
     { label: scope === 'all' ? I18n.t('fontmaker.modals.markedit_apply_all') : I18n.t('fontmaker.modals.apply_to', {name: lname}), onClick: () => meApply(scope) }
@@ -14145,7 +14145,7 @@ function updateCurrentGlyphLabel() {   // persistent "Editing: <glyph> — <name
   if (!el) return;
   const it = project && curItem();
   if (!it) { el.innerHTML = ''; return; }
-  const name = esc(it.name || '');
+  const name = esc(gName(it.name) || '');
   // Only real letters get a glyph preview: a custom Private-Use codepoint renders a tofu box, and a
   // lone combining mark (nikkud/trop) renders as a floating diacritic — show the name only for those.
   if (curKind !== 'letter' || isCustomCp(curCp) || wideGlyphItemFor(curCp)) { el.innerHTML = window.I18n ? I18n.t('fontmaker.workspace.editing', {name: name}) : ('Editing: ' + name); return; }
@@ -14266,7 +14266,7 @@ function renderAlignLeft(L, l) {
   let html = `<div class="ws-side-title">${I18n.t('fontmaker.panels.add_letters')}</div>` + inputModeBlock();
   if (project.inputMode === 'single' && curKind === 'letter') {
     const svg = svgUploadOn();
-    html += `<div class="drop" id="letterDrop">${_pT('letter_drop', 'Drop ' + _dropKind(svg) + ' for <b>' + esc(l.name) + '</b>, or ' + _dropBrowse('letterFile') + '.', { kind: _dropKind(svg), name: '<b>' + esc(l.name) + '</b>', browse: _dropBrowse('letterFile') })}</div>
+    html += `<div class="drop" id="letterDrop">${_pT('letter_drop', 'Drop ' + _dropKind(svg) + ' for <b>' + esc(gName(l.name)) + '</b>, or ' + _dropBrowse('letterFile') + '.', { kind: _dropKind(svg), name: '<b>' + esc(gName(l.name)) + '</b>', browse: _dropBrowse('letterFile') })}</div>
       <div class="allowed">${svg?_pT('letter_allowed_svg','Allowed: SVG only — vectors import directly (no tracing).'):_pT('mark_allowed_img','Allowed: any image file — PNG, JPG, GIF, WebP.')}</div>
       <input type="file" id="letterFile" accept="${svg?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
   } else if (project.inputMode === 'combined' && project.combinedSheets.length && curKind === 'letter') {
