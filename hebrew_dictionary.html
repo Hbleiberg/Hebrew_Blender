@@ -5117,6 +5117,14 @@ function getDictState() {
   };
 }
 
+// Members of a list in an untrusted payload (a hand-edited ?s= link, an imported lastState blob) are
+// kept only when this build renders a control for them; unknown entries are dropped, never the whole
+// list (pattern apply-settings-trusts-collection-members — the generator's known-key shape).
+function dictKnownMembers(list, selector, prop) {
+  if (!Array.isArray(list)) return [];
+  const known = new Set(Array.from(document.querySelectorAll(selector), el => prop === 'h' ? el.dataset.h : el.value));
+  return list.filter(v => typeof v === 'string' && known.has(v));
+}
 function applyDictState(s) {
   if (!s) return;
   _applyingDictState = true;
@@ -5148,7 +5156,7 @@ function applyDictState(s) {
     // 4. per-position letters
     if (Array.isArray(s.posLetters)) {
       for (let i = 0; i < 6; i++) {
-        posFilters[i] = new Set(s.posLetters[i] || []);
+        posFilters[i] = new Set(dictKnownMembers(s.posLetters[i], '#pg' + i + ' .lpt', 'h'));
         document.querySelectorAll('#pg' + i + ' .lpt').forEach(t => t.classList.toggle('selected', posFilters[i].has(t.dataset.h)));
         syncLptAria('#pg' + i + ' .lpt');
         updatePB(i);
@@ -5157,7 +5165,7 @@ function applyDictState(s) {
 
     // 5. any-letter
     if (Array.isArray(s.anyLetters)) {
-      anyLetterFilter = new Set(s.anyLetters);
+      anyLetterFilter = new Set(dictKnownMembers(s.anyLetters, '#pgAny .lpt', 'h'));
       document.querySelectorAll('#pgAny .lpt').forEach(t => t.classList.toggle('selected', anyLetterFilter.has(t.dataset.h)));
       syncLptAria('#pgAny .lpt');
       updatePBAny();
@@ -5169,15 +5177,19 @@ function applyDictState(s) {
     }
 
     // 6. length
-    if (Array.isArray(s.len)) {
-      const set = new Set(s.len);
+    // A list with entries but no known member is a link nobody could have made from this UI:
+    // keep the markup default rather than reading it as "the teacher unchecked everything".
+    const lenVals = dictKnownMembers(s.len, '.lcb', 'value');
+    if (Array.isArray(s.len) && (lenVals.length || s.len.length === 0)) {
+      const set = new Set(lenVals);
       document.querySelectorAll('.lcb').forEach(cb => { cb.checked = set.has(cb.value); });
       updateLenAll();
     }
 
     // 7. part of speech
-    if (Array.isArray(s.pos)) {
-      const set = new Set(s.pos);
+    const posVals = dictKnownMembers(s.pos, '.pcb', 'value');
+    if (Array.isArray(s.pos) && (posVals.length || s.pos.length === 0)) {
+      const set = new Set(posVals);
       const knowsLaterRows = POS_ROWS_ADDED_LATER.some(v => set.has(v));
       document.querySelectorAll('.pcb').forEach(cb => {
         // A value this state never knew about keeps its markup default rather than reading
