@@ -5134,7 +5134,7 @@ function getDictState() {
 // list (pattern apply-settings-trusts-collection-members — the generator's known-key shape).
 function dictKnownMembers(list, selector, prop) {
   if (!Array.isArray(list)) return [];
-  const known = new Set(Array.from(document.querySelectorAll(selector), el => prop === 'h' ? el.dataset.h : el.value));
+  const known = new Set(Array.from(document.querySelectorAll(selector), el => prop === 'value' ? el.value : el.dataset[prop]));
   return list.filter(v => typeof v === 'string' && known.has(v));
 }
 function applyDictState(s) {
@@ -5161,7 +5161,8 @@ function applyDictState(s) {
     // 3. vowels
     if (Array.isArray(s.vowels)) {
       vowelFilters.clear();
-      s.vowels.forEach(u => vowelFilters.add(u));
+      // Known vowels only: a garbage member used to inflate the Set past VOWEL_DEFS.length (filter silently off) and ride into lastState.
+      dictKnownMembers(s.vowels, '#vowelFilterGrid input[data-u]', 'u').forEach(u => vowelFilters.add(u));
       document.querySelectorAll('#vowelFilterGrid input[data-u]').forEach(cb => { cb.checked = vowelFilters.has(cb.dataset.u); });
     }
 
