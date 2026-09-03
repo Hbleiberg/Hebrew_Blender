@@ -799,8 +799,10 @@ footer summary{min-height:24px;}
   body.dark .font-opt:hover { border-color: var(--gold); }
   .font-opt-preview { font-size: 1.35rem; direction: rtl; line-height: 1.2; margin-bottom: 2px; }
   .font-opt-info { display: flex; flex-direction: column; gap: 0; width: 100%; }
-  .font-opt-label { font-weight: 600; font-size: 0.62rem; line-height: 1.2; word-break: break-word; }
-  .font-opt-attr { font-size: 0.52rem; color: var(--muted); line-height: 1.2;
+  /* Tile type pair converged across the four pickers (generator, dictionary, torah, trope): the name at
+     the suite's 11.2px floor, the credit line one step under it at 0.62rem (was 8.32px). (S322 Pass M) */
+  .font-opt-label { font-weight: 600; font-size: 0.7rem; line-height: 1.2; word-break: break-word; }
+  .font-opt-attr { font-size: 0.62rem; color: var(--muted); line-height: 1.2;
     word-break: break-word; text-decoration: none; }
   /* --muted on the ACTIVE row's lighter dark surface (#2a3349) measures 4.13:1, under the 4.5:1
      AA bar; the inactive rows clear it at 5.02:1 on #1e2535 — the plate decides, not the token.
