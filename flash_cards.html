@@ -481,6 +481,7 @@ body.dark .panel-title {
 }
 .panel.collapsed .panel-title::after { transform: rotate(-90deg); }
 .panel:not(.collapsed) .panel-title { border-bottom-color: var(--border); }
+.panel-title:hover, body.dark .panel-title:hover { color: var(--gold-text); }   /* (dark twin: body.dark .panel-title outranks :hover by its type selector) the Font Maker disclosure hover (.node-xform summary); a collapse header had no hover state (S317 → F S328) */
 .panel-body { padding: 14px 16px; }
 .panel.collapsed .panel-body { display: none; }
 

@@ -1030,6 +1030,7 @@
   }
   .sub-section-hdr::after { content: '▾'; font-size: 0.75rem; transition: transform 0.2s; flex-shrink: 0; }
   .sub-section.collapsed .sub-section-hdr::after { transform: rotate(-90deg); }
+  .sub-section-hdr:hover { color: var(--text); }   /* the Font Maker footer eyebrow's hover (summary.ft-h); a collapse header had no hover state (S317 → F S328) */
   .sub-section.collapsed .sub-section-body { display: none; }
 
   /* ───── Form rows ───── */

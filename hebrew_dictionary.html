@@ -433,6 +433,7 @@ body.dark .color-mode-btn.active{background:#2a4070;color:#dde4f0;}
 .pos-sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:var(--warm-gray);border-radius:4px;cursor:pointer;font-size:0.75rem;font-weight:600;user-select:none;gap:4px;}
 .pos-sec-hdr .hdr-left{display:flex;align-items:center;gap:6px;flex:1;min-width:0;}
 .pos-sec-hdr .lbl{white-space:nowrap;}
+.pos-sec-hdr:hover,.adv-section-title:hover{color:var(--gold-text);}   /* the Font Maker disclosure hover (.node-xform summary); a collapse header had no hover state (S317 → F S328) */
 .pos-badges{display:flex;gap:2px;flex-wrap:wrap;}
 .pbadge{background:var(--navy);color:var(--gold-light);border-radius:3px;padding:1px 5px;font-size:0.7rem;font-family:var(--heb-font);}
 .pos-clear{background:none;border:none;color:var(--muted);font-size:0.75rem;cursor:pointer;padding:0 2px;line-height:1;min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center;} /* 24px WCAG floor (touch-target haul) — the ✕ is nested inside the clickable section header, so a bigger box also cuts clear-vs-toggle misfires */
