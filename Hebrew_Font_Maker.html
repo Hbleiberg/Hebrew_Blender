@@ -15266,7 +15266,9 @@ function _setPyoPhase(phase) {
   const badge = document.getElementById('engineBadge');
   if (badge) badge.hidden = _exportPreparing || (phase !== 'download' && phase !== 'install');
 }
-function loadScript(src) { return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
+// A <script> load failure rejects with a bare Event, which every catch site that prints e.message
+// rendered as "[object Event]"; reject with a real Error carrying the localized engine message.
+function loadScript(src) { return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=()=>rej(new Error(I18n.t('fontmaker.modals.engine_fail_body'))); document.head.appendChild(s); }); }
 async function ensurePyodide(opts) {
   const background = !!(opts && opts.background);
   if (pyodide) return pyodide;
