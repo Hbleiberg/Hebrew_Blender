@@ -227,7 +227,8 @@ before the tag — hence the placement. Origins currently allowlisted (re-true t
 pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.html`):
 
 - **Everywhere:** Google Fonts (`fonts.googleapis.com` / `fonts.gstatic.com`) + gtag (`www.googletagmanager.com`
-  in `script-src`, `*.analytics.google.com` in `connect-src`); `data:` / `blob:` in `img-src` for PDF/PNG/`.ivrit`
+  in `script-src`; `*.google-analytics.com`, `*.analytics.google.com` and `www.googletagmanager.com` in
+  `connect-src`); `data:` / `blob:` in `img-src` for PDF/PNG/`.ivrit`
   export. (`i18n-test.html`, the dev harness, carries no gtag and allows only `data:` images.)
 - **All seven tools:** `cdn.jsdelivr.net` in `font-src` — the self-hosted `aharonium/fonts` faces (Ezra SIL, Shlomo,
   Dyslexia Hebrew, the Culmus faces) every Hebrew font picker offers.
