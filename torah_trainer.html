@@ -6503,13 +6503,24 @@ function applyCustomRange() {
   if (vs && ve && ve !== vs) ref = `${book} ${chap}:${vs}-${ve}`;
   else if (vs)              ref = `${book} ${chap}:${vs}`;
   else                      ref = `${book} ${chap}`;
+  // Narrowing a holiday reading keeps the holiday's name — "Rosh Hashanah — Day 1 — Genesis 21:1-8"
+  // still says which holiday this is in the tab, the print band, the strip chip and the saved
+  // reading — as long as the new ref sits inside the holiday's own ref; a jump outside it (Day 2's
+  // chapter, a whole chapter the range does not cover) is a different reading and drops the name (S336).
+  const h = settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
+  const inside = !!(h && refWithin(ref, h.ref));
   settings.customRef = ref;
-  settings.customLabel = null;
-  settings.holidayKey = null;
+  settings.customLabel = inside ? `${h.name} — ${ref}` : null;
+  settings.holidayKey = inside ? h.key : null;
   settings.scope = 'custom';
   saveSettings();
   syncParshaSelect();
   fetchAndRender();
+}
+// True when `inner` ("Book c:v[-[c:]v]") lies within `outer`; a whole-chapter "Book c" has no verse bounds → false.
+function refWithin(inner, outer) {
+  const a = parseRefRange(inner), b = parseRefRange(outer);
+  return !!(a && b && a.book === b.book && vcmp(a.startC, a.startV, b.startC, b.startV) >= 0 && vcmp(a.endC, a.endV, b.endC, b.endV) <= 0);
 }
 
 /* ══════════════════════════════════════════════════════
