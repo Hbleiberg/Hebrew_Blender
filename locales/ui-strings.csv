@@ -167,9 +167,6 @@ dashboard.editor.strikethrough,Strikethrough,קו חוצה,Editor toolbar button
 dashboard.editor.text_color,Text color,צבע טקסט,Editor toolbar color input title,
 dashboard.editor.underline,Underline,קו תחתון,Editor toolbar button title,
 dashboard.font.default_tag,[DEFAULT],[ברירת מחדל],default-font marker,
-dashboard.font.section_cursive,Cursive / Script,כתב יד / סקריפט,font picker section header,
-dashboard.font.section_myfonts,My Fonts,הגופנים שלי,font picker section header,
-dashboard.font.section_suffix,{section} Fonts,גופני {section},font picker section header,mixed UI+content — do not translate {…}
 dashboard.fs.controls_aria,Fullscreen controls,פקדי מסך מלא,fullscreen strip toolbar aria,aria-label only
 dashboard.fs.strip_pick,Pick,הגרלה,fullscreen strip button,
 dashboard.fs.strip_settings,Settings,הגדרות,fullscreen strip button,
@@ -3279,6 +3276,9 @@ shared.fonts.err_unreadable,Couldn’t read that font file.,לא ניתן היה
 shared.fonts.myfonts_download_name_aria,Download {name},הורדת {name},My Fonts row ⬇ button aria-label (names the row's font),do not translate {…}; shared (carriers: Font Maker + index)
 shared.fonts.myfonts_remove_name_aria,Remove {name} from My Fonts,הסרת {name} מהפונטים שלי,My Fonts row 🗑 button aria-label (names the row's font),do not translate {…}; shared (carriers: Font Maker + index)
 shared.fonts.section_cursive,Cursive / Script,כתב יד / סקריפט,Font-picker section header,shared (carriers: all font-selector tools)
+shared.fonts.section_block,Block Fonts,גופני בלוק,Font-picker section header (Block category),shared (carriers: classroom_dashboard / flash_cards / hebrew_blend_generator / hebrew_dictionary)
+shared.fonts.section_print,Print Fonts,גופני דפוס,Font-picker section header (Print category),shared (carriers: torah_trainer / trope_tutor)
+shared.fonts.section_torah,Torah Fonts,גופני תורה,Font-picker section header (Torah category),shared (carriers: torah_trainer / trope_tutor)
 shared.fonts.section_generic,{section} Fonts,גופני {section},"Font-picker section header (e.g. Block Fonts, Print Fonts, Torah Fonts)",mixed UI+content — {section} is a category name; shared
 shared.fonts.section_my_fonts,My Fonts,הגופנים שלי,Font-picker section header (custom fonts group),shared (carriers: all font-selector tools)
 shared.fonts.upload_label,⬆ Upload your own font?,⬆ העלו גופן משלכם?,My Fonts uploader label (below font grid),leading-emoji; shared (carriers: 7 font-selector tools)
@@ -3663,11 +3663,6 @@ torah.display.follow_hebrew,Hebrew,עברית,radio label,
 torah.display.follow_label,Follow,מעקב,settings label,
 torah.display.follow_translit,Translit,תעתיק,radio label,
 torah.display.font_default_tag,[DEFAULT],[ברירת מחדל],font picker default marker,
-torah.display.font_section_cursive,Cursive / Script,כתב יד / רהוט,font picker section header,
-torah.display.font_section_fallback,{section} Fonts,גופני {section},font picker section header (fallback),do-not-translate {section}
-torah.display.font_section_my,My Fonts,הגופנים שלי,font picker section header,
-torah.display.font_section_print,Print Fonts,גופני דפוס,font picker section header,
-torah.display.font_section_torah,Torah Fonts,גופני תורה,font picker section header,
 torah.display.font_sizes_header,Font sizes,גודלי גופן,settings subheader,
 torah.display.karaoke_header,Karaoke settings,הגדרות קריוקי,settings subheader,
 torah.display.restore_default_title,Restore default,שחזור ברירת מחדל,reset button title,
@@ -4031,11 +4026,6 @@ trope.progress.summary,{n} of {total} tropes attempted · personal best streak {
 trope.settings.aria,Trope Tutor settings,הגדרות מאמן הטעמים,settings drawer aria,aria-label only
 trope.settings.close_aria,Close settings,סגירת ההגדרות,close button aria,aria-label only
 trope.settings.font_default_tag,[DEFAULT],[ברירת מחדל],font picker default marker,
-trope.settings.font_section_cursive,Cursive / Script,כתב יד / סקריפט,font picker section header,
-trope.settings.font_section_fallback,{section} Fonts,גופני {section},font picker section header (fallback),do-not-translate {section}
-trope.settings.font_section_my,My Fonts,הגופנים שלי,font picker section header,
-trope.settings.font_section_print,Print Fonts,גופני דפוס,font picker section header,
-trope.settings.font_section_torah,Torah Fonts,גופני תורה,font picker section header,
 trope.settings.heb_size,Hebrew size,גודל עברית,slider label,
 trope.settings.panel_about,About,אודות,panel title,
 trope.settings.panel_drill,Drill,תרגול,panel title,

@@ -5345,6 +5345,13 @@ async function ivUploadFontFromFile(file){
   } catch (e) { console.error(e); alert(I18n.t('shared.fonts.err_unreadable')); return null; }
 }
 /* ═══ end My Fonts uploader ═══ */
+// Font-picker section header: an authored row for each named category the CSV carries in Hebrew,
+// the generic "{section} Fonts" for the rest. Per-page wiring, below the shared block like the render sites.
+function fontSectionLabel(sec) {
+  const KEYS = { 'My Fonts': 'shared.fonts.section_my_fonts', 'Cursive': 'shared.fonts.section_cursive',
+                 'Block': 'shared.fonts.section_block', 'Print': 'shared.fonts.section_print', 'Torah': 'shared.fonts.section_torah' };
+  return Object.prototype.hasOwnProperty.call(KEYS, sec) ? I18n.t(KEYS[sec]) : I18n.t('shared.fonts.section_generic', { section: sec });
+}
 /* Per-page pick handler(s) — thin wrappers over the shared uploader (each page routes the new font into its own picker/manager). */
 async function onUploadFontPick(input){
   const name = await ivUploadFontFromFile(input.files && input.files[0]);
@@ -5380,7 +5387,7 @@ function initFontSelector() {
   sections.forEach(sec => {
     const hdr = document.createElement('div');
     hdr.className = 'font-section-hdr' + (firstSection ? ' first' : '');
-    hdr.textContent = sec === 'My Fonts' ? I18n.t('shared.fonts.section_my_fonts') : sec === 'Cursive' ? I18n.t('shared.fonts.section_cursive') : I18n.t('shared.fonts.section_generic', { section: sec });
+    hdr.textContent = fontSectionLabel(sec);
     opts.appendChild(hdr);
     firstSection = false;
     allFonts().filter(f => f.section === sec).forEach(font => {
