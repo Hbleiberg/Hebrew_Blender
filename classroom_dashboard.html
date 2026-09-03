@@ -1539,7 +1539,7 @@
   .fr-backdrop { position: fixed; inset: 0; background: rgba(13,18,32,0.6); z-index: 600; display: none; }
   .fr-backdrop.open { display: block; }
   .fr-modal { position: fixed; z-index: 601; top: 50%; left: 50%; transform: translate(-50%,-50%);
-    width: min(560px, 92vw); max-height: 88vh; overflow: auto; background: var(--white); color: var(--text);
+    width: min(560px, 92vw); max-height: 88vh; max-height: 88dvh; /* dvh: the visible viewport while a phone URL bar is expanded */ overflow: auto; background: var(--white); color: var(--text);
     border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-md); padding: 24px 26px; display: none; }
   .fr-modal.open { display: block; }
   body.dark .fr-modal { background: var(--navy-deep); }
@@ -1582,7 +1582,7 @@
   .swm-backdrop { position: fixed; inset: 0; background: rgba(13,18,32,0.6); z-index: 560; display: none; }
   .swm-backdrop.open { display: block; }
   .swm-modal { position: fixed; z-index: 561; top: 50%; left: 50%; transform: translate(-50%,-50%);
-    width: min(920px, 94vw); max-height: 90vh; overflow: auto; background: var(--white); color: var(--text);
+    width: min(920px, 94vw); max-height: 90vh; max-height: 90dvh; /* dvh: the visible viewport while a phone URL bar is expanded */ overflow: auto; background: var(--white); color: var(--text);
     border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-md); padding: 22px 24px; display: none; }
   .swm-modal.open { display: block; }
   body.dark .swm-modal { background: var(--navy-deep); }
