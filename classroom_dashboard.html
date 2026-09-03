@@ -2479,7 +2479,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     </div>
     <div class="form-row" style="flex-direction:column;align-items:stretch;gap:4px;">
       <label for="pickerRoster" id="pickerRosterLabel" data-i18n="dashboard.picker.roster_label">Roster — one name per line</label>
-      <textarea id="pickerRoster" autocapitalize="words" autocorrect="off" spellcheck="false" rows="6" placeholder="e.g. Ava&#10;Noah&#10;&#1491;&#1464;&#1493;&#1460;&#1491;&#10;&#1502;&#1463;&#1497;&#1464;&#1492;" style="width:100%;resize:vertical;font-family:inherit;"></textarea><!-- i18n-ignore: roster placeholder is example student names (mixed EN/HE) with encoded newlines — illustrative content, not translatable chrome -->
+      <textarea id="pickerRoster" autocapitalize="words" autocorrect="off" spellcheck="false" rows="6" data-i18n-placeholder="dashboard.picker.roster_placeholder" placeholder="e.g. Ava&#10;Noah&#10;&#1491;&#1464;&#1493;&#1460;&#1491;&#10;&#1502;&#1463;&#1497;&#1464;&#1492;" style="width:100%;resize:vertical;font-family:inherit;"></textarea><!-- i18n-ignore: roster placeholder is example student names (mixed EN/HE) with encoded newlines — illustrative content, not translatable chrome -->
       <span id="pickerRosterCount" style="font-size:0.72rem;color:var(--muted);">0 names</span>
       <!-- On-screen Hebrew keyboard for the roster. This field's own placeholder is already
            Hebrew names, but the teacher typing it is — per the component's founding rationale —
