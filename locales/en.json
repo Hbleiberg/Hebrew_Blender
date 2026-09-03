@@ -2998,6 +2998,8 @@
   "fontmaker.panels.special_precomposed": "Special & precomposed forms",
   "fontmaker.panels.special_precomposed_hint": "Set where the dot sits in the combined glyph (e.g. שׁ / שׂ).",
   "fontmaker.panels.specialforms": "Specialized letters",
+  "fontmaker.panels.stage_margin_left": "left margin",
+  "fontmaker.panels.stage_margin_right": "right margin",
   "fontmaker.panels.style": "Style",
   "fontmaker.panels.style_bold": "Bold",
   "fontmaker.panels.style_regular": "Regular",

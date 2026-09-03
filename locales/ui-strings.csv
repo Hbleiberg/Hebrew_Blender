@@ -2668,6 +2668,8 @@ fontmaker.panels.special_intro,"Specialized letterforms — <b>auto-composed fro
 fontmaker.panels.special_precomposed,Special & precomposed forms,צורות מיוחדות ומורכבות מראש,side title,
 fontmaker.panels.special_precomposed_hint,Set where the dot sits in the combined glyph (e.g. שׁ / שׂ).,קבעו היכן הנקודה יושבת בגליף המשולב (למשל שׁ / שׂ).,panel hint,mixed UI+content — do not translate {…}
 fontmaker.panels.specialforms,Specialized letters,אותיות מיוחדות,panel title,
+fontmaker.panels.stage_margin_left,left margin,מרווח שמאלי,stage — rotated label inside the left side-bearing zone,lowercase by design (stage caption)
+fontmaker.panels.stage_margin_right,right margin,מרווח ימני,stage — rotated label inside the right side-bearing zone,lowercase by design (stage caption)
 fontmaker.panels.style,Style,סגנון,font style field label,
 fontmaker.panels.style_bold,Bold,מודגש,style option,
 fontmaker.panels.style_regular,Regular,רגיל,style option,

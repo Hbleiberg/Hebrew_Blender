@@ -2998,6 +2998,8 @@
   "fontmaker.panels.special_precomposed": "צורות מיוחדות ומורכבות מראש",
   "fontmaker.panels.special_precomposed_hint": "קבעו היכן הנקודה יושבת בגליף המשולב (למשל שׁ / שׂ).",
   "fontmaker.panels.specialforms": "אותיות מיוחדות",
+  "fontmaker.panels.stage_margin_left": "מרווח שמאלי",
+  "fontmaker.panels.stage_margin_right": "מרווח ימני",
   "fontmaker.panels.style": "סגנון",
   "fontmaker.panels.style_bold": "מודגש",
   "fontmaker.panels.style_regular": "רגיל",
