@@ -3568,10 +3568,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     });
   }
 
+  // The size vars are inherited by their consumers, all of which sit under .dashboard: writing them
+  // there restyles that subtree per slider step instead of every node on the page (S325 Pass D).
+  function sizeVarTarget() { return document.querySelector('.dashboard') || document.documentElement; }
   function setEngDateSize(val) {
     const v = parseFloat(val);
     settings.engDateSize = v;
-    document.documentElement.style.setProperty('--eng-date-size', v + 'rem');
+    sizeVarTarget().style.setProperty('--eng-date-size', v + 'rem');
     const lbl = document.getElementById('engDateSizeVal');
     if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
     const sl = document.getElementById('engDateSizeSlider');
@@ -3581,7 +3584,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function setHebDateSize(val) {
     const v = parseFloat(val);
     settings.hebDateSize = v;
-    document.documentElement.style.setProperty('--heb-date-size', v + 'rem');
+    sizeVarTarget().style.setProperty('--heb-date-size', v + 'rem');
     const lbl = document.getElementById('hebDateSizeVal');
     if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
     const sl = document.getElementById('hebDateSizeSlider');
@@ -3591,7 +3594,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function setTimeSize(val) {
     const v = parseFloat(val);
     settings.timeSize = v;
-    document.documentElement.style.setProperty('--time-size', v + 'rem');
+    sizeVarTarget().style.setProperty('--time-size', v + 'rem');
     const lbl = document.getElementById('timeSizeVal');
     if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
     const sl = document.getElementById('timeSizeSlider');
@@ -3601,7 +3604,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function setTempSize(val) {
     const v = parseFloat(val);
     settings.tempSize = v;
-    document.documentElement.style.setProperty('--temp-size', v + 'rem');
+    sizeVarTarget().style.setProperty('--temp-size', v + 'rem');
     const lbl = document.getElementById('tempSizeVal');
     if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
     const sl = document.getElementById('tempSizeSlider');
@@ -3611,7 +3614,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function setWeatherLabelSize(val) {
     const v = parseFloat(val);
     settings.weatherLabelSize = v;
-    document.documentElement.style.setProperty('--weather-label-size', v + 'rem');
+    sizeVarTarget().style.setProperty('--weather-label-size', v + 'rem');
     const lbl = document.getElementById('weatherLabelSizeVal');
     if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
     const sl = document.getElementById('weatherLabelSizeSlider');
@@ -3621,7 +3624,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function setWeatherHLSize(val) {
     const v = parseFloat(val);
     settings.weatherHLSize = v;
-    document.documentElement.style.setProperty('--weather-hl-size', v + 'rem');
+    sizeVarTarget().style.setProperty('--weather-hl-size', v + 'rem');
     const lbl = document.getElementById('weatherHLSizeVal');
     if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
     const sl = document.getElementById('weatherHLSizeSlider');
@@ -3631,7 +3634,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function setWeatherDescSize(val) {
     const v = parseFloat(val);
     settings.weatherDescSize = v;
-    document.documentElement.style.setProperty('--weather-desc-size', v + 'rem');
+    sizeVarTarget().style.setProperty('--weather-desc-size', v + 'rem');
     const lbl = document.getElementById('weatherDescSizeVal');
     if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
     const sl = document.getElementById('weatherDescSizeSlider');
@@ -3641,8 +3644,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function setDowDisplaySize(val) {
     const v = parseFloat(val);
     settings.dowDisplaySize = v;
-    document.documentElement.style.setProperty('--dow-display-size', v + 'rem');
-    document.documentElement.style.setProperty('--dow-eng-size', (v * 0.5).toFixed(3) + 'rem');
+    sizeVarTarget().style.setProperty('--dow-display-size', v + 'rem');
+    sizeVarTarget().style.setProperty('--dow-eng-size', (v * 0.5).toFixed(3) + 'rem');
     const lbl = document.getElementById('dowDisplaySizeVal');
     if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
     const sl = document.getElementById('dowDisplaySizeSlider');
@@ -3652,7 +3655,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function setDowYTTSize(val) {
     const v = parseFloat(val);
     settings.dowYTTSize = v;
-    document.documentElement.style.setProperty('--dow-ytt-size', v + 'rem');
+    sizeVarTarget().style.setProperty('--dow-ytt-size', v + 'rem');
     const lbl = document.getElementById('dowYTTSizeVal');
     if (lbl) lbl.textContent = v.toFixed(2).replace(/\.?0+$/, '') + 'rem';
     const sl = document.getElementById('dowYTTSizeSlider');
@@ -3662,7 +3665,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function setDowEmojiSize(val) {
     const v = parseFloat(val);
     settings.dowEmojiSize = v;
-    document.documentElement.style.setProperty('--dow-emoji-size', v + 'rem');
+    sizeVarTarget().style.setProperty('--dow-emoji-size', v + 'rem');
     const lbl = document.getElementById('dowEmojiSizeVal');
     if (lbl) lbl.textContent = v.toFixed(1) + 'rem';
     const sl = document.getElementById('dowEmojiSizeSlider');
