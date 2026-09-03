@@ -69,6 +69,21 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   while typing or when ask/help/QA overlays are open), and register the shortcut in BOTH the `?`
   cheat sheet (`shortcutGroups()`) and the triggering button's `title=` tooltip.
 
+### Export delivery — Send / Share / Save as
+`downloadBlob` records `window._lastDownload = {blob, name}` and the Exported ✓ screen snapshots it
+(before its LICENSE button can overwrite it) for the file-exit buttons: **📤 Share / Save to Files**
+appears only when `navigator.canShare({files})` says yes at runtime (Safari/iOS — Chromium's allowlist
+rejects `.ttf`; never UA-sniff), **💾 Save as…** only when `showSaveFilePicker` exists (Chromium
+desktop). **📤 Send to IvritSuite** (`fmSendFont`) always sends the TTF + LICENSE.txt: it reuses
+`_lastFontBytes` when `_lastFontStem === fontFileStem()`, else rebuilds via `buildFontBytes()`; it
+builds the submission draft from the same `resources.fonts.submit.*` keys and runtime-assembled
+address as resources.html's `openSubmitFont`, and either opens the share sheet with the files attached
+(pre-flight modal; the address is copied in the same gesture) or opens the `mailto:` via the
+`fmOpenMailto` seam plus a persistent attach checklist naming both files. Anything that needs a user
+gesture (`navigator.share`, `showSaveFilePicker`) is called synchronously from a click — never after
+an `await` — so every async preparation runs before the modal whose button makes the call; in-body
+checklist buttons are wired with `fmWireAct` after `askModal()` so they don't close the dialog.
+
 ### Undo / dirty / autosave contract — the big one
 **Never mutate `project` directly.** Route every mutation through `udDo(scopes, label, fn)`
 (scopes: `{t:'item',kind,cp}`, `'spacing'`, `'kerning'`, `'kernClasses'`, `'metrics'`, `'guides'`,

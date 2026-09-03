@@ -3754,7 +3754,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.38';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.39';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3951,14 +3951,14 @@ const HELP_CONTENT = {
       <li><strong>GitHub</strong> — publish your font and its license in a public repo so others can find and improve it (also the usual first step toward Google Fonts).</li>
     </ul>
     <h4>Add it to IvritSuite</h4>
-    <p>I'd love to feature your font in the IvritSuite <a href="resources.html?view=fonts" target="_blank" rel="noopener">font library</a>. To submit it, use the <span class="ui">📤 Share this font</span> button on the export-success screen — or the <span class="ui">✚ Submit a font</span> button on the Resources → Fonts page. Either one opens a <strong>pre-filled submission email</strong> to <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a>.</p>
-    <p>Fill in or confirm these details, then <strong>attach your files</strong>:</p>
+    <p>I'd love to feature your font in the IvritSuite <a href="resources.html?view=fonts" target="_blank" rel="noopener">font library</a>. To submit it, use the <span class="ui">📤 Send to IvritSuite</span> button on the <span class="ui">Exported ✓</span> screen. On an iPhone, iPad or Mac it opens your share sheet with the <strong>font file and its LICENSE.txt already attached</strong> — pick Mail and paste the address (it's copied for you). Elsewhere it opens a <strong>pre-filled submission email</strong> to <a href="mailto:Harrison@IvritSuite.com">Harrison@IvritSuite.com</a> and keeps a <strong>checklist on screen naming the two files to attach</strong>, with <span class="ui">⬇ Download again</span>, <span class="ui">💾 Save as…</span> and <span class="ui">⎘ Copy address</span> one click away. The <span class="ui">✚ Submit a font</span> button on the Resources → Fonts page starts the same email without the font attached.</p>
+    <p>Fill in or confirm these details:</p>
     <ul>
       <li><strong>Font name</strong> and <strong>type</strong> — Block / Cursive / Torah / Other</li>
       <li>Whether it supports <strong>nikkud</strong> and <strong>trop</strong></li>
       <li>Its <strong>license</strong> (CC0 / OFL / MIT / Other) and <strong>version</strong></li>
       <li>Your <strong>name</strong> and website (optional)</li>
-      <li>📎 <strong>Attach</strong> the exported <strong>font file</strong> (TTF / OTF / WOFF) <em>and</em> its <strong>LICENSE.txt</strong> — the zip/UFO already include it; for a single TTF/WOFF2, grab the <strong>⬇ LICENSE.txt</strong> button on the <span class="ui">Exported ✓</span> screen.</li>
+      <li>📎 <strong>Attach</strong> the <strong>font file</strong> <em>and</em> its <strong>LICENSE.txt</strong> — the checklist names them both. Only needed when the email opened without attachments; the zip/UFO exports already include the license.</li>
     </ul>
     <div class="help-tip">💛 Open licenses (CC0, OFL, MIT) let your font reach classrooms, siddurim, and projects you'll never even see. If you can, share it freely.</div>
   `,
@@ -3971,6 +3971,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.39</strong> &mdash; <strong>Sending your font to IvritSuite no longer depends on remembering the attachment.</strong> The <span class="ui">Exported ✓</span> screen's <span class="ui">📤 Send to IvritSuite</span> button now writes the submission email right here &mdash; no detour through the font library &mdash; and on an iPhone, iPad or Mac it opens the share sheet with the <strong>.ttf and its LICENSE.txt already attached</strong> (the address is copied for you). Everywhere else it opens the email and keeps an on-screen <strong>checklist naming the exact file to attach</strong>, with <span class="ui">⬇ Download again</span>, <span class="ui">💾 Save as&hellip;</span> and <span class="ui">⎘ Copy address</span> one click away. The same screen gained <span class="ui">📤 Share / Save to Files</span> and <span class="ui">💾 Save as&hellip;</span>, so a font can be put exactly where you want it even where the browser's download is hard to find. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.38</strong> &mdash; <strong>A slimmer footer.</strong> The strip under the workspace used to be a three-column block &mdash; the questions, a paragraph about the tool and a tall list of related tools &mdash; that stood taller than most panels. It is now a single line: <span class="ui">Frequently Asked Questions</span>, <span class="ui">About</span> and <span class="ui">Related Hebrew Tools</span> each fold open on a click, and the credits sit at the end of the same line. Nothing was removed; it just stopped taking a fifth of the screen. <em>(September 2026)</em></li>
       <li><strong>v5.37</strong> &mdash; <strong>Jump straight to the next unfinished letter.</strong> A new button under the letter grid &mdash; and Shift+] / Shift+[ from anywhere in the workspace &mdash; hops to the next letter still missing its outline, or, once you are placing nikkud, still missing its anchors. It follows the same list the Next up hint and the export warnings already use, so you can work through what is left without hunting the grid for the gaps. (August 2026)</li>
       <li><strong>v5.36</strong> &mdash; <strong>Right-side and mid-hataf meteg.</strong> The two Unicode spellings that move a meteg somewhere other than the left of its vowel now work: meteg + CGJ + vowel puts the meteg on the right, and hataf + ZWJ + meteg tucks the meteg between the hataf&rsquo;s vowel and its sheva dots &mdash; spaced by the same gap as the side-by-side pair. Nothing to set up; type the sequence and the font does the rest. <span style="color:var(--muted);">(September 2026)</span></li>
@@ -4103,7 +4104,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4116,7 +4117,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_38';
+  const CUR_KEY = 'fontmaker.changelog.v5_39';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -17445,7 +17446,7 @@ async function buildFontBytes() {                 // build the TTF in memory (no
   const res = JSON.parse(pyodide.runPython('hfm_build(hfm_spec_json)'));
   if (res.error) throw new Error(res.error);
   const bytes = b64ToBytes(res.ttf_b64);
-  window._lastFontBytes = bytes;
+  window._lastFontBytes = bytes; window._lastFontStem = fontFileStem();   // for Send to IvritSuite (stem = freshness stamp)
   return bytes;
 }
 
@@ -17454,24 +17455,123 @@ function onExportFormatChange() {
   const label = { ttf:'⬇ Export TTF', woff2:'⬇ Export WOFF2', ttfwoff2:'⬇ Export TTF + WOFF2', ufo:'⬇ Export UFO' }[fmt] || '⬇ Export';
   const btn = document.getElementById('exportBtn'); if (btn) btn.textContent = label;
 }
-function shareThisFont() {   // open the font library (Fonts view) + a pre-filled submission email
-  if (!project) return;
+/* ── Send this font to IvritSuite ────────────────────────────────────────────────────────────
+   One in-page flow that carries the exported bytes, so the attachment is automatic where the
+   browser allows it (the Safari/iOS share sheet — the only engine whose canShare() accepts a
+   .ttf) and hard to forget elsewhere (the mailto opens AND a checklist naming the exact files
+   stays on screen). Anything that needs a user gesture (navigator.share, showSaveFilePicker) is
+   called synchronously from a click, never after an await — every async step runs first. */
+const FM_SUBMIT_USER = 'Harrison', FM_SUBMIT_DOMAIN = 'IvritSuite.com';   // assembled at runtime, like resources.html's emailAddr()
+function fmSubmitAddr() { return FM_SUBMIT_USER + '@' + FM_SUBMIT_DOMAIN; }
+function fmSubmitPrefill() {
   const f = project.font;
   const licMap = { cc0:'CC0 (Public Domain)', ofl:'OFL (SIL Open Font License 1.1)', mit:'MIT License', arr:'All Rights Reserved' };
-  const params = new URLSearchParams({
-    view: 'fonts', submit: '1',
+  return {
     name: ((f.familyName || '').trim() + (f.style === 'bold' ? ' Bold' : '')),
     author: (f.author || '').trim(),
     license: project.osFont ? (project.osFont.licenseName || 'Upstream license (locked)') : (licMap[f.license] || f.license || ''),
     version: (f.version || '').trim(),
     nikkud: (f.nikkud && f.nikkud.enabled) ? 'Yes' : 'No',
     trop: (f.trop && f.trop.enabled) ? 'Yes' : 'No'
-  });
-  const url = 'resources.html?' + params.toString();
-  askModal(I18n.t('fontmaker.modals.share_font_title'),
-    I18n.t('fontmaker.modals.share_font_body', {name: '<b>' + esc(f.familyName || I18n.t('fontmaker.modals.your_font_default')) + '</b>'}),
-    [ { label: I18n.t('fontmaker.modals.open_library'), onClick: () => window.open(url, '_blank', 'noopener') },
+  };
+}
+function fmSubmitDraft(files) {   // same layout as resources.html's openSubmitFont, so every submission arrives alike
+  const pf = fmSubmitPrefill();
+  const ln = (label, val) => label + (val ? ' ' + val : '');
+  const subject = I18n.t('resources.fonts.submit.subject') + (pf.name ? ': ' + pf.name : '');
+  const lines = [
+    ln(I18n.t('resources.fonts.submit.name'), pf.name),
+    I18n.t('resources.fonts.submit.type'),
+    ln(I18n.t('resources.fonts.submit.nikkud'), pf.nikkud),
+    ln(I18n.t('resources.fonts.submit.trop'), pf.trop),
+    ln(I18n.t('resources.fonts.submit.license'), pf.license),
+    ln(I18n.t('resources.fonts.submit.version'), pf.version),
+    '',
+    ln(I18n.t('resources.fonts.submit.your_name'), pf.author),
+    I18n.t('resources.fonts.submit.your_website'),
+    ''
+  ];
+  const body = lines.concat([I18n.t('resources.fonts.submit.attach'), '', I18n.t('resources.fonts.submit.anything_else')]).join('\r\n');
+  const shareText = [I18n.t('fontmaker.send.to_line', {addr: fmSubmitAddr()}), '',
+                     I18n.t('fontmaker.send.attached_line', {font: files[0].name, license: files[1].name}), '']
+    .concat(lines, [I18n.t('resources.fonts.submit.anything_else')]).join('\r\n');
+  return { subject, body, shareText };
+}
+function fmLicenseFile() { return new File([licenseText()], fontSafeBase(project.font.familyName) + '-LICENSE.txt', {type:'text/plain'}); }
+async function fmSendFiles() {   // [TTF File, LICENSE File] — always the TTF; rebuilt when the last build is missing or stale (UFO export, rename)
+  const stem = fontFileStem();
+  if (!(window._lastFontBytes && window._lastFontBytes.length) || window._lastFontStem !== stem) {
+    status(I18n.t('fontmaker.send.rebuilding'), true);
+    try { await buildFontBytes(); } catch (err) { console.error(err); status(''); return null; }
+    status('');
+  }
+  return [ new File([window._lastFontBytes], stem + '.ttf', {type:'font/ttf'}), fmLicenseFile() ];
+}
+function fmCanShareFiles(files) {   // runtime capability only — Chromium's allowlist rejects .ttf, Safari accepts any file; never UA-sniff
+  try { return !!(navigator.share && navigator.canShare && navigator.canShare({ files })); } catch (e) { return false; }
+}
+function fmCopyAddr() {
+  const addr = fmSubmitAddr();
+  if (!(navigator.clipboard && navigator.clipboard.writeText)) return;
+  navigator.clipboard.writeText(addr).then(() => status(I18n.t('fontmaker.send.addr_copied', {addr}))).catch(() => {});
+}
+function fmOpenMailto(href) { location.href = href; }   // one-line seam: tests capture the draft without leaving the page
+function fmShareFiles(files) {   // system share sheet ("Save to Files" on iOS) — must run synchronously inside a click
+  let p; try { p = navigator.share({ files }); } catch (e) { p = Promise.reject(e); }
+  return p.catch(e => { if (e && e.name === 'AbortError') return; console.error(e); downloadBlob(files[0], files[0].name); });
+}
+function fmSaveAsPicker(file) {   // Chromium desktop "Save as…" — the user picks the folder, so they know where the file went
+  const ext = '.' + file.name.split('.').pop();
+  let p; try { p = window.showSaveFilePicker({ suggestedName: file.name, types: [{ description: file.name, accept: { [file.type || 'application/octet-stream']: [ext] } }] }); }
+  catch (e) { p = Promise.reject(e); }
+  return p.then(fh => fh.createWritable()).then(w => w.write(file).then(() => w.close()))
+    .then(() => status(I18n.t('fontmaker.send.saved_as', {name: file.name})))
+    .catch(e => { if (e && e.name === 'AbortError') return; console.error(e); downloadBlob(file, file.name); });
+}
+function fmActBtn(id, key) { return '<button type="button" class="tbtn ghost" id="' + id + '">' + esc(I18n.t(key)) + '</button>'; }
+function fmWireAct(id, fn) { const b = document.getElementById(id); if (b) b.addEventListener('click', fn); }   // in-body buttons on #askBody: they must NOT close the dialog (askModal's own do)
+function fmSendChecklist(files) {   // the attach checklist — persistent, only Done closes it
+  const canPick = typeof window.showSaveFilePicker === 'function';
+  askModal(I18n.t('fontmaker.send.title'),
+    I18n.t('fontmaker.send.mail_opened', {addr: '<b>' + esc(fmSubmitAddr()) + '</b>'})
+    + '<div style="margin-top:8px;">' + I18n.t('fontmaker.send.item_font', {file: '<b>' + esc(files[0].name) + '</b>'}) + '</div>'
+    + '<div style="margin-top:4px;">' + I18n.t('fontmaker.send.item_license', {file: '<b>' + esc(files[1].name) + '</b>'}) + '</div>'
+    + '<div class="hint" style="margin-top:8px;">' + esc(I18n.t('fontmaker.send.no_mail')) + '</div>'
+    + '<div class="mbtns" style="justify-content:flex-start;margin-top:10px;">'
+    + fmActBtn('sendDownloadAgain', 'fontmaker.send.download_again_btn')
+    + (canPick ? fmActBtn('sendSaveAs', 'fontmaker.send.saveas_btn') : '')
+    + fmActBtn('sendLicense', 'fontmaker.modals.exported_license_btn')
+    + fmActBtn('sendCopyAddr', 'fontmaker.send.copy_addr_btn')
+    + '</div>',
+    [{ label: I18n.t('fontmaker.modals.exported_done') }]);
+  fmWireAct('sendDownloadAgain', () => downloadBlob(files[0], files[0].name));
+  fmWireAct('sendSaveAs', () => fmSaveAsPicker(files[0]));
+  fmWireAct('sendLicense', () => downloadBlob(files[1], files[1].name));
+  fmWireAct('sendCopyAddr', fmCopyAddr);
+}
+function fmSendViaMailto(draft, files) {
+  fmOpenMailto('mailto:' + fmSubmitAddr() + '?subject=' + encodeURIComponent(draft.subject) + '&body=' + encodeURIComponent(draft.body));
+  fmSendChecklist(files);
+}
+function fmSendPreflightShare(files, draft) {   // explains the share sheet, then the primary button calls navigator.share in the same click
+  askModal(I18n.t('fontmaker.send.title'),
+    I18n.t('fontmaker.send.preflight_share', {font: '<b>' + esc(files[0].name) + '</b>', license: '<b>' + esc(files[1].name) + '</b>', addr: '<b>' + esc(fmSubmitAddr()) + '</b>'})
+    + '<div class="mbtns" style="justify-content:flex-start;margin-top:10px;">' + fmActBtn('sendCopyAddr', 'fontmaker.send.copy_addr_btn') + '</div>',
+    [ { label: I18n.t('fontmaker.send.open_share_btn'), onClick: () => {
+          let p; try { p = navigator.share({ files, title: draft.subject, text: draft.shareText }); } catch (e) { p = Promise.reject(e); }
+          fmCopyAddr();   // same gesture — a clipboard write after the sheet closes would be refused
+          p.then(() => status(I18n.t('fontmaker.send.share_done')))
+           .catch(e => { if (e && e.name === 'AbortError') return; console.error(e); fmSendViaMailto(draft, files); });
+        } },
       { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' } ]);
+  fmWireAct('sendCopyAddr', fmCopyAddr);
+}
+async function fmSendFont() {   // Exported ✓ → 📤 Send to IvritSuite
+  if (!project) return;
+  const files = await fmSendFiles();
+  if (!files) { askModal(I18n.t('fontmaker.send.nofile_title'), esc(I18n.t('fontmaker.send.nofile_body')), [{ label: I18n.t('fontmaker.modals.ok') }]); return; }
+  const draft = fmSubmitDraft(files);
+  if (fmCanShareFiles(files)) fmSendPreflightShare(files, draft); else fmSendViaMailto(draft, files);
 }
 // Close any export-warning modal and jump to a letter to fix it — guard-free navigation shared
 // with the QA grid (_selectItem bypasses the unsaved-placement guard; QA/warnings are read-only).
@@ -17643,7 +17743,7 @@ async function doExport(fmt) {
 async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only when a file actually shipped — callers roll the version bump back on false
   fmt = fmt || 'ttf';
   const fam = fontFileStem();   // family base + '-Bold' for the bold style — no Regular/Bold file collisions
-  window._lastFontBytes = bytes;   // for preview PDF
+  window._lastFontBytes = bytes; window._lastFontStem = fontFileStem();   // for Send to IvritSuite (stem = freshness stamp)
   if (fmt === 'ttf') {
     downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
     status(window.I18n ? I18n.t(gateSkipped ? 'fontmaker.status.exported_ttf_skipped' : 'fontmaker.status.exported_ttf', {name: fam})
@@ -17686,6 +17786,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
   }
 }
 function downloadBlob(blob, name) {
+  window._lastDownload = { blob, name };   // the Exported ✓ screen re-offers this exact file (Download again / Save as… / Share)
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
   document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }
@@ -18183,10 +18284,17 @@ async function saveCurrentToMyFonts(bytes) {
 }
 function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (called after every successful export, any format)
   markClean();   // a successful export is a safe checkpoint → drop the unsaved-work breadcrumb
+  const dl = window._lastDownload;   // snapshot now — the LICENSE button below overwrites it
+  const dlFile = dl ? new File([dl.blob], dl.name, {type: dl.blob.type}) : null;
+  const canShareFile = !!dlFile && fmCanShareFiles([dlFile]);   // Safari/iOS: the share sheet is the file exit ("Save to Files") where the download is invisible
+  const canPick = !!dlFile && typeof window.showSaveFilePicker === 'function';   // Chromium desktop: choose where the file goes
   const fam = (project.font.familyName || 'My Hebrew Font').trim() + (fontIsBold() ? ' Bold' : '');
   const canSave = !!(window.indexedDB && window.FontFace);
   const btns = [{ label: I18n.t('fontmaker.modals.exported_done'), cls: 'ghost' },
-                { label: I18n.t('fontmaker.modals.exported_share_btn'), cls: 'ghost', onClick: () => shareThisFont() }];
+                { label: I18n.t('fontmaker.modals.exported_send_btn'), cls: 'ghost', onClick: () => fmSendFont() }];
+  if (canShareFile) btns.push({ label: I18n.t('fontmaker.modals.exported_sharefile_btn'), cls: 'ghost',
+    onClick: () => fmShareFiles(licenseSeparate ? [dlFile, fmLicenseFile()] : [dlFile]) });
+  if (canPick) btns.push({ label: I18n.t('fontmaker.modals.exported_saveas_btn'), cls: 'ghost', onClick: () => fmSaveAsPicker(dlFile) });
   // Single-file TTF/WOFF2 downloads don't carry the license (the zip/UFO embed it), so offer it as a
   // reliable one-click download here — a click inside the modal is never blocked, unlike an
   // auto-triggered second download.
@@ -18209,7 +18317,8 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
     I18n.t('fontmaker.modals.exported_body', {name: '<b>' + esc(fam) + '</b>'})
     + (licenseSeparate ? ' ' + I18n.t('fontmaker.modals.exported_license') : '')
     + (canSave ? ' ' + I18n.t('fontmaker.modals.exported_save') : '')
-    + ' ' + I18n.t('fontmaker.modals.exported_share')
+    + ' ' + I18n.t('fontmaker.modals.exported_send')
+    + ((canShareFile || canPick) ? ' ' + I18n.t('fontmaker.modals.exported_getfile', {btn: '<b>' + esc(I18n.t(canShareFile ? 'fontmaker.modals.exported_sharefile_btn' : 'fontmaker.modals.exported_saveas_btn')) + '</b>'}) : '')
     + fellHtml + gateHtml,
     btns);
 }
