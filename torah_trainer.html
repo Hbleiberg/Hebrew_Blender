@@ -1438,31 +1438,42 @@ body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
   /* Bulk-select tint is a screen-only affordance — never ink. */
   .tt-bulk-selected { background:none !important; box-shadow:none !important; }
   .tt-bulk-cb { display:none !important; }   /* selection checkbox is a screen-only affordance */
-  /* Per-sheet running identifier (supersedes the S90 in-flow legend print): the reading
-     prints its clause colors as underlines, so the color->family key belongs on paper — and
-     sheets 2..N need the reference label too, or a 5-8 sheet parsha is unidentified past
-     sheet 1. #ttPrintBand is populated by the beforeprint handler and re-stamped on EVERY
-     page by print's position:fixed repetition (the same mechanism the hide-list below
-     suppresses for the drawer/toast). top:-18mm sits inside the enlarged @page top margin,
-     so the band can never overlap content on any sheet. Swatches use the SOLID
-     --trope-*-line ink the underlines actually print with — the old in-flow card printed
-     the 35% -bg tint, which collapses into one grey band on a greyscale copier — and are
-     re-resolved to the light palette by the S89 beforeprint handler. The in-flow header +
-     legend card are print-hidden below: the band is their on-paper replacement. */
-  @page { margin-top: 22mm; }
-  #ttPrintBand:not([hidden]) { display:flex; position:fixed; top:-18mm; inset-inline:0;
-    align-items:center; flex-wrap:wrap; column-gap:10px; row-gap:2px;
+  /* Per-sheet running identifier. Sheets 2..N carry the range label and "sheet / of" in the
+     @page margin boxes (Chromium 131+; other engines print no margin boxes and simply get
+     an unlabelled margin, which is what every engine got before): the four --tt-print-*
+     custom properties are set on <html> by buildPrintBand in the beforeprint handler and
+     cleared on afterprint, so an unloaded reading prints nothing here. The label sits on the
+     reading's start side (left in an LTR UI, right in Hebrew) and the counter opposite.
+     NEVER a position:fixed band with a negative top: Blink stacks page AREAS contiguously,
+     so each sheet's fixed copy at top:-18mm painted at the FOOT of the previous sheet, over
+     its last line, and the last sheet got none (measured on 30 PDFs, every margin setting).
+     Sheet 1 has the in-flow band below instead, so its margin-box label is suppressed. */
+  @page {
+    margin-top: 16mm;
+    /* direction:ltr — the boxes inherit the Hebrew UI's rtl, which bidi-reorders "2 / 23" into
+       "23 / 2"; the label is Latin ("Bereshit — Genesis 1:1-6:8") so ltr is right for both. */
+    @top-left  { content: var(--tt-print-l, none); direction: ltr; font: 700 9.5pt 'Source Sans 3', 'Libre Baskerville', sans-serif; color:#1a2744; vertical-align: bottom; padding-bottom: 2.5mm; }
+    @top-right { content: var(--tt-print-r, none); direction: ltr; font: 700 9.5pt 'Source Sans 3', 'Libre Baskerville', sans-serif; color:#1a2744; vertical-align: bottom; padding-bottom: 2.5mm; }
+  }
+  @page :first {
+    @top-left  { content: var(--tt-print-l1, none); }
+    @top-right { content: var(--tt-print-r1, none); }
+  }
+  /* Sheet-1 key (supersedes the S90 in-flow legend print): the reading prints its clause
+     colors as underlines, so the color->family key belongs on paper. #ttPrintBand is
+     populated by the beforeprint handler and prints in flow, once, above the reading.
+     Swatches use the SOLID --trope-*-line ink the underlines actually print with — the old
+     in-flow card printed the 35% -bg tint, which collapses into one grey band on a
+     greyscale copier — and are re-resolved to the light palette by the S89 beforeprint
+     handler. The in-flow header + legend card are print-hidden below: the band is their
+     on-paper replacement. */
+  #ttPrintBand:not([hidden]) { display:flex; align-items:center; flex-wrap:wrap;
+    column-gap:10px; row-gap:2px; margin-bottom:8px;
     font-size:8pt; line-height:1.2; color:#1a2744; }
   #ttPrintBand .pbnd-ref { font-weight:700; font-size:9.5pt; }
   #ttPrintBand .pbnd-chip { display:inline-flex; align-items:center; gap:3px; }
   #ttPrintBand .pbnd-sw { width:9px; height:9px; border-radius:2px;
     -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  /* Column labels for side-by-side sheets (built by buildPrintBand only when the parallel
-     grid is on the page): a full-width band row whose tracks mirror the reading grid —
-     same 1fr count (inline style), 20px gap, and the .tt-page 24px inline padding. */
-  #ttPrintBand .pbnd-cols { flex-basis:100%; display:grid; column-gap:20px;
-    padding-inline:24px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
-    text-align:center; }
   .tt-ref-hdr, .tt-trope-legend, #ttTropeChip, .tt-key-hints { display:none !important; }
   /* break-after: an aliyah heading must not strand at a sheet foot with its aliyah overleaf
      (unlike the geniza marker's refuted break-before, the divider's successor is a sibling
@@ -1933,6 +1944,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <div class="tt-trope-legend" id="ttTropeLegend" hidden>
     <a class="tt-trope-link" id="ttTropeTutorLink" hidden data-i18n="torah.trope_legend.tutor_link">Learn the trope names →</a>
   </div>
+  <!-- Print-only sheet-1 key (range label + compact clause key), in flow above the reading.
+       Populated by the beforeprint handler; sheets 2..N carry the label in the @page margin
+       boxes instead (see the print block). -->
+  <div id="ttPrintBand" hidden aria-hidden="true"></div>
   <div class="tt-reading" id="ttReading" tabindex="-1"></div>
   <!-- Reading keyboard hints. onReadingKeydown gives every word five keys — Enter/Space play it,
        arrows move word by word, Home/End jump to the ends — and initReadingRover() puts tabindex=0
@@ -1953,9 +1968,6 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
        Screen-hidden; shown only by the print block's body.tt-handout-geniza rule.
        Never contains the Tetragrammaton. -->
   <div id="ttGenizaMark" lang="he" dir="rtl">לגניזה</div>
-  <!-- Print-only per-sheet identifier (range label + compact clause key). Populated by the
-       beforeprint handler; the print block's position:fixed re-stamps it on every sheet. -->
-  <div id="ttPrintBand" hidden aria-hidden="true"></div>
 </div>
 </main>
 
@@ -3261,16 +3273,33 @@ function buildTropeLegend() {
   });
 }
 
-// Fill the per-sheet print band: the range label, plus (with trope coloring on) a compact
+// Fill the sheet-1 print band: the range label, plus (with trope coloring on) a compact
 // clause key whose swatches use the SOLID --trope-*-line ink the printed underlines use.
 // DOM-built like buildTropeLegend; runs on every beforeprint so it always reflects the
-// current reading + palette. The print block re-stamps it on every printed page.
+// current reading + palette. Also hands sheets 2..N their running identifier: the @page
+// margin boxes in the print block read four --tt-print-* custom properties off <html> —
+// label on the reading's start side, "sheet / of" opposite, sheet 1 label suppressed
+// (the band is there). A CSS string is built with JSON.stringify, whose escaping of " and
+// \ is CSS-valid; line breaks are dropped because CSS strings cannot hold them.
+function setPrintMarginVars(label) {
+  const rs = document.documentElement.style;
+  const keys = ['--tt-print-l', '--tt-print-r', '--tt-print-l1', '--tt-print-r1'];
+  if (!label) { keys.forEach(k => rs.removeProperty(k)); return; }
+  const ref = JSON.stringify(String(label).replace(/[\r\n]+/g, ' '));
+  const pg = 'counter(page) " / " counter(pages)';
+  const rtl = getComputedStyle(document.documentElement).direction === 'rtl';
+  rs.setProperty('--tt-print-l',  rtl ? pg : ref);
+  rs.setProperty('--tt-print-r',  rtl ? ref : pg);
+  rs.setProperty('--tt-print-l1', rtl ? pg : 'none');
+  rs.setProperty('--tt-print-r1', rtl ? 'none' : pg);
+}
 function buildPrintBand() {
   const band = document.getElementById('ttPrintBand');
   if (!band) return;
   band.textContent = '';
   const has = !!(currentRangeLabel && currentVerses && currentVerses.length);
   band.hidden = !has;
+  setPrintMarginVars(has ? currentRangeLabel : '');
   if (!has) return;
   const ref = document.createElement('span');
   ref.className = 'pbnd-ref';
@@ -3287,24 +3316,6 @@ function buildPrintBand() {
       chip.appendChild(document.createTextNode(window.I18n ? I18n.t('torah.glyphname.trope_' + def.key) : def.name));
       band.appendChild(chip);
     });
-  }
-  // Side-by-side sheets: the on-page column headers are grid-row:1, so they print on sheet 1
-  // only. Repeat them here as a full-width band row mirroring the grid's equal 1fr tracks
-  // (same column count, gap, and .tt-page inline padding — see .pbnd-cols in the print block),
-  // cloning the h3s' text and placement so labels, order, and direction match both UI languages.
-  const pgrid = document.querySelector('#ttReading .tt-grid.tt-print-parallel');
-  if (pgrid) {
-    const cols = document.createElement('span');
-    cols.className = 'pbnd-cols';
-    cols.style.gridTemplateColumns = 'repeat(' + (pgrid.dataset.printCols || 2) + ', 1fr)';
-    cols.dir = getComputedStyle(pgrid).direction === 'rtl' ? 'rtl' : 'ltr';
-    pgrid.querySelectorAll(':scope > .tt-grid-col > h3').forEach(h => {
-      const c = document.createElement('span');
-      c.textContent = h.textContent;
-      if (h.style.gridColumn) c.style.gridColumn = h.style.gridColumn;
-      cols.appendChild(c);
-    });
-    band.appendChild(cols);
   }
 }
 
@@ -6648,9 +6659,9 @@ function _handoutExit() {
   }
   document.body.classList.remove('tt-handout-print', 'tt-handout-hidenums',
     'tt-handout-size-large', 'tt-handout-size-xl', 'tt-handout-geniza');
-  const gm = document.getElementById('ttGenizaMark');   // back to its static home before the
-  const band = document.getElementById('ttPrintBand');  // re-render wipes #ttReading's subtree
-  if (gm && band && band.parentNode) band.parentNode.insertBefore(gm, band);
+  const gm = document.getElementById('ttGenizaMark');   // back outside #ttReading before the
+  const rd = document.getElementById('ttReading');      // re-render wipes its subtree
+  if (gm && rd && rd.parentNode) rd.parentNode.insertBefore(gm, rd.nextSibling);
   renderText();   // no saveSettings — the persisted settings never changed
 }
 function printHandout() {
@@ -7480,6 +7491,7 @@ window.addEventListener('beforeprint', () => {
 window.addEventListener('afterprint', () => {
   if (_printForceLight) { _printForceLight = false; applyNikkudColors(); applyTropeColors(); }
   const _pb = document.getElementById('ttPrintBand'); if (_pb) _pb.hidden = true;
+  setPrintMarginVars('');
 });
 // Handout restore — belt-and-braces alongside the try/finally in printHandout().
 // Idempotent; registered AFTER the palette-restore listener above so the exit
