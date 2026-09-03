@@ -727,6 +727,11 @@ footer a { display: inline-block; padding-block: 5px; }
   .ctl-btn:hover { background: var(--warm-gray); }
   body.dark .ctl-btn:hover { background: #2a3349; }   /* dark --warm-gray equals dark --white (the rest colour); pattern dark-hover-resolves-to-the-rest-colour */
   .ctl-btn.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+  /* A hovered primary kept its rest navy in light (.ctl-btn:hover and .ctl-btn.primary tie at (0,2,0), the
+     later primary rule wins) — the only button class on the page with no hover change. The chrome pages'
+     primary hover colours (contact / resources), placed after the dark .ctl-btn:hover so they win there too. */
+  .ctl-btn.primary:hover { background: #24345c; border-color: #24345c; }
+  body.dark .ctl-btn.primary:hover { background: #345090; border-color: #345090; }
   /* Align tools: each opposing pair stacked vertically, pairs sit side by side (wrap on narrow) */
   .scale-pairs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
   .scale-pairs .ctl-btn { width: 100%; text-align: center; padding: 6px 4px; box-sizing: border-box; min-width: 0; }
