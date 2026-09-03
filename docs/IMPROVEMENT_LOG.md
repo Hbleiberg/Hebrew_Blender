@@ -82,6 +82,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-03 | (S334 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-0mbq58` → draft PR #223** (API at start: open, draft, `mergeable_state:clean`, head `2b3a481`, base `4b66a64`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `4b66a64`; `sw.js` v657 and `FONT_MAKER_VERSION` 5.39 re-read from the files. **SW v657→v658** …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-03 | da1fc90 | torah_trainer.html | **The שם ה׳ and translation-notice chips get the verse chips' invisible 25px `::after` touch box** (`sub-floor touch target`, found by the S334 N census at 44×19). | iPhone 13 + 800 + 1280 × light/dark × EN/HE with the Sefaria stub: `elementFromPoint` 2px above / 1px below the paint resolves to the chip (the header before); the header line's …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-09-03 | (S333 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-0mbq58` → draft PR #223** (API at start: open, draft, `mergeable_state:clean`, head `5dd767f`, base `4b66a64`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `4b66a64`; `sw.js` v656 and `FONT_MAKER_VERSION` 5.39 re-read from the files. **SW v656→v657** …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-03 | (S332 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-0mbq58` → draft PR #223** (API at start: open, draft, `mergeable_state:clean`, head `fa39af6`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `4b66a64`; `sw.js` v655 and `FONT_MAKER_VERSION` 5.39 re-read from the files. **SW v655→v656** (6 precached pages …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -90,17 +94,15 @@ _(none)_
 
 - [x] 2026-09-03 | (S330 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-0mbq58` → draft PR #223** (API at start: open, draft, `mergeable_state:clean`, head `b0aef52`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `4b66a64`; `sw.js` v653 and `FONT_MAKER_VERSION` 5.39 re-read from the files. **SW v653→v654** (7 precached …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-03 | `371d571` | index + generator + flash_cards + dashboard + dictionary + torah_trainer + trope_tutor | **The shared `.ivrit` engine's `ivritSafeAssign` never spreads an array source** (the S329 top candidate: `&& !Array.isArray(src)` on all 7 copies; engine block sha-verified identical on the 3 byte-identical carriers, index keeps its adapted superset; no call site passes an …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-03 | (S329 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-0mbq58` → draft PR #223** (API at start: open, draft, `mergeable_state:clean`, head `cd7a211`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `4b66a64`; `sw.js` v652 and `FONT_MAKER_VERSION` 5.39 re-read from the files. **sw v652→v653** (3 precached pages …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
 
-- 2026-09-03 | **S333** | iters: 1 pass (**K**) + 3 fixes = **4** (5th slot unspent — `sub-floor touch target` AT CAP after two iterations, dashboard + FM AT CAP, every other open candidate is gate-2, a layout decision or an F/M convergence question) | tools touched: classroom_dashboard ×2 …[full text: IMPROVEMENT_ARCHIVE.md]
+- 2026-09-03 | **S334** | iters: 1 pass (**N**) + 3 fixes = **4** (5th slot unspent — torah_trainer AT CAP, every other open candidate is gate-2, a layout decision, an F/M convergence question or C's toggle geometry) | tools touched: torah_trainer ×2 (`2681a88`, `da1fc90`), locales ×1 (`fa4dce9`) | …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-09-03 | **S332** | iters: 1 pass (**L**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: contact + privacy + terms ×1 each (`be7db37`), Hebrew_Font_Maker ×1 (`fd3ef5a`), hebrew_dictionary ×1 (`6466548`), hebrew_blend_generator ×1 (`28cef7e`) | patterns fixed: …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+- 2026-09-03 | **S333** | iters: 1 pass (**K**) + 3 fixes = **4** (5th slot unspent — `sub-floor touch target` AT CAP after two iterations, dashboard + FM AT CAP, every other open candidate is gate-2, a layout decision or an F/M convergence question) | tools touched: classroom_dashboard ×2 …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- 2026-09-03 | **S332** | iters: 1 pass (**L**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: contact + privacy + terms ×1 each (`be7db37`), Hebrew_Font_Maker ×1 (`fd3ef5a`), hebrew_dictionary ×1 (`6466548`), hebrew_blend_generator ×1 (`28cef7e`) | patterns fixed: …[full text: …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-09-03 | **S331** | iters: 1 pass (**E**) + 4 fixes = **5** | tools touched: hebrew_dictionary ×2 (`5005689`, `e4652b5` — AT CAP), resources + trope_tutor + hebrew_blend_generator + flash_cards + torah_trainer + classroom_dashboard ×1 each (`e4652b5`), docs ×2 (`1924748` ops.md, `7d74845` …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -136,11 +138,9 @@ _(none)_
 
 - 2026-09-02 | **S315** | iters: 1 pass (**O**, on explicit direction) + 4 fixes = **5 (FULL BUDGET)** | tools touched: hebrew_dictionary ×2 (`b25f645`, `47fbd32`), Hebrew_Font_Maker ×2 (`b25f645`, `35272f4`), classroom_dashboard ×1 (`40bf42a`) | patterns fixed: …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-09-02 | **S314** | iters: 1 pass (**O**, on explicit direction `deslop`) + 4 fixes = **5 (FULL BUDGET)** | tools touched: flash_cards ×1 (`0536f51`), hebrew_blend_generator ×2 (`c6ffa99`, `76cea25`), trope_tutor ×1 (`679a085`); Hebrew_Font_Maker = the cap-exempt O target, unfixed | patterns …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S333 (2026-09-03):** classroom_dashboard **2026-09-03 (×2, `ecd0720` picker headers, `8d5fc63` `.ed-btn`; S331 ×1)**; Hebrew_Font_Maker **2026-09-03 (×2, `43983b5` `.ft-h`, `8d5fc63` `#unfinishedBtn`; S332 ×1; outside-loop v5.39)**; flash_cards + hebrew_blend_generator + trope_tutor **2026-09-03 (×2 each, `ecd0720` + `43983b5`)**; hebrew_dictionary + torah_trainer **2026-09-03 (×1, `ecd0720`)**; resources **2026-09-03 (×1, `43983b5`)**; contact/privacy/terms 2026-09-03 (S332 ×1 each); index 2026-09-03 (S330 ×1); 404 untouched since its …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S334 (2026-09-03):** torah_trainer **2026-09-03 (×2, `2681a88` fs plate, `da1fc90` chips; S333 ×1)**; locales/ui-strings.csv 2026-09-03 (`fa4dce9`); classroom_dashboard 2026-09-03 (S333 ×2); Hebrew_Font_Maker 2026-09-03 (S333 ×2; outside-loop v5.39); flash_cards + hebrew_blend_generator + trope_tutor 2026-09-03 (S333 ×2 each); hebrew_dictionary 2026-09-03 (S333 ×1); resources 2026-09-03 (S333 ×1); contact/privacy/terms 2026-09-03 (S332 ×1 each); index 2026-09-03 (S330 ×1); 404 untouched since its last E/L fix.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -162,7 +162,7 @@ _(none)_
 
 - **`false-clean-from-an-unverified-probe-handle`**: **ONE MORE ARTIFACT at 2026-09-03 (S330 Pass A), caught before a verdict: `matrix.mjs` given a comma-joined page list loaded a 404 and reported four `ok … pageerrors=0` cells — exposed by `body.dark=false` in the dark cells …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`sub-floor touch target`**: **filed carriers fixed 2026-09-03 (S333, `43983b5` + `8d5fc63`: the three S317 shapes — FAQ summaries ×5 pages, dashboard `.ed-btn`, FM `#unfinishedBtn`) — no filed carrier left; last swept S327 Pass C (`hebrew_blend_generator.html`, pseudo-aware …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`sub-floor touch target`**: **1 new carrier found 2026-09-03 (S334 Pass N census on `torah_trainer.html`, 159/183 controls at 390 on the iPhone 13 descriptor): the שם ה׳ / translation-notice chips 44×19, fixed in-session `da1fc90` (the verse chips' `::after` vehicle) — clean …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`author-display-defeats-the-hidden-attribute`**: **re-swept 2026-09-03 (S330 Pass A, runtime arm on all 13 pages: 55 `[hidden]` elements, 0 with computed `display !== 'none'`, an injected `.__ctl{display:flex}` hidden div reported on every page): hits 0; clean streak 1 — …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -220,7 +220,7 @@ _(none)_
 
 - **i18n cross-column parity (placeholders, plurals, inline markup)**: **re-swept 2026-09-03 (S320 Pass K, detector 1 only): `{placeholder}` sets en vs he over 5,128 keys, raw 30 → hits: 0 — all thirty are the S261-refuted `.one` plural shape (Hebrew spells the singular number; …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **horizontal-overflow-at-narrow-widths**: **re-swept 2026-08-29 (S290 Pass N, `Hebrew_Font_Maker.html`) — hits: 0 across 15 cells; clean streak: +1 — ACTIVE.** **⚑⚑ THE DETECTOR THIS PATTERN AND PASS N's ARM 1 HAD BEEN USING CANNOT FIRE ON A PHONE — read this before any future …[full text: IMPROVEMENT_ARCHIVE.md]
+- **horizontal-overflow-at-narrow-widths**: **re-swept 2026-09-03 (S334 Pass N, `torah_trainer.html`, 12 real-descriptor loads × 10 views incl. the S324 presentation toolbar) — hits: 1, the clipped-not-scrolled variant (`.tt-fs-plate` 340px in a 320px viewport, −10..330, A− and …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **hover-only-affordance-under-a-synthetic-mouse-event**: **re-swept 2026-08-23 (S249 Pass N arm 4) — hits: 1, the THIRD and FINAL carrier (`hebrew_dictionary.html`), fixed `383aa2a`; clean streak: 0 — ACTIVE.** **The class is now fully swept: all three `bindTip` carriers are …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -518,7 +518,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-02 (**S315 — 5th O, `hebrew_dictionary.html` (the S314 pointer's named target, never O-audited), run on explicit direction — B (S297) was and remains the stalest by date, divergence declared. Detector: Impeccable 4.1.3 (scratchpad clone), static arm NOT degraded (26 findings), browser arm live (607). THE DICTIONARY IS CLEAN OF TELLS: the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- N mobile & touch-device (one surface): 2026-09-03 (**S321 — 12th-ever N, `classroom_dashboard.html`, its 2nd dashboard N (S247 → S321, 74 sessions) and the pointer's named target: the outside-loop panel-width lock `735b451` + the S315 drawer had never been phone-audited. Real descriptors (iPhone SE 320, iPhone 13 390, Pixel 7 412, iPhone 13 landscape; `pointer:coarse`/`hover:none` confirmed on …[full text: IMPROVEMENT_ARCHIVE.md]
+- N mobile & touch-device (one surface): 2026-09-03 (**S334 — 13th-ever N, `torah_trainer.html`, its 2nd N (S245 → S334, 37 commits between, incl. the S324 handout + presentation toolbar) and the pointer's named target (O skipped, attended-only). Real descriptors (iPhone SE 320, iPhone 13 390 + landscape, Pixel 7 412), SW blocked, Sefaria stubbed per the S245 recipe: 12 loads × 10 views, 0 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - M aesthetics & visual design (one surface): 2026-09-03 (**S322 — 12th-ever M, `classroom_dashboard.html`, its 2nd dashboard M (S248 → S322, 74 sessions) and the pointer's named CHANGED surface (the outside-loop panel-width lock, the S315 drawer, the S321 phone strip). 18 cells (board + drawer at 1280/800 × light/dark × EN/HE, fullscreen light/dark): 0 pageerrors, 0 overflow, all three detectors …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -546,8 +546,8 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-03 (**S328 — 26th run, its first since S313 (15 sessions); F was the single stalest by date and the S328 pointer named it AND the affordance: THE COLLAPSIBLE-HEADER HOVER IDIOM (S317's four-tool filing).** Method: every `.panel-title`/`.sub-section-hdr`/`.pos-sec-hdr`/`.adv-section-title`/`.shoresh-patterns-title`/`.vowel-group-header`/`summary` on 9 pages …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S334):** **BRANCH/PR: S333 CONTINUED `claude/improve-loop-0mbq58` → draft PR #223 (head after this close-out; base `origin/main` `4b66a64`). CONTINUE that branch and PR if still open and unmerged; if merged, cut a fresh `claude/*` off latest `origin/main`. VERIFY via the API — this note is a snapshot.** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v657, `FONT_MAKER_VERSION` 5.39** — re-read both.
+**Next session (S335):** **BRANCH/PR: S334 CONTINUED `claude/improve-loop-0mbq58` → draft PR #223 (head after this close-out; base `origin/main` `4b66a64`). CONTINUE that branch and PR if still open and unmerged; if merged, cut a fresh `claude/*` off latest `origin/main`. VERIFY via the API — this note is a snapshot.** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v658, `FONT_MAKER_VERSION` 5.39** — re-read both.
 
-**⚑ THE STALEST PASS IS O (S315, attended only), THEN N (S321), M (S322), H (S323), G (S324), D (S325), I (S326), C (S327), F (S328), B (S329), A (S330), E (S331), L (S332), K (S333).** **Unattended: skip O and take N** (mobile & touch, one surface — real device descriptors, the seven arms, a phone contact sheet even when clean). N's per-surface history as the ARCHIVE's Pass N filings record it (re-derive with `grep -o 'NEW S[0-9]* Pass N[^|]*| [A-Za-z_]*\.html'` before picking): flash_cards S244, torah_trainer S245, trope_tutor S245, resources S246, generator S262, Font Maker S290, dictionary S303, dashboard S321. flash_cards is the least-recent but is O's reserved surface; **torah_trainer (S245, the S324 handout + presentation toolbar never phone-audited) is the pick**, Trope Tutor next. **O's surface is still flash_cards.html.**
+**⚑ THE STALEST PASS IS O (S315, attended only), THEN M (S322), H (S323), G (S324), D (S325), I (S326), C (S327), F (S328), B (S329), A (S330), E (S331), L (S332), K (S333), N (S334).** **Unattended: skip O and take M** (aesthetics, one surface — BEFORE/AFTER light + dark at the affected breakpoints, saved in the scratchpad, delivered at close-out; dramatic changes are gate 3, log them with screenshot paths). M's per-surface history as the ARCHIVE's Pass M filings record it (re-derive with `grep -o 'NEW S[0-9]* Pass M[^|]*| [A-Za-z_]*\.html'` AND the `M aesthetics` rotation rows — a clean M leaves no filing): Font Maker S225, dictionary S237, trope_tutor S245, index S246, generator S247, flash_cards S249 (O's reserved surface), torah S263, resources S277, contact S291/S304, privacy S304, dashboard S248/S322. **`Hebrew_Font_Maker.html` (S225, ~110 sessions, v5.39 landed outside the loop) is the pick unless the re-derivation finds a later FM M**; the dictionary next. **O's surface is still flash_cards.html.**
 
-**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the four unauthored picker terms (gate 2 — one CSV row each, the map lines are ready); the staging author URL on the hub (gate 2 — a maintainer fact); the real-words 7.2px grid (layout decision); the dashboard `.tip-icon`-vs-`.tip-wrap` divergence (F, S285); the S319/S323 gate-2 copy (attended). `sub-floor touch target` and `custom-property-written-on-documentElement-per-frame` both have no filed carrier left — the next A sweep decides their streaks. The 13 S320 dead CSV singletons are still dead (loop-findings S333 (6)) — a spare K iteration prunes them. Seed bench: the scroll-style handout (torah, S324), the last-backup date (index, S323).
+**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the four unauthored picker terms (gate 2 — one CSV row each, the map lines are ready); the staging author URL on the hub (gate 2 — a maintainer fact); the real-words 7.2px grid (layout decision); the 38×22 `.toggle` on torah + trope (C's geometry call, S334); the dashboard `.tip-icon`-vs-`.tip-wrap` divergence (F, S285); the S319/S323 gate-2 copy (attended). `sub-floor touch target` and `horizontal-overflow-at-narrow-widths` both took a hit at S334 (streaks 0) — the next A sweep re-checks both on the delta. The 13 S320 dead singletons are GONE (`fa4dce9`). Seed bench: the scroll-style handout (torah, S324), the last-backup date (index, S323).
