@@ -239,6 +239,7 @@ function scanFile(file, errors, warnings) {
     //     fragment of a concatenation is content-derived, which is rule 2's existing test moved a
     //     level out (it is what excuses `'⌨ ' + hkT(open ? 'shared.kbd.hide_toggle' : …)`, whose
     //     branches are translation KEYS, and `'@page { size: ' + (… ? 'A4' : 'letter')`, which is CSS).
+    let ternaryHit = false;
     const condRe = /\.(textContent|placeholder|title)\s*=\s*(?!['"])([^;]*\?(?![.?])[^;]*)/g;
     while ((m = condRe.exec(line))) {
       if (inLineComment(line, m.index)) continue;
@@ -253,7 +254,40 @@ function scanFile(file, errors, warnings) {
         const after = rhs.slice(lit.end + 1).replace(/^\s*/, '');
         if (after.startsWith('+')) continue;               // concatenated with a variable
         push(errors, ln, '.' + m[1] + ' assigned a hardcoded English literal in a ternary branch', line);
+        ternaryHit = true;
         break;                                             // one finding per assignment
+      }
+    }
+
+    // 2c) The SAME three sinks fed by a CONCATENATION whose quoted fragments are English PROSE:
+    //     `el.textContent = n + ' of ' + total + ' tropes attempted · personal best streak ' + pb`.
+    //     Rule 2 needs a quote right after the `=` and then excuses anything followed by `+` as
+    //     content-derived; 2b needs a `?`. A chain that starts with a variable, or a leading literal
+    //     followed by `+`, satisfied neither, and the Trope Tutor's settings-drawer progress line
+    //     survived every gate run behind it while its CSV key sat unused (S320). "Prose" means a
+    //     fragment carrying at least two words of three-plus letters — a separator (`' · '`, `' — '`),
+    //     a unit (`'rem'`), a CSS chunk (`'@page { size: '`, anything with a brace), a translation
+    //     KEY (`'shared.phrases.' + id`, dotted, no spaces) and markup stay out. Exemptions are the
+    //     structural ones rules 2/2b already use, plus any `…T(`/`t(` translate-helper wrapper
+    //     (`tpT`, `_pT`, `hkT`) — the chain is then building a key, not a sentence. Backtick chains
+    //     stay out for rule 2's reason. A line 2b already reported is not reported twice.
+    if (!ternaryHit) {
+      const chainRe = /\.(textContent|placeholder|title)\s*=\s*([^;]*\+[^;]*)/g;
+      while ((m = chainRe.exec(line))) {
+        if (inLineComment(line, m.index)) continue;
+        const rhs = m[2];
+        if (rhs.includes('`') || goesThroughI18n(rhs) || /\b[A-Za-z_]*[tT]\s*\(/.test(rhs)) continue;
+        const isProse = (t) => !looksLikeHtml(t) && !/[{}]/.test(t) && !/^[a-z0-9_]+(\.[a-z0-9_]+)+\.?$/i.test(t.trim())
+          && (t.match(/[A-Za-z][a-z]{2,}/g) || []).length >= 2;
+        let hit = false;
+        for (let i = 0; i < rhs.length && !hit; i++) {
+          if (rhs[i] !== '"' && rhs[i] !== "'") continue;
+          const lit = readLeadingLiteral(rhs.slice(i));
+          if (!lit) break;
+          if (isProse(lit.text)) hit = true;
+          i += lit.end;
+        }
+        if (hit) push(errors, ln, '.' + m[1] + ' assigned English prose inside a concatenation', line);
       }
     }
 

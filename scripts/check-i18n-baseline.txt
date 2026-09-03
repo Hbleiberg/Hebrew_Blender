@@ -14,3 +14,5 @@ hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	me
 hebrew_blend_generator.html	.textContent assigned a hardcoded English literal	numBar.textContent = 'CARD';
 hebrew_blend_generator.html	.textContent assigned a hardcoded English literal in a ternary branch	akBanner.textContent = versionLabel ? `✦ Answer Key — ${versionLabel} ✦` : '✦ Answer Key ✦';
 hebrew_blend_generator.html	.textContent assigned a hardcoded English literal in a ternary branch	banner.textContent = verLabel ? ('✦ Answer Key — ' + verLabel + ' ✦') : '✦ Answer Key ✦';
+hebrew_blend_generator.html	.textContent assigned English prose inside a concatenation	np.textContent = 'Not placed: ' + d.unplaced.map(w => w.heb).join(' · ');
+hebrew_blend_generator.html	.textContent assigned English prose inside a concatenation	sub.textContent = 'Scan-to-check answer key' + (shape === 'grid' ? '' : ' · ' + count + ' item' + (c
