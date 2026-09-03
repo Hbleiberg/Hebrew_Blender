@@ -186,8 +186,6 @@ dashboard.glyphname.shuruk,Shuruk,שורוק,vowel color-picker row label,glyph-
 dashboard.glyphname.shva,Shva,שווא,vowel color-picker row label,glyph-name
 dashboard.glyphname.tzere,Tzere,צירה,vowel color-picker row label,glyph-name
 dashboard.glyphname.vav_holam,Vav Holam,וו חולם,vowel color-picker row label,glyph-name
-dashboard.groups.close,Close,סגור,group result close button,
-dashboard.groups.group_title,Group {n},קבוצה {n},group card title,RTL / hebDisplay; Hebrew fork קְבוּצָה {n}
 dashboard.groups.reshuffle,🔀 Reshuffle,🔀 ערבוב מחדש,group result button,leading-emoji
 dashboard.header.home,Home,בית,header nav button,
 dashboard.header.settings_btn,Settings,הגדרות,header icon button title,
@@ -224,7 +222,6 @@ dashboard.layout.zone_right,Right column,העמודה השמאלית,zone badge 
 dashboard.picker.all_absent,Everyone is marked absent today.,כולם מסומנים כנעדרים היום.,pick overlay message,
 dashboard.picker.chip_absent,Absent today — tap to include,נעדר היום — הקישו כדי לכלול,chip tooltip (absent),
 dashboard.picker.chip_present,Tap to mark absent for this session,הקישו כדי לסמן כנעדר לשיעור זה,chip tooltip (present),
-dashboard.picker.class_cap_note,You can have up to {max} classes. Delete one to add another.,אפשר להחזיק עד {max} כיתות. מחקו אחת כדי להוסיף נוספת.,inline note,
 dashboard.picker.class_label,Class,כיתה,settings label,
 dashboard.picker.class_option,{name} ({count}),{name} ({count}),class-switcher option,mixed UI+content — do not translate {…}
 dashboard.picker.close,Close,סגור,pick overlay close button,
@@ -450,7 +447,6 @@ dashboard.text.strikethrough,Strikethrough,קו חוצה,editor toolbar button t
 dashboard.text.sub_font,English Font,גופן אנגלי,settings sub-section header,
 dashboard.text.text_color,Text color,צבע טקסט,editor toolbar color picker title,
 dashboard.text.underline,Underline,קו תחתון,editor toolbar button title,
-dashboard.timer.col_title,Timer,טיימר,live-card column title,RTL / hebDisplay; Hebrew fork כַּמָה זְמַן נִשְׁאַר?
 dashboard.timer.custom,Custom,מותאם,timer custom button,
 dashboard.timer.custom_invalid,Enter a duration as MM:SS (e.g. 2:30).,הזינו משך זמן בפורמט MM:SS (למשל 2:30).,alert,
 dashboard.timer.custom_placeholder,MM:SS,MM:SS,timer custom input placeholder,
@@ -471,8 +467,6 @@ dashboard.timer.show_fullscreen,Show timer in fullscreen mode,הצג טיימר 
 dashboard.timer.show_panel,Show Timer panel,הצג פאנל טיימר,settings label,
 dashboard.timer.start,▶ Start,▶ התחל,timer control button,leading-emoji
 dashboard.tour.firstrun_link,Take a tour →,צאו לסיור ←,First-run setup-card tour link,first-run affordance
-dashboard.tour.launch_label,Tour,סיור,Header tour-launch button label (❓ icon separate),"header button, short"
-dashboard.tour.launch_title,Take a quick tour,צאו לסיור מהיר,Header tour-launch button title,tooltip
 dashboard.tour.step1_body,"Yesterday, today and tomorrow in Hebrew — plus Shabbat times and the Omer count when they apply.","אתמול, היום ומחר בעברית — וגם זמני שבת וספירת העומר כשהם רלוונטיים.",tour step body,
 dashboard.tour.step1_title,Days of the week,ימות השבוע,tour step title,
 dashboard.tour.step2_body,"Today's English and Hebrew dates, the live clock, an optional holiday countdown — and, with Schedule Sync, a Now / Next line.","התאריך הלועזי והעברי של היום, השעון החי, ספירה לחג אופציונלית — ועם סנכרון מערכת שעות, שורת עכשיו / הבא.",tour step body,
@@ -1057,7 +1051,6 @@ flashcards.glyphname.vowel_vav_holam,Vav Holam,וו חולם,vowel picker tile l
 flashcards.header.h1,Hebrew Flash Cards for Reading Practice,כרטיסי זיכרון בעברית לתרגול קריאה,page H1 heading,REVIEW: marketing headline phrasing
 flashcards.header.home,←,←,"header home button, icon","leading-emoji; title/aria ""Home"""
 flashcards.header.home_label,Home,בית,header home button title/aria,aria-label only
-flashcards.header.present_title,Present fullscreen,מצב מסך מלא,header present button title (not in fullscreen),aria-label only
 flashcards.header.tour_button,❓ Tour,❓ סיור,header tour launcher button,leading-emoji
 flashcards.header.tour_button_title,Take a quick tour,סיור קצר,header tour launcher title,aria-label only
 flashcards.howto.step1,"Choose 1, 2, or 3 letters per card.","בחרו 1, 2 או 3 אותיות לכרטיס.",footer how-to step,
@@ -1309,7 +1302,6 @@ flashcards.words.loading_dict,Loading dictionary…,טוען מילון…,words
 flashcards.words.pool_count.one,{count} word in pool,מילה אחת במאגר,words-pool count,plural
 flashcards.words.pool_count.other,{count} words in pool,{count} מילים במאגר,words-pool count,plural
 fontmaker.about.about_intro,About Hebrew Font Maker. Version {version}. Developed by Harrison Bleiberg.,אודות יוצר הגופנים העברי. גרסה {version}. פותח על ידי Harrison Bleiberg.,about tab body,help prose
-fontmaker.about.beta_tag,Beta,בטא,header beta badge,
 fontmaker.about.changelog_heading,Changelog,יומן שינויים,about section heading,
 fontmaker.about.changelog_history,Beta version history,היסטוריית גרסאות בטא,about drawer summary,
 fontmaker.about.faq_a_commercial,"That depends on the license you pick when you export. CC0 places the font in the public domain — free for any use, including commercial, with no attribution required. OFL and MIT are also free for commercial use under their terms. All Rights Reserved keeps the font yours to license as you wish. You own what you create; IvritSuite claims no rights to your fonts.","זה תלוי ברישיון שתבחרו בעת הייצוא. CC0 מעביר את הגופן לנחלת הכלל — חופשי לכל שימוש, כולל מסחרי, ללא צורך בקרדיט. גם OFL ו-MIT חופשיים לשימוש מסחרי בכפוף לתנאיהם. All Rights Reserved משאיר את הגופן בבעלותכם לרישוי כרצונכם. אתם הבעלים של מה שאתם יוצרים; IvritSuite אינו טוען לזכויות כלשהן על הגופנים שלכם.",footer FAQ answer,
@@ -2116,7 +2108,6 @@ fontmaker.modals.shortcuts_close,Close,סגור,dialog button,
 fontmaker.modals.shortcuts_title,⌨ Keyboard shortcuts,⌨ קיצורי מקלדת,dialog title,leading-emoji
 fontmaker.modals.start_fresh,Start fresh,התחל מחדש,dialog button,
 fontmaker.modals.svg_import_failed_title,SVG import failed,ייבוא ה-SVG נכשל,dialog title,
-fontmaker.modals.svg_only_msg,Only SVG files can be uploaded while SVG mode is on.,ניתן להעלות רק קובצי SVG כשמצב SVG מופעל.,error toast/dialog,
 fontmaker.modals.svgguide_body,"SVG only. With this mode on, every upload zone accepts only .svg files. The vector paths become your glyph outlines directly — there is no tracing step, so the shapes stay exact. One letter per file. Choose One letter per image, pick a letter, and drop its SVG. It opens straight on the Nikkud step with the outline already in place. Auto-split one big sheet. Put every letter in a single SVG and name each element so it maps to a glyph — set the element's id (or Inkscape label) to one of: uni05D0 / u05D0 / glyph05D0 (the Unicode hex), the literal Hebrew letter, e.g. א, the English name, e.g. Alef, Kaf-sofit. Then choose One image with all letters, drop the SVG, and matches assign automatically (or click Auto-split by name). Box the rest by hand. Anything unnamed can still be selected: drag a box around a letter on the sheet and the shapes inside it become that glyph. Auto-fit. Each imported outline is scaled to the cap height and seated on the baseline (descenders dip below). Use Edit points and the Width / side-bearing controls to fine-tune. New shapes / PUA. For glyphs that aren't standard characters, turn on Add custom glyphs and import the SVG at a Private-Use code point (U+E000–U+F8FF). Tips: group transforms are honored, so flatten/ungroup freely; convert strokes to fills first (open strokes don't fill); clipped, masked, hidden, and <use>-referenced elements are skipped.","SVG בלבד. כשמצב זה מופעל, כל אזור העלאה מקבל רק קובצי .svg. הנתיבים הווקטוריים הופכים ישירות למתארי הגליפים שלכם — אין שלב מעקב, ולכן הצורות נשארות מדויקות. אות אחת לכל קובץ. בחרו אות אחת לכל תמונה, בחרו אות, ושחררו את ה-SVG שלה. זה נפתח ישירות בשלב הניקוד כשהמתאר כבר במקום. פיצול אוטומטי של דף גדול אחד. שימו כל אות ב-SVG יחיד ותנו שם לכל רכיב כך שיותאם לגליף — קבעו את ה-id של הרכיב (או תווית Inkscape) לאחד מ: uni05D0 / u05D0 / glyph05D0 (ה-hex של Unicode), האות העברית עצמה, למשל א, השם האנגלי, למשל Alef, Kaf-sofit. ואז בחרו תמונה אחת עם כל האותיות, שחררו את ה-SVG, וההתאמות מוקצות אוטומטית (או לחצו על פיצול אוטומטי לפי שם). תחמו את השאר ידנית. כל דבר ללא שם עדיין ניתן לבחירה: גררו תיבה סביב אות בדף והצורות שבתוכה הופכות לאותו גליף. התאמה אוטומטית. כל מתאר מיובא מותאם בקנה מידה לגובה האות ומוצב על קו הבסיס (יורדות צונחות מתחת). השתמשו בעריכת נקודות ובפקדי הרוחב / מרווח הצד לכוונון עדין. צורות חדשות / PUA. עבור גליפים שאינם תווים סטנדרטיים, הפעילו הוספת גליפים מותאמים וייבאו את ה-SVG בנקודת קוד שימוש-פרטי (U+E000–U+F8FF). טיפים: טרנספורמציות קבוצה מכובדות, אז שטחו/פרקו קבוצות בחופשיות; המירו קווים למילויים תחילה (קווים פתוחים אינם מתמלאים); רכיבים מקוצצים, ממוסכים, מוסתרים, ומופנים דרך <use> מדולגים.",dialog body,contains \n; html; mixed UI+content — do not translate {…}
 fontmaker.modals.svgguide_gotit,Got it,הבנתי,button,
 fontmaker.modals.svgguide_title,SVG Upload Guide,מדריך העלאת SVG,dialog title,
@@ -3445,7 +3436,6 @@ shared.resize.sidebar_title,Drag to resize the sidebar (double-click to reset),�
 shared.resize.drawer_title,Drag to resize the settings drawer (double-click to reset),גרירה לשינוי רוחב חלונית ההגדרות (לחיצה כפולה לאיפוס),Settings-drawer resize handle — title + aria-label,"shared (carriers: dashboard, torah, trope)"
 shared.resize.rail_title,Drag to resize this column (double-click to reset),גרירה לשינוי רוחב העמודה הזו (לחיצה כפולה לאיפוס),Dashboard rail resize handle — title + aria-label,shared (carrier: dashboard)
 shared.toast.copied,Copied!,הועתק!,Copy-button feedback,shared
-shared.toast.copied_check,✓ Copied!,✓ הועתק!,Copy-button feedback,leading-emoji; shared
 shared.toast.imported,Imported successfully.,הייבוא הצליח.,Import success toast,shared
 shared.tour.back,Back,אחורה,Guided tour nav button,shared
 shared.tour.done,Done,סיום,Guided tour final button,shared
@@ -3546,7 +3536,6 @@ torah.color.mode_highlight,Highlight,הדגשה,radio label,
 torah.color.mode_label,Mode,מצב,settings label,
 torah.color.mode_letter,Letter,אות,radio label,
 torah.color.mode_underline,Underline,קו תחתון,radio label,
-torah.color.picker_aria,Color for {name},צבע עבור {name},color input aria,aria-label only; do-not-translate {name} (name is a glyph-name)
 torah.color.scheme_default,Default,ברירת מחדל,vowel scheme button,
 torah.color.scheme_reset,Reset,איפוס,vowel scheme button,
 torah.color.scheme_talam,TaL AM,תל-עם,vowel scheme button,
@@ -3665,7 +3654,6 @@ torah.display.follow_translit,Translit,תעתיק,radio label,
 torah.display.font_default_tag,[DEFAULT],[ברירת מחדל],font picker default marker,
 torah.display.font_sizes_header,Font sizes,גודלי גופן,settings subheader,
 torah.display.karaoke_header,Karaoke settings,הגדרות קריוקי,settings subheader,
-torah.display.restore_default_title,Restore default,שחזור ברירת מחדל,reset button title,
 torah.display.show_cantillation,Show cantillation marks (te'amim),הצגת טעמי המקרא,settings label,
 torah.display.show_cantillation_tip,Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels).,טעמי המקרא (מעל ומתחת לאותיות) מציינים את מנגינת הטעמים. כבו כדי לראות ניקוד בלבד.,tooltip,
 torah.display.show_nikkud,Show nikkud (vowels),הצגת ניקוד,settings label,
@@ -3763,7 +3751,6 @@ torah.schedule.scope_aliyah_4,Aliyah 4,עלייה 4,scope option static fallback
 torah.schedule.scope_aliyah_5,Aliyah 5,עלייה 5,scope option static fallback (runtime label via scope_aliyah),
 torah.schedule.scope_aliyah_6,Aliyah 6,עלייה 6,scope option static fallback (runtime label via scope_aliyah),
 torah.schedule.scope_aliyah_7,Aliyah 7,עלייה 7,scope option static fallback (runtime label via scope_aliyah),
-torah.schedule.scope_disabled_title,"Reading scope applies to weekly parshiyot, not holiday readings.","היקף הקריאה חל על פרשיות השבוע, לא על קריאות החגים.",scope select title (disabled),
 torah.schedule.scope_full,Full parsha,פרשה מלאה,scope option,
 torah.schedule.scope_full_reading,Full reading,קריאה מלאה,scope option (holiday/custom),
 torah.schedule.scope_haftarah,Haftarah,הפטרה,scope option,
