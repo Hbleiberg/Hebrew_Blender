@@ -274,9 +274,11 @@
   /* .hbtn.fs-btn, not .fs-btn: #fsBtn carries BOTH classes, and .hbtn.icon-btn (0,2,0) outranks a
      bare .fs-btn (0,1,0), so the stacked button was silently keeping icon-btn's 7px block padding
      and rendering 41px against a 35px row. Specificity, not source order, decides. */
-  .hbtn.fs-btn { flex-direction: column; gap: 1px; padding: 4px 10px; line-height: 1; }
+  .hbtn.fs-btn { flex-direction: column; gap: 1px; padding: 2px 10px; line-height: 1; }
   .fs-btn .fs-ico { display: inline-flex; }
-  .fs-btn .fs-cap { font-size: 0.5rem; font-weight: 600; letter-spacing: 0.03em; }
+  /* 0.7rem (11.2px) is the suite's legibility floor for a functional label; with the 2px block
+     padding the stack is 16 + 1 + 11.2 + 4 + 2 (border) = 34.2px, inside the 35px header row. */
+  .fs-btn .fs-cap { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.03em; }
 
   /* ── i18n / RTL utilities ── */
   /* Mirror directional glyphs (←, ‹, ›, →) when the UI renders right-to-left. */
