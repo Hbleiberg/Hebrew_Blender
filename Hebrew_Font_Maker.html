@@ -17357,11 +17357,13 @@ def hfm_zip(entries_json):
 
 def hfm_build_ufo(spec_json):
     # UFO3 source package: cubic curves straight from the spec (no Cu2Qu), named anchors, features.fea,
-    # fontinfo.plist; zipped store-only. ufoLib (glifLib) ships with fontTools (already loaded).
+    # fontinfo.plist; zipped store-only. The .glif files are written by hand: fontTools' glifLib
+    # imports pyfilesystem2 ("fs"), which Pyodide's fonttools package does not carry, so a GlyphSet
+    # import raises "No module named 'fs'" in the browser and the whole export fails.
     try:
         import os, io, shutil, zipfile, base64, plistlib
-        from fontTools.ufoLib.glifLib import GlyphSet
-        from fontTools.pens.pointPen import SegmentToPointPen
+        from xml.sax.saxutils import quoteattr
+        from fontTools.pens.pointPen import SegmentToPointPen, AbstractPointPen
         spec = json.loads(spec_json)
         order = spec["glyphOrder"]
         glyphs = spec["glyphs"]
@@ -17410,22 +17412,68 @@ def hfm_build_ufo(spec_json):
                         sp.closePath()
             return draw
 
-        class _G:
-            pass
-        gs = GlyphSet(path + "/glyphs", ufoFormatVersion=3)
+        _ILLEGAL = set('"*+/:<>?[]|') | {chr(92), chr(127)} | {chr(i) for i in range(32)}
+        _RESERVED = {"aux", "clock$", "con", "nul", "prn"} | {"com%d" % i for i in range(1, 10)} | {"lpt%d" % i for i in range(1, 10)}
+        _NL = chr(10)
+
+        def glif_file_name(gn, used):     # ufoLib's userNameToFileName rule: case-safe (A -> A_), reserved-safe, clash-safe
+            s = ("_" + gn[1:]) if gn[:1] == "." else gn
+            s = "".join(("_" if c in _ILLEGAL else (c + "_" if c != c.lower() else c)) for c in s)[:250]
+            s = ".".join(("_" + p) if p.lower() in _RESERVED else p for p in s.split("."))
+            base, n = s, 1
+            while (s + ".glif").lower() in used:
+                n += 1
+                s = base + str(n)
+            used.add((s + ".glif").lower())
+            return s + ".glif"
+
+        class _GlifPen(AbstractPointPen):   # collects what SegmentToPointPen emits, already in GLIF point terms
+            def __init__(self):
+                self.contours = []
+            def beginPath(self, identifier=None, **kw):
+                self.contours.append([])
+            def addPoint(self, pt, segmentType=None, smooth=False, name=None, identifier=None, **kw):
+                self.contours[-1].append((pt, segmentType, smooth))
+            def endPath(self):
+                pass
+            def addComponent(self, *a, **kw):
+                pass
+
+        def _num(v):
+            return str(int(v)) if float(v).is_integer() else repr(float(v))
+
+        def glif_xml(gn, width, unicodes, anchors, draw):   # GLIF format 2 (UFO3)
+            pen = _GlifPen()
+            draw(pen)
+            out = ["<?xml version='1.0' encoding='UTF-8'?>", '<glyph name=%s format="2">' % quoteattr(gn)]
+            if width:
+                out.append('  <advance width="%s"/>' % _num(width))
+            for u in unicodes:
+                out.append('  <unicode hex="%04X"/>' % u)
+            for a in anchors:
+                out.append('  <anchor x="%s" y="%s" name=%s/>' % (_num(a["x"]), _num(a["y"]), quoteattr(a["name"])))
+            if pen.contours:
+                out.append("  <outline>")
+                for c in pen.contours:
+                    out.append("    <contour>")
+                    for (x, y), t, sm in c:
+                        out.append('      <point x="%s" y="%s"%s%s/>' % (_num(x), _num(y), (' type="%s"' % t) if t else "", ' smooth="yes"' if sm else ""))
+                    out.append("    </contour>")
+                out.append("  </outline>")
+            out.append("</glyph>")
+            return _NL.join(out) + _NL
+
+        used = set()
+        contents = {}
         for gn in order:
             gd = glyphs[gn]
-            g = _G()
-            g.width = int(gd.get("advance", 0))
-            g.height = 0
-            g.unicodes = uni.get(gn, [])
-            g.anchors = [{"x": float(a["x"]), "y": float(a["y"]), "name": a["name"]} for a in anchors_map.get(gn, [])]
-            g.lib = None
-            g.note = None
-            g.image = None
-            g.guidelines = []
-            gs.writeGlyph(gn, g, make_draw(gd["contours"], gd.get("curves")))
-        gs.writeContents()
+            fn = glif_file_name(gn, used)
+            contents[gn] = fn
+            anchors = [{"x": float(a["x"]), "y": float(a["y"]), "name": a["name"]} for a in anchors_map.get(gn, [])]
+            with open(path + "/glyphs/" + fn, "w", encoding="utf-8") as fp:
+                fp.write(glif_xml(gn, int(gd.get("advance", 0)), uni.get(gn, []), anchors, make_draw(gd["contours"], gd.get("curves"))))
+        with open(path + "/glyphs/contents.plist", "wb") as fp:
+            plistlib.dump(contents, fp)
 
         buf = io.BytesIO()
         base = os.path.dirname(path)
