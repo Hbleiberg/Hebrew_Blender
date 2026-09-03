@@ -1432,6 +1432,14 @@ body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
 @media (max-width: 480px) {
   header { flex-wrap:wrap; }
   .hright { flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
+  /* The presentation toolbar's plate is 340px wide (six 44px buttons, 6px gaps, two separators,
+     9px padding) inside an inset-inline:0 bar, so at 320px it spilled 10px past BOTH edges and
+     clipped A− and ⚙ (measured S334 on the iPhone SE descriptor). Drop the two decorative
+     separators and tighten the gap: 6×44 + 5×4 + 2×6 + 2 = 298px, one row, buttons untouched.
+     The wrap + max-inline-size pair is the safety net for anything narrower — inert wherever
+     the plate already fits, the dashboard's .fs-strip-inner precedent. */
+  .tt-fs-plate { gap:4px; padding:6px; flex-wrap:wrap; justify-content:center; max-inline-size:calc(100% - 16px); }
+  .tt-fs-sep { display:none; }
 }
 
 /* ── Reduced motion: honor the OS "reduce motion" preference for everything this
