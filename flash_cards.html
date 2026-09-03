@@ -6501,7 +6501,10 @@ const IVRIT_CFG = {
     const inPF = data.presetFolders || data.flashCardPresetFolders;
     if (inPF) ftImportTree('hebrewFlashCards_presetsFolders', inPF, mode === 'replace');
     if (incoming || inPF) renderPresets();
-    if (data.liveState) { applySettings(data.liveState); saveSettings(); }
+    const ls = data.liveState;
+    // Object, non-array, non-empty — the dashboard's gate: a hand-edited file's [] / "str" / 42 used to
+    // reach applySettings AND be saved as an empty letter/vowel selection (apply-settings-trusts-collection-members).
+    if (ls && typeof ls === 'object' && !Array.isArray(ls) && Object.keys(ls).length) { applySettings(ls); saveSettings(); }
     // Restore student profiles too, when the file includes them
     const inProfF = data.profileFolders || data.flashCardProfileFolders;
     if ((data.flashCardProfiles && data.flashCardProfiles.profiles) || inProfF) {

@@ -5528,7 +5528,10 @@ const IVRIT_CFG = {
     const inFolders = data.presetFolders || data.generatorPresetFolders;
     if (inFolders) ftImportTree('hebrewBlender_presetsFolders', inFolders, mode === 'replace');
     if (incoming || inFolders) renderPresets();
-    if (data.liveState) { applySettings(data.liveState); rememberSetup(); }
+    const ls = data.liveState;
+    // Object, non-array, non-empty — the dashboard's gate: a hand-edited file's [] / "str" / 42 used to
+    // reach applySettings AND be saved (apply-settings-trusts-collection-members).
+    if (ls && typeof ls === 'object' && !Array.isArray(ls) && Object.keys(ls).length) { applySettings(ls); rememberSetup(); }
   }
 };
 

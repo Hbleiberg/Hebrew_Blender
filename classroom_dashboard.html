@@ -6498,7 +6498,7 @@ function mountFolderTree(cfg){
       if (sf) ftImportTree('hebrewDashboard_schedulesFolders', sf, mode === 'replace');
       if ((sch || sf) && typeof renderSavedSchedules === 'function') renderSavedSchedules();
       const ls = data.liveState || data.dashboardSettings;
-      if (ls && Object.keys(ls).length) {
+      if (ls && typeof ls === 'object' && !Array.isArray(ls) && Object.keys(ls).length) {   // a string has keys too (apply-settings-trusts-collection-members)
         applySettings(ls);
         // applySettings preserves the live schedule keys (a display preset must never clobber them),
         // so restore the weekly grid + class colors from the file explicitly — validated, never raw.
