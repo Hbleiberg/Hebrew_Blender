@@ -235,6 +235,12 @@ pyodide v0.26.2 (+ fontTools), harfbuzzjs 0.4.6 (`hb.wasm` fetch — needs `'was
 `connect-src cdn.jsdelivr.net`), opentype.js 1.3.4 — all jsDelivr, all lazy-loaded via
 `loadScript()`. The page CSP already allowlists these; any **new** external resource requires
 editing this page's CSP meta (Security rule 3 above).
+Two engine contracts the exporters depend on: the UFO export writes its `.glif` files by hand
+(a small `AbstractPointPen` + `contents.plist` via plistlib) — never import `fontTools.ufoLib` /
+`glifLib` in `PY_BUILDER`, they import pyfilesystem2 (`fs`), which Pyodide's fonttools package does
+not carry, and the whole export fails; and every jsPDF `addImage()` call passes `undefined, 'FAST'`
+as its last two arguments — without a compression argument jsPDF stores the page raster raw
+(~11 MB per page).
 
 ### Starting Fonts / partner onboarding (`?start=<id>` + `starting-fonts/`)
 The Open Siddur collaboration: a partner page links `Hebrew_Font_Maker.html?start=<id>`, which

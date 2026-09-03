@@ -149,7 +149,15 @@ HTML). Verify changes end-to-end by driving the real page headless. Proven recip
 - Font Maker fixtures: a traced letter's contours are `[{points: [[x,y], …]}]` — renderers like
   `glyphPathAt` read `.points`, and wrong shapes throw deep inside `renderSpacingPreview`. To test
   export paths offline, stub `window.loadPyodide` with a fake returning
-  `{loadPackage: async()=>{}, runPython: ()=>{}, globals: {set: ()=>{}}}`.
+  `{loadPackage: async()=>{}, runPython: ()=>{}, globals: {set: ()=>{}}}` — or run the REAL engine:
+  the CDNs are blocked at the proxy, but PyPI, the npm registry and GitHub release assets are not,
+  so `npm pack pyodide@0.26.2 opentype.js@1.3.4 harfbuzzjs@0.4.6 html2canvas@1.4.1 jspdf@2.5.1`, the
+  pure `fonttools-4.51.0-py3-none-any.whl` from PyPI (patch its sha256 into `pyodide-lock.json`) and
+  the Brotli wasm wheel from the pyodide release tarball give every file the page fetches; serve them
+  at their exact CDN URLs with `page.route(...).fulfill({ body, contentType })` (`application/wasm`
+  for `.wasm`) and the page's own `exportFont()` / `generatePreviewPDF()` / `downloadTemplate()`
+  produce the true artifacts (`page.on('download')`). Full recipe with sizes and timings:
+  `loop-findings.md`, Font Maker section.
 - Headless focus quirk: `el.focus()` on the page's real inputs may not stick (activeElement stays
   BODY). When testing typing guards, inject a temporary `<input>` and use `page.focus()` on it.
 - Test matrix: light **and** dark (`toggleDark()`), desktop (~1280px) **and** stacked (~800px) viewports.
