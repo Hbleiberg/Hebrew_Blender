@@ -13449,6 +13449,7 @@ function copyShareLink(btnId) {
 function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
+  positionSidebarTab();   // the live language switch flips dir without a resize event; the fixed hide-tab is placed by measurement
   // Dynamic pieces that cache translated text at render time:
   try { renderPresets(); } catch (e) {}
   try { renderQuickStarts(); } catch (e) {}
