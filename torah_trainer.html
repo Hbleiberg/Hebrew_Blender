@@ -398,6 +398,10 @@ body.dark .tt-shem-chip { color:var(--gold-light); background:rgba(255,255,255,0
   padding:3px 9px; margin-inline-start:8px; vertical-align:middle; cursor:pointer;
 }
 body.dark .tt-notice-chip { color:var(--muted); background:rgba(255,255,255,0.06); }
+/* Both chips are tap targets (bindTip: tabindex + role=button) that paint 19px tall at their
+   0.68rem line — the same 25px ::after touch floor the verse chips carry (WCAG 2.5.8), invisible. */
+.tt-shem-chip, .tt-notice-chip { position:relative; }
+.tt-shem-chip::after, .tt-notice-chip::after { content:''; position:absolute; inset-inline:0; inset-block:-3px; }
 /* Handout-bar שם-dependent rows: .tt-ctrl's inline-flex would beat the hidden
    attribute (same trap as .tt-trope-legend[hidden]) — make hidden win. */
 #ttHandoutShemNote[hidden], #ttHandoutGenizaRow[hidden] { display:none; }
