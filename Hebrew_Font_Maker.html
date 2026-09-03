@@ -998,7 +998,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .ft-dt { min-width: 0; max-width: 100%; }
   .ft-dt[open] { flex: 1 1 100%; }
   .ft-h { font-family: 'Libre Baskerville', serif; font-size: 0.74rem; line-height: 1.4; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 3px 0; white-space: nowrap; }
-  summary.ft-h { cursor: pointer; }
+  summary.ft-h { cursor: pointer; padding-block: 4px; }   /* 24px+ disclosure row (WCAG 2.5.8); the non-summary .ft-h keeps 3px */
   summary.ft-h:hover { color: var(--text); }
   .ft-dt-body { max-width: 720px; padding: 4px 0 6px; }
   .ft-dt-body p { font-size: 0.78rem; line-height: 1.5; margin: 4px 0 6px; }
