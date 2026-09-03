@@ -1113,7 +1113,11 @@
   .btn-xs { padding: 4px 9px; font-size: 0.75rem; min-height: 30px; min-width: 30px; display: inline-flex; align-items: center; justify-content: center; }
   /* The two bare .btn-xs (Reset, ↺ Refresh) carried background:var(--white) inline, which no :hover can beat; the
      background lives here now and the hover is the drawer's own .timer-preset-btn idiom. Pattern control-class-without-a-hover-state. */
-  .btn-xs:not(.btn) { background: var(--white); }
+  .btn-xs:not(.btn) { background: var(--white); color: var(--text); border: 1px solid var(--border); }
+  /* The eleven size-row ↺ buttons are bare .btn-xs, so they inherited the UA button's black text and
+     2px outset black border: in dark mode that measured 1.37:1 (near-invisible) and in light the black
+     outset border was the drawer's only non-`--border` control. Converged on the drawer's own idiom
+     (the inline styles on Reset / ↺ Refresh already say exactly this). (S322 Pass M) */
   .btn-xs:not(.btn):hover { border-color: var(--gold); }
   .btn-secondary {
     background: transparent;
