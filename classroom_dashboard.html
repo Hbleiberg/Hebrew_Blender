@@ -2247,7 +2247,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label for="lockPanelWidths" data-i18n="dashboard.layout.lock_widths_label">Lock panel widths</label>
       <label class="toggle"><input type="checkbox" id="lockPanelWidths"><span class="slider"></span></label>
     </div>
-    <div style="padding-left:18px;margin:-4px 0 8px;">
+    <div style="padding-inline-start:18px;margin:-4px 0 8px;">
       <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.layout.lock_widths_hint">Freezes the draggable edges between the columns and on the settings drawer, so a stray touch can't resize them. Widths you already set stay exactly as they are.</span>
     </div>
     <div class="form-row">
@@ -2268,7 +2268,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label data-i18n="dashboard.display.show_text_size_options">Show text size options</label>
       <label class="toggle"><input type="checkbox" id="showTextSizeOptions"><span class="slider"></span></label>
     </div>
-    <div style="padding-left:18px;margin-bottom:6px;">
+    <div style="padding-inline-start:18px;margin-bottom:6px;">
       <button class="btn btn-xs btn-secondary" onclick="resetAllTextSizes()" data-i18n="dashboard.display.reset_all_text_sizes">↺ Reset all text sizes</button>
     </div>
     <div class="form-row">
@@ -2713,7 +2713,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <label data-i18n="dashboard.schedule.show_countdown">Show countdown to next class</label>
             <label class="toggle"><input type="checkbox" id="scheduleShowCountdown" onchange="setScheduleCountdown(this.checked)"><span class="slider"></span></label>
           </div>
-          <div class="form-row" id="countdownPresetNameRow" style="display:none;padding-left:16px;">
+          <div class="form-row" id="countdownPresetNameRow" style="display:none;padding-inline-start:16px;">
             <label style="font-size:0.8rem;font-weight:500;color:var(--muted);" data-i18n="dashboard.schedule.show_preset_name">Show preset name</label>
             <label class="toggle"><input type="checkbox" id="countdownShowPresetName" onchange="settings.countdownShowPresetName=this.checked;updateCountdown();saveSettingsToStorage();"><span class="slider"></span></label>
           </div>
