@@ -1539,6 +1539,16 @@
   .fr-tour { color: var(--gold-text); font-weight: 600; }
   .fr-skip:hover, .fr-tour:hover { text-decoration: underline; }
   @media (max-width: 560px) { .fr-starters { grid-template-columns: 1fr; } }
+  /* Phone portrait: the six-button fullscreen strip is ~435px wide, so on a 320–430px screen its
+     end buttons hung off both edges (at 390px "Settings" and "Blank" measured 11px off-screen each
+     side, unreachable). Fill the width and lay the six out as two rows of three; a plain flex-wrap
+     gave a 2×3 stack 182px tall that covered a third of the board. Scoped to the page's existing
+     phone breakpoint so nothing above 430px changes. (S321 Pass N arm 1) */
+  @media (max-width: 430px) {
+    #fsStrip { width: calc(100vw - 16px); }
+    .fs-strip-inner { flex-wrap: wrap; justify-content: center; width: 100%; box-sizing: border-box; }
+    .fs-strip-btn { flex: 0 0 calc((100% - 16px) / 3); box-sizing: border-box; }
+  }
 
   /* ── Weekly Schedule Sync editor (modal stacked over the settings drawer) ──
      z 560/561: above the drawer (100) it opens from, below the first-run card (600) and the
