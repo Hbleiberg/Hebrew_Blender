@@ -1479,6 +1479,13 @@ body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
      (unlike the geniza marker's refuted break-before, the divider's successor is a sibling
      verse in the same flow, so the engine CAN pull the divider forward). */
   .tt-aliyah-divider { color:#555; break-after:avoid; page-break-after:avoid; }
+  /* …except inside the parallel grid. There the divider and the rows are sibling grid items,
+     and when the row after a divider does not fit the sheet Chromium satisfies the divider's
+     break-after:avoid by CUTTING that row (its own break-inside:avoid loses): measured on a
+     146-verse side-by-side A4 print, 4:23's Hebrew and English each split across sheets 15/16
+     right after the "Aliyah 6" divider, the very desync the parallel layout exists to prevent.
+     With break-after auto here the row moves whole; the divider may strand at a sheet foot. */
+  .tt-grid.tt-print-parallel .tt-aliyah-divider { break-after:auto; page-break-after:auto; }
   /* The flanking rule-lines are 1px background fills, stripped by the print dialog's
      default "background graphics: off" — a border always prints. */
   .tt-aliyah-divider::before, .tt-aliyah-divider::after { background:none; height:0; border-top:1px solid #555; }
