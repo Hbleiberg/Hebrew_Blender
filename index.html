@@ -1169,6 +1169,7 @@ function eraseAllSettings() {
   keys.forEach(k => localStorage.removeItem(k));
   if (window.indexedDB) { listUserFonts().then(l => l.forEach(f => deleteUserFont(f.name))).catch(() => {}); _fontsBackupCache = []; renderMyFontsManager(); }
   document.getElementById('ieTextarea').value = '';
+  renderIvritInventory();   // the "This file will contain:" line reads storage; it must not keep the erased counts
   alert(I18n.t('home.alltools.erase_success'));
 }
 
