@@ -4219,6 +4219,7 @@ function isKnownVowelKey(k)  { return typeof k === 'string' && KNOWN_VOWEL_KEYS.
 function isKnownColorKey(k)  { return typeof k === 'string' && COLOR_DATA.some(c => c.key === k); }
 function isEmojiSubKey(k)    { return typeof k === 'string' && k.includes('|'); }   // "Category|Subcategory"; the catalogue itself arrives by fetch
 function knownMembers(list, isKnown) { return Array.isArray(list) ? list.filter(isKnown) : []; }
+const VOWEL_COLOR_KEYS = new Set([...VOWEL_COLOR_DEFS, ...VOWEL_COLOR_DEFS_TALAM].map(d => d.key));   // the only keys the colour pickers ever write
 function applySettings(s) {
   if (!s) return;
   mode = _clampChoice(s.mode, [1, 2, 3], 2);   // enum: the #modePills data-mode values
@@ -4250,7 +4251,9 @@ function applySettings(s) {
   }
   colorCodingEnabled = !!s.colorCodingEnabled;
   colorCodingMode = s.colorCodingMode ?? 'letter';
-  nikudColorOverrides = { ...(s.nikudColorOverrides || {}) };
+  // Known vowel keys with string values only: an array or string member used to spread into entries named 0, 1, 2… (apply-settings-trusts-collection-members)
+  const ovIn = s.nikudColorOverrides;
+  nikudColorOverrides = (ovIn && typeof ovIn === 'object' && !Array.isArray(ovIn)) ? Object.fromEntries(Object.entries(ovIn).filter(([k, v]) => VOWEL_COLOR_KEYS.has(k) && typeof v === 'string')) : {};
   vowelColorScheme = s.vowelColorScheme ?? 'default';
   const fontMigration = { frank:'Frank Ruhl Libre', david:'David Libre', noto:'Noto Serif Hebrew', heebo:'Heebo', assist:'Assistant' };
   // Keep an unrecognised name AS IS (only the legacy id migration rewrites it). At init the
