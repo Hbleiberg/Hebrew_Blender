@@ -5057,7 +5057,7 @@ function applyI18n() {
 
 // Prototype-pollution-safe merge (copied from the blend generator, per CLAUDE.md rule 1).
 function ivritSafeAssign(target, src) {
-  if (src && typeof src === 'object') {
+  if (src && typeof src === 'object' && !Array.isArray(src)) {
     Object.keys(src).forEach(k => {
       if (k === '__proto__' || k === 'constructor' || k === 'prototype') return;
       target[k] = src[k];

@@ -5563,8 +5563,9 @@ function ivritSafeParse(str) {
     (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
 }
 function ivritSafeAssign(target, src) {
-  // Object.assign that never copies the three prototype-pollution keys.
-  if (src && typeof src === 'object')
+  // Object.assign that never copies the three prototype-pollution keys and never spreads an array
+  // (an imported `presets: ["a","b"]` used to become entries named 0 and 1 on every carrier).
+  if (src && typeof src === 'object' && !Array.isArray(src))
     for (const k in src) if (Object.prototype.hasOwnProperty.call(src, k) &&
         k !== '__proto__' && k !== 'constructor' && k !== 'prototype') target[k] = src[k];
   return target;

@@ -1270,7 +1270,7 @@ function ivritSafeParse(str) {
     (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v);
 }
 function ivritSafeAssign(target, src) {
-  if (src && typeof src === 'object')
+  if (src && typeof src === 'object' && !Array.isArray(src))
     for (const k in src) if (Object.prototype.hasOwnProperty.call(src, k) &&
         k !== '__proto__' && k !== 'constructor' && k !== 'prototype') target[k] = src[k];
   return target;
