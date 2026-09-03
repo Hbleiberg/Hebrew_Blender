@@ -1,5 +1,7 @@
 # UI-string extraction report — `locales/ui-strings.csv`
 
+> **Historical snapshot (2026-07-11, the extraction that seeded the CSV).** Everything below describes the CSV on that day. The `he` column has since been fully translated and the row count has grown — `node scripts/check-i18n.js` reports the live state, and `docs/reference/i18n.md` documents the pipeline that maintains it.
+
 **Purpose.** Source-of-truth inventory of every user-facing **UI-chrome** string across IvritSuite,
 for the Hebrew-first localization effort. Extraction only — **no source files were modified**. The
 `he` column is intentionally empty (translation is a later phase).
