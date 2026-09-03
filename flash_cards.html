@@ -4207,6 +4207,17 @@ function getSettings() {
     sheetPracticed,
   };
 }
+// One chokepoint for every member list a preset, .ivrit file or ?s= link can carry (pattern
+// apply-settings-trusts-collection-members, the generator's isKnownLetterKey): only members the
+// page's own tables know survive, and a non-array is an empty list. A garbage link used to be
+// applied AND saved, so the pickers stayed polluted until every tile was re-picked.
+const KNOWN_LETTER_HEB = new Set(LETTERS.map(L => L.heb));
+const KNOWN_VOWEL_KEYS = new Set([...VOWEL_GROUPS, ...VOWEL_GROUPS_TALAM].flatMap(g => g.vowels.map(v => v.key)));
+function isKnownLetterKey(k) { return typeof k === 'string' && KNOWN_LETTER_HEB.has(k); }
+function isKnownVowelKey(k)  { return typeof k === 'string' && KNOWN_VOWEL_KEYS.has(k); }
+function isKnownColorKey(k)  { return typeof k === 'string' && COLOR_DATA.some(c => c.key === k); }
+function isEmojiSubKey(k)    { return typeof k === 'string' && k.includes('|'); }   // "Category|Subcategory"; the catalogue itself arrives by fetch
+function knownMembers(list, isKnown) { return Array.isArray(list) ? list.filter(isKnown) : []; }
 function applySettings(s) {
   if (!s) return;
   mode = _clampChoice(s.mode, [1, 2, 3], 2);   // enum: the #modePills data-mode values
@@ -4217,8 +4228,8 @@ function applySettings(s) {
   const homeBtn = document.getElementById('homeBtn');
   if (homeBtn) homeBtn.style.visibility = hideHomeBtn ? 'hidden' : '';
   cardCount = _clampCardCount(s.cardCount);   // clamp restored value (preset/.ivrit/share/corrupt blob)
-  selectedLetters = new Set(s.selectedLetters || []);
-  selectedVowels = new Set(s.selectedVowels || []);
+  selectedLetters = new Set(knownMembers(s.selectedLetters, isKnownLetterKey));
+  selectedVowels = new Set(knownMembers(s.selectedVowels, isKnownVowelKey));
   dageshTavEnabled = !!s.dageshTavEnabled;
   vavAsLetter = s.vavAsLetter !== false;
   anyLetterLock = !!s.anyLetterLock;
@@ -4229,12 +4240,12 @@ function applySettings(s) {
   };
   if (s.letterLocks) {
     for (const [k, v] of Object.entries(s.letterLocks)) {
-      letterLocks[+k] = { enabled: !!v.enabled, letters: new Set(v.letters || []) };
+      letterLocks[+k] = { enabled: !!v.enabled, letters: new Set(knownMembers(v.letters, isKnownLetterKey)) };
     }
   } else if (s.lockEnabled) {
     anyLetterLock = true;
     const pos = s.lockPosition ?? 1;
-    letterLocks[pos] = { enabled: true, letters: new Set(s.lockLetters || []) };
+    letterLocks[pos] = { enabled: true, letters: new Set(knownMembers(s.lockLetters, isKnownLetterKey)) };
   }
   colorCodingEnabled = !!s.colorCodingEnabled;
   colorCodingMode = s.colorCodingMode ?? 'letter';
@@ -4263,12 +4274,12 @@ function applySettings(s) {
   };
   if (s.vowelLocks) {
     for (const [k, v] of Object.entries(s.vowelLocks)) {
-      vowelLocks[+k] = { enabled: !!v.enabled, vowels: new Set(v.vowels || []) };
+      vowelLocks[+k] = { enabled: !!v.enabled, vowels: new Set(knownMembers(v.vowels, isKnownVowelKey)) };
     }
   } else if (s.vowelLockEnabled) {
     anyVowelLock = true;
     const pos = s.vowelLockPosition ?? 2;
-    vowelLocks[pos] = { enabled: true, vowels: new Set(s.lockedVowelKeys || (s.lockedVowelKey ? [s.lockedVowelKey] : [])) };
+    vowelLocks[pos] = { enabled: true, vowels: new Set(knownMembers(s.lockedVowelKeys || (s.lockedVowelKey ? [s.lockedVowelKey] : []), isKnownVowelKey)) };
   }
 
   // Reflect in UI
@@ -4325,13 +4336,13 @@ function applySettings(s) {
   colorDisplayMode = s.colorDisplayMode || 'color+name';
   colorFront = s.colorFront || 'color';
   colorShowTranslit = !!s.colorShowTranslit;
-  selectedColors = s.selectedColors ? new Set(s.selectedColors) : new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
+  selectedColors = Array.isArray(s.selectedColors) ? new Set(knownMembers(s.selectedColors, isKnownColorKey)) : new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
   emojiGender       = s.emojiGender || 'both';
   emojiFront        = s.emojiFront || 'emoji';
   emojiShowTranslit = s.emojiShowTranslit !== undefined ? !!s.emojiShowTranslit : true;
   emojiShowGender   = s.emojiShowGender   !== undefined ? !!s.emojiShowGender   : true;
   emojiGenderSide   = s.emojiGenderSide || 'both';
-  selectedEmojiSubs = new Set(s.selectedEmojiSubs || []);
+  selectedEmojiSubs = new Set(knownMembers(s.selectedEmojiSubs, isEmojiSubKey));
   // Words sub-mode
   wordsSource       = s.wordsSource || 'mylists';
   wordsFront        = s.wordsFront  || 'hebrew';
