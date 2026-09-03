@@ -8,11 +8,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S332 Pass L — GATE 2 / maintainer fact; deferred unattended**) | index.html | **The hub's Organization `sameAs` and the visible "Created by" link both point at `https://harrisonbleiberg.wpcomstaging.com/`, a WordPress.com staging address.** If a public author URL exists (or the site has moved), both should carry it; if the staging address IS the intended public home, waive this. …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [ ] P4 (**NEW S327 Pass C — the one tile grid `41679da` could not lift; needs a layout decision**) | hebrew_blend_generator.html | **The real-words letter grid's names render at 7.2px** (`.rw-letter-tile .name` 0.45rem, six 46px columns, abbreviated "Tzadi sf" / "שין שמאלית"): at the 0.62rem step "שין שמאלית" needs 49.7px in a 40px content box, so any lift wraps HE. Options: five columns (7 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S326 Pass I — filed to K (its owner); a shared-string shape, one CSV row per name + 9 per-page render sites**) | hebrew_dictionary.html + hebrew_blend_generator.html + flash_cards.html + torah_trainer.html + trope_tutor.html + classroom_dashboard.html | **The font picker's section headers render half-translated in the Hebrew UI: "גופני Block", "גופני Print", "גופני Torah"…** …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S325 Pass D — the pattern's most expensive carrier, blocked by a fixed cousin**) | hebrew_dictionary.html | **The sidebar drag writes `--dict-sidebar-w` on `documentElement` per frame: 14 ms style + 15 ms layout per frame at 1× across 10,369 nodes (the suite's heaviest drag).** `scope` cannot narrow it yet: `.sidebar-toggle-btn` (fixed, `inset-inline-start: …[full text: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S323 Pass H — GATE 2 copy; deferred unattended**) | index.html (`locales/ui-strings.csv`) | **The Manual-input import's confirm and success copy still describe the pre-AllTools dashboard-only import:** `home.alltools.import_confirm` "This will overwrite your current dashboard settings and merge all imported presets and schedules" and `home.alltools.import_success` "Import …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -84,9 +84,9 @@ _(none)_
 
 ## Done
 
-- [x] 2026-09-03 | (S331 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-0mbq58` → draft PR #223** (API at start: open, draft, `mergeable_state:clean`, head `d0bcad8`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `4b66a64`; `sw.js` v654 and `FONT_MAKER_VERSION` 5.39 re-read from the files. **SW v654→v655** (7 precached …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-09-03 | (S332 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-0mbq58` → draft PR #223** (API at start: open, draft, `mergeable_state:clean`, head `fa39af6`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `4b66a64`; `sw.js` v655 and `FONT_MAKER_VERSION` 5.39 re-read from the files. **SW v655→v656** (6 precached pages …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-03 | `e4652b5` | resources + trope_tutor + hebrew_blend_generator + flash_cards + hebrew_dictionary + torah_trainer + classroom_dashboard | **The 57 inline-styled FAQ / How-To `<summary>` rows get a hover state — one `footer` / `.panel-body`-scoped `details > summary:hover { text-decoration: underline }` per page (the FM footer idiom `fb34b61`; underline because the eyebrow rows set …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-09-03 | (S331 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-0mbq58` → draft PR #223** (API at start: open, draft, `mergeable_state:clean`, head `d0bcad8`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `4b66a64`; `sw.js` v654 and `FONT_MAKER_VERSION` 5.39 re-read from the files. **SW v654→v655** (7 precached …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-03 | (S330 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-0mbq58` → draft PR #223** (API at start: open, draft, `mergeable_state:clean`, head `b0aef52`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `4b66a64`; `sw.js` v653 and `FONT_MAKER_VERSION` 5.39 re-read from the files. **SW v653→v654** (7 precached …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -98,13 +98,11 @@ _(none)_
 
 - [x] 2026-09-03 | (S328 close-out) | branch/deploy note | **Branch/PR: FRESH branch `claude/improve-loop-0mbq58` cut at `origin/main` `4b66a64` (PR #222 merged 2026-09-03 14:41Z — verified via the API at start) → a DRAFT PR opened at close-out (find it by branch).** **Drift check:** `origin/main` moved 735b451 → 4b66a64 by that merge only; `sw.js` v651 and `FONT_MAKER_VERSION` 5.39 re-read from …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-03 | `63cdb5b` | hebrew_blend_generator.html | **The eight word-search direction checkboxes (`.ws-dir`) get `aria-label`s from new `worksheet.realwords.ws.dir_<w|e|s|n|se|sw|ne|nw>` keys (EN + HE), wired through `data-i18n-aria-label`.** Closes the S327 Pass C candidate; the visible arrows are unchanged. | Verified: 1280/800 × light/dark × EN/HE — all 8 names equal the CSV values …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-03 | (S327 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `15b9fd1`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `735b451`; `sw.js` v650 and `FONT_MAKER_VERSION` 5.39 re-read from the files. **sw v650→v651** (2 precached …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-03 | **S332** | iters: 1 pass (**L**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: contact + privacy + terms ×1 each (`be7db37`), Hebrew_Font_Maker ×1 (`fd3ef5a`), hebrew_dictionary ×1 (`6466548`), hebrew_blend_generator ×1 (`28cef7e`) | patterns fixed: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-09-03 | **S331** | iters: 1 pass (**E**) + 4 fixes = **5** | tools touched: hebrew_dictionary ×2 (`5005689`, `e4652b5` — AT CAP), resources + trope_tutor + hebrew_blend_generator + flash_cards + torah_trainer + classroom_dashboard ×1 each (`e4652b5`), docs ×2 (`1924748` ops.md, `7d74845` …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -144,17 +142,15 @@ _(none)_
 
 - 2026-09-02 | **S313** | iters: 1 pass (**F**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: index, resources, contact, privacy, terms, 404 **×1 each** (`8fef206`), Hebrew_Font_Maker ×1 (`6c93749`), classroom_dashboard ×1 + flash_cards ×1 (`9cf8942`), trope_tutor ×1 (`fc93f8f`) | patterns …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-09-02 | **S312** | iters: 1 pass (**C**) + 3 fixes = **4 of 5** (the 5th deliberately unspent — trope's remaining P3s sit behind its cap, the dashboard caption is a header-rhythm decision, nothing else above P4 was verified-safe inside the caps) | tools touched: trope_tutor **×2 (AT CAP**: …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S331 (2026-09-03):** hebrew_dictionary **2026-09-03 (×2, `5005689` vowel gate, `e4652b5` FAQ hover; S330 ×1, S328 ×2)**; hebrew_blend_generator + flash_cards + classroom_dashboard + torah_trainer + trope_tutor + resources **2026-09-03 (×1 each, `e4652b5`; generator S330 ×2, S329 ×2; flash cards S330 ×2, S329 ×2; dashboard S330 ×1, S329 ×1; torah/trope S330 ×1; resources S318)**; index 2026-09-03 (S330 ×1); Hebrew_Font_Maker 2026-09-03 (S326 ×2; outside-loop v5.39); contact/privacy/terms 2026-09-02 (S318 sitemap); 404 2026-08-31 (S304).
+- **S332 (2026-09-03):** hebrew_dictionary **2026-09-03 (×1, `6466548` scoped sidebar drag; S331 ×2, S330 ×1)**; hebrew_blend_generator **2026-09-03 (×1, `28cef7e` hide-tab after the language switch; S331 ×1, S330 ×2)**; contact/privacy/terms **2026-09-03 (×1 each, `be7db37` og:locale; S318 sitemap)**; Hebrew_Font_Maker **2026-09-03 (×1, `fd3ef5a` DRAFT marker; S326 ×2; outside-loop v5.39)**; flash_cards + classroom_dashboard + torah_trainer + trope_tutor + resources 2026-09-03 (S331 ×1 each, `e4652b5`); index 2026-09-03 (S330 ×1); 404 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`custom-property-written-on-documentElement-per-frame`** (registered S325 Pass D; S326 fixed 5 of 6 carriers — `290267e`, `280965f`, `bc11d44`, `c0520f7`). **First full sweep 2026-09-03 (S330 Pass A): 12 `documentElement.style.setProperty` writers on 6 pages, all one-shot …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`custom-property-written-on-documentElement-per-frame`** (registered S325 Pass D; S326 fixed 5 of 6 carriers — `290267e`, `280965f`, `bc11d44`, `c0520f7`; **S332 fixed the 6th, the dictionary sidebar drag `6466548` — its fixed hide-tab now follows by measurement, so no filed …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`apply-settings-trusts-collection-members`**: ACTIVE (consequence-critical: garbage is applied AND SAVED). **S331: carrier 14 FIXED — dictionary vowels `5005689` (`dictKnownMembers`, helper reads any `data-*`); S330 Pass A (`?s=` member axis, 122 runtime cells) fixed …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`apply-settings-trusts-collection-members`**: ACTIVE (consequence-critical: garbage is applied AND SAVED). **S331: carrier 14 FIXED — dictionary vowels `5005689` (`dictKnownMembers`, helper reads any `data-*`); S330 Pass A (`?s=` member axis, 122 runtime cells) fixed …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`control-class-without-a-hover-state`** — **S331: the S330 residual FIXED — 57 inline-styled FAQ / How-To `<summary>` rows on 7 pages (`e4652b5`, underline idiom `fb34b61`, scoped `footer` / `.panel-body`).** Last sweep 2026-09-03 (S330 Pass A, runtime: the S328 census + …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -344,7 +340,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 ## Recurring-pattern sweep status
 
-- **S330 Pass A (2026-09-03) — 12 ACTIVE patterns swept over the S317→S330 delta (`a91e49a..HEAD`: 61 commits, 25 files; on the pages +481 −164 across 8 files), 9 runtime arms every one controlled.** Hits: …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S330 Pass A (2026-09-03) — 12 ACTIVE patterns swept over the S317→S330 delta (`a91e49a..HEAD`: 61 commits, 25 files; on the pages +481 −164 across 8 files), 9 runtime arms every one controlled.** Hits: …[full text: …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **S317 Pass A (2026-09-02) — 12 ACTIVE patterns swept over the S299→S317 delta (`0dff0a3..HEAD`: 14 files, +981 −190, incl. the outside-loop FM footer fold and dashboard panel-width lock), every arm controlled.** Surface: all 13 root …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -546,16 +542,16 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
-- L SEO & discoverability audit: 2026-09-03 (**S319 — 14th run, its first since S301 (~18 sessions); L was the single stalest by BOTH date and session number and the S319 pointer named it AND its arms. Ran the S301 shape, and for the FIRST TIME SINCE S274 THE BYTE-CHECK REPORTED REAL MOVEMENT: `4bedf00..HEAD` (92 commits / 41 files / +13,505 −4,881), 13/14 files moved and **7/14 SEO surfaces …[full text: IMPROVEMENT_ARCHIVE.md]
+- L SEO & discoverability audit: 2026-09-03 (**S332 — 15th run, its first since S319 (13 sessions); L was the stalest unattended pass (O attended-only) and the S332 pointer named it AND its arms. Byte-check vs the S319 close-out `8de7e52`: 9/14 files moved, 0/14 SEO surfaces moved** (head metas + JSON-LD + `<summary>` text hashed per page) — the pointer's expectation exactly. **Mechanical 14/14 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-09-03 (**S323 — `index.html`, the hub's FIRST-EVER dedicated H and the 2nd chrome page H has walked (resources S305). H was the single stalest by BOTH date and session (2026-09-01/S305) and the S323 pointer named it; target re-derived against the ARCHIVE — H's per-tool history (dictionary S292, flash_cards S206, torah S217, trope S228, FM …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- E freshness/site-health: 2026-09-03 (**S331 — 27th run, its first since S318 (13 sessions); E was the stalest unattended pass (O attended-only) and the S331 pointer named it AND its arms. Delta `84c65b1..HEAD` (the S318→S330 loop work: 9 pages +509 −183, 8 doc files). 16 arms, 14 clean, 2 doc drifts FIXED:** (1) `ops.md`'s CSP allowlist named one of the three gtag `connect-src` hosts → …[full text: IMPROVEMENT_ARCHIVE.md]
+- E freshness/site-health: 2026-09-03 (**S331 — 27th run, its first since S318 (13 sessions); E was the stalest unattended pass (O attended-only) and the S331 pointer named it AND its arms. Delta `84c65b1..HEAD` (the S318→S330 loop work: 9 pages +509 −183, 8 doc files). 16 arms, 14 clean, 2 doc drifts FIXED:** (1) `ops.md`'s CSP allowlist named one of the three gtag `connect-src` hosts → …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - F cross-tool consistency: 2026-09-03 (**S328 — 26th run, its first since S313 (15 sessions); F was the single stalest by date and the S328 pointer named it AND the affordance: THE COLLAPSIBLE-HEADER HOVER IDIOM (S317's four-tool filing).** Method: every `.panel-title`/`.sub-section-hdr`/`.pos-sec-hdr`/`.adv-section-title`/`.shoresh-patterns-title`/`.vowel-group-header`/`summary` on 9 pages …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S332):** **BRANCH/PR: S331 CONTINUED `claude/improve-loop-0mbq58` → draft PR #223 (head after this close-out; base `origin/main` `4b66a64`). CONTINUE that branch and PR if still open and unmerged; if merged, cut a fresh `claude/*` off latest `origin/main`. VERIFY via the API — this note is a snapshot.** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v655, `FONT_MAKER_VERSION` 5.39** — re-read both.
+**Next session (S333):** **BRANCH/PR: S332 CONTINUED `claude/improve-loop-0mbq58` → draft PR #223 (head after this close-out; base `origin/main` `4b66a64`). CONTINUE that branch and PR if still open and unmerged; if merged, cut a fresh `claude/*` off latest `origin/main`. VERIFY via the API — this note is a snapshot.** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v656, `FONT_MAKER_VERSION` 5.39** — re-read both.
 
-**⚑ THE STALEST PASS IS O (S315, attended only), THEN L (S319), K (S320), N (S321), M (S322), H (S323), G (S324), D (S325), I (S326), C (S327), F (S328), B (S329), A (S330), E (S331).** **Unattended: skip O and take L** (SEO & discoverability — PR #223's page edits touched no `<title>`/description/JSON-LD and `update-llms-txt --check` was current at S331, so expect a clean byte-check against the S319 baseline and spend the pass on the crawl-graph, OG-parity and JSON-LD-claims arms; copy findings are gate 2). **O's surface is still flash_cards.html.**
+**⚑ THE STALEST PASS IS O (S315, attended only), THEN K (S320), N (S321), M (S322), H (S323), G (S324), D (S325), I (S326), C (S327), F (S328), B (S329), A (S330), E (S331), L (S332).** **Unattended: skip O and take K** (i18n audit — Check A/B/C/D were clean at S332, so spend the pass on the blind-spot arm: English built in template literals or passed as plain arguments on the pages PR #223 touched, and the S326 picker-header candidate, which K owns: 3 of its 7 section names already have authored Hebrew in the CSV — `resources.fonts.type_block` בלוק, `type_torah` תורה, `shared.fonts.section_cursive` — while Print, Sans, Serif, Easy Reading and Kid-Friendly need authored terms, so the whole row set stays gate 2 unattended). **O's surface is still flash_cards.html.**
 
-**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the picker section headers half-translated in HE (P4, K — 7 CSV rows + 9 sites; needs authored Hebrew terms, so gate 2 unattended); the dictionary `--dict-sidebar-w` carrier (reposition the fixed toggle first; dictionary is cap-clear again); the real-words 7.2px grid (layout decision); the dashboard `.tip-icon`-vs-`.tip-wrap` tooltip-binding divergence (F, S285 — small only if `wire()` can rebind without changing tap geometry); the S319/S323 gate-2 copy (attended). Seed bench: the scroll-style handout (torah, S324), the last-backup date (index, S323).
+**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the staging author URL on the hub (gate 2 — a maintainer fact); the picker section headers in HE (K, gate 2 for 5 terms); the real-words 7.2px grid (layout decision); the dashboard `.tip-icon`-vs-`.tip-wrap` divergence (F, S285 — its own verdict was "not a standalone fix"); the S319/S323 gate-2 copy (attended). `custom-property-written-on-documentElement-per-frame` has no filed carrier left — the next A sweep decides its streak. Seed bench: the scroll-style handout (torah, S324), the last-backup date (index, S323).
