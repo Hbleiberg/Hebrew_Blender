@@ -4250,8 +4250,11 @@ function applySettings(s) {
   const rawFont = s.hebFontId ?? 'Frank Ruhl Libre';
   hebFontId = fontMigration[rawFont] || rawFont;
   engFontId = s.engFontId ?? 'Libre Baskerville';
-  vowelPositions = new Set((s.vowelPositions || []).filter(p => p >= 1 && p <= (s.mode ?? 2)));
-  if (vowelPositions.size === 0) vowelPositions.add(s.mode ?? 2);
+  // Array members get the same guard as the scalars: only integer positions this (clamped) mode
+  // offers survive — a non-finite or string member from a loaded file used to slip through because
+  // the bound was read from the raw s.mode, and a non-array value threw on .filter.
+  vowelPositions = new Set((Array.isArray(s.vowelPositions) ? s.vowelPositions : []).filter(p => Number.isInteger(p) && p >= 1 && p <= mode));
+  if (vowelPositions.size === 0) vowelPositions.add(mode);
   anyVowelLock = !!s.anyVowelLock;
   vowelLocks = {
     1: { enabled: false, vowels: new Set() },
