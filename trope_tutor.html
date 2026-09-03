@@ -2836,7 +2836,11 @@ function syncFormToSettings() {
 function syncProgressSummary() {
   const attempted = TROPES.filter(t => { const s = statsOf(t.key); return s.r + s.w > 0; }).length;
   const el = document.getElementById('progressSummary');
-  if (el) el.textContent = attempted + ' of ' + TROPES.length + ' tropes attempted · personal best streak ' + progress.pbStreak + ' 🔥';
+  if (!el) return;
+  // Pre-ready first paint keeps the English shape; applyI18n re-runs this once the dictionary lands.
+  el.textContent = (_i18nReady && window.I18n)
+    ? I18n.t('trope.progress.summary', { n: attempted, total: TROPES.length, pb: progress.pbStreak })
+    : attempted + ' of ' + TROPES.length + ' tropes attempted · personal best streak ' + progress.pbStreak + ' 🔥';
 }
 function setTradition(v) {
   settings.tradition = v === 'seph' ? 'seph' : 'ashk';
@@ -3347,6 +3351,7 @@ function applyI18n() {
   try { if (!document.getElementById('learnView').hidden) renderLearn(); } catch (e) {}   // family/trope notes, name prefixes
   try { buildDrillScopeSel(); } catch (e) {}               // scope options: "All marks" + family names
   try { updateDrillStart(); } catch (e) {}                 // drill start summary + note
+  try { syncProgressSummary(); } catch (e) {}              // "{n} of {total} tropes attempted" line in the settings drawer
   // The missed-marks list is JS-built from _lastMissed; re-render it only while the results
   // view is actually showing, so a language change never repopulates a hidden panel.
   try { if (!document.getElementById('drillResults').hidden) buildMissedReview(); } catch (e) {}
