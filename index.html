@@ -1269,6 +1269,7 @@ const IVRIT_CFG = {
       refreshFontsBackupCache(); touched = true;
     }
     if (!touched) { alert(I18n.t('home.alltools.no_data_alert')); }
+    return touched;   // false lets ivritRestore skip the "Restored successfully" that used to follow
   }
 };
 
@@ -1392,10 +1393,17 @@ async function ivritRestore(text, sourceName) {
   if (ivritToolMismatch(payload.tool)) {
     if (!confirm(I18n.t('shared.ivrit.tool_mismatch_confirm', {tool: payload.tool, tool2: IVRIT_CFG.tool}))) return;
   }
+  // AllTools adaptation: a single tool's own save file (tool: 'Worksheet', 'Dashboard'…) carries none of
+  // the AllTools keys, so ivritToolMismatch's AllTools exemption used to walk it straight into the
+  // Merge/Replace question, then "no all-tools data", then "Restored successfully" — three answers to
+  // one drop. Say the one true thing before asking anything.
+  if (payload.tool && payload.tool !== IVRIT_CFG.tool) { alert(I18n.t('home.alltools.no_data_alert')); return; }
   const mode = await ivritAskMode();
   if (!mode) return;
-  try { IVRIT_CFG.apply(payload.data || {}, mode); }
+  let applied;
+  try { applied = IVRIT_CFG.apply(payload.data || {}, mode); }
   catch (e) { alert(I18n.t('shared.ivrit.err_restore_failed', {error: e.message})); return; }
+  if (applied === false) return;   // apply already said "no all-tools data": no status line, no success alert
   if (!IVRIT_CFG.needsReload) {
     ivritStatus(I18n.t('shared.ivrit.status_restored', { source: sourceName || 'file' }));
     alert(I18n.t('home.alltools.restore_reload') + '\n\n' +
