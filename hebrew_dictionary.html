@@ -759,6 +759,7 @@ footer nav a{display:inline-flex;align-items:center;min-height:24px;}
 /* Same floor for the footer FAQ/How-to disclosure rows (19-21px inline-styled) — min-height
    is absent from their inline styles, so no !important; display stays list-item (marker kept). */
 footer summary{min-height:24px;}
+footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To rows: the Font Maker footer's hover idiom — inline styles carry no hover */
 @media(max-width:680px){
   .app{flex-direction:column;overflow:visible;}
   /* Section 4: results (with the sticky search/mode bar) sit ABOVE the collapsed filter sidebar */
