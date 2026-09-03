@@ -2092,9 +2092,12 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <button class="timer-preset-btn" onclick="timerToggleCustom()" data-i18n="dashboard.timer.custom">Custom</button>
         </div>
         <div class="timer-custom-row" id="timerCustomRow" style="display:none;">
-          <input type="text" id="timerCustomInput" placeholder="MM:SS" data-i18n-placeholder="dashboard.timer.custom_placeholder" aria-label="Custom" data-i18n-aria-label="dashboard.timer.custom" inputmode="numeric" maxlength="5" onkeydown="if(event.key==='Enter')timerSetCustom()">
+          <input type="text" id="timerCustomInput" placeholder="MM:SS" data-i18n-placeholder="dashboard.timer.custom_placeholder" aria-label="Custom" data-i18n-aria-label="dashboard.timer.custom" inputmode="numeric" maxlength="5" onkeydown="if(event.key==='Enter')timerSetCustom()" oninput="timerCustomNote(false)">
           <button class="timer-ctrl-btn" onclick="timerSetCustom()" data-i18n="dashboard.timer.set">Set</button>
         </div>
+        <!-- Inline validation for the custom duration (same .schedule-validation/.sched-warn idiom as
+             #locNote) instead of the blocking alert() a mistyped "5.30" used to raise. -->
+        <div id="timerCustomNote" class="schedule-validation" role="status" aria-live="polite" style="display:none;"></div>
         <div class="timer-controls">
           <button class="timer-ctrl-btn" id="timerStartBtn" onclick="timerStart()" data-i18n="dashboard.timer.start">▶ Start</button>
           <button class="timer-ctrl-btn" id="timerPauseBtn" onclick="timerPause()" data-i18n="dashboard.timer.pause">⏸ Pause</button>
@@ -4288,12 +4291,28 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     if (r.style.display === 'flex') document.getElementById('timerCustomInput').focus();
   }
 
+  // A mistyped duration is a routine outcome, not an exception: say so under the field
+  // (blocking-alert-for-a-routine-path) and clear it as the teacher retypes.
+  function timerCustomNote(show) {
+    const n = document.getElementById('timerCustomNote');
+    const inp = document.getElementById('timerCustomInput');
+    if (!n) return;
+    if (show) {
+      n.innerHTML = '<span class="sched-warn">⚠ ' + esc(I18n.t('dashboard.timer.custom_invalid')) + '</span>';
+      n.style.display = '';
+      if (inp) inp.setAttribute('aria-invalid', 'true');
+    } else {
+      n.innerHTML = ''; n.style.display = 'none';
+      if (inp) inp.removeAttribute('aria-invalid');
+    }
+  }
   function timerSetCustom() {
     const v = (document.getElementById('timerCustomInput').value || '').trim();
     let sec = 0;
     if (/^\d{1,3}:\d{1,2}$/.test(v)) { const [m, s] = v.split(':').map(Number); sec = m * 60 + s; }
     else if (/^\d+$/.test(v)) { sec = parseInt(v) * 60; }
-    if (sec <= 0) { alert(I18n.t('dashboard.timer.custom_invalid')); return; }
+    if (sec <= 0) { timerCustomNote(true); document.getElementById('timerCustomInput').focus(); return; }
+    timerCustomNote(false);
     timerTotal = sec; timerRemaining = sec;
     document.getElementById('timerCustomRow').style.display = 'none';
     timerStart();
