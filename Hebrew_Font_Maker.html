@@ -19218,7 +19218,7 @@ async function generatePreviewPDF() {
       let w = availW, h = availW * cv.height / cv.width;
       if (h > availH) { h = availH; w = availH * cv.width / cv.height; }
       if (!first) pdf.addPage(); first = false;
-      pdf.addImage(cv.toDataURL('image/png'), 'PNG', (pw - w)/2, margin, w, h);
+      pdf.addImage(cv.toDataURL('image/png'), 'PNG', (pw - w)/2, margin, w, h, undefined, 'FAST');   // 'FAST' = Flate-compress the page raster; the default stores it raw (~10 MB per page)
     }
     // A titled grid of glyphs for an add-on specimen section. `chars` = display strings; rtl flips
     // text direction (Hebrew sets) vs LTR (English). Paginates to as many pages as needed.
@@ -19425,7 +19425,7 @@ async function downloadTemplate(kind, fmt) {
       const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
       canvases.forEach((cv, i) => {
         if (i) pdf.addPage();
-        pdf.addImage(cv.toDataURL('image/png'), 'PNG', 0, 0, pw, ph);   // full-bleed: the DOM is already Letter-shaped
+        pdf.addImage(cv.toDataURL('image/png'), 'PNG', 0, 0, pw, ph, undefined, 'FAST');   // full-bleed: the DOM is already Letter-shaped; 'FAST' Flate-compresses the raster (raw = 11 MB per page)
       });
       pdf.save(stem + '.pdf');
     } else {
