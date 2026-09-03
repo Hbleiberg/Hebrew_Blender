@@ -1129,7 +1129,10 @@ footer a { display: inline-block; padding-block: 5px; }
   @media (max-width: 1180px) {
     .ws-grid { grid-template-columns: 1fr; grid-template-areas: "center" "left" "right" "under"; }
     .ws-split { display: none; }                 /* stacked layout: no splitters */
-    .ws-left, .ws-right { max-width: 736px; margin: 0 auto; width: 100%; }
+    /* Stacked, the three columns become rows with .ws-grid's gap:0 between them, so the stage
+       legend touched the ADD LETTERS title (0px, measured S335 at 800 and 1100). 12px block-start
+       matches .ws-under's own 12px; fullscreen Draw's .ws-left rule (margin:0) still outranks it. */
+    .ws-left, .ws-right { max-width: 736px; margin: 12px auto 0; width: 100%; }
     .vslider-pair { justify-content: flex-start; }
   }
   @media (min-width: 1181px) {
