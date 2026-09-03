@@ -6480,12 +6480,19 @@ function prefillCustomPicker() {
 function applyCustomRange() {
   const book = document.getElementById('ttCustomBook').value;
   const chap = parseInt(document.getElementById('ttCustomChapter').value, 10) || 1;
-  const vs = document.getElementById('ttCustomVStart').value;
-  const ve = document.getElementById('ttCustomVEnd').value;
+  const vsIn = document.getElementById('ttCustomVStart');
+  const veIn = document.getElementById('ttCustomVEnd');
+  let vs = parseInt(vsIn.value, 10) || 0, ve = parseInt(veIn.value, 10) || 0;
+  // "8 – 1" is a typo, not a request for verse 8 (Sefaria answered the reversed ref with one
+  // verse, labelled "21:8-1"); "– 8" alone means from the chapter's start. Same reading of a
+  // teacher's intent as the copy bar's range field; the fields show what actually loaded (S336).
+  if (vs && ve && vs > ve) [vs, ve] = [ve, vs];
+  if (!vs && ve) vs = 1;
+  vsIn.value = vs || ''; veIn.value = ve || '';
   let ref;
-  if (vs && ve)      ref = `${book} ${chap}:${vs}-${ve}`;
-  else if (vs)       ref = `${book} ${chap}:${vs}`;
-  else               ref = `${book} ${chap}`;
+  if (vs && ve && ve !== vs) ref = `${book} ${chap}:${vs}-${ve}`;
+  else if (vs)              ref = `${book} ${chap}:${vs}`;
+  else                      ref = `${book} ${chap}`;
   settings.customRef = ref;
   settings.customLabel = null;
   settings.holidayKey = null;
