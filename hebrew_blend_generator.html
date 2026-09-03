@@ -4858,6 +4858,7 @@ function getSettings() {
 const KNOWN_LETTER_KEYS = new Set(LETTERS.flatMap(l => l.sofit ? [l.heb, l.sofit] : [l.heb]));
 function isKnownLetterKey(k) { return typeof k === 'string' && KNOWN_LETTER_KEYS.has(k); }
 function isKnownVowelKey(k)  { return typeof k === 'string' && VOWELS.some(v => v.key === k); }
+const VOWEL_COLOR_KEYS = new Set([...VOWEL_COLOR_DEFS, ...VOWEL_COLOR_DEFS_TALAM].map(d => d.key));   // the only keys the colour pickers ever write
 function applySettings(s) {
   // Letters
   if (s.dageshTav !== undefined) {
@@ -4944,7 +4945,7 @@ function applySettings(s) {
       toggleVowelLockSection(pos, !!s[activeKey]);
     }
     if (s[setKey]) {
-      lockVowels[pos - 1] = new Set(s[setKey]);
+      lockVowels[pos - 1] = new Set(Array.isArray(s[setKey]) ? s[setKey].filter(isKnownVowelKey) : []);   // known members only — a string spread its characters, 42 threw and aborted the rest of the restore (apply-settings-trusts-collection-members)
       _syncVowelLockGrid(pos);
     }
   });
@@ -5009,7 +5010,7 @@ function applySettings(s) {
   if (s.rwEraBiblical !== undefined) document.getElementById('rwEraBiblical').checked = s.rwEraBiblical;
   if (s.rwEraModern !== undefined)   document.getElementById('rwEraModern').checked = s.rwEraModern;
   if (s.rwLetterFilter) {
-    rwLetterFilter = new Set(s.rwLetterFilter);
+    rwLetterFilter = new Set(Array.isArray(s.rwLetterFilter) ? s.rwLetterFilter.filter(isKnownLetterKey) : []);   // known members only (every tile key is a LETTERS heb/sofit), never a throw on 42
     document.querySelectorAll('.rw-letter-tile').forEach(t => {
       t.classList.toggle('selected', rwLetterFilter.has(t.dataset.heb));
     });
@@ -5055,7 +5056,7 @@ function applySettings(s) {
     if (!src && s.cwModeActive) src = 'imported';
     rwSource = (src === 'lists' || src === 'imported') ? src : 'all';
     const idx = wlNameIndex();
-    selectedWordListIds = new Set((s.selectedWordListNames || []).map(n => idx[n]).filter(Boolean));
+    selectedWordListIds = new Set((Array.isArray(s.selectedWordListNames) ? s.selectedWordListNames : []).map(n => idx[n]).filter(Boolean));   // a string/number member has no .map
     // Inline words embedded in a loaded ?s= share link take precedence over the local store.
     rwInlinePool = Array.isArray(s.rwInlineWords)
       ? s.rwInlineWords.map(o => ({ word: String(o.w || ''), translit: String(o.t || ''), translation: String(o.e || '') })).filter(o => o.word)
@@ -5072,7 +5073,7 @@ function applySettings(s) {
   if (s.wsShowNikkud !== undefined)          document.getElementById('wsShowNikkud').checked = s.wsShowNikkud;
   if (s.wsShowWordBank !== undefined)        document.getElementById('wsShowWordBank').checked = s.wsShowWordBank;
   if (s.wsDirections) {
-    const sel = new Set(s.wsDirections);
+    const sel = new Set(Array.isArray(s.wsDirections) ? s.wsDirections : []);   // never a throw on 42
     document.querySelectorAll('.ws-dir').forEach(cb => { cb.checked = sel.has(cb.value); });
   }
   // Class Set
@@ -5115,8 +5116,9 @@ function applySettings(s) {
     else if (mode === 'both') mode = (s.colorStyle === 'highlight') ? 'highlight' : 'letter';
     setColorMode(mode);
   }
-  if (s.nikudColorOverrides) {
-    nikudColorOverrides = { ...s.nikudColorOverrides };
+  if (s.nikudColorOverrides && typeof s.nikudColorOverrides === 'object' && !Array.isArray(s.nikudColorOverrides)) {
+    // Known vowel keys with string values only: an array or string used to spread into entries named 0, 1, 2…
+    nikudColorOverrides = Object.fromEntries(Object.entries(s.nikudColorOverrides).filter(([k, v]) => VOWEL_COLOR_KEYS.has(k) && typeof v === 'string'));
   }
   // Rebuild color-picker list in the active scheme order (seeded with any overrides) + sync buttons.
   refreshVowelGroupColors();
