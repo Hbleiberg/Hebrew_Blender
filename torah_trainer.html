@@ -1862,7 +1862,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 <div id="ttCustomPicker" class="tt-controls" style="display:none;border-top:1px dashed var(--border);">
   <span class="tt-ctrl">
     <label for="ttCustomBook" data-i18n="torah.custom.book_label">Book:</label>
-    <select id="ttCustomBook">
+    <select id="ttCustomBook" onchange="customBookChanged()">
       <option value="Genesis" data-i18n="torah.custom.book_genesis">Genesis</option>
       <option value="Exodus" data-i18n="torah.custom.book_exodus">Exodus</option>
       <option value="Leviticus" data-i18n="torah.custom.book_leviticus">Leviticus</option>
@@ -6477,9 +6477,19 @@ function prefillCustomPicker() {
   chapIn.max = TORAH_BOOK_CHAPTERS[book];
   if (chap >= 1 && chap <= TORAH_BOOK_CHAPTERS[book]) chapIn.value = chap;
 }
+// The chapter box's max follows the book (Deuteronomy has 34 chapters, Genesis 50), so the spinner
+// and native validation catch a chapter the book does not have before Sefaria's error does (S336).
+function customBookChanged() {
+  const chapIn = document.getElementById('ttCustomChapter');
+  const max = TORAH_BOOK_CHAPTERS[document.getElementById('ttCustomBook').value] || 50;
+  chapIn.max = max;
+  if (parseInt(chapIn.value, 10) > max) chapIn.value = max;
+}
 function applyCustomRange() {
   const book = document.getElementById('ttCustomBook').value;
-  const chap = parseInt(document.getElementById('ttCustomChapter').value, 10) || 1;
+  const chapIn = document.getElementById('ttCustomChapter');
+  const chap = Math.min(Math.max(parseInt(chapIn.value, 10) || 1, 1), TORAH_BOOK_CHAPTERS[book] || 50);   // a typed 40 in Deuteronomy loads 34, and the box shows it
+  chapIn.value = chap;
   const vsIn = document.getElementById('ttCustomVStart');
   const veIn = document.getElementById('ttCustomVEnd');
   let vs = parseInt(vsIn.value, 10) || 0, ve = parseInt(veIn.value, 10) || 0;
