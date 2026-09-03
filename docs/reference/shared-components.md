@@ -237,8 +237,15 @@ enumerates selectors (the Trope Tutor) needs no extra entry.
 ```js
 mountSidebarResize({
   handle,      // the .sbr-split element (canonical markup below)
-  cssVar,      // '--tool-sidebar-w' — always written on document.documentElement, so fixed
-               //   cousins (collapse tabs, grid templates) follow one write
+  cssVar,      // '--tool-sidebar-w' — written on `scope` (default document.documentElement, so
+               //   fixed cousins such as collapse tabs follow one write)
+  scope,       // optional element that receives the var. A custom-property write restyles the
+               //   writer's whole subtree every drag frame, so name the consumers' nearest common
+               //   ancestor (the dashboard: .dashboard for its rails, the drawer for --drawer-w) and,
+               //   when the consumer is that element itself, register the var `@property … inherits:
+               //   false` so the frame restyles one element instead of the subtree. Leave the default
+               //   when a fixed cousin outside any smaller ancestor reads the var (the dictionary's
+               //   sidebar toggle) — measurements in loop-findings.
   storageKey,  // bare per-device key 'hebrew<Tool>_<thing>W' (registration rule below)
   anchor,      // 'start' | 'end' — the inline edge the PANEL is anchored to
   min, dflt,   // px floor + the dblclick / Enter-Space reset width

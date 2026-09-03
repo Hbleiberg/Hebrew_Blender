@@ -185,7 +185,7 @@ The settings UI is a slide-in modal from the right edge. Three elements:
 | Element | Role |
 |---|---|
 | `.settings-backdrop` | Full-screen dark overlay; click closes drawer |
-| `.settings-modal` | The panel (`width: var(--drawer-w, 380px)`, `max-width: 92vw`); slides in via `transform: translateX`; drag-resizable from its inline-start edge — see [Resizable panels](#resizable-panels-sidebars-drawers-rails--shared-component) |
+| `.settings-modal` | The panel (`width: var(--drawer-w, 380px)`, `max-width: 92vw`); slides in via `transform: translateX`; drag-resizable from its inline-start edge — see [Resizable panels](#resizable-panels-sidebars-drawers-rails--shared-component) | `--drawer-w` is written on the drawer element itself (sidebar-resize `scope`) and registered `@property … inherits:false`, like the rails' `--dash-rail-l/-r` on `.dashboard` — a drag frame restyles one element, not the page.
 | `.settings-header` | Navy bar with title + close button (`×`) |
 | `.settings-body` | Scrollable content area holding all `.panel` blocks |
 

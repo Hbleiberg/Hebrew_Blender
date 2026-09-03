@@ -6079,7 +6079,11 @@ function initDarkMode() {
      mountSidebarResize({
        handle: el,                   // .sbr-split element (role="separator",
                                      //   aria-orientation="vertical", tabindex="0")
-       cssVar: '--tool-sidebar-w',   // width var, written on document.documentElement
+       cssVar: '--tool-sidebar-w',   // width var, written on `scope` (default: documentElement)
+       scope: el,                    // optional: the element that receives the var. Name the
+                                     //   consumers' nearest common ancestor: a custom-property
+                                     //   write restyles that element's whole subtree, so a root
+                                     //   write recalcs the entire document on every drag frame
        storageKey: 'hebrewTool_sidebarW',   // bare per-device key (erase-only registration)
        anchor: 'start',              // inline edge the PANEL is anchored to:
                                      //   'start' (sidebar, left rail) | 'end' (drawer, right rail)
@@ -6097,13 +6101,14 @@ function initDarkMode() {
 function mountSidebarResize(cfg) {
   const handle = cfg.handle;
   if (!handle) return null;
+  const scope = cfg.scope || document.documentElement;
   /* Upper bound may be dynamic (a function): never returns less than cfg.min. */
   const hiNow = () => {
     const m = (typeof cfg.max === 'function') ? cfg.max() : cfg.max;
     return Math.max(cfg.min, Math.round(m));
   };
   const cur = () => {
-    const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(cfg.cssVar));
+    const v = parseFloat(getComputedStyle(scope).getPropertyValue(cfg.cssVar));
     return Number.isFinite(v) && v > 0 ? v : cfg.dflt;
   };
   /* 'end'-anchored panels (drawers, a right rail) grow toward inline-start, so the
@@ -6116,7 +6121,7 @@ function mountSidebarResize(cfg) {
   const set = (px, persist) => {
     const hi = hiNow();
     const w = Math.round(Math.max(cfg.min, Math.min(hi, px)));
-    document.documentElement.style.setProperty(cfg.cssVar, w + 'px');
+    scope.style.setProperty(cfg.cssVar, w + 'px');
     handle.setAttribute('aria-valuenow', String(w));
     handle.setAttribute('aria-valuemax', String(hi));
     if (persist) {
