@@ -323,8 +323,12 @@ header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px
 /* The filter sidebar is drag-resizable (see initSidebarResize). Its width lives in ONE custom
    property so a single write moves the panel, the splitter and the fixed collapse tab together —
    the tab is position:fixed and can't inherit the flex layout's width any other way. */
-:root{--dict-sidebar-w:300px;}
-.sidebar{width:var(--dict-sidebar-w);flex-shrink:0;background:var(--white);border-inline-end:1px solid var(--border);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
+/* Registered non-inherited: the drag writes it on .sidebar (its only consumer), so a frame restyles
+   one element instead of the whole page (the S325 measurement: 10,369 nodes per frame from :root);
+   the hide-tab follows the sidebar edge by measurement (positionSidebarTab). Browsers without
+   @property keep the var() default below. */
+@property --dict-sidebar-w { syntax: '<length>'; inherits: false; initial-value: 300px; }
+.sidebar{width:var(--dict-sidebar-w,300px);flex-shrink:0;background:var(--white);border-inline-end:1px solid var(--border);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
 #appSidebar.hidden{display:none;}
 /* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/trope_tutor — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
 .sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
@@ -345,7 +349,7 @@ header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px
 /* Offset by the splitter's outer half so the two never overlap: the tab sits at 50vh, which is
    exactly where a hand reaches for the edge, and a fixed 24px button over the 7px grab zone
    would swallow the drag there (it out-stacks the splitter's z-index:5). 4px is invisible. */
-.sidebar-toggle-btn{position:fixed;inset-inline-start:calc(var(--dict-sidebar-w) + 4px);top:50vh;transform:translateY(-50%);width:24px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
+.sidebar-toggle-btn{position:fixed;top:50vh;transform:translateY(-50%);width:24px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
 .sidebar-toggle-btn:hover{background:#0f1a33;}
 .sidebar-show-btn{position:fixed;inset-inline-start:0;top:50vh;transform:translateY(-50%);width:24px;height:52px;border-radius:0 6px 6px 0;border:none;background:var(--navy);color:var(--gold-light);font-size:0.8rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:100;padding:0;box-shadow:2px 0 6px rgba(0,0,0,0.15);}
 .sidebar-show-btn:hover{background:#0f1a33;}
@@ -3555,6 +3559,7 @@ function toggleSidebar() {
   const c = s.classList.toggle('hidden');
   show.style.display = c ? 'flex' : 'none';
   hide.style.display = c ? 'none' : 'flex';
+  positionSidebarTab();   // a resize while hidden left the tab's last measured inset stale
 }
 
 /* ═══ shared: sidebar-resize ═════════════════════════════════════════════════
@@ -3691,14 +3696,35 @@ function initSidebarResize() {
   mountSidebarResize({
     handle: document.getElementById('sidebarSplit'),
     cssVar: '--dict-sidebar-w',
+    scope: document.querySelector('.sidebar'),   // the var's only consumer; a root write restyled all ~10.4k nodes per frame (S325)
     storageKey: 'hebrewDictionary_sidebarW',
     anchor: 'start',
     min: 240, dflt: 300,
     /* Dynamic ceiling: the results column never drops below 320px, so a narrow window caps
        the sidebar tighter than the 620px hard max. */
-    max: () => Math.min(620, window.innerWidth - 320)
+    max: () => Math.min(620, window.innerWidth - 320),
+    onChange: positionSidebarTab
   });
 }
+
+// Pin the fixed hide-tab to the sidebar's inner edge by measurement (the generator's shape), so the
+// width var never has to reach it from :root. +4 clears the splitter's grab zone; the clamp keeps
+// the whole 24px tab on-screen when a stacked full-width sidebar puts its edge at the viewport's.
+function positionSidebarTab() {
+  const sidebar = document.getElementById('appSidebar');
+  const btn = document.getElementById('sidebarToggleBtn');
+  if (!sidebar || !btn || sidebar.classList.contains('hidden')) return;
+  const rect = sidebar.getBoundingClientRect();
+  const maxInset = Math.max(0, window.innerWidth - 24);
+  if (document.documentElement.dir === 'rtl') {
+    btn.style.left = 'auto';
+    btn.style.right = Math.min(window.innerWidth - rect.left + 4, maxInset) + 'px';
+  } else {
+    btn.style.right = 'auto';
+    btn.style.left = Math.min(rect.right + 4, maxInset) + 'px';
+  }
+}
+window.addEventListener('resize', positionSidebarTab);
 
 const FS_ENTER_ICON = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg>`;
 const FS_EXIT_ICON  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5,0.5 4.5,4.5 0.5,4.5"/><polyline points="13.5,4.5 9.5,4.5 9.5,0.5"/><polyline points="9.5,13.5 9.5,9.5 13.5,9.5"/><polyline points="0.5,9.5 4.5,9.5 4.5,13.5"/></svg>`;
@@ -5005,6 +5031,7 @@ function applyI18n() {
   updateExportState();   // export count is built via t() at init (pre-ready), so it needs a re-render here
   updatePrintSizeNote();   // t()-built too, and the wlFilterOverride branch below never reaches dictAfterFilter
   if (typeof window._updateMobileFiltersBtn === 'function') window._updateMobileFiltersBtn();
+  positionSidebarTab();   // the live language switch flips dir without a resize event
   if (_hk) _hk.applyI18n();   // read-only re-render of the on-screen keyboard labels
   rebuildFilterChips();
   // Re-render the active result view with translated strings, preserving the current mode/selection.
