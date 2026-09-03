@@ -7037,15 +7037,21 @@ function parseVerseRangeSpec(spec) {
   const order = (currentVerses || []).map(v => `${v.chapter}:${v.verse}`);
   if (!order.length) return { keys, unknown };
   const tokens = String(spec).split(/[,;]+|\s+/).filter(Boolean).slice(0, TT_RANGE_MAX_TOKENS);
-  for (const tok of tokens) {
+  // A one-chapter reading (a holiday reading, most custom ranges) has no ambiguity to resolve,
+  // so a bare "3" or "1-8" means that chapter's verses — a teacher typing what the verse numbers
+  // on screen say should not be told "Not in this reading" (S336). Multi-chapter readings keep
+  // requiring C:V, where a bare number really is ambiguous.
+  const soleChapter = order.every(k => k.split(':')[0] === order[0].split(':')[0]) ? order[0].split(':')[0] : null;
+  for (const raw of tokens) {
+    const tok = soleChapter ? raw.replace(/^(\d{1,3})(?:([-–])(\d{1,3}))?$/, (_, a, d, b) => b ? `${soleChapter}:${a}${d}${b}` : `${soleChapter}:${a}`) : raw;
     // C:V | C:V-C:V | C:V-V (same-chapter shorthand); hyphen or en-dash
     const m = tok.match(/^(\d{1,3}):(\d{1,3})(?:[-–](?:(\d{1,3}):)?(\d{1,3}))?$/);
-    if (!m) { unknown.push(tok); continue; }
+    if (!m) { unknown.push(raw); continue; }
     const i = order.indexOf(`${+m[1]}:${+m[2]}`);
-    if (i < 0) { unknown.push(tok); continue; }
+    if (i < 0) { unknown.push(raw); continue; }
     if (m[4] === undefined) { keys.push(order[i]); continue; }
     const j = order.indexOf(`${m[3] !== undefined ? +m[3] : +m[1]}:${+m[4]}`);
-    if (j < 0) { unknown.push(tok); continue; }
+    if (j < 0) { unknown.push(raw); continue; }
     const [a, b] = i <= j ? [i, j] : [j, i];   // a reversed range is a typo, not an error
     for (let k = a; k <= b; k++) keys.push(order[k]);
   }
