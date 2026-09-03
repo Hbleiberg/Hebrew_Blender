@@ -1495,8 +1495,18 @@
   }
   #fsExitBtn:hover { background: rgba(13,18,32,0.88); }
   #fsExitBtn .fs-x { font-size: 1.5rem; line-height: 1; }
-  #fsExitBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
+  /* 0.7rem is the suite's text floor; the label sat at 8.32px because raising it widens the plate
+     86→108px onto the zoom bar it already overlapped — the rule below is what makes that safe. */
+  #fsExitBtn .fs-label { font-size: 0.7rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
   body.fullscreen #fsExitBtn { display: flex; }
+  /* The plate is fixed at the physical top-right and the zoom bar is the first thing under it in
+     fullscreen: it covered the bar's Reset button on a 320px phone (elementFromPoint at the button's
+     centre returned the plate) and, in the Hebrew UI, the "🔍 Zoom" label at every width. Desktop
+     clears the bar's content from under the plate with a physical padding — physical on purpose, it
+     pairs with the plate's own `right: 16px`; phones (the 430px block) instead drop the plate under
+     the bar while the bar is shown (`zoombar-hidden` is set by toggleZoomBar). (S323) */
+  #zoomBar { padding: 5px 20px; }   /* was inline on the element, where no fullscreen rule could override it */
+  body.fullscreen #zoomBar { padding-right: 130px; }
   /* Idle-hide (shared fullscreen idle-hide block): the exit plate fades after 3s without pointer activity, returns on
      the next move, never hides while keyboard-focused. The quick strip keeps its own 4s show/hide. */
   body.fs-idle #fsExitBtn:not(:focus-visible) { opacity: 0; pointer-events: none; }
@@ -1550,6 +1560,8 @@
      phone breakpoint so nothing above 430px changes. (S321 Pass N arm 1) */
   @media (max-width: 430px) {
     #fsStrip { width: calc(100vw - 16px); }
+    body.fullscreen #zoomBar { padding-right: 20px; }   /* the bar's content needs the whole width here */
+    body.fullscreen:not(.zoombar-hidden) #fsExitBtn { top: 60px; }   /* below the 46px bar */
     .fs-strip-inner { flex-wrap: wrap; justify-content: center; width: 100%; box-sizing: border-box; }
     .fs-strip-btn { flex: 0 0 calc((100% - 16px) / 3); box-sizing: border-box; }
   }
@@ -1966,7 +1978,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <button id="blackoutBtn" class="hbtn icon-btn" onclick="toggleBlackout()" title="Blank the screen (B)" data-i18n-title="dashboard.header.blackout_btn" aria-label="Blank the screen (B)" data-i18n-aria-label="dashboard.header.blackout_btn" aria-pressed="false">⬛</button>
   </div>
 </header>
-<div id="zoomBar" style="background:var(--warm-gray);border-bottom:1px solid var(--border);padding:5px 20px;display:flex;align-items:center;gap:10px;font-size:0.78rem;color:var(--text);">
+<div id="zoomBar" style="background:var(--warm-gray);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:0.78rem;color:var(--text);">
   <span id="zoomSliderLabel" style="font-weight:600;white-space:nowrap;" data-i18n="dashboard.display.zoom_label">🔍 Zoom</span>
   <input type="range" id="zoomSlider" aria-labelledby="zoomSliderLabel" min="50" max="200" step="5" value="100" style="flex:1;accent-color:var(--gold);cursor:pointer;height:24px;">
   <span id="zoomLabel" class="bidi-isolate" style="white-space:nowrap;min-width:36px;">100%</span>
@@ -5086,6 +5098,7 @@ function mountSidebarResize(cfg) {
 
   function toggleZoomBar(show) {
     document.getElementById('zoomBar').style.display = show ? '' : 'none';
+    document.body.classList.toggle('zoombar-hidden', !show);   // lets the fullscreen exit plate reclaim the bar's row on phones
   }
 
   function syncFormToSettings() {
