@@ -2326,9 +2326,12 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div class="sub-section">
       <div class="sub-section-hdr" data-i18n="dashboard.datetime.sub_english_date">English Date</div>
       <div class="sub-section-body">
-        <div class="form-row">
+        <!-- flex-wrap: the three-option group (277px) does not fit beside the label in the 380px drawer,
+             so the label wrapped to two lines and the group ran 13px past the row; the group now drops
+             under the label, end-aligned like the row's toggles. (S327 Pass C) -->
+        <div class="form-row" style="flex-wrap:wrap;">
           <label data-i18n="dashboard.datetime.date_format">Date format</label>
-          <div class="radio-group">
+          <div class="radio-group" style="margin-inline-start:auto;">
             <input type="radio" name="engDateFmt" id="ef-mdy" value="MDY"><label for="ef-mdy" data-i18n="dashboard.datetime.fmt_mdy">MM/DD/YYYY</label>
             <input type="radio" name="engDateFmt" id="ef-dmy" value="DMY"><label for="ef-dmy" data-i18n="dashboard.datetime.fmt_dmy">DD/MM/YYYY</label>
             <input type="radio" name="engDateFmt" id="ef-long" value="LONG"><label for="ef-long" data-i18n="dashboard.datetime.fmt_long">Long</label>
