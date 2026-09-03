@@ -86,9 +86,11 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-03 | (S320 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `8de7e52`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `735b451` (an ancestor of the branch); `sw.js` v642 and `FONT_MAKER_VERSION` 5.38 re-read from the files. **sw …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-09-03 | (S319 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `d61c860`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `735b451`; `sw.js` v641 and `FONT_MAKER_VERSION` 5.38 re-read from the files. **sw v641→v642** (4 precached pages …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-03 | `b0f1583` | hebrew_blend_generator.html | **An unknown `blendCount` keeps the current pick** — `applySettings` assigned any value to the `<select>`; off-list (12, `'abc'`) set `.value` to `""` and the sheet said "0 blends". Only a value the select offers is applied (S316 Pass B candidate). | Playwright: 12/`'abc'`/`''`/`null` keep 40, `'40'`/40/20 apply, 0 page errors …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-09-03 | `b0f1583` | hebrew_blend_generator.html | **An unknown `blendCount` keeps the current pick** — `applySettings` assigned any value to the `<select>`; off-list (12, `'abc'`) set `.value` to `""` and the sheet said "0 blends". Only a value the select offers is applied (S316 Pass B candidate). | Playwright: 12/`'abc'`/`''`/`null` keep 40, `'40'`/40/20 apply, 0 page errors …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-03 | `9f57093` | flash_cards.html | **`vowelPositions` members get the scalar guard** — the filter's bound read the RAW `s.mode` (a non-finite mode let a non-finite member through, strings survived by coercion, a non-array threw on `.filter`); now integers within the CLAMPED mode, else the mode's own position. Pattern `non-finite-number-from-a-loaded-file` (S317's array blind spot). …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -124,19 +126,11 @@ _(none)_
 
 - [x] 2026-09-02 | S316 iter 1 (**Pass B — console & error audit**) | all 14 pages (+ the outside-loop landings) | **Four arms, every probe with a live control.** Arm 1 happy path 28 loads (14 pages × light/dark, dark proven by `body.dark`): 0 pageerrors / 0 same-origin failures. Arm 2 the outside-loop surface: dashboard first-run modal → Escape → drawer → panel-width lock (handles …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-02 | (S315 close-out) | branch/deploy note | **⚑ LANDED DIRECT TO `main` ON MAINTAINER DIRECTION** ("push to main" after the close-out and one direct feature request — the fullscreen exit-control idle-hide, `a725d0b`, a new shared block on 7 pages, sw v634→v635; `origin/main` re-verified at `1a87927`, clean fast-forward `1a87927..a725d0b`, so PR #219 closes as merged). **Branch/PR: …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-02 | `b25f645` | hebrew_dictionary.html + Hebrew_Font_Maker.html | (**S315 iter 2 — GATE 5 ASKED with the rendered contact sheet, answered "Waive all" + "Waive as brand"**) **Inline `impeccable-disable` waivers for the ratified conventions:** hairline + soft shadow on `.tour-card`/`.wm-dialog` (`gpt-thin-border-wide-shadow`), the 3px gold callout bar (`side-tab` on …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-02 | `47fbd32` | hebrew_dictionary.html | (**S315 iter 3 — the pass's own headline handoff, taken because it is one declaration**) **The 32 letter-picker captions (`.lpt .n`) move from 0.38rem = 6.08px — the smallest functional text in the suite — to 0.7rem = 11.2px, the S312 floor.** | Measured with the picker revealed, light + dark × 1280 + 800: no caption clips (sofit names wrap …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-02 | `35272f4` | Hebrew_Font_Maker.html | (**S315 iter 4 — the S312 P3 rest-state gold, Font Maker half**) **Five sites painted brand `--gold` at rest (`.lt-need`, `.wiz-os-row a`, `.hint-link`, `.sc-group h4`, `.mark-sq .pin-badge`) swap to `--gold-text`** (#7f5a13 light; = `--gold` in dark, so dark is unchanged). | Runtime composited-background contrast: light 2.60–2.75:1 → …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-02 | `40bf42a` | classroom_dashboard.html | (**S315 iter 5 — the LAST logged `control-class-without-a-hover-state` carrier**) **Bare `.btn-xs` buttons and the projected spoiler toggle get hover states.** Two `.btn-xs` carried `background:var(--white)` inline (the S314 lesson again) — moved into `.btn-xs:not(.btn)`; hover = the drawer's `.timer-preset-btn` gold-border idiom; spoiler …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-03 | **S320** | iters: 1 pass (**K**) + 3 fixes + 1 (detector) = **5 (FULL BUDGET)** | tools touched: trope_tutor ×1 (`d57326a`), classroom_dashboard ×1 (`ad7e5a8`), Hebrew_Font_Maker ×1 (`fffe886`), scripts ×1 (`dbf5f09`) — none at cap | patterns fixed: `authored-but-unreferenced i18n …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-09-03 | **S319** | iters: 1 pass (**L**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: Hebrew_Font_Maker ×1 (`5272be5`), hebrew_dictionary ×1 (`16cb1c0`), flash_cards ×1 (`9f57093`), hebrew_blend_generator ×1 (`b0f1583`) — none at cap | patterns fixed: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -176,15 +170,13 @@ _(none)_
 
 - 2026-08-31 | **S301** | iters: 1 pass (**L**) + 1 fix + 1 (seed intake) + 1 (verification closure) + 1 fix = **5 (FULL BUDGET)** | tools touched: classroom_dashboard **×1** (`0475af0`, the gate-2 enumeration fix), hebrew_blend_generator **×1** (`9125eb0`, the tour reveal) — both well inside the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-08-31 | **S299** | iters: 1 pass (**A**) + 2 (micro-feature) + 1 fix + 1 (seed intake) = **5 (FULL BUDGET)** | tools touched: classroom_dashboard **×1** (`143d482`, the gate-1 micro-feature), plus marker-comment-only edits to hebrew_dictionary / resources / Hebrew_Font_Maker in the same …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S319 (2026-09-03):** Hebrew_Font_Maker **2026-09-03 (×1, `5272be5` FAQ twin)**; hebrew_dictionary **2026-09-03 (×1, `16cb1c0` share-link members)**; flash_cards **2026-09-03 (×1, `9f57093` vowelPositions guard)**; hebrew_blend_generator **2026-09-03 (×1, `b0f1583` blendCount enum)**; all 13 pages via `js/i18n.js` 2026-09-02 (S317 `b13c1e5`); classroom_dashboard 2026-09-02 (S315 `40bf42a`; outside-loop `735b451`); trope_tutor 2026-09-02 (S314 `679a085`); index, resources, contact, privacy, terms, 404 2026-09-02 (S313 `8fef206`); …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S320 (2026-09-03):** trope_tutor **2026-09-03 (×1, `d57326a` progress line)**; classroom_dashboard **2026-09-03 (×1, `ad7e5a8` roster placeholder)**; Hebrew_Font_Maker **2026-09-03 (×1, `fffe886` stage captions; S319 `5272be5`)**; hebrew_dictionary 2026-09-03 (S319 `16cb1c0`); flash_cards 2026-09-03 (S319 `9f57093`); hebrew_blend_generator 2026-09-03 (S319 `b0f1583`); all 13 pages via `js/i18n.js` 2026-09-02 (S317 `b13c1e5`); index, resources, contact, privacy, terms, 404 2026-09-02 (S313 `8fef206`); torah_trainer 2026-09-02 (S312).
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`apply-settings-trusts-collection-members`**: ACTIVE. **Last swept 2026-09-02 (S317 Pass A); S319 fixed the 3rd carrier (`16cb1c0`, dictionary `applyDictState`) — hits all-time 3 fixed (`463685a`, `614c817`, `16cb1c0`), 1 OPEN carrier (flash cards …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`apply-settings-trusts-collection-members`**: ACTIVE. **Last swept 2026-09-02 (S317 Pass A); S319 fixed the 3rd carrier (`16cb1c0`, dictionary `applyDictState`) — hits all-time 3 fixed (`463685a`, `614c817`, `16cb1c0`), 1 OPEN carrier (flash cards …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`control-class-without-a-hover-state`** — re-swept 2026-09-02 (S317 Pass A, RUNTIME, every visible control on all 13 pages hovered with a real `page.mouse` in BOTH themes); hits this sweep 1, FIXED (`fb34b61`, the FM v5.38 footer's links + FAQ questions, the outside-loop …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -232,7 +224,7 @@ _(none)_
 
 - **fixed-width-third-party-embed-inflates-phone-layout**: **REGISTERED + first swept suite-wide 2026-08-28 (S276 Pass N) — hits: 2 carriers, BOTH fixed in-session (`23b2387` contact inline auto-render → data-size=compact ≤388 + ≤430 containment belt; `e4aaa44` resources …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **stale-html-fallback-behind-its-csv-value**: **RE-SWEPT 2026-08-31 (S302 Pass K, 3rd sweep, suite-wide) — census 2,310 sites (up from S289's 2,188 — the surface keeps growing), raw 7 → hits: 3**, all fixed in-pass (`2245a5a`) and re-swept 0; **clean streak: 0 — ACTIVE.** The …[full text: IMPROVEMENT_ARCHIVE.md]
+- **stale-html-fallback-behind-its-csv-value**: **RE-SWEPT 2026-09-03 (S320 Pass K, 4th sweep, suite-wide): census 1,789 leaf sites (this reader skips nested block markup; S302's 2,310 counted it), raw 3 → hits: 0** (one `&ldquo;`/`&rdquo;` entity the reader did not decode, two …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **undocumented-global-keyboard-shortcut**: **swept 2026-08-27 (S265 iter 4, sweep 2 — WIDENED past both registered blind spots), hits: 0. Clean streak: 1 — ACTIVE.** First swept S264 (1 hit, `flash_cards.html`, fixed `f65ce58`).** **Definition:** a `document`-level `keydown` …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -260,7 +252,7 @@ _(none)_
 
 - `mobile-input-hints` (a text input that takes a code, a URL, or non-English text but carries no typing hints): **re-swept 2026-08-28 (S267 iter 3, `flash_cards.html` `#presetName` — the twin-reconciliation the S266 feature build logged) — hits: 1, fixed (`05fdcab`); clean …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **i18n cross-column parity (placeholders, plurals, inline markup)**: **REGISTERED 2026-08-19 (S230) — a NEW pattern, owned by pass K. hits this sweep: 1 real (`dictionary.translit.credit`, fixed 63b15bf) + 1 logged-by-design (`shared.folders.empty_list`, closed 3fc6bda by gate …[full text: IMPROVEMENT_ARCHIVE.md]
+- **i18n cross-column parity (placeholders, plurals, inline markup)**: **re-swept 2026-09-03 (S320 Pass K, detector 1 only): `{placeholder}` sets en vs he over 5,128 keys, raw 30 → hits: 0 — all thirty are the S261-refuted `.one` plural shape (Hebrew spells the singular number; …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **horizontal-overflow-at-narrow-widths**: **re-swept 2026-08-29 (S290 Pass N, `Hebrew_Font_Maker.html`) — hits: 0 across 15 cells; clean streak: +1 — ACTIVE.** **⚑⚑ THE DETECTOR THIS PATTERN AND PASS N's ARM 1 HAD BEEN USING CANNOT FIRE ON A PHONE — read this before any future …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -324,7 +316,7 @@ _(**S211 exercised NO ACTIVE sweep pattern** — Pass F is a cross-tool consiste
 
 - **parse-per-call on a growing store** (a `read<Store>()` helper that re-parses its whole localStorage blob on every call, called O(n) times per render, over a store that grows without bound as the teacher uses the tool — so the tool punishes use, and the cost is invisible at …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **authored-but-unreferenced i18n key family** (a `*.<family>.*` group that exists in `ui-strings.csv`, is fully translated, and is referenced **nowhere** in the page that owns it — so a Hebrew-UI user sees English while the translation sits in the repo. Costs nothing to fix …[full text: IMPROVEMENT_ARCHIVE.md]
+- **authored-but-unreferenced i18n key family** (a CSV key or family that is fully translated and referenced nowhere, so a Hebrew-UI user sees English while the translation sits in the repo): **re-swept 2026-09-03 (S320 Pass K) at a NEW finer grain — the SINGLE-KEY shape inside …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **sub-floor touch target on a shared small-button class** (NEW, registered S193): a small-control class — `.btn-xs` and its kin — whose size comes from `padding` **alone**, so its rendered height lands below the suite's ratified **30px** floor (WCAG 2.5.8 asks 24px). Because …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -558,7 +550,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - M aesthetics & visual design (one surface): 2026-08-31 (**S304 — 11th-ever M, `privacy.html` + `terms.html`, and with it M COVERAGE IS COMPLETE: all 7 tools plus all 6 chrome pages have now had a dedicated aesthetics audit.** M was the single stalest by BOTH date and session number and the S304 pointer named it; the S196 re-derivation AGREED and then SHARPENED the target — **privacy and terms …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- K i18n / localization audit: 2026-08-31 (**S302 — 20th run, its first since S289; K was the single stalest by BOTH date and session number and the S302 pointer named it. Delta `592234c..HEAD` = 59 commits / 23 files / +1,442 −125. ALL FOUR GATES CLEAN — the 13th consecutive clean-gates K, so the value was again entirely past them.** **Blind-spot probe: 0 real / 338 live added script lines, …[full text: IMPROVEMENT_ARCHIVE.md]
+- K i18n / localization audit: 2026-09-03 (**S320 — 21st run, its first since S302 (~18 sessions); K was the single stalest by BOTH date and session number and the S320 pointer named it AND its arms. Delta `015716b..HEAD` = 93 commits / 41 files / +14,071 −4,909; on the 14 pages + `js/i18n.js`: 946 added lines, 464 outside `<script>`, 77 block-comment, 405 live. ALL FOUR GATES CLEAN — the 14th …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - C accessibility (one tool): 2026-09-02 (**S312 — `trope_tutor.html`, its 3rd dedicated C (S113 → S213 → S312, ~99 sessions) and the first C after three consecutive O sessions; C was the single stalest pass by date and the S312 pointer named it. Target = this row's own per-tool history (trope S213 stalest, generator S224 next); the S309/S310 backlog handed to C was folded in as two runtime arms. …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -582,10 +574,10 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-02 (**S313 — 25th run, its first since S296 (~17 sessions); F was the single stalest by BOTH date and session number and the S313 pointer named it AND the affordance: THE HOVER/PRESSED-STATE COLOUR LANGUAGE.** Method: every `:hover`/`:active` rule on all 13 pages tallied by the properties it sets, then EVERY visible control hovered with a real `page.mouse` and …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S320):** **BRANCH/PR: CONTINUE on `claude/improve-loop-k280wo` → draft PR #222 (S316–S319 commits; verify via the API first — if it has merged, cut a fresh `claude/*` branch off latest `origin/main`).** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v642, `FONT_MAKER_VERSION` 5.38** — re-read both.
+**Next session (S321):** **BRANCH/PR: CONTINUE on `claude/improve-loop-k280wo` → draft PR #222 (S316–S320 commits; verify via the API first — if it has merged, cut a fresh `claude/*` branch off latest `origin/main`).** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v643, `FONT_MAKER_VERSION` 5.38** — re-read both.
 
-**⚑ THE STALEST PASS IS K (2026-08-31, S302), THEN N (S303), M (S304), H (S305), G (S306).** K's arms: `check-i18n` Check A/B over the S302→now delta (+ the S319 FM FAQ twin's two new keys); the blind-spot probe on template-literal English in the four S316–S319 `applySettings` edits. **O's next target is flash_cards.html — attended only.** Run `update-sitemap` at EVERY close-out.
+**⚑ THE STALEST PASS IS N (2026-08-31, S303), THEN M (S304), H (S305), G (S306), D (S307).** N's target per the S303 row's own rule ("re-audit a CHANGED surface"): `classroom_dashboard.html` (the outside-loop panel-width lock `735b451` + the S315 drawer, never N-audited since) or `resources.html` (+271 lines this delta, the font gallery); run arms 1–6 with a real device descriptor and ship the phone contact sheet even when clean. **O's next target is flash_cards.html — attended only.** Run `update-sitemap` at EVERY close-out.
 
-**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the S319 gate-2 Hebrew-interface claim (needs an attended session); the dashboard "Full Screen" 8px label (P3, a header-rhythm call for M/C); flash cards' 4 remaining unfiltered member lists (the last open `apply-settings-trusts-collection-members` carrier); the FM `.ctl-btn.primary` hover cascade (MEASURE FIRST with an image loaded).
+**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the S319 gate-2 Hebrew-interface claim (needs an attended session); the dashboard "Full Screen" 8px label (P3); flash cards' 4 remaining unfiltered member lists (the last open `apply-settings-trusts-collection-members` carrier); the flash cards Colors-mode tile labels in raw English (a gate — same mapping class as the pos badge); the FM `.ctl-btn.primary` hover cascade (MEASURE FIRST).
 
-**/!\ THE S319 METHOD LESSONS.** (a) **A visible-twin probe must strip the ld+json block before it reads "visible" text, and must count paraphrased twins, not verbatim ones** — the first version passed a missing twin, the second failed 6 pages that were fine. (b) **`hebrewBlender_lang` is the i18n storage key** (not `ivritsuite_lang`) — an HE run that still reports `htmlLang:'en'` is a wrong key, not a pass. (c) The dictionary's `pos`/`len` lists are checkbox STATES, so filtering garbage to `[]` would have read as "unchecked everything": an all-garbage list keeps the markup default.
+**/!\ THE S320 METHOD LESSONS.** (a) **K's strongest arm is the runtime Hebrew screen, not the diff:** the static probe over 405 live added lines found nothing while the HE arm found three live English strings, two of them older than the delta — run it every K, on every page, and ALSO run a single-word pass over `button`/`summary`/`.label` nodes (this run's ≥2-word filter hid "Beta"/"Tour"/"Timer", which turned out wired, but the next one may not be). (b) **An authored-but-unreferenced key hides best as a SINGLETON in a wired family** — the family census is blind to it; grep the singleton's `en` value in its owner page. (c) **Check A rule 2c now fails the gate on prose inside a `+` chain** — a new concatenation is a gate failure, not a K find; printed-output sites go to the baseline with the header's Group-A reasoning.
