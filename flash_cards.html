@@ -6496,7 +6496,7 @@ const IVRIT_CFG = {
     const incoming = data.presets || data.flashCardPresets;   // also accept an AllTools bundle
     if (incoming) {
       const base = mode === 'replace' ? {} : readPresets();
-      writePresets(Object.assign(base, incoming));
+      writePresets(ivritSafeAssign(base, incoming));   // never bare Object.assign on an import merge (CLAUDE.md Security 1): a string/array `presets` would spread into garbage presets
     }
     const inPF = data.presetFolders || data.flashCardPresetFolders;
     if (inPF) ftImportTree('hebrewFlashCards_presetsFolders', inPF, mode === 'replace');

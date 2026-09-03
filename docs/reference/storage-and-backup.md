@@ -47,11 +47,11 @@ myToolPresets: JSON.parse(localStorage.getItem('hebrewMyTool_presets') || '{}'),
 **`importAllSettings`** — add a corresponding merge block:
 ```js
 if (parsed.myToolPresets) {
-  const existing = JSON.parse(localStorage.getItem('hebrewMyTool_presets') || '{}');
-  localStorage.setItem('hebrewMyTool_presets', JSON.stringify(Object.assign(existing, parsed.myToolPresets)));
+  const existing = ivritSafeParse(localStorage.getItem('hebrewMyTool_presets') || '{}');
+  localStorage.setItem('hebrewMyTool_presets', JSON.stringify(ivritSafeAssign(existing, parsed.myToolPresets)));
 }
 ```
-Use `Object.assign` so importing merges with existing data rather than wiping it. If a key holds a flat settings object (not a presets map), use `Object.assign` the same way — the imported values overwrite the existing ones field-by-field.
+Use `ivritSafeAssign` (never bare `Object.assign` — CLAUDE.md Security rule 1) so importing merges with existing data rather than wiping it, drops the prototype-pollution keys, and ignores a non-object value (a string or array would otherwise spread element-by-element into garbage entries). If a key holds a flat settings object (not a presets map), use `ivritSafeAssign` the same way — the imported values overwrite the existing ones field-by-field.
 
 **`eraseAllSettings`** — add the key to the array:
 ```js
@@ -128,7 +128,7 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
 ### Import behavior — always **ask Merge vs Replace**
 
 `ivritRestore()` shows a small modal (`ivritAskMode()`) on every import:
-- **Merge** — keep current data, add the file's (matching keys overwritten via `Object.assign`).
+- **Merge** — keep current data, add the file's (matching keys overwritten via `ivritSafeAssign`).
 - **Replace** — clear current data first, then load only the file's.
 
 ### Pattern: per-file `IVRIT_CFG` + shared engine
@@ -150,7 +150,7 @@ const IVRIT_CFG = {
     const incoming = data.presets || data.myToolPresets; // also accept an AllTools bundle key
     if (incoming) {
       const base = mode === 'replace' ? {} : JSON.parse(localStorage.getItem('hebrewMyTool_presets') || '{}');
-      localStorage.setItem('hebrewMyTool_presets', JSON.stringify(Object.assign(base, incoming)));
+      localStorage.setItem('hebrewMyTool_presets', JSON.stringify(ivritSafeAssign(base, incoming)));
       renderPresets();
     }
     if (data.liveState) applySettings(data.liveState);
