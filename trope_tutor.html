@@ -488,6 +488,10 @@ body.dark .btn-secondary:hover { background:#2a3349; }
   z-index:90; opacity:0; pointer-events:none; transition:opacity 0.25s;
 }
 .settings-backdrop.open { opacity:1; pointer-events:auto; }
+/* Registered NON-INHERITED: the drag-resize engine writes --drawer-w on the drawer itself (its
+   `scope`), and a non-inherited property lets a drag frame restyle that one element instead of
+   the drawer's whole subtree. Browsers without @property keep the var() default. */
+@property --drawer-w { syntax: '<length>'; inherits: false; initial-value: 380px; }
 .settings-modal {
   position:fixed; top:0; inset-inline-end:0;   /* right in LTR, left in RTL (drawer flips to the inline-end edge) */
   /* Drag-resizable from its inline-start edge (see the shared sidebar-resize block); the 92vw
@@ -2790,6 +2794,7 @@ function initDrawerResize() {
   mountSidebarResize({
     handle: document.getElementById('settingsResize'),
     cssVar: '--drawer-w',
+    scope: document.getElementById('settingsModal'),   // the drawer is the var's only consumer; with the @property rule a drag frame restyles one element
     storageKey: 'hebrewTropeTutor_drawerW',
     anchor: 'end',
     min: 320, dflt: 380,
