@@ -1672,7 +1672,9 @@
     border: 1px solid rgba(255,255,255,0.18); border-radius: 14px; padding: 8px 10px; box-shadow: 0 3px 12px rgba(0,0,0,0.32); }
   .fs-strip-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 62px; min-height: 48px;
     cursor: pointer; background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 10px; padding: 7px 12px; font-family: inherit; font-size: 0.6rem; letter-spacing: 0.03em; }
+    border-radius: 10px; padding: 7px 12px; font-family: inherit; font-size: 0.7rem; letter-spacing: 0.03em; }
+    /* 0.7rem (11.2px) is the suite's text floor; the six labels sat at 9.6px on the projected view. The
+       strip grows 435→441px at 1280 and not at all on phones (min-width / the 430px thirds govern). (S322 Pass M) */
   .fs-strip-btn .fss-ico { font-size: 1.2rem; line-height: 1; color: var(--gold-light); }
   .fs-strip-btn:hover { background: rgba(255,255,255,0.18); border-color: var(--gold); }
   .fs-pop { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; background: rgba(13,18,32,0.85); backdrop-filter: blur(8px);
