@@ -8,13 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S323 Pass H — measured on the hub; the restore is correct, the page just does not follow it**) | index.html | **Restoring a backup whose `uiLang` is `he` and/or `darkMode` is `1` onto a fresh (English, light) hub writes both keys but leaves the hub itself English and light until reload** — `I18n.lang` stays `en`, `body.dark` stays off, the 🌙 button still reads "Dark" — while the …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S323 Pass H — GATE 2 copy; deferred unattended**) | index.html (`locales/ui-strings.csv`) | **The Manual-input import's confirm and success copy still describe the pre-AllTools dashboard-only import:** `home.alltools.import_confirm` "This will overwrite your current dashboard settings and merge all imported presets and schedules" and `home.alltools.import_success` "Import …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**NEW S323 Pass H — GATE 2 copy; deferred unattended**) | index.html (`locales/ui-strings.csv`) | **The Manual-input import's confirm and success copy still describe the pre-AllTools dashboard-only import:** `home.alltools.import_confirm` "This will overwrite your current dashboard settings and merge all imported presets and schedules" and `home.alltools.import_success` "Import …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S323 Pass H — N arm 3's STATIC shape, the hub's carrier**) | index.html | **`.ie-modal { max-height: 90vh }` is the same centred-fixed-box-in-`vh` twin S321 logged for the dashboard's `.fr-modal`/`.swm-modal`;** on a phone with the URL bar expanded the box is taller than the visible viewport it is centred in. Measured 540px tall at 800×600 with the body scrolling and Erase …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S322 Pass M**) | classroom_dashboard.html | **`.sub-section-hdr` eyebrows are 0.68rem (10.88px)** (English Date / Hebrew Date / Time …), a hair under the 0.7rem floor `.panel-title` clears at 0.72rem; the weather panel's inline "↺ Refresh" is 0.68rem too. Two declarations. | found S322
+- [ ] P4 (**NEW S323 Pass H — N arm 3's STATIC shape, the hub's carrier**) | index.html | **`.ie-modal { max-height: 90vh }` is the same centred-fixed-box-in-`vh` twin S321 logged for the dashboard's `.fr-modal`/`.swm-modal`;** on a phone with the URL bar expanded the box is taller than the visible viewport it is centred in. Measured 540px tall at 800×600 with the body scrolling and Erase …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S322 Pass M**) | classroom_dashboard.html | **"Date format" wraps to two lines at 1280** beside its three-option segmented control (`MM/DD/YYYY · DD/MM/YYYY · Long`) in the 380px drawer, EN (`Date / format`) and HE alike — the drawer's only wrapped label. Let the radio-group wrap under the label (the phone breakpoint already does) or shorten the options. | found S322
 
@@ -78,6 +74,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
 
+- [ ] S | torah_trainer.html | **A scroll-style handout: no nikkud AND no te'amim.** "Hide nikkud" strips exactly the vowels and keeps every cantillation mark (measured S324: 18 accent codepoints remain), so the tikkun-style "as in the scroll" column a b'nei-mitzvah student rehearses from is not one checkbox away. One more handout checkbox ("Hide cantillation") wired like `handoutHideNikkud` …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [ ] S | index.html | **The hub knows when the last backup was saved and never says so.** `ivritSaveFile` builds `savedAt` for the file and forgets it; a teacher opening ⚙ Import / Export cannot tell whether the .ivrit on the old laptop is a week or a year old. Store `hebrewBlender_lastBackupAt` on Save (per-device, erase-only) and show one line under the inventory ("Last backup: {date}" / …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] M | resources.html | **"Submit a font" is a `mailto:` while "Suggest a Resource" is a real form.** Measured 2026-09-01: `openSubmitFont` builds a `mailto:` with a pre-filled subject and body and sets `window.location.href`; the sibling flow one view away is a Web3Forms POST with 5 required fields, 18 choice pills and hCaptcha. So the contribution path that actually needs a **file …[full …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -96,6 +94,12 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-03 | (S324 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `c73a815`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `735b451`; `sw.js` v646 and `FONT_MAKER_VERSION` 5.38 re-read from the files. **sw v646→v647** (3 precached …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-03 | `fe6011c` | classroom_dashboard.html | **`.sub-section-hdr` eyebrows and the weather panel's inline "↺ Refresh" move from 0.68rem (10.88px) to the 0.7rem floor.** Two declarations; closes the S322 P4. | Verified: 1280/800 × light/dark × EN/HE — all 6 eyebrows 11.2px at their 24px min-height, no wrap, no overflow; the Refresh button 11.2px, 30px tall; 0 pageerrors.
+
+- [x] 2026-09-03 | `92c8599` | index.html | **The hub follows a restored backup's `uiLang`/`darkMode` live** — `IVRIT_CFG.apply` and the manual-input `importAllSettings` call `toggleDark()` when the stored theme differs and `I18n.setLang()` when the language does, right after writing the keys. Closes the S323 P3. | Verified: 1280/800, four automatic cases (light/EN←he+dark merge, dark/HE←en+light …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-09-03 | (S323 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `0765757`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `735b451`; `sw.js` v645 and `FONT_MAKER_VERSION` 5.38 re-read from the files. **sw v645→v646** (2 precached …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-03 | `10fc812` | classroom_dashboard.html | **Three drawer indents → `padding-inline-start`** (the lock-widths hint, the "↺ Reset all text sizes" wrapper, `#countdownPresetNameRow`): physical `padding-left` left the Hebrew UI flush with the labels. Closes the S322 P3. | Verified: 1280/800 × light/dark — EN L18/L18/L16 unchanged, HE now R18/R18/R16 (was 0), crops before/after, 0 …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -108,13 +112,13 @@ _(none)_
 
 - [x] 2026-09-03 | (S320 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `8de7e52`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `735b451` (an ancestor of the branch); `sw.js` v642 and `FONT_MAKER_VERSION` 5.38 re-read from the files. **sw …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-03 | (S319 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `d61c860`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `735b451`; `sw.js` v641 and `FONT_MAKER_VERSION` 5.38 re-read from the files. **sw v641→v642** (4 precached pages …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
 
-- 2026-09-03 | **S323** | iters: 1 pass (**H**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: index ×2 (`fa8901f`, `3c43b32` — AT CAP), classroom_dashboard ×2 (`10fc812`, `1336ddd` — AT CAP) | patterns fixed: — (H is a walkthrough; the indent fix is a logical-CSS breach, not a registered …[full text: IMPROVEMENT_ARCHIVE.md]
+- 2026-09-03 | **S324** | iters: 1 pass (**G**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: torah_trainer ×2 (`8f007c3`, `06fde0b` — AT CAP), index ×1 (`92c8599`), classroom_dashboard ×1 (`fe6011c`) | patterns fixed: — (G is a discovery pass; no registered pattern) | pass run: G …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- 2026-09-03 | **S323** | iters: 1 pass (**H**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: index ×2 (`fa8901f`, `3c43b32` — AT CAP), classroom_dashboard ×2 (`10fc812`, `1336ddd` — AT CAP) | patterns fixed: — (H is a walkthrough; the indent fix is a logical-CSS breach, not a registered …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-09-03 | **S322** | iters: 1 pass (**M**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: classroom_dashboard ×2 (`95914bb`, `50e4549` — AT CAP), hebrew_blend_generator + hebrew_dictionary + torah_trainer + trope_tutor ×2 each (`7334b8e`, `7b86720` — one converged tile pair, each AT CAP) | …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -152,11 +156,9 @@ _(none)_
 
 - 2026-09-01 | **S305** | iters: 1 pass (**H**) + 1 fix + 1 fix + 1 seed-intake arm + 1 fix = **5 (FULL BUDGET)** | tools touched: resources **×2 (AT CAP** — `b7fa961` the filter chip counts + `5d8d28a` the fonts documentation & JSON-LD; **also the cap-exempt Pass-H target, its FIRST-EVER H and the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-08-31 | **S304** | iters: 1 pass (**M**) + 1 fix + 1 fix + 2 (micro-feature) = **5 (FULL BUDGET)** | tools touched: privacy **×1** + terms **×1** (`e093389` — **also the cap-exempt Pass-M target**), contact **×1** (`e093389`), hebrew_dictionary **×1** / hebrew_blend_generator **×1** / …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S323 (2026-09-03):** index **2026-09-03 (×2, `fa8901f` wrong-file refusal, `3c43b32` inventory after erase)**; classroom_dashboard **2026-09-03 (×2, `10fc812` logical indents, `1336ddd` exit plate; S322 ×2, S321 ×2)**; hebrew_blend_generator, hebrew_dictionary, torah_trainer, trope_tutor 2026-09-03 (S322 ×2 each, `7334b8e`, `7b86720`); Hebrew_Font_Maker 2026-09-03 (S321 `09f6220`); flash_cards 2026-09-03 (S321 `c2dea7e`); all 13 pages via `js/i18n.js` 2026-09-02 (S317 `b13c1e5`); resources, contact, privacy, terms, 404 2026-09-02 (S313 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S324 (2026-09-03):** torah_trainer **2026-09-03 (×2, `8f007c3` margin-box running identifier, `06fde0b` side-by-side split; S322 ×2)**; index **2026-09-03 (×1, `92c8599` restore repaint; S323 ×2)**; classroom_dashboard **2026-09-03 (×1, `fe6011c` eyebrow floor; S323 ×2, S322 ×2, S321 ×2)**; hebrew_blend_generator, hebrew_dictionary, trope_tutor 2026-09-03 (S322 ×2 each, `7334b8e`, `7b86720`); Hebrew_Font_Maker 2026-09-03 (S321 `09f6220`); flash_cards 2026-09-03 (S321 `c2dea7e`); all 13 pages via `js/i18n.js` 2026-09-02 (S317 `b13c1e5`); …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -540,7 +542,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - A recurring-pattern sweep: 2026-09-02 (**S317 — A was the single stalest by BOTH date and session number (2026-08-31/S299) and the S317 pointer named it AND its three weighted arms; all three paid.** Delta `0dff0a3..HEAD`, 14 files, +981 −190, the clone unshallowed to reach it. **12 ACTIVE patterns swept, every runtime arm controlled: 4 hits fixed, 8 filed, 6 clean.** Headline: **the pointer's …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- G print & export fidelity (one tool): 2026-09-01 (**S306 — `index.html`'s AllTools `.ivrit` export + ALL SIX CHROME PAGES' printed output; the FIRST-EVER G ON A CHROME PAGE and the first-ever audit of the suite's master backup file.** G was the single stalest by BOTH date and session number and the S306 pointer named it. **Target re-derived against the ARCHIVE per S292 — and the re-derivation …[full text: IMPROVEMENT_ARCHIVE.md]
+- G print & export fidelity (one tool): 2026-09-03 (**S324 — `torah_trainer.html`, its 2nd dedicated G since S181 (~143 sessions; 102 commits on the file since, incl. the print band, the geniza marker, the handout, the holiday strip, the presentation toolbar). G was the single stalest by BOTH date and session (2026-09-01/S306) and the S324 pointer named it; target re-derived against the ARCHIVE — …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - D performance (one tool): 2026-09-01 (**S307 — `torah_trainer.html`, its first dedicated D since S184/S185 (2026-08-06, ~122 sessions). D was the single stalest pass by BOTH date and session number and the S307 pointer named it; the S196 re-derivation AGREED for the first time ever without tension — unprofiled surface since each tool's own last D is torah **+2,120 −309 / 82 commits** vs …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -558,10 +560,10 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-02 (**S313 — 25th run, its first since S296 (~17 sessions); F was the single stalest by BOTH date and session number and the S313 pointer named it AND the affordance: THE HOVER/PRESSED-STATE COLOUR LANGUAGE.** Method: every `:hover`/`:active` rule on all 13 pages tallied by the properties it sets, then EVERY visible control hovered with a real `page.mouse` and …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S324):** **BRANCH/PR: CONTINUE on `claude/improve-loop-k280wo` → draft PR #222 (S316–S323 commits; verify via the API first — if it has merged, cut a fresh `claude/*` branch off latest `origin/main`).** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v646, `FONT_MAKER_VERSION` 5.38** — re-read both.
+**Next session (S325):** **BRANCH/PR: CONTINUE on `claude/improve-loop-k280wo` → draft PR #222 (S316–S324 commits; verify via the API first — if it has merged, cut a fresh `claude/*` branch off latest `origin/main`).** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v647, `FONT_MAKER_VERSION` 5.38** — re-read both.
 
-**⚑ THE STALEST PASS IS G (2026-09-01, S306), THEN D (S307), I (S308), C (S312).** G's last run was the hub's AllTools `.ivrit` + the six chrome pages' paper; re-derive its target against the ARCHIVE (the rotation row keeps only the last run) — print-adjacent surfaces changed since: the dashboard's fullscreen strip/plate (S321–S323) and the four font-picker tile pairs (S322) are not paper, so the tool whose printed/exported artifact is longest un-audited wins. **O's next target is flash_cards.html — attended only.** Run `update-sitemap` at EVERY close-out.
+**⚑ THE STALEST PASS IS D (2026-09-01, S307), THEN I (S308), C (S312), F (S313).** D's last run was torah_trainer; re-derive its target against the ARCHIVE (the row keeps only the last run) — the surface changed most since its own last D wins (the dashboard's S315 drawer + S321–S323 fullscreen/plate work, or the generator's chunked worksheet build). **O's next target is flash_cards.html — attended only.** Run `update-sitemap` at EVERY close-out.
 
-**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the hub not following a restored `uiLang`/`darkMode` until reload (P3, index — FIRST index item, index was at cap S323); the header's "Full Screen" 8px cap (P3, arithmetic-constrained, dashboard); the dashboard `.sub-section-hdr` 10.88px eyebrows and the "Date format" wrap (P4); the `vh` modal twins now on three carriers (dashboard ×2 + hub, P4); the S319 gate-2 Hebrew-interface claim and the S323 gate-2 manual-mode copy (attended). `apply-settings-trusts-collection-members` has NO open carriers — its next A sweep is a re-check.
+**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the header's "Full Screen" 8px cap (P3, arithmetic-constrained, dashboard); the "Date format" wrap (P4, dashboard); the `vh` modal twins on three carriers (P4); the two S324 torah residuals (per-sheet column labels, divider stranding — both need the side-by-side builder, torah was AT CAP in S324); the S319 gate-2 Hebrew-interface claim and the S323 gate-2 manual-mode copy (attended). Seed bench: the scroll-style handout (torah, S324), the last-backup date (index, S323).
 
-**/!\ THE S323 METHOD LESSONS.** (a) **A declaration in an element's inline `style` beats every stylesheet rule:** the desktop `padding-right` for the zoom bar read as shipped in the diff and measured as NOT applied (label still under the plate at 1280 HE) — move the declaration into a rule, then measure again; never trust a CSS fix you have only read. (b) **An `addInitScript` seed re-runs on every navigation,** so a "still there" reading after a destructive action is only trustworthy beside a `framenavigated` counter (0 here — the erase line really was stale). (c) **On the hub, `ivritToolMismatch` exempts AllTools, so ANY tool's file walks in** — a hub-side check has to be its own line, before the mode ask. (d) **Drive the real artifact:** the H arms used a captured download and `setInputFiles` on the hidden input, not `gather()`; the counts line agreed with the file both ways.
+**/!\ THE S324 METHOD LESSONS.** (a) **Text-on-every-sheet is not position-on-every-sheet:** S208 verified the print band by text presence and it had been painting at the previous sheet's foot all along — assert y from pdf.js text items (scratchpad `g324/items.mjs`) and LOOK at the rendered sheet. (b) **Blink stacks page areas contiguously:** a print-fixed element with a negative `top` paints on the previous sheet; the per-sheet mechanism is `@page` margin boxes with `var()` content (Chromium 131+), `@page :first` for sheet 1, `direction:ltr` pinned for counters. (c) **`page.pdf` fires the page's beforeprint/afterprint and honours `@page` margin-top over its own margin params** — six margin settings moved the first verse 0pt. (d) **Sefaria and Google Fonts are reachable by curl through the proxy but not by the browser:** `route.fulfill` fonts from curl'd files and the texts/versions endpoints from a synthetic dotted-ref stub (with a `license` on the English version) and the whole page drives. (e) **In a grid, Chromium answers `break-after:avoid` by cutting the next row** when the pair does not fit — test a fragmentation rule in isolation before assuming block-flow behaviour.

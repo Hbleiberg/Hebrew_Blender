@@ -132,16 +132,23 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   reading is loaded (hidden over the empty state). The "Learn the trope names →" link renders
   only when `const TROPE_TUTOR_URL` is non-null — set to `'trope_tutor.html'` since the Trope
   Tutor shipped (see its section below). On paper the color→family key travels via the **print
-  band** (superseding the older in-flow legend print): `#ttPrintBand`, a print-only running
-  identifier (range label + compact clause key) populated by `buildPrintBand()` in the
-  beforeprint handler and re-stamped on **every** printed sheet via `position:fixed` inside the
-  print block's enlarged `@page` top margin — sheets 2..N used to be unidentified/un-decodable,
-  and the old card's 35%-tint (`--trope-<fam>-bg`) swatches collapsed into one grey band on a
-  greyscale copier, so the band's swatches use the SOLID `--trope-<fam>-line` ink the printed
-  underlines use. The in-flow legend card and `.tt-ref-hdr` are print-hidden (the band replaces
-  them on paper); on-screen legend behavior is unchanged. The band never prints spuriously —
-  beforeprint hides it when no reading is loaded, and its chips render only with trope coloring
-  on. Do not "restore" the printed key to sheet-1-only.
+  band** (superseding the older in-flow legend print): `#ttPrintBand`, print-only, in flow
+  directly above `#ttReading` (so it prints once, on sheet 1), populated by `buildPrintBand()`
+  in the beforeprint handler: range label + compact clause key. The old card's 35%-tint
+  (`--trope-<fam>-bg`) swatches collapsed into one grey band on a greyscale copier, so the
+  band's swatches use the SOLID `--trope-<fam>-line` ink the printed underlines use. **Sheets
+  2..N are identified by `@page` margin boxes** (`@top-left`/`@top-right`, Chromium 131+;
+  other engines print an unlabelled margin): the range label on the reading's start side and
+  a `counter(page) " / " counter(pages)` opposite, fed by four `--tt-print-*` custom properties
+  `setPrintMarginVars()` sets on `<html>` in beforeprint and clears on afterprint, with
+  `@page :first` suppressing the label on sheet 1 (the band is there). The boxes are pinned
+  `direction:ltr` (a Hebrew UI would bidi-reorder "2 / 23"). **Never re-stamp the band with a
+  `position:fixed` element at a negative `top`:** Blink stacks page areas contiguously, so each
+  sheet's copy paints at the FOOT of the previous sheet, over its last line, and the last sheet
+  gets none (measured S324 on 30 PDFs, every margin setting). The in-flow legend card and
+  `.tt-ref-hdr` are print-hidden (the band replaces them on paper); on-screen legend behavior
+  is unchanged. The band never prints spuriously — beforeprint hides it when no reading is
+  loaded, and its chips render only with trope coloring on.
 
 ---
 
