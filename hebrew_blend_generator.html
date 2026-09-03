@@ -4876,7 +4876,12 @@ function applySettings(s) {
   updateVavAsLetterVisibility();
 
   // Layout
-  if (s.blendCount)              document.getElementById('blendCount').value = s.blendCount;
+  // Only a value the <select> offers is applied; anything else (a hand-edited link or preset)
+  // used to set .value to "" and the next sheet said "0 blends". Unknown → keep the current pick.
+  if (s.blendCount != null) {
+    const bc = document.getElementById('blendCount'), want = String(s.blendCount);
+    if (Array.from(bc.options).some(o => o.value === want)) bc.value = want;
+  }
   if (s.wsTitle !== undefined)   document.getElementById('wsTitle').value = s.wsTitle;
   if (s.wsSubtitle !== undefined) document.getElementById('wsSubtitle').value = s.wsSubtitle;
   if (s.excludeRepeats !== undefined) document.getElementById('excludeRepeats').checked = s.excludeRepeats;
