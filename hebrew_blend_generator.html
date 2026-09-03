@@ -2300,7 +2300,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   /* The [DEFAULT] marker sits in that same active row and failed for the same reason, but was
      missed by the S225 lift because it was an INLINE style — which no body.dark rule can override.
      Same plate, same 4.13:1, so the same lift; as a class it can now take one. (S285 Pass C) */
-  .font-opt-default { font-size: 0.6rem; color: var(--muted); font-weight: 400; }
+  .font-opt-default { font-size: 0.62rem; color: var(--muted); font-weight: 400; }   /* same step as .font-opt-attr, all four pickers (S322) */
   body.dark .font-opt-default { color: #adb6c9; }
   .font-section-hdr { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em;
     text-transform: uppercase; color: var(--muted); margin: 8px 0 4px;
