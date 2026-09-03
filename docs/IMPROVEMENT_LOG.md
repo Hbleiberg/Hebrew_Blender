@@ -8,9 +8,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S328 Pass F — the convergence's residual; the idiom is already decided, so this is mechanical**) | resources.html + torah_trainer.html + trope_tutor.html + classroom_dashboard.html + hebrew_blend_generator.html + flash_cards.html + hebrew_dictionary.html | **The FAQ / How-To `<details><summary>` rows (57 on 7 pages, all inline-styled `cursor:pointer`) still give no hover …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P3 (**NEW S329 Pass B arm 4 — a SHARED-BLOCK gap: the `.ivrit` engine's `ivritSafeAssign` guards `typeof src === 'object'`, which an array passes**) | index.html + hebrew_blend_generator.html + flash_cards.html + classroom_dashboard.html + hebrew_dictionary.html + torah_trainer.html + trope_tutor.html | **A non-empty array member on any `ivritSafeAssign` merge is spread index-by-index into …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**NEW S328 Pass F — the one collapse header the convergence could not reach with a colour**) | hebrew_blend_generator.html | **`.vowel-group-header` ×7 has no hover state and its text colour is set inline** (`header.style.color = vowelHeaderColor(group, isDark)` in the vowel-grid builder), so a `color:` hover rule cannot win. Either `text-decoration: underline` on `:hover` (theme- and …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S328 Pass F — the convergence's residual; the idiom is already decided, so this is mechanical**) | resources.html + torah_trainer.html + trope_tutor.html + classroom_dashboard.html + hebrew_blend_generator.html + flash_cards.html + hebrew_dictionary.html | **The FAQ / How-To `<details><summary>` rows (57 on 7 pages, all inline-styled `cursor:pointer`) still give no hover …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S327 Pass C — the one tile grid `41679da` could not lift; needs a layout decision**) | hebrew_blend_generator.html | **The real-words letter grid's names render at 7.2px** (`.rw-letter-tile .name` 0.45rem, six 46px columns, abbreviated "Tzadi sf" / "שין שמאלית"): at the 0.62rem step "שין שמאלית" needs 49.7px in a 40px content box, so any lift wraps HE. Options: five columns (7 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -88,6 +88,10 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-03 | (S329 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-0mbq58` → draft PR #223** (API at start: open, draft, `mergeable_state:clean`, head `cd7a211`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `4b66a64`; `sw.js` v652 and `FONT_MAKER_VERSION` 5.39 re-read from the files. **sw v652→v653** (3 precached pages …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-03 | `de935af` | hebrew_blend_generator.html | **The 7 vowel-group collapse headers get a hover state — the label underlines (`.vowel-group-header:hover > span:first-child`, the FAQ-question idiom `fb34b61`), colour-proof because the header colour is inline per group.** Closes the S328 Pass F residual; pattern `control-class-without-a-hover-state`. | Verified: real `page.mouse` …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-09-03 | (S328 close-out) | branch/deploy note | **Branch/PR: FRESH branch `claude/improve-loop-0mbq58` cut at `origin/main` `4b66a64` (PR #222 merged 2026-09-03 14:41Z — verified via the API at start) → a DRAFT PR opened at close-out (find it by branch).** **Drift check:** `origin/main` moved 735b451 → 4b66a64 by that merge only; `sw.js` v651 and `FONT_MAKER_VERSION` 5.39 re-read from …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-03 | `63cdb5b` | hebrew_blend_generator.html | **The eight word-search direction checkboxes (`.ws-dir`) get `aria-label`s from new `worksheet.realwords.ws.dir_<w|e|s|n|se|sw|ne|nw>` keys (EN + HE), wired through `data-i18n-aria-label`.** Closes the S327 Pass C candidate; the visible arrows are unchanged. | Verified: 1280/800 × light/dark × EN/HE — all 8 names equal the CSV values …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -100,13 +104,13 @@ _(none)_
 
 - [x] 2026-09-03 | (S325 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `56a337e`, 0 check runs — correct, no workflows). **Drift check:** `origin/main` still `735b451`; `sw.js` v648 and `FONT_MAKER_VERSION` 5.39 re-read (both moved on this branch by the outside-loop FM v5.39 …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-03 | (S324 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `c73a815`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `735b451`; `sw.js` v646 and `FONT_MAKER_VERSION` 5.38 re-read from the files. **sw v646→v647** (3 precached …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
 
-- 2026-09-03 | **S328** | iters: 1 pass (**F**) + 3 fixes = **4** (5th slot unspent — no cap-clear autonomous candidate) | tools touched: hebrew_blend_generator ×2 (`b85fe6f`, `63cdb5b` — AT CAP), classroom_dashboard ×2 (`b85fe6f`, `2f96547` — AT CAP), hebrew_dictionary ×2 (same — AT CAP), …[full text: IMPROVEMENT_ARCHIVE.md]
+- 2026-09-03 | **S329** | iters: 1 pass (**B**) + 3 fixes = **4** (5th slot unspent — every remaining candidate hits a capped tool or needs a decision) | tools touched: flash_cards ×2 (`a671ed5`, `5ec9292` — AT CAP), hebrew_blend_generator ×2 (`5ec9292`, `de935af` — AT CAP), classroom_dashboard ×1 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- 2026-09-03 | **S328** | iters: 1 pass (**F**) + 3 fixes = **4** (5th slot unspent — no cap-clear autonomous candidate) | tools touched: hebrew_blend_generator ×2 (`b85fe6f`, `63cdb5b` — AT CAP), classroom_dashboard ×2 (`b85fe6f`, `2f96547` — AT CAP), hebrew_dictionary ×2 (same — AT CAP), …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-09-03 | **S327** | iters: 1 pass (**C**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: hebrew_blend_generator ×2 (`d0bf245`, `41679da` — AT CAP), classroom_dashboard ×2 (`45a5554`, `b02d715` — AT CAP) | patterns fixed: — (sub-11px functional text ×2 on the generator; `sub-floor touch …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -144,19 +148,17 @@ _(none)_
 
 - 2026-09-02 | **S310** | iters: 1 pass (**O**) + 1 fix + 2 (render/propose/revert cycles for the gate-5 proposals) + 1 close-out = **5 (FULL BUDGET)** | tools touched: dashboard **×1**, flash-cards **×1**, torah **×1**, trope **×1** (all inside `21d0067`, one shared decision) | patterns fixed: …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-09-01 | **S309** | iters: 1 pass (**O — REGISTERED AND FIRST-EVER RUN**) + 1 skill build + 3 fixes = **5 (FULL BUDGET)** | tools touched: dashboard **×2 (AT CAP** — `2d0a170` sweep, `3333d60` shadow tokens**)**, torah **×2 (AT CAP)**, trope **×2 (AT CAP)**, index **×2 (AT CAP** — `e9ac7a4`, …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S328 (2026-09-03):** hebrew_blend_generator **2026-09-03 (×2, `b85fe6f` navy bars, `63cdb5b` ws-dir names; S327 ×2, S326 ×1)**; S326 ×1, S322 ×2)**; classroom_dashboard **2026-09-03 (×2, `b85fe6f` navy bars, `2f96547` sub-section eyebrows; S327 ×2, S326 ×1, S325 ×2)**; S326 ×1, S325 ×2, S324 ×1, S323 ×2, S322 ×2, S321 ×2)**; Hebrew_Font_Maker 2026-09-03 (S326 ×2; outside-loop v5.39 `4638e7b`); torah_trainer + trope_tutor **2026-09-03 (×1 each, `b85fe6f`; S325 ×1 each, torah S324 ×2)**; torah S324 ×2); index 2026-09-03 (S325 ×1, S324 ×1, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S329 (2026-09-03):** hebrew_blend_generator **2026-09-03 (×2, `5ec9292` liveState gate, `de935af` vowel-group hover; S328 ×2, S327 ×2)**; flash_cards **2026-09-03 (×2, `a671ed5` preset merge, `5ec9292` liveState gate; S328 ×1, S321 ×1)**; classroom_dashboard **2026-09-03 (×1, `5ec9292`; S328 ×2, S327 ×2)**; hebrew_dictionary 2026-09-03 (S328 ×2); torah_trainer + trope_tutor 2026-09-03 (S328 ×1 each); Hebrew_Font_Maker 2026-09-03 (S326 ×2; outside-loop v5.39 `4638e7b`); index 2026-09-03 (S325 ×1); resources 2026-09-02 (S318 hover); contact …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
 - **`custom-property-written-on-documentElement-per-frame`** (registered 2026-09-03 S325 Pass D; **S326: 6 carriers found, 5 fixed** — `290267e` dashboard rails + drawer, `280965f` torah + trope drawers, `bc11d44` generator sidebar, `c0520f7` dashboard size sliders — **1 filed** …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`apply-settings-trusts-collection-members`**: ACTIVE (consequence-critical: a garbage share link is applied AND SAVED). **Last swept 2026-09-02 (S317 Pass A); S321 fixed the 4th carrier (`c2dea7e`, flash cards `applySettings` — every list and both lock shapes through one …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`apply-settings-trusts-collection-members`**: ACTIVE (consequence-critical: a garbage share link or file is applied AND SAVED). **S329 Pass B (arm 4, runtime: 221 wrong-type `.ivrit` payloads on the 4 `IVRIT_CFG` pages) found the gate ABOVE `applySettings`: carriers 5–7 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`control-class-without-a-hover-state`** — **re-swept 2026-09-03 (S328 Pass F, RUNTIME: 176 collapsible headers on 9 pages hovered with a real `page.mouse` in BOTH themes, control fired on FM `.tbtn` / resources `.hbtn`): hits 4 header classes on 7 tools, ALL FIXED (`b85fe6f` …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`control-class-without-a-hover-state`** — **S329: 1 more carrier FIXED (`de935af`, the generator's 7 `.vowel-group-header`s — the FAQ-underline idiom, since their colour is inline). Re-swept 2026-09-03 (S328 Pass F, RUNTIME: 176 headers on 9 pages, real `page.mouse`, both …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-hover-resolves-to-the-rest-colour`**: **swept 2026-09-02 (S317 Pass A, runtime dark hover on all 13 pages) — hits: 3, ALL FIXED (`b13c1e5` S317, the shared `js/i18n.js` switcher = 13 pages; `655e797` S318, FM `.ctl-btn` + dictionary `.emoji-gender-btn`). Open carriers: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -540,7 +542,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - I first-load & empty-state: 2026-09-03 (**S326 — 25th run, its first since S308 (~18 sessions); I was the single stalest by BOTH date and session and the S326 pointer named it AND both weighted surfaces. Mechanical gates clean a TWELFTH consecutive run:** 26 genuinely-virgin loads (13 pages × EN/HE, new context per load = empty localStorage AND IndexedDB, SW blocked) → 0 pageerrors / 0 …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- B console/error audit: 2026-09-02 (**S316 — 25th run, its first since S297 (~19 sessions); B was the single stalest by date and session and the S316 pointer named it AND both of its arms. Four arms, every probe controlled: happy path 28 loads clean; the outside-loop landings (dashboard first-run modal → drawer → panel-width lock, FM footer fold, idle-hide ×7) clean; failure path clean on 7 …[full text: IMPROVEMENT_ARCHIVE.md]
+- B console/error audit: 2026-09-03 (**S329 — 26th run, its first since S316 (13 sessions); B was the stalest unattended pass (O skipped, attended-only) and the S329 pointer named it. Four arms, every probe controlled: (1) 56 loads (14 pages × 1280/390 × light/dark) 0 pageerrors / 0 failed same-origin requests; (2) 10 real-click interactions clean; (3) THE S316 HANDOFF'S NEW AXIS — a `/data/` …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
@@ -552,10 +554,8 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-03 (**S328 — 26th run, its first since S313 (15 sessions); F was the single stalest by date and the S328 pointer named it AND the affordance: THE COLLAPSIBLE-HEADER HOVER IDIOM (S317's four-tool filing).** Method: every `.panel-title`/`.sub-section-hdr`/`.pos-sec-hdr`/`.adv-section-title`/`.shoresh-patterns-title`/`.vowel-group-header`/`summary` on 9 pages …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S329):** **BRANCH/PR: S328 ran on a FRESH branch `claude/improve-loop-0mbq58` (cut from `origin/main` `4b66a64`, the merged PR #222 head) → a DRAFT PR opened at close-out. CONTINUE that branch and PR if still open and unmerged; if merged, cut a fresh `claude/*` off latest `origin/main`. VERIFY via the API — this note is a snapshot.** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v652, `FONT_MAKER_VERSION` 5.39** — re-read both.
+**Next session (S330):** **BRANCH/PR: S329 CONTINUED `claude/improve-loop-0mbq58` → draft PR #223 (head after this close-out; base `origin/main` `4b66a64`). CONTINUE that branch and PR if still open and unmerged; if merged, cut a fresh `claude/*` off latest `origin/main`. VERIFY via the API — this note is a snapshot.** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v653, `FONT_MAKER_VERSION` 5.39** — re-read both.
 
-**⚑ THE STALEST PASS IS O (S315, attended only), THEN B (S316), A (S317), E (S318), L (S319), K (S320), N (S321), M (S322), H (S323).** **Unattended: skip O and take B.** B's delta since S316 is the whole merged PR #222 (S316–S327, 40+ page commits) plus S328's hover rules. **A's next sweep** re-runs `control-class-without-a-hover-state` on the filed FAQ-summary residual and checks the S328 dark-twin lesson on every hover rule added since S317. **O's surface is still flash_cards.html.**
+**⚑ THE STALEST PASS IS O (S315, attended only), THEN A (S317), E (S318), L (S319), K (S320), N (S321), M (S322), H (S323), G (S324), D (S325), I (S326), C (S327), F (S328), B (S329).** **Unattended: skip O and take A.** A's delta since S317 is PR #222 (S316–S327) + S328/S329's hover rules and gates; its sweep re-runs `control-class-without-a-hover-state` on the FAQ-summary residual, checks the S328 dark-twin lesson on every hover rule since S317, and re-sweeps `apply-settings-trusts-collection-members` with the `.ivrit` member axis now in its detection row. **O's surface is still flash_cards.html.**
 
-**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the FAQ `<summary>` hover residual (P4, 7 pages — the idiom is decided, `fb34b61`; needs a session where the hover class and those tools are cap-clear); the generator `.vowel-group-header` (inline colour); the picker section headers half-translated in HE (P4, K — 7 CSV rows + 9 sites); the dictionary `--dict-sidebar-w` carrier (reposition the fixed toggle first); the real-words 7.2px grid (layout decision); the S317 sub-floor trio; the S319/S323 gate-2 copy (attended). Seed bench: the scroll-style handout (torah, S324), the last-backup date (index, S323).
-
-**/!\ THE S328 METHOD LESSONS.** (a) **`body.dark .x` outranks `.x:hover`** — (0,2,1) vs (0,2,0) — so a hover rule on any class with a dark restatement needs a `body.dark .x:hover` twin or the dark theme silently keeps the rest colour; flash cards caught it at verification, not at authoring. (b) **A Pass-A census can under-count a convention:** S317 saw four tools; the F census with `summary` in the selector saw 176 headers on 8 pages — widen the selector to every disclosure shape before calling something a per-tool miss. (c) **A class that never renders is not a carrier:** FM's 13 `.panel-title` rows are `display:none` under the permanent `layout-tabbed` class (added unconditionally at init) — a hover census must report visible/total, and 0 visible means investigate, not skip (a rule added there is dead CSS; it was reverted).
+**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the `.ivrit` engine's `ivritSafeAssign` array gap (P3, shared block on 7 carriers — one iteration, sha-verify; needs flash cards + generator cap-clear); the FAQ `<summary>` hover residual (P4, 7 pages, idiom `fb34b61`); the picker section headers half-translated in HE (P4, K — 7 CSV rows + 9 sites); the dictionary `--dict-sidebar-w` carrier (reposition the fixed toggle first); the real-words 7.2px grid (layout decision); the S317 sub-floor trio; the S319/S323 gate-2 copy (attended). Seed bench: the scroll-style handout (torah, S324), the last-backup date (index, S323).
