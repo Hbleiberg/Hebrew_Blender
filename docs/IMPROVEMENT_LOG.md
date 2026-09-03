@@ -8,9 +8,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S322 Pass M — a CLAUDE.md i18n §5 breach on the outside-loop `735b451` landing; measured, three tokens to fix**) | classroom_dashboard.html | **Three drawer indents are physical `padding-left`, so the Hebrew UI loses them:** the lock-widths hint wrapper (`padding-left:18px;margin:-4px 0 8px`), the "↺ Reset all text sizes" wrapper (`padding-left:18px`) and `#countdownPresetNameRow` …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P3 (**NEW S323 Pass H — measured on the hub; the restore is correct, the page just does not follow it**) | index.html | **Restoring a backup whose `uiLang` is `he` and/or `darkMode` is `1` onto a fresh (English, light) hub writes both keys but leaves the hub itself English and light until reload** — `I18n.lang` stays `en`, `body.dark` stays off, the 🌙 button still reads "Dark" — while the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S322 Pass M — pre-existing, N-owned; S321 arm 1 checked the strip, not the plate**) | classroom_dashboard.html | **In fullscreen on a phone the exit plate sits ON the zoom bar:** `#fsExitBtn` (86×52, top 14 / right 16) overlaps `#zoomBar` (full-width, 47px tall) at 320 and 390 in EN and HE, so the bar's Reset button is under the plate. When fixed, also raise `#fsExitBtn .fs-label` …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S323 Pass H — GATE 2 copy; deferred unattended**) | index.html (`locales/ui-strings.csv`) | **The Manual-input import's confirm and success copy still describe the pre-AllTools dashboard-only import:** `home.alltools.import_confirm` "This will overwrite your current dashboard settings and merge all imported presets and schedules" and `home.alltools.import_success` "Import …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P4 (**NEW S323 Pass H — N arm 3's STATIC shape, the hub's carrier**) | index.html | **`.ie-modal { max-height: 90vh }` is the same centred-fixed-box-in-`vh` twin S321 logged for the dashboard's `.fr-modal`/`.swm-modal`;** on a phone with the URL bar expanded the box is taller than the visible viewport it is centred in. Measured 540px tall at 800×600 with the body scrolling and Erase …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S322 Pass M**) | classroom_dashboard.html | **`.sub-section-hdr` eyebrows are 0.68rem (10.88px)** (English Date / Hebrew Date / Time …), a hair under the 0.7rem floor `.panel-title` clears at 0.72rem; the weather panel's inline "↺ Refresh" is 0.68rem too. Two declarations. | found S322
 
@@ -76,6 +78,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
 
+- [ ] S | index.html | **The hub knows when the last backup was saved and never says so.** `ivritSaveFile` builds `savedAt` for the file and forgets it; a teacher opening ⚙ Import / Export cannot tell whether the .ivrit on the old laptop is a week or a year old. Store `hebrewBlender_lastBackupAt` on Save (per-device, erase-only) and show one line under the inventory ("Last backup: {date}" / …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [ ] M | resources.html | **"Submit a font" is a `mailto:` while "Suggest a Resource" is a real form.** Measured 2026-09-01: `openSubmitFont` builds a `mailto:` with a pre-filled subject and body and sets `window.location.href`; the sibling flow one view away is a Web3Forms POST with 5 required fields, 18 choice pills and hCaptcha. So the contribution path that actually needs a **file …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S | index.html | **Show which tools already hold your saved work, on the tool cards.** A returning teacher scanning eight cards has no way to see where their presets live; measured 2026-08-31, index has **no** per-card data indicator and no recency affordance at all — the only `badge` in the file is the flash-cards *Beta* tag, and the two `recent` hits are Font Maker key comments inside …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -92,13 +96,13 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-03 | (S323 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `0765757`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `735b451`; `sw.js` v645 and `FONT_MAKER_VERSION` 5.38 re-read from the files. **sw v645→v646** (2 precached …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-03 | `10fc812` | classroom_dashboard.html | **Three drawer indents → `padding-inline-start`** (the lock-widths hint, the "↺ Reset all text sizes" wrapper, `#countdownPresetNameRow`): physical `padding-left` left the Hebrew UI flush with the labels. Closes the S322 P3. | Verified: 1280/800 × light/dark — EN L18/L18/L16 unchanged, HE now R18/R18/R16 (was 0), crops before/after, 0 …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-09-03 | (S322 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `7176777`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `735b451`; `sw.js` v644 and `FONT_MAKER_VERSION` 5.38 re-read from the files. **sw v644→v645** (5 precached pages …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-03 | `50e4549` | classroom_dashboard.html | **Fullscreen quick-strip labels 9.6px → 11.2px** — the six labels under the strip icons (`.fs-strip-btn` 0.6rem) on the PROJECTED view; now 0.7rem, the suite floor. The exit plate's `.fs-label` (8.32px) was deliberately left: raising it widens the plate 86→108px onto a zoom bar it already overlaps at phone widths (logged). | Verified: …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [x] 2026-09-03 | (S321 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `7cffb51`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `735b451`; `sw.js` v643 and `FONT_MAKER_VERSION` 5.38 re-read from the files. **sw v643→v644** (3 precached pages …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-03 | `09f6220` | Hebrew_Font_Maker.html | **Primary buttons get a hover colour** — the S318 candidate said a hovered `.ctl-btn.primary` paints warm-gray under white; MEASURED with a real `page.hover`: hover = rest (navy/white) in light, because `.ctl-btn:hover` and `.ctl-btn.primary` tie at (0,2,0) and the primary rule comes later — the candidate counted `:hover` as a …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-03 | `35bc4d6` | classroom_dashboard.html | **The board-text edit pencil shows on touch screens** — `.dash-edit-pencil` was `opacity:0` until `#dashTextWrap:hover`, which never fires under `(hover: none)`, so on a phone/tablet in-place editing had no visible way in (the drawer's text box still worked). A `@media (hover: none)` rule shows it at rest; mouse behaviour unchanged (S321 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -106,19 +110,11 @@ _(none)_
 
 - [x] 2026-09-03 | (S319 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `d61c860`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `735b451`; `sw.js` v641 and `FONT_MAKER_VERSION` 5.38 re-read from the files. **sw v641→v642** (4 precached pages …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-02 | (S318 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (verified via the API at session start: open, draft, `mergeable_state:clean`, head `a91e49a`, 0 check runs — no `.github/workflows`, correct). **Zero outside-loop drift:** `origin/main` still `735b451`; `sw.js` v640 and `FONT_MAKER_VERSION` 5.38 re-read from the files. …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-02 | `655e797` | Hebrew_Font_Maker.html + hebrew_dictionary.html | (**S318 iter 5 — `dark-hover-resolves-to-the-rest-colour`, its LAST two open carriers**) **`body.dark .ctl-btn:hover` and `body.dark .emoji-gender-btn:hover` get the suite's dark hover pair `#2a3349`** (both hovers were `var(--warm-gray)`, which in dark equals `--white`, each button's rest colour). | Real …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-02 | `5fe1d09` | README.md | (**S318 iter 4 — Pass E README accuracy**) **"Currently v5.5" (the FM is on 5.38; README never tracks bumps) now points at the About tab; the Files table gains the rows it lacked** — the whole i18n system (`js/i18n.js`, `locales/`, `build-locales`, `check-i18n` + baseline), `terms.html`, `i18n-test.html`, `update-sitemap`, `check-inline-js`, the trope …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-02 | `a0d1fa4` | docs/reference/ops.md | (**S318 iter 3 — Pass E reference accuracy**) **The per-page CSP allowlist re-trued from a census of every page's meta tag**: `cdn.jsdelivr.net` font-src is on all seven tools (the doc said four), the Trope Tutor's `raw.githubusercontent.com` media-src, `files.readme.io` on home + Torah Trainer, `www.youtube-nocookie.com` on the dashboard, …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-02 | `84c65b1` | sitemap.xml | (**S318 iter 2 — Pass E freshness**) **`lastmod` for privacy, terms and contact moved 2026-09-01 → 2026-09-02** (their last commit is `8fef206`, the S313 footer-hover fix, which no close-out followed with `update-sitemap`; stale on `origin/main` too). | `node scripts/update-sitemap.mjs` on the unshallowed clone; diff = exactly three dates; a second run …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-03 | **S323** | iters: 1 pass (**H**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: index ×2 (`fa8901f`, `3c43b32` — AT CAP), classroom_dashboard ×2 (`10fc812`, `1336ddd` — AT CAP) | patterns fixed: — (H is a walkthrough; the indent fix is a logical-CSS breach, not a registered …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-09-03 | **S322** | iters: 1 pass (**M**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: classroom_dashboard ×2 (`95914bb`, `50e4549` — AT CAP), hebrew_blend_generator + hebrew_dictionary + torah_trainer + trope_tutor ×2 each (`7334b8e`, `7b86720` — one converged tile pair, each AT CAP) | …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -158,11 +154,9 @@ _(none)_
 
 - 2026-08-31 | **S304** | iters: 1 pass (**M**) + 1 fix + 1 fix + 2 (micro-feature) = **5 (FULL BUDGET)** | tools touched: privacy **×1** + terms **×1** (`e093389` — **also the cap-exempt Pass-M target**), contact **×1** (`e093389`), hebrew_dictionary **×1** / hebrew_blend_generator **×1** / …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-08-31 | **S303** | iters: 1 pass (**N**) + 1 fix + 1 fix + 1 fix = **4 of 5** (gate 1 chose three fixes over a micro-feature, which is what the 5th would have cost) | tools touched: hebrew_dictionary **×2 (AT CAP** — `d2f6bc7` the unremembered Collapse-all, `73ec804` the phone rewriting the …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S322 (2026-09-03):** classroom_dashboard **2026-09-03 (×2, `95914bb` size-row ↺, `50e4549` strip labels; S321 ×2)**; hebrew_blend_generator, hebrew_dictionary, torah_trainer, trope_tutor **2026-09-03 (×2 each, `7334b8e` tile pair, `7b86720` [DEFAULT] marker)**; Hebrew_Font_Maker 2026-09-03 (S321 `09f6220`); flash_cards 2026-09-03 (S321 `c2dea7e`); all 13 pages via `js/i18n.js` 2026-09-02 (S317 `b13c1e5`); index, resources, contact, privacy, terms, 404 2026-09-02 (S313 `8fef206`).
+- **S323 (2026-09-03):** index **2026-09-03 (×2, `fa8901f` wrong-file refusal, `3c43b32` inventory after erase)**; classroom_dashboard **2026-09-03 (×2, `10fc812` logical indents, `1336ddd` exit plate; S322 ×2, S321 ×2)**; hebrew_blend_generator, hebrew_dictionary, torah_trainer, trope_tutor 2026-09-03 (S322 ×2 each, `7334b8e`, `7b86720`); Hebrew_Font_Maker 2026-09-03 (S321 `09f6220`); flash_cards 2026-09-03 (S321 `c2dea7e`); all 13 pages via `js/i18n.js` 2026-09-02 (S317 `b13c1e5`); resources, contact, privacy, terms, 404 2026-09-02 (S313 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -558,16 +552,16 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - L SEO & discoverability audit: 2026-09-03 (**S319 — 14th run, its first since S301 (~18 sessions); L was the single stalest by BOTH date and session number and the S319 pointer named it AND its arms. Ran the S301 shape, and for the FIRST TIME SINCE S274 THE BYTE-CHECK REPORTED REAL MOVEMENT: `4bedf00..HEAD` (92 commits / 41 files / +13,505 −4,881), 13/14 files moved and **7/14 SEO surfaces …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- H teacher walkthrough / paper-cuts (one tool): 2026-09-01 (**S305 — `resources.html`, its FIRST-EVER dedicated H and the FIRST CHROME PAGE H HAS EVER WALKED.** H was the single stalest pass by BOTH date and session number (2026-08-30/S292) and the S305 pointer named the target; the re-derivation AGREED and the reason is structural, not a tie-break: **H had covered all seven tools and no chrome …[full text: IMPROVEMENT_ARCHIVE.md]
+- H teacher walkthrough / paper-cuts (one tool): 2026-09-03 (**S323 — `index.html`, the hub's FIRST-EVER dedicated H and the 2nd chrome page H has walked (resources S305). H was the single stalest by BOTH date and session (2026-09-01/S305) and the S323 pointer named it; target re-derived against the ARCHIVE — H's per-tool history (dictionary S292, flash_cards S206, torah S217, trope S228, FM …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - E freshness/site-health: 2026-09-02 (**S318 — 26th run, its first since S300 (~18 sessions); E was the single stalest by BOTH date and session number and the S318 pointer named it AND its arms. Delta `7d2b1c1..HEAD` per the S300 row (the S315/S316 outside-loop `sw.js` moves, the `js/i18n.js` edit, the FM footer fold). THREE FINDINGS, ALL FIXED THIS SESSION; nine arms clean.** (1) `sitemap.xml` …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - F cross-tool consistency: 2026-09-02 (**S313 — 25th run, its first since S296 (~17 sessions); F was the single stalest by BOTH date and session number and the S313 pointer named it AND the affordance: THE HOVER/PRESSED-STATE COLOUR LANGUAGE.** Method: every `:hover`/`:active` rule on all 13 pages tallied by the properties it sets, then EVERY visible control hovered with a real `page.mouse` and …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S323):** **BRANCH/PR: CONTINUE on `claude/improve-loop-k280wo` → draft PR #222 (S316–S322 commits; verify via the API first — if it has merged, cut a fresh `claude/*` branch off latest `origin/main`).** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v645, `FONT_MAKER_VERSION` 5.38** — re-read both.
+**Next session (S324):** **BRANCH/PR: CONTINUE on `claude/improve-loop-k280wo` → draft PR #222 (S316–S323 commits; verify via the API first — if it has merged, cut a fresh `claude/*` branch off latest `origin/main`).** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v646, `FONT_MAKER_VERSION` 5.38** — re-read both.
 
-**⚑ THE STALEST PASS IS H (2026-09-01, S305), THEN G (S306), D (S307), I (S308).** H has walked all seven tools and `resources.html`; re-derive its target against the ARCHIVE — the changed surfaces are the dashboard's outside-loop panel-width lock + S315 drawer (never H-walked) and the Font Maker footer fold; a chrome page H has never walked (contact, index) is the structural alternative. Frictions → P3, missing small affordances → Feature seeds. **O's next target is flash_cards.html — attended only.** Run `update-sitemap` at EVERY close-out.
+**⚑ THE STALEST PASS IS G (2026-09-01, S306), THEN D (S307), I (S308), C (S312).** G's last run was the hub's AllTools `.ivrit` + the six chrome pages' paper; re-derive its target against the ARCHIVE (the rotation row keeps only the last run) — print-adjacent surfaces changed since: the dashboard's fullscreen strip/plate (S321–S323) and the four font-picker tile pairs (S322) are not paper, so the tool whose printed/exported artifact is longest un-audited wins. **O's next target is flash_cards.html — attended only.** Run `update-sitemap` at EVERY close-out.
 
-**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the dashboard's three physical `padding-left` indents (P3, three tokens — FIRST dashboard item, the dashboard was at cap S322); the fullscreen exit plate over the zoom bar at phone widths (P3, N's; take the 8.32px label with it); the two dashboard `vh`→`dvh` modal twins (P4); the "Full Screen" 8px label (P3); the S319 gate-2 Hebrew-interface claim (attended); the flash cards Colors-mode tile labels (a gate). `apply-settings-trusts-collection-members` has NO open carriers — its next A sweep is a re-check.
+**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the hub not following a restored `uiLang`/`darkMode` until reload (P3, index — FIRST index item, index was at cap S323); the header's "Full Screen" 8px cap (P3, arithmetic-constrained, dashboard); the dashboard `.sub-section-hdr` 10.88px eyebrows and the "Date format" wrap (P4); the `vh` modal twins now on three carriers (dashboard ×2 + hub, P4); the S319 gate-2 Hebrew-interface claim and the S323 gate-2 manual-mode copy (attended). `apply-settings-trusts-collection-members` has NO open carriers — its next A sweep is a re-check.
 
-**/!\ THE S322 METHOD LESSONS.** (a) **A background walker must composite alpha:** counting a `rgba(255,255,255,.1)` plate as opaque white produced 1.00:1 rows for every white-on-navy header control — the probe's, not the page's; require alpha > 0.5 or composite. (b) **Assert the probe's container resolves** (S295 rule, re-learned): `#settingsPanel` matched nothing — the drawer is `#settingsModal` — and the rhythm/mirror arms returned empty lists that read as 'clean'. (c) **A text-floor bump checks its hierarchy neighbour first:** the credit line alone at 0.7rem outsized the bold font name (9.92px); preview with an in-page override, then move the PAIR.
+**/!\ THE S323 METHOD LESSONS.** (a) **A declaration in an element's inline `style` beats every stylesheet rule:** the desktop `padding-right` for the zoom bar read as shipped in the diff and measured as NOT applied (label still under the plate at 1280 HE) — move the declaration into a rule, then measure again; never trust a CSS fix you have only read. (b) **An `addInitScript` seed re-runs on every navigation,** so a "still there" reading after a destructive action is only trustworthy beside a `framenavigated` counter (0 here — the erase line really was stale). (c) **On the hub, `ivritToolMismatch` exempts AllTools, so ANY tool's file walks in** — a hub-side check has to be its own line, before the mode ask. (d) **Drive the real artifact:** the H arms used a captured download and `setInputFiles` on the hidden input, not `gather()`; the counts line agreed with the file both ways.
