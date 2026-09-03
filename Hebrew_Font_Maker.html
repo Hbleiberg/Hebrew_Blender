@@ -18269,7 +18269,9 @@ function deleteMyFontUI(name) {
     [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' }, { label: I18n.t('fontmaker.modals.remove'), onClick: async () => { try { await deleteUserFont(name); } catch (e) { console.error(e); } if (_myFontsOpen) renderMyFontsList(); } }]);
 }
 async function saveCurrentToMyFonts(bytes) {
-  if (!project || project.letters.filter(l => l.contours).length === 0) { status(I18n.t('fontmaker.status.trace_first')); return; }
+  // Same gate as exportFont: the pre-drawn punctuation glyphs carry contours on a brand-new project,
+  // so a bare `l.contours` count let an untraced font reach the build (and the engine download).
+  if (!project || coreLetterStats().traced === 0) { status(I18n.t('fontmaker.status.trace_first')); return; }
   // The My Fonts store is keyed by name — a bold save must not evict its Regular sibling.
   const fam = (project.font.familyName || 'My Hebrew Font').trim() + (fontIsBold() ? ' Bold' : '');
   try {
