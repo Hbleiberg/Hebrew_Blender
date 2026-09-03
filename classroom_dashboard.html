@@ -1635,6 +1635,10 @@
     border-radius: 8px; border: 1px solid var(--border); background: var(--white); color: var(--muted);
     cursor: pointer; font-size: 1rem; line-height: 1; opacity: 0; transition: opacity 0.15s; }
   #dashTextWrap:hover .dash-edit-pencil, .dash-edit-pencil:focus { opacity: 0.9; }
+  /* Touch screens have no hover, so the pencil stayed at opacity 0 on a phone or tablet and
+     in-place editing had no visible way in (the drawer's text box still works, but nothing on the
+     board said so). Show it at rest where (hover: none); mouse behaviour is unchanged. (S321 Pass N arm 4) */
+  @media (hover: none) { .dash-edit-pencil { opacity: 0.9; } }
   .dash-edit-pencil:hover { border-color: var(--gold); color: var(--gold-text); }
   body.dark .dash-edit-pencil { background: var(--navy-deep); }
   body.fullscreen .dash-edit-pencil { display: none; }   /* in fullscreen the ✎ lives on the quick strip */
