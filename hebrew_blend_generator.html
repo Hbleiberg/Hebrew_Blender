@@ -636,7 +636,7 @@ footer a { display: inline-block; padding-block: 5px; }
     flex-direction: column;
     align-items: center;
     gap: 1px;
-    padding: 5px 3px;
+    padding: 5px 1px;   /* 1px sides: the 54px tile then holds the longest name (Hebrew "שין שמאלית") on one line at 0.62rem */
     border: 1px solid var(--border);
     border-radius: 5px;
     cursor: pointer;
@@ -647,7 +647,9 @@ footer a { display: inline-block; padding-block: 5px; }
   .letter-tile:hover { border-color: var(--gold); }
   .letter-tile.selected { background: var(--navy); border-color: var(--navy); color: var(--white); }
   .letter-tile .heb { font-size: 1.2rem; font-family: var(--heb-font); direction: rtl; }
-  .letter-tile .name { font-size: 0.55rem; text-align: center; line-height: 1.2; opacity: 0.75; direction: ltr; }
+  /* 0.62rem (9.92px) is the step the font pickers' credit lines use (S322): the 0.7rem floor wraps
+     "Tzadi sofit" / "שין שמאלית" inside a 5-column tile. Same step on the lock grids below. */
+  .letter-tile .name { font-size: 0.62rem; text-align: center; line-height: 1.2; opacity: 0.75; direction: ltr; }
   .rw-letter-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; direction: rtl; }
   .rw-letter-tile {
     display: flex; flex-direction: column; align-items: center; gap: 1px;
@@ -662,13 +664,13 @@ footer a { display: inline-block; padding-block: 5px; }
   .lock-letter-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; direction: rtl; }
   .lock-letter-tile {
     display: flex; flex-direction: column; align-items: center; gap: 1px;
-    padding: 3px 2px; border: 1px solid var(--border); border-radius: 4px;
+    padding: 3px 1px; border: 1px solid var(--border); border-radius: 4px;
     cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s; user-select: none; background: var(--white);
   }
   .lock-letter-tile:hover { border-color: var(--gold); }
   .lock-letter-tile.selected { background: var(--navy); border-color: var(--navy); color: var(--white); }
   .lock-letter-tile .heb { font-size: 0.95rem; font-family: var(--heb-font); direction: rtl; }
-  .lock-letter-tile .name { font-size: 0.4rem; text-align: center; line-height: 1.2; opacity: 0.75; direction: ltr; }
+  .lock-letter-tile .name { font-size: 0.62rem; text-align: center; line-height: 1.2; opacity: 0.75; direction: ltr; }
   .lock-pos-header { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
   .lock-pos-header .pos-label { font-size:0.72rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; }
   .lock-pos-header .lock-btns { display:flex; gap:3px; margin-left:auto; }
@@ -681,7 +683,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .lock-vowel-tile:hover { border-color: var(--gold); }
   .lock-vowel-tile.selected { background: var(--navy); border-color: var(--navy); color: var(--white); }
   .lock-vowel-tile .heb { font-size: 1.1rem; font-family: var(--heb-font); direction: rtl; }
-  .lock-vowel-tile .name { font-size: 0.55rem; text-align: center; line-height: 1.1; opacity: 0.78; direction: ltr; }
+  .lock-vowel-tile .name { font-size: 0.62rem; text-align: center; line-height: 1.1; opacity: 0.78; direction: ltr; }
   body.dark .lock-vowel-tile { background: #1e2535; border-color: var(--border); color: #dde4f0; }
   body.dark .lock-vowel-tile.selected { background: #2a4070; border-color: #4a6aaa; color: #dde4f0; }
   body.dark .lock-vowel-tile:hover { border-color: var(--gold); }
