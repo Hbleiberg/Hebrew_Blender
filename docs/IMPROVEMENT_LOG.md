@@ -8,19 +8,15 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S318 Pass E — a STATIC cascade reading, UNMEASURED: ground it with a real hover before fixing**) | Hebrew_Font_Maker.html | **`.ctl-btn:hover{background:var(--warm-gray)}` (0,2,1) outranks `.ctl-btn.primary{background:var(--navy);color:#fff}` (0,2,0), so a hovered primary button should paint warm-gray under white text in light** (the S318 dark twin mirrors the same order, so theme …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S319 Pass L — the inverse arm's whole-corpus hit; GATE 2 (copy), deferred unattended**) | index.html (+ every tool page) | **The Hebrew-language interface is claimed NOWHERE a crawler can see.** `js/i18n.js` landed 2026-07-11 and every page ships a visible EN/HE switcher, yet 0 of 14 pages carry interface/bilingual/"in Hebrew or English" vocabulary in `<title>`, description, OG, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**NEW S317 Pass A — 3rd carrier of `apply-settings-trusts-collection-members`, graceful shape**) | hebrew_dictionary.html | **`applyDictState` rebuilds `posFilters[i]`/`anyLetterFilter`/`len`/`pos`/`themes` Sets from payload members with no membership check and `lastState` persists them**: a `?s=` with `pos:[null,1,{},[],'zz']` (or `len`, or `anyLetters`) shows **"No words found"** for …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S318 Pass E — a STATIC cascade reading, UNMEASURED: ground it with a real hover before fixing**) | Hebrew_Font_Maker.html | **`.ctl-btn:hover{background:var(--warm-gray)}` (0,2,1) outranks `.ctl-btn.primary{background:var(--navy);color:#fff}` (0,2,0), so a hovered primary button should paint warm-gray under white text in light** (the S318 dark twin mirrors the same order, so theme …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S317 Pass A — filed to F, not fixed: a suite-wide idiom, not a per-page miss**) | hebrew_blend_generator.html + flash_cards.html + classroom_dashboard.html + hebrew_dictionary.html | **Every collapsible header (`.panel-title`, the dashboard `.sub-section-hdr`, the dictionary `.pos-sec-hdr`, the generator `.vowel-group-header`) carries `cursor:pointer` and gives NO hover feedback …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S317 Pass A — three `sub-floor touch target` shapes, filed to C (its owner), pseudo-aware runtime census**) | resources + generator + flash_cards + trope_tutor + Hebrew_Font_Maker + classroom_dashboard | **(1) The FAQ `<summary>` rows are 19–23px tall** (resources/generator/flash cards 19px heading + 21px questions; trope 21 + 24; FM `.ft-h` 23) — full-width block disclosures, so …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**NEW S317 Pass A — `non-finite-number-from-a-loaded-file`, the array-member blind spot of the S287 fix**) | flash_cards.html | **`applySettings` accepts a non-finite `vowelPositions[0]`**: poisoning every numeric in `getSettings()` with `1e999` and pushing it through `applySettings` leaves exactly one survivor, `vowelPositions.0` (the 9 scalar fields S287 guarded all clamp). …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] P4 (**NEW S316 Pass B arm 3 — the generator half shipped `463685a`, its lock sets `614c817` (S317); S317 Pass A widened THIS carrier to `lockLetters`/`lockedVowelKeys`/`selectedColors`/`selectedEmojiSubs` (garbage colours measured applied AND saved, page still degrades honestly); pattern `apply-settings-trusts-collection-members`**) | flash_cards.html | **`applySettings` keeps whatever …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S316 Pass B arm 3 — a positive-control finding, not a crash**) | hebrew_blend_generator.html | **A `blendCount` off the `<select>`'s list (e.g. 12, or `'abc'`) sets `.value` to `""` and the auto-generated sheet says "0 blends"**; the app's own links only emit list values, so only hand-edited links/presets hit it. Snap to the nearest option or ignore an unknown value in …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P3 (**NEW S312 Pass C — the S309 backlog's SMALLEST string, measured at RUNTIME**) | classroom_dashboard.html | **"Full Screen" under the header's fullscreen icon renders at 8px** (`.fs-btn .fs-cap` 0.5rem, 1280 and 800px alike) — the suite's smallest functional label, on the PROJECTED tool. The constraint is arithmetic, and a comment at `.hbtn.fs-btn` records why: icon 16 + gap 1 + cap 8 + …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -90,9 +86,15 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-03 | (S319 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (API at start: open, draft, `mergeable_state:clean`, head `d61c860`, 0 check runs — correct, no workflows). **Zero outside-loop drift:** `origin/main` still `735b451`; `sw.js` v641 and `FONT_MAKER_VERSION` 5.38 re-read from the files. **sw v641→v642** (4 precached pages …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-03 | `b0f1583` | hebrew_blend_generator.html | **An unknown `blendCount` keeps the current pick** — `applySettings` assigned any value to the `<select>`; off-list (12, `'abc'`) set `.value` to `""` and the sheet said "0 blends". Only a value the select offers is applied (S316 Pass B candidate). | Playwright: 12/`'abc'`/`''`/`null` keep 40, `'40'`/40/20 apply, 0 page errors …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-03 | `9f57093` | flash_cards.html | **`vowelPositions` members get the scalar guard** — the filter's bound read the RAW `s.mode` (a non-finite mode let a non-finite member through, strings survived by coercion, a non-array threw on `.filter`); now integers within the CLAMPED mode, else the mode's own position. Pattern `non-finite-number-from-a-loaded-file` (S317's array blind spot). …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-09-02 | (S318 close-out) | branch/deploy note | **Branch/PR: CONTINUED `claude/improve-loop-k280wo` → draft PR #222** (verified via the API at session start: open, draft, `mergeable_state:clean`, head `a91e49a`, 0 check runs — no `.github/workflows`, correct). **Zero outside-loop drift:** `origin/main` still `735b451`; `sw.js` v640 and `FONT_MAKER_VERSION` 5.38 re-read from the files. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-02 | `655e797` | Hebrew_Font_Maker.html + hebrew_dictionary.html | (**S318 iter 5 — `dark-hover-resolves-to-the-rest-colour`, its LAST two open carriers**) **`body.dark .ctl-btn:hover` and `body.dark .emoji-gender-btn:hover` get the suite's dark hover pair `#2a3349`** (both hovers were `var(--warm-gray)`, which in dark equals `--white`, each button's rest colour). | Real …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-09-02 | `655e797` | Hebrew_Font_Maker.html + hebrew_dictionary.html | (**S318 iter 5 — `dark-hover-resolves-to-the-rest-colour`, its LAST two open carriers**) **`body.dark .ctl-btn:hover` and `body.dark .emoji-gender-btn:hover` get the suite's dark hover pair `#2a3349`** (both hovers were `var(--warm-gray)`, which in dark equals `--white`, each button's rest colour). | Real …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-02 | `5fe1d09` | README.md | (**S318 iter 4 — Pass E README accuracy**) **"Currently v5.5" (the FM is on 5.38; README never tracks bumps) now points at the About tab; the Files table gains the rows it lacked** — the whole i18n system (`js/i18n.js`, `locales/`, `build-locales`, `check-i18n` + baseline), `terms.html`, `i18n-test.html`, `update-sitemap`, `check-inline-js`, the trope …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -132,19 +134,11 @@ _(none)_
 
 - [x] 2026-09-02 | `40bf42a` | classroom_dashboard.html | (**S315 iter 5 — the LAST logged `control-class-without-a-hover-state` carrier**) **Bare `.btn-xs` buttons and the projected spoiler toggle get hover states.** Two `.btn-xs` carried `background:var(--white)` inline (the S314 lesson again) — moved into `.btn-xs:not(.btn)`; hover = the drawer's `.timer-preset-btn` gold-border idiom; spoiler …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-02 | (S314 close-out) | branch/deploy note | **Branch/PR: FRESH `claude/improveloop-deslop-rm678r` off `origin/main` `1a87927` (PR #218 merged per the S313 close-out), draft PR opened at close-out.** **Drift check: ZERO outside-loop drift** — `origin/main` `1a87927` = the S313 ledger commits, `sw.js` v632, `FONT_MAKER_VERSION` 5.37; clone still shallow. **`sw.js` v632→v633** …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-02 | `0536f51` | flash_cards.html | (**S314 iter 2 — the S313 P3 the pointer named first**) **The four mode pills and ten `.count-btn` card-count buttons get a hover state** — two rules on the unselected controls using the page's own `.btn:hover` step (white↔paper). Pattern `control-class-without-a-hover-state`. | `verifyHover.mjs` (real `page.mouse`, computed-prop diff, …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-02 | `c6ffa99` | hebrew_blend_generator.html | (**S314 iter 3 — the second S313 P3**) **The header's Home, Tour, dark-mode and fullscreen controls get a hover state.** The candidate's "one CSS rule, no inline surgery" could not work — inline `background:transparent` beats any `:hover` selector — so the background moved into the existing shared `header > a, header > button` rule and …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-02 | `76cea25` | hebrew_blend_generator.html | (**S314 iter 4 — found by iter 3's CONTROL, not by a pass: `.blend-type-btn` fired 10/13 in light but 2/13 in dark**) **The blend-type buttons' dark hover was invisible: dark `--warm-gray` = dark `--white` = #1e2535**, the S313 lesson (c) shape on a second tool. One rule now uses the file's own dark hover pair (`.rw-drill-btn:hover`, …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-02 | `679a085` | trope_tutor.html | (**S314 iter 5 — the S312 P4, taken because the hover pattern hit its 2-per-session cap**) **Roving tabindex on the Learn/Drill tabs** — `tabIndex` follows `aria-selected` in `setMode()`, the Drill tab starts at -1; the RTL-aware arrow handler already focuses + clicks. | Playwright keyboard walk, light + dark × 1280 + 800: Tab from Learn lands on …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-03 | **S319** | iters: 1 pass (**L**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: Hebrew_Font_Maker ×1 (`5272be5`), hebrew_dictionary ×1 (`16cb1c0`), flash_cards ×1 (`9f57093`), hebrew_blend_generator ×1 (`b0f1583`) — none at cap | patterns fixed: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-09-02 | **S318** | iters: 1 pass (**E**) + 4 fixes = **5 (FULL BUDGET)** | tools touched: Hebrew_Font_Maker ×1 + hebrew_dictionary ×1 (`655e797`, one commit, both carriers); repo docs/plumbing ×3 (`84c65b1` sitemap, `a0d1fa4` ops.md, `5fe1d09` README — charged to no tool) | patterns fixed: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -184,15 +178,13 @@ _(none)_
 
 - 2026-08-31 | **S299** | iters: 1 pass (**A**) + 2 (micro-feature) + 1 fix + 1 (seed intake) = **5 (FULL BUDGET)** | tools touched: classroom_dashboard **×1** (`143d482`, the gate-1 micro-feature), plus marker-comment-only edits to hebrew_dictionary / resources / Hebrew_Font_Maker in the same …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-08-30 | **S298** | iters: 1 pass (**C**) + 2 fixes = **3 of 5 — STOPPED DELIBERATELY, first non-full session since S292** | tools touched: torah_trainer **×1**, trope_tutor **×1**, classroom_dashboard **×1** (all three in `1206653`), hebrew_blend_generator **×1** (`63cf248`). **No tool near …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S318 (2026-09-02):** Hebrew_Font_Maker **2026-09-02 (×1, `655e797` `.ctl-btn` dark hover)**; hebrew_dictionary **2026-09-02 (×1, `655e797` mode-button dark hover)**; hebrew_blend_generator 2026-09-02 (S317 `614c817`); flash_cards 2026-09-02 (S317 `0c20916`); all 13 pages via `js/i18n.js` 2026-09-02 (S317 `b13c1e5`); classroom_dashboard 2026-09-02 (S315 `40bf42a`; outside-loop `735b451`); trope_tutor 2026-09-02 (S314 `679a085`); index, resources, contact, privacy, terms, 404 2026-09-02 (S313 `8fef206`); torah_trainer 2026-09-02 (S312 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S319 (2026-09-03):** Hebrew_Font_Maker **2026-09-03 (×1, `5272be5` FAQ twin)**; hebrew_dictionary **2026-09-03 (×1, `16cb1c0` share-link members)**; flash_cards **2026-09-03 (×1, `9f57093` vowelPositions guard)**; hebrew_blend_generator **2026-09-03 (×1, `b0f1583` blendCount enum)**; all 13 pages via `js/i18n.js` 2026-09-02 (S317 `b13c1e5`); classroom_dashboard 2026-09-02 (S315 `40bf42a`; outside-loop `735b451`); trope_tutor 2026-09-02 (S314 `679a085`); index, resources, contact, privacy, terms, 404 2026-09-02 (S313 `8fef206`); …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`apply-settings-trusts-collection-members`**: **re-swept 2026-09-02 (S317 Pass A) — hits: 1 FIXED (`614c817`, the generator's three lock sets — same `applySettings` as `463685a`, 40 lines lower), 2 OPEN carriers filed (flash cards: widened to …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`apply-settings-trusts-collection-members`**: ACTIVE. **Last swept 2026-09-02 (S317 Pass A); S319 fixed the 3rd carrier (`16cb1c0`, dictionary `applyDictState`) — hits all-time 3 fixed (`463685a`, `614c817`, `16cb1c0`), 1 OPEN carrier (flash cards …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`control-class-without-a-hover-state`** — re-swept 2026-09-02 (S317 Pass A, RUNTIME, every visible control on all 13 pages hovered with a real `page.mouse` in BOTH themes); hits this sweep 1, FIXED (`fb34b61`, the FM v5.38 footer's links + FAQ questions, the outside-loop …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -220,7 +212,7 @@ _(none)_
 
 - **`dark-mode-token-as-text-on-a-light-ground`** (**NEW, registered AND CLOSED 2026-08-29 (S291 iters 2+4) — 2 carriers found, both fixed, suite census clean**): a rule paints text with a token whose value is tuned for the OTHER theme's ground, so it is correct in one mode and …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`non-finite-number-from-a-loaded-file`**: **re-swept 2026-09-02 (S317 Pass A, RUNTIME, with a no-poison CONTROL per tool) — settings arm CLEAN on all 7 tools (every numeric in `hebrew<Tool>_settings`/`lastState` poisoned to `1e999`, reload, re-save: 0 non-finite survivors, 0 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`non-finite-number-from-a-loaded-file`**: ACTIVE (consequence-critical: saved work). **Last swept 2026-09-02 (S317 Pass A, runtime, no-poison control per tool): settings arm clean on all 7 tools; the one survivor (flash cards `vowelPositions.0`) FIXED S319 `9f57093` — hits …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`var()-on-an-undefined-custom-property`**: **re-swept 2026-09-02 (S317 Pass A, delta only): hits: 0; clean streak: 2 — ACTIVE.** Every `var(--x)` added since `0dff0a3` resolves; the static suspect list flagged `--white` on three pages that declare it (a probe defect — the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -582,7 +574,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
-- L SEO & discoverability audit: 2026-08-31 (**S301 — 13th run, its first since S288 (~13 sessions); L was the single stalest by BOTH date and session number and the S301 pointer named it. Ran EXACTLY the S288-prescribed shape and it held a fifth time. **Byte check `be7bff9..HEAD` (59 commits / 22 files / +1,525 −153, 12 of the 14 root pages touched): 14/14 pages BYTE-IDENTICAL across the whole …[full text: IMPROVEMENT_ARCHIVE.md]
+- L SEO & discoverability audit: 2026-09-03 (**S319 — 14th run, its first since S301 (~18 sessions); L was the single stalest by BOTH date and session number and the S319 pointer named it AND its arms. Ran the S301 shape, and for the FIRST TIME SINCE S274 THE BYTE-CHECK REPORTED REAL MOVEMENT: `4bedf00..HEAD` (92 commits / 41 files / +13,505 −4,881), 13/14 files moved and **7/14 SEO surfaces …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-09-01 (**S305 — `resources.html`, its FIRST-EVER dedicated H and the FIRST CHROME PAGE H HAS EVER WALKED.** H was the single stalest pass by BOTH date and session number (2026-08-30/S292) and the S305 pointer named the target; the re-derivation AGREED and the reason is structural, not a tie-break: **H had covered all seven tools and no chrome …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -590,10 +582,10 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-02 (**S313 — 25th run, its first since S296 (~17 sessions); F was the single stalest by BOTH date and session number and the S313 pointer named it AND the affordance: THE HOVER/PRESSED-STATE COLOUR LANGUAGE.** Method: every `:hover`/`:active` rule on all 13 pages tallied by the properties it sets, then EVERY visible control hovered with a real `page.mouse` and …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S319):** **BRANCH/PR: CONTINUE on `claude/improve-loop-k280wo` → draft PR #222 (S316 + S317 + S318 commits; verify via the API first — if it has merged, cut a fresh `claude/*` branch off latest `origin/main`).** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v641, `FONT_MAKER_VERSION` 5.38** — re-read both.
+**Next session (S320):** **BRANCH/PR: CONTINUE on `claude/improve-loop-k280wo` → draft PR #222 (S316–S319 commits; verify via the API first — if it has merged, cut a fresh `claude/*` branch off latest `origin/main`).** 0 check runs is correct (no workflows); deploy is verifiable only AFTER a merge. **Drift note: `sw.js` is v642, `FONT_MAKER_VERSION` 5.38** — re-read both.
 
-**⚑ THE STALEST PASS IS L (2026-08-31, S301), THEN K (S302), N (S303), M (S304).** L's arms: the outside-loop FM footer fold (`a212ffa`/`c88fa55`) rewrote the FAQ markup — check the FAQ JSON-LD still matches the visible questions; sitemap ↔ canonical agreement after S318's three date moves; README/ops.md edits are not SEO surface. **O's next target is flash_cards.html — attended only.** Run `update-sitemap` at EVERY close-out (idempotent) — see the S318 close-out's protocol note.
+**⚑ THE STALEST PASS IS K (2026-08-31, S302), THEN N (S303), M (S304), H (S305), G (S306).** K's arms: `check-i18n` Check A/B over the S302→now delta (+ the S319 FM FAQ twin's two new keys); the blind-spot probe on template-literal English in the four S316–S319 `applySettings` edits. **O's next target is flash_cards.html — attended only.** Run `update-sitemap` at EVERY close-out.
 
-**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the dashboard "Full Screen" 8px label (P3, the projected tool); the dictionary `applyDictState` set filters (P4, garbage `?s=` members persist as "No words found"); flash cards' member filter + `vowelPositions.0` non-finite (P4); the FM `.ctl-btn.primary` hover cascade reading (MEASURE FIRST — it needs an image loaded). The collapsible-header no-hover idiom stays F's.
+**⚑ THE STRONGEST UNTAKEN CANDIDATES:** the S319 gate-2 Hebrew-interface claim (needs an attended session); the dashboard "Full Screen" 8px label (P3, a header-rhythm call for M/C); flash cards' 4 remaining unfiltered member lists (the last open `apply-settings-trusts-collection-members` carrier); the FM `.ctl-btn.primary` hover cascade (MEASURE FIRST with an image loaded).
 
-**/!\ THE S318 METHOD LESSONS.** (a) **Every raw link-checker hit is a checker artifact until grounded** — `data-rwsrc` matched for the FOURTH time (S200/S215/S259/S318) and an over-wide attribute alternation swallowed meta text; anchor `(?:href|src)\s*=` on a non-word boundary and `grep` each hit's line before counting it. (b) **`git branch -r --contains <sha> | head -3` hides `origin/main`** — count the exact ref, never the first lines. (c) **A pattern's stateful variants decide the fix's specificity**: read every `.cls.state`/`[aria-pressed]`/danger rule before adding a `body.dark .cls:hover` twin; a probe's `no visible element` on a variant is a gap to log, not a pass.
+**/!\ THE S319 METHOD LESSONS.** (a) **A visible-twin probe must strip the ld+json block before it reads "visible" text, and must count paraphrased twins, not verbatim ones** — the first version passed a missing twin, the second failed 6 pages that were fine. (b) **`hebrewBlender_lang` is the i18n storage key** (not `ivritsuite_lang`) — an HE run that still reports `htmlLang:'en'` is a wrong key, not a pass. (c) The dictionary's `pos`/`len` lists are checkbox STATES, so filtering garbage to `[]` would have read as "unchecked everything": an all-garbage list keeps the markup default.
