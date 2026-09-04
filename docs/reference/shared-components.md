@@ -510,6 +510,8 @@ touch-primary tools get gesture equivalents; every new interactive element must 
   that has one) **and** named in the triggering control's `title`; if its visible badge is `aria-hidden`,
   it also carries `aria-keyshortcuts`. Any new interactive element is reachable and operable by keyboard.
 
+- **Hand-rolled overlays and floating menus carry a keyboard contract** (converged S341): a modal (`.ie-modal`, `.sg-backdrop`, the settings drawers, `fcModalize`, `ivritAskMode`, the dashboard's `_trapTabWithin` dialogs) remembers its opener, moves focus in, wraps Tab/Shift+Tab inside, closes on Escape and restores focus on every close path; a floating menu (the folder-tree Move ▾, the dashboard ⋯ day menu, the flash cards sheet menu) is `role="menu"` of `menuitem`s with `aria-haspopup`/`aria-expanded` on its trigger, focus on the first item, Tab/arrows cycling, Escape closing and refocusing the trigger (stopped, so a page-level Escape does not also fire). Tour cards are the deliberate exception (`aria-modal="false"`; Tab walks the page, Escape ends the tour and restores focus). Measure it, never assume it — the hub's engine copy and the chrome pages drifted silently.
+
 ### 8. Hebrew text carries `lang="he"` (at rendering chokepoints)
 Hebrew content must be marked `lang="he"` so screen readers switch to a Hebrew voice instead of
 mispronouncing it with an English one. Mark at the **rendering chokepoint / nearest stable ancestor**,
