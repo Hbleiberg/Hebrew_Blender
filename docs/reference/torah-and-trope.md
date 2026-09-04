@@ -227,6 +227,8 @@ from `torah_trainer.html`.
   Registered in all five AllTools sites in `index.html`; progress imports go through
   `tropeProgressMerge` (r/w/pbStreak = max, families = union). `hebrewTropeTutor_tourSeen` is the
   export-exempt, erase-cleared tour flag.
+  `renderLearn` marks the family on screen visited (`families`) and saves as it renders, except under
+  `_chartPrintBuild` (the print chart) or `_i18nRerender` (the `applyI18n` re-render) — both read-only paths.
 - **Drill**: 10 questions/session; three types (Identify / Hear / Melody) toggleable in settings
   (last one refuses to uncheck **inline**, no alert). Answers sampled weighted by
   `0.35 + (1 − mastery)` (rare ×0.5, no adjacent repeats); questions stable-sorted by clip file key
