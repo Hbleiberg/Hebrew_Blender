@@ -236,3 +236,14 @@ version 0 synchronously, then streams the remaining versions in `setTimeout(0)` 
 ## Settings restore guard
 
 `applySettings()` keeps only known letter/vowel keys (`isKnownLetterKey`/`isKnownVowelKey`, built from `LETTERS` heb + sofit and `VOWELS` keys) when it rebuilds `selectedLetters`/`selectedVowels`; unknown members from a share link, preset or `.ivrit` file are dropped one by one, never the whole set, so `getLetter()` can't return undefined inside `generate()`.
+
+---
+
+## PDF export (`exportPDF`)
+
+Each `.sheet` (or `.bingo-page` / `.caller-sheet`) is captured with html2canvas at `scale: 2` and placed with
+one `pdf.addImage(..., undefined, 'FAST')` per page. **The `'FAST'` compression argument is required** —
+without it jsPDF stores the decoded raster raw (~10 MB per page, 107 MB for an 8-card bingo set). Bingo
+cut lines are drawn as vector primitives after the image, at positions measured from the captured canvas.
+The capture itself is synchronous and costs ~0.3–1 s of main thread per page; the button reads
+"Generating…" for the duration.

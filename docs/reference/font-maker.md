@@ -238,7 +238,8 @@ editing this page's CSP meta (Security rule 3 above).
 Two engine contracts the exporters depend on: the UFO export writes its `.glif` files by hand
 (a small `AbstractPointPen` + `contents.plist` via plistlib) — never import `fontTools.ufoLib` /
 `glifLib` in `PY_BUILDER`, they import pyfilesystem2 (`fs`), which Pyodide's fonttools package does
-not carry, and the whole export fails; and every jsPDF `addImage()` call passes `undefined, 'FAST'`
+not carry, and the whole export fails (and `buildUfoFontInfo` writes `openTypeOS2Type: []` explicitly —
+absent, ufo2ft/fontmake default to fsType 4 while the TTF export writes 0); and every jsPDF `addImage()` call passes `undefined, 'FAST'`
 as its last two arguments — without a compression argument jsPDF stores the page raster raw
 (~11 MB per page).
 
