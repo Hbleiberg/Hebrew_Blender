@@ -9082,7 +9082,7 @@ async function exportPDF() {
       const yOffset = margin + (availH - imgH) / 2;
 
       if (i > 0) pdf.addPage();
-      pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgW, imgH);
+      pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgW, imgH, undefined, 'FAST');   // 'FAST' = Flate-compress the page raster (lossless); without it jsPDF stores ~10 MB per page raw
 
       // Draw the cut lines as vector PDF primitives. We *measure* the actual
       // card-border positions in the captured canvas (rather than assuming
