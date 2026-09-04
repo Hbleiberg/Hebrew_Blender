@@ -1111,14 +1111,14 @@ body.dark .panel-title:hover { background:var(--navy); }   /* one step up from t
 body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .form-row input[type="number"] {
   background:var(--navy-deep); color:var(--text);
 }
-.toggle { position:relative; display:inline-block; width:38px; height:22px; flex-shrink:0; }
+.toggle { position:relative; display:inline-block; width:38px; height:24px; flex-shrink:0; }   /* 24px = the WCAG 2.5.8 touch floor */
 .toggle input { opacity:0; width:0; height:0; }
 .slider {
   position:absolute; inset:0; background:var(--border); border-radius:22px;
   cursor:pointer; transition:background 0.2s;
 }
 .slider::before {
-  content:''; position:absolute; height:16px; width:16px; left:3px; top:3px;
+  content:''; position:absolute; height:16px; width:16px; left:3px; top:4px;
   background:white; border-radius:50%; transition:transform 0.2s;
 }
 input:checked + .slider { background:var(--gold); }
