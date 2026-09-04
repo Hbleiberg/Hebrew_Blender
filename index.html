@@ -384,7 +384,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   </div>
 
   <button class="bookmark-btn" onclick="showBookmarkTip()" data-i18n="home.bookmark.button">🔖 Bookmark this page</button>
-  <div class="bookmark-tip" id="bookmarkTip"></div>
+  <div class="bookmark-tip" id="bookmarkTip" role="status"></div>   <!-- live region: the tip is the only response to 🔖, so a screen reader hears it -->
   <button class="ie-btn" onclick="openIEModal()" data-i18n="home.alltools.open_button">⚙ Import / Export All Settings</button>
   <a class="ie-btn" href="contact.html" data-i18n="home.contact_link">✉️ Contact &amp; Support</a>
 </div>
