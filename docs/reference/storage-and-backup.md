@@ -130,6 +130,7 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
 `ivritRestore()` shows a small modal (`ivritAskMode()`) on every import:
 - **Merge** — keep current data, add the file's (matching keys overwritten via `ivritSafeAssign`).
 - **Replace** — clear current data first, then load only the file's.
+- The prompt is an accessible dialog on every carrier, the hub's adapted copy included: `role="dialog"` + `aria-modal` + `aria-labelledby=ivritAskTitle`, focus lands on Merge, Tab is trapped across the three buttons, Escape cancels, and focus returns to the opener. The hub's copy additionally stops the handled Escape/Tab so its document-level AllTools-modal handler does not close that modal behind the prompt — keep that when re-syncing it from the engine.
 
 ### Pattern: per-file `IVRIT_CFG` + shared engine
 
