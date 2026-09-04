@@ -1666,7 +1666,7 @@ function openFontPreview(i, keepFocus) {
   updateFontPreview();
   if (_hk) _hk.refresh();   // keyboard capability hint tracks the newly previewed font
   syncFpNav();
-  document.getElementById('fontPreviewBackdrop').classList.add('open');
+  sgDialogOpen('fontPreviewBackdrop');   // focus lands on the sample field below (or stays on a chevron)
   // Stepping between fonts must NOT grab-and-select the sample field: the teacher is holding
   // a chevron to compare, and selecting their typed text means the next keystroke wipes it.
   if (!keepFocus) setTimeout(() => { inp.focus(); inp.select(); }, 60);
@@ -1737,13 +1737,39 @@ function fpUseInSuite() { if (_fpIdx >= 0) useFontInIvritSuite(_fpIdx); }
 function closeFontPreview(e) {
   const bd = document.getElementById('fontPreviewBackdrop');
   if (e && e.target !== bd) return;
+  sgDialogClose('fontPreviewBackdrop');
+}
+
+/* Dialog contract for the two .sg-backdrop modals (the hub's .ie-modal idiom): the opener is
+   remembered and focus moves in on open, Tab wraps inside the modal while it is open, Escape
+   closes, and focus returns to the opener on every close path (×, backdrop, Escape). Without it
+   the modals advertised aria-modal while a keyboard user's focus stayed on the page behind. */
+const _sgOpener = {};
+function sgDialogOpen(id, focusSel) {
+  const bd = document.getElementById(id);
+  if (!bd.classList.contains('open')) _sgOpener[id] = document.activeElement;   // a re-open in place (the preview chevrons) keeps the first opener
+  bd.classList.add('open');
+  const f = focusSel && bd.querySelector(focusSel);
+  if (f) f.focus();
+}
+function sgDialogClose(id) {
+  const bd = document.getElementById(id);
+  if (!bd.classList.contains('open')) return;
   bd.classList.remove('open');
+  const o = _sgOpener[id]; _sgOpener[id] = null;
+  if (o && o.focus && o.isConnected) { try { o.focus(); } catch (e) {} }
 }
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    const bd = document.getElementById('fontPreviewBackdrop');
-    if (bd && bd.classList.contains('open')) bd.classList.remove('open');
-  }
+  const bd = document.querySelector('.sg-backdrop.open');
+  if (!bd) return;
+  if (e.key === 'Escape') { e.preventDefault(); sgDialogClose(bd.id); return; }
+  if (e.key !== 'Tab') return;   // keep focus inside the dialog
+  const f = [...bd.querySelectorAll('.sg-modal button, .sg-modal [href], .sg-modal input, .sg-modal textarea, .sg-modal select, .sg-modal [tabindex]:not([tabindex="-1"])')]
+    .filter(el => !el.disabled && el.offsetParent !== null);
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && (document.activeElement === first || !bd.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && (document.activeElement === last || !bd.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
 });
 
 /* ── Download + Use-in-IvritSuite ── */
@@ -2069,11 +2095,8 @@ function openSubmitFont(pf) {
     }
   }
 
-  window.openSuggestModal = function(){ backdrop.classList.add('open'); ensureCaptcha(); };
-  window.closeSuggestModal = function(e){ if (e && e.target !== backdrop) return; backdrop.classList.remove('open'); };
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape' && backdrop.classList.contains('open')) backdrop.classList.remove('open');
-  });
+  window.openSuggestModal = function(){ sgDialogOpen('sgBackdrop', '.sg-modal-close'); ensureCaptcha(); };
+  window.closeSuggestModal = function(e){ if (e && e.target !== backdrop) return; sgDialogClose('sgBackdrop'); };
 
   form.addEventListener('submit', async function(e){
     e.preventDefault();
