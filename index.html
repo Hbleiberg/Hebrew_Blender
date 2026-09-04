@@ -1372,17 +1372,34 @@ function ivritAskMode() {
     box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:360px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);';
     // The shared.ivrit.* values are trusted locale strings; render the body's lightweight markdown (**bold**, \n) to HTML.
     const bodyHtml = I18n.t('shared.ivrit.restore_dialog_body').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-    box.innerHTML = '<div style="font-weight:700;font-size:1rem;margin-bottom:8px;">' + I18n.t('shared.ivrit.restore_dialog_title') + '</div>'
+    box.innerHTML = '<div id="ivritAskTitle" style="font-weight:700;font-size:1rem;margin-bottom:8px;">' + I18n.t('shared.ivrit.restore_dialog_title') + '</div>'
       + '<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;">' + bodyHtml + '</div>'
       + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
       + '<button data-act="merge" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">' + I18n.t('shared.ivrit.restore_merge_button') + '</button>'
       + '<button data-act="replace" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:#a83232;color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">' + I18n.t('shared.ivrit.restore_replace_button') + '</button>'
       + '<button data-act="cancel" style="flex:1;min-width:96px;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">' + I18n.t('shared.ivrit.restore_cancel_button') + '</button>'
       + '</div>';
+    // Accessible dialog (the shared engine's clause): label, modal role, Escape, Tab focus-trap across
+    // the 3 buttons, focus save/restore. The handled keys stop here — the hub's document-level handler
+    // for the AllTools modal would otherwise close THAT modal behind this dialog on the same Escape.
+    const opener = document.activeElement;
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+    box.setAttribute('aria-labelledby', 'ivritAskTitle');
     ov.appendChild(box); document.body.appendChild(ov);
-    const done = v => { if (ov.parentNode) document.body.removeChild(ov); resolve(v); };
-    box.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { const act = b.dataset.act; done(act === 'cancel' ? null : act); }));
+    const done = v => { if (ov.parentNode) document.body.removeChild(ov); try { opener && opener.focus && opener.focus(); } catch (e) {} resolve(v); };
+    const btns = [...box.querySelectorAll('button')];
+    btns.forEach(b => b.addEventListener('click', () => { const act = b.dataset.act; done(act === 'cancel' ? null : act); }));
     ov.addEventListener('click', e => { if (e.target === ov) done(null); });
+    ov.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(null); return; }
+      if (e.key !== 'Tab' || !btns.length) return;
+      e.stopPropagation();
+      const first = btns[0], last = btns[btns.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+    box.querySelector('[data-act=merge]').focus();
   });
 }
 function ivritToolMismatch(fileTool) {
