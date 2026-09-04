@@ -452,6 +452,9 @@ a modal `alert()`. (`confirm()` for genuinely destructive actions — erase, res
   Migrate the remaining call sites toward inline validation opportunistically as you touch each panel.
 - **Rule:** do not add **new** `alert()`-driven validation; wire new validation inline. Leave existing
   `confirm()` destructive-action guards in place.
+- **Rule:** a standing note retires as soon as the input it complains about changes (the generator's
+  `toggleLetter` and flash cards' `_retireStartNote(key, ok)`), never only on the next press of the primary
+  action — otherwise the button stays announced as `aria-disabled` after the teacher has fixed the problem.
 
 ### 6. First-run affordances
 One-time nudges / setup cards / starter layouts, each gated by a `hebrew<Tool>_<flag>` localStorage flag so

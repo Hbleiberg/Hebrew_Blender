@@ -3287,6 +3287,7 @@ function initLetters() {
       if (selectedLetters.has(heb)) selectedLetters.delete(heb);
       else selectedLetters.add(heb);
       tile.classList.toggle('selected');
+      _retireStartNote('flashcards.start.err_select_letter', selectedLetters.size > 0);
       saveSettings();
     });
     bindTileA11y(tile);
@@ -3356,6 +3357,7 @@ function buildLockLetterGrid(pos) {
       if (lk.letters.has(heb)) lk.letters.delete(heb);
       else lk.letters.add(heb);
       tile.classList.toggle('selected');
+      _retireStartNote('flashcards.start.err_locked_empty', !Object.entries(letterLocks).some(([pos, l]) => +pos <= mode && l.enabled && l.letters.size === 0));
       saveSettings();
     });
     bindTileA11y(tile);
@@ -3462,6 +3464,7 @@ function initVowels() {
         else selectedVowels.add(v.key);
         tile.classList.toggle('selected');
         updateVavAsLetterVisibility();
+        _retireStartNote('flashcards.start.err_select_vowel', selectedVowels.size > 0);
         saveSettings();
       });
       bindTileA11y(tile);
@@ -3672,6 +3675,7 @@ function renderWordListPicker() {
     cb.style.cssText = 'accent-color:var(--gold);width:14px;height:14px;flex-shrink:0;';
     cb.addEventListener('change', () => {
       if (cb.checked) selectedWordListIds.add(l.id); else selectedWordListIds.delete(l.id);
+      _retireStartNote('flashcards.start.err_select_wordlist', selectedWordListIds.size > 0);
       wordsInlinePool = null;            // any manual selection discards a loaded share pool
       updateWordsCount();
       saveSettings();
@@ -3782,6 +3786,7 @@ function toggleEmojiCat(catName, checked) {
     checked ? selectedEmojiSubs.add(k) : selectedEmojiSubs.delete(k);
   });
   renderEmojiCatTree();
+  _retireStartNote('flashcards.start.err_select_emoji', selectedEmojiSubs.size > 0);
   saveSettings();
 }
 
@@ -3789,6 +3794,7 @@ function toggleEmojiSub(catName, subName, checked) {
   const k = catName + '|' + subName;
   checked ? selectedEmojiSubs.add(k) : selectedEmojiSubs.delete(k);
   renderEmojiCatTree();
+  _retireStartNote('flashcards.start.err_select_emoji', selectedEmojiSubs.size > 0);
   saveSettings();
 }
 
@@ -3821,6 +3827,7 @@ function initColorTiles() {
     tile.addEventListener('click', () => {
       selectedColors.has(c.key) ? selectedColors.delete(c.key) : selectedColors.add(c.key);
       tile.classList.toggle('selected', selectedColors.has(c.key));
+      _retireStartNote('flashcards.start.err_select_color', selectedColors.size > 0);
       saveSettings();
     });
     grid.appendChild(tile);
@@ -4469,6 +4476,12 @@ function _setStartNote(keys) {
   const msg = _startNoteKeys.length && window.I18n ? _startNoteKeys.map(k => I18n.t(k)).join('\n') : '';
   if (note) { note.textContent = msg; note.style.display = msg ? '' : 'none'; }
   if (btn) btn.setAttribute('aria-disabled', msg ? 'true' : 'false');
+}
+// A change to the input a standing note complains about retires that line now, rather than
+// making the teacher press Start again to find out it works (the generator's toggleLetter
+// precedent). Start re-validates and re-shows anything still blocked.
+function _retireStartNote(key, ok) {
+  if (ok && _startNoteKeys.includes(key)) _setStartNote(_startNoteKeys.filter(k => k !== key));
 }
 function _setPresetNameNote(msg) {
   const note = document.getElementById('presetNameNote');
@@ -8040,11 +8053,13 @@ function wireSetupScreen() {
   document.getElementById('numMinInput').addEventListener('change', e => {
     numberMin = Math.max(0, Math.min(9999, parseInt(e.target.value) || 0));
     e.target.value = numberMin;
+    _retireStartNote('flashcards.start.err_range', numberMin <= numberMax);
     saveSettings();
   });
   document.getElementById('numMaxInput').addEventListener('change', e => {
     numberMax = Math.max(0, Math.min(9999, parseInt(e.target.value) || 0));
     e.target.value = numberMax;
+    _retireStartNote('flashcards.start.err_range', numberMin <= numberMax);
     saveSettings();
   });
 
