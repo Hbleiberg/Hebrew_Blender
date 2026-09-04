@@ -184,6 +184,14 @@ Whenever a new UI control is added to one of those tools, it must be included in
 
 Because `.ivrit` save files store `liveState = getSettings()`, keeping `getSettings()`/`applySettings()` complete is what makes both presets **and** `.ivrit` files capture every control. No separate `.ivrit` step is needed per control.
 
+**Consumer sites type-check the stored member before using it.** An import merges the presets
+map shallowly (`ivritSafeAssign`), so a hand-edited `.ivrit` can leave a non-object member under
+`presets` (or a `{v:2, week:<garbage>}` saved schedule). `loadPreset` applies only a plain-object
+preset (flash cards: its `.settings`; the generator: the value itself), `duplicatePreset` copies
+only one, and the dashboard's `normalizeScheduleWeek` returns `null` for a week whose `periods`
+is not an array — a garbage member is left in the store untouched, never applied, saved or
+minted into a blank grid that replaces the teacher's real one.
+
 (`torah_trainer.html`, `hebrew_dictionary.html`, and `trope_tutor.html` have no preset collection
 of their own — they persist a single `settings`/last-state object instead, so the equivalent
 obligation there is to add every new control to that object's save/restore path.)

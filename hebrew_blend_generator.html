@@ -5231,7 +5231,10 @@ function duplicatePreset(name) {
 
 function loadPreset(name) {
   const presets = ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}');
-  if (presets[name]) applySettings(presets[name]);
+  // A hand-edited .ivrit can leave a non-object member under presets (the import merges the map
+  // shallowly); applying one used to wipe the selected letters to none.
+  const p = presets[name];
+  if (p && typeof p === 'object' && !Array.isArray(p)) applySettings(p);
 }
 
 function copyTextarea(id) {

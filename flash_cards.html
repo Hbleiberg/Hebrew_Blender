@@ -4525,8 +4525,11 @@ function saveDeckFromResults() {
 }
 function loadPreset(name) {
   const presets = readPresets();
-  if (!presets[name]) return;
-  applySettings(presets[name].settings);
+  // A hand-edited .ivrit can leave a non-object member under presets (the import merges the map
+  // shallowly); applying one used to wipe the current letters and vowels to none, then save that.
+  const s = presets[name] && presets[name].settings;
+  if (!s || typeof s !== 'object' || Array.isArray(s)) return;
+  applySettings(s);
   saveSettings();
 }
 function playPreset(name) {
@@ -4551,8 +4554,10 @@ function overwritePreset(name) {
 function duplicatePreset(name) {
   const presets = readPresets();
   if (!presets[name]) return;
+  const src = presets[name].settings;
+  if (!src || typeof src !== 'object') return;   // same guard as loadPreset: JSON.parse(undefined) would throw
   const nn = ftDuplicateName(name, x => presets[x] !== undefined);
-  presets[nn] = { settings: JSON.parse(JSON.stringify(presets[name].settings)), order: Date.now() };
+  presets[nn] = { settings: JSON.parse(JSON.stringify(src)), order: Date.now() };
   writePresets(presets);
   ftInsertAfter('hebrewFlashCards_presetsFolders', name, nn);
   renderPresets();
