@@ -7234,6 +7234,8 @@ else ivritInit();
       mb.textContent = '⋯';
       mb.setAttribute('aria-label', I18n.t('dashboard.schedule.day_menu_aria', { day: dayName(d) }));
       mb.setAttribute('aria-haspopup', 'menu');
+      mb.setAttribute('aria-expanded', 'false');
+      mb.dataset.swmDay = d;
       mb.addEventListener('click', () => openWeekDayMenu(d, mb));
       h.appendChild(mb);
       grid.appendChild(h);
@@ -7481,15 +7483,26 @@ else ivritInit();
   /* ── Per-day ⋯ menu — the folder-tree move-menu pattern: body-appended fixed .ft-move-menu
         (z 9999 floats over the modal), viewport-clamped, closed by outside click / resize /
         scroll / Escape (the editor's capture handler closes the menu before the modal). ── */
-  let _swmMenuEl = null;
+  let _swmMenuEl = null, _swmMenuAnchor = null;
   function _swmMenuDocClick(e) { if (_swmMenuEl && !_swmMenuEl.contains(e.target)) closeWeekDayMenu(); }
-  function closeWeekDayMenu() {
+  // Keyboard contract — the folder-tree Move ▾ menu's: focus moves to the first item on open,
+  // Tab/Shift+Tab and ↓/↑ cycle inside (the menu sits at the end of <body>, outside the editor's
+  // Tab trap, so it was unreachable by keyboard), Escape closes and refocuses the trigger. A chosen
+  // item re-renders the grid, so focus goes back to the same day's ⋯ (or the anchor by id).
+  function closeWeekDayMenu(refocus) {
     if (!_swmMenuEl) return;
     _swmMenuEl.remove();
     _swmMenuEl = null;
     document.removeEventListener('click', _swmMenuDocClick, true);
     window.removeEventListener('resize', closeWeekDayMenu);
     window.removeEventListener('scroll', closeWeekDayMenu, true);
+    const a = _swmMenuAnchor; _swmMenuAnchor = null;
+    if (a) { if (a.hasAttribute('aria-haspopup')) a.setAttribute('aria-expanded', 'false'); if (refocus === true) a.focus(); }
+  }
+  function _swmRefocusAnchor(a) {
+    const again = a.isConnected ? a
+      : (a.dataset.swmDay != null ? document.querySelector('#swmModal .swm-daymenu-btn[data-swm-day="' + a.dataset.swmDay + '"]') : (a.id ? document.getElementById(a.id) : null));
+    if (again && again.focus) { try { again.focus(); } catch (e) {} }
   }
   // Generic anchored floating menu (shared by the day menu and the legacy-schedule day picker).
   function _swmOpenMenu(anchor, build) {
@@ -7497,15 +7510,23 @@ else ivritInit();
     const menu = document.createElement('div');
     menu.className = 'ft-move-menu';
     menu.setAttribute('role', 'menu');
+    if (anchor.getAttribute('aria-label')) menu.setAttribute('aria-label', anchor.getAttribute('aria-label'));
     const mk = (label, fn) => {
       const b = document.createElement('button');
       b.type = 'button';
       b.setAttribute('role', 'menuitem');
       b.textContent = label;
-      b.addEventListener('click', () => { closeWeekDayMenu(); fn(); });
+      b.addEventListener('click', () => { closeWeekDayMenu(); fn(); _swmRefocusAnchor(anchor); });
       menu.appendChild(b);
     };
     build(mk, menu);
+    menu.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeWeekDayMenu(true); return; }
+      if (e.key !== 'Tab' && e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      const items = [...menu.querySelectorAll('[role="menuitem"]')], i = items.indexOf(document.activeElement);
+      const d = (e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey)) ? -1 : 1;
+      e.preventDefault(); if (items.length) items[(i + d + items.length) % items.length].focus();
+    });
     document.body.appendChild(menu);
     const rc = anchor.getBoundingClientRect();
     let left = Math.max(6, rc.right - menu.offsetWidth), top = rc.bottom + 4;
@@ -7513,7 +7534,9 @@ else ivritInit();
     if (left + menu.offsetWidth > window.innerWidth - 6) left = window.innerWidth - menu.offsetWidth - 6;
     menu.style.left = left + 'px';
     menu.style.top = top + 'px';
-    _swmMenuEl = menu;
+    _swmMenuEl = menu; _swmMenuAnchor = anchor;
+    if (anchor.hasAttribute('aria-haspopup')) anchor.setAttribute('aria-expanded', 'true');
+    const first = menu.querySelector('[role="menuitem"]'); if (first) first.focus();
     setTimeout(() => {
       document.addEventListener('click', _swmMenuDocClick, true);
       window.addEventListener('resize', closeWeekDayMenu);
@@ -8243,7 +8266,7 @@ else ivritInit();
   function weekEditorKey(e) {
     if (e.key === 'Escape') {
       e.stopPropagation();
-      if (_swmMenuEl) { closeWeekDayMenu(); return; }   // an open day menu absorbs the first Escape
+      if (_swmMenuEl) { closeWeekDayMenu(true); return; }   // an open day menu absorbs the first Escape (keyboard: focus returns to its ⋯)
       closeWeekEditor();
       return;
     }
