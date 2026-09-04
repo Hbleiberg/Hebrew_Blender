@@ -4580,6 +4580,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   // (timeToMins('') → Infinity) and is surfaced by the editor's validation instead.
   function normalizeScheduleWeek(raw) {
     if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    // A week without a periods array is not a week: a hand-edited saved entry or settings blob used to
+    // mint a blank grid here, which then REPLACED the teacher's real grid on load.
+    if (!Array.isArray(raw.periods)) return null;
     const week = { v: 1, periods: [], weekend: raw.weekend === true, cells: {} };
     if (Array.isArray(raw.periods)) {
       week.periods = raw.periods
