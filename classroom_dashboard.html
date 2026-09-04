@@ -6342,15 +6342,29 @@ function mountFolderTree(cfg){
   function clearCues(){ container.querySelectorAll('.ft-drop,.ft-row-drop').forEach(x => x.classList.remove('ft-drop','ft-row-drop')); }
   function canDrop(target){ if (!dragNode || dragNode === target) return false; if (dragNode.t==='folder' && target && target.t==='folder' && ftIsDescendant(tree, dragNode.id, target.id)) return false; return true; }
 
-  function closeMenu(){ if (openMenu){ openMenu.remove(); openMenu = null; document.removeEventListener('click', onDoc, true); window.removeEventListener('resize', closeMenu); window.removeEventListener('scroll', closeMenu, true); } }
+  // Keyboard contract (the flash-cards sheet-menu idiom): the trigger carries aria-haspopup/aria-expanded,
+  // the menu is a role=menu of menuitems, focus moves to its first item on open, Tab/Shift+Tab and ↓/↑
+  // cycle inside it (the menu sits at the end of <body>, so Tab would otherwise walk out of the page),
+  // and Escape closes it and returns focus to the trigger — stopped there, so a page-level Escape (a
+  // settings drawer) does not also fire. An outside click keeps its own target; a chosen destination
+  // re-renders the tree, so focus is put back on the moved node's own Move button.
+  let menuBtn = null;
+  function closeMenu(refocus){ if (openMenu){ openMenu.remove(); openMenu = null; document.removeEventListener('click', onDoc, true); window.removeEventListener('resize', closeMenu); window.removeEventListener('scroll', closeMenu, true); if (menuBtn){ menuBtn.setAttribute('aria-expanded','false'); if (refocus === true) menuBtn.focus(); menuBtn = null; } } }
   function onDoc(e){ if (openMenu && !openMenu.contains(e.target)) closeMenu(); }
+  function moveBtnFor(node){ const rows = [...container.querySelectorAll(node.t==='folder' ? '[data-ft-folder]' : '[data-ft-item]')]; const row = rows.find(r => node.t==='folder' ? r.dataset.ftFolder===node.id : r.dataset.ftItem===node.name); return row && row.querySelector(node.t==='folder' ? ':scope > .ft-folder-head [aria-haspopup]' : '.ft-move-btn'); }
   function openMoveMenu(btn, node){
     closeMenu();
-    const menu = document.createElement('div'); menu.className = 'ft-move-menu';
+    const menu = document.createElement('div'); menu.className = 'ft-move-menu'; menu.setAttribute('role','menu'); menu.setAttribute('aria-label', btn.title || btn.textContent);
     ftPaths(tree, node.t==='folder' ? node.id : null).forEach(p => {
-      const b = document.createElement('button'); b.type='button'; b.textContent = p.label;
-      b.addEventListener('click', () => { const mv = ftRemove(tree, x => x===node); if (mv){ ftFolderArray(tree, p.id).push(mv); commit(); } closeMenu(); });
+      const b = document.createElement('button'); b.type='button'; b.setAttribute('role','menuitem'); b.textContent = p.label;
+      b.addEventListener('click', () => { const mv = ftRemove(tree, x => x===node); if (mv){ ftFolderArray(tree, p.id).push(mv); commit(); const fb = moveBtnFor(node); if (fb) fb.focus(); } closeMenu(); });
       menu.appendChild(b);
+    });
+    menu.addEventListener('keydown', e => {
+      if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); closeMenu(true); return; }
+      if (e.key !== 'Tab' && e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      const items = [...menu.querySelectorAll('button')], i = items.indexOf(document.activeElement), d = (e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey)) ? -1 : 1;
+      e.preventDefault(); items[(i + d + items.length) % items.length].focus();
     });
     document.body.appendChild(menu);
     const rc = btn.getBoundingClientRect();
@@ -6358,7 +6372,8 @@ function mountFolderTree(cfg){
     if (top + menu.offsetHeight > window.innerHeight - 6) top = Math.max(6, rc.top - menu.offsetHeight - 4);
     if (left + menu.offsetWidth > window.innerWidth - 6) left = window.innerWidth - menu.offsetWidth - 6;
     menu.style.left = left + 'px'; menu.style.top = top + 'px';
-    openMenu = menu;
+    openMenu = menu; menuBtn = btn; btn.setAttribute('aria-expanded','true');
+    const first = menu.querySelector('button'); if (first) first.focus();
     setTimeout(() => { document.addEventListener('click', onDoc, true); window.addEventListener('resize', closeMenu); window.addEventListener('scroll', closeMenu, true); }, 0);
   }
 
@@ -6383,7 +6398,7 @@ function mountFolderTree(cfg){
     row.appendChild(h); row.appendChild(nm);
     const acts = cfg.buildItemRow(node.name); if (acts) row.appendChild(acts);
     const mw = document.createElement('span'); mw.className='ft-move-wrap';
-    const mb = document.createElement('button'); mb.type='button'; mb.className='ft-move-btn'; mb.textContent=I18n.t('shared.folders.move_button');
+    const mb = document.createElement('button'); mb.type='button'; mb.className='ft-move-btn'; mb.textContent=I18n.t('shared.folders.move_button'); mb.setAttribute('aria-haspopup','menu'); mb.setAttribute('aria-expanded','false');
     mb.addEventListener('click', e => { e.stopPropagation(); openMoveMenu(mb, node); });
     mw.appendChild(mb); row.appendChild(mw);
     makeDraggable(row, node);
@@ -6402,7 +6417,7 @@ function mountFolderTree(cfg){
     const acts = document.createElement('span'); acts.className='ft-folder-actions';
     acts.appendChild(mkMini('＋',I18n.t('shared.folders.new_subfolder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_new_subfolder'))||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
     acts.appendChild(mkMini('✎',I18n.t('shared.folders.rename_folder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_rename'), node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
-    acts.appendChild(mkMini('↗',I18n.t('shared.folders.move_folder'), (b) => openMoveMenu(b, node)));
+    const mvb = mkMini('↗',I18n.t('shared.folders.move_folder'), (b) => openMoveMenu(b, node)); mvb.setAttribute('aria-haspopup','menu'); mvb.setAttribute('aria-expanded','false'); acts.appendChild(mvb);
     acts.appendChild(mkMini('🗑',I18n.t('shared.folders.delete_folder'), () => { if(!confirm(I18n.t('shared.folders.delete_confirm', { name: node.name }))) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
     head.appendChild(tw); head.appendChild(h); head.appendChild(nm); head.appendChild(cnt); head.appendChild(acts);
     head.addEventListener('click', e => { if (e.target.closest('.ft-folder-actions')) return; node.collapsed = !node.collapsed; commit(); });

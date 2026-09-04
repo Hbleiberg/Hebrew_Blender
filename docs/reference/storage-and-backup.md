@@ -236,7 +236,14 @@ mountFolderTree({ treeKey, container, listItemNames(), buildItemRow(name)→acti
   can't drop into itself/a descendant). The **Move ▾ menu** (`ftPaths` → Root + every folder
   breadcrumb) is the authoritative path and the only one that works on touch (HTML5 DnD doesn't
   fire on touch). The menu is appended to `<body>` with `position:fixed` so it escapes any
-  `overflow:hidden` panel (e.g. the dashboard settings drawer).
+  `overflow:hidden` panel (e.g. the dashboard settings drawer). **Keyboard contract** (the flash
+  cards sheet-menu idiom — keep it when re-syncing the block): the Move ▾ / ↗ trigger carries
+  `aria-haspopup="menu"` + `aria-expanded`; the menu is `role="menu"` of `role="menuitem"` buttons,
+  labelled from the trigger; focus moves to the first item on open; Tab/Shift+Tab and ↓/↑ cycle
+  inside it (it sits at the end of `<body>`, so Tab would otherwise leave the page); Escape closes
+  it and returns focus to the trigger, and is stopped there so a page-level Escape (the dashboard
+  drawer's) does not also fire; an outside click closes without moving focus; choosing a
+  destination re-renders the tree and puts focus on the moved node's own Move button.
 - Folder CRUD: New folder / New subfolder / Rename (`prompt`) / Delete (`confirm`; children move up
   — underlying items are NEVER deleted). Collapse state lives on the folder node (persists + backs up).
 
