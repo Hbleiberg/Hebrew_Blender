@@ -16824,6 +16824,7 @@ function buildUfoFontInfo(spec) {
     // compilers derive them from styleMapStyleName. Weight class is what makes the Bold heavy-flagged.
     openTypeOS2Selection: [7], openTypeOS2WeightClass: bold ? 700 : 400,
     openTypeOS2VendorID: 'IVST', openTypeOS2CodePageRanges: [0, 5],
+    openTypeOS2Type: [],   // fsType 0 = installable embedding, matching the TTF export; absent, ufo2ft/fontmake default to 4 (restricted)
     copyright: n.copyright,
     openTypeNameDesigner: n.designer || 'Made with IvritSuite Hebrew Font Maker',
     openTypeNameLicense: os ? ((os.licenseName || 'Upstream license') + ' — see LICENSE.txt for the full license and provenance.') : lic.desc,
