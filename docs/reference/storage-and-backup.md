@@ -180,7 +180,7 @@ This rule applies to **every tool that defines `getSettings()`/`applySettings()`
 currently `hebrew_blend_generator.html`, `flash_cards.html`, and `classroom_dashboard.html`.
 Whenever a new UI control is added to one of those tools, it must be included in both:
 - `getSettings()` — serialize the control's current value
-- `applySettings()` — restore the value and call any related UI toggle functions (e.g. `toggleGematriaMode()`, `toggleCwBlendOpts()`) so dependent rows update correctly
+- `applySettings()` — restore the value and call any related UI toggle functions (e.g. `toggleGematriaMode()`, `updateModeVisibility()`) so dependent rows update correctly
 
 Because `.ivrit` save files store `liveState = getSettings()`, keeping `getSettings()`/`applySettings()` complete is what makes both presets **and** `.ivrit` files capture every control. No separate `.ivrit` step is needed per control.
 
