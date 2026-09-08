@@ -546,6 +546,10 @@ body.dark .panel-title {
 /* Pointer feedback on the unselected pills — the page's own .btn:hover idiom (one surface step),
    pattern control-class-without-a-hover-state. The selected pill keeps its navy. */
 .pill-group .pill:hover:not(.active) { background: var(--white); }
+/* Dark mode: --navy is one step from the group's paper, so the selected fill all but vanished and the
+   state rode on gold text alone. The .emoji-gender-btn.active idiom (a deeper fill) plus a gold
+   hairline keeps the cue legible without touching the light theme. */
+body.dark .pill-group .pill.active { background: var(--navy-deep); box-shadow: inset 0 0 0 1px var(--gold); }
 
 /* ============== TOGGLES ============== */
 .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
