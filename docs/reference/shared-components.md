@@ -444,17 +444,26 @@ anywhere — first-visit pulses, tour transitions, timer/omer pulsing, fades —
 Validation should surface as **inline notes in the owning panel** plus a short summary near the primary
 action; a primary action that can't run gets `aria-disabled` + a stated reason rather than a dead click or
 a modal `alert()`. (`confirm()` for genuinely destructive actions — erase, reset-both-schemes — stays.)
-- **Implemented on:** **preset-save flows only, as a first slice.** The generator and flash
-  cards preset panels now validate empty names inline (`#presetNameNote` + `aria-live="polite"`, and
-  `aria-disabled` on `#savePresetBtn`) via a shared `_setPresetNameNote(msg)` helper per file — replacing
-  the generator's blocking `alert()` and flash cards' silent input-focus. Everywhere else, blocking
-  `alert()` is still the norm (≈15–21 calls each in the generator, flash cards, index, and dashboard).
-  Migrate the remaining call sites toward inline validation opportunistically as you touch each panel.
+- **Implemented on:** every tool with a validated primary action — re-true this census with
+  `grep -o "function _set[A-Za-z]*Note\|function _retire[A-Za-z]*" *.html` before trusting it. The
+  generator (`_setPresetNameNote`, `_setGenerateNote`), flash cards (`_setStartNote`/`_setWeakNote`,
+  `_setPresetNameNote`, `_setSaveDeckNote`, `_setWsHandoffNote`), the dashboard (`_setPresetNameNote`,
+  `_setWeekSaveNote`, `setLocNote`, `pickerClassNote`, `timerCustomNote`) and the Torah Trainer
+  (`_setRangeNote`, `_setCopyAllNote`) each pair an `aria-live` note with `aria-disabled` on the action
+  it blocks. Blocking `alert()` still exists on the hub, flash cards, generator, dashboard, Torah
+  Trainer, dictionary and Trope Tutor (none in the Font Maker, which uses `status()`/`askModal`);
+  migrate the validation-shaped ones inline as you touch each panel.
 - **Rule:** do not add **new** `alert()`-driven validation; wire new validation inline. Leave existing
   `confirm()` destructive-action guards in place.
 - **Rule:** a standing note retires as soon as the input it complains about changes (the generator's
-  `toggleLetter` and flash cards' `_retireStartNote(key, ok)`), never only on the next press of the primary
-  action — otherwise the button stays announced as `aria-disabled` after the teacher has fixed the problem.
+  `toggleLetter`, flash cards' `_retireStartNote(key, ok)` and `_retireWsHandoffNote()`, the dashboard's
+  `_retireWeekSaveEmptyNote()`), never only on the next press of the primary action — otherwise the
+  button stays announced as `aria-disabled` after the teacher has fixed the problem.
+- **Rule:** a note helper takes and stores the i18n **key** (+ params), never rendered `I18n.t()` text,
+  and the page's `applyI18n` re-renders every note still on screen — a text-storing note keeps its old
+  language across a live EN⇄HE switch. Shapes: a module-level `_<x>NoteKey` re-rendered from
+  `applyI18n` (generator, flash cards, dashboard) or the key stashed on the element's
+  `dataset.i18nKey` (Torah Trainer).
 
 ### 6. First-run affordances
 One-time nudges / setup cards / starter layouts, each gated by a `hebrew<Tool>_<flag>` localStorage flag so
