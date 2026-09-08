@@ -4223,6 +4223,7 @@
   "torah.handout.geniza_check": "Add a לגניזה marker to the printed page",
   "torah.handout.hide_nikkud": "Hide nikkud (vowels)",
   "torah.handout.hide_nums": "Hide verse numbers",
+  "torah.handout.hide_teamim": "Hide cantillation (trope)",
   "torah.handout.print_button": "🖨️ Print handout",
   "torah.handout.selected_only": "Print only the selected verses",
   "torah.handout.shem_note": "This reading contains שם ה׳ — printed pages traditionally go to geniza, not the trash.",

@@ -3559,6 +3559,7 @@ torah.handout.button,🎓 Student handout,🎓 דף לתלמיד,top-bar button 
 torah.handout.button_title,Print a clean Hebrew-only handout for students,הדפסת דף נקי לתלמידים — עברית בלבד,button title,
 torah.handout.title,Student handout,דף לתלמיד,handout options bar title,
 torah.handout.hide_nikkud,Hide nikkud (vowels),הסתרת ניקוד (תנועות),handout option toggle,
+torah.handout.hide_teamim,Hide cantillation (trope),הסתרת טעמי המקרא,"handout option toggle; with Hide nikkud too = a scroll-style (tikkun) column",
 torah.handout.hide_nums,Hide verse numbers,הסתרת מספרי פסוקים,handout option toggle,
 torah.handout.font_size,Font size:,גודל גופן:,handout option label,
 torah.handout.size_normal,Normal,רגיל,font-size radio (= current screen size),

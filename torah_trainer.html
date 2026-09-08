@@ -1892,6 +1892,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <label class="toggle"><input type="checkbox" id="ttHandoutHideNikkud"><span class="slider"></span></label>
   </span>
   <span class="tt-ctrl">
+    <label for="ttHandoutHideTeamim" data-i18n="torah.handout.hide_teamim">Hide cantillation (trope)</label>
+    <label class="toggle"><input type="checkbox" id="ttHandoutHideTeamim"><span class="slider"></span></label>
+  </span>
+  <span class="tt-ctrl">
     <label for="ttHandoutHideNums" data-i18n="torah.handout.hide_nums">Hide verse numbers</label>
     <label class="toggle"><input type="checkbox" id="ttHandoutHideNums"><span class="slider"></span></label>
   </span>
@@ -2435,6 +2439,7 @@ const DEFAULTS = {
   karaokeFollow: 'hebrew',     // 'hebrew' | 'translit'
   // Student handout (print-flow options; the transient print override itself is never persisted)
   handoutHideNikkud: false,    // strip nikkud on the printed handout
+  handoutHideTeamim: false,    // strip te'amim too — both on = a scroll-style (tikkun) column
   handoutHideNums: false,      // hide verse numbers on the printed handout
   handoutFontSize: 'large',    // 'normal' (screen size) | 'large' (2.2rem) | 'xl' (2.8rem)
   handoutGenizaMark: false,    // print a לגניזה footer when a divine name is detected
@@ -6186,6 +6191,9 @@ function wireSettingsForm() {
   document.getElementById('ttHandoutHideNikkud').addEventListener('change', e => {
     settings.handoutHideNikkud = e.target.checked; saveSettings();
   });
+  document.getElementById('ttHandoutHideTeamim').addEventListener('change', e => {
+    settings.handoutHideTeamim = e.target.checked; saveSettings();
+  });
   document.getElementById('ttHandoutHideNums').addEventListener('change', e => {
     settings.handoutHideNums = e.target.checked; saveSettings();
   });
@@ -6704,10 +6712,12 @@ function _handoutEnter() {
     showTranslit: settings.showTranslit,
     showTranslation: settings.showTranslation,
     showNikkud: settings.showNikkud,
+    showCantillation: settings.showCantillation,
   };
   settings.showTranslit = false;
   settings.showTranslation = false;
   if (settings.handoutHideNikkud) settings.showNikkud = false;
+  if (settings.handoutHideTeamim) settings.showCantillation = false;
   // Selected verses only: swap the render source for the print, restored in _handoutExit. The
   // selection Set itself is untouched, so the Copy bar resumes exactly as it was.
   _handoutVersesSnap = null;
@@ -6739,6 +6749,7 @@ function _handoutExit() {
     settings.showTranslit    = _handoutSnap.showTranslit;
     settings.showTranslation = _handoutSnap.showTranslation;
     settings.showNikkud      = _handoutSnap.showNikkud;
+    settings.showCantillation = _handoutSnap.showCantillation;
     _handoutSnap = null;
   }
   document.body.classList.remove('tt-handout-print', 'tt-handout-hidenums',
@@ -6767,6 +6778,7 @@ function toggleHandoutBar() {
 }
 function syncHandoutForm() {
   document.getElementById('ttHandoutHideNikkud').checked = !!settings.handoutHideNikkud;
+  document.getElementById('ttHandoutHideTeamim').checked = !!settings.handoutHideTeamim;
   document.getElementById('ttHandoutHideNums').checked   = !!settings.handoutHideNums;
   const fs = settings.handoutFontSize || 'large';
   document.getElementById('hsNormal').checked = fs === 'normal';
