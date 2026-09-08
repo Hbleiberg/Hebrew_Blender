@@ -7340,6 +7340,7 @@ else ivritInit();
     week.periods.push({ start, end });
     WEEK_KEYS.forEach(d => week.cells[d].push(null));
     sortWeekPeriods(week);
+    _retireWeekSaveEmptyNote();
     weekChanged();
   }
 
@@ -8151,6 +8152,7 @@ else ivritInit();
     if (!wk) return;
     settings.scheduleWeek = wk;
     _swmIcalPending = null;
+    _retireWeekSaveEmptyNote();
     const card = document.getElementById('swmIcalCard');
     if (card) { card.style.display = 'none'; card.textContent = ''; }
     _swmIcalHint = true;   // not _swmImportedHint — that hint's wording is about the legacy format's missing gaps
@@ -8179,6 +8181,13 @@ else ivritInit();
       note.style.display = msg ? '' : 'none';
     }
     if (btn) btn.setAttribute('aria-disabled', msg ? 'true' : 'false');
+  }
+  // The "add an entry first" note names the grid, not the name box: a period arriving (+ Add
+  // period, a calendar import) retires it now rather than on the next Save press
+  // (stale-validation-note-after-its-input-changes). Save re-validates and re-shows if still blocked.
+  function _retireWeekSaveEmptyNote() {
+    const week = settings.scheduleWeek;
+    if (_swmSaveNoteKey === 'dashboard.schedule.save_empty' && week && week.periods.length) _setWeekSaveNote(null);
   }
   function onWeekSaveNameInput() {
     if (_swmSaveNoteKey && document.getElementById('swmSaveName').value.trim()) _setWeekSaveNote(null);
