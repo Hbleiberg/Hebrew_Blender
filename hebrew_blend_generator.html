@@ -5184,10 +5184,15 @@ function _setGenerateNote(key) {
 
 // Inline preset-name validation (replaces a blocking alert()): show a note in the
 // panel + reflect the invalid state on the Save button via aria-disabled.
-function _setPresetNameNote(msg) {
+// Stores the KEY (like _setGenerateNote) so applyI18n can re-render a note still on screen
+// after a live EN⇄HE switch.
+let _presetNameNoteKey = null;
+function _setPresetNameNote(key) {
+  _presetNameNoteKey = key || null;
+  const msg = _presetNameNoteKey && window.I18n ? I18n.t(_presetNameNoteKey) : '';
   const note = document.getElementById('presetNameNote');
   const btn = document.getElementById('savePresetBtn');
-  if (note) { note.textContent = msg || ''; note.style.display = msg ? '' : 'none'; }
+  if (note) { note.textContent = msg; note.style.display = msg ? '' : 'none'; }
   if (btn) btn.setAttribute('aria-disabled', msg ? 'true' : 'false');
 }
 function onPresetNameInput() {
@@ -5197,7 +5202,7 @@ function onPresetNameInput() {
 }
 function savePreset() {
   const name = document.getElementById('presetName').value.trim();
-  if (!name) { _setPresetNameNote(I18n.t('worksheet.presets.name_note_empty')); document.getElementById('presetName').focus(); return; }
+  if (!name) { _setPresetNameNote('worksheet.presets.name_note_empty'); document.getElementById('presetName').focus(); return; }
   _setPresetNameNote('');
   const presets = ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}');
   presets[name] = getSettings();
@@ -13479,6 +13484,7 @@ function applyI18n() {
   try { renderPresets(); } catch (e) {}
   try { renderQuickStarts(); } catch (e) {}
   try { if (_genNoteKey) _setGenerateNote(_genNoteKey); } catch (e) {}   // re-render a Generate note still on screen
+  try { if (_presetNameNoteKey) _setPresetNameNote(_presetNameNoteKey); } catch (e) {}   // ditto for a preset-name note
   try { updateCombosCount(); } catch (e) {}
   // MUST run after applyStaticI18n: that sweep refills #generateBtn from its data-i18n key, which
   // would drop the "(N versions)" a class-set build is showing. This puts the right label back.
