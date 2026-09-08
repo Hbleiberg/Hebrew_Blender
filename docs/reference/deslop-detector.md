@@ -6,16 +6,21 @@
 ## Get the detector
 Third-party, Apache-2.0, `pbakaus/impeccable`. The pass does **not** depend on the Impeccable plugin or
 skill being installed (`/plugin` is unavailable in the remote web environment). Shallow-clone into the
-session scratchpad — never into the repo, never committed — and call the script directly:
+session scratchpad — never into the repo, never committed — and call the script directly.
+
+**Upstream HEAD no longer ships the JavaScript detector**: it is a Rust engine binary fetched by a shim,
+and that binary download is blocked in the remote sandbox. Check out the last JS-detector tag instead:
 
 ```bash
 git clone --depth 1 https://github.com/pbakaus/impeccable.git "$SCRATCH/impeccable"
-DET="$SCRATCH/impeccable/plugin/skills/impeccable/scripts/detector/detect-antipatterns.mjs"
+cd "$SCRATCH/impeccable" && git fetch --depth 1 origin tag skill-v4.1.3 && git worktree add "$SCRATCH/imp413" skill-v4.1.3
+DET="$SCRATCH/imp413/plugin/skills/impeccable/scripts/detector/detect-antipatterns.mjs"
 ```
 
-`npx impeccable detect` is a fallback if cloning is blocked, but npm has lagged the GitHub repo by a
-full major — **record which source you used and its version** in the rotation row; the rule registry
-differs between majors.
+The plugin manifest (`plugin/.claude-plugin/plugin.json`) is the authoritative version, not the root
+`package.json`. `npx impeccable detect` is a fallback if cloning is blocked, but it fetches the same
+binary — **record which source you used and its version** in the rotation row; the rule registry differs
+between majors.
 
 ## Two arms
 - **Static arm (the workhorse):** `node "$DET" <page>.html`. Reads the file; needs no server. Flags:
@@ -44,7 +49,23 @@ An inline ignore next to the choice, with the reason:
 /* impeccable-disable-line cream-palette -- parchment ground: deliberate siddur identity, ratified S3xx */
 ```
 `impeccable-disable` waives a whole file, `-line`/`-next-line` one site; `<!-- … -->` in HTML, `/* … */`
-in CSS; comma-separate rule ids. Prefer inline over `.impeccable/config.json`.
+in CSS; comma-separate rule ids. Prefer inline over `.impeccable/config.json`. Two limits, both measured:
+- The static arm reports every CSS-in-HTML finding at line 0, so `-line`/`-next-line` documents but
+  never suppresses there — use the file-level directive (right after `<meta charset>`, as the Font
+  Maker, dictionary and flash cards do) and say which ids are deliberately left unwaived.
+- The browser (URL) arm cannot apply comment directives at all (a live DOM has no line numbers). Its
+  DOM twin is `data-impeccable-ignore="rule-id"` on the element, which silences that subtree in every
+  arm — but the phantom `gpt-thin-border-wide-shadow` "28px" finding has no element, so that rule
+  never reads 0 in URL mode on a `.tour-card` carrier. Confirm a waiver with the static arm, and treat
+  the URL arm's count for a waived id as noise.
+
+## Hidden surfaces need a held-open copy
+Both arms snapshot early and see only what is rendered: a closed modal, an inactive `.screen`, a
+collapsed drawer are invisible. For each such state, write a scratchpad copy of the page (a symlink farm
+of the repo root served on its own port keeps relative fetches working) with an injected script that
+drives the state on a 50 ms interval, assert with Playwright that the state is open at 500 ms AND at
+2000 ms, plant a control tell inside it once (a purple gradient div is enough) and confirm the detector
+reports the control — only then do the copy's zeros count.
 
 ## Rule ids by owner
 - **Tells — O fixes (gated):** `side-tab`, `gpt-thin-border-wide-shadow`, `gradient-text`,
