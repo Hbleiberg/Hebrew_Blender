@@ -405,9 +405,10 @@ Writing a link **never navigates**; loading a link **never clobbers** the user's
   paste-in teacher share code (`shareCodeEncode`/`shareCodeDecode`) **and** a `?s=` URL twin
   (`copyShareLink`) read back at init; it is NOT paste-code-only.
   `torah_trainer.html`'s practice link (`copyPracticeLink`/`practiceLinkURL`) deliberately uses
-  **readable params** (`?parsha=&scope=&v=`) rather than an opaque blob — a link a student can read —
-  and only a parsha reading has a URL form, so `syncShareBtn` HIDES the button (never disables it) for
-  holiday and custom-range scopes.
+  **readable params** (`?parsha=&scope=&v=`, or `?holiday=<key>&v=` for one of the `HOLIDAY_READINGS`)
+  rather than an opaque blob — a link a student can read. A free-text custom range has no URL form
+  (its ref would be free text into Sefaria), so `syncShareBtn` HIDES the button (never disables it)
+  for that scope; the inbound `?holiday=` is regex-gated and must resolve through `holidayByKey`.
 - **`replaceState` is NOT universal:** the generator and dictionary mirror the link into the address bar;
   `torah_trainer` and `flash_cards` copy to the clipboard and leave it alone. Measured and deliberately
   LEFT as-is (both persist their state independently, so a refresh loses nothing, and the

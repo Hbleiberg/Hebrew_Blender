@@ -7430,6 +7430,22 @@ async function init() {
         const _dlV = _dl.get('v');
         if (_dlV && /^\d+:\d+$/.test(_dlV)) deepVerse = _dlV;   // regex REQUIRED: value flows into a querySelector
       }
+    } else {
+      // ?holiday=<key> — the practice link for one of the 17 HOLIDAY_READINGS. The key is
+      // regex-gated and must resolve through holidayByKey (never a free-text ref); the state
+      // writes mirror applyHolidayReading minus its render, which init performs below. The
+      // weekly parsha stays whatever this device remembers, exactly as the picker leaves it.
+      const _dlHol = _dl.get('holiday');
+      const _h = _dlHol && /^[a-z0-9-]+$/.test(_dlHol) ? holidayByKey(_dlHol) : null;
+      if (_h) {
+        settings.holidayKey = _h.key;
+        settings.customRef = _h.ref;
+        settings.customLabel = `${_h.name} — ${_h.ref}`;
+        settings.scope = 'custom';
+        saveSettings();
+        const _dlV = _dl.get('v');
+        if (_dlV && /^\d+:\d+$/.test(_dlV)) deepVerse = _dlV;
+      }
     }
   } catch (e) { /* never let a bad URL break init */ }
 
@@ -7440,8 +7456,9 @@ async function init() {
       const match = findParshaByName(cur.name);
       if (match) {
         settings.parshahKey = match.en;
-      } else if (cur.ref) {
-        // Holiday week — start on the holiday reading via custom scope.
+      } else if (cur.ref && !settings.holidayKey) {
+        // Holiday week — start on the holiday reading via custom scope (unless a ?holiday=
+        // link already chose one above).
         settings.customRef = cur.ref;
         settings.customLabel = `${cur.name} — ${cur.ref}`;
         settings.scope = 'custom';
@@ -7839,12 +7856,20 @@ function maybeShowClickHint() {
    optional, so every link already in the wild keeps behaving exactly as before. Nothing is
    persisted and the address bar is left alone — this link is for sending, not for this tab. */
 function practiceLinkURL() {
-  // Only a parsha reading has a URL form: holiday and custom-range scopes have no ?parsha=.
-  if (!settings.parshahKey || settings.holidayKey || settings.scope === 'custom') return null;
   const u = new URL(location.href);
   u.search = '';
-  u.searchParams.set('parsha', settings.parshahKey);
-  if (settings.scope && settings.scope !== 'parsha-full') u.searchParams.set('scope', settings.scope);
+  if (settings.scope === 'custom') {
+    // A holiday reading is one of the 17 HOLIDAY_READINGS keys, so it has a URL form too
+    // (?holiday=<key>); a free-text custom range does not — its ref would be free text into
+    // Sefaria — so the button stays hidden for that scope.
+    const h = settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
+    if (!h) return null;
+    u.searchParams.set('holiday', h.key);
+  } else {
+    if (!settings.parshahKey || settings.holidayKey) return null;
+    u.searchParams.set('parsha', settings.parshahKey);
+    if (settings.scope && settings.scope !== 'parsha-full') u.searchParams.set('scope', settings.scope);
+  }
   const first = Array.isArray(currentVerses) ? currentVerses[0] : null;
   if (first) u.searchParams.set('v', first.chapter + ':' + first.verse);
   return u.toString();
