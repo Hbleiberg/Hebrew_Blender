@@ -405,7 +405,12 @@ form.addEventListener('submit', async function(e){
   const formData = new FormData(form);
   if (!formData.get('h-captcha-response')) {
     statusEl.style.color = 'var(--muted)';
-    statusEl.textContent = I18n.t('contact.form.captcha_required');
+    // The widget is a third-party iframe (hcaptcha.com): on a school network that blocks it the
+    // box stays empty, and "complete the check below" points at nothing. Add the same email
+    // fallback the other failure paths carry whenever there is no widget to complete.
+    const widgetMissing = !document.querySelector('.h-captcha iframe');
+    if (widgetMissing) statusEl.innerHTML = esc(I18n.t('contact.form.captcha_required')) + ' ' + I18n.t('contact.form.error_email_suffix', { email: emailLink() });
+    else statusEl.textContent = I18n.t('contact.form.captcha_required');
     return;
   }
   btn.disabled = true;
