@@ -233,6 +233,7 @@
   "dashboard.picker.chip_absent": "נעדר היום — הקישו כדי לכלול",
   "dashboard.picker.chip_present": "הקישו כדי לסמן כנעדר לשיעור זה",
   "dashboard.picker.class_label": "כיתה",
+  "dashboard.picker.class_limit": "הגעתם למגבלה של {max} כיתות. מחקו אחת כדי להוסיף נוספת.",
   "dashboard.picker.class_option": "{name} ({count})",
   "dashboard.picker.close": "סגור",
   "dashboard.picker.close_aria": "סגור",

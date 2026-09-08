@@ -223,6 +223,7 @@ dashboard.picker.all_absent,Everyone is marked absent today.,כולם מסומנ
 dashboard.picker.chip_absent,Absent today — tap to include,נעדר היום — הקישו כדי לכלול,chip tooltip (absent),
 dashboard.picker.chip_present,Tap to mark absent for this session,הקישו כדי לסמן כנעדר לשיעור זה,chip tooltip (present),
 dashboard.picker.class_label,Class,כיתה,settings label,
+dashboard.picker.class_limit,You can have up to {max} classes. Delete one to add another.,הגעתם למגבלה של {max} כיתות. מחקו אחת כדי להוסיף נוספת.,student picker class-limit note (was a hardcoded template literal),do not translate {…}
 dashboard.picker.class_option,{name} ({count}),{name} ({count}),class-switcher option,mixed UI+content — do not translate {…}
 dashboard.picker.close,Close,סגור,pick overlay close button,
 dashboard.picker.close_aria,Close,סגור,projector overlay close aria,aria-label only
