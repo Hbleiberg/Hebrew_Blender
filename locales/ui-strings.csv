@@ -2991,6 +2991,9 @@ home.alltools.inv.fonts.other,{count} custom fonts,{count} גופנים מותא
 home.alltools.inv.empty,no saved items yet,אין עדיין פריטים שמורים,backup inventory when every count is zero,
 home.alltools.inv.will_contain,This file will contain: {summary},הקובץ הזה יכיל: {summary},live line under the Save button,do not translate {…}
 home.alltools.inv.restored,This file contained: {summary},הקובץ הזה הכיל: {summary},appended to the restore success alert,do not translate {…}
+home.alltools.last_backup,Last backup from this device: {date},גיבוי אחרון מהמכשיר הזה: {date},line under the backup inventory,do not translate {…}
+home.alltools.last_backup_stale,Last backup from this device: {date} ({days} days ago),גיבוי אחרון מהמכשיר הזה: {date} (לפני {days} ימים),same line once the backup is more than 30 days old; days is always ≥31 so no singular form,do not translate {…}
+home.alltools.last_backup_never,No backup has been saved from this device yet,עדיין לא נשמר גיבוי מהמכשיר הזה,line under the backup inventory when this device never saved a .ivrit,
 home.alltools.restore_reload,Restored successfully. Reload any open tool pages to apply.,השחזור הצליח. טענו מחדש את דפי הכלים הפתוחים כדי להחיל.,restore success alert,
 home.alltools.modal_title,⚙ Import / Export All Settings,⚙ ייבוא / ייצוא כל ההגדרות,modal header title,leading-emoji
 home.alltools.modal_close_aria,Close,סגור,alltools modal close button aria,aria-label only

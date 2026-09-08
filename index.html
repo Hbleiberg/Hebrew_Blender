@@ -404,6 +404,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         .ivrit-mode-btn.active{background:var(--navy,#1a2744);color:#fff;}
         .ivrit-drop{border:2px dashed var(--border,#ccc);border-radius:8px;padding:20px 12px;text-align:center;transition:all 0.15s;}
         .ivrit-drop.ivrit-drag{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
+        .ivrit-lastbackup{margin:-6px 0 10px;text-align:center;font-size:0.78rem;line-height:1.4;color:var(--muted);}
+        .ivrit-lastbackup.stale{color:var(--gold-text);}
       </style>
       <div class="ivrit-mode-toggle">
         <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" aria-pressed="true" onclick="setIvritMode('auto')" data-i18n="shared.ivrit.mode_auto">Automatic Input</button>
@@ -412,6 +414,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div id="ivritAuto">
         <button class="ie-action-btn primary" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;" data-i18n="home.alltools.save_button">⬇ Save All Settings to .ivrit file</button>
         <div id="ivritInventory" style="margin:-4px 0 10px;text-align:center;opacity:0.75;font-size:0.82rem;line-height:1.4;"></div>
+        <div id="ivritLastBackup" class="ivrit-lastbackup"></div>
         <div id="ivritDrop" class="ivrit-drop">
           <button class="ie-action-btn secondary" type="button" onclick="document.getElementById('ivritFileInput').click()" data-i18n="shared.ivrit.browse_button">Browse…</button>
           <div style="margin:6px 0;opacity:0.7;" data-i18n="shared.ivrit.or_divider">— or —</div>
@@ -1164,6 +1167,8 @@ function eraseAllSettings() {
     'hebrewTropeTutor_settings',
     'hebrewTropeTutor_progress',
     'hebrewBlender_inputMode',
+    // per-device, export-exempt: when this device last saved an AllTools .ivrit (the line under the inventory)
+    'hebrewBlender_lastBackupAt',
     'hebrewBlender_hebFont',
     'hebrewBlender_hebFontSize',
     'hebrewBlender_livePreview',
@@ -1368,6 +1373,23 @@ function renderIvritInventory() {
   const el = document.getElementById('ivritInventory');
   if (!el || !window.I18n) return;
   el.textContent = I18n.t('home.alltools.inv.will_contain', { summary: ivritInventory(IVRIT_CFG.gather()) });
+  renderIvritLastBackup();
+}
+// "Last backup from this device" under the inventory. hebrewBlender_lastBackupAt is per-device and
+// erase-only (a backup date is a fact about THIS machine, so it rides no export/import); past 30 days
+// the line takes the gold tint so a teacher notices the .ivrit on the old laptop is going stale.
+function renderIvritLastBackup() {
+  const el = document.getElementById('ivritLastBackup');
+  if (!el || !window.I18n) return;
+  let at = null;
+  try { at = localStorage.getItem('hebrewBlender_lastBackupAt'); } catch (e) {}
+  const t = at ? new Date(at).getTime() : NaN;
+  if (!isFinite(t)) { el.textContent = I18n.t('home.alltools.last_backup_never'); el.classList.remove('stale'); return; }
+  const days = Math.max(0, Math.floor((Date.now() - t) / 86400000));
+  const stale = days > 30;
+  el.textContent = stale ? I18n.t('home.alltools.last_backup_stale', { date: _ivFmt(t), days })
+                         : I18n.t('home.alltools.last_backup', { date: _ivFmt(t) });
+  el.classList.toggle('stale', stale);
 }
 function ivritSaveFile() {
   const payload = { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: IVRIT_CFG.tool, savedAt: new Date().toISOString(), data: IVRIT_CFG.gather() };
@@ -1377,6 +1399,8 @@ function ivritSaveFile() {
   a.href = url; a.download = ivritDateStamp() + '_' + IVRIT_CFG.tool + '.ivrit';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1500);
+  try { localStorage.setItem('hebrewBlender_lastBackupAt', payload.savedAt); } catch (e) {}
+  renderIvritLastBackup();
   ivritStatus(I18n.t('shared.ivrit.status_saved', { filename: a.download }));
 }
 function ivritAskMode() {

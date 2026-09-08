@@ -85,7 +85,9 @@ Not every key belongs in the three AllTools functions. Split them:
   `*_welcomeSeen`, `*_hintSeen`, `*_mobileWarnDismissed`, and similar dismissals. Backing these up would
   just re-suppress first-run help on a fresh machine, so they stay out of export/import — but **erase
   means fresh start**, so add them to `eraseAllSettings`. Also in this erase-only set today:
-  `hebrewDashboard_purgeDismissed`, `hebrewBlender_pwaDismissed`, `hebrewFontMaker_inputMode`, and the
+  `hebrewDashboard_purgeDismissed`, `hebrewBlender_pwaDismissed`, `hebrewFontMaker_inputMode`,
+  `hebrewBlender_lastBackupAt` (the ISO time this device last saved an AllTools `.ivrit`; drives the
+  "Last backup from this device" line under the hub's inventory, gold-tinted past 30 days), and the
   Font Maker's `hebrewFontMaker_uiPrefs` workspace-prefs blob. (Per-device UI prefs like `hebrewBlender_zoom`,
   `hebrewBlender_hideZoomBar`, the resizable-panel width keys (`hebrew<Tool>_<thing>W` — see
   [Resizable panels](#resizable-panels-sidebars-drawers-rails--shared-component), all erase-registered),
