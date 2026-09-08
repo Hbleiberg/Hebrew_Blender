@@ -444,6 +444,8 @@
 
 
 
+- [ ] P4 (**NEW S347 Pass K — receipts, recorded so no future K re-derives them**) | suite-wide | **(1) Four gates clean (16th consecutive); 5133→5136 keys after the hub's three last-backup rows.** **(2) Static delta `2b3a481..4798073` (the S333 → S346 close-outs: 8 pages, +458 −134): 0 live English outside `I18n.t`/`data-i18n`** — the grep heuristic (template literals with a capitalised word, `setAttribute` ternaries, `.textContent =`/`alert(`/`confirm(` with an English literal) returned one line, a torah_trainer code comment. **(3) Not re-run: the runtime HE census and the whole-corpus plain-argument probe** (the S333 receipts stand; the next K owes them). **(4) The hub's new `#ivritLastBackup` line renders the date through `_ivFmt` (locale `undefined`, the fonts-manager idiom), so the HE UI shows an English month name inside a Hebrew sentence — the same as the My Fonts "created" metadata one panel down; a K that wants to localize it changes `_ivFmt` once for both.** | found S347
+
 ## torah_trainer.html
 
 - [ ] P4 (**NEW S339 Pass I — receipts for the holiday strip on a virgin profile, so the next I/H re-runs rather than re-derives**) | torah_trainer.html | **The holiday strip is clean on a fresh profile in three cells** (EN 1280 light, HE 800 dark, EN offline): the 🕎 button is visible with `aria-expanded`, opening it builds 17 chips (30px tall, `aria-pressed`), Day 1 fires exactly one Sefaria text fetch and sets `scope:'custom'` + `holidayKey` + the "Rosh Hashanah — Day 1 — Genesis 21:1-34" label, a reload restores the holiday and re-opening shows it pressed; offline (Sefaria aborted) the status reads the localized load-failed line with the `torah.status.net_hint` fragment and the strip still works. | found: 2026-09-04, S339 Pass I
