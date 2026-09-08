@@ -1109,8 +1109,58 @@ function copyIEText() {
   btn.textContent = I18n.t('home.alltools.copy_done'); setTimeout(() => btn.textContent = I18n.t('home.alltools.copy_reset'), 1800);
 }
 
-function eraseAllSettings() {
-  if (!confirm(I18n.t('home.alltools.erase_confirm1'))) return;
+// The first erase gate is a dialog rather than a confirm() because the warning ADVISES a backup
+// ("Export a backup first if you want to keep your data") and a confirm() cannot offer one — the
+// only way to comply was cancel → Save → start over. Same text, same accessible contract as
+// ivritAskMode (role, label, Escape, Tab trap, focus restore, the hub's modal handler stopped),
+// plus a "Save a backup first" button that runs ivritSaveFile() and returns to this question.
+// Resolves 'backup' | 'erase' | null (cancel). The second, final confirm() stays as it was.
+function ivritAskErase() {
+  return new Promise(resolve => {
+    const ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
+    const box = document.createElement('div');
+    box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:400px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);';
+    const title = document.createElement('div');
+    title.id = 'ivritEraseTitle'; title.style.cssText = 'font-weight:700;font-size:1rem;margin-bottom:8px;';
+    title.textContent = I18n.t('home.alltools.erase_button').replace(/^[^\p{L}]+/u, '');   // the button label without its emoji
+    const body = document.createElement('div');
+    body.style.cssText = 'font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;white-space:pre-line;';
+    body.textContent = I18n.t('home.alltools.erase_confirm1');   // the same warning the confirm() showed
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
+    const mk = (act, label, css) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.act = act; b.textContent = label; b.style.cssText = 'flex:1;min-width:96px;padding:9px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.85rem;' + css; row.appendChild(b); return b; };
+    mk('backup', I18n.t('home.alltools.erase_backup_first'), 'border:none;background:var(--navy,#1a2744);color:#fff;');
+    mk('erase',  I18n.t('home.alltools.erase_dialog_erase'), 'border:none;background:#a83232;color:#fff;');
+    mk('cancel', I18n.t('shared.ivrit.restore_cancel_button'), 'border:1px solid var(--border,#ccc);background:transparent;color:inherit;');
+    box.appendChild(title); box.appendChild(body); box.appendChild(row);
+    const opener = document.activeElement;
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+    box.setAttribute('aria-labelledby', 'ivritEraseTitle');
+    ov.appendChild(box); document.body.appendChild(ov);
+    const done = v => { if (ov.parentNode) document.body.removeChild(ov); try { opener && opener.focus && opener.focus(); } catch (e) {} resolve(v); };
+    const btns = [...row.querySelectorAll('button')];
+    btns.forEach(b => b.addEventListener('click', () => { const act = b.dataset.act; done(act === 'cancel' ? null : act); }));
+    ov.addEventListener('click', e => { if (e.target === ov) done(null); });
+    ov.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(null); return; }
+      if (e.key !== 'Tab' || !btns.length) return;
+      e.stopPropagation();
+      const first = btns[0], last = btns[btns.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+    btns[0].focus();   // the safe route is the default
+  });
+}
+async function eraseAllSettings() {
+  for (;;) {
+    const act = await ivritAskErase();
+    if (!act) return;
+    if (act === 'backup') { ivritSaveFile(); continue; }   // the download starts; the question comes back
+    break;
+  }
   if (!confirm(I18n.t('home.alltools.erase_confirm2'))) return;
   const keys = [
     'hebrewBlender_presets',

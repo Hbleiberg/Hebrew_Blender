@@ -2965,6 +2965,8 @@ home.alltools.drop_text,Drop an <b>AllTools .ivrit</b> file here to restore ever
 home.alltools.erase_button,🗑 Erase All Settings,🗑 מחיקת כל ההגדרות,button,leading-emoji
 home.alltools.erase_confirm1,"⚠️ WARNING: This will permanently erase ALL presets, saved schedules, settings, and saved fonts for every IvritSuite tool.\n\nThis cannot be undone. Export a backup first if you want to keep your data.\n\nAre you sure you want to erase everything?","⚠️ אזהרה: פעולה זו תמחק לצמיתות את כל ההגדרות השמורות, מערכות השעות השמורות, ההגדרות והגופנים השמורים של כל כלי IvritSuite.\n\nלא ניתן לבטל פעולה זו. ייצאו גיבוי תחילה אם ברצונכם לשמור את הנתונים שלכם.\n\nהאם אתם בטוחים שברצונכם למחוק את הכול?",confirm,leading-emoji; contains \n
 home.alltools.erase_confirm2,Final confirmation: erase all Hebrew Blender data on this device?,אישור סופי: למחוק את כל נתוני Hebrew Blender במכשיר זה?,confirm,
+home.alltools.erase_backup_first,💾 Save a backup first,💾 קודם שמירת גיבוי,"first erase gate (dialog) — runs the .ivrit Save, then asks again",leading-emoji
+home.alltools.erase_dialog_erase,Erase everything,מחיקת הכול,first erase gate (dialog) — proceeds to the final confirm,
 home.alltools.erase_success,All settings and presets have been erased.,כל ההגדרות וההגדרות השמורות נמחקו.,alert,
 home.alltools.export_button,⬇ Export All Settings,⬇ ייצוא כל ההגדרות,button (manual mode),leading-emoji
 home.alltools.import_button,⬆ Import All Settings,⬆ ייבוא כל ההגדרות,button (manual mode),leading-emoji
