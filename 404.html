@@ -122,7 +122,12 @@ header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center
 .heb-404{font-family:'Frank Ruhl Libre',serif;direction:rtl;font-size:clamp(1.6rem,6vw,2.4rem);color:var(--text);margin:8px 0 4px;}
 .hero-title{font-family:'Libre Baskerville',serif;font-size:clamp(1.4rem,5vw,2rem);color:var(--text);margin:6px 0 14px;}
 .hero-sub{font-size:1rem;color:var(--muted);max-width:540px;line-height:1.55;margin-bottom:10px;}
-.hero-sub .heb-inline{font-family:'Frank Ruhl Libre',serif;direction:rtl;unicode-bidi:isolate;}
+/* Isolated, not forced RTL: the span holds "(Hebrew, transliteration)" and forcing direction:rtl laid the
+   whole parenthetical out right-to-left in the ENGLISH sentence too, so an English reader saw
+   "(lo nimtza ,לֹא נִמְצָא)" — comma and transliteration reversed (measured). With the direction inherited,
+   the Hebrew run still renders right-to-left inside itself, EN reads Hebrew-then-comma-then-translit, and
+   the Hebrew UI (paragraph already rtl) is unchanged. */
+.hero-sub .heb-inline{font-family:'Frank Ruhl Libre',serif;unicode-bidi:isolate;}
 .hero-quip{font-size:0.88rem;color:var(--muted);max-width:520px;line-height:1.5;font-style:italic;margin-bottom:36px;}
 
 .home-btn{background:var(--navy);color:var(--gold-light);border:none;border-radius:8px;padding:13px 34px;font-size:1rem;font-family:'Source Sans 3',sans-serif;font-weight:600;letter-spacing:0.02em;text-decoration:none;cursor:pointer;transition:background 0.15s,color 0.15s,transform 0.15s;}
