@@ -4487,16 +4487,21 @@ function _setStartNote(keys) {
 function _retireStartNote(key, ok) {
   if (ok && _startNoteKeys.includes(key)) _setStartNote(_startNoteKeys.filter(k => k !== key));
 }
-function _setPresetNameNote(msg) {
+// Stores the KEY (like _setStartNote) so applyI18n can re-render a note still on screen
+// after a live EN⇄HE switch.
+let _presetNameNoteKey = null;
+function _setPresetNameNote(key) {
+  _presetNameNoteKey = key || null;
+  const msg = _presetNameNoteKey && window.I18n ? I18n.t(_presetNameNoteKey) : '';
   const note = document.getElementById('presetNameNote');
   const btn = document.getElementById('savePresetBtn');
-  if (note) { note.textContent = msg || ''; note.style.display = msg ? '' : 'none'; }
+  if (note) { note.textContent = msg; note.style.display = msg ? '' : 'none'; }
   if (btn) btn.setAttribute('aria-disabled', msg ? 'true' : 'false');
 }
 function savePreset() {
   const nameInput = document.getElementById('presetName');
   const name = (nameInput.value || '').trim();
-  if (!name) { _setPresetNameNote(I18n.t('flashcards.teachertools.preset_name_required')); nameInput.focus(); return; }
+  if (!name) { _setPresetNameNote('flashcards.teachertools.preset_name_required'); nameInput.focus(); return; }
   _setPresetNameNote('');
   const presets = readPresets();
   if (presets[name]) {
@@ -4509,14 +4514,17 @@ function savePreset() {
 }
 /* Results-screen "save this card set" — savePreset()'s twin: same store, same validation
    vehicle, its own input/note elements (the setup panel is a screen away when the urge hits). */
-function _setSaveDeckNote(msg) {
+let _saveDeckNote = null;   // { key, params } while a note is on screen — re-rendered by applyI18n
+function _setSaveDeckNote(key, params) {
+  _saveDeckNote = key ? { key: key, params: params || null } : null;
+  const msg = _saveDeckNote && window.I18n ? I18n.t(_saveDeckNote.key, _saveDeckNote.params || {}) : '';
   const note = document.getElementById('saveDeckNote');
-  if (note) { note.textContent = msg || ''; note.style.display = msg ? '' : 'none'; }
+  if (note) { note.textContent = msg; note.style.display = msg ? '' : 'none'; }
 }
 function saveDeckFromResults() {
   const input = document.getElementById('saveDeckName');
   const name = (input.value || '').trim();
-  if (!name) { _setSaveDeckNote(I18n.t('flashcards.teachertools.preset_name_required')); input.focus(); return; }
+  if (!name) { _setSaveDeckNote('flashcards.teachertools.preset_name_required'); input.focus(); return; }
   const presets = readPresets();
   if (presets[name] && !confirm(I18n.t('flashcards.teachertools.preset_overwrite_confirm', { name: name }))) return;
   presets[name] = { settings: getSettings(), order: Date.now() };
@@ -4524,7 +4532,7 @@ function saveDeckFromResults() {
   renderPresets();
   input.value = '';
   document.getElementById('saveDeckRow').hidden = true;
-  _setSaveDeckNote(I18n.t('flashcards.results.deck_saved', { name: name }));
+  _setSaveDeckNote('flashcards.results.deck_saved', { name: name });
   showAppToast(I18n.t('flashcards.results.deck_saved', { name: name }));
 }
 function loadPreset(name) {
@@ -4967,10 +4975,13 @@ function copyShareLink() {
    Deliberately partial: everything a drill knows that a worksheet does not (card count, timer,
    listening, locks, profiles) is left out, so the generator applies its own defaults. */
 const WS_BLEND_TYPE = { 1: 'one', 2: 'two', 3: 'three' };
-function _setWsHandoffNote(msg, reason) {
+let _wsHandoffKey = null;   // the standing note's key, so applyI18n can re-render it
+function _setWsHandoffNote(key, reason) {
   const el = document.getElementById('wsHandoffNote');
   if (!el) return;
-  el.textContent = msg || '';
+  _wsHandoffKey = key || null;
+  const msg = _wsHandoffKey && window.I18n ? I18n.t(_wsHandoffKey) : '';
+  el.textContent = msg;
   el.style.display = msg ? '' : 'none';
   _wsHandoffReason = msg ? (reason || null) : null;
 }
@@ -4987,12 +4998,12 @@ function openInWorksheet() {
   // The "Other" sub-modes drill numbers/colours/emojis/word-lists, not letter+vowel blends,
   // so there is nothing a blend worksheet could carry over.
   if (s.otherModeActive) {
-    _setWsHandoffNote(I18n.t('flashcards.worksheet.other_mode'), 'other');
+    _setWsHandoffNote('flashcards.worksheet.other_mode', 'other');
     announce(I18n.t('flashcards.worksheet.other_mode'));
     return;
   }
   if (!s.selectedLetters.length || !s.selectedVowels.length) {
-    _setWsHandoffNote(I18n.t('flashcards.worksheet.need_selection'), 'selection');
+    _setWsHandoffNote('flashcards.worksheet.need_selection', 'selection');
     announce(I18n.t('flashcards.worksheet.need_selection'));
     return;
   }
@@ -8443,6 +8454,9 @@ function applyI18n() {
   updateWordsCount();
   if (_startNoteKeys.length) _setStartNote(_startNoteKeys);   // re-render a Start note still on screen
   if (_weakNoteKey) _setWeakNote(_weakNoteKey);               // same for the weakness no-data note
+  if (_presetNameNoteKey) _setPresetNameNote(_presetNameNoteKey);
+  if (_saveDeckNote) _setSaveDeckNote(_saveDeckNote.key, _saveDeckNote.params);
+  if (_wsHandoffKey) _setWsHandoffNote(_wsHandoffKey, _wsHandoffReason);
   { const _tsl = document.getElementById('timerShowLabel');
     if (_tsl) { const _tk = timerMode === 'limit' ? 'flashcards.timer.show_countdown' : 'flashcards.timer.show_timer';
                 _tsl.setAttribute('data-i18n', _tk); _tsl.textContent = I18n.t(_tk); } }
