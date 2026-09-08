@@ -4222,6 +4222,7 @@
   "torah.handout.hide_nikkud": "Hide nikkud (vowels)",
   "torah.handout.hide_nums": "Hide verse numbers",
   "torah.handout.print_button": "🖨️ Print handout",
+  "torah.handout.selected_only": "Print only the selected verses",
   "torah.handout.shem_note": "This reading contains שם ה׳ — printed pages traditionally go to geniza, not the trash.",
   "torah.handout.size_large": "Large",
   "torah.handout.size_normal": "Normal",

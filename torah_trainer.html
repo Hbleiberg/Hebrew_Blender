@@ -1903,6 +1903,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <input type="radio" name="ttHandoutSize" id="hsXL" value="xl"><label for="hsXL" data-i18n="torah.handout.size_xl">Extra large</label>
     </span>
   </span>
+  <span class="tt-ctrl" id="ttHandoutSelRow" hidden>
+    <label for="ttHandoutSelectedOnly" data-i18n="torah.handout.selected_only">Print only the selected verses</label>
+    <label class="toggle"><input type="checkbox" id="ttHandoutSelectedOnly"><span class="slider"></span></label>
+    <span id="ttHandoutSelCount" style="color:var(--muted);font-size:0.85em;"></span>
+  </span>
   <span class="tt-ctrl" id="ttHandoutGenizaRow" hidden>
     <label for="ttHandoutGeniza" data-i18n="torah.handout.geniza_check">Add a לגניזה marker to the printed page</label>
     <label class="toggle"><input type="checkbox" id="ttHandoutGeniza"><span class="slider"></span></label>
@@ -2433,6 +2438,7 @@ const DEFAULTS = {
   handoutHideNums: false,      // hide verse numbers on the printed handout
   handoutFontSize: 'large',    // 'normal' (screen size) | 'large' (2.2rem) | 'xl' (2.8rem)
   handoutGenizaMark: false,    // print a לגניזה footer when a divine name is detected
+  handoutSelectedOnly: false,  // print only the Copy bar's selected verses (row shown only while a selection exists)
   // Copy verses (clipboard) — format prefs persist; bulk-select mode/selection are
   // session-only unless copyBulkRemember is on. Every default below reproduces the
   // pre-Copy-panel behavior exactly, so an upgrading teacher sees no change until they opt in.
@@ -6188,6 +6194,9 @@ function wireSettingsForm() {
       if (e.target.checked) { settings.handoutFontSize = e.target.value; saveSettings(); }
     });
   });
+  document.getElementById('ttHandoutSelectedOnly').addEventListener('change', e => {
+    settings.handoutSelectedOnly = e.target.checked; saveSettings();
+  });
   document.getElementById('ttHandoutGeniza').addEventListener('change', e => {
     settings.handoutGenizaMark = e.target.checked; saveSettings();
   });
@@ -6673,6 +6682,7 @@ function printReading() {
    while active. */
 let _handoutActive = false;
 let _handoutSnap = null;
+let _handoutVersesSnap = null;   // currentVerses swapped out for a selected-verses-only handout
 function _handoutEnter() {
   if (_handoutActive) return;
   // Flush any PENDING debounced save with the PRE-override values (the verse
@@ -6698,6 +6708,13 @@ function _handoutEnter() {
   settings.showTranslit = false;
   settings.showTranslation = false;
   if (settings.handoutHideNikkud) settings.showNikkud = false;
+  // Selected verses only: swap the render source for the print, restored in _handoutExit. The
+  // selection Set itself is untouched, so the Copy bar resumes exactly as it was.
+  _handoutVersesSnap = null;
+  if (settings.handoutSelectedOnly && ttBulkSelected.size) {
+    const sel = selectedCopyVerses();
+    if (sel.length) { _handoutVersesSnap = currentVerses; currentVerses = sel; }
+  }
   const b = document.body;
   const fs = settings.handoutFontSize || 'large';
   b.classList.add('tt-handout-print');
@@ -6729,6 +6746,7 @@ function _handoutExit() {
   const gm = document.getElementById('ttGenizaMark');   // back outside #ttReading before the
   const rd = document.getElementById('ttReading');      // re-render wipes its subtree
   if (gm && rd && rd.parentNode) rd.parentNode.insertBefore(gm, rd.nextSibling);
+  if (_handoutVersesSnap) { currentVerses = _handoutVersesSnap; _handoutVersesSnap = null; }
   renderText();   // no saveSettings — the persisted settings never changed
 }
 function printHandout() {
@@ -6755,7 +6773,20 @@ function syncHandoutForm() {
   document.getElementById('hsLarge').checked  = fs === 'large';
   document.getElementById('hsXL').checked     = fs === 'xl';
   document.getElementById('ttHandoutGeniza').checked = !!settings.handoutGenizaMark;
+  document.getElementById('ttHandoutSelectedOnly').checked = !!settings.handoutSelectedOnly;
+  syncHandoutSelRow();
   updateHandoutShemUI();
+}
+// The "selected verses only" row exists only while the Copy bar holds a selection — with nothing
+// selected the toggle would be a dead control, and the handout prints the whole reading as before.
+// Re-synced from updateCopyTextarea (every selection path funnels through there, applyI18n too).
+function syncHandoutSelRow() {
+  const row = document.getElementById('ttHandoutSelRow');
+  if (!row) return;
+  const n = ttBulkSelected.size;
+  row.hidden = !n;
+  const c = document.getElementById('ttHandoutSelCount');
+  if (c && window.I18n) c.textContent = n ? I18n.t('torah.copy.bulk_count', { count: n }) : '';
 }
 /* ── Copy verses: per-verse 📋 button + bulk select-and-copy ──
    Mirrors hebrew_dictionary.html's bulk-copy pattern (pure builder, body-class
@@ -7161,6 +7192,7 @@ function updateCopyTextarea() {
     if (c.textContent !== label) c.textContent = label;
   }
   _syncBulkDock();
+  syncHandoutSelRow();
 }
 // The dock mirrors the panel's count and its two most-wanted actions at the bottom of the viewport.
 // Derived state only — nothing new is persisted, so no getSettings/AllTools wiring. It hangs off
