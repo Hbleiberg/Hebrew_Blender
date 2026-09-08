@@ -2724,6 +2724,7 @@ function initSpeechCapability() {
 let nameLetterMode = false;
 let nameLetterShowLetter = true;
 let otherModeActive = false;
+let _wsHandoffReason = null;   // 'other' | 'selection' — which input the standing worksheet-handoff note names
 let otherSubMode = 'numbers';
 let numberMin = 1;
 let numberMax = 100;
@@ -3288,6 +3289,7 @@ function initLetters() {
       else selectedLetters.add(heb);
       tile.classList.toggle('selected');
       _retireStartNote('flashcards.start.err_select_letter', selectedLetters.size > 0);
+      _retireWsHandoffNote();
       saveSettings();
     });
     bindTileA11y(tile);
@@ -3366,16 +3368,16 @@ function buildLockLetterGrid(pos) {
 function applyLetterButtons() {
   document.getElementById('letterAll').addEventListener('click', () => {
     getDisplayLetters().forEach(L => selectedLetters.add(L.heb));
-    initLetters(); saveSettings();
+    initLetters(); _retireStartNote('flashcards.start.err_select_letter', selectedLetters.size > 0); _retireWsHandoffNote(); saveSettings();
   });
   document.getElementById('letterNone').addEventListener('click', () => {
     selectedLetters.clear();
-    initLetters(); saveSettings();
+    initLetters(); _retireStartNote('flashcards.start.err_select_letter', selectedLetters.size > 0); _retireWsHandoffNote(); saveSettings();
   });
   document.getElementById('letterNoSofit').addEventListener('click', () => {
     selectedLetters.clear();
     getDisplayLetters().forEach(L => { if (!L.sofit) selectedLetters.add(L.heb); });
-    initLetters(); saveSettings();
+    initLetters(); _retireStartNote('flashcards.start.err_select_letter', selectedLetters.size > 0); _retireWsHandoffNote(); saveSettings();
   });
   document.getElementById('dageshTavToggle').addEventListener('change', (e) => {
     dageshTavEnabled = e.target.checked;
@@ -3465,6 +3467,7 @@ function initVowels() {
         tile.classList.toggle('selected');
         updateVavAsLetterVisibility();
         _retireStartNote('flashcards.start.err_select_vowel', selectedVowels.size > 0);
+        _retireWsHandoffNote();
         saveSettings();
       });
       bindTileA11y(tile);
@@ -3478,16 +3481,16 @@ function applyVowelButtons() {
   document.getElementById('vowelAll').addEventListener('click', () => {
     selectedVowels.clear();
     activeVowelGroups().forEach(g => g.vowels.forEach(v => selectedVowels.add(v.key)));
-    initVowels(); updateVavAsLetterVisibility(); saveSettings();
+    initVowels(); updateVavAsLetterVisibility(); _retireStartNote('flashcards.start.err_select_vowel', selectedVowels.size > 0); _retireWsHandoffNote(); saveSettings();
   });
   document.getElementById('vowelMain').addEventListener('click', () => {
     selectedVowels.clear();
     activeVowelGroups().forEach(g => g.vowels.forEach(v => { if (v.isMain) selectedVowels.add(v.key); }));
-    initVowels(); updateVavAsLetterVisibility(); saveSettings();
+    initVowels(); updateVavAsLetterVisibility(); _retireStartNote('flashcards.start.err_select_vowel', selectedVowels.size > 0); _retireWsHandoffNote(); saveSettings();
   });
   document.getElementById('vowelNone').addEventListener('click', () => {
     selectedVowels.clear();
-    initVowels(); updateVavAsLetterVisibility(); saveSettings();
+    initVowels(); updateVavAsLetterVisibility(); _retireStartNote('flashcards.start.err_select_vowel', selectedVowels.size > 0); _retireWsHandoffNote(); saveSettings();
   });
   document.getElementById('vavAsLetterToggle').addEventListener('change', (e) => {
     vavAsLetter = e.target.checked;
@@ -3846,6 +3849,7 @@ function setOtherMode(on) {
   document.getElementById('panelVowels').style.display = vowelPanelOff ? 'none' : '';
   if (on && nameLetterMode) setNameLetterMode(false);
   updateListeningAvailability();
+  _retireWsHandoffNote();
   saveSettings();
 }
 
@@ -4963,11 +4967,19 @@ function copyShareLink() {
    Deliberately partial: everything a drill knows that a worksheet does not (card count, timer,
    listening, locks, profiles) is left out, so the generator applies its own defaults. */
 const WS_BLEND_TYPE = { 1: 'one', 2: 'two', 3: 'three' };
-function _setWsHandoffNote(msg) {
+function _setWsHandoffNote(msg, reason) {
   const el = document.getElementById('wsHandoffNote');
   if (!el) return;
   el.textContent = msg || '';
   el.style.display = msg ? '' : 'none';
+  _wsHandoffReason = msg ? (reason || null) : null;
+}
+// A change to the input the handoff note complains about retires it now (the _retireStartNote
+// idiom, stale-validation-note-after-its-input-changes): the mode pill for "other_mode", the
+// letter/vowel selection for "need_selection". The next press re-validates and re-shows if still blocked.
+function _retireWsHandoffNote() {
+  if (_wsHandoffReason === 'other' && !otherModeActive) _setWsHandoffNote('');
+  else if (_wsHandoffReason === 'selection' && selectedLetters.size && selectedVowels.size) _setWsHandoffNote('');
 }
 function openInWorksheet() {
   let s;
@@ -4975,12 +4987,12 @@ function openInWorksheet() {
   // The "Other" sub-modes drill numbers/colours/emojis/word-lists, not letter+vowel blends,
   // so there is nothing a blend worksheet could carry over.
   if (s.otherModeActive) {
-    _setWsHandoffNote(I18n.t('flashcards.worksheet.other_mode'));
+    _setWsHandoffNote(I18n.t('flashcards.worksheet.other_mode'), 'other');
     announce(I18n.t('flashcards.worksheet.other_mode'));
     return;
   }
   if (!s.selectedLetters.length || !s.selectedVowels.length) {
-    _setWsHandoffNote(I18n.t('flashcards.worksheet.need_selection'));
+    _setWsHandoffNote(I18n.t('flashcards.worksheet.need_selection'), 'selection');
     announce(I18n.t('flashcards.worksheet.need_selection'));
     return;
   }
