@@ -756,6 +756,13 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      sheet — measured S253 at 14 of 14 pages of a Learn-tab print, text and shadow both. Same
      shape the dictionary closed in S252; torah_trainer already hides its `.tt-hint-toast` here. */
   header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay, .tu-toast { display:none !important; }
+  /* The footer's FAQ/how-to disclosures are screen navigation; on paper they print as a row of
+     closed summaries and, at Letter, spilled onto a 14th sheet holding nothing else. The credits
+     stay: the motif staffs derive from PocketTorah audio, so the CC BY-SA notice belongs on the
+     printed chart. */
+  footer details { display:none !important; }
+  footer { padding:6px 0 0; font-size:0.66rem; }
+  footer .footer-credits, footer .footer-credits > span { display:block; line-height:1.35; }   /* one credit per line, not a wrapped flex row */
   /* Print has to establish its own ink. The dialog drops background colours by default, so every
      colour picked to sit ON a coloured plate has to be re-lit for white paper. Remapping the
      tokens converges both themes on the light palette (the flash_cards S159 treatment); without
