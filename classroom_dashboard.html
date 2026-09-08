@@ -4293,10 +4293,12 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   // A mistyped duration is a routine outcome, not an exception: say so under the field
   // (blocking-alert-for-a-routine-path) and clear it as the teacher retypes.
+  let _timerCustomNoteShown = false;   // applyI18n re-renders the note while it is on screen
   function timerCustomNote(show) {
     const n = document.getElementById('timerCustomNote');
     const inp = document.getElementById('timerCustomInput');
     if (!n) return;
+    _timerCustomNoteShown = !!show;
     if (show) {
       n.innerHTML = '<span class="sched-warn">⚠ ' + esc(I18n.t('dashboard.timer.custom_invalid')) + '</span>';
       n.style.display = '';
@@ -5772,10 +5774,15 @@ function mountSidebarResize(cfg) {
       return `<option value="${esc(id)}"${id === selectedId ? ' selected' : ''}>${esc(c.name)} (${n})</option>`;
     }).join('');
   }
-  function pickerClassNote(msg) {
+  // Stores the i18n key (+ params), never rendered text, so applyI18n can re-render a note
+  // that is still on screen after a live language switch.
+  let _pickerClassNoteKey = null, _pickerClassNoteParams = null;
+  function pickerClassNote(key, params) {
     const el = document.getElementById('pickerClassNote');
     if (!el) return;
-    el.textContent = msg || '';
+    _pickerClassNoteKey = key || null; _pickerClassNoteParams = params || null;
+    const msg = _pickerClassNoteKey && window.I18n ? I18n.t(_pickerClassNoteKey, _pickerClassNoteParams || {}) : '';
+    el.textContent = msg;
     el.style.display = msg ? '' : 'none';
   }
   // Sync every class <select> that exists (drawer, card header, fullscreen pop) to the active class.
@@ -5808,7 +5815,7 @@ function mountSidebarResize(cfg) {
   }
   function newClass() {
     if (Object.keys(settings.rosters).length >= ROSTER_MAX_CLASSES) {
-      pickerClassNote(I18n.t('dashboard.picker.class_limit', { max: ROSTER_MAX_CLASSES }));
+      pickerClassNote('dashboard.picker.class_limit', { max: ROSTER_MAX_CLASSES });
       return;
     }
     const raw = prompt(I18n.t('dashboard.picker.new_class_prompt'));
@@ -5942,10 +5949,13 @@ function mountSidebarResize(cfg) {
     const o = _pickOpener; _pickOpener = null;
     if (o && o.focus) { try { o.focus(); } catch (e) {} }
   }
-  function setPickNote(msg) {
+  let _pickNoteKey = null;   // same key-not-text shape as pickerClassNote
+  function setPickNote(key) {
     const n = document.getElementById('pickNote');
     if (!n) return;
-    n.textContent = msg || '';
+    _pickNoteKey = key || null;
+    const msg = _pickNoteKey && window.I18n ? I18n.t(_pickNoteKey) : '';
+    n.textContent = msg;
     n.style.display = msg ? 'block' : 'none';
   }
   function addPickBtn(container, label, cls, fn) {
@@ -6012,7 +6022,7 @@ function mountSidebarResize(cfg) {
     let pool = eligible;
     if (fair) {
       pool = eligible.filter(n => !sess.picked.includes(n));
-      if (!pool.length) { sess.picked = []; pool = eligible; setPickNote(I18n.t('dashboard.picker.new_round')); }
+      if (!pool.length) { sess.picked = []; pool = eligible; setPickNote('dashboard.picker.new_round'); }
     }
     const winner = pool[Math.floor(Math.random() * pool.length)];
     const finish = () => {
@@ -9675,6 +9685,9 @@ function panelMemApply() {
       try { if (_locNoteKey) setLocNote(_locNoteKey, _locNoteParams); } catch (e) {}   // re-render a location note that is still on screen
       try { if (_presetNoteKey) _setPresetNameNote(_presetNoteKey); } catch (e) {}     // ditto for a preset-name note
       try { if (_swmSaveNoteKey) _setWeekSaveNote(_swmSaveNoteKey); } catch (e) {}     // ditto for the weekly save-as note
+      try { if (_pickerClassNoteKey) pickerClassNote(_pickerClassNoteKey, _pickerClassNoteParams); } catch (e) {}   // ditto for the picker's class-limit note
+      try { if (_pickNoteKey) setPickNote(_pickNoteKey); } catch (e) {}                 // ditto for the pick overlay's new-round note
+      try { if (_timerCustomNoteShown) timerCustomNote(true); } catch (e) {}            // ditto for the timer's invalid-duration note
       try { buildToolbar(document.getElementById('drawerToolbar')); } catch (e) {}      // editor toolbar titles/labels build via t()
       try { buildToolbar(document.getElementById('inplaceToolbarCmds')); } catch (e) {}
       try { if (_rosterKbd) _rosterKbd.applyI18n(); } catch (e) {}   // key names/tips are shared.kbd.* strings
