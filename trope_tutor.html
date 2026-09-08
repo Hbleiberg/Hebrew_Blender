@@ -780,6 +780,11 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      (.star keeps brand --gold: it is a mark, not text — see the --gold-text token note above.) */
   header, header h1 { color:var(--navy); }
   header p { color:var(--muted); }
+  /* ...and when the teacher turns background graphics ON (to get the card rules), the navy plates
+     come back under the navy ink just recolored above: the title vanished on its own header in
+     BOTH themes, and in dark mode the family headings sank into the .tu-view plate. Paper gets
+     white plates whichever way the dialog is set. */
+  header, .tu-view, footer { background:#fff !important; }
   body.dark .mark-hit { color:#8a6216; }
   /* These slabs only surface when the teacher turns background graphics ON to get the card
      rules; then they print as solid blocks of ink. */
