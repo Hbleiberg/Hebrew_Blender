@@ -233,6 +233,7 @@
   "dashboard.picker.chip_absent": "Absent today — tap to include",
   "dashboard.picker.chip_present": "Tap to mark absent for this session",
   "dashboard.picker.class_label": "Class",
+  "dashboard.picker.class_limit": "You can have up to {max} classes. Delete one to add another.",
   "dashboard.picker.class_option": "{name} ({count})",
   "dashboard.picker.close": "Close",
   "dashboard.picker.close_aria": "Close",

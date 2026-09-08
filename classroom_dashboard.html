@@ -5808,7 +5808,7 @@ function mountSidebarResize(cfg) {
   }
   function newClass() {
     if (Object.keys(settings.rosters).length >= ROSTER_MAX_CLASSES) {
-      pickerClassNote(`You can have up to ${ROSTER_MAX_CLASSES} classes. Delete one to add another.`);
+      pickerClassNote(I18n.t('dashboard.picker.class_limit', { max: ROSTER_MAX_CLASSES }));
       return;
     }
     const raw = prompt(I18n.t('dashboard.picker.new_class_prompt'));
