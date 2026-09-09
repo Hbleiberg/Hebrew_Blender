@@ -194,6 +194,17 @@ only one, and the dashboard's `normalizeScheduleWeek` returns `null` for a week 
 is not an array — a garbage member is left in the store untouched, never applied, saved or
 minted into a blank grid that replaces the teacher's real one.
 
+**Restore paths accept only a value the UI offers.** The same untrusted sources reach every field of
+`applySettings()` (a share link, a preset, a `.ivrit` `liveState`), so a value is applied only when the
+control could have produced it: the generator restores a `<select>` through `applySelectValue(id, v)`
+(the option must exist), a number/range input through `applyNumberValue(id, v)` (finite only) and a
+button-row enum through `isOffered(v, list | rowSelector, dataKey)` (the row's own `data-*` values);
+flash cards use `_clampChoice`/`_clampEnum(v, allowed, dflt)` and typeof checks for the two booleans and
+the font ids; the dictionary's `applyDictState` matches `copyMode` against its radio group and keeps
+`shoreshRoot` only as a string. An unoffered value leaves the current pick — it is never written to the
+control as `""`/`NaN` and never saved back. Legacy migrations (the generator's old `colorCodingMode`
+values, flash cards' `numberFront:'translit'`) run before the check so they still apply.
+
 (`torah_trainer.html`, `hebrew_dictionary.html`, and `trope_tutor.html` have no preset collection
 of their own — they persist a single `settings`/last-state object instead, so the equivalent
 obligation there is to add every new control to that object's save/restore path.)

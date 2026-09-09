@@ -237,6 +237,8 @@ version 0 synchronously, then streams the remaining versions in `setTimeout(0)` 
 
 `applySettings()` keeps only known letter/vowel keys (`isKnownLetterKey`/`isKnownVowelKey`, built from `LETTERS` heb + sofit and `VOWELS` keys) when it rebuilds `selectedLetters`/`selectedVowels`; unknown members from a share link, preset or `.ivrit` file are dropped one by one, never the whole set, so `getLetter()` can't return undefined inside `generate()`.
 
+The same guard applies per value: every `<select>` restores through `applySelectValue(id, v)` (only an option the select offers), every number/range input through `applyNumberValue(id, v)` (finite numbers only), and every button-row enum (`npGender`, `npDisplay`, `rwStarPage`, `traceLineStyle`, `cwClueLang`, `matchTarget`, `rwDrillType`…) through `isOffered(v, list | rowSelector, dataKey)`, which reads the allowed set from the row's own `data-*` attributes so a new button is covered without a second list. An unoffered value leaves the current pick; nothing is written to the control as `""` or `NaN`, so the remembered setup never saves garbage back. Keep the legacy `colorCodingMode` migration ahead of its check.
+
 ---
 
 ## PDF export (`exportPDF`)
