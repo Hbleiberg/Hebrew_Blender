@@ -124,6 +124,9 @@ shared component so any tool can adopt it.
    are `shared.kbd.*` (~99 rows, already translated). The page must load a Hebrew font named
    `'Frank Ruhl Libre'` (every tool already does) — key glyphs render in it, deliberately NOT in any
    user-selected/previewed font, so keys stay legible even when the previewed font has gaps.
+   Frank Ruhl Libre has no te'amim, so `.hk-key-glyph` stacks `'IvritSuite Taamim'` after it (the
+   self-hosted Noto Serif Hebrew subset in `fonts/NotoSerifHebrew-Taamim.ttf`) — the Trop tab's keys
+   and the `◌` carrier render from it; the page must declare that `@font-face` next to the Frank Ruhl one.
 7. Finish per the Definition of done: the page is precached → **bump `sw.js` VERSION**; run
    `check-inline-js.mjs` + `check-i18n.js`; verify headless light+dark / desktop+~800px / EN+HE.
    (Adopting it into the Font Maker is a shipped feature → also bump `FONT_MAKER_VERSION` + add the
