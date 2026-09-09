@@ -3911,6 +3911,12 @@ function _clampChoice(v, allowed, dflt) {
   const n = Number(v);
   return allowed.includes(n) ? n : dflt;
 }
+// For string enums (a pill row's data-* values, a <select>'s options): a value the UI offers, else the
+// default. A share link, preset or .ivrit file used to land anything here — an array, a number, a
+// misspelt mode — which then rendered nothing and was saved back (apply-settings-trusts-collection-members).
+function _clampEnum(v, allowed, dflt) {
+  return allowed.includes(v) ? v : dflt;
+}
 function setCardCount(n) {
   cardCount = _clampCardCount(n);
   _syncCountUI();
@@ -4281,11 +4287,11 @@ function applySettings(s) {
     letterLocks[pos] = { enabled: true, letters: new Set(knownMembers(s.lockLetters, isKnownLetterKey)) };
   }
   colorCodingEnabled = !!s.colorCodingEnabled;
-  colorCodingMode = s.colorCodingMode ?? 'letter';
+  colorCodingMode = _clampEnum(s.colorCodingMode, ['letter', 'highlight', 'underline'], 'letter');   // enum: #colorModePills data-cmode
   // Known vowel keys with string values only: an array or string member used to spread into entries named 0, 1, 2… (apply-settings-trusts-collection-members)
   const ovIn = s.nikudColorOverrides;
   nikudColorOverrides = (ovIn && typeof ovIn === 'object' && !Array.isArray(ovIn)) ? Object.fromEntries(Object.entries(ovIn).filter(([k, v]) => VOWEL_COLOR_KEYS.has(k) && typeof v === 'string')) : {};
-  vowelColorScheme = s.vowelColorScheme ?? 'default';
+  vowelColorScheme = _clampEnum(s.vowelColorScheme, ['default', 'talam'], 'default');
   const fontMigration = { frank:'Frank Ruhl Libre', david:'David Libre', noto:'Noto Serif Hebrew', heebo:'Heebo', assist:'Assistant' };
   // Keep an unrecognised name AS IS (only the legacy id migration rewrites it). At init the
   // saved name is often a My Font that the async IndexedDB read has not produced yet, so
@@ -4293,9 +4299,9 @@ function applySettings(s) {
   // re-applies by matching hebFontId against MY_FONTS, and a coerced id can never match.
   // setHebFont/setEngFont bail on a name they don't know rather than falling back, so an
   // unresolved id renders through the CSS --heb-font default until the store answers.
-  const rawFont = s.hebFontId ?? 'Frank Ruhl Libre';
+  const rawFont = (typeof s.hebFontId === 'string' && s.hebFontId) ? s.hebFontId : 'Frank Ruhl Libre';   // any NAME survives (a My Font); only a non-string is garbage
   hebFontId = fontMigration[rawFont] || rawFont;
-  engFontId = s.engFontId ?? 'Libre Baskerville';
+  engFontId = (typeof s.engFontId === 'string' && s.engFontId) ? s.engFontId : 'Libre Baskerville';
   // Array members get the same guard as the scalars: only integer positions this (clamped) mode
   // offers survive — a non-finite or string member from a loaded file used to slip through because
   // the bound was read from the raw s.mode, and a non-array value threw on .filter.
@@ -4339,7 +4345,7 @@ function applySettings(s) {
   showSkippedAgain = s.showSkippedAgain !== undefined ? !!s.showSkippedAgain : true;
   const skipReshowToggle = document.getElementById('skipReshowToggle');
   if (skipReshowToggle) skipReshowToggle.checked = showSkippedAgain;
-  timerMode = s.timerMode || 'off';
+  timerMode = _clampEnum(s.timerMode, ['off', 'track', 'limit'], 'off');   // enum: #timerModePills data-tmode
   timerShowOnScreen = s.timerShowOnScreen !== false;
   timeLimitSeconds = _clampChoice(s.timeLimitSeconds, [30, 60, 120, 180, 300, 600], 60);   // enum: the timer pills' data-secs
   document.querySelectorAll('#timerModePills .pill').forEach(p => p.classList.toggle('active', p.dataset.tmode === timerMode));
@@ -4354,12 +4360,12 @@ function applySettings(s) {
   document.getElementById('nameLetterOpts').classList.toggle('hide', !nameLetterMode);
   document.getElementById('inverseRow').classList.toggle('hide', nameLetterMode);
   otherModeActive = !!s.otherModeActive;
-  otherSubMode = s.otherSubMode || 'numbers';
+  otherSubMode = _clampEnum(s.otherSubMode, ['numbers', 'colors', 'emoji', 'words'], 'numbers');   // enum: the sub-mode pills' data-sub
   numberMin = _clampNum(s.numberMin, 0, 9999, 1);       // #numMinInput's own min/max
   numberMax = _clampNum(s.numberMax, 0, 9999, 100);     // #numMaxInput's own min/max
-  numberGender = s.numberGender || 'feminine';
+  numberGender = _clampEnum(s.numberGender, ['feminine', 'masculine'], 'feminine');
   // Migrate old boolean numberShowNum → numberFront string
-  if (s.numberFront && s.numberFront !== 'translit') {
+  if (['number', 'words'].includes(s.numberFront)) {   // enum: #numShowPills data-nshow; the retired 'translit' value falls through to the migration
     numberFront = s.numberFront;
   } else if (s.numberShowNum !== undefined) {
     numberFront = s.numberShowNum ? 'number' : 'words';
@@ -4367,20 +4373,20 @@ function applySettings(s) {
     numberFront = 'number';
   }
   numberShowTranslit = !!s.numberShowTranslit;
-  colorGender = s.colorGender || 'masculine';
-  colorDisplayMode = s.colorDisplayMode || 'color+name';
-  colorFront = s.colorFront || 'color';
+  colorGender = _clampEnum(s.colorGender, ['masculine', 'feminine'], 'masculine');
+  colorDisplayMode = _clampEnum(s.colorDisplayMode, ['color+name', 'color', 'name'], 'color+name');
+  colorFront = _clampEnum(s.colorFront, ['color', 'hebrew'], 'color');
   colorShowTranslit = !!s.colorShowTranslit;
   selectedColors = Array.isArray(s.selectedColors) ? new Set(knownMembers(s.selectedColors, isKnownColorKey)) : new Set(COLOR_DATA.filter(c => c.isMain).map(c => c.key));
-  emojiGender       = s.emojiGender || 'both';
-  emojiFront        = s.emojiFront || 'emoji';
+  emojiGender       = _clampEnum(s.emojiGender, ['both', 'fem', 'masc'], 'both');
+  emojiFront        = _clampEnum(s.emojiFront, ['emoji', 'hebrew'], 'emoji');
   emojiShowTranslit = s.emojiShowTranslit !== undefined ? !!s.emojiShowTranslit : true;
   emojiShowGender   = s.emojiShowGender   !== undefined ? !!s.emojiShowGender   : true;
-  emojiGenderSide   = s.emojiGenderSide || 'both';
+  emojiGenderSide   = _clampEnum(s.emojiGenderSide, ['both', 'emoji', 'hebrew'], 'both');
   selectedEmojiSubs = new Set(knownMembers(s.selectedEmojiSubs, isEmojiSubKey));
   // Words sub-mode
-  wordsSource       = s.wordsSource || 'mylists';
-  wordsFront        = s.wordsFront  || 'hebrew';
+  wordsSource       = _clampEnum(s.wordsSource, ['mylists', 'alldict'], 'mylists');
+  wordsFront        = _clampEnum(s.wordsFront, ['hebrew', 'english'], 'hebrew');
   wordsShowTranslit = !!s.wordsShowTranslit;
   wordsMinLen       = _clampNum(s.wordsMinLen, 1, 20, 1);    // #wordsMinInput's own min/max
   wordsMaxLen       = _clampNum(s.wordsMaxLen, 1, 20, 20);   // #wordsMaxInput's own min/max
@@ -4432,13 +4438,13 @@ function applySettings(s) {
   initColorPickers();
   updateVavAsLetterVisibility();
 
-  translitStyle = s.translitStyle || 'default';
+  translitStyle = _clampEnum(s.translitStyle, ['default', 'sbl', 'brill', 'modernIsraeli', 'ashkenazi'], 'default');   // enum: #translitStyleSelect's options
   const tsSel = document.getElementById('translitStyleSelect');
   if (tsSel) tsSel.value = translitStyle;
-  sheetDuplex = s.sheetDuplex ?? false;          // ?? not || — a stored false must survive
+  sheetDuplex = s.sheetDuplex === true;          // a stored false survives; a non-boolean is garbage, not "on"
   const sdT = document.getElementById('sheetDuplexToggle');
   if (sdT) sdT.checked = sheetDuplex;
-  sheetPracticed = s.sheetPracticed ?? false;    // ?? not || — a stored false must survive
+  sheetPracticed = s.sheetPracticed === true;    // a stored false survives; a non-boolean is garbage, not "on"
   const spT = document.getElementById('sheetPracticedToggle');
   if (spT) spT.checked = sheetPracticed;
   // Always load the library so romanized fields on numbers/colors cards get populated
