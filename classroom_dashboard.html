@@ -1141,6 +1141,12 @@
   .btn-secondary:hover { background: var(--warm-gray); border-color: var(--muted); }
   body.dark .btn-secondary { color: var(--text); }
   body.dark .btn-secondary:hover { background: #2a3349; }
+  /* The backup box's corner Copy was a class-less inline-styled button, so no :hover could reach it.
+     Same geometry, moved here; the hover is the bare .btn-xs idiom (gold border) with the muted text
+     stepping up. inset-inline-end keeps it off the placeholder's first characters in the RTL UI.
+     Pattern control-class-without-a-hover-state. */
+  .preset-copy-btn { position: absolute; top: 5px; inset-inline-end: 5px; background: none; border: 1px solid var(--border); border-radius: 4px; padding: 2px 5px; font-size: 0.65rem; color: var(--muted); cursor: pointer; }
+  .preset-copy-btn:hover { border-color: var(--gold); color: var(--text); }
 
   /* ───── Vowel color-scheme selector ───── */
   .vowel-scheme-row { display: flex; gap: 6px; margin-top: 6px; align-items: center; flex-wrap: wrap; }
@@ -2734,7 +2740,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       </div>
       <div style="position:relative;">
         <textarea id="presetBackupBox" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Paste backup JSON here, or click Export…" data-i18n-placeholder="dashboard.backup.placeholder" aria-label="Paste backup JSON here, or click Export…" data-i18n-aria-label="dashboard.backup.placeholder" style="height:80px;font-family:monospace;font-size:0.72rem;width:100%;"></textarea>
-        <button onclick="copyPresetBackup()" id="presetCopyBtn" title="Copy" data-i18n-title="shared.ivrit.manual_copy" data-i18n="shared.ivrit.manual_copy" style="position:absolute;top:5px;right:5px;background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:0.65rem;color:var(--muted);cursor:pointer;">Copy</button>
+        <button onclick="copyPresetBackup()" id="presetCopyBtn" class="preset-copy-btn" title="Copy" data-i18n-title="shared.ivrit.manual_copy" data-i18n="shared.ivrit.manual_copy">Copy</button>
       </div>
     </div>
   </div>
