@@ -356,6 +356,16 @@ footer a { display: inline-block; padding-block: 5px; }
   .ltile.sel .lt-heb, .ltile.sel .lt-name { color: #fff; }
   .lt-heb { font-family: var(--heb-font); font-size: 1.3rem; direction: rtl; line-height: 1; }
   .lt-name { font-size: 0.7rem; line-height: 1.1; color: var(--muted); direction: ltr; text-align: center; }
+  /* Custom-glyph tile corner buttons (✕ delete, ↔ convert to main): a class instead of inline styles so
+     :hover can reach them — an inline style beats any selector (pattern control-class-without-a-hover-state,
+     S362). Physical corners on purpose: the letter grid reads right-to-left in BOTH UI languages, so
+     inset-inline-* would not follow the UI language — it would only move the ✕ to the left corner. */
+  .cg-tile-btn { position: absolute; top: 1px; border: none; background: transparent; color: var(--muted);
+    cursor: pointer; line-height: 1; padding: 2px; }
+  .cg-tile-del { right: 1px; font-size: 0.78rem; }
+  .cg-tile-cvt { left: 1px; font-size: 0.72rem; }
+  .cg-tile-btn:hover { color: var(--text); }
+  .ltile.sel .cg-tile-btn:hover { color: #fff; }
   /* mark-tile preview: drawn from the tool's own glyph shapes (NOT the system font, which
      fails to render a bare combining nikkud on a dotted circle) so the vowel always shows */
   .mark-prev { display: block; height: 34px; width: auto; max-width: 50px; margin: 1px auto 0; overflow: visible; color: var(--text); }
@@ -5672,8 +5682,8 @@ function renderCustomGlyphsGrid() {
     grid.innerHTML = `<div class="hint" dir="auto" style="grid-column:1/-1;text-align:start;">${_cgT('empty', 'No custom glyphs yet — add one below')}</div>`;
     return;
   }
-  const delBtn = (cp, type) => `<button title="${esc(window.I18n ? I18n.t('fontmaker.panels.custom_del_title') : 'Delete glyph')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.panels.custom_del_title') : 'Delete glyph')}" onclick="event.stopPropagation();deleteCustomGlyph('${cp}','${type}')" style="position:absolute;top:1px;right:1px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.78rem;line-height:1;padding:2px;">✕</button>`;
-  const cvtBtn = cp => `<button title="${esc(window.I18n ? I18n.t('fontmaker.tip.convert_to_main') : 'Convert to a main glyph (gives it its own adjustable width)')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.tip.convert_to_main') : 'Convert to a main glyph (gives it its own adjustable width)')}" onclick="event.stopPropagation();convertMarkToMain('${cp}')" style="position:absolute;top:1px;left:1px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:0.72rem;line-height:1;padding:2px;">↔</button>`;
+  const delBtn = (cp, type) => `<button title="${esc(window.I18n ? I18n.t('fontmaker.panels.custom_del_title') : 'Delete glyph')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.panels.custom_del_title') : 'Delete glyph')}" onclick="event.stopPropagation();deleteCustomGlyph('${cp}','${type}')" class="cg-tile-btn cg-tile-del">✕</button>`;
+  const cvtBtn = cp => `<button title="${esc(window.I18n ? I18n.t('fontmaker.tip.convert_to_main') : 'Convert to a main glyph (gives it its own adjustable width)')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.tip.convert_to_main') : 'Convert to a main glyph (gives it its own adjustable width)')}" onclick="event.stopPropagation();convertMarkToMain('${cp}')" class="cg-tile-btn cg-tile-cvt">↔</button>`;
   bases.forEach(l => {
     const st = l.anchors ? 'anchored' : (l.contours ? 'traced' : (l.source && l.source.dataUrl ? 'img' : ''));
     const tile = document.createElement('div');
