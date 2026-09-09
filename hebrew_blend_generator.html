@@ -6520,13 +6520,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ═══ Preview notice bar (recipe flash + live-preview messages) ═══ */
 let _previewNoticeTimer = null;
+// `text` may be a renderer (() => I18n.t(...)); the last call is kept so applyI18n can re-run it for
+// a notice still on screen after a live EN⇄HE switch (the contact-form note idiom).
+let _previewNoticeLast = null;
 function showPreviewNotice(text, opts = {}) {
   const el = document.getElementById('previewNotice');
   if (!el) return;
+  const render = typeof text === 'function' ? text : () => text;
+  _previewNoticeLast = { render, opts };
   el.className = 'preview-notice notice-' + (opts.kind || 'wait');
   el.textContent = '';
   const span = document.createElement('span');
-  span.textContent = text;
+  span.textContent = render();
   el.appendChild(span);
   if (opts.retry) {
     const rb = document.createElement('button');
@@ -6554,7 +6559,13 @@ function showPreviewNotice(text, opts = {}) {
 function hidePreviewNotice() {
   const el = document.getElementById('previewNotice');
   if (el) el.style.display = 'none';
+  _previewNoticeLast = null;
   if (_previewNoticeTimer) { clearTimeout(_previewNoticeTimer); _previewNoticeTimer = null; }
+}
+function rerenderPreviewNotice() {
+  const el = document.getElementById('previewNotice');
+  if (!el || el.style.display === 'none' || !_previewNoticeLast) return;
+  showPreviewNotice(_previewNoticeLast.render, _previewNoticeLast.opts);
 }
 
 /* ═══ Quick Start recipes ═══
@@ -6605,7 +6616,7 @@ function runQuickStart(id) {
   generate();
   const drawer = document.getElementById('quickStartDrawer');
   if (drawer) drawer.open = false;
-  showPreviewNotice(I18n.t('worksheet.quickstart.loaded_notice', { name: quickStartLabel(recipe) }),
+  showPreviewNotice(() => I18n.t('worksheet.quickstart.loaded_notice', { name: quickStartLabel(recipe) }),
     { kind: 'info', autohide: 5000 });
 }
 
@@ -6705,7 +6716,8 @@ function liveGenerate() {
     blends = prevBlends;
     classSetSheets = prevClassSetSheets;
     lastGeneratedSnapshot = prevSnapshot;
-    showPreviewNotice(_liveAlertMsg || I18n.t('worksheet.preview.waiting_selection'), { kind: 'wait', dismissible: true });
+    const alertMsg = _liveAlertMsg;   // a rendered alert stays as rendered; the fallback re-translates
+    showPreviewNotice(() => alertMsg || I18n.t('worksheet.preview.waiting_selection'), { kind: 'wait', dismissible: true });
   } else {
     hidePreviewNotice();
   }
@@ -6718,12 +6730,12 @@ function runLiveSync() {
   if (kind === 'none') return;
   if (!livePreviewEnabled) {
     // Opted out: don't auto-apply, but flag content drift so the teacher knows to Generate.
-    if (kind === 'content') livePulseGenerate(I18n.t('worksheet.preview.settings_changed'));   // the CSV row was authored for this notice but never read (S363)
+    if (kind === 'content') livePulseGenerate(() => I18n.t('worksheet.preview.settings_changed'));   // the CSV row was authored for this notice but never read (S363)
     return;
   }
   if (kind === 'presentation') { renderWorksheet(false); hidePreviewNotice(); return; }
   // content, live on
-  if (liveIsHeavyMode()) { livePulseGenerate(I18n.t('worksheet.preview.settings_changed')); return; }
+  if (liveIsHeavyMode()) { livePulseGenerate(() => I18n.t('worksheet.preview.settings_changed')); return; }
   liveGenerate();
 }
 
@@ -9244,7 +9256,7 @@ async function exportPDF() {
     const filename = `${title.replace(/\s+/g, '_')}_Hebrew_Blends.pdf`;
     pdf.save(filename);
   } catch (err) {
-    showPreviewNotice(I18n.t('worksheet.validation.pdf_failed'), { kind: 'warn', dismissible: true });
+    showPreviewNotice(() => I18n.t('worksheet.validation.pdf_failed'), { kind: 'warn', dismissible: true });
     console.error(err);
   } finally {
     pdfBtn.textContent = I18n.t('worksheet.actions.export_pdf');
@@ -11417,9 +11429,9 @@ function generateRealWords(reuse) {
   // The corpus is only needed for the 'All Words' source — curated lists / imported words
   // (and drawBlends) never read REAL_WORDS, so those sources skip the fetch entirely.
   if (rwSource === 'all' && !REAL_WORDS.length) {           // corpus not loaded yet — fetch, then re-render
-    showPreviewNotice(I18n.t('worksheet.preview.loading_word_list'), { kind: 'wait' });
+    showPreviewNotice(() => I18n.t('worksheet.preview.loading_word_list'), { kind: 'wait' });
     ensureRealWords().then(() => {
-      if (!REAL_WORDS.length) { showPreviewNotice(I18n.t('worksheet.preview.word_list_failed'), { kind: 'warn', dismissible: true, retry: () => { ensureRealWords(); } }); return; }
+      if (!REAL_WORDS.length) { showPreviewNotice(() => I18n.t('worksheet.preview.word_list_failed'), { kind: 'warn', dismissible: true, retry: () => { ensureRealWords(); } }); return; }
       if (!document.getElementById('realWordsToggle')?.checked) return;  // user left Real Words meanwhile
       hidePreviewNotice();
       generateRealWords(reuse);
@@ -13531,6 +13543,7 @@ function applyI18n() {
   try { renderQuickStarts(); } catch (e) {}
   try { if (_genNoteKey) _setGenerateNote(_genNoteKey); } catch (e) {}   // re-render a Generate note still on screen
   try { if (_presetNameNoteKey) _setPresetNameNote(_presetNameNoteKey); } catch (e) {}   // ditto for a preset-name note
+  try { rerenderPreviewNotice(); } catch (e) {}   // and a live-preview notice ("Settings changed", "waiting for selection"…)
   try { updateCombosCount(); } catch (e) {}
   // MUST run after applyStaticI18n: that sweep refills #generateBtn from its data-i18n key, which
   // would drop the "(N versions)" a class-set build is showing. This puts the right label back.
