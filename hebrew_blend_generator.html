@@ -4861,6 +4861,16 @@ const KNOWN_LETTER_KEYS = new Set(LETTERS.flatMap(l => l.sofit ? [l.heb, l.sofit
 function isKnownLetterKey(k) { return typeof k === 'string' && KNOWN_LETTER_KEYS.has(k); }
 function isKnownVowelKey(k)  { return typeof k === 'string' && VOWELS.some(v => v.key === k); }
 const VOWEL_COLOR_KEYS = new Set([...VOWEL_COLOR_DEFS, ...VOWEL_COLOR_DEFS_TALAM].map(d => d.key));   // the only keys the colour pickers ever write
+// Restore a select-backed setting only when the <select> offers that value (the blendCount rule, applied
+// to every select-backed setting): a share link, preset or .ivrit carrying anything else used to set
+// .value to "" (selectedIndex -1), and the next render read "" — a bingo set with 0 cells, a timer with no
+// duration — then rememberSetup() saved the "" for every later load. Unknown → keep the current pick.
+function applySelectValue(id, v) {
+  const el = document.getElementById(id);
+  if (!el || v == null || v === '') return;
+  const want = String(v);
+  if (Array.from(el.options).some(o => o.value === want)) el.value = want;
+}
 function applySettings(s) {
   // Letters
   if (s.dageshTav !== undefined) {
@@ -4891,10 +4901,7 @@ function applySettings(s) {
   // Layout
   // Only a value the <select> offers is applied; anything else (a hand-edited link or preset)
   // used to set .value to "" and the next sheet said "0 blends". Unknown → keep the current pick.
-  if (s.blendCount != null) {
-    const bc = document.getElementById('blendCount'), want = String(s.blendCount);
-    if (Array.from(bc.options).some(o => o.value === want)) bc.value = want;
-  }
+  applySelectValue('blendCount', s.blendCount);
   if (s.wsTitle !== undefined)   document.getElementById('wsTitle').value = s.wsTitle;
   if (s.wsSubtitle !== undefined) document.getElementById('wsSubtitle').value = s.wsSubtitle;
   if (s.excludeRepeats !== undefined) document.getElementById('excludeRepeats').checked = s.excludeRepeats;
@@ -4916,7 +4923,7 @@ function applySettings(s) {
   if (s.answerKey !== undefined)   document.getElementById('answerKeyToggle').checked = s.answerKey;
   if (s.qrAnswerKey !== undefined) { const el = document.getElementById('qrAnswerKeyToggle'); if (el) el.checked = s.qrAnswerKey; }
   if (s.timerOn !== undefined)   document.getElementById('timerToggle').checked = s.timerOn;
-  if (s.timerDuration)           document.getElementById('timerDuration').value = s.timerDuration;
+  applySelectValue('timerDuration', s.timerDuration);
   if (s.audio !== undefined)     document.getElementById('audioToggle').checked = s.audio;
   if (s.ttsRate !== undefined)   {
     const sl = document.getElementById('ttsRateSlider');
@@ -4955,9 +4962,9 @@ function applySettings(s) {
 
   // Bingo
   if (s.bingo !== undefined)         document.getElementById('bingoToggle').checked = s.bingo;
-  if (s.bingoGrid)                   document.getElementById('bingoGrid').value = s.bingoGrid;
+  applySelectValue('bingoGrid', s.bingoGrid);
   if (s.bingoCards)                  document.getElementById('bingoCards').value = s.bingoCards;
-  if (s.bingoPerPage)                document.getElementById('bingoPerPage').value = s.bingoPerPage;
+  applySelectValue('bingoPerPage', s.bingoPerPage);
   if (s.bingoFreeSpace !== undefined)    document.getElementById('bingoFreeSpace').checked = s.bingoFreeSpace;
   if (s.bingoShowSounds !== undefined)   document.getElementById('bingoShowSounds').checked = s.bingoShowSounds;
   if (s.bingoCallerSheet !== undefined)  document.getElementById('bingoCallerSheet').checked = s.bingoCallerSheet;
@@ -4969,7 +4976,7 @@ function applySettings(s) {
   if (s.ntlAnswerKey !== undefined)  document.getElementById('ntlAnswerKey').checked  = s.ntlAnswerKey;
   if (s.ntlSelfCheck !== undefined)  document.getElementById('ntlSelfCheck').checked  = s.ntlSelfCheck;
   if (s.numberPractice !== undefined) document.getElementById('numberPracticeToggle').checked = s.numberPractice;
-  if (s.npCount)                      document.getElementById('npCount').value = s.npCount;
+  applySelectValue('npCount', s.npCount);
   if (s.npGender)                     setNpGender(s.npGender);
   if (s.npMin !== undefined)          document.getElementById('npMin').value = s.npMin;
   if (s.npMax !== undefined)          document.getElementById('npMax').value = s.npMax;
@@ -4980,9 +4987,9 @@ function applySettings(s) {
   if (s.npSelfCheck !== undefined)    document.getElementById('npSelfCheck').checked = s.npSelfCheck;
   if (s.npAudio !== undefined)        document.getElementById('npAudio').checked = s.npAudio;
   if (s.npBingo !== undefined)        document.getElementById('npBingo').checked = s.npBingo;
-  if (s.npBingoGrid)                  document.getElementById('npBingoGrid').value = s.npBingoGrid;
+  applySelectValue('npBingoGrid', s.npBingoGrid);
   if (s.npBingoCards)                 document.getElementById('npBingoCards').value = s.npBingoCards;
-  if (s.npBingoPerPage)               document.getElementById('npBingoPerPage').value = s.npBingoPerPage;
+  applySelectValue('npBingoPerPage', s.npBingoPerPage);
   if (s.npBingoFreeSpace !== undefined) document.getElementById('npBingoFreeSpace').checked = s.npBingoFreeSpace;
   if (s.npBingoShowPair !== undefined)  document.getElementById('npBingoShowPair').checked = s.npBingoShowPair;
   if (s.npBingoCaller !== undefined)    document.getElementById('npBingoCaller').checked = s.npBingoCaller;
@@ -4993,7 +5000,7 @@ function applySettings(s) {
   // Preload the corpus only for the 'All Words' source; curated lists / imported words don't need it.
   if (s.realWords && !s.rwSource && !s.cwModeActive) ensureRealWords();
   else if (s.realWords && s.rwSource === 'all') ensureRealWords();
-  if (s.rwCount)                 document.getElementById('rwCount').value = s.rwCount;
+  applySelectValue('rwCount', s.rwCount);
   if (s.rwMixed !== undefined)   { document.getElementById('rwMixed').checked = s.rwMixed; toggleRwStarRow(); }
   if (s.rwStarReal !== undefined) { document.getElementById('rwStarReal').checked = s.rwStarReal; toggleRwStarPageRow(); }
   if (s.rwStarPage) { rwStarPage = s.rwStarPage; document.querySelectorAll('[data-star]').forEach(b => b.classList.toggle('active', b.dataset.star === rwStarPage)); }
@@ -5017,9 +5024,9 @@ function applySettings(s) {
       t.classList.toggle('selected', rwLetterFilter.has(t.dataset.heb));
     });
   }
-  if (s.rwBingoGrid)    document.getElementById('rwBingoGrid').value = s.rwBingoGrid;
+  applySelectValue('rwBingoGrid', s.rwBingoGrid);
   if (s.rwBingoCards)   document.getElementById('rwBingoCards').value = s.rwBingoCards;
-  if (s.rwBingoPerPage) document.getElementById('rwBingoPerPage').value = s.rwBingoPerPage;
+  applySelectValue('rwBingoPerPage', s.rwBingoPerPage);
   if (s.rwBingoFreeSpace !== undefined)    document.getElementById('rwBingoFreeSpace').checked = s.rwBingoFreeSpace;
   if (s.rwBingoShared !== undefined)       document.getElementById('rwBingoShared').checked = s.rwBingoShared;
   if (s.rwBingoCaller !== undefined)       document.getElementById('rwBingoCaller').checked = s.rwBingoCaller;
@@ -5032,7 +5039,7 @@ function applySettings(s) {
 
   // Matching (standard blends) — set values only; visibility flows through updateModeVisibility() at end.
   if (s.matchingMode !== undefined && document.getElementById('matchingToggle')) document.getElementById('matchingToggle').checked = s.matchingMode;
-  if (s.matchBlendCount && document.getElementById('matchBlendCount')) document.getElementById('matchBlendCount').value = s.matchBlendCount;
+  applySelectValue('matchBlendCount', s.matchBlendCount);
   // Tracing — set values only; visibility flows through updateModeVisibility() at end.
   if (s.tracing !== undefined)          document.getElementById('tracingToggle').checked = s.tracing;
   if (s.traceLineStyle)                 traceLineStyle = s.traceLineStyle;
@@ -5070,8 +5077,8 @@ function applySettings(s) {
   if (s.rwGematriaInverse !== undefined)   document.getElementById('rwGematriaInverse').checked = s.rwGematriaInverse;
   if (s.rwGematriaSelfCheck !== undefined) document.getElementById('rwGematriaSelfCheck').checked = s.rwGematriaSelfCheck;
   if (s.rwFillVowelsDagesh !== undefined)    document.getElementById('rwFillVowelsDagesh').checked = s.rwFillVowelsDagesh;
-  if (s.wsWordCount)                         document.getElementById('wsWordCount').value = s.wsWordCount;
-  if (s.wsGridSize)                          document.getElementById('wsGridSize').value = s.wsGridSize;
+  applySelectValue('wsWordCount', s.wsWordCount);
+  applySelectValue('wsGridSize', s.wsGridSize);
   if (s.wsShowNikkud !== undefined)          document.getElementById('wsShowNikkud').checked = s.wsShowNikkud;
   if (s.wsShowWordBank !== undefined)        document.getElementById('wsShowWordBank').checked = s.wsShowWordBank;
   if (s.wsDirections) {
@@ -5084,8 +5091,8 @@ function applySettings(s) {
     onClassSetChange();
   }
   // Crossword
-  if (s.cwWordCount && document.getElementById('cwWordCountSel'))   document.getElementById('cwWordCountSel').value = s.cwWordCount;
-  if (s.cwGridSize && document.getElementById('cwGridSize'))     document.getElementById('cwGridSize').value = s.cwGridSize;
+  applySelectValue('cwWordCountSel', s.cwWordCount);
+  applySelectValue('cwGridSize', s.cwGridSize);
   if (s.cwShowNikkud !== undefined && document.getElementById('cwShowNikkud'))     document.getElementById('cwShowNikkud').checked = s.cwShowNikkud;
   if (s.cwShowWordBank !== undefined && document.getElementById('cwShowWordBank')) document.getElementById('cwShowWordBank').checked = s.cwShowWordBank;
   if (s.cwAnswerKey !== undefined && document.getElementById('cwAnswerKey'))       document.getElementById('cwAnswerKey').checked = s.cwAnswerKey;
@@ -5093,7 +5100,7 @@ function applySettings(s) {
 
   // Matching
   if (s.matchTarget) setMatchTarget(s.matchTarget);
-  if (s.matchCount && document.getElementById('matchCount'))       document.getElementById('matchCount').value = s.matchCount;
+  applySelectValue('matchCount', s.matchCount);
   if (s.matchVersions && document.getElementById('matchVersions')) document.getElementById('matchVersions').value = s.matchVersions;
   if (s.matchAnswerKey !== undefined && document.getElementById('matchAnswerKey')) document.getElementById('matchAnswerKey').checked = s.matchAnswerKey;
 
