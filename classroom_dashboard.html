@@ -6166,6 +6166,10 @@ function mountSidebarResize(cfg) {
     const name = document.getElementById('presetName').value.trim();
     if (!name) { _setPresetNameNote('dashboard.preset.save_empty'); return; }
     _setPresetNameNote(null);
+    // Saving under a name that already exists replaces that preset — the same destructive step the
+    // row's ↺ button confirms, so Save confirms too (the flash-card twin's shape; the name stays in
+    // the field on Cancel so the teacher can rename instead).
+    if (presets[name] !== undefined && !confirm(I18n.t('dashboard.preset.overwrite_confirm', { name: name }))) return;
     presets[name] = getSettings({ forPreset: true });   // rosters are shared — snapshot only activeRosterId
     savePresetsStorage();
     document.getElementById('presetName').value = '';
