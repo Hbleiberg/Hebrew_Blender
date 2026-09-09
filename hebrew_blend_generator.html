@@ -5240,6 +5240,10 @@ function savePreset() {
   if (!name) { _setPresetNameNote('worksheet.presets.name_note_empty'); document.getElementById('presetName').focus(); return; }
   _setPresetNameNote('');
   const presets = ivritSafeParse(localStorage.getItem('hebrewBlender_presets') || '{}');
+  // Saving under a name that already exists replaces that preset — the same destructive step the
+  // row's ↺ button confirms, so Save confirms too (the flash-card twin's shape; the name stays in
+  // the field on Cancel so the teacher can rename instead).
+  if (presets[name] !== undefined && !confirm(I18n.t('worksheet.presets.overwrite_confirm', { name: name }))) return;
   presets[name] = getSettings();
   localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));
   document.getElementById('presetName').value = '';
