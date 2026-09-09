@@ -800,6 +800,11 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      paper no longer has, and one chip carried a screen-only "✓". */
   #tuFamilyChips, #tuFamilyNote, #tuCards, .tu-learn-nav { display:none !important; }
   .tu-print-sheet { display:block !important; }
+  /* Ctrl+P on the Drill tab: the sheet lives inside #learnView, which is [hidden] while Drill is
+     open, so the start screen (the mark picker as 26 "—" rows) or a live question printed instead
+     of the chart. Paper always gets the chart, whichever tab is open. */
+  #learnView { display:block !important; }
+  #drillView { display:none !important; }
   .tu-print-fam-title {
     font-family:'Libre Baskerville', serif; font-size:0.95rem; letter-spacing:0.04em;
     color:var(--navy); margin:16px 0 6px;
