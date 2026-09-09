@@ -794,6 +794,20 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      sheets (the torah_trainer .tt-verse treatment). Best-effort: a card taller than the page
      still breaks, but these run ~544px against a ~979px Letter content box. */
   .tu-card { break-inside:avoid; page-break-inside:avoid; }
+  /* Paper compaction (S351 G measured 13 sheets at Letter AND A4, most holding one row of two
+     cards and ~45% blank): the screen's 2.2rem examples at line-height 1.6 made a 4-example card
+     ~460–544px, so two rows never fit the ~979px Letter content box. On paper the examples drop
+     to 1.7rem/1.35 (still large-print for a young reader; the marked cluster keeps its plate),
+     the notes and list padding tighten, and the "See it in the parsha" link — a dead link on
+     paper — goes. Cards land ~330–420px: two rows per sheet, roughly half the paper. */
+  .tu-cards { gap:10px; }
+  .tu-card-head { padding:8px 12px 4px; row-gap:4px; }
+  .tu-card-note { font-size:0.78rem; line-height:1.4; padding:0 12px 6px; }
+  .tu-family-note { font-size:0.78rem; line-height:1.4; }
+  .tu-ex-list { padding:4px 8px 8px; gap:2px; }
+  .tu-ex-row { padding:2px 6px; }
+  .tu-ex-word { font-size:1.7rem; line-height:1.35; }
+  .tu-card-links { display:none; }
   /* The screen studies ONE clause family at a time; the sheet is a wall chart, so paper swaps the
      live view for the all-families copy buildPrintChart() assembles. That also retires the chrome
      S195 found on the sheet — the family chips and "Next family →" are navigation for a view the
