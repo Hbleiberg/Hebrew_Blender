@@ -1603,7 +1603,8 @@
   .swm-chip.armed { border-color: var(--gold); background: rgba(201,146,42,0.12); }
   .swm-chip.armed .swm-chip-name { font-weight: 700; }
   .swm-chip-arm { background: none; border: none; padding: 0; font: inherit; color: inherit;
-    cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px; position: relative; }
+  .swm-chip-arm::after { content: ''; position: absolute; inset: -5px 0; }   /* the 15px arm's hit box reaches 25px inside the chip's dead padding (WCAG 2.5.8) — the .tip-icon::after idiom */
   .swm-chip-name { font-size: 0.8rem; line-height: 1.2; }
   .swm-chip-class { font-size: 0.68rem; color: var(--muted); font-style: italic; }
   .swm-swatch { position: relative; width: 18px; height: 18px; border-radius: 5px;
@@ -1612,7 +1613,7 @@
   .swm-swatch-eraser { display: inline-flex; align-items: center; justify-content: center;
     background: transparent; border: 1px dashed var(--muted); font-size: 0.72rem; color: var(--muted); }
   .swm-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 10px 0 8px; }
-  .swm-weekend { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; cursor: pointer; color: var(--text); }
+  .swm-weekend { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; cursor: pointer; color: var(--text); min-block-size: 24px; }   /* the label is the 14px checkbox's touch target (WCAG 2.5.8) */
   .swm-weekend input { accent-color: var(--gold); width: 14px; height: 14px; cursor: pointer; }
   .swm-toolbar-right { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
   /* Screen-hidden; the print block below reveals it as the printed sheet's title. */
