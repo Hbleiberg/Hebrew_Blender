@@ -2056,6 +2056,24 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         .ivrit-ask-btn[data-act="replace"]:hover{background:#8a2828;}
         .ivrit-ask-btn[data-act="cancel"]{background:transparent;color:inherit;border-color:var(--border,#ccc);}
         .ivrit-ask-btn[data-act="cancel"]:hover{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
+        /* Flash-card dialogs (profile picker, card-count picker): class-based like .ivrit-ask-btn so a hover plate can reach them */
+        .fc-dlg-btn{border:1px solid transparent;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.85rem;}
+        .fc-dlg-btn[data-act="create"]{padding:8px 12px;background:var(--navy,#1a2744);color:#fff;}
+        .fc-dlg-btn[data-act="create"]:hover{background:var(--gold,#c9922a);color:var(--navy,#1a2744);}
+        .fc-dlg-btn[data-act="start"]{flex:2;padding:9px;background:var(--gold,#c9922a);color:#1a2744;font-weight:700;}
+        .fc-dlg-btn[data-act="start"]:hover{background:var(--navy,#1a2744);color:#fff;}
+        .fc-dlg-btn[data-act="cancel"]{flex:1;padding:9px;background:transparent;color:inherit;border-color:var(--border,#ccc);}
+        .fc-dlg-btn[data-act="cancel"]:hover{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
+        .fc-dlg-btn.fc-dlg-wide{flex:none;width:100%;margin-top:14px;}
+        .fc-dlg-pick{text-align:start;padding:9px 11px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.88rem;}
+        .fc-dlg-pick.fc-dlg-quick{flex:1 0 auto;min-width:48px;padding:8px 10px;text-align:center;font-size:0.85rem;}
+        .fc-dlg-pick:hover{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
+        .fc-dlg-pick.is-active{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
+        .fc-dlg-pick.is-active:hover{background:rgba(201,146,42,0.24);}
+        .fc-dlg-pick.is-on{background:var(--navy,#1a2744);color:#fff;border-color:var(--navy,#1a2744);}
+        .fc-dlg-pick.is-on:hover{background:var(--gold,#c9922a);color:var(--navy,#1a2744);border-color:var(--gold,#c9922a);}
+        .fc-dlg-x{background:none;border:none;border-radius:6px;padding:0 5px;min-block-size:24px;min-inline-size:24px;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;}
+        .fc-dlg-x:hover{background:rgba(201,146,42,0.12);}
         /* Collapsible sub-section headings inside Advanced Settings */
         .adv-subhead{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-weight:600;margin-bottom:4px;}
         .adv-subhead::before{content:'▾';color:var(--gold);font-size:0.9rem;transition:transform 0.2s;flex-shrink:0;}
@@ -5315,16 +5333,16 @@ function chooseProfileModal(opts) {
       html += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">';
       names.forEach(n => {
         const isActive = n === active;
-        html += `<button data-name="${encodeURIComponent(n)}" style="text-align:start;padding:9px 11px;border:1px solid ${isActive ? 'var(--gold,#c9922a)' : 'var(--border,#ccc)'};border-radius:6px;background:${isActive ? 'rgba(201,146,42,0.12)' : 'transparent'};color:inherit;cursor:pointer;font-family:inherit;font-size:0.88rem;"></button>`;
+        html += `<button data-name="${encodeURIComponent(n)}" class="fc-dlg-pick${isActive ? ' is-active' : ''}"></button>`;
       });
       html += '</div>';
     }
     html += `<div style="font-size:0.82rem;font-weight:600;margin-bottom:5px;">${esc(I18n.t('flashcards.profile.new_profile_heading'))}</div>`
       + '<div style="display:flex;gap:6px;">'
       + `<input type="text" id="newProfileNameInput" maxlength="40" placeholder="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" aria-label="${esc(I18n.t('flashcards.profile.student_name_placeholder'))}" style="flex:1;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.88rem;">`
-      + `<button data-act="create" style="padding:8px 12px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t(confirmKey))}</button>`
+      + `<button data-act="create" class="fc-dlg-btn">${esc(I18n.t(confirmKey))}</button>`
       + '</div>'
-      + `<button data-act="cancel" style="width:100%;margin-top:14px;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('flashcards.profile.cancel'))}</button>`;
+      + `<button data-act="cancel" class="fc-dlg-btn fc-dlg-wide">${esc(I18n.t('flashcards.profile.cancel'))}</button>`;
     box.innerHTML = html;
     // fill profile button labels safely (avoid HTML injection from names)
     names.forEach(n => {
@@ -5583,11 +5601,11 @@ function askCardCount(defaultN, maxN) {
     box.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
         <div style="font-weight:700;font-size:1rem;">${esc(I18n.t('flashcards.weaknesses.modal_title'))}</div>
-        <button data-act="cancel" aria-label="${esc(I18n.t('flashcards.weaknesses.cancel'))}" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;">×</button>
+        <button data-act="cancel" aria-label="${esc(I18n.t('flashcards.weaknesses.cancel'))}" class="fc-dlg-x">×</button>
       </div>
       <div style="font-size:0.82rem;line-height:1.5;margin-bottom:12px;opacity:0.9;">${esc(sub)}</div>
       <div id="acQuick" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
-        ${picks.map(n => `<button data-n="${n}" style="flex:1 0 auto;min-width:48px;padding:8px 10px;border:1px solid var(--border,#ccc);border-radius:6px;background:${n===def?'var(--navy,#1a2744)':'transparent'};color:${n===def?'#fff':'inherit'};cursor:pointer;font-family:inherit;font-size:0.85rem;">${n}</button>`).join('')}
+        ${picks.map(n => `<button data-n="${n}" class="fc-dlg-pick fc-dlg-quick${n===def?' is-on':''}">${n}</button>`).join('')}
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
         <span style="font-size:0.82rem;opacity:0.9;">${esc(I18n.t('flashcards.weaknesses.custom_label'))}</span>
@@ -5595,17 +5613,15 @@ function askCardCount(defaultN, maxN) {
           style="flex:1;padding:7px 8px;border:1px solid var(--border,#ccc);border-radius:6px;background:var(--white,#fff);color:inherit;font-family:inherit;font-size:0.85rem;">
       </div>
       <div style="display:flex;gap:8px;">
-        <button data-act="start" style="flex:2;padding:9px;border:none;border-radius:6px;background:var(--gold,#c9922a);color:#1a2744;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('flashcards.weaknesses.start'))}</button>
-        <button data-act="cancel" style="flex:1;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">${esc(I18n.t('flashcards.weaknesses.cancel'))}</button>
+        <button data-act="start" class="fc-dlg-btn">${esc(I18n.t('flashcards.weaknesses.start'))}</button>
+        <button data-act="cancel" class="fc-dlg-btn">${esc(I18n.t('flashcards.weaknesses.cancel'))}</button>
       </div>`;
     ov.appendChild(box); document.body.appendChild(ov);
     let chosen = def;
     const custom = box.querySelector('#acCustom');
     const quick = box.querySelector('#acQuick');
     const paint = () => quick.querySelectorAll('button').forEach(b => {
-      const on = !custom.value && +b.dataset.n === chosen;
-      b.style.background = on ? 'var(--navy,#1a2744)' : 'transparent';
-      b.style.color = on ? '#fff' : 'inherit';
+      b.classList.toggle('is-on', !custom.value && +b.dataset.n === chosen);
     });
     quick.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
       chosen = +b.dataset.n; custom.value = ''; paint();
