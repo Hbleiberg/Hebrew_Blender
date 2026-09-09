@@ -4871,6 +4871,18 @@ function applySelectValue(id, v) {
   const want = String(v);
   if (Array.from(el.options).some(o => o.value === want)) el.value = want;
 }
+// Restore a number-backed setting only when the value is a finite number (a numeric string counts): the
+// DOM turns anything else into "" — a bingo set with 0 cards, a "NaN×" speech-rate label — and
+// rememberSetup() then saved the "" for every later load. Unknown → keep the current pick. Returns
+// whether it applied, so a site's follow-up (a label, a dependent control) reads the applied value.
+function applyNumberValue(id, v) {
+  const el = document.getElementById(id);
+  if (!el || v == null || v === '' || typeof v === 'boolean' || typeof v === 'object') return false;
+  const n = Number(v);
+  if (!Number.isFinite(n)) return false;
+  el.value = n;
+  return true;
+}
 function applySettings(s) {
   // Letters
   if (s.dageshTav !== undefined) {
@@ -4925,10 +4937,7 @@ function applySettings(s) {
   if (s.timerOn !== undefined)   document.getElementById('timerToggle').checked = s.timerOn;
   applySelectValue('timerDuration', s.timerDuration);
   if (s.audio !== undefined)     document.getElementById('audioToggle').checked = s.audio;
-  if (s.ttsRate !== undefined)   {
-    const sl = document.getElementById('ttsRateSlider');
-    if (sl) { sl.value = s.ttsRate; document.getElementById('ttsRateVal').textContent = parseFloat(s.ttsRate).toFixed(2) + '×'; }
-  }
+  if (applyNumberValue('ttsRateSlider', s.ttsRate)) document.getElementById('ttsRateVal').textContent = parseFloat(document.getElementById('ttsRateSlider').value).toFixed(2) + '×';
   if (s.timerOn !== undefined)   document.getElementById('timerDurationRow').style.display = s.timerOn ? 'flex' : 'none';
 
   // Focus letters
@@ -4963,7 +4972,7 @@ function applySettings(s) {
   // Bingo
   if (s.bingo !== undefined)         document.getElementById('bingoToggle').checked = s.bingo;
   applySelectValue('bingoGrid', s.bingoGrid);
-  if (s.bingoCards)                  document.getElementById('bingoCards').value = s.bingoCards;
+  applyNumberValue('bingoCards', s.bingoCards);
   applySelectValue('bingoPerPage', s.bingoPerPage);
   if (s.bingoFreeSpace !== undefined)    document.getElementById('bingoFreeSpace').checked = s.bingoFreeSpace;
   if (s.bingoShowSounds !== undefined)   document.getElementById('bingoShowSounds').checked = s.bingoShowSounds;
@@ -4978,8 +4987,8 @@ function applySettings(s) {
   if (s.numberPractice !== undefined) document.getElementById('numberPracticeToggle').checked = s.numberPractice;
   applySelectValue('npCount', s.npCount);
   if (s.npGender)                     setNpGender(s.npGender);
-  if (s.npMin !== undefined)          document.getElementById('npMin').value = s.npMin;
-  if (s.npMax !== undefined)          document.getElementById('npMax').value = s.npMax;
+  applyNumberValue('npMin', s.npMin);
+  applyNumberValue('npMax', s.npMax);
   if (s.npDisplay)                    setNpDisplay(s.npDisplay);
   if (s.npShowTranslit !== undefined) document.getElementById('npShowTranslit').checked = s.npShowTranslit;
   if (s.npTranslitPage)               setNpTranslitPage(s.npTranslitPage);
@@ -4988,7 +4997,7 @@ function applySettings(s) {
   if (s.npAudio !== undefined)        document.getElementById('npAudio').checked = s.npAudio;
   if (s.npBingo !== undefined)        document.getElementById('npBingo').checked = s.npBingo;
   applySelectValue('npBingoGrid', s.npBingoGrid);
-  if (s.npBingoCards)                 document.getElementById('npBingoCards').value = s.npBingoCards;
+  applyNumberValue('npBingoCards', s.npBingoCards);
   applySelectValue('npBingoPerPage', s.npBingoPerPage);
   if (s.npBingoFreeSpace !== undefined) document.getElementById('npBingoFreeSpace').checked = s.npBingoFreeSpace;
   if (s.npBingoShowPair !== undefined)  document.getElementById('npBingoShowPair').checked = s.npBingoShowPair;
@@ -5025,7 +5034,7 @@ function applySettings(s) {
     });
   }
   applySelectValue('rwBingoGrid', s.rwBingoGrid);
-  if (s.rwBingoCards)   document.getElementById('rwBingoCards').value = s.rwBingoCards;
+  applyNumberValue('rwBingoCards', s.rwBingoCards);
   applySelectValue('rwBingoPerPage', s.rwBingoPerPage);
   if (s.rwBingoFreeSpace !== undefined)    document.getElementById('rwBingoFreeSpace').checked = s.rwBingoFreeSpace;
   if (s.rwBingoShared !== undefined)       document.getElementById('rwBingoShared').checked = s.rwBingoShared;
@@ -5043,16 +5052,13 @@ function applySettings(s) {
   // Tracing — set values only; visibility flows through updateModeVisibility() at end.
   if (s.tracing !== undefined)          document.getElementById('tracingToggle').checked = s.tracing;
   if (s.traceLineStyle)                 traceLineStyle = s.traceLineStyle;
-  if (s.traceModels)                    document.getElementById('traceModels').value = s.traceModels;
+  applyNumberValue('traceModels', s.traceModels);
   if (s.traceSolidFirst !== undefined)  document.getElementById('traceSolidFirst').checked = s.traceSolidFirst;
   if (s.traceDarkness)                  traceDarkness = s.traceDarkness;
-  if (s.traceLinesPerItem)              document.getElementById('traceLinesPerItem').value = s.traceLinesPerItem;
+  applyNumberValue('traceLinesPerItem', s.traceLinesPerItem);
   if (s.traceRepeatModels !== undefined) document.getElementById('traceRepeatModels').checked = s.traceRepeatModels;
   if (s.traceFillLine !== undefined)    document.getElementById('traceFillLine').checked = s.traceFillLine;
-  if (s.traceSpacing !== undefined) {
-    const sl = document.getElementById('traceSpacing');
-    if (sl) { sl.value = s.traceSpacing; setTraceSpacing(s.traceSpacing); }
-  }
+  if (applyNumberValue('traceSpacing', s.traceSpacing)) setTraceSpacing(document.getElementById('traceSpacing').value);
   // Keep dependent tracing UI (button active states + fill-line-disables-models) in sync.
   syncTraceButtons();
   syncTraceFillDisabled();
@@ -5086,10 +5092,7 @@ function applySettings(s) {
     document.querySelectorAll('.ws-dir').forEach(cb => { cb.checked = sel.has(cb.value); });
   }
   // Class Set
-  if (s.classSetCount !== undefined && document.getElementById('classSetCount')) {
-    document.getElementById('classSetCount').value = s.classSetCount;
-    onClassSetChange();
-  }
+  if (applyNumberValue('classSetCount', s.classSetCount)) onClassSetChange();
   // Crossword
   applySelectValue('cwWordCountSel', s.cwWordCount);
   applySelectValue('cwGridSize', s.cwGridSize);
@@ -5101,7 +5104,7 @@ function applySettings(s) {
   // Matching
   if (s.matchTarget) setMatchTarget(s.matchTarget);
   applySelectValue('matchCount', s.matchCount);
-  if (s.matchVersions && document.getElementById('matchVersions')) document.getElementById('matchVersions').value = s.matchVersions;
+  applyNumberValue('matchVersions', s.matchVersions);
   if (s.matchAnswerKey !== undefined && document.getElementById('matchAnswerKey')) document.getElementById('matchAnswerKey').checked = s.matchAnswerKey;
 
   // Font size
