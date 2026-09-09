@@ -6718,12 +6718,12 @@ function runLiveSync() {
   if (kind === 'none') return;
   if (!livePreviewEnabled) {
     // Opted out: don't auto-apply, but flag content drift so the teacher knows to Generate.
-    if (kind === 'content') livePulseGenerate('Settings changed — Generate to apply.');
+    if (kind === 'content') livePulseGenerate(I18n.t('worksheet.preview.settings_changed'));   // the CSV row was authored for this notice but never read (S363)
     return;
   }
   if (kind === 'presentation') { renderWorksheet(false); hidePreviewNotice(); return; }
   // content, live on
-  if (liveIsHeavyMode()) { livePulseGenerate('Settings changed — Generate to apply.'); return; }
+  if (liveIsHeavyMode()) { livePulseGenerate(I18n.t('worksheet.preview.settings_changed')); return; }
   liveGenerate();
 }
 
