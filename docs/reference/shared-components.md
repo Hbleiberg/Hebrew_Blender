@@ -447,7 +447,9 @@ anywhere — first-visit pulses, tour transitions, timer/omer pulsing, fades —
 ### 5. Inline validation, never `alert()`
 Validation should surface as **inline notes in the owning panel** plus a short summary near the primary
 action; a primary action that can't run gets `aria-disabled` + a stated reason rather than a dead click or
-a modal `alert()`. (`confirm()` for genuinely destructive actions — erase, reset-both-schemes — stays.)
+a modal `alert()`. (`confirm()` for genuinely destructive actions — erase, reset-both-schemes — stays; the
+hub's FIRST erase gate is an `ivritAskMode`-shaped dialog, `ivritAskErase`, because it offers a backup
+before erasing — its final `confirm()` stays as it was.)
 - **Implemented on:** every tool with a validated primary action — re-true this census with
   `grep -o "function _set[A-Za-z]*Note\|function _retire[A-Za-z]*" *.html` before trusting it. The
   generator (`_setPresetNameNote`, `_setGenerateNote`), flash cards (`_setStartNote`/`_setWeakNote`,
@@ -466,8 +468,10 @@ a modal `alert()`. (`confirm()` for genuinely destructive actions — erase, res
 - **Rule:** a note helper takes and stores the i18n **key** (+ params), never rendered `I18n.t()` text,
   and the page's `applyI18n` re-renders every note still on screen — a text-storing note keeps its old
   language across a live EN⇄HE switch. Shapes: a module-level `_<x>NoteKey` re-rendered from
-  `applyI18n` (generator, flash cards, dashboard) or the key stashed on the element's
-  `dataset.i18nKey` (Torah Trainer).
+  `applyI18n` (generator, flash cards, dashboard), the key stashed on the element's
+  `dataset.i18nKey` (Torah Trainer), or — when the note is a built fragment — the render closure itself
+  (contact's `showStatus(render)` keeps it in `_statusRender`; the captcha-missing note carries a
+  mailto link, so it re-runs the renderer rather than re-translating a key).
 
 ### 6. First-run affordances
 One-time nudges / setup cards / starter layouts, each gated by a `hebrew<Tool>_<flag>` localStorage flag so
