@@ -3330,17 +3330,31 @@ function setPrintMarginVars(label) {
   rs.setProperty('--tt-print-l1', rtl ? pg : 'none');
   rs.setProperty('--tt-print-r1', rtl ? 'none' : pg);
 }
+// A selected-verses-only handout swaps currentVerses for the selection (_handoutEnter), so the
+// band and the sheets-2..N margin label must name the verses actually on paper, not the reading
+// they came from: "Bereshit — Genesis 1:2-4", never "Genesis 1:1-6:8" over a three-verse sheet.
+function printRangeLabel() {
+  if (!_handoutVersesSnap || !currentVerses || !currentVerses.length) return currentRangeLabel;
+  const a = currentVerses[0], z = currentVerses[currentVerses.length - 1];
+  const span = a.chapter !== z.chapter ? `${a.chapter}:${a.verse}-${z.chapter}:${z.verse}`
+             : a.verse !== z.verse     ? `${a.chapter}:${a.verse}-${z.verse}`
+             : `${a.chapter}:${a.verse}`;
+  const r = resolveRef(), pr = r && parseRefRange(r.ref);
+  const ref = (pr ? pr.book + ' ' : '') + span;
+  return r && r.ref && currentRangeLabel.includes(r.ref) ? currentRangeLabel.replace(r.ref, ref) : `${currentRangeLabel} — ${ref}`;
+}
 function buildPrintBand() {
   const band = document.getElementById('ttPrintBand');
   if (!band) return;
   band.textContent = '';
   const has = !!(currentRangeLabel && currentVerses && currentVerses.length);
   band.hidden = !has;
-  setPrintMarginVars(has ? currentRangeLabel : '');
+  const label = has ? printRangeLabel() : '';
+  setPrintMarginVars(label);
   if (!has) return;
   const ref = document.createElement('span');
   ref.className = 'pbnd-ref';
-  ref.textContent = currentRangeLabel;
+  ref.textContent = label;
   band.appendChild(ref);
   if (settings.colorCodeTrope) {
     TROPE_COLOR_DEFS.forEach(def => {
