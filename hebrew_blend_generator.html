@@ -4883,9 +4883,17 @@ function applyNumberValue(id, v) {
   el.value = n;
   return true;
 }
+// A string enum a share link, preset or .ivrit file carries is applied only when it is a value the UI
+// offers — an explicit list, or the data-<key> values of a button row (sel). Anything else (an array, a
+// number, a value a later build renamed) leaves the current pick: it used to be assigned raw, render
+// nothing, and be saved back into the remembered setup (apply-settings-trusts-collection-members).
+function isOffered(v, list, key) {
+  const allowed = typeof list === 'string' ? Array.from(document.querySelectorAll(list), b => b.dataset[key]) : list;
+  return allowed.includes(v);
+}
 function applySettings(s) {
   // Letters
-  if (s.dageshTav !== undefined) {
+  if (typeof s.dageshTav === 'boolean') {
     dageshTavEnabled = s.dageshTav;
     document.querySelectorAll('.js-dagesh-tav').forEach(el => el.checked = s.dageshTav);
     const grid = document.getElementById('letterGrid');
@@ -4898,7 +4906,7 @@ function applySettings(s) {
   selectedLetters = new Set(Array.isArray(s.selectedLetters) ? s.selectedLetters.filter(isKnownLetterKey) : []);
   selectedVowels  = new Set(Array.isArray(s.selectedVowels)  ? s.selectedVowels.filter(isKnownVowelKey)  : []);
   // Vowel color scheme governs the picker grouping/order — set before rebuilding the grid.
-  if (s.vowelColorScheme !== undefined) vowelColorScheme = s.vowelColorScheme ?? 'default';
+  if (isOffered(s.vowelColorScheme, ['default', 'talam'])) vowelColorScheme = s.vowelColorScheme;
   initVowels(); // rebuild picker in the active scheme; reads selectedVowels for checked state
   document.querySelectorAll('.letter-tile').forEach(t => {
     t.classList.toggle('selected', selectedLetters.has(t.dataset.heb));
@@ -4918,7 +4926,7 @@ function applySettings(s) {
   if (s.wsSubtitle !== undefined) document.getElementById('wsSubtitle').value = s.wsSubtitle;
   if (s.excludeRepeats !== undefined) document.getElementById('excludeRepeats').checked = s.excludeRepeats;
   if (s.landscape !== undefined) { document.getElementById('landscapeMode').checked = s.landscape; toggleLandscape(s.landscape); }
-  if (s.headerLang) setHeaderLang(s.headerLang);
+  if (isOffered(s.headerLang, ['en', 'he'])) setHeaderLang(s.headerLang);
   if (s.pageSize) setPageSize(s.pageSize);
 
   // Blend type & mode
@@ -4986,12 +4994,12 @@ function applySettings(s) {
   if (s.ntlSelfCheck !== undefined)  document.getElementById('ntlSelfCheck').checked  = s.ntlSelfCheck;
   if (s.numberPractice !== undefined) document.getElementById('numberPracticeToggle').checked = s.numberPractice;
   applySelectValue('npCount', s.npCount);
-  if (s.npGender)                     setNpGender(s.npGender);
+  if (isOffered(s.npGender, '[data-np-gender]', 'npGender'))          setNpGender(s.npGender);
   applyNumberValue('npMin', s.npMin);
   applyNumberValue('npMax', s.npMax);
-  if (s.npDisplay)                    setNpDisplay(s.npDisplay);
+  if (isOffered(s.npDisplay, '[data-np-display]', 'npDisplay'))       setNpDisplay(s.npDisplay);
   if (s.npShowTranslit !== undefined) document.getElementById('npShowTranslit').checked = s.npShowTranslit;
-  if (s.npTranslitPage)               setNpTranslitPage(s.npTranslitPage);
+  if (isOffered(s.npTranslitPage, '[data-np-translit]', 'npTranslit')) setNpTranslitPage(s.npTranslitPage);
   if (s.npAnswerKey !== undefined)    document.getElementById('npAnswerKey').checked = s.npAnswerKey;
   if (s.npSelfCheck !== undefined)    document.getElementById('npSelfCheck').checked = s.npSelfCheck;
   if (s.npAudio !== undefined)        document.getElementById('npAudio').checked = s.npAudio;
@@ -5012,11 +5020,11 @@ function applySettings(s) {
   applySelectValue('rwCount', s.rwCount);
   if (s.rwMixed !== undefined)   { document.getElementById('rwMixed').checked = s.rwMixed; toggleRwStarRow(); }
   if (s.rwStarReal !== undefined) { document.getElementById('rwStarReal').checked = s.rwStarReal; toggleRwStarPageRow(); }
-  if (s.rwStarPage) { rwStarPage = s.rwStarPage; document.querySelectorAll('[data-star]').forEach(b => b.classList.toggle('active', b.dataset.star === rwStarPage)); }
+  if (isOffered(s.rwStarPage, '[data-star]', 'star')) { rwStarPage = s.rwStarPage; document.querySelectorAll('[data-star]').forEach(b => b.classList.toggle('active', b.dataset.star === rwStarPage)); }
   if (s.rwShowTranslit !== undefined) { document.getElementById('rwShowTranslit').checked = s.rwShowTranslit; }
-  if (s.rwTranslitPage) { rwTranslitPage = s.rwTranslitPage; document.querySelectorAll('[data-translit]').forEach(b => b.classList.toggle('active', b.dataset.translit === rwTranslitPage)); toggleRwTranslitPageRow(); }
+  if (isOffered(s.rwTranslitPage, '[data-translit]', 'translit')) { rwTranslitPage = s.rwTranslitPage; document.querySelectorAll('[data-translit]').forEach(b => b.classList.toggle('active', b.dataset.translit === rwTranslitPage)); toggleRwTranslitPageRow(); }
   if (s.rwShowTranslation !== undefined) { document.getElementById('rwShowTranslation').checked = s.rwShowTranslation; }
-  if (s.rwTranslPage) { rwTranslPage = s.rwTranslPage; document.querySelectorAll('[data-transl]').forEach(b => b.classList.toggle('active', b.dataset.transl === rwTranslPage)); toggleRwTranslPageRow(); }
+  if (isOffered(s.rwTranslPage, '[data-transl]', 'transl')) { rwTranslPage = s.rwTranslPage; document.querySelectorAll('[data-transl]').forEach(b => b.classList.toggle('active', b.dataset.transl === rwTranslPage)); toggleRwTranslPageRow(); }
   if (s.rwLen1 !== undefined)    document.getElementById('rwLen1').checked = s.rwLen1;
   if (s.rwLen2 !== undefined)    document.getElementById('rwLen2').checked = s.rwLen2;
   if (s.rwLen3 !== undefined)    document.getElementById('rwLen3').checked = s.rwLen3;
@@ -5051,10 +5059,10 @@ function applySettings(s) {
   applySelectValue('matchBlendCount', s.matchBlendCount);
   // Tracing — set values only; visibility flows through updateModeVisibility() at end.
   if (s.tracing !== undefined)          document.getElementById('tracingToggle').checked = s.tracing;
-  if (s.traceLineStyle)                 traceLineStyle = s.traceLineStyle;
+  if (isOffered(s.traceLineStyle, '[data-trace-lines]', 'traceLines')) traceLineStyle = s.traceLineStyle;
   applyNumberValue('traceModels', s.traceModels);
   if (s.traceSolidFirst !== undefined)  document.getElementById('traceSolidFirst').checked = s.traceSolidFirst;
-  if (s.traceDarkness)                  traceDarkness = s.traceDarkness;
+  if (isOffered(s.traceDarkness, '[data-trace-dark]', 'traceDark'))    traceDarkness = s.traceDarkness;
   applyNumberValue('traceLinesPerItem', s.traceLinesPerItem);
   if (s.traceRepeatModels !== undefined) document.getElementById('traceRepeatModels').checked = s.traceRepeatModels;
   if (s.traceFillLine !== undefined)    document.getElementById('traceFillLine').checked = s.traceFillLine;
@@ -5099,10 +5107,10 @@ function applySettings(s) {
   if (s.cwShowNikkud !== undefined && document.getElementById('cwShowNikkud'))     document.getElementById('cwShowNikkud').checked = s.cwShowNikkud;
   if (s.cwShowWordBank !== undefined && document.getElementById('cwShowWordBank')) document.getElementById('cwShowWordBank').checked = s.cwShowWordBank;
   if (s.cwAnswerKey !== undefined && document.getElementById('cwAnswerKey'))       document.getElementById('cwAnswerKey').checked = s.cwAnswerKey;
-  if (s.cwClueLang) setCwClueLang(s.cwClueLang);
+  if (isOffered(s.cwClueLang, '[data-cwclue]', 'cwclue')) setCwClueLang(s.cwClueLang);
 
   // Matching
-  if (s.matchTarget) setMatchTarget(s.matchTarget);
+  if (isOffered(s.matchTarget, '[data-matchtarget]', 'matchtarget')) setMatchTarget(s.matchTarget);
   applySelectValue('matchCount', s.matchCount);
   applyNumberValue('matchVersions', s.matchVersions);
   if (s.matchAnswerKey !== undefined && document.getElementById('matchAnswerKey')) document.getElementById('matchAnswerKey').checked = s.matchAnswerKey;
@@ -5113,7 +5121,7 @@ function applySettings(s) {
   if (s.livePreview !== undefined) setLivePreview(s.livePreview);    // presence-guarded: older presets are unaffected
 
   // Vav-as-letter
-  if (s.vavAsLetter !== undefined) { vavAsLetter = s.vavAsLetter; const cb = document.getElementById('vavAsLetterCheck'); if (cb) cb.checked = vavAsLetter; updateVavAsLetterVisibility(); }
+  if (typeof s.vavAsLetter === 'boolean') { vavAsLetter = s.vavAsLetter; const cb = document.getElementById('vavAsLetterCheck'); if (cb) cb.checked = vavAsLetter; updateVavAsLetterVisibility(); }
 
   // Color coding
   if (s.colorCoding !== undefined) {
@@ -5121,7 +5129,7 @@ function applySettings(s) {
     document.getElementById('colorCodingToggle').checked = colorCodingEnabled;
     document.getElementById('colorCodingOptions').style.display = colorCodingEnabled ? 'flex' : 'none';
   }
-  if (s.colorCodingMode) {
+  if (isOffered(s.colorCodingMode, ['letter', 'highlight', 'underline', 'vowel', 'both'])) {   // the last two are the legacy values migrated below
     // Migrate old format: ('vowel'/'both' + colorStyle) → new ('letter'/'highlight'/'underline')
     let mode = s.colorCodingMode;
     if (mode === 'vowel') mode = 'underline';
@@ -5138,7 +5146,7 @@ function applySettings(s) {
   syncSchemeButtons();
 
   // Transliteration style
-  if (s.translitStyle) {
+  if (isOffered(s.translitStyle, Array.from(document.getElementById('translitStyleSelect')?.options || [], o => o.value))) {
     translitStyle = s.translitStyle;
     const sel = document.getElementById('translitStyleSelect');
     if (sel) sel.value = translitStyle;
@@ -5158,7 +5166,7 @@ function applySettings(s) {
   // drill) won't have rwDrillType:'numpractice'. If numberPractice was on
   // and rwDrillType is missing or stale, force it to numpractice so the
   // Drill Type row reflects the actual mode.
-  let drillToRestore = s.rwDrillType;
+  let drillToRestore = isOffered(s.rwDrillType, '.rw-drill-btn', 'drill') ? s.rwDrillType : undefined;
   if (s.numberPractice && (!drillToRestore || drillToRestore === 'reading')) {
     drillToRestore = 'numpractice';
   }
