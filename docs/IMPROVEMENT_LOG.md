@@ -8,7 +8,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S358 — pattern `control-class-without-a-hover-state`, the inline-styled dialog shape, found by the engine fix's own grep; hover UNVERIFIED at runtime**) | flash_cards.html | **The profile-picker dialog (`titleKey`/`names` builder near `flashcards.profile.new_profile_heading`) and `askCardCount`'s quick-pick buttons are built as inline-styled `<button>`s with no class, so no …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S359 — pattern `control-class-without-a-hover-state`, static census; hover UNVERIFIED — real mouse move first**) | hebrew_blend_generator.html + classroom_dashboard.html + Hebrew_Font_Maker.html | **The generator's `#headerLangEn`/`#headerLangHe` paint `background:var(--navy)` inline (an inline colour outranks any hover rule); its `#tourBtn`/`#darkToggle`/`#fsBtn` + bingo ±, the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S357 Pass A — pattern `sub-floor touch target`, M calls like the week-editor swatches**) | hebrew_blend_generator.html + Hebrew_Font_Maker.html | **The generator's `.toggle` switches are 40×22 (one 32×18) on every option row; the Font Maker's `#rulerCorner` zoom-reset is 22×22, sized by `--rl-w` (the ruler thickness).** A 24px switch/ruler is a visible size change; the mechanical …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -88,11 +88,17 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-09 | (S359 close-out) | branch/deploy note | **PR #227 open (draft, clean, head `55f694d` at start) → S359 CONTINUED `claude/inspiring-meitner-rhqskk`, 3 commits; a human merges and confirms the Pages run. Drift: none (`origin/main` `f2384a7`, sw v683, FM 5.39). `sw.js` v683→v684 (1 precached page: flash_cards); FM not bumped (no FM change). Scripts: check-i18n, check-inline-js, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-09 | `7e8cb37` | flash_cards.html | **the weaknesses viewer's four `.weak-tab`s get stylesheet rules (`paintTabs()` keeps only the `aria-pressed` sync) and its × and the Learner Ladder's × take `.fc-dlg-x` (S359, P4, `control-class-without-a-hover-state`)** | `l359/weakdlg.mjs` 4 cells (light/dark × 1280/800): hover feedback on tabs + both ×, 5.97–18.06:1, the tab moves by a real …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-09 | `bcae3ec` | flash_cards.html | **the profile-picker (`chooseProfileModal`) and card-count (`askCardCount`) dialogs move from inline-styled class-less buttons to `.fc-dlg-btn[data-act]` / `.fc-dlg-pick` (+ `is-active`/`is-on`) / `.fc-dlg-x` per-page CSS with hover plates; `paint()` toggles a class; the × reaches 24px (S359, P4, `control-class-without-a-hover-state` + `sub-floor …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-09-09 | (S358 close-out) | branch/deploy note | **PR #227 open (draft, clean, head `b418cf9` at start) → S358 CONTINUED `claude/inspiring-meitner-rhqskk`, 5 commits; a human merges and confirms the Pages run. Drift: none (`origin/main` `f2384a7`, sw v682, FM 5.39). `sw.js` v682→v683 (5 precached pages: hebrew_dictionary, flash_cards, classroom_dashboard, hebrew_blend_generator, index); …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-09 | `dd2bac2` | flash_cards + classroom_dashboard + hebrew_blend_generator + index (the `.ivrit` engine block + the hub superset) | **the Merge / Replace / Cancel dialog buttons move from inline styles to `.ivrit-ask-btn[data-act]` per-page CSS with hover plates (gold/navy, #8a2828, the drag-plate tint) (S358, P4, `control-class-without-a-hover-state`)** | `e358/askmode.mjs` 16 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-09 | `a2eddd9` | hebrew_dictionary.html | **`applyDictState` applies `copyMode` only when its radio group offers it and keeps `shoreshRoot` only as a string (S358, P3, `apply-settings-trusts-collection-members` — the enum shape's last open sites)** | `arm4.mjs hebrew_dictionary shoreshRoot,copyMode`: 16 loads, 0 leaks (before 14; the one PERSISTED row is a legit string root), …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-09-09 | `a2eddd9` | hebrew_dictionary.html | **`applyDictState` applies `copyMode` only when its radio group offers it and keeps `shoreshRoot` only as a string (S358, P3, `apply-settings-trusts-collection-members` — the enum shape's last open sites)** | `arm4.mjs hebrew_dictionary shoreshRoot,copyMode`: 16 loads, 0 leaks (before 14; the one PERSISTED row is a legit string root), …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-09 | `c32ef93` | docs/reference/storage-and-backup.md + generator.md | **the value-level restore guards recorded (`applySelectValue`, `applyNumberValue`, `isOffered`, `_clampEnum`/`_clampChoice`, the dictionary's radio match) (S358 Pass E, doc drift 2)** | every name grepped against the S356–S358 code
 
@@ -126,15 +132,11 @@ _(none)_
 
 - [x] 2026-09-09 | `d0c84cf` | hebrew_dictionary.html | **Filters button, fullscreen button, Reset-all chip and word-modal actions keep a hover plate in dark mode (S355 Pass F, P4, `dark-override-outranks-hover`):** `--navy-deep` → `--navy` ×3, `.wm-act` → `#2a3349` (the `.emoji-gender-btn` value). | Verified: real hover, 1280 + 390, light + dark: feedback in every cell, 9.85–14.81:1.
 
-- [x] 2026-09-09 | (S354 close-out) | branch/deploy note | **Branch/PR: PR #227 was still open and unmerged (API: draft, `mergeable_state` clean, head `9684434`), so S354 CONTINUED on `claude/inspiring-meitner-rhqskk` — 3 more commits (2 fixes + this close-out).** **Outside-loop drift: none** (`origin/main` still `f2384a7`; `sw.js` v678 and `FONT_MAKER_VERSION` 5.39 exactly as the S353 note …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-09 | `1f27219` | classroom_dashboard.html | **The message editor's toolbar buttons keep their gold hover plate in dark mode (S354, P2, `contrast-inverted-by-a-hover-or-active-state` — the `dark-override-outranks-hover` sub-shape).** `body.dark .ed-btn` (0,2,1) outranked `.ed-btn:hover` (0,2,0), so in dark mode only the hover's navy text applied: B / I / U / align at 1.26:1 on …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-09 | `d7264e0` | Hebrew_Font_Maker.html + classroom_dashboard.html + hebrew_dictionary.html + resources.html | **The shared `hebrew-keyboard CSS` block's `.hk-toggle:hover` and `.hk-layout:hover` painted text in brand `--gold` (S354, P2, `contrast-inverted-by-a-hover-or-active-state`): 2.60:1 on the dashboard's cream panel, 2.75:1 on the dictionary's white search bar** — the S312 …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-09 | **S359** | iters: 1 pass (**L**) + 2 fixes = **3** (4th/5th unspent — flash_cards AND the hover class at cap; every other open candidate is gated, an M call or the 7-page tour extraction) | tools touched: flash_cards ×2 (`bcae3ec`, `7e8cb37` — AT CAP) | patterns fixed: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-09-09 | **S358** | iters: 1 pass (**E**) + 4 fixes = **5** (full budget) | tools touched: hebrew_dictionary ×1 (`a2eddd9`), flash_cards + classroom_dashboard + hebrew_blend_generator + index ×1 (`dd2bac2`), docs ×2 (`a0e51f1`, `c32ef93`) | patterns fixed: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -174,11 +176,9 @@ _(none)_
 
 - 2026-09-04 | **S340** | iters: 1 pass (**C**) + 2 fixes = **3** (4th/5th unspent — index AT CAP; every other open candidate is gated or a decision) | tools touched: index ×2 (`b46648b` the Merge/Replace dialog, `dc9bb62` the bookmark live region — AT CAP) | patterns fixed: — (C is a discovery …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-09-04 | **S339** | iters: 1 pass (**I**) + 2 fixes = **3** (4th/5th unspent — both pass findings taken; every other open candidate is gated or a decision) | tools touched: trope_tutor ×1 (`fea54f5` applyI18n progress write), flash_cards ×1 (`f001815` Start-note retirement) — none at cap | …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S358 (2026-09-09):** hebrew_dictionary **2026-09-09 (×1, `a2eddd9`)**; flash_cards **2026-09-09 (×1, `dd2bac2`)**; classroom_dashboard **2026-09-09 (×1, `dd2bac2`)**; hebrew_blend_generator **2026-09-09 (×1, `dd2bac2`)**; index **2026-09-09 (×1, `dd2bac2`)**; contact 2026-09-09 (S357); Hebrew_Font_Maker 2026-09-09 (S356); resources 2026-09-09 (S356); torah_trainer 2026-09-09 (S355); trope_tutor 2026-09-09 (S353); 404 2026-09-08 (S349); privacy/terms 2026-09-08 (S348).
+- **S359 (2026-09-09):** flash_cards **2026-09-09 (×2, `bcae3ec`, `7e8cb37`)**; hebrew_dictionary 2026-09-09 (S358); classroom_dashboard 2026-09-09 (S358); hebrew_blend_generator 2026-09-09 (S358); index 2026-09-09 (S358); contact 2026-09-09 (S357); Hebrew_Font_Maker 2026-09-09 (S356); resources 2026-09-09 (S356); torah_trainer 2026-09-09 (S355); trope_tutor 2026-09-09 (S353); 404 2026-09-08 (S349); privacy/terms 2026-09-08 (S348).
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -192,13 +192,13 @@ _(none)_
 
 - **`apply-settings-trusts-collection-members`**: ACTIVE (consequence-critical: garbage is applied AND SAVED — never retires). **S358: the ENUM-STRING shape CLOSED on its last sites — the dictionary's `copyMode` (radio match) + `shoreshRoot` (string only), `a2eddd9`; S356–S357 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`control-class-without-a-hover-state`**: ACTIVE. **S358: the `.ivrit` engine's inline-styled Merge / Replace / Cancel row FIXED on all 4 carriers (`dd2bac2`, `.ivrit-ask-btn[data-act]` per-page CSS); the hub's erase gate was S357's `6a0809c`. Open sub-shape: flash cards' …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`control-class-without-a-hover-state`**: ACTIVE. **S359: flash cards' 3 dialogs FIXED — `bcae3ec` (profile picker + card count → `.fc-dlg-btn[data-act]`/`.fc-dlg-pick`/`.fc-dlg-x`), `7e8cb37` (weaknesses tabs + 2 ×); S358 the `.ivrit` engine row, S357 the hub's erase gate. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`false-clean-from-a-literal-only-pattern-match`** (**NEW, registered 2026-09-01 (S309 Pass O) — 1 carrier, and it had ALREADY been reported to the maintainer as a completed clean sweep before it was caught. ACTIVE — consequence-critical (it manufactures false assurance), so …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`false-clean-from-an-unverified-probe-handle`**: ACTIVE (consequence-critical: it manufactures false assurance — never retires). **ONE MORE ARTIFACT at 2026-09-08 (S343 Pass A), caught before a verdict: the first dashboard alert census reported `clicked=1` of 254 — the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`sub-floor touch target`**: ACTIVE. **S357 Pass A runtime census (11 delta pages): 2 NEW open carriers — the generator's `.toggle` switches (40×22, one 32×18) and the Font Maker's `#rulerCorner` (22×22, sized by `--rl-w`), both visible size changes (M calls, logged); exempt: …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`sub-floor touch target`**: ACTIVE. **S359: flash cards' card-count × 21→24px inside `bcae3ec`. S357 Pass A runtime census (11 delta pages): 2 open carriers — the generator's `.toggle` switches (40×22, one 32×18) and the Font Maker's `#rulerCorner` (22×22, `--rl-w`), both …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`ledger-section-loss`** (**NEW, registered 2026-08-30 (S296) — 1 carrier found and fixed, and a DETECTOR shipped with it**): a close-out edit that **deletes** ledger content instead of **moving** it to `docs/IMPROVEMENT_ARCHIVE.md`. The carrier: the S295 close-out …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -378,7 +378,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 ## Recurring-pattern sweep status
 
-- **S357 Pass A (2026-09-09) — 20 arms over `e0a94d9..9263d9a` (52 commits, 27 files), every runtime arm controlled.** Hits, all fixed: `apply-settings` enum shape (36 sites, `8a18689` + `46b82b0`, re-probed 448 + 136 loads → 0); …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S357 Pass A (2026-09-09) — 20 arms over `e0a94d9..9263d9a` (52 commits, 27 files), every runtime arm controlled.** Hits, all fixed: `apply-settings` enum shape (36 sites, `8a18689` + `46b82b0`, re-probed 448 + 136 loads → 0); …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **S343 Pass A (2026-09-08) — 18 arms over the S330→S342 delta (`d0bcad8..e0a94d9`: 50 commits, 13 files, +504 −154 on the pages; 0 outside-loop landings), every runtime arm controlled.** Hits: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -568,7 +568,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
-- L SEO & discoverability audit: 2026-09-08 (**S345 — 16th run, its first since S332 (13 sessions); L was the stalest unattended pass (O attended-only) and the S345 pointer named it AND its arms. Byte-check vs the S332 close-out `5dd767f`: 9/14 files moved, 4/14 surfaces moved — ALL FOUR the `<summary>` tag's `padding:2px 0`→`5px 0` from the S341 touch-floor fix `43983b5`, 0 crawler text moved** …[full text: IMPROVEMENT_ARCHIVE.md]
+- L SEO & discoverability audit: 2026-09-09 (**S359 — 17th run, first since S345 (14 sessions); stalest unattended pass, pointer-named. Byte-check vs `aebb86b` (S345→S358): 11/14 files moved, 0/14 crawler surfaces moved (title, description, canonical, OG/Twitter, JSON-LD, h1, FAQ summary TEXT). Mechanical 14/14 clean, every detector fired by a mutated-copy control; sitemap lastmod = git 12/12; 7 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-09-08 (**S350 — `contact.html`, its FIRST-EVER H: the archive's H rows cover every tool plus resources (S305) and the hub (S323), so contact — the one remaining chrome page with a real teacher task — was the never-audited target. H was the stalest pass and the pointer named it; the maintainer's invocation pre-selected the micro-feature (gate …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -576,10 +576,10 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-09 (**S355 — 28th run, its first since S341 (14 sessions); F was the stalest pass and the S355 pointer named it AND the affordance: DARK-MODE HOVER FEEDBACK on plate controls (the `dark-override-outranks-hover` twins).** Method: the corrected static detector over all 14 pages (8 pairs on 5 pages) + a runtime census with a REAL `page.mouse.move` + 450 ms in …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S359):** **BRANCH/PR: S358 CONTINUED `claude/inspiring-meitner-rhqskk` → draft PR #227 (base `origin/main` `f2384a7`; S352–S358 = 31 commits). Continue it if open; if merged, cut a fresh `claude/*` off latest `origin/main`. Verify via the API** (0 check runs is correct — no workflows; deploy is verifiable only after a merge). **Drift note: `sw.js` v683, `FONT_MAKER_VERSION` 5.39** — re-read both.
+**Next session (S360):** **BRANCH/PR: S359 CONTINUED `claude/inspiring-meitner-rhqskk` → draft PR #227 (base `origin/main` `f2384a7`; S352–S359 = 34 commits). Continue it if open; if merged, cut a fresh `claude/*` off latest `origin/main`. Verify via the API** (0 check runs is correct — no workflows; deploy is verifiable only after a merge). **Drift note: `sw.js` v684, `FONT_MAKER_VERSION` 5.39** — re-read both.
 
-**⚑ STALEST PASS: L (S345), then O (S346, attended-only — unattended skips to K), K (S347), N (S348), M (S349), H (S350), G (S351), D (S352), I (S353), C (S354), F (S355), B (S356), A (S357), E (S358).** Take L over the static HTML delta since the S345 close-out `aebb86b` (S345→S358): the loop touched no title/description/JSON-LD, so expect the byte-check mostly clean; the S351 FAQ `trope.footer.faq_a7` "one reference sheet" claim (8 sheets since `d9541e3`) is L's gate-2 question to batch. **O next `torah_trainer.html`. K owes two arms. N next `flash_cards.html` (S244); H the generator (S251); C the Font Maker (S257).**
+**⚑ STALEST PASS: O (S346, attended-only — unattended skips to K), K (S347), N (S348), M (S349), H (S350), G (S351), D (S352), I (S353), C (S354), F (S355), B (S356), A (S357), E (S358), L (S359).** Unattended: take K (24th run) over the S347→S359 delta — Check A/B/C/D gates, then the blind-spot arms K owes (English in template literals, plain-argument English); the S359 census candidate is A's, not K's. **O next `torah_trainer.html`. N next `flash_cards.html` (S244); H the generator (S251); C the Font Maker (S257).**
 
-**⚑ Harness (standing): torah verification stubs Sefaria by fulfilling `**/*sefaria.org/**` (calendars → one Parashat Hashavua item, `ref:'Genesis 1:1-6:8'`; v3 texts → 2-D per chapter); hidden toggle inputs → click `label.toggle:has(#id)`; the HTTP server does not survive a compaction — curl it before every Playwright run; pypdf needs a stub `cryptography` package; a hover-contrast read needs a REAL `page.mouse.move` + 400 ms, an opacity/`:focus-visible` read a real Tab, never `page.focus()`; a hover census measures rest state BEFORE opening any modal; a probe's row buttons need the host open by ITS path (dashboard schedules live inside `openWeekEditor()`), and an `elementFromPoint` receipt precedes every real click; `arm4.mjs <page> k1,k2` filters the `?s=` probe; the hub's erase gate is the LAST `[aria-modal]` — the IE modal stays open behind it (S357); `askmode.mjs` opens the engine dialog by calling `ivritAskMode()` inside `page.evaluate` (a Promise — never await it) and reads the LAST `[aria-modal]` (S358).**
+**⚑ Harness (standing): torah verification stubs Sefaria by fulfilling `**/*sefaria.org/**` (calendars → one Parashat Hashavua item, `ref:'Genesis 1:1-6:8'`; v3 texts → 2-D per chapter); hidden toggle inputs → click `label.toggle:has(#id)`; the HTTP server does not survive a compaction — curl it before every Playwright run; pypdf needs a stub `cryptography` package; a hover-contrast read needs a REAL `page.mouse.move` + 400 ms, an opacity/`:focus-visible` read a real Tab, never `page.focus()`; a hover census measures rest state BEFORE opening any modal; a probe's row buttons need the host open by ITS path (dashboard schedules live inside `openWeekEditor()`), and an `elementFromPoint` receipt precedes every real click; `arm4.mjs <page> k1,k2` filters the `?s=` probe; the hub's erase gate is the LAST `[aria-modal]` — the IE modal stays open behind it (S357); `askmode.mjs` opens the engine dialog by calling `ivritAskMode()` inside `page.evaluate` (a Promise — never await it) and reads the LAST `[aria-modal]` (S358); a control directory is REAL copies (`cp`), never `ln -sfn` over root `*` — S359's first L control wrote its mutations through symlinks into the repo (`git status` caught it); a crawl-graph control breaks the link on EVERY page; a ctrl copy of a repo-reading script must tolerate a non-git ROOT or it dies silently after the first hit (S359).**
 
-**⚑ TOP UNGATED CANDIDATES (S358):** flash cards' profile-picker + `askCardCount` inline-styled dialog buttons (P4, the S358 `.ivrit-ask-btn` idiom; verify hover first); the tour-card h4 → h2 ×7 (P4). Older ones are gated or M calls. **Seed bench:** unchanged.
+**⚑ TOP UNGATED CANDIDATES (S359):** the static census's class-less inline-styled buttons on the generator / dashboard / Font Maker (P4, `control-class-without-a-hover-state`; verify hover with a real mouse move FIRST — none of those tools is at cap); the tour-card h4 → h2 ×7 (P4, = the shared-block extraction CLAUDE.md asks for). Flash cards is at cap for S360 by the tie-break only, not the rule. Older ones are gated or M calls. **Seed bench:** unchanged.
