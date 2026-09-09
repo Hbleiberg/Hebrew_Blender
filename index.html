@@ -408,6 +408,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         .ivrit-mode-btn.active{background:var(--navy,#1a2744);color:#fff;}
         .ivrit-drop{border:2px dashed var(--border,#ccc);border-radius:8px;padding:20px 12px;text-align:center;transition:all 0.15s;}
         .ivrit-drop.ivrit-drag{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
+        .ivrit-ask-btn{flex:1;min-width:96px;padding:9px;border:1px solid transparent;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.85rem;}
+        .ivrit-ask-btn[data-act="merge"]{background:var(--navy,#1a2744);color:#fff;}
+        .ivrit-ask-btn[data-act="merge"]:hover{background:var(--gold,#c9922a);color:var(--navy,#1a2744);}
+        .ivrit-ask-btn[data-act="replace"]{background:#a83232;color:#fff;}
+        .ivrit-ask-btn[data-act="replace"]:hover{background:#8a2828;}
+        .ivrit-ask-btn[data-act="cancel"]{background:transparent;color:inherit;border-color:var(--border,#ccc);}
+        .ivrit-ask-btn[data-act="cancel"]:hover{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
         .ivrit-lastbackup{margin:-6px 0 10px;text-align:center;font-size:0.78rem;line-height:1.4;color:var(--muted);}
         .ivrit-lastbackup.stale{color:var(--gold-text);}
       </style>
@@ -1469,9 +1476,9 @@ function ivritAskMode() {
     box.innerHTML = '<div id="ivritAskTitle" style="font-weight:700;font-size:1rem;margin-bottom:8px;">' + I18n.t('shared.ivrit.restore_dialog_title') + '</div>'
       + '<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;">' + bodyHtml + '</div>'
       + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
-      + '<button data-act="merge" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:var(--navy,#1a2744);color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">' + I18n.t('shared.ivrit.restore_merge_button') + '</button>'
-      + '<button data-act="replace" style="flex:1;min-width:96px;padding:9px;border:none;border-radius:6px;background:#a83232;color:#fff;cursor:pointer;font-family:inherit;font-size:0.85rem;">' + I18n.t('shared.ivrit.restore_replace_button') + '</button>'
-      + '<button data-act="cancel" style="flex:1;min-width:96px;padding:9px;border:1px solid var(--border,#ccc);border-radius:6px;background:transparent;color:inherit;cursor:pointer;font-family:inherit;font-size:0.85rem;">' + I18n.t('shared.ivrit.restore_cancel_button') + '</button>'
+      + '<button class="ivrit-ask-btn" data-act="merge">' + I18n.t('shared.ivrit.restore_merge_button') + '</button>'
+      + '<button class="ivrit-ask-btn" data-act="replace">' + I18n.t('shared.ivrit.restore_replace_button') + '</button>'
+      + '<button class="ivrit-ask-btn" data-act="cancel">' + I18n.t('shared.ivrit.restore_cancel_button') + '</button>'
       + '</div>';
     // Accessible dialog (the shared engine's clause): label, modal role, Escape, Tab focus-trap across
     // the 3 buttons, focus save/restore. The handled keys stop here — the hub's document-level handler
