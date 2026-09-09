@@ -1563,6 +1563,7 @@
   .fr-starter { text-align: start; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px;
     cursor: pointer; background: var(--white); color: var(--text); transition: border-color 0.15s, background 0.15s; font-family: inherit; }
   body.dark .fr-starter { background: var(--navy); }
+  body.dark .fr-starter:hover { background: #24345c; }   /* the dark override (0,2,1) outranks :hover (0,2,0), so the gold border was the only dark hover cue — pattern dark-override-outranks-hover; one step up from the navy rest, the light navy-control hover */
   .fr-starter:hover { border-color: var(--gold); background: rgba(201,146,42,0.08); }
   .fr-starter b { display: block; font-size: 0.85rem; margin-bottom: 4px; color: var(--text); }
   .fr-starter span { font-size: 0.72rem; color: var(--muted); line-height: 1.4; display: block; }
