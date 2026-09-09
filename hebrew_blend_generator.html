@@ -628,6 +628,10 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   .color-mode-btn.active { background:var(--navy); color:var(--white); }
   body.dark .color-mode-btn { background:var(--white); color:var(--muted); }
   body.dark .color-mode-btn.active { background:#2a4070; color:#dde4f0; }
+  /* Hover feedback on the unselected pill — the .btn-xs steps (light warm-gray, dark #2a3349). The
+     dark twin outranks body.dark .color-mode-btn (0,2,1), which would otherwise pin the rest colour. */
+  .color-mode-btn:not(.active):hover { background:var(--warm-gray); color:var(--text); }
+  body.dark .color-mode-btn:not(.active):hover { background:#2a3349; color:#dde4f0; }
   .color-pick-example { font-family:var(--heb-font); font-size:1.1rem; width:26px; text-align:center; }
 
   .letter-grid {
@@ -3399,8 +3403,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div class="option-row">
           <div class="option-label" data-i18n="worksheet.layout.header_labels">Header Labels</div>
           <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:5px;overflow:hidden;font-size:0.78rem;">
-            <button id="headerLangEn" onclick="setHeaderLang('en')" style="padding:4px 10px;border:none;cursor:pointer;font-family:inherit;background:var(--navy);color:#fff;" data-i18n="worksheet.layout.header.en">English</button>
-            <button id="headerLangHe" onclick="setHeaderLang('he')" style="padding:4px 10px;border:none;cursor:pointer;font-family:var(--heb-font);background:var(--white);color:var(--text);" data-i18n="worksheet.layout.header.he">עברית</button>
+            <button id="headerLangEn" class="color-mode-btn active" onclick="setHeaderLang('en')" data-i18n="worksheet.layout.header.en">English</button>
+            <button id="headerLangHe" class="color-mode-btn" style="font-family:var(--heb-font);" onclick="setHeaderLang('he')" data-i18n="worksheet.layout.header.he">עברית</button>
           </div>
         </div>
       </div>
@@ -4665,10 +4669,10 @@ function selectNoSofit() {
 let headerLang = 'en';
 function setHeaderLang(lang) {
   headerLang = lang;
-  document.getElementById('headerLangEn').style.background = lang === 'en' ? 'var(--navy)' : 'var(--white)';
-  document.getElementById('headerLangEn').style.color      = lang === 'en' ? '#fff' : 'var(--text)';
-  document.getElementById('headerLangHe').style.background = lang === 'he' ? 'var(--navy)' : 'var(--white)';
-  document.getElementById('headerLangHe').style.color      = lang === 'he' ? '#fff' : 'var(--text)';
+  // A class, not inline colours: an inline background outranks every hover rule, and the pair
+  // now shares .color-mode-btn with the Page Size pair above it (dark .active step included).
+  document.getElementById('headerLangEn').classList.toggle('active', lang === 'en');
+  document.getElementById('headerLangHe').classList.toggle('active', lang === 'he');
   if (blends.length) renderWorksheet(false);
 }
 function wsMetaHTML() {
