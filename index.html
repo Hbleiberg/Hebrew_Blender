@@ -222,6 +222,8 @@ header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center
 .ie-modal-body>*{flex-shrink:0;}
 .ie-modal-body textarea{width:100%;height:200px;font-family:monospace;font-size:0.72rem;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--cream);color:var(--text);resize:vertical;}
 body.dark .ie-modal-body textarea{background:#0d1220;}
+/* The export/import box holds JSON — machine text a teacher copies or pastes, never reads as prose. In the Hebrew UI it inherited dir="rtl", so every line started at the right edge with its punctuation reordered. Only the filled state goes LTR: the (localized) placeholder keeps the UI's direction. */
+.ie-modal-body textarea:not(:placeholder-shown){direction:ltr;text-align:start;}
 .ie-modal-body .btn-row{display:flex;gap:8px;flex-wrap:wrap;}
 .ie-action-btn{padding:7px 16px;border-radius:6px;font-size:0.82rem;font-family:'Source Sans 3',sans-serif;font-weight:600;cursor:pointer;border:none;transition:background 0.15s;}
 .ie-action-btn.primary{background:var(--navy);color:#fff;}
