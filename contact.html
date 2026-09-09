@@ -399,6 +399,10 @@ if (matchMedia('(max-width: 388px)').matches) {
 // Contact form → Web3Forms (AJAX, JSON) with hCaptcha. Delivers to the contact address (assembled at runtime).
 const form = document.getElementById('contactForm');
 const statusEl = document.getElementById('formStatus');
+// The shown status keeps its RENDERER, not its rendered text, so applyI18n can repaint it after a live
+// language switch (pattern validation-note-stores-rendered-text) — the note used to stay English.
+let _statusRender = null;
+function showStatus(render) { _statusRender = render; render(); }
 form.addEventListener('submit', async function(e){
   e.preventDefault();
   const btn = form.querySelector('button[type="submit"]');
@@ -409,13 +413,15 @@ form.addEventListener('submit', async function(e){
     // box stays empty, and "complete the check below" points at nothing. Add the same email
     // fallback the other failure paths carry whenever there is no widget to complete.
     const widgetMissing = !document.querySelector('.h-captcha iframe');
-    if (widgetMissing) statusEl.innerHTML = esc(I18n.t('contact.form.captcha_required')) + ' ' + I18n.t('contact.form.error_email_suffix', { email: emailLink() });
-    else statusEl.textContent = I18n.t('contact.form.captcha_required');
+    showStatus(() => {
+      if (widgetMissing) statusEl.innerHTML = esc(I18n.t('contact.form.captcha_required')) + ' ' + I18n.t('contact.form.error_email_suffix', { email: emailLink() });
+      else statusEl.textContent = I18n.t('contact.form.captcha_required');
+    });
     return;
   }
   btn.disabled = true;
   statusEl.style.color = 'var(--muted)';
-  statusEl.textContent = I18n.t('contact.form.sending');
+  showStatus(() => { statusEl.textContent = I18n.t('contact.form.sending'); });
   if (!formData.get('subject')) formData.set('subject', 'IvritSuite contact form');
   formData.set('from_name', formData.get('name') || 'IvritSuite contact form');
   try {
@@ -431,15 +437,15 @@ form.addEventListener('submit', async function(e){
       form.reset();
       if (window.hcaptcha) { try { window.hcaptcha.reset(); } catch (_) {} }
       statusEl.style.color = 'var(--gold)';
-      statusEl.textContent = I18n.t('contact.form.success');
+      showStatus(() => { statusEl.textContent = I18n.t('contact.form.success'); });
     } else {
       statusEl.style.color = 'var(--muted)';
-      statusEl.innerHTML = (data && data.message ? esc(data.message) : I18n.t('contact.form.error_fallback')) +
-        ' ' + I18n.t('contact.form.error_email_suffix', { email: emailLink() });
+      showStatus(() => { statusEl.innerHTML = (data && data.message ? esc(data.message) : I18n.t('contact.form.error_fallback')) +
+        ' ' + I18n.t('contact.form.error_email_suffix', { email: emailLink() }); });
     }
   } catch (err) {
     statusEl.style.color = 'var(--muted)';
-    statusEl.innerHTML = I18n.t('contact.form.error_network', { email: emailLink() });
+    showStatus(() => { statusEl.innerHTML = I18n.t('contact.form.error_network', { email: emailLink() }); });
   } finally {
     btn.disabled = false;
   }
@@ -458,6 +464,7 @@ function applyI18n() {
   try { const _db = document.getElementById('darkBtn'); if (_db) _db.textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
   try { const qr = document.querySelector('.zelle-qr'); if (qr) qr.alt = I18n.t('contact.donate.zelle_qr_alt'); } catch (e) {}
   renderEmailLine();
+  try { if (_statusRender) _statusRender(); } catch (e) {}
 }
 document.addEventListener('DOMContentLoaded', () => {
   try {
