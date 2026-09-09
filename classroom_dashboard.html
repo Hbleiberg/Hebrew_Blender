@@ -126,7 +126,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=David+Libre:wght@400;500;700&family=Noto+Rashi+Hebrew&display=swap" media="print" onload="this.media='all'" rel="stylesheet">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=David+Libre:wght@400;500;700&family=Noto+Rashi+Hebrew&display=swap" rel="stylesheet"></noscript>
-<style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}</style><!-- Early dark mode (avoid flash) --><script>
+<style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}@font-face{font-family:'IvritSuite Taamim';src:url('/fonts/NotoSerifHebrew-Taamim.ttf') format('truetype');font-weight:400;font-display:swap;}</style><!-- Early dark mode (avoid flash) --><script>
   (function(){ var s = localStorage.getItem('hebrewBlender_darkMode');
     if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark-early');
@@ -157,7 +157,7 @@
     --muted: #6b6050;
     --border: #c8bfa8;
     --white: #ffffff;
-    --heb-font: 'Frank Ruhl Libre', serif;
+    --heb-font: 'Frank Ruhl Libre', 'IvritSuite Taamim', serif;
     --eng-font: 'Source Sans 3', sans-serif;   /* Dashboard Text message English/Latin font (picker) */
     --eng-date-size: 1.35rem;
     --heb-date-size: 2.6rem;
@@ -937,7 +937,7 @@
 .hk-key{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:40px;padding:3px 2px;border:1px solid var(--border,#c8bfa8);border-radius:5px;background:var(--white,#fff);color:var(--text,#1a2744);cursor:pointer;font-family:inherit;user-select:none;transition:border-color 0.15s,background 0.15s;}
 .hk-key:hover{border-color:var(--gold,#c9922a);}
 .hk-key:active{background:var(--warm-gray,#e8e0d0);}
-.hk-key-glyph{font-family:'Frank Ruhl Libre',serif;font-size:1.2rem;line-height:1.25;}
+.hk-key-glyph{font-family:'Frank Ruhl Libre','IvritSuite Taamim',serif;font-size:1.2rem;line-height:1.25;}
 .hk-key-name{font-size:0.5rem;line-height:1.15;opacity:0.75;text-align:center;overflow-wrap:anywhere;}
 .hk-subhead{font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted,#6b6050);margin-block:8px 4px;}
 .hk-util{display:flex;gap:4px;margin-block-start:8px;}
@@ -9274,6 +9274,13 @@ async function onUploadEngFontPick(input){
     });
   }
 
+  /* Frank Ruhl Libre and most picker faces carry no te'amim: splice the self-hosted fallback in
+     BEFORE the generic family so a cluster with a cantillation mark resolves to it, never to an OS
+     font that may lack the marks (stock macOS/iOS render them as boxes otherwise). */
+  function taamimStack(stack) {
+    const m = /^(.*?),\s*(serif|sans-serif|cursive|fantasy|monospace|system-ui)\s*$/.exec(stack);
+    return m ? m[1] + ", 'IvritSuite Taamim', " + m[2] : stack + ", 'IvritSuite Taamim'";
+  }
   function applyFontChoice(cfg, name) {
     // Unknown name → bail, never fall back. At init the saved name is often a My Font the
     // async IndexedDB read has not produced yet; writing cfg.builtins[0] into settings here
@@ -9283,7 +9290,7 @@ async function onUploadEngFontPick(input){
     if (!f) return;
     settings[cfg.settingKey] = f.name;
     loadHebFont(f);
-    document.documentElement.style.setProperty(cfg.cssVar, f.family);
+    document.documentElement.style.setProperty(cfg.cssVar, cfg.cssVar === '--heb-font' ? taamimStack(f.family) : f.family);
     if (cfg.mode === 'select') { engFontSelects().forEach(s => { s.value = f.name; }); return; }
     const mount = document.getElementById(cfg.mountId);
     if (mount) mount.querySelectorAll('.font-opt').forEach(el => {

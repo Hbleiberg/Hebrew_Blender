@@ -95,7 +95,7 @@ Cross-page code ships as `/* ═══ … ═══ */`-marked blocks that are 
 
 ## Hebrew fonts
 - Every Hebrew font picker pastes the `ivritsuite-fonts` block, shows a **"My Fonts"** group from `refreshMyFonts()` at init (IndexedDB is shared across the origin, so no per-tool key), and adds the My Fonts uploader block + "⬆ Upload your own font?" control below the grid. User fonts ride the AllTools export as `userFonts` with no extra wiring.
-- The page must load `'Frank Ruhl Libre'` (default font; keyboard keys render in it deliberately).
+- The page must load `'Frank Ruhl Libre'` (default font; keyboard keys render in it deliberately). Frank Ruhl Libre has **no te'amim glyphs**, so every Hebrew stack — each `--heb-font` default, every JS setter of it, and the keyboard's `.hk-key-glyph` — ends with `'IvritSuite Taamim'` (the self-hosted Hebrew-block subset of Noto Serif Hebrew, declared right after the Frank Ruhl `@font-face`) before the generic; browsers fall back per grapheme cluster, so a marks-only file or a same-family `unicode-range` rule does NOT work (verified: stock macOS/iOS otherwise renders cantillation as boxes).
 
 ## Color coding (nikkud / trope)
 - Two vowel schemes (`vowelColorScheme: 'default' | 'talam'`) on the dashboard, generator, flash cards and Torah Trainer. **A new vowel key or color control goes into both schemes:** both default maps, both ordered picker-def arrays, both group arrays (generator + flash cards), then `getSettings()`/`applySettings()`; Torah Trainer also needs its `.nik-<key>` CSS var line. Keys stay identical across schemes.

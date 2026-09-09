@@ -126,7 +126,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Frank+Ruhl+Libre:wght@400;500;700;900&family=David+Libre:wght@400;500;700&family=Noto+Serif+Hebrew:wght@400;500;700&family=Heebo:wght@400;500;700&family=Assistant:wght@400;500;700&display=swap" media="print" onload="this.media='all'" rel="stylesheet">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Frank+Ruhl+Libre:wght@400;500;700;900&family=David+Libre:wght@400;500;700&family=Noto+Serif+Hebrew:wght@400;500;700&family=Heebo:wght@400;500;700&family=Assistant:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
-<style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}/* Footer links are the page's smallest tap targets (12-15px line boxes ~19px apart —
+<style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}@font-face{font-family:'IvritSuite Taamim';src:url('/fonts/NotoSerifHebrew-Taamim.ttf') format('truetype');font-weight:400;font-display:swap;}/* Footer links are the page's smallest tap targets (12-15px line boxes ~19px apart —
    under the WCAG 2.5.8 24px floor with no qualifying spacing). inline-block + block
    padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
 footer a { display: inline-block; padding-block: 5px; }
@@ -332,7 +332,7 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
      .tour-card); .fc-card's 16px is the deliberate hero step above it. This token used to be
      14px and had exactly one consumer (.panel), which made it a third value doing one job. */
   --radius: 12px;
-  --heb-font: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
+  --heb-font: 'Frank Ruhl Libre', 'Noto Serif Hebrew', 'IvritSuite Taamim', serif;
   --serif: 'Libre Baskerville', Georgia, serif;
   --eng-font: var(--serif);   /* English/Latin card-text face — user-selectable; defaults to the serif look */
   --sans: 'Assistant', system-ui, -apple-system, sans-serif;
@@ -3016,6 +3016,13 @@ function loadHebFont(font) {
     loadUserFont(font.name).catch(e => { _loadedUserFonts.delete(font.name); console.warn('user font load failed', font.name, e); });
   }
 }
+/* Frank Ruhl Libre and most picker faces carry no te'amim: splice the self-hosted fallback in
+   BEFORE the generic family so a cluster with a cantillation mark resolves to it, never to an OS
+   font that may lack the marks (stock macOS/iOS render them as boxes otherwise). */
+function taamimStack(stack) {
+  const m = /^(.*?),\s*(serif|sans-serif|cursive|fantasy|monospace|system-ui)\s*$/.exec(stack);
+  return m ? m[1] + ", 'IvritSuite Taamim', " + m[2] : stack + ", 'IvritSuite Taamim'";
+}
 function setHebFont(name) {
   // An unknown name bails instead of falling back: at init it is a My Font the async store
   // read has not returned yet, and falling back would write the default over the saved choice.
@@ -3023,7 +3030,7 @@ function setHebFont(name) {
   if (!font) return;
   hebFontId = font.name;
   loadHebFont(font);
-  document.documentElement.style.setProperty('--heb-font', font.stack);
+  document.documentElement.style.setProperty('--heb-font', taamimStack(font.stack));
   document.querySelectorAll('#fontGrid .font-opt').forEach(b => { const on = b.dataset.fontName === font.name; b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
   saveSettings();
 }

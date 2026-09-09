@@ -196,6 +196,7 @@ IvritSuite displays Hebrew and Latin text in a number of openly-licensed typefac
 
 - `splash/fonts/` — **Libre Baskerville** (OFL 1.1; license text at `splash/fonts/OFL.txt`), bundled so `splash/gen_splash.py` can render the app launch screens offline.
 - `fonts/FrankRuhlLibre-Regular.ttf` — **Frank Ruhl Libre** (OFL 1.1; license text at `fonts/OFL.txt`), self-hosted and precached by the service worker as the suite's default Hebrew face.
+- `fonts/NotoSerifHebrew-Taamim.ttf` — **Noto Serif Hebrew** (OFL 1.1; license text at `fonts/NotoSerifHebrew-Taamim-LICENSE.txt`), a Hebrew-block subset (letters, nikkud, the cantillation range U+0591–05AF and the U+25CC dotted circle) self-hosted and precached as the `'IvritSuite Taamim'` fallback family that every Hebrew font stack ends with, because Frank Ruhl Libre itself has no te'amim glyphs.
 - `fonts/Reuben.ttf` — **Reuben** by Baruch Sienna (CC0), made with the IvritSuite Hebrew Font Maker and offered for download in the Resources gallery; its CC0 dedication is declared in the gallery entry and in the notice generated with each download.
 - `fonts/LakhishBold.ttf` — **Lakhish Bold** by Baruch Sienna (OFL 1.1; full text at `fonts/LakhishBold-LICENSE.txt`), made with the IvritSuite Hebrew Font Maker and offered for download in the Resources gallery.
 - `fonts/TzviScript.ttf` and `fonts/TzviScriptStrokeGuide.ttf` — **TzviScript** / **TzviScript Stroke Guide** by Harrison Bleiberg (OFL 1.1; full texts at `fonts/TzviScript-LICENSE.txt` and `fonts/TzviScriptStrokeGuide-LICENSE.txt`), made with the Hebrew Font Maker and offered in the Resources gallery.
@@ -213,7 +214,7 @@ Every typeface the site requests is listed below, grouped by license. The two li
 | Frank Ruhl Libre | Yanek Iontef | Google Fonts (also bundled in `fonts/`) | https://github.com/fontef/frankruhllibre |
 | David Libre | Yanek Iontef | Google Fonts | https://fonts.google.com/specimen/David+Libre |
 | Noto Sans Hebrew | Google / Noto Project | Google Fonts | https://fonts.google.com/noto/specimen/Noto+Sans+Hebrew |
-| Noto Serif Hebrew | Google / Noto Project | Google Fonts | https://fonts.google.com/noto/specimen/Noto+Serif+Hebrew |
+| Noto Serif Hebrew | Google / Noto Project | Google Fonts (a Hebrew-block subset is also bundled in `fonts/`) | https://fonts.google.com/noto/specimen/Noto+Serif+Hebrew |
 | Noto Rashi Hebrew | Google / Noto Project | Google Fonts | https://fonts.google.com/noto/specimen/Noto+Rashi+Hebrew |
 | Alef | HaGilda & Mushon Zer-Aviv | Google Fonts | https://alef.hagilda.com/ |
 | Solitreo | Nathan Gross & Bryan Kirschen | Google Fonts | https://fonts.google.com/specimen/Solitreo |

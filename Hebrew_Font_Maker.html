@@ -134,7 +134,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=Noto+Sans+Hebrew:wght@400;700&family=David+Libre:wght@400;700&family=Noto+Rashi+Hebrew:wght@400;700&display=swap" media="print" onload="this.media='all'" rel="stylesheet">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&family=Noto+Sans+Hebrew:wght@400;700&family=David+Libre:wght@400;700&family=Noto+Rashi+Hebrew:wght@400;700&display=swap" rel="stylesheet"></noscript>
-<style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}/* Footer links are the page's smallest tap targets (12-15px line boxes ~19px apart —
+<style>@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}@font-face{font-family:'IvritSuite Taamim';src:url('/fonts/NotoSerifHebrew-Taamim.ttf') format('truetype');font-weight:400;font-display:swap;}/* Footer links are the page's smallest tap targets (12-15px line boxes ~19px apart —
    under the WCAG 2.5.8 24px floor with no qualifying spacing). inline-block + block
    padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
 footer a { display: inline-block; padding-block: 5px; }
@@ -174,7 +174,7 @@ footer a { display: inline-block; padding-block: 5px; }
     --muted: #6b6050;
     --border: #c8bfa8;
     --white: #ffffff;
-    --heb-font: 'Frank Ruhl Libre', serif;
+    --heb-font: 'Frank Ruhl Libre', 'IvritSuite Taamim', serif;
     --below: #f59e0b;
     --above: #3b82f6;
     --center: #10b981;
@@ -1250,7 +1250,7 @@ footer a { display: inline-block; padding-block: 5px; }
 .hk-key{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:40px;padding:3px 2px;border:1px solid var(--border,#c8bfa8);border-radius:5px;background:var(--white,#fff);color:var(--text,#1a2744);cursor:pointer;font-family:inherit;user-select:none;transition:border-color 0.15s,background 0.15s;}
 .hk-key:hover{border-color:var(--gold,#c9922a);}
 .hk-key:active{background:var(--warm-gray,#e8e0d0);}
-.hk-key-glyph{font-family:'Frank Ruhl Libre',serif;font-size:1.2rem;line-height:1.25;}
+.hk-key-glyph{font-family:'Frank Ruhl Libre','IvritSuite Taamim',serif;font-size:1.2rem;line-height:1.25;}
 .hk-key-name{font-size:0.5rem;line-height:1.15;opacity:0.75;text-align:center;overflow-wrap:anywhere;}
 .hk-subhead{font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted,#6b6050);margin-block:8px 4px;}
 .hk-util{display:flex;gap:4px;margin-block-start:8px;}

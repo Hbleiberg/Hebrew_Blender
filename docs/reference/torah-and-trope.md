@@ -220,6 +220,9 @@ from `torah_trainer.html`.
   `renderMarkedWord` clusters base letters + combining marks (U+0591–U+05C7) and wraps the hit
   cluster in `.mark-hit`; index strings never pass through `innerHTML`. Glyph tiles render marks on
   the `GLYPH_CARRIER` (`'◌'` dotted circle — one constant; flip to `'א'` if a font floats marks).
+  Frank Ruhl Libre has no te'amim or `◌`, so any cluster carrying a mark renders whole (letter +
+  nikkud + te'am) from the `'IvritSuite Taamim'` fallback at the end of every `--heb-font` stack
+  (`fonts/NotoSerifHebrew-Taamim.ttf`); without it every mark is tofu on stock macOS/iOS.
   Postpositive/prepositive marks sitting at word edges is **correct**, not a bug.
 - **Persistence** (no presets, no `.ivrit` engine — AllTools-only backup):
   `hebrewTropeTutor_settings` (tradition ashk/seph, hebFont, hebFontSize, drill-type toggles,
