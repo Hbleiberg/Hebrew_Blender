@@ -230,6 +230,8 @@ body.dark .ie-modal-body textarea{background:#0d1220;}
 .ie-action-btn.primary:hover{background:var(--gold);color:var(--navy);}
 .ie-action-btn.secondary{background:var(--warm-gray);color:var(--text);border:1px solid var(--border);}
 .ie-action-btn.secondary:hover{border-color:var(--gold);color:var(--gold-text);}
+.ie-action-btn.danger{background:#a83232;color:#fff;}
+.ie-action-btn.danger:hover{background:#8a2828;}   /* the erase buttons were inline-styled with no hover rule at all — pattern control-class-without-a-hover-state */
 .ie-note{font-size:0.75rem;color:var(--muted);line-height:1.4;}
 /* .ie-note's colour does not reach an <a> inside it — the UA's own link rule wins — so the
    My Fonts note's link kept UA blue: 9.4:1 on light but 1.63:1 on the dark modal. Same
@@ -440,7 +442,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <div id="myFontsList"></div>
       </div>
       <div style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
-        <button class="ie-action-btn" style="background:#a83232;color:#fff;" onclick="eraseAllSettings()" data-i18n="home.alltools.erase_button">🗑 Erase All Settings</button>
+        <button class="ie-action-btn danger" onclick="eraseAllSettings()" data-i18n="home.alltools.erase_button">🗑 Erase All Settings</button>
       </div>
     </div>
   </div>
@@ -1131,10 +1133,11 @@ function ivritAskErase() {
     body.textContent = I18n.t('home.alltools.erase_confirm1');   // the same warning the confirm() showed
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
-    const mk = (act, label, css) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.act = act; b.textContent = label; b.style.cssText = 'flex:1;min-width:96px;padding:9px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.85rem;' + css; row.appendChild(b); return b; };
-    mk('backup', I18n.t('home.alltools.erase_backup_first'), 'border:none;background:var(--navy,#1a2744);color:#fff;');
-    mk('erase',  I18n.t('home.alltools.erase_dialog_erase'), 'border:none;background:#a83232;color:#fff;');
-    mk('cancel', I18n.t('shared.ivrit.restore_cancel_button'), 'border:1px solid var(--border,#ccc);background:transparent;color:inherit;');
+    // The modal's own button classes (primary / danger / secondary) so each carries its hover plate.
+    const mk = (act, label, cls) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.act = act; b.textContent = label; b.className = 'ie-action-btn ' + cls; b.style.cssText = 'flex:1;min-width:96px;padding:9px;font-size:0.85rem;'; row.appendChild(b); return b; };
+    mk('backup', I18n.t('home.alltools.erase_backup_first'), 'primary');
+    mk('erase',  I18n.t('home.alltools.erase_dialog_erase'), 'danger');
+    mk('cancel', I18n.t('shared.ivrit.restore_cancel_button'), 'secondary');
     box.appendChild(title); box.appendChild(body); box.appendChild(row);
     const opener = document.activeElement;
     box.setAttribute('role', 'dialog');
