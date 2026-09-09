@@ -1891,7 +1891,9 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     header, body.dark header { background: #fff; }
     header h1 { color: var(--navy); }
     header p { color: var(--muted); }
-    .col-title { color: var(--navy); background: #fff; border-block-end: 2px solid var(--gold); }
+    /* body.dark .col-title (0,1,1) outranks the bare class: without the twin, a dark-source print
+       with background graphics on shipped the titles as #0a0f1c slabs under remapped-navy text (1.29:1). */
+    .col-title, body.dark .col-title { color: var(--navy); background: #fff; border-block-end: 2px solid var(--gold); }
     .day-item.colored { color: var(--text); }
     .day-item.colored .day-eng { color: var(--muted); }
     body.dark .dash-col { background: var(--white); box-shadow: none; }
