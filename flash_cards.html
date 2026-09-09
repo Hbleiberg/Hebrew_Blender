@@ -2072,8 +2072,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         .fc-dlg-pick.is-active:hover{background:rgba(201,146,42,0.24);}
         .fc-dlg-pick.is-on{background:var(--navy,#1a2744);color:#fff;border-color:var(--navy,#1a2744);}
         .fc-dlg-pick.is-on:hover{background:var(--gold,#c9922a);color:var(--navy,#1a2744);border-color:var(--gold,#c9922a);}
-        .fc-dlg-x{background:none;border:none;border-radius:6px;padding:0 5px;min-block-size:24px;min-inline-size:24px;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;}
+        .fc-dlg-x{background:none;border:none;border-radius:6px;padding:0 5px;min-block-size:24px;min-inline-size:24px;display:inline-flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;}
         .fc-dlg-x:hover{background:rgba(201,146,42,0.12);}
+        /* Weaknesses viewer tabs: the selected state is a class, so the hover plate is never outranked by an inline colour */
+        .weak-tab{flex:1;padding:7px 4px;border:none;background:transparent;color:inherit;font-family:inherit;font-size:0.76rem;cursor:pointer;}
+        .weak-tab:hover{background:rgba(201,146,42,0.12);}
+        .weak-tab.active{background:var(--navy,#1a2744);color:#fff;}
+        .weak-tab.active:hover{background:var(--gold,#c9922a);color:var(--navy,#1a2744);}
         /* Collapsible sub-section headings inside Advanced Settings */
         .adv-subhead{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-weight:600;margin-bottom:4px;}
         .adv-subhead::before{content:'▾';color:var(--gold);font-size:0.9rem;transition:transform 0.2s;flex-shrink:0;}
@@ -5824,24 +5829,21 @@ function openWeaknessView(name) {
   box.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
       <div style="font-weight:700;font-size:1rem;">${I18n.t('flashcards.weaknesses.view_title', { name: esc(name) })}</div>
-      <button data-act="close" aria-label="${esc(I18n.t('flashcards.weaknesses.close_aria'))}" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;">×</button>
+      <button data-act="close" aria-label="${esc(I18n.t('flashcards.weaknesses.close_aria'))}" class="fc-dlg-x">×</button>
     </div>
     <div class="weak-tabs" style="display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:12px;">
-      <button class="weak-tab active" data-tab="vowels" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">${esc(I18n.t('flashcards.weaknesses.tab_vowels'))}</button>
-      <button class="weak-tab" data-tab="letters" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">${esc(I18n.t('flashcards.weaknesses.tab_letters'))}</button>
-      <button class="weak-tab" data-tab="combos" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">${esc(I18n.t('flashcards.weaknesses.tab_combos'))}</button>
-      <button class="weak-tab" data-tab="other" style="flex:1;padding:7px 4px;border:none;font-family:inherit;font-size:0.76rem;cursor:pointer;">${esc(I18n.t('flashcards.weaknesses.tab_other'))}</button>
+      <button class="weak-tab active" data-tab="vowels">${esc(I18n.t('flashcards.weaknesses.tab_vowels'))}</button>
+      <button class="weak-tab" data-tab="letters">${esc(I18n.t('flashcards.weaknesses.tab_letters'))}</button>
+      <button class="weak-tab" data-tab="combos">${esc(I18n.t('flashcards.weaknesses.tab_combos'))}</button>
+      <button class="weak-tab" data-tab="other">${esc(I18n.t('flashcards.weaknesses.tab_other'))}</button>
     </div>
     <div id="weakContent" style="overflow-y:auto;flex:1;"></div>`;
   ov.appendChild(box); document.body.appendChild(ov);
   const content = box.querySelector('#weakContent');
   const tabs = [...box.querySelectorAll('.weak-tab')];
-  const navy = getComputedStyle(document.documentElement).getPropertyValue('--navy') || '#1a2744';
   function paintTabs() {
     tabs.forEach(t => {
-      const on = t.classList.contains('active');
-      t.style.background = on ? navy : 'transparent';
-      t.style.color = on ? '#fff' : 'inherit';
+      const on = t.classList.contains('active');   // .weak-tab.active paints the selected tab
       // These are built and destroyed with the overlay, so initPillAria() never sees them —
       // expose the selected state here, the one place that already re-runs on every switch.
       t.setAttribute('aria-pressed', String(on));
@@ -6171,7 +6173,7 @@ function openLadderMap() {
   box.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
       <div style="font-weight:700;font-size:1rem;">${I18n.t('flashcards.ladder.modal_title', { name: esc(name) })}</div>
-      <button data-act="close" aria-label="${esc(I18n.t('flashcards.ladder.close_aria'))}" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:inherit;line-height:1;min-width:30px;min-height:30px;display:inline-flex;align-items:center;justify-content:center;">×</button>
+      <button data-act="close" aria-label="${esc(I18n.t('flashcards.ladder.close_aria'))}" class="fc-dlg-x" style="min-width:30px;min-height:30px;">×</button>
     </div>
     <div id="ladderList" style="overflow-y:auto;flex:1;"></div>`;
   ov.appendChild(box); document.body.appendChild(ov);
