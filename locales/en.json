@@ -5115,7 +5115,7 @@
   "worksheet.vowels.color.purple": "Purple",
   "worksheet.vowels.color.red": "Red",
   "worksheet.vowels.color.yellow": "Yellow",
-  "worksheet.vowels.count_vav": "Count וֹ/וּ as a letter",
+  "worksheet.vowels.count_vav": "Count <span style=\"font-family:var(--heb-font);direction:rtl;\" lang=\"he\" dir=\"rtl\">וֹ/וּ</span> as a letter",
   "worksheet.vowels.count_vav_tooltip": "When unchecked (default), vav-holam (<span style=\"font-family:var(--heb-font);\">וֹ</span>) and shuruk (<span style=\"font-family:var(--heb-font);\">וּ</span>) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked, they appear as standalone <span style=\"font-family:var(--heb-font);\">וֹ</span> and <span style=\"font-family:var(--heb-font);\">וּ</span> — the Vav itself is the letter.",
   "worksheet.vowels.group_header": "{sound} Sound – {color}",
   "worksheet.vowels.lock_vowels": "Lock Vowels",

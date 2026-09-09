@@ -5115,7 +5115,7 @@
   "worksheet.vowels.color.purple": "סגול",
   "worksheet.vowels.color.red": "אדום",
   "worksheet.vowels.color.yellow": "צהוב",
-  "worksheet.vowels.count_vav": "ספור וֹ/וּ כאות",
+  "worksheet.vowels.count_vav": "ספור <span style=\"font-family:var(--heb-font);direction:rtl;\" lang=\"he\" dir=\"rtl\">וֹ/וּ</span> כאות",
   "worksheet.vowels.count_vav_tooltip": "כשלא מסומן (ברירת מחדל), וו-חולם (<span style=\"font-family:var(--heb-font);\">וֹ</span>) ושורוק (<span style=\"font-family:var(--heb-font);\">וּ</span>) מופיעים לצד עיצור — הוו הוא סימן התנועה, ולא נספר כאות. כשמסומן, הם מופיעים כ-<span style=\"font-family:var(--heb-font);\">וֹ</span> ו-<span style=\"font-family:var(--heb-font);\">וּ</span> עצמאיים — הוו עצמו הוא האות.",
   "worksheet.vowels.group_header": "צליל {sound} – {color}",
   "worksheet.vowels.lock_vowels": "נעילת תנועות",

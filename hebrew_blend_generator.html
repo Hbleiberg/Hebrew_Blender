@@ -3486,7 +3486,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div id="vavAsLetterRow" style="display:none;margin-top:10px;border-top:1px solid var(--border);padding-top:8px;">
           <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;cursor:pointer;user-select:none;">
             <input type="checkbox" id="vavAsLetterCheck" onchange="setVavAsLetter(this.checked)" checked style="accent-color:var(--gold);width:13px;height:13px;">
-            Count <span style="font-family:var(--heb-font);direction:rtl;">וֹ/וּ</span> as a letter
+            <span data-i18n-html="worksheet.vowels.count_vav">Count <span style="font-family:var(--heb-font);direction:rtl;" lang="he" dir="rtl">וֹ/וּ</span> as a letter</span>
             <span class="tooltip-wrap" style="font-size:0.6rem;">?<span class="tooltip-box" data-i18n-html="worksheet.vowels.count_vav_tooltip">When unchecked (default), vav-holam (<span style="font-family:var(--heb-font);">וֹ</span>) and shuruk (<span style="font-family:var(--heb-font);">וּ</span>) appear alongside a consonant — the Vav is the vowel marker, not counted as a letter. When checked, they appear as standalone <span style="font-family:var(--heb-font);">וֹ</span> and <span style="font-family:var(--heb-font);">וּ</span> — the Vav itself is the letter.</span></span>
           </label>
         </div>
