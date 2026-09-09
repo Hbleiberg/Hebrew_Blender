@@ -532,7 +532,7 @@ async function refreshFontsBackupCache() {
 if (window.indexedDB) refreshFontsBackupCache();
 
 /* ── My IvritSuite Fonts manager (homepage gear modal) ── */
-function _ivFmt(ts) { if (!ts) return ''; try { return new Date(ts).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' }); } catch (e) { return ''; } }
+function _ivFmt(ts) { if (!ts) return ''; try { return new Date(ts).toLocaleDateString((window.I18n && I18n.lang) || undefined, { year:'numeric', month:'short', day:'numeric' }); } catch (e) { return ''; } }  // the UI language, not the browser locale: the date sits inside a localized sentence
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
 async function ivUploadFontFromFile(file){
   if (!file) return null;
