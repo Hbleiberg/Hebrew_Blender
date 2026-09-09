@@ -5299,16 +5299,18 @@ function applyDictState(s) {
     // 12. query
     document.getElementById('searchInput').value = s.q || '';
 
-    // 13. copy mode
-    if (s.copyMode) {
+    // 13. copy mode — only a value the radio group offers; a share link / saved state may carry
+    // anything (pattern apply-settings-trusts-collection-members), and an unoffered value leaves the pick.
+    const cmRadio = typeof s.copyMode === 'string'
+      ? [...document.querySelectorAll('input[name="copyMode"]')].find(r => r.value === s.copyMode) : null;
+    if (cmRadio) {
       copyMode = s.copyMode;
-      const r = document.querySelector('input[name="copyMode"][value="' + s.copyMode + '"]');
-      if (r) r.checked = true;
+      cmRadio.checked = true;
       if (typeof bulkSelected !== 'undefined' && bulkSelected.size) onCopyModeChange(s.copyMode);
     }
 
-    // 14. shoresh root
-    lastShoreshRoot = s.shoreshRoot || '';
+    // 14. shoresh root — a string only (it is rendered and saved back)
+    lastShoreshRoot = typeof s.shoreshRoot === 'string' ? s.shoreshRoot : '';
   } finally {
     _applyingDictState = false;
   }
