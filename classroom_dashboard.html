@@ -1364,6 +1364,9 @@
   }
   body.dark .ed-btn { background: var(--navy-deep); }
   .ed-btn:hover { background: var(--gold-light); color: var(--navy); }
+  /* body.dark .ed-btn (0,2,1) outranks .ed-btn:hover (0,2,0), so in dark mode only the hover's
+     navy text applied — on the navy-deep plate, 1.26:1. Restate the plate at the higher specificity. */
+  body.dark .ed-btn:hover { background: var(--gold-light); }
   .ed-sep { width: 1px; background: var(--border); align-self: stretch; margin: 1px 2px; flex-shrink: 0; }
   .ed-color {
     width: 32px; height: 28px;
