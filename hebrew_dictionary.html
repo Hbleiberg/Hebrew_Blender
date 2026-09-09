@@ -666,7 +666,8 @@ body.dark #appToast { background: #0a0f1c; }
    the reduced-motion tail is self-contained so the block stays portable to
    pages without a universal neutralizer. ═══════════════════════════════════ */
 .hk-toggle{display:inline-flex;align-items:center;gap:6px;margin-block-start:10px;font-size:0.8rem;font-weight:600;padding:6px 14px;border:1.5px solid var(--border,#c8bfa8);border-radius:20px;background:transparent;color:var(--text,#1a2744);cursor:pointer;font-family:inherit;transition:border-color 0.15s,color 0.15s;}
-.hk-toggle:hover{border-color:var(--gold,#c9922a);color:var(--gold,#c9922a);}
+/* Hover TEXT takes the readable gold: brand --gold on a light plate is ~2.6:1 (the border keeps the brand). */
+.hk-toggle:hover{border-color:var(--gold,#c9922a);color:var(--gold-text,#7f5a13);}
 .hk-toggle[aria-expanded="true"]{background:var(--navy,#1a2744);border-color:var(--navy,#1a2744);color:#fff;}
 /* Height cap keeps the panel usable inside a short viewport or a sticky mobile bar. */
 .hk-panel{margin-block-start:10px;border:1px solid var(--border,#c8bfa8);border-radius:8px;background:var(--cream,#fdf8ef);padding:8px;max-height:min(46vh,340px);overflow-y:auto;}
@@ -676,7 +677,7 @@ body.dark #appToast { background: #0a0f1c; }
 .hk-tab:hover{border-color:var(--gold,#c9922a);}
 .hk-tab.active{background:var(--navy,#1a2744);border-color:var(--navy,#1a2744);color:#fff;}
 .hk-layout{margin-inline-start:auto;font-size:0.68rem;padding:3px 9px;border:1px solid var(--border,#c8bfa8);border-radius:12px;background:transparent;color:var(--muted,#6b6050);cursor:pointer;font-family:inherit;transition:border-color 0.15s,color 0.15s;}
-.hk-layout:hover{border-color:var(--gold,#c9922a);color:var(--gold,#c9922a);}
+.hk-layout:hover{border-color:var(--gold,#c9922a);color:var(--gold-text,#7f5a13);}
 .hk-hint{font-size:0.72rem;color:var(--muted,#6b6050);margin-block-end:8px;}
 .hk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:4px;}
 .hk-rtl{direction:rtl;}
