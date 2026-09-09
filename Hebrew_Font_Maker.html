@@ -18243,7 +18243,7 @@ function mountSampleKeyboard(st) {
 let _myFontsOpen = false;
 function myFontsDate(ts) {
   if (!ts) return '';
-  try { return new Date(ts).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); }
+  try { return new Date(ts).toLocaleDateString((window.I18n && I18n.lang) || undefined, { year: 'numeric', month: 'short', day: 'numeric' }); }   // the UI language, not the browser locale: the date sits beside localized chrome
   catch (e) { return ''; }
 }
 function openMyFonts() {
@@ -19646,7 +19646,7 @@ async function loadRecentProject(idx) {
   if (await applyProjectData(JSON.parse(JSON.stringify(r.data)))) status(I18n.t('fontmaker.status.loaded_named', {name: r.name}));
 }
 /* "Load Project ▾" split menu: From computer… + the recent list */
-function recentDate(iso) { try { return new Date(iso).toLocaleDateString(undefined, { month:'short', day:'numeric' }); } catch (e) { return ''; } }
+function recentDate(iso) { try { return new Date(iso).toLocaleDateString((window.I18n && I18n.lang) || undefined, { month:'short', day:'numeric' }); } catch (e) { return ''; } }   // UI language, not browser locale
 function closeLoadMenu() { const m = document.getElementById('loadMenu'); if (m) m.remove(); document.removeEventListener('click', closeLoadMenu); }
 function toggleLoadMenu(ev) {
   ev.stopPropagation();
