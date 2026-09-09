@@ -420,6 +420,11 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   /* Pointer feedback — the .hbtn:hover idiom the dashboard/torah/trope headers use (white .18 + border .3),
      one step lighter on this gold-outlined trio. Pattern control-class-without-a-hover-state (S313 Pass F). */
   header > a:hover, header > button:hover { background: rgba(255,255,255,0.12); }
+  /* The shared language switcher stretches to its flex line (js/i18n.js align-self:stretch), and this
+     header's line is the 41px title block — so the switcher stood 41 beside the 35px buttons above.
+     Centre the slot and give the select the row's own 35 (pattern row-siblings-with-mismatched-heights, S362). */
+  header [data-i18n-switcher] { align-self: center; }
+  header .i18n-switch select.i18n-select { min-height: 35px; }
   /* i18n / RTL utilities — directional glyphs mirror under RTL; bidi-isolate protects number/Latin readouts */
   .dir-arrow { display: inline-block; }
   [dir="rtl"] .dir-arrow { transform: scaleX(-1); }
