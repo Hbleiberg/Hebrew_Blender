@@ -1147,6 +1147,7 @@
      Pattern control-class-without-a-hover-state. */
   .preset-copy-btn { position: absolute; top: 5px; inset-inline-end: 5px; background: none; border: 1px solid var(--border); border-radius: 4px; padding: 2px 5px; font-size: 0.65rem; color: var(--muted); cursor: pointer; }
   .preset-copy-btn:hover { border-color: var(--gold); color: var(--text); }
+  .preset-copy-btn::after { content: ''; position: absolute; inset: -5px 0; }   /* the 17px button's hit box reaches 25px (15px padding box + 5 + 5) over the box's dead corner, no visible change (WCAG 2.5.8; the .swm-chip-arm::after idiom — pattern sub-floor touch target, S362) */
 
   /* ───── Vowel color-scheme selector ───── */
   .vowel-scheme-row { display: flex; gap: 6px; margin-top: 6px; align-items: center; flex-wrap: wrap; }
