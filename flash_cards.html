@@ -5473,7 +5473,7 @@ function renderProfileHistory(name) {
       const li = document.createElement('li');
       li.className = 'result-item';
       const d = new Date(r.savedAt);
-      const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+      const dateStr = d.toLocaleDateString((window.I18n && I18n.lang) || undefined, { month: 'short', day: 'numeric', year: 'numeric' });   // UI language, not browser locale
       const timeStr = r.timeSec != null ? ` · ${formatTimerSecs(r.timeSec)}` : '';
       li.style.cssText = 'display:flex;align-items:center;gap:8px;';
       li.innerHTML = `
@@ -6285,7 +6285,7 @@ function _reportEnter(name) {
   const results = prof.results || [];
   if (!results.length) return;
 
-  const fmtDate = iso => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  const fmtDate = iso => new Date(iso).toLocaleDateString((window.I18n && I18n.lang) || undefined, { month: 'short', day: 'numeric', year: 'numeric' });   // UI language, not browser locale
   const stamps = results.map(r => r.savedAt).filter(Boolean).sort();
   const totalCards = results.reduce((n, r) => n + (r.total || 0), 0);
   const totalRight = results.reduce((n, r) => n + (r.correct || 0), 0);
@@ -6421,7 +6421,7 @@ function _certEnter(name) {
   const host = document.getElementById('fcCertSheet');
   const levels = readLadderLevels(name);
   if (!host || ladderNextIndex(levels) !== -1) return;
-  const fmtDate = iso => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  const fmtDate = iso => new Date(iso).toLocaleDateString((window.I18n && I18n.lang) || undefined, { month: 'short', day: 'numeric', year: 'numeric' });   // UI language, not browser locale
   // passedAt is first-earn per level (and mergeLadder keeps the earliest across merges), so the
   // MAX stamp is exactly the day the final level was first passed. Today only if a stamp is
   // missing (e.g. an imported record that predates the field).
