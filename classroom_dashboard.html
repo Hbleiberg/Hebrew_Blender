@@ -1862,7 +1862,12 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     .settings-backdrop, .settings-modal, #pickOverlay, #tipFloat, #appToast,
     .tour-spot, .tour-card, .dash-edit-pencil, #videoPanel, #timerCol, #pickerActions,
     .fr-backdrop, .fr-modal, .swm-backdrop, .swm-modal,
+    /* Two fixed surfaces that arrived after this list: the presenter blackout (a full-viewport
+       #000 sheet — with background graphics on, paper came out black) and the in-place text
+       editor's floating toolbar; the dashed editing outline is the same edit affordance. */
+    #blackout, #inplaceToolbar,
     #weatherBody button { display: none !important; }
+    #dashTextDisplay.editing { outline: none; }
     /* An instruction to click is an edit affordance, not board content — same reasoning as the
        fullscreen suppression above (and the print-hidden .dash-edit-pencil). Selector mirrors the
        base rule exactly so it ties on specificity and wins by order. */
