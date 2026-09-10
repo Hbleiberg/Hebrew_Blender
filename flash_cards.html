@@ -629,7 +629,7 @@ body.dark .slider::before { background: #d8dde9; }
   background: var(--white);
   border: 1px solid var(--border-strong);
   border-radius: 10px;
-  padding: 8px 4px 6px;
+  padding: 8px 1px 6px;   /* 1px sides (the generator's step): the 60.8px phone tile then holds "Chaf Sofit" on one line at 0.62rem */
   text-align: center;
   cursor: pointer;
   user-select: none;
@@ -647,7 +647,7 @@ body.dark .slider::before { background: #d8dde9; }
 .letter-tile small {
   display: block;
   font-family: var(--sans);
-  font-size: 0.58rem;
+  font-size: 0.62rem;   /* the generator's identical grid took this step first (text-size floor) */
   color: var(--muted);
   font-weight: 500;
   direction: ltr;
