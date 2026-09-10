@@ -3282,6 +3282,7 @@
   "fontmaker.toolbar.engine_badge": "engine loading…",
   "fontmaker.toolbar.engine_badge_title": "Getting the font engine ready so your first export is fast",
   "fontmaker.toolbar.export_btn": "⬇ Export TTF",
+  "fontmaker.toolbar.export_btn_fmt": "⬇ Export {fmt}",
   "fontmaker.toolbar.export_format_title": "Choose an export format — or save the font for use in IvritSuite",
   "fontmaker.toolbar.fmt_ttf": "TTF (recommended)",
   "fontmaker.toolbar.fmt_ttfwoff2": "TTF + WOFF2 (zip)",

@@ -2906,6 +2906,7 @@ fontmaker.templates.trop_meta,33 marks · 1 page,33 סימנים · עמוד א�
 fontmaker.toolbar.engine_badge,engine loading…,מנוע נטען…,toolbar status badge,
 fontmaker.toolbar.engine_badge_title,Getting the font engine ready so your first export is fast,מכינים את מנוע הגופן כדי שהייצוא הראשון שלכם יהיה מהיר,badge title,
 fontmaker.toolbar.export_btn,⬇ Export TTF,⬇ ייצוא TTF,toolbar button,leading-emoji
+fontmaker.toolbar.export_btn_fmt,⬇ Export {fmt},⬇ ייצוא {fmt},toolbar button; {fmt} is a format name (TTF / WOFF2 / TTF + WOFF2 / UFO) and is not translated,leading-emoji
 fontmaker.toolbar.export_format_title,Choose an export format — or save the font for use in IvritSuite,בחרו פורמט ייצוא — או שמרו את הגופן לשימוש ב-IvritSuite,select title,
 fontmaker.toolbar.fmt_ttf,TTF (recommended),TTF (מומלץ),export format option,
 fontmaker.toolbar.fmt_ttfwoff2,TTF + WOFF2 (zip),TTF + WOFF2 (zip),export format option,

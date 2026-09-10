@@ -17517,8 +17517,14 @@ async function buildFontBytes() {                 // build the TTF in memory (no
 
 function onExportFormatChange() {
   const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
-  const label = { ttf:'⬇ Export TTF', woff2:'⬇ Export WOFF2', ttfwoff2:'⬇ Export TTF + WOFF2', ufo:'⬇ Export UFO' }[fmt] || '⬇ Export';
-  const btn = document.getElementById('exportBtn'); if (btn) btn.textContent = label;
+  // Format names are product names (TTF, WOFF2, UFO); only the verb translates. The init call can
+  // run before the locale has loaded, when I18n.t hands back the key — keep the English shape then;
+  // applyI18n re-runs this once translations land AND on every live language switch (whose static
+  // pass would otherwise reset the button to the TTF label whatever format is picked).
+  const name = { ttf:'TTF', woff2:'WOFF2', ttfwoff2:'TTF + WOFF2', ufo:'UFO' }[fmt] || 'TTF';
+  const key = 'fontmaker.toolbar.export_btn_fmt';
+  const s = window.I18n ? I18n.t(key, { fmt: name }) : key;
+  const btn = document.getElementById('exportBtn'); if (btn) btn.textContent = s === key ? '⬇ Export ' + name : s;   // i18n-ignore: pre-ready English shape
 }
 /* ── Send this font to IvritSuite ────────────────────────────────────────────────────────────
    One in-page flow that carries the exported bytes, so the attachment is automatic where the
@@ -20688,6 +20694,7 @@ function applyI18n() {
     if (_dt) _dt.textContent = I18n.t(document.body.classList.contains('dark') ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark');
   } catch (e) {}
   try { syncFsPanelsBtn(); } catch (e) {}   // state-dependent label, same as the dark toggle above
+  try { onExportFormatChange(); } catch (e) {}   // state-dependent label: the picked export format, not the static TTF default
   // Re-render JS-built chrome (read-only) so any i18n it carries updates in place.
   try { renderControls(); } catch (e) {}
   try { renderGrids(); } catch (e) {}
