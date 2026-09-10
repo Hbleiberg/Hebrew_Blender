@@ -544,7 +544,7 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   }
   .toggle {
     position: relative;
-    width: 40px; height: 22px;
+    width: 40px; height: 24px;   /* 24px = the WCAG 2.5.8 touch floor (the torah/trope switch took the same step) */
     flex-shrink: 0;
   }
   .toggle input { opacity: 0; width: 0; height: 0; }
@@ -559,7 +559,7 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
     content: '';
     position: absolute;
     width: 16px; height: 16px;
-    inset-inline-start: 3px; top: 3px;
+    inset-inline-start: 3px; top: 4px;   /* re-centred in the 24px track */
     background: var(--white);
     border-radius: 50%;
     transition: transform 0.2s;
