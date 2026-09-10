@@ -1515,6 +1515,7 @@ body.dark .ft-move-menu button { color:#dde4f0; }
 body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .ft-newfolder:hover { background:#2a3349; }
 /* ═══ end folder-tree component CSS ═══ */
 
+.beta-tag { font-size: 0.7rem; background: var(--gold); color: var(--navy); padding: 1px 5px; border-radius: 3px; font-weight: 700; letter-spacing: 0.05em; vertical-align: middle; }   /* the suite's Beta badge — one idiom at the 11px floor (text-size floor) */
 </style>
 </head>
 <body>
@@ -1570,7 +1571,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <!-- 🎧 Listening mode (multiple choice) — presentation overlay across all modes -->
       <div class="row" id="listeningRow">
         <label class="switch"><input type="checkbox" id="listeningToggle"><span class="slider"></span></label>
-        <span class="label has-tip" data-tip="Instead of reading the card, hear it spoken and tap the matching answer. Trains listening (hear → identify) instead of decoding (see → say)." data-i18n-tip="flashcards.mode.listening_tip"><span data-i18n="flashcards.mode.listening_label">🎧 Listening</span> <span data-i18n="flashcards.badge.beta" style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
+        <span class="label has-tip" data-tip="Instead of reading the card, hear it spoken and tap the matching answer. Trains listening (hear → identify) instead of decoding (see → say)." data-i18n-tip="flashcards.mode.listening_tip"><span data-i18n="flashcards.mode.listening_label">🎧 Listening</span> <span data-i18n="flashcards.badge.beta" class="beta-tag">BETA</span></span>
       </div>
       <div id="listeningOpts" class="hide">
         <div class="row">
@@ -1987,10 +1988,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <!-- Audio -->
       <div class="row">
         <label class="switch"><input type="checkbox" id="audioToggle"><span class="slider"></span></label>
-        <span class="label"><span data-i18n="flashcards.advanced.audio_label">Audio</span> <span data-i18n="flashcards.badge.beta" style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
+        <span class="label"><span data-i18n="flashcards.advanced.audio_label">Audio</span> <span data-i18n="flashcards.badge.beta" class="beta-tag">BETA</span></span>
       </div>
       <div class="row" id="ttsRateRow" style="flex-direction:column;align-items:stretch;gap:4px;margin-top:6px;">
-        <span class="label" style="font-size:0.75rem;"><span id="ttsSpeedLbl" data-i18n="flashcards.advanced.tts_speed_label">Hebrew TTS Reading Speed</span> <span data-i18n="flashcards.badge.beta" style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span></span>
+        <span class="label" style="font-size:0.75rem;"><span id="ttsSpeedLbl" data-i18n="flashcards.advanced.tts_speed_label">Hebrew TTS Reading Speed</span> <span data-i18n="flashcards.badge.beta" class="beta-tag">BETA</span></span>
         <div style="display:flex;align-items:center;gap:6px;">
           <span style="font-size:0.65rem;color:var(--muted);" data-i18n="flashcards.advanced.tts_slow">Slow</span>
           <input type="range" id="ttsRateSlider" aria-labelledby="ttsSpeedLbl" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);"

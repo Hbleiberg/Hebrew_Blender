@@ -2362,6 +2362,7 @@ body.dark .ft-move-menu button { color:#dde4f0; }
 body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .ft-newfolder:hover { background:#2a3349; }
 /* ═══ end folder-tree component CSS ═══ */
 
+.beta-tag { font-size: 0.7rem; background: var(--gold); color: var(--navy); padding: 1px 5px; border-radius: 3px; font-weight: 700; letter-spacing: 0.05em; vertical-align: middle; }   /* the suite's Beta badge — one idiom at the 11px floor (text-size floor) */
 </style>
 </head>
 <body>
@@ -2413,7 +2414,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <div class="blend-type-selector" id="blendTypeSelector" style="grid-template-columns:repeat(5,1fr);">
             <button class="blend-type-btn" data-type="one"   onclick="setPracticeType('one')" data-i18n="worksheet.modes.practice.one">1-Letter</button>
             <button class="blend-type-btn active" data-type="two"   onclick="setPracticeType('two')" data-i18n="worksheet.modes.practice.two">2-Letter</button>
-            <button class="blend-type-btn" data-type="three" onclick="setPracticeType('three')"><span data-i18n="worksheet.modes.practice.three">3-Letter</span> <span style="font-size:0.5rem;background:var(--gold);color:var(--navy);padding:1px 3px;border-radius:3px;font-weight:700;" data-i18n="worksheet.common.beta">BETA</span></button>
+            <button class="blend-type-btn" data-type="three" onclick="setPracticeType('three')"><span data-i18n="worksheet.modes.practice.three">3-Letter</span> <span class="beta-tag" data-i18n="worksheet.common.beta">BETA</span></button>
             <button class="blend-type-btn" data-type="nikud" onclick="setPracticeType('nikud')" data-i18n="worksheet.modes.practice.nikud">Vowels Only</button>
             <button class="blend-type-btn" data-type="realwords" onclick="setPracticeType('realwords')" data-i18n="worksheet.modes.practice.realwords">Real Words</button>
           </div>
@@ -2742,7 +2743,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           </div>
           <div id="npSelfCheckOptions" style="display:none;padding-inline-start:16px;flex-direction:column;gap:4px;">
             <div class="toggle-row" style="font-size:0.82rem;">
-              <span><span data-i18n="worksheet.common.audio">Audio</span> <span style="font-size:0.65rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;" data-i18n="worksheet.common.beta">BETA</span></span>
+              <span><span data-i18n="worksheet.common.audio">Audio</span> <span class="beta-tag" data-i18n="worksheet.common.beta">BETA</span></span>
               <label class="toggle" style="transform:scale(0.75);transform-origin:right;">
                 <input type="checkbox" id="npAudio" onchange="onNpOptionChange()">
                 <span class="slider"></span>
@@ -3350,7 +3351,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             </select>
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
-            <span class="sub-label" style="font-size:0.78rem;flex:1;"><span data-i18n="worksheet.common.audio">Audio</span> <span style="font-size:0.65rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;" data-i18n="worksheet.common.beta">BETA</span></span>
+            <span class="sub-label" style="font-size:0.78rem;flex:1;"><span data-i18n="worksheet.common.audio">Audio</span> <span class="beta-tag" data-i18n="worksheet.common.beta">BETA</span></span>
             <label class="toggle" style="transform:scale(0.75);transform-origin:right;">
               <input type="checkbox" id="audioToggle">
               <span class="slider"></span>
@@ -3732,7 +3733,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <!-- TTS Reading Speed -->
           <div style="margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--cream);">
             <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.04em;color:var(--text);margin-bottom:6px;">
-              <span id="ttsSpeedLbl" data-i18n="worksheet.advanced.tts_speed">Hebrew TTS Reading Speed</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="worksheet.common.beta">BETA</span>
+              <span id="ttsSpeedLbl" data-i18n="worksheet.advanced.tts_speed">Hebrew TTS Reading Speed</span> <span class="beta-tag" data-i18n="worksheet.common.beta">BETA</span>
             </div>
             <div class="font-size-row">
               <span class="fs-label" data-i18n="worksheet.advanced.tts_slow">Slow</span>

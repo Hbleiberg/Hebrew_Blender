@@ -922,6 +922,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
   .ec-gender.masc { color:#3a78c0 !important; }
   .ec-gender.fem  { color:#c9468f !important; }
 }
+.beta-tag { font-size: 0.7rem; background: var(--gold); color: var(--navy); padding: 1px 5px; border-radius: 3px; font-weight: 700; letter-spacing: 0.05em; vertical-align: middle; }   /* the suite's Beta badge — one idiom at the 11px floor (text-size floor) */
 </style>
 </head>
 <body>
@@ -1215,7 +1216,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
           <div class="adv-section-body">
             <label class="cb-label" style="font-size:0.78rem;">
               <input type="checkbox" id="dictAudioToggle" style="accent-color:var(--gold);" onchange="toggleDictAudio(this.checked)">
-              <span data-i18n="dictionary.audio.show_button">Show pronunciation button</span> <span data-i18n="dictionary.audio.beta_badge" style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;">BETA</span>
+              <span data-i18n="dictionary.audio.show_button">Show pronunciation button</span> <span data-i18n="dictionary.audio.beta_badge" class="beta-tag">BETA</span>
             </label>
             <div style="margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--cream);">
               <div id="ttsSpeedLabel" style="font-size:0.72rem;font-weight:700;letter-spacing:0.04em;color:var(--text);margin-bottom:6px;" data-i18n="dictionary.audio.tts_speed_label">

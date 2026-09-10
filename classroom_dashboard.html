@@ -231,20 +231,7 @@
     color: var(--gold-light);
     margin-top: 2px;
   }
-  .beta-tag {
-    display: inline-block;
-    background: var(--gold);
-    color: var(--navy);
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.55rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    padding: 2px 6px;
-    border-radius: 4px;
-    vertical-align: middle;
-    margin-inline-start: 6px;
-    text-transform: uppercase;
-  }
+  .beta-tag { font-size: 0.7rem; background: var(--gold); color: var(--navy); padding: 1px 5px; border-radius: 3px; font-weight: 700; letter-spacing: 0.05em; vertical-align: middle; }   /* the suite's Beta badge — one idiom at the 11px floor (text-size floor) */
   .hright { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
   .hbtn {
     background: rgba(255,255,255,0.08);
@@ -2503,7 +2490,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <button class="btn-xs" onclick="setWeatherDescSize(1.05)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
     </div>
     <div class="form-row">
-      <label><span data-i18n="dashboard.weather.tap_to_read">Tap to read</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="dashboard.common.beta_badge">BETA</span></label>
+      <label><span data-i18n="dashboard.weather.tap_to_read">Tap to read</span> <span class="beta-tag" data-i18n="dashboard.common.beta_badge">BETA</span></label>
       <label class="toggle"><input type="checkbox" id="tapToReadWeather"><span class="slider"></span></label>
     </div>
     <hr>
@@ -2644,7 +2631,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <button class="btn-xs" onclick="setDowEmojiSize(1.4)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
     </div>
     <div class="form-row">
-      <label><span data-i18n="dashboard.days.tap_to_read">Tap to read</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="dashboard.common.beta_badge">BETA</span></label>
+      <label><span data-i18n="dashboard.days.tap_to_read">Tap to read</span> <span class="beta-tag" data-i18n="dashboard.common.beta_badge">BETA</span></label>
       <label class="toggle"><input type="checkbox" id="tapToReadDow"><span class="slider"></span></label>
     </div>
     <hr>
@@ -2821,7 +2808,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     </div>
 
     <div class="form-row" style="margin-top:12px;flex-direction:column;align-items:stretch;gap:4px;">
-      <label style="font-size:0.78rem;font-weight:600;"><span id="ttsRateSliderLabel" data-i18n="dashboard.color.tts_speed_label">Hebrew TTS Reading Speed</span> <span style="font-size:0.6rem;background:var(--gold);color:var(--navy);padding:1px 5px;border-radius:3px;font-weight:700;letter-spacing:0.05em;vertical-align:middle;" data-i18n="dashboard.common.beta_badge">BETA</span></label>
+      <label style="font-size:0.78rem;font-weight:600;"><span id="ttsRateSliderLabel" data-i18n="dashboard.color.tts_speed_label">Hebrew TTS Reading Speed</span> <span class="beta-tag" data-i18n="dashboard.common.beta_badge">BETA</span></label>
       <div style="display:flex;align-items:center;gap:6px;">
         <span style="font-size:0.65rem;color:var(--muted);" data-i18n="dashboard.color.tts_slow">Slow</span>
         <input type="range" id="ttsRateSlider" aria-labelledby="ttsRateSliderLabel" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);cursor:pointer;height:24px;"
