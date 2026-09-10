@@ -359,6 +359,7 @@
   "dashboard.schedule.preview_hint_week": "עדיין לא שובצו שיעורים — פתחו את הגדרת סנכרון מערכת השעות כדי לצבוע את השבוע.",
   "dashboard.schedule.print_heading": "מערכת שבועית",
   "dashboard.schedule.print_week": "🖨 הדפסת השבוע",
+  "dashboard.schedule.print_week_empty_title": "הוסיפו שיעור תחילה — אין עדיין מה להדפיס",
   "dashboard.schedule.print_week_title": "הדפסת רשת השבוע כדף עזר — כולל צבעי הכיתות",
   "dashboard.schedule.purge_body.one": "עברתם ללוח השבועי, אבל שורה אחת מלוח הזמנים היומי הישן עדיין שמורה. הלוח השבועי מתעלם ממנה — היא רק תופסת מקום בכל גיבוי.",
   "dashboard.schedule.purge_body.other": "עברתם ללוח השבועי, אבל {n} שורות מלוח הזמנים היומי הישן עדיין שמורות. הלוח השבועי מתעלם מהן — הן רק תופסות מקום בכל גיבוי.",

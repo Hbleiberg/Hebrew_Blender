@@ -359,6 +359,7 @@
   "dashboard.schedule.preview_hint_week": "No classes assigned yet — open Set up Schedule Sync to paint your week.",
   "dashboard.schedule.print_heading": "Weekly schedule",
   "dashboard.schedule.print_week": "🖨 Print week",
+  "dashboard.schedule.print_week_empty_title": "Add a period first — there is nothing to print yet",
   "dashboard.schedule.print_week_title": "Print the weekly grid as a reference sheet — class colors included",
   "dashboard.schedule.purge_body.one": "You're on the weekly grid now, but 1 row from the old daily schedule is still stored. The weekly schedule ignores it — it just rides along in every backup.",
   "dashboard.schedule.purge_body.other": "You're on the weekly grid now, but {n} rows from the old daily schedule are still stored. The weekly schedule ignores them — they just ride along in every backup.",

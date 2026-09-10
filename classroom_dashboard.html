@@ -1133,6 +1133,7 @@
      outset border was the drawer's only non-`--border` control. Converged on the drawer's own idiom
      (the inline styles on Reset / ↺ Refresh already say exactly this). (S322 Pass M) */
   .btn-xs:not(.btn):hover { border-color: var(--gold); }
+  .btn-xs:disabled, .btn-xs:disabled:hover { opacity: 0.35; cursor: not-allowed; border-color: var(--border); }   /* Print week on an empty week (the generator's .btn[disabled] idiom) */
   .btn-secondary {
     background: transparent;
     color: var(--text);
@@ -7246,7 +7247,17 @@ else ivritInit();
     const weekendChk = document.getElementById('swmWeekend');
     if (weekendChk) weekendChk.checked = !!(week && week.weekend);
     grid.textContent = '';
-    if (!week || !week.periods.length) {
+    // An empty week has nothing to print — the sheet would carry only the "+ Add period" hint —
+    // so Print week follows the generator's Print-until-Generate precedent: disabled + aria-disabled
+    // + a reason in the title (restored on the first period; re-labelled by the language re-render).
+    const printBtn = document.getElementById('swmPrintBtn');
+    const weekEmpty = !week || !week.periods.length;
+    if (printBtn) {
+      printBtn.disabled = weekEmpty;
+      if (weekEmpty) printBtn.setAttribute('aria-disabled', 'true'); else printBtn.removeAttribute('aria-disabled');
+      printBtn.title = I18n.t(weekEmpty ? 'dashboard.schedule.print_week_empty_title' : 'dashboard.schedule.print_week_title');
+    }
+    if (weekEmpty) {
       const hint = document.createElement('div');
       hint.className = 'swm-grid-empty';
       hint.textContent = I18n.t('dashboard.schedule.grid_empty_hint');
@@ -8357,6 +8368,7 @@ else ivritInit();
   let _swmPrintArmed = false;
   function printWeekGrid() {
     if (_swmPrintArmed) return;                 // a double-click must not stack two teardowns
+    if (!settings.scheduleWeek || !settings.scheduleWeek.periods.length) return;   // nothing to print (the button is disabled; this covers a programmatic call)
     _swmPrintArmed = true;
     closeWeekDayMenu();                         // a ⋯ menu is position:fixed and would print over the grid
     document.body.classList.add('swm-printing');
