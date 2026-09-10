@@ -1617,7 +1617,7 @@
   .swm-chip-class { font-size: 0.68rem; color: var(--muted); font-style: italic; }
   .swm-swatch { position: relative; width: 18px; height: 18px; border-radius: 5px;
     border: 1px solid rgba(0,0,0,0.25); flex-shrink: 0; cursor: pointer; }
-  .swm-swatch-input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; padding: 0; border: 0; }
+  .swm-swatch-input { position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px); opacity: 0; cursor: pointer; padding: 0; border: 0; }   /* the transparent input IS the hit box: 16px padding box + 8 = a 24px target (WCAG 2.5.8) that stays inside the chip's own padding — nothing visible moves */
   .swm-swatch-eraser { display: inline-flex; align-items: center; justify-content: center;
     background: transparent; border: 1px dashed var(--muted); font-size: 0.72rem; color: var(--muted); }
   .swm-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 10px 0 8px; }
