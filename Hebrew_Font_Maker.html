@@ -294,11 +294,15 @@ footer a { display: inline-block; padding-block: 5px; }
     font-size: 0.82rem; font-family: inherit; background: var(--white); color: var(--text); font-weight: 400;
     width: 100%; min-width: 0; box-sizing: border-box;
   }
-  .fld-help { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border: none; padding: 0; border-radius: 50%; background: var(--border); color: var(--muted); font-family: inherit; font-size: 0.66rem; font-weight: 700; cursor: pointer; text-decoration: none; vertical-align: middle; }
+  /* Text colour, not muted: --muted on --border measured 3.36:1 light / 4.13:1 dark for a 10.5px bold "?"
+     (S368 Pass C); --text reads 8.09:1 / 9.85:1. The hover plate uses the readable gold in light mode
+     (white on --gold was 2.75:1) and navy on gold in dark (white on the dark gold was 2.14:1). */
+  .fld-help { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border: none; padding: 0; border-radius: 50%; background: var(--border); color: var(--text); font-family: inherit; font-size: 0.7rem; font-weight: 700; cursor: pointer; text-decoration: none; vertical-align: middle; }
   /* 24px operable box without repainting the 15px badge — the ::after is the pointer target (WCAG 2.5.8); painted size unchanged. */
   .fld-help { position: relative; }
   .fld-help::after { content: ''; position: absolute; inset: -4.5px; }
-  .fld-help:hover { background: var(--gold); color: #fff; }
+  .fld-help:hover { background: var(--gold-text); color: #fff; }
+  body.dark .fld-help:hover { background: var(--gold); color: var(--navy); }
   .row2 { display: flex; gap: 8px; }
   .row2 > * { flex: 1; min-width: 0; }
   .inline { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; font-weight: 600; }
