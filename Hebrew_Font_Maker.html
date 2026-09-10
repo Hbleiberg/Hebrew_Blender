@@ -19613,7 +19613,13 @@ async function loadProjectFile(file) {
 }
 async function applyProjectData(data) {           // shared by file-load and "Load recent"
   if (!data || data.format !== 'hebrew-font-maker-project') { status(I18n.t('fontmaker.status.not_fontmaker_file')); return false; }
-  project = migrateProject(data);
+  // The font block is the project's identity (name, metrics, mark sets): a file whose block is not a
+  // plain object is not a project, and it used to throw past the `project =` line — a workspace with
+  // no font and no message. Anything migrateProject still cannot repair reports the same way.
+  if (!data.font || typeof data.font !== 'object' || Array.isArray(data.font)) { status(I18n.t('fontmaker.status.not_valid_project')); return false; }
+  let migrated;
+  try { migrated = migrateProject(data); } catch (e) { status(I18n.t('fontmaker.status.not_valid_project')); return false; }
+  project = migrated;
   udClear();                 // loaded project → reset undo history
   _flatCache = { url: null, canvas: null };   // don't pin a full-res flattened canvas from the previous project
   _fidelityLast = null;      // nor its fidelity report — see newProject(); a stale one would let Apply write another project's measured anchors here
@@ -19935,8 +19941,23 @@ function sanitizeMarkAnchors(l) {   // fidelity pins from a loaded save are untr
   if (clean) l.markAnchors = clean; else delete l.markAnchors;
 }
 function migrateProject(data) {
+  // An .hfm / autosave / recents blob is untrusted: a collection of the wrong shape (a string where an
+  // array belongs, a null entry, a number for a sub-block) used to throw out of the load with no status,
+  // and past the `project =` assignment it left a half-applied project on screen. Reduce every
+  // collection to its plain-object members first; the backfills below re-seed whatever was dropped.
+  const _isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+  const _objs = a => Array.isArray(a) ? a.filter(_isObj) : [];
+  data.letters = _objs(data.letters);
+  data.letters.forEach(l => {
+    if (!_isObj(l.source)) l.source = null;
+    if (!Array.isArray(l.transform) || l.transform.length !== 6) l.transform = null;
+    // contours are [{points:[[x,y],…]}] and curves ride 1:1 with them — one malformed entry drops both (the letter re-traces from its image)
+    if (l.contours != null && !(Array.isArray(l.contours) && l.contours.every(c => _isObj(c) && Array.isArray(c.points) && c.points.every(pt => Array.isArray(pt) && pt.length >= 2)))) { l.contours = null; l.curves = null; }
+    if (l.curves != null && !(Array.isArray(l.curves) && l.curves.every(cv => cv == null || (_isObj(cv) && Array.isArray(cv.start) && Array.isArray(cv.segments))))) l.curves = null;
+    ['anchors', 'savedAnchors', 'markShapes', 'captureBox'].forEach(k => { if (l[k] != null && !_isObj(l[k])) l[k] = null; });
+  });
   // ensure all 27 letters exist & fields present (forward-compatible)
-  const byCp = {}; (data.letters||[]).forEach(l => byCp[l.codepoint] = l);
+  const byCp = {}; data.letters.forEach(l => byCp[l.codepoint] = l);
   data.letters = LETTERS.map(L => {
     const ex = byCp[L.cp] || blankLetter(L);
     ex.source = ex.source || { kind:data.inputMode||'single', dataUrl:null, cropRect:null, sheetId:null };
@@ -20016,16 +20037,17 @@ function migrateProject(data) {
   if (typeof data.combinedIndex !== 'number') data.combinedIndex = 0;
   data.combinedIndex = Math.max(0, Math.min(data.combinedIndex, Math.max(0, data.combinedSheets.length - 1)));
   delete data.combinedImage;
-  data.precomposed = data.precomposed || PRECOMPOSED.map(p => ({...p}));
+  data.combinedSheets = data.combinedSheets.filter(_isObj);
+  data.precomposed = Array.isArray(data.precomposed) ? data.precomposed.filter(_isObj) : PRECOMPOSED.map(p => ({...p}));
   data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; if (pc.holam === undefined) pc.holam = null; });   // per-form mark anchor + holam-attach override
   data.precomposed.forEach(sanitizePrecompSrc);   // a form outline taken whole from a source font — shape-checked because it becomes glyph data verbatim
-  data.template = data.template || { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
-  if (!Array.isArray(data.template.customFonts)) data.template.customFonts = [];   // uploaded tracing fonts (bytes) persist here
-  data.view = data.view || { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
+  if (!_isObj(data.template)) data.template = { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
+  data.template.customFonts = _objs(data.template.customFonts);   // uploaded tracing fonts (bytes) persist here
+  if (!_isObj(data.view)) data.view = { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
   ['imgOpacityAlign','imgOpacityTrace','glyphOpacity'].forEach((k,i)=>{ if(data.view[k]==null) data.view[k]=[0.92,0.28,1.0][i]; });
   if (data.view.snapGuides == null) data.view.snapGuides = true;   // node-drag snapping — absent = ON
   if (!data.guides || typeof data.guides !== 'object') data.guides = { show: true, items: [] };   // project-wide drawing guides
-  if (!Array.isArray(data.guides.items)) data.guides.items = [];
+  data.guides.items = _objs(data.guides.items);
   if (data.guides.show == null) data.guides.show = true;
   if (data.font && data.font.markScale == null) data.font.markScale = 1.0;
   if (data.font) {
@@ -20042,8 +20064,8 @@ function migrateProject(data) {
       data.font.license = 'ofl';   // orphaned lock key with no provenance — heal to the safest normal default
     }
     data.font.style = data.font.style === 'bold' ? 'bold' : 'regular';   // Regular/Bold family style — backfills old saves and coerces junk
-    if (!data.font.metrics) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB };
-    else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB'].forEach((k,i)=>{ if(data.font.metrics[k]==null) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB][i]; });
+    if (!_isObj(data.font.metrics)) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB };
+    else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB'].forEach((k,i)=>{ const v = data.font.metrics[k]; if (typeof v !== 'number' || !Number.isFinite(v)) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB][i]; });   // a line box is numbers or the default — a string here reaches arithmetic
     { const _m = data.font.metrics, _ok = (v, lo, hi) => Number.isFinite(v) && v >= lo && v <= hi;   // imported line box: an .hfm / autosave blob is untrusted, and a bad value here collapses or explodes every line
       if (_m.typoAscent  != null) { if (_ok(+_m.typoAscent,  1, 3000))   _m.typoAscent  = Math.round(+_m.typoAscent);  else delete _m.typoAscent; }
       if (_m.typoDescent != null) { if (_ok(+_m.typoDescent, -1500, -1)) _m.typoDescent = Math.round(+_m.typoDescent); else delete _m.typoDescent; }
@@ -20056,18 +20078,18 @@ function migrateProject(data) {
       data.font.cholamScale = (_fb4b && _fb4b.markScale != null) ? _fb4b.markScale : (data.font.markScale != null ? data.font.markScale : 1.0);
     }
     if (data.font.holamScale == null) data.font.holamScale = (data.font.markScale != null ? data.font.markScale : 1.0);   // standalone holam now sized on its own — seed from the old unified size so existing saves look unchanged
-    if (!data.font.markNudge) data.font.markNudge = {};   // per-mark vertical fine-tune offsets (cp → dy)
+    if (!_isObj(data.font.markNudge)) data.font.markNudge = {};   // per-mark vertical fine-tune offsets (cp → dy)
     if (data.font.includeDigitsPunct == null) data.font.includeDigitsPunct = true;
-    if (!data.font.nikkud) data.font.nikkud = { enabled: true, mode: 'default', custom: {} };
-    if (!data.font.nikkud.custom) data.font.nikkud.custom = {};
+    if (!_isObj(data.font.nikkud)) data.font.nikkud = { enabled: true, mode: 'default', custom: {} };
+    if (!_isObj(data.font.nikkud.custom)) data.font.nikkud.custom = {};
     if (!data.font.nikkud.uploadMode) data.font.nikkud.uploadMode = 'perSymbol';
-    if (!data.font.nikkud.combinedImage) data.font.nikkud.combinedImage = { dataUrl: null };
-    if (!data.font.trop) data.font.trop = { enabled: false, mode: 'default', custom: {} };
-    if (!data.font.trop.custom) data.font.trop.custom = {};
+    if (!_isObj(data.font.nikkud.combinedImage)) data.font.nikkud.combinedImage = { dataUrl: null };
+    if (!_isObj(data.font.trop)) data.font.trop = { enabled: false, mode: 'default', custom: {} };
+    if (!_isObj(data.font.trop.custom)) data.font.trop.custom = {};
     if (!data.font.trop.uploadMode) data.font.trop.uploadMode = 'perSymbol';
-    if (!data.font.trop.combinedImage) data.font.trop.combinedImage = { dataUrl: null };
-    if (!data.font.trop.halign) data.font.trop.halign = {};   // per-mark Left/Center/Right (back-filled; L/R anchor columns added lazily by ensureTropAnchors)
-    if (!data.font.trop.vowelPair) data.font.trop.vowelPair = {};   // vowel+trop pairing (stack | slide) per vertical class
+    if (!_isObj(data.font.trop.combinedImage)) data.font.trop.combinedImage = { dataUrl: null };
+    if (!_isObj(data.font.trop.halign)) data.font.trop.halign = {};   // per-mark Left/Center/Right (back-filled; L/R anchor columns added lazily by ensureTropAnchors)
+    if (!_isObj(data.font.trop.vowelPair)) data.font.trop.vowelPair = {};   // vowel+trop pairing (stack | slide) per vertical class
     ['below','above'].forEach(c => {
       const v = data.font.trop.vowelPair[c] || (data.font.trop.vowelPair[c] = {});
       if (v.mode !== 'slide') v.mode = 'stack';
@@ -20111,9 +20133,10 @@ function migrateProject(data) {
         if (pc && pc.defWidth == null) pc.defWidth = f.defWidth;
       });
     }
-    if (!data.font.customMarks) data.font.customMarks = { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } };
-    if (!data.font.customMarks.custom) data.font.customMarks.custom = {};
-    if (!data.font.customMarks.combinedImage) data.font.customMarks.combinedImage = { dataUrl: null };
+    if (!_isObj(data.font.customMarks)) data.font.customMarks = { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } };
+    if (!_isObj(data.font.customMarks.custom)) data.font.customMarks.custom = {};
+    if (!_isObj(data.font.customMarks.combinedImage)) data.font.customMarks.combinedImage = { dataUrl: null };
+    ['nikkud','trop','customMarks'].forEach(cat => { const c = data.font[cat].custom; Object.keys(c).forEach(k => { if (!_isObj(c[k])) delete c[k]; }); });   // a mark entry is an object with a source — anything else is dropped
     data.font.customMarks.mode = 'custom';
     if (!data.font.accent || typeof data.font.accent !== 'object') data.font.accent = { mode: 'custom', custom: {} };
     if (!data.font.accent.custom || typeof data.font.accent.custom !== 'object') data.font.accent.custom = {};
