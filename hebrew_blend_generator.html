@@ -366,7 +366,8 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   body.dark .vowel-chip-sub { color: #adb6c9; }
   body.dark .btn-xs { background: #1e2535; color: #dde4f0; border-color: var(--border); }
   body.dark #bingoCards { background: #1e2535; color: #dde4f0; }
-  body.dark #bingoCards + div button { background: #1e2535; color: #dde4f0; border-color: var(--border); }
+  body.dark .bingo-step { background: #1e2535; color: #dde4f0; border-color: var(--border); }
+  body.dark .bingo-step:hover { background: #2a3349; }
   body.dark .btn-xs:hover { background: #2a3349; }
   body.dark .empty-state h2 { color: #dde4f0; }
   body.dark .empty-state p { color: var(--muted); }
@@ -604,6 +605,12 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   }
   #bingoCards::-webkit-inner-spin-button,
   #bingoCards::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  /* The ▲/▼ card stepper beside it: a class (was inline-styled, so no hover rule could reach it)
+     with the same geometry and the .btn-xs hover step. */
+  .bingo-step { flex: 1; padding: 0 5px; background: var(--white); border: none; cursor: pointer;
+    font-size: 0.55rem; color: var(--text); line-height: 1; transition: background 0.15s; }
+  .bingo-step-up { border-block-end: 1px solid var(--border); }
+  .bingo-step:hover { background: var(--warm-gray); }
   /* 30px floor — the suite's ratified touch-target size (S102, first applied in flash_cards.html;
      WCAG 2.5.8 asks 24px). Padding alone left these at 20–27px, the smallest in the suite. The
      inline-flex centering is what turns the min-height into a taller box instead of taller text;
@@ -2547,8 +2554,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <div style="display:flex;align-items:stretch;border:1px solid var(--border);border-radius:4px;overflow:hidden;width:90px;">
               <input type="number" id="bingoCards" aria-label="Number of bingo cards" data-i18n-aria-label="worksheet.aria.bingo_cards" min="1" max="200" value="30" style="flex:1;font-size:0.78rem;padding:3px 6px;border:none;font-family:inherit;background:var(--white);color:var(--text);text-align:center;-moz-appearance:textfield;" oninput="this.value=Math.max(1,Math.min(200,parseInt(this.value)||1))">
               <div style="display:flex;flex-direction:column;border-inline-start:1px solid var(--border);">
-                <button type="button" onclick="adjustBingoCards(1)" title="More cards" aria-label="More cards" data-i18n-title="worksheet.common.more_cards" data-i18n-aria-label="worksheet.common.more_cards" style="flex:1;padding:0 5px;background:var(--white);border:none;border-bottom:1px solid var(--border);cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▲</button>
-                <button type="button" onclick="adjustBingoCards(-1)" title="Fewer cards" aria-label="Fewer cards" data-i18n-title="worksheet.common.fewer_cards" data-i18n-aria-label="worksheet.common.fewer_cards" style="flex:1;padding:0 5px;background:var(--white);border:none;cursor:pointer;font-size:0.55rem;color:var(--text);line-height:1;">▼</button>
+                <button type="button" class="bingo-step bingo-step-up" onclick="adjustBingoCards(1)" title="More cards" aria-label="More cards" data-i18n-title="worksheet.common.more_cards" data-i18n-aria-label="worksheet.common.more_cards">▲</button>
+                <button type="button" class="bingo-step" onclick="adjustBingoCards(-1)" title="Fewer cards" aria-label="Fewer cards" data-i18n-title="worksheet.common.fewer_cards" data-i18n-aria-label="worksheet.common.fewer_cards">▼</button>
               </div>
             </div>
           </div>
