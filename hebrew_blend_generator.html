@@ -7358,13 +7358,12 @@ function setBlendType(type) {
   if (type !== 'two' && type !== 'three') clearLockPos(2);
   if (type !== 'three') clearLockPos(3);
 
-  const subtitles = {
-    two:   'Phonetic Hebrew decoding practice for emerging readers',
-    one:   'Phonetic Hebrew decoding — single-letter drills',
-    three: 'Phonetic Hebrew decoding — three-letter syllables',
-    nikud: 'Phonetic Hebrew decoding — vowel recognition',
-  };
-  document.getElementById('headerSub').textContent = subtitles[type];
+  // Translated — a type click used to write English here over the Hebrew UI (pattern
+  // wired-then-clobbered label). Written only once the locale is loaded: before that I18n.t hands
+  // back the key, and the static page subtitle (#headerSub's data-i18n) is the right text to leave.
+  const subtitleKeys = { two: 'worksheet.header_sub_two', one: 'worksheet.header_sub_one', three: 'worksheet.header_sub_three', nikud: 'worksheet.header_sub_nikud' };
+  const subKey = subtitleKeys[type], sub = subKey && window.I18n ? I18n.t(subKey) : null;
+  if (sub && sub !== subKey) document.getElementById('headerSub').textContent = sub;
 
   updateModeVisibility();
   updateCombosCount();

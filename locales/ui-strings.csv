@@ -4235,6 +4235,10 @@ worksheet.glyphname.vet,Vet,בית רפויה,letter tile name,glyph-name
 worksheet.glyphname.yud,Yud,יוד,letter tile name,glyph-name
 worksheet.glyphname.zayin,Zayin,זין,letter tile name,glyph-name
 worksheet.header_sub,"Free printable Hebrew worksheets, bingo cards, and decoding drills for Hebrew reading practice with nikkud.","דפי עבודה חינמיים להדפסה בעברית, כרטיסי בינגו ותרגולי פענוח לתרגול קריאה בעברית עם ניקוד.",header subtitle,
+worksheet.header_sub_two,Phonetic Hebrew decoding practice for emerging readers,תרגול פענוח פונטי בעברית לקוראים מתחילים,header subtitle after the 2-letter practice type is picked,
+worksheet.header_sub_one,Phonetic Hebrew decoding — single-letter drills,פענוח פונטי בעברית — תרגילי אות בודדת,header subtitle after the 1-letter practice type is picked,
+worksheet.header_sub_three,Phonetic Hebrew decoding — three-letter syllables,פענוח פונטי בעברית — הברות של שלוש אותיות,header subtitle after the 3-letter practice type is picked,
+worksheet.header_sub_nikud,Phonetic Hebrew decoding — vowel recognition,פענוח פונטי בעברית — זיהוי ניקוד,header subtitle after the Nikud practice type is picked,
 worksheet.home_link,Home,בית,header nav button,arrow supplied separately by a .dir-arrow span
 worksheet.howto.step1,"Pick a practice type (1, 2, or 3 letters).","בחרו סוג תרגול (1, 2 או 3 אותיות).",footer how-to step,
 worksheet.howto.step2,Select the Hebrew letters to include.,בחרו את האותיות העבריות לכלול.,footer how-to step,
