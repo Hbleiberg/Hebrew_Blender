@@ -13424,6 +13424,9 @@ function restoreLastSetup() {
   let saved = null;
   try { saved = ivritSafeParse(localStorage.getItem(LAST_SETUP_KEY) || 'null'); } catch (e) { return; }
   if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return;
+  // A snapshot with no letter set (a hand-edited key; ivritSafeParse leaves `{}` of a __proto__
+  // payload) would restore an EMPTY selection over the defaults — drop it like an unapplicable one.
+  if (!Array.isArray(saved.selectedLetters)) { try { localStorage.removeItem(LAST_SETUP_KEY); } catch (e2) {} return; }
   _lastSetupRestoring = true;
   let ok = true;
   try { applySettings(saved); } catch (e) { ok = false; }
