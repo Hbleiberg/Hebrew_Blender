@@ -8239,7 +8239,11 @@ else ivritInit();
     const name = (document.getElementById('swmSaveName').value || '').trim();
     if (!name) { _setWeekSaveNote('dashboard.schedule.save_name_empty'); return; }
     _setWeekSaveNote(null);
-    savedSchedules[name] = { v: 2, week: JSON.parse(JSON.stringify(week)) };   // same-name save overwrites, like savePreset
+    // Saving under a name that already exists replaces that schedule — the same destructive step the
+    // row's ↺ button confirms, so Save confirms too (savePreset's shape; the name stays in the field
+    // on Cancel so the teacher can rename instead).
+    if (savedSchedules[name] !== undefined && !confirm(I18n.t('dashboard.schedule.overwrite_confirm', { name: name }))) return;
+    savedSchedules[name] = { v: 2, week: JSON.parse(JSON.stringify(week)) };
     saveSchedulesStorage();
     document.getElementById('swmSaveName').value = '';
     renderSavedSchedules();
