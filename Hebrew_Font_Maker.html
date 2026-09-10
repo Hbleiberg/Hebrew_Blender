@@ -323,7 +323,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .co-ok { color: #116635; } .co-warn { color: #a32b1d; }
   html.dark-early body .co-ok,   body.dark .co-ok   { color: #4ade80; }
   html.dark-early body .co-warn, body.dark .co-warn { color: #f87171; }
-  .allowed { font-size: 0.65rem; color: var(--muted); opacity: 0.8; margin-top: 4px; text-align: center; line-height: 1.35; }
+  .allowed { font-size: 0.7rem; color: var(--muted); margin-top: 4px; text-align: center; line-height: 1.35; }
 
   /* ── Input mode toggle ── */
   .mode-toggle { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
@@ -346,7 +346,9 @@ footer a { display: inline-block; padding-block: 5px; }
   .letter-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; direction: rtl; }
   /* Band label inside the Punctuation picker. The grid itself is pinned direction:rtl for the Hebrew
      tiles, so the label re-asserts the UI direction rather than inheriting the tiles'. */
-  .punct-grp { grid-column: 1 / -1; direction: ltr; text-align: start; font-size: 0.58rem; font-weight: 700;
+  /* 0.7rem (11.2px) is the suite's legibility floor for functional text (the S316 tile-name step; S368 Pass C
+     lifted the last sub-11px class rules here: fullscreen captions 8.3px, this band label 9.3px, the 10.4px hints). */
+  .punct-grp { grid-column: 1 / -1; direction: ltr; text-align: start; font-size: 0.7rem; font-weight: 700;
     letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); margin: 9px 0 0; }
   .punct-grp:first-child { margin-top: 0; }
   [dir="rtl"] .punct-grp { direction: rtl; }
@@ -537,7 +539,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .brush-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 5px; margin-top: 4px; }
   .brush-tile { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 5px 3px 4px; background: var(--white); color: var(--text); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-family: inherit; }
   .brush-tile svg { display: block; width: 100%; height: auto; }
-  .brush-tile-label { font-size: 0.66rem; font-weight: 600; line-height: 1.1; white-space: nowrap; }
+  .brush-tile-label { font-size: 0.7rem; font-weight: 600; line-height: 1.1; white-space: nowrap; }
   .brush-tile:hover { border-color: var(--gold); }
   .brush-tile.active { background: var(--navy); color: #fff; border-color: var(--navy); }
   body.dark .brush-tile.active { background: #2a4070; border-color: #4a6aaa; }
@@ -651,7 +653,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .npnl-del-menu { position: absolute; top: calc(100% + 3px); inset-inline-end: 0; z-index: 60; background: var(--white); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.18); padding: 3px; min-width: 200px; }
   .npnl-del-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; background: none; border: none; border-radius: 4px; padding: 7px 9px; font-family: inherit; font-size: 0.78rem; font-weight: 600; color: #c0392b; cursor: pointer; text-align: start; white-space: nowrap; }
   body.dark .npnl-del-item { color: #ff8a7a; }
-  .npnl-del-item span { color: var(--muted); font-size: 0.66rem; font-weight: 400; }
+  .npnl-del-item span { color: var(--muted); font-size: 0.7rem; font-weight: 400; }
   .npnl-del-item:hover, .npnl-del-item:focus { background: var(--warm-gray); outline: none; }
   /* uniform disclosure chrome (co-class on the existing .node-xform details) */
   .npnl-disc { margin: 0; border-top: 1px solid var(--border); padding: 6px 0 4px; }
@@ -757,7 +759,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .metric-group { border-top: 1px solid var(--border); padding-top: 8px; margin-bottom: 8px; }
   .metric-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; align-items: start; }
   .metric-col { display: flex; flex-direction: column; gap: 4px; min-width: 0; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; }
-  .metric-sub { font-size: 0.65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+  .metric-sub { font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
   .metric-fld { font-size: 0.68rem; gap: 2px; }
   .metric-num { width: 100%; max-width: 150px; padding: 3px 5px; border: 1px solid var(--border); border-radius: 5px; background: var(--white); color: var(--text); font-family: ui-monospace, Menlo, monospace; font-size: 0.76rem; box-sizing: border-box; }
   .metric-actions { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
@@ -944,7 +946,7 @@ footer a { display: inline-block; padding-block: 5px; }
   #qaSummary .qa-ok { color: var(--center); font-weight: 700; }
   #qaSummary .qa-tall { display: block; margin-top: 5px; color: #c0392b; font-weight: 600; }
   .qa-table { border-collapse: separate; border-spacing: 5px; }
-  .qa-table th { font-size: 0.62rem; font-weight: 700; color: var(--muted); padding: 2px 1px; text-align: center; }
+  .qa-table th { font-size: 0.7rem; font-weight: 700; color: var(--muted); padding: 2px 1px; text-align: center; }
   .qa-table thead th { position: sticky; top: 0; background: var(--white); z-index: 1; }
   .qa-table thead th:first-child { inset-inline-start: 0; z-index: 2; }
   .qa-colhead { font-size: 1.1rem; line-height: 1; color: var(--text); }
@@ -1053,7 +1055,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .guide-name { flex: 1 1 auto; min-width: 0; font-family: inherit; font-size: 0.82rem; font-weight: 600; color: var(--text); background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 2px 5px; }
   .guide-name:hover { border-color: var(--border); }
   .guide-name:focus { border-color: var(--gold, #c9922a); background: var(--cream, #fdf8ef); outline: none; }
-  .guide-rename { background: none; border: none; color: var(--muted); font-size: 0.66rem; font-family: inherit; cursor: pointer; padding: 1px 3px; flex-shrink: 0; text-decoration: underline; }
+  .guide-rename { background: none; border: none; color: var(--muted); font-size: 0.7rem; font-family: inherit; cursor: pointer; padding: 1px 3px; flex-shrink: 0; text-decoration: underline; }
   .guide-rename:hover { color: var(--text); }
   .guide-del { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 4px; width: 22px; height: 22px; cursor: pointer; font-size: 0.8rem; line-height: 1; flex-shrink: 0; }
   .guide-del:hover { color: #c0392b; border-color: #c0392b; }
@@ -1111,7 +1113,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .load-menu-item:hover { background: var(--warm-gray); }
   .load-menu-item span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .load-menu-sep { height: 1px; background: var(--border); margin: 4px 2px; }
-  .load-menu-head { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 4px 10px 2px; }
+  .load-menu-head { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 4px 10px 2px; }
   .load-menu-empty { font-size: 0.78rem; color: var(--muted); padding: 6px 10px; }
   .load-menu-date { font-size: 0.7rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
 
@@ -1126,7 +1128,7 @@ footer a { display: inline-block; padding-block: 5px; }
   }
   #fsExitBtn:hover, #fsPanelsBtn:hover { opacity: 1; background: rgba(13,18,32,0.82); }
   #fsExitBtn .fs-x, #fsPanelsBtn .fs-x { font-size: 1.5rem; line-height: 1; }
-  #fsExitBtn .fs-label, #fsPanelsBtn .fs-label { font-size: 0.52rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
+  #fsExitBtn .fs-label, #fsPanelsBtn .fs-label { font-size: 0.7rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
   body.fullscreen #fsExitBtn { display: flex; }
   /* Idle-hide (shared fullscreen idle-hide block): both floating buttons fade after 3s without pointer activity,
      return on the next move, and never hide while keyboard-focused. */
@@ -4790,7 +4792,7 @@ function metricsPanel() {
       <label class="ctl-btn metric-toggle" id="metAdj" style="display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;"><input type="checkbox" ${metricAdjust?'checked':''} onchange="toggleMetricAdjust()" style="accent-color:var(--gold);width:14px;height:14px;cursor:pointer;flex-shrink:0;margin:0;">${I18n.t('fontmaker.panels.metric_adjust')}</label>
       <button class="ctl-btn" type="button" onclick="fitLetterMargins()" ${(curKind === 'letter' && l && l.contours && l.contours.length) ? '' : 'disabled'} title="${esc(I18n.t('fontmaker.panels.metric_fit_title'))}">${I18n.t('fontmaker.panels.metric_fit')}</button>
       <button class="ctl-btn" type="button" onclick="resetMetrics()">${I18n.t('fontmaker.panels.metric_reset')}</button>
-      <div class="hint" style="font-size:0.64rem;line-height:1.3;">${_pT('metric_hint', "Check <b>Adjust margins manually?</b> to show draggable dots: drag the <b>left</b> dot to slide the whole letter, the <b>right</b> dot to set the right margin, and <b>width</b> to set the advance. <b>Fit margins</b> gives a redrawn letter the font's default side margins. (The reference image stays draggable either way.)")}</div>
+      <div class="hint" style="line-height:1.3;">${_pT('metric_hint', "Check <b>Adjust margins manually?</b> to show draggable dots: drag the <b>left</b> dot to slide the whole letter, the <b>right</b> dot to set the right margin, and <b>width</b> to set the advance. <b>Fit margins</b> gives a redrawn letter the font's default side margins. (The reference image stays draggable either way.)")}</div>
     </div>
   </div>`;
 }
@@ -13594,7 +13596,7 @@ function renderSpacingPanel() {
     <div class="inline">${I18n.t('fontmaker.panels.line_spacing')} <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_spacing'))}"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
     <label class="fld">${I18n.t('fontmaker.panels.sample_text')} <input type="text" id="spacingSample" autocapitalize="off" autocorrect="off" spellcheck="false" dir="rtl" value="${esc(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
     ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" onclick="insertSampleGlyph('${l.codepoint}')" title="${esc(window.I18n ? I18n.t('fontmaker.tip.add_glyph_sample', {name: l.name || ('U+' + l.codepoint)}) : "Add " + (l.name || ('U+' + l.codepoint)) + " to the sample text (it can't be typed on a keyboard)")}">${esc(_pT('add_glyph_sample', '+ ' + (l.name || ('U+' + l.codepoint)), {name: l.name || ('U+' + l.codepoint)}))}</button>`).join('')}</div>` : ''}
-    ${project.font.nikkud.enabled ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;align-items:center;"><span class="hint" style="font-size:0.66rem;">${I18n.t('fontmaker.panels.test_combos_label')}</span>${SAMPLE_TEST_COMBOS.map(c => { const s = sampleComboStr(c); return `<button class="ctl-btn" style="padding:2px 8px;font-size:0.8rem;" onclick="insertSampleCombo('${c}')" title="${esc(I18n.t('fontmaker.panels.test_combos_tip', { combo: s }))}">+ <span lang="he" style="font-family:var(--heb-font);direction:rtl;">${s}</span></button>`; }).join('')}</div>` : ''}
+    ${project.font.nikkud.enabled ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;align-items:center;"><span class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.test_combos_label')}</span>${SAMPLE_TEST_COMBOS.map(c => { const s = sampleComboStr(c); return `<button class="ctl-btn" style="padding:2px 8px;font-size:0.8rem;" onclick="insertSampleCombo('${c}')" title="${esc(I18n.t('fontmaker.panels.test_combos_tip', { combo: s }))}">+ <span lang="he" style="font-family:var(--heb-font);direction:rtl;">${s}</span></button>`; }).join('')}</div>` : ''}
     <div class="tp-row" id="fmPhrases"></div>
     <button type="button" class="hk-toggle" id="fmKbdToggle" aria-expanded="false" aria-controls="fmKbdPanel">⌨ Show Hebrew Keyboard</button>
     <div class="hk-panel" id="fmKbdPanel" hidden></div>
@@ -14050,8 +14052,8 @@ function suggestKernPairs() {
    so editing a class propagates to pairs built from its old member set. ── */
 function kernClassManagerHTML() {
   const builtins = [
-    `<div class="readline" style="gap:8px;align-items:center;"><span>${I18n.t('fontmaker.panels.kern_finals')}</span><span style="color:var(--muted);font-size:0.6rem;flex-shrink:0;">${I18n.t('fontmaker.panels.kern_builtin')}</span></div>`,
-    `<div class="readline" style="gap:8px;align-items:center;"><span>${I18n.t('fontmaker.panels.kern_descenders')}</span><span style="color:var(--muted);font-size:0.6rem;flex-shrink:0;">${I18n.t('fontmaker.panels.kern_builtin')}</span></div>`
+    `<div class="readline" style="gap:8px;align-items:center;"><span>${I18n.t('fontmaker.panels.kern_finals')}</span><span style="color:var(--muted);font-size:0.7rem;flex-shrink:0;">${I18n.t('fontmaker.panels.kern_builtin')}</span></div>`,
+    `<div class="readline" style="gap:8px;align-items:center;"><span>${I18n.t('fontmaker.panels.kern_descenders')}</span><span style="color:var(--muted);font-size:0.7rem;flex-shrink:0;">${I18n.t('fontmaker.panels.kern_builtin')}</span></div>`
   ];
   const user = userKernClasses().map(c => `<div class="readline" style="gap:8px;align-items:center;">
       <span style="min-width:0;">${esc(c.name)} <span style="font-family:var(--heb-font);color:var(--muted);font-size:0.92rem;">${esc((c.members||[]).map(cp=>String.fromCodePoint(parseInt(cp,16))).join(' '))}</span></span>
