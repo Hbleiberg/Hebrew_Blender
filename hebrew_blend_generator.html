@@ -13060,7 +13060,12 @@ function setHebFont(name, save = true) {
 }
 
 function setHebFontSize(val) {
-  const size = (0.7 + Number(val) * 0.026).toFixed(2);
+  // The value arrives from the slider, a preset, a ?s= link and the persisted key: anything that is not
+  // a number in the slider's range used to set --heb-font-size to "NaNrem" (the worksheet lost its
+  // Hebrew size for the session) and persist the junk. Clamp to 0–100; junk falls back to the default.
+  const n = (typeof val === 'number' || (typeof val === 'string' && val.trim() !== '')) ? Number(val) : NaN;
+  val = Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 50;
+  const size = (0.7 + val * 0.026).toFixed(2);
   document.documentElement.style.setProperty('--heb-font-size', size + 'rem');
   const el = document.getElementById('hebFontSizeVal');
   if (el) el.textContent = size + 'rem';
