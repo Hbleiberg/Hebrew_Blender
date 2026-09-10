@@ -2297,8 +2297,13 @@ function shuffle(arr) {
 }
 function randomOf(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-function pickExample(key, preferFileKey) {
-  const pool = examplesFor(key).filter(x => !_badFiles.has(clipFileKey(x)));
+function pickExample(key, preferFileKey, anyFile) {
+  let pool = examplesFor(key).filter(x => !_badFiles.has(clipFileKey(x)));
+  // anyFile: the caller can show this example without its clip (an Identify question is a printed
+  // word; its post-answer autoplay already fails silently). Without it, blocked audio — a school
+  // filter, the PWA offline — marks one file bad per answered question until a family's whole
+  // pool is excluded and startDrill builds a 1-question, then a 0-question session (S367).
+  if (!pool.length && anyFile) pool = examplesFor(key);
   if (!pool.length) return null;
   if (preferFileKey) {
     const same = pool.filter(x => clipFileKey(x) === preferFileKey);
@@ -2340,17 +2345,21 @@ function startDrill() {
   const answers = weightedSample(tropePool, weightFn, QUESTIONS_PER_SESSION, { noAdjacentRepeat: true });
   const qs = answers.map((key, i) => {
     const type = types[i % types.length];
-    return { type, key, ex: pickExample(key) };
+    return { type, key, ex: pickExample(key, undefined, type === 'identify') };
   }).filter(q => q.ex);
   // group questions by source audio file so streamed-MP3 hops are rare
   qs.sort((a, b) => clipFileKey(a.ex).localeCompare(clipFileKey(b.ex)));
   // top up if any answer had no playable example (rare)
   while (qs.length < QUESTIONS_PER_SESSION && tropePool.length) {
     const key = randomOf(tropePool);
-    const ex = pickExample(key);
-    if (ex) qs.push({ type: types[qs.length % types.length], key, ex });
+    const type = types[qs.length % types.length];
+    const ex = pickExample(key, undefined, type === 'identify');
+    if (ex) qs.push({ type, key, ex });
     else break;
   }
+  // Every example of every mark in scope sits behind a failed clip file (Hear/Melody only):
+  // stay on the start screen and say so, rather than opening a "Session complete · 0 / 0" screen.
+  if (!qs.length) { showToast(I18n.t('trope.toast.audio_unavailable')); updateDrillStart(); return; }
 
   drill.active = true;
   drill.qs = qs.slice(0, QUESTIONS_PER_SESSION);
