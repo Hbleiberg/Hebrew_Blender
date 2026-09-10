@@ -5291,7 +5291,14 @@ function loadPreset(name) {
   // A hand-edited .ivrit can leave a non-object member under presets (the import merges the map
   // shallowly); applying one used to wipe the selected letters to none.
   const p = presets[name];
-  if (p && typeof p === 'object' && !Array.isArray(p)) applySettings(p);
+  if (!(p && typeof p === 'object' && !Array.isArray(p))) return;
+  applySettings(p);
+  // applySettings already re-renders an existing worksheet (measured S368: the generated snapshot
+  // follows the loaded preset with live preview on, off, and for presets saved before the flag
+  // existed). What was missing is the confirmation Quick Start gives: nothing named the preset that
+  // had just landed in a 300-control sidebar. Same notice, same key, only while it is true.
+  if (liveArmed && livePreviewEnabled && !liveIsHeavyMode())
+    showPreviewNotice(() => I18n.t('worksheet.quickstart.loaded_notice', { name: name }), { kind: 'info', autohide: 5000 });
 }
 
 function copyTextarea(id) {
