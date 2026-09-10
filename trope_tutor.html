@@ -2063,9 +2063,7 @@ function renderLearn() {
     if (!pool.length) {
       const li = document.createElement('li');
       li.className = 'tu-ex-none';
-      li.textContent = INDEX
-        ? 'No chanted example in this corpus.'
-        : 'Examples unavailable (index not loaded).';
+      li.textContent = I18n.t(INDEX ? 'trope.learn.no_example' : 'trope.learn.examples_unavailable');
       list.appendChild(li);
     } else {
       for (const ex of spreadPick(pool, 4)) {
