@@ -6144,7 +6144,9 @@ function mountSidebarResize(cfg) {
   const DEFAULT_PRESET = {"Default":{"location":"New York","engDateFmt":"MDY","showEngDOW":true,"hideEngDate":false,"hebDateScript":"translit","hideHebDate":false,"timeFmt":"12","hideTime":false,"tempUnit":"F","weatherLabelLang":"he","simpleWeatherDesc":false,"hideWeatherEmoji":false,"hideWeatherDesc":false,"hideWeather":false,"dowLang":"he","showYesterday":true,"showToday":true,"showTomorrow":true,"dowEmojiSet":"chick","colorDays":true,"headerLang":"he","hideDOW":false,"enableDashText":true,"dashTextHTML":"<div>This dashboard has support for <b>bold</b>, <i>italics</i>, <u>underline</u> and <strike>strikethrough</strike>. You can insert <a href=\"https://google.com\" target=\"_blank\" rel=\"noopener noreferrer\">links</a>.</div><div><br></div><div style=\"text-align: center;\">You can center text.</div><div>Change the <font size=\"6\">size</font>.</div><div>And you can also <span class=\"spoiler\">hide spoilers</span>. (Click the box.)</div><div><br></div><div>Click the gear icon at the top to edit this text and change how this dashboard works!</div>","hebFont":"Frank Ruhl Libre","engFont":"Source Sans 3","showNikkud":true,"colorCodeNikkud":false,"colorCodingMode":"letter","nikudColorOverrides":{},"dashTextSize":1.8,"showTimer":true,"showTimerFullscreen":true,"showYestTomorrow":true}};
 
   function loadPresets() {
-    try { presets = ivritSafeParse(localStorage.getItem('hebrewDashboard_presets')) || {}; }
+    // Only a plain object is a preset map: a stored string listed its characters as presets (five
+    // phantom rows for "hello", and no Default seeded since Object.keys("hello") is non-empty).
+    try { const o = ivritSafeParse(localStorage.getItem('hebrewDashboard_presets')); presets = (o && typeof o === 'object' && !Array.isArray(o)) ? o : {}; }
     catch (e) { presets = {}; }
     if (Object.keys(presets).length === 0) {
       Object.assign(presets, DEFAULT_PRESET);
@@ -6976,7 +6978,7 @@ else ivritInit();
     localStorage.setItem('hebrewDashboard_schedules', JSON.stringify(savedSchedules));
   }
   function loadSchedulesStorage() {
-    try { savedSchedules = ivritSafeParse(localStorage.getItem('hebrewDashboard_schedules')) || {}; }
+    try { const o = ivritSafeParse(localStorage.getItem('hebrewDashboard_schedules')); savedSchedules = (o && typeof o === 'object' && !Array.isArray(o)) ? o : {}; }   // same shape check as loadPresets
     catch (e) { savedSchedules = {}; }
   }
 
