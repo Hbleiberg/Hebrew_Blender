@@ -4509,7 +4509,9 @@ function loadSettings() {
 }
 
 function readPresets() {
-  try { return ivritSafeParse(localStorage.getItem(PRESET_KEY) || '{}'); } catch(e) { return {}; }
+  // Only a plain object is a preset map: a stored `null` threw in Object.keys (and broke the rest of
+  // init), a stored string listed its characters as presets. Mirrors readProfiles' shape check.
+  try { const o = ivritSafeParse(localStorage.getItem(PRESET_KEY) || '{}'); return (o && typeof o === 'object' && !Array.isArray(o)) ? o : {}; } catch(e) { return {}; }
 }
 function writePresets(obj) {
   try { localStorage.setItem(PRESET_KEY, JSON.stringify(obj)); } catch(e){}
