@@ -756,6 +756,9 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      sheet — measured S253 at 14 of 14 pages of a Learn-tab print, text and shadow both. Same
      shape the dictionary closed in S252; torah_trainer already hides its `.tt-hint-toast` here. */
   header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay, .tu-toast { display:none !important; }
+  /* The settings drawer and its backdrop are position:fixed too: left open at Ctrl+P they
+     stamp every sheet (the backdrop as a full-page tint). torah_trainer hides its twin pair. */
+  .settings-modal, .settings-backdrop { display:none !important; }
   /* The footer's FAQ/how-to disclosures are screen navigation; on paper they print as a row of
      closed summaries and, at Letter, spilled onto a 14th sheet holding nothing else. The credits
      stay: the motif staffs derive from PocketTorah audio, so the CC BY-SA notice belongs on the
