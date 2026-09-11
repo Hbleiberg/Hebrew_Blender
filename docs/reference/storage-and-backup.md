@@ -206,7 +206,9 @@ control as `""`/`NaN` and never saved back. Range setters that a preset or `.ivr
 directly clamp at the setter: the dashboard's twelve text-size setters go through
 `_sizeNum(val, sliderId)` (a non-finite value takes the slider's `defaultValue`, anything else is
 clamped to its `min`/`max`), and the generator's and dictionary's `setHebFontSize` clamp the shared
-`hebrewBlender_hebFontSize` to 0–100 (junk → 50) — so a label never reads `NaNrem`/`Infinityrem`
+`hebrewBlender_hebFontSize` to 0–100 (junk → 50), and the Torah Trainer's and Trope Tutor's
+`loadSettings` run their rate/size fields through `_sliderNum(val, sliderId, dflt)` (the same
+shape, keyed to each field's own slider) — so a label never reads `NaNrem`/`Infinityrem`
 and the stored value is always a number. Legacy migrations (the generator's old `colorCodingMode`
 values, flash cards' `numberFront:'translit'`) run before the check so they still apply.
 
