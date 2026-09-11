@@ -2291,7 +2291,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   .font-size-row { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
   .font-size-row .fs-label { font-size:0.72rem; color:var(--muted); font-weight:600; white-space:nowrap; }
   .font-size-row input[type=range] { flex:1; accent-color:var(--gold); cursor:pointer; height:24px; }
-  .font-size-row .fs-val { font-size:0.68rem; color:var(--muted); min-width:38px; text-align:right; font-variant-numeric:tabular-nums; }
+  .font-size-row .fs-val { font-size:0.7rem; color:var(--muted); min-width:38px; text-align:right; font-variant-numeric:tabular-nums; }
   .font-size-row .fs-reset { background:none; border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:0.78rem; cursor:pointer; color:var(--muted); line-height:1.4; font-family:inherit;
     /* same 30px floor torah's identical .sreset got in S193/S195 — these measured 21.5px */
     min-height:30px; min-width:30px; display:inline-flex; align-items:center; justify-content:center; }
@@ -3742,7 +3742,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               <span class="fs-val" id="ttsRateVal">0.75×</span>
               <button class="fs-reset" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="worksheet.common.reset_default" data-i18n-title="worksheet.common.reset_default">↺</button>
             </div>
-            <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);margin-top:1px;padding:0 2px;">
+            <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--muted);margin-top:1px;padding:0 2px;">
               <span data-i18n="worksheet.advanced.tts_slower">Slower</span><span data-i18n="worksheet.advanced.tts_fast">Fast</span>
             </div>
           </div>
@@ -4384,7 +4384,7 @@ function initVowels() {
     if (vowelColorScheme !== 'talam') {
       const header = document.createElement('div');
       header.className = 'vowel-group-header';
-      header.style.cssText = 'font-size:0.68rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;min-height:24px;';   // 24px = the WCAG 2.5.8 floor; the 30px house bar is for the .btn-xs family, not a full-width collapse header
+      header.style.cssText = 'font-size:0.7rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;min-height:24px;';   // 24px = the WCAG 2.5.8 floor; the 30px house bar is for the .btn-xs family, not a full-width collapse header
       const hdrText = document.createElement('span');
       hdrText.innerHTML = window.I18n ? I18n.t('worksheet.vowels.group_header', {sound: i18nName('worksheet.vowels.sound.', group.sound), color: vowelColorLabel(group)}) : (group.sound + ' Sound – ' + group.colorHtml);
       const arrow = document.createElement('span');
