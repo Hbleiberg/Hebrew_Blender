@@ -821,7 +821,9 @@ footer a { display: inline-block; padding-block: 5px; }
   .tour-card .tbtn:disabled { opacity: 0.4; cursor: default; }
 
   /* ── New-font onboarding wizard ── */
-  .wiz-modal { max-width: 560px; max-height: 92vh; overflow-y: auto; }
+  /* The four centred sheets pair every vh cap with a dvh twin (the hub's .ie-modal pair): dvh is the
+     visible viewport while a phone URL bar is expanded, so the sheet's close control stays reachable. */
+  .wiz-modal { max-width: 560px; max-height: 92vh; max-height: 92dvh; overflow-y: auto; }
   /* ghost buttons sit on the modal surface, not the navy toolbar — same repair as .tour-card
      (gold-light on the light modal is 1.5:1; Open a project / Back / Cancel were near-invisible) */
   .wiz-modal .tbtn.ghost { color: var(--text); border-color: var(--border); }
@@ -909,7 +911,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .sc-sep { color: var(--muted); font-size: 0.72rem; }
 
   /* ── "Edit shape" mark editor modal ── */
-  .me-modal { max-width: 560px; width: 94%; max-height: 90vh; overflow-y: auto; }
+  .me-modal { max-width: 560px; width: 94%; max-height: 90vh; max-height: 90dvh; overflow-y: auto; }
   .me-piece-list { display: flex; flex-direction: column; gap: 4px; margin: 8px 0; }
   .me-piece-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); cursor: pointer; font-size: 0.82rem; font-weight: 600; color: var(--text); }
   .me-piece-row.active { border-color: var(--gold); background: rgba(201,146,42,0.10); }
@@ -924,7 +926,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .me-piece-row .me-coord input::-webkit-outer-spin-button, .me-piece-row .me-coord input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
   /* ── Help guide modal ── */
-  .help-modal { max-width: 640px; width: 94%; max-height: 86vh; display: flex; flex-direction: column; }
+  .help-modal { max-width: 640px; width: 94%; max-height: 86vh; max-height: 86dvh; display: flex; flex-direction: column; }
   .help-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; }
   .help-tab { padding: 6px 11px; border: 1px solid var(--border); border-radius: 6px; background: var(--cream); color: var(--muted); font-size: 0.76rem; font-weight: 700; font-family: inherit; cursor: pointer; }
   .help-tab:hover { border-color: var(--gold); }
@@ -939,7 +941,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .help-tip { background: var(--cream); border-inline-start: 3px solid var(--gold); border-radius: 6px; padding: 8px 11px; margin: 0 0 10px; font-size: 0.82rem; } /* impeccable-disable-line side-tab -- 3px gold accent bar: the suite's callout convention, ratified as brand S315 */
 
   /* ── QA Check grid (collision review) ── */
-  .qa-modal { max-width: 96vw; width: 96vw; max-height: 92vh; }
+  .qa-modal { max-width: 96vw; width: 96vw; max-height: 92vh; max-height: 92dvh; }
   #qaGrid { overflow: auto; }
   #qaSummary { font-size: 0.84rem; color: var(--muted); margin: 0 0 12px; line-height: 1.5; flex: 0 0 auto; }
   #qaSummary b { color: var(--text); }
