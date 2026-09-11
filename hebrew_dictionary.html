@@ -5091,7 +5091,11 @@ function applyI18n() {
     } else if (shoreshMode) {
       if (lastShoreshRoot) renderShoreshFamily(lastShoreshRoot);
       else document.getElementById('resultCount').textContent = I18n.t('dictionary.shoresh.enter_root_count');
-    } else {
+    } else if (_bootstrapped) {
+      // Before maybeBootstrap() there is nothing translated on screen to re-render: the grid is
+      // still display:none behind the loading message, and the bootstrap render that follows
+      // reads the live locale anyway. Running onFilter() here as well used to filter, sort and
+      // build the first 100 cards twice on every load (S378 Pass D).
       onFilter();
     }
   } catch (e) {}
