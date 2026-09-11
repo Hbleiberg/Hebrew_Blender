@@ -43248,7 +43248,7 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 
 - [ ] P4 (**S369 Pass F — the last sub-11px item; generator/flash/privacy SHIPPED S375 (`5dfae78`, `c5a491e`, `f8f23e0`), resources + dictionary S374**) | hebrew_blend_generator.html + hebrew_dictionary.html + torah_trainer.html + trope_tutor.html | **The font tiles' credit line `.font-opt-attr` (×12 on the generator) + `.font-opt-default` sit at 0.62rem (9.92px) as a CONVERGED four-picker step …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**S375 Pass N — pattern `vh-capped-sheet-without-dvh-twin`; resources FIXED `b1c0655` S375, dictionary `7f55878` + dashboard `9fce260` S376; census in loop-findings**) | flash_cards.html ×3 + Hebrew_Font_Maker.html ×4 | **Seven centred fixed sheets still cap at `max-height:NNvh` with no `NNdvh` twin (flash's three JS dialogs at 85/85/80vh, lines ~5339/5832/6176; the FM wizard/QA/metrics/help modals at 92/90/86/92vh, lines ~824/912/927/942).** Fix = the hub's `.ie-modal` pair, one declaration per site; ≤2 tools per session. | found S375
+- [ ] P4 (**S375 Pass N — pattern `vh-capped-sheet-without-dvh-twin`; resources FIXED `b1c0655` S375, dictionary `7f55878` + dashboard `d1f04d2` S376; census in loop-findings**) | flash_cards.html ×3 + Hebrew_Font_Maker.html ×4 | **Seven centred fixed sheets still cap at `max-height:NNvh` with no `NNdvh` twin (flash's three JS dialogs at 85/85/80vh, lines ~5339/5832/6176; the FM wizard/QA/metrics/help modals at 92/90/86/92vh, lines ~824/912/927/942).** Fix = the hub's `.ie-modal` pair, one declaration per site; ≤2 tools per session. | found S375
 
 - [ ] P4 (**NEW S376 Pass M — a cross-page step, so F's to converge**) | torah_trainer.html + trope_tutor.html + classroom_dashboard.html | **The footer's "Related Hebrew Tools" header sits at three sizes: 0.78rem on flash/generator/dictionary/resources, 0.72rem (11.52px) on torah + trope, 0.7rem on the dashboard** — one inline `font-size` per page; converge on the 0.78rem majority (the trope FAQ summary beside it is already 0.78rem). | found S376
 
@@ -43366,7 +43366,7 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 
 - [x] 2026-09-11 | `7f55878` | hebrew_dictionary.html | **`.wm-dialog` caps at `max-height:88vh;max-height:88dvh` (the hub's `.ie-modal` pair) — the word-detail sheet no longer overflows a phone backdrop with the URL bar expanded** (`vh-capped-sheet-without-dvh-twin`) | `m376/dvh.mjs`: a real word-card tap opens it, the CSSOM resolves to `88dvh`, the sheet fits with × hit-testable on iPhone 13/SE/1280/800 × light/dark, 0 pageerrors
 
-- [x] 2026-09-11 | `9fce260` | classroom_dashboard.html | **`.pick-groups` caps at `max-height:74vh;max-height:74dvh` — the Group Maker grid inside the projector overlay no longer runs under Reshuffle/Close with a phone URL bar expanded** (`vh-capped-sheet-without-dvh-twin`) | `m376/dvh.mjs`: `openPickOverlay()` + 4 rendered groups, the CSSOM resolves to `74dvh`, the grid fits with × hit-testable on iPhone 13/SE/1280/800 × light/dark, 0 pageerrors
+- [x] 2026-09-11 | `d1f04d2` | classroom_dashboard.html | **`.pick-groups` caps at `max-height:74vh;max-height:74dvh` — the Group Maker grid inside the projector overlay no longer runs under Reshuffle/Close with a phone URL bar expanded** (`vh-capped-sheet-without-dvh-twin`) | `m376/dvh.mjs`: `openPickOverlay()` + 4 rendered groups, the CSSOM resolves to `74dvh`, the grid fits with × hit-testable on iPhone 13/SE/1280/800 × light/dark, 0 pageerrors
 
 - [x] 2026-09-11 | (S375 close-out) | branch/deploy note | **S375 CONTINUED `claude/improve-loop-swgwqx` (PR #229 open, unmerged; base `66dd97b` = `origin/main`), 4 commits + this close-out; a human merges and confirms the Pages run. Drift: none (`66dd97b`, sw v699, FM 5.39 — as the S374 close-out recorded). sw v699→v700 (resources, privacy, flash, generator); FM NOT bumped (untouched). Scripts: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -43386,7 +43386,7 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 
 ### from Per-session log (one line per session)
 
-- 2026-09-11 | **S376** | iters: 1 pass (**M**) + 4 fixes = **5** (full budget) | tools: trope ×2 (`9f19a0d`, `16f2d18`), dictionary (`7f55878`), dashboard (`9fce260`) | patterns fixed: vh-capped-sheet-without-dvh-twin ×2, text-size floor ×1, logical-CSS ×1 | pass run: M (16th; trope_tutor, 64 cells clean on the mechanical arms, 2 hits fixed, 2 logged) | SW: v700→v701
+- 2026-09-11 | **S376** | iters: 1 pass (**M**) + 4 fixes = **5** (full budget) | tools: trope ×2 (`9f19a0d`, `16f2d18`), dictionary (`7f55878`), dashboard (`d1f04d2`) | patterns fixed: vh-capped-sheet-without-dvh-twin ×2, text-size floor ×1, logical-CSS ×1 | pass run: M (16th; trope_tutor, 64 cells clean on the mechanical arms, 2 hits fixed, 2 logged) | SW: v700→v701
 
 - 2026-09-11 | **S375** | iters: 1 pass (**N**) + 4 fixes = **5** (full budget) | tools: resources (`b1c0655`), privacy (`f8f23e0`), generator (`5dfae78`), flash (`c5a491e`) | patterns fixed: vh-capped-sheet-without-dvh-twin ×1 (registered), text-size floor ×3 | pass run: N (16th; resources, 16 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -43412,7 +43412,7 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 
 ### from Tool coverage (last-touched date per tool)
 
-- **S376 (2026-09-11):** trope_tutor **2026-09-11 (`16f2d18`; M S376)**; hebrew_dictionary **2026-09-11 (`7f55878`; M S362)**; classroom_dashboard **2026-09-11 (`9fce260`; G S364)**; resources 2026-09-11 (`b1c0655`; N S375); privacy 2026-09-11 (`f8f23e0`; S360); hebrew_blend_generator 2026-09-11 (`5dfae78`; H S363); flash_cards 2026-09-11 (`c5a491e`; N S361); torah_trainer 2026-09-11 (`31a84f7` S374); Hebrew_Font_Maker 2026-09-11 (`9257fb8` S373; C S368); index 2026-09-10 (`edf4b2e` S370); contact / terms / 404 2026-09-09 (S359–S361 chrome sweep)
+- **S376 (2026-09-11):** trope_tutor **2026-09-11 (`16f2d18`; M S376)**; hebrew_dictionary **2026-09-11 (`7f55878`; M S362)**; classroom_dashboard **2026-09-11 (`d1f04d2`; G S364)**; resources 2026-09-11 (`b1c0655`; N S375); privacy 2026-09-11 (`f8f23e0`; S360); hebrew_blend_generator 2026-09-11 (`5dfae78`; H S363); flash_cards 2026-09-11 (`c5a491e`; N S361); torah_trainer 2026-09-11 (`31a84f7` S374); Hebrew_Font_Maker 2026-09-11 (`9257fb8` S373; C S368); index 2026-09-10 (`edf4b2e` S370); contact / terms / 404 2026-09-09 (S359–S361 chrome sweep)
 
 ### from Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -43438,7 +43438,7 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 
 - **`sub-floor touch target`**: ACTIVE. **S373: the S371 carrier FIXED (`9257fb8`, FM `.guide-rename` 15 → 25px via `::after`). Last swept S371 (pseudo-aware); known-clean: `.ivrit-ask-btn`, dictionary header buttons, dashboard swatch hit box, `#presetCopyBtn`; clean streak 0.** …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`vh-capped-sheet-without-dvh-twin`**: ACTIVE (registered S375). **S376: dictionary FIXED (`7f55878`), dashboard FIXED (`9fce260`); 7 open (flash ×3, FM ×4). Hits 10 (3 fixed), clean streak 0.** Detection: `grep -nE '(max-)?height:\s*(calc\(|min\()?\s*[0-9]+vh' | grep -v dvh | grep -v min-height` per page; a hit = a centred/fixed sheet with an edge control and no `dvh` twin on the line. Exempt: `min-height` floors, inner scrollers in a capped sheet (the 46vh keyboard), the FM `calc(100vh - N)` fallbacks under a dvh line, fullscreen card heights. Fix = `NNdvh` after the `NNvh`.
+- **`vh-capped-sheet-without-dvh-twin`**: ACTIVE (registered S375). **S376: dictionary FIXED (`7f55878`), dashboard FIXED (`d1f04d2`); 7 open (flash ×3, FM ×4). Hits 10 (3 fixed), clean streak 0.** Detection: `grep -nE '(max-)?height:\s*(calc\(|min\()?\s*[0-9]+vh' | grep -v dvh | grep -v min-height` per page; a hit = a centred/fixed sheet with an edge control and no `dvh` twin on the line. Exempt: `min-height` floors, inner scrollers in a capped sheet (the 46vh keyboard), the FM `calc(100vh - N)` fallbacks under a dvh line, fullscreen card heights. Fix = `NNdvh` after the `NNvh`.
 
 - **`ledger-section-loss`** (**NEW, registered 2026-08-30 (S296) — 1 carrier found and fixed, and a DETECTOR shipped with it**): a close-out edit that **deletes** ledger content instead of **moving** it to `docs/IMPROVEMENT_ARCHIVE.md`. The carrier: the S295 close-out …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
