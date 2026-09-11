@@ -2114,6 +2114,7 @@ fontmaker.modals.svgguide_body,"SVG only. With this mode on, every upload zone a
 fontmaker.modals.svgguide_gotit,Got it,הבנתי,button,
 fontmaker.modals.svgguide_title,SVG Upload Guide,מדריך העלאת SVG,dialog title,
 fontmaker.modals.template_error_title,Template error,שגיאת תבנית,dialog title,
+fontmaker.modals.pdf_libs_offline_body,"Couldn't load the PDF builder. Check your internet connection, then reload the page and try again.","לא ניתן היה לטעון את בונה ה-PDF. בדקו את חיבור האינטרנט שלכם, ואז טענו מחדש את הדף ונסו שוב.",dialog body — template sheets + Preview PDF when the page-top cdnjs scripts did not load,
 fontmaker.modals.this_letter,this letter,אות זו,default fallback,
 fontmaker.modals.ufo_fail_title,UFO build failed,בניית ה-UFO נכשלה,dialog title,
 fontmaker.modals.woff2_fail_title,WOFF2 failed,WOFF2 נכשל,dialog title,

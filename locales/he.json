@@ -2299,6 +2299,7 @@
   "fontmaker.modals.not_supported_title": "אינו נתמך",
   "fontmaker.modals.ok": "אישור",
   "fontmaker.modals.pdf_error_title": "שגיאת PDF",
+  "fontmaker.modals.pdf_libs_offline_body": "לא ניתן היה לטעון את בונה ה-PDF. בדקו את חיבור האינטרנט שלכם, ואז טענו מחדש את הדף ונסו שוב.",
   "fontmaker.modals.preview_error_title": "שגיאת תצוגה מקדימה",
   "fontmaker.modals.qa_close": "סגור",
   "fontmaker.modals.qa_title": "בדיקת איכות — התנגשויות מיקום",

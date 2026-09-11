@@ -19218,6 +19218,7 @@ async function fidelityApplyFixes(opts) {
 async function generatePreviewPDF() {
   if (!project) return;
   if (!project.letters.some(l => l.contours)) { status(I18n.t('fontmaker.status.trace_first_preview')); return; }
+  if (pdfLibsMissing(false)) { askModal(I18n.t('fontmaker.modals.preview_error_title'), I18n.t('fontmaker.modals.pdf_libs_offline_body'), [{ label:I18n.t('fontmaker.modals.ok') }]); return; }
   status(I18n.t('fontmaker.status.building_font_preview'), true);
   let fontBytes;
   try { fontBytes = await buildFontBytes(); }            // build the TTF on demand — no separate Export needed
@@ -19439,9 +19440,18 @@ async function renderTemplateCanvases(kind) {
   return canvases;
 }
 // Build + download a template. fmt 'pdf' → one multi-page US-Letter PDF; 'png' → one image per page.
+/* html2canvas + jsPDF load from cdnjs at the top of the page; a school filter or an offline PWA leaves them
+   undefined, and the template/preview catch blocks then showed the raw "html2canvas is not defined" (S380 Pass H). */
+function pdfLibsMissing(needCanvas) {
+  return !(window.jspdf && window.jspdf.jsPDF) || (needCanvas && typeof html2canvas !== 'function');
+}
 async function downloadTemplate(kind, fmt) {
   const spec = TEMPLATE_SPECS[kind];
   if (!spec) return;
+  if (typeof html2canvas !== 'function' || (fmt === 'pdf' && pdfLibsMissing(false))) {
+    askModal(I18n.t('fontmaker.modals.template_error_title'), I18n.t('fontmaker.modals.pdf_libs_offline_body'), [{ label:I18n.t('fontmaker.modals.ok') }]);
+    return;
+  }
   status(I18n.t('fontmaker.status.building_template', {title: I18n.t(spec.titleKey)}), true);
   try {
     const canvases = await renderTemplateCanvases(kind);

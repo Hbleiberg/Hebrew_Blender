@@ -2299,6 +2299,7 @@
   "fontmaker.modals.not_supported_title": "Not supported",
   "fontmaker.modals.ok": "OK",
   "fontmaker.modals.pdf_error_title": "PDF error",
+  "fontmaker.modals.pdf_libs_offline_body": "Couldn't load the PDF builder. Check your internet connection, then reload the page and try again.",
   "fontmaker.modals.preview_error_title": "Preview error",
   "fontmaker.modals.qa_close": "Close",
   "fontmaker.modals.qa_title": "QA Check — placement collisions",
