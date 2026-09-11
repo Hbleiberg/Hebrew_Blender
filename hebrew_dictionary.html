@@ -2388,7 +2388,8 @@ function loadWordCorpus() {   // callable (not a bare top-level chain) so the fa
           translitLower: (w.translit || '').toLowerCase(),
           translationLower: (w.translation || '').toLowerCase(),
           vowelSet,
-          hasVowel: vowelSet.size > 0
+          hasVowel: vowelSet.size > 0,
+          rank: 0   // alphabetical position, filled once in finishLoad (S378 Pass D)
         });
       }
       if (i < queue.length) { setTimeout(flattenBatch, 0); return; }
@@ -2396,6 +2397,11 @@ function loadWordCorpus() {   // callable (not a bare top-level chain) so the fa
       setTimeout(finishLoad, 0);   // first render gets its own task, separate from the last batch
     })();
     function finishLoad() {
+      // Alphabetical rank, computed ONCE with the collator so every later sort in onFilter is a
+      // numeric compare: the collator sort of a ~13k-word result was the single largest slice of
+      // each filter change (measured 130 ms of a 430-650 ms block at 4x CPU, S378 Pass D). A stable
+      // sort here keeps equal-`bare` words in corpus order, exactly as the old in-place sort did.
+      ALL_WORDS.slice().sort((a, b) => HEB_COLLATOR.compare(a.bare, b.bare)).forEach((w, i) => { w.rank = i; });
       // Theme filter: precompute a {theme: {pos: count}} breakdown, then let
       // updateThemeVisibility() show only the theme categories reachable from the currently
       // selected parts of speech (and hide the whole panel when none are — e.g. a stale
@@ -2930,12 +2936,12 @@ function onFilter() {
 
   const sort = document.getElementById('sortSel').value;
   filtered.sort((a,b) => {
-    if (sort === 'alpha')    return HEB_COLLATOR.compare(a.bare, b.bare);
-    if (sort === 'len-asc')  return a.len - b.len || HEB_COLLATOR.compare(a.bare, b.bare);
-    if (sort === 'len-desc') return b.len - a.len || HEB_COLLATOR.compare(a.bare, b.bare);
+    if (sort === 'alpha')    return a.rank - b.rank;   // precomputed collator order (finishLoad)
+    if (sort === 'len-asc')  return a.len - b.len || a.rank - b.rank;
+    if (sort === 'len-desc') return b.len - a.len || a.rank - b.rank;
     if (sort === 'transl')   return a.translation.localeCompare(b.translation);
-    if (sort === 'gem-asc')  return a.gem - b.gem || HEB_COLLATOR.compare(a.bare, b.bare);
-    if (sort === 'gem-desc') return b.gem - a.gem || HEB_COLLATOR.compare(a.bare, b.bare);
+    if (sort === 'gem-asc')  return a.gem - b.gem || a.rank - b.rank;
+    if (sort === 'gem-desc') return b.gem - a.gem || a.rank - b.rank;
     return 0;
   });
 
