@@ -19530,9 +19530,9 @@ function saveToBrowser() {
    project's identity is its derived family name (see pushRecentProject), so a same-named copy would
    silently evict the original. Switching is done through the shared applyProjectData load path. ── */
 function fmDerivedProjectName(familyName, reservedFontName, style) {   // mirrors pushRecentProject's naming
-  const fam = (familyName || 'Untitled') + (style === 'bold' ? ' Bold' : '');
+  const base = familyName || 'Untitled', fam = base + (style === 'bold' ? ' Bold' : '');
   const res = reservedFontName || '';
-  return res ? `${fam} - ${res}` : fam;
+  return (res && res !== base) ? `${fam} - ${res}` : fam;   // a fresh project seeds reservedFontName = familyName — never show "X - X"
 }
 function fmUniqueCopyName(base, style) {                               // "X copy", "X copy 2", … not already in Recents
   const b = ((base || '').trim()) || 'My Hebrew Font';
@@ -19667,10 +19667,13 @@ function getRecentProjects() {
 function pushRecentProject(p) {
   let list = getRecentProjects();
   // The style is part of the identity — a Bold project must not evict its Regular sibling from Recents.
-  const fam = ((p.font && p.font.familyName) || 'Untitled') + ((p.font && p.font.style) === 'bold' ? ' Bold' : '');
+  const base = (p.font && p.font.familyName) || 'Untitled', fam = base + ((p.font && p.font.style) === 'bold' ? ' Bold' : '');
   const res = (p.font && p.font.reservedFontName) || '';
-  const name = res ? `${fam} - ${res}` : fam;
-  list = list.filter(r => r.name !== name);                       // newest copy of a name wins
+  // The wizard seeds reservedFontName = familyName, so the old `${fam} - ${res}` read "X - X" for every
+  // fresh project (S380 Pass H); the suffix now appears only for a Reserved Font Name that differs.
+  const name = (res && res !== base) ? `${fam} - ${res}` : fam;
+  const legacy = res ? `${fam} - ${res}` : null;                  // a row saved under the old doubled form is the same project
+  list = list.filter(r => r.name !== name && r.name !== legacy);  // newest copy of a name wins
   list.unshift({ name, savedAt: p.savedAt || new Date().toISOString(), data: p });
   if (list.length > MAX_RECENT) list = list.slice(0, MAX_RECENT);
   while (list.length) {                                           // quota-safe: drop oldest until it fits
