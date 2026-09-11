@@ -912,6 +912,13 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
   #fsBtn, .sidebar-toggle-btn, .sidebar-show-btn, .sbr-split, #tipFloat, #shoreshControls, #appToast,
   .wc-copy, .wc-search, .wc-speak, .wm-overlay, .tour-spot, .tour-card { display:none !important; }
   .app, .main, .content { overflow:visible !important; }
+  /* Trailing dead space paginates like content (S377 Pass G, the torah trainer's S182 shape): the
+     grid's bottom margin plus the content pane's bottom padding sit below the last card, and a set
+     whose last row ends within ~30px of a sheet's bottom pushes nothing but empty box onto a fresh
+     sheet — measured: a 108-word set on A4 at 0.75in printed 7 sheets and one wholly blank 8th.
+     The print dialog's page margin already holds the cards off the paper edge. */
+  .content { padding-bottom:0; }
+  .results-grid { margin-bottom:0; }
   .word-card, .emoji-card { break-inside:avoid; }
   /* Background-graphics-off (the print-dialog default) drops every fill, so elements whose only
      legibility channel was a background need a text+border channel to survive on paper — and
