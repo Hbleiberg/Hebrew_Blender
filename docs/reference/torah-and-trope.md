@@ -145,7 +145,7 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   `direction:ltr` (a Hebrew UI would bidi-reorder "2 / 23"). **Never re-stamp the band with a
   `position:fixed` element at a negative `top`:** Blink stacks page areas contiguously, so each
   sheet's copy paints at the FOOT of the previous sheet, over its last line, and the last sheet
-  gets none (measured S324 on 30 PDFs, every margin setting). The in-flow legend card and
+  gets none (measured on 30 PDFs at every margin setting; the receipts are in `loop-findings.md`). The in-flow legend card and
   `.tt-ref-hdr` are print-hidden (the band replaces them on paper); on-screen legend behavior
   is unchanged. The band never prints spuriously — beforeprint hides it when no reading is
   loaded, and its chips render only with trope coloring on.
