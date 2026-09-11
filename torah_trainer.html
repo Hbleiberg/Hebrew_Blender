@@ -2508,6 +2508,18 @@ function loadSettings() {
     const s = ivritSafeParse(localStorage.getItem(STORAGE_KEY));
     if (s && typeof s === 'object') ivritSafeAssign(settings, s);
   } catch (e) {}
+  // Restore guard (pattern non-finite-number-from-a-loaded-file): a hand-edited 1e999 parses to
+  // Infinity, and `parseFloat(x) || default` at the readers let it — and a 9 or a -3 — through to
+  // the rate labels ("Infinity×"), the chant playbackRate and utt.rate. The two sliders' own ranges
+  // are the contract; anything non-finite takes the default (the dashboard's _sizeNum shape).
+  settings.karaokeRate = _sliderNum(settings.karaokeRate, 'optKaraokeRate', DEFAULTS.karaokeRate);
+  settings.ttsRate = _sliderNum(settings.ttsRate, 'optTTSRate', DEFAULTS.ttsRate);
+}
+function _sliderNum(val, sliderId, dflt) {
+  const sl = document.getElementById(sliderId);
+  const n = (typeof val === 'number' || (typeof val === 'string' && val.trim() !== '')) ? Number(val) : NaN;
+  if (!Number.isFinite(n)) return dflt;
+  return sl ? Math.min(parseFloat(sl.max), Math.max(parseFloat(sl.min), n)) : n;
 }
 function resetAllSettings() {
   if (!confirm(I18n.t('torah.confirm.reset_all'))) return;
