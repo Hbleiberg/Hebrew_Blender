@@ -2028,7 +2028,7 @@ footer a { display: inline-block; padding-block: 5px; }
     <h3 id="applyNikkudTitle" data-i18n="fontmaker.modals.applynikkud_title">Apply this positioning to other letters</h3>
     <p style="font-size:0.82rem;color:var(--muted);line-height:1.5;" data-i18n="fontmaker.modals.applynikkud_desc">Copies where this letter's nikkud &amp; trop marks sit (the anchor positions) onto the letters you pick, overwriting theirs. You can undo it.</p>
     <label class="chk" style="font-size:0.84rem;"><input type="checkbox" id="applyNikkudCenter" checked> <span data-i18n="fontmaker.modals.applynikkud_center">Keep each letter horizontally centered (recommended)</span></label>
-    <div class="hint" style="font-size:0.66rem;margin:2px 0 4px;" data-i18n="fontmaker.modals.applynikkud_center_hint">On: copies the vertical positions and keeps each mark centered on the target letter's own width (best when letters differ in width). Off: copies the exact X positions too.</div>
+    <div class="hint" style="font-size:0.7rem;margin:2px 0 4px;" data-i18n="fontmaker.modals.applynikkud_center_hint">On: copies the vertical positions and keeps each mark centered on the target letter's own width (best when letters differ in width). Off: copies the exact X positions too.</div>
     <div style="display:flex;gap:8px;margin:6px 0 8px;">
       <button class="ctl-btn" onclick="applyNikkudCheckAll(true)" data-i18n="fontmaker.modals.applyalign_select_all">Select all</button>
       <button class="ctl-btn" onclick="applyNikkudCheckAll(false)" data-i18n="fontmaker.modals.applyalign_none">None</button>
@@ -12686,7 +12686,7 @@ function renderWideFormControls(pc) {
   const wgi = wideGlyphItemFor(pc.target);
   if (wgi) {   // materialized — the maker's edited item is what ships; edit or revert, no Width slider
     return `<div class="ws-side-title">${esc(precompName(pc))}</div>
-      <div class="hint" style="font-size:0.66rem;">${_pT('wide_edited_hint', 'Converted to an editable glyph — the exported font ships your edited outline, and this form no longer follows its base letter. Revert to return to the auto-stretched version.')}</div>
+      <div class="hint" style="font-size:0.7rem;">${_pT('wide_edited_hint', 'Converted to an editable glyph — the exported font ships your edited outline, and this form no longer follows its base letter. Revert to return to the auto-stretched version.')}</div>
       <button class="ctl-btn primary" style="width:100%;margin-top:8px;" onclick="openWideGlyphEditor('${pc.target}')">${_pT('wide_edit_glyph', '✎ Edit the glyph →')}</button>
       <button class="ctl-btn" style="width:100%;margin-top:6px;" onclick="revertWideFormEdit('${pc.target}')">${_pT('wide_revert', 'Revert to auto-generated…')}</button>
       <hr class="ctl-divider">
@@ -12703,20 +12703,20 @@ function renderWideFormControls(pc) {
       <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${_pT('back', '← Back')}</button>`;
   }
   return `<div class="ws-side-title">${esc(precompName(pc))}</div>
-    <div class="hint" style="font-size:0.66rem;">${_pT('wide_auto_hint', 'Auto-composed from your traced ' + bases.map(esc).join(' + ') + '. The <b>Width</b> slider both adds side space and stretches the outline — saved automatically.', { bases: bases.map(esc).join(' + ') })}</div>
+    <div class="hint" style="font-size:0.7rem;">${_pT('wide_auto_hint', 'Auto-composed from your traced ' + bases.map(esc).join(' + ') + '. The <b>Width</b> slider both adds side space and stretches the outline — saved automatically.', { bases: bases.map(esc).join(' + ') })}</div>
     <hr class="ctl-divider">
     <div class="inline">${esc(window.I18n ? I18n.t('fontmaker.panels.width') : 'Width')} <input type="range" min="100" max="250" step="1" value="${wPct}" id="pcWidth" oninput="setPrecompWidth(this.value)" onchange="udSliderCommit('pcWidth');renderGrids()" aria-label="${esc(window.I18n ? I18n.t('fontmaker.panels.width') : 'Width')}"> <span id="pcWidthV" class="readout">${wPct}%</span></div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
-      ${isOver ? `<button class="ctl-btn" onclick="resetPrecompWidth()">${_pT('reset_width', 'Reset width')}</button>` : `<span class="hint" style="font-size:0.62rem;">${_pT('default_width_hint', 'Default width — drag the slider to customize.')}</span>`}
+      ${isOver ? `<button class="ctl-btn" onclick="resetPrecompWidth()">${_pT('reset_width', 'Reset width')}</button>` : `<span class="hint" style="font-size:0.7rem;">${_pT('default_width_hint', 'Default width — drag the slider to customize.')}</span>`}
     </div>
     ${isCustomCp(pc.target) ? '' : `<div class="ctl-row" style="margin-top:8px;">
       <button class="ctl-btn" style="width:100%;" onclick="convertWideToEditable('${pc.target}')">${_pT('wide_convert', 'Convert to editable glyph…')}</button>
     </div>
-    <div class="hint" style="font-size:0.6rem;margin-top:4px;">${_pT('wide_convert_hint', 'Stretch looking wonky? Convert this form into a real glyph you can edit point by point. It stops following the base letter — you can revert anytime.')}</div>`}
+    <div class="hint" style="font-size:0.7rem;margin-top:4px;">${_pT('wide_convert_hint', 'Stretch looking wonky? Convert this form into a real glyph you can edit point by point. It stops following the base letter — you can revert anytime.')}</div>`}
     <hr class="ctl-divider">
     <div class="ws-side-title">${_pT('nikkud_side', 'Nikkud')}</div>
-    <div class="hint" style="font-size:0.62rem;">${_pT('wide_nikkud_hint', "Vowels on this wide form follow <b>" + esc(donorName) + "</b>'s placement, stretched to fit — so they stay consistent with the plain letter. Preview one below; to move it, edit the nikkud on <b>" + esc(donorName) + "</b>.", { name: '<b>' + esc(donorName) + '</b>' })}</div>
-    <div class="hint" style="font-size:0.6rem;margin-top:4px;">${_pT('preview_vowel', 'Preview vowel')}</div>
+    <div class="hint" style="font-size:0.7rem;">${_pT('wide_nikkud_hint', "Vowels on this wide form follow <b>" + esc(donorName) + "</b>'s placement, stretched to fit — so they stay consistent with the plain letter. Preview one below; to move it, edit the nikkud on <b>" + esc(donorName) + "</b>.", { name: '<b>' + esc(donorName) + '</b>' })}</div>
+    <div class="hint" style="font-size:0.7rem;margin-top:4px;">${_pT('preview_vowel', 'Preview vowel')}</div>
     <div class="mark-grid2">${BELOW_VOWELS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeBelowVowel, 'setBelowVowel')).join('')}</div>
     <div class="ctl-row" style="margin-top:8px;">
       <button class="ctl-btn primary" style="width:100%;" onclick="gotoBaseNikkud('${donorCp}')">${_pT('edit_nikkud_on', 'Edit nikkud on ' + esc(donorName) + ' →', { name: esc(donorName) })}</button>
@@ -12813,7 +12813,7 @@ function renderPrecompControls(l) {
     <div class="inline">${I18n.t('fontmaker.panels.dagesh_size')} <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.dagesh_size'))}"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
     <hr class="ctl-divider">
     <button class="ctl-btn" style="width:100%;" onclick="openMarkEdit('nikkud','${pc.mark}')">${I18n.t('fontmaker.panels.edit_shape_btn')}</button>
-    <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.edit_shape_square_hint')}</div>
+    <div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.edit_shape_square_hint')}</div>
     <hr class="ctl-divider">
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${I18n.t('fontmaker.panels.back_to_vowels')}</button>`;
   }
@@ -12825,39 +12825,39 @@ function renderPrecompControls(l) {
   const cholPct = Math.round(cholamScale() * 100);
   const sizeBlock = isCholamVav
     ? `<div class="inline">${I18n.t('fontmaker.panels.holam_vav_size')} <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_vav_size'))}"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>
-    <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.holam_vav_hint')}</div>
-    <div class="hint" style="font-size:0.62rem;">${esc(I18n.t('fontmaker.panels.holam_vav_vs_haser'))}</div>`
+    <div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.holam_vav_hint')}</div>
+    <div class="hint" style="font-size:0.7rem;">${esc(I18n.t('fontmaker.panels.holam_vav_vs_haser'))}</div>`
     : `<div class="inline">${I18n.t('fontmaker.panels.dot_size')} <input type="range" min="30" max="200" step="1" value="${scPct}" id="pcScale" oninput="setPrecompMarkScale(this.value)" onchange="udSliderCommit('pcScale')" aria-label="${esc(I18n.t('fontmaker.panels.dot_size'))}"> <span id="pcScaleV" class="readout">${scPct}%</span></div>
-    <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.dagesh_size_hint')}</div>
+    <div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.dagesh_size_hint')}</div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
-      ${isScaleOverride ? `<button class="ctl-btn" onclick="resetPrecompMarkScale()">${I18n.t('fontmaker.panels.reset_auto_size')}</button>` : `<span class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.auto_size_hint')}</span>`}
+      ${isScaleOverride ? `<button class="ctl-btn" onclick="resetPrecompMarkScale()">${I18n.t('fontmaker.panels.reset_auto_size')}</button>` : `<span class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.auto_size_hint')}</span>`}
     </div>`;
-  const dotBlock = _src ? srcBlock : `<div class="hint" style="font-size:0.66rem;">${I18n.t('fontmaker.panels.precomp_where_hint')}</div>
+  const dotBlock = _src ? srcBlock : `<div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.precomp_where_hint')}</div>
     <hr class="ctl-divider">
     <div class="anc-xy">
       <label>X <input type="number" id="pcX" value="${a.x}" oninput="setPrecompCoord('x',this.value)" onchange="udBurstCommit()"></label>
       <label>Y <input type="number" id="pcY" value="${a.y}" oninput="setPrecompCoord('y',this.value)" onchange="udBurstCommit()"></label>
     </div>
     <div class="ctl-row" style="margin-top:8px;justify-content:center;">
-      ${isOverride ? `<button class="ctl-btn" onclick="resetPrecompAnchor()">${I18n.t('fontmaker.panels.reset_to_auto')}</button>` : `<span class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.auto_position_hint')}</span>`}
+      ${isOverride ? `<button class="ctl-btn" onclick="resetPrecompAnchor()">${I18n.t('fontmaker.panels.reset_to_auto')}</button>` : `<span class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.auto_position_hint')}</span>`}
     </div>`;
   return `<div class="ws-side-title">${I18n.t('fontmaker.panels.place_precomp_title', {glyph: '<span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">'+esc(precompComposed(pc))+'</span>', name: esc(precompName(pc))})}</div>
     ${dotBlock}${takesHolam ? `
     <hr class="ctl-divider">
     <div class="ws-side-title">${I18n.t('fontmaker.panels.precomp_holam_title')}</div>
-    <div class="hint" style="font-size:0.64rem;">${I18n.t('fontmaker.panels.precomp_holam_hint')}</div>
+    <div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.precomp_holam_hint')}</div>
     <div class="anc-xy">
       <label>X <input type="number" id="pcHolamX" value="${ha.x}" oninput="setPrecompHolamCoord('x',this.value)" onchange="udBurstCommit()"></label>
       <label>Y <input type="number" id="pcHolamY" value="${ha.y}" oninput="setPrecompHolamCoord('y',this.value)" onchange="udBurstCommit()"></label>
     </div>
     <div class="ctl-row" style="margin-top:8px;justify-content:center;">
-      ${isHolamOverride ? `<button class="ctl-btn" onclick="resetPrecompHolam()">${I18n.t('fontmaker.panels.reset_to_auto')}</button>` : `<span class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.auto_position_hint')}</span>`}
+      ${isHolamOverride ? `<button class="ctl-btn" onclick="resetPrecompHolam()">${I18n.t('fontmaker.panels.reset_to_auto')}</button>` : `<span class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.auto_position_hint')}</span>`}
     </div>` : ''}${_src ? '' : `
     <hr class="ctl-divider">
     ${sizeBlock}
     <hr class="ctl-divider">
     <button class="ctl-btn" style="width:100%;" onclick="openMarkEdit('nikkud','${pc.mark}')">${I18n.t('fontmaker.panels.edit_shape_btn')}</button>
-    <div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.edit_shape_square_hint')}</div>`}
+    <div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.edit_shape_square_hint')}</div>`}
     <hr class="ctl-divider">
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${I18n.t('fontmaker.panels.back_to_vowels')}</button>`;
 }
@@ -13898,7 +13898,7 @@ function renderKerningSection() {
     <div class="row2" style="gap:10px;align-items:flex-start;">${sideUI('left', e.left)}${sideUI('right', e.right)}</div>
     <div class="hint" style="margin-top:3px;">${I18n.t('fontmaker.panels.kern_reading_hint')}</div>
     <svg id="kernPreviewSvg" style="width:100%;height:auto;max-height:120px;margin-top:8px;"></svg>
-    ${(e.left.cls||e.right.cls) ? `<div class="hint" style="margin-top:-2px;font-size:0.62rem;">${I18n.t('fontmaker.panels.kern_preview_note')}</div>` : ''}
+    ${(e.left.cls||e.right.cls) ? `<div class="hint" style="margin-top:-2px;font-size:0.7rem;">${I18n.t('fontmaker.panels.kern_preview_note')}</div>` : ''}
     <div class="inline" style="margin-top:2px;">${I18n.t('fontmaker.panels.kern_gap')} <input type="range" min="-200" max="200" step="5" value="${e.value}" oninput="setKernValue(this.value)" aria-label="${esc(I18n.t('fontmaker.panels.kern_gap'))}"> <span id="kernV" class="readout">${e.value>0?'+':''}${e.value|0}</span></div>
     <div class="ctl-row" style="margin-top:6px;">
       <button id="kernAddBtn" class="ctl-btn primary" onclick="addOrUpdateKernPair()">${isUpdate?I18n.t('fontmaker.panels.kern_update'):I18n.t('fontmaker.panels.kern_add')}</button>
@@ -14682,7 +14682,7 @@ function renderEngAccentLeft(l) {   // English letters: accent placement = pick 
   const forms = project.precomposed.filter(pc => pc.base === l.codepoint);   // Latin accent targets are never in ALL_EXTRA_TARGETS, so precompExportable is vacuously true here — deliberately ungated
   if (!forms.length) return `<div class="ws-side-title">${esc(gName(l.name))}</div><div class="hint">${I18n.t('fontmaker.panels.eng_no_accents')}</div>`;
   return `<div class="ws-side-title">${I18n.t('fontmaker.panels.eng_place_accents', {name: esc(gName(l.name))})}</div>
-    <div class="hint" style="font-size:0.66rem;">${I18n.t('fontmaker.panels.eng_accents_hint')}</div>
+    <div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.eng_accents_hint')}</div>
     <div class="ctl-row" style="flex-wrap:wrap;gap:5px;margin-top:6px;">${forms.map(precompFormBtn).join('')}</div>`;
 }
 /* The ordered code points to cycle with ◀/▶ (or [ / ]) on the placement page — letters in the CURRENT
@@ -14723,7 +14723,7 @@ function renderAnchorLeft(L, l) {
         <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.reset_vowel_height_title'))}" aria-label="${esc(I18n.t('fontmaker.panels.reset_vowel_height_title'))}" onclick="setMarkNudge(activeVowelCp(),0)">⟲</button>
         ${editBtn(activeBelowVowel)}
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">${_pT('height_vowel_hint', 'Height raises or lowers just {name} — on <b>every letter</b>. <b>Edit shape</b> redesigns its dots &amp; bars.', {name: esc(vName)})}</div>
+      <div class="hint" style="font-size:0.7rem;text-align:center;">${_pT('height_vowel_hint', 'Height raises or lowers just {name} — on <b>every letter</b>. <b>Edit shape</b> redesigns its dots &amp; bars.', {name: esc(vName)})}</div>
       <hr class="ctl-divider">
       <div class="ws-side-title">${I18n.t('fontmaker.panels.meteg_title')}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
@@ -14732,8 +14732,8 @@ function renderAnchorLeft(L, l) {
         <span id="metegGapV" class="readout">${metegGap()}</span>
         <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.meteg_auto_title'))}" onclick="setMetegGapAuto()">${I18n.t('fontmaker.panels.meteg_auto')}</button>
       </div>
-      <div class="hint" id="metegGapState" style="font-size:0.6rem;text-align:center;">${esc(metegGapStateLabel())}</div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">${I18n.t('fontmaker.panels.meteg_hint')}</div>`;
+      <div class="hint" id="metegGapState" style="font-size:0.7rem;text-align:center;">${esc(metegGapStateLabel())}</div>
+      <div class="hint" style="font-size:0.7rem;text-align:center;">${I18n.t('fontmaker.panels.meteg_hint')}</div>`;
   } else if (cls === 'above') {
     const curAbove = aboveMarkFor(l);
     // One tile per above mark: the combined-form tile when this letter+mark composes to a form
@@ -14747,7 +14747,7 @@ function renderAnchorLeft(L, l) {
       <div class="mark-grid2">${aboveTiles}</div>
       ${precompJumpRow(l, 'above', ABOVE_MARKS.map(v => v.cp))}
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(curAbove)}</div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">${esc(I18n.t('fontmaker.panels.above_hint'))}${l.codepoint === '05E9' ? ' ' + esc(I18n.t('fontmaker.panels.above_hint_shin')) : ''}${l.codepoint === '05D5' ? ' ' + esc(I18n.t('fontmaker.panels.above_hint_vav')) : ''}</div>`;
+      <div class="hint" style="font-size:0.7rem;text-align:center;">${esc(I18n.t('fontmaker.panels.above_hint'))}${l.codepoint === '05E9' ? ' ' + esc(I18n.t('fontmaker.panels.above_hint_shin')) : ''}${l.codepoint === '05D5' ? ' ' + esc(I18n.t('fontmaker.panels.above_hint_vav')) : ''}</div>`;
   } else if (cls === 'center') {
     const centerTiles = CENTER_MARKS.map(v => {
       const pc = precompFormFor(l, v.cp);   // a dotted form (בּ/וּ…) replaces the generic Dagesh tile — same anchor, one control
@@ -14758,7 +14758,7 @@ function renderAnchorLeft(L, l) {
       <div class="mark-grid2">${centerTiles}</div>
       ${precompJumpRow(l, 'center', CENTER_MARKS.map(v => v.cp))}
       <div class="ctl-row" style="justify-content:center;margin-top:4px;">${editBtn(activeCenterMark)}</div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">${esc(I18n.t('fontmaker.panels.center_hint'))}</div>`;
+      <div class="hint" style="font-size:0.7rem;text-align:center;">${esc(I18n.t('fontmaker.panels.center_hint'))}</div>`;
   } else if (isTrop) {
     const ha = tropHalign(activeTropCp), tName = TROP_NAMES[activeTropCp] || 'this mark';
     const halignBtns = [['left', _pT('halign_left', '◀ Left')], ['center', _pT('halign_center', 'Center')], ['right', _pT('halign_right', 'Right ▶')]].map(([h,lbl]) =>
@@ -14776,19 +14776,19 @@ function renderAnchorLeft(L, l) {
         <span id="vowelNudgeV" class="readout">${tNdy>0?'+':''}${tNdy}</span>
         <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.reset_mark_height_title'))}" aria-label="${esc(I18n.t('fontmaker.panels.reset_mark_height_title'))}" onclick="setMarkNudge(activeVowelCp(),0)">⟲</button>
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">${_pT('height_trop_hint', 'Raises or lowers just <b>{name}</b> on every letter — e.g. to separate two marks sharing a side.', {name: esc(tName)})}</div>
+      <div class="hint" style="font-size:0.7rem;text-align:center;">${_pT('height_trop_hint', 'Raises or lowers just <b>{name}</b> on every letter — e.g. to separate two marks sharing a side.', {name: esc(tName)})}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
         <span style="font-size:0.72rem;color:var(--muted);">${I18n.t('fontmaker.panels.horizontal')}</span>${halignBtns}
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">${_pT('halign_hint', 'Sets where <b>' + esc(tName) + '</b> sits across every letter. Position tweaks belong to the column (Left / Center / Right) — and stay with it if you switch sides.', { name: '<b>' + esc(tName) + '</b>' })}</div>
+      <div class="hint" style="font-size:0.7rem;text-align:center;">${_pT('halign_hint', 'Sets where <b>' + esc(tName) + '</b> sits across every letter. Position tweaks belong to the column (Left / Center / Right) — and stay with it if you switch sides.', { name: '<b>' + esc(tName) + '</b>' })}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">${I18n.t('fontmaker.panels.default_spread')}</span>
         <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udSliderCommit('tropSpread')" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.default_spread'))}">
         <span id="tropSpreadV" class="readout">${tOff}</span>
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">${_pT('default_spread_hint', 'Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).')}</div>
+      <div class="hint" style="font-size:0.7rem;text-align:center;">${_pT('default_spread_hint', 'Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).')}</div>
       ${(nCustom => nCustom ? `
-      <div class="hint" style="font-size:0.6rem;text-align:center;color:var(--gold);">${_pT('side_positions_kept.' + (nCustom === 1 ? 'one' : 'other'), nCustom + ' letter' + (nCustom === 1 ? "'s" : "s'") + ' hand-tuned side positions kept — the slider only moves columns still at the default.', { count: nCustom })}</div>
+      <div class="hint" style="font-size:0.7rem;text-align:center;color:var(--gold);">${_pT('side_positions_kept.' + (nCustom === 1 ? 'one' : 'other'), nCustom + ' letter' + (nCustom === 1 ? "'s" : "s'") + ' hand-tuned side positions kept — the slider only moves columns still at the default.', { count: nCustom })}</div>
       <div class="ctl-row" style="justify-content:center;margin-top:2px;"><button class="ctl-btn" onclick="resetTropSideColumns()" title="${esc((window.I18n ? I18n.t('fontmaker.panels.reset_side_positions_title') : "Re-seed every letter's Left/Right columns from its center ± spread (undoable)"))}">${_pT('reset_side_positions', 'Reset all side positions')}</button></div>` : '')(tropCustomSideCount())}
       <hr class="ctl-divider">
       <div class="ws-side-title">${I18n.t('fontmaker.panels.pair_title')}</div>
@@ -14808,12 +14808,12 @@ function renderAnchorLeft(L, l) {
         <span id="vowelPairDxV" class="readout">${Math.abs(pcfg.dx)}</span>` : '');
         })(vowelPairCfg(want))}
       </div>
-      <div class="hint" style="font-size:0.6rem;text-align:center;">${I18n.t('fontmaker.panels.pair_hint')}</div>`;
+      <div class="hint" style="font-size:0.7rem;text-align:center;">${I18n.t('fontmaker.panels.pair_hint')}</div>`;
   }
   const xyWhat = cls === 'below' ? _pT('xy_what_below', 'all under-vowels') : cls === 'above' ? _pT('xy_what_above', 'the above mark') : cls === 'center' ? _pT('xy_what_center', 'the dagesh') : _pT('xy_what_trop', "this mark's column");
   const actPin = activePin(l);   // the previewed mark is pinned → X/Y (and the drag) edit the pin
-  const pinHint = actPin ? `<div class="hint" style="font-size:0.62rem;text-align:center;margin-top:4px;color:var(--gold);">✎ ${esc(I18n.t('fontmaker.fidelity.pinned_hint'))}
-      <button class="ctl-btn" style="font-size:0.64rem;padding:1px 8px;margin-inline-start:4px;" onclick="unpinActiveMark()">${I18n.t('fontmaker.fidelity.unpin')}</button></div>` : '';
+  const pinHint = actPin ? `<div class="hint" style="font-size:0.7rem;text-align:center;margin-top:4px;color:var(--gold);">✎ ${esc(I18n.t('fontmaker.fidelity.pinned_hint'))}
+      <button class="ctl-btn" style="font-size:0.7rem;padding:1px 8px;margin-inline-start:4px;" onclick="unpinActiveMark()">${I18n.t('fontmaker.fidelity.unpin')}</button></div>` : '';
   const xy = `<hr class="ctl-divider">
     <div class="ws-side-title">${esc(_pT('pos_title', '{class} position — {name} only', {class: anchorLabelT(cls), name: l.name}))}</div>
     <div class="anc-xy">
@@ -14825,7 +14825,7 @@ function renderAnchorLeft(L, l) {
       <button class="ctl-btn" onclick="centerAnchorH()" title="${esc(_pT('center_h_title', 'Center horizontally — halfway between the left and right margins'))}">${_pT('center_h', 'Center ↔')}</button>
       <button class="ctl-btn" onclick="centerAnchorV()" title="${esc(_pT('center_v_title', 'Center vertically — halfway between the top and base lines'))}">${_pT('center_v', 'Center ↕')}</button>
     </div>
-    <div class="hint" style="font-size:0.6rem;text-align:center;margin-top:5px;">${actPin ? '' : _pT('moves_xy_hint', 'Moves ' + xyWhat + ' on <b>' + esc(l.name) + '</b> only.', { what: xyWhat, name: '<b>' + esc(l.name) + '</b>' })}</div>`;
+    <div class="hint" style="font-size:0.7rem;text-align:center;margin-top:5px;">${actPin ? '' : _pT('moves_xy_hint', 'Moves ' + xyWhat + ' on <b>' + esc(l.name) + '</b> only.', { what: xyWhat, name: '<b>' + esc(l.name) + '</b>' })}</div>`;
   let coRow = '';
   if (l.anchors) {   // "Check stacking" — preview a 2nd (nikkud) mark on this letter + warn on overlap (Babylonian all-above / two-vowel letters; on trop classes: trop-vs-vowel clashes like holam under a Left-above mark)
     const acp = activeVowelCp();
@@ -14845,16 +14845,16 @@ function renderAnchorLeft(L, l) {
       const holamPair = aboveOnForm && (acp === '05B9' || acp === '05BA');
       if (holamPair && co === '05C2' && overlaps) {
         // שֹׂ merges the sin dot and the holam into ONE dot by convention — overlap here is the design, not a clash.
-        warn = `<div class="hint" style="font-size:0.64rem;">${esc(I18n.t('fontmaker.panels.sin_stack_merged_note'))}</div>`;
+        warn = `<div class="hint" style="font-size:0.7rem;">${esc(I18n.t('fontmaker.panels.sin_stack_merged_note'))}</div>`;
       } else if (holamPair && co === '05C2') {
         // The user separated them — legitimate, but say what שֹׂ will look like instead of implying a merge.
-        warn = `<div class="hint co-ok" style="font-size:0.64rem;">${esc(I18n.t('fontmaker.panels.check_stacking_clear', { active: gName(markName(acp)) }))}</div>`
-             + `<div class="hint" style="font-size:0.6rem;">${esc(I18n.t('fontmaker.panels.sin_stack_separate_note'))}</div>`;
+        warn = `<div class="hint co-ok" style="font-size:0.7rem;">${esc(I18n.t('fontmaker.panels.check_stacking_clear', { active: gName(markName(acp)) }))}</div>`
+             + `<div class="hint" style="font-size:0.7rem;">${esc(I18n.t('fontmaker.panels.sin_stack_separate_note'))}</div>`;
       } else {
         warn = overlaps
-          ? `<div class="hint co-warn" style="font-size:0.64rem;font-weight:600;">${esc(I18n.t('fontmaker.panels.check_stacking_overlap', { mark: gName(markName(co)), active: gName(markName(acp)) }))}</div>`
-          : `<div class="hint co-ok" style="font-size:0.64rem;">${esc(I18n.t('fontmaker.panels.check_stacking_clear', { active: gName(markName(acp)) }))}</div>`;
-        if (aboveOnForm) warn += `<div class="hint" style="font-size:0.6rem;">${esc(I18n.t('fontmaker.panels.shin_stack_note'))}</div>`;
+          ? `<div class="hint co-warn" style="font-size:0.7rem;font-weight:600;">${esc(I18n.t('fontmaker.panels.check_stacking_overlap', { mark: gName(markName(co)), active: gName(markName(acp)) }))}</div>`
+          : `<div class="hint co-ok" style="font-size:0.7rem;">${esc(I18n.t('fontmaker.panels.check_stacking_clear', { active: gName(markName(acp)) }))}</div>`;
+        if (aboveOnForm) warn += `<div class="hint" style="font-size:0.7rem;">${esc(I18n.t('fontmaker.panels.shin_stack_note'))}</div>`;
       }
     }
     coRow = `<hr class="ctl-divider">
@@ -14862,12 +14862,12 @@ function renderAnchorLeft(L, l) {
       <label class="fld" style="font-size:0.72rem;">${esc(I18n.t('fontmaker.panels.check_stacking_label'))}
         <select onchange="setCoPreview(this.value)">${opts}</select>
       </label>${warn}
-      <div class="hint" style="font-size:0.6rem;">${esc(I18n.t('fontmaker.panels.check_stacking_hint'))}</div>`;
+      <div class="hint" style="font-size:0.7rem;">${esc(I18n.t('fontmaker.panels.check_stacking_hint'))}</div>`;
   }
   const forms = project.precomposed.filter(pc => pc.base === l.codepoint && precompExportable(pc));   // seeded-but-off forms get no editor: the export skips them
   const formsSection = forms.length ? `<hr class="ctl-divider">
     <div class="ws-side-title">${esc(I18n.t('fontmaker.panels.special_precomposed'))}</div>
-    <div class="hint" style="font-size:0.66rem;">${esc(I18n.t('fontmaker.panels.special_precomposed_hint'))}</div>
+    <div class="hint" style="font-size:0.7rem;">${esc(I18n.t('fontmaker.panels.special_precomposed_hint'))}</div>
     <div class="ctl-row" style="flex-wrap:wrap;gap:5px;">${forms.map(precompFormBtn).join('')}</div>` : '';
   // The COUNT is live pins only: one whose stored key no longer matches (a pinned trop whose halign
   // moved to an edge column, a center pin from a foreign file) is inert everywhere, draws no ✎ badge
@@ -14879,8 +14879,8 @@ function renderAnchorLeft(L, l) {
   const nPins = nStored ? Object.keys(l.markAnchors).filter(cp => markPinFor(l, pinKeyFor(cp), cp)).length : 0;
   const pinsSection = nStored ? `<hr class="ctl-divider">
     <div class="ctl-row" style="align-items:center;justify-content:space-between;gap:6px;">
-      ${nPins ? `<span class="hint" style="font-size:0.64rem;color:var(--gold);">✎ ${esc(I18n.t(nPins === 1 ? 'fontmaker.fidelity.pins_row.one' : 'fontmaker.fidelity.pins_row.other', { count: nPins }))}</span>` : '<span></span>'}
-      <button class="ctl-btn" style="font-size:0.66rem;" onclick="clearLetterPins()">${I18n.t('fontmaker.fidelity.clear_pins')}</button>
+      ${nPins ? `<span class="hint" style="font-size:0.7rem;color:var(--gold);">✎ ${esc(I18n.t(nPins === 1 ? 'fontmaker.fidelity.pins_row.one' : 'fontmaker.fidelity.pins_row.other', { count: nPins }))}</span>` : '<span></span>'}
+      <button class="ctl-btn" style="font-size:0.7rem;" onclick="clearLetterPins()">${I18n.t('fontmaker.fidelity.clear_pins')}</button>
     </div>` : '';
   // Label Prev/Next with the actual neighbor glyph, computed from the SAME source stepLetter uses so they can't drift.
   const _cyc = _placementCycleCps();
@@ -14960,7 +14960,7 @@ function renderAnchorStageBelow(SB, l) {
       ${isTrop?'':`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_size')}</label> <input type="range" min="30" max="180" step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_size'))}"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
       <div class="size-slider-line"><label>${I18n.t('fontmaker.panels.dagesh_size')}</label> <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.dagesh_size'))}"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
       ${isVav?`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_vav_size')}</label> <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_vav_size'))}"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>`:''}`}
-      ${isTrop?'':`<div class="hint" style="font-size:0.62rem;">${I18n.t('fontmaker.panels.size_hint')}${isVav?' '+I18n.t('fontmaker.panels.size_hint_vav'):''}</div>`}
+      ${isTrop?'':`<div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.size_hint')}${isVav?' '+I18n.t('fontmaker.panels.size_hint_vav'):''}</div>`}
     </div>
     <div class="anchor-confirm-panel">
       ${placementPill}${saveBtn}
