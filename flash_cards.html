@@ -558,6 +558,7 @@ body.dark .pill-group .pill.active { background: var(--navy-deep); box-shadow: i
    give the box the 24px touch floor. inline-flex turns min-height into a taller BOX, not taller
    text (the S102 .btn-xs recipe); the row's align-items:center keeps neighbours centered. */
 .row .label.has-tip { display: inline-flex; align-items: center; min-height: 24px; }
+.row .label.has-tip > .beta-tag { margin-inline-start: 0.42em; }   /* a flex box drops the whitespace text node, so the Listening badge ran into its label; 0.42 of the badge's 0.7rem = one space of the 0.92rem label */
 .switch {
   position: relative;
   display: inline-block;
