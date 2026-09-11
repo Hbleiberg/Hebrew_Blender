@@ -18,7 +18,9 @@ suffix). For multi-feature work, batch **one** combined bump + entry at the end 
 The Font Maker's **project data** is deliberately **NOT** in the index.html AllTools export/import/erase —
 it doesn't fit the presets model. Its keys are local-only: `hebrewFontMaker_uiPrefs` (workspace UI
 prefs JSON blob — read/modify/write via `wsReadPrefs()`; put new persistent UI prefs **here**, not in
-new bare keys), `hebrewFontMaker_tourDone`, `hebrewFontMaker_inputMode`, `hebrewFontMaker_recentProjects`,
+new bare keys), `hebrewFontMaker_tourDone`, `hebrewFontMaker_inputMode`, `hebrewFontMaker_recentProjects` (read through
+`getRecentProjects()`, which keeps only `{name: string, data: object}` members of an array — any other
+stored shape reads as empty and is rewritten on the next save),
 `hebrewFontMaker_mobileWarnDismissed`, `hebrewFontMaker_autosave` (image-stripped fallback). Primary
 autosave is **IndexedDB** db `hebrewFontMaker`, store `autosave` (gzip blob, id `'current'`). Shared
 site-wide key it also reads: `hebrewBlender_darkMode`. **One AllTools exception:**
@@ -30,7 +32,12 @@ Replaces the old welcome card. Boot runs one launch decision from the `I18n.read
 `maybeRestoreAutosave()`: restorable snapshot → the Continue/Start-fresh prompt (Continue never shows
 the wizard); Start fresh or no snapshot → `wizardOpen('gate')` (Esc/backdrop inert — no-op `closeFn` +
 no backdrop `onclick`; the header's "Open a project ▾" is the exit; loading any project closes it via
-`applyProjectData`). Toolbar **New** = `wizardOpen('new')` (cancellable; Esc/backdrop/Cancel leave the
+`applyProjectData`). `applyProjectData` treats every `.hfm`/autosave/recents blob as untrusted: a
+missing or non-object `font` block, or a `migrateProject` throw, is refused with the "Not a valid
+project file" status before `project` is reassigned, and `migrateProject` reduces every collection
+(`letters`, `combinedSheets`, `precomposed`, `guides.items`, `template.customFonts`) to its plain-object
+members and nulls a letter's malformed `source`/`transform`/`contours`/`curves`/anchor blocks so the
+backfills re-seed them. Toolbar **New** = `wizardOpen('new')` (cancellable; Esc/backdrop/Cancel leave the
 current project untouched — nothing is discarded until "Create font"). `_launchDecided` makes the boot
 decision one-shot; the mobile-warn deferral baton (`_autosavePromptDeferred`) now resumes
 `maybeRestoreAutosave` directly. `aCloseModal` re-arms the wizard's focus trap after a stacked modal

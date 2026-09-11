@@ -237,7 +237,13 @@ version 0 synchronously, then streams the remaining versions in `setTimeout(0)` 
 
 `applySettings()` keeps only known letter/vowel keys (`isKnownLetterKey`/`isKnownVowelKey`, built from `LETTERS` heb + sofit and `VOWELS` keys) when it rebuilds `selectedLetters`/`selectedVowels`; unknown members from a share link, preset or `.ivrit` file are dropped one by one, never the whole set, so `getLetter()` can't return undefined inside `generate()`.
 
-The same guard applies per value: every `<select>` restores through `applySelectValue(id, v)` (only an option the select offers), every number/range input through `applyNumberValue(id, v)` (finite numbers only), and every button-row enum (`npGender`, `npDisplay`, `rwStarPage`, `traceLineStyle`, `cwClueLang`, `matchTarget`, `rwDrillType`…) through `isOffered(v, list | rowSelector, dataKey)`, which reads the allowed set from the row's own `data-*` attributes so a new button is covered without a second list. An unoffered value leaves the current pick; nothing is written to the control as `""` or `NaN`, so the remembered setup never saves garbage back. Keep the legacy `colorCodingMode` migration ahead of its check.
+The same guard applies per value: every `<select>` restores through `applySelectValue(id, v)` (only an option the select offers), every number/range input through `applyNumberValue(id, v)` (finite numbers only), and every button-row enum (`npGender`, `npDisplay`, `rwStarPage`, `traceLineStyle`, `cwClueLang`, `matchTarget`, `rwDrillType`…) through `isOffered(v, list | rowSelector, dataKey)`, which reads the allowed set from the row's own `data-*` attributes so a new button is covered without a second list. An unoffered value leaves the current pick; nothing is written to the control as `""` or `NaN`, so the remembered setup never saves garbage back. `setHebFontSize(val)` (called directly by presets and the shared `hebrewBlender_hebFontSize` key) clamps to 0–100 and falls back to 50 for a non-finite value. Keep the legacy `colorCodingMode` migration ahead of its check.
+
+---
+
+## Practice-type subtitle (`#headerSub`)
+
+The worksheet header's subtitle is static markup (`data-i18n="worksheet.header_sub"`). `setBlendType(type)` overwrites it with a per-type line from the CSV (`worksheet.header_sub_two` / `_one` / `_three` / `_nikud`) through `I18n.t`, only once the locale has loaded (an unresolved key leaves the static line in place). `applyI18n()` re-applies the static key, so a language switch shows the generic subtitle until the next type click — a known two-slot quirk, kept until the maintainer picks one wording.
 
 ---
 

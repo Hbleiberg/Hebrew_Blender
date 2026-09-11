@@ -28,7 +28,7 @@
 | `tropeTutorProgress` | `hebrewTropeTutor_progress` | Trope Tutor mastery (`{v:1,tropes:{key:{r,w}},families:{},pbStreak}`); imported via `tropeProgressMerge` — per-trope `r`/`w` and `pbStreak` as **max** of existing vs incoming, visited families as **union** (never a shallow assign) |
 | `userFonts` | *(IndexedDB `ivritsuite-fonts`, not localStorage)* | Custom fonts, base64-bundled at export — see "My Fonts" section |
 | `inputMode` | `hebrewBlender_inputMode` | Backup UI preference: `'auto'` (.ivrit file) or `'manual'` (text block) — see ".ivrit Save Files" below |
-| `hebFont` / `hebFontSize` | `hebrewBlender_hebFont` / `_hebFontSize` | Shared Generator+Dictionary display prefs (selected Hebrew font + size); scalar strings, empty = never-set (skipped on import) |
+| `hebFont` / `hebFontSize` | `hebrewBlender_hebFont` / `_hebFontSize` | Shared Generator+Dictionary display prefs (selected Hebrew font + size); scalar strings, empty = never-set (skipped on import); both readers clamp the size to 0–100 |
 | `livePreview` | `hebrewBlender_livePreview` | Generator live-preview toggle (`'1'`/`'0'`); scalar string, empty = never-set (skipped on import) |
 | `kbdLayout` | `hebrewBlender_kbdLayout` | On-screen Hebrew keyboard letter-layout choice (`'abc'` \| `'qwerty'`), site-wide across every keyboard carrier; scalar string, empty = never-set (skipped on import) |
 | `fmLastAuthor` | `hebrewFontMaker_lastAuthor` | Font Maker onboarding wizard's remembered author name; scalar string, empty = never-set (skipped on import) |
@@ -202,7 +202,12 @@ button-row enum through `isOffered(v, list | rowSelector, dataKey)` (the row's o
 flash cards use `_clampChoice`/`_clampEnum(v, allowed, dflt)` and typeof checks for the two booleans and
 the font ids; the dictionary's `applyDictState` matches `copyMode` against its radio group and keeps
 `shoreshRoot` only as a string. An unoffered value leaves the current pick — it is never written to the
-control as `""`/`NaN` and never saved back. Legacy migrations (the generator's old `colorCodingMode`
+control as `""`/`NaN` and never saved back. Range setters that a preset or `.ivrit` file calls
+directly clamp at the setter: the dashboard's twelve text-size setters go through
+`_sizeNum(val, sliderId)` (a non-finite value takes the slider's `defaultValue`, anything else is
+clamped to its `min`/`max`), and the generator's and dictionary's `setHebFontSize` clamp the shared
+`hebrewBlender_hebFontSize` to 0–100 (junk → 50) — so a label never reads `NaNrem`/`Infinityrem`
+and the stored value is always a number. Legacy migrations (the generator's old `colorCodingMode`
 values, flash cards' `numberFront:'translit'`) run before the check so they still apply.
 
 (`torah_trainer.html`, `hebrew_dictionary.html`, and `trope_tutor.html` have no preset collection
