@@ -910,7 +910,16 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
      slab on EVERY sheet; the dashboard and flash cards already hide it — this converges on them. */
   header, footer, .sidebar, #appSidebar, #mobileBar, .toolbar, .filter-chips, .load-more-btn,
   #fsBtn, .sidebar-toggle-btn, .sidebar-show-btn, .sbr-split, #tipFloat, #shoreshControls, #appToast,
-  .wc-copy, .wc-search, .wc-speak, .wm-overlay, .tour-spot, .tour-card { display:none !important; }
+  .wc-copy, .wc-search, .wc-speak, .ec-speak, .wc-bulk-cb, .wl-active-exit,
+  .wm-overlay, .tour-spot, .tour-card { display:none !important; }
+  /* Screen affordances that reached paper after the S252 list was written (S377 Pass G): the
+     emoji cards' 🔊 button (audio on: 1,785 of them across an emoji print, five extra sheets),
+     the bulk-select box on every card, and the saved-list banner's Exit button — the banner's
+     label stays, it is the only line naming what was printed. A box-shadow is a drawing, not a
+     background, so the dialog's background-graphics-off default never drops it: the card the
+     mouse rests on at Ctrl+P printed its hover halo as a card-sized grey plate. Same universal
+     rule as the flash cards' print block (pattern dark-print-shadow-slab). */
+  * { box-shadow:none !important; }
   .app, .main, .content { overflow:visible !important; }
   /* Trailing dead space paginates like content (S377 Pass G, the torah trainer's S182 shape): the
      grid's bottom margin plus the content pane's bottom padding sit below the last card, and a set
