@@ -703,7 +703,7 @@ body.dark .slider::before { background: #d8dde9; }
   line-height: 1;
 }
 .vtile .vname {
-  font-size: 0.66rem;
+  font-size: 0.7rem;
   color: var(--muted);
   margin-top: 4px;
 }
@@ -2020,7 +2020,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           Sets the romanization style. To show or hide transliteration on cards, use each mode's &ldquo;Show transliteration&rdquo; toggle in the Mode panel above.
         </div>
         <div id="translitLoadStatus" style="font-size:0.7rem;color:var(--muted);min-height:1em;text-align:center;margin-top:4px;"></div>
-        <div style="font-size:0.65rem;color:var(--muted);text-align:center;line-height:1.4;margin-top:4px;" data-i18n-html="flashcards.advanced.translit_credit">
+        <div style="font-size:0.7rem;color:var(--muted);text-align:center;line-height:1.4;margin-top:4px;" data-i18n-html="flashcards.advanced.translit_credit">
           Powered by <a href="https://github.com/charlesLoder/hebrew-transliteration" target="_blank" rel="noopener" style="color:var(--gold-text);text-decoration:none;">hebrew-transliteration</a> by Charles Loder
         </div>
       </div>
@@ -3081,7 +3081,7 @@ function initFontSelector() {
       btn.className = 'font-opt' + (font.name === hebFontId ? ' active' : '');
       btn.setAttribute('aria-pressed', font.name === hebFontId ? 'true' : 'false');
       btn.dataset.fontName = font.name;
-      btn.innerHTML = `<span lang="he" dir="rtl" style="font-family:${font.stack};font-size:1.4rem;direction:rtl;display:block;">אֶרֶץ</span><small>${ivEsc(font.name)}${font.name === 'Frank Ruhl Libre' ? ` <span style="font-size:0.6rem;font-weight:400;">${ivEsc(I18n.t('shared.fonts.default_marker'))}</span>` : ''}</small>`;
+      btn.innerHTML = `<span lang="he" dir="rtl" style="font-family:${font.stack};font-size:1.4rem;direction:rtl;display:block;">אֶרֶץ</span><small>${ivEsc(font.name)}${font.name === 'Frank Ruhl Libre' ? ` <span style="font-size:0.7rem;font-weight:400;">${ivEsc(I18n.t('shared.fonts.default_marker'))}</span>` : ''}</small>`;
       btn.addEventListener('click', () => setHebFont(font.name));
       host.appendChild(btn);
     });
@@ -3114,7 +3114,7 @@ function initEngFontSelector() {
       btn.className = 'font-opt' + (font.name === engFontId ? ' active' : '');
       btn.setAttribute('aria-pressed', font.name === engFontId ? 'true' : 'false');
       btn.dataset.fontName = font.name;
-      btn.innerHTML = `<span dir="ltr" style="font-family:${font.stack};font-size:1.35rem;direction:ltr;display:block;">Aa 123</span><small>${ivEsc(font.name)}${font.name === 'Libre Baskerville' ? ` <span style="font-size:0.6rem;font-weight:400;">${ivEsc(I18n.t('shared.fonts.default_marker'))}</span>` : ''}</small>`;
+      btn.innerHTML = `<span dir="ltr" style="font-family:${font.stack};font-size:1.35rem;direction:ltr;display:block;">Aa 123</span><small>${ivEsc(font.name)}${font.name === 'Libre Baskerville' ? ` <span style="font-size:0.7rem;font-weight:400;">${ivEsc(I18n.t('shared.fonts.default_marker'))}</span>` : ''}</small>`;
       btn.addEventListener('click', () => setEngFont(font.name));
       host.appendChild(btn);
     });
