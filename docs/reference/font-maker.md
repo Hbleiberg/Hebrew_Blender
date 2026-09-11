@@ -49,6 +49,8 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   `aCloseModal(id)`. `_activeModal` + the global keydown provide the focus trap and Escape-to-close —
   never add your own trap.
 - **Confirmations**: `askModal(title, bodyHtml, buttons)` with `[{label, cls:'ghost'?, onClick}]`.
+  `#askOverlay` sits one z-index layer above the other `.overlay`s, so a confirmation raised over the
+  wizard, help, QA, My Fonts or mobile-warn overlay is the one under the pointer.
   It auto-closes before running `onClick`; to make elements inside the body interactive (like the
   export-warning letter chips), wire listeners on `#askBody` **after** the `askModal(...)` call.
 - **Toasts**: `status(msg, sticky)` — auto-clears in 4s unless `sticky`.

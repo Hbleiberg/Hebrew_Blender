@@ -768,6 +768,9 @@ footer a { display: inline-block; padding-block: 5px; }
   /* ── Overlay / modal ── */
   .overlay { position: fixed; inset: 0; background: rgba(13,18,32,0.55); display: none; align-items: center; justify-content: center; z-index: 200; }
   .overlay.open { display: flex; }
+  /* askModal is raised OVER the wizard, help, QA, My Fonts and mobile-warn overlays (all later in the DOM at the
+     same z-index), so it painted beneath them: the My Fonts 🗑 confirm could not be clicked. One layer up. */
+  #askOverlay { z-index: 201; }
   .modal { background: var(--white); color: var(--text); border-radius: 12px; padding: 22px; max-width: 460px; width: 92%; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
   .modal h3 { font-family: 'Libre Baskerville', serif; margin: 0 0 10px; font-size: 1.05rem; }
   .modal p { font-size: 0.86rem; line-height: 1.5; }
