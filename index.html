@@ -1076,7 +1076,7 @@ async function importAllSettings() {
     if (parsed.tropeTutorProgress && Object.keys(parsed.tropeTutorProgress).length) {
       tropeProgressMerge(parsed.tropeTutorProgress, false);
     }
-    if (parsed.inputMode !== undefined) {
+    if (parsed.inputMode === 'auto' || parsed.inputMode === 'manual') {
       localStorage.setItem('hebrewBlender_inputMode', parsed.inputMode);
     }
     // Shared display prefs (Generator + Dictionary): empty string = never set, skip.
@@ -1339,7 +1339,7 @@ const IVRIT_CFG = {
     if (data.dictAudioEnabled  !== undefined) { localStorage.setItem('hebrewDictionary_audioEnabled',  data.dictAudioEnabled);  touched = true; }
     if (data.dictTranslitStyle !== undefined) { localStorage.setItem('hebrewDictionary_translitStyle', data.dictTranslitStyle); touched = true; }
     if (data.dictTtsRate       !== undefined) { localStorage.setItem('hebrewDictionary_ttsRate',       data.dictTtsRate);       touched = true; }
-    if (data.inputMode         !== undefined) { localStorage.setItem('hebrewBlender_inputMode',        data.inputMode); }
+    if (data.inputMode === 'auto' || data.inputMode === 'manual') { localStorage.setItem('hebrewBlender_inputMode', data.inputMode); }
     // Shared display prefs (Generator + Dictionary): empty string = never set, skip.
     if (data.hebFont)     { localStorage.setItem('hebrewBlender_hebFont',     data.hebFont);     touched = true; }
     if (data.hebFontSize) { localStorage.setItem('hebrewBlender_hebFontSize', data.hebFontSize); touched = true; }
@@ -1397,6 +1397,9 @@ function ivritDateStamp() {
 }
 function ivritStatus(msg) { const el = document.getElementById('ivritStatus'); if (el) el.textContent = msg || ''; }
 function setIvritMode(mode) {
+  // Anything but the two known modes (a hand-edited backup, a stale key) used to hide BOTH panes and
+  // press neither toggle — the backup section went blank. Fall back to Automatic (S379 Pass I).
+  if (mode !== 'manual') mode = 'auto';
   const a = document.getElementById('ivritAuto'), mn = document.getElementById('ivritManual');
   const ba = document.getElementById('ivritModeAuto'), bm = document.getElementById('ivritModeManual');
   if (ba) { ba.classList.toggle('active', mode === 'auto'); ba.setAttribute('aria-pressed', mode === 'auto' ? 'true' : 'false'); }

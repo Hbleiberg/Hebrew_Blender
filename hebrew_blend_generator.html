@@ -5663,6 +5663,9 @@ function ivritDateStamp() {
 }
 function ivritStatus(msg) { const el = document.getElementById('ivritStatus'); if (el) el.textContent = msg || ''; }
 function setIvritMode(mode) {
+  // Anything but the two known modes (a hand-edited backup, a stale key) used to hide BOTH panes and
+  // press neither toggle — the backup section went blank. Fall back to Automatic (S379 Pass I).
+  if (mode !== 'manual') mode = 'auto';
   const a = document.getElementById('ivritAuto'), mn = document.getElementById('ivritManual');
   const ba = document.getElementById('ivritModeAuto'), bm = document.getElementById('ivritModeManual');
   if (ba) { ba.classList.toggle('active', mode === 'auto'); ba.setAttribute('aria-pressed', mode === 'auto' ? 'true' : 'false'); }
