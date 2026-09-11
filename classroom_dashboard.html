@@ -719,7 +719,7 @@
   #pickOverlay { position: fixed; inset: 0; z-index: 400; display: none; flex-direction: column;
     align-items: center; justify-content: center; gap: 22px; padding: 4vmin;
     background: rgba(9,13,24,0.985); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-  .pick-close { position: absolute; top: 18px; right: 20px; width: 44px; height: 44px;
+  .pick-close { position: absolute; top: 18px; inset-inline-end: 20px; width: 44px; height: 44px;   /* logical: the × follows the inline end under the Hebrew UI (the dictionary's .wm-close shape) */
     border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1);
     color: #fff; font-size: 1.3rem; cursor: pointer; line-height: 1; }
   .pick-close:hover { background: rgba(255,255,255,0.22); border-color: var(--gold); }
