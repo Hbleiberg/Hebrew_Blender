@@ -19654,7 +19654,13 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
    Full projects are large, so keep a small rolling list and evict oldest on quota overflow.
    Like the autosave breadcrumb, this is NOT part of the portable .ivrit/AllTools backup. ── */
 const RECENT_KEY = 'hebrewFontMaker_recentProjects', MAX_RECENT = 6;
-function getRecentProjects() { try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch (e) { return []; } }
+// The stored value is untrusted (hand-edited, or written by an older build): anything but an array of
+// {name, data} objects used to throw out of toggleLoadMenu and leave the Load menu dead. Keep only the
+// well-shaped entries; pushRecentProject writes the cleaned list back.
+function getRecentProjects() {
+  try { const v = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); return Array.isArray(v) ? v.filter(r => r && typeof r === 'object' && typeof r.name === 'string' && r.data && typeof r.data === 'object') : []; }
+  catch (e) { return []; }
+}
 function pushRecentProject(p) {
   let list = getRecentProjects();
   // The style is part of the identity — a Bold project must not evict its Regular sibling from Recents.
