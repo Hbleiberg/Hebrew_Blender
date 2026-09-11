@@ -5167,6 +5167,8 @@ function mountSidebarResize(cfg) {
   }
 
   function applyZoom(val) {
+    val = Number(val);
+    if (!Number.isFinite(val)) val = 100;   // a non-numeric stored/imported zoomLevel used to label "NaN%" and desync the slider (S379)
     val = Math.min(200, Math.max(50, val));
     document.querySelector('.dashboard').style.zoom = val / 100;
     document.getElementById('zoomLabel').textContent = val + '%';
