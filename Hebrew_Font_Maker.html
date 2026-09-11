@@ -1055,7 +1055,8 @@ footer a { display: inline-block; padding-block: 5px; }
   .guide-name { flex: 1 1 auto; min-width: 0; font-family: inherit; font-size: 0.82rem; font-weight: 600; color: var(--text); background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 2px 5px; }
   .guide-name:hover { border-color: var(--border); }
   .guide-name:focus { border-color: var(--gold, #c9922a); background: var(--cream, #fdf8ef); outline: none; }
-  .guide-rename { background: none; border: none; color: var(--muted); font-size: 0.7rem; font-family: inherit; cursor: pointer; padding: 1px 3px; flex-shrink: 0; text-decoration: underline; }
+  .guide-rename { position: relative; background: none; border: none; color: var(--muted); font-size: 0.7rem; font-family: inherit; cursor: pointer; padding: 1px 3px; flex-shrink: 0; text-decoration: underline; }
+  .guide-rename::after { content: ''; position: absolute; inset: -5px 0; }   /* the 15px link's hit box reaches 25px over the row's own padding (WCAG 2.5.8) — nothing visible moves */
   .guide-rename:hover { color: var(--text); }
   .guide-del { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 4px; width: 22px; height: 22px; cursor: pointer; font-size: 0.8rem; line-height: 1; flex-shrink: 0; }
   .guide-del:hover { color: #c0392b; border-color: #c0392b; }
