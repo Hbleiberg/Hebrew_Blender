@@ -20544,6 +20544,10 @@ function wizardValidateOs(){
   const note = document.getElementById('wizOsNameNote');
   note.textContent = msg;
   note.hidden = !msg;
+  // The from-scratch wizard's own foot note belongs to wizStep1's validator, which never runs in this
+  // mode: reaching osfont THROUGH the gate/New wizard (the starting-font picker) would otherwise leave
+  // its "Enter a font name and author" line under every partner step. This mode has wizOsNameNote.
+  document.getElementById('wizNextNote').hidden = true;
   const blocked = (_wizardStep === 2 && !ok);
   document.getElementById('wizNext').setAttribute('aria-disabled', blocked ? 'true' : 'false');
   return ok;
