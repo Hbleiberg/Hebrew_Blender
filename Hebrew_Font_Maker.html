@@ -877,7 +877,43 @@ footer a { display: inline-block; padding-block: 5px; }
   .wiz-os-row { display: flex; gap: 8px; font-size: 0.8rem; align-items: baseline; }
   .wiz-os-row > span:first-child { color: var(--muted); min-inline-size: 100px; flex-shrink: 0; }
   .wiz-os-row a { color: var(--gold-text); font-weight: 700; }
+  #wizOsChangeFont { align-self: start; margin-block-end: 4px; }
   @media (max-width: 640px) { .wiz-tiles { grid-template-columns: 1fr; } }
+  /* "Start from an existing font" picker (#osPickOverlay) — a wide sheet: the card grid is the only
+     scroller, so the search/filter row and the license note stay put while 130+ cards scroll. */
+  .wiz-head-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .os-pick-modal { max-width: 940px; width: 94%; max-height: 92vh; max-height: 92dvh; display: flex; flex-direction: column; }
+  .os-pick-intro { font-size: 0.85rem; line-height: 1.45; margin: 6px 0 10px; }
+  .os-pick-intro a { color: var(--gold-text); font-weight: 700; }
+  .os-pick-tools { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: flex-end; margin-block-end: 10px; }
+  .os-pick-field { display: flex; flex-direction: column; gap: 3px; font-size: 0.72rem; font-weight: 700; color: var(--muted); }
+  .os-pick-field input { font: inherit; font-weight: 400; font-size: 0.86rem; color: var(--text); background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 6px 9px; min-inline-size: 0; inline-size: 100%; }
+  .os-pick-search { flex: 1 1 200px; }
+  .os-pick-text { flex: 1 1 220px; }
+  .os-pick-text input { font-family: 'Frank Ruhl Libre', 'IvritSuite Taamim', serif; }
+  .os-pick-filters { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; flex: 1 1 100%; }
+  .os-pick-filters .chk { margin: 0; }
+  .os-pick-count { font-size: 0.74rem; color: var(--muted); margin-inline-start: auto; }
+  .os-pick-grid { flex: 1 1 auto; min-block-size: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; padding: 2px; align-content: start; }
+  .os-pick-card { display: flex; flex-direction: column; gap: 4px; border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px; background: var(--white); color: var(--text); text-align: start; font: inherit; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .os-pick-card[hidden] { display: none; }
+  .os-pick-card:hover { border-color: var(--gold); }
+  .os-pick-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .os-pick-card[aria-busy="true"] { opacity: 0.6; cursor: progress; }
+  .os-pick-sample { font-family: 'Frank Ruhl Libre', 'IvritSuite Taamim', serif; font-size: 1.7rem; line-height: 1.6; min-block-size: 2.8em; display: flex; align-items: center; justify-content: center; overflow-wrap: anywhere; text-align: center; }
+  .os-pick-card.is-loading .os-pick-sample { color: var(--muted); }   /* fallback face until the real one lands */
+  .os-pick-name { font-weight: 700; font-size: 0.86rem; }
+  .os-pick-meta { font-size: 0.72rem; color: var(--muted); }
+  .os-pick-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-block-start: 2px; }
+  .os-badge { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.02em; padding: 1px 6px; border-radius: 10px; border: 1px solid var(--border); background: var(--cream); color: var(--muted); }
+  .os-badge-lic { color: var(--gold-text); border-color: var(--gold); }
+  .os-pick-empty { font-size: 0.86rem; color: var(--muted); text-align: center; padding: 20px 0; }
+  .os-pick-empty[hidden] { display: none; }
+  @media (max-width: 800px) {
+    .os-pick-modal { width: 96vw; padding: 14px; }
+    .os-pick-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+    .os-pick-sample { font-size: 1.4rem; }
+  }
 
   /* ── Font-engine background-load badge (next to Export) ── */
   .engine-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--muted); font-weight: 600; white-space: nowrap; }
@@ -1865,8 +1901,11 @@ footer a { display: inline-block; padding-block: 5px; }
   <div class="modal wiz-modal" role="dialog" aria-modal="true" aria-labelledby="wizTitle">
     <div class="wiz-head">
       <h3 id="wizTitle" data-i18n="fontmaker.wizard.title">✍️ Create a new font</h3>
-      <button class="tbtn ghost" id="wizOpenProject" onclick="toggleLoadMenu(event)" data-i18n="fontmaker.wizard.open_project">Open a project ▾</button>
-      <button class="tbtn ghost" id="wizCancelBtn" onclick="wizardCancel()" data-i18n="fontmaker.wizard.cancel" hidden>Cancel</button>
+      <div class="wiz-head-btns">
+        <button class="tbtn ghost" id="wizOpenProject" onclick="toggleLoadMenu(event)" data-i18n="fontmaker.wizard.open_project">Open a project ▾</button>
+        <button class="tbtn ghost" id="wizStartFromFont" onclick="osPickOpen(_wizardMode)" data-i18n="fontmaker.wizard.start_from_font">📚 Start from an existing font</button>
+        <button class="tbtn ghost" id="wizCancelBtn" onclick="wizardCancel()" data-i18n="fontmaker.wizard.cancel" hidden>Cancel</button>
+      </div>
     </div>
     <div class="wiz-steps" aria-hidden="true">
       <span class="wiz-dot" data-step="1">1</span><span class="wiz-dot-sep"></span><span class="wiz-dot" data-step="2">2</span><span class="wiz-dot-sep"></span><span class="wiz-dot" data-step="3">3</span>
@@ -1947,6 +1986,8 @@ footer a { display: inline-block; padding-block: 5px; }
         <div class="wiz-os-row"><span data-i18n="fontmaker.oswizard.meta_version">Version</span><b id="osPrevVersion"></b></div>
         <div class="wiz-os-row"><span data-i18n="fontmaker.panels.license">License</span><a id="osPrevLicense" target="_blank" rel="noopener"></a></div>
       </div>
+      <!-- Only when the font came from the in-app picker (osPickChoose) — a ?start= arrival has no picker to go back to. -->
+      <button type="button" class="tbtn ghost" id="wizOsChangeFont" onclick="osPickReopen()" data-i18n="fontmaker.oswizard.change_font" hidden>← Choose a different font</button>
       <p class="wiz-foot-note" data-i18n="fontmaker.oswizard.honesty">Your edited font will be rebuilt by IvritSuite from the letters you see in the editor — the original's Hebrew letterforms, vowels, mark positions, combined forms, Latin letters, punctuation, line metrics and kerning come along; its hinting and hand-tuned internals don't.</p>
     </section>
 
@@ -1995,6 +2036,35 @@ footer a { display: inline-block; padding-block: 5px; }
         <button class="tbtn" id="wizCreate" onclick="wizardCreate()" data-i18n="fontmaker.wizard.create" hidden>Create font</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- "Start from an existing font" picker: every Open Siddur starting font from starting-fonts/manifest.json,
+     each card previewed in the real font (lazy-loaded FontFace as it scrolls into view). Picking one runs the
+     SAME partner onboarding as the ?start= deep link (osPickChoose → wizardOpen('osfont')); see CLAUDE.md:
+     Starting Fonts. Cards are built in osPickRender (createElement + textContent — manifest strings never
+     reach innerHTML). -->
+<div class="overlay" id="osPickOverlay" onclick="if(event.target===this)osPickClose()">
+  <div class="modal os-pick-modal" role="dialog" aria-modal="true" aria-labelledby="osPickTitle">
+    <div class="wiz-head">
+      <h3 id="osPickTitle" data-i18n="fontmaker.ospick.title">📚 Start from an existing font</h3>
+      <button class="tbtn ghost" id="osPickCancel" onclick="osPickClose()" data-i18n="fontmaker.ospick.back">← Back</button>
+    </div>
+    <p class="os-pick-intro" id="osPickIntro"></p>
+    <div class="os-pick-tools">
+      <label class="os-pick-field os-pick-search"><span data-i18n="fontmaker.ospick.search_label">Search</span>
+        <input type="search" id="osPickSearch" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Font or designer name" data-i18n-placeholder="fontmaker.ospick.search_ph"></label>
+      <label class="os-pick-field os-pick-text"><span data-i18n="fontmaker.ospick.preview_label">Preview text</span>
+        <input type="text" id="osPickText" lang="he" dir="rtl" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="אָלֶף בֵּית גִּימֶל דָּלֶת שָׁלוֹם"></label>
+      <div class="os-pick-filters">
+        <label class="chk"><input type="checkbox" id="osPickNik"> <span data-i18n="fontmaker.ospick.filter_nikkud">Has nikkud</span></label>
+        <label class="chk"><input type="checkbox" id="osPickTrop"> <span data-i18n="fontmaker.ospick.filter_trop">Has trope</span></label>
+        <span class="os-pick-count" id="osPickCount" aria-live="polite"></span>
+      </div>
+    </div>
+    <div class="os-pick-grid" id="osPickGrid" role="list"></div>
+    <p class="os-pick-empty" id="osPickEmpty" data-i18n="fontmaker.ospick.empty" hidden>No starting font matches that search.</p>
+    <p class="wiz-foot-note"><span data-i18n="fontmaker.ospick.lock_note">Your version keeps the original font's license — the Font Maker locks it for you and carries the required credits into every export.</span> <button type="button" class="fld-help" onclick="openHelp('oslock')" title="Why is this locked?" data-i18n-title="fontmaker.osfont.lock_help_title" aria-label="Why is this locked?" data-i18n-aria-label="fontmaker.osfont.lock_help_title">?</button></p>
   </div>
 </div>
 
@@ -3736,6 +3806,8 @@ function aCloseModal(id) {
   // license "?", the template-PDF failure askModal) steals it, and closing that modal would
   // leave the still-open wizard with no Escape/Tab trap — hand it back.
   if (id !== 'wizardOverlay' && document.getElementById('wizardOverlay')?.classList.contains('open')) wizardRearmTrap();
+  // Same single-slot hand-back for the starting-font picker (its load-failure askModal and the license "?" help stack over it).
+  if (id !== 'osPickOverlay' && id !== 'wizardOverlay' && document.getElementById('osPickOverlay')?.classList.contains('open')) _activeModal = { id: 'osPickOverlay', close: osPickClose, opener: _osPickOpener };
 }
 document.addEventListener('keydown', e => {
   // Active modal takes priority: trap Tab + Escape-to-close.
@@ -3780,7 +3852,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.39';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.40';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -3997,6 +4069,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.40</strong> &mdash; <strong>Start from an existing font, right from the wizard.</strong> The <span class="ui">Create a new font</span> screen gained a <span class="ui">📚 Start from an existing font</span> button that opens a browsable library of every editable starting font from the Open Siddur Project &mdash; each card previewed in the real font, with search by name or designer, nikkud and trope filters, the font's license on the card, and a box to type your own Hebrew sample. Pick one and the same partner onboarding runs as the <code>?start=</code> link does: your version keeps the original's license and credits, and <span class="ui">← Choose a different font</span> takes you back to the library. <em>(September 2026)</em></li>
       <li><strong>v5.39</strong> &mdash; <strong>Sending your font to IvritSuite no longer depends on remembering the attachment.</strong> The <span class="ui">Exported ✓</span> screen's <span class="ui">📤 Send to IvritSuite</span> button now writes the submission email right here &mdash; no detour through the font library &mdash; and on an iPhone, iPad or Mac it opens the share sheet with the <strong>.ttf and its LICENSE.txt already attached</strong> (the address is copied for you). Everywhere else it opens the email and keeps an on-screen <strong>checklist naming the exact file to attach</strong>, with <span class="ui">⬇ Download again</span>, <span class="ui">💾 Save as&hellip;</span> and <span class="ui">⎘ Copy address</span> one click away. The same screen gained <span class="ui">📤 Share / Save to Files</span> and <span class="ui">💾 Save as&hellip;</span>, so a font can be put exactly where you want it even where the browser's download is hard to find. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.38</strong> &mdash; <strong>A slimmer footer.</strong> The strip under the workspace used to be a three-column block &mdash; the questions, a paragraph about the tool and a tall list of related tools &mdash; that stood taller than most panels. It is now a single line: <span class="ui">Frequently Asked Questions</span>, <span class="ui">About</span> and <span class="ui">Related Hebrew Tools</span> each fold open on a click, and the credits sit at the end of the same line. Nothing was removed; it just stopped taking a fifth of the screen. <em>(September 2026)</em></li>
       <li><strong>v5.37</strong> &mdash; <strong>Jump straight to the next unfinished letter.</strong> A new button under the letter grid &mdash; and Shift+] / Shift+[ from anywhere in the workspace &mdash; hops to the next letter still missing its outline, or, once you are placing nikkud, still missing its anchors. It follows the same list the Next up hint and the export warnings already use, so you can work through what is left without hunting the grid for the gaps. (August 2026)</li>
@@ -4130,7 +4203,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4143,7 +4216,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_39';
+  const CUR_KEY = 'fontmaker.changelog.v5_40';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -15062,6 +15135,7 @@ function udShortcutBlocked() {
   if (document.getElementById('qaOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('adOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('wizardOverlay')?.classList.contains('open')) return true;   // esp. cancellable mode — Ctrl+Z must not mutate the project behind it
+  if (document.getElementById('osPickOverlay')?.classList.contains('open')) return true;   // the starting-font picker sits in the same slot as the wizard
   if (document.getElementById('importProgressOverlay')?.classList.contains('open')) return true;   // an import is mid-flight — no undo/redo into a half-imported project
   return false;
 }
@@ -19843,18 +19917,36 @@ function _bootLaunchPrompt(data, rec, stripped) {
    same-origin (starting-fonts/); any failure lands in a Retry / Continue-to-Font-Maker modal —
    never a dead end — and the autosave snapshot is never touched without an explicit choice. */
 let _osStartId = null;   // consumed once per boot; Retry carries the id by argument
+/* Manifest + font loaders shared by the ?start= boot and the in-app picker (osPickOpen). The manifest is
+   file-shaped untrusted data (ivritSafeParse) and memoized for the session; an entry needs an id that is
+   safe inside a CSS font-family name, a file, a display name and a license id. A corrupt font throws inside
+   osLoadStartCtx, so every caller lands in its own Retry modal. */
+let _osManifest = null;
+async function osFetchManifest() {
+  if (_osManifest) return _osManifest;
+  const m = ivritSafeParse(await (await fetch('starting-fonts/manifest.json')).text());
+  const fonts = (m && Array.isArray(m.fonts)) ? m.fonts.filter(f => f && typeof f === 'object' && /^[a-z0-9-]+$/.test(String(f.id || ''))
+                                                                  && typeof f.file === 'string' && f.displayName && f.licenseId) : [];
+  if (!fonts.length) throw new Error('starting-fonts manifest empty or malformed');
+  _osManifest = fonts;
+  return fonts;
+}
+async function osLoadStartCtx(entry) {
+  const res = await fetch('starting-fonts/' + entry.file);
+  if (!res.ok) throw new Error('starting font HTTP ' + res.status + ': ' + entry.file);
+  const buf = await res.arrayBuffer();
+  let licenseTxt = '';
+  try { const lr = await fetch('starting-fonts/' + entry.licenseFile); if (lr.ok) licenseTxt = await lr.text(); } catch (e) {}   // soft — export has fallbacks
+  const ot = await ensureOpentype();
+  return { entry, bytes: new Uint8Array(buf), font: ot.parse(buf), licenseText: licenseTxt };   // a corrupt font fails HERE, into the caller's Retry modal
+}
 async function osStartBoot(id, data, rec, stripped) {
   status(I18n.t('fontmaker.osfont.boot_loading'), true);
   let ctx = null;
   try {
-    const m = ivritSafeParse(await (await fetch('starting-fonts/manifest.json')).text());
-    const entry = (m && Array.isArray(m.fonts)) ? m.fonts.find(f => f && f.id === id) : null;
-    if (!entry || !entry.file || !entry.displayName || !entry.licenseId) throw new Error('unknown starting font: ' + id);
-    const buf = await (await fetch('starting-fonts/' + entry.file)).arrayBuffer();
-    let licenseTxt = '';
-    try { licenseTxt = await (await fetch('starting-fonts/' + entry.licenseFile)).text(); } catch (e) {}   // soft — export has fallbacks
-    const ot = await ensureOpentype();
-    ctx = { entry, bytes: new Uint8Array(buf), font: ot.parse(buf), licenseText: licenseTxt };   // a corrupt font fails HERE, into the Retry modal
+    const entry = (await osFetchManifest()).find(f => f.id === id);
+    if (!entry) throw new Error('unknown starting font: ' + id);
+    ctx = await osLoadStartCtx(entry);
   } catch (e) {
     console.warn('starting-font boot failed', e);
     status('');
@@ -19865,7 +19957,7 @@ async function osStartBoot(id, data, rec, stripped) {
     return;
   }
   status('');
-  _osStartCtx = ctx;
+  _osStartCtx = ctx; _osStartOrigin = 'link';
   if (!data || data.format !== 'hebrew-font-maker-project') { wizardOpen('osfont'); return; }
   // A restorable snapshot exists — ask before anything is discarded (mirrors the Continue prompt).
   askModal(I18n.t('fontmaker.osfont.boot_pick_title'),
@@ -20255,6 +20347,7 @@ function wizardOpen(mode){
     document.getElementById({ single: 'wizSrcSingle', combined: 'wizSrcCombined', font: 'wizSrcFont', draw: 'wizSrcDraw' }[im]).checked = true;
   }
   document.getElementById('wizOpenProject').hidden = (mode !== 'gate' && mode !== 'osfont');
+  document.getElementById('wizStartFromFont').hidden = (mode === 'osfont');   // gate + toolbar New: the in-app starting-font picker
   document.getElementById('wizCancelBtn').hidden = (mode !== 'new' && mode !== 'osfont');
   _wizSwapChrome(mode === 'osfont');
   // gate mode: Escape is inert; osfont: Escape falls back to the gate wizard
@@ -20369,7 +20462,8 @@ function wizardCreate(){
    with _osStartCtx = {entry, bytes, font, licenseText} already fetched and parsed. Cancellable:
    Esc / backdrop / Cancel fall back to the normal gate wizard (the boot decision is already
    made, so no deferral-baton resume). See CLAUDE.md: Starting Fonts. ── */
-let _osStartCtx = null;   // set by osStartBoot before wizardOpen('osfont')
+let _osStartCtx = null;   // set by osStartBoot / osPickChoose before wizardOpen('osfont')
+let _osStartOrigin = 'link';   // 'link' (?start= deep link) | 'gate' | 'new' — where the partner wizard's Cancel / "Choose a different font" return to
 let _osPrevFace = null;   // FontFace registered for the step-1 live preview
 /* Sub-toggles gray out under an unchecked parent but KEEP their checked state, and wizardOsFinish
    reads .checked regardless — preserving the latent-import behavior (a wizOsNikkud=false project
@@ -20384,6 +20478,7 @@ function wizOsSyncSubs(){
 function wizardOsPrefill(){
   const e = _osStartCtx.entry;
   const T = (k, p) => window.I18n ? I18n.t(k, p) : k;
+  document.getElementById('wizOsChangeFont').hidden = (_osStartOrigin === 'link');   // a deep-link arrival has no picker to go back to
   document.getElementById('osPrevIntro').textContent = T('fontmaker.oswizard.intro', { font: e.displayName || e.id, partner: e.partnerName || '' });
   document.getElementById('osPrevName').textContent = e.displayName || '';
   document.getElementById('osPrevDesigner').textContent = e.designer || '—';
@@ -20457,7 +20552,11 @@ function wizardOsCancel(){
   aCloseModal('wizardOverlay');
   _wizardMode = null; _osStartCtx = null;
   if (_osPrevFace) { try { document.fonts.delete(_osPrevFace); } catch (e) {} _osPrevFace = null; }
-  wizardOpen('gate');   // fall back to the normal new-font gate
+  // A picker arrival returns to the wizard it left (the gate, or the cancellable toolbar-New wizard with
+  // the current project untouched); a ?start= deep link falls back to the normal new-font gate.
+  const back = (_osStartOrigin === 'new') ? 'new' : 'gate';
+  _osStartOrigin = 'link';
+  wizardOpen(back);
 }
 async function wizardOsFinish(){
   if (!wizardValidateOs()) { wizardShowStep(2); try { document.getElementById('wizOsName').focus(); } catch (e) {} return; }
@@ -20499,7 +20598,7 @@ async function wizardOsFinish(){
   if (yid) setAddYiddish(true);
   if (lad) setAddLadino(true);
   _launchDecided = true; _autosavePromptDeferred = false;
-  _wizardMode = null; _osStartCtx = null;
+  _wizardMode = null; _osStartCtx = null; _osStartOrigin = 'link';
   if (_osPrevFace) { try { document.fonts.delete(_osPrevFace); } catch (err) {} _osPrevFace = null; }
   aCloseModal('wizardOverlay');   // close first — the import's status toasts belong on the workspace
   // No delay on this path: a partner link lands on a BRAND-NEW project, so maybePrefetchEngine
@@ -20515,6 +20614,184 @@ async function wizardOsFinish(){
   status(I18n.t('fontmaker.oswizard.created_toast', { font: e.displayName || e.id, name }));
   markDirty();   // applyFontImport never dirties — this makes the import tomorrow's "Continue" snapshot
   if (tour) tourStartWhenClear();
+}
+
+/* ── "Start from an existing font" picker (#osPickOverlay) ──
+   Opened from the wizard header in gate or toolbar-New mode. One card per manifest font (osPickRender —
+   createElement + textContent, manifest strings never reach innerHTML); the real TTF is registered as a
+   throwaway FontFace only when its card scrolls into view (IntersectionObserver), and faces stay
+   registered for the session so reopening never refetches. Picking a font joins the ?start= path at the
+   same point the deep link does: osLoadStartCtx → _osStartCtx → wizardOpen('osfont'). The picker's
+   search / filters / preview text are per-open UI state, deliberately not persisted (no storage key). */
+const OS_PICK_SAMPLE = 'אָלֶף בֵּית גִּימֶל דָּלֶת שָׁלוֹם';   // i18n-ignore: Hebrew sample content (same phrase as #osPrev), not UI chrome
+let _osPickOrigin = 'gate', _osPickIO = null, _osPickLast = null, _osPickRendered = false, _osPickWired = false, _osPickBusy = false, _osPickOpener = null;
+const _osPickFaces = new Map();   // id → Promise<FontFace|null>; a failed load deletes its entry so a later open can retry
+function osPickT(k, p) { return window.I18n ? I18n.t(k, p) : k; }
+async function osPickOpen(origin) {
+  _osPickOrigin = (origin === 'new') ? 'new' : 'gate';
+  _osPickOpener = document.activeElement;
+  if (document.getElementById('wizardOverlay').classList.contains('open')) { _wizardMode = null; aCloseModal('wizardOverlay'); }
+  status(osPickT('fontmaker.osfont.boot_loading'), true);
+  let fonts;
+  try { fonts = await osFetchManifest(); }
+  catch (e) {
+    console.warn('starting-font manifest failed', e);
+    status('');
+    askModal(osPickT('fontmaker.ospick.load_fail_title'), esc(osPickT('fontmaker.ospick.load_fail_body')),
+      [ { label: osPickT('fontmaker.osfont.boot_retry'), onClick: () => osPickOpen(_osPickOrigin) },
+        { label: osPickT('fontmaker.ospick.back'), cls: 'ghost', onClick: () => wizardOpen(_osPickOrigin) } ]);
+    return;
+  }
+  status('');
+  osPickWire();
+  if (!_osPickRendered) osPickRender(fonts);
+  osPickShow(null);
+}
+function osPickWire() {
+  if (_osPickWired) return; _osPickWired = true;
+  document.getElementById('osPickSearch').addEventListener('input', osPickFilter);
+  document.getElementById('osPickNik').addEventListener('change', osPickFilter);
+  document.getElementById('osPickTrop').addEventListener('change', osPickFilter);
+  document.getElementById('osPickText').addEventListener('input', osPickSetText);
+}
+function osPickShow(focusEl) {
+  aOpenModal('osPickOverlay', osPickClose);
+  if (_activeModal && _activeModal.id === 'osPickOverlay') _activeModal.opener = _osPickOpener;   // return focus to the wizard button, not the card
+  osPickFilter();
+  osPickObserve();
+  setTimeout(() => { try { (focusEl || document.getElementById('osPickSearch')).focus(); } catch (e) {} }, 30);
+}
+function osPickBadge(text, cls) { const b = document.createElement('span'); b.className = 'os-badge' + (cls ? ' ' + cls : ''); b.textContent = text; return b; }
+function osPickRender(fonts) {
+  const grid = document.getElementById('osPickGrid');
+  grid.textContent = '';
+  const sorted = fonts.slice().sort((a, b) => String(a.displayName).localeCompare(String(b.displayName), 'en'));
+  const text = osPickSampleText();
+  sorted.forEach(e => {
+    const card = document.createElement('button');
+    card.type = 'button'; card.className = 'os-pick-card is-loading'; card.setAttribute('role', 'listitem');
+    card.dataset.id = e.id;
+    card.dataset.search = [e.displayName, e.designer, e.id, e.nameTableFamily].filter(Boolean).join(' ').toLowerCase();
+    card.dataset.nik = e.hasNikkud ? '1' : '';
+    card.dataset.trop = e.hasTrop ? '1' : '';
+    const sample = document.createElement('div'); sample.className = 'os-pick-sample'; sample.lang = 'he'; sample.dir = 'rtl';
+    sample.setAttribute('aria-hidden', 'true'); sample.textContent = text;
+    const name = document.createElement('div'); name.className = 'os-pick-name'; name.textContent = String(e.displayName);
+    const meta = document.createElement('div'); meta.className = 'os-pick-meta';
+    meta.textContent = [e.designer, e.originalVersion ? 'v' + e.originalVersion : ''].filter(Boolean).join(' · ');
+    const badges = document.createElement('div'); badges.className = 'os-pick-badges';
+    if (e.hasNikkud) badges.appendChild(osPickBadge(osPickT('fontmaker.ospick.badge_nikkud')));
+    if (e.hasTrop) badges.appendChild(osPickBadge(osPickT('fontmaker.ospick.badge_trop')));
+    const lic = osPickBadge(String(e.licenseId), 'os-badge-lic');   // i18n-ignore: license identifiers are manifest data
+    lic.title = String(e.licenseName || e.licenseId);
+    badges.appendChild(lic);
+    card.append(sample, name, meta, badges);
+    card.setAttribute('aria-label', osPickT('fontmaker.ospick.card_aria', { font: String(e.displayName), designer: String(e.designer || ''), license: String(e.licenseName || e.licenseId) }));
+    card.addEventListener('click', () => osPickChoose(e.id));
+    grid.appendChild(card);
+  });
+  // Intro: the partner credit + a link to their fonts page (every current entry shares one partner).
+  const intro = document.getElementById('osPickIntro');
+  const first = sorted[0] || {};
+  intro.textContent = osPickT('fontmaker.ospick.intro', { count: sorted.length, partner: String(first.partnerName || '') }) + ' ';
+  if (typeof first.partnerUrl === 'string' && /^https:\/\//.test(first.partnerUrl)) {
+    const a = document.createElement('a'); a.href = first.partnerUrl; a.target = '_blank'; a.rel = 'noopener';
+    a.textContent = osPickT('fontmaker.ospick.partner_link');
+    intro.appendChild(a);
+  }
+  _osPickRendered = true;
+}
+function osPickSampleText() { const v = document.getElementById('osPickText').value.trim(); return v || OS_PICK_SAMPLE; }
+function osPickSetText() { const t = osPickSampleText(); document.querySelectorAll('#osPickGrid .os-pick-sample').forEach(s => { s.textContent = t; }); }
+function osPickFilter() {
+  const q = document.getElementById('osPickSearch').value.trim().toLowerCase();
+  const nik = document.getElementById('osPickNik').checked, trp = document.getElementById('osPickTrop').checked;
+  let n = 0, total = 0;
+  document.querySelectorAll('#osPickGrid .os-pick-card').forEach(c => {
+    total++;
+    const show = (!q || c.dataset.search.includes(q)) && (!nik || c.dataset.nik === '1') && (!trp || c.dataset.trop === '1');
+    c.hidden = !show; if (show) n++;
+  });
+  document.getElementById('osPickCount').textContent = osPickT('fontmaker.ospick.count', { n, total });
+  document.getElementById('osPickEmpty').hidden = n > 0;
+}
+// Lazy previews: observe every not-yet-loaded card; a filtered-out card (display:none) simply reports
+// no intersection until it is shown again, so the observer needs no re-arm on filter changes.
+function osPickObserve() {
+  if (_osPickIO) { _osPickIO.disconnect(); _osPickIO = null; }
+  const grid = document.getElementById('osPickGrid');
+  const cards = Array.from(grid.querySelectorAll('.os-pick-card.is-loading'));
+  if (!('IntersectionObserver' in window)) { cards.forEach(c => osPickLoadFace(c)); return; }
+  _osPickIO = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) { _osPickIO.unobserve(en.target); osPickLoadFace(en.target); } });
+  }, { root: grid, rootMargin: '300px 0px' });
+  cards.forEach(c => _osPickIO.observe(c));
+}
+function osPickLoadFace(card) {
+  const id = card.dataset.id;
+  const entry = (_osManifest || []).find(f => f.id === id);
+  if (!entry || !window.FontFace) { card.classList.remove('is-loading'); return; }
+  const family = 'HFMOsPick-' + id;   // id matched /^[a-z0-9-]+$/ in osFetchManifest — safe inside a quoted font-family
+  if (!_osPickFaces.has(id)) {
+    _osPickFaces.set(id, (async () => {
+      const res = await fetch('starting-fonts/' + entry.file);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const ff = new FontFace(family, await res.arrayBuffer());
+      await ff.load(); document.fonts.add(ff); return ff;
+    })().catch(err => { console.warn('starting-font preview failed', id, err); _osPickFaces.delete(id); return null; }));
+  }
+  _osPickFaces.get(id).then(ff => {
+    const sample = card.querySelector('.os-pick-sample');
+    if (ff && sample) sample.style.fontFamily = "'" + family + "', 'IvritSuite Taamim', serif";
+    card.classList.remove('is-loading');
+    if (!ff) card.title = osPickT('fontmaker.ospick.preview_failed');
+  });
+}
+function osPickClose() {
+  aCloseModal('osPickOverlay');
+  if (_osPickIO) { _osPickIO.disconnect(); _osPickIO = null; }
+  wizardOpen(_osPickOrigin);   // back to the wizard this picker was opened from (gate, or toolbar New with the project untouched)
+}
+// "← Choose a different font" on partner step 1 (picker arrivals only): drop the pending context and
+// re-show the picker as it was left — same search, filters, preview text and already-loaded faces.
+function osPickReopen() {
+  aCloseModal('wizardOverlay');
+  _wizardMode = null; _osStartCtx = null;
+  if (_osPrevFace) { try { document.fonts.delete(_osPrevFace); } catch (e) {} _osPrevFace = null; }
+  _osPickOrigin = (_osStartOrigin === 'new') ? 'new' : 'gate';
+  _osStartOrigin = 'link';
+  const last = _osPickLast ? document.querySelector('#osPickGrid .os-pick-card[data-id="' + _osPickLast + '"]') : null;
+  osPickShow(last);
+}
+async function osPickChoose(id) {
+  if (_osPickBusy) return;
+  const entry = (_osManifest || []).find(f => f.id === id);
+  if (!entry) return;
+  const card = document.querySelector('#osPickGrid .os-pick-card[data-id="' + id + '"]');
+  _osPickBusy = true;
+  if (card) card.setAttribute('aria-busy', 'true');
+  status(osPickT('fontmaker.osfont.boot_loading'), true);
+  let ctx = null;
+  try { ctx = await osLoadStartCtx(entry); }
+  catch (e) {
+    console.warn('starting-font load failed', id, e);
+    _osPickBusy = false;
+    status('');
+    if (card) card.removeAttribute('aria-busy');
+    askModal(osPickT('fontmaker.osfont.boot_fail_title'),
+      osPickT('fontmaker.ospick.choose_fail_body', { font: '<b>' + esc(String(entry.displayName)) + '</b>' }),
+      [ { label: osPickT('fontmaker.osfont.boot_retry'), onClick: () => osPickChoose(id) },
+        { label: osPickT('fontmaker.ospick.back'), cls: 'ghost', onClick: () => {} } ]);
+    return;
+  }
+  _osPickBusy = false;
+  status('');
+  if (card) card.removeAttribute('aria-busy');
+  _osPickLast = id;
+  _osStartCtx = ctx; _osStartOrigin = _osPickOrigin;
+  if (_osPickIO) { _osPickIO.disconnect(); _osPickIO = null; }
+  aCloseModal('osPickOverlay');
+  wizardOpen('osfont');
 }
 // The import's fidelity autofix can leave a report open over the finished project (only when some
 // mark still missed). Spotlighting the workspace underneath a modal helps nobody, so wait the modal
@@ -20753,6 +21030,14 @@ function applyI18n() {
   try { renderControls(); } catch (e) {}
   try { renderGrids(); } catch (e) {}
   try { if (project) syncOsFontLock(); } catch (e) {}   // partner license-lock note text is I18n.t-built
+  // Starting-font picker cards (badges, aria-labels, intro, count) are JS-built — rebuild them read-only;
+  // already-loaded preview faces re-attach from the memoized _osPickFaces without a refetch.
+  try {
+    if (_osPickRendered && _osManifest) {
+      osPickRender(_osManifest);
+      if (document.getElementById('osPickOverlay').classList.contains('open')) { osPickFilter(); osPickObserve(); }
+    }
+  } catch (e) {}
   // renderGrids re-renders only the custom-glyph GRID once the panel exists (its once-guard keeps
   // normal renders from resetting the add-form), so the form's strings keep their build-time
   // language. Rebuild the full panel on a language change — an unsent add-form resets, the same

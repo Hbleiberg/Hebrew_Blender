@@ -281,6 +281,18 @@ opens that font pre-imported into a fresh, **license-locked** project via a 3-st
   `wizStepOs1–3` sections (gate/new untouched; chrome swaps via the data-i18n attribute-swap);
   `wizardOsFinish` seeds `project.osFont` + `font.license='os-passthrough'` then calls the
   existing `applyFontImport` headlessly (`{outlines,marks,anchors:true}`).
+- **In-app picker** (`#osPickOverlay`, wizard-header button `#wizStartFromFont` in gate and toolbar-New
+  modes): `osPickOpen(origin)` closes the wizard, loads the manifest through the shared
+  `osFetchManifest()` (memoized, `ivritSafeParse`, entries filtered to a `/^[a-z0-9-]+$/` id + file +
+  displayName + licenseId) and renders one `<button>` card per font (`osPickRender`, createElement +
+  textContent only; search / nikkud + trope filters / custom preview text are per-open state with no
+  storage key). Each card's real TTF is registered as a throwaway `FontFace` (`HFMOsPick-<id>`) only when
+  it scrolls into view (`osPickObserve` IntersectionObserver, `osPickLoadFace`); faces are memoized in
+  `_osPickFaces` for the session. `osPickChoose(id)` joins the deep-link path at `osLoadStartCtx(entry)` →
+  `_osStartCtx` → `wizardOpen('osfont')`, recording `_osStartOrigin` (`'link' | 'gate' | 'new'`): the
+  partner wizard's Cancel returns to that origin wizard and step 1 shows `#wizOsChangeFont` (hidden for
+  `'link'`) → `osPickReopen()`. `aCloseModal` hands the focus trap back to the picker the way it does for
+  the wizard; `udShortcutBlocked()` includes `osPickOverlay`; `applyI18n` re-renders the cards.
 - **Lock invariants** (`project.osFont` presence = partner-locked; belt-and-braces): `licenseText()`
   dispatches to `osPassthroughText()` **before** reading `font.license`; `buildFontSpec` AND
   `buildUfoFontInfo` carry independent partner branches (combined copyright, "designer; modified
