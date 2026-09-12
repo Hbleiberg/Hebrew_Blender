@@ -20669,7 +20669,13 @@ function osPickBadge(text, cls) { const b = document.createElement('span'); b.cl
 function osPickRender(fonts) {
   const grid = document.getElementById('osPickGrid');
   grid.textContent = '';
-  const sorted = fonts.slice().sort((a, b) => String(a.displayName).localeCompare(String(b.displayName), 'en'));
+  // A-Z first, then names that open with a digit or other non-letter (the 4Q… scroll fonts) — an
+  // alphabetical-only sort put the most unusual faces in the set on the opening screen.
+  const nonAlpha = s => /^\p{L}/u.test(s) ? 0 : 1;
+  const sorted = fonts.slice().sort((a, b) => {
+    const an = String(a.displayName), bn = String(b.displayName);
+    return (nonAlpha(an) - nonAlpha(bn)) || an.localeCompare(bn, 'en');
+  });
   const text = osPickSampleText();
   sorted.forEach(e => {
     const card = document.createElement('button');
