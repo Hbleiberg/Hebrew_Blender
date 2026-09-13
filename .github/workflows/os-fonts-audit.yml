@@ -1,0 +1,77 @@
+# Weekly audit of the Open Siddur Project's published font list against starting-fonts/manifest.json.
+# Runs scripts/audit-os-fonts.mjs; on main it commits the refreshed snapshot + report when they
+# change and opens (or updates) one tracking issue whenever something needs a human. It never
+# stages a font itself — intake still goes through /addOSFont (scripts/add_os_font.py), which reads
+# the license text shipped inside each archive.
+name: OpenSiddur font list audit
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'   # Mondays 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: os-fonts-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Fetch the partner list and audit it
+        id: audit
+        run: node scripts/audit-os-fonts.mjs --dump
+
+      - name: Upload the report
+        uses: actions/upload-artifact@v4
+        with:
+          name: os-fonts-audit
+          path: |
+            starting-fonts/AUDIT.md
+            starting-fonts/opensiddur-fonts.json
+          retention-days: 90
+
+      - name: Commit the refreshed snapshot and report
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git add starting-fonts/AUDIT.md starting-fonts/opensiddur-fonts.json
+          if git diff --cached --quiet; then echo "No change."; exit 0; fi
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Starting fonts: refresh OpenSiddur list audit"
+          git push origin HEAD:main
+
+      - name: Open or update the tracking issue
+        if: github.ref == 'refs/heads/main' && steps.audit.outputs.actionable != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEW: ${{ steps.audit.outputs.new }}
+          DROPPED: ${{ steps.audit.outputs.dropped }}
+          CONFLICTS: ${{ steps.audit.outputs.conflicts }}
+        run: |
+          title="OpenSiddur font list: $NEW new, $DROPPED dropped, $CONFLICTS license conflicts"
+          marker='<!-- os-fonts-audit -->'
+          {
+            echo "$marker"
+            echo "The weekly audit found something that needs a person. Full report: [starting-fonts/AUDIT.md](https://github.com/${GITHUB_REPOSITORY}/blob/main/starting-fonts/AUDIT.md) (run [#${GITHUB_RUN_NUMBER}](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}))."
+            echo
+            echo "New fonts go through \`/addOSFont\` one at a time; the license text shipped in the archive decides, not the listing."
+            echo
+            cat starting-fonts/AUDIT.md
+          } > body.md
+          existing=$(gh issue list --state open --search "$marker in:body" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --title "$title" --body-file body.md
+          else
+            gh issue create --title "$title" --body-file body.md --label "starting-fonts" || gh issue create --title "$title" --body-file body.md
+          fi
