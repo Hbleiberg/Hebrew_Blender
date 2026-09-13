@@ -4,7 +4,8 @@ Fonts in this folder power `Hebrew_Font_Maker.html?start=<id>`: a partner site (
 Project, https://opensiddur.org/help/fonts/) links here, the Font Maker fetches the font, runs a
 short partner onboarding, and opens a fresh project with the font's Hebrew letters, marks, and
 anchor positions imported. The derivative's license is locked to the upstream license, and
-declared Reserved Font Names force a rename.
+declared Reserved Font Names force a rename. The Font Maker's own "📚 Start from an existing font"
+picker (in the new-font wizard) reads the same manifest, so a staged font appears there automatically.
 
 ## Layout
 
