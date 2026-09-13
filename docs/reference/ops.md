@@ -173,8 +173,13 @@ push, is what updates the live site.
 - **One authored workflow exists: `.github/workflows/os-fonts-audit.yml`** (weekly, Mondays 06:17 UTC,
   plus `workflow_dispatch` and a push that touches the workflow or `scripts/audit-os-fonts.mjs`). It
   runs the audit, uploads `starting-fonts/AUDIT.md` + `opensiddur-fonts.json` as an artifact, and
-  only on `main` commits them when changed and opens/updates one `<!-- os-fonts-audit -->`-marked
-  issue when something needs a person. Its bot commit to `main` triggers a Pages deploy like any
+  only on `main` commits them when changed, runs the automated intake (`scripts/stage_os_fonts.py`,
+  Python + fontTools) on the new fonts and opens one PR per run with the staged ones
+  (`STAGE_TARGET: pr` at the top of the workflow; `main` pushes them directly), then opens/updates one
+  `<!-- os-fonts-audit -->`-marked issue when something needs a person and closes it when the audit is
+  clean. `gh pr create` from a workflow needs the repo setting "Allow GitHub Actions to create and
+  approve pull requests" (Settings → Actions → General → Workflow permissions); without it the branch
+  is still pushed and the issue links a one-click compare URL. Its bot commit to `main` triggers a Pages deploy like any
   other push (harmless: nothing under `starting-fonts/` is precached). The live
   `opensiddur.org/…/fonts.json` sits behind a Cloudflare JavaScript challenge that 403s every
   non-browser client, so the script falls back to the committed copy in the partner's site repo

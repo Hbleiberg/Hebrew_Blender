@@ -368,7 +368,19 @@ opens that font pre-imported into a fresh, **license-locked** project via a 3-st
   `wp-content/uploads/fonts/<family>/<family>.zip`, a hint the intake verifies) plus
   `starting-fonts/opensiddur-fonts.json` (the normalized list as last seen). Both are generated —
   never hand-edit them. The list is the discovery source only; the license text shipped inside the
-  archive stays the truth, so every new font still goes through `/addOSFont`.
+  archive stays the truth. **Automated intake:** `scripts/stage_os_fonts.py` takes the audit's
+  unmatched entries (`--emit-new`), downloads each archive from the partner's site repository
+  (`fonts/<family>/<family>.zip`, recorded as the upstream), picks the Regular/Book/Medium/Light face
+  and the plain-text LICENSE/OFL/COPYING/README member (preferring the one that states the GPL font
+  exception when that is the verdict), runs `add_os_font.py --dry-run`, and stages only when the
+  verdict's license family agrees with the partner's label — a coarse "GPL 3.0" label against shipped
+  GPL+FE text is staged and appended to `not-staged.json` `discrepancies` (the one machine write to
+  that file). `--name` is the catalogue name minus a trailing parenthetical, `--id` the catalogue slug
+  when it is a valid manifest id, `--designer` the catalogue typographer (the name-table designer is
+  noted in the report). HTML-only licenses, missing license text, label-vs-text disagreements and
+  refusals are left for `/addOSFont`. The workflow ships staged fonts as one PR per run
+  (`STAGE_TARGET: pr`; `main` pushes directly). The picker's "{count} editable fonts" line is computed
+  from the manifest, so no string changes with a count.
 - **Runtime**: `init()` strips `?start` immediately (keeps `?lang`); `osStartBoot` runs inside
   `maybeRestoreAutosave` after `_launchDecided` (deferral batons untouched; the no-param tail is
   the verbatim extraction `_bootLaunchPrompt`). A restorable snapshot is arbitrated first ("Open
@@ -387,7 +399,7 @@ opens that font pre-imported into a fresh, **license-locked** project via a 3-st
   `_osPickFaces` for the session. The preview field also hosts the shared **test-phrases** chips and
   **hebrew-keyboard** blocks (this page already carried both, so the carrier lists are unchanged):
   `osPickWire` mounts them once against one `getInput`/`onChange` pair (`osPickSetText` — a scripted
-  value change fires no `input` event), passes `getFontFlags: () => null` (the grid previews 132 fonts,
+  value change fires no `input` event), passes `getFontFlags: () => null` (the grid previews every manifest font,
   not one), and calls `setOpen(false)` so the toggle label renders through I18n at mount. The default
   sample `OS_PICK_SAMPLE` is unpointed; the chips reach nikkud, trop and the rest. The card grid is the
   modal's only flex-grower (every sibling is `flex: 0 0 auto`, the grid keeps a `min-block-size` floor),

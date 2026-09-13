@@ -1,8 +1,18 @@
-# Weekly audit of the Open Siddur Project's published font list against starting-fonts/manifest.json.
-# Runs scripts/audit-os-fonts.mjs; on main it commits the refreshed snapshot + report when they
-# change and opens (or updates) one tracking issue whenever something needs a human. It never
-# stages a font itself — intake still goes through /addOSFont (scripts/add_os_font.py), which reads
-# the license text shipped inside each archive.
+# Weekly audit of the Open Siddur Project's published font list against starting-fonts/manifest.json,
+# followed by automated intake of whatever is new.
+#
+#   audit  — scripts/audit-os-fonts.mjs. On main it commits the refreshed report + snapshot when they
+#            change. Unmatched fonts are handed to the intake as JSON.
+#   intake — scripts/stage_os_fonts.py runs scripts/add_os_font.py (the same tool and the same
+#            shipped-license gate a person uses) on each new font and stages the ones that pass.
+#            Staged fonts go up as ONE pull request per run (STAGE_TARGET=pr, the default) or straight
+#            to main (STAGE_TARGET=main). Fonts it will not decide (no license text, HTML-only license,
+#            label vs text disagreement, refused classification) are listed for a person.
+#   issue  — one tracking issue, created or updated whenever something needs a person, closed when
+#            the audit comes back clean.
+#
+# No sw.js VERSION bump is needed for an intake: the manifest is served network-first and font binaries
+# are fetched on demand. The picker's "{count} editable Hebrew fonts" line is computed from the manifest.
 name: OpenSiddur font list audit
 
 on:
@@ -13,14 +23,19 @@ on:
     paths:
       - '.github/workflows/os-fonts-audit.yml'
       - 'scripts/audit-os-fonts.mjs'
+      - 'scripts/stage_os_fonts.py'
 
 permissions:
   contents: write
   issues: write
+  pull-requests: write
 
 concurrency:
   group: os-fonts-audit
   cancel-in-progress: false
+
+env:
+  STAGE_TARGET: pr         # 'pr' = open a pull request with the staged fonts · 'main' = push them to main directly
 
 jobs:
   audit:
@@ -34,16 +49,7 @@ jobs:
 
       - name: Fetch the partner list and audit it
         id: audit
-        run: node scripts/audit-os-fonts.mjs --dump
-
-      - name: Upload the report
-        uses: actions/upload-artifact@v4
-        with:
-          name: os-fonts-audit
-          path: |
-            starting-fonts/AUDIT.md
-            starting-fonts/opensiddur-fonts.json
-          retention-days: 90
+        run: node scripts/audit-os-fonts.mjs --dump --emit-new "$RUNNER_TEMP/new.json"
 
       - name: Commit the refreshed snapshot and report
         if: github.ref == 'refs/heads/main'
@@ -55,27 +61,115 @@ jobs:
           git commit -m "Starting fonts: refresh OpenSiddur list audit"
           git push origin HEAD:main
 
-      - name: Open or update the tracking issue
-        if: github.ref == 'refs/heads/main' && steps.audit.outputs.actionable != '0'
+      # ---------- automated intake of the new fonts ----------
+      - uses: actions/setup-python@v5
+        if: steps.audit.outputs.new != '0'
+        with:
+          python-version: '3.12'
+
+      - name: Stage the new fonts that pass the shipped-license gate
+        id: stage
+        if: steps.audit.outputs.new != '0'
+        run: |
+          pip install --quiet fonttools
+          python3 scripts/stage_os_fonts.py "$RUNNER_TEMP/new.json" --report "$RUNNER_TEMP/stage-report.md" \
+            ${{ github.ref != 'refs/heads/main' && '--dry-run' || '' }}
+
+      - name: Publish the staged fonts
+        id: publish
+        if: github.ref == 'refs/heads/main' && steps.stage.outputs.staged != '0' && steps.stage.outputs.staged != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STAGED_IDS: ${{ steps.stage.outputs.staged_ids }}
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add starting-fonts/
+          title="Starting fonts: automated intake of $STAGED_IDS"
+          {
+            echo "Automated intake from the Open Siddur Project font list (run [#${GITHUB_RUN_NUMBER}](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}))."
+            echo "Each font passed \`scripts/add_os_font.py\`'s shipped-license gate; the manifest entry, LICENSE.txt and LINKS.md block were written by that script exactly as for a manual \`/addOSFont\`."
+            echo
+            cat "$RUNNER_TEMP/stage-report.md"
+          } > "$RUNNER_TEMP/pr-body.md"
+          if [ "$STAGE_TARGET" = "main" ]; then
+            git commit -F - <<EOF
+          $title
+
+          $(cat "$RUNNER_TEMP/stage-report.md")
+          EOF
+            git push origin HEAD:main
+            echo "published=main" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          branch="os-fonts/intake-${GITHUB_RUN_NUMBER}"
+          git checkout -b "$branch"
+          git commit -m "$title"
+          git push -u origin "$branch"
+          if url=$(gh pr create --base main --head "$branch" --title "$title" --body-file "$RUNNER_TEMP/pr-body.md" 2>"$RUNNER_TEMP/pr-err.txt"); then
+            echo "published=$url" >> "$GITHUB_OUTPUT"
+          else
+            # Usually "GitHub Actions is not permitted to create or approve pull requests" — a repo
+            # setting (Settings → Actions → General → Workflow permissions). The branch is pushed; the
+            # issue links it so a person can open the PR with one click.
+            echo "published=branch:https://github.com/${GITHUB_REPOSITORY}/compare/main...${branch}?expand=1" >> "$GITHUB_OUTPUT"
+            echo "pr_error=$(tr '\n' ' ' < "$RUNNER_TEMP/pr-err.txt")" >> "$GITHUB_OUTPUT"
+          fi
+          git checkout -q main
+
+      - name: Upload the reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: os-fonts-audit
+          path: |
+            starting-fonts/AUDIT.md
+            starting-fonts/opensiddur-fonts.json
+            ${{ runner.temp }}/stage-report.md
+          if-no-files-found: ignore
+          retention-days: 90
+
+      # ---------- one tracking issue ----------
+      - name: Open, update or close the tracking issue
+        if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
           NEW: ${{ steps.audit.outputs.new }}
           DROPPED: ${{ steps.audit.outputs.dropped }}
           CONFLICTS: ${{ steps.audit.outputs.conflicts }}
+          CHANGED: ${{ steps.audit.outputs.changed }}
+          STAGED: ${{ steps.stage.outputs.staged }}
+          SKIPPED: ${{ steps.stage.outputs.skipped }}
+          PUBLISHED: ${{ steps.publish.outputs.published }}
+          PR_ERROR: ${{ steps.publish.outputs.pr_error }}
         run: |
-          title="OpenSiddur font list: $NEW new, $DROPPED dropped, $CONFLICTS license conflicts"
           marker='<!-- os-fonts-audit -->'
+          existing=$(gh issue list --state open --search "$marker in:body" --json number --jq '.[0].number // empty')
+          # Nothing for a person: staged fonts (if any) are in the PR; close a stale issue.
+          if [ "${SKIPPED:-0}" = "0" ] && [ "${DROPPED:-0}" = "0" ] && [ "${CONFLICTS:-0}" = "0" ] && [ "${CHANGED:-0}" = "0" ]; then
+            if [ -n "$existing" ]; then
+              gh issue close "$existing" --comment "The audit is clean again (run [#${GITHUB_RUN_NUMBER}](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}))${PUBLISHED:+; staged fonts: $PUBLISHED}."
+            fi
+            echo "Nothing needs a person."; exit 0
+          fi
+          title="OpenSiddur font list: $NEW new (${STAGED:-0} staged automatically, ${SKIPPED:-0} need a person), $DROPPED dropped, $CONFLICTS license conflicts, ${CHANGED:-0} changed"
           {
             echo "$marker"
             echo "The weekly audit found something that needs a person. Full report: [starting-fonts/AUDIT.md](https://github.com/${GITHUB_REPOSITORY}/blob/main/starting-fonts/AUDIT.md) (run [#${GITHUB_RUN_NUMBER}](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}))."
+            case "$PUBLISHED" in
+              main) echo; echo "**Staged automatically and pushed to main.**";;
+              branch:*) echo; echo "**Staged automatically on a branch, but the workflow could not open the pull request** (${PR_ERROR:-see the run log}). Open it here: ${PUBLISHED#branch:}";;
+              http*) echo; echo "**Staged automatically:** $PUBLISHED — review and merge.";;
+            esac
             echo
-            echo "New fonts go through \`/addOSFont\` one at a time; the license text shipped in the archive decides, not the listing."
+            echo "Fonts left for a person go through \`/addOSFont\` one at a time; the license text shipped in the archive decides, not the listing."
             echo
+            [ -f "$RUNNER_TEMP/stage-report.md" ] && cat "$RUNNER_TEMP/stage-report.md" && echo
             cat starting-fonts/AUDIT.md
-          } > body.md
-          existing=$(gh issue list --state open --search "$marker in:body" --json number --jq '.[0].number // empty')
+          } > "$RUNNER_TEMP/body.md"
           if [ -n "$existing" ]; then
-            gh issue edit "$existing" --title "$title" --body-file body.md
+            gh issue edit "$existing" --title "$title" --body-file "$RUNNER_TEMP/body.md"
           else
-            gh issue create --title "$title" --body-file body.md --label "starting-fonts" || gh issue create --title "$title" --body-file body.md
+            gh issue create --title "$title" --body-file "$RUNNER_TEMP/body.md" --label "starting-fonts" \
+              || gh issue create --title "$title" --body-file "$RUNNER_TEMP/body.md"
           fi

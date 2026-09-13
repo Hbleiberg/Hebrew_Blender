@@ -21,10 +21,16 @@ The workhorse is `scripts/add_os_font.py` (Python 3 + fontTools; if it exits 2, 
 
 ## Protocol — in order, no skipping
 
-0. **Discovery.** `starting-fonts/AUDIT.md` (written weekly by `scripts/audit-os-fonts.mjs` from the
-   partner's published `fonts.json`; `node scripts/audit-os-fonts.mjs` refreshes it on demand) lists
-   every font on the partner list that is not yet staged, with its listed license and download URL.
-   Work from that list; the audit is discovery only and never stages anything.
+0. **Discovery and the automated intake.** `starting-fonts/AUDIT.md` (written weekly by
+   `scripts/audit-os-fonts.mjs` from the partner's published `fonts.json`) lists every font on the
+   partner list that is not yet staged. The workflow then runs `scripts/stage_os_fonts.py`, which
+   stages — with this same `add_os_font.py` gate — every new font whose archive ships a plain-text
+   license that classifies onto the allowlist and agrees with the partner's label, as one pull
+   request. **What reaches you by hand is only what it would not decide:** an HTML-only license
+   (transcribe it), no license text (`--license-source partner-declared` if you accept the label),
+   a label-vs-text disagreement, a refused classification. The tracking issue names each with the
+   reason. Reproduce its decision locally with
+   `node scripts/audit-os-fonts.mjs --emit-new new.json && python3 scripts/stage_os_fonts.py new.json --dry-run`.
 1. **Input.** A `.ttf`/`.otf` file path (dragged into the session, or fetched from the partner's
    repo — record the exact upstream URL you took it from). Refuse other formats and TTC
    collections. Locate the upstream license file that ships WITH the font (a LICENSE/OFL/README

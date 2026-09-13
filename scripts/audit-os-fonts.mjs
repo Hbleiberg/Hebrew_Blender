@@ -8,6 +8,7 @@
  *   node scripts/audit-os-fonts.mjs --source x.json # audit a local copy (or another URL) instead
  *   node scripts/audit-os-fonts.mjs --dump          # also print the raw list's shape (fields, samples)
  *   node scripts/audit-os-fonts.mjs --no-write      # report to stdout only
+ *   node scripts/audit-os-fonts.mjs --emit-new p.json # also write the unmatched entries (input to stage_os_fonts.py)
  *
  * Source. The list is the data file of the partner's WordPress plugin ("custom-fonts-display"):
  *   live:   https://opensiddur.org/wp-content/plugins/custom-fonts-display/data/fonts.json
@@ -259,9 +260,11 @@ async function main() {
     writeFileSync(REPORT, report + '\n');
     writeFileSync(SNAPSHOT, JSON.stringify({ schema: 1, source, partnerSchemaVersion: data?._meta?.schemaVersion ?? null, fonts: list }, null, 2) + '\n');
   }
+  const emit = opt('--emit-new', '');
+  if (emit) writeFileSync(resolve(emit), JSON.stringify(fresh.map((r) => r.p), null, 2) + '\n');
   // Machine-readable summary for the workflow.
   if (process.env.GITHUB_OUTPUT) {
-    writeFileSync(process.env.GITHUB_OUTPUT, `actionable=${actionable}\nnew=${fresh.length}\ndropped=${dropped.length}\nconflicts=${newConflicts}\n`, { flag: 'a' });
+    writeFileSync(process.env.GITHUB_OUTPUT, `actionable=${actionable}\nnew=${fresh.length}\ndropped=${dropped.length}\nconflicts=${newConflicts}\nchanged=${delta ? delta.changed.length : 0}\n`, { flag: 'a' });
   }
 }
 main();
