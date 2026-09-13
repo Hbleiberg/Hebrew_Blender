@@ -883,7 +883,12 @@ footer a { display: inline-block; padding-block: 5px; }
      scroller, so the search/filter row and the license note stay put while 130+ cards scroll. */
   .wiz-head-btns { display: flex; gap: 8px; flex-wrap: wrap; }
   .os-pick-modal { max-width: 940px; width: 94%; max-height: 92vh; max-height: 92dvh; display: flex; flex-direction: column; }
-  .os-pick-intro { font-size: 0.85rem; line-height: 1.45; margin: 6px 0 10px; }
+  /* Logo + intro on one row: the mark carries the partner identity so the sentence can stay short.
+     align-items:start keeps the logo pinned to the first line when the text wraps to two or three. */
+  .os-pick-partner { display: flex; align-items: flex-start; gap: 12px; margin: 6px 0 12px; }
+  .os-pick-logo { inline-size: 44px; block-size: 44px; flex: 0 0 auto; margin-block-start: 1px; }
+  .os-pick-logo[hidden] { display: none; }
+  .os-pick-intro { font-size: 0.85rem; line-height: 1.45; margin: 0; }
   .os-pick-intro a { color: var(--gold-text); font-weight: 700; }
   .os-pick-tools { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: flex-end; margin-block-end: 10px; }
   .os-pick-field { display: flex; flex-direction: column; gap: 3px; font-size: 0.72rem; font-weight: 700; color: var(--muted); }
@@ -2062,7 +2067,14 @@ footer a { display: inline-block; padding-block: 5px; }
       <h3 id="osPickTitle" data-i18n="fontmaker.ospick.title">📚 Start from an existing font</h3>
       <button class="tbtn ghost" id="osPickCancel" onclick="osPickClose()" data-i18n="fontmaker.ospick.back">← Back</button>
     </div>
-    <p class="os-pick-intro" id="osPickIntro"></p>
+    <!-- Partner credit: the Open Siddur Project's mark beside the intro line. Decorative (alt="") on
+         purpose — the "About these fonts" link inside the intro already points at the same page, and
+         two adjacent links to one URL is noise for a screen reader. osPickRender shows it only while
+         every manifest entry is that partner's. Provenance + license status: partners/opensiddur/NOTICE.md -->
+    <div class="os-pick-partner">
+      <img id="osPickLogo" class="os-pick-logo" src="partners/opensiddur/logo.png" alt="" aria-hidden="true" width="500" height="500" decoding="async" hidden>
+      <p class="os-pick-intro" id="osPickIntro"></p>
+    </div>
     <div class="os-pick-tools">
       <label class="os-pick-field os-pick-search"><span data-i18n="fontmaker.ospick.search_label">Search</span>
         <input type="search" id="osPickSearch" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Font or designer name" data-i18n-placeholder="fontmaker.ospick.search_ph"></label>
@@ -20736,7 +20748,7 @@ function osPickRender(fonts) {
     card.addEventListener('click', () => osPickChoose(e.id));
     grid.appendChild(card);
   });
-  // Intro: the partner credit + a link to their fonts page (every current entry shares one partner).
+  // Intro: the partner credit + a link to their fonts page.
   const intro = document.getElementById('osPickIntro');
   const first = sorted[0] || {};
   intro.textContent = osPickT('fontmaker.ospick.intro', { count: sorted.length, partner: String(first.partnerName || '') }) + ' ';
@@ -20745,6 +20757,11 @@ function osPickRender(fonts) {
     a.textContent = osPickT('fontmaker.ospick.partner_link');
     intro.appendChild(a);
   }
+  // The mark is one partner's, so it shows only while the whole library is theirs. A second partner's
+  // fonts in the manifest hide it rather than credit the wrong project (the sentence above reads from
+  // the first entry for the same reason — see partners/opensiddur/NOTICE.md).
+  const logo = document.getElementById('osPickLogo');
+  if (logo) logo.hidden = !(sorted.length && sorted.every(f => f.partner === 'opensiddur'));
   _osPickRendered = true;
 }
 function osPickSampleText() { const v = document.getElementById('osPickText').value.trim(); return v || OS_PICK_SAMPLE; }

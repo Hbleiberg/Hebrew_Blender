@@ -295,7 +295,13 @@ opens that font pre-imported into a fresh, **license-locked** project via a 3-st
   not one), and calls `setOpen(false)` so the toggle label renders through I18n at mount. The default
   sample `OS_PICK_SAMPLE` is unpointed; the chips reach nikkud, trop and the rest. The card grid is the
   modal's only flex-grower (every sibling is `flex: 0 0 auto`, the grid keeps a `min-block-size` floor),
-  so an open keyboard cannot squeeze it away. `osPickChoose(id)` joins the deep-link path at `osLoadStartCtx(entry)` →
+  so an open keyboard cannot squeeze it away. The Open Siddur mark sits beside the intro line
+  (`#osPickLogo`, vendored unmodified at `partners/opensiddur/logo.png` — same-origin like the fonts,
+  never hotlinked; the page's CSP allows `img-src 'self'` only). It is decorative (`alt=""`,
+  `aria-hidden`) because the intro's own link already points at the partner page, and `osPickRender`
+  shows it only while EVERY manifest entry carries `partner: "opensiddur"`, so a second partner's fonts
+  hide it rather than mis-credit. **Its license is not yet recorded** — see
+  `partners/opensiddur/NOTICE.md` before release. Nothing under `partners/` is precached. `osPickChoose(id)` joins the deep-link path at `osLoadStartCtx(entry)` →
   `_osStartCtx` → `wizardOpen('osfont')`, recording `_osStartOrigin` (`'link' | 'gate' | 'new'`): the
   partner wizard's Cancel returns to that origin wizard and step 1 shows `#wizOsChangeFont` (hidden for
   `'link'`) → `osPickReopen()`. `aCloseModal` hands the focus trap back to the picker the way it does for
