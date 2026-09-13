@@ -99,6 +99,29 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   cheat sheet (`shortcutGroups()`) and the triggering button's `title=` tooltip.
 
 ### Export delivery — Send / Share / Save as
+
+**Two destinations, one flow.** `FM_SEND_DESTS` maps a dest key → `{addr(), titleKey, subjectKey,
+introKey?, freeOnly?}`; `ivrit` goes to the IvritSuite library, `os` to `fonts@opensiddur.org`.
+Every step downstream takes that key — `fmSubmitDraft(files, dest)`, `fmSendViaMailto(draft, files,
+dest)`, `fmSendPreflightShare(files, draft, dest)`, `fmSendChecklist(files, dest)`,
+`fmCopyAddr(dest)`, `fmSubmitAddr(dest)` — so a third recipient is a row in the table plus its
+strings, never a second copy of the machinery. An unknown key falls back to `ivrit`.
+
+`fmWireAct` hands the **click event** to its callback, so an in-body button that needs a dest must
+be wired with an arrow (`() => fmCopyAddr(dest)`); passing the bare function would make the event
+the dest and silently copy the wrong address.
+
+A dest with `introKey` opens its draft with a line saying what the submission is, and on a project
+carrying `project.osFont` inserts `fontmaker.send.os_derived` naming the starting font — the
+recipient needs "derivative of your X", not "new font". The `ivrit` draft has no `introKey` and is
+therefore byte-identical to what it always was.
+
+`freeOnly: true` gates the destination on license: a font left `arr` raises
+`fmSendLicenseWarn(dest)` (Change the license → `exportJumpToLicense()`, Send anyway →
+`fmSendFont(dest, true)`, Cancel) before any mail app opens. A partner-derived project is skipped —
+`project.osFont` means the license is already locked to an open upstream.
+
+
 `downloadBlob` records `window._lastDownload = {blob, name}` and the Exported ✓ screen snapshots it
 (before its LICENSE button can overwrite it) for the file-exit buttons: **📤 Share / Save to Files**
 appears only when `navigator.canShare({files})` says yes at runtime (Safari/iOS — Chromium's allowlist

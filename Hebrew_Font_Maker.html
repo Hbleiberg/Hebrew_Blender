@@ -4129,7 +4129,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.41</strong> &mdash; <strong>Add a whole set of letter photos in one go.</strong> The <span class="ui">Individual pictures</span> upload now takes as many files as you pick or drop: the first lands on the letter you're on and the rest fill the <strong>next empty letters in alef-bet order</strong>, while any file <strong>named for its letter</strong> (<code>alef</code>, <code>Alef.jpg</code>, <code>01-alef</code>, <code>05D0</code>, <code>uni05D0</code> or <code>&#1488;</code>) goes straight there no matter what order you picked it in. Anything with nowhere to go is named in the message instead of disappearing quietly, and the whole batch undoes in one <span class="ui">Ctrl+Z</span>. Uploading a photo is also finally <strong>undoable and autosaved</strong> on its own &mdash; before this it was neither. <span class="ui">QA Check</span> also gained an <span class="ui">Only show problems</span> tick: it hides every letter row and mark column with nothing wrong, so a 27-row grid collapses to just the collisions worth clicking. And the <span class="ui">Recent</span> list under <span class="ui">Load Project &#9662;</span> finally has a <strong>🗑 on every row</strong> &mdash; it holds six projects and quietly drops the oldest, so a few test scans used to push your real font out with no way to clear them. It asks before it removes. <em>(September 2026)</em></li>
+      <li><strong>v5.41</strong> &mdash; <strong>Add a whole set of letter photos in one go.</strong> The <span class="ui">Individual pictures</span> upload now takes as many files as you pick or drop: the first lands on the letter you're on and the rest fill the <strong>next empty letters in alef-bet order</strong>, while any file <strong>named for its letter</strong> (<code>alef</code>, <code>Alef.jpg</code>, <code>01-alef</code>, <code>05D0</code>, <code>uni05D0</code> or <code>&#1488;</code>) goes straight there no matter what order you picked it in. Anything with nowhere to go is named in the message instead of disappearing quietly, and the whole batch undoes in one <span class="ui">Ctrl+Z</span>. Uploading a photo is also finally <strong>undoable and autosaved</strong> on its own &mdash; before this it was neither. <span class="ui">QA Check</span> also gained an <span class="ui">Only show problems</span> tick: it hides every letter row and mark column with nothing wrong, so a 27-row grid collapses to just the collisions worth clicking. And the <span class="ui">Recent</span> list under <span class="ui">Load Project &#9662;</span> finally has a <strong>🗑 on every row</strong> &mdash; it holds six projects and quietly drops the oldest, so a few test scans used to push your real font out with no way to clear them. It asks before it removes. And the <span class="ui">Exported &#10003;</span> screen now offers <span class="ui">📤 Send to Open Siddur</span> beside <span class="ui">📤 Send to IvritSuite</span> &mdash; the same one-click submission, addressed to the <strong>Open Siddur Project</strong>'s free Hebrew font library, with your font and its LICENSE.txt attached. If your font grew from one of their starting fonts, the message says which one. <em>(September 2026)</em></li>
       <li><strong>v5.40</strong> &mdash; <strong>Start from an existing font, right from the wizard.</strong> The <span class="ui">Create a new font</span> screen gained a <span class="ui">📚 Start from an existing font</span> button that opens a browsable library of every editable starting font from the Open Siddur Project &mdash; each card previewed in the real font, with search by name or designer, nikkud and trope filters, the font's license on the card, and a box to type your own Hebrew sample. Pick one and the same partner onboarding runs as the <code>?start=</code> link does: your version keeps the original's license and credits, and <span class="ui">← Choose a different font</span> takes you back to the library. <em>(September 2026)</em></li>
       <li><strong>v5.39</strong> &mdash; <strong>Sending your font to IvritSuite no longer depends on remembering the attachment.</strong> The <span class="ui">Exported ✓</span> screen's <span class="ui">📤 Send to IvritSuite</span> button now writes the submission email right here &mdash; no detour through the font library &mdash; and on an iPhone, iPad or Mac it opens the share sheet with the <strong>.ttf and its LICENSE.txt already attached</strong> (the address is copied for you). Everywhere else it opens the email and keeps an on-screen <strong>checklist naming the exact file to attach</strong>, with <span class="ui">⬇ Download again</span>, <span class="ui">💾 Save as&hellip;</span> and <span class="ui">⎘ Copy address</span> one click away. The same screen gained <span class="ui">📤 Share / Save to Files</span> and <span class="ui">💾 Save as&hellip;</span>, so a font can be put exactly where you want it even where the browser's download is hard to find. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.38</strong> &mdash; <strong>A slimmer footer.</strong> The strip under the workspace used to be a three-column block &mdash; the questions, a paragraph about the tool and a tall list of related tools &mdash; that stood taller than most panels. It is now a single line: <span class="ui">Frequently Asked Questions</span>, <span class="ui">About</span> and <span class="ui">Related Hebrew Tools</span> each fold open on a click, and the credits sit at the end of the same line. Nothing was removed; it just stopped taking a fifth of the screen. <em>(September 2026)</em></li>
@@ -17819,7 +17819,18 @@ function onExportFormatChange() {
    stays on screen). Anything that needs a user gesture (navigator.share, showSaveFilePicker) is
    called synchronously from a click, never after an await — every async step runs first. */
 const FM_SUBMIT_USER = 'Harrison', FM_SUBMIT_DOMAIN = 'IvritSuite.com';   // assembled at runtime, like resources.html's emailAddr()
-function fmSubmitAddr() { return FM_SUBMIT_USER + '@' + FM_SUBMIT_DOMAIN; }
+const FM_OS_USER = 'fonts', FM_OS_DOMAIN = 'opensiddur.org';                 // same, for the partner destination
+/* Two destinations, one flow. Every step below (draft → mailto/share sheet → attach checklist →
+   copy-address) takes a dest key, so the second recipient is a row here plus its strings — no
+   parallel copy of the send machinery to drift. An unknown key falls back to IvritSuite. */
+const FM_SEND_DESTS = {
+  ivrit: { addr: () => FM_SUBMIT_USER + '@' + FM_SUBMIT_DOMAIN, titleKey: 'fontmaker.send.title',    subjectKey: 'resources.fonts.submit.subject' },
+  // freeOnly: the Open Siddur Project publishes only freely-licensed work, so an All-Rights-Reserved
+  // font is turned away at the door — say so here, not after a human has read the mail.
+  os:    { addr: () => FM_OS_USER + '@' + FM_OS_DOMAIN,         titleKey: 'fontmaker.send.title_os', subjectKey: 'fontmaker.send.os_subject', introKey: 'fontmaker.send.os_intro', freeOnly: true },
+};
+function fmDest(d) { return FM_SEND_DESTS[d] || FM_SEND_DESTS.ivrit; }
+function fmSubmitAddr(d) { return fmDest(d).addr(); }
 function fmSubmitPrefill() {
   const f = project.font;
   const licMap = { cc0:'CC0 (Public Domain)', ofl:'OFL (SIL Open Font License 1.1)', mit:'MIT License', arr:'All Rights Reserved' };
@@ -17832,11 +17843,16 @@ function fmSubmitPrefill() {
     trop: (f.trop && f.trop.enabled) ? 'Yes' : 'No'
   };
 }
-function fmSubmitDraft(files) {   // same layout as resources.html's openSubmitFont, so every submission arrives alike
+function fmSubmitDraft(files, dest) {   // same layout as resources.html's openSubmitFont, so every submission arrives alike
+  const d = fmDest(dest);
   const pf = fmSubmitPrefill();
   const ln = (label, val) => label + (val ? ' ' + val : '');
-  const subject = I18n.t('resources.fonts.submit.subject') + (pf.name ? ': ' + pf.name : '');
-  const lines = [
+  const subject = I18n.t(d.subjectKey) + (pf.name ? ': ' + pf.name : '');
+  // A partner destination opens with what this is; and when the project started from one of THEIR
+  // fonts, the provenance line is the first thing its maintainer needs — it says "derivative", not "new".
+  const head = d.introKey ? [I18n.t(d.introKey), ''] : [];
+  if (d.introKey && project.osFont) head.splice(1, 0, I18n.t('fontmaker.send.os_derived', { font: project.osFont.displayName || '' }));
+  const lines = head.concat([
     ln(I18n.t('resources.fonts.submit.name'), pf.name),
     I18n.t('resources.fonts.submit.type'),
     ln(I18n.t('resources.fonts.submit.nikkud'), pf.nikkud),
@@ -17847,9 +17863,9 @@ function fmSubmitDraft(files) {   // same layout as resources.html's openSubmitF
     ln(I18n.t('resources.fonts.submit.your_name'), pf.author),
     I18n.t('resources.fonts.submit.your_website'),
     ''
-  ];
+  ]);
   const body = lines.concat([I18n.t('resources.fonts.submit.attach'), '', I18n.t('resources.fonts.submit.anything_else')]).join('\r\n');
-  const shareText = [I18n.t('fontmaker.send.to_line', {addr: fmSubmitAddr()}), '',
+  const shareText = [I18n.t('fontmaker.send.to_line', {addr: fmSubmitAddr(dest)}), '',
                      I18n.t('fontmaker.send.attached_line', {font: files[0].name, license: files[1].name}), '']
     .concat(lines, [I18n.t('resources.fonts.submit.anything_else')]).join('\r\n');
   return { subject, body, shareText };
@@ -17867,8 +17883,8 @@ async function fmSendFiles() {   // [TTF File, LICENSE File] — always the TTF;
 function fmCanShareFiles(files) {   // runtime capability only — Chromium's allowlist rejects .ttf, Safari accepts any file; never UA-sniff
   try { return !!(navigator.share && navigator.canShare && navigator.canShare({ files })); } catch (e) { return false; }
 }
-function fmCopyAddr() {
-  const addr = fmSubmitAddr();
+function fmCopyAddr(dest) {
+  const addr = fmSubmitAddr(dest);
   if (!(navigator.clipboard && navigator.clipboard.writeText)) return;
   navigator.clipboard.writeText(addr).then(() => status(I18n.t('fontmaker.send.addr_copied', {addr}))).catch(() => {});
 }
@@ -17887,10 +17903,10 @@ function fmSaveAsPicker(file) {   // Chromium desktop "Save as…" — the user 
 }
 function fmActBtn(id, key) { return '<button type="button" class="tbtn ghost" id="' + id + '">' + esc(I18n.t(key)) + '</button>'; }
 function fmWireAct(id, fn) { const b = document.getElementById(id); if (b) b.addEventListener('click', fn); }   // in-body buttons on #askBody: they must NOT close the dialog (askModal's own do)
-function fmSendChecklist(files) {   // the attach checklist — persistent, only Done closes it
+function fmSendChecklist(files, dest) {   // the attach checklist — persistent, only Done closes it
   const canPick = typeof window.showSaveFilePicker === 'function';
-  askModal(I18n.t('fontmaker.send.title'),
-    I18n.t('fontmaker.send.mail_opened', {addr: '<b>' + esc(fmSubmitAddr()) + '</b>'})
+  askModal(I18n.t(fmDest(dest).titleKey),
+    I18n.t('fontmaker.send.mail_opened', {addr: '<b>' + esc(fmSubmitAddr(dest)) + '</b>'})
     + '<div style="margin-top:8px;">' + I18n.t('fontmaker.send.item_font', {file: '<b>' + esc(files[0].name) + '</b>'}) + '</div>'
     + '<div style="margin-top:4px;">' + I18n.t('fontmaker.send.item_license', {file: '<b>' + esc(files[1].name) + '</b>'}) + '</div>'
     + '<div class="hint" style="margin-top:8px;">' + esc(I18n.t('fontmaker.send.no_mail')) + '</div>'
@@ -17904,31 +17920,43 @@ function fmSendChecklist(files) {   // the attach checklist — persistent, only
   fmWireAct('sendDownloadAgain', () => downloadBlob(files[0], files[0].name));
   fmWireAct('sendSaveAs', () => fmSaveAsPicker(files[0]));
   fmWireAct('sendLicense', () => downloadBlob(files[1], files[1].name));
-  fmWireAct('sendCopyAddr', fmCopyAddr);
+  fmWireAct('sendCopyAddr', () => fmCopyAddr(dest));   // arrow, not the bare fn: fmWireAct hands the click event to its callback
 }
-function fmSendViaMailto(draft, files) {
-  fmOpenMailto('mailto:' + fmSubmitAddr() + '?subject=' + encodeURIComponent(draft.subject) + '&body=' + encodeURIComponent(draft.body));
-  fmSendChecklist(files);
+function fmSendViaMailto(draft, files, dest) {
+  fmOpenMailto('mailto:' + fmSubmitAddr(dest) + '?subject=' + encodeURIComponent(draft.subject) + '&body=' + encodeURIComponent(draft.body));
+  fmSendChecklist(files, dest);
 }
-function fmSendPreflightShare(files, draft) {   // explains the share sheet, then the primary button calls navigator.share in the same click
-  askModal(I18n.t('fontmaker.send.title'),
-    I18n.t('fontmaker.send.preflight_share', {font: '<b>' + esc(files[0].name) + '</b>', license: '<b>' + esc(files[1].name) + '</b>', addr: '<b>' + esc(fmSubmitAddr()) + '</b>'})
+function fmSendPreflightShare(files, draft, dest) {   // explains the share sheet, then the primary button calls navigator.share in the same click
+  askModal(I18n.t(fmDest(dest).titleKey),
+    I18n.t('fontmaker.send.preflight_share', {font: '<b>' + esc(files[0].name) + '</b>', license: '<b>' + esc(files[1].name) + '</b>', addr: '<b>' + esc(fmSubmitAddr(dest)) + '</b>'})
     + '<div class="mbtns" style="justify-content:flex-start;margin-top:10px;">' + fmActBtn('sendCopyAddr', 'fontmaker.send.copy_addr_btn') + '</div>',
     [ { label: I18n.t('fontmaker.send.open_share_btn'), onClick: () => {
           let p; try { p = navigator.share({ files, title: draft.subject, text: draft.shareText }); } catch (e) { p = Promise.reject(e); }
-          fmCopyAddr();   // same gesture — a clipboard write after the sheet closes would be refused
+          fmCopyAddr(dest);   // same gesture — a clipboard write after the sheet closes would be refused
           p.then(() => status(I18n.t('fontmaker.send.share_done')))
-           .catch(e => { if (e && e.name === 'AbortError') return; console.error(e); fmSendViaMailto(draft, files); });
+           .catch(e => { if (e && e.name === 'AbortError') return; console.error(e); fmSendViaMailto(draft, files, dest); });
         } },
       { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' } ]);
-  fmWireAct('sendCopyAddr', fmCopyAddr);
+  fmWireAct('sendCopyAddr', () => fmCopyAddr(dest));
 }
-async function fmSendFont() {   // Exported ✓ → 📤 Send to IvritSuite
+/* The partner library is free-culture only: a font kept All Rights Reserved can't be published there,
+   and the license box is the one thing the author can still change. A partner-derived project (osFont)
+   is license-locked to an open upstream, so it can never land here. */
+function fmSendLicenseWarn(dest) {
+  askModal(I18n.t('fontmaker.send.os_license_title'),
+    I18n.t('fontmaker.send.os_license_body'),
+    [ { label: I18n.t('fontmaker.send.os_license_change_btn'), onClick: exportJumpToLicense },
+      { label: I18n.t('fontmaker.send.os_license_anyway_btn'), cls: 'ghost', onClick: () => fmSendFont(dest, true) },
+      { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' } ]);
+}
+async function fmSendFont(dest, licenseChecked) {   // Exported ✓ → 📤 Send to IvritSuite / to Open Siddur
   if (!project) return;
+  const d = fmDest(dest);
+  if (d.freeOnly && !licenseChecked && !project.osFont && project.font.license === 'arr') { fmSendLicenseWarn(dest); return; }
   const files = await fmSendFiles();
   if (!files) { askModal(I18n.t('fontmaker.send.nofile_title'), esc(I18n.t('fontmaker.send.nofile_body')), [{ label: I18n.t('fontmaker.modals.ok') }]); return; }
-  const draft = fmSubmitDraft(files);
-  if (fmCanShareFiles(files)) fmSendPreflightShare(files, draft); else fmSendViaMailto(draft, files);
+  const draft = fmSubmitDraft(files, dest);
+  if (fmCanShareFiles(files)) fmSendPreflightShare(files, draft, dest); else fmSendViaMailto(draft, files, dest);
 }
 // Close any export-warning modal and jump to a letter to fix it — guard-free navigation shared
 // with the QA grid (_selectItem bypasses the unsaved-placement guard; QA/warnings are read-only).
@@ -17958,6 +17986,15 @@ function customGlyphExportIssues() {
   if (!project.font.addCustomGlyphs) return { kind: 'off', count: bases.length + markCount };
   const blanks = bases.filter(l => !l.contours || !l.contours.length);
   return blanks.length ? { kind: 'blank', blanks } : null;
+}
+function exportJumpToLicense() {   // land the user on the License box — the Open Siddur free-culture nudge
+  setCatTab('fontdetails');
+  const el = document.getElementById('license');
+  if (!el) return;
+  el.scrollIntoView({ block: 'center' });
+  try { el.focus(); } catch (e) {}
+  el.classList.add('wiz-flash');
+  setTimeout(() => el.classList.remove('wiz-flash'), 2700);
 }
 function exportJumpToFontDetails() {   // land the user on the family-name field to pick a new name
   setCatTab('fontdetails');
@@ -18650,7 +18687,8 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
   const fam = (project.font.familyName || 'My Hebrew Font').trim() + (fontIsBold() ? ' Bold' : '');
   const canSave = !!(window.indexedDB && window.FontFace);
   const btns = [{ label: I18n.t('fontmaker.modals.exported_done'), cls: 'ghost' },
-                { label: I18n.t('fontmaker.modals.exported_send_btn'), cls: 'ghost', onClick: () => fmSendFont() }];
+                { label: I18n.t('fontmaker.modals.exported_send_btn'), cls: 'ghost', onClick: () => fmSendFont('ivrit') },
+                { label: I18n.t('fontmaker.modals.exported_send_os_btn'), cls: 'ghost', onClick: () => fmSendFont('os') }];
   if (canShareFile) btns.push({ label: I18n.t('fontmaker.modals.exported_sharefile_btn'), cls: 'ghost',
     onClick: () => fmShareFiles(licenseSeparate ? [dlFile, fmLicenseFile()] : [dlFile]) });
   if (canPick) btns.push({ label: I18n.t('fontmaker.modals.exported_saveas_btn'), cls: 'ghost', onClick: () => fmSaveAsPicker(dlFile) });
@@ -18677,6 +18715,7 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
     + (licenseSeparate ? ' ' + I18n.t('fontmaker.modals.exported_license') : '')
     + (canSave ? ' ' + I18n.t('fontmaker.modals.exported_save') : '')
     + ' ' + I18n.t('fontmaker.modals.exported_send')
+    + ' ' + I18n.t('fontmaker.modals.exported_send_os')
     + ((canShareFile || canPick) ? ' ' + I18n.t('fontmaker.modals.exported_getfile', {btn: '<b>' + esc(I18n.t(canShareFile ? 'fontmaker.modals.exported_sharefile_btn' : 'fontmaker.modals.exported_saveas_btn')) + '</b>'}) : '')
     + fellHtml + gateHtml,
     btns);
