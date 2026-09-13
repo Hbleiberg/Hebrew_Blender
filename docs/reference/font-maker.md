@@ -136,6 +136,22 @@ export-warning chips) legitimately use the `_` versions plus `gotoAnchors('nikku
 After mutating state, call `renderStage(); renderControls();` (+ `renderGrids()` if tile status or
 selection changed) — `afterUndo` shows the canonical full refresh.
 
+### QA Check grid (`#qaOverlay`)
+`qaBuild()` counts flagged cells per tab into `qaResult.counts` (the tab badges) and `qaResult.total`
+(the summary); `qaRenderGrid()` draws `qaRows()` × `qaColumns(qaTab)`. The grid is built in **two
+passes**: every cell's `qaCellLayers`/`qaCellReasons` is computed into a matrix first, because
+**"Only show problems"** (`qaOnlyProblems`, a per-device pref in `hebrewFontMaker_uiPrefs`) has to
+know which rows and columns are clear before the first `<th>` is written. It keeps a letter row with
+any flagged cell, then keeps a mark column flagged in any kept row — so a clean tab renders
+`fontmaker.qa.filter_clear`, never an empty table, and a section header's `colspan` follows the
+*visible* column count. The filter is **view-only**: it changes what the grid draws, never what QA
+counts, so the tab badges and the summary stay whole-font at all times. Reasons are still computed
+once per cell, exactly as before.
+
+`setQaOnlyProblems(on)` redraws the grid without re-running `qaBuild()`; `qaSyncFilterUI` keeps the
+checkbox and its readout in step. The checkbox lives in its own `.qa-filter` row **below** `#qaTabs`,
+not inside it — `#qaTabs` is a `role="tablist"` whose `_tabKeydown` ring walks its children.
+
 ### Page chrome — the footer bar
 The `<footer>` is deliberately a one-row bar, not the three-column block the other chrome pages use:
 three folded `<details>` (FAQ, About, Related Hebrew Tools — an open one takes the full row,

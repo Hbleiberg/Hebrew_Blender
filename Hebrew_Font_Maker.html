@@ -1003,6 +1003,11 @@ footer a { display: inline-block; padding-block: 5px; }
   /* ── QA Check grid (collision review) ── */
   .qa-modal { max-width: 96vw; width: 96vw; max-height: 92vh; max-height: 92dvh; }
   #qaGrid { overflow: auto; }
+  .qa-filter { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.8rem; margin: 0 0 10px; flex: 0 0 auto; }
+  .qa-filter label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 700; color: var(--text); }
+  .qa-filter input { cursor: pointer; }
+  .qa-filter-note { color: var(--muted); }
+  .qa-clear-note { color: var(--muted); font-size: 0.85rem; margin: 0; }
   #qaSummary { font-size: 0.84rem; color: var(--muted); margin: 0 0 12px; line-height: 1.5; flex: 0 0 auto; }
   #qaSummary b { color: var(--text); }
   #qaSummary .qa-ok { color: var(--center); font-weight: 700; }
@@ -1866,6 +1871,11 @@ footer a { display: inline-block; padding-block: 5px; }
     <h3 id="qaTitle" data-i18n="fontmaker.modals.qa_title">QA Check — placement collisions</h3>
     <div id="qaSummary"></div>
     <div class="help-tabs" id="qaTabs" role="tablist" aria-labelledby="qaTitle"></div>
+    <div class="qa-filter">
+      <label><input type="checkbox" id="qaOnlyProblems" onchange="setQaOnlyProblems(this.checked)" aria-controls="qaGrid">
+        <span data-i18n="fontmaker.qa.only_problems">Only show problems</span></label>
+      <span class="qa-filter-note" id="qaFilterNote" role="status" aria-live="polite"></span>
+    </div>
     <div class="help-body" id="qaGrid"></div>
     <div class="mbtns"><button class="tbtn" onclick="closeQA()" data-i18n="fontmaker.modals.qa_close">Close</button></div>
   </div>
@@ -4112,7 +4122,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.41</strong> &mdash; <strong>Add a whole set of letter photos in one go.</strong> The <span class="ui">Individual pictures</span> upload now takes as many files as you pick or drop: the first lands on the letter you're on and the rest fill the <strong>next empty letters in alef-bet order</strong>, while any file <strong>named for its letter</strong> (<code>alef</code>, <code>Alef.jpg</code>, <code>01-alef</code>, <code>05D0</code>, <code>uni05D0</code> or <code>&#1488;</code>) goes straight there no matter what order you picked it in. Anything with nowhere to go is named in the message instead of disappearing quietly, and the whole batch undoes in one <span class="ui">Ctrl+Z</span>. Uploading a photo is also finally <strong>undoable and autosaved</strong> on its own &mdash; before this it was neither. <em>(September 2026)</em></li>
+      <li><strong>v5.41</strong> &mdash; <strong>Add a whole set of letter photos in one go.</strong> The <span class="ui">Individual pictures</span> upload now takes as many files as you pick or drop: the first lands on the letter you're on and the rest fill the <strong>next empty letters in alef-bet order</strong>, while any file <strong>named for its letter</strong> (<code>alef</code>, <code>Alef.jpg</code>, <code>01-alef</code>, <code>05D0</code>, <code>uni05D0</code> or <code>&#1488;</code>) goes straight there no matter what order you picked it in. Anything with nowhere to go is named in the message instead of disappearing quietly, and the whole batch undoes in one <span class="ui">Ctrl+Z</span>. Uploading a photo is also finally <strong>undoable and autosaved</strong> on its own &mdash; before this it was neither. <span class="ui">QA Check</span> also gained an <span class="ui">Only show problems</span> tick: it hides every letter row and mark column with nothing wrong, so a 27-row grid collapses to just the collisions worth clicking. <em>(September 2026)</em></li>
       <li><strong>v5.40</strong> &mdash; <strong>Start from an existing font, right from the wizard.</strong> The <span class="ui">Create a new font</span> screen gained a <span class="ui">📚 Start from an existing font</span> button that opens a browsable library of every editable starting font from the Open Siddur Project &mdash; each card previewed in the real font, with search by name or designer, nikkud and trope filters, the font's license on the card, and a box to type your own Hebrew sample. Pick one and the same partner onboarding runs as the <code>?start=</code> link does: your version keeps the original's license and credits, and <span class="ui">← Choose a different font</span> takes you back to the library. <em>(September 2026)</em></li>
       <li><strong>v5.39</strong> &mdash; <strong>Sending your font to IvritSuite no longer depends on remembering the attachment.</strong> The <span class="ui">Exported ✓</span> screen's <span class="ui">📤 Send to IvritSuite</span> button now writes the submission email right here &mdash; no detour through the font library &mdash; and on an iPhone, iPad or Mac it opens the share sheet with the <strong>.ttf and its LICENSE.txt already attached</strong> (the address is copied for you). Everywhere else it opens the email and keeps an on-screen <strong>checklist naming the exact file to attach</strong>, with <span class="ui">⬇ Download again</span>, <span class="ui">💾 Save as&hellip;</span> and <span class="ui">⎘ Copy address</span> one click away. The same screen gained <span class="ui">📤 Share / Save to Files</span> and <span class="ui">💾 Save as&hellip;</span>, so a font can be put exactly where you want it even where the browser's download is hard to find. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.38</strong> &mdash; <strong>A slimmer footer.</strong> The strip under the workspace used to be a three-column block &mdash; the questions, a paragraph about the tool and a tall list of related tools &mdash; that stood taller than most panels. It is now a single line: <span class="ui">Frequently Asked Questions</span>, <span class="ui">About</span> and <span class="ui">Related Hebrew Tools</span> each fold open on a click, and the credits sit at the end of the same line. Nothing was removed; it just stopped taking a fifth of the screen. <em>(September 2026)</em></li>
@@ -15566,6 +15576,11 @@ const MARK_CPS = Object.keys(MARK_CLASS);
    live spacing preview, and the exported font all agree. Pure read — never mutates `project`.
    ════════════════════════════════════════════════════════════════════════ */
 let qaTab = 'nikkud';
+// "Only show problems" — hides every letter row and mark column with no flagged cell, so a 27 x 14
+// grid collapses to just the collisions. A per-device view pref (hebrewFontMaker_uiPrefs), never
+// project state: it changes what QA DRAWS, never what it counts (the tab badges and the summary
+// stay whole-font). Absent ⇒ off, so a first open still shows the full grid.
+let qaOnlyProblems = wsReadPrefs().qaOnlyProblems === true;
 let qaResult = null;
 let qaPairA = '05BC';   // "Two marks" tab: the fixed mark A compared against every other mark (default = dagesh)
 const QA_OVERLAP_TOL = 10;   // font units a mark vertex is inset toward its center before counting as "inside" (kissing contacts are fine)
@@ -16087,7 +16102,25 @@ function qaRenderGrid() {
   grid.style.color = (getComputedStyle(document.body).getPropertyValue('--text') || '').trim() || (document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744');   // one set → every child SVG's currentColor inherits it
   const cols = qaColumns(qaTab);
   const pairCtrl = qaTab === 'pairs' ? qaPairControlHtml() : '';
-  if (!cols.length) { const kind = I18n.t(qaTab === 'stacked' ? 'fontmaker.qa.tab_stacked' : (qaTab === 'trop' ? 'fontmaker.qa.tab_trop' : 'fontmaker.qa.tab_nikkud')); grid.innerHTML = pairCtrl + `<p style="color:var(--muted);font-size:0.85rem;">${I18n.t('fontmaker.qa.no_marks', { kind })}</p>` + qaBuildCheckHtml(); return; }
+  if (!cols.length) { qaSyncFilterUI(null, null); const kind = I18n.t(qaTab === 'stacked' ? 'fontmaker.qa.tab_stacked' : (qaTab === 'trop' ? 'fontmaker.qa.tab_trop' : 'fontmaker.qa.tab_nikkud')); grid.innerHTML = pairCtrl + `<p style="color:var(--muted);font-size:0.85rem;">${I18n.t('fontmaker.qa.no_marks', { kind })}</p>` + qaBuildCheckHtml(); return; }
+  // One pass over the WHOLE grid before any markup: "only problems" has to know which rows and
+  // which columns are clear before the first <th> is written, and the reasons are wanted twice
+  // either way — so each cell's layers/reasons are computed exactly once, as before.
+  const allRows = qaRows();
+  const cells = allRows.map(row => {
+    const L = row.L, anc = qaAnchors(L);
+    return cols.map(col => { const layers = qaCellLayers(L, anc, col); return { layers, reasons: qaCellReasons(L, row, col, layers) }; });
+  });
+  let rowIx = allRows.map((_, i) => i), colIx = cols.map((_, i) => i);
+  if (qaOnlyProblems) {
+    rowIx = rowIx.filter(r => cells[r].some(c => c.reasons.length));
+    colIx = colIx.filter(c => rowIx.some(r => cells[r][c].reasons.length));
+  }
+  qaSyncFilterUI({ rows: rowIx.length, cols: colIx.length }, { rows: allRows.length, cols: cols.length });
+  if (!rowIx.length) {   // filter on and this tab is clean — say so rather than draw an empty table
+    grid.innerHTML = pairCtrl + `<p class="qa-clear-note">${esc(I18n.t('fontmaker.qa.filter_clear'))}</p>` + qaBuildCheckHtml();
+    return;
+  }
   let html = pairCtrl + '<table class="qa-table"><thead><tr><th></th>';
   // The visible head is a mark on a U+25CC dotted-circle carrier, so name-from-content makes every
   // column announce as "dotted circle" — the mark itself is unpronounceable and the name lives only
@@ -16098,16 +16131,16 @@ function qaRenderGrid() {
   // the name it already announced. The span is a pure visual duplicate of the aria-label — mark it
   // decorative, exactly as the Trope Tutor's Learn cards do (f207a34). Hiding the only child is
   // safe here precisely BECAUSE the name comes from aria-label, not from content.
-  cols.forEach(col => { html += `<th title="${esc(col.name)}" aria-label="${esc(col.name)}"><span class="qa-colhead" aria-hidden="true">${esc(col.head)}</span></th>`; });
+  colIx.forEach(ci => { const col = cols[ci]; html += `<th title="${esc(col.name)}" aria-label="${esc(col.name)}"><span class="qa-colhead" aria-hidden="true">${esc(col.head)}</span></th>`; });
   html += '</tr></thead><tbody>';
   let lastSection = null;
-  qaRows().forEach(row => {
-    if (row.section && row.section !== lastSection) { lastSection = row.section; const secKey = { special: 'fontmaker.qa.section_special', wide: 'fontmaker.qa.section_wide', custom: 'fontmaker.qa.section_custom' }[row.section] || 'fontmaker.qa.section_custom'; html += `<tr class="qa-section"><td class="qa-section-h" colspan="${cols.length + 1}">${I18n.t(secKey)}</td></tr>`; }
-    const L = row.L, anc = qaAnchors(L);
+  rowIx.forEach(ri => {
+    const row = allRows[ri];
+    if (row.section && row.section !== lastSection) { lastSection = row.section; const secKey = { special: 'fontmaker.qa.section_special', wide: 'fontmaker.qa.section_wide', custom: 'fontmaker.qa.section_custom' }[row.section] || 'fontmaker.qa.section_custom'; html += `<tr class="qa-section"><td class="qa-section-h" colspan="${colIx.length + 1}">${I18n.t(secKey)}</td></tr>`; }
+    const L = row.L;
     html += `<tr><td class="qa-rowlabel" title="${esc(gName(row.name))}">${esc(row.labelCh)} <span style="color:var(--muted);">${esc(gName(row.name))}</span></td>`;
-    cols.forEach(col => {
-      const layers = qaCellLayers(L, anc, col);
-      const reasons = qaCellReasons(L, row, col, layers);
+    colIx.forEach(ci => {
+      const col = cols[ci], { layers, reasons } = cells[ri][ci];
       const flagged = reasons.length > 0;
       html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${row.cp}" data-kind="${col.kind}" data-mark="${col.cp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${esc(reasons.join(' · '))}"` : ''}>${qaCellSvg(L, layers)}</td>`;
     });
@@ -16157,6 +16190,21 @@ function qaJump(cp, markCp, kind, side, tropCp) {
   }
 }
 function setQaTab(t) { qaTab = t; qaRenderTabs(); qaRenderGrid(); }
+function setQaOnlyProblems(on) {   // view-only: redraws the grid, never re-runs qaBuild
+  qaOnlyProblems = !!on;
+  wsSavePref('qaOnlyProblems', qaOnlyProblems);
+  qaRenderGrid();
+}
+/* Keep the checkbox and its note in step with what the grid just drew. `shown`/`total` are
+   {rows, cols}; pass nulls when the tab has no columns to filter at all. */
+function qaSyncFilterUI(shown, total) {
+  const box = document.getElementById('qaOnlyProblems');
+  if (box) box.checked = qaOnlyProblems;
+  const note = document.getElementById('qaFilterNote'); if (!note) return;
+  note.textContent = (qaOnlyProblems && total && total.rows)
+    ? I18n.t('fontmaker.qa.filter_note', { rows: shown.rows, rowTotal: total.rows, cols: shown.cols, colTotal: total.cols })
+    : '';
+}
 function setQaPairA(cp) { qaPairA = cp; qaBuild(); qaRenderTabs(); qaRenderGrid(); }   // recount + redraw the Two-marks tab for the new fixed mark
 function qaPairControlHtml() {
   const marks = (project.font.nikkud.enabled ? MARK_CPS : []).filter(cp => cp !== '05C1' && cp !== '05C2');   // dots live only in the FB2A/FB2B ligature — see qaColumns('pairs')
