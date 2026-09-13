@@ -357,6 +357,18 @@ opens that font pre-imported into a fresh, **license-locked** project via a 3-st
   declares one under GPL) and any declared RFN forces a rename at runtime. Never hand-edit the
   manifest, a staged LICENSE.txt, or `starting-fonts/LINKS.md` (the copy-paste sheet of live
   `?start=` links — regenerated from the manifest on every intake / `--regen-links`).
+  **Discovery is automated, intake is not:** `scripts/audit-os-fonts.mjs` (run weekly by
+  `.github/workflows/os-fonts-audit.yml`, see `ops.md`) fetches the partner's published list
+  (`opensiddur.org/wp-content/plugins/custom-fonts-display/data/fonts.json`, falling back to the copy
+  committed in the partner's site repo — see `ops.md`), matches it against the manifest — the
+  partner's `slug` is our `id` for nearly every font, then `family` against the archive/file stem,
+  then name via the listing names recorded in `not-staged.json` — and writes `starting-fonts/AUDIT.md` (new fonts to intake, staged fonts that
+  dropped off the list, license-label disagreements, version/date/license changes since the last
+  run; the list carries no download URL, so a new font's archive is printed as the *probable*
+  `wp-content/uploads/fonts/<family>/<family>.zip`, a hint the intake verifies) plus
+  `starting-fonts/opensiddur-fonts.json` (the normalized list as last seen). Both are generated —
+  never hand-edit them. The list is the discovery source only; the license text shipped inside the
+  archive stays the truth, so every new font still goes through `/addOSFont`.
 - **Runtime**: `init()` strips `?start` immediately (keeps `?lang`); `osStartBoot` runs inside
   `maybeRestoreAutosave` after `_launchDecided` (deferral batons untouched; the no-param tail is
   the verbatim extraction `_bootLaunchPrompt`). A restorable snapshot is arbitrated first ("Open
