@@ -288,7 +288,14 @@ opens that font pre-imported into a fresh, **license-locked** project via a 3-st
   textContent only; search / nikkud + trope filters / custom preview text are per-open state with no
   storage key). Each card's real TTF is registered as a throwaway `FontFace` (`HFMOsPick-<id>`) only when
   it scrolls into view (`osPickObserve` IntersectionObserver, `osPickLoadFace`); faces are memoized in
-  `_osPickFaces` for the session. `osPickChoose(id)` joins the deep-link path at `osLoadStartCtx(entry)` →
+  `_osPickFaces` for the session. The preview field also hosts the shared **test-phrases** chips and
+  **hebrew-keyboard** blocks (this page already carried both, so the carrier lists are unchanged):
+  `osPickWire` mounts them once against one `getInput`/`onChange` pair (`osPickSetText` — a scripted
+  value change fires no `input` event), passes `getFontFlags: () => null` (the grid previews 132 fonts,
+  not one), and calls `setOpen(false)` so the toggle label renders through I18n at mount. The default
+  sample `OS_PICK_SAMPLE` is unpointed; the chips reach nikkud, trop and the rest. The card grid is the
+  modal's only flex-grower (every sibling is `flex: 0 0 auto`, the grid keeps a `min-block-size` floor),
+  so an open keyboard cannot squeeze it away. `osPickChoose(id)` joins the deep-link path at `osLoadStartCtx(entry)` →
   `_osStartCtx` → `wizardOpen('osfont')`, recording `_osStartOrigin` (`'link' | 'gate' | 'new'`): the
   partner wizard's Cancel returns to that origin wizard and step 1 shows `#wizOsChangeFont` (hidden for
   `'link'`) → `osPickReopen()`. `aCloseModal` hands the focus trap back to the picker the way it does for

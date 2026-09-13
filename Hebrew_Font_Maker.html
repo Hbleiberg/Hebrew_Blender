@@ -892,9 +892,18 @@ footer a { display: inline-block; padding-block: 5px; }
   .os-pick-text { flex: 1 1 220px; }
   .os-pick-text input { font-family: 'Frank Ruhl Libre', 'IvritSuite Taamim', serif; }
   .os-pick-filters { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; flex: 1 1 100%; }
+  /* Chips + keyboard toggle share one row under the preview field; the chip row brings its own top margin. */
+  .os-pick-sampletools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-block-end: 10px; }
+  .os-pick-sampletools .tp-row { margin-block-start: 0; flex: 1 1 auto; }
+  /* The card grid is the modal's only flex-grower; every control above it must refuse to shrink, or
+     the open keyboard collapses to its tab row (the shared panel's own max-height already caps it). */
+  .os-pick-modal > *:not(.os-pick-grid) { flex: 0 0 auto; }
+  .os-pick-modal .hk-panel { margin-block-end: 10px; }
   .os-pick-filters .chk { margin: 0; }
   .os-pick-count { font-size: 0.74rem; color: var(--muted); margin-inline-start: auto; }
-  .os-pick-grid { flex: 1 1 auto; min-block-size: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; padding: 2px; align-content: start; }
+  /* min-block-size is a floor, not the content height (132 cards far exceed it), so the grid still
+     shrinks and scrolls — it just never collapses to a sliver behind an open keyboard. */
+  .os-pick-grid { flex: 1 1 auto; min-block-size: 120px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; padding: 2px; align-content: start; }
   .os-pick-card { display: flex; flex-direction: column; gap: 4px; border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px; background: var(--white); color: var(--text); text-align: start; font: inherit; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
   .os-pick-card[hidden] { display: none; }
   .os-pick-card:hover { border-color: var(--gold); }
@@ -913,6 +922,9 @@ footer a { display: inline-block; padding-block: 5px; }
     .os-pick-modal { width: 96vw; padding: 14px; }
     .os-pick-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
     .os-pick-sample { font-size: 1.4rem; }
+    /* Host-side cap only (the shared block's own rule is untouched): on a phone the full-height
+       keyboard would leave the grid a sliver, so it gives some back. */
+    .os-pick-modal .hk-panel { max-height: min(32vh, 190px); }
   }
 
   /* ── Font-engine background-load badge (next to Export) ── */
@@ -2055,13 +2067,21 @@ footer a { display: inline-block; padding-block: 5px; }
       <label class="os-pick-field os-pick-search"><span data-i18n="fontmaker.ospick.search_label">Search</span>
         <input type="search" id="osPickSearch" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Font or designer name" data-i18n-placeholder="fontmaker.ospick.search_ph"></label>
       <label class="os-pick-field os-pick-text"><span data-i18n="fontmaker.ospick.preview_label">Preview text</span>
-        <input type="text" id="osPickText" lang="he" dir="rtl" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="אָלֶף בֵּית גִּימֶל דָּלֶת שָׁלוֹם"></label>
+        <input type="text" id="osPickText" lang="he" dir="rtl" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="שלום עולם"></label>
       <div class="os-pick-filters">
         <label class="chk"><input type="checkbox" id="osPickNik"> <span data-i18n="fontmaker.ospick.filter_nikkud">Has nikkud</span></label>
         <label class="chk"><input type="checkbox" id="osPickTrop"> <span data-i18n="fontmaker.ospick.filter_trop">Has trope</span></label>
         <span class="os-pick-count" id="osPickCount" aria-live="polite"></span>
       </div>
     </div>
+    <!-- Shared test-phrase chips + on-screen keyboard, both already carried by this page, wired to
+         #osPickText below the blocks' end markers (osPickWire). The toggle carries no data-i18n —
+         its Show/Hide label is state-dependent and owned by the keyboard block. -->
+    <div class="os-pick-sampletools">
+      <div class="tp-row" id="osPickPhrases"></div>
+      <button type="button" class="hk-toggle" id="osPickKbdToggle" aria-expanded="false" aria-controls="osPickKbdPanel">⌨ Show Hebrew Keyboard</button>
+    </div>
+    <div class="hk-panel" id="osPickKbdPanel" hidden></div>
     <div class="os-pick-grid" id="osPickGrid" role="list"></div>
     <p class="os-pick-empty" id="osPickEmpty" data-i18n="fontmaker.ospick.empty" hidden>No starting font matches that search.</p>
     <p class="wiz-foot-note"><span data-i18n="fontmaker.ospick.lock_note">Your version keeps the original font's license — the Font Maker locks it for you and carries the required credits into every export.</span> <button type="button" class="fld-help" onclick="openHelp('oslock')" title="Why is this locked?" data-i18n-title="fontmaker.osfont.lock_help_title" aria-label="Why is this locked?" data-i18n-aria-label="fontmaker.osfont.lock_help_title">?</button></p>
@@ -20627,8 +20647,9 @@ async function wizardOsFinish(){
    registered for the session so reopening never refetches. Picking a font joins the ?start= path at the
    same point the deep link does: osLoadStartCtx → _osStartCtx → wizardOpen('osfont'). The picker's
    search / filters / preview text are per-open UI state, deliberately not persisted (no storage key). */
-const OS_PICK_SAMPLE = 'אָלֶף בֵּית גִּימֶל דָּלֶת שָׁלוֹם';   // i18n-ignore: Hebrew sample content (same phrase as #osPrev), not UI chrome
+const OS_PICK_SAMPLE = 'שלום עולם';   // i18n-ignore: Hebrew sample content, not UI chrome. Unpointed on purpose — the letterforms read first; the chips below the field switch to nikkud, trop and the rest.
 let _osPickOrigin = 'gate', _osPickIO = null, _osPickLast = null, _osPickRendered = false, _osPickWired = false, _osPickBusy = false, _osPickOpener = null;
+let _osPickTp = null, _osPickHk = null;   // shared test-phrase + keyboard controllers, mounted once in osPickWire
 const _osPickFaces = new Map();   // id → Promise<FontFace|null>; a failed load deletes its entry so a later open can retry
 function osPickT(k, p) { return window.I18n ? I18n.t(k, p) : k; }
 async function osPickOpen(origin) {
@@ -20657,6 +20678,21 @@ function osPickWire() {
   document.getElementById('osPickNik').addEventListener('change', osPickFilter);
   document.getElementById('osPickTrop').addEventListener('change', osPickFilter);
   document.getElementById('osPickText').addEventListener('input', osPickSetText);
+  // Chips and keyboard edit the same field and re-render through the same callback (shared-components
+  // host contract): a scripted value change fires no 'input' event, so osPickSetText is the only path.
+  // This markup is static — unlike the Spacing tab's, it is never rebuilt — so one mount is enough.
+  const getInput = () => document.getElementById('osPickText');
+  const onChange = () => osPickSetText();
+  _osPickTp = mountTestPhrases({ container: document.getElementById('osPickPhrases'), getInput, onChange });
+  _osPickHk = mountHebrewKeyboard({
+    container: document.getElementById('osPickKbdPanel'), toggleBtn: document.getElementById('osPickKbdToggle'),
+    getInput, onChange,
+    getFontFlags: () => null   // the grid previews 132 different fonts — no single one to report coverage for
+  });
+  // The block never renders the toggle label at mount (the Spacing tab's carrier gets it from its own
+  // state-restoring setOpen call). Without this the button keeps its pre-I18n English fallback in a
+  // Hebrew UI, since this host mounts once and has no state to re-assert.
+  _osPickHk.setOpen(false);
 }
 function osPickShow(focusEl) {
   aOpenModal('osPickOverlay', osPickClose);
@@ -21047,6 +21083,8 @@ function applyI18n() {
       osPickRender(_osManifest);
       if (document.getElementById('osPickOverlay').classList.contains('open')) { osPickFilter(); osPickObserve(); }
     }
+    if (_osPickTp) _osPickTp.applyI18n();   // chip labels + tips (read-only re-render, per both blocks' host contract)
+    if (_osPickHk) _osPickHk.applyI18n();
   } catch (e) {}
   // renderGrids re-renders only the custom-glyph GRID once the panel exists (its once-guard keeps
   // normal renders from resetting the add-form), so the form's strings keep their build-time
