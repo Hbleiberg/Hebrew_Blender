@@ -1,6 +1,6 @@
 # Open Siddur Project — partner mark
 
-`logo.png` is the Open Siddur Project's logo, shown beside the partner credit in the Hebrew Font
+`logo.svg` is the Open Siddur Project's logo, shown beside the partner credit in the Hebrew Font
 Maker's "Start from an existing font" picker (`#osPickLogo`).
 
 | | |
@@ -10,16 +10,39 @@ Maker's "Start from an existing font" picker (`#osPickLogo`).
 | Year | 2009 |
 | Source page | https://opensiddur.org/miscellanea/art/logo-for-the-open-siddur-project-by-aharon-varady-2009/ |
 | Partner site | https://opensiddur.org/help/fonts/ |
-| File | `logo.png`, 500×500 PNG, RGBA, 29,465 bytes |
-| sha256 | `f041a2cab821370e040caf9ae48aa56f097b65ca9471a24784e4dba9425fda16` |
+| File | `logo.svg`, 359.5×359.5 viewBox, 11,170 bytes |
+| sha256 | `f40b6e30a8a4743b5f42a81f1d22bca88392a39155586d7c744b30d4a5890c3c` |
+| Internal title | "The Open Siddur Project Logo" (`sodipodi:docname` "Open Siddur Project Logo (Vilna).svg") |
 
 ## Provenance
 
-The file is a **pinned, unmodified copy** sent by Aharon Varady — the logo's creator — to the
-maintainer, and staged here byte-for-byte as received. Same rule as the fonts under
+The file is a **pinned, unmodified copy** staged byte-for-byte as received. Same rule as the fonts under
 `starting-fonts/`: vendored same-origin, never hotlinked (the Font Maker's CSP allows images from
 `'self'` only), and never re-encoded, so it stays byte-identical to what the Open Siddur Project
 published. Re-verify with the sha256 above before replacing it.
+
+Two files have been received for this mark:
+
+- a 500×500 **PNG**, sent by Aharon Varady directly to the maintainer. Shipped first; removed in
+  favour of the SVG, and recoverable from git history (sha256 `f041a2ca…`).
+- this **SVG**, sourced from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:The_Open_Siddur_Project_logo_(SVG).svg)
+  by the maintainer. It renders identically to the PNG (compared side by side at 300px and at the
+  44px display size) and scales cleanly, at a third of the bytes.
+
+**One unverified point.** commons.wikimedia.org is unreachable from the build environment, so the
+Commons page's own license tag and author field were never read. The underlying work is CC BY-SA 4.0
+on the creator's word (below), which settles the artwork — but if the Commons upload credits a
+**second** person for the vectorisation, that person is owed a credit too, and the line under the
+grid would need their name. Worth thirty seconds on that page to confirm. Nothing else depends on it.
+
+### Security review of the SVG
+
+Scanned before staging, since SVG is executable in ways a PNG is not: **no** `<script>`, event
+handlers (`onload`/`onclick`/`onerror`/…), `javascript:` URLs, `<foreignObject>`, `<use>`, `<image>`,
+animation elements, CSS `url()`, `@font-face`, or `ENTITY` declarations. The only absolute URLs are
+XML namespace identifiers and the SVG 1.1 DTD in the DOCTYPE; browsers do not fetch external DTDs,
+and the file is loaded through `<img>`, which never executes script regardless. Re-run that scan on
+any replacement.
 
 ## License
 
