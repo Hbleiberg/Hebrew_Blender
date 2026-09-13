@@ -300,8 +300,12 @@ opens that font pre-imported into a fresh, **license-locked** project via a 3-st
   never hotlinked; the page's CSP allows `img-src 'self'` only). It is decorative (`alt=""`,
   `aria-hidden`) because the intro's own link already points at the partner page, and `osPickRender`
   shows it only while EVERY manifest entry carries `partner: "opensiddur"`, so a second partner's fonts
-  hide it rather than mis-credit. **Its license is not yet recorded** — see
-  `partners/opensiddur/NOTICE.md` before release. Nothing under `partners/` is precached. `osPickChoose(id)` joins the deep-link path at `osLoadStartCtx(entry)` →
+  hide it rather than mis-credit. It is **CC BY-SA 4.0**, so the required
+  attribution (title · author · source · license) sits under the grid as `#osPickLogoCredit` — pinned
+  English like the footer credits, `dir="ltr"`, and hidden by the same gate, since a hidden mark has
+  nothing to attribute. **Never ship the mark without that line.** ShareAlike binds adaptations, not
+  display: the file is shown unmodified, so nothing here is a derivative. Full record:
+  `partners/opensiddur/NOTICE.md`. Nothing under `partners/` is precached. `osPickChoose(id)` joins the deep-link path at `osLoadStartCtx(entry)` →
   `_osStartCtx` → `wizardOpen('osfont')`, recording `_osStartOrigin` (`'link' | 'gate' | 'new'`): the
   partner wizard's Cancel returns to that origin wizard and step 1 shows `#wizOsChangeFont` (hidden for
   `'link'`) → `osPickReopen()`. `aCloseModal` hands the focus trap back to the picker the way it does for

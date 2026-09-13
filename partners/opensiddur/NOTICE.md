@@ -20,22 +20,30 @@ The file is a **pinned, unmodified copy** supplied by the maintainer — same ru
 `'self'` only), and never re-encoded, so it stays byte-identical to what the Open Siddur Project
 published. Re-verify with the sha256 above before replacing it.
 
-## LICENSE — NOT YET RECORDED
+## License
 
-**No license text has been staged for this file, because none was verified.** The source page above
-was unreachable from the environment the picker was built in, so the license was neither read nor
-detected — and this repository's rule for partner assets is *detected, never invented*.
+**CC BY-SA 4.0** — Creative Commons Attribution-ShareAlike 4.0 International,
+https://creativecommons.org/licenses/by-sa/4.0/ (confirmed by the maintainer, 2026-09-13).
 
-Before this ships publicly, the maintainer should record here:
+Attribution is required, and the picker carries it verbatim beneath the font grid
+(`#osPickLogoCredit`, pinned English, hidden whenever the mark itself is hidden):
 
-- the license the logo is offered under (name + version), and its URL;
-- any attribution wording that license requires;
-- confirmation that the Open Siddur Project is content for its mark to appear in the Font Maker's
-  interface — a license permitting reuse and a project agreeing to be represented in another
-  product are separate questions.
+> [Logo for the Open Siddur Project](https://opensiddur.org/miscellanea/art/logo-for-the-open-siddur-project-by-aharon-varady-2009/)
+> by Aharon Varady (2009) · [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 
-If the answer to the last point is no, delete this directory and the `#osPickLogo` markup, CSS and
-`osPickRender` gate in `Hebrew_Font_Maker.html`; the picker's text credit and link stand on their own.
+That is the standard title · author · source · license form. **Keep the credit and the mark
+together** — removing the line while the logo still renders puts the page out of compliance.
+
+ShareAlike binds adaptations, not display. The file is shown unmodified and never re-encoded, so
+nothing here is an adaptation and the share-alike term is not triggered. If the logo is ever
+recoloured, cropped or redrawn for this project, that derivative must itself be CC BY-SA 4.0.
+
+### Still worth confirming
+
+The license permits the use; it does not speak for the project. Worth a word with Aharon that the
+Open Siddur Project is content for its mark to appear in the Font Maker's interface. If not, delete
+this directory along with the `#osPickLogo` / `#osPickLogoCredit` markup, CSS and `osPickRender`
+gate in `Hebrew_Font_Maker.html`; the picker's text credit and link stand on their own.
 
 ## Runtime
 

@@ -921,6 +921,10 @@ footer a { display: inline-block; padding-block: 5px; }
   .os-pick-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-block-start: 2px; }
   .os-badge { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.02em; padding: 1px 6px; border-radius: 10px; border: 1px solid var(--border); background: var(--cream); color: var(--muted); }
   .os-badge-lic { color: var(--gold-text); border-color: var(--gold); }
+  .os-pick-credit { font-size: 0.68rem; line-height: 1.4; color: var(--muted); margin: 4px 0 0; }
+  .os-pick-credit a { color: inherit; text-decoration: underline; }
+  .os-pick-credit a:hover { color: var(--gold-text); }
+  .os-pick-credit[hidden] { display: none; }
   .os-pick-empty { font-size: 0.86rem; color: var(--muted); text-align: center; padding: 20px 0; }
   .os-pick-empty[hidden] { display: none; }
   @media (max-width: 800px) {
@@ -2097,6 +2101,13 @@ footer a { display: inline-block; padding-block: 5px; }
     <div class="os-pick-grid" id="osPickGrid" role="list"></div>
     <p class="os-pick-empty" id="osPickEmpty" data-i18n="fontmaker.ospick.empty" hidden>No starting font matches that search.</p>
     <p class="wiz-foot-note"><span data-i18n="fontmaker.ospick.lock_note">Your version keeps the original font's license — the Font Maker locks it for you and carries the required credits into every export.</span> <button type="button" class="fld-help" onclick="openHelp('oslock')" title="Why is this locked?" data-i18n-title="fontmaker.osfont.lock_help_title" aria-label="Why is this locked?" data-i18n-aria-label="fontmaker.osfont.lock_help_title">?</button></p>
+    <!-- CC BY-SA 4.0 attribution for the mark above (title · author · source · license). Pinned English
+         and never translated — a third-party credit, like the footer's; dir="ltr" keeps it in English
+         order inside the RTL UI. osPickRender hides it with the logo it credits. -->
+    <p class="os-pick-credit" id="osPickLogoCredit" dir="ltr" hidden><!-- i18n-ignore: third-party attribution -->
+      <a href="https://opensiddur.org/miscellanea/art/logo-for-the-open-siddur-project-by-aharon-varady-2009/" target="_blank" rel="noopener">Logo for the Open Siddur Project</a>
+      by Aharon Varady (2009) · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+    </p>
   </div>
 </div>
 
@@ -20760,8 +20771,12 @@ function osPickRender(fonts) {
   // The mark is one partner's, so it shows only while the whole library is theirs. A second partner's
   // fonts in the manifest hide it rather than credit the wrong project (the sentence above reads from
   // the first entry for the same reason — see partners/opensiddur/NOTICE.md).
+  // The CC BY-SA credit line rides with the mark: no logo shown, nothing to attribute.
+  const showMark = !!(sorted.length && sorted.every(f => f.partner === 'opensiddur'));
   const logo = document.getElementById('osPickLogo');
-  if (logo) logo.hidden = !(sorted.length && sorted.every(f => f.partner === 'opensiddur'));
+  if (logo) logo.hidden = !showMark;
+  const credit = document.getElementById('osPickLogoCredit');
+  if (credit) credit.hidden = !showMark;
   _osPickRendered = true;
 }
 function osPickSampleText() { const v = document.getElementById('osPickText').value.trim(); return v || OS_PICK_SAMPLE; }
