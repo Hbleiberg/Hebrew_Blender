@@ -170,7 +170,7 @@ shared component so any tool can adopt it.
 A row of one-click Hebrew sample phrases that fill a font-preview field: **Shalom · Pangram ·
 Alef-bet · Nikkud · Trop · Mixed**. Each phrase isolates **one** thing, so a font builder can tell
 which part of a font a problem is in — letters vs. vowels vs. cantillation vs. mixed script —
-instead of squinting at one sentence that mixes them. Modeled on the Open Siddur catalogue's
+instead of squinting at one sentence that mixes them. Modeled on the OpenSiddur catalogue's
 "Test your text in every font" popup.
 
 ### Rule: add these ONLY when asked

@@ -1,6 +1,6 @@
 # Starting Fonts — partner deep-link fonts for the Hebrew Font Maker
 
-Fonts in this folder power `Hebrew_Font_Maker.html?start=<id>`: a partner site (the Open Siddur
+Fonts in this folder power `Hebrew_Font_Maker.html?start=<id>`: a partner site (the OpenSiddur
 Project, https://opensiddur.org/help/fonts/) links here, the Font Maker fetches the font, runs a
 short partner onboarding, and opens a fresh project with the font's Hebrew letters, marks, and
 anchor positions imported. The derivative's license is locked to the upstream license, and

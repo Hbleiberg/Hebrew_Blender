@@ -1,6 +1,6 @@
-# Open Siddur Project — partner mark
+# OpenSiddur Project — partner mark
 
-`logo.svg` is the Open Siddur Project's logo, shown beside the partner credit in the Hebrew Font
+`logo.svg` is the OpenSiddur Project's logo, shown beside the partner credit in the Hebrew Font
 Maker's "Start from an existing font" picker (`#osPickLogo`).
 
 | | |
@@ -18,7 +18,7 @@ Maker's "Start from an existing font" picker (`#osPickLogo`).
 
 The file is a **pinned, unmodified copy** staged byte-for-byte as received. Same rule as the fonts under
 `starting-fonts/`: vendored same-origin, never hotlinked (the Font Maker's CSP allows images from
-`'self'` only), and never re-encoded, so it stays byte-identical to what the Open Siddur Project
+`'self'` only), and never re-encoded, so it stays byte-identical to what the OpenSiddur Project
 published. Re-verify with the sha256 above before replacing it.
 
 Two files have been received for this mark:
@@ -64,7 +64,7 @@ recoloured, cropped or redrawn for this project, that derivative must itself be 
 
 ### Permission
 
-**Granted.** Aharon Varady — creator of the logo and of the Open Siddur Project — gave his blessing
+**Granted.** Aharon Varady — creator of the logo and of the OpenSiddur Project — gave his blessing
 for the mark to appear in the Hebrew Font Maker's interface, and supplied the file himself
 (maintainer, 2026-09-13). That settles the question the license could not: a license permits reuse,
 but it does not speak for the project being represented.

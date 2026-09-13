@@ -5,8 +5,8 @@ description: >-
   validate a TTF/OTF against the partner license allowlist, stage it under starting-fonts/<id>/
   with its upstream LICENSE.txt, append starting-fonts/manifest.json, and print the live
   Hebrew_Font_Maker.html?start=<id> URL plus a paste-ready <a> snippet to send the partner
-  (Open Siddur Project). Use this whenever the user invokes /addOSFont, drops a font file and asks
-  to "add this font to the starting fonts", "make an Open Siddur edit link for this font", "add a
+  (OpenSiddur Project). Use this whenever the user invokes /addOSFont, drops a font file and asks
+  to "add this font to the starting fonts", "make an OpenSiddur edit link for this font", "add a
   partner font", "stage this font for the Font Maker deep link", or mentions "OS font intake" —
   even loosely phrased ("get this ttf onto Aharon's page", "new starting font").
 ---

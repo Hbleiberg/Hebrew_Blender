@@ -337,7 +337,7 @@ as its last two arguments — without a compression argument jsPDF stores the pa
 (~11 MB per page).
 
 ### Starting Fonts / partner onboarding (`?start=<id>` + `starting-fonts/`)
-The Open Siddur collaboration: a partner page links `Hebrew_Font_Maker.html?start=<id>`, which
+The OpenSiddur collaboration: a partner page links `Hebrew_Font_Maker.html?start=<id>`, which
 opens that font pre-imported into a fresh, **license-locked** project via a 3-step partner wizard.
 
 - **Data layer**: `starting-fonts/manifest.json` (`{"schema":1,"fonts":[...]}`) + one
@@ -379,7 +379,7 @@ opens that font pre-imported into a fresh, **license-locked** project via a 3-st
   not one), and calls `setOpen(false)` so the toggle label renders through I18n at mount. The default
   sample `OS_PICK_SAMPLE` is unpointed; the chips reach nikkud, trop and the rest. The card grid is the
   modal's only flex-grower (every sibling is `flex: 0 0 auto`, the grid keeps a `min-block-size` floor),
-  so an open keyboard cannot squeeze it away. The Open Siddur mark sits beside the intro line
+  so an open keyboard cannot squeeze it away. The OpenSiddur mark sits beside the intro line
   (`#osPickLogo`, vendored unmodified at `partners/opensiddur/logo.svg` — same-origin like the fonts,
   never hotlinked; the page's CSP allows `img-src 'self'` only). It is decorative (`alt=""`,
   `aria-hidden`) because the intro's own link already points at the partner page, and `osPickRender`
