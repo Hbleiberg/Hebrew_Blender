@@ -3895,7 +3895,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.40';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.41';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -4112,6 +4112,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.41</strong> &mdash; <strong>Add a whole set of letter photos in one go.</strong> The <span class="ui">Individual pictures</span> upload now takes as many files as you pick or drop: the first lands on the letter you're on and the rest fill the <strong>next empty letters in alef-bet order</strong>, while any file <strong>named for its letter</strong> (<code>alef</code>, <code>Alef.jpg</code>, <code>01-alef</code>, <code>05D0</code>, <code>uni05D0</code> or <code>&#1488;</code>) goes straight there no matter what order you picked it in. Anything with nowhere to go is named in the message instead of disappearing quietly, and the whole batch undoes in one <span class="ui">Ctrl+Z</span>. Uploading a photo is also finally <strong>undoable and autosaved</strong> on its own &mdash; before this it was neither. <em>(September 2026)</em></li>
       <li><strong>v5.40</strong> &mdash; <strong>Start from an existing font, right from the wizard.</strong> The <span class="ui">Create a new font</span> screen gained a <span class="ui">📚 Start from an existing font</span> button that opens a browsable library of every editable starting font from the Open Siddur Project &mdash; each card previewed in the real font, with search by name or designer, nikkud and trope filters, the font's license on the card, and a box to type your own Hebrew sample. Pick one and the same partner onboarding runs as the <code>?start=</code> link does: your version keeps the original's license and credits, and <span class="ui">← Choose a different font</span> takes you back to the library. <em>(September 2026)</em></li>
       <li><strong>v5.39</strong> &mdash; <strong>Sending your font to IvritSuite no longer depends on remembering the attachment.</strong> The <span class="ui">Exported ✓</span> screen's <span class="ui">📤 Send to IvritSuite</span> button now writes the submission email right here &mdash; no detour through the font library &mdash; and on an iPhone, iPad or Mac it opens the share sheet with the <strong>.ttf and its LICENSE.txt already attached</strong> (the address is copied for you). Everywhere else it opens the email and keeps an on-screen <strong>checklist naming the exact file to attach</strong>, with <span class="ui">⬇ Download again</span>, <span class="ui">💾 Save as&hellip;</span> and <span class="ui">⎘ Copy address</span> one click away. The same screen gained <span class="ui">📤 Share / Save to Files</span> and <span class="ui">💾 Save as&hellip;</span>, so a font can be put exactly where you want it even where the browser's download is hard to find. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.38</strong> &mdash; <strong>A slimmer footer.</strong> The strip under the workspace used to be a three-column block &mdash; the questions, a paragraph about the tool and a tall list of related tools &mdash; that stood taller than most panels. It is now a single line: <span class="ui">Frequently Asked Questions</span>, <span class="ui">About</span> and <span class="ui">Related Hebrew Tools</span> each fold open on a click, and the credits sit at the end of the same line. Nothing was removed; it just stopped taking a fifth of the screen. <em>(September 2026)</em></li>
@@ -4246,7 +4247,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4259,7 +4260,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_40';
+  const CUR_KEY = 'fontmaker.changelog.v5_41';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -5260,7 +5261,17 @@ function renderNextStepHint() {
   const s = coreLetterStats(), lists = coreLetterLists();
   const nikOn = project.font.nikkud.enabled;
   const link = (label, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'hint-link'; b.textContent = label; b.onclick = fn; return b; };
-  if (s.traced === 0) {
+  const waiting = lists.blanks.filter(b => {   // photo/strokes in, no outline yet — the trace queue
+    const l = project.letters.find(x => x.codepoint === b.cp);
+    return l && ((l.source && l.source.dataUrl) || (l.draw && l.draw.strokes && l.draw.strokes.length));
+  });
+  if (s.traced === 0 && waiting.length) {
+    // "Start by uploading…" is a lie once pictures are in — a multi-photo pick lands 27 of them at
+    // once, so point at the step that's actually next instead of the one just finished.
+    const w0 = waiting[0];
+    const parts = I18n.t('fontmaker.panels.nexthint_trace', { name: '\x00', count: waiting.length }).split('\x00');
+    host.append(parts[0] || '', link(gName(w0.name), () => { _selectItem('letter', w0.cp); setWorkMode('trace'); }), parts[1] || '');
+  } else if (s.traced === 0) {
     host.textContent = project.inputMode === 'draw'
       ? _drawT('nexthint_start', 'Pick a letter and draw it right on the canvas.')
       : I18n.t('fontmaker.panels.nexthint_start');   // upload-flavored copy is wrong for a draw project
@@ -6298,21 +6309,107 @@ function autoThresholdFor(src, flatten) {
 }
 /* ════════ end Auto-threshold + illumination flattening ════════ */
 
+/* Decode one uploaded raster and return the mutation that assigns it — the async work (file read,
+   decode, Otsu, fit) runs BEFORE anything is written, so a corrupt file changes nothing, and the
+   caller decides how to wrap it: one letter (uploadForCurrent) or a whole pick in ONE undo entry
+   (uploadForLetters), the adApply shape. */
+async function prepImageForItem(it, file) {
+  const url = await readFileAsDataUrl(file);
+  const im = await loadImg(url);
+  const transform = defaultFitTransform(im);          // fit height to letter-top, left at LSB
+  const binThreshold = autoThresholdFor(im, true);    // Otsu initial threshold (slider still wins later)
+  return () => {
+    it.source.kind = 'single'; it.source.dataUrl = url; it.source.cropRect = null;
+    it.draw = null;                                   // a photo replaces any drawing — stale strokes must not resurface in draw mode
+    it.flattenLighting = true;                        // fresh raster upload → lighting flattening on
+    it.thresholdUserSet = false;                      // any hand-tuned threshold belonged to the old image
+    it.binThreshold = binThreshold;
+    it.transform = transform;
+    it.contours = null; it.anchors = null;
+  };
+}
 async function uploadForCurrent(file) {
   if (svgUploadOn()) return uploadSvgForCurrent(file);
-  const url = await readFileAsDataUrl(file);
   const l = curLetter();
-  l.source.kind = 'single'; l.source.dataUrl = url; l.source.cropRect = null;
-  l.draw = null;                                     // a photo replaces any drawing — stale strokes must not resurface in draw mode
-  const im = await loadImg(url);
-  l.flattenLighting = true;                          // fresh raster upload → lighting flattening on
-  l.thresholdUserSet = false;                        // any hand-tuned threshold belonged to the old image
-  l.binThreshold = autoThresholdFor(im, true);       // Otsu initial threshold (slider still wins later)
-  l.transform = defaultFitTransform(im);   // fit height to letter-top, left at LSB
-  l.contours = null; l.anchors = null;
+  // withSource+withDraw: the whole point of an upload is the image assignment, and it discards any
+  // drawing — undo has to bring both back (the 'draw letter' entry carries the same pair).
+  udDo([Object.assign(itemScope(), { withSource: true, withDraw: true })],
+       'upload image — ' + l.name, await prepImageForItem(l, file));
   renderLetterGrid(); renderStage(); renderControls();
   status(I18n.t('fontmaker.status.loaded_image', {name: gName(l.name)}));
 }
+
+/* ════════ Multi-photo pick: one trip through the OS picker fills many letters ════════
+   A file whose NAME names a letter (alef / Alef.jpg / 01-alef.jpg / 05D0 / uni05D0 / א) claims that
+   letter wherever it sits, so a scanned-and-renamed set imports in any order. Everything else lands
+   on the current letter first, then on the following letters in alef-bet order that are still empty
+   — no outline, no image, no strokes — skipping punctuation and digits, which either ship a default
+   outline or aren't what a photo batch is for. Files with nowhere to go are reported, never dropped
+   silently. Commits as ONE undo entry (adApply's shape), so a mis-picked batch is one Ctrl+Z. */
+function _fileNameToCp(name, nameMap) {
+  const stem = String(name || '').replace(/\.[^.]+$/, '').trim();
+  const base = stem.replace(/^\d+\s*[-_. ]+\s*/, '') || stem;   // "01-alef", "3 gimel" — scanner counters
+  for (const c of [stem, base, stem.replace(/\s+/g, ''), base.replace(/\s+/g, '')]) {
+    const cp = c && matchSvgEntryToCp({ id: c }, nameMap);       // same id rules the SVG auto-split uses
+    if (cp) return cp;
+  }
+  return null;
+}
+function _letterIsEmpty(l) {
+  return !!l && !l.contours && !(l.source && l.source.dataUrl) && !(l.draw && l.draw.strokes && l.draw.strokes.length);
+}
+function _multiUploadTargets(n, claimed) {   // → [cp] of length ≤ n: current letter, then the next empty ones
+  const out = [];
+  if (n <= 0) return out;
+  const here = (curKind === 'letter' && project.letters.some(x => x.codepoint === curCp)) ? curCp : null;
+  if (here && !claimed.has(here)) out.push(here);
+  const i = here ? LETTER_ORDER.indexOf(here) : -1;
+  for (let k = 1; out.length < n && k <= LETTER_ORDER.length; k++) {
+    const cp = LETTER_ORDER[(i + k + LETTER_ORDER.length) % LETTER_ORDER.length];
+    if (claimed.has(cp) || out.indexOf(cp) >= 0) continue;
+    const meta = letterMeta(cp); if (meta && meta.cat === 'punct') continue;
+    if (_letterIsEmpty(project.letters.find(x => x.codepoint === cp))) out.push(cp);
+  }
+  return out;
+}
+async function uploadForLetters(files) {
+  const list = files == null ? [] : (files.length !== undefined ? Array.from(files) : [files]);
+  if (!list.length) return;
+  // SVG mode replaces the trace rather than the photo (uploadSvgForCurrent), and a single pick must
+  // behave exactly as it always has — both stay on the one-at-a-time path.
+  if (list.length === 1 || svgUploadOn()) return uploadForCurrent(list[0]);
+
+  const nameMap = buildSvgNameMap(), claimed = new Map(), rest = [];
+  list.forEach(f => {
+    const cp = _fileNameToCp(f.name, nameMap);
+    if (cp && !claimed.has(cp) && project.letters.some(x => x.codepoint === cp)) claimed.set(cp, f);
+    else rest.push(f);
+  });
+  const queue = _multiUploadTargets(rest.length, claimed);
+  const pairs = [];
+  claimed.forEach((f, cp) => pairs.push({ cp, file: f }));
+  queue.forEach((cp, i) => pairs.push({ cp, file: rest[i] }));
+  const leftover = rest.length - queue.length;
+  if (!pairs.length) { status(I18n.t('fontmaker.status.upload_no_room')); return; }
+
+  const prep = [], failed = [];
+  for (let i = 0; i < pairs.length; i++) {
+    const l = project.letters.find(x => x.codepoint === pairs[i].cp);
+    try { prep.push({ cp: pairs[i].cp, fn: await prepImageForItem(l, pairs[i].file) }); }
+    catch (e) { failed.push(pairs[i].file.name); }
+    status(I18n.t('fontmaker.status.preparing_letters', {i: i + 1, total: pairs.length}), true);
+    if ((i & 3) === 3) await _adYield();
+  }
+  if (!prep.length) { status(I18n.t('fontmaker.status.upload_all_failed')); return; }
+  udDo(prep.map(p => ({ t: 'item', kind: 'letter', cp: p.cp, withSource: true, withDraw: true })),
+       'upload ' + prep.length + ' photos', () => { prep.forEach(p => p.fn()); });
+  renderGrids(); renderStage(); renderControls();
+  let msg = I18n.t(prep.length === 1 ? 'fontmaker.status.loaded_photos.one' : 'fontmaker.status.loaded_photos.other', {count: prep.length});
+  if (leftover > 0) msg += ' ' + I18n.t(leftover === 1 ? 'fontmaker.status.upload_leftover.one' : 'fontmaker.status.upload_leftover.other', {count: leftover});
+  if (failed.length) msg += ' ' + I18n.t(failed.length === 1 ? 'fontmaker.status.upload_unreadable.one' : 'fontmaker.status.upload_unreadable.other', {count: failed.length});
+  status(msg);
+}
+/* ════════ end Multi-photo pick ════════ */
 async function uploadCombined(files) {
   const list = files == null ? [] : (files.length !== undefined ? Array.from(files) : [files]);
   if (!list.length) return;
@@ -14407,7 +14504,8 @@ function renderAlignLeft(L, l) {
     const svg = svgUploadOn();
     html += `<div class="drop" id="letterDrop">${_pT('letter_drop', 'Drop ' + _dropKind(svg) + ' for <b>' + esc(gName(l.name)) + '</b>, or ' + _dropBrowse('letterFile') + '.', { kind: _dropKind(svg), name: '<b>' + esc(gName(l.name)) + '</b>', browse: _dropBrowse('letterFile') })}</div>
       <div class="allowed">${svg?_pT('letter_allowed_svg','Allowed: SVG only — vectors import directly (no tracing).'):_pT('mark_allowed_img','Allowed: any image file — PNG, JPG, GIF, WebP.')}</div>
-      <input type="file" id="letterFile" accept="${svg?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
+      ${svg?'':`<div class="allowed">${_pT('letter_multi_hint','Pick or drop several at once — the rest fill the next empty letters (a file named <b>alef</b> or <b>05D0</b> goes straight to that letter).')}</div>`}
+      <input type="file" id="letterFile" accept="${svg?'.svg,image/svg+xml':'image/*'}"${svg?'':' multiple'} style="display:none;">`;
   } else if (project.inputMode === 'combined' && project.combinedSheets.length && curKind === 'letter') {
     html += (!l.source.dataUrl)
       ? `<div class="hint">${_pT('pick_then_box', 'Pick a letter, then drag a box around it on the sheet to bring it into the editor. Keyboard: arrows move the box, +/− resize, Enter to crop.')}</div>`
@@ -14446,8 +14544,9 @@ function renderAlignLeft(L, l) {
   wireInputModeBlock();
   if (project.inputMode === 'single' && curKind === 'letter') {
     const lf = document.getElementById('letterFile');
-    if (lf) lf.addEventListener('change', e => { if (e.target.files[0]) uploadForCurrent(e.target.files[0]); });
-    wireDrop('letterDrop', f => uploadForCurrent(f));
+    // value reset FIRST: without it re-picking the same file fires no `change` (the combinedFile precedent)
+    if (lf) lf.addEventListener('change', e => { const fs = Array.from(e.target.files || []); e.target.value = ''; if (fs.length) uploadForLetters(fs); });
+    wireDrop('letterDrop', fs => uploadForLetters(fs), true);
   }
 }
 function renderAlignRight(R, l) {
@@ -15161,11 +15260,14 @@ function snapFit() {   // "Center" button — fit to the glyph height, then cent
     l.transform = [k,0,0,k, fx(cx), fy(LETTER_TOP)];
     l.contours=null; l.curves=null; l.anchors=null; renderStage(); });
 }
-function wireDrop(id, cb) {
+function wireDrop(id, cb, multi) {
   const el = document.getElementById(id); if (!el) return;
   el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('drag'); });
   el.addEventListener('dragleave', () => el.classList.remove('drag'));
-  el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('drag'); const f = e.dataTransfer.files[0]; if (f) cb(f); });
+  el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('drag');
+    const fs = e.dataTransfer.files;                                     // `multi` hands the whole list over; every other zone keeps the first-file contract
+    if (multi) { if (fs && fs.length) cb(Array.from(fs)); return; }
+    const f = fs[0]; if (f) cb(f); });
 }
 
 /* shared guard for global shortcuts: ignore while typing, a modal is open, or no project */

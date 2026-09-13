@@ -103,6 +103,31 @@ covers undo + dirty + autosave in one. Pure-UI state (panel collapse, toggles) c
 directly with no undo entry. Read-only features (tour, QA grid, shortcuts sheet) must touch none of
 this — zero project-state changes.
 
+An **image assignment needs `withSource: true`** on its item scope (and `withDraw: true` when it can
+replace a drawing) — `ITEM_SKIP` holds `source`/`savedAnchors`/`draw` out of snapshots by default, so
+without the opt-in `udRestore` keeps the *new* image and rolls back only the geometry around it,
+which is a visible half-undo. The cost is that the entry retains a second copy of that item's
+`dataUrl` for as long as it sits on the stack; `draw letter`, `auto-detect letters` and
+`upload image` all pay it deliberately, full combined sheets never do.
+
+### Photo upload — one letter or a whole pick
+`prepImageForItem(it, file)` does all the async work (file read, decode, `autoThresholdFor`,
+`defaultFitTransform`) and hands back the *mutation* as a closure, so a corrupt file changes nothing
+and the caller chooses the wrapper. `uploadForCurrent` wraps one closure for the current item (letters
+and marks alike — the `markDrop` zone calls it too); `uploadForLetters` wraps a whole pick in ONE
+`udDo`, the `adApply` shape, so a mis-picked batch is a single Ctrl+Z.
+
+Distribution: a file whose **name** names a letter (`alef`, `Alef.jpg`, `01-alef`, `05D0`, `uni05D0`,
+`א`) claims that letter wherever it sits — `_fileNameToCp` reuses `buildSvgNameMap()` +
+`matchSvgEntryToCp`, the same id rules the SVG auto-split uses. Everything else fills the current
+letter first, then the following letters in `LETTER_ORDER` that are still empty (no outline, no
+image, no strokes), skipping `cat:'punct'` (digits and punctuation, which ship default outlines).
+Files with nowhere to go and files that fail to decode are counted in the toast, never dropped
+silently. The `multiple` attribute and the hint line under the drop zone are raster-mode only —
+SVG mode routes through `uploadSvgForCurrent`, which replaces the trace rather than the photo, and
+stays one-at-a-time. `wireDrop(id, cb, multi)`'s third argument opts a zone into whole-`FileList`
+drops; every other zone keeps the first-file contract.
+
 ### Workspace model + render pipeline
 State: `curKind` (`letter|nikkud|trop`), `curCp`, `workMode` (`align|trace|anchors|nodes`).
 Guarded vs guard-bypass pairs: `selectItem` → `_selectItem`, `setWorkMode` → `_setWorkMode` (the

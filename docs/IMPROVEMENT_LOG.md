@@ -92,8 +92,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
 
-- [ ] S | Hebrew_Font_Maker.html | **Individual pictures: pick all the photos at once.** Measured S380: `#letterFile` is single-file, so 27 letters cost 27 × (tile → browse → OS picker → Next: Trace) = 108 actions, while the combined-sheet input already carries `multiple`. A `multiple` input whose files fill the current letter and then the next untraced ones in alef-bet order (or by a …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] S | trope_tutor.html | **"Drill the marks I missed" on the results screen.** `_lastMissed` holds the keys + clips the review list renders, but the only next steps are Drill again (the same scope) and Back to Learn; `drillScope()` is family-only (`TROPE_FAMILY_DEFS`). A transient key-pool override in `startDrill` (no storage key, 1–2 CSV keys, ~35 lines) turns the review list into the next …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S | trope_tutor.html | **Missed-review rows and mastery cells open the mark's Learn card.** Measured S367: results → the Learn card of a missed mark is 2 clicks AND the student must know its family (the review row shows name + ▶ only; `.tu-mcell` is an inert `div`: no `tabindex`/`role`/`onclick`, cursor auto). A "Study →" per review row and a click on a mastery cell (`currentFamily = …[full …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -143,6 +141,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 _(none)_
 
 ## Done
+
+- [x] 2026-09-13 | feature seed | Hebrew_Font_Maker.html | **Individual pictures: pick all the photos at once — shipped (FM v5.41).** `multiple` + `uploadForLetters`: filename-targeted letters first, then the current letter and the following empty non-punct ones; leftovers and unreadable files named in the toast; the whole pick is ONE undo entry. Also fixed the same function's pre-existing violation — `uploadForCurrent` mutated `project` with no `udDo`/`markDirty`, so uploads were neither undoable nor autosaved. | verified: 43 assertions, 0 pageerrors
 
 - [x] 2026-09-11 | (S381 close-out) | branch/deploy note | **S381 CONTINUED `claude/improve-loop-swgwqx` (PR #229 open, draft, mergeable clean at start; base `66dd97b` = `origin/main`), 3 fix commits + this close-out (62 on the branch). After the close-out the maintainer authorized "push to main" in-session: main fast-forwarded `66dd97b..7f94f28`, PR #229 auto-closed as merged, the Pages run for `7f94f28` concluded success (sw v706 live). Drift: none (`origin/main` still `66dd97b`, sw v705, FM 5.39). sw v705→v706 (Font Maker CSS, flash cards JS, generator …[full text: IMPROVEMENT_ARCHIVE.md]
 
