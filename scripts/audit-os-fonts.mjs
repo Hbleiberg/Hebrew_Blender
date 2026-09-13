@@ -68,9 +68,20 @@ function licFamily(label) {
 // ---------- 1. load the partner list ----------
 async function loadSource(src) {
   if (isUrl(src)) {
-    const res = await fetch(src, { headers: { 'user-agent': 'ivritsuite-os-fonts-audit (+https://ivritsuite.com)' } });
-    if (!res.ok) throw new Error(`fetch ${src} → HTTP ${res.status}`);
-    return JSON.parse(await res.text());
+    // The partner site sits behind a WordPress/CDN bot filter that answers 403 to a bare or
+    // script-looking user-agent, so try an honest one first and a browser-shaped one second.
+    const uas = [
+      'Mozilla/5.0 (compatible; IvritSuite-fonts-audit/1.0; +https://ivritsuite.com)',
+      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36',
+    ];
+    let last = '';
+    for (const ua of uas) {
+      const res = await fetch(src, { headers: { 'user-agent': ua, accept: 'application/json, text/plain;q=0.9, */*;q=0.5', 'accept-language': 'en' } });
+      const text = await res.text();
+      if (res.ok) return JSON.parse(text);
+      last = `HTTP ${res.status} (server: ${res.headers.get('server') ?? '?'}, ua: ${ua.slice(0, 40)}…) body: ${text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 240)}`;
+    }
+    throw new Error(`fetch ${src} → ${last}`);
   }
   return JSON.parse(readFileSync(resolve(src), 'utf8'));
 }
