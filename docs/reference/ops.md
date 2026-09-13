@@ -170,6 +170,17 @@ Static GitHub Pages, custom domain `ivritsuite.com` (`CNAME`), `.nojekyll`, **no
 Every push to `main` auto-triggers a "pages build and deployment" Actions run — that run, not the
 push, is what updates the live site.
 
+- **One authored workflow exists: `.github/workflows/os-fonts-audit.yml`** (weekly, Mondays 06:17 UTC,
+  plus `workflow_dispatch` and a push that touches the workflow or `scripts/audit-os-fonts.mjs`). It
+  runs the audit, uploads `starting-fonts/AUDIT.md` + `opensiddur-fonts.json` as an artifact, and
+  only on `main` commits them when changed and opens/updates one `<!-- os-fonts-audit -->`-marked
+  issue when something needs a person. Its bot commit to `main` triggers a Pages deploy like any
+  other push (harmless: nothing under `starting-fonts/` is precached). The live
+  `opensiddur.org/…/fonts.json` sits behind a Cloudflare JavaScript challenge that 403s every
+  non-browser client, so the script falls back to the committed copy in the partner's site repo
+  (`raw.githubusercontent.com/aharonium/opensiddur.org/master/plugins/custom-fonts-display/data/fonts.json`)
+  and the report names which source it read. Never work around the challenge; if the live copy
+  matters, the partner exempts that path in Cloudflare.
 - **Rapid successive pushes cancel in-flight deploys** — after a burst of commits only the last
   deploy runs. Prefer batching; always confirm the final run concluded `success`.
 - **Transient Pages failures happen** (observed: the "Deploy to GitHub Pages" step hanging to a
