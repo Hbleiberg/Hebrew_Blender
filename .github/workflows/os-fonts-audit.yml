@@ -9,6 +9,10 @@ on:
   schedule:
     - cron: '17 6 * * 1'   # Mondays 06:17 UTC
   workflow_dispatch:
+  push:                    # a change to the audit itself runs it once, on any branch
+    paths:
+      - '.github/workflows/os-fonts-audit.yml'
+      - 'scripts/audit-os-fonts.mjs'
 
 permissions:
   contents: write
