@@ -27,6 +27,26 @@ site-wide key it also reads: `hebrewBlender_darkMode`. **One AllTools exception:
 `hebrewFontMaker_lastAuthor` (the onboarding wizard's remembered author name — a scalar identity pref
 like `hebFont`, not project data) IS registered in all five AllTools sites as `fmLastAuthor`.
 
+### "Load Project ▾" menu + the Recent list
+
+`toggleLoadMenu(ev)` only toggles; `openLoadMenu(anchor)` builds and positions the popup and is also
+what puts it back after a confirm, so the anchor it was hung off lives in `_loadMenuAnchor`. Two
+buttons call it: the toolbar's "Load Project ▾" and the wizard's "Open a project ▾".
+
+Each Recent row is a `.load-menu-row` flex wrapper holding the load button **and** a `.load-menu-del`
+🗑 as siblings — a button cannot nest inside a button, and keeping them apart also keeps the trash
+out of the load hit area. `removeRecentProjectUI(idx)` closes the menu **before** raising its
+`askModal`: `.load-menu` is `z-index: 300` and `#askOverlay` only `201`, so a menu left open paints
+over its own confirm. Either answer calls `reopenLoadMenu(idx)`, which re-anchors the menu (skipping
+it when the anchor is gone or off-screen) and focuses the neighbouring 🗑, so clearing several stale
+rows is Enter, Enter, Enter.
+
+`removeRecentProject(name, savedAt)` filters by **identity, not index** — the confirm is async, and a
+`saveToBrowser()` behind it unshifts a row and slides every index down one. It writes back the list
+`getRecentProjects()` already cleaned, so a malformed stored entry is dropped by the same write.
+Nothing here touches `project`, so there is no `udDo`/`markDirty` — this is the local Recent cache,
+not project state.
+
 ### New-font onboarding wizard (`#wizardOverlay`)
 Replaces the old welcome card. Boot runs one launch decision from the `I18n.ready`-gated
 `maybeRestoreAutosave()`: restorable snapshot → the Continue/Start-fresh prompt (Continue never shows

@@ -124,8 +124,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] S–M | classroom_dashboard.html | **One-deep undo in the week editor.** `applyCalendarImport` replaces `settings.scheduleWeek` wholesale, `clearWeekDay` / `copyWeekDayToWeekdays` / `removeWeekPeriod` guard with a native `confirm()` at most, and `weekChanged()` (the choke point) saves immediately with no history. A `weekSnapshot()` at the head of the ~8 mutators + `undoWeek()` + one toolbar …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] S | Hebrew_Font_Maker.html | **Remove a project from the Recent list.** `MAX_RECENT = 6`, `pushRecentProject` evicts by `list.pop()`, and the rows in `toggleLoadMenu` are bare `loadRecentProject(i)` buttons — six experiments push the real font out of the only in-browser recovery list with no delete. Per-row 🗑 via `askModal` + `status()`, the My Fonts rows' precedent; ~35 lines, 2 CSV keys. …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - [ ] M | resources.html | **"Submit a font" is a `mailto:` while "Suggest a Resource" is a real form.** Measured 2026-09-01: `openSubmitFont` builds a `mailto:` with a pre-filled subject and body and sets `window.location.href`; the sibling flow one view away is a Web3Forms POST with 5 required fields, 18 choice pills and hCaptcha. So the contribution pat …[full text: IMPROVEMENT_ARCHIVE.md] …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S | index.html | **Show which tools already hold your saved work, on the tool cards.** A returning teacher scanning eight cards has no way to see where their presets live; measured 2026-08-31, index has **no** per-card data indicator and no recency affordance at all — the only `badge` in the file is the flash-cards *Beta* tag, and the two `recent` hits are Font Maker key comments inside …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -139,6 +137,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 _(none)_
 
 ## Done
+
+- [x] 2026-09-13 | feature seed | Hebrew_Font_Maker.html | **Remove a project from the Recent list — shipped (FM v5.41).** Per-row 🗑 in "Load Project ▾", `askModal` confirm + `status()` toast; `MAX_RECENT` is 6 and evicts silently, so test scans pushed the real font out with no delete. Rows are a `.load-menu-row` wrapper (no button-in-button); the menu closes behind the confirm (z-index 300 > `#askOverlay` 201) and `reopenLoadMenu` re-anchors it either way. Matches name+savedAt, not index. | verified: 43 assertions, 0 pageerrors
 
 - [x] 2026-09-13 | feature seed | Hebrew_Font_Maker.html | **"Only show problems" in the QA grid — shipped (FM v5.41).** A pref-backed toggle (`hebrewFontMaker_uiPrefs.qaOnlyProblems`) that hides every letter row and mark column with no flagged cell; `qaRenderGrid` now builds a reasons matrix in one pass before emitting markup, reasons still computed once per cell. View-only — tab badges and the summary stay whole-font. On David CLM: 35 rows x 18 cols -> 6 x 9, same 45 flags. | verified: 24 assertions, EN light 1400 + HE dark 800, 0 pageerrors
 

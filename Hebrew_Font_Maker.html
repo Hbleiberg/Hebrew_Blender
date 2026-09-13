@@ -1184,6 +1184,13 @@ footer a { display: inline-block; padding-block: 5px; }
   .load-menu-head { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 4px 10px 2px; }
   .load-menu-empty { font-size: 0.78rem; color: var(--muted); padding: 6px 10px; }
   .load-menu-date { font-size: 0.7rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+  /* A Recent row is the load button PLUS its own 🗑. A button can't nest inside a button, so the row is a
+     flex wrapper and the two controls are siblings — that also keeps the trash out of the load hit area. */
+  .load-menu-row { display: flex; align-items: center; gap: 2px; }
+  .load-menu-row .load-menu-item { flex: 1 1 auto; min-width: 0; }
+  .load-menu-del { flex: 0 0 auto; background: none; border: none; border-radius: 6px; padding: 7px 8px;
+    font-family: inherit; font-size: 0.82rem; line-height: 1; color: var(--muted); cursor: pointer; }
+  .load-menu-del:hover, .load-menu-del:focus-visible { background: var(--warm-gray); color: var(--text); }
 
   /* Fullscreen (matches torah_trainer.html / classroom_dashboard.html) */
   body.fullscreen header, body.fullscreen footer { display: none; }
@@ -4122,7 +4129,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.41</strong> &mdash; <strong>Add a whole set of letter photos in one go.</strong> The <span class="ui">Individual pictures</span> upload now takes as many files as you pick or drop: the first lands on the letter you're on and the rest fill the <strong>next empty letters in alef-bet order</strong>, while any file <strong>named for its letter</strong> (<code>alef</code>, <code>Alef.jpg</code>, <code>01-alef</code>, <code>05D0</code>, <code>uni05D0</code> or <code>&#1488;</code>) goes straight there no matter what order you picked it in. Anything with nowhere to go is named in the message instead of disappearing quietly, and the whole batch undoes in one <span class="ui">Ctrl+Z</span>. Uploading a photo is also finally <strong>undoable and autosaved</strong> on its own &mdash; before this it was neither. <span class="ui">QA Check</span> also gained an <span class="ui">Only show problems</span> tick: it hides every letter row and mark column with nothing wrong, so a 27-row grid collapses to just the collisions worth clicking. <em>(September 2026)</em></li>
+      <li><strong>v5.41</strong> &mdash; <strong>Add a whole set of letter photos in one go.</strong> The <span class="ui">Individual pictures</span> upload now takes as many files as you pick or drop: the first lands on the letter you're on and the rest fill the <strong>next empty letters in alef-bet order</strong>, while any file <strong>named for its letter</strong> (<code>alef</code>, <code>Alef.jpg</code>, <code>01-alef</code>, <code>05D0</code>, <code>uni05D0</code> or <code>&#1488;</code>) goes straight there no matter what order you picked it in. Anything with nowhere to go is named in the message instead of disappearing quietly, and the whole batch undoes in one <span class="ui">Ctrl+Z</span>. Uploading a photo is also finally <strong>undoable and autosaved</strong> on its own &mdash; before this it was neither. <span class="ui">QA Check</span> also gained an <span class="ui">Only show problems</span> tick: it hides every letter row and mark column with nothing wrong, so a 27-row grid collapses to just the collisions worth clicking. And the <span class="ui">Recent</span> list under <span class="ui">Load Project &#9662;</span> finally has a <strong>🗑 on every row</strong> &mdash; it holds six projects and quietly drops the oldest, so a few test scans used to push your real font out with no way to clear them. It asks before it removes. <em>(September 2026)</em></li>
       <li><strong>v5.40</strong> &mdash; <strong>Start from an existing font, right from the wizard.</strong> The <span class="ui">Create a new font</span> screen gained a <span class="ui">📚 Start from an existing font</span> button that opens a browsable library of every editable starting font from the Open Siddur Project &mdash; each card previewed in the real font, with search by name or designer, nikkud and trope filters, the font's license on the card, and a box to type your own Hebrew sample. Pick one and the same partner onboarding runs as the <code>?start=</code> link does: your version keeps the original's license and credits, and <span class="ui">← Choose a different font</span> takes you back to the library. <em>(September 2026)</em></li>
       <li><strong>v5.39</strong> &mdash; <strong>Sending your font to IvritSuite no longer depends on remembering the attachment.</strong> The <span class="ui">Exported ✓</span> screen's <span class="ui">📤 Send to IvritSuite</span> button now writes the submission email right here &mdash; no detour through the font library &mdash; and on an iPhone, iPad or Mac it opens the share sheet with the <strong>.ttf and its LICENSE.txt already attached</strong> (the address is copied for you). Everywhere else it opens the email and keeps an on-screen <strong>checklist naming the exact file to attach</strong>, with <span class="ui">⬇ Download again</span>, <span class="ui">💾 Save as&hellip;</span> and <span class="ui">⎘ Copy address</span> one click away. The same screen gained <span class="ui">📤 Share / Save to Files</span> and <span class="ui">💾 Save as&hellip;</span>, so a font can be put exactly where you want it even where the browser's download is hard to find. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.38</strong> &mdash; <strong>A slimmer footer.</strong> The strip under the workspace used to be a three-column block &mdash; the questions, a paragraph about the tool and a tall list of related tools &mdash; that stood taller than most panels. It is now a single line: <span class="ui">Frequently Asked Questions</span>, <span class="ui">About</span> and <span class="ui">Related Hebrew Tools</span> each fold open on a click, and the credits sit at the end of the same line. Nothing was removed; it just stopped taking a fifth of the screen. <em>(September 2026)</em></li>
@@ -19965,25 +19972,64 @@ async function loadRecentProject(idx) {
   const r = getRecentProjects()[idx]; if (!r) return;
   if (await applyProjectData(JSON.parse(JSON.stringify(r.data)))) status(I18n.t('fontmaker.status.loaded_named', {name: r.name}));
 }
+/* Drop one row from the Recent list. MAX_RECENT is 6 and pushRecentProject evicts the oldest, so without
+   this six experiments quietly push the real font out of the only in-browser copy there is. Identity is
+   name+savedAt rather than the row index: the confirm is async, and a save behind it reorders the list. */
+function removeRecentProject(name, savedAt) {
+  const list = getRecentProjects().filter(r => !(r.name === name && r.savedAt === savedAt));
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+}
+function removeRecentProjectUI(idx) {
+  const r = getRecentProjects()[idx]; if (!r) return;
+  // .load-menu sits at z-index 300, ABOVE #askOverlay (201): left open it would paint over its own
+  // confirm. Close it, then put it back on either answer so a second stale row stays one click away.
+  closeLoadMenu();
+  askModal(I18n.t('fontmaker.modals.remove_recent_title'),
+    I18n.t('fontmaker.modals.remove_recent_body', { name: '<b>' + esc(r.name) + '</b>' }),
+    [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost', onClick: () => reopenLoadMenu(idx) },
+     { label: I18n.t('fontmaker.modals.remove'), onClick: () => {
+         const ok = removeRecentProject(r.name, r.savedAt);
+         status(I18n.t(ok ? 'fontmaker.status.removed_recent' : 'fontmaker.status.remove_recent_failed', { name: r.name }));
+         reopenLoadMenu(idx);
+       } }]);
+}
 /* "Load Project ▾" split menu: From computer… + the recent list */
 function recentDate(iso) { try { return new Date(iso).toLocaleDateString((window.I18n && I18n.lang) || undefined, { month:'short', day:'numeric' }); } catch (e) { return ''; } }   // UI language, not browser locale
 function closeLoadMenu() { const m = document.getElementById('loadMenu'); if (m) m.remove(); document.removeEventListener('click', closeLoadMenu); }
+let _loadMenuAnchor = null;   // the button the menu hangs off — remembered so a remove-confirm can put the menu back
 function toggleLoadMenu(ev) {
   ev.stopPropagation();
   if (document.getElementById('loadMenu')) { closeLoadMenu(); return; }
+  openLoadMenu(ev.currentTarget);
+}
+function openLoadMenu(anchor) {
+  closeLoadMenu();
+  _loadMenuAnchor = anchor;
   const recents = getRecentProjects();
   const menu = document.createElement('div'); menu.id = 'loadMenu'; menu.className = 'load-menu';
   let h = `<button class="load-menu-item" onclick="closeLoadMenu();document.getElementById('projFile').click()">${_pT('load_from_computer', '📂 Load from computer…')}</button>
     <div class="load-menu-sep"></div><div class="load-menu-head">${_pT('load_recent', 'Recent')}</div>`;
   h += recents.length
-    ? recents.map((r,i) => `<button class="load-menu-item" onclick="closeLoadMenu();loadRecentProject(${i})"><span>${esc(r.name)}</span><span class="load-menu-date">${recentDate(r.savedAt)}</span></button>`).join('')
+    ? recents.map((r,i) => `<div class="load-menu-row"><button class="load-menu-item" onclick="closeLoadMenu();loadRecentProject(${i})"><span>${esc(r.name)}</span><span class="load-menu-date">${recentDate(r.savedAt)}</span></button>` +
+        `<button class="load-menu-del" onclick="removeRecentProjectUI(${i})" title="${esc(_pT('load_remove_title', 'Remove from Recent'))}" aria-label="${esc(_pT('load_remove_aria', 'Remove {name} from Recent', {name: r.name}))}">🗑</button></div>`).join('')
     : `<div class="load-menu-empty">${_pT('load_no_recent', 'No recent projects yet — save one first.')}</div>`;
   menu.innerHTML = h;
   document.body.appendChild(menu);
-  const rect = ev.currentTarget.getBoundingClientRect();
+  const rect = anchor.getBoundingClientRect();
   menu.style.left = Math.max(6, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 8)) + 'px';
   menu.style.top = (rect.bottom + 4) + 'px';
   setTimeout(() => document.addEventListener('click', closeLoadMenu), 0);
+  return menu;
+}
+function reopenLoadMenu(focusIdx) {
+  const a = _loadMenuAnchor;
+  // getClientRects() catches an anchor that is still in the DOM but no longer on screen (the wizard's
+  // "Open a project" after the wizard closed behind the confirm, the toolbar in fullscreen).
+  if (!a || !a.isConnected || !a.getClientRects().length) return;
+  const menu = openLoadMenu(a);
+  const dels = menu.querySelectorAll('.load-menu-del');   // land on the neighbouring row, so clearing several is Enter, Enter, Enter
+  const t = dels.length ? dels[Math.min(focusIdx, dels.length - 1)] : menu.querySelector('.load-menu-item');
+  if (t) t.focus();
 }
 /* "Save Project ▾" split menu: Save Project… + Save as a copy… (reuses the .load-menu styling) */
 function closeSaveMenu() { const m = document.getElementById('saveMenu'); if (m) m.remove(); document.removeEventListener('click', closeSaveMenu); }
