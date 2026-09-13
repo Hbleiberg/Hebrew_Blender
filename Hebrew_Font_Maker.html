@@ -3912,7 +3912,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.41';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.42';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -4129,6 +4129,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.42</strong> &mdash; <strong><span class="ui">Reduce points</span> and <span class="ui">Round corners</span> stay on the letter you're editing.</strong> Nudging either slider and letting go on the value it started at left its before-snapshot armed, so the next letter you opened took the <strong>previous letter's outline</strong> the moment you touched the slider &mdash; clicking from letter to letter for a low-poly pass was impossible. The snapshot now clears whenever you change letters or steps, and the slider commits when it loses focus. <em>(September 2026)</em></li>
       <li><strong>v5.41</strong> &mdash; <strong>Add a whole set of letter photos in one go.</strong> The <span class="ui">Individual pictures</span> upload now takes as many files as you pick or drop: the first lands on the letter you're on and the rest fill the <strong>next empty letters in alef-bet order</strong>, while any file <strong>named for its letter</strong> (<code>alef</code>, <code>Alef.jpg</code>, <code>01-alef</code>, <code>05D0</code>, <code>uni05D0</code> or <code>&#1488;</code>) goes straight there no matter what order you picked it in. Anything with nowhere to go is named in the message instead of disappearing quietly, and the whole batch undoes in one <span class="ui">Ctrl+Z</span>. Uploading a photo is also finally <strong>undoable and autosaved</strong> on its own &mdash; before this it was neither. <span class="ui">QA Check</span> also gained an <span class="ui">Only show problems</span> tick: it hides every letter row and mark column with nothing wrong, so a 27-row grid collapses to just the collisions worth clicking. And the <span class="ui">Recent</span> list under <span class="ui">Load Project &#9662;</span> finally has a <strong>🗑 on every row</strong> &mdash; it holds six projects and quietly drops the oldest, so a few test scans used to push your real font out with no way to clear them. It asks before it removes. And the <span class="ui">Exported &#10003;</span> screen now offers <span class="ui">📤 Send to OpenSiddur</span> beside <span class="ui">📤 Send to IvritSuite</span> &mdash; the same one-click submission, addressed to the <strong>OpenSiddur Project</strong>'s free Hebrew font library, with your font and its LICENSE.txt attached. If your font grew from one of their starting fonts, the message says which one. <em>(September 2026)</em></li>
       <li><strong>v5.40</strong> &mdash; <strong>Start from an existing font, right from the wizard.</strong> The <span class="ui">Create a new font</span> screen gained a <span class="ui">📚 Start from an existing font</span> button that opens a browsable library of every editable starting font from the OpenSiddur Project &mdash; each card previewed in the real font, with search by name or designer, nikkud and trope filters, the font's license on the card, and a box to type your own Hebrew sample. Pick one and the same partner onboarding runs as the <code>?start=</code> link does: your version keeps the original's license and credits, and <span class="ui">← Choose a different font</span> takes you back to the library. <em>(September 2026)</em></li>
       <li><strong>v5.39</strong> &mdash; <strong>Sending your font to IvritSuite no longer depends on remembering the attachment.</strong> The <span class="ui">Exported ✓</span> screen's <span class="ui">📤 Send to IvritSuite</span> button now writes the submission email right here &mdash; no detour through the font library &mdash; and on an iPhone, iPad or Mac it opens the share sheet with the <strong>.ttf and its LICENSE.txt already attached</strong> (the address is copied for you). Everywhere else it opens the email and keeps an on-screen <strong>checklist naming the exact file to attach</strong>, with <span class="ui">⬇ Download again</span>, <span class="ui">💾 Save as&hellip;</span> and <span class="ui">⎘ Copy address</span> one click away. The same screen gained <span class="ui">📤 Share / Save to Files</span> and <span class="ui">💾 Save as&hellip;</span>, so a font can be put exactly where you want it even where the browser's download is hard to find. <span style="color:var(--muted);">(September 2026)</span></li>
@@ -4264,7 +4265,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4277,7 +4278,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_41';
+  const CUR_KEY = 'fontmaker.changelog.v5_42';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -6111,7 +6112,7 @@ function _setWorkMode(mode) {
   workMode = mode;
   nodeModel = null; nodeSel.clear(); nodeDrag = null;   // node-editor state is per-entry — rebuilt by renderStage when mode==='nodes'
   _marqueeMode = false; _penMode = false; penDraft = null; _penCursor = null;   // (_penEntry survives — set by drawWithPen just before entering, consumed by renderStage)
-  _hiddenContours.clear(); _filletBase = null;          // per-entry too (disclosure open-states persist)
+  _hiddenContours.clear(); _filletBase = null; _reduceBase = null; _reduceLast = null;   // per-entry too (disclosure open-states persist); a slider drag that ends on its start value fires no `change`, so its snapshot must die here rather than follow the next glyph
   cropDrag = null;                                       // drop any in-progress crop draft when the step changes
   drawGesture = null;                                    // abandon any in-flight draw stroke (its udCapture is never pushed)
   _drawSel.clear();                                      // draw-mode stroke selection is per-entry (indices are only valid against the current array)
@@ -11065,9 +11066,10 @@ function filletLiveInput(v) {
   if (!nodeModel || !nodeSel.size) return;
   const l = curLetter();
   _filletRadius = Math.max(5, Math.min(120, +v || 25));
+  if (_filletBase && (_filletBase.kind !== curKind || _filletBase.cp !== curCp)) { _filletBase = null; _filletLast = null; }   // same guard as reduceLiveInput
   if (!_filletBase) {
     udBurstBegin([itemScope()], 'round corners — ' + l.name);
-    _filletBase = { model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel) };
+    _filletBase = { model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel), kind: curKind, cp: curCp };
   }
   nodeModel = JSON.parse(JSON.stringify(_filletBase.model));
   nodeSel = new Set(_filletBase.sel);
@@ -11127,9 +11129,10 @@ function reduceLiveInput(v) {
   if (!nodeModel || _penMode) return;
   const l = curLetter();
   _reduceEps = Math.max(1, Math.min(30, +v || 8));
+  if (_reduceBase && (_reduceBase.kind !== curKind || _reduceBase.cp !== curCp)) { _reduceBase = null; _reduceLast = null; }   // never restore another glyph's outline into this one
   if (!_reduceBase) {
     udBurstBegin([itemScope()], 'reduce points — ' + l.name);
-    _reduceBase = { model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel) };
+    _reduceBase = { model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel), kind: curKind, cp: curCp };
   }
   nodeModel = JSON.parse(JSON.stringify(_reduceBase.model));   // reset to the pre-drag snapshot, re-apply at the new strength
   nodeSel = new Set(_reduceBase.sel);
@@ -12196,7 +12199,7 @@ function nodeEditPanelHTML(l) {
       <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.radius_label')} <span id="filletRadV" class="readout">${_filletRadius}</span>
         <input type="range" min="5" max="120" step="1" value="${_filletRadius}" style="flex:1;min-width:90px;"
                aria-label="${esc(I18n.t('fontmaker.node_editor.radius_aria'))}"
-               oninput="filletLiveInput(this.value)" onchange="filletCommit()"></label>
+               oninput="filletLiveInput(this.value)" onchange="filletCommit()" onblur="filletCommit()"></label>
       <button class="ctl-btn" onclick="filletApply()" ${dis}>${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
     <div class="hint" style="margin:4px 0 0;">${I18n.t('fontmaker.node_editor.round_hint')}</div>
@@ -12207,7 +12210,7 @@ function nodeEditPanelHTML(l) {
       <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.reduce_strength_label')} <span id="reduceEpsV" class="readout">${_reduceEps}</span>
         <input type="range" min="1" max="30" step="1" value="${_reduceEps}" style="flex:1;min-width:90px;"
                aria-label="${esc(I18n.t('fontmaker.node_editor.reduce_strength_aria'))}"
-               oninput="reduceLiveInput(this.value)" onchange="reduceCommit()"></label>
+               oninput="reduceLiveInput(this.value)" onchange="reduceCommit()" onblur="reduceCommit()"></label>
       <button class="ctl-btn" onclick="reduceApply()" title="${esc(I18n.t('fontmaker.node_editor.reduce_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
     <div class="hint" style="margin:4px 0 0;"><span id="reducePtsV" class="readout">${I18n.t('fontmaker.node_editor.reduce_count_now', {count: totalPts})}</span></div>
