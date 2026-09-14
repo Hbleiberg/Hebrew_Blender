@@ -97,6 +97,12 @@ Reconcile whenever you touch storage: every key a tool writes should be *either*
 functions *or* consciously in the exempt set above. Treat a key that is real data yet missing from
 export/import as a bug to fix, not a pattern to copy.
 
+- **Account session keys are not settings.** `sb-hhkmqwpjsyxdeuhvcyis-auth-token` (+ its transient
+  `-code-verifier`) is written by the Supabase SDK and `ivritSuite_accountCache` by `js/ivrit-account.js`;
+  none of them ride export/import (a session must never travel in a file), and `eraseAllSettings` clears
+  them when the hub adopts the module so "erase" also means signed out on this device. Details:
+  `docs/reference/accounts-and-cloud.md`.
+
 ---
 
 ## .ivrit Save Files (Automatic Input) — **REQUIRED on every tool with presets/settings**

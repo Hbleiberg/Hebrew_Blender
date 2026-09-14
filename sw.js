@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v713';
+const VERSION = 'v714';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -28,6 +28,8 @@ const CORE_ASSETS = [
   '/manifest.webmanifest',
   '/pwa.js',
   '/js/i18n.js',
+  '/js/supabase-config.js',
+  '/js/ivrit-account.js',
   '/locales/en.json',
   '/locales/he.json',
   '/favicon.svg',

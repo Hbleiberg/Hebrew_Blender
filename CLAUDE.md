@@ -28,10 +28,19 @@ index below) — read the file for the area you are touching before you touch it
 | `hebrew_blend_generator.html` selectors or worksheet build | `docs/reference/generator.md` |
 | `torah_trainer.html` / `trope_tutor.html`, vowel color schemes, trope coloring | `docs/reference/torah-and-trope.md` |
 | `sw.js`, `splash/`, deploy, sitemap/`llms.txt`, the Playwright recipe | `docs/reference/ops.md` |
+| Accounts, sign-in, the header account chip, `js/supabase-config.js`, `js/ivrit-account.js`, cloud saves | `docs/reference/accounts-and-cloud.md` |
 | The improvement loop (`/improveloop`), its ledger, its size rules | `.claude/skills/improveloop/SKILL.md`, `scripts/ledger-rules.mjs` |
 
+## Accounts & cloud saves (Supabase) — REQUIRED patterns
+Accounts are optional and additive; how the layer works: `docs/reference/accounts-and-cloud.md`.
+1. **Cloud is a third option, never a replacement** — local save, `.ivrit` download and JSON import stay untouched, and nothing is ever deleted or overwritten on sync without asking (a teacher's only backup may be that file).
+2. **Only `js/supabase-config.js` and `js/ivrit-account.js` (later `js/ivrit-saves.js`) talk to Supabase** — a tool page adds the `<script>` tags and a few lines of wiring, never its own auth or SDK code (one copy to audit, one place to switch off).
+3. **The SDK loads lazily and everything fails soft** — an anonymous visitor downloads nothing extra, and offline / a blocked CDN / a missing config only changes the chip's label, never the page (the suite is an offline PWA).
+4. **PKCE only, and a sign-in returns to the same page with its own query params kept** — the module strips only the auth params (`stripAuthParams`), so `?s=`, `?start=`, `?parsha=` and every other URL contract survive; never switch `flowType` to implicit (tokens in the fragment reach the analytics snippet).
+5. **Offering accounts on a page = CSP `script-src` += `https://cdn.jsdelivr.net`, `connect-src` += `https://hhkmqwpjsyxdeuhvcyis.supabase.co`**, then `node scripts/smoke-account.mjs` (0 `pageerror` with the CDN blocked is the bar).
+
 ## Definition of done — check EVERY item before finishing a change
-- [ ] Edited a precached file (any root HTML page, `pwa.js`, an icon, the manifest)? → **bump `VERSION` in `sw.js`**. The most-missed step — the live site serves stale copies until it's done.
+- [ ] Edited a precached file (any root HTML page, `pwa.js`, a `js/` module, `locales/*.json`, an icon, the manifest)? → **bump `VERSION` in `sw.js`**. The most-missed step — the live site serves stale copies until it's done.
 - [ ] Shipped a Font Maker feature? → bump `FONT_MAKER_VERSION` + prepend one changelog `<li>` in the About tab (one combined entry per release).
 - [ ] Added an external script/font/fetch/wasm/iframe? → update that page's **CSP meta tag** (Security rule 3).
 - [ ] Edited a file under `data/`? → **bump that corpus's `?v=N` on every page that fetches it** (same value everywhere) — the `/data/` cache is cache-first and exact-URL-keyed, so without a bump the edit reaches nobody.
