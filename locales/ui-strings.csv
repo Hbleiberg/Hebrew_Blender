@@ -5283,6 +5283,10 @@ shared.account.error_expired,That sign-in code or link has expired. Request a ne
 shared.account.error_link_other_browser,That link was opened in a different browser. Enter the code from the email here instead.,הקישור נפתח בדפדפן אחר. הקלידו כאן במקום זאת את הקוד מהאימייל.,Account popover error (?code= arrived without this browser's verifier),shared
 shared.account.error_rate_limited,Too many attempts. Wait a few minutes and try again.,יותר מדי ניסיונות. המתינו כמה דקות ונסו שוב.,Account popover error,shared
 shared.account.error_finish,Couldn't finish signing in. Please try again.,לא הצלחנו להשלים את הכניסה. נסו שוב.,Account popover error (unknown callback failure),shared
+shared.account.error_session,Your sign-in has expired. Sign in again.,תוקף הכניסה פג. היכנסו שוב.,Account error: the session is no longer valid (account page actions),shared
+shared.account.error_name,A display name is 1 to 80 characters.,שם תצוגה הוא באורך 1 עד 80 תווים.,Account page: the display name field refused,shared
+shared.account.error_unreachable,The cloud is unreachable right now. Try again later.,הענן אינו זמין כרגע. נסו שוב מאוחר יותר.,Account error: a call could not reach the server,shared
+shared.account.error_delete,Your account could not be deleted. Nothing was changed — try again in a moment.,לא ניתן היה למחוק את החשבון. שום דבר לא השתנה — נסו שוב בעוד רגע.,Account page: the delete-account call failed,shared
 shared.cloud.title,Cloud saves,שמירות בענן,Cloud-saves panel title,shared; cloud panel
 shared.cloud.signed_out,Sign in to keep copies of your saved items in the cloud and get them back on any device.,היכנסו כדי לשמור עותקים של הפריטים השמורים שלכם בענן ולקבל אותם בחזרה בכל מכשיר.,Cloud-saves panel note while signed out,shared; cloud panel
 shared.cloud.sign_in,Sign in,כניסה,Cloud-saves panel button while signed out (opens the header chip's menu),shared; cloud panel
@@ -5373,6 +5377,7 @@ shared.cloud.acct_backup_head,Backups,גיבויים,Account screen section head
 shared.cloud.acct_download_cloud,Download everything in your account (.ivrit),הורדת כל מה שבחשבון (.ivrit),Account screen button: one AllTools-shaped .ivrit file of every cloud row,shared; account screen
 shared.cloud.acct_device_backup,Back up everything on this device (.ivrit),גיבוי כל מה שבמכשיר הזה (.ivrit),Account screen button: opens the home page's Import / Export All Settings modal,shared; account screen
 shared.cloud.acct_download_note,Restore a file with Import / Export All Settings on the home page.,שחזרו קובץ באמצעות ייבוא / ייצוא כל ההגדרות בעמוד הבית.,Account screen note under the backup buttons,shared; account screen
+shared.cloud.acct_manage_link,Manage your account: download everything or delete the account…,ניהול החשבון: הורדת הכול או מחיקת החשבון…,Account screen link to account.html (under the backup buttons),shared; account screen
 shared.cloud.acct_preparing,Preparing the file…,מכין את הקובץ…,Account screen status while the account backup is assembled,shared; account screen
 shared.cloud.acct_downloaded,Downloaded a backup with {n} items.,הורד גיבוי עם {n} פריטים.,Account screen status after the account backup downloaded,shared; account screen; template
 shared.cloud.acct_not_now,Not now,לא עכשיו,Account screen dismiss button on the first (welcome) opening,shared; account screen

@@ -2,7 +2,8 @@
  * ivrit-projects.js — cloud copies of Hebrew Font Maker projects (window.IvritProjects).
  *
  * The fourth and last file that talks to Supabase (with supabase-config.js, ivrit-account.js and
- * ivrit-saves.js). Loaded only by Hebrew_Font_Maker.html, after the other three:
+ * ivrit-saves.js). Loaded by Hebrew_Font_Maker.html and by account.html (the download-everything zip), after
+ * the other three:
  *   <script src="/js/ivrit-projects.js" defer></script>
  *
  * What it owns: the `font_projects` catalogue rows and the three private buckets — the gzipped project
@@ -37,6 +38,8 @@
  *   remove(id)                 true — every object in the three buckets, then the row
  *   saveExport(id, blob, name) the row (one export slot: older exports in the folder are removed)
  *   downloadExport(id)         {blob, name}
+ *   projectFile(id, {onProgress})  {name, blob, failed, total, row} — the project as a .hebrewfont file with its
+ *                              photos put back (what Save Project writes); onProgress(done, total) per photo
  *   count()                    {n, bytes}
  *   onChange(fn)               fn() after every write
  *   limits                     {gz, source, export, projects}
@@ -57,6 +60,7 @@
   var CONC = 3;                         // parallel uploads / downloads
   var PAGE = 100;                       // Storage list page size
   var SOURCE_NAME = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$/;
+  var CLOUD_PREFIX = 'cloud:';           // how the page marks a photo it packed out: 'cloud:<object name>' (docs/reference/font-maker.md)
   var ROW_COLS = 'id, name, family_name, style, schema_version, letters_done, has_images, project_path, project_bytes, sources_bytes, export_path, exported_at, client_saved_at, created_at, updated_at';
 
   var cache = { uid: null, at: 0, rows: null, promise: null };
@@ -341,6 +345,61 @@
     });
   }
 
+  /* ---------- the project as a .hebrewfont file (the account page's download-everything zip) ---------- */
+  function gunzipText(buf) { return new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).text(); }
+  function gzipText(str) { return new Response(new Blob([str]).stream().pipeThrough(new CompressionStream('gzip'))).blob(); }
+  function readDataUrl(blob) {
+    return new Promise(function (res, rej) {
+      var r = new FileReader();
+      r.onload = function () { res(String(r.result)); };
+      r.onerror = function () { rej(r.error || makeError('read_failed')); };
+      r.readAsDataURL(blob);
+    });
+  }
+  function safeParse(str) {   // drops __proto__ / constructor / prototype at every depth
+    return JSON.parse(str, function (k, v) { return (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v; });
+  }
+  // Every 'cloud:<name>' string in the project, wherever it sits (the page writes them only at the raster slots;
+  // a generic walk keeps this module free of the page's layout). names limits the walk to the packed manifest.
+  function sentinels(obj, names, out) {
+    if (Array.isArray(obj)) { obj.forEach(function (v, i) { if (typeof v === 'string') { if (isSentinel(v, names)) out.push({ o: obj, k: i }); } else if (v && typeof v === 'object') sentinels(v, names, out); }); return out; }
+    if (obj && typeof obj === 'object') Object.keys(obj).forEach(function (k) { var v = obj[k]; if (typeof v === 'string') { if (isSentinel(v, names)) out.push({ o: obj, k: k }); } else if (v && typeof v === 'object') sentinels(v, names, out); });
+    return out;
+  }
+  function isSentinel(v, names) {
+    if (v.indexOf(CLOUD_PREFIX) !== 0) return false;
+    var n = v.slice(CLOUD_PREFIX.length);
+    return names ? Object.prototype.hasOwnProperty.call(names, n) : SOURCE_NAME.test(n);
+  }
+  // Downloads the project and its photos, puts the photos back where the page took them out, and returns the
+  // whole thing as one .hebrewfont file (gzipped JSON, exactly what Save Project writes). A photo that cannot
+  // be downloaded is left empty and counted (failed), never fails the file.
+  function projectFile(id, opts) {
+    opts = opts || {};
+    return open(id).then(function (res) {
+      var row = res.row;
+      return gunzipText(res.gz).then(function (text) {
+        var data = safeParse(text);
+        if (!data || typeof data !== 'object' || data.format !== 'hebrew-font-maker-project') throw makeError('shape', 'IvritProjects: not a Font Maker project file');
+        var manifest = (data.cloudSources && typeof data.cloudSources === 'object') ? data.cloudSources : null;
+        var slots = sentinels(data, manifest, []);
+        var names = [];
+        slots.forEach(function (sl) { var n = sl.o[sl.k].slice(CLOUD_PREFIX.length); if (names.indexOf(n) < 0) names.push(n); });
+        var urls = {}, failed = 0, done = 0;
+        return pool(names, CONC, function (name) {
+          return downloadSource(id, name).then(readDataUrl).then(function (u) { urls[name] = u; }, function () { failed++; })
+            .then(function () { done++; if (typeof opts.onProgress === 'function') opts.onProgress(done, names.length); });
+        }).then(function () {
+          slots.forEach(function (sl) { var n = sl.o[sl.k].slice(CLOUD_PREFIX.length); sl.o[sl.k] = Object.prototype.hasOwnProperty.call(urls, n) ? urls[n] : null; });
+          delete data.cloudSources;
+          return gzipText(JSON.stringify(data));
+        }).then(function (gz) {
+          return { name: fileStem(row.name) + '.hebrewfont', blob: new Blob([gz], { type: 'application/gzip' }), failed: failed, total: names.length, row: row };
+        });
+      });
+    });
+  }
+
   /* ---------- summary ---------- */
   function count() {
     return list().then(function (rows) {
@@ -361,6 +420,7 @@
     remove: remove,
     saveExport: saveExport,
     downloadExport: downloadExport,
+    projectFile: projectFile,
     count: count,
     refresh: function () { return list({ fresh: true }); },
     onChange: function (fn) { if (typeof fn === 'function' && listeners.indexOf(fn) < 0) listeners.push(fn); },

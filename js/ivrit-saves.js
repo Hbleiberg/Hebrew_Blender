@@ -50,6 +50,11 @@
  *   syncNow(tool)             Promise<summary> — every safe action in the list, in order
  *   act(tool, action, row)    Promise<result> — one row action ('upload' | 'download' | 'merge' | 'useCloud' |
  *                             'keepBoth' | 'keepMine' | 'delete' | 'file') on a row from plan(); the status line reports it
+ *   inventory()               Promise<[{tool, name, kinds:[{kind, label, count, bytes, names}], count, bytes}]> — what the
+ *                             account holds, tool by tool, without the data (the account page's listing)
+ *   bundleAll()               Promise<{file, count}> — every cloud row as one AllTools-shaped .ivrit object (the
+ *                             account screen downloads it; the account page zips it with the Font Maker projects)
+ *   forgetUser(uid)           drops this device's sync memory of an account that was deleted
  *   local / cloud             the two backends (used by saves-test.html)
  *   registry()                a copy of the effective registry
  *   t(key, fallback, params)  translate via IvritAccount.t (I18n when loaded, else the English fallback)
@@ -999,8 +1004,9 @@
       return registryFor(tool).some(function (e) { return e.shape !== 'tree' && localItems(e).length > 0; });
     });
   }
-  // Everything in the account as one AllTools-shaped .ivrit (the hub's Import / Export modal restores it).
-  function accountBackup() {
+  // Everything in the account as one AllTools-shaped .ivrit object (the hub's Import / Export modal restores
+  // it): the account screen downloads it as a file, the account page puts it in the download-everything zip.
+  function bundleAll() {
     var bundle = {}, count = 0;
     return seqMap(toolsWithEntries(), function (tool) {
       return cloudListFull(tool).then(function (rows) {
@@ -1009,10 +1015,44 @@
         count += b.count;
       });
     }).then(function () {
-      var file = { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', savedAt: now(), data: bundle };
-      downloadJson(file, 'IvritSuite_account_backup_' + now().slice(0, 10) + '.ivrit');
-      return count;
+      return { file: { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', savedAt: now(), data: bundle }, count: count };
     });
+  }
+  function accountBackup() {
+    return bundleAll().then(function (b) {
+      downloadJson(b.file, 'IvritSuite_account_backup_' + now().slice(0, 10) + '.ivrit');
+      return b.count;
+    });
+  }
+  // What the account holds, tool by tool, without the data (the account page's listing): per kind a count, the
+  // bytes, and the names where a row's name is the item's own (a preset, a deck, a student profile — not a
+  // word list or class list, whose row name is an id). Folder trees ride with their kind and count only in bytes.
+  function inventory() {
+    return seqMap(toolsWithEntries(), function (tool) {
+      return cloudList(tool).then(function (rows) {
+        var kinds = [], count = 0, bytes = 0;
+        registryFor(tool).forEach(function (e) {
+          var mine = rows.filter(function (r) { return r.kind === e.kind; });
+          if (!mine.length) return;
+          var b = 0; mine.forEach(function (r) { b += Number(r.bytes || 0); });
+          bytes += b;
+          if (e.shape === 'tree') return;
+          count += mine.length;
+          var named = e.shape === 'map' || (e.shape === 'mapIn' && !e.nameField);
+          kinds.push({ kind: e.kind, label: kindLabel(e), count: mine.length, bytes: b, names: named ? mine.map(function (r) { return r.name; }) : [] });
+        });
+        return { tool: tool, name: toolName(tool), kinds: kinds, count: count, bytes: bytes };
+      });
+    });
+  }
+  // After the account was deleted: drop what this device remembered about it (the sync memory and the welcome
+  // mark). Never touches a tool's own keys.
+  function forgetUser(uid) {
+    if (!uid) return;
+    var m = metaAll();
+    if (isPlainObject(m.users)) delete m.users[uid];
+    if (isPlainObject(m.welcomed)) delete m.welcomed[uid];
+    metaSave(m);
   }
 
   /* ---------- queue ---------- */
@@ -1071,6 +1111,7 @@
       '.ivsav-card ul{margin:4px 0 8px;padding-inline-start:18px;font-size:0.9rem;line-height:1.5;}' +
       '.ivsav-card .ivsav-btn{margin:4px 0;margin-inline-end:6px;font-size:0.88rem;padding:7px 12px;}' +
       '.ivsav-card .ivsav-status{margin:8px 0 0;}' +
+      '.ivsav-acct-manage{display:inline-block;margin-block:6px 2px;font-size:0.9rem;color:var(--gold-text,#7f5a13);}' +
       '@media (prefers-reduced-motion: reduce){.ivsav,.ivsav *{transition-duration:0.001ms!important;animation-duration:0.001ms!important;}}';
     var el = document.createElement('style');
     el.id = STYLE_ID;
@@ -1367,6 +1408,9 @@
       });
       card.appendChild(dev);
       card.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_download_note', 'Restore a file with Import / Export All Settings on the home page.')));
+      var manage = el('a', 'ivsav-acct-manage', t('shared.cloud.acct_manage_link', 'Manage your account: download everything or delete the account…'));
+      manage.href = '/account.html';
+      card.appendChild(manage);
     }
     card.appendChild(status);
     card.appendChild(button(opts.first ? t('shared.cloud.acct_not_now', 'Not now') : t('shared.cloud.acct_close', 'Close'), '', closeAccount));
@@ -1617,6 +1661,9 @@
     },
     cloud: { list: cloudList, load: cloudLoad, insert: cloudInsert, updateIf: cloudUpdateIf, remove: cloudRemove },
     registerSummary: registerSummary,
+    inventory: inventory,
+    bundleAll: bundleAll,
+    forgetUser: forgetUser,
     errorText: errorText,
     t: t,
     _test: {

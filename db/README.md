@@ -1,8 +1,9 @@
-# Database migrations (Supabase)
+# Database migrations and Edge Functions (Supabase)
 
 Everything the cloud side of IvritSuite needs in Postgres and Storage is written down here as plain
-SQL files, one per change, applied in order. The live project is `IvritSuite` (`hhkmqwpjsyxdeuhvcyis`,
-free plan). How the tables are used from the browser: `docs/reference/accounts-and-cloud.md`.
+SQL files, one per change, applied in order — plus the one server-side function the browser cannot do
+itself (`functions/`, below). The live project is `IvritSuite` (`hhkmqwpjsyxdeuhvcyis`, free plan). How
+the tables are used from the browser: `docs/reference/accounts-and-cloud.md`.
 
 ## The files
 
@@ -17,9 +18,26 @@ Each file starts with a comment that explains every block in plain language.
 
 The Supabase GitHub integration is installed on this repository with the production database linked to
 the `main` branch. That integration watches a `supabase/` folder and can create a **paid preview
-database branch** for every pull request that touches it. Keeping the SQL under `db/` keeps the
-"Supabase Preview" check harmless (it shows as skipped). If you ever adopt the Supabase CLI, move the
-files to `supabase/migrations/` — nothing inside them changes.
+database branch** for every pull request that touches it. Keeping the SQL (and the function source)
+under `db/` keeps the "Supabase Preview" check harmless (it shows as skipped). If you ever adopt the
+Supabase CLI, move the files to `supabase/migrations/` and `supabase/functions/` — nothing inside them
+changes.
+
+## Edge Functions (`functions/`)
+
+| Folder | What it does |
+|---|---|
+| `functions/delete-account/` | **Delete my account** (the button on `account.html`). For the signed-in caller only: removes every file under that user's folder in the three Font Maker buckets, then deletes the auth user, which takes the `profiles`, `saves` and `font_projects` rows with it (on delete cascade). It runs on Supabase's servers because two of those steps need the project's *secret* key, which never ships in a page; the platform gives the function that key as an environment variable, so nothing is configured by hand. It answers only the site's own origins (CORS) and is deployed with the platform's JWT check on, then checks the token again itself, so it can only ever delete the account that is calling it. |
+
+Deploying one (the code is a single `index.ts`; the platform keeps every deployed version):
+
+1. **Through Claude Code** (how it was first deployed): ask it to deploy `db/functions/<name>/index.ts`
+   through the Supabase connector with JWT verification on. It reads back the function list afterwards.
+2. **By hand**: Supabase dashboard → *Edge Functions* → *Deploy a new function* → *Via Editor* → name it
+   exactly as the folder (`delete-account`), paste the whole file, keep *Verify JWT* on → *Deploy*.
+
+Nothing in the browser changes when a function is redeployed; a new version is live at once. The function's
+own logs (every call, every error) are under *Edge Functions → delete-account → Logs*.
 
 ## Applying a migration
 
