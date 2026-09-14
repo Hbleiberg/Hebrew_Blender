@@ -144,8 +144,9 @@ How it works:
 
 Accounts are optional: everything works anonymously exactly as before, and the cloud is a third place
 to keep copies of your work next to the browser's own storage and `.ivrit` files. The whole account
-layer is two shared files — `js/supabase-config.js` (public project settings) and `js/ivrit-account.js`
-(sign-in, sign-out, the header chip) — plus `account-test.html`, a throwaway page for trying it out.
+layer is three shared files — `js/supabase-config.js` (public project settings), `js/ivrit-account.js`
+(sign-in, sign-out, the header chip) and `js/ivrit-saves.js` (the cloud-saves panel and the sync rules) —
+plus two throwaway pages for trying it out, `account-test.html` and `saves-test.html`.
 How it works inside: `docs/reference/accounts-and-cloud.md`.
 
 **Where the config values come from** (Supabase dashboard → project *IvritSuite*):
@@ -191,6 +192,13 @@ headless checks (with `--sdk <path to dist/umd/supabase.js>` it also exercises t
 **Database:** the tables, buckets and Row Level Security policies are plain SQL files under
 `db/migrations/`, applied once per file; `db/README.md` explains how to apply one and how to check the
 live project.
+
+**Cloud saves:** each tool's saved items stay in the browser exactly as before; signed in, a "Cloud saves"
+panel lists them next to the copies in your account with plain words (*Only on this device*, *Newer in
+the cloud*, *Changed in both places*…) and one button per row — Upload, Download, Merge, Keep both. Nothing
+on the device is ever deleted by the cloud, and nothing newer is overwritten by something older unless you
+choose it. `saves-test.html` exercises the panel on a set of throwaway test items; `node scripts/smoke-saves.mjs`
+runs the headless checks.
 
 ## Files
 

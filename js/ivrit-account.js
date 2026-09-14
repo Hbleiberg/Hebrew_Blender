@@ -21,6 +21,7 @@
  *   init(opts)                 optional { mount: 'auto' | selector | element | false }
  *   t(key, fallback)           translate via I18n when loaded, else the English fallback
  *   onOpenSaves(fn)            a tool registers how to open its cloud panel (adds a menu item)
+ *   openMenu()                 opens the chip's menu (false when no chip is mounted) — for a panel's Sign in button
  *   _test                      pure helpers exposed for the smoke test (scripts/smoke-account.mjs)
  *
  * How it stays cheap and safe:
@@ -688,6 +689,7 @@
     init: init,
     t: t,
     onOpenSaves: function (fn) { openSavesFn = (typeof fn === 'function') ? fn : null; renderChip(); },
+    openMenu: function () { if (!chip || !mounted) return false; openMenu(); return true; },   // a page's own "Sign in" button opens the chip's menu
     _test: { isAuthCallback: isAuthCallback, stripAuthParams: stripAuthParams, redirectTarget: redirectTarget, parseAuthParams: parseAuthParams, hasStoredSession: hasStoredSession, AUTH_KEY: AUTH_KEY, VERIFIER_KEY: VERIFIER_KEY, CACHE_KEY: CACHE_KEY }
   };
 })();

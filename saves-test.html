@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Saves test harness | IvritSuite</title>
+<!-- Throwaway harness for the shared saves module (Phase 3). Not linked, not in the sitemap, not precached. -->
+<script>(function(){try{if(localStorage.getItem('hebrewBlender_darkMode')==='1')document.documentElement.classList.add('dark-early');}catch(e){}})();</script>
+<script>(function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='en'||p==='he')?p:(localStorage.getItem('hebrewBlender_lang')||'en');if(l!=='en'&&l!=='he')l='en';document.documentElement.lang=l;document.documentElement.dir=(l==='he'?'rtl':'ltr');}catch(e){}})();</script>
+<script src="/js/i18n.js" defer></script>
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
+<style>
+:root{--navy:#1a2744;--gold:#c9922a;--gold-light:#e8c16f;--cream:#f7f3ea;--warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#fff;--danger-text:#b3261e;}
+html.dark-early body,body.dark{--cream:#141a28;--warm-gray:#1e2535;--text:#e8e4dc;--muted:#a39a88;--border:#3a4358;--white:#1e2535;--danger-text:#ff8a80;}
+body{margin:0;font-family:'Source Sans 3',-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;background:var(--cream);color:var(--text);}
+header{display:flex;align-items:center;gap:16px;padding:10px 20px;background:var(--navy);color:#fff;}
+header h1{margin:0;font-size:1.1rem;font-weight:600;flex:1;}
+.hright{display:flex;align-items:stretch;gap:8px;}
+.dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 12px;font-size:0.8rem;cursor:pointer;min-height:30px;}
+main{max-width:900px;margin:0 auto;padding:20px;}
+section{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-block-end:16px;}
+h2{margin:0 0 10px;font-size:1rem;}
+button.act{padding:7px 12px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);cursor:pointer;font:inherit;margin:3px 4px 3px 0;}
+button.act:hover{background:var(--warm-gray);}
+pre{background:var(--warm-gray);padding:10px;border-radius:6px;overflow:auto;font-size:0.8rem;white-space:pre-wrap;overflow-wrap:anywhere;max-height:320px;}
+.ok{color:#2e7d32;font-weight:600;} .fail{color:var(--danger-text);font-weight:600;}
+ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
+.hint{color:var(--muted);font-size:0.85rem;}
+#cloudPanel{margin-block:10px;padding:10px;border:1px dashed var(--border);border-radius:8px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>IvritSuite · saves test harness</h1>
+  <div class="hright">
+    <div data-i18n-switcher></div>
+    <button class="dark-btn" id="darkBtn" type="button" aria-pressed="false">🌙 Dark</button>
+  </div>
+</header>
+<main>
+  <section>
+    <h2>1. Live state</h2>
+    <p class="hint">The chip in the header is the real account chip. This box mirrors <code>IvritAccount.status()</code> and the registry the saves module sees on this page (four page-only entries for the tool <code>Suite</code>: a preset map, a folder tree that follows it, a settings object with per-device fields, and a score).</p>
+    <pre id="state">(waiting for IvritSaves…)</pre>
+    <button class="act" type="button" id="refreshBtn">Refresh</button>
+  </section>
+  <section>
+    <h2>2. Local backend (works signed out)</h2>
+    <p class="hint">Runs the local backend through a seed → list → load → save → remove round trip and checks that every <em>other</em> localStorage key is byte-identical afterwards and that no sync memory was created.</p>
+    <button class="act" type="button" id="localChecksBtn">Run local checks</button>
+    <ul class="checks" id="localChecks"></ul>
+  </section>
+  <section>
+    <h2>3. The panel</h2>
+    <p class="hint">The real panel, mounted by <code>IvritSaves.attach()</code>. The buttons below change the local stores the way a tool would; the dump shows the four stores and this account's sync memory.</p>
+    <div id="cloudPanel"></div>
+    <button class="act" type="button" id="seedBtn">Seed local test data</button>
+    <button class="act" type="button" id="editPresetBtn">Edit preset "Alef" locally</button>
+    <button class="act" type="button" id="editSettingsBtn">Edit settings locally</button>
+    <button class="act" type="button" id="editScoreBtn">Raise score locally</button>
+    <button class="act" type="button" id="flatFolderBtn">Flatten folders locally</button>
+    <button class="act" type="button" id="clearLocalBtn">Clear harness data on this device</button>
+    <pre id="dump">(nothing yet)</pre>
+  </section>
+  <section>
+    <h2>4. Self-checks (pure, no network)</h2>
+    <button class="act" type="button" id="checksBtn">Run self-checks</button>
+    <ul class="checks" id="checks"></ul>
+  </section>
+  <section>
+    <h2>5. Cloud self-checks (sign in first)</h2>
+    <p class="hint">A scripted run through the real table: upload, a change "from another device", download, a two-sided change with Keep both, a settings and a score conflict, a stale write refused, folders following their items, delete, cleanup. It uses only the harness rows (<code>Suite</code> / test, folders, settings, score) and removes them at the end.</p>
+    <button class="act" type="button" id="cloudChecksBtn">Run cloud self-checks</button>
+    <button class="act" type="button" id="cloudWipeBtn">Remove harness rows from the cloud</button>
+    <ul class="checks" id="cloudChecks"></ul>
+    <pre id="cloudOut">(no cloud action yet)</pre>
+  </section>
+</main>
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function show(el, v) { el.textContent = typeof v === 'string' ? v : JSON.stringify(v, null, 2); }
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsRemove(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  function readJson(k) { try { return JSON.parse(lsGet(k) || 'null'); } catch (e) { return null; } }
+
+  var STORE = 'ivritSuite_testStore', FOLDERS = 'ivritSuite_testFolders', SETTINGS = 'ivritSuite_testSettings', SCORE = 'ivritSuite_testScore';
+  var KEYS = [STORE, FOLDERS, SETTINGS, SCORE];
+  var META_KEY = 'ivritSuite_syncMeta';
+  var KINDS = ['test', 'folders', 'settings', 'score'];
+  var ENTRIES = [
+    { tool: 'Suite', kind: 'test', lsKey: STORE, shape: 'map', merge: 'item', ivritKey: 'ivritTestStore' },
+    { tool: 'Suite', kind: 'folders', lsKey: FOLDERS, shape: 'tree', merge: 'page', follows: 'test' },
+    { tool: 'Suite', kind: 'settings', lsKey: SETTINGS, shape: 'single', merge: 'assign', omit: ['zoom', '*Collapsed'] },
+    { tool: 'Suite', kind: 'score', lsKey: SCORE, shape: 'scalar', merge: 'max' }
+  ];
+  var flushes = 0, changes = [];
+
+  // Dark mode: the suite's convention (body.dark + hebrewBlender_darkMode), kept minimal here.
+  function applyDark(on) {
+    document.body.classList.toggle('dark', on);
+    document.documentElement.classList.remove('dark-early');
+    $('darkBtn').setAttribute('aria-pressed', on ? 'true' : 'false');
+    $('darkBtn').textContent = on ? '☀️ Light' : '🌙 Dark';
+    lsSet('hebrewBlender_darkMode', on ? '1' : '0');
+  }
+
+  function seedLocal() {
+    lsSet(STORE, JSON.stringify({ Alef: { n: 1, letters: ['א'] }, Bet: { n: 1, letters: ['ב'] } }));
+    lsSet(FOLDERS, JSON.stringify({ v: 1, root: [{ t: 'folder', id: 'f_unit1', name: 'Unit 1', collapsed: false, children: [{ t: 'item', name: 'Alef' }] }, { t: 'item', name: 'Bet' }] }));
+    lsSet(SETTINGS, JSON.stringify({ fontSize: 20, zoom: 3, leftCollapsed: true }));
+    lsSet(SCORE, '7');
+  }
+  function clearLocal() { KEYS.forEach(lsRemove); }
+  function clearMeta(uid) {
+    var m = readJson(META_KEY);
+    if (m && m.users && uid && m.users[uid] && m.users[uid].Suite) { delete m.users[uid].Suite; lsSet(META_KEY, JSON.stringify(m)); }
+  }
+  function editStore(name, patch) {
+    var st = readJson(STORE) || {};
+    st[name] = Object.assign({}, st[name] || {}, patch);
+    lsSet(STORE, JSON.stringify(st));
+  }
+  // Every localStorage key except the harness's own (the account cache and the language/theme prefs count as "other").
+  function snapshot() {
+    var o = {};
+    for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (KEYS.indexOf(k) < 0 && k !== META_KEY) o[k] = localStorage.getItem(k); }
+    return o;
+  }
+  function sameSnapshot(a, b) {
+    var ka = Object.keys(a).sort(), kb = Object.keys(b).sort();
+    if (ka.join('') !== kb.join('')) return false;
+    for (var i = 0; i < ka.length; i++) if (a[ka[i]] !== b[ka[i]]) return false;
+    return true;
+  }
+  function renderDump() {
+    var A = window.IvritAccount, me = A && A.user();
+    var meta = readJson(META_KEY);
+    show($('dump'), {
+      testStore: readJson(STORE), folders: readJson(FOLDERS), settings: readJson(SETTINGS), score: lsGet(SCORE),
+      syncMemory: (meta && meta.users && me && meta.users[me.id]) ? meta.users[me.id].Suite || null : null,
+      flushes: flushes, onLocalChanged: changes.slice(-8)
+    });
+  }
+  function checker(ulId) {
+    var ul = $(ulId); ul.textContent = '';
+    var pass = 0, total = 0;
+    function line(ok, label, detail) {
+      total++; if (ok) pass++;
+      var li = document.createElement('li');
+      var b = document.createElement('span'); b.className = ok ? 'ok' : 'fail'; b.textContent = ok ? 'PASS ' : 'FAIL ';
+      li.appendChild(b);
+      li.appendChild(document.createTextNode(label + (detail ? ' — ' + detail : '')));
+      ul.appendChild(li);
+    }
+    function done() {
+      var sum = document.createElement('li'); sum.className = pass === total ? 'ok' : 'fail';
+      sum.textContent = pass + ' / ' + total + ' passed'; ul.appendChild(sum);
+    }
+    // steps: [label, fn → {ok, detail} | Promise], run one after another; a thrown error fails that line only.
+    function run(steps) {
+      return steps.reduce(function (chain, step) {
+        return chain.then(function () {
+          return Promise.resolve().then(step[1]).then(
+            function (res) { line(!!(res && res.ok), step[0], res && res.detail); },
+            function (e) { line(false, step[0], (e && (e.code || '')) + ' ' + (e && e.message || e)); });
+        });
+      }, Promise.resolve()).then(done);
+    }
+    return { line: line, done: done, run: run };
+  }
+  function errText(e) { return e ? [e.code, e.status || e.statusCode, e.message].filter(Boolean).join(' ') : ''; }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    applyDark(lsGet('hebrewBlender_darkMode') === '1');
+    $('darkBtn').addEventListener('click', function () { applyDark(!document.body.classList.contains('dark')); });
+
+    var A = window.IvritAccount, S = window.IvritSaves;
+    if (!A || !S) { show($('state'), 'IvritAccount / IvritSaves not defined — did the /js/ modules load?'); return; }
+    var T = S._test;
+
+    // ---- 3. the real panel, wired the way a tool page will wire it ----
+    S.attach({
+      tool: 'Suite', panel: '#cloudPanel', entries: ENTRIES,
+      merges: {
+        // A tiny additive tree merge standing in for the shared ftImportTree: top-level nodes the local
+        // tree lacks (by name) are appended; nothing local is removed.
+        folders: function (local, cloud) {
+          var have = {};
+          local.root.forEach(function (n) { have[n.name] = true; });
+          cloud.root.forEach(function (n) { if (!have[n.name]) local.root.push(n); });
+          return local;
+        }
+      },
+      flush: function () { flushes++; },
+      onLocalChanged: function (kind, name) { changes.push(kind + ':' + name); renderDump(); },
+      open: function () { $('cloudPanel').scrollIntoView(); }
+    });
+
+    function refreshState() {
+      show($('state'), { status: A.status(), user: A.user(), registry: S.registry().map(function (e) { return e.kind + ' (' + e.shape + '/' + e.merge + (e.follows ? ', follows ' + e.follows : '') + ')'; }), time: new Date().toISOString() });
+      renderDump();
+    }
+    A.onChange(function () { refreshState(); });
+    A.ready.then(refreshState);
+    $('refreshBtn').addEventListener('click', refreshState);
+
+    $('seedBtn').addEventListener('click', function () { seedLocal(); renderDump(); if (A.user()) S.refresh('Suite').catch(function () {}); });
+    $('editPresetBtn').addEventListener('click', function () { var st = readJson(STORE) || {}; editStore('Alef', { n: ((st.Alef && st.Alef.n) || 0) + 1, editedAt: new Date().toISOString() }); renderDump(); if (A.user()) S.refresh('Suite').catch(function () {}); });
+    $('editSettingsBtn').addEventListener('click', function () { var s = readJson(SETTINGS) || {}; s.fontSize = (s.fontSize || 20) + 1; s.zoom = (s.zoom || 0) + 1; lsSet(SETTINGS, JSON.stringify(s)); renderDump(); if (A.user()) S.refresh('Suite').catch(function () {}); });
+    $('editScoreBtn').addEventListener('click', function () { lsSet(SCORE, String((parseInt(lsGet(SCORE), 10) || 0) + 1)); renderDump(); if (A.user()) S.refresh('Suite').catch(function () {}); });
+    $('flatFolderBtn').addEventListener('click', function () { var st = readJson(STORE) || {}; lsSet(FOLDERS, JSON.stringify({ v: 1, root: Object.keys(st).map(function (n) { return { t: 'item', name: n }; }) })); renderDump(); });
+    $('clearLocalBtn').addEventListener('click', function () { clearLocal(); clearMeta(A.user() && A.user().id); renderDump(); if (A.user()) S.refresh('Suite').catch(function () {}); });
+
+    // ---- 2. local backend round trip, signed out or in ----
+    $('localChecksBtn').addEventListener('click', function () {
+      var c = checker('localChecks');
+      var before = snapshot(), hadMeta = lsGet(META_KEY);
+      clearLocal();
+      seedLocal();
+      c.run([
+        ['list: the four listed items (the folder tree is not a row) with hashes', function () {
+          return S.local.list('Suite').then(function (items) {
+            var names = items.map(function (i) { return i.id; }).join(', ');
+            return { ok: items.length === 4 && items.every(function (i) { return typeof i.hash === 'string' && i.hash.length > 10 && i.bytes > 0; }), detail: names };
+          });
+        }],
+        ['load: Alef comes back as stored', function () {
+          return S.local.load('Suite', 'test', 'Alef').then(function (r) { return { ok: !!r && r.data.n === 1 && r.data.letters[0] === 'א', detail: JSON.stringify(r) }; });
+        }],
+        ['save: a new preset lands at the end of the map', function () {
+          return S.local.save('Suite', 'test', 'Gimel', { n: 5 }).then(function () {
+            var keys = Object.keys(readJson(STORE));
+            return { ok: keys.join() === 'Alef,Bet,Gimel', detail: keys.join(', ') };
+          });
+        }],
+        ['save: an existing preset keeps its place', function () {
+          return S.local.save('Suite', 'test', 'Alef', { n: 2 }).then(function () {
+            var st = readJson(STORE); var keys = Object.keys(st);
+            return { ok: keys.join() === 'Alef,Bet,Gimel' && st.Alef.n === 2, detail: keys.join(', ') };
+          });
+        }],
+        ['remove: Gimel is gone, the others stay', function () {
+          return S.local.remove('Suite', 'test', 'Gimel').then(function () { var keys = Object.keys(readJson(STORE)); return { ok: keys.join() === 'Alef,Bet', detail: keys.join(', ') }; });
+        }],
+        ['save: a settings object and a scalar are written as the tool stores them', function () {
+          return S.local.save('Suite', 'settings', 'default', { fontSize: 30, zoom: 1 }).then(function () { return S.local.save('Suite', 'score', 'default', { value: '9' }); })
+            .then(function () { return { ok: lsGet(SETTINGS) === '{"fontSize":30,"zoom":1}' && lsGet(SCORE) === '9', detail: lsGet(SETTINGS) + ' / ' + lsGet(SCORE) }; });
+        }],
+        ['save: a value of the wrong shape is refused', function () {
+          return S.local.save('Suite', 'settings', 'default', ['not', 'an', 'object']).then(function () { return { ok: false, detail: 'written (bad)' }; }, function (e) { return { ok: e && e.code === 'shape', detail: e && e.code }; });
+        }],
+        ['plan while signed out: every item is "Only on this device", no cloud call', function () {
+          if (A.user()) return { ok: true, detail: 'skipped: signed in' };
+          return S.plan('Suite').then(function (p) { return { ok: p.userId === null && p.rows.length === 4 && p.rows.every(function (r) { return r.state === 'local-only'; }), detail: p.rows.map(function (r) { return r.kind + '/' + r.name + ':' + r.state; }).join(', ') }; });
+        }],
+        ['no sync memory was created by local work', function () {
+          return { ok: lsGet(META_KEY) === hadMeta, detail: String(lsGet(META_KEY)).slice(0, 80) };
+        }],
+        ['every other localStorage key is byte-identical', function () {
+          clearLocal();
+          var after = snapshot();
+          return { ok: sameSnapshot(before, after), detail: Object.keys(after).length + ' keys' };
+        }]
+      ]).then(renderDump);
+    });
+
+    // ---- 4. pure self-checks ----
+    $('checksBtn').addEventListener('click', function () {
+      var c = checker('checks');
+      var settingsEntry = ENTRIES[2], mapEntry = ENTRIES[0], treeEntry = ENTRIES[1], scalarEntry = ENTRIES[3];
+      var L = function (h) { return { hash: h }; }, C = function (h, u) { return { hash: h, updatedAt: u }; }, M = function (h, u) { return { h: h, u: u }; };
+      c.run([
+        ['canonJson sorts keys at every depth and drops undefined', function () {
+          var a = T.canonJson({ b: 1, a: [{ d: 2, c: 1 }], z: undefined });
+          return { ok: a === '{"a":[{"c":1,"d":2}],"b":1}', detail: a };
+        }],
+        ['canonJson: key order and spacing never change the hash text', function () {
+          return { ok: T.canonJson({ x: 1, y: { q: [1, 2], p: 'a' } }) === T.canonJson(JSON.parse('{ "y" : { "p":"a", "q":[1,2] }, "x":1.0 }')), detail: '' };
+        }],
+        ['hashText: SHA-256 of "abc" with the 1. prefix', function () {
+          return T.hashText('abc').then(function (h) { return { ok: h === '1.ungWv48Bz-pBQUDeXa4iI7ADYaOWF3qctBD_YfIAFa0', detail: h }; });
+        }],
+        ['classify: local only / cloud only / same', function () {
+          return { ok: T.classify(L('a'), null, null) === 'local-only' && T.classify(null, C('a', 't'), null) === 'cloud-only' && T.classify(L('a'), C('a', 't'), null) === 'synced' && T.classify(null, null, null) === 'none', detail: '' };
+        }],
+        ['classify: no memory and different hashes → conflict', function () {
+          return { ok: T.classify(L('a'), C('b', 't'), null) === 'conflict', detail: '' };
+        }],
+        ['classify: local unchanged, cloud moved → "Newer in the cloud"', function () {
+          return { ok: T.classify(L('a'), C('b', 't2'), M('a', 't1')) === 'cloud-changed', detail: '' };
+        }],
+        ['classify: cloud unchanged (by updated_at, even with an unknown hash), local moved → "Newer on this device"', function () {
+          return { ok: T.classify(L('b'), C('a', 't1'), M('a', 't1')) === 'local-changed' && T.classify(L('b'), C('zzz', 't1'), M('a', 't1')) === 'local-changed', detail: '' };
+        }],
+        ['classify: both moved → conflict; neither moved (odd hash) → same', function () {
+          return { ok: T.classify(L('b'), C('c', 't2'), M('a', 't1')) === 'conflict' && T.classify(L('a'), C('zzz', 't1'), M('a', 't1')) === 'synced', detail: '' };
+        }],
+        ['deepMax: per-trope max, families union, streak max, nothing lost', function () {
+          var m = T.deepMax({ tropes: { a: { r: 2, w: 5 } }, families: { x: true }, pbStreak: 3, seen: false },
+                            { tropes: { a: { r: 4, w: 1 }, b: { r: 1, w: 0 } }, families: { y: true }, pbStreak: 2, seen: true });
+          var ok = m.tropes.a.r === 4 && m.tropes.a.w === 5 && m.tropes.b.r === 1 && m.families.x === true && m.families.y === true && m.pbStreak === 3 && m.seen === true;
+          return { ok: ok, detail: JSON.stringify(m) };
+        }],
+        ['maxValue: numeric strings compare as numbers, others keep this device\'s', function () {
+          return { ok: T.maxValue('7', '12') === '12' && T.maxValue('12', '7') === '12' && T.maxValue('abc', '12') === 'abc' && T.maxValue(undefined, '3') === '3', detail: '' };
+        }],
+        ['project: per-device fields (zoom, *Collapsed) never travel', function () {
+          var p = T.project(settingsEntry, { fontSize: 1, zoom: 2, leftCollapsed: true, rightCollapsed: false });
+          return { ok: JSON.stringify(p) === '{"fontSize":1}', detail: JSON.stringify(p) };
+        }],
+        ['restoreOmitted: this device\'s values come back; a fresh device gets none', function () {
+          var a = T.restoreOmitted(settingsEntry, { fontSize: 5, zoom: 9 }, { fontSize: 1, zoom: 2, leftCollapsed: true });
+          var b = T.restoreOmitted(settingsEntry, { fontSize: 5, zoom: 9 }, null);
+          return { ok: JSON.stringify(a) === '{"fontSize":5,"zoom":2,"leftCollapsed":true}' && JSON.stringify(b) === '{"fontSize":5}', detail: JSON.stringify(a) + ' / ' + JSON.stringify(b) };
+        }],
+        ['safeParse drops __proto__ / constructor / prototype at every depth', function () {
+          var v = T.safeParse('{"__proto__":{"polluted":1},"a":{"constructor":1,"b":2,"c":{"prototype":3}}}');
+          return { ok: !Object.prototype.hasOwnProperty.call(v, '__proto__') && ({}).polluted === undefined && !('constructor' in v.a && Object.prototype.hasOwnProperty.call(v.a, 'constructor')) && v.a.b === 2 && !Object.prototype.hasOwnProperty.call(v.a.c, 'prototype'), detail: JSON.stringify(v) };
+        }],
+        ['validateShape: settings must be an object, a tree needs root[], a scalar needs value', function () {
+          var ok = T.validateShape(settingsEntry, { a: 1 }) && !T.validateShape(settingsEntry, [1]) && !T.validateShape(settingsEntry, null) && !T.validateShape(settingsEntry, 'x') &&
+                   T.validateShape(treeEntry, { v: 1, root: [] }) && !T.validateShape(treeEntry, { v: 1 }) &&
+                   T.validateShape(scalarEntry, { value: '7' }) && !T.validateShape(scalarEntry, { value: {} }) &&
+                   T.validateShape(mapEntry, [1, 2]) && !T.validateShape(mapEntry, null);
+          return { ok: ok, detail: '' };
+        }],
+        ['guardUpload: empty or 121-char names, a 2 MB value and a NUL character are refused before any network', function () {
+          var long = new Array(122).join('x');
+          var big = new Array(1900001).join('x');
+          var g1 = T.guardUpload(mapEntry, '', {}), g2 = T.guardUpload(mapEntry, long, {}), g3 = T.guardUpload(mapEntry, 'big', { pad: big }), g4 = T.guardUpload(mapEntry, 'nul', { s: 'a\u0000b' }), g5 = T.guardUpload(mapEntry, 'fine', { n: 1 });
+          return { ok: g1 && g1.code === 'name' && g2 && g2.code === 'name' && g3 && g3.code === 'too_big' && g4 && g4.code === 'chars' && g5 === null, detail: [g1 && g1.code, g2 && g2.code, g3 && g3.code, g4 && g4.code, g5].join(', ') };
+        }],
+        ['guardUpload: a 120-character Hebrew name passes (code points, not bytes)', function () {
+          var name = new Array(121).join('א');
+          return { ok: T.guardUpload(mapEntry, name, { n: 1 }) === null, detail: name.length + ' chars' };
+        }],
+        ['errorText: the two 23514 messages, a duplicate name and a network failure map to their own sentences', function () {
+          var big = T.errorText({ code: '23514', message: 'new row for relation "saves" violates check constraint "saves_data_max_2mb"' });
+          var lim = T.errorText({ code: '23514', message: 'Save limit reached: an account can hold 2000 saved items' });
+          var dup = T.errorText({ code: '23505', message: 'duplicate key value violates unique constraint' });
+          var net = T.errorText(new TypeError('Failed to fetch'));
+          var ok = /2 MB/.test(big) && /limit/.test(lim) && /name/.test(dup) && /unreachable/.test(net) && big !== lim && lim !== dup;
+          return { ok: ok, detail: [big, lim, dup, net].join(' | ') };
+        }],
+        ['copyNameFor: "(cloud copy)", then "(cloud copy 2)" when that is taken', function () {
+          var keep = lsGet(STORE);
+          lsSet(STORE, JSON.stringify({ Alef: { n: 1 }, 'Alef (cloud copy)': { n: 2 } }));
+          var n1 = T.copyNameFor('Suite', mapEntry, 'Alef'), n2 = T.copyNameFor('Suite', mapEntry, 'Bet');
+          if (keep === null) lsRemove(STORE); else lsSet(STORE, keep);
+          return { ok: n1 === 'Alef (cloud copy 2)' && n2 === 'Bet (cloud copy)', detail: n1 + ' / ' + n2 };
+        }],
+        ['ivritFile: a map item becomes an AllTools bundle under its ivritKey', function () {
+          var f = T.ivritFile(mapEntry, 'Alef', { n: 1 });
+          return { ok: f.format === 'ivrit-save' && f.tool === 'AllTools' && f.data.ivritTestStore.Alef.n === 1 && f._ivritSuite === 1, detail: JSON.stringify(f.data) };
+        }],
+        ['treeIsFlat: items only → flat; a folder → not flat', function () {
+          return { ok: T.treeIsFlat({ root: [{ t: 'item', name: 'a' }] }) && !T.treeIsFlat({ root: [{ t: 'folder', name: 'f', children: [] }] }), detail: '' };
+        }]
+      ]);
+    });
+
+    // ---- 5. cloud self-checks (signed in) ----
+    function harnessRows() { return S.cloud.list('Suite').then(function (rows) { return rows.filter(function (r) { return KINDS.indexOf(r.kind) >= 0; }); }); }
+    function cloudRow(kind, name) { return harnessRows().then(function (rows) { for (var i = 0; i < rows.length; i++) if (rows[i].kind === kind && rows[i].name === name) return rows[i]; throw new Error('no cloud row ' + kind + '/' + name); }); }
+    function cloudWipe() { return harnessRows().then(function (rows) { return rows.reduce(function (chain, r) { return chain.then(function () { return S.cloud.remove(r.id); }); }, Promise.resolve()); }); }
+    // "Another device": rewrite a row through the client with no hash, so the unknown-hash path runs too.
+    function simulate(kind, name, data) { return cloudRow(kind, name).then(function (r) { return S.cloud.updateIf(r.id, r.updated_at, data, null); }); }
+    function rowOf(p, kind, name) { for (var i = 0; i < p.rows.length; i++) if (p.rows[i].kind === kind && p.rows[i].name === name) return p.rows[i]; return null; }
+    function states(p) { return p.rows.map(function (r) { return r.kind + '/' + r.name + ':' + r.state; }).join(', '); }
+    function allSynced(p) { return p.rows.length > 0 && p.rows.every(function (r) { return r.state === 'synced'; }); }
+
+    $('cloudWipeBtn').addEventListener('click', function () {
+      if (!A.user()) { show($('cloudOut'), 'sign in first'); return; }
+      show($('cloudOut'), 'working…');
+      cloudWipe().then(function () { return S.refresh('Suite'); }).then(function (p) { show($('cloudOut'), { removed: true, rows: p.rows.length }); }, function (e) { show($('cloudOut'), { ok: false, error: errText(e) }); });
+    });
+    $('cloudChecksBtn').addEventListener('click', function () {
+      var c = checker('cloudChecks');
+      var me = A.user();
+      if (!me) { c.line(false, 'signed in', 'sign in first (the header chip), then run the checks'); c.done(); return; }
+      show($('cloudOut'), 'running…');
+      c.run([
+        ['cleanup first: no harness rows in the cloud, none on this device', function () {
+          return cloudWipe().then(function () { clearLocal(); clearMeta(me.id); return S.refresh('Suite'); })
+            .then(function (p) { return { ok: p.rows.length === 0, detail: p.rows.length + ' rows' }; });
+        }],
+        ['seed: four local items read "Only on this device" (the folder tree is not a row)', function () {
+          seedLocal();
+          return S.refresh('Suite').then(function (p) { return { ok: p.rows.length === 4 && p.rows.every(function (r) { return r.state === 'local-only'; }) && p.counts.safe === 4, detail: states(p) }; });
+        }],
+        ['Sync now uploads all four, then the folder tree follows them', function () {
+          return S.syncNow('Suite').then(function (sum) {
+            return harnessRows().then(function (rows) {
+              var kinds = rows.map(function (r) { return r.kind + '/' + r.name; }).sort().join(', ');
+              return { ok: !sum.error && sum.up === 4 && rows.length === 5 && kinds.indexOf('folders/default') >= 0, detail: 'up=' + sum.up + ' rows: ' + kinds + (sum.error ? ' error: ' + errText(sum.error) : '') };
+            });
+          });
+        }],
+        ['after the sync every row reads "Same" and every cloud row carries a 1. hash', function () {
+          return S.refresh('Suite').then(function (p) {
+            return harnessRows().then(function (rows) {
+              return { ok: allSynced(p) && rows.every(function (r) { return typeof r.data_hash === 'string' && r.data_hash.indexOf(T.HASH_PREFIX) === 0; }), detail: states(p) };
+            });
+          });
+        }],
+        ['the settings row in the cloud carries no per-device field', function () {
+          return cloudRow('settings', 'default').then(function (r) { return S.cloud.load(r.id); })
+            .then(function (full) { return { ok: full.data.fontSize === 20 && !('zoom' in full.data) && !('leftCollapsed' in full.data), detail: JSON.stringify(full.data) }; });
+        }],
+        ['another device edits Alef in the cloud (no hash) → "Newer in the cloud"', function () {
+          return simulate('test', 'Alef', { n: 2, letters: ['א'], from: 'another device' }).then(function () { return S.refresh('Suite'); })
+            .then(function (p) { return { ok: rowOf(p, 'test', 'Alef').state === 'cloud-changed' && rowOf(p, 'test', 'Alef').safeAction === 'download', detail: states(p) }; });
+        }],
+        ['Download brings n=2 here, the page was told, the row reads "Same"', function () {
+          changes.length = 0;
+          return S.plan('Suite').then(function (p) { return S.act('Suite', 'download', rowOf(p, 'test', 'Alef')); })
+            .then(function () { return S.refresh('Suite'); })
+            .then(function (p) { var st = readJson(STORE); return { ok: st.Alef.n === 2 && st.Alef.from === 'another device' && rowOf(p, 'test', 'Alef').state === 'synced' && changes.indexOf('test:Alef') >= 0, detail: 'n=' + st.Alef.n + '; ' + states(p) }; });
+        }],
+        ['a local edit (n=3) and a cloud edit (n=4) → "Changed in both places" with Keep both / Use cloud copy / Keep mine', function () {
+          editStore('Alef', { n: 3 });
+          return simulate('test', 'Alef', { n: 4, letters: ['א'] }).then(function () { return S.refresh('Suite'); })
+            .then(function (p) { var r = rowOf(p, 'test', 'Alef'); return { ok: r.state === 'conflict' && r.choices.join() === 'keepBoth,useCloud,keepMine' && r.safeAction === null, detail: states(p) }; });
+        }],
+        ['Keep both: "Alef (cloud copy)" (n=4) lands here, the cloud Alef becomes n=3, the copy goes up, all "Same"', function () {
+          return S.plan('Suite').then(function (p) { return S.act('Suite', 'keepBoth', rowOf(p, 'test', 'Alef')); })
+            .then(function (res) {
+              var st = readJson(STORE);
+              return cloudRow('test', 'Alef').then(function (r) { return S.cloud.load(r.id); }).then(function (full) {
+                return S.refresh('Suite').then(function (p) {
+                  var ok = res.copy === 'Alef (cloud copy)' && st['Alef (cloud copy)'] && st['Alef (cloud copy)'].n === 4 && st.Alef.n === 3 && full.data.n === 3 &&
+                           p.rows.filter(function (r) { return r.kind === 'test'; }).length === 3 && allSynced(p);
+                  return { ok: ok, detail: 'copy=' + res.copy + '; cloud Alef n=' + full.data.n + '; ' + states(p) };
+                });
+              });
+            });
+        }],
+        ['settings: local fontSize 21 + zoom 9, cloud fontSize 22 + theme → "Changed in both" with Use cloud copy / Keep mine', function () {
+          lsSet(SETTINGS, JSON.stringify({ fontSize: 21, zoom: 9, leftCollapsed: true }));
+          return simulate('settings', 'default', { fontSize: 22, theme: 'dark' }).then(function () { return S.refresh('Suite'); })
+            .then(function (p) { var r = rowOf(p, 'settings', 'default'); return { ok: r.state === 'conflict' && r.choices.join() === 'useCloud,keepMine', detail: states(p) }; });
+        }],
+        ['Use cloud copy: fontSize 22 + theme land here, zoom 9 and leftCollapsed stay, the cloud row has neither', function () {
+          return S.plan('Suite').then(function (p) { return S.act('Suite', 'useCloud', rowOf(p, 'settings', 'default')); })
+            .then(function () { return cloudRow('settings', 'default'); }).then(function (r) { return S.cloud.load(r.id); })
+            .then(function (full) {
+              var s = readJson(SETTINGS);
+              return S.refresh('Suite').then(function (p) {
+                var ok = s.fontSize === 22 && s.theme === 'dark' && s.zoom === 9 && s.leftCollapsed === true && full.data.fontSize === 22 && full.data.theme === 'dark' && !('zoom' in full.data) && rowOf(p, 'settings', 'default').state === 'synced';
+                return { ok: ok, detail: JSON.stringify(s) + ' / cloud ' + JSON.stringify(full.data) };
+              });
+            });
+        }],
+        ['score: local 9 vs cloud 12 → Merge is the safe action → 12 on both sides', function () {
+          lsSet(SCORE, '9');
+          return simulate('score', 'default', { value: '12' }).then(function () { return S.refresh('Suite'); })
+            .then(function (p) {
+              var r = rowOf(p, 'score', 'default');
+              if (!(r.state === 'conflict' && r.safeAction === 'merge')) return { ok: false, detail: states(p) };
+              return S.act('Suite', 'merge', r).then(function () { return cloudRow('score', 'default'); }).then(function (cr) { return S.cloud.load(cr.id); })
+                .then(function (full) { return S.refresh('Suite').then(function (p2) { return { ok: lsGet(SCORE) === '12' && full.data.value === '12' && rowOf(p2, 'score', 'default').state === 'synced', detail: 'local ' + lsGet(SCORE) + ', cloud ' + JSON.stringify(full.data) }; }); });
+            });
+        }],
+        ['score raised here to 15 → "Newer on this device" → Sync now uploads it', function () {
+          lsSet(SCORE, '15');
+          return S.refresh('Suite').then(function (p) {
+            if (rowOf(p, 'score', 'default').state !== 'local-changed') return { ok: false, detail: states(p) };
+            return S.syncNow('Suite').then(function (sum) { return cloudRow('score', 'default'); }).then(function (cr) { return S.cloud.load(cr.id); })
+              .then(function (full) { return { ok: full.data.value === '15', detail: 'cloud ' + JSON.stringify(full.data) }; });
+          });
+        }],
+        ['a stale conditional update is refused, nothing overwritten', function () {
+          return cloudRow('test', 'Bet').then(function (r) { return S.cloud.updateIf(r.id, '2000-01-01T00:00:00+00:00', { n: 99 }, null); })
+            .then(function () { return { ok: false, detail: 'the update went through (bad)' }; },
+                  function (e) { return cloudRow('test', 'Bet').then(function (r) { return S.cloud.load(r.id); }).then(function (full) { return { ok: e && e.code === 'changed' && full.data.n === 1, detail: (e && e.code) + ', cloud Bet n=' + full.data.n }; }); });
+        }],
+        ['a download is refused when this device changed the item after the list was built', function () {
+          return simulate('test', 'Bet', { n: 5, letters: ['ב'] }).then(function () { return S.plan('Suite'); }).then(function (p) {
+            var r = rowOf(p, 'test', 'Bet');
+            editStore('Bet', { n: 6 });   // the "tool" writes after the list was built
+            return S.act('Suite', 'download', r).then(function () { return { ok: false, detail: 'download went through (bad)' }; },
+              function (e) { return { ok: e && e.code === 'changed' && readJson(STORE).Bet.n === 6, detail: (e && e.code) + '; local Bet n=' + readJson(STORE).Bet.n }; });
+          });
+        }],
+        ['…and Keep both then settles it', function () {
+          return S.plan('Suite').then(function (p) { var r = rowOf(p, 'test', 'Bet'); return r.state === 'conflict' ? S.act('Suite', 'keepBoth', r) : Promise.reject(new Error('expected a conflict, got ' + r.state)); })
+            .then(function () { return S.refresh('Suite'); }).then(function (p) { return { ok: allSynced(p) && !!readJson(STORE)['Bet (cloud copy)'], detail: states(p) }; });
+        }],
+        ['a flat local folder tree takes the cloud folders back after Sync now', function () {
+          var st = readJson(STORE) || {};
+          lsSet(FOLDERS, JSON.stringify({ v: 1, root: Object.keys(st).map(function (n) { return { t: 'item', name: n }; }) }));
+          return S.syncNow('Suite').then(function () {
+            var tr = readJson(FOLDERS);
+            return { ok: !!tr && tr.root.some(function (n) { return n.t === 'folder' && n.name === 'Unit 1'; }), detail: JSON.stringify(tr) };
+          });
+        }],
+        ['Delete from cloud removes only the cloud row; the local copy stays', function () {
+          return S.plan('Suite').then(function (p) { return S.act('Suite', 'delete', rowOf(p, 'test', 'Bet')); })
+            .then(function () { return S.refresh('Suite'); })
+            .then(function (p) { return { ok: rowOf(p, 'test', 'Bet').state === 'local-only' && !!readJson(STORE).Bet, detail: states(p) }; });
+        }],
+        ['cleanup: harness rows deleted, local keys and sync memory cleared', function () {
+          return cloudWipe().then(function () { clearLocal(); clearMeta(me.id); return S.refresh('Suite'); })
+            .then(function (p) { return harnessRows().then(function (rows) { return { ok: p.rows.length === 0 && rows.length === 0, detail: p.rows.length + ' rows here, ' + rows.length + ' in the cloud' }; }); });
+        }]
+      ]).then(function () { show($('cloudOut'), 'done — see the lines above'); renderDump(); });
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -5223,3 +5223,58 @@ shared.account.error_expired,That sign-in code or link has expired. Request a ne
 shared.account.error_link_other_browser,That link was opened in a different browser. Enter the code from the email here instead.,הקישור נפתח בדפדפן אחר. הקלידו כאן במקום זאת את הקוד מהאימייל.,Account popover error (?code= arrived without this browser's verifier),shared
 shared.account.error_rate_limited,Too many attempts. Wait a few minutes and try again.,יותר מדי ניסיונות. המתינו כמה דקות ונסו שוב.,Account popover error,shared
 shared.account.error_finish,Couldn't finish signing in. Please try again.,לא הצלחנו להשלים את הכניסה. נסו שוב.,Account popover error (unknown callback failure),shared
+shared.cloud.title,Cloud saves,שמירות בענן,Cloud-saves panel title,shared; cloud panel
+shared.cloud.signed_out,Sign in to keep copies of your saved items in the cloud and get them back on any device.,היכנסו כדי לשמור עותקים של הפריטים השמורים שלכם בענן ולקבל אותם בחזרה בכל מכשיר.,Cloud-saves panel note while signed out,shared; cloud panel
+shared.cloud.sign_in,Sign in,כניסה,Cloud-saves panel button while signed out (opens the header chip's menu),shared; cloud panel
+shared.cloud.loading,Checking your account…,בודק את החשבון…,Cloud-saves panel note while the stored session is being checked,shared; cloud panel
+shared.cloud.offline,Cloud saves need an internet connection. Your local saves still work.,שמירות בענן דורשות חיבור לאינטרנט. השמירות המקומיות ממשיכות לעבוד.,Cloud-saves panel note when offline,shared; cloud panel
+shared.cloud.unavailable,Cloud saves are unavailable right now. Your local saves still work.,שמירות בענן אינן זמינות כרגע. השמירות המקומיות ממשיכות לעבוד.,Cloud-saves panel note when the SDK is blocked or the config is missing,shared; cloud panel
+shared.cloud.refresh,Refresh,רענון,Cloud-saves panel button: list both sides again,shared; cloud panel
+shared.cloud.sync,Sync now,סנכרון עכשיו,Cloud-saves panel button: run every safe action (nothing to do),shared; cloud panel
+shared.cloud.sync_count,Sync now ({n}),סנכרון עכשיו ({n}),Cloud-saves panel button with the number of safe actions waiting,shared; cloud panel; template
+shared.cloud.working,Working…,מעבד…,Cloud-saves panel status while a cloud operation runs,shared; cloud panel
+shared.cloud.listing,Loading your cloud saves…,טוען את השמירות שלכם בענן…,Cloud-saves panel status during the first listing,shared; cloud panel
+shared.cloud.list_aria,Saved items on this device and in the cloud,פריטים שמורים במכשיר הזה ובענן,Cloud-saves panel list aria-label,shared; cloud panel; aria-label only
+shared.cloud.empty,Nothing saved yet. Items you save in this tool will appear here.,עדיין אין שמירות. פריטים שתשמרו בכלי הזה יופיעו כאן.,Cloud-saves panel note when both sides are empty,shared; cloud panel
+shared.cloud.all_synced,Everything is in sync.,הכול מסונכרן.,Cloud-saves panel status when no action is waiting,shared; cloud panel
+shared.cloud.state_local_only,Only on this device,רק במכשיר הזה,Cloud-saves row state badge,shared; cloud panel
+shared.cloud.state_cloud_only,Only in the cloud,רק בענן,Cloud-saves row state badge,shared; cloud panel
+shared.cloud.state_synced,Same,זהה,Cloud-saves row state badge: both sides hold the same content,shared; cloud panel
+shared.cloud.state_cloud_changed,Newer in the cloud,חדש יותר בענן,Cloud-saves row state badge,shared; cloud panel
+shared.cloud.state_local_changed,Newer on this device,חדש יותר במכשיר הזה,Cloud-saves row state badge,shared; cloud panel
+shared.cloud.state_conflict,Changed in both places,השתנה בשני המקומות,Cloud-saves row state badge: the person must choose,shared; cloud panel
+shared.cloud.upload,Upload,העלאה,Cloud-saves row action,shared; cloud panel
+shared.cloud.download,Download,הורדה,Cloud-saves row action,shared; cloud panel
+shared.cloud.merge,Merge,מיזוג,Cloud-saves row action (lossless merge of progress-style items),shared; cloud panel
+shared.cloud.keep_both,Keep both,לשמור את שניהם,Cloud-saves row action on a conflict: the cloud version is added under a new name,shared; cloud panel
+shared.cloud.use_cloud,Use cloud copy,להשתמש בעותק מהענן,Cloud-saves row action on a conflict,shared; cloud panel
+shared.cloud.keep_mine,Keep mine,לשמור את שלי,Cloud-saves row action on a conflict: this device's version goes up,shared; cloud panel
+shared.cloud.download_json,Download file,הורדת קובץ,Cloud-saves row action: save the cloud copy as an .ivrit file,shared; cloud panel
+shared.cloud.delete,Delete from cloud,מחיקה מהענן,Cloud-saves row action (the local copy stays),shared; cloud panel
+shared.cloud.delete_confirm,"Delete ""{name}"" from the cloud? The copy on this device stays.","למחוק את ""{name}"" מהענן? העותק במכשיר הזה יישאר.",Cloud-saves confirm() before deleting a cloud row,shared; cloud panel; template
+shared.cloud.updated,Updated {date},עודכן {date},Cloud-saves row meta: the cloud row's last change,shared; cloud panel; template
+shared.cloud.size_kb,{kb} KB,{kb} ק״ב,Cloud-saves row meta: size,shared; cloud panel; template
+shared.cloud.done_upload,"Uploaded ""{name}"".","""{name}"" הועלה.",Cloud-saves status after an upload,shared; cloud panel; template
+shared.cloud.done_download,"Downloaded ""{name}"" to this device.","""{name}"" הורד למכשיר הזה.",Cloud-saves status after a download,shared; cloud panel; template
+shared.cloud.done_merge,"Merged ""{name}"" on both sides.","""{name}"" מוזג בשני הצדדים.",Cloud-saves status after a merge,shared; cloud panel; template
+shared.cloud.done_keep_both,"Kept both: the cloud version is now ""{copy}"" on this device.","נשמרו שניהם: הגרסה מהענן נמצאת כעת במכשיר הזה בשם ""{copy}"".",Cloud-saves status after Keep both,shared; cloud panel; template
+shared.cloud.done_delete,"Deleted ""{name}"" from the cloud.","""{name}"" נמחק מהענן.",Cloud-saves status after deleting a cloud row,shared; cloud panel; template
+shared.cloud.done_sync,"Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.","הסנכרון הסתיים: {up} הועלו, {down} הורדו, {merged} מוזגו, {left} עדיין דורשים בחירה.",Cloud-saves status after Sync now,shared; cloud panel; template
+shared.cloud.sync_stopped,Stopped after {done} of {total}: {reason},נעצר אחרי {done} מתוך {total}: {reason},Cloud-saves status when Sync now hit an error,shared; cloud panel; template
+shared.cloud.reload_hint,"If this tool is open in other tabs, reload them.","אם הכלי פתוח בלשוניות אחרות, רעננו אותן.",Cloud-saves status hint after a download,shared; cloud panel
+shared.cloud.copy_suffix,{name} (cloud copy),{name} (עותק מהענן),Name given to the cloud version after Keep both,shared; cloud panel; template
+shared.cloud.copy_suffix_n,{name} (cloud copy {n}),{name} (עותק מהענן {n}),Name given to the cloud version after Keep both when the first name is taken,shared; cloud panel; template
+shared.cloud.error_name_taken,That name is already used in the cloud.,השם הזה כבר בשימוש בענן.,Cloud-saves error,shared; cloud panel
+shared.cloud.error_too_big,That item is too big for the cloud (2 MB limit).,הפריט גדול מדי לענן (מגבלה של 2 מגה־בייט).,Cloud-saves error,shared; cloud panel
+shared.cloud.error_limit,Your account has reached its limit of saved items.,החשבון שלכם הגיע למגבלת הפריטים השמורים.,Cloud-saves error,shared; cloud panel
+shared.cloud.error_name,Names must be 1 to 120 characters.,שם חייב להכיל בין תו אחד ל־120 תווים.,Cloud-saves error,shared; cloud panel
+shared.cloud.error_chars,That item contains characters the cloud cannot store.,הפריט מכיל תווים שהענן אינו יכול לשמור.,Cloud-saves error,shared; cloud panel
+shared.cloud.error_not_allowed,The cloud refused this action.,הענן דחה את הפעולה.,Cloud-saves error (row-level security),shared; cloud panel
+shared.cloud.error_session,Your sign-in has expired. Sign in again.,תוקף הכניסה פג. היכנסו שוב.,Cloud-saves error,shared; cloud panel
+shared.cloud.error_not_setup,Cloud saves are not set up on the server yet.,שמירות בענן עדיין לא הוגדרו בשרת.,Cloud-saves error (the table is missing),shared; cloud panel
+shared.cloud.error_offline,The cloud is unreachable right now. Try again later.,הענן אינו זמין כרגע. נסו שוב מאוחר יותר.,Cloud-saves error,shared; cloud panel
+shared.cloud.error_changed,That item changed in the cloud a moment ago. The list was refreshed; choose again.,הפריט השתנה בענן לפני רגע. הרשימה רועננה; בחרו שוב.,Cloud-saves error (another device wrote first),shared; cloud panel
+shared.cloud.error_shape,The cloud copy has an unexpected shape and was not written to this device.,לעותק בענן יש מבנה לא צפוי והוא לא נכתב למכשיר הזה.,Cloud-saves error,shared; cloud panel
+shared.cloud.error_quota,There is no room left on this device to store that item.,אין מקום פנוי במכשיר הזה לשמור את הפריט.,Cloud-saves error (localStorage full),shared; cloud panel
+shared.cloud.error_no_merge,This page cannot merge that item yet.,הדף הזה עדיין לא יכול למזג את הפריט.,Cloud-saves error (no page merge helper registered),shared; cloud panel
+shared.cloud.error_generic,Something went wrong. Please try again.,משהו השתבש. נסו שוב.,Cloud-saves error,shared; cloud panel
