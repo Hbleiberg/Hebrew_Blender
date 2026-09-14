@@ -194,7 +194,7 @@ headless checks (with `--sdk <path to dist/umd/supabase.js>` it also exercises t
 **Privacy, in one paragraph:** nothing is stored on a server unless a signed-in person clicks upload.
 An account holds the email address (and a Google name when Google is used), a display name and only the
 items uploaded from a tool's *Cloud saves* panel — which, when a teacher chooses it, can include student
-names and practice results from Flash Cards. Accounts are for teachers and other adults; students never
+names and practice results from Flash Cards and class lists from the Classroom Dashboard. Accounts are for teachers and other adults; students never
 need one. Every cloud item can be downloaded as a file or deleted from the panel, and nothing on the
 device is ever deleted by the cloud. The full wording lives in `privacy.html` and `terms.html` (the
 `privacy.legal.*` / `terms.legal.*` rows of `locales/ui-strings.csv`, English and Hebrew); a change to
