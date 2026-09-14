@@ -193,6 +193,15 @@ try {
       check(tag + ' A: localStorage byte-identical to the control run', after === control, diffKeys(control, after));
       const bad = await page.evaluate(() => Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_syncMeta'));
       check(tag + ' A: no sb-* key and no sync memory', bad.length === 0, bad.join(','));
+      const acct = await page.evaluate(() => {
+        const before = !!document.querySelector('.ivsav-overlay');
+        window.IvritSaves.openAccount();
+        const card = document.querySelector('.ivsav-overlay .ivsav-card');
+        const opened = !!card && /Sign in/.test(card.textContent) && document.activeElement === card;
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        return { before, opened, closed: !document.querySelector('.ivsav-overlay') };
+      });
+      check(tag + ' A: no account screen by itself; openAccount() shows the signed-out card and Escape closes it', !acct.before && acct.opened && acct.closed, JSON.stringify(acct));
       check(tag + ' A: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
     }
@@ -209,6 +218,18 @@ try {
       }, P.host, { timeout: 25000 }).catch(() => {});
       const st = await page.evaluate((host) => { const h = document.querySelector(host); return { account: IvritAccount.status(), status: (h.querySelector('.ivsav-status') || {}).textContent, note: (h.querySelector('.ivsav-note') || {}).textContent }; }, P.host);
       check(tag + ' B: panel failed soft with the API unreachable', /\S/.test(st.status || '') || /\S/.test(st.note || ''), JSON.stringify(st));
+      // The welcome screen opens once for a remembered session on a device with items; here its listing fails soft.
+      await page.waitForFunction(() => { const s = document.querySelector('.ivsav-overlay .ivsav-status'); return s && s.classList.contains('is-error') && s.textContent.trim(); }, null, { timeout: 25000 }).catch(() => {});
+      await page.screenshot({ path: path.join(SHOTS, tag + '-welcome-1280.png') });
+      const wel = await page.evaluate(() => {
+        const o = document.querySelector('.ivsav-overlay'), st = o && o.querySelector('.ivsav-status');
+        const welcomed = (() => { try { return !!JSON.parse(localStorage.getItem('ivritSuite_syncMeta')).welcomed['11111111-1111-4111-8111-111111111111']; } catch (e) { return false; } })();
+        const info = { opened: !!o, error: !!(st && st.classList.contains('is-error') && st.textContent.trim()), welcomed };
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        info.closed = !document.querySelector('.ivsav-overlay');
+        return info;
+      });
+      check(tag + ' B: the welcome screen opened once, failed soft, is remembered and closes on Escape', wel.opened && wel.error && wel.welcomed && wel.closed, JSON.stringify(wel));
       check(tag + ' B: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
     } else { console.log('SKIP ' + tag + ' B: no --sdk file given'); }

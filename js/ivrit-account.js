@@ -21,6 +21,7 @@
  *   init(opts)                 optional { mount: 'auto' | selector | element | false }
  *   t(key, fallback)           translate via I18n when loaded, else the English fallback
  *   onOpenSaves(fn)            a tool registers how to open its cloud panel (adds a menu item)
+ *   onOpenAccount(fn)          the saves module registers its account screen ("Account…" menu item)
  *   openMenu()                 opens the chip's menu (false when no chip is mounted) — for a panel's Sign in button
  *   _test                      pure helpers exposed for the smoke test (scripts/smoke-account.mjs)
  *
@@ -57,6 +58,7 @@
   var clientPromise = null;
   var handlers = [];
   var openSavesFn = null;
+  var openAccountFn = null;
   var pendingError = null;   // an error the auth server sent back in the URL; shown once the chip exists
   var initOpts = null;
   var mounted = false;
@@ -472,6 +474,12 @@
 
     if (status === 'signed-in' && currentUser) {
       m.appendChild(el('p', 'ivacct-who', t('shared.account.signed_in_as', 'Signed in as {email}', { email: currentUser.email })));
+      if (openAccountFn) {
+        var acct = el('button', 'ivacct-item', t('shared.account.account_item', 'Account…'));
+        acct.type = 'button';
+        acct.addEventListener('click', function () { closeMenu(false); try { openAccountFn(); } catch (e) { console.warn('[account] onOpenAccount failed:', e); } });
+        m.appendChild(acct);
+      }
       if (openSavesFn) {
         var saves = el('button', 'ivacct-item', t('shared.account.cloud_saves', 'Cloud saves…'));
         saves.type = 'button';
@@ -689,6 +697,7 @@
     init: init,
     t: t,
     onOpenSaves: function (fn) { openSavesFn = (typeof fn === 'function') ? fn : null; renderChip(); },
+    onOpenAccount: function (fn) { openAccountFn = (typeof fn === 'function') ? fn : null; renderChip(); },
     openMenu: function () { if (!chip || !mounted) return false; openMenu(); return true; },   // a page's own "Sign in" button opens the chip's menu
     _test: { isAuthCallback: isAuthCallback, stripAuthParams: stripAuthParams, redirectTarget: redirectTarget, parseAuthParams: parseAuthParams, hasStoredSession: hasStoredSession, AUTH_KEY: AUTH_KEY, VERIFIER_KEY: VERIFIER_KEY, CACHE_KEY: CACHE_KEY }
   };

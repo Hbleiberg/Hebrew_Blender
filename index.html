@@ -1660,9 +1660,12 @@ function initCloudSaves() {
       title: false,                              // the <summary> names the tool
       merges: merges[tool] || {},
       onLocalChanged: () => renderIvritInventory(),   // the "This file will contain:" counts read storage
-      open: openCloudSaves                       // the header chip's "Cloud saves…" item
+      open: openCloudSaves,                      // the header chip's "Cloud saves…" item
+      deviceBackup: openIEModal                  // the account screen's "Back up everything on this device"
     });
   });
+  // The account screen on other pages sends people here for the device backup.
+  if (new URLSearchParams(location.search).get('alltools') === 'open') openIEModal();
 }
 document.addEventListener('keydown', e => {
   const bd = document.getElementById('ieBackdrop');

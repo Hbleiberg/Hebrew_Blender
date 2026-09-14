@@ -44,6 +44,7 @@ any of them bumps `VERSION`. A page that only offers sign-in leaves the fourth l
 | `init({ mount })` | Optional; `mount: false` suppresses the auto-mount. Auto-mount runs at `DOMContentLoaded` |
 | `t(key, fallback)` | The `pwa.js`-style translator (I18n when loaded, else English) — reused by the saves module |
 | `onOpenSaves(fn)` | A tool registers how to open its cloud panel; "Cloud saves…" appears in the menu only then |
+| `onOpenAccount(fn)` | The saves module registers its account screen; "Account…" appears in the menu only then |
 | `openMenu()` | Opens the chip's menu (`false` when no chip is mounted) — what the saves panel's own Sign in button calls |
 | `_test` | Pure URL helpers for the smoke test |
 
@@ -178,7 +179,8 @@ surface: `entries` is for harnesses (real tools list theirs in the registry), `m
 `page` helpers, `flush()` must cancel any debounced writer and write now, `onLocalChanged(kind, name)`
 must re-read that key into memory and re-render, `open` is registered with `IvritAccount.onOpenSaves`,
 `title: false` drops the panel's own title (the page's panel heading is the heading) and an i18n key
-replaces it (the hub names each panel after its tool).
+replaces it (the hub names each panel after its tool), `deviceBackup` is how the page saves everything
+on the device to an `.ivrit` file (only the hub passes one).
 A `single` / `scalar` / `tree` / `mapIn` entry is **downloadable only when the page gave `onLocalChanged`**
 (otherwise upload-only, with a console warning): those tools keep their settings in memory and rewrite
 the whole blob on the next change, which would undo a download and then push the stale blob back up
@@ -225,6 +227,28 @@ and `ftImportTree` is additive, so a tree is never a row. After actions and afte
 is reconciled once all `follows` items exist on this device: a flat local tree takes the cloud's folders
 wholesale, two real trees go through the page's helper, and the result lands on whichever side differs.
 Preset downloaded one at a time may land at the root of the folder list; *Sync now* keeps the folders.
+
+### The account screen
+
+`IvritSaves.openAccount()` — an overlay (`.ivsav-overlay` / `.ivsav-card`, `role="dialog"`, Escape and
+an outside click close it, focus returns to the opener) reached from the chip's **Account…** item. It
+lists every tool that has anything, on either side, with plain counts ("3 not in your account yet",
+"2 only in your account", "1 changed in both places", or "everything is in your account"), and offers:
+
+- **Upload everything on this device** — every upload the per-tool plans call safe, tool by tool, then
+  the trees follow; rows the client-side guard refuses are skipped and counted, a network/server error
+  stops the run and says so. It is a copy: nothing is removed from the device (the note says so). Items
+  that are only in the account are brought down from a tool's panel or the hub's block (a hint appears).
+- **Download everything in your account (.ivrit)** — one AllTools-shaped file of every cloud row across
+  tools (`bundleFromRows` folds each kind into the bundle key the hub imports: a map kind → `{name: value}`,
+  a mapIn kind → its envelope + `{path: {id: value}}`, single/tree → the value, scalar → the plain value).
+- **Back up everything on this device (.ivrit)** — the page's `deviceBackup` hook when one was passed to
+  `attach()` (the hub opens its Import / Export modal); every other page sends people to
+  `index.html?alltools=open`, which opens that modal.
+
+It opens **by itself once per account on each device**, right after the first sign-in, when the device
+already holds saved items (`ivritSuite_syncMeta.welcomed[uid]` remembers it; a device with nothing saved
+is marked without a screen). That first opening is titled as a welcome and dismisses with *Not now*.
 
 ### The panel
 

@@ -211,7 +211,11 @@ on the device is ever deleted by the cloud, and nothing newer is overwritten by 
 choose it. Where the panel sits: the Generator and Flash Cards under *Advanced* next to the `.ivrit` backup,
 the Dictionary inside the Word Lists manager, the Torah Trainer and Trope Tutor in their settings drawer, and
 the home page's *Import / Export All Settings* modal holds one panel per tool — the place to bring a fresh
-browser up to date. `saves-test.html` exercises the panel on a set of throwaway test items;
+browser up to date. The chip's **Account…** item opens the account screen: what each tool holds on this
+device and in the account, **Upload everything on this device** (a copy — nothing is removed from the
+device; it also opens by itself once after the first sign-in on a device that already has saved items),
+and two backup buttons — everything in the account as one `.ivrit` file, or the home page's modal for
+everything on the device. `saves-test.html` exercises the panel on a set of throwaway test items;
 `node scripts/smoke-saves.mjs` and `node scripts/smoke-tools.mjs` run the headless checks.
 
 ## Files

@@ -32,9 +32,15 @@
  *      entry `follows` its items' kind and is synced after them, never on its own row in the list.
  *
  * Exposes window.IvritSaves:
- *   attach(cfg)               { tool, panel?, title?, entries?, merges?, flush?, onLocalChanged?, open? }
+ *   attach(cfg)               { tool, panel?, title?, entries?, merges?, flush?, onLocalChanged?, open?, deviceBackup? }
  *                             title: false → no title of its own (the page's panel heading is the heading);
- *                             an i18n key → that title (the hub names each panel after its tool)
+ *                             an i18n key → that title (the hub names each panel after its tool);
+ *                             deviceBackup: how this page saves everything on the device to an .ivrit file
+ *                             (the hub passes its Import / Export modal; other pages send people there)
+ *   openAccount()             the account screen: what this device holds per tool, "Upload everything on
+ *                             this device" (a copy — nothing leaves the device), and the backup buttons.
+ *                             Opens by itself once per account on a device that already has saved items,
+ *                             right after the first sign-in; the chip's "Account…" item reopens it.
  *   mountPanel(target, tool)  element | selector — renders the panel there
  *   refresh(tool)             Promise<plan> — re-lists both sides and re-renders
  *   plan(tool)                Promise<plan> — the per-item state table (no rendering)
@@ -120,6 +126,11 @@
   var pendingRefresh = {};   // tool → the listing promise in flight, so two callers share one listing
   var lastSeenWrite = null;  // the `at` of the last module write another tab told us about
   var listening = false;
+  var account = null;        // the open account screen: { root, opener, first } or null
+  // The tool names the account screen shows (the home page's card titles, present in every dictionary).
+  var TOOL_NAMES = { Worksheet: ['home.card.generator.name', 'Hebrew Worksheet Generator'], FlashCards: ['home.card.flashcards.name', 'Hebrew Flash Cards'],
+                     Dictionary: ['home.card.dictionary.name', 'Hebrew Word Lookup'], TorahTrainer: ['home.card.torah.name', 'Torah Trainer'],
+                     TropeTutor: ['home.card.trope.name', 'Trope Tutor'], Dashboard: ['home.card.dashboard.name', 'Hebrew Classroom Dashboard'], Suite: ['shared.cloud.tool_suite', 'IvritSuite'] };
 
   /* ---------- tiny helpers ---------- */
   function A() { return window.IvritAccount || null; }
@@ -368,6 +379,9 @@
     var m = metaAll(), b = metaBranch(m, uid, tool, kind, false);
     if (b && hasOwn(b, name)) { delete b[name]; metaSave(m); }
   }
+  // Whether the account screen already introduced itself to this account on this device.
+  function welcomedAt(uid) { var m = metaAll(); return (isPlainObject(m.welcomed) && m.welcomed[uid]) || null; }
+  function markWelcomed(uid) { var m = metaAll(); if (!isPlainObject(m.welcomed)) m.welcomed = {}; m.welcomed[uid] = now(); metaSave(m); }
   // Forget items that are gone on both sides. keep = { kind: { name: true } }.
   function metaPrune(uid, tool, keep) {
     var m = metaAll(), u = m.users[uid], tl = isPlainObject(u) && u[tool], changed = false;
@@ -406,6 +420,20 @@
         return c.from('saves').select(ROW_COLS).eq('tool', tool).order('kind').order('name').order('id').range(from, from + PAGE_SIZE - 1);
       }).then(function (rows) {
         rows = rows || [];
+        all = all.concat(rows);
+        return rows.length === PAGE_SIZE ? page(from + PAGE_SIZE) : all;
+      });
+    }
+    return page(0);
+  }
+  // Every row of a tool with its data — the account backup file (paged like the listing).
+  function cloudListFull(tool) {
+    var all = [];
+    function page(from) {
+      return withClient(function (c) {
+        return c.from('saves').select('id, kind, name, data').eq('tool', tool).order('kind').order('name').order('id').range(from, from + PAGE_SIZE - 1);
+      }).then(function (rows) {
+        rows = (rows || []).map(function (r) { r.data = clone(r.data); return r; });
         all = all.concat(rows);
         return rows.length === PAGE_SIZE ? page(from + PAGE_SIZE) : all;
       });
@@ -781,20 +809,38 @@
     bundle[entry.ivritKey || entry.kind] = payload;
     return { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: entry.ivritKey ? 'AllTools' : entry.tool, savedAt: now(), data: bundle };
   }
+  // One tool's cloud rows folded into the AllTools bundle shape the hub imports: a map kind becomes
+  // {name: value}, a mapIn kind its envelope + {path: {id: value}}, a single/tree its value, a scalar the
+  // plain value. Rows of a kind the registry does not know are left out. Pure.
+  function bundleFromRows(entries, rows) {
+    var out = {}, n = 0;
+    entries.forEach(function (e) {
+      var mine = rows.filter(function (r) { return r.kind === e.kind && !badName(r.name); });
+      if (!mine.length) return;
+      var key = e.ivritKey || e.kind;
+      if (e.shape === 'map') { out[key] = {}; mine.forEach(function (r) { out[key][r.name] = r.data; n++; }); }
+      else if (e.shape === 'mapIn') { out[key] = safeAssign({}, e.envelope || {}); out[key][e.path] = {}; mine.forEach(function (r) { out[key][e.path][r.name] = r.data; n++; }); }
+      else if (e.shape === 'scalar') { out[key] = isPlainObject(mine[0].data) ? mine[0].data.value : mine[0].data; n++; }
+      else { out[key] = mine[0].data; n++; }
+    });
+    return { data: out, count: n };
+  }
+  function downloadJson(obj, name) {
+    var blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.parentNode.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
   function fileStem(s) { return String(s).replace(/[^\w֐-׿.-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 60) || 'item'; }
   function actDownloadFile(tool, row) {
     ensureUser();
     return cloudLoad(row.cloud.id).then(function (full) {
-      var file = ivritFile(row.entry, row.name, full.data);
-      var blob = new Blob([JSON.stringify(file, null, 2)], { type: 'application/json' });
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = fileStem(row.entry.tool + '_' + row.kind + '_' + row.name) + '.ivrit';
-      document.body.appendChild(a);
-      a.click();
-      a.parentNode.removeChild(a);
-      setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+      downloadJson(ivritFile(row.entry, row.name, full.data), fileStem(row.entry.tool + '_' + row.kind + '_' + row.name) + '.ivrit');
       return { action: 'file', row: row };
     });
   }
@@ -877,6 +923,58 @@
     });
   }
 
+  // The account screen's "Upload everything on this device": every upload the plan calls safe, nothing else.
+  function uploadAllInner(tool) {
+    return planTool(tool).then(function (p) {
+      var todo = p.rows.filter(function (r) { return r.safeAction === 'upload'; });
+      var sum = { done: 0, total: todo.length, skipped: 0, error: null };
+      return seqMap(todo, function (row) {
+        return actUpload(tool, row).then(function () { sum.done++; }, function (err) { if (!isGuardError(err)) throw err; sum.skipped++; });
+      }).catch(function (err) { sum.error = err; })
+        .then(function () { return afterActions(tool); })
+        .then(function () { return sum; });
+    });
+  }
+  function toolsWithEntries() { return TOOLS.filter(function (tool) { return registryFor(tool).length > 0; }); }
+  function toolName(tool) { var n = TOOL_NAMES[tool]; return n ? t(n[0], n[1]) : tool; }
+  // What every tool holds, for the account screen: listings run one at a time through each tool's queue.
+  function accountSummary() {
+    return seqMap(toolsWithEntries(), function (tool) {
+      return enqueue(tool, function () { return planTool(tool); }).then(function (p) {
+        render(tool);
+        var up = 0, cloudOnly = 0, conflicts = 0;
+        p.rows.forEach(function (r) {
+          if (r.safeAction === 'upload') up++;
+          else if (r.state === 'cloud-only') cloudOnly++;
+          else if (r.state === 'conflict' && !r.safeAction) conflicts++;
+        });
+        return { tool: tool, name: toolName(tool), total: p.rows.length, up: up, cloudOnly: cloudOnly, conflicts: conflicts };
+      });
+    });
+  }
+  // Does this device hold anything the registry knows about? (No network; decides whether the account
+  // screen introduces itself after the first sign-in.)
+  function deviceHasItems() {
+    return toolsWithEntries().some(function (tool) {
+      return registryFor(tool).some(function (e) { return e.shape !== 'tree' && localItems(e).length > 0; });
+    });
+  }
+  // Everything in the account as one AllTools-shaped .ivrit (the hub's Import / Export modal restores it).
+  function accountBackup() {
+    var bundle = {}, count = 0;
+    return seqMap(toolsWithEntries(), function (tool) {
+      return cloudListFull(tool).then(function (rows) {
+        var b = bundleFromRows(registryFor(tool), rows);
+        safeAssign(bundle, b.data);
+        count += b.count;
+      });
+    }).then(function () {
+      var file = { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', savedAt: now(), data: bundle };
+      downloadJson(file, 'IvritSuite_account_backup_' + now().slice(0, 10) + '.ivrit');
+      return count;
+    });
+  }
+
   /* ---------- queue ---------- */
   function enqueue(tool, fn) {
     var q = queues[tool] || Promise.resolve();
@@ -923,6 +1021,16 @@
       '.ivsav-meta{flex:1 1 140px;font-size:0.75rem;color:var(--muted,#6b6050);}' +
       '.ivsav-actions{display:flex;flex-wrap:wrap;gap:4px;}' +
       '.ivsav-actions .ivsav-btn{font-size:0.75rem;padding:3px 8px;}' +
+      '.ivsav-overlay{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.45);}' +
+      '.ivsav-card{box-sizing:border-box;inline-size:100%;max-inline-size:540px;max-block-size:90vh;overflow:auto;padding:16px 18px;border:1px solid var(--border,#c8bfa8);' +
+        'border-radius:10px;background:var(--white,#fff);color:var(--text,#1a2744);box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:inherit;}' +
+      '.ivsav-card-head{display:flex;align-items:center;gap:8px;}' +
+      '.ivsav-card-title{flex:1 1 auto;margin:0;font-size:1.1rem;}' +
+      '.ivsav-card h3{margin:14px 0 4px;font-size:0.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted,#6b6050);}' +
+      '.ivsav-card p{margin:6px 0;font-size:0.9rem;line-height:1.45;}' +
+      '.ivsav-card ul{margin:4px 0 8px;padding-inline-start:18px;font-size:0.9rem;line-height:1.5;}' +
+      '.ivsav-card .ivsav-btn{margin:4px 0;margin-inline-end:6px;font-size:0.88rem;padding:7px 12px;}' +
+      '.ivsav-card .ivsav-status{margin:8px 0 0;}' +
       '@media (prefers-reduced-motion: reduce){.ivsav,.ivsav *{transition-duration:0.001ms!important;animation-duration:0.001ms!important;}}';
     var el = document.createElement('style');
     el.id = STYLE_ID;
@@ -1124,6 +1232,155 @@
     }, function (err) { say(tool, errorText(err), true); render(tool); throw err; });
   }
 
+  /* ---------- the account screen ---------- */
+  function closeAccount() {
+    if (!account) return;
+    var a = account; account = null;
+    document.removeEventListener('keydown', a.onKey);
+    if (a.root.parentNode) a.root.parentNode.removeChild(a.root);
+    if (a.opener && typeof a.opener.focus === 'function') { try { a.opener.focus(); } catch (e) {} }
+  }
+  function acctSay(text, isError) {
+    if (!account) return;
+    var st = account.root.querySelector('.ivsav-status');
+    if (st) { st.textContent = text || ''; st.classList.toggle('is-error', !!isError); }
+  }
+  function acctBusy(on) {
+    if (!account) return;
+    account.root.querySelectorAll('.ivsav-btn[data-act]').forEach(function (b) { if (on) b.setAttribute('aria-disabled', 'true'); else b.removeAttribute('aria-disabled'); });
+  }
+  // opts.first: the once-per-device introduction right after the first sign-in.
+  function openAccount(opts) {
+    opts = opts || {};
+    closeAccount();
+    injectStyle();
+    var user = currentUser();
+    var overlay = el('div', 'ivsav-overlay');
+    var card = el('div', 'ivsav-card');
+    card.setAttribute('role', 'dialog');
+    card.setAttribute('aria-modal', 'true');
+    card.setAttribute('tabindex', '-1');
+    var head = el('div', 'ivsav-card-head');
+    var title = el('h2', 'ivsav-card-title', opts.first ? t('shared.cloud.acct_welcome_title', 'Welcome! Keep your saved items in your account') : t('shared.cloud.acct_title', 'Your account'));
+    title.id = 'ivsav-acct-title';
+    card.setAttribute('aria-labelledby', title.id);
+    head.appendChild(title);
+    var x = button('✕', '', closeAccount);
+    x.setAttribute('aria-label', t('shared.cloud.acct_close', 'Close'));
+    head.appendChild(x);
+    card.appendChild(head);
+    var status = el('p', 'ivsav-status');
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-live', 'polite');
+    if (!user) {
+      card.appendChild(el('p', 'ivsav-note', t('shared.cloud.signed_out', 'Sign in to keep copies of your saved items in the cloud and get them back on any device.')));
+      card.appendChild(button(t('shared.cloud.sign_in', 'Sign in'), 'ivsav-primary', function () { closeAccount(); var a = A(); if (a && typeof a.openMenu === 'function') a.openMenu(); }));
+    } else {
+      card.appendChild(el('p', 'ivsav-note', t('shared.account.signed_in_as', 'Signed in as {email}', { email: user.email || '' })));
+      if (opts.first) card.appendChild(el('p', '', t('shared.cloud.acct_welcome_note', 'This device already has saved items. Copy them to your account and they will be there on any device you sign in on. Nothing is removed from this device.')));
+      card.appendChild(el('h3', '', t('shared.cloud.acct_device_head', 'On this device')));
+      var list = el('ul', 'ivsav-acct-list');
+      card.appendChild(list);
+      var uploadBtn = button(t('shared.cloud.acct_upload_all', 'Upload everything on this device'), 'ivsav-primary', function () { uploadAll(); });
+      uploadBtn.setAttribute('data-act', 'upload');
+      uploadBtn.setAttribute('aria-disabled', 'true');
+      card.appendChild(uploadBtn);
+      card.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_upload_note', 'Your items stay on this device too.')));
+      var hint = el('p', 'ivsav-note ivsav-acct-hint', t('shared.cloud.acct_cloud_only_hint', "Items that are only in your account come to this device from a tool's Cloud saves panel (Sync now), or from Import / Export All Settings on the home page."));
+      hint.hidden = true;
+      card.appendChild(hint);
+      card.appendChild(el('h3', '', t('shared.cloud.acct_backup_head', 'Backups')));
+      var dl = button(t('shared.cloud.acct_download_cloud', 'Download everything in your account (.ivrit)'), '', function () { backupAccount(); });
+      dl.setAttribute('data-act', 'backup');
+      card.appendChild(dl);
+      var dev = button(t('shared.cloud.acct_device_backup', 'Back up everything on this device (.ivrit)'), '', function () {
+        var fn = null;
+        Object.keys(pages).forEach(function (k) { if (!fn && typeof pages[k].deviceBackup === 'function') fn = pages[k].deviceBackup; });
+        closeAccount();
+        if (fn) { try { fn(); } catch (e) { warn('deviceBackup failed:', e); } }
+        else window.location.href = '/index.html?alltools=open';
+      });
+      card.appendChild(dev);
+      card.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_download_note', 'Restore a file with Import / Export All Settings on the home page.')));
+    }
+    card.appendChild(status);
+    card.appendChild(button(opts.first ? t('shared.cloud.acct_not_now', 'Not now') : t('shared.cloud.acct_close', 'Close'), '', closeAccount));
+    overlay.appendChild(card);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeAccount(); });
+    var onKey = function (e) { if (e.key === 'Escape') { e.preventDefault(); closeAccount(); } };
+    document.addEventListener('keydown', onKey);
+    document.body.appendChild(overlay);
+    account = { root: overlay, opener: document.activeElement, onKey: onKey, first: !!opts.first };
+    try { card.focus(); } catch (e) {}
+    if (user) fillAccount();
+  }
+  function fillAccount() {
+    var me = account;
+    acctSay(t('shared.cloud.acct_checking', 'Checking what is on this device and in your account…'), false);
+    return accountSummary().then(function (tools) {
+      if (account !== me) return;
+      var list = me.root.querySelector('.ivsav-acct-list');
+      while (list.firstChild) list.removeChild(list.firstChild);
+      var up = 0, cloudOnly = 0, shown = 0;
+      tools.forEach(function (x) {
+        if (!x.total) return;
+        shown++;
+        var bits = [];
+        if (x.up) bits.push(t('shared.cloud.acct_tool_up', '{n} not in your account yet', { n: x.up }));
+        if (x.cloudOnly) bits.push(t('shared.cloud.acct_tool_cloud_only', '{n} only in your account', { n: x.cloudOnly }));
+        if (x.conflicts) bits.push(t('shared.cloud.acct_tool_conflicts', '{n} changed in both places', { n: x.conflicts }));
+        if (!bits.length) bits.push(t('shared.cloud.acct_tool_synced', 'everything is in your account'));
+        list.appendChild(el('li', '', x.name + ': ' + bits.join(' · ')));
+        up += x.up; cloudOnly += x.cloudOnly;
+      });
+      if (!shown) list.appendChild(el('li', '', t('shared.cloud.acct_nothing', 'Nothing saved on this device or in your account yet.')));
+      var b = me.root.querySelector('.ivsav-btn[data-act="upload"]');
+      if (b) { if (up) b.removeAttribute('aria-disabled'); else b.setAttribute('aria-disabled', 'true'); }
+      var hint = me.root.querySelector('.ivsav-acct-hint');
+      if (hint) hint.hidden = !cloudOnly;
+      acctSay('', false);
+    }).catch(function (err) { if (account === me) acctSay(errorText(err), true); });
+  }
+  function uploadAll() {
+    var me = account;
+    if (!me || !currentUser()) return Promise.resolve();
+    acctBusy(true);
+    var total = 0, skipped = 0, error = null;
+    return seqMap(toolsWithEntries(), function (tool) {
+      if (error || account !== me) return Promise.resolve();
+      acctSay(t('shared.cloud.acct_uploading', 'Uploading {tool}…', { tool: toolName(tool) }), false);
+      return enqueue(tool, function () { return uploadAllInner(tool); }).then(function (sum) {
+        total += sum.done; skipped += sum.skipped;
+        if (sum.error) error = sum.error;
+        render(tool);
+      }, function (err) { error = err; render(tool); });
+    }).then(function () {
+      if (account !== me) return;
+      acctBusy(false);
+      var tail = skipped ? ' ' + t('shared.cloud.sync_skipped', '{n} could not be uploaded (too big or an invalid name).', { n: skipped }) : '';
+      if (error) acctSay(t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: total, total: total, reason: errorText(error) }) + tail, true);
+      else acctSay(t('shared.cloud.acct_uploaded', 'Uploaded {n} items to your account.', { n: total }) + tail, false);
+      return fillAccount();
+    });
+  }
+  function backupAccount() {
+    var me = account;
+    if (!me || !currentUser()) return Promise.resolve();
+    acctBusy(true);
+    acctSay(t('shared.cloud.acct_preparing', 'Preparing the file…'), false);
+    return accountBackup().then(function (n) {
+      if (account !== me) return;
+      acctBusy(false);
+      acctSay(t('shared.cloud.acct_downloaded', 'Downloaded a backup with {n} items.', { n: n }), false);
+    }, function (err) { if (account === me) { acctBusy(false); acctSay(errorText(err), true); } });
+  }
+  // Once per account on a device that already holds saved items: introduce the account screen.
+  function maybeWelcome(user) {
+    if (!user || welcomedAt(user.id)) return;
+    markWelcomed(user.id);
+    if (deviceHasItems()) openAccount({ first: true });
+  }
+
   /* ---------- mounting and wiring ---------- */
   function mountPanel(target, tool) {
     var host = typeof target === 'string' ? document.querySelector(target) : target;
@@ -1147,8 +1404,10 @@
           if (user) refresh(tool).catch(function () {});
           else { plans[tool] = null; say(tool, '', false); render(tool); }
         });
+        if (user) maybeWelcome(user); else closeAccount();
       });
     }
+    if (a && typeof a.onOpenAccount === 'function') a.onOpenAccount(function () { openAccount(); });
     // A module write in another tab of the same tool: re-read that key here (no flush — the point is to
     // drop this tab's stale in-memory copy), then list again. Only module writes carry the stamp.
     try { lastSeenWrite = (metaAll().lastWrite || {}).at || null; } catch (e) {}
@@ -1196,6 +1455,8 @@
   window.IvritSaves = {
     attach: attach,
     mountPanel: mountPanel,
+    openAccount: function (opts) { openAccount(opts); },
+    closeAccount: closeAccount,
     refresh: refresh,
     plan: function (tool) { return enqueue(tool, function () { return planTool(tool); }); },
     syncNow: syncNow,
@@ -1213,7 +1474,7 @@
       canonJson: canonJson, hashText: hashText, classify: classify, deepMax: deepMax, maxValue: maxValue,
       project: project, restoreOmitted: restoreOmitted, safeParse: safeParse, copyNameFor: copyNameFor,
       validateShape: validateShape, errorText: errorText, guardUpload: guardUpload, ivritFile: ivritFile,
-      treeIsFlat: treeIsFlat, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
+      treeIsFlat: treeIsFlat, bundleFromRows: bundleFromRows, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
     }
   };
 })();

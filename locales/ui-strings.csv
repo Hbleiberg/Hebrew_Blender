@@ -5218,6 +5218,7 @@ shared.account.verify,Verify code,אימות הקוד,Account popover verify but
 shared.account.sending,Sending…,שולח…,Account popover note while a request is in flight,shared
 shared.account.code_sent,"We emailed a 6-digit code to {email}. Type it here.","שלחנו קוד בן 6 ספרות אל {email}. הקלידו אותו כאן.",Account popover note after the email was sent,shared; template
 shared.account.signed_in_as,Signed in as {email},מחוברים בתור {email},Account popover first line when signed in,shared; template
+shared.account.account_item,Account…,חשבון…,Account popover item that opens the saves module's account screen,shared
 shared.account.cloud_saves,Cloud saves…,שמירות בענן…,Account popover item (only when the page registered a cloud panel),shared
 shared.account.sign_out,Sign out (this device),יציאה (מהמכשיר הזה),Account popover item,shared
 shared.account.needs_internet,Sign-in needs an internet connection.,הכניסה דורשת חיבור לאינטרנט.,Account popover note when offline,shared
@@ -5278,6 +5279,30 @@ shared.cloud.kind_streak,Best streak,הרצף הטוב ביותר,Cloud-saves ro
 shared.cloud.kind_profile,Student profiles,פרופילי תלמידים,Cloud-saves list group header for Flash Cards student profiles (one row per student),shared; cloud panel
 shared.cloud.kind_wordlist,Word lists,רשימות מילים,Cloud-saves list group header for the suite-wide word lists (one row per list),shared; cloud panel
 shared.cloud.kind_last_setup,Last worksheet setup,הגדרת דף העבודה האחרונה,Cloud-saves row name for the generator's remembered setup,shared; cloud panel
+shared.cloud.tool_suite,IvritSuite,IvritSuite,"Account screen: name of the test-harness tool (brand name, not translated)",shared; cloud panel
+shared.cloud.acct_title,Your account,החשבון שלכם,Account screen title (opened from the chip's Account… item),shared; account screen
+shared.cloud.acct_welcome_title,Welcome! Keep your saved items in your account,ברוכים הבאים! שמרו את הפריטים השמורים שלכם בחשבון,Account screen title the first time it opens by itself after sign-in on a device with saved items,shared; account screen
+shared.cloud.acct_welcome_note,This device already has saved items. Copy them to your account and they will be there on any device you sign in on. Nothing is removed from this device.,במכשיר הזה כבר יש פריטים שמורים. העתיקו אותם לחשבון והם יהיו זמינים בכל מכשיר שתיכנסו אליו. שום דבר אינו מוסר מהמכשיר הזה.,Account screen: explanation under the welcome title,shared; account screen
+shared.cloud.acct_device_head,On this device,במכשיר הזה,Account screen section heading: the per-tool list,shared; account screen
+shared.cloud.acct_checking,Checking what is on this device and in your account…,בודק מה נמצא במכשיר הזה ובחשבון…,Account screen status while every tool is listed,shared; account screen
+shared.cloud.acct_tool_up,{n} not in your account yet,{n} עדיין לא בחשבון,Account screen per-tool line fragment (after the tool name),shared; account screen; template
+shared.cloud.acct_tool_cloud_only,{n} only in your account,{n} רק בחשבון,Account screen per-tool line fragment,shared; account screen; template
+shared.cloud.acct_tool_conflicts,{n} changed in both places,{n} השתנו בשני המקומות,Account screen per-tool line fragment,shared; account screen; template
+shared.cloud.acct_tool_synced,everything is in your account,הכול בחשבון,Account screen per-tool line fragment when nothing is waiting,shared; account screen
+shared.cloud.acct_nothing,Nothing saved on this device or in your account yet.,עדיין אין שמירות במכשיר הזה או בחשבון.,Account screen list when every tool is empty on both sides,shared; account screen
+shared.cloud.acct_upload_all,Upload everything on this device,העלאת כל מה שבמכשיר הזה,Account screen primary button: copy every item this device holds into the account,shared; account screen
+shared.cloud.acct_upload_note,Your items stay on this device too.,הפריטים נשארים גם במכשיר הזה.,Account screen note under the upload button,shared; account screen
+shared.cloud.acct_cloud_only_hint,"Items that are only in your account come to this device from a tool's Cloud saves panel (Sync now), or from Import / Export All Settings on the home page.","פריטים שנמצאים רק בחשבון מגיעים למכשיר הזה מלוח שמירות בענן של הכלי (סנכרון עכשיו), או מייבוא / ייצוא כל ההגדרות בעמוד הבית.",Account screen hint shown when the account holds items this device lacks,shared; account screen
+shared.cloud.acct_uploading,Uploading {tool}…,מעלה {tool}…,Account screen status during Upload everything (tool = the tool's name),shared; account screen; template
+shared.cloud.acct_uploaded,Uploaded {n} items to your account.,{n} פריטים הועלו לחשבון.,Account screen status after Upload everything,shared; account screen; template
+shared.cloud.acct_backup_head,Backups,גיבויים,Account screen section heading,shared; account screen
+shared.cloud.acct_download_cloud,Download everything in your account (.ivrit),הורדת כל מה שבחשבון (.ivrit),Account screen button: one AllTools-shaped .ivrit file of every cloud row,shared; account screen
+shared.cloud.acct_device_backup,Back up everything on this device (.ivrit),גיבוי כל מה שבמכשיר הזה (.ivrit),Account screen button: opens the home page's Import / Export All Settings modal,shared; account screen
+shared.cloud.acct_download_note,Restore a file with Import / Export All Settings on the home page.,שחזרו קובץ באמצעות ייבוא / ייצוא כל ההגדרות בעמוד הבית.,Account screen note under the backup buttons,shared; account screen
+shared.cloud.acct_preparing,Preparing the file…,מכין את הקובץ…,Account screen status while the account backup is assembled,shared; account screen
+shared.cloud.acct_downloaded,Downloaded a backup with {n} items.,הורד גיבוי עם {n} פריטים.,Account screen status after the account backup downloaded,shared; account screen; template
+shared.cloud.acct_not_now,Not now,לא עכשיו,Account screen dismiss button on the first (welcome) opening,shared; account screen
+shared.cloud.acct_close,Close,סגירה,Account screen close button / aria-label of the ✕,shared; account screen
 shared.cloud.error_name_taken,That name is already used in the cloud.,השם הזה כבר בשימוש בענן.,Cloud-saves error,shared; cloud panel
 shared.cloud.error_too_big,That item is too big for the cloud (2 MB limit).,הפריט גדול מדי לענן (מגבלה של 2 מגה־בייט).,Cloud-saves error,shared; cloud panel
 shared.cloud.error_limit,Your account has reached its limit of saved items.,החשבון שלכם הגיע למגבלת הפריטים השמורים.,Cloud-saves error,shared; cloud panel
