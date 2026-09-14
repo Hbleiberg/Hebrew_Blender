@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Content-Security-Policy (defense-in-depth). Placed right after <meta charset> so it applies before
+     any script/style loads. script-src keeps 'unsafe-inline' because all app JS is inline by design; the
+     value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
+     origins. Accounts (Supabase): cdn.jsdelivr.net serves the pinned SDK, hhkmqwpjsyxdeuhvcyis.supabase.co is
+     Auth + PostgREST + Storage + the delete-account Edge Function. Update this when adding any external
+     script/font/fetch/iframe (see CLAUDE.md). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
+<link rel="manifest" href="manifest.webmanifest?v=3">
+<meta name="theme-color" content="#1a2744">
+<script src="/pwa.js" defer></script>
+<script src="/js/i18n.js" defer></script>
+<!-- Accounts (optional): the shared modules — this page never calls the SDK itself (CLAUDE.md, accounts rule 2) -->
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
+<script src="/js/ivrit-projects.js" defer></script>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="IvritSuite">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CMLC81Z0HC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CMLC81Z0HC');
+</script>
+<title>Your Account | IvritSuite</title>
+<meta name="description" content="Manage your optional IvritSuite account: see what it holds, download everything in it as one file, or delete the account and everything in it.">
+<link rel="canonical" href="https://ivritsuite.com/account.html">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IvritSuite">
+<meta property="og:title" content="Your Account | IvritSuite">
+<meta property="og:description" content="See what your optional IvritSuite account holds, download everything in it, or delete it.">
+<meta property="og:url" content="https://ivritsuite.com/account.html">
+<meta property="og:image" content="https://ivritsuite.com/og-card.png?v=3">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="IvritSuite — Free Hebrew Literacy Tools">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Your Account | IvritSuite">
+<meta name="twitter:description" content="See what your optional IvritSuite account holds, download everything in it, or delete it.">
+<meta name="twitter:image" content="https://ivritsuite.com/og-card.png?v=3">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "IvritSuite", "item": "https://ivritsuite.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Your Account", "item": "https://ivritsuite.com/account.html" }
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" media="print" onload="this.media='all'" rel="stylesheet">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
+<script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
+<script>
+  /* No-flash UI-language IIFE — mirrors the dark-mode one; sets dir/lang before paint so Hebrew
+     never flashes LTR->RTL. Authoritative set happens later in /js/i18n.js. */
+  (function () {
+    try {
+      var p = new URLSearchParams(location.search).get('lang');
+      var l = (p === 'en' || p === 'he') ? p : (localStorage.getItem('hebrewBlender_lang') || 'en');
+      if (l !== 'en' && l !== 'he') l = 'en';
+      document.documentElement.lang = l;
+      document.documentElement.dir = (l === 'he' ? 'rtl' : 'ltr');
+    } catch (e) {}
+  })();
+</script>
+<style>
+:root {
+  --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
+  --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
+  --gold-text:#7f5a13;--gold-text-hover:#5c4010;--danger-text:#b3261e;--danger-bg:#fdecec;--danger-border:#e5a5a5;
+}
+html.dark-early body,body.dark {
+  --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
+  --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;--gold-text:var(--gold);--gold-text-hover:var(--gold-light);
+  --danger-text:#ff9c94;--danger-bg:#3a1f1f;--danger-border:#6b3434;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+[hidden]{display:none!important;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
+header .star{font-size:32px;color:var(--gold);}
+header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
+header p{font-size:0.85rem;color:var(--gold-light);margin-top:3px;}
+header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
+.hbtn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;text-decoration:none;min-height:30px;display:inline-flex;align-items:center;justify-content:center;}
+.hbtn:hover{background:rgba(255,255,255,0.1);}
+.dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;min-height:30px;display:inline-flex;align-items:center;justify-content:center;}
+.dark-btn:hover{background:rgba(255,255,255,0.1);}
+
+main{flex:1;width:100%;max-width:860px;margin:0 auto;padding:48px 24px 64px;}
+main h1.page-title{font-family:'Libre Baskerville',serif;font-size:2rem;color:var(--text);margin-bottom:6px;}
+main .lede{font-size:0.95rem;color:var(--muted);margin-bottom:28px;line-height:1.55;}
+main h2{font-family:'Libre Baskerville',serif;font-size:1.2rem;color:var(--text);margin:0 0 8px;}
+main p,main li{font-size:0.95rem;line-height:1.6;color:var(--text);}
+main p{margin-bottom:10px;}
+main a{color:var(--gold-text);text-decoration:underline;}
+main a:hover{color:var(--gold-text-hover);}
+.tile{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);border-radius:12px;padding:22px 24px;box-shadow:0 2px 10px rgba(0,0,0,0.05);margin-block-end:22px;}
+.tile.danger{border-top-color:var(--danger-text);}
+.muted{color:var(--muted);}
+.note{font-size:0.88rem;color:var(--muted);margin-bottom:12px;line-height:1.55;}
+.status{margin-top:10px;font-size:0.9rem;color:var(--muted);min-height:1.3em;overflow-wrap:anywhere;}
+.status.is-error{color:var(--danger-text);}
+.field{margin-block:10px 8px;}
+.field label{display:block;font-size:0.82rem;font-weight:600;margin-bottom:5px;}
+.field input{width:100%;max-width:420px;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);padding:9px 10px;font-family:inherit;font-size:0.95rem;}
+.field input:focus{outline:2px solid var(--gold);outline-offset:1px;}
+.check{display:flex;align-items:flex-start;gap:8px;margin-block:10px;font-size:0.92rem;line-height:1.5;}
+.check input{margin-block-start:4px;flex-shrink:0;}
+.btn{background:var(--navy);color:#fff;border:1px solid transparent;border-radius:8px;padding:10px 20px;font-family:inherit;font-size:0.95rem;font-weight:600;cursor:pointer;transition:background 0.15s;margin-inline-end:8px;margin-block:4px;}
+.btn:hover{background:#24345c;}
+.btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+.btn[aria-disabled="true"]{opacity:0.55;cursor:default;}
+body.dark .btn{background:#2a4070;}
+body.dark .btn:hover{background:#345090;}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--border);}
+.btn.ghost:hover{background:var(--warm-gray);}
+.btn.danger{background:var(--danger-text);color:#fff;}
+.btn.danger:hover{background:#8f1d17;}
+body.dark .btn.danger{background:#a83a32;}
+.link-btn{background:none;border:0;padding:0 2px;color:var(--gold-text);font:inherit;font-size:0.85rem;text-decoration:underline;cursor:pointer;}
+.link-btn:hover{color:var(--gold-text-hover);}
+.link-btn:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
+#holdsList{list-style:none;margin:0 0 8px;padding:0;}
+.holds-tool{margin-block:8px 12px;}
+.holds-tool strong{display:block;font-weight:700;}
+.holds-kinds{margin:2px 0 0;padding-inline-start:18px;}
+.holds-names{margin:2px 0 4px;padding-inline-start:18px;font-size:0.88rem;color:var(--muted);}
+.holds-names li{font-size:0.88rem;line-height:1.45;}
+.confirm-box{margin-top:12px;padding:16px 18px;border:1px solid var(--danger-border);border-radius:10px;background:var(--danger-bg);}
+.confirm-box h3{font-size:1rem;margin-bottom:6px;}
+
+footer{text-align:center;padding:16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
+footer a{color:var(--gold-text);text-decoration:none;display:inline-block;padding-block:5px;}
+footer a:hover{text-decoration:underline;}
+
+@media (max-width:640px){
+  header{padding:16px 20px;}
+  header .brand-title{font-size:1.2rem;}
+  main{padding:28px 18px 48px;}
+  main h1.page-title{font-size:1.5rem;}
+  .tile{padding:18px 16px;}
+}
+@media (max-width:430px){
+  header{flex-wrap:wrap;}
+  header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
+}
+/* Honor reduced-motion: neutralize all transitions */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media print {
+  body, body.dark, html.dark-early body {
+    --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fff;
+    --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#fff;--gold-text:#7f5a13;--gold-text-hover:#5c4010;
+    background:#fff !important; color:#1a2744 !important;
+  }
+  header .hright { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="star">✡︎</span>
+  <div>
+    <div class="brand-title" data-i18n="account.header.title">IvritSuite — Your account</div>
+    <p data-i18n="account.header.tagline">What your account holds · Download everything · Delete your account</p>
+  </div>
+  <div class="hright">
+    <a class="hbtn" href="/" data-i18n="account.header.back_link">← Back</a>
+    <div data-i18n-switcher></div>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title" data-i18n="shared.darkmode.label_dark">🌙 Dark</button>
+  </div>
+</header>
+
+<main>
+  <h1 class="page-title" data-i18n="account.page_title">Your account</h1>
+  <p class="lede" data-i18n-html="account.lede">Everything your account holds, a download of all of it, and the way to delete it. What an account stores and how it is protected: <a href="privacy.html">Privacy Policy</a>.</p>
+
+  <!-- Signed out -->
+  <section class="tile" id="acctOut" hidden>
+    <p class="status" id="outNote" role="status" aria-live="polite"></p>
+    <button class="btn" type="button" id="outBtn" data-i18n="account.out.sign_in">Sign in</button>
+  </section>
+
+  <!-- Loading / offline / accounts unavailable -->
+  <section class="tile" id="acctBusy">
+    <p class="status" id="busyNote" role="status" aria-live="polite" data-i18n="account.out.loading">Checking your sign-in…</p>
+  </section>
+
+  <!-- Signed in -->
+  <div id="acctIn" hidden>
+    <section class="tile" id="secWho" aria-labelledby="whoHead">
+      <h2 id="whoHead" data-i18n="account.who.head">Who</h2>
+      <p id="whoLine"></p>
+      <p class="muted" id="whoProvider"></p>
+      <p class="muted" id="sinceLine"></p>
+      <form id="nameForm" novalidate>
+        <div class="field">
+          <label for="nameInput" data-i18n="account.who.name_label">Display name</label>
+          <input type="text" id="nameInput" name="name" maxlength="80" autocomplete="name">
+        </div>
+        <p class="note" data-i18n="account.who.name_note">Shown in the header when you are signed in. Only you see it.</p>
+        <button class="btn ghost" type="submit" id="nameSave" data-i18n="account.who.name_save">Save name</button>
+        <p class="status" id="nameNote" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="tile" id="secHolds" aria-labelledby="holdsHead">
+      <h2 id="holdsHead" data-i18n="account.holds.head">What your account holds</h2>
+      <p class="note" data-i18n="account.holds.note">Copies of the items you uploaded from the tools. To sync, download or delete a single item, use that tool's Cloud saves panel (Font Maker projects: Load Project ▾ → In your account).</p>
+      <ul id="holdsList"></ul>
+      <p id="holdsTotal"></p>
+      <button class="btn ghost" type="button" id="refreshBtn" data-i18n="account.holds.refresh">Refresh</button>
+      <p class="status" id="holdsStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="tile" id="secDownload" aria-labelledby="dlHead">
+      <h2 id="dlHead" data-i18n="account.download.head">Download everything</h2>
+      <p class="note" data-i18n="account.download.note">One .zip file with everything in your account: an .ivrit file of every saved item (restore it with Import / Export All Settings on the home page) and each Font Maker project as a .hebrewfont file with its photos, plus its exported font when you kept one. Photo projects make this large; the size is shown above.</p>
+      <button class="btn" type="button" id="dlBtn" aria-disabled="true" data-i18n="account.download.btn">Download everything (.zip)</button>
+      <p class="status" id="dlStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="tile danger" id="secDelete" aria-labelledby="delHead">
+      <h2 id="delHead" data-i18n="account.delete.head">Delete my account</h2>
+      <p class="note" data-i18n="account.delete.note">This deletes your account and everything in it — every saved item, every Font Maker project with its photos and exported fonts — right away and for good. Nothing on this device or any other device is touched: your browsers keep their own copies, and your .ivrit and .hebrewfont files stay yours.</p>
+      <button class="btn ghost" type="button" id="delBtn" data-i18n="account.delete.btn">Delete my account…</button>
+      <div class="confirm-box" id="delConfirm" hidden>
+        <h3 data-i18n="account.delete.confirm_head">Are you sure?</h3>
+        <label class="check"><input type="checkbox" id="delCheck"> <span data-i18n="account.delete.check">I have downloaded everything I want to keep, or I do not need it.</span></label>
+        <div class="field">
+          <label for="delEmail" data-i18n="account.delete.email_label">Type your email address to confirm</label>
+          <input type="email" id="delEmail" name="email" autocomplete="off" dir="ltr">
+        </div>
+        <button class="btn danger" type="button" id="delGo" aria-disabled="true" data-i18n="account.delete.go">Delete permanently</button>
+        <button class="btn ghost" type="button" id="delCancel" data-i18n="account.delete.cancel">Cancel</button>
+        <p class="status" id="delStatus" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Deleted -->
+  <section class="tile" id="acctGone" hidden>
+    <h2 data-i18n="account.gone.head">Your account was deleted</h2>
+    <p data-i18n="account.gone.body">Your account and everything in it are gone. Everything saved on this device stays exactly as it was, and you can keep using every tool without an account.</p>
+    <p class="muted" id="goneCounts"></p>
+    <p><a href="/" data-i18n="account.gone.home">Back to the home page</a></p>
+  </section>
+</main>
+
+<footer>
+  <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI -->
+  <span dir="ltr">Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a></span><br>
+  <span data-i18n="shared.footer.license_note">Free to use and adapt for non-commercial educational purposes with attribution</span> &nbsp;·&nbsp;
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a> &nbsp;·&nbsp;
+  <a href="privacy.html" data-i18n="shared.footer.privacy_link">Privacy Policy</a> &nbsp;·&nbsp;
+  <a href="terms.html" data-i18n="shared.footer.terms_link">Terms of Use</a>
+</footer>
+
+<script>
+function toggleDark() {
+  const dark = document.body.classList.toggle('dark');
+  document.documentElement.classList.remove('dark-early');
+  try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
+  const _db = document.getElementById('darkBtn');
+  _db.textContent = dark ? (window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light') : (window.I18n ? I18n.t('shared.darkmode.label_dark') : '🌙 Dark');
+  _db.setAttribute('aria-pressed', dark ? 'true' : 'false');
+}
+
+/* ── The account page. Every cloud call goes through the shared modules (IvritAccount, IvritSaves,
+   IvritProjects); this script only renders, asks, and packs the download. Nothing user- or server-supplied
+   is written with innerHTML. ── */
+const $ = (id) => document.getElementById(id);
+const t = (k, p) => (window.I18n ? I18n.t(k, p) : k);
+const enc = new TextEncoder();
+let user = null;          // IvritAccount.user() as last reported
+let prof = null;          // { displayName, createdAt } from profiles
+let inv = null;           // IvritSaves.inventory()
+let projects = null;      // IvritProjects.list()
+let deleting = false, gone = false, goneCounts = null, busyDl = false;
+const namesOpen = {};     // tool:kind → the names list is expanded
+// Status lines keep their RENDERER so a live language switch can repaint them (pattern: contact.html).
+const lines = {};
+function say(id, render, isError) {
+  lines[id] = render || null;
+  const n = $(id); if (!n) return;
+  n.textContent = render ? render() : '';
+  n.classList.toggle('is-error', !!isError);
+}
+function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined && text !== null) n.textContent = text; return n; }
+function setBusy(id, on) { const n = $(id); if (n) n.setAttribute('aria-disabled', on ? 'true' : 'false'); }
+function isDisabled(n) { return !n || n.getAttribute('aria-disabled') === 'true'; }
+function plural(base, n) { n = Number(n) || 0; return t(base + (n === 1 ? '.one' : '.other'), { n: n }); }
+function fmtSize(b) {
+  b = Number(b) || 0;
+  if (b < 1048576) return t('shared.cloud.size_kb', { kb: Math.max(1, Math.round(b / 1024)) });
+  return t('shared.cloud.size_mb', { mb: b < 10485760 ? (b / 1048576).toFixed(1) : String(Math.round(b / 1048576)) });
+}
+function fmtDate(iso) {
+  try { return new Date(iso).toLocaleDateString(window.I18n && I18n.lang === 'he' ? 'he-IL' : undefined, { dateStyle: 'medium' }); }
+  catch (e) { return String(iso || '').slice(0, 10); }
+}
+function safeStem(name, keepDot) {   // a zip entry name: no path characters, no control characters
+  const s = String(name || '').replace(/[\\/:*?"<>|\x00-\x1f]+/g, '_').replace(/^\.+/, '').trim().slice(0, 80);
+  return s || (keepDot ? 'file' : 'project');
+}
+function show(which) { ['acctOut', 'acctBusy', 'acctIn', 'acctGone'].forEach(id => { $(id).hidden = id !== which; }); }
+
+/* ── state ── */
+function onAccount(u, status) {
+  if (gone || deleting) return;
+  const was = user; user = u;
+  if (u) {
+    show('acctIn');
+    renderWho();
+    if (!was || was.id !== u.id) { prof = null; inv = null; projects = null; renderHolds(); loadProfile(); loadInventory(); }
+    return;
+  }
+  prof = null; inv = null; projects = null;
+  if (status === 'disabled') { say('outNote', () => t('account.out.disabled')); $('outBtn').hidden = true; show('acctOut'); }
+  else if (status === 'loading') { say('busyNote', () => t('account.out.loading')); show('acctBusy'); }
+  else if (status === 'offline' || status === 'unavailable') { say('busyNote', () => t('account.out.offline')); show('acctBusy'); }
+  else { say('outNote', () => t('account.out.note')); $('outBtn').hidden = false; show('acctOut'); }
+}
+
+/* ── who ── */
+function renderWho() {
+  if (!user) return;
+  $('whoLine').textContent = t('shared.account.signed_in_as', { email: user.email || '' });
+  $('whoProvider').textContent = user.provider === 'google' ? t('account.who.provider_google') : t('account.who.provider_email');
+  $('sinceLine').textContent = prof && prof.createdAt ? t('account.who.since', { date: fmtDate(prof.createdAt) }) : '';
+  const input = $('nameInput');
+  if (document.activeElement !== input && !input.dataset.touched) input.value = (prof && prof.displayName) || user.name || '';
+}
+function loadProfile() {
+  const me = user && user.id; if (!me) return;
+  IvritAccount.profile().then(p => { if (user && user.id === me) { prof = p; renderWho(); } }).catch(() => {});
+}
+function saveName(e) {
+  e.preventDefault();
+  if (!user || isDisabled($('nameSave'))) return;
+  setBusy('nameSave', true);
+  say('nameNote', () => t('shared.account.sending'));
+  IvritAccount.setDisplayName($('nameInput').value).then(name => {
+    prof = Object.assign({}, prof || {}, { displayName: name });
+    delete $('nameInput').dataset.touched;
+    $('nameInput').value = name;
+    say('nameNote', () => t('account.who.name_saved'));
+  }).catch(err => say('nameNote', () => IvritAccount.errorText(err), true)).then(() => setBusy('nameSave', false));
+}
+
+/* ── what the account holds ── */
+function loadInventory() {
+  const me = user && user.id; if (!me) return;
+  say('holdsStatus', () => t('account.holds.checking'));
+  setBusy('refreshBtn', true);
+  Promise.all([IvritSaves.inventory(), IvritProjects.list({ fresh: true })]).then(res => {
+    if (!user || user.id !== me) return;
+    inv = res[0]; projects = res[1];
+    renderHolds();
+    say('holdsStatus', null);
+  }).catch(err => { if (user && user.id === me) say('holdsStatus', () => IvritSaves.errorText(err), true); })
+    .then(() => setBusy('refreshBtn', false));
+}
+function renderHolds() {
+  const host = $('holdsList'); while (host.firstChild) host.removeChild(host.firstChild);
+  $('holdsTotal').textContent = '';
+  if (!inv) { setBusy('dlBtn', true); return; }
+  let items = 0, bytes = 0, shown = 0;
+  inv.forEach(tl => {
+    if (!tl.count) return;
+    shown++; items += tl.count; bytes += tl.bytes;
+    const li = el('li', 'holds-tool'); li.appendChild(el('strong', '', tl.name));
+    const ul = el('ul', 'holds-kinds');
+    tl.kinds.forEach(k => {
+      const row = el('li', '', t('account.holds.kind_line', { label: k.label, n: k.count, size: fmtSize(k.bytes) }));
+      if (k.names.length) {
+        const key = tl.tool + ':' + k.kind;
+        const btn = el('button', 'link-btn', namesOpen[key] ? t('account.holds.names_hide') : t('account.holds.names_show'));
+        btn.type = 'button';
+        btn.setAttribute('aria-expanded', namesOpen[key] ? 'true' : 'false');
+        btn.addEventListener('click', () => { namesOpen[key] = !namesOpen[key]; renderHolds(); });
+        row.appendChild(document.createTextNode(' '));
+        row.appendChild(btn);
+        if (namesOpen[key]) { const nl = el('ul', 'holds-names'); k.names.forEach(n => nl.appendChild(el('li', '', n))); row.appendChild(nl); }
+      }
+      ul.appendChild(row);
+    });
+    li.appendChild(ul); host.appendChild(li);
+  });
+  const pj = projects || [];
+  let pbytes = 0;
+  if (pj.length) {
+    shown++;
+    const li = el('li', 'holds-tool'); li.appendChild(el('strong', '', t('account.holds.projects_label')));
+    const ul = el('ul', 'holds-kinds');
+    pj.forEach(r => {
+      const b = (Number(r.project_bytes) || 0) + (Number(r.sources_bytes) || 0); pbytes += b;
+      let line = t('account.holds.project_line', { name: r.name, letters: plural('account.count.letters', r.letters_done), size: fmtSize(b), date: fmtDate(r.updated_at) });
+      if (r.export_path) line += ' · ' + t('account.holds.project_export');
+      ul.appendChild(el('li', '', line));
+    });
+    li.appendChild(ul); host.appendChild(li);
+  }
+  if (!shown) host.appendChild(el('li', 'muted', t('shared.cloud.acct_no_cloud')));
+  else $('holdsTotal').textContent = t('account.holds.total', { items: plural('account.count.items', items), projects: plural('account.count.projects', pj.length), size: fmtSize(bytes + pbytes) });
+  setBusy('dlBtn', !shown);
+}
+
+/* ── download everything: one store-only zip built here (the writer resources.html uses for font bundles) ── */
+function _crc32(bytes) {
+  let c = ~0 >>> 0;
+  for (let i = 0; i < bytes.length; i++) {
+    c ^= bytes[i];
+    for (let k = 0; k < 8; k++) c = (c >>> 1) ^ (0xEDB88320 & -(c & 1));
+  }
+  return (~c) >>> 0;
+}
+function makeZip(files) {   // [{name, bytes: Uint8Array}] → Uint8Array; store (no compression): the payload is already gzip/JSON
+  const u16 = n => [n & 0xff, (n >>> 8) & 0xff];
+  const u32 = n => [n & 0xff, (n >>> 8) & 0xff, (n >>> 16) & 0xff, (n >>> 24) & 0xff];
+  const dosTime = u16(0), dosDate = u16(0x21);   // a fixed, valid stamp (1980-01-01): a date field of 0 is malformed
+  const parts = [], central = [];
+  let offset = 0;
+  for (const f of files) {
+    const name = enc.encode(f.name), data = f.bytes, crc = _crc32(data);
+    const lfh = new Uint8Array([].concat(
+      u32(0x04034b50), u16(20), u16(0x0800), u16(0), dosTime, dosDate,   // flag bit 11: entry names are UTF-8
+      u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0)));
+    parts.push(lfh, name, data);
+    central.push(new Uint8Array([].concat(
+      u32(0x02014b50), u16(20), u16(20), u16(0x0800), u16(0), dosTime, dosDate,
+      u32(crc), u32(data.length), u32(data.length),
+      u16(name.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(offset))), name);
+    offset += lfh.length + name.length + data.length;
+  }
+  const cdStart = offset;
+  let cdSize = 0; central.forEach(c => cdSize += c.length);
+  const eocd = new Uint8Array([].concat(
+    u32(0x06054b50), u16(0), u16(0), u16(files.length), u16(files.length),
+    u32(cdSize), u32(cdStart), u16(0)));
+  const all = [...parts, ...central, eocd];
+  let total = 0; all.forEach(a => total += a.length);
+  const out = new Uint8Array(total);
+  let p = 0; all.forEach(a => { out.set(a, p); p += a.length; });
+  return out;
+}
+function saveBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+async function downloadAll() {
+  if (busyDl || !user || isDisabled($('dlBtn'))) return;
+  busyDl = true; setBusy('dlBtn', true);
+  const me = user.id, email = user.email || '', date = new Date().toISOString().slice(0, 10);
+  try {
+    say('dlStatus', () => t('account.download.prep_items'));
+    const bundle = await IvritSaves.bundleAll();
+    const rows = await IvritProjects.list({ fresh: true });
+    if (!bundle.count && !rows.length) { say('dlStatus', () => t('account.download.nothing')); return; }
+    const ivritName = 'IvritSuite-account-' + date + '.ivrit';
+    const files = [{ name: ivritName, bytes: enc.encode(JSON.stringify(bundle.file, null, 2)) }];
+    let missing = 0; const used = {};
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i], pos = { i: i + 1, n: rows.length, name: r.name };
+      say('dlStatus', () => t('account.download.prep_project', pos));
+      const f = await IvritProjects.projectFile(r.id, { onProgress: (j, m) => say('dlStatus', () => t('account.download.prep_photo', { i: pos.i, n: pos.n, j: j, m: m })) });
+      missing += f.failed;
+      let stem = safeStem(r.name);
+      if (used[stem]) { used[stem]++; stem += '-' + used[stem]; } else used[stem] = 1;
+      files.push({ name: 'font-projects/' + stem + '/' + f.name, bytes: new Uint8Array(await f.blob.arrayBuffer()) });
+      if (r.export_path) {
+        try { const ex = await IvritProjects.downloadExport(r.id); files.push({ name: 'font-projects/' + stem + '/' + safeStem(ex.name, true), bytes: new Uint8Array(await ex.blob.arrayBuffer()) }); }
+        catch (e) { missing++; }
+      }
+    }
+    say('dlStatus', () => t('account.download.prep_zip'));
+    files.unshift({ name: 'README.txt', bytes: enc.encode(t('account.zip.readme', { date: date, email: email, ivrit: ivritName })) });
+    const zip = makeZip(files);
+    if (!user || user.id !== me) return;
+    saveBlob(new Blob([zip], { type: 'application/zip' }), 'IvritSuite-account-' + date + '.zip');
+    const n = bundle.count, p = rows.length, size = fmtSize(zip.length);
+    say('dlStatus', () => t('account.download.done', { items: plural('account.count.items', n), projects: plural('account.count.projects', p), size: size }) + (missing ? ' ' + t('account.download.photos_missing', { n: missing }) : ''));
+  } catch (err) {
+    say('dlStatus', () => IvritSaves.errorText(err), true);
+  } finally {
+    busyDl = false; setBusy('dlBtn', !inv || !(inv.some(x => x.count) || (projects && projects.length)));
+  }
+}
+
+/* ── delete my account ── */
+function validateDel() {
+  const ok = !!user && $('delCheck').checked && $('delEmail').value.trim().toLowerCase() === String(user.email || '').toLowerCase();
+  setBusy('delGo', !ok || deleting);
+  return ok;
+}
+function openDel() {
+  $('delConfirm').hidden = false; $('delBtn').hidden = true;
+  $('delCheck').checked = false; $('delEmail').value = '';
+  say('delStatus', null); validateDel();
+  $('delCheck').focus();
+}
+function cancelDel() {
+  if (deleting) return;
+  $('delConfirm').hidden = true; $('delBtn').hidden = false;
+  $('delBtn').focus();
+}
+async function deleteNow() {
+  if (deleting || !validateDel()) return;
+  deleting = true; setBusy('delGo', true); setBusy('delCancel', true);
+  const uid = user.id;
+  say('delStatus', () => t('account.delete.working'));
+  try {
+    const res = await IvritAccount.deleteAccount();
+    goneCounts = res && res.deleted ? res.deleted : null;
+    gone = true;
+    try { IvritSaves.forgetUser(uid); } catch (e) {}
+    renderGone();
+    show('acctGone');
+  } catch (err) {
+    say('delStatus', () => IvritAccount.errorText(err), true);
+  } finally {
+    deleting = false; setBusy('delCancel', false); validateDel();
+  }
+}
+function renderGone() {
+  $('goneCounts').textContent = goneCounts ? t('account.gone.counts', { items: plural('account.count.items', goneCounts.saves), projects: plural('account.count.projects', goneCounts.projects), files: plural('account.count.files', goneCounts.files) }) : '';
+}
+
+/* ── i18n: fill static chrome + re-sync dark label + re-render JS-built content on load + live switch.
+   Wired inside DOMContentLoaded because /js/i18n.js is deferred (window.I18n is undefined at
+   inline-script parse time). ── */
+function applyI18n() {
+  if (!window.I18n) return;
+  I18n.applyStaticI18n();
+  try { const _db = $('darkBtn'); if (_db) _db.textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
+  renderWho(); renderHolds(); renderGone();
+  Object.keys(lines).forEach(id => { const r = lines[id], n = $(id); if (n && r) n.textContent = r(); });
+}
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const s = localStorage.getItem('hebrewBlender_darkMode');
+    if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.body.classList.add('dark');
+      const _db = $('darkBtn');
+      _db.textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light');
+      _db.setAttribute('aria-pressed', 'true');
+    }
+  } catch(e) {}
+  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+  $('outBtn').addEventListener('click', () => { if (window.IvritAccount) IvritAccount.openMenu(); });
+  $('nameForm').addEventListener('submit', saveName);
+  $('nameInput').addEventListener('input', () => { $('nameInput').dataset.touched = '1'; });
+  $('refreshBtn').addEventListener('click', () => { if (!isDisabled($('refreshBtn'))) loadInventory(); });
+  $('dlBtn').addEventListener('click', downloadAll);
+  $('delBtn').addEventListener('click', openDel);
+  $('delCancel').addEventListener('click', cancelDel);
+  $('delCheck').addEventListener('change', validateDel);
+  $('delEmail').addEventListener('input', validateDel);
+  $('delGo').addEventListener('click', deleteNow);
+  if (window.IvritAccount && window.IvritSaves && window.IvritProjects) IvritAccount.onChange(onAccount);
+  else { say('busyNote', () => t('account.out.offline')); show('acctBusy'); }
+});
+</script>
+</body>
+</html>

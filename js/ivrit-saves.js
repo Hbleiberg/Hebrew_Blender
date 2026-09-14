@@ -1026,7 +1026,7 @@
   }
   // What the account holds, tool by tool, without the data (the account page's listing): per kind a count, the
   // bytes, and the names where a row's name is the item's own (a preset, a deck, a student profile — not a
-  // word list or class list, whose row name is an id). Folder trees ride with their kind and count only in bytes.
+  // word list or class list, whose row name is an id). Folder trees count in the totals but are not listed.
   function inventory() {
     return seqMap(toolsWithEntries(), function (tool) {
       return cloudList(tool).then(function (rows) {
@@ -1035,9 +1035,8 @@
           var mine = rows.filter(function (r) { return r.kind === e.kind; });
           if (!mine.length) return;
           var b = 0; mine.forEach(function (r) { b += Number(r.bytes || 0); });
-          bytes += b;
+          bytes += b; count += mine.length;
           if (e.shape === 'tree') return;
-          count += mine.length;
           var named = e.shape === 'map' || (e.shape === 'mapIn' && !e.nameField);
           kinds.push({ kind: e.kind, label: kindLabel(e), count: mine.length, bytes: b, names: named ? mine.map(function (r) { return r.name; }) : [] });
         });

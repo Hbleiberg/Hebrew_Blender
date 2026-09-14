@@ -22,6 +22,7 @@ const CORE_ASSETS = [
   '/privacy.html',
   '/terms.html',
   '/contact.html',
+  '/account.html',
   '/404.html',
   '/fonts/FrankRuhlLibre-Regular.ttf',
   '/fonts/NotoSerifHebrew-Taamim.ttf',
