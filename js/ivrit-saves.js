@@ -104,7 +104,10 @@
     // page restores on its next load); the page supplies the tree merge
     { tool: 'Worksheet', kind: 'preset', lsKey: 'hebrewBlender_presets', shape: 'map', merge: 'item', ivritKey: 'generatorPresets', label: 'shared.cloud.kind_preset' },
     { tool: 'Worksheet', kind: 'presetFolders', lsKey: 'hebrewBlender_presetsFolders', shape: 'tree', merge: 'page', follows: 'preset', ivritKey: 'generatorPresetFolders' },
-    { tool: 'Worksheet', kind: 'lastState', lsKey: 'hebrewBlender_lastState', shape: 'single', merge: 'assign', ivritKey: 'blenderLastState', label: 'shared.cloud.kind_last_setup' }
+    { tool: 'Worksheet', kind: 'lastState', lsKey: 'hebrewBlender_lastState', shape: 'single', merge: 'assign', ivritKey: 'blenderLastState', label: 'shared.cloud.kind_last_setup' },
+    // hebrew_dictionary.html — the suite-wide word lists, one row per list (its id is the row name, its
+    // `name` the label); the page supplies the uncapped union merge. Its small display prefs stay per device.
+    { tool: 'Dictionary', kind: 'wordList', lsKey: 'ivritSuite_wordLists', shape: 'mapIn', path: 'lists', nameField: 'name', envelope: { v: 1 }, merge: 'page', ivritKey: 'wordLists', label: 'shared.cloud.kind_wordlist' }
   ];
   var extraEntries = [];   // entries a page registered through attach({ entries }) — the test harness
 

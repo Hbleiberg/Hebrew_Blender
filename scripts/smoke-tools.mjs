@@ -42,8 +42,10 @@ const SETTLE_MS = 1500;   // longer than every page's debounced writer (300 ms s
 /*
  * One entry per wired page. `seed` is written into localStorage before load (realistic values for every
  * registry key of the tool); `rows` is what plan(tool) must list (kind:name); `host` is the element the
- * panel renders into; `expand` runs in the page to make the host visible for the screenshot; `urlKeep`
- * (optional) is a query string the page must keep after the auth-error params are stripped.
+ * panel renders into; `prepare` (optional) runs in the page right after load, before any check, when the
+ * host only exists on demand (the dictionary's Word Lists manager); `expand` runs in the page to make the
+ * host visible for the screenshot; `urlKeep` (optional) is a query string the page must keep after the
+ * auth-error params are stripped.
  */
 const PAGES = [
   {
@@ -88,6 +90,19 @@ const PAGES = [
     rows: ['preset:Week 1', 'preset:Review', 'lastState:default'],
     expand: `const adv = document.getElementById('panelAdvanced'); if (adv.classList.contains('collapsed')) adv.querySelector(':scope > .panel-title').click(); const t = document.querySelector('.panel-title[data-i18n="worksheet.advanced.cloud_title"]'); if (t.parentElement.classList.contains('collapsed')) t.click(); t.scrollIntoView();`,
     urlKeep: 's=abc'
+  },
+  {
+    file: 'hebrew_dictionary.html', tool: 'Dictionary', host: '#wlCloudPanel',
+    seed: {
+      ivritSuite_wordLists: JSON.stringify({ v: 1, lists: {
+        m1abc_x1y2z: { name: 'Week 3 words', created: 1700000000000, updated: 1700000100000, words: [{ word: 'שָׁלוֹם', translation: 'peace', translit: 'shalom', pos: 'noun', era: 'bib' }] },
+        m1abd_q9w8e: { name: 'Colors', created: 1700000200000, updated: 1700000300000, words: [{ word: 'אָדֹם', translation: 'red', translit: 'adom', pos: 'adj', era: 'mod' }, { word: 'כָּחֹל', translation: 'blue', translit: 'kachol', pos: 'adj', era: 'mod' }] }
+      } })
+    },
+    rows: ['wordList:m1abc_x1y2z', 'wordList:m1abd_q9w8e'],
+    prepare: `wlOpenManager();`,
+    expand: `wlOpenManager();`,
+    urlKeep: 'wordlists=open'
   }
 ];
 
@@ -104,7 +119,7 @@ async function startServer() {
 }
 
 // Opens a page with foreign origins aborted. blockAccount = the control run (no account scripts at all).
-async function openPage(browser, file, { seed = {}, serveSdk = false, blockAccount = false, viewport = { width: 1280, height: 900 }, query = '' } = {}) {
+async function openPage(browser, file, { seed = {}, serveSdk = false, blockAccount = false, viewport = { width: 1280, height: 900 }, query = '', prepare = null } = {}) {
   const ctx = await browser.newContext({ serviceWorkers: 'block', viewport });
   await ctx.addInitScript((seed) => { for (const k of Object.keys(seed)) localStorage.setItem(k, seed[k]); }, seed);
   const page = await ctx.newPage();
@@ -125,6 +140,7 @@ async function openPage(browser, file, { seed = {}, serveSdk = false, blockAccou
   await page.goto(BASE + '/' + file + query, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.I18n && document.readyState !== 'loading', null, { timeout: 15000 }).catch(() => {});
   await page.waitForTimeout(SETTLE_MS);
+  if (prepare) { await page.evaluate(prepare).catch(e => errors.push('prepare: ' + e.message)); await page.waitForTimeout(300); }
   return { ctx, page, errors };
 }
 const dump = (page) => page.evaluate(() => JSON.stringify(Object.entries(localStorage).sort()));
@@ -138,14 +154,14 @@ try {
     // ---- control run: the page as it is without the account layer ----------------------------------
     let control;
     {
-      const { ctx, page, errors } = await openPage(browser, P.file, { seed: P.seed, blockAccount: true });
+      const { ctx, page, errors } = await openPage(browser, P.file, { seed: P.seed, blockAccount: true, prepare: P.prepare });
       control = await dump(page);
       check(tag + ' control: 0 pageerrors without the account scripts', errors.length === 0, errors.join(' | '));
       await ctx.close();
     }
     // ---- A. anonymous, CDN blocked -----------------------------------------------------------------
     {
-      const { ctx, page, errors } = await openPage(browser, P.file, { seed: P.seed });
+      const { ctx, page, errors } = await openPage(browser, P.file, { seed: P.seed, prepare: P.prepare });
       const chip = await page.evaluate(() => {
         const sw = document.querySelector('[data-i18n-switcher]'), chip = document.querySelector('.ivacct');
         return { mounted: !!chip, sameParent: !!chip && !!sw && chip.parentElement === sw.parentElement };
@@ -170,7 +186,7 @@ try {
       const seed = Object.assign({}, P.seed);
       seed[AUTH_KEY] = JSON.stringify({ access_token: 'x', refresh_token: 'y', expires_at: 4102444800, token_type: 'bearer', user: { id: '11111111-1111-4111-8111-111111111111', email: 'teacher@example.org' } });
       seed.ivritSuite_accountCache = JSON.stringify({ email: 'teacher@example.org', name: 'Test Teacher' });
-      const { ctx, page, errors } = await openPage(browser, P.file, { seed, serveSdk: true });
+      const { ctx, page, errors } = await openPage(browser, P.file, { seed, serveSdk: true, prepare: P.prepare });
       await page.waitForFunction(() => window.IvritAccount && IvritAccount.status() !== 'loading', null, { timeout: 25000 }).catch(() => {});
       await page.waitForFunction((host) => {
         const h = document.querySelector(host), st = h && h.querySelector('.ivsav-status'), note = h && h.querySelector('.ivsav-note');
