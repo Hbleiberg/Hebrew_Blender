@@ -8,7 +8,7 @@
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
      origins. Note: meta CSP can't express frame-ancestors or report-uri and does not cover content parsed
      before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -19,6 +19,9 @@
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
 <script src="/js/i18n.js" defer></script>
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2119,6 +2122,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <button type="button" id="backupScopeBoth" class="ivrit-mode-btn active" aria-pressed="true" onclick="setBackupScope('both')" data-i18n="flashcards.advanced.backup_scope_both">Both</button>
       </div>
       </div>
+      <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into #cloudSavesPanel; see initCloudSaves() -->
+      <div class="label adv-subhead" data-i18n="flashcards.advanced.cloud_head">Cloud saves</div>
+      <div class="adv-subbody"><div id="cloudSavesPanel"></div></div>
     </div>
   </div>
 
@@ -6557,6 +6563,25 @@ function flashBackupSave() {
   ivritStatus(I18n.t('shared.ivrit.status_saved', { filename: a.download }));
 }
 // Deep-merge an incoming {activeProfile, profiles} blob into the stored one
+// One student's record from two sources — pure, and the ONE merge rule for both callers (the .ivrit
+// import above through mergeProfilesBlob, the cloud panel through IvritSaves.attach's merges.profile):
+// results are unioned by savedAt (mine first), sorted, capped at the newest MAX_RESULTS_PER_PROFILE; the
+// ladder keeps the best of each level; `created` is the earlier stamp, `order` the later. Untrusted
+// shapes (a missing results array, a null entry) are tolerated the way sanitizeProfiles tolerates them.
+function mergeProfileEntry(mine, theirs) {
+  const a = (mine && typeof mine === 'object') ? mine : {}, b = (theirs && typeof theirs === 'object') ? theirs : {};
+  const resultsOf = p => (Array.isArray(p.results) ? p.results : []).filter(r => r && typeof r === 'object');
+  const out = ivritSafeAssign(ivritSafeAssign({}, b), a);   // a's fields win; a field only b has survives
+  const seen = new Set(resultsOf(a).map(r => r.savedAt));
+  out.results = resultsOf(a).concat(resultsOf(b).filter(r => !seen.has(r.savedAt)))
+    .sort((x, y) => new Date(x.savedAt) - new Date(y.savedAt))
+    .slice(-MAX_RESULTS_PER_PROFILE);
+  const ladder = mergeLadder(a.ladder, b.ladder);
+  if (ladder) out.ladder = ladder; else delete out.ladder;
+  if (a.created && b.created) out.created = Math.min(a.created, b.created);
+  if (a.order && b.order) out.order = Math.max(a.order, b.order);
+  return out;
+}
 function mergeProfilesBlob(incoming, mode) {
   const base = mode === 'replace' ? { activeProfile: null, profiles: {} } : readProfiles();
   // Sanitise the INCOMING side too, not just the stored side: the dedupe below reads `r.savedAt`
@@ -6565,19 +6590,7 @@ function mergeProfilesBlob(incoming, mode) {
   const inc = sanitizeProfiles(incoming);
   Object.keys(inc.profiles || {}).forEach(name => {
     const src = inc.profiles[name];
-    if (!base.profiles[name]) {
-      base.profiles[name] = src;
-    } else {
-      // merge result lists, de-duped by savedAt, capped
-      const seen = new Set(base.profiles[name].results.map(r => r.savedAt));
-      (src.results || []).forEach(r => { if (!seen.has(r.savedAt)) base.profiles[name].results.push(r); });
-      base.profiles[name].results = base.profiles[name].results
-        .sort((a, b) => new Date(a.savedAt) - new Date(b.savedAt))
-        .slice(-MAX_RESULTS_PER_PROFILE);
-      // Only `results` is merged above, so an imported backup's ladder needs its own pass.
-      const ladder = mergeLadder(base.profiles[name].ladder, src.ladder);
-      if (ladder) base.profiles[name].ladder = ladder;
-    }
+    base.profiles[name] = base.profiles[name] ? mergeProfileEntry(base.profiles[name], src) : src;
   });
   if (inc.activeProfile && base.profiles[inc.activeProfile]) base.activeProfile = inc.activeProfile;
   if (!base.activeProfile) base.activeProfile = Object.keys(base.profiles)[0] || null;
@@ -8514,7 +8527,53 @@ document.addEventListener('DOMContentLoaded', () => {
       else enterSharedDrill();
     }
   } catch (e) {}
+  initCloudSaves();
 });
+
+/* ── Cloud saves (optional accounts). Everything that talks to Supabase lives in the shared
+   js/ivrit-saves.js (its registry names this page's six keys). This page supplies (a) its pure merges —
+   the two folder trees through the shared ftImportTree, one student's profile through
+   mergeProfileEntry — and (b) how to re-read a key the module wrote, because presets, profiles and the
+   live settings are all rendered from memory and the next saveSettings() would put the old blob back. ── */
+function initCloudSaves() {
+  if (!window.IvritSaves) return;
+  // ftImportTree is write-through (it merges into the key and returns nothing); reading the key back
+  // hands the module the merged tree — it then writes the same bytes and tells the page.
+  const treeMerge = key => (local, cloud) => { ftImportTree(key, cloud, false); return ftRead(key); };
+  IvritSaves.attach({
+    tool: 'FlashCards',
+    panel: '#cloudSavesPanel',
+    title: false,                 // the sub-section heading is the heading
+    flush: saveSettings,          // the live settings object is what the module must read
+    merges: {
+      presetFolders: treeMerge('hebrewFlashCards_presetsFolders'),
+      profileFolders: treeMerge('hebrewFlashCards_profilesFolders'),
+      profile: mergeProfileEntry
+    },
+    onLocalChanged: function (kind) {
+      if (kind === 'preset' || kind === 'presetFolders') renderPresets();
+      else if (kind === 'profile' || kind === 'profileFolders') renderProfiles();
+      else if (kind === 'pbStreak') { loadPbStreak(); updateStatsBar(); }
+      else if (kind === 'settings') {
+        // Mid-ladder the drill is a transient override: hand the downloaded blob to the exit snapshot
+        // instead of applying it now, or _ladderExit() would restore the pre-ladder settings over it.
+        if (_ladderActive) {
+          try { const snap = ivritSafeParse(localStorage.getItem(SETTINGS_KEY) || 'null'); if (snap) _ladderActive.snapshot = snap; } catch (e) {}
+          return;
+        }
+        loadSettings();
+      }
+    },
+    open: function () {           // the header chip's "Cloud saves…" item — through the page's own toggles
+      const panel = document.getElementById('panelAdvanced');
+      if (panel && panel.classList.contains('collapsed')) { const t = panel.querySelector('.panel-title'); if (t) t.click(); }
+      const head = document.querySelector('.adv-subhead[data-i18n="flashcards.advanced.cloud_head"]');
+      if (!head) return;
+      if (head.classList.contains('collapsed')) head.click();
+      head.scrollIntoView({ block: 'start' });
+    }
+  });
+}
 
 // True when the UI is rendering right-to-left (Hebrew). Used to flip Arrow-key nav to visual dir.
 function _rtlNav() { return document.documentElement.dir === 'rtl'; }

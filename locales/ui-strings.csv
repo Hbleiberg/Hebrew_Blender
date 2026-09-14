@@ -933,6 +933,7 @@ dictionary.wordlists.manager_button,📚 Word Lists,📚 רשימות מילים
 dictionary.wordlists.save_button,⭑ Save as Word List…,⭑ שמירה כרשימת מילים…,save word-list button,leading-emoji
 flashcards.advanced.audio_label,Audio,שמע,advanced toggle label,
 flashcards.advanced.backup_head,Backup Presets,גיבוי הגדרות,advanced subheading,
+flashcards.advanced.cloud_head,Cloud saves,שמירות בענן,Advanced Settings sub-section heading (hosts the shared cloud-saves panel),
 flashcards.advanced.backup_include_label,Include in backup:,כלול בגיבוי:,backup scope label,
 flashcards.advanced.backup_intro,Save your data to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it. Use the toggle below to choose what's included.,"שמרו את הנתונים שלכם לקובץ <b>‎.ivrit</b> במכשיר. לשחזור, גררו את הקובץ למטה או עיינו אליו. השתמשו במתג למטה כדי לבחור מה כלול.",backup area intro,
 flashcards.advanced.backup_manual_placeholder,Exported preset JSON appears here…,קובץ JSON מיוצא של ההגדרות יופיע כאן…,manual backup textarea placeholder,placeholder

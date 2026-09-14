@@ -63,6 +63,20 @@ const PAGES = [
     rows: ['settings:default'],
     expand: `openSettingsAtPanel('cloud');`,
     urlKeep: 'parsha=Bereshit&v=1:1'
+  },
+  {
+    file: 'flash_cards.html', tool: 'FlashCards', host: '#cloudSavesPanel',
+    seed: {
+      hebrewFlashCards_presets: JSON.stringify({ 'Deck A': { settings: { mode: 2, cardCount: 12 }, order: 1700000000000 }, 'Deck B': { settings: { mode: 1, cardCount: 8 }, order: 1700000001000 } }),
+      hebrewFlashCards_presetsFolders: JSON.stringify({ v: 1, root: [{ t: 'folder', id: 'f1', name: 'Week 1', children: [{ t: 'item', name: 'Deck A' }] }, { t: 'item', name: 'Deck B' }] }),
+      hebrewFlashCards_settings: JSON.stringify({ mode: 2, cardCount: 20, selectedLetters: ['א', 'ב'], selectedVowels: ['kamatz'] }),
+      hebrewFlashCards_pbStreak: '4',
+      hebrewFlashCards_profiles: JSON.stringify({ activeProfile: 'Sarah', profiles: { Sarah: { created: 1700000000000, order: 1700000000000, results: [{ savedAt: '2026-09-01T10:00:00.000Z', pct: 90, correct: 9, total: 10, timeSec: 40, timerMode: 'off', settings: {}, cards: [] }], ladder: { levels: { l1: { bestPct: 90, passedAt: '2026-09-01T10:00:00.000Z' } } } }, Dan: { created: 1700000000000, order: 1700000000001, results: [] } } }),
+      hebrewFlashCards_profilesFolders: JSON.stringify({ v: 1, root: [{ t: 'item', name: 'Sarah' }, { t: 'item', name: 'Dan' }] })
+    },
+    rows: ['preset:Deck A', 'preset:Deck B', 'settings:default', 'pbStreak:default', 'profile:Sarah', 'profile:Dan'],
+    expand: `const p = document.getElementById('panelAdvanced'); if (p.classList.contains('collapsed')) p.querySelector('.panel-title').click(); document.querySelector('.adv-subhead[data-i18n="flashcards.advanced.cloud_head"]').scrollIntoView();`,
+    urlKeep: 's=abc'
   }
 ];
 
