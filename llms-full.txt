@@ -2,9 +2,10 @@
 
 > Free Hebrew worksheets, flash cards, dictionary, weekly parsha reader, and classroom tools for Hebrew learning and reading practice — for teachers and students.
 
-Everything runs entirely in the browser. There are no accounts, no ads, and no server:
-presets, settings and custom fonts are saved on your own device, and are backed up by
-downloading a portable `.ivrit` save file. The whole suite installs as an offline PWA.
+Everything runs in the browser. There are no ads, and no account is needed: presets,
+settings and custom fonts are saved on your own device and backed up by downloading a
+portable `.ivrit` save file. An optional free account (for teachers and other adults) keeps
+cloud copies of saved items to open on another device. The whole suite installs as an offline PWA.
 The interface is available in English and Hebrew. Content is CC BY-NC-SA 4.0 (material
 incorporating PocketTorah audio is CC BY-SA 4.0).
 
@@ -266,7 +267,7 @@ Every example is a real word from the Torah reading, clipped from PocketTorah's 
 
 **Is the Trope Tutor free?**
 
-Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account, no ads.
+Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account required, no ads.
 
 **Can I print a chart of all the trope marks?**
 
@@ -291,7 +292,7 @@ Make your own Hebrew fonts from your handwriting — trace or draw your letters 
 
 **Is the Hebrew Font Maker free?**
 
-Yes. The Hebrew Font Maker is completely free — make and download as many Hebrew fonts as you like, with no account or sign-up.
+Yes. The Hebrew Font Maker is completely free — make and download as many Hebrew fonts as you like, with no account or sign-up required.
 
 **How do I make my own Hebrew font?**
 

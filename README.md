@@ -1,6 +1,6 @@
 # IvritSuite (Hebrew Blender)
 
-A suite of browser-based tools for Hebrew literacy instruction — no installation, no build step, no server required. Open any HTML file directly in a browser or serve the folder statically.
+A suite of browser-based tools for Hebrew literacy instruction — no installation, no build step, no server required (accounts are optional and additive). Open any HTML file directly in a browser or serve the folder statically.
 
 **IvritSuite** is the brand the live site carries (every page's `<title>`); **Hebrew Blender** is the repository/project name and the name in the license credit. They refer to the same thing.
 
@@ -188,6 +188,15 @@ How it works inside: `docs/reference/accounts-and-cloud.md`.
 Use the chip (or the buttons) to sign in with your email or Google, watch the state box and the
 console, sign out. `node scripts/smoke-account.mjs` runs the
 headless checks (with `--sdk <path to dist/umd/supabase.js>` it also exercises the loaded SDK).
+
+**Privacy, in one paragraph:** nothing is stored on a server unless a signed-in person clicks upload.
+An account holds the email address (and a Google name when Google is used), a display name and only the
+items uploaded from a tool's *Cloud saves* panel — which, when a teacher chooses it, can include student
+names and practice results from Flash Cards. Accounts are for teachers and other adults; students never
+need one. Every cloud item can be downloaded as a file or deleted from the panel, and nothing on the
+device is ever deleted by the cloud. The full wording lives in `privacy.html` and `terms.html` (the
+`privacy.legal.*` / `terms.legal.*` rows of `locales/ui-strings.csv`, English and Hebrew); a change to
+what an account can store updates that text in the same commit.
 
 **Database:** the tables, buckets and Row Level Security policies are plain SQL files under
 `db/migrations/`, applied once per file; `db/README.md` explains how to apply one and how to check the
