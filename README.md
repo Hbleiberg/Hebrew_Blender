@@ -140,6 +140,47 @@ How it works:
 
 ---
 
+## Accounts (optional, Supabase)
+
+Accounts are optional: everything works anonymously exactly as before, and the cloud is a third place
+to keep copies of your work next to the browser's own storage and `.ivrit` files. The whole account
+layer is two shared files — `js/supabase-config.js` (public project settings) and `js/ivrit-account.js`
+(sign-in, sign-out, the header chip) — plus `account-test.html`, a throwaway page for trying it out.
+How it works inside: `docs/reference/accounts-and-cloud.md`.
+
+**Where the config values come from** (Supabase dashboard → project *IvritSuite*):
+- `url` — Project Settings → API → Project URL.
+- `anonKey` — Project Settings → API Keys → the *publishable* key (`sb_publishable_…`). It is safe to
+  commit: it only names the project, and Row Level Security keeps every user's rows private. To
+  rotate it: create a new publishable key in the dashboard, paste it into `js/supabase-config.js`, bump
+  `VERSION` in `sw.js`, deploy, then disable the old key.
+- `sdk` / `sdkIntegrity` — the pinned `@supabase/supabase-js` build on jsDelivr and its integrity hash
+  (the file header explains how to recompute it when upgrading).
+- `enabled: false` switches accounts off site-wide (no chip, no downloads, no network calls).
+
+**One-time dashboard setup** (Authentication section unless noted):
+1. *URL Configuration* — Site URL `https://ivritsuite.com`; Redirect URLs `https://ivritsuite.com/**`,
+   `http://localhost:8080/**`, `http://127.0.0.1:8080/**` (the last two are for local testing).
+2. *Providers → Email* — enabled, sign-ups allowed. Passwords are never used; people get an email with
+   a sign-in link **and** a 6-digit code (the code works on any device).
+3. *Emails → Templates → Magic Link* — keep `{{ .ConfirmationURL }}` and add
+   `<strong>{{ .Token }}</strong>` so the same email carries the code. Suggested subject: "Your IvritSuite
+   sign-in link and code".
+4. *Emails → SMTP Settings* — **required before anyone but you can sign in**: Supabase's built-in
+   sender only delivers to the project's own team members. Use a transactional provider with a free
+   tier (Resend, Brevo, Postmark), sender `no-reply@ivritsuite.com`, and add the SPF/DKIM records it
+   gives you at Cloudflare. Then raise *Rate Limits → emails per hour* above the default.
+5. *Providers → Google* — in Google Cloud Console create an OAuth consent screen (External, app name
+   IvritSuite, scopes `openid email profile`, then **Publish**) and a *Web application* OAuth client with
+   authorized origin `https://ivritsuite.com` and redirect URI
+   `https://hhkmqwpjsyxdeuhvcyis.supabase.co/auth/v1/callback`; paste the client id + secret into
+   Supabase and enable the provider.
+
+**Trying it locally:** `python3 -m http.server 8080` from the repo root, open
+`http://localhost:8080/account-test.html`, use the chip (or the buttons) to sign in with your email or
+Google, watch the state box and the console, sign out. `node scripts/smoke-account.mjs` runs the
+headless checks (with `--sdk <path to dist/umd/supabase.js>` it also exercises the loaded SDK).
+
 ## Files
 
 | File / directory | Description |

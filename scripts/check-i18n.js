@@ -58,7 +58,7 @@ const CSV_PATH = path.join(ROOT, 'locales', 'ui-strings.csv');
 const BASELINE_PATH = path.join(__dirname, 'check-i18n-baseline.txt');
 
 // Files whose *.html we deliberately do NOT scan (the i18n dev harness).
-const SKIP_HTML = new Set(['i18n-test.html']);
+const SKIP_HTML = new Set(['i18n-test.html', 'account-test.html']);
 // Keys whose empty cell is intentional English (Check B allowlist — applies to every language column).
 // Currently empty, and that is the healthy state: the corpus has no untranslated cell to excuse.
 // `worksheet.layout.title_default` sat here from the first localization pass until S308, which
@@ -450,12 +450,17 @@ function checkCorpus(targets) {
 }
 
 function main() {
-  // Targets: every root *.html (minus the harness) + pwa.js.
+  // Targets: every root *.html (minus the harnesses) + pwa.js + the shared js/ modules below.
   const targets = fs.readdirSync(ROOT)
     .filter(f => f.endsWith('.html') && !SKIP_HTML.has(f))
     .map(f => path.join(ROOT, f));
   const pwa = path.join(ROOT, 'pwa.js');
   if (fs.existsSync(pwa)) targets.push(pwa);
+  // Shared modules that build UI themselves (same t(key, fallback) shape as pwa.js).
+  ['ivrit-account.js'].forEach(f => {
+    const m = path.join(ROOT, 'js', f);
+    if (fs.existsSync(m)) targets.push(m);
+  });
 
   const errors = [];
   const warnings = [];

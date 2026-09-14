@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Account test harness | IvritSuite</title>
+<!-- Throwaway harness for the shared account module (Phase 1). Not linked, not in the sitemap, not precached. -->
+<script>(function(){try{if(localStorage.getItem('hebrewBlender_darkMode')==='1')document.documentElement.classList.add('dark-early');}catch(e){}})();</script>
+<script>(function(){try{var p=new URLSearchParams(location.search).get('lang');var l=(p==='en'||p==='he')?p:(localStorage.getItem('hebrewBlender_lang')||'en');if(l!=='en'&&l!=='he')l='en';document.documentElement.lang=l;document.documentElement.dir=(l==='he'?'rtl':'ltr');}catch(e){}})();</script>
+<script src="/js/i18n.js" defer></script>
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<style>
+:root{--navy:#1a2744;--gold:#c9922a;--gold-light:#e8c16f;--cream:#f7f3ea;--warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#fff;--danger-text:#b3261e;}
+html.dark-early body,body.dark{--cream:#141a28;--warm-gray:#1e2535;--text:#e8e4dc;--muted:#a39a88;--border:#3a4358;--white:#1e2535;--danger-text:#ff8a80;}
+body{margin:0;font-family:'Source Sans 3',-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;background:var(--cream);color:var(--text);}
+header{display:flex;align-items:center;gap:16px;padding:10px 20px;background:var(--navy);color:#fff;}
+header h1{margin:0;font-size:1.1rem;font-weight:600;flex:1;}
+.hright{display:flex;align-items:stretch;gap:8px;}
+.dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 12px;font-size:0.8rem;cursor:pointer;min-height:30px;}
+main{max-width:860px;margin:0 auto;padding:20px;}
+section{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-block-end:16px;}
+h2{margin:0 0 10px;font-size:1rem;}
+button.act{padding:7px 12px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);cursor:pointer;font:inherit;margin:3px 4px 3px 0;}
+button.act:hover{background:var(--warm-gray);}
+input.fld{padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font:inherit;margin:3px 4px 3px 0;}
+pre{background:var(--warm-gray);padding:10px;border-radius:6px;overflow:auto;font-size:0.8rem;white-space:pre-wrap;overflow-wrap:anywhere;}
+.ok{color:#2e7d32;font-weight:600;} .fail{color:var(--danger-text);font-weight:600;}
+ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
+.hint{color:var(--muted);font-size:0.85rem;}
+</style>
+</head>
+<body>
+<header>
+  <h1>IvritSuite · account test harness</h1>
+  <div class="hright">
+    <div data-i18n-switcher></div>
+    <button class="dark-btn" id="darkBtn" type="button" aria-pressed="false">🌙 Dark</button>
+  </div>
+</header>
+<main>
+  <section>
+    <h2>1. Live state</h2>
+    <p class="hint">The chip in the header is the real thing (mounted automatically after the language switcher). This box mirrors <code>IvritAccount.status()</code> / <code>user()</code> and logs every change to the console.</p>
+    <pre id="state">(waiting for IvritAccount…)</pre>
+    <button class="act" type="button" id="refreshBtn">Refresh</button>
+    <button class="act" type="button" id="logBtn">Log user() to console</button>
+  </section>
+  <section>
+    <h2>2. Sign in / out without the chip</h2>
+    <p class="hint">Same calls the chip makes. Email: request a code, then type it. Google: full-page redirect back to this page.</p>
+    <button class="act" type="button" id="googleBtn">Sign in with Google</button><br>
+    <input class="fld" type="email" id="emailFld" placeholder="you@school.org" dir="ltr" autocomplete="email">
+    <button class="act" type="button" id="emailBtn">Email me a link + code</button><br>
+    <input class="fld" type="text" id="codeFld" placeholder="6-digit code" dir="ltr" inputmode="numeric" autocomplete="one-time-code">
+    <button class="act" type="button" id="verifyBtn">Verify code</button><br>
+    <button class="act" type="button" id="signOutBtn">Sign out (this device)</button>
+    <pre id="actionOut">(no action yet)</pre>
+  </section>
+  <section>
+    <h2>3. Self-checks (pure URL helpers, no network)</h2>
+    <button class="act" type="button" id="checksBtn">Run self-checks</button>
+    <ul class="checks" id="checks"></ul>
+  </section>
+</main>
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function show(el, v) { el.textContent = typeof v === 'string' ? v : JSON.stringify(v, null, 2); }
+
+  // Dark mode: the suite's convention (body.dark + hebrewBlender_darkMode), kept minimal here.
+  function applyDark(on) {
+    document.body.classList.toggle('dark', on);
+    document.documentElement.classList.remove('dark-early');
+    $('darkBtn').setAttribute('aria-pressed', on ? 'true' : 'false');
+    $('darkBtn').textContent = on ? '☀️ Light' : '🌙 Dark';
+    try { localStorage.setItem('hebrewBlender_darkMode', on ? '1' : '0'); } catch (e) {}
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    var dark = false;
+    try { dark = localStorage.getItem('hebrewBlender_darkMode') === '1'; } catch (e) {}
+    applyDark(dark);
+    $('darkBtn').addEventListener('click', function () { applyDark(!document.body.classList.contains('dark')); });
+
+    var A = window.IvritAccount;
+    if (!A) { show($('state'), 'IvritAccount is not defined — did /js/ivrit-account.js load?'); return; }
+
+    function refresh() {
+      var s = { status: A.status(), user: A.user(), storedSession: A._test.hasStoredSession(), time: new Date().toISOString() };
+      show($('state'), s);
+      return s;
+    }
+    A.onChange(function (user, status) { console.log('[account-test] onChange', status, user); refresh(); });
+    A.ready.then(function (u) { console.log('[account-test] ready', u); refresh(); });
+    $('refreshBtn').addEventListener('click', refresh);
+    $('logBtn').addEventListener('click', function () { console.log('[account-test] user()', A.user()); });
+
+    function report(p) {
+      show($('actionOut'), 'working…');
+      p.then(function (r) { show($('actionOut'), { ok: true, result: r === undefined ? null : r }); refresh(); })
+       .catch(function (e) { show($('actionOut'), { ok: false, code: e && e.code, status: e && e.status, message: e && e.message }); refresh(); });
+    }
+    $('googleBtn').addEventListener('click', function () { report(A.signIn('google')); });
+    $('emailBtn').addEventListener('click', function () { report(A.signIn('email', { email: $('emailFld').value })); });
+    $('verifyBtn').addEventListener('click', function () { report(A.verifyCode($('emailFld').value, $('codeFld').value)); });
+    $('signOutBtn').addEventListener('click', function () { report(A.signOut()); });
+
+    // Self-checks: the URL helpers must keep every tool's own params and drop only the auth ones.
+    $('checksBtn').addEventListener('click', function () {
+      var T = A._test, base = location.origin + '/';
+      var cases = [
+        ['error return is a callback', T.isAuthCallback(base + 'flash_cards.html?s=abc&error=access_denied&error_code=otp_expired', false), true],
+        ['hash token is a callback', T.isAuthCallback(base + 'index.html#access_token=x&type=magiclink', false), true],
+        ['?code= without a verifier is NOT a callback', T.isAuthCallback(base + 'index.html?code=x', false), false],
+        ['?code= with a verifier is a callback', T.isAuthCallback(base + 'index.html?code=x', true), true],
+        ['plain ?s= is not a callback', T.isAuthCallback(base + 'hebrew_blend_generator.html?s=abc', false), false],
+        ['strip keeps ?s=, drops error params', T.stripAuthParams(base + 'hebrew_blend_generator.html?s=abc&error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid'), base + 'hebrew_blend_generator.html?s=abc'],
+        ['strip keeps ?parsha=&v=', T.stripAuthParams(base + 'torah_trainer.html?parsha=Bereshit&v=1:1&code=zzz'), base + 'torah_trainer.html?parsha=Bereshit&v=1%3A1'],
+        ['strip leaves an untouched URL identical', T.stripAuthParams(base + 'hebrew_dictionary.html?s=q&wordlists=open'), base + 'hebrew_dictionary.html?s=q&wordlists=open'],
+        ['strip removes auth hash, keeps others', T.stripAuthParams(base + 'index.html#access_token=x&refresh_token=y&type=recovery'), base + 'index.html'],
+        ['redirect target = same page, own params, no hash', T.redirectTarget(base + 'Hebrew_Font_Maker.html?start=alef&code=x#foo'), base + 'Hebrew_Font_Maker.html?start=alef'],
+        ['AUTH_KEY names this project', T.AUTH_KEY, 'sb-hhkmqwpjsyxdeuhvcyis-auth-token']
+      ];
+      var ul = $('checks'); ul.textContent = '';
+      var pass = 0;
+      cases.forEach(function (c) {
+        var ok = JSON.stringify(c[1]) === JSON.stringify(c[2]);
+        if (ok) pass++;
+        var li = document.createElement('li');
+        var b = document.createElement('span'); b.className = ok ? 'ok' : 'fail'; b.textContent = ok ? 'PASS ' : 'FAIL ';
+        li.appendChild(b);
+        li.appendChild(document.createTextNode(c[0] + (ok ? '' : ' — got ' + JSON.stringify(c[1]) + ', expected ' + JSON.stringify(c[2]))));
+        ul.appendChild(li);
+      });
+      var sum = document.createElement('li'); sum.className = pass === cases.length ? 'ok' : 'fail';
+      sum.textContent = pass + ' / ' + cases.length + ' passed';
+      ul.appendChild(sum);
+    });
+  });
+})();
+</script>
+</body>
+</html>
