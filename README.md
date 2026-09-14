@@ -188,6 +188,10 @@ Use the chip (or the buttons) to sign in with your email or Google, watch the st
 console, sign out. `node scripts/smoke-account.mjs` runs the
 headless checks (with `--sdk <path to dist/umd/supabase.js>` it also exercises the loaded SDK).
 
+**Database:** the tables, buckets and Row Level Security policies are plain SQL files under
+`db/migrations/`, applied once per file; `db/README.md` explains how to apply one and how to check the
+live project.
+
 ## Files
 
 | File / directory | Description |
