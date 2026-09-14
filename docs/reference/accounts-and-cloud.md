@@ -44,6 +44,7 @@ any of them bumps `VERSION`. A page that only offers sign-in leaves the fourth l
 | `init({ mount })` | Optional; `mount: false` suppresses the auto-mount. Auto-mount runs at `DOMContentLoaded` |
 | `t(key, fallback)` | The `pwa.js`-style translator (I18n when loaded, else English) — reused by the saves module |
 | `onOpenSaves(fn)` | A tool registers how to open its cloud panel; "Cloud saves…" appears in the menu only then |
+| `onOpenAccount(fn)` | The saves module registers its account screen; "Account…" appears in the menu only then |
 | `openMenu()` | Opens the chip's menu (`false` when no chip is mounted) — what the saves panel's own Sign in button calls |
 | `_test` | Pure URL helpers for the smoke test |
 
@@ -112,8 +113,9 @@ aware, transitions neutralized under `prefers-reduced-motion`. Sized to match th
 | `ivritSuite_accountCache` | the module | `{email, name}` for the loading/offline chip; erase-only |
 | `ivritSuite_syncMeta` | `js/ivrit-saves.js` | what this device last synced, per account: `{v:1, users:{[uid]:{[tool]:{[kind]:{[name]:{h, id, u, at}}}}}}`; erase-only, never exported |
 
-The hub's `eraseAllSettings` registers these when it adopts the module (Phase 4); until then they are
-consciously unregistered.
+The hub's `eraseAllSettings` removes every `sb-` key plus the two `ivritSuite_*` keys (Erase All = signed
+out on this device) and reloads the page when a session was there, so the chip, the panels and the SDK's
+in-memory session all start from the emptied storage.
 
 ## CSP origins a page needs to offer accounts
 
@@ -172,10 +174,13 @@ per localStorage key: `{ tool, kind, lsKey, shape, path?, nameField?, envelope?,
 | `ivritKey` | the AllTools bundle key, so *Download file* writes an `.ivrit` the hub imports (else `tool` + `data:{[kind]: …}`) |
 | `label` | an i18n key for the kind (falls back to the raw kind) |
 
-`attach({ tool, panel, entries?, merges?, flush?, onLocalChanged?, open? })` is the whole per-page
+`attach({ tool, panel, title?, entries?, merges?, flush?, onLocalChanged?, open? })` is the whole per-page
 surface: `entries` is for harnesses (real tools list theirs in the registry), `merges` supplies the
 `page` helpers, `flush()` must cancel any debounced writer and write now, `onLocalChanged(kind, name)`
-must re-read that key into memory and re-render, `open` is registered with `IvritAccount.onOpenSaves`.
+must re-read that key into memory and re-render, `open` is registered with `IvritAccount.onOpenSaves`,
+`title: false` drops the panel's own title (the page's panel heading is the heading) and an i18n key
+replaces it (the hub names each panel after its tool), `deviceBackup` is how the page saves everything
+on the device to an `.ivrit` file (only the hub passes one).
 A `single` / `scalar` / `tree` / `mapIn` entry is **downloadable only when the page gave `onLocalChanged`**
 (otherwise upload-only, with a console warning): those tools keep their settings in memory and rewrite
 the whole blob on the next change, which would undo a download and then push the stale blob back up
@@ -202,17 +207,48 @@ had after the last successful upload/download plus the row id and its `updated_a
 Conflict buttons: `item` → **Keep both** (the cloud version is written here as `name (cloud copy)`, read
 back, then the local `name` goes over the cloud row, then the copy goes up — one click, nothing lost,
 converges), *Use cloud copy*, *Keep mine*; `assign` → *Use cloud copy*, *Keep mine*; the rest → *Merge*.
+A `page` merge whose helper the current page did not supply (the hub) shows no button at all: the row
+stays listed as *Changed in both places* and the tool that owns the merge resolves it.
 Cloud writes to an existing row are **conditional** (`update … eq('updated_at', listed)`): zero rows back
 means another device wrote first, the list is refreshed and the person chooses again. New rows are
 `insert`s (`23505` = created meanwhile). **Sync now** runs every safe action in order, stops at the first
-error (re-running resumes) and leaves conflicts listed. Nothing runs on a timer. Before any local write
-the module calls `flush()`, after it `onLocalChanged()`, and downloads add the "reload other tabs" hint.
+error (re-running resumes) and leaves conflicts listed — except rows the client-side guard refuses (too
+big, an impossible name), which are skipped, counted and reported so one oversized item cannot block a
+sync forever. Nothing runs on a timer. Before any local write the module calls `flush()`, after it
+`onLocalChanged()`, and downloads add the "reload other tabs" hint. Two more guards against a page's
+in-memory copy: a listing calls `flush()` first when signed in (a pending debounced write would otherwise
+land between the listing and the first action and fail it as "changed"), and every module write stamps
+`lastWrite` into `ivritSuite_syncMeta`, whose `storage` event makes any *other* open tab of that tool
+re-read the key and list again (its next save would otherwise revert the download unseen). `refresh()`
+coalesces: callers that ask while a listing is queued share it, so sign-in lists each tool once.
 
 **Trees follow their items**: the shared tree component prunes nodes whose names are not in the store,
 and `ftImportTree` is additive, so a tree is never a row. After actions and after Sync, each tree entry
 is reconciled once all `follows` items exist on this device: a flat local tree takes the cloud's folders
 wholesale, two real trees go through the page's helper, and the result lands on whichever side differs.
 Preset downloaded one at a time may land at the root of the folder list; *Sync now* keeps the folders.
+
+### The account screen
+
+`IvritSaves.openAccount()` — an overlay (`.ivsav-overlay` / `.ivsav-card`, `role="dialog"`, Escape and
+an outside click close it, focus returns to the opener) reached from the chip's **Account…** item. It
+lists every tool that has anything, on either side, with plain counts ("3 not in your account yet",
+"2 only in your account", "1 changed in both places", or "everything is in your account"), and offers:
+
+- **Upload everything on this device** — every upload the per-tool plans call safe, tool by tool, then
+  the trees follow; rows the client-side guard refuses are skipped and counted, a network/server error
+  stops the run and says so. It is a copy: nothing is removed from the device (the note says so). Items
+  that are only in the account are brought down from a tool's panel or the hub's block (a hint appears).
+- **Download everything in your account (.ivrit)** — one AllTools-shaped file of every cloud row across
+  tools (`bundleFromRows` folds each kind into the bundle key the hub imports: a map kind → `{name: value}`,
+  a mapIn kind → its envelope + `{path: {id: value}}`, single/tree → the value, scalar → the plain value).
+- **Back up everything on this device (.ivrit)** — the page's `deviceBackup` hook when one was passed to
+  `attach()` (the hub opens its Import / Export modal); every other page sends people to
+  `index.html?alltools=open`, which opens that modal.
+
+It opens **by itself once per account on each device**, right after the first sign-in, when the device
+already holds saved items (`ivritSuite_syncMeta.welcomed[uid]` remembers it; a device with nothing saved
+is marked without a screen). That first opening is titled as a welcome and dismisses with *Not now*.
 
 ### The panel
 
@@ -236,6 +272,22 @@ refused, a download refused when the device changed meanwhile, folders following
 `scripts/smoke-saves.mjs` runs § 2 and § 4 headless with the CDN blocked, a fake session with the API
 unreachable, and Hebrew + dark at 800 px.
 
+### Implemented on
+
+| Page | Registry rows (`kind` · shape/merge · key) | Hooks passed to `attach()` | Panel |
+|---|---|---|---|
+| `trope_tutor.html` (`TropeTutor`) | `progress` single/deepMax `hebrewTropeTutor_progress` · `settings` single/assign (omit `panelsCollapsed`) `hebrewTropeTutor_settings` | `flush: saveSettingsFlush`; `onLocalChanged` resets `settings` / `progress` to their DEFAULTS clone, re-loads, re-applies font and drawer memory, re-renders Learn (under `_i18nRerender`) and the drill line — the `resetAllSettings()` / `resetProgress()` sequence | settings drawer, its own collapsible panel (`trope.settings.panel_cloud`) between *Progress* and *About*, `title: false` |
+| `torah_trainer.html` (`TorahTrainer`) | `settings` single/assign (omit `*Collapsed`, `lastPos`, `loopVerse` — the reading position carries a timestamp on every scroll and would keep the row "newer" forever; a cross-device bookmark is a later row of its own) `hebrewTorahTrainer_settings` | `flush: saveSettingsFlush` (a no-op during a handout print, by design); `onLocalChanged` = the `resetAllSettings()` sequence on a fresh DEFAULTS clone plus `syncParshaSelect()` and `fetchAndRender()` | settings drawer, its own panel (`torah.settings.panel_cloud`) just above *Reset*; `open` = `openSettingsAtPanel('cloud')` |
+| `flash_cards.html` (`FlashCards`) | `preset` map/item `hebrewFlashCards_presets` · `presetFolders` tree/page follows `preset` · `settings` single/assign `hebrewFlashCards_settings` · `pbStreak` scalar/max · `profile` mapIn (`path: profiles`, envelope `{activeProfile: null}`, one row per student) merge page · `profileFolders` tree/page follows `profile` | `flush: saveSettings`; `merges`: the two trees through the page's `ftImportTree` (write-through, read back), `profile` through the pure `mergeProfileEntry` that `mergeProfilesBlob` (the `.ivrit` import) also calls — results unioned by `savedAt`, newest 50 kept, ladder best-of; `onLocalChanged`: presets/folders → `renderPresets()`, profiles/folders → `renderProfiles()`, streak → `loadPbStreak()` + `updateStatsBar()`, settings → `loadSettings()`, or — while a Learner Ladder level runs — the new blob replaces `_ladderActive.snapshot` so `_ladderExit()` restores it instead of the pre-ladder state | Advanced Settings, a "Cloud saves" sub-section (`flashcards.advanced.cloud_head`) after Backup Presets, `title: false`; `open` un-collapses the panel and the sub-section through their own click handlers |
+| `hebrew_blend_generator.html` (`Worksheet`) | `preset` map/item `hebrewBlender_presets` · `presetFolders` tree/page follows `preset` · `lastState` single/assign `hebrewBlender_lastState` (the remembered setup the page restores on load) | `flush: rememberSetup` (the setup is read off the live controls); `merges`: the tree through `ftImportTree`; `onLocalChanged`: presets/folders → `renderPresets()`, last setup → `restoreLastSetup()` (re-applies the controls under `_lastSetupRestoring`; the next Generate uses them) | Advanced, a nested "Cloud saves" sub-panel (`worksheet.advanced.cloud_title`) right after Backup Presets, `title: false`; `open` un-collapses both through their own click handlers |
+| `hebrew_dictionary.html` (`Dictionary`) | `wordList` mapIn (`path: lists`, `nameField: name`, envelope `{v: 1}`, one row per list) merge page `ivritSuite_wordLists` — the page's small display prefs stay per device | `merges.wordList` = the pure, **uncapped** `mergeWordList` (words unioned by their `word` string, mine first; a cap would silently drop the other side's words, so a merged list may exceed 200 until words are removed); `onLocalChanged` re-renders the manager when it is showing; no `flush` (lists are written synchronously) | inside the Word Lists manager (rebuilt on every refresh, so `wlRenderManagerInto` mounts the panel each render; the manager lists again each time it opens signed in); `open` = `wlOpenManager()` |
+| `index.html` (the hub; no rows of its own) | — | five `attach()` calls, one per tool above, each with `title: false` into its own `<details>` inside the AllTools modal's "Cloud saves" block; `merges` = the folder trees through the hub's own `ftImportTree` copy only (a profile or word list changed in both places shows no button here and is merged inside its tool); `onLocalChanged` = `renderIvritInventory()` (nothing is in memory on the hub, so every shape is downloadable — the place to bring a fresh browser up to date) | the AllTools modal, between *My Fonts* and *Erase*; `open` opens the modal and scrolls to the block |
+
+`scripts/smoke-tools.mjs` loads every page in this table with the CDN blocked and proves: 0 `pageerror`,
+the chip beside the language switcher, the panel's sign-in line, `plan()` returning exactly the seeded
+items, and a localStorage dump byte-identical to a control run with the three account scripts blocked;
+then a remembered session with the API unreachable, and Hebrew + dark at 800 px.
+
 ## Manual Supabase setup (done once in the dashboard)
 
 The step-by-step walkthrough lives in `README.md` § "Accounts (optional, Supabase)": URL configuration
@@ -247,7 +299,6 @@ a few messages per hour).
 
 ## Roadmap pointers (what is not built yet)
 
-Per-tool adoption (the registry entries, `attach()` and the panel on each tool page), Font Maker
-projects (their own table and buckets), the account page, the delete-account Edge Function, and the
-keep-alive workflow follow in later phases; the tool pages carry no account or saves script until
-their phase.
+The remaining tool pages (see *Implemented on* for what is wired), Font Maker projects (their own
+table and buckets), the account page, the delete-account Edge Function, and the keep-alive workflow
+follow in later phases; a tool page carries no account or saves script until its turn.

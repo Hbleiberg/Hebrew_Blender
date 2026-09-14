@@ -330,6 +330,18 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
                    T.validateShape(mapEntry, [1, 2]) && !T.validateShape(mapEntry, null);
           return { ok: ok, detail: '' };
         }],
+        ['bundleFromRows folds cloud rows into the AllTools shape (map, mapIn, single, scalar; unknown kinds left out)', function () {
+          var entries = [
+            { tool: 'Suite', kind: 'test', shape: 'map', ivritKey: 'ivritTestStore' },
+            { tool: 'Suite', kind: 'lists', shape: 'mapIn', path: 'lists', envelope: { v: 1 }, ivritKey: 'wl' },
+            { tool: 'Suite', kind: 'settings', shape: 'single', ivritKey: 'st' },
+            { tool: 'Suite', kind: 'score', shape: 'scalar', ivritKey: 'sc' }
+          ];
+          var rows = [{ kind: 'test', name: 'A', data: { n: 1 } }, { kind: 'test', name: 'B', data: { n: 2 } }, { kind: 'lists', name: 'id1', data: { name: 'L' } },
+                      { kind: 'settings', name: 'default', data: { x: 1 } }, { kind: 'score', name: 'default', data: { value: '7' } }, { kind: 'unknown', name: 'z', data: {} }];
+          var b = T.bundleFromRows(entries, rows);
+          return { ok: b.count === 5 && JSON.stringify(b.data) === JSON.stringify({ ivritTestStore: { A: { n: 1 }, B: { n: 2 } }, wl: { v: 1, lists: { id1: { name: 'L' } } }, st: { x: 1 }, sc: '7' }), detail: JSON.stringify(b) };
+        }],
         ['guardUpload: empty or 121-char names, a 2 MB value and a NUL character are refused before any network', function () {
           var long = new Array(122).join('x');
           var big = new Array(1900001).join('x');
@@ -417,11 +429,14 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
           return simulate('test', 'Alef', { n: 2, letters: ['א'], from: 'another device' }).then(function () { return S.refresh('Suite'); })
             .then(function (p) { return { ok: rowOf(p, 'test', 'Alef').state === 'cloud-changed' && rowOf(p, 'test', 'Alef').safeAction === 'download', detail: states(p) }; });
         }],
-        ['Download brings n=2 here, the page was told, the row reads "Same"', function () {
+        ['Download brings n=2 here, the page was told, the row reads "Same", and the write is stamped for other tabs', function () {
           changes.length = 0;
           return S.plan('Suite').then(function (p) { return S.act('Suite', 'download', rowOf(p, 'test', 'Alef')); })
             .then(function () { return S.refresh('Suite'); })
-            .then(function (p) { var st = readJson(STORE); return { ok: st.Alef.n === 2 && st.Alef.from === 'another device' && rowOf(p, 'test', 'Alef').state === 'synced' && changes.indexOf('test:Alef') >= 0, detail: 'n=' + st.Alef.n + '; ' + states(p) }; });
+            .then(function (p) {
+              var st = readJson(STORE), lw = (readJson(S._test.META_KEY) || {}).lastWrite || {};
+              return { ok: st.Alef.n === 2 && st.Alef.from === 'another device' && rowOf(p, 'test', 'Alef').state === 'synced' && changes.indexOf('test:Alef') >= 0 && lw.tool === 'Suite' && lw.kind === 'test' && lw.name === 'Alef' && typeof lw.at === 'number', detail: 'n=' + st.Alef.n + '; lastWrite=' + JSON.stringify(lw) + '; ' + states(p) };
+            });
         }],
         ['a local edit (n=3) and a cloud edit (n=4) → "Changed in both places" with Keep both / Use cloud copy / Keep mine', function () {
           editStore('Alef', { n: 3 });

@@ -7,7 +7,7 @@
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
      origins. Note: meta CSP can't express frame-ancestors or report-uri and does not cover content parsed
      before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdnjs.cloudflare.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdnjs.cloudflare.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -18,6 +18,9 @@
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
 <script src="/js/i18n.js" defer></script>
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -3728,6 +3731,12 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 <button class="btn-xs" onclick="importPresets()" data-i18n="worksheet.advanced.import_backup">⬇ Import from backup</button>
               </div>
             </div>
+          </div>
+
+          <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into #cloudSavesPanel; see initCloudSaves() -->
+          <div class="panel collapsed" style="border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:8px;">
+            <div class="panel-title" data-i18n="worksheet.advanced.cloud_title">Cloud saves</div>
+            <div class="panel-body" id="cloudSavesPanel"></div>
           </div>
 
           <!-- TTS Reading Speed -->
@@ -13661,6 +13670,39 @@ if (document.readyState === 'loading') {
 } else {
   restoreFromURL();
 }
+
+/* ── Cloud saves (optional accounts). Everything that talks to Supabase lives in the shared
+   js/ivrit-saves.js (its registry names this page's three keys). This page supplies the folder-tree
+   merge (the shared ftImportTree) and how to re-read a key the module wrote: presets re-render, and a
+   downloaded last setup is re-applied to the controls through restoreLastSetup() — otherwise the next
+   Generate or the pagehide save would write the current controls straight back over it. ── */
+function initCloudSaves() {
+  if (!window.IvritSaves) return;
+  // ftImportTree is write-through (it merges into the key and returns nothing); reading the key back
+  // hands the module the merged tree — it then writes the same bytes and tells the page.
+  const treeMerge = key => (local, cloud) => { ftImportTree(key, cloud, false); return ftRead(key); };
+  IvritSaves.attach({
+    tool: 'Worksheet',
+    panel: '#cloudSavesPanel',
+    title: false,                 // the sub-panel's own title is the heading
+    flush: rememberSetup,         // the remembered setup is read off the live controls
+    merges: { presetFolders: treeMerge('hebrewBlender_presetsFolders') },
+    onLocalChanged: function (kind) {
+      if (kind === 'lastState') restoreLastSetup();   // re-applies the controls under _lastSetupRestoring; the next Generate uses them
+      else renderPresets();
+    },
+    open: function () {           // the header chip's "Cloud saves…" item — through the page's own toggles
+      const adv = document.getElementById('panelAdvanced');
+      if (adv && adv.classList.contains('collapsed')) { const t = adv.querySelector(':scope > .panel-title'); if (t) t.click(); }
+      const title = document.querySelector('.panel-title[data-i18n="worksheet.advanced.cloud_title"]');
+      if (!title) return;
+      if (title.parentElement.classList.contains('collapsed')) title.click();
+      title.scrollIntoView({ block: 'start' });
+    }
+  });
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initCloudSaves);
+else initCloudSaves();
 </script>
 <span id="a11yStatus" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;"></span>
 </body>

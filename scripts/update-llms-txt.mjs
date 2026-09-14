@@ -41,9 +41,10 @@ const SITE_URL = 'https://ivritsuite.com/';
 
 /** The one hand-maintained block: facts about the suite that live in no page's metadata. */
 const SITE_INTRO = [
-  'Everything runs entirely in the browser. There are no accounts, no ads, and no server:',
-  'presets, settings and custom fonts are saved on your own device, and are backed up by',
-  'downloading a portable `.ivrit` save file. The whole suite installs as an offline PWA.',
+  'Everything runs in the browser. There are no ads, and no account is needed: presets,',
+  'settings and custom fonts are saved on your own device and backed up by downloading a',
+  'portable `.ivrit` save file. An optional free account (for teachers and other adults) keeps',
+  'cloud copies of saved items to open on another device. The whole suite installs as an offline PWA.',
   'The interface is available in English and Hebrew. Content is CC BY-NC-SA 4.0 (material',
   'incorporating PocketTorah audio is CC BY-SA 4.0).',
 ].join('\n');

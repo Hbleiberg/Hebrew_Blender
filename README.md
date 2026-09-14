@@ -1,6 +1,6 @@
 # IvritSuite (Hebrew Blender)
 
-A suite of browser-based tools for Hebrew literacy instruction — no installation, no build step, no server required. Open any HTML file directly in a browser or serve the folder statically.
+A suite of browser-based tools for Hebrew literacy instruction — no installation, no build step, no server required (accounts are optional and additive). Open any HTML file directly in a browser or serve the folder statically.
 
 **IvritSuite** is the brand the live site carries (every page's `<title>`); **Hebrew Blender** is the repository/project name and the name in the license credit. They refer to the same thing.
 
@@ -146,7 +146,9 @@ Accounts are optional: everything works anonymously exactly as before, and the c
 to keep copies of your work next to the browser's own storage and `.ivrit` files. The whole account
 layer is three shared files — `js/supabase-config.js` (public project settings), `js/ivrit-account.js`
 (sign-in, sign-out, the header chip) and `js/ivrit-saves.js` (the cloud-saves panel and the sync rules) —
-plus two throwaway pages for trying it out, `account-test.html` and `saves-test.html`.
+plus two throwaway pages for trying it out, `account-test.html` and `saves-test.html`. The chip and the
+panel are on the home page, the Worksheet Generator, Flash Cards, the Dictionary, the Torah Trainer and
+the Trope Tutor (the Classroom Dashboard and the Font Maker follow in later phases).
 How it works inside: `docs/reference/accounts-and-cloud.md`.
 
 **Where the config values come from** (Supabase dashboard → project *IvritSuite*):
@@ -189,6 +191,15 @@ Use the chip (or the buttons) to sign in with your email or Google, watch the st
 console, sign out. `node scripts/smoke-account.mjs` runs the
 headless checks (with `--sdk <path to dist/umd/supabase.js>` it also exercises the loaded SDK).
 
+**Privacy, in one paragraph:** nothing is stored on a server unless a signed-in person clicks upload.
+An account holds the email address (and a Google name when Google is used), a display name and only the
+items uploaded from a tool's *Cloud saves* panel — which, when a teacher chooses it, can include student
+names and practice results from Flash Cards. Accounts are for teachers and other adults; students never
+need one. Every cloud item can be downloaded as a file or deleted from the panel, and nothing on the
+device is ever deleted by the cloud. The full wording lives in `privacy.html` and `terms.html` (the
+`privacy.legal.*` / `terms.legal.*` rows of `locales/ui-strings.csv`, English and Hebrew); a change to
+what an account can store updates that text in the same commit.
+
 **Database:** the tables, buckets and Row Level Security policies are plain SQL files under
 `db/migrations/`, applied once per file; `db/README.md` explains how to apply one and how to check the
 live project.
@@ -197,8 +208,15 @@ live project.
 panel lists them next to the copies in your account with plain words (*Only on this device*, *Newer in
 the cloud*, *Changed in both places*…) and one button per row — Upload, Download, Merge, Keep both. Nothing
 on the device is ever deleted by the cloud, and nothing newer is overwritten by something older unless you
-choose it. `saves-test.html` exercises the panel on a set of throwaway test items; `node scripts/smoke-saves.mjs`
-runs the headless checks.
+choose it. Where the panel sits: the Generator and Flash Cards under *Advanced* next to the `.ivrit` backup,
+the Dictionary inside the Word Lists manager, the Torah Trainer and Trope Tutor in their settings drawer, and
+the home page's *Import / Export All Settings* modal holds one panel per tool — the place to bring a fresh
+browser up to date. The chip's **Account…** item opens the account screen: what each tool holds on this
+device and in the account, **Upload everything on this device** (a copy — nothing is removed from the
+device; it also opens by itself once after the first sign-in on a device that already has saved items),
+and two backup buttons — everything in the account as one `.ivrit` file, or the home page's modal for
+everything on the device. `saves-test.html` exercises the panel on a set of throwaway test items;
+`node scripts/smoke-saves.mjs` and `node scripts/smoke-tools.mjs` run the headless checks.
 
 ## Files
 

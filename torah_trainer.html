@@ -7,7 +7,7 @@
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
      origins. Note: meta CSP can't express frame-ancestors or report-uri and does not cover content parsed
      before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://files.readme.io; media-src 'self' blob: https://raw.githubusercontent.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://www.sefaria.org; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://files.readme.io; media-src 'self' blob: https://raw.githubusercontent.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://www.sefaria.org https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -18,6 +18,9 @@
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
 <script src="/js/i18n.js" defer></script>
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2343,6 +2346,12 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           </ol>
         </details>
       </div>
+    </div>
+
+    <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into the body; see initCloudSaves() -->
+    <div class="panel collapsed">
+      <div class="panel-title" data-i18n="torah.settings.panel_cloud">Cloud saves</div>
+      <div class="panel-body" id="cloudSavesPanel"></div>
     </div>
 
     <div class="panel collapsed">
@@ -7576,11 +7585,41 @@ async function init() {
     _pendingLoopVerse = settings.loopVerse;
     _pendingLoopArmOnly = true;
   }
+  initCloudSaves();
   await fetchAndRender();
   if (deepVerse) flashVerse(deepVerse);   // scroll+flash the deep-linked verse (no-ops if not rendered)
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+/* ── Cloud saves (optional accounts). Everything that talks to Supabase lives in the shared
+   js/ivrit-saves.js; this page only says how to re-read its one settings key after the module
+   writes it — the live `settings` object (and its 300 ms debounced save) would otherwise put the
+   old blob straight back. The sequence is resetAllSettings() plus the two steps it skips
+   (syncParshaSelect for a changed reading, the parsha/holiday select). ── */
+function initCloudSaves() {
+  if (!window.IvritSaves) return;
+  IvritSaves.attach({
+    tool: 'TorahTrainer',
+    panel: '#cloudSavesPanel',
+    title: false,                 // the drawer panel's own title is the heading
+    flush: saveSettingsFlush,     // a pending debounced save lands before the module reads the key
+    onLocalChanged: function () {
+      settings = JSON.parse(JSON.stringify(DEFAULTS));
+      loadSettings();
+      panelMemApply();
+      syncFormToSettings();
+      setHebFont(settings.hebFont);
+      initColorPickers();
+      initTropeColorPickers();
+      applyTropeColors();
+      applyDisplayClasses();
+      syncParshaSelect();
+      fetchAndRender();
+    },
+    open: function () { openSettingsAtPanel('cloud'); }   // the header chip's "Cloud saves…" item
+  });
+}
 
 // ── Live i18n: re-translate static chrome + rebuild dynamic pieces on language switch ──
 // Registered on DOMContentLoaded so the deferred /js/i18n.js has already defined window.I18n.

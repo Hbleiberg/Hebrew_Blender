@@ -8,7 +8,7 @@
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
      origins. Note: meta CSP can't express frame-ancestors or report-uri and does not cover content parsed
      before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -19,6 +19,9 @@
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
 <script src="/js/i18n.js" defer></script>
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1861,6 +1864,22 @@ function wlWordFromDict(w) {
     era: w.era || ''
   };
 }
+// One word list from two sources — pure and UNCAPPED: the cloud panel's merge (IvritSaves.attach's
+// merges.wordList) for a list edited on two devices. Words are unioned by their `word` string, mine
+// first; a cap here would silently drop the other side's words, so a merged list may exceed WL_MAX_WORDS
+// until words are removed (wlReadStore tolerates that; wlMergeIntoList refuses further adds). `updated`
+// is the later stamp, `created` the earlier; the name stays mine unless mine is the default.
+function mergeWordList(mine, theirs) {
+  const a = (mine && typeof mine === 'object') ? mine : {}, b = (theirs && typeof theirs === 'object') ? theirs : {};
+  const wordsOf = l => (Array.isArray(l.words) ? l.words : []).filter(w => w && typeof w === 'object' && w.word);
+  const out = ivritSafeAssign(ivritSafeAssign({}, b), a);   // my fields win; a field only theirs has survives
+  const seen = new Set(wordsOf(a).map(w => w.word));
+  out.words = wordsOf(a).concat(wordsOf(b).filter(w => !seen.has(w.word)));
+  if (!a.name || a.name === 'Untitled list') out.name = b.name || a.name || 'Untitled list';
+  if (a.created && b.created) out.created = Math.min(a.created, b.created);
+  if (a.updated && b.updated) out.updated = Math.max(a.updated, b.updated);
+  return out;
+}
 // Merge `words` into `existing` array, deduping by the `word` string (first occurrence wins), capped.
 function wlDedupeInto(existing, words) {
   const seen = new Set(existing.map(x => x.word));
@@ -2072,6 +2091,8 @@ function wlOpenManager() {
   const b = document.createElement('div');
   wlRenderManagerInto(b);
   _openWordModal(b);
+  // The cloud panel lists again each time the manager opens signed in (the module coalesces repeats).
+  if (window.IvritSaves && window.IvritAccount && IvritAccount.status() === 'signed-in') IvritSaves.refresh('Dictionary').catch(() => {});
 }
 function wlRefreshManager() {
   const body = document.getElementById('wmBody');
@@ -2083,6 +2104,14 @@ function wlRefreshManager() {
 }
 function wlRenderManagerInto(root) {
   root.appendChild(wlEl('div', { style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 12px;' }, I18n.t('dictionary.wordlist.manager_title')));
+  // Cloud saves (optional accounts): the shared js/ivrit-saves.js panel lives inside this manager, above
+  // the lists — before the empty-state return, so a first download is possible on a fresh device. #wmBody
+  // is rebuilt on every refresh, so the panel is (re)mounted here each render; the module re-parents its root.
+  if (window.IvritSaves) {
+    const host = wlEl('div', { id: 'wlCloudPanel', style: 'margin:0 0 12px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;' });
+    root.appendChild(host);
+    IvritSaves.mountPanel(host, 'Dictionary');
+  }
   const store = wlReadStore();
   const ids = Object.keys(store.lists).sort((a, b) => (store.lists[b].updated || 0) - (store.lists[a].updated || 0));
   if (!ids.length) {
@@ -5040,6 +5069,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // i18n: register the live re-render here (inside DOMContentLoaded) so the deferred /js/i18n.js has
   // executed and window.I18n exists — a top-level registration would run before i18n.js and be skipped.
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+  // Cloud saves (optional accounts): the shared js/ivrit-saves.js owns every line that talks to Supabase
+  // (its registry names the word-lists key); this page supplies the list merge and re-renders the manager
+  // when the module wrote a list while it is showing. The panel itself mounts inside wlRenderManagerInto.
+  if (window.IvritSaves) {
+    IvritSaves.attach({
+      tool: 'Dictionary',
+      merges: { wordList: mergeWordList },
+      onLocalChanged: function () { if (document.getElementById('wlCloudPanel')) wlRefreshManager(); },
+      open: wlOpenManager   // the header chip's "Cloud saves…" item
+    });
+  }
   // Deep-link (e.g. from Flash Cards' "My Word Lists" empty state): open the
   // Word List manager straight away instead of landing on the plain Dictionary.
   if (new URLSearchParams(location.search).get('wordlists') === 'open') {

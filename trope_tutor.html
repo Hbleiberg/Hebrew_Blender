@@ -7,7 +7,7 @@
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
      origins. This page never calls sefaria.org (it consumes only the pre-built data/trope/ index) and
      loads no ESM modules. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; media-src 'self' blob: https://raw.githubusercontent.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; media-src 'self' blob: https://raw.githubusercontent.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -18,6 +18,9 @@
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
 <script src="/js/i18n.js" defer></script>
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -97,7 +100,7 @@
     { "@type": "Question", "name": "What are trope (te'amim)?", "acceptedAnswer": { "@type": "Answer", "text": "Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it." } },
     { "@type": "Question", "name": "How does Drill mode work?", "acceptedAnswer": { "@type": "Answer", "text": "Each session asks 10 questions of three kinds: see a marked word and name the trope, hear a clip and pick the symbol, or see a symbol and pick the matching melody. Marks you miss come up more often, and distractors get sneakier (like pashta vs. kadma) as your mastery grows." } },
     { "@type": "Question", "name": "Where do the chanted examples come from?", "acceptedAnswer": { "@type": "Answer", "text": "Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (by Russel Neiss & Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria." } },
-    { "@type": "Question", "name": "Is the Trope Tutor free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account, no ads." } },
+    { "@type": "Question", "name": "Is the Trope Tutor free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account required, no ads." } },
     { "@type": "Question", "name": "Can I print a chart of all the trope marks?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. In Learn mode, the Print chart button prints all 26 marks as one reference sheet — each mark's symbol with its Ashkenazi and Sephardi names, grouped by clause family." } }
   ]
 }
@@ -996,7 +999,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q3">What are trope (te'amim)?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a3">Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q4">How does Drill mode work?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a4">Each session asks 10 questions of three kinds: name the trope on a marked word, pick the symbol for a melody you hear, or pick the melody that matches a symbol. Marks you miss come up more often, and distractors get sneakier (pashta vs. kadma) as your mastery grows.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q5">Where do the chanted examples come from?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a5">Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (Russel Neiss &amp; Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q6">Is the Trope Tutor free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a6">Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account, no ads.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q6">Is the Trope Tutor free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a6">Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account required, no ads.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q7">Can I print a chart of all the trope marks?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a7">Yes. In Learn mode, the Print chart button prints all 26 marks as one reference sheet — each mark's symbol with its Ashkenazi and Sephardi names, grouped by clause family.</p></details>
       </div>
     </details>
@@ -1115,6 +1118,12 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <p class="settings-note" id="progressSummary" style="margin-top:0;"></p>
         <button class="btn btn-xs btn-secondary" onclick="resetProgress()" type="button" data-i18n="trope.progress.reset_button">↺ Reset mastery &amp; personal best</button>
       </div>
+    </div>
+
+    <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into the body; see initCloudSaves() -->
+    <div class="panel collapsed">
+      <div class="panel-title" data-i18n="trope.settings.panel_cloud">Cloud saves</div>
+      <div class="panel-body" id="cloudSavesPanel"></div>
     </div>
 
     <div class="panel collapsed">
@@ -3415,11 +3424,52 @@ async function init() {
   initFontSelector();
   setHebFont(settings.hebFont);
   refreshMyFonts();
+  initCloudSaves();
   await loadData();
   renderLearn();
   updateDrillStart();
 }
 document.addEventListener('DOMContentLoaded', init);
+
+/* ── Cloud saves (optional accounts). Everything that talks to Supabase lives in the shared
+   js/ivrit-saves.js; this page only says which keys it owns (the module's registry names them) and
+   how to re-read a key after the module writes it — the live `settings` / `progress` objects would
+   otherwise overwrite a download on the next save. Mirrors resetAllSettings() / resetProgress(). ── */
+function initCloudSaves() {
+  if (!window.IvritSaves) return;
+  IvritSaves.attach({
+    tool: 'TropeTutor',
+    panel: '#cloudSavesPanel',
+    title: false,                 // the drawer panel's own title is the heading
+    flush: saveSettingsFlush,     // a pending debounced save lands before the module reads the key
+    onLocalChanged: function (kind) {
+      if (kind === 'settings') {
+        settings = JSON.parse(JSON.stringify(DEFAULTS));
+        loadSettings();
+        applyHebFontSize();
+        setHebFont(settings.hebFont);
+        panelMemApply();
+        syncFormToSettings();
+      } else if (kind === 'progress') {
+        progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
+        loadProgress();
+        syncProgressSummary();
+      }
+      _i18nRerender = true;   // a read-only re-render: must not mark the current family as visited
+      try { renderLearn(); } finally { _i18nRerender = false; }
+      updateDrillStart();
+    },
+    open: function () {         // the header chip's "Cloud saves…" item
+      openSettings();
+      const title = document.querySelector('.panel-title[data-i18n="trope.settings.panel_cloud"]');
+      if (!title) return;
+      title.parentElement.classList.remove('collapsed');
+      syncPanelTitleAria();
+      panelMemSave();
+      title.scrollIntoView({ block: 'start' });
+    }
+  });
+}
 
 // ── Live i18n: re-translate static chrome + rebuild dynamic pieces on language switch ──
 // Registered on DOMContentLoaded so the deferred /js/i18n.js has already defined window.I18n.

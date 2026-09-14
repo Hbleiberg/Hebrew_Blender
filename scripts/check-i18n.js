@@ -97,6 +97,33 @@ function parseCSV(text) {
   return rows.filter(r => !(r.length === 1 && r[0] === ''));
 }
 
+// ── Check E: data-legal-block slot/segment parity (privacy.html, terms.html) ──
+function checkLegalBlocks() {
+  const rows = parseCSV(fs.readFileSync(CSV_PATH, 'utf8'));
+  const header = rows[0];
+  const langCols = header.map((h, i) => ({ h, i })).filter(c => c.i > 0 && c.h !== 'context' && c.h !== 'notes');
+  const byKey = new Map(rows.slice(1).map(r => [r[0], r]));
+  const out = [];
+  for (const file of ['privacy.html', 'terms.html']) {
+    const p = path.join(ROOT, file);
+    if (!fs.existsSync(p)) continue;
+    const html = fs.readFileSync(p, 'utf8');
+    const re = /<div data-legal-block="([^"]+)">([\s\S]*?)\n\s*<\/div>/g;
+    let m;
+    while ((m = re.exec(html))) {
+      const key = m[1];
+      const slots = (m[2].match(/<(p|li)\b/g) || []).length;
+      const row = byKey.get(key);
+      if (!row) { out.push({ file, key, msg: 'key missing from the CSV' }); continue; }
+      for (const c of langCols) {
+        const segs = (row[c.i] || '').split('\\n').length;
+        if (segs !== slots) out.push({ file, key, msg: '[' + c.h + '] ' + segs + ' segment(s) for ' + slots + ' slot(s)' });
+      }
+    }
+  }
+  return out;
+}
+
 // ── Check D: RFC-4180 quoting integrity ──
 // parseCSV above drops any `"` that isn't a doubled pair inside a quoted field, so a malformed cell
 // loses its quotes SILENTLY rather than failing the build. This scan is the strict reader that says
@@ -542,7 +569,18 @@ function main() {
     console.log('check-i18n: Check D clean — locales/ui-strings.csv is valid RFC-4180 (no quote is silently dropped from a built value).');
   }
 
-  const blocking = fresh.length + corpus.c1.length + corpus.c2.length + quoting.length;
+  // Check E — legal blocks (blocking). privacy.html / terms.html render a `data-legal-block` by splitting
+  // the CSV value on \n into the block's <p>/<li> slots, and keep the English fallback silently when
+  // the counts differ — so every language cell must have exactly as many segments as the block has slots.
+  const legal = checkLegalBlocks();
+  if (legal.length) {
+    console.error('\ncheck-i18n: ' + legal.length + ' data-legal-block mismatch(es) — the slot count and every language cell\'s \\n segment count must agree:');
+    legal.forEach(v => console.error('  ' + v.file + '  ' + v.key + '  ' + v.msg));
+  } else {
+    console.log('check-i18n: Check E clean — every data-legal-block has one \\n segment per <p>/<li> slot in every language.');
+  }
+
+  const blocking = fresh.length + corpus.c1.length + corpus.c2.length + quoting.length + legal.length;
   if (!blocking) console.log('\ncheck-i18n: clean (no new blocking violations).');
   process.exit(blocking ? 1 : 0);
 }
