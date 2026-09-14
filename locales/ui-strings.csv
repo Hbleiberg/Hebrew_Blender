@@ -409,6 +409,7 @@ dashboard.settings.panel_location,Location,מיקום,panel title,
 dashboard.settings.panel_omer,Omer,עומר,panel title,
 dashboard.settings.panel_picker,Student Picker,בורר תלמידים,panel title,
 dashboard.settings.panel_presets,Presets,תבניות,panel title,
+dashboard.settings.cloud_head,Cloud saves,שמירות בענן,Presets panel sub-section heading (hosts the shared cloud-saves panel),
 dashboard.settings.panel_schedule,Schedule Sync,סנכרון מערכת שעות,panel title,
 dashboard.settings.panel_timer,Timer,טיימר,panel title,
 dashboard.settings.panel_weather,Weather,מזג אוויר,panel title,
@@ -3022,7 +3023,7 @@ home.alltools.myfonts.remove_title,Remove,הסרה,button title,aria/title
 home.alltools.myfonts.title,★ My IvritSuite Fonts,★ הגופנים שלי ב-IvritSuite,section heading,leading-symbol
 home.alltools.myfonts.upload_button,⬆ Upload a font,⬆ העלאת גופן,upload label/button,leading-emoji
 home.alltools.cloud.title,☁ Cloud saves,☁ שמירות בענן,AllTools modal: heading of the cloud-saves block (one shared panel per tool),leading-emoji
-home.alltools.cloud.note,One panel per tool: what is saved in this browser next to the copies in your account. A change made in both places to a student profile or a word list is merged inside that tool.,לוח אחד לכל כלי: מה ששמור בדפדפן הזה לצד העותקים שבחשבון שלכם. שינוי שנעשה בשני המקומות בפרופיל תלמיד או ברשימת מילים ממוזג בתוך אותו כלי.,AllTools modal: note under the cloud-saves heading,
+home.alltools.cloud.note,"One panel per tool: what is saved in this browser next to the copies in your account. A change made in both places to a student profile, a class list or a word list is merged inside that tool.","לוח אחד לכל כלי: מה ששמור בדפדפן הזה לצד העותקים שבחשבון שלכם. שינוי שנעשה בשני המקומות בפרופיל תלמיד, ברשימת כיתה או ברשימת מילים ממוזג בתוך אותו כלי.",AllTools modal: note under the cloud-saves heading,
 home.alltools.myfonts.use_alert,“{name}” will be used in every IvritSuite tool. Reload any open tool pages to see it.,“{name}” ישמש בכל כלי IvritSuite. טענו מחדש את דפי הכלים הפתוחים כדי לראותו.,alert,template
 home.alltools.myfonts.use_button,Use in all tools,שימוש בכל הכלים,button,
 home.alltools.myfonts.use_status,“{name}” is now the font in every tool — reload any open tool to see it.,“{name}” הוא כעת הגופן בכל כלי — טענו מחדש כל כלי פתוח כדי לראותו.,status text,template
@@ -5278,10 +5279,17 @@ shared.cloud.kind_progress,Mastery progress,התקדמות בשליטה,Cloud-sa
 shared.cloud.kind_streak,Best streak,הרצף הטוב ביותר,Cloud-saves row name for the Flash Cards personal-best streak,shared; cloud panel
 shared.cloud.kind_profile,Student profiles,פרופילי תלמידים,Cloud-saves list group header for Flash Cards student profiles (one row per student),shared; cloud panel
 shared.cloud.kind_wordlist,Word lists,רשימות מילים,Cloud-saves list group header for the suite-wide word lists (one row per list),shared; cloud panel
+shared.cloud.kind_schedule,Saved schedules,מערכות שעות שמורות,Cloud-saves list group header for the Classroom Dashboard's saved schedules,shared; cloud panel
+shared.cloud.kind_roster,Class lists,רשימות כיתה,Cloud-saves list group header for the Classroom Dashboard's rosters (one row per class; student names),shared; cloud panel
 shared.cloud.kind_last_setup,Last worksheet setup,הגדרת דף העבודה האחרונה,Cloud-saves row name for the generator's remembered setup,shared; cloud panel
 shared.cloud.tool_suite,IvritSuite,IvritSuite,"Account screen: name of the test-harness tool (brand name, not translated)",shared; cloud panel
 shared.cloud.acct_title,Your account,החשבון שלכם,Account screen title (opened from the chip's Account… item),shared; account screen
 shared.cloud.acct_welcome_title,Welcome! Keep your saved items in your account,ברוכים הבאים! שמרו את הפריטים השמורים שלכם בחשבון,Account screen title the first time it opens by itself after sign-in on a device with saved items,shared; account screen
+shared.cloud.splash_title,Sync settings from your last login?,לסנכרן את ההגדרות מהכניסה הקודמת?,Account screen title when it opens by itself right after a fresh sign-in and the account holds saved items,shared; account screen
+shared.cloud.acct_last_saved,Your account was last saved on {date}.,החשבון שלכם נשמר לאחרונה ב-{date}.,Account screen line under the title: the most recent cloud save across all tools (date = localized date and time),shared; account screen; template
+shared.cloud.acct_no_cloud,Nothing is saved in your account yet.,עדיין לא נשמר דבר בחשבון שלכם.,Account screen line under the title when the account holds no rows,shared; account screen
+shared.cloud.acct_sync_all,Sync everything,סנכרון הכול,"Account screen primary button when the account holds saved items: every tool's safe actions (download, upload, lossless merge)",shared; account screen
+shared.cloud.acct_syncing,Syncing {tool}…,מסנכרן {tool}…,Account screen status during Sync everything (tool = the tool's name),shared; account screen; template
 shared.cloud.acct_welcome_note,This device already has saved items. Copy them to your account and they will be there on any device you sign in on. Nothing is removed from this device.,במכשיר הזה כבר יש פריטים שמורים. העתיקו אותם לחשבון והם יהיו זמינים בכל מכשיר שתיכנסו אליו. שום דבר אינו מוסר מהמכשיר הזה.,Account screen: explanation under the welcome title,shared; account screen
 shared.cloud.acct_device_head,On this device,במכשיר הזה,Account screen section heading: the per-tool list,shared; account screen
 shared.cloud.acct_checking,Checking what is on this device and in your account…,בודק מה נמצא במכשיר הזה ובחשבון…,Account screen status while every tool is listed,shared; account screen
