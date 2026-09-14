@@ -99,7 +99,12 @@
     { tool: 'FlashCards', kind: 'settings', lsKey: 'hebrewFlashCards_settings', shape: 'single', merge: 'assign', ivritKey: 'flashCardSettings', label: 'shared.cloud.kind_settings' },
     { tool: 'FlashCards', kind: 'pbStreak', lsKey: 'hebrewFlashCards_pbStreak', shape: 'scalar', merge: 'max', ivritKey: 'flashCardPbStreak', label: 'shared.cloud.kind_streak' },
     { tool: 'FlashCards', kind: 'profile', lsKey: 'hebrewFlashCards_profiles', shape: 'mapIn', path: 'profiles', envelope: { activeProfile: null }, merge: 'page', ivritKey: 'flashCardProfiles', label: 'shared.cloud.kind_profile' },
-    { tool: 'FlashCards', kind: 'profileFolders', lsKey: 'hebrewFlashCards_profilesFolders', shape: 'tree', merge: 'page', follows: 'profile', ivritKey: 'flashCardProfileFolders' }
+    { tool: 'FlashCards', kind: 'profileFolders', lsKey: 'hebrewFlashCards_profilesFolders', shape: 'tree', merge: 'page', follows: 'profile', ivritKey: 'flashCardProfileFolders' },
+    // hebrew_blend_generator.html — presets and their folders, and the remembered last setup (what the
+    // page restores on its next load); the page supplies the tree merge
+    { tool: 'Worksheet', kind: 'preset', lsKey: 'hebrewBlender_presets', shape: 'map', merge: 'item', ivritKey: 'generatorPresets', label: 'shared.cloud.kind_preset' },
+    { tool: 'Worksheet', kind: 'presetFolders', lsKey: 'hebrewBlender_presetsFolders', shape: 'tree', merge: 'page', follows: 'preset', ivritKey: 'generatorPresetFolders' },
+    { tool: 'Worksheet', kind: 'lastState', lsKey: 'hebrewBlender_lastState', shape: 'single', merge: 'assign', ivritKey: 'blenderLastState', label: 'shared.cloud.kind_last_setup' }
   ];
   var extraEntries = [];   // entries a page registered through attach({ entries }) — the test harness
 

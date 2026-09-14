@@ -4096,6 +4096,7 @@ worksheet.advanced.backup_auto_explainer,Save all your presets and current setti
 worksheet.advanced.backup_manual_explainer,Export your saved presets as text you can copy and store. Paste it back to restore.,ייצאו את ההגדרות השמורות שלכם כטקסט שאפשר להעתיק ולשמור. הדביקו אותו בחזרה כדי לשחזר.,backup panel explainer,
 worksheet.advanced.backup_placeholder,Paste backup here to import…,הדביקו כאן גיבוי כדי לייבא…,textarea placeholder,
 worksheet.advanced.backup_title,Backup Presets,גיבוי הגדרות,sub-panel title,
+worksheet.advanced.cloud_title,Cloud saves,שמירות בענן,Advanced panel: nested sub-panel title (hosts the shared cloud-saves panel),
 worksheet.advanced.colorcode_enable,Enable color coding,הפעל צביעה,toggle-row label,
 worksheet.advanced.colorcode_title,Color Code Nikkud,צביעת ניקוד,sub-panel title,
 worksheet.advanced.colormode.highlight,Highlight,הדגשה,color-mode button,

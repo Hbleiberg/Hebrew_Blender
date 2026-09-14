@@ -4761,6 +4761,7 @@
   "worksheet.advanced.backup_manual_explainer": "ייצאו את ההגדרות השמורות שלכם כטקסט שאפשר להעתיק ולשמור. הדביקו אותו בחזרה כדי לשחזר.",
   "worksheet.advanced.backup_placeholder": "הדביקו כאן גיבוי כדי לייבא…",
   "worksheet.advanced.backup_title": "גיבוי הגדרות",
+  "worksheet.advanced.cloud_title": "שמירות בענן",
   "worksheet.advanced.colorcode_enable": "הפעל צביעה",
   "worksheet.advanced.colorcode_title": "צביעת ניקוד",
   "worksheet.advanced.colormode.highlight": "הדגשה",

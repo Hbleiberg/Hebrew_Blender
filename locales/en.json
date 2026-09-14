@@ -4761,6 +4761,7 @@
   "worksheet.advanced.backup_manual_explainer": "Export your saved presets as text you can copy and store. Paste it back to restore.",
   "worksheet.advanced.backup_placeholder": "Paste backup here to import…",
   "worksheet.advanced.backup_title": "Backup Presets",
+  "worksheet.advanced.cloud_title": "Cloud saves",
   "worksheet.advanced.colorcode_enable": "Enable color coding",
   "worksheet.advanced.colorcode_title": "Color Code Nikkud",
   "worksheet.advanced.colormode.highlight": "Highlight",

@@ -77,6 +77,17 @@ const PAGES = [
     rows: ['preset:Deck A', 'preset:Deck B', 'settings:default', 'pbStreak:default', 'profile:Sarah', 'profile:Dan'],
     expand: `const p = document.getElementById('panelAdvanced'); if (p.classList.contains('collapsed')) p.querySelector('.panel-title').click(); document.querySelector('.adv-subhead[data-i18n="flashcards.advanced.cloud_head"]').scrollIntoView();`,
     urlKeep: 's=abc'
+  },
+  {
+    file: 'hebrew_blend_generator.html', tool: 'Worksheet', host: '#cloudSavesPanel',
+    seed: {
+      hebrewBlender_presets: JSON.stringify({ 'Week 1': { selectedLetters: ['א', 'ב'], selectedVowels: ['kamatz'], pageSize: 'letter' }, 'Review': { selectedLetters: ['ג'], selectedVowels: ['patach'] } }),
+      hebrewBlender_presetsFolders: JSON.stringify({ v: 1, root: [{ t: 'folder', id: 'f1', name: 'Fall', children: [{ t: 'item', name: 'Week 1' }] }, { t: 'item', name: 'Review' }] }),
+      hebrewBlender_lastState: JSON.stringify({ selectedLetters: ['א', 'ב', 'ג'], selectedVowels: ['kamatz', 'patach'], headerLang: 'en' })
+    },
+    rows: ['preset:Week 1', 'preset:Review', 'lastState:default'],
+    expand: `const adv = document.getElementById('panelAdvanced'); if (adv.classList.contains('collapsed')) adv.querySelector(':scope > .panel-title').click(); const t = document.querySelector('.panel-title[data-i18n="worksheet.advanced.cloud_title"]'); if (t.parentElement.classList.contains('collapsed')) t.click(); t.scrollIntoView();`,
+    urlKeep: 's=abc'
   }
 ];
 
