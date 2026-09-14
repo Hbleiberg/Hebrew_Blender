@@ -37,10 +37,13 @@
  *                             an i18n key → that title (the hub names each panel after its tool);
  *                             deviceBackup: how this page saves everything on the device to an .ivrit file
  *                             (the hub passes its Import / Export modal; other pages send people there)
- *   openAccount()             the account screen: what this device holds per tool, "Upload everything on
- *                             this device" (a copy — nothing leaves the device), and the backup buttons.
- *                             Opens by itself once per account on a device that already has saved items,
- *                             right after the first sign-in; the chip's "Account…" item reopens it.
+ *   openAccount()             the account screen: when the account was last saved, what every tool holds on
+ *                             this device and in the account, "Sync everything" (every safe action across
+ *                             tools) or — while the account is empty — "Upload everything on this device"
+ *                             (a copy; nothing leaves the device), and the backup buttons. Opens by itself
+ *                             after every fresh sign-in ("Sync settings from your last login?") and once per
+ *                             account on a device that already has saved items; the chip's "Account…"
+ *                             item reopens it.
  *   mountPanel(target, tool)  element | selector — renders the panel there
  *   refresh(tool)             Promise<plan> — re-lists both sides and re-renders
  *   plan(tool)                Promise<plan> — the per-item state table (no rendering)
@@ -113,7 +116,20 @@
     { tool: 'Worksheet', kind: 'lastState', lsKey: 'hebrewBlender_lastState', shape: 'single', merge: 'assign', ivritKey: 'blenderLastState', label: 'shared.cloud.kind_last_setup' },
     // hebrew_dictionary.html — the suite-wide word lists, one row per list (its id is the row name, its
     // `name` the label); the page supplies the uncapped union merge. Its small display prefs stay per device.
-    { tool: 'Dictionary', kind: 'wordList', lsKey: 'ivritSuite_wordLists', shape: 'mapIn', path: 'lists', nameField: 'name', envelope: { v: 1 }, merge: 'page', ivritKey: 'wordLists', label: 'shared.cloud.kind_wordlist' }
+    { tool: 'Dictionary', kind: 'wordList', lsKey: 'ivritSuite_wordLists', shape: 'mapIn', path: 'lists', nameField: 'name', envelope: { v: 1 }, merge: 'page', ivritKey: 'wordLists', label: 'shared.cloud.kind_wordlist' },
+    // classroom_dashboard.html — presets and saved schedules with their folders; ONE settings blob whose
+    // per-device state (zoom, layout, collapsed panels, wake lock, the ephemeral picker sessions, the
+    // derived coordinates, the live class pointer) never travels; and the class lists (rosters), which live
+    // inside that same blob, as their own rows — a teacher's choice to upload (privacy.legal.* says so) —
+    // so the settings row omits them. The page supplies the tree and roster merges.
+    { tool: 'Dashboard', kind: 'preset', lsKey: 'hebrewDashboard_presets', shape: 'map', merge: 'item', ivritKey: 'dashboardPresets', label: 'shared.cloud.kind_preset' },
+    { tool: 'Dashboard', kind: 'presetFolders', lsKey: 'hebrewDashboard_presetsFolders', shape: 'tree', merge: 'page', follows: 'preset', ivritKey: 'dashboardPresetFolders' },
+    { tool: 'Dashboard', kind: 'schedule', lsKey: 'hebrewDashboard_schedules', shape: 'map', merge: 'item', ivritKey: 'dashboardSchedules', label: 'shared.cloud.kind_schedule' },
+    { tool: 'Dashboard', kind: 'scheduleFolders', lsKey: 'hebrewDashboard_schedulesFolders', shape: 'tree', merge: 'page', follows: 'schedule', ivritKey: 'dashboardScheduleFolders' },
+    { tool: 'Dashboard', kind: 'settings', lsKey: 'hebrewDashboard_settings', shape: 'single', merge: 'assign',
+      omit: ['rosters', 'activeRosterId', 'pickerSessions', '_geoCoords', '*Collapsed', 'panelLayout', 'videoLayout', 'zoomLevel', 'hideZoomBar', 'keepAwake', 'lockPanelWidths', 'showTextSizeOptions'],
+      ivritKey: 'dashboardSettings', label: 'shared.cloud.kind_settings' },
+    { tool: 'Dashboard', kind: 'roster', lsKey: 'hebrewDashboard_settings', shape: 'mapIn', path: 'rosters', nameField: 'name', merge: 'page', label: 'shared.cloud.kind_roster' }
   ];
   var extraEntries = [];   // entries a page registered through attach({ entries }) — the test harness
 
@@ -127,6 +143,7 @@
   var lastSeenWrite = null;  // the `at` of the last module write another tab told us about
   var listening = false;
   var account = null;        // the open account screen: { root, opener, first } or null
+  var splashShown = false;   // the fresh-sign-in splash opens at most once per page load
   // The tool names the account screen shows (the home page's card titles, present in every dictionary).
   var TOOL_NAMES = { Worksheet: ['home.card.generator.name', 'Hebrew Worksheet Generator'], FlashCards: ['home.card.flashcards.name', 'Hebrew Flash Cards'],
                      Dictionary: ['home.card.dictionary.name', 'Hebrew Word Lookup'], TorahTrainer: ['home.card.torah.name', 'Torah Trainer'],
@@ -609,7 +626,9 @@
       if (uid && r.state === 'synced' && r.local && r.cloud && (!r.memory || r.memory.h !== r.local.hash || r.memory.u !== r.cloud.updatedAt)) {
         metaSet(uid, tool, r.kind, r.name, { h: r.local.hash, id: r.cloud.id, u: r.cloud.updatedAt, at: now() });
       }
-      r.downloadable = !(NEEDS_HOOK[r.entry.shape] && typeof cfg.onLocalChanged !== 'function');
+      // A tool this page renders needs its re-read hook before a settings blob may land; a tool this page
+      // does not render holds nothing in memory here (other tabs re-read through the write stamp).
+      r.downloadable = pages[tool] ? !(NEEDS_HOOK[r.entry.shape] && typeof cfg.onLocalChanged !== 'function') : true;
       r.mergeable = r.entry.merge === 'deepMax' || r.entry.merge === 'max' || (r.entry.merge === 'page' && typeof (cfg.merges && cfg.merges[r.kind]) === 'function');
       r.safeAction = safeActionFor(r);
       r.choices = choicesFor(r);
@@ -942,13 +961,14 @@
     return seqMap(toolsWithEntries(), function (tool) {
       return enqueue(tool, function () { return planTool(tool); }).then(function (p) {
         render(tool);
-        var up = 0, cloudOnly = 0, conflicts = 0;
+        var up = 0, cloudOnly = 0, conflicts = 0, lastSaved = null;
         p.rows.forEach(function (r) {
           if (r.safeAction === 'upload') up++;
           else if (r.state === 'cloud-only') cloudOnly++;
           else if (r.state === 'conflict' && !r.safeAction) conflicts++;
         });
-        return { tool: tool, name: toolName(tool), total: p.rows.length, up: up, cloudOnly: cloudOnly, conflicts: conflicts };
+        (p.cloudRows || []).forEach(function (r) { if (r.updated_at && (!lastSaved || r.updated_at > lastSaved)) lastSaved = r.updated_at; });
+        return { tool: tool, name: toolName(tool), total: p.rows.length, cloud: (p.cloudRows || []).length, safe: p.counts.safe, up: up, cloudOnly: cloudOnly, conflicts: conflicts, lastSaved: lastSaved };
       });
     });
   }
@@ -1262,6 +1282,7 @@
     card.setAttribute('tabindex', '-1');
     var head = el('div', 'ivsav-card-head');
     var title = el('h2', 'ivsav-card-title', opts.first ? t('shared.cloud.acct_welcome_title', 'Welcome! Keep your saved items in your account') : t('shared.cloud.acct_title', 'Your account'));
+    if (opts.splash) title.textContent = t('shared.cloud.splash_title', 'Sync settings from your last login?');
     title.id = 'ivsav-acct-title';
     card.setAttribute('aria-labelledby', title.id);
     head.appendChild(title);
@@ -1278,9 +1299,15 @@
     } else {
       card.appendChild(el('p', 'ivsav-note', t('shared.account.signed_in_as', 'Signed in as {email}', { email: user.email || '' })));
       if (opts.first) card.appendChild(el('p', '', t('shared.cloud.acct_welcome_note', 'This device already has saved items. Copy them to your account and they will be there on any device you sign in on. Nothing is removed from this device.')));
+      card.appendChild(el('p', 'ivsav-acct-last', ''));
       card.appendChild(el('h3', '', t('shared.cloud.acct_device_head', 'On this device')));
       var list = el('ul', 'ivsav-acct-list');
       card.appendChild(list);
+      var syncBtn = button(t('shared.cloud.acct_sync_all', 'Sync everything'), 'ivsav-primary', function () { syncAll(); });
+      syncBtn.setAttribute('data-act', 'sync');
+      syncBtn.setAttribute('aria-disabled', 'true');
+      syncBtn.hidden = true;
+      card.appendChild(syncBtn);
       var uploadBtn = button(t('shared.cloud.acct_upload_all', 'Upload everything on this device'), 'ivsav-primary', function () { uploadAll(); });
       uploadBtn.setAttribute('data-act', 'upload');
       uploadBtn.setAttribute('aria-disabled', 'true');
@@ -1310,7 +1337,7 @@
     var onKey = function (e) { if (e.key === 'Escape') { e.preventDefault(); closeAccount(); } };
     document.addEventListener('keydown', onKey);
     document.body.appendChild(overlay);
-    account = { root: overlay, opener: document.activeElement, onKey: onKey, first: !!opts.first };
+    account = { root: overlay, opener: document.activeElement, onKey: onKey, first: !!opts.first, splash: !!opts.splash };
     try { card.focus(); } catch (e) {}
     if (user) fillAccount();
   }
@@ -1321,8 +1348,10 @@
       if (account !== me) return;
       var list = me.root.querySelector('.ivsav-acct-list');
       while (list.firstChild) list.removeChild(list.firstChild);
-      var up = 0, cloudOnly = 0, shown = 0;
+      var up = 0, cloudOnly = 0, shown = 0, safe = 0, cloud = 0, lastSaved = null;
       tools.forEach(function (x) {
+        safe += x.safe; cloud += x.cloud;
+        if (x.lastSaved && (!lastSaved || x.lastSaved > lastSaved)) lastSaved = x.lastSaved;
         if (!x.total) return;
         shown++;
         var bits = [];
@@ -1334,8 +1363,16 @@
         up += x.up; cloudOnly += x.cloudOnly;
       });
       if (!shown) list.appendChild(el('li', '', t('shared.cloud.acct_nothing', 'Nothing saved on this device or in your account yet.')));
+      // The line under the title: when the account was last saved. With an empty account the screen is
+      // about moving this device's items up; with a filled one, about syncing — one primary button each.
+      var last = me.root.querySelector('.ivsav-acct-last');
+      if (last) last.textContent = cloud ? t('shared.cloud.acct_last_saved', 'Your account was last saved on {date}.', { date: fmtDate(lastSaved) }) : t('shared.cloud.acct_no_cloud', 'Nothing is saved in your account yet.');
+      var title = me.root.querySelector('.ivsav-card-title');
+      if (title && me.splash) title.textContent = cloud ? t('shared.cloud.splash_title', 'Sync settings from your last login?') : t('shared.cloud.acct_welcome_title', 'Welcome! Keep your saved items in your account');
+      var sb = me.root.querySelector('.ivsav-btn[data-act="sync"]');
       var b = me.root.querySelector('.ivsav-btn[data-act="upload"]');
-      if (b) { if (up) b.removeAttribute('aria-disabled'); else b.setAttribute('aria-disabled', 'true'); }
+      if (sb) { sb.hidden = !cloud; if (safe) sb.removeAttribute('aria-disabled'); else sb.setAttribute('aria-disabled', 'true'); }
+      if (b) { b.hidden = !!cloud; if (up) b.removeAttribute('aria-disabled'); else b.setAttribute('aria-disabled', 'true'); }
       var hint = me.root.querySelector('.ivsav-acct-hint');
       if (hint) hint.hidden = !cloudOnly;
       acctSay('', false);
@@ -1363,6 +1400,30 @@
       return fillAccount();
     });
   }
+  // "Sync everything": each tool's Sync now, one after another — downloads, uploads and lossless merges,
+  // conflicts left listed; tools this page does not render may take their settings too (nothing is in memory).
+  function syncAll() {
+    var me = account;
+    if (!me || !currentUser()) return Promise.resolve();
+    acctBusy(true);
+    var up = 0, down = 0, merged = 0, skipped = 0, left = 0, error = null;
+    return seqMap(toolsWithEntries(), function (tool) {
+      if (error || account !== me) return Promise.resolve();
+      acctSay(t('shared.cloud.acct_syncing', 'Syncing {tool}…', { tool: toolName(tool) }), false);
+      return enqueue(tool, function () { return syncNowInner(tool); }).then(function (sum) {
+        up += sum.up; down += sum.down; merged += sum.merged; skipped += sum.skipped; left += sum.left;
+        if (sum.error) error = sum.error;
+        render(tool);
+      }, function (err) { error = err; render(tool); });
+    }).then(function () {
+      if (account !== me) return;
+      acctBusy(false);
+      var tail = skipped ? ' ' + t('shared.cloud.sync_skipped', '{n} could not be uploaded (too big or an invalid name).', { n: skipped }) : '';
+      if (error) acctSay(t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: up + down + merged, total: up + down + merged, reason: errorText(error) }) + tail, true);
+      else acctSay(t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: up, down: down, merged: merged, left: left }) + tail, false);
+      return fillAccount();
+    });
+  }
   function backupAccount() {
     var me = account;
     if (!me || !currentUser()) return Promise.resolve();
@@ -1374,9 +1435,14 @@
       acctSay(t('shared.cloud.acct_downloaded', 'Downloaded a backup with {n} items.', { n: n }), false);
     }, function (err) { if (account === me) { acctBusy(false); acctSay(errorText(err), true); } });
   }
-  // Once per account on a device that already holds saved items: introduce the account screen.
+  // After a fresh sign-in (this page load established the session): "Sync settings from your last login?".
+  // Otherwise, once per account on a device that already holds saved items: introduce the account screen.
   function maybeWelcome(user) {
-    if (!user || welcomedAt(user.id)) return;
+    if (!user) return;
+    var a = A();
+    var fresh = !!(a && typeof a.sessionSource === 'function' && a.sessionSource() === 'new');
+    if (fresh && !splashShown) { splashShown = true; markWelcomed(user.id); openAccount({ splash: true }); return; }
+    if (welcomedAt(user.id)) return;
     markWelcomed(user.id);
     if (deviceHasItems()) openAccount({ first: true });
   }
@@ -1404,7 +1470,7 @@
           if (user) refresh(tool).catch(function () {});
           else { plans[tool] = null; say(tool, '', false); render(tool); }
         });
-        if (user) maybeWelcome(user); else closeAccount();
+        if (user) maybeWelcome(user); else { splashShown = false; closeAccount(); }
       });
     }
     if (a && typeof a.onOpenAccount === 'function') a.onOpenAccount(function () { openAccount(); });

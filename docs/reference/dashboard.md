@@ -377,3 +377,17 @@ body.dark #tipFloat { background: #0a0f1c; }
 
 ---
 
+## Cloud saves (optional accounts)
+
+The shared module (`docs/reference/accounts-and-cloud.md`) owns everything that talks to Supabase; the
+dashboard only says which keys it owns and how to re-read them. What matters here: `saveSettingsToStorage()`
+is the `flush` (synchronous, and it reads `#dashEditor` into `settings` first); the settings row **omits**
+every per-device field (`*Collapsed`, `panelLayout`, `videoLayout`, `zoomLevel`, `hideZoomBar`, `keepAwake`,
+`lockPanelWidths`, `showTextSizeOptions`), the ephemeral `pickerSessions`, the derived `_geoCoords`, the live
+`activeRosterId` and the `rosters` — the class lists are their own rows on the same key (one per class,
+labelled by the class name), so a projector's zoom or layout never lands on the laptop and a class list
+uploads only when the teacher chooses it. After the module writes the settings key the page re-reads it
+(`loadSettingsFromStorage()`), then runs the `IVRIT_CFG.apply` tail — `applySettings` on a clone, the three
+render caches nulled, `renderWeekSummary` / `renderScheduleUI` / the week editor — and `ensureActiveClass()`
+self-heals a dangling class pointer after a roster download. Nothing on a timer writes storage, so the
+30-second `checkSchedule` cannot race a sync.

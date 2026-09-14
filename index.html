@@ -457,12 +457,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <!-- Cloud saves (optional accounts): one shared js/ivrit-saves.js panel per tool, mounted by initCloudSaves() -->
       <div id="cloudSavesSection" style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
         <h4 style="margin:0 0 4px;font-size:0.95rem;" data-i18n="home.alltools.cloud.title">☁ Cloud saves</h4>
-        <p class="ie-note" style="margin:0 0 8px;" data-i18n="home.alltools.cloud.note">One panel per tool: what is saved in this browser next to the copies in your account. A change made in both places to a student profile or a word list is merged inside that tool.</p>
+        <p class="ie-note" style="margin:0 0 8px;" data-i18n="home.alltools.cloud.note">One panel per tool: what is saved in this browser next to the copies in your account. A change made in both places to a student profile, a class list or a word list is merged inside that tool.</p>
         <details class="ie-cloud-tool"><summary data-i18n="home.card.generator.name">Hebrew Worksheet Generator</summary><div class="ie-cloud-host" data-tool="Worksheet"></div></details>
         <details class="ie-cloud-tool"><summary data-i18n="home.card.flashcards.name">Hebrew Flash Cards</summary><div class="ie-cloud-host" data-tool="FlashCards"></div></details>
         <details class="ie-cloud-tool"><summary data-i18n="home.card.dictionary.name">Hebrew Word Lookup</summary><div class="ie-cloud-host" data-tool="Dictionary"></div></details>
         <details class="ie-cloud-tool"><summary data-i18n="home.card.torah.name">Torah Trainer</summary><div class="ie-cloud-host" data-tool="TorahTrainer"></div></details>
         <details class="ie-cloud-tool"><summary data-i18n="home.card.trope.name">Trope Tutor</summary><div class="ie-cloud-host" data-tool="TropeTutor"></div></details>
+        <details class="ie-cloud-tool"><summary data-i18n="home.card.dashboard.name">Hebrew Classroom Dashboard</summary><div class="ie-cloud-host" data-tool="Dashboard"></div></details>
       </div>
       <div style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
         <button class="ie-action-btn danger" onclick="eraseAllSettings()" data-i18n="home.alltools.erase_button">🗑 Erase All Settings</button>
@@ -1650,7 +1651,8 @@ function initCloudSaves() {
   const treeMerge = key => (local, cloud) => { ftImportTree(key, cloud, false); return ftRead(key); };
   const merges = {
     Worksheet:  { presetFolders: treeMerge('hebrewBlender_presetsFolders') },
-    FlashCards: { presetFolders: treeMerge('hebrewFlashCards_presetsFolders'), profileFolders: treeMerge('hebrewFlashCards_profilesFolders') }
+    FlashCards: { presetFolders: treeMerge('hebrewFlashCards_presetsFolders'), profileFolders: treeMerge('hebrewFlashCards_profilesFolders') },
+    Dashboard:  { presetFolders: treeMerge('hebrewDashboard_presetsFolders'), scheduleFolders: treeMerge('hebrewDashboard_schedulesFolders') }
   };
   document.querySelectorAll('#cloudSavesSection .ie-cloud-host').forEach(host => {
     const tool = host.getAttribute('data-tool');

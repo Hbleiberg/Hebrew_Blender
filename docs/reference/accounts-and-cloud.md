@@ -45,6 +45,7 @@ any of them bumps `VERSION`. A page that only offers sign-in leaves the fourth l
 | `t(key, fallback)` | The `pwa.js`-style translator (I18n when loaded, else English) — reused by the saves module |
 | `onOpenSaves(fn)` | A tool registers how to open its cloud panel; "Cloud saves…" appears in the menu only then |
 | `onOpenAccount(fn)` | The saves module registers its account screen; "Account…" appears in the menu only then |
+| `sessionSource()` | `'new'` when this page load established the session (a sign-in here, or an auth callback), `'restored'` when it came from storage, `null` when signed out — what decides the sign-in splash |
 | `openMenu()` | Opens the chip's menu (`false` when no chip is mounted) — what the saves panel's own Sign in button calls |
 | `_test` | Pure URL helpers for the smoke test |
 
@@ -231,14 +232,20 @@ Preset downloaded one at a time may land at the root of the folder list; *Sync n
 ### The account screen
 
 `IvritSaves.openAccount()` — an overlay (`.ivsav-overlay` / `.ivsav-card`, `role="dialog"`, Escape and
-an outside click close it, focus returns to the opener) reached from the chip's **Account…** item. It
-lists every tool that has anything, on either side, with plain counts ("3 not in your account yet",
-"2 only in your account", "1 changed in both places", or "everything is in your account"), and offers:
+an outside click close it, focus returns to the opener) reached from the chip's **Account…** item. Under
+the title it says when the account was last saved (the newest `updated_at` across every tool's rows) or
+that nothing is saved yet, then lists every tool that has anything, on either side, with plain counts
+("3 not in your account yet", "2 only in your account", "1 changed in both places", or "everything is in
+your account"), and offers one primary action for the state it found:
 
-- **Upload everything on this device** — every upload the per-tool plans call safe, tool by tool, then
-  the trees follow; rows the client-side guard refuses are skipped and counted, a network/server error
-  stops the run and says so. It is a copy: nothing is removed from the device (the note says so). Items
-  that are only in the account are brought down from a tool's panel or the hub's block (a hint appears).
+- **Sync everything** (the account holds items) — each tool's *Sync now* in turn: downloads, uploads and
+  lossless merges, conflicts left listed; a tool this page does not render may take its settings blob
+  too (nothing of it is in memory here; other tabs re-read through the write stamp), while its folder
+  trees are merged only through the page's own helper, so a real tree on both sides is left as is.
+- **Upload everything on this device** (the account is empty) — every upload the per-tool plans call
+  safe, tool by tool, then the trees follow. It is a copy: nothing is removed from the device (the note
+  says so). Rows the client-side guard refuses are skipped and counted; a network/server error stops
+  the run and says so.
 - **Download everything in your account (.ivrit)** — one AllTools-shaped file of every cloud row across
   tools (`bundleFromRows` folds each kind into the bundle key the hub imports: a map kind → `{name: value}`,
   a mapIn kind → its envelope + `{path: {id: value}}`, single/tree → the value, scalar → the plain value).
@@ -246,9 +253,12 @@ lists every tool that has anything, on either side, with plain counts ("3 not in
   `attach()` (the hub opens its Import / Export modal); every other page sends people to
   `index.html?alltools=open`, which opens that modal.
 
-It opens **by itself once per account on each device**, right after the first sign-in, when the device
-already holds saved items (`ivritSuite_syncMeta.welcomed[uid]` remembers it; a device with nothing saved
-is marked without a screen). That first opening is titled as a welcome and dismisses with *Not now*.
+It opens by itself in two cases. **After every fresh sign-in** — the page load that established the
+session, as `IvritAccount.sessionSource()` reports (`'new'` for a sign-in during this load or an auth
+callback, `'restored'` for a session read from storage) — it is titled *Sync settings from your last
+login?* with the last-saved date under it, at most once per page load. Otherwise **once per account on
+each device** that already holds saved items (`ivritSuite_syncMeta.welcomed[uid]` remembers it; a device
+with nothing saved is marked without a screen), titled as a welcome. Both dismiss with *Not now*.
 
 ### The panel
 
@@ -281,7 +291,8 @@ unreachable, and Hebrew + dark at 800 px.
 | `flash_cards.html` (`FlashCards`) | `preset` map/item `hebrewFlashCards_presets` · `presetFolders` tree/page follows `preset` · `settings` single/assign `hebrewFlashCards_settings` · `pbStreak` scalar/max · `profile` mapIn (`path: profiles`, envelope `{activeProfile: null}`, one row per student) merge page · `profileFolders` tree/page follows `profile` | `flush: saveSettings`; `merges`: the two trees through the page's `ftImportTree` (write-through, read back), `profile` through the pure `mergeProfileEntry` that `mergeProfilesBlob` (the `.ivrit` import) also calls — results unioned by `savedAt`, newest 50 kept, ladder best-of; `onLocalChanged`: presets/folders → `renderPresets()`, profiles/folders → `renderProfiles()`, streak → `loadPbStreak()` + `updateStatsBar()`, settings → `loadSettings()`, or — while a Learner Ladder level runs — the new blob replaces `_ladderActive.snapshot` so `_ladderExit()` restores it instead of the pre-ladder state | Advanced Settings, a "Cloud saves" sub-section (`flashcards.advanced.cloud_head`) after Backup Presets, `title: false`; `open` un-collapses the panel and the sub-section through their own click handlers |
 | `hebrew_blend_generator.html` (`Worksheet`) | `preset` map/item `hebrewBlender_presets` · `presetFolders` tree/page follows `preset` · `lastState` single/assign `hebrewBlender_lastState` (the remembered setup the page restores on load) | `flush: rememberSetup` (the setup is read off the live controls); `merges`: the tree through `ftImportTree`; `onLocalChanged`: presets/folders → `renderPresets()`, last setup → `restoreLastSetup()` (re-applies the controls under `_lastSetupRestoring`; the next Generate uses them) | Advanced, a nested "Cloud saves" sub-panel (`worksheet.advanced.cloud_title`) right after Backup Presets, `title: false`; `open` un-collapses both through their own click handlers |
 | `hebrew_dictionary.html` (`Dictionary`) | `wordList` mapIn (`path: lists`, `nameField: name`, envelope `{v: 1}`, one row per list) merge page `ivritSuite_wordLists` — the page's small display prefs stay per device | `merges.wordList` = the pure, **uncapped** `mergeWordList` (words unioned by their `word` string, mine first; a cap would silently drop the other side's words, so a merged list may exceed 200 until words are removed); `onLocalChanged` re-renders the manager when it is showing; no `flush` (lists are written synchronously) | inside the Word Lists manager (rebuilt on every refresh, so `wlRenderManagerInto` mounts the panel each render; the manager lists again each time it opens signed in); `open` = `wlOpenManager()` |
-| `index.html` (the hub; no rows of its own) | — | five `attach()` calls, one per tool above, each with `title: false` into its own `<details>` inside the AllTools modal's "Cloud saves" block; `merges` = the folder trees through the hub's own `ftImportTree` copy only (a profile or word list changed in both places shows no button here and is merged inside its tool); `onLocalChanged` = `renderIvritInventory()` (nothing is in memory on the hub, so every shape is downloadable — the place to bring a fresh browser up to date) | the AllTools modal, between *My Fonts* and *Erase*; `open` opens the modal and scrolls to the block |
+| `classroom_dashboard.html` (`Dashboard`) | `preset` map/item `hebrewDashboard_presets` · `presetFolders` tree/page follows `preset` · `schedule` map/item `hebrewDashboard_schedules` (a value is either a v2 weekly grid or a legacy day array; replaced whole) · `scheduleFolders` tree/page follows `schedule` · `settings` single/assign `hebrewDashboard_settings` omitting `rosters`, `activeRosterId`, `pickerSessions`, `_geoCoords`, `*Collapsed`, `panelLayout`, `videoLayout`, `zoomLevel`, `hideZoomBar`, `keepAwake`, `lockPanelWidths`, `showTextSizeOptions` · `roster` mapIn over the **same key** (`path: rosters`, `nameField: name`, one row per class) merge page — two entries on one key work because the settings row omits what the roster rows carry | `flush: saveSettingsToStorage` (synchronous; it also reads the board text off the editor); `merges`: the two trees through `ftImportTree`, `roster` through the pure `mergeRoster` (names unioned, mine first, no cap; the name stays mine unless it is the default); `onLocalChanged`: presets → `loadPresets()` + `renderPresets()`, schedules → `loadSchedulesStorage()` + `renderSavedSchedules()`, settings → `loadSettingsFromStorage()` then the `IVRIT_CFG.apply` tail (`applySettings` on a clone, the three render caches nulled, week summary / schedule UI / editor re-rendered), roster → `loadSettingsFromStorage()` + `ensureActiveClass()` + `normalizePickerSession()` + the drawer form and the student picker re-rendered | settings drawer, a "Cloud saves" sub-section (`dashboard.settings.cloud_head`) at the end of the *Presets* panel under the `.ivrit` backup, `title: false`; `open` = `openSettings()` + un-collapse the panel through its own title |
+| `index.html` (the hub; no rows of its own) | — | six `attach()` calls, one per tool above, each with `title: false` into its own `<details>` inside the AllTools modal's "Cloud saves" block; `merges` = the folder trees through the hub's own `ftImportTree` copy only (a profile or word list changed in both places shows no button here and is merged inside its tool); `onLocalChanged` = `renderIvritInventory()` (nothing is in memory on the hub, so every shape is downloadable — the place to bring a fresh browser up to date) | the AllTools modal, between *My Fonts* and *Erase*; `open` opens the modal and scrolls to the block |
 
 `scripts/smoke-tools.mjs` loads every page in this table with the CDN blocked and proves: 0 `pageerror`,
 the chip beside the language switcher, the panel's sign-in line, `plan()` returning exactly the seeded

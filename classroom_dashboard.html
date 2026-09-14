@@ -7,7 +7,7 @@
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
      origins. Note: meta CSP can't express frame-ancestors or report-uri and does not cover content parsed
      before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://www.hebcal.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://nominatim.openstreetmap.org; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://www.hebcal.com https://api.open-meteo.com https://geocoding-api.open-meteo.com https://nominatim.openstreetmap.org https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -18,6 +18,9 @@
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
 <script src="/js/i18n.js" defer></script>
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -2739,6 +2742,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <textarea id="presetBackupBox" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Paste backup JSON here, or click Export…" data-i18n-placeholder="dashboard.backup.placeholder" aria-label="Paste backup JSON here, or click Export…" data-i18n-aria-label="dashboard.backup.placeholder" style="height:80px;font-family:monospace;font-size:0.72rem;width:100%;"></textarea>
         <button onclick="copyPresetBackup()" id="presetCopyBtn" class="preset-copy-btn" title="Copy" data-i18n-title="shared.ivrit.manual_copy" data-i18n="shared.ivrit.manual_copy">Copy</button>
       </div>
+    </div>
+    <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into #cloudSavesPanel; see initCloudSaves() -->
+    <div class="sub-section" style="margin-top:14px;">
+      <div class="sub-section-hdr" data-i18n="dashboard.settings.cloud_head">Cloud saves</div>
+      <div class="sub-section-body"><div id="cloudSavesPanel"></div></div>
     </div>
   </div>
 </div>
@@ -5722,6 +5730,20 @@ function mountSidebarResize(cfg) {
   const PICKER_MAX = 60;
 
   // Canonical roster parse: trim, drop blanks, dedupe (first wins), cap at PICKER_MAX.
+  // One class list from two sources — pure and UNCAPPED: the cloud panel's merge (IvritSaves.attach's
+  // merges.roster) for a class edited on two devices. Names are unioned (trimmed, mine first, no
+  // duplicates); a cap here would silently drop the other side's students, so a merged class may exceed
+  // PICKER_MAX until names are removed (parseRoster caps only what is typed). The name stays mine unless
+  // mine is the default.
+  function mergeRoster(mine, theirs) {
+    const a = (mine && typeof mine === 'object') ? mine : {}, b = (theirs && typeof theirs === 'object') ? theirs : {};
+    const namesOf = c => (Array.isArray(c.names) ? c.names : []).filter(n => typeof n === 'string').map(n => n.trim()).filter(Boolean);
+    const out = ivritSafeAssign(ivritSafeAssign({}, b), a);   // my fields win; a field only theirs has survives
+    const seen = new Set();
+    out.names = namesOf(a).concat(namesOf(b)).filter(n => !seen.has(n) && seen.add(n));
+    if (!a.name || a.name === 'My class') out.name = b.name || a.name || 'My class';
+    return out;
+  }
   function parseRoster(str) {
     const seen = new Set(), out = [];
     String(str || '').split('\n').forEach(line => {
@@ -6599,6 +6621,58 @@ function mountFolderTree(cfg){
       }
     }
   };
+
+  /* ── Cloud saves (optional accounts). Everything that talks to Supabase lives in the shared
+     js/ivrit-saves.js (its registry names this page's keys — the class lists are their own rows on the
+     settings key, which the settings row omits along with every per-device field). This page supplies
+     its merges — the two folder trees through the shared ftImportTree, a class list through mergeRoster —
+     and how to re-read a key the module wrote: every store here is rendered from memory, and the next
+     saveSettingsToStorage() would otherwise put the old blob straight back. ── */
+  function initCloudSaves() {
+    if (!window.IvritSaves) return;
+    // ftImportTree is write-through (it merges into the key and returns nothing); reading the key back
+    // hands the module the merged tree — it then writes the same bytes and tells the page.
+    const treeMerge = key => (local, cloud) => { ftImportTree(key, cloud, false); return ftRead(key); };
+    IvritSaves.attach({
+      tool: 'Dashboard',
+      panel: '#cloudSavesPanel',
+      title: false,                        // the sub-section heading is the heading
+      flush: saveSettingsToStorage,        // synchronous; it also reads the board text off the editor first
+      merges: {
+        presetFolders: treeMerge('hebrewDashboard_presetsFolders'),
+        scheduleFolders: treeMerge('hebrewDashboard_schedulesFolders'),
+        roster: mergeRoster
+      },
+      onLocalChanged: function (kind) {
+        if (kind === 'preset' || kind === 'presetFolders') { loadPresets(); renderPresets(); return; }
+        if (kind === 'schedule' || kind === 'scheduleFolders') { loadSchedulesStorage(); renderSavedSchedules(); return; }
+        // settings and class lists share one key: re-read it, then repaint what the kind touches
+        loadSettingsFromStorage();
+        if (kind === 'roster') {
+          ensureActiveClass();
+          normalizePickerSession();
+          renderClassManager();
+          renderStudentPicker();
+          return;
+        }
+        // The IVRIT_CFG.apply tail: applySettings on a clone (it keeps the live schedule keys, which the
+        // re-read just refreshed), the render caches cleared, the schedule views and presets repainted.
+        applySettings(JSON.parse(JSON.stringify(settings)));
+        _lastScheduleKey = null; _lastPreviewKey = null; _lastNowNextKey = null;
+        renderWeekSummary();
+        renderScheduleUI();
+        if (weekEditorOpen()) renderWeekEditor();
+        renderPresets();
+      },
+      open: function () {                  // the header chip's "Cloud saves…" item — through the page's own toggle
+        openSettings();
+        const p = document.getElementById('presetsPanel');
+        if (p && p.classList.contains('collapsed')) { const t = p.querySelector('.panel-title'); if (t) t.click(); }
+        const host = document.getElementById('cloudSavesPanel');
+        if (host) host.scrollIntoView({ block: 'start' });
+      }
+    });
+  }
 
 /* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary — copy verbatim; called from the .ivrit engine restore path) ═══ */
 let _appToastTimer = null;
@@ -9772,6 +9846,7 @@ function panelMemApply() {
           `<button class="fr-starter" onclick="frApplyStarter('${esc(st.key)}')"><b>${esc(I18n.t('dashboard.setup.starter_' + st.key + '_label'))}</b><span>${esc(I18n.t('dashboard.setup.starter_' + st.key + '_desc'))}</span></button>`).join(''); } catch (e) {}
     }
     if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+    initCloudSaves();
   });
 
   // ESC closes settings / the first-run card

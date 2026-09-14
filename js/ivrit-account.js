@@ -22,6 +22,8 @@
  *   t(key, fallback)           translate via I18n when loaded, else the English fallback
  *   onOpenSaves(fn)            a tool registers how to open its cloud panel (adds a menu item)
  *   onOpenAccount(fn)          the saves module registers its account screen ("Account…" menu item)
+ *   sessionSource()            'new' when this page load established the session (a sign-in here, or an auth
+ *                              callback), 'restored' when it came from storage, null when signed out
  *   openMenu()                 opens the chip's menu (false when no chip is mounted) — for a panel's Sign in button
  *   _test                      pure helpers exposed for the smoke test (scripts/smoke-account.mjs)
  *
@@ -53,6 +55,9 @@
 
   var status = enabled ? 'anonymous' : 'disabled';
   var currentUser = null;
+  var sessionSource = null;   // 'new' | 'restored' | null — how the current session came to be (see sessionSource())
+  var bootCallback = false;   // this page load carried an auth callback (?code=): the session it yields is a fresh sign-in
+  var initialSeen = false;    // the SDK's INITIAL_SESSION has fired: a user arriving after it signed in during this page's life
   var client = null;
   var sdkPromise = null;
   var clientPromise = null;
@@ -211,16 +216,22 @@
     var u = userFromSession(session);
     if ((u ? 'signed-in' : 'anonymous') !== status) noteState = null;
     if (u) {
+      // The first event that carries a user says how the session came to be. The SDK replays a stored
+      // session as SIGNED_IN *before* its INITIAL_SESSION, so "before INITIAL_SESSION, no callback in the
+      // URL" is a restored session; anything after it (the emailed code, a later sign-in) or a callback
+      // load is a fresh one. Token refreshes and re-emitted events later keep the answer.
+      if (!sessionSource) sessionSource = (initialSeen || bootCallback) ? 'new' : 'restored';
       currentUser = u;
       setStatus('signed-in');
       lsSet(CACHE_KEY, JSON.stringify({ email: u.email, name: u.name }));
     } else {
+      sessionSource = null;
       currentUser = null;
       setStatus('anonymous');
       lsRemove(CACHE_KEY);
     }
     if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') cleanUrlNow();
-    if (event === 'INITIAL_SESSION') resolveReady();
+    if (event === 'INITIAL_SESSION') { initialSeen = true; resolveReady(); }
     renderChip();
     fire();
   }
@@ -632,7 +643,8 @@
       if (!pendingError) pendingError = { error: 'link_other_browser', code: 'link_other_browser', description: '' };
       cleanUrlNow();
     }
-    if (isAuthCallback(location.href) || hasStoredSession()) {
+    bootCallback = isAuthCallback(location.href);
+    if (bootCallback || hasStoredSession()) {
       setStatus('loading');
       getClient().catch(function (err) {
         setStatus(err && err.code === 'offline' ? 'offline' : 'unavailable');
@@ -698,6 +710,7 @@
     t: t,
     onOpenSaves: function (fn) { openSavesFn = (typeof fn === 'function') ? fn : null; renderChip(); },
     onOpenAccount: function (fn) { openAccountFn = (typeof fn === 'function') ? fn : null; renderChip(); },
+    sessionSource: function () { return sessionSource; },
     openMenu: function () { if (!chip || !mounted) return false; openMenu(); return true; },   // a page's own "Sign in" button opens the chip's menu
     _test: { isAuthCallback: isAuthCallback, stripAuthParams: stripAuthParams, redirectTarget: redirectTarget, parseAuthParams: parseAuthParams, hasStoredSession: hasStoredSession, AUTH_KEY: AUTH_KEY, VERIFIER_KEY: VERIFIER_KEY, CACHE_KEY: CACHE_KEY }
   };

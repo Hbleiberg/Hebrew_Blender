@@ -147,8 +147,8 @@ to keep copies of your work next to the browser's own storage and `.ivrit` files
 layer is three shared files — `js/supabase-config.js` (public project settings), `js/ivrit-account.js`
 (sign-in, sign-out, the header chip) and `js/ivrit-saves.js` (the cloud-saves panel and the sync rules) —
 plus two throwaway pages for trying it out, `account-test.html` and `saves-test.html`. The chip and the
-panel are on the home page, the Worksheet Generator, Flash Cards, the Dictionary, the Torah Trainer and
-the Trope Tutor (the Classroom Dashboard and the Font Maker follow in later phases).
+panel are on the home page, the Worksheet Generator, Flash Cards, the Dictionary, the Torah Trainer, the
+Trope Tutor and the Classroom Dashboard (the Font Maker follows in a later phase).
 How it works inside: `docs/reference/accounts-and-cloud.md`.
 
 **Where the config values come from** (Supabase dashboard → project *IvritSuite*):
@@ -194,7 +194,7 @@ headless checks (with `--sdk <path to dist/umd/supabase.js>` it also exercises t
 **Privacy, in one paragraph:** nothing is stored on a server unless a signed-in person clicks upload.
 An account holds the email address (and a Google name when Google is used), a display name and only the
 items uploaded from a tool's *Cloud saves* panel — which, when a teacher chooses it, can include student
-names and practice results from Flash Cards. Accounts are for teachers and other adults; students never
+names and practice results from Flash Cards and class lists from the Classroom Dashboard. Accounts are for teachers and other adults; students never
 need one. Every cloud item can be downloaded as a file or deleted from the panel, and nothing on the
 device is ever deleted by the cloud. The full wording lives in `privacy.html` and `terms.html` (the
 `privacy.legal.*` / `terms.legal.*` rows of `locales/ui-strings.csv`, English and Hebrew); a change to
@@ -209,13 +209,15 @@ panel lists them next to the copies in your account with plain words (*Only on t
 the cloud*, *Changed in both places*…) and one button per row — Upload, Download, Merge, Keep both. Nothing
 on the device is ever deleted by the cloud, and nothing newer is overwritten by something older unless you
 choose it. Where the panel sits: the Generator and Flash Cards under *Advanced* next to the `.ivrit` backup,
-the Dictionary inside the Word Lists manager, the Torah Trainer and Trope Tutor in their settings drawer, and
+the Dictionary inside the Word Lists manager, the Torah Trainer, Trope Tutor and Classroom Dashboard in their
+settings drawer, and
 the home page's *Import / Export All Settings* modal holds one panel per tool — the place to bring a fresh
-browser up to date. The chip's **Account…** item opens the account screen: what each tool holds on this
-device and in the account, **Upload everything on this device** (a copy — nothing is removed from the
-device; it also opens by itself once after the first sign-in on a device that already has saved items),
-and two backup buttons — everything in the account as one `.ivrit` file, or the home page's modal for
-everything on the device. `saves-test.html` exercises the panel on a set of throwaway test items;
+browser up to date. The chip's **Account…** item opens the account screen: when the account was last
+saved, what each tool holds on this device and in the account, **Sync everything** (or, while the account
+is empty, **Upload everything on this device** — a copy; nothing is removed from the device), and two
+backup buttons — everything in the account as one `.ivrit` file, or the home page's modal for everything
+on the device. It opens by itself after every fresh sign-in ("Sync settings from your last login?") and
+once on a device that already has saved items. `saves-test.html` exercises the panel on a set of throwaway test items;
 `node scripts/smoke-saves.mjs` and `node scripts/smoke-tools.mjs` run the headless checks.
 
 ## Files

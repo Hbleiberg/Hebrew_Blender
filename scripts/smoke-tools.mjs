@@ -104,11 +104,26 @@ const PAGES = [
     prepare: `wlOpenManager();`,
     expand: `wlOpenManager();`,
     urlKeep: 'wordlists=open'
+  },
+  {
+    file: 'classroom_dashboard.html', tool: 'Dashboard', host: '#cloudSavesPanel',
+    seed: {
+      hebrewDashboard_settings: JSON.stringify({ location: 'Atlanta, GA', engDateFmt: 'LONG', hebFont: 'Frank Ruhl Libre', dashTextHTML: '<p>Boker tov!</p>', presetColors: { Morning: '#aabbcc' },
+        rosters: { m1r_0: { name: 'Kitah Alef', names: ['Noa', 'Eitan', 'Maya'] }, m1r_1: { name: 'Kitah Bet', names: ['Ari'] } }, activeRosterId: 'm1r_0', pickerSessions: { m1r_0: { picked: ['Noa'], absent: [] } },
+        zoomLevel: 1.2, hideZoomBar: true, panelsCollapsed: { 'dashboard.settings.panel_weather': true }, videoCollapsed: true, keepAwake: false, _geoCoords: { lat: 33.7, lon: -84.4 } }),
+      hebrewDashboard_presets: JSON.stringify({ Morning: { headerLang: 'en', showTimer: true }, Tefillah: { headerLang: 'he', showTimer: false } }),
+      hebrewDashboard_presetsFolders: JSON.stringify({ v: 1, root: [{ t: 'item', name: 'Morning' }, { t: 'item', name: 'Tefillah' }] }),
+      hebrewDashboard_schedules: JSON.stringify({ 'Week A': { v: 2, week: { v: 1, periods: [{ start: '08:00', end: '08:45' }], weekend: false, cells: { mon: ['Morning'] } } }, 'Old day': [{ preset: 'Morning', until: '09:00' }] }),
+      hebrewDashboard_schedulesFolders: JSON.stringify({ v: 1, root: [{ t: 'item', name: 'Week A' }, { t: 'item', name: 'Old day' }] })
+    },
+    rows: ['preset:Morning', 'preset:Tefillah', 'schedule:Week A', 'schedule:Old day', 'settings:default', 'roster:m1r_0', 'roster:m1r_1'],
+    expand: `openSettings(); const p = document.getElementById('presetsPanel'); if (p.classList.contains('collapsed')) p.querySelector('.panel-title').click(); document.getElementById('cloudSavesPanel').scrollIntoView();`,
+    urlKeep: 'lang=en'
   }
 ];
 // The hub carries one panel per tool: its seed is every tool's seed, its rows every tool's rows.
 PAGES.push({
-  file: 'index.html', host: '#cloudSavesSection', panels: 5,
+  file: 'index.html', host: '#cloudSavesSection', panels: 6,
   seed: Object.assign({}, ...PAGES.map(p => p.seed)),
   tools: PAGES.map(p => ({ tool: p.tool, rows: p.rows })),
   prepare: `openIEModal();`,
@@ -224,12 +239,14 @@ try {
       const wel = await page.evaluate(() => {
         const o = document.querySelector('.ivsav-overlay'), st = o && o.querySelector('.ivsav-status');
         const welcomed = (() => { try { return !!JSON.parse(localStorage.getItem('ivritSuite_syncMeta')).welcomed['11111111-1111-4111-8111-111111111111']; } catch (e) { return false; } })();
-        const info = { opened: !!o, error: !!(st && st.classList.contains('is-error') && st.textContent.trim()), welcomed };
+        const title = o && o.querySelector('.ivsav-card-title');
+        // a remembered session is 'restored', so the screen is the once-per-device welcome, not the sign-in splash
+        const info = { opened: !!o, error: !!(st && st.classList.contains('is-error') && st.textContent.trim()), welcomed, source: IvritAccount.sessionSource(), welcomeTitle: !!title && /Welcome/.test(title.textContent) };
         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
         info.closed = !document.querySelector('.ivsav-overlay');
         return info;
       });
-      check(tag + ' B: the welcome screen opened once, failed soft, is remembered and closes on Escape', wel.opened && wel.error && wel.welcomed && wel.closed, JSON.stringify(wel));
+      check(tag + ' B: the welcome screen opened once (restored session, welcome title), failed soft, is remembered and closes on Escape', wel.opened && wel.error && wel.welcomed && wel.closed && wel.source === 'restored' && wel.welcomeTitle, JSON.stringify(wel));
       check(tag + ' B: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
     } else { console.log('SKIP ' + tag + ' B: no --sdk file given'); }
