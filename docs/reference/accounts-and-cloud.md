@@ -12,17 +12,20 @@ Supabase — no tool page ever calls the SDK directly:
 |---|---|
 | `js/supabase-config.js` | Public project values: `url`, publishable `anonKey`, the pinned SDK URL + its Subresource Integrity hash, and the `enabled` kill switch. The only file that changes when the project changes. |
 | `js/ivrit-account.js` | `window.IvritAccount` — session state, sign-in/out, lazy SDK loading, the header chip. |
-| `account-test.html` | Throwaway harness (own CSP, `noindex`, not in the sitemap/`llms.txt`/`sw.js`, skipped by `check-i18n`). Mounts the real chip, mirrors state, and runs the URL self-checks. |
-| `scripts/smoke-account.mjs` | Headless Playwright smoke: anonymous with the CDN blocked, remembered session offline, SDK served locally, auth-error URL contracts, Hebrew + dark at 800 px. |
+| `js/ivrit-saves.js` | `window.IvritSaves` — the saves adapter: `IVRIT_SYNC_REGISTRY`, the local and cloud backends, the per-item state table, the cloud-saves panel. |
+| `account-test.html` | Throwaway harness (own CSP, `noindex`, not in the sitemap/`llms.txt`/`sw.js`, skipped by `check-i18n`). Mounts the real chip, mirrors state, runs the URL self-checks and the Phase 2 table/bucket checks. |
+| `saves-test.html` | Same rules. Mounts the real panel with four page-only registry entries, runs the local round trip, the pure self-checks and the scripted cloud checks. |
+| `scripts/smoke-account.mjs`, `scripts/smoke-saves.mjs` | Headless Playwright smokes: anonymous with the CDN blocked, remembered session offline, SDK served locally, URL contracts, Hebrew + dark at 800 px. |
 
 Load order on a page (all deferred, so `window.I18n` and `window.IVRIT_SUPABASE` exist when the module runs):
 ```html
 <script src="/js/i18n.js" defer></script>
 <script src="/js/supabase-config.js" defer></script>
 <script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
 ```
-Both `js/` files are in `sw.js` `CORE_ASSETS` (network-first like every same-origin script), so editing
-either bumps `VERSION`.
+All three `js/` files are in `sw.js` `CORE_ASSETS` (network-first like every same-origin script), so editing
+any of them bumps `VERSION`. A page that only offers sign-in leaves the fourth line out.
 
 ## `IvritAccount` API
 
@@ -41,6 +44,7 @@ either bumps `VERSION`.
 | `init({ mount })` | Optional; `mount: false` suppresses the auto-mount. Auto-mount runs at `DOMContentLoaded` |
 | `t(key, fallback)` | The `pwa.js`-style translator (I18n when loaded, else English) — reused by the saves module |
 | `onOpenSaves(fn)` | A tool registers how to open its cloud panel; "Cloud saves…" appears in the menu only then |
+| `openMenu()` | Opens the chip's menu (`false` when no chip is mounted) — what the saves panel's own Sign in button calls |
 | `_test` | Pure URL helpers for the smoke test |
 
 ## How the SDK is loaded (and why anonymous pages pay nothing)
@@ -106,6 +110,7 @@ aware, transitions neutralized under `prefers-reduced-motion`. Sized to match th
 | `sb-hhkmqwpjsyxdeuhvcyis-auth-token` | the SDK | the session; erase-only (Erase All = signed out on this device) |
 | `sb-hhkmqwpjsyxdeuhvcyis-auth-token-code-verifier` | the SDK | transient, only during a PKCE round trip |
 | `ivritSuite_accountCache` | the module | `{email, name}` for the loading/offline chip; erase-only |
+| `ivritSuite_syncMeta` | `js/ivrit-saves.js` | what this device last synced, per account: `{v:1, users:{[uid]:{[tool]:{[kind]:{[name]:{h, id, u, at}}}}}}`; erase-only, never exported |
 
 The hub's `eraseAllSettings` registers these when it adopts the module (Phase 4); until then they are
 consciously unregistered.
@@ -130,7 +135,7 @@ the publishable key alone reads nothing and no account can see another account's
 | `font_projects` | cloud Font Maker project | 25 per account | catalogue row for a project whose gzipped JSON, downscaled images and exports live in Storage; `project_path` / `export_path` must start with the owner's id |
 
 Limits come back as Postgres `check_violation` (`23514`) with a readable message; a duplicate name is
-`23505`; anything RLS refuses is `42501`. The saves adapter (Phase 3) maps these to the panel's strings.
+`23505`; anything RLS refuses is `42501`. The saves adapter maps these to the panel's strings (`errorText`).
 
 **Buckets** (all private): `font-projects` (20 MB, gzip), `font-exports` (5 MB, ttf / woff2 / zip),
 `font-sources` (2 MB, jpeg / png). Every object path is `<user id>/<project id>/<file>`, and the four
@@ -145,6 +150,92 @@ row and runs cloud self-checks (other users' rows invisible, the anon key reads 
 someone else is refused, a PNG uploads into the caller's folder while a text file and a foreign folder
 are refused, the probe is removed).
 
+## The saves adapter (`js/ivrit-saves.js`)
+
+A **local-first mirror**. The localStorage keys a tool already renders from stay the source of truth;
+the `saves` table holds one row per saved item, which the person uploads and downloads from a panel.
+Anonymous use never writes anything (no key, no request). Nothing on the device is ever deleted by the
+module, and nothing newer is overwritten by something older unless the person chooses that on a
+"changed in both places" row. Every entry point resolves or rejects; the DOM is `createElement`/`textContent`.
+
+### The registry
+
+`IVRIT_SYNC_REGISTRY` (an array inside the module) is the only place that names synced keys — one entry
+per localStorage key: `{ tool, kind, lsKey, shape, path?, nameField?, envelope?, merge, omit?, follows?, ivritKey?, label? }`.
+
+| Field | Meaning |
+|---|---|
+| `shape` | `map` (`{name: value}` → one row per name), `mapIn` (`{…, [path]: {key: value}}` → one row per key; label from `value[nameField]`; `envelope` = the other top-level fields, e.g. `{v:1}`), `single` (one settings object → one row named `default`), `tree` (`{v:1, root:[…]}` → `default`, synced after `follows`), `scalar` (a plain string → `default`, travelling as `{value}`) |
+| `merge` | how a downloaded copy lands on a differing local one: `item` (replace that item), `assign` (cloud fields over a copy of local — the `.ivrit` Merge teachers know; also the "Use cloud copy" button), `deepMax` (lossless: numbers max, booleans or, objects recurse, arrays keep local), `max` (scalar), `page` (the page's pure `merges[kind](local, cloud) → merged`) |
+| `omit` | field names (a trailing/leading `*` glob allowed) that never travel: stripped before hashing and upload, this device's values put back after a download, cloud values of them dropped |
+| `follows` | trees only: the kind whose items the tree names |
+| `ivritKey` | the AllTools bundle key, so *Download file* writes an `.ivrit` the hub imports (else `tool` + `data:{[kind]: …}`) |
+| `label` | an i18n key for the kind (falls back to the raw kind) |
+
+`attach({ tool, panel, entries?, merges?, flush?, onLocalChanged?, open? })` is the whole per-page
+surface: `entries` is for harnesses (real tools list theirs in the registry), `merges` supplies the
+`page` helpers, `flush()` must cancel any debounced writer and write now, `onLocalChanged(kind, name)`
+must re-read that key into memory and re-render, `open` is registered with `IvritAccount.onOpenSaves`.
+A `single` / `scalar` / `tree` / `mapIn` entry is **downloadable only when the page gave `onLocalChanged`**
+(otherwise upload-only, with a console warning): those tools keep their settings in memory and rewrite
+the whole blob on the next change, which would undo a download and then push the stale blob back up
+as "newer on this device".
+
+### Hashes and the state table
+
+Postgres `jsonb` rewrites JSON (key order, spacing), so every hash is SHA-256 (`crypto.subtle`, prefix
+`1.`, base64url) over the **canonical** form of the value — keys sorted at every depth — after `omit`;
+the row's `data_hash` is only a listing shortcut, a row with a null or foreign hash is fetched and hashed
+here. Object key order therefore does not survive the cloud (tools read by key; list order comes from
+the local store and the folder tree). `ivritSuite_syncMeta` remembers, per account, the hash both sides
+had after the last successful upload/download plus the row id and its `updated_at`.
+
+| Situation (L = local hash, C = cloud hash, M = memory) | State | Safe action |
+|---|---|---|
+| local only | Only on this device | Upload |
+| cloud only | Only in the cloud | Download |
+| L = C, or neither side moved since M | Same | — |
+| L = M.h, cloud moved (`updated_at` ≠ M.u and C ≠ M.h) | Newer in the cloud | Download |
+| cloud unchanged (`updated_at` = M.u or C = M.h), L ≠ M.h | Newer on this device | Upload |
+| both moved, or no memory yet and L ≠ C | Changed in both places | none for `item`/`assign`; Merge for `deepMax`/`max`/`page` |
+
+Conflict buttons: `item` → **Keep both** (the cloud version is written here as `name (cloud copy)`, read
+back, then the local `name` goes over the cloud row, then the copy goes up — one click, nothing lost,
+converges), *Use cloud copy*, *Keep mine*; `assign` → *Use cloud copy*, *Keep mine*; the rest → *Merge*.
+Cloud writes to an existing row are **conditional** (`update … eq('updated_at', listed)`): zero rows back
+means another device wrote first, the list is refreshed and the person chooses again. New rows are
+`insert`s (`23505` = created meanwhile). **Sync now** runs every safe action in order, stops at the first
+error (re-running resumes) and leaves conflicts listed. Nothing runs on a timer. Before any local write
+the module calls `flush()`, after it `onLocalChanged()`, and downloads add the "reload other tabs" hint.
+
+**Trees follow their items**: the shared tree component prunes nodes whose names are not in the store,
+and `ftImportTree` is additive, so a tree is never a row. After actions and after Sync, each tree entry
+is reconciled once all `follows` items exist on this device: a flat local tree takes the cloud's folders
+wholesale, two real trees go through the page's helper, and the result lands on whichever side differs.
+Preset downloaded one at a time may land at the root of the folder list; *Sync now* keeps the folders.
+
+### The panel
+
+`mountPanel(target, tool)` or `attach({ panel })`: classes `ivsav-*`, one injected `<style id="ivsav-style">`,
+palette vars with fallbacks, `body.dark` aware, logical properties, reduced-motion neutraliser. Signed out:
+one line + a Sign in button (opens the chip's menu). Offline / unavailable: the matching line. Signed in:
+title, *Refresh*, *Sync now (n)*, an `aria-live="polite"` status line, then one list — a row per kind + name
+across both sides, grouped by kind — with the plain-words state, size, the cloud `updated_at`, and the
+buttons the state allows; cloud rows also get *Download file* and *Delete from cloud* (`confirm()`; the
+local copy stays). No Rename (a preset rename would orphan its folder-tree node; `mapIn` names are ids).
+All cloud work runs through one per-tool promise queue; buttons are `aria-disabled` meanwhile;
+`showAppToast` is used when the page has it. Strings `shared.cloud.*`, re-rendered on `I18n.ready` /
+`I18n.onChange`. Public surface: `attach`, `mountPanel`, `refresh`, `plan`, `syncNow`, `act(tool, action, row)`,
+`local`, `cloud`, `registry`, `t`, `_test`.
+
+**Checking it from the browser**: `saves-test.html` § 2 runs the local backend signed out (every other
+key byte-identical, no sync memory), § 4 the pure checks (canonical hash vector, the state table, merges,
+omit, `safeParse`, guards, error mapping), § 5 the scripted cloud run (upload, a change from "another
+device" with no hash, download, keep-both, a settings and a score conflict, a stale conditional write
+refused, a download refused when the device changed meanwhile, folders following, delete, cleanup).
+`scripts/smoke-saves.mjs` runs § 2 and § 4 headless with the CDN blocked, a fake session with the API
+unreachable, and Hebrew + dark at 800 px.
+
 ## Manual Supabase setup (done once in the dashboard)
 
 The step-by-step walkthrough lives in `README.md` § "Accounts (optional, Supabase)": URL configuration
@@ -156,7 +247,7 @@ a few messages per hour).
 
 ## Roadmap pointers (what is not built yet)
 
-Schema + Storage buckets + RLS (`supabase/migrations/`), the generic saves adapter (`js/ivrit-saves.js`
-with the one declarative `IVRIT_SYNC_REGISTRY`), per-tool adoption, Font Maker projects, the account
-page, the delete-account Edge Function, and the keep-alive workflow follow in later phases; the
-tool pages carry no account script until their phase.
+Per-tool adoption (the registry entries, `attach()` and the panel on each tool page), Font Maker
+projects (their own table and buckets), the account page, the delete-account Edge Function, and the
+keep-alive workflow follow in later phases; the tool pages carry no account or saves script until
+their phase.

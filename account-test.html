@@ -123,6 +123,7 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
     function unwrap(r) { if (r && r.error) throw r.error; return r ? r.data : null; }
     function errText(e) { return e ? [e.code, e.status || e.statusCode, e.message].filter(Boolean).join(' ') : ''; }
     function cloudReport(p) {
+      if (!A.user()) { show($('cloudOut'), { ok: false, message: 'sign in first (section 2 or the header chip), then try again' }); return; }
       show($('cloudOut'), 'working…');
       p.then(function (r) { show($('cloudOut'), { ok: true, result: r === undefined ? null : r }); })
        .catch(function (e) { show($('cloudOut'), { ok: false, code: e && e.code, status: e && (e.status || e.statusCode), message: e && e.message, details: e && e.details, hint: e && e.hint }); });
