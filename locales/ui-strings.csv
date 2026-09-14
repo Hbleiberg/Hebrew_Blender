@@ -4035,6 +4035,7 @@ trope.settings.close_aria,Close settings,סגירת ההגדרות,close button 
 trope.settings.font_default_tag,[DEFAULT],[ברירת מחדל],font picker default marker,
 trope.settings.heb_size,Hebrew size,גודל עברית,slider label,
 trope.settings.panel_about,About,אודות,panel title,
+trope.settings.panel_cloud,Cloud saves,שמירות בענן,settings drawer panel title (hosts the shared cloud-saves panel),
 trope.settings.panel_drill,Drill,תרגול,panel title,
 trope.settings.panel_font,Hebrew Font,גופן עברי,panel title,
 trope.settings.panel_names,Names & Tradition,שמות ומסורת,panel title,
@@ -5261,9 +5262,17 @@ shared.cloud.done_keep_both,"Kept both: the cloud version is now ""{copy}"" on t
 shared.cloud.done_delete,"Deleted ""{name}"" from the cloud.","""{name}"" נמחק מהענן.",Cloud-saves status after deleting a cloud row,shared; cloud panel; template
 shared.cloud.done_sync,"Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.","הסנכרון הסתיים: {up} הועלו, {down} הורדו, {merged} מוזגו, {left} עדיין דורשים בחירה.",Cloud-saves status after Sync now,shared; cloud panel; template
 shared.cloud.sync_stopped,Stopped after {done} of {total}: {reason},נעצר אחרי {done} מתוך {total}: {reason},Cloud-saves status when Sync now hit an error,shared; cloud panel; template
+shared.cloud.sync_skipped,{n} could not be uploaded (too big or an invalid name).,{n} לא ניתן היה להעלות (גדול מדי או שם לא תקין).,Cloud-saves status sentence appended after Sync now when rows were skipped by the client-side guard,shared; cloud panel; template
 shared.cloud.reload_hint,"If this tool is open in other tabs, reload them.","אם הכלי פתוח בלשוניות אחרות, רעננו אותן.",Cloud-saves status hint after a download,shared; cloud panel
 shared.cloud.copy_suffix,{name} (cloud copy),{name} (עותק מהענן),Name given to the cloud version after Keep both,shared; cloud panel; template
 shared.cloud.copy_suffix_n,{name} (cloud copy {n}),{name} (עותק מהענן {n}),Name given to the cloud version after Keep both when the first name is taken,shared; cloud panel; template
+shared.cloud.kind_preset,Presets,הגדרות שמורות,Cloud-saves list group header for a tool's saved presets / decks,shared; cloud panel
+shared.cloud.kind_settings,Settings,הגדרות,Cloud-saves row name for a tool's one settings blob,shared; cloud panel
+shared.cloud.kind_progress,Mastery progress,התקדמות בשליטה,Cloud-saves row name for the Trope Tutor's mastery counts,shared; cloud panel
+shared.cloud.kind_streak,Best streak,הרצף הטוב ביותר,Cloud-saves row name for the Flash Cards personal-best streak,shared; cloud panel
+shared.cloud.kind_profile,Student profiles,פרופילי תלמידים,Cloud-saves list group header for Flash Cards student profiles (one row per student),shared; cloud panel
+shared.cloud.kind_wordlist,Word lists,רשימות מילים,Cloud-saves list group header for the suite-wide word lists (one row per list),shared; cloud panel
+shared.cloud.kind_last_setup,Last worksheet setup,הגדרת דף העבודה האחרונה,Cloud-saves row name for the generator's remembered setup,shared; cloud panel
 shared.cloud.error_name_taken,That name is already used in the cloud.,השם הזה כבר בשימוש בענן.,Cloud-saves error,shared; cloud panel
 shared.cloud.error_too_big,That item is too big for the cloud (2 MB limit).,הפריט גדול מדי לענן (מגבלה של 2 מגה־בייט).,Cloud-saves error,shared; cloud panel
 shared.cloud.error_limit,Your account has reached its limit of saved items.,החשבון שלכם הגיע למגבלת הפריטים השמורים.,Cloud-saves error,shared; cloud panel
@@ -5273,7 +5282,7 @@ shared.cloud.error_not_allowed,The cloud refused this action.,הענן דחה א
 shared.cloud.error_session,Your sign-in has expired. Sign in again.,תוקף הכניסה פג. היכנסו שוב.,Cloud-saves error,shared; cloud panel
 shared.cloud.error_not_setup,Cloud saves are not set up on the server yet.,שמירות בענן עדיין לא הוגדרו בשרת.,Cloud-saves error (the table is missing),shared; cloud panel
 shared.cloud.error_offline,The cloud is unreachable right now. Try again later.,הענן אינו זמין כרגע. נסו שוב מאוחר יותר.,Cloud-saves error,shared; cloud panel
-shared.cloud.error_changed,That item changed in the cloud a moment ago. The list was refreshed; choose again.,הפריט השתנה בענן לפני רגע. הרשימה רועננה; בחרו שוב.,Cloud-saves error (another device wrote first),shared; cloud panel
+shared.cloud.error_changed,That item changed a moment ago (here or in the cloud). The list was refreshed; choose again.,הפריט השתנה לפני רגע (כאן או בענן). הרשימה רועננה; בחרו שוב.,Cloud-saves error (another device or this page wrote first; the conditional write or the local check refused),shared; cloud panel
 shared.cloud.error_shape,The cloud copy has an unexpected shape and was not written to this device.,לעותק בענן יש מבנה לא צפוי והוא לא נכתב למכשיר הזה.,Cloud-saves error,shared; cloud panel
 shared.cloud.error_quota,There is no room left on this device to store that item.,אין מקום פנוי במכשיר הזה לשמור את הפריט.,Cloud-saves error (localStorage full),shared; cloud panel
 shared.cloud.error_no_merge,This page cannot merge that item yet.,הדף הזה עדיין לא יכול למזג את הפריט.,Cloud-saves error (no page merge helper registered),shared; cloud panel

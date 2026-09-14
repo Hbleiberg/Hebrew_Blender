@@ -32,7 +32,9 @@
  *      entry `follows` its items' kind and is synced after them, never on its own row in the list.
  *
  * Exposes window.IvritSaves:
- *   attach(cfg)               { tool, panel?, entries?, merges?, flush?, onLocalChanged?, open? }
+ *   attach(cfg)               { tool, panel?, title?, entries?, merges?, flush?, onLocalChanged?, open? }
+ *                             title: false → no title of its own (the page's panel heading is the heading);
+ *                             an i18n key → that title (the hub names each panel after its tool)
  *   mountPanel(target, tool)  element | selector — renders the panel there
  *   refresh(tool)             Promise<plan> — re-lists both sides and re-renders
  *   plan(tool)                Promise<plan> — the per-item state table (no rendering)
@@ -83,8 +85,9 @@
   //   ivritKey   the AllTools bundle key, so "Download file" writes an .ivrit the hub already imports
   //   label      an i18n key for the kind (falls back to the raw kind)
   var IVRIT_SYNC_REGISTRY = [
-    // Phase 4 adds one line per synced key, for example:
-    // { tool: 'TropeTutor', kind: 'progress', lsKey: 'hebrewTropeTutor_progress', shape: 'single', merge: 'deepMax', ivritKey: 'tropeTutorProgress', label: 'shared.cloud.kind_progress' }
+    // trope_tutor.html — mastery counts merge losslessly (max / union); the drawer layout never travels
+    { tool: 'TropeTutor', kind: 'progress', lsKey: 'hebrewTropeTutor_progress', shape: 'single', merge: 'deepMax', ivritKey: 'tropeTutorProgress', label: 'shared.cloud.kind_progress' },
+    { tool: 'TropeTutor', kind: 'settings', lsKey: 'hebrewTropeTutor_settings', shape: 'single', merge: 'assign', omit: ['panelsCollapsed'], ivritKey: 'tropeTutorSettings', label: 'shared.cloud.kind_settings' }
   ];
   var extraEntries = [];   // entries a page registered through attach({ entries }) — the test harness
 
@@ -94,6 +97,8 @@
   var queues = {};     // tool → promise chain: one cloud operation at a time
   var busy = {};       // tool → true while its queue runs
   var messages = {};   // tool → { text, isError }
+  var pendingRefresh = {};   // tool → the listing promise in flight, so two callers share one listing
+  var lastSeenWrite = null;  // the `at` of the last module write another tab told us about
   var listening = false;
 
   /* ---------- tiny helpers ---------- */
@@ -291,7 +296,16 @@
     } else {
       text = JSON.stringify(value);
     }
-    return writeText(entry.lsKey, text);
+    return writeText(entry.lsKey, text).then(function () { stampWrite(entry, name); });
+  }
+  // Other tabs of the same tool learn about a module write through the sync-memory key (a `storage`
+  // event, see listen()) and re-read the key — otherwise their next in-memory save would revert it.
+  // Signed in only: anonymous use never creates the key (the harness's local round trip stays silent).
+  function stampWrite(entry, name) {
+    if (!currentUser()) return;
+    var m = metaAll();
+    m.lastWrite = { tool: entry.tool, kind: entry.kind, name: name, at: Date.now() };
+    metaSave(m);
   }
   // Only the test harness removes local data (its own keys). The panel never calls this.
   function localRemove(entry, name) {
@@ -490,7 +504,7 @@
     if (m === 'item') return r.downloadable ? ['keepBoth', 'useCloud', 'keepMine'] : ['keepMine'];
     if (m === 'assign') return r.downloadable ? ['useCloud', 'keepMine'] : ['keepMine'];
     if (r.mergeable && r.downloadable) return ['merge'];
-    return ['keepMine'];
+    return m === 'page' ? [] : ['keepMine'];   // no helper on this page: the tool that owns the merge resolves it
   }
   function localSide(tool) {
     var items = [];
@@ -509,6 +523,7 @@
   function planTool(tool) {
     var user = currentUser();
     var uid = user ? user.id : null;
+    if (uid) flushPage(tool);   // a pending debounced write must land before the listing, or the first action sees a moved item
     return localSide(tool).then(function (locals) {
       var rows = {}, order = [];
       locals.forEach(function (it) {
@@ -824,15 +839,18 @@
       return seqMap(trees, function (e) { return syncTree(tool, e, p); }).then(function () { return p; });
     });
   }
+  // A row the client-side guard refuses (too big, an impossible name) is skipped and counted; the run
+  // goes on. Anything else — a network or server error — stops it, and re-running resumes.
+  function isGuardError(err) { var c = err && err.code; return c === 'too_big' || c === 'name' || c === 'chars'; }
   function syncNowInner(tool) {
     return planTool(tool).then(function (p) {
       var todo = p.rows.filter(function (r) { return r.safeAction; });
-      var sum = { done: 0, total: todo.length, up: 0, down: 0, merged: 0, left: 0, error: null };
+      var sum = { done: 0, total: todo.length, up: 0, down: 0, merged: 0, skipped: 0, left: 0, error: null };
       return seqMap(todo, function (row) {
         return runAction(tool, row.safeAction, row).then(function () {
           sum.done++;
           if (row.safeAction === 'upload') sum.up++; else if (row.safeAction === 'download') sum.down++; else sum.merged++;
-        });
+        }, function (err) { if (!isGuardError(err)) throw err; sum.skipped++; });
       }).catch(function (err) { sum.error = err; })
         .then(function () { return afterActions(tool); })
         .then(function (p2) { sum.left = p2.counts.conflicts; return sum; });
@@ -955,8 +973,9 @@
     if (!panel || !panel.root) return;
     var root = panel.root;
     while (root.firstChild) root.removeChild(root.firstChild);
+    var cfg = pages[tool] || {};
     var head = el('div', 'ivsav-head');
-    head.appendChild(el('span', 'ivsav-title', t('shared.cloud.title', 'Cloud saves')));
+    if (cfg.title !== false) head.appendChild(el('span', 'ivsav-title', typeof cfg.title === 'string' ? t(cfg.title, 'Cloud saves') : t('shared.cloud.title', 'Cloud saves')));
     var state = accountState();
     var p = plans[tool];
     var isBusy = !!busy[tool];
@@ -968,7 +987,7 @@
       if (!n) syncBtn.setAttribute('aria-disabled', 'true');
       head.appendChild(syncBtn);
     }
-    root.appendChild(head);
+    if (head.firstChild) root.appendChild(head);   // signed out with title:false there is nothing to show up here
     var status = el('p', 'ivsav-status');
     status.setAttribute('role', 'status');
     status.setAttribute('aria-live', 'polite');
@@ -1009,7 +1028,8 @@
     p.rows.forEach(function (row) {
       if (row.kind !== lastKind) {
         lastKind = row.kind;
-        list.appendChild(el('li', 'ivsav-kind', kindLabel(row.entry)));
+        // a group header only where a kind can hold many rows; a settings / streak row already reads as its kind
+        if (row.entry.shape === 'map' || row.entry.shape === 'mapIn') list.appendChild(el('li', 'ivsav-kind', kindLabel(row.entry)));
       }
       var li = el('li', 'ivsav-row');
       li.setAttribute('data-state', row.state);
@@ -1064,15 +1084,21 @@
       throw err;
     });
   }
+  // One listing serves every caller that asks while it is queued or running (sign-in, Refresh, other tabs).
   function refresh(tool) {
+    if (pendingRefresh[tool]) return pendingRefresh[tool];
     say(tool, '', false);
-    return enqueue(tool, function () { return planTool(tool); }).then(function (p) { render(tool); return p; }, function (err) { say(tool, errorText(err), true); render(tool); throw err; });
+    var p = enqueue(tool, function () { return planTool(tool); }).then(function (plan) { render(tool); return plan; }, function (err) { say(tool, errorText(err), true); render(tool); throw err; });
+    pendingRefresh[tool] = p;
+    p.then(function () { delete pendingRefresh[tool]; }, function () { delete pendingRefresh[tool]; });
+    return p;
   }
   function syncNow(tool) {
     say(tool, '', false);
     return enqueue(tool, function () { return syncNowInner(tool); }).then(function (sum) {
-      if (sum.error) say(tool, t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: sum.done, total: sum.total, reason: errorText(sum.error) }), true);
-      else say(tool, t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: sum.up, down: sum.down, merged: sum.merged, left: sum.left }), false);
+      var skipped = sum.skipped ? ' ' + t('shared.cloud.sync_skipped', '{n} could not be uploaded (too big or an invalid name).', { n: sum.skipped }) : '';
+      if (sum.error) say(tool, t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: sum.done, total: sum.total, reason: errorText(sum.error) }) + skipped, true);
+      else say(tool, t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: sum.up, down: sum.down, merged: sum.merged, left: sum.left }) + skipped, false);
       render(tool);
       return sum;
     }, function (err) { say(tool, errorText(err), true); render(tool); throw err; });
@@ -1103,6 +1129,19 @@
         });
       });
     }
+    // A module write in another tab of the same tool: re-read that key here (no flush — the point is to
+    // drop this tab's stale in-memory copy), then list again. Only module writes carry the stamp.
+    try { lastSeenWrite = (metaAll().lastWrite || {}).at || null; } catch (e) {}
+    window.addEventListener('storage', function (e) {
+      if (e.key !== META_KEY || !e.newValue) return;
+      var lw = null;
+      try { lw = safeParse(e.newValue).lastWrite; } catch (x) { return; }
+      if (!isPlainObject(lw) || lw.at === lastSeenWrite) return;
+      lastSeenWrite = lw.at;
+      if (!pages[lw.tool]) return;
+      notifyPage(lw.tool, lw.kind, lw.name);
+      if (currentUser()) refresh(lw.tool).catch(function () {}); else render(lw.tool);
+    });
     // Labels render before the dictionary arrives and again when it does, and on every language switch.
     if (window.I18n) {
       try { if (window.I18n.ready && window.I18n.ready.then) window.I18n.ready.then(function () { Object.keys(panels).forEach(render); }); } catch (e) {}
@@ -1129,10 +1168,7 @@
     var a = A();
     if (a && typeof a.onOpenSaves === 'function' && typeof cfg.open === 'function') a.onOpenSaves(cfg.open);
     if (cfg.panel) mountPanel(cfg.panel, tool);
-    listen();
-    if (a && a.ready && a.ready.then) {
-      a.ready.then(function (user) { if (user) refresh(tool).catch(function () {}); else render(tool); });
-    }
+    listen();   // IvritAccount.onChange fires once when the state is known — that call lists every attached tool
     return true;
   }
 

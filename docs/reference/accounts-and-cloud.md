@@ -172,10 +172,12 @@ per localStorage key: `{ tool, kind, lsKey, shape, path?, nameField?, envelope?,
 | `ivritKey` | the AllTools bundle key, so *Download file* writes an `.ivrit` the hub imports (else `tool` + `data:{[kind]: …}`) |
 | `label` | an i18n key for the kind (falls back to the raw kind) |
 
-`attach({ tool, panel, entries?, merges?, flush?, onLocalChanged?, open? })` is the whole per-page
+`attach({ tool, panel, title?, entries?, merges?, flush?, onLocalChanged?, open? })` is the whole per-page
 surface: `entries` is for harnesses (real tools list theirs in the registry), `merges` supplies the
 `page` helpers, `flush()` must cancel any debounced writer and write now, `onLocalChanged(kind, name)`
-must re-read that key into memory and re-render, `open` is registered with `IvritAccount.onOpenSaves`.
+must re-read that key into memory and re-render, `open` is registered with `IvritAccount.onOpenSaves`,
+`title: false` drops the panel's own title (the page's panel heading is the heading) and an i18n key
+replaces it (the hub names each panel after its tool).
 A `single` / `scalar` / `tree` / `mapIn` entry is **downloadable only when the page gave `onLocalChanged`**
 (otherwise upload-only, with a console warning): those tools keep their settings in memory and rewrite
 the whole blob on the next change, which would undo a download and then push the stale blob back up
@@ -202,11 +204,20 @@ had after the last successful upload/download plus the row id and its `updated_a
 Conflict buttons: `item` → **Keep both** (the cloud version is written here as `name (cloud copy)`, read
 back, then the local `name` goes over the cloud row, then the copy goes up — one click, nothing lost,
 converges), *Use cloud copy*, *Keep mine*; `assign` → *Use cloud copy*, *Keep mine*; the rest → *Merge*.
+A `page` merge whose helper the current page did not supply (the hub) shows no button at all: the row
+stays listed as *Changed in both places* and the tool that owns the merge resolves it.
 Cloud writes to an existing row are **conditional** (`update … eq('updated_at', listed)`): zero rows back
 means another device wrote first, the list is refreshed and the person chooses again. New rows are
 `insert`s (`23505` = created meanwhile). **Sync now** runs every safe action in order, stops at the first
-error (re-running resumes) and leaves conflicts listed. Nothing runs on a timer. Before any local write
-the module calls `flush()`, after it `onLocalChanged()`, and downloads add the "reload other tabs" hint.
+error (re-running resumes) and leaves conflicts listed — except rows the client-side guard refuses (too
+big, an impossible name), which are skipped, counted and reported so one oversized item cannot block a
+sync forever. Nothing runs on a timer. Before any local write the module calls `flush()`, after it
+`onLocalChanged()`, and downloads add the "reload other tabs" hint. Two more guards against a page's
+in-memory copy: a listing calls `flush()` first when signed in (a pending debounced write would otherwise
+land between the listing and the first action and fail it as "changed"), and every module write stamps
+`lastWrite` into `ivritSuite_syncMeta`, whose `storage` event makes any *other* open tab of that tool
+re-read the key and list again (its next save would otherwise revert the download unseen). `refresh()`
+coalesces: callers that ask while a listing is queued share it, so sign-in lists each tool once.
 
 **Trees follow their items**: the shared tree component prunes nodes whose names are not in the store,
 and `ftImportTree` is additive, so a tree is never a row. After actions and after Sync, each tree entry
@@ -236,6 +247,17 @@ refused, a download refused when the device changed meanwhile, folders following
 `scripts/smoke-saves.mjs` runs § 2 and § 4 headless with the CDN blocked, a fake session with the API
 unreachable, and Hebrew + dark at 800 px.
 
+### Implemented on
+
+| Page | Registry rows (`kind` · shape/merge · key) | Hooks passed to `attach()` | Panel |
+|---|---|---|---|
+| `trope_tutor.html` (`TropeTutor`) | `progress` single/deepMax `hebrewTropeTutor_progress` · `settings` single/assign (omit `panelsCollapsed`) `hebrewTropeTutor_settings` | `flush: saveSettingsFlush`; `onLocalChanged` resets `settings` / `progress` to their DEFAULTS clone, re-loads, re-applies font and drawer memory, re-renders Learn (under `_i18nRerender`) and the drill line — the `resetAllSettings()` / `resetProgress()` sequence | settings drawer, its own collapsible panel (`trope.settings.panel_cloud`) between *Progress* and *About*, `title: false` |
+
+`scripts/smoke-tools.mjs` loads every page in this table with the CDN blocked and proves: 0 `pageerror`,
+the chip beside the language switcher, the panel's sign-in line, `plan()` returning exactly the seeded
+items, and a localStorage dump byte-identical to a control run with the three account scripts blocked;
+then a remembered session with the API unreachable, and Hebrew + dark at 800 px.
+
 ## Manual Supabase setup (done once in the dashboard)
 
 The step-by-step walkthrough lives in `README.md` § "Accounts (optional, Supabase)": URL configuration
@@ -247,7 +269,6 @@ a few messages per hour).
 
 ## Roadmap pointers (what is not built yet)
 
-Per-tool adoption (the registry entries, `attach()` and the panel on each tool page), Font Maker
-projects (their own table and buckets), the account page, the delete-account Edge Function, and the
-keep-alive workflow follow in later phases; the tool pages carry no account or saves script until
-their phase.
+The remaining tool pages (see *Implemented on* for what is wired), Font Maker projects (their own
+table and buckets), the account page, the delete-account Edge Function, and the keep-alive workflow
+follow in later phases; a tool page carries no account or saves script until its turn.

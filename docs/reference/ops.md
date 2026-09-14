@@ -254,8 +254,9 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
   in `script-src`; `*.google-analytics.com`, `*.analytics.google.com` and `www.googletagmanager.com` in
   `connect-src`); `data:` / `blob:` in `img-src` for PDF/PNG/`.ivrit`
   export. (`i18n-test.html`, the dev harness, carries no gtag and allows only `data:` images.)
-- **`account-test.html`** (the account-module harness): no gtag; `cdn.jsdelivr.net` in `script-src` (the pinned Supabase SDK) and
-  `hhkmqwpjsyxdeuhvcyis.supabase.co` in `connect-src`. Any tool page that later offers accounts adds exactly those two origins.
+- **Pages that offer accounts** (`account-test.html`, `saves-test.html`, Trope Tutor): `cdn.jsdelivr.net` in `script-src` (the
+  pinned Supabase SDK) and `hhkmqwpjsyxdeuhvcyis.supabase.co` in `connect-src` — exactly those two origins, nothing else
+  (avatars are initials, Realtime is not used). The two harnesses carry no gtag.
 - **All seven tools:** `cdn.jsdelivr.net` in `font-src` — the self-hosted `aharonium/fonts` faces (Ezra SIL, Shlomo,
   Dyslexia Hebrew, the Culmus faces) every Hebrew font picker offers.
 - **Generator, Flash Cards, Dictionary, Torah Trainer:** `esm.sh` + `cdn.jsdelivr.net` in `script-src` and
