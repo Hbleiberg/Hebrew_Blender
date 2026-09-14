@@ -16,6 +16,7 @@ Supabase — no tool page ever calls the SDK directly:
 | `account-test.html` | Throwaway harness (own CSP, `noindex`, not in the sitemap/`llms.txt`/`sw.js`, skipped by `check-i18n`). Mounts the real chip, mirrors state, runs the URL self-checks and the Phase 2 table/bucket checks. |
 | `saves-test.html` | Same rules. Mounts the real panel with four page-only registry entries, runs the local round trip, the pure self-checks and the scripted cloud checks. |
 | `scripts/smoke-account.mjs`, `scripts/smoke-saves.mjs` | Headless Playwright smokes: anonymous with the CDN blocked, remembered session offline, SDK served locally, URL contracts, Hebrew + dark at 800 px. |
+| `scripts/smoke-sync.mjs` | Headless end-to-end sync test against a fake cloud (`--sdk` required): Playwright answers the project's `/rest/v1/saves` from an in-memory table and replays the second-device flow — settings changed in both places, Sync everything, the account screen's settings choice, the dashboard opening with Schedule Sync live. |
 
 Load order on a page (all deferred, so `window.I18n` and `window.IVRIT_SUPABASE` exist when the module runs):
 ```html
@@ -252,6 +253,18 @@ your account"), and offers one primary action for the state it found:
 - **Back up everything on this device (.ivrit)** — the page's `deviceBackup` hook when one was passed to
   `attach()` (the hub opens its Import / Export modal); every other page sends people to
   `index.html?alltools=open`, which opens that modal.
+- **Settings that differ** — shown only while some tool's settings blob (an `assign` row) is *Changed in
+  both places* and this page may write it. That is the everyday case on a second device, not a rare
+  clash: every tool writes its settings blob the first time it opens there, so with no sync memory yet
+  the module cannot tell which side is newer and *Sync everything* leaves the row alone (the live report
+  behind this block: a phone that took every dashboard preset and schedule but not Schedule Sync, which
+  lives in the settings blob). The block names the tools and offers **Use my account's settings** (each
+  such row's *Use cloud copy*: the account's fields land over a copy of this device's, per-device `omit`
+  fields kept, then both sides hold the result and the memory remembers it) or **Keep this device's
+  settings** (each row's *Keep mine*: this device's projection goes up). Items named the same on both
+  sides (a preset, a deck) keep their per-row choices in the tool's panel; a hint says so while any
+  remain. The finishing line of every account-screen action stays on the status line through the
+  re-listing that follows it.
 
 It opens by itself in two cases. **After every fresh sign-in** — the page load that established the
 session, as `IvritAccount.sessionSource()` reports (`'new'` for a sign-in during this load or an auth

@@ -571,6 +571,11 @@
     if (r.mergeable && r.downloadable) return ['merge'];
     return m === 'page' ? [] : ['keepMine'];   // no helper on this page: the tool that owns the merge resolves it
   }
+  // A settings blob that differs on both sides on a device with no memory of a sync is the everyday case
+  // on a second device (every tool writes its settings blob the first time it opens there), not a rare
+  // clash — so the account screen resolves every such row in one step. Items (a preset named the same
+  // on both sides) keep their per-row choices in the tool's panel.
+  function isSettingsChoice(r) { return r.state === 'conflict' && r.entry.merge === 'assign' && r.choices.indexOf('useCloud') >= 0; }
   function localSide(tool) {
     var items = [];
     registryFor(tool).forEach(function (e) { if (e.shape !== 'tree') items = items.concat(localItems(e)); });
@@ -961,14 +966,14 @@
     return seqMap(toolsWithEntries(), function (tool) {
       return enqueue(tool, function () { return planTool(tool); }).then(function (p) {
         render(tool);
-        var up = 0, cloudOnly = 0, conflicts = 0, lastSaved = null;
+        var up = 0, cloudOnly = 0, conflicts = 0, settings = 0, lastSaved = null;
         p.rows.forEach(function (r) {
           if (r.safeAction === 'upload') up++;
           else if (r.state === 'cloud-only') cloudOnly++;
-          else if (r.state === 'conflict' && !r.safeAction) conflicts++;
+          else if (r.state === 'conflict' && !r.safeAction) { conflicts++; if (isSettingsChoice(r)) settings++; }
         });
         (p.cloudRows || []).forEach(function (r) { if (r.updated_at && (!lastSaved || r.updated_at > lastSaved)) lastSaved = r.updated_at; });
-        return { tool: tool, name: toolName(tool), total: p.rows.length, cloud: (p.cloudRows || []).length, safe: p.counts.safe, up: up, cloudOnly: cloudOnly, conflicts: conflicts, lastSaved: lastSaved };
+        return { tool: tool, name: toolName(tool), total: p.rows.length, cloud: (p.cloudRows || []).length, safe: p.counts.safe, up: up, cloudOnly: cloudOnly, conflicts: conflicts, settings: settings, lastSaved: lastSaved };
       });
     });
   }
@@ -1316,6 +1321,24 @@
       var hint = el('p', 'ivsav-note ivsav-acct-hint', t('shared.cloud.acct_cloud_only_hint', "Items that are only in your account come to this device from a tool's Cloud saves panel (Sync now), or from Import / Export All Settings on the home page."));
       hint.hidden = true;
       card.appendChild(hint);
+      // "Settings that differ": a settings blob changed in both places is chosen here for every tool at once.
+      var sec = el('div', 'ivsav-acct-settings');
+      sec.hidden = true;
+      sec.appendChild(el('h3', '', t('shared.cloud.acct_settings_head', 'Settings that differ')));
+      sec.appendChild(el('p', 'ivsav-acct-settings-note', ''));
+      var useBtn = button(t('shared.cloud.acct_use_account', "Use my account's settings"), 'ivsav-primary', function () { resolveSettings('useCloud'); });
+      useBtn.title = t('shared.cloud.acct_use_account_title', "Replace this device's settings with the copy in your account");
+      useBtn.setAttribute('data-act', 'use-account');
+      sec.appendChild(useBtn);
+      var keepBtn = button(t('shared.cloud.acct_keep_device', "Keep this device's settings"), '', function () { resolveSettings('keepMine'); });
+      keepBtn.title = t('shared.cloud.acct_keep_device_title', "Put this device's settings in your account instead");
+      keepBtn.setAttribute('data-act', 'keep-device');
+      sec.appendChild(keepBtn);
+      sec.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_settings_aside', 'Either way, per-device choices such as zoom, panel layout and which panels are open stay as they are here.')));
+      card.appendChild(sec);
+      var other = el('p', 'ivsav-note ivsav-acct-other', t('shared.cloud.acct_other_conflicts_hint', 'Other items marked "changed in both places" are chosen one by one in that tool\'s Cloud saves panel.'));
+      other.hidden = true;
+      card.appendChild(other);
       card.appendChild(el('h3', '', t('shared.cloud.acct_backup_head', 'Backups')));
       var dl = button(t('shared.cloud.acct_download_cloud', 'Download everything in your account (.ivrit)'), '', function () { backupAccount(); });
       dl.setAttribute('data-act', 'backup');
@@ -1341,14 +1364,16 @@
     try { card.focus(); } catch (e) {}
     if (user) fillAccount();
   }
-  function fillAccount() {
+  // doneText (optional): what the status line shows once the listing is in — the finishing line of the
+  // action that asked for the re-listing, which would otherwise be wiped by "Checking…".
+  function fillAccount(doneText) {
     var me = account;
     acctSay(t('shared.cloud.acct_checking', 'Checking what is on this device and in your account…'), false);
     return accountSummary().then(function (tools) {
       if (account !== me) return;
       var list = me.root.querySelector('.ivsav-acct-list');
       while (list.firstChild) list.removeChild(list.firstChild);
-      var up = 0, cloudOnly = 0, shown = 0, safe = 0, cloud = 0, lastSaved = null;
+      var up = 0, cloudOnly = 0, shown = 0, safe = 0, cloud = 0, lastSaved = null, settingsTools = [], others = 0;
       tools.forEach(function (x) {
         safe += x.safe; cloud += x.cloud;
         if (x.lastSaved && (!lastSaved || x.lastSaved > lastSaved)) lastSaved = x.lastSaved;
@@ -1361,6 +1386,8 @@
         if (!bits.length) bits.push(t('shared.cloud.acct_tool_synced', 'everything is in your account'));
         list.appendChild(el('li', '', x.name + ': ' + bits.join(' · ')));
         up += x.up; cloudOnly += x.cloudOnly;
+        if (x.settings) settingsTools.push(x.name);
+        others += x.conflicts - x.settings;
       });
       if (!shown) list.appendChild(el('li', '', t('shared.cloud.acct_nothing', 'Nothing saved on this device or in your account yet.')));
       // The line under the title: when the account was last saved. With an empty account the screen is
@@ -1375,7 +1402,15 @@
       if (b) { b.hidden = !!cloud; if (up) b.removeAttribute('aria-disabled'); else b.setAttribute('aria-disabled', 'true'); }
       var hint = me.root.querySelector('.ivsav-acct-hint');
       if (hint) hint.hidden = !cloudOnly;
-      acctSay('', false);
+      var sec = me.root.querySelector('.ivsav-acct-settings');
+      if (sec) {
+        sec.hidden = !settingsTools.length;
+        var note = sec.querySelector('.ivsav-acct-settings-note');
+        if (note) note.textContent = t('shared.cloud.acct_settings_note', '{tools}: the settings on this device are not the same as the ones in your account. Choose which to keep.', { tools: settingsTools.join(', ') });
+      }
+      var other = me.root.querySelector('.ivsav-acct-other');
+      if (other) other.hidden = !others;
+      acctSay(doneText || '', false);
     }).catch(function (err) { if (account === me) acctSay(errorText(err), true); });
   }
   function uploadAll() {
@@ -1395,9 +1430,8 @@
       if (account !== me) return;
       acctBusy(false);
       var tail = skipped ? ' ' + t('shared.cloud.sync_skipped', '{n} could not be uploaded (too big or an invalid name).', { n: skipped }) : '';
-      if (error) acctSay(t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: total, total: total, reason: errorText(error) }) + tail, true);
-      else acctSay(t('shared.cloud.acct_uploaded', 'Uploaded {n} items to your account.', { n: total }) + tail, false);
-      return fillAccount();
+      if (error) { acctSay(t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: total, total: total, reason: errorText(error) }) + tail, true); return; }
+      return fillAccount(t('shared.cloud.acct_uploaded', 'Uploaded {n} items to your account.', { n: total }) + tail);
     });
   }
   // "Sync everything": each tool's Sync now, one after another — downloads, uploads and lossless merges,
@@ -1419,9 +1453,36 @@
       if (account !== me) return;
       acctBusy(false);
       var tail = skipped ? ' ' + t('shared.cloud.sync_skipped', '{n} could not be uploaded (too big or an invalid name).', { n: skipped }) : '';
-      if (error) acctSay(t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: up + down + merged, total: up + down + merged, reason: errorText(error) }) + tail, true);
-      else acctSay(t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: up, down: down, merged: merged, left: left }) + tail, false);
-      return fillAccount();
+      if (error) { acctSay(t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: up + down + merged, total: up + down + merged, reason: errorText(error) }) + tail, true); return; }
+      return fillAccount(t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: up, down: down, merged: merged, left: left }) + tail);
+    });
+  }
+  // The "Settings that differ" block: for every tool, every settings blob changed in both places takes the
+  // chosen side — 'useCloud' (the account's copy lands here, per-device fields kept) or 'keepMine' (this
+  // device's copy goes up) — then both sides hold it and the sync memory remembers it.
+  function resolveSettings(choice) {
+    var me = account;
+    if (!me || !currentUser()) return Promise.resolve();
+    acctBusy(true);
+    var done = 0, total = 0, error = null;
+    return seqMap(toolsWithEntries(), function (tool) {
+      if (error || account !== me) return Promise.resolve();
+      acctSay(t('shared.cloud.acct_updating', 'Updating {tool}…', { tool: toolName(tool) }), false);
+      return enqueue(tool, function () {
+        return planTool(tool).then(function (p) {
+          var rows = p.rows.filter(isSettingsChoice);
+          if (!rows.length) return null;
+          total += rows.length;
+          return seqMap(rows, function (row) { return runAction(tool, choice, row).then(function () { done++; }); })
+            .then(function () { return afterActions(tool); });
+        });
+      }).then(function () { render(tool); }, function (err) { error = err; render(tool); });
+    }).then(function () {
+      if (account !== me) return;
+      acctBusy(false);
+      if (error) { acctSay(t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: done, total: total, reason: errorText(error) }), true); return; }
+      return fillAccount(choice === 'useCloud' ? t('shared.cloud.acct_settings_done_cloud', "Your account's settings are now on this device.")
+                                               : t('shared.cloud.acct_settings_done_mine', "This device's settings are now in your account."));
     });
   }
   function backupAccount() {
