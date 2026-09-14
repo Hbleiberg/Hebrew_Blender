@@ -5297,6 +5297,9 @@ shared.cloud.acct_tool_up,{n} not in your account yet,{n} עדיין לא בחש
 shared.cloud.acct_tool_cloud_only,{n} only in your account,{n} רק בחשבון,Account screen per-tool line fragment,shared; account screen; template
 shared.cloud.acct_tool_conflicts,{n} changed in both places,{n} השתנו בשני המקומות,Account screen per-tool line fragment,shared; account screen; template
 shared.cloud.acct_tool_synced,everything is in your account,הכול בחשבון,Account screen per-tool line fragment when nothing is waiting,shared; account screen
+shared.cloud.acct_tool_projects.one,{name}: 1 project in your account ({size}),{name}: פרויקט אחד בחשבון ({size}),"Account screen line for Font Maker cloud projects (name = the tool's name, size = e.g. 28 MB)",shared; account screen; plural; template
+shared.cloud.acct_tool_projects.other,{name}: {n} projects in your account ({size}),{name}: {n} פרויקטים בחשבון ({size}),"Account screen line for Font Maker cloud projects (name = the tool's name, size = e.g. 28 MB)",shared; account screen; plural; template
+shared.cloud.size_mb,{mb} MB,{mb} MB,"A size in megabytes (account screen line, Font Maker load menu)",shared; template
 shared.cloud.acct_nothing,Nothing saved on this device or in your account yet.,עדיין אין שמירות במכשיר הזה או בחשבון.,Account screen list when every tool is empty on both sides,shared; account screen
 shared.cloud.acct_upload_all,Upload everything on this device,העלאת כל מה שבמכשיר הזה,Account screen primary button: copy every item this device holds into the account,shared; account screen
 shared.cloud.acct_upload_note,Your items stay on this device too.,הפריטים נשארים גם במכשיר הזה.,Account screen note under the upload button,shared; account screen
@@ -5336,3 +5339,8 @@ shared.cloud.error_shape,The cloud copy has an unexpected shape and was not writ
 shared.cloud.error_quota,There is no room left on this device to store that item.,אין מקום פנוי במכשיר הזה לשמור את הפריט.,Cloud-saves error (localStorage full),shared; cloud panel
 shared.cloud.error_no_merge,This page cannot merge that item yet.,הדף הזה עדיין לא יכול למזג את הפריט.,Cloud-saves error (no page merge helper registered),shared; cloud panel
 shared.cloud.error_generic,Something went wrong. Please try again.,משהו השתבש. נסו שוב.,Cloud-saves error,shared; cloud panel
+shared.cloud.error_file_too_big,That file is too big for the cloud.,הקובץ הזה גדול מדי עבור הענן.,Error line when Storage refuses an object for its size,shared; cloud
+shared.cloud.error_file_type,The cloud does not accept that file type.,הענן אינו מקבל קבצים מסוג זה.,Error line when Storage refuses an object's mime type,shared; cloud
+shared.cloud.error_not_found,That file is no longer in your account.,הקובץ הזה כבר אינו בחשבון שלכם.,Error line when a project file or photo is missing in Storage,shared; cloud
+shared.cloud.error_project_limit,Your account has reached its limit of 25 font projects.,החשבון שלכם הגיע למגבלה של 25 פרויקטים של גופנים.,Error line when the font_projects cap is hit,shared; cloud
+shared.cloud.error_project_too_big,This project is too big for your account (20 MB after compression).,הפרויקט הזה גדול מדי עבור החשבון (20 MB אחרי דחיסה).,Error line when a packed Font Maker project exceeds the bucket cap,shared; cloud

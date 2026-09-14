@@ -9,6 +9,7 @@ free plan). How the tables are used from the browser: `docs/reference/accounts-a
 | File | What it creates |
 |---|---|
 | `migrations/0001_accounts_and_saves.sql` | `profiles` (display name per account, filled by a trigger), `saves` (one row per saved item, ≤ 2 MB, 2000 per account), `font_projects` (catalogue rows for cloud Font Maker projects, 25 per account), the three private buckets `font-projects` / `font-exports` / `font-sources`, and the Row Level Security policies that keep every row and file private to its owner |
+| `migrations/0002_font_sources_originals.sql` | raises the `font-sources` bucket's per-file cap from 2 MiB to 15 MiB and adds WebP to its accepted types, so a Font Maker project's photos are kept at their original size (Phase 5); nothing else changes |
 
 Each file starts with a comment that explains every block in plain language.
 

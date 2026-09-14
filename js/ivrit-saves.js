@@ -497,6 +497,11 @@
     if (code === 'too_big' || (code === '23514' && /2mb|octet|too big/.test(lower))) return t('shared.cloud.error_too_big', 'That item is too big for the cloud (2 MB limit).');
     if (code === '23514') return t('shared.cloud.error_limit', 'Your account has reached its limit of saved items.');
     if (code === '23505') return t('shared.cloud.error_name_taken', 'That name is already used in the cloud.');
+    if (code === 'file_too_big') return t('shared.cloud.error_file_too_big', 'That file is too big for the cloud.');
+    if (code === 'bad_type') return t('shared.cloud.error_file_type', 'The cloud does not accept that file type.');
+    if (code === 'not_found') return t('shared.cloud.error_not_found', 'That file is no longer in your account.');
+    if (code === 'project_limit') return t('shared.cloud.error_project_limit', 'Your account has reached its limit of 25 font projects.');
+    if (code === 'project_too_big') return t('shared.cloud.error_project_too_big', 'This project is too big for your account (20 MB after compression).');
     if (code === '42501') return t('shared.cloud.error_not_allowed', 'The cloud refused this action.');
     if (code === 'signed_out' || code === 'PGRST301' || st === 401 || /jwt/.test(lower)) return t('shared.cloud.error_session', 'Your sign-in has expired. Sign in again.');
     if (code === 'PGRST204' || code === 'PGRST205' || code === '42P01') return t('shared.cloud.error_not_setup', 'Cloud saves are not set up on the server yet.');
@@ -977,6 +982,16 @@
       });
     });
   }
+  // Another module (the Font Maker's projects) adds one line to the account screen's list: a function
+  // returning a string or a promise of one; an empty string or a failure adds nothing.
+  var summaryHooks = [];
+  function registerSummary(fn) { if (typeof fn === 'function' && summaryHooks.indexOf(fn) < 0) summaryHooks.push(fn); }
+  function summaryLines() {
+    var out = [];
+    return seqMap(summaryHooks, function (fn) {
+      return Promise.resolve().then(fn).then(function (text) { if (text) out.push(String(text)); }, function (err) { warn('summary hook failed:', err); });
+    }).then(function () { return out; });
+  }
   // Does this device hold anything the registry knows about? (No network; decides whether the account
   // screen introduces itself after the first sign-in.)
   function deviceHasItems() {
@@ -1370,7 +1385,10 @@
     var me = account;
     acctSay(t('shared.cloud.acct_checking', 'Checking what is on this device and in your account…'), false);
     return accountSummary().then(function (tools) {
+      return summaryLines().then(function (extra) { return { tools: tools, extra: extra }; });
+    }).then(function (res) {
       if (account !== me) return;
+      var tools = res.tools, extra = res.extra;
       var list = me.root.querySelector('.ivsav-acct-list');
       while (list.firstChild) list.removeChild(list.firstChild);
       var up = 0, cloudOnly = 0, shown = 0, safe = 0, cloud = 0, lastSaved = null, settingsTools = [], others = 0;
@@ -1389,6 +1407,7 @@
         if (x.settings) settingsTools.push(x.name);
         others += x.conflicts - x.settings;
       });
+      extra.forEach(function (text) { list.appendChild(el('li', '', text)); shown++; });
       if (!shown) list.appendChild(el('li', '', t('shared.cloud.acct_nothing', 'Nothing saved on this device or in your account yet.')));
       // The line under the title: when the account was last saved. With an empty account the screen is
       // about moving this device's items up; with a filled one, about syncing — one primary button each.
@@ -1575,6 +1594,7 @@
     if (a && typeof a.onOpenSaves === 'function' && typeof cfg.open === 'function') a.onOpenSaves(cfg.open);
     if (cfg.panel) mountPanel(cfg.panel, tool);
     listen();   // IvritAccount.onChange fires once when the state is known — that call lists every attached tool
+    if (currentUser()) refresh(tool).catch(function () {});   // …unless it already fired before this attach (listen() runs at boot)
     return true;
   }
 
@@ -1596,6 +1616,8 @@
       remove: function (tool, kind, name) { var e = entryFor(tool, kind); if (!e) return Promise.reject(makeError('bad_kind')); return localRemove(e, name); }
     },
     cloud: { list: cloudList, load: cloudLoad, insert: cloudInsert, updateIf: cloudUpdateIf, remove: cloudRemove },
+    registerSummary: registerSummary,
+    errorText: errorText,
     t: t,
     _test: {
       canonJson: canonJson, hashText: hashText, classify: classify, deepMax: deepMax, maxValue: maxValue,
@@ -1604,4 +1626,7 @@
       treeIsFlat: treeIsFlat, bundleFromRows: bundleFromRows, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
     }
   };
+  // The chip's "Account…" item and the sign-in splash belong to every page that loads this module, including
+  // one with no registry rows of its own (the Font Maker): start listening at boot, not only on attach().
+  if (A()) listen();
 })();
