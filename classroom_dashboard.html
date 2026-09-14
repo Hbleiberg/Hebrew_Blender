@@ -6663,6 +6663,7 @@ function mountFolderTree(cfg){
         renderScheduleUI();
         if (weekEditorOpen()) renderWeekEditor();
         renderPresets();
+        checkSchedule();   // a downloaded Schedule Sync switches the board to the current period now, not at the next 30 s tick
       },
       open: function () {                  // the header chip's "Cloud saves…" item — through the page's own toggle
         openSettings();

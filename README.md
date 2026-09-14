@@ -217,8 +217,12 @@ saved, what each tool holds on this device and in the account, **Sync everything
 is empty, **Upload everything on this device** — a copy; nothing is removed from the device), and two
 backup buttons — everything in the account as one `.ivrit` file, or the home page's modal for everything
 on the device. It opens by itself after every fresh sign-in ("Sync settings from your last login?") and
-once on a device that already has saved items. `saves-test.html` exercises the panel on a set of throwaway test items;
-`node scripts/smoke-saves.mjs` and `node scripts/smoke-tools.mjs` run the headless checks.
+once on a device that already has saved items. When a tool's settings differ on this device and in the
+account — the usual case on a second device, which wrote its own settings the first time the tool opened —
+the screen offers **Use my account's settings** or **Keep this device's settings** in one step (per-device
+choices such as zoom stay either way). `saves-test.html` exercises the panel on a set of throwaway test items;
+`node scripts/smoke-saves.mjs` and `node scripts/smoke-tools.mjs` run the headless checks, and
+`node scripts/smoke-sync.mjs --sdk <supabase.js>` replays the second-device sync flow against a fake cloud.
 
 ## Files
 
