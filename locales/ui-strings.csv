@@ -3021,6 +3021,8 @@ home.alltools.myfonts.remove_confirm,Remove “{name}” from My Fonts? Tools us
 home.alltools.myfonts.remove_title,Remove,הסרה,button title,aria/title
 home.alltools.myfonts.title,★ My IvritSuite Fonts,★ הגופנים שלי ב-IvritSuite,section heading,leading-symbol
 home.alltools.myfonts.upload_button,⬆ Upload a font,⬆ העלאת גופן,upload label/button,leading-emoji
+home.alltools.cloud.title,☁ Cloud saves,☁ שמירות בענן,AllTools modal: heading of the cloud-saves block (one shared panel per tool),leading-emoji
+home.alltools.cloud.note,One panel per tool: what is saved in this browser next to the copies in your account. A change made in both places to a student profile or a word list is merged inside that tool.,לוח אחד לכל כלי: מה ששמור בדפדפן הזה לצד העותקים שבחשבון שלכם. שינוי שנעשה בשני המקומות בפרופיל תלמיד או ברשימת מילים ממוזג בתוך אותו כלי.,AllTools modal: note under the cloud-saves heading,
 home.alltools.myfonts.use_alert,“{name}” will be used in every IvritSuite tool. Reload any open tool pages to see it.,“{name}” ישמש בכל כלי IvritSuite. טענו מחדש את דפי הכלים הפתוחים כדי לראותו.,alert,template
 home.alltools.myfonts.use_button,Use in all tools,שימוש בכל הכלים,button,
 home.alltools.myfonts.use_status,“{name}” is now the font in every tool — reload any open tool to see it.,“{name}” הוא כעת הגופן בכל כלי — טענו מחדש כל כלי פתוח כדי לראותו.,status text,template

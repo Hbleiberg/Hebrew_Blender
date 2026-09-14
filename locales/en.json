@@ -3543,6 +3543,8 @@
   "fontmaker.workspace.resize_left_aria": "Resize left panel",
   "fontmaker.workspace.resize_right_aria": "Resize right panel",
   "fontmaker.workspace.steps_aria": "Workspace step",
+  "home.alltools.cloud.note": "One panel per tool: what is saved in this browser next to the copies in your account. A change made in both places to a student profile or a word list is merged inside that tool.",
+  "home.alltools.cloud.title": "☁ Cloud saves",
   "home.alltools.copy_button": "Copy to Clipboard",
   "home.alltools.copy_done": "✓ Copied",
   "home.alltools.copy_err_empty": "Nothing to copy — export first.",

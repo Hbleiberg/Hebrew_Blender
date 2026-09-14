@@ -7,7 +7,7 @@
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
      origins. Note: meta CSP can't express frame-ancestors or report-uri and does not cover content parsed
      before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://files.readme.io; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://files.readme.io; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -18,6 +18,9 @@
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
 <script src="/js/i18n.js" defer></script>
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -225,6 +228,9 @@ body.dark .ie-modal-body textarea{background:#0d1220;}
 /* The export/import box holds JSON — machine text a teacher copies or pastes, never reads as prose. In the Hebrew UI it inherited dir="rtl", so every line started at the right edge with its punctuation reordered. Only the filled state goes LTR: the (localized) placeholder keeps the UI's direction. */
 .ie-modal-body textarea:not(:placeholder-shown){direction:ltr;text-align:start;}
 .ie-modal-body .btn-row{display:flex;gap:8px;flex-wrap:wrap;}
+.ie-cloud-tool{border:1px solid var(--border);border-radius:6px;padding:4px 10px;margin-block-end:6px;}
+.ie-cloud-tool>summary{cursor:pointer;font-weight:600;font-size:0.9rem;padding:4px 0;}
+.ie-cloud-tool>.ie-cloud-host{padding:4px 0 8px;}
 .ie-action-btn{padding:7px 16px;border-radius:6px;font-size:0.82rem;font-family:'Source Sans 3',sans-serif;font-weight:600;cursor:pointer;border:none;transition:background 0.15s;}
 .ie-action-btn.primary{background:var(--navy);color:#fff;}
 .ie-action-btn.primary:hover{background:var(--gold);color:var(--navy);}
@@ -447,6 +453,16 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <p class="ie-note" style="margin:0 0 8px;" data-i18n-html="home.alltools.myfonts.note">Fonts you built in the <a href="Hebrew_Font_Maker.html">Hebrew Font Maker</a> — or any <b>.ttf / .otf / .woff</b> you upload — are saved in this browser. Use one across every tool, download it, or remove it.</p>
         <label class="ie-action-btn secondary" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin-bottom:8px;"><span data-i18n="home.alltools.myfonts.upload_button">⬆ Upload a font</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPickIndex(this)"></label>
         <div id="myFontsList"></div>
+      </div>
+      <!-- Cloud saves (optional accounts): one shared js/ivrit-saves.js panel per tool, mounted by initCloudSaves() -->
+      <div id="cloudSavesSection" style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
+        <h4 style="margin:0 0 4px;font-size:0.95rem;" data-i18n="home.alltools.cloud.title">☁ Cloud saves</h4>
+        <p class="ie-note" style="margin:0 0 8px;" data-i18n="home.alltools.cloud.note">One panel per tool: what is saved in this browser next to the copies in your account. A change made in both places to a student profile or a word list is merged inside that tool.</p>
+        <details class="ie-cloud-tool"><summary data-i18n="home.card.generator.name">Hebrew Worksheet Generator</summary><div class="ie-cloud-host" data-tool="Worksheet"></div></details>
+        <details class="ie-cloud-tool"><summary data-i18n="home.card.flashcards.name">Hebrew Flash Cards</summary><div class="ie-cloud-host" data-tool="FlashCards"></div></details>
+        <details class="ie-cloud-tool"><summary data-i18n="home.card.dictionary.name">Hebrew Word Lookup</summary><div class="ie-cloud-host" data-tool="Dictionary"></div></details>
+        <details class="ie-cloud-tool"><summary data-i18n="home.card.torah.name">Torah Trainer</summary><div class="ie-cloud-host" data-tool="TorahTrainer"></div></details>
+        <details class="ie-cloud-tool"><summary data-i18n="home.card.trope.name">Trope Tutor</summary><div class="ie-cloud-host" data-tool="TropeTutor"></div></details>
       </div>
       <div style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
         <button class="ie-action-btn danger" onclick="eraseAllSettings()" data-i18n="home.alltools.erase_button">🗑 Erase All Settings</button>
@@ -1253,10 +1269,17 @@ async function eraseAllSettings() {
     // outside the AllTools payload and the .ivrit project file is their canonical save.
   ];
   keys.forEach(k => localStorage.removeItem(k));
+  // The account layer's own keys (all erase-only, never exported): the SDK's session — any `sb-` key,
+  // incl. a PKCE verifier mid-flow — the chip's name cache and the cloud-saves sync memory. Erase =
+  // signed out on this device; when a session was there the page reloads afterwards, so the chip and
+  // the cloud panels (and the SDK's in-memory copy of the session) start from the emptied storage.
+  const accountKeys = Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_accountCache' || k === 'ivritSuite_syncMeta');
+  accountKeys.forEach(k => localStorage.removeItem(k));
   if (window.indexedDB) { listUserFonts().then(l => l.forEach(f => deleteUserFont(f.name))).catch(() => {}); _fontsBackupCache = []; renderMyFontsManager(); }
   document.getElementById('ieTextarea').value = '';
   renderIvritInventory();   // the "This file will contain:" line reads storage; it must not keep the erased counts
   alert(I18n.t('home.alltools.erase_success'));
+  if (accountKeys.length) location.reload();
 }
 
 /* ────────── .ivrit SAVE FILE (AllTools) ────────── */
@@ -1607,7 +1630,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } catch(e) {}
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+  initCloudSaves();
 });
+
+/* ── Cloud saves (optional accounts): one shared js/ivrit-saves.js panel per tool inside the AllTools
+   modal, so a fresh browser can be brought up to date from one place. Nothing on this page holds a tool's
+   state in memory, so every shape may be downloaded here; the folder trees merge through this page's own
+   ftImportTree copy, while a profile or word-list changed in both places is left for the tool that owns
+   that merge (a second copy of those rules here would drift from the tool's). ── */
+function openCloudSaves() {
+  openIEModal();
+  const s = document.getElementById('cloudSavesSection');
+  if (s) s.scrollIntoView({ block: 'start' });
+}
+function initCloudSaves() {
+  if (!window.IvritSaves) return;
+  // ftImportTree is write-through (it merges into the key and returns nothing); reading the key back
+  // hands the module the merged tree — it then writes the same bytes.
+  const treeMerge = key => (local, cloud) => { ftImportTree(key, cloud, false); return ftRead(key); };
+  const merges = {
+    Worksheet:  { presetFolders: treeMerge('hebrewBlender_presetsFolders') },
+    FlashCards: { presetFolders: treeMerge('hebrewFlashCards_presetsFolders'), profileFolders: treeMerge('hebrewFlashCards_profilesFolders') }
+  };
+  document.querySelectorAll('#cloudSavesSection .ie-cloud-host').forEach(host => {
+    const tool = host.getAttribute('data-tool');
+    IvritSaves.attach({
+      tool,
+      panel: host,
+      title: false,                              // the <summary> names the tool
+      merges: merges[tool] || {},
+      onLocalChanged: () => renderIvritInventory(),   // the "This file will contain:" counts read storage
+      open: openCloudSaves                       // the header chip's "Cloud saves…" item
+    });
+  });
+}
 document.addEventListener('keydown', e => {
   const bd = document.getElementById('ieBackdrop');
   if (!bd.classList.contains('open')) return;

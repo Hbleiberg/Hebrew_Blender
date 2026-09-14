@@ -146,7 +146,9 @@ Accounts are optional: everything works anonymously exactly as before, and the c
 to keep copies of your work next to the browser's own storage and `.ivrit` files. The whole account
 layer is three shared files — `js/supabase-config.js` (public project settings), `js/ivrit-account.js`
 (sign-in, sign-out, the header chip) and `js/ivrit-saves.js` (the cloud-saves panel and the sync rules) —
-plus two throwaway pages for trying it out, `account-test.html` and `saves-test.html`.
+plus two throwaway pages for trying it out, `account-test.html` and `saves-test.html`. The chip and the
+panel are on the home page, the Worksheet Generator, Flash Cards, the Dictionary, the Torah Trainer and
+the Trope Tutor (the Classroom Dashboard and the Font Maker follow in later phases).
 How it works inside: `docs/reference/accounts-and-cloud.md`.
 
 **Where the config values come from** (Supabase dashboard → project *IvritSuite*):
@@ -206,8 +208,11 @@ live project.
 panel lists them next to the copies in your account with plain words (*Only on this device*, *Newer in
 the cloud*, *Changed in both places*…) and one button per row — Upload, Download, Merge, Keep both. Nothing
 on the device is ever deleted by the cloud, and nothing newer is overwritten by something older unless you
-choose it. `saves-test.html` exercises the panel on a set of throwaway test items; `node scripts/smoke-saves.mjs`
-runs the headless checks.
+choose it. Where the panel sits: the Generator and Flash Cards under *Advanced* next to the `.ivrit` backup,
+the Dictionary inside the Word Lists manager, the Torah Trainer and Trope Tutor in their settings drawer, and
+the home page's *Import / Export All Settings* modal holds one panel per tool — the place to bring a fresh
+browser up to date. `saves-test.html` exercises the panel on a set of throwaway test items;
+`node scripts/smoke-saves.mjs` and `node scripts/smoke-tools.mjs` run the headless checks.
 
 ## Files
 

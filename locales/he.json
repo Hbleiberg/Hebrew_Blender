@@ -3543,6 +3543,8 @@
   "fontmaker.workspace.resize_left_aria": "שינוי גודל הלוח השמאלי",
   "fontmaker.workspace.resize_right_aria": "שינוי גודל הלוח הימני",
   "fontmaker.workspace.steps_aria": "שלב עבודה",
+  "home.alltools.cloud.note": "לוח אחד לכל כלי: מה ששמור בדפדפן הזה לצד העותקים שבחשבון שלכם. שינוי שנעשה בשני המקומות בפרופיל תלמיד או ברשימת מילים ממוזג בתוך אותו כלי.",
+  "home.alltools.cloud.title": "☁ שמירות בענן",
   "home.alltools.copy_button": "העתקה ללוח",
   "home.alltools.copy_done": "✓ הועתק",
   "home.alltools.copy_err_empty": "אין מה להעתיק — ייצאו קודם.",

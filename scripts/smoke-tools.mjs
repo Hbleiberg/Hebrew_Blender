@@ -45,7 +45,8 @@ const SETTLE_MS = 1500;   // longer than every page's debounced writer (300 ms s
  * panel renders into; `prepare` (optional) runs in the page right after load, before any check, when the
  * host only exists on demand (the dictionary's Word Lists manager); `expand` runs in the page to make the
  * host visible for the screenshot; `urlKeep` (optional) is a query string the page must keep after the
- * auth-error params are stripped.
+ * auth-error params are stripped; `tools` (the hub) lists several {tool, rows} pairs and `panels` the
+ * number of panels the host must hold.
  */
 const PAGES = [
   {
@@ -105,6 +106,14 @@ const PAGES = [
     urlKeep: 'wordlists=open'
   }
 ];
+// The hub carries one panel per tool: its seed is every tool's seed, its rows every tool's rows.
+PAGES.push({
+  file: 'index.html', host: '#cloudSavesSection', panels: 5,
+  seed: Object.assign({}, ...PAGES.map(p => p.seed)),
+  tools: PAGES.map(p => ({ tool: p.tool, rows: p.rows })),
+  prepare: `openIEModal();`,
+  expand: `openIEModal(); document.querySelectorAll('#cloudSavesSection details').forEach(d => { d.open = true; }); document.getElementById('cloudSavesSection').scrollIntoView();`
+});
 
 const results = [];
 function check(name, ok, detail) { results.push({ name, ok: !!ok }); console.log((ok ? 'PASS ' : 'FAIL ') + name + (ok || !detail ? '' : ' — ' + detail)); }
@@ -172,8 +181,14 @@ try {
         return { host: !!h, panel: !!p, note: note ? note.textContent : '' };
       }, P.host);
       check(tag + ' A: panel shows the sign-in line', panel.panel && /Sign in/.test(panel.note), JSON.stringify(panel));
-      const rows = await page.evaluate((tool) => window.IvritSaves.plan(tool).then(p => p.rows.map(r => r.kind + ':' + r.name).sort()), P.tool).catch(e => ['error: ' + e]);
-      check(tag + ' A: plan() lists exactly the seeded items', JSON.stringify(rows) === JSON.stringify([...P.rows].sort()), JSON.stringify(rows));
+      if (P.panels) {
+        const n = await page.evaluate((host) => document.querySelectorAll(host + ' .ivsav').length, P.host);
+        check(tag + ' A: ' + P.panels + ' panels mounted', n === P.panels, String(n));
+      }
+      for (const T of (P.tools || [{ tool: P.tool, rows: P.rows }])) {
+        const rows = await page.evaluate((tool) => window.IvritSaves.plan(tool).then(p => p.rows.map(r => r.kind + ':' + r.name).sort()), T.tool).catch(e => ['error: ' + e]);
+        check(tag + ' A: plan(' + T.tool + ') lists exactly the seeded items', JSON.stringify(rows) === JSON.stringify([...T.rows].sort()), JSON.stringify(rows));
+      }
       const after = await dump(page);
       check(tag + ' A: localStorage byte-identical to the control run', after === control, diffKeys(control, after));
       const bad = await page.evaluate(() => Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_syncMeta'));
