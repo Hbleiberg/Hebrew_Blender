@@ -65,9 +65,14 @@ read IVRIT_SUPABASE
   and every page's synchronous analytics snippet sends `page_view` with the full URL before any
   deferred script could clean it. PKCE leaves only a one-time `?code=`, useless without the verifier
   stored in the browser that started the flow.
-- **Email sends a magic link and a 6-digit code in one message.** The link signs in when opened in
-  the requesting browser; the code (`verifyOtp`, type `email`) works anywhere — another device, a mail
-  app's in-app browser, the installed PWA. Inside an installed app the email option is listed first.
+- **Email sends a 6-digit code.** `signInWithOtp` (`shouldCreateUser: true`) sends it; `verifyOtp`
+  (type `email`) signs in anywhere — another device, a mail app's in-app browser, the installed PWA.
+  The dashboard templates (*Confirm signup* for a person's first email, *Magic Link* after that) are
+  **code-only, with no `{{ .ConfirmationURL }}`**: school mail filters open every link in an incoming
+  email to scan it, which spends a one-time link seconds after it is sent (two scanners hit the first
+  real sign-in link before the teacher could). The link-handling code stays — `?code=` callbacks and the
+  expired / other-browser notes — because Google OAuth returns through the same path and a template
+  could re-add the link. Inside an installed app the email option is listed first.
 - **Redirects return to the same page with its own params intact.** `redirectTarget()` = the current
   URL minus `code`, `error`, `error_code`, `error_description` and minus the hash. After the round
   trip the SDK removes `code`; the module removes any remaining auth keys (`stripAuthParams`) and
@@ -115,9 +120,10 @@ no `frame-src`, no `wss:` (Realtime is not used). The test harness carries exact
 
 The step-by-step walkthrough lives in `README.md` § "Accounts (optional, Supabase)": URL configuration
 and redirect allow-list (`https://ivritsuite.com/**`, `http://localhost:8080/**`), Email provider + the
-magic-link template carrying both `{{ .ConfirmationURL }}` and `{{ .Token }}`, Google OAuth client and
-callback, and the custom SMTP provider that is **required before anyone but the project owner can
-receive a sign-in email** (the built-in sender delivers only to project team members).
+two email templates (*Confirm signup* and *Magic Link*) carrying `{{ .Token }}` only, Google OAuth
+client and callback, and the custom SMTP provider that is **required before anyone but the project's
+team members can receive a sign-in email** (the built-in sender refuses other addresses and allows only
+a few messages per hour).
 
 ## Roadmap pointers (what is not built yet)
 

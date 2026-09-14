@@ -161,24 +161,31 @@ How it works inside: `docs/reference/accounts-and-cloud.md`.
 **One-time dashboard setup** (Authentication section unless noted):
 1. *URL Configuration* — Site URL `https://ivritsuite.com`; Redirect URLs `https://ivritsuite.com/**`,
    `http://localhost:8080/**`, `http://127.0.0.1:8080/**` (the last two are for local testing).
-2. *Providers → Email* — enabled, sign-ups allowed. Passwords are never used; people get an email with
-   a sign-in link **and** a 6-digit code (the code works on any device).
-3. *Emails → Templates → Magic Link* — keep `{{ .ConfirmationURL }}` and add
-   `<strong>{{ .Token }}</strong>` so the same email carries the code. Suggested subject: "Your IvritSuite
-   sign-in link and code".
-4. *Emails → SMTP Settings* — **required before anyone but you can sign in**: Supabase's built-in
-   sender only delivers to the project's own team members. Use a transactional provider with a free
-   tier (Resend, Brevo, Postmark), sender `no-reply@ivritsuite.com`, and add the SPF/DKIM records it
-   gives you at Cloudflare. Then raise *Rate Limits → emails per hour* above the default.
-5. *Providers → Google* — in Google Cloud Console create an OAuth consent screen (External, app name
-   IvritSuite, scopes `openid email profile`, then **Publish**) and a *Web application* OAuth client with
-   authorized origin `https://ivritsuite.com` and redirect URI
+2. *Sign In / Providers → Email* — enabled, sign-ups allowed, Email OTP length 6. Passwords are never
+   used; people get an email with a 6-digit code.
+3. *Emails → Templates* — make **both** *Confirm signup* (a person's first email) and *Magic Link*
+   (every later one) code-only: the body shows `{{ .Token }}` and has **no** `{{ .ConfirmationURL }}`
+   link. School mail filters open every link in an incoming email to scan it, which spends a one-time
+   sign-in link seconds after it is sent (seen in the auth logs: two scanners hit the link before the
+   teacher could); a code cannot be spent that way. Suggested subject: "Your IvritSuite sign-in code".
+   If the *Email OTP Expiration* setting changes, change the "expires in" wording in the templates too.
+4. *Emails → SMTP Settings* — **required before anyone but the project's team members can sign in**:
+   Supabase's built-in sender refuses other addresses ("Email address not authorized") and allows only a
+   few messages per hour. Use a transactional provider with a free tier (Resend, Brevo, Postmark), sender
+   `no-reply@ivritsuite.com`, and add the SPF/DKIM records it gives you at Cloudflare. Then raise
+   *Rate Limits → emails per hour* above the default 30.
+5. *Sign In / Providers → Google* — in Google Cloud Console (Google Auth Platform) create the consent
+   screen (External, app name IvritSuite, authorized domains `ivritsuite.com` and
+   `hhkmqwpjsyxdeuhvcyis.supabase.co`, basic scopes only, then **Publish**; with no logo and only basic
+   scopes Google needs no verification review) and a *Web application* OAuth client with redirect URI
    `https://hhkmqwpjsyxdeuhvcyis.supabase.co/auth/v1/callback`; paste the client id + secret into
    Supabase and enable the provider.
 
-**Trying it locally:** `python3 -m http.server 8080` from the repo root, open
-`http://localhost:8080/account-test.html`, use the chip (or the buttons) to sign in with your email or
-Google, watch the state box and the console, sign out. `node scripts/smoke-account.mjs` runs the
+**Trying it:** `python3 -m http.server 8080` from the repo root and open
+`http://localhost:8080/account-test.html` — or, without a local server, merge and open
+`https://ivritsuite.com/account-test.html` (the page is `noindex` and loads nothing on any tool page).
+Use the chip (or the buttons) to sign in with your email or Google, watch the state box and the
+console, sign out. `node scripts/smoke-account.mjs` runs the
 headless checks (with `--sdk <path to dist/umd/supabase.js>` it also exercises the loaded SDK).
 
 ## Files
