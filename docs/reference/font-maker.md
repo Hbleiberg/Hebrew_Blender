@@ -32,7 +32,7 @@ never replaces either.
 
 ### Cloud projects (account copies) — `IvritProjects`
 The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-saves.js` and
-`/js/ivrit-projects.js` (the last is loaded only here; it owns every `font_projects` and Storage call —
+`/js/ivrit-projects.js` (the last is loaded here and by `account.html`; it owns every `font_projects` and Storage call —
 `docs/reference/accounts-and-cloud.md` → Font Maker projects). The page owns the project format and the UI:
 - **Identity** rides in the project: `project.cloudId` (the `font_projects` row) and `project.cloudRev` (the
   row's `updated_at` this copy last matched). They are the only two fields written outside `udDo` — identity,
@@ -70,6 +70,10 @@ The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-save
 - **Guards**: `udShortcutBlocked()` and the global keydown return early while the account screen
   (`.ivsav-overlay`) is open, so its Escape does not close the editor's own modal. Strings are
   `fontmaker.cloud.*` through `_cT(key, fallback, params)` (the `_pT` shape); `fmMb` formats sizes.
+- **The account page** (`account.html`) never opens a project here: its download-everything zip rebuilds a
+  `.hebrewfont` from the cloud copy through `IvritProjects.projectFile(id)` — the module's own generic walk over
+  the `cloud:` strings the packed manifest names, photos put back as data URLs, `cloudSources` dropped — so the
+  file is what Save Project writes. `fmCloudUnpack` stays the path for opening in this page.
 - **Test**: `node scripts/smoke-fontmaker.mjs --sdk <supabase.js>` (port 8082) replays the whole flow
   against a fake cloud that also fakes Storage.
 

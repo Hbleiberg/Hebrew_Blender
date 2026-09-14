@@ -204,7 +204,7 @@ what an account can store updates that text in the same commit.
 
 **Database:** the tables, buckets and Row Level Security policies are plain SQL files under
 `db/migrations/`, applied once per file; `db/README.md` explains how to apply one and how to check the
-live project.
+live project. The one server-side function (delete my account) lives under `db/functions/`, in the same README.
 
 **Cloud saves:** each tool's saved items stay in the browser exactly as before; signed in, a "Cloud saves"
 panel lists them next to the copies in your account with plain words (*Only on this device*, *Newer in
@@ -234,6 +234,14 @@ shows Saved, Saving or Unsaved); a change made on another device is never overwr
 and the browser's Recent copies are untouched. Photo projects are large (often 20–40 MB), so the Load menu
 and the account screen show each project's size; an account holds up to 25 projects.
 `node scripts/smoke-fontmaker.mjs --sdk <supabase.js>` replays the whole flow against a fake cloud.
+**Your account page** (`account.html`, linked from the account screen and the privacy policy): who the
+account is and its display name; everything it holds tool by tool (counts, sizes, the names of presets and
+student profiles); **Download everything** — one zip with an `.ivrit` of every saved item plus each Font
+Maker project as a `.hebrewfont` with its photos and its exported font; and **Delete my account**, which
+asks for a checkbox and the account's email address, then removes the account with everything in it through
+the one piece of code that runs outside the browser (`db/functions/delete-account/`, a Supabase Edge
+Function — it needs the project's secret key, which never ships in a page). A deletion touches nothing on any
+device. `node scripts/smoke-account-page.mjs --sdk <supabase.js>` replays the page against a fake cloud.
 
 ## Files
 
@@ -249,6 +257,7 @@ and the account screen show each project's size; an account holds up to 25 proje
 | `Hebrew_Font_Maker.html` | Make a real installable Hebrew font from your handwriting — trace, anchor nikkud/trop, export TTF/WOFF2/UFO — Beta |
 | `resources.html` | Curated directory of external Hebrew / Jewish-education resources |
 | `contact.html` | Contact / feedback form (web3forms + hCaptcha) |
+| `account.html` | Your account (optional accounts): what it holds, download everything as one zip, delete the account |
 | `privacy.html` | Privacy policy |
 | `terms.html` | Terms of use |
 | `404.html` | Custom not-found page |

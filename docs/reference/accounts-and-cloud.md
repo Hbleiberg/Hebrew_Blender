@@ -5,7 +5,7 @@
 ## What exists
 
 Accounts are **optional and additive**. Anonymous use, localStorage, `.ivrit` files and JSON import are
-untouched; the cloud is a third place to keep copies. Two shared files own every line that talks to
+untouched; the cloud is a third place to keep copies. Four shared files own every line that talks to
 Supabase — no tool page ever calls the SDK directly:
 
 | File | Role |
@@ -13,12 +13,15 @@ Supabase — no tool page ever calls the SDK directly:
 | `js/supabase-config.js` | Public project values: `url`, publishable `anonKey`, the pinned SDK URL + its Subresource Integrity hash, and the `enabled` kill switch. The only file that changes when the project changes. |
 | `js/ivrit-account.js` | `window.IvritAccount` — session state, sign-in/out, lazy SDK loading, the header chip. |
 | `js/ivrit-saves.js` | `window.IvritSaves` — the saves adapter: `IVRIT_SYNC_REGISTRY`, the local and cloud backends, the per-item state table, the cloud-saves panel, the account screen. |
-| `js/ivrit-projects.js` | `window.IvritProjects` — Font Maker cloud projects: the `font_projects` rows and the three Storage buckets (project file, photos, latest export). Loaded only by `Hebrew_Font_Maker.html`. |
+| `js/ivrit-projects.js` | `window.IvritProjects` — Font Maker cloud projects: the `font_projects` rows and the three Storage buckets (project file, photos, latest export). Loaded by `Hebrew_Font_Maker.html` and by `account.html` (the download-everything zip). |
 | `account-test.html` | Throwaway harness (own CSP, `noindex`, not in the sitemap/`llms.txt`/`sw.js`, skipped by `check-i18n`). Mounts the real chip, mirrors state, runs the URL self-checks and the Phase 2 table/bucket checks. |
 | `saves-test.html` | Same rules. Mounts the real panel with four page-only registry entries, runs the local round trip, the pure self-checks and the scripted cloud checks. |
+| `account.html` | The account page (in the sitemap, precached, own CSP): who the account is and its display name, what it holds tool by tool, **Download everything** (one zip) and **Delete my account**. Only the shared modules talk to Supabase; see "The account page and data rights" below. |
+| `db/functions/delete-account/` | The one Edge Function: removes the caller's Storage files, then the auth user (rows cascade). Deployed through the connector with the platform's JWT check on; `db/README.md` says how, and why it is not under `supabase/`. |
 | `scripts/smoke-account.mjs`, `scripts/smoke-saves.mjs` | Headless Playwright smokes: anonymous with the CDN blocked, remembered session offline, SDK served locally, URL contracts, Hebrew + dark at 800 px. |
 | `scripts/smoke-sync.mjs` | Headless end-to-end sync test against a fake cloud (`--sdk` required): Playwright answers the project's `/rest/v1/saves` from an in-memory table and replays the second-device flow — settings changed in both places, Sync everything, the account screen's settings choice, the dashboard opening with Schedule Sync live. |
 | `scripts/smoke-fontmaker.mjs` | Headless end-to-end test of Font Maker cloud projects (`--sdk` required, port 8082): the fake cloud also answers the Storage endpoints; anonymous control, save, autosave, open in a fresh browser, conflict (Overwrite / Keep both), delete, export keep, a refused upload, the `?start=` contract, Hebrew + dark. |
+| `scripts/smoke-account-page.mjs` | Headless end-to-end test of the account page (`--sdk` required, port 8083): anonymous control, the listing, the display name, the download-everything zip parsed and checked in Node, delete (accepted and refused), Hebrew + dark. |
 
 Load order on a page (all deferred, so `window.I18n` and `window.IVRIT_SUPABASE` exist when the module runs):
 ```html
@@ -50,6 +53,10 @@ any of them bumps `VERSION`. A page that only offers sign-in leaves the fourth l
 | `onOpenAccount(fn)` | The saves module registers its account screen; "Account…" appears in the menu only then |
 | `sessionSource()` | `'new'` when this page load established the session (a sign-in here, or an auth callback), `'restored'` when it came from storage, `null` when signed out — what decides the sign-in splash |
 | `openMenu()` | Opens the chip's menu (`false` when no chip is mounted) — what the saves panel's own Sign in button calls |
+| `profile()` | Promise → `{ displayName, createdAt }` from the account's `profiles` row |
+| `setDisplayName(name)` | 1–80 characters: writes the user's metadata (`full_name`, what the chip reads everywhere) and mirrors it into `profiles.display_name`; the chip re-renders on the SDK's `USER_UPDATED` |
+| `deleteAccount()` | Calls the `delete-account` Edge Function with the session's token, then signs this device out; resolves with the function's `{ ok, deleted: {saves, projects, files} }`. Nothing on the device is touched |
+| `errorText(err)` | One localized sentence for a failure of any call above (the account page's status lines) |
 | `_test` | Pure URL helpers for the smoke test |
 
 ## How the SDK is loaded (and why anonymous pages pay nothing)
@@ -274,7 +281,8 @@ session, as `IvritAccount.sessionSource()` reports (`'new'` for a sign-in during
 callback, `'restored'` for a session read from storage) — it is titled *Sync settings from your last
 login?* with the last-saved date under it, at most once per page load. Otherwise **once per account on
 each device** that already holds saved items (`ivritSuite_syncMeta.welcomed[uid]` remembers it; a device
-with nothing saved is marked without a screen), titled as a welcome. Both dismiss with *Not now*.
+with nothing saved is marked without a screen), titled as a welcome. Both dismiss with *Not now*. A link under
+the backup buttons leads to the account page (`account.html`): the download-everything zip and *Delete my account*.
 
 ### The panel
 
@@ -346,6 +354,49 @@ Errors reject with a code `IvritSaves.errorText` knows: Storage's shapes are nor
 413, `bad_type` 415, `not_found` 404) and the cap's `23514` becomes `project_limit`. Rule 2 names this
 module as the fourth and last file that talks to Supabase.
 
+## The account page and data rights (`account.html`)
+
+The page an account-holder reaches from the account screen's link and from the privacy policy. It is a plain
+root page (own CSP, in the sitemap, precached) whose script only renders, asks and packs; every cloud call goes
+through the three modules. Four tiles, shown only while signed in (signed out: one line and a Sign in button
+that opens the chip's menu; offline or with the SDK blocked: one line, nothing else):
+
+- **Who** — the email, how the account signs in (Google or an emailed code), when it was created
+  (`profiles.created_at`), and the display name. Saving a name calls `IvritAccount.setDisplayName()`: the
+  user's metadata first (what the chip reads on every page — it re-renders on the SDK's `USER_UPDATED`), then
+  `profiles.display_name`. An empty or over-long name is refused before any request.
+- **What your account holds** — `IvritSaves.inventory()` (one listing per tool, no data): per kind a count and
+  the bytes, with the names expandable where a row's name is the item's own (presets, decks, student profiles)
+  and never where it is an id (word lists, class lists); then `IvritProjects.list()` for the Font Maker
+  projects (letters done, size, last edit, whether an export is kept); then one total line. Folder trees count
+  in the totals but are not listed.
+- **Download everything** — one store-only zip built in the page (the writer `resources.html` uses for font
+  bundles, with UTF-8 names): `README.txt`; `IvritSuite-account-<date>.ivrit`, the AllTools-shaped bundle from
+  `IvritSaves.bundleAll()` (the hub's Import / Export modal restores it); and per project
+  `font-projects/<name>/<name>.hebrewfont` from `IvritProjects.projectFile()` — the cloud copy with its photos
+  put back where the page took them out (a generic walk over the `cloud:` strings the packed manifest names,
+  photos downloaded three at a time, a failed one left empty and counted) — next to the exported font when one
+  is kept. Progress goes to the status line (project i of n, photo j of m); the button is disabled while the
+  account holds nothing.
+- **Delete my account** — a confirmation box that needs a ticked checkbox ("I have downloaded everything I want
+  to keep, or I do not need it") and the account's email address typed (compared case-insensitively); the red
+  button stays `aria-disabled` until both hold. Then `IvritAccount.deleteAccount()` calls the `delete-account`
+  Edge Function (`db/functions/delete-account/index.ts`): the platform's JWT check runs first, the function asks
+  Auth who the token belongs to, removes every object under `<uid>/` in the three buckets (paged, subfolders
+  included), then `auth.admin.deleteUser(uid)` — the `profiles`, `saves` and `font_projects` rows cascade. It
+  answers only the site's own origins (CORS) and returns the counts. Back in the page: the module signs this
+  device out (the sign-out call itself may 401 — the session is already dead — which is ignored),
+  `IvritSaves.forgetUser(uid)` drops the sync memory and the welcome mark, and the "deleted" tile shows the
+  counts. Nothing stored on any device is touched: browsers keep their copies, `.ivrit` and `.hebrewfont` files
+  stay. A failed call leaves the box open with one error line and the session intact.
+
+The download is not forced before a deletion (a photo project can be tens of megabytes, and a failed forced
+download would block the deletion); the checkbox states the choice instead. The privacy policy's section 5
+names the page as the way to see, download and delete everything (EN + HE, accounts rule 8).
+
+`node scripts/smoke-account-page.mjs --sdk <supabase.js>` replays all of it against a fake cloud and parses the
+zip in Node (the CRC of every entry, the bundle's keys, the `.hebrewfont`'s photos byte for byte).
+
 ## Manual Supabase setup (done once in the dashboard)
 
 The step-by-step walkthrough lives in `README.md` § "Accounts (optional, Supabase)": URL configuration
@@ -357,5 +408,5 @@ a few messages per hour).
 
 ## Roadmap pointers (what is not built yet)
 
-The account page with a download-all zip and the delete-account Edge Function (Phase 6) and the
-keep-alive workflow with the ops notes (Phase 8) follow; every tool page now carries the account layer.
+The keep-alive workflow with the ops notes (Phase 8) follows; every tool page carries the account layer and
+the account page (Phase 6) is live.
