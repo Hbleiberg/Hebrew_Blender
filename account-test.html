@@ -53,7 +53,7 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
     <p class="hint">Same calls the chip makes. Email: request a code, then type it. Google: full-page redirect back to this page.</p>
     <button class="act" type="button" id="googleBtn">Sign in with Google</button><br>
     <input class="fld" type="email" id="emailFld" placeholder="you@school.org" dir="ltr" autocomplete="email">
-    <button class="act" type="button" id="emailBtn">Email me a link + code</button><br>
+    <button class="act" type="button" id="emailBtn">Email me a code</button><br>
     <input class="fld" type="text" id="codeFld" placeholder="6-digit code" dir="ltr" inputmode="numeric" autocomplete="one-time-code">
     <button class="act" type="button" id="verifyBtn">Verify code</button><br>
     <button class="act" type="button" id="signOutBtn">Sign out (this device)</button>
@@ -63,6 +63,16 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
     <h2>3. Self-checks (pure URL helpers, no network)</h2>
     <button class="act" type="button" id="checksBtn">Run self-checks</button>
     <ul class="checks" id="checks"></ul>
+  </section>
+  <section>
+    <h2>4. Cloud tables &amp; buckets (Phase 2)</h2>
+    <p class="hint">Sign in first. The row is <code>{ tool: 'Suite', kind: 'test', name: 'phase2' }</code> in the <code>saves</code> table. The self-checks prove Row Level Security and the bucket rules from this browser: other accounts' rows are invisible, the key alone reads nothing, writing as someone else is refused, a PNG lands only in this account's own folder.</p>
+    <button class="act" type="button" id="saveRowBtn">Save test row</button>
+    <button class="act" type="button" id="listRowsBtn">List my saves</button>
+    <button class="act" type="button" id="deleteRowBtn">Delete test row</button>
+    <button class="act" type="button" id="cloudChecksBtn">Run cloud self-checks</button>
+    <pre id="cloudOut">(no cloud action yet)</pre>
+    <ul class="checks" id="cloudChecks"></ul>
   </section>
 </main>
 <script>
@@ -106,6 +116,125 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
     $('emailBtn').addEventListener('click', function () { report(A.signIn('email', { email: $('emailFld').value })); });
     $('verifyBtn').addEventListener('click', function () { report(A.verifyCode($('emailFld').value, $('codeFld').value)); });
     $('signOutBtn').addEventListener('click', function () { report(A.signOut()); });
+
+    // ---- 4. Cloud tables & buckets (Phase 2): the saves table and the font-sources bucket ----
+    var CFG = window.IVRIT_SUPABASE || {};
+    var TEST_ROW = { tool: 'Suite', kind: 'test', name: 'phase2' };
+    function unwrap(r) { if (r && r.error) throw r.error; return r ? r.data : null; }
+    function errText(e) { return e ? [e.code, e.status || e.statusCode, e.message].filter(Boolean).join(' ') : ''; }
+    function cloudReport(p) {
+      show($('cloudOut'), 'working…');
+      p.then(function (r) { show($('cloudOut'), { ok: true, result: r === undefined ? null : r }); })
+       .catch(function (e) { show($('cloudOut'), { ok: false, code: e && e.code, status: e && (e.status || e.statusCode), message: e && e.message, details: e && e.details, hint: e && e.hint }); });
+    }
+    $('saveRowBtn').addEventListener('click', function () {
+      cloudReport(A.client().then(function (c) {
+        var now = new Date().toISOString();
+        var row = { tool: TEST_ROW.tool, kind: TEST_ROW.kind, name: TEST_ROW.name,
+                    data: { hello: 'world', savedAt: now, lang: document.documentElement.lang || 'en' },
+                    data_hash: 'phase2-test', client_updated_at: now };
+        return c.from('saves').upsert(row, { onConflict: 'user_id,tool,kind,name' })
+                .select('id, tool, kind, name, bytes, created_at, updated_at').then(unwrap);
+      }));
+    });
+    $('listRowsBtn').addEventListener('click', function () {
+      cloudReport(A.client().then(function (c) {
+        return c.from('saves').select('id, tool, kind, name, bytes, updated_at')
+                .order('updated_at', { ascending: false }).limit(50).then(unwrap);
+      }));
+    });
+    $('deleteRowBtn').addEventListener('click', function () {
+      cloudReport(A.client().then(function (c) {
+        return c.from('saves').delete().match(TEST_ROW).select('id, name').then(unwrap);
+      }));
+    });
+    $('cloudChecksBtn').addEventListener('click', function () {
+      var ul = $('cloudChecks'); ul.textContent = '';
+      var pass = 0, total = 0;
+      function line(ok, label, detail) {
+        total++; if (ok) pass++;
+        var li = document.createElement('li');
+        var b = document.createElement('span'); b.className = ok ? 'ok' : 'fail'; b.textContent = ok ? 'PASS ' : 'FAIL ';
+        li.appendChild(b);
+        li.appendChild(document.createTextNode(label + (detail ? ' — ' + detail : '')));
+        ul.appendChild(li);
+      }
+      var me = A.user();
+      if (!me) { line(false, 'signed in', 'sign in first, then run the checks'); return; }
+      var other = '00000000-0000-4000-8000-000000000000';
+      var probe = me.id + '/phase2-probe.png';
+      var raw = atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
+      var bytes = new Uint8Array(raw.length);
+      for (var i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+      var pngBlob = new Blob([bytes], { type: 'image/png' });
+      A.client().then(function (c) {
+        var anon = window.supabase.createClient(CFG.url, CFG.anonKey, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'ivacct-anon-probe' } });
+        var steps = [
+          ['profiles: exactly one row, mine, with a display name', function () {
+            return c.from('profiles').select('id, display_name').then(unwrap).then(function (rows) {
+              return { ok: rows.length === 1 && rows[0].id === me.id && !!rows[0].display_name, detail: JSON.stringify(rows) };
+            });
+          }],
+          ['saves: rows of other accounts are invisible', function () {
+            return c.from('saves').select('id').neq('user_id', me.id).then(unwrap).then(function (rows) {
+              return { ok: rows.length === 0, detail: rows.length + ' rows' };
+            });
+          }],
+          ['saves: the key alone (no sign-in) reads nothing', function () {
+            return anon.from('saves').select('id').limit(1).then(function (r) {
+              var ok = !!r.error || (Array.isArray(r.data) && r.data.length === 0);
+              return { ok: ok, detail: r.error ? errText(r.error) : (r.data.length + ' rows') };
+            });
+          }],
+          ['saves: inserting as someone else is refused', function () {
+            return c.from('saves').insert({ user_id: other, tool: 'Suite', kind: 'test', name: 'intruder', data: {} }).then(function (r) {
+              return { ok: !!r.error, detail: r.error ? errText(r.error) : 'insert succeeded (bad)' };
+            });
+          }],
+          ['storage: a PNG uploads into my own folder', function () {
+            return c.storage.from('font-sources').upload(probe, pngBlob, { contentType: 'image/png', upsert: true }).then(function (r) {
+              return { ok: !r.error, detail: r.error ? errText(r.error) : (r.data && r.data.path) };
+            });
+          }],
+          ['storage: my folder lists the probe', function () {
+            return c.storage.from('font-sources').list(me.id).then(function (r) {
+              var names = (r.data || []).map(function (f) { return f.name; });
+              return { ok: !r.error && names.indexOf('phase2-probe.png') >= 0, detail: r.error ? errText(r.error) : names.join(', ') };
+            });
+          }],
+          ['storage: a text file is refused (mime allow-list)', function () {
+            return c.storage.from('font-sources').upload(me.id + '/phase2-probe.txt', new Blob(['probe'], { type: 'text/plain' }), { contentType: 'text/plain' }).then(function (r) {
+              return { ok: !!r.error, detail: r.error ? errText(r.error) : 'upload succeeded (bad)' };
+            });
+          }],
+          ['storage: uploading into another folder is refused', function () {
+            return c.storage.from('font-sources').upload(other + '/phase2-probe.png', pngBlob, { contentType: 'image/png' }).then(function (r) {
+              return { ok: !!r.error, detail: r.error ? errText(r.error) : 'upload succeeded (bad)' };
+            });
+          }],
+          ['storage: another folder lists nothing', function () {
+            return c.storage.from('font-sources').list(other).then(function (r) {
+              return { ok: !r.error && (r.data || []).length === 0, detail: r.error ? errText(r.error) : ((r.data || []).length + ' files') };
+            });
+          }],
+          ['storage: the probe is removed again', function () {
+            return c.storage.from('font-sources').remove([probe]).then(function (r) {
+              return { ok: !r.error && (r.data || []).length === 1, detail: r.error ? errText(r.error) : ((r.data || []).length + ' removed') };
+            });
+          }]
+        ];
+        return steps.reduce(function (chain, step) {
+          return chain.then(function () {
+            return Promise.resolve().then(step[1]).then(
+              function (res) { line(res.ok, step[0], res.detail); },
+              function (e) { line(false, step[0], errText(e)); });
+          });
+        }, Promise.resolve());
+      }).then(function () {
+        var sum = document.createElement('li'); sum.className = pass === total ? 'ok' : 'fail';
+        sum.textContent = pass + ' / ' + total + ' passed'; ul.appendChild(sum);
+      }).catch(function (e) { line(false, 'cloud client', errText(e)); });
+    });
 
     // Self-checks: the URL helpers must keep every tool's own params and drop only the auth ones.
     $('checksBtn').addEventListener('click', function () {

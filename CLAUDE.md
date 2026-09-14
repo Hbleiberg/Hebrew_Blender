@@ -28,7 +28,7 @@ index below) — read the file for the area you are touching before you touch it
 | `hebrew_blend_generator.html` selectors or worksheet build | `docs/reference/generator.md` |
 | `torah_trainer.html` / `trope_tutor.html`, vowel color schemes, trope coloring | `docs/reference/torah-and-trope.md` |
 | `sw.js`, `splash/`, deploy, sitemap/`llms.txt`, the Playwright recipe | `docs/reference/ops.md` |
-| Accounts, sign-in, the header account chip, `js/supabase-config.js`, `js/ivrit-account.js`, cloud saves | `docs/reference/accounts-and-cloud.md` |
+| Accounts, sign-in, the header account chip, `js/supabase-config.js`, `js/ivrit-account.js`, cloud saves, `db/migrations/` | `docs/reference/accounts-and-cloud.md`, `db/README.md` |
 | The improvement loop (`/improveloop`), its ledger, its size rules | `.claude/skills/improveloop/SKILL.md`, `scripts/ledger-rules.mjs` |
 
 ## Accounts & cloud saves (Supabase) — REQUIRED patterns
@@ -38,6 +38,7 @@ Accounts are optional and additive; how the layer works: `docs/reference/account
 3. **The SDK loads lazily and everything fails soft** — an anonymous visitor downloads nothing extra, and offline / a blocked CDN / a missing config only changes the chip's label, never the page (the suite is an offline PWA).
 4. **PKCE only, and a sign-in returns to the same page with its own query params kept** — the module strips only the auth params (`stripAuthParams`), so `?s=`, `?start=`, `?parsha=` and every other URL contract survive; never switch `flowType` to implicit (tokens in the fragment reach the analytics snippet).
 5. **Offering accounts on a page = CSP `script-src` += `https://cdn.jsdelivr.net`, `connect-src` += `https://hhkmqwpjsyxdeuhvcyis.supabase.co`**, then `node scripts/smoke-account.mjs` (0 `pageerror` with the CDN blocked is the bar).
+6. **Schema changes are `db/migrations/NNNN_<name>.sql`, applied once through the Supabase connector or the SQL editor** — RLS on and `to authenticated` on every table, never a `drop`, never RLS off (the folder is `db/`, not `supabase/`, so the GitHub integration never spins up a paid preview branch).
 
 ## Definition of done — check EVERY item before finishing a change
 - [ ] Edited a precached file (any root HTML page, `pwa.js`, a `js/` module, `locales/*.json`, an icon, the manifest)? → **bump `VERSION` in `sw.js`**. The most-missed step — the live site serves stale copies until it's done.

@@ -65,9 +65,14 @@ read IVRIT_SUPABASE
   and every page's synchronous analytics snippet sends `page_view` with the full URL before any
   deferred script could clean it. PKCE leaves only a one-time `?code=`, useless without the verifier
   stored in the browser that started the flow.
-- **Email sends a magic link and a 6-digit code in one message.** The link signs in when opened in
-  the requesting browser; the code (`verifyOtp`, type `email`) works anywhere — another device, a mail
-  app's in-app browser, the installed PWA. Inside an installed app the email option is listed first.
+- **Email sends a 6-digit code.** `signInWithOtp` (`shouldCreateUser: true`) sends it; `verifyOtp`
+  (type `email`) signs in anywhere — another device, a mail app's in-app browser, the installed PWA.
+  The dashboard templates (*Confirm signup* for a person's first email, *Magic Link* after that) are
+  **code-only, with no `{{ .ConfirmationURL }}`**: school mail filters open every link in an incoming
+  email to scan it, which spends a one-time link seconds after it is sent (two scanners hit the first
+  real sign-in link before the teacher could). The link-handling code stays — `?code=` callbacks and the
+  expired / other-browser notes — because Google OAuth returns through the same path and a template
+  could re-add the link. Inside an installed app the email option is listed first.
 - **Redirects return to the same page with its own params intact.** `redirectTarget()` = the current
   URL minus `code`, `error`, `error_code`, `error_description` and minus the hash. After the round
   trip the SDK removes `code`; the module removes any remaining auth keys (`stripAuthParams`) and
@@ -111,13 +116,43 @@ consciously unregistered.
 (Auth, PostgREST, Storage all live on that host). Nothing else: no `img-src` (avatars are initials),
 no `frame-src`, no `wss:` (Realtime is not used). The test harness carries exactly these.
 
+## Database, buckets and policies (Phase 2)
+
+The SQL lives in `db/migrations/` (one file per change, applied in order; `db/README.md` explains how to
+apply one and why the folder is not `supabase/`). Everything a browser can reach is guarded by Row Level
+Security: every policy is `to authenticated` and compares `(select auth.uid())` with the row's owner, so
+the publishable key alone reads nothing and no account can see another account's rows or files.
+
+| Table | One row per | Caps | Notes |
+|---|---|---|---|
+| `profiles` | account | — | `display_name` (≤ 80) filled by the `handle_new_user` trigger from Google's name or the email's local part; the client may read and update its own row only; rows are created by the trigger and removed by the cascade from `auth.users` |
+| `saves` | saved item | `data` ≤ 2 MB; 2000 rows per account | `(user_id, tool, kind, name)` is unique, so the client upserts on it; `user_id` defaults to `auth.uid()` and is never sent; `bytes` and `updated_at` are set by a trigger (`updated_at` is the only ordering signal, `client_updated_at` is display-only); `tool` ∈ Suite / Worksheet / FlashCards / Dictionary / TorahTrainer / TropeTutor / Dashboard; `kind` matches `^[A-Za-z]{1,32}$`; `name` 1–120 chars |
+| `font_projects` | cloud Font Maker project | 25 per account | catalogue row for a project whose gzipped JSON, downscaled images and exports live in Storage; `project_path` / `export_path` must start with the owner's id |
+
+Limits come back as Postgres `check_violation` (`23514`) with a readable message; a duplicate name is
+`23505`; anything RLS refuses is `42501`. The saves adapter (Phase 3) maps these to the panel's strings.
+
+**Buckets** (all private): `font-projects` (20 MB, gzip), `font-exports` (5 MB, ttf / woff2 / zip),
+`font-sources` (2 MB, jpeg / png). Every object path is `<user id>/<project id>/<file>`, and the four
+`storage.objects` policies allow a signed-in user to read, upload (`upsert` needs update + select),
+replace and delete only inside the folder named after their own id.
+
+**Account deletion**: deleting an auth user cascades the rows but not the files; the self-service path
+that removes both is the Phase 6 Edge Function. The migration file carries the manual cleanup note.
+
+**Checking it from the browser**: `account-test.html` § 4 saves, lists and deletes a `Suite/test/phase2`
+row and runs cloud self-checks (other users' rows invisible, the anon key reads nothing, inserting as
+someone else is refused, a PNG uploads into the caller's folder while a text file and a foreign folder
+are refused, the probe is removed).
+
 ## Manual Supabase setup (done once in the dashboard)
 
 The step-by-step walkthrough lives in `README.md` § "Accounts (optional, Supabase)": URL configuration
 and redirect allow-list (`https://ivritsuite.com/**`, `http://localhost:8080/**`), Email provider + the
-magic-link template carrying both `{{ .ConfirmationURL }}` and `{{ .Token }}`, Google OAuth client and
-callback, and the custom SMTP provider that is **required before anyone but the project owner can
-receive a sign-in email** (the built-in sender delivers only to project team members).
+two email templates (*Confirm signup* and *Magic Link*) carrying `{{ .Token }}` only, Google OAuth
+client and callback, and the custom SMTP provider that is **required before anyone but the project's
+team members can receive a sign-in email** (the built-in sender refuses other addresses and allows only
+a few messages per hour).
 
 ## Roadmap pointers (what is not built yet)
 
