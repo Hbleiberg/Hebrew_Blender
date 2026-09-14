@@ -3780,6 +3780,7 @@ torah.settings.collapse_all,Collapse all menus,כיווץ כל התפריטים,
 torah.settings.color_for_aria,Color for {name},צבע עבור {name},vowel/trope color-picker input aria,aria-label only; {name} is the vowel/trope name (content) — do not translate {name}
 torah.settings.expand_all,Expand all menus,הרחבת כל התפריטים,button,
 torah.settings.panel_about,About & FAQ,אודות ושאלות נפוצות,panel title,
+torah.settings.panel_cloud,Cloud saves,שמירות בענן,settings drawer panel title (hosts the shared cloud-saves panel),
 torah.settings.panel_audio,Audio speeds,מהירויות שמע,panel title,
 torah.settings.panel_copy,Copy,העתקה,panel title,
 torah.settings.panel_display,Display,תצוגה,panel title,

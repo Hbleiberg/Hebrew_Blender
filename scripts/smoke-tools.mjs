@@ -54,6 +54,15 @@ const PAGES = [
     },
     rows: ['progress:default', 'settings:default'],
     expand: `openSettings(); const t = document.querySelector('.panel-title[data-i18n="trope.settings.panel_cloud"]'); t.parentElement.classList.remove('collapsed');`
+  },
+  {
+    file: 'torah_trainer.html', tool: 'TorahTrainer', host: '#cloudSavesPanel',
+    seed: {
+      hebrewTorahTrainer_settings: JSON.stringify({ parshahKey: 'bereshit', scope: 'parsha-full', layout: 'stacked', showTranslit: true, hebFont: 'Frank Ruhl Libre', hebFontSize: 2.4, vowelColorScheme: 'default', lastPos: { readingKey: 'bereshit', verse: '1:3', ts: 1700000000000 }, panelsCollapsed: { 'torah.settings.panel_copy': true }, karaokeBarCollapsed: false })
+    },
+    rows: ['settings:default'],
+    expand: `openSettingsAtPanel('cloud');`,
+    urlKeep: 'parsha=Bereshit&v=1:1'
   }
 ];
 
@@ -163,8 +172,9 @@ try {
     // ---- D. URL contract --------------------------------------------------------------------------
     if (P.urlKeep) {
       const { ctx, page, errors } = await openPage(browser, P.file, { seed: P.seed, query: '?' + P.urlKeep + '&error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid' });
-      const search = await page.evaluate(() => location.search);
-      check(tag + ' D: keeps its own params and loses the auth-error ones', search === '?' + P.urlKeep, search);
+      // compared as decoded pairs: the module rebuilds the query with URLSearchParams, which may re-encode a ':'
+      const params = await page.evaluate(() => JSON.stringify([...new URLSearchParams(location.search).entries()]));
+      check(tag + ' D: keeps its own params and loses the auth-error ones', params === JSON.stringify([...new URLSearchParams(P.urlKeep).entries()]), params);
       check(tag + ' D: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
     }

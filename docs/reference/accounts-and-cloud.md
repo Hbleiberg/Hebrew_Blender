@@ -252,6 +252,7 @@ unreachable, and Hebrew + dark at 800 px.
 | Page | Registry rows (`kind` · shape/merge · key) | Hooks passed to `attach()` | Panel |
 |---|---|---|---|
 | `trope_tutor.html` (`TropeTutor`) | `progress` single/deepMax `hebrewTropeTutor_progress` · `settings` single/assign (omit `panelsCollapsed`) `hebrewTropeTutor_settings` | `flush: saveSettingsFlush`; `onLocalChanged` resets `settings` / `progress` to their DEFAULTS clone, re-loads, re-applies font and drawer memory, re-renders Learn (under `_i18nRerender`) and the drill line — the `resetAllSettings()` / `resetProgress()` sequence | settings drawer, its own collapsible panel (`trope.settings.panel_cloud`) between *Progress* and *About*, `title: false` |
+| `torah_trainer.html` (`TorahTrainer`) | `settings` single/assign (omit `*Collapsed`, `lastPos`, `loopVerse` — the reading position carries a timestamp on every scroll and would keep the row "newer" forever; a cross-device bookmark is a later row of its own) `hebrewTorahTrainer_settings` | `flush: saveSettingsFlush` (a no-op during a handout print, by design); `onLocalChanged` = the `resetAllSettings()` sequence on a fresh DEFAULTS clone plus `syncParshaSelect()` and `fetchAndRender()` | settings drawer, its own panel (`torah.settings.panel_cloud`) just above *Reset*; `open` = `openSettingsAtPanel('cloud')` |
 
 `scripts/smoke-tools.mjs` loads every page in this table with the CDN blocked and proves: 0 `pageerror`,
 the chip beside the language switcher, the panel's sign-in line, `plan()` returning exactly the seeded
