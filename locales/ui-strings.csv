@@ -2751,6 +2751,7 @@ fontmaker.cloud.load_checking,Checking your account…,בודק את החשבו�
 fontmaker.cloud.load_sign_in,Sign in to see your account's projects,היכנסו כדי לראות את הפרויקטים שבחשבון שלכם,Load Project ▾ row shown when signed out,fontmaker; cloud
 fontmaker.cloud.load_none,No projects in your account yet.,עדיין אין פרויקטים בחשבון שלכם.,Load Project ▾ empty state for the cloud section,fontmaker; cloud
 fontmaker.cloud.load_meta,{letters} letters · {size} · {when},{letters} אותיות · {size} · {when},"Load Project ▾ cloud row detail (letters done, size in MB, relative time)",fontmaker; cloud; template
+fontmaker.cloud.load_meta_one,1 letter · {size} · {when},אות אחת · {size} · {when},Load Project ▾ cloud row detail when exactly one letter is done,fontmaker; cloud; template; plural
 fontmaker.cloud.load_font_title,Download the latest exported font,הורדת הגופן האחרון שיוצא,Tooltip/aria-label of the ⬇ button on a cloud project row,fontmaker; cloud
 fontmaker.cloud.load_delete_title,Delete from your account,מחיקה מהחשבון שלכם,Tooltip of the 🗑 button on a cloud project row,fontmaker; cloud
 fontmaker.cloud.load_delete_aria,Delete {name} from your account,מחיקת {name} מהחשבון שלכם,aria-label of the 🗑 button on a cloud project row,fontmaker; cloud; template

@@ -12,11 +12,13 @@ Supabase — no tool page ever calls the SDK directly:
 |---|---|
 | `js/supabase-config.js` | Public project values: `url`, publishable `anonKey`, the pinned SDK URL + its Subresource Integrity hash, and the `enabled` kill switch. The only file that changes when the project changes. |
 | `js/ivrit-account.js` | `window.IvritAccount` — session state, sign-in/out, lazy SDK loading, the header chip. |
-| `js/ivrit-saves.js` | `window.IvritSaves` — the saves adapter: `IVRIT_SYNC_REGISTRY`, the local and cloud backends, the per-item state table, the cloud-saves panel. |
+| `js/ivrit-saves.js` | `window.IvritSaves` — the saves adapter: `IVRIT_SYNC_REGISTRY`, the local and cloud backends, the per-item state table, the cloud-saves panel, the account screen. |
+| `js/ivrit-projects.js` | `window.IvritProjects` — Font Maker cloud projects: the `font_projects` rows and the three Storage buckets (project file, photos, latest export). Loaded only by `Hebrew_Font_Maker.html`. |
 | `account-test.html` | Throwaway harness (own CSP, `noindex`, not in the sitemap/`llms.txt`/`sw.js`, skipped by `check-i18n`). Mounts the real chip, mirrors state, runs the URL self-checks and the Phase 2 table/bucket checks. |
 | `saves-test.html` | Same rules. Mounts the real panel with four page-only registry entries, runs the local round trip, the pure self-checks and the scripted cloud checks. |
 | `scripts/smoke-account.mjs`, `scripts/smoke-saves.mjs` | Headless Playwright smokes: anonymous with the CDN blocked, remembered session offline, SDK served locally, URL contracts, Hebrew + dark at 800 px. |
 | `scripts/smoke-sync.mjs` | Headless end-to-end sync test against a fake cloud (`--sdk` required): Playwright answers the project's `/rest/v1/saves` from an in-memory table and replays the second-device flow — settings changed in both places, Sync everything, the account screen's settings choice, the dashboard opening with Schedule Sync live. |
+| `scripts/smoke-fontmaker.mjs` | Headless end-to-end test of Font Maker cloud projects (`--sdk` required, port 8082): the fake cloud also answers the Storage endpoints; anonymous control, save, autosave, open in a fresh browser, conflict (Overwrite / Keep both), delete, export keep, a refused upload, the `?start=` contract, Hebrew + dark. |
 
 Load order on a page (all deferred, so `window.I18n` and `window.IVRIT_SUPABASE` exist when the module runs):
 ```html
@@ -142,7 +144,8 @@ Limits come back as Postgres `check_violation` (`23514`) with a readable message
 `23505`; anything RLS refuses is `42501`. The saves adapter maps these to the panel's strings (`errorText`).
 
 **Buckets** (all private): `font-projects` (20 MB, gzip), `font-exports` (5 MB, ttf / woff2 / zip),
-`font-sources` (2 MB, jpeg / png). Every object path is `<user id>/<project id>/<file>`, and the four
+`font-sources` (15 MB, jpeg / png / webp — raised from 2 MB by migration 0002 so photos keep their
+original size). Every object path is `<user id>/<project id>/<file>`, and the four
 `storage.objects` policies allow a signed-in user to read, upload (`upsert` needs update + select),
 replace and delete only inside the folder named after their own id.
 
@@ -307,10 +310,41 @@ unreachable, and Hebrew + dark at 800 px.
 | `classroom_dashboard.html` (`Dashboard`) | `preset` map/item `hebrewDashboard_presets` · `presetFolders` tree/page follows `preset` · `schedule` map/item `hebrewDashboard_schedules` (a value is either a v2 weekly grid or a legacy day array; replaced whole) · `scheduleFolders` tree/page follows `schedule` · `settings` single/assign `hebrewDashboard_settings` omitting `rosters`, `activeRosterId`, `pickerSessions`, `_geoCoords`, `*Collapsed`, `panelLayout`, `videoLayout`, `zoomLevel`, `hideZoomBar`, `keepAwake`, `lockPanelWidths`, `showTextSizeOptions` · `roster` mapIn over the **same key** (`path: rosters`, `nameField: name`, one row per class) merge page — two entries on one key work because the settings row omits what the roster rows carry | `flush: saveSettingsToStorage` (synchronous; it also reads the board text off the editor); `merges`: the two trees through `ftImportTree`, `roster` through the pure `mergeRoster` (names unioned, mine first, no cap; the name stays mine unless it is the default); `onLocalChanged`: presets → `loadPresets()` + `renderPresets()`, schedules → `loadSchedulesStorage()` + `renderSavedSchedules()`, settings → `loadSettingsFromStorage()` then the `IVRIT_CFG.apply` tail (`applySettings` on a clone, the three render caches nulled, week summary / schedule UI / editor re-rendered), roster → `loadSettingsFromStorage()` + `ensureActiveClass()` + `normalizePickerSession()` + the drawer form and the student picker re-rendered | settings drawer, a "Cloud saves" sub-section (`dashboard.settings.cloud_head`) at the end of the *Presets* panel under the `.ivrit` backup, `title: false`; `open` = `openSettings()` + un-collapse the panel through its own title |
 | `index.html` (the hub; no rows of its own) | — | six `attach()` calls, one per tool above, each with `title: false` into its own `<details>` inside the AllTools modal's "Cloud saves" block; `merges` = the folder trees through the hub's own `ftImportTree` copy only (a profile or word list changed in both places shows no button here and is merged inside its tool); `onLocalChanged` = `renderIvritInventory()` (nothing is in memory on the hub, so every shape is downloadable — the place to bring a fresh browser up to date) | the AllTools modal, between *My Fonts* and *Erase*; `open` opens the modal and scrolls to the block |
 
+**`Hebrew_Font_Maker.html`** has no registry rows: its projects are `font_projects` rows plus Storage objects,
+through `js/ivrit-projects.js` — see *Font Maker projects* below. It loads the same three scripts plus
+that module; the chip's *Account…* item and the sign-in splash work there because `IvritSaves` now starts
+listening at boot, and the account screen shows "Hebrew Font Maker: n projects in your account (size)"
+through `IvritSaves.registerSummary(fn)` (a line, never part of the sync counts).
+
 `scripts/smoke-tools.mjs` loads every page in this table with the CDN blocked and proves: 0 `pageerror`,
 the chip beside the language switcher, the panel's sign-in line, `plan()` returning exactly the seeded
 items, and a localStorage dump byte-identical to a control run with the three account scripts blocked;
 then a remembered session with the API unreachable, and Hebrew + dark at 800 px.
+
+## Font Maker projects (`js/ivrit-projects.js`)
+
+A project is one `font_projects` row (the catalogue entry: name, family, style, schema version, letters
+done, sizes, the current `project_path`, the latest `export_path`, `client_saved_at`) plus objects under
+`<user id>/<project id>/` in three buckets: `font-projects/…/project-<rev>.json.gz` (the packed project),
+`font-sources/…/<sha256-16hex>.<jpg|png|webp>` (one object per distinct photo, original bytes and type —
+the maintainer chose full size over shrinking; a photo-heavy project is 20–40 MB, so sizes are shown in
+the Load menu and on the account screen, and the free plan's 1 GB / 5 GB egress a month is the budget),
+`font-exports/…/<stem>.<ttf|woff2|zip>` (the latest export only). The page packs and unpacks the project
+(`docs/reference/font-maker.md` → Cloud projects); the module moves bytes and rows:
+
+| Call | What happens |
+|---|---|
+| `list({fresh})` | the account's rows, newest first; memoised 30 s per user, every write invalidates |
+| `get(id)` | one row or null — never memoised (the conflict probe) |
+| `save({id?, name, meta, projectGz, sources, expectedUpdatedAt, onProgress})` | size guards first (name 1–120, gz ≤ 20 MiB, every photo ≤ 15 MiB — refused by label before any request); a new project inserts its row FIRST so the 25-row cap and a taken name (`23505`) surface before a byte moves; the folder is listed once and only missing photos upload (3 at a time, `upsert`, a 409 counts as done); the project file goes up under a **versioned name** and the row is switched to it with a conditional update on `updated_at` — zero rows back means another device wrote first (`changed`), our file is removed and nothing of theirs was touched; then the previous file and unreferenced photos are removed (best effort); a fresh row whose uploads failed is deleted again |
+| `open(id)` / `downloadSource(id, name)` / `listSources(id)` | the project file's bytes; one photo; the folder's photos |
+| `remove(id)` | every object in the three buckets, then the row (an orphaned row is visible and retryable; orphaned objects would not be) |
+| `saveExport(id, blob, name)` / `downloadExport(id)` | one export slot per project (older objects in the folder removed), `export_path` + `exported_at` on the row |
+| `count()` / `onChange(fn)` | the account-screen line; a callback after every write |
+
+Errors reject with a code `IvritSaves.errorText` knows: Storage's shapes are normalised (`file_too_big`
+413, `bad_type` 415, `not_found` 404) and the cap's `23514` becomes `project_limit`. Rule 2 names this
+module as the fourth and last file that talks to Supabase.
 
 ## Manual Supabase setup (done once in the dashboard)
 
@@ -323,6 +357,5 @@ a few messages per hour).
 
 ## Roadmap pointers (what is not built yet)
 
-The remaining tool pages (see *Implemented on* for what is wired), Font Maker projects (their own
-table and buckets), the account page, the delete-account Edge Function, and the keep-alive workflow
-follow in later phases; a tool page carries no account or saves script until its turn.
+The account page with a download-all zip and the delete-account Edge Function (Phase 6) and the
+keep-alive workflow with the ops notes (Phase 8) follow; every tool page now carries the account layer.

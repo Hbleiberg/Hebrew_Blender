@@ -20104,7 +20104,8 @@ async function fmCloudFillLoadMenu(menu) {   // fills the placeholder once the l
   else if (!rows.length) host.innerHTML = `<div class="load-menu-empty">${esc(_cT('load_none', 'No projects in your account yet.'))}</div>`;
   else host.innerHTML = rows.map(r => {
     if (!/^[0-9a-f-]{36}$/i.test(String(r.id))) return '';
-    const meta = _cT('load_meta', '{letters} letters · {size} · {when}', { letters: r.letters_done || 0, size: fmMb((Number(r.project_bytes) || 0) + (Number(r.sources_bytes) || 0)), when: fmCloudRel(r.updated_at) });
+    const n = Number(r.letters_done) || 0, size = fmMb((Number(r.project_bytes) || 0) + (Number(r.sources_bytes) || 0)), when = fmCloudRel(r.updated_at);
+    const meta = n === 1 ? _cT('load_meta_one', '1 letter · {size} · {when}', { size, when }) : _cT('load_meta', '{letters} letters · {size} · {when}', { letters: n, size, when });
     const dlTitle = esc(_cT('load_font_title', 'Download the latest exported font'));
     return `<div class="load-menu-row"><button class="load-menu-item" onclick="closeLoadMenu();fmCloudOpen('${r.id}')"><span>${esc(r.name)}</span><span class="load-menu-meta">${esc(meta)}</span></button>` +
       (r.export_path ? `<button class="load-menu-cdl" onclick="closeLoadMenu();fmCloudDownloadExport('${r.id}')" title="${dlTitle}" aria-label="${dlTitle}">⬇</button>` : '') +

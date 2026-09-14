@@ -1626,6 +1626,7 @@
   "fontmaker.cloud.load_font_title": "הורדת הגופן האחרון שיוצא",
   "fontmaker.cloud.load_head": "בחשבון שלכם",
   "fontmaker.cloud.load_meta": "{letters} אותיות · {size} · {when}",
+  "fontmaker.cloud.load_meta_one": "אות אחת · {size} · {when}",
   "fontmaker.cloud.load_none": "עדיין אין פרויקטים בחשבון שלכם.",
   "fontmaker.cloud.load_sign_in": "היכנסו כדי לראות את הפרויקטים שבחשבון שלכם",
   "fontmaker.cloud.menu_save": "☁ שמירה בחשבון שלי…",

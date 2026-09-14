@@ -238,7 +238,11 @@
           progress({ phase: 'sources', done: 0, total: missing.length });
           return pool(missing, CONC, function (s) {
             return uploadObject(BUCKETS.sources, folder + '/' + s.name, s.blob, s.blob.type)
-              .catch(function (err) { if (Number(err && (err.status || err.statusCode)) === 409) return null; throw err; })   // uploaded meanwhile: fine
+              .catch(function (err) {
+                if (Number(err && (err.status || err.statusCode)) === 409) return null;   // uploaded meanwhile: fine
+                if (err && (err.code === 'file_too_big' || err.code === 'bad_type') && !err.label) err.label = s.label || s.name;   // the message can name the letter
+                throw err;
+              })
               .then(function () { done++; progress({ phase: 'sources', done: done, total: missing.length }); });
           }).then(function () { return have; });
         }).then(function (have) {
@@ -267,8 +271,8 @@
           });
         });
       }).catch(function (err) {
-        if (created && row) { deleteRow(row.id).catch(function () {}); invalidate(); }   // no half-made project stays behind
-        throw err;
+        if (!(created && row)) throw err;
+        return deleteRow(row.id).catch(function () {}).then(function () { invalidate(); throw err; });   // no half-made project stays behind — and the caller sees that once this settles
       });
     });
   }

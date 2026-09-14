@@ -88,6 +88,7 @@ Turn your own handwritten Hebrew letters into a real, installable font — entir
 - **QA Check** — a collision grid flags any letter × mark overlaps before you export
 - **Export** — TrueType (TTF), WOFF2, or editable UFO source, each with a license of your choice (CC0 / OFL / MIT / CC-BY / All Rights Reserved)
 - **Use in IvritSuite** — save a finished font in the browser and pick it from any other tool's font picker
+- **Save to your account** — with a free account, keep whole projects (photos included) in the cloud and open them on any device; see *Accounts* below
 - Recent-projects list + autosave, guided tour, changelog in the About tab; built client-side with Pyodide + fontTools (loaded on first export)
 
 ### Teaching Resources (`resources.html`)
@@ -144,11 +145,12 @@ How it works:
 
 Accounts are optional: everything works anonymously exactly as before, and the cloud is a third place
 to keep copies of your work next to the browser's own storage and `.ivrit` files. The whole account
-layer is three shared files — `js/supabase-config.js` (public project settings), `js/ivrit-account.js`
-(sign-in, sign-out, the header chip) and `js/ivrit-saves.js` (the cloud-saves panel and the sync rules) —
-plus two throwaway pages for trying it out, `account-test.html` and `saves-test.html`. The chip and the
-panel are on the home page, the Worksheet Generator, Flash Cards, the Dictionary, the Torah Trainer, the
-Trope Tutor and the Classroom Dashboard (the Font Maker follows in a later phase).
+layer is four shared files — `js/supabase-config.js` (public project settings), `js/ivrit-account.js`
+(sign-in, sign-out, the header chip), `js/ivrit-saves.js` (the cloud-saves panel and the sync rules) and
+`js/ivrit-projects.js` (Font Maker projects) — plus two throwaway pages for trying it out,
+`account-test.html` and `saves-test.html`. The chip and the panel are on the home page, the Worksheet
+Generator, Flash Cards, the Dictionary, the Torah Trainer, the Trope Tutor and the Classroom Dashboard;
+the Font Maker keeps whole projects instead (next paragraph).
 How it works inside: `docs/reference/accounts-and-cloud.md`.
 
 **Where the config values come from** (Supabase dashboard → project *IvritSuite*):
@@ -223,6 +225,15 @@ the screen offers **Use my account's settings** or **Keep this device's settings
 choices such as zoom stay either way). `saves-test.html` exercises the panel on a set of throwaway test items;
 `node scripts/smoke-saves.mjs` and `node scripts/smoke-tools.mjs` run the headless checks, and
 `node scripts/smoke-sync.mjs --sdk <supabase.js>` replays the second-device sync flow against a fake cloud.
+
+**Font Maker projects:** *Save Project ▾ → Save to my account* keeps a whole project — the outlines, the
+settings, and the photos you traced from, at full size — in your account, and *Load Project ▾ → In your
+account* opens it on any device. From then on changes keep saving by themselves (a ☁ badge next to Save
+shows Saved, Saving or Unsaved); a change made on another device is never overwritten without asking
+(Overwrite / Keep both / Not now); an exported font can be kept with the project. Your `.hebrewfont` files
+and the browser's Recent copies are untouched. Photo projects are large (often 20–40 MB), so the Load menu
+and the account screen show each project's size; an account holds up to 25 projects.
+`node scripts/smoke-fontmaker.mjs --sdk <supabase.js>` replays the whole flow against a fake cloud.
 
 ## Files
 

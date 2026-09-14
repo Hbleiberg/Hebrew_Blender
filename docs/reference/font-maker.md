@@ -25,7 +25,53 @@ stored shape reads as empty and is rewritten on the next save),
 autosave is **IndexedDB** db `hebrewFontMaker`, store `autosave` (gzip blob, id `'current'`). Shared
 site-wide key it also reads: `hebrewBlender_darkMode`. **One AllTools exception:**
 `hebrewFontMaker_lastAuthor` (the onboarding wizard's remembered author name — a scalar identity pref
-like `hebFont`, not project data) IS registered in all five AllTools sites as `fmLastAuthor`.
+like `hebFont`, not project data) IS registered in all five AllTools sites as `fmLastAuthor`. A project's
+**cloud copy** (optional, per project, in the signed-in account) is the section below — it is the third
+place a project can live, next to the `.hebrewfont` file and this browser's Recent/autosave copies, and
+never replaces either.
+
+### Cloud projects (account copies) — `IvritProjects`
+The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-saves.js` and
+`/js/ivrit-projects.js` (the last is loaded only here; it owns every `font_projects` and Storage call —
+`docs/reference/accounts-and-cloud.md` → Font Maker projects). The page owns the project format and the UI:
+- **Identity** rides in the project: `project.cloudId` (the `font_projects` row) and `project.cloudRev` (the
+  row's `updated_at` this copy last matched). They are the only two fields written outside `udDo` — identity,
+  not undoable content. Absent = never saved to an account. `commitSaveAs` deletes both from the copy (a copy
+  is a new project); `loadProjectFile` keeps a file's `cloudId` only when the signed-in account's list has it
+  (`fmCloudClaim`); `newProject()` and `applyProjectData()` call `fmCloudReset()`.
+- **Pack / unpack at the boundary, never inside the live project**: `fmCloudPack(project)` deep-clones and,
+  at every raster slot (`fmRasterSlots`: letters' and marks' `source.dataUrl`, `combinedSheets[].dataUrl`,
+  `font[cat].combinedImage.dataUrl`), decodes the data URL by hand (`fmDataUrlToBlob` — the CSP has no
+  `data:` in `connect-src`), keeps the ORIGINAL bytes and type (jpeg / png / webp; anything else is redrawn
+  to PNG), hashes them (`fmHashBytes`, 16 hex of SHA-256) and writes the string `'cloud:<hash>.<ext>'` in the
+  clone; drawn letters (`source.kind === 'draw'`) are stripped to `null` (`drawEnsureRaster` rebuilds them),
+  SVG sheets and `template.customFonts[].dataB64` stay inline; a `cloudSources` manifest is added. The runtime
+  `_cloudNames` map (data URL → object name) means an unchanged photo is never re-encoded or re-uploaded.
+  `fmCloudUnpack(data, id)` downloads the referenced objects (4 at a time) and puts data URLs back BEFORE
+  `applyProjectData`, so `imgCache` keys, `traceSig` and every synchronous reader see exactly what they see
+  today. A photo that fails to download becomes `null` and is counted in a toast.
+- **Saving**: Save Project ▾ → `fmCloudMenuRow()` (a sign-in row when signed out); `fmCloudSave()` shows one
+  dialog the first time, then `fmCloudWrite(mode)`: probe the row (`IvritProjects.get`), compare its
+  `updated_at` with `cloudRev` (a mismatch raises the conflict dialog — Overwrite / Keep both via the Save-as
+  recipe / Not now, which pauses autosave), pack, gzip (rewrapped as `application/gzip`), `IvritProjects.save`
+  with progress phases through `status()` inside `ipArm(0)`, then `cloudId`/`cloudRev` are set and a local
+  `autosaveNow()` records the revision (`cloudRev` + `cloudClean` on the IndexedDB record). `markDirty()` also
+  sets `_cloudDirty` and arms a 10 s `fmCloudAutosave()` (skipped while signed out, offline, busy or paused;
+  an `online` event re-arms). The toolbar `#cloudPip` (Saved / Saving… / Unsaved / Couldn't save — click to
+  retry) is shown only while the project has a `cloudId` and someone is signed in; `beforeunload` also warns
+  while `_cloudDirty || _cloudBusy`.
+- **Opening**: Load Project ▾ gets an "In your account" section (`fmCloudLoadSection` + the asynchronous
+  `fmCloudFillLoadMenu`, which writes only into the still-open menu); its rows use their own classes
+  (`.load-menu-cdel`, `.load-menu-cdl`) so `reopenLoadMenu`'s 🗑 index keeps counting Recent rows.
+  `fmCloudOpen(id)` is local-first (the IndexedDB snapshot with the same `cloudRev` and `cloudClean` needs
+  no download), else download → unpack → `applyProjectData`. `fmCloudDelete(id)` closes the menu, confirms,
+  removes row + objects, reopens the menu. The Exported ✓ dialog gains `fmCloudKeepExport(dlFile)` (the
+  snapshotted file, ≤ 5 MB) and a row with an export shows ⬇ (`fmCloudDownloadExport`).
+- **Guards**: `udShortcutBlocked()` and the global keydown return early while the account screen
+  (`.ivsav-overlay`) is open, so its Escape does not close the editor's own modal. Strings are
+  `fontmaker.cloud.*` through `_cT(key, fallback, params)` (the `_pT` shape); `fmMb` formats sizes.
+- **Test**: `node scripts/smoke-fontmaker.mjs --sdk <supabase.js>` (port 8082) replays the whole flow
+  against a fake cloud that also fakes Storage.
 
 ### "Load Project ▾" menu + the Recent list
 
