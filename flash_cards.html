@@ -824,6 +824,7 @@ body.dark .slider::before { background: #d8dde9; }
 
 /* ============== FONT SELECTOR ============== */
 .font-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; margin-top: 8px; }
+.font-missing-note { margin: 4px 0 0; font-size: 0.78rem; color: var(--muted, #6b6050); }
 .font-opt {
   padding: 8px;
   border: 1px solid var(--border-strong);
@@ -1999,9 +2000,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <div style="display:flex;align-items:center;gap:6px;">
           <span style="font-size:0.65rem;color:var(--muted);" data-i18n="flashcards.advanced.tts_slow">Slow</span>
           <input type="range" id="ttsRateSlider" aria-labelledby="ttsSpeedLbl" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);"
-                 oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
+                 oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'; saveSettings();">
           <span id="ttsRateVal" class="bidi-isolate" style="font-size:0.72rem;color:var(--text);min-width:36px;text-align:end;">0.75×</span>
-          <button class="btn sm ghost" style="padding:2px 6px;font-size:0.65rem;" title="Restore default" data-i18n-title="flashcards.common.restore_default" aria-label="Restore default" data-i18n-aria-label="flashcards.common.restore_default" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';">↺</button>
+          <button class="btn sm ghost" style="padding:2px 6px;font-size:0.65rem;" title="Restore default" data-i18n-title="flashcards.common.restore_default" aria-label="Restore default" data-i18n-aria-label="flashcards.common.restore_default" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';saveSettings();">↺</button>
         </div>
       </div>
 
@@ -2034,6 +2035,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="label adv-subhead" data-i18n="flashcards.advanced.hebrew_font_head">Hebrew Font</div>
       <div class="adv-subbody">
         <div class="font-grid" id="fontGrid"></div>
+        <p id="hebFontMissing" class="font-missing-note" role="status" aria-live="polite" hidden></p>
         <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
       </div>
 
@@ -2041,6 +2043,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="label adv-subhead" data-i18n="flashcards.advanced.english_font_head">English / Latin Font</div>
       <div class="adv-subbody">
         <div class="font-grid" id="engFontGrid"></div>
+        <p id="engFontMissing" class="font-missing-note" role="status" aria-live="polite" hidden></p>
         <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadEngFontPick(this)"></label>
       </div>
 
@@ -2702,6 +2705,7 @@ let colorCodingMode = 'letter';
 let nikudColorOverrides = {};
 let vowelColorScheme = 'default'; // 'default' | 'talam'
 let hebFontId = 'Frank Ruhl Libre';
+let _myFontsLoaded = false;   // the My Fonts store has answered once
 let engFontId = 'Libre Baskerville';   // English/Latin card-text face (see ENG_FONTS)
 let audioEnabled = false;
 function updateTtsRateVisibility() {
@@ -2744,12 +2748,15 @@ function updateListeningAvailability() {
   } else if (!hasHebrewVoice() && enumeratedVoiceCount() > 0) {
     note = 'No Hebrew voice detected on this device — audio may be silent or read with a default voice.';
   }
-  if (disabled && listeningEnabled) { listeningEnabled = false; t.checked = false; }
+  // The stored preference stays as it is (it travels through a sync unchanged); only what runs on this
+  // device is gated — the toggle, its options row and the note show the effective state.
+  const on = listeningEnabled && !disabled;
+  t.checked = on;
   t.disabled = disabled;
   t.title = title;
-  if (opts) opts.classList.toggle('hide', !(listeningEnabled && !disabled));
+  if (opts) opts.classList.toggle('hide', !on);
   if (warn) {
-    const show = !!note && (!speechSupported || listeningEnabled);
+    const show = !!note && (!speechSupported || on);
     warn.textContent = note;
     warn.classList.toggle('hide', !show);
   }
@@ -3001,10 +3008,11 @@ async function refreshMyFonts() {
       stack: "'" + String(f.name).replace(/['"\\<>]/g, '') + "', serif",
       load: { type: 'userfont' } }));
   } catch (e) { MY_FONTS = []; }
+  _myFontsLoaded = true;
   initFontSelector();
   initEngFontSelector();
-  if (MY_FONTS.some(f => f.name === hebFontId)) setHebFont(hebFontId);
-  if (MY_FONTS.some(f => f.name === engFontId)) setEngFont(engFontId);
+  setHebFont(hebFontId);   // a My Font applies now; a name not on this device shows the note; a stock face just re-applies
+  setEngFont(engFontId);
 }
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
 async function ivUploadFontFromFile(file){
@@ -3061,11 +3069,21 @@ function taamimStack(stack) {
   const m = /^(.*?),\s*(serif|sans-serif|cursive|fantasy|monospace|system-ui)\s*$/.exec(stack);
   return m ? m[1] + ", 'IvritSuite Taamim', " + m[2] : stack + ", 'IvritSuite Taamim'";
 }
+// A face this device does not have: no button stays highlighted, and once the My Fonts store has answered
+// (before that a saved name may still turn out to be a My Font) a note names what is missing. The stored
+// choice itself is untouched, so it travels through a sync unchanged.
+function _markMissingFont(gridSel, noteId, name) {
+  const note = document.getElementById(noteId);
+  if (!name) { if (note) { note.textContent = ''; note.hidden = true; } return; }
+  document.querySelectorAll(gridSel + ' .font-opt').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+  if (note && _myFontsLoaded) { note.textContent = I18n.t('shared.fonts.missing_note', { name }); note.hidden = false; }
+}
 function setHebFont(name) {
   // An unknown name bails instead of falling back: at init it is a My Font the async store
   // read has not returned yet, and falling back would write the default over the saved choice.
   const font = allFonts().find(f => f.name === name);
-  if (!font) return;
+  if (!font) { _markMissingFont('#fontGrid', 'hebFontMissing', name); return; }
+  _markMissingFont('#fontGrid', 'hebFontMissing', null);
   hebFontId = font.name;
   loadHebFont(font);
   document.documentElement.style.setProperty('--heb-font', taamimStack(font.stack));
@@ -3097,7 +3115,8 @@ function initFontSelector() {
    drives the --eng-font CSS var used by the English card faces. */
 function setEngFont(name) {
   const font = allEngFonts().find(f => f.name === name);   // unknown → bail, as setHebFont does
-  if (!font) return;
+  if (!font) { _markMissingFont('#engFontGrid', 'engFontMissing', name); return; }
+  _markMissingFont('#engFontGrid', 'engFontMissing', null);
   engFontId = font.name;
   loadHebFont(font);
   document.documentElement.style.setProperty('--eng-font', font.stack);
@@ -3676,6 +3695,20 @@ function wlNamesForIds(ids) {
   for (const id of arr) { const l = lists[id]; if (l) out.push(String(l.name || 'Untitled list')); }
   return out;
 }
+let _wlAppliedNames = null;   // { key, names }: the names the last applied settings carried, for the selection they applied to
+// The names beside the ids: the ones the last applied settings carried, verbatim, while the selection is
+// unchanged (a list this device lacks keeps its name through a round trip), else resolved afresh.
+function wlNamesForSetup() {
+  const key = [...selectedWordListIds].sort().join('\n');
+  if (_wlAppliedNames && _wlAppliedNames.key === key) return _wlAppliedNames.names.slice();
+  return wlNamesForIds(selectedWordListIds);
+}
+// How many of the selected lists exist on this device (a selection made elsewhere may name lists not here yet).
+function wlLiveSelectedCount() {
+  if (!selectedWordListIds.size) return 0;
+  const lists = wlReadStoreLocal().lists;
+  return [...selectedWordListIds].filter(id => !!lists[id]).length;
+}
 
 function fetchAllWordsData() {
   _wordsLoadFailed = false;
@@ -3741,9 +3774,7 @@ function renderWordListPicker() {
   const empty = document.getElementById('wordsEmptyState');
   if (!picker) return;
   const lists = wlListsArray();
-  // Prune selections whose lists no longer exist
-  const liveIds = new Set(lists.map(l => l.id));
-  [...selectedWordListIds].forEach(id => { if (!liveIds.has(id)) selectedWordListIds.delete(id); });
+  // A selected list that is not on this device (yet) stays selected — it just has no row to show.
   picker.innerHTML = '';
   if (empty) empty.classList.toggle('hide', lists.length !== 0);
   if (lists.length === 0) { picker.classList.add('hide'); return; }
@@ -4306,7 +4337,8 @@ function getSettings() {
     emojiGender, emojiFront, emojiShowTranslit, emojiShowGender, emojiGenderSide,
     selectedEmojiSubs: [...selectedEmojiSubs],
     wordsSource, wordsFront, wordsShowTranslit, wordsMinLen, wordsMaxLen,
-    selectedWordListNames: wlNamesForIds(selectedWordListIds),
+    selectedWordListIds: [...selectedWordListIds],   // the stable key the suite syncs lists under; the names beside it resolve an older blob
+    selectedWordListNames: wlNamesForSetup(),
     timerMode, timerShowOnScreen, timeLimitSeconds,
     ttsRate: parseFloat(document.getElementById('ttsRateSlider')?.value || 0.75),
     vowelPositions: [...vowelPositions],
@@ -4462,8 +4494,12 @@ function applySettings(s) {
   wordsShowTranslit = !!s.wordsShowTranslit;
   wordsMinLen       = _clampNum(s.wordsMinLen, 1, 20, 1);    // #wordsMinInput's own min/max
   wordsMaxLen       = _clampNum(s.wordsMaxLen, 1, 20, 20);   // #wordsMaxInput's own min/max
-  const _wlIdx = wlNameIndex();
-  selectedWordListIds = new Set((s.selectedWordListNames || []).map(n => _wlIdx[n]).filter(Boolean));
+  // Lists travel by id, kept as given whether or not the list is on this device yet (the picker shows what
+  // exists, Start counts only those); an older blob's names are resolved through the name index.
+  const _wlNames = (Array.isArray(s.selectedWordListNames) ? s.selectedWordListNames : []).filter(n => typeof n === 'string');
+  if (Array.isArray(s.selectedWordListIds) && s.selectedWordListIds.every(x => typeof x === 'string')) selectedWordListIds = new Set(s.selectedWordListIds);
+  else { const _wlIdx = wlNameIndex(); selectedWordListIds = new Set(_wlNames.map(n => _wlIdx[n]).filter(Boolean)); }
+  _wlAppliedNames = { key: [...selectedWordListIds].sort().join('\n'), names: _wlNames };
   // Inline words embedded in a loaded share code take precedence over the local store.
   wordsInlinePool = Array.isArray(s.wordsInline)
     ? s.wordsInline.map(o => ({ word: String(o.w || ''), translit: String(o.t || ''), translation: String(o.e || '') })).filter(o => o.word)
@@ -4530,8 +4566,12 @@ function saveSettings() {
   // A Learner Ladder level reconfigures the whole drill transiently. This one guard is what
   // keeps the teacher's persisted settings untouched across all ~70 call sites; _ladderExit()
   // restores the snapshot and then writes once.
-  if (_ladderActive) return;
+  if (_ladderActive || _sharedDrill) return;
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(getSettings())); } catch(e){}
+}
+// The stored settings as they are — what a file or a listing must carry while a transient drill runs.
+function _persistedSettings() {
+  try { const s = ivritSafeParse(localStorage.getItem(SETTINGS_KEY) || 'null'); return (s && typeof s === 'object' && !Array.isArray(s)) ? s : null; } catch (e) { return null; }
 }
 function loadSettings() {
   try {
@@ -5216,7 +5256,7 @@ function updateStatsBar() {
    STUDENT PROFILES & SAVED RESULTS
    ========================================================================= */
 const PROFILES_KEY = 'hebrewFlashCards_profiles';
-const MAX_RESULTS_PER_PROFILE = 50;
+const MAX_RESULTS_PER_PROFILE = 100;   // the newest results a student's history keeps; index.html's FC_MAX_RESULTS is the same number
 
 // The parse is memoized on the exact stored string, because one render of the Teacher Tools
 // panel calls readProfiles() about twice per profile (getActiveProfile + buildItemRow, plus the
@@ -5299,7 +5339,8 @@ function createProfile(name) {
 function deleteProfile(name) {
   const db = readProfiles();
   if (!db.profiles[name]) return;
-  if (!confirm(I18n.t('flashcards.profile.delete_confirm', { name: name }))) return;
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.user === 'function' && IvritAccount.user());
+  if (!confirm(I18n.t(signedIn ? 'flashcards.profile.delete_confirm_cloud' : 'flashcards.profile.delete_confirm', { name: name }))) return;
   delete db.profiles[name];
   if (db.activeProfile === name) db.activeProfile = Object.keys(db.profiles)[0] || null;
   writeProfiles(db);
@@ -5310,7 +5351,8 @@ function renameProfile(oldName, newName) {
   if (!newName || newName === oldName) return;
   const db = readProfiles();
   if (!db.profiles[oldName]) return;
-  if (db.profiles[newName] && !confirm(I18n.t('flashcards.profile.merge_confirm', { newName: newName, oldName: oldName }))) return;
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.user === 'function' && IvritAccount.user());
+  if (db.profiles[newName] && !confirm(I18n.t(signedIn ? 'flashcards.profile.merge_confirm_cloud' : 'flashcards.profile.merge_confirm', { newName: newName, oldName: oldName }))) return;
   const dest = db.profiles[newName] || { created: db.profiles[oldName].created, order: db.profiles[oldName].order, results: [] };
   dest.results = dest.results.concat(db.profiles[oldName].results || []).slice(-MAX_RESULTS_PER_PROFILE);
   // dest is rebuilt from `results` alone, so anything else on the source is dropped unless it
@@ -6054,6 +6096,14 @@ function recordLadderResult(name, levelId, pct) {
 }
 
 let _ladderActive = null;   // { levelId, profile, snapshot, recorded } while a ladder drill runs
+let _sharedDrill = false;   // a ?s= link's drill is running: like a ladder level it never touches the stored settings
+// Back on the setup screen the teacher's own settings return (the link changed nothing that persists).
+function _leaveSharedDrill() {
+  if (!_sharedDrill) return;
+  _sharedDrill = false;
+  loadSettings();
+  saveSettings();   // the late-assigned fields too, not the partial blob applySettings' inner saves wrote
+}
 
 /* The deck-shaping fields a level pins. Everything NOT listed here — font, size, colour
    coding, audio, transliteration style, TTS rate — is inherited from the teacher's snapshot,
@@ -6683,7 +6733,8 @@ const IVRIT_CFG = {
       // profiles. index.html's AllTools bundle has always carried it; the tool's own
       // .ivrit did not, so a save/restore round-trip on this page silently reset it to 0.
       flashCardPbStreak: localStorage.getItem(PB_STREAK_KEY) || '0',
-      liveState: getSettings()
+      // While a ladder level or a shared drill runs, the file carries the teacher's own settings, not the drill's.
+      liveState: (_ladderActive && _ladderActive.snapshot) || (_sharedDrill && _persistedSettings()) || getSettings()
     };
   },
   apply(data, mode) {
@@ -7379,6 +7430,7 @@ function showScreen(id) {
   // Exiting here covers every route home in one place — the header button, End Practice
   // Early, and Return to Options — instead of a restore sprinkled at each call site.
   if (_ladderActive && id === 'screenSetup') _ladderExit();
+  if (_sharedDrill && id === 'screenSetup') _leaveSharedDrill();
   document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
@@ -7481,7 +7533,7 @@ function startPractice() {
       if (failed) fetchAllWordsData().then(() => { if (ALL_WORDS_DATA) startPractice(); });
       issues.push(failed ? 'flashcards.words.load_failed' : 'flashcards.start.err_dict_loading');
     }
-    else if (wordsSource === 'mylists' && selectedWordListIds.size === 0 && !(wordsInlinePool && wordsInlinePool.length))
+    else if (wordsSource === 'mylists' && wlLiveSelectedCount() === 0 && !(wordsInlinePool && wordsInlinePool.length))
       issues.push('flashcards.start.err_select_wordlist');
     else if (!WORDS_POOL || WORDS_POOL.length === 0) issues.push('flashcards.start.err_no_words');
   }
@@ -8542,7 +8594,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Same decode → payload guard → apply → auto-start as loadShareCode, but silent on garbage:
   // a broken or truncated link lands on normal setup instead of an error the student can't act
   // on. I18n.ready-gated like ?path so the drill UI builds translated. The param is never
-  // stripped — parents bookmark the link, and a refresh re-entering the drill is the point.
+  // stripped — parents bookmark the link, and a refresh re-entering the drill is the point. The
+  // link is a drill to run, not a change to the teacher's own settings: nothing is saved while it
+  // runs (_sharedDrill), and the setup screen brings the stored settings back.
   try {
     const sParam = new URLSearchParams(location.search).get('s');
     if (sParam) {
@@ -8551,10 +8605,12 @@ document.addEventListener('DOMContentLoaded', () => {
           const payload = shareCodeDecode(sParam);
           const data = payload && typeof payload === 'object' ? (payload.data || (payload.tool ? null : payload)) : null;
           if (!data || typeof data !== 'object') return;
+          _sharedDrill = true;
           applySettings(data);
-          saveSettings();
           startPractice();
-        } catch (e) {}
+          const active = document.querySelector('.screen.active');
+          if (!active || active.id === 'screenSetup') _leaveSharedDrill();   // the drill could not start: the teacher's settings are back at once
+        } catch (e) { _leaveSharedDrill(); }
       };
       if (window.I18n) I18n.ready.then(enterSharedDrill);
       else enterSharedDrill();
@@ -8592,7 +8648,9 @@ function initCloudSaves() {
           try { const snap = ivritSafeParse(localStorage.getItem(SETTINGS_KEY) || 'null'); if (snap) _ladderActive.snapshot = snap; } catch (e) {}
           return;
         }
+        if (_sharedDrill) return;   // the download is in the store; the setup screen loads it when the shared drill ends
         loadSettings();
+        saveSettings();   // applySettings' inner saves wrote a partial blob (the late-assigned fields were still the old ones): write the whole one
       }
     },
     open: function () {           // the header chip's "Cloud saves…" item — through the page's own toggles

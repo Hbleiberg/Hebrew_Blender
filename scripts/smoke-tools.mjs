@@ -79,7 +79,34 @@ const PAGES = [
     },
     rows: ['preset:Deck A', 'preset:Deck B', 'settings:default', 'pbStreak:default', 'profile:Sarah', 'profile:Dan'],
     expand: `const p = document.getElementById('panelAdvanced'); if (p.classList.contains('collapsed')) p.querySelector('.panel-title').click(); document.querySelector('.adv-subhead[data-i18n="flashcards.advanced.cloud_head"]').scrollIntoView();`,
-    urlKeep: 's=abc'
+    urlKeep: 's=abc',
+    // E. what a sync must never change: the listening preference on a browser without speech, and the
+    // teacher's own settings while a ?s= link's drill runs
+    extra: async ({ browser, tag }) => {
+      const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      const captureSettings = async () => { const first = await openPage(browser, 'flash_cards.html', {}); const base = await first.page.evaluate(() => getSettings()); await first.ctx.close(); return base; };
+      {
+        const seedText = JSON.stringify(Object.assign({}, await captureSettings(), { listening: true }));
+        const { ctx, page, errors } = await openPage(browser, 'flash_cards.html', { seed: { hebrewFlashCards_settings: seedText }, init: () => { Object.defineProperty(window, 'speechSynthesis', { value: undefined, configurable: true }); } });
+        const r = await page.evaluate(() => { saveSettings(); const t = document.getElementById('listeningToggle'); return { after: localStorage.getItem('hebrewFlashCards_settings'), checked: t.checked, disabled: t.disabled, supported: speechSupported }; });
+        check(tag + ' E: without speech the listening preference is kept — toggle off and disabled here, the stored settings byte-identical', !r.supported && r.disabled && !r.checked && r.after === seedText, JSON.stringify({ supported: r.supported, disabled: r.disabled, checked: r.checked, listening: JSON.parse(r.after || '{}').listening }) + ' ' + diffKeys(JSON.stringify([['s', seedText]]), JSON.stringify([['s', r.after]])));
+        check(tag + ' E: 0 pageerrors (no speech)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      {
+        const seedText = JSON.stringify(Object.assign({}, await captureSettings(), { mode: 2, cardCount: 12 }));
+        const link = b64({ selectedLetters: ['א', 'ב', 'ג'], selectedVowels: ['a', 'patah'], mode: 1, cardCount: 6 });   // Flash Cards vowel keys (not the generator's)
+        const { ctx, page, errors } = await openPage(browser, 'flash_cards.html', { seed: { hebrewFlashCards_settings: seedText }, query: '?s=' + link });
+        await page.waitForFunction(() => { const a = document.querySelector('.screen.active'); return !!a && a.id !== 'screenSetup'; }, null, { timeout: 10000 }).catch(() => {});
+        const r = await page.evaluate(() => { saveSettings(); return { screen: (document.querySelector('.screen.active') || {}).id, mode, shared: _sharedDrill, after: localStorage.getItem('hebrewFlashCards_settings') }; });
+        await page.evaluate(() => showScreen('screenSetup'));
+        const back = await page.evaluate(() => ({ mode, cardCount, shared: _sharedDrill, after: localStorage.getItem('hebrewFlashCards_settings') }));
+        check(tag + ' E: a ?s= link runs as a transient drill (mode 1) and leaves the stored settings byte-identical', r.screen !== 'screenSetup' && r.mode === 1 && r.shared === true && r.after === seedText, JSON.stringify({ screen: r.screen, mode: r.mode, shared: r.shared, same: r.after === seedText }));
+        check(tag + " E: back on the setup screen the teacher's own settings return and the store still matches", back.mode === 2 && back.cardCount === 12 && back.shared === false && back.after === seedText, JSON.stringify({ mode: back.mode, cardCount: back.cardCount, shared: back.shared, same: back.after === seedText }));
+        check(tag + ' E: 0 pageerrors (?s=)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+    }
   },
   {
     file: 'hebrew_blend_generator.html', tool: 'Worksheet', host: '#cloudSavesPanel',
@@ -181,9 +208,10 @@ async function startServer() {
 }
 
 // Opens a page with foreign origins aborted. blockAccount = the control run (no account scripts at all).
-async function openPage(browser, file, { seed = {}, serveSdk = false, blockAccount = false, viewport = { width: 1280, height: 900 }, query = '', prepare = null } = {}) {
+async function openPage(browser, file, { seed = {}, serveSdk = false, blockAccount = false, viewport = { width: 1280, height: 900 }, query = '', prepare = null, init = null } = {}) {
   const ctx = await browser.newContext({ serviceWorkers: 'block', viewport });
   await ctx.addInitScript((seed) => { for (const k of Object.keys(seed)) localStorage.setItem(k, seed[k]); }, seed);
+  if (init) await ctx.addInitScript(init);   // a page-specific stub that must be in place before the page's scripts run
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(String(e && e.message || e)));

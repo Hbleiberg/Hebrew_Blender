@@ -1198,9 +1198,11 @@ flashcards.mode.words_source_mylists,My Word Lists,רשימות המילים ש�
 flashcards.profile.button_label,{name}  ·  {count} saved,{name}  ·  {count} שמורים,save-to-profile choice button,
 flashcards.profile.cancel,Cancel,ביטול,save-to-profile cancel button,
 flashcards.profile.delete_confirm,"Delete profile ""{name}"" and all of its saved results? This cannot be undone.","למחוק את הפרופיל ""{name}"" ואת כל התוצאות השמורות שלו? לא ניתן לבטל זאת.",confirm dialog,mixed UI+content — do not translate {…}
+flashcards.profile.delete_confirm_cloud,"Delete profile ""{name}"" and all of its saved results on this device? The copy in your account stays until you delete it there (Cloud saves → Delete from your account too).","למחוק את הפרופיל ""{name}"" ואת כל התוצאות השמורות שלו במכשיר הזה? העותק בחשבון נשאר עד שתמחקו אותו שם (שמירות בענן ← למחוק גם מהחשבון).",confirm dialog while signed in (the account keeps its copy),mixed UI+content — do not translate {…}
 flashcards.profile.delete_result_confirm,Delete this saved result?,למחוק את התוצאה השמורה הזו?,confirm dialog,
 flashcards.profile.history_pct_frac,({correct}/{total}),({correct}/{total}),history item score fraction,
 flashcards.profile.merge_confirm,"Profile ""{newName}"" already exists — merge ""{oldName}"" into it?","הפרופיל ""{newName}"" כבר קיים — למזג את ""{oldName}"" אליו?",confirm dialog,mixed UI+content — do not translate {…}
+flashcards.profile.merge_confirm_cloud,"Profile ""{newName}"" already exists — merge ""{oldName}"" into it? The account's copy of ""{oldName}"" stays until you delete it there (Cloud saves → Delete from your account too).","הפרופיל ""{newName}"" כבר קיים — למזג את ""{oldName}"" אליו? העותק של ""{oldName}"" בחשבון נשאר עד שתמחקו אותו שם (שמירות בענן ← למחוק גם מהחשבון).",confirm dialog while signed in (the account keeps the old name's copy),mixed UI+content — do not translate {…}
 flashcards.profile.new_profile_heading,New profile,פרופיל חדש,save-to-profile modal section,
 flashcards.profile.new_prompt,New profile name:,שם פרופיל חדש:,prompt dialog,
 flashcards.profile.no_profiles_option,— no profiles —,— אין פרופילים —,active-profile dropdown empty option,
