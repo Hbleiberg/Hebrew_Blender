@@ -176,7 +176,7 @@ _(none)_
 
 ### Per-session log (one line per session)
 
-- 2026-09-15 | **S387** | iters: 1 pass (**L**) + the `.ivrit` junk-shape sweep + 3 fixes = **5** (full budget) | tools: trope_tutor (`f77b6da`), hebrew_dictionary (`831b414`), classroom_dashboard (`68552b3`) | patterns fixed: hover-feedback-survives-the-disabled-state ×2 (its session cap; carrier …[full text: IMPROVEMENT_ARCHIVE.md]
+- 2026-09-15 | **S387** | iters: 1 pass (**L**) + 3 fixes = **4** (5th unspent: the hover-vs-disabled class hit its 2-per-session cap and every other open candidate is gated or adjudicated not-a-defect; the 254-cell junk sweep was `68552b3`'s grounding, not its own iteration) | tools: trope_tutor (`f77b6da`), hebrew_dictionary (`831b414`), classroom_dashboard (`68552b3`) | patterns fixed: hover-feedback-survives-the-disabled-state ×2 (its session cap; carrier …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-09-15 | **S386** | iters: 1 pass (**E**) + 4 fixes = **5** (full budget) | tools: account (`fba22e1`), THIRD_PARTY_LICENSES (`e65f7e5`), README (`ad6bcd8`), sitemap (`e89e6dd`) | patterns fixed: hover-feedback-survives-the-disabled-state ×1 (3 controls, carrier 4 of 7) | pass run: E (31st; …[full text: IMPROVEMENT_ARCHIVE.md]
 
