@@ -5192,6 +5192,16 @@ function mountSidebarResize(cfg) {
 
   function syncFormToSettings() {
     const $ = id => document.getElementById(id);
+    // A stored value matching no radio — a hand-edited .ivrit, an older build's enum — made the
+    // bare querySelector below return null, so `.checked` threw and the whole form sync aborted:
+    // the board never rendered, and because the junk had already been saved the next load failed
+    // the same way. Guarded like groupMode / videoLayout / colorMode further down, and matched by
+    // value rather than interpolated into the selector (a stored quote is a selector syntax error,
+    // not a miss). An unmatched value leaves the group as it was instead of taking the page down.
+    const setRadio = (name, value) => {
+      const v = String(value);
+      document.querySelectorAll(`input[name="${name}"]`).forEach(r => { if (r.value === v) r.checked = true; });
+    };
     $('locationInput').value = settings.location;
     $('showHolidayCountdown').checked = settings.showHolidayCountdown !== false;
     $('showShabbatTimes').checked = settings.showShabbatTimes !== false;
@@ -5210,23 +5220,23 @@ function mountSidebarResize(cfg) {
     updateGroupNLabel();
     updatePickerRosterCount();
     renderClassManager();
-    document.querySelector(`input[name="engDateFmt"][value="${settings.engDateFmt}"]`).checked = true;
+    setRadio('engDateFmt', settings.engDateFmt);
     $('showEngDOW').checked = settings.showEngDOW;
     $('hideEngDate').checked = settings.hideEngDate;
-    document.querySelector(`input[name="hebDateScript"][value="${settings.hebDateScript}"]`).checked = true;
+    setRadio('hebDateScript', settings.hebDateScript);
     $('hideHebDate').checked = settings.hideHebDate;
-    document.querySelector(`input[name="timeFmt"][value="${settings.timeFmt}"]`).checked = true;
+    setRadio('timeFmt', settings.timeFmt);
     $('hideTime').checked = settings.hideTime;
     $('showSeconds').checked = !!settings.showSeconds;
-    document.querySelector(`input[name="tempUnit"][value="${settings.tempUnit}"]`).checked = true;
-    document.querySelector(`input[name="weatherLabelLang"][value="${settings.weatherLabelLang}"]`).checked = true;
+    setRadio('tempUnit', settings.tempUnit);
+    setRadio('weatherLabelLang', settings.weatherLabelLang);
     $('hideTemperature').checked = !!settings.hideTemperature;
     $('hideWeatherEmoji').checked = settings.hideWeatherEmoji;
     $('hideHighLow').checked = !!settings.hideHighLow;
     $('hideWeatherDesc').checked = settings.hideWeatherDesc;
     $('simpleWeatherDesc').checked = settings.simpleWeatherDesc;
     $('hideWeather').checked = settings.hideWeather;
-    document.querySelector(`input[name="dowLang"][value="${settings.dowLang}"]`).checked = true;
+    setRadio('dowLang', settings.dowLang);
     $('colorDays').checked = settings.colorDays !== false;
     $('showYesterday').checked = settings.showYesterday;
     $('showToday').checked = settings.showToday;
@@ -5240,7 +5250,7 @@ function mountSidebarResize(cfg) {
       btn.classList.toggle('active', btn.dataset.set === activeSet);
       btn.setAttribute('aria-pressed', btn.dataset.set === activeSet ? 'true' : 'false');
     });
-    document.querySelector(`input[name="headerLang"][value="${settings.headerLang || 'he'}"]`).checked = true;
+    setRadio('headerLang', settings.headerLang || 'he');
     setColTitleSize(settings.colTitleSize ?? 0.78);
     const showTso = !!settings.showTextSizeOptions;
     $('showTextSizeOptions').checked = showTso;
