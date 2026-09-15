@@ -7,13 +7,55 @@ the tables are used from the browser: `docs/reference/accounts-and-cloud.md`.
 
 ## The files
 
-| File | What it creates |
-|---|---|
-| `migrations/0001_accounts_and_saves.sql` | `profiles` (display name per account, filled by a trigger), `saves` (one row per saved item, ≤ 2 MB, 2000 per account), `font_projects` (catalogue rows for cloud Font Maker projects, 25 per account), the three private buckets `font-projects` / `font-exports` / `font-sources`, and the Row Level Security policies that keep every row and file private to its owner |
-| `migrations/0002_font_sources_originals.sql` | raises the `font-sources` bucket's per-file cap from 2 MiB to 15 MiB and adds WebP to its accepted types, so a Font Maker project's photos are kept at their original size (Phase 5); nothing else changes |
-| `migrations/0003_keepalive.sql` | `public.keepalive()`, a function that returns `'ok'` and reads nothing, callable with the publishable key: the daily GitHub Actions workflow `.github/workflows/supabase-keepalive.yml` calls it so the free project counts as active and is never paused (Phase 8); no table, no policy changes |
+| File | Live? | What it creates |
+|---|---|---|
+| `migrations/0001_accounts_and_saves.sql` | yes — sign-in and every panel work | `profiles`, `saves`, `font_projects`, the three private buckets, and the policies that keep every row and file private to its owner. **Four functions, five triggers and a backfill besides** — see *What 0001 actually contains* below |
+| `migrations/0002_font_sources_originals.sql` | yes — a photo over 2 MiB uploads | raises the `font-sources` bucket's per-file cap from 2 MiB to 15 MiB and adds WebP to its accepted types, so a Font Maker project's photos are kept at their original size (Phase 5); nothing else changes |
+| `migrations/0003_keepalive.sql` | yes — a green keep-alive run | `public.keepalive()`, a function that returns `'ok'` and reads nothing, callable with the publishable key: the daily GitHub Actions workflow `.github/workflows/supabase-keepalive.yml` calls it so the free project counts as active and is never paused (Phase 8); no table, no policy changes |
 
 Each file starts with a comment that explains every block in plain language.
+
+**The *Live?* column is evidence, not a record.** A migration applied through the connector is recorded in
+`supabase_migrations`; one pasted into the SQL editor is not, so the repository cannot prove what ran. Check
+the project itself rather than trusting this column — `select name from supabase_migrations.schema_migrations
+order by 1;` for the recorded ones, and the read-only queries under *Checking the live project* for the rest.
+Keep the column honest when you add a file: `no` until you have applied it.
+
+### What 0001 actually contains
+
+The table row above covers the objects a reader goes looking for. These are the rest, and they are the ones
+most easily lost if the project is ever rebuilt from scratch:
+
+| Object | Kind | Why it matters |
+|---|---|---|
+| `set_updated_at()` | function + triggers on all three tables | `updated_at` is the **only** ordering signal the sync uses; `client_updated_at` is display-only |
+| `handle_new_user()` | `security definer` function + a trigger **on `auth.users`** | creates the `profiles` row from Google's name or the email's local part. The only object outside `public` / `storage`, and the one a rebuild forgets |
+| `saves_before_write()` | function + trigger | sets `bytes` and `updated_at`, and raises the 2000-row cap |
+| `font_projects_before_write()` | function + trigger | sets `updated_at`, and raises the 25-project cap |
+| a backfill `insert` | one-time statement | gives `profiles` rows to accounts that already existed when the trigger was added |
+| per-table `revoke all` + narrow grants | permissions | **this**, not RLS, is what makes the publishable key read nothing: an anonymous request is refused with `42501` before a policy is consulted. The daily keep-alive asserts that exact code |
+| an advisor-hygiene `revoke` | permissions | drops `execute` on `public.rls_auto_enable()` from `public`/`anon`/`authenticated`, guarded so it is a no-op when the function is absent |
+
+Two consequences the SQL states only implicitly:
+
+- **`profiles` is granted `select, update` — no `insert`, no `delete`.** A client can never create or repair
+  its own profile row, so if `handle_new_user` ever fails for an account, `IvritAccount.profile()` has no
+  recovery path and the fix is a migration, not a retry in the page.
+- **The 2000-row and 25-project caps are raised by triggers, and only on `INSERT`.** An `UPDATE` never
+  re-checks them. The 2 MB `data` cap, by contrast, is a real CHECK constraint (`saves_data_max_2mb`), as is
+  `char_length(data_hash) <= 64`. All of them surface as the same `23514`, so the error code alone will not
+  tell you which one you hit.
+
+Two more shapes worth knowing before you change them: `saves.tool` is a **CHECK listing the seven tool
+names**, mirroring `var TOOLS` in `js/ivrit-saves.js` — an eighth tool needs a migration widening it, or
+every upload from that tool fails with an unexplained `23514`. And the four `storage.objects` policies are
+**per command, spanning all three buckets** (`bucket_id in (…)`), not one policy per bucket — so a fourth
+bucket means editing all four, under a house rule that forbids `drop`.
+
+`public.keepalive()` must stay **`stable`**: that is what lets PostgREST serve it as a plain
+`GET /rest/v1/rpc/keepalive`, which is what the workflow's `curl` calls. Making it `volatile` would require a
+POST and break the workflow without changing anything the function returns. Its grant pair (`revoke all …
+from public`, then `grant execute … to anon, authenticated`) is equally load-bearing.
 
 ## Why `db/` and not `supabase/`
 
@@ -39,6 +81,39 @@ Deploying one (the code is a single `index.ts`; the platform keeps every deploye
 
 Nothing in the browser changes when a function is redeployed; a new version is live at once. The function's
 own logs (every call, every error) are under *Edge Functions → delete-account → Logs*.
+
+**What `delete-account` answers**, so a caller can be read without guessing:
+
+| Status | Code | When |
+|---|---|---|
+| 405 | `method_not_allowed` | anything but `POST` |
+| 401 | `no_token` | no bearer token on the request |
+| 401 | `invalid_token` | Auth could not say whose token it is |
+| 500 | `not_configured` | `SUPABASE_URL` or the secret key is missing from the environment |
+| 500 | `delete_failed` | anything thrown along the way — the real error reaches `console.error` only, so the logs are the only place to read it |
+| 200 | — | `{ok, deleted:{saves, projects, files}}` |
+
+The platform's own JWT check answers its **own** 401 before the function runs at all; that is a different
+401 from the two above, and it is the one you get when *Verify JWT* is on and the token is absent or stale.
+
+`deleted.saves` and `deleted.projects` are counted **before** the delete — the rows go by cascade and are
+never re-counted, and `profiles` is not counted at all — so they report what the account held, not what was
+verified gone. `deleted.files` is counted as files are removed, 100 at a time, recursing into each project's
+folder (an entry with no `id` is treated as a folder). The secret key is read from `SUPABASE_SECRET_KEYS`
+(a JSON object, `.default`) and falls back to `SUPABASE_SERVICE_ROLE_KEY`.
+
+**Two things about this function are known and deliberate**, recorded here so they are not rediscovered as
+surprises:
+
+- It imports the SDK as `npm:@supabase/supabase-js@2` — a floating major version. The browser side is
+  pinned to an exact build with an integrity hash; the server side is not, so redeploying on a different
+  day can pull a newer SDK than the one last tested. Pinning it is a one-word edit **plus a redeploy**,
+  which is a live action against the one production project — not something a push can do.
+- `ALLOWED_ORIGINS` is a hardcoded list of four: the two real origins (`https://ivritsuite.com`,
+  `https://www.ivritsuite.com`) and `http://localhost:8080` / `http://127.0.0.1:8080`, left in from
+  development. They are untidy rather than dangerous — a caller still needs a valid token for the account
+  it is deleting — but adding or removing an origin means editing the function and redeploying it, not a
+  dashboard setting.
 
 ## Applying a migration
 
