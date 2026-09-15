@@ -112,6 +112,85 @@
   // instead of being pushed back down. After a write the module applies the language itself (I18n.setLang)
   // and fires `ivritsuite:prefs` on window; each page follows the theme from that event, the rest is
   // read at the next load (the done line says so).
+  // The user-font store the whole suite shares (docs/reference/shared-components.md → ivritsuite-fonts):
+  // one IndexedDB per origin, records { name, family, bytes: ArrayBuffer, created }, keyed by name. The
+  // pages' own copy of the block owns writing from the uploader; this is the module's read/write path for
+  // the same store, kept deliberately small and non-evicting (see USER_FONTS.write).
+  var FONTS_DB = 'ivritsuite-fonts', FONTS_STORE = 'fonts', FONTS_CAP = 10;
+  function fontsTx(mode, fn) {
+    return new Promise(function (resolve, reject) {
+      if (!window.indexedDB) { reject(makeError('no_fonts', 'IvritSaves: this browser has no IndexedDB')); return; }
+      var open;
+      try { open = indexedDB.open(FONTS_DB, 1); } catch (e) { reject(e); return; }
+      open.onupgradeneeded = function () { var db = open.result; if (!db.objectStoreNames.contains(FONTS_STORE)) db.createObjectStore(FONTS_STORE, { keyPath: 'name' }); };
+      open.onerror = function () { reject(open.error); };
+      open.onsuccess = function () {
+        try {
+          var tx = open.result.transaction(FONTS_STORE, mode), req = fn(tx.objectStore(FONTS_STORE));
+          tx.oncomplete = function () { resolve(req && req.result); };
+          tx.onerror = function () { reject(tx.error); };
+          tx.onabort = function () { reject(tx.error); };
+        } catch (e) { reject(e); }
+      };
+    });
+  }
+  function bytesToB64(buf) {
+    var b = new Uint8Array(buf), out = '', CH = 0x8000;
+    for (var i = 0; i < b.length; i += CH) out += String.fromCharCode.apply(null, b.subarray(i, i + CH));
+    return btoa(out);
+  }
+  function b64ToBytes(b64) {
+    var bin = atob(String(b64 || '')), out = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out.buffer;
+  }
+  // The fonts a teacher made or uploaded, one row each. The value is exactly the shape the AllTools backup
+  // has always used for a font — { name, b64, family } — so the account file and the device file agree; the
+  // per-device `created` stamp is deliberately left out, or every device would hash the same font differently.
+  var USER_FONTS = {
+    cache: null,
+    // IndexedDB is async and a plan is assembled synchronously, so the records are read once per listing
+    // (planTool primes every virtual store first) and served from this snapshot afterwards.
+    prime: function () {
+      return fontsTx('readonly', function (os) { return os.getAll(); }).then(function (rows) {
+        var out = {};
+        (rows || []).forEach(function (r) {
+          if (!r || typeof r.name !== 'string' || badName(r.name) || !r.bytes) return;
+          try { out[r.name] = { name: r.name, b64: bytesToB64(r.bytes), family: typeof r.family === 'string' && r.family ? r.family : r.name }; } catch (e) {}
+        });
+        USER_FONTS.cache = out;
+      }, function (err) { warn('the fonts store could not be read:', err); if (!USER_FONTS.cache) USER_FONTS.cache = {}; });
+    },
+    read: function () { var c = USER_FONTS.cache; return (c && Object.keys(c).length) ? c : null; },
+    // A download never evicts. The shared `saveUserFont` drops the oldest font once the cap is reached, which
+    // is right for an upload the teacher just chose and wrong for a sync: at the cap the row is refused with
+    // `cap`, so the run names it and nothing of theirs is deleted.
+    write: function (value, name) {
+      if (!isPlainObject(value) || typeof value.b64 !== 'string' || !value.b64) throw makeError('shape');
+      var cache = USER_FONTS.cache || {};
+      if (!hasOwn(cache, name) && Object.keys(cache).length >= FONTS_CAP) throw makeError('cap');
+      var bytes;
+      try { bytes = b64ToBytes(value.b64); } catch (e) { throw makeError('shape'); }
+      var family = (typeof value.family === 'string' && value.family) ? value.family : name;
+      return fontsTx('readwrite', function (os) { return os.put({ name: name, family: family, bytes: bytes, created: Date.now() }); }).then(function () {
+        cache[name] = { name: name, b64: value.b64, family: family };
+        USER_FONTS.cache = cache;
+        fontsChanged(name);
+        return [name];
+      });
+    },
+    remove: function (name) {
+      return fontsTx('readwrite', function (os) { return os.delete(name); }).then(function () {
+        if (USER_FONTS.cache) delete USER_FONTS.cache[name];
+        fontsChanged(name);
+      });
+    }
+  };
+  // No page attaches the Suite tool, so there is no onLocalChanged to call: every font picker listens for
+  // this instead and re-runs its own refreshMyFonts().
+  function fontsChanged(name) {
+    try { window.dispatchEvent(new CustomEvent('ivritsuite:fonts', { detail: { name: name } })); } catch (e) {}
+  }
   var SUITE_PREFS = {
     fields: {
       lang:              { key: 'hebrewBlender_lang',              ok: function (v) { var s = (window.I18n && window.I18n.supported) || ['en', 'he']; return typeof v === 'string' && s.indexOf(v) >= 0; } },
@@ -175,6 +254,10 @@
   var IVRIT_SYNC_REGISTRY = [
     // every page — the suite-wide preferences as one row (see SUITE_PREFS above); the hub shows its panel
     { tool: 'Suite', kind: 'prefs', virtual: SUITE_PREFS, shape: 'single', merge: 'assign', ivritKey: 'suitePrefs', label: 'shared.cloud.kind_suite_prefs' },
+    // every page with a Hebrew font picker — a teacher's own fonts, one row each with the TTF base64 inside
+    // (a Font Maker export or a handwriting face, tens to a few hundred KB; the 1.8 MB row guard refuses a
+    // bigger one by name). Without this a synced font name arrives on a second device with no face behind it.
+    { tool: 'Suite', kind: 'font', virtual: USER_FONTS, shape: 'map', merge: 'item', ivritKey: 'userFonts', label: 'shared.cloud.kind_font' },
     // trope_tutor.html — mastery counts merge losslessly (max / union); the drawer layout never travels
     { tool: 'TropeTutor', kind: 'progress', lsKey: 'hebrewTropeTutor_progress', shape: 'single', merge: 'deepMax', ivritKey: 'tropeTutorProgress', label: 'shared.cloud.kind_progress' },
     { tool: 'TropeTutor', kind: 'settings', lsKey: 'hebrewTropeTutor_settings', shape: 'single', merge: 'assign', omit: ['panelsCollapsed'], ivritKey: 'tropeTutorSettings', label: 'shared.cloud.kind_settings' },
@@ -431,9 +514,10 @@
   function localWrite(entry, name, value) {
     if (badName(name)) return Promise.reject(makeError('name'));
     if (entry.virtual) {
-      try { virtualChanged = entry.virtual.write(value); } catch (e) { return Promise.reject(makeError('quota', 'IvritSaves: preference write failed')); }
-      stampWrite(entry, name);
-      return Promise.resolve();
+      return Promise.resolve().then(function () { return entry.virtual.write(value, name); }).then(function (changed) {
+        virtualChanged = changed || null;
+        stampWrite(entry, name);
+      }, function (e) { throw (e && e.code) ? e : makeError('quota', 'IvritSaves: the write failed'); });
     }
     var store, text;
     if (entry.shape === 'map') {
@@ -488,7 +572,7 @@
   }
   // Only the test harness removes local data (its own keys). The panel never calls this.
   function localRemove(entry, name) {
-    if (entry.virtual) return entry.virtual.remove();
+    if (entry.virtual) return Promise.resolve().then(function () { return entry.virtual.remove(name); });
     var store = readStore(entry);
     if (entry.shape === 'map') {
       if (store && hasOwn(store, name)) { delete store[name]; return writeText(entry.lsKey, JSON.stringify(store)); }
@@ -767,11 +851,20 @@
     if (typeof row.data_hash === 'string' && row.data_hash.indexOf(currentPrefix()) === 0) return Promise.resolve(row.data_hash);
     return cloudLoad(row.id).then(function (full) { return hashItem(entry, full.data); });   // unknown: hash it here
   }
+  // A virtual store backed by something asynchronous (the fonts IndexedDB) reads itself into a snapshot
+  // first, so the plan below can stay synchronous. Never on an anonymous page: opening a database an
+  // anonymous visit would not otherwise open is exactly the kind of change the byte-identical bar forbids.
+  function primeVirtual(tool) {
+    var vs = registryFor(tool).filter(function (e) { return e.virtual && typeof e.virtual.prime === 'function'; });
+    return seqMap(vs, function (e) {
+      return Promise.resolve().then(function () { return e.virtual.prime(); }).catch(function (err) { warn('prime failed for', e.kind, err); });
+    });
+  }
   function planTool(tool) {
     var user = currentUser();
     var uid = user ? user.id : null;
     if (uid) flushPage(tool);   // a pending debounced write must land before the listing, or the first action sees a moved item
-    return localSide(tool).then(function (locals) {
+    return (uid ? primeVirtual(tool) : Promise.resolve()).then(function () { return localSide(tool); }).then(function (locals) {
       var rows = {}, order = [];
       locals.forEach(function (it) {
         var k = keyOf(it.kind, it.name);
@@ -1236,7 +1329,7 @@
   // helper, a row that moved between the listing and the action, a page hook that failed — skip that row;
   // the run goes on and names it. Anything else (the connection, the session, the device's storage, the
   // server) stops the tool, and re-running resumes.
-  var ROW_ERRORS = { too_big: true, name: true, chars: true, shape: true, no_merge: true, changed: true, changed_here: true, hook: true };
+  var ROW_ERRORS = { too_big: true, name: true, chars: true, shape: true, no_merge: true, changed: true, changed_here: true, hook: true, cap: true };
   function isRowError(err) { return !!(err && ROW_ERRORS[String(err.code)]); }
   // Errors that would fail every tool the same way: a bulk run does not go on to the next tool.
   function isConnectionError(err) {
@@ -1254,6 +1347,7 @@
     if (code === 'no_merge') return t('shared.cloud.skip_no_merge', 'this page cannot merge it');
     if (code === 'changed' || code === 'changed_here') return t('shared.cloud.skip_changed', 'changed meanwhile');
     if (code === 'hook') return t('shared.cloud.skip_hook', 'this page could not show it');
+    if (code === 'cap') return t('shared.cloud.skip_cap', 'this device already holds ten fonts');
     return errorText(err);
   }
   function noteSkip(sum, row, err) { sum.skipped++; sum.skips.push({ name: row.label, why: skipReason(err) }); }
@@ -2136,7 +2230,7 @@
       project: project, restoreOmitted: restoreOmitted, safeParse: safeParse, copyNameFor: copyNameFor,
       validateShape: validateShape, errorText: errorText, guardUpload: guardUpload, ivritFile: ivritFile,
       treeIsFlat: treeIsFlat, bundleFromRows: bundleFromRows, recheckWrites: recheckWrites, isRowError: isRowError, isConnectionError: isConnectionError,
-      suitePrefs: SUITE_PREFS, isUntouchedDefaultClass: isUntouchedDefaultClass, copyLabelFor: copyLabelFor, TOOL_PAGES: TOOL_PAGES, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
+      suitePrefs: SUITE_PREFS, userFonts: USER_FONTS, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, isUntouchedDefaultClass: isUntouchedDefaultClass, copyLabelFor: copyLabelFor, TOOL_PAGES: TOOL_PAGES, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
     }
   };
   // The chip's "Account…" item and the sign-in splash belong to every page that loads this module, including

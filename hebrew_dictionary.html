@@ -5083,6 +5083,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const want = localStorage.getItem('hebrewBlender_darkMode');
       if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
     });
+    // A font from the account landed in the shared store: re-list My Fonts, which also re-applies a face
+    // this page had chosen by name but could not show until now.
+    window.addEventListener('ivritsuite:fonts', () => { try { refreshMyFonts(); } catch (e) {} });
     IvritSaves.attach({
       tool: 'Dictionary',
       merges: { wordList: mergeWordList },

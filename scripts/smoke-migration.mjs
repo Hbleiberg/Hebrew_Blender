@@ -193,6 +193,7 @@ const screen = (page) => page.evaluate(() => {
   };
 });
 // "Sync finished: a uploaded, b downloaded, c merged, d still need a choice." → [a, b, c, d] (both languages keep the order)
+const ivritFontNames = (v) => Array.isArray(v) ? v.map(f => f && f.name) : (v && typeof v === 'object' ? Object.keys(v) : []);
 const syncNumbers = (text) => { const m = String(text).match(/(\d+)\D+(\d+)\D+(\d+)\D+(\d+)/); return m ? m.slice(1).map(Number) : null; };
 // Sync everything, then take the account's settings for every tool the screen names (the everyday second-device path).
 async function syncAndSettle(page) {
@@ -314,7 +315,16 @@ function buildDeviceA(D) {
   return s;
 }
 const withSession = (s) => Object.assign({}, s, { [AUTH_KEY]: J(SESSION), ivritSuite_accountCache: J({ email: 'teacher@example.org', name: 'Test Teacher' }), ivritSuite_syncMeta: J({ v: 1, users: {}, welcomed: { [UID]: '2026-09-14T00:00:00.000Z' } }) });
-const EXPECTED_ROWS = { Suite: 1, TropeTutor: 2, TorahTrainer: 1, FlashCards: 8, Worksheet: 4, Dictionary: 2, Dashboard: 8 };   // 26 rows, five of them folder trees
+const EXPECTED_ROWS = { Suite: 2, TropeTutor: 2, TorahTrainer: 1, FlashCards: 8, Worksheet: 4, Dictionary: 2, Dashboard: 8 };   // 27 rows, five of them folder trees
+// A font the teacher made: it lives in IndexedDB, not localStorage, so the dump-and-classify pass below
+// cannot see it — it is seeded on A and looked for on B by name.
+const FONT_NAME = 'Morah Handwriting', FONT_B64 = 'AAEAAAALAIAAAwAwT1MvMg==';
+const seedFont = (page) => page.evaluate(async ([name, b64]) => {
+  const bin = atob(b64), u = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  await saveUserFont(name, u, name);
+}, [FONT_NAME, FONT_B64]);
+const fontsOn = (page) => page.evaluate(() => listUserFonts().then(l => l.map(f => f.name).sort()));
 
 const browser = await chromium.launch();
 const srv = await startServer();
@@ -359,6 +369,7 @@ try {
   {
     await visitAll(ctxA, errA);
     const { page, errors } = await openPage(ctxA, 'index.html');
+    await seedFont(page);   // a teacher's own font, the one category that lives outside localStorage
     await openAccount(page);
     const s0 = await screen(page);
     await clickAndWait(page, 'upload', UPLOADED);
@@ -367,7 +378,7 @@ try {
     cloud.rows.forEach(r => { byTool[r.tool] = (byTool[r.tool] || 0) + 1; });
     check('2: an empty account offered Upload everything; the run named no skipped row', s0.lines.length >= 7 && !/skipped|דולגו|Stopped|נעצר/.test(s.status), JSON.stringify({ lines: s0.lines, status: s.status }));
     const countsMatch = Object.keys(EXPECTED_ROWS).every(t => byTool[t] === EXPECTED_ROWS[t]) && Object.keys(byTool).length === Object.keys(EXPECTED_ROWS).length;
-    check('2: the cloud holds exactly the expected rows per tool (26, five of them folder trees)', countsMatch && cloud.rows.length === 26, JSON.stringify(byTool));
+    check('2: the cloud holds exactly the expected rows per tool (27, five of them folder trees)', countsMatch && cloud.rows.length === 27, JSON.stringify(byTool));
     await page.screenshot({ path: path.join(SHOTS, '2-A-uploaded.png') });
     dumpA = await dump(page);
     errA.push(...errors);
@@ -385,6 +396,9 @@ try {
     check('3: B synced everything on the home page and took the account\'s settings where asked; nothing left to choose', !s1.block && !/to merge inside|למיזוג/.test(s1.lines.join(' ')) && /IvritSuite/.test(s1.lines.join(' ')), JSON.stringify(s1));
     const live = await page.evaluate(() => ({ lang: document.documentElement.lang, dark: document.body.classList.contains('dark') }));
     check('3: the suite-wide preferences applied live on B (Hebrew, dark)', live.lang === 'he' && live.dark, JSON.stringify(live));
+    const bFonts = await fontsOn(page);
+    const bBytes = await page.evaluate((n) => getUserFont(n).then(r => r && r.bytes ? new Uint8Array(r.bytes).length : 0), FONT_NAME);
+    check("3: the teacher's own font came across with its bytes", JSON.stringify(bFonts) === JSON.stringify([FONT_NAME]) && bBytes === 16, JSON.stringify({ bFonts, bBytes }));
     errB.push(...errors);
     await page.close();
     await visitAll(ctxB, errB);
@@ -492,6 +506,7 @@ try {
   {
     const b = await openPage(ctxB, 'index.html');
     const file = await b.page.evaluate(() => window.IvritSaves.bundleAll().then(x => x.file));
+    check('8: the backup carries the font too, in the shape this page\'s own export uses', !!file.data.userFonts && ivritFontNames(file.data.userFonts).includes(FONT_NAME), JSON.stringify(Object.keys(file.data.userFonts || {})));
     check('8: the backup is partial and carries the class lists and the suite-wide preferences', file.partial === true && file.data.dashboardRosters && file.data.dashboardRosters.rosters.a_0.names.includes('Noa') && file.data.suitePrefs && file.data.suitePrefs.lang === 'he' && file.data.suitePrefs.kbdLayout === 'abc' && file.data.generatorPresets['Week 1'], Object.keys(file.data || {}).join(','));
     errB.push(...b.errors); await b.page.close();
     const ctxC = await openContext(browser, null, { hebrewDashboard_settings: J({ location: 'Boston, MA', zoomLevel: 130, rosters: { c_1: { name: 'Mine', names: ['Lior'] } }, activeRosterId: 'c_1' }) }, { blockAccount: true });
