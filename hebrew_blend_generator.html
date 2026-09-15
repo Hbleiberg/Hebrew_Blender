@@ -4457,7 +4457,12 @@ function bindTileA11y(tile) {
    direction (the grid is direction:rtl, so ArrowLeft is the next tile in DOM order), Home/End jump to
    the ends. Enter/Space still toggle via bindTileA11y. Listeners bind once per grid element. */
 function roveTileGrid(container, tileSel) {
-  const tiles = () => [...container.querySelectorAll(tileSel)].filter(t => t.offsetParent !== null);
+  // A grid built inside a collapsed panel or a hidden section has no VISIBLE tiles yet, and an empty
+  // list made this bail before it set a single tabindex — leaving that grid one Tab stop per tile until
+  // something happened to rebuild it while open. Fall back to all tiles so the roving index is seeded at
+  // build time either way; once the grid is on screen the visible set is what the arrow keys walk.
+  const tiles = () => { const all = [...container.querySelectorAll(tileSel)];
+                        const vis = all.filter(t => t.offsetParent !== null); return vis.length ? vis : all; };
   const setCurrent = cur => tiles().forEach(t => t.setAttribute('tabindex', t === cur ? '0' : '-1'));
   const all = tiles();
   if (!all.length) return;
@@ -8886,6 +8891,7 @@ function initLockGrids() {
       bindTileA11y(div);
       grid.appendChild(div);
     });
+    roveTileGrid(grid, '.lock-letter-tile');
   });
 }
 
@@ -11358,6 +11364,7 @@ function initRwLetterGrid() {
       grid.appendChild(div);
     });
   });
+  roveTileGrid(grid, '.rw-letter-tile');
 }
 
 function toggleRwLetter(heb, el) {
