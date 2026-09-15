@@ -426,6 +426,14 @@ body.dark .vowel-chip-sub{color:#adb6c9;}
    uses (S102): the inline-flex is what turns min-height into a taller BOX rather than taller text. */
 .pos-all-btn{flex:1;padding:3px 0;min-height:30px;display:inline-flex;align-items:center;justify-content:center;font-size:0.72rem;font-family:'Source Sans 3',sans-serif;background:var(--warm-gray);color:var(--text);border:1px solid var(--border);border-radius:4px;cursor:pointer;}
 .pos-all-btn:hover{border-color:var(--gold);color:var(--gold-text);}
+/* The word-list controls hand-rolled the locked look with an inline style.opacity and no
+   cursor change, so #wlSaveBtn kept cursor:pointer and still took the gold hover above while
+   disabled, and the ↑/↓ sat at 0.3 — below every rule-based disabled opacity in the suite
+   (0.35-0.55). Converged on this page's own .tbtn:disabled idiom. The hover guard is (0,3,0)
+   against the (0,2,0) it cancels, and --border/--text are themed, so one restate covers both
+   themes; .pos-all-btn:hover changes only border and text, so only those are restated. */
+.pos-all-btn:disabled{opacity:0.5;cursor:default;}
+.pos-all-btn:disabled:hover{border-color:var(--border);color:var(--text);}
 /* In-place corpus-retry button (converged retry model) — same S102 floor declarations as above;
    this file has no .btn-xs, so the retry sites carry their own class. Both tokens flip with the
    theme, so no dark rule is needed. */
@@ -529,6 +537,7 @@ body.dark .wm-form{background:var(--white);}
 .wm-heb-sm{font-family:var(--heb-font);font-size:1.3rem;direction:rtl;flex:1;}
 .wm-form-tr{font-size:0.8rem;color:var(--muted);}
 .wm-mini{border:none;background:transparent;cursor:pointer;font-size:1rem;color:var(--text);}
+.wm-mini:disabled{opacity:0.4;cursor:default;}
 .wm-actions{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
 .wm-act{padding:7px 12px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-size:0.82rem;font-family:inherit;cursor:pointer;text-align:start;transition:background 0.15s,border-color 0.15s;}
 body.dark .wm-act{background:var(--white);}
@@ -1199,7 +1208,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
             <div style="font-size:0.72rem;font-weight:600;margin-bottom:2px;color:var(--text);"><span data-i18n="dictionary.wordlists.head">Word Lists</span> <span class="tip-wrap" data-i18n-tip="dictionary.wordlists.head_tip" data-tip="Save selected words as a named list stored across the whole site, so you can reuse it in other tools."><i class="tip-icon">?</i></span></div>
             <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px;" data-i18n="dictionary.wordlists.head_desc">Save selected words as a named list you can reuse elsewhere on the site.</div>
             <div style="display:flex;gap:5px;">
-              <button id="wlSaveBtn" class="pos-all-btn" style="flex:1;opacity:0.5;" onclick="wlOpenSaveModal()" disabled data-i18n="dictionary.wordlists.save_button">⭑ Save as Word List…</button>
+              <button id="wlSaveBtn" class="pos-all-btn" style="flex:1;" onclick="wlOpenSaveModal()" disabled data-i18n="dictionary.wordlists.save_button">⭑ Save as Word List…</button>
               <button class="pos-all-btn" style="flex:1;" onclick="wlOpenManager()" data-i18n="dictionary.wordlists.manager_button">📚 Word Lists</button>
             </div>
           </div>
@@ -1755,7 +1764,7 @@ function updateExportState() {
   if (c) c.textContent = I18n.t(bulkSelected.size === 1 ? 'dictionary.export.count.one' : 'dictionary.export.count.other', { count: bulkSelected.size });
   if (active) { const e = document.getElementById('exportErr'); if (e) e.textContent = ''; }
   const sb = document.getElementById('wlSaveBtn');
-  if (sb) { sb.disabled = !active; sb.style.opacity = active ? '' : '0.5'; }
+  if (sb) sb.disabled = !active;
 }
 function exportSelectedWords() {
   const out = [];
@@ -2152,11 +2161,11 @@ function wlRenderManagerInto(root) {
           wr.appendChild(wlEl('span', { style: 'flex:1;color:var(--muted);word-break:break-word;' }, w.translation || ''));
           const up = wlEl('button', { cls: 'wm-mini', type: 'button', title: I18n.t('dictionary.wordlist.move_up_title') }, '↑');
           up.setAttribute('aria-label', I18n.t('dictionary.wordlist.move_up_title'));
-          if (idx === 0) { up.disabled = true; up.style.opacity = '0.3'; }
+          if (idx === 0) up.disabled = true;
           up.addEventListener('click', () => { wlMoveWord(id, w.word, -1); paint(); });
           const dn = wlEl('button', { cls: 'wm-mini', type: 'button', title: I18n.t('dictionary.wordlist.move_down_title') }, '↓');
           dn.setAttribute('aria-label', I18n.t('dictionary.wordlist.move_down_title'));
-          if (idx === words.length - 1) { dn.disabled = true; dn.style.opacity = '0.3'; }
+          if (idx === words.length - 1) dn.disabled = true;
           dn.addEventListener('click', () => { wlMoveWord(id, w.word, 1); paint(); });
           const x = wlEl('button', { cls: 'wm-mini', type: 'button', title: I18n.t('dictionary.wordlist.remove_word_title') }, '✕');
           x.setAttribute('aria-label', I18n.t('dictionary.wordlist.remove_word_title'));
