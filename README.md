@@ -224,7 +224,9 @@ account — the usual case on a second device, which wrote its own settings the 
 the screen offers **Use my account's settings** or **Keep this device's settings** in one step (per-device
 choices such as zoom stay either way). The site-wide preferences — language, theme, keyboard layout, the
 Hebrew font and size, the Font Maker author name, the Dictionary's romanization, speech rate and emoji choices
-— sync as one row, **IvritSuite preferences**, and the language and theme switch live when it lands. A preset,
+— sync as one row, **IvritSuite preferences**, and the language and theme switch live when it lands. Fonts you
+made or uploaded travel too, one row each, so a font chosen on the laptop actually renders on the phone; a
+device already holding the ten My Fonts allows says so rather than dropping one of yours to make room. A preset,
 deck, student or class deleted on one device is never removed anywhere by itself: its row reads *Deleted on
 this device* with *Bring it back* / *Delete from your account too*, and *Sync everything* leaves it alone.
 The account's `.ivrit` backup is *partial* — the account's copies only — so the home page merges it without

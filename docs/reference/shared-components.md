@@ -47,6 +47,13 @@ Because they live in IndexedDB (not `localStorage`), they need **no** per-tool k
 export/import/erase functions beyond that already-present `userFonts` handling.
 
 ### Rule for any new tool with a Hebrew font selector
+`js/ivrit-saves.js` reads and writes this same store for the account's `Suite`/`font` rows, through its own
+small copy of the open/transaction pair rather than the page's (it has to work on any carrier). Its write is
+deliberately **not** `saveUserFont`: that one drops the oldest font once `IV_FONTS_CAP` is reached, which is
+right for an upload the teacher just chose and wrong for a sync, so at the cap the module refuses the row and
+names it instead. After it writes, it fires `ivritsuite:fonts` on `window`; every picker page listens and
+re-runs `refreshMyFonts()`.
+
 It **must**: (1) paste the shared `ivritsuite-fonts` block, (2) implement the consumer pattern above so a
 **"My Fonts"** group appears and `refreshMyFonts()` runs at init, and (3) paste the **My Fonts uploader**
 block + the "Upload your own font?" control below its picker. Custom fonts then work and upload everywhere

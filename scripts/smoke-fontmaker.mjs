@@ -271,6 +271,7 @@ try {
       return { load, save, pip: document.getElementById('cloudPip').hidden };
     });
     check('0: signed out, the Load menu offers a sign-in row under "In your account" and the Save menu a sign-in row', /In your account/.test(menus.load) && /Sign in to see/.test(menus.load) && /Sign in to save/.test(menus.save) && menus.pip === true, JSON.stringify(menus));
+    check('0: the Load menu says Recent belongs to this browser', /Recent is this browser only/.test(menus.load), menus.load.slice(0, 200));
     const after = await dump(page);
     check('0: localStorage byte-identical to the control run', after === control, after === control ? '' : 'differs');
     check('0: 0 pageerrors with the account scripts present, CDN blocked', errors.length === 0, errors.join(' | '));
@@ -284,6 +285,14 @@ try {
     const { page, errors } = await openPage(ctx, { signedIn: true });
     const fx = await page.evaluate(FIXTURE);
     check('1: the fixture project loaded through applyProjectData', fx === true, String(fx));
+    // Signed in with nothing saved yet — what a second device shows. The empty line must name the way across.
+    const empty = await page.evaluate(async () => {
+      document.querySelector('[data-i18n="fontmaker.toolbar.load_project"]').click();
+      const lm = document.getElementById('loadMenu');
+      for (let i = 0; i < 60 && /Checking your account/.test(lm.textContent); i++) await new Promise(r => setTimeout(r, 100));
+      const text = lm.textContent; closeLoadMenu(); return text;
+    });
+    check('1: with an empty account the Load menu names Save Project → Save to my account, and says Recent is local', /No projects in your account yet/.test(empty) && /Save to my account/.test(empty) && /Recent is this browser only/.test(empty), empty.slice(0, 260));
     const saved = await page.evaluate(() => fmCloudWrite('new'));
     let st = await state(page);
     const rows = cloud.tables.font_projects;

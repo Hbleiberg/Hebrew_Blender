@@ -190,6 +190,25 @@ const PAGES = [
       check(tag + ' E: the emoji exclusions were kept through the load (before and after the catalogue arrived)', JSON.stringify(early) === '["Animal|Mammal"]' && r.loaded && JSON.stringify(r.stored) === '["Animal|Mammal"]' && JSON.stringify(r.live) === '["Animal|Mammal"]', JSON.stringify({ early, r }));
       check(tag + ' E: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
+      // The nikkud colour coding survives a load, and a stored blob is import-target data: an unknown vowel
+      // key and anything that is not a plain hex colour are dropped before a colour can reach a style attribute.
+      {
+        const seeded = JSON.stringify({ on: true, mode: 'underline', overrides: { a: '#123456', patah: 'red; background:url(x)', nosuchkey: '#abcdef', e: '#fff' } });
+        const c2 = await openPage(browser, 'hebrew_dictionary.html', { seed: { hebrewDictionary_nikudColors: seeded } });
+        const st = await c2.page.evaluate(() => ({
+          on: colorCodingEnabled, mode: colorCodingMode, over: nikudColorOverrides,
+          checked: document.getElementById('colorCodingToggle').checked,
+          optsShown: document.getElementById('colorCodingOptions').style.display !== 'none',
+          underlineActive: document.getElementById('colorModeUnderline').getAttribute('aria-pressed') === 'true'
+        }));
+        check(tag + ' E: the stored colour coding came back onto the state and the controls', st.on === true && st.mode === 'underline' && st.checked && st.optsShown && st.underlineActive, JSON.stringify(st));
+        check(tag + ' E: a bad colour and an unknown vowel key were dropped, the good ones kept', JSON.stringify(st.over) === JSON.stringify({ a: '#123456', e: '#fff' }), JSON.stringify(st.over));
+        const round = await c2.page.evaluate(() => { toggleColorCoding(false); setColorMode('highlight'); return localStorage.getItem('hebrewDictionary_nikudColors'); });
+        const rb = JSON.parse(round || '{}');
+        check(tag + ' E: turning it off and changing the mode are both written straight away', rb.on === false && rb.mode === 'highlight' && rb.overrides && rb.overrides.a === '#123456', round);
+        check(tag + ' E: 0 pageerrors (colour coding)', c2.errors.length === 0, c2.errors.join(' | '));
+        await c2.ctx.close();
+      }
     },
     expand: `wlOpenManager();`,
     urlKeep: 'wordlists=open'

@@ -89,7 +89,8 @@ class FakeCloud {
         row('Dictionary', 'wordList', 'abc', { name: 'Colors', words: [] }, 6), row('Dashboard', 'settings', 'default', { headerLang: 'he' }, 7), row('TropeTutor', 'progress', 'default', { v: 1, tropes: {} }, 8),
         row('Dashboard', 'roster', 'lap_0', { name: 'Kitah Alef', names: ['Noa', 'Eitan'] }, 10),   // a class list: its own key in the backup
         row('Dashboard', 'future', 'thing', { x: 1 }, 11),                                        // a kind this build does not know: kept in the backup, not listed
-        row('Suite', 'prefs', 'default', { darkMode: '1', hebFont: 'David Libre', dictTtsRate: '1.2' }, 12)   // the suite-wide preferences row
+        row('Suite', 'prefs', 'default', { darkMode: '1', hebFont: 'David Libre', dictTtsRate: '1.2' }, 12),   // the suite-wide preferences row
+        row('Suite', 'font', 'Morah Handwriting', { name: 'Morah Handwriting', b64: 'AAEAAAALAIAAAwAwT1MvMg==', family: 'Morah Handwriting' }, 13)   // a font the teacher made
       ],
       font_projects: [{ id: PID, user_id: UID, name: 'Smoke Font', family_name: 'Smoke Font', style: null, schema_version: 5, letters_done: 3, has_images: true, project_path: UID + '/' + PID + '/project-1.json.gz', project_bytes: GZ.length, sources_bytes: PNG1.length + PNG2.length, export_path: UID + '/' + PID + '/SmokeFont.ttf', exported_at: at(9), client_saved_at: null, created_at: at(9), updated_at: at(9) }],
       profiles: [{ id: UID, display_name: 'Test Teacher', created_at: at(0), updated_at: at(0) }]
@@ -267,11 +268,12 @@ try {
     check('1: class list counted but not named; the unknown kind is mentioned, not listed', /Class lists: 1/.test(list) && !/Kitah Alef/.test(list) && /1 items saved by a newer version/.test(list) && !/thing/.test(list), list);
     check('1: settings and mastery rows listed', /Settings: 1/.test(list) && /Mastery progress: 1/.test(list));
     check('1: the suite-wide preferences row under IvritSuite', /IvritSuite[\s\S]*IvritSuite preferences: 1/.test(list), list);
+    check("1: the teacher's own font is counted and its name can be expanded", /My Fonts: 1/.test(list), list);
     await page.evaluate(() => { const b = [...document.querySelectorAll('#holdsList .link-btn')].find(x => x.closest('li').textContent.includes('Student profiles')); b.click(); });
     const list2 = await text(page, '#holdsList');
     check('1: names expand for profiles only', /Dana/.test(list2) && /Yoni/.test(list2) && !/Aleph Bet/.test(list2));
     check('1: the font project line', /Smoke Font: 3 letters/.test(list2) && /with an exported font/.test(list2));
-    check('1: the total line', /11 items and 1 project,/.test(await text(page, '#holdsTotal')), await text(page, '#holdsTotal'));
+    check('1: the total line', /12 items and 1 project,/.test(await text(page, '#holdsTotal')), await text(page, '#holdsTotal'));
     check('1: who — email, provider, since', (await text(page, '#whoLine')).includes(EMAIL) && /emailed code/.test(await text(page, '#whoProvider')) && (await text(page, '#sinceLine')).length > 0);
     check('1: display name from profiles', (await page.inputValue('#nameInput')) === 'Test Teacher');
     check('1: download enabled, delete box closed', !(await disabled(page, '#dlBtn')) && !(await visible(page, '#delConfirm')));
@@ -309,7 +311,8 @@ try {
       && iv.data.generatorPresets['Aleph Bet'].fontSize === 24 && iv.data.generatorPresets.Vowels.fontSize === 30 && iv.data.generatorPresetFolders.v === 1
       && iv.data.flashCardProfiles.profiles.Dana && iv.data.flashCardProfiles.profiles.Yoni && iv.data.flashCardProfiles.activeProfile === null
       && iv.data.wordLists.lists.abc.name === 'Colors' && iv.data.wordLists.v === 1 && iv.data.dashboardSettings.headerLang === 'he' && iv.data.tropeTutorProgress.v === 1
-      && iv.data.suitePrefs && iv.data.suitePrefs.hebFont === 'David Libre' && iv.data.suitePrefs.darkMode === '1', iv ? Object.keys(iv.data).join(',') : 'no .ivrit');
+      && iv.data.suitePrefs && iv.data.suitePrefs.hebFont === 'David Libre' && iv.data.suitePrefs.darkMode === '1'
+      && iv.data.userFonts && iv.data.userFonts['Morah Handwriting'] && iv.data.userFonts['Morah Handwriting'].b64 === 'AAEAAAALAIAAAwAwT1MvMg==', iv ? Object.keys(iv.data).join(',') : 'no .ivrit');
     check('3: the .ivrit is marked partial, carries the class list under its own key and the unknown kind under cloudUnknown', !!iv && iv.partial === true && iv.data.dashboardRosters && JSON.stringify(iv.data.dashboardRosters.rosters.lap_0.names) === '["Noa","Eitan"]' && Array.isArray(iv.data.cloudUnknown) && iv.data.cloudUnknown.length === 1 && iv.data.cloudUnknown[0].kind === 'future' && iv.data.cloudUnknown[0].tool === 'Dashboard' && iv.data.cloudUnknown[0].data.x === 1, iv ? JSON.stringify({ partial: iv.partial, rosters: iv.data.dashboardRosters, unknown: iv.data.cloudUnknown }) : 'no .ivrit');
     // ---- 3b. that .ivrit dropped on the home page: merged without the Merge/Replace question, the class list landed, per-device fields kept ----
     {
@@ -339,7 +342,7 @@ try {
     check('3: no sentinel, no manifest, SVG and identity intact', !!proj && !JSON.stringify(proj).includes('cloud:') && proj.cloudSources === undefined && proj.combinedSheets[0].dataUrl === SVG && proj.cloudId === PID && proj.letters[2].source.dataUrl === null);
     const ex = entries.find(e => e.name === 'font-projects/Smoke Font/SmokeFont.ttf');
     check('3: the exported font rides along', !!ex && Buffer.compare(ex.bytes, TTF) === 0);
-    check('3: the done line', /Downloaded 11 items and 1 project/.test(await text(page, '#dlStatus')), await text(page, '#dlStatus'));
+    check('3: the done line', /Downloaded 12 items and 1 project/.test(await text(page, '#dlStatus')), await text(page, '#dlStatus'));
     check('3: two photo downloads, no re-download of the project file', cloud.log.filter(e => e.kind === 'download' && e.bucket === 'font-sources').length === 2 && cloud.log.filter(e => e.kind === 'download' && e.bucket === 'font-projects').length === 1);
   }
   // ---- 4. delete my account -----------------------------------------------------------------------
@@ -357,7 +360,7 @@ try {
     await page.waitForFunction(() => !document.getElementById('acctGone').hidden, null, { timeout: 20000 });
     const call = cloud.log.find(e => e.kind === 'delete-account');
     check('4: the function was called with the session token and the publishable key', !!call && call.auth === 'Bearer x' && call.apikey === CFG.anonKey, JSON.stringify(call));
-    check('4: the deleted tile with the counts', /11 items, 1 project, 4 files/.test(await text(page, '#goneCounts')), await text(page, '#goneCounts'));
+    check('4: the deleted tile with the counts', /12 items, 1 project, 4 files/.test(await text(page, '#goneCounts')), await text(page, '#goneCounts'));
     const ls = await page.evaluate(() => Object.assign({}, localStorage));
     check('4: session and name cache removed', !(AUTH_KEY in ls) && !('ivritSuite_accountCache' in ls));
     const meta = JSON.parse(ls.ivritSuite_syncMeta || '{}');

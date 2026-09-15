@@ -3876,6 +3876,43 @@ let colorCodingEnabled = false;
 let colorCodingMode = 'letter'; // 'letter' | 'highlight' | 'underline'
 let nikudColorOverrides = {};
 
+/* Nikkud colour coding is a teaching preference, not session noise: every other tool keeps its own in a
+   settings blob, and this one was rebuilt from the defaults on every load. One key holds all three pieces.
+   Validated on read, strictly: colorizeHebrew interpolates a colour straight into a style attribute, and
+   once the blob can arrive from a restored .ivrit file or an account it is import-target data — so an
+   unknown vowel key or a value that is not a plain hex colour is dropped (Security rule 2). */
+const DICT_COLORS_KEY = 'hebrewDictionary_nikudColors';
+const DICT_HEX_RE = /^#[0-9a-fA-F]{3,8}$/;
+const DICT_COLOR_MODES = ['letter', 'highlight', 'underline'];
+function dictColorsSave() {
+  try { localStorage.setItem(DICT_COLORS_KEY, JSON.stringify({ on: !!colorCodingEnabled, mode: colorCodingMode, overrides: nikudColorOverrides })); } catch (e) {}
+}
+function dictColorsLoad() {
+  let blob = null;
+  try { blob = ivritSafeParse(localStorage.getItem(DICT_COLORS_KEY) || 'null'); } catch (e) {}
+  if (!blob || typeof blob !== 'object' || Array.isArray(blob)) return;
+  const known = VOWEL_COLOR_DEFS.map(d => d.key), over = {};
+  const src = (blob.overrides && typeof blob.overrides === 'object' && !Array.isArray(blob.overrides)) ? blob.overrides : {};
+  known.forEach(k => { const v = src[k]; if (typeof v === 'string' && DICT_HEX_RE.test(v)) over[k] = v; });
+  nikudColorOverrides = over;
+  if (DICT_COLOR_MODES.indexOf(blob.mode) >= 0) colorCodingMode = blob.mode;
+  colorCodingEnabled = blob.on === true;
+}
+/* Paint the restored state onto the controls. Deliberately does not call setColorMode or
+   updateColorPickerValues: both re-render the word list, which has not been built yet at init. The first
+   render reads colorCodingEnabled and colorCodingMode itself, so it comes up already coloured. */
+function dictColorsApply() {
+  const cb = document.getElementById('colorCodingToggle');
+  if (cb) cb.checked = colorCodingEnabled;
+  const opts = document.getElementById('colorCodingOptions');
+  if (opts) opts.style.display = colorCodingEnabled ? 'flex' : 'none';
+  setSegActive(document.getElementById('colorModeLetter'),    colorCodingMode === 'letter');
+  setSegActive(document.getElementById('colorModeHighlight'), colorCodingMode === 'highlight');
+  setSegActive(document.getElementById('colorModeUnderline'), colorCodingMode === 'underline');
+  VOWEL_COLOR_DEFS.forEach(def => { const pick = document.getElementById(`colorPick_${def.key}`); if (pick) pick.value = getNikudColor(def.key); });
+  refreshColorExPreviews();
+}
+
 function getNikudColor(key) {
   if (nikudColorOverrides[key] !== undefined) return nikudColorOverrides[key];
   return (document.body.classList.contains('dark') ? NIKUD_DEFAULTS_DARK : NIKUD_DEFAULTS_LIGHT)[key] || '#888';
@@ -3932,6 +3969,7 @@ function toggleDictAudio(on) {
 function toggleColorCoding(on) {
   colorCodingEnabled = on;
   document.getElementById('colorCodingOptions').style.display = on ? 'flex' : 'none';
+  dictColorsSave();
   rerender();
 }
 
@@ -3969,6 +4007,7 @@ function setColorMode(mode) {
   setSegActive(document.getElementById('colorModeHighlight'), mode === 'highlight');
   setSegActive(document.getElementById('colorModeUnderline'), mode === 'underline');
   refreshColorExPreviews();
+  dictColorsSave();
   if (colorCodingEnabled) rerender();
 }
 
@@ -3998,6 +4037,7 @@ function initColorPickers() {
       nikudColorOverrides[def.key] = e.target.value;
       const ex2 = document.getElementById(`colorEx_${def.key}`);
       if (ex2) applyColorExStyle(ex2, e.target.value);
+      dictColorsSave();
       if (colorCodingEnabled) rerender();
     });
     row.appendChild(ex); row.appendChild(lbl); row.appendChild(pick);
@@ -4020,6 +4060,7 @@ function updateColorPickerValues() {
 function resetNikudColors() {
   if (!confirm(I18n.t('dictionary.advanced.color_reset_confirm'))) return;
   nikudColorOverrides = {};
+  dictColorsSave();
   updateColorPickerValues();
 }
 
@@ -4996,7 +5037,9 @@ document.addEventListener('DOMContentLoaded', () => {
   captureDictDefaultsAndRestore();
   initFontSelector();
   refreshMyFonts();
+  dictColorsLoad();     // the stored colour coding, before the pickers are built from it
   initColorPickers();
+  dictColorsApply();
   try {
     const fv = localStorage.getItem('hebrewBlender_hebFontSize');
     if (fv !== null) { const sl = document.getElementById('hebFontSizeSlider'); if (sl) { sl.value = fv; setHebFontSize(fv); } }
@@ -5083,6 +5126,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const want = localStorage.getItem('hebrewBlender_darkMode');
       if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
     });
+    // A font from the account landed in the shared store: re-list My Fonts, which also re-applies a face
+    // this page had chosen by name but could not show until now.
+    window.addEventListener('ivritsuite:fonts', () => { try { refreshMyFonts(); } catch (e) {} });
     IvritSaves.attach({
       tool: 'Dictionary',
       merges: { wordList: mergeWordList },

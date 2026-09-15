@@ -1023,6 +1023,7 @@ function exportAllSettings() {
     flashCardProfileFolders:  ftRead('hebrewFlashCards_profilesFolders'),
     ...dictScalarsIfSet(),
     dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
+    dictNikudColors:     lsJSON('hebrewDictionary_nikudColors', {}),
     dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
     blenderLastState:    lsJSON('hebrewBlender_lastState', {}),
     torahTrainerSettings: lsJSON('hebrewTorahTrainer_settings', {}),
@@ -1055,7 +1056,15 @@ function exportAllSettings() {
 // Unfolded into the flat AllTools keys — only where the file does not carry them itself — so the validated
 // branches below apply each one; a field this hub does not know is left where it is.
 const IVRIT_SUITE_PREF_KEYS = { lang: 'uiLang', darkMode: 'darkMode', kbdLayout: 'kbdLayout', inputMode: 'inputMode', hebFont: 'hebFont', hebFontSize: 'hebFontSize',
-  livePreview: 'livePreview', fmLastAuthor: 'fmLastAuthor', dictTranslitStyle: 'dictTranslitStyle', dictTtsRate: 'dictTtsRate', dictEmojiSettings: 'dictEmojiSettings' };
+  livePreview: 'livePreview', fmLastAuthor: 'fmLastAuthor', dictTranslitStyle: 'dictTranslitStyle', dictTtsRate: 'dictTtsRate', dictEmojiSettings: 'dictEmojiSettings',
+  dictNikudColors: 'dictNikudColors' };
+// A font list is an array in this page's own export and a { name: {name, b64, family} } map in the account
+// backup (one cloud row per font). Both import: everything downstream reads an array.
+function ivritFontList(v) {
+  if (Array.isArray(v)) return v;
+  if (v && typeof v === 'object') return Object.keys(v).map(k => { const f = v[k]; return (f && typeof f === 'object') ? Object.assign({ name: k }, f) : null; }).filter(Boolean);
+  return [];
+}
 function ivritUnfoldSuitePrefs(d) {
   const sp = d && d.suitePrefs;
   if (!sp || typeof sp !== 'object' || Array.isArray(sp)) return;
@@ -1123,6 +1132,10 @@ async function importAllSettings() {
       const existing = ivritSafeParse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}');
       localStorage.setItem('hebrewDictionary_emojiSettings', JSON.stringify(ivritSafeAssign(existing, parsed.dictEmojiSettings)));
     }
+    if (parsed.dictNikudColors && Object.keys(parsed.dictNikudColors).length) {
+      const existing = ivritSafeParse(localStorage.getItem('hebrewDictionary_nikudColors') || '{}');
+      localStorage.setItem('hebrewDictionary_nikudColors', JSON.stringify(ivritSafeAssign(existing, parsed.dictNikudColors)));   // the page validates every colour on read
+    }
     if (parsed.dictLastState && Object.keys(parsed.dictLastState).length) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewDictionary_lastState') || '{}');
       localStorage.setItem('hebrewDictionary_lastState', JSON.stringify(ivritSafeAssign(existing, parsed.dictLastState)));
@@ -1173,8 +1186,9 @@ async function importAllSettings() {
     if (parsed.wordLists) {
       wlMergeIntoStorage(parsed.wordLists, false);
     }
-    if (parsed.userFonts && Array.isArray(parsed.userFonts) && window.indexedDB) {
-      for (const uf of parsed.userFonts) { try { await saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family); } catch (e) {} }
+    const _pFonts = ivritFontList(parsed.userFonts);
+    if (_pFonts.length && window.indexedDB) {
+      for (const uf of _pFonts) { try { await saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family); } catch (e) {} }
       refreshFontsBackupCache();
     }
     alert(I18n.t('home.alltools.import_success'));
@@ -1261,6 +1275,7 @@ async function eraseAllSettings() {
     'hebrewDictionary_translitStyle',
     'hebrewDictionary_ttsRate',
     'hebrewDictionary_emojiSettings',
+    'hebrewDictionary_nikudColors',
     'hebrewDictionary_lastState',
     'hebrewBlender_zoom',
     'hebrewBlender_hideZoomBar',
@@ -1356,6 +1371,7 @@ const IVRIT_CFG = {
       flashCardPresetFolders:   ftRead('hebrewFlashCards_presetsFolders'),
       flashCardProfileFolders:  ftRead('hebrewFlashCards_profilesFolders'),
       dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
+      dictNikudColors:     lsJSON('hebrewDictionary_nikudColors', {}),
       dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
       blenderLastState:    lsJSON('hebrewBlender_lastState',    {}),
       torahTrainerSettings:lsJSON('hebrewTorahTrainer_settings',    {}),
@@ -1410,6 +1426,7 @@ const IVRIT_CFG = {
       touched = true;
     }
     if (data.dictEmojiSettings)   { mergeObj('hebrewDictionary_emojiSettings', data.dictEmojiSettings);  touched = true; }
+    if (data.dictNikudColors && Object.keys(data.dictNikudColors).length) { mergeObj('hebrewDictionary_nikudColors', data.dictNikudColors); touched = true; }
     if (data.dictLastState && Object.keys(data.dictLastState).length) { mergeObj('hebrewDictionary_lastState', data.dictLastState); touched = true; }
     if (data.blenderLastState && Object.keys(data.blenderLastState).length) { mergeObj('hebrewBlender_lastState', data.blenderLastState); touched = true; }
     if (data.torahTrainerSettings){ mergeObj('hebrewTorahTrainer_settings',   data.torahTrainerSettings); touched = true; }
@@ -1437,8 +1454,9 @@ const IVRIT_CFG = {
     if (data.generatorPanels && Object.keys(data.generatorPanels).length) { mergeObj('hebrewBlender_panels',      data.generatorPanels); touched = true; }
     if (data.flashCardPanels && Object.keys(data.flashCardPanels).length) { mergeObj('hebrewFlashCards_panels',   data.flashCardPanels); touched = true; }
     if (data.dictPanels      && Object.keys(data.dictPanels).length)      { mergeObj('hebrewDictionary_panels',   data.dictPanels);      touched = true; }
-    if (data.userFonts && Array.isArray(data.userFonts) && window.indexedDB) {
-      await Promise.all(data.userFonts.map(uf => Promise.resolve().then(() => saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family)).catch(() => {})));   // awaited: the success line is honest
+    const _dFonts = ivritFontList(data.userFonts);
+    if (_dFonts.length && window.indexedDB) {
+      await Promise.all(_dFonts.map(uf => Promise.resolve().then(() => saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family)).catch(() => {})));   // awaited: the success line is honest
       await Promise.resolve(refreshFontsBackupCache()).catch(() => {}); touched = true;
     }
     if (!touched) { alert(I18n.t('home.alltools.no_data_alert')); }
@@ -1537,7 +1555,7 @@ const IVRIT_INV_PARTS = [
   ['decks',     d => Object.keys(d.flashCardPresets   || {}).length],
   ['profiles',  d => Object.keys((d.flashCardProfiles || {}).profiles || {}).length],
   ['wordlists', d => Object.keys((d.wordLists || {}).lists || {}).length],
-  ['fonts',     d => ((d.userFonts || []).length)]
+  ['fonts',     d => ivritFontList(d.userFonts).length]
 ];
 function ivritInventory(data) {
   if (!window.I18n || !data || typeof data !== 'object') return '';

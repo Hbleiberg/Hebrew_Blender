@@ -52,6 +52,9 @@
  *      panel row carries a signpost linking there; closing the account screen right after Sync everything
  *      does not stop the run (the dashboard rows still land); an untouched empty default class is a seed
  *      that is never uploaded by itself.
+ *  17. A font a teacher made travels: a device with none takes it from the account and its picker shows it
+ *      at once; a device already holding the ten My Fonts allows refuses the eleventh by name rather than
+ *      evicting one of theirs, and the account keeps it.
  *
  * Run from the repo root:  node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
  * The script starts python3 -m http.server itself (port 8081 by default, so it can run beside the others).
@@ -779,6 +782,55 @@ try {
     check('16: the empty default class reads as a seed with no action', !!seedRow && seedRow.seed === true && seedRow.state === 'local-only' && seedRow.safe === null && seedRow.choices.length === 0 && states['roster:dev1_0'] === 'seed', JSON.stringify(seedRow));
     check('16: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
+  }
+  // ---- 17. a teacher's own font travels, and a full My Fonts is never emptied to make room ----------
+  if (want(17)) {
+    const B64 = 'AAEAAAALAIAAAwAwT1MvMg==';   // not a real face: the module only decodes it, nothing loads it here
+    const FONT = { tool: 'Suite', kind: 'font', name: 'Morah Handwriting', data: { name: 'Morah Handwriting', b64: B64, family: 'Morah Handwriting' } };
+    const fontsIn = (page) => page.evaluate(() => listUserFonts().then(l => l.map(f => f.name).sort()));
+    // (a) a device with no fonts of its own takes the one in the account, and the picker shows it at once
+    {
+      const cloud = new FakeCloud(CLOUD_ROWS().concat([FONT]));
+      const ctx = await openContext(browser, cloud, SEED(true));
+      const { page, errors } = await openPage(ctx, 'hebrew_blend_generator.html');
+      const before = await fontsIn(page);
+      await openAccount(page);
+      let s = await screen(page);
+      check('17a: the account screen lists the font as only in the account', before.length === 0 && s.lines.some(l => /IvritSuite/.test(l) && /only in your account/.test(l)), JSON.stringify({ before, lines: s.lines }));
+      await clickAndWait(page, 'sync', 'Sync finished');
+      const after = await fontsIn(page);
+      // MY_FONTS is a top-level let on the page: reachable by name, not on window. refreshMyFonts is async,
+      // so wait for the picker to catch up rather than racing it.
+      await page.waitForFunction(() => MY_FONTS.some(f => f.name === 'Morah Handwriting'), null, { timeout: 10000 }).catch(() => {});
+      const picker = await page.evaluate(() => MY_FONTS.map(f => f.name));
+      const states = await page.evaluate(() => window.IvritSaves.plan('Suite').then(p => Object.fromEntries(p.rows.map(r => [r.kind + ':' + r.name, r.state]))));
+      check('17a: the font landed in the shared store, the picker re-listed it, and the row reads Same', JSON.stringify(after) === '["Morah Handwriting"]' && picker.includes('Morah Handwriting') && states['font:Morah Handwriting'] === 'synced', JSON.stringify({ after, picker, states }));
+      const bytes = await page.evaluate(() => getUserFont('Morah Handwriting').then(r => r && r.bytes ? new Uint8Array(r.bytes).length : 0));
+      check('17a: the bytes decoded to the right length', bytes === 16, String(bytes));
+      check('17a: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+    // (b) a device already holding the ten My Fonts allows: the eleventh is refused by name, none is dropped
+    {
+      const cloud = new FakeCloud(CLOUD_ROWS().concat([FONT]));
+      const ctx = await openContext(browser, cloud, SEED(true));
+      const { page, errors } = await openPage(ctx, 'hebrew_blend_generator.html');
+      await page.evaluate(async (b64) => {
+        const bin = atob(b64), u = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+        for (let i = 1; i <= 10; i++) await saveUserFont('Mine ' + i, u, 'Mine ' + i);
+      }, B64);
+      const before = await fontsIn(page);
+      await openAccount(page);
+      await clickAndWait(page, 'sync', 'Sync finished');
+      const after = await fontsIn(page);
+      const s = await screen(page);
+      check('17b: with ten fonts here the eleventh is skipped and named, and not one of the teacher\'s is deleted', before.length === 10 && JSON.stringify(after) === JSON.stringify(before) && /skipped/.test(s.status) && /Morah Handwriting/.test(s.status) && /ten fonts/.test(s.status), JSON.stringify({ n: after.length, same: JSON.stringify(after) === JSON.stringify(before), status: s.status }));
+      check('17b: the account still holds it, so it is not lost either', !!cloud.find('font', 'Morah Handwriting'), 'row gone');
+      await page.screenshot({ path: path.join(SHOTS, '17-fonts-cap.png') });
+      check('17b: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
   }
 } finally {
   await browser.close();
