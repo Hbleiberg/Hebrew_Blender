@@ -38,8 +38,9 @@ The tools load these at runtime from public CDNs (jsDelivr, cdnjs, esm.sh); none
 | Brotli | Font Maker (WOFF2 compression via Pyodide) | © the Brotli Authors (Google) | MIT | https://github.com/google/brotli |
 | HarfBuzz / harfbuzzjs 0.4.6 | Font Maker (QA shaping check) | © the HarfBuzz Project authors | "Old MIT" (permissive) | https://github.com/harfbuzz/harfbuzzjs |
 | hebrew-transliteration 2.9.1 | Worksheet, Dictionary, Flash Cards, Torah Trainer | © 2022 Charles Loder | MIT | https://github.com/charlesLoder/hebrew-transliteration |
+| @supabase/supabase-js 2.116.0 | Accounts / cloud saves — every tool page plus `account.html`; loaded lazily from the pinned UMD build, so a visitor who never signs in never downloads it | © 2020 Supabase | MIT | https://github.com/supabase/supabase-js |
 
-**The MIT-licensed libraries above** (html2canvas, jsPDF, opentype.js, fontTools, Brotli, hebrew-transliteration) are governed by the MIT License below — each project's own copyright notice, as listed in the table, applies:
+**The MIT-licensed libraries above** (html2canvas, jsPDF, opentype.js, fontTools, Brotli, hebrew-transliteration, @supabase/supabase-js) are governed by the MIT License below — each project's own copyright notice, as listed in the table, applies:
 
 ```
 MIT License
