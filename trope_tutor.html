@@ -792,6 +792,15 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      BOTH themes, and in dark mode the family headings sank into the .tu-view plate. Paper gets
      white plates whichever way the dialog is set. */
   header, .tu-view, footer { background:#fff !important; }
+  /* The plate's own drop shadow rides the same switch and the rule above does not reach it:
+     .tu-view draws with var(--shadow-sm), which is rgba(26,39,68,.05) on the light theme and
+     rgba(0,0,0,.4) on the dark one — so a dark-source print with background graphics on put the
+     re-lit white card inside a heavy grey frame, the full height of the chart. Reset it here,
+     beside the background it belongs to, rather than with a blanket `* { box-shadow:none }`:
+     .tu-mcell.mastered marks a learned motif with an inset gold ring drawn the same way, and
+     that ring is chart content. Pattern dark-print-shadow-slab (the dashboard already resets
+     .dash-col's). */
+  .tu-view { box-shadow:none; }
   body.dark .mark-hit { color:#8a6216; }
   /* These slabs only surface when the teacher turns background graphics ON to get the card
      rules; then they print as solid blocks of ink. */
