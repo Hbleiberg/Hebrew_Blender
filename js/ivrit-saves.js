@@ -98,7 +98,81 @@
   //   envelope   mapIn only: the other top-level fields to keep when creating the store, e.g. {v:1}
   //   ivritKey   the AllTools bundle key, so "Download file" writes an .ivrit the hub already imports
   //   label      an i18n key for the kind (falls back to the raw kind)
+  //   virtual    instead of lsKey: a store assembled from several keys ({ read, write, remove, applied }) —
+  //              the suite-wide preferences row below is the one such store
+  // The suite-wide preferences (`Suite` / `prefs`): the small site-wide keys every page reads — one row,
+  // assembled from those keys. What travels: the UI language, the theme, the on-screen keyboard layout,
+  // the backup input mode, the shared Hebrew font and size, live preview, the Font Maker author name, and
+  // the Dictionary's romanization style, TTS rate and emoji settings. What stays per device: the three
+  // `*_panels` maps (which panels are open), the Dictionary's audio switch and its last search. A field
+  // this build cannot apply (an unknown language, an out-of-range value) is held in the sync memory and
+  // reported as the row's value until the key is changed here, so a newer device's choice round-trips
+  // instead of being pushed back down. After a write the module applies the language itself (I18n.setLang)
+  // and fires `ivritsuite:prefs` on window; each page follows the theme from that event, the rest is
+  // read at the next load (the done line says so).
+  var SUITE_PREFS = {
+    fields: {
+      lang:              { key: 'hebrewBlender_lang',              ok: function (v) { var s = (window.I18n && window.I18n.supported) || ['en', 'he']; return typeof v === 'string' && s.indexOf(v) >= 0; } },
+      darkMode:          { key: 'hebrewBlender_darkMode',          ok: function (v) { return v === '1' || v === '0'; } },
+      kbdLayout:         { key: 'hebrewBlender_kbdLayout',         ok: function (v) { return v === 'abc' || v === 'qwerty'; } },
+      inputMode:         { key: 'hebrewBlender_inputMode',         ok: function (v) { return v === 'auto' || v === 'manual'; } },
+      hebFont:           { key: 'hebrewBlender_hebFont',           ok: function (v) { return typeof v === 'string' && v.length > 0 && v.length <= 80; } },
+      hebFontSize:       { key: 'hebrewBlender_hebFontSize',       ok: function (v) { return numeric(v) && Number(v) >= 0 && Number(v) <= 100; } },
+      livePreview:       { key: 'hebrewBlender_livePreview',       ok: function (v) { return v === '1' || v === '0'; } },
+      fmLastAuthor:      { key: 'hebrewFontMaker_lastAuthor',      ok: function (v) { return typeof v === 'string' && v.length > 0 && v.length <= 80; } },
+      dictTranslitStyle: { key: 'hebrewDictionary_translitStyle',  ok: function (v) { return ['default', 'sbl', 'brill', 'modernIsraeli', 'ashkenazi', 'simpleStressed'].indexOf(v) >= 0; } },
+      dictTtsRate:       { key: 'hebrewDictionary_ttsRate',        ok: function (v) { return numeric(v) && Number(v) >= 0.5 && Number(v) <= 1.5; } },
+      dictEmojiSettings: { key: 'hebrewDictionary_emojiSettings',  json: true, ok: function (v) { return isPlainObject(v); } }
+    },
+    live: { lang: true, darkMode: true },   // applied on every open page at once; the rest at the next load
+    // The row's value: every field whose key is set (null when none is), with the held fields (what this
+    // device could not apply) reported in place of the key's value while that key is unchanged.
+    read: function () {
+      var out = {}, any = false, held = suiteHeld(), f = SUITE_PREFS.fields;
+      Object.keys(f).forEach(function (name) {
+        var raw = lsGet(f[name].key), v = raw;
+        if (raw !== null && f[name].json) { try { v = safeParse(raw); } catch (e) { v = null; } if (!isPlainObject(v)) v = null; }
+        if (v !== null && v !== '') { out[name] = v; any = true; }
+      });
+      Object.keys(held).forEach(function (name) {
+        var h = held[name];
+        if (!isPlainObject(h)) return;
+        var cur = f[name] ? lsGet(f[name].key) : null;
+        if (f[name] && cur !== h.was) return;   // the key moved since the hold was taken: this device's choice wins
+        out[name] = h.v; any = true;
+      });
+      return any ? out : null;
+    },
+    // Writes the fields it can apply; holds the rest. Never removes a key. Returns the names that changed.
+    write: function (value) {
+      var changed = [], held = suiteHeld(), f = SUITE_PREFS.fields;
+      Object.keys(value).forEach(function (name) {
+        if (badName(name)) return;
+        var v = value[name], d = f[name];
+        if (d && d.ok(v)) {
+          var text = d.json ? JSON.stringify(v) : String(v);
+          if (lsGet(d.key) !== text) { localStorage.setItem(d.key, text); changed.push(name); }
+          delete held[name];
+        } else if (v !== undefined && v !== null) {
+          held[name] = { v: v, was: d ? lsGet(d.key) : null };   // kept for the row's hash; applied by a build that knows it
+        }
+      });
+      suiteHeldSave(held);
+      return changed;
+    },
+    remove: function () { return Promise.resolve(); },   // the harness's cleanup never removes a shared preference
+    // After the tail settled the row: the language switches on this page now, and every listener follows
+    // the theme. Returns whether a field that only shows after a reload changed.
+    applied: function (changed) {
+      var i = window.I18n, lang = lsGet('hebrewBlender_lang');
+      if (i && typeof i.setLang === 'function' && lang && i.lang !== lang) { try { i.setLang(lang); } catch (e) {} }
+      try { window.dispatchEvent(new CustomEvent('ivritsuite:prefs', { detail: { changed: changed || [] } })); } catch (e) {}
+      return (changed || []).some(function (name) { return !SUITE_PREFS.live[name]; });
+    }
+  };
   var IVRIT_SYNC_REGISTRY = [
+    // every page — the suite-wide preferences as one row (see SUITE_PREFS above); the hub shows its panel
+    { tool: 'Suite', kind: 'prefs', virtual: SUITE_PREFS, shape: 'single', merge: 'assign', ivritKey: 'suitePrefs', label: 'shared.cloud.kind_suite_prefs' },
     // trope_tutor.html — mastery counts merge losslessly (max / union); the drawer layout never travels
     { tool: 'TropeTutor', kind: 'progress', lsKey: 'hebrewTropeTutor_progress', shape: 'single', merge: 'deepMax', ivritKey: 'tropeTutorProgress', label: 'shared.cloud.kind_progress' },
     { tool: 'TropeTutor', kind: 'settings', lsKey: 'hebrewTropeTutor_settings', shape: 'single', merge: 'assign', omit: ['panelsCollapsed'], ivritKey: 'tropeTutorSettings', label: 'shared.cloud.kind_settings' },
@@ -291,6 +365,7 @@
 
   /* ---------- the local backend (reads never write; writes are read back) ---------- */
   function readStore(entry) {
+    if (entry.virtual) { try { return entry.virtual.read(); } catch (e) { return null; } }
     var raw = lsGet(entry.lsKey);
     if (raw === null) return null;
     if (entry.shape === 'scalar') return raw === '' ? null : raw;
@@ -333,8 +408,14 @@
   }
   // map / mapIn: the one item is set (a new name lands at the end, like the tool's own writer);
   // single / tree: the whole value; scalar: the plain string.
+  var virtualChanged = null;   // the field names the last virtual write changed, read by the tail
   function localWrite(entry, name, value) {
     if (badName(name)) return Promise.reject(makeError('name'));
+    if (entry.virtual) {
+      try { virtualChanged = entry.virtual.write(value); } catch (e) { return Promise.reject(makeError('quota', 'IvritSaves: preference write failed')); }
+      stampWrite(entry, name);
+      return Promise.resolve();
+    }
     var store, text;
     if (entry.shape === 'map') {
       store = readStore(entry) || {};
@@ -388,6 +469,7 @@
   }
   // Only the test harness removes local data (its own keys). The panel never calls this.
   function localRemove(entry, name) {
+    if (entry.virtual) return entry.virtual.remove();
     var store = readStore(entry);
     if (entry.shape === 'map') {
       if (store && hasOwn(store, name)) { delete store[name]; return writeText(entry.lsKey, JSON.stringify(store)); }
@@ -402,6 +484,10 @@
   }
 
   /* ---------- sync memory: what this device last synced, per account ---------- */
+  // The suite-wide preferences this device could not apply (SUITE_PREFS): { field: { v, was } } — the
+  // account's value and what the key held when it arrived. Device-level, like the write stamps.
+  function suiteHeld() { var m = metaAll(); return isPlainObject(m.held) ? m.held : {}; }
+  function suiteHeldSave(held) { var m = metaAll(); if (Object.keys(held).length) m.held = held; else delete m.held; metaSave(m); }
   function metaAll() {
     try { var m = safeParse(lsGet(META_KEY) || 'null'); if (isPlainObject(m) && m.v === 1 && isPlainObject(m.users)) return m; } catch (e) {}
     return { v: 1, users: {} };
@@ -590,7 +676,8 @@
     if (!isPlainObject(e)) return 'not an object';
     if (TOOLS.indexOf(e.tool) < 0) return 'unknown tool ' + e.tool;
     if (!KIND_RE.test(String(e.kind))) return 'bad kind ' + e.kind;
-    if (typeof e.lsKey !== 'string' || !e.lsKey) return 'missing lsKey';
+    if (e.virtual) { if (!isPlainObject(e.virtual) || typeof e.virtual.read !== 'function' || typeof e.virtual.write !== 'function') return 'virtual needs read and write'; }
+    else if (typeof e.lsKey !== 'string' || !e.lsKey) return 'missing lsKey';
     if (SHAPES.indexOf(e.shape) < 0) return 'bad shape ' + e.shape;
     if (MERGES.indexOf(e.merge) < 0) return 'bad merge ' + e.merge;
     if (e.shape === 'mapIn' && (typeof e.path !== 'string' || !e.path)) return 'mapIn needs a path';
@@ -795,9 +882,16 @@
   // from. A page hook that throws remembers nothing (the page's stale memory would write back over the
   // download) and fails the action with `hook`; a store the page emptied fails the same way.
   function settleLocalWrite(tool, uid, entry, name, full) {
+    var changed = virtualChanged;
+    virtualChanged = null;
     if (!notifyPage(tool, entry.kind, name)) throw makeError('hook', 'IvritSaves: the page could not take the write');
     flushPage(tool);
-    return reconcileStore(tool, uid, entry, name, full);
+    return reconcileStore(tool, uid, entry, name, full).then(function (r) {
+      // A virtual row (the suite-wide preferences) applies itself once both sides agree: the language on
+      // this page now, the theme through every page's listener; `hint` = something shows after a reload.
+      if (entry.virtual && typeof entry.virtual.applied === 'function') { try { r.hint = !!entry.virtual.applied(changed); } catch (e) {} }
+      return r;
+    });
   }
   // The comparing half of the tail — also used when the store already held the value and nothing was written.
   function reconcileStore(tool, uid, entry, name, full) {
@@ -861,7 +955,7 @@
         var value = restoreOmitted(row.entry, full.data, it ? it.value : null);
         return localWrite(row.entry, row.name, value)
           .then(function () { return settleLocalWrite(tool, uid, row.entry, row.name, full); })
-          .then(function (r) { return { action: 'download', row: row, pushed: r.pushed }; });
+          .then(function (r) { return { action: 'download', row: row, pushed: r.pushed, hint: r.hint }; });
       });
     });
   }
@@ -872,7 +966,7 @@
     if (g) return Promise.reject(g);
     return localWrite(row.entry, row.name, value)
       .then(function () { return settleLocalWrite(tool, uid, row.entry, row.name, full); })
-      .then(function (r) { return { action: 'merge', row: row, pushed: r.pushed }; });
+      .then(function (r) { return { action: 'merge', row: row, pushed: r.pushed, hint: r.hint }; });
   }
   function actMerge(tool, row) {
     var uid = ensureUser();
@@ -1134,8 +1228,9 @@
       var sum = { tool: tool, done: 0, total: todo.length, up: 0, down: 0, merged: 0, skipped: 0, skips: [], left: 0, error: null, treeError: null };
       return seqMap(todo, function (row) {
         if (row.safeAction === 'upload' && !localItem(row.entry, row.name)) { sum.total--; return Promise.resolve(); }   // gone meanwhile (folded into another item): nothing to send
-        return runAction(tool, row.safeAction, row).then(function () {
+        return runAction(tool, row.safeAction, row).then(function (res) {
           sum.done++;
+          if (res && res.hint) sum.hint = true;
           if (row.safeAction === 'upload') sum.up++; else if (row.safeAction === 'download') sum.down++; else sum.merged++;
         }, function (err) { if (!isRowError(err)) throw err; noteSkip(sum, row, err); });
       }).catch(function (err) { sum.error = err; })
@@ -1352,15 +1447,18 @@
     if (action === 'keepMine') return t('shared.cloud.keep_mine', 'Keep mine');
     return action;
   }
+  // After the suite-wide preferences changed: the fields that only show after a reload.
+  function suiteHintText(hint) { return hint ? ' ' + t('shared.cloud.suite_reload_hint', 'Reload open pages to see the font, keyboard and dictionary preferences.') : ''; }
   function doneText(res) {
     var name = res.row ? res.row.label : '';
     if (res.action === 'upload') return t('shared.cloud.done_upload', 'Uploaded "{name}".', { name: name });
     if (res.action === 'download') {
       var line = res.pushed ? t('shared.cloud.done_download_pushed', 'Downloaded "{name}" and put this device\'s version in your account.', { name: name })
                             : t('shared.cloud.done_download', 'Downloaded "{name}" to this device.', { name: name });
+      if (res.row && res.row.entry && res.row.entry.virtual) return line + suiteHintText(res.hint);
       return line + ' ' + t('shared.cloud.reload_hint', 'If this tool is open in other tabs, reload them.');
     }
-    if (res.action === 'merge') return t('shared.cloud.done_merge', 'Merged "{name}" on both sides.', { name: name });
+    if (res.action === 'merge') return t('shared.cloud.done_merge', 'Merged "{name}" on both sides.', { name: name }) + suiteHintText(res.hint);
     if (res.action === 'keepBoth') return t('shared.cloud.done_keep_both', 'Kept both: the cloud version is now "{copy}" on this device.', { copy: res.copy });
     if (res.action === 'delete') return t('shared.cloud.done_delete', 'Deleted "{name}" from the cloud.', { name: name });
     return '';
@@ -1528,7 +1626,7 @@
   function syncNow(tool) {
     say(tool, '', false);
     return enqueue(tool, function () { return syncNowInner(tool); }).then(function (sum) {
-      var tail = skippedText(sum.skips) + foldersText(sum.treeError);
+      var tail = skippedText(sum.skips) + foldersText(sum.treeError) + suiteHintText(sum.hint);
       if (sum.error) say(tool, t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: sum.done, total: sum.total, reason: errorText(sum.error) }) + tail, true);
       else say(tool, t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: sum.up, down: sum.down, merged: sum.merged, left: sum.left }) + tail, false);
       render(tool);
@@ -1549,9 +1647,26 @@
     var st = account.root.querySelector('.ivsav-status');
     if (st) { st.textContent = text || ''; st.classList.toggle('is-error', !!isError); }
   }
+  function acctDone(text, isError) { acctSay(text, isError); if (account) account.doneText = text || ''; }   // the line a rebuilt screen keeps
   function acctBusy(on) {
     if (!account) return;
+    account.busy = !!on;
     account.root.querySelectorAll('.ivsav-btn[data-act]').forEach(function (b) { if (on) b.setAttribute('aria-disabled', 'true'); else b.removeAttribute('aria-disabled'); });
+  }
+  // The screen is built in the language of the moment; when a synced preference switches the language
+  // (I18n.setLang, live) it is rebuilt in the new one — between runs, keeping its last status line.
+  function currentLang() { return (window.I18n && window.I18n.lang) || null; }
+  function reopenAccountForLang(doneText) {
+    var me = account;
+    if (!me) return;
+    openAccount({ first: me.first, splash: me.splash, doneText: doneText });
+  }
+  // A live switch while the screen is idle rebuilds it now; during a run or a listing the rebuild waits for
+  // the listing's last line (fillAccount), so nothing transient is carried over.
+  function onLangSwitched() {
+    if (!account || account.lang === currentLang()) return;
+    if (account.busy || account.listing) { account.langStale = true; return; }
+    reopenAccountForLang(account.doneText || '');
   }
   // opts.first: the once-per-device introduction right after the first sign-in.
   function openAccount(opts) {
@@ -1613,7 +1728,7 @@
       keepBtn.title = t('shared.cloud.acct_keep_device_title', "Put this device's settings in your account instead");
       keepBtn.setAttribute('data-act', 'keep-device');
       sec.appendChild(keepBtn);
-      sec.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_settings_aside', 'Either way, per-device choices such as zoom, panel layout and which panels are open stay as they are here.')));
+      sec.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_settings_aside', "Either way, per-device choices stay as they are here: zoom, panel layout, which panels are open, and the Dictionary's sound switch and last search.")));
       card.appendChild(sec);
       var other = el('p', 'ivsav-note ivsav-acct-other', t('shared.cloud.acct_other_conflicts_hint', 'Other items marked "changed in both places" are chosen one by one in that tool\'s Cloud saves panel.'));
       other.hidden = true;
@@ -1642,14 +1757,17 @@
     var onKey = function (e) { if (e.key === 'Escape') { e.preventDefault(); closeAccount(); } };
     document.addEventListener('keydown', onKey);
     document.body.appendChild(overlay);
-    account = { root: overlay, opener: document.activeElement, onKey: onKey, first: !!opts.first, splash: !!opts.splash };
+    account = { root: overlay, opener: document.activeElement, onKey: onKey, first: !!opts.first, splash: !!opts.splash, lang: currentLang(), busy: false, listing: false, langStale: false, doneText: opts.doneText || '' };
     try { card.focus(); } catch (e) {}
-    if (user) fillAccount();
+    if (user) fillAccount(opts.doneText);
   }
   // doneText (optional): what the status line shows once the listing is in — the finishing line of the
   // action that asked for the re-listing, which would otherwise be wiped by "Checking…".
   function fillAccount(doneText) {
     var me = account;
+    if (!me) return Promise.resolve();
+    if (me.lang !== currentLang()) { reopenAccountForLang(doneText); return Promise.resolve(); }
+    me.listing = true;
     acctSay(t('shared.cloud.acct_checking', 'Checking what is on this device and in your account…'), false);
     return accountSummary().then(function (tools) {
       return summaryLines().then(function (extra) { return { tools: tools, extra: extra }; });
@@ -1698,15 +1816,18 @@
       }
       var other = me.root.querySelector('.ivsav-acct-other');
       if (other) other.hidden = !others;
-      acctSay(doneText || '', false);
-    }).catch(function (err) { if (account === me) acctSay(errorText(err), true); });
+      me.listing = false;
+      acctDone(doneText || '', false);
+      if (me.langStale || me.lang !== currentLang()) reopenAccountForLang(doneText || '');   // the language moved while this listing ran
+    }).catch(function (err) { if (account === me) { me.listing = false; acctDone(errorText(err), true); } });
   }
   // A bulk run over every tool, one tool at a time. A tool that stops does not end the run unless its error
   // would fail every tool the same way (the connection, the session): the finishing line then names the
   // stop, the counts so far and the tools not reached. Each tool's panel gets its own stop line.
-  function newRun() { return { up: 0, down: 0, merged: 0, done: 0, total: 0, left: 0, skips: [], treeError: null, stopped: null, halt: false, notReached: [] }; }
+  function newRun() { return { up: 0, down: 0, merged: 0, done: 0, total: 0, left: 0, skips: [], treeError: null, stopped: null, halt: false, notReached: [], hint: false }; }
   function runNote(run, tool, sum) {
     run.up += sum.up || 0; run.down += sum.down || 0; run.merged += sum.merged || 0; run.done += sum.done || 0; run.total += sum.total || 0; run.left += sum.left || 0;
+    if (sum.hint) run.hint = true;
     (sum.skips || []).forEach(function (s) { run.skips.push(s); });
     if (sum.treeError && !run.treeError) run.treeError = sum.treeError;
     if (!sum.error) return;
@@ -1736,7 +1857,7 @@
     return runTools(run, me, 'shared.cloud.acct_uploading', 'Uploading {tool}…', uploadAllInner).then(function () {
       if (account !== me) return;
       acctBusy(false);
-      if (run.stopped) { acctSay(stoppedText(run, 'shared.cloud.acct_upload_stopped_at', 'Stopped while uploading {tool}: {reason}'), true); return; }
+      if (run.stopped) { acctDone(stoppedText(run, 'shared.cloud.acct_upload_stopped_at', 'Stopped while uploading {tool}: {reason}'), true); return; }
       return fillAccount(t('shared.cloud.acct_uploaded', 'Uploaded {n} items to your account.', { n: run.done }) + skippedText(run.skips) + foldersText(run.treeError));
     });
   }
@@ -1750,8 +1871,8 @@
     return runTools(run, me, 'shared.cloud.acct_syncing', 'Syncing {tool}…', syncNowInner).then(function () {
       if (account !== me) return;
       acctBusy(false);
-      if (run.stopped) { acctSay(stoppedText(run, 'shared.cloud.acct_stopped_at', 'Stopped while syncing {tool}: {reason}'), true); return; }
-      return fillAccount(t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: run.up, down: run.down, merged: run.merged, left: run.left }) + skippedText(run.skips) + foldersText(run.treeError));
+      if (run.stopped) { acctDone(stoppedText(run, 'shared.cloud.acct_stopped_at', 'Stopped while syncing {tool}: {reason}'), true); return; }
+      return fillAccount(t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: run.up, down: run.down, merged: run.merged, left: run.left }) + skippedText(run.skips) + foldersText(run.treeError) + suiteHintText(run.hint));
     });
   }
   // The "Settings that differ" block: for every tool, every settings blob changed in both places takes the
@@ -1764,7 +1885,7 @@
       var sum = { tool: tool, done: 0, total: rows.length, skipped: 0, skips: [], error: null, treeError: null };
       if (!rows.length) return sum;
       return seqMap(rows, function (row) {
-        return runAction(tool, choice, row).then(function () { sum.done++; }, function (err) { if (!isRowError(err)) throw err; noteSkip(sum, row, err); });
+        return runAction(tool, choice, row).then(function (res) { sum.done++; if (res && res.hint) sum.hint = true; }, function (err) { if (!isRowError(err)) throw err; noteSkip(sum, row, err); });
       }).catch(function (err) { sum.error = err; })
         .then(function () { return finishRun(tool, p, sum); })
         .then(function () { return sum; });
@@ -1778,10 +1899,10 @@
     return runTools(run, me, 'shared.cloud.acct_updating', 'Updating {tool}…', function (tool) { return resolveSettingsInner(tool, choice); }).then(function () {
       if (account !== me) return;
       acctBusy(false);
-      if (run.stopped) { acctSay(stoppedText(run, 'shared.cloud.acct_update_stopped_at', 'Stopped while updating {tool}: {reason}'), true); return; }
+      if (run.stopped) { acctDone(stoppedText(run, 'shared.cloud.acct_update_stopped_at', 'Stopped while updating {tool}: {reason}'), true); return; }
       var line = choice === 'useCloud' ? t('shared.cloud.acct_settings_done_cloud', "Your account's settings are now on this device.")
                                        : t('shared.cloud.acct_settings_done_mine', "This device's settings are now in your account.");
-      return fillAccount(line + skippedText(run.skips) + foldersText(run.treeError));
+      return fillAccount(line + skippedText(run.skips) + foldersText(run.treeError) + suiteHintText(run.hint));
     });
   }
   function backupAccount() {
@@ -1865,7 +1986,7 @@
     // Labels render before the dictionary arrives and again when it does, and on every language switch.
     if (window.I18n) {
       try { if (window.I18n.ready && window.I18n.ready.then) window.I18n.ready.then(function () { Object.keys(panels).forEach(render); }); } catch (e) {}
-      try { if (typeof window.I18n.onChange === 'function') window.I18n.onChange(function () { Object.keys(panels).forEach(render); }); } catch (e) {}
+      try { if (typeof window.I18n.onChange === 'function') window.I18n.onChange(function () { Object.keys(panels).forEach(render); onLangSwitched(); }); } catch (e) {}
     }
   }
   function attach(cfg) {
@@ -1927,7 +2048,7 @@
       project: project, restoreOmitted: restoreOmitted, safeParse: safeParse, copyNameFor: copyNameFor,
       validateShape: validateShape, errorText: errorText, guardUpload: guardUpload, ivritFile: ivritFile,
       treeIsFlat: treeIsFlat, bundleFromRows: bundleFromRows, recheckWrites: recheckWrites, isRowError: isRowError, isConnectionError: isConnectionError,
-      META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
+      suitePrefs: SUITE_PREFS, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
     }
   };
   // The chip's "Account…" item and the sign-in splash belong to every page that loads this module, including

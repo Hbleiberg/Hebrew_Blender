@@ -212,9 +212,10 @@ const PAGES = [
 ];
 // The hub carries one panel per tool: its seed is every tool's seed, its rows every tool's rows.
 PAGES.push({
-  file: 'index.html', host: '#cloudSavesSection', panels: 6,
+  file: 'index.html', host: '#cloudSavesSection', panels: 7,
   seed: Object.assign({}, ...PAGES.map(p => p.seed)),
-  tools: PAGES.map(p => ({ tool: p.tool, rows: p.rows })),
+  // …plus the suite-wide preferences row: the hub's .ivrit engine writes hebrewBlender_inputMode at init, so the row has a local item
+  tools: PAGES.map(p => ({ tool: p.tool, rows: p.rows })).concat([{ tool: 'Suite', rows: ['prefs:default'] }]),
   prepare: `openIEModal();`,
   expand: `openIEModal(); document.querySelectorAll('#cloudSavesSection details').forEach(d => { d.open = true; }); document.getElementById('cloudSavesSection').scrollIntoView();`
 });

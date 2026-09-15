@@ -175,7 +175,8 @@ module, and nothing newer is overwritten by something older unless the person ch
 ### The registry
 
 `IVRIT_SYNC_REGISTRY` (an array inside the module) is the only place that names synced keys — one entry
-per localStorage key: `{ tool, kind, lsKey, shape, path?, nameField?, envelope?, merge, omit?, follows?, ivritKey?, label? }`.
+per localStorage key: `{ tool, kind, lsKey, shape, path?, nameField?, envelope?, merge, omit?, follows?, ivritKey?, label? }`
+(or `virtual` in place of `lsKey`, see below).
 
 | Field | Meaning |
 |---|---|
@@ -185,6 +186,26 @@ per localStorage key: `{ tool, kind, lsKey, shape, path?, nameField?, envelope?,
 | `follows` | trees only: the kind whose items the tree names |
 | `ivritKey` | the AllTools bundle key, so *Download file* writes an `.ivrit` the hub imports (else `tool` + `data:{[kind]: …}`) |
 | `label` | an i18n key for the kind (falls back to the raw kind) |
+| `virtual` | in place of `lsKey`: a store assembled from several keys (`{ read, write, remove, applied }`); the suite-wide preferences row is the one such store |
+
+**The suite-wide preferences row** (`Suite` / `prefs`, `virtual: SUITE_PREFS` beside the registry, single/assign,
+`ivritKey: suitePrefs`): one row assembled from the small site-wide keys every page reads — `hebrewBlender_lang`,
+`_darkMode`, `_kbdLayout`, `_inputMode`, `_hebFont`, `_hebFontSize`, `_livePreview`, `hebrewFontMaker_lastAuthor`,
+`hebrewDictionary_translitStyle`, `_ttsRate`, `_emojiSettings`; the three `*_panels` maps, the Dictionary's audio
+switch and its last search stay per device. Every page syncs it (`Suite` is first in `TOOLS`, so a language change
+lands before the tools' own rows); only the hub shows its panel. `write` sets each field it can validate (the
+language against `I18n.supported`, the two-value switches, the slider ranges, the six romanization styles, a plain
+object for the emoji settings) and never removes a key. A field this build cannot apply — an unknown language, a
+value out of range, a field a newer build added — is **held** in the sync memory (`held: { field: { v, was } }`) and
+reported as the row's value while that key still holds `was`, so the tail sees both sides equal instead of pushing a
+degraded copy down; a change to the key here drops the hold and the row reads *Newer on this device*. Once the tail
+settled the row the module applies the language itself (`I18n.setLang`, live on every converted page) and fires
+`ivritsuite:prefs` on `window`; each page's `initCloudSaves` follows the theme from that event (its own `toggleDark()`
+when the stored value and `body.dark` disagree — the dashboard's re-renders the nikkud colors as its rule requires);
+the other fields show at the next load and the done line says so (`shared.cloud.suite_reload_hint`). The account
+screen, built in the language of the moment, is rebuilt in the new one between runs and listings, keeping its last
+final line. In the account backup the row is `suitePrefs`, which the hub's two import paths unfold into the flat
+AllTools keys (`uiLang`, `darkMode`, …) their validated branches already apply.
 
 `attach({ tool, panel, title?, entries?, merges?, flush?, onLocalChanged?, open? })` is the whole per-page
 surface: `entries` is for harnesses (real tools list theirs in the registry), `merges` supplies the
@@ -345,7 +366,7 @@ unreachable, and Hebrew + dark at 800 px.
 | `hebrew_blend_generator.html` (`Worksheet`) | `preset` map/item `hebrewBlender_presets` · `presetFolders` tree/page follows `preset` · `lastState` single/assign `hebrewBlender_lastState` (the remembered setup the page restores on load) | `flush: rememberSetup` (the setup is read off the live controls); `merges`: the tree through the shared pure `ftMergeTrees`; `onLocalChanged`: presets/folders → `renderPresets()`, last setup → `restoreLastSetup()` (re-applies the controls under `_lastSetupRestoring`; the next Generate uses them) | Advanced, a nested "Cloud saves" sub-panel (`worksheet.advanced.cloud_title`) right after Backup Presets, `title: false`; `open` un-collapses both through their own click handlers |
 | `hebrew_dictionary.html` (`Dictionary`) | `wordList` mapIn (`path: lists`, `nameField: name`, envelope `{v: 1}`, one row per list) merge page `ivritSuite_wordLists` — the page's small display prefs stay per device | `merges.wordList` = the pure, **uncapped** `mergeWordList` (words unioned by their `word` string, mine first; a cap would silently drop the other side's words, so a merged list may exceed 200 until words are removed); `onLocalChanged` re-renders the manager when it is showing; no `flush` (lists are written synchronously) | inside the Word Lists manager (rebuilt on every refresh, so `wlRenderManagerInto` mounts the panel each render; the manager lists again each time it opens signed in); `open` = `wlOpenManager()` |
 | `classroom_dashboard.html` (`Dashboard`) | `preset` map/item `hebrewDashboard_presets` · `presetFolders` tree/page follows `preset` · `schedule` map/item `hebrewDashboard_schedules` (a value is either a v2 weekly grid or a legacy day array; replaced whole) · `scheduleFolders` tree/page follows `schedule` · `settings` single/assign `hebrewDashboard_settings` omitting `rosters`, `activeRosterId`, `pickerSessions`, `_geoCoords`, `*Collapsed`, `panelLayout`, `videoLayout`, `zoomLevel`, `hideZoomBar`, `keepAwake`, `lockPanelWidths`, `showTextSizeOptions` · `roster` mapIn over the **same key** (`path: rosters`, `nameField: name`, one row per class) merge page — two entries on one key work because the settings row omits what the roster rows carry | `flush: saveSettingsToStorage` (synchronous; it also reads the board text off the editor); `merges`: the two trees through the shared pure `ftMergeTrees`, `roster` through the pure `mergeRoster` (names unioned, mine first, no cap; the name stays mine unless it is the default); `onLocalChanged`: presets → `loadPresets()` + `renderPresets()`, schedules → `loadSchedulesStorage()` + `renderSavedSchedules()`, settings → `loadSettingsFromStorage()` then the `IVRIT_CFG.apply` tail (`applySettings` on a clone, the three render caches nulled, week summary / schedule UI / editor re-rendered), roster → `loadSettingsFromStorage()` + `ensureActiveClass()` + `normalizePickerSession()` + the drawer form and the student picker re-rendered | settings drawer, a "Cloud saves" sub-section (`dashboard.settings.cloud_head`) at the end of the *Presets* panel under the `.ivrit` backup, `title: false`; `open` = `openSettings()` + un-collapse the panel through its own title |
-| `index.html` (the hub; no rows of its own) | — | six `attach()` calls, one per tool above, each with `title: false` into its own `<details>` inside the AllTools modal's "Cloud saves" block; `merges` = the folder trees through the hub's own `ftMergeTrees` copy only (a profile or word list changed in both places shows no button here and is merged inside its tool); `onLocalChanged` = `renderIvritInventory()` (nothing is in memory on the hub, so every shape is downloadable — the place to bring a fresh browser up to date) | the AllTools modal, between *My Fonts* and *Erase*; `open` opens the modal and scrolls to the block |
+| `index.html` (the hub; no rows of its own) | — | seven `attach()` calls — one per tool above and one for the suite-wide preferences row (`<details data-tool="Suite">`, first in the block, titled `shared.cloud.kind_suite_prefs`) — each with `title: false` into its own `<details>` inside the AllTools modal's "Cloud saves" block; `merges` = the folder trees through the hub's own `ftMergeTrees` copy only (a profile or word list changed in both places shows no button here and is merged inside its tool); `onLocalChanged` = `renderIvritInventory()` (nothing is in memory on the hub, so every shape is downloadable — the place to bring a fresh browser up to date) | the AllTools modal, between *My Fonts* and *Erase*; `open` opens the modal and scrolls to the block |
 
 **`Hebrew_Font_Maker.html`** has no registry rows: its projects are `font_projects` rows plus Storage objects,
 through `js/ivrit-projects.js` — see *Font Maker projects* below. It loads the same three scripts plus

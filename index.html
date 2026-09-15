@@ -458,6 +458,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div id="cloudSavesSection" style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
         <h4 style="margin:0 0 4px;font-size:0.95rem;" data-i18n="home.alltools.cloud.title">☁ Cloud saves</h4>
         <p class="ie-note" style="margin:0 0 8px;" data-i18n="home.alltools.cloud.note">One panel per tool: what is saved in this browser next to the copies in your account. A change made in both places to a student profile, a class list or a word list is merged inside that tool.</p>
+        <details class="ie-cloud-tool"><summary data-i18n="shared.cloud.kind_suite_prefs">IvritSuite preferences</summary><div class="ie-cloud-host" data-tool="Suite"></div></details>
         <details class="ie-cloud-tool"><summary data-i18n="home.card.generator.name">Hebrew Worksheet Generator</summary><div class="ie-cloud-host" data-tool="Worksheet"></div></details>
         <details class="ie-cloud-tool"><summary data-i18n="home.card.flashcards.name">Hebrew Flash Cards</summary><div class="ie-cloud-host" data-tool="FlashCards"></div></details>
         <details class="ie-cloud-tool"><summary data-i18n="home.card.dictionary.name">Hebrew Word Lookup</summary><div class="ie-cloud-host" data-tool="Dictionary"></div></details>
@@ -1048,6 +1049,18 @@ function exportAllSettings() {
   };
   document.getElementById('ieTextarea').value = JSON.stringify(blob, null, 2);
 }
+// The account backup carries the suite-wide preferences as one `suitePrefs` object (the cloud module's
+// IvritSuite row: language, theme, keyboard layout, backup input mode, shared Hebrew font and size, live
+// preview, the Font Maker author name, the Dictionary's romanization style, TTS rate and emoji settings).
+// Unfolded into the flat AllTools keys — only where the file does not carry them itself — so the validated
+// branches below apply each one; a field this hub does not know is left where it is.
+const IVRIT_SUITE_PREF_KEYS = { lang: 'uiLang', darkMode: 'darkMode', kbdLayout: 'kbdLayout', inputMode: 'inputMode', hebFont: 'hebFont', hebFontSize: 'hebFontSize',
+  livePreview: 'livePreview', fmLastAuthor: 'fmLastAuthor', dictTranslitStyle: 'dictTranslitStyle', dictTtsRate: 'dictTtsRate', dictEmojiSettings: 'dictEmojiSettings' };
+function ivritUnfoldSuitePrefs(d) {
+  const sp = d && d.suitePrefs;
+  if (!sp || typeof sp !== 'object' || Array.isArray(sp)) return;
+  Object.keys(IVRIT_SUITE_PREF_KEYS).forEach(f => { const k = IVRIT_SUITE_PREF_KEYS[f]; if (d[k] === undefined && sp[f] !== undefined && sp[f] !== null) d[k] = sp[f]; });
+}
 async function importAllSettings() {
   const raw = document.getElementById('ieTextarea').value.trim();
   if (!raw) { alert(I18n.t('home.alltools.import_err_empty')); return; }
@@ -1055,6 +1068,7 @@ async function importAllSettings() {
   try { parsed = ivritSafeParse(raw); } catch(e) { alert(I18n.t('home.alltools.import_err_json')); return; }
   // An .ivrit file pasted whole (the account backup, a cloud row's file): its data is the export blob
   if (parsed && parsed.format === 'ivrit-save' && parsed.data && typeof parsed.data === 'object' && !Array.isArray(parsed.data)) { parsed = parsed.data; parsed._hebrewBlenderExport = 1; }
+  ivritUnfoldSuitePrefs(parsed);
   if (!parsed._hebrewBlenderExport) { alert(I18n.t('home.alltools.import_err_notexport')); return; }
   if (!confirm(I18n.t('home.alltools.import_confirm'))) return;
   try {
@@ -1373,6 +1387,7 @@ const IVRIT_CFG = {
       const base = mode === 'replace' ? {} : ivritSafeParse(localStorage.getItem(key) || '{}');
       localStorage.setItem(key, JSON.stringify(ivritSafeAssign(base, val)));
     };
+    ivritUnfoldSuitePrefs(data);
     let touched = false;
     if (data.generatorPresets)    { mergeObj('hebrewBlender_presets',         data.generatorPresets);    touched = true; }
     if (data.dashboardPresets)    { mergeObj('hebrewDashboard_presets',       data.dashboardPresets);    touched = true; }
@@ -1724,6 +1739,12 @@ function openCloudSaves() {
 }
 function initCloudSaves() {
   if (!window.IvritSaves) return;
+  // A suite-wide preference from the account landed (the module's IvritSuite row): follow the theme now —
+  // the module switches the language itself; the rest is read at the next load.
+  window.addEventListener('ivritsuite:prefs', () => {
+    const want = localStorage.getItem('hebrewBlender_darkMode');
+    if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
+  });
   // ftMergeTrees is pure (the shared block's one merge rule); the module writes the result and tells the page.
   const merges = {
     Worksheet:  { presetFolders: ftMergeTrees },

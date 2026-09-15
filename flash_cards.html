@@ -8630,6 +8630,12 @@ document.addEventListener('DOMContentLoaded', () => {
    live settings are all rendered from memory and the next saveSettings() would put the old blob back. ── */
 function initCloudSaves() {
   if (!window.IvritSaves) return;
+  // A suite-wide preference from the account landed (the module's IvritSuite row): follow the theme now —
+  // the module switches the language itself; the rest is read at the next load.
+  window.addEventListener('ivritsuite:prefs', () => {
+    const want = localStorage.getItem('hebrewBlender_darkMode');
+    if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark(want === '1');
+  });
   // ftMergeTrees is pure (the shared block's one merge rule); the module writes the result and tells the page.
   IvritSaves.attach({
     tool: 'FlashCards',

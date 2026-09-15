@@ -151,8 +151,11 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
   carries `dashboardRosters` (`{ rosters: { id: { name, names } } }`, imported by the hub's
   `mergeDashboardRosters` after `dashboardSettings` and by the dashboard's own `IVRIT_CFG.apply`) and, under
   `cloudUnknown`, rows of a kind this build's registry does not know (`[{tool, kind, name, data}]`, kept for a
-  newer build to import; the hub ignores the key). The hub's textarea import accepts the whole `.ivrit`
-  envelope too (it reads `data`).
+  newer build to import; the hub ignores the key), and `suitePrefs`, the account's copy of the suite-wide
+  preferences row (`{ lang, darkMode, kbdLayout, inputMode, hebFont, hebFontSize, livePreview, fmLastAuthor,
+  dictTranslitStyle, dictTtsRate, dictEmojiSettings }`), which the hub's two import paths unfold into the flat
+  keys of the table above before their validated branches run. The hub's textarea import accepts the whole
+  `.ivrit` envelope too (it reads `data`).
 - The prompt is an accessible dialog on every carrier, the hub's adapted copy included: `role="dialog"` + `aria-modal` + `aria-labelledby=ivritAskTitle`, focus lands on Merge, Tab is trapped across the three buttons, Escape cancels, and focus returns to the opener. The hub's copy additionally stops the handled Escape/Tab so its document-level AllTools-modal handler does not close that modal behind the prompt — keep that when re-syncing it from the engine.
 
 ### Pattern: per-file `IVRIT_CFG` + shared engine

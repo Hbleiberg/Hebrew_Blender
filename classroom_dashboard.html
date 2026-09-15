@@ -6764,6 +6764,12 @@ function mountFolderTree(cfg){
      adoptClassFromAccount() moves the per-device class pointer off this device's untouched default. ── */
   function initCloudSaves() {
     if (!window.IvritSaves) return;
+    // A suite-wide preference from the account landed (the module's IvritSuite row): follow the theme now —
+    // the module switches the language itself; the rest is read at the next load.
+    window.addEventListener('ivritsuite:prefs', () => {
+      const want = localStorage.getItem('hebrewBlender_darkMode');
+      if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
+    });
     // ftMergeTrees is pure (the shared block's one merge rule); the module writes the result and tells the page.
     IvritSaves.attach({
       tool: 'Dashboard',

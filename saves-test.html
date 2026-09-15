@@ -226,6 +226,7 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
       c.run([
         ['list: the four listed items (the folder tree is not a row) with hashes', function () {
           return S.local.list('Suite').then(function (items) {
+            items = items.filter(function (i) { return i.kind !== 'prefs'; });   // the registry's own suite-wide preferences row is not one of the harness's four
             var names = items.map(function (i) { return i.id; }).join(', ');
             return { ok: items.length === 4 && items.every(function (i) { return typeof i.hash === 'string' && i.hash.length > 10 && i.bytes > 0; }), detail: names };
           });
@@ -257,7 +258,7 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
         }],
         ['plan while signed out: every item is "Only on this device", no cloud call', function () {
           if (A.user()) return { ok: true, detail: 'skipped: signed in' };
-          return S.plan('Suite').then(function (p) { return { ok: p.userId === null && p.rows.length === 4 && p.rows.every(function (r) { return r.state === 'local-only'; }), detail: p.rows.map(function (r) { return r.kind + '/' + r.name + ':' + r.state; }).join(', ') }; });
+          return S.plan('Suite').then(function (p) { var rows = p.rows.filter(function (r) { return r.kind !== 'prefs'; }); return { ok: p.userId === null && rows.length === 4 && rows.every(function (r) { return r.state === 'local-only'; }), detail: rows.map(function (r) { return r.kind + '/' + r.name + ':' + r.state; }).join(', ') }; });
         }],
         ['no sync memory was created by local work', function () {
           return { ok: lsGet(META_KEY) === hadMeta, detail: String(lsGet(META_KEY)).slice(0, 80) };

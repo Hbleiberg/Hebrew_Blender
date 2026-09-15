@@ -42,6 +42,11 @@
  *      account: one class with both names, the pointer on it, one PATCH, nothing posted or deleted.
  *  14. A weekly grid removed on another device is removed here too when the settings arrive (a merge
  *      could never delete it), and nothing puts it back.
+ *  15. The suite-wide preferences row (IvritSuite / prefs): (a) on a device with none of its own the row
+ *      downloads and the page turns Hebrew and dark without a reload, the finish line naming what shows
+ *      after one; (b) a device with preferences of its own gets the Settings that differ block, "Use my
+ *      account's settings" lands the keys live and sends the union up, a field this build cannot apply
+ *      is held (reported as the row's value) until that key changes here.
  *
  * Run from the repo root:  node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
  * The script starts python3 -m http.server itself (port 8081 by default, so it can run beside the others).
@@ -658,6 +663,74 @@ try {
     check('14: after the download the grid is gone here too, the row reads Same, and nothing put it back', d.enabled === false && d.periods === 0 && states['settings:default'] === 'synced' && patchesOn(cloud, row.id) === before && !('scheduleWeek' in row.data), JSON.stringify({ enabled: d.enabled, periods: d.periods, state: states['settings:default'], patches: [before, patchesOn(cloud, row.id)] }));
     check('14: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
+  }
+  // ---- 15. the suite-wide preferences row: language and theme apply live, the rest lands for the next load ----
+  if (want(15)) {
+    const SUITE = { tool: 'Suite', kind: 'prefs', name: 'default', data: { lang: 'he', darkMode: '1', hebFont: 'David Libre', dictTtsRate: '1.2', fmLastAuthor: 'Morah Rivka' } };
+    const PREF_KEYS = ['hebrewBlender_lang', 'hebrewBlender_darkMode', 'hebrewBlender_hebFont', 'hebrewDictionary_ttsRate', 'hebrewFontMaker_lastAuthor'];
+    const DONE = 'Sync finished|הסנכרון הסתיים', HINT = 'Reload open pages|רעננו דפים פתוחים';
+    const settled = async (page, statusRe) => {   // the language landed and the account screen was rebuilt in it, its status line kept
+      await page.waitForFunction((re) => {
+        const t = document.querySelector('.ivsav-overlay .ivsav-card-title'), s = document.querySelector('.ivsav-overlay .ivsav-status');
+        return !!(window.I18n && I18n.lang === 'he' && document.documentElement.lang === 'he' && t && t.textContent === 'החשבון שלכם' && s && new RegExp(re).test(s.textContent));
+      }, statusRe, { timeout: 20000 });
+      return page.evaluate((keys) => ({
+        ls: keys.map(k => localStorage.getItem(k)), dark: document.body.classList.contains('dark'), dir: document.documentElement.dir,
+        pressed: (document.getElementById('darkBtn') || document.getElementById('darkToggle') || { getAttribute: () => null }).getAttribute('aria-pressed'),
+        status: document.querySelector('.ivsav-overlay .ivsav-status').textContent, kbd: localStorage.getItem('hebrewBlender_kbdLayout'),
+        held: (JSON.parse(localStorage.getItem('ivritSuite_syncMeta') || '{}').held) || null
+      }), PREF_KEYS);
+    };
+    const suiteStates = (page) => page.evaluate(() => window.IvritSaves.plan('Suite').then(p => Object.fromEntries(p.rows.map(r => [r.kind + ':' + r.name, r.state]))));
+    // (a) a device with no preference of its own (the Trope Tutor writes none at load): the row is only in the account
+    {
+      const cloud = new FakeCloud(CLOUD_ROWS().concat([SUITE]));
+      const ctx = await openContext(browser, cloud, SEED(false));
+      const { page, errors } = await openPage(ctx, 'trope_tutor.html');
+      const before = await page.evaluate(() => ({ lang: document.documentElement.lang, dark: document.body.classList.contains('dark'), prefs: localStorage.getItem('hebrewBlender_lang') }));
+      await openAccount(page);
+      let s = await screen(page);
+      check('15a: the account screen lists the preferences as only in the account', before.lang === 'en' && !before.dark && before.prefs === null && s.lines.some(l => /IvritSuite/.test(l) && /1 only in your account/.test(l)), JSON.stringify({ before, lines: s.lines }));
+      await clickAndWait(page, 'sync', DONE);
+      const r = await settled(page, DONE);
+      const row = cloud.find('prefs', 'default');
+      check('15a: the keys landed and the page is in Hebrew and dark without a reload', JSON.stringify(r.ls) === JSON.stringify(['he', '1', 'David Libre', '1.2', 'Morah Rivka']) && r.dark && r.pressed === 'true' && r.dir === 'rtl', JSON.stringify(r));
+      check('15a: the finish line says the other preferences show after a reload; nothing held, nothing pushed', new RegExp(HINT).test(r.status) && r.held === null && patchesOn(cloud, row.id) === 0, JSON.stringify({ status: r.status, held: r.held, patches: patchesOn(cloud, row.id) }));
+      const states = await suiteStates(page);
+      check('15a: the row reads Same', states['prefs:default'] === 'synced', JSON.stringify(states));
+      await page.screenshot({ path: path.join(SHOTS, '15a-prefs-live.png') });
+      check('15a: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+    // (b) a device that already holds preferences (English; the generator's .ivrit engine stamps the backup mode at
+    //     init): the row is changed in both places and the Settings that differ block resolves it; a field this build
+    //     cannot apply is held, reported as the row's value, and released when the key changes here
+    {
+      const suite = Object.assign({}, SUITE, { data: Object.assign({}, SUITE.data, { lang: 'he', kbdLayout: 'dvorak' }) });   // no such layout here
+      const cloud = new FakeCloud(CLOUD_ROWS().concat([suite]));
+      const seed = SEED(false); seed.hebrewBlender_lang = 'en'; seed.hebrewBlender_kbdLayout = 'abc';
+      const ctx = await openContext(browser, cloud, seed);
+      const { page, errors } = await openPage(ctx, 'hebrew_blend_generator.html');
+      await openAccount(page);
+      let s = await screen(page);
+      check('15b: the Settings that differ block names IvritSuite', s.block && /IvritSuite/.test(s.note) && s.lines.some(l => /IvritSuite/.test(l) && /1 changed in both places/.test(l)), JSON.stringify(s));
+      const USED = 'now on this device|נמצאות עכשיו במכשיר הזה';   // the Hebrew "Checking…" line also says "this device": match the done line only
+      await clickAndWait(page, 'use-account', USED);
+      const r = await settled(page, USED);
+      const row = cloud.find('prefs', 'default');
+      check("15b: Use my account's settings landed the keys live; the unknown layout is held, not written", JSON.stringify(r.ls) === JSON.stringify(['he', '1', 'David Libre', '1.2', 'Morah Rivka']) && r.dark && r.dir === 'rtl' && r.kbd === 'abc' && r.held && r.held.kbdLayout && r.held.kbdLayout.v === 'dvorak' && r.held.kbdLayout.was === 'abc', JSON.stringify(r));
+      check('15b: the account row took the union (this device\'s backup mode joined it) in one PATCH, the held layout kept', row.data.inputMode === 'auto' && row.data.lang === 'he' && row.data.kbdLayout === 'dvorak' && patchesOn(cloud, row.id) === 1, JSON.stringify({ data: row.data, patches: patchesOn(cloud, row.id) }));
+      let states = await suiteStates(page);
+      check('15b: the row reads Same while the held field is reported as the row\'s value', states['prefs:default'] === 'synced' && new RegExp(HINT).test(r.status), JSON.stringify({ states, status: r.status }));
+      // the teacher changes the keyboard layout here: the hold is released and the row reads newer on this device
+      await page.evaluate(() => localStorage.setItem('hebrewBlender_kbdLayout', 'qwerty'));
+      states = await suiteStates(page);
+      const value = await page.evaluate(() => window.IvritSaves._test.suitePrefs.read());
+      check('15b: a key changed here releases its hold — the row reads Newer on this device with this device\'s layout', states['prefs:default'] === 'local-changed' && value.kbdLayout === 'qwerty', JSON.stringify({ states, value }));
+      await page.screenshot({ path: path.join(SHOTS, '15b-prefs-block.png') });
+      check('15b: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
   }
 } finally {
   await browser.close();

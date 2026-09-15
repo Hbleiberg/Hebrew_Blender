@@ -3460,6 +3460,12 @@ document.addEventListener('DOMContentLoaded', init);
    otherwise overwrite a download on the next save. Mirrors resetAllSettings() / resetProgress(). ── */
 function initCloudSaves() {
   if (!window.IvritSaves) return;
+  // A suite-wide preference from the account landed (the module's IvritSuite row): follow the theme now —
+  // the module switches the language itself; the rest is read at the next load.
+  window.addEventListener('ivritsuite:prefs', () => {
+    const want = localStorage.getItem('hebrewBlender_darkMode');
+    if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
+  });
   IvritSaves.attach({
     tool: 'TropeTutor',
     panel: '#cloudSavesPanel',
