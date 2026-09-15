@@ -243,6 +243,13 @@ the one piece of code that runs outside the browser (`db/functions/delete-accoun
 Function — it needs the project's secret key, which never ships in a page). A deletion touches nothing on any
 device. `node scripts/smoke-account-page.mjs --sdk <supabase.js>` replays the page against a fake cloud.
 
+`node scripts/smoke-migration.mjs --sdk <supabase.js>` is the golden migration replay: a device A built from the
+tools' real defaults (every setting changed, folders, students, word lists, classes, a weekly grid, the suite-wide
+preferences) uploads everything, a fresh device B syncs it all, and every difference left between the two is
+classified — anything unexplained fails the run. It also replays a round trip, a folder move, deletions that never
+propagate by themselves, the account backup on a third device, and a second device that opened every tool before
+signing in.
+
 **Keeping it running (operations):**
 - **The free project must stay awake.** Supabase pauses a Free-plan project after about a week with too little
   *database* activity, and a paused project refuses every sign-in until someone presses *Restore* in the Supabase

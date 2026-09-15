@@ -5269,6 +5269,24 @@ function dictKnownMembers(list, selector, prop) {
   const known = new Set(Array.from(document.querySelectorAll(selector), el => prop === 'value' ? el.value : el.dataset[prop]));
   return list.filter(v => typeof v === 'string' && known.has(v));
 }
+// The last-search state is per device; the Emoji settings (the mode switch, the gender, the excluded
+// categories) are a preference that also lives in hebrewDictionary_emojiSettings and travels with the
+// account. A replay of the session snapshot must not put this device's older copy of them back over that
+// preference (on a second device it wrote [] over the account's exclusions): the stored settings win for
+// the three emoji fields. A ?s= link keeps its own — that is what it shares.
+function _dictWithStoredEmoji(st) {
+  let saved = null;
+  try { saved = ivritSafeParse(localStorage.getItem(EMOJI_SETTINGS_KEY) || 'null'); } catch (e) {}
+  if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return st;
+  const out = ivritSafeAssign({}, st);
+  const prev = (st.emoji && typeof st.emoji === 'object') ? st.emoji : {};
+  out.emoji = {
+    gender: typeof saved.gender === 'string' ? saved.gender : (prev.gender || 'all'),
+    excludedSubs: Array.isArray(saved.excludedSubs) ? saved.excludedSubs.filter(k => typeof k === 'string') : (Array.isArray(prev.excludedSubs) ? prev.excludedSubs : [])
+  };
+  if (typeof saved.mode === 'boolean' && st.mode !== 'shoresh') out.mode = saved.mode ? 'emojis' : 'words';
+  return out;
+}
 function applyDictState(s) {
   if (!s) return;
   _applyingDictState = true;
@@ -5459,7 +5477,7 @@ function maybeBootstrap() {
   if (!_domReady || !_wordsReady || _bootstrapped) return;
   _bootstrapped = true;
   if (_pendingShareState) applyDictState(ivritSafeAssign(_dictClone(DICT_SHARE_DEFAULTS || {}), _pendingShareState));
-  else if (_pendingSessionState) applyDictState(ivritSafeAssign(_dictClone(DICT_SHARE_DEFAULTS || {}), _pendingSessionState));
+  else if (_pendingSessionState) applyDictState(ivritSafeAssign(_dictClone(DICT_SHARE_DEFAULTS || {}), _dictWithStoredEmoji(_pendingSessionState)));
   else onFilter();
 }
 
