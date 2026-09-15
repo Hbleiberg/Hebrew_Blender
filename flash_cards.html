@@ -3953,8 +3953,10 @@ function initColorTiles() {
       _retireStartNote('flashcards.start.err_select_color', selectedColors.size > 0);
       saveSettings();
     });
+    bindTileA11y(tile);
     grid.appendChild(tile);
   });
+  roveTileGrid(grid, '.color-tile');
 }
 
 function setOtherMode(on) {
