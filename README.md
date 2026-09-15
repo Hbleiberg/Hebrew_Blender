@@ -222,7 +222,13 @@ on the device. It opens by itself after every fresh sign-in ("Sync settings from
 once on a device that already has saved items. When a tool's settings differ on this device and in the
 account — the usual case on a second device, which wrote its own settings the first time the tool opened —
 the screen offers **Use my account's settings** or **Keep this device's settings** in one step (per-device
-choices such as zoom stay either way). `saves-test.html` exercises the panel on a set of throwaway test items;
+choices such as zoom stay either way). The site-wide preferences — language, theme, keyboard layout, the
+Hebrew font and size, the Font Maker author name, the Dictionary's romanization, speech rate and emoji choices
+— sync as one row, **IvritSuite preferences**, and the language and theme switch live when it lands. A preset,
+deck, student or class deleted on one device is never removed anywhere by itself: its row reads *Deleted on
+this device* with *Bring it back* / *Delete from your account too*, and *Sync everything* leaves it alone.
+The account's `.ivrit` backup is *partial* — the account's copies only — so the home page merges it without
+the Merge/Replace question, class lists included. `saves-test.html` exercises the panel on a set of throwaway test items;
 `node scripts/smoke-saves.mjs` and `node scripts/smoke-tools.mjs` run the headless checks, and
 `node scripts/smoke-sync.mjs --sdk <supabase.js>` replays the second-device sync flow against a fake cloud.
 

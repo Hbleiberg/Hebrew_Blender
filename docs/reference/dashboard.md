@@ -411,3 +411,8 @@ blob a sync wrote before this dashboard was ever opened here (class lists only) 
 (`_storedBlobIsFirstRun`). The 30-second `checkSchedule` can write storage at a period boundary (through
 `applySettings` → `applyZoom`); the module re-reads the store after every write and treats a row that
 moved between its listing and an action as a skip, not a stop.
+
+An untouched empty default class ("My class", no names — the one every fresh device mints) is a **seed** for the
+cloud, not a class list: the registry's roster entry says so (`skipUpload`), its row reads *Empty default — not
+uploaded*, has no button, and *Sync everything* never sends it by itself; a name added to it makes it a class
+like any other. The ninth "My class" row a phone once uploaded was such a seed.

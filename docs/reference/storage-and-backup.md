@@ -35,6 +35,12 @@
 | `uiLang` / `darkMode` | `hebrewBlender_lang` / `hebrewBlender_darkMode` | The suite-wide UI-language choice (`'en'`\|`'he'`) and theme choice (`'1'`\|`'0'`). Registered on the maintainer's call: these are **identity** prefs, not per-device ones — the language especially is what a Hebrew-reading teacher would most notice losing on a new machine. `uiLang` is **validated on import** against `I18n.supported` (via `_ivLangOk`) because every page's no-flash `<head>` IIFE reads the stored value unvalidated; `darkMode` accepts only the two literal strings, so a stored `'0'` survives the surrounding truthiness tests |
 | `generatorPanels` / `flashCardPanels` / `dictPanels` | `hebrewBlender_panels` / `hebrewFlashCards_panels` / `hebrewDictionary_panels` | Which collapsible panels the user left open, for the three tools with no settings blob of their own (the dashboard, Torah Trainer and Trope Tutor carry theirs as `panelsCollapsed` inside their own settings blob). Flat `{data-i18n key: bool}` maps merged via `ivritSafeAssign`; empty = never-set (skipped on import). See [Panel-collapse memory](#shared-ux-components--the-conventions-all-tools-are-converging-on) |
 
+The eleven preference rows above — `inputMode`, `hebFont` / `hebFontSize`, `livePreview`, `kbdLayout`, `fmLastAuthor`,
+`uiLang` / `darkMode`, and the Dictionary's `dictTranslitStyle`, `dictTtsRate`, `dictEmojiSettings` — also travel with an
+account, as the cloud module's one *IvritSuite preferences* row (`SUITE_PREFS` beside the registry in `js/ivrit-saves.js`;
+`docs/reference/accounts-and-cloud.md` → *The suite-wide preferences row*). The three panel maps, `dictAudioEnabled` and
+`dictLastState` stay per device.
+
 ### Rule: any new tool with persistent data must be added here
 
 When a new tool is added to this site that saves **any** data to `localStorage`, its key(s) must be added to all three functions in `index.html`:
@@ -99,7 +105,8 @@ export/import as a bug to fix, not a pattern to copy.
 
 - **Account session keys are not settings.** `sb-hhkmqwpjsyxdeuhvcyis-auth-token` (+ its transient
   `-code-verifier`) is written by the Supabase SDK, `ivritSuite_accountCache` by `js/ivrit-account.js`,
-  and `ivritSuite_syncMeta` (what this device last synced to the cloud, per account) by `js/ivrit-saves.js`;
+  and `ivritSuite_syncMeta` (what this device last synced to the cloud, per account; also the write stamps other tabs
+  re-read on, and `held` — the suite-wide preference fields this device could not apply) by `js/ivrit-saves.js`;
   none of them ride export/import (a session must never travel in a file, and sync memory is per device),
   and `eraseAllSettings` removes every `sb-` key plus the two `ivritSuite_*` keys — "erase" also means
   signed out on this device — then reloads when a session was there. Which of the keys above have a cloud

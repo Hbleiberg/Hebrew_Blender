@@ -125,7 +125,15 @@ sequenceDiagram
 
 The rules the module follows — one row per saved item, a hash on both sides, "newer" decided by the row's
 server timestamp plus a per-device memory, nothing local ever deleted, nothing newer ever overwritten without
-a click — are in `docs/reference/accounts-and-cloud.md`, *The saves adapter*.
+a click — are in `docs/reference/accounts-and-cloud.md`, *The saves adapter*. Four more, since the audit that
+followed the first live test: after every download the page re-reads the key and the module re-reads the store,
+and when the page's own re-apply changed it, that normalized form goes back up at once (never hidden behind
+"Same"); the suite-wide preferences (language, theme, keyboard, Hebrew font, the Font Maker author name, the
+Dictionary's display choices) are one row synced first, so a language change lands live before the tools' rows;
+a *Sync everything* keeps going when the account screen closes, and stops only for an error that would fail
+every tool the same way (a dead connection, a lost session), naming what it skipped; and a row deleted or renamed
+on one device is never removed anywhere by itself — it reads *Deleted on this device* and the person chooses
+*Bring it back* or *Delete from your account too*.
 
 ### Saving a Font Maker project
 
