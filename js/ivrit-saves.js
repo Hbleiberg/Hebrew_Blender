@@ -171,6 +171,7 @@
   function badName(n) { return n === '__proto__' || n === 'constructor' || n === 'prototype'; }
   function now() { return new Date().toISOString(); }
   function warn() { try { console.warn.apply(console, ['[saves]'].concat(Array.prototype.slice.call(arguments))); } catch (e) {} }
+  function noop() {}
   // JSON from a file, the cloud or a store never gets to pollute Object.prototype.
   function safeParse(str) {
     return JSON.parse(str, function (k, v) { return (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v; });
@@ -405,7 +406,31 @@
     try { var m = safeParse(lsGet(META_KEY) || 'null'); if (isPlainObject(m) && m.v === 1 && isPlainObject(m.users)) return m; } catch (e) {}
     return { v: 1, users: {} };
   }
-  function metaSave(m) { try { localStorage.setItem(META_KEY, JSON.stringify(m)); } catch (e) {} }
+  // Two tabs read-modify-write this key. The write stamps (`written`, `lastWrite`) are the part another tab
+  // may have moved meanwhile, so the newer stamp per tool and kind is taken from the stored copy before
+  // writing — a lost stamp would leave a tab's stale in-memory copy unread. Everything else is this tab's.
+  function metaSave(m) {
+    try {
+      var cur = null;
+      try { cur = safeParse(lsGet(META_KEY) || 'null'); } catch (e) {}
+      if (isPlainObject(cur)) {
+        var w = isPlainObject(cur.written) ? cur.written : {};
+        Object.keys(w).forEach(function (tool) {
+          if (!isPlainObject(w[tool])) return;
+          Object.keys(w[tool]).forEach(function (kind) {
+            var at = w[tool][kind];
+            if (typeof at !== 'number') return;
+            if (!isPlainObject(m.written)) m.written = {};
+            if (!isPlainObject(m.written[tool])) m.written[tool] = {};
+            if (!(m.written[tool][kind] >= at)) m.written[tool][kind] = at;
+          });
+        });
+        var lw = cur.lastWrite;
+        if (isPlainObject(lw) && typeof lw.at === 'number' && !(isPlainObject(m.lastWrite) && m.lastWrite.at >= lw.at)) m.lastWrite = lw;
+      }
+      localStorage.setItem(META_KEY, JSON.stringify(m));
+    } catch (e) {}
+  }
   function metaBranch(m, uid, tool, kind, create) {
     var u = m.users[uid]; if (!isPlainObject(u)) { if (!create) return null; u = m.users[uid] = {}; }
     var tl = u[tool]; if (!isPlainObject(tl)) { if (!create) return null; tl = u[tool] = {}; }
@@ -519,7 +544,9 @@
     var st = err && (err.status || err.statusCode);
     var lower = String((err && err.message) || '').toLowerCase();
     if (code === 'quota') return t('shared.cloud.error_quota', 'There is no room left on this device to store that item.');
-    if (code === 'changed') return t('shared.cloud.error_changed', 'That item changed in the cloud a moment ago. The list was refreshed; choose again.');
+    if (code === 'changed') return t('shared.cloud.error_changed', 'That item changed a moment ago (here or in the cloud). The list was refreshed; choose again.');
+    if (code === 'changed_here') return t('shared.cloud.error_changed_here', 'That item changed on this device after the list was made. The list was refreshed; choose again.');
+    if (code === 'hook') return t('shared.cloud.error_hook', 'Downloaded, but this page could not show it. Reload the page, then choose again.');
     if (code === 'shape') return t('shared.cloud.error_shape', 'The cloud copy has an unexpected shape and was not written to this device.');
     if (code === 'no_merge') return t('shared.cloud.error_no_merge', 'This page cannot merge that item yet.');
     if (code === 'name') return t('shared.cloud.error_name', 'Names must be 1 to 120 characters.');
@@ -571,7 +598,7 @@
     if (e.omit !== undefined && !Array.isArray(e.omit)) return 'omit must be an array';
     return null;
   }
-  function keyOf(kind, name) { return kind + '' + name; }
+  function keyOf(kind, name) { return kind + ':' + name; }   // a kind is letters only, so the first ':' always ends it
   function hashItem(entry, value) { return hashText(canonJson(project(entry, value))); }
 
   /* ---------- the plan: one row per kind + name across both sides ---------- */
@@ -705,33 +732,87 @@
     var cfg = pages[tool];
     if (cfg && typeof cfg.flush === 'function') { try { cfg.flush(); } catch (e) { warn('flush failed:', e); } }
   }
+  // Tells the page to re-read the key. Returns false when the page's hook threw: its in-memory copy is then
+  // stale and would write back over what was just stored, so the caller must not remember the write.
   function notifyPage(tool, kind, name) {
     var cfg = pages[tool];
-    if (cfg && typeof cfg.onLocalChanged === 'function') { try { cfg.onLocalChanged(kind, name); } catch (e) { warn('onLocalChanged failed:', e); } }
+    if (!cfg || typeof cfg.onLocalChanged !== 'function') return true;
+    try { cfg.onLocalChanged(kind, name); return true; } catch (e) { warn('onLocalChanged failed:', e); return false; }
   }
   // The local side may have moved since the list was built (the page kept working): a download or a
-  // merge onto a value newer than the one the person looked at is refused and the list refreshed.
+  // merge onto a value newer than the one the person looked at — or onto an item that was not there when
+  // they looked — is refused and the list refreshed.
   function assertLocalAsPlanned(row, it) {
-    if (!row.local) return Promise.resolve();
-    if (!it) throw makeError('changed', 'IvritSaves: the local item is gone');
-    return hashItem(row.entry, it.value).then(function (h) { if (h !== row.local.hash) throw makeError('changed', 'IvritSaves: the local item changed meanwhile'); });
+    if (!row.local) { if (it) throw makeError('changed_here', 'IvritSaves: a local item appeared meanwhile'); return Promise.resolve(); }
+    if (!it) throw makeError('changed_here', 'IvritSaves: the local item is gone');
+    return hashItem(row.entry, it.value).then(function (h) { if (h !== row.local.hash) throw makeError('changed_here', 'IvritSaves: the local item changed meanwhile'); });
   }
-  function remember(uid, tool, row, name, h, saved) {
-    if (stillMe(uid)) metaSet(uid, tool, row.kind, name, { h: h, id: saved.id, u: saved.updated_at, at: now() });
+  function remember(uid, tool, kind, name, h, saved) {
+    if (stillMe(uid)) metaSet(uid, tool, kind, name, { h: h, id: saved.id, u: saved.updated_at, at: now() });
   }
-  // Upload = also "Keep mine" on a conflict: the local copy goes over the listed cloud row (if any).
-  function actUpload(tool, row) {
+  // The one ending of every local write the module makes (a download, a merge, a folder tree, the copy of
+  // Keep both): tell the page, let the page's own writer land whatever it re-applied, then make the two
+  // sides equal — the cloud row is remembered when the store still matches it, and the store's version is
+  // put in the account when it does not. Remembering the store's hash as the cloud's would hide a lossy
+  // re-apply behind "Same"; pushing makes both sides hold the page's normalized form, which reads "Same"
+  // honestly and converges in one round. `full` = { id, updated_at, data } of the row the store was written
+  // from. A page hook that throws remembers nothing (the page's stale memory would write back over the
+  // download) and fails the action with `hook`; a store the page emptied fails the same way.
+  function settleLocalWrite(tool, uid, entry, name, full) {
+    if (!notifyPage(tool, entry.kind, name)) throw makeError('hook', 'IvritSaves: the page could not take the write');
+    flushPage(tool);
+    return reconcileStore(tool, uid, entry, name, full);
+  }
+  // The comparing half of the tail — also used when the store already held the value and nothing was written.
+  function reconcileStore(tool, uid, entry, name, full) {
+    var back = localItem(entry, name);
+    if (!back) throw makeError('hook', 'IvritSaves: the page dropped the item');
+    var projected = project(entry, back.value);
+    return Promise.all([hashText(canonJson(projected)), hashItem(entry, full.data)]).then(function (hs) {
+      var h = hs[0], cloudHash = hs[1];
+      if (h === cloudHash) { remember(uid, tool, entry.kind, name, h, full); return { hash: h, pushed: false }; }
+      var g = guardUpload(entry, name, projected);
+      if (g) throw g;
+      return cloudUpdateIf(full.id, full.updated_at, projected, h).then(function (saved) {
+        remember(uid, tool, entry.kind, name, h, saved);
+        return { hash: h, pushed: true };
+      }, function (err) {
+        if (err && err.code === 'changed') { warn('the account copy moved while this device took it; the next listing shows both sides'); return { hash: h, pushed: false }; }
+        throw err;
+      });
+    });
+  }
+  // Upload: the local copy goes over the listed cloud row (if any). "Keep mine" on a conflict is the same
+  // send after a check that the local copy is still the one the person looked at; for a settings blob it
+  // is a merge in which this device's fields win and a field only the account had survives.
+  function actUpload(tool, row, keepMine) {
+    if (keepMine && row.cloud && row.entry.merge === 'assign') return actKeepMineAssign(tool, row);
     var uid = ensureUser();
     flushPage(tool);
     var it = localItem(row.entry, row.name);
-    if (!it) throw makeError('changed', 'IvritSaves: nothing to upload');
-    var projected = project(row.entry, it.value);
-    var g = guardUpload(row.entry, row.name, projected);
-    if (g) throw g;
-    return hashText(canonJson(projected)).then(function (h) {
-      var write = row.cloud ? cloudUpdateIf(row.cloud.id, row.cloud.updatedAt, projected, h)
-                            : cloudInsert(row.entry, row.name, projected, h).catch(function (err) { if (err && err.code === '23505') throw makeError('changed'); throw err; });
-      return write.then(function (saved) { remember(uid, tool, row, row.name, h, saved); return { action: 'upload', row: row }; });
+    if (!it) throw makeError('changed_here', 'IvritSaves: nothing to upload');
+    return (keepMine ? assertLocalAsPlanned(row, it) : Promise.resolve()).then(function () {
+      var projected = project(row.entry, it.value);
+      var g = guardUpload(row.entry, row.name, projected);
+      if (g) throw g;
+      return hashText(canonJson(projected)).then(function (h) {
+        var write = row.cloud ? cloudUpdateIf(row.cloud.id, row.cloud.updatedAt, projected, h)
+                              : cloudInsert(row.entry, row.name, projected, h).catch(function (err) { if (err && err.code === '23505') throw makeError('changed'); throw err; });
+        return write.then(function (saved) { remember(uid, tool, row.kind, row.name, h, saved); return { action: 'upload', row: row }; });
+      });
+    });
+  }
+  function actKeepMineAssign(tool, row) {
+    var uid = ensureUser();
+    return cloudLoad(row.cloud.id).then(function (full) {
+      if (!validateShape(row.entry, full.data)) throw makeError('shape');
+      flushPage(tool);
+      var it = localItem(row.entry, row.name);
+      return assertLocalAsPlanned(row, it).then(function () {
+        if (!it) throw makeError('changed_here');
+        var merged = safeAssign(clone(restoreOmitted(row.entry, full.data, it.value)), it.value);
+        return writeBothSides(tool, uid, row, merged, full);
+      }).then(function () { return { action: 'upload', row: row }; });
     });
   }
   function actDownload(tool, row) {
@@ -742,32 +823,20 @@
       var it = localItem(row.entry, row.name);
       return assertLocalAsPlanned(row, it).then(function () {
         var value = restoreOmitted(row.entry, full.data, it ? it.value : null);
-        return localWrite(row.entry, row.name, value).then(function () {
-          notifyPage(tool, row.kind, row.name);
-          var back = localItem(row.entry, row.name);   // what the store now holds is what gets remembered
-          return hashItem(row.entry, back ? back.value : value).then(function (h) {
-            remember(uid, tool, row, row.name, h, full);
-            return { action: 'download', row: row };
-          });
-        });
+        return localWrite(row.entry, row.name, value)
+          .then(function () { return settleLocalWrite(tool, uid, row.entry, row.name, full); })
+          .then(function (r) { return { action: 'download', row: row, pushed: r.pushed }; });
       });
     });
   }
-  // Shared tail of the merging actions: write the value here, tell the page, put the same value in the
-  // cloud (unless the cloud already holds it), remember it.
+  // Shared tail of the merging actions: the value is checked against the account's limits first (a merge
+  // too big to store is refused before anything is written on either side), written here, then settled.
   function writeBothSides(tool, uid, row, value, full) {
-    return localWrite(row.entry, row.name, value).then(function () {
-      notifyPage(tool, row.kind, row.name);
-      var back = localItem(row.entry, row.name);
-      var projected = project(row.entry, back ? back.value : value);
-      var g = guardUpload(row.entry, row.name, projected);
-      if (g) throw g;
-      return Promise.all([hashText(canonJson(projected)), hashItem(row.entry, full.data)]).then(function (hs) {
-        var h = hs[0], cloudHash = hs[1];
-        if (h === cloudHash) { remember(uid, tool, row, row.name, h, full); return { action: 'merge', row: row }; }
-        return cloudUpdateIf(full.id, full.updated_at, projected, h).then(function (saved) { remember(uid, tool, row, row.name, h, saved); return { action: 'merge', row: row }; });
-      });
-    });
+    var g = guardUpload(row.entry, row.name, project(row.entry, value));
+    if (g) return Promise.reject(g);
+    return localWrite(row.entry, row.name, value)
+      .then(function () { return settleLocalWrite(tool, uid, row.entry, row.name, full); })
+      .then(function (r) { return { action: 'merge', row: row, pushed: r.pushed }; });
   }
   function actMerge(tool, row) {
     var uid = ensureUser();
@@ -820,9 +889,10 @@
     }
     return base + ' ' + Date.now();
   }
-  // Keep both: the cloud version is added on this device under a new name first (and read back), then
-  // this device's version goes over the cloud row, then the copy goes up too — every device ends with
-  // both, nothing is lost, and it converges in one click.
+  // Keep both: the cloud version gets its new name in the account first, then this device's version goes
+  // over the original row (only if it is still the listed one), then the copy lands on this device and is
+  // read back. A refusal at the first step writes nothing anywhere; one at the second removes the copy it
+  // just made — so every device ends with both versions, nothing is lost, and it converges in one click.
   function actKeepBoth(tool, row) {
     var uid = ensureUser();
     return cloudLoad(row.cloud.id).then(function (full) {
@@ -830,25 +900,24 @@
       flushPage(tool);
       var it = localItem(row.entry, row.name);
       return assertLocalAsPlanned(row, it).then(function () {
-        if (!it) throw makeError('changed');
+        if (!it) throw makeError('changed_here');
         var copyName = copyNameFor(tool, row.entry, row.name);
-        var g = guardUpload(row.entry, copyName, full.data);
+        var theirs = project(row.entry, full.data);
+        var mine = project(row.entry, it.value);
+        var g = guardUpload(row.entry, copyName, theirs) || guardUpload(row.entry, row.name, mine);
         if (g) throw g;
-        return localWrite(row.entry, copyName, full.data).then(function () {
-          notifyPage(tool, row.kind, copyName);
-          var projected = project(row.entry, it.value);
-          var g2 = guardUpload(row.entry, row.name, projected);
-          if (g2) throw g2;
-          return hashText(canonJson(projected)).then(function (h) {
-            return cloudUpdateIf(full.id, full.updated_at, projected, h).then(function (saved) {
-              remember(uid, tool, row, row.name, h, saved);
-              return hashItem(row.entry, full.data).then(function (hc) {
-                return cloudInsert(row.entry, copyName, project(row.entry, full.data), hc)
-                  .then(function (saved2) { remember(uid, tool, row, copyName, hc, saved2); },
-                        function (err) { warn('the copy stays on this device only for now:', err); });   // Sync will retry it
-              });
+        return Promise.all([hashItem(row.entry, full.data), hashText(canonJson(mine))]).then(function (hs) {
+          var hc = hs[0], h = hs[1];
+          return cloudInsert(row.entry, copyName, theirs, hc).catch(function (err) { if (err && err.code === '23505') throw makeError('changed'); throw err; })
+            .then(function (copyRow) {
+              return cloudUpdateIf(full.id, full.updated_at, mine, h)
+                .catch(function (err) { return cloudRemove(copyRow.id).catch(noop).then(function () { throw err; }); })
+                .then(function (saved) {
+                  remember(uid, tool, row.kind, row.name, h, saved);
+                  return localWrite(row.entry, copyName, restoreOmitted(row.entry, full.data, it.value))
+                    .then(function () { return settleLocalWrite(tool, uid, row.entry, copyName, { id: copyRow.id, updated_at: copyRow.updated_at, data: theirs }); });
+                });
             });
-          });
         }).then(function () { return { action: 'keepBoth', row: row, copy: copyName }; });
       });
     });
@@ -905,7 +974,8 @@
   }
   function runAction(tool, action, row) {
     return Promise.resolve().then(function () {
-      if (action === 'upload' || action === 'keepMine') return actUpload(tool, row);
+      if (action === 'upload') return actUpload(tool, row);
+      if (action === 'keepMine') return actUpload(tool, row, true);
       if (action === 'download') return actDownload(tool, row);
       if (action === 'merge') return actMerge(tool, row);
       if (action === 'useCloud') return actUseCloud(tool, row);
@@ -933,51 +1003,84 @@
     if (!local && !cloudRow) return Promise.resolve();
     if (p.rows.some(function (r) { return r.kind === entry.follows && r.state === 'cloud-only'; })) return Promise.resolve();
     return (cloudRow ? cloudLoad(cloudRow.id) : Promise.resolve(null)).then(function (full) {
-      var cloud = (full && validateShape(entry, full.data)) ? full.data : null;
-      var merged;
-      if (local && cloud) {
-        if (treeIsFlat(local)) merged = cloud;
-        else if (typeof helper === 'function') { merged = helper(clone(local), clone(cloud)); if (!validateShape(entry, merged)) merged = local; }
-        else { warn('no merge helper for tree kind', entry.kind, '— the cloud folders were not merged'); merged = local; }
-      } else merged = local || cloud;
-      var chain = Promise.resolve();
-      if (!local || canonJson(merged) !== canonJson(local)) {
-        chain = chain.then(function () { flushPage(tool); return localWrite(entry, DEFAULT_NAME, merged); })
-                     .then(function () { notifyPage(tool, entry.kind, DEFAULT_NAME); });
-      }
-      return chain.then(function () {
-        return hashItem(entry, merged).then(function (h) {
-          if (cloud && canonJson(merged) === canonJson(cloud)) { if (stillMe(uid)) metaSet(uid, tool, entry.kind, DEFAULT_NAME, { h: h, id: full.id, u: full.updated_at, at: now() }); return; }
-          var g = guardUpload(entry, DEFAULT_NAME, merged);
-          if (g) throw g;
-          var write = full ? cloudUpdateIf(full.id, full.updated_at, merged, h) : cloudInsert(entry, DEFAULT_NAME, merged, h);
-          return write.then(function (saved) { if (stillMe(uid)) metaSet(uid, tool, entry.kind, DEFAULT_NAME, { h: h, id: saved.id, u: saved.updated_at, at: now() }); });
+      if (full && !validateShape(entry, full.data)) throw makeError('shape');
+      if (!full) {
+        // nothing in the account yet: this device's folders go up as they are
+        var g = guardUpload(entry, DEFAULT_NAME, local);
+        if (g) throw g;
+        return hashItem(entry, local).then(function (h) {
+          return cloudInsert(entry, DEFAULT_NAME, local, h).then(function (saved) { remember(uid, tool, entry.kind, DEFAULT_NAME, h, saved); });
         });
-      });
+      }
+      var cloud = full.data, merged;
+      if (!local || treeIsFlat(local)) merged = cloud;
+      else if (typeof helper === 'function') { merged = helper(clone(local), clone(cloud)); if (!validateShape(entry, merged)) merged = local; }
+      else { warn('no merge helper for tree kind', entry.kind, '— the cloud folders were not merged'); merged = local; }
+      // The store then holds the merged tree and the tail compares it with the account: the page's own
+      // re-render may still reorder or prune it, and what the store holds afterwards is what goes up.
+      if (local && canonJson(merged) === canonJson(local)) return reconcileStore(tool, uid, entry, DEFAULT_NAME, full);
+      flushPage(tool);
+      return localWrite(entry, DEFAULT_NAME, merged).then(function () { return settleLocalWrite(tool, uid, entry, DEFAULT_NAME, full); });
     });
   }
-  // After any action: list again, then let every tree of the tool follow its items.
-  function afterActions(tool) {
-    return planTool(tool).then(function (p) {
-      var trees = registryFor(tool).filter(function (e) { return e.shape === 'tree'; });
-      if (!trees.length || !p.userId) return p;
-      return seqMap(trees, function (e) { return syncTree(tool, e, p); }).then(function () { return p; });
-    });
+  // Every tree of the tool follows its items, after the plan they follow was made.
+  function syncTrees(tool, p) {
+    var trees = registryFor(tool).filter(function (e) { return e.shape === 'tree'; });
+    if (!trees.length || !p.userId) return Promise.resolve(p);
+    return seqMap(trees, function (e) { return syncTree(tool, e, p); }).then(function () { return p; });
   }
-  // A row the client-side guard refuses (too big, an impossible name) is skipped and counted; the run
-  // goes on. Anything else — a network or server error — stops it, and re-running resumes.
-  function isGuardError(err) { var c = err && err.code; return c === 'too_big' || c === 'name' || c === 'chars'; }
+  // After any action: list again, then let the trees follow.
+  function afterActions(tool) { return planTool(tool).then(function (p) { return syncTrees(tool, p); }); }
+  // Errors that belong to one row — the guard's refusals, a malformed cloud copy, a page with no merge
+  // helper, a row that moved between the listing and the action, a page hook that failed — skip that row;
+  // the run goes on and names it. Anything else (the connection, the session, the device's storage, the
+  // server) stops the tool, and re-running resumes.
+  var ROW_ERRORS = { too_big: true, name: true, chars: true, shape: true, no_merge: true, changed: true, changed_here: true, hook: true };
+  function isRowError(err) { return !!(err && ROW_ERRORS[String(err.code)]); }
+  // Errors that would fail every tool the same way: a bulk run does not go on to the next tool.
+  function isConnectionError(err) {
+    var code = String((err && err.code) || ''), st = err && (err.status || err.statusCode), lower = String((err && err.message) || '').toLowerCase();
+    return code === 'offline' || code === 'blocked' || code === 'disabled' || code === 'signed_out' || code === 'PGRST301' || st === 401 || /jwt/.test(lower)
+      || code === 'PGRST204' || code === 'PGRST205' || code === '42P01' || /failed to fetch|networkerror|load failed|network request failed/.test(lower);
+  }
+  // The few words after a skipped row's name.
+  function skipReason(err) {
+    var code = String((err && err.code) || '');
+    if (code === 'too_big') return t('shared.cloud.skip_too_big', 'too big for the cloud');
+    if (code === 'name') return t('shared.cloud.skip_name', 'invalid name');
+    if (code === 'chars') return t('shared.cloud.skip_chars', 'characters the cloud cannot store');
+    if (code === 'shape') return t('shared.cloud.skip_shape', 'unexpected shape in the cloud copy');
+    if (code === 'no_merge') return t('shared.cloud.skip_no_merge', 'this page cannot merge it');
+    if (code === 'changed' || code === 'changed_here') return t('shared.cloud.skip_changed', 'changed meanwhile');
+    if (code === 'hook') return t('shared.cloud.skip_hook', 'this page could not show it');
+    return errorText(err);
+  }
+  function noteSkip(sum, row, err) { sum.skipped++; sum.skips.push({ name: row.label, why: skipReason(err) }); }
+  // The finishing line's tail naming the skipped rows ('' when none), and the note for a failed tree pass.
+  function skippedText(skips) {
+    if (!skips || !skips.length) return '';
+    var list = skips.map(function (s) { return t('shared.cloud.skipped_item', '{name} ({why})', { name: s.name, why: s.why }); }).join(', ');
+    return ' ' + t('shared.cloud.sync_skipped_named', '{n} skipped: {list}.', { n: skips.length, list: list });
+  }
+  function foldersText(err) { return err ? ' ' + t('shared.cloud.folders_error', 'The folder layout was not synced: {reason}', { reason: errorText(err) }) : ''; }
+  // The re-listing and the tree pass that end every run: a failed listing is the run's stop, a failed tree
+  // pass is noted beside the result, and the tool's latest plan comes back either way.
+  function finishRun(tool, p, sum) {
+    return planTool(tool).then(function (p2) {
+      return syncTrees(tool, p2).catch(function (err) { sum.treeError = err; }).then(function () { return p2; });
+    }, function (err) { if (!sum.error) sum.error = err; return p; });
+  }
   function syncNowInner(tool) {
     return planTool(tool).then(function (p) {
       var todo = p.rows.filter(function (r) { return r.safeAction; });
-      var sum = { done: 0, total: todo.length, up: 0, down: 0, merged: 0, skipped: 0, left: 0, error: null };
+      var sum = { tool: tool, done: 0, total: todo.length, up: 0, down: 0, merged: 0, skipped: 0, skips: [], left: 0, error: null, treeError: null };
       return seqMap(todo, function (row) {
         return runAction(tool, row.safeAction, row).then(function () {
           sum.done++;
           if (row.safeAction === 'upload') sum.up++; else if (row.safeAction === 'download') sum.down++; else sum.merged++;
-        }, function (err) { if (!isGuardError(err)) throw err; sum.skipped++; });
+        }, function (err) { if (!isRowError(err)) throw err; noteSkip(sum, row, err); });
       }).catch(function (err) { sum.error = err; })
-        .then(function () { return afterActions(tool); })
+        .then(function () { return finishRun(tool, p, sum); })
         .then(function (p2) { sum.left = p2.counts.conflicts; return sum; });
     });
   }
@@ -986,11 +1089,11 @@
   function uploadAllInner(tool) {
     return planTool(tool).then(function (p) {
       var todo = p.rows.filter(function (r) { return r.safeAction === 'upload'; });
-      var sum = { done: 0, total: todo.length, skipped: 0, error: null };
+      var sum = { tool: tool, done: 0, total: todo.length, skipped: 0, skips: [], error: null, treeError: null };
       return seqMap(todo, function (row) {
-        return actUpload(tool, row).then(function () { sum.done++; }, function (err) { if (!isGuardError(err)) throw err; sum.skipped++; });
+        return actUpload(tool, row).then(function () { sum.done++; }, function (err) { if (!isRowError(err)) throw err; noteSkip(sum, row, err); });
       }).catch(function (err) { sum.error = err; })
-        .then(function () { return afterActions(tool); })
+        .then(function () { return finishRun(tool, p, sum); })
         .then(function () { return sum; });
     });
   }
@@ -1179,7 +1282,11 @@
   function doneText(res) {
     var name = res.row ? res.row.label : '';
     if (res.action === 'upload') return t('shared.cloud.done_upload', 'Uploaded "{name}".', { name: name });
-    if (res.action === 'download') return t('shared.cloud.done_download', 'Downloaded "{name}" to this device.', { name: name }) + ' ' + t('shared.cloud.reload_hint', 'If this tool is open in other tabs, reload them.');
+    if (res.action === 'download') {
+      var line = res.pushed ? t('shared.cloud.done_download_pushed', 'Downloaded "{name}" and put this device\'s version in your account.', { name: name })
+                            : t('shared.cloud.done_download', 'Downloaded "{name}" to this device.', { name: name });
+      return line + ' ' + t('shared.cloud.reload_hint', 'If this tool is open in other tabs, reload them.');
+    }
     if (res.action === 'merge') return t('shared.cloud.done_merge', 'Merged "{name}" on both sides.', { name: name });
     if (res.action === 'keepBoth') return t('shared.cloud.done_keep_both', 'Kept both: the cloud version is now "{copy}" on this device.', { copy: res.copy });
     if (res.action === 'delete') return t('shared.cloud.done_delete', 'Deleted "{name}" from the cloud.', { name: name });
@@ -1189,7 +1296,8 @@
     messages[tool] = text ? { text: text, isError: !!isError } : null;
     var st = panels[tool] && panels[tool].root && panels[tool].root.querySelector('.ivsav-status');
     if (st) { st.textContent = text || ''; st.classList.toggle('is-error', !!isError); }
-    if (text && !isError && typeof window.showAppToast === 'function') { try { window.showAppToast(text); } catch (e) {} }
+    // A toast too, so a line inside a collapsed drawer is still seen; an error stays up longer.
+    if (text && typeof window.showAppToast === 'function') { try { window.showAppToast(text, isError ? 6000 : undefined); } catch (e) {} }
   }
   function accountState() {
     var a = A();
@@ -1213,10 +1321,10 @@
     var p = plans[tool];
     var isBusy = !!busy[tool];
     if (state === 'signed-in') {
-      var refreshBtn = button(t('shared.cloud.refresh', 'Refresh'), '', function () { refresh(tool); });
+      var refreshBtn = button(t('shared.cloud.refresh', 'Refresh'), '', function () { refresh(tool).catch(noop); });
       head.appendChild(refreshBtn);
       var n = p ? p.counts.safe : 0;
-      var syncBtn = button(n ? t('shared.cloud.sync_count', 'Sync now ({n})', { n: n }) : t('shared.cloud.sync', 'Sync now'), 'ivsav-primary', function () { syncNow(tool); });
+      var syncBtn = button(n ? t('shared.cloud.sync_count', 'Sync now ({n})', { n: n }) : t('shared.cloud.sync', 'Sync now'), 'ivsav-primary', function () { syncNow(tool).catch(noop); });
       if (!n) syncBtn.setAttribute('aria-disabled', 'true');
       head.appendChild(syncBtn);
     }
@@ -1276,15 +1384,15 @@
       li.appendChild(el('div', 'ivsav-meta', metaBits.join(' · ')));
       var actions = el('div', 'ivsav-actions');
       row.choices.forEach(function (action) {
-        var b = button(actionText(action), action === row.safeAction || action === 'keepBoth' ? 'ivsav-primary' : '', function () { act(tool, action, row); });
+        var b = button(actionText(action), action === row.safeAction || action === 'keepBoth' ? 'ivsav-primary' : '', function () { act(tool, action, row).catch(noop); });
         if (isBusy) b.setAttribute('aria-disabled', 'true');
         actions.appendChild(b);
       });
       if (row.cloud) {
-        var fileBtn = button(t('shared.cloud.download_json', 'Download file'), '', function () { act(tool, 'file', row); });
+        var fileBtn = button(t('shared.cloud.download_json', 'Download file'), '', function () { act(tool, 'file', row).catch(noop); });
         var delBtn = button(t('shared.cloud.delete', 'Delete from cloud'), '', function () {
           if (!window.confirm(t('shared.cloud.delete_confirm', 'Delete "{name}" from the cloud? The copy on this device stays.', { name: row.label }))) return;
-          act(tool, 'delete', row);
+          act(tool, 'delete', row).catch(noop);
         });
         if (isBusy) { fileBtn.setAttribute('aria-disabled', 'true'); delBtn.setAttribute('aria-disabled', 'true'); }
         actions.appendChild(fileBtn);
@@ -1302,13 +1410,13 @@
     say(tool, '', false);
     return enqueue(tool, function () {
       return runAction(tool, action, row).then(function (res) {
-        return afterActions(tool).then(function () { return res; });
+        return planTool(tool).then(function (p) { return syncTrees(tool, p).catch(function (err) { res.treeError = err; }); }).then(function () { return res; });
       }).catch(function (err) {
-        if (err && err.code === 'changed') return planTool(tool).catch(function () {}).then(function () { throw err; });
+        if (err && (err.code === 'changed' || err.code === 'changed_here')) return planTool(tool).catch(noop).then(function () { throw err; });
         throw err;
       });
     }).then(function (res) {
-      say(tool, doneText(res), false);
+      say(tool, doneText(res) + foldersText(res.treeError), false);
       render(tool);
       return res;
     }, function (err) {
@@ -1329,9 +1437,9 @@
   function syncNow(tool) {
     say(tool, '', false);
     return enqueue(tool, function () { return syncNowInner(tool); }).then(function (sum) {
-      var skipped = sum.skipped ? ' ' + t('shared.cloud.sync_skipped', '{n} could not be uploaded (too big or an invalid name).', { n: sum.skipped }) : '';
-      if (sum.error) say(tool, t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: sum.done, total: sum.total, reason: errorText(sum.error) }) + skipped, true);
-      else say(tool, t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: sum.up, down: sum.down, merged: sum.merged, left: sum.left }) + skipped, false);
+      var tail = skippedText(sum.skips) + foldersText(sum.treeError);
+      if (sum.error) say(tool, t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: sum.done, total: sum.total, reason: errorText(sum.error) }) + tail, true);
+      else say(tool, t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: sum.up, down: sum.down, merged: sum.merged, left: sum.left }) + tail, false);
       render(tool);
       return sum;
     }, function (err) { say(tool, errorText(err), true); render(tool); throw err; });
@@ -1500,25 +1608,43 @@
       acctSay(doneText || '', false);
     }).catch(function (err) { if (account === me) acctSay(errorText(err), true); });
   }
+  // A bulk run over every tool, one tool at a time. A tool that stops does not end the run unless its error
+  // would fail every tool the same way (the connection, the session): the finishing line then names the
+  // stop, the counts so far and the tools not reached. Each tool's panel gets its own stop line.
+  function newRun() { return { up: 0, down: 0, merged: 0, done: 0, total: 0, left: 0, skips: [], treeError: null, stopped: null, halt: false, notReached: [] }; }
+  function runNote(run, tool, sum) {
+    run.up += sum.up || 0; run.down += sum.down || 0; run.merged += sum.merged || 0; run.done += sum.done || 0; run.total += sum.total || 0; run.left += sum.left || 0;
+    (sum.skips || []).forEach(function (s) { run.skips.push(s); });
+    if (sum.treeError && !run.treeError) run.treeError = sum.treeError;
+    if (!sum.error) return;
+    if (!run.stopped) run.stopped = { tool: tool, error: sum.error };
+    if (isConnectionError(sum.error)) run.halt = true;
+    say(tool, t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: sum.done || 0, total: sum.total || 0, reason: errorText(sum.error) }), true);
+  }
+  function runTools(run, me, sayKey, sayFallback, fn) {
+    return seqMap(toolsWithEntries(), function (tool) {
+      if (account !== me) return Promise.resolve();
+      if (run.halt) { run.notReached.push(tool); return Promise.resolve(); }
+      acctSay(t(sayKey, sayFallback, { tool: toolName(tool) }), false);
+      return enqueue(tool, function () { return fn(tool); }).then(function (sum) { runNote(run, tool, sum || {}); render(tool); }, function (err) { runNote(run, tool, { error: err }); render(tool); });
+    });
+  }
+  function stoppedText(run, key, fallback) {
+    var text = t(key, fallback, { tool: toolName(run.stopped.tool), reason: errorText(run.stopped.error) })
+      + ' ' + t('shared.cloud.acct_done_so_far', '{done} of {total} done so far.', { done: run.done, total: run.total });
+    if (run.notReached.length) text += ' ' + t('shared.cloud.acct_not_reached', 'Not checked yet: {tools}.', { tools: run.notReached.map(toolName).join(', ') });
+    return text + skippedText(run.skips);
+  }
   function uploadAll() {
     var me = account;
     if (!me || !currentUser()) return Promise.resolve();
     acctBusy(true);
-    var total = 0, skipped = 0, error = null;
-    return seqMap(toolsWithEntries(), function (tool) {
-      if (error || account !== me) return Promise.resolve();
-      acctSay(t('shared.cloud.acct_uploading', 'Uploading {tool}…', { tool: toolName(tool) }), false);
-      return enqueue(tool, function () { return uploadAllInner(tool); }).then(function (sum) {
-        total += sum.done; skipped += sum.skipped;
-        if (sum.error) error = sum.error;
-        render(tool);
-      }, function (err) { error = err; render(tool); });
-    }).then(function () {
+    var run = newRun();
+    return runTools(run, me, 'shared.cloud.acct_uploading', 'Uploading {tool}…', uploadAllInner).then(function () {
       if (account !== me) return;
       acctBusy(false);
-      var tail = skipped ? ' ' + t('shared.cloud.sync_skipped', '{n} could not be uploaded (too big or an invalid name).', { n: skipped }) : '';
-      if (error) { acctSay(t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: total, total: total, reason: errorText(error) }) + tail, true); return; }
-      return fillAccount(t('shared.cloud.acct_uploaded', 'Uploaded {n} items to your account.', { n: total }) + tail);
+      if (run.stopped) { acctSay(stoppedText(run, 'shared.cloud.acct_upload_stopped_at', 'Stopped while uploading {tool}: {reason}'), true); return; }
+      return fillAccount(t('shared.cloud.acct_uploaded', 'Uploaded {n} items to your account.', { n: run.done }) + skippedText(run.skips) + foldersText(run.treeError));
     });
   }
   // "Sync everything": each tool's Sync now, one after another — downloads, uploads and lossless merges,
@@ -1527,49 +1653,42 @@
     var me = account;
     if (!me || !currentUser()) return Promise.resolve();
     acctBusy(true);
-    var up = 0, down = 0, merged = 0, skipped = 0, left = 0, error = null;
-    return seqMap(toolsWithEntries(), function (tool) {
-      if (error || account !== me) return Promise.resolve();
-      acctSay(t('shared.cloud.acct_syncing', 'Syncing {tool}…', { tool: toolName(tool) }), false);
-      return enqueue(tool, function () { return syncNowInner(tool); }).then(function (sum) {
-        up += sum.up; down += sum.down; merged += sum.merged; skipped += sum.skipped; left += sum.left;
-        if (sum.error) error = sum.error;
-        render(tool);
-      }, function (err) { error = err; render(tool); });
-    }).then(function () {
+    var run = newRun();
+    return runTools(run, me, 'shared.cloud.acct_syncing', 'Syncing {tool}…', syncNowInner).then(function () {
       if (account !== me) return;
       acctBusy(false);
-      var tail = skipped ? ' ' + t('shared.cloud.sync_skipped', '{n} could not be uploaded (too big or an invalid name).', { n: skipped }) : '';
-      if (error) { acctSay(t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: up + down + merged, total: up + down + merged, reason: errorText(error) }) + tail, true); return; }
-      return fillAccount(t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: up, down: down, merged: merged, left: left }) + tail);
+      if (run.stopped) { acctSay(stoppedText(run, 'shared.cloud.acct_stopped_at', 'Stopped while syncing {tool}: {reason}'), true); return; }
+      return fillAccount(t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: run.up, down: run.down, merged: run.merged, left: run.left }) + skippedText(run.skips) + foldersText(run.treeError));
     });
   }
   // The "Settings that differ" block: for every tool, every settings blob changed in both places takes the
   // chosen side — 'useCloud' (the account's copy lands here, per-device fields kept) or 'keepMine' (this
-  // device's copy goes up) — then both sides hold it and the sync memory remembers it.
+  // device's copy goes up, a field only the account had kept) — then both sides hold it and the sync memory
+  // remembers it.
+  function resolveSettingsInner(tool, choice) {
+    return planTool(tool).then(function (p) {
+      var rows = p.rows.filter(isSettingsChoice);
+      var sum = { tool: tool, done: 0, total: rows.length, skipped: 0, skips: [], error: null, treeError: null };
+      if (!rows.length) return sum;
+      return seqMap(rows, function (row) {
+        return runAction(tool, choice, row).then(function () { sum.done++; }, function (err) { if (!isRowError(err)) throw err; noteSkip(sum, row, err); });
+      }).catch(function (err) { sum.error = err; })
+        .then(function () { return finishRun(tool, p, sum); })
+        .then(function () { return sum; });
+    });
+  }
   function resolveSettings(choice) {
     var me = account;
     if (!me || !currentUser()) return Promise.resolve();
     acctBusy(true);
-    var done = 0, total = 0, error = null;
-    return seqMap(toolsWithEntries(), function (tool) {
-      if (error || account !== me) return Promise.resolve();
-      acctSay(t('shared.cloud.acct_updating', 'Updating {tool}…', { tool: toolName(tool) }), false);
-      return enqueue(tool, function () {
-        return planTool(tool).then(function (p) {
-          var rows = p.rows.filter(isSettingsChoice);
-          if (!rows.length) return null;
-          total += rows.length;
-          return seqMap(rows, function (row) { return runAction(tool, choice, row).then(function () { done++; }); })
-            .then(function () { return afterActions(tool); });
-        });
-      }).then(function () { render(tool); }, function (err) { error = err; render(tool); });
-    }).then(function () {
+    var run = newRun();
+    return runTools(run, me, 'shared.cloud.acct_updating', 'Updating {tool}…', function (tool) { return resolveSettingsInner(tool, choice); }).then(function () {
       if (account !== me) return;
       acctBusy(false);
-      if (error) { acctSay(t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: done, total: total, reason: errorText(error) }), true); return; }
-      return fillAccount(choice === 'useCloud' ? t('shared.cloud.acct_settings_done_cloud', "Your account's settings are now on this device.")
-                                               : t('shared.cloud.acct_settings_done_mine', "This device's settings are now in your account."));
+      if (run.stopped) { acctSay(stoppedText(run, 'shared.cloud.acct_update_stopped_at', 'Stopped while updating {tool}: {reason}'), true); return; }
+      var line = choice === 'useCloud' ? t('shared.cloud.acct_settings_done_cloud', "Your account's settings are now on this device.")
+                                       : t('shared.cloud.acct_settings_done_mine', "This device's settings are now in your account.");
+      return fillAccount(line + skippedText(run.skips) + foldersText(run.treeError));
     });
   }
   function backupAccount() {
@@ -1709,7 +1828,8 @@
       canonJson: canonJson, hashText: hashText, classify: classify, deepMax: deepMax, maxValue: maxValue,
       project: project, restoreOmitted: restoreOmitted, safeParse: safeParse, copyNameFor: copyNameFor,
       validateShape: validateShape, errorText: errorText, guardUpload: guardUpload, ivritFile: ivritFile,
-      treeIsFlat: treeIsFlat, bundleFromRows: bundleFromRows, recheckWrites: recheckWrites, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
+      treeIsFlat: treeIsFlat, bundleFromRows: bundleFromRows, recheckWrites: recheckWrites, isRowError: isRowError, isConnectionError: isConnectionError,
+      META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
     }
   };
   // The chip's "Account…" item and the sign-in splash belong to every page that loads this module, including

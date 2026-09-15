@@ -23,6 +23,11 @@
  *      default stays listed; the account is never patched).
  *   6. Another tab's write while this tab was in the background: on pageshow / visibilitychange the module
  *      re-reads the key without a storage event, the dropdown gains the class and the page adopts it.
+ *   7. A download the page re-applies differently (a 3-digit colour the dashboard drops): the module puts
+ *      the page's form in the account (one PATCH) and the row reads Same — never "Same" over two versions.
+ *   8. Row-scoped trouble (a preset too big to upload, a malformed cloud row) is skipped and named while
+ *      Sync everything goes on to the dashboard; a dead connection stops the run and names the tools it
+ *      never reached.
  *
  * Run from the repo root:  node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
  * The script starts python3 -m http.server itself (port 8081 by default, so it can run beside the others).
@@ -57,7 +62,7 @@ const SESSION = { access_token: 'x', refresh_token: 'y', expires_at: 4102444800,
 // filters, order, offset/limit, select), POST (insert; one object back for .single()), PATCH (eq.
 // filters, the changed rows back — none when the updated_at guard misses), DELETE. Every call is logged.
 class FakeCloud {
-  constructor(rows) { this.n = 0; this.log = []; this.rows = rows.map(r => this.fresh(r)); }
+  constructor(rows) { this.n = 0; this.log = []; this.rows = rows.map(r => this.fresh(r)); this.abortWhen = null; }   // abortWhen(url, method) → true = the connection dies
   stamp() { return new Date(Date.UTC(2026, 8, 14, 20, 0, 0) + (++this.n) * 1000).toISOString(); }
   fresh(r) { const at = this.stamp(); return Object.assign({ id: crypto.randomUUID(), user_id: UID, created_at: at, updated_at: at, client_updated_at: null, data_hash: null, bytes: JSON.stringify(r.data).length }, r); }
   find(kind, name) { return this.rows.find(r => r.kind === kind && r.name === name); }
@@ -67,6 +72,7 @@ class FakeCloud {
     const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,PATCH,DELETE,OPTIONS', 'access-control-expose-headers': '*' };
     const json = (status, body) => route.fulfill({ status, headers: Object.assign({ 'content-type': 'application/json; charset=utf-8' }, cors), body: JSON.stringify(body) });
     if (m === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
+    if (this.abortWhen && this.abortWhen(url, m)) { this.log.push({ m, search: url.search, aborted: true }); return route.abort('failed'); }
     if (url.pathname.endsWith('/auth/v1/user')) return json(200, SESSION.user);
     if (url.pathname.endsWith('/auth/v1/token')) return json(200, Object.assign({ expires_in: 3600 }, SESSION));
     if (!url.pathname.endsWith('/rest/v1/saves')) { this.log.push({ m, path: url.pathname, unexpected: true }); return json(404, { message: 'not found' }); }
@@ -344,7 +350,10 @@ try {
     check('5: before the sync the picker sat on the empty default with no note', before.value === 'dev1_0' && before.options.length === 1 && before.note === '', JSON.stringify(before));
     check('5: Sync everything listed all three account classes and kept the default', pk.options.length === 4 && ['Kitah Alef (2)', 'Kitah Bet (1)', 'Kitah Gimel (2)', 'My class (0)'].every(n => pk.options.includes(n)), JSON.stringify(pk.options));
     check('5: the picker switched to the first account class — chips, note and toast', pk.value === 'lap_0' && d.active === 'lap_0' && /Noa/.test(pk.chips) && /Eitan/.test(pk.chips) && /Now showing Kitah Alef/.test(pk.note) && /Now showing Kitah Alef/.test(pk.toast), JSON.stringify({ value: pk.value, chips: pk.chips, note: pk.note, toast: pk.toast }));
-    check('5: the sync memory holds every class; nothing was patched or deleted in the account', JSON.stringify(d.rosterMemory) === '["dev1_0","lap_0","lap_1","lap_2"]' && cloud.log.filter(e => e.m === 'PATCH' || e.m === 'DELETE').length === 0, JSON.stringify({ mem: d.rosterMemory, calls: cloud.log.map(e => e.m) }));
+    // The one PATCH allowed is the folder tree: the page's own render added its seeded preset to the tree it
+    // had just taken from the account, and the tail put that form back (both sides then hold it — convergence).
+    const patchedKinds = cloud.log.filter(e => e.m === 'PATCH').map(e => { const id = (new URLSearchParams(e.search).get('id') || '').slice(3); const r = cloud.rows.find(r => r.id === id); return r ? r.kind : '?'; });
+    check('5: the sync memory holds every class; no class, preset, schedule or settings row was patched or deleted', JSON.stringify(d.rosterMemory) === '["dev1_0","lap_0","lap_1","lap_2"]' && cloud.log.filter(e => e.m === 'DELETE').length === 0 && patchedKinds.every(k => k === 'presetFolders' || k === 'scheduleFolders'), JSON.stringify({ mem: d.rosterMemory, patchedKinds, calls: cloud.log.map(e => e.m) }));
     await page.screenshot({ path: path.join(SHOTS, '5-picker-adopted.png') });
     check('5: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
@@ -378,6 +387,57 @@ try {
     await page.waitForTimeout(SETTLE_MS);
     check('6: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
+  }
+  // ---- 7. a download the page re-applies differently: the page's form goes up and the row reads Same ----
+  {
+    const rows = CLOUD_ROWS();
+    rows.find(r => r.kind === 'settings').data = Object.assign({}, ACCOUNT_SETTINGS, { presetColors: { Morning: '#abc' } });   // the dashboard keeps 6-digit colours only
+    const cloud = new FakeCloud(rows);
+    const ctx = await openContext(browser, cloud, SEED(true));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    await openAccount(page);
+    await clickAndWait(page, 'use-account', 'now on this device');
+    const row = cloud.find('settings', 'default');
+    const d = await dashState(page);
+    const states = await planStates(page);
+    const patches = cloud.log.filter(e => e.m === 'PATCH');
+    check('7: the page dropped the 3-digit colour and the module put its form in the account — one PATCH', patches.length === 1 && !('Morning' in (row.data.presetColors || {})) && d.color === undefined && d.location === 'Atlanta, GA', JSON.stringify({ patches: patches.length, presetColors: row.data.presetColors, local: d.color, location: d.location }));
+    check('7: the row reads Same afterwards and the memory holds the pushed row', states['settings:default'] === 'synced' && d.memory, JSON.stringify({ states, memory: d.memory }));
+    check('7: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- 8. row-scoped trouble is skipped and named; a dead connection stops the run and names the rest ----
+  {
+    // a Flash Cards streak row that is not { value } — a download refused by the shape check (the page is not
+    // open here, so the module would take the row straight into the store otherwise)
+    const rows = () => CLOUD_ROWS().concat([{ tool: 'FlashCards', kind: 'pbStreak', name: 'default', data: 'not an object' }]);
+    const seed = SEED(false);
+    seed.hebrewBlender_presets = JSON.stringify({ 'Big preset': { big: 'x'.repeat(1900000) }, 'Small preset': { fontSize: 22 } });
+    const cloud = new FakeCloud(rows());
+    const ctx = await openContext(browser, cloud, seed);
+    const { page, errors } = await openPage(ctx, 'hebrew_blend_generator.html');
+    await openAccount(page);
+    await clickAndWait(page, 'sync', 'Sync finished|Stopped');
+    const s = await screen(page);
+    const d = await dashState(page);
+    check('8: the two rows were skipped by name and the run went on to the dashboard', /^Sync finished/.test(s.status) && /0 still need a choice/.test(s.status) && /2 skipped: Big preset \(too big for the cloud\), Best streak \(unexpected shape in the cloud copy\)\.$/.test(s.status) && d.presets.includes('Morning') && d.enabled === true, JSON.stringify({ status: s.status, presets: d.presets, enabled: d.enabled }));
+    const streak = await page.evaluate(() => localStorage.getItem('hebrewFlashCards_pbStreak'));
+    check('8: the small preset went up; the big one and the malformed row were left alone, and nothing was written for the streak', !!cloud.find('preset', 'Small preset') && !cloud.find('preset', 'Big preset') && cloud.find('pbStreak', 'default').data === 'not an object' && streak === null, JSON.stringify({ rows: cloud.rows.map(r => r.kind + ':' + r.name), streak }));
+    await page.screenshot({ path: path.join(SHOTS, '8-skipped-named.png') });
+    check('8: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+    // the same device, but the connection dies at the Torah Trainer once the run is under way
+    const cloud2 = new FakeCloud(rows());
+    const ctx2 = await openContext(browser, cloud2, seed);
+    const second = await openPage(ctx2, 'hebrew_blend_generator.html');
+    await openAccount(second.page);
+    cloud2.abortWhen = (url) => url.searchParams.get('tool') === 'eq.TorahTrainer';
+    await clickAndWait(second.page, 'sync', 'Sync finished|Stopped');
+    const s2 = await screen(second.page);
+    const d2 = await dashState(second.page);
+    check('8: a dead connection stops the run at the Torah Trainer and names the tools not reached', /^Stopped while syncing Torah Trainer: The cloud is unreachable right now\. Try again later\. \d+ of \d+ done so far\. Not checked yet: Trope Tutor, Hebrew Classroom Dashboard\. 2 skipped: Big preset/.test(s2.status) && !d2.presets.includes('Morning'), JSON.stringify({ status: s2.status, presets: d2.presets }));
+    check('8: 0 pageerrors after the dead connection', second.errors.length === 0, second.errors.join(' | '));
+    await ctx2.close();
   }
 } finally {
   await browser.close();

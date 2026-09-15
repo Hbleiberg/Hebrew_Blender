@@ -5382,12 +5382,22 @@ shared.cloud.updated,Updated {date},עודכן {date},Cloud-saves row meta: the 
 shared.cloud.size_kb,{kb} KB,{kb} KB,A size in kilobytes (under a megabyte),shared; template
 shared.cloud.done_upload,"Uploaded ""{name}"".","""{name}"" הועלה.",Cloud-saves status after an upload,shared; cloud panel; template
 shared.cloud.done_download,"Downloaded ""{name}"" to this device.","""{name}"" הורד למכשיר הזה.",Cloud-saves status after a download,shared; cloud panel; template
+shared.cloud.done_download_pushed,"Downloaded ""{name}"" and put this device's version in your account.","""{name}"" הורד, והגרסה של המכשיר הזה נשמרה בחשבון.",Cloud-saves status after a download the page re-applied differently (the store's version was then put in the account so both sides match),shared; cloud panel; template
 shared.cloud.done_merge,"Merged ""{name}"" on both sides.","""{name}"" מוזג בשני הצדדים.",Cloud-saves status after a merge,shared; cloud panel; template
 shared.cloud.done_keep_both,"Kept both: the cloud version is now ""{copy}"" on this device.","נשמרו שניהם: הגרסה מהענן נמצאת כעת במכשיר הזה בשם ""{copy}"".",Cloud-saves status after Keep both,shared; cloud panel; template
 shared.cloud.done_delete,"Deleted ""{name}"" from the cloud.","""{name}"" נמחק מהענן.",Cloud-saves status after deleting a cloud row,shared; cloud panel; template
 shared.cloud.done_sync,"Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.","הסנכרון הסתיים: {up} הועלו, {down} הורדו, {merged} מוזגו, {left} עדיין דורשים בחירה.",Cloud-saves status after Sync now,shared; cloud panel; template
 shared.cloud.sync_stopped,Stopped after {done} of {total}: {reason},נעצר אחרי {done} מתוך {total}: {reason},Cloud-saves status when Sync now hit an error,shared; cloud panel; template
-shared.cloud.sync_skipped,{n} could not be uploaded (too big or an invalid name).,{n} לא ניתן היה להעלות (גדול מדי או שם לא תקין).,Cloud-saves status sentence appended after Sync now when rows were skipped by the client-side guard,shared; cloud panel; template
+shared.cloud.sync_skipped_named,{n} skipped: {list}.,{n} דולגו: {list}.,"Cloud-saves status sentence appended after a sync when rows were skipped (list = the skipped rows, each rendered with skipped_item)",shared; cloud panel; template
+shared.cloud.skipped_item,{name} ({why}),{name} ({why}),One skipped row inside sync_skipped_named: its name and the reason in a few words (a skip_* string),shared; cloud panel; template
+shared.cloud.skip_too_big,too big for the cloud,גדול מדי לענן,Reason (a few words) for a skipped row: over the 2 MB limit,shared; cloud panel
+shared.cloud.skip_name,invalid name,שם לא תקין,Reason (a few words) for a skipped row: a name the cloud refuses,shared; cloud panel
+shared.cloud.skip_chars,characters the cloud cannot store,תווים שהענן אינו יכול לשמור,Reason (a few words) for a skipped row,shared; cloud panel
+shared.cloud.skip_shape,unexpected shape in the cloud copy,מבנה לא צפוי בעותק שבענן,Reason (a few words) for a skipped row: the cloud copy failed the shape check,shared; cloud panel
+shared.cloud.skip_no_merge,this page cannot merge it,הדף הזה אינו יכול למזג אותו,Reason (a few words) for a skipped row: no merge helper on this page,shared; cloud panel
+shared.cloud.skip_changed,changed meanwhile,השתנה בינתיים,Reason (a few words) for a skipped row: it moved between the listing and the action,shared; cloud panel
+shared.cloud.skip_hook,this page could not show it,הדף הזה לא הצליח להציג אותו,Reason (a few words) for a skipped row: the page's re-read hook failed,shared; cloud panel
+shared.cloud.folders_error,The folder layout was not synced: {reason},סידור התיקיות לא סונכרן: {reason},Cloud-saves status note appended when the folder-tree pass after a sync failed,shared; cloud panel; template
 shared.cloud.reload_hint,"If this tool is open in other tabs, reload them.","אם הכלי פתוח בלשוניות אחרות, רעננו אותן.",Cloud-saves status hint after a download,shared; cloud panel
 shared.cloud.copy_suffix,{name} (cloud copy),{name} (עותק מהענן),Name given to the cloud version after Keep both,shared; cloud panel; template
 shared.cloud.copy_suffix_n,{name} (cloud copy {n}),{name} (עותק מהענן {n}),Name given to the cloud version after Keep both when the first name is taken,shared; cloud panel; template
@@ -5435,6 +5445,11 @@ shared.cloud.acct_settings_done_cloud,Your account's settings are now on this de
 shared.cloud.acct_settings_done_mine,This device's settings are now in your account.,ההגדרות של המכשיר הזה נמצאות עכשיו בחשבון.,Account screen status after Keep this device's settings,shared; account screen
 shared.cloud.acct_uploading,Uploading {tool}…,מעלה {tool}…,Account screen status during Upload everything (tool = the tool's name),shared; account screen; template
 shared.cloud.acct_uploaded,Uploaded {n} items to your account.,{n} פריטים הועלו לחשבון.,Account screen status after Upload everything,shared; account screen; template
+shared.cloud.acct_stopped_at,Stopped while syncing {tool}: {reason},נעצר בזמן סנכרון {tool}: {reason},Account screen status when Sync everything stopped inside one tool (tool = the tool's name),shared; account screen; template
+shared.cloud.acct_upload_stopped_at,Stopped while uploading {tool}: {reason},נעצר בזמן העלאת {tool}: {reason},Account screen status when Upload everything stopped inside one tool,shared; account screen; template
+shared.cloud.acct_update_stopped_at,Stopped while updating {tool}: {reason},נעצר בזמן עדכון {tool}: {reason},Account screen status when the settings choice stopped inside one tool,shared; account screen; template
+shared.cloud.acct_done_so_far,{done} of {total} done so far.,{done} מתוך {total} בוצעו עד כה.,Account screen sentence after a stopped run: the counts so far,shared; account screen; template
+shared.cloud.acct_not_reached,Not checked yet: {tools}.,טרם נבדקו: {tools}.,"Account screen sentence after a stopped run: the tools the run never reached (tools = their names, comma-separated)",shared; account screen; template
 shared.cloud.acct_backup_head,Backups,גיבויים,Account screen section heading,shared; account screen
 shared.cloud.acct_download_cloud,Download everything in your account (.ivrit),הורדת כל מה שבחשבון (.ivrit),Account screen button: one AllTools-shaped .ivrit file of every cloud row,shared; account screen
 shared.cloud.acct_device_backup,Back up everything on this device (.ivrit),גיבוי כל מה שבמכשיר הזה (.ivrit),Account screen button: opens the home page's Import / Export All Settings modal,shared; account screen
@@ -5454,6 +5469,8 @@ shared.cloud.error_session,Your sign-in has expired. Sign in again.,תוקף ה�
 shared.cloud.error_not_setup,Cloud saves are not set up on the server yet.,שמירות בענן עדיין לא הוגדרו בשרת.,Cloud-saves error (the table is missing),shared; cloud panel
 shared.cloud.error_offline,The cloud is unreachable right now. Try again later.,הענן אינו זמין כרגע. נסו שוב מאוחר יותר.,Cloud-saves error,shared; cloud panel
 shared.cloud.error_changed,That item changed a moment ago (here or in the cloud). The list was refreshed; choose again.,הפריט השתנה לפני רגע (כאן או בענן). הרשימה רועננה; בחרו שוב.,Cloud-saves error (another device or this page wrote first; the conditional write or the local check refused),shared; cloud panel
+shared.cloud.error_changed_here,That item changed on this device after the list was made. The list was refreshed; choose again.,הפריט השתנה במכשיר הזה אחרי שהרשימה נבנתה. הרשימה רועננה; בחרו שוב.,Cloud-saves error (the local copy moved between the listing and the action),shared; cloud panel
+shared.cloud.error_hook,"Downloaded, but this page could not show it. Reload the page, then choose again.","הורד, אבל הדף הזה לא הצליח להציג אותו. רעננו את הדף ובחרו שוב.",Cloud-saves error (the page's re-read hook threw after a download; nothing was remembered),shared; cloud panel
 shared.cloud.error_shape,The cloud copy has an unexpected shape and was not written to this device.,לעותק בענן יש מבנה לא צפוי והוא לא נכתב למכשיר הזה.,Cloud-saves error,shared; cloud panel
 shared.cloud.error_quota,There is no room left on this device to store that item.,אין מקום פנוי במכשיר הזה לשמור את הפריט.,Cloud-saves error (localStorage full),shared; cloud panel
 shared.cloud.error_no_merge,This page cannot merge that item yet.,הדף הזה עדיין לא יכול למזג את הפריט.,Cloud-saves error (no page merge helper registered),shared; cloud panel
