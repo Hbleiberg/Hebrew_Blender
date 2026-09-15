@@ -2,7 +2,7 @@
 name: improveloop
 description: >-
   Run one bounded, ledger-driven continuous-improvement session on the IvritSuite / Hebrew Blender
-  codebase: read the ledger, run the stalest discovery pass (A–O), ship up to four small verified
+  codebase: read the ledger, run the stalest discovery pass (A–P), ship up to four small verified
   fixes (one commit each), optionally one micro-feature, ask the maintainer at decision gates, update
   the ledger, close out. Use whenever the user invokes /improveloop, or asks to run, continue, resume
   or "rerun" the improvement loop / an improvement session / pass / sweep, or to hunt-and-fix small
@@ -35,7 +35,9 @@ ratified protocol convention this skill contradicts, follow the ledger and flag 
 3. **Number this session** from the pointer's `SN`; tag everything you write with it. The pointer is
    the tie-break when two passes look equally stale.
 4. **Outside-loop drift check.** Compare against the last close-out entry: `origin/main` position,
-   `sw.js` `VERSION`, `FONT_MAKER_VERSION`. Note what landed outside the loop (version moves included);
+   `sw.js` `VERSION`, `FONT_MAKER_VERSION`, and the highest-numbered `db/migrations/` file with its `Live?`
+   state (`db/README.md`). Note what landed outside the loop (version moves included); backend phases land
+   there and leave no ledger trace at all, so a jump in any of these is where the unaudited surface is;
    that surface is prime discovery territory. Never trust the previous close-out's numbers unread.
 5. **Branch & PR.** Loop sessions run on a `claude/*` branch feeding a draft PR — never push to `main`
    unless the maintainer explicitly authorizes it in-session. If the previous loop PR is open and
@@ -50,7 +52,16 @@ ratified protocol convention this skill contradicts, follow the ledger and flag 
 | Budget | **5 iterations**: 1 discovery pass + up to 4 fixes. A micro-feature costs 2. |
 | Scope guard | One concern per iteration, one commit per iteration. A fix that reveals a second problem logs it as a candidate — never chase it now. |
 | Verification debt | At most one unverified aspect outstanding; resolve or revert it before the next iteration, and end the session rather than accumulate a second. Never leave the tree mid-change. |
-| Variety governor | Max 2 iterations/session on one recurring-pattern class; max 2 touching one tool (each chrome page — index, resources, contact, privacy, terms, 404 — is its own tool). The pass charges the budget but not the caps. If the top candidate breaks a cap, take the highest-priority one that doesn't; priority still wins across sessions. Tie-break toward tools and patterns untouched in the last 2 sessions. |
+| Variety governor | Max 2 iterations/session on one recurring-pattern class; max 2 touching one tool (each chrome page — index, resources, contact, privacy, terms, 404, **account** — is its own tool; a shared `js/` module counts as **every page that loads it**, so one such fix is that session's whole allowance for it). The pass charges the budget but not the caps. If the top candidate breaks a cap, take the highest-priority one that doesn't; priority still wins across sessions. Tie-break toward tools and patterns untouched in the last 2 sessions. |
+
+**Backend boundary — the loop never changes the live project.** No migration applied, no Edge Function
+deployed, no key rotated, no policy or grant altered — and no gate makes it askable. `db/` is deliberately
+not `supabase/`, so there is **one shared production project**: a loop branch would mutate it before its own
+draft PR is reviewed, and with `drop` forbidden neither "revert cleanly" nor the verification-debt rule can
+hold for server state. A finding that needs one is logged as a Candidate or Feature seed with the SQL
+**drafted as the next `db/migrations/NNNN_<name>.sql`, `Live?` = no**, and named in the close-out as
+maintainer work. The browser-side backend files (`js/ivrit-*.js`, `js/supabase-config.js`, `account.html`)
+are ordinary loop surface — verified by the smokes, not by the generic recipe.
 
 ## Decision gates — ask the maintainer (AskUserQuestion, concise options, a recommended default)
 Small verified fixes stay autonomous. These decisions are the maintainer's:
@@ -86,7 +97,12 @@ gracefully; it never stalls the session.
    single-file HTML; match local style). Ledger line numbers drift — locate by pattern.
 3. **Fix minimally.** Smallest diff that resolves the issue; no drive-by cleanups or reformatting.
 4. **Verify** per CLAUDE.md's Playwright recipe (light + dark × desktop + ~800px) plus an
-   issue-specific check designed before coding. Save data → `.ivrit` round-trip; export paths → produce
+   issue-specific check designed before coding. **A change touching `js/supabase-config.js`,
+   `js/ivrit-account.js`, `js/ivrit-saves.js`, `js/ivrit-projects.js`, `account.html` or a page's account
+   wiring is verified by the matching smoke** (`docs/reference/ops.md` → *Backend smokes*), **not** by the
+   recipe: the recipe route-aborts the SDK CDN and the project URL, so the signed-in path never runs and a
+   broken sync merge, a wrong registry row or an RLS denial all pass clean — the false zero of the three
+   measurement rules below, at a layer they do not name. Save data → `.ivrit` round-trip; export paths → produce
    the artifact and inspect it. Three measurement rules for any probe: **fire a control before trusting
    a zero** (drive it with a real `page.click`, not a loop inside `page.evaluate`); **a silent control
    means diagnose, not discard** (a bad control string is not a blind detector); **assert the probe's
@@ -107,7 +123,7 @@ tool is stalest for D?") means grepping `docs/IMPROVEMENT_ARCHIVE.md` too — ro
 run. A pass defined here but absent from the table (no ledgered removal or SKIP) gets a row
 `- <letter> <name>: never run — registered <date>` at session start; never-run rows are stalest.
 "One tool/surface per session" passes pick the least-recently-audited of the 7 tools + chrome pages
-(index, resources, contact, privacy/terms, 404); the row's result note tracks coverage.
+(index, resources, contact, privacy/terms, 404, account); the row's result note tracks coverage.
 
 - **A. Recurring-pattern sweep** — sweep every pattern marked ACTIVE in Pattern health, by the
   detection definition its row carries (tuned greps, exemptions, what counts as a hit); never re-derive
@@ -124,8 +140,10 @@ run. A pass defined here but absent from the table (no ledgered removal or SKIP)
 - **D. Performance snapshot (one tool)** — cold load + one heavy interaction; log main-thread blocks
   >200 ms with profile evidence.
 - **E. Freshness & site health** — sitemap `lastmod` vs git, broken internal links, SW precache list vs
-  files (both directions), THIRD_PARTY_LICENSES vs deps, robots/CNAME present and parsing, README /
-  CLAUDE.md / `docs/reference/*` accuracy. Indexability *semantics* are L's.
+  files (both directions — the four backend `js/` modules and `account.html` belong in it), each page's CSP
+  allowlist against what that page actually loads (`docs/reference/ops.md`; the two account origins must be
+  present exactly where the account scripts are), THIRD_PARTY_LICENSES vs deps, robots/CNAME present and
+  parsing, README / CLAUDE.md / `docs/reference/*` accuracy. Indexability *semantics* are L's.
 - **F. Cross-tool consistency** — one UX affordance (empty states, share buttons, dark toggles, font
   pickers, toasts…) compared across all seven tools and the chrome pages; converge on the best
   existing implementation.
@@ -140,11 +158,14 @@ run. A pass defined here but absent from the table (no ledgered removal or SKIP)
 - **I. First-load & empty-state** — every tool in a fresh context (empty localStorage AND IndexedDB):
   instructive empty states, no crash on absent keys, demo data paths, onboarding copy matches the UI.
 - **K. i18n audit** — `node scripts/check-i18n.js`: Check A stays clean; Check B's backlog is the
-  burndown (prefer sites whose CSV keys exist). Then probe its blind spot: English built in template
-  literals or passed as plain arguments. Respect the translate-vs-content boundary in CLAUDE.md.
+  burndown (prefer sites whose CSV keys exist). Checks C, D and **E** are blocking — E keeps every
+  `data-legal-block`'s slot count equal to its `\n` segments, which is what stops a privacy/terms edit
+  silently serving English, so a session that touched `privacy.legal.*` / `terms.legal.*` reads E's output
+  rather than the exit code. Then probe its blind spot: English built in template literals or passed as
+  plain arguments. Respect the translate-vs-content boundary in CLAUDE.md.
 - **L. SEO & discoverability** — audit the static HTML source, offline: unique `<title>` (~50–60) and
   description (~150–160) per page; `rel=canonical` = `https://ivritsuite.com/<page>.html` (homepage:
-  bare root); `404.html` and `i18n-test.html` stay out of the indexable set; OG/Twitter parity and
+  bare root); `404.html`, `i18n-test.html`, `account-test.html` and `saves-test.html` stay out of the indexable set (the last two are `noindex` harnesses, absent from the sitemap, `llms.txt` and the precache by design); `account.html` is **in** it; OG/Twitter parity and
   `og:image` resolving (strip `?v=`); every JSON-LD block parses and its claims match the visible UI;
   sitemap = indexable set, sitemap↔canonical agreement; crawl-graph from the homepage via static
   `<a href>`; one `h1`, alt text on content images. Titles and descriptions stay English; never propose
@@ -187,6 +208,20 @@ run. A pass defined here but absent from the table (no ledgered removal or SKIP)
   present one side-by-side composite per proposal → ship only what came back approved, then re-run the
   arm to confirm the rule id is gone. Never present an AFTER you did not render. Prefer converging a
   token or shared block over patching call sites.
+- **P. Accounts & cloud (one surface)** — the layer no other pass can see. Pick the least-recently-audited
+  wired surface (the 7 tools, the hub's cloud panels, `account.html`). Arms, running what the surface has:
+  **1** anonymous parity — the page's full localStorage dump byte-identical to a control run with the account
+  scripts blocked (`smoke-tools.mjs --only <file>`), the bar being that an anonymous visit is unchanged;
+  **2** signed-in behaviour through the matching smoke, never the generic recipe (see iteration step 4);
+  **3** registry integrity — every `IVRIT_SYNC_REGISTRY` key registered at all three AllTools sites and in the
+  page's own `IVRIT_CFG`, and the kind of data it carries named in `privacy.legal.*` / `terms.legal.*`
+  (CLAUDE.md accounts rule 8); **4** every reset control on a syncing page calls `forgetRow(tool, kind)` — its
+  absence turns a local reset into an account-wide one and nothing else detects it; **5** the two CSP origins
+  present exactly where the account scripts are, and nowhere else; **6** the four `js/` modules and
+  `account.html` in `sw.js` `CORE_ASSETS`; **7** `var TOOLS` still equal to `saves.tool`'s CHECK. **Control:**
+  plant a defect — rename a registry key, delete a `forgetRow` call — and confirm the probe fires before any
+  clean result counts; a fake cloud that answered nothing looks exactly like a layer with no bugs. Findings
+  needing a migration, a deploy or a key stop at the backend boundary and are logged, not shipped.
 
 (J, the metrics-informed pass, is permanently SKIP in the rotation: its feature was removed.)
 
@@ -237,9 +272,12 @@ archive. Limits live in `scripts/ledger-rules.mjs`:
    health, Tool coverage, the rotation row, the per-session line, the new handoff pointer.
 2. **Compact and check:** `node scripts/compact-ledger.mjs --apply`, then
    `node scripts/check-ledger.mjs --vs origin/main` — both must be clean.
-3. **Repo definition of done** per CLAUDE.md (check-i18n, build-locales if keys were added, `sw.js`
-   VERSION bumped once in the final commit if any precached file changed, update-sitemap last if page
-   content changed).
+3. **Repo definition of done** — walk CLAUDE.md's checklist itself, not this paraphrase: `check-i18n`
+   (+ `build-locales` if CSV keys were added), `check-inline-js` if any inline `<script>` changed, the
+   **backend smokes** if a backend file changed, the page's CSP if a new origin is loaded, the `data/`
+   `?v=N` bump on every fetcher if a corpus changed, `FONT_MAKER_VERSION` + one changelog entry if a Font
+   Maker feature shipped, `sw.js` VERSION bumped once in the final commit if any precached file changed,
+   then `update-sitemap` and `update-llms-txt` last if page content or metadata changed.
 4. **Push** the session branch; ensure the draft PR exists or is updated.
 5. **Summary**, then the recap. Summary: iterations, pass run and its result, patterns swept
    (hits/clean), micro-feature shipped/split, screenshots delivered (M/N/O rules), gates asked → answers,
