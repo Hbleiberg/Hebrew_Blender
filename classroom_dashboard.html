@@ -1889,6 +1889,12 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     .day-item.colored { color: var(--text); }
     .day-item.colored .day-eng { color: var(--muted); }
     body.dark .dash-col { background: var(--white); box-shadow: none; }
+    /* That reset only ever reached the dark theme, where it rode in beside the literal slab.
+       The light column carries the same shadow at rgba(26,39,68,.05) and printed a grey band
+       down every column edge — faint, but ink the board does not need, and the paper artifact is
+       the point. (.day-item keeps its box-shadow on purpose: that ring is how today is marked.)
+       Pattern dark-print-shadow-slab. */
+    .dash-col { box-shadow: none; }
     body.dark .day-item:not(.colored) { background: var(--warm-gray); }
     /* The screen zoom is an inline style on .dashboard — 160% on a SmartBoard must not
        print as 160% on Letter. */
