@@ -3411,6 +3411,7 @@ shared.fonts.section_torah,Torah Fonts,גופני תורה,Font-picker section h
 shared.fonts.section_generic,{section} Fonts,גופני {section},"Font-picker section header (e.g. Block Fonts, Print Fonts, Torah Fonts)",mixed UI+content — {section} is a category name; shared
 shared.fonts.section_my_fonts,My Fonts,הגופנים שלי,Font-picker section header (custom fonts group),shared (carriers: all font-selector tools)
 shared.fonts.upload_label,⬆ Upload your own font?,⬆ העלו גופן משלכם?,My Fonts uploader label (below font grid),leading-emoji; shared (carriers: 7 font-selector tools)
+shared.fonts.missing_note,"""{name}"" is chosen but is not on this device. Upload it under My Fonts to use it here.","""{name}"" נבחר אך אינו נמצא במכשיר הזה. העלו אותו תחת ""הגופנים שלי"" כדי להשתמש בו כאן.",Note under a Hebrew font picker when the saved font name is not on this device (a My Font made elsewhere); the choice is kept and travels through a sync untouched,shared; fonts; template
 shared.fonts.upload_title,"Add a .ttf, .otf, or .woff/.woff2 font to My Fonts","הוסיפו גופן ‎.ttf‏, ‎.otf‏ או ‎.woff/.woff2 אל הגופנים שלי",My Fonts uploader label title,shared
 shared.lang.switcher_aria,Language,שפה,aria-label on the EN/עברית language switcher — its only accessible name (no visible label),aria-label only; shared
 shared.footer.about_header,About,אודות,Footer section header,shared
@@ -4550,6 +4551,7 @@ worksheet.quickstart.numbers,Numbers 0–20,מספרים 0–20,quick-start chip
 worksheet.lastsetup.restored,Your last worksheet setup is back.,המערך האחרון שלכם חזר.,sidebar notice shown when the previous visit's configuration was restored,REVIEW: HE draft
 worksheet.lastsetup.start_fresh,↺ Start fresh,↺ להתחיל מחדש,button that forgets the remembered setup and reloads the defaults,leading-glyph; REVIEW: HE draft
 worksheet.lastsetup.start_fresh_title,Forget the saved setup and start from the defaults,שכחו את המערך השמור והתחילו מברירת המחדל,tooltip for the Start fresh button,REVIEW: HE draft
+worksheet.lastsetup.start_fresh_title_cloud,Forget the saved setup on this device. The copy in your account stays until you delete it from Cloud saves.,לשכוח את ההגדרה השמורה במכשיר הזה. העותק בחשבון נשאר עד שתמחקו אותו משמירות בענן.,Tooltip of the generator's Start fresh button while signed in (only this device's copy is forgotten),worksheet; last setup
 worksheet.realwords.bingo.title,Bingo Options,אפשרויות בינגו,rw section header,
 worksheet.realwords.clear_btn,✕ Clear,✕ נקה,button,leading-emoji
 worksheet.realwords.clear_confirm,Clear the imported word list?,לנקות את רשימת המילים שיובאה?,confirm dialog,

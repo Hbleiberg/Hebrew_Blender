@@ -90,7 +90,45 @@ const PAGES = [
     },
     rows: ['preset:Week 1', 'preset:Review', 'lastState:default'],
     expand: `const adv = document.getElementById('panelAdvanced'); if (adv.classList.contains('collapsed')) adv.querySelector(':scope > .panel-title').click(); const t = document.querySelector('.panel-title[data-i18n="worksheet.advanced.cloud_title"]'); if (t.parentElement.classList.contains('collapsed')) t.click(); t.scrollIntoView();`,
-    urlKeep: 's=abc'
+    urlKeep: 's=abc',
+    // E. what a sync must never change: the remembered setup on a ?ak= load, and a setup carrying what this
+    // device cannot show (a My Font made elsewhere, a list it lacks, values this build does not offer)
+    extra: async ({ browser, tag }) => {
+      const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      const setup = JSON.stringify({ selectedLetters: ['א', 'ב', 'ג'], selectedVowels: ['kamatz', 'patach'], headerLang: 'he', pageSize: 'a4' });
+      {
+        const { ctx, page, errors } = await openPage(browser, 'hebrew_blend_generator.html', { seed: { hebrewBlender_lastState: setup }, query: '?ak=' + b64({ v: 1, type: 'ntl', items: [['אָ', 'a'], ['בָּ', 'ba']] }) });
+        const r = await page.evaluate(() => { rememberSetup(); window.dispatchEvent(new Event('pagehide')); return { after: localStorage.getItem('hebrewBlender_lastState'), akView: _answerKeyView === true }; });   // a top-level let: reachable by name, not on window
+        check(tag + ' E: a ?ak= load shows the answer key and leaves the remembered setup byte-identical', r.akView && r.after === setup, JSON.stringify({ akView: r.akView, after: (r.after || '').slice(0, 160) }));
+        check(tag + ' E: 0 pageerrors (?ak=)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      {
+        const first = await openPage(browser, 'hebrew_blend_generator.html', {});
+        const base = await first.page.evaluate(() => getSettings());
+        await first.ctx.close();
+        const mutated = Object.assign({}, base, { hebFont: 'Made Elsewhere', rwSource: 'lists', selectedWordListIds: ['nope_123'], selectedWordListNames: ['Gone list'], traceLineStyle: 'zigzag', wsWordCount: '999', headerLang: 'he' });
+        const seedText = JSON.stringify(mutated);
+        const { ctx, page, errors } = await openPage(browser, 'hebrew_blend_generator.html', { seed: { hebrewBlender_lastState: seedText } });
+        await page.waitForTimeout(500);   // the My Fonts store answers (the missing-font note waits for it)
+        const r = await page.evaluate(() => { rememberSetup(); const n = document.getElementById('hebFontMissing'); return { after: localStorage.getItem('hebrewBlender_lastState'), font: localStorage.getItem('hebrewBlender_hebFont'), active: document.querySelectorAll('.font-opt.active').length, note: n ? n.textContent : '', noteHidden: n ? n.hidden : null }; });
+        check(tag + ' E: an unknown font, an absent list id and unoffered values survive a load-then-flush round trip byte-for-byte', r.after === seedText, diffKeys(JSON.stringify([['setup', seedText]]), JSON.stringify([['setup', r.after]])));
+        check(tag + ' E: the missing font is named under the picker, no face is highlighted, the shared font key carries the name', /Made Elsewhere/.test(r.note) && r.noteHidden === false && r.active === 0 && r.font === 'Made Elsewhere', JSON.stringify({ note: r.note, hidden: r.noteHidden, active: r.active, font: r.font }));
+        check(tag + ' E: 0 pageerrors (round trip)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      {
+        // a honoured ?s= link leaves the address bar (a reload then reopens the remembered setup, not the link)
+        const first = await openPage(browser, 'hebrew_blend_generator.html', {});
+        const link = await first.page.evaluate(() => shareB64Encode(JSON.stringify({ headerLang: 'he' })));
+        await first.ctx.close();
+        const { ctx, page, errors } = await openPage(browser, 'hebrew_blend_generator.html', { query: '?s=' + link + '&lang=en' });
+        const r = await page.evaluate(() => ({ search: location.search, headerLang: getSettings().headerLang }));
+        check(tag + ' E: a valid ?s= link is applied and then stripped from the address bar, other params kept', r.headerLang === 'he' && !/[?&]s=/.test(r.search) && /lang=en/.test(r.search), JSON.stringify(r));
+        check(tag + ' E: 0 pageerrors (?s=)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+    }
   },
   {
     file: 'hebrew_dictionary.html', tool: 'Dictionary', host: '#wlCloudPanel',
@@ -272,6 +310,8 @@ try {
       check(tag + ' D: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
     }
+    // ---- E. page-specific: what a sync must never change on this page -------------------------------
+    if (P.extra) await P.extra({ browser, tag });
   }
 } finally {
   await browser.close();
