@@ -267,6 +267,13 @@ mountFolderTree({ treeKey, container, listItemNames(), buildItemRow(name)→acti
 - `syncTree(tree, names)` runs on every render: prunes item nodes whose name left the store, dedupes
   (first occurrence wins), repairs folder ids/fields, appends new store names at root. Store↔tree
   stays consistent automatically — so a renamed/deleted/imported preset just re-surfaces at root.
+- `ftMergeTrees(existing, incoming) → tree` is the one **pure** merge rule, used by `ftImportTree`
+  (an `.ivrit` merge) and handed to the cloud module as each tree's `merges` helper: folders match by
+  name at the same level and merge recursively (the local folder's id and collapsed state win); an
+  item appears exactly once — filed inside a folder on either side beats unfiled at the root, and the
+  local placement wins when both sides file it; local order first, the incoming side's new nodes
+  appended in its order; empty folders from both sides are kept; an incoming folder whose id clashes
+  gets a fresh one. `ftImportTree(key, incoming, replace)` = `replace ? write incoming : write(merge)`.
 - Items reuse the existing `.preset-item` styling; folders use `.ft-folder*`. All names render via
   `textContent` (XSS-safe — no inline `onclick` interpolation).
 - DnD = reorder + drop-into-folder (modeled as pure tree transforms then full re-render; a folder

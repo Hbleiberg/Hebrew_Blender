@@ -778,16 +778,49 @@ function ftPaths(tree, excludeId){
   })(tree.root, '');
   return out;
 }
+// Pure merge of two trees (this device's first, the incoming one second) — the one rule for an .ivrit
+// import and for a cloud sync. Level by level: folders match by name and merge recursively (the local
+// folder's id and collapsed state win); an item appears exactly once — filed inside a folder on either
+// side beats unfiled at the root, and this device's placement wins when both sides file it; local order
+// first, the incoming side's new nodes appended in its order; empty folders from both sides are kept.
+function ftMergeTrees(existing, incoming){
+  const A = (existing && Array.isArray(existing.root)) ? existing.root : [], B = (incoming && Array.isArray(incoming.root)) ? incoming.root : [];
+  const filedLoc = new Set(), rootLoc = new Set(), filedIn = new Set(), ids = new Set(), placed = new Set();
+  function scan(arr, depth, filed, root){ for (const n of arr){ if (!n) continue; if (n.t==='item') (depth ? filed : root).add(n.name); else if (n.t==='folder') scan(n.children||[], depth+1, filed, root); } }
+  scan(A, 0, filedLoc, rootLoc); scan(B, 0, filedIn, new Set());
+  (function walk(arr){ for (const n of arr){ if (n && n.t==='folder'){ if (n.id) ids.add(n.id); walk(n.children||[]); } } })(A);
+  const keepLocal = (name, depth) => !placed.has(name) && (depth > 0 || !filedIn.has(name));
+  const keepIncoming = (name, depth) => !placed.has(name) && !filedLoc.has(name) && (depth > 0 || (!rootLoc.has(name) && !filedIn.has(name)));
+  const folder = (n, children) => ({ t:'folder', id: n.id, name: n.name, collapsed: !!n.collapsed, children });
+  function level(a, b, depth){
+    const out = [], used = new Set();
+    for (const n of a){
+      if (!n) continue;
+      if (n.t==='item'){ if (keepLocal(n.name, depth)) { placed.add(n.name); out.push({ t:'item', name: n.name }); } }
+      else if (n.t==='folder'){
+        const j = b.findIndex((m, i) => m && m.t==='folder' && m.name===n.name && !used.has(i));
+        if (j >= 0) used.add(j);
+        out.push(folder(n, level(n.children||[], j >= 0 ? (b[j].children||[]) : [], depth+1)));
+      }
+    }
+    b.forEach((n, i) => {
+      if (!n || used.has(i)) return;
+      if (n.t==='item'){ if (keepIncoming(n.name, depth)) { placed.add(n.name); out.push({ t:'item', name: n.name }); } }
+      else if (n.t==='folder'){
+        const f = folder(n, level([], n.children||[], depth+1));
+        if (!f.id || ids.has(f.id)) f.id = ftGenId();
+        ids.add(f.id);
+        out.push(f);
+      }
+    });
+    return out;
+  }
+  return { v:1, root: level(A, B, 0) };
+}
 function ftImportTree(key, incoming, replace){
   if (!incoming || !Array.isArray(incoming.root)) return;
   if (replace) { ftWrite(key, { v:1, root: incoming.root }); return; }
-  const existing = ftRead(key), haveItem = new Set(), haveFolder = new Set();
-  (function walk(arr){ for (const n of arr){ if (n.t==='item') haveItem.add(n.name); else if (n.t==='folder'){ haveFolder.add(n.name); walk(n.children||[]); } } })(existing.root);
-  incoming.root.forEach(n => {
-    if (n.t==='item' && !haveItem.has(n.name)) existing.root.push(n);
-    else if (n.t==='folder' && !haveFolder.has(n.name)) existing.root.push(n);
-  });
-  ftWrite(key, existing);
+  ftWrite(key, ftMergeTrees(ftRead(key), incoming));
 }
 function ftDuplicateName(name, exists){
   const m = String(name).match(/^(.*?)\s+(\d+)$/);
@@ -1637,7 +1670,7 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Cloud saves (optional accounts): one shared js/ivrit-saves.js panel per tool inside the AllTools
    modal, so a fresh browser can be brought up to date from one place. Nothing on this page holds a tool's
    state in memory, so every shape may be downloaded here; the folder trees merge through this page's own
-   ftImportTree copy, while a profile or word-list changed in both places is left for the tool that owns
+   ftMergeTrees copy, while a profile or word-list changed in both places is left for the tool that owns
    that merge (a second copy of those rules here would drift from the tool's). ── */
 function openCloudSaves() {
   openIEModal();
@@ -1646,13 +1679,11 @@ function openCloudSaves() {
 }
 function initCloudSaves() {
   if (!window.IvritSaves) return;
-  // ftImportTree is write-through (it merges into the key and returns nothing); reading the key back
-  // hands the module the merged tree — it then writes the same bytes.
-  const treeMerge = key => (local, cloud) => { ftImportTree(key, cloud, false); return ftRead(key); };
+  // ftMergeTrees is pure (the shared block's one merge rule); the module writes the result and tells the page.
   const merges = {
-    Worksheet:  { presetFolders: treeMerge('hebrewBlender_presetsFolders') },
-    FlashCards: { presetFolders: treeMerge('hebrewFlashCards_presetsFolders'), profileFolders: treeMerge('hebrewFlashCards_profilesFolders') },
-    Dashboard:  { presetFolders: treeMerge('hebrewDashboard_presetsFolders'), scheduleFolders: treeMerge('hebrewDashboard_schedulesFolders') }
+    Worksheet:  { presetFolders: ftMergeTrees },
+    FlashCards: { presetFolders: ftMergeTrees, profileFolders: ftMergeTrees },
+    Dashboard:  { presetFolders: ftMergeTrees, scheduleFolders: ftMergeTrees }
   };
   document.querySelectorAll('#cloudSavesSection .ie-cloud-host').forEach(host => {
     const tool = host.getAttribute('data-tool');

@@ -720,9 +720,38 @@
       if (r.state === 'conflict' && !r.safeAction) counts.conflicts++;
       if (r.state === 'synced') counts.synced++;
     });
-    var p = { tool: tool, userId: uid, rows: list, cloudRows: cloudRows, counts: counts };
-    plans[tool] = p;
-    return p;
+    var p = { tool: tool, userId: uid, rows: list, cloudRows: cloudRows, counts: counts, treesDiffer: [] };
+    // A folder tree is never a row, but a layout that differs is work the Sync buttons must offer.
+    var trees = uid ? entries.filter(function (e) { return e.shape === 'tree'; }) : [];
+    return seqMap(trees, function (e) { return treeDiffers(tool, uid, e, cloudRows, list); }).then(function (diffs) {
+      p.treesDiffer = diffs.filter(Boolean);
+      counts.safe += p.treesDiffer.length;
+      plans[tool] = p;
+      return p;
+    });
+  }
+  // The cloud row of a tree entry, if any.
+  function treeRowOf(entry, cloudRows) {
+    var row = null;
+    (cloudRows || []).forEach(function (r) { if (r.kind === entry.kind && r.name === DEFAULT_NAME) row = r; });
+    return row;
+  }
+  function localTree(entry) {
+    var local = readStore(entry);
+    return (local && Array.isArray(local.root) && local.root.length) ? local : null;
+  }
+  // Whether a tree needs the tree pass — resolves to its kind, or null: one side only, the two sides
+  // differ, or the account's copy cannot be compared without loading it. While an item it follows is
+  // still only in the account the tree waits for that download (a safe action of its own).
+  function treeDiffers(tool, uid, entry, cloudRows, rows) {
+    var cloudRow = treeRowOf(entry, cloudRows), local = localTree(entry);
+    if (!local && !cloudRow) return Promise.resolve(null);
+    if (rows.some(function (r) { return r.kind === entry.follows && r.state === 'cloud-only'; })) return Promise.resolve(null);
+    if (!local || !cloudRow) return Promise.resolve(entry.kind);
+    var mem = metaGet(uid, tool, entry.kind, DEFAULT_NAME);
+    var cloudHash = (mem && mem.id === cloudRow.id && mem.u === cloudRow.updated_at) ? mem.h
+                  : (typeof cloudRow.data_hash === 'string' && cloudRow.data_hash.indexOf(currentPrefix()) === 0) ? cloudRow.data_hash : null;
+    return hashItem(entry, local).then(function (h) { return (cloudHash && h === cloudHash) ? null : entry.kind; });
   }
 
   /* ---------- actions (each runs inside the tool's queue) ---------- */
@@ -992,45 +1021,50 @@
   // the tree is left alone on both sides (the page would prune its names); otherwise: a flat local tree
   // takes the cloud's folders wholesale, two real trees go through the page's additive merge, and the
   // result lands on whichever side differs.
+  // Resolves to whether the tree changed on either side. The classify rule, for trees, through the sync
+  // memory: an unchanged side takes the other's tree; two changed sides (or no memory yet) merge through
+  // the page's pure helper — folders by name, an item once, filed beats unfiled, this device's placement
+  // when both file it — and the merge goes up, so the other device then reads "cloud changed" and takes
+  // it: one round, and both hold the same tree.
   function syncTree(tool, entry, p) {
     var uid = ensureUser();
     var cfg = pages[tool] || {};
     var helper = cfg.merges && cfg.merges[entry.kind];
-    var cloudRow = null;
-    (p.cloudRows || []).forEach(function (r) { if (r.kind === entry.kind && r.name === DEFAULT_NAME) cloudRow = r; });
-    var local = readStore(entry);
-    if (local && !(Array.isArray(local.root) && local.root.length)) local = null;
-    if (!local && !cloudRow) return Promise.resolve();
-    if (p.rows.some(function (r) { return r.kind === entry.follows && r.state === 'cloud-only'; })) return Promise.resolve();
-    return (cloudRow ? cloudLoad(cloudRow.id) : Promise.resolve(null)).then(function (full) {
-      if (full && !validateShape(entry, full.data)) throw makeError('shape');
-      if (!full) {
+    var cloudRow = treeRowOf(entry, p.cloudRows), local = localTree(entry);
+    if (!local && !cloudRow) return Promise.resolve(false);
+    if (p.rows.some(function (r) { return r.kind === entry.follows && r.state === 'cloud-only'; })) return Promise.resolve(false);
+    var mem = metaGet(uid, tool, entry.kind, DEFAULT_NAME);
+    var cloudSame = !!(mem && cloudRow && mem.id === cloudRow.id && mem.u === cloudRow.updated_at);
+    return (local ? hashItem(entry, local) : Promise.resolve(null)).then(function (localHash) {
+      var localSame = !!(mem && localHash && localHash === mem.h);
+      if (localSame && cloudSame) return false;   // neither side moved since this device last synced the tree
+      if (!cloudRow) {
         // nothing in the account yet: this device's folders go up as they are
         var g = guardUpload(entry, DEFAULT_NAME, local);
         if (g) throw g;
-        return hashItem(entry, local).then(function (h) {
-          return cloudInsert(entry, DEFAULT_NAME, local, h).then(function (saved) { remember(uid, tool, entry.kind, DEFAULT_NAME, h, saved); });
-        });
+        return cloudInsert(entry, DEFAULT_NAME, local, localHash).then(function (saved) { remember(uid, tool, entry.kind, DEFAULT_NAME, localHash, saved); return true; });
       }
-      var cloud = full.data, merged;
-      if (!local || treeIsFlat(local)) merged = cloud;
-      else if (typeof helper === 'function') { merged = helper(clone(local), clone(cloud)); if (!validateShape(entry, merged)) merged = local; }
-      else { warn('no merge helper for tree kind', entry.kind, '— the cloud folders were not merged'); merged = local; }
-      // The store then holds the merged tree and the tail compares it with the account: the page's own
-      // re-render may still reorder or prune it, and what the store holds afterwards is what goes up.
-      if (local && canonJson(merged) === canonJson(local)) return reconcileStore(tool, uid, entry, DEFAULT_NAME, full);
-      flushPage(tool);
-      return localWrite(entry, DEFAULT_NAME, merged).then(function () { return settleLocalWrite(tool, uid, entry, DEFAULT_NAME, full); });
+      return cloudLoad(cloudRow.id).then(function (full) {
+        if (!validateShape(entry, full.data)) throw makeError('shape');
+        var cloud = full.data, merged;
+        if (!local || localSame || treeIsFlat(local)) merged = cloud;
+        else if (cloudSame) merged = local;
+        else if (typeof helper === 'function') { merged = helper(clone(local), clone(cloud)); if (!validateShape(entry, merged)) merged = local; }
+        else { warn('no merge helper for tree kind', entry.kind, '— the cloud folders were not merged'); merged = local; }
+        // The store then holds the merged tree and the tail compares it with the account: the page's own
+        // re-render may still reorder or prune it, and what the store holds afterwards is what goes up.
+        if (local && canonJson(merged) === canonJson(local)) return reconcileStore(tool, uid, entry, DEFAULT_NAME, full).then(function (r) { return r.pushed; });
+        flushPage(tool);
+        return localWrite(entry, DEFAULT_NAME, merged).then(function () { return settleLocalWrite(tool, uid, entry, DEFAULT_NAME, full); }).then(function () { return true; });
+      });
     });
   }
-  // Every tree of the tool follows its items, after the plan they follow was made.
+  // Every tree of the tool follows its items, after the plan they follow was made; resolves to how many changed.
   function syncTrees(tool, p) {
-    var trees = registryFor(tool).filter(function (e) { return e.shape === 'tree'; });
-    if (!trees.length || !p.userId) return Promise.resolve(p);
-    return seqMap(trees, function (e) { return syncTree(tool, e, p); }).then(function () { return p; });
+    var trees = registryFor(tool).filter(function (e) { return e.shape === 'tree'; }), n = 0;
+    if (!trees.length || !p.userId) return Promise.resolve(0);
+    return seqMap(trees, function (e) { return syncTree(tool, e, p).then(function (changed) { if (changed) n++; }); }).then(function () { return n; });
   }
-  // After any action: list again, then let the trees follow.
-  function afterActions(tool) { return planTool(tool).then(function (p) { return syncTrees(tool, p); }); }
   // Errors that belong to one row — the guard's refusals, a malformed cloud copy, a page with no merge
   // helper, a row that moved between the listing and the action, a page hook that failed — skip that row;
   // the run goes on and names it. Anything else (the connection, the session, the device's storage, the
@@ -1067,7 +1101,7 @@
   // pass is noted beside the result, and the tool's latest plan comes back either way.
   function finishRun(tool, p, sum) {
     return planTool(tool).then(function (p2) {
-      return syncTrees(tool, p2).catch(function (err) { sum.treeError = err; }).then(function () { return p2; });
+      return syncTrees(tool, p2).then(function (n) { if (n) sum.merged = (sum.merged || 0) + n; }, function (err) { sum.treeError = err; }).then(function () { return p2; });
     }, function (err) { if (!sum.error) sum.error = err; return p; });
   }
   function syncNowInner(tool) {
@@ -1111,7 +1145,7 @@
           else if (r.state === 'conflict' && !r.safeAction) { conflicts++; if (isSettingsChoice(r)) settings++; }
         });
         (p.cloudRows || []).forEach(function (r) { if (r.updated_at && (!lastSaved || r.updated_at > lastSaved)) lastSaved = r.updated_at; });
-        return { tool: tool, name: toolName(tool), total: p.rows.length, cloud: (p.cloudRows || []).length, safe: p.counts.safe, up: up, cloudOnly: cloudOnly, conflicts: conflicts, settings: settings, lastSaved: lastSaved };
+        return { tool: tool, name: toolName(tool), total: p.rows.length, cloud: (p.cloudRows || []).length, safe: p.counts.safe, up: up, cloudOnly: cloudOnly, conflicts: conflicts, settings: settings, folders: (p.treesDiffer || []).length, lastSaved: lastSaved };
       });
     });
   }
@@ -1211,6 +1245,7 @@
       '.ivsav-note{margin:6px 0;font-size:0.85rem;overflow-wrap:anywhere;}' +
       '.ivsav-list{list-style:none;margin:0;padding:0;}' +
       '.ivsav-kind{margin-block:10px 4px;font-size:0.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted,#6b6050);}' +
+      '.ivsav-note-row{margin-block:2px 8px;font-size:0.8rem;color:var(--muted,#6b6050);overflow-wrap:anywhere;}' +
       '.ivsav-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:6px 8px;margin-block:3px;border:1px solid var(--border,#c8bfa8);' +
         'border-radius:6px;background:var(--white,#fff);}' +
       '.ivsav-main{flex:1 1 180px;min-inline-size:0;}' +
@@ -1361,13 +1396,23 @@
     if (!p) { status.textContent = t('shared.cloud.listing', 'Loading your cloud saves…'); return; }
     var list = el('ul', 'ivsav-list');
     list.setAttribute('aria-label', t('shared.cloud.list_aria', 'Saved items on this device and in the cloud'));
-    if (!p.rows.length) {
+    var treesDiffer = p.treesDiffer || [];
+    if (!p.rows.length && !treesDiffer.length) {
       root.appendChild(el('p', 'ivsav-note', t('shared.cloud.empty', 'Nothing saved yet. Items you save in this tool will appear here.')));
       return;
+    }
+    // A folder tree that differs is not a row: it is a note under the group of the kind it follows.
+    var treeNote = {};
+    treesDiffer.forEach(function (kind) { var e = entryFor(tool, kind); treeNote[(e && e.follows) || kind] = true; });
+    function noteFor(kind) {
+      if (!treeNote[kind]) return;
+      delete treeNote[kind];
+      list.appendChild(el('li', 'ivsav-note-row', t('shared.cloud.folders_differ', 'Folder layout: different here and in your account — Sync now merges it.')));
     }
     var lastKind = null;
     p.rows.forEach(function (row) {
       if (row.kind !== lastKind) {
+        if (lastKind) noteFor(lastKind);
         lastKind = row.kind;
         // a group header only where a kind can hold many rows; a settings / streak row already reads as its kind
         if (row.entry.shape === 'map' || row.entry.shape === 'mapIn') list.appendChild(el('li', 'ivsav-kind', kindLabel(row.entry)));
@@ -1401,6 +1446,8 @@
       li.appendChild(actions);
       list.appendChild(li);
     });
+    if (lastKind) noteFor(lastKind);
+    Object.keys(treeNote).forEach(noteFor);
     root.appendChild(list);
     if (p.counts.safe === 0 && p.counts.conflicts === 0 && !msg && !isBusy) status.textContent = t('shared.cloud.all_synced', 'Everything is in sync.');
   }
@@ -1571,12 +1618,13 @@
       tools.forEach(function (x) {
         safe += x.safe; cloud += x.cloud;
         if (x.lastSaved && (!lastSaved || x.lastSaved > lastSaved)) lastSaved = x.lastSaved;
-        if (!x.total) return;
+        if (!x.total && !x.folders) return;
         shown++;
         var bits = [];
         if (x.up) bits.push(t('shared.cloud.acct_tool_up', '{n} not in your account yet', { n: x.up }));
         if (x.cloudOnly) bits.push(t('shared.cloud.acct_tool_cloud_only', '{n} only in your account', { n: x.cloudOnly }));
         if (x.conflicts) bits.push(t('shared.cloud.acct_tool_conflicts', '{n} changed in both places', { n: x.conflicts }));
+        if (!bits.length && x.folders) bits.push(t('shared.cloud.acct_tool_folders', 'the folder layout differs'));
         if (!bits.length) bits.push(t('shared.cloud.acct_tool_synced', 'everything is in your account'));
         list.appendChild(el('li', '', x.name + ': ' + bits.join(' · ')));
         up += x.up; cloudOnly += x.cloudOnly;

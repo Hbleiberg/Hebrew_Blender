@@ -28,6 +28,9 @@
  *   8. Row-scoped trouble (a preset too big to upload, a malformed cloud row) is skipped and named while
  *      Sync everything goes on to the dashboard; a dead connection stops the run and names the tools it
  *      never reached.
+ *   9. Folder trees converge: an item filed in the account's tree beats the same item unfiled here; a
+ *      folder move made here is offered by the Sync buttons on its own and goes up; a device that synced
+ *      the earlier layout and did not touch it takes the moved one and pushes nothing back.
  *
  * Run from the repo root:  node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
  * The script starts python3 -m http.server itself (port 8081 by default, so it can run beside the others).
@@ -438,6 +441,63 @@ try {
     check('8: a dead connection stops the run at the Torah Trainer and names the tools not reached', /^Stopped while syncing Torah Trainer: The cloud is unreachable right now\. Try again later\. \d+ of \d+ done so far\. Not checked yet: Trope Tutor, Hebrew Classroom Dashboard\. 2 skipped: Big preset/.test(s2.status) && !d2.presets.includes('Morning'), JSON.stringify({ status: s2.status, presets: d2.presets }));
     check('8: 0 pageerrors after the dead connection', second.errors.length === 0, second.errors.join(' | '));
     await ctx2.close();
+  }
+  // ---- 9. folder trees converge: filed beats unfiled, a move made here goes up by itself, a move made elsewhere comes down ----
+  {
+    const treeOf = (t) => { const out = []; (function walk(arr, path) { arr.forEach(n => { if (n.t === 'item') out.push(path + n.name); else { out.push(path + n.name + '/'); walk(n.children || [], path + n.name + '/'); } }); })(t.root, ''); return out; };
+    const patchesOn = (cl, id) => cl.log.filter(e => e.m === 'PATCH' && (new URLSearchParams(e.search).get('id') || '') === 'eq.' + id).length;
+    const rows = CLOUD_ROWS().map(r => r.kind === 'presetFolders' ? Object.assign({}, r, { data: { v: 1, root: [{ t: 'folder', id: 'f_w1', name: 'Week 1', collapsed: false, children: [{ t: 'item', name: 'Morning' }] }] } }) : r);
+    const cloud = new FakeCloud(rows);
+    const seed = SEED(true);
+    seed.hebrewDashboard_presets = JSON.stringify({ Morning: { headerLang: 'en', showTimer: true } });   // the account's preset, so its row reads Same
+    seed.hebrewDashboard_presetsFolders = JSON.stringify({ v: 1, root: [{ t: 'item', name: 'Morning' }, { t: 'folder', id: 'f_old', name: 'Old', collapsed: false, children: [] }] });
+    const ctx = await openContext(browser, cloud, seed);
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    const localTree = (pg) => pg.evaluate(() => JSON.parse(localStorage.getItem('hebrewDashboard_presetsFolders')));
+    const treeRow = () => cloud.find('presetFolders', 'default');
+    await openAccount(page);
+    await clickAndWait(page, 'sync', 'Sync finished');
+    let tree = await localTree(page);
+    check('9: after the sync "Morning" is filed once, under Week 1, and the unrelated folder is kept', JSON.stringify(treeOf(tree)) === JSON.stringify(['Old/', 'Week 1/', 'Week 1/Morning']), JSON.stringify(treeOf(tree)));
+    check('9: the account holds the same layout after one PATCH of the tree row', JSON.stringify(treeOf(treeRow().data)) === JSON.stringify(treeOf(tree)) && patchesOn(cloud, treeRow().id) === 1, JSON.stringify({ cloud: treeOf(treeRow().data), patches: patchesOn(cloud, treeRow().id) }));
+    await clickAndWait(page, 'use-account', 'now on this device');   // settle the settings row, so the dashboard line can speak about folders alone
+    const synced = { tree: await localTree(page), presets: await page.evaluate(() => localStorage.getItem('hebrewDashboard_presets')), meta: await page.evaluate(() => JSON.parse(localStorage.getItem('ivritSuite_syncMeta'))) };
+    // the teacher moves "Morning" into a new folder here and comes back later
+    await page.evaluate(() => {
+      const t = JSON.parse(localStorage.getItem('hebrewDashboard_presetsFolders'));
+      t.root.find(n => n.t === 'folder' && n.name === 'Week 1').children = [];
+      t.root.push({ t: 'folder', id: 'f_w2', name: 'Week 2', collapsed: false, children: [{ t: 'item', name: 'Morning' }] });
+      localStorage.setItem('hebrewDashboard_presetsFolders', JSON.stringify(t));
+    });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => window.IvritAccount && window.IvritSaves && IvritAccount.status() === 'signed-in', null, { timeout: 25000 });
+    await page.waitForFunction(() => !!document.querySelector('.ivsav-note-row'), null, { timeout: 15000 }).catch(() => {});
+    const note = await page.evaluate(() => (document.querySelector('.ivsav-note-row') || {}).textContent || '');
+    await openAccount(page);
+    let s = await screen(page);
+    check('9: a folder move alone shows the note in the panel and the account line, and enables Sync everything', /Folder layout: different here and in your account/.test(note) && s.sync && s.lines.some(l => /Hebrew Classroom Dashboard: the folder layout differs/.test(l)), JSON.stringify({ note, lines: s.lines, sync: s.sync }));
+    await page.screenshot({ path: path.join(SHOTS, '9-folders-differ.png') });
+    await clickAndWait(page, 'sync', 'Sync finished');
+    s = await screen(page);
+    tree = await localTree(page);
+    check('9: Sync sent the move up ("1 merged", one more PATCH) and the account now files Morning under Week 2', /1 merged/.test(s.status) && patchesOn(cloud, treeRow().id) === 2 && JSON.stringify(treeOf(treeRow().data)) === JSON.stringify(['Old/', 'Week 1/', 'Week 2/', 'Week 2/Morning']) && JSON.stringify(treeOf(tree)) === JSON.stringify(treeOf(treeRow().data)), JSON.stringify({ status: s.status, cloud: treeOf(treeRow().data), local: treeOf(tree) }));
+    check('9: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+    // the other device: it synced the earlier layout (its tree, and its memory of that sync) and has not touched it since
+    const seedB = SEED(true);
+    seedB.hebrewDashboard_presets = synced.presets;
+    seedB.hebrewDashboard_presetsFolders = JSON.stringify(synced.tree);
+    const metaB = JSON.parse(seedB.ivritSuite_syncMeta);
+    metaB.users[UID] = { Dashboard: { presetFolders: synced.meta.users[UID].Dashboard.presetFolders } };
+    seedB.ivritSuite_syncMeta = JSON.stringify(metaB);
+    const ctxB = await openContext(browser, cloud, seedB);
+    const b = await openPage(ctxB, 'classroom_dashboard.html');
+    await openAccount(b.page);
+    await clickAndWait(b.page, 'sync', 'Sync finished');
+    const treeB = await localTree(b.page);
+    check('9: the other device takes the moved layout — Morning under Week 2, Week 1 kept once and empty — and pushes nothing back', JSON.stringify(treeOf(treeB)) === JSON.stringify(['Old/', 'Week 1/', 'Week 2/', 'Week 2/Morning']) && patchesOn(cloud, treeRow().id) === 2, JSON.stringify({ tree: treeOf(treeB), patches: patchesOn(cloud, treeRow().id) }));
+    check('9: 0 pageerrors on the other device', b.errors.length === 0, b.errors.join(' | '));
+    await ctxB.close();
   }
 } finally {
   await browser.close();

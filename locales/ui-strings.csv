@@ -5425,6 +5425,8 @@ shared.cloud.acct_tool_up,{n} not in your account yet,{n} עדיין לא בחש
 shared.cloud.acct_tool_cloud_only,{n} only in your account,{n} רק בחשבון,Account screen per-tool line fragment,shared; account screen; template
 shared.cloud.acct_tool_conflicts,{n} changed in both places,{n} השתנו בשני המקומות,Account screen per-tool line fragment,shared; account screen; template
 shared.cloud.acct_tool_synced,everything is in your account,הכול בחשבון,Account screen per-tool line fragment when nothing is waiting,shared; account screen
+shared.cloud.acct_tool_folders,the folder layout differs,סידור התיקיות שונה,Account screen per-tool line fragment when only that tool's folder tree differs between this device and the account,shared; account screen
+shared.cloud.folders_differ,Folder layout: different here and in your account — Sync now merges it.,סידור התיקיות: שונה כאן ובחשבון — סנכרון עכשיו ממזג אותו.,Cloud-saves panel note under a kind's group when its folder tree differs between this device and the account (a tree is never a row),shared; cloud panel
 shared.cloud.acct_tool_projects.one,{name}: 1 project in your account ({size}),{name}: פרויקט אחד בחשבון ({size}),"Account screen line for Font Maker cloud projects (name = the tool's name, size = e.g. 28 MB)",shared; account screen; plural; template
 shared.cloud.acct_tool_projects.other,{name}: {n} projects in your account ({size}),{name}: {n} פרויקטים בחשבון ({size}),"Account screen line for Font Maker cloud projects (name = the tool's name, size = e.g. 28 MB)",shared; account screen; plural; template
 shared.cloud.size_mb,{mb} MB,{mb} MB,"A size in megabytes (account screen line, Font Maker load menu)",shared; template
