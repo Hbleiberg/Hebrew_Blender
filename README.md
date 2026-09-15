@@ -158,14 +158,17 @@ How it works inside: `docs/reference/accounts-and-cloud.md`.
 - `anonKey` — Project Settings → API Keys → the *publishable* key (`sb_publishable_…`). It is safe to
   commit: it only names the project, and Row Level Security keeps every user's rows private. To
   rotate it: create a new publishable key in the dashboard, paste it into `js/supabase-config.js`, bump
-  `VERSION` in `sw.js`, deploy, then disable the old key.
+  `VERSION` in `sw.js`, deploy, then disable the old key. **Keep `url:` and `anonKey:` at the start of their
+  lines, in single quotes** — the keep-alive workflow reads them out of the file with a plain text search, so
+  double quotes, a template literal or a one-line object break it with "Could not read url / anonKey".
 - `sdk` / `sdkIntegrity` — the pinned `@supabase/supabase-js` build on jsDelivr and its integrity hash
   (the file header explains how to recompute it when upgrading).
 - `enabled: false` switches accounts off site-wide (no chip, no downloads, no network calls).
 
 **One-time dashboard setup** (Authentication section unless noted):
 1. *URL Configuration* — Site URL `https://ivritsuite.com`; Redirect URLs `https://ivritsuite.com/**`,
-   `http://localhost:8080/**`, `http://127.0.0.1:8080/**` (the last two are for local testing).
+   `http://localhost:8080/**`, `http://127.0.0.1:8080/**` (the last two are for local testing). The
+   delete-account Edge Function keeps its own hardcoded copy of this list — changing one means changing both.
 2. *Sign In / Providers → Email* — enabled, sign-ups allowed, Email OTP length 6. Passwords are never
    used; people get an email with a 6-digit code.
 3. *Emails → Templates* — make **both** *Confirm signup* (a person's first email) and *Magic Link*
@@ -223,7 +226,7 @@ once on a device that already has saved items. When a tool's settings differ on 
 account — the usual case on a second device, which wrote its own settings the first time the tool opened —
 the screen offers **Use my account's settings** or **Keep this device's settings** in one step (per-device
 choices such as zoom stay either way). The site-wide preferences — language, theme, keyboard layout, the
-Hebrew font and size, the Font Maker author name, the Dictionary's romanization, speech rate and emoji choices
+Hebrew font and size, the Font Maker author name, the Dictionary's romanization, speech rate, emoji choices and nikkud colours
 — sync as one row, **IvritSuite preferences**, and the language and theme switch live when it lands. Fonts you
 made or uploaded travel too, one row each, so a font chosen on the laptop actually renders on the phone; a
 device already holding the ten My Fonts allows says so rather than dropping one of yours to make room. A preset,
@@ -282,8 +285,13 @@ signing in.
   workflow reads the key from that file and runs once on that push, so the new key is proven at once. The key is public by design; rotating it is
   housekeeping, not an emergency.
 - **Upgrading the pinned SDK:** change the version in the `sdk` URL and recompute `sdkIntegrity` as the file's
-  header shows, bump `VERSION` in `sw.js`, then run the smokes with the new file
-  (`node scripts/smoke-account.mjs --sdk <path>` and the others).
+  header shows, bump `VERSION` in `sw.js`, then run **all seven** smokes with the new file —
+  `smoke-account`, `smoke-saves`, `smoke-tools` (port 8080, one at a time), then `smoke-sync` (8081),
+  `smoke-fontmaker` (8082), `smoke-account-page` (8083) and `smoke-migration` (8084), each as
+  `node scripts/<name>.mjs --sdk <path>`. The last four refuse to run without `--sdk`; the first three
+  quietly skip their signed-in scenarios instead, so a pass without it is only a partial pass. The fixture
+  is `npm pack @supabase/supabase-js@<version>` → `package/dist/umd/supabase.js`, and it must be the
+  version you just pinned. Full table: `docs/reference/ops.md` → *Backend smokes*.
 - **A database change** is a new `db/migrations/NNNN_<name>.sql` applied once; **a change to the delete-account
   function** is a redeploy — both in `db/README.md`. Never a `supabase/` folder (the GitHub integration would open
   a paid preview branch).
