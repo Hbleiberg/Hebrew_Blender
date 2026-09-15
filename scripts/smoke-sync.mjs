@@ -31,6 +31,11 @@
  *   9. Folder trees converge: an item filed in the account's tree beats the same item unfiled here; a
  *      folder move made here is offered by the Sync buttons on its own and goes up; a device that synced
  *      the earlier layout and did not touch it takes the moved one and pushes nothing back.
+ *  10. A preset and a class deleted on this device after a sync read "Deleted on this device": Sync
+ *      everything brings neither back; "Delete from your account too" removes the row and its memory;
+ *      "Bring it back" restores the other one.
+ *  11. "Delete from cloud" on a synced row leaves the local copy reading "Removed from your account":
+ *      Sync uploads nothing; a local edit makes it a normal local-only row that uploads.
  *
  * Run from the repo root:  node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
  * The script starts python3 -m http.server itself (port 8081 by default, so it can run beside the others).
@@ -57,6 +62,8 @@ if (!SDK_BYTES) { console.error('smoke-sync: pass --sdk <path to the pinned supa
 const SHOTS = process.env.SMOKE_SHOTS || path.join(process.env.TMPDIR || '/tmp', 'smoke-sync');
 fs.mkdirSync(SHOTS, { recursive: true });
 const SETTLE_MS = 1500;
+const ONLY = process.env.SMOKE_ONLY ? process.env.SMOKE_ONLY.split(',').map(Number) : null;   // e.g. SMOKE_ONLY=10,11 — the capture (0) always runs
+const want = (...ns) => !ONLY || ns.some(n => ONLY.includes(n));
 const UID = '11111111-1111-4111-8111-111111111111';
 const SESSION = { access_token: 'x', refresh_token: 'y', expires_at: 4102444800, token_type: 'bearer', user: { id: UID, email: 'teacher@example.org' } };
 
@@ -187,6 +194,7 @@ async function openPage(ctx, file) {
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(String(e && e.message || e)));
+  if (process.env.SMOKE_DEBUG) page.on('console', m => console.log('    [page]', m.type(), m.text().slice(0, 300)));
   await page.goto(BASE + '/' + file, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.IvritAccount && window.IvritSaves && IvritAccount.status() === 'signed-in', null, { timeout: 25000 });
   await page.waitForTimeout(SETTLE_MS);
@@ -250,7 +258,7 @@ try {
   const cap = await captureDashboardBlob(browser);
   check('0: captured the dashboard\'s own settings blob and the registry\'s per-device fields', cap.keys > 40 && cap.omit.includes('rosters') && cap.omit.includes('zoomLevel') && !('rosters' in ACCOUNT_SETTINGS) && ACCOUNT_SETTINGS.scheduleEnabled === true, JSON.stringify(cap));
   // ---- 1. the reported flow: signed in on the generator page, the dashboard rows come from the account ----
-  {
+  if (want(1)) {
     const cloud = new FakeCloud(CLOUD_ROWS());
     const ctx = await openContext(browser, cloud, SEED(true));
     const { page, errors } = await openPage(ctx, 'hebrew_blend_generator.html');
@@ -288,7 +296,7 @@ try {
     await ctx.close();
   }
   // ---- 2. the same choice made on the dashboard page repaints it live ------------------------------
-  {
+  if (want(2)) {
     const cloud = new FakeCloud(CLOUD_ROWS());
     const ctx = await openContext(browser, cloud, SEED(true));
     const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
@@ -309,7 +317,7 @@ try {
     await ctx.close();
   }
   // ---- 3. keeping this device's settings pushes the device's projection over the account's row ------
-  {
+  if (want(3)) {
     const cloud = new FakeCloud(CLOUD_ROWS());
     const before = cloud.find('settings', 'default').updated_at;
     const ctx = await openContext(browser, cloud, SEED(true));
@@ -326,7 +334,7 @@ try {
     await ctx.close();
   }
   // ---- 4. a device without a dashboard blob: no block, the settings simply download -----------------
-  {
+  if (want(4)) {
     const cloud = new FakeCloud(CLOUD_ROWS());
     const ctx = await openContext(browser, cloud, SEED(false));
     const { page, errors } = await openPage(ctx, 'hebrew_blend_generator.html');
@@ -341,7 +349,7 @@ try {
     await ctx.close();
   }
   // ---- 5. several classes in the account, this device on its untouched default: the picker switches ----
-  {
+  if (want(5)) {
     const cloud = new FakeCloud(CLOUD_ROWS_MANY());
     const ctx = await openContext(browser, cloud, SEED(true));
     const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
@@ -362,7 +370,7 @@ try {
     await ctx.close();
   }
   // ---- 6. another tab's write while this tab was hidden: the resume-time re-read ---------------------
-  {
+  if (want(6)) {
     const cloud = new FakeCloud(CLOUD_ROWS());
     const ctx = await openContext(browser, cloud, SEED(true));
     const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
@@ -392,7 +400,7 @@ try {
     await ctx.close();
   }
   // ---- 7. a download the page re-applies differently: the page's form goes up and the row reads Same ----
-  {
+  if (want(7)) {
     const rows = CLOUD_ROWS();
     rows.find(r => r.kind === 'settings').data = Object.assign({}, ACCOUNT_SETTINGS, { presetColors: { Morning: '#abc' } });   // the dashboard keeps 6-digit colours only
     const cloud = new FakeCloud(rows);
@@ -410,7 +418,7 @@ try {
     await ctx.close();
   }
   // ---- 8. row-scoped trouble is skipped and named; a dead connection stops the run and names the rest ----
-  {
+  if (want(8)) {
     // a Flash Cards streak row that is not { value } — a download refused by the shape check (the page is not
     // open here, so the module would take the row straight into the store otherwise)
     const rows = () => CLOUD_ROWS().concat([{ tool: 'FlashCards', kind: 'pbStreak', name: 'default', data: 'not an object' }]);
@@ -443,7 +451,7 @@ try {
     await ctx2.close();
   }
   // ---- 9. folder trees converge: filed beats unfiled, a move made here goes up by itself, a move made elsewhere comes down ----
-  {
+  if (want(9)) {
     const treeOf = (t) => { const out = []; (function walk(arr, path) { arr.forEach(n => { if (n.t === 'item') out.push(path + n.name); else { out.push(path + n.name + '/'); walk(n.children || [], path + n.name + '/'); } }); })(t.root, ''); return out; };
     const patchesOn = (cl, id) => cl.log.filter(e => e.m === 'PATCH' && (new URLSearchParams(e.search).get('id') || '') === 'eq.' + id).length;
     const rows = CLOUD_ROWS().map(r => r.kind === 'presetFolders' ? Object.assign({}, r, { data: { v: 1, root: [{ t: 'folder', id: 'f_w1', name: 'Week 1', collapsed: false, children: [{ t: 'item', name: 'Morning' }] }] } }) : r);
@@ -498,6 +506,85 @@ try {
     check('9: the other device takes the moved layout — Morning under Week 2, Week 1 kept once and empty — and pushes nothing back', JSON.stringify(treeOf(treeB)) === JSON.stringify(['Old/', 'Week 1/', 'Week 2/', 'Week 2/Morning']) && patchesOn(cloud, treeRow().id) === 2, JSON.stringify({ tree: treeOf(treeB), patches: patchesOn(cloud, treeRow().id) }));
     check('9: 0 pageerrors on the other device', b.errors.length === 0, b.errors.join(' | '));
     await ctxB.close();
+  }
+  // ---- 10 + 11. deletions ask instead of coming back (the hub: every panel, nothing in memory) ----
+  if (want(10, 11)) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const ctx = await openContext(browser, cloud, SEED(false));
+    const { page, errors } = await openPage(ctx, 'index.html');
+    // The delete buttons confirm() first. A native dialog raised inside a Playwright-driven click stalls the
+    // page (the driver cannot return while the dialog is up), so the page's confirm is replaced by a spy
+    // that records the question and answers yes — the real button handlers still run.
+    await page.evaluate(() => { window.__confirms = []; window.confirm = (m) => { window.__confirms.push(m); return true; }; });
+    const confirms = () => page.evaluate(() => window.__confirms);
+    // The panel sits inside the closed AllTools modal, so the click is dispatched through a locator (no
+    // visibility check) rather than fired from inside page.evaluate — a confirm() raised inside an
+    // evaluate stalls the page until the evaluate returns, which it cannot while the dialog is up.
+    const clickRowButton = async (pg, name, label) => {
+      const at = await pg.evaluate(([name, label]) => {
+        const rows = [...document.querySelectorAll('.ivsav[data-tool="Dashboard"] .ivsav-row')];
+        const i = rows.findIndex(l => l.querySelector('.ivsav-name').textContent === name);
+        const buttons = i >= 0 ? [...rows[i].querySelectorAll('button')].map(x => x.textContent) : null;
+        return { i, j: buttons ? buttons.indexOf(label) : -1, buttons };
+      }, [name, label]);
+      if (at.i < 0 || at.j < 0) return { ok: false, buttons: at.buttons };
+      await pg.locator('.ivsav[data-tool="Dashboard"] .ivsav-row').nth(at.i).locator('button').nth(at.j).dispatchEvent('click');
+      return { ok: true };
+    };
+    // Resolves to the panel's status line once it matches — or, after 30 s, to what it says instead (the check then shows it).
+    const waitStatus = (pg, re) => pg.waitForFunction((re) => new RegExp(re).test((document.querySelector('.ivsav[data-tool="Dashboard"] .ivsav-status') || {}).textContent || ''), re, { timeout: 30000 })
+      .then(() => pg.evaluate(() => (document.querySelector('.ivsav[data-tool="Dashboard"] .ivsav-status') || {}).textContent || ''), () => pg.evaluate(() => 'TIMEOUT; status: ' + ((document.querySelector('.ivsav[data-tool="Dashboard"] .ivsav-status') || {}).textContent || '')));
+    const memoryOf = (pg, kind) => pg.evaluate((kind) => { const m = JSON.parse(localStorage.getItem('ivritSuite_syncMeta') || '{}'); return Object.keys((((m.users || {})['11111111-1111-4111-8111-111111111111'] || {}).Dashboard || {})[kind] || {}).sort(); }, kind);
+    await openAccount(page);
+    await clickAndWait(page, 'sync', 'Sync finished');
+    let d = await dashState(page);
+    check('10: a fresh device took every dashboard row from the account', d.presets.includes('Morning') && d.schedules.includes('2026-2027') && d.rosters.includes('lap_0') && d.enabled === true, JSON.stringify(d));
+    // the teacher deletes the preset and the class on this device
+    await page.evaluate(() => {
+      const p = JSON.parse(localStorage.getItem('hebrewDashboard_presets')); delete p.Morning; localStorage.setItem('hebrewDashboard_presets', JSON.stringify(p));
+      const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings')); delete s.rosters.lap_0; localStorage.setItem('hebrewDashboard_settings', JSON.stringify(s));
+    });
+    let states = await planStates(page);
+    check('10: both read "deleted on this device", not "only in the cloud"', states['preset:Morning'] === 'deleted-here' && states['roster:lap_0'] === 'deleted-here', JSON.stringify(states));
+    const addPreset = (pg, name) => pg.evaluate((name) => { const p = JSON.parse(localStorage.getItem('hebrewDashboard_presets')); p[name] = { headerLang: 'he' }; localStorage.setItem('hebrewDashboard_presets', JSON.stringify(p)); }, name);
+    await addPreset(page, 'Evening');   // something for the run to do, so the Sync button is live
+    await openAccount(page);            // re-opened: the screen lists again after the local changes
+    await clickAndWait(page, 'sync', 'Sync finished');
+    d = await dashState(page);
+    let s = await screen(page);
+    check('10: Sync everything uploaded the new preset, brought neither deleted row back, and the account line says so', !d.presets.includes('Morning') && !d.rosters.includes('lap_0') && /1 uploaded, 0 downloaded/.test(s.status) && s.lines.some(l => /Hebrew Classroom Dashboard: 2 deleted on this device/.test(l)), JSON.stringify({ presets: d.presets, rosters: d.rosters, status: s.status, lines: s.lines }));
+    await page.screenshot({ path: path.join(SHOTS, '10-deleted-here.png') });
+    await page.evaluate(() => window.IvritSaves.closeAccount());
+    const rowState = (pg, name) => pg.evaluate((name) => { const li = [...document.querySelectorAll('.ivsav[data-tool="Dashboard"] .ivsav-row')].find(l => l.querySelector('.ivsav-name').textContent === name); return li ? { state: li.getAttribute('data-state'), badge: li.querySelector('.ivsav-state').textContent, buttons: [...li.querySelectorAll('button')].map(b => b.textContent) } : null; }, name);
+    const before = await rowState(page, 'Morning');
+    check('10: the panel row offers exactly the two choices and no generic delete', before && before.badge === 'Deleted on this device' && JSON.stringify(before.buttons) === JSON.stringify(['Delete from your account too', 'Bring it back', 'Download file']), JSON.stringify(before));
+    const c1 = await clickRowButton(page, 'Morning', 'Delete from your account too');
+    const st1 = await waitStatus(page, 'Deleted "Morning"');
+    const memPresets = await memoryOf(page, 'preset');
+    check('10: "Delete from your account too" asked first, then removed the row and its memory', c1.ok && !cloud.find('preset', 'Morning') && !memPresets.includes('Morning') && /Delete "Morning" from your account too\? It is already gone from this device/.test((await confirms())[0] || ''), JSON.stringify({ c1, st1, rows: cloud.rows.map(r => r.kind + ':' + r.name), memPresets, confirms: await confirms() }));
+    const c2 = await clickRowButton(page, 'lap_0', 'Bring it back');   // gone here, the class list is listed by its row id
+    const st2 = await waitStatus(page, 'Downloaded "lap_0"');
+    states = await planStates(page);
+    d = await dashState(page);
+    check('10: "Bring it back" restored the class and the row reads Same', c2.ok && d.rosters.includes('lap_0') && states['roster:lap_0'] === 'synced', JSON.stringify({ c2, st2, rosters: d.rosters, states }));
+    // 11. Delete from cloud on a synced row: the local copy stays and is not uploaded again by itself
+    const c3 = await clickRowButton(page, '2026-2027', 'Delete from cloud');
+    const st3 = await waitStatus(page, 'Deleted "2026-2027"');
+    states = await planStates(page);
+    const row11 = await rowState(page, '2026-2027');
+    check('11: after "Delete from cloud" (its confirm says the copy here stays) the schedule reads "Removed from your account" with only "Upload again"', c3.ok && !cloud.find('schedule', '2026-2027') && states['schedule:2026-2027'] === 'cloud-deleted' && row11 && row11.badge === 'Removed from your account' && JSON.stringify(row11.buttons) === JSON.stringify(['Upload again']) && /The copy on this device stays and is not uploaded again/.test((await confirms())[1] || ''), JSON.stringify({ c3, st3, states, row11, confirms: await confirms() }));
+    const posts = () => cloud.log.filter(e => e.m === 'POST' && e.body && e.body.kind === 'schedule').length;
+    await addPreset(page, 'Night');   // again something else for the run to do
+    await openAccount(page);
+    await clickAndWait(page, 'sync', 'Sync finished');
+    check('11: Sync everything did not upload it', posts() === 0 && !cloud.find('schedule', '2026-2027') && !!cloud.find('preset', 'Night'), JSON.stringify({ posts: posts(), rows: cloud.rows.map(r => r.kind + ':' + r.name) }));
+    await page.evaluate(() => { const s = JSON.parse(localStorage.getItem('hebrewDashboard_schedules')); s['2026-2027'].week.weekend = true; localStorage.setItem('hebrewDashboard_schedules', JSON.stringify(s)); });
+    states = await planStates(page);
+    await openAccount(page);
+    await clickAndWait(page, 'sync', 'Sync finished');
+    check('11: a local edit made it a normal local-only row again, and Sync uploaded it', states['schedule:2026-2027'] === 'local-only' && posts() === 1 && !!cloud.find('schedule', '2026-2027') && cloud.find('schedule', '2026-2027').data.week.weekend === true, JSON.stringify({ states, posts: posts() }));
+    check('10/11: 0 pageerrors on the hub', errors.length === 0, errors.join(' | '));
+    await ctx.close();
   }
 } finally {
   await browser.close();

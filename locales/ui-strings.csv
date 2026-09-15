@@ -5369,15 +5369,21 @@ shared.cloud.state_synced,Same,זהה,Cloud-saves row state badge: both sides ho
 shared.cloud.state_cloud_changed,Newer in the cloud,חדש יותר בענן,Cloud-saves row state badge,shared; cloud panel
 shared.cloud.state_local_changed,Newer on this device,חדש יותר במכשיר הזה,Cloud-saves row state badge,shared; cloud panel
 shared.cloud.state_conflict,Changed in both places,השתנה בשני המקומות,Cloud-saves row state badge: the person must choose,shared; cloud panel
+shared.cloud.state_deleted_here,Deleted on this device,נמחק במכשיר הזה,Cloud-saves row state badge: a row this device once synced is gone here (deleted or renamed) — the person chooses,shared; cloud panel
+shared.cloud.state_cloud_deleted,Removed from your account,הוסר מהחשבון,"Cloud-saves row state badge: Delete from cloud was pressed and the local copy is unchanged since, so it is not uploaded again by itself",shared; cloud panel
 shared.cloud.upload,Upload,העלאה,Cloud-saves row action,shared; cloud panel
 shared.cloud.download,Download,הורדה,Cloud-saves row action,shared; cloud panel
 shared.cloud.merge,Merge,מיזוג,Cloud-saves row action (lossless merge of progress-style items),shared; cloud panel
 shared.cloud.keep_both,Keep both,לשמור את שניהם,Cloud-saves row action on a conflict: the cloud version is added under a new name,shared; cloud panel
 shared.cloud.use_cloud,Use cloud copy,להשתמש בעותק מהענן,Cloud-saves row action on a conflict,shared; cloud panel
 shared.cloud.keep_mine,Keep mine,לשמור את שלי,Cloud-saves row action on a conflict: this device's version goes up,shared; cloud panel
+shared.cloud.delete_cloud_too,Delete from your account too,למחוק גם מהחשבון,Cloud-saves row action on a row deleted on this device: remove the account copy as well,shared; cloud panel
+shared.cloud.delete_cloud_too_confirm,"Delete ""{name}"" from your account too? It is already gone from this device, so this removes the last copy.","למחוק את ""{name}"" גם מהחשבון? הוא כבר נמחק מהמכשיר הזה, כך שזו מחיקת העותק האחרון.",Cloud-saves confirm before removing the account copy of a row already deleted on this device,shared; cloud panel; template
+shared.cloud.bring_back,Bring it back,להחזיר,Cloud-saves row action on a row deleted on this device: download the account copy again,shared; cloud panel
+shared.cloud.upload_again,Upload again,להעלות שוב,Cloud-saves row action on a row removed from the account: put the local copy back in the account,shared; cloud panel
 shared.cloud.download_json,Download file,הורדת קובץ,Cloud-saves row action: save the cloud copy as an .ivrit file,shared; cloud panel
 shared.cloud.delete,Delete from cloud,מחיקה מהענן,Cloud-saves row action (the local copy stays),shared; cloud panel
-shared.cloud.delete_confirm,"Delete ""{name}"" from the cloud? The copy on this device stays.","למחוק את ""{name}"" מהענן? העותק במכשיר הזה יישאר.",Cloud-saves confirm() before deleting a cloud row,shared; cloud panel; template
+shared.cloud.delete_confirm,"Delete ""{name}"" from your account? The copy on this device stays and is not uploaded again unless you change it or press Upload again.","למחוק את ""{name}"" מהחשבון? העותק במכשיר הזה נשאר ולא יועלה שוב אלא אם תשנו אותו או תלחצו ""להעלות שוב"".",Cloud-saves confirm before deleting a cloud row (the local copy stays; the memory keeps a tombstone so it is not re-uploaded unchanged),shared; cloud panel; template
 shared.cloud.updated,Updated {date},עודכן {date},Cloud-saves row meta: the cloud row's last change,shared; cloud panel; template
 shared.cloud.size_kb,{kb} KB,{kb} KB,A size in kilobytes (under a megabyte),shared; template
 shared.cloud.done_upload,"Uploaded ""{name}"".","""{name}"" הועלה.",Cloud-saves status after an upload,shared; cloud panel; template
@@ -5424,6 +5430,7 @@ shared.cloud.acct_checking,Checking what is on this device and in your account�
 shared.cloud.acct_tool_up,{n} not in your account yet,{n} עדיין לא בחשבון,Account screen per-tool line fragment (after the tool name),shared; account screen; template
 shared.cloud.acct_tool_cloud_only,{n} only in your account,{n} רק בחשבון,Account screen per-tool line fragment,shared; account screen; template
 shared.cloud.acct_tool_conflicts,{n} changed in both places,{n} השתנו בשני המקומות,Account screen per-tool line fragment,shared; account screen; template
+shared.cloud.acct_tool_deleted,{n} deleted on this device — choose in the Cloud saves panel,{n} נמחקו במכשיר הזה — בחרו בלוח השמירות בענן,Account screen per-tool line fragment: rows this device deleted that are still in the account,shared; account screen; template
 shared.cloud.acct_tool_synced,everything is in your account,הכול בחשבון,Account screen per-tool line fragment when nothing is waiting,shared; account screen
 shared.cloud.acct_tool_folders,the folder layout differs,סידור התיקיות שונה,Account screen per-tool line fragment when only that tool's folder tree differs between this device and the account,shared; account screen
 shared.cloud.folders_differ,Folder layout: different here and in your account — Sync now merges it.,סידור התיקיות: שונה כאן ובחשבון — סנכרון עכשיו ממזג אותו.,Cloud-saves panel note under a kind's group when its folder tree differs between this device and the account (a tree is never a row),shared; cloud panel

@@ -215,19 +215,37 @@ had after the last successful upload/download plus the row id and its `updated_a
 | L = M.h, cloud moved (`updated_at` ≠ M.u and C ≠ M.h) | Newer in the cloud | Download |
 | cloud unchanged (`updated_at` = M.u or C = M.h), L ≠ M.h | Newer on this device | Upload |
 | both moved, or no memory yet and L ≠ C | Changed in both places | none for `item`/`assign`; Merge for `deepMax`/`max`/`page` |
+| cloud only, and M knows that very row (M.id = the row, M.u = its `updated_at` or M.h = C) — it was synced here once and is gone here | Deleted on this device | none: **Delete from your account too** / **Bring it back** |
+| local only, and M carries the tombstone *Delete from cloud* left with M.h = L | Removed from your account | none: **Upload again** (a local change makes it a normal local-only row) |
 
-Conflict buttons: `item` → **Keep both** (the cloud version is written here as `name (cloud copy)`, read
-back, then the local `name` goes over the cloud row, then the copy goes up — one click, nothing lost,
-converges), *Use cloud copy*, *Keep mine*; `assign` → *Use cloud copy*, *Keep mine*; the rest → *Merge*.
+Conflict buttons: `item` → **Keep both** (the cloud version is inserted in the account as `name (cloud
+copy)` first, then the local `name` goes over the cloud row with the conditional update — a refusal there
+removes the copy just made — then the copy is written here and read back: one click, nothing lost,
+converges), *Use cloud copy*, *Keep mine*; `assign` → *Use cloud copy*, *Keep mine* (this device's fields
+win, a field only the account had survives); the rest → *Merge*. A deletion is never automatic: *Delete
+from cloud* leaves a tombstone in the memory so the untouched local copy is not uploaded again by itself,
+and a row this device synced once and then deleted or renamed reads *Deleted on this device* until the
+person chooses (Erase All Settings removes the memory, so an erased device downloads everything afresh).
 A `page` merge whose helper the current page did not supply (the hub) shows no button at all: the row
 stays listed as *Changed in both places* and the tool that owns the merge resolves it.
 Cloud writes to an existing row are **conditional** (`update … eq('updated_at', listed)`): zero rows back
 means another device wrote first, the list is refreshed and the person chooses again. New rows are
-`insert`s (`23505` = created meanwhile). **Sync now** runs every safe action in order, stops at the first
-error (re-running resumes) and leaves conflicts listed — except rows the client-side guard refuses (too
-big, an impossible name), which are skipped, counted and reported so one oversized item cannot block a
-sync forever. Nothing runs on a timer. Before any local write the module calls `flush()`, after it
-`onLocalChanged()`, and downloads add the "reload other tabs" hint. Two more guards against a page's
+`insert`s (`23505` = created meanwhile). **Sync now** runs every safe action in order and leaves conflicts
+and deletions listed. A row's own trouble — too big, an impossible name, characters the cloud cannot
+store, a malformed cloud copy, no merge helper on this page, moved between the listing and the action,
+a page hook that failed — skips that row, and the finishing line names each skipped row with its reason;
+only an error every row would share (the connection, the session, the device's storage, the server) stops
+the tool, and re-running resumes. In a bulk run on the account screen a stopped tool ends the run only
+when its error was the connection or the session; the stop line names the tool, the counts so far and
+the tools not reached, and each stopped tool's panel carries its own stop line. Nothing runs on a timer.
+Every local write the module makes ends the same way (`settleLocalWrite`): the page's `onLocalChanged()`
+(a hook that throws fails the action with `hook`, nothing remembered), then the page's `flush()`, then
+the store is re-read and compared with the account — equal, the cloud row is remembered; different (the
+page re-applied the value its own way), the store's projection is put in the account with the
+conditional update and *that* row is remembered. Remembering the store's hash as the cloud's would hide a
+lossy re-apply behind "Same"; pushing makes both sides hold the page's normalized form. A merge is checked
+against the account's limits before anything is written on either side. Downloads add the "reload other
+tabs" hint. Two more guards against a page's
 in-memory copy: a listing calls `flush()` first when signed in (a pending debounced write would otherwise
 land between the listing and the first action and fail it as "changed"), and every module write stamps
 `lastWrite` and `written[tool][kind]` into `ivritSuite_syncMeta`: any *other* open tab of that tool

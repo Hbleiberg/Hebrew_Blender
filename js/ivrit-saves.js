@@ -605,9 +605,13 @@
   // local / cloud: { hash } or null (cloud also carries updatedAt); memory: what this device last synced
   // for the item, or null. The row's updated_at matching the memory is what says "the cloud copy is
   // the one I synced" — the hash in `data_hash` is only a shortcut.
+  // Two derived states never act on their own: a cloud-only row this device once synced (the memory knows
+  // that very row) was deleted or renamed here — `deleted-here`, the person chooses; a local-only row
+  // whose memory carries the tombstone "Delete from cloud" left, with the same hash, is `cloud-deleted`
+  // and is not uploaded again until it changes or the person asks.
   function classify(local, cloud, memory) {
-    if (local && !cloud) return 'local-only';
-    if (!local && cloud) return 'cloud-only';
+    if (local && !cloud) return (memory && memory.deletedCloud && memory.h === local.hash) ? 'cloud-deleted' : 'local-only';
+    if (!local && cloud) return (memory && memory.id === cloud.id && (memory.u === cloud.updatedAt || memory.h === cloud.hash)) ? 'deleted-here' : 'cloud-only';
     if (!local && !cloud) return 'none';
     if (local.hash === cloud.hash) return 'synced';
     if (memory) {
@@ -626,6 +630,8 @@
     return null;
   }
   function choicesFor(r) {
+    if (r.state === 'deleted-here') return r.downloadable ? ['deleteCloud', 'download'] : ['deleteCloud'];
+    if (r.state === 'cloud-deleted') return ['upload'];
     if (r.state !== 'conflict') return r.safeAction ? [r.safeAction] : [];
     var m = r.entry.merge;
     if (m === 'item') return r.downloadable ? ['keepBoth', 'useCloud', 'keepMine'] : ['keepMine'];
@@ -714,11 +720,12 @@
       var d = (kindOrder[a.kind] || 0) - (kindOrder[b.kind] || 0);
       return d || String(a.label).localeCompare(String(b.label));
     });
-    var counts = { safe: 0, conflicts: 0, synced: 0 };
+    var counts = { safe: 0, conflicts: 0, synced: 0, deleted: 0 };
     list.forEach(function (r) {
       if (r.safeAction) counts.safe++;
       if (r.state === 'conflict' && !r.safeAction) counts.conflicts++;
       if (r.state === 'synced') counts.synced++;
+      if (r.state === 'deleted-here') counts.deleted++;
     });
     var p = { tool: tool, userId: uid, rows: list, cloudRows: cloudRows, counts: counts, treesDiffer: [] };
     // A folder tree is never a row, but a layout that differs is work the Sync buttons must offer.
@@ -951,9 +958,18 @@
       });
     });
   }
+  // "Delete from cloud" leaves a tombstone in the memory when a copy stays on this device, so that copy
+  // reads "Removed from your account" and is not uploaded again unless it changes or the person asks.
   function actDelete(tool, row) {
     var uid = ensureUser();
-    return cloudRemove(row.cloud.id).then(function () { if (stillMe(uid)) metaDelete(uid, tool, row.kind, row.name); return { action: 'delete', row: row }; });
+    flushPage(tool);
+    var it = localItem(row.entry, row.name);
+    return (it ? hashItem(row.entry, it.value) : Promise.resolve(null)).then(function (h) {
+      return cloudRemove(row.cloud.id).then(function () {
+        if (stillMe(uid)) { if (h) metaSet(uid, tool, row.kind, row.name, { deletedCloud: true, h: h, at: now() }); else metaDelete(uid, tool, row.kind, row.name); }
+        return { action: 'delete', row: row };
+      });
+    });
   }
   // An .ivrit file of the cloud copy: an AllTools-shaped bundle when the entry names its bundle key.
   function ivritFile(entry, name, data) {
@@ -1009,7 +1025,7 @@
       if (action === 'merge') return actMerge(tool, row);
       if (action === 'useCloud') return actUseCloud(tool, row);
       if (action === 'keepBoth') return actKeepBoth(tool, row);
-      if (action === 'delete') return actDelete(tool, row);
+      if (action === 'delete' || action === 'deleteCloud') return actDelete(tool, row);
       if (action === 'file') return actDownloadFile(tool, row);
       throw makeError('bad_action', 'IvritSaves: unknown action ' + action);
     });
@@ -1138,14 +1154,15 @@
     return seqMap(toolsWithEntries(), function (tool) {
       return enqueue(tool, function () { return planTool(tool); }).then(function (p) {
         render(tool);
-        var up = 0, cloudOnly = 0, conflicts = 0, settings = 0, lastSaved = null;
+        var up = 0, cloudOnly = 0, conflicts = 0, settings = 0, deleted = 0, lastSaved = null;
         p.rows.forEach(function (r) {
           if (r.safeAction === 'upload') up++;
           else if (r.state === 'cloud-only') cloudOnly++;
+          else if (r.state === 'deleted-here') deleted++;
           else if (r.state === 'conflict' && !r.safeAction) { conflicts++; if (isSettingsChoice(r)) settings++; }
         });
         (p.cloudRows || []).forEach(function (r) { if (r.updated_at && (!lastSaved || r.updated_at > lastSaved)) lastSaved = r.updated_at; });
-        return { tool: tool, name: toolName(tool), total: p.rows.length, cloud: (p.cloudRows || []).length, safe: p.counts.safe, up: up, cloudOnly: cloudOnly, conflicts: conflicts, settings: settings, folders: (p.treesDiffer || []).length, lastSaved: lastSaved };
+        return { tool: tool, name: toolName(tool), total: p.rows.length, cloud: (p.cloudRows || []).length, safe: p.counts.safe, up: up, cloudOnly: cloudOnly, conflicts: conflicts, settings: settings, deleted: deleted, folders: (p.treesDiffer || []).length, lastSaved: lastSaved };
       });
     });
   }
@@ -1256,6 +1273,8 @@
       '.ivsav-row[data-state="conflict"] .ivsav-state{background:#fde7e7;color:#8a1c1c;}' +
       '.ivsav-row[data-state="cloud-changed"] .ivsav-state,.ivsav-row[data-state="cloud-only"] .ivsav-state{background:#e3ecfa;color:#1a3d7a;}' +
       '.ivsav-row[data-state="local-changed"] .ivsav-state,.ivsav-row[data-state="local-only"] .ivsav-state{background:#fbf0d9;color:#6b4a00;}' +
+      '.ivsav-row[data-state="deleted-here"] .ivsav-state,.ivsav-row[data-state="cloud-deleted"] .ivsav-state{background:#ececec;color:#555;}' +
+      'body.dark .ivsav-row[data-state="deleted-here"] .ivsav-state,body.dark .ivsav-row[data-state="cloud-deleted"] .ivsav-state{background:#3a3a3a;color:#ddd;}' +
       'body.dark .ivsav-row[data-state="synced"] .ivsav-state{background:#1f4d2a;color:#c9f0cf;}' +
       'body.dark .ivsav-row[data-state="conflict"] .ivsav-state{background:#5a2323;color:#ffd6d6;}' +
       'body.dark .ivsav-row[data-state="cloud-changed"] .ivsav-state,body.dark .ivsav-row[data-state="cloud-only"] .ivsav-state{background:#23385c;color:#d6e4ff;}' +
@@ -1303,11 +1322,14 @@
     if (state === 'synced') return t('shared.cloud.state_synced', 'Same');
     if (state === 'cloud-changed') return t('shared.cloud.state_cloud_changed', 'Newer in the cloud');
     if (state === 'local-changed') return t('shared.cloud.state_local_changed', 'Newer on this device');
+    if (state === 'deleted-here') return t('shared.cloud.state_deleted_here', 'Deleted on this device');
+    if (state === 'cloud-deleted') return t('shared.cloud.state_cloud_deleted', 'Removed from your account');
     return t('shared.cloud.state_conflict', 'Changed in both places');
   }
-  function actionText(action) {
-    if (action === 'upload') return t('shared.cloud.upload', 'Upload');
-    if (action === 'download') return t('shared.cloud.download', 'Download');
+  function actionText(action, state) {
+    if (action === 'upload') return state === 'cloud-deleted' ? t('shared.cloud.upload_again', 'Upload again') : t('shared.cloud.upload', 'Upload');
+    if (action === 'download') return state === 'deleted-here' ? t('shared.cloud.bring_back', 'Bring it back') : t('shared.cloud.download', 'Download');
+    if (action === 'deleteCloud') return t('shared.cloud.delete_cloud_too', 'Delete from your account too');
     if (action === 'merge') return t('shared.cloud.merge', 'Merge');
     if (action === 'keepBoth') return t('shared.cloud.keep_both', 'Keep both');
     if (action === 'useCloud') return t('shared.cloud.use_cloud', 'Use cloud copy');
@@ -1429,19 +1451,25 @@
       li.appendChild(el('div', 'ivsav-meta', metaBits.join(' · ')));
       var actions = el('div', 'ivsav-actions');
       row.choices.forEach(function (action) {
-        var b = button(actionText(action), action === row.safeAction || action === 'keepBoth' ? 'ivsav-primary' : '', function () { act(tool, action, row).catch(noop); });
+        var b = button(actionText(action, row.state), action === row.safeAction || action === 'keepBoth' ? 'ivsav-primary' : '', function () {
+          if (action === 'deleteCloud' && !window.confirm(t('shared.cloud.delete_cloud_too_confirm', 'Delete "{name}" from your account too? It is already gone from this device, so this removes the last copy.', { name: row.label }))) return;
+          act(tool, action, row).catch(noop);
+        });
         if (isBusy) b.setAttribute('aria-disabled', 'true');
         actions.appendChild(b);
       });
       if (row.cloud) {
         var fileBtn = button(t('shared.cloud.download_json', 'Download file'), '', function () { act(tool, 'file', row).catch(noop); });
-        var delBtn = button(t('shared.cloud.delete', 'Delete from cloud'), '', function () {
-          if (!window.confirm(t('shared.cloud.delete_confirm', 'Delete "{name}" from the cloud? The copy on this device stays.', { name: row.label }))) return;
-          act(tool, 'delete', row).catch(noop);
-        });
-        if (isBusy) { fileBtn.setAttribute('aria-disabled', 'true'); delBtn.setAttribute('aria-disabled', 'true'); }
+        if (isBusy) fileBtn.setAttribute('aria-disabled', 'true');
         actions.appendChild(fileBtn);
-        actions.appendChild(delBtn);
+        if (row.state !== 'deleted-here') {   // that row's own choice button is the delete
+          var delBtn = button(t('shared.cloud.delete', 'Delete from cloud'), '', function () {
+            if (!window.confirm(t('shared.cloud.delete_confirm', 'Delete "{name}" from your account? The copy on this device stays and is not uploaded again unless you change it or press Upload again.', { name: row.label }))) return;
+            act(tool, 'delete', row).catch(noop);
+          });
+          if (isBusy) delBtn.setAttribute('aria-disabled', 'true');
+          actions.appendChild(delBtn);
+        }
       }
       li.appendChild(actions);
       list.appendChild(li);
@@ -1449,7 +1477,7 @@
     if (lastKind) noteFor(lastKind);
     Object.keys(treeNote).forEach(noteFor);
     root.appendChild(list);
-    if (p.counts.safe === 0 && p.counts.conflicts === 0 && !msg && !isBusy) status.textContent = t('shared.cloud.all_synced', 'Everything is in sync.');
+    if (p.counts.safe === 0 && p.counts.conflicts === 0 && !p.counts.deleted && !msg && !isBusy) status.textContent = t('shared.cloud.all_synced', 'Everything is in sync.');
   }
   // One row action, from a panel button or a page's own control: resolves with { action, row, copy? },
   // rejects with the mapped error after the status line has shown it (a "changed meanwhile" re-lists first).
@@ -1624,6 +1652,7 @@
         if (x.up) bits.push(t('shared.cloud.acct_tool_up', '{n} not in your account yet', { n: x.up }));
         if (x.cloudOnly) bits.push(t('shared.cloud.acct_tool_cloud_only', '{n} only in your account', { n: x.cloudOnly }));
         if (x.conflicts) bits.push(t('shared.cloud.acct_tool_conflicts', '{n} changed in both places', { n: x.conflicts }));
+        if (x.deleted) bits.push(t('shared.cloud.acct_tool_deleted', '{n} deleted on this device — choose in the Cloud saves panel', { n: x.deleted }));
         if (!bits.length && x.folders) bits.push(t('shared.cloud.acct_tool_folders', 'the folder layout differs'));
         if (!bits.length) bits.push(t('shared.cloud.acct_tool_synced', 'everything is in your account'));
         list.appendChild(el('li', '', x.name + ': ' + bits.join(' · ')));
@@ -1855,7 +1884,8 @@
     openAccount: function (opts) { openAccount(opts); },
     closeAccount: closeAccount,
     refresh: refresh,
-    plan: function (tool) { return enqueue(tool, function () { return planTool(tool); }); },
+    // A listing for the caller's own use; the panel is re-rendered afterwards (the queue renders it busy while it runs).
+    plan: function (tool) { return enqueue(tool, function () { return planTool(tool); }).then(function (p) { render(tool); return p; }, function (e) { render(tool); throw e; }); },
     syncNow: syncNow,
     act: act,
     registry: function () { return IVRIT_SYNC_REGISTRY.concat(extraEntries).map(function (e) { return safeAssign({}, e); }); },
