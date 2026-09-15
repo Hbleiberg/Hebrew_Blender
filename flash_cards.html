@@ -984,8 +984,11 @@ body.dark .lc-replay { color: var(--gold-light); }
   display: flex; align-items: center; justify-content: center; text-align: center;
   transition: border-color 0.15s, background 0.15s, transform 0.1s;
 }
-.lc-tile:hover  { border-color: var(--gold); }
-.lc-tile:active { transform: scale(0.97); }
+/* Once the student answers, every tile is disabled — so the hover ring and the press dip are guarded the
+   way .ladder-row below guards its own, or a locked tile keeps lighting up and dipping under the cursor
+   and still feels clickable while the cursor already says it isn't. */
+.lc-tile:hover:not(:disabled)  { border-color: var(--gold); }
+.lc-tile:active:not(:disabled) { transform: scale(0.97); }
 .lc-tile:disabled { cursor: default; }
 .lc-tile.good { background: var(--good-soft); border-color: var(--good); }
 .lc-tile.bad  { background: var(--bad-soft);  border-color: var(--bad); }
@@ -3334,7 +3337,12 @@ function bindTileA11y(tile) {
    ArrowLeft is the next tile in DOM order), Home/End jump to the ends. Enter/Space still toggle via
    bindTileA11y. The grid element persists across re-renders, so its listeners are bound once. */
 function roveTileGrid(container, tileSel) {
-  const tiles = () => [...container.querySelectorAll(tileSel)].filter(t => t.offsetParent !== null);
+  // A grid built inside a collapsed panel or a hidden section has no VISIBLE tiles yet, and an empty
+  // list made this bail before it set a single tabindex — leaving that grid one Tab stop per tile until
+  // something happened to rebuild it while open. Fall back to all tiles so the roving index is seeded at
+  // build time either way; once the grid is on screen the visible set is what the arrow keys walk.
+  const tiles = () => { const all = [...container.querySelectorAll(tileSel)];
+                        const vis = all.filter(t => t.offsetParent !== null); return vis.length ? vis : all; };
   const setCurrent = cur => tiles().forEach(t => t.setAttribute('tabindex', t === cur ? '0' : '-1'));
   const all = tiles();
   if (!all.length) return;
@@ -3948,8 +3956,10 @@ function initColorTiles() {
       _retireStartNote('flashcards.start.err_select_color', selectedColors.size > 0);
       saveSettings();
     });
+    bindTileA11y(tile);
     grid.appendChild(tile);
   });
+  roveTileGrid(grid, '.color-tile');
 }
 
 function setOtherMode(on) {

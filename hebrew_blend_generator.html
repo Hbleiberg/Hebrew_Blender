@@ -429,6 +429,13 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
      Centre the slot and give the select the row's own 35 (pattern row-siblings-with-mismatched-heights, S362). */
   header [data-i18n-switcher] { align-self: center; }
   header .i18n-switch select.i18n-select { min-height: 35px; }
+  /* The account chip mounts immediately after that switcher slot and carries the same
+     align-self:stretch (js/ivrit-account.js), so it stood 41 beside the 35px buttons for exactly
+     the reason the switcher did — the stretch is right on every other page, where the chip sits in
+     a dedicated .hright row whose line IS the control row. Same two-line treatment, scoped to this
+     header so the shared module is left alone (pattern row-siblings-with-mismatched-heights). */
+  header > .ivacct { align-self: center; }
+  header > .ivacct .ivacct-btn { min-height: 35px; }
   /* i18n / RTL utilities — directional glyphs mirror under RTL; bidi-isolate protects number/Latin readouts */
   .dir-arrow { display: inline-block; }
   [dir="rtl"] .dir-arrow { transform: scaleX(-1); }
@@ -4457,7 +4464,12 @@ function bindTileA11y(tile) {
    direction (the grid is direction:rtl, so ArrowLeft is the next tile in DOM order), Home/End jump to
    the ends. Enter/Space still toggle via bindTileA11y. Listeners bind once per grid element. */
 function roveTileGrid(container, tileSel) {
-  const tiles = () => [...container.querySelectorAll(tileSel)].filter(t => t.offsetParent !== null);
+  // A grid built inside a collapsed panel or a hidden section has no VISIBLE tiles yet, and an empty
+  // list made this bail before it set a single tabindex — leaving that grid one Tab stop per tile until
+  // something happened to rebuild it while open. Fall back to all tiles so the roving index is seeded at
+  // build time either way; once the grid is on screen the visible set is what the arrow keys walk.
+  const tiles = () => { const all = [...container.querySelectorAll(tileSel)];
+                        const vis = all.filter(t => t.offsetParent !== null); return vis.length ? vis : all; };
   const setCurrent = cur => tiles().forEach(t => t.setAttribute('tabindex', t === cur ? '0' : '-1'));
   const all = tiles();
   if (!all.length) return;
@@ -8886,6 +8898,7 @@ function initLockGrids() {
       bindTileA11y(div);
       grid.appendChild(div);
     });
+    roveTileGrid(grid, '.lock-letter-tile');
   });
 }
 
@@ -11358,6 +11371,7 @@ function initRwLetterGrid() {
       grid.appendChild(div);
     });
   });
+  roveTileGrid(grid, '.rw-letter-tile');
 }
 
 function toggleRwLetter(heb, el) {
@@ -13592,6 +13606,10 @@ function restoreLastSetup() {
 // the pagehide save below from writing the current (non-default) state straight back.
 function startFreshSetup() {
   _lastSetupRestoring = true;
+  // A deliberate reset: the module forgets what this device last synced, so the account reads the
+  // remembered setup as "only in the cloud" (offering Download) instead of "deleted on this device"
+  // — which would invite the teacher to delete the setup their other device still has.
+  if (window.IvritSaves && typeof IvritSaves.forgetRow === 'function') IvritSaves.forgetRow('Worksheet', 'lastState');
   try { localStorage.removeItem(LAST_SETUP_KEY); } catch (e) {}
   location.replace(location.pathname);
 }

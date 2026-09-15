@@ -475,7 +475,7 @@ body.dark .tu-mcell { background:var(--navy-deep); }
   font-weight:700; cursor:pointer; font-size:0.82rem; transition:all 0.15s;
 }
 .btn:hover { background:var(--gold-light); border-color:var(--gold-light); }
-.btn[aria-disabled="true"] { opacity:0.5; cursor:not-allowed; }
+.btn[aria-disabled="true"], .btn:disabled { opacity:0.5; cursor:not-allowed; }
 .btn-lg { padding:10px 22px; font-size:0.95rem; }
 /* 30px floor — the suite's ratified touch-target size (S102, first applied in flash_cards.html;
    WCAG 2.5.8 asks 24px). Padding alone left these at exactly 24px. */
@@ -484,6 +484,17 @@ body.dark .tu-mcell { background:var(--navy-deep); }
 .btn-secondary:hover { background:var(--warm-gray); border-color:var(--muted); }
 body.dark .btn-secondary { color:var(--text); }
 body.dark .btn-secondary:hover { background:#2a3349; }
+/* A locked .btn keeps its resting colour under the cursor. Two carriers, two idioms:
+   #drillStartBtn (.btn-lg) takes aria-disabled when the index will not load, #tuRetryBtn
+   (.btn-xs .btn-secondary) takes native disabled while a retry is in flight — so both
+   selectors are listed throughout. Specificity IS the fix: each guard is (0,3,0) against
+   the (0,2,0) :hover it cancels; the variant guard follows the base one so it wins the
+   tie on its own rest colour; and dark needs its own restate because
+   body.dark .btn-secondary:hover is (0,3,1) and would outrank a (0,3,0) guard.
+   --gold and --border are themed, so one restate each covers both themes. */
+.btn[aria-disabled="true"]:hover, .btn:disabled:hover { background:var(--gold); border-color:var(--gold); }
+.btn-secondary[aria-disabled="true"]:hover, .btn-secondary:disabled:hover { background:transparent; border-color:var(--border); }
+body.dark .btn-secondary[aria-disabled="true"]:hover, body.dark .btn-secondary:disabled:hover { background:transparent; }
 
 /* ───── Settings drawer (house pattern) ───── */
 .settings-backdrop {
@@ -792,6 +803,15 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      BOTH themes, and in dark mode the family headings sank into the .tu-view plate. Paper gets
      white plates whichever way the dialog is set. */
   header, .tu-view, footer { background:#fff !important; }
+  /* The plate's own drop shadow rides the same switch and the rule above does not reach it:
+     .tu-view draws with var(--shadow-sm), which is rgba(26,39,68,.05) on the light theme and
+     rgba(0,0,0,.4) on the dark one — so a dark-source print with background graphics on put the
+     re-lit white card inside a heavy grey frame, the full height of the chart. Reset it here,
+     beside the background it belongs to, rather than with a blanket `* { box-shadow:none }`:
+     .tu-mcell.mastered marks a learned motif with an inset gold ring drawn the same way, and
+     that ring is chart content. Pattern dark-print-shadow-slab (the dashboard already resets
+     .dash-col's). */
+  .tu-view { box-shadow:none; }
   body.dark .mark-hit { color:#8a6216; }
   /* These slabs only surface when the teacher turns background graphics ON to get the card
      rules; then they print as solid blocks of ink. */

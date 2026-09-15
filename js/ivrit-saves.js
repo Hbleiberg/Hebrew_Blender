@@ -1513,8 +1513,10 @@
       '.ivsav-title{font-weight:700;flex:1 1 auto;}' +
       '.ivsav-btn{padding:5px 10px;border:1px solid var(--border,#c8bfa8);border-radius:6px;background:var(--white,#fff);color:inherit;' +
         'font-family:inherit;font-size:0.8rem;line-height:1.3;cursor:pointer;}' +
-      '.ivsav-btn:hover{background:var(--warm-gray,#e8e0d0);}' +
-      'body.dark .ivsav-btn:hover{background:#2a3349;}' +
+      // Every .ivsav-btn[data-act] is aria-disabled while a sync is in flight; the hover is guarded to
+      // match the dimming below, so a locked row does not keep offering a click mid-upload.
+      '.ivsav-btn:hover:not([aria-disabled="true"]){background:var(--warm-gray,#e8e0d0);}' +
+      'body.dark .ivsav-btn:hover:not([aria-disabled="true"]){background:#2a3349;}' +
       '.ivsav-btn:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:1px;}' +
       '.ivsav-btn[aria-disabled="true"]{opacity:.55;cursor:default;}' +
       '.ivsav-btn.ivsav-primary{border-color:var(--gold,#c9922a);font-weight:600;}' +
