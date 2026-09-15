@@ -13592,6 +13592,10 @@ function restoreLastSetup() {
 // the pagehide save below from writing the current (non-default) state straight back.
 function startFreshSetup() {
   _lastSetupRestoring = true;
+  // A deliberate reset: the module forgets what this device last synced, so the account reads the
+  // remembered setup as "only in the cloud" (offering Download) instead of "deleted on this device"
+  // — which would invite the teacher to delete the setup their other device still has.
+  if (window.IvritSaves && typeof IvritSaves.forgetRow === 'function') IvritSaves.forgetRow('Worksheet', 'lastState');
   try { localStorage.removeItem(LAST_SETUP_KEY); } catch (e) {}
   location.replace(location.pathname);
 }
