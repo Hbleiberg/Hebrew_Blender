@@ -134,7 +134,7 @@
     { tool: 'Dashboard', kind: 'settings', lsKey: 'hebrewDashboard_settings', shape: 'single', merge: 'assign',
       omit: ['rosters', 'activeRosterId', 'pickerSessions', '_geoCoords', '*Collapsed', 'panelLayout', 'videoLayout', 'zoomLevel', 'hideZoomBar', 'keepAwake', 'lockPanelWidths', 'showTextSizeOptions'],
       ivritKey: 'dashboardSettings', label: 'shared.cloud.kind_settings' },
-    { tool: 'Dashboard', kind: 'roster', lsKey: 'hebrewDashboard_settings', shape: 'mapIn', path: 'rosters', nameField: 'name', merge: 'page', label: 'shared.cloud.kind_roster' }
+    { tool: 'Dashboard', kind: 'roster', lsKey: 'hebrewDashboard_settings', shape: 'mapIn', path: 'rosters', nameField: 'name', merge: 'page', ivritKey: 'dashboardRosters', label: 'shared.cloud.kind_roster' }
   ];
   var extraEntries = [];   // entries a page registered through attach({ entries }) — the test harness
 
@@ -503,7 +503,7 @@
     var all = [];
     function page(from) {
       return withClient(function (c) {
-        return c.from('saves').select('id, kind, name, data').eq('tool', tool).order('kind').order('name').order('id').range(from, from + PAGE_SIZE - 1);
+        return c.from('saves').select('id, tool, kind, name, data').eq('tool', tool).order('kind').order('name').order('id').range(from, from + PAGE_SIZE - 1);
       }).then(function (rows) {
         rows = (rows || []).map(function (r) { r.data = clone(r.data); return r; });
         all = all.concat(rows);
@@ -980,13 +980,18 @@
     else payload = data;
     var bundle = {};
     bundle[entry.ivritKey || entry.kind] = payload;
-    return { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: entry.ivritKey ? 'AllTools' : entry.tool, savedAt: now(), data: bundle };
+    // partial: the account's copy of one item — merged into what the device holds, never replacing it
+    return { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: entry.ivritKey ? 'AllTools' : entry.tool, partial: true, savedAt: now(), data: bundle };
   }
   // One tool's cloud rows folded into the AllTools bundle shape the hub imports: a map kind becomes
   // {name: value}, a mapIn kind its envelope + {path: {id: value}}, a single/tree its value, a scalar the
-  // plain value. Rows of a kind the registry does not know are left out. Pure.
+  // plain value. Rows of a kind this build's registry does not know (saved by a newer version) come back
+  // separately as `unknown`, so a backup still carries them. Pure.
   function bundleFromRows(entries, rows) {
-    var out = {}, n = 0;
+    var out = {}, n = 0, known = {};
+    entries.forEach(function (e) { known[e.kind] = true; });
+    var unknown = rows.filter(function (r) { return !known[r.kind] && !badName(r.name) && KIND_RE.test(String(r.kind || '')); })
+                      .map(function (r) { return { tool: r.tool, kind: r.kind, name: r.name, data: r.data }; });
     entries.forEach(function (e) {
       var mine = rows.filter(function (r) { return r.kind === e.kind && !badName(r.name); });
       if (!mine.length) return;
@@ -996,7 +1001,7 @@
       else if (e.shape === 'scalar') { out[key] = isPlainObject(mine[0].data) ? mine[0].data.value : mine[0].data; n++; }
       else { out[key] = mine[0].data; n++; }
     });
-    return { data: out, count: n };
+    return { data: out, count: n, unknown: unknown };
   }
   function downloadJson(obj, name) {
     var blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
@@ -1189,16 +1194,21 @@
   }
   // Everything in the account as one AllTools-shaped .ivrit object (the hub's Import / Export modal restores
   // it): the account screen downloads it as a file, the account page puts it in the download-everything zip.
+  // The account's every row as one AllTools-shaped file. `partial`: it holds the account's copies only (the
+  // per-device fields a settings row omits are not in it), so the hub merges it and never replaces anything.
+  // Rows of a kind this build does not know ride along under `cloudUnknown` for a newer build to import.
   function bundleAll() {
-    var bundle = {}, count = 0;
+    var bundle = {}, count = 0, unknown = [];
     return seqMap(toolsWithEntries(), function (tool) {
       return cloudListFull(tool).then(function (rows) {
         var b = bundleFromRows(registryFor(tool), rows);
         safeAssign(bundle, b.data);
-        count += b.count;
+        count += b.count + b.unknown.length;
+        unknown = unknown.concat(b.unknown);
       });
     }).then(function () {
-      return { file: { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', savedAt: now(), data: bundle }, count: count };
+      if (unknown.length) bundle.cloudUnknown = unknown;
+      return { file: { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', partial: true, savedAt: now(), data: bundle }, count: count };
     });
   }
   function accountBackup() {
@@ -1213,7 +1223,9 @@
   function inventory() {
     return seqMap(toolsWithEntries(), function (tool) {
       return cloudList(tool).then(function (rows) {
-        var kinds = [], count = 0, bytes = 0;
+        var kinds = [], count = 0, bytes = 0, known = {};
+        registryFor(tool).forEach(function (e) { known[e.kind] = true; });
+        var unknown = rows.filter(function (r) { return !known[r.kind]; }).length;   // saved by a newer version of the site
         registryFor(tool).forEach(function (e) {
           var mine = rows.filter(function (r) { return r.kind === e.kind; });
           if (!mine.length) return;
@@ -1223,7 +1235,7 @@
           var named = e.shape === 'map' || (e.shape === 'mapIn' && !e.nameField);
           kinds.push({ kind: e.kind, label: kindLabel(e), count: mine.length, bytes: b, names: named ? mine.map(function (r) { return r.name; }) : [] });
         });
-        return { tool: tool, name: toolName(tool), kinds: kinds, count: count, bytes: bytes };
+        return { tool: tool, name: toolName(tool), kinds: kinds, count: count, bytes: bytes, unknown: unknown };
       });
     });
   }

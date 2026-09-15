@@ -86,7 +86,9 @@ class FakeCloud {
       saves: [
         row('Worksheet', 'preset', 'Aleph Bet', { fontSize: 24 }, 1), row('Worksheet', 'preset', 'Vowels', { fontSize: 30 }, 2), row('Worksheet', 'presetFolders', 'default', { v: 1, root: [] }, 3),
         row('FlashCards', 'profile', 'Dana', { results: [] }, 4), row('FlashCards', 'profile', 'Yoni', { results: [] }, 5),
-        row('Dictionary', 'wordList', 'abc', { name: 'Colors', words: [] }, 6), row('Dashboard', 'settings', 'default', { headerLang: 'he' }, 7), row('TropeTutor', 'progress', 'default', { v: 1, tropes: {} }, 8)
+        row('Dictionary', 'wordList', 'abc', { name: 'Colors', words: [] }, 6), row('Dashboard', 'settings', 'default', { headerLang: 'he' }, 7), row('TropeTutor', 'progress', 'default', { v: 1, tropes: {} }, 8),
+        row('Dashboard', 'roster', 'lap_0', { name: 'Kitah Alef', names: ['Noa', 'Eitan'] }, 10),   // a class list: its own key in the backup
+        row('Dashboard', 'future', 'thing', { x: 1 }, 11)                                         // a kind this build does not know: kept in the backup, not listed
       ],
       font_projects: [{ id: PID, user_id: UID, name: 'Smoke Font', family_name: 'Smoke Font', style: null, schema_version: 5, letters_done: 3, has_images: true, project_path: UID + '/' + PID + '/project-1.json.gz', project_bytes: GZ.length, sources_bytes: PNG1.length + PNG2.length, export_path: UID + '/' + PID + '/SmokeFont.ttf', exported_at: at(9), client_saved_at: null, created_at: at(9), updated_at: at(9) }],
       profiles: [{ id: UID, display_name: 'Test Teacher', created_at: at(0), updated_at: at(0) }]
@@ -261,12 +263,13 @@ try {
     check('1: worksheet presets counted', /Hebrew Worksheet Generator[\s\S]*Presets: 2/.test(list), list);
     check('1: student profiles counted', /Student profiles: 2/.test(list));
     check('1: word list counted but not named', /Word lists: 1/.test(list) && !/Colors/.test(list) && !/abc/.test(list));
+    check('1: class list counted but not named; the unknown kind is mentioned, not listed', /Class lists: 1/.test(list) && !/Kitah Alef/.test(list) && /1 items saved by a newer version/.test(list) && !/thing/.test(list), list);
     check('1: settings and mastery rows listed', /Settings: 1/.test(list) && /Mastery progress: 1/.test(list));
     await page.evaluate(() => { const b = [...document.querySelectorAll('#holdsList .link-btn')].find(x => x.closest('li').textContent.includes('Student profiles')); b.click(); });
     const list2 = await text(page, '#holdsList');
     check('1: names expand for profiles only', /Dana/.test(list2) && /Yoni/.test(list2) && !/Aleph Bet/.test(list2));
     check('1: the font project line', /Smoke Font: 3 letters/.test(list2) && /with an exported font/.test(list2));
-    check('1: the total line', /8 items and 1 project,/.test(await text(page, '#holdsTotal')), await text(page, '#holdsTotal'));
+    check('1: the total line', /10 items and 1 project,/.test(await text(page, '#holdsTotal')), await text(page, '#holdsTotal'));
     check('1: who — email, provider, since', (await text(page, '#whoLine')).includes(EMAIL) && /emailed code/.test(await text(page, '#whoProvider')) && (await text(page, '#sinceLine')).length > 0);
     check('1: display name from profiles', (await page.inputValue('#nameInput')) === 'Test Teacher');
     check('1: download enabled, delete box closed', !(await disabled(page, '#dlBtn')) && !(await visible(page, '#delConfirm')));
@@ -304,13 +307,34 @@ try {
       && iv.data.generatorPresets['Aleph Bet'].fontSize === 24 && iv.data.generatorPresets.Vowels.fontSize === 30 && iv.data.generatorPresetFolders.v === 1
       && iv.data.flashCardProfiles.profiles.Dana && iv.data.flashCardProfiles.profiles.Yoni && iv.data.flashCardProfiles.activeProfile === null
       && iv.data.wordLists.lists.abc.name === 'Colors' && iv.data.wordLists.v === 1 && iv.data.dashboardSettings.headerLang === 'he' && iv.data.tropeTutorProgress.v === 1, iv ? Object.keys(iv.data).join(',') : 'no .ivrit');
+    check('3: the .ivrit is marked partial, carries the class list under its own key and the unknown kind under cloudUnknown', !!iv && iv.partial === true && iv.data.dashboardRosters && JSON.stringify(iv.data.dashboardRosters.rosters.lap_0.names) === '["Noa","Eitan"]' && Array.isArray(iv.data.cloudUnknown) && iv.data.cloudUnknown.length === 1 && iv.data.cloudUnknown[0].kind === 'future' && iv.data.cloudUnknown[0].tool === 'Dashboard' && iv.data.cloudUnknown[0].data.x === 1, iv ? JSON.stringify({ partial: iv.partial, rosters: iv.data.dashboardRosters, unknown: iv.data.cloudUnknown }) : 'no .ivrit');
+    // ---- 3b. that .ivrit dropped on the home page: merged without the Merge/Replace question, the class list landed, per-device fields kept ----
+    {
+      const ctxH = await openContext(browser, null, { hebrewDashboard_settings: JSON.stringify({ location: 'Boston, MA', zoomLevel: 130, rosters: { dev_1: { name: 'Mine', names: ['Ari'] } }, activeRosterId: 'dev_1' }) }, { blockAccount: true });
+      const hub = await ctxH.newPage();
+      const hubErrors = []; hub.on('pageerror', e => hubErrors.push(String(e && e.message || e)));
+      await hub.goto(BASE + '/index.html', { waitUntil: 'domcontentloaded' });
+      await hub.waitForFunction(() => window.I18n && typeof ivritRestore === 'function', null, { timeout: 15000 });
+      await hub.waitForTimeout(500);
+      const r = await hub.evaluate(async (text) => {
+        window.__alerts = []; window.alert = (m) => window.__alerts.push(String(m));
+        window.__asked = false; ivritAskMode = () => { window.__asked = true; return Promise.resolve('merge'); };
+        await ivritRestore(text, 'account.ivrit');
+        const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings'));
+        return { asked: window.__asked, alerts: window.__alerts, zoom: s.zoomLevel, headerLang: s.headerLang, rosters: Object.keys(s.rosters).sort(), landed: s.rosters.lap_0 && s.rosters.lap_0.names, mine: s.rosters.dev_1 && s.rosters.dev_1.names, presets: Object.keys(JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}')), status: (document.getElementById('ivritStatus') || {}).textContent || '' };
+      }, ivrit.bytes.toString());
+      check('3b: the account backup merges on the home page without the Merge/Replace question and says so', r.asked === false && /Merged from account\.ivrit/.test(r.status) && r.alerts.some(a => /1 class list/.test(a)), JSON.stringify({ asked: r.asked, status: r.status, alerts: r.alerts }));
+      check("3b: the class list landed beside this device's own, the per-device zoom and the device's settings stayed, the presets came", JSON.stringify(r.rosters) === '["dev_1","lap_0"]' && JSON.stringify(r.landed) === '["Noa","Eitan"]' && JSON.stringify(r.mine) === '["Ari"]' && r.zoom === 130 && r.headerLang === 'he' && r.presets.includes('Aleph Bet'), JSON.stringify(r));
+      check('3b: 0 pageerrors on the home page', hubErrors.length === 0, hubErrors.join(' | '));
+      await ctxH.close();
+    }
     const hf = entries.find(e => e.name === 'font-projects/Smoke Font/Smoke_Font.hebrewfont');
     const proj = hf ? JSON.parse(zlib.gunzipSync(hf.bytes).toString()) : null;
     check('3: the .hebrewfont has its photos back, byte for byte', !!proj && proj.letters[0].source.dataUrl === 'data:image/png;base64,' + PNG1.toString('base64') && proj.letters[1].source.dataUrl === 'data:image/png;base64,' + PNG2.toString('base64'), names.join(', '));
     check('3: no sentinel, no manifest, SVG and identity intact', !!proj && !JSON.stringify(proj).includes('cloud:') && proj.cloudSources === undefined && proj.combinedSheets[0].dataUrl === SVG && proj.cloudId === PID && proj.letters[2].source.dataUrl === null);
     const ex = entries.find(e => e.name === 'font-projects/Smoke Font/SmokeFont.ttf');
     check('3: the exported font rides along', !!ex && Buffer.compare(ex.bytes, TTF) === 0);
-    check('3: the done line', /Downloaded 8 items and 1 project/.test(await text(page, '#dlStatus')), await text(page, '#dlStatus'));
+    check('3: the done line', /Downloaded 10 items and 1 project/.test(await text(page, '#dlStatus')), await text(page, '#dlStatus'));
     check('3: two photo downloads, no re-download of the project file', cloud.log.filter(e => e.kind === 'download' && e.bucket === 'font-sources').length === 2 && cloud.log.filter(e => e.kind === 'download' && e.bucket === 'font-projects').length === 1);
   }
   // ---- 4. delete my account -----------------------------------------------------------------------
@@ -328,7 +352,7 @@ try {
     await page.waitForFunction(() => !document.getElementById('acctGone').hidden, null, { timeout: 20000 });
     const call = cloud.log.find(e => e.kind === 'delete-account');
     check('4: the function was called with the session token and the publishable key', !!call && call.auth === 'Bearer x' && call.apikey === CFG.anonKey, JSON.stringify(call));
-    check('4: the deleted tile with the counts', /8 items, 1 project, 4 files/.test(await text(page, '#goneCounts')), await text(page, '#goneCounts'));
+    check('4: the deleted tile with the counts', /10 items, 1 project, 4 files/.test(await text(page, '#goneCounts')), await text(page, '#goneCounts'));
     const ls = await page.evaluate(() => Object.assign({}, localStorage));
     check('4: session and name cache removed', !(AUTH_KEY in ls) && !('ivritSuite_accountCache' in ls));
     const meta = JSON.parse(ls.ivritSuite_syncMeta || '{}');

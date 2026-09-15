@@ -395,8 +395,8 @@ function renderHolds() {
   if (!inv) { setBusy('dlBtn', true); return; }
   let items = 0, bytes = 0, shown = 0;
   inv.forEach(tl => {
-    if (!tl.count) return;
-    shown++; items += tl.count; bytes += tl.bytes;
+    if (!tl.count && !tl.unknown) return;
+    shown++; items += tl.count + (tl.unknown || 0); bytes += tl.bytes;
     const li = el('li', 'holds-tool'); li.appendChild(el('strong', '', tl.name));
     const ul = el('ul', 'holds-kinds');
     tl.kinds.forEach(k => {
@@ -413,6 +413,7 @@ function renderHolds() {
       }
       ul.appendChild(row);
     });
+    if (tl.unknown) ul.appendChild(el('li', '', t('account.holds.unknown', { n: tl.unknown })));   // rows of a kind this build does not know: in the download, not listed
     li.appendChild(ul); host.appendChild(li);
   });
   const pj = projects || [];

@@ -128,6 +128,7 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
   "version": 1,
   "tool": "Worksheet",        // tool identity — survives the user renaming the file
   "savedAt": "2026-05-30T...",// ISO timestamp
+  "partial": true,            // optional — an account's copies only: merged, never replacing (see below)
   "data": { /* presets + liveState, or the AllTools bundle */ }
 }
 ```
@@ -141,6 +142,17 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
 `ivritRestore()` shows a small modal (`ivritAskMode()`) on every import:
 - **Merge** — keep current data, add the file's (matching keys overwritten via `ivritSafeAssign`).
 - **Replace** — clear current data first, then load only the file's.
+- **`partial: true` skips the question and merges.** The cloud module writes it on the account backup
+  (`IvritSaves.bundleAll()`) and on a cloud row's *Download file*: those files hold the account's copies only
+  — a settings row omits the per-device fields (zoom, panel layout, collapsed panels…) — so a Replace would
+  delete what the device alone holds. Every carrier's `ivritRestore` and the hub's copy read the flag, apply
+  with `mode = 'merge'` and say so (`shared.ivrit.status_partial_merged`); `IVRIT_CFG.apply` is awaited and
+  a `false` return means "nothing for this tool" (`shared.ivrit.nothing_for_tool`). The account backup also
+  carries `dashboardRosters` (`{ rosters: { id: { name, names } } }`, imported by the hub's
+  `mergeDashboardRosters` after `dashboardSettings` and by the dashboard's own `IVRIT_CFG.apply`) and, under
+  `cloudUnknown`, rows of a kind this build's registry does not know (`[{tool, kind, name, data}]`, kept for a
+  newer build to import; the hub ignores the key). The hub's textarea import accepts the whole `.ivrit`
+  envelope too (it reads `data`).
 - The prompt is an accessible dialog on every carrier, the hub's adapted copy included: `role="dialog"` + `aria-modal` + `aria-labelledby=ivritAskTitle`, focus lands on Merge, Tab is trapped across the three buttons, Escape cancels, and focus returns to the opener. The hub's copy additionally stops the handled Escape/Tab so its document-level AllTools-modal handler does not close that modal behind the prompt — keep that when re-syncing it from the engine.
 
 ### Pattern: per-file `IVRIT_CFG` + shared engine

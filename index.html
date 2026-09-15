@@ -1020,9 +1020,7 @@ function exportAllSettings() {
     dashboardScheduleFolders: ftRead('hebrewDashboard_schedulesFolders'),
     flashCardPresetFolders:   ftRead('hebrewFlashCards_presetsFolders'),
     flashCardProfileFolders:  ftRead('hebrewFlashCards_profilesFolders'),
-    dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled') || '0',
-    dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
-    dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate') || '0.75',
+    ...dictScalarsIfSet(),
     dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
     dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
     blenderLastState:    lsJSON('hebrewBlender_lastState', {}),
@@ -1055,6 +1053,8 @@ async function importAllSettings() {
   if (!raw) { alert(I18n.t('home.alltools.import_err_empty')); return; }
   let parsed;
   try { parsed = ivritSafeParse(raw); } catch(e) { alert(I18n.t('home.alltools.import_err_json')); return; }
+  // An .ivrit file pasted whole (the account backup, a cloud row's file): its data is the export blob
+  if (parsed && parsed.format === 'ivrit-save' && parsed.data && typeof parsed.data === 'object' && !Array.isArray(parsed.data)) { parsed = parsed.data; parsed._hebrewBlenderExport = 1; }
   if (!parsed._hebrewBlenderExport) { alert(I18n.t('home.alltools.import_err_notexport')); return; }
   if (!confirm(I18n.t('home.alltools.import_confirm'))) return;
   try {
@@ -1074,6 +1074,7 @@ async function importAllSettings() {
       const existing = ivritSafeParse(localStorage.getItem('hebrewDashboard_settings') || '{}');
       localStorage.setItem('hebrewDashboard_settings', JSON.stringify(ivritSafeAssign(existing, parsed.dashboardSettings)));
     }
+    if (parsed.dashboardRosters && parsed.dashboardRosters.rosters) mergeDashboardRosters(parsed.dashboardRosters.rosters, false);
     if (parsed.flashCardPresets) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewFlashCards_presets') || '{}');
       localStorage.setItem('hebrewFlashCards_presets', JSON.stringify(ivritSafeAssign(existing, parsed.flashCardPresets)));
@@ -1247,6 +1248,9 @@ async function eraseAllSettings() {
     'hebrewDictionary_ttsRate',
     'hebrewDictionary_emojiSettings',
     'hebrewDictionary_lastState',
+    'hebrewBlender_zoom',
+    'hebrewBlender_hideZoomBar',
+    'hebrewDashboard_shabbatCache',
     'hebrewDictionary_tourSeen',
     // Dictionary sidebar width: a per-device layout pref like hebrewBlender_zoom (it tracks the
     // monitor, not the teacher), so export/import-exempt — but erase restores the 300px default.
@@ -1337,9 +1341,6 @@ const IVRIT_CFG = {
       dashboardScheduleFolders: ftRead('hebrewDashboard_schedulesFolders'),
       flashCardPresetFolders:   ftRead('hebrewFlashCards_presetsFolders'),
       flashCardProfileFolders:  ftRead('hebrewFlashCards_profilesFolders'),
-      dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled')  || '0',
-      dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
-      dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate')       || '0.75',
       dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
       dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
       blenderLastState:    lsJSON('hebrewBlender_lastState',    {}),
@@ -1360,10 +1361,13 @@ const IVRIT_CFG = {
       flashCardPanels:     lsJSON('hebrewFlashCards_panels', {}),
       dictPanels:          lsJSON('hebrewDictionary_panels', {}),
       wordLists:           lsJSON('ivritSuite_wordLists', { v: 1, lists: {} }),
-      userFonts:           _fontsBackupCache || []
+      userFonts:           _fontsBackupCache || [],
+      // The three Dictionary scalars only when this device ever set them (a restore skips an absent key, so
+      // a backup from a device that never touched them no longer resets the target's).
+      ...dictScalarsIfSet()
     };
   },
-  apply(data, mode) {
+  async apply(data, mode) {
     const mergeObj = (key, val) => {
       if (val === undefined) return;
       const base = mode === 'replace' ? {} : ivritSafeParse(localStorage.getItem(key) || '{}');
@@ -1374,6 +1378,7 @@ const IVRIT_CFG = {
     if (data.dashboardPresets)    { mergeObj('hebrewDashboard_presets',       data.dashboardPresets);    touched = true; }
     if (data.dashboardSchedules)  { mergeObj('hebrewDashboard_schedules',     data.dashboardSchedules);  touched = true; }
     if (data.dashboardSettings)   { mergeObj('hebrewDashboard_settings',      data.dashboardSettings);   touched = true; }
+    if (data.dashboardRosters && data.dashboardRosters.rosters) { mergeDashboardRosters(data.dashboardRosters.rosters, mode === 'replace'); touched = true; }   // after the settings blob: class lists live inside it
     if (data.flashCardPresets)    { mergeObj('hebrewFlashCards_presets',      data.flashCardPresets);    touched = true; }
     if (data.flashCardSettings)   { mergeObj('hebrewFlashCards_settings',     data.flashCardSettings);   touched = true; }
     if (data.flashCardProfiles && data.flashCardProfiles.profiles) { mergeFlashCardProfiles(data.flashCardProfiles, mode === 'replace'); touched = true; }
@@ -1418,8 +1423,8 @@ const IVRIT_CFG = {
     if (data.flashCardPanels && Object.keys(data.flashCardPanels).length) { mergeObj('hebrewFlashCards_panels',   data.flashCardPanels); touched = true; }
     if (data.dictPanels      && Object.keys(data.dictPanels).length)      { mergeObj('hebrewDictionary_panels',   data.dictPanels);      touched = true; }
     if (data.userFonts && Array.isArray(data.userFonts) && window.indexedDB) {
-      data.userFonts.forEach(uf => { try { saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family); } catch (e) {} });
-      refreshFontsBackupCache(); touched = true;
+      await Promise.all(data.userFonts.map(uf => Promise.resolve().then(() => saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family)).catch(() => {})));   // awaited: the success line is honest
+      await Promise.resolve(refreshFontsBackupCache()).catch(() => {}); touched = true;
     }
     if (!touched) { alert(I18n.t('home.alltools.no_data_alert')); }
     return touched;   // false lets ivritRestore skip the "Restored successfully" that used to follow
@@ -1475,10 +1480,45 @@ function setIvritMode(mode) {
    they dropped was the right one. Counts are taken straight off the payload the Save writes
    (or the file the Restore read), so the summary can never disagree with what actually
    travelled, and nothing new is stored to produce it. */
+// The three Dictionary scalars, only the ones this device ever set.
+function dictScalarsIfSet() {
+  const out = {};
+  [['dictAudioEnabled', 'hebrewDictionary_audioEnabled'], ['dictTranslitStyle', 'hebrewDictionary_translitStyle'], ['dictTtsRate', 'hebrewDictionary_ttsRate']].forEach(([k, ls]) => {
+    const v = localStorage.getItem(ls);
+    if (v !== null) out[k] = v;
+  });
+  return out;
+}
+// Class lists from an account backup (dashboardRosters: { rosters: { id: { name, names } } }): merged by id
+// into hebrewDashboard_settings.rosters — names unioned, a class only the file has added — or, on Replace,
+// the map swapped. Never touches anything else in the blob.
+function mergeDashboardRosters(incoming, replace) {
+  const KEY = 'hebrewDashboard_settings';
+  let s; try { s = ivritSafeParse(localStorage.getItem(KEY) || '{}'); } catch (e) { s = {}; }
+  if (!s || typeof s !== 'object' || Array.isArray(s)) s = {};
+  const cur = (!replace && s.rosters && typeof s.rosters === 'object' && !Array.isArray(s.rosters)) ? s.rosters : {};
+  Object.keys(incoming || {}).forEach(id => {
+    if (id === '__proto__' || id === 'constructor' || id === 'prototype') return;
+    const inc = incoming[id];
+    if (!inc || typeof inc !== 'object' || Array.isArray(inc)) return;
+    const names = [...new Set((Array.isArray(inc.names) ? inc.names : []).filter(n => typeof n === 'string').map(n => n.trim()).filter(Boolean))];
+    const name = (typeof inc.name === 'string' && inc.name.trim()) ? inc.name.trim() : 'My class';
+    const mine = cur[id];
+    if (mine && typeof mine === 'object' && !Array.isArray(mine)) {
+      const have = (Array.isArray(mine.names) ? mine.names : []).filter(n => typeof n === 'string');
+      const seen = new Set(have);
+      mine.names = have.concat(names.filter(n => !seen.has(n)));
+      if (!mine.name || mine.name === 'My class') mine.name = name;
+    } else cur[id] = { name, names };
+  });
+  s.rosters = cur;
+  localStorage.setItem(KEY, JSON.stringify(s));
+}
 const IVRIT_INV_PARTS = [
   ['presets',   d => Object.keys(d.generatorPresets   || {}).length],
   ['layouts',   d => Object.keys(d.dashboardPresets   || {}).length],
   ['schedules', d => Object.keys(d.dashboardSchedules || {}).length],
+  ['classes',   d => Object.keys((d.dashboardRosters || {}).rosters || {}).length],
   ['decks',     d => Object.keys(d.flashCardPresets   || {}).length],
   ['profiles',  d => Object.keys((d.flashCardProfiles || {}).profiles || {}).length],
   ['wordlists', d => Object.keys((d.wordLists || {}).lists || {}).length],
@@ -1591,14 +1631,16 @@ async function ivritRestore(text, sourceName) {
   // Merge/Replace question, then "no all-tools data", then "Restored successfully" — three answers to
   // one drop. Say the one true thing before asking anything.
   if (payload.tool && payload.tool !== IVRIT_CFG.tool) { alert(I18n.t('home.alltools.no_data_alert')); return; }
-  const mode = await ivritAskMode();
+  // partial: an account's copies only (per-device settings are not in it) — merged, never replacing
+  const partial = payload.partial === true;
+  const mode = partial ? 'merge' : await ivritAskMode();
   if (!mode) return;
   let applied;
-  try { applied = IVRIT_CFG.apply(payload.data || {}, mode); }
+  try { applied = await IVRIT_CFG.apply(payload.data || {}, mode); }
   catch (e) { alert(I18n.t('shared.ivrit.err_restore_failed', {error: e.message})); return; }
   if (applied === false) return;   // apply already said "no all-tools data": no status line, no success alert
   if (!IVRIT_CFG.needsReload) {
-    ivritStatus(I18n.t('shared.ivrit.status_restored', { source: sourceName || 'file' }));
+    ivritStatus(I18n.t(partial ? 'shared.ivrit.status_partial_merged' : 'shared.ivrit.status_restored', { source: sourceName || 'file' }));
     alert(I18n.t('home.alltools.restore_reload') + '\n\n' +
           I18n.t('home.alltools.inv.restored', { summary: ivritInventory(payload.data || {}) }));
     renderIvritInventory();   // the modal is still open behind the alert; keep its line true
