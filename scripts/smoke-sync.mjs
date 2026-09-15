@@ -36,6 +36,12 @@
  *      "Bring it back" restores the other one.
  *  11. "Delete from cloud" on a synced row leaves the local copy reading "Removed from your account":
  *      Sync uploads nothing; a local edit makes it a normal local-only row that uploads.
+ *  12. A preset names its class: loading it picks the class with that name on this device; an unknown
+ *      name or an older preset's foreign id keeps the current class; a snapshot saved here carries the name.
+ *  13. A same-named class this device made and never synced folds into the one that lands from the
+ *      account: one class with both names, the pointer on it, one PATCH, nothing posted or deleted.
+ *  14. A weekly grid removed on another device is removed here too when the settings arrive (a merge
+ *      could never delete it), and nothing puts it back.
  *
  * Run from the repo root:  node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
  * The script starts python3 -m http.server itself (port 8081 by default, so it can run beside the others).
@@ -233,6 +239,7 @@ const dashState = (page) => page.evaluate(() => {
   };
 });
 const planStates = (page) => page.evaluate(() => window.IvritSaves.plan('Dashboard').then(p => Object.fromEntries(p.rows.map(r => [r.kind + ':' + r.name, r.state]))));
+const patchesOn = (cl, id) => cl.log.filter(e => e.m === 'PATCH' && (new URLSearchParams(e.search).get('id') || '') === 'eq.' + id).length;
 const liveDash = (page) => page.evaluate(() => ({
   checked: document.getElementById('scheduleEnabled').checked,
   bodyShown: document.getElementById('scheduleSyncBody').style.display !== 'none',
@@ -453,7 +460,6 @@ try {
   // ---- 9. folder trees converge: filed beats unfiled, a move made here goes up by itself, a move made elsewhere comes down ----
   if (want(9)) {
     const treeOf = (t) => { const out = []; (function walk(arr, path) { arr.forEach(n => { if (n.t === 'item') out.push(path + n.name); else { out.push(path + n.name + '/'); walk(n.children || [], path + n.name + '/'); } }); })(t.root, ''); return out; };
-    const patchesOn = (cl, id) => cl.log.filter(e => e.m === 'PATCH' && (new URLSearchParams(e.search).get('id') || '') === 'eq.' + id).length;
     const rows = CLOUD_ROWS().map(r => r.kind === 'presetFolders' ? Object.assign({}, r, { data: { v: 1, root: [{ t: 'folder', id: 'f_w1', name: 'Week 1', collapsed: false, children: [{ t: 'item', name: 'Morning' }] }] } }) : r);
     const cloud = new FakeCloud(rows);
     const seed = SEED(true);
@@ -584,6 +590,73 @@ try {
     await clickAndWait(page, 'sync', 'Sync finished');
     check('11: a local edit made it a normal local-only row again, and Sync uploaded it', states['schedule:2026-2027'] === 'local-only' && posts() === 1 && !!cloud.find('schedule', '2026-2027') && cloud.find('schedule', '2026-2027').data.week.weekend === true, JSON.stringify({ states, posts: posts() }));
     check('10/11: 0 pageerrors on the hub', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- 12. presets name their class ------------------------------------------------------------------
+  if (want(12)) {
+    const rows = CLOUD_ROWS().filter(r => r.kind !== 'roster' && r.kind !== 'preset').concat([
+      { tool: 'Dashboard', kind: 'preset', name: 'Morning', data: { headerLang: 'en', showTimer: true, activeRosterName: 'Kitah Alef' } },
+      { tool: 'Dashboard', kind: 'preset', name: 'Evening', data: { headerLang: 'he', showTimer: false, activeRosterName: 'Nobody' } },
+      { tool: 'Dashboard', kind: 'preset', name: 'Legacy', data: { headerLang: 'he', activeRosterId: 'lap_zz' } }
+    ]);
+    const cloud = new FakeCloud(rows);
+    const seed = SEED(true);
+    const dev = JSON.parse(seed.hebrewDashboard_settings);
+    dev.rosters = { dev_9: { name: 'Kitah Alef', names: ['Noa'] }, dev_8: { name: 'Kitah Bet', names: ['Ari'] } }; dev.activeRosterId = 'dev_9';
+    seed.hebrewDashboard_settings = JSON.stringify(dev);
+    const ctx = await openContext(browser, cloud, seed);
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    await openAccount(page);
+    await clickAndWait(page, 'sync', 'Sync finished');
+    const r = await page.evaluate(() => { const out = {}; switchClass('dev_8'); loadPreset('Morning'); out.morning = settings.activeRosterId; loadPreset('Evening'); out.evening = settings.activeRosterId; loadPreset('Legacy'); out.legacy = settings.activeRosterId; out.nameLeak = 'activeRosterName' in settings; return out; });
+    check('12: a preset names its class — the class with that name here is chosen; an unknown name or a foreign id keeps the current class', r.morning === 'dev_9' && r.evening === 'dev_9' && r.legacy === 'dev_9' && !r.nameLeak, JSON.stringify(r));
+    const r2 = await page.evaluate(() => { switchClass('dev_8'); const p = getSettings({ forPreset: true }); return { name: p.activeRosterName, hasId: 'activeRosterId' in p, cls: presetClassName('Morning'), clsUnknown: presetClassName('Evening') }; });
+    check("12: a snapshot saved here carries the class name, never the device id; the schedule resolves a preset's class by name", r2.name === 'Kitah Bet' && !r2.hasId && r2.cls === 'Kitah Alef' && r2.clsUnknown === '', JSON.stringify(r2));
+    check('12: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- 13. same-named classes: a never-synced local one folds into the one from the account --------
+  if (want(13)) {
+    const rows = CLOUD_ROWS().map(r => r.kind === 'roster' ? Object.assign({}, r, { data: { name: 'Grade 4', names: ['Eitan'] } }) : r);
+    const cloud = new FakeCloud(rows);
+    const seed = SEED(true);
+    const dev = JSON.parse(seed.hebrewDashboard_settings);
+    dev.rosters = { dev_0: { name: 'Grade 4', names: ['Noa'] } }; dev.activeRosterId = 'dev_0';
+    seed.hebrewDashboard_settings = JSON.stringify(dev);
+    const ctx = await openContext(browser, cloud, seed);
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    await openAccount(page);
+    await clickAndWait(page, 'sync', 'Sync finished');
+    const d = await dashState(page);
+    const pk = await pickerState(page);
+    const row = cloud.find('roster', 'lap_0');
+    const rosterPosts = cloud.log.filter(e => e.m === 'POST' && e.body && e.body.kind === 'roster').length, deletes = cloud.log.filter(e => e.m === 'DELETE').length;
+    check('13: one class with both names, the pointer on it, and the page said so', JSON.stringify(d.rosters) === '["lap_0"]' && d.active === 'lap_0' && /Eitan/.test(pk.chips) && /Noa/.test(pk.chips) && /Merged your "Grade 4"/.test(pk.toast), JSON.stringify({ rosters: d.rosters, active: d.active, chips: pk.chips, toast: pk.toast }));
+    check('13: the account row took the union in one PATCH; nothing was posted for the folded class, nothing deleted', JSON.stringify(row.data.names) === JSON.stringify(['Eitan', 'Noa']) && rosterPosts === 0 && deletes === 0 && patchesOn(cloud, row.id) === 1, JSON.stringify({ names: row.data.names, rosterPosts, deletes, patches: patchesOn(cloud, row.id) }));
+    await page.screenshot({ path: path.join(SHOTS, '13-folded-class.png') });
+    check('13: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- 14. a weekly grid removed elsewhere is removed here when the settings arrive -----------------
+  if (want(14)) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const ctx = await openContext(browser, cloud, SEED(true));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    await openAccount(page);
+    await clickAndWait(page, 'sync', 'Sync finished');
+    await clickAndWait(page, 'use-account', 'now on this device');
+    let d = await dashState(page);
+    check('14: the weekly grid arrived with the account settings', d.enabled === true && d.periods === 2 && d.memory, JSON.stringify(d));
+    // another device removed the grid and turned Schedule Sync off
+    const row = cloud.find('settings', 'default');
+    const before = patchesOn(cloud, row.id);
+    row.data = Object.assign({}, row.data, { scheduleEnabled: false }); delete row.data.scheduleWeek; row.updated_at = cloud.stamp(); row.data_hash = null;   // as a write from another device leaves it (its own hash, unknown here)
+    await openAccount(page);
+    await clickAndWait(page, 'sync', 'Sync finished');
+    d = await dashState(page);
+    const states = await planStates(page);
+    check('14: after the download the grid is gone here too, the row reads Same, and nothing put it back', d.enabled === false && d.periods === 0 && states['settings:default'] === 'synced' && patchesOn(cloud, row.id) === before && !('scheduleWeek' in row.data), JSON.stringify({ enabled: d.enabled, periods: d.periods, state: states['settings:default'], patches: [before, patchesOn(cloud, row.id)] }));
+    check('14: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
 } finally {

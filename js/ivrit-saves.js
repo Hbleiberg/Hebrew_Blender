@@ -1122,9 +1122,13 @@
   }
   function syncNowInner(tool) {
     return planTool(tool).then(function (p) {
-      var todo = p.rows.filter(function (r) { return r.safeAction; });
+      // Downloads and merges first, uploads after: what lands may change this device (a same-named class
+      // folds into the one that arrived), and an upload of an item that is then gone is skipped quietly.
+      var todo = p.rows.filter(function (r) { return r.safeAction && r.safeAction !== 'upload'; })
+                 .concat(p.rows.filter(function (r) { return r.safeAction === 'upload'; }));
       var sum = { tool: tool, done: 0, total: todo.length, up: 0, down: 0, merged: 0, skipped: 0, skips: [], left: 0, error: null, treeError: null };
       return seqMap(todo, function (row) {
+        if (row.safeAction === 'upload' && !localItem(row.entry, row.name)) { sum.total--; return Promise.resolve(); }   // gone meanwhile (folded into another item): nothing to send
         return runAction(tool, row.safeAction, row).then(function () {
           sum.done++;
           if (row.safeAction === 'upload') sum.up++; else if (row.safeAction === 'download') sum.down++; else sum.merged++;
@@ -1886,6 +1890,7 @@
     refresh: refresh,
     // A listing for the caller's own use; the panel is re-rendered afterwards (the queue renders it busy while it runs).
     plan: function (tool) { return enqueue(tool, function () { return planTool(tool); }).then(function (p) { render(tool); return p; }, function (e) { render(tool); throw e; }); },
+    lastPlan: function (tool) { return plans[tool] || null; },   // the last listing, synchronously (a page hook reads a row's state from it)
     syncNow: syncNow,
     act: act,
     registry: function () { return IVRIT_SYNC_REGISTRY.concat(extraEntries).map(function (e) { return safeAssign({}, e); }); },

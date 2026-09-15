@@ -289,9 +289,11 @@ dashboard.picker.class_option,{name} ({count}),{name} ({count}),class-switcher o
 dashboard.picker.close,Close,סגור,pick overlay close button,
 dashboard.picker.close_aria,Close,סגור,projector overlay close aria,aria-label only
 dashboard.picker.cloud_switched,Now showing {name} — the classes from your account are in the class list.,עכשיו מוצגת {name} — הכיתות מהחשבון שלכם נמצאות ברשימת הכיתות.,student picker note + toast after a cloud sync switched this device to a class from the account,REVIEW: Hebrew draft; mixed UI+content — do not translate {…}
+dashboard.picker.merged_same_name,"Merged your ""{name}"" with the one from your account.","""{name}"" שלכם מוזגה עם זו שבחשבון.",Toast after a class list from the account landed and a same-named class this device made (never synced) was folded into it,dashboard; picker; template
 dashboard.picker.col_title,Student Picker,בורר תלמידים,live-card column title,RTL / hebDisplay; Hebrew fork מִי הַתּוֹר?
 dashboard.picker.default_class_name,My class,הכיתה שלי,default class name,
 dashboard.picker.delete_class_confirm,"Delete class ""{name}""? Its roster and today's picks will be removed.","למחוק את הכיתה ""{name}""? רשימת התלמידים שלה והבחירות של היום יימחקו.",confirm dialog,mixed UI+content — do not translate {…}
+dashboard.picker.delete_class_confirm_cloud,"Delete class ""{name}"" on this device? Its roster and today's picks are removed here; the copy in your account stays until you delete it there (Cloud saves → Delete from your account too).","למחוק את הכיתה ""{name}"" במכשיר הזה? רשימת התלמידים והבחירות של היום יוסרו כאן; העותק בחשבון נשאר עד שתמחקו אותו שם (שמירות בענן ← למחוק גם מהחשבון).",confirm dialog while signed in (the account keeps its copy of the class list),
 dashboard.picker.delete_class_title,Delete class,מחק כיתה,icon button title,
 dashboard.picker.empty_card,"Add students to this class in Settings → Student Picker, or pick a different class from the header.","הוסיפו תלמידים לכיתה זו בהגדרות ← בורר תלמידים, או בחרו כיתה אחרת מהכותרת.",empty state (sidebar card),
 dashboard.picker.empty_groups,Add a class roster in Settings → Student Picker.,הוסיפו רשימת תלמידים לכיתה בהגדרות ← בורר תלמידים.,groups overlay empty state,

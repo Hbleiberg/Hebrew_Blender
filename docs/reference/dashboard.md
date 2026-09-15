@@ -394,5 +394,20 @@ that downloads the account's classes would keep showing its own untouched defaul
 `adoptClassFromAccount()` switches it to the first class from the account — after each roster row lands,
 and once per signed-in load (`IvritAccount.onChange`) for a sync that ran on another page — and says so
 (`dashboard.picker.cloud_switched`: the drawer's class note plus a toast); the empty default stays listed
-(sync never deletes). Nothing on a timer writes storage, so the 30-second `checkSchedule` cannot race a
-sync.
+(sync never deletes). A class list that lands under the same name as a class this device made itself and
+never synced (the module's last listing, `IvritSaves.lastPlan('Dashboard')`, said *only on this device*) is
+folded into the landed one — `foldSameNamedClass`: names unioned, pick session and pointer moved, the
+duplicate dropped, a toast (`dashboard.picker.merged_same_name`); a class synced before, or one that differs,
+stays as a second class. The settings branch of the hook replaces the in-memory object outright (every own
+key deleted, `PRISTINE_DEFAULTS` back, the stored blob on top) so a weekly grid removed elsewhere is removed
+here too — a merge could never delete a field; when `location` changed it drops `_geoCoords` and refetches
+weather and Shabbat times, and it repaints the holiday countdown, the Shabbat block and the Omer display
+at once. Presets carry the class **name** (`activeRosterName`, written by `getSettings({forPreset:true})`,
+never the per-device id): `applySettings` picks the class with that name here, else an older preset's id
+when it exists here, else keeps the current class; `presetClassName` (the schedule's class-for-preset
+lookup) resolves by name first. `IVRIT_CFG.apply` also takes class lists (`dashboardRosters` from the
+account backup, `roster` from a single row's file), merged by id, and returns whether anything landed. A
+blob a sync wrote before this dashboard was ever opened here (class lists only) still counts as a first run
+(`_storedBlobIsFirstRun`). The 30-second `checkSchedule` can write storage at a period boundary (through
+`applySettings` → `applyZoom`); the module re-reads the store after every write and treats a row that
+moved between its listing and an action as a skip, not a stop.
