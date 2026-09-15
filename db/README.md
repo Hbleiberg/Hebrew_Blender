@@ -9,7 +9,7 @@ the tables are used from the browser: `docs/reference/accounts-and-cloud.md`.
 
 | File | Live? | What it creates |
 |---|---|---|
-| `migrations/0001_accounts_and_saves.sql` | yes — sign-in and every panel work | `profiles`, `saves`, `font_projects`, the three private buckets, and the policies that keep every row and file private to its owner. **Four functions, five triggers and a backfill besides** — see *What 0001 actually contains* below |
+| `migrations/0001_accounts_and_saves.sql` | yes — sign-in and every panel work | `profiles`, `saves`, `font_projects`, the three private buckets, and the policies that keep every row and file private to its owner. **Four functions, four triggers and a backfill besides** — see *What 0001 actually contains* below |
 | `migrations/0002_font_sources_originals.sql` | yes — a photo over 2 MiB uploads | raises the `font-sources` bucket's per-file cap from 2 MiB to 15 MiB and adds WebP to its accepted types, so a Font Maker project's photos are kept at their original size (Phase 5); nothing else changes |
 | `migrations/0003_keepalive.sql` | yes — a green keep-alive run | `public.keepalive()`, a function that returns `'ok'` and reads nothing, callable with the publishable key: the daily GitHub Actions workflow `.github/workflows/supabase-keepalive.yml` calls it so the free project counts as active and is never paused (Phase 8); no table, no policy changes |
 
@@ -28,10 +28,10 @@ most easily lost if the project is ever rebuilt from scratch:
 
 | Object | Kind | Why it matters |
 |---|---|---|
-| `set_updated_at()` | function + triggers on all three tables | `updated_at` is the **only** ordering signal the sync uses; `client_updated_at` is display-only |
-| `handle_new_user()` | `security definer` function + a trigger **on `auth.users`** | creates the `profiles` row from Google's name or the email's local part. The only object outside `public` / `storage`, and the one a rebuild forgets |
-| `saves_before_write()` | function + trigger | sets `bytes` and `updated_at`, and raises the 2000-row cap |
-| `font_projects_before_write()` | function + trigger | sets `updated_at`, and raises the 25-project cap |
+| `set_updated_at()` | function + one trigger, on `profiles` only | `updated_at` is the **only** ordering signal the sync uses (`client_updated_at` is display-only). `saves` and `font_projects` do not use this trigger — each sets its own `updated_at` inside its `before_write` function |
+| `handle_new_user()` | `security definer` function + a trigger **on `auth.users`** (`after insert`) | creates the `profiles` row from Google's name or the email's local part. The only object outside `public` / `storage`, and the one a rebuild forgets |
+| `saves_before_write()` | function + trigger (`before insert or update`) | sets `bytes` and `updated_at`, and raises the 2000-row cap |
+| `font_projects_before_write()` | function + trigger (`before insert or update`) | sets `updated_at`, and raises the 25-project cap |
 | a backfill `insert` | one-time statement | gives `profiles` rows to accounts that already existed when the trigger was added |
 | per-table `revoke all` + narrow grants | permissions | **this**, not RLS, is what makes the publishable key read nothing: an anonymous request is refused with `42501` before a policy is consulted. The daily keep-alive asserts that exact code |
 | an advisor-hygiene `revoke` | permissions | drops `execute` on `public.rls_auto_enable()` from `public`/`anon`/`authenticated`, guarded so it is a no-op when the function is absent |
