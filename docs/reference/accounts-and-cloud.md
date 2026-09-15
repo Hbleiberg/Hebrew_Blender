@@ -409,7 +409,9 @@ client and callback, and the custom SMTP provider that is **required before anyo
 team members can receive a sign-in email** (the built-in sender refuses other addresses and allows only
 a few messages per hour).
 
-## Roadmap pointers (what is not built yet)
+## Operations
 
-The keep-alive workflow with the ops notes (Phase 8) follows; every tool page carries the account layer and
-the account page (Phase 6) is live.
+Everything in the plan is built. Keeping the free project awake (`.github/workflows/supabase-keepalive.yml` and
+migration 0003), the before-other-people-sign-in checklist, rotating the publishable key, upgrading the SDK,
+restoring a person's data from their zip and where to look when something fails are in the README's *Keeping it
+running*; the plain-language map of what talks to what is `docs/backend-architecture.md`.

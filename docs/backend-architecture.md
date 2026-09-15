@@ -46,6 +46,7 @@ flowchart LR
   end
   acct --> auth
   acct --> fn
+  acct --> api
   saves --> api
   proj --> api
   proj --> storage
@@ -66,8 +67,8 @@ anonymous visitor uses only the dotted ones — the SDK is not even downloaded u
 |---|---|---|---|
 | The browser | GitHub Pages | every page load | nothing — public files |
 | `js/ivrit-account.js` | jsDelivr | the first *Sign in* click on a device, or a page load with a remembered session | the pinned SDK URL and its integrity hash; nothing at all while anonymous |
-| `js/ivrit-account.js` | Supabase Auth | sign in (email code or Google), refresh the session, sign out, change the display name | the publishable key, plus the session token once signed in |
-| `js/ivrit-saves.js` | Supabase Data API | list, upload and download rows of `saves` (and read the `profiles` row) | the publishable key + the session token |
+| `js/ivrit-account.js` | Supabase Auth, and the Data API for the `profiles` row | sign in (email code or Google), refresh the session, sign out; read and change the display name | the publishable key, plus the session token once signed in |
+| `js/ivrit-saves.js` | Supabase Data API | list, upload and download rows of `saves` | the publishable key + the session token |
 | `js/ivrit-projects.js` | Data API + Storage | Font Maker projects: `font_projects` rows and files in the three buckets | the same |
 | `js/ivrit-account.js` | the Edge Function | *Delete my account* | the session token (the function checks it again itself) |
 | The Edge Function | Auth + Storage | delete the caller's files, then the caller's user record | the project's **secret** key from its own environment — never in a page |
@@ -183,7 +184,7 @@ kind of stored data updates the policy in the same commit (`CLAUDE.md`, accounts
 
 | What | Where | When | Why |
 |---|---|---|---|
-| *Supabase keep-alive* | GitHub Actions, `.github/workflows/supabase-keepalive.yml` | daily | one database query with the publishable key so the free project is never paused for inactivity, then a check that the three account tables refuse an anonymous read |
+| *Supabase keep-alive* | GitHub Actions, `.github/workflows/supabase-keepalive.yml` | daily | one database query with the publishable key so the free project is never paused for inactivity, then a check that the three account tables refuse an anonymous read; a failed run opens a tracking issue, closed by the next green run |
 | *pages build and deployment* | GitHub Actions (GitHub's own) | every push to `main` | the deploy — that run's success is what updates the live site |
 | *OpenSiddur font list audit* | GitHub Actions, `.github/workflows/os-fonts-audit.yml` | weekly | Font Maker starting fonts; not part of the account layer |
 
@@ -194,7 +195,8 @@ only when someone presses *Delete my account*.
 
 | What you see | Look at |
 |---|---|
-| The chip says *Offline* or that the account is unavailable | the device's connection; a school filter blocking `cdn.jsdelivr.net` (the SDK) or `*.supabase.co`; the project paused (Supabase dashboard → *Restore*); the browser console — each module logs one line and never throws into the page |
+| The chip says *Offline* or that the account is unavailable | the SDK could not load: the device's connection, or a school filter blocking `cdn.jsdelivr.net`; the browser console — each module logs one line and never throws into the page |
+| The chip looks normal, but every sign-in or sync fails with one error line | the project paused (Supabase dashboard → *Restore*; the keep-alive's tracking issue says so first), or a school filter blocking `*.supabase.co`; the browser console |
 | The code email never arrives | Supabase → *Authentication → Logs*: "Email address not authorized" means custom SMTP is not set up yet (README, dashboard step 4); "rate limit" means *Rate Limits → emails per hour*; otherwise the email provider's own dashboard |
 | A panel row could not upload | Supabase → *Logs → API*: `42501` is a policy, `23514` a cap (2 MB / 2000 rows / 25 projects), `23505` a taken name — `db/README.md`, *If something goes wrong* |
 | A Font Maker upload is refused | *Logs → Storage*: the file's type or size against the bucket's allow-list (`db/README.md`) |

@@ -2,7 +2,7 @@
 --
 -- Why: a Free-plan Supabase project is paused after about a week with too little *database* activity, and
 -- a paused project refuses every sign-in until someone presses Restore in the dashboard (local saves keep
--- working; the tools fail soft, but a teacher on a second device just sees an "unavailable" chip). The
+-- working; the tools fail soft, but every sign-in and sync then fails with one error line). The
 -- GitHub Actions workflow .github/workflows/supabase-keepalive.yml calls this function once a day with the
 -- site's publishable key. That is a real, tiny query to the database — the kind of activity Supabase
 -- counts — and it needs no account and no secret.

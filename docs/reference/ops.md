@@ -186,15 +186,19 @@ push, is what updates the live site.
   (`raw.githubusercontent.com/aharonium/opensiddur.org/master/plugins/custom-fonts-display/data/fonts.json`)
   and the report names which source it read. Never work around the challenge; if the live copy
   matters, the partner exempts that path in Cloudflare.
-- **`.github/workflows/supabase-keepalive.yml`** (daily 04:41 UTC, `workflow_dispatch`, and a push that touches
-  the file runs it once on any branch): one tiny database request with the publishable key read out of
-  `js/supabase-config.js` at run time — `GET /rest/v1/rpc/keepalive` must answer `"ok"` (the function from
-  `db/migrations/0003_keepalive.sql`) — so the free Supabase project is never paused for inactivity (Supabase counts
-  *database* activity, "a few user requests each day"; an Auth health URL would not do), then a privacy check that
-  `profiles`, `saves` and `font_projects` refuse an anonymous read (401/403, never 200). A red run emails the
-  maintainer; a project paused anyway is restored from the Supabase dashboard. GitHub disables a scheduled
-  workflow after 60 days without commits (the Actions tab then shows *Enable workflow*). It commits nothing and
-  never involves a `sw.js` bump. The plain-language map of the whole account layer: `docs/backend-architecture.md`.
+- **`.github/workflows/supabase-keepalive.yml`** (daily 04:41 UTC from `main`, `workflow_dispatch`, and a push that
+  touches the workflow or `js/supabase-config.js` runs it once on any branch): one tiny database request with the
+  publishable key read out of `js/supabase-config.js` at run time — `GET /rest/v1/rpc/keepalive` must answer `"ok"`
+  (the function from `db/migrations/0003_keepalive.sql`) — so the free Supabase project is never paused for
+  inactivity (Supabase counts *database* activity, "a few user requests each day"; an Auth health URL would not do),
+  then a privacy check that `profiles`, `saves` and `font_projects` refuse an anonymous read with Postgres's own
+  `42501` in the body (a 401 from the gateway alone would not do — a dead key gives that too, which is why the
+  heartbeat runs first). A failed run opens one `<!-- supabase-keepalive -->`-marked issue and the next green run
+  closes it; GitHub's own e-mail for a failed scheduled run reaches only whoever last edited the `cron:` line, so
+  the maintainer edits that line once from their own account after merging. A project paused anyway is restored
+  from the Supabase dashboard. GitHub disables a scheduled workflow after 60 days without commits (the Actions tab
+  then shows *Enable workflow*). It commits nothing and never involves a `sw.js` bump. The plain-language map of
+  the whole account layer: `docs/backend-architecture.md`.
 - **Rapid successive pushes cancel in-flight deploys** — after a burst of commits only the last
   deploy runs. Prefer batching; always confirm the final run concluded `success`.
 - **Transient Pages failures happen** (observed: the "Deploy to GitHub Pages" step hanging to a

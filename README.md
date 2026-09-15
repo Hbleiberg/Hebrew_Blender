@@ -246,19 +246,25 @@ device. `node scripts/smoke-account-page.mjs --sdk <supabase.js>` replays the pa
 **Keeping it running (operations):**
 - **The free project must stay awake.** Supabase pauses a Free-plan project after about a week with too little
   *database* activity, and a paused project refuses every sign-in until someone presses *Restore* in the Supabase
-  dashboard (local saves, `.ivrit` files and everything anonymous keep working; the chip says the account is
-  unavailable). `.github/workflows/supabase-keepalive.yml` makes one tiny database request a day with the
-  publishable key (`rpc/keepalive`, the function from `db/migrations/0003_keepalive.sql`) and, with the same key,
-  checks that the three account tables still refuse an anonymous read; a red run emails you. GitHub switches a
-  scheduled workflow off after 60 days without commits — the Actions tab then shows *Enable workflow*. If the
-  project was paused anyway: Supabase dashboard → the project → *Restore*; nothing in the repository changes.
+  dashboard (local saves, `.ivrit` files and everything anonymous keep working; the chip looks normal, but every
+  sign-in and sync fails with one error line). `.github/workflows/supabase-keepalive.yml` makes one tiny database
+  request a day with the publishable key (`rpc/keepalive`, the function from `db/migrations/0003_keepalive.sql`)
+  and, with the same key, checks that the three account tables still refuse an anonymous read. A failed run opens
+  one tracking issue (the next green run closes it), and a new issue notifies you like any other; GitHub's own
+  e-mail for a failed scheduled run goes only to whoever last edited the schedule line of the workflow, so edit
+  that line once from your own GitHub account after merging (any change to the minute will do — the commits so
+  far carry no GitHub identity). The schedule runs only from `main`; a push that touches the workflow or
+  `js/supabase-config.js` runs it once on any branch. GitHub switches a scheduled workflow off after 60 days
+  without commits — the Actions tab then shows *Enable workflow*. If the project was paused anyway: Supabase
+  dashboard → the project → *Restore* (possible within Supabase's restore window — 90 days at the time of writing;
+  check the current policy); nothing in the repository changes.
 - **Before other people sign in** (once): custom SMTP configured and proven with a sign-in from an address that is
   not on the project's team (dashboard step 4 above — the built-in sender refuses other addresses); *Rate Limits →
-  emails per hour* raised; the Google consent screen published (step 5); the redirect URLs (step 1); the
-  keep-alive workflow green.
+  emails per hour* raised; the Google consent screen published (step 5); the redirect URLs (step 1); a
+  scheduled run of the keep-alive on `main` green (Actions → *Supabase keep-alive*).
 - **Rotating the publishable key:** create the new key in the dashboard (*Project Settings → API Keys*), paste it
   into `js/supabase-config.js`, bump `VERSION` in `sw.js`, deploy, confirm a sign-in, then disable the old key. The
-  workflow reads the key from that file, so nothing else changes. The key is public by design; rotating it is
+  workflow reads the key from that file and runs once on that push, so the new key is proven at once. The key is public by design; rotating it is
   housekeeping, not an emergency.
 - **Upgrading the pinned SDK:** change the version in the `sdk` URL and recompute `sdkIntegrity` as the file's
   header shows, bump `VERSION` in `sw.js`, then run the smokes with the new file
@@ -268,9 +274,9 @@ device. `node scripts/smoke-account-page.mjs --sdk <supabase.js>` replays the pa
   a paid preview branch).
 - **Restoring a person's data from their *Download everything* zip:** the `.ivrit` inside goes through the home
   page's *Import / Export All Settings → Import* (choose *Merge*; it restores every tool's saved items on that
-  device); each `font-projects/<name>/<name>.hebrewfont` opens in the Font Maker from its *Load Project ▾* menu
-  (the open-a-file row); an exported `.ttf` can be added to *My Fonts* through the *Upload your own font* control
-  under any tool's Hebrew font picker. Then, signed in, *Upload everything on this device* (the account screen)
+  device); each `font-projects/<name>/<name>.hebrewfont` opens in the Font Maker through *Load Project ▾ → 📂 Load
+  from computer…*; an exported `.ttf` (unzip a zip export first) can be added to *My Fonts* through the *Upload
+  your own font* control under any tool's Hebrew font picker. Then, signed in, *Upload everything on this device* (the account screen)
   and *Save to my account* (the Font Maker) fill the account again. A deleted account cannot be recovered on the
   server side — the zip is the only copy.
 - **When something fails:** the browser console first (the modules log one line per failure and never throw into

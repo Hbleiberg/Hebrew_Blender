@@ -42,7 +42,9 @@ own logs (every call, every error) are under *Edge Functions → delete-account 
 
 ## Applying a migration
 
-Two ways; both are fine, and both record the migration in the project's `supabase_migrations` history.
+Two ways; both are fine. The connector (like the Supabase CLI) also records the migration in the project's
+`supabase_migrations` history; a paste into the SQL editor does not — add the file's row to the table above
+either way.
 
 1. **Through Claude Code** (the way these were first applied): ask it to apply the file through the
    Supabase connector. It applies the SQL, then reads back the tables, the migration list and the
@@ -86,5 +88,6 @@ select user_id, count(*) as items, pg_size_pretty(sum(bytes)::bigint) as size fr
   so the repository keeps matching the project.
 - The free plan pauses a project after about a week with too little database activity;
   `.github/workflows/supabase-keepalive.yml` prevents that with one query a day (migration 0003). If it
-  happens anyway — the workflow was disabled, or GitHub was down for a week — the dashboard offers *Restore*.
+  happens anyway — the workflow was disabled, or GitHub was down for a week — the dashboard offers *Restore*
+  (within Supabase's restore window: 90 days at the time of writing).
   Sign-ins fail while it is paused, local saves are unaffected.
