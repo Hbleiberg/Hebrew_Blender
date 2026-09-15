@@ -104,8 +104,10 @@ cache version — separate from the user-facing splash version (`VERSION` in
 
 ## Verifying changes — headless Playwright recipe
 
-The repo has **no test infrastructure** (no package.json, no test files — hand-authored static
-HTML). Verify changes end-to-end by driving the real page headless. Proven recipe:
+The repo has **no package.json and no unit tests** (hand-authored static HTML), but it does carry
+seven headless end-to-end suites for the accounts / cloud layer — `scripts/smoke-*.mjs`, catalogued
+under *Backend smokes* below. Verify changes end-to-end by driving the real page headless. Proven
+recipe:
 
 - Playwright is preinstalled globally. Import in an `.mjs` script as:
   ```js
@@ -161,6 +163,42 @@ HTML). Verify changes end-to-end by driving the real page headless. Proven recip
 - Headless focus quirk: `el.focus()` on the page's real inputs may not stick (activeElement stays
   BODY). When testing typing guards, inject a temporary `<input>` and use `page.focus()` on it.
 - Test matrix: light **and** dark (`toggleDark()`), desktop (~1280px) **and** stacked (~800px) viewports.
+
+### Backend smokes — the accounts / cloud layer
+
+**The generic recipe above cannot see a signed-in page.** Route-aborting every external origin also
+aborts `https://cdn.jsdelivr.net` (the Supabase SDK) and `https://hhkmqwpjsyxdeuhvcyis.supabase.co`
+(every REST, Auth and Storage call), so a run that looks clean has only ever exercised the anonymous
+path — a broken sync merge, a wrong `IVRIT_SYNC_REGISTRY` row or an RLS denial all pass it. Anything
+touching `js/supabase-config.js`, `js/ivrit-account.js`, `js/ivrit-saves.js`, `js/ivrit-projects.js`,
+`account.html` or a page's account wiring is verified by the matching smoke below, not by the recipe
+alone.
+
+Each script starts its own `python3 -m http.server` and answers every cloud call from a fake
+in-memory PostgREST / Auth / Storage — no network, no real project, nothing to clean up.
+
+| Script | `--sdk` | Port | What it proves |
+|---|---|---|---|
+| `scripts/smoke-account.mjs` | optional | 8080 | anonymous with the CDN blocked (0 `pageerror`, no `sb-*` key), the chip, SRI, the URL contracts |
+| `scripts/smoke-saves.mjs` | optional | 8080 | the local round trip signed out, canonical hashing, the state table, fail-soft with the API unreachable |
+| `scripts/smoke-tools.mjs` | optional | 8080 | the six wired tool pages; the full localStorage dump byte-identical to a control run with the account scripts blocked |
+| `scripts/smoke-sync.mjs` | **required** | 8081 | the second-device story: changed-in-both-places, folder-tree convergence, deletions that never propagate, fonts travelling |
+| `scripts/smoke-fontmaker.mjs` | **required** | 8082 | cloud projects + Storage: upload/download/list/remove, Overwrite vs Keep both, a refused 413, `?start=` param stripping |
+| `scripts/smoke-account-page.mjs` | **required** | 8083 | `account.html`: the listing, the display name, the download-everything zip (parsed in Node, per-entry CRC), delete-account accepted and refused |
+| `scripts/smoke-migration.mjs` | **required** | 8084 | the golden replay — device A → account → fresh device B, every localStorage difference classified; anything UNEXPECTED fails the run |
+
+- **The `--sdk` fixture** is the pinned UMD build: `npm pack @supabase/supabase-js@2.116.0`, `tar -xzf`
+  it, and pass `package/dist/umd/supabase.js`. The version and its SRI hash live in
+  `js/supabase-config.js`; a fixture that drifts from them tests the wrong SDK. The npm registry is
+  reachable from the sandbox even though the CDNs are not.
+- **The four `--sdk`-required scripts `exit(2)` without it**; the three optional ones silently skip
+  their signed-in scenarios instead — so a "pass" without `--sdk` is a partial pass.
+- **`smoke-account`, `smoke-saves` and `smoke-tools` all hardcode port 8080** and take no `--port`:
+  run them one at a time. The four newer scripts took 8081–8084 so they can run beside each other.
+- `smoke-tools.mjs --only <file>` narrows to one page; `SMOKE_DEBUG=1` makes `smoke-migration.mjs`
+  echo the page console.
+- Applying a migration and deploying an Edge Function are **not** part of this recipe and are not
+  verified by any smoke — both are out-of-band actions against the one live project: `db/README.md`.
 
 ---
 
