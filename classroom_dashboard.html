@@ -5864,6 +5864,30 @@ function mountSidebarResize(cfg) {
     renderClassManager();     // repaints all switchers + the drawer roster
     renderStudentPicker();    // swaps the chip list + this class's picked/absent state
   }
+  // After a cloud sync the account's classes are in the list, but the class pointer is per device and may
+  // still name the untouched default this device made for itself ("My class", no names) — the picker
+  // looks empty while the dropdown is full. Switch to the first real class once and say so; the default
+  // stays listed (sync never deletes; 🗑 removes it). Not inside ensureActiveClass, which runs from render
+  // paths. Every creator names the default with the literal below; the default_class_name key is compared
+  // too in case one ever switches to it.
+  function isUntouchedDefaultClass(c) {
+    if (!c || (Array.isArray(c.names) && c.names.length)) return false;
+    return c.name === 'My class' || (!!window.I18n && c.name === I18n.t('dashboard.picker.default_class_name'));
+  }
+  function adoptClassFromAccount() {
+    ensureActiveClass();
+    if (!isUntouchedDefaultClass(settings.rosters[settings.activeRosterId])) return false;
+    const id = Object.keys(settings.rosters).find(k => k !== settings.activeRosterId && !isUntouchedDefaultClass(settings.rosters[k]));
+    if (!id) return false;
+    switchClass(id);   // persists the pointer; repaints the switchers, the drawer roster and the chips
+    const params = { name: settings.rosters[id].name };
+    pickerClassNote('dashboard.picker.cloud_switched', params);   // key-based: applyI18n re-renders it
+    if (window.I18n) {
+      const say = () => showAppToast(I18n.t('dashboard.picker.cloud_switched', params));
+      if (I18n.ready && I18n.ready.then) I18n.ready.then(say); else say();   // at load the dictionary may not be in yet
+    }
+    return true;
+  }
   function newClass() {
     if (Object.keys(settings.rosters).length >= ROSTER_MAX_CLASSES) {
       pickerClassNote('dashboard.picker.class_limit', { max: ROSTER_MAX_CLASSES });
@@ -6627,7 +6651,8 @@ function mountFolderTree(cfg){
      settings key, which the settings row omits along with every per-device field). This page supplies
      its merges — the two folder trees through the shared ftImportTree, a class list through mergeRoster —
      and how to re-read a key the module wrote: every store here is rendered from memory, and the next
-     saveSettingsToStorage() would otherwise put the old blob straight back. ── */
+     saveSettingsToStorage() would otherwise put the old blob straight back. After a class list lands,
+     adoptClassFromAccount() moves the per-device class pointer off this device's untouched default. ── */
   function initCloudSaves() {
     if (!window.IvritSaves) return;
     // ftImportTree is write-through (it merges into the key and returns nothing); reading the key back
@@ -6653,6 +6678,7 @@ function mountFolderTree(cfg){
           normalizePickerSession();
           renderClassManager();
           renderStudentPicker();
+          adoptClassFromAccount();   // this device's untouched default → the first class from the account, once
           return;
         }
         // The IVRIT_CFG.apply tail: applySettings on a clone (it keeps the live schedule keys, which the
@@ -6673,6 +6699,12 @@ function mountFolderTree(cfg){
         if (host) host.scrollIntoView({ block: 'start' });
       }
     });
+    // A sync that ran on another page (the home page, the generator) wrote the class lists without this
+    // page's hook: adopt the pointer when the dashboard next loads signed in. Fires once when the account
+    // state is known and on every change; an anonymous load never reaches adoptClassFromAccount.
+    if (window.IvritAccount && typeof IvritAccount.onChange === 'function') {
+      IvritAccount.onChange(function (user) { if (user) adoptClassFromAccount(); });
+    }
   }
 
 /* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary — copy verbatim; called from the .ivrit engine restore path) ═══ */

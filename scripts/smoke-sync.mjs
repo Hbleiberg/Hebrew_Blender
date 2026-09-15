@@ -18,6 +18,11 @@
  *   3. "Keep this device's settings": the device's projection (no class lists, no zoom) goes over the
  *      account's row and the row reads Same afterwards.
  *   4. A device with no dashboard blob at all: no block; Sync everything simply downloads the settings.
+ *   5. Several classes in the account while this device sits on its untouched "My class": Sync everything
+ *      lists them all and the page switches the picker to the first account class and says so (the empty
+ *      default stays listed; the account is never patched).
+ *   6. Another tab's write while this tab was in the background: on pageshow / visibilitychange the module
+ *      re-reads the key without a storage event, the dropdown gains the class and the page adopts it.
  *
  * Run from the repo root:  node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
  * The script starts python3 -m http.server itself (port 8081 by default, so it can run beside the others).
@@ -130,6 +135,11 @@ const CLOUD_ROWS = () => [
   { tool: 'Dashboard', kind: 'roster', name: 'lap_0', data: { name: 'Kitah Alef', names: ['Noa', 'Eitan'] } },
   { tool: 'Dashboard', kind: 'settings', name: 'default', data: ACCOUNT_SETTINGS }
 ];
+const CLOUD_ROWS_MANY = () => CLOUD_ROWS().filter(r => r.kind !== 'roster').concat([
+  { tool: 'Dashboard', kind: 'roster', name: 'lap_0', data: { name: 'Kitah Alef', names: ['Noa', 'Eitan'] } },
+  { tool: 'Dashboard', kind: 'roster', name: 'lap_1', data: { name: 'Kitah Bet', names: ['Ari'] } },
+  { tool: 'Dashboard', kind: 'roster', name: 'lap_2', data: { name: 'Kitah Gimel', names: ['Lior', 'Tamar'] } }
+]);
 const SEED = (withDevice) => {
   const s = {};
   s[AUTH_KEY] = JSON.stringify(SESSION);
@@ -196,7 +206,9 @@ const dashState = (page) => page.evaluate(() => {
   const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || 'null');
   const meta = JSON.parse(localStorage.getItem('ivritSuite_syncMeta') || '{}');
   const mem = (((meta.users || {})['11111111-1111-4111-8111-111111111111'] || {}).Dashboard || {}).settings;
+  const rmem = (((meta.users || {})['11111111-1111-4111-8111-111111111111'] || {}).Dashboard || {}).roster || {};
   return {
+    rosterMemory: Object.keys(rmem).sort(),
     enabled: s && s.scheduleEnabled, periods: s && s.scheduleWeek ? s.scheduleWeek.periods.length : 0, mon: s && s.scheduleWeek ? s.scheduleWeek.cells.mon[0] : null,
     color: s && s.presetColors && s.presetColors.Morning, location: s && s.location, rosters: s ? Object.keys(s.rosters || {}).sort() : [], active: s && s.activeRosterId, zoom: s && s.zoomLevel,
     presets: Object.keys(JSON.parse(localStorage.getItem('hebrewDashboard_presets') || '{}')), schedules: Object.keys(JSON.parse(localStorage.getItem('hebrewDashboard_schedules') || '{}')),
@@ -210,6 +222,18 @@ const liveDash = (page) => page.evaluate(() => ({
   schedules: (document.getElementById('savedScheduleList') || {}).textContent || '',
   presets: (document.getElementById('presetsPanel') || {}).textContent || ''
 }));
+// The student picker as the page shows it: the drawer's class list, the chips, the note under the class
+// row (only while shown) and the last toast text.
+const pickerState = (page) => page.evaluate(() => {
+  const sel = document.getElementById('pickerClassSel'), note = document.getElementById('pickerClassNote');
+  return {
+    value: sel ? sel.value : null,
+    options: sel ? [...sel.options].map(o => o.textContent) : [],
+    chips: (document.getElementById('pickerChips') || {}).textContent || '',
+    note: note && note.style.display !== 'none' ? note.textContent : '',
+    toast: (document.getElementById('appToast') || {}).textContent || ''
+  };
+});
 
 const browser = await chromium.launch();
 const srv = await startServer();
@@ -244,6 +268,9 @@ try {
     const second = await openPage(ctx, 'classroom_dashboard.html');
     const live = await liveDash(second.page);
     const states = await planStates(second.page);
+    const d2 = await dashState(second.page);
+    const pk = await pickerState(second.page);
+    check("1: the dashboard adopted the account's class at load and kept the empty default listed", d2.active === 'lap_0' && pk.value === 'lap_0' && pk.options.some(o => /Kitah Alef \(2\)/.test(o)) && pk.options.some(o => /My class \(0\)/.test(o)) && /Noa/.test(pk.chips) && /Now showing Kitah Alef/.test(pk.note), JSON.stringify({ active: d2.active, pk }));
     check('1: the dashboard opens with Schedule Sync on and its body shown', live.checked && live.bodyShown, JSON.stringify(live));
     check('1: the dashboard lists the downloaded schedule and preset', /2026-2027/.test(live.schedules) && /Morning/.test(live.presets), JSON.stringify({ schedules: live.schedules.slice(0, 80), presets: live.presets.slice(0, 120) }));
     check('1: every dashboard row reads Same after the page wrote its own blob back', Object.values(states).every(v => v === 'synced'), JSON.stringify(states));
@@ -264,7 +291,9 @@ try {
     const live = await liveDash(page);
     const d = await dashState(page);
     const states = await planStates(page);
+    const pk = await pickerState(page);
     check('2: the live page now shows Schedule Sync on, its body, the schedule and the preset — no reload', live.checked && live.bodyShown && /2026-2027/.test(live.schedules) && /Morning/.test(live.presets), JSON.stringify(live));
+    check('2: the roster download switched the picker to the account class with the note and toast', d.active === 'lap_0' && pk.value === 'lap_0' && /Noa/.test(pk.chips) && /Now showing Kitah Alef/.test(pk.note) && /Now showing Kitah Alef/.test(pk.toast), JSON.stringify({ active: d.active, pk }));
     check('2: storage carries the weekly grid and the memory; every row reads Same', d.enabled === true && d.periods === 2 && d.memory && Object.values(states).every(v => v === 'synced'), JSON.stringify({ d, states }));
     await page.screenshot({ path: path.join(SHOTS, '2-dashboard-live.png') });
     check('2: 0 pageerrors', errors.length === 0, errors.join(' | '));
@@ -300,6 +329,54 @@ try {
     const d = await dashState(page);
     check('4: Sync everything downloaded the settings with the schedule; still no block', !s.block && d.enabled === true && d.periods === 2 && d.memory && /0 still need a choice/.test(s.status), JSON.stringify({ d, status: s.status }));
     check('4: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- 5. several classes in the account, this device on its untouched default: the picker switches ----
+  {
+    const cloud = new FakeCloud(CLOUD_ROWS_MANY());
+    const ctx = await openContext(browser, cloud, SEED(true));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    const before = await pickerState(page);
+    await openAccount(page);
+    await clickAndWait(page, 'sync', 'Sync finished');
+    const pk = await pickerState(page);
+    const d = await dashState(page);
+    check('5: before the sync the picker sat on the empty default with no note', before.value === 'dev1_0' && before.options.length === 1 && before.note === '', JSON.stringify(before));
+    check('5: Sync everything listed all three account classes and kept the default', pk.options.length === 4 && ['Kitah Alef (2)', 'Kitah Bet (1)', 'Kitah Gimel (2)', 'My class (0)'].every(n => pk.options.includes(n)), JSON.stringify(pk.options));
+    check('5: the picker switched to the first account class — chips, note and toast', pk.value === 'lap_0' && d.active === 'lap_0' && /Noa/.test(pk.chips) && /Eitan/.test(pk.chips) && /Now showing Kitah Alef/.test(pk.note) && /Now showing Kitah Alef/.test(pk.toast), JSON.stringify({ value: pk.value, chips: pk.chips, note: pk.note, toast: pk.toast }));
+    check('5: the sync memory holds every class; nothing was patched or deleted in the account', JSON.stringify(d.rosterMemory) === '["dev1_0","lap_0","lap_1","lap_2"]' && cloud.log.filter(e => e.m === 'PATCH' || e.m === 'DELETE').length === 0, JSON.stringify({ mem: d.rosterMemory, calls: cloud.log.map(e => e.m) }));
+    await page.screenshot({ path: path.join(SHOTS, '5-picker-adopted.png') });
+    check('5: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- 6. another tab's write while this tab was hidden: the resume-time re-read ---------------------
+  {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const ctx = await openContext(browser, cloud, SEED(true));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    // What another tab's download leaves behind — the class in the blob and the stamps in the sync memory
+    // — written from this same tab, so no storage event fires; then the resume signal.
+    const simulate = (id, name, names, how) => page.evaluate(([id, name, names, how]) => {
+      const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings'));
+      s.rosters[id] = { name, names };
+      localStorage.setItem('hebrewDashboard_settings', JSON.stringify(s));
+      const meta = JSON.parse(localStorage.getItem('ivritSuite_syncMeta') || '{"v":1,"users":{}}');
+      const at = Date.now() + (how === 'pageshow' ? 1 : 2);
+      meta.lastWrite = { tool: 'Dashboard', kind: 'roster', name: id, at };
+      meta.written = meta.written || {}; meta.written.Dashboard = meta.written.Dashboard || {}; meta.written.Dashboard.roster = at;
+      localStorage.setItem('ivritSuite_syncMeta', JSON.stringify(meta));
+      const sel = document.getElementById('pickerClassSel');
+      const beforeCount = sel.options.length;
+      if (how === 'pageshow') window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+      else { Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'visible' }); document.dispatchEvent(new Event('visibilitychange')); }
+      return { beforeCount, options: [...sel.options].map(o => o.textContent), value: sel.value, quiet: window.IvritSaves._test.recheckWrites() === false };
+    }, [id, name, names, how]);
+    const r1 = await simulate('tab2_0', 'Kitah Dalet', ['Lior'], 'pageshow');
+    check('6: on pageshow the page re-read the blob another tab wrote and adopted the class', r1.beforeCount === 1 && r1.options.includes('Kitah Dalet (1)') && r1.value === 'tab2_0' && r1.quiet, JSON.stringify(r1));
+    const r2 = await simulate('tab2_1', 'Kitah Hei', ['Maya', 'Yoav'], 'visibilitychange');
+    check('6: on visibilitychange the dropdown gained the next class and the pointer stayed on the adopted one', r2.options.includes('Kitah Hei (2)') && r2.value === 'tab2_0' && r2.quiet, JSON.stringify(r2));
+    await page.waitForTimeout(SETTLE_MS);
+    check('6: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
 } finally {

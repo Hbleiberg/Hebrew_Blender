@@ -19,7 +19,7 @@ Supabase — no tool page ever calls the SDK directly:
 | `account.html` | The account page (in the sitemap, precached, own CSP): who the account is and its display name, what it holds tool by tool, **Download everything** (one zip) and **Delete my account**. Only the shared modules talk to Supabase; see "The account page and data rights" below. |
 | `db/functions/delete-account/` | The one Edge Function: removes the caller's Storage files, then the auth user (rows cascade). Deployed through the connector with the platform's JWT check on; `db/README.md` says how, and why it is not under `supabase/`. |
 | `scripts/smoke-account.mjs`, `scripts/smoke-saves.mjs` | Headless Playwright smokes: anonymous with the CDN blocked, remembered session offline, SDK served locally, URL contracts, Hebrew + dark at 800 px. |
-| `scripts/smoke-sync.mjs` | Headless end-to-end sync test against a fake cloud (`--sdk` required): Playwright answers the project's `/rest/v1/saves` from an in-memory table and replays the second-device flow — settings changed in both places, Sync everything, the account screen's settings choice, the dashboard opening with Schedule Sync live. |
+| `scripts/smoke-sync.mjs` | Headless end-to-end sync test against a fake cloud (`--sdk` required): Playwright answers the project's `/rest/v1/saves` from an in-memory table and replays the second-device flow — settings changed in both places, Sync everything, the account screen's settings choice, the dashboard opening with Schedule Sync live, the picker switching to the first class from the account when this device's own is the untouched default, and the resume-time re-read of another tab's write. |
 | `scripts/smoke-fontmaker.mjs` | Headless end-to-end test of Font Maker cloud projects (`--sdk` required, port 8082): the fake cloud also answers the Storage endpoints; anonymous control, save, autosave, open in a fresh browser, conflict (Overwrite / Keep both), delete, export keep, a refused upload, the `?start=` contract, Hebrew + dark. |
 | `scripts/smoke-account-page.mjs` | Headless end-to-end test of the account page (`--sdk` required, port 8083): anonymous control, the listing, the display name, the download-everything zip parsed and checked in Node, delete (accepted and refused), Hebrew + dark. |
 
@@ -230,9 +230,12 @@ sync forever. Nothing runs on a timer. Before any local write the module calls `
 `onLocalChanged()`, and downloads add the "reload other tabs" hint. Two more guards against a page's
 in-memory copy: a listing calls `flush()` first when signed in (a pending debounced write would otherwise
 land between the listing and the first action and fail it as "changed"), and every module write stamps
-`lastWrite` into `ivritSuite_syncMeta`, whose `storage` event makes any *other* open tab of that tool
-re-read the key and list again (its next save would otherwise revert the download unseen). `refresh()`
-coalesces: callers that ask while a listing is queued share it, so sign-in lists each tool once.
+`lastWrite` and `written[tool][kind]` into `ivritSuite_syncMeta`: any *other* open tab of that tool
+re-reads the key and lists again when the key's `storage` event arrives — and again, per tool and kind
+against the stamps it last saw, whenever it becomes visible or returns from the back-forward cache
+(`recheckWrites()`; a background tab on iOS may never get the event, and its next in-memory save would
+otherwise revert the download unseen; a tab's own writes are already seen). `refresh()` coalesces:
+callers that ask while a listing is queued share it, so sign-in lists each tool once.
 
 **Trees follow their items**: the shared tree component prunes nodes whose names are not in the store,
 and `ftImportTree` is additive, so a tree is never a row. After actions and after Sync, each tree entry

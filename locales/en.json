@@ -298,6 +298,7 @@
   "dashboard.picker.class_option": "{name} ({count})",
   "dashboard.picker.close": "Close",
   "dashboard.picker.close_aria": "Close",
+  "dashboard.picker.cloud_switched": "Now showing {name} — the classes from your account are in the class list.",
   "dashboard.picker.col_title": "Student Picker",
   "dashboard.picker.default_class_name": "My class",
   "dashboard.picker.delete_class_confirm": "Delete class \"{name}\"? Its roster and today's picks will be removed.",

@@ -145,7 +145,7 @@
   var busy = {};       // tool → true while its queue runs
   var messages = {};   // tool → { text, isError }
   var pendingRefresh = {};   // tool → the listing promise in flight, so two callers share one listing
-  var lastSeenWrite = null;  // the `at` of the last module write another tab told us about
+  var seen = {};             // tool → kind → the write stamp this tab last acted on, or made itself (recheckWrites)
   var listening = false;
   var account = null;        // the open account screen: { root, opener, first } or null
   var splashShown = false;   // the fresh-sign-in splash opens at most once per page load
@@ -351,14 +351,39 @@
     }
     return writeText(entry.lsKey, text).then(function () { stampWrite(entry, name); });
   }
-  // Other tabs of the same tool learn about a module write through the sync-memory key (a `storage`
-  // event, see listen()) and re-read the key — otherwise their next in-memory save would revert it.
+  // Other tabs of the same tool learn about a module write through the sync-memory key — its `storage`
+  // event, or a look at the stamps when the tab next becomes visible (see recheckWrites) — and re-read
+  // the key; otherwise their next in-memory save would revert it. `lastWrite` names the write; `written`
+  // keeps one stamp per tool and kind, overwritten in place, so it never grows past the registry.
   // Signed in only: anonymous use never creates the key (the harness's local round trip stays silent).
   function stampWrite(entry, name) {
     if (!currentUser()) return;
-    var m = metaAll();
-    m.lastWrite = { tool: entry.tool, kind: entry.kind, name: name, at: Date.now() };
+    var m = metaAll(), at = Date.now();
+    m.lastWrite = { tool: entry.tool, kind: entry.kind, name: name, at: at };
+    if (!isPlainObject(m.written)) m.written = {};
+    if (!isPlainObject(m.written[entry.tool])) m.written[entry.tool] = {};
+    m.written[entry.tool][entry.kind] = at;
+    markSeen(entry.tool, entry.kind, at);   // this tab's own write is not news to it
     metaSave(m);
+  }
+  function markSeen(tool, kind, at) { if (!isPlainObject(seen[tool])) seen[tool] = {}; seen[tool][kind] = at; }
+  // The stamps as one map tool → kind → at: `written`, with `lastWrite` folded in (a tab still running the
+  // previous module stamps only that one).
+  function stampsOf(m) {
+    var out = {}, w = isPlainObject(m.written) ? m.written : {}, lw = isPlainObject(m.lastWrite) ? m.lastWrite : null;
+    Object.keys(w).forEach(function (tool) {
+      if (!isPlainObject(w[tool])) return;
+      Object.keys(w[tool]).forEach(function (kind) {
+        if (typeof w[tool][kind] !== 'number') return;
+        if (!out[tool]) out[tool] = {};
+        out[tool][kind] = w[tool][kind];
+      });
+    });
+    if (lw && typeof lw.at === 'number' && lw.tool && lw.kind) {
+      if (!out[lw.tool]) out[lw.tool] = {};
+      if (!(out[lw.tool][lw.kind] >= lw.at)) out[lw.tool][lw.kind] = lw.at;
+    }
+    return out;
   }
   // Only the test harness removes local data (its own keys). The panel never calls this.
   function localRemove(entry, name) {
@@ -1583,6 +1608,27 @@
     render(tool);
     return panel.root;
   }
+  // A module write in another tab that this tab has not acted on: re-read that key here (no flush — the
+  // point is to drop this tab's stale in-memory copy, exactly as the storage event always did), then list
+  // again. Per tool and kind, against the stamps this tab last saw; its own writes are already seen.
+  // Returns whether anything was re-read (the sync smoke asserts a quiet second call).
+  function recheckWrites() {
+    var m, stamps, lw, touched = {};
+    try { m = metaAll(); stamps = stampsOf(m); } catch (e) { return false; }
+    lw = isPlainObject(m.lastWrite) ? m.lastWrite : {};
+    Object.keys(stamps).forEach(function (tool) {
+      Object.keys(stamps[tool]).forEach(function (kind) {
+        var at = stamps[tool][kind];
+        if (seen[tool] && seen[tool][kind] === at) return;
+        markSeen(tool, kind, at);
+        if (!pages[tool]) return;
+        notifyPage(tool, kind, (lw.tool === tool && lw.kind === kind) ? lw.name : null);
+        touched[tool] = true;
+      });
+    });
+    Object.keys(touched).forEach(function (tool) { if (currentUser()) refresh(tool).catch(function () {}); else render(tool); });
+    return Object.keys(touched).length > 0;
+  }
   function listen() {
     if (listening) return;
     listening = true;
@@ -1597,19 +1643,13 @@
       });
     }
     if (a && typeof a.onOpenAccount === 'function') a.onOpenAccount(function () { openAccount(); });
-    // A module write in another tab of the same tool: re-read that key here (no flush — the point is to
-    // drop this tab's stale in-memory copy), then list again. Only module writes carry the stamp.
-    try { lastSeenWrite = (metaAll().lastWrite || {}).at || null; } catch (e) {}
-    window.addEventListener('storage', function (e) {
-      if (e.key !== META_KEY || !e.newValue) return;
-      var lw = null;
-      try { lw = safeParse(e.newValue).lastWrite; } catch (x) { return; }
-      if (!isPlainObject(lw) || lw.at === lastSeenWrite) return;
-      lastSeenWrite = lw.at;
-      if (!pages[lw.tool]) return;
-      notifyPage(lw.tool, lw.kind, lw.name);
-      if (currentUser()) refresh(lw.tool).catch(function () {}); else render(lw.tool);
-    });
+    // Writes by other tabs: their `storage` event, and — because a tab in the background (iOS suspends
+    // them) may never get that event — a look at the stamps whenever this tab becomes visible again or
+    // returns from the back-forward cache. Nothing stamped before this page load is news.
+    try { seen = stampsOf(metaAll()); } catch (e) {}
+    window.addEventListener('storage', function (e) { if (e.key === META_KEY && e.newValue) recheckWrites(); });
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') recheckWrites(); });
+    window.addEventListener('pageshow', function () { recheckWrites(); });
     // Labels render before the dictionary arrives and again when it does, and on every language switch.
     if (window.I18n) {
       try { if (window.I18n.ready && window.I18n.ready.then) window.I18n.ready.then(function () { Object.keys(panels).forEach(render); }); } catch (e) {}
@@ -1669,7 +1709,7 @@
       canonJson: canonJson, hashText: hashText, classify: classify, deepMax: deepMax, maxValue: maxValue,
       project: project, restoreOmitted: restoreOmitted, safeParse: safeParse, copyNameFor: copyNameFor,
       validateShape: validateShape, errorText: errorText, guardUpload: guardUpload, ivritFile: ivritFile,
-      treeIsFlat: treeIsFlat, bundleFromRows: bundleFromRows, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
+      treeIsFlat: treeIsFlat, bundleFromRows: bundleFromRows, recheckWrites: recheckWrites, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
     }
   };
   // The chip's "Account…" item and the sign-in splash belong to every page that loads this module, including

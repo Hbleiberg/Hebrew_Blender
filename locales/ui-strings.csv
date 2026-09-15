@@ -288,6 +288,7 @@ dashboard.picker.class_limit,You can have up to {max} classes. Delete one to add
 dashboard.picker.class_option,{name} ({count}),{name} ({count}),class-switcher option,mixed UI+content — do not translate {…}
 dashboard.picker.close,Close,סגור,pick overlay close button,
 dashboard.picker.close_aria,Close,סגור,projector overlay close aria,aria-label only
+dashboard.picker.cloud_switched,Now showing {name} — the classes from your account are in the class list.,עכשיו מוצגת {name} — הכיתות מהחשבון שלכם נמצאות ברשימת הכיתות.,student picker note + toast after a cloud sync switched this device to a class from the account,REVIEW: Hebrew draft; mixed UI+content — do not translate {…}
 dashboard.picker.col_title,Student Picker,בורר תלמידים,live-card column title,RTL / hebDisplay; Hebrew fork מִי הַתּוֹר?
 dashboard.picker.default_class_name,My class,הכיתה שלי,default class name,
 dashboard.picker.delete_class_confirm,"Delete class ""{name}""? Its roster and today's picks will be removed.","למחוק את הכיתה ""{name}""? רשימת התלמידים שלה והבחירות של היום יימחקו.",confirm dialog,mixed UI+content — do not translate {…}

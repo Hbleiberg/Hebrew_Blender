@@ -298,6 +298,7 @@
   "dashboard.picker.class_option": "{name} ({count})",
   "dashboard.picker.close": "סגור",
   "dashboard.picker.close_aria": "סגור",
+  "dashboard.picker.cloud_switched": "עכשיו מוצגת {name} — הכיתות מהחשבון שלכם נמצאות ברשימת הכיתות.",
   "dashboard.picker.col_title": "בורר תלמידים",
   "dashboard.picker.default_class_name": "הכיתה שלי",
   "dashboard.picker.delete_class_confirm": "למחוק את הכיתה \"{name}\"? רשימת התלמידים שלה והבחירות של היום יימחקו.",

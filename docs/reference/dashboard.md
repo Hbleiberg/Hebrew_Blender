@@ -389,5 +389,10 @@ labelled by the class name), so a projector's zoom or layout never lands on the 
 uploads only when the teacher chooses it. After the module writes the settings key the page re-reads it
 (`loadSettingsFromStorage()`), then runs the `IVRIT_CFG.apply` tail — `applySettings` on a clone, the three
 render caches nulled, `renderWeekSummary` / `renderScheduleUI` / the week editor — and `ensureActiveClass()`
-self-heals a dangling class pointer after a roster download. Nothing on a timer writes storage, so the
-30-second `checkSchedule` cannot race a sync.
+self-heals a dangling class pointer after a roster download. The pointer is per device, so a second device
+that downloads the account's classes would keep showing its own untouched default (`My class`, no names):
+`adoptClassFromAccount()` switches it to the first class from the account — after each roster row lands,
+and once per signed-in load (`IvritAccount.onChange`) for a sync that ran on another page — and says so
+(`dashboard.picker.cloud_switched`: the drawer's class note plus a toast); the empty default stays listed
+(sync never deletes). Nothing on a timer writes storage, so the 30-second `checkSchedule` cannot race a
+sync.
