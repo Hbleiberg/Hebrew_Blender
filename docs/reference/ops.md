@@ -170,7 +170,7 @@ Static GitHub Pages, custom domain `ivritsuite.com` (`CNAME`), `.nojekyll`, **no
 Every push to `main` auto-triggers a "pages build and deployment" Actions run — that run, not the
 push, is what updates the live site.
 
-- **One authored workflow exists: `.github/workflows/os-fonts-audit.yml`** (weekly, Mondays 06:17 UTC,
+- **Two authored workflows exist.** `.github/workflows/os-fonts-audit.yml` (weekly, Mondays 06:17 UTC,
   plus `workflow_dispatch` and a push that touches the workflow or `scripts/audit-os-fonts.mjs`). It
   runs the audit, uploads `starting-fonts/AUDIT.md` + `opensiddur-fonts.json` as an artifact, and
   only on `main` commits them when changed, runs the automated intake (`scripts/stage_os_fonts.py`,
@@ -186,6 +186,15 @@ push, is what updates the live site.
   (`raw.githubusercontent.com/aharonium/opensiddur.org/master/plugins/custom-fonts-display/data/fonts.json`)
   and the report names which source it read. Never work around the challenge; if the live copy
   matters, the partner exempts that path in Cloudflare.
+- **`.github/workflows/supabase-keepalive.yml`** (daily 04:41 UTC, `workflow_dispatch`, and a push that touches
+  the file runs it once on any branch): one tiny database request with the publishable key read out of
+  `js/supabase-config.js` at run time — `GET /rest/v1/rpc/keepalive` must answer `"ok"` (the function from
+  `db/migrations/0003_keepalive.sql`) — so the free Supabase project is never paused for inactivity (Supabase counts
+  *database* activity, "a few user requests each day"; an Auth health URL would not do), then a privacy check that
+  `profiles`, `saves` and `font_projects` refuse an anonymous read (401/403, never 200). A red run emails the
+  maintainer; a project paused anyway is restored from the Supabase dashboard. GitHub disables a scheduled
+  workflow after 60 days without commits (the Actions tab then shows *Enable workflow*). It commits nothing and
+  never involves a `sw.js` bump. The plain-language map of the whole account layer: `docs/backend-architecture.md`.
 - **Rapid successive pushes cancel in-flight deploys** — after a burst of commits only the last
   deploy runs. Prefer batching; always confirm the final run concluded `success`.
 - **Transient Pages failures happen** (observed: the "Deploy to GitHub Pages" step hanging to a

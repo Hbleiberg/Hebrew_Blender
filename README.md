@@ -243,6 +243,47 @@ the one piece of code that runs outside the browser (`db/functions/delete-accoun
 Function — it needs the project's secret key, which never ships in a page). A deletion touches nothing on any
 device. `node scripts/smoke-account-page.mjs --sdk <supabase.js>` replays the page against a fake cloud.
 
+**Keeping it running (operations):**
+- **The free project must stay awake.** Supabase pauses a Free-plan project after about a week with too little
+  *database* activity, and a paused project refuses every sign-in until someone presses *Restore* in the Supabase
+  dashboard (local saves, `.ivrit` files and everything anonymous keep working; the chip says the account is
+  unavailable). `.github/workflows/supabase-keepalive.yml` makes one tiny database request a day with the
+  publishable key (`rpc/keepalive`, the function from `db/migrations/0003_keepalive.sql`) and, with the same key,
+  checks that the three account tables still refuse an anonymous read; a red run emails you. GitHub switches a
+  scheduled workflow off after 60 days without commits — the Actions tab then shows *Enable workflow*. If the
+  project was paused anyway: Supabase dashboard → the project → *Restore*; nothing in the repository changes.
+- **Before other people sign in** (once): custom SMTP configured and proven with a sign-in from an address that is
+  not on the project's team (dashboard step 4 above — the built-in sender refuses other addresses); *Rate Limits →
+  emails per hour* raised; the Google consent screen published (step 5); the redirect URLs (step 1); the
+  keep-alive workflow green.
+- **Rotating the publishable key:** create the new key in the dashboard (*Project Settings → API Keys*), paste it
+  into `js/supabase-config.js`, bump `VERSION` in `sw.js`, deploy, confirm a sign-in, then disable the old key. The
+  workflow reads the key from that file, so nothing else changes. The key is public by design; rotating it is
+  housekeeping, not an emergency.
+- **Upgrading the pinned SDK:** change the version in the `sdk` URL and recompute `sdkIntegrity` as the file's
+  header shows, bump `VERSION` in `sw.js`, then run the smokes with the new file
+  (`node scripts/smoke-account.mjs --sdk <path>` and the others).
+- **A database change** is a new `db/migrations/NNNN_<name>.sql` applied once; **a change to the delete-account
+  function** is a redeploy — both in `db/README.md`. Never a `supabase/` folder (the GitHub integration would open
+  a paid preview branch).
+- **Restoring a person's data from their *Download everything* zip:** the `.ivrit` inside goes through the home
+  page's *Import / Export All Settings → Import* (choose *Merge*; it restores every tool's saved items on that
+  device); each `font-projects/<name>/<name>.hebrewfont` opens in the Font Maker from its *Load Project ▾* menu
+  (the open-a-file row); an exported `.ttf` can be added to *My Fonts* through the *Upload your own font* control
+  under any tool's Hebrew font picker. Then, signed in, *Upload everything on this device* (the account screen)
+  and *Save to my account* (the Font Maker) fill the account again. A deleted account cannot be recovered on the
+  server side — the zip is the only copy.
+- **When something fails:** the browser console first (the modules log one line per failure and never throw into
+  the page); then the Supabase dashboard → *Logs* (API, Auth, Postgres, Storage, and Edge Functions →
+  delete-account), *Advisors* (security + performance; should stay clean), *Authentication → Users*;
+  `account-test.html` and `saves-test.html` reproduce a sign-in and a sync without a tool page; the smokes replay
+  every flow against a fake cloud. The plain-language map of what talks to what: `docs/backend-architecture.md`.
+- **Free-plan limits that matter** (check the numbers on Supabase's pricing page — they change): roughly 500 MB
+  of database, 1 GB of file storage, 5 GB of egress a month, 50,000 monthly active users, two free projects per
+  person, no backups. Saved items are small (a preset is about 2 KB); Font Maker photo projects are what fill
+  storage (often 20–40 MB each, sent again to every device that opens them), so glance at *Storage* and *Usage*
+  in the dashboard first. Upgrading the organization to Pro removes the pausing rule and adds daily backups.
+
 ## Files
 
 | File / directory | Description |
@@ -266,6 +307,7 @@ device. `node scripts/smoke-account-page.mjs --sdk <supabase.js>` replays the pa
 | `sw.js` | Service worker — precaches the app shell for offline use (cache `ivritsuite-v<VERSION>`) |
 | `manifest.webmanifest` | PWA manifest (name, icons, theme/background color) |
 | `js/i18n.js` | Shared i18n runtime (`window.I18n`) loaded by every page — the EN / עברית switcher, `data-i18n*` filling, RTL flip |
+| `js/supabase-config.js`, `js/ivrit-account.js`, `js/ivrit-saves.js`, `js/ivrit-projects.js` | The optional account layer — public project settings, sign-in + the header chip, cloud saves + the account screen, Font Maker cloud projects; the only files that talk to Supabase (see *Accounts*) |
 | `locales/ui-strings.csv`, `locales/<lang>.json` | UI strings — the CSV is the single source of truth; `scripts/build-locales.js` compiles the committed per-language JSON |
 | `scripts/check-i18n.js` (+ `check-i18n-baseline.txt`) | Gate for hardcoded UI strings, physical CSS and CSV quoting; the baseline lists accepted findings |
 | `scripts/check-inline-js.mjs` | Parses every inline `<script>` in every root page — one syntax error kills a page's whole app while the HTML still renders |
@@ -274,6 +316,7 @@ device. `node scripts/smoke-account-page.mjs --sdk <supabase.js>` replays the pa
 | `llms.txt`, `llms-full.txt` | Curated plain-text site map for LLMs / fetching agents ([llmstxt.org](https://llmstxt.org)) — the short index and its expanded companion (how-to steps + Q&A). **Generated**, never hand-edited |
 | `scripts/update-llms-txt.mjs` | Regenerates both from `sitemap.xml` + each page's JSON-LD and `<head>` metadata (plain Node, zero deps; `--check` reports staleness) |
 | `scripts/update-sitemap.mjs` | Refreshes every `<lastmod>` in `sitemap.xml` from each page's last git commit (refuses to run on a shallow clone) |
+| `.github/workflows/os-fonts-audit.yml`, `.github/workflows/supabase-keepalive.yml` | The two authored GitHub Actions workflows: the weekly OpenSiddur font-list audit + intake, and the daily Supabase keep-alive (one database query with the publishable key, plus a check that the account tables refuse an anonymous read) |
 | `data/hebrew_words.json` | Structured word data (~2.93 MB, 13,081 entries) loaded by the generator and dictionary via `fetch()` |
 | `source-data/hebrew_dictionary_4_19_2026.csv` | Pipeline-input CSV used to build `data/hebrew_words.json` (Hebrew w/ nikkud, transliteration, translation, POS, era); not served at runtime |
 | `data/hebrew_emojis.json` (+ `source-data/hebrew_emojis.csv` pipeline input) | Hebrew word ↔ emoji mappings used by the dictionary and flash-card emoji modes |
@@ -290,6 +333,8 @@ device. `node scripts/smoke-account-page.mjs --sdk <supabase.js>` replays the pa
 | `docs/phonotactic_blending_filter_spec.md` | Linguistic specification for the phonotactic validity filter used by the generator |
 | `docs/theme_tagging_report.md` | Build report for the dictionary's `themes` tags (an offline, LLM-assisted pipeline with adversarial review); the spot-check surface — to fix a word, edit its `themes` array in `data/hebrew_words.json` and bump the `?v=` |
 | `docs/reference/` | How each component works (storage, i18n, shared blocks, Font Maker, dashboard, generator, Torah/trope, ops) — indexed from `CLAUDE.md` |
+| `docs/backend-architecture.md` | The plain-language map of the account layer — what talks to what, the keys, where the data lives, what runs on a schedule, where to look when something fails |
+| `db/migrations/`, `db/functions/`, `db/README.md` | The database side of accounts: one SQL file per change (applied once), the delete-account Edge Function, and how to apply and check them |
 | `docs/IMPROVEMENT_LOG.md`, `docs/IMPROVEMENT_ARCHIVE.md`, `docs/reference/loop-findings.md` | The improvement loop's ledger (current state), its history, and its measurements; guarded by `scripts/check-ledger.mjs`, compacted by `scripts/compact-ledger.mjs`, limits in `scripts/ledger-rules.mjs` |
 | `splash/` | iOS launch/splash screens + `gen_splash.py` generator (and its bundled Libre Baskerville fonts) |
 | `starting-fonts/` + `scripts/add_os_font.py` | Partner "starting fonts" behind `Hebrew_Font_Maker.html?start=<id>` (manifest + each font's upstream license), staged by the intake script |

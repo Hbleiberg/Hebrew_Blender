@@ -28,7 +28,7 @@ index below) — read the file for the area you are touching before you touch it
 | `hebrew_blend_generator.html` selectors or worksheet build | `docs/reference/generator.md` |
 | `torah_trainer.html` / `trope_tutor.html`, vowel color schemes, trope coloring | `docs/reference/torah-and-trope.md` |
 | `sw.js`, `splash/`, deploy, sitemap/`llms.txt`, the Playwright recipe | `docs/reference/ops.md` |
-| Accounts, sign-in, the header account chip, `js/supabase-config.js`, `js/ivrit-account.js`, cloud saves and `js/ivrit-saves.js`, Font Maker cloud projects and `js/ivrit-projects.js`, the account page `account.html`, `db/migrations/`, `db/functions/` | `docs/reference/accounts-and-cloud.md`, `db/README.md` |
+| Accounts, sign-in, the header account chip, `js/supabase-config.js`, `js/ivrit-account.js`, cloud saves and `js/ivrit-saves.js`, Font Maker cloud projects and `js/ivrit-projects.js`, the account page `account.html`, `db/migrations/`, `db/functions/` | `docs/reference/accounts-and-cloud.md`, `db/README.md`; the plain-language map of what talks to what: `docs/backend-architecture.md` |
 | The improvement loop (`/improveloop`), its ledger, its size rules | `.claude/skills/improveloop/SKILL.md`, `scripts/ledger-rules.mjs` |
 
 ## Accounts & cloud saves (Supabase) — REQUIRED patterns
@@ -41,6 +41,7 @@ Accounts are optional and additive; how the layer works: `docs/reference/account
 6. **Schema changes are `db/migrations/NNNN_<name>.sql`, applied once through the Supabase connector or the SQL editor** — RLS on and `to authenticated` on every table, never a `drop`, never RLS off (the folder is `db/`, not `supabase/`, so the GitHub integration never spins up a paid preview branch). Server-side code is an Edge Function whose source lives under `db/functions/<name>/`, deployed through the connector with its JWT check on — the browser never holds the secret key.
 7. **`IVRIT_SYNC_REGISTRY` in `js/ivrit-saves.js` is the only place that names synced keys, and sync never deletes local data or overwrites newer with older unasked** — a page that syncs a settings blob, folder tree or nested map passes `flush`/`onLocalChanged` to `attach()` (its in-memory state would otherwise undo a download), a tree entry `follows` its items' kind, and hashes are over canonical JSON (Postgres reorders keys).
 8. **What an account can store is stated in `privacy.legal.*` / `terms.legal.*` (EN + HE)** — a registry row that adds a new kind of data (student profiles, rosters, Font Maker projects…) updates that text in the same commit; `check-i18n` Check E keeps every `data-legal-block`'s slot count equal to its `\n` segments (the page keeps the English silently otherwise).
+9. **The free project is kept awake by `.github/workflows/supabase-keepalive.yml` calling `public.keepalive()` daily** — a migration never drops that function and the workflow stays enabled (a paused project refuses every sign-in until someone restores it by hand).
 
 ## Definition of done — check EVERY item before finishing a change
 - [ ] Edited a precached file (any root HTML page, `pwa.js`, a `js/` module, `locales/*.json`, an icon, the manifest)? → **bump `VERSION` in `sw.js`**. The most-missed step — the live site serves stale copies until it's done.

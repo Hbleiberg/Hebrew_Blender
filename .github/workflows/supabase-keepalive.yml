@@ -1,0 +1,81 @@
+# Keeps the free Supabase project awake.
+#
+# Supabase pauses a Free-plan project after about a week with too little *database* activity (its docs:
+# "typically a few user requests to the database each day"), and a paused project refuses every sign-in
+# until someone presses Restore in the dashboard — local saves keep working and the tools fail soft, but a
+# teacher on a second device sees an "unavailable" chip with no explanation. This workflow makes one tiny
+# database request a day with the site's public (publishable) key: GET /rest/v1/rpc/keepalive, which runs
+# public.keepalive() (db/migrations/0003_keepalive.sql) and answers "ok".
+#
+# It also checks, with the same key, that the three account tables refuse an anonymous read (401/403,
+# never 200): the publishable key alone reading no one's rows is what the whole security model rests on,
+# so a grant to `anon` that slips into a later migration turns this workflow red. A red run emails the
+# maintainer (GitHub's default for scheduled workflows).
+#
+# The URL and the key are read out of js/supabase-config.js at run time, so rotating the key stays a
+# one-file change and the workflow needs no repository secret. Nothing is committed by it. GitHub disables
+# a scheduled workflow after 60 days without commits to the repository; the Actions tab then shows an
+# "Enable workflow" button. Where this fits: README "Keeping it running", docs/backend-architecture.md.
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: '41 4 * * *'   # daily 04:41 UTC (an off-hour minute: the top of the hour is GitHub's busiest)
+  workflow_dispatch:
+  push:                    # a change to the workflow itself runs it once, on any branch
+    paths:
+      - '.github/workflows/supabase-keepalive.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the project URL and publishable key from js/supabase-config.js
+        run: |
+          url=$(grep -oP "^\s*url:\s*'\K[^']+" js/supabase-config.js)
+          key=$(grep -oP "^\s*anonKey:\s*'\K[^']+" js/supabase-config.js)
+          if [ -z "$url" ] || [ -z "$key" ]; then
+            echo "::error::Could not read url / anonKey from js/supabase-config.js"
+            exit 1
+          fi
+          echo "SUPABASE_URL=$url" >> "$GITHUB_ENV"
+          echo "SUPABASE_KEY=$key" >> "$GITHUB_ENV"
+          echo "Project: $url"
+
+      - name: Heartbeat — one real database query (rpc/keepalive must answer "ok")
+        run: |
+          out=$(curl -sS --max-time 30 -w '\n%{http_code}' \
+            -H "apikey: $SUPABASE_KEY" -H "Authorization: Bearer $SUPABASE_KEY" \
+            "$SUPABASE_URL/rest/v1/rpc/keepalive")
+          status=${out##*$'\n'}
+          reply=${out%$'\n'*}
+          echo "HTTP $status — $reply"
+          if [ "$status" != "200" ] || [ "$reply" != '"ok"' ]; then
+            echo "::error::The keep-alive query did not answer \"ok\" (HTTP $status). Is the project paused (Supabase dashboard → Restore)? Was db/migrations/0003_keepalive.sql applied?"
+            exit 1
+          fi
+
+      - name: Privacy check — the publishable key alone must not read any account table
+        run: |
+          fail=0
+          for table in profiles saves font_projects; do
+            status=$(curl -sS --max-time 30 -o /dev/null -w '%{http_code}' \
+              -H "apikey: $SUPABASE_KEY" -H "Authorization: Bearer $SUPABASE_KEY" \
+              "$SUPABASE_URL/rest/v1/$table?select=id&limit=1")
+            echo "$table: HTTP $status"
+            case "$status" in
+              401|403) ;;
+              *) echo "::error::An anonymous read of '$table' was not refused (HTTP $status). Check the grants and policies (db/README.md)."; fail=1 ;;
+            esac
+          done
+          exit $fail

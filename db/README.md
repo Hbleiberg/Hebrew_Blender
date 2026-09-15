@@ -11,6 +11,7 @@ the tables are used from the browser: `docs/reference/accounts-and-cloud.md`.
 |---|---|
 | `migrations/0001_accounts_and_saves.sql` | `profiles` (display name per account, filled by a trigger), `saves` (one row per saved item, ≤ 2 MB, 2000 per account), `font_projects` (catalogue rows for cloud Font Maker projects, 25 per account), the three private buckets `font-projects` / `font-exports` / `font-sources`, and the Row Level Security policies that keep every row and file private to its owner |
 | `migrations/0002_font_sources_originals.sql` | raises the `font-sources` bucket's per-file cap from 2 MiB to 15 MiB and adds WebP to its accepted types, so a Font Maker project's photos are kept at their original size (Phase 5); nothing else changes |
+| `migrations/0003_keepalive.sql` | `public.keepalive()`, a function that returns `'ok'` and reads nothing, callable with the publishable key: the daily GitHub Actions workflow `.github/workflows/supabase-keepalive.yml` calls it so the free project counts as active and is never paused (Phase 8); no table, no policy changes |
 
 Each file starts with a comment that explains every block in plain language.
 
@@ -52,7 +53,7 @@ Two ways; both are fine, and both record the migration in the project's `supabas
 
 A migration runs once. Running it again stops at the first `already exists` and changes nothing, so
 a second run is harmless. **Never edit an applied file** — write the next change as
-`migrations/0002_<short_name>.sql`, keeping the same style: RLS on for every table, policies
+`migrations/<next number>_<short_name>.sql`, keeping the same style: RLS on for every table, policies
 `to authenticated` with `(select auth.uid())`, functions with `set search_path = ''`, no `drop`, and
 nothing that deletes rows.
 
@@ -83,5 +84,7 @@ select user_id, count(*) as items, pg_size_pretty(sum(bytes)::bigint) as size fr
 - *"mime type … is not supported"* → the bucket's allow-list; extend it in a new migration
   (`update storage.buckets set allowed_mime_types = … where id = …`), never by hand in the dashboard,
   so the repository keeps matching the project.
-- The free plan pauses a project after about a week without traffic; the dashboard offers *Restore*.
+- The free plan pauses a project after about a week with too little database activity;
+  `.github/workflows/supabase-keepalive.yml` prevents that with one query a day (migration 0003). If it
+  happens anyway — the workflow was disabled, or GitHub was down for a week — the dashboard offers *Restore*.
   Sign-ins fail while it is paused, local saves are unaffected.
