@@ -3934,7 +3934,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.43';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.44';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -4151,6 +4151,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.44</strong> &mdash; <strong>Erasing part of a letter no longer stops you redrawing there.</strong> The <span class="ui">Erase</span> tool's <span class="ui">Sculpt</span> mode takes ink away by recording a hole in the paper &mdash; and that hole used to keep erasing forever, so any new stroke drawn through a patch you had already rubbed out vanished as you drew it, on screen and in the exported font. A sculpted hole now only takes away the ink that was already on the page when you swept it, exactly like a real eraser: rub something out, draw it again, and what you draw stays. Erasing still works on everything currently drawn, and sliding a stroke out from under an old hole still brings it back whole. <em>(September 2026)</em></li>
       <li><strong>v5.43</strong> &mdash; <strong>Save a project to your account.</strong> With a free IvritSuite account (the <span class="ui">☁ Sign in</span> button in the header) the <span class="ui">Save Project ▾</span> menu gains <span class="ui">Save to my account</span>: the project and its letter photos, at full size, are kept in your account and reopen from <span class="ui">Load Project ▾ → In your account</span> on any device. From then on changes keep saving by themselves (the ☁ badge next to Save shows Saved, Saving or Unsaved), a change made on another device is never overwritten without asking, and an exported font can be kept with the project. Your <code>.hebrewfont</code> files and the copies in this browser work exactly as before. <em>(September 2026)</em></li>
       <li><strong>v5.42</strong> &mdash; <strong><span class="ui">Reduce points</span> and <span class="ui">Round corners</span> stay on the letter you're editing.</strong> Nudging either slider and letting go on the value it started at left its before-snapshot armed, so the next letter you opened took the <strong>previous letter's outline</strong> the moment you touched the slider &mdash; clicking from letter to letter for a low-poly pass was impossible. The snapshot now clears whenever you change letters or steps, and the slider commits when it loses focus. <em>(September 2026)</em></li>
       <li><strong>v5.41</strong> &mdash; <strong>Add a whole set of letter photos in one go.</strong> The <span class="ui">Individual pictures</span> upload now takes as many files as you pick or drop: the first lands on the letter you're on and the rest fill the <strong>next empty letters in alef-bet order</strong>, while any file <strong>named for its letter</strong> (<code>alef</code>, <code>Alef.jpg</code>, <code>01-alef</code>, <code>05D0</code>, <code>uni05D0</code> or <code>&#1488;</code>) goes straight there no matter what order you picked it in. Anything with nowhere to go is named in the message instead of disappearing quietly, and the whole batch undoes in one <span class="ui">Ctrl+Z</span>. Uploading a photo is also finally <strong>undoable and autosaved</strong> on its own &mdash; before this it was neither. <span class="ui">QA Check</span> also gained an <span class="ui">Only show problems</span> tick: it hides every letter row and mark column with nothing wrong, so a 27-row grid collapses to just the collisions worth clicking. And the <span class="ui">Recent</span> list under <span class="ui">Load Project &#9662;</span> finally has a <strong>🗑 on every row</strong> &mdash; it holds six projects and quietly drops the oldest, so a few test scans used to push your real font out with no way to clear them. It asks before it removes. And the <span class="ui">Exported &#10003;</span> screen now offers <span class="ui">📤 Send to OpenSiddur</span> beside <span class="ui">📤 Send to IvritSuite</span> &mdash; the same one-click submission, addressed to the <strong>OpenSiddur Project</strong>'s free Hebrew font library, with your font and its LICENSE.txt attached. If your font grew from one of their starting fonts, the message says which one. <em>(September 2026)</em></li>
@@ -4288,7 +4289,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4301,7 +4302,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_43';
+  const CUR_KEY = 'fontmaker.changelog.v5_44';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -8995,7 +8996,8 @@ const ERASE_STEP = 12;       // partial-erase resample pitch (font units) — ma
    stroke, 'partial' CUTS a stroke (always through its full cross-section — strokes carry one width),
    and 'sculpt' takes ink away without touching the stroke array at all: it records a hole in the
    paper (l.draw.carves) that the stage masks out and drawRenderCanvas paints white, so the tracer
-   sees the carved shape. It is the only mode that can shave a sliver off ONE side of a stroke. */
+   sees the carved shape. It is the only mode that can shave a sliver off ONE side of a stroke.
+   A sculpt hole takes away only the ink that was already down when it was swept (drawGenOf). */
 const ERASE_MODES = ['sculpt', 'partial', 'whole'];
 const DOT_RMIN = 9;          // dotted-style dot-radius floor — measured: r=5 vanishes, r=7 survives, 9 keeps margin
 const DOT_MAX = 1024;        // dots per stroke ceiling (pitch stretches rather than exceed it)
@@ -9099,7 +9101,7 @@ function drawPlaceStamp(cl, x, y, e) {   // atomic: the whole stamp fits under t
   def.strokes.forEach(ds => {
     const o = _stampPartStroke(ds, k, st, na, def.noHollow);
     o.pts = o.pts.map(([px, py]) => [cc(x + px), cc(y + py), 0.5]);
-    cl.draw.strokes.push(o);
+    cl.draw.strokes.push(drawTagGen(o, cl.draw));
   });
   udPush(ud);
   renderStage(); renderControls();
@@ -9292,10 +9294,12 @@ function _carvePathD(c) {
   return d;
 }
 /* The in-flight erase mask (sculpt + partial). Luminance semantics: the white rect keeps everything,
-   black paths erase. Committed carves are re-emitted underneath the live path because this mask
-   REPLACES the persistent #fmCarveMask on the group while the pointer is down — without them, every
-   hole already sculpted would fill back in for the duration of the gesture. */
-function _drawEraseMaskEl(l, x, y) {
+   black paths erase. It carries ONLY the live path: the committed carves now hang off the
+   per-generation wrappers INSIDE #drawStrokes (drawStrokesSVG), so masking the outer group leaves
+   every hole already sculpted exactly where it is instead of re-stating it. An in-flight sweep is
+   by definition the newest carve, so applying it to the whole group — every generation at once —
+   is exactly the right preview of what pointerup will commit. */
+function _drawEraseMaskEl(x, y) {
   const ns = 'http://www.w3.org/2000/svg';
   const maskEl = document.createElementNS(ns, 'mask');
   maskEl.setAttribute('id', 'fmEraseMask');
@@ -9317,26 +9321,47 @@ function _drawEraseMaskEl(l, x, y) {
     maskEl.appendChild(el);
     return el;
   };
-  ((l && l.draw && l.draw.carves) || []).forEach(c => cut(_carvePathD(c), c.w));
   const seed = 'M ' + fx(x).toFixed(1) + ' ' + fy(y).toFixed(1) + ' L ' + fx(x).toFixed(1) + ' ' + fy(y).toFixed(1);   // M+L seed → a tap shows a round-cap dot immediately
   return { maskEl, live: cut(seed, _drawEraser) };
+}
+/* ═══ Carve generations — why an eraser doesn't outlive the ink it erased ═══
+   A carve is a hole in the paper, so it keeps erasing whatever lies under it. Left global that
+   makes an erased patch permanently un-drawable: redraw through it and the new stroke is eaten by
+   the old sweep (reported from the field, "I erased a letter and tried to redraw it — the erasing
+   persisted"). A real eraser only takes away marks that are ALREADY on the page.
+   So every stroke records the generation it was drawn in — `s.cg`, the number of carves that
+   existed at the time — and carve k erases only strokes with `cg <= k`. Absent = 0, which is what
+   every project saved before this carried, so an old drawing renders byte-for-byte as it did.
+   Moving a stroke out from under a carve of its OWN generation still restores it whole (the mask is
+   positional, exactly like sliding paper out from under an eraser) — that contract is untouched. */
+const drawGenOf = s => (s && s.cg > 0) ? s.cg : 0;                 // a stroke's generation (absent/garbage = 0)
+const drawCurGen = d => (d && d.carves) ? d.carves.length : 0;     // the generation a stroke drawn RIGHT NOW belongs to
+function drawTagGen(sk, d) {   // stamp the current generation onto a committing stroke — only when non-zero,
+  const g = drawCurGen(d);     // so a drawing with no carves keeps byte-identical stroke objects (and drawSig)
+  if (g) sk.cg = g;
+  return sk;
 }
 function drawStrokesSVG(l) {
   if (!(l.draw && l.draw.strokes.length)) return '';
   const c = stageColors().ink;
   const pathOf = poly => `M ${poly.map(q => fx(q[0]).toFixed(1) + ' ' + fy(q[1]).toFixed(1)).join(' L ')} Z`;
-  // Sculpted holes, as a luminance mask on the whole group — the persistent twin of the in-flight
-  // #fmEraseMask. Only ONE of this function's two call sites runs per render (draw step vs. the
-  // ghost on the trace step are exclusive branches), so the id is never emitted twice.
+  // Sculpted holes, as one luminance mask PER GENERATION — generation g's mask carries carves g…N-1,
+  // the ones swept after those strokes were drawn. Only ONE of this function's two call sites runs
+  // per render (draw step vs. the ghost on the trace step are exclusive branches), so the ids are
+  // never emitted twice. With no carves nothing is emitted at all and the markup is what it always was.
   const carves = l.draw.carves || [];
-  const maskSvg = carves.length
-    ? '<mask id="fmCarveMask" maskUnits="userSpaceOnUse" x="-600" y="-600" width="1800" height="1800">'
+  const gens = [...new Set(l.draw.strokes.map(drawGenOf))].sort((a, b) => a - b);
+  const maskSvg = gens.filter(g => g < carves.length).map(g =>
+    `<mask id="fmCarveMask${g}" maskUnits="userSpaceOnUse" x="-600" y="-600" width="1800" height="1800">`
       + '<rect x="-600" y="-600" width="1800" height="1800" fill="#fff"/>'
-      + carves.map(cv => `<path d="${_carvePathD(cv)}" fill="none" stroke="#000" stroke-width="${(cv.w * SC).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"/>`).join('')
-      + '</mask>'
-    : '';
-  // The <g> wrapper is the erasers' mask target ([data-di] lookups pierce it unchanged)
-  return maskSvg + '<g id="drawStrokes"' + (carves.length ? ' mask="url(#fmCarveMask)"' : '') + '>' + l.draw.strokes.map((s, i) => {
+      + carves.slice(g).map(cv => `<path d="${_carvePathD(cv)}" fill="none" stroke="#000" stroke-width="${(cv.w * SC).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"/>`).join('')
+      + '</mask>').join('');
+  // #drawStrokes is the LIVE eraser's mask target and deliberately carries no mask of its own — the
+  // committed carves hang off the inner per-generation wrappers, so an in-flight sweep can mask the
+  // whole group without re-stating (and mis-applying) what is already committed. [data-di] lookups
+  // pierce both wrappers unchanged. Generations are emitted in ascending order, which is drawing
+  // order, so the replay's DOM walk still reveals strokes in the order they were made.
+  const svgFor = (s, i) => {
     const gm = s.st ? drawStyleGeom(s) : null;
     if (gm) {
       const d = _drawGeomPathD(gm);
@@ -9352,7 +9377,14 @@ function drawStrokesSVG(l) {
       return `<path data-di="${i}" d="${pathOf(poly)}" fill="${c}"/>`;
     }
     return `<polyline data-di="${i}" points="${s.pts.map(q => fx(q[0]).toFixed(1) + ',' + fy(q[1]).toFixed(1)).join(' ')}" fill="none" stroke="${c}" stroke-width="${(s.w * SC).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"/>`;
-  }).join('') + '</g>';
+  };
+  const body = !carves.length
+    ? l.draw.strokes.map(svgFor).join('')
+    : gens.map(g => {
+        const inner = l.draw.strokes.map((s, i) => drawGenOf(s) === g ? svgFor(s, i) : '').join('');
+        return g < carves.length ? `<g mask="url(#fmCarveMask${g})">${inner}</g>` : inner;   // the newest generation has nothing swept over it yet
+      }).join('');
+  return maskSvg + '<g id="drawStrokes">' + body + '</g>';
 }
 /* ═══ Stroke replay — "watch this letter being written" ═══
    Purely presentational, and deliberately so: it hides the stroke elements drawStrokesSVG has
@@ -9443,7 +9475,10 @@ function drawSig(d) {
   if (!(d && d.strokes && d.strokes.length)) return '';
   const sig = d.strokes.map(s => {
     const a = s.pts[0] || [0, 0], b = s.pts[s.pts.length - 1] || [0, 0];
-    return s.w + (s.st || '') + '#' + s.pts.length + '@' + a[0] + ',' + a[1] + '>' + b[0] + ',' + b[1];
+    // The generation rides along only when non-zero — which carve sweeps a stroke sits under changes
+    // the traced shape, but every stroke drawn before generations existed is 0, so those signatures
+    // stay byte-identical and no old project is nagged into a re-trace it doesn't need.
+    return s.w + (s.st || '') + (s.cg ? '~' + s.cg : '') + '#' + s.pts.length + '@' + a[0] + ',' + a[1] + '>' + b[0] + ',' + b[1];
   }).join('|');
   // Sculpted holes are part of the drawing, so they belong in its signature — but the tail is
   // appended ONLY when there are any, so every project saved before sculpt existed keeps a
@@ -9552,7 +9587,7 @@ function drawPointerDown(e) {
       // Sculpt and Partial are identical under the pointer and differ only in what pointerup commits,
       // so they share this branch; the eraser width freezes here the way a stroke's w does, or a
       // mid-gesture [ / ] resize would retroactively rewrite the whole swept path.
-      const em = _drawEraseMaskEl(cl, x, y);
+      const em = _drawEraseMaskEl(x, y);
       stage().appendChild(em.maskEl);
       const grp = stage().querySelector('#drawStrokes');
       if (grp) grp.setAttribute('mask', 'url(#fmEraseMask)');
@@ -9676,7 +9711,7 @@ function drawPointerMove(e) {
       if (!g.maskEl.isConnected) stage().appendChild(g.maskEl);   // an async re-render wiped the SVG mid-gesture
       const grp = stage().querySelector('#drawStrokes');          // …and rebuilt the group without its mask attribute
       if (grp && grp.getAttribute('mask') !== 'url(#fmEraseMask)') grp.setAttribute('mask', 'url(#fmEraseMask)');
-      const mp = g.mp;   // the LIVE path — not maskEl's first, which is now a committed carve
+      const mp = g.mp;   // the LIVE path — the only one this mask carries
       mp.setAttribute('d', mp.getAttribute('d') + ' L ' + fx(x).toFixed(1) + ' ' + fy(y).toFixed(1));
       continue;
     }
@@ -9741,13 +9776,13 @@ function drawPointerUp(e) {
       const tap = Math.hypot(g.cur[0] - g.x0, g.cur[1] - g.y0) < 2;   // zero-length rule → a dot, never a degenerate 2-pt stroke
       const sk = { w: _drawBrush, pr: 0, pts: tap ? [[g.x0, g.y0, 0.5]] : [[g.x0, g.y0, 0.5], [g.cur[0], g.cur[1], 0.5]] };
       _drawApplyStyle(sk, g);
-      cl.draw.strokes.push(_drawTapFloor(sk));
+      cl.draw.strokes.push(drawTagGen(_drawTapFloor(sk), cl.draw));
       udPush(g.ud);
     }
   } else if (cl && cl.draw) {
     const sk = { w: _drawBrush, pr: (_drawPressure || (_drawSpeed && g.pointerType !== 'pen')) ? 1 : 0, pts: g.pts };
     _drawApplyStyle(sk, g);   // (hollow overrides pr to 0)
-    cl.draw.strokes.push(_drawTapFloor(sk));
+    cl.draw.strokes.push(drawTagGen(_drawTapFloor(sk), cl.draw));
     udPush(g.ud);   // udPush marks dirty → the strokes autosave
   }
   renderStage(); renderControls();   // live polyline → committed shape; stroke-count readout
@@ -9837,6 +9872,7 @@ function drawEraseSplit(cl, g) {
       const step = r.length > 2048 ? Math.ceil(r.length / 2048) : 1;   // keep fragments inside sanitizeDraw's per-stroke cap
       const fr = step > 1 ? r.filter((_, i) => i % step === 0 || i === r.length - 1) : r;
       const o = { w: s.w, pr: s.pr, pts: fr };
+      if (s.cg) o.cg = s.cg;     // …and the generation — a fragment is the same ink, cut, not redrawn
       if (s.st) { o.st = s.st;   // fragments keep the style + its one param
         if (s.st === 'c') o.na = s.na; else if (s.st === 'b') o.tl = s.tl;
         else if (s.st === 'd') o.ds = s.ds; else o.rim = s.rim; }
@@ -10046,7 +10082,7 @@ function drawRenderCanvas(d, fr) {
     if (poly.length < 3) return;
     ctx.beginPath(); tracePoly(poly); ctx.fill();
   };
-  d.strokes.forEach(s => {
+  const paintStroke = s => {
     const gm = s.st ? drawStyleGeom(s) : null;   // shared geometry layer = SVG/canvas parity (drawEnsureRaster determinism)
     if (gm) {
       if (gm.dots) { gm.dots.forEach(([cx, cy, r]) => { ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill(); }); return; }
@@ -10065,20 +10101,31 @@ function drawRenderCanvas(d, fr) {
       for (let i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i][0], s.pts[i][1]);
       ctx.stroke();
     }
-  });
-  // Sculpted holes go on last, in the paper's own colour — the canvas is opaque white by contract,
-  // so painting white IS erasing, and the tracer's 128 threshold reads it back as paper. This is the
+  };
+  // Sculpted holes go on in the paper's own colour — the canvas is opaque white by contract, so
+  // painting white IS erasing, and the tracer's 128 threshold reads it back as paper. This is the
   // whole export story for sculpt: both the commit path (_drawCommitNow) and the autosave-restore
   // path (drawEnsureRaster) rasterize through here, so the carve reaches the outline, the QA sheet
   // and the exported font with nothing else to wire up.
-  (d.carves || []).forEach(cv => {
+  // Ink and holes are REPLAYED in the order they happened — generation 0's strokes, carve 0, the
+  // strokes drawn after it, carve 1 … — which is all it takes for white paint to land only on ink
+  // that was already down, the same thing the stage's per-generation masks say (drawStrokesSVG).
+  // A drawing whose strokes are all generation 0 paints every stroke and then every carve, exactly
+  // as this always did, so an old project rasterizes to the same bytes.
+  const paintCarve = hole => {   // not `cv` — that is this function's canvas
     ctx.fillStyle = ctx.strokeStyle = '#fff';
-    if (cv.pts.length === 1) { ctx.beginPath(); ctx.arc(cv.pts[0][0], cv.pts[0][1], cv.w / 2, 0, Math.PI * 2); ctx.fill(); return; }
-    ctx.lineWidth = cv.w;
-    ctx.beginPath(); ctx.moveTo(cv.pts[0][0], cv.pts[0][1]);
-    for (let i = 1; i < cv.pts.length; i++) ctx.lineTo(cv.pts[i][0], cv.pts[i][1]);
+    if (hole.pts.length === 1) { ctx.beginPath(); ctx.arc(hole.pts[0][0], hole.pts[0][1], hole.w / 2, 0, Math.PI * 2); ctx.fill(); return; }
+    ctx.lineWidth = hole.w;
+    ctx.beginPath(); ctx.moveTo(hole.pts[0][0], hole.pts[0][1]);
+    for (let i = 1; i < hole.pts.length; i++) ctx.lineTo(hole.pts[i][0], hole.pts[i][1]);
     ctx.stroke();
-  });
+  };
+  const carves = d.carves || [];
+  for (let g = 0; g <= carves.length; g++) {
+    ctx.fillStyle = ctx.strokeStyle = '#000';   // back to ink after the previous generation's hole
+    d.strokes.forEach(s => { if (drawGenOf(s) === g) paintStroke(s); });
+    if (g < carves.length) paintCarve(carves[g]);
+  }
   return cv;
 }
 function drawCommit(advance) {   // warn-first wraps udDo — same shape as traceCurrent
@@ -20641,6 +20688,7 @@ function sanitizeDraw(d) {
     }
     if (pts.length) {
       const o = { w, pr: s.pr ? 1 : 0, pts };
+      if (Number.isFinite(+s.cg) && +s.cg > 0) o.cg = Math.round(+s.cg);   // carve generation (clamped to the surviving carves below)
       const st = ['c','b','d','h'].includes(s.st) ? s.st : (s.nib ? 'c' : null);   // nib:1 = legacy preview-build chisel
       if (st) {
         o.st = st;
@@ -20665,6 +20713,9 @@ function sanitizeDraw(d) {
     }
     if (pts.length) carves.push({ w, pts });
   }
+  // A generation past the last surviving carve would read as "immune to every hole" — harmless, but
+  // it has to agree with what actually loaded, so pin it to the carves that made it through.
+  for (const s of strokes) if (s.cg > carves.length) { if (carves.length) s.cg = carves.length; else delete s.cg; }
   const out = { v: 1, strokes };
   if (carves.length) out.carves = carves;   // absent when there are none, so an untouched drawing keeps its old shape
   return out;

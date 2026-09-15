@@ -229,6 +229,45 @@ export-warning chips) legitimately use the `_` versions plus `gotoAnchors('nikku
 After mutating state, call `renderStage(); renderControls();` (+ `renderGrids()` if tile status or
 selection changed) — `afterUndo` shows the canonical full refresh.
 
+### Draw step — strokes, holes, and carve generations
+A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);
+the OUTLINE the rest of the app works with only exists once `drawCommit` runs the tracer, and
+`drawSig`/`drawNeedsTrace` are what say the two have drifted apart. The three eraser modes differ
+only in what pointerup commits: **whole** drops a stroke, **partial** (`drawEraseSplit`) cuts one
+into fragments through its full cross-section, and **sculpt** (`drawCarveCommit`) touches the stroke
+array as little as it can and instead records the swept path as a hole in the paper,
+`l.draw.carves[] = {w, pts}` — the only mode that can shave a sliver off ONE side of a stroke.
+
+**A hole only erases ink that was already on the page when it was swept.** Every stroke carries
+`s.cg`, the number of carves that existed when it was committed, and carve *k* erases exactly the
+strokes with `cg <= k`. Absent `cg` = generation 0, so a project saved before generations existed
+renders and re-traces byte-for-byte as it did. Left global — one hole over everything, forever — a
+sculpted patch became permanently un-drawable: redrawing through it and watching the new stroke
+vanish as you drew it is the bug this exists to prevent. The three writers of a new stroke tag it
+(`drawTagGen`), a partial-erase fragment inherits its parent's `cg` (it is the same ink, cut, not
+redrawn), and `sanitizeDraw` pins a reloaded `cg` to the carves that actually survived the load.
+
+Both renderers say the same thing two ways, and must keep agreeing — SVG/canvas parity is what makes
+`drawEnsureRaster` deterministic:
+- **Stage** (`drawStrokesSVG`): one `<mask id="fmCarveMask<g>">` per generation carrying carves
+  `g…N-1`, each wrapping its own generation's strokes inside `#drawStrokes`. `#drawStrokes` itself
+  deliberately carries **no** mask — it is the LIVE eraser's target, so `_drawEraseMaskEl` holds only
+  the in-flight path (an in-flight sweep is by definition the newest carve and applies to every
+  generation at once) and never has to re-state what is already committed. `[data-di]` lookups pierce
+  both wrappers, and generations are emitted in ascending order so the stroke replay still reveals
+  strokes in drawing order. With no carves nothing extra is emitted at all.
+- **Export raster** (`drawRenderCanvas`): the drawing is REPLAYED in the order it happened —
+  generation 0's strokes, carve 0, the strokes drawn after it, carve 1 … The canvas is opaque white
+  by contract, so painting a carve white IS erasing and the tracer's 128 threshold reads it back as
+  paper; replaying chronologically is all it takes for white paint to land only on ink that was
+  already down. This is the whole export story for sculpt: `_drawCommitNow` and `drawEnsureRaster`
+  both rasterize through here, so a carve reaches the outline, the QA sheet and the exported font.
+
+A carve is fixed in letter space and NOT attached to a stroke, so sliding a stroke out from under one
+of its own generation brings it back whole, and a carve over blank paper subtracts nothing. Caps:
+`DRAW_STROKE_MAX` / `DRAW_CARVE_MAX` are the runtime ceilings **and** `sanitizeDraw`'s reload
+ceilings — they must stay equal, or a reload silently drops ink the editor let you place.
+
 ### QA Check grid (`#qaOverlay`)
 `qaBuild()` counts flagged cells per tab into `qaResult.counts` (the tab badges) and `qaResult.total`
 (the summary); `qaRenderGrid()` draws `qaRows()` × `qaColumns(qaTab)`. The grid is built in **two
