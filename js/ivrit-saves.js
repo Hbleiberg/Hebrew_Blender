@@ -203,7 +203,8 @@
       fmLastAuthor:      { key: 'hebrewFontMaker_lastAuthor',      ok: function (v) { return typeof v === 'string' && v.length > 0 && v.length <= 80; } },
       dictTranslitStyle: { key: 'hebrewDictionary_translitStyle',  ok: function (v) { return ['default', 'sbl', 'brill', 'modernIsraeli', 'ashkenazi', 'simpleStressed'].indexOf(v) >= 0; } },
       dictTtsRate:       { key: 'hebrewDictionary_ttsRate',        ok: function (v) { return numeric(v) && Number(v) >= 0.5 && Number(v) <= 1.5; } },
-      dictEmojiSettings: { key: 'hebrewDictionary_emojiSettings',  json: true, ok: function (v) { return isPlainObject(v); } }
+      dictEmojiSettings: { key: 'hebrewDictionary_emojiSettings',  json: true, ok: function (v) { return isPlainObject(v); } },
+      dictNikudColors:   { key: 'hebrewDictionary_nikudColors',     json: true, ok: function (v) { return isPlainObject(v); } }
     },
     live: { lang: true, darkMode: true },   // applied on every open page at once; the rest at the next load
     // The row's value: every field whose key is set (null when none is), with the held fields (what this

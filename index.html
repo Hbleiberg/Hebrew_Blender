@@ -1023,6 +1023,7 @@ function exportAllSettings() {
     flashCardProfileFolders:  ftRead('hebrewFlashCards_profilesFolders'),
     ...dictScalarsIfSet(),
     dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
+    dictNikudColors:     lsJSON('hebrewDictionary_nikudColors', {}),
     dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
     blenderLastState:    lsJSON('hebrewBlender_lastState', {}),
     torahTrainerSettings: lsJSON('hebrewTorahTrainer_settings', {}),
@@ -1055,7 +1056,8 @@ function exportAllSettings() {
 // Unfolded into the flat AllTools keys — only where the file does not carry them itself — so the validated
 // branches below apply each one; a field this hub does not know is left where it is.
 const IVRIT_SUITE_PREF_KEYS = { lang: 'uiLang', darkMode: 'darkMode', kbdLayout: 'kbdLayout', inputMode: 'inputMode', hebFont: 'hebFont', hebFontSize: 'hebFontSize',
-  livePreview: 'livePreview', fmLastAuthor: 'fmLastAuthor', dictTranslitStyle: 'dictTranslitStyle', dictTtsRate: 'dictTtsRate', dictEmojiSettings: 'dictEmojiSettings' };
+  livePreview: 'livePreview', fmLastAuthor: 'fmLastAuthor', dictTranslitStyle: 'dictTranslitStyle', dictTtsRate: 'dictTtsRate', dictEmojiSettings: 'dictEmojiSettings',
+  dictNikudColors: 'dictNikudColors' };
 // A font list is an array in this page's own export and a { name: {name, b64, family} } map in the account
 // backup (one cloud row per font). Both import: everything downstream reads an array.
 function ivritFontList(v) {
@@ -1129,6 +1131,10 @@ async function importAllSettings() {
     if (parsed.dictEmojiSettings) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewDictionary_emojiSettings') || '{}');
       localStorage.setItem('hebrewDictionary_emojiSettings', JSON.stringify(ivritSafeAssign(existing, parsed.dictEmojiSettings)));
+    }
+    if (parsed.dictNikudColors && Object.keys(parsed.dictNikudColors).length) {
+      const existing = ivritSafeParse(localStorage.getItem('hebrewDictionary_nikudColors') || '{}');
+      localStorage.setItem('hebrewDictionary_nikudColors', JSON.stringify(ivritSafeAssign(existing, parsed.dictNikudColors)));   // the page validates every colour on read
     }
     if (parsed.dictLastState && Object.keys(parsed.dictLastState).length) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewDictionary_lastState') || '{}');
@@ -1269,6 +1275,7 @@ async function eraseAllSettings() {
     'hebrewDictionary_translitStyle',
     'hebrewDictionary_ttsRate',
     'hebrewDictionary_emojiSettings',
+    'hebrewDictionary_nikudColors',
     'hebrewDictionary_lastState',
     'hebrewBlender_zoom',
     'hebrewBlender_hideZoomBar',
@@ -1364,6 +1371,7 @@ const IVRIT_CFG = {
       flashCardPresetFolders:   ftRead('hebrewFlashCards_presetsFolders'),
       flashCardProfileFolders:  ftRead('hebrewFlashCards_profilesFolders'),
       dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
+      dictNikudColors:     lsJSON('hebrewDictionary_nikudColors', {}),
       dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
       blenderLastState:    lsJSON('hebrewBlender_lastState',    {}),
       torahTrainerSettings:lsJSON('hebrewTorahTrainer_settings',    {}),
@@ -1418,6 +1426,7 @@ const IVRIT_CFG = {
       touched = true;
     }
     if (data.dictEmojiSettings)   { mergeObj('hebrewDictionary_emojiSettings', data.dictEmojiSettings);  touched = true; }
+    if (data.dictNikudColors && Object.keys(data.dictNikudColors).length) { mergeObj('hebrewDictionary_nikudColors', data.dictNikudColors); touched = true; }
     if (data.dictLastState && Object.keys(data.dictLastState).length) { mergeObj('hebrewDictionary_lastState', data.dictLastState); touched = true; }
     if (data.blenderLastState && Object.keys(data.blenderLastState).length) { mergeObj('hebrewBlender_lastState', data.blenderLastState); touched = true; }
     if (data.torahTrainerSettings){ mergeObj('hebrewTorahTrainer_settings',   data.torahTrainerSettings); touched = true; }

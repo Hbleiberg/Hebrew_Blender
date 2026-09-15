@@ -32,11 +32,12 @@
 | `livePreview` | `hebrewBlender_livePreview` | Generator live-preview toggle (`'1'`/`'0'`); scalar string, empty = never-set (skipped on import) |
 | `kbdLayout` | `hebrewBlender_kbdLayout` | On-screen Hebrew keyboard letter-layout choice (`'abc'` \| `'qwerty'`), site-wide across every keyboard carrier; scalar string, empty = never-set (skipped on import) |
 | `fmLastAuthor` | `hebrewFontMaker_lastAuthor` | Font Maker onboarding wizard's remembered author name; scalar string, empty = never-set (skipped on import) |
+| `dictNikudColors` | `hebrewDictionary_nikudColors` | The Dictionary's nikkud colour coding: `{ on, mode: 'letter'\|'highlight'\|'underline', overrides: {vowelKey: '#hex'} }`. **Validated on read** (`dictColorsLoad`): `colorizeHebrew` interpolates a colour into a `style` attribute, so an unknown vowel key or a value failing `/^#[0-9a-fA-F]{3,8}$/` is dropped — the blob can arrive from a restored file or an account |
 | `uiLang` / `darkMode` | `hebrewBlender_lang` / `hebrewBlender_darkMode` | The suite-wide UI-language choice (`'en'`\|`'he'`) and theme choice (`'1'`\|`'0'`). Registered on the maintainer's call: these are **identity** prefs, not per-device ones — the language especially is what a Hebrew-reading teacher would most notice losing on a new machine. `uiLang` is **validated on import** against `I18n.supported` (via `_ivLangOk`) because every page's no-flash `<head>` IIFE reads the stored value unvalidated; `darkMode` accepts only the two literal strings, so a stored `'0'` survives the surrounding truthiness tests |
 | `generatorPanels` / `flashCardPanels` / `dictPanels` | `hebrewBlender_panels` / `hebrewFlashCards_panels` / `hebrewDictionary_panels` | Which collapsible panels the user left open, for the three tools with no settings blob of their own (the dashboard, Torah Trainer and Trope Tutor carry theirs as `panelsCollapsed` inside their own settings blob). Flat `{data-i18n key: bool}` maps merged via `ivritSafeAssign`; empty = never-set (skipped on import). See [Panel-collapse memory](#shared-ux-components--the-conventions-all-tools-are-converging-on) |
 
-The eleven preference rows above — `inputMode`, `hebFont` / `hebFontSize`, `livePreview`, `kbdLayout`, `fmLastAuthor`,
-`uiLang` / `darkMode`, and the Dictionary's `dictTranslitStyle`, `dictTtsRate`, `dictEmojiSettings` — also travel with an
+The twelve preference rows above — `inputMode`, `hebFont` / `hebFontSize`, `livePreview`, `kbdLayout`, `fmLastAuthor`,
+`uiLang` / `darkMode`, and the Dictionary's `dictTranslitStyle`, `dictTtsRate`, `dictEmojiSettings`, `dictNikudColors` — also travel with an
 account, as the cloud module's one *IvritSuite preferences* row (`SUITE_PREFS` beside the registry in `js/ivrit-saves.js`;
 `docs/reference/accounts-and-cloud.md` → *The suite-wide preferences row*). The three panel maps, `dictAudioEnabled` and
 `dictLastState` stay per device.

@@ -352,7 +352,7 @@ try {
     const have = ['hebrewTropeTutor_settings', 'hebrewTorahTrainer_settings', 'hebrewFlashCards_settings', 'hebrewBlender_lastState', 'hebrewDashboard_settings'].filter(k => !D[k]);
     const fcOmit = (REG.find(e => e.tool === 'FlashCards' && e.kind === 'settings') || {}).omit || [];
     check('0: the Flash Cards settings row omits the four fields the machine decides, and nothing else', JSON.stringify(fcOmit.slice().sort()) === JSON.stringify(['audioEnabled', 'hideHomeBtn', 'sheetDuplex', 'ttsRate']), JSON.stringify(fcOmit));
-    check('0: every settings-blob page wrote its default store; the registry and the suite-wide keys were read', have.length === 0 && REG.length >= 20 && suiteKeys.size === 11, JSON.stringify({ missing: have, reg: REG.length, suite: suiteKeys.size }));
+    check('0: every settings-blob page wrote its default store; the registry and the suite-wide keys were read', have.length === 0 && REG.length >= 20 && suiteKeys.size === 12, JSON.stringify({ missing: have, reg: REG.length, suite: suiteKeys.size }));
     check('0: 0 pageerrors while capturing', errs.length === 0, errs.join(' | '));
   }
   // ---- 1. device A's data -------------------------------------------------------------------------------
