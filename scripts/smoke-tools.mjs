@@ -65,7 +65,20 @@ const PAGES = [
     },
     rows: ['settings:default'],
     expand: `openSettingsAtPanel('cloud');`,
-    urlKeep: 'parsha=Bereshit&v=1:1'
+    urlKeep: 'parsha=Bereshit&v=1:1',
+    // E. the chosen translation stays chosen when this book's list does not offer it: a substitute is shown, never saved
+    extra: async ({ browser, tag }) => {
+      const { ctx, page, errors } = await openPage(browser, 'torah_trainer.html', { seed: { hebrewTorahTrainer_settings: JSON.stringify({ translationVersion: 'Made Up Version', showTranslation: true }) } });
+      const r = await page.evaluate(async () => {
+        fetchVersionsList = async () => [{ versionTitle: 'The Holy Scriptures: A New Translation (JPS 1917)', language: 'en', license: 'Public Domain' }, { versionTitle: 'Other English', language: 'en', license: 'Public Domain' }];   // Sefaria is blocked here: a canned list
+        await populateVersionDropdown('Genesis');
+        saveSettingsFlush();
+        return { stored: JSON.parse(localStorage.getItem('hebrewTorahTrainer_settings')).translationVersion, inMemory: settings.translationVersion, shown: document.getElementById('ttVersionSelect').value, effective: effectiveVersion() };
+      });
+      check(tag + ' E: a translation this book does not offer stays the stored choice; the substitute is only shown', r.stored === 'Made Up Version' && r.inMemory === 'Made Up Version' && /JPS 1917/.test(r.shown) && /JPS 1917/.test(r.effective), JSON.stringify(r));
+      check(tag + ' E: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
   },
   {
     file: 'flash_cards.html', tool: 'FlashCards', host: '#cloudSavesPanel',

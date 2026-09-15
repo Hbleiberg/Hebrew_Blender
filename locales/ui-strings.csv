@@ -3682,6 +3682,7 @@ torah.color.scheme_reset,Reset,איפוס,vowel scheme button,
 torah.color.scheme_talam,TaL AM,תל-עם,vowel scheme button,
 torah.color.trope_reset,Reset,איפוס,trope scheme button,
 torah.confirm.reset_all,Reset all Torah Trainer settings to defaults?,לאפס את כל הגדרות מאמן התורה לברירת המחדל?,confirm dialog,
+torah.confirm.reset_all_cloud,Reset all Torah Trainer settings to defaults on this device? The copy in your account stays; the next sync asks which one to keep unless you delete it from Cloud saves.,לאפס את כל הגדרות מאמן התורה לברירת המחדל במכשיר הזה? העותק בחשבון נשאר; הסנכרון הבא ישאל איזה מהם לשמור אלא אם תמחקו אותו משמירות בענן.,confirm dialog while signed in,
 torah.confirm.reset_trope_colors,Are you sure? This resets your custom trope-family colors to the defaults.,האם אתם בטוחים? פעולה זו מאפסת את צבעי משפחות הטעמים המותאמים אישית שלכם לברירת המחדל.,confirm dialog,
 torah.confirm.reset_vowel_colors,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים אישית שלכם עבור ערכות ברירת המחדל ותל-עם כאחד.,confirm dialog,
 torah.controls.custom_range_button,Custom range…,טווח מותאם…,button,
@@ -3996,7 +3997,9 @@ torah.a11y.skip_to_reading,Skip to the reading,דילוג לקריאה,Skip-link
 trope.about.body,"Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"">PocketTorah</a> recordings (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press ❓ Tour in the header. Companion reader: <a href=""torah_trainer.html"">Torah Trainer</a>.","מאמן הטעמים מלמד את טעמי המקרא של התורה עם דוגמאות מושרות אמיתיות שנלקטו מהקלטות <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"">PocketTorah</a> (CC BY-SA 4.0) ומהטקסט העברי של Sefaria. חדשים כאן? לחצו על ❓ סיור בכותרת. קורא משלים: <a href=""torah_trainer.html"">מאמן התורה</a>.",about panel prose,html; keep the two <a> links
 trope.about.reset_all,↺ Reset all Trope Tutor settings,↺ איפוס כל הגדרות מאמן הטעמים,button,leading-emoji
 trope.confirm.reset_all,Reset all Trope Tutor settings to defaults?,לאפס את כל הגדרות מאמן הטעמים לברירת המחדל?,confirm dialog,
+trope.confirm.reset_all_cloud,Reset all Trope Tutor settings to defaults on this device? The copy in your account stays; the next sync asks which one to keep unless you delete it from Cloud saves.,לאפס את כל הגדרות מאמן הטעמים לברירת המחדל במכשיר הזה? העותק בחשבון נשאר; הסנכרון הבא ישאל איזה מהם לשמור אלא אם תמחקו אותו משמירות בענן.,confirm dialog while signed in,
 trope.confirm.reset_progress,Reset your per-trope mastery and personal-best streak? This cannot be undone.,לאפס את השליטה בכל טעם ואת רצף השיא האישי? לא ניתן לבטל פעולה זו.,confirm dialog,
+trope.confirm.reset_progress_cloud,"Reset your per-trope mastery and personal-best streak on this device? The copy in your account stays, and the next sync merges that mastery back in unless you delete it from Cloud saves.","לאפס את השליטה בכל טעם ואת רצף השיא האישי במכשיר הזה? העותק בחשבון נשאר, והסנכרון הבא ימזג את השליטה הזו בחזרה אלא אם תמחקו אותו משמירות בענן.",confirm dialog while signed in (the account copy is merged back by the next sync),
 trope.drill.back_to_learn,Back to Learn,חזרה ללימוד,button,
 trope.drill.choices_aria,Answer choices,אפשרויות תשובה,choices group aria,aria-label only
 trope.drill.choose_again,choose again to answer,בחרו שוב כדי לענות,melody choice subtext,

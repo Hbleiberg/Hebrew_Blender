@@ -241,3 +241,31 @@ from `torah_trainer.html`.
 
 ---
 
+
+## Cloud saves — what the two pages round-trip
+
+Both pages sync one settings blob (and the Trope Tutor its mastery progress) through the shared module
+(`docs/reference/accounts-and-cloud.md`); what matters here is what a download must not change.
+
+- **Torah Trainer's translation version is display-only when it cannot be honoured.** `settings.translationVersion`
+  is the teacher's choice and is written only by the Version box (and once, as a first-ever default, by
+  `populateVersionDropdown`). When a book's licence-filtered list does not offer it, or the version returns no
+  English for a passage, the substitute (JPS 1917, else the first safe version) lives in `_versionFallback`,
+  `effectiveVersion()` is what every `fetchSefariaText` call and the Version box / footer show, and the stored
+  choice travels through a sync untouched. The fallback is cleared on a book change and by a new choice.
+- **A download during the handout print override waits.** `onLocalChanged` sets `_pendingCloudReread` while
+  `_handoutActive` (the module's flush is a no-op then, so the download stays in the store) and `_handoutExit`
+  runs `cloudReread()` — the `resetAllSettings()` sequence plus `syncParshaSelect`, `syncHandoutForm` and the
+  fallback reset — afterwards. The Trope Tutor's hook also rebuilds the drill-scope box (`buildDrillScopeSel`),
+  which is otherwise built once at init.
+- **A font this device lacks stays chosen.** `setHebFont` on an unknown name keeps `settings.hebFont`, clears
+  the `.font-opt` highlights and, once `refreshMyFonts()` has answered (`_myFontsLoaded`), shows
+  `shared.fonts.missing_note` under `#fontOptions`.
+- **A deliberate reset forgets the sync memory** (`IvritSaves.forgetRow`) so the next listing reads the row as
+  changed in both places: the settings blob is asked about on the account screen, the Trope mastery is merged
+  back losslessly — a reset never overwrites the account's copy by itself. The confirms say so while signed in
+  (`*.confirm.reset_*_cloud`).
+- By design: `?parsha=` / `?holiday=` deep links persist the reading and travel (a bookmark on one device is
+  the next device's starting point); `lastPos` and `loopVerse` stay per device (omitted); the Trope merge
+  maxes `w` as well as `r` (mastery can read lower after a lossless merge, never higher than either side);
+  `progress.v` is maxed and then forced to the current schema version.

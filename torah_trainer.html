@@ -1193,6 +1193,7 @@ body.dark .btn-secondary:hover { background:#2a3349; }
 
 /* ───── Font selector (two-column grid, matches hebrew_blend_generator.html:1699-1721) ───── */
 .font-options { display:grid; grid-template-columns:1fr 1fr; gap:4px; }
+.font-missing-note { margin: 4px 0 0; font-size: 0.78rem; color: var(--muted, #6b6050); }
 .font-section-hdr {
   font-size:0.7rem; color:var(--muted); font-weight:700;
   letter-spacing:0.08em; text-transform:uppercase;
@@ -2531,7 +2532,11 @@ function _sliderNum(val, sliderId, dflt) {
   return sl ? Math.min(parseFloat(sl.max), Math.max(parseFloat(sl.min), n)) : n;
 }
 function resetAllSettings() {
-  if (!confirm(I18n.t('torah.confirm.reset_all'))) return;
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.user === 'function' && IvritAccount.user());
+  if (!confirm(I18n.t(signedIn ? 'torah.confirm.reset_all_cloud' : 'torah.confirm.reset_all'))) return;
+  // A deliberate reset: the module forgets what this device last synced, so the next sync asks which
+  // settings to keep instead of sending the reset up as "newer on this device".
+  if (signedIn && window.IvritSaves && typeof IvritSaves.forgetRow === 'function') IvritSaves.forgetRow('TorahTrainer', 'settings');
   localStorage.removeItem(STORAGE_KEY);
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   panelMemApply();   // panelsCollapsed is null again — back to the markup defaults
@@ -4019,6 +4024,12 @@ function cssEscape(s) {
    ══════════════════════════════════════════════════════ */
 let _fetchSeq = 0;   // stale-response guard: only the latest fetchAndRender may render
 let _readingLoading = false;   // true while a Sefaria reading fetch is in flight — the tour holds its reading steps until it resolves
+// The translation on screen when the teacher's chosen version is not in this book's list, or returned
+// no English for this passage: a substitute that is shown — in the Version box and the footer — and
+// never saved, so the choice itself travels through a sync untouched. Cleared on a book change and by
+// the Version box (a new choice).
+let _versionFallback = null;
+function effectiveVersion() { return _versionFallback || settings.translationVersion; }
 async function fetchAndRender() {
   const r = resolveRef();
   const seq = ++_fetchSeq;
@@ -4049,7 +4060,7 @@ async function fetchAndRender() {
     // translation" is a second asker: without this, a teacher with that ticked and the DISPLAY
     // toggle off got verses carrying translation:'' and a Hebrew-only clipboard, silently.
     const wantEnglish = settings.showTranslation || settings.copyIncludeTrans;
-    let verses = await fetchSefariaText(r.ref, wantEnglish, settings.translationVersion);
+    let verses = await fetchSefariaText(r.ref, wantEnglish, effectiveVersion());
     if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch
     const book = r.parshahEntry ? r.parshahEntry.book : (settings.customRef || '').split(/[ .]/)[0];
     // Requested a translation but Sefaria returned no English for this version +
@@ -4068,7 +4079,7 @@ async function fetchAndRender() {
     // translationVersion requirement from this gate recovers both cases the same way.
     let fallbackNote = '';
     if (settings.showTranslation && verses._engCount === 0 && book) {
-      const fb = await pickFallbackVersion(book, settings.translationVersion);
+      const fb = await pickFallbackVersion(book, effectiveVersion());
       if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch
       if (fb) {
         const alt = await fetchSefariaText(r.ref, true, fb);
@@ -4079,8 +4090,7 @@ async function fetchAndRender() {
           if (settings.translationVersion) {
             fallbackNote = I18n.t('torah.status.fallback_version', { version: settings.translationVersion, other: fb });
           }
-          settings.translationVersion = fb;
-          saveSettings();
+          _versionFallback = fb;   // shown, never saved
           verses = alt;
           // Keep the Version box honest about which text is actually on screen (it may have
           // finished loading with the old value while this fetch was in flight).
@@ -4109,10 +4119,10 @@ async function fetchAndRender() {
     // version title mismatch, or API hiccup.
     if (fallbackNote) {
       setStatus(fallbackNote, false);
-    } else if (settings.showTranslation && settings.translationVersion && verses._engCount === 0) {
+    } else if (settings.showTranslation && effectiveVersion() && verses._engCount === 0) {
       const reason = verses._engFound
-        ? I18n.t('torah.status.version_no_cover', { version: settings.translationVersion })
-        : I18n.t('torah.status.version_not_returned', { version: settings.translationVersion });
+        ? I18n.t('torah.status.version_no_cover', { version: effectiveVersion() })
+        : I18n.t('torah.status.version_not_returned', { version: effectiveVersion() });
       setStatus(reason, true);
     } else {
       setStatus('', false);
@@ -5384,8 +5394,9 @@ async function refreshMyFonts() {
       family: "'" + String(f.name).replace(/['"\\<>]/g, '') + "', serif",
       link: null, attr: 'made with IvritSuite Font Maker', load: { type: 'userfont' } }));
   } catch (e) { MY_FONTS = []; }
+  _myFontsLoaded = true;
   initFontSelector();   // rebuild the picker so the My Fonts section appears
-  if (MY_FONTS.some(f => f.name === settings.hebFont)) setHebFont(settings.hebFont);   // re-apply a persisted user font (now loadable via FontFace)
+  setHebFont(settings.hebFont);   // a persisted My Font applies now (loadable via FontFace); a name not on this device shows the note; a stock face just re-applies
 }
 
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
@@ -5479,13 +5490,26 @@ function taamimStack(stack) {
   const m = /^(.*?),\s*(serif|sans-serif|cursive|fantasy|monospace|system-ui)\s*$/.exec(stack);
   return m ? m[1] + ", 'IvritSuite Taamim', " + m[2] : stack + ", 'IvritSuite Taamim'";
 }
+// A face this device does not have (a My Font made elsewhere): the stored choice is kept — it travels
+// through a sync untouched — no button stays highlighted, and once the My Fonts store has answered a
+// note under the picker names what is missing.
+let _myFontsLoaded = false;
+function _markMissingFont(name) {
+  const opts = document.getElementById('fontOptions');
+  let note = document.getElementById('hebFontMissing');
+  if (!note && opts) { note = document.createElement('p'); note.id = 'hebFontMissing'; note.className = 'font-missing-note'; note.setAttribute('role', 'status'); note.setAttribute('aria-live', 'polite'); note.hidden = true; opts.insertAdjacentElement('afterend', note); }
+  if (!name) { if (note) { note.textContent = ''; note.hidden = true; } return; }
+  document.querySelectorAll('.font-opt').forEach(el => { el.classList.remove('active'); el.setAttribute('aria-pressed', 'false'); });
+  if (note && _myFontsLoaded && window.I18n) { note.textContent = I18n.t('shared.fonts.missing_note', { name }); note.hidden = false; }
+}
 function setHebFont(name) {
   // Unknown name (e.g. a persisted My Font before the async refreshMyFonts() has
   // populated MY_FONTS at init) → bail WITHOUT falling back — the dictionary
   // pattern. Falling back to HEB_FONTS[0] here would overwrite settings.hebFont
   // and permanently clobber the saved user-font choice on every page load.
   const f = allFonts().find(x => x.name === name);
-  if (!f) return;
+  if (!f) { _markMissingFont(name); return; }
+  _markMissingFont(null);
   settings.hebFont = f.name;
   loadHebFont(f);
   document.documentElement.style.setProperty('--heb-font', taamimStack(f.family));
@@ -6168,6 +6192,7 @@ function wireSettingsForm() {
   // Version dropdown
   document.getElementById('ttVersionSelect').addEventListener('change', e => {
     settings.translationVersion = e.target.value;
+    _versionFallback = null;   // a new choice: nothing to substitute
     textCache.clear();
     saveSettings();
     updateTransFooter();
@@ -6632,16 +6657,18 @@ async function populateVersionDropdown(book) {
     opt.dataset.license = v.license || '';
     sel.appendChild(opt);
   });
-  // Pick a default: JPS 1917 (Public Domain) if present, otherwise first safe version.
-  if (!settings.translationVersion || !safe.find(v => (v.versionTitle || '').trim() === settings.translationVersion)) {
-    const jps1917 = safe.find(v => /JPS\s*1917|1917.*JPS|Holy Scriptures.*1917|Holy Scriptures.*New Translation/i.test(v.versionTitle || ''));
-    const pick = jps1917 || safe[0];
-    if (pick) {
-      settings.translationVersion = (pick.versionTitle || pick.title || '').trim();
-      saveSettings();
-    }
+  // JPS 1917 (Public Domain) if present, otherwise the first safe version: the saved choice when there
+  // is none yet (a first-ever pick), only the shown substitute when the teacher's choice is not in this
+  // book's list — the choice stays stored and travels through a sync untouched.
+  _versionFallback = null;
+  const jps1917 = safe.find(v => /JPS\s*1917|1917.*JPS|Holy Scriptures.*1917|Holy Scriptures.*New Translation/i.test(v.versionTitle || ''));
+  const pick = jps1917 || safe[0];
+  if (!settings.translationVersion) {
+    if (pick) { settings.translationVersion = (pick.versionTitle || pick.title || '').trim(); saveSettings(); }
+  } else if (!safe.find(v => (v.versionTitle || '').trim() === settings.translationVersion)) {
+    if (pick) _versionFallback = (pick.versionTitle || pick.title || '').trim();
   }
-  sel.value = settings.translationVersion;
+  sel.value = effectiveVersion();
   updateTransFooter();
 }
 
@@ -6732,6 +6759,7 @@ function printReading() {
    blocks there). Idempotent via _handoutActive; saveSettings() is a no-op
    while active. */
 let _handoutActive = false;
+let _pendingCloudReread = false;   // a cloud download landed while the handout print override was up: re-read afterwards
 let _handoutSnap = null;
 let _handoutVersesSnap = null;   // currentVerses swapped out for a selected-verses-only handout
 function _handoutEnter() {
@@ -6802,6 +6830,7 @@ function _handoutExit() {
   if (gm && rd && rd.parentNode) rd.parentNode.insertBefore(gm, rd.nextSibling);
   if (_handoutVersesSnap) { currentVerses = _handoutVersesSnap; _handoutVersesSnap = null; }
   renderText();   // no saveSettings — the persisted settings never changed
+  if (_pendingCloudReread) { _pendingCloudReread = false; cloudReread(); }
 }
 function printHandout() {
   if (!currentVerses || !currentVerses.length) { showHintToast(I18n.t('torah.controls.print_need_reading')); return; }
@@ -7597,6 +7626,23 @@ document.addEventListener('DOMContentLoaded', init);
    writes it — the live `settings` object (and its 300 ms debounced save) would otherwise put the
    old blob straight back. The sequence is resetAllSettings() plus the two steps it skips
    (syncParshaSelect for a changed reading, the parsha/holiday select). ── */
+// Re-read the settings key the cloud module wrote and repaint everything rendered from it — the
+// resetAllSettings() sequence plus the parsha box, the handout bar and the version fallback.
+function cloudReread() {
+  settings = JSON.parse(JSON.stringify(DEFAULTS));
+  loadSettings();
+  _versionFallback = null;
+  panelMemApply();
+  syncFormToSettings();
+  syncHandoutForm();
+  setHebFont(settings.hebFont);
+  initColorPickers();
+  initTropeColorPickers();
+  applyTropeColors();
+  applyDisplayClasses();
+  syncParshaSelect();
+  fetchAndRender();
+}
 function initCloudSaves() {
   if (!window.IvritSaves) return;
   IvritSaves.attach({
@@ -7604,19 +7650,9 @@ function initCloudSaves() {
     panel: '#cloudSavesPanel',
     title: false,                 // the drawer panel's own title is the heading
     flush: saveSettingsFlush,     // a pending debounced save lands before the module reads the key
-    onLocalChanged: function () {
-      settings = JSON.parse(JSON.stringify(DEFAULTS));
-      loadSettings();
-      panelMemApply();
-      syncFormToSettings();
-      setHebFont(settings.hebFont);
-      initColorPickers();
-      initTropeColorPickers();
-      applyTropeColors();
-      applyDisplayClasses();
-      syncParshaSelect();
-      fetchAndRender();
-    },
+    // While the handout print override is up the stored blob is not what is on screen: the re-read waits
+    // for _handoutExit (the module's flush is a no-op meanwhile, so the download stays in the store).
+    onLocalChanged: function () { if (_handoutActive) { _pendingCloudReread = true; return; } cloudReread(); },
     open: function () { openSettingsAtPanel('cloud'); }   // the header chip's "Cloud saves…" item
   });
 }

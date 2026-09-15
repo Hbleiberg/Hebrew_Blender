@@ -1891,6 +1891,9 @@
     // A listing for the caller's own use; the panel is re-rendered afterwards (the queue renders it busy while it runs).
     plan: function (tool) { return enqueue(tool, function () { return planTool(tool); }).then(function (p) { render(tool); return p; }, function (e) { render(tool); throw e; }); },
     lastPlan: function (tool) { return plans[tool] || null; },   // the last listing, synchronously (a page hook reads a row's state from it)
+    // A deliberate reset on a page: forget what this device last synced for that row, so the next listing
+    // asks (a settings blob) or merges (progress) instead of sending the reset up as "newer here".
+    forgetRow: function (tool, kind, name) { var u = currentUser(); if (u) metaDelete(u.id, tool, kind, name || DEFAULT_NAME); },
     syncNow: syncNow,
     act: act,
     registry: function () { return IVRIT_SYNC_REGISTRY.concat(extraEntries).map(function (e) { return safeAssign({}, e); }); },
