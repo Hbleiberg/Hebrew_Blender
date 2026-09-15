@@ -429,6 +429,13 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
      Centre the slot and give the select the row's own 35 (pattern row-siblings-with-mismatched-heights, S362). */
   header [data-i18n-switcher] { align-self: center; }
   header .i18n-switch select.i18n-select { min-height: 35px; }
+  /* The account chip mounts immediately after that switcher slot and carries the same
+     align-self:stretch (js/ivrit-account.js), so it stood 41 beside the 35px buttons for exactly
+     the reason the switcher did — the stretch is right on every other page, where the chip sits in
+     a dedicated .hright row whose line IS the control row. Same two-line treatment, scoped to this
+     header so the shared module is left alone (pattern row-siblings-with-mismatched-heights). */
+  header > .ivacct { align-self: center; }
+  header > .ivacct .ivacct-btn { min-height: 35px; }
   /* i18n / RTL utilities — directional glyphs mirror under RTL; bidi-isolate protects number/Latin readouts */
   .dir-arrow { display: inline-block; }
   [dir="rtl"] .dir-arrow { transform: scaleX(-1); }
