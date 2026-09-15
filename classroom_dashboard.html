@@ -4543,6 +4543,12 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
 
   function extractYouTubeId(url) {
+    // settings.videoEmbedUrl arrives from storage, a hand-edited .ivrit or an older build, so
+    // it is not guaranteed to be a string. The caller's `url ?` guard only stops the falsy
+    // shapes; [] and {} are truthy, reached .match() and threw — and because the import had
+    // already written the junk to storage, every later load threw again and the board came up
+    // blank for good. Same failure as the radio-group crash 9614a80 closed, different field.
+    if (typeof url !== 'string') return null;
     const m = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
     return m ? m[1] : null;
   }
