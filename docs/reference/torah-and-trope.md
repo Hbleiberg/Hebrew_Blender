@@ -265,7 +265,9 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   changed in both places: the settings blob is asked about on the account screen, the Trope mastery is merged
   back losslessly — a reset never overwrites the account's copy by itself. The confirms say so while signed in
   (`*.confirm.reset_*_cloud`).
-- By design: `?parsha=` / `?holiday=` deep links persist the reading and travel (a bookmark on one device is
-  the next device's starting point); `lastPos` and `loopVerse` stay per device (omitted); the Trope merge
+- By design: `?parsha=` / `?holiday=` / `?ref=` deep links persist the reading and travel (a bookmark on one
+  device is the next device's starting point); a `?ref=` range seeds `parshahKey` only when the device has
+  none, so a teacher's own week survives opening a colleague's link; `lastPos` and `loopVerse` stay per
+  device (omitted); the Trope merge
   maxes `w` as well as `r` (mastery can read lower after a lossless merge, never higher than either side);
   `progress.v` is maxed and then forced to the current schema version.

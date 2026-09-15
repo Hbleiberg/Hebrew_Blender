@@ -4675,6 +4675,8 @@
   "torah.settings.reset_all": "↺ Reset all Torah Trainer settings",
   "torah.settings.title": "⚙️ Torah Trainer Settings",
   "torah.share.button": "🔗 Copy link",
+  "torah.share.copied_range": "Link copied — {ref}",
+  "torah.share.copied_span": "Link copied — a link holds one range, so it opens all of {ref}, including verses you did not tick.",
   "torah.shem.chip_label": "שם ה׳",
   "torah.shem.chip_tip": "This reading contains God's name. A printed page traditionally requires geniza (respectful storage), not disposal.",
   "torah.status.aliyah_audio_unavailable": "Audio for aliyah {n} is not available in PocketTorah.",

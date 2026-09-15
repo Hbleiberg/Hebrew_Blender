@@ -415,10 +415,18 @@ Writing a link **never navigates**; loading a link **never clobbers** the user's
   paste-in teacher share code (`shareCodeEncode`/`shareCodeDecode`) **and** a `?s=` URL twin
   (`copyShareLink`) read back at init; it is NOT paste-code-only.
   `torah_trainer.html`'s practice link (`copyPracticeLink`/`practiceLinkURL`) deliberately uses
-  **readable params** (`?parsha=&scope=&v=`, or `?holiday=<key>&v=` for one of the `HOLIDAY_READINGS`)
-  rather than an opaque blob — a link a student can read. A free-text custom range has no URL form
-  (its ref would be free text into Sefaria), so `syncShareBtn` HIDES the button (never disables it)
-  for that scope; the inbound `?holiday=` is regex-gated and must resolve through `holidayByKey`.
+  **readable params** (`?parsha=&scope=&v=`, `?holiday=<key>&v=` for one of the `HOLIDAY_READINGS`,
+  or `?ref=<Book C:V-C:V>` for an arbitrary verse range) rather than an opaque blob — a link a
+  student can read, colons and all (`prettyLinkURL` hands back the `%3A` that `URLSearchParams`
+  escapes). A verse range is what a teacher assigning six pesukim actually wants to send, so it
+  comes from whichever selection the teacher made last: a Copy-bar selection outranks the scope the
+  reading is open at, and a gappy one widens to its full span with the toast saying so. **What makes
+  `?ref=` safe is that neither end trusts a character of it** — `parseSharedRef` rebuilds the ref
+  from parsed integers plus a book that must be a key of `TORAH_BOOK_CHAPTERS`, so nothing the URL
+  carried can reach Sefaria; anything it cannot rebuild is `null` and the link is ignored in
+  silence. `?holiday=` may ride alongside `?ref=` to keep a narrowed holiday's name, and supplies it
+  only while `refWithin` says the range really sits inside that reading. `syncShareBtn` HIDES the
+  button (never disables it) when there is no shareable reading at all.
 - **`replaceState` is NOT universal:** the generator and dictionary mirror the link into the address bar;
   `torah_trainer` and `flash_cards` copy to the clipboard and leave it alone. Measured and deliberately
   LEFT as-is (both persist their state independently, so a refresh loses nothing, and the

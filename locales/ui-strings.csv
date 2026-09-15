@@ -3714,6 +3714,8 @@ torah.handout.shem_note,"This reading contains שם ה׳ — printed pages tradi
 torah.handout.geniza_check,Add a לגניזה marker to the printed page,הוספת סימון לגניזה בתחתית הדף המודפס,handout option toggle (shown only when a divine name is detected),לגניזה pinned Hebrew in both languages
 torah.handout.selected_only,Print only the selected verses,הדפסת הפסוקים שנבחרו בלבד,handout option toggle (row shown only while the Copy bar holds a selection; the count beside it reuses torah.copy.bulk_count),
 torah.share.button,🔗 Copy link,🔗 העתקת קישור,top-bar button that copies a link to the current reading,leading-emoji
+torah.share.copied_range,Link copied — {ref},הקישור הועתק — {ref},toast after copying a practice link narrowed to a verse range,mixed UI+content — do not translate {…}
+torah.share.copied_span,"Link copied — a link holds one range, so it opens all of {ref}, including verses you did not tick.","הקישור הועתק — קישור מכיל טווח אחד, ולכן הוא פותח את כל {ref}, כולל פסוקים שלא סומנו.",toast when a selection with gaps in it had to be widened to its full span,mixed UI+content — do not translate {…}
 torah.copy.button,📋 Copy,📋 העתקה,top-bar button next to Student handout,leading-emoji
 torah.copy.button_title,Copy verses to the clipboard — one verse or a selection,העתקת פסוקים ללוח — פסוק אחד או בחירה,button title,
 torah.copy.title,Copy verses,העתקת פסוקים,copy options bar title,

@@ -3014,6 +3014,62 @@ function parshaContainingRef(ref) {
   }
   return null;
 }
+// ── Shared verse-range refs (the ?ref= practice link) ────────────────────────
+// One builder for every ref string this page composes, so the Custom range picker, the copy-bar
+// selection and the share link can never drift into three spellings of the same passage.
+function canonicalRefFromParts(book, c1, v1, c2, v2) {
+  if (!book || !TORAH_BOOK_CHAPTERS[book] || !c1) return null;
+  if (!v1) return `${book} ${c1}`;                                  // whole chapter
+  if (!c2 || !v2 || (c2 === c1 && v2 === v1)) return `${book} ${c1}:${v1}`;
+  if (c2 === c1) return `${book} ${c1}:${v1}-${v2}`;                 // same-chapter shorthand
+  return `${book} ${c1}:${v1}-${c2}:${v2}`;
+}
+// An inbound ?ref= is untrusted, and its value would otherwise reach Sefaria as a free-text ref
+// (resolveRef hands settings.customRef straight to fetchSefariaText). So nothing from the URL is
+// ever passed through: the parts are parsed to integers, the book must be one of the five, each
+// chapter is clamped to that book, and the ref is REBUILT from what survived. Its own regex
+// rather than parseRefRange's, because a whole-chapter "Exodus 6" is a ref the picker can produce
+// and parseRefRange deliberately does not match; {1,3} also bounds what a junk paste can cost.
+const SHARED_REF_RE = /^([A-Za-z]+)\s+(\d{1,3})(?::(\d{1,3})(?:-(?:(\d{1,3}):)?(\d{1,3}))?)?$/;
+function parseSharedRef(raw) {
+  const m = String(raw || '').trim().match(SHARED_REF_RE);
+  if (!m) return null;
+  const book = m[1], maxC = TORAH_BOOK_CHAPTERS[book];
+  if (!maxC) return null;                                           // not one of the five books → ignore
+  // Out of range is refused, not clamped. The Custom range picker clamps because its number box
+  // then shows what actually loaded; a link has nowhere to show a correction, and quietly serving
+  // Deuteronomy 34 to a student who was sent Deuteronomy 40 is worse than the link not working.
+  const okC = n => n >= 1 && n <= maxC;
+  const c1 = +m[2];
+  if (!okC(c1)) return null;
+  if (m[3] === undefined) return canonicalRefFromParts(book, c1, 0, 0, 0);
+  let v1 = +m[3];
+  if (v1 < 1) return null;
+  if (m[5] === undefined) return canonicalRefFromParts(book, c1, v1, c1, v1);
+  let c2 = m[4] !== undefined ? +m[4] : c1, v2 = +m[5];
+  if (!okC(c2) || v2 < 1) return null;
+  // A reversed range is a typo, not a request — the same reading of intent applyCustomRange takes.
+  let s1 = c1, sv1 = v1, s2 = c2, sv2 = v2;
+  if (vcmp(s1, sv1, s2, sv2) > 0) { s1 = c2; sv1 = v2; s2 = c1; sv2 = v1; }
+  return canonicalRefFromParts(book, s1, sv1, s2, sv2);
+}
+// The heading a bare range should carry, so "Exodus 6:2-6:9" reads as "Va'eira — Exodus 6:2-6:9"
+// on the teacher's screen and the student's alike. `holidayKey` is the reading being narrowed, if
+// any: the holiday's name survives only while the range stays inside its own ref, exactly as the
+// Custom range picker has always treated it. It is deliberately NOT searched across all holidays
+// — Genesis 21 sits in both Vayera and the Rosh Hashanah reading, and calling a Vayera range
+// "Rosh Hashanah" because the verses happen to overlap would be wrong. null when the range sits
+// in no parsha either (the bare ref is then the label).
+function labelForCustomRef(ref, holidayKey) {
+  if (!ref) return null;
+  const h = holidayKey ? holidayByKey(holidayKey) : null;
+  if (h && refWithin(ref, h.ref)) return `${h.name} — ${ref}`;
+  // parshaContainingRef matches on the range's START, so "Genesis 6:5-6:12" would come back as
+  // Bereshit while half of it is already Noach. Require full containment before borrowing a name
+  // — the same stricter test the holiday arm above applies. No name beats a wrong one.
+  const p = parshaContainingRef(ref);
+  return p && refWithin(ref, p.ref) ? `${p.en} — ${ref}` : null;
+}
 // Aliyah numbers (1–7) of `parshaEn` that intersect the given verse range.
 function overlappingAliyot(parshaEn, r) {
   const al = aliyahLookup(parshaEn);
@@ -4140,6 +4196,7 @@ async function fetchAndRender() {
   } catch (e) {
     if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch; don't clobber it with an error
     _readingLoading = false;
+    syncShareBtn();   // nothing loaded: don't leave a live button offering a link to it
     console.error(e);
     // Only blame the network when the failure happened while fetching. Once the text is in hand
     // (netDone), a throw is a render/code fault — the Hebrew is often already on screen — so
@@ -6473,9 +6530,12 @@ function updateScopeSelectState() {
     if (!customOpt) {
       customOpt = document.createElement('option');
       customOpt.value = 'custom';
-      customOpt.textContent = I18n.t('torah.schedule.scope_full_reading');
       scopeSel.appendChild(customOpt);
     }
+    // Label on EVERY pass, not just on creation: this option is usually built during init, before
+    // I18n.ready resolves, and refreshScopeLabels above deliberately leaves custom scope alone —
+    // so a create-time-only write stranded the raw key in the picker for the rest of the session.
+    customOpt.textContent = I18n.t('torah.schedule.scope_full_reading');
     scopeSel.value = 'custom';
   } else {
     if (customOpt) customOpt.remove();
@@ -6584,18 +6644,17 @@ function applyCustomRange() {
   if (vs && ve && vs > ve) [vs, ve] = [ve, vs];
   if (!vs && ve) vs = 1;
   vsIn.value = vs || ''; veIn.value = ve || '';
-  let ref;
-  if (vs && ve && ve !== vs) ref = `${book} ${chap}:${vs}-${ve}`;
-  else if (vs)              ref = `${book} ${chap}:${vs}`;
-  else                      ref = `${book} ${chap}`;
+  const ref = canonicalRefFromParts(book, chap, vs, ve ? chap : 0, ve);
   // Narrowing a holiday reading keeps the holiday's name — "Rosh Hashanah — Day 1 — Genesis 21:1-8"
   // still says which holiday this is in the tab, the print band, the strip chip and the saved
   // reading — as long as the new ref sits inside the holiday's own ref; a jump outside it (Day 2's
   // chapter, a whole chapter the range does not cover) is a different reading and drops the name (S336).
+  // Outside a holiday the label now names the weekly parsha the range sits in, so the teacher's
+  // screen and a student opening the ?ref= link for the same verses read identically.
   const h = settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
   const inside = !!(h && refWithin(ref, h.ref));
   settings.customRef = ref;
-  settings.customLabel = inside ? `${h.name} — ${ref}` : null;
+  settings.customLabel = labelForCustomRef(ref, settings.holidayKey);
   settings.holidayKey = inside ? h.key : null;
   settings.scope = 'custom';
   saveSettings();
@@ -7249,9 +7308,36 @@ function syncBulkClasses() {
 function selectedCopyVerses() {
   return (currentVerses || []).filter(v => ttBulkSelected.has(`${v.chapter}:${v.verse}`));
 }
+// The canonical ref for whatever the copy bar has selected, so "Copy link" can share exactly those
+// verses. selectedCopyVerses filters through currentVerses, so the selection already arrives in
+// reading order and a range spanning a chapter boundary needs no arithmetic.
+function selectionSpanRef() {
+  const sel = selectedCopyVerses();
+  if (!sel.length) return null;
+  const br = currentReadingCtx && currentReadingCtx.ref ? parseRefRange(currentReadingCtx.ref) : null;
+  if (!br || !br.book) return null;
+  const a = sel[0], b = sel[sel.length - 1];
+  return canonicalRefFromParts(br.book, a.chapter, a.verse, b.chapter, b.verse);
+}
+// True when the selection is one unbroken run of the loaded reading — i.e. the span ref above names
+// exactly the selected verses and nothing more. A gappy selection ("2:16-2:20, 3:6") has no
+// single-ref spelling, so the link widens to the span and copyPracticeLink says so in the toast.
+function selectionIsContiguous() {
+  const sel = selectedCopyVerses();
+  if (sel.length < 2) return true;
+  // _handoutVersesSnap holds the real reading while the handout print override has currentVerses
+  // swapped for just the selected verses — against that subset every selection looks contiguous.
+  const list = _handoutVersesSnap || currentVerses || [];
+  const i = list.indexOf(sel[0]), j = list.indexOf(sel[sel.length - 1]);
+  return i >= 0 && j >= i && (j - i + 1) === sel.length;
+}
 // Textarea/count refresh. The preview always shows the PLAIN flavor — a textarea cannot
 // render the rich one — so with color-coded copy on it previews the text, not the styling.
 function updateCopyTextarea() {
+  // The selection decides what "Copy link" shares, so the button has to re-read it here. Hooked to
+  // this rather than syncBulkClasses because renderText calls that one — including from the handout
+  // print path, which has currentVerses temporarily swapped to just the selected verses.
+  syncShareBtn();
   const ta = document.getElementById('ttCopyTextarea');
   if (!ta) return;
   const verses = selectedCopyVerses();
@@ -7526,11 +7612,43 @@ async function init() {
   // Tutor's "See it in the parsha →", e.g. torah_trainer.html?parsha=Va'eira&v=6:2). Because it
   // SETS settings.parshahKey, the default-selection block below is skipped when it resolves and
   // runs normally otherwise. Anything unresolvable is silently ignored (mirrors the ?lang param).
-  let deepVerse = null;
+  // ?ref=<Book C:V-C:V> is the verse-range form, checked first; ?holiday=<key> the whole-reading one.
+  let deepVerse = null, deepRefApplied = false;
   try {
     const _dl = new URLSearchParams(location.search);
     const _dlParsha = _dl.get('parsha');
-    if (_dlParsha) {
+    // ?holiday= is read up front because ?ref= may carry one alongside it, to keep a narrowed
+    // holiday's name. The key is regex-gated and must resolve through holidayByKey — never a
+    // free-text ref.
+    const _dlHolRaw = _dl.get('holiday');
+    const _dlHol = _dlHolRaw && /^[a-z0-9-]+$/.test(_dlHolRaw) ? holidayByKey(_dlHolRaw) : null;
+    // ?ref=<Book C:V-C:V> — an arbitrary verse range, so a teacher can send exactly the pesukim
+    // they selected. parseSharedRef REBUILDS the ref from parsed integers and an allowlisted book,
+    // so not one character of the URL reaches Sefaria; anything it cannot rebuild is null and this
+    // branch never runs, leaving the device's own reading exactly as it was.
+    const _dlRef = parseSharedRef(_dl.get('ref'));
+    if (_dlRef) {
+      // A ?holiday= riding along only supplies the name, and only while the range stays inside
+      // that reading — so a forged pairing cannot mislabel a passage. The weekly parsha this
+      // device remembers is deliberately left alone: 'custom' scope never reads parshahKey, and a
+      // teacher returning to their own tab should still find their own week waiting.
+      const _inHol = !!(_dlHol && refWithin(_dlRef, _dlHol.ref));
+      settings.holidayKey = _inHol ? _dlHol.key : null;
+      settings.customRef = _dlRef;
+      settings.customLabel = labelForCustomRef(_dlRef, settings.holidayKey);
+      settings.scope = 'custom';
+      // A device that has never picked a week would otherwise fall into the default-selection
+      // block below, whose holiday-week path writes customRef and would overwrite this range.
+      // Seeding the containing parsha skips that block and leaves the student in the right week
+      // if they later step out of the custom scope; a device that already has one keeps it.
+      if (!settings.parshahKey) {
+        const _rp = parshaContainingRef(_dlRef);
+        if (_rp) settings.parshahKey = _rp.en;
+      }
+      deepRefApplied = true;
+      saveSettings();
+      syncParshaSelect();
+    } else if (_dlParsha) {
       const dm = findParshaByName(_dlParsha);
       if (dm) {
         settings.parshahKey = dm.en;
@@ -7546,22 +7664,18 @@ async function init() {
         const _dlV = _dl.get('v');
         if (_dlV && /^\d+:\d+$/.test(_dlV)) deepVerse = _dlV;   // regex REQUIRED: value flows into a querySelector
       }
-    } else {
-      // ?holiday=<key> — the practice link for one of the 17 HOLIDAY_READINGS. The key is
-      // regex-gated and must resolve through holidayByKey (never a free-text ref); the state
-      // writes mirror applyHolidayReading minus its render, which init performs below. The
-      // weekly parsha stays whatever this device remembers, exactly as the picker leaves it.
-      const _dlHol = _dl.get('holiday');
-      const _h = _dlHol && /^[a-z0-9-]+$/.test(_dlHol) ? holidayByKey(_dlHol) : null;
-      if (_h) {
-        settings.holidayKey = _h.key;
-        settings.customRef = _h.ref;
-        settings.customLabel = `${_h.name} — ${_h.ref}`;
-        settings.scope = 'custom';
-        saveSettings();
-        const _dlV = _dl.get('v');
-        if (_dlV && /^\d+:\d+$/.test(_dlV)) deepVerse = _dlV;
-      }
+    } else if (_dlHol) {
+      // ?holiday=<key> — the practice link for one of the 17 HOLIDAY_READINGS, whole. The state
+      // writes mirror applyHolidayReading minus its render, which init performs below. The weekly
+      // parsha stays whatever this device remembers, exactly as the picker leaves it.
+      settings.holidayKey = _dlHol.key;
+      settings.customRef = _dlHol.ref;
+      settings.customLabel = `${_dlHol.name} — ${_dlHol.ref}`;
+      settings.scope = 'custom';
+      saveSettings();
+      syncParshaSelect();   // otherwise the picker and the holiday strip strand on the stale week
+      const _dlV = _dl.get('v');
+      if (_dlV && /^\d+:\d+$/.test(_dlV)) deepVerse = _dlV;
     }
   } catch (e) { /* never let a bad URL break init */ }
 
@@ -7572,9 +7686,9 @@ async function init() {
       const match = findParshaByName(cur.name);
       if (match) {
         settings.parshahKey = match.en;
-      } else if (cur.ref && !settings.holidayKey) {
-        // Holiday week — start on the holiday reading via custom scope (unless a ?holiday=
-        // link already chose one above).
+      } else if (cur.ref && !settings.holidayKey && !deepRefApplied) {
+        // Holiday week — start on the holiday reading via custom scope (unless a ?holiday= or
+        // ?ref= link already chose the reading above).
         settings.customRef = cur.ref;
         settings.customLabel = `${cur.name} — ${cur.ref}`;
         settings.scope = 'custom';
@@ -7679,6 +7793,11 @@ function applyI18n() {
   try { initTropeColorPickers(); } catch (e) {}     // trope-family colour inputs — same
   try { buildTropeLegend(); } catch (e) {}          // family chips (glyphname keys)
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
+  // refreshScopeLabels leaves custom scope alone — that option is injected by
+  // updateScopeSelectState, which only runs on a render — so a language switch while a custom
+  // range or a holiday reading is open would strand it in the old language. Every ?ref= link
+  // lands in custom scope, so this is the common case, not the corner one.
+  try { const co = document.querySelector('#scopeSelect option[value="custom"]'); if (co) co.textContent = I18n.t('torah.schedule.scope_full_reading'); } catch (e) {}
   try { const og = document.querySelector('#parshaSelect optgroup'); if (og) og.label = I18n.t('torah.controls.holiday_group_label'); } catch (e) {}
   try { syncWeekStepLabels(); } catch (e) {}        // week-step buttons name their destination
   try { syncFsBar(); } catch (e) {}                // fullscreen bar: aliyah state + disabled reason
@@ -8016,17 +8135,46 @@ function maybeShowClickHint() {
    handshake); this is the missing emitter, so a tutor can hand a student the reading they just
    set up instead of talking them through rebuilding it. `scope` is new on the inbound side and
    optional, so every link already in the wild keeps behaving exactly as before. Nothing is
-   persisted and the address bar is left alone — this link is for sending, not for this tab. */
+   persisted and the address bar is left alone — this link is for sending, not for this tab.
+   ?ref=<Book C:V-C:V> carries an arbitrary verse range, so a teacher who has selected exactly the
+   pesukim they want — in the Custom range picker or by ticking them in the Copy bar — can send
+   those and nothing else. It is readable on purpose, like the rest of them; what makes it safe is
+   that both ends run it through parseSharedRef, which rebuilds the ref from parsed integers and an
+   allowlisted book rather than trusting a character of it. */
+// Finish a ?ref= link: the verses themselves, plus the holiday's key when the range stays inside
+// that reading, so a narrowed holiday keeps its name on the far side. No ?v= — a ?ref= link already
+// starts where the range starts, so the anchor would only repeat it.
+function refLinkURL(u, ref) {
+  u.searchParams.set('ref', ref);
+  const h = settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
+  if (h && refWithin(ref, h.ref)) u.searchParams.set('holiday', h.key);
+  return prettyLinkURL(u);
+}
+// The whole point of this page's params is that a student can read them, and URLSearchParams
+// percent-encodes the colon a verse reference is built on ("?ref=Exodus+6%3A2-6%3A9"). A colon is
+// a legal pchar in a query component (RFC 3986 3.4) and .get() decodes either spelling coming
+// back in, so hand it back its colons. Applies to the older ?v= anchor too.
+function prettyLinkURL(u) {
+  u.search = u.search.replace(/%3A/gi, ':');
+  return u.toString();
+}
 function practiceLinkURL() {
   const u = new URL(location.href);
   u.search = '';
+  // A copy-bar selection is the most recent and most explicit thing the teacher has said about
+  // which verses they mean, so it wins over the scope the reading happens to be open at.
+  const selRef = selectionSpanRef();
+  if (selRef) return refLinkURL(u, selRef);
   if (settings.scope === 'custom') {
-    // A holiday reading is one of the 17 HOLIDAY_READINGS keys, so it has a URL form too
-    // (?holiday=<key>); a free-text custom range does not — its ref would be free text into
-    // Sefaria — so the button stays hidden for that scope.
+    // A holiday reading is one of the 17 HOLIDAY_READINGS keys, so it keeps its own short
+    // ?holiday=<key> form — the link teachers already hold. Any other custom range spells its
+    // verses out as ?ref=, rebuilt by parseSharedRef so only a ref this page could have composed
+    // ever leaves here (and only one it can re-validate ever comes back).
     const h = settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
-    if (!h) return null;
-    u.searchParams.set('holiday', h.key);
+    const ref = parseSharedRef(settings.customRef);
+    if (h && (!ref || ref === parseSharedRef(h.ref))) u.searchParams.set('holiday', h.key);
+    else if (ref) return refLinkURL(u, ref);
+    else return null;
   } else {
     if (!settings.parshahKey || settings.holidayKey) return null;
     u.searchParams.set('parsha', settings.parshahKey);
@@ -8034,7 +8182,7 @@ function practiceLinkURL() {
   }
   const first = Array.isArray(currentVerses) ? currentVerses[0] : null;
   if (first) u.searchParams.set('v', first.chapter + ':' + first.verse);
-  return u.toString();
+  return prettyLinkURL(u);
 }
 // Hidden rather than disabled when there is nothing to share: a dead-looking live button is the
 // paper-cut this pass kept finding, and a control that cannot act should not be offered.
@@ -8045,7 +8193,17 @@ function syncShareBtn() {
 function copyPracticeLink(btn) {
   const url = practiceLinkURL();
   if (!url) return;
-  const done = () => showHintToast(I18n.t('shared.toast.copied'));
+  // Name the passage in the toast, so a teacher can see at the moment of copying whether they
+  // shared the range or the whole reading — and, when their ticks had gaps in them, that the link
+  // widened to the whole span, which is the one thing a single ref cannot say for itself.
+  const done = () => {
+    let msg = I18n.t('shared.toast.copied');
+    try {
+      const shared = new URL(url).searchParams.get('ref');
+      if (shared) msg = I18n.t(selectionIsContiguous() ? 'torah.share.copied_range' : 'torah.share.copied_span', { ref: shared });
+    } catch (e) {}
+    showHintToast(msg);
+  };
   if (navigator.clipboard) navigator.clipboard.writeText(url).then(done).catch(done);
   else {
     const ta = document.createElement('textarea');
