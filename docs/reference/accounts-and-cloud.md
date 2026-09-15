@@ -19,7 +19,7 @@ Supabase — no tool page ever calls the SDK directly:
 | `account.html` | The account page (in the sitemap, precached, own CSP): who the account is and its display name, what it holds tool by tool, **Download everything** (one zip) and **Delete my account**. Only the shared modules talk to Supabase; see "The account page and data rights" below. |
 | `db/functions/delete-account/` | The one Edge Function: removes the caller's Storage files, then the auth user (rows cascade). Deployed through the connector with the platform's JWT check on; `db/README.md` says how, and why it is not under `supabase/`. |
 | `scripts/smoke-account.mjs`, `scripts/smoke-saves.mjs` | Headless Playwright smokes: anonymous with the CDN blocked, remembered session offline, SDK served locally, URL contracts, Hebrew + dark at 800 px. |
-| `scripts/smoke-sync.mjs` | Headless end-to-end sync test against a fake cloud (`--sdk` required): Playwright answers the project's `/rest/v1/saves` from an in-memory table and replays the second-device flow — settings changed in both places, Sync everything, the account screen's settings choice, the dashboard opening with Schedule Sync live, the picker switching to the first class from the account when this device's own is the untouched default, and the resume-time re-read of another tab's write; then the Phase 9 scenarios — a page re-apply pushed up as one PATCH, skipped rows named and a run that reaches the dashboard past a bad row, deletions that read *Deleted on this device* / *Removed from your account* and never propagate by themselves, a preset naming its class, a same-named class folding into the account's, a weekly grid removed elsewhere removed here, the suite-wide preferences applying live (Hebrew and dark without a reload; a field this build cannot apply held), and the hub's account screen — the signpost to the owning tool, the split counts, a run that outlives the screen, the seed that is never uploaded; and a teacher's own font travelling, with the eleventh refused by name on a device whose My Fonts is already full rather than one of theirs being evicted. |
+| `scripts/smoke-sync.mjs` | Headless end-to-end sync test against a fake cloud (`--sdk` required, port 8081): Playwright answers the project's `/rest/v1/saves` from an in-memory table and replays the second-device flow — settings changed in both places, Sync everything, the account screen's settings choice, the dashboard opening with Schedule Sync live, the picker switching to the first class from the account when this device's own is the untouched default, and the resume-time re-read of another tab's write; then the Phase 9 scenarios — a page re-apply pushed up as one PATCH, skipped rows named and a run that reaches the dashboard past a bad row, deletions that read *Deleted on this device* / *Removed from your account* and never propagate by themselves, a preset naming its class, a same-named class folding into the account's, a weekly grid removed elsewhere removed here, the suite-wide preferences applying live (Hebrew and dark without a reload; a field this build cannot apply held), and the hub's account screen — the signpost to the owning tool, the split counts, a run that outlives the screen, the seed that is never uploaded; and a teacher's own font travelling, with the eleventh refused by name on a device whose My Fonts is already full rather than one of theirs being evicted. |
 | `scripts/smoke-fontmaker.mjs` | Headless end-to-end test of Font Maker cloud projects (`--sdk` required, port 8082): the fake cloud also answers the Storage endpoints; anonymous control, save, autosave, open in a fresh browser, conflict (Overwrite / Keep both), delete, export keep, a refused upload, the `?start=` contract, Hebrew + dark. |
 | `scripts/smoke-account-page.mjs` | Headless end-to-end test of the account page (`--sdk` required, port 8083): anonymous control, the listing, the display name, the download-everything zip parsed and checked in Node, delete (accepted and refused), Hebrew + dark. |
 | `scripts/smoke-migration.mjs` | The golden migration replay (`--sdk` required, port 8084): the six pages' real default blobs are captured, device A is built from them with every boolean flipped, enums moved, folders nested two deep, students, word lists, classes, a weekly grid and the suite-wide preferences; A opens every tool once and uploads everything; a fresh device B syncs, takes the account's settings where the screen asks, opens every tool and syncs until quiet; then every localStorage difference between A and B is classified — EXPECTED-OMIT, EXPECTED-NEVER-SYNC, EXPECTED-ENVELOPE, EXPECTED-SEED, LOADER-NORMALIZED (an allowlist, each line justified) — and anything UNEXPECTED fails the run (the table is printed either way). Then: a round trip B → A, a folder move, a student and a class deleted on B (never propagating by themselves), the account backup on a third device, and the second-device story (every tool opened anonymously before signing in) through the same classifier. |
@@ -30,9 +30,14 @@ Load order on a page (all deferred, so `window.I18n` and `window.IVRIT_SUPABASE`
 <script src="/js/supabase-config.js" defer></script>
 <script src="/js/ivrit-account.js" defer></script>
 <script src="/js/ivrit-saves.js" defer></script>
+<script src="/js/ivrit-projects.js" defer></script>   <!-- Font Maker and the account page only -->
 ```
-All three `js/` files are in `sw.js` `CORE_ASSETS` (network-first like every same-origin script), so editing
-any of them bumps `VERSION`. A page that only offers sign-in leaves the fourth line out.
+All four of those `js/` files — config, account, saves **and projects** — are in `sw.js` `CORE_ASSETS`
+(network-first like every same-origin script), so editing **any** of them bumps `VERSION`, `ivrit-projects.js`
+included. Two pages depart from the block: `account-test.html` stops at the third line (it offers sign-in
+only, no panel), and only `Hebrew_Font_Maker.html` and `account.html` add the fifth. Loading the saves
+module is not the same as attaching to it — those same two pages never call `attach()`; they rely on the
+module's own boot listener and use `inventory` / `bundleAll` / `forgetUser` / `errorText` directly.
 
 ## `IvritAccount` API
 
@@ -123,7 +128,7 @@ aware, transitions neutralized under `prefers-reduced-motion`. Sized to match th
 | `sb-hhkmqwpjsyxdeuhvcyis-auth-token` | the SDK | the session; erase-only (Erase All = signed out on this device) |
 | `sb-hhkmqwpjsyxdeuhvcyis-auth-token-code-verifier` | the SDK | transient, only during a PKCE round trip |
 | `ivritSuite_accountCache` | the module | `{email, name}` for the loading/offline chip; erase-only |
-| `ivritSuite_syncMeta` | `js/ivrit-saves.js` | what this device last synced, per account: `{v:1, users:{[uid]:{[tool]:{[kind]:{[name]:{h, id, u, at}}}}}}`; erase-only, never exported |
+| `ivritSuite_syncMeta` | `js/ivrit-saves.js` | what this device last synced, per account: `{v:1, users:{[uid]:…}}` keyed `[tool][kind][name]` → `{h, id, u, at}`, **plus four more fields at the same top level**: `held` (the `SUITE_PREFS` fields this build could not apply), `welcomed`, `lastWrite` and `written`. Two tabs read-modify-write this key, so `metaSave()` re-reads the stored copy first and keeps the newer write stamp per tool and kind. Erase-only, never exported |
 
 The hub's `eraseAllSettings` removes every `sb-` key plus the two `ivritSuite_*` keys (Erase All = signed
 out on this device) and reloads the page when a session was there, so the chip, the panels and the SDK's
@@ -139,19 +144,32 @@ no `frame-src`, no `wss:` (Realtime is not used). The test harness carries exact
 
 The SQL lives in `db/migrations/` (one file per change, applied in order; `db/README.md` explains how to
 apply one and why the folder is not `supabase/`). Everything a browser can reach is guarded by Row Level
-Security: every policy is `to authenticated` and compares `(select auth.uid())` with the row's owner, so
-the publishable key alone reads nothing and no account can see another account's rows or files.
+Security, and the publishable key is stopped by a second mechanism people routinely confuse with it.
+Every policy is `to authenticated` and compares `(select auth.uid())` with the row's owner, so no account
+can see another account's rows or files. What stops the **anonymous key** is the explicit
+`revoke all on table … from anon` in migration 0001: an anonymous request is refused by Postgres with
+`42501` before any policy is consulted. RLS on its own would hand back an **empty result set, not an
+error**. The distinction is load-bearing — the keep-alive workflow asserts the literal `42501` in the
+response body, so what it re-proves every morning is the revoke, not the policy (a gateway-level 401
+would not satisfy it).
 
 | Table | One row per | Caps | Notes |
 |---|---|---|---|
 | `profiles` | account | — | `display_name` (≤ 80) filled by the `handle_new_user` trigger from Google's name or the email's local part; the client may read and update its own row only; rows are created by the trigger and removed by the cascade from `auth.users` |
-| `saves` | saved item | `data` ≤ 2 MB; 2000 rows per account | `(user_id, tool, kind, name)` is unique, so the client upserts on it; `user_id` defaults to `auth.uid()` and is never sent; `bytes` and `updated_at` are set by a trigger (`updated_at` is the only ordering signal, `client_updated_at` is display-only); `tool` ∈ Suite / Worksheet / FlashCards / Dictionary / TorahTrainer / TropeTutor / Dashboard; `kind` matches `^[A-Za-z]{1,32}$`; `name` 1–120 chars |
+| `saves` | saved item | `data` ≤ 2 MB (a real CHECK); 2000 rows per account (**trigger-raised on `INSERT` only** — an `UPDATE` never re-checks it) | `(user_id, tool, kind, name)` is unique, so the client upserts on it; `user_id` defaults to `auth.uid()` and is never sent; `bytes` and `updated_at` are set by a trigger (`updated_at` is the only ordering signal, `client_updated_at` is display-only); `tool` is a **hard CHECK constraint** listing Suite / Worksheet / FlashCards / Dictionary / TorahTrainer / TropeTutor / Dashboard, mirroring `var TOOLS` in the module — **an eighth tool needs a migration widening it**, or every upload from that tool returns an opaque `23514`; `data_hash` is capped at 64 chars by its own CHECK; `kind` matches `^[A-Za-z]{1,32}$`; `name` 1–120 chars |
 | `font_projects` | cloud Font Maker project | 25 per account | catalogue row for a project whose gzipped JSON, downscaled images and exports live in Storage; `project_path` / `export_path` must start with the owner's id |
+
+**The 2 MB server cap is not the one a teacher meets.** The module guards at `MAX_BYTES = 1887436`
+(1.8 MB of canonical JSON) before uploading, because the server's 2 MB is measured over its own slightly
+wider text — so an oversize row is always refused client-side and the `23514` size path is unreachable from
+a browser. 1.8 MB is the number to quote when a deck will not upload. Listing and loading are paged at
+`PAGE_SIZE = 1000` (PostgREST's maximum), looping until a short page, so a full 2000-row account is exactly
+two round trips per tool.
 
 Limits come back as Postgres `check_violation` (`23514`) with a readable message; a duplicate name is
 `23505`; anything RLS refuses is `42501`. The saves adapter maps these to the panel's strings (`errorText`).
 
-**Buckets** (all private): `font-projects` (20 MB, gzip), `font-exports` (5 MB, ttf / woff2 / zip),
+**Buckets** (all private): `font-projects` (20 MB, gzip), `font-exports` (5 MB; `font/ttf`, `font/woff2`, `application/zip` **and `application/octet-stream`** — the fourth is not optional, it is what a browser often types a `.ttf` `Blob` as),
 `font-sources` (15 MB, jpeg / png / webp — raised from 2 MB by migration 0002 so photos keep their
 original size). Every object path is `<user id>/<project id>/<file>`, and the four
 `storage.objects` policies allow a signed-in user to read, upload (`upsert` needs update + select),
@@ -193,7 +211,7 @@ per localStorage key: `{ tool, kind, lsKey, shape, path?, nameField?, envelope?,
 **The suite-wide preferences row** (`Suite` / `prefs`, `virtual: SUITE_PREFS` beside the registry, single/assign,
 `ivritKey: suitePrefs`): one row assembled from the small site-wide keys every page reads — `hebrewBlender_lang`,
 `_darkMode`, `_kbdLayout`, `_inputMode`, `_hebFont`, `_hebFontSize`, `_livePreview`, `hebrewFontMaker_lastAuthor`,
-`hebrewDictionary_translitStyle`, `_ttsRate`, `_emojiSettings`; the three `*_panels` maps, the Dictionary's audio
+`hebrewDictionary_translitStyle`, `_ttsRate`, `_emojiSettings`, `_nikudColors`; the three `*_panels` maps, the Dictionary's audio
 switch and its last search stay per device. Every page syncs it (`Suite` is first in `TOOLS`, so a language change
 lands before the tools' own rows); only the hub shows its panel. `write` sets each field it can validate (the
 language against `I18n.supported`, the two-value switches, the slider ranges, the six romanization styles, a plain
@@ -218,14 +236,15 @@ font would hash differently on every device. The bytes live where they always di
 store backed by something asynchronous must be read before the plan is built — `planTool` calls `prime()` on
 every virtual entry first, and only when signed in, so an anonymous visit still opens nothing it would not
 have opened. **A download never evicts.** The shared `saveUserFont` drops the oldest font past
-`IV_FONTS_CAP`, which is right for an upload the teacher chose and wrong for a sync: at the cap the row is
+`IV_FONTS_CAP` (the page-side shared-block name; the module keeps its own deliberately separate copy of the
+IndexedDB constants as `FONTS_DB` / `FONTS_STORE` / `FONTS_CAP`), which is right for an upload the teacher chose and wrong for a sync: at the cap the row is
 refused with `cap` and the run names it ("this device already holds ten fonts"), so the account keeps the font
 and the device keeps all of its own. A teacher with ten different fonts on two devices therefore has twenty in
 the account and ten on each, which is the honest reading of a per-device limit. After a write the module fires
 `ivritsuite:fonts` on `window`; each picker page listens and re-runs `refreshMyFonts()`, which also re-applies
 a face the page had chosen by name but could not show until then.
 
-`attach({ tool, panel, title?, entries?, merges?, flush?, onLocalChanged?, open? })` is the whole per-page
+`attach({ tool, panel, title?, entries?, merges?, flush?, onLocalChanged?, open?, deviceBackup? })` is the whole per-page
 surface: `entries` is for harnesses (real tools list theirs in the registry), `merges` supplies the
 `page` helpers, `flush()` must cancel any debounced writer and write now, `onLocalChanged(kind, name)`
 must re-read that key into memory and re-render, `open` is registered with `IvritAccount.onOpenSaves`,
@@ -383,8 +402,18 @@ tools' own base-36 shape) and suffixes the item's own name on both sides (`copyL
 share one label.
 All cloud work runs through one per-tool promise queue; buttons are `aria-disabled` meanwhile;
 `showAppToast` is used when the page has it. Strings `shared.cloud.*`, re-rendered on `I18n.ready` /
-`I18n.onChange`. Public surface: `attach`, `mountPanel`, `refresh`, `plan`, `syncNow`, `act(tool, action, row)`,
-`local`, `cloud`, `registry`, `t`, `_test`.
+`I18n.onChange`. Public surface: `attach`, `mountPanel`, `refresh`, `plan`, `lastPlan`, `syncNow`, `act(tool, action, row)`,
+`forgetRow`, `openAccount`, `closeAccount`, `registerSummary`, `inventory`, `bundleAll`, `forgetUser`,
+`errorText`, `local`, `cloud`, `registry`, `t`, `_test`.
+
+**`forgetRow(tool, kind)` is an obligation, not a convenience.** A page whose "Reset all settings" or
+"Reset progress" button also syncs **must** call it from that handler (`torah_trainer.html` and
+`trope_tutor.html` do; the pattern is `if (signedIn && window.IvritSaves && typeof IvritSaves.forgetRow
+=== 'function')`). It forgets what this device last synced for that row, so the next listing **asks**
+(a settings blob) or **merges** (progress) instead of reading the wiped local copy as "newer here" and
+pushing the reset up. Without it a local reset silently becomes an account-wide reset — the one way this
+layer can destroy a teacher's work rather than duplicate it. `lastPlan(tool)` returns the last plan
+computed for a tool without recomputing it (the dashboard reads it to decide whether a sync landed).
 
 **Checking it from the browser**: `saves-test.html` § 2 runs the local backend signed out (every other
 key byte-identical, no sync memory), § 4 the pure checks (canonical hash vector, the state table, merges,
@@ -404,7 +433,7 @@ unreachable, and Hebrew + dark at 800 px.
 | `hebrew_blend_generator.html` (`Worksheet`) | `preset` map/item `hebrewBlender_presets` · `presetFolders` tree/page follows `preset` · `lastState` single/assign `hebrewBlender_lastState` (the remembered setup the page restores on load) | `flush: rememberSetup` (the setup is read off the live controls); `merges`: the tree through the shared pure `ftMergeTrees`; `onLocalChanged`: presets/folders → `renderPresets()`, last setup → `restoreLastSetup()` (re-applies the controls under `_lastSetupRestoring`; the next Generate uses them) | Advanced, a nested "Cloud saves" sub-panel (`worksheet.advanced.cloud_title`) right after Backup Presets, `title: false`; `open` un-collapses both through their own click handlers |
 | `hebrew_dictionary.html` (`Dictionary`) | `wordList` mapIn (`path: lists`, `nameField: name`, envelope `{v: 1}`, one row per list) merge page `ivritSuite_wordLists` — the page's small display prefs stay per device | `merges.wordList` = the pure, **uncapped** `mergeWordList` (words unioned by their `word` string, mine first; a cap would silently drop the other side's words, so a merged list may exceed 200 until words are removed); `onLocalChanged` re-renders the manager when it is showing; no `flush` (lists are written synchronously). The page's last-search replay (`hebrewDictionary_lastState`, per device) defers to the stored emoji settings for the emoji mode, gender and excluded categories (`_dictWithStoredEmoji`): a per-device snapshot must not put an older copy back over the synced preference — a `?s=` link keeps its own | inside the Word Lists manager (rebuilt on every refresh, so `wlRenderManagerInto` mounts the panel each render; the manager lists again each time it opens signed in); `open` = `wlOpenManager()` |
 | `classroom_dashboard.html` (`Dashboard`) | `preset` map/item `hebrewDashboard_presets` · `presetFolders` tree/page follows `preset` · `schedule` map/item `hebrewDashboard_schedules` (a value is either a v2 weekly grid or a legacy day array; replaced whole) · `scheduleFolders` tree/page follows `schedule` · `settings` single/assign `hebrewDashboard_settings` omitting `rosters`, `activeRosterId`, `pickerSessions`, `_geoCoords`, `*Collapsed`, `panelLayout`, `videoLayout`, `zoomLevel`, `hideZoomBar`, `keepAwake`, `lockPanelWidths`, `showTextSizeOptions` · `roster` mapIn over the **same key** (`path: rosters`, `nameField: name`, one row per class) merge page — two entries on one key work because the settings row omits what the roster rows carry | `flush: saveSettingsToStorage` (synchronous; it also reads the board text off the editor); `merges`: the two trees through the shared pure `ftMergeTrees`, `roster` through the pure `mergeRoster` (names unioned, mine first, no cap; the name stays mine unless it is the default); `onLocalChanged`: presets → `loadPresets()` + `renderPresets()`, schedules → `loadSchedulesStorage()` + `renderSavedSchedules()`, settings → `loadSettingsFromStorage()` then the `IVRIT_CFG.apply` tail (`applySettings` on a clone, the three render caches nulled, week summary / schedule UI / editor re-rendered), roster → `loadSettingsFromStorage()` + `ensureActiveClass()` + `normalizePickerSession()` + the drawer form and the student picker re-rendered | settings drawer, a "Cloud saves" sub-section (`dashboard.settings.cloud_head`) at the end of the *Presets* panel under the `.ivrit` backup, `title: false`; `open` = `openSettings()` + un-collapse the panel through its own title |
-| `index.html` (the hub; no rows of its own) | — | seven `attach()` calls — one per tool above and one for the suite-wide preferences row (`<details data-tool="Suite">`, first in the block, titled `shared.cloud.kind_suite_prefs`) — each with `title: false` into its own `<details>` inside the AllTools modal's "Cloud saves" block; `merges` = the folder trees through the hub's own `ftMergeTrees` copy only (a profile or word list changed in both places shows no button here and is merged inside its tool); `onLocalChanged` = `renderIvritInventory()` (nothing is in memory on the hub, so every shape is downloadable — the place to bring a fresh browser up to date) | the AllTools modal, between *My Fonts* and *Erase*; `open` opens the modal and scrolls to the block |
+| `index.html` (the hub; no rows of its own) | — | **one** `attach()` call, inside a `forEach` over the `.ie-cloud-host` elements — so adding a tool to the hub is a markup change (`<div class="ie-cloud-host" data-tool="…">`), never a new call. One host per tool above, plus one for the suite-wide preferences row (`<details data-tool="Suite">`, first in the block, titled `shared.cloud.kind_suite_prefs`) — each with `title: false` into its own `<details>` inside the AllTools modal's "Cloud saves" block; `merges` = the folder trees through the hub's own `ftMergeTrees` copy only (a profile or word list changed in both places shows no button here and is merged inside its tool); `onLocalChanged` = `renderIvritInventory()` (nothing is in memory on the hub, so every shape is downloadable — the place to bring a fresh browser up to date) | the AllTools modal, between *My Fonts* and *Erase*; `open` opens the modal and scrolls to the block |
 
 **`Hebrew_Font_Maker.html`** has no registry rows: its projects are `font_projects` rows plus Storage objects,
 through `js/ivrit-projects.js` — see *Font Maker projects* below. It loads the same three scripts plus
@@ -437,6 +466,10 @@ the Load menu and on the account screen, and the free plan's 1 GB / 5 GB egress 
 | `remove(id)` | every object in the three buckets, then the row (an orphaned row is visible and retryable; orphaned objects would not be) |
 | `saveExport(id, blob, name)` / `downloadExport(id)` | one export slot per project (older objects in the folder removed), `export_path` + `exported_at` on the row |
 | `count()` / `onChange(fn)` | the account-screen line; a callback after every write |
+| `refresh()` | drops the 30 s memo so the next `list()` re-fetches |
+| `projectFile(id)` | the packed cloud copy for the account page's download-everything zip |
+| `errorCode(err)` | the raw error → the code vocabulary below |
+| `limits` | `{gz, source, export, projects}` — the same numbers the size guards use, so a page states them without hardcoding |
 
 Errors reject with a code `IvritSaves.errorText` knows: Storage's shapes are normalised (`file_too_big`
 413, `bad_type` 415, `not_found` 404) and the cap's `23514` becomes `project_limit`. Rule 2 names this

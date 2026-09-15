@@ -163,13 +163,18 @@ sequenceDiagram
   F-->>P: the counts, and the page signs this device out
 ```
 
+The counts it reports (`saves`, `projects`) are **read before the delete, not after it** — the rows
+themselves go by cascade and are never re-counted, and the `profiles` row is not counted at all. So they
+say "this is what the account held", not "this is what was verified gone". Files are counted as they are
+removed, 100 at a time, recursing into each project's folder.
+
 ## The keys, and what each one can do
 
 | Key | Where it lives | What it can do |
 |---|---|---|
-| **Publishable key** (`anonKey`) | `js/supabase-config.js`, committed and served to every visitor | Names the project. Alone it reads nothing: every account table is revoked from the anonymous role, and the daily workflow proves that each morning. Rotating it is housekeeping (README, *Keeping it running*). |
+| **Publishable key** (`anonKey`) | `js/supabase-config.js`, committed and served to every visitor | Names the project. Alone it reads nothing: every account table is revoked from the anonymous role, and the daily workflow proves that each morning. Rotating it is housekeeping (README, *Keeping it running*). **Keep `url:` and `anonKey:` at the start of their lines in single quotes** — the daily workflow reads them out of the file with a text search, and double quotes, a template literal or a one-line object silently break it. |
 | **Session token** | the signed-in browser's localStorage (`sb-…-auth-token`), refreshed by the SDK | Acts as that one person. The database compares it with each row's owner (Row Level Security). *Sign out* removes it from that device only; *Erase All Settings* too. |
-| **Secret key** | nowhere in the repository and never in a page; Supabase hands it to the Edge Function as an environment variable | Bypasses Row Level Security. Only the delete-account function holds it, and that function first asks Auth whose token is calling, then deletes only that account. |
+| **Secret key** | nowhere in the repository and never in a page; Supabase hands it to the Edge Function as an environment variable | Bypasses Row Level Security. Only the delete-account function holds it, and that function first asks Auth whose token is calling, then deletes only that account. It reads `SUPABASE_SECRET_KEYS` (a JSON object, `.default`) and falls back to `SUPABASE_SERVICE_ROLE_KEY`. **Two things about this function are deliberate and worth not being surprised by:** it imports the SDK as `npm:@supabase/supabase-js@2` — a floating major version, unlike the browser's pinned build, so a redeploy can pick up a newer SDK than the one last tested; and its list of allowed calling sites still includes `http://localhost:8080` and `http://127.0.0.1:8080` alongside the two real ones, which is untidy rather than dangerous (a caller still needs a valid token for the account it is deleting). Changing either means editing the function and redeploying it. |
 | **SDK integrity hash** (`sdkIntegrity`) | `js/supabase-config.js` | The browser refuses to run the SDK file if its bytes differ from the pinned build. |
 | Google client secret, SMTP password | the Supabase dashboard only | Let Supabase talk to Google and to the email provider. Not in the repository. |
 
@@ -178,7 +183,7 @@ sequenceDiagram
 | Data | Where | Cap | Who can read it | Removed by |
 |---|---|---|---|---|
 | Who the account is: email, sign-in method, display name | Supabase Auth's user record + the `profiles` row a trigger creates | — | that account | *Delete my account* |
-| Saved items: presets, decks, settings, word lists, mastery progress, student profiles, class lists | one row each in `saves` (the item's JSON inside the row) | 2 MB per item, 2000 items per account | that account | *Delete from cloud* in a tool's panel; *Delete my account* |
+| Saved items: presets, decks, settings, word lists, mastery progress, student profiles, class lists | one row each in `saves` (the item's JSON inside the row) | 2 MB per item at the database; **1.8 MB is the real limit**, refused in the browser before anything is sent. 2000 items per account | that account | *Delete from cloud* in a tool's panel; *Delete my account* |
 | Font Maker projects | a `font_projects` row plus files in three private buckets: the gzipped project, the photos it was traced from (original size), the latest exported font | 25 projects per account; 20 / 15 / 5 MB per file | that account | 🗑 in *Load Project ▾ → In your account*; *Delete my account* |
 | The session | that browser's localStorage | — | that browser | *Sign out*, *Erase All Settings* |
 | This device's sync memory (what it last synced) | that browser's localStorage (`ivritSuite_syncMeta`) | — | that browser | *Erase All Settings* |
@@ -192,7 +197,7 @@ kind of stored data updates the policy in the same commit (`CLAUDE.md`, accounts
 
 | What | Where | When | Why |
 |---|---|---|---|
-| *Supabase keep-alive* | GitHub Actions, `.github/workflows/supabase-keepalive.yml` | daily | one database query with the publishable key so the free project is never paused for inactivity, then a check that the three account tables refuse an anonymous read; a failed run opens a tracking issue, closed by the next green run |
+| *Supabase keep-alive* | GitHub Actions, `.github/workflows/supabase-keepalive.yml` | daily | one database query with the publishable key so the free project is never paused for inactivity, then a check that the three account tables refuse an anonymous read — and it insists the refusal come from the database itself (the reply must carry Postgres error `42501`), because a gateway-level 401 would look identical while hiding a stray permission granted to the anonymous role; a failed run opens a tracking issue, closed by the next green run |
 | *pages build and deployment* | GitHub Actions (GitHub's own) | every push to `main` | the deploy — that run's success is what updates the live site |
 | *OpenSiddur font list audit* | GitHub Actions, `.github/workflows/os-fonts-audit.yml` | weekly | Font Maker starting fonts; not part of the account layer |
 
