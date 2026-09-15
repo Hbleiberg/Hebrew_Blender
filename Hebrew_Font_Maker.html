@@ -1187,6 +1187,7 @@ footer a { display: inline-block; padding-block: 5px; }
   .load-menu-sep { height: 1px; background: var(--border); margin: 4px 2px; }
   .load-menu-head { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 4px 10px 2px; }
   .load-menu-empty { font-size: 0.78rem; color: var(--muted); padding: 6px 10px; }
+  .load-menu-note { font-size: 0.72rem; color: var(--muted); padding: 2px 10px 6px; max-inline-size: 30ch; line-height: 1.35; }
   .load-menu-date { font-size: 0.7rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
   /* A Recent row is the load button PLUS its own 🗑. A button can't nest inside a button, so the row is a
      flex wrapper and the two controls are siblings — that also keeps the trash out of the load hit area. */
@@ -20088,6 +20089,13 @@ function fmCloudMenuRow() {
   const signedIn = !!fmCloudUser();
   return `<div class="load-menu-sep"></div><button class="load-menu-item" onclick="closeSaveMenu();${signedIn ? 'fmCloudSave()' : 'fmCloudSignIn()'}">${esc(signedIn ? _cT('menu_save', '☁ Save to my account…') : _cT('menu_sign_in', '☁ Sign in to save to your account'))}</button>`;
 }
+// Recent is this browser's own list — up to six WHOLE projects, photos and all, which is why it never
+// travels. On a second device that reads as "my projects are gone", so where accounts are offered the menu
+// says it once, under Recent and above the account section that is the actual way across.
+function fmCloudRecentNote() {
+  if (!fmCloudOn()) return '';
+  return `<div class="load-menu-note">${esc(_cT('recent_local', 'Recent is this browser only. Projects you save to your account open on any device.'))}</div>`;
+}
 function fmCloudLoadSection() {
   if (!fmCloudOn()) return '';
   const inner = fmCloudUser()
@@ -20101,7 +20109,7 @@ async function fmCloudFillLoadMenu(menu) {   // fills the placeholder once the l
   try { rows = await IvritProjects.list(); } catch (e) { err = e; }
   if (document.getElementById('loadMenu') !== menu || !host.isConnected) return;
   if (err) host.innerHTML = `<div class="load-menu-empty">${esc(fmCloudErrorText(err))}</div>`;
-  else if (!rows.length) host.innerHTML = `<div class="load-menu-empty">${esc(_cT('load_none', 'No projects in your account yet.'))}</div>`;
+  else if (!rows.length) host.innerHTML = `<div class="load-menu-empty">${esc(_cT('load_none', 'No projects in your account yet. On the device that has one, open it and choose Save Project ▾ → ☁ Save to my account.'))}</div>`;
   else host.innerHTML = rows.map(r => {
     if (!/^[0-9a-f-]{36}$/i.test(String(r.id))) return '';
     const n = Number(r.letters_done) || 0, size = fmMb((Number(r.project_bytes) || 0) + (Number(r.sources_bytes) || 0)), when = fmCloudRel(r.updated_at);
@@ -20417,6 +20425,7 @@ function openLoadMenu(anchor) {
     ? recents.map((r,i) => `<div class="load-menu-row"><button class="load-menu-item" onclick="closeLoadMenu();loadRecentProject(${i})"><span>${esc(r.name)}</span><span class="load-menu-date">${recentDate(r.savedAt)}</span></button>` +
         `<button class="load-menu-del" onclick="removeRecentProjectUI(${i})" title="${esc(_pT('load_remove_title', 'Remove from Recent'))}" aria-label="${esc(_pT('load_remove_aria', 'Remove {name} from Recent', {name: r.name}))}">🗑</button></div>`).join('')
     : `<div class="load-menu-empty">${_pT('load_no_recent', 'No recent projects yet — save one first.')}</div>`;
+  h += fmCloudRecentNote();
   h += fmCloudLoadSection();
   menu.innerHTML = h;
   document.body.appendChild(menu);

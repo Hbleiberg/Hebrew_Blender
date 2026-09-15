@@ -2816,7 +2816,8 @@ fontmaker.cloud.menu_sign_in,☁ Sign in to save to your account,☁ היכנס�
 fontmaker.cloud.load_head,In your account,בחשבון שלכם,Load Project ▾ menu section heading for cloud projects,fontmaker; cloud
 fontmaker.cloud.load_checking,Checking your account…,בודק את החשבון שלכם…,Load Project ▾ placeholder row while the cloud list loads,fontmaker; cloud
 fontmaker.cloud.load_sign_in,Sign in to see your account's projects,היכנסו כדי לראות את הפרויקטים שבחשבון שלכם,Load Project ▾ row shown when signed out,fontmaker; cloud
-fontmaker.cloud.load_none,No projects in your account yet.,עדיין אין פרויקטים בחשבון שלכם.,Load Project ▾ empty state for the cloud section,fontmaker; cloud
+fontmaker.cloud.load_none,"No projects in your account yet. On the device that has one, open it and choose Save Project ▾ → ☁ Save to my account.","עדיין אין פרויקטים בחשבון שלכם. במכשיר שבו נמצא פרויקט, פתחו אותו ובחרו ׳שמירת פרויקט ▾ → ☁ שמירה בחשבון שלי׳.",Load Project ▾ empty state for the cloud section — it names the one action that fills it and the device to do it on,fontmaker; cloud
+fontmaker.cloud.recent_local,Recent is this browser only. Projects you save to your account open on any device.,״אחרונים״ הוא של הדפדפן הזה בלבד. פרויקטים שאתם שומרים בחשבון נפתחים בכל מכשיר.,Load Project ▾ note under the Recent list: Recent holds whole projects and never travels; the account is the way across,fontmaker; cloud
 fontmaker.cloud.load_meta,{letters} letters · {size} · {when},{letters} אותיות · {size} · {when},"Load Project ▾ cloud row detail (letters done, size in MB, relative time)",fontmaker; cloud; template
 fontmaker.cloud.load_meta_one,1 letter · {size} · {when},אות אחת · {size} · {when},Load Project ▾ cloud row detail when exactly one letter is done,fontmaker; cloud; template; plural
 fontmaker.cloud.load_font_title,Download the latest exported font,הורדת הגופן האחרון שיוצא,Tooltip/aria-label of the ⬇ button on a cloud project row,fontmaker; cloud
