@@ -100,6 +100,8 @@
   //   label      an i18n key for the kind (falls back to the raw kind)
   //   virtual    instead of lsKey: a store assembled from several keys ({ read, write, remove, applied }) —
   //              the suite-wide preferences row below is the one such store
+  //   skipUpload (name, value) → true for a local item that is only a seed (an untouched empty default class):
+  //              it is listed as "Empty default — not uploaded" and never sent by itself
   // The suite-wide preferences (`Suite` / `prefs`): the small site-wide keys every page reads — one row,
   // assembled from those keys. What travels: the UI language, the theme, the on-screen keyboard layout,
   // the backup input mode, the shared Hebrew font and size, live preview, the Font Maker author name, and
@@ -208,7 +210,8 @@
     { tool: 'Dashboard', kind: 'settings', lsKey: 'hebrewDashboard_settings', shape: 'single', merge: 'assign',
       omit: ['rosters', 'activeRosterId', 'pickerSessions', '_geoCoords', '*Collapsed', 'panelLayout', 'videoLayout', 'zoomLevel', 'hideZoomBar', 'keepAwake', 'lockPanelWidths', 'showTextSizeOptions'],
       ivritKey: 'dashboardSettings', label: 'shared.cloud.kind_settings' },
-    { tool: 'Dashboard', kind: 'roster', lsKey: 'hebrewDashboard_settings', shape: 'mapIn', path: 'rosters', nameField: 'name', merge: 'page', ivritKey: 'dashboardRosters', label: 'shared.cloud.kind_roster' }
+    { tool: 'Dashboard', kind: 'roster', lsKey: 'hebrewDashboard_settings', shape: 'mapIn', path: 'rosters', nameField: 'name', merge: 'page', ivritKey: 'dashboardRosters', label: 'shared.cloud.kind_roster',
+      skipUpload: function (name, value) { return isUntouchedDefaultClass(value); } }
   ];
   var extraEntries = [];   // entries a page registered through attach({ entries }) — the test harness
 
@@ -227,6 +230,17 @@
   var TOOL_NAMES = { Worksheet: ['home.card.generator.name', 'Hebrew Worksheet Generator'], FlashCards: ['home.card.flashcards.name', 'Hebrew Flash Cards'],
                      Dictionary: ['home.card.dictionary.name', 'Hebrew Word Lookup'], TorahTrainer: ['home.card.torah.name', 'Torah Trainer'],
                      TropeTutor: ['home.card.trope.name', 'Trope Tutor'], Dashboard: ['home.card.dashboard.name', 'Hebrew Classroom Dashboard'], Suite: ['shared.cloud.tool_suite', 'IvritSuite'] };
+
+  // Where each tool lives, for the "open {tool} to merge it" signpost on a page that cannot merge that row.
+  var TOOL_PAGES = { Worksheet: '/hebrew_blend_generator.html', FlashCards: '/flash_cards.html', Dictionary: '/hebrew_dictionary.html?wordlists=open',
+                     TorahTrainer: '/torah_trainer.html', TropeTutor: '/trope_tutor.html', Dashboard: '/classroom_dashboard.html', Suite: '/index.html?alltools=open' };
+  // The dashboard mints one empty class named "My class" on every fresh device (the literal, in both
+  // languages, plus the localized default); untouched, it is a seed, not a class list worth a row.
+  function isUntouchedDefaultClass(value) {
+    if (!isPlainObject(value) || (Array.isArray(value.names) && value.names.length)) return false;
+    var name = typeof value.name === 'string' ? value.name.trim() : '';
+    return name === '' || name === 'My class' || name === t('dashboard.picker.default_class_name', 'My class');
+  }
 
   /* ---------- tiny helpers ---------- */
   function A() { return window.IvritAccount || null; }
@@ -683,6 +697,7 @@
     if (e.shape === 'mapIn' && (typeof e.path !== 'string' || !e.path)) return 'mapIn needs a path';
     if (e.shape === 'tree' && (typeof e.follows !== 'string' || !e.follows)) return 'a tree needs follows';
     if (e.omit !== undefined && !Array.isArray(e.omit)) return 'omit must be an array';
+    if (e.skipUpload !== undefined && typeof e.skipUpload !== 'function') return 'skipUpload must be a function';
     return null;
   }
   function keyOf(kind, name) { return kind + ':' + name; }   // a kind is letters only, so the first ':' always ends it
@@ -711,12 +726,14 @@
     return 'conflict';
   }
   function safeActionFor(r) {
+    if (r.seed && r.state === 'local-only') return null;   // an untouched seed is never sent by itself
     if (r.state === 'local-only' || r.state === 'local-changed') return 'upload';
     if (r.state === 'cloud-only' || r.state === 'cloud-changed') return r.downloadable ? 'download' : null;
     if (r.state === 'conflict' && r.mergeable && r.downloadable) return 'merge';
     return null;
   }
   function choicesFor(r) {
+    if (r.seed && r.state === 'local-only') return [];
     if (r.state === 'deleted-here') return r.downloadable ? ['deleteCloud', 'download'] : ['deleteCloud'];
     if (r.state === 'cloud-deleted') return ['upload'];
     if (r.state !== 'conflict') return r.safeAction ? [r.safeAction] : [];
@@ -753,7 +770,8 @@
       var rows = {}, order = [];
       locals.forEach(function (it) {
         var k = keyOf(it.kind, it.name);
-        rows[k] = { key: k, kind: it.kind, name: it.name, label: it.label, entry: it.entry, local: { hash: it.hash, bytes: it.bytes }, cloud: null, memory: null };
+        rows[k] = { key: k, kind: it.kind, name: it.name, label: it.label, entry: it.entry, local: { hash: it.hash, bytes: it.bytes }, cloud: null, memory: null,
+                    seed: !!(typeof it.entry.skipUpload === 'function' && it.entry.skipUpload(it.name, it.value)) };
         order.push(k);
       });
       if (!uid) return finishPlan(tool, null, rows, order, []);
@@ -807,10 +825,11 @@
       var d = (kindOrder[a.kind] || 0) - (kindOrder[b.kind] || 0);
       return d || String(a.label).localeCompare(String(b.label));
     });
-    var counts = { safe: 0, conflicts: 0, synced: 0, deleted: 0 };
+    // conflicts: rows a button on this page can resolve; mergeInTool: rows only the owning tool can merge.
+    var counts = { safe: 0, conflicts: 0, mergeInTool: 0, synced: 0, deleted: 0 };
     list.forEach(function (r) {
       if (r.safeAction) counts.safe++;
-      if (r.state === 'conflict' && !r.safeAction) counts.conflicts++;
+      if (r.state === 'conflict' && !r.safeAction) { if (r.choices.length) counts.conflicts++; else counts.mergeInTool++; }
       if (r.state === 'synced') counts.synced++;
       if (r.state === 'deleted-here') counts.deleted++;
     });
@@ -1007,7 +1026,29 @@
       });
     });
   }
+  // The id shape the tools mint (base-36 time plus a random tail), for the copy of an id-keyed row.
+  function mintId() { return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6); }
+  // The label of a Keep-both copy on an id-keyed row (a word list, a class list): the item's own name suffixed,
+  // unique among the labels this device holds — never two lists with the same label.
+  function copyLabelFor(entry, label) {
+    var taken = {};
+    localItems(entry).forEach(function (it) { if (isPlainObject(it.value) && typeof it.value[entry.nameField] === 'string') taken[it.value[entry.nameField]] = true; });
+    var base = t('shared.cloud.copy_suffix', '{name} (cloud copy)', { name: label });
+    if (!taken[base]) return base;
+    for (var n = 2; n < 1000; n++) {
+      var c = t('shared.cloud.copy_suffix_n', '{name} (cloud copy {n})', { name: label, n: n });
+      if (!taken[c]) return c;
+    }
+    return base + ' ' + Date.now();
+  }
   function copyNameFor(tool, entry, name) {
+    if (entry.shape === 'mapIn' && entry.nameField) {   // the row name is an id: mint a fresh one (the label is suffixed separately)
+      var taken0 = {};
+      localItems(entry).forEach(function (it) { taken0[it.name] = true; });
+      ((plans[tool] && plans[tool].rows) || []).forEach(function (r) { if (r.kind === entry.kind) taken0[r.name] = true; });
+      for (var i = 0; i < 20; i++) { var id = mintId(); if (!taken0[id]) return id; }
+      return mintId() + '_' + Date.now();
+    }
     var taken = {};
     localItems(entry).forEach(function (it) { taken[it.name] = true; });
     ((plans[tool] && plans[tool].rows) || []).forEach(function (r) { if (r.kind === entry.kind) taken[r.name] = true; });
@@ -1034,6 +1075,12 @@
         var copyName = copyNameFor(tool, row.entry, row.name);
         var theirs = project(row.entry, full.data);
         var mine = project(row.entry, it.value);
+        var landing = restoreOmitted(row.entry, full.data, it.value);
+        if (row.entry.shape === 'mapIn' && row.entry.nameField && isPlainObject(theirs)) {   // an id-keyed row: the copy's label is suffixed on both sides
+          var label = copyLabelFor(row.entry, typeof theirs[row.entry.nameField] === 'string' ? theirs[row.entry.nameField] : row.label);
+          theirs = clone(theirs); theirs[row.entry.nameField] = label;
+          landing = clone(landing); landing[row.entry.nameField] = label;
+        }
         var g = guardUpload(row.entry, copyName, theirs) || guardUpload(row.entry, row.name, mine);
         if (g) throw g;
         return Promise.all([hashItem(row.entry, full.data), hashText(canonJson(mine))]).then(function (hs) {
@@ -1044,11 +1091,11 @@
                 .catch(function (err) { return cloudRemove(copyRow.id).catch(noop).then(function () { throw err; }); })
                 .then(function (saved) {
                   remember(uid, tool, row.kind, row.name, h, saved);
-                  return localWrite(row.entry, copyName, restoreOmitted(row.entry, full.data, it.value))
+                  return localWrite(row.entry, copyName, landing)
                     .then(function () { return settleLocalWrite(tool, uid, row.entry, copyName, { id: copyRow.id, updated_at: copyRow.updated_at, data: theirs }); });
                 });
             });
-        }).then(function () { return { action: 'keepBoth', row: row, copy: copyName }; });
+        }).then(function () { return { action: 'keepBoth', row: row, copy: (row.entry.shape === 'mapIn' && row.entry.nameField && isPlainObject(theirs)) ? theirs[row.entry.nameField] : copyName }; });
       });
     });
   }
@@ -1235,7 +1282,7 @@
         }, function (err) { if (!isRowError(err)) throw err; noteSkip(sum, row, err); });
       }).catch(function (err) { sum.error = err; })
         .then(function () { return finishRun(tool, p, sum); })
-        .then(function (p2) { sum.left = p2.counts.conflicts; return sum; });
+        .then(function (p2) { sum.left = p2.counts.conflicts; sum.mergeInTool = p2.counts.mergeInTool; return sum; });
     });
   }
 
@@ -1258,15 +1305,18 @@
     return seqMap(toolsWithEntries(), function (tool) {
       return enqueue(tool, function () { return planTool(tool); }).then(function (p) {
         render(tool);
-        var up = 0, cloudOnly = 0, conflicts = 0, settings = 0, deleted = 0, lastSaved = null;
+        var up = 0, cloudOnly = 0, conflicts = 0, mergeInTool = 0, settings = 0, deleted = 0, lastSaved = null;
         p.rows.forEach(function (r) {
           if (r.safeAction === 'upload') up++;
           else if (r.state === 'cloud-only') cloudOnly++;
           else if (r.state === 'deleted-here') deleted++;
-          else if (r.state === 'conflict' && !r.safeAction) { conflicts++; if (isSettingsChoice(r)) settings++; }
+          else if (r.state === 'conflict' && !r.safeAction) {
+            if (!r.choices.length) mergeInTool++;                          // only the owning tool can merge it
+            else { conflicts++; if (isSettingsChoice(r)) settings++; }     // a button on this page resolves it
+          }
         });
         (p.cloudRows || []).forEach(function (r) { if (r.updated_at && (!lastSaved || r.updated_at > lastSaved)) lastSaved = r.updated_at; });
-        return { tool: tool, name: toolName(tool), total: p.rows.length, cloud: (p.cloudRows || []).length, safe: p.counts.safe, up: up, cloudOnly: cloudOnly, conflicts: conflicts, settings: settings, deleted: deleted, folders: (p.treesDiffer || []).length, lastSaved: lastSaved };
+        return { tool: tool, name: toolName(tool), total: p.rows.length, cloud: (p.cloudRows || []).length, safe: p.counts.safe, up: up, cloudOnly: cloudOnly, conflicts: conflicts, mergeInTool: mergeInTool, settings: settings, deleted: deleted, folders: (p.treesDiffer || []).length, lastSaved: lastSaved };
       });
     });
   }
@@ -1374,6 +1424,8 @@
       '.ivsav-list{list-style:none;margin:0;padding:0;}' +
       '.ivsav-kind{margin-block:10px 4px;font-size:0.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted,#6b6050);}' +
       '.ivsav-note-row{margin-block:2px 8px;font-size:0.8rem;color:var(--muted,#6b6050);overflow-wrap:anywhere;}' +
+      '.ivsav-signpost{flex:1 1 100%;font-size:0.8rem;color:var(--muted,#6b6050);overflow-wrap:anywhere;}' +
+      '.ivsav-signpost a{color:var(--gold-text,var(--text,#1a2744));text-decoration:underline;}' +
       '.ivsav-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:6px 8px;margin-block:3px;border:1px solid var(--border,#c8bfa8);' +
         'border-radius:6px;background:var(--white,#fff);}' +
       '.ivsav-main{flex:1 1 180px;min-inline-size:0;}' +
@@ -1427,6 +1479,20 @@
     try { return new Date(iso).toLocaleString(locale(), { dateStyle: 'medium', timeStyle: 'short' }); } catch (e) { return String(iso).slice(0, 16).replace('T', ' '); }
   }
   function fmtKb(bytes) { return t('shared.cloud.size_kb', '{kb} KB', { kb: Math.max(1, Math.round((bytes || 0) / 1024)) }); }
+  // "Changed in both places — open {tool} to merge it", the tool name a link to its page when this page is not it.
+  function signpost(tool) {
+    var box = el('div', 'ivsav-signpost');
+    var name = toolName(tool), href = TOOL_PAGES[tool];
+    var text = t('shared.cloud.resolve_in_tool', 'Changed in both places — open {tool} to merge it', { tool: '\u0001' });
+    var parts = text.split('\u0001');
+    box.appendChild(document.createTextNode(parts[0]));
+    var here = false;
+    try { here = window.location.pathname === href.split('?')[0]; } catch (e) {}
+    if (href && !here) { var a = el('a', '', name); a.href = href; box.appendChild(a); }   // a link unless this page is that tool
+    else box.appendChild(document.createTextNode(name));
+    box.appendChild(document.createTextNode(parts.length > 1 ? parts.slice(1).join(name) : ''));
+    return box;
+  }
   function stateText(state) {
     if (state === 'local-only') return t('shared.cloud.state_local_only', 'Only on this device');
     if (state === 'cloud-only') return t('shared.cloud.state_cloud_only', 'Only in the cloud');
@@ -1557,8 +1623,10 @@
       li.setAttribute('data-state', row.state);
       var main = el('div', 'ivsav-main');
       main.appendChild(el('span', 'ivsav-name', row.label));
-      main.appendChild(el('span', 'ivsav-state', stateText(row.state)));
+      main.appendChild(el('span', 'ivsav-state', row.seed && row.state === 'local-only' ? t('shared.cloud.state_seed', 'Empty default — not uploaded') : stateText(row.state)));
       li.appendChild(main);
+      // A row only its own tool can merge: say so, with the way there (a page that is that tool has no helper either — plain text then).
+      if (row.state === 'conflict' && !row.choices.length && row.entry.merge === 'page') li.appendChild(signpost(tool));
       var metaBits = [];
       if (row.cloud) metaBits.push(fmtKb(row.cloud.bytes), t('shared.cloud.updated', 'Updated {date}', { date: fmtDate(row.cloud.updatedAt) }));
       else if (row.local) metaBits.push(fmtKb(row.local.bytes));
@@ -1591,7 +1659,7 @@
     if (lastKind) noteFor(lastKind);
     Object.keys(treeNote).forEach(noteFor);
     root.appendChild(list);
-    if (p.counts.safe === 0 && p.counts.conflicts === 0 && !p.counts.deleted && !msg && !isBusy) status.textContent = t('shared.cloud.all_synced', 'Everything is in sync.');
+    if (p.counts.safe === 0 && p.counts.conflicts === 0 && !p.counts.mergeInTool && !p.counts.deleted && !msg && !isBusy) status.textContent = t('shared.cloud.all_synced', 'Everything is in sync.');
   }
   // One row action, from a panel button or a page's own control: resolves with { action, row, copy? },
   // rejects with the mapped error after the status line has shown it (a "changed meanwhile" re-lists first).
@@ -1626,7 +1694,7 @@
   function syncNow(tool) {
     say(tool, '', false);
     return enqueue(tool, function () { return syncNowInner(tool); }).then(function (sum) {
-      var tail = skippedText(sum.skips) + foldersText(sum.treeError) + suiteHintText(sum.hint);
+      var tail = mergeInToolText(sum.mergeInTool) + skippedText(sum.skips) + foldersText(sum.treeError) + suiteHintText(sum.hint);
       if (sum.error) say(tool, t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: sum.done, total: sum.total, reason: errorText(sum.error) }) + tail, true);
       else say(tool, t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: sum.up, down: sum.down, merged: sum.merged, left: sum.left }) + tail, false);
       render(tool);
@@ -1712,7 +1780,7 @@
       uploadBtn.setAttribute('aria-disabled', 'true');
       card.appendChild(uploadBtn);
       card.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_upload_note', 'Your items stay on this device too.')));
-      var hint = el('p', 'ivsav-note ivsav-acct-hint', t('shared.cloud.acct_cloud_only_hint', "Items that are only in your account come to this device from a tool's Cloud saves panel (Sync now), or from Import / Export All Settings on the home page."));
+      var hint = el('p', 'ivsav-note ivsav-acct-hint', t('shared.cloud.acct_cloud_only_hint', 'Items that are only in your account: Sync everything brings them to this device.'));
       hint.hidden = true;
       card.appendChild(hint);
       // "Settings that differ": a settings blob changed in both places is chosen here for every tool at once.
@@ -1721,7 +1789,7 @@
       sec.appendChild(el('h3', '', t('shared.cloud.acct_settings_head', 'Settings that differ')));
       sec.appendChild(el('p', 'ivsav-acct-settings-note', ''));
       var useBtn = button(t('shared.cloud.acct_use_account', "Use my account's settings"), 'ivsav-primary', function () { resolveSettings('useCloud'); });
-      useBtn.title = t('shared.cloud.acct_use_account_title', "Replace this device's settings with the copy in your account");
+      useBtn.title = t('shared.cloud.acct_use_account_title', "Replace this device's settings with the copy in your account and put the result back in your account");
       useBtn.setAttribute('data-act', 'use-account');
       sec.appendChild(useBtn);
       var keepBtn = button(t('shared.cloud.acct_keep_device', "Keep this device's settings"), '', function () { resolveSettings('keepMine'); });
@@ -1740,9 +1808,11 @@
       var dev = button(t('shared.cloud.acct_device_backup', 'Back up everything on this device (.ivrit)'), '', function () {
         var fn = null;
         Object.keys(pages).forEach(function (k) { if (!fn && typeof pages[k].deviceBackup === 'function') fn = pages[k].deviceBackup; });
-        closeAccount();
-        if (fn) { try { fn(); } catch (e) { warn('deviceBackup failed:', e); } }
-        else window.location.href = '/index.html?alltools=open';
+        if (fn) { closeAccount(); try { fn(); } catch (e) { warn('deviceBackup failed:', e); } return; }
+        // Another page: the hub's Import / Export modal in a new tab, so this page (a Font Maker canvas, a drill) stays as it is.
+        var w = null;
+        try { w = window.open('/index.html?alltools=open', '_blank', 'noopener'); } catch (e) {}
+        if (!w) { closeAccount(); window.location.href = '/index.html?alltools=open'; }
       });
       card.appendChild(dev);
       card.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_download_note', 'Restore a file with Import / Export All Settings on the home page.')));
@@ -1758,6 +1828,7 @@
     document.addEventListener('keydown', onKey);
     document.body.appendChild(overlay);
     account = { root: overlay, opener: document.activeElement, onKey: onKey, first: !!opts.first, splash: !!opts.splash, lang: currentLang(), busy: false, listing: false, langStale: false, doneText: opts.doneText || '' };
+    if (user && (opts.first || opts.splash)) markWelcomed(user.id);   // a self-opened screen was shown: once per account and device
     try { card.focus(); } catch (e) {}
     if (user) fillAccount(opts.doneText);
   }
@@ -1786,6 +1857,7 @@
         if (x.up) bits.push(t('shared.cloud.acct_tool_up', '{n} not in your account yet', { n: x.up }));
         if (x.cloudOnly) bits.push(t('shared.cloud.acct_tool_cloud_only', '{n} only in your account', { n: x.cloudOnly }));
         if (x.conflicts) bits.push(t('shared.cloud.acct_tool_conflicts', '{n} changed in both places', { n: x.conflicts }));
+        if (x.mergeInTool) bits.push(t('shared.cloud.acct_tool_merge_in_tool', '{n} to merge inside {tool}', { n: x.mergeInTool, tool: x.name }));
         if (x.deleted) bits.push(t('shared.cloud.acct_tool_deleted', '{n} deleted on this device — choose in the Cloud saves panel', { n: x.deleted }));
         if (!bits.length && x.folders) bits.push(t('shared.cloud.acct_tool_folders', 'the folder layout differs'));
         if (!bits.length) bits.push(t('shared.cloud.acct_tool_synced', 'everything is in your account'));
@@ -1824,9 +1896,10 @@
   // A bulk run over every tool, one tool at a time. A tool that stops does not end the run unless its error
   // would fail every tool the same way (the connection, the session): the finishing line then names the
   // stop, the counts so far and the tools not reached. Each tool's panel gets its own stop line.
-  function newRun() { return { up: 0, down: 0, merged: 0, done: 0, total: 0, left: 0, skips: [], treeError: null, stopped: null, halt: false, notReached: [], hint: false }; }
+  function newRun() { return { up: 0, down: 0, merged: 0, done: 0, total: 0, left: 0, mergeInTool: 0, skips: [], treeError: null, stopped: null, halt: false, notReached: [], hint: false }; }
+  function mergeInToolText(n) { return n ? ' ' + t('shared.cloud.done_merge_in_tool', "{n} to merge inside a tool's own Cloud saves panel.", { n: n }) : ''; }
   function runNote(run, tool, sum) {
-    run.up += sum.up || 0; run.down += sum.down || 0; run.merged += sum.merged || 0; run.done += sum.done || 0; run.total += sum.total || 0; run.left += sum.left || 0;
+    run.up += sum.up || 0; run.down += sum.down || 0; run.merged += sum.merged || 0; run.done += sum.done || 0; run.total += sum.total || 0; run.left += sum.left || 0; run.mergeInTool += sum.mergeInTool || 0;
     if (sum.hint) run.hint = true;
     (sum.skips || []).forEach(function (s) { run.skips.push(s); });
     if (sum.treeError && !run.treeError) run.treeError = sum.treeError;
@@ -1835,11 +1908,18 @@
     if (isConnectionError(sum.error)) run.halt = true;
     say(tool, t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: sum.done || 0, total: sum.total || 0, reason: errorText(sum.error) }), true);
   }
+  // The screen's close controls stay live during a run: closing it stops only the screen's updates, never the
+  // run (every tool is still checked); the finishing line then goes to the page's toast when it has one.
+  function acctSayFor(me, text, isError) { if (account === me) acctSay(text, isError); }
+  function finishAccountRun(me, line, isError) {
+    if (account === me) { acctBusy(false); if (isError) acctDone(line, true); else return fillAccount(line); return Promise.resolve(); }
+    if (line && typeof window.showAppToast === 'function') { try { window.showAppToast(line, isError ? 6000 : undefined); } catch (e) {} }
+    return Promise.resolve();
+  }
   function runTools(run, me, sayKey, sayFallback, fn) {
     return seqMap(toolsWithEntries(), function (tool) {
-      if (account !== me) return Promise.resolve();
       if (run.halt) { run.notReached.push(tool); return Promise.resolve(); }
-      acctSay(t(sayKey, sayFallback, { tool: toolName(tool) }), false);
+      acctSayFor(me, t(sayKey, sayFallback, { tool: toolName(tool) }), false);
       return enqueue(tool, function () { return fn(tool); }).then(function (sum) { runNote(run, tool, sum || {}); render(tool); }, function (err) { runNote(run, tool, { error: err }); render(tool); });
     });
   }
@@ -1855,10 +1935,8 @@
     acctBusy(true);
     var run = newRun();
     return runTools(run, me, 'shared.cloud.acct_uploading', 'Uploading {tool}…', uploadAllInner).then(function () {
-      if (account !== me) return;
-      acctBusy(false);
-      if (run.stopped) { acctDone(stoppedText(run, 'shared.cloud.acct_upload_stopped_at', 'Stopped while uploading {tool}: {reason}'), true); return; }
-      return fillAccount(t('shared.cloud.acct_uploaded', 'Uploaded {n} items to your account.', { n: run.done }) + skippedText(run.skips) + foldersText(run.treeError));
+      if (run.stopped) return finishAccountRun(me, stoppedText(run, 'shared.cloud.acct_upload_stopped_at', 'Stopped while uploading {tool}: {reason}'), true);
+      return finishAccountRun(me, t('shared.cloud.acct_uploaded', 'Uploaded {n} items to your account.', { n: run.done }) + skippedText(run.skips) + foldersText(run.treeError), false);
     });
   }
   // "Sync everything": each tool's Sync now, one after another — downloads, uploads and lossless merges,
@@ -1869,10 +1947,8 @@
     acctBusy(true);
     var run = newRun();
     return runTools(run, me, 'shared.cloud.acct_syncing', 'Syncing {tool}…', syncNowInner).then(function () {
-      if (account !== me) return;
-      acctBusy(false);
-      if (run.stopped) { acctDone(stoppedText(run, 'shared.cloud.acct_stopped_at', 'Stopped while syncing {tool}: {reason}'), true); return; }
-      return fillAccount(t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: run.up, down: run.down, merged: run.merged, left: run.left }) + skippedText(run.skips) + foldersText(run.treeError) + suiteHintText(run.hint));
+      if (run.stopped) return finishAccountRun(me, stoppedText(run, 'shared.cloud.acct_stopped_at', 'Stopped while syncing {tool}: {reason}'), true);
+      return finishAccountRun(me, t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: run.up, down: run.down, merged: run.merged, left: run.left }) + mergeInToolText(run.mergeInTool) + skippedText(run.skips) + foldersText(run.treeError) + suiteHintText(run.hint), false);
     });
   }
   // The "Settings that differ" block: for every tool, every settings blob changed in both places takes the
@@ -1897,12 +1973,10 @@
     acctBusy(true);
     var run = newRun();
     return runTools(run, me, 'shared.cloud.acct_updating', 'Updating {tool}…', function (tool) { return resolveSettingsInner(tool, choice); }).then(function () {
-      if (account !== me) return;
-      acctBusy(false);
-      if (run.stopped) { acctDone(stoppedText(run, 'shared.cloud.acct_update_stopped_at', 'Stopped while updating {tool}: {reason}'), true); return; }
+      if (run.stopped) return finishAccountRun(me, stoppedText(run, 'shared.cloud.acct_update_stopped_at', 'Stopped while updating {tool}: {reason}'), true);
       var line = choice === 'useCloud' ? t('shared.cloud.acct_settings_done_cloud', "Your account's settings are now on this device.")
                                        : t('shared.cloud.acct_settings_done_mine', "This device's settings are now in your account.");
-      return fillAccount(line + skippedText(run.skips) + foldersText(run.treeError) + suiteHintText(run.hint));
+      return finishAccountRun(me, line + skippedText(run.skips) + foldersText(run.treeError) + suiteHintText(run.hint), false);
     });
   }
   function backupAccount() {
@@ -1918,14 +1992,21 @@
   }
   // After a fresh sign-in (this page load established the session): "Sync settings from your last login?".
   // Otherwise, once per account on a device that already holds saved items: introduce the account screen.
+  // The mark is set when a screen was actually shown (openAccount, for `first` / `splash`): a device with
+  // nothing on it is not marked here — the first listing that finds rows in the account offers the sync
+  // once (offerOnce), so a teacher already signed in elsewhere is not left without the way in.
   function maybeWelcome(user) {
     if (!user) return;
     var a = A();
     var fresh = !!(a && typeof a.sessionSource === 'function' && a.sessionSource() === 'new');
-    if (fresh && !splashShown) { splashShown = true; markWelcomed(user.id); openAccount({ splash: true }); return; }
+    if (fresh && !splashShown) { splashShown = true; openAccount({ splash: true }); return; }
     if (welcomedAt(user.id)) return;
-    markWelcomed(user.id);
     if (deviceHasItems()) openAccount({ first: true });
+  }
+  function offerOnce(user) {
+    if (!user || !stillMe(user.id) || welcomedAt(user.id) || account) return;
+    var any = Object.keys(pages).some(function (tool) { var p = plans[tool]; return !!(p && p.cloudRows && p.cloudRows.length); });
+    if (any) openAccount({ splash: true });
   }
 
   /* ---------- mounting and wiring ---------- */
@@ -1968,11 +2049,13 @@
     var a = A();
     if (a && typeof a.onChange === 'function') {
       a.onChange(function (user) {
+        var listings = [];
         Object.keys(pages).forEach(function (tool) {
-          if (user) refresh(tool).catch(function () {});
+          if (user) listings.push(refresh(tool).catch(noop));
           else { plans[tool] = null; say(tool, '', false); render(tool); }
         });
-        if (user) maybeWelcome(user); else { splashShown = false; closeAccount(); }
+        if (user) { maybeWelcome(user); Promise.all(listings).then(function () { offerOnce(user); }); }
+        else { splashShown = false; closeAccount(); }
       });
     }
     if (a && typeof a.onOpenAccount === 'function') a.onOpenAccount(function () { openAccount(); });
@@ -2048,7 +2131,7 @@
       project: project, restoreOmitted: restoreOmitted, safeParse: safeParse, copyNameFor: copyNameFor,
       validateShape: validateShape, errorText: errorText, guardUpload: guardUpload, ivritFile: ivritFile,
       treeIsFlat: treeIsFlat, bundleFromRows: bundleFromRows, recheckWrites: recheckWrites, isRowError: isRowError, isConnectionError: isConnectionError,
-      suitePrefs: SUITE_PREFS, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
+      suitePrefs: SUITE_PREFS, isUntouchedDefaultClass: isUntouchedDefaultClass, copyLabelFor: copyLabelFor, TOOL_PAGES: TOOL_PAGES, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
     }
   };
   // The chip's "Account…" item and the sign-in splash belong to every page that loads this module, including

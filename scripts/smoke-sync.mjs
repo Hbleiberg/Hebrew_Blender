@@ -18,7 +18,8 @@
  *   3. "Keep this device's settings": the device's projection (no class lists, no zoom) goes over the
  *      account's row and the row reads Same afterwards.
  *   4. A device with no dashboard blob at all: no block; Sync everything simply downloads the settings.
- *   5. Several classes in the account while this device sits on its untouched "My class": Sync everything
+ *   5. Several classes in the account while this device sits on its untouched "My class" (a seed, never
+ *      uploaded by itself): Sync everything
  *      lists them all and the page switches the picker to the first account class and says so (the empty
  *      default stays listed; the account is never patched).
  *   6. Another tab's write while this tab was in the background: on pageshow / visibilitychange the module
@@ -47,6 +48,10 @@
  *      after one; (b) a device with preferences of its own gets the Settings that differ block, "Use my
  *      account's settings" lands the keys live and sends the union up, a field this build cannot apply
  *      is held (reported as the row's value) until that key changes here.
+ *  16. On the hub, a word list changed in both places counts as "to merge inside" the Dictionary and its
+ *      panel row carries a signpost linking there; closing the account screen right after Sync everything
+ *      does not stop the run (the dashboard rows still land); an untouched empty default class is a seed
+ *      that is never uploaded by itself.
  *
  * Run from the repo root:  node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
  * The script starts python3 -m http.server itself (port 8081 by default, so it can run beside the others).
@@ -243,7 +248,9 @@ const dashState = (page) => page.evaluate(() => {
     memory: mem && mem.default && typeof mem.default.h === 'string' && mem.default.h.indexOf('1.') === 0
   };
 });
-const planStates = (page) => page.evaluate(() => window.IvritSaves.plan('Dashboard').then(p => Object.fromEntries(p.rows.map(r => [r.kind + ':' + r.name, r.state]))));
+// A row's state; an untouched empty default class (a seed the module never uploads by itself) reads 'seed'.
+const planStates = (page) => page.evaluate(() => window.IvritSaves.plan('Dashboard').then(p => Object.fromEntries(p.rows.map(r => [r.kind + ':' + r.name, r.seed && r.state === 'local-only' ? 'seed' : r.state]))));
+const allSame = (states) => Object.values(states).every(v => v === 'synced' || v === 'seed');
 const patchesOn = (cl, id) => cl.log.filter(e => e.m === 'PATCH' && (new URLSearchParams(e.search).get('id') || '') === 'eq.' + id).length;
 const liveDash = (page) => page.evaluate(() => ({
   checked: document.getElementById('scheduleEnabled').checked,
@@ -302,7 +309,7 @@ try {
     check("1: the dashboard adopted the account's class at load and kept the empty default listed", d2.active === 'lap_0' && pk.value === 'lap_0' && pk.options.some(o => /Kitah Alef \(2\)/.test(o)) && pk.options.some(o => /My class \(0\)/.test(o)) && /Noa/.test(pk.chips) && /Now showing Kitah Alef/.test(pk.note), JSON.stringify({ active: d2.active, pk }));
     check('1: the dashboard opens with Schedule Sync on and its body shown', live.checked && live.bodyShown, JSON.stringify(live));
     check('1: the dashboard lists the downloaded schedule and preset', /2026-2027/.test(live.schedules) && /Morning/.test(live.presets), JSON.stringify({ schedules: live.schedules.slice(0, 80), presets: live.presets.slice(0, 120) }));
-    check('1: every dashboard row reads Same after the page wrote its own blob back', Object.values(states).every(v => v === 'synced'), JSON.stringify(states));
+    check('1: every dashboard row reads Same after the page wrote its own blob back (the empty default class is a seed)', allSame(states) && states['roster:dev1_0'] === 'seed', JSON.stringify(states));
     await second.page.screenshot({ path: path.join(SHOTS, '1-dashboard-after.png') });
     check('1: 0 pageerrors on the dashboard page', second.errors.length === 0, second.errors.join(' | '));
     await ctx.close();
@@ -323,7 +330,7 @@ try {
     const pk = await pickerState(page);
     check('2: the live page now shows Schedule Sync on, its body, the schedule and the preset — no reload', live.checked && live.bodyShown && /2026-2027/.test(live.schedules) && /Morning/.test(live.presets), JSON.stringify(live));
     check('2: the roster download switched the picker to the account class with the note and toast', d.active === 'lap_0' && pk.value === 'lap_0' && /Noa/.test(pk.chips) && /Now showing Kitah Alef/.test(pk.note) && /Now showing Kitah Alef/.test(pk.toast), JSON.stringify({ active: d.active, pk }));
-    check('2: storage carries the weekly grid and the memory; every row reads Same', d.enabled === true && d.periods === 2 && d.memory && Object.values(states).every(v => v === 'synced'), JSON.stringify({ d, states }));
+    check('2: storage carries the weekly grid and the memory; every row reads Same', d.enabled === true && d.periods === 2 && d.memory && allSame(states), JSON.stringify({ d, states }));
     await page.screenshot({ path: path.join(SHOTS, '2-dashboard-live.png') });
     check('2: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
@@ -376,7 +383,8 @@ try {
     // The one PATCH allowed is the folder tree: the page's own render added its seeded preset to the tree it
     // had just taken from the account, and the tail put that form back (both sides then hold it — convergence).
     const patchedKinds = cloud.log.filter(e => e.m === 'PATCH').map(e => { const id = (new URLSearchParams(e.search).get('id') || '').slice(3); const r = cloud.rows.find(r => r.id === id); return r ? r.kind : '?'; });
-    check('5: the sync memory holds every class; no class, preset, schedule or settings row was patched or deleted', JSON.stringify(d.rosterMemory) === '["dev1_0","lap_0","lap_1","lap_2"]' && cloud.log.filter(e => e.m === 'DELETE').length === 0 && patchedKinds.every(k => k === 'presetFolders' || k === 'scheduleFolders'), JSON.stringify({ mem: d.rosterMemory, patchedKinds, calls: cloud.log.map(e => e.m) }));
+    const rosterPosts5 = cloud.log.filter(e => e.m === 'POST' && e.body && e.body.kind === 'roster').length;
+    check('5: the sync memory holds every account class; the untouched empty default was not uploaded (a seed); no class, preset, schedule or settings row was patched or deleted', JSON.stringify(d.rosterMemory) === '["lap_0","lap_1","lap_2"]' && rosterPosts5 === 0 && cloud.log.filter(e => e.m === 'DELETE').length === 0 && patchedKinds.every(k => k === 'presetFolders' || k === 'scheduleFolders'), JSON.stringify({ mem: d.rosterMemory, rosterPosts5, patchedKinds, calls: cloud.log.map(e => e.m) }));
     await page.screenshot({ path: path.join(SHOTS, '5-picker-adopted.png') });
     check('5: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
@@ -731,6 +739,46 @@ try {
       check('15b: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
     }
+  }
+  // ---- 16. the account screen on the hub: a row only its tool can merge is signposted, the counts say so, and
+  //          closing the screen mid-run does not stop the run ----------------------------------------------
+  if (want(16)) {
+    const rows = CLOUD_ROWS().concat([{ tool: 'Dictionary', kind: 'wordList', name: 'abc', data: { name: 'Colors', created: 1, updated: 2, words: [{ word: 'אדום', translit: 'adom', meaning: 'red' }] } }]);
+    const cloud = new FakeCloud(rows);
+    const seed = SEED(true);
+    seed.ivritSuite_wordLists = JSON.stringify({ v: 1, lists: { abc: { name: 'Colors', created: 1, updated: 3, words: [{ word: 'כחול', translit: 'kachol', meaning: 'blue' }] } } });   // the same list, edited here: changed in both places
+    const ctx = await openContext(browser, cloud, seed);
+    const { page, errors } = await openPage(ctx, 'index.html');
+    await openAccount(page);
+    let s = await screen(page);
+    check('16: the word list counts as "to merge inside" the Dictionary, not as a choice this page can make', s.lines.some(l => /Hebrew Word Lookup: 1 to merge inside Hebrew Word Lookup/.test(l)) && !s.lines.some(l => /Hebrew Word Lookup.*changed in both places/.test(l)) && s.block && /Classroom Dashboard/.test(s.note) && !s.otherHint, JSON.stringify(s));
+    const sp = await page.evaluate(() => {
+      openIEModal();
+      const host = document.querySelector('.ie-cloud-host[data-tool="Dictionary"]');
+      const row = host && [...host.querySelectorAll('.ivsav-row')].find(r => /Colors/.test(r.textContent));
+      const box = row && row.querySelector('.ivsav-signpost'), a = box && box.querySelector('a');
+      return { state: row && row.getAttribute('data-state'), text: box ? box.textContent : '', href: a ? a.getAttribute('href') : null, buttons: row ? [...row.querySelectorAll('.ivsav-actions .ivsav-btn')].map(b => b.textContent) : [] };
+    });
+    check('16: the panel row carries the signpost with a link to the Dictionary and no merge button', sp.state === 'conflict' && /open Hebrew Word Lookup to merge it/.test(sp.text) && sp.href === '/hebrew_dictionary.html?wordlists=open' && !sp.buttons.some(b => /Merge|Keep|Use/.test(b)), JSON.stringify(sp));
+    await page.screenshot({ path: path.join(SHOTS, '16-signpost.png') });
+    await page.evaluate(() => { closeIEModal(); });
+    // Sync everything, then close the screen at once: the run must still reach the dashboard (last in the order)
+    await page.click('.ivsav-overlay .ivsav-btn[data-act="sync"]');
+    await page.waitForFunction(() => /Syncing|Checking/.test((document.querySelector('.ivsav-overlay .ivsav-status') || {}).textContent || ''), null, { timeout: 10000 });
+    await page.keyboard.press('Escape');
+    const closed = await page.evaluate(() => !document.querySelector('.ivsav-overlay'));
+    // the run is still going: wait for the dashboard rows (last in the order) to land in storage
+    await page.waitForFunction(() => { const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}'); const p = JSON.parse(localStorage.getItem('hebrewDashboard_presets') || '{}'); return !!(s.rosters && s.rosters.lap_0 && p.Morning); }, null, { timeout: 60000 }).catch(() => {});
+    const states = await planStates(page);
+    const d = await dashState(page);
+    const wl = await page.evaluate(() => JSON.parse(localStorage.getItem('ivritSuite_wordLists')).lists.abc.words.map(w => w.word));
+    check('16: the screen closed at once and the run went on to the dashboard: its rows landed here', closed && d.presets.includes('Morning') && d.schedules.includes('2026-2027') && JSON.stringify(d.rosters) === '["dev1_0","lap_0"]' && states['preset:Morning'] === 'synced' && states['roster:lap_0'] === 'synced', JSON.stringify({ closed, d, states }));
+    const rosterPosts = cloud.log.filter(e => e.m === 'POST' && e.body && e.body.kind === 'roster').length;
+    check('16: the word list was left for the Dictionary to merge, and the untouched empty default class was not uploaded', JSON.stringify(wl) === '["כחול"]' && cloud.find('wordList', 'abc').data.words[0].word === 'אדום' && rosterPosts === 0, JSON.stringify({ wl, rosterPosts }));
+    const seedRow = await page.evaluate(() => window.IvritSaves.plan('Dashboard').then(p => { const r = p.rows.find(r => r.kind === 'roster' && r.name === 'dev1_0'); return r ? { seed: r.seed, state: r.state, safe: r.safeAction, choices: r.choices } : null; }));
+    check('16: the empty default class reads as a seed with no action', !!seedRow && seedRow.seed === true && seedRow.state === 'local-only' && seedRow.safe === null && seedRow.choices.length === 0 && states['roster:dev1_0'] === 'seed', JSON.stringify(seedRow));
+    check('16: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
   }
 } finally {
   await browser.close();

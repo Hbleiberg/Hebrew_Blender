@@ -187,6 +187,7 @@ per localStorage key: `{ tool, kind, lsKey, shape, path?, nameField?, envelope?,
 | `ivritKey` | the AllTools bundle key, so *Download file* writes an `.ivrit` the hub imports (else `tool` + `data:{[kind]: …}`) |
 | `label` | an i18n key for the kind (falls back to the raw kind) |
 | `virtual` | in place of `lsKey`: a store assembled from several keys (`{ read, write, remove, applied }`); the suite-wide preferences row is the one such store |
+| `skipUpload` | `(name, value) → true` for a local item that is only a seed — the roster entry's says so for an untouched empty class named "My class" (the literal or the localized default): the row reads *Empty default — not uploaded*, has no button and is never sent by itself (a device that adds a name to it stops it being a seed); an already-uploaded copy stays a normal row |
 
 **The suite-wide preferences row** (`Suite` / `prefs`, `virtual: SUITE_PREFS` beside the registry, single/assign,
 `ivritKey: suitePrefs`): one row assembled from the small site-wide keys every page reads — `hebrewBlender_lang`,
@@ -296,13 +297,20 @@ its own may land at the root of the folder list; *Sync now* keeps the folders.
 an outside click close it, focus returns to the opener) reached from the chip's **Account…** item. Under
 the title it says when the account was last saved (the newest `updated_at` across every tool's rows) or
 that nothing is saved yet, then lists every tool that has anything, on either side, with plain counts
-("3 not in your account yet", "2 only in your account", "1 changed in both places", or "everything is in
-your account"), and offers one primary action for the state it found:
+("3 not in your account yet", "2 only in your account", "1 changed in both places" — rows a button on this
+page can resolve — "1 to merge inside Hebrew Word Lookup" — a page-merge row this page has no helper for,
+counted apart so "still need a choice" never names something this page cannot do — "1 deleted on this
+device", or "everything is in your account"), and offers one primary action for the state it found:
 
 - **Sync everything** (the account holds items) — each tool's *Sync now* in turn: downloads, uploads and
   lossless merges, conflicts left listed; a tool this page does not render may take its settings blob
   too (nothing of it is in memory here; other tabs re-read through the write stamp), while its folder
-  trees are merged only through the page's own helper, so a real tree on both sides is left as is.
+  trees are merged only through the page's own helper, so a real tree on both sides is left as is. The
+  screen's close controls stay live during a run, and closing it stops only the screen's updates, never
+  the run: every tool is still checked, and the finishing line goes to the page's toast when it has one.
+  The finishing line names the rows only a tool can merge ("1 to merge inside a tool's own Cloud saves
+  panel"), the skipped rows, a folder pass that failed, and — after the suite-wide preferences changed —
+  what shows after a reload.
 - **Upload everything on this device** (the account is empty) — every upload the per-tool plans call
   safe, tool by tool, then the trees follow. It is a copy: nothing is removed from the device (the note
   says so). Rows the client-side guard refuses are skipped and counted; a network/server error stops
@@ -311,8 +319,9 @@ your account"), and offers one primary action for the state it found:
   tools (`bundleFromRows` folds each kind into the bundle key the hub imports: a map kind → `{name: value}`,
   a mapIn kind → its envelope + `{path: {id: value}}`, single/tree → the value, scalar → the plain value).
 - **Back up everything on this device (.ivrit)** — the page's `deviceBackup` hook when one was passed to
-  `attach()` (the hub opens its Import / Export modal); every other page sends people to
-  `index.html?alltools=open`, which opens that modal.
+  `attach()` (the hub opens its Import / Export modal); every other page opens `index.html?alltools=open`
+  in a new tab (`noopener`; navigating away when the popup is blocked), so a Font Maker canvas or a running
+  drill stays as it is.
 - **Settings that differ** — shown only while some tool's settings blob (an `assign` row) is *Changed in
   both places* and this page may write it. That is the everyday case on a second device, not a rare
   clash: every tool writes its settings blob the first time it opens there, so with no sync memory yet
@@ -320,19 +329,27 @@ your account"), and offers one primary action for the state it found:
   behind this block: a phone that took every dashboard preset and schedule but not Schedule Sync, which
   lives in the settings blob). The block names the tools and offers **Use my account's settings** (each
   such row's *Use cloud copy*: the account's fields land over a copy of this device's, per-device `omit`
-  fields kept, then both sides hold the result and the memory remembers it) or **Keep this device's
-  settings** (each row's *Keep mine*: this device's projection goes up). Items named the same on both
-  sides (a preset, a deck) keep their per-row choices in the tool's panel; a hint says so while any
-  remain. The finishing line of every account-screen action stays on the status line through the
-  re-listing that follows it.
+  fields kept, then both sides hold the result — the button's title says the result goes back up too —
+  and the memory remembers it) or **Keep this device's settings** (each row's *Keep mine*: this device's
+  projection goes up). Items named the same on both sides (a preset, a deck) keep their per-row choices
+  in the tool's panel; a hint says so while any remain. A row only its own tool can merge (a student
+  profile, a word list or a class list on a page with no helper for it) is counted apart ("to merge
+  inside {tool}") and its panel row carries a signpost — "Changed in both places — open {tool} to merge
+  it" — with the tool's name a link to its page (`TOOL_PAGES`; the Dictionary's opens its Word Lists
+  manager). While the account holds items this device does not, a hint points at *Sync everything*. The
+  finishing line of every account-screen action stays on the status line through the re-listing that
+  follows it.
 
 It opens by itself in two cases. **After every fresh sign-in** — the page load that established the
 session, as `IvritAccount.sessionSource()` reports (`'new'` for a sign-in during this load or an auth
 callback, `'restored'` for a session read from storage) — it is titled *Sync settings from your last
 login?* with the last-saved date under it, at most once per page load. Otherwise **once per account on
-each device** that already holds saved items (`ivritSuite_syncMeta.welcomed[uid]` remembers it; a device
-with nothing saved is marked without a screen), titled as a welcome. Both dismiss with *Not now*. A link under
-the backup buttons leads to the account page (`account.html`): the download-everything zip and *Delete my account*.
+each device**: a device that already holds saved items gets the welcome at once; a device with nothing
+saved gets *Sync settings from your last login?* once the first signed-in listing finds rows in the
+account (`offerOnce`, after the attached tools' listings), so a teacher already signed in elsewhere is not
+left without the way in. `ivritSuite_syncMeta.welcomed[uid]` is set only when such a screen was actually
+shown (`openAccount` with `first` / `splash`). Both dismiss with *Not now*. A link under the backup
+buttons leads to the account page (`account.html`): the download-everything zip and *Delete my account*.
 
 ### The panel
 
