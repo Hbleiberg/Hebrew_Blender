@@ -4609,17 +4609,21 @@ function loadEmojiSettings() {
     return ivritSafeParse(raw);
   } catch(e) { return null; }
 }
+// The stored exclusions while the catalogue is not loaded (the first save at load runs before
+// fetchEmojiData restores them; it used to write [] over them every time Emoji mode reopened).
+function storedEmojiExclusions() {
+  const prev = loadEmojiSettings();
+  return (prev && Array.isArray(prev.excludedSubs)) ? prev.excludedSubs.filter(k => typeof k === 'string') : [];
+}
 function saveEmojiSettings() {
   try {
-    const blob = {
-      mode: emojiMode,
-      gender: emojiGender,
-      excludedSubs: emojiSelectedSubs ? null : []  // placeholder, real value set below
-    };
+    const blob = { mode: emojiMode, gender: emojiGender, excludedSubs: [] };
     if (EMOJI_DATA && emojiSelectedSubs) {
       const allSubs = [];
       EMOJI_DATA.categories.forEach(c => c.subcategories.forEach(s => allSubs.push(c.name + '|' + s)));
       blob.excludedSubs = allSubs.filter(k => !emojiSelectedSubs.has(k));
+    } else {
+      blob.excludedSubs = storedEmojiExclusions();   // not loaded yet: keep what was stored
     }
     localStorage.setItem(EMOJI_SETTINGS_KEY, JSON.stringify(blob));
   } catch(e) {}
@@ -5205,6 +5209,7 @@ let DICT_SHARE_DEFAULTS = null;
 // Compute the list of emoji "Category|Subcategory" keys that are currently EXCLUDED
 // (mirrors saveEmojiSettings L2476-2479 so the share/session/emoji-settings never diverge).
 function _dictEmojiExcluded() {
+  if (!(EMOJI_DATA && emojiSelectedSubs)) return storedEmojiExclusions();   // not loaded yet: the stored list, not an empty one
   const out = [];
   if (EMOJI_DATA && emojiSelectedSubs) {
     const all = [];

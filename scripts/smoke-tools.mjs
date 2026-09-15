@@ -180,6 +180,17 @@ const PAGES = [
     },
     rows: ['wordList:m1abc_x1y2z', 'wordList:m1abd_q9w8e'],
     prepare: `wlOpenManager();`,
+    // E. the emoji category exclusions survive a load that reopens Emoji mode (the first save used to run
+    // before the catalogue was loaded and wrote [] over them)
+    extra: async ({ browser, tag }) => {
+      const { ctx, page, errors } = await openPage(browser, 'hebrew_dictionary.html', { seed: { hebrewDictionary_emojiSettings: JSON.stringify({ mode: true, gender: 'all', excludedSubs: ['Animal|Mammal'] }) } });
+      const early = await page.evaluate(() => JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings')).excludedSubs);
+      await page.waitForFunction(() => !!EMOJI_DATA, null, { timeout: 20000 }).catch(() => {});
+      const r = await page.evaluate(() => { saveEmojiSettings(); return { loaded: !!EMOJI_DATA, stored: JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings')).excludedSubs, live: _dictEmojiExcluded() }; });
+      check(tag + ' E: the emoji exclusions were kept through the load (before and after the catalogue arrived)', JSON.stringify(early) === '["Animal|Mammal"]' && r.loaded && JSON.stringify(r.stored) === '["Animal|Mammal"]' && JSON.stringify(r.live) === '["Animal|Mammal"]', JSON.stringify({ early, r }));
+      check(tag + ' E: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    },
     expand: `wlOpenManager();`,
     urlKeep: 'wordlists=open'
   },
