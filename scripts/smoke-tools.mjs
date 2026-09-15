@@ -65,7 +65,20 @@ const PAGES = [
     },
     rows: ['settings:default'],
     expand: `openSettingsAtPanel('cloud');`,
-    urlKeep: 'parsha=Bereshit&v=1:1'
+    urlKeep: 'parsha=Bereshit&v=1:1',
+    // E. the chosen translation stays chosen when this book's list does not offer it: a substitute is shown, never saved
+    extra: async ({ browser, tag }) => {
+      const { ctx, page, errors } = await openPage(browser, 'torah_trainer.html', { seed: { hebrewTorahTrainer_settings: JSON.stringify({ translationVersion: 'Made Up Version', showTranslation: true }) } });
+      const r = await page.evaluate(async () => {
+        fetchVersionsList = async () => [{ versionTitle: 'The Holy Scriptures: A New Translation (JPS 1917)', language: 'en', license: 'Public Domain' }, { versionTitle: 'Other English', language: 'en', license: 'Public Domain' }];   // Sefaria is blocked here: a canned list
+        await populateVersionDropdown('Genesis');
+        saveSettingsFlush();
+        return { stored: JSON.parse(localStorage.getItem('hebrewTorahTrainer_settings')).translationVersion, inMemory: settings.translationVersion, shown: document.getElementById('ttVersionSelect').value, effective: effectiveVersion() };
+      });
+      check(tag + ' E: a translation this book does not offer stays the stored choice; the substitute is only shown', r.stored === 'Made Up Version' && r.inMemory === 'Made Up Version' && /JPS 1917/.test(r.shown) && /JPS 1917/.test(r.effective), JSON.stringify(r));
+      check(tag + ' E: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
   },
   {
     file: 'flash_cards.html', tool: 'FlashCards', host: '#cloudSavesPanel',
@@ -79,7 +92,34 @@ const PAGES = [
     },
     rows: ['preset:Deck A', 'preset:Deck B', 'settings:default', 'pbStreak:default', 'profile:Sarah', 'profile:Dan'],
     expand: `const p = document.getElementById('panelAdvanced'); if (p.classList.contains('collapsed')) p.querySelector('.panel-title').click(); document.querySelector('.adv-subhead[data-i18n="flashcards.advanced.cloud_head"]').scrollIntoView();`,
-    urlKeep: 's=abc'
+    urlKeep: 's=abc',
+    // E. what a sync must never change: the listening preference on a browser without speech, and the
+    // teacher's own settings while a ?s= link's drill runs
+    extra: async ({ browser, tag }) => {
+      const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      const captureSettings = async () => { const first = await openPage(browser, 'flash_cards.html', {}); const base = await first.page.evaluate(() => getSettings()); await first.ctx.close(); return base; };
+      {
+        const seedText = JSON.stringify(Object.assign({}, await captureSettings(), { listening: true }));
+        const { ctx, page, errors } = await openPage(browser, 'flash_cards.html', { seed: { hebrewFlashCards_settings: seedText }, init: () => { Object.defineProperty(window, 'speechSynthesis', { value: undefined, configurable: true }); } });
+        const r = await page.evaluate(() => { saveSettings(); const t = document.getElementById('listeningToggle'); return { after: localStorage.getItem('hebrewFlashCards_settings'), checked: t.checked, disabled: t.disabled, supported: speechSupported }; });
+        check(tag + ' E: without speech the listening preference is kept — toggle off and disabled here, the stored settings byte-identical', !r.supported && r.disabled && !r.checked && r.after === seedText, JSON.stringify({ supported: r.supported, disabled: r.disabled, checked: r.checked, listening: JSON.parse(r.after || '{}').listening }) + ' ' + diffKeys(JSON.stringify([['s', seedText]]), JSON.stringify([['s', r.after]])));
+        check(tag + ' E: 0 pageerrors (no speech)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      {
+        const seedText = JSON.stringify(Object.assign({}, await captureSettings(), { mode: 2, cardCount: 12 }));
+        const link = b64({ selectedLetters: ['א', 'ב', 'ג'], selectedVowels: ['a', 'patah'], mode: 1, cardCount: 6 });   // Flash Cards vowel keys (not the generator's)
+        const { ctx, page, errors } = await openPage(browser, 'flash_cards.html', { seed: { hebrewFlashCards_settings: seedText }, query: '?s=' + link });
+        await page.waitForFunction(() => { const a = document.querySelector('.screen.active'); return !!a && a.id !== 'screenSetup'; }, null, { timeout: 10000 }).catch(() => {});
+        const r = await page.evaluate(() => { saveSettings(); return { screen: (document.querySelector('.screen.active') || {}).id, mode, shared: _sharedDrill, after: localStorage.getItem('hebrewFlashCards_settings') }; });
+        await page.evaluate(() => showScreen('screenSetup'));
+        const back = await page.evaluate(() => ({ mode, cardCount, shared: _sharedDrill, after: localStorage.getItem('hebrewFlashCards_settings') }));
+        check(tag + ' E: a ?s= link runs as a transient drill (mode 1) and leaves the stored settings byte-identical', r.screen !== 'screenSetup' && r.mode === 1 && r.shared === true && r.after === seedText, JSON.stringify({ screen: r.screen, mode: r.mode, shared: r.shared, same: r.after === seedText }));
+        check(tag + " E: back on the setup screen the teacher's own settings return and the store still matches", back.mode === 2 && back.cardCount === 12 && back.shared === false && back.after === seedText, JSON.stringify({ mode: back.mode, cardCount: back.cardCount, shared: back.shared, same: back.after === seedText }));
+        check(tag + ' E: 0 pageerrors (?s=)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+    }
   },
   {
     file: 'hebrew_blend_generator.html', tool: 'Worksheet', host: '#cloudSavesPanel',
@@ -90,7 +130,45 @@ const PAGES = [
     },
     rows: ['preset:Week 1', 'preset:Review', 'lastState:default'],
     expand: `const adv = document.getElementById('panelAdvanced'); if (adv.classList.contains('collapsed')) adv.querySelector(':scope > .panel-title').click(); const t = document.querySelector('.panel-title[data-i18n="worksheet.advanced.cloud_title"]'); if (t.parentElement.classList.contains('collapsed')) t.click(); t.scrollIntoView();`,
-    urlKeep: 's=abc'
+    urlKeep: 's=abc',
+    // E. what a sync must never change: the remembered setup on a ?ak= load, and a setup carrying what this
+    // device cannot show (a My Font made elsewhere, a list it lacks, values this build does not offer)
+    extra: async ({ browser, tag }) => {
+      const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      const setup = JSON.stringify({ selectedLetters: ['א', 'ב', 'ג'], selectedVowels: ['kamatz', 'patach'], headerLang: 'he', pageSize: 'a4' });
+      {
+        const { ctx, page, errors } = await openPage(browser, 'hebrew_blend_generator.html', { seed: { hebrewBlender_lastState: setup }, query: '?ak=' + b64({ v: 1, type: 'ntl', items: [['אָ', 'a'], ['בָּ', 'ba']] }) });
+        const r = await page.evaluate(() => { rememberSetup(); window.dispatchEvent(new Event('pagehide')); return { after: localStorage.getItem('hebrewBlender_lastState'), akView: _answerKeyView === true }; });   // a top-level let: reachable by name, not on window
+        check(tag + ' E: a ?ak= load shows the answer key and leaves the remembered setup byte-identical', r.akView && r.after === setup, JSON.stringify({ akView: r.akView, after: (r.after || '').slice(0, 160) }));
+        check(tag + ' E: 0 pageerrors (?ak=)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      {
+        const first = await openPage(browser, 'hebrew_blend_generator.html', {});
+        const base = await first.page.evaluate(() => getSettings());
+        await first.ctx.close();
+        const mutated = Object.assign({}, base, { hebFont: 'Made Elsewhere', rwSource: 'lists', selectedWordListIds: ['nope_123'], selectedWordListNames: ['Gone list'], traceLineStyle: 'zigzag', wsWordCount: '999', headerLang: 'he' });
+        const seedText = JSON.stringify(mutated);
+        const { ctx, page, errors } = await openPage(browser, 'hebrew_blend_generator.html', { seed: { hebrewBlender_lastState: seedText } });
+        await page.waitForTimeout(500);   // the My Fonts store answers (the missing-font note waits for it)
+        const r = await page.evaluate(() => { rememberSetup(); const n = document.getElementById('hebFontMissing'); return { after: localStorage.getItem('hebrewBlender_lastState'), font: localStorage.getItem('hebrewBlender_hebFont'), active: document.querySelectorAll('.font-opt.active').length, note: n ? n.textContent : '', noteHidden: n ? n.hidden : null }; });
+        check(tag + ' E: an unknown font, an absent list id and unoffered values survive a load-then-flush round trip byte-for-byte', r.after === seedText, diffKeys(JSON.stringify([['setup', seedText]]), JSON.stringify([['setup', r.after]])));
+        check(tag + ' E: the missing font is named under the picker, no face is highlighted, the shared font key carries the name', /Made Elsewhere/.test(r.note) && r.noteHidden === false && r.active === 0 && r.font === 'Made Elsewhere', JSON.stringify({ note: r.note, hidden: r.noteHidden, active: r.active, font: r.font }));
+        check(tag + ' E: 0 pageerrors (round trip)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+      {
+        // a honoured ?s= link leaves the address bar (a reload then reopens the remembered setup, not the link)
+        const first = await openPage(browser, 'hebrew_blend_generator.html', {});
+        const link = await first.page.evaluate(() => shareB64Encode(JSON.stringify({ headerLang: 'he' })));
+        await first.ctx.close();
+        const { ctx, page, errors } = await openPage(browser, 'hebrew_blend_generator.html', { query: '?s=' + link + '&lang=en' });
+        const r = await page.evaluate(() => ({ search: location.search, headerLang: getSettings().headerLang }));
+        check(tag + ' E: a valid ?s= link is applied and then stripped from the address bar, other params kept', r.headerLang === 'he' && !/[?&]s=/.test(r.search) && /lang=en/.test(r.search), JSON.stringify(r));
+        check(tag + ' E: 0 pageerrors (?s=)', errors.length === 0, errors.join(' | '));
+        await ctx.close();
+      }
+    }
   },
   {
     file: 'hebrew_dictionary.html', tool: 'Dictionary', host: '#wlCloudPanel',
@@ -102,6 +180,17 @@ const PAGES = [
     },
     rows: ['wordList:m1abc_x1y2z', 'wordList:m1abd_q9w8e'],
     prepare: `wlOpenManager();`,
+    // E. the emoji category exclusions survive a load that reopens Emoji mode (the first save used to run
+    // before the catalogue was loaded and wrote [] over them)
+    extra: async ({ browser, tag }) => {
+      const { ctx, page, errors } = await openPage(browser, 'hebrew_dictionary.html', { seed: { hebrewDictionary_emojiSettings: JSON.stringify({ mode: true, gender: 'all', excludedSubs: ['Animal|Mammal'] }) } });
+      const early = await page.evaluate(() => JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings')).excludedSubs);
+      await page.waitForFunction(() => !!EMOJI_DATA, null, { timeout: 20000 }).catch(() => {});
+      const r = await page.evaluate(() => { saveEmojiSettings(); return { loaded: !!EMOJI_DATA, stored: JSON.parse(localStorage.getItem('hebrewDictionary_emojiSettings')).excludedSubs, live: _dictEmojiExcluded() }; });
+      check(tag + ' E: the emoji exclusions were kept through the load (before and after the catalogue arrived)', JSON.stringify(early) === '["Animal|Mammal"]' && r.loaded && JSON.stringify(r.stored) === '["Animal|Mammal"]' && JSON.stringify(r.live) === '["Animal|Mammal"]', JSON.stringify({ early, r }));
+      check(tag + ' E: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    },
     expand: `wlOpenManager();`,
     urlKeep: 'wordlists=open'
   },
@@ -123,9 +212,10 @@ const PAGES = [
 ];
 // The hub carries one panel per tool: its seed is every tool's seed, its rows every tool's rows.
 PAGES.push({
-  file: 'index.html', host: '#cloudSavesSection', panels: 6,
+  file: 'index.html', host: '#cloudSavesSection', panels: 7,
   seed: Object.assign({}, ...PAGES.map(p => p.seed)),
-  tools: PAGES.map(p => ({ tool: p.tool, rows: p.rows })),
+  // …plus the suite-wide preferences row: the hub's .ivrit engine writes hebrewBlender_inputMode at init, so the row has a local item
+  tools: PAGES.map(p => ({ tool: p.tool, rows: p.rows })).concat([{ tool: 'Suite', rows: ['prefs:default'] }]),
   prepare: `openIEModal();`,
   expand: `openIEModal(); document.querySelectorAll('#cloudSavesSection details').forEach(d => { d.open = true; }); document.getElementById('cloudSavesSection').scrollIntoView();`
 });
@@ -143,9 +233,10 @@ async function startServer() {
 }
 
 // Opens a page with foreign origins aborted. blockAccount = the control run (no account scripts at all).
-async function openPage(browser, file, { seed = {}, serveSdk = false, blockAccount = false, viewport = { width: 1280, height: 900 }, query = '', prepare = null } = {}) {
+async function openPage(browser, file, { seed = {}, serveSdk = false, blockAccount = false, viewport = { width: 1280, height: 900 }, query = '', prepare = null, init = null } = {}) {
   const ctx = await browser.newContext({ serviceWorkers: 'block', viewport });
   await ctx.addInitScript((seed) => { for (const k of Object.keys(seed)) localStorage.setItem(k, seed[k]); }, seed);
+  if (init) await ctx.addInitScript(init);   // a page-specific stub that must be in place before the page's scripts run
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(String(e && e.message || e)));
@@ -272,6 +363,8 @@ try {
       check(tag + ' D: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
     }
+    // ---- E. page-specific: what a sync must never change on this page -------------------------------
+    if (P.extra) await P.extra({ browser, tag });
   }
 } finally {
   await browser.close();

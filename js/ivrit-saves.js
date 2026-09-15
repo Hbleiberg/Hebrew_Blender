@@ -50,6 +50,11 @@
  *   syncNow(tool)             Promise<summary> — every safe action in the list, in order
  *   act(tool, action, row)    Promise<result> — one row action ('upload' | 'download' | 'merge' | 'useCloud' |
  *                             'keepBoth' | 'keepMine' | 'delete' | 'file') on a row from plan(); the status line reports it
+ *   inventory()               Promise<[{tool, name, kinds:[{kind, label, count, bytes, names}], count, bytes}]> — what the
+ *                             account holds, tool by tool, without the data (the account page's listing)
+ *   bundleAll()               Promise<{file, count}> — every cloud row as one AllTools-shaped .ivrit object (the
+ *                             account screen downloads it; the account page zips it with the Font Maker projects)
+ *   forgetUser(uid)           drops this device's sync memory of an account that was deleted
  *   local / cloud             the two backends (used by saves-test.html)
  *   registry()                a copy of the effective registry
  *   t(key, fallback, params)  translate via IvritAccount.t (I18n when loaded, else the English fallback)
@@ -93,7 +98,83 @@
   //   envelope   mapIn only: the other top-level fields to keep when creating the store, e.g. {v:1}
   //   ivritKey   the AllTools bundle key, so "Download file" writes an .ivrit the hub already imports
   //   label      an i18n key for the kind (falls back to the raw kind)
+  //   virtual    instead of lsKey: a store assembled from several keys ({ read, write, remove, applied }) —
+  //              the suite-wide preferences row below is the one such store
+  //   skipUpload (name, value) → true for a local item that is only a seed (an untouched empty default class):
+  //              it is listed as "Empty default — not uploaded" and never sent by itself
+  // The suite-wide preferences (`Suite` / `prefs`): the small site-wide keys every page reads — one row,
+  // assembled from those keys. What travels: the UI language, the theme, the on-screen keyboard layout,
+  // the backup input mode, the shared Hebrew font and size, live preview, the Font Maker author name, and
+  // the Dictionary's romanization style, TTS rate and emoji settings. What stays per device: the three
+  // `*_panels` maps (which panels are open), the Dictionary's audio switch and its last search. A field
+  // this build cannot apply (an unknown language, an out-of-range value) is held in the sync memory and
+  // reported as the row's value until the key is changed here, so a newer device's choice round-trips
+  // instead of being pushed back down. After a write the module applies the language itself (I18n.setLang)
+  // and fires `ivritsuite:prefs` on window; each page follows the theme from that event, the rest is
+  // read at the next load (the done line says so).
+  var SUITE_PREFS = {
+    fields: {
+      lang:              { key: 'hebrewBlender_lang',              ok: function (v) { var s = (window.I18n && window.I18n.supported) || ['en', 'he']; return typeof v === 'string' && s.indexOf(v) >= 0; } },
+      darkMode:          { key: 'hebrewBlender_darkMode',          ok: function (v) { return v === '1' || v === '0'; } },
+      kbdLayout:         { key: 'hebrewBlender_kbdLayout',         ok: function (v) { return v === 'abc' || v === 'qwerty'; } },
+      inputMode:         { key: 'hebrewBlender_inputMode',         ok: function (v) { return v === 'auto' || v === 'manual'; } },
+      hebFont:           { key: 'hebrewBlender_hebFont',           ok: function (v) { return typeof v === 'string' && v.length > 0 && v.length <= 80; } },
+      hebFontSize:       { key: 'hebrewBlender_hebFontSize',       ok: function (v) { return numeric(v) && Number(v) >= 0 && Number(v) <= 100; } },
+      livePreview:       { key: 'hebrewBlender_livePreview',       ok: function (v) { return v === '1' || v === '0'; } },
+      fmLastAuthor:      { key: 'hebrewFontMaker_lastAuthor',      ok: function (v) { return typeof v === 'string' && v.length > 0 && v.length <= 80; } },
+      dictTranslitStyle: { key: 'hebrewDictionary_translitStyle',  ok: function (v) { return ['default', 'sbl', 'brill', 'modernIsraeli', 'ashkenazi', 'simpleStressed'].indexOf(v) >= 0; } },
+      dictTtsRate:       { key: 'hebrewDictionary_ttsRate',        ok: function (v) { return numeric(v) && Number(v) >= 0.5 && Number(v) <= 1.5; } },
+      dictEmojiSettings: { key: 'hebrewDictionary_emojiSettings',  json: true, ok: function (v) { return isPlainObject(v); } }
+    },
+    live: { lang: true, darkMode: true },   // applied on every open page at once; the rest at the next load
+    // The row's value: every field whose key is set (null when none is), with the held fields (what this
+    // device could not apply) reported in place of the key's value while that key is unchanged.
+    read: function () {
+      var out = {}, any = false, held = suiteHeld(), f = SUITE_PREFS.fields;
+      Object.keys(f).forEach(function (name) {
+        var raw = lsGet(f[name].key), v = raw;
+        if (raw !== null && f[name].json) { try { v = safeParse(raw); } catch (e) { v = null; } if (!isPlainObject(v)) v = null; }
+        if (v !== null && v !== '') { out[name] = v; any = true; }
+      });
+      Object.keys(held).forEach(function (name) {
+        var h = held[name];
+        if (!isPlainObject(h)) return;
+        var cur = f[name] ? lsGet(f[name].key) : null;
+        if (f[name] && cur !== h.was) return;   // the key moved since the hold was taken: this device's choice wins
+        out[name] = h.v; any = true;
+      });
+      return any ? out : null;
+    },
+    // Writes the fields it can apply; holds the rest. Never removes a key. Returns the names that changed.
+    write: function (value) {
+      var changed = [], held = suiteHeld(), f = SUITE_PREFS.fields;
+      Object.keys(value).forEach(function (name) {
+        if (badName(name)) return;
+        var v = value[name], d = f[name];
+        if (d && d.ok(v)) {
+          var text = d.json ? JSON.stringify(v) : String(v);
+          if (lsGet(d.key) !== text) { localStorage.setItem(d.key, text); changed.push(name); }
+          delete held[name];
+        } else if (v !== undefined && v !== null) {
+          held[name] = { v: v, was: d ? lsGet(d.key) : null };   // kept for the row's hash; applied by a build that knows it
+        }
+      });
+      suiteHeldSave(held);
+      return changed;
+    },
+    remove: function () { return Promise.resolve(); },   // the harness's cleanup never removes a shared preference
+    // After the tail settled the row: the language switches on this page now, and every listener follows
+    // the theme. Returns whether a field that only shows after a reload changed.
+    applied: function (changed) {
+      var i = window.I18n, lang = lsGet('hebrewBlender_lang');
+      if (i && typeof i.setLang === 'function' && lang && i.lang !== lang) { try { i.setLang(lang); } catch (e) {} }
+      try { window.dispatchEvent(new CustomEvent('ivritsuite:prefs', { detail: { changed: changed || [] } })); } catch (e) {}
+      return (changed || []).some(function (name) { return !SUITE_PREFS.live[name]; });
+    }
+  };
   var IVRIT_SYNC_REGISTRY = [
+    // every page — the suite-wide preferences as one row (see SUITE_PREFS above); the hub shows its panel
+    { tool: 'Suite', kind: 'prefs', virtual: SUITE_PREFS, shape: 'single', merge: 'assign', ivritKey: 'suitePrefs', label: 'shared.cloud.kind_suite_prefs' },
     // trope_tutor.html — mastery counts merge losslessly (max / union); the drawer layout never travels
     { tool: 'TropeTutor', kind: 'progress', lsKey: 'hebrewTropeTutor_progress', shape: 'single', merge: 'deepMax', ivritKey: 'tropeTutorProgress', label: 'shared.cloud.kind_progress' },
     { tool: 'TropeTutor', kind: 'settings', lsKey: 'hebrewTropeTutor_settings', shape: 'single', merge: 'assign', omit: ['panelsCollapsed'], ivritKey: 'tropeTutorSettings', label: 'shared.cloud.kind_settings' },
@@ -129,7 +210,8 @@
     { tool: 'Dashboard', kind: 'settings', lsKey: 'hebrewDashboard_settings', shape: 'single', merge: 'assign',
       omit: ['rosters', 'activeRosterId', 'pickerSessions', '_geoCoords', '*Collapsed', 'panelLayout', 'videoLayout', 'zoomLevel', 'hideZoomBar', 'keepAwake', 'lockPanelWidths', 'showTextSizeOptions'],
       ivritKey: 'dashboardSettings', label: 'shared.cloud.kind_settings' },
-    { tool: 'Dashboard', kind: 'roster', lsKey: 'hebrewDashboard_settings', shape: 'mapIn', path: 'rosters', nameField: 'name', merge: 'page', label: 'shared.cloud.kind_roster' }
+    { tool: 'Dashboard', kind: 'roster', lsKey: 'hebrewDashboard_settings', shape: 'mapIn', path: 'rosters', nameField: 'name', merge: 'page', ivritKey: 'dashboardRosters', label: 'shared.cloud.kind_roster',
+      skipUpload: function (name, value) { return isUntouchedDefaultClass(value); } }
   ];
   var extraEntries = [];   // entries a page registered through attach({ entries }) — the test harness
 
@@ -140,7 +222,7 @@
   var busy = {};       // tool → true while its queue runs
   var messages = {};   // tool → { text, isError }
   var pendingRefresh = {};   // tool → the listing promise in flight, so two callers share one listing
-  var lastSeenWrite = null;  // the `at` of the last module write another tab told us about
+  var seen = {};             // tool → kind → the write stamp this tab last acted on, or made itself (recheckWrites)
   var listening = false;
   var account = null;        // the open account screen: { root, opener, first } or null
   var splashShown = false;   // the fresh-sign-in splash opens at most once per page load
@@ -148,6 +230,17 @@
   var TOOL_NAMES = { Worksheet: ['home.card.generator.name', 'Hebrew Worksheet Generator'], FlashCards: ['home.card.flashcards.name', 'Hebrew Flash Cards'],
                      Dictionary: ['home.card.dictionary.name', 'Hebrew Word Lookup'], TorahTrainer: ['home.card.torah.name', 'Torah Trainer'],
                      TropeTutor: ['home.card.trope.name', 'Trope Tutor'], Dashboard: ['home.card.dashboard.name', 'Hebrew Classroom Dashboard'], Suite: ['shared.cloud.tool_suite', 'IvritSuite'] };
+
+  // Where each tool lives, for the "open {tool} to merge it" signpost on a page that cannot merge that row.
+  var TOOL_PAGES = { Worksheet: '/hebrew_blend_generator.html', FlashCards: '/flash_cards.html', Dictionary: '/hebrew_dictionary.html?wordlists=open',
+                     TorahTrainer: '/torah_trainer.html', TropeTutor: '/trope_tutor.html', Dashboard: '/classroom_dashboard.html', Suite: '/index.html?alltools=open' };
+  // The dashboard mints one empty class named "My class" on every fresh device (the literal, in both
+  // languages, plus the localized default); untouched, it is a seed, not a class list worth a row.
+  function isUntouchedDefaultClass(value) {
+    if (!isPlainObject(value) || (Array.isArray(value.names) && value.names.length)) return false;
+    var name = typeof value.name === 'string' ? value.name.trim() : '';
+    return name === '' || name === 'My class' || name === t('dashboard.picker.default_class_name', 'My class');
+  }
 
   /* ---------- tiny helpers ---------- */
   function A() { return window.IvritAccount || null; }
@@ -166,6 +259,7 @@
   function badName(n) { return n === '__proto__' || n === 'constructor' || n === 'prototype'; }
   function now() { return new Date().toISOString(); }
   function warn() { try { console.warn.apply(console, ['[saves]'].concat(Array.prototype.slice.call(arguments))); } catch (e) {} }
+  function noop() {}
   // JSON from a file, the cloud or a store never gets to pollute Object.prototype.
   function safeParse(str) {
     return JSON.parse(str, function (k, v) { return (k === '__proto__' || k === 'constructor' || k === 'prototype') ? undefined : v; });
@@ -285,6 +379,7 @@
 
   /* ---------- the local backend (reads never write; writes are read back) ---------- */
   function readStore(entry) {
+    if (entry.virtual) { try { return entry.virtual.read(); } catch (e) { return null; } }
     var raw = lsGet(entry.lsKey);
     if (raw === null) return null;
     if (entry.shape === 'scalar') return raw === '' ? null : raw;
@@ -327,8 +422,14 @@
   }
   // map / mapIn: the one item is set (a new name lands at the end, like the tool's own writer);
   // single / tree: the whole value; scalar: the plain string.
+  var virtualChanged = null;   // the field names the last virtual write changed, read by the tail
   function localWrite(entry, name, value) {
     if (badName(name)) return Promise.reject(makeError('name'));
+    if (entry.virtual) {
+      try { virtualChanged = entry.virtual.write(value); } catch (e) { return Promise.reject(makeError('quota', 'IvritSaves: preference write failed')); }
+      stampWrite(entry, name);
+      return Promise.resolve();
+    }
     var store, text;
     if (entry.shape === 'map') {
       store = readStore(entry) || {};
@@ -346,17 +447,43 @@
     }
     return writeText(entry.lsKey, text).then(function () { stampWrite(entry, name); });
   }
-  // Other tabs of the same tool learn about a module write through the sync-memory key (a `storage`
-  // event, see listen()) and re-read the key — otherwise their next in-memory save would revert it.
+  // Other tabs of the same tool learn about a module write through the sync-memory key — its `storage`
+  // event, or a look at the stamps when the tab next becomes visible (see recheckWrites) — and re-read
+  // the key; otherwise their next in-memory save would revert it. `lastWrite` names the write; `written`
+  // keeps one stamp per tool and kind, overwritten in place, so it never grows past the registry.
   // Signed in only: anonymous use never creates the key (the harness's local round trip stays silent).
   function stampWrite(entry, name) {
     if (!currentUser()) return;
-    var m = metaAll();
-    m.lastWrite = { tool: entry.tool, kind: entry.kind, name: name, at: Date.now() };
+    var m = metaAll(), at = Date.now();
+    m.lastWrite = { tool: entry.tool, kind: entry.kind, name: name, at: at };
+    if (!isPlainObject(m.written)) m.written = {};
+    if (!isPlainObject(m.written[entry.tool])) m.written[entry.tool] = {};
+    m.written[entry.tool][entry.kind] = at;
+    markSeen(entry.tool, entry.kind, at);   // this tab's own write is not news to it
     metaSave(m);
+  }
+  function markSeen(tool, kind, at) { if (!isPlainObject(seen[tool])) seen[tool] = {}; seen[tool][kind] = at; }
+  // The stamps as one map tool → kind → at: `written`, with `lastWrite` folded in (a tab still running the
+  // previous module stamps only that one).
+  function stampsOf(m) {
+    var out = {}, w = isPlainObject(m.written) ? m.written : {}, lw = isPlainObject(m.lastWrite) ? m.lastWrite : null;
+    Object.keys(w).forEach(function (tool) {
+      if (!isPlainObject(w[tool])) return;
+      Object.keys(w[tool]).forEach(function (kind) {
+        if (typeof w[tool][kind] !== 'number') return;
+        if (!out[tool]) out[tool] = {};
+        out[tool][kind] = w[tool][kind];
+      });
+    });
+    if (lw && typeof lw.at === 'number' && lw.tool && lw.kind) {
+      if (!out[lw.tool]) out[lw.tool] = {};
+      if (!(out[lw.tool][lw.kind] >= lw.at)) out[lw.tool][lw.kind] = lw.at;
+    }
+    return out;
   }
   // Only the test harness removes local data (its own keys). The panel never calls this.
   function localRemove(entry, name) {
+    if (entry.virtual) return entry.virtual.remove();
     var store = readStore(entry);
     if (entry.shape === 'map') {
       if (store && hasOwn(store, name)) { delete store[name]; return writeText(entry.lsKey, JSON.stringify(store)); }
@@ -371,11 +498,39 @@
   }
 
   /* ---------- sync memory: what this device last synced, per account ---------- */
+  // The suite-wide preferences this device could not apply (SUITE_PREFS): { field: { v, was } } — the
+  // account's value and what the key held when it arrived. Device-level, like the write stamps.
+  function suiteHeld() { var m = metaAll(); return isPlainObject(m.held) ? m.held : {}; }
+  function suiteHeldSave(held) { var m = metaAll(); if (Object.keys(held).length) m.held = held; else delete m.held; metaSave(m); }
   function metaAll() {
     try { var m = safeParse(lsGet(META_KEY) || 'null'); if (isPlainObject(m) && m.v === 1 && isPlainObject(m.users)) return m; } catch (e) {}
     return { v: 1, users: {} };
   }
-  function metaSave(m) { try { localStorage.setItem(META_KEY, JSON.stringify(m)); } catch (e) {} }
+  // Two tabs read-modify-write this key. The write stamps (`written`, `lastWrite`) are the part another tab
+  // may have moved meanwhile, so the newer stamp per tool and kind is taken from the stored copy before
+  // writing — a lost stamp would leave a tab's stale in-memory copy unread. Everything else is this tab's.
+  function metaSave(m) {
+    try {
+      var cur = null;
+      try { cur = safeParse(lsGet(META_KEY) || 'null'); } catch (e) {}
+      if (isPlainObject(cur)) {
+        var w = isPlainObject(cur.written) ? cur.written : {};
+        Object.keys(w).forEach(function (tool) {
+          if (!isPlainObject(w[tool])) return;
+          Object.keys(w[tool]).forEach(function (kind) {
+            var at = w[tool][kind];
+            if (typeof at !== 'number') return;
+            if (!isPlainObject(m.written)) m.written = {};
+            if (!isPlainObject(m.written[tool])) m.written[tool] = {};
+            if (!(m.written[tool][kind] >= at)) m.written[tool][kind] = at;
+          });
+        });
+        var lw = cur.lastWrite;
+        if (isPlainObject(lw) && typeof lw.at === 'number' && !(isPlainObject(m.lastWrite) && m.lastWrite.at >= lw.at)) m.lastWrite = lw;
+      }
+      localStorage.setItem(META_KEY, JSON.stringify(m));
+    } catch (e) {}
+  }
   function metaBranch(m, uid, tool, kind, create) {
     var u = m.users[uid]; if (!isPlainObject(u)) { if (!create) return null; u = m.users[uid] = {}; }
     var tl = u[tool]; if (!isPlainObject(tl)) { if (!create) return null; tl = u[tool] = {}; }
@@ -448,7 +603,7 @@
     var all = [];
     function page(from) {
       return withClient(function (c) {
-        return c.from('saves').select('id, kind, name, data').eq('tool', tool).order('kind').order('name').order('id').range(from, from + PAGE_SIZE - 1);
+        return c.from('saves').select('id, tool, kind, name, data').eq('tool', tool).order('kind').order('name').order('id').range(from, from + PAGE_SIZE - 1);
       }).then(function (rows) {
         rows = (rows || []).map(function (r) { r.data = clone(r.data); return r; });
         all = all.concat(rows);
@@ -489,7 +644,9 @@
     var st = err && (err.status || err.statusCode);
     var lower = String((err && err.message) || '').toLowerCase();
     if (code === 'quota') return t('shared.cloud.error_quota', 'There is no room left on this device to store that item.');
-    if (code === 'changed') return t('shared.cloud.error_changed', 'That item changed in the cloud a moment ago. The list was refreshed; choose again.');
+    if (code === 'changed') return t('shared.cloud.error_changed', 'That item changed a moment ago (here or in the cloud). The list was refreshed; choose again.');
+    if (code === 'changed_here') return t('shared.cloud.error_changed_here', 'That item changed on this device after the list was made. The list was refreshed; choose again.');
+    if (code === 'hook') return t('shared.cloud.error_hook', 'Downloaded, but this page could not show it. Reload the page, then choose again.');
     if (code === 'shape') return t('shared.cloud.error_shape', 'The cloud copy has an unexpected shape and was not written to this device.');
     if (code === 'no_merge') return t('shared.cloud.error_no_merge', 'This page cannot merge that item yet.');
     if (code === 'name') return t('shared.cloud.error_name', 'Names must be 1 to 120 characters.');
@@ -497,6 +654,11 @@
     if (code === 'too_big' || (code === '23514' && /2mb|octet|too big/.test(lower))) return t('shared.cloud.error_too_big', 'That item is too big for the cloud (2 MB limit).');
     if (code === '23514') return t('shared.cloud.error_limit', 'Your account has reached its limit of saved items.');
     if (code === '23505') return t('shared.cloud.error_name_taken', 'That name is already used in the cloud.');
+    if (code === 'file_too_big') return t('shared.cloud.error_file_too_big', 'That file is too big for the cloud.');
+    if (code === 'bad_type') return t('shared.cloud.error_file_type', 'The cloud does not accept that file type.');
+    if (code === 'not_found') return t('shared.cloud.error_not_found', 'That file is no longer in your account.');
+    if (code === 'project_limit') return t('shared.cloud.error_project_limit', 'Your account has reached its limit of 25 font projects.');
+    if (code === 'project_too_big') return t('shared.cloud.error_project_too_big', 'This project is too big for your account (20 MB after compression).');
     if (code === '42501') return t('shared.cloud.error_not_allowed', 'The cloud refused this action.');
     if (code === 'signed_out' || code === 'PGRST301' || st === 401 || /jwt/.test(lower)) return t('shared.cloud.error_session', 'Your sign-in has expired. Sign in again.');
     if (code === 'PGRST204' || code === 'PGRST205' || code === '42P01') return t('shared.cloud.error_not_setup', 'Cloud saves are not set up on the server yet.');
@@ -528,24 +690,30 @@
     if (!isPlainObject(e)) return 'not an object';
     if (TOOLS.indexOf(e.tool) < 0) return 'unknown tool ' + e.tool;
     if (!KIND_RE.test(String(e.kind))) return 'bad kind ' + e.kind;
-    if (typeof e.lsKey !== 'string' || !e.lsKey) return 'missing lsKey';
+    if (e.virtual) { if (!isPlainObject(e.virtual) || typeof e.virtual.read !== 'function' || typeof e.virtual.write !== 'function') return 'virtual needs read and write'; }
+    else if (typeof e.lsKey !== 'string' || !e.lsKey) return 'missing lsKey';
     if (SHAPES.indexOf(e.shape) < 0) return 'bad shape ' + e.shape;
     if (MERGES.indexOf(e.merge) < 0) return 'bad merge ' + e.merge;
     if (e.shape === 'mapIn' && (typeof e.path !== 'string' || !e.path)) return 'mapIn needs a path';
     if (e.shape === 'tree' && (typeof e.follows !== 'string' || !e.follows)) return 'a tree needs follows';
     if (e.omit !== undefined && !Array.isArray(e.omit)) return 'omit must be an array';
+    if (e.skipUpload !== undefined && typeof e.skipUpload !== 'function') return 'skipUpload must be a function';
     return null;
   }
-  function keyOf(kind, name) { return kind + '' + name; }
+  function keyOf(kind, name) { return kind + ':' + name; }   // a kind is letters only, so the first ':' always ends it
   function hashItem(entry, value) { return hashText(canonJson(project(entry, value))); }
 
   /* ---------- the plan: one row per kind + name across both sides ---------- */
   // local / cloud: { hash } or null (cloud also carries updatedAt); memory: what this device last synced
   // for the item, or null. The row's updated_at matching the memory is what says "the cloud copy is
   // the one I synced" — the hash in `data_hash` is only a shortcut.
+  // Two derived states never act on their own: a cloud-only row this device once synced (the memory knows
+  // that very row) was deleted or renamed here — `deleted-here`, the person chooses; a local-only row
+  // whose memory carries the tombstone "Delete from cloud" left, with the same hash, is `cloud-deleted`
+  // and is not uploaded again until it changes or the person asks.
   function classify(local, cloud, memory) {
-    if (local && !cloud) return 'local-only';
-    if (!local && cloud) return 'cloud-only';
+    if (local && !cloud) return (memory && memory.deletedCloud && memory.h === local.hash) ? 'cloud-deleted' : 'local-only';
+    if (!local && cloud) return (memory && memory.id === cloud.id && (memory.u === cloud.updatedAt || memory.h === cloud.hash)) ? 'deleted-here' : 'cloud-only';
     if (!local && !cloud) return 'none';
     if (local.hash === cloud.hash) return 'synced';
     if (memory) {
@@ -558,12 +726,16 @@
     return 'conflict';
   }
   function safeActionFor(r) {
+    if (r.seed && r.state === 'local-only') return null;   // an untouched seed is never sent by itself
     if (r.state === 'local-only' || r.state === 'local-changed') return 'upload';
     if (r.state === 'cloud-only' || r.state === 'cloud-changed') return r.downloadable ? 'download' : null;
     if (r.state === 'conflict' && r.mergeable && r.downloadable) return 'merge';
     return null;
   }
   function choicesFor(r) {
+    if (r.seed && r.state === 'local-only') return [];
+    if (r.state === 'deleted-here') return r.downloadable ? ['deleteCloud', 'download'] : ['deleteCloud'];
+    if (r.state === 'cloud-deleted') return ['upload'];
     if (r.state !== 'conflict') return r.safeAction ? [r.safeAction] : [];
     var m = r.entry.merge;
     if (m === 'item') return r.downloadable ? ['keepBoth', 'useCloud', 'keepMine'] : ['keepMine'];
@@ -598,7 +770,8 @@
       var rows = {}, order = [];
       locals.forEach(function (it) {
         var k = keyOf(it.kind, it.name);
-        rows[k] = { key: k, kind: it.kind, name: it.name, label: it.label, entry: it.entry, local: { hash: it.hash, bytes: it.bytes }, cloud: null, memory: null };
+        rows[k] = { key: k, kind: it.kind, name: it.name, label: it.label, entry: it.entry, local: { hash: it.hash, bytes: it.bytes }, cloud: null, memory: null,
+                    seed: !!(typeof it.entry.skipUpload === 'function' && it.entry.skipUpload(it.name, it.value)) };
         order.push(k);
       });
       if (!uid) return finishPlan(tool, null, rows, order, []);
@@ -652,15 +825,46 @@
       var d = (kindOrder[a.kind] || 0) - (kindOrder[b.kind] || 0);
       return d || String(a.label).localeCompare(String(b.label));
     });
-    var counts = { safe: 0, conflicts: 0, synced: 0 };
+    // conflicts: rows a button on this page can resolve; mergeInTool: rows only the owning tool can merge.
+    var counts = { safe: 0, conflicts: 0, mergeInTool: 0, synced: 0, deleted: 0 };
     list.forEach(function (r) {
       if (r.safeAction) counts.safe++;
-      if (r.state === 'conflict' && !r.safeAction) counts.conflicts++;
+      if (r.state === 'conflict' && !r.safeAction) { if (r.choices.length) counts.conflicts++; else counts.mergeInTool++; }
       if (r.state === 'synced') counts.synced++;
+      if (r.state === 'deleted-here') counts.deleted++;
     });
-    var p = { tool: tool, userId: uid, rows: list, cloudRows: cloudRows, counts: counts };
-    plans[tool] = p;
-    return p;
+    var p = { tool: tool, userId: uid, rows: list, cloudRows: cloudRows, counts: counts, treesDiffer: [] };
+    // A folder tree is never a row, but a layout that differs is work the Sync buttons must offer.
+    var trees = uid ? entries.filter(function (e) { return e.shape === 'tree'; }) : [];
+    return seqMap(trees, function (e) { return treeDiffers(tool, uid, e, cloudRows, list); }).then(function (diffs) {
+      p.treesDiffer = diffs.filter(Boolean);
+      counts.safe += p.treesDiffer.length;
+      plans[tool] = p;
+      return p;
+    });
+  }
+  // The cloud row of a tree entry, if any.
+  function treeRowOf(entry, cloudRows) {
+    var row = null;
+    (cloudRows || []).forEach(function (r) { if (r.kind === entry.kind && r.name === DEFAULT_NAME) row = r; });
+    return row;
+  }
+  function localTree(entry) {
+    var local = readStore(entry);
+    return (local && Array.isArray(local.root) && local.root.length) ? local : null;
+  }
+  // Whether a tree needs the tree pass — resolves to its kind, or null: one side only, the two sides
+  // differ, or the account's copy cannot be compared without loading it. While an item it follows is
+  // still only in the account the tree waits for that download (a safe action of its own).
+  function treeDiffers(tool, uid, entry, cloudRows, rows) {
+    var cloudRow = treeRowOf(entry, cloudRows), local = localTree(entry);
+    if (!local && !cloudRow) return Promise.resolve(null);
+    if (rows.some(function (r) { return r.kind === entry.follows && r.state === 'cloud-only'; })) return Promise.resolve(null);
+    if (!local || !cloudRow) return Promise.resolve(entry.kind);
+    var mem = metaGet(uid, tool, entry.kind, DEFAULT_NAME);
+    var cloudHash = (mem && mem.id === cloudRow.id && mem.u === cloudRow.updated_at) ? mem.h
+                  : (typeof cloudRow.data_hash === 'string' && cloudRow.data_hash.indexOf(currentPrefix()) === 0) ? cloudRow.data_hash : null;
+    return hashItem(entry, local).then(function (h) { return (cloudHash && h === cloudHash) ? null : entry.kind; });
   }
 
   /* ---------- actions (each runs inside the tool's queue) ---------- */
@@ -670,33 +874,94 @@
     var cfg = pages[tool];
     if (cfg && typeof cfg.flush === 'function') { try { cfg.flush(); } catch (e) { warn('flush failed:', e); } }
   }
+  // Tells the page to re-read the key. Returns false when the page's hook threw: its in-memory copy is then
+  // stale and would write back over what was just stored, so the caller must not remember the write.
   function notifyPage(tool, kind, name) {
     var cfg = pages[tool];
-    if (cfg && typeof cfg.onLocalChanged === 'function') { try { cfg.onLocalChanged(kind, name); } catch (e) { warn('onLocalChanged failed:', e); } }
+    if (!cfg || typeof cfg.onLocalChanged !== 'function') return true;
+    try { cfg.onLocalChanged(kind, name); return true; } catch (e) { warn('onLocalChanged failed:', e); return false; }
   }
   // The local side may have moved since the list was built (the page kept working): a download or a
-  // merge onto a value newer than the one the person looked at is refused and the list refreshed.
+  // merge onto a value newer than the one the person looked at — or onto an item that was not there when
+  // they looked — is refused and the list refreshed.
   function assertLocalAsPlanned(row, it) {
-    if (!row.local) return Promise.resolve();
-    if (!it) throw makeError('changed', 'IvritSaves: the local item is gone');
-    return hashItem(row.entry, it.value).then(function (h) { if (h !== row.local.hash) throw makeError('changed', 'IvritSaves: the local item changed meanwhile'); });
+    if (!row.local) { if (it) throw makeError('changed_here', 'IvritSaves: a local item appeared meanwhile'); return Promise.resolve(); }
+    if (!it) throw makeError('changed_here', 'IvritSaves: the local item is gone');
+    return hashItem(row.entry, it.value).then(function (h) { if (h !== row.local.hash) throw makeError('changed_here', 'IvritSaves: the local item changed meanwhile'); });
   }
-  function remember(uid, tool, row, name, h, saved) {
-    if (stillMe(uid)) metaSet(uid, tool, row.kind, name, { h: h, id: saved.id, u: saved.updated_at, at: now() });
+  function remember(uid, tool, kind, name, h, saved) {
+    if (stillMe(uid)) metaSet(uid, tool, kind, name, { h: h, id: saved.id, u: saved.updated_at, at: now() });
   }
-  // Upload = also "Keep mine" on a conflict: the local copy goes over the listed cloud row (if any).
-  function actUpload(tool, row) {
+  // The one ending of every local write the module makes (a download, a merge, a folder tree, the copy of
+  // Keep both): tell the page, let the page's own writer land whatever it re-applied, then make the two
+  // sides equal — the cloud row is remembered when the store still matches it, and the store's version is
+  // put in the account when it does not. Remembering the store's hash as the cloud's would hide a lossy
+  // re-apply behind "Same"; pushing makes both sides hold the page's normalized form, which reads "Same"
+  // honestly and converges in one round. `full` = { id, updated_at, data } of the row the store was written
+  // from. A page hook that throws remembers nothing (the page's stale memory would write back over the
+  // download) and fails the action with `hook`; a store the page emptied fails the same way.
+  function settleLocalWrite(tool, uid, entry, name, full) {
+    var changed = virtualChanged;
+    virtualChanged = null;
+    if (!notifyPage(tool, entry.kind, name)) throw makeError('hook', 'IvritSaves: the page could not take the write');
+    flushPage(tool);
+    return reconcileStore(tool, uid, entry, name, full).then(function (r) {
+      // A virtual row (the suite-wide preferences) applies itself once both sides agree: the language on
+      // this page now, the theme through every page's listener; `hint` = something shows after a reload.
+      if (entry.virtual && typeof entry.virtual.applied === 'function') { try { r.hint = !!entry.virtual.applied(changed); } catch (e) {} }
+      return r;
+    });
+  }
+  // The comparing half of the tail — also used when the store already held the value and nothing was written.
+  function reconcileStore(tool, uid, entry, name, full) {
+    var back = localItem(entry, name);
+    if (!back) throw makeError('hook', 'IvritSaves: the page dropped the item');
+    var projected = project(entry, back.value);
+    return Promise.all([hashText(canonJson(projected)), hashItem(entry, full.data)]).then(function (hs) {
+      var h = hs[0], cloudHash = hs[1];
+      if (h === cloudHash) { remember(uid, tool, entry.kind, name, h, full); return { hash: h, pushed: false }; }
+      var g = guardUpload(entry, name, projected);
+      if (g) throw g;
+      return cloudUpdateIf(full.id, full.updated_at, projected, h).then(function (saved) {
+        remember(uid, tool, entry.kind, name, h, saved);
+        return { hash: h, pushed: true };
+      }, function (err) {
+        if (err && err.code === 'changed') { warn('the account copy moved while this device took it; the next listing shows both sides'); return { hash: h, pushed: false }; }
+        throw err;
+      });
+    });
+  }
+  // Upload: the local copy goes over the listed cloud row (if any). "Keep mine" on a conflict is the same
+  // send after a check that the local copy is still the one the person looked at; for a settings blob it
+  // is a merge in which this device's fields win and a field only the account had survives.
+  function actUpload(tool, row, keepMine) {
+    if (keepMine && row.cloud && row.entry.merge === 'assign') return actKeepMineAssign(tool, row);
     var uid = ensureUser();
     flushPage(tool);
     var it = localItem(row.entry, row.name);
-    if (!it) throw makeError('changed', 'IvritSaves: nothing to upload');
-    var projected = project(row.entry, it.value);
-    var g = guardUpload(row.entry, row.name, projected);
-    if (g) throw g;
-    return hashText(canonJson(projected)).then(function (h) {
-      var write = row.cloud ? cloudUpdateIf(row.cloud.id, row.cloud.updatedAt, projected, h)
-                            : cloudInsert(row.entry, row.name, projected, h).catch(function (err) { if (err && err.code === '23505') throw makeError('changed'); throw err; });
-      return write.then(function (saved) { remember(uid, tool, row, row.name, h, saved); return { action: 'upload', row: row }; });
+    if (!it) throw makeError('changed_here', 'IvritSaves: nothing to upload');
+    return (keepMine ? assertLocalAsPlanned(row, it) : Promise.resolve()).then(function () {
+      var projected = project(row.entry, it.value);
+      var g = guardUpload(row.entry, row.name, projected);
+      if (g) throw g;
+      return hashText(canonJson(projected)).then(function (h) {
+        var write = row.cloud ? cloudUpdateIf(row.cloud.id, row.cloud.updatedAt, projected, h)
+                              : cloudInsert(row.entry, row.name, projected, h).catch(function (err) { if (err && err.code === '23505') throw makeError('changed'); throw err; });
+        return write.then(function (saved) { remember(uid, tool, row.kind, row.name, h, saved); return { action: 'upload', row: row }; });
+      });
+    });
+  }
+  function actKeepMineAssign(tool, row) {
+    var uid = ensureUser();
+    return cloudLoad(row.cloud.id).then(function (full) {
+      if (!validateShape(row.entry, full.data)) throw makeError('shape');
+      flushPage(tool);
+      var it = localItem(row.entry, row.name);
+      return assertLocalAsPlanned(row, it).then(function () {
+        if (!it) throw makeError('changed_here');
+        var merged = safeAssign(clone(restoreOmitted(row.entry, full.data, it.value)), it.value);
+        return writeBothSides(tool, uid, row, merged, full);
+      }).then(function () { return { action: 'upload', row: row }; });
     });
   }
   function actDownload(tool, row) {
@@ -707,32 +972,20 @@
       var it = localItem(row.entry, row.name);
       return assertLocalAsPlanned(row, it).then(function () {
         var value = restoreOmitted(row.entry, full.data, it ? it.value : null);
-        return localWrite(row.entry, row.name, value).then(function () {
-          notifyPage(tool, row.kind, row.name);
-          var back = localItem(row.entry, row.name);   // what the store now holds is what gets remembered
-          return hashItem(row.entry, back ? back.value : value).then(function (h) {
-            remember(uid, tool, row, row.name, h, full);
-            return { action: 'download', row: row };
-          });
-        });
+        return localWrite(row.entry, row.name, value)
+          .then(function () { return settleLocalWrite(tool, uid, row.entry, row.name, full); })
+          .then(function (r) { return { action: 'download', row: row, pushed: r.pushed, hint: r.hint }; });
       });
     });
   }
-  // Shared tail of the merging actions: write the value here, tell the page, put the same value in the
-  // cloud (unless the cloud already holds it), remember it.
+  // Shared tail of the merging actions: the value is checked against the account's limits first (a merge
+  // too big to store is refused before anything is written on either side), written here, then settled.
   function writeBothSides(tool, uid, row, value, full) {
-    return localWrite(row.entry, row.name, value).then(function () {
-      notifyPage(tool, row.kind, row.name);
-      var back = localItem(row.entry, row.name);
-      var projected = project(row.entry, back ? back.value : value);
-      var g = guardUpload(row.entry, row.name, projected);
-      if (g) throw g;
-      return Promise.all([hashText(canonJson(projected)), hashItem(row.entry, full.data)]).then(function (hs) {
-        var h = hs[0], cloudHash = hs[1];
-        if (h === cloudHash) { remember(uid, tool, row, row.name, h, full); return { action: 'merge', row: row }; }
-        return cloudUpdateIf(full.id, full.updated_at, projected, h).then(function (saved) { remember(uid, tool, row, row.name, h, saved); return { action: 'merge', row: row }; });
-      });
-    });
+    var g = guardUpload(row.entry, row.name, project(row.entry, value));
+    if (g) return Promise.reject(g);
+    return localWrite(row.entry, row.name, value)
+      .then(function () { return settleLocalWrite(tool, uid, row.entry, row.name, full); })
+      .then(function (r) { return { action: 'merge', row: row, pushed: r.pushed, hint: r.hint }; });
   }
   function actMerge(tool, row) {
     var uid = ensureUser();
@@ -773,7 +1026,29 @@
       });
     });
   }
+  // The id shape the tools mint (base-36 time plus a random tail), for the copy of an id-keyed row.
+  function mintId() { return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6); }
+  // The label of a Keep-both copy on an id-keyed row (a word list, a class list): the item's own name suffixed,
+  // unique among the labels this device holds — never two lists with the same label.
+  function copyLabelFor(entry, label) {
+    var taken = {};
+    localItems(entry).forEach(function (it) { if (isPlainObject(it.value) && typeof it.value[entry.nameField] === 'string') taken[it.value[entry.nameField]] = true; });
+    var base = t('shared.cloud.copy_suffix', '{name} (cloud copy)', { name: label });
+    if (!taken[base]) return base;
+    for (var n = 2; n < 1000; n++) {
+      var c = t('shared.cloud.copy_suffix_n', '{name} (cloud copy {n})', { name: label, n: n });
+      if (!taken[c]) return c;
+    }
+    return base + ' ' + Date.now();
+  }
   function copyNameFor(tool, entry, name) {
+    if (entry.shape === 'mapIn' && entry.nameField) {   // the row name is an id: mint a fresh one (the label is suffixed separately)
+      var taken0 = {};
+      localItems(entry).forEach(function (it) { taken0[it.name] = true; });
+      ((plans[tool] && plans[tool].rows) || []).forEach(function (r) { if (r.kind === entry.kind) taken0[r.name] = true; });
+      for (var i = 0; i < 20; i++) { var id = mintId(); if (!taken0[id]) return id; }
+      return mintId() + '_' + Date.now();
+    }
     var taken = {};
     localItems(entry).forEach(function (it) { taken[it.name] = true; });
     ((plans[tool] && plans[tool].rows) || []).forEach(function (r) { if (r.kind === entry.kind) taken[r.name] = true; });
@@ -785,9 +1060,10 @@
     }
     return base + ' ' + Date.now();
   }
-  // Keep both: the cloud version is added on this device under a new name first (and read back), then
-  // this device's version goes over the cloud row, then the copy goes up too — every device ends with
-  // both, nothing is lost, and it converges in one click.
+  // Keep both: the cloud version gets its new name in the account first, then this device's version goes
+  // over the original row (only if it is still the listed one), then the copy lands on this device and is
+  // read back. A refusal at the first step writes nothing anywhere; one at the second removes the copy it
+  // just made — so every device ends with both versions, nothing is lost, and it converges in one click.
   function actKeepBoth(tool, row) {
     var uid = ensureUser();
     return cloudLoad(row.cloud.id).then(function (full) {
@@ -795,32 +1071,46 @@
       flushPage(tool);
       var it = localItem(row.entry, row.name);
       return assertLocalAsPlanned(row, it).then(function () {
-        if (!it) throw makeError('changed');
+        if (!it) throw makeError('changed_here');
         var copyName = copyNameFor(tool, row.entry, row.name);
-        var g = guardUpload(row.entry, copyName, full.data);
+        var theirs = project(row.entry, full.data);
+        var mine = project(row.entry, it.value);
+        var landing = restoreOmitted(row.entry, full.data, it.value);
+        if (row.entry.shape === 'mapIn' && row.entry.nameField && isPlainObject(theirs)) {   // an id-keyed row: the copy's label is suffixed on both sides
+          var label = copyLabelFor(row.entry, typeof theirs[row.entry.nameField] === 'string' ? theirs[row.entry.nameField] : row.label);
+          theirs = clone(theirs); theirs[row.entry.nameField] = label;
+          landing = clone(landing); landing[row.entry.nameField] = label;
+        }
+        var g = guardUpload(row.entry, copyName, theirs) || guardUpload(row.entry, row.name, mine);
         if (g) throw g;
-        return localWrite(row.entry, copyName, full.data).then(function () {
-          notifyPage(tool, row.kind, copyName);
-          var projected = project(row.entry, it.value);
-          var g2 = guardUpload(row.entry, row.name, projected);
-          if (g2) throw g2;
-          return hashText(canonJson(projected)).then(function (h) {
-            return cloudUpdateIf(full.id, full.updated_at, projected, h).then(function (saved) {
-              remember(uid, tool, row, row.name, h, saved);
-              return hashItem(row.entry, full.data).then(function (hc) {
-                return cloudInsert(row.entry, copyName, project(row.entry, full.data), hc)
-                  .then(function (saved2) { remember(uid, tool, row, copyName, hc, saved2); },
-                        function (err) { warn('the copy stays on this device only for now:', err); });   // Sync will retry it
-              });
+        return Promise.all([hashItem(row.entry, full.data), hashText(canonJson(mine))]).then(function (hs) {
+          var hc = hs[0], h = hs[1];
+          return cloudInsert(row.entry, copyName, theirs, hc).catch(function (err) { if (err && err.code === '23505') throw makeError('changed'); throw err; })
+            .then(function (copyRow) {
+              return cloudUpdateIf(full.id, full.updated_at, mine, h)
+                .catch(function (err) { return cloudRemove(copyRow.id).catch(noop).then(function () { throw err; }); })
+                .then(function (saved) {
+                  remember(uid, tool, row.kind, row.name, h, saved);
+                  return localWrite(row.entry, copyName, landing)
+                    .then(function () { return settleLocalWrite(tool, uid, row.entry, copyName, { id: copyRow.id, updated_at: copyRow.updated_at, data: theirs }); });
+                });
             });
-          });
-        }).then(function () { return { action: 'keepBoth', row: row, copy: copyName }; });
+        }).then(function () { return { action: 'keepBoth', row: row, copy: (row.entry.shape === 'mapIn' && row.entry.nameField && isPlainObject(theirs)) ? theirs[row.entry.nameField] : copyName }; });
       });
     });
   }
+  // "Delete from cloud" leaves a tombstone in the memory when a copy stays on this device, so that copy
+  // reads "Removed from your account" and is not uploaded again unless it changes or the person asks.
   function actDelete(tool, row) {
     var uid = ensureUser();
-    return cloudRemove(row.cloud.id).then(function () { if (stillMe(uid)) metaDelete(uid, tool, row.kind, row.name); return { action: 'delete', row: row }; });
+    flushPage(tool);
+    var it = localItem(row.entry, row.name);
+    return (it ? hashItem(row.entry, it.value) : Promise.resolve(null)).then(function (h) {
+      return cloudRemove(row.cloud.id).then(function () {
+        if (stillMe(uid)) { if (h) metaSet(uid, tool, row.kind, row.name, { deletedCloud: true, h: h, at: now() }); else metaDelete(uid, tool, row.kind, row.name); }
+        return { action: 'delete', row: row };
+      });
+    });
   }
   // An .ivrit file of the cloud copy: an AllTools-shaped bundle when the entry names its bundle key.
   function ivritFile(entry, name, data) {
@@ -831,13 +1121,18 @@
     else payload = data;
     var bundle = {};
     bundle[entry.ivritKey || entry.kind] = payload;
-    return { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: entry.ivritKey ? 'AllTools' : entry.tool, savedAt: now(), data: bundle };
+    // partial: the account's copy of one item — merged into what the device holds, never replacing it
+    return { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: entry.ivritKey ? 'AllTools' : entry.tool, partial: true, savedAt: now(), data: bundle };
   }
   // One tool's cloud rows folded into the AllTools bundle shape the hub imports: a map kind becomes
   // {name: value}, a mapIn kind its envelope + {path: {id: value}}, a single/tree its value, a scalar the
-  // plain value. Rows of a kind the registry does not know are left out. Pure.
+  // plain value. Rows of a kind this build's registry does not know (saved by a newer version) come back
+  // separately as `unknown`, so a backup still carries them. Pure.
   function bundleFromRows(entries, rows) {
-    var out = {}, n = 0;
+    var out = {}, n = 0, known = {};
+    entries.forEach(function (e) { known[e.kind] = true; });
+    var unknown = rows.filter(function (r) { return !known[r.kind] && !badName(r.name) && KIND_RE.test(String(r.kind || '')); })
+                      .map(function (r) { return { tool: r.tool, kind: r.kind, name: r.name, data: r.data }; });
     entries.forEach(function (e) {
       var mine = rows.filter(function (r) { return r.kind === e.kind && !badName(r.name); });
       if (!mine.length) return;
@@ -847,7 +1142,7 @@
       else if (e.shape === 'scalar') { out[key] = isPlainObject(mine[0].data) ? mine[0].data.value : mine[0].data; n++; }
       else { out[key] = mine[0].data; n++; }
     });
-    return { data: out, count: n };
+    return { data: out, count: n, unknown: unknown };
   }
   function downloadJson(obj, name) {
     var blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
@@ -870,12 +1165,13 @@
   }
   function runAction(tool, action, row) {
     return Promise.resolve().then(function () {
-      if (action === 'upload' || action === 'keepMine') return actUpload(tool, row);
+      if (action === 'upload') return actUpload(tool, row);
+      if (action === 'keepMine') return actUpload(tool, row, true);
       if (action === 'download') return actDownload(tool, row);
       if (action === 'merge') return actMerge(tool, row);
       if (action === 'useCloud') return actUseCloud(tool, row);
       if (action === 'keepBoth') return actKeepBoth(tool, row);
-      if (action === 'delete') return actDelete(tool, row);
+      if (action === 'delete' || action === 'deleteCloud') return actDelete(tool, row);
       if (action === 'file') return actDownloadFile(tool, row);
       throw makeError('bad_action', 'IvritSaves: unknown action ' + action);
     });
@@ -887,63 +1183,106 @@
   // the tree is left alone on both sides (the page would prune its names); otherwise: a flat local tree
   // takes the cloud's folders wholesale, two real trees go through the page's additive merge, and the
   // result lands on whichever side differs.
+  // Resolves to whether the tree changed on either side. The classify rule, for trees, through the sync
+  // memory: an unchanged side takes the other's tree; two changed sides (or no memory yet) merge through
+  // the page's pure helper — folders by name, an item once, filed beats unfiled, this device's placement
+  // when both file it — and the merge goes up, so the other device then reads "cloud changed" and takes
+  // it: one round, and both hold the same tree.
   function syncTree(tool, entry, p) {
     var uid = ensureUser();
     var cfg = pages[tool] || {};
     var helper = cfg.merges && cfg.merges[entry.kind];
-    var cloudRow = null;
-    (p.cloudRows || []).forEach(function (r) { if (r.kind === entry.kind && r.name === DEFAULT_NAME) cloudRow = r; });
-    var local = readStore(entry);
-    if (local && !(Array.isArray(local.root) && local.root.length)) local = null;
-    if (!local && !cloudRow) return Promise.resolve();
-    if (p.rows.some(function (r) { return r.kind === entry.follows && r.state === 'cloud-only'; })) return Promise.resolve();
-    return (cloudRow ? cloudLoad(cloudRow.id) : Promise.resolve(null)).then(function (full) {
-      var cloud = (full && validateShape(entry, full.data)) ? full.data : null;
-      var merged;
-      if (local && cloud) {
-        if (treeIsFlat(local)) merged = cloud;
+    var cloudRow = treeRowOf(entry, p.cloudRows), local = localTree(entry);
+    if (!local && !cloudRow) return Promise.resolve(false);
+    if (p.rows.some(function (r) { return r.kind === entry.follows && r.state === 'cloud-only'; })) return Promise.resolve(false);
+    var mem = metaGet(uid, tool, entry.kind, DEFAULT_NAME);
+    var cloudSame = !!(mem && cloudRow && mem.id === cloudRow.id && mem.u === cloudRow.updated_at);
+    return (local ? hashItem(entry, local) : Promise.resolve(null)).then(function (localHash) {
+      var localSame = !!(mem && localHash && localHash === mem.h);
+      if (localSame && cloudSame) return false;   // neither side moved since this device last synced the tree
+      if (!cloudRow) {
+        // nothing in the account yet: this device's folders go up as they are
+        var g = guardUpload(entry, DEFAULT_NAME, local);
+        if (g) throw g;
+        return cloudInsert(entry, DEFAULT_NAME, local, localHash).then(function (saved) { remember(uid, tool, entry.kind, DEFAULT_NAME, localHash, saved); return true; });
+      }
+      return cloudLoad(cloudRow.id).then(function (full) {
+        if (!validateShape(entry, full.data)) throw makeError('shape');
+        var cloud = full.data, merged;
+        if (!local || localSame || treeIsFlat(local)) merged = cloud;
+        else if (cloudSame) merged = local;
         else if (typeof helper === 'function') { merged = helper(clone(local), clone(cloud)); if (!validateShape(entry, merged)) merged = local; }
         else { warn('no merge helper for tree kind', entry.kind, '— the cloud folders were not merged'); merged = local; }
-      } else merged = local || cloud;
-      var chain = Promise.resolve();
-      if (!local || canonJson(merged) !== canonJson(local)) {
-        chain = chain.then(function () { flushPage(tool); return localWrite(entry, DEFAULT_NAME, merged); })
-                     .then(function () { notifyPage(tool, entry.kind, DEFAULT_NAME); });
-      }
-      return chain.then(function () {
-        return hashItem(entry, merged).then(function (h) {
-          if (cloud && canonJson(merged) === canonJson(cloud)) { if (stillMe(uid)) metaSet(uid, tool, entry.kind, DEFAULT_NAME, { h: h, id: full.id, u: full.updated_at, at: now() }); return; }
-          var g = guardUpload(entry, DEFAULT_NAME, merged);
-          if (g) throw g;
-          var write = full ? cloudUpdateIf(full.id, full.updated_at, merged, h) : cloudInsert(entry, DEFAULT_NAME, merged, h);
-          return write.then(function (saved) { if (stillMe(uid)) metaSet(uid, tool, entry.kind, DEFAULT_NAME, { h: h, id: saved.id, u: saved.updated_at, at: now() }); });
-        });
+        // The store then holds the merged tree and the tail compares it with the account: the page's own
+        // re-render may still reorder or prune it, and what the store holds afterwards is what goes up.
+        if (local && canonJson(merged) === canonJson(local)) return reconcileStore(tool, uid, entry, DEFAULT_NAME, full).then(function (r) { return r.pushed; });
+        flushPage(tool);
+        return localWrite(entry, DEFAULT_NAME, merged).then(function () { return settleLocalWrite(tool, uid, entry, DEFAULT_NAME, full); }).then(function () { return true; });
       });
     });
   }
-  // After any action: list again, then let every tree of the tool follow its items.
-  function afterActions(tool) {
-    return planTool(tool).then(function (p) {
-      var trees = registryFor(tool).filter(function (e) { return e.shape === 'tree'; });
-      if (!trees.length || !p.userId) return p;
-      return seqMap(trees, function (e) { return syncTree(tool, e, p); }).then(function () { return p; });
-    });
+  // Every tree of the tool follows its items, after the plan they follow was made; resolves to how many changed.
+  function syncTrees(tool, p) {
+    var trees = registryFor(tool).filter(function (e) { return e.shape === 'tree'; }), n = 0;
+    if (!trees.length || !p.userId) return Promise.resolve(0);
+    return seqMap(trees, function (e) { return syncTree(tool, e, p).then(function (changed) { if (changed) n++; }); }).then(function () { return n; });
   }
-  // A row the client-side guard refuses (too big, an impossible name) is skipped and counted; the run
-  // goes on. Anything else — a network or server error — stops it, and re-running resumes.
-  function isGuardError(err) { var c = err && err.code; return c === 'too_big' || c === 'name' || c === 'chars'; }
+  // Errors that belong to one row — the guard's refusals, a malformed cloud copy, a page with no merge
+  // helper, a row that moved between the listing and the action, a page hook that failed — skip that row;
+  // the run goes on and names it. Anything else (the connection, the session, the device's storage, the
+  // server) stops the tool, and re-running resumes.
+  var ROW_ERRORS = { too_big: true, name: true, chars: true, shape: true, no_merge: true, changed: true, changed_here: true, hook: true };
+  function isRowError(err) { return !!(err && ROW_ERRORS[String(err.code)]); }
+  // Errors that would fail every tool the same way: a bulk run does not go on to the next tool.
+  function isConnectionError(err) {
+    var code = String((err && err.code) || ''), st = err && (err.status || err.statusCode), lower = String((err && err.message) || '').toLowerCase();
+    return code === 'offline' || code === 'blocked' || code === 'disabled' || code === 'signed_out' || code === 'PGRST301' || st === 401 || /jwt/.test(lower)
+      || code === 'PGRST204' || code === 'PGRST205' || code === '42P01' || /failed to fetch|networkerror|load failed|network request failed/.test(lower);
+  }
+  // The few words after a skipped row's name.
+  function skipReason(err) {
+    var code = String((err && err.code) || '');
+    if (code === 'too_big') return t('shared.cloud.skip_too_big', 'too big for the cloud');
+    if (code === 'name') return t('shared.cloud.skip_name', 'invalid name');
+    if (code === 'chars') return t('shared.cloud.skip_chars', 'characters the cloud cannot store');
+    if (code === 'shape') return t('shared.cloud.skip_shape', 'unexpected shape in the cloud copy');
+    if (code === 'no_merge') return t('shared.cloud.skip_no_merge', 'this page cannot merge it');
+    if (code === 'changed' || code === 'changed_here') return t('shared.cloud.skip_changed', 'changed meanwhile');
+    if (code === 'hook') return t('shared.cloud.skip_hook', 'this page could not show it');
+    return errorText(err);
+  }
+  function noteSkip(sum, row, err) { sum.skipped++; sum.skips.push({ name: row.label, why: skipReason(err) }); }
+  // The finishing line's tail naming the skipped rows ('' when none), and the note for a failed tree pass.
+  function skippedText(skips) {
+    if (!skips || !skips.length) return '';
+    var list = skips.map(function (s) { return t('shared.cloud.skipped_item', '{name} ({why})', { name: s.name, why: s.why }); }).join(', ');
+    return ' ' + t('shared.cloud.sync_skipped_named', '{n} skipped: {list}.', { n: skips.length, list: list });
+  }
+  function foldersText(err) { return err ? ' ' + t('shared.cloud.folders_error', 'The folder layout was not synced: {reason}', { reason: errorText(err) }) : ''; }
+  // The re-listing and the tree pass that end every run: a failed listing is the run's stop, a failed tree
+  // pass is noted beside the result, and the tool's latest plan comes back either way.
+  function finishRun(tool, p, sum) {
+    return planTool(tool).then(function (p2) {
+      return syncTrees(tool, p2).then(function (n) { if (n) sum.merged = (sum.merged || 0) + n; }, function (err) { sum.treeError = err; }).then(function () { return p2; });
+    }, function (err) { if (!sum.error) sum.error = err; return p; });
+  }
   function syncNowInner(tool) {
     return planTool(tool).then(function (p) {
-      var todo = p.rows.filter(function (r) { return r.safeAction; });
-      var sum = { done: 0, total: todo.length, up: 0, down: 0, merged: 0, skipped: 0, left: 0, error: null };
+      // Downloads and merges first, uploads after: what lands may change this device (a same-named class
+      // folds into the one that arrived), and an upload of an item that is then gone is skipped quietly.
+      var todo = p.rows.filter(function (r) { return r.safeAction && r.safeAction !== 'upload'; })
+                 .concat(p.rows.filter(function (r) { return r.safeAction === 'upload'; }));
+      var sum = { tool: tool, done: 0, total: todo.length, up: 0, down: 0, merged: 0, skipped: 0, skips: [], left: 0, error: null, treeError: null };
       return seqMap(todo, function (row) {
-        return runAction(tool, row.safeAction, row).then(function () {
+        if (row.safeAction === 'upload' && !localItem(row.entry, row.name)) { sum.total--; return Promise.resolve(); }   // gone meanwhile (folded into another item): nothing to send
+        return runAction(tool, row.safeAction, row).then(function (res) {
           sum.done++;
+          if (res && res.hint) sum.hint = true;
           if (row.safeAction === 'upload') sum.up++; else if (row.safeAction === 'download') sum.down++; else sum.merged++;
-        }, function (err) { if (!isGuardError(err)) throw err; sum.skipped++; });
+        }, function (err) { if (!isRowError(err)) throw err; noteSkip(sum, row, err); });
       }).catch(function (err) { sum.error = err; })
-        .then(function () { return afterActions(tool); })
-        .then(function (p2) { sum.left = p2.counts.conflicts; return sum; });
+        .then(function () { return finishRun(tool, p, sum); })
+        .then(function (p2) { sum.left = p2.counts.conflicts; sum.mergeInTool = p2.counts.mergeInTool; return sum; });
     });
   }
 
@@ -951,11 +1290,11 @@
   function uploadAllInner(tool) {
     return planTool(tool).then(function (p) {
       var todo = p.rows.filter(function (r) { return r.safeAction === 'upload'; });
-      var sum = { done: 0, total: todo.length, skipped: 0, error: null };
+      var sum = { tool: tool, done: 0, total: todo.length, skipped: 0, skips: [], error: null, treeError: null };
       return seqMap(todo, function (row) {
-        return actUpload(tool, row).then(function () { sum.done++; }, function (err) { if (!isGuardError(err)) throw err; sum.skipped++; });
+        return actUpload(tool, row).then(function () { sum.done++; }, function (err) { if (!isRowError(err)) throw err; noteSkip(sum, row, err); });
       }).catch(function (err) { sum.error = err; })
-        .then(function () { return afterActions(tool); })
+        .then(function () { return finishRun(tool, p, sum); })
         .then(function () { return sum; });
     });
   }
@@ -966,16 +1305,30 @@
     return seqMap(toolsWithEntries(), function (tool) {
       return enqueue(tool, function () { return planTool(tool); }).then(function (p) {
         render(tool);
-        var up = 0, cloudOnly = 0, conflicts = 0, settings = 0, lastSaved = null;
+        var up = 0, cloudOnly = 0, conflicts = 0, mergeInTool = 0, settings = 0, deleted = 0, lastSaved = null;
         p.rows.forEach(function (r) {
           if (r.safeAction === 'upload') up++;
           else if (r.state === 'cloud-only') cloudOnly++;
-          else if (r.state === 'conflict' && !r.safeAction) { conflicts++; if (isSettingsChoice(r)) settings++; }
+          else if (r.state === 'deleted-here') deleted++;
+          else if (r.state === 'conflict' && !r.safeAction) {
+            if (!r.choices.length) mergeInTool++;                          // only the owning tool can merge it
+            else { conflicts++; if (isSettingsChoice(r)) settings++; }     // a button on this page resolves it
+          }
         });
         (p.cloudRows || []).forEach(function (r) { if (r.updated_at && (!lastSaved || r.updated_at > lastSaved)) lastSaved = r.updated_at; });
-        return { tool: tool, name: toolName(tool), total: p.rows.length, cloud: (p.cloudRows || []).length, safe: p.counts.safe, up: up, cloudOnly: cloudOnly, conflicts: conflicts, settings: settings, lastSaved: lastSaved };
+        return { tool: tool, name: toolName(tool), total: p.rows.length, cloud: (p.cloudRows || []).length, safe: p.counts.safe, up: up, cloudOnly: cloudOnly, conflicts: conflicts, mergeInTool: mergeInTool, settings: settings, deleted: deleted, folders: (p.treesDiffer || []).length, lastSaved: lastSaved };
       });
     });
+  }
+  // Another module (the Font Maker's projects) adds one line to the account screen's list: a function
+  // returning a string or a promise of one; an empty string or a failure adds nothing.
+  var summaryHooks = [];
+  function registerSummary(fn) { if (typeof fn === 'function' && summaryHooks.indexOf(fn) < 0) summaryHooks.push(fn); }
+  function summaryLines() {
+    var out = [];
+    return seqMap(summaryHooks, function (fn) {
+      return Promise.resolve().then(fn).then(function (text) { if (text) out.push(String(text)); }, function (err) { warn('summary hook failed:', err); });
+    }).then(function () { return out; });
   }
   // Does this device hold anything the registry knows about? (No network; decides whether the account
   // screen introduces itself after the first sign-in.)
@@ -984,20 +1337,61 @@
       return registryFor(tool).some(function (e) { return e.shape !== 'tree' && localItems(e).length > 0; });
     });
   }
-  // Everything in the account as one AllTools-shaped .ivrit (the hub's Import / Export modal restores it).
-  function accountBackup() {
-    var bundle = {}, count = 0;
+  // Everything in the account as one AllTools-shaped .ivrit object (the hub's Import / Export modal restores
+  // it): the account screen downloads it as a file, the account page puts it in the download-everything zip.
+  // The account's every row as one AllTools-shaped file. `partial`: it holds the account's copies only (the
+  // per-device fields a settings row omits are not in it), so the hub merges it and never replaces anything.
+  // Rows of a kind this build does not know ride along under `cloudUnknown` for a newer build to import.
+  function bundleAll() {
+    var bundle = {}, count = 0, unknown = [];
     return seqMap(toolsWithEntries(), function (tool) {
       return cloudListFull(tool).then(function (rows) {
         var b = bundleFromRows(registryFor(tool), rows);
         safeAssign(bundle, b.data);
-        count += b.count;
+        count += b.count + b.unknown.length;
+        unknown = unknown.concat(b.unknown);
       });
     }).then(function () {
-      var file = { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', savedAt: now(), data: bundle };
-      downloadJson(file, 'IvritSuite_account_backup_' + now().slice(0, 10) + '.ivrit');
-      return count;
+      if (unknown.length) bundle.cloudUnknown = unknown;
+      return { file: { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', partial: true, savedAt: now(), data: bundle }, count: count };
     });
+  }
+  function accountBackup() {
+    return bundleAll().then(function (b) {
+      downloadJson(b.file, 'IvritSuite_account_backup_' + now().slice(0, 10) + '.ivrit');
+      return b.count;
+    });
+  }
+  // What the account holds, tool by tool, without the data (the account page's listing): per kind a count, the
+  // bytes, and the names where a row's name is the item's own (a preset, a deck, a student profile — not a
+  // word list or class list, whose row name is an id). Folder trees count in the totals but are not listed.
+  function inventory() {
+    return seqMap(toolsWithEntries(), function (tool) {
+      return cloudList(tool).then(function (rows) {
+        var kinds = [], count = 0, bytes = 0, known = {};
+        registryFor(tool).forEach(function (e) { known[e.kind] = true; });
+        var unknown = rows.filter(function (r) { return !known[r.kind]; }).length;   // saved by a newer version of the site
+        registryFor(tool).forEach(function (e) {
+          var mine = rows.filter(function (r) { return r.kind === e.kind; });
+          if (!mine.length) return;
+          var b = 0; mine.forEach(function (r) { b += Number(r.bytes || 0); });
+          bytes += b; count += mine.length;
+          if (e.shape === 'tree') return;
+          var named = e.shape === 'map' || (e.shape === 'mapIn' && !e.nameField);
+          kinds.push({ kind: e.kind, label: kindLabel(e), count: mine.length, bytes: b, names: named ? mine.map(function (r) { return r.name; }) : [] });
+        });
+        return { tool: tool, name: toolName(tool), kinds: kinds, count: count, bytes: bytes, unknown: unknown };
+      });
+    });
+  }
+  // After the account was deleted: drop what this device remembered about it (the sync memory and the welcome
+  // mark). Never touches a tool's own keys.
+  function forgetUser(uid) {
+    if (!uid) return;
+    var m = metaAll();
+    if (isPlainObject(m.users)) delete m.users[uid];
+    if (isPlainObject(m.welcomed)) delete m.welcomed[uid];
+    metaSave(m);
   }
 
   /* ---------- queue ---------- */
@@ -1029,6 +1423,9 @@
       '.ivsav-note{margin:6px 0;font-size:0.85rem;overflow-wrap:anywhere;}' +
       '.ivsav-list{list-style:none;margin:0;padding:0;}' +
       '.ivsav-kind{margin-block:10px 4px;font-size:0.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted,#6b6050);}' +
+      '.ivsav-note-row{margin-block:2px 8px;font-size:0.8rem;color:var(--muted,#6b6050);overflow-wrap:anywhere;}' +
+      '.ivsav-signpost{flex:1 1 100%;font-size:0.8rem;color:var(--muted,#6b6050);overflow-wrap:anywhere;}' +
+      '.ivsav-signpost a{color:var(--gold-text,var(--text,#1a2744));text-decoration:underline;}' +
       '.ivsav-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:6px 8px;margin-block:3px;border:1px solid var(--border,#c8bfa8);' +
         'border-radius:6px;background:var(--white,#fff);}' +
       '.ivsav-main{flex:1 1 180px;min-inline-size:0;}' +
@@ -1039,6 +1436,8 @@
       '.ivsav-row[data-state="conflict"] .ivsav-state{background:#fde7e7;color:#8a1c1c;}' +
       '.ivsav-row[data-state="cloud-changed"] .ivsav-state,.ivsav-row[data-state="cloud-only"] .ivsav-state{background:#e3ecfa;color:#1a3d7a;}' +
       '.ivsav-row[data-state="local-changed"] .ivsav-state,.ivsav-row[data-state="local-only"] .ivsav-state{background:#fbf0d9;color:#6b4a00;}' +
+      '.ivsav-row[data-state="deleted-here"] .ivsav-state,.ivsav-row[data-state="cloud-deleted"] .ivsav-state{background:#ececec;color:#555;}' +
+      'body.dark .ivsav-row[data-state="deleted-here"] .ivsav-state,body.dark .ivsav-row[data-state="cloud-deleted"] .ivsav-state{background:#3a3a3a;color:#ddd;}' +
       'body.dark .ivsav-row[data-state="synced"] .ivsav-state{background:#1f4d2a;color:#c9f0cf;}' +
       'body.dark .ivsav-row[data-state="conflict"] .ivsav-state{background:#5a2323;color:#ffd6d6;}' +
       'body.dark .ivsav-row[data-state="cloud-changed"] .ivsav-state,body.dark .ivsav-row[data-state="cloud-only"] .ivsav-state{background:#23385c;color:#d6e4ff;}' +
@@ -1056,6 +1455,7 @@
       '.ivsav-card ul{margin:4px 0 8px;padding-inline-start:18px;font-size:0.9rem;line-height:1.5;}' +
       '.ivsav-card .ivsav-btn{margin:4px 0;margin-inline-end:6px;font-size:0.88rem;padding:7px 12px;}' +
       '.ivsav-card .ivsav-status{margin:8px 0 0;}' +
+      '.ivsav-acct-manage{display:inline-block;margin-block:6px 2px;font-size:0.9rem;color:var(--gold-text,#7f5a13);}' +
       '@media (prefers-reduced-motion: reduce){.ivsav,.ivsav *{transition-duration:0.001ms!important;animation-duration:0.001ms!important;}}';
     var el = document.createElement('style');
     el.id = STYLE_ID;
@@ -1079,28 +1479,52 @@
     try { return new Date(iso).toLocaleString(locale(), { dateStyle: 'medium', timeStyle: 'short' }); } catch (e) { return String(iso).slice(0, 16).replace('T', ' '); }
   }
   function fmtKb(bytes) { return t('shared.cloud.size_kb', '{kb} KB', { kb: Math.max(1, Math.round((bytes || 0) / 1024)) }); }
+  // "Changed in both places — open {tool} to merge it", the tool name a link to its page when this page is not it.
+  function signpost(tool) {
+    var box = el('div', 'ivsav-signpost');
+    var name = toolName(tool), href = TOOL_PAGES[tool];
+    var text = t('shared.cloud.resolve_in_tool', 'Changed in both places — open {tool} to merge it', { tool: '\u0001' });
+    var parts = text.split('\u0001');
+    box.appendChild(document.createTextNode(parts[0]));
+    var here = false;
+    try { here = window.location.pathname === href.split('?')[0]; } catch (e) {}
+    if (href && !here) { var a = el('a', '', name); a.href = href; box.appendChild(a); }   // a link unless this page is that tool
+    else box.appendChild(document.createTextNode(name));
+    box.appendChild(document.createTextNode(parts.length > 1 ? parts.slice(1).join(name) : ''));
+    return box;
+  }
   function stateText(state) {
     if (state === 'local-only') return t('shared.cloud.state_local_only', 'Only on this device');
     if (state === 'cloud-only') return t('shared.cloud.state_cloud_only', 'Only in the cloud');
     if (state === 'synced') return t('shared.cloud.state_synced', 'Same');
     if (state === 'cloud-changed') return t('shared.cloud.state_cloud_changed', 'Newer in the cloud');
     if (state === 'local-changed') return t('shared.cloud.state_local_changed', 'Newer on this device');
+    if (state === 'deleted-here') return t('shared.cloud.state_deleted_here', 'Deleted on this device');
+    if (state === 'cloud-deleted') return t('shared.cloud.state_cloud_deleted', 'Removed from your account');
     return t('shared.cloud.state_conflict', 'Changed in both places');
   }
-  function actionText(action) {
-    if (action === 'upload') return t('shared.cloud.upload', 'Upload');
-    if (action === 'download') return t('shared.cloud.download', 'Download');
+  function actionText(action, state) {
+    if (action === 'upload') return state === 'cloud-deleted' ? t('shared.cloud.upload_again', 'Upload again') : t('shared.cloud.upload', 'Upload');
+    if (action === 'download') return state === 'deleted-here' ? t('shared.cloud.bring_back', 'Bring it back') : t('shared.cloud.download', 'Download');
+    if (action === 'deleteCloud') return t('shared.cloud.delete_cloud_too', 'Delete from your account too');
     if (action === 'merge') return t('shared.cloud.merge', 'Merge');
     if (action === 'keepBoth') return t('shared.cloud.keep_both', 'Keep both');
     if (action === 'useCloud') return t('shared.cloud.use_cloud', 'Use cloud copy');
     if (action === 'keepMine') return t('shared.cloud.keep_mine', 'Keep mine');
     return action;
   }
+  // After the suite-wide preferences changed: the fields that only show after a reload.
+  function suiteHintText(hint) { return hint ? ' ' + t('shared.cloud.suite_reload_hint', 'Reload open pages to see the font, keyboard and dictionary preferences.') : ''; }
   function doneText(res) {
     var name = res.row ? res.row.label : '';
     if (res.action === 'upload') return t('shared.cloud.done_upload', 'Uploaded "{name}".', { name: name });
-    if (res.action === 'download') return t('shared.cloud.done_download', 'Downloaded "{name}" to this device.', { name: name }) + ' ' + t('shared.cloud.reload_hint', 'If this tool is open in other tabs, reload them.');
-    if (res.action === 'merge') return t('shared.cloud.done_merge', 'Merged "{name}" on both sides.', { name: name });
+    if (res.action === 'download') {
+      var line = res.pushed ? t('shared.cloud.done_download_pushed', 'Downloaded "{name}" and put this device\'s version in your account.', { name: name })
+                            : t('shared.cloud.done_download', 'Downloaded "{name}" to this device.', { name: name });
+      if (res.row && res.row.entry && res.row.entry.virtual) return line + suiteHintText(res.hint);
+      return line + ' ' + t('shared.cloud.reload_hint', 'If this tool is open in other tabs, reload them.');
+    }
+    if (res.action === 'merge') return t('shared.cloud.done_merge', 'Merged "{name}" on both sides.', { name: name }) + suiteHintText(res.hint);
     if (res.action === 'keepBoth') return t('shared.cloud.done_keep_both', 'Kept both: the cloud version is now "{copy}" on this device.', { copy: res.copy });
     if (res.action === 'delete') return t('shared.cloud.done_delete', 'Deleted "{name}" from the cloud.', { name: name });
     return '';
@@ -1109,7 +1533,8 @@
     messages[tool] = text ? { text: text, isError: !!isError } : null;
     var st = panels[tool] && panels[tool].root && panels[tool].root.querySelector('.ivsav-status');
     if (st) { st.textContent = text || ''; st.classList.toggle('is-error', !!isError); }
-    if (text && !isError && typeof window.showAppToast === 'function') { try { window.showAppToast(text); } catch (e) {} }
+    // A toast too, so a line inside a collapsed drawer is still seen; an error stays up longer.
+    if (text && typeof window.showAppToast === 'function') { try { window.showAppToast(text, isError ? 6000 : undefined); } catch (e) {} }
   }
   function accountState() {
     var a = A();
@@ -1133,10 +1558,10 @@
     var p = plans[tool];
     var isBusy = !!busy[tool];
     if (state === 'signed-in') {
-      var refreshBtn = button(t('shared.cloud.refresh', 'Refresh'), '', function () { refresh(tool); });
+      var refreshBtn = button(t('shared.cloud.refresh', 'Refresh'), '', function () { refresh(tool).catch(noop); });
       head.appendChild(refreshBtn);
       var n = p ? p.counts.safe : 0;
-      var syncBtn = button(n ? t('shared.cloud.sync_count', 'Sync now ({n})', { n: n }) : t('shared.cloud.sync', 'Sync now'), 'ivsav-primary', function () { syncNow(tool); });
+      var syncBtn = button(n ? t('shared.cloud.sync_count', 'Sync now ({n})', { n: n }) : t('shared.cloud.sync', 'Sync now'), 'ivsav-primary', function () { syncNow(tool).catch(noop); });
       if (!n) syncBtn.setAttribute('aria-disabled', 'true');
       head.appendChild(syncBtn);
     }
@@ -1173,13 +1598,23 @@
     if (!p) { status.textContent = t('shared.cloud.listing', 'Loading your cloud saves…'); return; }
     var list = el('ul', 'ivsav-list');
     list.setAttribute('aria-label', t('shared.cloud.list_aria', 'Saved items on this device and in the cloud'));
-    if (!p.rows.length) {
+    var treesDiffer = p.treesDiffer || [];
+    if (!p.rows.length && !treesDiffer.length) {
       root.appendChild(el('p', 'ivsav-note', t('shared.cloud.empty', 'Nothing saved yet. Items you save in this tool will appear here.')));
       return;
+    }
+    // A folder tree that differs is not a row: it is a note under the group of the kind it follows.
+    var treeNote = {};
+    treesDiffer.forEach(function (kind) { var e = entryFor(tool, kind); treeNote[(e && e.follows) || kind] = true; });
+    function noteFor(kind) {
+      if (!treeNote[kind]) return;
+      delete treeNote[kind];
+      list.appendChild(el('li', 'ivsav-note-row', t('shared.cloud.folders_differ', 'Folder layout: different here and in your account — Sync now merges it.')));
     }
     var lastKind = null;
     p.rows.forEach(function (row) {
       if (row.kind !== lastKind) {
+        if (lastKind) noteFor(lastKind);
         lastKind = row.kind;
         // a group header only where a kind can hold many rows; a settings / streak row already reads as its kind
         if (row.entry.shape === 'map' || row.entry.shape === 'mapIn') list.appendChild(el('li', 'ivsav-kind', kindLabel(row.entry)));
@@ -1188,33 +1623,43 @@
       li.setAttribute('data-state', row.state);
       var main = el('div', 'ivsav-main');
       main.appendChild(el('span', 'ivsav-name', row.label));
-      main.appendChild(el('span', 'ivsav-state', stateText(row.state)));
+      main.appendChild(el('span', 'ivsav-state', row.seed && row.state === 'local-only' ? t('shared.cloud.state_seed', 'Empty default — not uploaded') : stateText(row.state)));
       li.appendChild(main);
+      // A row only its own tool can merge: say so, with the way there (a page that is that tool has no helper either — plain text then).
+      if (row.state === 'conflict' && !row.choices.length && row.entry.merge === 'page') li.appendChild(signpost(tool));
       var metaBits = [];
       if (row.cloud) metaBits.push(fmtKb(row.cloud.bytes), t('shared.cloud.updated', 'Updated {date}', { date: fmtDate(row.cloud.updatedAt) }));
       else if (row.local) metaBits.push(fmtKb(row.local.bytes));
       li.appendChild(el('div', 'ivsav-meta', metaBits.join(' · ')));
       var actions = el('div', 'ivsav-actions');
       row.choices.forEach(function (action) {
-        var b = button(actionText(action), action === row.safeAction || action === 'keepBoth' ? 'ivsav-primary' : '', function () { act(tool, action, row); });
+        var b = button(actionText(action, row.state), action === row.safeAction || action === 'keepBoth' ? 'ivsav-primary' : '', function () {
+          if (action === 'deleteCloud' && !window.confirm(t('shared.cloud.delete_cloud_too_confirm', 'Delete "{name}" from your account too? It is already gone from this device, so this removes the last copy.', { name: row.label }))) return;
+          act(tool, action, row).catch(noop);
+        });
         if (isBusy) b.setAttribute('aria-disabled', 'true');
         actions.appendChild(b);
       });
       if (row.cloud) {
-        var fileBtn = button(t('shared.cloud.download_json', 'Download file'), '', function () { act(tool, 'file', row); });
-        var delBtn = button(t('shared.cloud.delete', 'Delete from cloud'), '', function () {
-          if (!window.confirm(t('shared.cloud.delete_confirm', 'Delete "{name}" from the cloud? The copy on this device stays.', { name: row.label }))) return;
-          act(tool, 'delete', row);
-        });
-        if (isBusy) { fileBtn.setAttribute('aria-disabled', 'true'); delBtn.setAttribute('aria-disabled', 'true'); }
+        var fileBtn = button(t('shared.cloud.download_json', 'Download file'), '', function () { act(tool, 'file', row).catch(noop); });
+        if (isBusy) fileBtn.setAttribute('aria-disabled', 'true');
         actions.appendChild(fileBtn);
-        actions.appendChild(delBtn);
+        if (row.state !== 'deleted-here') {   // that row's own choice button is the delete
+          var delBtn = button(t('shared.cloud.delete', 'Delete from cloud'), '', function () {
+            if (!window.confirm(t('shared.cloud.delete_confirm', 'Delete "{name}" from your account? The copy on this device stays and is not uploaded again unless you change it or press Upload again.', { name: row.label }))) return;
+            act(tool, 'delete', row).catch(noop);
+          });
+          if (isBusy) delBtn.setAttribute('aria-disabled', 'true');
+          actions.appendChild(delBtn);
+        }
       }
       li.appendChild(actions);
       list.appendChild(li);
     });
+    if (lastKind) noteFor(lastKind);
+    Object.keys(treeNote).forEach(noteFor);
     root.appendChild(list);
-    if (p.counts.safe === 0 && p.counts.conflicts === 0 && !msg && !isBusy) status.textContent = t('shared.cloud.all_synced', 'Everything is in sync.');
+    if (p.counts.safe === 0 && p.counts.conflicts === 0 && !p.counts.mergeInTool && !p.counts.deleted && !msg && !isBusy) status.textContent = t('shared.cloud.all_synced', 'Everything is in sync.');
   }
   // One row action, from a panel button or a page's own control: resolves with { action, row, copy? },
   // rejects with the mapped error after the status line has shown it (a "changed meanwhile" re-lists first).
@@ -1222,13 +1667,13 @@
     say(tool, '', false);
     return enqueue(tool, function () {
       return runAction(tool, action, row).then(function (res) {
-        return afterActions(tool).then(function () { return res; });
+        return planTool(tool).then(function (p) { return syncTrees(tool, p).catch(function (err) { res.treeError = err; }); }).then(function () { return res; });
       }).catch(function (err) {
-        if (err && err.code === 'changed') return planTool(tool).catch(function () {}).then(function () { throw err; });
+        if (err && (err.code === 'changed' || err.code === 'changed_here')) return planTool(tool).catch(noop).then(function () { throw err; });
         throw err;
       });
     }).then(function (res) {
-      say(tool, doneText(res), false);
+      say(tool, doneText(res) + foldersText(res.treeError), false);
       render(tool);
       return res;
     }, function (err) {
@@ -1249,9 +1694,9 @@
   function syncNow(tool) {
     say(tool, '', false);
     return enqueue(tool, function () { return syncNowInner(tool); }).then(function (sum) {
-      var skipped = sum.skipped ? ' ' + t('shared.cloud.sync_skipped', '{n} could not be uploaded (too big or an invalid name).', { n: sum.skipped }) : '';
-      if (sum.error) say(tool, t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: sum.done, total: sum.total, reason: errorText(sum.error) }) + skipped, true);
-      else say(tool, t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: sum.up, down: sum.down, merged: sum.merged, left: sum.left }) + skipped, false);
+      var tail = mergeInToolText(sum.mergeInTool) + skippedText(sum.skips) + foldersText(sum.treeError) + suiteHintText(sum.hint);
+      if (sum.error) say(tool, t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: sum.done, total: sum.total, reason: errorText(sum.error) }) + tail, true);
+      else say(tool, t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: sum.up, down: sum.down, merged: sum.merged, left: sum.left }) + tail, false);
       render(tool);
       return sum;
     }, function (err) { say(tool, errorText(err), true); render(tool); throw err; });
@@ -1270,9 +1715,26 @@
     var st = account.root.querySelector('.ivsav-status');
     if (st) { st.textContent = text || ''; st.classList.toggle('is-error', !!isError); }
   }
+  function acctDone(text, isError) { acctSay(text, isError); if (account) account.doneText = text || ''; }   // the line a rebuilt screen keeps
   function acctBusy(on) {
     if (!account) return;
+    account.busy = !!on;
     account.root.querySelectorAll('.ivsav-btn[data-act]').forEach(function (b) { if (on) b.setAttribute('aria-disabled', 'true'); else b.removeAttribute('aria-disabled'); });
+  }
+  // The screen is built in the language of the moment; when a synced preference switches the language
+  // (I18n.setLang, live) it is rebuilt in the new one — between runs, keeping its last status line.
+  function currentLang() { return (window.I18n && window.I18n.lang) || null; }
+  function reopenAccountForLang(doneText) {
+    var me = account;
+    if (!me) return;
+    openAccount({ first: me.first, splash: me.splash, doneText: doneText });
+  }
+  // A live switch while the screen is idle rebuilds it now; during a run or a listing the rebuild waits for
+  // the listing's last line (fillAccount), so nothing transient is carried over.
+  function onLangSwitched() {
+    if (!account || account.lang === currentLang()) return;
+    if (account.busy || account.listing) { account.langStale = true; return; }
+    reopenAccountForLang(account.doneText || '');
   }
   // opts.first: the once-per-device introduction right after the first sign-in.
   function openAccount(opts) {
@@ -1318,7 +1780,7 @@
       uploadBtn.setAttribute('aria-disabled', 'true');
       card.appendChild(uploadBtn);
       card.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_upload_note', 'Your items stay on this device too.')));
-      var hint = el('p', 'ivsav-note ivsav-acct-hint', t('shared.cloud.acct_cloud_only_hint', "Items that are only in your account come to this device from a tool's Cloud saves panel (Sync now), or from Import / Export All Settings on the home page."));
+      var hint = el('p', 'ivsav-note ivsav-acct-hint', t('shared.cloud.acct_cloud_only_hint', 'Items that are only in your account: Sync everything brings them to this device.'));
       hint.hidden = true;
       card.appendChild(hint);
       // "Settings that differ": a settings blob changed in both places is chosen here for every tool at once.
@@ -1327,14 +1789,14 @@
       sec.appendChild(el('h3', '', t('shared.cloud.acct_settings_head', 'Settings that differ')));
       sec.appendChild(el('p', 'ivsav-acct-settings-note', ''));
       var useBtn = button(t('shared.cloud.acct_use_account', "Use my account's settings"), 'ivsav-primary', function () { resolveSettings('useCloud'); });
-      useBtn.title = t('shared.cloud.acct_use_account_title', "Replace this device's settings with the copy in your account");
+      useBtn.title = t('shared.cloud.acct_use_account_title', "Replace this device's settings with the copy in your account and put the result back in your account");
       useBtn.setAttribute('data-act', 'use-account');
       sec.appendChild(useBtn);
       var keepBtn = button(t('shared.cloud.acct_keep_device', "Keep this device's settings"), '', function () { resolveSettings('keepMine'); });
       keepBtn.title = t('shared.cloud.acct_keep_device_title', "Put this device's settings in your account instead");
       keepBtn.setAttribute('data-act', 'keep-device');
       sec.appendChild(keepBtn);
-      sec.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_settings_aside', 'Either way, per-device choices such as zoom, panel layout and which panels are open stay as they are here.')));
+      sec.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_settings_aside', "Either way, per-device choices stay as they are here: zoom, panel layout, which panels are open, and the Dictionary's sound switch and last search.")));
       card.appendChild(sec);
       var other = el('p', 'ivsav-note ivsav-acct-other', t('shared.cloud.acct_other_conflicts_hint', 'Other items marked "changed in both places" are chosen one by one in that tool\'s Cloud saves panel.'));
       other.hidden = true;
@@ -1346,12 +1808,17 @@
       var dev = button(t('shared.cloud.acct_device_backup', 'Back up everything on this device (.ivrit)'), '', function () {
         var fn = null;
         Object.keys(pages).forEach(function (k) { if (!fn && typeof pages[k].deviceBackup === 'function') fn = pages[k].deviceBackup; });
-        closeAccount();
-        if (fn) { try { fn(); } catch (e) { warn('deviceBackup failed:', e); } }
-        else window.location.href = '/index.html?alltools=open';
+        if (fn) { closeAccount(); try { fn(); } catch (e) { warn('deviceBackup failed:', e); } return; }
+        // Another page: the hub's Import / Export modal in a new tab, so this page (a Font Maker canvas, a drill) stays as it is.
+        var w = null;
+        try { w = window.open('/index.html?alltools=open', '_blank', 'noopener'); } catch (e) {}
+        if (!w) { closeAccount(); window.location.href = '/index.html?alltools=open'; }
       });
       card.appendChild(dev);
       card.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_download_note', 'Restore a file with Import / Export All Settings on the home page.')));
+      var manage = el('a', 'ivsav-acct-manage', t('shared.cloud.acct_manage_link', 'Manage your account: download everything or delete the account…'));
+      manage.href = '/account.html';
+      card.appendChild(manage);
     }
     card.appendChild(status);
     card.appendChild(button(opts.first ? t('shared.cloud.acct_not_now', 'Not now') : t('shared.cloud.acct_close', 'Close'), '', closeAccount));
@@ -1360,35 +1827,46 @@
     var onKey = function (e) { if (e.key === 'Escape') { e.preventDefault(); closeAccount(); } };
     document.addEventListener('keydown', onKey);
     document.body.appendChild(overlay);
-    account = { root: overlay, opener: document.activeElement, onKey: onKey, first: !!opts.first, splash: !!opts.splash };
+    account = { root: overlay, opener: document.activeElement, onKey: onKey, first: !!opts.first, splash: !!opts.splash, lang: currentLang(), busy: false, listing: false, langStale: false, doneText: opts.doneText || '' };
+    if (user && (opts.first || opts.splash)) markWelcomed(user.id);   // a self-opened screen was shown: once per account and device
     try { card.focus(); } catch (e) {}
-    if (user) fillAccount();
+    if (user) fillAccount(opts.doneText);
   }
   // doneText (optional): what the status line shows once the listing is in — the finishing line of the
   // action that asked for the re-listing, which would otherwise be wiped by "Checking…".
   function fillAccount(doneText) {
     var me = account;
+    if (!me) return Promise.resolve();
+    if (me.lang !== currentLang()) { reopenAccountForLang(doneText); return Promise.resolve(); }
+    me.listing = true;
     acctSay(t('shared.cloud.acct_checking', 'Checking what is on this device and in your account…'), false);
     return accountSummary().then(function (tools) {
+      return summaryLines().then(function (extra) { return { tools: tools, extra: extra }; });
+    }).then(function (res) {
       if (account !== me) return;
+      var tools = res.tools, extra = res.extra;
       var list = me.root.querySelector('.ivsav-acct-list');
       while (list.firstChild) list.removeChild(list.firstChild);
       var up = 0, cloudOnly = 0, shown = 0, safe = 0, cloud = 0, lastSaved = null, settingsTools = [], others = 0;
       tools.forEach(function (x) {
         safe += x.safe; cloud += x.cloud;
         if (x.lastSaved && (!lastSaved || x.lastSaved > lastSaved)) lastSaved = x.lastSaved;
-        if (!x.total) return;
+        if (!x.total && !x.folders) return;
         shown++;
         var bits = [];
         if (x.up) bits.push(t('shared.cloud.acct_tool_up', '{n} not in your account yet', { n: x.up }));
         if (x.cloudOnly) bits.push(t('shared.cloud.acct_tool_cloud_only', '{n} only in your account', { n: x.cloudOnly }));
         if (x.conflicts) bits.push(t('shared.cloud.acct_tool_conflicts', '{n} changed in both places', { n: x.conflicts }));
+        if (x.mergeInTool) bits.push(t('shared.cloud.acct_tool_merge_in_tool', '{n} to merge inside {tool}', { n: x.mergeInTool, tool: x.name }));
+        if (x.deleted) bits.push(t('shared.cloud.acct_tool_deleted', '{n} deleted on this device — choose in the Cloud saves panel', { n: x.deleted }));
+        if (!bits.length && x.folders) bits.push(t('shared.cloud.acct_tool_folders', 'the folder layout differs'));
         if (!bits.length) bits.push(t('shared.cloud.acct_tool_synced', 'everything is in your account'));
         list.appendChild(el('li', '', x.name + ': ' + bits.join(' · ')));
         up += x.up; cloudOnly += x.cloudOnly;
         if (x.settings) settingsTools.push(x.name);
         others += x.conflicts - x.settings;
       });
+      extra.forEach(function (text) { list.appendChild(el('li', '', text)); shown++; });
       if (!shown) list.appendChild(el('li', '', t('shared.cloud.acct_nothing', 'Nothing saved on this device or in your account yet.')));
       // The line under the title: when the account was last saved. With an empty account the screen is
       // about moving this device's items up; with a filled one, about syncing — one primary button each.
@@ -1410,28 +1888,55 @@
       }
       var other = me.root.querySelector('.ivsav-acct-other');
       if (other) other.hidden = !others;
-      acctSay(doneText || '', false);
-    }).catch(function (err) { if (account === me) acctSay(errorText(err), true); });
+      me.listing = false;
+      acctDone(doneText || '', false);
+      if (me.langStale || me.lang !== currentLang()) reopenAccountForLang(doneText || '');   // the language moved while this listing ran
+    }).catch(function (err) { if (account === me) { me.listing = false; acctDone(errorText(err), true); } });
+  }
+  // A bulk run over every tool, one tool at a time. A tool that stops does not end the run unless its error
+  // would fail every tool the same way (the connection, the session): the finishing line then names the
+  // stop, the counts so far and the tools not reached. Each tool's panel gets its own stop line.
+  function newRun() { return { up: 0, down: 0, merged: 0, done: 0, total: 0, left: 0, mergeInTool: 0, skips: [], treeError: null, stopped: null, halt: false, notReached: [], hint: false }; }
+  function mergeInToolText(n) { return n ? ' ' + t('shared.cloud.done_merge_in_tool', "{n} to merge inside a tool's own Cloud saves panel.", { n: n }) : ''; }
+  function runNote(run, tool, sum) {
+    run.up += sum.up || 0; run.down += sum.down || 0; run.merged += sum.merged || 0; run.done += sum.done || 0; run.total += sum.total || 0; run.left += sum.left || 0; run.mergeInTool += sum.mergeInTool || 0;
+    if (sum.hint) run.hint = true;
+    (sum.skips || []).forEach(function (s) { run.skips.push(s); });
+    if (sum.treeError && !run.treeError) run.treeError = sum.treeError;
+    if (!sum.error) return;
+    if (!run.stopped) run.stopped = { tool: tool, error: sum.error };
+    if (isConnectionError(sum.error)) run.halt = true;
+    say(tool, t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: sum.done || 0, total: sum.total || 0, reason: errorText(sum.error) }), true);
+  }
+  // The screen's close controls stay live during a run: closing it stops only the screen's updates, never the
+  // run (every tool is still checked); the finishing line then goes to the page's toast when it has one.
+  function acctSayFor(me, text, isError) { if (account === me) acctSay(text, isError); }
+  function finishAccountRun(me, line, isError) {
+    if (account === me) { acctBusy(false); if (isError) acctDone(line, true); else return fillAccount(line); return Promise.resolve(); }
+    if (line && typeof window.showAppToast === 'function') { try { window.showAppToast(line, isError ? 6000 : undefined); } catch (e) {} }
+    return Promise.resolve();
+  }
+  function runTools(run, me, sayKey, sayFallback, fn) {
+    return seqMap(toolsWithEntries(), function (tool) {
+      if (run.halt) { run.notReached.push(tool); return Promise.resolve(); }
+      acctSayFor(me, t(sayKey, sayFallback, { tool: toolName(tool) }), false);
+      return enqueue(tool, function () { return fn(tool); }).then(function (sum) { runNote(run, tool, sum || {}); render(tool); }, function (err) { runNote(run, tool, { error: err }); render(tool); });
+    });
+  }
+  function stoppedText(run, key, fallback) {
+    var text = t(key, fallback, { tool: toolName(run.stopped.tool), reason: errorText(run.stopped.error) })
+      + ' ' + t('shared.cloud.acct_done_so_far', '{done} of {total} done so far.', { done: run.done, total: run.total });
+    if (run.notReached.length) text += ' ' + t('shared.cloud.acct_not_reached', 'Not checked yet: {tools}.', { tools: run.notReached.map(toolName).join(', ') });
+    return text + skippedText(run.skips);
   }
   function uploadAll() {
     var me = account;
     if (!me || !currentUser()) return Promise.resolve();
     acctBusy(true);
-    var total = 0, skipped = 0, error = null;
-    return seqMap(toolsWithEntries(), function (tool) {
-      if (error || account !== me) return Promise.resolve();
-      acctSay(t('shared.cloud.acct_uploading', 'Uploading {tool}…', { tool: toolName(tool) }), false);
-      return enqueue(tool, function () { return uploadAllInner(tool); }).then(function (sum) {
-        total += sum.done; skipped += sum.skipped;
-        if (sum.error) error = sum.error;
-        render(tool);
-      }, function (err) { error = err; render(tool); });
-    }).then(function () {
-      if (account !== me) return;
-      acctBusy(false);
-      var tail = skipped ? ' ' + t('shared.cloud.sync_skipped', '{n} could not be uploaded (too big or an invalid name).', { n: skipped }) : '';
-      if (error) { acctSay(t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: total, total: total, reason: errorText(error) }) + tail, true); return; }
-      return fillAccount(t('shared.cloud.acct_uploaded', 'Uploaded {n} items to your account.', { n: total }) + tail);
+    var run = newRun();
+    return runTools(run, me, 'shared.cloud.acct_uploading', 'Uploading {tool}…', uploadAllInner).then(function () {
+      if (run.stopped) return finishAccountRun(me, stoppedText(run, 'shared.cloud.acct_upload_stopped_at', 'Stopped while uploading {tool}: {reason}'), true);
+      return finishAccountRun(me, t('shared.cloud.acct_uploaded', 'Uploaded {n} items to your account.', { n: run.done }) + skippedText(run.skips) + foldersText(run.treeError), false);
     });
   }
   // "Sync everything": each tool's Sync now, one after another — downloads, uploads and lossless merges,
@@ -1440,49 +1945,38 @@
     var me = account;
     if (!me || !currentUser()) return Promise.resolve();
     acctBusy(true);
-    var up = 0, down = 0, merged = 0, skipped = 0, left = 0, error = null;
-    return seqMap(toolsWithEntries(), function (tool) {
-      if (error || account !== me) return Promise.resolve();
-      acctSay(t('shared.cloud.acct_syncing', 'Syncing {tool}…', { tool: toolName(tool) }), false);
-      return enqueue(tool, function () { return syncNowInner(tool); }).then(function (sum) {
-        up += sum.up; down += sum.down; merged += sum.merged; skipped += sum.skipped; left += sum.left;
-        if (sum.error) error = sum.error;
-        render(tool);
-      }, function (err) { error = err; render(tool); });
-    }).then(function () {
-      if (account !== me) return;
-      acctBusy(false);
-      var tail = skipped ? ' ' + t('shared.cloud.sync_skipped', '{n} could not be uploaded (too big or an invalid name).', { n: skipped }) : '';
-      if (error) { acctSay(t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: up + down + merged, total: up + down + merged, reason: errorText(error) }) + tail, true); return; }
-      return fillAccount(t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: up, down: down, merged: merged, left: left }) + tail);
+    var run = newRun();
+    return runTools(run, me, 'shared.cloud.acct_syncing', 'Syncing {tool}…', syncNowInner).then(function () {
+      if (run.stopped) return finishAccountRun(me, stoppedText(run, 'shared.cloud.acct_stopped_at', 'Stopped while syncing {tool}: {reason}'), true);
+      return finishAccountRun(me, t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: run.up, down: run.down, merged: run.merged, left: run.left }) + mergeInToolText(run.mergeInTool) + skippedText(run.skips) + foldersText(run.treeError) + suiteHintText(run.hint), false);
     });
   }
   // The "Settings that differ" block: for every tool, every settings blob changed in both places takes the
   // chosen side — 'useCloud' (the account's copy lands here, per-device fields kept) or 'keepMine' (this
-  // device's copy goes up) — then both sides hold it and the sync memory remembers it.
+  // device's copy goes up, a field only the account had kept) — then both sides hold it and the sync memory
+  // remembers it.
+  function resolveSettingsInner(tool, choice) {
+    return planTool(tool).then(function (p) {
+      var rows = p.rows.filter(isSettingsChoice);
+      var sum = { tool: tool, done: 0, total: rows.length, skipped: 0, skips: [], error: null, treeError: null };
+      if (!rows.length) return sum;
+      return seqMap(rows, function (row) {
+        return runAction(tool, choice, row).then(function (res) { sum.done++; if (res && res.hint) sum.hint = true; }, function (err) { if (!isRowError(err)) throw err; noteSkip(sum, row, err); });
+      }).catch(function (err) { sum.error = err; })
+        .then(function () { return finishRun(tool, p, sum); })
+        .then(function () { return sum; });
+    });
+  }
   function resolveSettings(choice) {
     var me = account;
     if (!me || !currentUser()) return Promise.resolve();
     acctBusy(true);
-    var done = 0, total = 0, error = null;
-    return seqMap(toolsWithEntries(), function (tool) {
-      if (error || account !== me) return Promise.resolve();
-      acctSay(t('shared.cloud.acct_updating', 'Updating {tool}…', { tool: toolName(tool) }), false);
-      return enqueue(tool, function () {
-        return planTool(tool).then(function (p) {
-          var rows = p.rows.filter(isSettingsChoice);
-          if (!rows.length) return null;
-          total += rows.length;
-          return seqMap(rows, function (row) { return runAction(tool, choice, row).then(function () { done++; }); })
-            .then(function () { return afterActions(tool); });
-        });
-      }).then(function () { render(tool); }, function (err) { error = err; render(tool); });
-    }).then(function () {
-      if (account !== me) return;
-      acctBusy(false);
-      if (error) { acctSay(t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: done, total: total, reason: errorText(error) }), true); return; }
-      return fillAccount(choice === 'useCloud' ? t('shared.cloud.acct_settings_done_cloud', "Your account's settings are now on this device.")
-                                               : t('shared.cloud.acct_settings_done_mine', "This device's settings are now in your account."));
+    var run = newRun();
+    return runTools(run, me, 'shared.cloud.acct_updating', 'Updating {tool}…', function (tool) { return resolveSettingsInner(tool, choice); }).then(function () {
+      if (run.stopped) return finishAccountRun(me, stoppedText(run, 'shared.cloud.acct_update_stopped_at', 'Stopped while updating {tool}: {reason}'), true);
+      var line = choice === 'useCloud' ? t('shared.cloud.acct_settings_done_cloud', "Your account's settings are now on this device.")
+                                       : t('shared.cloud.acct_settings_done_mine', "This device's settings are now in your account.");
+      return finishAccountRun(me, line + skippedText(run.skips) + foldersText(run.treeError) + suiteHintText(run.hint), false);
     });
   }
   function backupAccount() {
@@ -1498,14 +1992,21 @@
   }
   // After a fresh sign-in (this page load established the session): "Sync settings from your last login?".
   // Otherwise, once per account on a device that already holds saved items: introduce the account screen.
+  // The mark is set when a screen was actually shown (openAccount, for `first` / `splash`): a device with
+  // nothing on it is not marked here — the first listing that finds rows in the account offers the sync
+  // once (offerOnce), so a teacher already signed in elsewhere is not left without the way in.
   function maybeWelcome(user) {
     if (!user) return;
     var a = A();
     var fresh = !!(a && typeof a.sessionSource === 'function' && a.sessionSource() === 'new');
-    if (fresh && !splashShown) { splashShown = true; markWelcomed(user.id); openAccount({ splash: true }); return; }
+    if (fresh && !splashShown) { splashShown = true; openAccount({ splash: true }); return; }
     if (welcomedAt(user.id)) return;
-    markWelcomed(user.id);
     if (deviceHasItems()) openAccount({ first: true });
+  }
+  function offerOnce(user) {
+    if (!user || !stillMe(user.id) || welcomedAt(user.id) || account) return;
+    var any = Object.keys(pages).some(function (tool) { var p = plans[tool]; return !!(p && p.cloudRows && p.cloudRows.length); });
+    if (any) openAccount({ splash: true });
   }
 
   /* ---------- mounting and wiring ---------- */
@@ -1521,37 +2022,54 @@
     render(tool);
     return panel.root;
   }
+  // A module write in another tab that this tab has not acted on: re-read that key here (no flush — the
+  // point is to drop this tab's stale in-memory copy, exactly as the storage event always did), then list
+  // again. Per tool and kind, against the stamps this tab last saw; its own writes are already seen.
+  // Returns whether anything was re-read (the sync smoke asserts a quiet second call).
+  function recheckWrites() {
+    var m, stamps, lw, touched = {};
+    try { m = metaAll(); stamps = stampsOf(m); } catch (e) { return false; }
+    lw = isPlainObject(m.lastWrite) ? m.lastWrite : {};
+    Object.keys(stamps).forEach(function (tool) {
+      Object.keys(stamps[tool]).forEach(function (kind) {
+        var at = stamps[tool][kind];
+        if (seen[tool] && seen[tool][kind] === at) return;
+        markSeen(tool, kind, at);
+        if (!pages[tool]) return;
+        notifyPage(tool, kind, (lw.tool === tool && lw.kind === kind) ? lw.name : null);
+        touched[tool] = true;
+      });
+    });
+    Object.keys(touched).forEach(function (tool) { if (currentUser()) refresh(tool).catch(function () {}); else render(tool); });
+    return Object.keys(touched).length > 0;
+  }
   function listen() {
     if (listening) return;
     listening = true;
     var a = A();
     if (a && typeof a.onChange === 'function') {
       a.onChange(function (user) {
+        var listings = [];
         Object.keys(pages).forEach(function (tool) {
-          if (user) refresh(tool).catch(function () {});
+          if (user) listings.push(refresh(tool).catch(noop));
           else { plans[tool] = null; say(tool, '', false); render(tool); }
         });
-        if (user) maybeWelcome(user); else { splashShown = false; closeAccount(); }
+        if (user) { maybeWelcome(user); Promise.all(listings).then(function () { offerOnce(user); }); }
+        else { splashShown = false; closeAccount(); }
       });
     }
     if (a && typeof a.onOpenAccount === 'function') a.onOpenAccount(function () { openAccount(); });
-    // A module write in another tab of the same tool: re-read that key here (no flush — the point is to
-    // drop this tab's stale in-memory copy), then list again. Only module writes carry the stamp.
-    try { lastSeenWrite = (metaAll().lastWrite || {}).at || null; } catch (e) {}
-    window.addEventListener('storage', function (e) {
-      if (e.key !== META_KEY || !e.newValue) return;
-      var lw = null;
-      try { lw = safeParse(e.newValue).lastWrite; } catch (x) { return; }
-      if (!isPlainObject(lw) || lw.at === lastSeenWrite) return;
-      lastSeenWrite = lw.at;
-      if (!pages[lw.tool]) return;
-      notifyPage(lw.tool, lw.kind, lw.name);
-      if (currentUser()) refresh(lw.tool).catch(function () {}); else render(lw.tool);
-    });
+    // Writes by other tabs: their `storage` event, and — because a tab in the background (iOS suspends
+    // them) may never get that event — a look at the stamps whenever this tab becomes visible again or
+    // returns from the back-forward cache. Nothing stamped before this page load is news.
+    try { seen = stampsOf(metaAll()); } catch (e) {}
+    window.addEventListener('storage', function (e) { if (e.key === META_KEY && e.newValue) recheckWrites(); });
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') recheckWrites(); });
+    window.addEventListener('pageshow', function () { recheckWrites(); });
     // Labels render before the dictionary arrives and again when it does, and on every language switch.
     if (window.I18n) {
       try { if (window.I18n.ready && window.I18n.ready.then) window.I18n.ready.then(function () { Object.keys(panels).forEach(render); }); } catch (e) {}
-      try { if (typeof window.I18n.onChange === 'function') window.I18n.onChange(function () { Object.keys(panels).forEach(render); }); } catch (e) {}
+      try { if (typeof window.I18n.onChange === 'function') window.I18n.onChange(function () { Object.keys(panels).forEach(render); onLangSwitched(); }); } catch (e) {}
     }
   }
   function attach(cfg) {
@@ -1575,6 +2093,7 @@
     if (a && typeof a.onOpenSaves === 'function' && typeof cfg.open === 'function') a.onOpenSaves(cfg.open);
     if (cfg.panel) mountPanel(cfg.panel, tool);
     listen();   // IvritAccount.onChange fires once when the state is known — that call lists every attached tool
+    if (currentUser()) refresh(tool).catch(function () {});   // …unless it already fired before this attach (listen() runs at boot)
     return true;
   }
 
@@ -1585,7 +2104,12 @@
     openAccount: function (opts) { openAccount(opts); },
     closeAccount: closeAccount,
     refresh: refresh,
-    plan: function (tool) { return enqueue(tool, function () { return planTool(tool); }); },
+    // A listing for the caller's own use; the panel is re-rendered afterwards (the queue renders it busy while it runs).
+    plan: function (tool) { return enqueue(tool, function () { return planTool(tool); }).then(function (p) { render(tool); return p; }, function (e) { render(tool); throw e; }); },
+    lastPlan: function (tool) { return plans[tool] || null; },   // the last listing, synchronously (a page hook reads a row's state from it)
+    // A deliberate reset on a page: forget what this device last synced for that row, so the next listing
+    // asks (a settings blob) or merges (progress) instead of sending the reset up as "newer here".
+    forgetRow: function (tool, kind, name) { var u = currentUser(); if (u) metaDelete(u.id, tool, kind, name || DEFAULT_NAME); },
     syncNow: syncNow,
     act: act,
     registry: function () { return IVRIT_SYNC_REGISTRY.concat(extraEntries).map(function (e) { return safeAssign({}, e); }); },
@@ -1596,12 +2120,21 @@
       remove: function (tool, kind, name) { var e = entryFor(tool, kind); if (!e) return Promise.reject(makeError('bad_kind')); return localRemove(e, name); }
     },
     cloud: { list: cloudList, load: cloudLoad, insert: cloudInsert, updateIf: cloudUpdateIf, remove: cloudRemove },
+    registerSummary: registerSummary,
+    inventory: inventory,
+    bundleAll: bundleAll,
+    forgetUser: forgetUser,
+    errorText: errorText,
     t: t,
     _test: {
       canonJson: canonJson, hashText: hashText, classify: classify, deepMax: deepMax, maxValue: maxValue,
       project: project, restoreOmitted: restoreOmitted, safeParse: safeParse, copyNameFor: copyNameFor,
       validateShape: validateShape, errorText: errorText, guardUpload: guardUpload, ivritFile: ivritFile,
-      treeIsFlat: treeIsFlat, bundleFromRows: bundleFromRows, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
+      treeIsFlat: treeIsFlat, bundleFromRows: bundleFromRows, recheckWrites: recheckWrites, isRowError: isRowError, isConnectionError: isConnectionError,
+      suitePrefs: SUITE_PREFS, isUntouchedDefaultClass: isUntouchedDefaultClass, copyLabelFor: copyLabelFor, TOOL_PAGES: TOOL_PAGES, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
     }
   };
+  // The chip's "Account…" item and the sign-in splash belong to every page that loads this module, including
+  // one with no registry rows of its own (the Font Maker): start listening at boot, not only on attach().
+  if (A()) listen();
 })();

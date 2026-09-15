@@ -88,6 +88,7 @@ Turn your own handwritten Hebrew letters into a real, installable font — entir
 - **QA Check** — a collision grid flags any letter × mark overlaps before you export
 - **Export** — TrueType (TTF), WOFF2, or editable UFO source, each with a license of your choice (CC0 / OFL / MIT / CC-BY / All Rights Reserved)
 - **Use in IvritSuite** — save a finished font in the browser and pick it from any other tool's font picker
+- **Save to your account** — with a free account, keep whole projects (photos included) in the cloud and open them on any device; see *Accounts* below
 - Recent-projects list + autosave, guided tour, changelog in the About tab; built client-side with Pyodide + fontTools (loaded on first export)
 
 ### Teaching Resources (`resources.html`)
@@ -144,11 +145,12 @@ How it works:
 
 Accounts are optional: everything works anonymously exactly as before, and the cloud is a third place
 to keep copies of your work next to the browser's own storage and `.ivrit` files. The whole account
-layer is three shared files — `js/supabase-config.js` (public project settings), `js/ivrit-account.js`
-(sign-in, sign-out, the header chip) and `js/ivrit-saves.js` (the cloud-saves panel and the sync rules) —
-plus two throwaway pages for trying it out, `account-test.html` and `saves-test.html`. The chip and the
-panel are on the home page, the Worksheet Generator, Flash Cards, the Dictionary, the Torah Trainer, the
-Trope Tutor and the Classroom Dashboard (the Font Maker follows in a later phase).
+layer is four shared files — `js/supabase-config.js` (public project settings), `js/ivrit-account.js`
+(sign-in, sign-out, the header chip), `js/ivrit-saves.js` (the cloud-saves panel and the sync rules) and
+`js/ivrit-projects.js` (Font Maker projects) — plus two throwaway pages for trying it out,
+`account-test.html` and `saves-test.html`. The chip and the panel are on the home page, the Worksheet
+Generator, Flash Cards, the Dictionary, the Torah Trainer, the Trope Tutor and the Classroom Dashboard;
+the Font Maker keeps whole projects instead (next paragraph).
 How it works inside: `docs/reference/accounts-and-cloud.md`.
 
 **Where the config values come from** (Supabase dashboard → project *IvritSuite*):
@@ -202,7 +204,7 @@ what an account can store updates that text in the same commit.
 
 **Database:** the tables, buckets and Row Level Security policies are plain SQL files under
 `db/migrations/`, applied once per file; `db/README.md` explains how to apply one and how to check the
-live project.
+live project. The one server-side function (delete my account) lives under `db/functions/`, in the same README.
 
 **Cloud saves:** each tool's saved items stay in the browser exactly as before; signed in, a "Cloud saves"
 panel lists them next to the copies in your account with plain words (*Only on this device*, *Newer in
@@ -220,9 +222,86 @@ on the device. It opens by itself after every fresh sign-in ("Sync settings from
 once on a device that already has saved items. When a tool's settings differ on this device and in the
 account — the usual case on a second device, which wrote its own settings the first time the tool opened —
 the screen offers **Use my account's settings** or **Keep this device's settings** in one step (per-device
-choices such as zoom stay either way). `saves-test.html` exercises the panel on a set of throwaway test items;
+choices such as zoom stay either way). The site-wide preferences — language, theme, keyboard layout, the
+Hebrew font and size, the Font Maker author name, the Dictionary's romanization, speech rate and emoji choices
+— sync as one row, **IvritSuite preferences**, and the language and theme switch live when it lands. A preset,
+deck, student or class deleted on one device is never removed anywhere by itself: its row reads *Deleted on
+this device* with *Bring it back* / *Delete from your account too*, and *Sync everything* leaves it alone.
+The account's `.ivrit` backup is *partial* — the account's copies only — so the home page merges it without
+the Merge/Replace question, class lists included. `saves-test.html` exercises the panel on a set of throwaway test items;
 `node scripts/smoke-saves.mjs` and `node scripts/smoke-tools.mjs` run the headless checks, and
 `node scripts/smoke-sync.mjs --sdk <supabase.js>` replays the second-device sync flow against a fake cloud.
+
+**Font Maker projects:** *Save Project ▾ → Save to my account* keeps a whole project — the outlines, the
+settings, and the photos you traced from, at full size — in your account, and *Load Project ▾ → In your
+account* opens it on any device. From then on changes keep saving by themselves (a ☁ badge next to Save
+shows Saved, Saving or Unsaved); a change made on another device is never overwritten without asking
+(Overwrite / Keep both / Not now); an exported font can be kept with the project. Your `.hebrewfont` files
+and the browser's Recent copies are untouched. Photo projects are large (often 20–40 MB), so the Load menu
+and the account screen show each project's size; an account holds up to 25 projects.
+`node scripts/smoke-fontmaker.mjs --sdk <supabase.js>` replays the whole flow against a fake cloud.
+**Your account page** (`account.html`, linked from the account screen and the privacy policy): who the
+account is and its display name; everything it holds tool by tool (counts, sizes, the names of presets and
+student profiles); **Download everything** — one zip with an `.ivrit` of every saved item plus each Font
+Maker project as a `.hebrewfont` with its photos and its exported font; and **Delete my account**, which
+asks for a checkbox and the account's email address, then removes the account with everything in it through
+the one piece of code that runs outside the browser (`db/functions/delete-account/`, a Supabase Edge
+Function — it needs the project's secret key, which never ships in a page). A deletion touches nothing on any
+device. `node scripts/smoke-account-page.mjs --sdk <supabase.js>` replays the page against a fake cloud.
+
+`node scripts/smoke-migration.mjs --sdk <supabase.js>` is the golden migration replay: a device A built from the
+tools' real defaults (every setting changed, folders, students, word lists, classes, a weekly grid, the suite-wide
+preferences) uploads everything, a fresh device B syncs it all, and every difference left between the two is
+classified — anything unexplained fails the run. It also replays a round trip, a folder move, deletions that never
+propagate by themselves, the account backup on a third device, and a second device that opened every tool before
+signing in.
+
+**Keeping it running (operations):**
+- **The free project must stay awake.** Supabase pauses a Free-plan project after about a week with too little
+  *database* activity, and a paused project refuses every sign-in until someone presses *Restore* in the Supabase
+  dashboard (local saves, `.ivrit` files and everything anonymous keep working; the chip looks normal, but every
+  sign-in and sync fails with one error line). `.github/workflows/supabase-keepalive.yml` makes one tiny database
+  request a day with the publishable key (`rpc/keepalive`, the function from `db/migrations/0003_keepalive.sql`)
+  and, with the same key, checks that the three account tables still refuse an anonymous read. A failed run opens
+  one tracking issue (the next green run closes it), and a new issue notifies you like any other; GitHub's own
+  e-mail for a failed scheduled run goes only to whoever last edited the schedule line of the workflow, so edit
+  that line once from your own GitHub account after merging (any change to the minute will do — the commits so
+  far carry no GitHub identity). The schedule runs only from `main`; a push that touches the workflow or
+  `js/supabase-config.js` runs it once on any branch. GitHub switches a scheduled workflow off after 60 days
+  without commits — the Actions tab then shows *Enable workflow*. If the project was paused anyway: Supabase
+  dashboard → the project → *Restore* (possible within Supabase's restore window — 90 days at the time of writing;
+  check the current policy); nothing in the repository changes.
+- **Before other people sign in** (once): custom SMTP configured and proven with a sign-in from an address that is
+  not on the project's team (dashboard step 4 above — the built-in sender refuses other addresses); *Rate Limits →
+  emails per hour* raised; the Google consent screen published (step 5); the redirect URLs (step 1); a
+  scheduled run of the keep-alive on `main` green (Actions → *Supabase keep-alive*).
+- **Rotating the publishable key:** create the new key in the dashboard (*Project Settings → API Keys*), paste it
+  into `js/supabase-config.js`, bump `VERSION` in `sw.js`, deploy, confirm a sign-in, then disable the old key. The
+  workflow reads the key from that file and runs once on that push, so the new key is proven at once. The key is public by design; rotating it is
+  housekeeping, not an emergency.
+- **Upgrading the pinned SDK:** change the version in the `sdk` URL and recompute `sdkIntegrity` as the file's
+  header shows, bump `VERSION` in `sw.js`, then run the smokes with the new file
+  (`node scripts/smoke-account.mjs --sdk <path>` and the others).
+- **A database change** is a new `db/migrations/NNNN_<name>.sql` applied once; **a change to the delete-account
+  function** is a redeploy — both in `db/README.md`. Never a `supabase/` folder (the GitHub integration would open
+  a paid preview branch).
+- **Restoring a person's data from their *Download everything* zip:** the `.ivrit` inside goes through the home
+  page's *Import / Export All Settings → Import* (choose *Merge*; it restores every tool's saved items on that
+  device); each `font-projects/<name>/<name>.hebrewfont` opens in the Font Maker through *Load Project ▾ → 📂 Load
+  from computer…*; an exported `.ttf` (unzip a zip export first) can be added to *My Fonts* through the *Upload
+  your own font* control under any tool's Hebrew font picker. Then, signed in, *Upload everything on this device* (the account screen)
+  and *Save to my account* (the Font Maker) fill the account again. A deleted account cannot be recovered on the
+  server side — the zip is the only copy.
+- **When something fails:** the browser console first (the modules log one line per failure and never throw into
+  the page); then the Supabase dashboard → *Logs* (API, Auth, Postgres, Storage, and Edge Functions →
+  delete-account), *Advisors* (security + performance; should stay clean), *Authentication → Users*;
+  `account-test.html` and `saves-test.html` reproduce a sign-in and a sync without a tool page; the smokes replay
+  every flow against a fake cloud. The plain-language map of what talks to what: `docs/backend-architecture.md`.
+- **Free-plan limits that matter** (check the numbers on Supabase's pricing page — they change): roughly 500 MB
+  of database, 1 GB of file storage, 5 GB of egress a month, 50,000 monthly active users, two free projects per
+  person, no backups. Saved items are small (a preset is about 2 KB); Font Maker photo projects are what fill
+  storage (often 20–40 MB each, sent again to every device that opens them), so glance at *Storage* and *Usage*
+  in the dashboard first. Upgrading the organization to Pro removes the pausing rule and adds daily backups.
 
 ## Files
 
@@ -238,6 +317,7 @@ choices such as zoom stay either way). `saves-test.html` exercises the panel on 
 | `Hebrew_Font_Maker.html` | Make a real installable Hebrew font from your handwriting — trace, anchor nikkud/trop, export TTF/WOFF2/UFO — Beta |
 | `resources.html` | Curated directory of external Hebrew / Jewish-education resources |
 | `contact.html` | Contact / feedback form (web3forms + hCaptcha) |
+| `account.html` | Your account (optional accounts): what it holds, download everything as one zip, delete the account |
 | `privacy.html` | Privacy policy |
 | `terms.html` | Terms of use |
 | `404.html` | Custom not-found page |
@@ -246,6 +326,7 @@ choices such as zoom stay either way). `saves-test.html` exercises the panel on 
 | `sw.js` | Service worker — precaches the app shell for offline use (cache `ivritsuite-v<VERSION>`) |
 | `manifest.webmanifest` | PWA manifest (name, icons, theme/background color) |
 | `js/i18n.js` | Shared i18n runtime (`window.I18n`) loaded by every page — the EN / עברית switcher, `data-i18n*` filling, RTL flip |
+| `js/supabase-config.js`, `js/ivrit-account.js`, `js/ivrit-saves.js`, `js/ivrit-projects.js` | The optional account layer — public project settings, sign-in + the header chip, cloud saves + the account screen, Font Maker cloud projects; the only files that talk to Supabase (see *Accounts*) |
 | `locales/ui-strings.csv`, `locales/<lang>.json` | UI strings — the CSV is the single source of truth; `scripts/build-locales.js` compiles the committed per-language JSON |
 | `scripts/check-i18n.js` (+ `check-i18n-baseline.txt`) | Gate for hardcoded UI strings, physical CSS and CSV quoting; the baseline lists accepted findings |
 | `scripts/check-inline-js.mjs` | Parses every inline `<script>` in every root page — one syntax error kills a page's whole app while the HTML still renders |
@@ -254,6 +335,7 @@ choices such as zoom stay either way). `saves-test.html` exercises the panel on 
 | `llms.txt`, `llms-full.txt` | Curated plain-text site map for LLMs / fetching agents ([llmstxt.org](https://llmstxt.org)) — the short index and its expanded companion (how-to steps + Q&A). **Generated**, never hand-edited |
 | `scripts/update-llms-txt.mjs` | Regenerates both from `sitemap.xml` + each page's JSON-LD and `<head>` metadata (plain Node, zero deps; `--check` reports staleness) |
 | `scripts/update-sitemap.mjs` | Refreshes every `<lastmod>` in `sitemap.xml` from each page's last git commit (refuses to run on a shallow clone) |
+| `.github/workflows/os-fonts-audit.yml`, `.github/workflows/supabase-keepalive.yml` | The two authored GitHub Actions workflows: the weekly OpenSiddur font-list audit + intake, and the daily Supabase keep-alive (one database query with the publishable key, plus a check that the account tables refuse an anonymous read) |
 | `data/hebrew_words.json` | Structured word data (~2.93 MB, 13,081 entries) loaded by the generator and dictionary via `fetch()` |
 | `source-data/hebrew_dictionary_4_19_2026.csv` | Pipeline-input CSV used to build `data/hebrew_words.json` (Hebrew w/ nikkud, transliteration, translation, POS, era); not served at runtime |
 | `data/hebrew_emojis.json` (+ `source-data/hebrew_emojis.csv` pipeline input) | Hebrew word ↔ emoji mappings used by the dictionary and flash-card emoji modes |
@@ -270,6 +352,8 @@ choices such as zoom stay either way). `saves-test.html` exercises the panel on 
 | `docs/phonotactic_blending_filter_spec.md` | Linguistic specification for the phonotactic validity filter used by the generator |
 | `docs/theme_tagging_report.md` | Build report for the dictionary's `themes` tags (an offline, LLM-assisted pipeline with adversarial review); the spot-check surface — to fix a word, edit its `themes` array in `data/hebrew_words.json` and bump the `?v=` |
 | `docs/reference/` | How each component works (storage, i18n, shared blocks, Font Maker, dashboard, generator, Torah/trope, ops) — indexed from `CLAUDE.md` |
+| `docs/backend-architecture.md` | The plain-language map of the account layer — what talks to what, the keys, where the data lives, what runs on a schedule, where to look when something fails |
+| `db/migrations/`, `db/functions/`, `db/README.md` | The database side of accounts: one SQL file per change (applied once), the delete-account Edge Function, and how to apply and check them |
 | `docs/IMPROVEMENT_LOG.md`, `docs/IMPROVEMENT_ARCHIVE.md`, `docs/reference/loop-findings.md` | The improvement loop's ledger (current state), its history, and its measurements; guarded by `scripts/check-ledger.mjs`, compacted by `scripts/compact-ledger.mjs`, limits in `scripts/ledger-rules.mjs` |
 | `splash/` | iOS launch/splash screens + `gen_splash.py` generator (and its bundled Libre Baskerville fonts) |
 | `starting-fonts/` + `scripts/add_os_font.py` | Partner "starting fonts" behind `Hebrew_Font_Maker.html?start=<id>` (manifest + each font's upstream license), staged by the intake script |

@@ -4609,17 +4609,21 @@ function loadEmojiSettings() {
     return ivritSafeParse(raw);
   } catch(e) { return null; }
 }
+// The stored exclusions while the catalogue is not loaded (the first save at load runs before
+// fetchEmojiData restores them; it used to write [] over them every time Emoji mode reopened).
+function storedEmojiExclusions() {
+  const prev = loadEmojiSettings();
+  return (prev && Array.isArray(prev.excludedSubs)) ? prev.excludedSubs.filter(k => typeof k === 'string') : [];
+}
 function saveEmojiSettings() {
   try {
-    const blob = {
-      mode: emojiMode,
-      gender: emojiGender,
-      excludedSubs: emojiSelectedSubs ? null : []  // placeholder, real value set below
-    };
+    const blob = { mode: emojiMode, gender: emojiGender, excludedSubs: [] };
     if (EMOJI_DATA && emojiSelectedSubs) {
       const allSubs = [];
       EMOJI_DATA.categories.forEach(c => c.subcategories.forEach(s => allSubs.push(c.name + '|' + s)));
       blob.excludedSubs = allSubs.filter(k => !emojiSelectedSubs.has(k));
+    } else {
+      blob.excludedSubs = storedEmojiExclusions();   // not loaded yet: keep what was stored
     }
     localStorage.setItem(EMOJI_SETTINGS_KEY, JSON.stringify(blob));
   } catch(e) {}
@@ -5073,6 +5077,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // (its registry names the word-lists key); this page supplies the list merge and re-renders the manager
   // when the module wrote a list while it is showing. The panel itself mounts inside wlRenderManagerInto.
   if (window.IvritSaves) {
+    // A suite-wide preference from the account landed (the module's IvritSuite row): follow the theme now —
+    // the module switches the language itself; the rest is read at the next load.
+    window.addEventListener('ivritsuite:prefs', () => {
+      const want = localStorage.getItem('hebrewBlender_darkMode');
+      if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
+    });
     IvritSaves.attach({
       tool: 'Dictionary',
       merges: { wordList: mergeWordList },
@@ -5205,6 +5215,7 @@ let DICT_SHARE_DEFAULTS = null;
 // Compute the list of emoji "Category|Subcategory" keys that are currently EXCLUDED
 // (mirrors saveEmojiSettings L2476-2479 so the share/session/emoji-settings never diverge).
 function _dictEmojiExcluded() {
+  if (!(EMOJI_DATA && emojiSelectedSubs)) return storedEmojiExclusions();   // not loaded yet: the stored list, not an empty one
   const out = [];
   if (EMOJI_DATA && emojiSelectedSubs) {
     const all = [];
@@ -5257,6 +5268,24 @@ function dictKnownMembers(list, selector, prop) {
   if (!Array.isArray(list)) return [];
   const known = new Set(Array.from(document.querySelectorAll(selector), el => prop === 'value' ? el.value : el.dataset[prop]));
   return list.filter(v => typeof v === 'string' && known.has(v));
+}
+// The last-search state is per device; the Emoji settings (the mode switch, the gender, the excluded
+// categories) are a preference that also lives in hebrewDictionary_emojiSettings and travels with the
+// account. A replay of the session snapshot must not put this device's older copy of them back over that
+// preference (on a second device it wrote [] over the account's exclusions): the stored settings win for
+// the three emoji fields. A ?s= link keeps its own — that is what it shares.
+function _dictWithStoredEmoji(st) {
+  let saved = null;
+  try { saved = ivritSafeParse(localStorage.getItem(EMOJI_SETTINGS_KEY) || 'null'); } catch (e) {}
+  if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return st;
+  const out = ivritSafeAssign({}, st);
+  const prev = (st.emoji && typeof st.emoji === 'object') ? st.emoji : {};
+  out.emoji = {
+    gender: typeof saved.gender === 'string' ? saved.gender : (prev.gender || 'all'),
+    excludedSubs: Array.isArray(saved.excludedSubs) ? saved.excludedSubs.filter(k => typeof k === 'string') : (Array.isArray(prev.excludedSubs) ? prev.excludedSubs : [])
+  };
+  if (typeof saved.mode === 'boolean' && st.mode !== 'shoresh') out.mode = saved.mode ? 'emojis' : 'words';
+  return out;
 }
 function applyDictState(s) {
   if (!s) return;
@@ -5448,7 +5477,7 @@ function maybeBootstrap() {
   if (!_domReady || !_wordsReady || _bootstrapped) return;
   _bootstrapped = true;
   if (_pendingShareState) applyDictState(ivritSafeAssign(_dictClone(DICT_SHARE_DEFAULTS || {}), _pendingShareState));
-  else if (_pendingSessionState) applyDictState(ivritSafeAssign(_dictClone(DICT_SHARE_DEFAULTS || {}), _pendingSessionState));
+  else if (_pendingSessionState) applyDictState(ivritSafeAssign(_dictClone(DICT_SHARE_DEFAULTS || {}), _dictWithStoredEmoji(_pendingSessionState)));
   else onFilter();
 }
 

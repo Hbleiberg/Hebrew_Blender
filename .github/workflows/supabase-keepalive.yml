@@ -1,0 +1,129 @@
+# Keeps the free Supabase project awake, and says so loudly when it cannot.
+#
+# Supabase pauses a Free-plan project after about a week with too little *database* activity (its docs:
+# "typically a few user requests to the database each day"), and a paused project refuses every sign-in
+# until someone presses Restore in the dashboard — local saves keep working and the tools fail soft, but
+# the chip looks normal and every sign-in or sync fails with one error line. This workflow makes one
+# tiny database request a day with the site's public (publishable) key: GET /rest/v1/rpc/keepalive,
+# which runs public.keepalive() (db/migrations/0003_keepalive.sql) and answers "ok".
+#
+# It then checks, with the same key, that the three account tables refuse an anonymous read — refused by
+# the database itself (Postgres error 42501 in the body), not merely by the gateway: the publishable key
+# alone reading no one's rows is what the whole security model rests on, so a grant to `anon` that slips
+# into a later migration turns this workflow red. The heartbeat runs first on purpose: a disabled or
+# rotated key would make every request 401, and the privacy check alone could not tell that from a refusal.
+#
+# A failed run opens (or updates) one tracking issue, which notifies the repository owner the way any new
+# issue does; the next green run closes it. GitHub's own e-mail for a failed *scheduled* run goes only to
+# whoever last edited the `cron:` line below, so edit that line once from your own GitHub account after
+# merging (README, "Keeping it running").
+#
+# The URL and the key are read out of js/supabase-config.js at run time, so a key rotation stays a change
+# to that file (plus the usual sw.js bump), needs no repository secret, and is proven at once: a push that
+# touches the config or this workflow runs it once, on any branch. The daily schedule itself runs only
+# from the default branch. GitHub disables a scheduled workflow after 60 days without commits to the
+# repository; the Actions tab then shows an "Enable workflow" button. Where this fits: README "Keeping it
+# running", docs/backend-architecture.md.
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: '41 4 * * *'   # daily 04:41 UTC (an off-hour minute: the top of the hour is GitHub's busiest)
+  workflow_dispatch:
+  push:                    # a change to the workflow or to the project config runs it once, on any branch
+    paths:
+      - '.github/workflows/supabase-keepalive.yml'
+      - 'js/supabase-config.js'
+
+permissions:
+  contents: read
+  issues: write            # the tracking issue on failure
+
+concurrency:
+  group: supabase-keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the project URL and publishable key from js/supabase-config.js
+        run: |
+          url=$(grep -oP "^\s*url:\s*'\K[^']+" js/supabase-config.js || true)
+          key=$(grep -oP "^\s*anonKey:\s*'\K[^']+" js/supabase-config.js || true)
+          if [ -z "$url" ] || [ -z "$key" ]; then
+            echo "::error::Could not read url / anonKey from js/supabase-config.js"
+            exit 1
+          fi
+          echo "SUPABASE_URL=$url" >> "$GITHUB_ENV"
+          echo "SUPABASE_KEY=$key" >> "$GITHUB_ENV"
+          echo "Project: $url"
+
+      - name: Heartbeat — one real database query (rpc/keepalive must answer "ok")
+        run: |
+          # `|| true` keeps a connection failure from ending the step before the message below is printed;
+          # curl then reports the status as 000.
+          out=$(curl -sS --max-time 30 -w '\n%{http_code}' \
+            -H "apikey: $SUPABASE_KEY" -H "Authorization: Bearer $SUPABASE_KEY" \
+            "$SUPABASE_URL/rest/v1/rpc/keepalive" || true)
+          status=${out##*$'\n'}
+          reply=${out%$'\n'*}
+          echo "HTTP $status — $reply"
+          if [ "$status" != "200" ] || [ "$reply" != '"ok"' ]; then
+            echo "::error::The keep-alive query did not answer \"ok\" (HTTP $status). Is the project paused (Supabase dashboard → Restore)? Was db/migrations/0003_keepalive.sql applied? Is the key in js/supabase-config.js still valid?"
+            exit 1
+          fi
+
+      - name: Privacy check — the publishable key alone must not read any account table
+        run: |
+          fail=0
+          for table in profiles saves font_projects; do
+            body="$RUNNER_TEMP/$table.json"
+            status=$(curl -sS --max-time 30 -o "$body" -w '%{http_code}' \
+              -H "apikey: $SUPABASE_KEY" -H "Authorization: Bearer $SUPABASE_KEY" \
+              "$SUPABASE_URL/rest/v1/$table?select=id&limit=1" || true)
+            echo "$table: HTTP $status — $(head -c 200 "$body" 2>/dev/null)"
+            # 42501 = Postgres "permission denied": the database itself refused the anonymous role, which is the point.
+            if { [ "$status" = "401" ] || [ "$status" = "403" ]; } && grep -q '42501' "$body"; then
+              continue
+            fi
+            echo "::error::An anonymous read of '$table' was not refused by the database (HTTP $status). Check the grants and policies (db/README.md)."
+            fail=1
+          done
+          exit $fail
+
+      - name: Open or update the tracking issue when the run failed; close it when it passes again
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OUTCOME: ${{ job.status }}
+        run: |
+          marker='<!-- supabase-keepalive -->'
+          run_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          existing=$(gh issue list --state open --search "$marker in:body" --json number --jq '.[0].number // empty' || true)
+          if [ "$OUTCOME" = "success" ]; then
+            if [ -n "$existing" ]; then
+              gh issue close "$existing" --comment "The keep-alive passed again ([run #${GITHUB_RUN_NUMBER}]($run_url))."
+            fi
+            echo "Green; nothing to report."
+            exit 0
+          fi
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "Failed again: [run #${GITHUB_RUN_NUMBER}]($run_url)."
+            exit 0
+          fi
+          {
+            echo "$marker"
+            echo "The Supabase keep-alive failed: [run #${GITHUB_RUN_NUMBER}]($run_url)."
+            echo
+            echo "What to check, in order (README → *Keeping it running*):"
+            echo "1. Is the project paused? Supabase dashboard → the project → **Restore**. Sign-ins fail while it is paused; nothing on anyone's device is affected."
+            echo "2. Is the publishable key in \`js/supabase-config.js\` still valid (Project Settings → API Keys)?"
+            echo "3. Did a migration drop \`public.keepalive()\` or grant the anonymous role a read on an account table? (\`db/README.md\`)"
+            echo
+            echo "This issue closes itself on the next green run."
+          } > "$RUNNER_TEMP/issue.md"
+          gh issue create --title "Supabase keep-alive failed — check whether the project is paused" --body-file "$RUNNER_TEMP/issue.md"

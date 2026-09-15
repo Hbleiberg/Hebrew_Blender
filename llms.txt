@@ -25,6 +25,7 @@ incorporating PocketTorah audio is CC BY-SA 4.0).
 - [Privacy Policy](https://ivritsuite.com/privacy.html): IvritSuite privacy policy: what the site stores on your own device, what it never collects, and FERPA compliance information for schools and educators.
 - [Terms of Use](https://ivritsuite.com/terms.html): IvritSuite terms of use: who owns the worksheets and fonts you make, third-party licenses, acceptable classroom use, and the warranty disclaimer.
 - [Contact & Support](https://ivritsuite.com/contact.html): Get in touch with the maker of IvritSuite, and support the project. IvritSuite is free and always will be — donations via PayPal, Venmo, or Zelle.
+- [Your Account](https://ivritsuite.com/account.html): Manage your optional IvritSuite account: see what it holds, download everything in it as one file, or delete the account and everything in it.
 - [Source code](https://github.com/hbleiberg/Hebrew_Blender): The full static site, hand-authored and open source.
 - [llms-full.txt](https://ivritsuite.com/llms-full.txt): The expanded version of this file — every tool with its how-to steps and questions & answers.
 

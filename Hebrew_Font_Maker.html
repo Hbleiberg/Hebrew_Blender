@@ -9,7 +9,7 @@
      script injection, object/base-uri hijacks, and unexpected connect/frame origins. Note: meta CSP
      can't express frame-ancestors or report-uri and does not cover content parsed before this tag.
      Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.googletagmanager.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://cdn.jsdelivr.net https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -20,6 +20,10 @@
 <meta name="theme-color" content="#1a2744">
 <script src="/pwa.js" defer></script>
 <script src="/js/i18n.js" defer></script>
+<script src="/js/supabase-config.js" defer></script>
+<script src="/js/ivrit-account.js" defer></script>
+<script src="/js/ivrit-saves.js" defer></script>
+<script src="/js/ivrit-projects.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1191,6 +1195,20 @@ footer a { display: inline-block; padding-block: 5px; }
   .load-menu-del { flex: 0 0 auto; background: none; border: none; border-radius: 6px; padding: 7px 8px;
     font-family: inherit; font-size: 0.82rem; line-height: 1; color: var(--muted); cursor: pointer; }
   .load-menu-del:hover, .load-menu-del:focus-visible { background: var(--warm-gray); color: var(--text); }
+  /* "In your account" rows: their own classes, so reopenLoadMenu's 🗑 index keeps counting Recent rows only */
+  .load-menu-meta { font-size: 0.7rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+  .load-menu-cdel, .load-menu-cdl { flex: 0 0 auto; background: none; border: none; border-radius: 6px; padding: 7px 8px;
+    font-family: inherit; font-size: 0.82rem; line-height: 1; color: var(--muted); cursor: pointer; }
+  .load-menu-cdel:hover, .load-menu-cdel:focus-visible, .load-menu-cdl:hover, .load-menu-cdl:focus-visible { background: var(--warm-gray); color: var(--text); }
+  /* ☁ badge next to Save Project ▾: shown only while the project has an account copy (js/ivrit-projects.js) */
+  .cloud-pip { background: none; border: 1px solid transparent; border-radius: 6px; padding: 3px 7px; cursor: default; font-family: inherit; }
+  .cloud-pip[data-state="error"], .cloud-pip[data-state="unsaved"] { cursor: pointer; }
+  .cloud-pip:not([data-state="saving"]) .engine-dot { animation: none; }
+  .cloud-pip[data-state="saved"] .engine-dot { background: #2e7d32; }
+  .cloud-pip[data-state="unsaved"] .engine-dot { background: var(--muted); }
+  .cloud-pip[data-state="error"] { color: #b3261e; }
+  .cloud-pip[data-state="error"] .engine-dot { background: #b3261e; }
+  .cloud-pip:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
   /* Fullscreen (matches torah_trainer.html / classroom_dashboard.html) */
   body.fullscreen header, body.fullscreen footer { display: none; }
@@ -1400,6 +1418,7 @@ footer a { display: inline-block; padding-block: 5px; }
     <button class="tbtn ghost" onclick="newProjectFresh()" data-i18n="fontmaker.toolbar.new">New</button>
     <button class="tbtn ghost" onclick="toggleLoadMenu(event)" data-i18n="fontmaker.toolbar.load_project">Load Project ▾</button>
     <button class="tbtn ghost" onclick="toggleSaveMenu(event)" data-i18n="fontmaker.toolbar.save_project_menu">Save Project ▾</button>
+    <button id="cloudPip" class="engine-badge cloud-pip" type="button" hidden onclick="fmCloudPipClick()"><span class="engine-dot" aria-hidden="true"></span><span class="cloud-pip-text"></span></button>
     <input type="file" id="projFile" accept=".hebrewfont,.json,application/json,application/gzip" style="display:none;">
   </div>
   <div class="tb-group">
@@ -3337,6 +3356,7 @@ function newProject() {
   curKind = 'letter'; curCp = LETTER_ORDER[0]; workMode = 'align';
   syncMetaToForm(); renderGrids(); setWorkMode('align'); status(I18n.t('fontmaker.status.new_project'));
   _projectDirty = false; clearTimeout(_autosaveTimer);   // fresh project: not dirty (boot keeps any snapshot so the prompt can still offer prior work)
+  fmCloudReset();
 }
 function newProjectFresh() {   // toolbar "New" → the onboarding wizard, cancellable: nothing is
   wizardOpen('new');           // discarded until "Create font" runs (Esc/backdrop/Cancel = untouched)
@@ -3870,6 +3890,7 @@ function aCloseModal(id) {
   if (id !== 'osPickOverlay' && id !== 'wizardOverlay' && document.getElementById('osPickOverlay')?.classList.contains('open')) _activeModal = { id: 'osPickOverlay', close: osPickClose, opener: _osPickOpener };
 }
 document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.querySelector('.ivsav-overlay')) return;   // the account screen closes itself on Escape — the editor's modal underneath must not
   // Active modal takes priority: trap Tab + Escape-to-close.
   const am = _activeModal && document.getElementById(_activeModal.id);
   if (am && am.classList.contains('open')) {
@@ -3912,7 +3933,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.42';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.43';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -4129,6 +4150,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.43</strong> &mdash; <strong>Save a project to your account.</strong> With a free IvritSuite account (the <span class="ui">☁ Sign in</span> button in the header) the <span class="ui">Save Project ▾</span> menu gains <span class="ui">Save to my account</span>: the project and its letter photos, at full size, are kept in your account and reopen from <span class="ui">Load Project ▾ → In your account</span> on any device. From then on changes keep saving by themselves (the ☁ badge next to Save shows Saved, Saving or Unsaved), a change made on another device is never overwritten without asking, and an exported font can be kept with the project. Your <code>.hebrewfont</code> files and the copies in this browser work exactly as before. <em>(September 2026)</em></li>
       <li><strong>v5.42</strong> &mdash; <strong><span class="ui">Reduce points</span> and <span class="ui">Round corners</span> stay on the letter you're editing.</strong> Nudging either slider and letting go on the value it started at left its before-snapshot armed, so the next letter you opened took the <strong>previous letter's outline</strong> the moment you touched the slider &mdash; clicking from letter to letter for a low-poly pass was impossible. The snapshot now clears whenever you change letters or steps, and the slider commits when it loses focus. <em>(September 2026)</em></li>
       <li><strong>v5.41</strong> &mdash; <strong>Add a whole set of letter photos in one go.</strong> The <span class="ui">Individual pictures</span> upload now takes as many files as you pick or drop: the first lands on the letter you're on and the rest fill the <strong>next empty letters in alef-bet order</strong>, while any file <strong>named for its letter</strong> (<code>alef</code>, <code>Alef.jpg</code>, <code>01-alef</code>, <code>05D0</code>, <code>uni05D0</code> or <code>&#1488;</code>) goes straight there no matter what order you picked it in. Anything with nowhere to go is named in the message instead of disappearing quietly, and the whole batch undoes in one <span class="ui">Ctrl+Z</span>. Uploading a photo is also finally <strong>undoable and autosaved</strong> on its own &mdash; before this it was neither. <span class="ui">QA Check</span> also gained an <span class="ui">Only show problems</span> tick: it hides every letter row and mark column with nothing wrong, so a 27-row grid collapses to just the collisions worth clicking. And the <span class="ui">Recent</span> list under <span class="ui">Load Project &#9662;</span> finally has a <strong>🗑 on every row</strong> &mdash; it holds six projects and quietly drops the oldest, so a few test scans used to push your real font out with no way to clear them. It asks before it removes. And the <span class="ui">Exported &#10003;</span> screen now offers <span class="ui">📤 Send to OpenSiddur</span> beside <span class="ui">📤 Send to IvritSuite</span> &mdash; the same one-click submission, addressed to the <strong>OpenSiddur Project</strong>'s free Hebrew font library, with your font and its LICENSE.txt attached. If your font grew from one of their starting fonts, the message says which one. <em>(September 2026)</em></li>
       <li><strong>v5.40</strong> &mdash; <strong>Start from an existing font, right from the wizard.</strong> The <span class="ui">Create a new font</span> screen gained a <span class="ui">📚 Start from an existing font</span> button that opens a browsable library of every editable starting font from the OpenSiddur Project &mdash; each card previewed in the real font, with search by name or designer, nikkud and trope filters, the font's license on the card, and a box to type your own Hebrew sample. Pick one and the same partner onboarding runs as the <code>?start=</code> link does: your version keeps the original's license and credits, and <span class="ui">← Choose a different font</span> takes you back to the library. <em>(September 2026)</em></li>
@@ -4265,7 +4287,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4278,7 +4300,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_42';
+  const CUR_KEY = 'fontmaker.changelog.v5_43';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -15296,6 +15318,7 @@ function udShortcutBlocked() {
   const ae = document.activeElement;
   if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
   if (document.getElementById('askOverlay')?.classList.contains('open')) return true;
+  if (document.querySelector('.ivsav-overlay')) return true;   // the account screen (js/ivrit-saves.js) is open over the editor
   if (document.getElementById('helpOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('qaOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('adOverlay')?.classList.contains('open')) return true;
@@ -18700,6 +18723,8 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
   // auto-triggered second download.
   if (licenseSeparate) btns.push({ label: I18n.t('fontmaker.modals.exported_license_btn'), cls: 'ghost',
     onClick: () => downloadBlob(new Blob([licenseText()], {type:'text/plain'}), fontSafeBase(project.font.familyName) + '-LICENSE.txt') });
+  const canKeep = !!(dlFile && project.cloudId && fmCloudUser() && dlFile.size <= 5 * 1024 * 1024);   // the project has an account copy: keep this export with it
+  if (canKeep) btns.push({ label: _cT('exported_keep_btn', '☁ Keep this export in my account'), cls: 'ghost', onClick: () => fmCloudKeepExport(dlFile) });
   if (canSave) btns.push({ label: I18n.t('fontmaker.modals.exported_myfonts_btn'), onClick: () => openMyFonts() });
   // Faceted-glyph warning: some letters' curves couldn't convert to quadratics and exported with straight
   // edges. Surface which ones on the persistent success screen (the toast auto-clears too fast for this).
@@ -18720,6 +18745,7 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
     + ' ' + I18n.t('fontmaker.modals.exported_send')
     + ' ' + I18n.t('fontmaker.modals.exported_send_os')
     + ((canShareFile || canPick) ? ' ' + I18n.t('fontmaker.modals.exported_getfile', {btn: '<b>' + esc(I18n.t(canShareFile ? 'fontmaker.modals.exported_sharefile_btn' : 'fontmaker.modals.exported_saveas_btn')) + '</b>'}) : '')
+    + (canKeep ? ' ' + esc(_cT('exported_keep', 'You can also keep this export with the project in your account.')) : '')
     + fellHtml + gateHtml,
     btns);
 }
@@ -19903,6 +19929,7 @@ function saveProjectAs() {
     pushRecentProject(project);
     // 2) build the renamed copy (familyName === reservedFontName, like a fresh project's seed)
     const copy = JSON.parse(JSON.stringify(project));
+    delete copy.cloudId; delete copy.cloudRev;   // a copy is a new project — it must not write over the original's account row
     copy.font.familyName = name;
     if (!copy.osFont) copy.font.reservedFontName = name;   // partner copies keep the upstream Reserved Font Names
     copy.savedAt = new Date().toISOString();
@@ -19927,6 +19954,339 @@ function stripImagesForAutosave(p) {
   });
   return c;
 }
+/* ════════════════════════════════════════════════════════════════════════
+   CLOUD PROJECTS — an optional copy of the project in the signed-in account (js/ivrit-projects.js
+   moves the bytes; this page owns the project format and the UI).
+   fmCloudPack turns the live project into {json, sources}: every raster data URL becomes a
+   content-addressed object name and the JSON carries the string 'cloud:<name>' in its place (a string,
+   like the '[omitted]' sentinel, so nothing can crash if it ever leaks). fmCloudUnpack puts the data
+   URLs back BEFORE applyProjectData(), so the in-memory `project` never holds placeholders — every
+   reader keeps seeing data URLs, the image cache keys and trace signatures included.
+   Identity lives in the project: project.cloudId (the account row) and project.cloudRev (the row's
+   updated_at this copy last matched) — the only two fields written outside udDo, because they are
+   identity, not undoable content. A copy (Save as…) drops both; a loaded file keeps them only when this
+   account owns that project.
+   ════════════════════════════════════════════════════════════════════════ */
+const CLOUD_PREFIX = 'cloud:';
+const CLOUD_AUTOSAVE_MS = 10000;
+const _cloudNames = new Map();   // data URL → {name, size, type, blob}: what this session uploaded or downloaded
+let _cloudBusy = false, _cloudDirty = false, _cloudTimer = 0, _cloudPaused = false, _cloudLastErr = null, _cloudSavedAt = null;
+
+function fmFill(s, p) { return String(s).replace(/\{(\w+)\}/g, (m, k) => (p && Object.prototype.hasOwnProperty.call(p, k)) ? p[k] : m); }
+function _cT(k, fallback, p) {   // fontmaker.cloud.* with an English fallback (the _pT shape)
+  const key = 'fontmaker.cloud.' + k;
+  if (!window.I18n) return p ? fmFill(fallback, p) : fallback;
+  const v = I18n.t(key, p);
+  return v === key ? (p ? fmFill(fallback, p) : fallback) : v;
+}
+function fmCloudOn() { return !!(window.IvritProjects && window.IvritAccount && typeof IvritAccount.status === 'function' && IvritAccount.status() !== 'disabled'); }
+function fmCloudUser() { return (fmCloudOn() && typeof IvritAccount.user === 'function') ? IvritAccount.user() : null; }
+function fmCloudSignIn() { if (window.IvritAccount && typeof IvritAccount.openMenu === 'function') IvritAccount.openMenu(); }
+function fmMb(bytes) {   // "740 KB" under a megabyte, "2.4 MB" under ten, "28 MB" above
+  const b = Number(bytes) || 0, T = (k, f, p) => window.IvritSaves ? IvritSaves.t(k, f, p) : fmFill(f, p);
+  if (b < 1048576) return T('shared.cloud.size_kb', '{kb} KB', { kb: Math.max(1, Math.round(b / 1024)) });
+  const mb = b / 1048576;
+  return T('shared.cloud.size_mb', '{mb} MB', { mb: mb < 10 ? mb.toFixed(1) : String(Math.round(mb)) });
+}
+function fmCloudRel(iso) {
+  const t0 = Date.parse(iso); if (!isFinite(t0)) return '';
+  const s = Math.max(0, Math.round((Date.now() - t0) / 1000));
+  if (s < 60) return _cT('rel_now', 'just now');
+  const m = Math.round(s / 60); if (m < 60) return _cT('rel_minutes', '{n} min ago', { n: m });
+  const h = Math.round(m / 60); if (h < 24) return _cT('rel_hours', '{n} h ago', { n: h });
+  return _cT('rel_days', '{n} d ago', { n: Math.round(h / 24) });
+}
+function fmCloudErrorText(e) {
+  const code = e && e.code;
+  if (code === '23505') return _cT('err_name_taken', "You already have a project with that name in your account — change the font's name.");
+  if (code === 'file_too_big') return _cT('err_photo_too_big', 'The photo for {label} is too big for your account (15 MB per photo).', { label: (e && e.label) || '?' });
+  if (code === 'project_too_big') return _cT('err_project_too_big', 'This project is too big for your account (20 MB after compression) — reference fonts are the usual cause.');
+  if (code === 'changed') return _cT('err_changed', 'The copy in your account changed meanwhile — choose again.');
+  return window.IvritSaves ? IvritSaves.errorText(e) : String((e && e.message) || e);
+}
+// Every raster slot a project holds, as {o, k} holders: the stripImagesForAutosave set plus the mark sheets.
+function fmRasterSlots(p) {
+  const out = [];
+  (p.letters || []).forEach(l => { if (l && l.source) out.push({ o: l.source, k: 'dataUrl', draw: l.source.kind === 'draw', label: l.name || 'letter' }); });
+  ['nikkud', 'trop', 'customMarks'].forEach(cat => {
+    const f = p.font && p.font[cat]; if (!f) return;
+    Object.keys(f.custom || {}).forEach(cp => { const m = f.custom[cp]; if (m && m.source) out.push({ o: m.source, k: 'dataUrl', draw: m.source.kind === 'draw', label: cat + ' ' + cp }); });
+    if (f.combinedImage) out.push({ o: f.combinedImage, k: 'dataUrl', draw: false, label: cat });
+  });
+  (p.combinedSheets || []).forEach(s => { if (s) out.push({ o: s, k: 'dataUrl', draw: false, label: s.name || 'sheet' }); });
+  return out;
+}
+function fmDataUrlToBlob(u) {   // by hand: this page's CSP has no data: in connect-src, so fetch(dataUrl) is blocked
+  const m = /^data:([^;,]+)?((?:;[^;,]+)*?)(;base64)?,([\s\S]*)$/.exec(u); if (!m) return null;
+  const type = (m[1] || 'application/octet-stream').toLowerCase();
+  let bytes;
+  try {
+    if (m[3]) { const bin = atob(m[4]); bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i); }
+    else bytes = new TextEncoder().encode(decodeURIComponent(m[4]));
+  } catch (e) { return null; }
+  return new Blob([bytes], { type });
+}
+function fmCloudExt(type) { return type === 'image/jpeg' ? 'jpg' : type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : null; }
+async function fmToPng(u) {   // a type the bucket refuses (gif, bmp, heic…) is redrawn as a lossless PNG
+  const im = await loadImg(u);
+  const cv = document.createElement('canvas'); cv.width = im.naturalWidth || im.width; cv.height = im.naturalHeight || im.height;
+  const ctx = cv.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height); ctx.drawImage(im, 0, 0);
+  return new Promise((res, rej) => cv.toBlob(b => b ? res(b) : rej(new Error('toBlob failed')), 'image/png'));
+}
+async function fmHashBytes(blob) {   // 16 hex chars of SHA-256; an FNV-1a pair where SubtleCrypto is missing (a duplicate object at worst)
+  const buf = await blob.arrayBuffer();
+  try { if (window.crypto && crypto.subtle) { const d = await crypto.subtle.digest('SHA-256', buf); return Array.from(new Uint8Array(d).slice(0, 8), b => b.toString(16).padStart(2, '0')).join(''); } } catch (e) {}
+  const u8 = new Uint8Array(buf); let h1 = 0x811c9dc5, h2 = (0x01000193 ^ u8.length) >>> 0;
+  for (let i = 0; i < u8.length; i++) { h1 = Math.imul(h1 ^ u8[i], 0x01000193) >>> 0; h2 = Math.imul(h2 ^ u8[i], 0x01000195) >>> 0; }
+  return h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0');
+}
+async function fmCloudPack(p) {
+  const c = JSON.parse(JSON.stringify(p));
+  const sources = [], manifest = {}, seen = new Set();
+  for (const slot of fmRasterSlots(c)) {
+    const u = slot.o[slot.k];
+    if (typeof u !== 'string' || !u || u.startsWith(CLOUD_PREFIX)) continue;
+    if (slot.draw) { slot.o[slot.k] = null; continue; }               // drawEnsureRaster() rebuilds it from the strokes on open
+    if (/^data:image\/svg\+xml/i.test(u)) continue;                     // text: stays inline
+    let entry = _cloudNames.get(u);
+    if (!entry) {
+      let blob = fmDataUrlToBlob(u); if (!blob) continue;
+      let ext = fmCloudExt(blob.type);
+      if (!ext) { blob = await fmToPng(u); ext = 'png'; }
+      const hash = await fmHashBytes(blob);
+      entry = { name: hash + '.' + ext, size: blob.size, type: blob.type, blob };
+      _cloudNames.set(u, entry);
+    }
+    slot.o[slot.k] = CLOUD_PREFIX + entry.name;
+    if (!seen.has(entry.name)) { seen.add(entry.name); manifest[entry.name] = entry.size; sources.push({ name: entry.name, size: entry.size, label: slot.label, blob: entry.blob }); }
+  }
+  c.cloudSources = manifest;
+  delete c.cloudRev;   // the row's revision is remembered locally, never inside the account copy
+  return { json: JSON.stringify(c), sources };
+}
+async function fmCloudUnpack(data, id, onProgress) {
+  const slots = fmRasterSlots(data).filter(s => typeof s.o[s.k] === 'string' && s.o[s.k].startsWith(CLOUD_PREFIX));
+  const names = Array.from(new Set(slots.map(s => s.o[s.k].slice(CLOUD_PREFIX.length))));
+  const urls = new Map(); let failed = 0, done = 0;
+  const queue = names.slice();
+  const worker = async () => {
+    while (queue.length) {
+      const name = queue.shift();
+      try { const blob = await IvritProjects.downloadSource(id, name); const u = await readFileAsDataUrl(blob); urls.set(name, u); _cloudNames.set(u, { name, size: blob.size, type: blob.type, blob }); }
+      catch (e) { failed++; }
+      done++; if (onProgress) onProgress(done, names.length);
+    }
+  };
+  await Promise.all([0, 1, 2, 3].map(worker));
+  for (const s of slots) { const name = s.o[s.k].slice(CLOUD_PREFIX.length); s.o[s.k] = urls.has(name) ? urls.get(name) : null; }
+  delete data.cloudSources;
+  return { failed, total: names.length };
+}
+// Save ▾ menu row and Load ▾ menu section
+function fmCloudMenuRow() {
+  if (!fmCloudOn()) return '';
+  const signedIn = !!fmCloudUser();
+  return `<div class="load-menu-sep"></div><button class="load-menu-item" onclick="closeSaveMenu();${signedIn ? 'fmCloudSave()' : 'fmCloudSignIn()'}">${esc(signedIn ? _cT('menu_save', '☁ Save to my account…') : _cT('menu_sign_in', '☁ Sign in to save to your account'))}</button>`;
+}
+function fmCloudLoadSection() {
+  if (!fmCloudOn()) return '';
+  const inner = fmCloudUser()
+    ? `<div class="load-menu-empty">${esc(_cT('load_checking', 'Checking your account…'))}</div>`
+    : `<button class="load-menu-item" onclick="closeLoadMenu();fmCloudSignIn()">${esc(_cT('load_sign_in', "Sign in to see your account's projects"))}</button>`;
+  return `<div class="load-menu-sep"></div><div class="load-menu-head">${esc(_cT('load_head', 'In your account'))}</div><div id="loadMenuCloud">${inner}</div>`;
+}
+async function fmCloudFillLoadMenu(menu) {   // fills the placeholder once the list arrives — only while this very menu is still open
+  const host = menu.querySelector('#loadMenuCloud'); if (!host || !fmCloudUser()) return;
+  let rows = null, err = null;
+  try { rows = await IvritProjects.list(); } catch (e) { err = e; }
+  if (document.getElementById('loadMenu') !== menu || !host.isConnected) return;
+  if (err) host.innerHTML = `<div class="load-menu-empty">${esc(fmCloudErrorText(err))}</div>`;
+  else if (!rows.length) host.innerHTML = `<div class="load-menu-empty">${esc(_cT('load_none', 'No projects in your account yet.'))}</div>`;
+  else host.innerHTML = rows.map(r => {
+    if (!/^[0-9a-f-]{36}$/i.test(String(r.id))) return '';
+    const n = Number(r.letters_done) || 0, size = fmMb((Number(r.project_bytes) || 0) + (Number(r.sources_bytes) || 0)), when = fmCloudRel(r.updated_at);
+    const meta = n === 1 ? _cT('load_meta_one', '1 letter · {size} · {when}', { size, when }) : _cT('load_meta', '{letters} letters · {size} · {when}', { letters: n, size, when });
+    const dlTitle = esc(_cT('load_font_title', 'Download the latest exported font'));
+    return `<div class="load-menu-row"><button class="load-menu-item" onclick="closeLoadMenu();fmCloudOpen('${r.id}')"><span>${esc(r.name)}</span><span class="load-menu-meta">${esc(meta)}</span></button>` +
+      (r.export_path ? `<button class="load-menu-cdl" onclick="closeLoadMenu();fmCloudDownloadExport('${r.id}')" title="${dlTitle}" aria-label="${dlTitle}">⬇</button>` : '') +
+      `<button class="load-menu-cdel" onclick="fmCloudDelete('${r.id}')" title="${esc(_cT('load_delete_title', 'Delete from your account'))}" aria-label="${esc(_cT('load_delete_aria', 'Delete {name} from your account', { name: r.name }))}">🗑</button></div>`;
+  }).join('');
+  const a = _loadMenuAnchor;   // the filled menu may be wider: keep it on screen
+  if (a && a.isConnected) { const rect = a.getBoundingClientRect(); menu.style.left = Math.max(6, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 8)) + 'px'; }
+}
+// The ☁ badge next to Save ▾ (only while the project has an account copy and someone is signed in)
+function fmCloudPipRender() {
+  const pip = document.getElementById('cloudPip'); if (!pip) return;
+  const on = !!(project && project.cloudId && fmCloudUser());
+  pip.hidden = !on; if (!on) return;
+  const state = _cloudBusy ? 'saving' : (_cloudLastErr ? 'error' : ((_cloudDirty || _cloudPaused) ? 'unsaved' : 'saved'));
+  pip.dataset.state = state;
+  const txt = pip.querySelector('.cloud-pip-text');
+  if (txt) txt.textContent = state === 'saving' ? _cT('pip_saving', '☁ Saving…') : state === 'error' ? _cT('pip_error', "☁ Couldn't save — click to retry") : state === 'unsaved' ? _cT('pip_unsaved', '☁ Unsaved') : _cT('pip_saved', '☁ Saved');
+  pip.title = state === 'saved' && _cloudSavedAt ? _cT('pip_saved_at', 'Saved to your account {time}', { time: fmCloudRel(_cloudSavedAt.toISOString()) })
+            : (state === 'unsaved' && _cloudPaused) ? _cT('pip_paused', 'Cloud saving is paused — click to save now') : '';
+}
+function fmCloudPipClick() {
+  if (!project || !project.cloudId || _cloudBusy) return;
+  if (_cloudLastErr || _cloudDirty || _cloudPaused) { _cloudPaused = false; fmCloudWrite('explicit'); }
+  else status(_cT('pip_saved_at', 'Saved to your account {time}', { time: fmCloudRel((_cloudSavedAt || new Date()).toISOString()) }));
+}
+function fmCloudReset() {   // a project was loaded or created: forget the previous project's cloud state (an upload in flight finishes on its own)
+  clearTimeout(_cloudTimer); _cloudDirty = false; _cloudPaused = false; _cloudLastErr = null; _cloudSavedAt = null;
+  fmCloudPipRender();
+}
+function fmCloudArm() { if (!project || !project.cloudId || _cloudPaused) return; clearTimeout(_cloudTimer); _cloudTimer = setTimeout(fmCloudAutosave, CLOUD_AUTOSAVE_MS); }
+async function fmCloudAutosave() {
+  if (!project || !project.cloudId || _cloudPaused || _cloudBusy || !_cloudDirty) return;
+  if (!fmCloudUser() || navigator.onLine === false) return;   // retried by the next change or the online event
+  await fmCloudWrite('auto');
+}
+// Explicit save: the first time, one dialog says what happens; afterwards the badge and autosave take over.
+function fmCloudSave() {
+  if (!fmCloudOn() || !project) return;
+  if (!fmCloudUser()) { fmCloudSignIn(); return; }
+  onMetaChange();
+  if (project.cloudId) { fmCloudWrite('explicit'); return; }
+  const name = fmDerivedProjectName(project.font.familyName, project.font.reservedFontName, project.font.style);
+  askModal(_cT('first_title', 'Save to your account'),
+    `<p style="margin:0 0 8px;">${_cT('first_body', '{name} will be kept in your account with its photos at full size. Your files and the copies in this browser stay as they are.', { name: '<b>' + esc(name) + '</b>' })}</p>` +
+    `<p style="margin:0;color:var(--muted);font-size:0.82rem;">${esc(_cT('first_note', 'From then on, changes keep saving to your account by themselves.'))}</p>`,
+    [{ label: _cT('first_btn', 'Save'), onClick: () => fmCloudWrite('new') },
+     { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' }]);
+}
+// mode: 'new' | 'explicit' | 'auto' | 'overwrite' (the conflict dialog's choice: take the row as it is now)
+async function fmCloudWrite(mode) {
+  if (_cloudBusy || !project || !fmCloudUser()) return false;
+  const target = project;   // a load during the upload must not receive this project's identity
+  const quiet = mode === 'auto';
+  _cloudBusy = true; _cloudLastErr = null; fmCloudPipRender();
+  if (!quiet) { ipArm(0); status(_cT('phase_prepare', 'Preparing your project…'), true); }
+  try {
+    onMetaChange();
+    let id = project.cloudId || null, expected = null;
+    if (id) {
+      const row = await IvritProjects.get(id);
+      if (!row) { id = null; }                                                   // deleted in the account meanwhile: save it anew
+      else if (mode !== 'overwrite' && project.cloudRev && row.updated_at !== project.cloudRev) { fmCloudConflict(row); return false; }
+      else expected = row.updated_at;
+    }
+    const name = fmDerivedProjectName(project.font.familyName, project.font.reservedFontName, project.font.style);
+    const packed = await fmCloudPack(project);
+    const gz = new Blob([await gzipBlob(packed.json)], { type: 'application/gzip' });   // gzipBlob() returns an untyped Blob
+    const meta = { family_name: project.font.familyName || null, style: project.font.style || null, schema_version: project.schemaVersion || null,
+                   letters_done: (project.letters || []).filter(l => { const cp = l && parseInt(l.codepoint, 16); return l && l.contours && l.contours.length && cp >= 0x05D0 && cp <= 0x05EA; }).length,   // the 27 Hebrew letters (codepoints are hex strings); digits and punctuation ship with outlines
+                   client_saved_at: project.savedAt || null };
+    const row = await IvritProjects.save({ id, name, meta, projectGz: gz, sources: packed.sources, expectedUpdatedAt: id ? expected : undefined,
+      onProgress: p => { if (quiet) return;
+        if (p.phase === 'sources' && p.total) status(_cT('phase_photo', 'Uploading photo {i} of {n}…', { i: Math.min(p.done + 1, p.total), n: p.total }), true);
+        else if (p.phase === 'project') status(_cT('phase_project', 'Uploading project…'), true); } });
+    if (project !== target) return true;
+    project.cloudId = row.id; project.cloudRev = row.updated_at;   // identity, not content: the two writes outside udDo
+    _cloudDirty = false; _cloudPaused = false; _cloudSavedAt = new Date();
+    autosaveNow();   // the local snapshot now records the revision it matches
+    if (!quiet) { pushRecentProject(project); status(_cT('saved_toast', 'Saved to your account')); }
+    return true;
+  } catch (e) {
+    if (project === target) _cloudLastErr = e;
+    if (!quiet || (e && e.code !== 'offline')) status(fmCloudErrorText(e), true);
+    return false;
+  } finally { _cloudBusy = false; if (!quiet) ipClose(); fmCloudPipRender(); }
+}
+function fmCloudConflict(row) {
+  _cloudPaused = true; fmCloudPipRender();
+  askModal(_cT('conflict_title', 'Changed on another device'),
+    `<p style="margin:0 0 8px;">${_cT('conflict_body', 'The copy of {name} in your account was changed {when}, after this copy last matched it.', { name: '<b>' + esc(row.name) + '</b>', when: esc(fmCloudRel(row.updated_at)) })}</p>`,
+    [{ label: _cT('conflict_overwrite', "Overwrite the account's copy"), onClick: () => { _cloudPaused = false; fmCloudWrite('overwrite'); } },
+     { label: _cT('conflict_keep_both', 'Keep both (save this as a copy)'), onClick: () => fmCloudKeepBoth() },
+     { label: _cT('conflict_not_now', 'Not now'), cls: 'ghost' }]);
+}
+async function fmCloudKeepBoth() {   // this copy becomes a new project (the Save as… recipe) and goes up under its own row
+  const style = project.font.style, name = fmUniqueCopyName(project.font.familyName, style);
+  project.savedAt = new Date().toISOString();
+  pushRecentProject(project);
+  const copy = JSON.parse(JSON.stringify(project));
+  copy.font.familyName = name;
+  if (!copy.osFont) copy.font.reservedFontName = name;
+  copy.savedAt = new Date().toISOString();
+  delete copy.cloudId; delete copy.cloudRev;
+  pushRecentProject(copy);
+  if (await applyProjectData(JSON.parse(JSON.stringify(copy)))) { status(I18n.t('fontmaker.status.saved_as', { name })); fmCloudWrite('new'); }
+}
+async function fmCloudLocalCopy(id, rev) {   // the local snapshot of the same account revision, untouched since: no download needed
+  try {
+    const rec = await autosaveGet();
+    if (rec && rec.gz && rec.cloudRev === rev && rec.cloudClean) {
+      const d = ivritSafeParse(await gunzipText(rec.gz));
+      if (d && d.format === 'hebrew-font-maker-project' && d.cloudId === id) return d;
+    }
+  } catch (e) {}
+  return null;
+}
+async function fmCloudOpen(id) {
+  if (!fmCloudUser()) { fmCloudSignIn(); return; }
+  ipArm(0); status(_cT('phase_open', 'Opening from your account…'), true);
+  let opened = false, local = false;
+  try {
+    const row = await IvritProjects.get(id);
+    if (!row) { const e = new Error('gone'); e.code = 'not_found'; throw e; }
+    let data = await fmCloudLocalCopy(id, row.updated_at);
+    local = !!data;
+    if (!data) {
+      const res = await IvritProjects.open(id);
+      data = ivritSafeParse(await gunzipText(res.gz));
+      if (!data || data.format !== 'hebrew-font-maker-project') { const e = new Error('bad file'); e.code = 'shape'; throw e; }
+      const got = await fmCloudUnpack(data, id, (d, n) => status(_cT('phase_download', 'Downloading photo {i} of {n}…', { i: d, n }), true));
+      if (got.failed) status(_cT('photos_missing', '{n} photos could not be loaded', { n: got.failed }), true);
+    }
+    data.cloudId = row.id; data.cloudRev = row.updated_at;
+    opened = await applyProjectData(data);
+  } catch (e) { status(fmCloudErrorText(e), true); }
+  finally { ipClose(); }
+  if (opened) { _cloudSavedAt = new Date(); fmCloudPipRender(); status(local ? _cT('opened_local', "Opened this device's copy of your account project") : _cT('opened_cloud', 'Opened from your account')); }
+}
+async function fmCloudClaim(data) {   // a file may carry another account's identity: keep cloudId only when this account owns that project
+  if (!data || !data.cloudId) return;
+  let ok = false;
+  try { if (fmCloudUser()) ok = (await IvritProjects.list()).some(r => r.id === data.cloudId); } catch (e) {}
+  if (!ok) { delete data.cloudId; delete data.cloudRev; }
+}
+async function fmCloudDelete(id) {
+  closeLoadMenu();   // .load-menu sits above #askOverlay — same dance as removeRecentProjectUI
+  let name = '';
+  try { const r = (await IvritProjects.list()).find(x => x.id === id); name = r ? r.name : ''; } catch (e) {}
+  askModal(_cT('delete_title', 'Delete from your account?'),
+    _cT('delete_body', 'Delete {name}, its photos and its exported font from your account? Copies on this computer and in this browser stay.', { name: '<b>' + esc(name) + '</b>' }),
+    [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost', onClick: () => reopenLoadMenu(0) },
+     { label: _cT('delete_btn', 'Delete'), onClick: async () => {
+         try {
+           await IvritProjects.remove(id);
+           if (project && project.cloudId === id) { delete project.cloudId; delete project.cloudRev; fmCloudReset(); }
+           status(_cT('deleted_toast', 'Deleted {name} from your account.', { name }));
+         } catch (e) { status(fmCloudErrorText(e), true); }
+         reopenLoadMenu(0);
+       } }]);
+}
+async function fmCloudDownloadExport(id) {
+  try { const r = await IvritProjects.downloadExport(id); downloadBlob(r.blob, r.name); }
+  catch (e) { status(fmCloudErrorText(e), true); }
+}
+async function fmCloudKeepExport(file) {
+  if (!project || !project.cloudId || !fmCloudUser() || !file) return;
+  status(_cT('phase_export', 'Uploading the export…'), true);
+  try {
+    const row = await IvritProjects.saveExport(project.cloudId, file, file.name);
+    project.cloudRev = row.updated_at;   // the row moved for this export, not for another device's edit
+    status(_cT('export_kept_toast', 'Export kept in your account'));
+  } catch (e) { status(fmCloudErrorText(e), true); }
+}
+function fmCloudSummaryLine() {   // the account screen's line for this tool
+  if (!fmCloudUser() || !window.IvritSaves) return '';
+  return IvritProjects.count().then(c => c.n
+    ? IvritSaves.t(c.n === 1 ? 'shared.cloud.acct_tool_projects.one' : 'shared.cloud.acct_tool_projects.other',
+        c.n === 1 ? '{name}: 1 project in your account ({size})' : '{name}: {n} projects in your account ({size})',
+        { name: I18n.t('fontmaker.about.app_title'), n: c.n, size: fmMb(c.bytes) })
+    : '');
+}
 async function loadProjectFile(file) {
   let data;
   try {
@@ -19941,6 +20301,7 @@ async function loadProjectFile(file) {
     }
     data = ivritSafeParse(text);
   } catch { status(I18n.t('fontmaker.status.not_valid_project')); return; }
+  await fmCloudClaim(data);
   if (await applyProjectData(data)) status(I18n.t('fontmaker.status.project_loaded'));
 }
 async function applyProjectData(data) {           // shared by file-load and "Load recent"
@@ -19974,6 +20335,7 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   for (const dl of project.letters) { try { await drawEnsureRaster(dl); } catch (e) {} }
   curKind = 'letter'; curCp = LETTER_ORDER[0];
   syncMetaToForm(); renderGrids(); _setWorkMode(_defaultStepForCur());   // reopen an already-traced first letter directly on Edit points
+  fmCloudReset();       // the previous project's cloud state does not carry over (identity rides in the project itself)
   markClean();          // a freshly loaded project is a known-good state — clear the dirty flag
   autosaveNow();        // …and make the continuity snapshot reflect what was just loaded
   _launchDecided = true;   // a loaded project settles the boot launch decision
@@ -20055,12 +20417,14 @@ function openLoadMenu(anchor) {
     ? recents.map((r,i) => `<div class="load-menu-row"><button class="load-menu-item" onclick="closeLoadMenu();loadRecentProject(${i})"><span>${esc(r.name)}</span><span class="load-menu-date">${recentDate(r.savedAt)}</span></button>` +
         `<button class="load-menu-del" onclick="removeRecentProjectUI(${i})" title="${esc(_pT('load_remove_title', 'Remove from Recent'))}" aria-label="${esc(_pT('load_remove_aria', 'Remove {name} from Recent', {name: r.name}))}">🗑</button></div>`).join('')
     : `<div class="load-menu-empty">${_pT('load_no_recent', 'No recent projects yet — save one first.')}</div>`;
+  h += fmCloudLoadSection();
   menu.innerHTML = h;
   document.body.appendChild(menu);
   const rect = anchor.getBoundingClientRect();
   menu.style.left = Math.max(6, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 8)) + 'px';
   menu.style.top = (rect.bottom + 4) + 'px';
   setTimeout(() => document.addEventListener('click', closeLoadMenu), 0);
+  fmCloudFillLoadMenu(menu);   // the "In your account" rows arrive asynchronously
   return menu;
 }
 function reopenLoadMenu(focusIdx) {
@@ -20084,7 +20448,8 @@ function toggleSaveMenu(ev) {
     `<div class="load-menu-sep"></div>` +
     `<button class="load-menu-item" onclick="closeSaveMenu();saveProjectAs()">${esc(I18n.t('fontmaker.savemenu.save_as'))}</button>` +
     `<div class="load-menu-sep"></div>` +
-    `<button class="load-menu-item" onclick="closeSaveMenu();openMyFonts()">${esc(I18n.t('fontmaker.savemenu.my_fonts'))}</button>`;
+    `<button class="load-menu-item" onclick="closeSaveMenu();openMyFonts()">${esc(I18n.t('fontmaker.savemenu.my_fonts'))}</button>` +
+    fmCloudMenuRow();
   document.body.appendChild(menu);
   const rect = ev.currentTarget.getBoundingClientRect();
   menu.style.left = Math.max(6, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 8)) + 'px';
@@ -20120,6 +20485,7 @@ function autosaveClear()  { return _fmTx('readwrite', os => os.delete('current')
 let _projectDirty = false, _autosaveTimer = 0, _autosaveInFlight = false;
 function markDirty() {   // a real edit happened → flag unsaved + schedule a debounced autosave
   _projectDirty = true;
+  if (project && project.cloudId) { _cloudDirty = true; fmCloudArm(); fmCloudPipRender(); }
   clearTimeout(_autosaveTimer);
   _autosaveTimer = setTimeout(autosaveNow, 3000);
 }
@@ -20140,7 +20506,7 @@ async function autosaveNow() {
     const json = JSON.stringify(project);
     if (typeof indexedDB === 'undefined' || typeof CompressionStream === 'undefined') throw new Error('no IDB/gzip');
     const blob = await gzipBlob(json);                       // full project incl. images, gzipped
-    await autosavePut({ id: 'current', savedAt: new Date().toISOString(), gz: await blob.arrayBuffer() });
+    await autosavePut({ id: 'current', savedAt: new Date().toISOString(), gz: await blob.arrayBuffer(), cloudRev: (project.cloudRev || null), cloudClean: !_cloudDirty });   // cloudRev/cloudClean: lets a cloud Open reuse this snapshot
   } catch (e) {   // private mode / no IndexedDB → stripped localStorage slot (outlines survive, images don't)
     try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch (_) {}
   } finally { _autosaveInFlight = false; }
@@ -21307,9 +21673,13 @@ function init() {
   drawLoadPrefs();        // Draw-mode brush/pressure/smoothing/pen-only mirrors from hebrewFontMaker_uiPrefs
   initRulers();           // canvas rulers: bar/stage listeners, scroll+resize redraw, Shift+R (hebrewFontMaker_uiPrefs)
   initGrid();             // canvas grid: checkbox sync + Shift+G (hebrewFontMaker_uiPrefs)
-  window.addEventListener('beforeunload', e => { if (_projectDirty) { e.preventDefault(); e.returnValue = ''; } });   // warn before losing unsaved work
+  window.addEventListener('beforeunload', e => { if (_projectDirty || _cloudDirty || _cloudBusy) { e.preventDefault(); e.returnValue = ''; } });   // warn before losing unsaved work
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushAutosave(); });   // tab hidden → flush the debounced autosave now
   window.addEventListener('pagehide', flushAutosave);   // closing/navigating away → last-chance flush
+  // Cloud projects: retry a pending cloud save when the connection returns; keep the badge in step with sign-in; the account screen's line.
+  window.addEventListener('online', () => { if (_cloudDirty) fmCloudArm(); });
+  if (window.IvritAccount && typeof IvritAccount.onChange === 'function') IvritAccount.onChange(u => { if (!u) clearTimeout(_cloudTimer); else if (_cloudDirty) fmCloudArm(); fmCloudPipRender(); });
+  if (window.IvritSaves && window.IvritProjects && typeof IvritSaves.registerSummary === 'function') IvritSaves.registerSummary(fmCloudSummaryLine);
   // Defer the restore prompt until translations have loaded — window.I18n exists by DOMContentLoaded,
   // but I18n.ready (the locale-JSON fetch) may not have resolved, so building the modal now would
   // render its labels as raw i18n keys (fontmaker.modals.continue_body, …).
@@ -21324,7 +21694,7 @@ function init() {
   }
   // Wire i18n here (inside init, which runs on DOMContentLoaded) so the deferred /js/i18n.js
   // has already defined window.I18n — at top-level script parse time it is still undefined.
-  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+  if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); I18n.ready.then(fmCloudPipRender); I18n.onChange(fmCloudPipRender); }
 }
 /* ── i18n: fill static chrome + re-render read-only surfaces on load + live switch ──
    Read-only paths only — never udDo/markDirty (the undo/dirty contract). The glyph-edit

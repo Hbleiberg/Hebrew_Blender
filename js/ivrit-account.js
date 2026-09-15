@@ -25,6 +25,12 @@
  *   sessionSource()            'new' when this page load established the session (a sign-in here, or an auth
  *                              callback), 'restored' when it came from storage, null when signed out
  *   openMenu()                 opens the chip's menu (false when no chip is mounted) — for a panel's Sign in button
+ *   profile()                  Promise<{displayName, createdAt}> — the account's profiles row (signed in only)
+ *   setDisplayName(name)       Promise<name> — 1–80 characters; writes the user's metadata (what the chip shows)
+ *                              and profiles.display_name
+ *   deleteAccount()            Promise<{ok, deleted}> — the delete-account Edge Function (files, rows, the auth
+ *                              user), then this device forgets the session; nothing on the device is touched
+ *   errorText(err)             one localized sentence for a failure of any call above (the account page uses it)
  *   _test                      pure helpers exposed for the smoke test (scripts/smoke-account.mjs)
  *
  * How it stays cheap and safe:
@@ -282,6 +288,10 @@
     if (code === 'invalid_email' || code === 'validation_failed' || /valid email/.test(msg)) return t('shared.account.error_email', 'Please enter a valid email address.');
     if (st === 429 || code === 'over_email_send_rate_limit' || code === 'over_request_rate_limit' || /rate limit/.test(msg)) return t('shared.account.error_rate_limited', 'Too many attempts. Wait a few minutes and try again.');
     if (code === 'invalid_code' || code === 'otp_expired' || code === 'otp_disabled' || (/token|otp|code/.test(msg) && /expired|invalid/.test(msg))) return t('shared.account.error_invalid_code', 'That code is not valid or has expired. Check the email and try again.');
+    if (code === 'invalid_name') return t('shared.account.error_name', 'A display name is 1 to 80 characters.');
+    if (code === 'signed_out' || code === 'PGRST301' || st === 401 || /jwt/.test(msg)) return t('shared.account.error_session', 'Your sign-in has expired. Sign in again.');
+    if (code === 'unreachable' || /failed to fetch|networkerror|load failed|network request failed/.test(msg)) return t('shared.account.error_unreachable', 'The cloud is unreachable right now. Try again later.');
+    if (code === 'fn_failed' || /^fn_/.test(code)) return t('shared.account.error_delete', 'Your account could not be deleted. Nothing was changed — try again in a moment.');
     return t('shared.account.error_generic', 'Something went wrong. Please try again.');
   }
   function pendingErrorText() {
@@ -289,6 +299,59 @@
     if (pendingError.code === 'link_other_browser') return t('shared.account.error_link_other_browser', 'That link was opened in a different browser. Enter the code from the email here instead.');
     if (pendingError.code === 'otp_expired' || /expired|invalid/.test(String(pendingError.description || '').toLowerCase())) return t('shared.account.error_expired', 'That sign-in link has expired. Request a new one.');
     return t('shared.account.error_finish', "Couldn't finish signing in. Please try again.");
+  }
+
+  /* ---------- the account page's calls (account.html) ---------- */
+  function requireUser() { if (!currentUser) throw makeError('signed_out', 'IvritAccount: not signed in'); return currentUser; }
+  function unwrap(r) { if (r && r.error) throw r.error; return r ? r.data : null; }
+  function profile() {
+    return getClient().then(function (c) {
+      var u = requireUser();
+      return c.from('profiles').select('display_name, created_at').eq('id', u.id).maybeSingle();
+    }).then(unwrap).then(function (p) {
+      return { displayName: p ? String(p.display_name || '') : '', createdAt: p ? (p.created_at || null) : null };
+    });
+  }
+  // The display name lives in the user's metadata (what the chip reads on every page) and is mirrored into
+  // profiles.display_name (the row the account was created with). A Google sign-in later may put Google's
+  // name back into the metadata; the profiles copy keeps what was typed here.
+  function setDisplayName(name) {
+    name = String(name === undefined || name === null ? '' : name).replace(/\s+/g, ' ').trim();
+    if (!name || name.length > 80) return Promise.reject(makeError('invalid_name', 'IvritAccount: a display name is 1 to 80 characters'));
+    return getClient().then(function (c) {
+      var u = requireUser();
+      return c.auth.updateUser({ data: { full_name: name } }).then(unwrap)
+        .then(function () { return c.from('profiles').update({ display_name: name }).eq('id', u.id); }).then(unwrap)
+        .then(function () { return name; });
+    });
+  }
+  // A failed invoke: FunctionsHttpError carries the Response as .context; its JSON names the step that failed.
+  function functionError(err) {
+    var e = makeError('fn_failed', (err && err.message) || 'IvritAccount: function failed');
+    var ctx = err && err.context;
+    var st = (ctx && typeof ctx.status === 'number') ? ctx.status : null;
+    if (st === 401) e.code = 'signed_out';
+    else if (st) e.code = 'fn_' + st;
+    else if (/fetch|network/i.test(String(((err && err.name) || '') + ' ' + ((err && err.message) || '')))) e.code = navigator.onLine === false ? 'offline' : 'unreachable';
+    e.status = st;
+    if (ctx && typeof ctx.json === 'function') {
+      return ctx.json().then(function (body) { if (body && body.error) e.detail = String(body.error); return e; }, function () { return e; });
+    }
+    return Promise.resolve(e);
+  }
+  // "Delete my account": the Edge Function removes the account's files, rows and the auth user (only ever the
+  // account its JWT names), then this device forgets the session. Nothing stored on the device is touched.
+  function deleteAccount() {
+    return getClient().then(function (c) {
+      requireUser();
+      return c.functions.invoke('delete-account', { method: 'POST', body: {} });
+    }).then(function (r) {
+      if (r && r.error) return functionError(r.error).then(function (e) { throw e; });
+      var data = r && r.data;
+      if (!data || data.ok !== true) throw makeError('fn_failed', 'IvritAccount: unexpected reply from delete-account');
+      // The session is dead on the server; forgetting it here is what matters (the sign-out call itself may 401).
+      return signOut().then(function () { return data; }, function () { return data; });
+    });
   }
 
   /* ---------- the chip ---------- */
@@ -712,6 +775,10 @@
     onOpenAccount: function (fn) { openAccountFn = (typeof fn === 'function') ? fn : null; renderChip(); },
     sessionSource: function () { return sessionSource; },
     openMenu: function () { if (!chip || !mounted) return false; openMenu(); return true; },   // a page's own "Sign in" button opens the chip's menu
+    profile: profile,
+    setDisplayName: setDisplayName,
+    deleteAccount: deleteAccount,
+    errorText: errorText,
     _test: { isAuthCallback: isAuthCallback, stripAuthParams: stripAuthParams, redirectTarget: redirectTarget, parseAuthParams: parseAuthParams, hasStoredSession: hasStoredSession, AUTH_KEY: AUTH_KEY, VERIFIER_KEY: VERIFIER_KEY, CACHE_KEY: CACHE_KEY }
   };
 })();

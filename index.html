@@ -458,6 +458,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div id="cloudSavesSection" style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
         <h4 style="margin:0 0 4px;font-size:0.95rem;" data-i18n="home.alltools.cloud.title">☁ Cloud saves</h4>
         <p class="ie-note" style="margin:0 0 8px;" data-i18n="home.alltools.cloud.note">One panel per tool: what is saved in this browser next to the copies in your account. A change made in both places to a student profile, a class list or a word list is merged inside that tool.</p>
+        <details class="ie-cloud-tool"><summary data-i18n="shared.cloud.kind_suite_prefs">IvritSuite preferences</summary><div class="ie-cloud-host" data-tool="Suite"></div></details>
         <details class="ie-cloud-tool"><summary data-i18n="home.card.generator.name">Hebrew Worksheet Generator</summary><div class="ie-cloud-host" data-tool="Worksheet"></div></details>
         <details class="ie-cloud-tool"><summary data-i18n="home.card.flashcards.name">Hebrew Flash Cards</summary><div class="ie-cloud-host" data-tool="FlashCards"></div></details>
         <details class="ie-cloud-tool"><summary data-i18n="home.card.dictionary.name">Hebrew Word Lookup</summary><div class="ie-cloud-host" data-tool="Dictionary"></div></details>
@@ -652,6 +653,9 @@ function closeIEModal(e) {
 // History while the data is still in storage. Coerce the shape on both sides before merging. Kept as
 // its own local copy rather than shared, matching how index.html already carries its own
 // ivritSafeParse and its adapted AllTools engine.
+// One student's history keeps this many results (the newest) — the same number flash_cards.html uses
+// (MAX_RESULTS_PER_PROFILE), so a merge here never trims what the tool would keep.
+const FC_MAX_RESULTS = 100;
 function sanitizeFcProfiles(db) {
   const out = { activeProfile: null, profiles: {} };
   if (!db || typeof db !== 'object') return out;
@@ -702,7 +706,7 @@ function mergeFlashCardProfiles(incoming, replace) {
     const seen = new Set((base.profiles[name].results || []).map(r => r.savedAt));
     (src.results || []).forEach(r => { if (!seen.has(r.savedAt)) base.profiles[name].results.push(r); });
     base.profiles[name].results = (base.profiles[name].results || [])
-      .sort((a, b) => new Date(a.savedAt) - new Date(b.savedAt)).slice(-50);
+      .sort((a, b) => new Date(a.savedAt) - new Date(b.savedAt)).slice(-FC_MAX_RESULTS);
     const ladder = mergeFcLadder(base.profiles[name].ladder, src.ladder);
     if (ladder) base.profiles[name].ladder = ladder;
   });
@@ -778,16 +782,49 @@ function ftPaths(tree, excludeId){
   })(tree.root, '');
   return out;
 }
+// Pure merge of two trees (this device's first, the incoming one second) — the one rule for an .ivrit
+// import and for a cloud sync. Level by level: folders match by name and merge recursively (the local
+// folder's id and collapsed state win); an item appears exactly once — filed inside a folder on either
+// side beats unfiled at the root, and this device's placement wins when both sides file it; local order
+// first, the incoming side's new nodes appended in its order; empty folders from both sides are kept.
+function ftMergeTrees(existing, incoming){
+  const A = (existing && Array.isArray(existing.root)) ? existing.root : [], B = (incoming && Array.isArray(incoming.root)) ? incoming.root : [];
+  const filedLoc = new Set(), rootLoc = new Set(), filedIn = new Set(), ids = new Set(), placed = new Set();
+  function scan(arr, depth, filed, root){ for (const n of arr){ if (!n) continue; if (n.t==='item') (depth ? filed : root).add(n.name); else if (n.t==='folder') scan(n.children||[], depth+1, filed, root); } }
+  scan(A, 0, filedLoc, rootLoc); scan(B, 0, filedIn, new Set());
+  (function walk(arr){ for (const n of arr){ if (n && n.t==='folder'){ if (n.id) ids.add(n.id); walk(n.children||[]); } } })(A);
+  const keepLocal = (name, depth) => !placed.has(name) && (depth > 0 || !filedIn.has(name));
+  const keepIncoming = (name, depth) => !placed.has(name) && !filedLoc.has(name) && (depth > 0 || (!rootLoc.has(name) && !filedIn.has(name)));
+  const folder = (n, children) => ({ t:'folder', id: n.id, name: n.name, collapsed: !!n.collapsed, children });
+  function level(a, b, depth){
+    const out = [], used = new Set();
+    for (const n of a){
+      if (!n) continue;
+      if (n.t==='item'){ if (keepLocal(n.name, depth)) { placed.add(n.name); out.push({ t:'item', name: n.name }); } }
+      else if (n.t==='folder'){
+        const j = b.findIndex((m, i) => m && m.t==='folder' && m.name===n.name && !used.has(i));
+        if (j >= 0) used.add(j);
+        out.push(folder(n, level(n.children||[], j >= 0 ? (b[j].children||[]) : [], depth+1)));
+      }
+    }
+    b.forEach((n, i) => {
+      if (!n || used.has(i)) return;
+      if (n.t==='item'){ if (keepIncoming(n.name, depth)) { placed.add(n.name); out.push({ t:'item', name: n.name }); } }
+      else if (n.t==='folder'){
+        const f = folder(n, level([], n.children||[], depth+1));
+        if (!f.id || ids.has(f.id)) f.id = ftGenId();
+        ids.add(f.id);
+        out.push(f);
+      }
+    });
+    return out;
+  }
+  return { v:1, root: level(A, B, 0) };
+}
 function ftImportTree(key, incoming, replace){
   if (!incoming || !Array.isArray(incoming.root)) return;
   if (replace) { ftWrite(key, { v:1, root: incoming.root }); return; }
-  const existing = ftRead(key), haveItem = new Set(), haveFolder = new Set();
-  (function walk(arr){ for (const n of arr){ if (n.t==='item') haveItem.add(n.name); else if (n.t==='folder'){ haveFolder.add(n.name); walk(n.children||[]); } } })(existing.root);
-  incoming.root.forEach(n => {
-    if (n.t==='item' && !haveItem.has(n.name)) existing.root.push(n);
-    else if (n.t==='folder' && !haveFolder.has(n.name)) existing.root.push(n);
-  });
-  ftWrite(key, existing);
+  ftWrite(key, ftMergeTrees(ftRead(key), incoming));
 }
 function ftDuplicateName(name, exists){
   const m = String(name).match(/^(.*?)\s+(\d+)$/);
@@ -984,9 +1021,7 @@ function exportAllSettings() {
     dashboardScheduleFolders: ftRead('hebrewDashboard_schedulesFolders'),
     flashCardPresetFolders:   ftRead('hebrewFlashCards_presetsFolders'),
     flashCardProfileFolders:  ftRead('hebrewFlashCards_profilesFolders'),
-    dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled') || '0',
-    dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
-    dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate') || '0.75',
+    ...dictScalarsIfSet(),
     dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
     dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
     blenderLastState:    lsJSON('hebrewBlender_lastState', {}),
@@ -1014,11 +1049,26 @@ function exportAllSettings() {
   };
   document.getElementById('ieTextarea').value = JSON.stringify(blob, null, 2);
 }
+// The account backup carries the suite-wide preferences as one `suitePrefs` object (the cloud module's
+// IvritSuite row: language, theme, keyboard layout, backup input mode, shared Hebrew font and size, live
+// preview, the Font Maker author name, the Dictionary's romanization style, TTS rate and emoji settings).
+// Unfolded into the flat AllTools keys — only where the file does not carry them itself — so the validated
+// branches below apply each one; a field this hub does not know is left where it is.
+const IVRIT_SUITE_PREF_KEYS = { lang: 'uiLang', darkMode: 'darkMode', kbdLayout: 'kbdLayout', inputMode: 'inputMode', hebFont: 'hebFont', hebFontSize: 'hebFontSize',
+  livePreview: 'livePreview', fmLastAuthor: 'fmLastAuthor', dictTranslitStyle: 'dictTranslitStyle', dictTtsRate: 'dictTtsRate', dictEmojiSettings: 'dictEmojiSettings' };
+function ivritUnfoldSuitePrefs(d) {
+  const sp = d && d.suitePrefs;
+  if (!sp || typeof sp !== 'object' || Array.isArray(sp)) return;
+  Object.keys(IVRIT_SUITE_PREF_KEYS).forEach(f => { const k = IVRIT_SUITE_PREF_KEYS[f]; if (d[k] === undefined && sp[f] !== undefined && sp[f] !== null) d[k] = sp[f]; });
+}
 async function importAllSettings() {
   const raw = document.getElementById('ieTextarea').value.trim();
   if (!raw) { alert(I18n.t('home.alltools.import_err_empty')); return; }
   let parsed;
   try { parsed = ivritSafeParse(raw); } catch(e) { alert(I18n.t('home.alltools.import_err_json')); return; }
+  // An .ivrit file pasted whole (the account backup, a cloud row's file): its data is the export blob
+  if (parsed && parsed.format === 'ivrit-save' && parsed.data && typeof parsed.data === 'object' && !Array.isArray(parsed.data)) { parsed = parsed.data; parsed._hebrewBlenderExport = 1; }
+  ivritUnfoldSuitePrefs(parsed);
   if (!parsed._hebrewBlenderExport) { alert(I18n.t('home.alltools.import_err_notexport')); return; }
   if (!confirm(I18n.t('home.alltools.import_confirm'))) return;
   try {
@@ -1038,6 +1088,7 @@ async function importAllSettings() {
       const existing = ivritSafeParse(localStorage.getItem('hebrewDashboard_settings') || '{}');
       localStorage.setItem('hebrewDashboard_settings', JSON.stringify(ivritSafeAssign(existing, parsed.dashboardSettings)));
     }
+    if (parsed.dashboardRosters && parsed.dashboardRosters.rosters) mergeDashboardRosters(parsed.dashboardRosters.rosters, false);
     if (parsed.flashCardPresets) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewFlashCards_presets') || '{}');
       localStorage.setItem('hebrewFlashCards_presets', JSON.stringify(ivritSafeAssign(existing, parsed.flashCardPresets)));
@@ -1211,6 +1262,9 @@ async function eraseAllSettings() {
     'hebrewDictionary_ttsRate',
     'hebrewDictionary_emojiSettings',
     'hebrewDictionary_lastState',
+    'hebrewBlender_zoom',
+    'hebrewBlender_hideZoomBar',
+    'hebrewDashboard_shabbatCache',
     'hebrewDictionary_tourSeen',
     // Dictionary sidebar width: a per-device layout pref like hebrewBlender_zoom (it tracks the
     // monitor, not the teacher), so export/import-exempt — but erase restores the 300px default.
@@ -1301,9 +1355,6 @@ const IVRIT_CFG = {
       dashboardScheduleFolders: ftRead('hebrewDashboard_schedulesFolders'),
       flashCardPresetFolders:   ftRead('hebrewFlashCards_presetsFolders'),
       flashCardProfileFolders:  ftRead('hebrewFlashCards_profilesFolders'),
-      dictAudioEnabled:    localStorage.getItem('hebrewDictionary_audioEnabled')  || '0',
-      dictTranslitStyle:   localStorage.getItem('hebrewDictionary_translitStyle') || 'default',
-      dictTtsRate:         localStorage.getItem('hebrewDictionary_ttsRate')       || '0.75',
       dictEmojiSettings:   lsJSON('hebrewDictionary_emojiSettings', {}),
       dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
       blenderLastState:    lsJSON('hebrewBlender_lastState',    {}),
@@ -1324,20 +1375,25 @@ const IVRIT_CFG = {
       flashCardPanels:     lsJSON('hebrewFlashCards_panels', {}),
       dictPanels:          lsJSON('hebrewDictionary_panels', {}),
       wordLists:           lsJSON('ivritSuite_wordLists', { v: 1, lists: {} }),
-      userFonts:           _fontsBackupCache || []
+      userFonts:           _fontsBackupCache || [],
+      // The three Dictionary scalars only when this device ever set them (a restore skips an absent key, so
+      // a backup from a device that never touched them no longer resets the target's).
+      ...dictScalarsIfSet()
     };
   },
-  apply(data, mode) {
+  async apply(data, mode) {
     const mergeObj = (key, val) => {
       if (val === undefined) return;
       const base = mode === 'replace' ? {} : ivritSafeParse(localStorage.getItem(key) || '{}');
       localStorage.setItem(key, JSON.stringify(ivritSafeAssign(base, val)));
     };
+    ivritUnfoldSuitePrefs(data);
     let touched = false;
     if (data.generatorPresets)    { mergeObj('hebrewBlender_presets',         data.generatorPresets);    touched = true; }
     if (data.dashboardPresets)    { mergeObj('hebrewDashboard_presets',       data.dashboardPresets);    touched = true; }
     if (data.dashboardSchedules)  { mergeObj('hebrewDashboard_schedules',     data.dashboardSchedules);  touched = true; }
     if (data.dashboardSettings)   { mergeObj('hebrewDashboard_settings',      data.dashboardSettings);   touched = true; }
+    if (data.dashboardRosters && data.dashboardRosters.rosters) { mergeDashboardRosters(data.dashboardRosters.rosters, mode === 'replace'); touched = true; }   // after the settings blob: class lists live inside it
     if (data.flashCardPresets)    { mergeObj('hebrewFlashCards_presets',      data.flashCardPresets);    touched = true; }
     if (data.flashCardSettings)   { mergeObj('hebrewFlashCards_settings',     data.flashCardSettings);   touched = true; }
     if (data.flashCardProfiles && data.flashCardProfiles.profiles) { mergeFlashCardProfiles(data.flashCardProfiles, mode === 'replace'); touched = true; }
@@ -1382,8 +1438,8 @@ const IVRIT_CFG = {
     if (data.flashCardPanels && Object.keys(data.flashCardPanels).length) { mergeObj('hebrewFlashCards_panels',   data.flashCardPanels); touched = true; }
     if (data.dictPanels      && Object.keys(data.dictPanels).length)      { mergeObj('hebrewDictionary_panels',   data.dictPanels);      touched = true; }
     if (data.userFonts && Array.isArray(data.userFonts) && window.indexedDB) {
-      data.userFonts.forEach(uf => { try { saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family); } catch (e) {} });
-      refreshFontsBackupCache(); touched = true;
+      await Promise.all(data.userFonts.map(uf => Promise.resolve().then(() => saveUserFont(uf.name, _ivB64ToBytes(uf.b64), uf.family)).catch(() => {})));   // awaited: the success line is honest
+      await Promise.resolve(refreshFontsBackupCache()).catch(() => {}); touched = true;
     }
     if (!touched) { alert(I18n.t('home.alltools.no_data_alert')); }
     return touched;   // false lets ivritRestore skip the "Restored successfully" that used to follow
@@ -1439,10 +1495,45 @@ function setIvritMode(mode) {
    they dropped was the right one. Counts are taken straight off the payload the Save writes
    (or the file the Restore read), so the summary can never disagree with what actually
    travelled, and nothing new is stored to produce it. */
+// The three Dictionary scalars, only the ones this device ever set.
+function dictScalarsIfSet() {
+  const out = {};
+  [['dictAudioEnabled', 'hebrewDictionary_audioEnabled'], ['dictTranslitStyle', 'hebrewDictionary_translitStyle'], ['dictTtsRate', 'hebrewDictionary_ttsRate']].forEach(([k, ls]) => {
+    const v = localStorage.getItem(ls);
+    if (v !== null) out[k] = v;
+  });
+  return out;
+}
+// Class lists from an account backup (dashboardRosters: { rosters: { id: { name, names } } }): merged by id
+// into hebrewDashboard_settings.rosters — names unioned, a class only the file has added — or, on Replace,
+// the map swapped. Never touches anything else in the blob.
+function mergeDashboardRosters(incoming, replace) {
+  const KEY = 'hebrewDashboard_settings';
+  let s; try { s = ivritSafeParse(localStorage.getItem(KEY) || '{}'); } catch (e) { s = {}; }
+  if (!s || typeof s !== 'object' || Array.isArray(s)) s = {};
+  const cur = (!replace && s.rosters && typeof s.rosters === 'object' && !Array.isArray(s.rosters)) ? s.rosters : {};
+  Object.keys(incoming || {}).forEach(id => {
+    if (id === '__proto__' || id === 'constructor' || id === 'prototype') return;
+    const inc = incoming[id];
+    if (!inc || typeof inc !== 'object' || Array.isArray(inc)) return;
+    const names = [...new Set((Array.isArray(inc.names) ? inc.names : []).filter(n => typeof n === 'string').map(n => n.trim()).filter(Boolean))];
+    const name = (typeof inc.name === 'string' && inc.name.trim()) ? inc.name.trim() : 'My class';
+    const mine = cur[id];
+    if (mine && typeof mine === 'object' && !Array.isArray(mine)) {
+      const have = (Array.isArray(mine.names) ? mine.names : []).filter(n => typeof n === 'string');
+      const seen = new Set(have);
+      mine.names = have.concat(names.filter(n => !seen.has(n)));
+      if (!mine.name || mine.name === 'My class') mine.name = name;
+    } else cur[id] = { name, names };
+  });
+  s.rosters = cur;
+  localStorage.setItem(KEY, JSON.stringify(s));
+}
 const IVRIT_INV_PARTS = [
   ['presets',   d => Object.keys(d.generatorPresets   || {}).length],
   ['layouts',   d => Object.keys(d.dashboardPresets   || {}).length],
   ['schedules', d => Object.keys(d.dashboardSchedules || {}).length],
+  ['classes',   d => Object.keys((d.dashboardRosters || {}).rosters || {}).length],
   ['decks',     d => Object.keys(d.flashCardPresets   || {}).length],
   ['profiles',  d => Object.keys((d.flashCardProfiles || {}).profiles || {}).length],
   ['wordlists', d => Object.keys((d.wordLists || {}).lists || {}).length],
@@ -1555,14 +1646,16 @@ async function ivritRestore(text, sourceName) {
   // Merge/Replace question, then "no all-tools data", then "Restored successfully" — three answers to
   // one drop. Say the one true thing before asking anything.
   if (payload.tool && payload.tool !== IVRIT_CFG.tool) { alert(I18n.t('home.alltools.no_data_alert')); return; }
-  const mode = await ivritAskMode();
+  // partial: an account's copies only (per-device settings are not in it) — merged, never replacing
+  const partial = payload.partial === true;
+  const mode = partial ? 'merge' : await ivritAskMode();
   if (!mode) return;
   let applied;
-  try { applied = IVRIT_CFG.apply(payload.data || {}, mode); }
+  try { applied = await IVRIT_CFG.apply(payload.data || {}, mode); }
   catch (e) { alert(I18n.t('shared.ivrit.err_restore_failed', {error: e.message})); return; }
   if (applied === false) return;   // apply already said "no all-tools data": no status line, no success alert
   if (!IVRIT_CFG.needsReload) {
-    ivritStatus(I18n.t('shared.ivrit.status_restored', { source: sourceName || 'file' }));
+    ivritStatus(I18n.t(partial ? 'shared.ivrit.status_partial_merged' : 'shared.ivrit.status_restored', { source: sourceName || 'file' }));
     alert(I18n.t('home.alltools.restore_reload') + '\n\n' +
           I18n.t('home.alltools.inv.restored', { summary: ivritInventory(payload.data || {}) }));
     renderIvritInventory();   // the modal is still open behind the alert; keep its line true
@@ -1637,7 +1730,7 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Cloud saves (optional accounts): one shared js/ivrit-saves.js panel per tool inside the AllTools
    modal, so a fresh browser can be brought up to date from one place. Nothing on this page holds a tool's
    state in memory, so every shape may be downloaded here; the folder trees merge through this page's own
-   ftImportTree copy, while a profile or word-list changed in both places is left for the tool that owns
+   ftMergeTrees copy, while a profile or word-list changed in both places is left for the tool that owns
    that merge (a second copy of those rules here would drift from the tool's). ── */
 function openCloudSaves() {
   openIEModal();
@@ -1646,13 +1739,17 @@ function openCloudSaves() {
 }
 function initCloudSaves() {
   if (!window.IvritSaves) return;
-  // ftImportTree is write-through (it merges into the key and returns nothing); reading the key back
-  // hands the module the merged tree — it then writes the same bytes.
-  const treeMerge = key => (local, cloud) => { ftImportTree(key, cloud, false); return ftRead(key); };
+  // A suite-wide preference from the account landed (the module's IvritSuite row): follow the theme now —
+  // the module switches the language itself; the rest is read at the next load.
+  window.addEventListener('ivritsuite:prefs', () => {
+    const want = localStorage.getItem('hebrewBlender_darkMode');
+    if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
+  });
+  // ftMergeTrees is pure (the shared block's one merge rule); the module writes the result and tells the page.
   const merges = {
-    Worksheet:  { presetFolders: treeMerge('hebrewBlender_presetsFolders') },
-    FlashCards: { presetFolders: treeMerge('hebrewFlashCards_presetsFolders'), profileFolders: treeMerge('hebrewFlashCards_profilesFolders') },
-    Dashboard:  { presetFolders: treeMerge('hebrewDashboard_presetsFolders'), scheduleFolders: treeMerge('hebrewDashboard_schedulesFolders') }
+    Worksheet:  { presetFolders: ftMergeTrees },
+    FlashCards: { presetFolders: ftMergeTrees, profileFolders: ftMergeTrees },
+    Dashboard:  { presetFolders: ftMergeTrees, scheduleFolders: ftMergeTrees }
   };
   document.querySelectorAll('#cloudSavesSection .ie-cloud-host').forEach(host => {
     const tool = host.getAttribute('data-tool');

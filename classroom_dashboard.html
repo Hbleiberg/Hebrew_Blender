@@ -3225,7 +3225,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     showOmerProgress: true,
     // Student Picker / Group Maker
     rosters: {},                      // named classes: { "<id>": { name, names:[] } } — SHARED, excluded from preset snapshots
-    activeRosterId: '',               // which class is live; INCLUDED in presets/.ivrit (rosters themselves are not)
+    activeRosterId: '',               // which class is live — per device; a preset carries the class NAME instead (activeRosterName, resolved on apply)
     showStudentPicker: false,         // opt-in feature-add (defaults off, like showVideoEmbed/scheduleEnabled)
     showStudentPickerFullscreen: true,
     pickerCollapsed: false,
@@ -5542,6 +5542,7 @@ function mountSidebarResize(cfg) {
     if (s && s.activeRosterId === undefined && typeof s.roster === 'string') {
       forcedActiveId = resolveLegacyRosterToClass(s.roster, opts.presetName);
     }
+    const pointerBefore = settings.activeRosterId;
     // Preserve schedule configuration — it must never be overwritten by loading a display preset
     // (Schedule Sync applies presets, so a preset carrying schedule state would clobber the very
     // schedule driving it; presetColors is shared class data on the same footing as rosters).
@@ -5574,6 +5575,15 @@ function mountSidebarResize(cfg) {
       }
     }
     if (forcedActiveId) settings.activeRosterId = forcedActiveId;
+    else if (s && typeof s.activeRosterName === 'string') {
+      // A preset names its class: the class with that name here, else a legacy id that exists here, else
+      // the pointer stays where it was (a name this device does not have never jumps the picker).
+      const byName = s.activeRosterName && Object.keys(settings.rosters || {}).find(id => settings.rosters[id] && settings.rosters[id].name === s.activeRosterName);
+      settings.activeRosterId = byName || ((s.activeRosterId && settings.rosters && settings.rosters[s.activeRosterId]) ? s.activeRosterId : pointerBefore);
+    } else if (s && s.activeRosterId !== undefined && !(settings.rosters && settings.rosters[s.activeRosterId])) {
+      settings.activeRosterId = pointerBefore;   // an older preset's id from another device: keep the current class
+    }
+    delete settings.activeRosterName;   // never in the live blob (nor, through it, in the settings row)
     delete settings.roster;         // legacy field is gone once classes exist
     ensureActiveClass();            // guarantee a valid active class (handles a deleted-class reference)
     normalizePickerSession();
@@ -5619,7 +5629,13 @@ function mountSidebarResize(cfg) {
     // .ivrit / AllTools backups (opts omitted) but strip them from preset snapshots (opts.forPreset).
     // Same for the weekly schedule + class colors: a preset must not embed the schedule that switches
     // presets (self-reference) nor the shared color map.
-    if (opts && opts.forPreset) { delete out.rosters; delete out.scheduleWeek; delete out.presetColors; }
+    if (opts && opts.forPreset) {
+      delete out.rosters; delete out.scheduleWeek; delete out.presetColors;
+      // Class ids are per device: a preset names its class, and applySettings resolves the name here.
+      const live = settings.rosters && settings.rosters[settings.activeRosterId];
+      out.activeRosterName = (live && typeof live.name === 'string') ? live.name : '';
+      delete out.activeRosterId;
+    }
     return out;
   }
 
@@ -5627,11 +5643,24 @@ function mountSidebarResize(cfg) {
     settings.dashTextHTML = document.getElementById('dashEditor').innerHTML;
     localStorage.setItem('hebrewDashboard_settings', JSON.stringify(settings));
   }
+  // A first run is no stored blob — or a blob a sync wrote before this dashboard was ever opened here
+  // (class lists only: no location, no board text), so the first-run card still appears.
+  function _storedBlobIsFirstRun() {
+    try {
+      const raw = localStorage.getItem('hebrewDashboard_settings');
+      if (raw === null) return true;
+      const s = ivritSafeParse(raw);
+      return !!s && typeof s === 'object' && !Array.isArray(s) && s.location === undefined && s.dashTextHTML === undefined;
+    } catch (e) { return false; }
+  }
   function loadSettingsFromStorage() {
     try {
       const saved = ivritSafeParse(localStorage.getItem('hebrewDashboard_settings'));
       if (saved) {
         ivritSafeAssign(settings, saved);
+        // A blob a sync wrote before this dashboard was ever opened here holds class lists only: the
+        // starter board still applies (the classes are kept — the defaults carry none).
+        if (saved.location === undefined && saved.dashTextHTML === undefined) Object.assign(settings, DEFAULT_PRESET['Default']);
         if (saved.showDOWEmojis === false) settings.dowEmojiSet = 'none';
         delete settings.showDOWEmojis;
         // Legacy: pre-panelLayout blobs express the video position via videoLayout only. Key the
@@ -5864,6 +5893,52 @@ function mountSidebarResize(cfg) {
     renderClassManager();     // repaints all switchers + the drawer roster
     renderStudentPicker();    // swaps the chip list + this class's picked/absent state
   }
+  // After a cloud sync the account's classes are in the list, but the class pointer is per device and may
+  // still name the untouched default this device made for itself ("My class", no names) — the picker
+  // looks empty while the dropdown is full. Switch to the first real class once and say so; the default
+  // stays listed (sync never deletes; 🗑 removes it). Not inside ensureActiveClass, which runs from render
+  // paths. Every creator names the default with the literal below; the default_class_name key is compared
+  // too in case one ever switches to it.
+  function isUntouchedDefaultClass(c) {
+    if (!c || (Array.isArray(c.names) && c.names.length)) return false;
+    return c.name === 'My class' || (!!window.I18n && c.name === I18n.t('dashboard.picker.default_class_name'));
+  }
+  function adoptClassFromAccount() {
+    ensureActiveClass();
+    if (!isUntouchedDefaultClass(settings.rosters[settings.activeRosterId])) return false;
+    const id = Object.keys(settings.rosters).find(k => k !== settings.activeRosterId && !isUntouchedDefaultClass(settings.rosters[k]));
+    if (!id) return false;
+    switchClass(id);   // persists the pointer; repaints the switchers, the drawer roster and the chips
+    const params = { name: settings.rosters[id].name };
+    pickerClassNote('dashboard.picker.cloud_switched', params);   // key-based: applyI18n re-renders it
+    if (window.I18n) {
+      const say = () => showAppToast(I18n.t('dashboard.picker.cloud_switched', params));
+      if (I18n.ready && I18n.ready.then) I18n.ready.then(say); else say();   // at load the dictionary may not be in yet
+    }
+    return true;
+  }
+  // A class list that landed from the account under its own id, when this device holds a class of the
+  // same name that it made itself and never synced (the module's last listing said "only on this device"):
+  // the two are one class — this device's names join the landed one, its pick session and the pointer
+  // move over, the duplicate goes. A class that was synced before, or one that differs, stays: two classes.
+  function foldSameNamedClass(landedId) {
+    const landed = settings.rosters && settings.rosters[landedId];
+    if (!landed || !window.IvritSaves || typeof IvritSaves.lastPlan !== 'function') return false;
+    const plan = IvritSaves.lastPlan('Dashboard');
+    if (!plan || !Array.isArray(plan.rows)) return false;
+    const dupId = Object.keys(settings.rosters).find(id => id !== landedId && settings.rosters[id] && settings.rosters[id].name === landed.name
+      && plan.rows.some(r => r.kind === 'roster' && r.name === id && r.state === 'local-only'));
+    if (!dupId) return false;
+    settings.rosters[landedId] = mergeRoster(landed, settings.rosters[dupId]);   // the landed class's fields, both sides' names
+    if (!settings.pickerSessions || typeof settings.pickerSessions !== 'object') settings.pickerSessions = {};
+    if (settings.pickerSessions[dupId] && !settings.pickerSessions[landedId]) settings.pickerSessions[landedId] = settings.pickerSessions[dupId];
+    delete settings.pickerSessions[dupId];
+    delete settings.rosters[dupId];
+    if (settings.activeRosterId === dupId) settings.activeRosterId = landedId;
+    saveSettingsToStorage();
+    if (window.I18n) showAppToast(I18n.t('dashboard.picker.merged_same_name', { name: landed.name }));
+    return true;
+  }
   function newClass() {
     if (Object.keys(settings.rosters).length >= ROSTER_MAX_CLASSES) {
       pickerClassNote('dashboard.picker.class_limit', { max: ROSTER_MAX_CLASSES });
@@ -5886,7 +5961,8 @@ function mountSidebarResize(cfg) {
   }
   function deleteClass() {
     const c = curClass();
-    if (!confirm(I18n.t('dashboard.picker.delete_class_confirm', { name: c.name }))) return;
+    const signedIn = !!(window.IvritAccount && typeof IvritAccount.user === 'function' && IvritAccount.user());
+    if (!confirm(I18n.t(signedIn ? 'dashboard.picker.delete_class_confirm_cloud' : 'dashboard.picker.delete_class_confirm', { name: c.name }))) return;
     const id = settings.activeRosterId;
     delete settings.rosters[id];
     delete settings.pickerSessions[id];
@@ -6378,16 +6454,49 @@ function ftPaths(tree, excludeId){
   })(tree.root, '');
   return out;
 }
+// Pure merge of two trees (this device's first, the incoming one second) — the one rule for an .ivrit
+// import and for a cloud sync. Level by level: folders match by name and merge recursively (the local
+// folder's id and collapsed state win); an item appears exactly once — filed inside a folder on either
+// side beats unfiled at the root, and this device's placement wins when both sides file it; local order
+// first, the incoming side's new nodes appended in its order; empty folders from both sides are kept.
+function ftMergeTrees(existing, incoming){
+  const A = (existing && Array.isArray(existing.root)) ? existing.root : [], B = (incoming && Array.isArray(incoming.root)) ? incoming.root : [];
+  const filedLoc = new Set(), rootLoc = new Set(), filedIn = new Set(), ids = new Set(), placed = new Set();
+  function scan(arr, depth, filed, root){ for (const n of arr){ if (!n) continue; if (n.t==='item') (depth ? filed : root).add(n.name); else if (n.t==='folder') scan(n.children||[], depth+1, filed, root); } }
+  scan(A, 0, filedLoc, rootLoc); scan(B, 0, filedIn, new Set());
+  (function walk(arr){ for (const n of arr){ if (n && n.t==='folder'){ if (n.id) ids.add(n.id); walk(n.children||[]); } } })(A);
+  const keepLocal = (name, depth) => !placed.has(name) && (depth > 0 || !filedIn.has(name));
+  const keepIncoming = (name, depth) => !placed.has(name) && !filedLoc.has(name) && (depth > 0 || (!rootLoc.has(name) && !filedIn.has(name)));
+  const folder = (n, children) => ({ t:'folder', id: n.id, name: n.name, collapsed: !!n.collapsed, children });
+  function level(a, b, depth){
+    const out = [], used = new Set();
+    for (const n of a){
+      if (!n) continue;
+      if (n.t==='item'){ if (keepLocal(n.name, depth)) { placed.add(n.name); out.push({ t:'item', name: n.name }); } }
+      else if (n.t==='folder'){
+        const j = b.findIndex((m, i) => m && m.t==='folder' && m.name===n.name && !used.has(i));
+        if (j >= 0) used.add(j);
+        out.push(folder(n, level(n.children||[], j >= 0 ? (b[j].children||[]) : [], depth+1)));
+      }
+    }
+    b.forEach((n, i) => {
+      if (!n || used.has(i)) return;
+      if (n.t==='item'){ if (keepIncoming(n.name, depth)) { placed.add(n.name); out.push({ t:'item', name: n.name }); } }
+      else if (n.t==='folder'){
+        const f = folder(n, level([], n.children||[], depth+1));
+        if (!f.id || ids.has(f.id)) f.id = ftGenId();
+        ids.add(f.id);
+        out.push(f);
+      }
+    });
+    return out;
+  }
+  return { v:1, root: level(A, B, 0) };
+}
 function ftImportTree(key, incoming, replace){
   if (!incoming || !Array.isArray(incoming.root)) return;
   if (replace) { ftWrite(key, { v:1, root: incoming.root }); return; }
-  const existing = ftRead(key), haveItem = new Set(), haveFolder = new Set();
-  (function walk(arr){ for (const n of arr){ if (n.t==='item') haveItem.add(n.name); else if (n.t==='folder'){ haveFolder.add(n.name); walk(n.children||[]); } } })(existing.root);
-  incoming.root.forEach(n => {
-    if (n.t==='item' && !haveItem.has(n.name)) existing.root.push(n);
-    else if (n.t==='folder' && !haveFolder.has(n.name)) existing.root.push(n);
-  });
-  ftWrite(key, existing);
+  ftWrite(key, ftMergeTrees(ftRead(key), incoming));
 }
 function ftDuplicateName(name, exists){
   const m = String(name).match(/^(.*?)\s+(\d+)$/);
@@ -6585,10 +6694,12 @@ function mountFolderTree(cfg){
       };
     },
     apply(data, mode) {
+      let applied = false;
       const p = data.presets || data.dashboardPresets;
       const sch = data.schedules || data.dashboardSchedules;
       const pf = data.presetFolders || data.dashboardPresetFolders;
       const sf = data.scheduleFolders || data.dashboardScheduleFolders;
+      if (p || sch || pf || sf) applied = true;
       if (p) {
         if (mode === 'replace') Object.keys(presets).forEach(k => delete presets[k]);
         ivritSafeAssign(presets, p);
@@ -6618,43 +6729,81 @@ function mountFolderTree(cfg){
         renderScheduleUI();
         if (weekEditorOpen()) renderWeekEditor();
         saveSettingsToStorage();
+        applied = true;
       }
+      // Class lists: the account backup's key (dashboardRosters) or a single row's file (roster), both
+      // { rosters: { id: { name, names } } } — merged by id (Replace mode swaps the map), never dropped.
+      const rs = (data.dashboardRosters && data.dashboardRosters.rosters) || (data.roster && data.roster.rosters);
+      if (rs && typeof rs === 'object' && !Array.isArray(rs)) {
+        ensureActiveClass();
+        if (mode === 'replace') { settings.rosters = {}; settings.pickerSessions = {}; }
+        Object.keys(rs).forEach(id => {
+          if (id === '__proto__' || id === 'constructor' || id === 'prototype') return;
+          const inc = rs[id];
+          if (!inc || typeof inc !== 'object' || Array.isArray(inc)) return;
+          const clean = { name: (typeof inc.name === 'string' && inc.name) ? inc.name : 'My class', names: parseRoster((Array.isArray(inc.names) ? inc.names : []).filter(n => typeof n === 'string').join('\n')) };
+          settings.rosters[id] = settings.rosters[id] ? mergeRoster(settings.rosters[id], clean) : clean;
+        });
+        ensureActiveClass();
+        normalizePickerSession();
+        saveSettingsToStorage();
+        renderClassManager();
+        renderStudentPicker();
+        applied = true;
+      }
+      return applied;
     }
   };
 
   /* ── Cloud saves (optional accounts). Everything that talks to Supabase lives in the shared
      js/ivrit-saves.js (its registry names this page's keys — the class lists are their own rows on the
      settings key, which the settings row omits along with every per-device field). This page supplies
-     its merges — the two folder trees through the shared ftImportTree, a class list through mergeRoster —
+     its merges — the two folder trees through the shared ftMergeTrees, a class list through mergeRoster —
      and how to re-read a key the module wrote: every store here is rendered from memory, and the next
-     saveSettingsToStorage() would otherwise put the old blob straight back. ── */
+     saveSettingsToStorage() would otherwise put the old blob straight back. After a class list lands,
+     adoptClassFromAccount() moves the per-device class pointer off this device's untouched default. ── */
   function initCloudSaves() {
     if (!window.IvritSaves) return;
-    // ftImportTree is write-through (it merges into the key and returns nothing); reading the key back
-    // hands the module the merged tree — it then writes the same bytes and tells the page.
-    const treeMerge = key => (local, cloud) => { ftImportTree(key, cloud, false); return ftRead(key); };
+    // A suite-wide preference from the account landed (the module's IvritSuite row): follow the theme now —
+    // the module switches the language itself; the rest is read at the next load.
+    window.addEventListener('ivritsuite:prefs', () => {
+      const want = localStorage.getItem('hebrewBlender_darkMode');
+      if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
+    });
+    // ftMergeTrees is pure (the shared block's one merge rule); the module writes the result and tells the page.
     IvritSaves.attach({
       tool: 'Dashboard',
       panel: '#cloudSavesPanel',
       title: false,                        // the sub-section heading is the heading
       flush: saveSettingsToStorage,        // synchronous; it also reads the board text off the editor first
       merges: {
-        presetFolders: treeMerge('hebrewDashboard_presetsFolders'),
-        scheduleFolders: treeMerge('hebrewDashboard_schedulesFolders'),
+        presetFolders: ftMergeTrees,
+        scheduleFolders: ftMergeTrees,
         roster: mergeRoster
       },
-      onLocalChanged: function (kind) {
+      onLocalChanged: function (kind, name) {
         if (kind === 'preset' || kind === 'presetFolders') { loadPresets(); renderPresets(); return; }
         if (kind === 'schedule' || kind === 'scheduleFolders') { loadSchedulesStorage(); renderSavedSchedules(); return; }
         // settings and class lists share one key: re-read it, then repaint what the kind touches
-        loadSettingsFromStorage();
         if (kind === 'roster') {
+          loadSettingsFromStorage();
+          foldSameNamedClass(name);  // a class this device made under the same name and never synced joins the one that landed
           ensureActiveClass();
           normalizePickerSession();
           renderClassManager();
           renderStudentPicker();
+          adoptClassFromAccount();   // this device's untouched default → the first class from the account, once
+          checkSchedule();
           return;
         }
+        // A downloaded blob replaces the in-memory one outright — a merge onto it could never remove a
+        // field (a weekly grid deleted elsewhere came back and went up again): every own key goes, the
+        // pristine defaults return, the stored blob lands on top. The stored blob carries this device's
+        // rosters, pointer, pick sessions and per-device fields (the module put them back), so they survive.
+        const before = { location: settings.location };
+        Object.keys(settings).forEach(k => delete settings[k]);
+        Object.assign(settings, JSON.parse(JSON.stringify(PRISTINE_DEFAULTS)));
+        loadSettingsFromStorage();
         // The IVRIT_CFG.apply tail: applySettings on a clone (it keeps the live schedule keys, which the
         // re-read just refreshed), the render caches cleared, the schedule views and presets repainted.
         applySettings(JSON.parse(JSON.stringify(settings)));
@@ -6664,6 +6813,13 @@ function mountFolderTree(cfg){
         if (weekEditorOpen()) renderWeekEditor();
         renderPresets();
         checkSchedule();   // a downloaded Schedule Sync switches the board to the current period now, not at the next 30 s tick
+        // The board's own widgets: a new city drops the coordinates captured here (the weather and Shabbat
+        // times would otherwise keep this device's old place) and fetches afresh; the holiday countdown,
+        // the Shabbat block and the Omer toggles repaint now, not at midnight.
+        if (settings.location !== before.location) { delete settings._geoCoords; saveSettingsToStorage(); fetchWeather(); fetchShabbat(true); }
+        else fetchShabbat(false);
+        fetchHolidays();
+        updateOmerDisplay();
       },
       open: function () {                  // the header chip's "Cloud saves…" item — through the page's own toggle
         openSettings();
@@ -6673,6 +6829,12 @@ function mountFolderTree(cfg){
         if (host) host.scrollIntoView({ block: 'start' });
       }
     });
+    // A sync that ran on another page (the home page, the generator) wrote the class lists without this
+    // page's hook: adopt the pointer when the dashboard next loads signed in. Fires once when the account
+    // state is known and on every change; an anonymous load never reaches adoptClassFromAccount.
+    if (window.IvritAccount && typeof IvritAccount.onChange === 'function') {
+      IvritAccount.onChange(function (user) { if (user) adoptClassFromAccount(); });
+    }
   }
 
 /* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary — copy verbatim; called from the .ivrit engine restore path) ═══ */
@@ -7021,12 +7183,16 @@ async function ivritRestore(text, sourceName) {
   if (ivritToolMismatch(payload.tool)) {
     if (!confirm(I18n.t('shared.ivrit.tool_mismatch_confirm', { tool: payload.tool, tool2: IVRIT_CFG.tool }))) return;
   }
-  const mode = await ivritAskMode();
+  // partial: an account's copies only (per-device settings are not in it) — merged, never replacing
+  const partial = payload.partial === true;
+  const mode = partial ? 'merge' : await ivritAskMode();
   if (!mode) return;
-  try { IVRIT_CFG.apply(payload.data || {}, mode); }
+  let applied;
+  try { applied = await IVRIT_CFG.apply(payload.data || {}, mode); }
   catch (e) { alert(I18n.t('shared.ivrit.err_restore_failed', { error: e.message })); return; }
+  if (applied === false) { alert(I18n.t('shared.ivrit.nothing_for_tool')); return; }   // apply looked and found nothing for this tool
   if (!IVRIT_CFG.needsReload) {
-    ivritStatus(I18n.t('shared.ivrit.status_restored', { source: sourceName || 'file' }));
+    ivritStatus(I18n.t(partial ? 'shared.ivrit.status_partial_merged' : 'shared.ivrit.status_restored', { source: sourceName || 'file' }));
     showAppToast(sourceName ? I18n.t('shared.ivrit.toast_restored_named', { source: sourceName }) : I18n.t('shared.ivrit.toast_restored_plain'));
   }
 }
@@ -7203,11 +7369,17 @@ else ivritInit();
     return { ...base, status, currentIdx, currentEntry };
   }
 
-  // Derive the class a period's preset activates (via the preset's stored activeRosterId). Returns ''
-  // when the preset is unknown, predates class rosters (no activeRosterId), or points at a deleted class.
+  // Derive the class a period's preset activates — by the class name the preset carries, else (an older
+  // preset) by its stored activeRosterId. Returns '' when the preset is unknown, predates class rosters,
+  // or names a class this device does not have.
   function presetClassName(presetName) {
     const snap = presets[presetName];
-    if (!snap || !snap.activeRosterId) return '';
+    if (!snap) return '';
+    if (typeof snap.activeRosterName === 'string' && snap.activeRosterName) {
+      const hit = Object.keys(settings.rosters || {}).some(id => settings.rosters[id] && settings.rosters[id].name === snap.activeRosterName);
+      return hit ? snap.activeRosterName : '';
+    }
+    if (!snap.activeRosterId) return '';
     const c = settings.rosters && settings.rosters[snap.activeRosterId];
     return c ? c.name : '';
   }
@@ -9724,7 +9896,7 @@ function panelMemApply() {
 
   /* ────────── INIT ────────── */
   document.addEventListener('DOMContentLoaded', () => {
-    const isFirstVisit = localStorage.getItem('hebrewDashboard_settings') === null;
+    const isFirstVisit = _storedBlobIsFirstRun();
     loadSettingsFromStorage();
     loadPresets();
     loadSchedulesStorage();

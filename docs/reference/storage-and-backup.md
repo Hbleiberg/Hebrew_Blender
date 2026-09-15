@@ -35,6 +35,12 @@
 | `uiLang` / `darkMode` | `hebrewBlender_lang` / `hebrewBlender_darkMode` | The suite-wide UI-language choice (`'en'`\|`'he'`) and theme choice (`'1'`\|`'0'`). Registered on the maintainer's call: these are **identity** prefs, not per-device ones — the language especially is what a Hebrew-reading teacher would most notice losing on a new machine. `uiLang` is **validated on import** against `I18n.supported` (via `_ivLangOk`) because every page's no-flash `<head>` IIFE reads the stored value unvalidated; `darkMode` accepts only the two literal strings, so a stored `'0'` survives the surrounding truthiness tests |
 | `generatorPanels` / `flashCardPanels` / `dictPanels` | `hebrewBlender_panels` / `hebrewFlashCards_panels` / `hebrewDictionary_panels` | Which collapsible panels the user left open, for the three tools with no settings blob of their own (the dashboard, Torah Trainer and Trope Tutor carry theirs as `panelsCollapsed` inside their own settings blob). Flat `{data-i18n key: bool}` maps merged via `ivritSafeAssign`; empty = never-set (skipped on import). See [Panel-collapse memory](#shared-ux-components--the-conventions-all-tools-are-converging-on) |
 
+The eleven preference rows above — `inputMode`, `hebFont` / `hebFontSize`, `livePreview`, `kbdLayout`, `fmLastAuthor`,
+`uiLang` / `darkMode`, and the Dictionary's `dictTranslitStyle`, `dictTtsRate`, `dictEmojiSettings` — also travel with an
+account, as the cloud module's one *IvritSuite preferences* row (`SUITE_PREFS` beside the registry in `js/ivrit-saves.js`;
+`docs/reference/accounts-and-cloud.md` → *The suite-wide preferences row*). The three panel maps, `dictAudioEnabled` and
+`dictLastState` stay per device.
+
 ### Rule: any new tool with persistent data must be added here
 
 When a new tool is added to this site that saves **any** data to `localStorage`, its key(s) must be added to all three functions in `index.html`:
@@ -99,7 +105,8 @@ export/import as a bug to fix, not a pattern to copy.
 
 - **Account session keys are not settings.** `sb-hhkmqwpjsyxdeuhvcyis-auth-token` (+ its transient
   `-code-verifier`) is written by the Supabase SDK, `ivritSuite_accountCache` by `js/ivrit-account.js`,
-  and `ivritSuite_syncMeta` (what this device last synced to the cloud, per account) by `js/ivrit-saves.js`;
+  and `ivritSuite_syncMeta` (what this device last synced to the cloud, per account; also the write stamps other tabs
+  re-read on, and `held` — the suite-wide preference fields this device could not apply) by `js/ivrit-saves.js`;
   none of them ride export/import (a session must never travel in a file, and sync memory is per device),
   and `eraseAllSettings` removes every `sb-` key plus the two `ivritSuite_*` keys — "erase" also means
   signed out on this device — then reloads when a session was there. Which of the keys above have a cloud
@@ -128,6 +135,7 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
   "version": 1,
   "tool": "Worksheet",        // tool identity — survives the user renaming the file
   "savedAt": "2026-05-30T...",// ISO timestamp
+  "partial": true,            // optional — an account's copies only: merged, never replacing (see below)
   "data": { /* presets + liveState, or the AllTools bundle */ }
 }
 ```
@@ -141,6 +149,20 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
 `ivritRestore()` shows a small modal (`ivritAskMode()`) on every import:
 - **Merge** — keep current data, add the file's (matching keys overwritten via `ivritSafeAssign`).
 - **Replace** — clear current data first, then load only the file's.
+- **`partial: true` skips the question and merges.** The cloud module writes it on the account backup
+  (`IvritSaves.bundleAll()`) and on a cloud row's *Download file*: those files hold the account's copies only
+  — a settings row omits the per-device fields (zoom, panel layout, collapsed panels…) — so a Replace would
+  delete what the device alone holds. Every carrier's `ivritRestore` and the hub's copy read the flag, apply
+  with `mode = 'merge'` and say so (`shared.ivrit.status_partial_merged`); `IVRIT_CFG.apply` is awaited and
+  a `false` return means "nothing for this tool" (`shared.ivrit.nothing_for_tool`). The account backup also
+  carries `dashboardRosters` (`{ rosters: { id: { name, names } } }`, imported by the hub's
+  `mergeDashboardRosters` after `dashboardSettings` and by the dashboard's own `IVRIT_CFG.apply`) and, under
+  `cloudUnknown`, rows of a kind this build's registry does not know (`[{tool, kind, name, data}]`, kept for a
+  newer build to import; the hub ignores the key), and `suitePrefs`, the account's copy of the suite-wide
+  preferences row (`{ lang, darkMode, kbdLayout, inputMode, hebFont, hebFontSize, livePreview, fmLastAuthor,
+  dictTranslitStyle, dictTtsRate, dictEmojiSettings }`), which the hub's two import paths unfold into the flat
+  keys of the table above before their validated branches run. The hub's textarea import accepts the whole
+  `.ivrit` envelope too (it reads `data`).
 - The prompt is an accessible dialog on every carrier, the hub's adapted copy included: `role="dialog"` + `aria-modal` + `aria-labelledby=ivritAskTitle`, focus lands on Merge, Tab is trapped across the three buttons, Escape cancels, and focus returns to the opener. The hub's copy additionally stops the handled Escape/Tab so its document-level AllTools-modal handler does not close that modal behind the prompt — keep that when re-syncing it from the engine.
 
 ### Pattern: per-file `IVRIT_CFG` + shared engine
@@ -267,6 +289,13 @@ mountFolderTree({ treeKey, container, listItemNames(), buildItemRow(name)→acti
 - `syncTree(tree, names)` runs on every render: prunes item nodes whose name left the store, dedupes
   (first occurrence wins), repairs folder ids/fields, appends new store names at root. Store↔tree
   stays consistent automatically — so a renamed/deleted/imported preset just re-surfaces at root.
+- `ftMergeTrees(existing, incoming) → tree` is the one **pure** merge rule, used by `ftImportTree`
+  (an `.ivrit` merge) and handed to the cloud module as each tree's `merges` helper: folders match by
+  name at the same level and merge recursively (the local folder's id and collapsed state win); an
+  item appears exactly once — filed inside a folder on either side beats unfiled at the root, and the
+  local placement wins when both sides file it; local order first, the incoming side's new nodes
+  appended in its order; empty folders from both sides are kept; an incoming folder whose id clashes
+  gets a fresh one. `ftImportTree(key, incoming, replace)` = `replace ? write incoming : write(merge)`.
 - Items reuse the existing `.preset-item` styling; folders use `.ft-folder*`. All names render via
   `textContent` (XSS-safe — no inline `onclick` interpolation).
 - DnD = reorder + drop-into-folder (modeled as pure tree transforms then full re-render; a folder

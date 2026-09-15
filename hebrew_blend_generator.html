@@ -2300,6 +2300,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     min-height:30px; min-width:30px; display:inline-flex; align-items:center; justify-content:center; }
   .font-size-row .fs-reset:hover { border-color:var(--gold); color:var(--gold-text); }
   .font-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .font-missing-note { margin: 4px 0 0; font-size: 0.78rem; color: var(--muted, #6b6050); }
   .font-opt {
     display: flex; flex-direction: column; align-items: center; text-align: center;
     padding: 4px 3px; border: 1px solid var(--border); border-radius: 5px;
@@ -3628,6 +3629,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default" aria-label="Reset to default" data-i18n-title="worksheet.common.reset_default" data-i18n-aria-label="worksheet.common.reset_default">↺</button>
               </div>
               <div class="font-selector-grid"></div>
+              <p id="hebFontMissing" class="font-missing-note" role="status" aria-live="polite" hidden></p>
               <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
             </div>
           </div>
@@ -4849,11 +4851,13 @@ function getSettings() {
     rwEraBiblical:     document.getElementById('rwEraBiblical').checked,
     rwEraModern:       document.getElementById('rwEraModern').checked,
     rwLetterFilter:    [...rwLetterFilter],
-    // Word source: 'all' | 'lists' | 'imported'. Saved lists persist by NAME (survives
-    // differing ids across devices / list re-creation). Imported words are not persisted
-    // in presets (only embedded inline in ?s= share links — see serializeSettings).
+    // Word source: 'all' | 'lists' | 'imported'. Saved lists travel by ID — the stable key the suite
+    // syncs them under, so a rename elsewhere keeps the pointer — with their names beside them: the names
+    // resolve an older blob, and a name that resolved to nothing here is carried, not dropped. Imported
+    // words are not persisted in presets (only embedded inline in ?s= share links — see serializeSettings).
     rwSource,
-    selectedWordListNames: wlNamesForIds(selectedWordListIds),
+    selectedWordListIds: [...selectedWordListIds],
+    selectedWordListNames: wlNamesForSetup(),
     rwBingoGrid:       document.getElementById('rwBingoGrid').value,
     rwBingoCards:      document.getElementById('rwBingoCards').value,
     rwBingoPerPage:    document.getElementById('rwBingoPerPage').value,
@@ -4929,11 +4933,18 @@ const VOWEL_COLOR_KEYS = new Set([...VOWEL_COLOR_DEFS, ...VOWEL_COLOR_DEFS_TALAM
 // to every select-backed setting): a share link, preset or .ivrit carrying anything else used to set
 // .value to "" (selectedIndex -1), and the next render read "" — a bingo set with 0 cells, a timer with no
 // duration — then rememberSetup() saved the "" for every later load. Unknown → keep the current pick.
+// What a restore could not show on this device — a select value, an enum, a number this build does not
+// offer — is kept beside the control's value at that moment (filled in at the end of applySettings), and
+// rememberSetup() puts it back into the remembered setup as long as the control is untouched: a value
+// this device cannot show travels through it unchanged, and a deliberate change here wins.
+let _unapplied = {};
+function _noteUnapplied(field, value) { if (value == null || value === '') return; _unapplied[field] = { value, live: undefined }; }
 function applySelectValue(id, v) {
   const el = document.getElementById(id);
   if (!el || v == null || v === '') return;
   const want = String(v);
-  if (Array.from(el.options).some(o => o.value === want)) el.value = want;
+  if (Array.from(el.options).some(o => o.value === want)) { el.value = want; delete _unapplied[id]; }
+  else _noteUnapplied(id, v);
 }
 // Restore a number-backed setting only when the value is a finite number (a numeric string counts): the
 // DOM turns anything else into "" — a bingo set with 0 cards, a "NaN×" speech-rate label — and
@@ -4943,17 +4954,20 @@ function applyNumberValue(id, v) {
   const el = document.getElementById(id);
   if (!el || v == null || v === '' || typeof v === 'boolean' || typeof v === 'object') return false;
   const n = Number(v);
-  if (!Number.isFinite(n)) return false;
+  if (!Number.isFinite(n)) { _noteUnapplied(id, v); return false; }
   el.value = n;
+  delete _unapplied[id];
   return true;
 }
 // A string enum a share link, preset or .ivrit file carries is applied only when it is a value the UI
 // offers — an explicit list, or the data-<key> values of a button row (sel). Anything else (an array, a
 // number, a value a later build renamed) leaves the current pick: it used to be assigned raw, render
 // nothing, and be saved back into the remembered setup (apply-settings-trusts-collection-members).
-function isOffered(v, list, key) {
+function isOffered(v, list, key, field) {
   const allowed = typeof list === 'string' ? Array.from(document.querySelectorAll(list), b => b.dataset[key]) : list;
-  return allowed.includes(v);
+  const ok = allowed.includes(v);
+  if (field) { if (ok) delete _unapplied[field]; else _noteUnapplied(field, v); }
+  return ok;
 }
 function applySettings(s) {
   // Letters
@@ -4970,7 +4984,7 @@ function applySettings(s) {
   selectedLetters = new Set(Array.isArray(s.selectedLetters) ? s.selectedLetters.filter(isKnownLetterKey) : []);
   selectedVowels  = new Set(Array.isArray(s.selectedVowels)  ? s.selectedVowels.filter(isKnownVowelKey)  : []);
   // Vowel color scheme governs the picker grouping/order — set before rebuilding the grid.
-  if (isOffered(s.vowelColorScheme, ['default', 'talam'])) vowelColorScheme = s.vowelColorScheme;
+  if (isOffered(s.vowelColorScheme, ['default', 'talam'], null, 'vowelColorScheme')) vowelColorScheme = s.vowelColorScheme;
   initVowels(); // rebuild picker in the active scheme; reads selectedVowels for checked state
   document.querySelectorAll('.letter-tile').forEach(t => {
     t.classList.toggle('selected', selectedLetters.has(t.dataset.heb));
@@ -4990,7 +5004,7 @@ function applySettings(s) {
   if (s.wsSubtitle !== undefined) document.getElementById('wsSubtitle').value = s.wsSubtitle;
   if (s.excludeRepeats !== undefined) document.getElementById('excludeRepeats').checked = s.excludeRepeats;
   if (s.landscape !== undefined) { document.getElementById('landscapeMode').checked = s.landscape; toggleLandscape(s.landscape); }
-  if (isOffered(s.headerLang, ['en', 'he'])) setHeaderLang(s.headerLang);
+  if (isOffered(s.headerLang, ['en', 'he'], null, 'headerLang')) setHeaderLang(s.headerLang);
   if (s.pageSize) setPageSize(s.pageSize);
 
   // Blend type & mode
@@ -5058,12 +5072,12 @@ function applySettings(s) {
   if (s.ntlSelfCheck !== undefined)  document.getElementById('ntlSelfCheck').checked  = s.ntlSelfCheck;
   if (s.numberPractice !== undefined) document.getElementById('numberPracticeToggle').checked = s.numberPractice;
   applySelectValue('npCount', s.npCount);
-  if (isOffered(s.npGender, '[data-np-gender]', 'npGender'))          setNpGender(s.npGender);
+  if (isOffered(s.npGender, '[data-np-gender]', 'npGender', 'npGender'))          setNpGender(s.npGender);
   applyNumberValue('npMin', s.npMin);
   applyNumberValue('npMax', s.npMax);
-  if (isOffered(s.npDisplay, '[data-np-display]', 'npDisplay'))       setNpDisplay(s.npDisplay);
+  if (isOffered(s.npDisplay, '[data-np-display]', 'npDisplay', 'npDisplay'))       setNpDisplay(s.npDisplay);
   if (s.npShowTranslit !== undefined) document.getElementById('npShowTranslit').checked = s.npShowTranslit;
-  if (isOffered(s.npTranslitPage, '[data-np-translit]', 'npTranslit')) setNpTranslitPage(s.npTranslitPage);
+  if (isOffered(s.npTranslitPage, '[data-np-translit]', 'npTranslit', 'npTranslitPage')) setNpTranslitPage(s.npTranslitPage);
   if (s.npAnswerKey !== undefined)    document.getElementById('npAnswerKey').checked = s.npAnswerKey;
   if (s.npSelfCheck !== undefined)    document.getElementById('npSelfCheck').checked = s.npSelfCheck;
   if (s.npAudio !== undefined)        document.getElementById('npAudio').checked = s.npAudio;
@@ -5084,11 +5098,11 @@ function applySettings(s) {
   applySelectValue('rwCount', s.rwCount);
   if (s.rwMixed !== undefined)   { document.getElementById('rwMixed').checked = s.rwMixed; toggleRwStarRow(); }
   if (s.rwStarReal !== undefined) { document.getElementById('rwStarReal').checked = s.rwStarReal; toggleRwStarPageRow(); }
-  if (isOffered(s.rwStarPage, '[data-star]', 'star')) { rwStarPage = s.rwStarPage; document.querySelectorAll('[data-star]').forEach(b => b.classList.toggle('active', b.dataset.star === rwStarPage)); }
+  if (isOffered(s.rwStarPage, '[data-star]', 'star', 'rwStarPage')) { rwStarPage = s.rwStarPage; document.querySelectorAll('[data-star]').forEach(b => b.classList.toggle('active', b.dataset.star === rwStarPage)); }
   if (s.rwShowTranslit !== undefined) { document.getElementById('rwShowTranslit').checked = s.rwShowTranslit; }
-  if (isOffered(s.rwTranslitPage, '[data-translit]', 'translit')) { rwTranslitPage = s.rwTranslitPage; document.querySelectorAll('[data-translit]').forEach(b => b.classList.toggle('active', b.dataset.translit === rwTranslitPage)); toggleRwTranslitPageRow(); }
+  if (isOffered(s.rwTranslitPage, '[data-translit]', 'translit', 'rwTranslitPage')) { rwTranslitPage = s.rwTranslitPage; document.querySelectorAll('[data-translit]').forEach(b => b.classList.toggle('active', b.dataset.translit === rwTranslitPage)); toggleRwTranslitPageRow(); }
   if (s.rwShowTranslation !== undefined) { document.getElementById('rwShowTranslation').checked = s.rwShowTranslation; }
-  if (isOffered(s.rwTranslPage, '[data-transl]', 'transl')) { rwTranslPage = s.rwTranslPage; document.querySelectorAll('[data-transl]').forEach(b => b.classList.toggle('active', b.dataset.transl === rwTranslPage)); toggleRwTranslPageRow(); }
+  if (isOffered(s.rwTranslPage, '[data-transl]', 'transl', 'rwTranslPage')) { rwTranslPage = s.rwTranslPage; document.querySelectorAll('[data-transl]').forEach(b => b.classList.toggle('active', b.dataset.transl === rwTranslPage)); toggleRwTranslPageRow(); }
   if (s.rwLen1 !== undefined)    document.getElementById('rwLen1').checked = s.rwLen1;
   if (s.rwLen2 !== undefined)    document.getElementById('rwLen2').checked = s.rwLen2;
   if (s.rwLen3 !== undefined)    document.getElementById('rwLen3').checked = s.rwLen3;
@@ -5123,10 +5137,10 @@ function applySettings(s) {
   applySelectValue('matchBlendCount', s.matchBlendCount);
   // Tracing — set values only; visibility flows through updateModeVisibility() at end.
   if (s.tracing !== undefined)          document.getElementById('tracingToggle').checked = s.tracing;
-  if (isOffered(s.traceLineStyle, '[data-trace-lines]', 'traceLines')) traceLineStyle = s.traceLineStyle;
+  if (isOffered(s.traceLineStyle, '[data-trace-lines]', 'traceLines', 'traceLineStyle')) traceLineStyle = s.traceLineStyle;
   applyNumberValue('traceModels', s.traceModels);
   if (s.traceSolidFirst !== undefined)  document.getElementById('traceSolidFirst').checked = s.traceSolidFirst;
-  if (isOffered(s.traceDarkness, '[data-trace-dark]', 'traceDark'))    traceDarkness = s.traceDarkness;
+  if (isOffered(s.traceDarkness, '[data-trace-dark]', 'traceDark', 'traceDarkness'))    traceDarkness = s.traceDarkness;
   applyNumberValue('traceLinesPerItem', s.traceLinesPerItem);
   if (s.traceRepeatModels !== undefined) document.getElementById('traceRepeatModels').checked = s.traceRepeatModels;
   if (s.traceFillLine !== undefined)    document.getElementById('traceFillLine').checked = s.traceFillLine;
@@ -5135,15 +5149,18 @@ function applySettings(s) {
   syncTraceButtons();
   syncTraceFillDisabled();
 
-  // Word source (Real Words). Saved-list selection persists by name; remap to local ids
-  // and silently drop lists that no longer exist. Legacy migration: an old cwModeActive
-  // preset (the retired custom-wordlist mode) becomes the 'imported' source.
+  // Word source (Real Words). Saved-list selection travels by id (kept as given, whether or not the list
+  // is on this device yet — the picker shows what exists, the pool skips the rest); an older blob's names
+  // are resolved through the name index, and the ones that resolve to nothing are parked so they round-trip.
+  // Legacy migration: an old cwModeActive preset (the retired custom-wordlist mode) becomes 'imported'.
   {
     let src = s.rwSource;
     if (!src && s.cwModeActive) src = 'imported';
     rwSource = (src === 'lists' || src === 'imported') ? src : 'all';
-    const idx = wlNameIndex();
-    selectedWordListIds = new Set((Array.isArray(s.selectedWordListNames) ? s.selectedWordListNames : []).map(n => idx[n]).filter(Boolean));   // a string/number member has no .map
+    const names = (Array.isArray(s.selectedWordListNames) ? s.selectedWordListNames : []).filter(n => typeof n === 'string');   // a string/number member has no .map
+    if (Array.isArray(s.selectedWordListIds) && s.selectedWordListIds.every(x => typeof x === 'string')) selectedWordListIds = new Set(s.selectedWordListIds);
+    else { const idx = wlNameIndex(); selectedWordListIds = new Set(names.map(n => idx[n]).filter(Boolean)); }
+    _wlAppliedNames = { key: [...selectedWordListIds].sort().join('\n'), names };
     // Inline words embedded in a loaded ?s= share link take precedence over the local store.
     rwInlinePool = Array.isArray(s.rwInlineWords)
       ? s.rwInlineWords.map(o => ({ word: String(o.w || ''), translit: String(o.t || ''), translation: String(o.e || '') })).filter(o => o.word)
@@ -5171,10 +5188,10 @@ function applySettings(s) {
   if (s.cwShowNikkud !== undefined && document.getElementById('cwShowNikkud'))     document.getElementById('cwShowNikkud').checked = s.cwShowNikkud;
   if (s.cwShowWordBank !== undefined && document.getElementById('cwShowWordBank')) document.getElementById('cwShowWordBank').checked = s.cwShowWordBank;
   if (s.cwAnswerKey !== undefined && document.getElementById('cwAnswerKey'))       document.getElementById('cwAnswerKey').checked = s.cwAnswerKey;
-  if (isOffered(s.cwClueLang, '[data-cwclue]', 'cwclue')) setCwClueLang(s.cwClueLang);
+  if (isOffered(s.cwClueLang, '[data-cwclue]', 'cwclue', 'cwClueLang')) setCwClueLang(s.cwClueLang);
 
   // Matching
-  if (isOffered(s.matchTarget, '[data-matchtarget]', 'matchtarget')) setMatchTarget(s.matchTarget);
+  if (isOffered(s.matchTarget, '[data-matchtarget]', 'matchtarget', 'matchTarget')) setMatchTarget(s.matchTarget);
   applySelectValue('matchCount', s.matchCount);
   applyNumberValue('matchVersions', s.matchVersions);
   if (s.matchAnswerKey !== undefined && document.getElementById('matchAnswerKey')) document.getElementById('matchAnswerKey').checked = s.matchAnswerKey;
@@ -5193,7 +5210,7 @@ function applySettings(s) {
     document.getElementById('colorCodingToggle').checked = colorCodingEnabled;
     document.getElementById('colorCodingOptions').style.display = colorCodingEnabled ? 'flex' : 'none';
   }
-  if (isOffered(s.colorCodingMode, ['letter', 'highlight', 'underline', 'vowel', 'both'])) {   // the last two are the legacy values migrated below
+  if (isOffered(s.colorCodingMode, ['letter', 'highlight', 'underline', 'vowel', 'both'], null, 'colorCodingMode')) {   // the last two are the legacy values migrated below
     // Migrate old format: ('vowel'/'both' + colorStyle) → new ('letter'/'highlight'/'underline')
     let mode = s.colorCodingMode;
     if (mode === 'vowel') mode = 'underline';
@@ -5210,7 +5227,7 @@ function applySettings(s) {
   syncSchemeButtons();
 
   // Transliteration style
-  if (isOffered(s.translitStyle, Array.from(document.getElementById('translitStyleSelect')?.options || [], o => o.value))) {
+  if (isOffered(s.translitStyle, Array.from(document.getElementById('translitStyleSelect')?.options || [], o => o.value), null, 'translitStyle')) {
     translitStyle = s.translitStyle;
     const sel = document.getElementById('translitStyleSelect');
     if (sel) sel.value = translitStyle;
@@ -5230,7 +5247,7 @@ function applySettings(s) {
   // drill) won't have rwDrillType:'numpractice'. If numberPractice was on
   // and rwDrillType is missing or stale, force it to numpractice so the
   // Drill Type row reflects the actual mode.
-  let drillToRestore = isOffered(s.rwDrillType, '.rw-drill-btn', 'drill') ? s.rwDrillType : undefined;
+  let drillToRestore = isOffered(s.rwDrillType, '.rw-drill-btn', 'drill', 'rwDrillType') ? s.rwDrillType : undefined;
   if (s.numberPractice && (!drillToRestore || drillToRestore === 'reading')) {
     drillToRestore = 'numpractice';
   }
@@ -5244,6 +5261,8 @@ function applySettings(s) {
   // Final, single visibility pass — replaces the previous order-dependent
   // chain of toggle handlers and inline style.display mutations.
   updateModeVisibility();
+  // What could not be shown here remembers the control's current value beside its own (see _unapplied).
+  try { const live = getSettings(); for (const f in _unapplied) if (_unapplied[f].live === undefined) _unapplied[f].live = live[f]; } catch (e) {}
 }
 
 // Inline "can't generate yet" validation, replacing a blocking alert(). Three copies of Generate
@@ -5440,16 +5459,49 @@ function ftPaths(tree, excludeId){
   })(tree.root, '');
   return out;
 }
+// Pure merge of two trees (this device's first, the incoming one second) — the one rule for an .ivrit
+// import and for a cloud sync. Level by level: folders match by name and merge recursively (the local
+// folder's id and collapsed state win); an item appears exactly once — filed inside a folder on either
+// side beats unfiled at the root, and this device's placement wins when both sides file it; local order
+// first, the incoming side's new nodes appended in its order; empty folders from both sides are kept.
+function ftMergeTrees(existing, incoming){
+  const A = (existing && Array.isArray(existing.root)) ? existing.root : [], B = (incoming && Array.isArray(incoming.root)) ? incoming.root : [];
+  const filedLoc = new Set(), rootLoc = new Set(), filedIn = new Set(), ids = new Set(), placed = new Set();
+  function scan(arr, depth, filed, root){ for (const n of arr){ if (!n) continue; if (n.t==='item') (depth ? filed : root).add(n.name); else if (n.t==='folder') scan(n.children||[], depth+1, filed, root); } }
+  scan(A, 0, filedLoc, rootLoc); scan(B, 0, filedIn, new Set());
+  (function walk(arr){ for (const n of arr){ if (n && n.t==='folder'){ if (n.id) ids.add(n.id); walk(n.children||[]); } } })(A);
+  const keepLocal = (name, depth) => !placed.has(name) && (depth > 0 || !filedIn.has(name));
+  const keepIncoming = (name, depth) => !placed.has(name) && !filedLoc.has(name) && (depth > 0 || (!rootLoc.has(name) && !filedIn.has(name)));
+  const folder = (n, children) => ({ t:'folder', id: n.id, name: n.name, collapsed: !!n.collapsed, children });
+  function level(a, b, depth){
+    const out = [], used = new Set();
+    for (const n of a){
+      if (!n) continue;
+      if (n.t==='item'){ if (keepLocal(n.name, depth)) { placed.add(n.name); out.push({ t:'item', name: n.name }); } }
+      else if (n.t==='folder'){
+        const j = b.findIndex((m, i) => m && m.t==='folder' && m.name===n.name && !used.has(i));
+        if (j >= 0) used.add(j);
+        out.push(folder(n, level(n.children||[], j >= 0 ? (b[j].children||[]) : [], depth+1)));
+      }
+    }
+    b.forEach((n, i) => {
+      if (!n || used.has(i)) return;
+      if (n.t==='item'){ if (keepIncoming(n.name, depth)) { placed.add(n.name); out.push({ t:'item', name: n.name }); } }
+      else if (n.t==='folder'){
+        const f = folder(n, level([], n.children||[], depth+1));
+        if (!f.id || ids.has(f.id)) f.id = ftGenId();
+        ids.add(f.id);
+        out.push(f);
+      }
+    });
+    return out;
+  }
+  return { v:1, root: level(A, B, 0) };
+}
 function ftImportTree(key, incoming, replace){
   if (!incoming || !Array.isArray(incoming.root)) return;
   if (replace) { ftWrite(key, { v:1, root: incoming.root }); return; }
-  const existing = ftRead(key), haveItem = new Set(), haveFolder = new Set();
-  (function walk(arr){ for (const n of arr){ if (n.t==='item') haveItem.add(n.name); else if (n.t==='folder'){ haveFolder.add(n.name); walk(n.children||[]); } } })(existing.root);
-  incoming.root.forEach(n => {
-    if (n.t==='item' && !haveItem.has(n.name)) existing.root.push(n);
-    else if (n.t==='folder' && !haveFolder.has(n.name)) existing.root.push(n);
-  });
-  ftWrite(key, existing);
+  ftWrite(key, ftMergeTrees(ftRead(key), incoming));
 }
 function ftDuplicateName(name, exists){
   const m = String(name).match(/^(.*?)\s+(\d+)$/);
@@ -5655,10 +5707,10 @@ const IVRIT_CFG = {
     const inFolders = data.presetFolders || data.generatorPresetFolders;
     if (inFolders) ftImportTree('hebrewBlender_presetsFolders', inFolders, mode === 'replace');
     if (incoming || inFolders) renderPresets();
-    const ls = data.liveState;
+    const ls = data.liveState || data.blenderLastState;   // a tool file's live state, or the account backup's key for it
     // Object, non-array, non-empty — the dashboard's gate: a hand-edited file's [] / "str" / 42 used to
     // reach applySettings AND be saved (apply-settings-trusts-collection-members).
-    if (ls && typeof ls === 'object' && !Array.isArray(ls) && Object.keys(ls).length) { applySettings(ls); rememberSetup(); }
+    if (ls && typeof ls === 'object' && !Array.isArray(ls) && Object.keys(ls).length) { applySettings(ls); rememberSetup(true); }
   }
 };
 
@@ -5780,12 +5832,16 @@ async function ivritRestore(text, sourceName) {
   if (ivritToolMismatch(payload.tool)) {
     if (!confirm(I18n.t('shared.ivrit.tool_mismatch_confirm', { tool: payload.tool, tool2: IVRIT_CFG.tool }))) return;
   }
-  const mode = await ivritAskMode();
+  // partial: an account's copies only (per-device settings are not in it) — merged, never replacing
+  const partial = payload.partial === true;
+  const mode = partial ? 'merge' : await ivritAskMode();
   if (!mode) return;
-  try { IVRIT_CFG.apply(payload.data || {}, mode); }
+  let applied;
+  try { applied = await IVRIT_CFG.apply(payload.data || {}, mode); }
   catch (e) { alert(I18n.t('shared.ivrit.err_restore_failed', { error: e.message })); return; }
+  if (applied === false) { alert(I18n.t('shared.ivrit.nothing_for_tool')); return; }   // apply looked and found nothing for this tool
   if (!IVRIT_CFG.needsReload) {
-    ivritStatus(I18n.t('shared.ivrit.status_restored', { source: sourceName || 'file' }));
+    ivritStatus(I18n.t(partial ? 'shared.ivrit.status_partial_merged' : 'shared.ivrit.status_restored', { source: sourceName || 'file' }));
     showAppToast(sourceName ? I18n.t('shared.ivrit.toast_restored_named', { source: sourceName }) : I18n.t('shared.ivrit.toast_restored_plain'));
   }
 }
@@ -9360,7 +9416,7 @@ function autoCols(count) {
 
 function generate(animate = false) {
   _setGenerateNote(null);   // a fresh attempt clears the previous "can't generate yet" note
-  rememberSetup();          // this setup is what the next visit reopens
+  rememberSetup(true);      // this setup is what the next visit reopens (deliberate: it replaces a held one too)
   classSetSheets = null;  // reset; only the standard multi-version path sets it
   if (document.getElementById('nameTheLetterToggle')?.checked) {
     generateNameTheLetter();
@@ -10727,6 +10783,14 @@ let cwClueLang = 'english'; // Crossword clue language: 'english' | 'translit' |
 // (curated lists are printed whole — matching Flash Cards' convention).
 let rwSource = 'all';                 // 'all' | 'lists' | 'imported'
 let selectedWordListIds = new Set();  // ids of the checked saved Word Lists
+let _wlAppliedNames = null;           // { key, names }: the names the last applied setup carried, for the selection it applied to
+// The names beside the ids: the ones the last applied setup carried, verbatim, while the selection is
+// unchanged (a list this device lacks keeps its name through a round trip), else resolved afresh.
+function wlNamesForSetup() {
+  const key = [...selectedWordListIds].sort().join('\n');
+  if (_wlAppliedNames && _wlAppliedNames.key === key) return _wlAppliedNames.names.slice();
+  return wlNamesForIds(selectedWordListIds);
+}
 let rwInlinePool = null;              // words embedded in a loaded ?s= share link (takes precedence)
 
 /* ── Word-list store reader (consumer side) ──
@@ -11448,9 +11512,7 @@ function renderRwListPicker() {
   const empty = document.getElementById('rwListEmptyState');
   if (!picker) return;
   const lists = wlListsArray();
-  // Prune selections whose lists no longer exist.
-  const liveIds = new Set(lists.map(l => l.id));
-  [...selectedWordListIds].forEach(id => { if (!liveIds.has(id)) selectedWordListIds.delete(id); });
+  // A selected list that is not on this device (yet) stays selected — it just has no row to show.
   picker.innerHTML = '';
   if (empty) empty.style.display = lists.length ? 'none' : '';
   if (lists.length === 0) { picker.style.display = 'none'; return; }
@@ -13018,6 +13080,7 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
 
 /* ── My Fonts: user-made fonts from the shared store, shown in the picker (loaded via FontFace) ── */
 let MY_FONTS = []; const _loadedUserFonts = new Set();
+let _myFontsLoaded = false;   // the My Fonts store has answered once (before that a saved name may still turn out to be a My Font)
 function ivEsc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
 // Canonical HTML-escaper for user/remote strings interpolated into innerHTML (escapes all 5 metachars incl. ').
 function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
@@ -13029,6 +13092,7 @@ async function refreshMyFonts() {
       stack: "'" + String(f.name).replace(/['"\\<>]/g, '') + "', serif",
       attr: 'made with IvritSuite Font Maker', link: null, load: { type: 'userfont' } }));
   } catch (e) { MY_FONTS = []; }
+  _myFontsLoaded = true;
   initFontSelector();
   const saved = localStorage.getItem('hebrewBlender_hebFont');
   if (saved && MY_FONTS.some(f => f.name === saved)) setHebFont(saved, false);
@@ -13091,7 +13155,17 @@ function taamimStack(stack) {
 }
 function setHebFont(name, save = true) {
   const font = allFonts().find(f => f.name === name);
-  if (!font) return;
+  const note = document.getElementById('hebFontMissing');
+  if (!font) {
+    // A face this device does not have (a My Font made elsewhere): the choice is kept — and written when
+    // asked — so it travels through a sync untouched; the CSS face stays as it is, no button is active, and
+    // a note names what is missing once the My Fonts store has answered (before that the font may still come).
+    if (save) try { localStorage.setItem('hebrewBlender_hebFont', name); } catch(e) {}
+    document.querySelectorAll('.font-opt').forEach(el => { el.classList.remove('active'); el.setAttribute('aria-pressed', 'false'); });
+    if (note && _myFontsLoaded && name) { note.textContent = window.I18n ? I18n.t('shared.fonts.missing_note', { name }) : ''; note.hidden = !note.textContent; }
+    return;
+  }
+  if (note) { note.textContent = ''; note.hidden = true; }
   loadHebFont(font);
   document.documentElement.style.setProperty('--heb-font', taamimStack(font.stack));
   if (save) try { localStorage.setItem('hebrewBlender_hebFont', name); } catch(e) {}
@@ -13475,10 +13549,25 @@ function renderAnswerKeyView(akStr) {
    remembered state and travel incomplete. */
 const LAST_SETUP_KEY = 'hebrewBlender_lastState';
 let _lastSetupRestoring = false;   // suppress saves while a restore (or a deliberate reset) is in flight
+let _lastSetupHeld = false;        // a remembered setup this page could not apply: kept as it is until a Generate replaces it
+let _answerKeyView = false;        // the ?ak= view shows no setup of its own — nothing is remembered from it
 
-function rememberSetup() {
-  if (_lastSetupRestoring) return;
-  try { localStorage.setItem(LAST_SETUP_KEY, JSON.stringify(getSettings())); } catch (e) {}
+// force: a deliberate save (Generate, a restored file) replaces a held setup too; the routine saves —
+// pagehide and the cloud module's flush — leave a held one alone.
+function rememberSetup(force = false) {
+  if (_lastSetupRestoring || _answerKeyView) return;
+  if (_lastSetupHeld && !force) return;
+  _lastSetupHeld = false;
+  let s;
+  try { s = getSettings(); } catch (e) { return; }
+  for (const f in _unapplied) { const u = _unapplied[f]; if (JSON.stringify(s[f]) === JSON.stringify(u.live)) s[f] = u.value; }
+  const text = JSON.stringify(s);
+  // A pristine setup is the absence of a setup: with nothing remembered and every control at its default,
+  // nothing is written — so "Start fresh" leaves no blank setup behind to be synced over a real one.
+  let had = null;
+  try { had = localStorage.getItem(LAST_SETUP_KEY); } catch (e) {}
+  if (had === null && SHARE_DEFAULTS && text === JSON.stringify(SHARE_DEFAULTS)) return;
+  try { localStorage.setItem(LAST_SETUP_KEY, text); } catch (e) {}
 }
 
 function restoreLastSetup() {
@@ -13492,9 +13581,9 @@ function restoreLastSetup() {
   let ok = true;
   try { applySettings(saved); } catch (e) { ok = false; }
   _lastSetupRestoring = false;
-  // A snapshot this page can no longer apply (an older shape, a hand-edited key) is dropped
-  // rather than retried on every future load.
-  if (!ok) { try { localStorage.removeItem(LAST_SETUP_KEY); } catch (e2) {} return; }
+  // A snapshot this page cannot apply (a newer build's shape, most likely) is held as it is — not dropped,
+  // which would only fetch it from the account again — until a Generate here replaces it.
+  if (!ok) { _lastSetupHeld = true; return; }
   const bar = document.getElementById('lastSetupBar');
   if (bar) bar.style.display = 'flex';
 }
@@ -13515,7 +13604,7 @@ function restoreFromURL() {
   // Answer-key view (?ak=) takes precedence over ?s= — a scanned worksheet QR.
   try {
     const ak = new URLSearchParams(location.search).get('ak');
-    if (ak && renderAnswerKeyView(ak)) return;              // valid key view → stop normal init
+    if (ak && renderAnswerKeyView(ak)) { _answerKeyView = true; return; }   // valid key view → stop normal init; its pristine sidebar is never remembered
   } catch(e) {}                                             // any failure → fall through to ?s=
   // Deep-link from the Dictionary: ?wl=<listId> loads that saved Word List as the Real-Words source
   // and generates a worksheet from it (the second half of the S72 handshake; the Flash Cards half
@@ -13530,6 +13619,7 @@ function restoreFromURL() {
       rwSource = 'lists';        // set before toggleRealWordsUI so its setRwSource(rwSource) skips the corpus load
       toggleRealWordsUI();       // enter Real-Words mode; setRwSource('lists') renders the picker (list pre-checked)
       try { generate(); } catch(e) {}
+      _stripShareParams();
       return;                    // ?wl= handled — skip ?s=
     }
   } catch(e) {}
@@ -13544,6 +13634,17 @@ function restoreFromURL() {
   // Auto-generate. Real-words drills need REAL_WORDS; generateRealWords() lazy-loads
   // it via ensureRealWords() and re-renders when ready, so a plain generate() suffices.
   try { generate(); } catch(e) {}
+  _stripShareParams();
+}
+// A link, once honoured, leaves the address bar: a reload then reopens the remembered setup instead of
+// replaying the link over it. (Copy link still mirrors the current setup into the bar, as before.)
+function _stripShareParams() {
+  try {
+    const u = new URL(location.href);
+    if (!u.searchParams.has('s') && !u.searchParams.has('wl')) return;
+    u.searchParams.delete('s'); u.searchParams.delete('wl');
+    history.replaceState(null, '', u.pathname + u.search + u.hash);
+  } catch(e) {}
 }
 
 // "📋 Copy shareable link" — sync the address bar, copy the URL, flash the button.
@@ -13673,20 +13774,31 @@ if (document.readyState === 'loading') {
 
 /* ── Cloud saves (optional accounts). Everything that talks to Supabase lives in the shared
    js/ivrit-saves.js (its registry names this page's three keys). This page supplies the folder-tree
-   merge (the shared ftImportTree) and how to re-read a key the module wrote: presets re-render, and a
+   merge (the shared ftMergeTrees) and how to re-read a key the module wrote: presets re-render, and a
    downloaded last setup is re-applied to the controls through restoreLastSetup() — otherwise the next
    Generate or the pagehide save would write the current controls straight back over it. ── */
 function initCloudSaves() {
   if (!window.IvritSaves) return;
-  // ftImportTree is write-through (it merges into the key and returns nothing); reading the key back
-  // hands the module the merged tree — it then writes the same bytes and tells the page.
-  const treeMerge = key => (local, cloud) => { ftImportTree(key, cloud, false); return ftRead(key); };
+  // A suite-wide preference from the account landed (the module's IvritSuite row): follow the theme now —
+  // the module switches the language itself; the rest is read at the next load.
+  window.addEventListener('ivritsuite:prefs', () => {
+    const want = localStorage.getItem('hebrewBlender_darkMode');
+    if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
+  });
+  // Signed in, "Start fresh" forgets only this device's copy — its tooltip says so (the key swap survives a language switch).
+  if (window.IvritAccount && typeof IvritAccount.onChange === 'function') {
+    IvritAccount.onChange(u => {
+      const key = u ? 'worksheet.lastsetup.start_fresh_title_cloud' : 'worksheet.lastsetup.start_fresh_title';
+      document.querySelectorAll('[onclick="startFreshSetup()"]').forEach(b => { b.setAttribute('data-i18n-title', key); if (window.I18n) b.title = I18n.t(key); });
+    });
+  }
+  // ftMergeTrees is pure (the shared block's one merge rule); the module writes the result and tells the page.
   IvritSaves.attach({
     tool: 'Worksheet',
     panel: '#cloudSavesPanel',
     title: false,                 // the sub-panel's own title is the heading
     flush: rememberSetup,         // the remembered setup is read off the live controls
-    merges: { presetFolders: treeMerge('hebrewBlender_presetsFolders') },
+    merges: { presetFolders: ftMergeTrees },
     onLocalChanged: function (kind) {
       if (kind === 'lastState') restoreLastSetup();   // re-applies the controls under _lastSetupRestoring; the next Generate uses them
       else renderPresets();

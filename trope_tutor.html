@@ -628,6 +628,7 @@ body.dark .settings-note.error { color:#ff6666; }
 
 /* ───── Font selector (house pattern) ───── */
 .font-options { display:grid; grid-template-columns:1fr 1fr; gap:4px; }
+.font-missing-note { margin: 4px 0 0; font-size: 0.78rem; color: var(--muted, #6b6050); }
 .font-section-hdr {
   font-size:0.7rem; color:var(--muted); font-weight:700;
   letter-spacing:0.08em; text-transform:uppercase;
@@ -1372,7 +1373,11 @@ function loadProgress() {
   } catch (e) {}
 }
 function resetAllSettings() {
-  if (!confirm(I18n.t('trope.confirm.reset_all'))) return;
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.user === 'function' && IvritAccount.user());
+  if (!confirm(I18n.t(signedIn ? 'trope.confirm.reset_all_cloud' : 'trope.confirm.reset_all'))) return;
+  // A deliberate reset: the module forgets what this device last synced, so the next sync asks which
+  // settings to keep instead of sending the reset up as "newer on this device".
+  if (signedIn && window.IvritSaves && typeof IvritSaves.forgetRow === 'function') IvritSaves.forgetRow('TropeTutor', 'settings');
   localStorage.removeItem(STORAGE_KEY);
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   applyHebFontSize();
@@ -1382,7 +1387,11 @@ function resetAllSettings() {
   updateDrillStart();
 }
 function resetProgress() {
-  if (!confirm(I18n.t('trope.confirm.reset_progress'))) return;
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.user === 'function' && IvritAccount.user());
+  if (!confirm(I18n.t(signedIn ? 'trope.confirm.reset_progress_cloud' : 'trope.confirm.reset_progress'))) return;
+  // Forgotten by the module too: the next sync then merges the account's mastery back in (a lossless
+  // merge) instead of sending the zeros up as "newer on this device".
+  if (signedIn && window.IvritSaves && typeof IvritSaves.forgetRow === 'function') IvritSaves.forgetRow('TropeTutor', 'progress');
   progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
   saveProgress();
   renderLearn();
@@ -3048,8 +3057,9 @@ async function refreshMyFonts() {
       family: "'" + String(f.name).replace(/['"\\<>]/g, '') + "', serif",
       link: null, attr: 'made with IvritSuite Font Maker', load: { type: 'userfont' } }));
   } catch (e) { MY_FONTS = []; }
+  _myFontsLoaded = true;
   initFontSelector();   // rebuild the picker so the My Fonts section appears
-  if (MY_FONTS.some(f => f.name === settings.hebFont)) setHebFont(settings.hebFont);   // re-apply a persisted user font (now loadable via FontFace)
+  setHebFont(settings.hebFont);   // a persisted My Font applies now (loadable via FontFace); a name not on this device shows the note; a stock face just re-applies
 }
 
 /* ═══ My Fonts uploader (shared, identical across pages) ═══ */
@@ -3143,13 +3153,26 @@ function taamimStack(stack) {
   const m = /^(.*?),\s*(serif|sans-serif|cursive|fantasy|monospace|system-ui)\s*$/.exec(stack);
   return m ? m[1] + ", 'IvritSuite Taamim', " + m[2] : stack + ", 'IvritSuite Taamim'";
 }
+// A face this device does not have (a My Font made elsewhere): the stored choice is kept — it travels
+// through a sync untouched — no button stays highlighted, and once the My Fonts store has answered a
+// note under the picker names what is missing.
+let _myFontsLoaded = false;
+function _markMissingFont(name) {
+  const opts = document.getElementById('fontOptions');
+  let note = document.getElementById('hebFontMissing');
+  if (!note && opts) { note = document.createElement('p'); note.id = 'hebFontMissing'; note.className = 'font-missing-note'; note.setAttribute('role', 'status'); note.setAttribute('aria-live', 'polite'); note.hidden = true; opts.insertAdjacentElement('afterend', note); }
+  if (!name) { if (note) { note.textContent = ''; note.hidden = true; } return; }
+  document.querySelectorAll('.font-opt').forEach(el => { el.classList.remove('active'); el.setAttribute('aria-pressed', 'false'); });
+  if (note && _myFontsLoaded && window.I18n) { note.textContent = I18n.t('shared.fonts.missing_note', { name }); note.hidden = false; }
+}
 function setHebFont(name) {
   // Unknown name (e.g. a persisted My Font before the async refreshMyFonts() has
   // populated MY_FONTS at init) → bail WITHOUT falling back — the dictionary
   // pattern. Falling back to HEB_FONTS[0] here would overwrite settings.hebFont
   // and permanently clobber the saved user-font choice on every page load.
   const f = allFonts().find(x => x.name === name);
-  if (!f) return;
+  if (!f) { _markMissingFont(name); return; }
+  _markMissingFont(null);
   settings.hebFont = f.name;
   loadHebFont(f);
   document.documentElement.style.setProperty('--heb-font', taamimStack(f.family));
@@ -3437,6 +3460,12 @@ document.addEventListener('DOMContentLoaded', init);
    otherwise overwrite a download on the next save. Mirrors resetAllSettings() / resetProgress(). ── */
 function initCloudSaves() {
   if (!window.IvritSaves) return;
+  // A suite-wide preference from the account landed (the module's IvritSuite row): follow the theme now —
+  // the module switches the language itself; the rest is read at the next load.
+  window.addEventListener('ivritsuite:prefs', () => {
+    const want = localStorage.getItem('hebrewBlender_darkMode');
+    if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
+  });
   IvritSaves.attach({
     tool: 'TropeTutor',
     panel: '#cloudSavesPanel',
@@ -3450,6 +3479,7 @@ function initCloudSaves() {
         setHebFont(settings.hebFont);
         panelMemApply();
         syncFormToSettings();
+        buildDrillScopeSel();   // the scope box is built once at init; the drill reads the downloaded scope, so the box must say it too
       } else if (kind === 'progress') {
         progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
         loadProgress();
