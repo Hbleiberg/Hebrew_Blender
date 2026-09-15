@@ -984,8 +984,11 @@ body.dark .lc-replay { color: var(--gold-light); }
   display: flex; align-items: center; justify-content: center; text-align: center;
   transition: border-color 0.15s, background 0.15s, transform 0.1s;
 }
-.lc-tile:hover  { border-color: var(--gold); }
-.lc-tile:active { transform: scale(0.97); }
+/* Once the student answers, every tile is disabled — so the hover ring and the press dip are guarded the
+   way .ladder-row below guards its own, or a locked tile keeps lighting up and dipping under the cursor
+   and still feels clickable while the cursor already says it isn't. */
+.lc-tile:hover:not(:disabled)  { border-color: var(--gold); }
+.lc-tile:active:not(:disabled) { transform: scale(0.97); }
 .lc-tile:disabled { cursor: default; }
 .lc-tile.good { background: var(--good-soft); border-color: var(--good); }
 .lc-tile.bad  { background: var(--bad-soft);  border-color: var(--bad); }
