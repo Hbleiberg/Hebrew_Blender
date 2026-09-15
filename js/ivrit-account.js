@@ -376,8 +376,11 @@
       '.ivacct-menu[hidden]{display:none;}' +
       '.ivacct-item{display:block;inline-size:100%;box-sizing:border-box;margin-block:4px;padding:8px 10px;border:1px solid var(--border,#c8bfa8);' +
         'border-radius:6px;background:transparent;color:inherit;font:inherit;font-weight:600;text-align:start;cursor:pointer;}' +
-      '.ivacct-item:hover{background:var(--warm-gray,#e8e0d0);}' +
-      'body.dark .ivacct-item:hover{background:#2a3349;}' +
+      // setBusy() locks every menu button while a sign-in or sign-out is in flight, so the hover is
+      // guarded the same way the dimming below marks it — otherwise a locked item keeps lighting up
+      // under the cursor of the teacher who is waiting on exactly that round trip.
+      '.ivacct-item:hover:not([aria-disabled="true"]){background:var(--warm-gray,#e8e0d0);}' +
+      'body.dark .ivacct-item:hover:not([aria-disabled="true"]){background:#2a3349;}' +
       '.ivacct-item[aria-disabled="true"]{opacity:.55;cursor:default;}' +
       '.ivacct-label{display:block;margin-block:8px 3px;font-size:0.78rem;color:var(--muted,#6b6050);}' +
       '.ivacct-input{display:block;inline-size:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--border,#c8bfa8);border-radius:6px;' +
