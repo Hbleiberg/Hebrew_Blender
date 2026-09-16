@@ -2316,6 +2316,21 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
        dialog's default background-graphics:off, and faint on B/W even when kept. Print
        it as a real border in the same ink as the name/date .ws-field-line. */
     .gematria-blank { background:none; height:0; border-top:1px solid #1a2744; }
+    /* The same shape as .gematria-blank, on the two surfaces a teacher prints most. The
+       dialog ships "Background graphics" OFF, so a background-color plate is simply not
+       painted: the answer-key banner is gold on a navy plate, and without it the gold
+       prints at 1.5:1 on white on EVERY answer key this tool makes; a bingo card's column
+       letters are white on that same navy, i.e. white on white, and its "CARD #n" bar is
+       white on gold, which fails even WITH the plate. Give each band ink and a rule of its
+       own -- the flash-card print faces' idiom -- so it reads with the plate or without it,
+       and on the B/W laser this block already darkens gold ink for. The dark twin is listed
+       so it keeps the specificity of the relight above. exportPDF is unaffected: it renders
+       the screen styles through html2canvas (its onclone only drops .dark), not print media. */
+    .answer-key-banner, body.dark .answer-key-banner {
+      background:none; color:#1a2744; border:1px solid #1a2744;
+    }
+    .bingo-card-num, .bingo-card-header { background:none; color:#1a2744; border-bottom:1px solid #1a2744; }
+    .bingo-card-header span { border-left-color:#1a2744; }
   }
 
   /* Font selector */
