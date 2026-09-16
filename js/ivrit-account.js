@@ -471,10 +471,27 @@
     }
   }
   function onDocPointer(e) { if (chip && chip.open && !chip.root.contains(e.target)) closeMenu(false); }
+  // The menu's inline-end edge is pinned to the chip, and the chip rides a header row that wraps at
+  // phone widths — so on a narrow screen it can be anchored far from the edge it grows toward and
+  // leave the viewport. Measured across the nine carriers at 320/390/412: five pages overflow, the
+  // worst by 187px of a 282px menu, which is the whole sign-in form. Nothing scrolls it back —
+  // in RTL the overflow runs in the inline-start direction, where no scrollbar forms at all. Clamp
+  // it the way the pages' own tooltip has since S213: measure, then shift by the overshoot.
+  function clampMenu() {
+    if (!chip || !chip.menu || chip.menu.hidden) return;
+    var m = chip.menu;
+    m.style.transform = '';
+    var r = m.getBoundingClientRect();
+    var w = document.documentElement.clientWidth, dx = 0;
+    if (r.right > w - 6) dx = (w - 6) - r.right;
+    if (r.left + dx < 6) dx = 6 - r.left;
+    if (dx) m.style.transform = 'translateX(' + Math.round(dx) + 'px)';
+  }
   function openMenu() {
     if (!chip || chip.open) return;
     renderMenu();
     chip.menu.hidden = false;
+    clampMenu();
     chip.open = true;
     chip.btn.setAttribute('aria-expanded', 'true');
     document.addEventListener('pointerdown', onDocPointer, true);
@@ -674,6 +691,7 @@
     } else if (status === 'offline') {
       setNote(t('shared.account.needs_internet', 'Sign-in needs an internet connection.'), false);
     }
+    clampMenu();   // a re-render while open changes the menu's size (the code field appears)
   }
 
   function mountChip(target) {
