@@ -1506,6 +1506,10 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
     position: absolute;
     width: 100%;
     height: 100%;
+    /* width/height 100% + 10px padding + 1.5px border: without border-box each face is 23px
+       wider and taller than its grid cell, so it laid over the next card (truncating that
+       card's part-of-speech tag) and the last column ran off the paper. */
+    box-sizing: border-box;
     backface-visibility: hidden;
     border: 1.5px solid var(--border);
     border-radius: 8px;
@@ -1706,7 +1710,7 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   .rw-flip-inner { position: relative; transition: transform 0.4s; transform-style: preserve-3d; min-height: 90px; }
   .rw-flip.flipped .rw-flip-inner { transform: rotateY(180deg); }
   .rw-flip-front, .rw-flip-back {
-    position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+    position: absolute; width: 100%; height: 100%; box-sizing: border-box; backface-visibility: hidden;
     border: 1.5px solid var(--border); border-radius: 8px;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 10px; background: var(--white); gap: 4px;
