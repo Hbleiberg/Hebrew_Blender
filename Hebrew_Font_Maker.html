@@ -1008,7 +1008,10 @@ footer a { display: inline-block; padding-block: 5px; }
   .help-modal { max-width: 640px; width: 94%; max-height: 86vh; max-height: 86dvh; display: flex; flex-direction: column; }
   .help-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; }
   .help-tab { padding: 6px 11px; border: 1px solid var(--border); border-radius: 6px; background: var(--cream); color: var(--muted); font-size: 0.76rem; font-weight: 700; font-family: inherit; cursor: pointer; }
-  .help-tab:hover { border-color: var(--gold); }
+  /* :where() so the guard costs no specificity: .help-tab.active (0,3,0) and its dark twin
+     (0,3,1) must keep outranking this hover, or an active tab would start taking a gold
+     border it has never had. Measured both ways. */
+  .help-tab:hover:where(:not([disabled]):not([aria-disabled="true"])) { border-color: var(--gold); }
   .help-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
   body.dark .help-tab.active { background: #2a4070; border-color: #4a6aaa; }
   .help-body { flex: 1 1 auto; overflow-y: auto; font-size: 0.86rem; line-height: 1.55; color: var(--text); padding-inline-end: 4px; }
