@@ -148,6 +148,21 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   while typing or when ask/help/QA overlays are open), and register the shortcut in BOTH the `?`
   cheat sheet (`shortcutGroups()`) and the triggering button's `title=` tooltip.
 
+### Theme changes and baked ink
+The preview SVGs draw with `currentColor` and have that colour **set explicitly on each render**
+(`_previewInkColor()` — `--text`, falling back to the literal pair). Nothing about a dark-mode switch
+reaches a baked colour on its own, so `toggleDark` has to re-run the renders — and it used to list
+them by hand, which is how the kerning pair preview got missed: it kept whichever ink was current
+when the Spacing tab last rendered, and after a toggle back to light its two glyphs sat there in pale
+dark-mode grey. **`reinkPreviews()` is now the single list**, and a new baked-ink preview is added
+there, not to `toggleDark`. Each call no-ops when its host element is absent, so it is safe to call
+on any theme change.
+
+The QA grid bakes its ink too and is deliberately *not* in that list: `.overlay` is `position:fixed;
+inset:0`, so it covers the header and the dark toggle cannot be reached while the grid is open, and
+`openQA()` rebuilds it on every open. There is no OS-theme listener either — `toggleDark` is the only
+path a live page changes theme by, which is what makes one list sufficient.
+
 ### Coordinate range — why a build can die in fontTools
 Every glyph's bounding box is packed as **int16** in `glyf`, so a single point past ±**32767** fails the
 whole build with `struct.error: 'h' format requires …` — a Python traceback that names no glyph. The
