@@ -3,6 +3,9 @@ account.header.title,IvritSuite — Your account,IvritSuite — החשבון ש�
 account.header.tagline,What your account holds · Download everything · Delete your account,מה יש בחשבון · הורדת הכול · מחיקת החשבון,Account page header tagline,
 account.header.back_link,← Back,← חזרה,header back button,leading-arrow
 account.page_title,Your account,החשבון שלכם,Account page h1,
+account.framed.head,This page can't be shown inside another site,לא ניתן להציג דף זה בתוך אתר אחר,Account page heading shown when the page is loaded inside an iframe,clickjacking guard
+account.framed.body,"Your account settings open only on ivritsuite.com, so no one can place a fake page over them.","הגדרות החשבון שלכם נפתחות רק באתר ivritsuite.com, כדי שאיש לא יוכל להציב דף מזויף מעליהן.",Account page explanation shown when the page is framed,clickjacking guard
+account.framed.link,Open your account →,פתיחת החשבון שלכם ←,Account page link that breaks out of the frame,trailing-arrow
 account.lede,"Everything your account holds, a download of all of it, and the way to delete it. What an account stores and how it is protected: <a href=""privacy.html"">Privacy Policy</a>.","כל מה שהחשבון שלכם מכיל, הורדה של הכול, והדרך למחוק אותו. מה חשבון מאחסן וכיצד הוא מוגן: <a href=""privacy.html"">מדיניות הפרטיות</a>.",Account page lede (html: one link),html
 account.out.note,Sign in to see your account.,היכנסו כדי לראות את החשבון שלכם.,"Account page, signed out",
 account.out.sign_in,Sign in,כניסה,"Account page, signed out: opens the header chip's menu",
