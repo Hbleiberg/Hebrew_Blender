@@ -332,6 +332,7 @@ signing in.
 | `terms.html` | Terms of use |
 | `404.html` | Custom not-found page |
 | `i18n-test.html` | Developer harness for the i18n runtime (not indexed, not precached) |
+| `account-test.html`, `saves-test.html` | Developer harnesses for the account and cloud-saves modules — each exercises one `js/ivrit-*.js` module on its own, away from a real tool page (not linked, not indexed, not precached) |
 | `pwa.js` | Service-worker registration + install-prompt handling |
 | `sw.js` | Service worker — precaches the app shell for offline use (cache `ivritsuite-v<VERSION>`) |
 | `manifest.webmanifest` | PWA manifest (name, icons, theme/background color) |
@@ -366,7 +367,8 @@ signing in.
 | `db/migrations/`, `db/functions/`, `db/README.md` | The database side of accounts: one SQL file per change (applied once), the delete-account Edge Function, and how to apply and check them |
 | `docs/IMPROVEMENT_LOG.md`, `docs/IMPROVEMENT_ARCHIVE.md`, `docs/reference/loop-findings.md` | The improvement loop's ledger (current state), its history, and its measurements; guarded by `scripts/check-ledger.mjs`, compacted by `scripts/compact-ledger.mjs`, limits in `scripts/ledger-rules.mjs` |
 | `splash/` | iOS launch/splash screens + `gen_splash.py` generator (and its bundled Libre Baskerville fonts) |
-| `starting-fonts/` + `scripts/add_os_font.py` | Partner "starting fonts" behind `Hebrew_Font_Maker.html?start=<id>` (manifest + each font's upstream license), staged by the intake script |
+| `starting-fonts/` + `scripts/add_os_font.py`, `scripts/audit-os-fonts.mjs`, `scripts/stage_os_fonts.py` | Partner "starting fonts" behind `Hebrew_Font_Maker.html?start=<id>` (manifest + each font's upstream license). Staged either by hand through the `/addOSFont` skill or by the weekly workflow, which audits the partner's published list and runs the same license gate on whatever is new |
+| `partners/` | Partner marks shown inside a tool — currently the Open Siddur Project's logo beside the Font Maker's starting-font picker, vendored unmodified with its provenance and license terms in `NOTICE.md` (not precached) |
 | `icons/`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `og-card.png`, `og-fontmaker.png` | PWA / home-screen icons and the social cards (the suite's, and the Font Maker's own) |
 | `zelle-qr.jpg` | Donation QR code shown on the contact page |
 | `fonts/` | Bundled Hebrew display fonts (Frank Ruhl Libre, Lakhish Bold, Reuben, TzviScript, TzviScript Stroke Guide) + their license files |

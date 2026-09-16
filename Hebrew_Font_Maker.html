@@ -746,6 +746,14 @@ footer a { display: inline-block; padding-block: 5px; }
   .ctl-btn { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 6px 11px; min-height: 24px; font-size: 0.78rem; cursor: pointer; font-family: inherit; color: var(--text); font-weight: 600; }
   .ctl-btn:hover { background: var(--warm-gray); }
   body.dark .ctl-btn:hover { background: #2a3349; }   /* dark --warm-gray equals dark --white (the rest colour); pattern dark-hover-resolves-to-the-rest-colour */
+  /* Undo/redo and the node-bar buttons ship disabled and spend much of their life that way, while
+     .ctl-btn:disabled dims them to 0.4 with cursor:default — so the hover is cancelled the way
+     .tbtn:disabled kills its own brightness filter, or a dead control keeps lighting up under a
+     cursor that already says it cannot be clicked. Restated (--white is the rest colour in BOTH
+     themes) rather than written as :hover:not(:disabled), which would raise the rule to (0,3,0) and
+     outrank .draw-chips .ctl-btn[aria-pressed="true"] — a pressed draw chip would go warm-gray on
+     hover. The dark selector is listed separately because body.dark .ctl-btn:hover is (0,3,1). */
+  .ctl-btn:disabled:hover, body.dark .ctl-btn:disabled:hover { background-color: var(--white); }
   .ctl-btn.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
   /* A hovered primary kept its rest navy in light (.ctl-btn:hover and .ctl-btn.primary tie at (0,2,0), the
      later primary rule wins) — the only button class on the page with no hover change. The chrome pages'

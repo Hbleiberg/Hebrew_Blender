@@ -130,13 +130,29 @@ main a:hover{color:var(--gold-text-hover);}
 .btn:hover{background:#24345c;}
 .btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 .btn[aria-disabled="true"]{opacity:0.55;cursor:default;}
+/* Three buttons here spend real time locked: #dlBtn until the listing arrives, #delGo until the
+   checkbox and the typed address both match, #delCancel while the deletion is in flight. The
+   dimming above said so; the hover did not, so each kept lighting up under a cursor already
+   shaped "you cannot click this" — and #delGo is the destructive one, so its red lit for a
+   control that would not fire. Restated at each variant's own rest colour, the way contact and
+   resources were: :hover:not([aria-disabled]) would change the rule's weight, and a single
+   base-level guard would paint the danger and ghost buttons navy. Each restate outranks the
+   :hover it cancels (.btn.danger[aria-disabled]:hover is one class up on .btn.danger:hover), so
+   the dark rests need their own pair — an unguarded (0,4,0) would otherwise beat body.dark's
+   (0,3,1) and show a dark-mode button its light-mode colour.
+   Pattern hover-feedback-survives-the-disabled-state; carriers 4 of 5 from the S383 census. */
+.btn[aria-disabled="true"]:hover{background:var(--navy);}
 body.dark .btn{background:#2a4070;}
 body.dark .btn:hover{background:#345090;}
+body.dark .btn[aria-disabled="true"]:hover{background:#2a4070;}
 .btn.ghost{background:transparent;color:var(--text);border-color:var(--border);}
 .btn.ghost:hover{background:var(--warm-gray);}
+.btn.ghost[aria-disabled="true"]:hover{background:transparent;}
 .btn.danger{background:var(--danger-text);color:#fff;}
 .btn.danger:hover{background:#8f1d17;}
+.btn.danger[aria-disabled="true"]:hover{background:var(--danger-text);}
 body.dark .btn.danger{background:#a83a32;}
+body.dark .btn.danger[aria-disabled="true"]:hover{background:#a83a32;}
 .link-btn{background:none;border:0;padding:0 2px;color:var(--gold-text);font:inherit;font-size:0.85rem;text-decoration:underline;cursor:pointer;}
 .link-btn:hover{color:var(--gold-text-hover);}
 .link-btn:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
@@ -160,7 +176,11 @@ footer a:hover{text-decoration:underline;}
   main h1.page-title{font-size:1.5rem;}
   .tile{padding:18px 16px;}
 }
-@media (max-width:430px){
+/* Phone widths: let the header button row wrap onto a second line instead of pushing the page
+   sideways (WCAG 1.4.10 reflow). 466px is this page's MEASURED overflow ceiling, not a device
+   width: the row overflows from 432px up to 466px and fits above it, so the gate ends where the
+   break does. Re-measure when the header gains a control; ungating moves layouts that fit. */
+@media (max-width:466px){
   header{flex-wrap:wrap;}
   header .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
 }

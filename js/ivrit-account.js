@@ -297,7 +297,7 @@
   function pendingErrorText() {
     if (!pendingError) return '';
     if (pendingError.code === 'link_other_browser') return t('shared.account.error_link_other_browser', 'That link was opened in a different browser. Enter the code from the email here instead.');
-    if (pendingError.code === 'otp_expired' || /expired|invalid/.test(String(pendingError.description || '').toLowerCase())) return t('shared.account.error_expired', 'That sign-in link has expired. Request a new one.');
+    if (pendingError.code === 'otp_expired' || /expired|invalid/.test(String(pendingError.description || '').toLowerCase())) return t('shared.account.error_expired', 'That sign-in code or link has expired. Request a new one.');
     return t('shared.account.error_finish', "Couldn't finish signing in. Please try again.");
   }
 
@@ -376,8 +376,11 @@
       '.ivacct-menu[hidden]{display:none;}' +
       '.ivacct-item{display:block;inline-size:100%;box-sizing:border-box;margin-block:4px;padding:8px 10px;border:1px solid var(--border,#c8bfa8);' +
         'border-radius:6px;background:transparent;color:inherit;font:inherit;font-weight:600;text-align:start;cursor:pointer;}' +
-      '.ivacct-item:hover{background:var(--warm-gray,#e8e0d0);}' +
-      'body.dark .ivacct-item:hover{background:#2a3349;}' +
+      // setBusy() locks every menu button while a sign-in or sign-out is in flight, so the hover is
+      // guarded the same way the dimming below marks it — otherwise a locked item keeps lighting up
+      // under the cursor of the teacher who is waiting on exactly that round trip.
+      '.ivacct-item:hover:not([aria-disabled="true"]){background:var(--warm-gray,#e8e0d0);}' +
+      'body.dark .ivacct-item:hover:not([aria-disabled="true"]){background:#2a3349;}' +
       '.ivacct-item[aria-disabled="true"]{opacity:.55;cursor:default;}' +
       '.ivacct-label{display:block;margin-block:8px 3px;font-size:0.78rem;color:var(--muted,#6b6050);}' +
       '.ivacct-input{display:block;inline-size:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--border,#c8bfa8);border-radius:6px;' +
@@ -468,10 +471,27 @@
     }
   }
   function onDocPointer(e) { if (chip && chip.open && !chip.root.contains(e.target)) closeMenu(false); }
+  // The menu's inline-end edge is pinned to the chip, and the chip rides a header row that wraps at
+  // phone widths — so on a narrow screen it can be anchored far from the edge it grows toward and
+  // leave the viewport. Measured across the nine carriers at 320/390/412: five pages overflow, the
+  // worst by 187px of a 282px menu, which is the whole sign-in form. Nothing scrolls it back —
+  // in RTL the overflow runs in the inline-start direction, where no scrollbar forms at all. Clamp
+  // it the way the pages' own tooltip has since S213: measure, then shift by the overshoot.
+  function clampMenu() {
+    if (!chip || !chip.menu || chip.menu.hidden) return;
+    var m = chip.menu;
+    m.style.transform = '';
+    var r = m.getBoundingClientRect();
+    var w = document.documentElement.clientWidth, dx = 0;
+    if (r.right > w - 6) dx = (w - 6) - r.right;
+    if (r.left + dx < 6) dx = 6 - r.left;
+    if (dx) m.style.transform = 'translateX(' + Math.round(dx) + 'px)';
+  }
   function openMenu() {
     if (!chip || chip.open) return;
     renderMenu();
     chip.menu.hidden = false;
+    clampMenu();
     chip.open = true;
     chip.btn.setAttribute('aria-expanded', 'true');
     document.addEventListener('pointerdown', onDocPointer, true);
@@ -606,7 +626,7 @@
     emailInput.placeholder = t('shared.account.email_placeholder', 'you@school.org');
     emailInput.value = lastEmail;
     emailLabel.appendChild(emailInput);
-    var send = el('button', 'ivacct-item', t('shared.account.send_code', 'Email me a sign-in link and code'));
+    var send = el('button', 'ivacct-item', t('shared.account.send_code', 'Email me a sign-in code'));
     send.type = 'submit';
 
     var codeWrap = el('div', 'ivacct-code');
@@ -635,7 +655,7 @@
         setBusy(false);
         menuStage = 'code';
         codeWrap.hidden = false;
-        setNote(t('shared.account.code_sent', 'We emailed a sign-in link and a code to {email}. Click the link, or type the code here.', { email: email }), false);
+        setNote(t('shared.account.code_sent', 'We emailed a 6-digit code to {email}. Type it here.', { email: email }), false);
         codeInput.focus();
       }).catch(function (err) { setBusy(false); setNote(errorText(err), true); });
     });
@@ -671,6 +691,7 @@
     } else if (status === 'offline') {
       setNote(t('shared.account.needs_internet', 'Sign-in needs an internet connection.'), false);
     }
+    clampMenu();   // a re-render while open changes the menu's size (the code field appears)
   }
 
   function mountChip(target) {

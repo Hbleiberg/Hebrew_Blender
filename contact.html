@@ -145,8 +145,16 @@ main strong{font-weight:700;}
 .btn-primary:hover{background:#24345c;}
 .btn-primary:active{transform:scale(0.98);}
 .btn-primary:disabled{opacity:0.55;cursor:default;}
+/* The Send button is disabled while the form is incomplete and again mid-submit, so the hover and
+   the press dip are cancelled to match that dimming — otherwise a locked button keeps lighting up
+   and dipping under a cursor that already says it cannot be clicked. Restated at the rest colour
+   (the dark rest differs, hence its own rule) rather than :hover:not(:disabled), which changes the
+   rule's weight; pattern hover-feedback-survives-the-disabled-state. */
+.btn-primary:disabled:hover{background:var(--navy);}
+.btn-primary:disabled:active{transform:none;}
 body.dark .btn-primary{background:#2a4070;}
 body.dark .btn-primary:hover{background:#345090;}
+body.dark .btn-primary:disabled:hover{background:#2a4070;}
 /* Honeypot: must stay in the DOM and out of display:none so naive bots still fill it, while
    being unreachable for people (the input also carries aria-hidden + tabindex=-1). It used to
    park at left:-9999px, which is off-screen and unscrollable in LTR but REAL scrollable

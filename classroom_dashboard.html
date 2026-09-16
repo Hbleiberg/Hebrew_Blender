@@ -1817,9 +1817,17 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     header h1 { font-size: 1.15rem; }
     header p { display: none; }
   }
-  @media (max-width: 600px) {
+  /* The header's second overflow band. Above 600px the .hbtn labels come back and the button
+     row is 560px wide again, so it overflowed from 602px up to 652px — measured, and the reason
+     the wrap gate above stops at 558 instead of swallowing the 560-600 widths that already fit.
+     Closing it by shrinking rather than wrapping is this page's own idiom; the gate is the
+     measured ceiling. The date/time scaling keeps its own 600px scope — it is a projection
+     size, not a header lever, and nothing up here should move it. */
+  @media (max-width: 652px) {
     .hbtn { padding: 6px 8px; font-size: 0.78rem; }
     .hbtn .hbtn-label { display: none; }
+  }
+  @media (max-width: 600px) {
     /* Scale, never restate — see the body.fullscreen note. */
     .heb-date { font-size: calc(var(--heb-date-size) * 0.769); }
     .current-time { font-size: calc(var(--time-size) * 0.765); }
@@ -1829,11 +1837,19 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
      page sideways (WCAG 1.4.10 reflow). max-width is the operative half — the row is
      flex-shrink:0, so nothing makes it wrap until something caps its width. This page needs
      the header itself to wrap too: capping .hright alone leaves the title block and the button
-     row competing for one line. Scoped to 430px because unscoped it moves the header at
-     desktop widths (S223 lever matrix). */
-  @media (max-width: 430px) {
+     row competing for one line. Scoped, because unscoped it moves the header at desktop widths
+     (S223 lever matrix, re-run and still true: forced on everywhere the wrap rules move 377
+     layouts that currently fit). 558px is this page's MEASURED overflow ceiling for this band,
+     not a device width — the row overflows from 432px up to 558px and fits above it, so the
+     gate ends where the break does. The page's second band, 602-652, is not this rule's: it is
+     the .hbtn labels reappearing above their own gate, closed there. */
+  @media (max-width: 558px) {
     header { flex-wrap:wrap; }
     .hright { flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
+  }
+  /* The settings drawer keeps its own 430px scope: it is not a header lever, and its own note
+     below is explicit that widening it is a desktop change made in service of phones. */
+  @media (max-width: 430px) {
     /* Segmented controls wrap on phones. .panel is overflow:hidden and .form-row does not wrap, so
        a group wider than the drawer is CLIPPED with no scrollbar and no way to reach it: at 320px
        the "Long" date format measured 0% visible and elementFromPoint returned null, i.e. the
@@ -1889,6 +1905,12 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     .day-item.colored { color: var(--text); }
     .day-item.colored .day-eng { color: var(--muted); }
     body.dark .dash-col { background: var(--white); box-shadow: none; }
+    /* That reset only ever reached the dark theme, where it rode in beside the literal slab.
+       The light column carries the same shadow at rgba(26,39,68,.05) and printed a grey band
+       down every column edge — faint, but ink the board does not need, and the paper artifact is
+       the point. (.day-item keeps its box-shadow on purpose: that ring is how today is marked.)
+       Pattern dark-print-shadow-slab. */
+    .dash-col { box-shadow: none; }
     body.dark .day-item:not(.colored) { background: var(--warm-gray); }
     /* The screen zoom is an inline style on .dashboard — 160% on a SmartBoard must not
        print as 160% on Letter. */
@@ -4537,6 +4559,12 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   }
 
   function extractYouTubeId(url) {
+    // settings.videoEmbedUrl arrives from storage, a hand-edited .ivrit or an older build, so
+    // it is not guaranteed to be a string. The caller's `url ?` guard only stops the falsy
+    // shapes; [] and {} are truthy, reached .match() and threw — and because the import had
+    // already written the junk to storage, every later load threw again and the board came up
+    // blank for good. Same failure as the radio-group crash 9614a80 closed, different field.
+    if (typeof url !== 'string') return null;
     const m = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
     return m ? m[1] : null;
   }
@@ -5192,6 +5220,16 @@ function mountSidebarResize(cfg) {
 
   function syncFormToSettings() {
     const $ = id => document.getElementById(id);
+    // A stored value matching no radio — a hand-edited .ivrit, an older build's enum — made the
+    // bare querySelector below return null, so `.checked` threw and the whole form sync aborted:
+    // the board never rendered, and because the junk had already been saved the next load failed
+    // the same way. Guarded like groupMode / videoLayout / colorMode further down, and matched by
+    // value rather than interpolated into the selector (a stored quote is a selector syntax error,
+    // not a miss). An unmatched value leaves the group as it was instead of taking the page down.
+    const setRadio = (name, value) => {
+      const v = String(value);
+      document.querySelectorAll(`input[name="${name}"]`).forEach(r => { if (r.value === v) r.checked = true; });
+    };
     $('locationInput').value = settings.location;
     $('showHolidayCountdown').checked = settings.showHolidayCountdown !== false;
     $('showShabbatTimes').checked = settings.showShabbatTimes !== false;
@@ -5210,23 +5248,23 @@ function mountSidebarResize(cfg) {
     updateGroupNLabel();
     updatePickerRosterCount();
     renderClassManager();
-    document.querySelector(`input[name="engDateFmt"][value="${settings.engDateFmt}"]`).checked = true;
+    setRadio('engDateFmt', settings.engDateFmt);
     $('showEngDOW').checked = settings.showEngDOW;
     $('hideEngDate').checked = settings.hideEngDate;
-    document.querySelector(`input[name="hebDateScript"][value="${settings.hebDateScript}"]`).checked = true;
+    setRadio('hebDateScript', settings.hebDateScript);
     $('hideHebDate').checked = settings.hideHebDate;
-    document.querySelector(`input[name="timeFmt"][value="${settings.timeFmt}"]`).checked = true;
+    setRadio('timeFmt', settings.timeFmt);
     $('hideTime').checked = settings.hideTime;
     $('showSeconds').checked = !!settings.showSeconds;
-    document.querySelector(`input[name="tempUnit"][value="${settings.tempUnit}"]`).checked = true;
-    document.querySelector(`input[name="weatherLabelLang"][value="${settings.weatherLabelLang}"]`).checked = true;
+    setRadio('tempUnit', settings.tempUnit);
+    setRadio('weatherLabelLang', settings.weatherLabelLang);
     $('hideTemperature').checked = !!settings.hideTemperature;
     $('hideWeatherEmoji').checked = settings.hideWeatherEmoji;
     $('hideHighLow').checked = !!settings.hideHighLow;
     $('hideWeatherDesc').checked = settings.hideWeatherDesc;
     $('simpleWeatherDesc').checked = settings.simpleWeatherDesc;
     $('hideWeather').checked = settings.hideWeather;
-    document.querySelector(`input[name="dowLang"][value="${settings.dowLang}"]`).checked = true;
+    setRadio('dowLang', settings.dowLang);
     $('colorDays').checked = settings.colorDays !== false;
     $('showYesterday').checked = settings.showYesterday;
     $('showToday').checked = settings.showToday;
@@ -5240,7 +5278,7 @@ function mountSidebarResize(cfg) {
       btn.classList.toggle('active', btn.dataset.set === activeSet);
       btn.setAttribute('aria-pressed', btn.dataset.set === activeSet ? 'true' : 'false');
     });
-    document.querySelector(`input[name="headerLang"][value="${settings.headerLang || 'he'}"]`).checked = true;
+    setRadio('headerLang', settings.headerLang || 'he');
     setColTitleSize(settings.colTitleSize ?? 0.78);
     const showTso = !!settings.showTextSizeOptions;
     $('showTextSizeOptions').checked = showTso;

@@ -425,8 +425,12 @@ body.fs-idle #fsBtn:not(:focus-visible) { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { #fsBtn { transition-duration: 0.001ms !important; } }
 .h-right { display: flex; gap: 6px; align-items: center; }
 /* Narrow screens: the header now also carries the language switcher, so shrink the controls
-   (and the title) to keep everything on one row without horizontal overflow. */
-@media (max-width: 440px) {
+   (and the title) to keep everything on one row without horizontal overflow.
+   486px is this page's MEASURED overflow ceiling, not a device width: the header overflows from
+   442px up to 486px and fits above it, so the gate ends where the break does. The title's own
+   row move is part of the lever here — the grid's auto track only yields once the 1fr column is
+   empty — so the whole block moves together. Re-measure when the header gains a control. */
+@media (max-width: 486px) {
   .app-header { gap: 4px; padding-inline: 8px; }
   /* The title shares a grid row with the Home button and the whole right-hand cluster, so at
      phone widths its 1fr column collapses to ~53px and the h1 breaks into six lines — 21.5%
@@ -501,28 +505,28 @@ body.dark .panel-title {
   font-size: 0.95rem;
   transition: background 0.15s, transform 0.05s, border-color 0.15s;
 }
-.btn:hover { background: var(--paper); }
+.btn:hover:not([disabled]):not([aria-disabled="true"]) { background: var(--paper); }
 .btn:active { transform: scale(0.97); }
 .btn.primary {
   background: var(--navy);
   color: var(--gold-light);
   border-color: var(--navy);
 }
-.btn.primary:hover { background: var(--navy-soft); }
+.btn.primary:hover:not([disabled]):not([aria-disabled="true"]) { background: var(--navy-soft); }
 .btn.gold {
   background: var(--gold);
   color: var(--navy);
   border-color: var(--gold);
   font-weight: 700;
 }
-.btn.gold:hover { background: var(--gold-light); }
+.btn.gold:hover:not([disabled]):not([aria-disabled="true"]) { background: var(--gold-light); }
 .btn.play { color: var(--good); border-color: var(--good); background: transparent; }
-.btn.play:hover { background: var(--good-soft); }
+.btn.play:hover:not([disabled]):not([aria-disabled="true"]) { background: var(--good-soft); }
 .btn.danger { color: var(--bad); border-color: var(--bad); background: transparent; }
-.btn.danger:hover { background: var(--bad-soft); }
+.btn.danger:hover:not([disabled]):not([aria-disabled="true"]) { background: var(--bad-soft); }
 .btn.ghost { background: transparent; border-color: var(--border); }
 .btn.sm { padding: 6px 10px; font-size: 0.85rem; border-radius: 8px; }
-.btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
 
 .btn-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .btn-row.center { justify-content: center; }
@@ -984,8 +988,11 @@ body.dark .lc-replay { color: var(--gold-light); }
   display: flex; align-items: center; justify-content: center; text-align: center;
   transition: border-color 0.15s, background 0.15s, transform 0.1s;
 }
-.lc-tile:hover  { border-color: var(--gold); }
-.lc-tile:active { transform: scale(0.97); }
+/* Once the student answers, every tile is disabled — so the hover ring and the press dip are guarded the
+   way .ladder-row below guards its own, or a locked tile keeps lighting up and dipping under the cursor
+   and still feels clickable while the cursor already says it isn't. */
+.lc-tile:hover:not(:disabled)  { border-color: var(--gold); }
+.lc-tile:active:not(:disabled) { transform: scale(0.97); }
 .lc-tile:disabled { cursor: default; }
 .lc-tile.good { background: var(--good-soft); border-color: var(--good); }
 .lc-tile.bad  { background: var(--bad-soft);  border-color: var(--bad); }
@@ -3334,7 +3341,12 @@ function bindTileA11y(tile) {
    ArrowLeft is the next tile in DOM order), Home/End jump to the ends. Enter/Space still toggle via
    bindTileA11y. The grid element persists across re-renders, so its listeners are bound once. */
 function roveTileGrid(container, tileSel) {
-  const tiles = () => [...container.querySelectorAll(tileSel)].filter(t => t.offsetParent !== null);
+  // A grid built inside a collapsed panel or a hidden section has no VISIBLE tiles yet, and an empty
+  // list made this bail before it set a single tabindex — leaving that grid one Tab stop per tile until
+  // something happened to rebuild it while open. Fall back to all tiles so the roving index is seeded at
+  // build time either way; once the grid is on screen the visible set is what the arrow keys walk.
+  const tiles = () => { const all = [...container.querySelectorAll(tileSel)];
+                        const vis = all.filter(t => t.offsetParent !== null); return vis.length ? vis : all; };
   const setCurrent = cur => tiles().forEach(t => t.setAttribute('tabindex', t === cur ? '0' : '-1'));
   const all = tiles();
   if (!all.length) return;
@@ -3948,8 +3960,10 @@ function initColorTiles() {
       _retireStartNote('flashcards.start.err_select_color', selectedColors.size > 0);
       saveSettings();
     });
+    bindTileA11y(tile);
     grid.appendChild(tile);
   });
+  roveTileGrid(grid, '.color-tile');
 }
 
 function setOtherMode(on) {
