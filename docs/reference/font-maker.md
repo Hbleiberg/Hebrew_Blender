@@ -148,6 +148,25 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   while typing or when ask/help/QA overlays are open), and register the shortcut in BOTH the `?`
   cheat sheet (`shortcutGroups()`) and the triggering button's `title=` tooltip.
 
+### The two dots on a שׁ/שׂ placement screen
+`precompTakesHolam(pc)` (base ש + mark ׁ/ׂ) is the **only** form that draws two draggable dots: the
+orange one is the form's own mark (`#pcMark`, dragged via `.pcanc`), the blue one is
+`precompHolamAnchor` — where a following holam attaches on that dotted letter (`#pcHolamMark`, via
+`.pcholam`). Both visible at once IS the stacking check for this case, so they are meant to overlap.
+
+Because they overlap, each carries its **name on the canvas** (`precompDotLabel`): `precompName(pc)`
+for the orange, `gName(markName('05B9'))` for the blue — both already-localized name tables, so this
+added no strings. The orange label sits above its dot and the blue below, so they stay apart when the
+dots coincide, and colour is never the only thing telling them apart. Labels are knocked out in
+`stageColors().paper` (the stage's own `var(--white)` background, per theme) and carry
+`pointer-events:none`, or they would steal the drag from the handle underneath.
+
+`precompLabelPos` clamps into `_stageVBEdges`, the frame the current render is actually showing: a
+shin-dot rides above its letter, so on a tall glyph an unclamped label would be drawn off the top of
+the canvas. `movePrecompLabel` reuses that same function during a drag — `renderStage()` re-lays
+everything on pointerup, so it only has to cover the live drag. **Single-dot forms get no label**;
+there is nothing to disambiguate, and the panel already names the one colour.
+
 ### Theme changes and baked ink
 The preview SVGs draw with `currentColor` and have that colour **set explicitly on each render**
 (`_previewInkColor()` — `--text`, falling back to the literal pair). Nothing about a dark-mode switch
