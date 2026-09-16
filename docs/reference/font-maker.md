@@ -283,6 +283,28 @@ of its own generation brings it back whole, and a carve over blank paper subtrac
 `DRAW_STROKE_MAX` / `DRAW_CARVE_MAX` are the runtime ceilings **and** `sanitizeDraw`'s reload
 ceilings — they must stay equal, or a reload silently drops ink the editor let you place.
 
+### Spacing preview — sample-text direction
+`spacingPreviewLayout` returns `order`, the cell indices in **left-to-right visual order**, and
+`spacingLineSVG` always walks it with the pen starting at the left edge. An all-Hebrew line is
+unchanged by this (its order is simply reversed), but the panel used to lay out every sample
+right-to-left unconditionally, so `Hello` drew *olleH*, `1234` drew *4321*, and the shipped `Mixed`
+test phrase — the one that exists to show Hebrew beside digits and Latin — mangled both of its
+non-Hebrew runs.
+
+`bidiOrder` is the slice of UAX #9 the panel needs, and no more: **P2/P3** (base direction from the
+first strong character; nothing strong → the page's own `dir`, which is what `dir="auto"` on the
+input box resolves to, so box and preview cannot disagree), **W7** (a number following a Latin
+letter *becomes* Latin — this is what keeps `v5.45` and the space after it in one run), **N1/N2**
+(neutrals take the surrounding direction, and a number that stayed a number counts as R when
+resolving them), and **L2**'s run reversal. Two embedding levels is the whole ladder: a plain text
+field has no markup to nest deeper. Kerning stays a *logical* pair, so `spacingLineSVG` applies
+`gaps[min(a,b)]` only between visual neighbours still adjacent in reading order.
+
+Any change here is checked against **Chromium's own bidi**, not against reasoning: render the same
+string in an element with `dir="auto"`, read each character's x with a `Range`, and compare the two
+orders cell-by-cell. Doing that is what caught W7 and the EN-leans-R rule in N1 — both were wrong on
+the first pass and both looked plausible.
+
 ### QA Check grid (`#qaOverlay`)
 `qaBuild()` counts flagged cells per tab into `qaResult.counts` (the tab badges) and `qaResult.total`
 (the summary); `qaRenderGrid()` draws `qaRows()` × `qaColumns(qaTab)`. The grid is built in **two

@@ -4170,7 +4170,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.45</strong> &mdash; <strong><span class="ui">Save letter &amp; next &rarr;</span> stays in the tab you are working in.</strong> Drawing your way through the <span class="ui">English</span> tab, it saved the letter and then jumped straight back to the Hebrew alphabet &mdash; abandoning the other fifty-one English letters &mdash; and the <span class="ui">Custom glyphs</span> and <span class="ui">Wide letterforms</span> tabs did the same. It now moves to the next letter still missing an outline <em>in the tab you are actually in</em>, and the English tab's <span class="ui">Uppercase A&ndash;Z</span> / <span class="ui">Lowercase a&ndash;z</span> switch follows along, so the letter you land on is the one highlighted in the grid. <span style="color:var(--muted);">(September 2026)</span></li>
+      <li><strong>v5.45</strong> &mdash; <strong>Two fixes for working outside the Hebrew alphabet.</strong> <strong><span class="ui">Save letter &amp; next &rarr;</span> now stays in the tab you are working in.</strong> Drawing your way through the <span class="ui">English</span> tab, it saved the letter and then jumped straight back to the Hebrew alphabet &mdash; abandoning the other fifty-one English letters &mdash; and the <span class="ui">Custom glyphs</span> and <span class="ui">Wide letterforms</span> tabs did the same. It now moves to the next letter still missing an outline <em>in the tab you are actually in</em>, and the English tab's <span class="ui">Uppercase A&ndash;Z</span> / <span class="ui">Lowercase a&ndash;z</span> switch follows along, so the letter you land on is the one highlighted in the grid. <strong>And the <span class="ui">Sample text</span> box in the <span class="ui">Spacing</span> tab no longer reads backwards.</strong> The preview laid every character out right-to-left whatever you typed, so <span class="ui">Hello</span> drew <em>olleH</em> and <span class="ui">1234</span> drew <em>4321</em> &mdash; even the ready-made <span class="ui">Mixed</span> phrase, which exists precisely to show Hebrew beside digits and Latin, came out mangled. The preview now follows the same direction rules your browser does: Hebrew still runs right to left, English and numbers run left to right, and a line that mixes them puts each run where a reader expects it. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.44</strong> &mdash; <strong>Erasing part of a letter no longer stops you redrawing there.</strong> The <span class="ui">Erase</span> tool's <span class="ui">Sculpt</span> mode takes ink away by recording a hole in the paper &mdash; and that hole used to keep erasing forever, so any new stroke drawn through a patch you had already rubbed out vanished as you drew it, on screen and in the exported font. A sculpted hole now only takes away the ink that was already on the page when you swept it, exactly like a real eraser: rub something out, draw it again, and what you draw stays. Erasing still works on everything currently drawn, and sliding a stroke out from under an old hole still brings it back whole. <em>(September 2026)</em></li>
       <li><strong>v5.43</strong> &mdash; <strong>Save a project to your account.</strong> With a free IvritSuite account (the <span class="ui">☁ Sign in</span> button in the header) the <span class="ui">Save Project ▾</span> menu gains <span class="ui">Save to my account</span>: the project and its letter photos, at full size, are kept in your account and reopen from <span class="ui">Load Project ▾ → In your account</span> on any device. From then on changes keep saving by themselves (the ☁ badge next to Save shows Saved, Saving or Unsaved), a change made on another device is never overwritten without asking, and an exported font can be kept with the project. Your <code>.hebrewfont</code> files and the copies in this browser work exactly as before. <em>(September 2026)</em></li>
       <li><strong>v5.42</strong> &mdash; <strong><span class="ui">Reduce points</span> and <span class="ui">Round corners</span> stay on the letter you're editing.</strong> Nudging either slider and letting go on the value it started at left its before-snapshot armed, so the next letter you opened took the <strong>previous letter's outline</strong> the moment you touched the slider &mdash; clicking from letter to letter for a low-poly pass was impossible. The snapshot now clears whenever you change letters or steps, and the slider commits when it loses focus. <em>(September 2026)</em></li>
@@ -13937,7 +13937,7 @@ function renderSpacingPanel() {
     <div class="inline">${I18n.t('fontmaker.panels.word_spacing')} <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.word_spacing'))}"> <span id="wsV" class="readout">${sp.wordSpacing}</span></div>
     <div class="hint" style="margin-top:-4px;">${I18n.t('fontmaker.panels.word_spacing_hint')}</div>
     <div class="inline">${I18n.t('fontmaker.panels.line_spacing')} <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_spacing'))}"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
-    <label class="fld">${I18n.t('fontmaker.panels.sample_text')} <input type="text" id="spacingSample" autocapitalize="off" autocorrect="off" spellcheck="false" dir="rtl" value="${esc(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
+    <label class="fld">${I18n.t('fontmaker.panels.sample_text')} <input type="text" id="spacingSample" autocapitalize="off" autocorrect="off" spellcheck="false" dir="auto" value="${esc(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
     ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" onclick="insertSampleGlyph('${l.codepoint}')" title="${esc(window.I18n ? I18n.t('fontmaker.tip.add_glyph_sample', {name: l.name || ('U+' + l.codepoint)}) : "Add " + (l.name || ('U+' + l.codepoint)) + " to the sample text (it can't be typed on a keyboard)")}">${esc(_pT('add_glyph_sample', '+ ' + (l.name || ('U+' + l.codepoint)), {name: l.name || ('U+' + l.codepoint)}))}</button>`).join('')}</div>` : ''}
     ${project.font.nikkud.enabled ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;align-items:center;"><span class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.test_combos_label')}</span>${SAMPLE_TEST_COMBOS.map(c => { const s = sampleComboStr(c); return `<button class="ctl-btn" style="padding:2px 8px;font-size:0.8rem;" onclick="insertSampleCombo('${c}')" title="${esc(I18n.t('fontmaker.panels.test_combos_tip', { combo: s }))}">+ <span lang="he" style="font-family:var(--heb-font);direction:rtl;">${s}</span></button>`; }).join('')}</div>` : ''}
     <div class="tp-row" id="fmPhrases"></div>
@@ -14105,12 +14105,87 @@ function spacingPreviewLayout() {   // shared by the big preview and the waterfa
   // pair kerning between adjacent glyphs (reading order) — matches the exported `kern` feature & the kern-panel preview
   const gaps = cells.map((c, i) => { const n = cells[i+1]; return (c.type === 'glyph' && n && n.type === 'glyph') ? kernPreviewValue(c.cp, n.cp) : 0; });
   gaps.forEach(g => total += g);
-  return { cells, gaps, total, ascender, descender, lineH };
+  return { cells, gaps, order: bidiOrder(cells), total, ascender, descender, lineH };
 }
-function spacingLineSVG(L, yo) {   // one line of the sample at baseline offset yo — RTL: pen starts at the right edge and walks left
-  let pen = L.total, body = '';
-  L.cells.forEach((c, i) => {
-    pen -= c.w;
+/* ── Sample-text direction ──
+   The preview used to lay EVERY cell right-to-left, so a Hebrew line was right and everything else
+   read backwards: typing "Hello" drew olleH, "1234" drew 4321, and the shipped "Hebrew beside digits
+   and Latin" test phrase mangled both of its non-Hebrew runs. A font preview has to show the sample
+   the way a reader sees it, so this is the slice of UAX #9 that the panel actually needs: a base
+   direction from the first strong character (P2/P3 — the same rule `dir="auto"` applies to the input
+   box, so box and preview always agree), a number after a Latin letter retyped as Latin (W7), ONE
+   extra embedding level for the opposite direction, neutrals taking the surrounding direction when
+   both sides match and the base direction otherwise (N1/N2), and L2's run reversal. Two levels is
+   the whole ladder here: there is no markup in a plain text field to nest deeper.
+   Every rule below is checked against Chromium's own bidi, not against reasoning — W7 and N1's
+   "a number leans R" were both wrong on the first pass and both looked perfectly plausible.
+   Returns logical cell indices in LEFT-TO-RIGHT visual order. */
+const BIDI_R = 1, BIDI_L = 2, BIDI_EN = 3, BIDI_NEUTRAL = 4;
+function bidiClassOf(cell) {
+  if (cell.type !== 'glyph' || !cell.cp) return BIDI_NEUTRAL;          // the space cell, and anything without a code point
+  const c = parseInt(cell.cp, 16);
+  if ((c >= 0x0590 && c <= 0x05FF) || (c >= 0xFB1D && c <= 0xFB4F)) return BIDI_R;   // Hebrew block + its presentation forms
+  if (c >= 0x30 && c <= 0x39) return BIDI_EN;                          // European digits — they READ left-to-right but LEAN right-to-left (below)
+  if (isEng(cell.cp)) return BIDI_L;                                   // the same predicate that routes a letter to the English tab
+  return BIDI_NEUTRAL;                                                 // punctuation, symbols, custom glyphs — they take their surroundings
+}
+function bidiOrder(cells) {
+  const n = cells.length, cls = cells.map(bidiClassOf);
+  // P2/P3: the first STRONG character picks the base direction — a digit is not strong, so "1234 שלום"
+  // is still a Hebrew line. With nothing strong at all, `dir="auto"` falls back to the inherited
+  // direction, so read the page's and the box cannot disagree with the preview.
+  const strong = cls.find(k => k === BIDI_R || k === BIDI_L);
+  const base = strong ? (strong === BIDI_L ? 0 : 1)
+                      : (document.documentElement.getAttribute('dir') === 'rtl' ? 1 : 0);
+  // W7: a number that FOLLOWS a Latin letter is Latin — "v5.45" and "Aa 1234" are each one
+  // left-to-right run, which is what keeps the space after the number on the correct side of it.
+  // Search back past neutrals and other numbers to the first strong type; off the start counts as
+  // the base direction. Written into a copy, because W7 reads the classes as W6 left them —
+  // retyping in place would let one number's answer decide the next one's.
+  const typ = cls.slice();
+  for (let i = 0; i < n; i++) {
+    if (cls[i] !== BIDI_EN) continue;
+    let k = i - 1; while (k >= 0 && (cls[k] === BIDI_NEUTRAL || cls[k] === BIDI_EN)) k--;
+    if ((k >= 0 ? cls[k] : (base === 0 ? BIDI_L : BIDI_R)) === BIDI_L) typ[i] = BIDI_L;
+  }
+  const lvR = 1, lvL = base === 0 ? 0 : 2;                             // R is always odd, L always even
+  const lv = typ.map(k => k === BIDI_NEUTRAL ? -1 : k === BIDI_R ? lvR : lvL);
+  // N1/N2. A number that stayed a number resolves to an even (left-to-right) level, but for the
+  // neutrals AROUND it, it counts as R — that is what stops "שלום 1234 Aa" gluing its number to
+  // its Latin word across the space and hoisting both to the wrong side of the line.
+  const lean = typ.map(k => k === BIDI_NEUTRAL ? 0 : k === BIDI_L ? BIDI_L : BIDI_R);
+  const edge = base === 1 ? BIDI_R : BIDI_L;                           // off either end counts as the base direction
+  for (let i = 0; i < n; i++) {
+    if (lv[i] !== -1) continue;
+    let j = i; while (j < n && lv[j] === -1) j++;
+    const before = i > 0 ? lean[i-1] : edge, after = j < n ? lean[j] : edge;
+    const fill = before === after ? (before === BIDI_R ? lvR : lvL) : base;
+    for (let k = i; k < j; k++) lv[k] = fill;
+    i = j - 1;
+  }
+  let top = base; lv.forEach(l => { if (l > top) top = l; });
+  const order = cells.map((_, i) => i);
+  for (let lev = top; lev >= 1; lev--) {         // L2 — reverse every run at or above each level, highest first
+    let i = 0;
+    while (i < n) {
+      if (lv[order[i]] < lev) { i++; continue; }
+      let j = i; while (j < n && lv[order[j]] >= lev) j++;
+      for (let a = i, b = j - 1; a < b; a++, b--) { const t = order[a]; order[a] = order[b]; order[b] = t; }
+      i = j;
+    }
+  }
+  return order;
+}
+/* One line of the sample at baseline offset yo. L.order is already in left-to-right VISUAL order
+   (see bidiOrder), so the pen always starts at the left edge and walks right — an all-Hebrew line
+   comes out exactly as it did before, because its order is simply reversed. A kern belongs to a
+   LOGICAL pair, so it is applied between two visual neighbours only when they are still adjacent in
+   reading order; whichever way round that pair ended up, gaps[min] is its value. */
+function spacingLineSVG(L, yo) {
+  const order = L.order || L.cells.map((_, i) => i);
+  let pen = 0, body = '';
+  order.forEach((ci, vi) => {
+    const c = L.cells[ci];
     if (c.type === 'glyph') {
       if (c.contours) {
         body += `<path d="${glyphPathAt(c.contours, pen, yo, c.curves)}" fill="currentColor"/>`;
@@ -14118,7 +14193,9 @@ function spacingLineSVG(L, yo) {   // one line of the sample at baseline offset 
       }
       else body += `<rect x="${(pen+40).toFixed(0)}" y="${(yo-L.ascender+60).toFixed(0)}" width="${Math.max(20,c.w-80).toFixed(0)}" height="${(L.ascender-60).toFixed(0)}" rx="10" fill="none" stroke="currentColor" stroke-dasharray="7 6" opacity="0.3"/>`;
     }
-    pen -= L.gaps[i];   // open/close the kern before the next glyph (− tightens, + loosens)
+    pen += c.w;
+    const nx = order[vi+1];
+    if (nx !== undefined && Math.abs(nx - ci) === 1) pen += L.gaps[Math.min(nx, ci)];   // open/close the kern before the next glyph (− tightens, + loosens)
   });
   return body;
 }
