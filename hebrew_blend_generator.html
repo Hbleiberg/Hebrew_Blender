@@ -1706,16 +1706,8 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   body.dark .match-item { background: #252d3e; border-color: var(--border); }
   body.dark .match-heb, body.dark .match-label, body.dark .match-num, body.dark .match-ak-heb { color: #dde4f0; }
   body.dark .match-dot { border-color: #dde4f0; background: #252d3e; }
-  .rw-flip { perspective: 600px; cursor: pointer; }
-  .rw-flip-inner { position: relative; transition: transform 0.4s; transform-style: preserve-3d; min-height: 90px; }
-  .rw-flip.flipped .rw-flip-inner { transform: rotateY(180deg); }
-  .rw-flip-front, .rw-flip-back {
-    position: absolute; width: 100%; height: 100%; box-sizing: border-box; backface-visibility: hidden;
-    border: 1.5px solid var(--border); border-radius: 8px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 10px; background: var(--white); gap: 4px;
-  }
-  .rw-flip-back { transform: rotateY(180deg); background: var(--cream); }
+  /* The Self-Check flip-card rules live once, under "Flip cards for vocab drill" above. A second,
+     byte-identical copy sat here and is why a05e1cf had to apply its box-sizing fix in two places. */
 
   .bingo-page {
     display: flex;
