@@ -6159,7 +6159,10 @@ function setPageSize(v) {
   if (ab) ab.classList.toggle('active', pageSize === 'a4');
   _applyPageSizeStyle();
   _syncPillAria();
-  renderWorksheet(false);   // browser-print rows-per-page depends on page height
+  // Re-paginate through the CURRENT sheet's own renderer, not renderWorksheet, which only knows
+  // blends[] — empty in Real Words mode, where it would replace the sheet with an empty one
+  // (measured: Page Size wiped a 288-cell word search / crossword). Same reason as rerenderCurrentSheet's.
+  rerenderCurrentSheet();   // browser-print rows-per-page depends on page height
 }
 
 function applyColorExStyle(el, color) {
@@ -6882,7 +6885,7 @@ function runLiveSync() {
     if (kind === 'content') livePulseGenerate(() => I18n.t('worksheet.preview.settings_changed'));   // the CSV row was authored for this notice but never read (S363)
     return;
   }
-  if (kind === 'presentation') { renderWorksheet(false); hidePreviewNotice(); return; }
+  if (kind === 'presentation') { rerenderCurrentSheet(); hidePreviewNotice(); return; }   // same reason as setPageSize above: a presentation-only change must not swap in a blends sheet
   // content, live on
   if (liveIsHeavyMode()) { livePulseGenerate(() => I18n.t('worksheet.preview.settings_changed')); return; }
   liveGenerate();
