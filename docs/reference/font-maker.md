@@ -148,6 +148,28 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   while typing or when ask/help/QA overlays are open), and register the shortcut in BOTH the `?`
   cheat sheet (`shortcutGroups()`) and the triggering button's `title=` tooltip.
 
+### Coordinate range — why a build can die in fontTools
+Every glyph's bounding box is packed as **int16** in `glyf`, so a single point past ±**32767** fails the
+whole build with `struct.error: 'h' format requires …` — a Python traceback that names no glyph. The
+normal workflow cannot reach it: the tracer's px→unit map (`ifx`/`ify`) is a fixed linear one bounded
+by the stage, and `drawFrame` clamps drawn ink, so a full project with every optional surface on and
+letters pushed to the stage corners tops out around 2,200 units — roughly 15× inside the limit.
+
+**Typed numbers are the way in, so they are clamped at the source.** `_XFORM_CLAMP` is declared above
+`xformMatrix` and used by *both* the live sliders and `xformMatrix` itself, because the Apply button
+hands the raw number field straight through — that path clamped only the floor, so a typed `5000`
+scaled an outline 50×. The mark editor's piece fields are bounded the same way (`ME_POS_MAX` /
+`ME_SIZE_MAX`); a dot's radius already reused its slider's 8–200.
+
+`glyphRangeError(spec)` is the backstop, called by **both** build paths right after `buildFontSpec()`
+and before Pyodide ever runs: it walks every glyph's contours *and* its curve control points (a
+control point can sit outside a polygon that fits) and returns a translated message naming the
+letters, which each call site shows in its own idiom — `buildFontBytes` throws it for Preview PDF's
+catch, the export path shows the build-fail modal. It exists for a project that already carries such
+a point, from a build before those clamps, an import, or a hand-edited `.hebrewfont`. Letter labels
+are `esc()`d because both call sites drop the message into `innerHTML` and a custom glyph's name is
+the teacher's own text.
+
 ### Export delivery — Send / Share / Save as
 
 **Two destinations, one flow.** `FM_SEND_DESTS` maps a dest key → `{addr(), titleKey, subjectKey,
