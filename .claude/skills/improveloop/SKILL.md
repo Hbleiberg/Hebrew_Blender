@@ -35,15 +35,18 @@ ratified protocol convention this skill contradicts, follow the ledger and flag 
 3. **Number this session** from the pointer's `SN`; tag everything you write with it. The pointer is
    the tie-break when two passes look equally stale.
 4. **Outside-loop drift check.** Compare against the last close-out entry: `origin/main` position,
-   `sw.js` `VERSION`, `FONT_MAKER_VERSION`, and the highest-numbered `db/migrations/` file with its `Live?`
-   state (`db/README.md`). Note what landed outside the loop (version moves included); backend phases land
-   there and leave no ledger trace at all, so a jump in any of these is where the unaudited surface is;
-   that surface is prime discovery territory. Never trust the previous close-out's numbers unread.
-5. **Branch & PR.** Loop sessions run on a `claude/*` branch feeding a draft PR — never push to `main`
-   unless the maintainer explicitly authorizes it in-session. If the previous loop PR is open and
-   unmerged, continue on it; if merged, cut a fresh branch off latest `origin/main` and open a new draft
-   PR at close-out. This supersedes CLAUDE.md's "commit directly to main" rule for loop sessions; Pages
-   deploys only on merge, so deploy `success` is verified after merge, not in-session.
+   `sw.js` `VERSION`, `FONT_MAKER_VERSION`, the highest-numbered `db/migrations/` file with its `Live?`
+   state (`db/README.md`), `db/functions/*` source (a source edit with no recorded deploy is drift),
+   `js/supabase-config.js` (the SDK pin and the key), the keep-alive workflow file, and the keep-alive's
+   last scheduled run (through the connector or the Actions tab). Note what landed outside the loop
+   (version moves included); backend phases land there and leave no ledger trace at all, so a jump in any
+   of these is where the unaudited surface is; that surface is prime discovery territory. Never trust the
+   previous close-out's numbers unread.
+5. **Branch & PR.** Loop sessions follow CLAUDE.md's Git rule: a `claude/*` branch feeding a draft PR —
+   never push to `main` unless the maintainer explicitly authorizes it in-session, and that authorization
+   is never standing. If the previous loop PR is open and unmerged, continue on it; if merged, cut a fresh
+   branch off latest `origin/main` and open a new draft PR at close-out. Pages deploys only on merge, so
+   deploy `success` is verified after merge, not in-session.
 6. Enter the iteration protocol; its first act is the stalest discovery pass.
 
 ## Session parameters
@@ -52,7 +55,7 @@ ratified protocol convention this skill contradicts, follow the ledger and flag 
 | Budget | **5 iterations**: 1 discovery pass + up to 4 fixes. A micro-feature costs 2. |
 | Scope guard | One concern per iteration, one commit per iteration. A fix that reveals a second problem logs it as a candidate — never chase it now. |
 | Verification debt | At most one unverified aspect outstanding; resolve or revert it before the next iteration, and end the session rather than accumulate a second. Never leave the tree mid-change. |
-| Variety governor | Max 2 iterations/session on one recurring-pattern class; max 2 touching one tool (each chrome page — index, resources, contact, privacy, terms, 404, **account** — is its own tool; a shared `js/` module counts as **every page that loads it**, so one such fix is that session's whole allowance for it). The pass charges the budget but not the caps. If the top candidate breaks a cap, take the highest-priority one that doesn't; priority still wins across sessions. Tie-break toward tools and patterns untouched in the last 2 sessions. |
+| Variety governor | Max 2 iterations/session on one recurring-pattern class; max 2 touching one tool (each chrome page — index, resources, contact, privacy, terms, 404, **account** — is its own tool; at most **one iteration per session** may change a shared script every page loads — `js/i18n.js`, `pwa.js`, the four backend modules — any of them, and that iteration does not also spend the per-page touches). The pass charges the budget but not the caps. If the top candidate breaks a cap, take the highest-priority one that doesn't; priority still wins across sessions. Tie-break toward tools and patterns untouched in the last 2 sessions. |
 
 **Backend boundary — the loop never changes the live project.** No migration applied, no Edge Function
 deployed, no key rotated, no policy or grant altered — and no gate makes it askable. `db/` is deliberately
@@ -62,6 +65,13 @@ hold for server state. A finding that needs one is logged as a Candidate or Feat
 **drafted as the next `db/migrations/NNNN_<name>.sql`, `Live?` = no**, and named in the close-out as
 maintainer work. The browser-side backend files (`js/ivrit-*.js`, `js/supabase-config.js`, `account.html`)
 are ordinary loop surface — verified by the smokes, not by the generic recipe.
+**Reading the live project is allowed and expected** where the Supabase connector is present — `list_migrations`,
+`list_tables`, `get_advisors`, `list_edge_functions`, `get_edge_function`, `query_logs` — and nothing else:
+`apply_migration`, `deploy_edge_function`, any `execute_sql` that writes, `pause_project` / `restore_project`,
+branch and key operations, and the workflow's `cron:` line are never the loop's, and no gate makes them askable.
+**Nothing from a live read — an e-mail, a user id, a row name, a log line — is written into the ledger, the
+findings file or a commit** (the ledger is public); a read that finds drift logs a Candidate naming the
+maintainer action only.
 
 ## Decision gates — ask the maintainer (AskUserQuestion, concise options, a recommended default)
 Small verified fixes stay autonomous. These decisions are the maintainer's:
@@ -131,8 +141,8 @@ run. A pass defined here but absent from the table (no ledgered removal or SKIP)
   included. A fix that reveals a new recurring shape registers it with its own health row. Retirement:
   3 consecutive clean sweeps, **unless consequence-critical** (security, data loss — those stay ACTIVE).
   **A2** (every 6th A, or when all patterns are retired): spot-check retired patterns; a hit un-retires.
-- **B. Console & error audit** — load every page headless; capture console errors/warnings and failed
-  requests on load and one basic interaction per tool.
+- **B. Console & error audit** — load every root page headless, `account.html` and the two harnesses
+  included; capture console errors/warnings and failed requests on load and one basic interaction per tool.
 - **C. Accessibility (one tool)** — keyboard-only walkthrough: focus order and visibility,
   Escape/Enter on modals, `aria-` on interactive SVG/canvas, reduced motion, contrast in both themes,
   touch-target size (WCAG 2.5.8 — C owns the `sub-floor touch target` pattern). These tools are
@@ -155,8 +165,9 @@ run. A pass defined here but absent from the table (no ledgered removal or SKIP)
   friction (extra clicks, missing defaults, unclear copy, dead ends, re-entering data another tool
   has). Frictions → P3 Candidates; missing small affordances → Feature seeds (the micro-feature
   intake). Never re-log a seed the maintainer struck.
-- **I. First-load & empty-state** — every tool in a fresh context (empty localStorage AND IndexedDB):
-  instructive empty states, no crash on absent keys, demo data paths, onboarding copy matches the UI.
+- **I. First-load & empty-state** — every tool and `account.html` in a fresh context (empty localStorage
+  AND IndexedDB — no `sb-*` key, no sync memory: the anonymous path): instructive empty states, no crash
+  on absent keys, demo data paths, onboarding copy matches the UI.
 - **K. i18n audit** — `node scripts/check-i18n.js`: Check A stays clean; Check B's backlog is the
   burndown (prefer sites whose CSV keys exist). Checks C, D and **E** are blocking — E keeps every
   `data-legal-block`'s slot count equal to its `\n` segments, which is what stops a privacy/terms edit
@@ -199,7 +210,8 @@ run. A pass defined here but absent from the table (no ledgered removal or SKIP)
   like nobody chose it?" using the Impeccable anti-pattern detector; how to run both arms, the DEGRADED
   rule, waiver syntax and rule-id ownership: `docs/reference/deslop-detector.md`. Triage every finding
   into: **tell** (O's, gated), **brand truth** (waive inline with the reason — gated: the site's
-  navy/gold/parchment, Frank Ruhl Libre, siddur identity is deliberate, and a finding that contradicts
+  navy/gold/parchment, Frank Ruhl Libre, siddur identity is deliberate, the Google "G" on the sign-in button is
+  official path data kept unmodified as Google's terms require and inline so no CSP grows, and a finding that contradicts
   a documented choice is a false positive), **another pass's** (file it there), or **detector wrong
   here** (record the rule id and why). O owns tells, not quality in general: contrast and legibility
   → C, refinement → M, main-thread cost → D, phone reachability → N; when both M and O could claim a
@@ -211,14 +223,21 @@ run. A pass defined here but absent from the table (no ledgered removal or SKIP)
 - **P. Accounts & cloud (one surface)** — the layer no other pass can see. Pick the least-recently-audited
   wired surface (the 7 tools, the hub's cloud panels, `account.html`). Arms, running what the surface has:
   **1** anonymous parity — the page's full localStorage dump byte-identical to a control run with the account
-  scripts blocked (`smoke-tools.mjs --only <file>`), the bar being that an anonymous visit is unchanged;
+  scripts blocked (`smoke-tools.mjs --only <file>`, with `--sdk` or its signed-in arms silently skip), the bar
+  being that an anonymous visit is unchanged;
   **2** signed-in behaviour through the matching smoke, never the generic recipe (see iteration step 4);
   **3** registry integrity — every `IVRIT_SYNC_REGISTRY` key registered at all three AllTools sites and in the
   page's own `IVRIT_CFG`, and the kind of data it carries named in `privacy.legal.*` / `terms.legal.*`
   (CLAUDE.md accounts rule 8); **4** every reset control on a syncing page calls `forgetRow(tool, kind)` — its
   absence turns a local reset into an account-wide one and nothing else detects it; **5** the two CSP origins
-  present exactly where the account scripts are, and nowhere else; **6** the four `js/` modules and
-  `account.html` in `sw.js` `CORE_ASSETS`; **7** `var TOOLS` still equal to `saves.tool`'s CHECK. **Control:**
+  present exactly where the account scripts are, and nowhere else, and every gtag page carrying the
+  `page_location` snippet with the same keys as `AUTH_QUERY_KEYS` (the A-sweep pattern owns detection; P
+  confirms the carrier count); **6** the four `js/` modules and `account.html` in `sw.js` `CORE_ASSETS`;
+  **7** `var TOOLS` still equal to `saves.tool`'s CHECK; **8** (connector present, read-only) the recorded
+  migrations plus `db/README.md`'s object queries against its `Live?` column (a hand-pasted migration has no
+  history row, so an absent record alone is not drift), the security and performance advisors clean,
+  `delete-account` deployed with its JWT check on and its deployed source equal to
+  `db/functions/delete-account/index.ts`, and the keep-alive's latest scheduled run green. **Control:**
   plant a defect — rename a registry key, delete a `forgetRow` call — and confirm the probe fires before any
   clean result counts; a fake cloud that answered nothing looks exactly like a layer with no bugs. Findings
   needing a migration, a deploy or a key stop at the backend boundary and are logged, not shipped.
@@ -229,7 +248,10 @@ run. A pass defined here but absent from the table (no ledgered removal or SKIP)
 - **Source:** only the ledger's Feature seeds (from pass H or explicit human request). Never invent one.
 - **Micro:** one tool (a declared cross-tool handshake pair is the sole exception), ≤ ~150 lines of
   diff, no dependencies, no build step, no `data/` edits, storage keys reconciled per CLAUDE.md in the
-  same commit, both themes, single-file conventions.
+  same commit, both themes, single-file conventions. Never across the backend boundary — no migration, no
+  deploy, no new `saves.tool` value; a seed that adds a synced key ships its registry row, its `omit` list and
+  its `privacy.legal.*` / `terms.legal.*` text and passes `smoke-sync` + `smoke-migration` in the same commit,
+  or it is not micro.
 - **Budget:** max 1 per session, costs 2 iterations (1 per touched tool against the caps). Skip when a
   P1 exists. Selection is gate 1; unattended default is skip and log.
 - **Verification:** the full step 4 plus a fresh-profile check and a `.ivrit` round-trip if state was
@@ -238,7 +260,9 @@ run. A pass defined here but absent from the table (no ledgered removal or SKIP)
   the ledger, log "attempted, split."
 
 ## Prioritization rubric
-P1 data loss, security, broken core function, export corruption · P2 silently wrong output, undo holes,
+P1 data loss, security, broken core function, export corruption, an account-wide deletion or overwrite (a
+reset pushed up, a sync that removes), a secret or session token reaching a page or analytics, an anonymous
+visit that downloads or calls the account layer · P2 silently wrong output, undo holes,
 a11y blockers · P3 performance, dead UI, confusing copy, consistency, paper-cuts · P4 polish.
 Tie-breakers: (1) teachers' saved work, (2) the printed/exported artifact, (3) dual-audience beats
 single, (4) untouched in the last 2 sessions, (5) smallest diff.
@@ -282,7 +306,8 @@ archive. Limits live in `scripts/ledger-rules.mjs`:
 5. **Summary**, then the recap. Summary: iterations, pass run and its result, patterns swept
    (hits/clean), micro-feature shipped/split, screenshots delivered (M/N/O rules), gates asked → answers,
    decisions deferred, protocol divergences to fold into this skill, and what a human must do (merge
-   the PR, verify the deploy). Then **"In simple terms, what did this loop session do?"** — a short,
+   the PR, verify the deploy, apply a drafted migration, redeploy a changed function, set the keep-alive's
+   `cron:` line from their own account if never done, re-enable the workflow if the Actions tab shows it off). Then **"In simple terms, what did this loop session do?"** — a short,
    jargon-free recap for a teacher: what visibly changed, what was checked and found fine, what to do
    next — ending with "run `/compact` now before the next session" (or, in a harness that
    auto-compacts, that this is covered). The loop keeps its state in the ledger, not the chat.
