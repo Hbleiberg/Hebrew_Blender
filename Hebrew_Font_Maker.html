@@ -968,8 +968,12 @@ footer a { display: inline-block; padding-block: 5px; }
   .hint-link:hover { filter: brightness(1.1); }
   .hint-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
   #unfinishedBtn { padding-block: 3px; }   /* alone in its row, so a 24px+ target; inline .hint-links stay text-sized */
-  /* Shared focus-visible ring for the custom controls (suite standard: 2px gold) */
-  .ltile:focus-visible, .wtab:focus-visible, .ctab:focus-visible, .tbtn:focus-visible, .mode-btn:focus-visible, .ctl-btn:focus-visible, .hbtn:focus-visible, .brush-tile:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  /* Shared focus-visible ring for the custom controls (suite standard: 2px gold).
+     .mode-btn is deliberately NOT in this list: its segments fill a .mode-toggle that is
+     overflow:hidden, so an OUTSET ring is clipped away entirely -- measured at 0 gold pixels in
+     both themes at 1280 and 800. It keeps its own rule above, outline-offset:-2px, the same
+     inset .npnl-mode-btn uses for the same reason. Adding it back here re-hides the ring. */
+  .ltile:focus-visible, .wtab:focus-visible, .ctab:focus-visible, .tbtn:focus-visible, .ctl-btn:focus-visible, .hbtn:focus-visible, .brush-tile:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
   /* ── Clickable letter chips in the export-warning modals ── */
   .lchip-wrap { max-height: 46vh; overflow: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5px 8px; margin-top: 12px; }
