@@ -2336,7 +2336,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       background:none; color:#1a2744; border:1px solid #1a2744;
     }
     .bingo-card-num, .bingo-card-header { background:none; color:#1a2744; border-bottom:1px solid #1a2744; }
-    .bingo-card-header span { border-left-color:#1a2744; }
+    /* border-color, not border-left-color: only the left edge carries a width, so this
+       recolours exactly that divider without introducing a physical property of its own. */
+    .bingo-card-header span { border-color:#1a2744; }
   }
 
   /* Font selector */
