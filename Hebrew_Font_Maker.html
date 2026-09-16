@@ -4170,7 +4170,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.45</strong> &mdash; <strong>Two fixes for working outside the Hebrew alphabet.</strong> <strong><span class="ui">Save letter &amp; next &rarr;</span> now stays in the tab you are working in.</strong> Drawing your way through the <span class="ui">English</span> tab, it saved the letter and then jumped straight back to the Hebrew alphabet &mdash; abandoning the other fifty-one English letters &mdash; and the <span class="ui">Custom glyphs</span> and <span class="ui">Wide letterforms</span> tabs did the same. It now moves to the next letter still missing an outline <em>in the tab you are actually in</em>, and the English tab's <span class="ui">Uppercase A&ndash;Z</span> / <span class="ui">Lowercase a&ndash;z</span> switch follows along, so the letter you land on is the one highlighted in the grid. <strong>And the <span class="ui">Sample text</span> box in the <span class="ui">Spacing</span> tab no longer reads backwards.</strong> The preview laid every character out right-to-left whatever you typed, so <span class="ui">Hello</span> drew <em>olleH</em> and <span class="ui">1234</span> drew <em>4321</em> &mdash; even the ready-made <span class="ui">Mixed</span> phrase, which exists precisely to show Hebrew beside digits and Latin, came out mangled. The preview now follows the same direction rules your browser does: Hebrew still runs right to left, English and numbers run left to right, and a line that mixes them puts each run where a reader expects it. <span style="color:var(--muted);">(September 2026)</span></li>
+      <li><strong>v5.45</strong> &mdash; <strong>Two fixes for working outside the Hebrew alphabet.</strong> <strong><span class="ui">Save letter &amp; next &rarr;</span> now stays in the tab you are working in.</strong> Drawing your way through the <span class="ui">English</span> tab, it saved the letter and then jumped straight back to the Hebrew alphabet &mdash; abandoning the other fifty-one English letters &mdash; and the <span class="ui">Custom glyphs</span> and <span class="ui">Wide letterforms</span> tabs did the same. It now moves to the next letter still missing an outline <em>in the tab you are actually in</em>, and the English tab's <span class="ui">Uppercase A&ndash;Z</span> / <span class="ui">Lowercase a&ndash;z</span> switch follows along, so the letter you land on is the one highlighted in the grid. <strong>And the <span class="ui">Sample text</span> box in the <span class="ui">Spacing</span> tab no longer reads backwards.</strong> The preview laid every character out right-to-left whatever you typed, so <span class="ui">Hello</span> drew <em>olleH</em> and <span class="ui">1234</span> drew <em>4321</em> &mdash; even the ready-made <span class="ui">Mixed</span> phrase, which exists precisely to show Hebrew beside digits and Latin, came out mangled. The preview now follows the same direction rules your browser does: Hebrew still runs right to left, English and numbers run left to right, and a line that mixes them puts each run where a reader expects it. The <span class="ui">Kerning</span> pair preview beside it follows the same rule — a Hebrew pair still puts the first letter on the right, an <span class="ui">A</span>/<span class="ui">V</span> pair puts it on the left — and its <span class="ui">First</span> / <span class="ui">Second</span> captions now name the side the glyph is actually on. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.44</strong> &mdash; <strong>Erasing part of a letter no longer stops you redrawing there.</strong> The <span class="ui">Erase</span> tool's <span class="ui">Sculpt</span> mode takes ink away by recording a hole in the paper &mdash; and that hole used to keep erasing forever, so any new stroke drawn through a patch you had already rubbed out vanished as you drew it, on screen and in the exported font. A sculpted hole now only takes away the ink that was already on the page when you swept it, exactly like a real eraser: rub something out, draw it again, and what you draw stays. Erasing still works on everything currently drawn, and sliding a stroke out from under an old hole still brings it back whole. <em>(September 2026)</em></li>
       <li><strong>v5.43</strong> &mdash; <strong>Save a project to your account.</strong> With a free IvritSuite account (the <span class="ui">☁ Sign in</span> button in the header) the <span class="ui">Save Project ▾</span> menu gains <span class="ui">Save to my account</span>: the project and its letter photos, at full size, are kept in your account and reopen from <span class="ui">Load Project ▾ → In your account</span> on any device. From then on changes keep saving by themselves (the ☁ badge next to Save shows Saved, Saving or Unsaved), a change made on another device is never overwritten without asking, and an exported font can be kept with the project. Your <code>.hebrewfont</code> files and the copies in this browser work exactly as before. <em>(September 2026)</em></li>
       <li><strong>v5.42</strong> &mdash; <strong><span class="ui">Reduce points</span> and <span class="ui">Round corners</span> stay on the letter you're editing.</strong> Nudging either slider and letting go on the value it started at left its before-snapshot armed, so the next letter you opened took the <strong>previous letter's outline</strong> the moment you touched the slider &mdash; clicking from letter to letter for a low-poly pass was impossible. The snapshot now clears whenever you change letters or steps, and the slider commits when it loses focus. <em>(September 2026)</em></li>
@@ -14278,11 +14278,11 @@ function renderKerningSection() {
   const sideUI = (which, s) => {
     // one label for the visible caption AND the input's accessible name, so the two
     // can never drift apart (the "–" placeholder is no name at all on its own)
-    const sideLabel = which === 'left' ? I18n.t('fontmaker.panels.kern_first') : I18n.t('fontmaker.panels.kern_second');
+    const sideLabel = kernSideCaption(which);   // "(right)" / "(left)" follows the pair's own direction
     return `
     <div style="flex:1;min-width:0;">
-      <div class="metric-sub" style="margin-bottom:3px;">${sideLabel}</div>
-      <input type="text" dir="rtl" maxlength="2" autocapitalize="off" autocorrect="off" spellcheck="false" ${s.cls ? 'disabled' : ''} value="${esc(kernSideDisplay(s))}"
+      <div class="metric-sub" id="kernCap-${which}" style="margin-bottom:3px;">${sideLabel}</div>
+      <input type="text" dir="auto" maxlength="2" autocapitalize="off" autocorrect="off" spellcheck="false" ${s.cls ? 'disabled' : ''} value="${esc(kernSideDisplay(s))}"
         oninput="setKernGlyph('${which}', this.value)" placeholder="–" aria-label="${esc(sideLabel)}"
         style="width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:5px;padding:5px;font-size:1.2rem;text-align:center;background:var(--white);color:var(--text);font-family:var(--heb-font);">
       <select onchange="setKernClass('${which}', this.value)" aria-label="${esc(sideLabel)}" style="width:100%;box-sizing:border-box;margin-top:4px;border:1px solid var(--border);border-radius:5px;padding:4px;font-size:0.72rem;background:var(--white);color:var(--text);">
@@ -14329,6 +14329,20 @@ function renderKerningSection() {
   renderSpacingPreview();   // keep the big multi-line sample in sync with every kerning add/update/delete
 }
 
+/* Which way round the pair being edited is drawn, and therefore which side each caption names.
+   Two cells through bidiOrder, so the kern preview, the sample preview and the side labels all read
+   the pair's direction from one place. A class side is judged by its representative glyph — the same
+   one the preview draws. Returns cell indices in left-to-right visual order. */
+function kernPairOrder() {
+  const e = kernEnsureEdit();
+  return bidiOrder([{ type: 'glyph', cp: kernSideCps(e.left)[0] }, { type: 'glyph', cp: kernSideCps(e.right)[0] }]);
+}
+function kernSideCaption(which) {   // 'left' = the FIRST glyph in reading order, 'right' = the second
+  const firstIsLeftmost = kernPairOrder()[0] === 0;
+  return which === 'left'
+    ? I18n.t(firstIsLeftmost ? 'fontmaker.panels.kern_first_ltr'  : 'fontmaker.panels.kern_first')
+    : I18n.t(firstIsLeftmost ? 'fontmaker.panels.kern_second_ltr' : 'fontmaker.panels.kern_second');
+}
 function renderKernPreview() {
   const svg = document.getElementById('kernPreviewSvg'); if (!svg || !project) return;
   const e = kernEnsureEdit(), em = effMetrics(), ascender = em.lamedAscender + 100, descender = em.descender - 50;
@@ -14341,10 +14355,19 @@ function renderKernPreview() {
   const cell = (l, w, pen) => (l && l.contours)
     ? `<path d="${glyphPathAt(l.contours, pen, 0, l.curves)}" fill="currentColor"/>`
     : `<rect x="${(pen+40).toFixed(0)}" y="${(-ascender+60).toFixed(0)}" width="${Math.max(20,w-80).toFixed(0)}" height="${(ascender-60).toFixed(0)}" rx="10" fill="none" stroke="currentColor" stroke-dasharray="7 6" opacity="0.3"/>`;
-  let pen = total, body = '';        // RTL: pen starts at the right edge and walks left; the first glyph sits rightmost
-  pen -= wa; body += cell(la, wa, pen);
-  pen -= gap;                        // ← the kern: + opens the gap, − closes it (same value the FEA emits)
-  pen -= wb; body += cell(lb, wb, pen);
+  // The pair is drawn in ITS OWN direction, through the same bidiOrder the sample preview uses — a
+  // Hebrew pair still puts the first glyph on the right, an A/V pair puts it on the left, and the two
+  // previews can never disagree about a pair they both show. The stored pair stays in LOGICAL
+  // (reading) order either way, which is what the exported `kern` feature wants; only the drawing
+  // flips. The kern sits between the two: + opens the gap, − closes it (the value the FEA emits).
+  const items = [{ l: la, w: wa }, { l: lb, w: wb }];
+  let pen = 0, body = '';
+  kernPairOrder().forEach((ci, vi) => {
+    const it = items[ci];
+    body += cell(it.l, it.w, pen);
+    pen += it.w;
+    if (vi === 0) pen += gap;
+  });
   const pad = 30, vw = Math.max(total, 200);
   svg.setAttribute('viewBox', `${-pad} ${(-ascender-pad).toFixed(0)} ${(vw+2*pad).toFixed(0)} ${(ascender-descender+2*pad).toFixed(0)}`);
   svg.style.color = (getComputedStyle(document.body).getPropertyValue('--text')||'').trim() || (document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744');
@@ -14356,6 +14379,8 @@ function setKernGlyph(which, v) {
   if (ch) { e[which].cp = ch.codePointAt(0).toString(16).toUpperCase().padStart(4,'0'); e[which].cls = ''; }
   renderKernPreview();
   renderSpacingPreview();   // live: typing a glyph also updates the big sample preview
+  ['left','right'].forEach(w => { const c = document.getElementById('kernCap-' + w);   // typing a Latin letter can flip the pair's direction
+    if (c) c.textContent = kernSideCaption(w); });                                     // in place, for the same reason the button below is
   const btn = document.getElementById('kernAddBtn');        // refresh label without re-rendering (keeps input focus)
   // fontmaker.panels.kern_update / kern_add have shipped translated since the panel landed; the
   // ternary here just never asked for them.

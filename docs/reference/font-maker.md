@@ -305,6 +305,16 @@ string in an element with `dir="auto"`, read each character's x with a `Range`, 
 orders cell-by-cell. Doing that is what caught W7 and the EN-leans-R rule in N1 — both were wrong on
 the first pass and both looked plausible.
 
+The **kerning pair preview** reads its direction from the same place: `kernPairOrder()` runs the
+pair's two representative code points through `bidiOrder`, `renderKernPreview` walks that order from
+the left edge, and `kernSideCaption()` picks `kern_first`/`kern_second` ("(right)"/"(left)") or their
+`_ltr` twins from the same answer — so the caption can never name a side the preview does not draw
+on. A class side is judged by the representative glyph the preview already draws. The stored pair
+stays in **logical (reading) order** whichever way it is drawn, because that is what the exported
+`kern` feature wants; only the drawing flips. `setKernGlyph` refreshes both captions in place, for
+the same reason it refreshes the Add/Update button rather than re-rendering: a full rebuild would
+drop focus mid-typing, and typing a Latin letter can flip the pair's direction.
+
 ### QA Check grid (`#qaOverlay`)
 `qaBuild()` counts flagged cells per tab into `qaResult.counts` (the tab badges) and `qaResult.total`
 (the summary); `qaRenderGrid()` draws `qaRows()` × `qaColumns(qaTab)`. The grid is built in **two
