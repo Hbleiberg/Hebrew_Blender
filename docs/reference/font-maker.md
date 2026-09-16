@@ -148,6 +148,62 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   while typing or when ask/help/QA overlays are open), and register the shortcut in BOTH the `?`
   cheat sheet (`shortcutGroups()`) and the triggering button's `title=` tooltip.
 
+### The two dots on a שׁ/שׂ placement screen
+`precompTakesHolam(pc)` (base ש + mark ׁ/ׂ) is the **only** form that draws two draggable dots: the
+orange one is the form's own mark (`#pcMark`, dragged via `.pcanc`), the blue one is
+`precompHolamAnchor` — where a following holam attaches on that dotted letter (`#pcHolamMark`, via
+`.pcholam`). Both visible at once IS the stacking check for this case, so they are meant to overlap.
+
+Because they overlap, each carries its **name on the canvas** (`precompDotLabel`): `precompName(pc)`
+for the orange, `gName(markName('05B9'))` for the blue — both already-localized name tables, so this
+added no strings. The orange label sits above its dot and the blue below, so they stay apart when the
+dots coincide, and colour is never the only thing telling them apart. Labels are knocked out in
+`stageColors().paper` (the stage's own `var(--white)` background, per theme) and carry
+`pointer-events:none`, or they would steal the drag from the handle underneath.
+
+`precompLabelPos` clamps into `_stageVBEdges`, the frame the current render is actually showing: a
+shin-dot rides above its letter, so on a tall glyph an unclamped label would be drawn off the top of
+the canvas. `movePrecompLabel` reuses that same function during a drag — `renderStage()` re-lays
+everything on pointerup, so it only has to cover the live drag. **Single-dot forms get no label**;
+there is nothing to disambiguate, and the panel already names the one colour.
+
+### Theme changes and baked ink
+The preview SVGs draw with `currentColor` and have that colour **set explicitly on each render**
+(`_previewInkColor()` — `--text`, falling back to the literal pair). Nothing about a dark-mode switch
+reaches a baked colour on its own, so `toggleDark` has to re-run the renders — and it used to list
+them by hand, which is how the kerning pair preview got missed: it kept whichever ink was current
+when the Spacing tab last rendered, and after a toggle back to light its two glyphs sat there in pale
+dark-mode grey. **`reinkPreviews()` is now the single list**, and a new baked-ink preview is added
+there, not to `toggleDark`. Each call no-ops when its host element is absent, so it is safe to call
+on any theme change.
+
+The QA grid bakes its ink too and is deliberately *not* in that list: `.overlay` is `position:fixed;
+inset:0`, so it covers the header and the dark toggle cannot be reached while the grid is open, and
+`openQA()` rebuilds it on every open. There is no OS-theme listener either — `toggleDark` is the only
+path a live page changes theme by, which is what makes one list sufficient.
+
+### Coordinate range — why a build can die in fontTools
+Every glyph's bounding box is packed as **int16** in `glyf`, so a single point past ±**32767** fails the
+whole build with `struct.error: 'h' format requires …` — a Python traceback that names no glyph. The
+normal workflow cannot reach it: the tracer's px→unit map (`ifx`/`ify`) is a fixed linear one bounded
+by the stage, and `drawFrame` clamps drawn ink, so a full project with every optional surface on and
+letters pushed to the stage corners tops out around 2,200 units — roughly 15× inside the limit.
+
+**Typed numbers are the way in, so they are clamped at the source.** `_XFORM_CLAMP` is declared above
+`xformMatrix` and used by *both* the live sliders and `xformMatrix` itself, because the Apply button
+hands the raw number field straight through — that path clamped only the floor, so a typed `5000`
+scaled an outline 50×. The mark editor's piece fields are bounded the same way (`ME_POS_MAX` /
+`ME_SIZE_MAX`); a dot's radius already reused its slider's 8–200.
+
+`glyphRangeError(spec)` is the backstop, called by **both** build paths right after `buildFontSpec()`
+and before Pyodide ever runs: it walks every glyph's contours *and* its curve control points (a
+control point can sit outside a polygon that fits) and returns a translated message naming the
+letters, which each call site shows in its own idiom — `buildFontBytes` throws it for Preview PDF's
+catch, the export path shows the build-fail modal. It exists for a project that already carries such
+a point, from a build before those clamps, an import, or a hand-edited `.hebrewfont`. Letter labels
+are `esc()`d because both call sites drop the message into `innerHTML` and a custom glyph's name is
+the teacher's own text.
+
 ### Export delivery — Send / Share / Save as
 
 **Two destinations, one flow.** `FM_SEND_DESTS` maps a dest key → `{addr(), titleKey, subjectKey,
@@ -229,6 +285,21 @@ export-warning chips) legitimately use the `_` versions plus `gotoAnchors('nikku
 After mutating state, call `renderStage(); renderControls();` (+ `renderGrids()` if tile status or
 selection changed) — `afterUndo` shows the canonical full refresh.
 
+**Not every letter is a Hebrew letter, and `LETTER_ORDER` only knows the Hebrew ones.** English
+(`.eng`), custom glyphs (`.custom`) and wide forms (`.wideGlyph`) are `project.letters` entries at
+code points `LETTER_ORDER` has never heard of, so any cycler that indexes into it gets `-1` and
+silently restarts at alef — walking the user out of the tab they were working in. Each one owns an
+ordered list instead: `ENGLISH_CPS` (A–Z, a–z, then the import-only accented forms) for English, and
+a `project.letters` filter on the flag for the other two. `_placementCycleCps` (the ◀/▶ and `[`/`]`
+cycle, traced letters only) and `_drawCycleCps` (Save letter & next, untraced only) are the two, and
+they resolve the category in the same precedence `_selectItem` uses to pick `catTab` — so a cycle can
+never land on a letter that belongs to a different tab than the one it started in.
+
+`_selectItem` also syncs `englishCase`, because the English grid renders **one case at a time**: the
+tab alone is not enough, and landing on a lowercase letter while the switch still reads
+`Uppercase A–Z` leaves the tile off-screen with nothing highlighted. `engMeta(cp).case` covers both
+bands (A–Z/a–z carry their own case; every import-only form is `'accent'`).
+
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);
 the OUTLINE the rest of the app works with only exists once `drawCommit` runs the tracer, and
@@ -267,6 +338,38 @@ A carve is fixed in letter space and NOT attached to a stroke, so sliding a stro
 of its own generation brings it back whole, and a carve over blank paper subtracts nothing. Caps:
 `DRAW_STROKE_MAX` / `DRAW_CARVE_MAX` are the runtime ceilings **and** `sanitizeDraw`'s reload
 ceilings — they must stay equal, or a reload silently drops ink the editor let you place.
+
+### Spacing preview — sample-text direction
+`spacingPreviewLayout` returns `order`, the cell indices in **left-to-right visual order**, and
+`spacingLineSVG` always walks it with the pen starting at the left edge. An all-Hebrew line is
+unchanged by this (its order is simply reversed), but the panel used to lay out every sample
+right-to-left unconditionally, so `Hello` drew *olleH*, `1234` drew *4321*, and the shipped `Mixed`
+test phrase — the one that exists to show Hebrew beside digits and Latin — mangled both of its
+non-Hebrew runs.
+
+`bidiOrder` is the slice of UAX #9 the panel needs, and no more: **P2/P3** (base direction from the
+first strong character; nothing strong → the page's own `dir`, which is what `dir="auto"` on the
+input box resolves to, so box and preview cannot disagree), **W7** (a number following a Latin
+letter *becomes* Latin — this is what keeps `v5.45` and the space after it in one run), **N1/N2**
+(neutrals take the surrounding direction, and a number that stayed a number counts as R when
+resolving them), and **L2**'s run reversal. Two embedding levels is the whole ladder: a plain text
+field has no markup to nest deeper. Kerning stays a *logical* pair, so `spacingLineSVG` applies
+`gaps[min(a,b)]` only between visual neighbours still adjacent in reading order.
+
+Any change here is checked against **Chromium's own bidi**, not against reasoning: render the same
+string in an element with `dir="auto"`, read each character's x with a `Range`, and compare the two
+orders cell-by-cell. Doing that is what caught W7 and the EN-leans-R rule in N1 — both were wrong on
+the first pass and both looked plausible.
+
+The **kerning pair preview** reads its direction from the same place: `kernPairOrder()` runs the
+pair's two representative code points through `bidiOrder`, `renderKernPreview` walks that order from
+the left edge, and `kernSideCaption()` picks `kern_first`/`kern_second` ("(right)"/"(left)") or their
+`_ltr` twins from the same answer — so the caption can never name a side the preview does not draw
+on. A class side is judged by the representative glyph the preview already draws. The stored pair
+stays in **logical (reading) order** whichever way it is drawn, because that is what the exported
+`kern` feature wants; only the drawing flips. `setKernGlyph` refreshes both captions in place, for
+the same reason it refreshes the Add/Update button rather than re-rendering: a full rebuild would
+drop focus mid-typing, and typing a Latin letter can flip the pair's direction.
 
 ### QA Check grid (`#qaOverlay`)
 `qaBuild()` counts flagged cells per tab into `qaResult.counts` (the tab badges) and `qaResult.total`

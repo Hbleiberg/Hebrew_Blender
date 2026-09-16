@@ -9,6 +9,12 @@
      Auth + PostgREST + Storage + the delete-account Edge Function. Update this when adding any external
      script/font/fetch/iframe (see CLAUDE.md). -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<!-- Clickjacking guard. This page manages an account, so it is never legitimately embedded; the
+     tool pages are left framable on purpose (a teacher may embed one in an LMS). frame-ancestors would
+     be the right instrument, but it is IGNORED in a <meta> tag (measured) and GitHub Pages serves no
+     custom headers, so refusing to render is the only mitigation available here. Runs before any
+     content so a framed load never paints the real page. -->
+<script>if (window.top !== window.self) document.documentElement.classList.add('ivframed');</script>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -34,7 +40,14 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-CMLC81Z0HC');
+  // The sign-in return leg carries ?code= (and ?error…): the Supabase SDK still needs them in the URL,
+  // and js/ivrit-account.js strips them — but only once it has run, which is after this tag. Report the
+  // cleaned URL so no authorization code or error text ever reaches Analytics. The key list mirrors
+  // AUTH_QUERY_KEYS in js/ivrit-account.js; a deferred module cannot be read from here.
+  gtag('config', 'G-CMLC81Z0HC', { page_location: (function () {
+    try { var u = new URL(location.href); ['code', 'error', 'error_code', 'error_description'].forEach(function (k) { u.searchParams.delete(k); }); return u.toString(); }
+    catch (e) { return location.href; }
+  })() });
 </script>
 <title>Your Account | IvritSuite</title>
 <meta name="description" content="Manage your optional IvritSuite account: see what it holds, download everything in it as one file, or delete the account and everything in it.">
@@ -193,6 +206,12 @@ footer a:hover{text-decoration:underline;}
     scroll-behavior: auto !important;
   }
 }
+/* Clickjacking guard (see the <head> note): framed, the page shows only a link out. */
+#framedOut { display: none; }
+html.ivframed #framedOut { display: block; max-inline-size: 34rem; margin: 18vh auto 0; padding: 0 24px; text-align: center; }
+html.ivframed body > *:not(#framedOut) { display: none !important; }
+html.ivframed #framedOut h2 { margin-block-end: 12px; }
+html.ivframed #framedOut p { color: var(--muted); margin-block-end: 20px; }
 @media print {
   body, body.dark, html.dark-early body {
     --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fff;
@@ -204,6 +223,12 @@ footer a:hover{text-decoration:underline;}
 </style>
 </head>
 <body>
+
+<div id="framedOut" role="alert">
+  <h2 data-i18n="account.framed.head">This page can't be shown inside another site</h2>
+  <p data-i18n="account.framed.body">Your account settings open only on ivritsuite.com, so no one can place a fake page over them.</p>
+  <a class="hbtn" href="/account.html" target="_top" data-i18n="account.framed.link">Open your account →</a>
+</div>
 
 <header>
   <span class="star">✡︎</span>

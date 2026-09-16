@@ -87,6 +87,19 @@ read IVRIT_SUPABASE
   and every page's synchronous analytics snippet sends `page_view` with the full URL before any
   deferred script could clean it. PKCE leaves only a one-time `?code=`, useless without the verifier
   stored in the browser that started the flow.
+  **The one-time `?code=` is still kept out of Analytics.** `stripAuthParams` cleans the address bar,
+  but it lives in a deferred module and the inline `gtag('config', …)` runs during parse, so GA4's
+  default `page_location` (= `document.location.href`) carried the code and any `?error_description=`.
+  Every carrier's `config` call therefore passes an **explicit `page_location`** with the four
+  `AUTH_QUERY_KEYS` removed. `location.href` itself must stay intact — the SDK reads `?code=` from it
+  to complete the exchange — so never "simplify" this by cleaning the URL before the SDK runs, and
+  keep the key list in step with `AUTH_QUERY_KEYS` (an inline tag cannot read a deferred module).
+- **`account.html` refuses to render in a frame**; the tool pages stay embeddable on purpose, so a
+  teacher can put one in an LMS. `frame-ancestors` is not an option: it is **ignored in a `<meta>` tag**
+  (measured — the same directive works as an HTTP header) and GitHub Pages serves no custom headers.
+  So an inline script sets `.ivframed` on `<html>` when `window.top !== window.self` and CSS hides
+  everything but a `target="_top"` link out. Deleting an account was never clickjackable anyway: it
+  needs the account's own email typed into a field.
 - **Email sends a 6-digit code.** `signInWithOtp` (`shouldCreateUser: true`) sends it; `verifyOtp`
   (type `email`) signs in anywhere — another device, a mail app's in-app browser, the installed PWA.
   The dashboard templates (*Confirm signup* for a person's first email, *Magic Link* after that) are
