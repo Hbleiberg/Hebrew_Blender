@@ -1917,7 +1917,7 @@
         if (!w) { closeAccount(); window.location.href = '/index.html?alltools=open'; }
       });
       card.appendChild(dev);
-      card.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_download_note', 'Restore a file with Import / Export All Settings on the home page.')));
+      card.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_download_note', 'Restore a file with Import / Export All Settings on the home page: it is merged into what is on that device (per-device settings such as zoom and panel layout are not in it).')));
       var manage = el('a', 'ivsav-acct-manage', t('shared.cloud.acct_manage_link', 'Manage your account: download everything or delete the account…'));
       manage.href = '/account.html';
       card.appendChild(manage);
