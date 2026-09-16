@@ -50,7 +50,14 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-CMLC81Z0HC');
+  // The sign-in return leg carries ?code= (and ?error…): the Supabase SDK still needs them in the URL,
+  // and js/ivrit-account.js strips them — but only once it has run, which is after this tag. Report the
+  // cleaned URL so no authorization code or error text ever reaches Analytics. The key list mirrors
+  // AUTH_QUERY_KEYS in js/ivrit-account.js; a deferred module cannot be read from here.
+  gtag('config', 'G-CMLC81Z0HC', { page_location: (function () {
+    try { var u = new URL(location.href); ['code', 'error', 'error_code', 'error_description'].forEach(function (k) { u.searchParams.delete(k); }); return u.toString(); }
+    catch (e) { return location.href; }
+  })() });
 </script>
 <title>Hebrew Worksheet Generator — Bingo & Drills | IvritSuite</title>
 <meta name="description" content="Generate printable Hebrew decoding worksheets, bingo cards, and vocabulary drills. Customize letters, vowels, and difficulty for emerging Hebrew readers.">
