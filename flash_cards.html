@@ -425,8 +425,12 @@ body.fs-idle #fsBtn:not(:focus-visible) { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { #fsBtn { transition-duration: 0.001ms !important; } }
 .h-right { display: flex; gap: 6px; align-items: center; }
 /* Narrow screens: the header now also carries the language switcher, so shrink the controls
-   (and the title) to keep everything on one row without horizontal overflow. */
-@media (max-width: 440px) {
+   (and the title) to keep everything on one row without horizontal overflow.
+   486px is this page's MEASURED overflow ceiling, not a device width: the header overflows from
+   442px up to 486px and fits above it, so the gate ends where the break does. The title's own
+   row move is part of the lever here — the grid's auto track only yields once the 1fr column is
+   empty — so the whole block moves together. Re-measure when the header gains a control. */
+@media (max-width: 486px) {
   .app-header { gap: 4px; padding-inline: 8px; }
   /* The title shares a grid row with the Home button and the whole right-hand cluster, so at
      phone widths its 1fr column collapses to ~53px and the h1 breaks into six lines — 21.5%

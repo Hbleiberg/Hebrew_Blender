@@ -1434,13 +1434,18 @@ body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — the row is
    flex-shrink:0, so nothing makes it wrap until something caps its width. This page needs
    the header itself to wrap too: capping .hright alone leaves the title block and the button
-   row competing for one line. Scoped to 480px, not the 430px its sibling pages use: .hright's
-   right edge is 451.4px here, so the row still overflowed at 431-451. Measured inert from 480
-   up — header heights at 480/520/560/600/680/720/768/900/1024/1280 are identical with the rules
-   forced on and with them off. */
-@media (max-width: 480px) {
+   row competing for one line. Scoped to this page's own MEASURED overflow ceiling rather than
+   a device width, the way 480 was once picked over its siblings' 430 — and for the same reason
+   it has had to move again: the account chip widened .hright, so the row overflowed from 482px
+   up to 534px. The gate ends exactly where the break does, so no width that already fits is
+   touched. Re-measure whenever the header gains a control. */
+@media (max-width: 534px) {
   header { flex-wrap:wrap; }
   .hright { flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
+}
+/* The presentation toolbar keeps its own 480px scope: it is not a header lever, it fits at every
+   width in the header's band, and its separators are a visible change wherever it is applied. */
+@media (max-width: 480px) {
   /* The presentation toolbar's plate is 340px wide (six 44px buttons, 6px gaps, two separators,
      9px padding) inside an inset-inline:0 bar, so at 320px it spilled 10px past BOTH edges and
      clipped A− and ⚙ (measured S334 on the iPhone SE descriptor). Drop the two decorative

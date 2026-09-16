@@ -1817,9 +1817,17 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     header h1 { font-size: 1.15rem; }
     header p { display: none; }
   }
-  @media (max-width: 600px) {
+  /* The header's second overflow band. Above 600px the .hbtn labels come back and the button
+     row is 560px wide again, so it overflowed from 602px up to 652px — measured, and the reason
+     the wrap gate above stops at 558 instead of swallowing the 560-600 widths that already fit.
+     Closing it by shrinking rather than wrapping is this page's own idiom; the gate is the
+     measured ceiling. The date/time scaling keeps its own 600px scope — it is a projection
+     size, not a header lever, and nothing up here should move it. */
+  @media (max-width: 652px) {
     .hbtn { padding: 6px 8px; font-size: 0.78rem; }
     .hbtn .hbtn-label { display: none; }
+  }
+  @media (max-width: 600px) {
     /* Scale, never restate — see the body.fullscreen note. */
     .heb-date { font-size: calc(var(--heb-date-size) * 0.769); }
     .current-time { font-size: calc(var(--time-size) * 0.765); }
@@ -1829,11 +1837,19 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
      page sideways (WCAG 1.4.10 reflow). max-width is the operative half — the row is
      flex-shrink:0, so nothing makes it wrap until something caps its width. This page needs
      the header itself to wrap too: capping .hright alone leaves the title block and the button
-     row competing for one line. Scoped to 430px because unscoped it moves the header at
-     desktop widths (S223 lever matrix). */
-  @media (max-width: 430px) {
+     row competing for one line. Scoped, because unscoped it moves the header at desktop widths
+     (S223 lever matrix, re-run and still true: forced on everywhere the wrap rules move 377
+     layouts that currently fit). 558px is this page's MEASURED overflow ceiling for this band,
+     not a device width — the row overflows from 432px up to 558px and fits above it, so the
+     gate ends where the break does. The page's second band, 602-652, is not this rule's: it is
+     the .hbtn labels reappearing above their own gate, closed there. */
+  @media (max-width: 558px) {
     header { flex-wrap:wrap; }
     .hright { flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
+  }
+  /* The settings drawer keeps its own 430px scope: it is not a header lever, and its own note
+     below is explicit that widening it is a desktop change made in service of phones. */
+  @media (max-width: 430px) {
     /* Segmented controls wrap on phones. .panel is overflow:hidden and .form-row does not wrap, so
        a group wider than the drawer is CLIPPED with no scrollbar and no way to reach it: at 320px
        the "Long" date format measured 0% visible and elementFromPoint returned null, i.e. the

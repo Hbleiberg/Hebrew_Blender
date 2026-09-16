@@ -2020,6 +2020,16 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
 
   @page { margin: 0.35in; }
 
+  /* The header's overflow band sits just ABOVE the MOBILE gate: the switcher and the account
+     chip widened the nav row, so it overflowed from 702px up to 732px (measured) while the rest
+     of the page is still correctly in its desktop layout there. So the header's wrap lever gets
+     its own gate at that measured ceiling, and the MOBILE block — which stacks the sidebar and
+     rebuilds the whole layout — keeps its 700px scope. Re-measure when the header gains a
+     control. */
+  @media (max-width: 732px) {
+    header { flex-wrap: wrap; row-gap: 8px; }
+  }
+
   /* ── MOBILE ── */
   @media (max-width: 700px) {
     header {
