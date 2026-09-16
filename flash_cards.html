@@ -8062,9 +8062,13 @@ function showResults() {
     const cls = s === true ? 'good' : s === false ? 'bad' : '';
     const mark = s === true ? '✓' : s === false ? '✗' : '–';
     // Learning content: pin the Hebrew rtl/lang; the emoji wrapper stays ltr.
+    // esc() like the .rtr line below: in Words mode a card's face is whatever a pasted share
+    // code embedded (applySettings' `wordsInline`), i.e. untrusted text, never markup. Every
+    // card face already escapes it — colorizeHebrew() escapes each cluster, the print sheet's
+    // fcsCell() calls esc() — and this list was the one place that interpolated it raw.
     const middle = c.emoji
-      ? `<span class="rheb" style="display:flex;align-items:center;gap:10px;direction:ltr;" dir="ltr"><span style="font-size:1.6rem;flex-shrink:0;line-height:1;">${c.emoji}</span><span style="direction:rtl;font-family:var(--heb-font);" lang="he" dir="rtl">${c.heb}</span></span>`
-      : `<span class="rheb" lang="he" dir="rtl">${c.heb}</span>`;
+      ? `<span class="rheb" style="display:flex;align-items:center;gap:10px;direction:ltr;" dir="ltr"><span style="font-size:1.6rem;flex-shrink:0;line-height:1;">${esc(c.emoji)}</span><span style="direction:rtl;font-family:var(--heb-font);" lang="he" dir="rtl">${esc(c.heb)}</span></span>`
+      : `<span class="rheb" lang="he" dir="rtl">${esc(c.heb)}</span>`;
     return `
       <li class="result-item ${cls}">
         <span class="rmark">${mark}</span>
