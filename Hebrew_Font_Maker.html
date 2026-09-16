@@ -3422,6 +3422,10 @@ function _selectItem(kind, cp) {
              : (project.font.addSpecialForms && SPECIAL_TARGETS.indexOf(cp) >= 0) ? 'specialforms' : 'letter')
          : isCustomCp(cp) ? 'customglyphs'
          : (kind === 'letter' && letterMeta(cp) && letterMeta(cp).cat === 'punct') ? 'punct' : kind;   // keep the picker on the edited item's category (English → English tab; custom → Custom glyphs; punct → Punctuation)
+  // The English grid shows ONE case at a time, so the tab alone is not enough: landing on a lowercase
+  // letter while the switch still reads Uppercase left the tile off-screen and nothing highlighted.
+  // engMeta covers both bands (A-Z/a-z carry their case, the import-only forms are all 'accent').
+  if (kind === 'letter' && isEng(cp)) { const em = engMeta(cp); if (em && em.case) englishCase = em.case; }
   renderGrids();
   // Cycling letter→letter while placing nikkud should STAY on the Nikkud/Trop page (final adjustments
   // shouldn't re-open the step every click). _setWorkMode('anchors') auto-falls back to Align for
@@ -3949,7 +3953,7 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
-const FONT_MAKER_VERSION = '5.44';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.45';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -4166,6 +4170,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.45</strong> &mdash; <strong><span class="ui">Save letter &amp; next &rarr;</span> stays in the tab you are working in.</strong> Drawing your way through the <span class="ui">English</span> tab, it saved the letter and then jumped straight back to the Hebrew alphabet &mdash; abandoning the other fifty-one English letters &mdash; and the <span class="ui">Custom glyphs</span> and <span class="ui">Wide letterforms</span> tabs did the same. It now moves to the next letter still missing an outline <em>in the tab you are actually in</em>, and the English tab's <span class="ui">Uppercase A&ndash;Z</span> / <span class="ui">Lowercase a&ndash;z</span> switch follows along, so the letter you land on is the one highlighted in the grid. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.44</strong> &mdash; <strong>Erasing part of a letter no longer stops you redrawing there.</strong> The <span class="ui">Erase</span> tool's <span class="ui">Sculpt</span> mode takes ink away by recording a hole in the paper &mdash; and that hole used to keep erasing forever, so any new stroke drawn through a patch you had already rubbed out vanished as you drew it, on screen and in the exported font. A sculpted hole now only takes away the ink that was already on the page when you swept it, exactly like a real eraser: rub something out, draw it again, and what you draw stays. Erasing still works on everything currently drawn, and sliding a stroke out from under an old hole still brings it back whole. <em>(September 2026)</em></li>
       <li><strong>v5.43</strong> &mdash; <strong>Save a project to your account.</strong> With a free IvritSuite account (the <span class="ui">☁ Sign in</span> button in the header) the <span class="ui">Save Project ▾</span> menu gains <span class="ui">Save to my account</span>: the project and its letter photos, at full size, are kept in your account and reopen from <span class="ui">Load Project ▾ → In your account</span> on any device. From then on changes keep saving by themselves (the ☁ badge next to Save shows Saved, Saving or Unsaved), a change made on another device is never overwritten without asking, and an exported font can be kept with the project. Your <code>.hebrewfont</code> files and the copies in this browser work exactly as before. <em>(September 2026)</em></li>
       <li><strong>v5.42</strong> &mdash; <strong><span class="ui">Reduce points</span> and <span class="ui">Round corners</span> stay on the letter you're editing.</strong> Nudging either slider and letting go on the value it started at left its before-snapshot armed, so the next letter you opened took the <strong>previous letter's outline</strong> the moment you touched the slider &mdash; clicking from letter to letter for a low-poly pass was impossible. The snapshot now clears whenever you change letters or steps, and the slider commits when it loses focus. <em>(September 2026)</em></li>
@@ -4304,7 +4309,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_44','v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4317,7 +4322,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_44';
+  const CUR_KEY = 'fontmaker.changelog.v5_45';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -10178,11 +10183,25 @@ async function _drawCommitNow(advance) {
   renderLetterGrid(); renderStage(); renderControls();
   if (advance && n) drawAdvance();
 }
-function drawAdvance() {   // next Hebrew letter without contours (digits/punct excluded — reachable by grid click)
-  const i = LETTER_ORDER.indexOf(curCp);
-  for (let k = 1; k <= LETTER_ORDER.length; k++) {
-    const cp = LETTER_ORDER[(i + k) % LETTER_ORDER.length];
-    const meta = letterMeta(cp); if (meta && meta.cat === 'punct') continue;
+/* The code points "Save letter & next →" walks — the CURRENT tab's letters, not always the Hebrew
+   alphabet. English / custom glyphs / wide forms live in project.letters at code points that are NOT
+   in LETTER_ORDER, so a LETTER_ORDER-only cycle found indexOf() === -1 and restarted at alef: saving
+   an English letter threw you out of the English tab and abandoned the other 51. Precedence mirrors
+   _selectItem's catTab assignment, so the letter we land on can never belong to a different tab than
+   the one we came from. Punctuation stays out of the Hebrew cycle (it ships a default outline and is
+   reachable by grid click) — the other categories have no punctuation to skip. */
+function _drawCycleCps() {
+  const mine = f => (project.letters || []).filter(f).map(x => x.codepoint);
+  if (isEng(curCp)) return ENGLISH_CPS.filter(cp => (project.letters || []).some(x => x.codepoint === cp && x.eng));   // A-Z, a-z, then any imported accented forms
+  if (wideGlyphItemFor(curCp)) return mine(x => x.wideGlyph);
+  if (isCustomCp(curCp)) return mine(x => x.custom);
+  return LETTER_ORDER.filter(cp => { const m = letterMeta(cp); return !(m && m.cat === 'punct'); });
+}
+function drawAdvance() {   // next letter in THIS tab without contours
+  const order = _drawCycleCps(); if (!order.length) return;
+  const i = order.indexOf(curCp);
+  for (let k = 1; k <= order.length; k++) {
+    const cp = order[(i + k + order.length) % order.length];
     const t = project.letters.find(x => x.codepoint === cp);
     if (t && !t.contours) { selectItem('letter', cp); return; }
   }

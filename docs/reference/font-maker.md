@@ -229,6 +229,21 @@ export-warning chips) legitimately use the `_` versions plus `gotoAnchors('nikku
 After mutating state, call `renderStage(); renderControls();` (+ `renderGrids()` if tile status or
 selection changed) — `afterUndo` shows the canonical full refresh.
 
+**Not every letter is a Hebrew letter, and `LETTER_ORDER` only knows the Hebrew ones.** English
+(`.eng`), custom glyphs (`.custom`) and wide forms (`.wideGlyph`) are `project.letters` entries at
+code points `LETTER_ORDER` has never heard of, so any cycler that indexes into it gets `-1` and
+silently restarts at alef — walking the user out of the tab they were working in. Each one owns an
+ordered list instead: `ENGLISH_CPS` (A–Z, a–z, then the import-only accented forms) for English, and
+a `project.letters` filter on the flag for the other two. `_placementCycleCps` (the ◀/▶ and `[`/`]`
+cycle, traced letters only) and `_drawCycleCps` (Save letter & next, untraced only) are the two, and
+they resolve the category in the same precedence `_selectItem` uses to pick `catTab` — so a cycle can
+never land on a letter that belongs to a different tab than the one it started in.
+
+`_selectItem` also syncs `englishCase`, because the English grid renders **one case at a time**: the
+tab alone is not enough, and landing on a lowercase letter while the switch still reads
+`Uppercase A–Z` leaves the tile off-screen with nothing highlighted. `engMeta(cp).case` covers both
+bands (A–Z/a–z carry their own case; every import-only form is `'accent'`).
+
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);
 the OUTLINE the rest of the app works with only exists once `drawCommit` runs the tracer, and
