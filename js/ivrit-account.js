@@ -297,7 +297,7 @@
   function pendingErrorText() {
     if (!pendingError) return '';
     if (pendingError.code === 'link_other_browser') return t('shared.account.error_link_other_browser', 'That link was opened in a different browser. Enter the code from the email here instead.');
-    if (pendingError.code === 'otp_expired' || /expired|invalid/.test(String(pendingError.description || '').toLowerCase())) return t('shared.account.error_expired', 'That sign-in link has expired. Request a new one.');
+    if (pendingError.code === 'otp_expired' || /expired|invalid/.test(String(pendingError.description || '').toLowerCase())) return t('shared.account.error_expired', 'That sign-in code or link has expired. Request a new one.');
     return t('shared.account.error_finish', "Couldn't finish signing in. Please try again.");
   }
 
@@ -609,7 +609,7 @@
     emailInput.placeholder = t('shared.account.email_placeholder', 'you@school.org');
     emailInput.value = lastEmail;
     emailLabel.appendChild(emailInput);
-    var send = el('button', 'ivacct-item', t('shared.account.send_code', 'Email me a sign-in link and code'));
+    var send = el('button', 'ivacct-item', t('shared.account.send_code', 'Email me a sign-in code'));
     send.type = 'submit';
 
     var codeWrap = el('div', 'ivacct-code');
@@ -638,7 +638,7 @@
         setBusy(false);
         menuStage = 'code';
         codeWrap.hidden = false;
-        setNote(t('shared.account.code_sent', 'We emailed a sign-in link and a code to {email}. Click the link, or type the code here.', { email: email }), false);
+        setNote(t('shared.account.code_sent', 'We emailed a 6-digit code to {email}. Type it here.', { email: email }), false);
         codeInput.focus();
       }).catch(function (err) { setBusy(false); setNote(errorText(err), true); });
     });
