@@ -382,6 +382,11 @@
       '.ivacct-item:hover:not([aria-disabled="true"]){background:var(--warm-gray,#e8e0d0);}' +
       'body.dark .ivacct-item:hover:not([aria-disabled="true"]){background:#2a3349;}' +
       '.ivacct-item[aria-disabled="true"]{opacity:.55;cursor:default;}' +
+      // The Google item is the one menu row with artwork: flex so the mark sits on the leading edge
+      // (inline-start, so it follows the Hebrew UI to the right) and the label keeps the row's start
+      // alignment. Its size is set in px, not em, because the mark must stay legible as a mark.
+      '.ivacct-item.ivacct-gbtn{display:flex;align-items:center;gap:8px;}' +
+      '.ivacct-gmark{inline-size:18px;block-size:18px;flex-shrink:0;}' +
       '.ivacct-label{display:block;margin-block:8px 3px;font-size:0.78rem;color:var(--muted,#6b6050);}' +
       '.ivacct-input{display:block;inline-size:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--border,#c8bfa8);border-radius:6px;' +
         'background:var(--white,#fff);color:inherit;font:inherit;}' +
@@ -402,6 +407,34 @@
     if (cls) n.className = cls;
     if (text !== undefined && text !== null) n.textContent = text;
     return n;
+  }
+
+  // Google's four-colour "G" for the sign-in row. Built inline rather than fetched or set as a
+  // background `data:` URI so that no carrier page's CSP changes and an offline visitor still sees it.
+  // The path data is the official mark, unmodified — Google's branding terms allow it on a sign-in
+  // button only as-is (no recolouring, no reshaping). It is `aria-hidden`: the button's own text
+  // already says Google, so a screen reader would otherwise announce the brand twice.
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+  var GOOGLE_G = [
+    ['#EA4335', 'M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z'],
+    ['#4285F4', 'M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z'],
+    ['#FBBC05', 'M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z'],
+    ['#34A853', 'M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z']
+  ];
+  function googleMark() {
+    // setAttribute, not .className — on an SVG element that property is a read-only SVGAnimatedString.
+    var svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('class', 'ivacct-gmark');
+    svg.setAttribute('viewBox', '0 0 48 48');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    for (var i = 0; i < GOOGLE_G.length; i++) {
+      var path = document.createElementNS(SVG_NS, 'path');
+      path.setAttribute('fill', GOOGLE_G[i][0]);
+      path.setAttribute('d', GOOGLE_G[i][1]);
+      svg.appendChild(path);
+    }
+    return svg;
   }
   function initialsOf(u) {
     var name = (u && u.name) || '';
@@ -608,8 +641,10 @@
     // Signed out (anonymous, or offline with no remembered account): the sign-in form.
     var form = el('form', 'ivacct-form');
     form.setAttribute('novalidate', '');
-    var google = el('button', 'ivacct-item', t('shared.account.google', 'Continue with Google'));
+    var google = el('button', 'ivacct-gbtn ivacct-item');
     google.type = 'button';
+    google.appendChild(googleMark());
+    google.appendChild(el('span', null, t('shared.account.google', 'Continue with Google')));
     google.addEventListener('click', function () {
       setBusy(true);
       setNote(t('shared.account.sending', 'Sending…'), false);
