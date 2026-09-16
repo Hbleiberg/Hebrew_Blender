@@ -528,6 +528,15 @@
     chip.open = true;
     chip.btn.setAttribute('aria-expanded', 'true');
     document.addEventListener('pointerdown', onDocPointer, true);
+    // The clamp above is a measurement, so it goes stale the moment the viewport moves: a rotation
+    // or a window resize with the menu open leaves the shift computed for the OLD width. Measured
+    // across the nine carriers, opening wide and then narrowing: 15 of 32 cells leave the viewport,
+    // the worst 202px of a 282px menu on the generator -- the same geometry clampMenu() exists to
+    // prevent, arrived at from the other direction. Re-clamp rather than close, which is what the
+    // pages' own tree menus do on resize: this menu holds a typed email and a 6-digit code mid
+    // sign-in, and a phone's on-screen keyboard fires resize just by focusing that field.
+    window.addEventListener('resize', clampMenu);
+    window.addEventListener('orientationchange', clampMenu);
     var items = focusables();
     if (items.length) items[0].focus();
     // Warm the SDK while the person reads the menu, so the first real click is quick; a failure
@@ -548,6 +557,8 @@
     chip.open = false;
     chip.btn.setAttribute('aria-expanded', 'false');
     document.removeEventListener('pointerdown', onDocPointer, true);
+    window.removeEventListener('resize', clampMenu);
+    window.removeEventListener('orientationchange', clampMenu);
     if (refocus) chip.btn.focus();
   }
   function setNote(text, isError) {
