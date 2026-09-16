@@ -30,6 +30,13 @@ pre{background:var(--warm-gray);padding:10px;border-radius:6px;overflow:auto;fon
 .ok{color:#2e7d32;font-weight:600;} .fail{color:var(--danger-text);font-weight:600;}
 ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
 .hint{color:var(--muted);font-size:0.85rem;}
+/* The same header-wrap gate the 14 real pages carry (98fc581): without it the control row
+   cannot wrap and pushes the dark toggle off a 320px screen. 464px is that commit's measured
+   overflow ceiling, not a phone width. */
+@media (max-width:464px){
+  header{flex-wrap:wrap;}
+  .hright{flex-wrap:wrap;max-width:100%;justify-content:flex-end;}
+}
 </style>
 </head>
 <body>

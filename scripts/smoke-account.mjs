@@ -12,6 +12,8 @@
  *   E. URL contracts: an auth error return keeps ?s= and loses the error params; a ?code= with no
  *      verifier is stripped and explained.
  *   F. Hebrew UI + dark mode at 800 px renders the chip in Hebrew (screenshots in the scratch dir).
+ *   G. Real phone widths (320 / 390, EN + HE): the open menu and the page itself both stay
+ *      inside the viewport. 800 px is a tablet — F cannot see a phone overflow.
  *
  * Run from the repo root:  node scripts/smoke-account.mjs [--sdk path/to/supabase.js]
  * Needs the repo served on http://localhost:8080 — the script starts python3 -m http.server itself.
@@ -176,6 +178,31 @@ try {
     await page.screenshot({ path: path.join(SHOTS, 'F-he-dark-800.png') });
     check('F: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
+  }
+  // ---- G. Real phone widths ------------------------------------------------------------------
+  // F's 800 px is a tablet, and every one of the 17 phone overflows pass N found in S389 was
+  // invisible to it. 320 / 390 are the narrowest widths the suite targets; the open menu is the
+  // widest thing the chip can put on screen, and it is measured in both directions because an RTL
+  // menu overflows off the other edge. The document is measured too: a menu that fits while the
+  // header it hangs from does not is still a sideways-scrolling page.
+  for (const width of [320, 390]) {
+    for (const he of [false, true]) {
+      const seed = he ? { hebrewBlender_lang: 'he', hebrewBlender_darkMode: '1' } : {};
+      const { ctx, page, errors } = await openPage(browser, { seed, viewport: { width, height: 700 } });
+      await page.click('.ivacct-btn');
+      await page.waitForSelector('.ivacct-menu:not([hidden])', { timeout: 3000 });
+      const box = await page.evaluate(() => {
+        const r = document.querySelector('.ivacct-menu').getBoundingClientRect();
+        const d = document.documentElement;
+        return { l: Math.round(r.left), r: Math.round(r.right), w: innerWidth, sw: d.scrollWidth, cw: d.clientWidth };
+      });
+      const tag = `G: ${width}px ${he ? 'he' : 'en'}`;
+      check(`${tag} — menu stays inside the viewport`, box.l >= 0 && box.r <= box.w, JSON.stringify(box));
+      check(`${tag} — the page does not scroll sideways`, box.sw <= box.cw, JSON.stringify(box));
+      check(`${tag} — 0 pageerrors`, errors.length === 0, errors.join(' | '));
+      await page.screenshot({ path: path.join(SHOTS, `G-${width}-${he ? 'he' : 'en'}.png`) });
+      await ctx.close();
+    }
   }
 } finally {
   await browser.close();
