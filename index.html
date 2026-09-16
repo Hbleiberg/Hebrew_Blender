@@ -460,14 +460,14 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <textarea id="ieTextarea" wrap="off" placeholder="Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…" data-i18n-placeholder="home.alltools.textarea_placeholder" aria-label="Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…" data-i18n-aria-label="home.alltools.textarea_placeholder" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
         <div><button class="ie-action-btn secondary" onclick="copyIEText()" id="ieCopyBtn" data-i18n="home.alltools.copy_button">Copy to Clipboard</button></div>
       </div>
-      <div id="myFontsSection" style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
+      <div id="myFontsSection" style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
         <h4 style="margin:0 0 4px;font-size:0.95rem;"><span data-i18n="home.alltools.myfonts.title">★ My IvritSuite Fonts</span> <span id="myFontsCount" style="font-weight:400;font-size:0.8rem;opacity:0.7;"></span></h4>
         <p class="ie-note" style="margin:0 0 8px;" data-i18n-html="home.alltools.myfonts.note">Fonts you built in the <a href="Hebrew_Font_Maker.html">Hebrew Font Maker</a> — or any <b>.ttf / .otf / .woff</b> you upload — are saved in this browser. Use one across every tool, download it, or remove it.</p>
         <label class="ie-action-btn secondary" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin-bottom:8px;"><span data-i18n="home.alltools.myfonts.upload_button">⬆ Upload a font</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPickIndex(this)"></label>
         <div id="myFontsList"></div>
       </div>
       <!-- Cloud saves (optional accounts): one shared js/ivrit-saves.js panel per tool, mounted by initCloudSaves() -->
-      <div id="cloudSavesSection" style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
+      <div id="cloudSavesSection" style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
         <h4 style="margin:0 0 4px;font-size:0.95rem;" data-i18n="home.alltools.cloud.title">☁ Cloud saves</h4>
         <p class="ie-note" style="margin:0 0 8px;" data-i18n="home.alltools.cloud.note">One panel per tool: what is saved in this browser next to the copies in your account. A change made in both places to a student profile, a class list or a word list is merged inside that tool.</p>
         <details class="ie-cloud-tool"><summary data-i18n="shared.cloud.kind_suite_prefs">IvritSuite preferences</summary><div class="ie-cloud-host" data-tool="Suite"></div></details>
@@ -478,7 +478,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <details class="ie-cloud-tool"><summary data-i18n="home.card.trope.name">Trope Tutor</summary><div class="ie-cloud-host" data-tool="TropeTutor"></div></details>
         <details class="ie-cloud-tool"><summary data-i18n="home.card.dashboard.name">Hebrew Classroom Dashboard</summary><div class="ie-cloud-host" data-tool="Dashboard"></div></details>
       </div>
-      <div style="margin-top:14px;border-top:1px solid rgba(0,0,0,0.12);padding-top:12px;">
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
         <button class="ie-action-btn danger" onclick="eraseAllSettings()" data-i18n="home.alltools.erase_button">🗑 Erase All Settings</button>
       </div>
     </div>
@@ -599,7 +599,7 @@ async function renderMyFontsManager() {
   }
   list.forEach(f => {   // rows via DOM (names are user-controlled → no innerHTML)
     const row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid rgba(0,0,0,0.08);flex-wrap:wrap;';
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--border);flex-wrap:wrap;';
     const nm = document.createElement('span');
     nm.style.cssText = 'flex:1 1 120px;min-width:0;font-weight:600;font-size:0.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
     nm.textContent = f.name; nm.title = f.name;
