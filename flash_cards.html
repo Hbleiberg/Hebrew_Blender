@@ -501,28 +501,28 @@ body.dark .panel-title {
   font-size: 0.95rem;
   transition: background 0.15s, transform 0.05s, border-color 0.15s;
 }
-.btn:hover { background: var(--paper); }
+.btn:hover:not([disabled]):not([aria-disabled="true"]) { background: var(--paper); }
 .btn:active { transform: scale(0.97); }
 .btn.primary {
   background: var(--navy);
   color: var(--gold-light);
   border-color: var(--navy);
 }
-.btn.primary:hover { background: var(--navy-soft); }
+.btn.primary:hover:not([disabled]):not([aria-disabled="true"]) { background: var(--navy-soft); }
 .btn.gold {
   background: var(--gold);
   color: var(--navy);
   border-color: var(--gold);
   font-weight: 700;
 }
-.btn.gold:hover { background: var(--gold-light); }
+.btn.gold:hover:not([disabled]):not([aria-disabled="true"]) { background: var(--gold-light); }
 .btn.play { color: var(--good); border-color: var(--good); background: transparent; }
-.btn.play:hover { background: var(--good-soft); }
+.btn.play:hover:not([disabled]):not([aria-disabled="true"]) { background: var(--good-soft); }
 .btn.danger { color: var(--bad); border-color: var(--bad); background: transparent; }
-.btn.danger:hover { background: var(--bad-soft); }
+.btn.danger:hover:not([disabled]):not([aria-disabled="true"]) { background: var(--bad-soft); }
 .btn.ghost { background: transparent; border-color: var(--border); }
 .btn.sm { padding: 6px 10px; font-size: 0.85rem; border-radius: 8px; }
-.btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
 
 .btn-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .btn-row.center { justify-content: center; }
