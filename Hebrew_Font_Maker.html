@@ -20345,7 +20345,12 @@ async function downloadTemplate(kind, fmt) {
   const spec = TEMPLATE_SPECS[kind];
   if (!spec) return;
   if (typeof html2canvas !== 'function' || (fmt === 'pdf' && pdfLibsMissing(false))) {
-    askModal(I18n.t('fontmaker.modals.template_error_title'), I18n.t('fontmaker.modals.pdf_libs_offline_body'), [{ label:I18n.t('fontmaker.modals.ok') }]);
+    // Name the builder that is actually missing. A PNG sheet needs only html2canvas, so the PDF
+    // message sent a teacher who asked for an image looking for the wrong thing; and a PDF whose
+    // jsPDF arrived but whose html2canvas did not is an image failure too.
+    const bodyKey = (fmt === 'pdf' && pdfLibsMissing(false))
+      ? 'fontmaker.modals.pdf_libs_offline_body' : 'fontmaker.modals.image_libs_offline_body';
+    askModal(I18n.t('fontmaker.modals.template_error_title'), I18n.t(bodyKey), [{ label:I18n.t('fontmaker.modals.ok') }]);
     return;
   }
   status(I18n.t('fontmaker.status.building_template', {title: I18n.t(spec.titleKey)}), true);

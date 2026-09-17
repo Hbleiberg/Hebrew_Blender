@@ -2388,6 +2388,7 @@
   "fontmaker.modals.help_shortcuts": "⌨ קיצורים",
   "fontmaker.modals.help_take_tour": "▶ צאו לסיור",
   "fontmaker.modals.help_title": "איך זה עובד?",
+  "fontmaker.modals.image_libs_offline_body": "לא ניתן היה לטעון את בונה התמונות. בדקו את חיבור האינטרנט שלכם, ואז טענו מחדש את הדף ונסו שוב.",
   "fontmaker.modals.import": "ייבוא",
   "fontmaker.modals.import_anchors_none": "אמקם אותם אוטומטית.",
   "fontmaker.modals.import_bold_after": "להפוך למודגש אחרי הייבוא (נפתחת תצוגה מקדימה של משקל)",

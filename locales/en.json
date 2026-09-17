@@ -2388,6 +2388,7 @@
   "fontmaker.modals.help_shortcuts": "⌨ Shortcuts",
   "fontmaker.modals.help_take_tour": "▶ Take a tour",
   "fontmaker.modals.help_title": "How does this work?",
+  "fontmaker.modals.image_libs_offline_body": "Couldn't load the image builder. Check your internet connection, then reload the page and try again.",
   "fontmaker.modals.import": "Import",
   "fontmaker.modals.import_anchors_none": "I'll place them automatically.",
   "fontmaker.modals.import_bold_after": "Make it bolder after import (opens a weight preview)",
