@@ -1,4 +1,5 @@
 key,en,he,context,notes
+account.a11y.skip_to_account,Skip to your account,דילוג לחשבון שלכם,Skip-link (a11y),aria/skip-link
 account.header.title,IvritSuite — Your account,IvritSuite — החשבון שלכם,Account page header title,
 account.header.tagline,What your account holds · Download everything · Delete your account,מה יש בחשבון · הורדת הכול · מחיקת החשבון,Account page header tagline,
 account.header.back_link,← Back,← חזרה,header back button,leading-arrow
@@ -64,6 +65,7 @@ account.gone.head,Your account was deleted,החשבון שלכם נמחק,Accoun
 account.gone.body,"Your account and everything in it are gone. Everything saved on this device stays exactly as it was, and you can keep using every tool without an account.","החשבון שלכם וכל מה שהיה בו נמחקו. כל מה ששמור במכשיר הזה נשאר בדיוק כפי שהיה, ואפשר להמשיך להשתמש בכל הכלים בלי חשבון.",Account page final text after deletion,
 account.gone.counts,"Deleted: {items}, {projects}, {files}.","נמחקו: {items}, {projects}, {files}.",Account page final line after deletion (account.count fragments),template
 account.gone.home,Back to the home page,חזרה לעמוד הבית,Account page link after deletion,
+contact.a11y.skip_to_form,Skip to the form,דילוג לטופס,Skip-link (a11y),aria/skip-link
 contact.donate.open_paypal,Open PayPal →,פתחו את PayPal →,donation button,
 contact.donate.open_venmo,Open Venmo →,פתחו את Venmo →,donation button,
 contact.donate.tab_paypal,PayPal,PayPal,donation tab,
@@ -93,6 +95,7 @@ contact.lede,"Have a question, found a bug, or have an idea for a new feature? I
 contact.page_title,Contact & Support,יצירת קשר ותמיכה,page title,
 contact.support_body,"IvritSuite is free, and it always will be — no account required, no ads, no paywalls. If these tools have been useful in your classroom or learning, a small donation helps cover the development and upkeep that keep them running and growing. It's entirely optional, and deeply appreciated. Thank you.","IvritSuite חינמי, ותמיד יישאר כך — ללא צורך בחשבון, ללא פרסומות, ללא תשלום. אם הכלים האלה הועילו לכם בכיתה או בלמידה, תרומה קטנה מסייעת לכסות את הפיתוח והתחזוקה ששומרים עליהם פעילים ומתפתחים. זה לגמרי אופציונלי, ומוערך מאוד. תודה.",tile body,
 contact.support_heading,Support IvritSuite,תמכו ב-IvritSuite,tile heading,
+dashboard.a11y.skip_to_board,Skip to the board,דילוג ללוח,Skip-link (a11y),aria/skip-link
 dashboard.about.faq_a1,"It displays the live Hebrew date, time, weather, and days of the week for use on classroom SmartBoards or projectors during morning routine and Hebrew instruction.","מציג בזמן אמת את התאריך העברי, השעה, מזג האוויר וימות השבוע — לשימוש על לוחות חכמים או מקרנים בכיתה במהלך שגרת הבוקר והוראת העברית.",FAQ answer,
 dashboard.about.faq_a2,"Yes. The dashboard is designed for SmartBoards, projectors, and large displays. A built-in fullscreen mode and zoom control let you size content for any classroom screen.","כן. לוח המחוונים מתוכנן ללוחות חכמים, מקרנים ומסכים גדולים. מצב מסך מלא מובנה ופקד זום מאפשרים להתאים את גודל התוכן לכל מסך כיתתי.",FAQ answer,
 dashboard.about.faq_a3,Yes. The dashboard is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes.,כן. לוח המחוונים חינמי לשימוש תחת רישיון CC BY-NC-SA 4.0 למטרות חינוכיות לא-מסחריות.,FAQ answer,
@@ -612,6 +615,7 @@ dashboard.weather.wmo_snow_grains,Snow Grains,גרגרי שלג,weather descript
 dashboard.weather.wmo_snow_showers,Snow Showers,ממטרי שלג,weather description,
 dashboard.weather.wmo_thunderstorm,Thunderstorm,סופת רעמים,weather description,
 dictionary.a11y.skip_results,Skip past results,דלג על התוצאות,keyboard bypass link before the results grid,
+dictionary.a11y.skip_to_dictionary,Skip to the dictionary,דילוג למילון,Skip-link (a11y),aria/skip-link
 dictionary.advanced.color_enable,Enable color coding,הפעלת צביעה,color coding checkbox,
 dictionary.advanced.color_head,Color Code Nikkud,צביעת ניקוד,advanced section title,
 dictionary.advanced.color_mode_highlight,Highlight,הדגשה,color mode button,
@@ -1000,6 +1004,7 @@ dictionary.wordlists.head_desc,Save selected words as a named list you can reuse
 dictionary.wordlists.head_tip,"Save selected words as a named list stored across the whole site, so you can reuse it in other tools.","שמרו מילים נבחרות כרשימה בעלת שם המאוחסנת בכל האתר, כדי לעשות בה שימוש חוזר בכלים אחרים.",word-lists tooltip,
 dictionary.wordlists.manager_button,📚 Word Lists,📚 רשימות מילים,open word-lists manager button,leading-emoji
 dictionary.wordlists.save_button,⭑ Save as Word List…,⭑ שמירה כרשימת מילים…,save word-list button,leading-emoji
+flashcards.a11y.skip_to_cards,Skip to the cards,דילוג לכרטיסים,Skip-link (a11y),aria/skip-link
 flashcards.advanced.audio_label,Audio,שמע,advanced toggle label,
 flashcards.advanced.backup_head,Backup Presets,גיבוי הגדרות,advanced subheading,
 flashcards.advanced.cloud_head,Cloud saves,שמירות בענן,Advanced Settings sub-section heading (hosts the shared cloud-saves panel),
@@ -1375,6 +1380,7 @@ flashcards.words.load_failed,"Couldn't load the word list. Check your internet c
 flashcards.words.loading_dict,Loading dictionary…,טוען מילון…,words-pool count while loading,toast
 flashcards.words.pool_count.one,{count} word in pool,מילה אחת במאגר,words-pool count,plural
 flashcards.words.pool_count.other,{count} words in pool,{count} מילים במאגר,words-pool count,plural
+fontmaker.a11y.skip_to_workspace,Skip to the workspace,דילוג לסביבת העבודה,Skip-link (a11y),aria/skip-link
 fontmaker.about.about_intro,About Hebrew Font Maker. Version {version}. Developed by Harrison Bleiberg.,אודות יוצר הגופנים העברי. גרסה {version}. פותח על ידי Harrison Bleiberg.,about tab body,help prose
 fontmaker.about.changelog_heading,Changelog,יומן שינויים,about section heading,
 fontmaker.about.changelog_history,Beta version history,היסטוריית גרסאות בטא,about drawer summary,
@@ -3117,6 +3123,7 @@ fontmaker.workspace.resize_right_aria,Resize right panel,שינוי גודל ה�
 fontmaker.workspace.steps_aria,Workspace step,שלב עבודה,workspace step tablist,aria-label only
 fontmaker.stage.canvas_aria,Glyph editing canvas — {glyph},משטח עריכת התו — {glyph},glyph edit canvas aria-label,aria-label only; {glyph}=localized glyph name
 fontmaker.stage.detect_canvas_aria,Letter detection canvas — drag to adjust the box around each letter,משטח זיהוי אותיות — גררו כדי להתאים את התיבה סביב כל אות,auto-detect modal canvas aria-label,aria-label only
+home.a11y.skip_to_tools,Skip to the tools,דילוג לכלים,Skip-link (a11y),aria/skip-link
 home.alltools.copy_button,Copy to Clipboard,העתקה ללוח,button,
 home.alltools.copy_done,✓ Copied,✓ הועתק,button state,leading-emoji
 home.alltools.copy_err_empty,Nothing to copy — export first.,אין מה להעתיק — ייצאו קודם.,alert,
@@ -3213,6 +3220,7 @@ home.contact_link,✉️ Contact & Support,✉️ יצירת קשר ותמיכה
 home.header.brand,IvritSuite,IvritSuite,header wordmark,brand name
 home.header.tagline,Tools for Hebrew literacy instruction,כלים להוראת אוריינות עברית,header subtitle,
 home.hero.subtitle,Free Hebrew Learning Tools for Teachers and Students,כלים חינמיים ללימוד עברית למורים ולתלמידים,hero subheading,
+notfound.a11y.skip_to_links,Skip to the links,דילוג לקישורים,Skip-link (a11y),aria/skip-link
 notfound.header.brand,IvritSuite,IvritSuite,header wordmark,brand name
 notfound.header.tagline,Tools for Hebrew literacy instruction,כלים להוראת אוריינות עברית,header subtitle,
 notfound.home_button,← Back to the Promised Home Page,← חזרה לדף הבית המובטח,primary button,leading-arrow
@@ -3224,6 +3232,7 @@ notfound.quip,"We tried to blend it back together from a few stray letters — b
 notfound.subtitle,"We searched right-to-left <em>and</em> left-to-right, but this page is nowhere to be found <span class=""heb-inline"">(לֹא נִמְצָא, <em>lo nimtza</em>)</span>. It may have slipped out for a snack and forgotten its vowels.","חיפשנו מימין לשמאל <em>וגם</em> משמאל לימין, אבל הדף הזה איננו <span class=""heb-inline"">(לֹא נִמְצָא, <em>lo nimtza</em>)</span>. ייתכן שהוא יצא לחטיף ושכח את התנועות שלו.",hero subtitle,html; mixed UI+content; contains Hebrew
 notfound.title,This page wandered off for forty years.,הדף הזה תעה במדבר ארבעים שנה.,hero title,
 notfound.tool_links_intro,Or wander somewhere useful:,או שוטטו למקום מועיל:,tool links intro,
+privacy.a11y.skip_to_policy,Skip to the policy,דילוג למדיניות,Skip-link (a11y),aria/skip-link
 privacy.effective_date,"Effective date: September 14, 2026",תאריך תחילה: 14 בספטמבר 2026,effective date line,
 privacy.header.back_link,← Back,← חזרה,header back button,leading-arrow
 privacy.header.tagline,How we handle your data,כיצד אנו מטפלים בנתונים שלכם,header subtitle,
@@ -3266,6 +3275,7 @@ pwa.aria.dismiss,Dismiss,סגירה,banner close aria-label,aria-label only
 pwa.aria.label,Install IvritSuite,התקנת IvritSuite,install banner aria-label,aria-label only
 pwa.install.android,Install web app?,להתקין את האפליקציה?,install banner text (Android),
 pwa.install.ios,Install Web App: Tap Share → Add to Home Screen,התקנת האפליקציה: הקישו שיתוף ← הוספה למסך הבית,install banner text (iOS),
+resources.a11y.skip_to_resources,Skip to the resources,דילוג למשאבים,Skip-link (a11y),aria/skip-link
 resources.card.grades_prefix,Grades: {gradeLabel},כיתות: {gradeLabel},resource card grade line,mixed UI+content — do not translate {gradeLabel}
 resources.card.visit_link,Visit resource,מעבר למשאב,resource card link,
 resources.cat_badge.culture,Culture,תרבות,resource card category badge,
@@ -3407,7 +3417,6 @@ resources.suggest.title,✚ Suggest a Resource,✚ הצעת משאב,modal heade
 resources.suggest.url_placeholder,https://…,https://…,input placeholder,
 resources.view.fonts,🔤 Fonts,🔤 גופנים,view toggle button,leading-emoji
 resources.view.links,📚 Links,📚 קישורים,view toggle button,leading-emoji
-shared.a11y.skip_to_content,Skip to main content,דילוג לתוכן הראשי,keyboard bypass link at the top of every page,aria/skip-link; shared
 shared.corpus.retry_button,↻ Try again,↻ נסו שוב,in-place retry for a failed corpus/data load (converged model; torah keeps its own torah.reading.retry_button),leading-emoji; mirrors torah.reading.retry_button
 shared.darkmode.label_dark,🌙 Dark,🌙 כהה,Dark-mode toggle label (shown when light),"leading-emoji; shared (labeled variant: 404, dictionary)"
 shared.darkmode.label_light,☀️ Light,☀️ בהיר,Dark-mode toggle label (shown when dark),"leading-emoji; shared (labeled variant: 404, dictionary)"
@@ -3614,6 +3623,7 @@ shared.tour.done,Done,סיום,Guided tour final button,shared
 shared.tour.end,End tour,סיים סיור,Guided tour close (aria-label on ✕),aria-label; shared
 shared.tour.next,Next,הבא,Guided tour nav button,shared
 shared.tour.step_counter,Step {count} of {total},שלב {count} מתוך {total},Guided tour step counter,mixed UI+content — {count}/{total} numeric; shared
+terms.a11y.skip_to_terms,Skip to the terms,דילוג לתנאים,Skip-link (a11y),aria/skip-link
 terms.effective_date,"Effective date: September 14, 2026",בתוקף מיום: 14 בספטמבר 2026,effective date line,"REVIEW: legal copy — Hebrew draft, confirm wording"
 terms.header.back_link,← Back,← חזרה,header back button,leading-arrow
 terms.header.tagline,How you may use the site,כיצד מותר להשתמש באתר,header subtitle,"REVIEW: legal copy — Hebrew draft, confirm wording"
@@ -4237,6 +4247,7 @@ trope.tradition.primary_label,Primary trope names,שמות הטעמים העיק
 trope.tradition.primary_tip,"Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'.","שני השמות מוצגים תמיד בכל כרטיס; כאן בוחרים איזה מהם מוביל. שימו לב להתנגשות הקלאסית: 'פשטא' האשכנזי הוא 'קדמא' הספרדי, בעוד 'קדמא' האשכנזי הוא 'אזלא' הספרדי.",tooltip,
 trope.tradition.sephardi,Sephardi,ספרדי,radio label,
 trope.a11y.skip_to_tutor,Skip to the tutor,דלגו למאמן,Skip-link (a11y),aria/skip-link
+worksheet.a11y.skip_to_worksheet,Skip to the worksheet,דילוג לדף העבודה,Skip-link (a11y),aria/skip-link
 worksheet.actions.copy_link,🔗 Copy shareable link,🔗 העתק קישור לשיתוף,action button,leading-emoji
 worksheet.actions.copy_link_title,Copy shareable link,העתק קישור לשיתוף,mobile FAB button title,aria-label only
 worksheet.actions.disabled_hint,Generate a worksheet first,צרו קודם דף עבודה,disabled-button title + FAB toast,
