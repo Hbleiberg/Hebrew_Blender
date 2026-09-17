@@ -129,6 +129,10 @@ main a{color:var(--gold-text);text-decoration:underline;}
 main a:hover{color:var(--gold-text-hover);}
 .tile{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);border-radius:12px;padding:22px 24px;box-shadow:0 2px 10px rgba(0,0,0,0.05);margin-block-end:22px;}
 .tile.danger{border-top-color:var(--danger-text);}
+/* deleteNow() focuses #acctGone so the result is announced; without this it takes the UA's default
+   1px black ring, which is off-token here and near-invisible on the dark surface. Same gold as every
+   other ring on the page. :focus-visible, so a teacher who clicked with a mouse sees no ring at all. */
+#acctGone:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 .muted{color:var(--muted);}
 .note{font-size:0.88rem;color:var(--muted);margin-bottom:12px;line-height:1.55;}
 .status{margin-top:10px;font-size:0.9rem;color:var(--muted);min-height:1.3em;overflow-wrap:anywhere;}
@@ -310,9 +314,13 @@ html.ivframed #framedOut p { color: var(--muted); margin-block-end: 20px; }
     </section>
   </div>
 
-  <!-- Deleted -->
-  <section class="tile" id="acctGone" hidden>
-    <h2 data-i18n="account.gone.head">Your account was deleted</h2>
+  <!-- Deleted. tabindex="-1" so deleteNow() can move focus here: showing this tile hides the one
+       holding #delGo, which drops focus to <body> — the screen reader's last words are "Deleting your
+       account…" from a #delStatus now inside the hidden subtree, and the keyboard's next Tab starts
+       back at the header. aria-labelledby matches the four sections above, so the move announces this
+       tile by its own heading. -->
+  <section class="tile" id="acctGone" tabindex="-1" aria-labelledby="goneHead" hidden>
+    <h2 id="goneHead" data-i18n="account.gone.head">Your account was deleted</h2>
     <p data-i18n="account.gone.body">Your account and everything in it are gone. Everything saved on this device stays exactly as it was, and you can keep using every tool without an account.</p>
     <p class="muted" id="goneCounts"></p>
     <p><a href="/" data-i18n="account.gone.home">Back to the home page</a></p>
@@ -593,6 +601,7 @@ async function deleteNow() {
     try { IvritSaves.forgetUser(uid); } catch (e) {}
     renderGone();
     show('acctGone');
+    $('acctGone').focus();   // the page already does this at every other step of this flow (openDel -> #delCheck, cancelDel -> #delBtn)
   } catch (err) {
     say('delStatus', () => IvritAccount.errorText(err), true);
   } finally {
@@ -631,6 +640,13 @@ document.addEventListener('DOMContentLoaded', () => {
   $('dlBtn').addEventListener('click', downloadAll);
   $('delBtn').addEventListener('click', openDel);
   $('delCancel').addEventListener('click', cancelDel);
+  // Escape leaves the confirm box the same way Cancel does. openDel() moves focus INTO the box and
+  // cancelDel() moves it back, so the box already behaves like the suite's other focus-managed
+  // surfaces (the drawer, the tour, fcModalize) — it just had no keyboard exit, and the destructive
+  // control is the one inside it. Bound to the box, so Escape anywhere else on the page still does
+  // nothing; cancelDel() already refuses while a deletion is in flight, so a mid-delete Escape is
+  // a no-op rather than a way to hide a running request.
+  $('delConfirm').addEventListener('keydown', (e) => { if (e.key === 'Escape') cancelDel(); });
   $('delCheck').addEventListener('change', validateDel);
   $('delEmail').addEventListener('input', validateDel);
   $('delGo').addEventListener('click', deleteNow);

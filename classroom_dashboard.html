@@ -2188,8 +2188,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <div class="fr-loc-row">
     <input type="text" id="frLocationInput" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="City, e.g. New York" data-i18n-placeholder="dashboard.display.location_placeholder" aria-label="Location" data-i18n-aria-label="dashboard.settings.panel_location">
     <button class="btn btn-xs" onclick="frUpdateLocation()" data-i18n="dashboard.display.location_update">Update</button>
-    <button class="btn btn-xs btn-secondary" onclick="frUseCurrentLocation()" data-i18n="dashboard.display.current_location">📍 Current Location</button>
+    <button class="btn btn-xs btn-secondary" id="frCurrentLocBtn" onclick="frUseCurrentLocation()" data-i18n="dashboard.display.current_location">📍 Current Location</button>
   </div>
+  <!-- The card's own copy of the drawer's #locNote (setLocNote writes both): the backdrop hides the
+       drawer, so this is where a geolocation refusal has to appear for the teacher who pressed 📍. -->
+  <div id="frLocNote" class="schedule-validation" role="status" aria-live="polite" style="display:none;"></div>
   <div class="fr-starters" id="frStarters"></div>
   <div class="fr-actions">
     <a href="#" class="fr-skip" onclick="frSkip();return false;" data-i18n="dashboard.setup.skip">Skip for now</a>
@@ -3995,17 +3998,29 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   // rendered string, so a language switch re-renders a note that is still on screen instead of
   // leaving it frozen in the previous language (the pattern torah_trainer's setStatus established).
   let _locNoteKey = null, _locNoteParams = null;
+  // TWO hosts. The first-run card offers the same two location controls as the drawer and sits over
+  // a backdrop, so a note written only into the drawer's #locNote is behind the modal: a refused or
+  // blocked 📍 Current Location left the one screen that asked for the location completely silent.
+  const LOC_NOTE_HOSTS = ['locNote', 'frLocNote'];
   function setLocNote(key, params) {
     _locNoteKey = key || null; _locNoteParams = params || null;
-    const el = document.getElementById('locNote');
-    if (!el) return;
-    el.innerHTML = '';
-    if (!_locNoteKey) { el.style.display = 'none'; return; }
-    const d = document.createElement('div');
-    d.className = 'sched-warn';
-    d.textContent = I18n.t(_locNoteKey, _locNoteParams || undefined);
-    el.appendChild(d);
-    el.style.display = '';
+    // One announcement, not two: when the card was opened from the drawer's own Quick-start button
+    // the drawer stays open beneath the backdrop, so its #locNote is a visible polite status region
+    // too, and both would speak the same sentence. While the card is open its host is the one on
+    // screen, so the drawer's copy is skipped; the next note writes it again.
+    const cardOpen = !!(document.getElementById('frModal') || {}).classList?.contains('open');
+    LOC_NOTE_HOSTS.forEach(id => {
+      if (cardOpen && id === 'locNote') return;
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.innerHTML = '';
+      if (!_locNoteKey) { el.style.display = 'none'; return; }
+      const d = document.createElement('div');
+      d.className = 'sched-warn';
+      d.textContent = I18n.t(_locNoteKey, _locNoteParams || undefined);
+      el.appendChild(d);
+      el.style.display = '';
+    });
   }
 
   async function useCurrentLocation() {
@@ -4014,9 +4029,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       setLocNote('dashboard.weather.geo_unsupported');
       return;
     }
-    const btn = document.getElementById('currentLocBtn');
-    btn.textContent = '…';
-    btn.disabled = true;
+    // Both copies of the control, for the same reason: the card covers the drawer, so busying only
+    // the drawer's button leaves the one the teacher actually pressed looking like it did nothing.
+    const btns = ['currentLocBtn', 'frCurrentLocBtn'].map(id => document.getElementById(id)).filter(Boolean);
+    const locBtnsIdle = () => btns.forEach(b => { b.textContent = I18n.t('dashboard.display.current_location'); b.disabled = false; });
+    btns.forEach(b => { b.textContent = '…'; b.disabled = true; });
     navigator.geolocation.getCurrentPosition(async pos => {
       const { latitude, longitude } = pos.coords;
       try {
@@ -4038,12 +4055,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         await fetchWeather();
         fetchShabbat(true);
       } finally {
-        btn.textContent = I18n.t('dashboard.display.current_location');
-        btn.disabled = false;
+        locBtnsIdle();
       }
     }, err => {
-      btn.textContent = I18n.t('dashboard.display.current_location');
-      btn.disabled = false;
+      locBtnsIdle();
       setLocNote('dashboard.weather.geo_error', { message: err.message || 'Permission denied' });
     });
   }
@@ -9832,9 +9847,31 @@ async function onUploadEngFontPick(input){
       applyWakeLock();
     }
   });
+  // The roster textarea commits on BLUR (commitRosterFromTextarea) and nothing else, so a refresh
+  // or a closed lid mid-typing fires no commit at all: a teacher who types twenty-five names and
+  // then hits F5 loses every one, while the live "25 names" count under the box says otherwise.
+  // Measured: 5 names typed, then reload — ✕ / Escape / backdrop all keep them (each is a real
+  // blur), a bare reload keeps 0. The in-place message editor two lines below is already rescued
+  // by this same pair, which is what this leaves out. Guarded on the textarea being the focused
+  // element: that IS the mid-typing case, and it is the only state where the box is known to hold
+  // the class's names — syncFormToSettings() fills it when the drawer opens, so committing an
+  // untouched (empty) textarea on a page whose drawer was never opened would write the roster away.
+  // A DRAFT save, not the blur commit. commitRosterFromTextarea() also rewrites the box with the
+  // parsed names and prunes the picked/absent lists against them — right once the teacher has left
+  // the box, wrong while she is still in it. Measured: "Ann⏎Ben⏎" with the caret on the empty third
+  // line, a switch away and back, then "Cara" typed, stored "BenCara", because the rewrite had
+  // dropped the empty line; and "Sarah" → "Sar" mid-fix with Sarah already picked lost the picked
+  // mark. So this stores what is typed and touches nothing else; the box, the session lists and
+  // the picker wait for the blur commit as before (the picker ignores a picked name that is not in
+  // the roster). Both callers save to storage right after.
+  function flushRosterIfTyping() {
+    const ta = document.getElementById('pickerRoster');
+    if (!ta || document.activeElement !== ta) return;
+    curClass().names = parseRoster(ta.value);
+  }
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') acquireWakeLock();
-    else saveSettingsToStorage();   // see the pagehide note below
+    else { flushRosterIfTyping(); saveSettingsToStorage(); }   // see the pagehide note below
   });
   // Refresh/close mid-edit must not eat the text: commit the in-place edit on the way out.
   // pagehide (not beforeunload) so bfcache stays eligible; localStorage writes are sync-safe here.
@@ -9843,7 +9880,7 @@ async function onUploadEngFontPick(input){
   // default and then just shuts the lid or swipes to another app loses it. Both events are wired
   // because pagehide alone is unreliable on mobile. Snapshotting here is safe mid-edit: the editable
   // is #dashTextDisplay while saveSettingsToStorage reads the untouched #dashEditor source.
-  window.addEventListener('pagehide', () => { if (_activeEditable) exitInPlaceEdit(true); saveSettingsToStorage(); });
+  window.addEventListener('pagehide', () => { if (_activeEditable) exitInPlaceEdit(true); flushRosterIfTyping(); saveSettingsToStorage(); });
   // Reveal the strip on any pointer activity while fullscreen; keep it up while hovered
   const _fsReveal = () => { if (document.body.classList.contains('fullscreen')) showFsStrip(); };
   document.addEventListener('pointermove', _fsReveal, { passive: true });

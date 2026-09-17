@@ -337,9 +337,8 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
     --white: #1e2535;
   }
   body.dark header { background: #0d1220; border-bottom-color: var(--gold); color: #dde4f0; }
-  body.dark header h1,
-  body.dark header p { color: #dde4f0; }
-  body.dark header p { color: var(--gold-light); }
+  body.dark header h1 { color: #dde4f0; }
+  body.dark header p { color: var(--gold-light); }   /* the h1 line above used to name p too, and lost to this one */
   body.dark .panel-title { background: #0d1220; color: #dde4f0; }
   body.dark .panel-title::after { color: var(--gold-light); }
   body.dark .sidebar { background: #1e2535; border-inline-end-color: var(--border); }
@@ -378,12 +377,13 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   body.dark #bingoCards { background: #1e2535; color: #dde4f0; }
   body.dark .bingo-step { background: #1e2535; color: #dde4f0; border-color: var(--border); }
   body.dark .bingo-step:hover { background: #2a3349; }
-  body.dark .btn-xs:hover { background: #2a3349; }
-  body.dark .empty-state h2 { color: #dde4f0; }
+  body.dark .btn-xs:hover:not([disabled]):not([aria-disabled="true"]) { background: #2a3349; }
+  /* .empty-state h2's dark colour lives beside the component (var(--gold-light)); the copy that
+     stood here was the same selector and lost to it. */
   body.dark .empty-state p { color: var(--muted); }
   body.dark .btn-outline { border-color: #4a5a7a; color: #8a9ab8; }
   body.dark .btn-secondary { background: #2a3a5a; color: #dde4f0; }
-  body.dark .btn-secondary:hover { background: #345090; }   /* the dark override (0,2,1) outranks .btn-secondary:hover (0,2,0); the contact/Font Maker primary's dark hover — pattern dark-override-outranks-hover */
+  body.dark .btn-secondary:hover:not([disabled]):not([aria-disabled="true"]) { background: #345090; }   /* the dark override (0,5,1) outranks the light rule (0,4,0); the contact/Font Maker primary's dark hover — pattern dark-override-outranks-hover. Both carry the disabled guard so the ranking survives it — raising one alone would flip this pair. */
   body.dark .btn[disabled],
   body.dark .btn:disabled { opacity: 1 !important; color: #3d4f6a !important; border-color: #2a3349 !important; background-color: transparent !important; }
   body.dark #focusYudWarning { color: var(--gold-light); }
@@ -648,7 +648,7 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
     color: var(--navy);
     transition: background 0.15s;
   }
-  .btn-xs:hover { background: var(--warm-gray); }
+  .btn-xs:hover:not([disabled]):not([aria-disabled="true"]) { background: var(--warm-gray); }
 
   .color-mode-btn { flex:1; padding:4px 6px; font-size:0.72rem; border:none; background:var(--white); color:var(--muted); cursor:pointer; border-right:1px solid var(--border); font-family:inherit;
     /* same 30px floor .btn-xs carries (S102) — these measured 20px */
@@ -803,7 +803,7 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
     color: var(--white);
     margin-top: 8px;
   }
-  .btn-secondary:hover { background: #0f1a33; }
+  .btn-secondary:hover:not([disabled]):not([aria-disabled="true"]) { background: #0f1a33; }
   .btn-outline {
     background: transparent;
     color: var(--navy);
@@ -825,17 +825,10 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   }
 
   /* ── MAIN TOOLBAR ── */
-  .main-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 28px;
-    background: var(--cream);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
+  /* .main-toolbar is declared a second time under the other "MAIN TOOLBAR" heading below, with all
+     nine of the same properties and a tighter gap and padding, so the copy that stood here never
+     reached the page and an edit to it would have done nothing. .main-content is NOT the same case
+     and stays: the later copy sets only padding, so this one's flex and overflow-y still apply. */
   .main-content {
     padding: 28px 36px;
     flex: 1;
@@ -1506,6 +1499,10 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
     position: absolute;
     width: 100%;
     height: 100%;
+    /* width/height 100% + 10px padding + 1.5px border: without border-box each face is 23px
+       wider and taller than its grid cell, so it laid over the next card (truncating that
+       card's part-of-speech tag) and the last column ran off the paper. */
+    box-sizing: border-box;
     backface-visibility: hidden;
     border: 1.5px solid var(--border);
     border-radius: 8px;
@@ -1702,16 +1699,8 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   body.dark .match-item { background: #252d3e; border-color: var(--border); }
   body.dark .match-heb, body.dark .match-label, body.dark .match-num, body.dark .match-ak-heb { color: #dde4f0; }
   body.dark .match-dot { border-color: #dde4f0; background: #252d3e; }
-  .rw-flip { perspective: 600px; cursor: pointer; }
-  .rw-flip-inner { position: relative; transition: transform 0.4s; transform-style: preserve-3d; min-height: 90px; }
-  .rw-flip.flipped .rw-flip-inner { transform: rotateY(180deg); }
-  .rw-flip-front, .rw-flip-back {
-    position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-    border: 1.5px solid var(--border); border-radius: 8px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 10px; background: var(--white); gap: 4px;
-  }
-  .rw-flip-back { transform: rotateY(180deg); background: var(--cream); }
+  /* The Self-Check flip-card rules live once, under "Flip cards for vocab drill" above. A second,
+     byte-identical copy sat here and is why a05e1cf had to apply its box-sizing fix in two places. */
 
   .bingo-page {
     display: flex;
@@ -1758,7 +1747,10 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   .bingo-card-header span:last-child { border-left: none; }
   .bingo-card-num {
     background: #c9922a;
-    color: #ffffff;
+    /* Navy on gold, the .beta-tag idiom this page already uses for small bold text on the
+       gold plate: white on #c9922a measures 2.75:1 at 11.2px bold, under the 4.5 floor.
+       Both copies of this duplicated rule carry it (the later one wins by source order). */
+    color: #1a2744;
     text-align: center;
     font-size: 0.7rem;
     font-weight: 700;
@@ -1807,7 +1799,10 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   .bingo-cell .sound { font-size: 0.6rem; color: #6b6050; font-style: italic; margin-top: 1px; white-space: nowrap; }
   .bingo-card-num {
     background: #c9922a;
-    color: #ffffff;
+    /* Navy on gold, the .beta-tag idiom this page already uses for small bold text on the
+       gold plate: white on #c9922a measures 2.75:1 at 11.2px bold, under the 4.5 floor.
+       Both copies of this duplicated rule carry it (the later one wins by source order). */
+    color: #1a2744;
     text-align: center;
     font-size: 0.7rem;
     font-weight: 700;
@@ -2312,6 +2307,23 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
        dialog's default background-graphics:off, and faint on B/W even when kept. Print
        it as a real border in the same ink as the name/date .ws-field-line. */
     .gematria-blank { background:none; height:0; border-top:1px solid #1a2744; }
+    /* The same shape as .gematria-blank, on the two surfaces a teacher prints most. The
+       dialog ships "Background graphics" OFF, so a background-color plate is simply not
+       painted: the answer-key banner is gold on a navy plate, and without it the gold
+       prints at 1.5:1 on white on EVERY answer key this tool makes; a bingo card's column
+       letters are white on that same navy, i.e. white on white, and its "CARD #n" bar is
+       white on gold, which fails even WITH the plate. Give each band ink and a rule of its
+       own -- the flash-card print faces' idiom -- so it reads with the plate or without it,
+       and on the B/W laser this block already darkens gold ink for. The dark twin is listed
+       so it keeps the specificity of the relight above. exportPDF is unaffected: it renders
+       the screen styles through html2canvas (its onclone only drops .dark), not print media. */
+    .answer-key-banner, body.dark .answer-key-banner {
+      background:none; color:#1a2744; border:1px solid #1a2744;
+    }
+    .bingo-card-num, .bingo-card-header { background:none; color:#1a2744; border-bottom:1px solid #1a2744; }
+    /* border-color, not border-left-color: only the left edge carries a width, so this
+       recolours exactly that divider without introducing a physical property of its own. */
+    .bingo-card-header span { border-color:#1a2744; }
   }
 
   /* Font selector */
@@ -6159,7 +6171,10 @@ function setPageSize(v) {
   if (ab) ab.classList.toggle('active', pageSize === 'a4');
   _applyPageSizeStyle();
   _syncPillAria();
-  renderWorksheet(false);   // browser-print rows-per-page depends on page height
+  // Re-paginate through the CURRENT sheet's own renderer, not renderWorksheet, which only knows
+  // blends[] — empty in Real Words mode, where it would replace the sheet with an empty one
+  // (measured: Page Size wiped a 288-cell word search / crossword). Same reason as rerenderCurrentSheet's.
+  rerenderCurrentSheet();   // browser-print rows-per-page depends on page height
 }
 
 function applyColorExStyle(el, color) {
@@ -6882,7 +6897,7 @@ function runLiveSync() {
     if (kind === 'content') livePulseGenerate(() => I18n.t('worksheet.preview.settings_changed'));   // the CSV row was authored for this notice but never read (S363)
     return;
   }
-  if (kind === 'presentation') { renderWorksheet(false); hidePreviewNotice(); return; }
+  if (kind === 'presentation') { rerenderCurrentSheet(); hidePreviewNotice(); return; }   // same reason as setPageSize above: a presentation-only change must not swap in a blends sheet
   // content, live on
   if (liveIsHeavyMode()) { livePulseGenerate(() => I18n.t('worksheet.preview.settings_changed')); return; }
   liveGenerate();

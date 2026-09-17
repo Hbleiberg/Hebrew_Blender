@@ -1172,7 +1172,14 @@ body.dark .radio-group input:checked + label { background:#1e2535; color:var(--g
   padding:7px 14px; border-radius:5px; font-family:inherit;
   font-weight:700; cursor:pointer; font-size:0.82rem; transition:background 0.15s, border-color 0.15s;
 }
-.btn:hover { background:var(--gold-light); border-color:var(--gold-light); }
+/* :where() carries no specificity, so this stays (0,2,0) and .btn-secondary:hover below -- also
+   (0,2,0), winning only by source order -- keeps its ranking; a bare :not() pair would lift this to
+   (0,4,0) and hand every secondary button the gold hover. The guard itself: .btn declares its own
+   background, and the two Copy All buttons take aria-disabled (never the attribute -- see
+   #ttCopyAllBtn[aria-disabled="true"], which sets opacity and cursor and no background), so a
+   locked Copy All stepped gold -> gold-light under the pointer exactly like an operable one. Same
+   shape as .tt-fs-btn[aria-disabled="true"]:hover further down. */
+.btn:hover:where(:not([aria-disabled="true"]):not([disabled])) { background:var(--gold-light); border-color:var(--gold-light); }
 /* 30px floor — the suite's ratified touch-target size (S102, first applied in flash_cards.html;
    WCAG 2.5.8 asks 24px). Padding alone left these at 22–24px. */
 .btn-xs { padding:4px 9px; font-size:0.72rem; min-height:30px; min-width:30px; display:inline-flex; align-items:center; justify-content:center; }

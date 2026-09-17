@@ -968,8 +968,12 @@ footer a { display: inline-block; padding-block: 5px; }
   .hint-link:hover { filter: brightness(1.1); }
   .hint-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
   #unfinishedBtn { padding-block: 3px; }   /* alone in its row, so a 24px+ target; inline .hint-links stay text-sized */
-  /* Shared focus-visible ring for the custom controls (suite standard: 2px gold) */
-  .ltile:focus-visible, .wtab:focus-visible, .ctab:focus-visible, .tbtn:focus-visible, .mode-btn:focus-visible, .ctl-btn:focus-visible, .hbtn:focus-visible, .brush-tile:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  /* Shared focus-visible ring for the custom controls (suite standard: 2px gold).
+     .mode-btn is deliberately NOT in this list: its segments fill a .mode-toggle that is
+     overflow:hidden, so an OUTSET ring is clipped away entirely -- measured at 0 gold pixels in
+     both themes at 1280 and 800. It keeps its own rule above, outline-offset:-2px, the same
+     inset .npnl-mode-btn uses for the same reason. Adding it back here re-hides the ring. */
+  .ltile:focus-visible, .wtab:focus-visible, .ctab:focus-visible, .tbtn:focus-visible, .ctl-btn:focus-visible, .hbtn:focus-visible, .brush-tile:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
   /* ── Clickable letter chips in the export-warning modals ── */
   .lchip-wrap { max-height: 46vh; overflow: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5px 8px; margin-top: 12px; }
@@ -1008,7 +1012,11 @@ footer a { display: inline-block; padding-block: 5px; }
   .help-modal { max-width: 640px; width: 94%; max-height: 86vh; max-height: 86dvh; display: flex; flex-direction: column; }
   .help-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; }
   .help-tab { padding: 6px 11px; border: 1px solid var(--border); border-radius: 6px; background: var(--cream); color: var(--muted); font-size: 0.76rem; font-weight: 700; font-family: inherit; cursor: pointer; }
-  .help-tab:hover { border-color: var(--gold); }
+  /* :where() so the guard costs no specificity: this stays (0,2,0), the same as .help-tab.active
+     below, which wins only by source order (its dark twin, (0,3,1), outranks outright). A bare
+     :not() pair would lift this to (0,4,0) and an active tab would start taking a gold border it
+     has never had. Measured both ways. */
+  .help-tab:hover:where(:not([disabled]):not([aria-disabled="true"])) { border-color: var(--gold); }
   .help-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
   body.dark .help-tab.active { background: #2a4070; border-color: #4a6aaa; }
   .help-body { flex: 1 1 auto; overflow-y: auto; font-size: 0.86rem; line-height: 1.55; color: var(--text); padding-inline-end: 4px; }
