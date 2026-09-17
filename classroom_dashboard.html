@@ -9850,9 +9850,18 @@ async function onUploadEngFontPick(input){
   // element: that IS the mid-typing case, and it is the only state where the box is known to hold
   // the class's names — syncFormToSettings() fills it when the drawer opens, so committing an
   // untouched (empty) textarea on a page whose drawer was never opened would write the roster away.
+  // A DRAFT save, not the blur commit. commitRosterFromTextarea() also rewrites the box with the
+  // parsed names and prunes the picked/absent lists against them — right once the teacher has left
+  // the box, wrong while she is still in it. Measured: "Ann⏎Ben⏎" with the caret on the empty third
+  // line, a switch away and back, then "Cara" typed, stored "BenCara", because the rewrite had
+  // dropped the empty line; and "Sarah" → "Sar" mid-fix with Sarah already picked lost the picked
+  // mark. So this stores what is typed and touches nothing else; the box, the session lists and
+  // the picker wait for the blur commit as before (the picker ignores a picked name that is not in
+  // the roster). Both callers save to storage right after.
   function flushRosterIfTyping() {
     const ta = document.getElementById('pickerRoster');
-    if (ta && document.activeElement === ta) commitRosterFromTextarea();
+    if (!ta || document.activeElement !== ta) return;
+    curClass().names = parseRoster(ta.value);
   }
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') acquireWakeLock();
