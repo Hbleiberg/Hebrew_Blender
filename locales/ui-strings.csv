@@ -1436,6 +1436,7 @@ fontmaker.canvas.my_font,My Font,הגופן שלי,canvas — specimen cover fal
 fontmaker.canvas.section_custom,Custom glyphs,גליפים מותאמים,canvas — specimen section title,canvas
 fontmaker.canvas.section_english,English letters,אותיות אנגליות,canvas — specimen section title,canvas
 fontmaker.canvas.section_ladino,Ladino forms,צורות לדינו,canvas — specimen section title,canvas
+fontmaker.canvas.section_punct,Digits & punctuation,ספרות ופיסוק,canvas — specimen section title,canvas
 fontmaker.canvas.section_specialized,Specialized — wide letterforms,מיוחדות — צורות אותיות רחבות,canvas — specimen section title,canvas
 fontmaker.canvas.section_wide,Wide letterforms,צורות אותיות רחבות,canvas — specimen section title,canvas
 fontmaker.canvas.section_yiddish,Yiddish forms,צורות יידיש,canvas — specimen section title,canvas

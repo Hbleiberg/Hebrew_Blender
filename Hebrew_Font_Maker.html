@@ -5620,6 +5620,12 @@ function letterShips(L, l) {
   if (L.cat !== 'punct') return true;
   return includePunct() && !!(l && l.contours && l.contours.length);
 }
+/* The digits, punctuation and symbols the Preview PDF shows — exactly the set the exported font
+   carries (letterShips: the toggle AND ink), so no cell ever renders in a system face. */
+function punctSpecimenChars() {
+  return LETTERS.filter(L => L.cat === 'punct' && letterShips(L, (project.letters || []).find(x => x.codepoint === L.cp)))
+    .map(L => { try { return String.fromCodePoint(parseInt(L.cp, 16)); } catch (e) { return ''; } }).filter(Boolean);
+}
 /* Which band of the Punctuation picker a glyph belongs to. Derived from the codepoint rather than a
    table field, so a new row needs no extra bookkeeping — but the LETTERS punct rows must stay in this
    group order, or the headers interleave. */
@@ -20044,6 +20050,9 @@ async function generatePreviewPDF() {
       ctx.fillText(I18n.t('fontmaker.canvas.special_forms'), W/2, y); y += 58;
       ctx.direction = 'rtl'; ctx.fillStyle = '#111'; ctx.font = HEB(40);
       ctx.fillText('שׁ  שׂ  וֹ  וּ  בּ  כּ  פּ  תּ', W/2, y);
+      // Digits — only once all ten ship (one left out would render in a system face beside the rest)
+      const shipped = punctSpecimenChars();
+      if ('0123456789'.split('').every(d => shipped.includes(d))) { y += 70; ctx.direction = 'ltr'; ctx.font = HEB(34); ctx.fillText('0 1 2 3 4 5 6 7 8 9', W/2, y); }
       addPageCanvas(cv);
     }
 
@@ -20115,6 +20124,13 @@ async function generatePreviewPDF() {
       const marks = Object.keys(cmStore).map(cp => cpChar(cp));
       const chars = mains.concat(marks).filter(Boolean);
       if (chars.length) specimenPage(I18n.t('fontmaker.canvas.section_custom'), chars, { rtl: true, cols: 8, glyphPx: 42 });
+    }
+    // ── Digits & punctuation: what letterShips puts in the font (the toggle AND ink). One LTR page —
+    // a lone bracket is never mirrored under direction 'ltr', and the Hebrew marks are bidi-neutral
+    // single glyphs, so the Hebrew band needs no RTL page of its own. ──
+    {
+      const chars = punctSpecimenChars();
+      if (chars.length) specimenPage(I18n.t('fontmaker.canvas.section_punct'), chars, { rtl: false, cols: 10, glyphPx: 38 });
     }
     pdf.save(((project.font.familyName||'font') + (fontIsBold() ? ' Bold' : '')).replace(/\s+/g,'_') + '_specimen.pdf');
     status(I18n.t('fontmaker.status.preview_pdf_saved'));

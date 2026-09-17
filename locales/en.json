@@ -1562,6 +1562,7 @@
   "fontmaker.canvas.section_custom": "Custom glyphs",
   "fontmaker.canvas.section_english": "English letters",
   "fontmaker.canvas.section_ladino": "Ladino forms",
+  "fontmaker.canvas.section_punct": "Digits & punctuation",
   "fontmaker.canvas.section_specialized": "Specialized — wide letterforms",
   "fontmaker.canvas.section_wide": "Wide letterforms",
   "fontmaker.canvas.section_yiddish": "Yiddish forms",
