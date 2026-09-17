@@ -3945,7 +3945,13 @@ function aCloseModal(id) {
   const ov = document.getElementById(id); if (ov) ov.classList.remove('open');
   const ret = (_activeModal && _activeModal.id === id) ? _activeModal.opener : null;
   if (_activeModal && _activeModal.id === id) _activeModal = null;
-  if (ret && ret.focus) { try { ret.focus(); } catch (e) {} }
+  // <body> is not an opener: a modal that auto-opens on load (the onboarding wizard) captures it
+  // because nothing was focused yet, and re-focusing <body> restores nothing — the browser keeps the
+  // sequential-focus start at the hidden field inside the overlay, which sits after the whole
+  // workspace in the DOM, so the user's next Tab leaves the page instead of entering it. Hand focus
+  // to the main region (APG: the invoking element, or failing that a sensible place in the page).
+  if (ret && ret !== document.body && ret.focus) { try { ret.focus(); } catch (e) {} }
+  else { const m = document.getElementById('mainContent'); if (m) { try { m.focus(); } catch (e) {} } }
   // _activeModal is a single slot: a modal stacked over the onboarding wizard (help via the
   // license "?", the template-PDF failure askModal) steals it, and closing that modal would
   // leave the still-open wizard with no Escape/Tab trap — hand it back.
