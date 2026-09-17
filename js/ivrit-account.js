@@ -368,8 +368,12 @@
       'body.dark .ivacct-btn:hover{background:#2a3349;}' +
       '.ivacct-btn:focus-visible,.ivacct-item:focus-visible,.ivacct-input:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:1px;}' +
       '.ivacct-btn[data-state="offline"],.ivacct-btn[data-state="unavailable"]{opacity:.72;}' +
+      // Navy on the gold disc, not white: gold is a LIGHT surface in both themes, so white initials read
+      // 2.75:1 light and 2.14:1 dark at 10.56px bold (2.40 / 2.02 on flash cards, whose --gold is paler)
+      // against a 4.5 floor. A literal, not var(--text): that token flips light in dark mode while this
+      // background stays gold. Same remedy the generator's bingo card number took for the same pair.
       '.ivacct-avatar{display:inline-flex;align-items:center;justify-content:center;inline-size:20px;block-size:20px;border-radius:50%;' +
-        'background:var(--gold,#c9922a);color:#fff;font-size:0.66rem;font-weight:700;letter-spacing:.02em;flex-shrink:0;}' +
+        'background:var(--gold,#c9922a);color:#1a2744;font-size:0.66rem;font-weight:700;letter-spacing:.02em;flex-shrink:0;}' +
       '.ivacct-menu{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:1200;min-inline-size:260px;max-inline-size:min(92vw,340px);' +
         'padding:10px;border:1px solid var(--border,#c8bfa8);border-radius:10px;background:var(--white,#fff);color:var(--text,#1a2744);' +
         'box-shadow:0 8px 24px rgba(0,0,0,.18);text-align:start;font-size:0.85rem;font-weight:400;}' +
