@@ -1529,6 +1529,7 @@ footer a { display: inline-block; padding-block: 5px; }
         <button type="button" id="unfinishedBtn" class="hint-link" style="display:none;margin-top:5px;"
           onclick="stepUnfinished(1)" title="Jump to the next letter still missing an outline or its anchors (Shift + ], or Shift + [ to go back)"
           data-i18n="fontmaker.panels.unfinished_btn" data-i18n-title="fontmaker.panels.unfinished_btn_title">Next unfinished letter</button>
+        <div class="ctl-row" style="margin-top:6px;"><button type="button" class="ctl-btn draw-save-all" data-cat="letter" style="display:none;" onclick="drawCommitAll('letter')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button></div>
       </div>
     </div>
 
@@ -1559,6 +1560,7 @@ footer a { display: inline-block; padding-block: 5px; }
           <button class="mode-btn" id="engCaseLower" onclick="setEnglishCase('lower')" aria-pressed="false" data-i18n="fontmaker.panels.eng_case_lower">Lowercase a–z</button>
           <button class="mode-btn" id="engCaseAccent" onclick="setEnglishCase('accent')" aria-pressed="false" style="display:none;" data-i18n="fontmaker.panels.eng_case_accent">Accented &amp; extra</button>
         </div>
+        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="english" style="display:none;" onclick="drawCommitAll('english')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button></div>
         <div class="letter-grid" id="englishGrid"></div>
         <div id="englishAccentNote" style="display:none;margin-top:9px;font-size:0.72rem;color:var(--muted);line-height:1.5;"></div>
       </div>
@@ -3482,6 +3484,7 @@ function renderGrids() {
   if (document.getElementById('yiddishPanelBody')) renderYiddishPanel();
   if (document.getElementById('ladinoPanelBody')) renderLadinoPanel();
   renderCatTabs();   // also (re)builds the tab bar so the Custom glyphs / English / Specialized / Yiddish / Ladino tabs appear/disappear with their toggles
+  syncDrawSaveAllBtns();   // the panels were just rebuilt — restate each tab's pending count
 }
 /* ── Custom-mark geometry helpers ──
    Custom mark contours are stored in workspace coords (natural for the editor); the
@@ -5647,7 +5650,7 @@ function renderPunctPanel() {
     <div class="hint" style="margin:6px 0 9px;">${ on
       ? _pT('punct_on_hint', 'Included in the exported font &amp; the Punctuation practice template. Trace or draw each one like a letter — digits start blank; punctuation comes pre-shaped, and drawing over a built-in shape replaces it. Clear all existing glyphs to start every one blank.')
       : _pT('punct_off_hint', 'Currently <strong>off</strong>: these glyphs are skipped on export and have no practice page. Turn it on to include them.') }</div>
-    <div class="ctl-row" style="margin:0 0 9px;"><button class="ctl-btn" id="punctClearAllBtn" title="${esc(_pT('punct_clear_all_title', 'Remove every outline, drawing and photo on this tab — the built-in shapes too — so each glyph starts blank. Asks first; one Ctrl+Z restores everything.'))}">${_pT('punct_clear_all', 'Clear all existing glyphs…')}</button></div>
+    <div class="ctl-row" style="margin:0 0 9px;"><button class="ctl-btn" id="punctClearAllBtn" title="${esc(_pT('punct_clear_all_title', 'Remove every outline, drawing and photo on this tab — the built-in shapes too — so each glyph starts blank. Asks first; one Ctrl+Z restores everything.'))}">${_pT('punct_clear_all', 'Clear all existing glyphs…')}</button>${drawSaveAllBtnHTML('punct')}</div>
     <div class="letter-grid" id="punctGrid"></div>`;
   // Wired here rather than as an inline handler (the renderFormPanel rule): nothing is interpolated into JS.
   const clearBtn = document.getElementById('punctClearAllBtn'); if (clearBtn) clearBtn.addEventListener('click', clearAllPunct);
@@ -5935,6 +5938,7 @@ function renderCustomGlyphsPanel() {
     .map(L => `<option value="${L.cp}">${esc(gName(L.name))} (${String.fromCodePoint(parseInt(L.cp, 16))})</option>`).join('');
   el.innerHTML = `
     <div class="hint" style="margin-bottom:8px;">${_cgT('glyphs_hint', "Define a glyph at any Unicode code point. Brand-new shapes work best in the Private-Use range <b>U+E000–U+F8FF</b>. Trace each glyph like a letter, or duplicate an existing letter and tweak it.")}</div>
+    <div class="ctl-row" style="margin:0 0 8px;">${drawSaveAllBtnHTML('customglyphs')}</div>
     <div class="letter-grid" id="customGlyphsGrid"></div>
     <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
       <div style="font-weight:700;font-size:0.82rem;margin-bottom:6px;">${_cgT('add_new', "+ Add a new glyph")}</div>
@@ -6074,7 +6078,8 @@ function renderFormPanel(panelId, targets, intro, extras) {
   const srcNote = nSrc
     ? `<div class="form-ready" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">${esc(_pT('form_src_note', 'These forms came ready-made from the imported font.', {count: nSrc}))}<button class="ctl-btn" type="button" id="${panelId}Rebuild" style="padding:3px 8px;font-size:0.7rem;">${esc(_pT('form_src_rebuild', 'Rebuild from my letters'))}</button></div>`
     : '';
-  el.innerHTML = `<div class="hint" style="margin-bottom:8px;">${intro}</div>${summary}${srcNote}<div class="letter-grid" id="${panelId}Grid"></div>`;
+  const saveAll = panelId === 'wideFormsPanelBody' ? `<div class="ctl-row" style="margin:0 0 8px;">${drawSaveAllBtnHTML('wideforms')}</div>` : '';   // converted wide forms are drawable; the composed tabs are not
+  el.innerHTML = `<div class="hint" style="margin-bottom:8px;">${intro}</div>${summary}${srcNote}${saveAll}<div class="letter-grid" id="${panelId}Grid"></div>`;
   if (nSrc) { const rb = document.getElementById(panelId + 'Rebuild'); if (rb) rb.addEventListener('click', () => precompRebuildForms(targets)); }
   const grid = document.getElementById(panelId + 'Grid'); if (!grid) return;
   let any = false;
@@ -10309,15 +10314,22 @@ async function _drawCommitNow(advance) {
    the one we came from. Punctuation is its own cycle (the Punctuation tab, in grid order) and stays
    out of the Hebrew one; without its branch a digit's indexOf() was -1 too, and Save threw the
    teacher onto the Letters tab at alef. */
-function _drawCycleCps() {
+function tabDrawCps(cat) {   // the ordered drawable code points of one picker tab — the cycle AND Save all drawings read this, so they can never disagree
   const mine = f => (project.letters || []).filter(f).map(x => x.codepoint);
-  if (isEng(curCp)) return ENGLISH_CPS.filter(cp => (project.letters || []).some(x => x.codepoint === cp && x.eng));   // A-Z, a-z, then any imported accented forms
-  if (wideGlyphItemFor(curCp)) return mine(x => x.wideGlyph);
-  if (isCustomCp(curCp)) return mine(x => x.custom);
   const isP = cp => { const m = letterMeta(cp); return !!(m && m.cat === 'punct'); };
-  if (isP(curCp)) return LETTER_ORDER.filter(isP);
-  return LETTER_ORDER.filter(cp => !isP(cp));
+  if (cat === 'english') return ENGLISH_CPS.filter(cp => (project.letters || []).some(x => x.codepoint === cp && x.eng));   // A-Z, a-z, then any imported accented forms
+  if (cat === 'wideforms') return mine(x => x.wideGlyph);
+  if (cat === 'customglyphs') return mine(x => x.custom);
+  if (cat === 'punct') return LETTER_ORDER.filter(isP);
+  return LETTER_ORDER.filter(cp => !isP(cp));   // 'letter'
 }
+function _drawCatOf(cp) {   // the tab a drawable code point cycles in — _selectItem's precedence, minus the detail of which tab surfaces a wide form
+  if (isEng(cp)) return 'english';
+  if (wideGlyphItemFor(cp)) return 'wideforms';
+  if (isCustomCp(cp)) return 'customglyphs';
+  const m = letterMeta(cp); return (m && m.cat === 'punct') ? 'punct' : 'letter';
+}
+function _drawCycleCps() { return tabDrawCps(_drawCatOf(curCp)); }
 /* "Still to draw" = no outline, or only the shipped default one (a punctuation mark nobody has drawn
    yet) — the same test _defaultStepForCur uses to open a glyph on Draw. */
 function drawAdvance() {   // next glyph in THIS tab still to draw
@@ -10330,6 +10342,91 @@ function drawAdvance() {   // next glyph in THIS tab still to draw
   }
   const m = letterMeta(curCp);
   status(I18n.t(m && m.cat === 'punct' ? 'fontmaker.draw.all_done_punct_toast' : 'fontmaker.draw.all_done_toast'));
+}
+
+/* ── Save all drawings — one button per drawable tab (Letters / Punctuation / English / Custom glyphs /
+   Wide letterforms) that commits every drawing on that tab still waiting for its Save. A drawing
+   only becomes an outline when Save runs the tracer (drawNeedsTrace), and a forgotten Save is a
+   glyph silently missing from the export; the Trace step's auto-commit only covers the glyph you
+   visit. Shape: adApply's two phases — an async pass that rasterises each drawing and decodes it
+   into imgCache, then ONE synchronous udDo that traces them all (one Ctrl+Z brings every outline
+   back), with curKind/curCp retargeted per glyph because rasterizeCurrent/traceSig read the CURRENT
+   item (applyOutlineToAll's idiom). Hand-edited glyphs are left alone and named — the same
+   protection drawCommit gives one glyph — and a drawing that changed while we were rasterising is
+   skipped rather than stamped with a signature its outline never came from. ── */
+let _drawSaveAllBusy = false;
+function drawSaveAllBtnHTML(cat) {   // cat is a static literal at every call site — never user data — so the inline handler is the file's idiom
+  return `<button type="button" class="ctl-btn draw-save-all" data-cat="${cat}" style="display:none;" onclick="drawCommitAll('${cat}')" title="${esc(_drawT('save_all_title', 'Save & trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time.'))}"><span>${_drawT('save_all', 'Save all drawings')}</span> <span class="dsa-n"></span></button>`;
+}
+function drawPendingFor(cat) {   // { pending, handEdited } — drawings on this tab still waiting for their Save
+  const pending = [], handEdited = [];
+  tabDrawCps(cat).forEach(cp => {
+    const l = (project.letters || []).find(x => x.codepoint === cp);
+    if (!l || !(l.draw && l.draw.strokes.length) || (l.source && l.source.kind === 'svg') || !drawNeedsTrace(l)) return;   // an imported vector is never silently turned into a draw raster (drawPointerDown refuses it too)
+    (l.handEdited ? handEdited : pending).push(l);
+  });
+  return { pending, handEdited };
+}
+function syncDrawSaveAllBtns() {   // shown only with something to save (syncUnfinishedBtn's idiom) — a photo project simply has nothing pending
+  if (!project) return;
+  document.querySelectorAll('.draw-save-all[data-cat]').forEach(b => {
+    const n = drawPendingFor(b.dataset.cat).pending.length;
+    b.style.display = n ? '' : 'none';
+    b.disabled = _drawSaveAllBusy;
+    const c = b.querySelector('.dsa-n'); if (c) c.textContent = n ? '(' + n + ')' : '';
+  });
+}
+async function drawCommitAll(cat) {
+  if (!project || _drawSaveAllBusy) return;
+  const { pending, handEdited } = drawPendingFor(cat);
+  if (!pending.length) { status(I18n.t('fontmaker.draw.save_all_none')); return; }
+  if (drawGesture) _drawAbandon();   // never commit a stroke that is still under the pen
+  _drawSaveAllBusy = true; syncDrawSaveAllBtns();
+  const proj = project, k0 = curKind, c0 = curCp;
+  try {
+    // Phase 1 — async: rasterise every pending drawing and decode it (rasterizeCurrent reads imgCache).
+    const prep = [];
+    for (let i = 0; i < pending.length; i++) {
+      const l = pending[i];
+      const fr = drawFrame(l.draw);
+      const url = drawRenderCanvas(l.draw, fr).toDataURL('image/png');
+      const sig = drawSig(l.draw);   // what this raster was made from — a stroke added while we await is caught in phase 2
+      try { await loadImg(url); } catch (e) { continue; }
+      if (project !== proj) return;   // the project was replaced meanwhile (New / Load) — nothing of it is ours to commit
+      prep.push({ l, fr, url, sig });
+      if ((i & 3) === 3) { status(I18n.t('fontmaker.draw.save_all_progress', { i: i + 1, total: pending.length }), true); await _adYield(); }
+    }
+    if (!prep.length) return;
+    status(I18n.t('fontmaker.draw.save_all_tracing'), true); await _adYield();   // let the strip paint before the synchronous trace block
+    // Phase 2 — sync, atomic: ONE undo entry, exactly _drawCommitNow's writes per glyph.
+    const done = [], changed = [], noInk = [];
+    udDo(prep.map(p => ({ t: 'item', kind: 'letter', cp: p.l.codepoint, withSource: true, withDraw: true })), 'save all drawings (' + prep.length + ')', () => {
+      try {
+        prep.forEach(p => {
+          const l = p.l;
+          if (!(l.draw && l.draw.strokes.length) || drawSig(l.draw) !== p.sig) { changed.push(l); return; }   // edited while we were rasterising — save it again
+          curKind = 'letter'; curCp = l.codepoint;   // point rasterizeCurrent / traceSig at this glyph
+          l.source.kind = 'draw'; l.source.dataUrl = p.url; l.source.cropRect = null; l.source.sheetId = null;
+          l.transform = [SC, 0, 0, SC, fx(p.fr.x0), fy(p.fr.y1)];   // canvas px land 1:1 in font units
+          l.captureBox = null;
+          l.flattenLighting = false;   // synthetic ink — nothing to flatten (exactly false: itemFlattenOn tests !== false)
+          l.binThreshold = 128; l.thresholdUserSet = true; l.invert = false;   // pure black-on-white: 128 reproduces stroke width verbatim; block Otsu
+          l.drawSig = p.sig;   // this outline now matches these strokes (undo restores the old pair together)
+          l.contours = null; l.curves = null;   // anchors survive — same contract as a photo re-trace
+          (_traceCore(l) ? done : noInk).push(l);
+        });
+      } finally { curKind = k0; curCp = c0; _rawTrace = null; }   // restore the current item; drop the stale raw cache
+    });
+    if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   // the current glyph may be one of them — afterUndo's idiom
+    _drawSel.clear();
+    renderGrids(); renderStage(); renderControls();
+    const names = ls => ls.map(l => gName(l.name)).join(', ');
+    let msg = I18n.t(done.length === 1 ? 'fontmaker.draw.save_all_toast.one' : 'fontmaker.draw.save_all_toast.other', { count: done.length });
+    if (handEdited.length) msg += ' ' + I18n.t('fontmaker.draw.save_all_skipped', { names: names(handEdited) });
+    if (changed.length) msg += ' ' + I18n.t('fontmaker.draw.save_all_changed', { names: names(changed) });
+    if (noInk.length) msg += ' ' + I18n.t('fontmaker.draw.save_all_no_ink', { names: names(noInk) });
+    status(msg);
+  } finally { _drawSaveAllBusy = false; syncDrawSaveAllBtns(); }
 }
 async function drawEnsureRaster(l) {   // stripped-autosave restore — the raster is deterministic from strokes
   if (!(l.draw && l.draw.strokes.length)) return;
@@ -14821,6 +14918,7 @@ function renderControls() {
   updateNodeEditToggle();   // keep the header toggle's label/visibility current on every render
   updateStepTicks();   // keep the per-glyph step checklist current on every render (trace/confirm route through here)
   syncPunctClearBtn();   // the Punctuation tab's Clear all follows every stroke and commit — they end here, not in renderGrids
+  syncDrawSaveAllBtns();   // …and so do the Save all drawings buttons
   const L = document.getElementById('ctlLeft'), R = document.getElementById('ctlRight'), U = document.getElementById('ctlUnder');
   const SB = document.getElementById('stageBelow');
   if (!L || !R || !U) return;

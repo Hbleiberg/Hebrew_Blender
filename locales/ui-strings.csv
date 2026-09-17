@@ -5105,6 +5105,16 @@ fontmaker.panels.not_traced,Not traced yet.,עדיין לא הומר לקווי 
 fontmaker.draw.untraced_handedited,"This letter’s points were edited by hand, so the drawing is not re-traced automatically — doing so would replace those edits. Re-trace only if you want the drawing to win.","הנקודות של האות הזו נערכו ידנית, ולכן הציור לא מומר לקווי מתאר אוטומטית — פעולה כזו הייתה מחליפה את העריכות. המירו מחדש רק אם אתם רוצים שהציור יגבר.",Trace step — why a hand-edited letter is not auto-traced,
 fontmaker.draw.untraced_stale_stage,The outline below is older than this drawing — re-trace to catch it up.,קווי המתאר שלמטה ישנים יותר מהציור הזה — המירו מחדש כדי לעדכן אותם.,Trace stage caption when an existing outline is older than the strokes,
 fontmaker.draw.stock_ghost_hint,"Built-in shape — draw over it to replace it, or leave it as is.","צורה מובנית — ציירו מעליה כדי להחליף אותה, או השאירו אותה כפי שהיא.",Draw stage caption under a punctuation mark that still carries its shipped default outline,
+fontmaker.draw.save_all,Save all drawings,שמירת כל הציורים,button — commits every drawing on this tab that is not saved yet,
+fontmaker.draw.save_all_title,"Save & trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time.","שמירה והמרה לקווי מתאר של כל ציור בכרטיסייה זו שעדיין לא נשמר, בצעד אחד (Ctrl+Z אחד מבטל את כולם). גליפים שנקודותיהם נערכו ידנית נשארים לשמירה אחד-אחד.",button title (tooltip),
+fontmaker.draw.save_all_none,Every drawing on this tab is already saved.,כל הציורים בכרטיסייה זו כבר שמורים.,toast,
+fontmaker.draw.save_all_progress,Preparing drawing {i} of {total}…,מכין ציור {i} מתוך {total}…,sticky status while Save all drawings rasterises,
+fontmaker.draw.save_all_tracing,Tracing the drawings…,ממיר את הציורים לקווי מתאר…,sticky status during the trace block,
+fontmaker.draw.save_all_toast.one,Saved and traced {count} drawing.,נשמר והומר ציור {count}.,toast,plural
+fontmaker.draw.save_all_toast.other,Saved and traced {count} drawings.,נשמרו והומרו {count} ציורים.,toast,plural
+fontmaker.draw.save_all_skipped,Left for you to save one at a time (hand-edited points): {names}.,הושארו לשמירה אחד-אחד (נקודות שנערכו ידנית): {names}.,toast — appended sentence,
+fontmaker.draw.save_all_changed,Changed while saving — save again: {names}.,השתנו במהלך השמירה — שמרו שוב: {names}.,toast — appended sentence,
+fontmaker.draw.save_all_no_ink,No ink detected: {names}.,לא זוהה דיו: {names}.,toast — appended sentence,
 fontmaker.panels.align_imported_svg,Imported from SVG — set nikkud in step 3.,יובא מ-SVG — הגדירו את הניקוד בשלב 3.,Align stage caption for a vector glyph imported from an SVG,
 fontmaker.panels.align_loaded_font,Loaded from font — set nikkud in step 3.,נטען מגופן — הגדירו את הניקוד בשלב 3.,Align stage caption for a glyph imported from a font file,
 fontmaker.panels.align_no_image,No image yet — upload below.,עדיין אין תמונה — העלו למטה.,Align stage caption when the letter has no reference image yet,
@@ -5261,6 +5271,7 @@ fontmaker.undolabel.clear_drawing,clear drawing,ניקוי הציור,undo actio
 fontmaker.undolabel.clear_pins,clear pins,ניקוי הנעצים,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.clear_trace,clear trace,ניקוי העקיבה,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.clear_all_punctuation_n,clear all punctuation ({n}),ניקוי כל הפיסוק ({n}),undo action name; {n} is a count,
+fontmaker.undolabel.save_all_drawings_n,save all drawings ({n}),שמירת כל הציורים ({n}),undo action name; {n} is a count,
 fontmaker.undolabel.corner_points,corner points,נקודות פינתיות,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.crop_svg,crop SVG,חיתוך SVG,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.delete_contour,delete contour,מחיקת קו מתאר,undo action name,REVIEW: HE authored S243
