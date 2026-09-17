@@ -242,6 +242,14 @@ gesture (`navigator.share`, `showSaveFilePicker`) is called synchronously from a
 an `await` — so every async preparation runs before the modal whose button makes the call; in-body
 checklist buttons are wired with `fmWireAct` after `askModal()` so they don't close the dialog.
 
+### Preview PDF — what the specimen shows
+`generatePreviewPDF` draws the cover, the letter × nikkud chart (Hebrew letters only — punctuation
+takes no nikkud) and one `specimenPage` per enabled add-on set, then **the digits and punctuation
+the font actually carries**: `punctSpecimenChars()` is `letterShips`'s own rule (the Include toggle
+AND ink), so no cell ever falls back to a system face. One LTR page — a lone bracket is never
+mirrored under `direction 'ltr'` and the Hebrew marks are bidi-neutral single glyphs — and the
+cover gains a 0–9 line only once all ten digits ship.
+
 ### Undo / dirty / autosave contract — the big one
 **Never mutate `project` directly.** Route every mutation through `udDo(scopes, label, fn)`
 (scopes: `{t:'item',kind,cp}`, `'spacing'`, `'kerning'`, `'kernClasses'`, `'metrics'`, `'guides'`,
@@ -290,10 +298,30 @@ selection changed) — `afterUndo` shows the canonical full refresh.
 code points `LETTER_ORDER` has never heard of, so any cycler that indexes into it gets `-1` and
 silently restarts at alef — walking the user out of the tab they were working in. Each one owns an
 ordered list instead: `ENGLISH_CPS` (A–Z, a–z, then the import-only accented forms) for English, and
-a `project.letters` filter on the flag for the other two. `_placementCycleCps` (the ◀/▶ and `[`/`]`
-cycle, traced letters only) and `_drawCycleCps` (Save letter & next, untraced only) are the two, and
-they resolve the category in the same precedence `_selectItem` uses to pick `catTab` — so a cycle can
-never land on a letter that belongs to a different tab than the one it started in.
+a `project.letters` filter on the flag for the other two; punctuation (`cat:'punct'`, which IS in
+`LETTER_ORDER`) is its own list too, in grid order. `tabDrawCps(cat)` is the one enumerator of a
+tab's drawable code points — `_drawCycleCps` (Save letter & next) reads it through `_drawCatOf(cp)`
+and so does *Save all drawings*, so the two can never disagree about a tab's members — and
+`_placementCycleCps` (the ◀/▶ and `[`/`]` cycle, traced letters only, punctuation skipped because it
+is anchor-free) resolves the category the same way. That precedence is `_selectItem`'s, held in one
+place, `catTabFor(kind, cp)` (english → wide / specialized → custom → punct → the kind itself), which
+`udNavTo` uses too, so a click and a single-item undo land on the same tab. `drawAdvance` walks to
+the next glyph that is "still to draw": no outline, **or only its shipped default one** (next).
+
+**Punctuation defaults are placeholders, not the teacher's work.** 17 marks are seeded from
+`PUNCT_DEFAULTS` by `blankLetter`; digits and the rest start blank, and there is no provenance flag
+on an item. `isStockOutline(l)` answers by value — the contours equal the factory's (JSON memoised
+once per code point) and nothing of the teacher's has touched the outline (no `handEdited`, no
+`drawSig`, no `source.dataUrl`, not SVG) — so editing a `PUNCT_DEFAULTS` shape reclassifies it in
+every saved project. A stock mark opens on Draw in a Draw project (`_defaultStepForCur`, with the
+shape ghosted on the stage), counts as still-to-draw for Save letter & next, is a *pending drawing*
+once it has strokes (`drawNeedsTrace` — so Trace auto-commits it and `stripImagesForAutosave` keeps
+the strokes), and still ships (`letterShips` only asks for ink). *Clear all existing glyphs…* on the
+Punctuation tab (`clearAllPunct`) confirms first — the body says how many still carry the built-in
+shape and how many carry the teacher's own work — then re-blanks every clearable item **from
+`blankLetter`** minus the default, in ONE `udDo` (`withSource` + `withDraw`), so anchors, placement
+flags and threshold fields reset together and one Ctrl+Z restores all of it. Its enabled state is
+re-stated from `renderControls`, where a stroke lands (`renderGrids` alone would go stale).
 
 `_selectItem` also syncs `englishCase`, because the English grid renders **one case at a time**: the
 tab alone is not enough, and landing on a lowercase letter while the switch still reads
@@ -338,6 +366,28 @@ A carve is fixed in letter space and NOT attached to a stroke, so sliding a stro
 of its own generation brings it back whole, and a carve over blank paper subtracts nothing. Caps:
 `DRAW_STROKE_MAX` / `DRAW_CARVE_MAX` are the runtime ceilings **and** `sanitizeDraw`'s reload
 ceilings — they must stay equal, or a reload silently drops ink the editor let you place.
+
+**The live preview is built from the same geometry layer.** `_drawLivePathD` runs
+`drawStyleGeom(s) || _drawRoundGeom(s)` — the round pen's own geometry (`drawRadiusAt` /
+`drawStrokePoly`, a dot for a tap) in `drawStyleGeom`'s vocabulary — after `_drawTapFloor` and
+hollow's no-pressure rule, so the in-flight `<path>` IS what pointerup commits, pressure included.
+`drawPointerDown` picks it whenever the width will vary (`g.live`: a styled pen, real pen pressure,
+or speed pseudo-pressure on a mouse/finger); a round stroke that will commit at one width keeps the
+incremental `<polyline>`. Every path preview goes through `_drawLivePaint`'s rAF gate — one rebuild
+per frame, never per sample (that is O(n²) per stroke) — and on that path the round pen costs what
+the chisel pen costs (measured; `loop-findings.md`).
+
+**Save all drawings** (`drawCommitAll(cat)`, one button per drawable tab via `drawSaveAllBtnHTML`):
+`drawPendingFor(cat)` lists the tab's drawings still waiting for their Save (strokes +
+`drawNeedsTrace`, never an SVG-sourced glyph; hand-edited ones split off and named — `drawCommit`'s
+own protection, batched). Then `adApply`'s two phases: an async pass that rasterises each drawing
+into `imgCache` and captures `drawSig` *at that moment*, then ONE synchronous `udDo` with exactly
+`_drawCommitNow`'s writes per glyph, `curKind`/`curCp` retargeted per glyph inside a `try/finally`
+(`rasterizeCurrent` and `traceSig` read the current item — `applyOutlineToAll`'s idiom). A drawing
+whose signature changed while we were rasterising is skipped and named, never stamped with a
+signature its outline did not come from; `_drawSaveAllBusy` guards re-entry and an in-flight
+gesture is abandoned first. `syncDrawSaveAllBtns` hides a button with nothing to save and runs from
+`renderGrids` and `renderControls`.
 
 ### Spacing preview — sample-text direction
 `spacingPreviewLayout` returns `order`, the cell indices in **left-to-right visual order**, and
