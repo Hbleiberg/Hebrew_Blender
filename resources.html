@@ -2100,6 +2100,12 @@ function openSubmitFont(pf) {
   wirePills('sgAgePills', 'sgAge', true);
 
   // hCaptcha renders unreliably inside a display:none modal — render it (once) when the modal opens.
+  // The retry below is bounded: js.hcaptcha.com is a third-party script, and on a school network
+  // that blocks it window.hcaptcha never arrives, so an unconditional re-arm polls every 300ms for
+  // as long as the tab is open. The counter resets on each opening, so a network that comes back
+  // still gets a fresh 6 seconds the next time the teacher tries.
+  let hcTries = 0;
+  const HC_MAX_TRIES = 20;   // × 300ms = 6s, and the script is async-defer so it is normally there already
   function ensureCaptcha(){
     const box = document.getElementById('sgHcaptcha');
     if (hcId !== null || !box || box.querySelector('iframe')) return;
@@ -2111,12 +2117,12 @@ function openSubmitFont(pf) {
       const hcOpts = { sitekey: HCAPTCHA_SITEKEY };
       if (matchMedia('(max-width: 355px)').matches) hcOpts.size = 'compact';
       try { hcId = window.hcaptcha.render(box, hcOpts); } catch (_) {}
-    } else {
+    } else if (++hcTries <= HC_MAX_TRIES) {
       setTimeout(ensureCaptcha, 300); // hCaptcha API not loaded yet
     }
   }
 
-  window.openSuggestModal = function(){ sgDialogOpen('sgBackdrop', '.sg-modal-close'); ensureCaptcha(); };
+  window.openSuggestModal = function(){ hcTries = 0; sgDialogOpen('sgBackdrop', '.sg-modal-close'); ensureCaptcha(); };
   window.closeSuggestModal = function(e){ if (e && e.target !== backdrop) return; sgDialogClose('sgBackdrop'); };
 
   form.addEventListener('submit', async function(e){
