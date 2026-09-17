@@ -240,7 +240,7 @@ Learn the Torah cantillation marks (trope / te'amim) one clause family at a time
 1. **Pick a clause family** — Start in Learn mode. The trope marks are grouped by clause family — use the chips above the cards to move between families.
 2. **Study each mark's card** — Every card shows the mark's symbol on a Hebrew word plus its Ashkenazi and Sephardi names. Switch the primary naming tradition in settings.
 3. **Play the chanted example** — Each card plays a real word from the Torah reading, clipped from PocketTorah's recordings, so you hear the mark's actual melody.
-4. **Switch to Drill** — Drill sessions ask 10 questions of three kinds: name the trope on a marked word, hear a clip and pick the symbol, or pick the melody that matches a symbol.
+4. **Switch to Drill** — Drill sessions ask 5, 10 or 20 questions of three kinds: name the trope on a marked word, hear a clip and pick the symbol, or pick the melody that matches a symbol.
 5. **Track your mastery** — The per-mark mastery grid shows your progress. Marks you miss come up more often, and distractors get sneakier as your mastery grows.
 
 ### Questions
@@ -259,7 +259,7 @@ Cantillation marks printed above and below the words of the Hebrew Bible. Each m
 
 **How does Drill mode work?**
 
-Each session asks 10 questions of three kinds: see a marked word and name the trope, hear a clip and pick the symbol, or see a symbol and pick the matching melody. Marks you miss come up more often, and distractors get sneakier (like pashta vs. kadma) as your mastery grows.
+Each session asks 5, 10 or 20 questions (your choice) of three kinds: see a marked word and name the trope, hear a clip and pick the symbol, or see a symbol and pick the matching melody. Marks you miss come up more often, and distractors get sneakier (like pashta vs. kadma) as your mastery grows.
 
 **Where do the chanted examples come from?**
 
