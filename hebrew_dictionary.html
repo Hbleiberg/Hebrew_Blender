@@ -970,7 +970,6 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
 </style>
 </head>
 <body><a class="skip-link" href="#appContainer" data-i18n="dictionary.a11y.skip_to_dictionary">Skip to the dictionary</a>
-<button id="fsBtn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
 
 <header>
   <span class="star">✡︎</span>
@@ -986,6 +985,9 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
   </div>
 </header>
 
+<!-- Floating presenter controls live after the header, like the two sidebar buttons below: this one
+     is position:fixed at the bottom corner, so its place in the source is purely its Tab position. -->
+<button id="fsBtn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
 <button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar" aria-label="Show sidebar" data-i18n-title="dictionary.sidebar.show_title" data-i18n-aria-label="dictionary.sidebar.show_title"><span class="dir-arrow" aria-hidden="true">›</span></button>
 <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar" aria-label="Hide sidebar" data-i18n-title="dictionary.sidebar.hide_title" data-i18n-aria-label="dictionary.sidebar.hide_title"><span class="dir-arrow" aria-hidden="true">‹</span></button>
 
