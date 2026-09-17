@@ -9087,7 +9087,7 @@ function _drawT(k, fallback, p) {   // fontmaker.draw.* with an English fallback
   const v = I18n.t(key, p);
   return v === key ? fallback : v;
 }
-let drawGesture = null;      // active stroke/erase: { tool, pointerId, pointerType, pts, sm, el, kill, ud }
+let drawGesture = null;      // active stroke/erase: { tool, pointerId, pointerType, pts, sm, el, kill, ud, st, live (path preview rebuilt per frame vs. the incremental polyline) }
 let _drawPenSeen = false;    // a pen has been seen this session → palm rejection arms
 let _drawPenUntil = 0;       // ignore touch until this timestamp (rolling +500ms on pen activity)
 let _drawTool = 'draw';      // 'draw' | 'erase' | 'line' | 'move' — session-only (always starts on Draw)
@@ -9623,11 +9623,25 @@ function _drawTapFloor(sk) {
   if (r > 0 && r < need) sk.w = Math.ceil(sk.w * need / r);
   return sk;
 }
-/* styled live preview — rebuild the in-flight stroke's shape each move batch (O(n), n ≤ 2048) */
+/* The round pen's own geometry, in drawStyleGeom's vocabulary: the same drawRadiusAt / drawStrokePoly
+   the committed renderers use (drawStrokesSVG's svgFor, drawRenderCanvas's paintStroke), so a live
+   preview built from it IS what the stroke will look like once the stylus lifts — pressure included.
+   Also the fallback for a styled stroke drawStyleGeom declines (a brush tap), which commits as a
+   round dot. */
+function _drawRoundGeom(s) {
+  if (s.pts.length === 1) { const q = s.pts[0]; return { dots: [[q[0], q[1], drawRadiusAt(s, q[2])]] }; }
+  const poly = drawStrokePoly(s);
+  return poly.length > 2 ? { fill: [poly] } : null;
+}
+/* live preview — rebuild the in-flight stroke's shape from the real geometry layer (O(n), n ≤ 2048).
+   `s` is a throwaway, so it takes the commit-time rules too: hollow commits without pressure
+   (_drawApplyStyle), and a tap carries its width floor (_drawTapFloor) — so a tap previews at the
+   size it will be kept, not the size the tracer would drop. */
 function _drawLivePathD(g) {
-  const s = { w: _drawBrush, pr: (_drawPressure || (_drawSpeed && g.pointerType !== 'pen')) ? 1 : 0,
+  const s = { w: _drawBrush, pr: (g.st !== 'h' && (_drawPressure || (_drawSpeed && g.pointerType !== 'pen'))) ? 1 : 0,
               st: g.st, na: g.na, tl: g.tl, ds: g.ds, rim: g.rim, pts: g.pts };
-  const gm = drawStyleGeom(s);
+  _drawTapFloor(s);
+  const gm = drawStyleGeom(s) || _drawRoundGeom(s);
   return gm ? _drawGeomPathD(gm) : '';
 }
 /* …but the move handler paints once per accepted SAMPLE, not once per batch, so an O(points)
@@ -9727,9 +9741,15 @@ function drawPointerDown(e) {
                     st, na: _drawNaFor(e, st), tl: _drawTaper, ds: _drawDotSpacing, rim: _drawRim, el, ud };
   } else {
     const st = STYLE_ST[_drawStyle] || null;   // style + params freeze at gesture start (like w)
-    const el = document.createElementNS('http://www.w3.org/2000/svg', st ? 'path' : 'polyline');
+    // Which preview is honest: a styled pen, or a round one whose width will VARY — real pen pressure,
+    // or speed pseudo-pressure on a mouse/finger — is rebuilt from the real geometry layer once per
+    // frame (_drawLivePaint), so what you see while the pen is down is what pointerup commits. A round
+    // stroke that will commit at one width (a mouse with Speed off: pressureOf gives a constant 0.5,
+    // the width map's fixed point) keeps the incremental polyline, which already looks identical.
+    const live = !!(st || (e.pointerType === 'pen' ? _drawPressure : _drawSpeed));
+    const el = document.createElementNS('http://www.w3.org/2000/svg', live ? 'path' : 'polyline');
     el.setAttribute('class', 'draw-live');
-    if (st) {
+    if (live) {
       el.setAttribute('fill', stageColors().ink);
       if (st === 'h') el.setAttribute('fill-rule', 'evenodd');
     } else {
@@ -9745,8 +9765,8 @@ function drawPointerDown(e) {
     const p0 = speedSynth ? 0.65 : pressureOf(e);               // mid-fat seed; the EMA smooths from here
     drawGesture = { tool: 'draw', pointerId: e.pointerId, pointerType: e.pointerType,
                     pts: [[Math.round(x), Math.round(y), p0]], sm: [x, y, p0], lv: [x, y, e.timeStamp],
-                    st, na: _drawNaFor(e, st), tl: _drawTaper, ds: _drawDotSpacing, rim: _drawRim, el, ud };
-    if (st) el.setAttribute('d', _drawLivePathD(drawGesture));   // seed the tap footprint
+                    st, live, na: _drawNaFor(e, st), tl: _drawTaper, ds: _drawDotSpacing, rim: _drawRim, el, ud };
+    if (live) el.setAttribute('d', _drawLivePathD(drawGesture));   // seed the tap footprint
   }
   try { stage().setPointerCapture(e.pointerId); } catch (err) {}   // synthetic test events have no active pointer — must not throw
   e.preventDefault();
@@ -9838,7 +9858,7 @@ function drawPointerMove(e) {
     if (g.pts.length >= 2048) continue;                // hard cap — matches sanitizeDraw
     g.pts.push([Math.round(g.sm[0]), Math.round(g.sm[1]), g.sm[2]]);
     if (!g.el.isConnected) stage().appendChild(g.el);  // a stray async re-render wiped the SVG mid-stroke
-    if (g.st) _drawLivePaint(g);
+    if (g.live) _drawLivePaint(g);   // one geometry rebuild per FRAME, never per sample (that is O(n²) per stroke — see _drawLivePaint)
     else g.el.setAttribute('points', g.el.getAttribute('points') + ' ' + fx(g.sm[0]).toFixed(1) + ',' + fy(g.sm[1]).toFixed(1));
   }
   e.preventDefault();
