@@ -740,7 +740,7 @@ body.dark #appToast { background: #0a0f1c; }
 .tour-spot{position:fixed;top:0;left:0;width:0;height:0;border-radius:8px;pointer-events:none;z-index:1400;box-shadow:0 0 0 9999px rgba(13,18,32,0.62),0 0 0 3px var(--gold);transition:top 0.25s ease,left 0.25s ease,width 0.25s ease,height 0.25s ease;}
 .tour-card{position:fixed;z-index:1500;width:300px;max-width:92vw;background:var(--white);color:var(--text);border:1px solid var(--border);border-radius:12px;box-shadow: 0 6px 16px rgba(0,0,0,0.34);padding:16px 18px 14px;}/* impeccable-disable-line gpt-thin-border-wide-shadow -- hairline + soft shadow is the suite's ratified floating-surface convention (S311 88f4940, re-ratified S315) */
 body.dark .tour-card{background:var(--cream);}
-.tour-card h4{font-family:'Libre Baskerville',serif;margin:0 26px 8px 0;font-size:0.98rem;color:var(--text);}
+.tour-card h2{font-family:'Libre Baskerville',serif;margin:0 26px 8px 0;font-size:0.98rem;color:var(--text);}
 .tour-card p{font-size:0.84rem;line-height:1.5;margin:0 0 12px;color:var(--text);}
 .tour-x{position:absolute;top:8px;inset-inline-end:8px;width:26px;height:26px;background:transparent;border:none;border-radius:6px;color:var(--muted);font-size:1rem;cursor:pointer;line-height:1;}
 .tour-x:hover{background:var(--warm-gray);color:var(--text);}
@@ -1369,7 +1369,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
 <div class="tour-spot" id="tourSpot" hidden></div>
 <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
   <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)">✕</button>
-  <h4 id="tourCardTitle"></h4>
+  <h2 id="tourCardTitle"></h2>
   <p id="tourCardBody"></p>
   <div class="tour-meta">
     <span id="tourStep" class="bidi-isolate"></span>

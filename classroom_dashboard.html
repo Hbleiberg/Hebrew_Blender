@@ -1744,7 +1744,7 @@
     border-radius: 12px;
     border: 1px solid var(--border); box-shadow: 0 6px 16px rgba(0,0,0,0.34); padding: 16px 18px 14px;
   }
-  .tour-card h4 { font-family: 'Libre Baskerville', serif; margin: 0 26px 8px 0; font-size: 0.98rem; color: var(--text); }
+  .tour-card h2 { font-family: 'Libre Baskerville', serif; margin: 0 26px 8px 0; font-size: 0.98rem; color: var(--text); }
   .tour-card p { font-size: 0.84rem; line-height: 1.5; margin: 0 0 12px; color: var(--text); }
   .tour-x {
     position: absolute; top: 8px; right: 8px; width: 26px; height: 26px;
@@ -2255,7 +2255,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <div class="tour-spot" id="tourSpot" hidden></div>
 <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
   <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)">✕</button>
-  <h4 id="tourCardTitle"></h4>
+  <h2 id="tourCardTitle"></h2>
   <p id="tourCardBody"></p>
   <div class="tour-meta">
     <span id="tourStep"></span>
