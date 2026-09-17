@@ -9204,7 +9204,6 @@ function initPanelCollapse() {
 
 async function exportPDF() {
   flushWorksheetBuild();   // the export reads every on-screen .sheet — finish any chunked build first
-  const { jsPDF } = window.jspdf;
   const ws = document.getElementById('worksheet');
   const title = document.getElementById('wsTitle').value || 'Hebrew Blends';
 
@@ -9213,6 +9212,11 @@ async function exportPDF() {
   pdfBtn.disabled = true;
 
   try {
+    // jspdf.umd comes from cdnjs and nothing precaches it, so offline — or behind a school filter —
+    // window.jspdf is simply absent. Read it here, INSIDE the try, so that case takes the page's own
+    // failure path: the warn notice points at Print → Save as PDF, which needs no CDN at all. Outside
+    // the try the destructure threw past the catch, and the button sat there looking ready.
+    const { jsPDF } = window.jspdf;
     let sheets = [...ws.querySelectorAll('.sheet')];
     const bingoPages = [...ws.querySelectorAll('.bingo-page')];
     if (sheets.length === 0) {
