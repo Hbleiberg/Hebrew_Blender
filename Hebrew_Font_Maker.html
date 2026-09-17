@@ -3040,7 +3040,11 @@ function metegPairRightFor(t) {   // the CGJ right-side form's mirror of metegPa
 
 /* ── Punctuation & More: default outlines (font units; baseline 0, letter-top 600).
    Each factory returns { contours:[{winding,points}], advance }. Digits 0–9 are ABSENT →
-   seeded blank (traced like letters). Shapes are deliberately simple — the user re-traces. */
+   seeded blank (traced like letters). Shapes are deliberately simple — the user re-traces.
+   isStockOutline() below recognises a glyph that still carries one of these shapes BY VALUE, so
+   editing a shape here reclassifies it in every already-saved project (it would read as the
+   teacher's own outline: no Draw default, skipped by Save letter & next, counted as "own" by
+   Clear all). Add a new default freely; change an existing one only with that in mind. */
 function _arcBand(cx, cy, rOut, rIn, a0, a1, n=12) {   // closed ring-segment polygon (for parens / question hook)
   const p = [], D = Math.PI/180;
   for (let i=0;i<=n;i++){ const a=(a0+(a1-a0)*i/n)*D; p.push([cx+rOut*Math.cos(a), cy+rOut*Math.sin(a)]); }
@@ -3071,6 +3075,21 @@ const PUNCT_DEFAULTS = (() => {
     '2014': C([ rectPts(20,250,460,310) ], 480),                                       // em dash
   };
 })();
+/* Does this letter still carry the shipped PUNCT_DEFAULTS outline, untouched by the teacher? There
+   is no provenance flag on an item (a saved project cannot tell a default from a trace), so the
+   answer is by value: the contours equal the factory's, and nothing the teacher can do to an
+   outline — hand-edit points, commit a drawing (drawSig), trace a photo (source.dataUrl), import
+   an SVG — has happened. Width-only edits (advance/lsb) keep it "stock": the SHAPE is still
+   undrawn, which is what the Draw step and Save letter & next care about. The reference JSON is
+   memoised once per code point; the shapes are a handful of points each. */
+const _stockJson = {};
+function isStockOutline(l) {
+  if (!l || !PUNCT_DEFAULTS[l.codepoint] || !Array.isArray(l.contours)) return false;
+  if (l.handEdited || l.drawSig != null || (l.source && (l.source.dataUrl || l.source.kind === 'svg'))) return false;
+  const cp = l.codepoint;
+  if (!_stockJson[cp]) _stockJson[cp] = JSON.stringify(PUNCT_DEFAULTS[cp]().contours);
+  return JSON.stringify(l.contours) === _stockJson[cp];
+}
 
 /* ── Font-unit metrics ── */
 const UPM = 1000, BASELINE = 0, LETTER_TOP = 600, LAMED_TOP = 800, DESCENDER = -250;
@@ -3230,7 +3249,7 @@ function udRestore(s, snap) {
 function udNavTo(s) {                                    // show the affected item (no side effects — not selectItem)
   if (s.t !== 'item') return;
   if (curKind === s.kind && curCp === s.cp) return;
-  curKind = s.kind; curCp = s.cp; catTab = (s.kind === 'letter' && isEng(s.cp)) ? 'english' : s.kind;
+  curKind = s.kind; curCp = s.cp; catTab = catTabFor(s.kind, s.cp);   // the same precedence a click uses — an undo on a punctuation glyph stays on that tab
 }
 function udCapture(scopes, label) { return { label, slices: scopes.map(s => ({ scope: s, before: udSnap(s) })) }; }
 function udPush(p) {
@@ -3416,6 +3435,16 @@ function customMark(kind, cp) {
   if (!store[cp]) store[cp] = markItem(kind, cp);
   return store[cp];
 }
+/* Which picker tab a (kind, cp) belongs to — the ONE precedence every navigator uses (_selectItem,
+   udNavTo), so a click and an undo land on the same tab: English → wide / specialized forms → custom
+   glyphs → punctuation → the kind itself (letter / nikkud / trop). */
+function catTabFor(kind, cp) {
+  return (kind === 'letter' && isEng(cp)) ? 'english'
+       : (kind === 'letter' && wideGlyphItemFor(cp)) ? (project.font.addWideForms ? 'wideforms'   // a materialized wide form lives in whichever tab surfaces it
+           : (project.font.addSpecialForms && SPECIAL_TARGETS.indexOf(cp) >= 0) ? 'specialforms' : 'letter')
+       : isCustomCp(cp) ? 'customglyphs'
+       : (kind === 'letter' && letterMeta(cp) && letterMeta(cp).cat === 'punct') ? 'punct' : kind;
+}
 function selectItem(kind, cp) {
   // Switching to a different letter/mark from the placement screen with an unsaved move? Offer to save.
   if (workMode === 'anchors' && !(kind === curKind && cp === curCp)) { guardPlacement(() => _selectItem(kind, cp)); return; }
@@ -3424,11 +3453,7 @@ function selectItem(kind, cp) {
 function _selectItem(kind, cp) {
   udFlushPending();          // commit any open slider burst / pending nudge before navigating away (while identity is still the OUTGOING item)
   curKind = kind; curCp = cp;
-  catTab = (kind === 'letter' && isEng(cp)) ? 'english'
-         : (kind === 'letter' && wideGlyphItemFor(cp)) ? (project.font.addWideForms ? 'wideforms'   // a materialized wide form lives in whichever tab surfaces it
-             : (project.font.addSpecialForms && SPECIAL_TARGETS.indexOf(cp) >= 0) ? 'specialforms' : 'letter')
-         : isCustomCp(cp) ? 'customglyphs'
-         : (kind === 'letter' && letterMeta(cp) && letterMeta(cp).cat === 'punct') ? 'punct' : kind;   // keep the picker on the edited item's category (English → English tab; custom → Custom glyphs; punct → Punctuation)
+  catTab = catTabFor(kind, cp);   // keep the picker on the edited item's category (English → English tab; custom → Custom glyphs; punct → Punctuation)
   // The English grid shows ONE case at a time, so the tab alone is not enough: landing on a lowercase
   // letter while the switch still reads Uppercase left the tile off-screen and nothing highlighted.
   // engMeta covers both bands (A-Z/a-z carry their case, the import-only forms are all 'accent').
@@ -5614,10 +5639,62 @@ function renderPunctPanel() {
   const el = document.getElementById('punctPanelBody'); if (!el) return;
   el.innerHTML = `<label class="chk"><input type="checkbox" ${on?'checked':''} onchange="setIncludePunct(this.checked)"> ${_pT('punct_include', "Include digits &amp; punctuation in my font")}</label>
     <div class="hint" style="margin:6px 0 9px;">${ on
-      ? _pT('punct_on_hint', 'Included in the exported font &amp; the Punctuation practice template. Trace each one like a letter — digits start blank; punctuation comes pre-shaped.')
+      ? _pT('punct_on_hint', 'Included in the exported font &amp; the Punctuation practice template. Trace or draw each one like a letter — digits start blank; punctuation comes pre-shaped, and drawing over a built-in shape replaces it. Clear all existing glyphs to start every one blank.')
       : _pT('punct_off_hint', 'Currently <strong>off</strong>: these glyphs are skipped on export and have no practice page. Turn it on to include them.') }</div>
+    <div class="ctl-row" style="margin:0 0 9px;"><button class="ctl-btn" id="punctClearAllBtn" title="${esc(_pT('punct_clear_all_title', 'Remove every outline, drawing and photo on this tab — the built-in shapes too — so each glyph starts blank. Asks first; one Ctrl+Z restores everything.'))}">${_pT('punct_clear_all', 'Clear all existing glyphs…')}</button></div>
     <div class="letter-grid" id="punctGrid"></div>`;
+  // Wired here rather than as an inline handler (the renderFormPanel rule): nothing is interpolated into JS.
+  const clearBtn = document.getElementById('punctClearAllBtn'); if (clearBtn) clearBtn.addEventListener('click', clearAllPunct);
+  syncPunctClearBtn();
   renderPunctGrid();
+}
+/* Every Punctuation-tab item beside its LETTERS row, and the subset with anything to clear. */
+function punctItems() {
+  return LETTERS.filter(L => L.cat === 'punct').map(L => ({ L, l: (project.letters || []).find(x => x.codepoint === L.cp) })).filter(p => p.l);
+}
+function punctClearable() {
+  return punctItems().filter(({ l }) => l.contours || (l.draw && l.draw.strokes.length) || (l.source && l.source.dataUrl));
+}
+function syncPunctClearBtn() {   // a new stroke reaches the page through renderControls, not renderGrids — so both call this
+  const b = document.getElementById('punctClearAllBtn'); if (!b || !project) return;
+  b.disabled = !punctClearable().length;
+}
+/* "Clear all existing glyphs" — the Punctuation tab's reset. Everything there goes back to blank:
+   the shipped default shapes AND whatever the teacher drew, traced or photographed, so that every
+   digit and mark opens on the Draw step in a Draw project. Confirm first (the body says how many
+   still carry the built-in shape and how many carry the teacher's own work), then ONE udDo over the
+   affected items — one Ctrl+Z brings all of it back. */
+function clearAllPunct() {
+  const items = punctClearable(); if (!items.length) return;
+  const count = items.length, stock = items.filter(({ l }) => isStockOutline(l)).length, own = count - stock;
+  const t = (k, p) => I18n.t('fontmaker.modals.' + k, p);
+  let body = t(count === 1 ? 'punct_clear_body.one' : 'punct_clear_body.other', { count });
+  if (stock) body += ' ' + t(stock === 1 ? 'punct_clear_stock.one' : 'punct_clear_stock.other', { stock });
+  if (own) body += ' ' + t(own === 1 ? 'punct_clear_own.one' : 'punct_clear_own.other', { own });
+  body += ' ' + t('punct_clear_undo');
+  askModal(t('punct_clear_title'), body,
+    [ { label: t('cancel'), cls: 'ghost' },
+      { label: t('clear_all'), onClick: () => _clearAllPunctNow(items) } ]);
+}
+function _clearAllPunctNow(items) {
+  udFlushPending();   // an open slider burst on a punct glyph would otherwise commit later against a pre-clear snapshot
+  const scopes = items.map(({ l }) => ({ t: 'item', kind: 'letter', cp: l.codepoint, withSource: true, withDraw: true }));
+  udDo(scopes, 'clear all punctuation (' + items.length + ')', () => {
+    items.forEach(({ L, l }) => {
+      // Re-blank from the factory, never from a hand-kept field list — anchors (finalizeFromRaw seeds
+      // them on any traced letter), placement flags, threshold and outline settings all reset together.
+      // Minus the shipped default, and keeping the input-mode stamp setInputMode wrote on source.kind.
+      const b = blankLetter(L); b.contours = null; b.advance = null; b.source.kind = l.source.kind;
+      Object.assign(l, b);   // same object: undo slices, grid tiles and the current selection keep their handle
+      delete l.drawSig; delete l.attachAnchor; delete l.markAnchors; l.savedAnchors = null;
+    });
+  });
+  _rawTrace = null;
+  if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   // the current glyph may be one of them — afterUndo's idiom
+  _drawSel.clear();
+  renderGrids();
+  if (isPunctItem()) _setWorkMode(_defaultStepForCur()); else { renderStage(); renderControls(); }
+  status(I18n.t(items.length === 1 ? 'fontmaker.status.punct_cleared.one' : 'fontmaker.status.punct_cleared.other', { count: items.length }));
 }
 function renderPunctGrid() {
   const grid = document.getElementById('punctGrid'); if (!grid) return;
@@ -6131,9 +6208,12 @@ function convertMarkToMain(cp) {
 // Furthest applicable editing step for the current item: a traced letter opens on Edit points
 // (node editing), everything else (untraced letters, marks, editor glyphs) on Align. _setWorkMode
 // and renderStage self-correct any illegal 'nodes' request, so this is always safe to pass through.
+// In a Draw project an undrawn letter opens on Draw — and a punctuation mark still wearing its
+// shipped default outline counts as undrawn (isStockOutline): the default is a placeholder, not
+// the teacher's work, and a 'nodes' answer would pass _setWorkMode's Draw⇄Align normaliser untouched.
 function _defaultStepForCur() {
   if (curKind === 'letter' && project.inputMode === 'draw' && curLetter()
-      && curLetter().source.kind !== 'svg' && !(curLetter().contours || []).length) return 'draw';
+      && curLetter().source.kind !== 'svg' && (!(curLetter().contours || []).length || isStockOutline(curLetter()))) return 'draw';
   return (curKind === 'letter' && curLetter() && (curLetter().contours || []).length) ? 'nodes' : 'align';
 }
 function setWorkMode(mode) {
@@ -8567,6 +8647,10 @@ async function renderStage() {
       h += `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="14">${esc(_pT('align_no_image', 'No image yet — upload below.'))}</text>`;
     }
   } else if (workMode === 'draw') {
+    if (isStockOutline(l)) {   // a shipped punctuation shape: show what drawing here replaces (read-only — the tracer only ever sees the strokes)
+      h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-rule="nonzero" opacity="0.22" pointer-events="none"/>`;
+      h += `<text x="300" y="540" text-anchor="middle" fill="#9aa0aa" font-size="12">${esc(_drawT('stock_ghost_hint', 'Built-in shape — draw over it to replace it, or leave it as is.'))}</text>`;
+    }
     h += drawStrokesSVG(l);   // committed strokes over the reference ghost (the tracing paper)
     if (_drawTool === 'move' && _drawSel.size && l.draw) {
       [..._drawSel].forEach(i => { if (i >= l.draw.strokes.length) _drawSel.delete(i); });   // defensive — indices can go stale
@@ -9521,7 +9605,8 @@ function drawNeedsTrace(l) {
   // Projects saved before drawSig existed carry no signature, so staleness is unknowable there —
   // flag only the certain case (strokes with no outline at all) rather than nag about a drawing
   // that WAS traced. Anything saved from here on records the pair and gets the precise check.
-  if (l.drawSig == null) return !(l.contours && l.contours.length);
+  // A punctuation mark still wearing its shipped default has no outline OF THE DRAWING either.
+  if (l.drawSig == null) return !(l.contours && l.contours.length) || isStockOutline(l);
   return drawSig(l.draw) !== l.drawSig;
 }
 /* A tap is a tiny ISLAND of ink, and the tracer discards those long before it discards a thin bar —
@@ -10195,24 +10280,30 @@ async function _drawCommitNow(advance) {
    in LETTER_ORDER, so a LETTER_ORDER-only cycle found indexOf() === -1 and restarted at alef: saving
    an English letter threw you out of the English tab and abandoned the other 51. Precedence mirrors
    _selectItem's catTab assignment, so the letter we land on can never belong to a different tab than
-   the one we came from. Punctuation stays out of the Hebrew cycle (it ships a default outline and is
-   reachable by grid click) — the other categories have no punctuation to skip. */
+   the one we came from. Punctuation is its own cycle (the Punctuation tab, in grid order) and stays
+   out of the Hebrew one; without its branch a digit's indexOf() was -1 too, and Save threw the
+   teacher onto the Letters tab at alef. */
 function _drawCycleCps() {
   const mine = f => (project.letters || []).filter(f).map(x => x.codepoint);
   if (isEng(curCp)) return ENGLISH_CPS.filter(cp => (project.letters || []).some(x => x.codepoint === cp && x.eng));   // A-Z, a-z, then any imported accented forms
   if (wideGlyphItemFor(curCp)) return mine(x => x.wideGlyph);
   if (isCustomCp(curCp)) return mine(x => x.custom);
-  return LETTER_ORDER.filter(cp => { const m = letterMeta(cp); return !(m && m.cat === 'punct'); });
+  const isP = cp => { const m = letterMeta(cp); return !!(m && m.cat === 'punct'); };
+  if (isP(curCp)) return LETTER_ORDER.filter(isP);
+  return LETTER_ORDER.filter(cp => !isP(cp));
 }
-function drawAdvance() {   // next letter in THIS tab without contours
+/* "Still to draw" = no outline, or only the shipped default one (a punctuation mark nobody has drawn
+   yet) — the same test _defaultStepForCur uses to open a glyph on Draw. */
+function drawAdvance() {   // next glyph in THIS tab still to draw
   const order = _drawCycleCps(); if (!order.length) return;
   const i = order.indexOf(curCp);
   for (let k = 1; k <= order.length; k++) {
     const cp = order[(i + k + order.length) % order.length];
     const t = project.letters.find(x => x.codepoint === cp);
-    if (t && !t.contours) { selectItem('letter', cp); return; }
+    if (t && (!t.contours || isStockOutline(t))) { selectItem('letter', cp); return; }
   }
-  status(I18n.t('fontmaker.draw.all_done_toast'));
+  const m = letterMeta(curCp);
+  status(I18n.t(m && m.cat === 'punct' ? 'fontmaker.draw.all_done_punct_toast' : 'fontmaker.draw.all_done_toast'));
 }
 async function drawEnsureRaster(l) {   // stripped-autosave restore — the raster is deterministic from strokes
   if (!(l.draw && l.draw.strokes.length)) return;
@@ -14703,6 +14794,7 @@ function renderControls() {
   updateCurrentGlyphLabel();
   updateNodeEditToggle();   // keep the header toggle's label/visibility current on every render
   updateStepTicks();   // keep the per-glyph step checklist current on every render (trace/confirm route through here)
+  syncPunctClearBtn();   // the Punctuation tab's Clear all follows every stroke and commit — they end here, not in renderGrids
   const L = document.getElementById('ctlLeft'), R = document.getElementById('ctlRight'), U = document.getElementById('ctlUnder');
   const SB = document.getElementById('stageBelow');
   if (!L || !R || !U) return;
@@ -20248,7 +20340,7 @@ function stripImagesForAutosave(p) {
   // Draw strokes are re-editable source data, but 27 letters' worth can outweigh the images this
   // strip exists to shed. Committed letters keep their contours in the JSON, so drop their strokes
   // here; only in-progress (uncommitted) drawings ride along in the stripped fallback.
-  c.letters.forEach(l => { if (l.draw && l.contours) l.draw = null; });
+  c.letters.forEach(l => { if (l.draw && l.contours && !drawNeedsTrace(l)) l.draw = null; });   // a pending drawing — never traced, stale, or over a shipped default — is in-progress work: keep it
   ['nikkud','trop','customMarks'].forEach(cat => {
     const cm = c.font[cat] && c.font[cat].custom;
     if (cm) Object.values(cm).forEach(m => { if (m.source && m.source.dataUrl) m.source.dataUrl = '[omitted]'; });
