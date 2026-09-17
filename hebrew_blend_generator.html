@@ -337,9 +337,8 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
     --white: #1e2535;
   }
   body.dark header { background: #0d1220; border-bottom-color: var(--gold); color: #dde4f0; }
-  body.dark header h1,
-  body.dark header p { color: #dde4f0; }
-  body.dark header p { color: var(--gold-light); }
+  body.dark header h1 { color: #dde4f0; }
+  body.dark header p { color: var(--gold-light); }   /* the h1 line above used to name p too, and lost to this one */
   body.dark .panel-title { background: #0d1220; color: #dde4f0; }
   body.dark .panel-title::after { color: var(--gold-light); }
   body.dark .sidebar { background: #1e2535; border-inline-end-color: var(--border); }
@@ -379,7 +378,8 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   body.dark .bingo-step { background: #1e2535; color: #dde4f0; border-color: var(--border); }
   body.dark .bingo-step:hover { background: #2a3349; }
   body.dark .btn-xs:hover:not([disabled]):not([aria-disabled="true"]) { background: #2a3349; }
-  body.dark .empty-state h2 { color: #dde4f0; }
+  /* .empty-state h2's dark colour lives beside the component (var(--gold-light)); the copy that
+     stood here was the same selector and lost to it. */
   body.dark .empty-state p { color: var(--muted); }
   body.dark .btn-outline { border-color: #4a5a7a; color: #8a9ab8; }
   body.dark .btn-secondary { background: #2a3a5a; color: #dde4f0; }
@@ -825,17 +825,10 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
   }
 
   /* ── MAIN TOOLBAR ── */
-  .main-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 28px;
-    background: var(--cream);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
+  /* .main-toolbar is declared a second time under the other "MAIN TOOLBAR" heading below, with all
+     nine of the same properties and a tighter gap and padding, so the copy that stood here never
+     reached the page and an edit to it would have done nothing. .main-content is NOT the same case
+     and stays: the later copy sets only padding, so this one's flex and overflow-y still apply. */
   .main-content {
     padding: 28px 36px;
     flex: 1;
