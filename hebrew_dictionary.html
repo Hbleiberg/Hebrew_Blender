@@ -381,7 +381,10 @@ header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px
 .search-wrap input::placeholder{color:var(--muted);}
 /* Section 4: clear-search button (all widths) */
 .search-clear{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;border:none;background:var(--warm-gray);color:var(--muted);font-size:0.72rem;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;} /* 24px WCAG floor (touch-target haul) — glyph size unchanged; fits centered in the ~34px input */
-.search-clear:hover{background:var(--gold);color:#fff;}
+/* --gold is a LIGHT surface in both themes, so white on it reads 2.75:1 (light) and 2.14:1
+   (dark, where the gold is paler) -- below the 4.5:1 floor in both. --navy is #1a2744 here with
+   no dark override, which is why .nav-btn above already pairs the two: 5.38:1 and 6.92:1. */
+.search-clear:hover{background:var(--gold);color:var(--navy);}
 .search-clear.show{display:inline-flex;}
 .search-wrap input.has-clear{padding-inline-end:30px;}
 /* "/" jumps to the search box (see the handler by clearDictSearch). The hint sits exactly where
@@ -508,7 +511,7 @@ body.fullscreen .app{height:100vh;min-height:unset;}
 /* Section 1: toolbar share/reset buttons */
 .dict-tool-btn{padding:4px 10px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);font-size:0.78rem;font-family:'Source Sans 3',sans-serif;cursor:pointer;transition:background 0.15s,border-color 0.15s;white-space:nowrap;min-height:30px;box-sizing:border-box;}
 .dict-tool-btn:hover{background:var(--warm-gray);border-color:var(--gold);}
-.dict-tool-btn.copied{background:var(--gold);border-color:var(--gold);color:#fff;}
+.dict-tool-btn.copied{background:var(--gold);border-color:var(--gold);color:var(--navy);}
 /* Section 2: active-filter chip row */
 .filter-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 20px;background:var(--cream);border-bottom:1px solid var(--border);align-items:center;overflow:hidden;}
 .filter-chips:empty{display:none;}
@@ -517,13 +520,13 @@ body.fullscreen .app{height:100vh;min-height:unset;}
 .fchip:hover{border-color:var(--gold);}
 .fchip-body{font-size:0.74rem;background:transparent;border:none;color:var(--text);cursor:pointer;font-family:inherit;padding:3px 6px 3px 10px;line-height:1.5;white-space:nowrap;}
 .fchip-x{display:inline-flex;align-items:center;justify-content:center;width:20px;height:22px;background:transparent;color:var(--muted);font-size:0.72rem;line-height:1;border:none;border-inline-start:1px solid var(--border);cursor:pointer;flex-shrink:0;padding:0;}
-.fchip-x:hover{background:var(--gold);color:#fff;}
+.fchip-x:hover{background:var(--gold);color:var(--navy);}
 /* "Load as filter" active-list banner — makes the saved-list view visible (and exitable)
    so it no longer silently vanishes when the next filter change clears wlFilterOverride. */
 #wlActiveBanner{align-items:center;gap:10px;margin:8px 20px 0;padding:7px 12px;background:var(--warm-gray);border:1px solid var(--border);border-inline-start:3px solid var(--gold);border-radius:8px;font-size:0.82rem;}/* impeccable-disable-line side-tab -- 3px gold accent bar: the suite's callout convention, ratified as brand S315 */
 .wl-active-label{color:var(--text);font-weight:600;}
 .wl-active-exit{margin-inline-start:auto;background:var(--white);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:0.74rem;padding:3px 10px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:border-color 0.15s,background 0.15s;}
-.wl-active-exit:hover{border-color:var(--gold);background:var(--gold);color:#fff;}
+.wl-active-exit:hover{border-color:var(--gold);background:var(--gold);color:var(--navy);}
 .fchip-body:focus-visible,.fchip-x:focus-visible,.fchip-reset:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
 .sort-sel:focus-visible,.dict-tool-btn:focus-visible,.word-card:focus-visible,.emoji-card:focus-visible,.lpt:focus-visible,.panel-title:focus-visible,.adv-section-title:focus-visible,.pos-sec-hdr:focus-visible,.shoresh-patterns-title:focus-visible,.shoresh-pat.filled:focus-visible,.emoji-cat-arrow:focus-visible,.vowel-group-section div[role="button"]:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
 .fchip-reset{font-size:0.74rem;background:var(--navy);color:#fff;border:1px solid var(--navy);border-radius:14px;padding:4px 11px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;}
@@ -533,14 +536,14 @@ body.dark .fchip-reset:hover{background:var(--navy);}   /* pattern dark-override
 /* Section 2: empty-state action buttons */
 .empty .empty-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px;}
 .empty .empty-btn{padding:6px 14px;border:1px solid var(--gold);border-radius:6px;background:var(--white);color:var(--text);font-size:0.82rem;font-family:inherit;cursor:pointer;transition:background 0.15s;}
-.empty .empty-btn:hover{background:var(--gold);color:#fff;}
+.empty .empty-btn:hover{background:var(--gold);color:var(--navy);}
 /* Section 3: word / emoji detail modal */
 .wm-overlay{display:none;position:fixed;inset:0;background:rgba(13,18,32,0.55);z-index:1000;align-items:center;justify-content:center;padding:20px;}
 .wm-overlay.open{display:flex;}
 .wm-dialog{background:var(--white);border:1px solid var(--border);border-radius:12px;max-width:440px;width:100%;max-height:88vh;max-height:88dvh;/* dvh: the visible viewport while a phone URL bar is expanded (the hub's .ie-modal pair) */overflow-y:auto;position:relative;box-shadow: 0 7px 16px rgba(0,0,0,0.30);padding:26px 22px 20px;}/* impeccable-disable-line gpt-thin-border-wide-shadow -- hairline + soft shadow is the suite's ratified floating-surface convention (S311 88f4940, re-ratified S315) */
 body.dark .wm-dialog{background:var(--cream);}
 .wm-close{position:absolute;top:10px;inset-inline-end:10px;width:30px;height:30px;border-radius:6px;border:none;background:var(--warm-gray);color:var(--muted);font-size:1rem;cursor:pointer;line-height:1;}
-.wm-close:hover{background:var(--gold);color:#fff;}
+.wm-close:hover{background:var(--gold);color:var(--navy);}
 .wm-heb{font-family:var(--heb-font);font-size:2.6rem;direction:rtl;text-align:center;color:var(--text);line-height:1.2;margin:4px 24px 4px;}
 .wm-emoji{font-size:3.2rem;text-align:center;margin-bottom:4px;}
 .wm-translit{text-align:center;color:var(--muted);font-size:1rem;margin-bottom:2px;}
@@ -559,7 +562,7 @@ body.dark .wm-form{background:var(--white);}
 body.dark .wm-act{background:var(--white);}
 body.dark .wm-act:hover{background:#2a3349;}   /* dark --warm-gray equals dark --white (the rest colour) AND the dark override outranks :hover — the .emoji-gender-btn value */
 .wm-act:hover{border-color:var(--gold);background:var(--warm-gray);}
-.wm-act.copied{background:var(--gold);color:#fff;border-color:var(--gold);}
+.wm-act.copied{background:var(--gold);color:var(--navy);border-color:var(--gold);}
 .wm-root-row{margin-bottom:12px;}
 .wm-root-btn{width:100%;padding:9px 12px;border:1px solid var(--gold);border-radius:6px;background:var(--gold);color:var(--navy);font-size:0.85rem;font-family:inherit;font-weight:600;cursor:pointer;}
 .wm-root-btn:hover{background:var(--gold-light);color:var(--navy);}
