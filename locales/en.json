@@ -3967,6 +3967,7 @@
   "resources.suggest.age_label": "Intended age group",
   "resources.suggest.age_middle": "Middle / High (6–12)",
   "resources.suggest.captcha_required": "Please complete the “I’m human” check before sending.",
+  "resources.suggest.captcha_unavailable": "The “I’m human” check couldn’t load — it may be blocked on this network.",
   "resources.suggest.cat_culture": "🎭 Culture",
   "resources.suggest.cat_hebrew": "🇮🇱 Hebrew",
   "resources.suggest.cat_lesson": "📘 Lesson Planning",

@@ -3382,6 +3382,7 @@ resources.suggest.age_elementary,Elementary (3–5),יסודי (3–5),pill butt
 resources.suggest.age_label,Intended age group,קבוצת הגיל המיועדת,form label,
 resources.suggest.age_middle,Middle / High (6–12),חטיבה / תיכון (6–12),pill button,
 resources.suggest.captcha_required,Please complete the “I’m human” check before sending.,אנא השלימו את בדיקת “אני אדם” לפני השליחה.,form status,
+resources.suggest.captcha_unavailable,The “I’m human” check couldn’t load — it may be blocked on this network.,בדיקת “אני אדם” לא נטענה — ייתכן שהיא חסומה ברשת זו.,form status — shown instead of captcha_required when the hCaptcha iframe never rendered,
 resources.suggest.cat_culture,🎭 Culture,🎭 תרבות,pill button,leading-emoji
 resources.suggest.cat_hebrew,🇮🇱 Hebrew,🇮🇱 עברית,pill button,leading-emoji
 resources.suggest.cat_lesson,📘 Lesson Planning,📘 תכנון שיעורים,pill button,leading-emoji

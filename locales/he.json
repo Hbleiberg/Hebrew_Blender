@@ -3967,6 +3967,7 @@
   "resources.suggest.age_label": "קבוצת הגיל המיועדת",
   "resources.suggest.age_middle": "חטיבה / תיכון (6–12)",
   "resources.suggest.captcha_required": "אנא השלימו את בדיקת “אני אדם” לפני השליחה.",
+  "resources.suggest.captcha_unavailable": "בדיקת “אני אדם” לא נטענה — ייתכן שהיא חסומה ברשת זו.",
   "resources.suggest.cat_culture": "🎭 תרבות",
   "resources.suggest.cat_hebrew": "🇮🇱 עברית",
   "resources.suggest.cat_lesson": "📘 תכנון שיעורים",

@@ -2131,7 +2131,19 @@ function openSubmitFont(pf) {
     const token = (window.hcaptcha && hcId !== null) ? window.hcaptcha.getResponse(hcId) : '';
     if (!token){
       statusEl.style.color = 'var(--muted)';
-      statusEl.textContent = I18n.t('resources.suggest.captcha_required');
+      // The widget is a third-party iframe (hcaptcha.com): on a school network that filters it the
+      // box never renders, so "complete the check" asks for something that is not on screen. Say
+      // what actually happened and offer the email path the other failure branches already carry.
+      // Anchor on #sgHcaptcha, the container this page renders into -- `.h-captcha` is a class
+      // hCaptcha adds itself, so it is absent here for BOTH reasons and cannot tell them apart.
+      const hcBox = document.getElementById('sgHcaptcha');
+      if (!hcBox || !hcBox.querySelector('iframe')){
+        const _mail = '<a href="mailto:' + emailAddr() + '">' + emailAddr() + '</a>';
+        statusEl.innerHTML = esc(I18n.t('resources.suggest.captcha_unavailable')) +
+          ' ' + I18n.t('resources.suggest.error_email_suffix', {email: _mail});
+      } else {
+        statusEl.textContent = I18n.t('resources.suggest.captcha_required');
+      }
       return;
     }
     btn.disabled = true;
