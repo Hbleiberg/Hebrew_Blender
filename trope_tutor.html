@@ -448,6 +448,9 @@ body.dark .tu-review { background:#131a29; }
 }
 /* The name takes the slack so every ▶ lands on the same inline edge, LTR and RTL alike. */
 .tu-review-name { font-size:0.86rem; font-weight:600; color:var(--text); flex:1 1 auto; }
+/* The list's call to action. Inside #resReview on purpose: the box is hidden on a clean sweep,
+   so the button needs no visibility state of its own. */
+.tu-review-drill { margin-block-start:10px; width:100%; }
 
 /* Mastery grid */
 .tu-mgrid { display:flex; flex-direction:column; gap:8px; margin:14px auto 0; max-width:720px; text-align:initial; }
@@ -1005,6 +1008,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <div class="tu-review" id="resReview" hidden>
           <h3 class="tu-review-title" id="resReviewTitle"></h3>
           <ul class="tu-review-list" id="resReviewList"></ul>
+          <button class="btn tu-review-drill" onclick="drillMissed()" data-i18n="trope.drill.drill_missed">Drill these marks</button>
         </div>
         <button class="btn btn-lg" onclick="startDrill()" data-i18n="trope.drill.drill_again">Drill again</button>
         <button class="btn btn-lg btn-secondary" onclick="setMode('learn')" data-i18n="trope.drill.back_to_learn">Back to Learn</button>
@@ -2428,11 +2432,16 @@ function pickDistractors(answerKey, n) {
 }
 
 function startDrill() {
+  // Consume the missed-marks override FIRST, before any bail below can return: a leaked pool would
+  // silently narrow the next ordinary drill. One session, then it is gone.
+  const forced = _missedPool;
+  _missedPool = null;
   const btn = document.getElementById('drillStartBtn');
   if (btn.getAttribute('aria-disabled') === 'true') { updateDrillStart(); return; }
   const types = enabledTypes();
   const n = drillLength();   // read once: the session length cannot shift while the questions are built
-  const tropePool = scopedDrillPool().map(t => t.key);
+  // A focused pool repeats to fill the session — the same contract as a small family scope below.
+  const tropePool = (forced && forced.length) ? forced.slice() : scopedDrillPool().map(t => t.key);
   // choices need ≥4 distinct marks GLOBALLY (distractors are unscoped); the scoped
   // answer pool itself just needs to be non-empty — repeats are the point of a focused drill
   if (!types.length || !tropePool.length || drillableTropes().length < 4) { updateDrillStart(); return; }
@@ -2697,6 +2706,15 @@ function answer(q, pickedKey, btn) {
    it renders from _lastMissed and touches no progress, mastery or drill state, so re-rendering
    it (a language or font change) can never alter what the student earned. */
 let _lastMissed = [];
+/* The review list's call to action: a one-session answer-pool override, consumed by the very next
+   startDrill(). Transient by design — no storage key, nothing synced, nothing to reset. */
+let _missedPool = null;
+function drillMissed() {
+  const keys = _lastMissed.map(m => m.key).filter(k => TROPE_BY_KEY[k]);
+  if (!keys.length) return;   // unreachable: the button lives inside #resReview, which is hidden on a clean sweep
+  _missedPool = keys;
+  startDrill();
+}
 
 function buildMissedReview() {
   const box = document.getElementById('resReview');

@@ -4818,6 +4818,7 @@
   "trope.drill.choose_again": "בחרו שוב כדי לענות",
   "trope.drill.correct": "✓ נכון — {name}",
   "trope.drill.drill_again": "תרגול נוסף",
+  "trope.drill.drill_missed": "תרגול הטעמים האלה",
   "trope.drill.finish": "סיום →",
   "trope.drill.heading": "תרגול: {n} שאלות בכל מפגש",
   "trope.drill.incorrect": "✗ זה היה {name}",

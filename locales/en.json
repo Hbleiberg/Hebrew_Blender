@@ -4818,6 +4818,7 @@
   "trope.drill.choose_again": "choose again to answer",
   "trope.drill.correct": "✓ Correct — {name}",
   "trope.drill.drill_again": "Drill again",
+  "trope.drill.drill_missed": "Drill these marks",
   "trope.drill.finish": "Finish →",
   "trope.drill.heading": "Drill: {n} questions per session",
   "trope.drill.incorrect": "✗ It was {name}",

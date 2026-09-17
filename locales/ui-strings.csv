@@ -4050,6 +4050,7 @@ trope.drill.choices_aria,Answer choices,אפשרויות תשובה,choices grou
 trope.drill.choose_again,choose again to answer,בחרו שוב כדי לענות,melody choice subtext,
 trope.drill.correct,✓ Correct — {name},✓ נכון — {name},answer feedback,leading-emoji; do-not-translate {name}
 trope.drill.drill_again,Drill again,תרגול נוסף,button,
+trope.drill.drill_missed,Drill these marks,תרגול הטעמים האלה,button under the missed-marks list on the drill results screen,
 trope.drill.finish,Finish →,סיום →,button (last question),
 trope.drill.heading,Drill: {n} questions per session,תרגול: {n} שאלות בכל מפגש,drill start heading,do-not-translate {n}
 trope.drill.incorrect,✗ It was {name},✗ זה היה {name},answer feedback,leading-emoji; do-not-translate {name}
