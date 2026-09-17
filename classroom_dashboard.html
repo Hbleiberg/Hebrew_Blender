@@ -9832,9 +9832,22 @@ async function onUploadEngFontPick(input){
       applyWakeLock();
     }
   });
+  // The roster textarea commits on BLUR (commitRosterFromTextarea) and nothing else, so a refresh
+  // or a closed lid mid-typing fires no commit at all: a teacher who types twenty-five names and
+  // then hits F5 loses every one, while the live "25 names" count under the box says otherwise.
+  // Measured: 5 names typed, then reload — ✕ / Escape / backdrop all keep them (each is a real
+  // blur), a bare reload keeps 0. The in-place message editor two lines below is already rescued
+  // by this same pair, which is what this leaves out. Guarded on the textarea being the focused
+  // element: that IS the mid-typing case, and it is the only state where the box is known to hold
+  // the class's names — syncFormToSettings() fills it when the drawer opens, so committing an
+  // untouched (empty) textarea on a page whose drawer was never opened would write the roster away.
+  function flushRosterIfTyping() {
+    const ta = document.getElementById('pickerRoster');
+    if (ta && document.activeElement === ta) commitRosterFromTextarea();
+  }
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') acquireWakeLock();
-    else saveSettingsToStorage();   // see the pagehide note below
+    else { flushRosterIfTyping(); saveSettingsToStorage(); }   // see the pagehide note below
   });
   // Refresh/close mid-edit must not eat the text: commit the in-place edit on the way out.
   // pagehide (not beforeunload) so bfcache stays eligible; localStorage writes are sync-safe here.
@@ -9843,7 +9856,7 @@ async function onUploadEngFontPick(input){
   // default and then just shuts the lid or swipes to another app loses it. Both events are wired
   // because pagehide alone is unreliable on mobile. Snapshotting here is safe mid-edit: the editable
   // is #dashTextDisplay while saveSettingsToStorage reads the untouched #dashEditor source.
-  window.addEventListener('pagehide', () => { if (_activeEditable) exitInPlaceEdit(true); saveSettingsToStorage(); });
+  window.addEventListener('pagehide', () => { if (_activeEditable) exitInPlaceEdit(true); flushRosterIfTyping(); saveSettingsToStorage(); });
   // Reveal the strip on any pointer activity while fullscreen; keep it up while hovered
   const _fsReveal = () => { if (document.body.classList.contains('fullscreen')) showFsStrip(); };
   document.addEventListener('pointermove', _fsReveal, { passive: true });
