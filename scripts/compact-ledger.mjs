@@ -163,7 +163,15 @@ const pad = (s, n) => String(s).padEnd(n);
 console.log(`compact-ledger (${apply ? 'APPLY' : 'dry run'}) — S${sessionTag}, ${today}`);
 console.log(pad('section', 36) + pad('blocks', 8) + pad('kept', 6) + pad('archived', 10) + pad('findings', 10) + pad('bytes before', 14) + 'after');
 for (const s of stats) console.log(pad(s.section, 36) + pad(s.blocks, 8) + pad(s.kept, 6) + pad(s.archived, 10) + pad(s.findings, 10) + pad(s.before, 14) + s.after);
-console.log(`ledger: ${ledgerText.length} → ${newLedger.length} bytes; archive +${archiveAppend.length} bytes; findings +${findings.length} records`);
+const bytesOf = (t) => Buffer.byteLength(t);   // LIMITS.totalBytes is BYTES, and check-ledger
+// measures Buffer.byteLength — reporting string .length here counted UTF-16 units instead, so a
+// ledger carrying Hebrew and em-dashes read ~1.5 KB smaller than it is and looked compacted while
+// the gate still failed. Report and judge in the same unit the limit is written in.
+console.log(`ledger: ${bytesOf(ledgerText)} → ${bytesOf(newLedger)} bytes; archive +${bytesOf(archiveAppend)} bytes; findings +${findings.length} records`);
+if (bytesOf(newLedger) > LIMITS.totalBytes) {
+  console.log(`ledger: STILL ${bytesOf(newLedger) - LIMITS.totalBytes} bytes over the ${LIMITS.totalBytes} limit after compaction —`);
+  console.log('        the fixed TRUNC widths cannot shrink it further, so trim this session\'s own new text.');
+}
 const longest = newLedger.split('\n').reduce((m, l) => Math.max(m, l.length), 0);
 console.log(`longest live line: ${longest} chars (limit ${LIMITS.lineChars}, handoff ${LIMITS.handoffLineChars})`);
 

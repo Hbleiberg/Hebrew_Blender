@@ -597,3 +597,29 @@ const PANEL_MEM_CFG = {
 
 ---
 
+### 10. Header skip link — the keyboard bypass, on every page
+An `<a class="skip-link">` as the **first child of `<body>`**, hidden off-screen until it takes keyboard
+focus, then dropping in at the top inline start. One rule, sha-identical on all 14 carriers modulo
+indentation — paste it, do not re-author it:
+```css
+.skip-link {
+  position:absolute; inset-inline-start:8px; top:-48px; z-index:200;
+  background:var(--navy); color:#fff; padding:8px 14px;
+  border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
+  text-decoration:none;
+}
+.skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
+```
+- `inset-inline-start`, never `left` — a physical inset pins the link to the same side in Hebrew
+  (measured S397: `he` logical start 1168px vs 8px in `en`). **No `transition`**: it must appear the
+  instant focus reaches it, and the bare rule is then safe on `privacy.html` / `terms.html` / `404.html`,
+  which have no motion and no `prefers-reduced-motion` block to neutralize one in.
+- The **`href` is per page**, pointing at that page's own main-content element, and that element carries
+  **`tabindex="-1"`** so focus really lands on it: `#ttReading`, `#tuMain`, `#appContainer` (dictionary),
+  `#mainContent` everywhere else.
+- The **label names the destination** (maintainer's call, S397): one key per page under that page's own
+  prefix — `home.a11y.skip_to_tools`, `worksheet.a11y.skip_to_worksheet`, `dashboard.a11y.skip_to_board`,
+  and so on. Hebrew uses the `דילוג ל…` form and that page's own vocabulary. Never a single shared label.
+- **Implemented on:** all 14 root pages. The dictionary's separate `.skip-results` is a *mid-page* bypass
+  of the results grid — a different affordance, not a second header skip link.
+- **Rule:** a new page ships this block, an anchored target with `tabindex="-1"`, and its own label key.
