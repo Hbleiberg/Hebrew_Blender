@@ -226,13 +226,18 @@ from `torah_trainer.html`.
   Postpositive/prepositive marks sitting at word edges is **correct**, not a bug.
 - **Persistence** (no presets, no `.ivrit` engine — AllTools-only backup):
   `hebrewTropeTutor_settings` (tradition ashk/seph, hebFont, hebFontSize, drill-type toggles,
+  `drillScope`, `drillLength`,
   playbackRate) and `hebrewTropeTutor_progress` (`{v:1, tropes:{key:{r,w}}, families:{}, pbStreak}`).
   Registered in all five AllTools sites in `index.html`; progress imports go through
   `tropeProgressMerge` (r/w/pbStreak = max, families = union). `hebrewTropeTutor_tourSeen` is the
   export-exempt, erase-cleared tour flag.
   `renderLearn` marks the family on screen visited (`families`) and saves as it renders, except under
   `_chartPrintBuild` (the print chart) or `_i18nRerender` (the `applyI18n` re-render) — both read-only paths.
-- **Drill**: 10 questions/session; three types (Identify / Hear / Melody) toggleable in settings
+- **Drill**: 5 / 10 / 20 questions per session (`drillLength`, default 10, picked on the drill start
+  screen); `drillScope` and `drillLength` are both **validated at read time**, never at load, because
+  a settings blob arrives from an AllTools import or a cloud download — and both selects are JS-built,
+  so `syncDrillSelects()` rebuilds them from every path that can change the stored value (a language
+  switch, a cloud download, a settings reset). Three types (Identify / Hear / Melody) toggleable in settings
   (last one refuses to uncheck **inline**, no alert). Answers sampled weighted by
   `0.35 + (1 − mastery)` (rare ×0.5, no adjacent repeats); questions stable-sorted by clip file key
   to minimize MP3 hops; distractors sampled without replacement, weighted toward same-family ∪

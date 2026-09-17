@@ -98,7 +98,7 @@
     { "@type": "Question", "name": "What is the Trope Tutor?", "acceptedAnswer": { "@type": "Answer", "text": "A free interactive tutor for the Torah cantillation marks (trope / te'amim). Learn mode teaches the marks one clause family at a time — symbol, names, and melody with real chanted examples — and Drill mode quizzes you three ways with per-mark mastery tracking." } },
     { "@type": "Question", "name": "What melody tradition is this?", "acceptedAnswer": { "@type": "Answer", "text": "The recordings are PocketTorah's, chanted in a widely-taught Ashkenazi melody. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings." } },
     { "@type": "Question", "name": "What are trope (te'amim)?", "acceptedAnswer": { "@type": "Answer", "text": "Cantillation marks printed above and below the words of the Hebrew Bible. Each mark names a melodic phrase and marks the grammar of the verse — together they tell you how to chant it." } },
-    { "@type": "Question", "name": "How does Drill mode work?", "acceptedAnswer": { "@type": "Answer", "text": "Each session asks 10 questions of three kinds: see a marked word and name the trope, hear a clip and pick the symbol, or see a symbol and pick the matching melody. Marks you miss come up more often, and distractors get sneakier (like pashta vs. kadma) as your mastery grows." } },
+    { "@type": "Question", "name": "How does Drill mode work?", "acceptedAnswer": { "@type": "Answer", "text": "Each session asks 5, 10 or 20 questions (your choice) of three kinds: see a marked word and name the trope, hear a clip and pick the symbol, or see a symbol and pick the matching melody. Marks you miss come up more often, and distractors get sneakier (like pashta vs. kadma) as your mastery grows." } },
     { "@type": "Question", "name": "Where do the chanted examples come from?", "acceptedAnswer": { "@type": "Answer", "text": "Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (by Russel Neiss & Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria." } },
     { "@type": "Question", "name": "Is the Trope Tutor free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account required, no ads." } },
     { "@type": "Question", "name": "Can I print a chart of all the trope marks?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. In Learn mode, the Print chart button prints all 26 marks as one reference sheet — each mark's symbol with its Ashkenazi and Sephardi names, grouped by clause family." } }
@@ -116,7 +116,7 @@
     { "@type": "HowToStep", "position": 1, "name": "Pick a clause family", "text": "Start in Learn mode. The trope marks are grouped by clause family — use the chips above the cards to move between families." },
     { "@type": "HowToStep", "position": 2, "name": "Study each mark's card", "text": "Every card shows the mark's symbol on a Hebrew word plus its Ashkenazi and Sephardi names. Switch the primary naming tradition in settings." },
     { "@type": "HowToStep", "position": 3, "name": "Play the chanted example", "text": "Each card plays a real word from the Torah reading, clipped from PocketTorah's recordings, so you hear the mark's actual melody." },
-    { "@type": "HowToStep", "position": 4, "name": "Switch to Drill", "text": "Drill sessions ask 10 questions of three kinds: name the trope on a marked word, hear a clip and pick the symbol, or pick the melody that matches a symbol." },
+    { "@type": "HowToStep", "position": 4, "name": "Switch to Drill", "text": "Drill sessions ask 5, 10 or 20 questions of three kinds: name the trope on a marked word, hear a clip and pick the symbol, or pick the melody that matches a symbol." },
     { "@type": "HowToStep", "position": 5, "name": "Track your mastery", "text": "The per-mark mastery grid shows your progress. Marks you miss come up more often, and distractors get sneakier as your mastery grows." }
   ]
 }
@@ -964,11 +964,17 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 
     <div id="drillStart">
       <div class="tu-drill-center">
-        <h2 data-i18n="trope.drill.heading">Drill: 10 questions per session</h2>
+        <!-- Empty on purpose: the question count is a setting now, so updateDrillStart() writes this
+             heading through I18n.t('trope.drill.heading', {n}) — the #drillTypesSummary shape below. -->
+        <h2 id="drillHeading"></h2>
         <p class="tu-drill-sub" id="drillTypesSummary"></p>
         <div class="tu-scope-row">
           <label for="drillScopeSel" data-i18n="trope.drill.scope_label">Drill which marks?</label>
           <select id="drillScopeSel" onchange="setDrillScope(this.value)"></select>
+        </div>
+        <div class="tu-scope-row">
+          <label for="drillLenSel" data-i18n="trope.drill.len_label">How many questions?</label>
+          <select id="drillLenSel" onchange="setDrillLength(this.value)"></select>
         </div>
         <button class="btn btn-lg" id="drillStartBtn" onclick="startDrill()" data-i18n="trope.drill.start_button">Start drill</button>
         <div class="tu-note" id="drillStartNote" role="status"></div>
@@ -1315,6 +1321,7 @@ const DEFAULTS = {
   drillHear: true,
   drillMelody: true,
   drillScope: 'all',            // 'all' | a TROPE_FAMILY_DEFS key — answers-only filter (distractors stay global)
+  drillLength: 10,              // questions per session; one of DRILL_LENGTHS, validated on every read
   playbackRate: 1.0,
   panelsCollapsed: null,        // settings-drawer per-panel collapse map {data-i18n key: bool}; null = markup defaults
 };
@@ -1412,6 +1419,7 @@ function resetAllSettings() {
   applyHebFontSize();
   setHebFont(settings.hebFont);
   syncFormToSettings();
+  syncDrillSelects();   // both selects are JS-built: without this they keep showing the pre-reset choice
   renderLearn();
   updateDrillStart();
 }
@@ -2244,7 +2252,8 @@ function nextFamily() {
 /* ══════════════════════════════════════════════════════
    DRILL MODE
    ══════════════════════════════════════════════════════ */
-const QUESTIONS_PER_SESSION = 10;
+const DRILL_LENGTHS = [5, 10, 20];   // a warm-up, the house default, a test
+const QUESTIONS_PER_SESSION = 10;    // the default only — startDrill() reads drillLength()
 const drill = { active: false, qs: [], i: -1, correct: 0, results: [], best: 0 };
 
 function enabledTypes() {
@@ -2270,6 +2279,13 @@ function scopedDrillPool() {
   const scope = drillScope();
   return scope === 'all' ? pool : pool.filter(t => t.family === scope);
 }
+/* ─── Drill length: a 5-question warm-up, 10, or a 20-question test ───
+   Validated on every read for the same reason drillScope() is — a settings blob arrives
+   from an AllTools import or a cloud download, so the stored value is never trusted. */
+function drillLength() {
+  const v = parseInt(settings.drillLength, 10);
+  return DRILL_LENGTHS.indexOf(v) >= 0 ? v : QUESTIONS_PER_SESSION;
+}
 function buildDrillScopeSel() {
   const sel = document.getElementById('drillScopeSel');
   if (!sel) return;
@@ -2291,9 +2307,33 @@ function setDrillScope(v) {
   saveSettings();
   updateDrillStart();
 }
+function buildDrillLenSel() {
+  const sel = document.getElementById('drillLenSel');
+  if (!sel) return;
+  sel.innerHTML = '';
+  for (const len of DRILL_LENGTHS) {
+    const o = document.createElement('option');
+    o.value = String(len);
+    o.textContent = String(len);   // i18n-ignore: a bare numeral, the same in every language
+    sel.appendChild(o);
+  }
+  sel.value = String(drillLength());
+}
+function setDrillLength(v) {
+  settings.drillLength = parseInt(v, 10);
+  saveSettings();
+  updateDrillStart();
+}
+/* Both drill selects are JS-built, so every path that can change the stored value rebuilds them:
+   a language switch (applyI18n, which is also the FIRST build — the scope options are i18n text,
+   so there is deliberately no init() call), a cloud download, and a settings reset. NOT from
+   updateDrillStart(): that runs on every tab switch, and rebuilding a <select> under the
+   teacher's cursor is its own defect. */
+function syncDrillSelects() { buildDrillScopeSel(); buildDrillLenSel(); }
 function updateDrillStart() {
   const types = enabledTypes();
   const names = { identify: I18n.t('trope.drill.type_identify'), hear: I18n.t('trope.drill.type_hear'), melody: I18n.t('trope.drill.type_melody') };
+  document.getElementById('drillHeading').textContent = I18n.t('trope.drill.heading', { n: drillLength() });
   document.getElementById('drillTypesSummary').textContent =
     I18n.t('trope.drill.types_summary', { types: types.map(t => names[t]).join(' · '), n: progress.pbStreak });
   const btn = document.getElementById('drillStartBtn');
@@ -2391,6 +2431,7 @@ function startDrill() {
   const btn = document.getElementById('drillStartBtn');
   if (btn.getAttribute('aria-disabled') === 'true') { updateDrillStart(); return; }
   const types = enabledTypes();
+  const n = drillLength();   // read once: the session length cannot shift while the questions are built
   const tropePool = scopedDrillPool().map(t => t.key);
   // choices need ≥4 distinct marks GLOBALLY (distractors are unscoped); the scoped
   // answer pool itself just needs to be non-empty — repeats are the point of a focused drill
@@ -2401,7 +2442,7 @@ function startDrill() {
     if (TROPE_BY_KEY[k].rare) w *= 0.5;
     return w;
   };
-  const answers = weightedSample(tropePool, weightFn, QUESTIONS_PER_SESSION, { noAdjacentRepeat: true });
+  const answers = weightedSample(tropePool, weightFn, n, { noAdjacentRepeat: true });
   const qs = answers.map((key, i) => {
     const type = types[i % types.length];
     return { type, key, ex: pickExample(key, undefined, type === 'identify') };
@@ -2409,7 +2450,7 @@ function startDrill() {
   // group questions by source audio file so streamed-MP3 hops are rare
   qs.sort((a, b) => clipFileKey(a.ex).localeCompare(clipFileKey(b.ex)));
   // top up if any answer had no playable example (rare)
-  while (qs.length < QUESTIONS_PER_SESSION && tropePool.length) {
+  while (qs.length < n && tropePool.length) {
     const key = randomOf(tropePool);
     const type = types[qs.length % types.length];
     const ex = pickExample(key, undefined, type === 'identify');
@@ -2421,7 +2462,7 @@ function startDrill() {
   if (!qs.length) { showToast(I18n.t('trope.toast.audio_unavailable')); updateDrillStart(); return; }
 
   drill.active = true;
-  drill.qs = qs.slice(0, QUESTIONS_PER_SESSION);
+  drill.qs = qs.slice(0, n);
   drill.i = -1;
   drill.correct = 0;
   drill.best = 0;
@@ -3511,7 +3552,7 @@ function initCloudSaves() {
         setHebFont(settings.hebFont);
         panelMemApply();
         syncFormToSettings();
-        buildDrillScopeSel();   // the scope box is built once at init; the drill reads the downloaded scope, so the box must say it too
+        syncDrillSelects();   // the drill reads the downloaded scope and length, so both boxes must say them too
       } else if (kind === 'progress') {
         progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
         loadProgress();
@@ -3543,7 +3584,7 @@ function applyI18n() {
   // Read-only re-render: the family on screen was marked visited when it was first shown, so a
   // language switch must not touch the progress record (the _chartPrintBuild precedent).
   try { if (!document.getElementById('learnView').hidden) { _i18nRerender = true; renderLearn(); } } catch (e) {} finally { _i18nRerender = false; }   // family/trope notes, name prefixes
-  try { buildDrillScopeSel(); } catch (e) {}               // scope options: "All marks" + family names
+  try { syncDrillSelects(); } catch (e) {}                 // scope options ("All marks" + family names) and the length options
   try { updateDrillStart(); } catch (e) {}                 // drill start summary + note
   try { syncProgressSummary(); } catch (e) {}              // "{n} of {total} tropes attempted" line in the settings drawer
   // The missed-marks list is JS-built from _lastMissed; re-render it only while the results
