@@ -467,11 +467,16 @@ body.dark .tu-review { background:#131a29; }
 .tu-mfam.fam-geresh   .tu-mfam-label { border-inline-end-color:var(--trope-geresh-line); }
 .tu-mfam.fam-rare     .tu-mfam-label { border-inline-end-color:var(--trope-rare-line); }
 .tu-mcells { display:flex; flex-wrap:wrap; gap:5px; flex:1; }
+/* A <button>, not a div: every cell opens that mark's Learn card. The font/color/appearance
+   resets are what keep it rendering exactly as the div did. */
 .tu-mcell {
   display:flex; flex-direction:column; align-items:center; gap:1px;
   border:1px solid var(--border); border-radius:6px; padding:4px 8px;
   background:var(--white); min-width:74px;
+  font:inherit; color:inherit; appearance:none; cursor:pointer;
 }
+.tu-mcell:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.tu-mcell:hover { border-color:var(--gold); }
 body.dark .tu-mcell { background:var(--navy-deep); }
 .tu-mcell .m-glyph { font-family:var(--heb-font); font-size:1.25rem; line-height:1.1; direction:rtl; }
 .tu-mcell .m-name { font-size:0.7rem; font-weight:600; color:var(--text); text-align:center; }
@@ -1976,9 +1981,13 @@ function buildMasteryGrid(container) {
       const { r, w } = statsOf(t.key);
       const m = masteryOf(t.key);
       const mastered = m >= 0.8;
-      const cell = document.createElement('div');
+      // A real <button>, not a div: the cell opens the mark's Learn card, so it needs a keyboard
+      // and a focus ring, and a button gives both for free.
+      const cell = document.createElement('button');
+      cell.type = 'button';
       cell.className = 'tu-mcell' + (mastered ? ' mastered' : '');
-      cell.title = I18n.t('trope.drill.mastery_cell_title', { name: tropeName(t), r: r, w: w }) + (mastered ? I18n.t('trope.drill.mastery_cell_title_suffix') : '');
+      cell.title = I18n.t('trope.drill.mastery_cell_title', { name: tropeName(t), r: r, w: w }) + (mastered ? I18n.t('trope.drill.mastery_cell_title_suffix') : '') + I18n.t('trope.drill.mastery_cell_title_study');
+      cell.onclick = () => openLearnFor(t.key);
       if (mastered) {
         const vh = document.createElement('span');
         vh.className = 'vh';
@@ -2075,6 +2084,7 @@ function renderLearn() {
   for (const t of TROPES.filter(x => x.family === fam.key)) {
     const card = document.createElement('div');
     card.className = 'tu-card';
+    card.dataset.key = t.key;   // the jump target for openLearnFor(); cards carry no other identity
 
     const head = document.createElement('div');
     head.className = 'tu-card-head';
@@ -2251,6 +2261,27 @@ function nextFamily() {
   currentFamily = TROPE_FAMILY_DEFS[i + 1].key;
   renderLearn();
   document.getElementById('tuFamilyChips').scrollIntoView({ block: 'nearest' });
+}
+/* ─── Open one mark's Learn card ───
+   The drill screens name marks the student wants explained right now — the missed-marks list and
+   every mastery cell — and reaching the card used to cost two clicks AND knowing the mark's family.
+   Switches family, renders, then scrolls the card into view, focuses it so a keyboard user lands
+   there too, and flashes it with the page's own .pulse-attn (already neutralized in the
+   prefers-reduced-motion block). NOT a read-only path: marking the family visited is correct
+   here — the student really is about to study it. */
+function openLearnFor(key) {
+  const t = TROPE_BY_KEY[key];
+  if (!t) return;
+  currentFamily = t.family;
+  setMode('learn');
+  renderLearn();   // setMode() shows the view; it does not render it
+  const card = [...document.querySelectorAll('#tuCards .tu-card')].find(c => c.dataset.key === key);
+  if (!card) return;
+  card.scrollIntoView({ block: 'center' });
+  card.tabIndex = -1;
+  card.focus();
+  card.classList.add('pulse-attn');
+  setTimeout(() => card.classList.remove('pulse-attn'), 1600);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2736,6 +2767,13 @@ function buildMissedReview() {
     name.className = 'tu-review-name';
     name.textContent = tropeNameLine(t);
     li.appendChild(name);
+    const study = document.createElement('button');
+    study.type = 'button';
+    study.className = 'btn btn-xs btn-secondary';
+    study.textContent = I18n.t('trope.drill.review_study');
+    study.setAttribute('aria-label', I18n.t('trope.drill.review_study_aria', { name: tropeName(t) }));
+    study.onclick = () => openLearnFor(miss.key);
+    li.appendChild(study);
     if (miss.ex) {
       const play = document.createElement('button');
       play.type = 'button';

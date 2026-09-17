@@ -4059,6 +4059,7 @@ trope.drill.len_label,How many questions?,כמה שאלות?,drill length select
 trope.drill.mastered_vh,mastered,נשלט,mastery cell (visually hidden),
 trope.drill.mastery_aria,Mastery by trope,שליטה לפי טעם,mastery grid aria,aria-label only
 trope.drill.mastery_cell_title,{name} — {r} right / {w} wrong,{name} — {r} נכון / {w} שגוי,mastery cell title,do-not-translate {name}/{r}/{w}
+trope.drill.mastery_cell_title_study, — open its Learn card, — לפתיחת כרטיס הלימוד,"mastery cell title suffix, always appended: the cell is a button that opens the mark's Learn card",
 trope.drill.mastery_cell_title_suffix, — mastered, — נשלט,mastery cell title suffix (appended when mastered),
 trope.drill.melody_choice_num,▶ {n},▶ {n},melody choice button,leading-emoji; do-not-translate {n}
 trope.drill.melody_hint,Choose a number to hear its melody; choose it again to answer.,בחרו מספר כדי לשמוע את המנגינה שלו; בחרו בו שוב כדי לענות.,hint,
@@ -4081,6 +4082,8 @@ trope.drill.results_heading,Session complete,המפגש הושלם,results headi
 trope.drill.results_pb,🏆 New personal best!,🏆 שיא אישי חדש!,results banner,leading-emoji
 trope.drill.review_title.one,1 mark to review,סימן אחד לחזרה,heading above the missed-marks list on the drill results screen,plural; REVIEW: HE draft
 trope.drill.review_title.other,{count} marks to review,{count} סימנים לחזרה,heading above the missed-marks list on the drill results screen,plural; REVIEW: HE draft
+trope.drill.review_study,Study →,ללימוד ←,"button in a missed-marks row: opens that mark's Learn card","the arrow is mirrored per language on purpose — a literal → does not flip under RTL"
+trope.drill.review_study_aria,Study {name},ללימוד {name},aria-label on the Study button in the missed-marks list,do-not-translate {name}
 trope.drill.review_play_aria,Hear {name} again,השמעת {name} שוב,aria-label on the replay button in the missed-marks list,aria-label only; REVIEW: HE draft
 trope.drill.results_sub,{correct} / {total} correct · best streak this session: {best} 🔥 · personal best: {pb} 🔥,{correct} / {total} נכון · רצף שיא במפגש זה: {best} 🔥 · שיא אישי: {pb} 🔥,results subtitle,do-not-translate {correct}/{total}/{best}/{pb}
 trope.drill.scope_all,All marks,כל הטעמים,drill scope select — the default option,REVIEW: HE draft
