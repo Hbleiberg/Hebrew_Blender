@@ -3407,6 +3407,7 @@ resources.suggest.title,✚ Suggest a Resource,✚ הצעת משאב,modal heade
 resources.suggest.url_placeholder,https://…,https://…,input placeholder,
 resources.view.fonts,🔤 Fonts,🔤 גופנים,view toggle button,leading-emoji
 resources.view.links,📚 Links,📚 קישורים,view toggle button,leading-emoji
+shared.a11y.skip_to_content,Skip to main content,דילוג לתוכן הראשי,keyboard bypass link at the top of every page,aria/skip-link; shared
 shared.corpus.retry_button,↻ Try again,↻ נסו שוב,in-place retry for a failed corpus/data load (converged model; torah keeps its own torah.reading.retry_button),leading-emoji; mirrors torah.reading.retry_button
 shared.darkmode.label_dark,🌙 Dark,🌙 כהה,Dark-mode toggle label (shown when light),"leading-emoji; shared (labeled variant: 404, dictionary)"
 shared.darkmode.label_light,☀️ Light,☀️ בהיר,Dark-mode toggle label (shown when dark),"leading-emoji; shared (labeled variant: 404, dictionary)"

@@ -316,6 +316,15 @@ html.dark-early body,body.dark {
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+/* ───── Skip link (house pattern; the same rule on every page) ───── */
+/* Visually hidden until keyboard focus reaches it, then it drops in at the top inline start. */
+.skip-link {
+  position:absolute; inset-inline-start:8px; top:-48px; z-index:200;
+  background:var(--navy); color:#fff; padding:8px 14px;
+  border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
+  text-decoration:none;
+}
+.skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
 header{background:var(--navy);color:#fff;padding:18px 32px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);flex-shrink:0;}
 header .star{font-size:28px;color:var(--gold);flex-shrink:0;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
@@ -960,8 +969,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
 .beta-tag { font-size: 0.7rem; background: var(--gold); color: var(--navy); padding: 1px 5px; border-radius: 3px; font-weight: 700; letter-spacing: 0.05em; vertical-align: middle; }   /* the suite's Beta badge — one idiom at the 11px floor (text-size floor) */
 </style>
 </head>
-<body>
-
+<body><a class="skip-link" href="#appContainer" data-i18n="shared.a11y.skip_to_content">Skip to main content</a>
 <button id="fsBtn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
 
 <header>
@@ -981,7 +989,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
 <button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar" aria-label="Show sidebar" data-i18n-title="dictionary.sidebar.show_title" data-i18n-aria-label="dictionary.sidebar.show_title"><span class="dir-arrow" aria-hidden="true">›</span></button>
 <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar" aria-label="Hide sidebar" data-i18n-title="dictionary.sidebar.hide_title" data-i18n-aria-label="dictionary.sidebar.hide_title"><span class="dir-arrow" aria-hidden="true">‹</span></button>
 
-<div class="app" id="appContainer">
+<div class="app" id="appContainer" tabindex="-1">
   <aside class="sidebar" id="appSidebar">
 
     <div class="search-wrap">

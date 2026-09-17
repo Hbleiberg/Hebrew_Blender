@@ -218,6 +218,15 @@
   }
 
   /* ───── Header ───── */
+  /* ───── Skip link (house pattern; the same rule on every page) ───── */
+  /* Visually hidden until keyboard focus reaches it, then it drops in at the top inline start. */
+  .skip-link {
+    position:absolute; inset-inline-start:8px; top:-48px; z-index:200;
+    background:var(--navy); color:#fff; padding:8px 14px;
+    border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
+    text-decoration:none;
+  }
+  .skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
   header {
     background: var(--navy);
     color: #fff;
@@ -2017,7 +2026,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 /* ═══ end folder-tree component CSS ═══ */
 
 </style></head>
-<body><header>
+<body>
+<a class="skip-link" href="#mainContent" data-i18n="shared.a11y.skip_to_content">Skip to main content</a>
+<header>
   <div class="star">✡︎</div>
   <div class="htitle">
     <h1 data-i18n="dashboard.header.title">Hebrew Classroom Dashboard</h1>
@@ -2075,7 +2086,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <div class="pick-stage" id="pickStage"></div>
   <div class="pick-controls" id="pickControls"></div>
 </div>
-<div class="dashboard">
+<div class="dashboard" id="mainContent" tabindex="-1">
   <!-- START RAIL (panelLayout zone "left") -->
   <div class="zone-col" id="zoneLeft">
   <!-- Days -->

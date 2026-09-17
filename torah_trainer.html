@@ -285,10 +285,10 @@ body {
 /* ───── Header (matches classroom_dashboard.html:148-204) ───── */
 /* Skip link — visually hidden until keyboard-focused, then slides in at top-left. */
 .skip-link {
-  position:absolute; left:8px; top:-48px; z-index:200;
+  position:absolute; inset-inline-start:8px; top:-48px; z-index:200;
   background:var(--navy); color:#fff; padding:8px 14px;
   border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
-  text-decoration:none; transition:top 0.15s;
+  text-decoration:none;
 }
 .skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
 header {
@@ -1718,13 +1718,12 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
   .tour-spot { transition: none !important; }
   .tt-hint-toast { transition: none !important; }
-  /* Drawer slide, panel-collapse caret, skip link: snap instead of animating.
+  /* Drawer slide and panel-collapse caret: snap instead of animating.
      The backdrop travels WITH the drawer, so it has to snap too — neutralizing only the modal
      left a 0.25s opacity fade behind. Both other carriers of this drawer already group the pair
      (classroom_dashboard, trope_tutor). */
   .settings-modal, .settings-backdrop { transition: none !important; }
   .panel-title::after { transition: none !important; }
-  .skip-link { transition: none !important; }
   /* Karaoke highlight + audio-bar caret: snap the color/transform change. */
   .tt-word, .tt-audio-bar .tt-audio-collapse { transition: none !important; }
   /* Toggle-switch knob: snap the slide (its transition is now transform-only). */

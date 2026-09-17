@@ -159,6 +159,15 @@ html.dark-early body,body.dark {
 body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
 
 /* ── Header ── */
+/* ───── Skip link (house pattern; the same rule on every page) ───── */
+/* Visually hidden until keyboard focus reaches it, then it drops in at the top inline start. */
+.skip-link {
+  position:absolute; inset-inline-start:8px; top:-48px; z-index:200;
+  background:var(--navy); color:#fff; padding:8px 14px;
+  border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
+  text-decoration:none;
+}
+.skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
 header{background:var(--navy);color:#fff;padding:16px 32px;display:flex;align-items:center;gap:14px;border-bottom:4px solid var(--gold);}
 header .star{font-size:28px;color:var(--gold);flex-shrink:0;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
@@ -435,8 +444,7 @@ body.dark #fontToast{background:#2a4070;}
 }
 </style>
 </head>
-<body>
-
+<body><a class="skip-link" href="#mainContent" data-i18n="shared.a11y.skip_to_content">Skip to main content</a>
 <header>
   <span class="star">✡︎</span>
   <div>
@@ -450,7 +458,7 @@ body.dark #fontToast{background:#2a4070;}
   </div>
 </header>
 
-<main>
+<main id="mainContent" tabindex="-1">
   <h2 class="page-heading" data-i18n="resources.page_heading">Resources</h2>
   <p class="page-sub" data-i18n="resources.page_sub">A curated directory of free Hebrew learning resources, worksheets, dictionaries, and Jewish education tools for teachers and students.</p>
 

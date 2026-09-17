@@ -118,6 +118,15 @@ html.dark-early body,body.dark {
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+/* ───── Skip link (house pattern; the same rule on every page) ───── */
+/* Visually hidden until keyboard focus reaches it, then it drops in at the top inline start. */
+.skip-link {
+  position:absolute; inset-inline-start:8px; top:-48px; z-index:200;
+  background:var(--navy); color:#fff; padding:8px 14px;
+  border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
+  text-decoration:none;
+}
+.skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
 header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
 header .star{font-size:32px;color:var(--gold);}
 header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
@@ -270,8 +279,7 @@ footer a { display: inline-block; padding-block: 5px; }
 }
 </style>
 </head>
-<body>
-
+<body><a class="skip-link" href="#mainContent" data-i18n="shared.a11y.skip_to_content">Skip to main content</a>
 <header>
   <span class="star">✡︎</span>
   <div>
@@ -285,7 +293,7 @@ footer a { display: inline-block; padding-block: 5px; }
   </div>
 </header>
 
-<main>
+<main id="mainContent" tabindex="-1">
   <h1 class="page-title" data-i18n="contact.page_title">Contact &amp; Support</h1>
   <div class="lede" data-i18n="contact.lede">Have a question, found a bug, or have an idea for a new feature? I'd love to hear from you.</div>
 

@@ -187,10 +187,10 @@ body {
 
 /* ───── Header (house pattern) ───── */
 .skip-link {
-  position:absolute; left:8px; top:-48px; z-index:200;
+  position:absolute; inset-inline-start:8px; top:-48px; z-index:200;
   background:var(--navy); color:#fff; padding:8px 14px;
   border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
-  text-decoration:none; transition:top 0.15s;
+  text-decoration:none;
 }
 .skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
 header {
@@ -887,7 +887,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
 
 /* ── Reduced motion: honor the OS "reduce motion" preference for everything this
    tool animates (tour spotlight, first-visit pulse, toast, drawer slide, panel caret,
-   skip link, tile/chip transitions). ── */
+   tile/chip transitions). ── */
 /* Keyboard-operable font upload (suite-wide S54): `hidden` (display:none) removed the file
    input from the tab order, making the uploader mouse-only. The input is now visually hidden
    but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
@@ -901,7 +901,6 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   .tu-toast { transition: none !important; }
   .settings-modal { transition: none !important; }
   .panel-title::after { transition: none !important; }
-  .skip-link { transition: none !important; }
   .tu-tab, .tu-chip, .tu-choice, .font-opt, .hbtn, .btn, .tu-ex-play, .settings-close, .radio-group label { transition: none !important; }
   .slider, .slider::before { transition: none !important; }   /* settings toggle knob */
   .settings-backdrop { transition: none !important; }

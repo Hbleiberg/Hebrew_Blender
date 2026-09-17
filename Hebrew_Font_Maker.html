@@ -215,6 +215,15 @@ footer a { display: inline-block; padding-block: 5px; }
   }
 
   /* ── Header ── */
+  /* ───── Skip link (house pattern; the same rule on every page) ───── */
+  /* Visually hidden until keyboard focus reaches it, then it drops in at the top inline start. */
+  .skip-link {
+    position:absolute; inset-inline-start:8px; top:-48px; z-index:200;
+    background:var(--navy); color:#fff; padding:8px 14px;
+    border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
+    text-decoration:none;
+  }
+  .skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
   header {
     display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap;
     background: var(--navy); color: #fff;
@@ -1408,7 +1417,7 @@ footer a { display: inline-block; padding-block: 5px; }
 /* ═══ end shared: test-phrases CSS ═══════════════════════════════════════ */
 </style>
 </head>
-<body>
+<body><a class="skip-link" href="#mainContent" data-i18n="shared.a11y.skip_to_content">Skip to main content</a>
 <header>
   <span class="star">✡︎</span>
   <div style="flex:1;min-width:0;">
@@ -1648,7 +1657,7 @@ footer a { display: inline-block; padding-block: 5px; }
     </div>
   </aside>
 
-  <main class="workspace">
+  <main class="workspace" id="mainContent" tabindex="-1">
     <div class="work-tabs" role="tablist" aria-label="Workspace step" data-i18n-aria-label="fontmaker.workspace.steps_aria">
       <div class="work-current" id="workCurrent" aria-hidden="true"></div>
       <div class="wtab-group">
