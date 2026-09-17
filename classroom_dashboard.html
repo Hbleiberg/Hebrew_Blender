@@ -4004,7 +4004,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   const LOC_NOTE_HOSTS = ['locNote', 'frLocNote'];
   function setLocNote(key, params) {
     _locNoteKey = key || null; _locNoteParams = params || null;
+    // One announcement, not two: when the card was opened from the drawer's own Quick-start button
+    // the drawer stays open beneath the backdrop, so its #locNote is a visible polite status region
+    // too, and both would speak the same sentence. While the card is open its host is the one on
+    // screen, so the drawer's copy is skipped; the next note writes it again.
+    const cardOpen = !!(document.getElementById('frModal') || {}).classList?.contains('open');
     LOC_NOTE_HOSTS.forEach(id => {
+      if (cardOpen && id === 'locNote') return;
       const el = document.getElementById(id);
       if (!el) return;
       el.innerHTML = '';
