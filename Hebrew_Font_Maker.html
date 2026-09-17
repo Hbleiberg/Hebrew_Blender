@@ -7322,7 +7322,15 @@ function removeCombinedSheet() {
 let opentypeLoading = null;
 async function ensureOpentype() {
   if (window.opentype) return window.opentype;
-  if (!opentypeLoading) opentypeLoading = loadScript('https://cdn.jsdelivr.net/npm/opentype.js@1.3.4/dist/opentype.min.js');
+  if (!opentypeLoading) {
+    opentypeLoading = loadScript('https://cdn.jsdelivr.net/npm/opentype.js@1.3.4/dist/opentype.min.js');
+    // Clear it on failure, the way ensurePyodide and ensureHB already do. Without this the rejected
+    // promise is cached: every later call re-throws it without re-requesting the script, so the read
+    // failure modal's own advice -- check your connection and try again -- cannot come true for the
+    // rest of the tab's life, and a teacher on a school network that blinked once loses "extract
+    // letters from an uploaded font" until they reload.
+    opentypeLoading.catch(() => { opentypeLoading = null; });
+  }
   await opentypeLoading;
   return window.opentype;
 }
