@@ -6061,6 +6061,14 @@ function mountSidebarResize(cfg) {
     renderStudentPicker();
     saveSettingsToStorage();
   }
+  // "Everyone's here": absence marks are session state that persists across days on purpose (a
+  // class's list is not re-made each morning), so give the class one tap back to all-present
+  // instead of un-marking chip by chip. Active class only; the fair-cycle history stays.
+  function clearAbsences() {
+    curSession().absent = [];
+    renderStudentPicker();
+    saveSettingsToStorage();
+  }
 
   function renderStudentPicker() {
     const chips = document.getElementById('pickerChips');
@@ -6109,6 +6117,15 @@ function mountSidebarResize(cfg) {
           btn.addEventListener('click', resetPickerCycle);
           progress.appendChild(btn);
         }
+      }
+      if (absent.length) {   // whether or not the fair cycle is on; gone the moment the class is all-present
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-xs';
+        btn.textContent = I18n.t('dashboard.picker.everyone_here');
+        btn.title = I18n.t('dashboard.picker.everyone_here_title');
+        btn.addEventListener('click', clearAbsences);
+        progress.appendChild(btn);
       }
     }
   }

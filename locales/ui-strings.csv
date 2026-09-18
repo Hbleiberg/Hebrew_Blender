@@ -305,6 +305,8 @@ dashboard.picker.delete_class_title,Delete class,מחק כיתה,icon button tit
 dashboard.picker.empty_card,"Add students to this class in Settings → Student Picker, or pick a different class from the header.","הוסיפו תלמידים לכיתה זו בהגדרות ← בורר תלמידים, או בחרו כיתה אחרת מהכותרת.",empty state (sidebar card),
 dashboard.picker.empty_groups,Add a class roster in Settings → Student Picker.,הוסיפו רשימת תלמידים לכיתה בהגדרות ← בורר תלמידים.,groups overlay empty state,
 dashboard.picker.empty_pick,Add students to this class in Settings → Student Picker.,הוסיפו תלמידים לכיתה זו בהגדרות ← בורר תלמידים.,pick overlay empty state,
+dashboard.picker.everyone_here,✅ Everyone's here,✅ כולם כאן,student picker — clears this class's absence marks (shown only while someone is marked absent),leading-emoji
+dashboard.picker.everyone_here_title,Clear today's absence marks for this class,ניקוי סימוני ההיעדרות של היום לכיתה זו,button title,
 dashboard.picker.fair_cycle,Don't repeat until everyone's been picked,אל תחזור עד שכולם נבחרו,settings label,
 dashboard.picker.fs_hide,Hide,הסתר,fullscreen pick pop button,
 dashboard.picker.fs_make_groups,👥 Make Groups,👥 חלוקה לקבוצות,fullscreen pick pop button,leading-emoji

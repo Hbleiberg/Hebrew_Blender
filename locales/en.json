@@ -314,6 +314,8 @@
   "dashboard.picker.empty_card": "Add students to this class in Settings → Student Picker, or pick a different class from the header.",
   "dashboard.picker.empty_groups": "Add a class roster in Settings → Student Picker.",
   "dashboard.picker.empty_pick": "Add students to this class in Settings → Student Picker.",
+  "dashboard.picker.everyone_here": "✅ Everyone's here",
+  "dashboard.picker.everyone_here_title": "Clear today's absence marks for this class",
   "dashboard.picker.fair_cycle": "Don't repeat until everyone's been picked",
   "dashboard.picker.fs_hide": "Hide",
   "dashboard.picker.fs_make_groups": "👥 Make Groups",

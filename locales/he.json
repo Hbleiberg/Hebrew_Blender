@@ -314,6 +314,8 @@
   "dashboard.picker.empty_card": "הוסיפו תלמידים לכיתה זו בהגדרות ← בורר תלמידים, או בחרו כיתה אחרת מהכותרת.",
   "dashboard.picker.empty_groups": "הוסיפו רשימת תלמידים לכיתה בהגדרות ← בורר תלמידים.",
   "dashboard.picker.empty_pick": "הוסיפו תלמידים לכיתה זו בהגדרות ← בורר תלמידים.",
+  "dashboard.picker.everyone_here": "✅ כולם כאן",
+  "dashboard.picker.everyone_here_title": "ניקוי סימוני ההיעדרות של היום לכיתה זו",
   "dashboard.picker.fair_cycle": "אל תחזור עד שכולם נבחרו",
   "dashboard.picker.fs_hide": "הסתר",
   "dashboard.picker.fs_make_groups": "👥 חלוקה לקבוצות",
