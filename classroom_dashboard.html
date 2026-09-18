@@ -2560,6 +2560,32 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <label data-i18n="dashboard.timer.show_fullscreen">Show timer in fullscreen mode</label>
       <label class="toggle"><input type="checkbox" id="showTimerFullscreen"><span class="slider"></span></label>
     </div>
+    <hr>
+    <!-- Finish sound: every option is synthesized from the page's one AudioContext (TIMER_SOUNDS),
+         so there is no asset to fetch and nothing to add to the CSP. The <option> labels carry
+         data-i18n — applyStaticI18n sets textContent only, so the selection survives a language switch. -->
+    <div class="form-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+      <label for="timerSoundSel" data-i18n="dashboard.timer.sound_label">Finish sound</label>
+      <div style="display:flex;gap:5px;align-items:center;">
+        <select id="timerSoundSel" style="flex:1;min-width:0;max-width:none;">
+          <option value="none" data-i18n="dashboard.timer.sound_none">Silent</option>
+          <option value="beep" data-i18n="dashboard.timer.sound_beep">Beep</option>
+          <option value="chime" data-i18n="dashboard.timer.sound_chime">Chime</option>
+          <option value="bell" data-i18n="dashboard.timer.sound_bell">Bell</option>
+          <option value="dingdong" data-i18n="dashboard.timer.sound_dingdong">Ding-dong</option>
+          <option value="triple" data-i18n="dashboard.timer.sound_triple">Triple beep</option>
+          <option value="gentle" data-i18n="dashboard.timer.sound_gentle">Gentle</option>
+          <option value="shofar" data-i18n="dashboard.timer.sound_shofar">Shofar</option>
+        </select>
+        <button type="button" class="btn-xs" id="timerSoundTestBtn" onclick="timerTestSound()" title="Play the selected sound" data-i18n-title="dashboard.timer.sound_test_title" data-i18n-aria-label="dashboard.timer.sound_test_title" aria-label="Play the selected sound" data-i18n="dashboard.timer.sound_test">▶ Test</button>
+      </div>
+    </div>
+    <div class="size-row">
+      <label for="timerVolumeSlider" data-i18n="dashboard.timer.volume">Volume</label>
+      <input type="range" id="timerVolumeSlider" min="0" max="100" step="5" value="70" oninput="setTimerVolume(this.value)">
+      <span class="size-val" id="timerVolumeVal">70%</span>
+      <button class="btn-xs" onclick="setTimerVolume(70)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+    </div>
   </div>
 </div>
 
@@ -3264,6 +3290,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     showShabbatTimes: true,
     showTimer: true,
     showTimerFullscreen: true,
+    timerSound: 'beep',               // which TIMER_SOUNDS recipe plays at "Time!" — 'none' is silent
+    timerVolume: 70,                  // 0–100; the master gain is (pct/100)², so 70 reproduces the old beep's 0.25
     showOmerCounter: true,
     showOmerEnglish: true,
     showOmerProgress: true,
@@ -4318,6 +4346,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   let timerInterval = null;
   let timerRunning = false;
   let timerAudioCtx = null;
+  let timerMasterGain = null;      // every finish sound goes through this one node, so the volume slider is live
   let timerFinishTimeout = null;   // the 3-second "Time!" hold; whatever restarts the clock inside it clears it first
 
   function fmtTimer(s) { return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
@@ -4430,7 +4459,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     timerRunning = false;
     clearInterval(timerInterval);
     document.getElementById('timerCol').classList.remove('running', 'urgent');
-    timerBeep();
+    timerPlayFinishSound();
     const d = document.getElementById('timerDisplay');
     d.classList.remove('warn');
     d.textContent = I18n.t('dashboard.timer.done');
@@ -4442,26 +4471,180 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     }, 3000);
   }
 
+  // One AudioContext for the page, unlocked inside a click (timerStart / the Test button) so the
+  // autoplay policy never mutes the finish sound. Everything plays through timerMasterGain, whose
+  // gain is the volume setting — so dragging the slider is audible on the next sound with no rewiring.
   function ensureTimerAudio() {
     try {
       if (!timerAudioCtx) timerAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (timerAudioCtx.state === 'suspended') timerAudioCtx.resume();
+      if (timerAudioCtx && !timerMasterGain) {
+        timerMasterGain = timerAudioCtx.createGain();
+        timerMasterGain.connect(timerAudioCtx.destination);
+        applyTimerVolume();
+      }
     } catch (e) {}
   }
 
-  function timerBeep() {
+  // Perceived loudness is not linear in the slider position, so the master gain is the square of it.
+  // ?? not ||: a deliberate 0 ("muted, but keep my sound choice") must survive the round trip.
+  function timerVolumeGain() {
+    const pct = Math.max(0, Math.min(100, Number(settings.timerVolume ?? 70)));
+    return (pct / 100) * (pct / 100);
+  }
+  function applyTimerVolume() {
+    try { if (timerMasterGain) timerMasterGain.gain.value = timerVolumeGain(); } catch (e) {}
+  }
+
+  /* Finish-sound recipes. Each takes (ctx, out, t0) and schedules its own nodes — no shared state,
+     nothing to clean up, every one under ~1.8 s so it lands inside the 3-second "Time!" hold.
+     Peak gains are authored at full scale (~0.5); the master gain scales them, so the default
+     volume of 70 reproduces the 0.25 the single beep used before this picker existed.
+     House style: exponential ramps bottom out at 0.0001, never 0, and every osc gets an explicit stop. */
+  function timerTone(ctx, out, t0, opts) {
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = opts.type || 'sine';
+    o.frequency.setValueAtTime(opts.freq, t0);
+    o.connect(g); g.connect(out);
+    const atk = opts.attack ?? 0.01;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(opts.peak, t0 + atk);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + atk + opts.decay);
+    o.start(t0);
+    o.stop(t0 + atk + opts.decay + 0.02);
+  }
+
+  const TIMER_SOUNDS = {
+    // The original: one 440 Hz sine with a 300 ms decay.
+    beep(ctx, out, t0) { timerTone(ctx, out, t0, { freq: 440, peak: 0.5, decay: 0.3 }); },
+
+    // Three rising notes, C5–E5–G5.
+    chime(ctx, out, t0) {
+      [523.25, 659.25, 783.99].forEach((f, i) =>
+        timerTone(ctx, out, t0 + i * 0.18, { type: 'triangle', freq: f, peak: 0.44, decay: 0.5 }));
+    },
+
+    // A struck bell reads as a bell because its partials are INHARMONIC — plain harmonics
+    // (2×, 3×) would just sound like a thicker beep. These ratios are the classic idiophone set.
+    bell(ctx, out, t0) {
+      [[1, 0.36, 1.8], [2.76, 0.16, 1.0], [5.40, 0.08, 0.6]].forEach(([ratio, peak, decay]) =>
+        timerTone(ctx, out, t0, { freq: 587.33 * ratio, peak, decay, attack: 0.004 }));
+    },
+
+    // Doorbell: a descending major third, E5 then C5.
+    dingdong(ctx, out, t0) {
+      [[659.25, 0], [523.25, 0.38]].forEach(([f, at]) => {
+        timerTone(ctx, out, t0 + at, { type: 'triangle', freq: f, peak: 0.34, decay: 0.7 });
+        timerTone(ctx, out, t0 + at, { freq: f, peak: 0.22, decay: 0.7 });
+      });
+    },
+
+    // Three quick pips — the "attention please" one.
+    triple(ctx, out, t0) {
+      for (let i = 0; i < 3; i++)
+        timerTone(ctx, out, t0 + i * 0.15, { type: 'triangle', freq: 880, peak: 0.42, decay: 0.08 });
+    },
+
+    // Soft and slow: a low fifth that fades up rather than cracking in. For a calm room.
+    gentle(ctx, out, t0) {
+      timerTone(ctx, out, t0, { freq: 330, peak: 0.42, decay: 1.2, attack: 0.25 });
+      timerTone(ctx, out, t0, { freq: 494, peak: 0.21, decay: 1.2, attack: 0.25 });
+    },
+
+    // A tekiah-shaped blast. Sawtooths give the reedy harmonic stack; the lowpass sweeping open
+    // is the breath arriving; the pitch scoops up at the onset and lifts again at the release,
+    // the way a real blast does. Two oscillators a few cents apart give it the rough, beating
+    // edge a single clean tone never has. It is a synthesized horn, not a recording.
+    shofar(ctx, out, t0) {
+      try {
+        const dur = 1.25;
+        const filt = ctx.createBiquadFilter();
+        filt.type = 'lowpass'; filt.Q.value = 2;
+        filt.frequency.setValueAtTime(800, t0);
+        filt.frequency.linearRampToValueAtTime(1800, t0 + 0.25);
+        filt.frequency.setValueAtTime(1800, t0 + dur - 0.2);
+        filt.frequency.linearRampToValueAtTime(900, t0 + dur);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.34, t0 + 0.08);
+        g.gain.setValueAtTime(0.34, t0 + dur - 0.25);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+        filt.connect(g); g.connect(out);
+
+        const lfo = ctx.createOscillator();     // the wobble a held blast always has
+        const lfoGain = ctx.createGain();
+        lfo.frequency.setValueAtTime(5, t0);
+        lfoGain.gain.setValueAtTime(4, t0);
+        lfo.connect(lfoGain);
+        lfo.start(t0); lfo.stop(t0 + dur + 0.02);
+
+        [0, 7].forEach(cents => {
+          const o = ctx.createOscillator();
+          o.type = 'sawtooth';
+          o.detune.setValueAtTime(cents, t0);
+          o.frequency.setValueAtTime(300, t0);
+          o.frequency.exponentialRampToValueAtTime(370, t0 + 0.18);
+          o.frequency.setValueAtTime(370, t0 + dur - 0.3);
+          o.frequency.exponentialRampToValueAtTime(385, t0 + dur - 0.05);
+          lfoGain.connect(o.frequency);
+          o.connect(filt);
+          o.start(t0); o.stop(t0 + dur + 0.02);
+        });
+      } catch (e) {}
+    }
+  };
+
+  // A stored blob can name a sound this build doesn't have (an older export, a hand-edited .ivrit).
+  // Anything unrecognised reads as the default beep rather than silence — a timer that goes quiet
+  // without being asked to is the one failure a teacher would not notice until it mattered.
+  function timerSoundId(v) {
+    return (v === 'none' || TIMER_SOUNDS[v]) ? v : 'beep';
+  }
+
+  // The single hook: timerFinish() and the drawer's Test button both come through here.
+  function timerPlayFinishSound(id) {
     try {
+      const name = timerSoundId(id || settings.timerSound);
+      if (name === 'none') return;
       ensureTimerAudio();
-      if (!timerAudioCtx) return;
-      const o = timerAudioCtx.createOscillator();
-      const g = timerAudioCtx.createGain();
-      o.type = 'sine'; o.frequency.value = 440;
-      o.connect(g); g.connect(timerAudioCtx.destination);
-      g.gain.setValueAtTime(0.25, timerAudioCtx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.0001, timerAudioCtx.currentTime + 0.3);
-      o.start();
-      o.stop(timerAudioCtx.currentTime + 0.3);
+      if (!timerAudioCtx || !timerMasterGain) return;
+      applyTimerVolume();
+      (TIMER_SOUNDS[name] || TIMER_SOUNDS.beep)(timerAudioCtx, timerMasterGain, timerAudioCtx.currentTime + 0.02);
     } catch (e) {}
+  }
+
+  // Slider handler. Writes the setting, repaints the readout, and takes effect on the next sound.
+  function setTimerVolume(pct) {
+    const v = Math.max(0, Math.min(100, Math.round(Number(pct) || 0)));
+    settings.timerVolume = v;
+    const slider = document.getElementById('timerVolumeSlider');
+    const out = document.getElementById('timerVolumeVal');
+    if (slider) slider.value = v;
+    if (out) out.textContent = v + '%';   // i18n-ignore: a bare percent sign, same idiom as the 'rem' readouts
+    applyTimerVolume();
+    saveSettingsToStorage();
+  }
+
+  // Preview from the drawer. This click is also a valid unlock gesture, so a teacher who picks a
+  // sound before ever starting a timer still hears it. Silent is a real choice, so it stays a no-op.
+  function timerTestSound() {
+    const sel = document.getElementById('timerSoundSel');
+    const id = sel ? sel.value : (settings.timerSound || 'beep');
+    if (id === 'none') return;
+    timerPlayFinishSound(id);
+  }
+
+  // The Test button is pointless while "Silent" is chosen — mark it so, but keep it focusable
+  // (aria-disabled, not disabled) so it never vanishes from the keyboard order mid-session.
+  function syncTimerSoundTestBtn() {
+    const sel = document.getElementById('timerSoundSel');
+    const btn = document.getElementById('timerSoundTestBtn');
+    if (!sel || !btn) return;
+    const off = sel.value === 'none';
+    btn.setAttribute('aria-disabled', off ? 'true' : 'false');
+    btn.style.opacity = off ? '0.45' : '';
+    btn.style.cursor = off ? 'default' : '';
   }
 
   function applyTimerVisibility() {
@@ -5284,6 +5467,14 @@ function mountSidebarResize(cfg) {
     $('showShabbatTimes').checked = settings.showShabbatTimes !== false;
     $('showTimer').checked = settings.showTimer !== false;
     $('showTimerFullscreen').checked = settings.showTimerFullscreen !== false;
+    $('timerSoundSel').value = timerSoundId(settings.timerSound);   // an unknown id (older/edited blob) falls back to the beep
+    syncTimerSoundTestBtn();
+    { // ?? not ||: a stored 0 is "muted on purpose" and must not snap back to 70
+      const tv = Math.max(0, Math.min(100, Number(settings.timerVolume ?? 70)));
+      $('timerVolumeSlider').value = tv;
+      $('timerVolumeVal').textContent = tv + '%';   // i18n-ignore: bare percent sign
+      applyTimerVolume();
+    }
     $('showOmerCounter').checked = settings.showOmerCounter !== false;
     $('showOmerEnglish').checked = settings.showOmerEnglish !== false;
     $('showOmerProgress').checked = settings.showOmerProgress !== false;
@@ -5407,6 +5598,12 @@ function mountSidebarResize(cfg) {
       settings.showTimerFullscreen = e.target.checked;
       applyTimerVisibility();
       saveSettingsToStorage();
+    });
+    document.getElementById('timerSoundSel').addEventListener('change', e => {
+      settings.timerSound = timerSoundId(e.target.value);
+      syncTimerSoundTestBtn();
+      saveSettingsToStorage();
+      timerPlayFinishSound(settings.timerSound);   // hear what you just picked — this change is a user gesture
     });
     document.getElementById('showOmerCounter').addEventListener('change', e => {
       settings.showOmerCounter = e.target.checked;

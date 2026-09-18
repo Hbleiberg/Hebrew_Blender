@@ -543,7 +543,19 @@ dashboard.timer.reset,↺ Reset,↺ איפוס,timer control button,leading-emoj
 dashboard.timer.set,Set,הגדר,timer custom set button,
 dashboard.timer.show_fullscreen,Show timer in fullscreen mode,הצג טיימר במצב מסך מלא,settings label,
 dashboard.timer.show_panel,Show Timer panel,הצג פאנל טיימר,settings label,
+dashboard.timer.sound_beep,Beep,ציפצוף,finish-sound option,
+dashboard.timer.sound_bell,Bell,פעמון,finish-sound option,
+dashboard.timer.sound_chime,Chime,צלצול,finish-sound option,
+dashboard.timer.sound_dingdong,Ding-dong,דינג-דונג,finish-sound option,
+dashboard.timer.sound_gentle,Gentle,עדין,finish-sound option,
+dashboard.timer.sound_label,Finish sound,צליל סיום,settings label,
+dashboard.timer.sound_none,Silent,ללא צליל,finish-sound option,
+dashboard.timer.sound_shofar,Shofar,שופר,finish-sound option,
+dashboard.timer.sound_test,▶ Test,▶ השמעה,settings button — previews the selected sound,leading-emoji
+dashboard.timer.sound_test_title,Play the selected sound,השמעת הצליל הנבחר,settings button tooltip,
+dashboard.timer.sound_triple,Triple beep,שלושה ציפצופים,finish-sound option,
 dashboard.timer.start,▶ Start,▶ התחל,timer control button,leading-emoji
+dashboard.timer.volume,Volume,עוצמת קול,settings label,
 dashboard.tour.firstrun_link,Take a tour →,צאו לסיור ←,First-run setup-card tour link,first-run affordance
 dashboard.tour.step1_body,"Yesterday, today and tomorrow in Hebrew — plus Shabbat times and the Omer count when they apply.","אתמול, היום ומחר בעברית — וגם זמני שבת וספירת העומר כשהם רלוונטיים.",tour step body,
 dashboard.tour.step1_title,Days of the week,ימות השבוע,tour step title,

@@ -384,6 +384,16 @@ body.dark #tipFloat { background: #0a0f1c; }
   only** — Reset still returns to the preset — and keeps a running clock running, resumes one that just hit
   "Time!" (the 3-second hold is `timerFinishTimeout`, which `timerStart` / `timerReset` clear so a restart
   inside it is never snapped back to the full duration), and leaves a paused or idle one where it is.
+- **Timer finish sound:** `timerFinish()` calls `timerPlayFinishSound()`, the one dispatcher over
+  `TIMER_SOUNDS` — a table of `(ctx, out, t0)` recipes (`beep` is the default and the pre-picker sound;
+  `none` is silent) synthesized from the page's single `timerAudioCtx`, so there is no asset to fetch,
+  nothing in the CSP and nothing to precache. Everything plays through one `timerMasterGain` whose gain is
+  `(timerVolume/100)²` — a square curve for perceived loudness, calibrated so the default `70` reproduces
+  the 0.25 the lone beep used. The context is unlocked inside a click (`timerStart`, and the drawer's Test
+  button, which is why the button must keep calling `ensureTimerAudio()`); recipes stay under ~1.8 s so
+  they land inside the "Time!" hold. `timerSound` and `timerVolume` both travel with the account —
+  `timerSoundId()` maps an id this build doesn't know to `beep`, never to silence, so an older blob can
+  never quietly mute a classroom. Restore `timerVolume` with `??`: a stored `0` is a deliberate mute.
 - **Student Picker:** a class's `picked` / `absent` lists live in `settings.pickerSessions[rosterId]` —
   localStorage only, stripped from presets, share codes, `.ivrit` files and the cloud row — and absences
   persist across days on purpose. `resetPickerCycle()` empties `picked` ("🔄 New round");
