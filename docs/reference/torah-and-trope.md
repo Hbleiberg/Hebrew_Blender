@@ -243,6 +243,19 @@ from `torah_trainer.html`.
   to minimize MP3 hops; distractors sampled without replacement, weighted toward same-family ∪
   `CONFUSABLE_PAIRS` (pashta↔kadma etc.) as the answer's mastery rises. Melody choices are two-tap:
   first tap plays, second tap answers.
+- **Results screen**: `showResults()` distils the session's wrong answers into `_lastMissed` (first
+  miss per mark wins, keeping the clip that was playing) and `buildMissedReview()` renders that list
+  **read-only** — safe to re-render on a language or font change, it never touches progress. Each row
+  offers ▶ (replay the clip) and "Study →" (`openLearnFor(key)`); "Drill these marks" sets
+  `_missedPool`, a **one-session answer-pool override** that `startDrill()` consumes on its first
+  line, before any bail can return, so it can never leak into the next ordinary drill (no storage
+  key, nothing synced, nothing to reset). The button lives inside `#resReview`, so a clean sweep
+  hides it with the list. Both mastery grids render `.tu-mcell` as a real `<button>` calling
+  `openLearnFor(key)`, which switches `currentFamily`, renders, scrolls to and focuses the card
+  (`data-key`) and flashes `.pulse-attn`; it **deliberately marks the family visited** — unlike the
+  `_i18nRerender` / `_chartPrintBuild` read-only paths — because the student really is about to
+  study it. `setMode('drill')` re-shows the start screen whenever no session is active, so a Learn
+  detour from the results screen ends there (the score and the button are gone; `_lastMissed` is not).
 
 ---
 
