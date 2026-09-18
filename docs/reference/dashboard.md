@@ -394,6 +394,24 @@ body.dark #tipFloat { background: #0a0f1c; }
   they land inside the "Time!" hold. `timerSound` and `timerVolume` both travel with the account —
   `timerSoundId()` maps an id this build doesn't know to `beep`, never to silence, so an older blob can
   never quietly mute a classroom. Restore `timerVolume` with `??`: a stored `0` is a deliberate mute.
+- **Repeat until dismissed** (`timerRepeat`, off by default): `timerFinish()` swaps the 3-second hold for
+  an alert that waits to be acknowledged — the sound repeats on a per-sound interval (`TIMER_SOUND_MS`;
+  the recipes run 0.3–1.3 s, so one fixed spacing would either talk over the shofar or leave a gap after
+  the beep) and "Time!" stays up. Three things end it and they are **not** interchangeable: a dismissal
+  stops the sound *and* clears the display; the `timerRepeatMaxSec` cutoff and a hidden tab stop only the
+  sound, leaving the alert on screen and still dismissible, so a teacher back from the hall still sees
+  that the timer ended. Hence the split between `timerEndAlert()` (teardown only — the four timer controls
+  call this, because each already owns its own display and countdown state; `timerAddMinute` would
+  otherwise add `timerTotal + 60`) and `timerDismissAlert()` (teardown **plus** clearing the display).
+  `timerRepeatMaxSec` is seconds with `0` = never, restored with `??`. The dismiss listeners are
+  **capture-phase and attached only while alerting** — capture because the blackout's Escape handler calls
+  `stopImmediatePropagation()`, and a blanked screen during a work period is exactly when a timer rings —
+  and they never `preventDefault()`, so the dismissing tap still does whatever it was going to do. A plain
+  key is ignored while a text surface has focus (the `B`-shortcut guard), Escape is not. The document-level
+  fallback is load-bearing, not a convenience: `#timerDisplay` is hidden when the panel is collapsed or
+  `showTimerFullscreen` is off, and then the visible Stop does not exist. The "tap to stop" hint is a
+  **sibling** of `#timerDisplay`, never a child — `.done` runs `timerFlash`, which would strobe a child —
+  and being static text it is also the only visual cue left under reduced motion, which kills that flash.
 - **Student Picker:** a class's `picked` / `absent` lists live in `settings.pickerSessions[rosterId]` —
   localStorage only, stripped from presets, share codes, `.ivrit` files and the cloud row — and absences
   persist across days on purpose. `resetPickerCycle()` empties `picked` ("🔄 New round");

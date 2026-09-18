@@ -691,6 +691,14 @@
   body.dark .timer-display.warn { color: #ff6b6b; }
   .timer-display.done { color: #cc3333; animation: timerFlash 0.5s steps(1, end) infinite; }
   @keyframes timerFlash { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+  /* Repeat-until-dismissed. The display becomes the Stop target, stretched because the column is
+     align-items:center — shrink-to-fit would leave a target only as wide as the word "Time!", which is
+     no use on a smartboard. The hint is static text, so the reduced-motion block below (which kills the
+     .done flash outright) leaves it as the one remaining visual cue. */
+  #timerCol.ringing .timer-display { cursor: pointer; align-self: stretch; text-align: center; }
+  #timerCol.ringing .timer-display:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; border-radius: 6px; }
+  .timer-stop-hint { font-size: 0.8rem; color: var(--muted); user-select: none; text-align: center; }
+  body.dark .timer-stop-hint { color: #99a2b8; }
   #timerCol.running { animation: timerPulse 2s ease-in-out infinite; }
   #timerCol.running.urgent { animation: timerPulse 0.6s ease-in-out infinite; }
   @keyframes timerPulse { 0%, 100% { box-shadow: var(--shadow-sm); } 50% { box-shadow: 0 0 0 4px rgba(201,146,42,0.32); } }
@@ -2136,6 +2144,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="col-title" id="timerColTitle">Timer</div>
       <div class="col-body" id="timerBody">
         <div class="timer-display" id="timerDisplay">0:00</div>
+        <!-- Sibling of #timerDisplay on purpose: .done runs timerFlash, which would strobe a child.
+             Styled like the blackout hint — readable at the laptop, invisible from the back of a room. -->
+        <div class="timer-stop-hint" id="timerStopHint" style="display:none;" data-i18n="dashboard.timer.stop_hint">Tap, or press Esc, to stop</div>
         <div class="timer-presets">
           <button class="timer-preset-btn" onclick="timerPreset(60)" data-i18n="dashboard.timer.preset_1min">1 min</button>
           <button class="timer-preset-btn" onclick="timerPreset(180)" data-i18n="dashboard.timer.preset_3min">3 min</button>
@@ -2585,6 +2596,21 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <input type="range" id="timerVolumeSlider" min="0" max="100" step="5" value="70" oninput="setTimerVolume(this.value)">
       <span class="size-val" id="timerVolumeVal">70%</span>
       <button class="btn-xs" onclick="setTimerVolume(70)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+    </div>
+    <div class="form-row">
+      <label data-i18n="dashboard.timer.repeat">Repeat until dismissed</label>
+      <label class="toggle"><input type="checkbox" id="timerRepeat"><span class="slider"></span></label>
+    </div>
+    <!-- Only meaningful while the repeat is on, so it rides the parent toggle (the #colorModeRow idiom). -->
+    <div class="form-row" id="timerRepeatStopRow" style="display:none;">
+      <label for="timerRepeatMax" data-i18n="dashboard.timer.repeat_stop_after">Give up after</label>
+      <select id="timerRepeatMax">
+        <option value="30" data-i18n="dashboard.timer.repeat_30s">30 sec</option>
+        <option value="60" data-i18n="dashboard.timer.repeat_1min">1 min</option>
+        <option value="120" data-i18n="dashboard.timer.repeat_2min">2 min</option>
+        <option value="300" data-i18n="dashboard.timer.repeat_5min">5 min</option>
+        <option value="0" data-i18n="dashboard.timer.repeat_never">Never</option>
+      </select>
     </div>
   </div>
 </div>
@@ -3292,6 +3318,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     showTimerFullscreen: true,
     timerSound: 'beep',               // which TIMER_SOUNDS recipe plays at "Time!" — 'none' is silent
     timerVolume: 70,                  // 0–100; the master gain is (pct/100)², so 70 reproduces the old beep's 0.25
+    timerRepeat: false,               // keep sounding (and keep "Time!" up) until someone acknowledges it
+    timerRepeatMaxSec: 60,            // how long the repeat runs before it gives up on its own; 0 = never give up
     showOmerCounter: true,
     showOmerEnglish: true,
     showOmerProgress: true,
@@ -4348,6 +4376,9 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   let timerAudioCtx = null;
   let timerMasterGain = null;      // every finish sound goes through this one node, so the volume slider is live
   let timerFinishTimeout = null;   // the 3-second "Time!" hold; whatever restarts the clock inside it clears it first
+  let timerAlert = false;          // repeat mode: the finish state persists until acknowledged
+  let timerRingTimer = null;       // the repeat interval
+  let timerRingCap = null;         // the "give up after" timeout
 
   function fmtTimer(s) { return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 
@@ -4374,6 +4405,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     if (timerRemaining <= 0) { if (timerTotal > 0) timerRemaining = timerTotal; else return; }
     if (timerRunning) return;
     clearTimeout(timerFinishTimeout);   // a Start inside the "Time!" hold must not be snapped back to the full duration 3 s later
+    timerEndAlert();                    // starting again is an acknowledgement
     ensureTimerAudio();
     timerRunning = true;
     document.getElementById('timerCol').classList.add('running');
@@ -4386,6 +4418,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function timerPause() {
     timerRunning = false;
     clearInterval(timerInterval);
+    timerEndAlert();                    // the instinctive button to hit at a ringing timer — it must silence it
+    document.getElementById('timerDisplay').classList.remove('done');
     document.getElementById('timerCol').classList.remove('running', 'urgent');
     renderTimerDisplay();
   }
@@ -4394,6 +4428,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     timerRunning = false;
     clearInterval(timerInterval);
     clearTimeout(timerFinishTimeout);
+    timerEndAlert();
     timerRemaining = timerTotal;
     const col = document.getElementById('timerCol');
     col.classList.remove('running', 'urgent');
@@ -4409,7 +4444,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function timerAddMinute() {
     const d = document.getElementById('timerDisplay');
     const justDone = d.classList.contains('done');
-    if (justDone) { clearTimeout(timerFinishTimeout); d.classList.remove('done', 'warn'); }
+    if (justDone) { clearTimeout(timerFinishTimeout); timerEndAlert(); d.classList.remove('done', 'warn'); }
     timerRemaining = Math.max(0, timerRemaining) + 60;
     if (justDone) timerStart(); else renderTimerDisplay();
   }
@@ -4459,11 +4494,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     timerRunning = false;
     clearInterval(timerInterval);
     document.getElementById('timerCol').classList.remove('running', 'urgent');
-    timerPlayFinishSound();
     const d = document.getElementById('timerDisplay');
     d.classList.remove('warn');
     d.textContent = I18n.t('dashboard.timer.done');
     d.classList.add('done');
+    // Repeat mode replaces the 3-second hold with an alert that waits to be acknowledged; it plays
+    // the first sound itself. Everything else about the finish is identical.
+    if (settings.timerRepeat) { timerBeginAlert(); return; }
+    timerPlayFinishSound();
     timerFinishTimeout = setTimeout(() => {
       d.classList.remove('done');
       timerRemaining = timerTotal;
@@ -4612,6 +4650,101 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       applyTimerVolume();
       (TIMER_SOUNDS[name] || TIMER_SOUNDS.beep)(timerAudioCtx, timerMasterGain, timerAudioCtx.currentTime + 0.02);
     } catch (e) {}
+  }
+
+  /* ── Repeat until dismissed ──────────────────────────────────────────────────────────────────
+     Opt-in. The finish state stops being a 3-second hold and becomes an alert that waits to be
+     acknowledged: the sound repeats and "Time!" stays up. Three different things end it, and they
+     are deliberately not the same — only an actual dismissal clears the display, because a teacher
+     who was out of the room should still come back to evidence that the timer ended.
+        dismissed  → sound stops, display clears
+        gave up    → sound stops, display stays (and stays dismissible)
+        tab hidden → sound stops, display stays
+     Spacing is per-sound: the recipes run 0.3 s (beep) to 1.3 s (shofar), so one fixed interval
+     would either talk over the shofar or leave a dead gap after the beep. */
+  const TIMER_SOUND_MS = { beep: 1200, chime: 1400, bell: 2000, dingdong: 1600, triple: 1200, gentle: 1800, shofar: 2000 };
+
+  function timerAlertActive() { return timerAlert; }
+
+  function timerBeginAlert() {
+    timerAlert = true;
+    const col = document.getElementById('timerCol');
+    const d = document.getElementById('timerDisplay');
+    const hint = document.getElementById('timerStopHint');
+    if (col) col.classList.add('ringing');
+    if (d) {
+      d.setAttribute('role', 'button');
+      d.setAttribute('tabindex', '0');
+      d.setAttribute('aria-label', I18n.t('dashboard.timer.stop_aria'));
+    }
+    if (hint) hint.style.display = '';
+    const id = timerSoundId(settings.timerSound);
+    if (id !== 'none') {
+      timerPlayFinishSound(id);
+      clearInterval(timerRingTimer);
+      timerRingTimer = setInterval(() => timerPlayFinishSound(id), TIMER_SOUND_MS[id] || 1500);
+    }
+    // ?? not ||: 0 is "never give up", and || would quietly turn it into a minute.
+    const capSec = Math.max(0, Number(settings.timerRepeatMaxSec ?? 60));
+    clearTimeout(timerRingCap);
+    if (capSec > 0) timerRingCap = setTimeout(timerStopRinging, capSec * 1000);
+    document.addEventListener('pointerdown', timerAlertPointer, true);
+    document.addEventListener('keydown', timerAlertKey, true);
+  }
+
+  // Silence only — the alert stays on screen and stays dismissible.
+  function timerStopRinging() {
+    clearInterval(timerRingTimer); timerRingTimer = null;
+    clearTimeout(timerRingCap); timerRingCap = null;
+  }
+
+  // Teardown only — deliberately touches no countdown or display state, because each timer control
+  // already owns that. Reset/Start/+1 min/Pause call this; a bare acknowledgement calls the next one.
+  function timerEndAlert() {
+    if (!timerAlert) return;
+    timerStopRinging();
+    timerAlert = false;
+    document.removeEventListener('pointerdown', timerAlertPointer, true);
+    document.removeEventListener('keydown', timerAlertKey, true);
+    // A sound already scheduled on the audio clock has no stop handle, so duck the one node
+    // everything routes through and let applyTimerVolume restore it once the tail has passed.
+    try {
+      if (timerMasterGain && timerAudioCtx) {
+        timerMasterGain.gain.cancelScheduledValues(timerAudioCtx.currentTime);
+        timerMasterGain.gain.setValueAtTime(0.0001, timerAudioCtx.currentTime);
+        setTimeout(applyTimerVolume, 400);
+      }
+    } catch (e) {}
+    const col = document.getElementById('timerCol');
+    const d = document.getElementById('timerDisplay');
+    const hint = document.getElementById('timerStopHint');
+    if (col) col.classList.remove('ringing');
+    if (hint) hint.style.display = 'none';
+    if (d) { d.removeAttribute('role'); d.removeAttribute('tabindex'); d.removeAttribute('aria-label'); }
+  }
+
+  // Acknowledged with no other intent behind it: clear "Time!" and go back to the idle display.
+  function timerDismissAlert() {
+    if (!timerAlert) return;
+    timerEndAlert();
+    const d = document.getElementById('timerDisplay');
+    if (d) d.classList.remove('done');
+    timerRemaining = timerTotal;
+    renderTimerDisplay();
+  }
+
+  // Never preventDefault: the tap should still do whatever it was going to do. Dismissing on
+  // pointerdown (before click) means a fullscreen-strip button still fires its own handler.
+  function timerAlertPointer() { timerDismissAlert(); }
+
+  function timerAlertKey(e) {
+    if (e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt' || e.key === 'Meta') return;
+    // Same text-surface guard the B shortcut uses — without it Space stops working in every field.
+    const t = e.target;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) {
+      if (e.key !== 'Escape') return;
+    }
+    timerDismissAlert();
   }
 
   // Slider handler. Writes the setting, repaints the readout, and takes effect on the next sound.
@@ -5475,6 +5608,14 @@ function mountSidebarResize(cfg) {
       $('timerVolumeVal').textContent = tv + '%';   // i18n-ignore: bare percent sign
       applyTimerVolume();
     }
+    $('timerRepeat').checked = settings.timerRepeat === true;
+    { // ?? again: 0 here is the "Never" option, not a missing value
+      const cap = String(Math.max(0, Number(settings.timerRepeatMaxSec ?? 60)));
+      const sel = $('timerRepeatMax');
+      sel.value = [...sel.options].some(o => o.value === cap) ? cap : '60';
+      const row = $('timerRepeatStopRow');
+      if (row) row.style.display = settings.timerRepeat === true ? 'flex' : 'none';
+    }
     $('showOmerCounter').checked = settings.showOmerCounter !== false;
     $('showOmerEnglish').checked = settings.showOmerEnglish !== false;
     $('showOmerProgress').checked = settings.showOmerProgress !== false;
@@ -5597,6 +5738,16 @@ function mountSidebarResize(cfg) {
     document.getElementById('showTimerFullscreen').addEventListener('change', e => {
       settings.showTimerFullscreen = e.target.checked;
       applyTimerVisibility();
+      saveSettingsToStorage();
+    });
+    document.getElementById('timerRepeat').addEventListener('change', e => {
+      settings.timerRepeat = e.target.checked;
+      document.getElementById('timerRepeatStopRow').style.display = e.target.checked ? 'flex' : 'none';
+      if (!e.target.checked) timerDismissAlert();   // turning it off while one is ringing stops it now
+      saveSettingsToStorage();
+    });
+    document.getElementById('timerRepeatMax').addEventListener('change', e => {
+      settings.timerRepeatMaxSec = Math.max(0, Number(e.target.value) || 0);
       saveSettingsToStorage();
     });
     document.getElementById('timerSoundSel').addEventListener('change', e => {
@@ -10112,7 +10263,10 @@ async function onUploadEngFontPick(input){
   }
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') acquireWakeLock();
-    else { flushRosterIfTyping(); saveSettingsToStorage(); }   // see the pagehide note below
+    // Chrome exempts an AudioContext from background throttling but clamps setInterval to ~1/min, so a
+    // hidden tab would keep ringing — roughly once a minute, from a window with no dismiss surface in
+    // sight. Silence it; the alert stays on screen for whenever the teacher comes back to this tab.
+    else { timerStopRinging(); flushRosterIfTyping(); saveSettingsToStorage(); }   // see the pagehide note below
   });
   // Refresh/close mid-edit must not eat the text: commit the in-place edit on the way out.
   // pagehide (not beforeunload) so bfcache stays eligible; localStorage writes are sync-safe here.

@@ -543,6 +543,13 @@ dashboard.timer.reset,↺ Reset,↺ איפוס,timer control button,leading-emoj
 dashboard.timer.set,Set,הגדר,timer custom set button,
 dashboard.timer.show_fullscreen,Show timer in fullscreen mode,הצג טיימר במצב מסך מלא,settings label,
 dashboard.timer.show_panel,Show Timer panel,הצג פאנל טיימר,settings label,
+dashboard.timer.repeat,Repeat until dismissed,השמעה חוזרת עד לעצירה,settings label,
+dashboard.timer.repeat_1min,1 min,דקה,give-up-after option,
+dashboard.timer.repeat_2min,2 min,שתי דקות,give-up-after option,
+dashboard.timer.repeat_30s,30 sec,30 שניות,give-up-after option,
+dashboard.timer.repeat_5min,5 min,חמש דקות,give-up-after option,
+dashboard.timer.repeat_never,Never,אף פעם,give-up-after option — the sound keeps going until someone stops it,
+dashboard.timer.repeat_stop_after,Give up after,להפסיק אחרי,settings label,
 dashboard.timer.sound_beep,Beep,ציפצוף,finish-sound option,
 dashboard.timer.sound_bell,Bell,פעמון,finish-sound option,
 dashboard.timer.sound_chime,Chime,צלצול,finish-sound option,
@@ -554,6 +561,8 @@ dashboard.timer.sound_shofar,Shofar,שופר,finish-sound option,
 dashboard.timer.sound_test,▶ Test,▶ השמעה,settings button — previews the selected sound,leading-emoji
 dashboard.timer.sound_test_title,Play the selected sound,השמעת הצליל הנבחר,settings button tooltip,
 dashboard.timer.sound_triple,Triple beep,שלושה ציפצופים,finish-sound option,
+dashboard.timer.stop_aria,Stop the timer,עצירת הטיימר,aria-label on the Time! display while it repeats,
+dashboard.timer.stop_hint,"Tap, or press Esc, to stop","הקישו, או לחצו Esc, כדי לעצור",hint under the flashing Time! while the sound repeats,
 dashboard.timer.start,▶ Start,▶ התחל,timer control button,leading-emoji
 dashboard.timer.volume,Volume,עוצמת קול,settings label,
 dashboard.tour.firstrun_link,Take a tour →,צאו לסיור ←,First-run setup-card tour link,first-run affordance
