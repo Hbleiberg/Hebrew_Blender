@@ -523,6 +523,8 @@ dashboard.text.strikethrough,Strikethrough,קו חוצה,editor toolbar button t
 dashboard.text.sub_font,English Font,גופן אנגלי,settings sub-section header,
 dashboard.text.text_color,Text color,צבע טקסט,editor toolbar color picker title,
 dashboard.text.underline,Underline,קו תחתון,editor toolbar button title,
+dashboard.timer.add_minute,+1 min,עוד דקה,timer control button — adds a minute to the countdown that is showing,
+dashboard.timer.add_minute_title,Add a minute to the countdown,הוסיפו דקה לספירה לאחור,button title,
 dashboard.timer.custom,Custom,מותאם,timer custom button,
 dashboard.timer.custom_invalid,Enter a duration as MM:SS (e.g. 2:30).,הזינו משך זמן בפורמט MM:SS (למשל 2:30).,alert,
 dashboard.timer.custom_placeholder,MM:SS,MM:SS,timer custom input placeholder,

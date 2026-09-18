@@ -533,6 +533,8 @@
   "dashboard.text.sub_font": "English Font",
   "dashboard.text.text_color": "Text color",
   "dashboard.text.underline": "Underline",
+  "dashboard.timer.add_minute": "+1 min",
+  "dashboard.timer.add_minute_title": "Add a minute to the countdown",
   "dashboard.timer.custom": "Custom",
   "dashboard.timer.custom_invalid": "Enter a duration as MM:SS (e.g. 2:30).",
   "dashboard.timer.custom_placeholder": "MM:SS",

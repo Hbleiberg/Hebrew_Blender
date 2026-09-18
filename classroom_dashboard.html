@@ -699,7 +699,7 @@
     padding: 4px 10px; border: 1px solid var(--border); border-radius: 5px; background: var(--white);
     color: var(--text); cursor: pointer; transition: border-color 0.15s; }
   .timer-preset-btn:hover, .timer-ctrl-btn:hover { border-color: var(--gold); }
-  .timer-controls { display: flex; gap: 6px; }
+  .timer-controls { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }   /* four buttons (Start / Pause / Reset / +1 min); wraps and centers like .timer-presets above it */
   .timer-custom-row { display: flex; gap: 5px; align-items: center; }
   .timer-custom-row input { width: 72px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 5px;
     font-family: inherit; text-align: center; background: var(--white); color: var(--text); }
@@ -2154,6 +2154,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <button class="timer-ctrl-btn" id="timerStartBtn" onclick="timerStart()" data-i18n="dashboard.timer.start">▶ Start</button>
           <button class="timer-ctrl-btn" id="timerPauseBtn" onclick="timerPause()" data-i18n="dashboard.timer.pause">⏸ Pause</button>
           <button class="timer-ctrl-btn" id="timerResetBtn" onclick="timerReset()" data-i18n="dashboard.timer.reset">↺ Reset</button>
+          <button class="timer-ctrl-btn" id="timerAddMinBtn" onclick="timerAddMinute()" title="Add a minute to the countdown" data-i18n-title="dashboard.timer.add_minute_title" data-i18n="dashboard.timer.add_minute">+1 min</button>
         </div>
       </div>
     </div>
@@ -4317,6 +4318,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   let timerInterval = null;
   let timerRunning = false;
   let timerAudioCtx = null;
+  let timerFinishTimeout = null;   // the 3-second "Time!" hold; whatever restarts the clock inside it clears it first
 
   function fmtTimer(s) { return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 
@@ -4342,6 +4344,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function timerStart() {
     if (timerRemaining <= 0) { if (timerTotal > 0) timerRemaining = timerTotal; else return; }
     if (timerRunning) return;
+    clearTimeout(timerFinishTimeout);   // a Start inside the "Time!" hold must not be snapped back to the full duration 3 s later
     ensureTimerAudio();
     timerRunning = true;
     document.getElementById('timerCol').classList.add('running');
@@ -4361,12 +4364,25 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   function timerReset() {
     timerRunning = false;
     clearInterval(timerInterval);
+    clearTimeout(timerFinishTimeout);
     timerRemaining = timerTotal;
     const col = document.getElementById('timerCol');
     col.classList.remove('running', 'urgent');
     const d = document.getElementById('timerDisplay');
     d.classList.remove('warn', 'done');
     renderTimerDisplay();
+  }
+
+  // "+1 min": one more minute on the countdown that is showing. It changes timerRemaining only —
+  // timerTotal stays the chosen duration, so Reset still returns to the preset — keeps a running
+  // clock running (the interval is untouched; the render recomputes the ≤10 s urgent state), resumes
+  // one that just hit "Time!", and leaves a paused or idle one where it is (0:00 becomes a stopped 1:00).
+  function timerAddMinute() {
+    const d = document.getElementById('timerDisplay');
+    const justDone = d.classList.contains('done');
+    if (justDone) { clearTimeout(timerFinishTimeout); d.classList.remove('done', 'warn'); }
+    timerRemaining = Math.max(0, timerRemaining) + 60;
+    if (justDone) timerStart(); else renderTimerDisplay();
   }
 
   function timerPreset(sec) {
@@ -4419,7 +4435,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     d.classList.remove('warn');
     d.textContent = I18n.t('dashboard.timer.done');
     d.classList.add('done');
-    setTimeout(() => {
+    timerFinishTimeout = setTimeout(() => {
       d.classList.remove('done');
       timerRemaining = timerTotal;
       renderTimerDisplay();

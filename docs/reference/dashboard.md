@@ -377,6 +377,21 @@ body.dark #tipFloat { background: #0a0f1c; }
 
 ---
 
+## Timer and Student Picker — small contracts (`classroom_dashboard.html`)
+
+- **Timer:** `timerTotal` is the chosen duration (a preset or the custom field) and `timerRemaining` the
+  countdown; `timerReset()` returns to `timerTotal`. **"+1 min" (`timerAddMinute`) changes `timerRemaining`
+  only** — Reset still returns to the preset — and keeps a running clock running, resumes one that just hit
+  "Time!" (the 3-second hold is `timerFinishTimeout`, which `timerStart` / `timerReset` clear so a restart
+  inside it is never snapped back to the full duration), and leaves a paused or idle one where it is.
+- **Student Picker:** a class's `picked` / `absent` lists live in `settings.pickerSessions[rosterId]` —
+  localStorage only, stripped from presets, share codes, `.ivrit` files and the cloud row — and absences
+  persist across days on purpose. `resetPickerCycle()` empties `picked` ("🔄 New round");
+  `clearAbsences()` empties `absent` ("✅ Everyone's here", rendered in `#pickerProgress` only while someone
+  is marked absent, whether or not the fair cycle is on). Both act on the active class only.
+
+---
+
 ## Cloud saves (optional accounts)
 
 The shared module (`docs/reference/accounts-and-cloud.md`) owns everything that talks to Supabase; the

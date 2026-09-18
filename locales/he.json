@@ -533,6 +533,8 @@
   "dashboard.text.sub_font": "גופן אנגלי",
   "dashboard.text.text_color": "צבע טקסט",
   "dashboard.text.underline": "קו תחתון",
+  "dashboard.timer.add_minute": "עוד דקה",
+  "dashboard.timer.add_minute_title": "הוסיפו דקה לספירה לאחור",
   "dashboard.timer.custom": "מותאם",
   "dashboard.timer.custom_invalid": "הזינו משך זמן בפורמט MM:SS (למשל 2:30).",
   "dashboard.timer.custom_placeholder": "MM:SS",
