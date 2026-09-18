@@ -4704,6 +4704,16 @@ worksheet.realwords.pos.proper_noun,Proper Noun,שם פרטי,part-of-speech che
 worksheet.realwords.pos.root,Root (שׁורש),שורש,part-of-speech checkbox,RTL / hebDisplay
 worksheet.realwords.pos.verb,Verb,פועל,part-of-speech checkbox,
 worksheet.realwords.show_translation,Show Translation,הצג תרגום,toggle-row label,
+worksheet.realwords.save_list_btn,⭑ Save as Word List,⭑ שמור כרשימת מילים,save the pasted list into My Word Lists,leading-emoji
+worksheet.realwords.save_list_name_placeholder,List name…,שם הרשימה…,new word-list name input placeholder,placeholder
+worksheet.realwords.save_list_name_aria,Word list name,שם רשימת המילים,new word-list name input aria-label,aria-label only
+worksheet.realwords.save_list_note_name,Give the list a name first.,תנו שם לרשימה תחילה.,inline validation note under Import / Clear,
+worksheet.realwords.save_list_note_words,Paste some words above first.,הדביקו מילים למעלה תחילה.,inline validation note under Import / Clear,
+worksheet.realwords.save_list_saved.one,✓ Saved “{name}” with {count} word — selected under My Word Lists.,✓ נשמרה ״{name}״ עם מילה אחת — נבחרה תחת רשימות המילים שלי.,confirmation above the My Word Lists picker,plural;leading-emoji; mixed UI+content — do not translate {…}
+worksheet.realwords.save_list_saved.other,✓ Saved “{name}” with {count} words — selected under My Word Lists.,✓ נשמרה ״{name}״ עם {count} מילים — נבחרה תחת רשימות המילים שלי.,confirmation above the My Word Lists picker,plural;leading-emoji; mixed UI+content — do not translate {…}
+worksheet.realwords.save_list_capped,Only the first {max} words were kept.,נשמרו רק {max} המילים הראשונות.,confirmation suffix when the pasted list exceeded the cap,
+worksheet.realwords.save_list_limit,You already have {max} word lists — delete one in the Dictionary to add another.,יש לכם כבר {max} רשימות מילים — מחקו אחת במילון כדי להוסיף נוספת.,inline validation note under Import / Clear,
+worksheet.realwords.save_list_storage,Storage is full — couldn't save this word list.,האחסון מלא — לא ניתן היה לשמור את רשימת המילים הזו.,inline validation note under Import / Clear,
 worksheet.realwords.source.all,All Words,כל המילים,word-source button,
 worksheet.realwords.source.imported,Imported List,רשימה מיובאת,word-source button,
 worksheet.realwords.source.lists,My Word Lists,רשימות המילים שלי,word-source button,

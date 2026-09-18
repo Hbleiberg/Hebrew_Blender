@@ -275,6 +275,23 @@ leaves the line on.
 
 ---
 
+## Word source — the imported list and "⭑ Save as Word List"
+
+The Real Words drills draw from `rwSource` = `all` (the corpus) | `lists` (checked saved Word Lists,
+by id) | `imported` (the paste-in `customWordlistData`, memory only and deliberately outside
+`getSettings()`, so an `imported` preset restores an empty pool). `saveImportedAsWordList()` is this
+page's one writer of the suite-wide `ivritSuite_wordLists` store: it parses the textarea (no prior
+Import click needed), stores the Dictionary's word shape `{word, translation, translit, pos, era}`
+deduped by `word` under the Dictionary's caps (50 lists, 200 words — `CW_SAVE_MAX_*`, kept equal to
+`WL_MAX_*`) with the same id shape, and then selects that list under `lists` (`selectedWordListIds`,
+`setRwSource('lists')`), so the next preset, remembered setup, `.ivrit` file or share link carries it
+by id. It never edits or removes a list. Validation is inline (`#cwImportStatus` + `aria-disabled`
+on the button, the preset-name flow's shape); the confirmation lives in `#rwListSaveNote` above the
+picker and `_syncRwSourceUI()` clears it on the next source change. Cloud: the store is the
+Dictionary's `wordList` row, so the new list reads *Only on this device* at the next listing.
+
+---
+
 ## Practice-type subtitle (`#headerSub`)
 
 The worksheet header's subtitle is static markup (`data-i18n="worksheet.header_sub"`). `setBlendType(type)` overwrites it with a per-type line from the CSV (`worksheet.header_sub_two` / `_one` / `_three` / `_nikud`) through `I18n.t`, only once the locale has loaded (an unresolved key leaves the static line in place). `applyI18n()` re-applies the static key, so a language switch shows the generic subtitle until the next type click — a known two-slot quirk, kept until the maintainer picks one wording.

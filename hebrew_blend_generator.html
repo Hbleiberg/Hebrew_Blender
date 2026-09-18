@@ -2956,6 +2956,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               <!-- My Word Lists picker -->
               <div id="rwListPickerWrap" style="display:none;">
                 <div id="rwListEmptyState" style="display:none;font-size:0.75rem;color:var(--muted);line-height:1.5;padding:8px 4px;" data-i18n-html="worksheet.realwords.list_empty">No word lists yet. <a href="hebrew_dictionary.html">Create word lists in the Dictionary</a>, then come back to drill them here.</div>
+                <div id="rwListSaveNote" role="status" aria-live="polite" style="display:none;font-size:0.72rem;text-align:center;color:var(--gold);font-weight:600;margin-bottom:6px;"></div>
                 <div id="rwListPicker" style="display:none;flex-direction:column;border:1px solid var(--border);border-radius:6px;overflow:hidden;"></div>
               </div>
               <!-- Imported list paste-in -->
@@ -2967,7 +2968,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                   <button class="btn-xs" style="flex:1;" onclick="importCustomWordlist()" data-i18n="worksheet.realwords.import_btn">⬇ Import</button>
                   <button class="btn-xs" style="flex:1;" onclick="clearCustomWordlist()" data-i18n="worksheet.realwords.clear_btn">✕ Clear</button>
                 </div>
-                <div id="cwImportStatus" style="font-size:0.72rem;text-align:center;color:var(--gold);font-weight:600;min-height:1.2em;"></div>
+                <div id="cwImportStatus" role="status" aria-live="polite" style="font-size:0.72rem;text-align:center;color:var(--gold);font-weight:600;min-height:1.2em;"></div>
+                <!-- Keep the pasted list: written into the suite-wide Word Lists store (the Dictionary's), then
+                     selected under My Word Lists so presets carry it by id — see saveImportedAsWordList() -->
+                <div style="display:flex;gap:6px;margin-top:2px;">
+                  <input type="text" id="cwSaveListName" placeholder="List name…" data-i18n-placeholder="worksheet.realwords.save_list_name_placeholder" aria-label="Word list name" data-i18n-aria-label="worksheet.realwords.save_list_name_aria" oninput="onCwSaveNameInput()" style="flex:1;min-width:0;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.8rem;background:var(--white);color:var(--text);">
+                  <button class="btn-xs" id="cwSaveListBtn" onclick="saveImportedAsWordList()" aria-disabled="true" data-i18n="worksheet.realwords.save_list_btn">⭑ Save as Word List</button>
+                </div>
               </div>
               <div id="rwListPoolInfo" style="display:none;margin-top:6px;font-size:0.7rem;color:var(--muted);text-align:center;"></div>
             </div>
@@ -10918,7 +10925,9 @@ let rwInlinePool = null;              // words embedded in a loaded ?s= share li
 /* ── Word-list store reader (consumer side) ──
    Reads the suite-wide ivritSuite_wordLists store produced by the Dictionary.
    Store shape: { v:1, lists:{ <id>:{name,created,updated,words:[{word,translation,translit,pos,era}]} } }
-   Mirrors flash_cards.html's consumer helpers — do NOT port the Dictionary's full manager API. */
+   Mirrors flash_cards.html's consumer helpers — do NOT port the Dictionary's full manager API. The
+   page's one writer is saveImportedAsWordList() (a NEW list from the pasted import, the Dictionary's
+   shape and caps); nothing here edits or removes a list. */
 function wlReadStoreLocal() {
   let s;
   try { s = ivritSafeParse(localStorage.getItem('ivritSuite_wordLists') || '{}'); } catch (e) { s = null; }
@@ -11051,6 +11060,64 @@ function clearCustomWordlist() {
   document.getElementById('cwImportCount').textContent = '';
   document.getElementById('cwImportStatus').textContent = '';
   if (rwSource === 'imported') updateRwPoolInfo();
+}
+
+// ── "⭑ Save as Word List": the pasted list into the suite-wide store ──
+// customWordlistData lives only in memory and is not in getSettings() (a preset saved in 'imported'
+// mode restores an EMPTY pool), so the one way to keep a pasted list was to paste it again. This
+// writes it as a new list into ivritSuite_wordLists — the Dictionary's store, which Flash Cards and
+// this page's My Word Lists picker already read — and switches the source to that list, so the next
+// preset, remembered setup, .ivrit file or share link carries it by id. Mirrors the Dictionary's
+// wlAddList: the same id shape, the same 50-list / 200-word caps, words deduped by their `word`
+// string (first wins), never an edit or a removal of an existing list. The store is the Dictionary's
+// wordList cloud row, so the new list reads "Only on this device" at the next listing — an upload
+// the teacher chooses, never a deletion or a silent overwrite. Validation is inline (the status
+// line + aria-disabled on the button), the preset-name flow's shape.
+const CW_SAVE_MAX_LISTS = 50;    // = the Dictionary's WL_MAX_LISTS
+const CW_SAVE_MAX_WORDS = 200;   // = the Dictionary's WL_MAX_WORDS
+function _setCwSaveNote(key, params) {
+  const el = document.getElementById('cwImportStatus');
+  if (el) el.textContent = (key && window.I18n) ? I18n.t(key, params) : '';
+}
+function onCwSaveNameInput() {
+  const name = (document.getElementById('cwSaveListName')?.value || '').trim();
+  document.getElementById('cwSaveListBtn')?.setAttribute('aria-disabled', name ? 'false' : 'true');
+  if (name) _setCwSaveNote('');
+}
+function saveImportedAsWordList() {
+  const nameEl = document.getElementById('cwSaveListName');
+  const name = (nameEl?.value || '').trim();
+  const parsed = parseCwText(document.getElementById('cwImportTextarea').value);   // the textarea, so Save needs no prior Import click
+  if (!parsed.length) { _setCwSaveNote('worksheet.realwords.save_list_note_words'); return; }
+  if (!name) { _setCwSaveNote('worksheet.realwords.save_list_note_name'); nameEl?.focus(); return; }
+  const store = wlReadStoreLocal();
+  if (Object.keys(store.lists).length >= CW_SAVE_MAX_LISTS) { _setCwSaveNote('worksheet.realwords.save_list_limit', { max: CW_SAVE_MAX_LISTS }); return; }
+  const seen = new Set(), words = [];
+  for (const w of parsed) {
+    if (seen.has(w.heb)) continue;
+    seen.add(w.heb);
+    if (words.length < CW_SAVE_MAX_WORDS) words.push({ word: w.heb, translation: w.translation || '', translit: w.translit || '', pos: w.pos || '', era: w.era || '' });
+  }
+  const capped = seen.size > words.length;
+  const now = Date.now();
+  const id = now.toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+  store.lists[id] = { name: name, created: now, updated: now, words: words };
+  try { localStorage.setItem('ivritSuite_wordLists', JSON.stringify(store)); }
+  catch (e) { _setCwSaveNote('worksheet.realwords.save_list_storage'); return; }
+  _setCwSaveNote('');
+  if (nameEl) nameEl.value = '';
+  onCwSaveNameInput();
+  // The saved list is the source now: the picker shows it ticked and the pool is the same words.
+  selectedWordListIds = new Set([id]);
+  _wlAppliedNames = null;
+  setRwSource('lists');   // _syncRwSourceUI clears #rwListSaveNote, so the confirmation is written after it
+  const note = document.getElementById('rwListSaveNote');
+  if (note) {
+    let msg = I18n.t('worksheet.realwords.save_list_saved.' + (words.length === 1 ? 'one' : 'other'), { name: name, count: words.length });
+    if (capped) msg += ' ' + I18n.t('worksheet.realwords.save_list_capped', { max: CW_SAVE_MAX_WORDS });
+    note.textContent = msg;   // the name is the teacher's text → textContent, never markup
+    note.style.display = '';
+  }
 }
 
 // (The separate "custom wordlist" mode was retired — the imported list is now a Real
@@ -11615,6 +11682,7 @@ function _syncRwSourceUI() {
   const pw = document.getElementById('rwListPickerWrap'); if (pw) pw.style.display = (rwSource === 'lists') ? '' : 'none';
   const iw = document.getElementById('rwImportWrap');     if (iw) iw.style.display = (rwSource === 'imported') ? '' : 'none';
   const pi = document.getElementById('rwListPoolInfo');   if (pi) pi.style.display = (rwSource === 'all') ? 'none' : '';
+  const sn = document.getElementById('rwListSaveNote');   if (sn) { sn.textContent = ''; sn.style.display = 'none'; }   // "Saved as…" is for the switch that just happened
   if (rwSource === 'lists') renderRwListPicker();
   updateRwPoolInfo();
 }
