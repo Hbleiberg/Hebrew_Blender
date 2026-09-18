@@ -5038,6 +5038,8 @@
   "worksheet.actions.practice_flashcards": "🃏 Practice these in Flash Cards",
   "worksheet.actions.practice_flashcards_title": "Open these letters and vowels as a Flash Cards drill",
   "worksheet.actions.print": "🖨 Print",
+  "worksheet.actions.print_count.one": "📄 {count} page to print",
+  "worksheet.actions.print_count.other": "📄 {count} pages to print",
   "worksheet.actions.print_tip": "💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.",
   "worksheet.actions.regen_title": "New random draw with the same settings",
   "worksheet.actions.regenerate": "↺ Regenerate",

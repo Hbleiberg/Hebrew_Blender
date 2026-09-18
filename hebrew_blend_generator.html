@@ -789,8 +789,11 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
      against a 900px viewport, roughly three screens). Sidebar-scoped, so the print rule that
      hides .sidebar hides these too — no new print-list entry. */
   .gen-fab-actions { display: none; gap: 6px; }
-  .gen-fab.has-actions { gap: 8px; }
+  .gen-fab.has-actions { gap: 8px; flex-wrap: wrap; }   /* the page count below wraps onto its own line */
   .gen-fab.has-actions .gen-fab-actions { display: flex; }
+  /* "N pages to print" (updatePrintCount) — a full-width line under the actions, so the bar is one
+     text line taller only while a worksheet exists; the two reserved paddings below cover that. */
+  .gen-fab-count { flex-basis: 100%; text-align: center; font-size: 0.7rem; color: var(--muted); }
   /* Beat the bar's own 200px min-width so three controls fit the 320px default sidebar. */
   /* min-height, not padding alone: at phone widths the inherited font-size left these at 37px,
      under the suite's 40px touch floor (the registered sub-floor touch target pattern). */
@@ -801,11 +804,12 @@ footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To
      Generate is on screen (unchanged); once actions exist the bar stays and only the duplicate
      Generate steps aside, so the actions remain reachable from anywhere on the page. */
   .gen-fab.has-actions.inline-gen-visible .gen-fab-primary { display: none; }
-  /* Reserve room so the fixed footer never hides the last slice of sidebar content. */
-  .sidebar { padding-bottom: 70px; }
+  /* Reserve room so the fixed footer never hides the last slice of sidebar content (its taller
+     post-Generate state, with the page-count line, included). */
+  .sidebar { padding-bottom: 88px; }
   @media (max-width: 700px) {
     .gen-fab { width: 100%; border-inline-end: none; } /* mobile: full (stacked) width; sidebar uses border-bottom, no inner divider */
-    .main-content { padding-bottom: 78px; }      /* clear the fixed footer over the worksheet */
+    .main-content { padding-bottom: 96px; }      /* clear the fixed footer (with its page-count line) over the worksheet */
   }
   .btn-secondary {
     background: var(--navy);
@@ -3619,6 +3623,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <button class="btn btn-outline" id="shareBtn" onclick="copyShareLink('shareBtn')" style="margin-top:8px;" data-i18n="worksheet.actions.copy_link">🔗 Copy shareable link</button>
       <div id="shareNotice" role="status" style="display:none;margin-top:6px;font-size:0.72rem;color:var(--muted);text-align:center;line-height:1.4;"></div>
       <button class="btn btn-outline" id="fcHandoffBtn" onclick="openInFlashCards()" style="margin-top:6px;" title="Open these letters and vowels as a Flash Cards drill" data-i18n="worksheet.actions.practice_flashcards" data-i18n-title="worksheet.actions.practice_flashcards_title">🃏 Practice these in Flash Cards</button>
+      <div class="print-tip" id="printCount" role="status" aria-live="polite" hidden style="margin-top:8px;font-size:0.72rem;color:var(--muted);text-align:center;"></div>
       <div class="print-tip" id="printTip" style="display:none;margin-top:8px;font-size:0.72rem;color:var(--muted);background:var(--warm-gray);border-radius:5px;padding:7px 9px;line-height:1.4;" data-i18n-html="worksheet.actions.print_tip">
         💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.
       </div>
@@ -3818,6 +3823,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
         <button class="btn btn-secondary" onclick="window.print()" data-i18n="worksheet.actions.print">🖨 Print</button>
         <button class="btn btn-outline" onclick="exportPDF()" data-i18n="worksheet.actions.pdf_mob">⬇ PDF</button>
       </div>
+      <div class="gen-fab-count" id="genFabCount" aria-hidden="true" hidden></div>
     </div>
 
   </aside>
@@ -6955,6 +6961,43 @@ function onGenerateSettled() {
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireLive);
   else wireLive();
+})();
+
+// ── "N pages to print" under Print / Export PDF ──
+// Print and Export PDF send one page per .sheet (student sheets, answer keys, tracing pages),
+// .bingo-page and .caller-sheet — the units exportPDF captures — so the line says how many pages a
+// click sends to a shared printer BEFORE it happens (a 30-card Class Bingo or a 40-version Class Set
+// used to go out unannounced). #worksheet is rewritten by many paths (each mode's generator,
+// rerenderCurrentSheet for a presentation change, the chunked Class Set pump appending sheets after
+// enableButtons already ran), so the count follows the worksheet's own child list through one
+// observer, coalesced to a frame, rather than a call at every writer. 0 pages (empty state, before
+// the first Generate) hides both hosts.
+function updatePrintCount() {
+  const ws = document.getElementById('worksheet');
+  const n = ws ? ws.querySelectorAll('.sheet, .bingo-page, .caller-sheet').length : 0;
+  const text = (n && window.I18n) ? I18n.t('worksheet.actions.print_count.' + (n === 1 ? 'one' : 'other'), { count: n }) : '';
+  ['printCount', 'genFabCount'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    el.hidden = !text;
+  });
+}
+(function () {
+  let raf = 0;
+  function wirePrintCount() {
+    const ws = document.getElementById('worksheet');
+    if (!ws || !window.MutationObserver) return;
+    // Every page unit is a direct child of #worksheet (each renderer appends to `ws`; the tracing
+    // probe sheet is appended and removed in the same task), so childList alone sees every change.
+    new MutationObserver(() => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => { raf = 0; updatePrintCount(); });
+    }).observe(ws, { childList: true });
+    updatePrintCount();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wirePrintCount);
+  else wirePrintCount();
 })();
 
 /* ═══ Guided tour (ported from Hebrew_Font_Maker.html — keep the engines in sync) ═══ */
@@ -13807,6 +13850,7 @@ function applyI18n() {
   try { if (document.querySelector('#lockGrid1 .lock-letter-tile')) initLockGrids(); } catch (e) {}
   try { if (document.querySelector('#lockVowelGrid1 .lock-vowel-tile')) initLockVowelGrids(); } catch (e) {}
   try { updateRwPoolInfo(); } catch (e) {}
+  try { updatePrintCount(); } catch (e) {}   // "N pages to print" is I18n.t-built at render time
   try { updateMatchPoolNote(); } catch (e) {}
   try { initFontSelector(); } catch (e) {}
   // Re-label an open tour card in place (no re-navigation, so reveal() doesn't re-fire).

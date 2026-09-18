@@ -4270,6 +4270,8 @@ worksheet.actions.pdf_mob,⬇ PDF,⬇ PDF,mobile FAB button,leading-emoji
 worksheet.actions.practice_flashcards,🃏 Practice these in Flash Cards,🃏 תרגלו את אלה בכרטיסיות,generator hand-off button to flash cards,leading-emoji
 worksheet.actions.practice_flashcards_title,Open these letters and vowels as a Flash Cards drill,פתיחת האותיות והתנועות האלה כתרגול כרטיסיות,generator hand-off button title/aria,aria-label only
 worksheet.actions.print,🖨 Print,🖨 הדפס,action button,leading-emoji
+worksheet.actions.print_count.one,📄 {count} page to print,📄 עמוד אחד להדפסה,page count under the Print / Export PDF buttons (also the frozen footer),plural;leading-emoji
+worksheet.actions.print_count.other,📄 {count} pages to print,📄 {count} עמודים להדפסה,page count under the Print / Export PDF buttons (also the frozen footer),plural;leading-emoji
 worksheet.actions.print_tip,"💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.","💡 <strong>טיפ להדפסה:</strong> בתיבת ההדפסה, בטלו את הסימון של <em>כותרות עליונות ותחתונות</em> כדי להסיר את הכתובת והתאריך.",tip box,leading-emoji;html
 worksheet.actions.regenerate,↺ Regenerate,↺ צור מחדש,action button,leading-emoji
 worksheet.advanced.backup_auto_explainer,Save all your presets and current settings to a <b>.ivrit</b> save file on your device. Restore later by dropping the file below or browsing for it.,"שמרו את כל ההגדרות השמורות וההגדרות הנוכחיות שלכם לקובץ שמירה <b>.ivrit</b> במכשיר. לשחזור מאוחר יותר, גררו את הקובץ למטה או עיינו אליו.",backup panel explainer,html

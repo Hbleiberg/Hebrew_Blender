@@ -233,6 +233,22 @@ version 0 synchronously, then streams the remaining versions in `setTimeout(0)` 
 
 ---
 
+## Page count under Print / Export PDF (`updatePrintCount`)
+
+Print and Export PDF both send one page per `.sheet` (student sheets, `.answer-key-sheet`, tracing
+pages), `.bingo-page` and `.caller-sheet` — the same units `exportPDF` captures — so `#printCount`
+(the live region under the sidebar's Print / PDF buttons) and `#genFabCount` (its `aria-hidden` twin
+on the frozen footer, wrapped onto its own line) say how many pages a click will send before it
+happens. The count is not called from the renderers: one `MutationObserver` on `#worksheet`'s child
+list (every page unit is a direct child; the tracing probe sheet is appended and removed in the same
+task) coalesces to a frame and re-counts, which is what keeps it right through a presentation-only
+re-render (Answer Key on/off) and the chunked Class Set pump that appends sheets after
+`enableButtons()` already ran. Zero units (the empty state, before the first Generate) hides both
+hosts; `applyI18n()` re-renders the text on a language switch. The sidebar's `padding-bottom` and
+the mobile `.main-content` padding reserve the footer's taller post-Generate height.
+
+---
+
 ## Settings restore guard
 
 `applySettings()` keeps only known letter/vowel keys (`isKnownLetterKey`/`isKnownVowelKey`, built from `LETTERS` heb + sofit and `VOWELS` keys) when it rebuilds `selectedLetters`/`selectedVowels`; unknown members from a share link, preset or `.ivrit` file are dropped one by one, never the whole set, so `getLetter()` can't return undefined inside `generate()`.

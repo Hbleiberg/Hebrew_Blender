@@ -5038,6 +5038,8 @@
   "worksheet.actions.practice_flashcards": "🃏 תרגלו את אלה בכרטיסיות",
   "worksheet.actions.practice_flashcards_title": "פתיחת האותיות והתנועות האלה כתרגול כרטיסיות",
   "worksheet.actions.print": "🖨 הדפס",
+  "worksheet.actions.print_count.one": "📄 עמוד אחד להדפסה",
+  "worksheet.actions.print_count.other": "📄 {count} עמודים להדפסה",
   "worksheet.actions.print_tip": "💡 <strong>טיפ להדפסה:</strong> בתיבת ההדפסה, בטלו את הסימון של <em>כותרות עליונות ותחתונות</em> כדי להסיר את הכתובת והתאריך.",
   "worksheet.actions.regen_title": "הגרלה אקראית חדשה עם אותן הגדרות",
   "worksheet.actions.regenerate": "↺ צור מחדש",
