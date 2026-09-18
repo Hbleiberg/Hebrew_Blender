@@ -261,6 +261,20 @@ The same guard applies per value: every `<select>` restores through `applySelect
 
 ---
 
+## Worksheet header — the Name / Date line
+
+`wsMetaHTML()` is the single source of the `Name: ___ Date: ___` block (English or עברית after
+`headerLang`), called from every sheet builder's header template and from the tracing probe — bingo
+cards and caller sheets never carried it. The Layout panel's *Name / Date line* toggle
+(`#nameDateToggle`, default on) is its one gate, read live so the chunked Class Set thunks follow it;
+off, the function returns `''` and `.ws-header` (flex, space-between) keeps just the title block.
+`toggleNameDate(on)` re-renders in place through `rerenderCurrentSheet()` when a `.sheet` exists; the
+setting travels as `showNameDate` (getSettings → presets, the remembered setup, `.ivrit`, `?s=`, the
+cloud row) and is a `LIVE_PRESENTATION_KEYS` member (same items, no reshuffle); a blob without the key
+leaves the line on.
+
+---
+
 ## Practice-type subtitle (`#headerSub`)
 
 The worksheet header's subtitle is static markup (`data-i18n="worksheet.header_sub"`). `setBlendType(type)` overwrites it with a per-type line from the CSV (`worksheet.header_sub_two` / `_one` / `_three` / `_nikud`) through `I18n.t`, only once the locale has loaded (an unresolved key leaves the static line in place). `applyI18n()` re-applies the static key, so a language switch shows the generic subtitle until the next type click — a known two-slot quirk, kept until the maintainer picks one wording.

@@ -3472,6 +3472,10 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <button id="headerLangHe" class="color-mode-btn" style="font-family:var(--heb-font);" onclick="setHeaderLang('he')" data-i18n="worksheet.layout.header.he">עברית</button>
           </div>
         </div>
+        <div class="option-row">
+          <div class="option-label"><span data-i18n="worksheet.layout.name_date">Name / Date line</span> <span class="tooltip-wrap" style="font-size:0.65rem;">?<span class="tooltip-box" data-i18n="worksheet.layout.name_date_tooltip">Prints a Name: ___ Date: ___ line in the worksheet header. Turn it off for projected sheets, center work, or pages you label yourself.</span></span></div>
+          <label class="toggle"><input type="checkbox" id="nameDateToggle" checked onchange="toggleNameDate(this.checked)"><span class="slider"></span></label>
+        </div>
       </div>
     </div>
 
@@ -4786,6 +4790,11 @@ function setHeaderLang(lang) {
   if (blends.length) renderWorksheet(false);
 }
 function wsMetaHTML() {
+  // The Name: ___ Date: ___ line, in the header language. The Layout panel's "Name / Date line"
+  // toggle is its one gate, read live like headerLang (the chunked Class Set thunks call this at
+  // execution time): off, every renderer's header keeps just its title block. Bingo cards and
+  // caller sheets never carried the line — none of their builders calls this.
+  if (!(document.getElementById('nameDateToggle')?.checked ?? true)) return '';
   if (headerLang === 'he') {
     return `<div style="display:grid;grid-template-columns:auto 1fr;column-gap:8px;row-gap:8px;align-items:center;font-size:0.82rem;color:var(--muted);direction:rtl;">
       <span style="font-family:var(--heb-font);white-space:nowrap;">שֵׁם:</span><div class="ws-field-line"></div>
@@ -4796,6 +4805,17 @@ function wsMetaHTML() {
     <div class="ws-field">Name: <div class="ws-field-line"></div></div>
     <div class="ws-field">Date: <div class="ws-field-line" style="width:80px"></div></div>
   </div>`;
+}
+
+// ── NAME / DATE LINE ──
+function toggleNameDate(on) {
+  const cb = document.getElementById('nameDateToggle');
+  if (cb) cb.checked = !!on;
+  // Same drawn items, no reshuffle: rerenderCurrentSheet routes number practice, the Real Words
+  // drills and blends to their own re-renderer (setHeaderLang's renderWorksheet-only re-render
+  // misses the first two). Only a .sheet carries the line, and a restore before the first Generate
+  // has nothing to redraw.
+  if (document.querySelector('#worksheet .sheet')) rerenderCurrentSheet();
 }
 
 // ── LANDSCAPE MODE ──
@@ -4821,6 +4841,7 @@ function getSettings() {
     excludeRepeats: document.getElementById('excludeRepeats').checked,
     landscape:     document.getElementById('landscapeMode').checked,
     headerLang,
+    showNameDate:  document.getElementById('nameDateToggle')?.checked ?? true,
     pageSize,
     // Blend type & mode
     blendType:     document.querySelector('.blend-type-btn.active[data-type]')?.dataset.type || 'two',
@@ -5060,6 +5081,7 @@ function applySettings(s) {
   if (s.excludeRepeats !== undefined) document.getElementById('excludeRepeats').checked = s.excludeRepeats;
   if (s.landscape !== undefined) { document.getElementById('landscapeMode').checked = s.landscape; toggleLandscape(s.landscape); }
   if (isOffered(s.headerLang, ['en', 'he'], null, 'headerLang')) setHeaderLang(s.headerLang);
+  if (s.showNameDate !== undefined) toggleNameDate(!!s.showNameDate);   // older blobs lack it → the line stays on
   if (s.pageSize) setPageSize(s.pageSize);
 
   // Blend type & mode
@@ -6817,7 +6839,7 @@ let _liveAlertMsg = null;
 // not listed here is treated as content (needs a fresh draw). Conservative on purpose:
 // misclassifying content as presentation would show stale output, so when unsure → content.
 const LIVE_PRESENTATION_KEYS = new Set([
-  'wsTitle','wsSubtitle','headerLang','landscape',
+  'wsTitle','wsSubtitle','headerLang','landscape','showNameDate',
   'inverse','fillVowels','fillVowelsAnswerKey','answerKey','qrAnswerKey','selfCheck','includeDageshim','audio',
   'hebFontSize','colorCoding','colorCodingMode','nikudColorOverrides','vowelColorScheme','translitStyle',
   'timerOn','timerDuration',

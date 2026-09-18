@@ -5232,6 +5232,8 @@
   "worksheet.layout.header_labels": "Header Labels",
   "worksheet.layout.landscape": "Landscape Print",
   "worksheet.layout.landscape_tooltip": "Rotates the printout to landscape (wide) for both 🖨 Print and Export PDF, and widens the blends grid. Turn off for portrait (tall).",
+  "worksheet.layout.name_date": "Name / Date line",
+  "worksheet.layout.name_date_tooltip": "Prints a Name: ___ Date: ___ line in the worksheet header. Turn it off for projected sheets, center work, or pages you label yourself.",
   "worksheet.layout.page.a4": "A4",
   "worksheet.layout.page.letter": "Letter",
   "worksheet.layout.page_size": "Page Size",

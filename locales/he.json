@@ -5232,6 +5232,8 @@
   "worksheet.layout.header_labels": "תוויות כותרת",
   "worksheet.layout.landscape": "הדפסה לרוחב",
   "worksheet.layout.landscape_tooltip": "מסובב את התדפיס לרוחב עבור 🖨 הדפס וגם ייצא PDF, ומרחיב את רשת הצירופים. כבו לפריסה לאורך.",
+  "worksheet.layout.name_date": "שורת שם / תאריך",
+  "worksheet.layout.name_date_tooltip": "מדפיס שורת שם: ___ תאריך: ___ בכותרת דף העבודה. כבו עבור דפים מוקרנים, עבודה בעמדות, או דפים שאתם מסמנים בעצמכם.",
   "worksheet.layout.page.a4": "A4",
   "worksheet.layout.page.letter": "Letter",
   "worksheet.layout.page_size": "גודל עמוד",
