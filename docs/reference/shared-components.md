@@ -388,13 +388,20 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   Hebrew interface. Sha-verify it across carriers after any edit, like the other blocks.
 - **The SVG set**, one snippet per glyph, identical on every carrier: `hi-arrow` (also carries `dir-arrow`
   for the pages' older mirroring rule), `hi-moon` + `hi-sun` (always both, the CSS picks one), `hi-gear`,
-  `hi-help`, `hi-fs-enter` / `hi-fs-exit`, `hi-blank`, `hi-user`, plus the control family `hi-play`,
+  `hi-help`, `hi-fs-enter` / `hi-fs-exit`, `hi-blank`, `hi-user`, the set that replaced the last emoji
+  controls — `hi-close` (dismiss, clear, remove a row; it also unified the three characters `✕`, `×` and a
+  literal `×` that were all doing this one job), `hi-trash` (destroy — deliberately NOT the same picture as
+  close, because a teacher's only backup may be behind it), `hi-plus`, `hi-bookmark` (save for later: it
+  replaced `★`, `⭑` and the browser-bookmark `🔖`), `hi-cloud`, `hi-keyboard`, `hi-search`, `hi-warning`,
+  `hi-undo` / `hi-redo`, `hi-up` / `hi-down`, `hi-book`, `hi-folder` / `hi-folder-plus` and `hi-move` —
+  plus the control family `hi-play`,
   `hi-pause`, `hi-stop`, `hi-reset`, `hi-retry`, `hi-loop`, `hi-sound` and `hi-music`, and the action family
   `hi-copy`, `hi-link`, `hi-print`, `hi-save`, `hi-download`, `hi-upload`, `hi-send` and `hi-page`, and the dashboard
   family `hi-timer`, `hi-dice`, `hi-group`, `hi-pencil` and `hi-video`, plus `hi-calendar` (a festival
   reading on the Torah Trainer, the dashboard's calendar import) and `hi-palette` (turning colour coding on) — the strip's Settings and Blank reuse `hi-gear` and
-  `hi-blank` and the Torah Trainer's handout reuses `hi-page`, so one action keeps one picture wherever it
-  appears. A glyph lives only on the pages that use it; what must match byte-for-byte is each snippet
+  `hi-blank`, the Torah Trainer's handout reuses `hi-page`, and so does the generator's **Generate
+  Worksheet** — `hi-page` was already a lined sheet, which is exactly what that button produces, so it took
+  the existing glyph instead of gaining a near-twin. One action keeps one picture wherever it appears. A glyph lives only on the pages that use it; what must match byte-for-byte is each snippet
   wherever it *does* appear. Every snippet is
   `aria-hidden="true" focusable="false"`; the control's own `title` / `aria-label` names it. `.hi-sm` is the
   13px size the tiny settings buttons take and `.hi-btn` lines an icon up with its label inside a button.
@@ -446,10 +453,25 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   descriptor's `icon` field, which makes `askModal` write `innerHTML` instead of `textContent`.
 - **`askModal` writes its *title* with `textContent`**, so a modal heading cannot hold a glyph — the Font
   Maker's two Send-a-font titles keep their emoji for that reason. Give `askModal` a title-icon argument
-  before converting them; a heading is not worth changing the primitive on its own.
-- **`mkMini` in the folder-tree block writes `textContent`**, unlike the list builders' `mk()`, so the tree's
-  four row buttons (new subfolder, rename, move, delete) are still glyphs. Converting one of the four would
-  leave a half-drawn row — teach `mkMini` the same leading-`<` rule and convert all four together.
+  before converting them; a heading is not worth changing the primitive on its own. Its *buttons* do take an
+  `icon` field, which is how **Keep this export in my account** draws the cloud.
+- **`mkMini` now reads a leading `<` as icon markup**, like the list builders' `mk()`, and sets the button's
+  `aria-label` from its title — an icon-only button has no text left to name it. The folder tree's four row
+  buttons and its move menu take their glyphs from the `FT_ICON_*` consts at the top of the JS block,
+  `FT_`-prefixed and self-contained like the keyboard's `HK_` set, so the block still drops into a page that
+  has its own icon constants. **The move menu keeps the folder name in `textContent`** and adds the icon with
+  `insertAdjacentHTML('afterbegin', …)`, so a name a teacher typed never reaches `innerHTML` and the block
+  needs no `esc()`.
+- **The keyboard toggle's icon is written by the shared block**, not by the host page: that label is
+  state-dependent (Show / Hide) and carries no `data-i18n`, so `setOpen` writes the text and then prepends
+  `HK_ICON`; each host button's inline markup holds the same snippet as its pre-`I18n.ready` fallback. That
+  line carries an `i18n-ignore` — Check A reads `hkT(open ? 'a.b' : 'a.c')` as a hardcoded English ternary,
+  but both arms are I18n keys.
+- **Still text by decision, not by oversight:** the `▾` dropdown caret (a text caret in a text control, it
+  mirrors correctly in RTL, and the panel twisty is pure CSS `content`), the folder tree's `⌂ Root` row and
+  its `⠿` drag handle, and every `✓`/`✗` that is a *status mark* rather than a button — a saved or exported
+  confirmation, the flash-card and worksheet practice answers, the Trope Tutor's score line. Converting a
+  status mark is a different job from converting a control; don't sweep them together.
 
 ### Adding the header to a new page
 Paste the CSS block, copy the snippets from any carrier (never redraw them), put labels in `.hi-lbl` spans,

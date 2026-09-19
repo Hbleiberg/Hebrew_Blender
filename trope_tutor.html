@@ -948,7 +948,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 </header>
 
 <div class="tu-tabs" role="tablist" aria-label="Tutor mode" data-i18n-aria-label="trope.tabs.aria">
-  <button class="tu-tab" id="tabLearn" role="tab" aria-selected="true" aria-controls="learnView" onclick="setMode('learn')" data-i18n="trope.tabs.learn">📖 Learn</button>
+  <button class="tu-tab hi-btn" id="tabLearn" role="tab" aria-selected="true" aria-controls="learnView" onclick="setMode('learn')"><svg class="hi hi-sm hi-book" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.2v12.4"/><path d="M12 7.2S10 5.4 6 5.4a18 18 0 0 0-2.4.2v12.6A18 18 0 0 1 6 18c4 0 6 1.6 6 1.6s2-1.6 6-1.6a18 18 0 0 1 2.4.2V5.6A18 18 0 0 0 18 5.4c-4 0-6 1.8-6 1.8Z"/></svg><span class="hi-lbl" data-i18n="trope.tabs.learn">Learn</span></button>
   <button class="tu-tab" id="tabDrill" role="tab" aria-selected="false" tabindex="-1" aria-controls="drillView" onclick="setMode('drill')" data-i18n="trope.tabs.drill">🎯 Drill</button>
 </div>
 
@@ -960,8 +960,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
        follows). loadData() is idempotent and re-reports its own outcome, so a retry is just
        re-calling it and re-rendering what depends on INDEX. Kept OUTSIDE #tuStatus so the
        `.tu-status:empty` collapse rule still works. -->
-  <button class="btn btn-xs btn-secondary" id="tuRetryBtn" type="button" hidden
-          onclick="retryLoadData()" class="hi-btn"><svg class="hi hi-sm hi-retry" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 18.58 A7.6 7.6 0 1 1 15.8 18.58 M15.8 18.58 L16.96 15.39 M15.8 18.58 L19.15 19.17"/></svg><span class="hi-lbl" data-i18n="trope.status.retry_button">Try again</span></button>
+  <button class="btn btn-xs btn-secondary hi-btn" id="tuRetryBtn" type="button" hidden
+          onclick="retryLoadData()"><svg class="hi hi-sm hi-retry" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 18.58 A7.6 7.6 0 1 1 15.8 18.58 M15.8 18.58 L16.96 15.39 M15.8 18.58 L19.15 19.17"/></svg><span class="hi-lbl" data-i18n="trope.status.retry_button">Try again</span></button>
 
   <!-- ════════ LEARN ════════ -->
   <section class="tu-view" id="learnView" role="tabpanel" aria-labelledby="tabLearn">
@@ -1080,7 +1080,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 <!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
 <div class="tour-spot" id="tourSpot" hidden></div>
 <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
-  <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)">✕</button>
+  <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   <h4 id="tourCardTitle"></h4>
   <p id="tourCardBody"></p>
   <div class="tour-meta">
@@ -1109,7 +1109,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
            toggle itself (torah convergence, S180 Pass H). Synced with #darkBtn by
            toggleDark()/initDark(). -->
       <button class="settings-close" id="drawerDarkBtn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg></button>
-      <button class="settings-close" onclick="closeSettings()" aria-label="Close settings" data-i18n-aria-label="trope.settings.close_aria">×</button>
+      <button class="settings-close" onclick="closeSettings()" aria-label="Close settings" data-i18n-aria-label="trope.settings.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     </div>
   </div>
   <div class="settings-body">

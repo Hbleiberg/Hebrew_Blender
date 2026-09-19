@@ -1535,7 +1535,7 @@ hr.soft { border: none; border-top: 1px dashed var(--border); margin: 12px 0; }
 .ft-folder-name { font-weight:600; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .ft-folder-count { font-size:.72rem; color:var(--muted,#6b6050); flex:0 0 auto; }
 .ft-folder-actions { display:flex; gap:1px; flex:0 0 auto; }
-.ft-mini { background:none; border:none; cursor:pointer; font-size:.82rem; padding:0 3px; color:var(--muted,#6b6050); font-family:inherit; line-height:1; }
+.ft-mini { background:none; border:none; cursor:pointer; font-size:.82rem; padding:0 3px; color:var(--muted,#6b6050); font-family:inherit; line-height:1; display:inline-flex; align-items:center; justify-content:center; min-width:22px; min-height:22px; }
 .ft-mini:hover { color:var(--gold,#c9922a); }
 .ft-folder-body { padding-block:3px 5px; padding-inline:16px 5px; display:flex; flex-direction:column; gap:4px; }
 .ft-empty-folder { font-size:.72rem; color:var(--muted,#6b6050); font-style:italic; padding:3px 4px; }
@@ -1957,7 +1957,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
         <div class="preset-row" style="margin-bottom:8px;">
           <select id="activeProfileSelect" class="preset-input" aria-labelledby="profilesHeadLbl" style="flex:1;"></select>
-          <button class="btn sm" id="newProfileBtn" title="Create a new profile" data-i18n-title="flashcards.teachertools.new_profile_button_title" data-i18n="flashcards.teachertools.new_profile_button">＋ New</button>
+          <button class="btn sm" id="newProfileBtn" title="Create a new profile" data-i18n-title="flashcards.teachertools.new_profile_button_title" class="hi-btn"><svg class="hi hi-sm hi-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.8v8.4M7.8 12h8.4"/></svg><span class="hi-lbl" data-i18n="flashcards.teachertools.new_profile_button">New</span></button>
         </div>
         <div class="btn-row" style="margin-bottom:8px;">
           <button class="btn sm" id="renameProfileBtn" data-i18n="flashcards.teachertools.rename_button">Rename</button>
@@ -2336,7 +2336,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
 <div class="tour-spot" id="tourSpot" hidden></div>
 <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
-  <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)">✕</button>
+  <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   <h4 id="tourCardTitle"></h4>
   <p id="tourCardBody"></p>
   <div class="tour-meta">
@@ -4763,7 +4763,7 @@ function renderPresets() {
       f.appendChild(mk(I18n.t('flashcards.teachertools.load_button'), 'btn sm primary', () => loadPreset(name)));
       f.appendChild(mk(I18n.t('flashcards.teachertools.save_button'), 'btn sm', () => overwritePreset(name)));
       const dup = mk('⧉', 'btn sm', () => duplicatePreset(name)); dup.title = I18n.t('shared.folders.duplicate'); f.appendChild(dup);
-      const delP = mk('✕', 'btn sm danger', () => deletePreset(name));
+      const delP = mk(ICON_CLOSE_SM, 'btn sm danger', () => deletePreset(name));
       delP.setAttribute('aria-label', I18n.t('flashcards.actions.delete_aria', { name }));
       f.appendChild(delP);
       return f;
@@ -4775,6 +4775,14 @@ function renderPresets() {
 /* Sidecar overlay: the preset/schedule/profile store stays a flat {name:...} object and is the
    source of truth for which items EXIST. This tree only organizes them (references items by name).
    Stored as JSON under a per-list key. mountFolderTree(cfg) renders + wires DnD and a Move menu. */
+/* Icons for the row buttons and the move menu. FT_-prefixed and self-contained, like the
+   keyboard block's HK_ set, so the block drops into a page that already has its own icon consts. */
+const FT_ICON_NEW    = '<svg class="hi hi-sm hi-folder-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 7a1.8 1.8 0 0 1 1.8-1.8h3.9l2 2.4h7.7A1.8 1.8 0 0 1 20.6 9.4v8.4a1.8 1.8 0 0 1-1.8 1.8H5.2a1.8 1.8 0 0 1-1.8-1.8Z"/><path d="M12 11.4v5.2M9.4 14h5.2"/></svg>';
+const FT_ICON_RENAME = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
+const FT_ICON_MOVE   = '<svg class="hi hi-sm hi-move" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.4 12.8v5.8a1.8 1.8 0 0 1-1.8 1.8H5.8A1.8 1.8 0 0 1 4 18.6V6.8A1.8 1.8 0 0 1 5.8 5h5.8"/><path d="M15 4.2h5v5"/><path d="M11.6 12.6 19.8 4.4"/></svg>';
+const FT_ICON_DEL    = '<svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg>';
+const FT_ICON_FOLDER = '<svg class="hi hi-sm hi-folder" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 7a1.8 1.8 0 0 1 1.8-1.8h3.9l2 2.4h7.7A1.8 1.8 0 0 1 20.6 9.4v8.4a1.8 1.8 0 0 1-1.8 1.8H5.2a1.8 1.8 0 0 1-1.8-1.8Z"/></svg>';
+
 function ftRead(key){ try { const o = ivritSafeParse(localStorage.getItem(key) || 'null'); if (o && Array.isArray(o.root)) return o; } catch(e){} return { v:1, root:[] }; }
 function ftWrite(key, tree){ try { localStorage.setItem(key, JSON.stringify(tree)); } catch(e){} }
 function ftGenId(){ return 'f_' + Math.random().toString(36).slice(2,9); }
@@ -4919,7 +4927,7 @@ function mountFolderTree(cfg){
     closeMenu();
     const menu = document.createElement('div'); menu.className = 'ft-move-menu'; menu.setAttribute('role','menu'); menu.setAttribute('aria-label', btn.title || btn.textContent);
     ftPaths(tree, node.t==='folder' ? node.id : null).forEach(p => {
-      const b = document.createElement('button'); b.type='button'; b.setAttribute('role','menuitem'); b.textContent = p.label;
+      const b = document.createElement('button'); b.type='button'; b.setAttribute('role','menuitem'); b.textContent = p.label; if (p.id !== null) b.insertAdjacentHTML('afterbegin', FT_ICON_FOLDER);
       b.addEventListener('click', () => { const mv = ftRemove(tree, x => x===node); if (mv){ ftFolderArray(tree, p.id).push(mv); commit(); const fb = moveBtnFor(node); if (fb) fb.focus(); } closeMenu(); });
       menu.appendChild(b);
     });
@@ -4969,7 +4977,10 @@ function mountFolderTree(cfg){
     row.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); const b = row.getBoundingClientRect(); insertRelative(node, (e.clientY - b.top) > b.height/2); });
     return row;
   }
-  function mkMini(label, title, fn){ const b=document.createElement('button'); b.type='button'; b.className='ft-mini'; b.textContent=label; b.title=title; b.addEventListener('click', e => { e.stopPropagation(); fn(b); }); return b; }
+  function mkMini(label, title, fn){ const b=document.createElement('button'); b.type='button'; b.className='ft-mini';
+    // A leading '<' means inline SVG from the set above (static markup in this block, never user data).
+    if (label.charAt(0) === '<') { b.innerHTML = label; b.setAttribute('aria-label', title); } else b.textContent = label;
+    b.title=title; b.addEventListener('click', e => { e.stopPropagation(); fn(b); }); return b; }
   function renderFolder(node){
     const fol = document.createElement('div'); fol.className = 'ft-folder' + (node.collapsed?' ft-collapsed':''); fol.dataset.ftFolder = node.id;
     const head = document.createElement('div'); head.className='ft-folder-head';
@@ -4978,10 +4989,10 @@ function mountFolderTree(cfg){
     const nm = document.createElement('span'); nm.className='ft-folder-name'; nm.textContent = node.name;
     const cnt = document.createElement('span'); cnt.className='ft-folder-count'; cnt.textContent = '(' + node.children.length + ')';
     const acts = document.createElement('span'); acts.className='ft-folder-actions';
-    acts.appendChild(mkMini('＋',I18n.t('shared.folders.new_subfolder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_new_subfolder'))||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
-    acts.appendChild(mkMini('✎',I18n.t('shared.folders.rename_folder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_rename'), node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
-    const mvb = mkMini('↗',I18n.t('shared.folders.move_folder'), (b) => openMoveMenu(b, node)); mvb.setAttribute('aria-haspopup','menu'); mvb.setAttribute('aria-expanded','false'); acts.appendChild(mvb);
-    acts.appendChild(mkMini('🗑',I18n.t('shared.folders.delete_folder'), () => { if(!confirm(I18n.t('shared.folders.delete_confirm', { name: node.name }))) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
+    acts.appendChild(mkMini(FT_ICON_NEW,I18n.t('shared.folders.new_subfolder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_new_subfolder'))||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
+    acts.appendChild(mkMini(FT_ICON_RENAME,I18n.t('shared.folders.rename_folder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_rename'), node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
+    const mvb = mkMini(FT_ICON_MOVE,I18n.t('shared.folders.move_folder'), (b) => openMoveMenu(b, node)); mvb.setAttribute('aria-haspopup','menu'); mvb.setAttribute('aria-expanded','false'); acts.appendChild(mvb);
+    acts.appendChild(mkMini(FT_ICON_DEL,I18n.t('shared.folders.delete_folder'), () => { if(!confirm(I18n.t('shared.folders.delete_confirm', { name: node.name }))) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
     head.appendChild(tw); head.appendChild(h); head.appendChild(nm); head.appendChild(cnt); head.appendChild(acts);
     head.addEventListener('click', e => { if (e.target.closest('.ft-folder-actions')) return; node.collapsed = !node.collapsed; commit(); });
     makeDraggable(fol, node);
@@ -5008,7 +5019,7 @@ function mountFolderTree(cfg){
     rootDrop.addEventListener('drop', e => { if (!dragNode) return; e.preventDefault(); e.stopPropagation(); const dn=dragNode; ftRemove(tree, x=>x===dn); tree.root.push(dn); commit(); });
     wrap.appendChild(rootDrop);
     container.appendChild(wrap);
-    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder'; add.textContent=I18n.t('shared.folders.new_folder');
+    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder hi-btn'; add.textContent=I18n.t('shared.folders.new_folder'); add.insertAdjacentHTML('afterbegin', FT_ICON_NEW);
     add.addEventListener('click', () => { const x=(prompt(I18n.t('shared.folders.prompt_new_folder'))||'').trim(); if(!x) return; tree.root.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); });
     container.appendChild(add);
   }
@@ -5601,7 +5612,7 @@ function renderProfiles() {
       sub.textContent = (name === act ? I18n.t('flashcards.profile.active_marker') : '') + I18n.t('flashcards.profile.saved_count', { count: count });
       f.appendChild(sub);
       const setb = document.createElement('button'); setb.type = 'button'; setb.className = 'btn sm primary'; setb.textContent = I18n.t('flashcards.profile.set_active'); setb.addEventListener('click', () => setActiveProfile(name)); f.appendChild(setb);
-      const del = document.createElement('button'); del.type = 'button'; del.className = 'btn sm danger'; del.textContent = '✕'; del.setAttribute('aria-label', I18n.t('flashcards.actions.delete_aria', { name })); del.addEventListener('click', () => deleteProfile(name)); f.appendChild(del);
+      const del = document.createElement('button'); del.type = 'button'; del.className = 'btn sm danger'; del.innerHTML = ICON_CLOSE_SM; del.setAttribute('aria-label', I18n.t('flashcards.actions.delete_aria', { name })); del.addEventListener('click', () => deleteProfile(name)); f.appendChild(del);
       return f;
     }
   });
@@ -5644,7 +5655,7 @@ function renderProfileHistory(name) {
           <b>${r.pct}%</b> <span class="sub">${esc(I18n.t('flashcards.profile.history_pct_frac', { correct: r.correct, total: r.total }))}</span><br>
           <span class="sub" style="font-size:0.72rem;">${dateStr} · ${describeResultMode(r.settings)}${timeStr}</span>
         </span>
-        <button class="btn sm danger" data-act="del" aria-label="${esc(I18n.t('flashcards.actions.delete_aria', { name: dateStr }))}">✕</button>
+        <button class="btn sm danger" data-act="del" aria-label="${esc(I18n.t('flashcards.actions.delete_aria', { name: dateStr }))}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
       `;
       li.querySelector('[data-act=del]').addEventListener('click', () => {
         if (!confirm(I18n.t('flashcards.profile.delete_result_confirm'))) return;
@@ -5768,7 +5779,7 @@ function askCardCount(defaultN, maxN) {
     box.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
         <div style="font-weight:700;font-size:1rem;">${esc(I18n.t('flashcards.weaknesses.modal_title'))}</div>
-        <button data-act="cancel" aria-label="${esc(I18n.t('flashcards.weaknesses.cancel'))}" class="fc-dlg-x">×</button>
+        <button data-act="cancel" aria-label="${esc(I18n.t('flashcards.weaknesses.cancel'))}" class="fc-dlg-x"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
       </div>
       <div style="font-size:0.82rem;line-height:1.5;margin-bottom:12px;opacity:0.9;">${esc(sub)}</div>
       <div id="acQuick" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
@@ -5991,7 +6002,7 @@ function openWeaknessView(name) {
   box.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
       <div style="font-weight:700;font-size:1rem;">${I18n.t('flashcards.weaknesses.view_title', { name: esc(name) })}</div>
-      <button data-act="close" aria-label="${esc(I18n.t('flashcards.weaknesses.close_aria'))}" class="fc-dlg-x">×</button>
+      <button data-act="close" aria-label="${esc(I18n.t('flashcards.weaknesses.close_aria'))}" class="fc-dlg-x"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     </div>
     <div class="weak-tabs" style="display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:12px;">
       <button class="weak-tab active" data-tab="vowels">${esc(I18n.t('flashcards.weaknesses.tab_vowels'))}</button>
@@ -6343,7 +6354,7 @@ function openLadderMap() {
   box.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
       <div style="font-weight:700;font-size:1rem;">${I18n.t('flashcards.ladder.modal_title', { name: esc(name) })}</div>
-      <button data-act="close" aria-label="${esc(I18n.t('flashcards.ladder.close_aria'))}" class="fc-dlg-x" style="min-width:30px;min-height:30px;">×</button>
+      <button data-act="close" aria-label="${esc(I18n.t('flashcards.ladder.close_aria'))}" class="fc-dlg-x" style="min-width:30px;min-height:30px;"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     </div>
     <div id="ladderList" style="overflow-y:auto;flex:1;"></div>`;
   ov.appendChild(box); document.body.appendChild(ov);
@@ -8542,6 +8553,7 @@ function toggleFullscreen() {
 }
 // Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
 // builds in script. Static markup from this file, never user data.
+const ICON_CLOSE_SM = '<svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg>';
 const ICON_SOUND = '<svg class="hi hi-sm hi-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" fill="currentColor"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg>';
 const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
 const FS_ENTER_ICON = '<svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';

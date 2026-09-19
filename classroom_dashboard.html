@@ -2019,7 +2019,7 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
 .ft-folder-name { font-weight:600; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .ft-folder-count { font-size:.72rem; color:var(--muted,#6b6050); flex:0 0 auto; }
 .ft-folder-actions { display:flex; gap:1px; flex:0 0 auto; }
-.ft-mini { background:none; border:none; cursor:pointer; font-size:.82rem; padding:0 3px; color:var(--muted,#6b6050); font-family:inherit; line-height:1; }
+.ft-mini { background:none; border:none; cursor:pointer; font-size:.82rem; padding:0 3px; color:var(--muted,#6b6050); font-family:inherit; line-height:1; display:inline-flex; align-items:center; justify-content:center; min-width:22px; min-height:22px; }
 .ft-mini:hover { color:var(--gold,#c9922a); }
 .ft-folder-body { padding-block:3px 5px; padding-inline:16px 5px; display:flex; flex-direction:column; gap:4px; }
 .ft-empty-folder { font-size:.72rem; color:var(--muted,#6b6050); font-style:italic; padding:3px 4px; }
@@ -2073,14 +2073,14 @@ body.dark .hi-sun{display:inline-block;}
   </div>
 </header>
 <div id="zoomBar" style="background:var(--warm-gray);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:0.78rem;color:var(--text);">
-  <span id="zoomSliderLabel" style="font-weight:600;white-space:nowrap;" data-i18n="dashboard.display.zoom_label">🔍 Zoom</span>
+  <span id="zoomSliderLabel" style="font-weight:600;white-space:nowrap;" class="hi-btn" style="justify-content:flex-start;"><svg class="hi hi-sm hi-search" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.6" cy="10.6" r="6.4"/><path d="M15.4 15.4l4.6 4.6"/></svg><span data-i18n="dashboard.display.zoom_label">Zoom</span></span>
   <input type="range" id="zoomSlider" aria-labelledby="zoomSliderLabel" min="50" max="200" step="5" value="100" style="flex:1;accent-color:var(--gold);cursor:pointer;height:24px;">
   <span id="zoomLabel" class="bidi-isolate" style="white-space:nowrap;min-width:36px;">100%</span>
   <button onclick="applyZoom(100)" class="btn-xs" style="font-size:0.7rem;padding:2px 7px;border:1px solid var(--border);border-radius:4px;color:var(--text);cursor:pointer;" data-i18n="dashboard.display.zoom_reset">Reset</button>
   <span class="wake-dot zoom-wake-dot" role="img" title="Screen will stay awake" data-i18n-title="dashboard.display.wake_dot" aria-label="Screen will stay awake" data-i18n-aria-label="dashboard.display.wake_dot"></span>
 </div>
 <button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" data-i18n-title="shared.fullscreen.exit_title">
-  <span class="fs-x">✕</span>
+  <span class="fs-x"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></span>
   <span class="fs-label" data-i18n="shared.fullscreen.exit_label">Exit Full Screen</span>
 </button>
 <span class="wake-dot wake-dot-fs" role="img" title="Screen will stay awake" data-i18n-title="dashboard.display.wake_dot" aria-label="Screen will stay awake" data-i18n-aria-label="dashboard.display.wake_dot"></span>
@@ -2109,7 +2109,7 @@ body.dark .hi-sun{display:inline-block;}
 </div>
 <div id="blackout" aria-hidden="true" onclick="setBlackout(false)"><span class="bo-hint" data-i18n="dashboard.blackout.hint">Tap, or press Esc, to return</span></div>
 <div id="pickOverlay" role="dialog" aria-modal="true" aria-label="Student picker" data-i18n-aria-label="dashboard.picker.overlay_aria" style="display:none;">
-  <button class="pick-close" type="button" onclick="closePickOverlay()" aria-label="Close" data-i18n-aria-label="dashboard.picker.close_aria">✕</button>
+  <button class="pick-close" type="button" onclick="closePickOverlay()" aria-label="Close" data-i18n-aria-label="dashboard.picker.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   <div class="pick-note" id="pickNote"></div>
   <div class="pick-stage" id="pickStage"></div>
   <div class="pick-controls" id="pickControls"></div>
@@ -2225,7 +2225,7 @@ body.dark .hi-sun{display:inline-block;}
 <!-- ───── First-run setup card ───── -->
 <div class="fr-backdrop" id="frBackdrop" onclick="frSkip()"></div>
 <div class="fr-modal" id="frModal" role="dialog" aria-modal="true" aria-labelledby="frTitle">
-  <button class="fr-close" onclick="frSkip()" aria-label="Close" data-i18n-aria-label="dashboard.setup.close_aria">✕</button>
+  <button class="fr-close" onclick="frSkip()" aria-label="Close" data-i18n-aria-label="dashboard.setup.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   <h2 class="fr-h" id="frTitle" data-i18n="dashboard.setup.title">Welcome! Let's set up your dashboard</h2>
   <p class="fr-sub" data-i18n="dashboard.setup.subtitle">Set your location for accurate weather and Shabbat times, then pick a starting layout. You can change anything later in Settings.</p>
   <div class="fr-loc-row">
@@ -2245,7 +2245,7 @@ body.dark .hi-sun{display:inline-block;}
 <!-- ───── Weekly Schedule Sync editor ───── -->
 <div class="swm-backdrop" id="swmBackdrop" onclick="closeWeekEditor()"></div>
 <div class="swm-modal" id="swmModal" role="dialog" aria-modal="true" aria-labelledby="swmTitle">
-  <button class="fr-close" onclick="closeWeekEditor()" aria-label="Close schedule editor" data-i18n-aria-label="dashboard.schedule.editor_close_aria">✕</button>
+  <button class="fr-close" onclick="closeWeekEditor()" aria-label="Close schedule editor" data-i18n-aria-label="dashboard.schedule.editor_close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   <h2 class="fr-h" id="swmTitle" data-i18n="dashboard.schedule.editor_title">Set up Schedule Sync</h2>
   <p class="fr-sub" data-i18n="dashboard.schedule.editor_sub">Pick a class below, then click or drag across the grid to paint its periods. Changes save automatically.</p>
   <div id="swmImportCard" class="swm-import" style="display:none;"></div>
@@ -2286,7 +2286,7 @@ body.dark .hi-sun{display:inline-block;}
 <!-- ───── Guided tour coach-mark (non-modal spotlight) ───── -->
 <div class="tour-spot" id="tourSpot" hidden></div>
 <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
-  <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)">✕</button>
+  <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   <h2 id="tourCardTitle"></h2>
   <p id="tourCardBody"></p>
   <div class="tour-meta">
@@ -2301,13 +2301,13 @@ body.dark .hi-sun{display:inline-block;}
 <div id="inplaceToolbar" class="editor-toolbar inplace-toolbar" style="display:none;">
   <span id="inplaceToolbarCmds" style="display:contents;"></span>
   <span class="ed-sep"></span>
-  <button class="ed-btn" type="button" title="Finish editing" data-i18n-title="dashboard.editor.finish_editing" onclick="exitInPlaceEdit(true)" data-i18n="dashboard.text.done_btn">✓ Done</button>
+  <button class="ed-btn hi-btn" type="button" title="Finish editing" data-i18n-title="dashboard.editor.finish_editing" onclick="exitInPlaceEdit(true)"><svg class="hi hi-sm hi-check" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 12.6 9.6 17.4 19.2 6.6"/></svg><span class="hi-lbl" data-i18n="dashboard.text.done_btn">Done</span></button>
 </div>
 <!-- ───── Move-panels edit-mode bar (shown only while body.layout-edit) ───── -->
 <div id="layoutEditBar" role="toolbar" aria-label="Move panels" data-i18n-aria-label="dashboard.layout.bar_aria">
   <span class="leb-hint" data-i18n="dashboard.layout.edit_hint">Use the arrow buttons on each panel to move it. Changes save automatically.</span>
   <button class="leb-btn hi-btn" type="button" id="layoutResetBtn" onclick="resetPanelLayout()"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="dashboard.layout.reset_button">Restore default layout</span></button>
-  <button class="leb-btn" type="button" id="layoutDoneBtn" onclick="exitLayoutEdit()" data-i18n="dashboard.layout.done_button">✓ Done</button>
+  <button class="leb-btn hi-btn" type="button" id="layoutDoneBtn" onclick="exitLayoutEdit()"><svg class="hi hi-sm hi-check" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 12.6 9.6 17.4 19.2 6.6"/></svg><span class="hi-lbl" data-i18n="dashboard.layout.done_button">Done</span></button>
 </div>
 <!-- Screen-reader live region for move announcements (same pattern as flash_cards #a11yStatus) -->
 <span id="a11yStatus" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;"></span>
@@ -2327,7 +2327,7 @@ body.dark .hi-sun{display:inline-block;}
            pickers render dark-dependently — so the drawer offers the toggle itself
            (torah convergence, S180 Pass H). Synced with #darkBtn by toggleDark()/initDark(). -->
       <button class="settings-close" id="drawerDarkBtn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg></button>
-      <button class="settings-close" onclick="closeSettings()" title="Close" data-i18n-title="dashboard.settings.close_title" aria-label="Close settings" data-i18n-aria-label="dashboard.settings.close_aria">×</button>
+      <button class="settings-close" onclick="closeSettings()" title="Close" data-i18n-title="dashboard.settings.close_title" aria-label="Close settings" data-i18n-aria-label="dashboard.settings.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     </div>
   </div>
   <div class="settings-body">
@@ -2651,9 +2651,9 @@ body.dark .hi-sun{display:inline-block;}
       <label for="pickerClassSel" data-i18n="dashboard.picker.class_label">Class</label>
       <div style="display:flex;gap:5px;align-items:center;">
         <select id="pickerClassSel" onchange="switchClass(this.value)" style="flex:1;min-width:0;max-width:none;"></select>
-        <button type="button" class="btn-xs" title="New class" aria-label="New class" data-i18n-aria-label="dashboard.picker.new_class_title" data-i18n-title="dashboard.picker.new_class_title" onclick="newClass()">➕</button>
+        <button type="button" class="btn-xs" title="New class" aria-label="New class" data-i18n-aria-label="dashboard.picker.new_class_title" data-i18n-title="dashboard.picker.new_class_title" onclick="newClass()"><svg class="hi hi-sm hi-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.8v8.4M7.8 12h8.4"/></svg></button>
         <button type="button" class="btn-xs" title="Rename class" aria-label="Rename class" data-i18n-aria-label="dashboard.picker.rename_class_title" data-i18n-title="dashboard.picker.rename_class_title" onclick="renameClass()"><svg class="hi hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg></button>
-        <button type="button" class="btn-xs" title="Delete class" aria-label="Delete class" data-i18n-aria-label="dashboard.picker.delete_class_title" data-i18n-title="dashboard.picker.delete_class_title" onclick="deleteClass()">🗑</button>
+        <button type="button" class="btn-xs" title="Delete class" aria-label="Delete class" data-i18n-aria-label="dashboard.picker.delete_class_title" data-i18n-title="dashboard.picker.delete_class_title" onclick="deleteClass()"><svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg></button>
       </div>
       <span id="pickerClassNote" style="font-size:0.72rem;color:var(--gold-text);display:none;"></span>
     </div>
@@ -2961,7 +2961,7 @@ body.dark .hi-sun{display:inline-block;}
         <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q2">Does it work on SmartBoards?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a2">Yes. The dashboard is designed for SmartBoards, projectors, and large displays. A built-in fullscreen mode and zoom control let you size content for any classroom screen.</p></details>
         <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q3">Is the dashboard free?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a3">Yes. The dashboard is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes.</p></details>
         <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q4">Can I project the Hebrew date?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a4">Yes. The Hebrew (Jewish) date and the corresponding Gregorian date are shown live and update automatically each day.</p></details>
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q5">Is there a guided tour, and how do I switch layouts?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n-html="dashboard.about.faq_a5">Click <strong>❓ Tour</strong> in the top bar for a quick walkthrough. First-time teachers also get a setup card. To switch layouts, open Settings → Presets and tap a Quick-start layout — Hebrew classroom, Morning routine, or a General classroom layout for non-Judaics rooms — then tweak it and Save your own preset.</p></details>
+        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q5">Is there a guided tour, and how do I switch layouts?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n-html="dashboard.about.faq_a5">Click <strong>Tour</strong> in the top bar for a quick walkthrough. First-time teachers also get a setup card. To switch layouts, open Settings → Presets and tap a Quick-start layout — Hebrew classroom, Morning routine, or a General classroom layout for non-Judaics rooms — then tweak it and Save your own preset.</p></details>
         <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q6">Can the dashboard switch between periods by itself?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a6">Yes. Settings → Schedule Sync lets you build a weekly grid — paint each class across your periods and days, or import the whole grid from your school calendar's .ics or .csv export; the board reconfigures itself through the day and shows a live Now / Next display and a countdown.</p></details>
         <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q7">How do I keep the display from going to sleep?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n-html="dashboard.about.faq_a7">Fullscreen keeps the screen awake automatically. Otherwise turn on <strong>Keep screen awake</strong> in Settings → Display Options, where the browser supports it.</p></details>
       </div>
@@ -2975,7 +2975,7 @@ body.dark .hi-sun{display:inline-block;}
         <li data-i18n="dashboard.about.howto_4">Use the fullscreen button to project to your SmartBoard.</li>
         <li data-i18n="dashboard.about.howto_5">Save your setup as a preset — or start from a Quick-start layout in the Presets panel.</li>
         <li data-i18n="dashboard.about.howto_6">In fullscreen, move the mouse to reveal quick controls (settings, timer, student picker, text, video, blank screen).</li>
-        <li data-i18n="dashboard.about.howto_7">Click the ✎ on the dashboard message to edit it right on the board.</li>
+        <li data-i18n="dashboard.about.howto_7">Click the pencil on the dashboard message to edit it right on the board.</li>
       </ol>
     </details>
     <div>
@@ -3254,6 +3254,10 @@ body.dark .hi-sun{display:inline-block;}
   // Shared icon-set SVGs for the buttons this page builds in script (see the header-icons CSS block).
   // Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
 // builds in script. Static markup from this file, never user data.
+const ICON_TRASH_SM = '<svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg>';
+const ICON_CHECK_SM = '<svg class="hi hi-sm hi-check" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 12.6 9.6 17.4 19.2 6.6"/></svg>';
+const ICON_WARN_SM = '<svg class="hi hi-sm hi-warning" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.2 21.3 19.3a1.3 1.3 0 0 1-1.1 2H3.8a1.3 1.3 0 0 1-1.1-2Z"/><path d="M12 10v4.2"/><circle cx="12" cy="17.4" r=".75" fill="currentColor" stroke="none"/></svg>';
+const ICON_CLOSE_SM = '<svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg>';
 const ICON_LINK_SM = '<svg class="hi hi-sm hi-link" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 13.7a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.7 1.7"/><path d="M13.7 10.3a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.7-1.7"/></svg>';
 const ICON_PENCIL_SM = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
 const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg>';
@@ -4496,7 +4500,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     if (!n) return;
     _timerCustomNoteShown = !!show;
     if (show) {
-      n.innerHTML = '<span class="sched-warn">⚠ ' + esc(I18n.t('dashboard.timer.custom_invalid')) + '</span>';
+      n.innerHTML = '<span class="sched-warn">' + ICON_WARN_SM + esc(I18n.t('dashboard.timer.custom_invalid')) + '</span>';
       n.style.display = '';
       if (inp) inp.setAttribute('aria-invalid', 'true');
     } else {
@@ -6869,6 +6873,14 @@ function mountSidebarResize(cfg) {
 /* Sidecar overlay: the preset/schedule/profile store stays a flat {name:...} object and is the
    source of truth for which items EXIST. This tree only organizes them (references items by name).
    Stored as JSON under a per-list key. mountFolderTree(cfg) renders + wires DnD and a Move menu. */
+/* Icons for the row buttons and the move menu. FT_-prefixed and self-contained, like the
+   keyboard block's HK_ set, so the block drops into a page that already has its own icon consts. */
+const FT_ICON_NEW    = '<svg class="hi hi-sm hi-folder-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 7a1.8 1.8 0 0 1 1.8-1.8h3.9l2 2.4h7.7A1.8 1.8 0 0 1 20.6 9.4v8.4a1.8 1.8 0 0 1-1.8 1.8H5.2a1.8 1.8 0 0 1-1.8-1.8Z"/><path d="M12 11.4v5.2M9.4 14h5.2"/></svg>';
+const FT_ICON_RENAME = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
+const FT_ICON_MOVE   = '<svg class="hi hi-sm hi-move" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.4 12.8v5.8a1.8 1.8 0 0 1-1.8 1.8H5.8A1.8 1.8 0 0 1 4 18.6V6.8A1.8 1.8 0 0 1 5.8 5h5.8"/><path d="M15 4.2h5v5"/><path d="M11.6 12.6 19.8 4.4"/></svg>';
+const FT_ICON_DEL    = '<svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg>';
+const FT_ICON_FOLDER = '<svg class="hi hi-sm hi-folder" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 7a1.8 1.8 0 0 1 1.8-1.8h3.9l2 2.4h7.7A1.8 1.8 0 0 1 20.6 9.4v8.4a1.8 1.8 0 0 1-1.8 1.8H5.2a1.8 1.8 0 0 1-1.8-1.8Z"/></svg>';
+
 function ftRead(key){ try { const o = ivritSafeParse(localStorage.getItem(key) || 'null'); if (o && Array.isArray(o.root)) return o; } catch(e){} return { v:1, root:[] }; }
 function ftWrite(key, tree){ try { localStorage.setItem(key, JSON.stringify(tree)); } catch(e){} }
 function ftGenId(){ return 'f_' + Math.random().toString(36).slice(2,9); }
@@ -7013,7 +7025,7 @@ function mountFolderTree(cfg){
     closeMenu();
     const menu = document.createElement('div'); menu.className = 'ft-move-menu'; menu.setAttribute('role','menu'); menu.setAttribute('aria-label', btn.title || btn.textContent);
     ftPaths(tree, node.t==='folder' ? node.id : null).forEach(p => {
-      const b = document.createElement('button'); b.type='button'; b.setAttribute('role','menuitem'); b.textContent = p.label;
+      const b = document.createElement('button'); b.type='button'; b.setAttribute('role','menuitem'); b.textContent = p.label; if (p.id !== null) b.insertAdjacentHTML('afterbegin', FT_ICON_FOLDER);
       b.addEventListener('click', () => { const mv = ftRemove(tree, x => x===node); if (mv){ ftFolderArray(tree, p.id).push(mv); commit(); const fb = moveBtnFor(node); if (fb) fb.focus(); } closeMenu(); });
       menu.appendChild(b);
     });
@@ -7063,7 +7075,10 @@ function mountFolderTree(cfg){
     row.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); const b = row.getBoundingClientRect(); insertRelative(node, (e.clientY - b.top) > b.height/2); });
     return row;
   }
-  function mkMini(label, title, fn){ const b=document.createElement('button'); b.type='button'; b.className='ft-mini'; b.textContent=label; b.title=title; b.addEventListener('click', e => { e.stopPropagation(); fn(b); }); return b; }
+  function mkMini(label, title, fn){ const b=document.createElement('button'); b.type='button'; b.className='ft-mini';
+    // A leading '<' means inline SVG from the set above (static markup in this block, never user data).
+    if (label.charAt(0) === '<') { b.innerHTML = label; b.setAttribute('aria-label', title); } else b.textContent = label;
+    b.title=title; b.addEventListener('click', e => { e.stopPropagation(); fn(b); }); return b; }
   function renderFolder(node){
     const fol = document.createElement('div'); fol.className = 'ft-folder' + (node.collapsed?' ft-collapsed':''); fol.dataset.ftFolder = node.id;
     const head = document.createElement('div'); head.className='ft-folder-head';
@@ -7072,10 +7087,10 @@ function mountFolderTree(cfg){
     const nm = document.createElement('span'); nm.className='ft-folder-name'; nm.textContent = node.name;
     const cnt = document.createElement('span'); cnt.className='ft-folder-count'; cnt.textContent = '(' + node.children.length + ')';
     const acts = document.createElement('span'); acts.className='ft-folder-actions';
-    acts.appendChild(mkMini('＋',I18n.t('shared.folders.new_subfolder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_new_subfolder'))||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
-    acts.appendChild(mkMini('✎',I18n.t('shared.folders.rename_folder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_rename'), node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
-    const mvb = mkMini('↗',I18n.t('shared.folders.move_folder'), (b) => openMoveMenu(b, node)); mvb.setAttribute('aria-haspopup','menu'); mvb.setAttribute('aria-expanded','false'); acts.appendChild(mvb);
-    acts.appendChild(mkMini('🗑',I18n.t('shared.folders.delete_folder'), () => { if(!confirm(I18n.t('shared.folders.delete_confirm', { name: node.name }))) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
+    acts.appendChild(mkMini(FT_ICON_NEW,I18n.t('shared.folders.new_subfolder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_new_subfolder'))||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
+    acts.appendChild(mkMini(FT_ICON_RENAME,I18n.t('shared.folders.rename_folder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_rename'), node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
+    const mvb = mkMini(FT_ICON_MOVE,I18n.t('shared.folders.move_folder'), (b) => openMoveMenu(b, node)); mvb.setAttribute('aria-haspopup','menu'); mvb.setAttribute('aria-expanded','false'); acts.appendChild(mvb);
+    acts.appendChild(mkMini(FT_ICON_DEL,I18n.t('shared.folders.delete_folder'), () => { if(!confirm(I18n.t('shared.folders.delete_confirm', { name: node.name }))) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
     head.appendChild(tw); head.appendChild(h); head.appendChild(nm); head.appendChild(cnt); head.appendChild(acts);
     head.addEventListener('click', e => { if (e.target.closest('.ft-folder-actions')) return; node.collapsed = !node.collapsed; commit(); });
     makeDraggable(fol, node);
@@ -7102,7 +7117,7 @@ function mountFolderTree(cfg){
     rootDrop.addEventListener('drop', e => { if (!dragNode) return; e.preventDefault(); e.stopPropagation(); const dn=dragNode; ftRemove(tree, x=>x===dn); tree.root.push(dn); commit(); });
     wrap.appendChild(rootDrop);
     container.appendChild(wrap);
-    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder'; add.textContent=I18n.t('shared.folders.new_folder');
+    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder hi-btn'; add.textContent=I18n.t('shared.folders.new_folder'); add.insertAdjacentHTML('afterbegin', FT_ICON_NEW);
     add.addEventListener('click', () => { const x=(prompt(I18n.t('shared.folders.prompt_new_folder'))||'').trim(); if(!x) return; tree.root.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); });
     container.appendChild(add);
   }
@@ -7130,7 +7145,7 @@ function mountFolderTree(cfg){
         f.appendChild(mk(ICON_RESET_SM, I18n.t('dashboard.preset.overwrite_title'), 'btn btn-xs btn-secondary', () => overwritePreset(name)));
         f.appendChild(mk('⧉', I18n.t('dashboard.preset.duplicate_title'), 'btn btn-xs btn-secondary', () => duplicatePreset(name)));
         f.appendChild(mk(ICON_PENCIL_SM, I18n.t('dashboard.preset.rename_title'), 'btn btn-xs btn-secondary', () => renamePreset(name)));
-        f.appendChild(mk('×', I18n.t('dashboard.preset.delete_title'), 'btn btn-xs btn-secondary', () => deletePreset(name)));
+        f.appendChild(mk(ICON_CLOSE_SM, I18n.t('dashboard.preset.delete_title'), 'btn btn-xs btn-secondary', () => deletePreset(name)));
         return f;
       }
     });
@@ -7144,7 +7159,7 @@ function mountFolderTree(cfg){
     const btn = document.getElementById('presetCopyBtn');
     if (!box.value) return;
     navigator.clipboard.writeText(box.value).catch(() => { box.select(); document.execCommand('copy'); });
-    btn.textContent = '✓'; setTimeout(() => btn.textContent = I18n.t('shared.ivrit.manual_copy'), 1500);
+    btn.innerHTML = ICON_CHECK_SM; setTimeout(() => btn.textContent = I18n.t('shared.ivrit.manual_copy'), 1500);
   }
   function importPresets() {
     try {
@@ -7369,6 +7384,7 @@ function showAppToast(msg, ms = 2600) {
    hebrewBlender_kbdLayout, already registered in the index.html AllTools
    functions — adopters must not re-register it. All identifiers are HK_/hk-
    prefixed so the block can land in pages that define GLYPH_CARRIER etc. ═══ */
+const HK_ICON = '<svg class="hi hi-sm hi-keyboard" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.6" y="6.4" width="18.8" height="11.2" rx="2"/><path d="M6 9.6h.01M9.2 9.6h.01M12.4 9.6h.01M15.6 9.6h.01M18 9.6h.01M6 12.6h.01M9.2 12.6h.01M12.4 12.6h.01M15.6 12.6h.01M18 12.6h.01M8 15.4h8"/></svg>';
 const HK_GLYPH_CARRIER = '◌';   // dotted-circle carrier for lone marks; flip to 'א' if a font floats them (same convention as the Trope Tutor)
 const HK_LETTERS = [            // alef-bet order, finals adjacent; plain forms only — dagesh/shin/sin dots are Nikkud-tab keys
   ['א','alef'],['ב','bet'],['ג','gimel'],['ד','dalet'],['ה','heh'],['ו','vav'],['ז','zayin'],
@@ -7540,7 +7556,9 @@ function mountHebrewKeyboard(cfg) {
 
   function syncToggle() {
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    toggle.textContent = '⌨ ' + hkT(open ? 'shared.kbd.hide_toggle' : 'shared.kbd.show_toggle');
+    toggle.classList.add('hi-btn');
+    toggle.textContent = hkT(open ? 'shared.kbd.hide_toggle' : 'shared.kbd.show_toggle');   // i18n-ignore: both ternary arms are I18n keys, not English
+    toggle.insertAdjacentHTML('afterbegin', HK_ICON);
   }
   function setOpen(on) {
     open = !!on;
@@ -8064,7 +8082,7 @@ else ivritInit();
       const rm = document.createElement('button');
       rm.type = 'button';
       rm.className = 'schedule-del-btn swm-rowdel';
-      rm.textContent = '×';
+      rm.innerHTML = ICON_CLOSE_SM;
       rm.title = I18n.t('dashboard.schedule.remove');
       rm.setAttribute('aria-label', I18n.t('dashboard.schedule.remove_period_aria', { n: p + 1 }));
       rm.addEventListener('click', () => removeWeekPeriod(p));
@@ -9153,7 +9171,7 @@ else ivritInit();
         f.appendChild(mk(ICON_RESET_SM, I18n.t('dashboard.schedule.overwrite_title'), 'btn btn-xs btn-secondary', () => overwriteSavedSchedule(name)));
         f.appendChild(mk('⧉', I18n.t('dashboard.schedule.sched_duplicate_title'), 'btn btn-xs btn-secondary', () => duplicateSavedSchedule(name)));
         f.appendChild(mk(ICON_PENCIL_SM, I18n.t('dashboard.schedule.sched_rename_title'), 'btn btn-xs btn-secondary', () => renameSavedSchedule(name)));
-        f.appendChild(mk('×', I18n.t('dashboard.schedule.sched_delete_title'), 'btn btn-xs btn-secondary', () => deleteSavedSchedule(name)));
+        f.appendChild(mk(ICON_CLOSE_SM, I18n.t('dashboard.schedule.sched_delete_title'), 'btn btn-xs btn-secondary', () => deleteSavedSchedule(name)));
         return f;
       }
     });

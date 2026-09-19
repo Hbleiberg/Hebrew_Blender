@@ -476,7 +476,7 @@ body.dark #fontToast{background:#2a4070;}
   <p class="page-sub" data-i18n="resources.page_sub">A curated directory of free Hebrew learning resources, worksheets, dictionaries, and Jewish education tools for teachers and students.</p>
 
   <div class="view-toggle">
-    <button data-view="links" class="active" onclick="setView('links')" data-i18n="resources.view.links">📚 Links</button>
+    <button data-view="links" class="active hi-btn" onclick="setView('links')"><svg class="hi hi-sm hi-book" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.2v12.4"/><path d="M12 7.2S10 5.4 6 5.4a18 18 0 0 0-2.4.2v12.6A18 18 0 0 1 6 18c4 0 6 1.6 6 1.6s2-1.6 6-1.6a18 18 0 0 1 2.4.2V5.6A18 18 0 0 0 18 5.4c-4 0-6 1.8-6 1.8Z"/></svg><span class="hi-lbl" data-i18n="resources.view.links">Links</span></button>
     <button data-view="fonts" onclick="setView('fonts')" data-i18n="resources.view.fonts">🔤 Fonts</button>
   </div>
 
@@ -500,7 +500,7 @@ body.dark #fontToast{background:#2a4070;}
       <button class="filter-btn" data-filter="age" data-value="middle" data-i18n="resources.filters.age_middle">Middle / High (6–12)</button>
       <button class="filter-btn" data-filter="age" data-value="adult" data-i18n="resources.filters.age_adult">Adult / Teacher</button>
     </div>
-    <button class="suggest-btn" onclick="openSuggestModal()" data-i18n="resources.filters.suggest_button">✚ Suggest a Resource</button>
+    <button class="suggest-btn hi-btn" onclick="openSuggestModal()"><svg class="hi hi-sm hi-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.8v8.4M7.8 12h8.4"/></svg><span class="hi-lbl" data-i18n="resources.filters.suggest_button">Suggest a Resource</span></button>
   </div>
 
   <p class="results-count" id="resultsCount"></p>
@@ -535,7 +535,7 @@ body.dark #fontToast{background:#2a4070;}
       <button class="filter-btn" data-filter="flic" data-value="ofl" data-i18n="resources.filters.flic_ofl">OFL</button>
       <button class="filter-btn" data-filter="flic" data-value="other" data-i18n="resources.filters.flic_other">Other</button>
     </div>
-    <button class="suggest-btn" onclick="openSubmitFont()" data-i18n="resources.filters.submit_font_button">✚ Submit a font</button>
+    <button class="suggest-btn hi-btn" onclick="openSubmitFont()"><svg class="hi hi-sm hi-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.8v8.4M7.8 12h8.4"/></svg><span class="hi-lbl" data-i18n="resources.filters.submit_font_button">Submit a font</span></button>
   </div>
 
   <p class="results-count" id="fontCount"></p>
@@ -1215,6 +1215,7 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
    hebrewBlender_kbdLayout, already registered in the index.html AllTools
    functions — adopters must not re-register it. All identifiers are HK_/hk-
    prefixed so the block can land in pages that define GLYPH_CARRIER etc. ═══ */
+const HK_ICON = '<svg class="hi hi-sm hi-keyboard" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.6" y="6.4" width="18.8" height="11.2" rx="2"/><path d="M6 9.6h.01M9.2 9.6h.01M12.4 9.6h.01M15.6 9.6h.01M18 9.6h.01M6 12.6h.01M9.2 12.6h.01M12.4 12.6h.01M15.6 12.6h.01M18 12.6h.01M8 15.4h8"/></svg>';
 const HK_GLYPH_CARRIER = '◌';   // dotted-circle carrier for lone marks; flip to 'א' if a font floats them (same convention as the Trope Tutor)
 const HK_LETTERS = [            // alef-bet order, finals adjacent; plain forms only — dagesh/shin/sin dots are Nikkud-tab keys
   ['א','alef'],['ב','bet'],['ג','gimel'],['ד','dalet'],['ה','heh'],['ו','vav'],['ז','zayin'],
@@ -1386,7 +1387,9 @@ function mountHebrewKeyboard(cfg) {
 
   function syncToggle() {
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    toggle.textContent = '⌨ ' + hkT(open ? 'shared.kbd.hide_toggle' : 'shared.kbd.show_toggle');
+    toggle.classList.add('hi-btn');
+    toggle.textContent = hkT(open ? 'shared.kbd.hide_toggle' : 'shared.kbd.show_toggle');   // i18n-ignore: both ternary arms are I18n keys, not English
+    toggle.insertAdjacentHTML('afterbegin', HK_ICON);
   }
   function setOpen(on) {
     open = !!on;
@@ -1639,7 +1642,7 @@ function renderFonts() {
       '<div class="font-preview-line" lang="he" style="font-family:\'' + esc(f.family) + '\',serif;">' + esc(fontSampleFor(f)) + '</div>' +
       '<div class="font-by">' + by + '</div>' +
       '<div class="font-actions">' +
-        '<button type="button" onclick="openFontPreview(' + i + ')">' + esc(I18n.t('resources.fonts.preview_action')) + '</button>' +
+        '<button type="button" class="hi-btn" onclick="openFontPreview(' + i + ')">' + "<svg class=\"hi hi-sm hi-search\" viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" aria-hidden=\"true\" focusable=\"false\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"10.6\" cy=\"10.6\" r=\"6.4\"/><path d=\"M15.4 15.4l4.6 4.6\"/></svg>" + esc(I18n.t('resources.fonts.preview_action')) + '</button>' +
         '<button type="button" onclick="downloadFont(' + i + ')">' + esc(I18n.t('resources.fonts.download_action')) + '</button>' +
         '<button type="button" onclick="useFontInIvritSuite(' + i + ')">' + esc(I18n.t('resources.fonts.use_action')) + '</button>' +
       '</div>' +
@@ -1961,8 +1964,8 @@ function openSubmitFont(pf) {
 <div class="sg-backdrop" id="sgBackdrop" onclick="closeSuggestModal(event)">
   <div class="sg-modal" role="dialog" aria-modal="true" aria-labelledby="sgTitle" onclick="event.stopPropagation()">
     <div class="sg-modal-hdr">
-      <h3 id="sgTitle" data-i18n="resources.suggest.title">✚ Suggest a Resource</h3>
-      <button class="sg-modal-close" onclick="closeSuggestModal()" aria-label="Close" data-i18n-aria-label="resources.modal.close_aria">×</button>
+      <h3 id="sgTitle" class="hi-btn" style="justify-content:flex-start;"><svg class="hi hi-sm hi-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.8v8.4M7.8 12h8.4"/></svg><span data-i18n="resources.suggest.title">Suggest a Resource</span></h3>
+      <button class="sg-modal-close" onclick="closeSuggestModal()" aria-label="Close" data-i18n-aria-label="resources.modal.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     </div>
     <div class="sg-modal-body">
       <p class="sg-intro" data-i18n="resources.suggest.intro">Know a great Hebrew or Jewish-education resource? Share it and I'll consider adding it to the directory.</p>
@@ -2055,7 +2058,7 @@ function openSubmitFont(pf) {
                 data-i18n-title="resources.preview.next_font"
                 data-i18n-aria-label="resources.preview.next_font"><span class="fp-nav-arrow">&rsaquo;</span></button>
       </div>
-      <button class="sg-modal-close" onclick="closeFontPreview()" aria-label="Close" data-i18n-aria-label="resources.modal.close_aria">×</button>
+      <button class="sg-modal-close" onclick="closeFontPreview()" aria-label="Close" data-i18n-aria-label="resources.modal.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     </div>
     <div class="sg-modal-body">
       <label for="fontPreviewInput" class="sg-hint" style="display:block;margin-bottom:6px;" data-i18n="resources.preview.input_label">Type Hebrew (or anything) to preview in this font:</label>
@@ -2063,7 +2066,7 @@ function openSubmitFont(pf) {
       <div class="tp-row" id="fpPhrases"></div>
       <!-- On-screen Hebrew keyboard: label is state-dependent (Show/Hide), so JS owns it — no data-i18n
            (applyStaticI18n would stomp the expanded-state label); the English text is the pre-I18n fallback. -->
-      <button type="button" class="hk-toggle" id="fpKbdToggle" aria-expanded="false" aria-controls="fpKbdPanel">⌨ Show Hebrew Keyboard</button>
+      <button type="button" class="hk-toggle hi-btn" id="fpKbdToggle" aria-expanded="false" aria-controls="fpKbdPanel"><svg class="hi hi-sm hi-keyboard" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.6" y="6.4" width="18.8" height="11.2" rx="2"/><path d="M6 9.6h.01M9.2 9.6h.01M12.4 9.6h.01M15.6 9.6h.01M18 9.6h.01M6 12.6h.01M9.2 12.6h.01M12.4 12.6h.01M15.6 12.6h.01M18 12.6h.01M8 15.4h8"/></svg>Show Hebrew Keyboard</button>
       <div class="hk-panel" id="fpKbdPanel" hidden></div>
       <div class="fp-render" id="fontPreviewRender" lang="he"></div>
       <div class="fp-sizes" id="fontPreviewSizes" lang="he"></div>
@@ -2074,7 +2077,7 @@ function openSubmitFont(pf) {
         <div class="font-by" id="fontPreviewBy"></div>
         <div class="font-actions">
           <button type="button" onclick="fpDownload()" class="hi-btn"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="resources.fonts.download_action">Download</span></button>
-          <button type="button" onclick="fpUseInSuite()" data-i18n="resources.fonts.use_action">★ Use in IvritSuite</button>
+          <button type="button" onclick="fpUseInSuite()" class="hi-btn"><svg class="hi hi-sm hi-bookmark" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.4h11a1 1 0 0 1 1 1v14.2l-6.5-4-6.5 4V5.4a1 1 0 0 1 1-1Z"/></svg><span class="hi-lbl" data-i18n="resources.fonts.use_action">Use in IvritSuite</span></button>
         </div>
         <div class="font-meta-row" id="fontPreviewMeta"></div>
       </div>

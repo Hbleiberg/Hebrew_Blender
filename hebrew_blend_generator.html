@@ -2407,7 +2407,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 .ft-folder-name { font-weight:600; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .ft-folder-count { font-size:.72rem; color:var(--muted,#6b6050); flex:0 0 auto; }
 .ft-folder-actions { display:flex; gap:1px; flex:0 0 auto; }
-.ft-mini { background:none; border:none; cursor:pointer; font-size:.82rem; padding:0 3px; color:var(--muted,#6b6050); font-family:inherit; line-height:1; }
+.ft-mini { background:none; border:none; cursor:pointer; font-size:.82rem; padding:0 3px; color:var(--muted,#6b6050); font-family:inherit; line-height:1; display:inline-flex; align-items:center; justify-content:center; min-width:22px; min-height:22px; }
 .ft-mini:hover { color:var(--gold,#c9922a); }
 .ft-folder-body { padding-block:3px 5px; padding-inline:16px 5px; display:flex; flex-direction:column; gap:4px; }
 .ft-empty-folder { font-size:.72rem; color:var(--muted,#6b6050); font-style:italic; padding:3px 4px; }
@@ -2620,8 +2620,8 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <div style="display:flex;align-items:stretch;border:1px solid var(--border);border-radius:4px;overflow:hidden;width:90px;">
               <input type="number" id="bingoCards" aria-label="Number of bingo cards" data-i18n-aria-label="worksheet.aria.bingo_cards" min="1" max="200" value="30" style="flex:1;font-size:0.78rem;padding:3px 6px;border:none;font-family:inherit;background:var(--white);color:var(--text);text-align:center;-moz-appearance:textfield;" oninput="this.value=Math.max(1,Math.min(200,parseInt(this.value)||1))">
               <div style="display:flex;flex-direction:column;border-inline-start:1px solid var(--border);">
-                <button type="button" class="bingo-step bingo-step-up" onclick="adjustBingoCards(1)" title="More cards" aria-label="More cards" data-i18n-title="worksheet.common.more_cards" data-i18n-aria-label="worksheet.common.more_cards">▲</button>
-                <button type="button" class="bingo-step" onclick="adjustBingoCards(-1)" title="Fewer cards" aria-label="Fewer cards" data-i18n-title="worksheet.common.fewer_cards" data-i18n-aria-label="worksheet.common.fewer_cards">▼</button>
+                <button type="button" class="bingo-step bingo-step-up" onclick="adjustBingoCards(1)" title="More cards" aria-label="More cards" data-i18n-title="worksheet.common.more_cards" data-i18n-aria-label="worksheet.common.more_cards"><svg class="hi hi-sm hi-up" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.6 15.2 12 8.8l6.4 6.4"/></svg></button>
+                <button type="button" class="bingo-step" onclick="adjustBingoCards(-1)" title="Fewer cards" aria-label="Fewer cards" data-i18n-title="worksheet.common.fewer_cards" data-i18n-aria-label="worksheet.common.fewer_cards"><svg class="hi hi-sm hi-down" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.6 8.8 12 15.2l6.4-6.4"/></svg></button>
               </div>
             </div>
           </div>
@@ -2979,14 +2979,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 <div id="cwImportCount" style="font-size:0.7rem;color:var(--muted);text-align:center;min-height:1em;"></div>
                 <div style="display:flex;gap:6px;">
                   <button class="btn-xs hi-btn" style="flex:1;" onclick="importCustomWordlist()"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="worksheet.realwords.import_btn">Import</span></button>
-                  <button class="btn-xs" style="flex:1;" onclick="clearCustomWordlist()" data-i18n="worksheet.realwords.clear_btn">✕ Clear</button>
+                  <button class="btn-xs hi-btn" style="flex:1;" onclick="clearCustomWordlist()"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg><span class="hi-lbl" data-i18n="worksheet.realwords.clear_btn">Clear</span></button>
                 </div>
                 <div id="cwImportStatus" role="status" aria-live="polite" style="font-size:0.72rem;text-align:center;color:var(--gold);font-weight:600;min-height:1.2em;"></div>
                 <!-- Keep the pasted list: written into the suite-wide Word Lists store (the Dictionary's), then
                      selected under My Word Lists so presets carry it by id — see saveImportedAsWordList() -->
                 <div style="display:flex;gap:6px;margin-top:2px;">
                   <input type="text" id="cwSaveListName" placeholder="List name…" data-i18n-placeholder="worksheet.realwords.save_list_name_placeholder" aria-label="Word list name" data-i18n-aria-label="worksheet.realwords.save_list_name_aria" oninput="onCwSaveNameInput()" style="flex:1;min-width:0;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:0.8rem;background:var(--white);color:var(--text);">
-                  <button class="btn-xs" id="cwSaveListBtn" onclick="saveImportedAsWordList()" aria-disabled="true" data-i18n="worksheet.realwords.save_list_btn">⭑ Save as Word List</button>
+                  <button class="btn-xs hi-btn" id="cwSaveListBtn" onclick="saveImportedAsWordList()" aria-disabled="true"><svg class="hi hi-sm hi-bookmark" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.4h11a1 1 0 0 1 1 1v14.2l-6.5-4-6.5 4V5.4a1 1 0 0 1 1-1Z"/></svg><span class="hi-lbl" data-i18n="worksheet.realwords.save_list_btn">Save as Word List</span></button>
                 </div>
               </div>
               <div id="rwListPoolInfo" style="display:none;margin-top:6px;font-size:0.7rem;color:var(--muted);text-align:center;"></div>
@@ -3639,7 +3639,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
     <!-- Generate (desktop) -->
     <div class="desktop-buttons">
-      <button class="btn btn-primary" id="generateBtn" onclick="generate()" data-i18n="worksheet.actions.generate">⬡ Generate Worksheet</button>
+      <button class="btn btn-primary hi-btn" id="generateBtn" onclick="generate()"><svg class="hi hi-sm hi-page" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3H7a2.2 2.2 0 0 0-2.2 2.2v13.6A2.2 2.2 0 0 0 7 21h10a2.2 2.2 0 0 0 2.2-2.2V8.7z"/><path d="M13.5 3v5.7h5.7"/><path d="M8.6 13h6.8M8.6 16.6h4.6"/></svg><span class="hi-lbl" data-i18n="worksheet.actions.generate">Generate Worksheet</span></button>
       <div class="gen-note" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
       <button class="btn btn-outline hi-btn" id="regenBtn" onclick="regenerate()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="worksheet.actions.regenerate">Regenerate</span></button>
       <button class="btn btn-secondary hi-btn" id="printBtn" onclick="window.print()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="worksheet.actions.print">Print</span></button>
@@ -3838,7 +3838,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <!-- Frozen "Generate" footer (desktop) — always-reachable primary action; sticks to the sidebar bottom -->
     <div class="gen-fab" id="genFab">
       <div class="gen-fab-primary">
-        <button class="btn btn-primary" onclick="generate()" title="⬡ Generate Worksheet" data-i18n="worksheet.actions.generate_mob" data-i18n-title="worksheet.actions.generate">⬡ Generate</button>
+        <button class="btn btn-primary hi-btn" onclick="generate()" title="Generate Worksheet" data-i18n-title="worksheet.actions.generate"><svg class="hi hi-sm hi-page" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">undefined</svg><span class="hi-lbl" data-i18n="worksheet.actions.generate_mob">Generate</span></button>
       </div>
       <div class="gen-note" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
       <!-- Post-Generate actions: revealed by enableButtons() once a worksheet exists, so the
@@ -3863,7 +3863,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
   <!-- Mobile FAB -->
   <div class="mobile-fab">
-    <button class="btn btn-primary" onclick="generate()" data-i18n="worksheet.actions.generate_mob">⬡ Generate</button>
+    <button class="btn btn-primary hi-btn" onclick="generate()"><svg class="hi hi-sm hi-page" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3H7a2.2 2.2 0 0 0-2.2 2.2v13.6A2.2 2.2 0 0 0 7 21h10a2.2 2.2 0 0 0 2.2-2.2V8.7z"/><path d="M13.5 3v5.7h5.7"/><path d="M8.6 13h6.8M8.6 16.6h4.6"/></svg><span class="hi-lbl" data-i18n="worksheet.actions.generate_mob">Generate</span></button>
     <div class="gen-note" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
     <button class="btn btn-outline" id="regenBtnMob" onclick="regenerate()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
     <button class="btn btn-secondary" id="printBtnMob" onclick="window.print()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg></button>
@@ -3874,7 +3874,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <!-- Guided "Take a tour" coach-mark (non-modal spotlight; see tourStart) -->
   <div class="tour-spot" id="tourSpot" hidden></div>
   <div class="tour-card" id="tourCard" role="dialog" aria-modal="false" aria-labelledby="tourCardTitle" aria-describedby="tourCardBody" hidden>
-    <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)">✕</button>
+    <button class="tour-x" id="tourClose" aria-label="End tour" data-i18n-aria-label="shared.tour.end" onclick="tourEnd(false)"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     <h2 id="tourCardTitle"></h2>
     <p id="tourCardBody"></p>
     <div class="tour-meta">
@@ -3917,7 +3917,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 </div>
 
 <button id="fsExitBtn" onclick="toggleFullscreen()" title="Exit fullscreen" data-i18n-title="shared.fullscreen.exit_title">
-  <span class="fs-x">✕</span>
+  <span class="fs-x"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></span>
   <span class="fs-label" data-i18n="shared.fullscreen.exit_label">Exit Full Screen</span>
 </button>
 
@@ -5463,7 +5463,7 @@ function copyTextarea(id) {
   if (!box.value) return;
   const btn = document.getElementById('presetCopyBtn');
   navigator.clipboard.writeText(box.value).catch(() => { box.select(); document.execCommand('copy'); });
-  if (btn) { btn.textContent = '✓'; setTimeout(() => btn.textContent = I18n.t('worksheet.advanced.copy'), 1500); }
+  if (btn) { btn.innerHTML = ICON_CHECK_SM; setTimeout(() => btn.textContent = I18n.t('worksheet.advanced.copy'), 1500); }
 }
 
 function exportPresets() {
@@ -5493,6 +5493,14 @@ function importPresets() {
 /* Sidecar overlay: the preset/schedule/profile store stays a flat {name:...} object and is the
    source of truth for which items EXIST. This tree only organizes them (references items by name).
    Stored as JSON under a per-list key. mountFolderTree(cfg) renders + wires DnD and a Move menu. */
+/* Icons for the row buttons and the move menu. FT_-prefixed and self-contained, like the
+   keyboard block's HK_ set, so the block drops into a page that already has its own icon consts. */
+const FT_ICON_NEW    = '<svg class="hi hi-sm hi-folder-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 7a1.8 1.8 0 0 1 1.8-1.8h3.9l2 2.4h7.7A1.8 1.8 0 0 1 20.6 9.4v8.4a1.8 1.8 0 0 1-1.8 1.8H5.2a1.8 1.8 0 0 1-1.8-1.8Z"/><path d="M12 11.4v5.2M9.4 14h5.2"/></svg>';
+const FT_ICON_RENAME = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
+const FT_ICON_MOVE   = '<svg class="hi hi-sm hi-move" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.4 12.8v5.8a1.8 1.8 0 0 1-1.8 1.8H5.8A1.8 1.8 0 0 1 4 18.6V6.8A1.8 1.8 0 0 1 5.8 5h5.8"/><path d="M15 4.2h5v5"/><path d="M11.6 12.6 19.8 4.4"/></svg>';
+const FT_ICON_DEL    = '<svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg>';
+const FT_ICON_FOLDER = '<svg class="hi hi-sm hi-folder" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 7a1.8 1.8 0 0 1 1.8-1.8h3.9l2 2.4h7.7A1.8 1.8 0 0 1 20.6 9.4v8.4a1.8 1.8 0 0 1-1.8 1.8H5.2a1.8 1.8 0 0 1-1.8-1.8Z"/></svg>';
+
 function ftRead(key){ try { const o = ivritSafeParse(localStorage.getItem(key) || 'null'); if (o && Array.isArray(o.root)) return o; } catch(e){} return { v:1, root:[] }; }
 function ftWrite(key, tree){ try { localStorage.setItem(key, JSON.stringify(tree)); } catch(e){} }
 function ftGenId(){ return 'f_' + Math.random().toString(36).slice(2,9); }
@@ -5637,7 +5645,7 @@ function mountFolderTree(cfg){
     closeMenu();
     const menu = document.createElement('div'); menu.className = 'ft-move-menu'; menu.setAttribute('role','menu'); menu.setAttribute('aria-label', btn.title || btn.textContent);
     ftPaths(tree, node.t==='folder' ? node.id : null).forEach(p => {
-      const b = document.createElement('button'); b.type='button'; b.setAttribute('role','menuitem'); b.textContent = p.label;
+      const b = document.createElement('button'); b.type='button'; b.setAttribute('role','menuitem'); b.textContent = p.label; if (p.id !== null) b.insertAdjacentHTML('afterbegin', FT_ICON_FOLDER);
       b.addEventListener('click', () => { const mv = ftRemove(tree, x => x===node); if (mv){ ftFolderArray(tree, p.id).push(mv); commit(); const fb = moveBtnFor(node); if (fb) fb.focus(); } closeMenu(); });
       menu.appendChild(b);
     });
@@ -5687,7 +5695,10 @@ function mountFolderTree(cfg){
     row.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); const b = row.getBoundingClientRect(); insertRelative(node, (e.clientY - b.top) > b.height/2); });
     return row;
   }
-  function mkMini(label, title, fn){ const b=document.createElement('button'); b.type='button'; b.className='ft-mini'; b.textContent=label; b.title=title; b.addEventListener('click', e => { e.stopPropagation(); fn(b); }); return b; }
+  function mkMini(label, title, fn){ const b=document.createElement('button'); b.type='button'; b.className='ft-mini';
+    // A leading '<' means inline SVG from the set above (static markup in this block, never user data).
+    if (label.charAt(0) === '<') { b.innerHTML = label; b.setAttribute('aria-label', title); } else b.textContent = label;
+    b.title=title; b.addEventListener('click', e => { e.stopPropagation(); fn(b); }); return b; }
   function renderFolder(node){
     const fol = document.createElement('div'); fol.className = 'ft-folder' + (node.collapsed?' ft-collapsed':''); fol.dataset.ftFolder = node.id;
     const head = document.createElement('div'); head.className='ft-folder-head';
@@ -5696,10 +5707,10 @@ function mountFolderTree(cfg){
     const nm = document.createElement('span'); nm.className='ft-folder-name'; nm.textContent = node.name;
     const cnt = document.createElement('span'); cnt.className='ft-folder-count'; cnt.textContent = '(' + node.children.length + ')';
     const acts = document.createElement('span'); acts.className='ft-folder-actions';
-    acts.appendChild(mkMini('＋',I18n.t('shared.folders.new_subfolder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_new_subfolder'))||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
-    acts.appendChild(mkMini('✎',I18n.t('shared.folders.rename_folder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_rename'), node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
-    const mvb = mkMini('↗',I18n.t('shared.folders.move_folder'), (b) => openMoveMenu(b, node)); mvb.setAttribute('aria-haspopup','menu'); mvb.setAttribute('aria-expanded','false'); acts.appendChild(mvb);
-    acts.appendChild(mkMini('🗑',I18n.t('shared.folders.delete_folder'), () => { if(!confirm(I18n.t('shared.folders.delete_confirm', { name: node.name }))) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
+    acts.appendChild(mkMini(FT_ICON_NEW,I18n.t('shared.folders.new_subfolder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_new_subfolder'))||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
+    acts.appendChild(mkMini(FT_ICON_RENAME,I18n.t('shared.folders.rename_folder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_rename'), node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
+    const mvb = mkMini(FT_ICON_MOVE,I18n.t('shared.folders.move_folder'), (b) => openMoveMenu(b, node)); mvb.setAttribute('aria-haspopup','menu'); mvb.setAttribute('aria-expanded','false'); acts.appendChild(mvb);
+    acts.appendChild(mkMini(FT_ICON_DEL,I18n.t('shared.folders.delete_folder'), () => { if(!confirm(I18n.t('shared.folders.delete_confirm', { name: node.name }))) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
     head.appendChild(tw); head.appendChild(h); head.appendChild(nm); head.appendChild(cnt); head.appendChild(acts);
     head.addEventListener('click', e => { if (e.target.closest('.ft-folder-actions')) return; node.collapsed = !node.collapsed; commit(); });
     makeDraggable(fol, node);
@@ -5726,7 +5737,7 @@ function mountFolderTree(cfg){
     rootDrop.addEventListener('drop', e => { if (!dragNode) return; e.preventDefault(); e.stopPropagation(); const dn=dragNode; ftRemove(tree, x=>x===dn); tree.root.push(dn); commit(); });
     wrap.appendChild(rootDrop);
     container.appendChild(wrap);
-    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder'; add.textContent=I18n.t('shared.folders.new_folder');
+    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder hi-btn'; add.textContent=I18n.t('shared.folders.new_folder'); add.insertAdjacentHTML('afterbegin', FT_ICON_NEW);
     add.addEventListener('click', () => { const x=(prompt(I18n.t('shared.folders.prompt_new_folder'))||'').trim(); if(!x) return; tree.root.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); });
     container.appendChild(add);
   }
@@ -5779,7 +5790,7 @@ function renderPresets() {
       f.appendChild(mk(I18n.t('worksheet.presets.load'), '', '', () => loadPreset(name)));
       f.appendChild(mk(ICON_RESET_SM, I18n.t('worksheet.presets.overwrite_title'), '', () => overwritePreset(name)));
       f.appendChild(mk('⧉', I18n.t('worksheet.presets.duplicate_title'), '', () => duplicatePreset(name)));
-      f.appendChild(mk('✕', I18n.t('worksheet.presets.delete_title'), 'del-btn', () => deletePreset(name)));
+      f.appendChild(mk(ICON_CLOSE_SM, I18n.t('worksheet.presets.delete_title'), 'del-btn', () => deletePreset(name)));
       return f;
     }
   });
@@ -6770,7 +6781,7 @@ function showPreviewNotice(text, opts = {}) {
     btn.className = 'pn-close';
     btn.type = 'button';
     btn.setAttribute('aria-label', I18n.t('worksheet.preview.dismiss'));
-    btn.textContent = '✕';
+    btn.innerHTML = ICON_CLOSE_SM;
     btn.addEventListener('click', hidePreviewNotice);
     el.appendChild(btn);
   }
@@ -7192,6 +7203,10 @@ function _tourKey(e) {
 // Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
 // builds in script. Static markup from this file, never user data.
 const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg>';
+const ICON_PAGE_SM = '<svg class="hi hi-sm hi-page" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3H7a2.2 2.2 0 0 0-2.2 2.2v13.6A2.2 2.2 0 0 0 7 21h10a2.2 2.2 0 0 0 2.2-2.2V8.7z"/><path d="M13.5 3v5.7h5.7"/><path d="M8.6 13h6.8M8.6 16.6h4.6"/></svg>';
+const ICON_BOOKMARK_SM = '<svg class="hi hi-sm hi-bookmark" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.4h11a1 1 0 0 1 1 1v14.2l-6.5-4-6.5 4V5.4a1 1 0 0 1 1-1Z"/></svg>';
+const ICON_CHECK_SM = '<svg class="hi hi-sm hi-check" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 12.6 9.6 17.4 19.2 6.6"/></svg>';
+const ICON_CLOSE_SM = '<svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg>';
 const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
 const ICON_PAUSE_SM = '<svg class="hi hi-sm hi-pause" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.8" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/><rect x="13.6" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/></svg>';
 const ICON_SOUND_SM = '<svg class="hi hi-sm hi-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" fill="currentColor"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg>';
@@ -13908,7 +13923,7 @@ function copyShareLink(btnId) {
     const b = document.getElementById(id);
     if (!b) return;
     if (b.dataset.label === undefined) b.dataset.label = b.innerHTML;
-    b.innerHTML = (id === 'shareBtnMob') ? '✓' : esc(I18n.t('worksheet.share.copied'));
+    b.innerHTML = (id === 'shareBtnMob') ? ICON_CHECK_SM : esc(I18n.t('worksheet.share.copied'));
   });
   announce(I18n.t('worksheet.share.copied'));
   setTimeout(() => {
