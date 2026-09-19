@@ -364,6 +364,7 @@
         'padding-block:4px;padding-inline:10px;border:1px solid var(--border,#c8bfa8);border-radius:6px;' +
         'background:var(--white,#fff);color:var(--text,#1a2744);font-family:inherit;font-size:0.78rem;font-weight:600;' +
         'line-height:1.3;cursor:pointer;white-space:nowrap;}' +
+      '.ivacct-ico{display:inline-flex;width:16px;height:16px;flex-shrink:0;}.ivacct-ico svg{width:16px;height:16px;}' +
       '.ivacct-btn:hover{background:var(--warm-gray,#e8e0d0);}' +
       'body.dark .ivacct-btn:hover{background:#2a3349;}' +
       '.ivacct-btn:focus-visible,.ivacct-item:focus-visible,.ivacct-input:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:1px;}' +
@@ -406,6 +407,8 @@
     (document.head || document.documentElement).appendChild(el);
   }
 
+  // The signed-out chip's glyph: the header-icons set's user-in-circle (docs/reference/shared-components.md → Header icons).
+  var ICON_USER = '<svg class="hi hi-user" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.3 18.4a6.5 6.5 0 0 1 11.4 0"/></svg>';
   function el(tag, cls, text) {
     var n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -598,7 +601,9 @@
       btn.appendChild(el('span', 'ivacct-avatar', initialsOf(u)));
       btn.appendChild(el('span', 'ivacct-text', t('shared.account.offline', 'Offline')));
     } else {
-      btn.appendChild(el('span', 'ivacct-text', '☁ ' + t('shared.account.sign_in', 'Sign in')));
+      var ico = el('span', 'ivacct-ico'); ico.innerHTML = ICON_USER;   // static markup from this file, never user data
+      btn.appendChild(ico);
+      btn.appendChild(el('span', 'ivacct-text', t('shared.account.sign_in', 'Sign in')));
     }
     if (chip.open) renderMenu();
   }

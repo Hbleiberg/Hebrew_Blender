@@ -141,6 +141,15 @@
    under the WCAG 2.5.8 24px floor with no qualifying spacing). inline-block + block
    padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
 footer a { display: inline-block; padding-block: 5px; }
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404 (docs/reference/shared-components.md → Header icons).
+   The header controls carry inline SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies.
+   The dark toggle holds both the moon and the sun and body.dark picks one; scripts change only the .hi-lbl text beside it. */
+.hi{width:16px;height:16px;flex-shrink:0;display:inline-block;vertical-align:-0.2em;}
+.hi-sun{display:none;}
+body.dark .hi-moon{display:none;}
+body.dark .hi-sun{display:inline-block;}
+[dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* ═══ end header-icons CSS ═══ */
 </style>
 <script>(function(){try{var s=localStorage.getItem('hebrewBlender_darkMode');if(s==='1'||(s===null&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-early');}}catch(e){}})()</script>
 <!-- No-flash UI-language IIFE — mirrors the dark-mode one; sets dir/lang before paint so Hebrew
@@ -331,9 +340,9 @@ header h1{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:
 header p{font-size:0.82rem;color:var(--gold-light);margin-top:2px;}
 header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px;}
 /* 30px is the shared language switcher's height (js/i18n.js), which no page can lower — so the row converges UP to it, the chrome pages' .hbtn convention; before: switcher 30 / Home 24 / Tour 24 / Dark 25 (pattern row-siblings-with-mismatched-heights, S362 Pass M). */
-.dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:4px 12px;font-size:0.78rem;min-height:30px;cursor:pointer;font-family:'Source Sans 3',sans-serif;white-space:nowrap;}
+.dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:4px 12px;font-size:0.78rem;min-height:30px;cursor:pointer;font-family:'Source Sans 3',sans-serif;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;}
 .dark-btn:hover{background:rgba(255,255,255,0.1);}
-.nav-btn{background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:4px 12px;font-size:0.78rem;min-height:30px;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;white-space:nowrap;}
+.nav-btn{background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:4px 12px;font-size:0.78rem;min-height:30px;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
 .nav-btn:hover{background:var(--gold-light);}
 /* i18n / RTL utilities — directional glyphs mirror under RTL; bidi-isolate protects number/Latin readouts */
 .dir-arrow{display:inline-block;}
@@ -982,15 +991,15 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
   </div>
   <div class="hright">
     <div data-i18n-switcher></div>
-    <a class="nav-btn" href="/"><span class="dir-arrow" aria-hidden="true">←</span> <span data-i18n="dictionary.header.home">Home</span></a>
-    <button class="nav-btn" id="tourBtn" onclick="tourStart()" title="Take a quick tour" data-i18n="dictionary.header.tour_button" data-i18n-title="dictionary.header.tour_button_title">❓ Tour</button>
-    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" title="Toggle dark mode" data-i18n="shared.darkmode.label_dark" data-i18n-title="shared.darkmode.toggle_title">🌙 Dark</button>
+    <a class="nav-btn" href="/"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="dictionary.header.home">Home</span></a>
+    <button class="nav-btn" id="tourBtn" onclick="tourStart()" title="Take a quick tour" data-i18n-title="dictionary.header.tour_button_title"><svg class="hi hi-help" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.9"/><circle cx="12" cy="17" r=".7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="dictionary.header.tour_button">Tour</span></button>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" title="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><span class="hi-lbl" data-i18n="shared.darkmode.label_dark">Dark</span></button>
   </div>
 </header>
 
 <!-- Floating presenter controls live after the header, like the two sidebar buttons below: this one
      is position:fixed at the bottom corner, so its place in the source is purely its Tab position. -->
-<button id="fsBtn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg></button>
+<button id="fsBtn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
 <button class="sidebar-show-btn" id="sidebarShowBtn" onclick="toggleSidebar()" title="Show sidebar" aria-label="Show sidebar" data-i18n-title="dictionary.sidebar.show_title" data-i18n-aria-label="dictionary.sidebar.show_title"><span class="dir-arrow" aria-hidden="true">›</span></button>
 <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" title="Hide sidebar" aria-label="Hide sidebar" data-i18n-title="dictionary.sidebar.hide_title" data-i18n-aria-label="dictionary.sidebar.hide_title"><span class="dir-arrow" aria-hidden="true">‹</span></button>
 
@@ -3846,8 +3855,8 @@ function positionSidebarTab() {
 }
 window.addEventListener('resize', positionSidebarTab);
 
-const FS_ENTER_ICON = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="0.5,4.5 0.5,0.5 4.5,0.5"/><polyline points="9.5,0.5 13.5,0.5 13.5,4.5"/><polyline points="13.5,9.5 13.5,13.5 9.5,13.5"/><polyline points="4.5,13.5 0.5,13.5 0.5,9.5"/></svg>`;
-const FS_EXIT_ICON  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4.5,0.5 4.5,4.5 0.5,4.5"/><polyline points="13.5,4.5 9.5,4.5 9.5,0.5"/><polyline points="9.5,13.5 9.5,9.5 13.5,9.5"/><polyline points="0.5,9.5 4.5,9.5 4.5,13.5"/></svg>`;
+const FS_ENTER_ICON = '<svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
+const FS_EXIT_ICON = '<svg class="hi hi-fs-exit" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
 // iPhone Safari has no element-fullscreen API, so this tap would reject silently — hide the
 // button wherever the unprefixed API this page calls is absent (no dead clicks, CLAUDE.md UX 5).
 (function () {
@@ -4131,7 +4140,7 @@ function toggleDark() {
   document.documentElement.classList.remove('dark-early');
   try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
   const _db = document.getElementById('darkBtn');
-  _db.textContent = window.I18n ? I18n.t(dark ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark') : (dark ? '☀️ Light' : '🌙 Dark');
+  (_db.querySelector('.hi-lbl') || _db).textContent = window.I18n ? I18n.t(dark ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark') : (dark ? 'Light' : 'Dark');
   _db.setAttribute('aria-pressed', dark ? 'true' : 'false');
   refreshDictVowelGroupColors();
   updateColorPickerValues();
@@ -5130,7 +5139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.body.classList.add('dark');
       const _db = document.getElementById('darkBtn');
-      _db.textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light');
+      (_db.querySelector('.hi-lbl') || _db).textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : 'Light');
       _db.setAttribute('aria-pressed', 'true');
     }
   } catch(e) {}
@@ -5229,7 +5238,7 @@ function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
   const _db = document.getElementById('darkBtn');
-  if (_db) _db.textContent = I18n.t(document.body.classList.contains('dark') ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark');
+  if (_db) (_db.querySelector('.hi-lbl') || _db).textContent = I18n.t(document.body.classList.contains('dark') ? 'shared.darkmode.label_light' : 'shared.darkmode.label_dark');
   initColorPickers();
   relabelVowelFilter();
   refreshDictVowelGroupColors();   // re-localize the vowel-group "Sound" headers

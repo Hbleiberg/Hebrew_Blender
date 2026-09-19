@@ -141,6 +141,15 @@
    padding grows each link's BOX to >=24px; prose flow and wrapping are unaffected. */
 footer a { display: inline-block; padding-block: 5px; }
 footer details > summary:hover { text-decoration: underline; }   /* FAQ / How-To rows: the Font Maker footer's hover idiom — inline styles carry no hover */
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404 (docs/reference/shared-components.md → Header icons).
+   The header controls carry inline SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies.
+   The dark toggle holds both the moon and the sun and body.dark picks one; scripts change only the .hi-lbl text beside it. */
+.hi{width:16px;height:16px;flex-shrink:0;display:inline-block;vertical-align:-0.2em;}
+.hi-sun{display:none;}
+body.dark .hi-moon{display:none;}
+body.dark .hi-sun{display:inline-block;}
+[dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* ═══ end header-icons CSS ═══ */
 </style>
 <script>
 /* No-flash dark-mode IIFE — runs before paint */
@@ -1549,13 +1558,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 <body><a class="skip-link" href="#mainContent" data-i18n="flashcards.a11y.skip_to_cards">Skip to the cards</a>
 <!-- ============== HEADER ============== -->
 <header class="app-header">
-  <a href="/" class="h-btn" id="homeBtn" title="Home" aria-label="Home" data-i18n-title="flashcards.header.home_label" data-i18n-aria-label="flashcards.header.home_label"><span class="dir-arrow" aria-hidden="true">←</span></a>
+  <a href="/" class="h-btn" id="homeBtn" title="Home" aria-label="Home" data-i18n-title="flashcards.header.home_label" data-i18n-aria-label="flashcards.header.home_label"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg></a>
   <h1 data-i18n="flashcards.header.h1">Hebrew Flash Cards for Reading Practice</h1>
   <div class="h-right">
     <div data-i18n-switcher></div>
-    <button class="h-btn" id="tourBtn" onclick="tourStart()" title="Take a quick tour" data-i18n-title="flashcards.header.tour_button_title" data-i18n="flashcards.header.tour_button" style="width:auto;border-radius:22px;padding:0 14px;font-size:0.85rem;gap:6px;">❓ Tour</button>
-    <button class="h-btn" id="fsBtn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria" aria-pressed="false">⛶</button>
-    <button class="h-btn" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false">🌙</button>
+    <button class="h-btn" id="tourBtn" onclick="tourStart()" title="Take a quick tour" data-i18n-title="flashcards.header.tour_button_title" style="width:auto;border-radius:22px;padding:0 14px;font-size:0.85rem;gap:6px;"><svg class="hi hi-help" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.9"/><circle cx="12" cy="17" r=".7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="flashcards.header.tour_button">Tour</span></button>
+    <button class="h-btn" id="fsBtn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria" aria-pressed="false"><svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+    <button class="h-btn" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg></button>
   </div>
 </header>
 
@@ -2955,14 +2964,12 @@ function toggleDark(force) {
   document.body.classList.toggle('dark', next);
   document.documentElement.classList.toggle('dark-early', next);
   try { localStorage.setItem('hebrewBlender_darkMode', next ? '1' : '0'); } catch(e){}
-  document.getElementById('darkToggle').textContent = next ? '☀️' : '🌙';
   document.getElementById('darkToggle').setAttribute('aria-pressed', next ? 'true' : 'false');
   refreshVowelGroupColors();
   initColorPickers();
   if (document.getElementById('screenCard').classList.contains('active')) renderCurrentCard();
 }
 function initDarkMode() {
-  document.getElementById('darkToggle').textContent = isDark() ? '☀️' : '🌙';
   document.getElementById('darkToggle').setAttribute('aria-pressed', isDark() ? 'true' : 'false');
   document.getElementById('darkToggle').addEventListener('click', () => toggleDark());
 }
@@ -8526,12 +8533,14 @@ function toggleFullscreen() {
     }
   } catch (e) { /* a rejected fullscreen request is not user-facing (CLAUDE.md §5) */ }
 }
+const FS_ENTER_ICON = '<svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
+const FS_EXIT_ICON = '<svg class="hi hi-fs-exit" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
 function _syncFsBtn() {
   const on = !!_fsElement();
   document.body.classList.toggle('fc-fullscreen', on);
   const btn = document.getElementById('fsBtn');
   if (!btn) return;
-  btn.textContent = on ? '⤢' : '⛶';
+  btn.innerHTML = on ? FS_EXIT_ICON : FS_ENTER_ICON;
   btn.setAttribute('aria-pressed', on ? 'true' : 'false');
   const fk = on ? 'shared.fullscreen.exit_title' : 'shared.fullscreen.enter_title';
   btn.setAttribute('data-i18n-title', fk);

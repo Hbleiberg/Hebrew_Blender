@@ -2,7 +2,7 @@ key,en,he,context,notes
 account.a11y.skip_to_account,Skip to your account,דילוג לחשבון שלכם,Skip-link (a11y),aria/skip-link
 account.header.title,IvritSuite — Your account,IvritSuite — החשבון שלכם,Account page header title,
 account.header.tagline,What your account holds · Download everything · Delete your account,מה יש בחשבון · הורדת הכול · מחיקת החשבון,Account page header tagline,
-account.header.back_link,← Back,← חזרה,header back button,leading-arrow
+account.header.back_link,Back,חזרה,header back button,svg-arrow-in-markup
 account.page_title,Your account,החשבון שלכם,Account page h1,
 account.framed.head,This page can't be shown inside another site,לא ניתן להציג דף זה בתוך אתר אחר,Account page heading shown when the page is loaded inside an iframe,clickjacking guard
 account.framed.body,"Your account settings open only on ivritsuite.com, so no one can place a fake page over them.","הגדרות החשבון שלכם נפתחות רק באתר ivritsuite.com, כדי שאיש לא יוכל להציב דף מזויף מעליהן.",Account page explanation shown when the page is framed,clickjacking guard
@@ -88,7 +88,7 @@ contact.form.submit_button,Send message,שליחת הודעה,submit button,
 contact.form.success,Message sent ✓ — thank you! I’ll get back to you soon.,ההודעה נשלחה ✓ — תודה! אחזור אליכם בקרוב.,form status,
 contact.getintouch_heading,Get in touch,צרו קשר,tile heading,
 contact.getintouch_intro,Send a message below and it will go straight to my inbox. Please include your email so I can write back.,שלחו הודעה למטה והיא תגיע ישירות לתיבת הדואר שלי. אנא כללו את כתובת האימייל שלכם כדי שאוכל להשיב.,tile intro,
-contact.header.back_link,← Back,← חזרה,header back button,leading-arrow
+contact.header.back_link,Back,חזרה,header back button,svg-arrow-in-markup
 contact.header.tagline,Get in touch · Support the project,צרו קשר · תמכו בפרויקט,header subtitle,
 contact.header.title,IvritSuite — Contact & Support,IvritSuite — יצירת קשר ותמיכה,header h1,
 contact.lede,"Have a question, found a bug, or have an idea for a new feature? I'd love to hear from you.","יש לכם שאלה, מצאתם באג, או שיש לכם רעיון לתכונה חדשה? אשמח לשמוע מכם.",page lede,
@@ -833,7 +833,7 @@ dictionary.glyphname.vowel_vav_holam,Vav Holam,חוֹלָם מָלֵא,vowel fil
 dictionary.header.h1,Hebrew Word Lookup & Dictionary,חיפוש מילים ומילון עברי,page H1 heading,
 dictionary.header.home,Home,בית,header home link,leading-emoji
 dictionary.header.subtitle,"Browse and filter Hebrew vocabulary by length, part of speech, and era — a free Hebrew dictionary for learning and practice.","עיינו וסננו אוצר מילים עברי לפי אורך, חלק דיבר ותקופה — מילון עברי חינמי ללמידה ולתרגול.",header subtitle,
-dictionary.header.tour_button,❓ Tour,❓ סיור,header tour launcher button,leading-emoji
+dictionary.header.tour_button,Tour,סיור,header tour launcher button,svg-icon-in-markup
 dictionary.header.tour_button_title,Take a quick tour,צאו לסיור מהיר,header tour launcher title,aria-label only
 dictionary.howto.step1,Type a Hebrew word in the search bar (with or without nikkud).,הקלידו מילה בעברית בשורת החיפוש (עם או בלי ניקוד).,footer how-to step,
 dictionary.howto.step2,"Or filter by theme, word length, part of speech, era, or letter position.","או סננו לפי נושא, אורך מילה, חלק דיבר, תקופה או מיקום אות.",footer how-to step,
@@ -1153,7 +1153,7 @@ flashcards.glyphname.vowel_vav_holam,Vav Holam,וו חולם,vowel picker tile l
 flashcards.header.h1,Hebrew Flash Cards for Reading Practice,כרטיסי זיכרון בעברית לתרגול קריאה,page H1 heading,REVIEW: marketing headline phrasing
 flashcards.header.home,←,←,"header home button, icon","leading-emoji; title/aria ""Home"""
 flashcards.header.home_label,Home,בית,header home button title/aria,aria-label only
-flashcards.header.tour_button,❓ Tour,❓ סיור,header tour launcher button,leading-emoji
+flashcards.header.tour_button,Tour,סיור,header tour launcher button,svg-icon-in-markup
 flashcards.header.tour_button_title,Take a quick tour,סיור קצר,header tour launcher title,aria-label only
 flashcards.howto.step1,"Choose 1, 2, or 3 letters per card.","בחרו 1, 2 או 3 אותיות לכרטיס.",footer how-to step,
 flashcards.howto.step2,Select Hebrew letters and vowels to drill.,בחרו אותיות ותנועות לתרגול.,footer how-to step,
@@ -3105,7 +3105,7 @@ fontmaker.toolbar.fmt_woff2,WOFF2 (web),WOFF2 (לרשת),export format option,
 fontmaker.toolbar.help,❓ Help,❓ עזרה,toolbar button,leading-emoji
 fontmaker.toolbar.help_aria,Help,עזרה,toolbar Help button,aria-label only
 fontmaker.toolbar.help_title,A plain-language guide to the whole tool,מדריך בשפה פשוטה לכל הכלי,toolbar button title,
-fontmaker.toolbar.home,← Home,← בית,toolbar link,leading-emoji
+fontmaker.toolbar.home,Home,בית,toolbar link,svg-arrow-in-markup
 fontmaker.toolbar.load_project,Load Project ▾,טעינת פרויקט ▾,toolbar button,
 fontmaker.toolbar.new,New,חדש,toolbar button,
 fontmaker.toolbar.preview_pdf,Preview PDF,תצוגה מקדימה PDF,toolbar button,
@@ -3260,7 +3260,7 @@ notfound.title,This page wandered off for forty years.,הדף הזה תעה במ
 notfound.tool_links_intro,Or wander somewhere useful:,או שוטטו למקום מועיל:,tool links intro,
 privacy.a11y.skip_to_policy,Skip to the policy,דילוג למדיניות,Skip-link (a11y),aria/skip-link
 privacy.effective_date,"Effective date: September 14, 2026",תאריך תחילה: 14 בספטמבר 2026,effective date line,
-privacy.header.back_link,← Back,← חזרה,header back button,leading-arrow
+privacy.header.back_link,Back,חזרה,header back button,svg-arrow-in-markup
 privacy.header.tagline,How we handle your data,כיצד אנו מטפלים בנתונים שלכם,header subtitle,
 privacy.header.title,IvritSuite — Privacy Policy,IvritSuite — מדיניות פרטיות,header h1,
 privacy.legal.changes,"If this policy is updated, the ""Effective date"" at the top of the page will change. Material changes will be reflected on this page; account holders may also be told by email about changes that affect what an account stores.","אם מדיניות זו תעודכן, ""תאריך התחילה"" בראש העמוד ישתנה. שינויים מהותיים ישתקפו בעמוד זה; בעלי חשבון עשויים לקבל הודעה באימייל על שינויים המשפיעים על מה שחשבון מאחסן.",section 9 body,
@@ -3387,7 +3387,7 @@ resources.fonts.type_other,Other,אחר,font type badge,
 resources.fonts.type_torah,Torah,תורה,font type badge,
 resources.fonts.use_action,★ Use in IvritSuite,★ שימוש ב-IvritSuite,font card action,leading-symbol
 resources.fonts_count,Showing {count} of {total} fonts,מציג {count} מתוך {total} גופנים,results count,template
-resources.header.back_link,← Back,← חזרה,header back button,leading-arrow
+resources.header.back_link,Back,חזרה,header back button,svg-arrow-in-markup
 resources.header.tagline,Hebrew literacy tools and references,כלים ומקורות לאוריינות עברית,header subtitle,
 resources.header.title,Teaching Resources,משאבים להוראה,header h1,
 resources.modal.close_aria,Close,סגירה,modal close button (both modals),aria-label only
@@ -3445,8 +3445,8 @@ resources.suggest.url_placeholder,https://…,https://…,input placeholder,
 resources.view.fonts,🔤 Fonts,🔤 גופנים,view toggle button,leading-emoji
 resources.view.links,📚 Links,📚 קישורים,view toggle button,leading-emoji
 shared.corpus.retry_button,↻ Try again,↻ נסו שוב,in-place retry for a failed corpus/data load (converged model; torah keeps its own torah.reading.retry_button),leading-emoji; mirrors torah.reading.retry_button
-shared.darkmode.label_dark,🌙 Dark,🌙 כהה,Dark-mode toggle label (shown when light),"leading-emoji; shared (labeled variant: 404, dictionary)"
-shared.darkmode.label_light,☀️ Light,☀️ בהיר,Dark-mode toggle label (shown when dark),"leading-emoji; shared (labeled variant: 404, dictionary)"
+shared.darkmode.label_dark,Dark,כהה,Dark-mode toggle label (shown when light),"svg-icon-in-markup; shared (labeled variant: 404, dictionary)"
+shared.darkmode.label_light,Light,בהיר,Dark-mode toggle label (shown when dark),"svg-icon-in-markup; shared (labeled variant: 404, dictionary)"
 shared.darkmode.toggle_title,Toggle dark mode,מצב כהה,Dark-mode toggle title/aria-label,shared
 shared.folders.delete_confirm,"Delete folder ""{name}""? Its contents move out — nothing is deleted.","למחוק את התיקייה ""{name}""? התוכן שלה יוצא החוצה — שום דבר לא נמחק.",Folder delete confirm,mixed UI+content — do not translate {name}; shared
 shared.folders.delete_folder,Delete folder (keeps items),מחק תיקייה (שומר פריטים),Folder-tree action (title on 🗑),shared
@@ -3652,7 +3652,7 @@ shared.tour.next,Next,הבא,Guided tour nav button,shared
 shared.tour.step_counter,Step {count} of {total},שלב {count} מתוך {total},Guided tour step counter,mixed UI+content — {count}/{total} numeric; shared
 terms.a11y.skip_to_terms,Skip to the terms,דילוג לתנאים,Skip-link (a11y),aria/skip-link
 terms.effective_date,"Effective date: September 14, 2026",בתוקף מיום: 14 בספטמבר 2026,effective date line,"REVIEW: legal copy — Hebrew draft, confirm wording"
-terms.header.back_link,← Back,← חזרה,header back button,leading-arrow
+terms.header.back_link,Back,חזרה,header back button,svg-arrow-in-markup
 terms.header.tagline,How you may use the site,כיצד מותר להשתמש באתר,header subtitle,"REVIEW: legal copy — Hebrew draft, confirm wording"
 terms.header.title,IvritSuite — Terms of Use,IvritSuite — תנאי שימוש,header h1,"REVIEW: legal copy — Hebrew draft, confirm wording"
 terms.legal.acceptableuse,"Please don't: use the site for any unlawful purpose; attempt to disrupt, overload, or probe the site or its infrastructure; misuse the contact or suggestion forms (spam, harassment, or impersonation); use an account to store content you have no right to store or content unrelated to the tools; or misrepresent an affiliation with IvritSuite.","נא לא: להשתמש באתר לכל מטרה בלתי חוקית; לנסות לשבש את האתר או את תשתיתו, להעמיס עליהם או לתחקר אותם; לעשות שימוש לרעה בטופסי יצירת הקשר או ההצעות (ספאם, הטרדה או התחזות); להשתמש בחשבון לאחסון תוכן שאין לכם זכות לאחסן או תוכן שאינו קשור לכלים; או להציג מצג שווא בדבר שיוך ל־IvritSuite.",section 10 body,"REVIEW: legal copy — Hebrew draft, confirm wording"
@@ -3913,7 +3913,7 @@ torah.header.home,Home,בית,header nav button,
 torah.header.settings_title,Settings,הגדרות,header gear button title,
 torah.header.subtitle,"Read the weekly parsha with vowel coloring, transliteration, translations, and chanted-audio karaoke.","קראו את פרשת השבוע עם צביעת תנועות, תעתיק, תרגומים וקריוקי בטעמים.",header subtitle,
 torah.header.title,Torah Trainer,מאמן התורה,h1 header,
-torah.header.tour_button,❓ Tour,❓ סיור,header button,leading-emoji
+torah.header.tour_button,Tour,סיור,header button,svg-icon-in-markup
 torah.header.tour_title,Take a quick tour,צאו לסיור מהיר,header button title,
 torah.jumpnav.aliyah_label,Aliyah,עלייה,Jump-bar chips group label,
 torah.jumpnav.aria,Jump to aliyah,קפיצה לעלייה,in-page nav aria-label,aria-label only
@@ -4190,7 +4190,7 @@ trope.header.home,Home,בית,header nav button,
 trope.header.settings_title,Settings,הגדרות,header gear title + aria,
 trope.header.subtitle,"Learn the Torah cantillation marks — names, symbols, and melodies — with real chanted examples.","למדו את טעמי המקרא של התורה — שמות, סימנים ומנגינות — עם דוגמאות מושרות אמיתיות.",header subtitle,
 trope.header.title,Trope Tutor,מאמן הטעמים,h1 header,
-trope.header.tour_button,❓ Tour,❓ סיור,header button,leading-emoji
+trope.header.tour_button,Tour,סיור,header button,svg-icon-in-markup
 trope.header.tour_title,Take a quick tour,צאו לסיור מהיר,header button title,
 trope.learn.examples_unavailable,Examples unavailable (index not loaded).,הדוגמאות אינן זמינות (המפתח לא נטען).,card empty state,
 trope.learn.families_aria,Trope clause families,משפחות הטעמים,family chip group aria,aria-label only
@@ -4777,7 +4777,7 @@ worksheet.title,Hebrew Worksheet Generator,מחולל דפי עבודה בעבר
 worksheet.tour.firstrun_link,Take a quick tour →,צאו לסיור קצר ←,First-run quick-start tour link,first-run affordance
 worksheet.tour.generate.body,Builds your worksheet instantly. Regenerate keeps your settings but reshuffles.,בונה את דף העבודה שלכם מיד. ׳צור מחדש׳ שומר על ההגדרות אך מערבב מחדש.,tour step body,
 worksheet.tour.generate.title,Generate,צור,tour step title,
-worksheet.tour.launch_button,❓ Tour,❓ סיור,Header tour-launch button,leading-emoji
+worksheet.tour.launch_button,Tour,סיור,Header tour-launch button,svg-icon-in-markup
 worksheet.tour.launch_title,Take a quick tour,סיור קצר,Header tour-launch button title,tooltip
 worksheet.tour.letters.body,Tap letters to include or exclude them — match exactly what your class has learned.,הקישו על אותיות כדי לכלול או להוציא אותן — התאימו בדיוק למה שהכיתה למדה.,tour step body,
 worksheet.tour.letters.title,Letters,אותיות,tour step title,

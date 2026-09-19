@@ -132,9 +132,9 @@ header .star{font-size:32px;color:var(--gold);}
 header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
 header p{font-size:0.85rem;color:var(--gold-light);margin-top:3px;}
 header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center;}
-.hbtn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;text-decoration:none;min-height:30px;display:inline-flex;align-items:center;justify-content:center;}
+.hbtn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;text-decoration:none;min-height:30px;display:inline-flex;align-items:center;gap:6px;justify-content:center;}
 .hbtn:hover{background:rgba(255,255,255,0.1);}
-.dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;min-height:30px;display:inline-flex;align-items:center;justify-content:center;}
+.dark-btn{background:none;border:1px solid var(--gold-light);color:var(--gold-light);border-radius:6px;padding:5px 14px;font-size:0.8rem;cursor:pointer;font-family:'Source Sans 3',sans-serif;min-height:30px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
 .dark-btn:hover{background:rgba(255,255,255,0.1);}
 
 main{flex:1;width:100%;max-width:1060px;margin:0 auto;padding:48px 24px 64px;}
@@ -277,6 +277,15 @@ footer a { display: inline-block; padding-block: 5px; }
      rule is the same on every one, so a future page copies one line, not a judgement call. */
   header .hright { display: none !important; }
 }
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404 (docs/reference/shared-components.md → Header icons).
+   The header controls carry inline SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies.
+   The dark toggle holds both the moon and the sun and body.dark picks one; scripts change only the .hi-lbl text beside it. */
+.hi{width:16px;height:16px;flex-shrink:0;display:inline-block;vertical-align:-0.2em;}
+.hi-sun{display:none;}
+body.dark .hi-moon{display:none;}
+body.dark .hi-sun{display:inline-block;}
+[dir="rtl"] .hi-arrow{transform:scaleX(-1);}
+/* ═══ end header-icons CSS ═══ */
 </style>
 </head>
 <body><a class="skip-link" href="#mainContent" data-i18n="contact.a11y.skip_to_form">Skip to the form</a>
@@ -287,9 +296,9 @@ footer a { display: inline-block; padding-block: 5px; }
     <p data-i18n="contact.header.tagline">Get in touch · Support the project</p>
   </div>
   <div class="hright">
-    <a class="hbtn" href="/" data-i18n="contact.header.back_link">← Back</a>
+    <a class="hbtn" href="/"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="contact.header.back_link">Back</span></a>
     <div data-i18n-switcher></div>
-    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title" data-i18n="shared.darkmode.label_dark">🌙 Dark</button>
+    <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><span class="hi-lbl" data-i18n="shared.darkmode.label_dark">Dark</span></button>
   </div>
 </header>
 
@@ -378,7 +387,7 @@ function toggleDark() {
   document.documentElement.classList.remove('dark-early');
   try { localStorage.setItem('hebrewBlender_darkMode', dark ? '1' : '0'); } catch(e) {}
   const _db = document.getElementById('darkBtn');
-  _db.textContent = dark ? (window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light') : (window.I18n ? I18n.t('shared.darkmode.label_dark') : '🌙 Dark');
+  (_db.querySelector('.hi-lbl') || _db).textContent = dark ? (window.I18n ? I18n.t('shared.darkmode.label_light') : 'Light') : (window.I18n ? I18n.t('shared.darkmode.label_dark') : 'Dark');
   _db.setAttribute('aria-pressed', dark ? 'true' : 'false');
 }
 
@@ -484,7 +493,7 @@ function renderEmailLine() {
 function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
-  try { const _db = document.getElementById('darkBtn'); if (_db) _db.textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
+  try { const _db = document.getElementById('darkBtn'); if (_db) (_db.querySelector('.hi-lbl') || _db).textContent = document.body.classList.contains('dark') ? I18n.t('shared.darkmode.label_light') : I18n.t('shared.darkmode.label_dark'); } catch (e) {}
   try { const qr = document.querySelector('.zelle-qr'); if (qr) qr.alt = I18n.t('contact.donate.zelle_qr_alt'); } catch (e) {}
   renderEmailLine();
   try { if (_statusRender) _statusRender(); } catch (e) {}
@@ -495,7 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (s === '1' || (s === null && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.body.classList.add('dark');
       const _db = document.getElementById('darkBtn');
-      _db.textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : '☀️ Light');
+      (_db.querySelector('.hi-lbl') || _db).textContent = (window.I18n ? I18n.t('shared.darkmode.label_light') : 'Light');
       _db.setAttribute('aria-pressed', 'true');
     }
   } catch(e) {}

@@ -365,6 +365,44 @@ clears it, and leaving fullscreen clears it. Nothing is saved.
   `document.fullscreenElement` as a getter, dispatch `fullscreenchange`, then measure the control at
   t=0, after 3.3 s idle, after a `page.mouse.move`, while focused past the idle time, and after exit.
 
+## Header icons — shared block (every page with the suite header)
+
+The header controls (Home / Back, the dark-mode toggle, Settings, Tour, Full Screen, the dashboard's
+Blank-the-screen, and the account chip) carry inline SVG glyphs from one shared set instead of emoji.
+Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
+`torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
+`account`, `404`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
+
+### The two byte-identical parts
+- **The `/* ═══ header-icons CSS ═══ */` block**, pasted before the main stylesheet's `</style>` on every
+  carrier: `.hi` sizes the glyphs (16px, `currentColor`, so each button's own colour applies), `.hi-sun` is
+  hidden until `body.dark` swaps it for `.hi-moon`, and `[dir="rtl"] .hi-arrow` mirrors the arrow on the
+  Hebrew interface. Sha-verify it across carriers after any edit, like the other blocks.
+- **The SVG set**, one snippet per glyph, identical on every carrier: `hi-arrow` (also carries `dir-arrow`
+  for the pages' older mirroring rule), `hi-moon` + `hi-sun` (always both, the CSS picks one), `hi-gear`,
+  `hi-help`, `hi-fs-enter` / `hi-fs-exit`, `hi-blank`, `hi-user`. Every snippet is `aria-hidden="true"
+  focusable="false"`; the control's own `title` / `aria-label` names it.
+
+### Host contract
+- **A header string never carries the glyph.** `shared.darkmode.label_dark` / `_light`, the `*.header.home`,
+  `*.header.back_link` and `*.tour_button` rows are plain words in both languages; the icon is markup.
+  A button that shows a label keeps its `data-i18n` on an inner `<span class="hi-lbl">` (or the page's own
+  `.hbtn-label`), never on the button, because `applyStaticI18n` would replace the SVG with the string.
+- **The dark toggle holds both `hi-moon` and `hi-sun`.** Its scripts write only `aria-pressed` and, on the
+  labelled variant, the label text — `(_db.querySelector('.hi-lbl') || _db).textContent = …` — never the
+  button's `textContent`. A second or third dark button (the dashboard and Trope Tutor drawers, the Torah
+  Trainer's fullscreen bar) carries the same pair and the same rule.
+- **Full screen** keeps each page's own swap code; the constants it swaps (`FS_ENTER` / `FS_EXIT` or
+  `FS_ENTER_ICON` / `FS_EXIT_ICON`) hold the shared `hi-fs-enter` / `hi-fs-exit` snippets, and the button's
+  initial markup holds `hi-fs-enter`.
+- **Icon + label spacing** comes from the button's own `gap` (every labelled header button is
+  `display:inline-flex; align-items:center; gap:5–6px`); nothing in the block adds margins.
+
+### Adding the header to a new page
+Paste the CSS block, copy the snippets from any carrier (never redraw them), put labels in `.hi-lbl` spans,
+add the page to the carrier list in every block's header comment, sha-verify, and check the header headless
+with the Playwright recipe in light + dark and EN + HE (the arrow must mirror, the toggle must swap moon for sun).
+
 ## Shared UX components — the conventions all tools are converging on
 
 These are the cross-tool UX patterns the suite is standardizing, documented the same way as the
