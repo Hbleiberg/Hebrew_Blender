@@ -471,7 +471,7 @@ dashboard.settings.close_title,Close,סגור,settings drawer close title,
 dashboard.settings.drawer_aria,Dashboard settings,הגדרות לוח המחוונים,settings drawer aria-label,aria-label only
 dashboard.settings.collapse_all,Collapse all menus,כווץ את כל התפריטים,settings drawer button,
 dashboard.settings.expand_all,Expand all menus,הרחב את כל התפריטים,settings drawer button,
-dashboard.settings.header,⚙️  Dashboard Settings,⚙️  הגדרות לוח המחוונים,settings drawer header,leading-emoji
+dashboard.settings.header,Dashboard Settings,הגדרות לוח המחוונים,settings drawer header,leading-emoji
 dashboard.settings.panel_about,About & FAQ,אודות ושאלות נפוצות,panel title,
 dashboard.settings.panel_dashtext,Dashboard Text,טקסט הלוח,panel title,
 dashboard.settings.panel_datetime,Date & Time,תאריך ושעה,panel title,
@@ -4245,7 +4245,7 @@ trope.settings.panel_names,Names & Tradition,שמות ומסורת,panel title,
 trope.settings.panel_progress,Progress,התקדמות,panel title,
 trope.settings.reset_size_aria,Reset Hebrew size,איפוס גודל עברית,reset button aria,aria-label only
 trope.settings.reset_size_title,Reset size,איפוס גודל,reset button title,
-trope.settings.title,⚙ Settings,⚙ הגדרות,settings drawer header,leading-emoji
+trope.settings.title,Settings,הגדרות,settings drawer header,leading-emoji
 trope.status.index_unavailable,Example clips unavailable (couldn’t load the trope index) — Learn mode still shows every mark.,קטעי הדוגמה אינם זמינים (טעינת מפתח הטעמים נכשלה) — מצב הלימוד עדיין מציג כל טעם.,status,
 trope.status.retry_button,Try again,נסו שוב,retry button beside the index-load failure status,he mirrors torah.reading.retry_button
 trope.status.loading_audio,Loading audio…,טוען שמע…,status,

@@ -237,9 +237,10 @@ Settings are saved to `localStorage` on close.
 }
 body.dark .settings-header { background: var(--navy-deep); }
 
-.settings-header h2 {
+.settings-header h2 {          /* holds the shared hi-gear + a span carrying the data-i18n */
   font-family: 'Libre Baskerville', serif;
   font-size: 1rem; letter-spacing: 0.05em; color: #fff;
+  display: flex; align-items: center; gap: 7px;
 }
 
 .settings-close {

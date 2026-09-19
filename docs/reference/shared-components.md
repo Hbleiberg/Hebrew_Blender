@@ -375,7 +375,8 @@ upload, send and page, and the **dashboard's board controls**: the fullscreen qu
 Text, Video, Blank), the student picker's Pick One / Make Groups pair (in the sidebar and in the strip's pick
 popup) and the board's edit pencil, and the **Torah Trainer's picker controls**: Holiday Torah Readings
 (a calendar), Student handout (the page glyph the flash cards' worksheet handoff already carries), the
-trope-colour chip (a palette) and the settings drawer's heading gear.
+trope-colour chip (a palette) and the settings drawer's heading gear — the gear the dashboard's and the
+Trope Tutor's drawer headings carry too.
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
 `account`, `404`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
@@ -409,9 +410,11 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   (WCAG 2.5.8) — the dashboard timer's Start / Pause / Reset are the example, icon-only so the four
   transport controls sit on one line. Only do it where the glyph is unambiguous on its own; a word the
   icon cannot carry (the timer's own *+1 min*, *Custom*, *Set*) keeps its label.
-- **A heading takes its glyph the same way a button does** — the Torah Trainer's settings drawer keeps the
-  `data-i18n` on a span beside the gear and gets the gap from a page rule on `.settings-header h2`, never from
-  `.hi-btn`, whose name (and `justify-content:center`) belongs to buttons.
+- **A heading takes its glyph the same way a button does** — all three settings drawers (Torah Trainer,
+  dashboard, Trope Tutor) keep the `data-i18n` on a span beside the gear and get the gap from each page's own
+  rule on `.settings-header h2`, never from `.hi-btn`, whose name (and `justify-content:center`) belongs to
+  buttons. One drawer keeping an emoji while the others draw the icon is the inconsistency to avoid: a teacher
+  moving between tools sees the headings side by side.
 - **The dark toggle holds both `hi-moon` and `hi-sun`.** Its scripts write only `aria-pressed` and, on the
   labelled variant, the label text — `(_db.querySelector('.hi-lbl') || _db).textContent = …` — never the
   button's `textContent`. A second or third dark button (the dashboard and Trope Tutor drawers, the Torah
