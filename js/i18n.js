@@ -11,8 +11,9 @@
  *                           updates switchers, then fires every onChange handler
  *   I18n.onChange(fn)       register fn(lang, dir) to re-render the page after a live switch
  *   I18n.applyStaticI18n(root)  fill [data-i18n]/[data-i18n-title|aria-label|placeholder|html]
- *   I18n.createSwitcher()   -> a DOM node: a <select> dropdown (🇺🇸 EN / 🇮🇱 עברית — flag is decorative,
- *                           label carries it on Windows where flag glyphs fall back to letters)
+ *   I18n.createSwitcher()   -> a DOM node: a <select> dropdown (EN / עברית) with the current language's
+ *                           flag drawn as a small inline SVG laid over the select's start edge
+ *                           (the emoji flags fell back to "US"/"IL" letters on Windows)
  *   I18n.mountSwitchers()   -> fill every [data-i18n-switcher] slot
  * A guarded global `t` alias is also set (only if window.t is undefined).
  *
@@ -156,6 +157,8 @@
     var sels = document.querySelectorAll('.i18n-switch select');
     var aria = switcherAria();
     for (var i = 0; i < sels.length; i++) { sels[i].value = lang; sels[i].setAttribute('aria-label', aria); }
+    var flags = document.querySelectorAll('.i18n-switch .i18n-flag');
+    for (var j = 0; j < flags.length; j++) flags[j].innerHTML = flagMarkup(lang);   // static markup from FLAGS
   }
 
   // ---- Live language switch (no reload) ------------------------------------------------------
@@ -208,7 +211,7 @@
       'color:var(--text,#1a2744);background:var(--white,#fff);' +
       // min-height holds the suite's ratified 30px touch floor (S102). Padding alone left it at
       // 26.2px on all 12 pages; the caret is centred off the wrapper, so it follows the taller box.
-      'border:1px solid var(--border,#c8bfa8);border-radius:6px;padding-block:4px;padding-inline:8px 24px;' +
+      'border:1px solid var(--border,#c8bfa8);border-radius:6px;padding-block:4px;padding-inline:34px 24px;' +
       'min-height:30px;box-sizing:border-box;}' +
       // …and stretch to whatever THIS host's header row is, so one shared control doesn't have to
       // guess a height that fits 13 different rows. Measured 2026-08-26 across 10 pages x EN/HE:
@@ -226,21 +229,46 @@
       // rest colour; the literal is the suite's dark hover pair (generator .blend-type-btn, S314).
       // Pattern dark-hover-resolves-to-the-rest-colour.
       'body.dark .i18n-switch select.i18n-select:hover{background:#2a3349;}' +
-      '.i18n-switch select.i18n-select:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:1px;}';
+      '.i18n-switch select.i18n-select:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:1px;}' +
+      // The flag: a 20x14 inline SVG over the select's start edge (the wrapper is direction:ltr, so
+      // "start" is the left on every page), clipped to a soft corner by the span, never a hit target.
+      '.i18n-flag{position:absolute;inset-inline-start:8px;top:50%;transform:translateY(-50%);width:20px;height:14px;' +
+      'display:flex;border-radius:2px;overflow:hidden;pointer-events:none;box-shadow:0 0 0 1px rgba(0,0,0,.18);}' +
+      '.i18n-flag svg{width:20px;height:14px;display:block;}';
     var el = document.createElement('style');
     el.id = STYLE_ID;
     el.textContent = css;
     (document.head || document.documentElement).appendChild(el);
   }
 
-  // flag is a decorative regional-indicator emoji shown in the option text. NOTE: it is NOT a real
-  // glyph on Windows (Segoe UI Emoji ships no flags — it falls back to the "US"/"IL" letter pair), so
-  // the text `label` must always accompany it; never make an option flag-only. `aria` is unused by the
+  // The flag is a small inline SVG (FLAGS below) shown beside the closed select for the current
+  // language — never inside an <option>, which cannot hold markup, and never an emoji (Segoe UI Emoji
+  // ships no flags, so Windows rendered the "US"/"IL" letter pair). The text `label` is the option's
+  // whole content and always accompanies the flag; never make the control flag-only. `aria` is unused by the
   // <select> (each option is announced by its own text) but kept for parity with future custom UIs.
   var SWITCHER_LANGS = [
-    { code: 'en', label: 'EN', flag: '🇺🇸', aria: 'English' },
-    { code: 'he', label: 'עברית', flag: '🇮🇱', aria: 'Hebrew' }
+    { code: 'en', label: 'EN', aria: 'English' },
+    { code: 'he', label: 'עברית', aria: 'Hebrew' }
   ];
+  // Static markup from this file only (never user data), 20x14, drawn with the flags' own colours:
+  // the United States (thirteen stripes, a starred canton) and Israel (two stripes, a Magen David).
+  // A language with no entry here shows the label alone.
+  var FLAGS = {
+    en: '<svg class="i18n-flag-us" viewBox="0 0 20 14" width="20" height="14" aria-hidden="true" focusable="false">' +
+        '<rect width="20" height="14" fill="#fff"/>' +
+        '<path fill="#b22234" d="M0 0h20v1.08H0zM0 2.15h20v1.08H0zM0 4.31h20v1.08H0zM0 6.46h20v1.08H0zM0 8.62h20v1.08H0zM0 10.77h20v1.08H0zM0 12.92h20V14H0z"/>' +
+        '<rect width="8.5" height="7.54" fill="#3c3b6e"/>' +
+        '<g fill="#fff"><circle cx="1.5" cy="1.5" r=".45"/><circle cx="3.5" cy="1.5" r=".45"/><circle cx="5.5" cy="1.5" r=".45"/><circle cx="7.5" cy="1.5" r=".45"/>' +
+        '<circle cx="2.5" cy="2.9" r=".45"/><circle cx="4.5" cy="2.9" r=".45"/><circle cx="6.5" cy="2.9" r=".45"/>' +
+        '<circle cx="1.5" cy="4.3" r=".45"/><circle cx="3.5" cy="4.3" r=".45"/><circle cx="5.5" cy="4.3" r=".45"/><circle cx="7.5" cy="4.3" r=".45"/>' +
+        '<circle cx="2.5" cy="5.7" r=".45"/><circle cx="4.5" cy="5.7" r=".45"/><circle cx="6.5" cy="5.7" r=".45"/></g></svg>',
+    he: '<svg class="i18n-flag-il" viewBox="0 0 20 14" width="20" height="14" aria-hidden="true" focusable="false">' +
+        '<rect width="20" height="14" fill="#fff"/>' +
+        '<path fill="#0038b8" d="M0 1.6h20v1.9H0zM0 10.5h20v1.9H0z"/>' +
+        '<g fill="none" stroke="#0038b8" stroke-width=".85" stroke-linejoin="round">' +
+        '<path d="M10 3.9l2.6 4.5H7.4z"/><path d="M10 10.1L7.4 5.6h5.2z"/></g></svg>'
+  };
+  function flagMarkup(code) { return FLAGS[code] || ''; }
 
   // The switcher has NO visible label — just a flag and a language code — so this aria-label is the
   // only name a screen-reader or voice-control user has for the control. It follows the UI language:
@@ -267,11 +295,16 @@
     SWITCHER_LANGS.forEach(function (o) {
       var opt = document.createElement('option');
       opt.value = o.code;
-      opt.textContent = (o.flag ? o.flag + ' ' : '') + o.label;
+      opt.textContent = o.label;
       if (o.code === lang) opt.selected = true;
       sel.appendChild(opt);
     });
     sel.addEventListener('change', function () { if (sel.value !== lang) setLang(sel.value); });
+    var flag = document.createElement('span');
+    flag.className = 'i18n-flag';
+    flag.setAttribute('aria-hidden', 'true');
+    flag.innerHTML = flagMarkup(lang);   // static markup from FLAGS, never user data
+    wrap.appendChild(flag);
     wrap.appendChild(sel);
     return wrap;
   }
