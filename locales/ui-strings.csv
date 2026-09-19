@@ -646,7 +646,7 @@ dictionary.advanced.color_head,Color Code Nikkud,צביעת ניקוד,advanced 
 dictionary.advanced.color_mode_highlight,Highlight,הדגשה,color mode button,
 dictionary.advanced.color_mode_letter,Letter,אות,color mode button,
 dictionary.advanced.color_mode_underline,Underline,קו תחתון,color mode button,
-dictionary.advanced.color_reset,↺ Reset to defaults,↺ איפוס לברירת מחדל,color reset button,leading-emoji
+dictionary.advanced.color_reset,Reset to defaults,איפוס לברירת מחדל,color reset button,leading-emoji
 dictionary.advanced.color_reset_confirm,Are you sure? This resets your custom vowel colors to the defaults.,בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים לברירת המחדל.,confirm dialog,
 dictionary.advanced.font_head,Hebrew Font,גופן עברי,advanced section title,
 dictionary.advanced.font_size,Size,גודל,font size row label,
@@ -864,7 +864,7 @@ dictionary.modal.form_masculine,♂ Masculine,♂ זכר,emoji modal form label,
 dictionary.modal.google,Look up on Google ↗,חיפוש בגוגל ↗,word modal Google link,leading-emoji
 dictionary.modal.hear_form_aria,Hear {label},השמעת {label},emoji modal form speak aria-label,aria-label only
 dictionary.modal.in_bulk_list,✓ In bulk list,✓ ברשימה המרובה,word modal bulk button (added),leading-emoji
-dictionary.modal.pronounce,🔊 Pronounce,🔊 הגייה,word modal speak button,leading-emoji
+dictionary.modal.pronounce,Pronounce,הגייה,word modal speak button,leading-emoji
 dictionary.modal.words_from_root,Words from this root  {root}  →,מילים מהשורש הזה  {root}  →,word modal root button,mixed UI+content — do not translate {…}
 dictionary.ordinal_1st,1st,ראשונה,letter-position ordinal,
 dictionary.ordinal_2nd,2nd,שנייה,letter-position ordinal,
@@ -947,7 +947,7 @@ dictionary.toolbar.print_large_emojis,This will print all {count} emojis. Narrow
 dictionary.toolbar.print_large_words,This will print all {count} words. Narrow your filters to print fewer.,פעולה זו תדפיס את כל {count} המילים. צמצמו את הסינון כדי להדפיס פחות.,print-size heads-up beside the Print button,
 dictionary.toolbar.print_title,Print the current results,הדפסת התוצאות הנוכחיות,toolbar print button title,
 dictionary.toolbar.wordlists_title,View and manage your saved Word Lists,צפייה וניהול של רשימות המילים השמורות,toolbar word-lists button title,
-dictionary.toolbar.reset_filters,↺ Reset filters,↺ איפוס מסננים,toolbar reset button,leading-emoji
+dictionary.toolbar.reset_filters,Reset filters,איפוס מסננים,toolbar reset button,leading-emoji
 dictionary.toolbar.reset_filters_title,Reset all filters to their defaults,איפוס כל המסננים לברירת המחדל,toolbar reset button title,aria-label only
 dictionary.toolbar.sort_alpha,Hebrew A→Z,עברית א→ת,sort option,
 dictionary.toolbar.sort_cat,Category,קטגוריה,sort option (emoji mode),
@@ -1074,7 +1074,7 @@ flashcards.card.prev_key_title,Previous card (←),הכרטיס הקודם (→)
 flashcards.card.next_key_title,Next card (→),הכרטיס הבא (←),next button tooltip naming its keyboard shortcut,ARROW IS MIRRORED BY DESIGN: see prev_key_title
 flashcards.card.mark_yes_key_title,Mark correct (Y),סמנו כנכון (Y),mark-right button tooltip naming its keyboard shortcut,key letter stays Latin Y — it is the physical key
 flashcards.card.mark_no_key_title,Mark wrong (N),סמנו כשגוי (N),mark-wrong button tooltip naming its keyboard shortcut,key letter stays Latin N — it is the physical key
-flashcards.card.hear,🔊 Hear,🔊 השמע,card back speak button,leading-emoji
+flashcards.card.hear,Hear,השמע,card back speak button,leading-emoji
 flashcards.card.listen_degenerate,Add more letters/vowels for multiple-choice options.,הוסיפו עוד אותיות/תנועות כדי לקבל אפשרויות בחירה.,listening insufficient-options hint,
 flashcards.card.listen_hint_heard,Which one did you hear?,איזה שמעתם?,listening prompt after playing,
 flashcards.card.kbd_flip,Flip the card,היפוך הכרטיס,keyboard hint row label,shown only on a fine pointer
@@ -1978,7 +1978,7 @@ fontmaker.modals.ad_changed_boxes,You changed {count} box(es) — re-detecting d
 fontmaker.modals.ad_discard_redetect,Discard & re-detect,בטל וזהה מחדש,button,
 fontmaker.modals.ad_ink_threshold,Ink threshold,סף דיו,control label,
 fontmaker.modals.ad_keep_editing,Keep editing,המשך לערוך,button,
-fontmaker.modals.ad_redetect,↻ Re-detect,↻ זהה מחדש,button,leading-emoji
+fontmaker.modals.ad_redetect,Re-detect,זהה מחדש,button,leading-emoji
 fontmaker.modals.ad_separation,Separation,הפרדה,control label,
 fontmaker.modals.ad_separation_aria,"Separation — split touching letters (0 off, 5 strongest)","הפרדה — פיצול אותיות נוגעות (0 כבוי, 5 החזק ביותר)",slider aria-label,aria-label only
 fontmaker.modals.ad_threshold_aria,Detection ink threshold override,עקיפת סף דיו לזיהוי,input aria-label,aria-label only
@@ -2094,7 +2094,7 @@ fontmaker.modals.glyph_exists_title,Glyph already exists,הגליף כבר קי�
 fontmaker.modals.gotit,Got it,הבנתי,dialog button,
 fontmaker.modals.help_close,Close,סגור,help dialog button,
 fontmaker.modals.help_shortcuts,⌨ Shortcuts,⌨ קיצורים,help dialog button,leading-emoji
-fontmaker.modals.help_take_tour,▶ Take a tour,▶ צאו לסיור,help dialog button,leading-emoji
+fontmaker.modals.help_take_tour,Take a tour,צאו לסיור,help dialog button,leading-emoji
 fontmaker.modals.help_title,How does this work?,איך זה עובד?,help dialog title,
 fontmaker.modals.import,Import,ייבוא,dialog button,
 fontmaker.modals.import_anchors_none,I'll place them automatically.,אמקם אותם אוטומטית.,dialog body fragment,
@@ -2162,7 +2162,7 @@ fontmaker.modals.markedit_mode_upload,Upload image,העלה תמונה,mark-edit
 fontmaker.modals.markedit_open_upload,Open image editor for this mark →,פתחו את עורך התמונה עבור סימן זה ←,mark-edit button,
 fontmaker.modals.markedit_redo,↷ Redo,↷ ביצוע חוזר,mark-edit button,leading-emoji
 fontmaker.modals.markedit_redo_title,Redo (Ctrl/Cmd+Shift+Z),ביצוע חוזר (Ctrl/Cmd+Shift+Z),mark-edit button title,
-fontmaker.modals.markedit_reset,↺ Reset,↺ איפוס,mark-edit button,leading-emoji
+fontmaker.modals.markedit_reset,Reset,איפוס,mark-edit button,leading-emoji
 fontmaker.modals.markedit_reset_title,Discard your edits and restore this mark's default shape,בטלו את העריכות שלכם ושחזרו את צורת ברירת המחדל של סימן זה,mark-edit button title,
 fontmaker.modals.markedit_scope_all,"<b>Apply to all letters</b> saves this shape as the font-wide design for <b>{name}</b> — every letter without its own per-letter override uses it. To reshape it for just one letter, open that letter's placement step and use <b>✎ Edit shape</b> there. Neither affects positioning.","<b>החל על כל האותיות</b> שומר צורה זו כעיצוב הכלל-גופני עבור <b>{name}</b> — כל אות ללא עקיפה משלה משתמשת בה. כדי לעצב אותה מחדש עבור אות אחת בלבד, פתחו את שלב ההצבה של אותה אות והשתמשו ב-<b>✎ עריכת צורה</b> שם. אף אחד מהם אינו משפיע על המיקום.",mark-edit scope note,html
 fontmaker.modals.markedit_scope_letter,"<b>Apply to current letter</b> changes this mark only for <b>{name}</b>; <b>Apply to all letters</b> changes it everywhere. Neither affects positioning. (A per-letter shape bakes into the font for that letter+mark pair; when another mark such as a dagesh sits between them, that combination falls back to the all-letters shape.)","<b>החל על האות הנוכחית</b> משנה סימן זה עבור <b>{name}</b> בלבד; <b>החל על כל האותיות</b> משנה אותו בכל מקום. אף אחד מהם אינו משפיע על המיקום. (צורה לכל אות נצרבת לגופן עבור אותו זוג אות+סימן; כשסימן אחר כמו דגש יושב ביניהם, אותו שילוב חוזר לצורת כל-האותיות.)",mark-edit scope note,html
@@ -2756,7 +2756,7 @@ fontmaker.panels.reference_title,Reference,ייחוס,side title,
 fontmaker.panels.reference_upload,⬆ Upload your own reference font,⬆ העלו גופן ייחוס משלכם,button,leading-emoji
 fontmaker.panels.reference_upload_allowed,Allowed: TTF or OTF font files.,מותר: קובצי גופן TTF או OTF.,allowed-files note,
 fontmaker.panels.region_selected,Region selected for <b>{name}</b>.,נבחר אזור עבור <b>{name}</b>.,panel hint,
-fontmaker.panels.reselect_area,↺ Re-select area,↺ בחר אזור מחדש,button,leading-emoji
+fontmaker.panels.reselect_area,Re-select area,בחר אזור מחדש,button,leading-emoji
 fontmaker.panels.reserved_name,Reserved name,שם שמור,field label,
 fontmaker.panels.reset_all,Reset all,אפס הכל,button,
 fontmaker.panels.reset_auto_size,Reset to auto size,אפס לגודל אוטומטי,button,
@@ -3444,7 +3444,7 @@ resources.suggest.title,✚ Suggest a Resource,✚ הצעת משאב,modal heade
 resources.suggest.url_placeholder,https://…,https://…,input placeholder,
 resources.view.fonts,🔤 Fonts,🔤 גופנים,view toggle button,leading-emoji
 resources.view.links,📚 Links,📚 קישורים,view toggle button,leading-emoji
-shared.corpus.retry_button,↻ Try again,↻ נסו שוב,in-place retry for a failed corpus/data load (converged model; torah keeps its own torah.reading.retry_button),leading-emoji; mirrors torah.reading.retry_button
+shared.corpus.retry_button,Try again,נסו שוב,in-place retry for a failed corpus/data load (converged model; torah keeps its own torah.reading.retry_button),leading-emoji; mirrors torah.reading.retry_button
 shared.darkmode.label_dark,Dark,כהה,Dark-mode toggle label (shown when light),"svg-icon-in-markup; shared (labeled variant: 404, dictionary)"
 shared.darkmode.label_light,Light,בהיר,Dark-mode toggle label (shown when dark),"svg-icon-in-markup; shared (labeled variant: 404, dictionary)"
 shared.darkmode.toggle_title,Toggle dark mode,מצב כהה,Dark-mode toggle title/aria-label,shared
@@ -3722,7 +3722,7 @@ torah.audio.loop_pause_label,Pause between repeats,השהיה בין חזרות,
 torah.audio.loop_pause_none,None,ללא,select option,
 torah.audio.loop_pause_tip,"When you loop a verse (🔁), wait this long before repeating it — handy for practicing along.","כשאתם חוזרים על פסוק בלולאה (🔁), המתינו זמן זה לפני החזרה — נוח לתרגול תוך כדי.",tooltip,
 torah.audio.loopstop_aria,Stop looping,עצירת הלולאה,loop-stop button aria + title,
-torah.audio.loopstop_text,⏹ Stop loop,⏹ עצירת הלולאה,loop-stop button text,leading-emoji
+torah.audio.loopstop_text,Stop loop,עצירת הלולאה,loop-stop button text,leading-emoji
 torah.audio.mini_rate_title,Chant speed — expand the audio bar for speed controls,מהירות השירה — הרחיבו את סרגל השמע לפקדי המהירות,collapsed-bar speed chip title + aria,
 torah.audio.pause_aria,Pause,השהה,play/pause button aria (dynamic),aria-label only
 torah.audio.play_aria,Play,נגן,play/pause button aria (dynamic),aria-label only
@@ -3918,8 +3918,8 @@ torah.header.tour_title,Take a quick tour,צאו לסיור מהיר,header butt
 torah.jumpnav.aliyah_label,Aliyah,עלייה,Jump-bar chips group label,
 torah.jumpnav.aria,Jump to aliyah,קפיצה לעלייה,in-page nav aria-label,aria-label only
 torah.jumpnav.current_verse,Current verse,פסוק נוכחי,Jump-bar position readout label + title,
-torah.reading.chant_all,🎵 Chant all,🎵 שירת הכול,ref-header button,leading-emoji
-torah.reading.chant_all_stop,⏹ Stop chant,⏹ עצירת השירה,ref-header button,leading-emoji
+torah.reading.chant_all,Chant all,שירת הכול,ref-header button,leading-emoji
+torah.reading.chant_all_stop,Stop chant,עצירת השירה,ref-header button,leading-emoji
 torah.reading.empty_body,"Choose a parsha — the reading appears here with optional transliteration, translation, color-coded vowels, and chanted audio.","בחרו פרשה — הקריאה תופיע כאן עם תעתיק אופציונלי, תרגום, תנועות צבועות ושמע בטעמים.",empty state (in-card picker sits right below since S237),
 torah.reading.card_pick_aria,Choose a parsha,בחרו פרשה,in-card parsha picker on the empty/failed reading card,aria-label only
 torah.reading.empty_title,Pick a parsha to start,בחרו פרשה כדי להתחיל,empty state h2,print-adjacent empty state
@@ -3933,17 +3933,17 @@ torah.reading.kbd_play,Play this word,השמעת המילה,reading keyboard hin
 torah.reading.kbd_home,Home,Home,name of the Home key in the reading keyboard hint row,key cap - Israeli keyboards print this in Latin
 torah.reading.kbd_end,End,End,name of the End key in the reading keyboard hint row,key cap - Israeli keyboards print this in Latin
 torah.reading.kbd_ends,First / last word,מילה ראשונה / אחרונה,reading keyboard hint row label for Home and End,
-torah.reading.read_all,🔊 Read all,🔊 הקראת הכול,ref-header button,leading-emoji
+torah.reading.read_all,Read all,הקראת הכול,ref-header button,leading-emoji
 torah.reading.resume,Resume at {verse} →,המשך מ-{verse} →,resume chip,mixed UI+content — do not translate {verse}
 torah.reading.resume_dismiss_aria,Dismiss resume,ביטול ההמשך,resume chip dismiss aria,aria-label only
-torah.reading.retry_button,↻ Try again,↻ נסו שוב,failed-load empty state retry button,leading-emoji
-torah.reading.stop,⏹ Stop,⏹ עצירה,ref-header button (reading),leading-emoji
-torah.reading.verse_chant,🎵 Chant,🎵 שירה,per-verse button,leading-emoji
+torah.reading.retry_button,Try again,נסו שוב,failed-load empty state retry button,leading-emoji
+torah.reading.stop,Stop,עצירה,ref-header button (reading),leading-emoji
+torah.reading.verse_chant,Chant,שירה,per-verse button,leading-emoji
 torah.reading.verse_chant_aria,Chant verse {verseRef} (PocketTorah audio),שירת פסוק {verseRef} (שמע PocketTorah),per-verse button aria,aria-label only; mixed UI+content — do not translate {verseRef}
-torah.reading.verse_loop,🔁 Loop,🔁 לולאה,per-verse button,leading-emoji
+torah.reading.verse_loop,Loop,לולאה,per-verse button,leading-emoji
 torah.reading.verse_loop_aria,Loop verse {verseRef} (repeat the chant),לולאה על פסוק {verseRef} (חזרה על השירה),per-verse button aria,aria-label only; mixed UI+content — do not translate {verseRef}
 torah.reading.verse_loop_stop_aria,Stop looping verse {verseRef},עצירת הלולאה על פסוק {verseRef},per-verse button aria (looping),aria-label only; mixed UI+content — do not translate {verseRef}
-torah.reading.verse_read,🔊 Read,🔊 הקראה,per-verse button,leading-emoji
+torah.reading.verse_read,Read,הקראה,per-verse button,leading-emoji
 torah.reading.verse_read_aria,Read verse {verseRef} aloud (TTS),הקראת פסוק {verseRef} בקול (הקראה קולית),per-verse button aria,aria-label only; mixed UI+content — do not translate {verseRef}
 torah.reading.row_hebrew,Hebrew,עברית,Interlinear/side-by-side row label (Hebrew line),
 torah.reading.col_english,English,אנגלית,Side-by-side translation column header,
@@ -3984,7 +3984,7 @@ torah.settings.panel_schedule,Reading schedule,לוח קריאה,panel title,
 torah.settings.panel_translit,Transliteration scheme,סגנון תעתיק,panel title,
 torah.settings.panel_trope_color,Trope color coding,צביעת טעמים,panel title,
 torah.settings.panel_vowel_color,Vowel color coding,צביעת תנועות,panel title,
-torah.settings.reset_all,↺ Reset all Torah Trainer settings,↺ איפוס כל הגדרות מאמן התורה,button,leading-emoji
+torah.settings.reset_all,Reset all Torah Trainer settings,איפוס כל הגדרות מאמן התורה,button,leading-emoji
 torah.settings.title,⚙️ Torah Trainer Settings,⚙️ הגדרות מאמן התורה,settings drawer header,leading-emoji
 torah.status.aliyah_audio_unavailable,Audio for aliyah {n} is not available in PocketTorah.,השמע לעלייה {n} אינו זמין ב-PocketTorah.,karaoke status,do-not-translate {n}
 torah.status.audio_basename_missing,Audio basename missing in manifest.,שם קובץ השמע חסר במניפסט.,karaoke status,
@@ -4065,7 +4065,7 @@ torah.trope_legend.tutor_link,Learn the trope names →,למדו את שמות �
 torah.trope_legend.enable_chip,🎨 Color-code the trope,🎨 צביעת טעמים,one-way chip above the reading that turns trope color coding on,REVIEW: HE draft
 torah.a11y.skip_to_reading,Skip to the reading,דילוג לקריאה,Skip-link to the reading (a11y),aria/skip-link
 trope.about.body,"Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"">PocketTorah</a> recordings (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press ❓ Tour in the header. Companion reader: <a href=""torah_trainer.html"">Torah Trainer</a>.","מאמן הטעמים מלמד את טעמי המקרא של התורה עם דוגמאות מושרות אמיתיות שנלקטו מהקלטות <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"">PocketTorah</a> (CC BY-SA 4.0) ומהטקסט העברי של Sefaria. חדשים כאן? לחצו על ❓ סיור בכותרת. קורא משלים: <a href=""torah_trainer.html"">מאמן התורה</a>.",about panel prose,html; keep the two <a> links
-trope.about.reset_all,↺ Reset all Trope Tutor settings,↺ איפוס כל הגדרות מאמן הטעמים,button,leading-emoji
+trope.about.reset_all,Reset all Trope Tutor settings,איפוס כל הגדרות מאמן הטעמים,button,leading-emoji
 trope.confirm.reset_all,Reset all Trope Tutor settings to defaults?,לאפס את כל הגדרות מאמן הטעמים לברירת המחדל?,confirm dialog,
 trope.confirm.reset_all_cloud,Reset all Trope Tutor settings to defaults on this device? The copy in your account stays; the next sync asks which one to keep unless you delete it from Cloud saves.,לאפס את כל הגדרות מאמן הטעמים לברירת המחדל במכשיר הזה? העותק בחשבון נשאר; הסנכרון הבא ישאל איזה מהם לשמור אלא אם תמחקו אותו משמירות בענן.,confirm dialog while signed in,
 trope.confirm.reset_progress,Reset your per-trope mastery and personal-best streak? This cannot be undone.,לאפס את השליטה בכל טעם ואת רצף השיא האישי? לא ניתן לבטל פעולה זו.,confirm dialog,
@@ -4094,13 +4094,13 @@ trope.drill.not_enough,Not enough tropes with examples to build a drill.,אין 
 trope.drill.opt_hear,Hear: play a clip → pick the symbol,האזנה: השמיעו קטע → בחרו את הסימן,drill settings label,
 trope.drill.opt_identify,Identify: see a word → name the trope,זיהוי: ראו מילה → נקבו את הטעם,drill settings label,
 trope.drill.opt_melody,Melody: see a symbol → pick its melody,מנגינה: ראו סימן → בחרו את המנגינה שלו,drill settings label,
-trope.drill.play_melody,▶ Play the melody,▶ השמעת המנגינה,button,leading-emoji
+trope.drill.play_melody,Play the melody,השמעת המנגינה,button,leading-emoji
 trope.drill.playback_speed,Playback speed,מהירות השמעה,slider label,
 trope.drill.q_hear,Listen — which mark carries this melody?,האזינו — איזה טעם נושא את המנגינה הזו?,question prompt,
 trope.drill.q_identify,Which trope is marked on this word?,איזה טעם מסומן על המילה הזו?,question prompt,
 trope.drill.q_melody,Which melody matches this mark?,איזו מנגינה מתאימה לטעם הזה?,question prompt,
 trope.drill.q_progress,Question {n} of {total},שאלה {n} מתוך {total},drill progress,do-not-translate {n}/{total}
-trope.drill.replay,↻ Replay,↻ השמעה חוזרת,button,leading-emoji
+trope.drill.replay,Replay,השמעה חוזרת,button,leading-emoji
 trope.drill.reset_speed_aria,Reset playback speed,איפוס מהירות ההשמעה,reset button aria,aria-label only
 trope.drill.reset_speed_title,Reset speed,איפוס מהירות,reset button title,
 trope.drill.results_heading,Session complete,המפגש הושלם,results heading,
@@ -4230,7 +4230,7 @@ trope.learn.trope_note_yetiv,"Prepositive — printed at the very start of the w
 trope.learn.trope_note_zakef_gadol,Zakef katon's louder sibling — a vertical bar joins the two dots when the word stands alone in its clause.,אחיו הרם יותר של זקף קטון — קו אנכי מצטרף לשתי הנקודות כשהמילה עומדת לבדה במשפטה.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
 trope.learn.trope_note_zarka,Postpositive — curls off the end of the word and always throws ahead to a segol.,טעם מאחר — מסתלסל בסוף המילה ותמיד משליך קדימה אל סגול.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
 trope.learn.visited_aria,visited,נצפה,family chip visited badge aria,aria-label only
-trope.progress.reset_button,↺ Reset mastery & personal best,↺ איפוס שליטה ושיא אישי,button,leading-emoji
+trope.progress.reset_button,Reset mastery & personal best,איפוס שליטה ושיא אישי,button,leading-emoji
 trope.progress.summary,{n} of {total} tropes attempted · personal best streak {pb} 🔥,{n} מתוך {total} טעמים נוסו · רצף שיא אישי {pb} 🔥,progress summary,do-not-translate {n}/{total}/{pb}
 trope.settings.aria,Trope Tutor settings,הגדרות מאמן הטעמים,settings drawer aria,aria-label only
 trope.settings.close_aria,Close settings,סגירת ההגדרות,close button aria,aria-label only
@@ -4246,7 +4246,7 @@ trope.settings.reset_size_aria,Reset Hebrew size,איפוס גודל עברית,
 trope.settings.reset_size_title,Reset size,איפוס גודל,reset button title,
 trope.settings.title,⚙ Settings,⚙ הגדרות,settings drawer header,leading-emoji
 trope.status.index_unavailable,Example clips unavailable (couldn’t load the trope index) — Learn mode still shows every mark.,קטעי הדוגמה אינם זמינים (טעינת מפתח הטעמים נכשלה) — מצב הלימוד עדיין מציג כל טעם.,status,
-trope.status.retry_button,↻ Try again,↻ נסו שוב,retry button beside the index-load failure status,he mirrors torah.reading.retry_button
+trope.status.retry_button,Try again,נסו שוב,retry button beside the index-load failure status,he mirrors torah.reading.retry_button
 trope.status.loading_audio,Loading audio…,טוען שמע…,status,
 trope.status.loading_index,Loading the trope index…,טוען את מפתח הטעמים…,status,
 trope.status.tap_to_hear,Tap ▶ to hear the melody.,הקישו על ▶ כדי לשמוע את המנגינה.,status,
@@ -4294,7 +4294,7 @@ worksheet.actions.print,🖨 Print,🖨 הדפס,action button,leading-emoji
 worksheet.actions.print_count.one,📄 {count} page to print,📄 עמוד אחד להדפסה,page count under the Print / Export PDF buttons (also the frozen footer),plural;leading-emoji
 worksheet.actions.print_count.other,📄 {count} pages to print,📄 {count} עמודים להדפסה,page count under the Print / Export PDF buttons (also the frozen footer),plural;leading-emoji
 worksheet.actions.print_tip,"💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.","💡 <strong>טיפ להדפסה:</strong> בתיבת ההדפסה, בטלו את הסימון של <em>כותרות עליונות ותחתונות</em> כדי להסיר את הכתובת והתאריך.",tip box,leading-emoji;html
-worksheet.actions.regenerate,↺ Regenerate,↺ צור מחדש,action button,leading-emoji
+worksheet.actions.regenerate,Regenerate,צור מחדש,action button,leading-emoji
 worksheet.advanced.backup_auto_explainer,Save all your presets and current settings to a <b>.ivrit</b> save file on your device. Restore later by dropping the file below or browsing for it.,"שמרו את כל ההגדרות השמורות וההגדרות הנוכחיות שלכם לקובץ שמירה <b>.ivrit</b> במכשיר. לשחזור מאוחר יותר, גררו את הקובץ למטה או עיינו אליו.",backup panel explainer,html
 worksheet.advanced.backup_manual_explainer,Export your saved presets as text you can copy and store. Paste it back to restore.,ייצאו את ההגדרות השמורות שלכם כטקסט שאפשר להעתיק ולשמור. הדביקו אותו בחזרה כדי לשחזר.,backup panel explainer,
 worksheet.advanced.backup_placeholder,Paste backup here to import…,הדביקו כאן גיבוי כדי לייבא…,textarea placeholder,
@@ -4636,7 +4636,7 @@ worksheet.quickstart.loaded_notice,Loaded “{name}” — tweak anything on the
 worksheet.quickstart.name_letter,Alef-Bet: Name the Letter,אלף-בית: שם האות,quick-start chip,
 worksheet.quickstart.numbers,Numbers 0–20,מספרים 0–20,quick-start chip,
 worksheet.lastsetup.restored,Your last worksheet setup is back.,המערך האחרון שלכם חזר.,sidebar notice shown when the previous visit's configuration was restored,REVIEW: HE draft
-worksheet.lastsetup.start_fresh,↺ Start fresh,↺ להתחיל מחדש,button that forgets the remembered setup and reloads the defaults,leading-glyph; REVIEW: HE draft
+worksheet.lastsetup.start_fresh,Start fresh,להתחיל מחדש,button that forgets the remembered setup and reloads the defaults,leading-glyph; REVIEW: HE draft
 worksheet.lastsetup.start_fresh_title,Forget the saved setup and start from the defaults,שכחו את המערך השמור והתחילו מברירת המחדל,tooltip for the Start fresh button,REVIEW: HE draft
 worksheet.lastsetup.start_fresh_title_cloud,Forget the saved setup on this device. The copy in your account stays until you delete it from Cloud saves.,לשכוח את ההגדרה השמורה במכשיר הזה. העותק בחשבון נשאר עד שתמחקו אותו משמירות בענן.,Tooltip of the generator's Start fresh button while signed in (only this device's copy is forgotten),worksheet; last setup
 worksheet.realwords.bingo.title,Bingo Options,אפשרויות בינגו,rw section header,
@@ -4757,7 +4757,7 @@ worksheet.selfcheck.missed,✗ Missed,✗ טעיתי,flip-card score button,lead
 worksheet.selfcheck.per_row,Per row:,בכל שורה:,self-check control label,
 worksheet.selfcheck.play_audio,Play audio,נגן שמע,audio button title,aria-label only
 worksheet.selfcheck.remaining,{count} left,נותרו {count},score-bar remaining count,
-worksheet.selfcheck.reset,↺ Reset,↺ איפוס,self-check reset button,leading-emoji
+worksheet.selfcheck.reset,Reset,איפוס,self-check reset button,leading-emoji
 worksheet.selfcheck.reveal_all,Reveal All,חשוף הכל,self-check control button,
 worksheet.selfcheck.score_line,{correct} correct · {incorrect} incorrect · {total} total,{correct} נכון · {incorrect} שגוי · {total} סך הכול,score summary line,mixed UI+content — do not translate {…}
 worksheet.selfcheck.session_complete,Session Complete!,המפגש הושלם!,score summary h2,
@@ -4766,8 +4766,8 @@ worksheet.selfcheck.tap_reveal_gematria,Tap a card to reveal its Gematria value,
 worksheet.selfcheck.tap_reveal_word,Tap a card to reveal the Hebrew word,הקישו על כרטיס כדי לחשוף את המילה בעברית,self-check control hint,
 worksheet.selfcheck.tap_to_flip,Tap a card to flip,הקישו על כרטיס כדי להפוך,self-check control hint,
 worksheet.selfcheck.tap_to_reveal,tap to reveal,הקישו כדי לחשוף,flip-card hint,
-worksheet.selfcheck.timer_pause,⏸ Pause,⏸ השהה,timer control button,leading-emoji
-worksheet.selfcheck.timer_start,▶ Start,▶ התחל,timer control button,leading-emoji
+worksheet.selfcheck.timer_pause,Pause,השהה,timer control button,leading-emoji
+worksheet.selfcheck.timer_start,Start,התחל,timer control button,leading-emoji
 worksheet.selfcheck.try_again,Try Again,נסו שוב,score summary button,
 worksheet.share.copied,✓ Copied!,✓ הועתק!,share button feedback,leading-emoji
 worksheet.share.truncate_notice,Only the first {cap} of {count} words were embedded in this link.,רק {cap} המילים הראשונות מתוך {count} הוטמעו בקישור זה.,share notice,mixed UI+content — do not translate {…}
@@ -4846,7 +4846,7 @@ flashcards.count.custom_placeholder,Custom,מותאם,Placeholder on the custom 
 flashcards.count.custom_aria,Custom card count ({min} to {max}),מספר כרטיסים מותאם ({min} עד {max}),aria-label on the custom card-count input,has {min} {max}
 flashcards.profile.saved_count,{count} saved,{count} שמורים,Sub-label on each profile row (saved-results count),has {count}
 flashcards.profile.active_marker,★ ,★ ,Prefix marking the active profile row,symbol only
-flashcards.teachertools.play_button,▶ Play,▶ נגן,Play button on a saved preset row (loads + starts the drill),
+flashcards.teachertools.play_button,Play,נגן,Play button on a saved preset row (loads + starts the drill),
 worksheet.actions.pdf_generating,⏳ Generating...,⏳ יוצר...,PDF export button (busy state),leading-emoji
 worksheet.actions.regen_title,New random draw with the same settings,הגרלה אקראית חדשה עם אותן הגדרות,Regenerate button title (enabled),
 worksheet.empty.not_enough_blends,Not enough blends to match.,אין מספיק צירופים להתאמה.,worksheet empty state,print-adjacent empty state
@@ -5079,7 +5079,7 @@ fontmaker.draw.smoothing_low,Low,נמוכה,smoothing option,
 fontmaker.draw.smoothing_med,Medium,בינונית,smoothing option,
 fontmaker.draw.smoothing_high,High,גבוהה,smoothing option,
 fontmaker.draw.clear,Clear letter,ניקוי האות,button,
-fontmaker.draw.replay,▶ Replay,▶ הדגמה,button — replays the drawn strokes in order,leading-emoji; REVIEW: HE draft
+fontmaker.draw.replay,Replay,הדגמה,button — replays the drawn strokes in order,leading-emoji; REVIEW: HE draft
 fontmaker.draw.replay_title,Replay the strokes in the order they were drawn,הצגת הקווים בסדר שבו צוירו,replay button tooltip,REVIEW: HE draft
 fontmaker.draw.replay_reduced,"Reduced motion is on, so the strokes are shown all at once.","מצב תנועה מופחתת פעיל, ולכן הקווים מוצגים בבת אחת.",status line when the replay animation is suppressed,REVIEW: HE draft
 fontmaker.draw.stroke_count.one,{count} stroke,קו אחד,stroke count readout,plural

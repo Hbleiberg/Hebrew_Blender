@@ -960,7 +960,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
        re-calling it and re-rendering what depends on INDEX. Kept OUTSIDE #tuStatus so the
        `.tu-status:empty` collapse rule still works. -->
   <button class="btn btn-xs btn-secondary" id="tuRetryBtn" type="button" hidden
-          onclick="retryLoadData()" data-i18n="trope.status.retry_button">&#8635; Try again</button>
+          onclick="retryLoadData()" class="hi-btn"><svg class="hi hi-sm hi-retry" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 18.58 A7.6 7.6 0 1 1 15.8 18.58 M15.8 18.58 L16.96 15.39 M15.8 18.58 L19.15 19.17"/></svg><span class="hi-lbl" data-i18n="trope.status.retry_button">Try again</span></button>
 
   <!-- ════════ LEARN ════════ -->
   <section class="tu-view" id="learnView" role="tabpanel" aria-labelledby="tabLearn">
@@ -1151,7 +1151,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <label for="optRate" data-i18n="trope.drill.playback_speed">Playback speed</label>
           <input type="range" id="optRate" min="0.5" max="1.5" step="0.05" oninput="setPlaybackRate(parseFloat(this.value))">
           <span class="sval" id="optRateVal">1.00×</span>
-          <button class="sreset" onclick="resetPlaybackRate()" title="Reset speed" aria-label="Reset playback speed" data-i18n-title="trope.drill.reset_speed_title" data-i18n-aria-label="trope.drill.reset_speed_aria">↺</button>
+          <button class="sreset" onclick="resetPlaybackRate()" title="Reset speed" aria-label="Reset playback speed" data-i18n-title="trope.drill.reset_speed_title" data-i18n-aria-label="trope.drill.reset_speed_aria"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
       </div>
     </div>
@@ -1165,7 +1165,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <label for="optFontSize" data-i18n="trope.settings.heb_size">Hebrew size</label>
           <input type="range" id="optFontSize" min="1.4" max="3.2" step="0.1" oninput="setHebFontSize(parseFloat(this.value))">
           <span class="sval" id="optFontSizeVal"></span>
-          <button class="sreset" onclick="resetHebFontSize()" title="Reset size" aria-label="Reset Hebrew size" data-i18n-title="trope.settings.reset_size_title" data-i18n-aria-label="trope.settings.reset_size_aria">↺</button>
+          <button class="sreset" onclick="resetHebFontSize()" title="Reset size" aria-label="Reset Hebrew size" data-i18n-title="trope.settings.reset_size_title" data-i18n-aria-label="trope.settings.reset_size_aria"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
       </div>
     </div>
@@ -1174,7 +1174,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="trope.settings.panel_progress">Progress</div>
       <div class="panel-body">
         <p class="settings-note" id="progressSummary" style="margin-top:0;"></p>
-        <button class="btn btn-xs btn-secondary" onclick="resetProgress()" type="button" data-i18n="trope.progress.reset_button">↺ Reset mastery &amp; personal best</button>
+        <button class="btn btn-xs btn-secondary hi-btn" onclick="resetProgress()" type="button"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="trope.progress.reset_button">Reset mastery &amp; personal best</span></button>
       </div>
     </div>
 
@@ -1193,7 +1193,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press ❓ Tour in the header.
           Companion reader: <a href="torah_trainer.html">Torah Trainer</a>.
         </p>
-        <button class="btn btn-xs btn-secondary" onclick="resetAllSettings()" type="button" style="margin-top:8px;" data-i18n="trope.about.reset_all">↺ Reset all Trope Tutor settings</button>
+        <button class="btn btn-xs btn-secondary hi-btn" onclick="resetAllSettings()" type="button" style="margin-top:8px;"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="trope.about.reset_all">Reset all Trope Tutor settings</span></button>
       </div>
     </div>
 
@@ -1487,6 +1487,11 @@ function initDark() {
    model, mirroring the dictionary: one #fsBtn swaps its glyph + title on fullscreenchange. Reuses the
    shared.fullscreen.* keys (no new keys); the header .hright is already print-hidden, and the button
    stays visible in fullscreen so it also exits. ── */
+// Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
+// builds in script. Static markup from this file, never user data.
+const ICON_PLAY = '<svg class="hi hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
+const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
+const ICON_RETRY = '<svg class="hi hi-sm hi-retry" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 18.58 A7.6 7.6 0 1 1 15.8 18.58 M15.8 18.58 L16.96 15.39 M15.8 18.58 L19.15 19.17"/></svg>';
 const FS_ENTER_ICON = '<svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
 const FS_EXIT_ICON = '<svg class="hi hi-fs-exit" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
 // iPhone Safari has no element-fullscreen API, so this tap would reject silently — hide the
@@ -2164,7 +2169,7 @@ function renderLearn() {
         const play = document.createElement('button');
         play.type = 'button';
         play.className = 'tu-ex-play';
-        play.textContent = '▶';
+        play.innerHTML = ICON_PLAY;
         play.setAttribute('aria-label', I18n.t('trope.learn.play_example_aria', { name: tropeName(t), parsha: ex.p, ref: ex.ref }));
         play.onclick = () => playLearnExample(t, ex, play);
         li.appendChild(play);
@@ -2562,7 +2567,8 @@ function renderQuestion(q, regenDepth) {
     const play = document.createElement('button');
     play.type = 'button';
     play.className = 'tu-qplay';
-    play.textContent = I18n.t('trope.drill.play_melody');
+    play.className += ' hi-btn';
+    play.innerHTML = ICON_PLAY_SM + esc(I18n.t('trope.drill.play_melody'));
     play.onclick = () => playClip(q.ex, { onError: onClipError });
     stem.appendChild(play);
     buildSymbolChoices(q, t);
@@ -2634,7 +2640,8 @@ function buildMelodyChoices(q, t, regenDepth) {
     btn.dataset.key = opt.key;
     btn.setAttribute('aria-pressed', 'false');
     const num = document.createElement('span');
-    num.textContent = '▶ ' + (idx + 1);
+    num.className += ' hi-btn';
+    num.innerHTML = ICON_PLAY_SM + esc(String(idx + 1));
     btn.appendChild(num);
     const sub = document.createElement('span');
     sub.className = 'c-sub';
@@ -2726,7 +2733,8 @@ function answer(q, pickedKey, btn) {
   const replay = document.createElement('button');
   replay.type = 'button';
   replay.className = 'btn btn-xs btn-secondary';
-  replay.textContent = I18n.t('trope.drill.replay');
+  replay.className += ' hi-btn';
+  replay.innerHTML = ICON_RETRY + esc(I18n.t('trope.drill.replay'));
   replay.onclick = () => playClip(q.ex, { onError: () => showToast(I18n.t('trope.toast.clip_wont_load')) });
   feedback.appendChild(replay);
   const next = document.createElement('button');
@@ -2789,7 +2797,7 @@ function buildMissedReview() {
       const play = document.createElement('button');
       play.type = 'button';
       play.className = 'tu-ex-play';
-      play.textContent = '▶';
+      play.innerHTML = ICON_PLAY;
       play.setAttribute('aria-label', I18n.t('trope.drill.review_play_aria', { name: tropeName(t) }));
       play.onclick = () => playClip(miss.ex, { onError: () => showToast(I18n.t('trope.toast.clip_wont_load')) });
       li.appendChild(play);

@@ -2037,7 +2037,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
           <input type="range" id="ttsRateSlider" aria-labelledby="ttsSpeedLbl" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);"
                  oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'; saveSettings();">
           <span id="ttsRateVal" class="bidi-isolate" style="font-size:0.72rem;color:var(--text);min-width:36px;text-align:end;">0.75×</span>
-          <button class="btn sm ghost" style="padding:2px 6px;font-size:0.65rem;" title="Restore default" data-i18n-title="flashcards.common.restore_default" aria-label="Restore default" data-i18n-aria-label="flashcards.common.restore_default" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';saveSettings();">↺</button>
+          <button class="btn sm ghost" style="padding:2px 6px;font-size:0.65rem;" title="Restore default" data-i18n-title="flashcards.common.restore_default" aria-label="Restore default" data-i18n-aria-label="flashcards.common.restore_default" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';saveSettings();"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
       </div>
 
@@ -2198,7 +2198,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       </div>
       <div class="fc-face fc-back">
         <div class="fc-translit" id="fcBackTr"></div>
-        <button id="fcSpeakBtn" class="btn-xs" style="display:none;margin:6px auto 0;font-size:0.8rem;" onclick="event.stopPropagation();" data-i18n="flashcards.card.hear">🔊 Hear</button>
+        <button id="fcSpeakBtn" class="btn-xs hi-btn" style="display:none;margin:6px auto 0;font-size:0.8rem;" onclick="event.stopPropagation();"><svg class="hi hi-sm hi-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" fill="currentColor"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg><span class="hi-lbl" data-i18n="flashcards.card.hear">Hear</span></button>
         <div class="fc-back-q" data-i18n="flashcards.card.did_i_get_it">Did I get it?</div>
         <div class="fc-badge hide" id="fcBackBadge"></div>
       </div>
@@ -2208,7 +2208,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <!-- 🎧 Listening view (audio prompt + multiple choice); shown in place of the flip card -->
   <div id="fcListen" style="display:none;">
     <div class="lc-prompt">
-      <button id="lcReplay" class="lc-replay" type="button" aria-label="Play audio" data-i18n-aria-label="flashcards.card.aria_play_audio">🔊</button>
+      <button id="lcReplay" class="lc-replay" type="button" aria-label="Play audio" data-i18n-aria-label="flashcards.card.aria_play_audio"><svg class="hi hi-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" fill="currentColor"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg></button>
       <div id="lcHint" class="lc-hint"></div>
     </div>
     <div id="lcChoices" class="lc-choices" role="group" aria-label="Answer choices" data-i18n-aria-label="flashcards.card.aria_answer_choices"></div>
@@ -4755,8 +4755,11 @@ function renderPresets() {
     listItemNames: () => Object.keys(readPresets()),
     buildItemRow: (name) => {
       const f = document.createDocumentFragment();
-      const mk = (txt, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; b.addEventListener('click', fn); return b; };
-      f.appendChild(mk(I18n.t('flashcards.teachertools.play_button'), 'btn sm play', () => playPreset(name)));
+      const mk = (txt, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls;
+        // A leading '<' means inline SVG from the shared icon set (static markup in this file, never user data).
+        if (txt.charAt(0) === '<') b.innerHTML = txt; else b.textContent = txt;
+        b.addEventListener('click', fn); return b; };
+      f.appendChild(mk(ICON_PLAY_SM + esc(I18n.t('flashcards.teachertools.play_button')), 'btn sm play hi-btn', () => playPreset(name)));
       f.appendChild(mk(I18n.t('flashcards.teachertools.load_button'), 'btn sm primary', () => loadPreset(name)));
       f.appendChild(mk(I18n.t('flashcards.teachertools.save_button'), 'btn sm', () => overwritePreset(name)));
       const dup = mk('⧉', 'btn sm', () => duplicatePreset(name)); dup.title = I18n.t('shared.folders.duplicate'); f.appendChild(dup);
@@ -8537,6 +8540,10 @@ function toggleFullscreen() {
     }
   } catch (e) { /* a rejected fullscreen request is not user-facing (CLAUDE.md §5) */ }
 }
+// Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
+// builds in script. Static markup from this file, never user data.
+const ICON_SOUND = '<svg class="hi hi-sm hi-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" fill="currentColor"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg>';
+const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
 const FS_ENTER_ICON = '<svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
 const FS_EXIT_ICON = '<svg class="hi hi-fs-exit" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
 function _syncFsBtn() {

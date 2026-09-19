@@ -2455,7 +2455,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 
     <div id="lastSetupBar" class="last-setup-bar" role="status">
       <span data-i18n="worksheet.lastsetup.restored">Your last worksheet setup is back.</span>
-      <button type="button" class="btn-xs" onclick="startFreshSetup()" title="Forget the saved setup and start from the defaults" data-i18n="worksheet.lastsetup.start_fresh" data-i18n-title="worksheet.lastsetup.start_fresh_title">↺ Start fresh</button>
+      <button type="button" class="btn-xs hi-btn" onclick="startFreshSetup()" title="Forget the saved setup and start from the defaults" data-i18n-title="worksheet.lastsetup.start_fresh_title"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="worksheet.lastsetup.start_fresh">Start fresh</span></button>
     </div>
 
     <details class="quick-start-drawer" id="quickStartDrawer">
@@ -2866,14 +2866,14 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
             <input type="range" id="traceSpacing" min="0" max="100" value="25" step="1"
                    oninput="setTraceSpacing(this.value)" ondblclick="resetTraceSpacing()">
             <span class="fs-val" id="traceSpacingVal">0.50rem</span>
-            <button class="fs-reset" onclick="resetTraceSpacing()" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="worksheet.common.reset_default" data-i18n-title="worksheet.common.reset_default">↺</button>
+            <button class="fs-reset" onclick="resetTraceSpacing()" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="worksheet.common.reset_default" data-i18n-title="worksheet.common.reset_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
           </div>
           <div class="font-size-row">
             <span class="fs-label" data-i18n="worksheet.common.size">Size</span>
             <input type="range" id="traceSize" min="0" max="100" value="50" step="1"
                    oninput="setHebFontSize(this.value)" ondblclick="resetTraceSize()">
             <span class="fs-val" id="traceSizeVal">2.00rem</span>
-            <button class="fs-reset" onclick="resetTraceSize()" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="worksheet.common.reset_default" data-i18n-title="worksheet.common.reset_default">↺</button>
+            <button class="fs-reset" onclick="resetTraceSize()" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="worksheet.common.reset_default" data-i18n-title="worksheet.common.reset_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
           </div>
           <div style="display:flex;gap:6px;align-items:center;font-size:0.78rem;">
             <span class="sub-label" style="font-size:0.78rem;min-width:96px;" data-i18n="worksheet.modes.tracing.line_style">Line style</span>
@@ -3641,7 +3641,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
     <div class="desktop-buttons">
       <button class="btn btn-primary" id="generateBtn" onclick="generate()" data-i18n="worksheet.actions.generate">⬡ Generate Worksheet</button>
       <div class="gen-note" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
-      <button class="btn btn-outline" id="regenBtn" onclick="regenerate()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;" data-i18n="worksheet.actions.regenerate">↺ Regenerate</button>
+      <button class="btn btn-outline hi-btn" id="regenBtn" onclick="regenerate()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="worksheet.actions.regenerate">Regenerate</span></button>
       <button class="btn btn-secondary" id="printBtn" onclick="window.print()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;" data-i18n="worksheet.actions.print">🖨 Print</button>
       <button class="btn btn-outline" id="pdfBtn" onclick="exportPDF()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;margin-top:8px;" data-i18n="worksheet.actions.export_pdf">⬇ Export PDF</button>
       <button class="btn btn-outline" id="shareBtn" onclick="copyShareLink('shareBtn')" style="margin-top:8px;" data-i18n="worksheet.actions.copy_link">🔗 Copy shareable link</button>
@@ -3699,7 +3699,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
                 <input type="range" id="hebFontSizeSlider" min="0" max="100" value="50" step="1"
                        oninput="setHebFontSize(this.value)" ondblclick="resetHebFontSize()">
                 <span class="fs-val" id="hebFontSizeVal">2.00rem</span>
-                <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default" aria-label="Reset to default" data-i18n-title="worksheet.common.reset_default" data-i18n-aria-label="worksheet.common.reset_default">↺</button>
+                <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default" aria-label="Reset to default" data-i18n-title="worksheet.common.reset_default" data-i18n-aria-label="worksheet.common.reset_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
               </div>
               <div class="font-selector-grid"></div>
               <p id="hebFontMissing" class="font-missing-note" role="status" aria-live="polite" hidden></p>
@@ -3824,7 +3824,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
               <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.75" aria-labelledby="ttsSpeedLbl"
                      oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
               <span class="fs-val" id="ttsRateVal">0.75×</span>
-              <button class="fs-reset" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="worksheet.common.reset_default" data-i18n-title="worksheet.common.reset_default">↺</button>
+              <button class="fs-reset" onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="worksheet.common.reset_default" data-i18n-title="worksheet.common.reset_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
             </div>
             <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--muted);margin-top:1px;padding:0 2px;">
               <span data-i18n="worksheet.advanced.tts_slower">Slower</span><span data-i18n="worksheet.advanced.tts_fast">Fast</span>
@@ -3865,7 +3865,7 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
   <div class="mobile-fab">
     <button class="btn btn-primary" onclick="generate()" data-i18n="worksheet.actions.generate_mob">⬡ Generate</button>
     <div class="gen-note" role="status" aria-live="polite" style="display:none;font-size:0.7rem;color:var(--gold);margin-top:4px;"></div>
-    <button class="btn btn-outline" id="regenBtnMob" onclick="regenerate()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;">↺</button>
+    <button class="btn btn-outline" id="regenBtnMob" onclick="regenerate()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
     <button class="btn btn-secondary" id="printBtnMob" onclick="window.print()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;">🖨</button>
     <button class="btn btn-outline" id="pdfBtnMob" onclick="exportPDF()" disabled aria-disabled="true" title="Generate a worksheet first" data-i18n-title="worksheet.actions.disabled_hint" style="opacity:0.4;cursor:not-allowed;" data-i18n="worksheet.actions.pdf_mob">⬇ PDF</button>
     <button class="btn btn-outline" id="shareBtnMob" onclick="copyShareLink('shareBtnMob')" title="Copy shareable link" aria-label="Copy shareable link" data-i18n-aria-label="worksheet.actions.copy_link_title" data-i18n-title="worksheet.actions.copy_link_title">🔗</button>
@@ -5773,9 +5773,11 @@ function renderPresets() {
     listItemNames: () => Object.keys(readPresets()),
     buildItemRow: (name) => {
       const f = document.createDocumentFragment();
-      const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = txt; if (title) b.title = title; if (cls) b.className = cls; b.addEventListener('click', fn); return b; };
+      const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button';
+        // A leading '<' means inline SVG from the shared icon set (static markup in this file, never user data).
+        if (txt.charAt(0) === '<') { b.innerHTML = txt; if (title) b.setAttribute('aria-label', title); } else b.textContent = txt; if (title) b.title = title; if (cls) b.className = cls; b.addEventListener('click', fn); return b; };
       f.appendChild(mk(I18n.t('worksheet.presets.load'), '', '', () => loadPreset(name)));
-      f.appendChild(mk('↺', I18n.t('worksheet.presets.overwrite_title'), '', () => overwritePreset(name)));
+      f.appendChild(mk(ICON_RESET_SM, I18n.t('worksheet.presets.overwrite_title'), '', () => overwritePreset(name)));
       f.appendChild(mk('⧉', I18n.t('worksheet.presets.duplicate_title'), '', () => duplicatePreset(name)));
       f.appendChild(mk('✕', I18n.t('worksheet.presets.delete_title'), 'del-btn', () => deletePreset(name)));
       return f;
@@ -7187,6 +7189,12 @@ function _tourKey(e) {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', nudge);
   else nudge();
 })();
+// Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
+// builds in script. Static markup from this file, never user data.
+const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg>';
+const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
+const ICON_PAUSE_SM = '<svg class="hi hi-sm hi-pause" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.8" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/><rect x="13.6" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/></svg>';
+const ICON_SOUND_SM = '<svg class="hi hi-sm hi-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" fill="currentColor"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg>';
 const FS_ENTER_ICON = '<svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
 const FS_EXIT_ICON = '<svg class="hi hi-fs-exit" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
 // iPhone Safari has no element-fullscreen API, so this tap would reject silently — hide the
@@ -8365,7 +8373,7 @@ function renderNumberPracticeSelfCheck(ws, items, title, subtitle, audioOn, show
   // Audio plays the Hebrew word — put the speaker button on whichever side
   // displays the Hebrew, so students can read along while listening.
   const audioBtn = audioOn
-    ? `<button class="btn-xs" style="margin-top:6px;font-size:0.7rem;" title="${esc(I18n.t('worksheet.selfcheck.play_audio'))}" aria-label="${esc(I18n.t('worksheet.selfcheck.play_audio'))}" onclick="event.stopPropagation();speakBlend(this.closest('.flip-card').dataset.heb)">🔊</button>`
+    ? `<button class="btn-xs" style="margin-top:6px;font-size:0.7rem;" title="${esc(I18n.t('worksheet.selfcheck.play_audio'))}" aria-label="${esc(I18n.t('worksheet.selfcheck.play_audio'))}" onclick="event.stopPropagation();speakBlend(this.closest('.flip-card').dataset.heb)">${ICON_SOUND_SM}</button>`
     : '';
   const trlBack = (it) => showTrl ? `<span style="font-size:0.85rem;color:var(--gold-light);font-style:italic;margin-top:4px;">${esc(it.tr)}</span>` : '';
 
@@ -9881,7 +9889,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
       <span class="score-correct">✓ 0</span>
       <span class="score-incorrect">✗ 0</span>
       <span class="score-remaining">${items.length} left</span>
-      <button class="btn-xs" style="margin-left:auto;" onclick="resetGematriaCheck()">${esc(I18n.t('worksheet.selfcheck.reset'))}</button>`;
+      <button class="btn-xs" style="margin-left:auto;" onclick="resetGematriaCheck()">${ICON_RESET_SM}${esc(I18n.t('worksheet.selfcheck.reset'))}</button>`;
     ws.appendChild(scoreBar);
 
     const controls = document.createElement('div');
@@ -10632,9 +10640,9 @@ function renderSelfCheck(ws, cols, title, subtitle) {
     timerBar.innerHTML = `
       <span id="scTimerDisplay" class="timer-display">-:--</span>
       <div class="timer-controls">
-        <button class="btn-xs" onclick="startTimer(${timerDur})">${esc(I18n.t('worksheet.selfcheck.timer_start'))}</button>
-        <button class="btn-xs" onclick="stopTimer()">${esc(I18n.t('worksheet.selfcheck.timer_pause'))}</button>
-        <button class="btn-xs" onclick="resetTimer()">${esc(I18n.t('worksheet.selfcheck.reset'))}</button>
+        <button class="btn-xs" onclick="startTimer(${timerDur})">${ICON_PLAY_SM}${esc(I18n.t('worksheet.selfcheck.timer_start'))}</button>
+        <button class="btn-xs" onclick="stopTimer()">${ICON_PAUSE_SM}${esc(I18n.t('worksheet.selfcheck.timer_pause'))}</button>
+        <button class="btn-xs" onclick="resetTimer()">${ICON_RESET_SM}${esc(I18n.t('worksheet.selfcheck.reset'))}</button>
       </div>`;
     ws.appendChild(timerBar);
     timerRemaining = timerDur;
@@ -10649,7 +10657,7 @@ function renderSelfCheck(ws, cols, title, subtitle) {
     <span class="score-correct">✓ 0</span>
     <span class="score-incorrect">✗ 0</span>
     <span class="score-remaining">${blends.length} left</span>
-    <button class="btn-xs" style="margin-left:auto;" onclick="resetSelfCheck()">${esc(I18n.t('worksheet.selfcheck.reset'))}</button>`;
+    <button class="btn-xs" style="margin-left:auto;" onclick="resetSelfCheck()">${ICON_RESET_SM}${esc(I18n.t('worksheet.selfcheck.reset'))}</button>`;
   ws.appendChild(scoreBar);
 
   // Controls
@@ -10690,7 +10698,7 @@ function renderSelfCheck(ws, cols, title, subtitle) {
         <div class="flip-card-back">
           <span class="flip-card-num" style="color:var(--gold-light);">${idx + 1}</span>
           <span style="font-size:1.1rem;">${b.translitDisplay ?? b.combined}</span>
-          ${audioOn ? `<button class="btn-xs" style="margin-top:4px;font-size:0.7rem;" title="${esc(I18n.t('worksheet.selfcheck.play_audio'))}" aria-label="${esc(I18n.t('worksheet.selfcheck.play_audio'))}" onclick="event.stopPropagation();speakBlend(this.closest('.flip-card').dataset.heb)">🔊</button>` : ''}
+          ${audioOn ? `<button class="btn-xs" style="margin-top:4px;font-size:0.7rem;" title="${esc(I18n.t('worksheet.selfcheck.play_audio'))}" aria-label="${esc(I18n.t('worksheet.selfcheck.play_audio'))}" onclick="event.stopPropagation();speakBlend(this.closest('.flip-card').dataset.heb)">${ICON_SOUND_SM}</button>` : ''}
         </div>
       </div>
       <div class="flip-card-score-btns">

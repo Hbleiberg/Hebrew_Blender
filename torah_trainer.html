@@ -2044,12 +2044,12 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 
 <div class="tt-audio-bar" id="ttAudioBar" role="region" aria-label="Cantillation audio playback" data-i18n-aria-label="torah.audio.region_aria">
   <button class="tt-audio-collapse" id="ttAudioCollapseBtn" onclick="toggleAudioBarCollapse()" aria-label="Collapse audio bar" aria-expanded="true" title="Collapse / expand audio bar" data-i18n-aria-label="torah.audio.collapse_aria" data-i18n-title="torah.audio.collapse_title">▾</button>
-  <button class="tt-audio-playpause" id="ttAudioPlayPauseBtn" onclick="toggleAudioPlay()" aria-label="Play or pause" title="Play / pause" data-i18n-aria-label="torah.audio.playpause_aria" data-i18n-title="torah.audio.playpause_title">▶</button>
+  <button class="tt-audio-playpause" id="ttAudioPlayPauseBtn" onclick="toggleAudioPlay()" aria-label="Play or pause" title="Play / pause" data-i18n-aria-label="torah.audio.playpause_aria" data-i18n-title="torah.audio.playpause_title"><svg class="hi hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg></button>
   <span class="tt-audio-label" id="ttAudioLabel" data-i18n="torah.audio.karaoke_label">Karaoke</span>
   <!-- Collapsed-only chant-speed chip — the collapsed strip's hint that the speed
        controls live behind ▾ (S180 H audio slice (c)); click expands the bar. -->
   <button class="tt-audio-mini-rate" id="ttMiniRate" onclick="toggleAudioBarCollapse()" aria-label="Chant speed — expand the audio bar for speed controls" title="Chant speed — expand the audio bar for speed controls" data-i18n-aria-label="torah.audio.mini_rate_title" data-i18n-title="torah.audio.mini_rate_title">1.00×</button>
-  <button class="tt-audio-loopstop" id="ttLoopStopBtn" onclick="stopLoop()" aria-label="Stop looping" title="Stop looping" data-i18n-aria-label="torah.audio.loopstop_aria" data-i18n-title="torah.audio.loopstop_aria" style="display:none;" data-i18n="torah.audio.loopstop_text">⏹ Stop loop</button>
+  <button class="tt-audio-loopstop hi-btn" id="ttLoopStopBtn" onclick="stopLoop()" aria-label="Stop looping" title="Stop looping" data-i18n-aria-label="torah.audio.loopstop_aria" data-i18n-title="torah.audio.loopstop_aria" style="display:none;"><svg class="hi hi-sm hi-stop" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2.2" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="torah.audio.loopstop_text">Stop loop</span></button>
   <!-- Loop-pause mirror of the drawer's #optLoopPause (same keys, same settings.loopPauseMs);
        shown only while a loop runs — the one moment the setting matters (S180 H audio slice). -->
   <span class="tt-audio-pause" id="ttLoopPauseRow" style="display:none;">
@@ -2130,19 +2130,19 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <label for="optHebSize" data-i18n="torah.display.size_hebrew">Hebrew</label>
           <input type="range" id="optHebSize" min="0.7" max="3.5" step="0.05" value="1.5">
           <span class="sval" id="optHebSizeVal">1.50rem</span>
-          <button class="sreset" onclick="resetFontSize('heb')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default">↺</button>
+          <button class="sreset" onclick="resetFontSize('heb')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <div class="slider-row">
           <label for="optTranslitSize" data-i18n="torah.display.size_translit">Translit</label>
           <input type="range" id="optTranslitSize" min="0.5" max="2" step="0.05" value="0.95">
           <span class="sval" id="optTranslitSizeVal">0.95rem</span>
-          <button class="sreset" onclick="resetFontSize('translit')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default">↺</button>
+          <button class="sreset" onclick="resetFontSize('translit')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <div class="slider-row">
           <label for="optEnglishSize" data-i18n="torah.display.size_english">English</label>
           <input type="range" id="optEnglishSize" min="0.5" max="2" step="0.05" value="0.95">
           <span class="sval" id="optEnglishSizeVal">0.95rem</span>
-          <button class="sreset" onclick="resetFontSize('english')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default">↺</button>
+          <button class="sreset" onclick="resetFontSize('english')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <hr style="border:none; border-top:1px solid var(--border); margin:12px 0 8px;">
         <div style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;" data-i18n="torah.display.karaoke_header">Karaoke settings</div>
@@ -2320,13 +2320,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <label for="optKaraokeRate" data-i18n="torah.audio.speed_chant">Chant</label>
           <input type="range" id="optKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0">
           <span class="sval" id="optKaraokeRateVal">1.00×</span>
-          <button class="sreset" onclick="resetKaraokeRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default">↺</button>
+          <button class="sreset" onclick="resetKaraokeRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <div class="slider-row">
           <label for="optTTSRate" data-i18n="torah.audio.speed_read">Read</label>
           <input type="range" id="optTTSRate" min="0.5" max="1.5" step="0.05" value="0.75">
           <span class="sval" id="optTTSRateVal">0.75×</span>
-          <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default">↺</button>
+          <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <div class="form-row" style="margin-top:8px;">
           <label for="optLoopPause"><span data-i18n="torah.audio.loop_pause_label">Pause between repeats</span>
@@ -2389,7 +2389,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <div class="panel collapsed">
       <div class="panel-title" data-i18n="torah.settings.panel_reset">Reset</div>
       <div class="panel-body">
-        <button class="btn btn-xs btn-secondary" onclick="resetAllSettings()" type="button" data-i18n="torah.settings.reset_all">↺ Reset all Torah Trainer settings</button>
+        <button class="btn btn-xs btn-secondary hi-btn" onclick="resetAllSettings()" type="button"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="torah.settings.reset_all">Reset all Torah Trainer settings</span></button>
       </div>
     </div>
 
@@ -2583,6 +2583,15 @@ function resetAllSettings() {
 /* ══════════════════════════════════════════════════════
    FULLSCREEN  (matches classroom_dashboard.html pattern)
    ══════════════════════════════════════════════════════ */
+// Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
+// builds in script. Static markup from this file, never user data.
+const ICON_PLAY = '<svg class="hi hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
+const ICON_PAUSE = '<svg class="hi hi-pause" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.8" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/><rect x="13.6" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/></svg>';
+const ICON_STOP = '<svg class="hi hi-sm hi-stop" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2.2" fill="currentColor"/></svg>';
+const ICON_SOUND = '<svg class="hi hi-sm hi-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" fill="currentColor"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg>';
+const ICON_MUSIC = '<svg class="hi hi-sm hi-music" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17.5V5.2l10-2v12.3"/><ellipse cx="6.4" cy="17.8" rx="2.7" ry="2.3" fill="currentColor"/><ellipse cx="16.4" cy="15.5" rx="2.7" ry="2.3" fill="currentColor"/></svg>';
+const ICON_LOOP = '<svg class="hi hi-sm hi-loop" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10a3.5 3.5 0 0 1 3.5 3.5v.5"/><path d="M18 4.6 20.8 7.4 18 10.2"/><path d="M17 17H7a3.5 3.5 0 0 1-3.5-3.5V13"/><path d="M6 19.4 3.2 16.6 6 13.8"/></svg>';
+const ICON_RETRY = '<svg class="hi hi-sm hi-retry" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 18.58 A7.6 7.6 0 1 1 15.8 18.58 M15.8 18.58 L16.96 15.39 M15.8 18.58 L19.15 19.17"/></svg>';
 const FS_ENTER = '<svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
 const FS_EXIT = '<svg class="hi hi-fs-exit" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
 // iPhone Safari has no element-fullscreen API, so this tap would reject silently — hide the
@@ -3822,14 +3831,14 @@ function renderEmptyReading(failed) {   // friendly card shown in #ttReading whe
   // instead. Mutually exclusive with the reading-failure button by construction: a reading fetch
   // can't even resolve a selection while parshiyotData is empty, so `failed` is never set here.
   const corpusRetryHtml = (!canPick && _staticDataFailed && !failed)
-    ? `<button type="button" class="btn" id="ttCorpusRetryBtn" onclick="retryStaticData()" data-i18n-key="torah.reading.retry_button">${esc(I18n.t('torah.reading.retry_button'))}</button>`
+    ? `<button type="button" class="btn" id="ttCorpusRetryBtn" onclick="retryStaticData()" data-i18n-key="torah.reading.retry_button">${ICON_RETRY}${esc(I18n.t('torah.reading.retry_button'))}</button>`
     : '';
   document.getElementById('ttReading').innerHTML =
     `<div class="tt-empty">
        <div class="tt-empty-star" aria-hidden="true">✡︎</div>
        <h2 data-i18n-key="${tKey}">${esc(I18n.t(tKey))}</h2>
        <p data-i18n-key="${bKey}">${esc(I18n.t(bKey))}</p>` +
-    (failed ? `<button type="button" class="btn" id="ttRetryBtn" onclick="fetchAndRender()" data-i18n-key="torah.reading.retry_button">${esc(I18n.t('torah.reading.retry_button'))}</button>` : '') +
+    (failed ? `<button type="button" class="btn" id="ttRetryBtn" onclick="fetchAndRender()" data-i18n-key="torah.reading.retry_button">${ICON_RETRY}${esc(I18n.t('torah.reading.retry_button'))}</button>` : '') +
     pickerHtml + corpusRetryHtml +
     `</div>`;
   const cp = document.getElementById('ttCardParsha');
@@ -3884,8 +3893,8 @@ function renderText() {
       ? ` <span class="tt-notice-chip" data-i18n-tip="torah.trans.unavailable_tip" data-tip="${esc(I18n.t('torah.trans.unavailable_tip'))}">${esc(I18n.t('torah.trans.unavailable_chip'))}</span>`
       : ''}</span>
     <span style="display:flex;gap:6px;">
-      <button class="tt-readall" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? esc(I18n.t('torah.reading.stop')) : esc(I18n.t('torah.reading.read_all'))}</button>
-      ${canChant ? `<button class="tt-readall tt-chantall${chantAllState.active ? ' active' : ''}" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? esc(I18n.t('torah.reading.chant_all_stop')) : esc(I18n.t('torah.reading.chant_all'))}</button>` : ''}
+      <button class="tt-readall hi-btn" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? ICON_STOP + esc(I18n.t('torah.reading.stop')) : ICON_SOUND + esc(I18n.t('torah.reading.read_all'))}</button>
+      ${canChant ? `<button class="tt-readall tt-chantall hi-btn${chantAllState.active ? ' active' : ''}" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? ICON_STOP + esc(I18n.t('torah.reading.chant_all_stop')) : ICON_MUSIC + esc(I18n.t('torah.reading.chant_all'))}</button>` : ''}
     </span>
   </div>`;
   // Aliyah landmarks (full-parsha only) — inline dividers + jump targets.
@@ -3931,9 +3940,9 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
     html += `  <div class="tt-verse-row" style="align-items:center;">`;
     html += `    <span class="tt-verse-num">${esc(numLabel)}</span>`;
     html += `    <span class="tt-verse-buttons">`;
-    html += `      <button class="tt-speak" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_read'))}</button>`;
-    if (canChant) html += `      <button class="tt-chant" onclick="chantVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_chant_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_chant'))}</button>`;
-    if (canLoop) html += `      <button class="tt-loop" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
+    html += `      <button class="tt-speak hi-btn" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${ICON_SOUND}${esc(I18n.t('torah.reading.verse_read'))}</button>`;
+    if (canChant) html += `      <button class="tt-chant hi-btn" onclick="chantVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_chant_aria',{verseRef:numLabel}))}">${ICON_MUSIC}${esc(I18n.t('torah.reading.verse_chant'))}</button>`;
+    if (canLoop) html += `      <button class="tt-loop hi-btn" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${ICON_LOOP}${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
     html += `      <button class="tt-copy" onclick="copyVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_copy_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_copy'))}</button>`;
     html += `    </span>`;
     html += `  </div>`;
@@ -4017,9 +4026,9 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
     html += `<div class="tt-grid-row" data-vk="${esc(numLabel)}" style="grid-row:${rowOf[i]};grid-column:${colHeb}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
     html += `<span class="tt-vnum">${numLabel}<span class="tt-verse-buttons" style="display:flex;flex-direction:column;gap:3px;margin-top:4px;margin-left:0;">`;
     html += `<input type="checkbox" class="tt-bulk-cb" aria-label="${esc(I18n.t('torah.copy.bulk_cb_aria',{verseRef:numLabel}))}"${ttBulkSelected.has(numLabel) ? ' checked' : ''}>`;
-    html += `<button class="tt-speak" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_read'))}</button>`;
-    if (canChant) html += `<button class="tt-chant" onclick="chantVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_chant_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_chant'))}</button>`;
-    if (canLoop) html += `<button class="tt-loop" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
+    html += `<button class="tt-speak hi-btn" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${ICON_SOUND}${esc(I18n.t('torah.reading.verse_read'))}</button>`;
+    if (canChant) html += `<button class="tt-chant hi-btn" onclick="chantVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_chant_aria',{verseRef:numLabel}))}">${ICON_MUSIC}${esc(I18n.t('torah.reading.verse_chant'))}</button>`;
+    if (canLoop) html += `<button class="tt-loop hi-btn" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${ICON_LOOP}${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
     html += `<button class="tt-copy" onclick="copyVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_copy_aria',{verseRef:numLabel}))}">${esc(I18n.t('torah.reading.verse_copy'))}</button>`;
     html += `</span></span>`;
     html += `<span class="tt-cell heb" lang="he">${hebHtml}</span>`;
@@ -4613,7 +4622,7 @@ function renderLoopState() {
     const vk = holder ? holder.dataset.vk : '';
     const on = !!active && vk === active;
     btn.classList.toggle('active', on);
-    btn.textContent = on ? I18n.t('torah.audio.loopstop_text') : I18n.t('torah.reading.verse_loop');
+    btn.innerHTML = (on ? ICON_STOP : ICON_LOOP) + esc(on ? I18n.t('torah.audio.loopstop_text') : I18n.t('torah.reading.verse_loop'));
     btn.setAttribute('aria-label', on ? I18n.t('torah.reading.verse_loop_stop_aria', {verseRef: vk}) : I18n.t('torah.reading.verse_loop_aria', {verseRef: vk}));
     if (on) btn.setAttribute('aria-pressed', 'true'); else btn.removeAttribute('aria-pressed');
   });
@@ -4800,7 +4809,7 @@ function toggleReadAll() {
   pauseKaraoke();
   ttsState.readAllActive = true;
   ttsState.readAllIdx = 0;
-  document.getElementById('ttReadAllBtn').textContent = I18n.t('torah.reading.stop');
+  document.getElementById('ttReadAllBtn').innerHTML = ICON_STOP + esc(I18n.t('torah.reading.stop'));
   document.getElementById('ttReadAllBtn').classList.add('active');
   readAllStep();
 }
@@ -4907,7 +4916,7 @@ function stopChantAll() {
     currentAudio.onended = () => { clearKaraokeHighlight(); updatePlayPauseIcon(); };
   }
   const btn = document.getElementById('ttChantAllBtn');
-  if (btn) { btn.textContent = I18n.t('torah.reading.chant_all'); btn.classList.remove('active'); }
+  if (btn) { btn.innerHTML = ICON_MUSIC + esc(I18n.t('torah.reading.chant_all')); btn.classList.remove('active'); }
 }
 // Both readouts are written at init — BEFORE I18n.ready — so applyI18n re-runs this to heal
 // the raw key strings and to follow later language switches. That makes it a NAMED handler
@@ -5281,7 +5290,7 @@ function toggleAudioPlay() {
 function updatePlayPauseIcon() {
   const btn = document.getElementById('ttAudioPlayPauseBtn');
   if (!btn || !currentAudio) return;
-  btn.textContent = currentAudio.paused ? '▶' : '⏸';
+  btn.innerHTML = currentAudio.paused ? ICON_PLAY : ICON_PAUSE;
   btn.setAttribute('aria-label', currentAudio.paused ? I18n.t('torah.audio.play_aria') : I18n.t('torah.audio.pause_aria'));
 }
 

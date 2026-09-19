@@ -365,10 +365,12 @@ clears it, and leaving fullscreen clears it. Nothing is saved.
   `document.fullscreenElement` as a getter, dispatch `fullscreenchange`, then measure the control at
   t=0, after 3.3 s idle, after a `page.mouse.move`, while focused past the idle time, and after exit.
 
-## Header icons — shared block (every page with the suite header)
+## Icons — shared block (the header on every page, and the control buttons inside the tools)
 
 The header controls (Home / Back, the dark-mode toggle, Settings, Tour, Full Screen, the dashboard's
-Blank-the-screen, and the account chip) carry inline SVG glyphs from one shared set instead of emoji.
+Blank-the-screen, and the account chip) carry inline SVG glyphs from one shared set instead of emoji, and so
+do the in-page **control buttons**: play, pause, stop, reset / restore-default, retry / replay, loop, sound
+and the music note on the chant buttons.
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
 `account`, `404`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
@@ -380,8 +382,10 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   Hebrew interface. Sha-verify it across carriers after any edit, like the other blocks.
 - **The SVG set**, one snippet per glyph, identical on every carrier: `hi-arrow` (also carries `dir-arrow`
   for the pages' older mirroring rule), `hi-moon` + `hi-sun` (always both, the CSS picks one), `hi-gear`,
-  `hi-help`, `hi-fs-enter` / `hi-fs-exit`, `hi-blank`, `hi-user`. Every snippet is `aria-hidden="true"
-  focusable="false"`; the control's own `title` / `aria-label` names it.
+  `hi-help`, `hi-fs-enter` / `hi-fs-exit`, `hi-blank`, `hi-user`, plus the control family `hi-play`,
+  `hi-pause`, `hi-stop`, `hi-reset`, `hi-retry`, `hi-loop`, `hi-sound` and `hi-music`. Every snippet is
+  `aria-hidden="true" focusable="false"`; the control's own `title` / `aria-label` names it. `.hi-sm` is the
+  13px size the tiny settings buttons take and `.hi-btn` lines an icon up with its label inside a button.
 
 ### Host contract
 - **A header string never carries the glyph.** `shared.darkmode.label_dark` / `_light`, the `*.header.home`,
@@ -396,7 +400,14 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   `FS_ENTER_ICON` / `FS_EXIT_ICON`) hold the shared `hi-fs-enter` / `hi-fs-exit` snippets, and the button's
   initial markup holds `hi-fs-enter`.
 - **Icon + label spacing** comes from the button's own `gap` (every labelled header button is
-  `display:inline-flex; align-items:center; gap:5–6px`); nothing in the block adds margins.
+  `display:inline-flex; align-items:center; gap:5–6px`) or from `.hi-btn`; nothing in the block adds margins.
+- **A button a script builds** takes its icon from a `const ICON_*` beside that page's other icon constants
+  and is written with `innerHTML = ICON_X + esc(label)`, never `textContent` — a `textContent` write would
+  drop the SVG. The list builders' `mk()` helpers read a leading `<` as icon markup (static markup from the
+  page, never user data) and then always take the title as the button's accessible name.
+- **Not every glyph is a control.** The dashboard's day-badge emoji sets (⏪️▶️⏩️, 🔼⏹️🔽) are the pictures a
+  teacher projects on the board, the flash cards' ↺ flips a card rather than resetting anything, and prose
+  that mentions a control ("Tap ▶ to hear the melody") stays prose — leave all three alone.
 
 ### Adding the header to a new page
 Paste the CSS block, copy the snippets from any carrier (never redraw them), put labels in `.hi-lbl` spans,

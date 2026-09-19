@@ -1173,7 +1173,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
                 <input type="range" id="hebFontSizeSlider" min="0" max="100" value="50" step="1"
                        oninput="setHebFontSize(this.value)" ondblclick="resetHebFontSize()">
                 <span class="fs-val" id="hebFontSizeVal">2.00rem</span>
-                <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default" aria-label="Reset to default" data-i18n-title="dictionary.advanced.font_size_reset_title" data-i18n-aria-label="dictionary.advanced.font_size_reset_title">↺</button>
+                <button class="fs-reset" onclick="resetHebFontSize()" title="Reset to default" aria-label="Reset to default" data-i18n-title="dictionary.advanced.font_size_reset_title" data-i18n-aria-label="dictionary.advanced.font_size_reset_title"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
               </div>
             <div class="font-selector-grid"></div>
             <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
@@ -1195,7 +1195,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
                 <button id="colorModeUnderline" class="color-mode-btn"        aria-pressed="false" onclick="setColorMode('underline')" data-i18n="dictionary.advanced.color_mode_underline">Underline</button>
               </div>
               <div id="colorPickerList"></div>
-              <button class="pos-all-btn" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;" data-i18n="dictionary.advanced.color_reset">↺ Reset to defaults</button>
+              <button class="pos-all-btn hi-btn" onclick="resetNikudColors()" style="font-size:0.68rem;width:100%;"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="dictionary.advanced.color_reset">Reset to defaults</span></button>
             </div>
           </div>
         </div>
@@ -1288,7 +1288,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
                 <input type="range" id="ttsRateSlider" min="0.5" max="1.5" step="0.05" value="0.75"
                        aria-labelledby="ttsSpeedLabel" oninput="onTtsRateChange(this.value)">
                 <span class="fs-val bidi-isolate" id="ttsRateVal">0.75×</span>
-                <button class="fs-reset" onclick="resetTtsRate()" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="dictionary.advanced.font_size_reset_title" data-i18n-title="dictionary.advanced.font_size_reset_title">↺</button>
+                <button class="fs-reset" onclick="resetTtsRate()" title="Reset to default" aria-label="Reset to default" data-i18n-aria-label="dictionary.advanced.font_size_reset_title" data-i18n-title="dictionary.advanced.font_size_reset_title"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
               </div>
               <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);margin-top:1px;padding:0 2px;">
                 <span data-i18n="dictionary.audio.tts_slower">Slower</span><span data-i18n="dictionary.audio.tts_fast">Fast</span>
@@ -1352,7 +1352,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
       <button class="dict-tool-btn" id="dictPrintBtn" onclick="printDictionary()" title="Print the current results" data-i18n="dictionary.toolbar.print_button" data-i18n-title="dictionary.toolbar.print_title">🖨️ Print</button>
       <span class="print-size-note" id="printSizeNote" role="status" aria-live="polite" hidden></span>
       <button class="dict-tool-btn" id="dictWordListsBtn" onclick="wlOpenManager()" title="View and manage your saved Word Lists" data-i18n="dictionary.wordlists.manager_button" data-i18n-title="dictionary.toolbar.wordlists_title">📚 Word Lists</button>
-      <button class="dict-tool-btn" id="dictResetBtn" onclick="resetDictFilters()" title="Reset all filters to their defaults" style="display:none;" data-i18n="dictionary.toolbar.reset_filters" data-i18n-title="dictionary.toolbar.reset_filters_title">↺ Reset filters</button>
+      <button class="dict-tool-btn hi-btn" id="dictResetBtn" onclick="resetDictFilters()" title="Reset all filters to their defaults" style="display:none;" data-i18n-title="dictionary.toolbar.reset_filters_title"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="dictionary.toolbar.reset_filters">Reset filters</span></button>
     </div>
     <div class="filter-chips" id="filterChips" aria-label="Active filters" data-i18n-aria-label="dictionary.toolbar.active_filters_aria"></div>
     <div id="wlActiveBanner" role="status" aria-live="polite" style="display:none;"></div>
@@ -2530,7 +2530,8 @@ function loadWordCorpus() {   // callable (not a bare top-level chain) so the fa
       btn.type = 'button'; btn.id = 'dictRetryBtn'; btn.className = 'corpus-retry-btn';
       btn.style.marginTop = '8px';
       btn.setAttribute('data-i18n', 'shared.corpus.retry_button');
-      btn.textContent = window.I18n ? I18n.t('shared.corpus.retry_button') : '↻ Try again';
+      btn.className += ' hi-btn';
+      btn.innerHTML = ICON_RETRY + esc(window.I18n ? I18n.t('shared.corpus.retry_button') : 'Try again');
       btn.onclick = retryWordCorpus;
       el.after(btn);
     }
@@ -3243,7 +3244,7 @@ function buildWordCard(w) {
   card.appendChild(btn);
   const speakBtn = document.createElement('button');
   speakBtn.className = 'wc-speak';
-  speakBtn.textContent = '🔊';
+  speakBtn.innerHTML = ICON_SOUND;   // static markup from the shared icon set
   speakBtn.title = I18n.t('dictionary.card.hear_title');
   speakBtn.setAttribute('aria-label', I18n.t('dictionary.card.hear_title'));
   speakBtn.addEventListener('click', e => { e.stopPropagation(); speakWord(w.word); });
@@ -3859,6 +3860,10 @@ function positionSidebarTab() {
 }
 window.addEventListener('resize', positionSidebarTab);
 
+// Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
+// builds in script. Static markup from this file, never user data.
+const ICON_SOUND = '<svg class="hi hi-sm hi-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" fill="currentColor"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg>';
+const ICON_RETRY = '<svg class="hi hi-sm hi-retry" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 18.58 A7.6 7.6 0 1 1 15.8 18.58 M15.8 18.58 L16.96 15.39 M15.8 18.58 L19.15 19.17"/></svg>';
 const FS_ENTER_ICON = '<svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
 const FS_EXIT_ICON = '<svg class="hi hi-fs-exit" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
 // iPhone Safari has no element-fullscreen API, so this tap would reject silently — hide the
@@ -5040,7 +5045,7 @@ function renderEmojiResults() {
         <span class="ec-gender ${cls}" data-i18n="${labelKey}">${esc(label)}</span>
         <div class="ec-heb-row">
           <div class="ec-heb">${colorizeHebrew(heb)}</div>
-          <button class="ec-speak" title="${esc(hearT)}" aria-label="${esc(hearT)}" data-i18n-title="dictionary.card.hear_title" data-i18n-aria-label="dictionary.card.hear_title" onclick="speakWord('${escHeb}')">🔊</button>
+          <button class="ec-speak" title="${esc(hearT)}" aria-label="${esc(hearT)}" data-i18n-title="dictionary.card.hear_title" data-i18n-aria-label="dictionary.card.hear_title" onclick="speakWord('${escHeb}')">${ICON_SOUND}</button>
         </div>
         ${translit ? `<div class="ec-translit">${translit}</div>` : ''}
       </div>`;
@@ -5866,7 +5871,7 @@ function openWordModal(w) {
   b.appendChild(badges);
 
   const actions = document.createElement('div'); actions.className = 'wm-actions';
-  const spk = document.createElement('button'); spk.className = 'wm-act'; spk.textContent = I18n.t('dictionary.modal.pronounce'); spk.addEventListener('click', () => speakWord(w.word)); actions.appendChild(spk);
+  const spk = document.createElement('button'); spk.className = 'wm-act'; spk.className += ' hi-btn'; spk.innerHTML = ICON_SOUND + esc(I18n.t('dictionary.modal.pronounce')); spk.addEventListener('click', () => speakWord(w.word)); actions.appendChild(spk);
   _wmCopyButtons(actions, m => computeCopyText(w, m));
   const bulkBtn = document.createElement('button'); bulkBtn.className = 'wm-act';
   bulkBtn.textContent = bulkSelected.has(w.word) ? I18n.t('dictionary.modal.in_bulk_list') : I18n.t('dictionary.modal.add_to_bulk');

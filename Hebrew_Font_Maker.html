@@ -1840,7 +1840,7 @@ body.dark .hi-sun{display:inline-block;}
     <div class="hint" id="meScopeNote" style="margin-top:8px;"></div>
     <div class="mbtns" style="justify-content:space-between;">
       <button class="tbtn ghost" onclick="closeMarkEdit()" data-i18n="fontmaker.modals.markedit_back">‹ Back</button>
-      <button class="tbtn ghost" onclick="meConfirmReset()" title="Discard your edits and restore this mark's default shape" data-i18n-title="fontmaker.modals.markedit_reset_title" data-i18n="fontmaker.modals.markedit_reset">↺ Reset</button>
+      <button class="tbtn ghost hi-btn" onclick="meConfirmReset()" title="Discard your edits and restore this mark's default shape" data-i18n-title="fontmaker.modals.markedit_reset_title"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="fontmaker.modals.markedit_reset">Reset</span></button>
       <span style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="tbtn" id="meApplyCur" onclick="meConfirmApply('current')" data-i18n="fontmaker.modals.markedit_apply_current">Apply to current letter</button>
         <button class="tbtn" id="meApplyAll" onclick="meConfirmApply('all')" data-i18n="fontmaker.modals.markedit_apply_all">Apply to all letters</button>
@@ -1921,7 +1921,7 @@ body.dark .hi-sun{display:inline-block;}
   <div class="modal help-modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <h3 id="helpTitle" data-i18n="fontmaker.modals.help_title">How does this work?</h3>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px;">
-      <button class="tbtn" onclick="closeHelp(); tourStart();" data-i18n="fontmaker.modals.help_take_tour">▶ Take a tour</button>
+      <button class="tbtn hi-btn" onclick="closeHelp(); tourStart();"><svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="fontmaker.modals.help_take_tour">Take a tour</span></button>
       <button class="tbtn ghost" onclick="closeHelp(); openShortcuts();" data-i18n="fontmaker.modals.help_shortcuts">⌨ Shortcuts</button>
     </div>
     <div class="help-tabs" id="helpTabs" role="tablist" aria-labelledby="helpTitle"></div>
@@ -1969,7 +1969,7 @@ body.dark .hi-sun{display:inline-block;}
         <input type="number" id="adTh" min="1" max="254" inputmode="numeric"
                aria-label="Detection ink threshold override" data-i18n-aria-label="fontmaker.modals.ad_threshold_aria"
                onchange="adSetTh(this.value)"></span>
-      <button class="ctl-btn" onclick="adRedetect()" data-i18n="fontmaker.modals.ad_redetect">↻ Re-detect</button>
+      <button class="ctl-btn hi-btn" onclick="adRedetect()"><svg class="hi hi-sm hi-retry" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 18.58 A7.6 7.6 0 1 1 15.8 18.58 M15.8 18.58 L16.96 15.39 M15.8 18.58 L19.15 19.17"/></svg><span class="hi-lbl" data-i18n="fontmaker.modals.ad_redetect">Re-detect</span></button>
       <span id="adConfirm" hidden><span id="adConfirmMsg"></span>
         <button class="ctl-btn" onclick="adRedetect(true)" data-i18n="fontmaker.modals.ad_discard_redetect">Discard &amp; re-detect</button>
         <button class="ctl-btn" onclick="adConfirmHide()" data-i18n="fontmaker.modals.ad_keep_editing">Keep editing</button></span>
@@ -4016,6 +4016,10 @@ const HELP_TABS = [
   ['share','Share my font'],
   ['about','About'],
 ];
+// Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
+// builds in script. Static markup from this file, never user data.
+const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg>';
+const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
 const FONT_MAKER_VERSION = '5.46';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
@@ -8447,7 +8451,7 @@ function renderMarkControls(c, it) {
           : I18n.t('fontmaker.panels.markctl_combined_hint', {label, name: '<b>'+esc(gName(it.name))+'</b>'}) }</div>`;
       } else {
         h += `<div class="hint">${I18n.t('fontmaker.panels.markctl_region_hint', {name: '<b>'+esc(gName(it.name))+'</b>'})}</div>
-          <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">${I18n.t('fontmaker.panels.reselect_area')}</button></div>`;
+          <div class="ctl-row"><button class="ctl-btn hi-btn" onclick="reselectArea()">${ICON_RESET_SM}${esc(I18n.t('fontmaker.panels.reselect_area'))}</button></div>`;
       }
     } else {
       if (svgUploadOn() && it.source && it.source.kind === 'svg' && it.contours)
@@ -15407,7 +15411,7 @@ function renderDrawLeft(L, l) {
     </div>` + ctxHtml + `
     <div class="ctl-row" style="margin-top:8px;">
       <button class="ctl-btn" id="drawUndoBtn" onclick="undo()" title="${esc(I18n.t('fontmaker.toolbar.undo_title'))}" ${undoStack.length?'':'disabled'}>↶ ${I18n.t('fontmaker.toolbar.undo_aria')}</button>
-      <button class="ctl-btn" id="drawReplayBtn" onclick="drawReplay()" aria-pressed="false" title="${esc(_drawT('replay_title', 'Replay the strokes in the order they were drawn'))}" ${nStrokes?'':'disabled'}>${_drawT('replay', '\u25b6 Replay')}</button>
+      <button class="ctl-btn hi-btn" id="drawReplayBtn" onclick="drawReplay()" aria-pressed="false" title="${esc(_drawT('replay_title', 'Replay the strokes in the order they were drawn'))}" ${nStrokes?'':'disabled'}>${ICON_PLAY_SM}${esc(_drawT('replay', 'Replay'))}</button>
       <button class="ctl-btn" id="drawTidyBtn" onclick="drawTidyStrokes()" title="${esc(_drawT('tidy_title', 'Straighten strokes that are nearly straight and snap loose ends onto a guide — one press, one undo'))}" ${nStrokes?'':'disabled'}>${_drawT('tidy', 'Tidy strokes')}</button>
       <button class="ctl-btn" onclick="drawClearCurrent()" ${nStrokes?'':'disabled'}>${_drawT('clear', 'Clear letter')}</button>
       <button class="ctl-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${I18n.t('fontmaker.panels.copy_outline')}</button>
