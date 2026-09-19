@@ -2034,9 +2034,13 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
 /* ═══ end folder-tree component CSS ═══ */
 
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404 (docs/reference/shared-components.md → Header icons).
-   The header controls carry inline SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies.
+   The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
+   SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
+   size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
    The dark toggle holds both the moon and the sun and body.dark picks one; scripts change only the .hi-lbl text beside it. */
 .hi{width:16px;height:16px;flex-shrink:0;display:inline-block;vertical-align:-0.2em;}
+.hi-sm{width:13px;height:13px;}
+.hi-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;}
 .hi-sun{display:none;}
 body.dark .hi-moon{display:none;}
 body.dark .hi-sun{display:inline-block;}
@@ -2144,8 +2148,8 @@ body.dark .hi-sun{display:inline-block;}
           <div class="weather-loading" data-i18n="dashboard.weather.loading">Loading weather…</div>
         </div>
         <div style="text-align:center;margin-top:6px;">
-          <button onclick="renderWeather()" class="btn-xs" title="Refresh weather" data-i18n-title="dashboard.weather.refresh_title" data-i18n="dashboard.weather.refresh"
-            style="font-size:0.7rem;padding:2px 8px;border:1px solid var(--border);border-radius:4px;color:var(--muted);cursor:pointer;">↺ Refresh</button>
+          <button onclick="renderWeather()" class="btn-xs hi-btn" title="Refresh weather" data-i18n-title="dashboard.weather.refresh_title"
+            style="font-size:0.7rem;padding:2px 8px;border:1px solid var(--border);border-radius:4px;color:var(--muted);cursor:pointer;"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="dashboard.weather.refresh">Refresh</span></button>
         </div>
       </div>
     </div>
@@ -2171,9 +2175,9 @@ body.dark .hi-sun{display:inline-block;}
              #locNote) instead of the blocking alert() a mistyped "5.30" used to raise. -->
         <div id="timerCustomNote" class="schedule-validation" role="status" aria-live="polite" style="display:none;"></div>
         <div class="timer-controls">
-          <button class="timer-ctrl-btn" id="timerStartBtn" onclick="timerStart()" data-i18n="dashboard.timer.start">▶ Start</button>
-          <button class="timer-ctrl-btn" id="timerPauseBtn" onclick="timerPause()" data-i18n="dashboard.timer.pause">⏸ Pause</button>
-          <button class="timer-ctrl-btn" id="timerResetBtn" onclick="timerReset()" data-i18n="dashboard.timer.reset">↺ Reset</button>
+          <button class="timer-ctrl-btn hi-btn" id="timerStartBtn" onclick="timerStart()"><svg class="hi hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="dashboard.timer.start">Start</span></button>
+          <button class="timer-ctrl-btn hi-btn" id="timerPauseBtn" onclick="timerPause()"><svg class="hi hi-pause" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.8" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/><rect x="13.6" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="dashboard.timer.pause">Pause</span></button>
+          <button class="timer-ctrl-btn hi-btn" id="timerResetBtn" onclick="timerReset()"><svg class="hi hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="dashboard.timer.reset">Reset</span></button>
           <button class="timer-ctrl-btn" id="timerAddMinBtn" onclick="timerAddMinute()" title="Add a minute to the countdown" data-i18n-title="dashboard.timer.add_minute_title" data-i18n="dashboard.timer.add_minute">+1 min</button>
         </div>
       </div>
@@ -2295,7 +2299,7 @@ body.dark .hi-sun{display:inline-block;}
 <!-- ───── Move-panels edit-mode bar (shown only while body.layout-edit) ───── -->
 <div id="layoutEditBar" role="toolbar" aria-label="Move panels" data-i18n-aria-label="dashboard.layout.bar_aria">
   <span class="leb-hint" data-i18n="dashboard.layout.edit_hint">Use the arrow buttons on each panel to move it. Changes save automatically.</span>
-  <button class="leb-btn" type="button" id="layoutResetBtn" onclick="resetPanelLayout()" data-i18n="dashboard.layout.reset_button">↺ Restore default layout</button>
+  <button class="leb-btn hi-btn" type="button" id="layoutResetBtn" onclick="resetPanelLayout()"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="dashboard.layout.reset_button">Restore default layout</span></button>
   <button class="leb-btn" type="button" id="layoutDoneBtn" onclick="exitLayoutEdit()" data-i18n="dashboard.layout.done_button">✓ Done</button>
 </div>
 <!-- Screen-reader live region for move announcements (same pattern as flash_cards #a11yStatus) -->
@@ -2367,14 +2371,14 @@ body.dark .hi-sun{display:inline-block;}
       <label for="colTitleSizeSlider" data-i18n="dashboard.display.header_size">Header size</label>
       <input type="range" id="colTitleSizeSlider" min="0.5" max="1.8" step="0.05" value="0.78" oninput="setColTitleSize(this.value)">
       <span class="size-val" id="colTitleSizeVal">0.78rem</span>
-      <button class="btn-xs" onclick="setColTitleSize(0.78)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setColTitleSize(0.78)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
     </div>
     <div class="form-row" style="margin-top:8px;">
       <label data-i18n="dashboard.display.show_text_size_options">Show text size options</label>
       <label class="toggle"><input type="checkbox" id="showTextSizeOptions"><span class="slider"></span></label>
     </div>
     <div style="padding-inline-start:18px;margin-bottom:6px;">
-      <button class="btn btn-xs btn-secondary" onclick="resetAllTextSizes()" data-i18n="dashboard.display.reset_all_text_sizes">↺ Reset all text sizes</button>
+      <button class="btn btn-xs btn-secondary hi-btn" onclick="resetAllTextSizes()"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="dashboard.display.reset_all_text_sizes">Reset all text sizes</span></button>
     </div>
     <div class="form-row">
       <label data-i18n="dashboard.display.hide_zoom_bar">Hide zoom bar</label>
@@ -2429,7 +2433,7 @@ body.dark .hi-sun{display:inline-block;}
           <label for="engDateSizeSlider" data-i18n="dashboard.datetime.eng_date_size">Eng Date size</label>
           <input type="range" id="engDateSizeSlider" min="0.5" max="3" step="0.05" value="1.35" oninput="setEngDateSize(this.value)">
           <span class="size-val" id="engDateSizeVal">1.35rem</span>
-          <button class="btn-xs" onclick="setEngDateSize(1.35)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+          <button class="btn-xs" onclick="setEngDateSize(1.35)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <div class="form-row">
           <label data-i18n="dashboard.datetime.hide_eng_date">Hide English date</label>
@@ -2453,7 +2457,7 @@ body.dark .hi-sun{display:inline-block;}
           <label for="hebDateSizeSlider" data-i18n="dashboard.datetime.heb_date_size">Heb Date size</label>
           <input type="range" id="hebDateSizeSlider" min="0.5" max="5" step="0.1" value="2.6" oninput="setHebDateSize(this.value)">
           <span class="size-val" id="hebDateSizeVal">2.6rem</span>
-          <button class="btn-xs" onclick="setHebDateSize(2.6)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+          <button class="btn-xs" onclick="setHebDateSize(2.6)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <div class="form-row">
           <label data-i18n="dashboard.datetime.hide_heb_date">Hide Hebrew date</label>
@@ -2484,7 +2488,7 @@ body.dark .hi-sun{display:inline-block;}
           <label for="timeSizeSlider" data-i18n="dashboard.datetime.time_size">Time size</label>
           <input type="range" id="timeSizeSlider" min="0.5" max="6" step="0.1" value="3.4" oninput="setTimeSize(this.value)">
           <span class="size-val" id="timeSizeVal">3.4rem</span>
-          <button class="btn-xs" onclick="setTimeSize(3.4)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+          <button class="btn-xs" onclick="setTimeSize(3.4)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <div class="form-row">
           <label data-i18n="dashboard.datetime.hide_time">Hide time</label>
@@ -2510,7 +2514,7 @@ body.dark .hi-sun{display:inline-block;}
       <label for="tempSizeSlider" data-i18n="dashboard.weather.temp_size">Temp size</label>
       <input type="range" id="tempSizeSlider" min="0.5" max="4" step="0.1" value="2" oninput="setTempSize(this.value)">
       <span class="size-val" id="tempSizeVal">2rem</span>
-      <button class="btn-xs" onclick="setTempSize(2)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setTempSize(2)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
     </div>
     <div class="form-row">
       <label data-i18n="dashboard.weather.label_language">Label language</label>
@@ -2523,7 +2527,7 @@ body.dark .hi-sun{display:inline-block;}
       <label for="weatherLabelSizeSlider" data-i18n="dashboard.weather.label_size">Label size</label>
       <input type="range" id="weatherLabelSizeSlider" min="0.5" max="3" step="0.05" value="1.1" oninput="setWeatherLabelSize(this.value)">
       <span class="size-val" id="weatherLabelSizeVal">1.1rem</span>
-      <button class="btn-xs" onclick="setWeatherLabelSize(1.1)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setWeatherLabelSize(1.1)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
     </div>
     <div class="form-row">
       <label><span data-i18n="dashboard.weather.simple_desc">Simple weather description</span> <span class="tip-wrap" data-tip="Limits description to: Sun, Clouds, Sun &amp; Clouds, Rain, Snow, or Fog — instead of full WMO detail." data-i18n-tip="dashboard.weather.simple_desc_tip"><i class="tip-icon">?</i></span></label>
@@ -2545,7 +2549,7 @@ body.dark .hi-sun{display:inline-block;}
       <label for="weatherHLSizeSlider" data-i18n="dashboard.weather.hl_size">H/L size</label>
       <input type="range" id="weatherHLSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setWeatherHLSize(this.value)">
       <span class="size-val" id="weatherHLSizeVal">0.72rem</span>
-      <button class="btn-xs" onclick="setWeatherHLSize(0.72)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setWeatherHLSize(0.72)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
     </div>
     <div class="form-row">
       <label data-i18n="dashboard.weather.hide_desc">Hide weather description</label>
@@ -2555,7 +2559,7 @@ body.dark .hi-sun{display:inline-block;}
       <label for="weatherDescSizeSlider" data-i18n="dashboard.weather.desc_size">Description size</label>
       <input type="range" id="weatherDescSizeSlider" min="0.4" max="3" step="0.05" value="1.05" oninput="setWeatherDescSize(this.value)">
       <span class="size-val" id="weatherDescSizeVal">1.05rem</span>
-      <button class="btn-xs" onclick="setWeatherDescSize(1.05)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setWeatherDescSize(1.05)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
     </div>
     <div class="form-row">
       <label><span data-i18n="dashboard.weather.tap_to_read">Tap to read</span> <span class="beta-tag" data-i18n="dashboard.common.beta_badge">BETA</span></label>
@@ -2597,14 +2601,14 @@ body.dark .hi-sun{display:inline-block;}
           <option value="gentle" data-i18n="dashboard.timer.sound_gentle">Gentle</option>
           <option value="shofar" data-i18n="dashboard.timer.sound_shofar">Shofar</option>
         </select>
-        <button type="button" class="btn-xs" id="timerSoundTestBtn" onclick="timerTestSound()" title="Play the selected sound" data-i18n-title="dashboard.timer.sound_test_title" data-i18n-aria-label="dashboard.timer.sound_test_title" aria-label="Play the selected sound" data-i18n="dashboard.timer.sound_test">▶ Test</button>
+        <button type="button" class="btn-xs hi-btn" id="timerSoundTestBtn" onclick="timerTestSound()" title="Play the selected sound" data-i18n-title="dashboard.timer.sound_test_title" data-i18n-aria-label="dashboard.timer.sound_test_title" aria-label="Play the selected sound"><svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="dashboard.timer.sound_test">Test</span></button>
       </div>
     </div>
     <div class="size-row">
       <label for="timerVolumeSlider" data-i18n="dashboard.timer.volume">Volume</label>
       <input type="range" id="timerVolumeSlider" min="0" max="100" step="5" value="70" oninput="setTimerVolume(this.value)">
       <span class="size-val" id="timerVolumeVal">70%</span>
-      <button class="btn-xs" onclick="setTimerVolume(70)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setTimerVolume(70)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
     </div>
     <div class="form-row">
       <label data-i18n="dashboard.timer.repeat">Repeat until dismissed</label>
@@ -2696,7 +2700,7 @@ body.dark .hi-sun{display:inline-block;}
       <label for="dowDisplaySizeSlider" data-i18n="dashboard.days.display_size">Display size</label>
       <input type="range" id="dowDisplaySizeSlider" min="0.5" max="3" step="0.05" value="1.35" oninput="setDowDisplaySize(this.value)">
       <span class="size-val" id="dowDisplaySizeVal">1.35rem</span>
-      <button class="btn-xs" onclick="setDowDisplaySize(1.35)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setDowDisplaySize(1.35)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
     </div>
     <div class="form-row">
       <label data-i18n="dashboard.days.color_days">Color days of the week</label>
@@ -2718,7 +2722,7 @@ body.dark .hi-sun{display:inline-block;}
       <label for="dowYTTSizeSlider" data-i18n="dashboard.days.ytt_size">Y/T/T size</label>
       <input type="range" id="dowYTTSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setDowYTTSize(this.value)">
       <span class="size-val" id="dowYTTSizeVal">0.72rem</span>
-      <button class="btn-xs" onclick="setDowYTTSize(0.72)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setDowYTTSize(0.72)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
     </div>
     <div class="form-row">
       <label data-i18n="dashboard.days.emoji_sequence">Emoji sequence</label>
@@ -2737,7 +2741,7 @@ body.dark .hi-sun{display:inline-block;}
       <label for="dowEmojiSizeSlider" data-i18n="dashboard.days.emoji_size">Emoji size</label>
       <input type="range" id="dowEmojiSizeSlider" min="0.5" max="4" step="0.1" value="1.4" oninput="setDowEmojiSize(this.value)">
       <span class="size-val" id="dowEmojiSizeVal">1.4rem</span>
-      <button class="btn-xs" onclick="setDowEmojiSize(1.4)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default">↺</button>
+      <button class="btn-xs" onclick="setDowEmojiSize(1.4)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
     </div>
     <div class="form-row">
       <label><span data-i18n="dashboard.days.tap_to_read">Tap to read</span> <span class="beta-tag" data-i18n="dashboard.common.beta_badge">BETA</span></label>
@@ -2931,7 +2935,7 @@ body.dark .hi-sun{display:inline-block;}
         <button class="btn btn-xs btn-secondary" style="padding:2px 6px;font-size:0.65rem;"
                 title="Restore default" data-i18n-title="dashboard.common.restore_default"
                 aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default"
-                onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';settings.ttsRate=0.75;saveSettingsToStorage();">↺</button>
+                onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';settings.ttsRate=0.75;saveSettingsToStorage();"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);padding:0 1px;">
         <span data-i18n="dashboard.color.tts_slower">Slower</span><span data-i18n="dashboard.color.tts_fast">Fast</span>
@@ -3240,6 +3244,8 @@ body.dark .hi-sun{display:inline-block;}
     return v === k ? def.name : v;
   }
 
+  // Shared icon-set SVGs for the buttons this page builds in script (see the header-icons CSS block).
+  const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg>';
   const FS_ENTER = '<svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
   const FS_EXIT = '<svg class="hi hi-fs-exit" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
 
@@ -7103,9 +7109,14 @@ function mountFolderTree(cfg){
         const f = document.createDocumentFragment();
         // A glyph label ("↺", "⧉", "×") IS the accessible name unless something outranks it, so
         // mirror the translated title into aria-label whenever the label carries no words.
-        const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; if (title) { b.title = title; if (!/\p{L}|\p{N}/u.test(txt)) b.setAttribute('aria-label', title); } b.addEventListener('click', fn); return b; };
+        const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls;
+          // A leading '<' means an inline SVG from the shared icon set (static markup in this file, never user data);
+          // such a button carries no text, so it always takes the title as its accessible name.
+          const isIcon = txt.charAt(0) === '<';
+          if (isIcon) b.innerHTML = txt; else b.textContent = txt;
+          if (title) { b.title = title; if (isIcon || !/\p{L}|\p{N}/u.test(txt)) b.setAttribute('aria-label', title); } b.addEventListener('click', fn); return b; };
         f.appendChild(mk(I18n.t('dashboard.preset.load'), '', 'btn btn-xs', () => loadPreset(name)));
-        f.appendChild(mk('↺', I18n.t('dashboard.preset.overwrite_title'), 'btn btn-xs btn-secondary', () => overwritePreset(name)));
+        f.appendChild(mk(ICON_RESET_SM, I18n.t('dashboard.preset.overwrite_title'), 'btn btn-xs btn-secondary', () => overwritePreset(name)));
         f.appendChild(mk('⧉', I18n.t('dashboard.preset.duplicate_title'), 'btn btn-xs btn-secondary', () => duplicatePreset(name)));
         f.appendChild(mk('✎', I18n.t('dashboard.preset.rename_title'), 'btn btn-xs btn-secondary', () => renamePreset(name)));
         f.appendChild(mk('×', I18n.t('dashboard.preset.delete_title'), 'btn btn-xs btn-secondary', () => deletePreset(name)));
@@ -9121,9 +9132,14 @@ else ivritInit();
         const f = document.createDocumentFragment();
         // A glyph label ("↺", "⧉", "×") IS the accessible name unless something outranks it, so
         // mirror the translated title into aria-label whenever the label carries no words.
-        const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = txt; if (title) { b.title = title; if (!/\p{L}|\p{N}/u.test(txt)) b.setAttribute('aria-label', title); } b.addEventListener('click', fn); return b; };
+        const mk = (txt, title, cls, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = cls;
+          // A leading '<' means an inline SVG from the shared icon set (static markup in this file, never user data);
+          // such a button carries no text, so it always takes the title as its accessible name.
+          const isIcon = txt.charAt(0) === '<';
+          if (isIcon) b.innerHTML = txt; else b.textContent = txt;
+          if (title) { b.title = title; if (isIcon || !/\p{L}|\p{N}/u.test(txt)) b.setAttribute('aria-label', title); } b.addEventListener('click', fn); return b; };
         f.appendChild(mk(I18n.t('dashboard.schedule.sched_load'), '', 'btn btn-xs', () => loadSavedSchedule(name)));
-        f.appendChild(mk('↺', I18n.t('dashboard.schedule.overwrite_title'), 'btn btn-xs btn-secondary', () => overwriteSavedSchedule(name)));
+        f.appendChild(mk(ICON_RESET_SM, I18n.t('dashboard.schedule.overwrite_title'), 'btn btn-xs btn-secondary', () => overwriteSavedSchedule(name)));
         f.appendChild(mk('⧉', I18n.t('dashboard.schedule.sched_duplicate_title'), 'btn btn-xs btn-secondary', () => duplicateSavedSchedule(name)));
         f.appendChild(mk('✎', I18n.t('dashboard.schedule.sched_rename_title'), 'btn btn-xs btn-secondary', () => renameSavedSchedule(name)));
         f.appendChild(mk('×', I18n.t('dashboard.schedule.sched_delete_title'), 'btn btn-xs btn-secondary', () => deleteSavedSchedule(name)));

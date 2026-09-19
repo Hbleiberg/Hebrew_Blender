@@ -207,7 +207,7 @@ dashboard.display.keep_awake,Keep screen awake,שמור מסך פעיל,settings
 dashboard.display.keep_awake_tip,Prevents the display from dimming or sleeping while the dashboard is open (Screen Wake Lock). Fullscreen keeps the screen awake automatically.,מונע מהמסך להתעמעם או להיכנס לשינה בזמן שלוח המחוונים פתוח (Screen Wake Lock). מסך מלא שומר את המסך פעיל אוטומטית.,settings tooltip,
 dashboard.display.location_placeholder,"City, e.g. New York","עיר, למשל New York",location input placeholder,
 dashboard.display.location_update,Update,עדכן,location update button,
-dashboard.display.reset_all_text_sizes,↺ Reset all text sizes,↺ אפס את כל גדלי הטקסט,settings button,leading-emoji
+dashboard.display.reset_all_text_sizes,Reset all text sizes,אפס את כל גדלי הטקסט,settings button,leading-emoji
 dashboard.display.reset_all_text_sizes_confirm,Reset all text sizes to defaults?,לאפס את כל גדלי הטקסט לברירות המחדל?,confirm dialog,
 dashboard.display.show_text_size_options,Show text size options,הצג אפשרויות גודל טקסט,settings label,
 dashboard.display.show_video_embed,Show video embed,הצג הטמעת וידאו,settings label,
@@ -280,7 +280,7 @@ dashboard.layout.panel_picker,Student Picker,בורר תלמידים,panel name 
 dashboard.layout.panel_timer,Timer,טיימר,panel name in move-panels chrome,
 dashboard.layout.panel_video,Video,וידאו,panel name in move-panels chrome,
 dashboard.layout.panel_weather,Weather,מזג אוויר,panel name in move-panels chrome,
-dashboard.layout.reset_button,↺ Restore default layout,↺ שחזור פריסת ברירת המחדל,move-panels bar button,leading-emoji
+dashboard.layout.reset_button,Restore default layout,שחזור פריסת ברירת המחדל,move-panels bar button,leading-emoji
 dashboard.layout.reset_confirm,Are you sure? This discards your custom panel arrangement and restores the default layout.,בטוחים? פעולה זו מבטלת את סידור הפאנלים המותאם שלכם ומשחזרת את פריסת ברירת המחדל.,confirm dialog before layout reset,
 dashboard.layout.reset_toast,Default layout restored,פריסת ברירת המחדל שוחזרה,toast + announcement after layout reset,
 dashboard.layout.switch_column_aria,Move {name} to the other column,העברת {name} לעמודה השנייה,panel move button aria-label + title,do not translate {…}
@@ -534,12 +534,12 @@ dashboard.timer.fs_1min,1 min,1 דק',fullscreen timer pop button,
 dashboard.timer.fs_3min,3 min,3 דק',fullscreen timer pop button,
 dashboard.timer.fs_5min,5 min,5 דק',fullscreen timer pop button,
 dashboard.timer.fs_hide,Hide,הסתר,fullscreen timer pop button,
-dashboard.timer.pause,⏸ Pause,⏸ השהה,timer control button,leading-emoji
+dashboard.timer.pause,Pause,השהה,timer control button,leading-emoji
 dashboard.timer.preset_10min,10 min,10 דק',timer preset button,
 dashboard.timer.preset_1min,1 min,1 דק',timer preset button,
 dashboard.timer.preset_3min,3 min,3 דק',timer preset button,
 dashboard.timer.preset_5min,5 min,5 דק',timer preset button,
-dashboard.timer.reset,↺ Reset,↺ איפוס,timer control button,leading-emoji
+dashboard.timer.reset,Reset,איפוס,timer control button,leading-emoji
 dashboard.timer.set,Set,הגדר,timer custom set button,
 dashboard.timer.show_fullscreen,Show timer in fullscreen mode,הצג טיימר במצב מסך מלא,settings label,
 dashboard.timer.show_panel,Show Timer panel,הצג פאנל טיימר,settings label,
@@ -558,12 +558,12 @@ dashboard.timer.sound_gentle,Gentle,עדין,finish-sound option,
 dashboard.timer.sound_label,Finish sound,צליל סיום,settings label,
 dashboard.timer.sound_none,Silent,ללא צליל,finish-sound option,
 dashboard.timer.sound_shofar,Shofar,שופר,finish-sound option,
-dashboard.timer.sound_test,▶ Test,▶ השמעה,settings button — previews the selected sound,leading-emoji
+dashboard.timer.sound_test,Test,השמעה,settings button — previews the selected sound,leading-emoji
 dashboard.timer.sound_test_title,Play the selected sound,השמעת הצליל הנבחר,settings button tooltip,
 dashboard.timer.sound_triple,Triple beep,שלושה ציפצופים,finish-sound option,
 dashboard.timer.stop_aria,Stop the timer,עצירת הטיימר,aria-label on the Time! display while it repeats,
 dashboard.timer.stop_hint,"Tap, or press Esc, to stop","הקישו, או לחצו Esc, כדי לעצור",hint under the flashing Time! while the sound repeats,
-dashboard.timer.start,▶ Start,▶ התחל,timer control button,leading-emoji
+dashboard.timer.start,Start,התחל,timer control button,leading-emoji
 dashboard.timer.volume,Volume,עוצמת קול,settings label,
 dashboard.tour.firstrun_link,Take a tour →,צאו לסיור ←,First-run setup-card tour link,first-run affordance
 dashboard.tour.step1_body,"Yesterday, today and tomorrow in Hebrew — plus Shabbat times and the Omer count when they apply.","אתמול, היום ומחר בעברית — וגם זמני שבת וספירת העומר כשהם רלוונטיים.",tour step body,
@@ -606,7 +606,7 @@ dashboard.weather.label_language,Label language,שפת התוויות,settings l
 dashboard.weather.label_size,Label size,גודל תווית,size slider label,
 dashboard.weather.loading,Loading weather…,טוען מזג אוויר…,weather loading state,
 dashboard.weather.not_found,"Location ""{location}"" not found.","המיקום ""{location}"" לא נמצא.",weather error state,mixed UI+content — do not translate {…}
-dashboard.weather.refresh,↺ Refresh,↺ רענן,weather refresh button,leading-emoji
+dashboard.weather.refresh,Refresh,רענן,weather refresh button,leading-emoji
 dashboard.weather.refresh_title,Refresh weather,רענן מזג אוויר,weather refresh button title,
 dashboard.weather.simple_clouds,Clouds,עננים,simple weather description,
 dashboard.weather.simple_desc,Simple weather description,תיאור מזג אוויר פשוט,settings label,

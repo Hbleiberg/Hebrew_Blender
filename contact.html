@@ -278,9 +278,13 @@ footer a { display: inline-block; padding-block: 5px; }
   header .hright { display: none !important; }
 }
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404 (docs/reference/shared-components.md → Header icons).
-   The header controls carry inline SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies.
+   The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
+   SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
+   size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
    The dark toggle holds both the moon and the sun and body.dark picks one; scripts change only the .hi-lbl text beside it. */
 .hi{width:16px;height:16px;flex-shrink:0;display:inline-block;vertical-align:-0.2em;}
+.hi-sm{width:13px;height:13px;}
+.hi-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;}
 .hi-sun{display:none;}
 body.dark .hi-moon{display:none;}
 body.dark .hi-sun{display:inline-block;}
