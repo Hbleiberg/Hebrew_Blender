@@ -373,7 +373,9 @@ do the in-page **control buttons**: play, pause, stop, reset / restore-default, 
 and the music note on the chant buttons, and the **action buttons**: copy, copy-link, print, save, download,
 upload, send and page, and the **dashboard's board controls**: the fullscreen quick strip (Settings, Timer, Pick,
 Text, Video, Blank), the student picker's Pick One / Make Groups pair (in the sidebar and in the strip's pick
-popup) and the board's edit pencil.
+popup) and the board's edit pencil, and the **Torah Trainer's picker controls**: Holiday Torah Readings
+(a calendar), Student handout (the page glyph the flash cards' worksheet handoff already carries), the
+trope-colour chip (a palette) and the settings drawer's heading gear.
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
 `account`, `404`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
@@ -388,8 +390,11 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   `hi-help`, `hi-fs-enter` / `hi-fs-exit`, `hi-blank`, `hi-user`, plus the control family `hi-play`,
   `hi-pause`, `hi-stop`, `hi-reset`, `hi-retry`, `hi-loop`, `hi-sound` and `hi-music`, and the action family
   `hi-copy`, `hi-link`, `hi-print`, `hi-save`, `hi-download`, `hi-upload`, `hi-send` and `hi-page`, and the dashboard
-  family `hi-timer`, `hi-dice`, `hi-group`, `hi-pencil` and `hi-video` (the strip's Settings and Blank reuse
-  `hi-gear` and `hi-blank`, so one action keeps one picture wherever it appears). Every snippet is
+  family `hi-timer`, `hi-dice`, `hi-group`, `hi-pencil` and `hi-video`, plus `hi-calendar` (a festival
+  reading) and `hi-palette` (turning colour coding on) — the strip's Settings and Blank reuse `hi-gear` and
+  `hi-blank` and the Torah Trainer's handout reuses `hi-page`, so one action keeps one picture wherever it
+  appears. A glyph lives only on the pages that use it; what must match byte-for-byte is each snippet
+  wherever it *does* appear. Every snippet is
   `aria-hidden="true" focusable="false"`; the control's own `title` / `aria-label` names it. `.hi-sm` is the
   13px size the tiny settings buttons take and `.hi-btn` lines an icon up with its label inside a button.
 
@@ -404,6 +409,9 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   (WCAG 2.5.8) — the dashboard timer's Start / Pause / Reset are the example, icon-only so the four
   transport controls sit on one line. Only do it where the glyph is unambiguous on its own; a word the
   icon cannot carry (the timer's own *+1 min*, *Custom*, *Set*) keeps its label.
+- **A heading takes its glyph the same way a button does** — the Torah Trainer's settings drawer keeps the
+  `data-i18n` on a span beside the gear and gets the gap from a page rule on `.settings-header h2`, never from
+  `.hi-btn`, whose name (and `justify-content:center`) belongs to buttons.
 - **The dark toggle holds both `hi-moon` and `hi-sun`.** Its scripts write only `aria-pressed` and, on the
   labelled variant, the label text — `(_db.querySelector('.hi-lbl') || _db).textContent = …` — never the
   button's `textContent`. A second or third dark button (the dashboard and Trope Tutor drawers, the Torah
@@ -423,13 +431,14 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
 - **Import takes the upload icon and export the download icon**, whichever way round the old glyph ran — the
   generator's backup pair used to point the other way, which read as the opposite action.
 - **An `<option>` cannot hold an SVG**, so a control whose label lives in a `<select>` keeps its text glyph (the
-  Font Maker's *Upload your own reference font…* option, and the language switcher, which draws its flag beside
-  the closed select instead).
+  Font Maker's *Upload your own reference font…* option, the 🎵 the Torah Trainer's Reading picker puts on a
+  chantable aliyah, and the language switcher, which draws its flag beside the closed select instead).
 - **Not every glyph is a control.** The dashboard's day-badge emoji sets (⏪️▶️⏩️, 🔼⏹️🔽) are the pictures a
   teacher projects on the board, the flash cards' ↺ flips a card rather than resetting anything, the resources
   directory's category chips (🖨️ Printables, 🇮🇱 Hebrew…) are one emoji set the whole listing shares, the
-  generator's printed Caller Sheet is worksheet output, and prose that mentions a control ("Tap ▶ to hear the
-  melody") stays prose — leave all of them alone.
+  generator's printed Caller Sheet is worksheet output, the Torah Trainer's 💡 tip toast, its ✦ aliyah
+  divider and the ✡︎ star on its header and empty card are ornaments rather than controls, and prose that
+  mentions a control ("Tap ▶ to hear the melody") stays prose — leave all of them alone.
 - **The Font Maker's two button helpers take an optional icon**: `fmActBtn(id, key, icon)` and a modal button
   descriptor's `icon` field, which makes `askModal` write `innerHTML` instead of `textContent`.
 
