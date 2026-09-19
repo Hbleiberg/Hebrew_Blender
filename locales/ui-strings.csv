@@ -309,20 +309,20 @@ dashboard.picker.everyone_here,✅ Everyone's here,✅ כולם כאן,student p
 dashboard.picker.everyone_here_title,Clear today's absence marks for this class,ניקוי סימוני ההיעדרות של היום לכיתה זו,button title,
 dashboard.picker.fair_cycle,Don't repeat until everyone's been picked,אל תחזור עד שכולם נבחרו,settings label,
 dashboard.picker.fs_hide,Hide,הסתר,fullscreen pick pop button,
-dashboard.picker.fs_make_groups,👥 Make Groups,👥 חלוקה לקבוצות,fullscreen pick pop button,leading-emoji
-dashboard.picker.fs_pick_one,🎲 Pick One,🎲 הגרל אחד,fullscreen pick pop button,leading-emoji
+dashboard.picker.fs_make_groups,Make Groups,חלוקה לקבוצות,fullscreen pick pop button,leading-emoji
+dashboard.picker.fs_pick_one,Pick One,הגרל אחד,fullscreen pick pop button,leading-emoji
 dashboard.picker.group_count_label,Number of groups (N),מספר קבוצות (N),settings label (count mode),
 dashboard.picker.group_mode,Group Maker mode,מצב יצירת קבוצות,settings label,
 dashboard.picker.group_of_n,Groups of N,קבוצות של N,radio option,
 dashboard.picker.group_size_label,Group size (N),גודל קבוצה (N),settings label (size mode),
-dashboard.picker.make_groups,👥 Make Groups,👥 חלוקה לקבוצות,sidebar picker button,leading-emoji
+dashboard.picker.make_groups,Make Groups,חלוקה לקבוצות,sidebar picker button,leading-emoji
 dashboard.picker.n_groups,N groups,N קבוצות,radio option,
 dashboard.picker.new_class_prompt,New class name:,שם כיתה חדשה:,prompt,
 dashboard.picker.new_class_title,New class,כיתה חדשה,icon button title,
 dashboard.picker.new_round,🔄 New round,🔄 סבב חדש,fair-cycle reset button + pick note,leading-emoji
 dashboard.picker.overlay_aria,Student picker,בורר תלמידים,projector overlay aria,aria-label only
 dashboard.picker.pick_again,🎲 Pick Again,🎲 הגרל שוב,pick result button,leading-emoji
-dashboard.picker.pick_one,🎲 Pick One,🎲 הגרל אחד,sidebar picker button,leading-emoji
+dashboard.picker.pick_one,Pick One,הגרל אחד,sidebar picker button,leading-emoji
 dashboard.picker.progress,Picked {done} / {total},נבחרו {done} / {total},fair-cycle progress,
 dashboard.picker.rename_class_prompt,Rename class:,שנה שם כיתה:,prompt,
 dashboard.picker.rename_class_title,Rename class,שנה שם כיתה,icon button title,

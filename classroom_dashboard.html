@@ -1695,6 +1695,7 @@
   /* ── In-place dashboard text editing ── */
   #dashTextWrap { position: relative; }
   .dash-edit-pencil { position: absolute; top: 4px; right: 4px; z-index: 5; width: 34px; height: 34px;
+    display: inline-flex; align-items: center; justify-content: center;
     border-radius: 8px; border: 1px solid var(--border); background: var(--white); color: var(--muted);
     cursor: pointer; font-size: 1rem; line-height: 1; opacity: 0; transition: opacity 0.15s; }
   #dashTextWrap:hover .dash-edit-pencil, .dash-edit-pencil:focus { opacity: 0.9; }
@@ -1704,7 +1705,7 @@
   @media (hover: none) { .dash-edit-pencil { opacity: 0.9; } }
   .dash-edit-pencil:hover { border-color: var(--gold); color: var(--gold-text); }
   body.dark .dash-edit-pencil { background: var(--navy-deep); }
-  body.fullscreen .dash-edit-pencil { display: none; }   /* in fullscreen the ✎ lives on the quick strip */
+  body.fullscreen .dash-edit-pencil { display: none; }   /* in fullscreen the pencil lives on the quick strip */
   .inplace-toolbar { position: fixed; z-index: 210; width: auto; max-width: 96vw;
     box-shadow: var(--shadow-md); border: 1px solid var(--border); border-radius: 8px; background: var(--white); }
   body.dark .inplace-toolbar { background: var(--navy-deep); }
@@ -1735,6 +1736,7 @@
     /* 0.7rem (11.2px) is the suite's text floor; the six labels sat at 9.6px on the projected view. The
        strip grows 435→441px at 1280 and not at all on phones (min-width / the 430px thirds govern). (S322 Pass M) */
   .fs-strip-btn .fss-ico { font-size: 1.2rem; line-height: 1; color: var(--gold-light); }
+  .fs-strip-btn .fss-ico .hi { width: 22px; height: 22px; display: block; }   /* the shared 16px glyph, sized for a strip read from across the room (the emoji it replaced drew at ~19px) */
   .fs-strip-btn:hover { background: rgba(255,255,255,0.18); border-color: var(--gold); }
   .fs-pop { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; background: rgba(13,18,32,0.85); backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 7px 9px; box-shadow: 0 3px 12px rgba(0,0,0,0.32); }
@@ -2091,17 +2093,17 @@ body.dark .hi-sun{display:inline-block;}
   </div>
   <div id="fsPickPop" class="fs-pop" style="display:none;">
     <select id="pickerClassSelFs" class="picker-class-switch" dir="ltr" title="Switch class" data-i18n-title="dashboard.picker.switch_class" aria-label="Switch class" data-i18n-aria-label="dashboard.picker.switch_class" onchange="switchClass(this.value)"></select>
-    <button class="fs-pop-btn" type="button" onclick="fsPickOne()" data-i18n="dashboard.picker.fs_pick_one">🎲 Pick One</button>
-    <button class="fs-pop-btn" type="button" onclick="fsPickGroups()" data-i18n="dashboard.picker.fs_make_groups">👥 Make Groups</button>
+    <button class="fs-pop-btn hi-btn" type="button" onclick="fsPickOne()"><svg class="hi hi-dice" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3.5"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="dashboard.picker.fs_pick_one">Pick One</span></button>
+    <button class="fs-pop-btn hi-btn" type="button" onclick="fsPickGroups()"><svg class="hi hi-group" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.5" r="3.4"/><path d="M2.5 20.5v-1.6a4.2 4.2 0 0 1 4.2-4.2h4.6a4.2 4.2 0 0 1 4.2 4.2v1.6"/><path d="M15.6 4.3a3.2 3.2 0 0 1 0 6.4"/><path d="M21.5 20.5v-1.6a4.2 4.2 0 0 0-3.2-4.1"/></svg><span class="hi-lbl" data-i18n="dashboard.picker.fs_make_groups">Make Groups</span></button>
     <button class="fs-pop-btn fs-pop-hide" type="button" onclick="fsPickHide()" data-i18n="dashboard.picker.fs_hide">Hide</button>
   </div>
   <div class="fs-strip-inner">
-    <button class="fs-strip-btn" type="button" onclick="openSettings()"><span class="fss-ico">⚙️</span><span data-i18n="dashboard.fs.strip_settings">Settings</span></button>
-    <button class="fs-strip-btn" type="button" id="fsTimerBtn" onclick="fsStripTimerToggle()"><span class="fss-ico">⏱️</span><span data-i18n="dashboard.fs.strip_timer">Timer</span></button>
-    <button class="fs-strip-btn" type="button" id="fsPickBtn" onclick="fsStripPickToggle()"><span class="fss-ico">🎲</span><span data-i18n="dashboard.fs.strip_pick">Pick</span></button>
-    <button class="fs-strip-btn" type="button" onclick="fsStripText()"><span class="fss-ico">✎</span><span data-i18n="dashboard.fs.strip_text">Text</span></button>
-    <button class="fs-strip-btn" type="button" onclick="fsStripVideo()"><span class="fss-ico">📺</span><span data-i18n="dashboard.fs.strip_video">Video</span></button>
-    <button class="fs-strip-btn" type="button" onclick="toggleBlackout()"><span class="fss-ico">⬛</span><span data-i18n="dashboard.fs.strip_blackout">Blank</span></button>
+    <button class="fs-strip-btn" type="button" onclick="openSettings()"><span class="fss-ico"><svg class="hi hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg></span><span data-i18n="dashboard.fs.strip_settings">Settings</span></button>
+    <button class="fs-strip-btn" type="button" id="fsTimerBtn" onclick="fsStripTimerToggle()"><span class="fss-ico"><svg class="hi hi-timer" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 6V3M9.5 3h5M12 13.5l3-3"/></svg></span><span data-i18n="dashboard.fs.strip_timer">Timer</span></button>
+    <button class="fs-strip-btn" type="button" id="fsPickBtn" onclick="fsStripPickToggle()"><span class="fss-ico"><svg class="hi hi-dice" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3.5"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg></span><span data-i18n="dashboard.fs.strip_pick">Pick</span></button>
+    <button class="fs-strip-btn" type="button" onclick="fsStripText()"><span class="fss-ico"><svg class="hi hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg></span><span data-i18n="dashboard.fs.strip_text">Text</span></button>
+    <button class="fs-strip-btn" type="button" onclick="fsStripVideo()"><span class="fss-ico"><svg class="hi hi-video" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M10.2 7.6l5.2 2.9-5.2 2.9Z" fill="currentColor"/></svg></span><span data-i18n="dashboard.fs.strip_video">Video</span></button>
+    <button class="fs-strip-btn" type="button" onclick="toggleBlackout()"><span class="fss-ico"><svg class="hi hi-blank" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M6 6.5l12 8"/></svg></span><span data-i18n="dashboard.fs.strip_blackout">Blank</span></button>
   </div>
 </div>
 <div id="blackout" aria-hidden="true" onclick="setBlackout(false)"><span class="bo-hint" data-i18n="dashboard.blackout.hint">Tap, or press Esc, to return</span></div>
@@ -2142,7 +2144,7 @@ body.dark .hi-sun{display:inline-block;}
     </div>
     <div id="dashTextWrap" style="display:none;width:100%;">
       <div id="dashTextDisplay" class="dash-text-display" data-i18n-placeholder="dashboard.text.empty_placeholder"></div>
-      <button id="dashEditPencil" class="dash-edit-pencil" title="Edit text" data-i18n-title="dashboard.text.edit_pencil_title" aria-label="Edit dashboard text" data-i18n-aria-label="dashboard.text.edit_pencil_aria" onclick="enterInPlaceEdit()">✎</button>
+      <button id="dashEditPencil" class="dash-edit-pencil" title="Edit text" data-i18n-title="dashboard.text.edit_pencil_title" aria-label="Edit dashboard text" data-i18n-aria-label="dashboard.text.edit_pencil_aria" onclick="enterInPlaceEdit()"><svg class="hi hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg></button>
     </div>
   </div><!-- END RAIL (panelLayout zone "right") --><div class="zone-col" id="zoneRight">
     <div class="dash-col" id="weatherCol">
@@ -2191,8 +2193,8 @@ body.dark .hi-sun{display:inline-block;}
       <div class="col-body" id="pickerBody">
         <div class="picker-chips" id="pickerChips"></div>
         <div class="picker-actions" id="pickerActions">
-          <button class="btn" type="button" onclick="pickOne()" data-i18n="dashboard.picker.pick_one">🎲 Pick One</button>
-          <button class="btn-secondary" type="button" onclick="makeGroups()" data-i18n="dashboard.picker.make_groups">👥 Make Groups</button>
+          <button class="btn hi-btn" type="button" onclick="pickOne()"><svg class="hi hi-dice" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3.5"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="dashboard.picker.pick_one">Pick One</span></button>
+          <button class="btn-secondary hi-btn" type="button" onclick="makeGroups()"><svg class="hi hi-group" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.5" r="3.4"/><path d="M2.5 20.5v-1.6a4.2 4.2 0 0 1 4.2-4.2h4.6a4.2 4.2 0 0 1 4.2 4.2v1.6"/><path d="M15.6 4.3a3.2 3.2 0 0 1 0 6.4"/><path d="M21.5 20.5v-1.6a4.2 4.2 0 0 0-3.2-4.1"/></svg><span class="hi-lbl" data-i18n="dashboard.picker.make_groups">Make Groups</span></button>
         </div>
         <div class="picker-progress" id="pickerProgress"></div>
       </div>

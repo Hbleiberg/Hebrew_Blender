@@ -371,7 +371,9 @@ The header controls (Home / Back, the dark-mode toggle, Settings, Tour, Full Scr
 Blank-the-screen, and the account chip) carry inline SVG glyphs from one shared set instead of emoji, and so
 do the in-page **control buttons**: play, pause, stop, reset / restore-default, retry / replay, loop, sound
 and the music note on the chant buttons, and the **action buttons**: copy, copy-link, print, save, download,
-upload, send and page.
+upload, send and page, and the **dashboard's board controls**: the fullscreen quick strip (Settings, Timer, Pick,
+Text, Video, Blank), the student picker's Pick One / Make Groups pair (in the sidebar and in the strip's pick
+popup) and the board's edit pencil.
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
 `account`, `404`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
@@ -385,7 +387,9 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   for the pages' older mirroring rule), `hi-moon` + `hi-sun` (always both, the CSS picks one), `hi-gear`,
   `hi-help`, `hi-fs-enter` / `hi-fs-exit`, `hi-blank`, `hi-user`, plus the control family `hi-play`,
   `hi-pause`, `hi-stop`, `hi-reset`, `hi-retry`, `hi-loop`, `hi-sound` and `hi-music`, and the action family
-  `hi-copy`, `hi-link`, `hi-print`, `hi-save`, `hi-download`, `hi-upload`, `hi-send` and `hi-page`. Every snippet is
+  `hi-copy`, `hi-link`, `hi-print`, `hi-save`, `hi-download`, `hi-upload`, `hi-send` and `hi-page`, and the dashboard
+  family `hi-timer`, `hi-dice`, `hi-group`, `hi-pencil` and `hi-video` (the strip's Settings and Blank reuse
+  `hi-gear` and `hi-blank`, so one action keeps one picture wherever it appears). Every snippet is
   `aria-hidden="true" focusable="false"`; the control's own `title` / `aria-label` names it. `.hi-sm` is the
   13px size the tiny settings buttons take and `.hi-btn` lines an icon up with its label inside a button.
 
@@ -407,6 +411,9 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
 - **Full screen** keeps each page's own swap code; the constants it swaps (`FS_ENTER` / `FS_EXIT` or
   `FS_ENTER_ICON` / `FS_EXIT_ICON`) hold the shared `hi-fs-enter` / `hi-fs-exit` snippets, and the button's
   initial markup holds `hi-fs-enter`.
+- **A page sizes a glyph for its own control with a rule on the wrapper, never by editing the block** — the
+  dashboard's fullscreen strip shows its six at 22px through `.fs-strip-btn .fss-ico .hi` (a strip read from
+  across the room; the emoji it replaced drew at ~19px) while the shared `.hi` stays 16px everywhere else.
 - **Icon + label spacing** comes from the button's own `gap` (every labelled header button is
   `display:inline-flex; align-items:center; gap:5–6px`) or from `.hi-btn`; nothing in the block adds margins.
 - **A button a script builds** takes its icon from a `const ICON_*` beside that page's other icon constants
