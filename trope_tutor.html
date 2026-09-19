@@ -973,7 +973,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <div class="tu-family-note" id="tuFamilyNote"></div>
     <div class="tu-cards" id="tuCards"></div>
     <div class="tu-learn-nav">
-      <button class="btn btn-secondary" id="tuPrintChart" onclick="printChart()" title="Print all 26 marks as one reference chart" data-i18n-title="trope.learn.print_chart_title" data-i18n="trope.learn.print_chart">🖨️ Print chart</button>
+      <button class="btn btn-secondary hi-btn" id="tuPrintChart" onclick="printChart()" title="Print all 26 marks as one reference chart" data-i18n-title="trope.learn.print_chart_title"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="trope.learn.print_chart">Print chart</span></button>
       <button class="btn" id="tuNextFamily" onclick="nextFamily()" data-i18n="trope.learn.next_family">Next family →</button>
     </div>
     <!-- Built on demand by buildPrintChart() and shown only on paper — see the @media print block. -->
@@ -1160,7 +1160,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="trope.settings.panel_font">Hebrew Font</div>
       <div class="panel-body">
         <div class="font-options" id="fontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><span data-i18n="shared.fonts.upload_label">⬆ Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
         <div class="slider-row" style="margin-top:10px;">
           <label for="optFontSize" data-i18n="trope.settings.heb_size">Hebrew size</label>
           <input type="range" id="optFontSize" min="1.4" max="3.2" step="0.1" oninput="setHebFontSize(parseFloat(this.value))">

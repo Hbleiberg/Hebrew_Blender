@@ -607,7 +607,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <button type="button" id="ivritModeManual" class="ivrit-mode-btn" aria-pressed="false" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
       </div>
       <div id="ivritAuto">
-        <button class="ie-action-btn primary" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;" data-i18n="home.alltools.save_button">⬇ Save All Settings to .ivrit file</button>
+        <button class="ie-action-btn primary hi-btn" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="home.alltools.save_button">Save All Settings to .ivrit file</span></button>
         <div id="ivritInventory" style="margin:-4px 0 10px;text-align:center;opacity:0.75;font-size:0.82rem;line-height:1.4;"></div>
         <div id="ivritLastBackup" class="ivrit-lastbackup"></div>
         <div id="ivritDrop" class="ivrit-drop">
@@ -620,8 +620,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       </div>
       <div id="ivritManual" style="display:none;">
         <div class="btn-row">
-          <button class="ie-action-btn primary" onclick="exportAllSettings()" data-i18n="home.alltools.export_button">⬇ Export All Settings</button>
-          <button class="ie-action-btn primary" onclick="importAllSettings()" data-i18n="home.alltools.import_button">⬆ Import All Settings</button>
+          <button class="ie-action-btn primary hi-btn" onclick="exportAllSettings()"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="home.alltools.export_button">Export All Settings</span></button>
+          <button class="ie-action-btn primary hi-btn" onclick="importAllSettings()"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="home.alltools.import_button">Import All Settings</span></button>
         </div>
         <textarea id="ieTextarea" wrap="off" placeholder="Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…" data-i18n-placeholder="home.alltools.textarea_placeholder" aria-label="Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…" data-i18n-aria-label="home.alltools.textarea_placeholder" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
         <div><button class="ie-action-btn secondary" onclick="copyIEText()" id="ieCopyBtn" data-i18n="home.alltools.copy_button">Copy to Clipboard</button></div>
@@ -629,7 +629,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div id="myFontsSection" style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
         <h4 style="margin:0 0 4px;font-size:0.95rem;"><span data-i18n="home.alltools.myfonts.title">★ My IvritSuite Fonts</span> <span id="myFontsCount" style="font-weight:400;font-size:0.8rem;opacity:0.7;"></span></h4>
         <p class="ie-note" style="margin:0 0 8px;" data-i18n-html="home.alltools.myfonts.note">Fonts you built in the <a href="Hebrew_Font_Maker.html">Hebrew Font Maker</a> — or any <b>.ttf / .otf / .woff</b> you upload — are saved in this browser. Use one across every tool, download it, or remove it.</p>
-        <label class="ie-action-btn secondary" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin-bottom:8px;"><span data-i18n="home.alltools.myfonts.upload_button">⬆ Upload a font</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPickIndex(this)"></label>
+        <label class="ie-action-btn secondary" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin-bottom:8px;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="home.alltools.myfonts.upload_button">Upload a font</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPickIndex(this)"></label>
         <div id="myFontsList"></div>
       </div>
       <!-- Cloud saves (optional accounts): one shared js/ivrit-saves.js panel per tool, mounted by initCloudSaves() -->
@@ -672,6 +672,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
    per-origin — so one DB ("ivritsuite-fonts") is automatically shared by all of
    them. Keep this block byte-identical in every consuming page. No library is
    needed (indexedDB + FontFace are built in), so it loads nothing at page load. */
+// Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
+// builds in script. Static markup from this file, never user data.
+const ICON_DOWNLOAD_SM = '<svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg>';
 const IV_FONTS_DB = 'ivritsuite-fonts', IV_FONTS_STORE = 'fonts', IV_FONTS_CAP = 10;
 function _ivOpenFontsDB() {
   return new Promise((resolve, reject) => {
@@ -777,7 +780,7 @@ async function renderMyFontsManager() {
     const mk = (txt, title, fn, aria) => { const b = document.createElement('button'); b.className = 'ie-action-btn secondary'; b.textContent = txt; if (title) { b.title = title; b.setAttribute('aria-label', aria || title); } b.style.cssText = 'padding:4px 8px;font-size:0.78rem;'; b.onclick = fn; return b; };
     row.append(nm, meta,
       mk(I18n.t('home.alltools.myfonts.use_button'), '', () => useFontEverywhere(f.name)),
-      mk('⬇', I18n.t('home.alltools.myfonts.download_title'), () => downloadMyFontFile(f.name), I18n.t('shared.fonts.myfonts_download_name_aria', { name: f.name })),
+      mk(ICON_DOWNLOAD_SM, I18n.t('home.alltools.myfonts.download_title'), () => downloadMyFontFile(f.name), I18n.t('shared.fonts.myfonts_download_name_aria', { name: f.name })),
       mk('🗑', I18n.t('home.alltools.myfonts.remove_title'), () => deleteMyFontFile(f.name), I18n.t('shared.fonts.myfonts_remove_name_aria', { name: f.name })));
     host.appendChild(row);
   });

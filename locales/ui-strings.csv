@@ -352,7 +352,7 @@ dashboard.preset.rename_toast,"Renamed to ""{name}"" — Schedule Sync updated."
 dashboard.preset.save,Save,שמור,preset save button,
 dashboard.preset.save_empty,Please enter a preset name.,אנא הזינו שם תבנית.,alert,
 dashboard.schedule.add_period,+ Add period,+ הוסף שיעור,weekly editor toolbar button,leading-emoji
-dashboard.schedule.print_week,🖨 Print week,🖨 הדפסת השבוע,weekly editor toolbar button — prints the grid as a reference sheet,leading-emoji; REVIEW: HE draft
+dashboard.schedule.print_week,Print week,הדפסת השבוע,weekly editor toolbar button — prints the grid as a reference sheet,leading-emoji; REVIEW: HE draft
 dashboard.schedule.print_week_title,"Print the weekly grid as a reference sheet — class colors included","הדפסת רשת השבוע כדף עזר — כולל צבעי הכיתות",print button tooltip,REVIEW: HE draft
 dashboard.schedule.print_week_empty_title,Add a period first — there is nothing to print yet,הוסיפו שיעור תחילה — אין עדיין מה להדפיס,print button tooltip while the week has no periods (the button is disabled),REVIEW: HE draft
 dashboard.schedule.print_heading,Weekly schedule,מערכת שבועית,title line on the PRINTED weekly grid — teacher-facing chrome so it follows the UI language,REVIEW: HE draft
@@ -712,14 +712,14 @@ dictionary.empty.no_emojis_match,No emojis match these filters,אין אימוג
 dictionary.empty.no_words_match,No words match these filters,אין מילים התואמות למסננים אלו,empty state,empty state
 dictionary.empty.reset_all,Reset all filters,איפוס כל המסננים,empty state button,
 dictionary.empty.search_without_vowels,Search without vowels,חיפוש ללא ניקוד,empty state button,
-dictionary.export.anki_button,⬇ Export for Anki,⬇ ייצוא ל-Anki,export button,leading-emoji
+dictionary.export.anki_button,Export for Anki,ייצוא ל-Anki,export button,leading-emoji
 dictionary.export.count.one,{count} word selected for export.,מילה אחת נבחרה לייצוא.,export count,plural
 dictionary.export.count.other,{count} words selected for export.,{count} מילים נבחרו לייצוא.,export count,plural
 dictionary.export.err_select_first,Select words using Bulk Copy Mode first.,בחרו מילים באמצעות מצב העתקה מרובה תחילה.,export error / word-list error,
 dictionary.export.head,Export Selected Words,ייצוא מילים נבחרות,export subheading,
 dictionary.export.hint,Active when Bulk Copy Mode is on and at least one word is selected.,פעיל כאשר מצב העתקה מרובה מופעל ולפחות מילה אחת נבחרה.,export hint,
 dictionary.export.instructions,Anki: import via File → Import. Quizlet: use Import from Word/Excel on the study set creation page.,Anki: ייבוא דרך File ← Import. Quizlet: השתמשו ב-Import from Word/Excel בדף יצירת סט הלימוד.,export instructions,
-dictionary.export.quizlet_button,⬇ Export for Quizlet,⬇ ייצוא ל-Quizlet,export button,leading-emoji
+dictionary.export.quizlet_button,Export for Quizlet,ייצוא ל-Quizlet,export button,leading-emoji
 dictionary.faq.a_era,"Yes. Filter by era — biblical, mishnaic, medieval, and modern Hebrew.","כן. סננו לפי תקופה — עברית מקראית, משנאית, ימי-ביניימית ומודרנית.",footer FAQ answer,
 dictionary.faq.a_free,Yes. Free under CC BY-NC-SA 4.0; word data sourced from Kaikki.org.,כן. חינמי תחת רישיון CC BY-NC-SA 4.0; נתוני המילים ממקור Kaikki.org.,footer FAQ answer,
 dictionary.faq.a_keyboard,"Yes. Click <strong>⌨ Show Hebrew Keyboard</strong> by the search bar and click out letters, nikkud, and trop marks — nothing needs to be installed on your computer.","כן. לחצו על <strong>⌨ הצג מקלדת עברית</strong> ליד שורת החיפוש והקליקו אותיות, ניקוד וטעמים — אין צורך להתקין דבר במחשב.",footer FAQ answer,carries <strong> markup — read via data-i18n-html
@@ -938,10 +938,10 @@ dictionary.sidebar.expand_all,Expand all menus,הרחבת כל התפריטים,
 dictionary.sidebar.hide_title,Hide sidebar,הסתרת הסרגל,sidebar hide button title,aria-label only
 dictionary.sidebar.show_title,Show sidebar,הצגת הסרגל,sidebar show button title,aria-label only
 dictionary.toolbar.active_filters_aria,Active filters,מסננים פעילים,filter chips container aria-label,aria-label only
-dictionary.toolbar.copy_link,🔗 Copy link,🔗 העתקת קישור,toolbar share button,leading-emoji
+dictionary.toolbar.copy_link,Copy link,העתקת קישור,toolbar share button,leading-emoji
 dictionary.toolbar.copy_link_title,Copy a link to this exact filtered view,העתקת קישור לתצוגה המסוננת הזו בדיוק,toolbar share button title,aria-label only
 dictionary.toolbar.loading,Loading…,טוען…,result count while loading,toast
-dictionary.toolbar.print_button,🖨️ Print,🖨️ הדפסה,toolbar print button,leading-emoji
+dictionary.toolbar.print_button,Print,הדפסה,toolbar print button,leading-emoji
 dictionary.toolbar.print_empty,No words to print — search first.,אין מילים להדפסה — חפשו קודם.,print empty-state SR announce,
 dictionary.toolbar.print_large_emojis,This will print all {count} emojis. Narrow your filters to print fewer.,פעולה זו תדפיס את כל {count} האימוג'ים. צמצמו את הסינון כדי להדפיס פחות.,print-size heads-up beside the Print button (emoji mode),
 dictionary.toolbar.print_large_words,This will print all {count} words. Narrow your filters to print fewer.,פעולה זו תדפיס את כל {count} המילים. צמצמו את הסינון כדי להדפיס פחות.,print-size heads-up beside the Print button,
@@ -1248,7 +1248,7 @@ flashcards.profile.save,Save,שמירה,save-to-profile create button,
 flashcards.profile.save_modal_title,Save results to…,שמור תוצאות אל…,save-to-profile modal title,
 flashcards.profile.set_active,Set Active,הפוך לפעיל,profile list button,
 flashcards.profile.student_name_placeholder,Student name…,שם התלמיד…,new-profile name input placeholder,placeholder
-flashcards.report.button,📄 Progress Report,📄 דוח התקדמות,progress-report button (Teacher Tools),leading-emoji
+flashcards.report.button,Progress Report,דוח התקדמות,progress-report button (Teacher Tools),leading-emoji
 flashcards.report.button_title,Print a one-page progress report for this student,הדפסת דוח התקדמות בן עמוד אחד לתלמיד זה,progress-report button title,
 flashcards.report.col_mode,Drill,תרגול,progress-report drills-table column header,
 flashcards.report.col_score,Score,ניקוד,progress-report drills-table column header,
@@ -1286,7 +1286,7 @@ flashcards.results.panel_title,Results,תוצאות,results panel title,
 flashcards.results.practice_mistakes,Practice This Drill's Mistakes,תרגלו את הטעויות בתרגול הזה,results action button,disambiguated from teacher-tools weak-cards
 flashcards.results.redo,Redo This Card Set,חזרו על סדרת הכרטיסים,results action button,
 flashcards.results.return_to_options,Return to Options,חזרה לאפשרויות,results action button,
-flashcards.results.save_button,💾 Save Results,💾 שמור תוצאות,results action button,leading-emoji
+flashcards.results.save_button,Save Results,שמור תוצאות,results action button,leading-emoji
 flashcards.results.save_deck,📌 Save This Card Set as a Preset,📌 שמרו את סדרת הכרטיסים כהגדרה שמורה,results-screen button that reveals the save-as-preset row,leading-emoji; REVIEW: HE draft
 flashcards.results.deck_saved,"Saved as ""{name}"". It's in your Presets list.","נשמר בשם ""{name}"". נמצא ברשימת ההגדרות השמורות.",inline note + toast after saving the card set as a preset,has {name}; REVIEW: HE draft
 flashcards.results.save_button_done,✓ Saved to {name},✓ נשמר אל {name},save-results confirmation label,leading-emoji
@@ -1311,8 +1311,8 @@ flashcards.start.err_select_emoji,Select at least one emoji subcategory.,בחר�
 flashcards.start.err_select_letter,Select at least one letter.,בחרו לפחות אות אחת.,start validation alert,
 flashcards.start.err_select_vowel,Select at least one vowel.,בחרו לפחות תנועה אחת.,start validation alert,
 flashcards.start.err_select_wordlist,Select at least one word list.,בחרו לפחות רשימת מילים אחת.,start validation alert,
-flashcards.teachertools.copy_code,📋 Copy Code,📋 העתק קוד,share-code copy button,leading-emoji
-flashcards.teachertools.copy_link,🔗 Copy Link,🔗 העתק קישור,share-link copy button (?s= URL twin of the code),leading-emoji
+flashcards.teachertools.copy_code,Copy Code,העתק קוד,share-code copy button,leading-emoji
+flashcards.teachertools.copy_link,Copy Link,העתק קישור,share-link copy button (?s= URL twin of the code),leading-emoji
 flashcards.teachertools.delete_button,Delete,מחק,profile delete button,
 flashcards.actions.delete_aria,Delete {name},מחק את {name},icon-only ✕ delete button aria-label (preset / profile),aria-label only
 flashcards.teachertools.generate_share,Generate Share Code,צור קוד שיתוף,share-code button,
@@ -1481,6 +1481,7 @@ fontmaker.canvas.tpl_page_of,{title} · page {n} of {total},{title} · עמוד 
 fontmaker.canvas.tpl_punct,Punctuation & More,פיסוק ועוד,canvas — printable template title,canvas
 fontmaker.canvas.tpl_trop,Trop (Cantillation),טעמים (טעמי המקרא),canvas — printable template title,canvas
 fontmaker.changelog.v5_42,"v5.42 — Reduce points and Round corners stay on the letter you're editing. Nudging either slider and letting go on the value it started at left its before-snapshot armed, so the next letter you opened took the previous letter's outline the moment you touched the slider — clicking from letter to letter for a low-poly pass was impossible. The snapshot now clears whenever you change letters or steps, and the slider commits when it loses focus. (September 2026)","v5.42 — «צמצום נקודות» ו«עיגול פינות» נשארים על האות שעורכים. הזזת אחד המחוונים ושחרורו על הערך שממנו התחיל השאירה את תמונת המצב הקודמת פעילה, וכך האות הבאה שנפתחה קיבלה את קו המתאר של האות הקודמת ברגע שנגעו במחוון — מעבר מאות לאות לצמצום נקודות היה בלתי אפשרי. תמונת המצב מתנקה כעת בכל החלפת אות או שלב, והמחוון נשמר כשהוא מאבד מיקוד. (ספטמבר 2026)",changelog entry,plain-text mirror of the About-tab li; REVIEW: machine-drafted HE — confirm
+fontmaker.changelog.v5_47,"v5.47 — Buttons now use drawn icons instead of emoji. Export, Save Project, Send to IvritSuite, Save as…, Download again, the mark-edit Reset, Re-detect, Replay and the header controls all draw their symbol as a small vector, so they look the same on every computer instead of changing with the operating system's emoji font — and they follow the page's colours in dark mode.","v5.47 — הכפתורים משתמשים כעת בסמלים מצוירים במקום באמוג'י. ייצוא, שמירת פרויקט, שליחה ל-IvritSuite, שמירה בשם…, הורדה חוזרת, איפוס עריכת הסימן, זיהוי מחדש, הדגמה וכפתורי הכותרת — כולם מציירים את הסמל כווקטור קטן, כך שהם נראים זהים בכל מחשב במקום להשתנות לפי גופן האמוג'י של מערכת ההפעלה, והם מתאימים את צבעם למצב הכהה.",About-tab changelog entry,
 fontmaker.changelog.v5_46,"v5.46 — Digits and punctuation now behave like letters, and the pen shows its real stroke. The Punctuation tab opens on Draw in a drawing project. The marks that come pre-shaped used to open on Edit points, so only the blank digits ever reached the canvas; the built-in shape now sits faintly under your pen and is replaced by whatever you draw. Save letter & next → stays on that tab (it used to jump back to alef), and a new Clear all existing glyphs… button empties the whole tab — the built-in shapes and your own — after asking first; one Ctrl+Z brings everything back. The Round pen previews pressure while you draw: on a stylus the stroke thickens and thins under the pen instead of only after you lift it — what you see is exactly what gets saved. The Preview PDF now shows the digits and punctuation your font includes, with a 0–9 line on the cover once all ten digits are drawn. And every drawable tab has Save all drawings: one click saves and traces every drawing on that tab you have not saved yet (glyphs whose points you edited by hand are left for you to save one at a time), so a forgotten Save no longer means a glyph missing from the font. (September 2026)","v5.46 — ספרות ופיסוק מתנהגים כעת כמו אותיות, והעט מציג את הקו האמיתי שלו. הלשונית «פיסוק» נפתחת על «ציור» בפרויקט ציור. הסימנים שמגיעים מעוצבים מראש נפתחו על «עריכת נקודות», כך שרק הספרות הריקות הגיעו אי פעם ללוח; הצורה המובנית יושבת כעת בעמעום מתחת לעט ומוחלפת במה שאתם מציירים. «שמירת האות והבאה ←» נשארת בלשונית הזו (בעבר קפצה חזרה לאל״ף), וכפתור חדש «ניקוי כל הגליפים הקיימים…» מרוקן את הלשונית כולה — הצורות המובנות ושלכם — אחרי שאלה תחילה; Ctrl+Z אחד מחזיר הכול. העט «עגול» מציג את הלחץ בזמן הציור: עם עט דיגיטלי הקו מתעבה ומתדקק מתחת לעט במקום רק אחרי שמרימים אותו — מה שרואים הוא בדיוק מה שנשמר. «תצוגה מקדימה PDF» מציגה כעת את הספרות והפיסוק שהגופן כולל, עם שורת 0–9 בעמוד השער ברגע שכל עשר הספרות מצוירות. ולכל לשונית שאפשר לצייר בה יש «שמירת כל הציורים»: לחיצה אחת שומרת וממירה כל ציור בלשונית שעדיין לא נשמר (גליפים שנקודותיהם נערכו ידנית נשארים לשמירה אחד-אחד), כך ששמירה שנשכחה כבר לא פירושה גליף חסר בגופן. (ספטמבר 2026)",changelog entry,plain-text mirror of the About-tab li; REVIEW: machine-drafted HE — confirm
 fontmaker.changelog.v5_45,"v5.45 — Two fixes for working outside the Hebrew alphabet. Save letter & next → now stays in the tab you are working in: drawing your way through the English tab, it saved the letter and then jumped straight back to the Hebrew alphabet, abandoning the other fifty-one English letters — and the Custom glyphs and Wide letterforms tabs did the same. It now moves to the next letter still missing an outline in the tab you are actually in, and the English tab's Uppercase A–Z / Lowercase a–z switch follows along, so the letter you land on is the one highlighted in the grid. And the Sample text box in the Spacing tab no longer reads backwards: the preview laid every character out right-to-left whatever you typed, so Hello drew olleH and 1234 drew 4321, and even the ready-made Mixed phrase came out mangled. The preview now follows the same direction rules your browser does — Hebrew still runs right to left, English and numbers run left to right, and a line that mixes them puts each run where a reader expects it. The Kerning pair preview beside it follows the same rule — a Hebrew pair still puts the first letter on the right, an A/V pair puts it on the left — and its First / Second captions now name the side the glyph is actually on, and it follows a Dark switch instead of keeping the old theme's ink — which left its two letters sitting there in pale grey. And Preview PDF no longer fails with a wall of Python: a letter whose points had been scaled or moved far outside the letter box stopped the font builder with a raw error that named no letter at all. The Scale box in Edit points now holds to the same 25–400% its slider always did, the mark editor's position and size boxes are bounded too, and a project that already carries such a letter is told which letter and what to do about it. And the two dots on a shin/sin placement screen now say which is which: placing the dot on a shin or sin shows two of them — the orange one is the letter's own dot, the blue one marks where a holam lands if you type one on that letter — and both are labelled on the canvas now, so they stay tellable apart when they sit almost on top of each other, or if the two colours look alike to you. (September 2026)","v5.45 — שני תיקונים לעבודה מחוץ לאלפבית העברי. «שמירת האות והבאה ←» נשארת כעת בלשונית שבה אתם עובדים: בציור האותיות בלשונית «אנגלית» הכפתור שמר את האות ואז קפץ בחזרה לאלפבית העברי ונטש את חמישים ואחת האותיות הנותרות — וכך נהגו גם הלשוניות «גליפים מותאמים» ו«אותיות רחבות». כעת הוא עובר לאות הבאה שעדיין חסר לה קו מתאר באותה לשונית שבה אתם נמצאים, ומתג «אותיות רישיות A–Z» / «אותיות קטנות a–z» עוקב אחריו. ותיבת «טקסט לדוגמה» בלשונית «ריווח» כבר אינה מוצגת הפוך: התצוגה סידרה כל תו מימין לשמאל בלי קשר למה שהקלדתם, וכך Hello צויר olleH ו־1234 צויר 4321 — ואפילו הביטוי המוכן «מעורב» יצא משובש. התצוגה פועלת כעת לפי אותם כללי הכיוון של הדפדפן: עברית עדיין מימין לשמאל, אנגלית וספרות משמאל לימין, ושורה מעורבת מציבה כל רצף במקום שהקורא מצפה לו. תצוגת זוג הכרנינג שלידה פועלת לפי אותו כלל — בזוג עברי האות הראשונה עדיין מימין, בזוג A/V היא משמאל — והכיתוביות «ראשונה» / «שנייה» מציינות כעת את הצד שבו האות אכן נמצאת, והיא עוקבת אחרי מעבר למצב כהה במקום לשמר את הצבע של ערכת הנושא הקודמת — מה שהשאיר את שתי האותיות שלה באפור חיוור. ו«תצוגה מקדימה PDF» כבר אינה נכשלת עם קיר של שגיאות Python: אות שהנקודות שלה הוגדלו או הוזזו הרחק מחוץ לתיבת האות עצרה את בונה הגופן בשגיאה גולמית שלא נקבה בשם אף אות. תיבת «קנה מידה» ב«עריכת נקודות» מוגבלת כעת לאותם 400%–:25 שהמחוון שלה תמיד אכף, גם תיבות המיקום והגודל בעורך הסימנים מוגבלות, ופרויקט שכבר מכיל אות כזו מקבל הודעה האומרת באיזו אות מדובר ומה לעשות. ושתי הנקודות במסך מיקום הנקודה של שין/שין שמאלית מסמנות כעת מי הן: במיקום הנקודה על שין מופיעות שתיים — הכתומה היא הנקודה של האות עצמה, והכחולה מסמנת היכן ישב חולם אם מקלידים אותו על האות — ושתיהן מסומנות כעת בשמן על הלוח, כך שאפשר להבחין ביניהן גם כשהן כמעט זו על גבי זו, או אם שני הצבעים נראים לכם דומים. (ספטמבר 2026)",changelog entry,plain-text mirror of the About-tab li; REVIEW: machine-drafted HE — confirm
 fontmaker.changelog.v5_44,"v5.44 — Erasing part of a letter no longer stops you redrawing there. The Erase tool’s Sculpt mode takes ink away by recording a hole in the paper — and that hole used to keep erasing forever, so any new stroke drawn through a patch you had already rubbed out vanished as you drew it, on screen and in the exported font. A sculpted hole now only takes away the ink that was already on the page when you swept it, exactly like a real eraser: rub something out, draw it again, and what you draw stays. Erasing still works on everything currently drawn, and sliding a stroke out from under an old hole still brings it back whole. (September 2026)","v5.44 — מחיקת חלק מאות כבר אינה מונעת מכם לצייר שם מחדש. מצב «פיסול» של כלי המחיקה מסיר דיו על ידי רישום חור בנייר — והחור הזה היה ממשיך למחוק לנצח, וכך כל קו חדש שצויר דרך אזור שכבר נמחק נעלם תוך כדי ציור, גם על המסך וגם בגופן שמיוצא. חור פיסול מסיר כעת רק את הדיו שכבר היה על הדף ברגע המחיקה, בדיוק כמו מחק אמיתי: מוחקים משהו, מציירים אותו שוב, ומה שמציירים נשאר. המחיקה עדיין פועלת על כל מה שמצויר כרגע, והזזת קו החוצה מתחת לחור ישן עדיין מחזירה אותו שלם. (ספטמבר 2026)",changelog entry,plain-text mirror of the About-tab li; REVIEW: machine-drafted HE — confirm
@@ -2073,17 +2074,17 @@ fontmaker.modals.exported_faceted.one,"⚠ {count} letter exported with straight
 fontmaker.modals.exported_faceted.other,"⚠ {count} letters exported with straight edges — their curves couldn't be converted: {chars}. Re-trace or simplify those outlines, then export again for smooth curves.","⚠ {count} אותיות יוצאו עם קצוות ישרים — לא ניתן היה להמיר את העקומות שלהן: {chars}. עקבו מחדש או פשטו את המתארים האלה, ואז ייצאו שוב לעקומות חלקות.",dialog warning,plural; leading-emoji; mixed UI+content — do not translate {…}
 fontmaker.modals.exported_gate_skip,"⚠ The shaping check couldn't run (the validator failed to load). Your font downloaded, but its vowel/trop positioning wasn't verified — test it in a word processor, or export again once you're back online to run the check.","⚠ בדיקת העיצוב לא הצליחה לרוץ (הבודק נכשל להיטען). הגופן שלכם ירד, אך מיקום התנועות/הטעמים שלו לא אומת — בדקו אותו במעבד תמלילים, או ייצאו שוב כשתחזרו לחיבור כדי להריץ את הבדיקה.",dialog warning,leading-emoji
 fontmaker.modals.exported_license,Get its ⬇ LICENSE.txt below and keep it with the font.,קבלו את ה-⬇ LICENSE.txt שלו למטה ושמרו אותו יחד עם הגופן.,dialog body fragment,
-fontmaker.modals.exported_license_btn,⬇ LICENSE.txt,⬇ LICENSE.txt,dialog button,leading-emoji
+fontmaker.modals.exported_license_btn,LICENSE.txt,LICENSE.txt,dialog button,leading-emoji
 fontmaker.modals.exported_myfonts_btn,★ My IvritSuite Fonts,★ הגופנים שלי ב-IvritSuite,dialog button,leading-emoji
 fontmaker.modals.exported_save,Save it to ★ My IvritSuite Fonts (this browser) to pick it in every IvritSuite tool's font selector.,שמרו אותו ל-★ הגופנים שלי ב-IvritSuite (בדפדפן זה) כדי לבחור אותו בבורר הגופנים של כל כלי IvritSuite.,dialog body fragment,
 fontmaker.modals.exported_title,Exported ✓,יוצא ✓,dialog title,leading-emoji
 fontmaker.modals.exported_send,Or 📤 Send it to IvritSuite to add it to the font library — the file goes with it.,או 📤 שלחו אותו ל-IvritSuite כדי להוסיפו לספריית הגופנים — הקובץ נשלח יחד איתו.,dialog body fragment,leading-emoji
-fontmaker.modals.exported_send_btn,📤 Send to IvritSuite,📤 שליחה ל-IvritSuite,dialog button,leading-emoji
+fontmaker.modals.exported_send_btn,Send to IvritSuite,שליחה ל-IvritSuite,dialog button,leading-emoji
 fontmaker.modals.exported_send_os,📤 Send to OpenSiddur does the same for the OpenSiddur Project's free font library.,📤 שליחה לסידור הפתוח עושה את אותו הדבר עבור ספריית הגופנים החופשית של פרויקט הסידור הפתוח.,dialog body sentence,REVIEW: machine-drafted HE — confirm
-fontmaker.modals.exported_send_os_btn,📤 Send to OpenSiddur,📤 שליחה לסידור הפתוח,dialog button,"leading-emoji; brand name — do not translate ""OpenSiddur"" beyond the established HE form; REVIEW: machine-drafted HE — confirm"
+fontmaker.modals.exported_send_os_btn,Send to OpenSiddur,שליחה לסידור הפתוח,dialog button,"leading-emoji; brand name — do not translate ""OpenSiddur"" beyond the established HE form; REVIEW: machine-drafted HE — confirm"
 fontmaker.modals.exported_getfile,Can't find the download? {btn} puts the file exactly where you choose.,לא מוצאים את ההורדה? {btn} שומר את הקובץ בדיוק היכן שתבחרו.,dialog body fragment,
-fontmaker.modals.exported_sharefile_btn,📤 Share / Save to Files,📤 שיתוף / שמירה בקבצים,dialog button,leading-emoji
-fontmaker.modals.exported_saveas_btn,💾 Save as…,💾 שמירה בשם…,dialog button,leading-emoji
+fontmaker.modals.exported_sharefile_btn,Share / Save to Files,שיתוף / שמירה בקבצים,dialog button,leading-emoji
+fontmaker.modals.exported_saveas_btn,Save as…,שמירה בשם…,dialog button,leading-emoji
 fontmaker.modals.font_import_failed_title,Font import failed,ייבוא הגופן נכשל,dialog title,
 fontmaker.modals.font_read_failed_title,Font read failed,קריאת הגופן נכשלה,dialog title,
 fontmaker.modals.glyph_exists_body,You already have a custom glyph at U+{cp}.,כבר יש לכם גליף מותאם ב-U+{cp}.,dialog body,
@@ -2227,7 +2228,7 @@ fontmaker.modals.save_copy_btn,Save copy,שמירת עותק,dialog button,
 fontmaker.modals.save_in_browser,🌐 In this browser,🌐 בדפדפן זה,dialog button,leading-emoji
 fontmaker.modals.save_project_body,Where would you like to save? “To computer” is a permanent backup file you keep. “In this browser” is a quick save that stays on this device only.,"היכן תרצו לשמור? ""למחשב"" הוא קובץ גיבוי קבוע שנשאר אצלכם. ""בדפדפן זה"" היא שמירה מהירה שנשארת במכשיר זה בלבד.",dialog body,
 fontmaker.modals.save_project_title,Save Project,שמירת פרויקט,dialog title,
-fontmaker.modals.save_to_computer,💾 To computer,💾 למחשב,dialog button,leading-emoji
+fontmaker.modals.save_to_computer,To computer,למחשב,dialog button,leading-emoji
 fontmaker.modals.saved_browser_reminder,"Heads-up: this copy lives only in this browser, on this device. If you clear your browsing data or move to another computer, it's gone. ⚠️ Use Save Project → 💾 To computer every so often so you always have a backup you can't lose.","שימו לב: העותק הזה חי רק בדפדפן זה, במכשיר זה. אם תנקו את נתוני הגלישה שלכם או תעברו למחשב אחר, הוא ייעלם. ⚠️ השתמשו בשמירת פרויקט → 💾 למחשב מדי פעם כדי שתמיד יהיה לכם גיבוי שאי אפשר לאבד.",dialog body,leading-emoji
 fontmaker.modals.saved_browser_title,Saved in this browser ✓,נשמר בדפדפן זה ✓,dialog title,leading-emoji
 fontmaker.modals.shaping_fail_body,"This usually means the mark anchors didn't take. You can still download, but vowels/trop may be misplaced.","זה בדרך כלל אומר שעוגני הסימנים לא נקלטו. עדיין תוכלו להוריד, אך התנועות/הטעמים עשויים להיות במקום שגוי.",dialog body,
@@ -2753,7 +2754,7 @@ fontmaker.panels.raise_vowel_title,Raise this vowel on every letter,הגבה ת�
 fontmaker.panels.reference_font,Reference font (tracing guide),גופן ייחוס (מדריך מעקב),field label,
 fontmaker.panels.reference_show,Show reference glyph behind,הצג גליף ייחוס מאחור,checkbox label,
 fontmaker.panels.reference_title,Reference,ייחוס,side title,
-fontmaker.panels.reference_upload,⬆ Upload your own reference font,⬆ העלו גופן ייחוס משלכם,button,leading-emoji
+fontmaker.panels.reference_upload,Upload your own reference font,העלו גופן ייחוס משלכם,button,leading-emoji
 fontmaker.panels.reference_upload_allowed,Allowed: TTF or OTF font files.,מותר: קובצי גופן TTF או OTF.,allowed-files note,
 fontmaker.panels.region_selected,Region selected for <b>{name}</b>.,נבחר אזור עבור <b>{name}</b>.,panel hint,
 fontmaker.panels.reselect_area,Re-select area,בחר אזור מחדש,button,leading-emoji
@@ -2862,7 +2863,7 @@ fontmaker.qa.tab_pairs,Two marks,שני סימנים,QA tab,
 fontmaker.qa.tab_stacked,Stacked,מוערמים,QA tab,
 fontmaker.qa.tab_trop,Trop,טעמים,QA tab,
 fontmaker.qa.tall_warn,⚠ Tall artwork — export will expand the clip box to {asc} / {desc} (asc/desc) so Word won't clip it.,⚠ איור גבוה — הייצוא ירחיב את תיבת החיתוך ל-{asc} / {desc} (עליון/תחתון) כדי ש-Word לא יחתוך אותו.,QA summary,leading-emoji
-fontmaker.savemenu.save,💾 Save Project…,💾 שמירת פרויקט…,menu item,leading-emoji
+fontmaker.savemenu.save,Save Project…,שמירת פרויקט…,menu item,leading-emoji
 fontmaker.savemenu.save_as,📑 Save as a copy…,📑 שמירה כעותק…,menu item,leading-emoji
 fontmaker.savemenu.my_fonts,★ My IvritSuite Fonts…,★ הגופנים שלי ב-IvritSuite…,menu item,leading-emoji
 fontmaker.cloud.menu_save,☁ Save to my account…,☁ שמירה בחשבון שלי…,Save Project ▾ menu row (signed in),fontmaker; cloud; leading-emoji
@@ -3095,8 +3096,8 @@ fontmaker.templates.punct_meta,"digits, punctuation & symbols · 2 pages","ספ�
 fontmaker.templates.trop_meta,33 marks · 1 page,33 סימנים · עמוד אחד,templates tab row meta,
 fontmaker.toolbar.engine_badge,engine loading…,מנוע נטען…,toolbar status badge,
 fontmaker.toolbar.engine_badge_title,Getting the font engine ready so your first export is fast,מכינים את מנוע הגופן כדי שהייצוא הראשון שלכם יהיה מהיר,badge title,
-fontmaker.toolbar.export_btn,⬇ Export TTF,⬇ ייצוא TTF,toolbar button,leading-emoji
-fontmaker.toolbar.export_btn_fmt,⬇ Export {fmt},⬇ ייצוא {fmt},toolbar button; {fmt} is a format name (TTF / WOFF2 / TTF + WOFF2 / UFO) and is not translated,leading-emoji
+fontmaker.toolbar.export_btn,Export TTF,ייצוא TTF,toolbar button,leading-emoji
+fontmaker.toolbar.export_btn_fmt,Export {fmt},ייצוא {fmt},toolbar button; {fmt} is a format name (TTF / WOFF2 / TTF + WOFF2 / UFO) and is not translated,leading-emoji
 fontmaker.toolbar.export_format_title,Choose an export format — or save the font for use in IvritSuite,בחרו פורמט ייצוא — או שמרו את הגופן לשימוש ב-IvritSuite,select title,
 fontmaker.toolbar.fmt_ttf,TTF (recommended),TTF (מומלץ),export format option,
 fontmaker.toolbar.fmt_ttfwoff2,TTF + WOFF2 (zip),TTF + WOFF2 (zip),export format option,
@@ -3161,8 +3162,8 @@ home.alltools.erase_confirm2,Final confirmation: erase all Hebrew Blender data o
 home.alltools.erase_backup_first,💾 Save a backup first,💾 קודם שמירת גיבוי,"first erase gate (dialog) — runs the .ivrit Save, then asks again",leading-emoji
 home.alltools.erase_dialog_erase,Erase everything,מחיקת הכול,first erase gate (dialog) — proceeds to the final confirm,
 home.alltools.erase_success,All settings and presets have been erased.,כל ההגדרות וההגדרות השמורות נמחקו.,alert,
-home.alltools.export_button,⬇ Export All Settings,⬇ ייצוא כל ההגדרות,button (manual mode),leading-emoji
-home.alltools.import_button,⬆ Import All Settings,⬆ ייבוא כל ההגדרות,button (manual mode),leading-emoji
+home.alltools.export_button,Export All Settings,ייצוא כל ההגדרות,button (manual mode),leading-emoji
+home.alltools.import_button,Import All Settings,ייבוא כל ההגדרות,button (manual mode),leading-emoji
 home.alltools.import_confirm,This will overwrite your current dashboard settings and merge all imported presets and schedules. Continue?,פעולה זו תדרוס את הגדרות לוח המחוונים הנוכחיות שלכם ותמזג את כל ההגדרות השמורות ומערכות השעות המיובאות. להמשיך?,confirm,
 home.alltools.import_err_empty,Paste an exported settings block first.,הדביקו תחילה בלוק הגדרות מיוצא.,alert,
 home.alltools.import_err_json,Invalid JSON — please paste the full export block.,JSON לא תקין — אנא הדביקו את בלוק הייצוא המלא.,alert,
@@ -3200,7 +3201,7 @@ home.alltools.myfonts.note,"Fonts you built in the <a href=""Hebrew_Font_Maker.h
 home.alltools.myfonts.remove_confirm,Remove “{name}” from My Fonts? Tools using it will fall back to their default font.,להסיר את “{name}” מהגופנים שלי? כלים המשתמשים בו יחזרו לגופן ברירת המחדל שלהם.,confirm dialog,template
 home.alltools.myfonts.remove_title,Remove,הסרה,button title,aria/title
 home.alltools.myfonts.title,★ My IvritSuite Fonts,★ הגופנים שלי ב-IvritSuite,section heading,leading-symbol
-home.alltools.myfonts.upload_button,⬆ Upload a font,⬆ העלאת גופן,upload label/button,leading-emoji
+home.alltools.myfonts.upload_button,Upload a font,העלאת גופן,upload label/button,leading-emoji
 home.alltools.cloud.title,☁ Cloud saves,☁ שמירות בענן,AllTools modal: heading of the cloud-saves block (one shared panel per tool),leading-emoji
 home.alltools.cloud.note,"One panel per tool: what is saved in this browser next to the copies in your account. A change made in both places to a student profile, a class list or a word list is merged inside that tool.","לוח אחד לכל כלי: מה ששמור בדפדפן הזה לצד העותקים שבחשבון שלכם. שינוי שנעשה בשני המקומות בפרופיל תלמיד, ברשימת כיתה או ברשימת מילים ממוזג בתוך אותו כלי.",AllTools modal: note under the cloud-saves heading,
 home.alltools.myfonts.use_alert,“{name}” will be used in every IvritSuite tool. Reload any open tool pages to see it.,“{name}” ישמש בכל כלי IvritSuite. טענו מחדש את דפי הכלים הפתוחים כדי לראותו.,alert,template
@@ -3209,7 +3210,7 @@ home.alltools.myfonts.use_status,“{name}” is now the font in every tool — 
 home.alltools.no_data_alert,This file has no all-tools data. Try importing it on its own tool's page instead.,בקובץ זה אין נתוני כל-הכלים. נסו לייבא אותו בעמוד הכלי הייעודי שלו במקום זאת.,alert (AllTools .ivrit apply),
 home.alltools.note,"Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.","גבו <b>את כל</b> ההגדרות השמורות, מערכות השעות השמורות, ההגדרות והגופנים השמורים מהמחולל, לוח המחוונים, כרטיסי הזיכרון, המילון, מאמן התורה, מאמן הטעמים ויוצר הגופנים — יחד. <b>קלט אוטומטי</b> שומר ומשחזר קובץ <b>.ivrit</b> יחיד; <b>קלט ידני</b> משתמש בבלוק טקסט להעתקה והדבקה.",modal intro note,html; mixed UI+content — do not translate tool names
 home.alltools.open_button,⚙ Import / Export All Settings,⚙ ייבוא / ייצוא כל ההגדרות,button opening settings modal,leading-emoji
-home.alltools.save_button,⬇ Save All Settings to .ivrit file,⬇ שמירת כל ההגדרות לקובץ .ivrit,button (auto mode),leading-emoji
+home.alltools.save_button,Save All Settings to .ivrit file,שמירת כל ההגדרות לקובץ .ivrit,button (auto mode),leading-emoji
 home.alltools.textarea_placeholder,"Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…","לחצו על 'ייצוא כל ההגדרות' כדי ליצור גיבוי, או הדביקו כאן גיבוי ולחצו על 'ייבוא כל ההגדרות'…",textarea placeholder,
 home.badge.beta,Beta,בטא,tool card badge (flash cards; font maker),
 home.bookmark.button,🔖 Bookmark this page,🔖 הוספת העמוד לסימניות,button,leading-emoji
@@ -3362,7 +3363,7 @@ resources.filters.ftype_torah,Torah,תורה,filter button,
 resources.filters.submit_font_button,✚ Submit a font,✚ הגשת גופן,CTA button,leading-emoji
 resources.filters.suggest_button,✚ Suggest a Resource,✚ הצעת משאב,CTA button,leading-emoji
 resources.fonts.by_prefix,By {author},מאת {author},font card byline,template; html
-resources.fonts.download_action,⬇ Download,⬇ הורדה,font card action,leading-emoji
+resources.fonts.download_action,Download,הורדה,font card action,leading-emoji
 resources.fonts.nikkud_label,Nikkud,ניקוד,font card meta,
 resources.fonts.preview_action,🔍 Preview,🔍 תצוגה מקדימה,font card action,leading-emoji
 resources.fonts.submit.anything_else,Anything else we should know:,משהו נוסף שכדאי לנו לדעת:,prefilled email body label,scope-ambiguous (mailto payload)
@@ -3479,7 +3480,7 @@ shared.fonts.section_print,Print Fonts,גופני דפוס,Font-picker section h
 shared.fonts.section_torah,Torah Fonts,גופני תורה,Font-picker section header (Torah category),shared (carriers: torah_trainer / trope_tutor)
 shared.fonts.section_generic,{section} Fonts,גופני {section},"Font-picker section header (e.g. Block Fonts, Print Fonts, Torah Fonts)",mixed UI+content — {section} is a category name; shared
 shared.fonts.section_my_fonts,My Fonts,הגופנים שלי,Font-picker section header (custom fonts group),shared (carriers: all font-selector tools)
-shared.fonts.upload_label,⬆ Upload your own font?,⬆ העלו גופן משלכם?,My Fonts uploader label (below font grid),leading-emoji; shared (carriers: 7 font-selector tools)
+shared.fonts.upload_label,Upload your own font?,העלו גופן משלכם?,My Fonts uploader label (below font grid),leading-emoji; shared (carriers: 7 font-selector tools)
 shared.fonts.missing_note,"""{name}"" is chosen but is not on this device. Upload it under My Fonts to use it here.","""{name}"" נבחר אך אינו נמצא במכשיר הזה. העלו אותו תחת ""הגופנים שלי"" כדי להשתמש בו כאן.",Note under a Hebrew font picker when the saved font name is not on this device (a My Font made elsewhere); the choice is kept and travels through a sync untouched,shared; fonts; template
 shared.fonts.upload_title,"Add a .ttf, .otf, or .woff/.woff2 font to My Fonts","הוסיפו גופן ‎.ttf‏, ‎.otf‏ או ‎.woff/.woff2 אל הגופנים שלי",My Fonts uploader label title,shared
 shared.lang.switcher_aria,Language,שפה,aria-label on the EN/עברית language switcher — its only accessible name (no visible label),aria-label only; shared
@@ -3511,7 +3512,7 @@ shared.ivrit.restore_dialog_body,**Merge** keeps what you have now and adds the 
 shared.ivrit.restore_dialog_title,Restore from .ivrit file,שחזור מקובץ ‎.ivrit,Restore-mode dialog title,shared
 shared.ivrit.restore_merge_button,Merge,מיזוג,Restore dialog button,shared
 shared.ivrit.restore_replace_button,Replace,החלפה,Restore dialog button,shared
-shared.ivrit.save_button,⬇ Save to .ivrit file,⬇ שמור לקובץ ‎.ivrit,Backup panel button,leading-emoji; shared; keep '.ivrit' literal
+shared.ivrit.save_button,Save to .ivrit file,שמור לקובץ ‎.ivrit,Backup panel button,leading-emoji; shared; keep '.ivrit' literal
 shared.ivrit.status_restored,Restored from {source},שוחזר מ-{source},Restore status line,mixed UI+content — do not translate {source}; shared
 shared.ivrit.status_partial_merged,"Merged from {source} — this file holds your account's copies (per-device settings such as zoom and panel layout are not in it), so nothing was replaced.","מוזג מ-{source} — הקובץ הזה מכיל את העותקים שבחשבון (הגדרות של המכשיר עצמו כמו זום ופריסת לוחות אינן בו), ולכן דבר לא הוחלף.",Restore status line for an account backup (.ivrit with partial: true) — merged without the Merge/Replace question,mixed UI+content — do not translate {source}; shared
 shared.ivrit.nothing_for_tool,This file holds nothing for this tool.,הקובץ הזה אינו מכיל דבר עבור הכלי הזה.,Alert when a restore applied nothing on this page (the file was for another tool or empty),shared
@@ -3754,7 +3755,7 @@ torah.confirm.reset_all_cloud,Reset all Torah Trainer settings to defaults on th
 torah.confirm.reset_trope_colors,Are you sure? This resets your custom trope-family colors to the defaults.,האם אתם בטוחים? פעולה זו מאפסת את צבעי משפחות הטעמים המותאמים אישית שלכם לברירת המחדל.,confirm dialog,
 torah.confirm.reset_vowel_colors,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים אישית שלכם עבור ערכות ברירת המחדל ותל-עם כאחד.,confirm dialog,
 torah.controls.custom_range_button,Custom range…,טווח מותאם…,button,
-torah.controls.print_button,🖨️ Print,🖨️ הדפסה,button,leading-emoji
+torah.controls.print_button,Print,הדפסה,button,leading-emoji
 torah.controls.print_title,Print this reading for students,הדפיסו את הקריאה עבור התלמידים,button title,
 torah.controls.print_need_reading,Load a parsha first to print.,טענו פרשה קודם כדי להדפיס.,toast,
 torah.shem.chip_label,שם ה׳,שם ה׳,chip in the reading header when a divine name is detected,pinned Hebrew in both languages by design
@@ -3769,15 +3770,15 @@ torah.handout.font_size,Font size:,גודל גופן:,handout option label,
 torah.handout.size_normal,Normal,רגיל,font-size radio (= current screen size),
 torah.handout.size_large,Large,גדול,font-size radio (2.2rem; the default),
 torah.handout.size_xl,Extra large,גדול במיוחד,font-size radio (2.8rem),
-torah.handout.print_button,🖨️ Print handout,🖨️ הדפסת הדף,handout bar primary button,leading-emoji
+torah.handout.print_button,Print handout,הדפסת הדף,handout bar primary button,leading-emoji
 torah.handout.cancel,Cancel,ביטול,handout bar close button,
 torah.handout.shem_note,"This reading contains שם ה׳ — printed pages traditionally go to geniza, not the trash.",הקריאה כוללת שם ה׳ — דפים מודפסים נהוג להביא לגניזה ולא להשליכם לאשפה.,notice in handout bar when a divine name is detected,שם ה׳ pinned Hebrew in both languages
 torah.handout.geniza_check,Add a לגניזה marker to the printed page,הוספת סימון לגניזה בתחתית הדף המודפס,handout option toggle (shown only when a divine name is detected),לגניזה pinned Hebrew in both languages
 torah.handout.selected_only,Print only the selected verses,הדפסת הפסוקים שנבחרו בלבד,handout option toggle (row shown only while the Copy bar holds a selection; the count beside it reuses torah.copy.bulk_count),
-torah.share.button,🔗 Copy link,🔗 העתקת קישור,top-bar button that copies a link to the current reading,leading-emoji
+torah.share.button,Copy link,העתקת קישור,top-bar button that copies a link to the current reading,leading-emoji
 torah.share.copied_range,Link copied — {ref},הקישור הועתק — {ref},toast after copying a practice link narrowed to a verse range,mixed UI+content — do not translate {…}
 torah.share.copied_span,"Link copied — a link holds one range, so it opens all of {ref}, including verses you did not tick.","הקישור הועתק — קישור מכיל טווח אחד, ולכן הוא פותח את כל {ref}, כולל פסוקים שלא סומנו.",toast when a selection with gaps in it had to be widened to its full span,mixed UI+content — do not translate {…}
-torah.copy.button,📋 Copy,📋 העתקה,top-bar button next to Student handout,leading-emoji
+torah.copy.button,Copy,העתקה,top-bar button next to Student handout,leading-emoji
 torah.copy.button_title,Copy verses to the clipboard — one verse or a selection,העתקת פסוקים ללוח — פסוק אחד או בחירה,button title,
 torah.copy.title,Copy verses,העתקת פסוקים,copy options bar title,
 torah.copy.inc_ref,Include verse numbers,כולל מספרי פסוקים,copy option toggle,
@@ -3825,7 +3826,7 @@ torah.copy.color_coding,Copy color coding,העתקת צביעה,copy option — 
 torah.copy.color_coding_tip,"Copies the vowel and trope colors as formatted text, so they survive a paste into Google Docs, Word or Pages. Plain-text editors still receive clean unstyled text. Colors are copied in their light-mode shades so they stay readable on a white page.","מעתיק את צבעי התנועות והטעמים כטקסט מעוצב, כך שהם נשמרים בהדבקה ל־Google Docs, ל־Word או ל־Pages. עורכי טקסט רגיל עדיין מקבלים טקסט נקי ללא עיצוב. הצבעים מועתקים בגוונים הבהירים כדי שיישארו קריאים על דף לבן.",tooltip,
 torah.copy.bulk_remember,Remember Select verses mode,זכירת מצב בחירת פסוקים,copy option — persist bulk-select mode across Copy bar opens,
 torah.copy.bulk_remember_tip,"The Copy bar opens with Select verses already on, and closing it keeps your selection instead of clearing it.","סרגל ההעתקה נפתח כשבחירת פסוקים כבר פעילה, וסגירתו שומרת על הבחירה במקום לנקות אותה.",tooltip,
-torah.reading.verse_copy,📋 Copy,📋 העתקה,per-verse button,leading-emoji
+torah.reading.verse_copy,Copy,העתקה,per-verse button,leading-emoji
 torah.reading.verse_copy_aria,Copy verse {verseRef} to the clipboard,העתקת פסוק {verseRef} ללוח,per-verse button aria-label,aria-label only
 torah.controls.holiday_group_label,Holiday Torah Readings,קריאות התורה לחגים,Parsha-picker optgroup header,
 torah.controls.week_prev,Previous reading,הקריאה הקודמת,week-step button flanking the parsha picker (label before the destination is known),button title + aria-label; REVIEW: HE draft
@@ -4206,7 +4207,7 @@ trope.learn.name_ashkenazi_prefix,Ashkenazi: {name},אשכנזי: {name},seconda
 trope.learn.name_sephardi_prefix,Sephardi: {name},ספרדי: {name},secondary-name label on card,do-not-translate {name} (a glyph-name)
 trope.learn.next_family,Next family →,המשפחה הבאה →,button,
 trope.learn.no_example,No chanted example in this corpus.,אין דוגמה מושרת בקורפוס זה.,card empty state,
-trope.learn.print_chart,🖨️ Print chart,🖨️ הדפסת הטבלה,button,leading-emoji
+trope.learn.print_chart,Print chart,הדפסת הטבלה,button,leading-emoji
 trope.learn.print_chart_title,Print all 26 marks as one reference chart,הדפיסו את כל 26 הטעמים כטבלת עזר אחת,button title,
 trope.learn.play_example_aria,Play {name} example from {parsha} {ref},השמעת דוגמת {name} מ-{parsha} {ref},example play button aria,aria-label only; do-not-translate {parsha}/{ref}
 trope.learn.rare_tag,Rare,נדיר,card tag,
@@ -4280,17 +4281,17 @@ trope.tradition.primary_tip,"Both names are always shown on each card; this pick
 trope.tradition.sephardi,Sephardi,ספרדי,radio label,
 trope.a11y.skip_to_tutor,Skip to the tutor,דלגו למאמן,Skip-link (a11y),aria/skip-link
 worksheet.a11y.skip_to_worksheet,Skip to the worksheet,דילוג לדף העבודה,Skip-link (a11y),aria/skip-link
-worksheet.actions.copy_link,🔗 Copy shareable link,🔗 העתק קישור לשיתוף,action button,leading-emoji
+worksheet.actions.copy_link,Copy shareable link,העתק קישור לשיתוף,action button,leading-emoji
 worksheet.actions.copy_link_title,Copy shareable link,העתק קישור לשיתוף,mobile FAB button title,aria-label only
 worksheet.actions.disabled_hint,Generate a worksheet first,צרו קודם דף עבודה,disabled-button title + FAB toast,
-worksheet.actions.export_pdf,⬇ Export PDF,⬇ ייצא PDF,action button,leading-emoji
+worksheet.actions.export_pdf,Export PDF,ייצא PDF,action button,leading-emoji
 worksheet.actions.generate,⬡ Generate Worksheet,⬡ צור דף עבודה,primary action button,leading-emoji
 worksheet.actions.generate_class_set,⬡ Generate Class Set ({count} versions),⬡ צור סט כיתתי ({count} גרסאות),primary action button when Class Set > 1,leading-emoji
 worksheet.actions.generate_mob,⬡ Generate,⬡ צור,mobile FAB button,leading-emoji
-worksheet.actions.pdf_mob,⬇ PDF,⬇ PDF,mobile FAB button,leading-emoji
+worksheet.actions.pdf_mob,PDF,PDF,mobile FAB button,leading-emoji
 worksheet.actions.practice_flashcards,🃏 Practice these in Flash Cards,🃏 תרגלו את אלה בכרטיסיות,generator hand-off button to flash cards,leading-emoji
 worksheet.actions.practice_flashcards_title,Open these letters and vowels as a Flash Cards drill,פתיחת האותיות והתנועות האלה כתרגול כרטיסיות,generator hand-off button title/aria,aria-label only
-worksheet.actions.print,🖨 Print,🖨 הדפס,action button,leading-emoji
+worksheet.actions.print,Print,הדפס,action button,leading-emoji
 worksheet.actions.print_count.one,📄 {count} page to print,📄 עמוד אחד להדפסה,page count under the Print / Export PDF buttons (also the frozen footer),plural;leading-emoji
 worksheet.actions.print_count.other,📄 {count} pages to print,📄 {count} עמודים להדפסה,page count under the Print / Export PDF buttons (also the frozen footer),plural;leading-emoji
 worksheet.actions.print_tip,"💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.","💡 <strong>טיפ להדפסה:</strong> בתיבת ההדפסה, בטלו את הסימון של <em>כותרות עליונות ותחתונות</em> כדי להסיר את הכתובת והתאריך.",tip box,leading-emoji;html
@@ -4306,10 +4307,10 @@ worksheet.advanced.colormode.highlight,Highlight,הדגשה,color-mode button,
 worksheet.advanced.colormode.letter,Letter,אות,color-mode button,
 worksheet.advanced.colormode.underline,Underline,קו תחתון,color-mode button,
 worksheet.advanced.copy,Copy,העתק,textarea copy button,
-worksheet.advanced.export_backup,⬆ Export backup,⬆ ייצא גיבוי,button,leading-emoji
+worksheet.advanced.export_backup,Export backup,ייצא גיבוי,button,leading-emoji
 worksheet.advanced.font_title,Hebrew Font,גופן עברי,sub-panel title,
 worksheet.advanced.hide_zoom_bar,Hide Zoom Bar,הסתר סרגל זום,toggle-row label,
-worksheet.advanced.import_backup,⬇ Import from backup,⬇ ייבא מגיבוי,button,leading-emoji
+worksheet.advanced.import_backup,Import from backup,ייבא מגיבוי,button,leading-emoji
 worksheet.advanced.live_preview,Live update preview,עדכון תצוגה מקדימה בזמן אמת,toggle-row label,
 worksheet.advanced.live_preview_tooltip,"When on, the worksheet updates as you change settings (after your first Generate). Turn it off to update only when you click Generate.","כשמופעל, דף העבודה מתעדכן תוך כדי שינוי ההגדרות (לאחר היצירה הראשונה). כבו כדי לעדכן רק כשלוחצים על ״צור דף עבודה״.",tooltip,
 worksheet.advanced.panel_title,Advanced,מתקדם,panel title,
@@ -4620,7 +4621,7 @@ worksheet.presets.overwrite_confirm,"Overwrite preset ""{name}"" with current se
 worksheet.presets.overwrite_title,Overwrite with current settings,דריסה עם ההגדרות הנוכחיות,preset action button title,aria-label only
 worksheet.presets.panel_title,Saved Presets,הגדרות שמורות,panel title,
 worksheet.presets.panel_tooltip,"Save your current letter, vowel, and layout settings as a named preset. Load it later to instantly restore everything — great for switching between class levels or drill types.","שמרו את הגדרות האותיות, התנועות והפריסה הנוכחיות שלכם כהגדרה בשם. טענו אותה מאוחר יותר כדי לשחזר הכול מיד — מצוין למעבר בין רמות כיתה או סוגי תרגול.",tooltip,
-worksheet.presets.save,💾 Save,💾 שמור,button,leading-emoji
+worksheet.presets.save,Save,שמור,button,leading-emoji
 worksheet.preview.adjust_selection,Adjust your selection to continue.,התאימו את הבחירה שלכם כדי להמשיך.,preview notice,
 worksheet.preview.dismiss,Dismiss,סגור,preview notice close button,aria-label only
 worksheet.preview.loading_word_list,Loading word list…,טוען רשימת מילים…,preview notice,
@@ -4685,7 +4686,7 @@ worksheet.realwords.help.reverse,English shown — students recall or write the 
 worksheet.realwords.help.vocab,"Flip cards: Hebrew front, English translation back.","כרטיסים מתהפכים: עברית בחזית, תרגום לאנגלית בגב.",drill help line,
 worksheet.realwords.help.wordsearch,"A printable Hebrew word search puzzle. Pick grid size, word count, and allowed directions.","תפזורת עברית להדפסה. בחרו גודל רשת, מספר מילים וכיוונים מותרים.",drill help line,
 worksheet.realwords.idpos_section,Parts of Speech,חלקי דיבר,rw sub-section header,
-worksheet.realwords.import_btn,⬇ Import,⬇ ייבא,button,leading-emoji
+worksheet.realwords.import_btn,Import,ייבא,button,leading-emoji
 worksheet.realwords.import_detected.one,{count} word detected,זוהתה מילה אחת,import count note,plural
 worksheet.realwords.import_detected.other,{count} words detected,זוהו {count} מילים,import count note,plural
 worksheet.realwords.import_instructions,"In the <strong>Word Lookup</strong> dictionary, enable <strong>Bulk Copy Mode</strong> and set Copy Mode to <strong>All info</strong>. Select your words, copy, then paste below. Plain Hebrew (one per line) also works.","במילון <strong>חיפוש המילים</strong>, הפעילו <strong>מצב העתקה מרובה</strong> והגדירו את מצב ההעתקה ל׳<strong>כל המידע</strong>׳. בחרו את המילים שלכם, העתיקו, ואז הדביקו למטה. גם עברית פשוטה (אחת בכל שורה) עובדת.",instructions,html
@@ -4923,7 +4924,7 @@ fontmaker.modals.shaping_fail_shin_holam_pos,A holam on a dotted shin/sin shaped
 fontmaker.modals.shaping_fail_zero_offset,Marks shaped with zero offset (fallback). The hebr script / anchors may be missing.,הסימנים עוצבו ללא היסט (ברירת מחדל). ייתכן שסקריפט hebr או נקודות העיגון חסרים.,FM export shaping-gate,maintainer-approved HE
 fontmaker.send.title,📤 Send this font to IvritSuite,📤 שליחת הגופן הזה ל-IvritSuite,dialog title,leading-emoji
 fontmaker.send.preflight_share,"Your device's share sheet will open with {font} and {license} attached. Choose Mail (or any email app) and paste the address into To: {addr} — it's copied to your clipboard when you continue, and it's also the first line of the message.","גיליון השיתוף של המכשיר ייפתח עם {font} ו-{license} מצורפים. בחרו ב-Mail (או בכל אפליקציית דוא״ל) והדביקו את הכתובת בשדה ״אל״: {addr} — היא מועתקת ללוח כשתמשיכו, והיא גם השורה הראשונה של ההודעה.",dialog body,
-fontmaker.send.open_share_btn,📤 Open share sheet,📤 פתיחת גיליון השיתוף,dialog button,leading-emoji
+fontmaker.send.open_share_btn,Open share sheet,פתיחת גיליון השיתוף,dialog button,leading-emoji
 fontmaker.send.copy_addr_btn,⎘ Copy address,⎘ העתקת הכתובת,dialog button,leading-emoji
 fontmaker.send.addr_copied,Address copied: {addr},הכתובת הועתקה: {addr},toast,
 fontmaker.send.share_done,Shared ✓ — thank you!,שותף ✓ — תודה!,toast,
@@ -4931,8 +4932,8 @@ fontmaker.send.mail_opened,An email to {addr} should have opened with the detail
 fontmaker.send.item_font,📎 {file} — your font. It's in your Downloads folder (or wherever this browser saves files).,📎 {file} — הגופן שלכם. הוא בתיקיית ההורדות (או היכן שהדפדפן הזה שומר קבצים).,dialog body row,leading-emoji
 fontmaker.send.item_license,📎 {file} — its license.,📎 {file} — הרישיון שלו.,dialog body row,leading-emoji
 fontmaker.send.no_mail,Nothing opened? Copy the address and send both files from any email app.,שום דבר לא נפתח? העתיקו את הכתובת ושלחו את שני הקבצים מכל אפליקציית דוא״ל.,dialog body,
-fontmaker.send.download_again_btn,⬇ Download again,⬇ הורדה מחדש,dialog button,leading-emoji
-fontmaker.send.saveas_btn,💾 Save as… (choose where),💾 שמירה בשם… (בחירת מיקום),dialog button,leading-emoji
+fontmaker.send.download_again_btn,Download again,הורדה מחדש,dialog button,leading-emoji
+fontmaker.send.saveas_btn,Save as… (choose where),שמירה בשם… (בחירת מיקום),dialog button,leading-emoji
 fontmaker.send.saved_as,Saved {name} ✓,נשמר {name} ✓,toast,
 fontmaker.send.nofile_title,No font to send yet,עדיין אין גופן לשליחה,dialog title,
 fontmaker.send.nofile_body,"Export the font first (⬇ Export TTF), then use Send from the Exported ✓ screen.","ייצאו קודם את הגופן (⬇ ייצוא TTF), ואז השתמשו בשליחה ממסך יוצא ✓.",dialog body,
@@ -4964,7 +4965,7 @@ dictionary.themes.school,School,בית ספר,theme name,REVIEW: machine-drafted
 dictionary.themes.feelings,Feelings,רגשות,theme name,REVIEW: machine-drafted HE — confirm
 dictionary.themes.places,Places,מקומות,theme name,REVIEW: machine-drafted HE — confirm
 dictionary.themes.holidays,Holidays & Judaism,חגים ויהדות,theme name,REVIEW: machine-drafted HE — confirm
-flashcards.sheet.button,🖨️ Print card sheet,🖨️ הדפיסו דף כרטיסים,setup CTA button next to Start,leading-emoji
+flashcards.sheet.button,Print card sheet,הדפיסו דף כרטיסים,setup CTA button next to Start,leading-emoji
 flashcards.sheet.duplex,Answer on the back (double-sided),תשובה בצד השני (הדפסה דו-צדדית),card-sheet print option,
 flashcards.sheet.duplex_tip,Prints a matching answer page after each card page. Flip on the long edge so each answer lands behind its own card.,מדפיס דף תשובות תואם אחרי כל דף כרטיסים. הפכו לאורך הצד הארוך כדי שכל תשובה תיפול מאחורי הכרטיס שלה.,card-sheet duplex tooltip,
 flashcards.sheet.err_empty,No cards to print — choose some letters and vowels first.,אין כרטיסים להדפסה — בחרו קודם אותיות ותנועות.,card-sheet empty-deck toast,
@@ -5411,7 +5412,7 @@ fontmaker.undolabel.vowel_slide_distance,vowel slide distance,מרחק הזזת 
 fontmaker.undolabel.width,width,רוחב,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.word_spacing,word spacing,ריווח המילים,undo action name,REVIEW: HE authored S243
 flashcards.worksheet.head,Make a Worksheet,יצירת דף עבודה,teacher-tools sub-heading above the worksheet hand-off,
-flashcards.worksheet.button,📄 Print these as a worksheet,📄 הדפיסו את אלה כדף עבודה,flash-cards hand-off button to the worksheet generator,leading-emoji
+flashcards.worksheet.button,Print these as a worksheet,הדפיסו את אלה כדף עבודה,flash-cards hand-off button to the worksheet generator,leading-emoji
 flashcards.worksheet.button_title,Open these letters and vowels as a printable worksheet,פתיחת האותיות והתנועות האלה כדף עבודה להדפסה,flash-cards hand-off button title/aria,aria-label only
 flashcards.worksheet.need_selection,Pick at least one letter and one vowel to make a worksheet.,בחרו לפחות אות אחת ותנועה אחת כדי ליצור דף עבודה.,inline note when the worksheet hand-off has nothing to send,
 flashcards.worksheet.other_mode,Worksheets cover letters and vowels. Turn off Other mode first.,"דפי עבודה מיועדים לאותיות ולתנועות. כבו תחילה את מצב ""אחר"".",inline note when the deck is drilling numbers/colours/emojis instead of blends,

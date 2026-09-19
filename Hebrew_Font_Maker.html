@@ -1482,7 +1482,7 @@ body.dark .hi-sun{display:inline-block;}
       <option value="ttfwoff2" data-i18n="fontmaker.toolbar.fmt_ttfwoff2">TTF + WOFF2 (zip)</option>
       <option value="ufo" data-i18n="fontmaker.toolbar.fmt_ufo">UFO source (zip)</option>
     </select>
-    <button class="tbtn" id="exportBtn" onclick="exportFont()" data-i18n="fontmaker.toolbar.export_btn">⬇ Export TTF</button>
+    <button class="tbtn hi-btn" id="exportBtn" onclick="exportFont()"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="fontmaker.toolbar.export_btn">Export TTF</span></button>
     <span id="engineBadge" class="engine-badge" title="Getting the font engine ready so your first export is fast" data-i18n-title="fontmaker.toolbar.engine_badge_title" hidden><span class="engine-dot" aria-hidden="true"></span><span data-i18n="fontmaker.toolbar.engine_badge">engine loading…</span></span>
   </div>
   <!-- The other six tools all launch the tour from a header ❓ Tour button; here it used to live only
@@ -3869,14 +3869,15 @@ function ipClose() {
   aCloseModal('importProgressOverlay');
 }
 function askModal(title, bodyHtml, buttons) {
-  // buttons: [{label, cls, onClick}] — returns nothing; handlers close modal
+  // buttons: [{label, cls, icon, onClick}] — returns nothing; handlers close modal.
+  // `icon` is inline SVG from the shared icon set (static markup in this file, never user data).
   document.getElementById('askTitle').textContent = title;
   document.getElementById('askBody').innerHTML = bodyHtml;
   const wrap = document.getElementById('askBtns'); wrap.innerHTML = '';
   buttons.forEach(b => {
     const el = document.createElement('button');
-    el.className = 'tbtn' + (b.cls === 'ghost' ? ' ghost' : '');
-    el.textContent = b.label;
+    el.className = 'tbtn' + (b.cls === 'ghost' ? ' ghost' : '') + (b.icon ? ' hi-btn' : '');
+    if (b.icon) el.innerHTML = b.icon + esc(b.label); else el.textContent = b.label;
     el.onclick = () => { closeModal(); if (b.onClick) b.onClick(); };
     wrap.appendChild(el);
   });
@@ -4018,9 +4019,16 @@ const HELP_TABS = [
 ];
 // Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
 // builds in script. Static markup from this file, never user data.
+const ICON_DOWNLOAD_SM = '<svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg>';
+const ICON_UPLOAD_SM = '<svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg>';
+const ICON_SAVE_SM = '<svg class="hi hi-sm hi-save" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 6.2A2.2 2.2 0 0 1 6.7 4h9.4L20 7.9v9.9a2.2 2.2 0 0 1-2.2 2.2H6.7a2.2 2.2 0 0 1-2.2-2.2z"/><path d="M8 4v5.2h7V4"/><rect x="8" y="13.4" width="8" height="6.6" rx="1.2"/></svg>';
+const ICON_SEND_SM = '<svg class="hi hi-sm hi-send" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 3.4 10.8 13.2"/><path d="M20.6 3.4 14.4 20.6l-3.6-7.4-7.4-3.6z"/></svg>';
+const ICON_COPY_SM = '<svg class="hi hi-sm hi-copy" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2.2"/><path d="M15.5 5.5v-.8a2.2 2.2 0 0 0-2.2-2.2H6.2A2.2 2.2 0 0 0 4 4.7v7.1a2.2 2.2 0 0 0 2.2 2.2H5"/></svg>';
+const ICON_PRINT_SM = '<svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg>';
+const ICON_PAGE_SM = '<svg class="hi hi-sm hi-page" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3H7a2.2 2.2 0 0 0-2.2 2.2v13.6A2.2 2.2 0 0 0 7 21h10a2.2 2.2 0 0 0 2.2-2.2V8.7z"/><path d="M13.5 3v5.7h5.7"/><path d="M8.6 13h6.8M8.6 16.6h4.6"/></svg>';
 const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg>';
 const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
-const FONT_MAKER_VERSION = '5.46';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.47';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -4237,6 +4245,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.47</strong> &mdash; <strong>Buttons now use drawn icons instead of emoji.</strong> <span class="ui">Export</span>, <span class="ui">Save Project</span>, <span class="ui">Send to IvritSuite</span>, <span class="ui">Save as&hellip;</span>, <span class="ui">Download again</span>, the mark-edit <span class="ui">Reset</span>, <span class="ui">Re-detect</span>, <span class="ui">Replay</span> and the header controls all draw their symbol as a small vector, so they look the same on every computer instead of changing with the operating system&rsquo;s emoji font &mdash; and they follow the page&rsquo;s colours in dark mode.</li>
       <li><strong>v5.46</strong> &mdash; <strong>Digits and punctuation now behave like letters, and the pen shows its real stroke.</strong> <strong>The <span class="ui">Punctuation</span> tab opens on <span class="ui">Draw</span> in a drawing project.</strong> The marks that come pre-shaped used to open on <span class="ui">Edit points</span>, so only the blank digits ever reached the canvas; the built-in shape now sits faintly under your pen and is replaced by whatever you draw. <strong><span class="ui">Save letter &amp; next &rarr;</span> stays on that tab</strong> (it used to jump back to alef), and a new <span class="ui">Clear all existing glyphs&hellip;</span> button empties the whole tab &mdash; the built-in shapes and your own &mdash; after asking first; one Ctrl+Z brings everything back. <strong>The <span class="ui">Round</span> pen previews pressure while you draw:</strong> on a stylus the stroke thickens and thins under the pen instead of only after you lift it &mdash; what you see is exactly what gets saved. <strong>The <span class="ui">Preview PDF</span> now shows the digits and punctuation your font includes</strong>, with a 0&ndash;9 line on the cover once all ten digits are drawn. <strong>And every drawable tab has <span class="ui">Save all drawings</span>:</strong> one click saves and traces every drawing on that tab you have not saved yet (glyphs whose points you edited by hand are left for you to save one at a time), so a forgotten Save no longer means a glyph missing from the font. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.45</strong> &mdash; <strong>Two fixes for working outside the Hebrew alphabet.</strong> <strong><span class="ui">Save letter &amp; next &rarr;</span> now stays in the tab you are working in.</strong> Drawing your way through the <span class="ui">English</span> tab, it saved the letter and then jumped straight back to the Hebrew alphabet &mdash; abandoning the other fifty-one English letters &mdash; and the <span class="ui">Custom glyphs</span> and <span class="ui">Wide letterforms</span> tabs did the same. It now moves to the next letter still missing an outline <em>in the tab you are actually in</em>, and the English tab's <span class="ui">Uppercase A&ndash;Z</span> / <span class="ui">Lowercase a&ndash;z</span> switch follows along, so the letter you land on is the one highlighted in the grid. <strong>And the <span class="ui">Sample text</span> box in the <span class="ui">Spacing</span> tab no longer reads backwards.</strong> The preview laid every character out right-to-left whatever you typed, so <span class="ui">Hello</span> drew <em>olleH</em> and <span class="ui">1234</span> drew <em>4321</em> &mdash; even the ready-made <span class="ui">Mixed</span> phrase, which exists precisely to show Hebrew beside digits and Latin, came out mangled. The preview now follows the same direction rules your browser does: Hebrew still runs right to left, English and numbers run left to right, and a line that mixes them puts each run where a reader expects it. The <span class="ui">Kerning</span> pair preview beside it follows the same rule — a Hebrew pair still puts the first letter on the right, an <span class="ui">A</span>/<span class="ui">V</span> pair puts it on the left — and its <span class="ui">First</span> / <span class="ui">Second</span> captions now name the side the glyph is actually on, and it follows a <span class="ui">Dark</span> switch instead of keeping the old theme's ink — which left its two letters sitting there in pale grey. <strong>And <span class="ui">Preview PDF</span> no longer fails with a wall of Python.</strong> A letter whose points had been scaled or moved far outside the letter box stopped the font builder with a raw error that named no letter at all. The <span class="ui">Scale</span> box in <span class="ui">Edit points</span> now holds to the same 25–400% its slider always did, the mark editor's position and size boxes are bounded too, and a project that already carries such a letter is told <em>which</em> letter and what to do about it. <strong>And the two dots on a <span class="ui">שׁ</span>/<span class="ui">שׂ</span> placement screen now say which is which.</strong> Placing the dot on a shin or sin shows two of them: the orange one is the letter's own dot, the blue one marks where a <em>holam</em> lands if you type one on that letter. Both are labelled on the canvas now, so they are still tellable apart when they sit almost on top of each other — or if the two colours look alike to you. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.44</strong> &mdash; <strong>Erasing part of a letter no longer stops you redrawing there.</strong> The <span class="ui">Erase</span> tool's <span class="ui">Sculpt</span> mode takes ink away by recording a hole in the paper &mdash; and that hole used to keep erasing forever, so any new stroke drawn through a patch you had already rubbed out vanished as you drew it, on screen and in the exported font. A sculpted hole now only takes away the ink that was already on the page when you swept it, exactly like a real eraser: rub something out, draw it again, and what you draw stays. Erasing still works on everything currently drawn, and sliding a stroke out from under an old hole still brings it back whole. <em>(September 2026)</em></li>
@@ -4390,7 +4399,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_46';
+  const CUR_KEY = 'fontmaker.changelog.v5_47';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -14992,7 +15001,7 @@ function referencePanelR() {
       <select id="templateFont" onchange="onTemplateChange()"></select>
     </label>
     <div id="refUploadWrap" style="display:none;">
-      <button class="ctl-btn" style="font-size:0.72rem;width:100%;" onclick="document.getElementById('ttfTemplateFile').click()">${I18n.t('fontmaker.panels.reference_upload')}</button>
+      <button class="ctl-btn hi-btn" style="font-size:0.72rem;width:100%;" onclick="document.getElementById('ttfTemplateFile').click()">${ICON_UPLOAD_SM}${esc(I18n.t('fontmaker.panels.reference_upload'))}</button>
       <div class="allowed">${I18n.t('fontmaker.panels.reference_upload_allowed')}</div>
       <input type="file" id="ttfTemplateFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
     </div>
@@ -18392,7 +18401,8 @@ function onExportFormatChange() {
   const name = { ttf:'TTF', woff2:'WOFF2', ttfwoff2:'TTF + WOFF2', ufo:'UFO' }[fmt] || 'TTF';
   const key = 'fontmaker.toolbar.export_btn_fmt';
   const s = window.I18n ? I18n.t(key, { fmt: name }) : key;
-  const btn = document.getElementById('exportBtn'); if (btn) btn.textContent = s === key ? '⬇ Export ' + name : s;   // i18n-ignore: pre-ready English shape
+  const btn = document.getElementById('exportBtn');
+  if (btn) btn.innerHTML = ICON_DOWNLOAD_SM + esc(s === key ? 'Export ' + name : s);   // i18n-ignore: pre-ready English shape
 }
 /* ── Send this font to IvritSuite ────────────────────────────────────────────────────────────
    One in-page flow that carries the exported bytes, so the attachment is automatic where the
@@ -18483,7 +18493,8 @@ function fmSaveAsPicker(file) {   // Chromium desktop "Save as…" — the user 
     .then(() => status(I18n.t('fontmaker.send.saved_as', {name: file.name})))
     .catch(e => { if (e && e.name === 'AbortError') return; console.error(e); downloadBlob(file, file.name); });
 }
-function fmActBtn(id, key) { return '<button type="button" class="tbtn ghost" id="' + id + '">' + esc(I18n.t(key)) + '</button>'; }
+// `icon`: inline SVG from the shared icon set (static markup in this file, never user data).
+function fmActBtn(id, key, icon) { return '<button type="button" class="tbtn ghost' + (icon ? ' hi-btn' : '') + '" id="' + id + '">' + (icon || '') + esc(I18n.t(key)) + '</button>'; }
 function fmWireAct(id, fn) { const b = document.getElementById(id); if (b) b.addEventListener('click', fn); }   // in-body buttons on #askBody: they must NOT close the dialog (askModal's own do)
 function fmSendChecklist(files, dest) {   // the attach checklist — persistent, only Done closes it
   const canPick = typeof window.showSaveFilePicker === 'function';
@@ -18493,9 +18504,9 @@ function fmSendChecklist(files, dest) {   // the attach checklist — persistent
     + '<div style="margin-top:4px;">' + I18n.t('fontmaker.send.item_license', {file: '<b>' + esc(files[1].name) + '</b>'}) + '</div>'
     + '<div class="hint" style="margin-top:8px;">' + esc(I18n.t('fontmaker.send.no_mail')) + '</div>'
     + '<div class="mbtns" style="justify-content:flex-start;margin-top:10px;">'
-    + fmActBtn('sendDownloadAgain', 'fontmaker.send.download_again_btn')
-    + (canPick ? fmActBtn('sendSaveAs', 'fontmaker.send.saveas_btn') : '')
-    + fmActBtn('sendLicense', 'fontmaker.modals.exported_license_btn')
+    + fmActBtn('sendDownloadAgain', 'fontmaker.send.download_again_btn', ICON_DOWNLOAD_SM)
+    + (canPick ? fmActBtn('sendSaveAs', 'fontmaker.send.saveas_btn', ICON_SAVE_SM) : '')
+    + fmActBtn('sendLicense', 'fontmaker.modals.exported_license_btn', ICON_DOWNLOAD_SM)
     + fmActBtn('sendCopyAddr', 'fontmaker.send.copy_addr_btn')
     + '</div>',
     [{ label: I18n.t('fontmaker.modals.exported_done') }]);
@@ -18512,7 +18523,7 @@ function fmSendPreflightShare(files, draft, dest) {   // explains the share shee
   askModal(I18n.t(fmDest(dest).titleKey),
     I18n.t('fontmaker.send.preflight_share', {font: '<b>' + esc(files[0].name) + '</b>', license: '<b>' + esc(files[1].name) + '</b>', addr: '<b>' + esc(fmSubmitAddr(dest)) + '</b>'})
     + '<div class="mbtns" style="justify-content:flex-start;margin-top:10px;">' + fmActBtn('sendCopyAddr', 'fontmaker.send.copy_addr_btn') + '</div>',
-    [ { label: I18n.t('fontmaker.send.open_share_btn'), onClick: () => {
+    [ { label: I18n.t('fontmaker.send.open_share_btn'), icon: ICON_SEND_SM, onClick: () => {
           let p; try { p = navigator.share({ files, title: draft.subject, text: draft.shareText }); } catch (e) { p = Promise.reject(e); }
           fmCopyAddr(dest);   // same gesture — a clipboard write after the sheet closes would be refused
           p.then(() => status(I18n.t('fontmaker.send.share_done')))
@@ -19223,7 +19234,7 @@ async function renderMyFontsList() {
     // announces these as "⬇" and "🗑" — the destructive one included. The aria-label also
     // carries the row's font name: ten saved fonts must not announce ten identical actions.
     const dl = document.createElement('button');
-    dl.className = 'tbtn ghost'; dl.textContent = '⬇'; dl.title = I18n.t('fontmaker.modals.myfonts_download_title'); dl.style.padding = '4px 8px';
+    dl.className = 'tbtn ghost'; dl.innerHTML = ICON_DOWNLOAD_SM; dl.title = I18n.t('fontmaker.modals.myfonts_download_title'); dl.style.padding = '4px 8px';
     dl.setAttribute('aria-label', I18n.t('shared.fonts.myfonts_download_name_aria', { name: f.name }));
     dl.onclick = () => downloadMyFont(f.name);
     const del = document.createElement('button');
@@ -19271,11 +19282,11 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
   const fam = (project.font.familyName || 'My Hebrew Font').trim() + (fontIsBold() ? ' Bold' : '');
   const canSave = !!(window.indexedDB && window.FontFace);
   const btns = [{ label: I18n.t('fontmaker.modals.exported_done'), cls: 'ghost' },
-                { label: I18n.t('fontmaker.modals.exported_send_btn'), cls: 'ghost', onClick: () => fmSendFont('ivrit') },
-                { label: I18n.t('fontmaker.modals.exported_send_os_btn'), cls: 'ghost', onClick: () => fmSendFont('os') }];
-  if (canShareFile) btns.push({ label: I18n.t('fontmaker.modals.exported_sharefile_btn'), cls: 'ghost',
+                { label: I18n.t('fontmaker.modals.exported_send_btn'), cls: 'ghost', icon: ICON_SEND_SM, onClick: () => fmSendFont('ivrit') },
+                { label: I18n.t('fontmaker.modals.exported_send_os_btn'), cls: 'ghost', icon: ICON_SEND_SM, onClick: () => fmSendFont('os') }];
+  if (canShareFile) btns.push({ label: I18n.t('fontmaker.modals.exported_sharefile_btn'), cls: 'ghost', icon: ICON_SEND_SM,
     onClick: () => fmShareFiles(licenseSeparate ? [dlFile, fmLicenseFile()] : [dlFile]) });
-  if (canPick) btns.push({ label: I18n.t('fontmaker.modals.exported_saveas_btn'), cls: 'ghost', onClick: () => fmSaveAsPicker(dlFile) });
+  if (canPick) btns.push({ label: I18n.t('fontmaker.modals.exported_saveas_btn'), cls: 'ghost', icon: ICON_SAVE_SM, onClick: () => fmSaveAsPicker(dlFile) });
   // Single-file TTF/WOFF2 downloads don't carry the license (the zip/UFO embed it), so offer it as a
   // reliable one-click download here — a click inside the modal is never blocked, unlike an
   // auto-triggered second download.
@@ -20412,7 +20423,7 @@ function saveProject() {
   // Two ways to save: a permanent file on the computer, or a quick copy kept in this browser.
   askModal(I18n.t('fontmaker.modals.save_project_title'),
     I18n.t('fontmaker.modals.save_project_body'),
-    [ {label:I18n.t('fontmaker.modals.save_to_computer'), onClick: () => saveToComputer()},
+    [ {label:I18n.t('fontmaker.modals.save_to_computer'), icon: ICON_SAVE_SM, onClick: () => saveToComputer()},
       {label:I18n.t('fontmaker.modals.save_in_browser'), onClick: () => saveToBrowser()},
       {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'} ]);
 }
@@ -21025,7 +21036,7 @@ function toggleSaveMenu(ev) {
   if (document.getElementById('saveMenu')) { closeSaveMenu(); return; }
   const menu = document.createElement('div'); menu.id = 'saveMenu'; menu.className = 'load-menu';
   menu.innerHTML =
-    `<button class="load-menu-item" onclick="closeSaveMenu();saveProject()">${esc(I18n.t('fontmaker.savemenu.save'))}</button>` +
+    `<button class="load-menu-item hi-btn" onclick="closeSaveMenu();saveProject()">${ICON_SAVE_SM}${esc(I18n.t('fontmaker.savemenu.save'))}</button>` +
     `<div class="load-menu-sep"></div>` +
     `<button class="load-menu-item" onclick="closeSaveMenu();saveProjectAs()">${esc(I18n.t('fontmaker.savemenu.save_as'))}</button>` +
     `<div class="load-menu-sep"></div>` +

@@ -370,7 +370,8 @@ clears it, and leaving fullscreen clears it. Nothing is saved.
 The header controls (Home / Back, the dark-mode toggle, Settings, Tour, Full Screen, the dashboard's
 Blank-the-screen, and the account chip) carry inline SVG glyphs from one shared set instead of emoji, and so
 do the in-page **control buttons**: play, pause, stop, reset / restore-default, retry / replay, loop, sound
-and the music note on the chant buttons.
+and the music note on the chant buttons, and the **action buttons**: copy, copy-link, print, save, download,
+upload, send and page.
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
 `account`, `404`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
@@ -383,7 +384,8 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
 - **The SVG set**, one snippet per glyph, identical on every carrier: `hi-arrow` (also carries `dir-arrow`
   for the pages' older mirroring rule), `hi-moon` + `hi-sun` (always both, the CSS picks one), `hi-gear`,
   `hi-help`, `hi-fs-enter` / `hi-fs-exit`, `hi-blank`, `hi-user`, plus the control family `hi-play`,
-  `hi-pause`, `hi-stop`, `hi-reset`, `hi-retry`, `hi-loop`, `hi-sound` and `hi-music`. Every snippet is
+  `hi-pause`, `hi-stop`, `hi-reset`, `hi-retry`, `hi-loop`, `hi-sound` and `hi-music`, and the action family
+  `hi-copy`, `hi-link`, `hi-print`, `hi-save`, `hi-download`, `hi-upload`, `hi-send` and `hi-page`. Every snippet is
   `aria-hidden="true" focusable="false"`; the control's own `title` / `aria-label` names it. `.hi-sm` is the
   13px size the tiny settings buttons take and `.hi-btn` lines an icon up with its label inside a button.
 
@@ -405,9 +407,18 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   and is written with `innerHTML = ICON_X + esc(label)`, never `textContent` — a `textContent` write would
   drop the SVG. The list builders' `mk()` helpers read a leading `<` as icon markup (static markup from the
   page, never user data) and then always take the title as the button's accessible name.
+- **Import takes the upload icon and export the download icon**, whichever way round the old glyph ran — the
+  generator's backup pair used to point the other way, which read as the opposite action.
+- **An `<option>` cannot hold an SVG**, so a control whose label lives in a `<select>` keeps its text glyph (the
+  Font Maker's *Upload your own reference font…* option, and the language switcher, which draws its flag beside
+  the closed select instead).
 - **Not every glyph is a control.** The dashboard's day-badge emoji sets (⏪️▶️⏩️, 🔼⏹️🔽) are the pictures a
-  teacher projects on the board, the flash cards' ↺ flips a card rather than resetting anything, and prose
-  that mentions a control ("Tap ▶ to hear the melody") stays prose — leave all three alone.
+  teacher projects on the board, the flash cards' ↺ flips a card rather than resetting anything, the resources
+  directory's category chips (🖨️ Printables, 🇮🇱 Hebrew…) are one emoji set the whole listing shares, the
+  generator's printed Caller Sheet is worksheet output, and prose that mentions a control ("Tap ▶ to hear the
+  melody") stays prose — leave all of them alone.
+- **The Font Maker's two button helpers take an optional icon**: `fmActBtn(id, key, icon)` and a modal button
+  descriptor's `icon` field, which makes `askModal` write `innerHTML` instead of `textContent`.
 
 ### Adding the header to a new page
 Paste the CSS block, copy the snippets from any carrier (never redraw them), put labels in `.hi-lbl` spans,
