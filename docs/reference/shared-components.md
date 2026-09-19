@@ -394,6 +394,12 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   `*.header.back_link` and `*.tour_button` rows are plain words in both languages; the icon is markup.
   A button that shows a label keeps its `data-i18n` on an inner `<span class="hi-lbl">` (or the page's own
   `.hbtn-label`), never on the button, because `applyStaticI18n` would replace the SVG with the string.
+- **A button may drop its label and keep only the glyph**, but then the translated name moves to
+  `title` + `aria-label` (both `data-i18n-title` and `data-i18n-aria-label` on the same key, so the two stay
+  in step in either language) and the button gets a rule holding it to the suite's 30px touch floor
+  (WCAG 2.5.8) — the dashboard timer's Start / Pause / Reset are the example, icon-only so the four
+  transport controls sit on one line. Only do it where the glyph is unambiguous on its own; a word the
+  icon cannot carry (the timer's own *+1 min*, *Custom*, *Set*) keeps its label.
 - **The dark toggle holds both `hi-moon` and `hi-sun`.** Its scripts write only `aria-pressed` and, on the
   labelled variant, the label text — `(_db.querySelector('.hi-lbl') || _db).textContent = …` — never the
   button's `textContent`. A second or third dark button (the dashboard and Trope Tutor drawers, the Torah

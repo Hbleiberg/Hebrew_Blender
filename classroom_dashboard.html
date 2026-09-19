@@ -708,6 +708,10 @@
     color: var(--text); cursor: pointer; transition: border-color 0.15s; }
   .timer-preset-btn:hover, .timer-ctrl-btn:hover { border-color: var(--gold); }
   .timer-controls { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }   /* four buttons (Start / Pause / Reset / +1 min); wraps and centers like .timer-presets above it */
+  /* Start / Pause / Reset are icon-only — the play, pause and reset glyphs read at a glance and the
+     three of them plus +1 min then sit on one line instead of wrapping. Each keeps its translated name
+     as title + aria-label, and the square holds the suite's 30px touch floor (WCAG 2.5.8). */
+  .timer-ctrl-btn.hi-btn { min-width: 34px; min-height: 30px; padding: 4px 8px; }
   .timer-custom-row { display: flex; gap: 5px; align-items: center; }
   .timer-custom-row input { width: 72px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 5px;
     font-family: inherit; text-align: center; background: var(--white); color: var(--text); }
@@ -2175,9 +2179,9 @@ body.dark .hi-sun{display:inline-block;}
              #locNote) instead of the blocking alert() a mistyped "5.30" used to raise. -->
         <div id="timerCustomNote" class="schedule-validation" role="status" aria-live="polite" style="display:none;"></div>
         <div class="timer-controls">
-          <button class="timer-ctrl-btn hi-btn" id="timerStartBtn" onclick="timerStart()"><svg class="hi hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="dashboard.timer.start">Start</span></button>
-          <button class="timer-ctrl-btn hi-btn" id="timerPauseBtn" onclick="timerPause()"><svg class="hi hi-pause" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.8" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/><rect x="13.6" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="dashboard.timer.pause">Pause</span></button>
-          <button class="timer-ctrl-btn hi-btn" id="timerResetBtn" onclick="timerReset()"><svg class="hi hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="dashboard.timer.reset">Reset</span></button>
+          <button class="timer-ctrl-btn hi-btn" id="timerStartBtn" onclick="timerStart()" title="Start" aria-label="Start" data-i18n-title="dashboard.timer.start" data-i18n-aria-label="dashboard.timer.start"><svg class="hi hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg></button>
+          <button class="timer-ctrl-btn hi-btn" id="timerPauseBtn" onclick="timerPause()" title="Pause" aria-label="Pause" data-i18n-title="dashboard.timer.pause" data-i18n-aria-label="dashboard.timer.pause"><svg class="hi hi-pause" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.8" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/><rect x="13.6" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/></svg></button>
+          <button class="timer-ctrl-btn hi-btn" id="timerResetBtn" onclick="timerReset()" title="Reset" aria-label="Reset" data-i18n-title="dashboard.timer.reset" data-i18n-aria-label="dashboard.timer.reset"><svg class="hi hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
           <button class="timer-ctrl-btn" id="timerAddMinBtn" onclick="timerAddMinute()" title="Add a minute to the countdown" data-i18n-title="dashboard.timer.add_minute_title" data-i18n="dashboard.timer.add_minute">+1 min</button>
         </div>
       </div>
