@@ -2255,7 +2255,7 @@ body.dark .hi-sun{display:inline-block;}
       <label class="swm-weekend"><input type="checkbox" id="swmWeekend" onchange="setWeekWeekend(this.checked)"><span data-i18n="dashboard.schedule.show_weekend">Show weekend</span></label>
       <div class="swm-toolbar-right">
         <button class="btn-xs" id="swmAddPeriod" onclick="addWeekPeriod()" data-i18n="dashboard.schedule.add_period">+ Add period</button>
-        <button class="btn-xs" id="swmIcalBtn" onclick="pickIcalFile()" data-i18n="dashboard.schedule.ical_btn" data-i18n-title="dashboard.schedule.ical_btn_title" title="Import class times from a calendar export (.ics) or a spreadsheet (.csv)">📅 Import calendar</button>
+        <button class="btn-xs hi-btn" id="swmIcalBtn" onclick="pickIcalFile()" data-i18n-title="dashboard.schedule.ical_btn_title" title="Import class times from a calendar export (.ics) or a spreadsheet (.csv)"><svg class="hi hi-sm hi-calendar" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="5.4" width="17.6" height="15.2" rx="2.2"/><path d="M3.2 10.2h17.6"/><path d="M8.2 3v4.4M15.8 3v4.4"/><circle cx="12" cy="15.6" r="1.7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="dashboard.schedule.ical_btn">Import calendar</span></button>
         <button class="btn-xs hi-btn" id="swmPrintBtn" onclick="printWeekGrid()" data-i18n-title="dashboard.schedule.print_week_title" title="Print the weekly grid as a reference sheet — class colors included"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="dashboard.schedule.print_week">Print week</span></button>
       </div>
     </div>
@@ -2652,7 +2652,7 @@ body.dark .hi-sun{display:inline-block;}
       <div style="display:flex;gap:5px;align-items:center;">
         <select id="pickerClassSel" onchange="switchClass(this.value)" style="flex:1;min-width:0;max-width:none;"></select>
         <button type="button" class="btn-xs" title="New class" aria-label="New class" data-i18n-aria-label="dashboard.picker.new_class_title" data-i18n-title="dashboard.picker.new_class_title" onclick="newClass()">➕</button>
-        <button type="button" class="btn-xs" title="Rename class" aria-label="Rename class" data-i18n-aria-label="dashboard.picker.rename_class_title" data-i18n-title="dashboard.picker.rename_class_title" onclick="renameClass()">✏️</button>
+        <button type="button" class="btn-xs" title="Rename class" aria-label="Rename class" data-i18n-aria-label="dashboard.picker.rename_class_title" data-i18n-title="dashboard.picker.rename_class_title" onclick="renameClass()"><svg class="hi hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg></button>
         <button type="button" class="btn-xs" title="Delete class" aria-label="Delete class" data-i18n-aria-label="dashboard.picker.delete_class_title" data-i18n-title="dashboard.picker.delete_class_title" onclick="deleteClass()">🗑</button>
       </div>
       <span id="pickerClassNote" style="font-size:0.72rem;color:var(--gold-text);display:none;"></span>
@@ -3255,6 +3255,7 @@ body.dark .hi-sun{display:inline-block;}
   // Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
 // builds in script. Static markup from this file, never user data.
 const ICON_LINK_SM = '<svg class="hi hi-sm hi-link" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 13.7a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.7 1.7"/><path d="M13.7 10.3a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.7-1.7"/></svg>';
+const ICON_PENCIL_SM = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
 const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg>';
   const FS_ENTER = '<svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
   const FS_EXIT = '<svg class="hi hi-fs-exit" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
@@ -7128,7 +7129,7 @@ function mountFolderTree(cfg){
         f.appendChild(mk(I18n.t('dashboard.preset.load'), '', 'btn btn-xs', () => loadPreset(name)));
         f.appendChild(mk(ICON_RESET_SM, I18n.t('dashboard.preset.overwrite_title'), 'btn btn-xs btn-secondary', () => overwritePreset(name)));
         f.appendChild(mk('⧉', I18n.t('dashboard.preset.duplicate_title'), 'btn btn-xs btn-secondary', () => duplicatePreset(name)));
-        f.appendChild(mk('✎', I18n.t('dashboard.preset.rename_title'), 'btn btn-xs btn-secondary', () => renamePreset(name)));
+        f.appendChild(mk(ICON_PENCIL_SM, I18n.t('dashboard.preset.rename_title'), 'btn btn-xs btn-secondary', () => renamePreset(name)));
         f.appendChild(mk('×', I18n.t('dashboard.preset.delete_title'), 'btn btn-xs btn-secondary', () => deletePreset(name)));
         return f;
       }
@@ -9151,7 +9152,7 @@ else ivritInit();
         f.appendChild(mk(I18n.t('dashboard.schedule.sched_load'), '', 'btn btn-xs', () => loadSavedSchedule(name)));
         f.appendChild(mk(ICON_RESET_SM, I18n.t('dashboard.schedule.overwrite_title'), 'btn btn-xs btn-secondary', () => overwriteSavedSchedule(name)));
         f.appendChild(mk('⧉', I18n.t('dashboard.schedule.sched_duplicate_title'), 'btn btn-xs btn-secondary', () => duplicateSavedSchedule(name)));
-        f.appendChild(mk('✎', I18n.t('dashboard.schedule.sched_rename_title'), 'btn btn-xs btn-secondary', () => renameSavedSchedule(name)));
+        f.appendChild(mk(ICON_PENCIL_SM, I18n.t('dashboard.schedule.sched_rename_title'), 'btn btn-xs btn-secondary', () => renameSavedSchedule(name)));
         f.appendChild(mk('×', I18n.t('dashboard.schedule.sched_delete_title'), 'btn btn-xs btn-secondary', () => deleteSavedSchedule(name)));
         return f;
       }

@@ -117,7 +117,7 @@ dashboard.about.howto_3,Customize the Hebrew font and nikkud display.,התאימ
 dashboard.about.howto_4,Use the fullscreen button to project to your SmartBoard.,השתמשו בכפתור מסך מלא כדי להקרין ללוח החכם.,how-to step,
 dashboard.about.howto_5,Save your setup as a preset — or start from a Quick-start layout in the Presets panel.,שמרו את ההגדרה שלכם כתבנית — או התחילו מפריסת התחלה מהירה בפאנל התבניות.,how-to step,
 dashboard.about.howto_6,"In fullscreen, move the mouse to reveal quick controls (settings, timer, student picker, text, video, blank screen).","במסך מלא, הזיזו את העכבר כדי לחשוף פקדים מהירים (הגדרות, טיימר, הגרלה, טקסט, וידאו, החשכה).",how-to step,
-dashboard.about.howto_7,Click the ✎ on the dashboard message to edit it right on the board.,לחצו על ה-✎ בהודעת הלוח כדי לערוך אותה ישירות על הלוח.,how-to step,
+dashboard.about.howto_7,Click the pencil on the dashboard message to edit it right on the board.,לחצו על סמל העיפרון בהודעת הלוח כדי לערוך אותה ישירות על הלוח.,how-to step,svg-icon-in-markup
 dashboard.about.howto_summary,How To Use,איך להשתמש,how-to section summary,
 dashboard.backup.auto_explainer,"Save all your presets, saved schedules, and current settings to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.","שמרו את כל התבניות, מערכות השעות השמורות וההגדרות הנוכחיות שלכם לקובץ <b>.ivrit</b> במכשיר שלכם. שחזרו על ידי גרירת הקובץ למטה או איתורו בעיון.",backup panel explainer,html
 dashboard.backup.err_invalid_json,Invalid JSON.,JSON לא תקין.,Manual-backup import error alert,alert
@@ -387,7 +387,7 @@ dashboard.schedule.grid_empty_hint,No periods yet — click “+ Add period” t
 dashboard.schedule.import_blank_btn,Start blank,התחלה ריקה,legacy-import offer button,
 dashboard.schedule.import_body,Your existing schedule listed only end times. Tell us when your first period starts and we'll build the weekly grid from it — every weekday gets the same column to start.,מערכת השעות הקיימת שלכם כללה רק שעות סיום. ציינו מתי מתחיל השיעור הראשון ואנחנו נבנה ממנה את הרשת השבועית — כל ימי החול יקבלו תחילה את אותה עמודה.,legacy-import offer body,
 dashboard.schedule.ical_apply_btn,Import,ייבוא,calendar-file import preview apply button,REVIEW: HE draft
-dashboard.schedule.ical_btn,📅 Import calendar,📅 ייבוא יומן,weekly editor toolbar button — import class times from an .ics/.csv file,leading-emoji; REVIEW: HE draft
+dashboard.schedule.ical_btn,Import calendar,ייבוא יומן,weekly editor toolbar button — import class times from an .ics/.csv file,svg-icon-in-markup; REVIEW: HE draft
 dashboard.schedule.ical_btn_title,Import class times from a calendar export (.ics) or a spreadsheet (.csv),ייבוא שעות שיעורים מייצוא יומן (‎.ics) או מגיליון (‎.csv),toolbar button tooltip,REVIEW: HE draft
 dashboard.schedule.ical_cancel_btn,Cancel,ביטול,calendar-file import preview cancel button,REVIEW: HE draft
 dashboard.schedule.ical_close_btn,Close,סגירה,calendar-file import error-card close button,REVIEW: HE draft
@@ -758,7 +758,7 @@ dictionary.filters.len_8plus,8+ Letter,8+ אותיות,word-length checkbox,
 dictionary.filters.len_prefix,Prefixes/Suffixes,תחיליות/סופיות,word-length checkbox,
 dictionary.filters.length_panel_title,Word Length,אורך המילה,filter panel title,
 dictionary.filters.letter_panel_title,Filter by Letter,סינון לפי אות,filter panel title,
-dictionary.filters.mobile_button,⚙ Filters,⚙ מסננים,mobile filters button,leading-emoji
+dictionary.filters.mobile_button,Filters,מסננים,mobile filters button,svg-icon-in-markup
 dictionary.filters.mode_emojis,Emojis,אימוג׳ים,mode switcher button,
 dictionary.filters.mode_shoresh,Shoresh,שורש,mode switcher button,
 dictionary.filters.mode_words,Words,מילים,mode switcher button,
@@ -1481,6 +1481,7 @@ fontmaker.canvas.tpl_page_of,{title} · page {n} of {total},{title} · עמוד 
 fontmaker.canvas.tpl_punct,Punctuation & More,פיסוק ועוד,canvas — printable template title,canvas
 fontmaker.canvas.tpl_trop,Trop (Cantillation),טעמים (טעמי המקרא),canvas — printable template title,canvas
 fontmaker.changelog.v5_42,"v5.42 — Reduce points and Round corners stay on the letter you're editing. Nudging either slider and letting go on the value it started at left its before-snapshot armed, so the next letter you opened took the previous letter's outline the moment you touched the slider — clicking from letter to letter for a low-poly pass was impossible. The snapshot now clears whenever you change letters or steps, and the slider commits when it loses focus. (September 2026)","v5.42 — «צמצום נקודות» ו«עיגול פינות» נשארים על האות שעורכים. הזזת אחד המחוונים ושחרורו על הערך שממנו התחיל השאירה את תמונת המצב הקודמת פעילה, וכך האות הבאה שנפתחה קיבלה את קו המתאר של האות הקודמת ברגע שנגעו במחוון — מעבר מאות לאות לצמצום נקודות היה בלתי אפשרי. תמונת המצב מתנקה כעת בכל החלפת אות או שלב, והמחוון נשמר כשהוא מאבד מיקוד. (ספטמבר 2026)",changelog entry,plain-text mirror of the About-tab li; REVIEW: machine-drafted HE — confirm
+fontmaker.changelog.v5_48,"v5.48 — The last emoji buttons became drawn icons. Tour, Help, the Settings tab and panel, Edit points, Edit shape, Edit the glyph, Draw with pen, Copy outline and Copy address now draw the same vector symbols the rest of IvritSuite uses, so a button means the same picture in every tool. Edit shape also appears in your language now — it had been left in English. (September 2026)","v5.48 — כפתורי האימוג׳י האחרונים הפכו לסמלים מצוירים. סיור, עזרה, לשונית הגדרות והפאנל שלה, עריכת נקודות, עריכת צורה, עריכת הגליף, צייר בעט, העתק מתאר והעתקת הכתובת מציירים כעת את אותם סמלים וקטוריים שבשאר IvritSuite, כך שכפתור מסמן את אותה תמונה בכל הכלים. ״עריכת צורה״ מופיעה כעת גם בשפה שלכם — היא נותרה קודם באנגלית. (ספטמבר 2026)",changelog entry,plain-text mirror of the About-tab li
 fontmaker.changelog.v5_47,"v5.47 — Buttons now use drawn icons instead of emoji. Export, Save Project, Send to IvritSuite, Save as…, Download again, the mark-edit Reset, Re-detect, Replay and the header controls all draw their symbol as a small vector, so they look the same on every computer instead of changing with the operating system's emoji font — and they follow the page's colours in dark mode.","v5.47 — הכפתורים משתמשים כעת בסמלים מצוירים במקום באמוג'י. ייצוא, שמירת פרויקט, שליחה ל-IvritSuite, שמירה בשם…, הורדה חוזרת, איפוס עריכת הסימן, זיהוי מחדש, הדגמה וכפתורי הכותרת — כולם מציירים את הסמל כווקטור קטן, כך שהם נראים זהים בכל מחשב במקום להשתנות לפי גופן האמוג'י של מערכת ההפעלה, והם מתאימים את צבעם למצב הכהה.",About-tab changelog entry,
 fontmaker.changelog.v5_46,"v5.46 — Digits and punctuation now behave like letters, and the pen shows its real stroke. The Punctuation tab opens on Draw in a drawing project. The marks that come pre-shaped used to open on Edit points, so only the blank digits ever reached the canvas; the built-in shape now sits faintly under your pen and is replaced by whatever you draw. Save letter & next → stays on that tab (it used to jump back to alef), and a new Clear all existing glyphs… button empties the whole tab — the built-in shapes and your own — after asking first; one Ctrl+Z brings everything back. The Round pen previews pressure while you draw: on a stylus the stroke thickens and thins under the pen instead of only after you lift it — what you see is exactly what gets saved. The Preview PDF now shows the digits and punctuation your font includes, with a 0–9 line on the cover once all ten digits are drawn. And every drawable tab has Save all drawings: one click saves and traces every drawing on that tab you have not saved yet (glyphs whose points you edited by hand are left for you to save one at a time), so a forgotten Save no longer means a glyph missing from the font. (September 2026)","v5.46 — ספרות ופיסוק מתנהגים כעת כמו אותיות, והעט מציג את הקו האמיתי שלו. הלשונית «פיסוק» נפתחת על «ציור» בפרויקט ציור. הסימנים שמגיעים מעוצבים מראש נפתחו על «עריכת נקודות», כך שרק הספרות הריקות הגיעו אי פעם ללוח; הצורה המובנית יושבת כעת בעמעום מתחת לעט ומוחלפת במה שאתם מציירים. «שמירת האות והבאה ←» נשארת בלשונית הזו (בעבר קפצה חזרה לאל״ף), וכפתור חדש «ניקוי כל הגליפים הקיימים…» מרוקן את הלשונית כולה — הצורות המובנות ושלכם — אחרי שאלה תחילה; Ctrl+Z אחד מחזיר הכול. העט «עגול» מציג את הלחץ בזמן הציור: עם עט דיגיטלי הקו מתעבה ומתדקק מתחת לעט במקום רק אחרי שמרימים אותו — מה שרואים הוא בדיוק מה שנשמר. «תצוגה מקדימה PDF» מציגה כעת את הספרות והפיסוק שהגופן כולל, עם שורת 0–9 בעמוד השער ברגע שכל עשר הספרות מצוירות. ולכל לשונית שאפשר לצייר בה יש «שמירת כל הציורים»: לחיצה אחת שומרת וממירה כל ציור בלשונית שעדיין לא נשמר (גליפים שנקודותיהם נערכו ידנית נשארים לשמירה אחד-אחד), כך ששמירה שנשכחה כבר לא פירושה גליף חסר בגופן. (ספטמבר 2026)",changelog entry,plain-text mirror of the About-tab li; REVIEW: machine-drafted HE — confirm
 fontmaker.changelog.v5_45,"v5.45 — Two fixes for working outside the Hebrew alphabet. Save letter & next → now stays in the tab you are working in: drawing your way through the English tab, it saved the letter and then jumped straight back to the Hebrew alphabet, abandoning the other fifty-one English letters — and the Custom glyphs and Wide letterforms tabs did the same. It now moves to the next letter still missing an outline in the tab you are actually in, and the English tab's Uppercase A–Z / Lowercase a–z switch follows along, so the letter you land on is the one highlighted in the grid. And the Sample text box in the Spacing tab no longer reads backwards: the preview laid every character out right-to-left whatever you typed, so Hello drew olleH and 1234 drew 4321, and even the ready-made Mixed phrase came out mangled. The preview now follows the same direction rules your browser does — Hebrew still runs right to left, English and numbers run left to right, and a line that mixes them puts each run where a reader expects it. The Kerning pair preview beside it follows the same rule — a Hebrew pair still puts the first letter on the right, an A/V pair puts it on the left — and its First / Second captions now name the side the glyph is actually on, and it follows a Dark switch instead of keeping the old theme's ink — which left its two letters sitting there in pale grey. And Preview PDF no longer fails with a wall of Python: a letter whose points had been scaled or moved far outside the letter box stopped the font builder with a raw error that named no letter at all. The Scale box in Edit points now holds to the same 25–400% its slider always did, the mark editor's position and size boxes are bounded too, and a project that already carries such a letter is told which letter and what to do about it. And the two dots on a shin/sin placement screen now say which is which: placing the dot on a shin or sin shows two of them — the orange one is the letter's own dot, the blue one marks where a holam lands if you type one on that letter — and both are labelled on the canvas now, so they stay tellable apart when they sit almost on top of each other, or if the two colours look alike to you. (September 2026)","v5.45 — שני תיקונים לעבודה מחוץ לאלפבית העברי. «שמירת האות והבאה ←» נשארת כעת בלשונית שבה אתם עובדים: בציור האותיות בלשונית «אנגלית» הכפתור שמר את האות ואז קפץ בחזרה לאלפבית העברי ונטש את חמישים ואחת האותיות הנותרות — וכך נהגו גם הלשוניות «גליפים מותאמים» ו«אותיות רחבות». כעת הוא עובר לאות הבאה שעדיין חסר לה קו מתאר באותה לשונית שבה אתם נמצאים, ומתג «אותיות רישיות A–Z» / «אותיות קטנות a–z» עוקב אחריו. ותיבת «טקסט לדוגמה» בלשונית «ריווח» כבר אינה מוצגת הפוך: התצוגה סידרה כל תו מימין לשמאל בלי קשר למה שהקלדתם, וכך Hello צויר olleH ו־1234 צויר 4321 — ואפילו הביטוי המוכן «מעורב» יצא משובש. התצוגה פועלת כעת לפי אותם כללי הכיוון של הדפדפן: עברית עדיין מימין לשמאל, אנגלית וספרות משמאל לימין, ושורה מעורבת מציבה כל רצף במקום שהקורא מצפה לו. תצוגת זוג הכרנינג שלידה פועלת לפי אותו כלל — בזוג עברי האות הראשונה עדיין מימין, בזוג A/V היא משמאל — והכיתוביות «ראשונה» / «שנייה» מציינות כעת את הצד שבו האות אכן נמצאת, והיא עוקבת אחרי מעבר למצב כהה במקום לשמר את הצבע של ערכת הנושא הקודמת — מה שהשאיר את שתי האותיות שלה באפור חיוור. ו«תצוגה מקדימה PDF» כבר אינה נכשלת עם קיר של שגיאות Python: אות שהנקודות שלה הוגדלו או הוזזו הרחק מחוץ לתיבת האות עצרה את בונה הגופן בשגיאה גולמית שלא נקבה בשם אף אות. תיבת «קנה מידה» ב«עריכת נקודות» מוגבלת כעת לאותם 400%–:25 שהמחוון שלה תמיד אכף, גם תיבות המיקום והגודל בעורך הסימנים מוגבלות, ופרויקט שכבר מכיל אות כזו מקבל הודעה האומרת באיזו אות מדובר ומה לעשות. ושתי הנקודות במסך מיקום הנקודה של שין/שין שמאלית מסמנות כעת מי הן: במיקום הנקודה על שין מופיעות שתיים — הכתומה היא הנקודה של האות עצמה, והכחולה מסמנת היכן ישב חולם אם מקלידים אותו על האות — ושתיהן מסומנות כעת בשמן על הלוח, כך שאפשר להבחין ביניהן גם כשהן כמעט זו על גבי זו, או אם שני הצבעים נראים לכם דומים. (ספטמבר 2026)",changelog entry,plain-text mirror of the About-tab li; REVIEW: machine-drafted HE — confirm
@@ -2411,7 +2412,7 @@ fontmaker.panels.adv_wide_hint,"Adds a <strong>Wide letterforms</strong> tab wit
 fontmaker.panels.adv_wide_label,Wide letterforms,אותיות רחבות,advanced control label,
 fontmaker.panels.adv_yiddish_hint,"Adds a <strong>Yiddish</strong> tab: pasekh/komets alef (אַ אָ), the rafe letters (בֿ כֿ פֿ), the digraphs tsvey vovn / vov-yud / tsvey yudn (װ ױ ײ), and pasekh tsvey yudn (ײַ) — all composed from your traced letters.","מוסיף לשונית <strong>יידיש</strong>: פתח/קמץ אלף (אַ אָ), אותיות הרפה (בֿ כֿ פֿ), הדיגרפים צוויי וון / וו-יוד / צוויי יודן (װ ױ ײ), ופתח צוויי יודן (ײַ) — כולם מורכבים מהאותיות העקובות שלכם.",advanced hint,html; mixed UI+content — keep the Hebrew examples
 fontmaker.panels.adv_yiddish_label,Yiddish,יידיש,advanced control label,
-fontmaker.panels.advanced,⚙️ Settings,⚙️ הגדרות,panel title,
+fontmaker.panels.advanced,Settings,הגדרות,panel title,svg-icon-in-markup
 fontmaker.panels.align_font_hint_loaded,"Outline loaded from your font file — no tracing needed. Set the <b>Width &amp; margins</b> below, then go to <b>Nikkud</b> to place the vowels.","המתאר נטען מקובץ הגופן שלכם — אין צורך במעקב. קבעו את <b>הרוחב והמרווחים</b> למטה, ואז עברו ל<b>ניקוד</b> כדי להציב את התנועות.",align under hint,
 fontmaker.panels.align_font_hint_missing,"No glyph for this letter was found in the uploaded font. Try another font, or pick a different input mode under <b>Add Letters</b> on the left.","לא נמצא גליף עבור אות זו בגופן שהועלה. נסו גופן אחר, או בחרו מצב קלט אחר תחת <b>הוספת אותיות</b> משמאל.",align under hint,
 fontmaker.panels.align_svg_hint_loaded,"Imported from SVG — no tracing needed. Set the <b>Width &amp; margins</b> below, then go to <b>Nikkud</b> to place the vowels.","יובא מ-SVG — אין צורך במעקב. קבעו את <b>הרוחב והמרווחים</b> למטה, ואז עברו ל<b>ניקוד</b> כדי להציב את התנועות.",align under hint,
@@ -2459,7 +2460,7 @@ fontmaker.panels.combined_remove_title,Remove this sheet from the set,הסר ד�
 fontmaker.panels.combined_sheet_default,Sheet {n},דף {n},combined nav default name,
 fontmaker.panels.confirm_placement,✓ Confirm placement,✓ אשר מיקום,button,leading-emoji
 fontmaker.panels.confirm_placement_title,Marks this letter's placement as reviewed. Undo (Ctrl+Z) always works — confirming isn't required to keep your changes.,מסמן את מיקום האות הזו כנבדק. ביטול (Ctrl+Z) תמיד עובד — אישור אינו נדרש כדי לשמור את השינויים שלכם.,button title,
-fontmaker.panels.copy_outline,⎘ Copy outline…,⎘ העתק מתאר…,button,leading-emoji
+fontmaker.panels.copy_outline,Copy outline…,העתק מתאר…,button,svg-icon-in-markup
 fontmaker.panels.copy_outline_title,Start this letter from another letter's outline,התחל אות זו ממתאר של אות אחרת,button title,
 fontmaker.panels.clear_outline,Clear outline,נקה מתאר,button,
 fontmaker.panels.corners,Corners (sharp ↔ round),פינות (חד ↔ מעוגל),slider label,
@@ -2515,12 +2516,12 @@ fontmaker.panels.default_width_hint,Default width — drag the slider to customi
 fontmaker.panels.detail,Detail (less ↔ more),פירוט (פחות ↔ יותר),slider label,
 fontmaker.panels.dot_size,Dot size,גודל נקודה,slider label,
 fontmaker.panels.drag_handle_hint,"Drag the handle (or arrow keys; Shift = 1 unit), or edit X/Y on the left, to position the {class} mark.","גררו את הידית (או מקשי החצים; Shift = יחידה אחת), או ערכו X/Y משמאל, כדי למקם את סימן ה-{class}.",anchor under hint,
-fontmaker.panels.draw_pen,✏ Draw with pen,✏ צייר בעט,button,leading-emoji
+fontmaker.panels.draw_pen,Draw with pen,צייר בעט,button,svg-icon-in-markup
 fontmaker.panels.draw_pen_title,This glyph is blank — draw its outline point by point,גליף זה ריק — ציירו את המתאר שלו נקודה אחר נקודה,button title,
 fontmaker.panels.draw_pen_title2,No trace yet — draw the outline point by point instead,אין עדיין מעקב — ציירו את המתאר נקודה אחר נקודה במקום,button title,
 fontmaker.panels.edit_nikkud_on,Edit nikkud on {name} →,ערוך ניקוד על {name} ←,button,
-fontmaker.panels.edit_points,✎ Edit points,✎ עריכת נקודות,button,leading-emoji
-fontmaker.panels.edit_shape,✎ Edit shape,✎ עריכת צורה,button,leading-emoji
+fontmaker.panels.edit_points,Edit points,עריכת נקודות,button,svg-icon-in-markup
+fontmaker.panels.edit_shape,Edit shape,עריכת צורה,button,svg-icon-in-markup
 fontmaker.panels.edit_shape_square,"✎ Edit shape (square, dots & bars)","✎ עריכת צורה (ריבוע, נקודות ומוטות)",button,leading-emoji
 fontmaker.panels.edit_shape_square_hint,Make the dot a square or redesign it. Applies to this form (via its base letter); choose “all letters” in the editor to change it everywhere.,"הפכו את הנקודה לריבוע או עצבו אותה מחדש. חל על צורה זו (דרך אות הבסיס שלה); בחרו ""כל האותיות"" בעורך כדי לשנות אותה בכל מקום.",panel hint,
 fontmaker.panels.eng_accent_drag_hint,"Pick an accented form on the left, then drag the orange dot to position the accent. Accents are baked into precomposed letters (á, é, ñ, ç…) when you export.","בחרו צורה מוטעמת משמאל, ואז גררו את הנקודה הכתומה כדי למקם את סימן ההטעמה. סימני ההטעמה נצרבים לאותיות מורכבות מראש (á, é, ñ, ç…) בעת הייצוא.",anchor under hint,
@@ -2824,7 +2825,7 @@ fontmaker.panels.waterfall_summary,Waterfall — sample at several sizes,מפל 
 fontmaker.panels.wide_auto_hint,Auto-composed from your traced {bases}. The <b>Width</b> slider both adds side space and stretches the outline — saved automatically.,מורכב אוטומטית מ-{bases} העקובות שלכם. מחוון <b>הרוחב</b> גם מוסיף מרווח צד וגם מותח את המתאר — נשמר אוטומטית.,panel hint,
 fontmaker.panels.wide_convert,Convert to editable glyph…,המרה לגליף הניתן לעריכה…,wide-form action button,
 fontmaker.panels.wide_convert_hint,Stretch looking wonky? Convert this form into a real glyph you can edit point by point. It stops following the base letter — you can revert anytime.,המתיחה נראית עקומה? המירו את הצורה לגליף אמיתי שאפשר לערוך נקודה-נקודה. היא תפסיק לעקוב אחרי אות הבסיס — ואפשר לשחזר בכל עת.,wide-form hint,
-fontmaker.panels.wide_edit_glyph,✎ Edit the glyph →,✎ עריכת הגליף ←,wide-form action button,
+fontmaker.panels.wide_edit_glyph,Edit the glyph →,עריכת הגליף ←,wide-form action button,svg-icon-in-markup
 fontmaker.panels.wide_edited_hint,"Converted to an editable glyph — the exported font ships your edited outline, and this form no longer follows its base letter. Revert to return to the auto-stretched version.","הומרה לגליף הניתן לעריכה — הגופן המיוצא כולל את קו המתאר שערכתם, והצורה כבר אינה עוקבת אחרי אות הבסיס שלה. שחזרו כדי לחזור לגרסה הנמתחת אוטומטית.",wide-form hint,
 fontmaker.panels.wide_intro,"A wide variant of every letter — <b>auto-stretched from your traced letters</b> (150% to start). Pick one to adjust its <b>Width</b> slider, or convert it to an <b>editable glyph</b> if the stretch needs hand-fixing. The exported font includes them at their code points and in the <b>ss02 “Wide letterforms”</b> stylistic set.","גרסה רחבה של כל אות — <b>נמתחת אוטומטית מהאותיות העקובות שלכם</b> (150% בתור התחלה). בחרו אות כדי לכוון את מחוון ה<b>רוחב</b> שלה, או המירו אותה ל<b>גליף הניתן לעריכה</b> אם המתיחה זקוקה לתיקון ידני. הגופן המיוצא כולל אותן בנקודות הקוד שלהן ובסט הסגנוני <b>ss02 ״אותיות רחבות״</b>.",panel intro,html
 fontmaker.panels.wide_nikkud_hint,"Vowels on this wide form follow {name}'s placement, stretched to fit — so they stay consistent with the plain letter. Preview one below; to move it, edit the nikkud on {name}.","תנועות על צורה רחבה זו עוקבות אחר המיקום של {name}, נמתחות כדי להתאים — כך שהן נשארות עקביות עם האות הרגילה. הציגו אחת למטה; כדי להזיז אותה, ערכו את הניקוד על {name}.",panel hint,
@@ -3065,7 +3066,7 @@ fontmaker.status.trace_first_preview,"Trace at least one letter first, then Prev
 fontmaker.status.upload_sheet_first,Upload a sheet first.,העלו קודם דף.,toast,
 fontmaker.status.validating_shaping,Validating shaping…,מאמת עיצוב…,toast,
 fontmaker.status.vector_selected,{name}: vector selected from the SVG sheet.,{name}: נבחר וקטור מדף ה-SVG.,toast,
-fontmaker.tabs.cat_advanced,⚙️ Settings,⚙️ הגדרות,category tab,
+fontmaker.tabs.cat_advanced,Settings,הגדרות,category tab,svg-icon-in-markup
 fontmaker.tabs.cat_customglyphs,Custom glyphs,גליפים מותאמים,category tab,
 fontmaker.tabs.cat_english,English,אנגלית,category tab,
 fontmaker.tabs.cat_fontdetails,Font Details,פרטי הגופן,category tab,
@@ -3103,7 +3104,7 @@ fontmaker.toolbar.fmt_ttf,TTF (recommended),TTF (מומלץ),export format optio
 fontmaker.toolbar.fmt_ttfwoff2,TTF + WOFF2 (zip),TTF + WOFF2 (zip),export format option,
 fontmaker.toolbar.fmt_ufo,UFO source (zip),מקור UFO (zip),export format option,
 fontmaker.toolbar.fmt_woff2,WOFF2 (web),WOFF2 (לרשת),export format option,
-fontmaker.toolbar.help,❓ Help,❓ עזרה,toolbar button,leading-emoji
+fontmaker.toolbar.help,Help,עזרה,toolbar button,svg-icon-in-markup
 fontmaker.toolbar.help_aria,Help,עזרה,toolbar Help button,aria-label only
 fontmaker.toolbar.help_title,A plain-language guide to the whole tool,מדריך בשפה פשוטה לכל הכלי,toolbar button title,
 fontmaker.toolbar.home,Home,בית,toolbar link,svg-arrow-in-markup
@@ -3117,7 +3118,7 @@ fontmaker.toolbar.redo_title,Redo (Ctrl+Shift+Z),בצע שוב (Ctrl+Shift+Z),to
 fontmaker.toolbar.save_project,Save Project,שמירת פרויקט,toolbar button,
 fontmaker.toolbar.save_project_menu,Save Project ▾,שמירת פרויקט ▾,toolbar button,
 fontmaker.toolbar.tour_aria,Tour,סיור,toolbar Tour button,aria-label only
-fontmaker.toolbar.tour_btn,❓ Tour,❓ סיור,toolbar tour launcher button,leading-emoji
+fontmaker.toolbar.tour_btn,Tour,סיור,toolbar tour launcher button,svg-icon-in-markup
 fontmaker.toolbar.tour_title,Take a quick tour,צאו לסיור מהיר,toolbar button title,
 fontmaker.toolbar.undo_aria,Undo,בטל,aria-label only,aria-label only
 fontmaker.toolbar.undo_title,Undo (Ctrl+Z),בטל (Ctrl+Z),toolbar button title,
@@ -3193,7 +3194,7 @@ home.alltools.last_backup,Last backup from this device: {date},גיבוי אחר
 home.alltools.last_backup_stale,Last backup from this device: {date} ({days} days ago),גיבוי אחרון מהמכשיר הזה: {date} (לפני {days} ימים),same line once the backup is more than 30 days old; days is always ≥31 so no singular form,do not translate {…}
 home.alltools.last_backup_never,No backup has been saved from this device yet,עדיין לא נשמר גיבוי מהמכשיר הזה,line under the backup inventory when this device never saved a .ivrit,
 home.alltools.restore_reload,Restored successfully. Reload any open tool pages to apply.,השחזור הצליח. טענו מחדש את דפי הכלים הפתוחים כדי להחיל.,restore success alert,
-home.alltools.modal_title,⚙ Import / Export All Settings,⚙ ייבוא / ייצוא כל ההגדרות,modal header title,leading-emoji
+home.alltools.modal_title,Import / Export All Settings,ייבוא / ייצוא כל ההגדרות,modal header title,svg-icon-in-markup
 home.alltools.modal_close_aria,Close,סגור,alltools modal close button aria,aria-label only
 home.alltools.myfonts.download_title,Download,הורדה,button title,aria/title
 home.alltools.myfonts.empty,"No saved fonts yet. Build one in the Hebrew Font Maker, then “Save to My Fonts”.","אין עדיין גופנים שמורים. צרו גופן ביוצר הגופנים העברי, ואז “שמירה לגופנים שלי”.",empty state,
@@ -3209,7 +3210,7 @@ home.alltools.myfonts.use_button,Use in all tools,שימוש בכל הכלים,b
 home.alltools.myfonts.use_status,“{name}” is now the font in every tool — reload any open tool to see it.,“{name}” הוא כעת הגופן בכל כלי — טענו מחדש כל כלי פתוח כדי לראותו.,status text,template
 home.alltools.no_data_alert,This file has no all-tools data. Try importing it on its own tool's page instead.,בקובץ זה אין נתוני כל-הכלים. נסו לייבא אותו בעמוד הכלי הייעודי שלו במקום זאת.,alert (AllTools .ivrit apply),
 home.alltools.note,"Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.","גבו <b>את כל</b> ההגדרות השמורות, מערכות השעות השמורות, ההגדרות והגופנים השמורים מהמחולל, לוח המחוונים, כרטיסי הזיכרון, המילון, מאמן התורה, מאמן הטעמים ויוצר הגופנים — יחד. <b>קלט אוטומטי</b> שומר ומשחזר קובץ <b>.ivrit</b> יחיד; <b>קלט ידני</b> משתמש בבלוק טקסט להעתקה והדבקה.",modal intro note,html; mixed UI+content — do not translate tool names
-home.alltools.open_button,⚙ Import / Export All Settings,⚙ ייבוא / ייצוא כל ההגדרות,button opening settings modal,leading-emoji
+home.alltools.open_button,Import / Export All Settings,ייבוא / ייצוא כל ההגדרות,button opening settings modal,svg-icon-in-markup
 home.alltools.save_button,Save All Settings to .ivrit file,שמירת כל ההגדרות לקובץ .ivrit,button (auto mode),leading-emoji
 home.alltools.textarea_placeholder,"Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…","לחצו על 'ייצוא כל ההגדרות' כדי ליצור גיבוי, או הדביקו כאן גיבוי ולחצו על 'ייבוא כל ההגדרות'…",textarea placeholder,
 home.badge.beta,Beta,בטא,tool card badge (flash cards; font maker),
@@ -4869,7 +4870,7 @@ fontmaker.node_editor.no_points_selected,No points selected,לא נבחרו נק
 fontmaker.node_editor.sel_actions,Selection actions,פעולות בחירה,group aria-label,
 fontmaker.node_editor.point_type,Point type,סוג נקודה,group aria-label,
 fontmaker.node_editor.segment_type,Segment type,סוג מקטע,group aria-label,
-fontmaker.panels.edit_shape_btn,"✎ Edit shape (square, dots & bars)","✎ עריכת צורה (ריבוע, נקודות ומוטות)",button,
+fontmaker.panels.edit_shape_btn,"Edit shape (square, dots & bars)","עריכת צורה (ריבוע, נקודות ומוטות)",button,svg-icon-in-markup
 fontmaker.panels.tip_finer_move,"Tip: use the arrow keys for finer, exact movement.",טיפ: השתמשו במקשי החִצים לתנועה עדינה ומדויקת יותר.,anchor nudge hint,
 fontmaker.panels.upload_ref_font,⬆ Upload your own reference font…,⬆ העלו גופן ייחוס משלכם…,reference-font selector option,
 worksheet.qr.too_many,⚠ Too many items for a QR answer key — reduce the item count.,⚠ יותר מדי פריטים עבור מפתח תשובות QR — הפחיתו את מספר הפריטים.,QR options validation note,
@@ -4925,7 +4926,7 @@ fontmaker.modals.shaping_fail_zero_offset,Marks shaped with zero offset (fallbac
 fontmaker.send.title,📤 Send this font to IvritSuite,📤 שליחת הגופן הזה ל-IvritSuite,dialog title,leading-emoji
 fontmaker.send.preflight_share,"Your device's share sheet will open with {font} and {license} attached. Choose Mail (or any email app) and paste the address into To: {addr} — it's copied to your clipboard when you continue, and it's also the first line of the message.","גיליון השיתוף של המכשיר ייפתח עם {font} ו-{license} מצורפים. בחרו ב-Mail (או בכל אפליקציית דוא״ל) והדביקו את הכתובת בשדה ״אל״: {addr} — היא מועתקת ללוח כשתמשיכו, והיא גם השורה הראשונה של ההודעה.",dialog body,
 fontmaker.send.open_share_btn,Open share sheet,פתיחת גיליון השיתוף,dialog button,leading-emoji
-fontmaker.send.copy_addr_btn,⎘ Copy address,⎘ העתקת הכתובת,dialog button,leading-emoji
+fontmaker.send.copy_addr_btn,Copy address,העתקת הכתובת,dialog button,svg-icon-in-markup
 fontmaker.send.addr_copied,Address copied: {addr},הכתובת הועתקה: {addr},toast,
 fontmaker.send.share_done,Shared ✓ — thank you!,שותף ✓ — תודה!,toast,
 fontmaker.send.mail_opened,An email to {addr} should have opened with the details filled in. Now attach these two files to it — the email can't pick them up on its own:,אמור להיפתח דוא״ל אל {addr} עם הפרטים ממולאים. כעת צרפו אליו את שני הקבצים האלה — הדוא״ל לא יכול לצרף אותם בעצמו:,dialog body,

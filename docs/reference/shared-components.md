@@ -392,7 +392,7 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   `hi-pause`, `hi-stop`, `hi-reset`, `hi-retry`, `hi-loop`, `hi-sound` and `hi-music`, and the action family
   `hi-copy`, `hi-link`, `hi-print`, `hi-save`, `hi-download`, `hi-upload`, `hi-send` and `hi-page`, and the dashboard
   family `hi-timer`, `hi-dice`, `hi-group`, `hi-pencil` and `hi-video`, plus `hi-calendar` (a festival
-  reading) and `hi-palette` (turning colour coding on) — the strip's Settings and Blank reuse `hi-gear` and
+  reading on the Torah Trainer, the dashboard's calendar import) and `hi-palette` (turning colour coding on) — the strip's Settings and Blank reuse `hi-gear` and
   `hi-blank` and the Torah Trainer's handout reuses `hi-page`, so one action keeps one picture wherever it
   appears. A glyph lives only on the pages that use it; what must match byte-for-byte is each snippet
   wherever it *does* appear. Every snippet is
@@ -444,6 +444,12 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   mentions a control ("Tap ▶ to hear the melody") stays prose — leave all of them alone.
 - **The Font Maker's two button helpers take an optional icon**: `fmActBtn(id, key, icon)` and a modal button
   descriptor's `icon` field, which makes `askModal` write `innerHTML` instead of `textContent`.
+- **`askModal` writes its *title* with `textContent`**, so a modal heading cannot hold a glyph — the Font
+  Maker's two Send-a-font titles keep their emoji for that reason. Give `askModal` a title-icon argument
+  before converting them; a heading is not worth changing the primitive on its own.
+- **`mkMini` in the folder-tree block writes `textContent`**, unlike the list builders' `mk()`, so the tree's
+  four row buttons (new subfolder, rename, move, delete) are still glyphs. Converting one of the four would
+  leave a half-drawn row — teach `mkMini` the same leading-`<` rule and convert all four together.
 
 ### Adding the header to a new page
 Paste the CSS block, copy the snippets from any carrier (never redraw them), put labels in `.hi-lbl` spans,
