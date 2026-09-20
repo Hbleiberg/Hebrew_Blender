@@ -402,7 +402,11 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   `hi-blank`, the Torah Trainer's handout reuses `hi-page`, and so does the generator's **Generate
   Worksheet** — `hi-page` was already a lined sheet, which is exactly what that button produces, so it took
   the existing glyph instead of gaining a near-twin. One action keeps one picture wherever it appears. A glyph lives only on the pages that use it; what must match byte-for-byte is each snippet
-  wherever it *does* appear. Every snippet is
+  wherever it *does* appear. **`hi-move` (the folder tree's Move-to row button) was chosen against two
+  alternatives — an arrow entering a folder, and an arrow meeting a bar — and the diagonal won partly
+  because it needs no mirroring**: a sideways "move it over there" arrow reads backwards in the mirrored
+  Hebrew row, so either alternative would have needed a `[dir="rtl"]` flip. Don't "fix" it to a horizontal
+  arrow in a later sweep. Every snippet is
   `aria-hidden="true" focusable="false"`; the control's own `title` / `aria-label` names it. `.hi-sm` is the
   13px size the tiny settings buttons take and `.hi-btn` lines an icon up with its label inside a button.
 
