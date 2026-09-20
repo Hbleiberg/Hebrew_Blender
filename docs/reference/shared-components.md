@@ -451,10 +451,15 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   mentions a control ("Tap ▶ to hear the melody") stays prose — leave all of them alone.
 - **The Font Maker's two button helpers take an optional icon**: `fmActBtn(id, key, icon)` and a modal button
   descriptor's `icon` field, which makes `askModal` write `innerHTML` instead of `textContent`.
-- **`askModal` writes its *title* with `textContent`**, so a modal heading cannot hold a glyph — the Font
-  Maker's two Send-a-font titles keep their emoji for that reason. Give `askModal` a title-icon argument
-  before converting them; a heading is not worth changing the primitive on its own. Its *buttons* do take an
-  `icon` field, which is how **Keep this export in my account** draws the cloud.
+- **`askModal` takes an optional fourth argument, `titleIcon`** — inline SVG from the shared set, written as
+  `innerHTML = titleIcon + esc(title)` with `.hi-btn` toggled on the heading; without it the heading goes back
+  to `textContent`, so all 60-odd three-argument calls are unaffected. `#askTitle.hi-btn` overrides `.hi-btn`'s
+  `justify-content:center` to `flex-start`, because a heading leads with its icon where a button centres it.
+  Its *buttons* take an `icon` field the same way, which is how **Keep this export in my account** draws the
+  cloud and both Send-a-font dialogs draw the paper plane.
+- **`#askTitle` carries no `data-i18n`** — `askModal` owns its text (and its icon) on every open, so the
+  attribute would let `applyStaticI18n` reset an open dialog's heading to *Notice* on a language switch. Same
+  rule as the shared keyboard toggle: a label JS owns never also carries `data-i18n`.
 - **`mkMini` now reads a leading `<` as icon markup**, like the list builders' `mk()`, and sets the button's
   `aria-label` from its title — an icon-only button has no text left to name it. The folder tree's four row
   buttons and its move menu take their glyphs from the `FT_ICON_*` consts at the top of the JS block,
