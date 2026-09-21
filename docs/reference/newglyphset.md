@@ -3,7 +3,9 @@
 > Binding rules live in `CLAUDE.md`; this is how a new glyph set (an optional alphabet tab such as
 > English or Cyrillic, or a tab of forms composed from the Hebrew letters) is added so that it seeds,
 > draws, cycles, exports, reloads, imports and prints like the ones already there. Locate everything by
-> pattern — line numbers drift. The **Cyrillic set is the reference implementation**: it is the minimal
+> pattern — line numbers drift. The **Cyrillic set is the reference implementation** for an LTR set, and the
+> **Phoenician set** (`grep -n "isPhn(\|\.phn\b\|addPhoenicianLetters\|PHOENICIAN_" Hebrew_Font_Maker.html`)
+> for an RTL one and for a set above the BMP. Cyrillic is the minimal
 > alphabet set (no accent bands), so `grep -n "isCyr(\|\.cyr\b\|addCyrillicLetters\|CYRILLIC_"
 > Hebrew_Font_Maker.html` lists every site a new set needs a twin at. English carries the same sites
 > plus its import-only accent bands (`LATIN_*`, `engSupportsAccents`, `renderEngAccentLeft`), which a
@@ -14,7 +16,7 @@
 | Kind | Copy | Direction | Examples |
 |---|---|---|---|
 | **LTR alphabet** — whole letters, no Hebrew marks | Cyrillic (`.cyr` items in `project.letters`) | grid pinned `direction:ltr` | Latin, Cyrillic, Greek, Armenian |
-| **RTL alphabet without Hebrew marks** | the same item pattern, with the RTL rules in §3 | grid inherits the shared `direction:rtl` | Samaritan, Paleo-Hebrew, Judeo-Arabic base letters |
+| **RTL alphabet without Hebrew marks** | Phoenician (`.phn` items), with the RTL rules in §3 | grid inherits the shared `direction:rtl` | Samaritan, Judeo-Arabic base letters (Paleo-Hebrew is done — it *is* the Phoenician set) |
 | **Forms composed from the Hebrew letters** | Yiddish / Ladino / Specialized / Wide (`project.precomposed`) | RTL | a dotted form, a ligature, a wide variant |
 | **Letters that take nikkud or trop** | not a glyph set — that is the Hebrew pipeline (`LETTERS`, anchors, QA, FEA); plan it as its own feature from the anchor sections of `font-maker.md` | | |
 
@@ -29,7 +31,8 @@ eight sites. The rest of this file is the **alphabet** pattern, LTR or RTL.
 Pick a short stem and a category id, e.g. stem `cyr`, id `cyrillic` (English: `eng` / `english`).
 Every identifier below derives from them, so a grep for the stem finds the whole set later:
 
-- Data: `<STEM>_LETTERS` (`{cp, name, case, group?}`; `cp` is a 4-hex uppercase string), `<STEM>_CPS`,
+- Data: `<STEM>_LETTERS` (`{cp, name, case?, group?}`; `cp` is an uppercase hex string — 4 digits in the BMP,
+  5 or 6 above it; a caseless script omits `case` and everything keyed to it), `<STEM>_CPS`,
   `is<Stem>(cp)` (a `Set` — it runs per spacing-preview cell and per tile), `<stem>Meta(cp)`,
   `<stem>UserMade(l)`; item flags `.<stem>` + `.case` (+ `.<stem>Source = 'import'`).
 - Flag: `project.font.add<Stem>Letters` (default `false` in `newProject()`); setter
@@ -180,14 +183,19 @@ Anchor patterns are the English / Cyrillic lines to sit beside.
    the order (Cyrillic's sits between the customglyphs and english splices to read … English, Cyrillic,
    Custom glyphs …).
 6. **Routing / cycling / step tabs**: §4.
-7. **Export** `buildFontSpec`: a base pass after the Cyrillic one (`gname` = `'uni' + cp`, skip when a
+7. **Export** `buildFontSpec`: a base pass after the Cyrillic one (`gname` — `uni` + 4 hex digits in the BMP,
+   `u` + 5–6 above it, AGL's rule, which `gname()` already branches on by `cp.length`; skip when a
    custom glyph already owns the name, `glyphOrder` + `baseGlyphNames` + `cmap`); `fontInkBounds`
    folds the set's ink into the clip box (descenders clip in Word otherwise); the fidelity filter
    gains `!l.<stem>`. OS/2: the TTF builder derives `ulCodePageRange1` from `spec["cmap"]` and the
    UFO's `openTypeOS2CodePageRanges` from `spec.cmap` — extend the range test for the new block only
    if Windows has a code page for it (bit 0 cp1252 Latin-1, 1 cp1250 Latin-2, 2 cp1251 Cyrillic,
    3 cp1253 Greek, 4 cp1254 Turkish, 5 cp1255 Hebrew, 6 cp1256 Arabic, 7 cp1257 Baltic, 8 cp1258
-   Vietnamese); `ulUnicodeRange` is recalculated from the cmap by itself. Glyph naming, the FEA
+   Vietnamese); `ulUnicodeRange` is recalculated from the cmap by itself — SMP bits and bit 57 (Non-Plane 0)
+   included, so a set **above the BMP** declares nothing by hand, and fontTools adds the (3,10) format-12
+   cmap subtable on its own once a key passes 0xFFFF. Verify both on the exported bytes, not by reading the
+   code: the `recalcUnicodeRanges` call sits behind a bare `except: pass`, and a format-4-only font fails
+   only at render time, as tofu. Glyph naming, the FEA
    (`DFLT` + `hebr` only), kerning and the UFO `.glif` writer need nothing.
 8. **Persistence** `migrateProject`: the preservation guard `(l.custom || l.eng || l.cyr || l.<stem> ||
    l.wideGlyph)`; a hygiene block after the `.cyr` one (drop unless the code point is a string in the

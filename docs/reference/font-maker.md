@@ -294,11 +294,11 @@ After mutating state, call `renderStage(); renderControls();` (+ `renderGrids()`
 selection changed) — `afterUndo` shows the canonical full refresh.
 
 **Not every letter is a Hebrew letter, and `LETTER_ORDER` only knows the Hebrew ones.** English
-(`.eng`), custom glyphs (`.custom`) and wide forms (`.wideGlyph`) are `project.letters` entries at
+(`.eng`), Cyrillic (`.cyr`), Phoenician (`.phn`), custom glyphs (`.custom`) and wide forms (`.wideGlyph`) are `project.letters` entries at
 code points `LETTER_ORDER` has never heard of, so any cycler that indexes into it gets `-1` and
 silently restarts at alef — walking the user out of the tab they were working in. Each one owns an
-ordered list instead: `ENGLISH_CPS` (A–Z, a–z, then the import-only accented forms) for English, and
-a `project.letters` filter on the flag for the other two; punctuation (`cat:'punct'`, which IS in
+ordered list instead: `ENGLISH_CPS` (A–Z, a–z, then the import-only accented forms) for English,
+`CYRILLIC_CPS` and `PHOENICIAN_CPS` for those two, and a `project.letters` filter on the flag for the rest; punctuation (`cat:'punct'`, which IS in
 `LETTER_ORDER`) is its own list too, in grid order. `tabDrawCps(cat)` is the one enumerator of a
 tab's drawable code points — `_drawCycleCps` (Save letter & next) reads it through `_drawCatOf(cp)`
 and so does *Save all drawings*, so the two can never disagree about a tab's members — and
@@ -346,8 +346,32 @@ Cyrillic glyph, and `bidiClassOf` reads Cyrillic as strong left-to-right beside 
 the Cyrillic grid are pinned `direction: ltr` in every UI language (`#englishGrid, #cyrillicGrid`): their
 alphabets read that way, and it keeps the tile order in step with the *Save letter & next* cycle, so the
 next letter is the tile to the right; the Cyrillic band labels follow the tiles, not the UI direction.
-Adding another set — LTR or RTL, or a tab of composed forms — is the recipe in `newglyphset.md`, with
-the Cyrillic set as its reference implementation.
+**Phoenician / Paleo-Hebrew** (`.phn`, the *Add Phoenician letters* toggle) is the same shape again, and the
+**RTL** reference implementation. Unicode unifies Paleo-Hebrew with Phoenician — block U+10900–U+1091F, script
+`Phnx`, bidi class R — so one set carries both names, and the glyphs export at their own code points beside the
+square Hebrew rather than replacing it (one font, both scripts; they are not on any keyboard, so a teacher reaches
+them by copy-paste). `PHOENICIAN_LETTERS` is a flat table of 29 in three groups — `alphabet` (the 22 letters in
+Unicode order), `numbers` (the six numerals, listed **1 2 3 10 20 100**, which is *not* code point order because
+NUMBER TWO and THREE were encoded later at 1091A/1091B) and `sep` (the word separator) — and the script is
+**caseless**, so there is no case toggle, no `_selectItem` case sync and no `l.case` to normalize. The grid is
+deliberately **not** direction-pinned: it inherits the shared `direction: rtl`, its band labels follow the UI
+direction the way Punctuation's do, and *Save letter & next* lands on the tile to the **left**. `bidiClassOf`
+reads the block as strong RTL beside Hebrew, and the specimen page uses the Hebrew add-on layout
+(`{ rtl: true, cols: 8, glyphPx: 44 }`).
+
+These are the **first glyphs in the app above the BMP**, and that is the one place the pattern needed widening:
+a cp is 5 hex digits, so `gname()` names them `u10900` — AGL's SMP form — instead of `uni10900`, which is defined
+only for exactly four digits and would ship a `post` table that reverse-maps wrong. That branch keys off
+`cp.length`, and every other cp in the app is exactly 4, so a Hebrew-only project's spec is byte-identical to what
+it was before (measured, not assumed). Everything downstream already coped: `padStart(4,'0')` and `'%04X'` are
+*minimum* widths, the cp→char idiom is `String.fromCodePoint` everywhere, and `cmap[parseInt(cp,16)]` needs no
+help — so fontTools adds a **(3,10) format-12** cmap subtable by itself once a key passes 0xFFFF (a format-4-only
+font would render paleo as tofu), and `recalcUnicodeRanges` sets OS/2 bit **58** (Phoenician) and bit **57**
+(Non-Plane 0). `ulCodePageRange` is untouched — Windows has no Phoenician code page. `normalizeCp()` still gates
+*custom glyphs* to the BMP; that is a deliberate limit on that one route, not a glyph-naming one.
+
+Adding another set — LTR or RTL, or a tab of composed forms — is the recipe in `newglyphset.md`, with the
+Cyrillic set as its LTR reference implementation and the Phoenician set as its RTL one.
 
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);
