@@ -5,7 +5,9 @@
 > draws, cycles, exports, reloads, imports and prints like the ones already there. Locate everything by
 > pattern — line numbers drift. The **Cyrillic set is the reference implementation** for an LTR set, and the
 > **Phoenician set** (`grep -n "isPhn(\|\.phn\b\|addPhoenicianLetters\|PHOENICIAN_" Hebrew_Font_Maker.html`)
-> for an RTL one and for a set above the BMP. Cyrillic is the minimal
+> for an RTL one and for a set above the BMP. **Imperial Aramaic**
+> (`grep -n "isAram(\|\.aram\b\|addAramaicLetters\|ARAMAIC_" Hebrew_Font_Maker.html`) is that same RTL recipe
+> worked a second time, so diffing the two stems shows which sites are per-set and which are boilerplate. Cyrillic is the minimal
 > alphabet set (no accent bands), so `grep -n "isCyr(\|\.cyr\b\|addCyrillicLetters\|CYRILLIC_"
 > Hebrew_Font_Maker.html` lists every site a new set needs a twin at. English carries the same sites
 > plus its import-only accent bands (`LATIN_*`, `engSupportsAccents`, `renderEngAccentLeft`), which a
@@ -16,7 +18,7 @@
 | Kind | Copy | Direction | Examples |
 |---|---|---|---|
 | **LTR alphabet** — whole letters, no Hebrew marks | Cyrillic (`.cyr` items in `project.letters`) | grid pinned `direction:ltr` | Latin, Cyrillic, Greek, Armenian |
-| **RTL alphabet without Hebrew marks** | Phoenician (`.phn` items), with the RTL rules in §3 | grid inherits the shared `direction:rtl` | Samaritan, Judeo-Arabic base letters (Paleo-Hebrew is done — it *is* the Phoenician set) |
+| **RTL alphabet without Hebrew marks** | Phoenician (`.phn` items) or Imperial Aramaic (`.aram`), with the RTL rules in §3 | grid inherits the shared `direction:rtl` | Samaritan, Nabataean, Judeo-Arabic base letters (Paleo-Hebrew is done — it *is* the Phoenician set) |
 | **Forms composed from the Hebrew letters** | Yiddish / Ladino / Specialized / Wide (`project.precomposed`) | RTL | a dotted form, a ligature, a wide variant |
 | **Letters that take nikkud or trop** | not a glyph set — that is the Hebrew pipeline (`LETTERS`, anchors, QA, FEA); plan it as its own feature from the anchor sections of `font-maker.md` | | |
 
@@ -195,7 +197,9 @@ Anchor patterns are the English / Cyrillic lines to sit beside.
    included, so a set **above the BMP** declares nothing by hand, and fontTools adds the (3,10) format-12
    cmap subtable on its own once a key passes 0xFFFF. Verify both on the exported bytes, not by reading the
    code: the `recalcUnicodeRanges` call sits behind a bare `except: pass`, and a format-4-only font fails
-   only at render time, as tofu. Glyph naming, the FEA
+   only at render time, as tofu. Do not assume the block *has* a bit: the OS/2 v4 table was frozen before
+   Unicode 5.2, so Phoenician gets bit 58 but Imperial Aramaic gets only bit 57 (Non-Plane 0) — a check
+   expecting an Aramaic bit fails a perfectly good font. Glyph naming, the FEA
    (`DFLT` + `hebr` only), kerning and the UFO `.glif` writer need nothing.
 8. **Persistence** `migrateProject`: the preservation guard `(l.custom || l.eng || l.cyr || l.<stem> ||
    l.wideGlyph)`; a hygiene block after the `.cyr` one (drop unless the code point is a string in the

@@ -294,7 +294,7 @@ After mutating state, call `renderStage(); renderControls();` (+ `renderGrids()`
 selection changed) — `afterUndo` shows the canonical full refresh.
 
 **Not every letter is a Hebrew letter, and `LETTER_ORDER` only knows the Hebrew ones.** English
-(`.eng`), Cyrillic (`.cyr`), Phoenician (`.phn`), custom glyphs (`.custom`) and wide forms (`.wideGlyph`) are `project.letters` entries at
+(`.eng`), Cyrillic (`.cyr`), Phoenician (`.phn`), Imperial Aramaic (`.aram`), custom glyphs (`.custom`) and wide forms (`.wideGlyph`) are `project.letters` entries at
 code points `LETTER_ORDER` has never heard of, so any cycler that indexes into it gets `-1` and
 silently restarts at alef — walking the user out of the tab they were working in. Each one owns an
 ordered list instead: `ENGLISH_CPS` (A–Z, a–z, then the import-only accented forms) for English,
@@ -359,7 +359,24 @@ direction the way Punctuation's do, and *Save letter & next* lands on the tile t
 reads the block as strong RTL beside Hebrew, and the specimen page uses the Hebrew add-on layout
 (`{ rtl: true, cols: 8, glyphPx: 44 }`).
 
-These are the **first glyphs in the app above the BMP**, and that is the one place the pattern needed widening:
+**Imperial Aramaic** (`.aram`, the *Add Aramaic letters* toggle) is that same RTL shape a second time — block
+U+10840–U+1085F, script `Armi`, bidi class R — the chancery script of the Persian empire and the ancestor of the
+square letters. `ARAMAIC_LETTERS` is a flat table of **31** in three groups: `alphabet` (the 22 letters),
+`numbers` (the eight numerals) and `section` (the section sign). Two differences from Phoenician are worth
+knowing. Its numerals were all encoded together, so numeric order *is* code point order and the table needs no
+re-sorting — what departs from code point order is the *band* order, because the lone section sign at 10857 is
+listed after the numerals at 10858–1085F. And U+10856 is unassigned, so it is simply absent from the table.
+Caseless like Phoenician, so again no case toggle and no `l.case`.
+
+Unlike the Phoenician block, this one is carried by fonts the app already ships: of the 132 Starting Fonts,
+`aramaic-imperial-yeb` maps all 31 and `aramaic-viibce` the 22 letters, so `fontAramaicCoverage` clears
+`ARAM_IMPORT_MIN` and the *Start from an existing font* wizard pre-ticks the box by itself. Before this set
+existed those glyphs were parsed and dropped. (`aramaic-early-br-rkb` is the odd one out: despite the name its
+23 mapped code points are **Phoenician**, so it opens that tab instead — correct for its actual cmap, surprising
+from its name.)
+
+Phoenician was the **first set in the app above the BMP** (Imperial Aramaic is the second, and rides the same
+branch), and that is the one place the pattern needed widening:
 a cp is 5 hex digits, so `gname()` names them `u10900` — AGL's SMP form — instead of `uni10900`, which is defined
 only for exactly four digits and would ship a `post` table that reverse-maps wrong. That branch keys off
 `cp.length`, and every other cp in the app is exactly 4, so a Hebrew-only project's spec is byte-identical to what
@@ -367,11 +384,14 @@ it was before (measured, not assumed). Everything downstream already coped: `pad
 *minimum* widths, the cp→char idiom is `String.fromCodePoint` everywhere, and `cmap[parseInt(cp,16)]` needs no
 help — so fontTools adds a **(3,10) format-12** cmap subtable by itself once a key passes 0xFFFF (a format-4-only
 font would render paleo as tofu), and `recalcUnicodeRanges` sets OS/2 bit **58** (Phoenician) and bit **57**
-(Non-Plane 0). `ulCodePageRange` is untouched — Windows has no Phoenician code page. `normalizeCp()` still gates
+(Non-Plane 0). Imperial Aramaic gets bit **57 only**: it was encoded in Unicode 5.2, after the OS/2 v4 bit table
+was frozen, so it has **no Unicode-range bit of its own** — a font carrying it is correct, not broken, and a
+check that expects an Aramaic bit will fail a good font. `ulCodePageRange` is untouched for both — Windows has
+no code page for either block. `normalizeCp()` still gates
 *custom glyphs* to the BMP; that is a deliberate limit on that one route, not a glyph-naming one.
 
 Adding another set — LTR or RTL, or a tab of composed forms — is the recipe in `newglyphset.md`, with the
-Cyrillic set as its LTR reference implementation and the Phoenician set as its RTL one.
+Cyrillic set as its LTR reference implementation and the Phoenician and Imperial Aramaic sets as its RTL ones.
 
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);

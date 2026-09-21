@@ -1612,6 +1612,13 @@ body.dark .hi-sun{display:inline-block;}
         <div class="letter-grid" id="phoenicianGrid"></div>
       </div>
     </div>
+    <div class="panel collapsed cat-panel" data-cat="aramaic">
+      <div class="panel-title"><span data-i18n="fontmaker.panels.aramaic">Imperial Aramaic</span> <span id="aramaicProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
+      <div class="panel-body">
+        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="aramaic" style="display:none;" onclick="drawCommitAll('aramaic')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button></div>
+        <div class="letter-grid" id="aramaicGrid"></div>
+      </div>
+    </div>
     <div class="panel collapsed cat-panel" data-cat="specialforms">
       <div class="panel-title" data-i18n="fontmaker.panels.specialforms">Specialized letters</div>
       <div class="panel-body" id="specialFormsPanelBody"></div>
@@ -1652,6 +1659,11 @@ body.dark .hi-sun{display:inline-block;}
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_phoenician_label">Phoenician / Paleo-Hebrew letters</div>
             <label class="chk"><input type="checkbox" id="addPhoenicianLettersChk" onchange="setAddPhoenicianLetters(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_phoenician">Add Phoenician letters</span></label>
             <div class="hint" data-i18n-html="fontmaker.panels.adv_phoenician_hint">Adds a <strong>Phoenician / Paleo-Hebrew</strong> tab to design the <strong>22 ancient letters</strong>, the six numerals and the word separator — the script of the Siloam inscription and the Lachish ostraca. They sit beside your square Hebrew at their own Unicode code points, so one font can show both. Note they are not on any keyboard: reach them by copy-paste or Insert ▸ Symbol. Template: <a href="#" data-fmact="tpl-phoenician-pdf">PDF</a> · <a href="#" data-fmact="tpl-phoenician-png">PNG</a></div>
+          </div>
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_aramaic_label">Imperial Aramaic letters</div>
+            <label class="chk"><input type="checkbox" id="addAramaicLettersChk" onchange="setAddAramaicLetters(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_aramaic">Add Aramaic letters</span></label>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_aramaic_hint">Adds an <strong>Imperial Aramaic</strong> tab to design the <strong>22 letters</strong>, the eight numerals and the section sign — the chancery script of the Persian empire, the hand of the Elephantine papyri, and the ancestor of today's square letters. They sit beside your square Hebrew at their own Unicode code points, so one font can show both. Importing a font fills this tab from its own Aramaic letters. Note they are not on any keyboard: reach them by copy-paste or Insert ▸ Symbol. Template: <a href="#" data-fmact="tpl-aramaic-pdf">PDF</a> · <a href="#" data-fmact="tpl-aramaic-png">PNG</a></div>
           </div>
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_special_label">Specialized letters</div>
@@ -2087,6 +2099,7 @@ body.dark .hi-sun{display:inline-block;}
       <label class="chk"><input type="checkbox" id="wizEnglish"> <span data-i18n="fontmaker.panels.adv_add_english">Add English letters</span></label>
       <label class="chk"><input type="checkbox" id="wizCyrillic"> <span data-i18n="fontmaker.panels.adv_add_cyrillic">Add Cyrillic letters</span></label>
       <label class="chk"><input type="checkbox" id="wizPhoenician"> <span data-i18n="fontmaker.panels.adv_add_phoenician">Add Phoenician letters</span></label>
+      <label class="chk"><input type="checkbox" id="wizAramaic"> <span data-i18n="fontmaker.panels.adv_add_aramaic">Add Aramaic letters</span></label>
       <label class="chk"><input type="checkbox" id="wizYiddish"> <span data-i18n="fontmaker.panels.adv_add_yiddish">Add Yiddish glyphs</span></label>
       <label class="chk"><input type="checkbox" id="wizLadino"> <span data-i18n="fontmaker.panels.adv_add_ladino">Add Ladino glyphs</span></label>
       <p class="wiz-foot-note" data-i18n="fontmaker.wizard.later_footnote">You can change any of this later — it all lives in Font Details and Settings.</p>
@@ -2165,11 +2178,13 @@ body.dark .hi-sun{display:inline-block;}
       <label class="chk"><input type="checkbox" id="wizOsEnglish"> <span data-i18n="fontmaker.panels.adv_add_english">Add English letters</span></label>
       <label class="chk"><input type="checkbox" id="wizOsCyrillic"> <span data-i18n="fontmaker.panels.adv_add_cyrillic">Add Cyrillic letters</span></label>
       <label class="chk"><input type="checkbox" id="wizOsPhoenician"> <span data-i18n="fontmaker.panels.adv_add_phoenician">Add Phoenician letters</span></label>
+      <label class="chk"><input type="checkbox" id="wizOsAramaic"> <span data-i18n="fontmaker.panels.adv_add_aramaic">Add Aramaic letters</span></label>
       <label class="chk"><input type="checkbox" id="wizOsYiddish"> <span data-i18n="fontmaker.panels.adv_add_yiddish">Add Yiddish glyphs</span></label>
       <label class="chk"><input type="checkbox" id="wizOsLadino"> <span data-i18n="fontmaker.panels.adv_add_ladino">Add Ladino glyphs</span></label>
       <p class="hint" id="wizOsLatinHint">Yiddish and Ladino forms start empty; English letters come across when the original has them.</p>
       <p class="hint" id="wizOsCyrHint">Cyrillic letters come across when the original has them.</p>
       <p class="hint" id="wizOsPhnHint">Phoenician letters come across when the original has them.</p>
+      <p class="hint" id="wizOsAramHint">Imperial Aramaic letters come across when the original has them.</p>
       <label class="chk"><input type="checkbox" id="wizOsKern" checked> <span data-i18n="fontmaker.oswizard.kern_toggle">Kerning &amp; spacing — the original's letter-pair kerning, word gap and line spacing</span></label>
       <label class="chk" style="margin-top:12px;"><input type="checkbox" id="wizOsTour"> <span data-i18n="fontmaker.oswizard.tour_after">Show me around this font when it opens</span></label>
     </section>
@@ -2976,6 +2991,46 @@ function phnUserMade(l) {
   return !!(l && l.contours && l.contours.length
     && (l.handEdited || l.draw || (l.source && l.source.dataUrl) || l.phnSource !== 'import'));
 }
+/* ── Imperial Aramaic letters — added on demand via the "Add Aramaic letters" Settings toggle.
+   The chancery script of the Persian empire (block U+10840–U+1085F, script Armi, bidi class R), and the
+   direct ancestor of the square Hebrew letters. Phoenician's shape exactly: RTL and caseless, so no case
+   toggle, no _selectItem case sync and no l.case. Three groups, each its own band in the grid: alphabet =
+   the 22 letters, numbers = the eight numerals, section = the section sign. Unlike Phoenician's, these
+   numerals were all encoded together, so numeric order IS code point order and the table needs no
+   re-sorting — but the band still comes before the lone section sign at 10857, which is why the table is
+   not one ascending run. 10856 is unassigned and simply absent. Above the BMP like Phoenician, so gname()
+   names these u10840, AGL's SMP form, not uni10840. The list is the order ARAMAIC_CPS hands to the
+   Save-letter-&-next cycle and to the printable template. */
+const ARAMAIC_GROUPS = ['alphabet', 'numbers', 'section'];
+const ARAMAIC_LETTERS = (() => {
+  const T = {   // [cp, Unicode short name]
+    alphabet: [['10840','Aleph'],['10841','Beth'],['10842','Gimel'],['10843','Daleth'],['10844','He'],
+               ['10845','Waw'],['10846','Zayin'],['10847','Heth'],['10848','Teth'],['10849','Yodh'],
+               ['1084A','Kaph'],['1084B','Lamedh'],['1084C','Mem'],['1084D','Nun'],['1084E','Samekh'],
+               ['1084F','Ayin'],['10850','Pe'],['10851','Sadhe'],['10852','Qoph'],['10853','Resh'],
+               ['10854','Shin'],['10855','Taw']],
+    numbers:  [['10858','Number One'],['10859','Number Two'],['1085A','Number Three'],
+               ['1085B','Number Ten'],['1085C','Number Twenty'],['1085D','Number One Hundred'],
+               ['1085E','Number One Thousand'],['1085F','Number Ten Thousand']],
+    section:  [['10857','Section Sign']]
+  };
+  const out = [];
+  ARAMAIC_GROUPS.forEach(g => T[g].forEach(r => {
+    // The short name keeps gName()'s slug unique per glyph: the Aramaic character itself is stripped from
+    // the slug, so a bare '(Imperial Aramaic)' would give all 31 the same key.
+    out.push({ cp: r[0], name: String.fromCodePoint(parseInt(r[0], 16)) + ' (Imperial Aramaic ' + r[1] + ')', group: g });
+  }));
+  return out;   // 22 letters + 8 numerals + the section sign = 31
+})();
+const ARAMAIC_CPS = ARAMAIC_LETTERS.map(l => l.cp);
+const _ARAM_SET = new Set(ARAMAIC_CPS);   // isAram runs per spacing-preview cell and per tile
+function isAram(cp) { return _ARAM_SET.has(cp); }
+function aramMeta(cp) { return ARAMAIC_LETTERS.find(l => l.cp === cp); }
+/* phnUserMade's twin — the same OR of independent evidence, keyed on aramSource. */
+function aramUserMade(l) {
+  return !!(l && l.contours && l.contours.length
+    && (l.handEdited || l.draw || (l.source && l.source.dataUrl) || l.aramSource !== 'import'));
+}
 function markClassFor(cp) { return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].cls) || MARK_CLASS[cp] || TROP_CLASS[cp]; }
 
 /* ── Default mark glyph outlines (font units, attach-anchor at origin 0,0) ──
@@ -3527,6 +3582,7 @@ function newProject() {
       addEnglishLetters: false,
       addCyrillicLetters: false,
     addPhoenicianLetters: false,
+    addAramaicLetters: false,
       addSpecialForms: false, addYiddish: false, addLadino: false, addWideForms: false,   // opt-in extra glyph tabs
       kerning: [],
       kernClasses: []
@@ -3557,7 +3613,7 @@ function curItem() {
   return customMark(curKind, curCp);
 }
 function curLetter() { return curItem(); }
-function letterMeta(cp) { return LETTERS.find(l => l.cp === cp) || engMeta(cp) || cyrMeta(cp) || phnMeta(cp); }
+function letterMeta(cp) { return LETTERS.find(l => l.cp === cp) || engMeta(cp) || cyrMeta(cp) || phnMeta(cp) || aramMeta(cp); }
 function curMeta() { return curKind === 'letter' ? letterMeta(curCp) : null; }
 function markName(cp) { return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].name) || MARK_NAMES[cp] || TROP_NAMES[cp] || cp; }
 // kind 'accent' must resolve through LATIN_ACCENTS: MARK_CLASS has no entry, so cedilla would fall to
@@ -3588,6 +3644,7 @@ function catTabFor(kind, cp) {
   return (kind === 'letter' && isEng(cp)) ? 'english'
        : (kind === 'letter' && isCyr(cp)) ? 'cyrillic'
        : (kind === 'letter' && isPhn(cp)) ? 'phoenician'
+       : (kind === 'letter' && isAram(cp)) ? 'aramaic'
        : (kind === 'letter' && wideGlyphItemFor(cp)) ? (project.font.addWideForms ? 'wideforms'   // a materialized wide form lives in whichever tab surfaces it
            : (project.font.addSpecialForms && SPECIAL_TARGETS.indexOf(cp) >= 0) ? 'specialforms' : 'letter')
        : isCustomCp(cp) ? 'customglyphs'
@@ -3628,6 +3685,7 @@ function renderGrids() {
   if (document.getElementById('englishGrid')) renderEnglishGrid();
   if (document.getElementById('cyrillicGrid')) renderCyrillicGrid();
   if (document.getElementById('phoenicianGrid')) renderPhoenicianGrid();
+  if (document.getElementById('aramaicGrid')) renderAramaicGrid();
   if (document.getElementById('specialFormsPanelBody')) renderSpecialFormsPanel();
   if (document.getElementById('wideFormsPanelBody')) renderWideFormsPanel();
   if (document.getElementById('yiddishPanelBody')) renderYiddishPanel();
@@ -4172,7 +4230,7 @@ const ICON_WARN_SM = '<svg class="hi hi-sm hi-warning" viewBox="0 0 24 24" width
 const ICON_PENCIL_SM = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
 const ICON_GEAR_SM = '<svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg>';
 const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
-const FONT_MAKER_VERSION = '5.52';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.53';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -4329,6 +4387,11 @@ const HELP_CONTENT = {
         <button class="tbtn" onclick="downloadTemplate('phoenicianletters','pdf')">PDF</button>
         <button class="tbtn ghost" onclick="downloadTemplate('phoenicianletters','png')">Picture (PNG)</button>
       </div>
+      <div class="tpl-row">
+        <span style="flex:1 1 150px;font-weight:600;">Imperial Aramaic Letters <span style="font-weight:400;color:var(--muted);">· the 22 letters, the eight numerals &amp; the section sign · 1 page</span></span>
+        <button class="tbtn" onclick="downloadTemplate('aramaicletters','pdf')">PDF</button>
+        <button class="tbtn ghost" onclick="downloadTemplate('aramaicletters','png')">Picture (PNG)</button>
+      </div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
         <span style="flex:1 1 150px;font-weight:600;">Vowels (Nikkud) <span style="font-weight:400;color:var(--muted);">· 18 marks · 1 page</span></span>
         <button class="tbtn" onclick="downloadTemplate('nikkud','pdf')">PDF</button>
@@ -4399,6 +4462,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.53</strong> &mdash; <strong>Imperial Aramaic letters.</strong> A new <span class="ui">Add Aramaic letters</span> switch in <span class="ui">Settings</span> (and in both wizards) opens an <span class="ui">Imperial Aramaic</span> tab: the 22 letters, the eight numerals and the section sign, each group on its own. This is the official script of the Persian empire and the hand of the Elephantine papyri, and our own square letters grew out of it. It sits beside your square Hebrew at its own Unicode code points, so one font can show both. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab right to left, the way the script reads &mdash; print a one-page practice sheet, and see them in <span class="ui">Preview PDF</span>. Two of the Aramaic <span class="ui">Starting Fonts</span> &mdash; Imperial Yeb and VIIBCE &mdash; now bring their Aramaic letters across with them, instead of leaving them behind. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.52</strong> &mdash; <strong>Phoenician / Paleo-Hebrew letters.</strong> A new <span class="ui">Add Phoenician letters</span> switch in <span class="ui">Settings</span> (and in both wizards) opens a <span class="ui">Phoenician / Paleo-Hebrew</span> tab: the 22 ancient letters of the alef-bet, the six numerals and the word separator, each group in its own section. This is the script of the Siloam inscription and the Lachish ostraca, and it sits beside your square Hebrew at its own Unicode code points, so one font can show both. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab right to left, the way the script reads &mdash; print a one-page practice sheet, and see them in <span class="ui">Preview PDF</span>. They are not on any keyboard: reach them by copy-paste or Insert ▸ Symbol. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.51</strong> &mdash; <strong>Cyrillic letters.</strong> A new <span class="ui">Add Cyrillic letters</span> switch in <span class="ui">Settings</span> (and in the new-font wizard) opens a <span class="ui">Cyrillic</span> tab: the Russian alphabet plus the Ukrainian, Belarusian, Serbian and Macedonian letters, each group in its own section, with an uppercase/lowercase switch. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab &mdash; print a three-page practice sheet, see them in <span class="ui">Preview PDF</span>, and a font you start from brings its own Cyrillic letters across. The English and Cyrillic grids now read left to right, like their alphabets, so the next letter is always the tile to the right. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.50</strong> &mdash; <strong>The Send-a-font windows finished the icon change.</strong> Both <span class="ui">Send this font&hellip;</span> dialogs head themselves with the same drawn paper-plane their buttons use, instead of an emoji. Their heading also stops resetting itself: switching language with a dialog open used to replace its title with the word <span class="ui">Notice</span>, and now leaves it alone. <span style="color:var(--muted);">(September 2026)</span></li>
@@ -4545,7 +4609,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_51','v5_50','v5_49','v5_48','v5_47','v5_46','v5_45','v5_44','v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_52','v5_51','v5_50','v5_49','v5_48','v5_47','v5_46','v5_45','v5_44','v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4558,7 +4622,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_52';
+  const CUR_KEY = 'fontmaker.changelog.v5_53';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -5551,6 +5615,7 @@ function renderLetterGrid() {
   if (document.getElementById('englishGrid')) renderEnglishGrid();
   if (document.getElementById('cyrillicGrid')) renderCyrillicGrid();
   if (document.getElementById('phoenicianGrid')) renderPhoenicianGrid();
+  if (document.getElementById('aramaicGrid')) renderAramaicGrid();
 }
 // One dynamic "what should I do next?" line under the letter grid. Names are focusable links that
 // jump to the letter in the right work mode (shares the guard-free navigation used by the QA grid).
@@ -5770,6 +5835,39 @@ function renderPhoenicianGrid() {
   });
   a11yTiles(grid);
   const prog = document.getElementById('phoenicianProgress'); if (prog) prog.textContent = total ? _pT('phn_progress', `(${done}/${total})`, {done, total}) : '';
+}
+/* renderPhoenicianGrid again, for the other RTL set — caseless too, so all 31 glyphs are one grid with a
+   .punct-grp label per group (alphabet / numbers / section). Not direction-pinned: the script is RTL, so it
+   inherits the shared direction:rtl and the tile "Save letter & next" lands on is the one to the LEFT.
+   The glyph spans carry lang="und-Armi" — undetermined language, Imperial Aramaic script. "arc" would claim
+   the Aramaic language, and a teacher is as likely to be writing Hebrew words in these letters. */
+function renderAramaicGrid() {
+  const grid = document.getElementById('aramaicGrid'); if (!grid) return;
+  grid.innerHTML = ''; let done = 0, total = 0, grp = null;
+  ARAMAIC_LETTERS.forEach(C => {
+    const l = project.letters.find(x => x.codepoint === C.cp && x.aram); if (!l) return;
+    if (C.group !== grp) {
+      grp = C.group;
+      const h = document.createElement('div');
+      h.className = 'punct-grp';
+      const k = 'fontmaker.panels.aram_group_' + C.group;
+      h.setAttribute('data-i18n', k);
+      h.textContent = window.I18n ? I18n.t(k) : C.group;   // renderGrids can run before the deferred i18n runtime lands
+      grid.appendChild(h);
+    }
+    total++;
+    const st = letterStatus(l); if (st === 'traced' || st === 'anchored') done++;
+    const ch = String.fromCodePoint(parseInt(C.cp, 16));
+    const tile = document.createElement('div');
+    tile.className = 'ltile' + (curKind === 'letter' && C.cp === curCp ? ' sel' : '');
+    tile.innerHTML = `<span class="lt-dot ${st}"></span>
+      <span class="lt-heb" lang="und-Armi" style="font-family:${esc(project.template.font)};">${ch}</span>
+      <span class="lt-name" lang="und-Armi">${ch}</span>`;
+    tile.onclick = () => selectItem('letter', C.cp);
+    grid.appendChild(tile);
+  });
+  a11yTiles(grid);
+  const prog = document.getElementById('aramaicProgress'); if (prog) prog.textContent = total ? _pT('aram_progress', `(${done}/${total})`, {done, total}) : '';
 }
 /* ── Nikkud / Trop sidebar panels (shared, parametrised by category) ── */
 function markStatusOf(m) {
@@ -6090,7 +6188,7 @@ function normalizeCp(raw) {        // "U+05D0" | "0x05D0" | "05D0" | a pasted ch
   else if (/^[0-9a-f]{1,6}$/i.test(s)) n = parseInt(s, 16);
   else n = s.codePointAt(0);       // a single pasted character
   if (!Number.isFinite(n) || n < 0x20 || n > 0xFFFF) return null;   // custom glyphs stay in the BMP on purpose
-                                                                    // (gname() itself handles SMP — see PHOENICIAN_LETTERS)
+                                                                    // (gname() itself handles SMP — see PHOENICIAN_LETTERS and ARAMAIC_LETTERS)
   return n.toString(16).toUpperCase().padStart(4, '0');
 }
 function setAddCustomGlyphs(on) {
@@ -6141,6 +6239,20 @@ function ensurePhoenicianSeeded(p) {   // idempotent — also what grows an old 
   PHOENICIAN_LETTERS.forEach(C => {
     if (!p.letters.some(l => l.codepoint === C.cp && l.phn)) {
       const it = blankLetter(C); it.phn = true; p.letters.push(it);   // caseless script — no it.case
+    }
+  });
+}
+function setAddAramaicLetters(on) {
+  project.font.addAramaicLetters = !!on; markDirty();
+  if (on) ensureAramaicSeeded();
+  else if (isAram(curCp)) selectItem('letter', LETTER_ORDER[0]);   // leave the Aramaic editor if it was open — the letters themselves are kept
+  renderGrids();   // rebuilds the tab bar (renderCatTabs) → shows/hides the Imperial Aramaic tab
+}
+function ensureAramaicSeeded(p) {   // idempotent — also what grows an old project's tab when the table grows (migrateProject re-runs it on load)
+  p = p || project;
+  ARAMAIC_LETTERS.forEach(C => {
+    if (!p.letters.some(l => l.codepoint === C.cp && l.aram)) {
+      const it = blankLetter(C); it.aram = true; p.letters.push(it);   // caseless script — no it.case
     }
   });
 }
@@ -6220,6 +6332,8 @@ document.addEventListener('click', e => {
   else if (act === 'tpl-cyrillic-png') downloadTemplate('cyrillicletters', 'png');
   else if (act === 'tpl-phoenician-pdf') downloadTemplate('phoenicianletters', 'pdf');
   else if (act === 'tpl-phoenician-png') downloadTemplate('phoenicianletters', 'png');
+  else if (act === 'tpl-aramaic-pdf') downloadTemplate('aramaicletters', 'pdf');
+  else if (act === 'tpl-aramaic-png') downloadTemplate('aramaicletters', 'png');
   else if (act === 'svg-guide')        openSvgGuide();
 });
 function cgSetType(t) {
@@ -6545,7 +6659,7 @@ function _setWorkMode(mode) {
     if (mode === 'nodes') mode = 'align';     // node editor is letters-only
     if (mode === 'draw') mode = 'align';      // draw is letters-only — marks never get a draw field
     if (curItem().designMode === 'editor') mode = 'align';
-  } else if (mode === 'anchors' && !precompTarget && (isPunctItem() || isCyr(curCp) || isPhn(curCp) || !(project.font.nikkud.enabled || project.font.trop.enabled))) {
+  } else if (mode === 'anchors' && !precompTarget && (isPunctItem() || isCyr(curCp) || isPhn(curCp) || isAram(curCp) || !(project.font.nikkud.enabled || project.font.trop.enabled))) {
     mode = 'align';                            // punctuation and Cyrillic are anchor-free; letters-only font has no marks step (but a precomposed/wide form being placed stays in anchors)
   }
   if (curKind === 'letter') {   // Draw ⇄ Align normalization
@@ -6627,13 +6741,16 @@ function renderCatTabs() {
   if (cy && project && project.font) cy.checked = !!project.font.addCyrillicLetters;
   const ph = document.getElementById('addPhoenicianLettersChk');
   if (ph && project && project.font) ph.checked = !!project.font.addPhoenicianLetters;
+  const am = document.getElementById('addAramaicLettersChk');
+  if (am && project && project.font) am.checked = !!project.font.addAramaicLetters;
   const sf = document.getElementById('addSpecialFormsChk'); if (sf && project && project.font) sf.checked = !!project.font.addSpecialForms;
   const wf = document.getElementById('addWideFormsChk');    if (wf && project && project.font) wf.checked = !!project.font.addWideForms;
   const yi = document.getElementById('addYiddishChk');      if (yi && project && project.font) yi.checked = !!project.font.addYiddish;
   const la = document.getElementById('addLadinoChk');       if (la && project && project.font) la.checked = !!project.font.addLadino;
-  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', english: 'English', cyrillic: 'Cyrillic', phoenician: 'Phoenician / Paleo-Hebrew', customglyphs: 'Custom glyphs', specialforms: 'Specialized letters', wideforms: 'Wide letterforms', yiddish: 'Yiddish', ladino: 'Ladino', spacing: 'Spacing', advanced: 'Settings' };
+  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', english: 'English', cyrillic: 'Cyrillic', phoenician: 'Phoenician / Paleo-Hebrew', aramaic: 'Imperial Aramaic', customglyphs: 'Custom glyphs', specialforms: 'Specialized letters', wideforms: 'Wide letterforms', yiddish: 'Yiddish', ladino: 'Ladino', spacing: 'Spacing', advanced: 'Settings' };
   const cats = ['fontdetails', 'letter', 'nikkud', 'trop', 'punct', 'spacing', 'advanced'];
   if (project && project.font && project.font.addCustomGlyphs) cats.splice(cats.indexOf('punct') + 1, 0, 'customglyphs');   // appears right after Punctuation
+  if (project && project.font && project.font.addAramaicLetters) cats.splice(cats.indexOf('punct') + 1, 0, 'aramaic');   // Imperial Aramaic right after Phoenician — before that splice, because later splices land earlier on screen
   if (project && project.font && project.font.addPhoenicianLetters) cats.splice(cats.indexOf('punct') + 1, 0, 'phoenician');   // Phoenician right after Cyrillic — before that splice, because later splices land earlier on screen
   if (project && project.font && project.font.addCyrillicLetters) cats.splice(cats.indexOf('punct') + 1, 0, 'cyrillic');   // Cyrillic right after English — this line sits BEFORE the English splice because later splices land earlier on screen
   if (project && project.font && project.font.addEnglishLetters) cats.splice(cats.indexOf('punct') + 1, 0, 'english');   // English tab right after Punctuation (before Cyrillic / Custom glyphs)
@@ -7796,6 +7913,12 @@ function fontPhoenicianCoverage(font) {
   PHOENICIAN_LETTERS.forEach(C => { const g = font.charToGlyph(String.fromCodePoint(parseInt(C.cp,16))); if (g && g.index !== 0) n++; });
   return n;
 }
+const ARAM_IMPORT_MIN = 16;   // of the 31: over half the block, so the font really carries the script. Two shipped starting fonts clear it — aramaic-imperial-yeb (31) and aramaic-viibce (22)
+function fontAramaicCoverage(font) {
+  let n = 0;
+  ARAMAIC_LETTERS.forEach(C => { const g = font.charToGlyph(String.fromCodePoint(parseInt(C.cp,16))); if (g && g.index !== 0) n++; });
+  return n;
+}
 function fontLatinCoverage(font) {
   let n = 0;
   ENGLISH_LETTERS.forEach(E => { const g = font.charToGlyph(String.fromCodePoint(parseInt(E.cp,16))); if (g && g.index !== 0) n++; });
@@ -7879,16 +8002,27 @@ function askFontImportOptions(file, font, bytes) {
              { label: I18n.t('fontmaker.modals.keep_my_phoenician'), onClick: () => { opts.phnMode = 'blanks'; next(); } },
              { label: I18n.t('fontmaker.modals.replace_phoenician'), onClick: () => { opts.phnMode = 'replace'; next(); } }]);
         };
+        // And once more for Imperial Aramaic — now the last link in the chain.
+        const aramRisk = (opts.outlines && fontAramaicCoverage(font) >= ARAM_IMPORT_MIN)
+                      ? project.letters.filter(l => l.aram && aramUserMade(l)).length : 0;
+        const askAram = next => {
+          if (!aramRisk) return next();
+          askModal(I18n.t('fontmaker.modals.replace_aramaic_title'),
+            I18n.t(aramRisk===1?'fontmaker.modals.replace_aramaic_body.one':'fontmaker.modals.replace_aramaic_body.other', {count: '<b>' + aramRisk + '</b>'}),
+            [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' },
+             { label: I18n.t('fontmaker.modals.keep_my_aramaic'), onClick: () => { opts.aramMode = 'blanks'; next(); } },
+             { label: I18n.t('fontmaker.modals.replace_aramaic'), onClick: () => { opts.aramMode = 'replace'; next(); } }]);
+        };
         // Confirm before overwriting letters the user has already drawn (only when replacing outlines).
-        // .eng / .cyr / .phn items are excluded here — askEng / askCyr / askPhn own them, and counting them twice asks twice.
-        const existing = opts.outlines ? project.letters.filter(x => x.contours && x.contours.length && !x.eng && !x.cyr && !x.phn).length : 0;
+        // .eng / .cyr / .phn / .aram items are excluded here — askEng / askCyr / askPhn / askAram own them, and counting them twice asks twice.
+        const existing = opts.outlines ? project.letters.filter(x => x.contours && x.contours.length && !x.eng && !x.cyr && !x.phn && !x.aram).length : 0;
         if (existing > 0) {
           askModal(I18n.t('fontmaker.modals.replace_letters_title'),
             I18n.t(existing===1?'fontmaker.modals.replace_letters_body.one':'fontmaker.modals.replace_letters_body.other', {count: '<b>' + existing + '</b>'}),
             [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' },
-             { label: I18n.t('fontmaker.modals.replace_import'), onClick: () => askEng(() => askCyr(() => askPhn(run))) }]);
+             { label: I18n.t('fontmaker.modals.replace_import'), onClick: () => askEng(() => askCyr(() => askPhn(() => askAram(run)))) }]);
         } else {
-          askEng(() => askCyr(() => askPhn(run)));
+          askEng(() => askCyr(() => askPhn(() => askAram(run))));
         }
     } }
   ]);
@@ -7995,8 +8129,9 @@ async function applyFontImport(file, font, bytes, opts) {
         if (importLetterOutline(l, font, scale)) { l.cyrSource = 'import'; nCyr++; }
       });
     }
-    // Phoenician / Paleo-Hebrew, the same again. Very few fonts carry the block, so auto-on almost never fires —
-    // the wizard checkbox (opts.phoenician === true) is the usual way in.
+    // Phoenician / Paleo-Hebrew, the same again. Auto-on fires more often than it looks: 11 of the 132
+    // shipped starting fonts map 15+ of the block — every paleo face, the three proto-canaanite ones,
+    // Ahiram, and FreeSans at a full 29. Elsewhere the wizard checkbox (opts.phoenician === true) is the way in.
     let nPhn = 0;
     const phnCoverage = opts.outlines ? fontPhoenicianCoverage(font) : 0;
     if (opts.outlines && opts.phoenician !== false && (opts.phoenician === true || phnCoverage >= PHN_IMPORT_MIN)) {
@@ -8007,6 +8142,22 @@ async function applyFontImport(file, font, bytes, opts) {
         const l = project.letters.find(x => x.codepoint === C.cp && x.phn);
         if (!l || (keepMine && phnUserMade(l))) return;
         if (importLetterOutline(l, font, scale)) { l.phnSource = 'import'; nPhn++; }
+      });
+    }
+    // Imperial Aramaic, the same again — but here auto-on really does fire. Unlike the Phoenician
+    // block, this one is carried by the Starting Fonts the app already ships: Aramaic Imperial Yeb
+    // maps all 31 and Aramaic VIIBCE the 22 letters, so loading one of those brings its Aramaic
+    // across instead of dropping it on the floor.
+    let nAram = 0;
+    const aramCoverage = opts.outlines ? fontAramaicCoverage(font) : 0;
+    if (opts.outlines && opts.aramaic !== false && (opts.aramaic === true || aramCoverage >= ARAM_IMPORT_MIN)) {
+      const keepMine = opts.aramMode === 'blanks';
+      project.font.addAramaicLetters = true;
+      ensureAramaicSeeded();   // the UI half of setAddAramaicLetters is the renderGrids() below
+      ARAMAIC_LETTERS.forEach(C => {
+        const l = project.letters.find(x => x.codepoint === C.cp && x.aram);
+        if (!l || (keepMine && aramUserMade(l))) return;
+        if (importLetterOutline(l, font, scale)) { l.aramSource = 'import'; nAram++; }
       });
     }
     // Combined Hebrew forms the source font already drew — שׁ שׂ אַ אָ בּ וּ כּ פּ תּ וֹ בֿ כֿ פֿ and the
@@ -8183,13 +8334,14 @@ async function applyFontImport(file, font, bytes, opts) {
     // of the workspace with the unfixed placements.
     if (!opts.autofix) ipClose();
     const pl = (k, c, o) => I18n.t(k + (c === 1 ? '.one' : '.other'), Object.assign({count: c}, o || {}));
-    if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal(I18n.t('fontmaker.modals.no_hebrew_title'), I18n.t('fontmaker.modals.no_hebrew_body') + (nEng ? ' ' + pl('fontmaker.status.import_loaded_english', nEng) : '') + (nCyr ? ' ' + pl('fontmaker.status.import_loaded_cyrillic', nCyr) : '') + (nPhn ? ' ' + pl('fontmaker.status.import_loaded_phoenician', nPhn) : ''), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
+    if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal(I18n.t('fontmaker.modals.no_hebrew_title'), I18n.t('fontmaker.modals.no_hebrew_body') + (nEng ? ' ' + pl('fontmaker.status.import_loaded_english', nEng) : '') + (nCyr ? ' ' + pl('fontmaker.status.import_loaded_cyrillic', nCyr) : '') + (nPhn ? ' ' + pl('fontmaker.status.import_loaded_phoenician', nPhn) : '') + (nAram ? ' ' + pl('fontmaker.status.import_loaded_aramaic', nAram) : ''), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
     let msg = opts.outlines ? I18n.t('fontmaker.status.import_loaded_letters', {n: n, file: file.name}) : I18n.t('fontmaker.status.import_kept_outlines');
     if (opts.outlines && nPunct) msg += ' ' + pl('fontmaker.status.import_loaded_punct', nPunct);
     if (opts.outlines && nEng)    msg += ' ' + pl('fontmaker.status.import_loaded_english', nEng);
     if (opts.outlines && nEngAcc) msg += ' ' + pl('fontmaker.status.import_loaded_accented', nEngAcc);
     if (opts.outlines && nCyr)    msg += ' ' + pl('fontmaker.status.import_loaded_cyrillic', nCyr);
     if (opts.outlines && nPhn)    msg += ' ' + pl('fontmaker.status.import_loaded_phoenician', nPhn);
+    if (opts.outlines && nAram)   msg += ' ' + pl('fontmaker.status.import_loaded_aramaic', nAram);
     if (marksAny) {
       msg += ' ' + (markHits ? pl('fontmaker.status.import_replaced_marks', markHits) : I18n.t('fontmaker.status.import_no_marks'));
       if (tropImported && !project.font.trop.enabled) msg += ' ' + I18n.t('fontmaker.status.import_turn_on_trop');
@@ -8693,6 +8845,7 @@ function updateTabs() {
   const eng = !isMark && isEng(curCp);   // English letters: the placement step is for accents, not nikkud
   const cyr = !isMark && isCyr(curCp);   // Cyrillic letters take no marks and have no accent step — no placement tabs at all
   const phn = !isMark && isPhn(curCp);   // Phoenician likewise — an ancient alphabet, no nikkud and no trop
+  const aram = !isMark && isAram(curCp);   // and Imperial Aramaic, the other ancient alphabet
   const combined = isMark && project.font[curKind].uploadMode === 'combined';
   const editor = isMark && !combined && curItem().designMode === 'editor';
   document.getElementById('tabAlign').textContent = editor ? I18n.t('fontmaker.tabs.step_design')
@@ -8703,11 +8856,11 @@ function updateTabs() {
     ta.style.display = engSupportsAccents(curCp) ? '' : 'none';   // only the English letters that take accents
     ta.textContent = I18n.t('fontmaker.tabs.step_accents');
   } else {
-    ta.style.display = (!isMark && !isPunct && !cyr && !phn && project.font.nikkud.enabled) ? '' : 'none';
+    ta.style.display = (!isMark && !isPunct && !cyr && !phn && !aram && project.font.nikkud.enabled) ? '' : 'none';
     ta.textContent = I18n.t('fontmaker.tabs.step_nikkud');
   }
   const tt = document.getElementById('tabTrop');
-  tt.style.display = (!isMark && !isPunct && !eng && !cyr && !phn && project.font.trop.enabled) ? '' : 'none';
+  tt.style.display = (!isMark && !isPunct && !eng && !cyr && !phn && !aram && project.font.trop.enabled) ? '' : 'none';
   tt.textContent = I18n.t('fontmaker.tabs.step_trop');
   updateStepTicks();   // refresh per-glyph completion marks after labels/visibility are set
 }
@@ -8731,7 +8884,7 @@ function updateStepTicks() {
   setTick('tabTrace', l.contours ? 'done' : 'todo');
   // Placement: the CONFIRMED flag is the done signal (carried-over + unconfirmed read as not-done).
   // English accents have no confirm flow → no tick; Cyrillic has no placement step at all.
-  const placeState = (isEng(l.codepoint) || isCyr(l.codepoint) || isPhn(l.codepoint)) ? null : (l.placementSaved ? 'done' : 'todo');
+  const placeState = (isEng(l.codepoint) || isCyr(l.codepoint) || isPhn(l.codepoint) || isAram(l.codepoint)) ? null : (l.placementSaved ? 'done' : 'todo');
   setTick('tabAnchors', placeState);
   setTick('tabTrop', placeState);
 }
@@ -10705,7 +10858,8 @@ function tabDrawCps(cat) {   // the ordered drawable code points of one picker t
   const isP = cp => { const m = letterMeta(cp); return !!(m && m.cat === 'punct'); };
   if (cat === 'english') return ENGLISH_CPS.filter(cp => (project.letters || []).some(x => x.codepoint === cp && x.eng));   // A-Z, a-z, then any imported accented forms
   if (cat === 'cyrillic') return CYRILLIC_CPS.filter(cp => (project.letters || []).some(x => x.codepoint === cp && x.cyr));   // upper band then lower band, each Russian → Ukrainian/Belarusian → Serbian/Macedonian
-  if (cat === 'phoenician') return PHOENICIAN_CPS.filter(cp => (project.letters || []).some(x => x.codepoint === cp && x.phn));   // the 22 letters, then the numerals 1 2 3 10 20 100, then the word separator
+  if (cat === 'phoenician') return PHOENICIAN_CPS.filter(cp => (project.letters || []).some(x => x.codepoint === cp && x.phn));
+  if (cat === 'aramaic') return ARAMAIC_CPS.filter(cp => (project.letters || []).some(x => x.codepoint === cp && x.aram));   // the 22 letters, then the numerals 1 2 3 10 20 100 1000 10000, then the section sign   // the 22 letters, then the numerals 1 2 3 10 20 100, then the word separator
   if (cat === 'wideforms') return mine(x => x.wideGlyph);
   if (cat === 'customglyphs') return mine(x => x.custom);
   if (cat === 'punct') return LETTER_ORDER.filter(isP);
@@ -10715,6 +10869,7 @@ function _drawCatOf(cp) {   // the tab a drawable code point cycles in — _sele
   if (isEng(cp)) return 'english';
   if (isCyr(cp)) return 'cyrillic';
   if (isPhn(cp)) return 'phoenician';
+  if (isAram(cp)) return 'aramaic';
   if (wideGlyphItemFor(cp)) return 'wideforms';
   if (isCustomCp(cp)) return 'customglyphs';
   const m = letterMeta(cp); return (m && m.cat === 'punct') ? 'punct' : 'letter';
@@ -14786,7 +14941,8 @@ function bidiClassOf(cell) {
   if (cell.type !== 'glyph' || !cell.cp) return BIDI_NEUTRAL;          // the space cell, and anything without a code point
   const c = parseInt(cell.cp, 16);
   if ((c >= 0x0590 && c <= 0x05FF) || (c >= 0xFB1D && c <= 0xFB4F)
-      || (c >= 0x10900 && c <= 0x1091F)) return BIDI_R;                  // Hebrew block + its presentation forms + Phoenician
+      || (c >= 0x10900 && c <= 0x1091F)
+      || (c >= 0x10840 && c <= 0x1085F)) return BIDI_R;                  // Hebrew block + its presentation forms + Phoenician + Imperial Aramaic
   if (c >= 0x30 && c <= 0x39) return BIDI_EN;                          // European digits — they READ left-to-right but LEAN right-to-left (below)
   if (isEng(cell.cp) || isCyr(cell.cp)) return BIDI_L;                 // the same predicates that route a letter to the English / Cyrillic tab
   return BIDI_NEUTRAL;                                                 // punctuation, symbols, custom glyphs — they take their surroundings
@@ -15484,7 +15640,7 @@ function renderAlignUnder(U, l) {
 function renderAlignStageBelow(SB, l) {
   if (!SB) return;
   const nextBtn = isVectorGlyph(l)
-    ? (l.contours && !isPunctItem() && !isCyr(l.codepoint) && !isPhn(l.codepoint) ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button>` : '')   // Cyrillic and Phoenician have no placement step to go to
+    ? (l.contours && !isPunctItem() && !isCyr(l.codepoint) && !isPhn(l.codepoint) && !isAram(l.codepoint) ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button>` : '')   // Cyrillic and Phoenician have no placement step to go to
     : (curImageUrl() ? `<button class="ctl-btn primary" onclick="setWorkMode('trace')">${_pT('next_trace', 'Next: Trace →')}</button>` : '');
   const applyBtn = (curKind === 'letter' && !isVectorGlyph(l) && curImageUrl())
     ? `<button class="ctl-btn" onclick="openApplyAlign()" title="${esc(window.I18n ? I18n.t('fontmaker.tip.apply_align_other') : "Copy this letter's position & scale onto other letters")}">${_pT('apply_alignment', 'Apply alignment to other letters…')}</button>` : '';
@@ -15567,7 +15723,7 @@ function renderTraceUnder(U, l) {
 /* Shared by Trace and Edit-points (both route through renderTraceUnder). */
 function renderTraceStageBelow(SB, l) {
   if (!SB) return;
-  SB.innerHTML = (l.contours && !isPunctItem() && !isCyr(l.codepoint) && !isPhn(l.codepoint))   // Cyrillic and Phoenician have no placement step to go to
+  SB.innerHTML = (l.contours && !isPunctItem() && !isCyr(l.codepoint) && !isPhn(l.codepoint) && !isAram(l.codepoint))   // Cyrillic, Phoenician and Aramaic have no placement step to go to
     ? `<div class="stage-actions"><button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button></div>` : '';
 }
 
@@ -15814,6 +15970,7 @@ function _placementCycleCps() {
   if (isEng(curCp)) return (project.letters || []).filter(x => x.eng && x.contours && x.contours.length).map(x => x.codepoint);
   if (isCyr(curCp)) return (project.letters || []).filter(x => x.cyr && x.contours && x.contours.length).map(x => x.codepoint);   // unreachable in practice (Cyrillic never enters the placement step) — kept so the precedence mirrors catTabFor
   if (isPhn(curCp)) return (project.letters || []).filter(x => x.phn && x.contours && x.contours.length).map(x => x.codepoint);   // likewise unreachable — Phoenician has no placement step either
+  if (isAram(curCp)) return (project.letters || []).filter(x => x.aram && x.contours && x.contours.length).map(x => x.codepoint);   // and Imperial Aramaic, same reason
   if (isCustomCp(curCp)) return (project.letters || []).filter(x => x.custom).map(x => x.codepoint);
   if (wideGlyphItemFor(curCp)) return (project.letters || []).filter(x => x.wideGlyph).map(x => x.codepoint);   // cycle the converted wide forms
   return LETTER_ORDER.filter(cp => { const m = letterMeta(cp); return !(m && m.cat === 'punct'); });
@@ -16891,6 +17048,9 @@ function fontInkBounds() {
   if (project.font.addPhoenicianLetters) (project.letters || []).forEach(L => {   // same reason — paleo qof, mem and nun run well below the baseline
     if (L.phn && L.contours && L.contours.length) upd(polysBounds(L.contours.map(c => c.points)));
   });
+  if (project.font.addAramaicLetters) (project.letters || []).forEach(L => {   // and again — Aramaic qoph, mem and nun descend the same way
+    if (L.aram && L.contours && L.contours.length) upd(polysBounds(L.contours.map(c => c.points)));
+  });
   // Traced punctuation/symbol ink ships too (letterShips — the exact export predicate), and so do
   // custom MAIN glyphs; both were invisible to the clip box, so a tall traced bracket or custom glyph
   // could clip in Word while winAscent claimed to cover the true ink.
@@ -17228,9 +17388,21 @@ function buildFontSpec() {
   });
 
   // Phoenician / Paleo-Hebrew base letters — the same pass again (flagged .phn). These are the only glyphs
-  // above the BMP: gname() names them u10900… and parseInt gives a cmap key past 0xFFFF, which makes fontTools
+  // above the BMP together with Imperial Aramaic: gname() names them u10900… and parseInt gives a cmap key past 0xFFFF, which makes fontTools
   // add a format-12 subtable of its own accord (a format-4-only font would render them as tofu).
   if (project.font.addPhoenicianLetters) (project.letters || []).filter(l => l.phn && l.contours && l.contours.length).forEach(l => {
+    const nm = gname(l.codepoint);
+    if (glyphs[nm]) return;                                         // an explicit custom glyph already owns this cp — never clobber it
+    const contours = l.contours.map(c => c.points);
+    glyphs[nm] = { contours, advance: effLetterAdvance(l), lsb: (l.lsb != null ? l.lsb : null) };
+    if (l.curves && l.curves.length === contours.length) glyphs[nm].curves = l.curves;
+    glyphOrder.push(nm); baseGlyphNames.push(nm); cmap[parseInt(l.codepoint,16)] = nm;
+  });
+
+  // Imperial Aramaic base letters — the same pass once more (flagged .aram), and the second set above
+  // the BMP: gname() names these u10840… on the same cp.length branch, and the format-12 subtable
+  // fontTools adds for Phoenician covers them too.
+  if (project.font.addAramaicLetters) (project.letters || []).filter(l => l.aram && l.contours && l.contours.length).forEach(l => {
     const nm = gname(l.codepoint);
     if (glyphs[nm]) return;                                         // an explicit custom glyph already owns this cp — never clobber it
     const contours = l.contours.map(c => c.points);
@@ -20237,7 +20409,7 @@ async function fidelityMeasure(ctx) {
   const rows = [];
   let skippedSubst = 0, skippedEdge = 0, skippedUser = 0, skippedOdd = 0;
   try {
-    const letters = project.letters.filter(l => !l.custom && !l.eng && !l.cyr && !l.phn && !l.wideGlyph && l.contours && l.contours.length
+    const letters = project.letters.filter(l => !l.custom && !l.eng && !l.cyr && !l.phn && !l.aram && !l.wideGlyph && l.contours && l.contours.length
       && (letterMeta(l.codepoint) || {}).cat !== 'punct');
     ctx.importedMarks.forEach(([kind, cp]) => {
       const cov = ctx.markCoverage[cp];
@@ -20643,6 +20815,10 @@ async function generatePreviewPDF() {
       const traced = PHOENICIAN_LETTERS.filter(e => { const L = project.letters.find(x => x.codepoint === e.cp && x.phn); return L && L.contours && L.contours.length; });
       if (traced.length) specimenPage(I18n.t('fontmaker.canvas.section_phoenician'), traced.map(e => cpChar(e.cp)), { rtl: true, cols: 8, glyphPx: 44 });   // an RTL script, so the Hebrew add-on layout
     }
+    if (pf.addAramaicLetters) {
+      const traced = ARAMAIC_LETTERS.filter(e => { const L = project.letters.find(x => x.codepoint === e.cp && x.aram); return L && L.contours && L.contours.length; });
+      if (traced.length) specimenPage(I18n.t('fontmaker.canvas.section_aramaic'), traced.map(e => cpChar(e.cp)), { rtl: true, cols: 8, glyphPx: 44 });   // RTL too — the same Hebrew add-on layout
+    }
     if (pf.addSpecialForms) {
       const chars = SPECIAL_TARGETS.map(t => cpChar(t)).filter(Boolean);
       if (chars.length) specimenPage(I18n.t('fontmaker.canvas.section_specialized'), chars, { rtl: true, cols: 8, glyphPx: 44 });
@@ -20701,12 +20877,14 @@ const TEMPLATE_SPECS = {
              items: CYRILLIC_LETTERS.map(C => ({ cp:C.cp, name:String.fromCodePoint(parseInt(C.cp,16)), cls:null })) },   // 94 → 3 pages (36 slots each)
   phoenicianletters: { kind:'phoenician', title:'Phoenician Letters', titleKey:'fontmaker.canvas.tpl_phoenician', cols:6, rowsPerPage:6,
              items: PHOENICIAN_LETTERS.map(C => ({ cp:C.cp, name:String.fromCodePoint(parseInt(C.cp,16)), cls:null })) },   // 29 → 1 page (36 slots)
+  aramaicletters: { kind:'aramaic', title:'Imperial Aramaic Letters', titleKey:'fontmaker.canvas.tpl_aramaic', cols:6, rowsPerPage:6,
+             items: ARAMAIC_LETTERS.map(C => ({ cp:C.cp, name:String.fromCodePoint(parseInt(C.cp,16)), cls:null })) },   // 31 → 1 page (36 slots)
 };
 // One write-in box: colored border + a small corner label (ref glyph + name + U+code + class). Interior left blank.
 function templateCellHTML(item, kind) {
   const fontFam = (project.template && project.template.font) || "'Noto Sans Hebrew', sans-serif";
   const base  = String.fromCodePoint(parseInt(item.cp, 16));
-  const glyph = (kind === 'letters' || kind === 'punct' || kind === 'latin' || kind === 'cyrillic' || kind === 'phoenician') ? base : ('◌' + base);   // dotted circle ◌ carries an isolated combining mark (punctuation is standalone)
+  const glyph = (kind === 'letters' || kind === 'punct' || kind === 'latin' || kind === 'cyrillic' || kind === 'phoenician' || kind === 'aramaic') ? base : ('◌' + base);   // dotted circle ◌ carries an isolated combining mark (punctuation is standalone)
   const code  = 'U+' + item.cp.toUpperCase();
   const cls   = item.cls ? (' · ' + item.cls) : '';
   const label =
@@ -21741,13 +21919,14 @@ function migrateProject(data) {
     return ex;
   });
   // Non-LETTERS items that live in project.letters — custom MAIN glyphs (.custom), English/Latin
-  // letters (.eng), Cyrillic letters (.cyr) and converted wide letterforms (.wideGlyph) — are rebuilt away by the LETTERS.map
+  // letters (.eng), Cyrillic (.cyr), Phoenician (.phn), Imperial Aramaic (.aram) and converted wide
+  // letterforms (.wideGlyph) — are rebuilt away by the LETTERS.map
   // above, so preserve any beyond the standard 27.
   // .eng used to be dropped here and re-seeded BLANK by ensureEnglishSeeded below, which silently
   // destroyed traced/imported Latin on every save→reload and autosave restore.
   { const stdCps = new Set(LETTERS.map(L => L.cp));
     Object.values(byCp).forEach(l => {
-      if (!l || !(l.custom || l.eng || l.cyr || l.phn || l.wideGlyph) || stdCps.has(l.codepoint)) return;
+      if (!l || !(l.custom || l.eng || l.cyr || l.phn || l.aram || l.wideGlyph) || stdCps.has(l.codepoint)) return;
       l.source = l.source || { kind: data.inputMode || 'single', dataUrl: null, cropRect: null, sheetId: null };
       if (l.source.sheetId === undefined) l.source.sheetId = null;
       if (!l.transform) l.transform = [1,0,0,1,0,0];
@@ -21787,7 +21966,13 @@ function migrateProject(data) {
         if (l.phnSource !== 'import') delete l.phnSource;           // closed domain
         if (!l.name) l.name = (phnMeta(l.codepoint) || {}).name || ('U+' + l.codepoint);
       }
-      if (l.wideGlyph && !l.custom && !l.eng && !l.cyr && !l.phn) {
+      if (l.aram && !l.eng && !l.cyr && !l.phn) {   // and once more — caseless too, so again no l.case to normalize
+        if (typeof l.codepoint !== 'string' || !isAram(l.codepoint)) return;
+        delete l.case;                                              // a stray case from a hand-edited blob means nothing here
+        if (l.aramSource !== 'import') delete l.aramSource;         // closed domain
+        if (!l.name) l.name = (aramMeta(l.codepoint) || {}).name || ('U+' + l.codepoint);
+      }
+      if (l.wideGlyph && !l.custom && !l.eng && !l.cyr && !l.phn && !l.aram) {
         // Same cp-hygiene as .eng: a converted wide letterform is only meaningful at a wide-table
         // target — anything else is dropped and the auto-generated form takes over again.
         if (typeof l.codepoint !== 'string' || WIDE_ALL_TARGETS.indexOf(l.codepoint) < 0) return;
@@ -21890,6 +22075,8 @@ function migrateProject(data) {
     if (data.font.addCyrillicLetters) ensureCyrillicSeeded(data);   // also grows the tab when CYRILLIC_LETTERS gains a letter (the note below)
     if (data.font.addPhoenicianLetters == null) data.font.addPhoenicianLetters = false;
     if (data.font.addPhoenicianLetters) ensurePhoenicianSeeded(data);   // likewise for PHOENICIAN_LETTERS
+    if (data.font.addAramaicLetters == null) data.font.addAramaicLetters = false;
+    if (data.font.addAramaicLetters) ensureAramaicSeeded(data);   // and for ARAMAIC_LETTERS
     // A tab that is ON must carry its full CURRENT form set — a release can grow a tab's table
     // (SPECIAL_MORE joined SPECIAL_FORMS in v5.19), and without this an old project with the tab
     // already enabled would silently miss the new forms forever (toggle-off/on was the only path).
@@ -21994,7 +22181,7 @@ function wizardOpen(mode){
     document.getElementById('wizLicense').value = 'ofl';
     document.getElementById('wizStyleRegular').checked = true;
     document.getElementById('wizNikkud').checked = true;
-    ['wizTrop','wizEnglish','wizCyrillic','wizPhoenician','wizYiddish','wizLadino','wizTour'].forEach(id => { document.getElementById(id).checked = false; });
+    ['wizTrop','wizEnglish','wizCyrillic','wizPhoenician','wizAramaic','wizYiddish','wizLadino','wizTour'].forEach(id => { document.getElementById(id).checked = false; });
     let im = null;
     try { im = localStorage.getItem('hebrewFontMaker_inputMode'); } catch(e){}
     if (im !== 'single' && im !== 'combined' && im !== 'font' && im !== 'draw') im = 'single';
@@ -22077,6 +22264,7 @@ function wizardCreate(){
   const eng = document.getElementById('wizEnglish').checked;
   const cyr = document.getElementById('wizCyrillic').checked;
   const phn = document.getElementById('wizPhoenician').checked;
+  const aram = document.getElementById('wizAramaic').checked;
   const yid = document.getElementById('wizYiddish').checked;
   const lad = document.getElementById('wizLadino').checked;
   const srcSel = document.querySelector('#wizStep3 input[name="wizSource"]:checked');
@@ -22092,6 +22280,7 @@ function wizardCreate(){
   if (eng) setAddEnglishLetters(true);
   if (cyr) setAddCyrillicLetters(true);
   if (phn) setAddPhoenicianLetters(true);
+  if (aram) setAddAramaicLetters(true);
   if (yid) setAddYiddish(true);
   if (lad) setAddLadino(true);
   setInputMode(src);      // persists the pref + renderControls/renderStage (which re-runs updateTabs)
@@ -22186,11 +22375,16 @@ function wizardOsPrefill(){
   const cyrHint = document.getElementById('wizOsCyrHint');
   if (cyrHint) { const k = osCyr >= CYR_IMPORT_MIN ? 'fontmaker.oswizard.cyrillic_hint_yes' : 'fontmaker.oswizard.cyrillic_hint_no';
                  cyrHint.setAttribute('data-i18n', k); cyrHint.textContent = I18n.t(k); }
-  const osPhn = _osStartCtx.font ? fontPhoenicianCoverage(_osStartCtx.font) : 0;   // and again for Phoenician — almost always 0, so almost always unchecked
+  const osPhn = _osStartCtx.font ? fontPhoenicianCoverage(_osStartCtx.font) : 0;   // and again for Phoenician — 0 for most fonts, 23–29 for the 11 shipped paleo/proto faces
   document.getElementById('wizOsPhoenician').checked = osPhn >= PHN_IMPORT_MIN;
   const phnHint = document.getElementById('wizOsPhnHint');
   if (phnHint) { const k = osPhn >= PHN_IMPORT_MIN ? 'fontmaker.oswizard.phoenician_hint_yes' : 'fontmaker.oswizard.phoenician_hint_no';
                  phnHint.setAttribute('data-i18n', k); phnHint.textContent = I18n.t(k); }
+  const osAram = _osStartCtx.font ? fontAramaicCoverage(_osStartCtx.font) : 0;   // and Imperial Aramaic — this one DOES fire for the shipped Aramaic starting fonts
+  document.getElementById('wizOsAramaic').checked = osAram >= ARAM_IMPORT_MIN;
+  const aramHint = document.getElementById('wizOsAramHint');
+  if (aramHint) { const k = osAram >= ARAM_IMPORT_MIN ? 'fontmaker.oswizard.aramaic_hint_yes' : 'fontmaker.oswizard.aramaic_hint_no';
+                  aramHint.setAttribute('data-i18n', k); aramHint.textContent = I18n.t(k); }
   // Pre-checked, unlike the from-scratch wizard: a partner arrival came straight from someone else's
   // page and has never seen this tool, so the walkthrough is the expected next beat. Still a checkbox —
   // the tour never launches on its own (CLAUDE.md, Shared UX §1).
@@ -22247,6 +22441,7 @@ async function wizardOsFinish(){
   const eng = document.getElementById('wizOsEnglish').checked;
   const cyr = document.getElementById('wizOsCyrillic').checked;
   const phn = document.getElementById('wizOsPhoenician').checked;
+  const aram = document.getElementById('wizOsAramaic').checked;
   const yid = document.getElementById('wizOsYiddish').checked;
   const lad = document.getElementById('wizOsLadino').checked;
   const tour = document.getElementById('wizOsTour').checked;
@@ -22271,6 +22466,7 @@ async function wizardOsFinish(){
   if (eng) setAddEnglishLetters(true);
   if (cyr) setAddCyrillicLetters(true);
   if (phn) setAddPhoenicianLetters(true);
+  if (aram) setAddAramaicLetters(true);
   if (yid) setAddYiddish(true);
   if (lad) setAddLadino(true);
   _launchDecided = true; _autosavePromptDeferred = false;
@@ -22284,7 +22480,7 @@ async function wizardOsFinish(){
   await applyFontImport({ name: (e.file || '').split('/').pop() || e.displayName }, ctx.font, ctx.bytes,
                         { outlines: true, marksNikkud: nikShapes, marksTrop: tropShapes,
                           anchorsNikkud: nikPlace, anchorsTrop: tropPlace, kernSpacing: kern,
-                          boldAfter: false, autofix: true, english: eng, cyrillic: cyr, phoenician: phn });
+                          boldAfter: false, autofix: true, english: eng, cyrillic: cyr, phoenician: phn, aramaic: aram });
   setInputMode('font');   // applyFontImport stamps project.inputMode; this also persists the pref
   setCatTab('letter');
   status(I18n.t('fontmaker.oswizard.created_toast', { font: e.displayName || e.id, name }));
