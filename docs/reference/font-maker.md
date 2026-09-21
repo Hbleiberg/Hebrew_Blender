@@ -328,6 +328,22 @@ tab alone is not enough, and landing on a lowercase letter while the switch stil
 `Uppercase A–Z` leaves the tile off-screen with nothing highlighted. `engMeta(cp).case` covers both
 bands (A–Z/a–z carry their own case; every import-only form is `'accent'`).
 
+**Cyrillic** (`.cyr`, the *Add Cyrillic letters* toggle) is the English shape minus the accent bands.
+`CYRILLIC_LETTERS` is an explicit table of upper/lower pairs in three groups — `ru` (the Russian alphabet),
+`ukbe` (the letters Ukrainian and Belarusian add), `srmk` (the letters Serbian and Macedonian add) — and
+`CYRILLIC_CPS` lists the upper band then the lower band, each group in order: that order is what
+`tabDrawCps('cyrillic')` hands to *Save letter & next* and to the printable template. `catTabFor` routes a
+Cyrillic code point right after the English test, `_selectItem` syncs `cyrillicCase` the way it syncs
+`englishCase`, and `renderCyrillicGrid` draws the active band as one `.letter-grid` with a `.punct-grp`
+label per group (the Punctuation picker's idiom). A Cyrillic letter never enters the placement step:
+`_setWorkMode` folds `anchors` back to Align for it, `updateTabs` hides both placement tabs and the two
+*Next: Nikkud* buttons skip it, so the English-only accent branches need no twin. The letter names carry
+the Unicode short name (`А (Cyrillic A, uppercase)`) because `gName` strips non-ASCII from its slug and a
+bare `(uppercase)` would collide across the whole band. A font import fills the tab the way it fills
+English (`fontCyrillicCoverage`, `CYR_IMPORT_MIN`, `opts.cyrillic` / `opts.cyrMode`, `cyrSource`), the
+export declares cp1251 in OS/2 (and the UFO code-page list) only when the shipped cmap carries a
+Cyrillic glyph, and `bidiClassOf` reads Cyrillic as strong left-to-right beside Latin.
+
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);
 the OUTLINE the rest of the app works with only exists once `drawCommit` runs the tracer, and

@@ -1588,6 +1588,17 @@ body.dark .hi-sun{display:inline-block;}
         <div id="englishAccentNote" style="display:none;margin-top:9px;font-size:0.72rem;color:var(--muted);line-height:1.5;"></div>
       </div>
     </div>
+    <div class="panel collapsed cat-panel" data-cat="cyrillic">
+      <div class="panel-title"><span data-i18n="fontmaker.panels.cyrillic">Cyrillic</span> <span id="cyrillicProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
+      <div class="panel-body">
+        <div class="mode-toggle" style="margin-bottom:10px;">
+          <button class="mode-btn" id="cyrCaseUpper" onclick="setCyrillicCase('upper')" aria-pressed="true" data-i18n="fontmaker.panels.cyr_case_upper">Uppercase А–Я</button>
+          <button class="mode-btn" id="cyrCaseLower" onclick="setCyrillicCase('lower')" aria-pressed="false" data-i18n="fontmaker.panels.cyr_case_lower">Lowercase а–я</button>
+        </div>
+        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="cyrillic" style="display:none;" onclick="drawCommitAll('cyrillic')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button></div>
+        <div class="letter-grid" id="cyrillicGrid"></div>
+      </div>
+    </div>
     <div class="panel collapsed cat-panel" data-cat="specialforms">
       <div class="panel-title" data-i18n="fontmaker.panels.specialforms">Specialized letters</div>
       <div class="panel-body" id="specialFormsPanelBody"></div>
@@ -1618,6 +1629,11 @@ body.dark .hi-sun{display:inline-block;}
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_english_label">English letters</div>
             <label class="chk"><input type="checkbox" id="addEnglishLettersChk" onchange="setAddEnglishLetters(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_english">Add English letters</span></label>
             <div class="hint" data-i18n-html="fontmaker.panels.adv_english_hint">Adds an <strong>English</strong> tab to design <strong>A–Z and a–z</strong> (with an uppercase/lowercase switch). Importing a font fills this tab from its own Latin letters. Accent-supporting letters can carry accents (á, é, ñ, ç…). Template: <a href="#" data-fmact="tpl-english-pdf">PDF</a> · <a href="#" data-fmact="tpl-english-png">PNG</a></div>
+          </div>
+          <div>
+            <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_cyrillic_label">Cyrillic letters</div>
+            <label class="chk"><input type="checkbox" id="addCyrillicLettersChk" onchange="setAddCyrillicLetters(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_cyrillic">Add Cyrillic letters</span></label>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_cyrillic_hint">Adds a <strong>Cyrillic</strong> tab to design <strong>А–Я and а–я</strong> (with an uppercase/lowercase switch) — the Russian alphabet, plus the Ukrainian, Belarusian, Serbian and Macedonian letters in their own sections. Importing a font fills this tab from its own Cyrillic letters. Template: <a href="#" data-fmact="tpl-cyrillic-pdf">PDF</a> · <a href="#" data-fmact="tpl-cyrillic-png">PNG</a></div>
           </div>
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_special_label">Specialized letters</div>
@@ -2051,6 +2067,7 @@ body.dark .hi-sun{display:inline-block;}
       <label class="chk"><input type="checkbox" id="wizTrop"> <span data-i18n="fontmaker.wizard.trope_toggle">Trope (cantillation marks)</span></label>
       <div class="wiz-field-label" data-i18n="fontmaker.wizard.alphabets_label">Extra alphabets</div>
       <label class="chk"><input type="checkbox" id="wizEnglish"> <span data-i18n="fontmaker.panels.adv_add_english">Add English letters</span></label>
+      <label class="chk"><input type="checkbox" id="wizCyrillic"> <span data-i18n="fontmaker.panels.adv_add_cyrillic">Add Cyrillic letters</span></label>
       <label class="chk"><input type="checkbox" id="wizYiddish"> <span data-i18n="fontmaker.panels.adv_add_yiddish">Add Yiddish glyphs</span></label>
       <label class="chk"><input type="checkbox" id="wizLadino"> <span data-i18n="fontmaker.panels.adv_add_ladino">Add Ladino glyphs</span></label>
       <p class="wiz-foot-note" data-i18n="fontmaker.wizard.later_footnote">You can change any of this later — it all lives in Font Details and Settings.</p>
@@ -2127,9 +2144,11 @@ body.dark .hi-sun{display:inline-block;}
       <label class="chk wiz-sub"><input type="checkbox" id="wizOsTropPlace" checked> <span data-i18n="fontmaker.oswizard.trop_place">Use the original's trop placement</span></label>
       <div class="wiz-field-label" data-i18n="fontmaker.wizard.alphabets_label">Extra alphabets</div>
       <label class="chk"><input type="checkbox" id="wizOsEnglish"> <span data-i18n="fontmaker.panels.adv_add_english">Add English letters</span></label>
+      <label class="chk"><input type="checkbox" id="wizOsCyrillic"> <span data-i18n="fontmaker.panels.adv_add_cyrillic">Add Cyrillic letters</span></label>
       <label class="chk"><input type="checkbox" id="wizOsYiddish"> <span data-i18n="fontmaker.panels.adv_add_yiddish">Add Yiddish glyphs</span></label>
       <label class="chk"><input type="checkbox" id="wizOsLadino"> <span data-i18n="fontmaker.panels.adv_add_ladino">Add Ladino glyphs</span></label>
       <p class="hint" id="wizOsLatinHint">Yiddish and Ladino forms start empty; English letters come across when the original has them.</p>
+      <p class="hint" id="wizOsCyrHint">Cyrillic letters come across when the original has them.</p>
       <label class="chk"><input type="checkbox" id="wizOsKern" checked> <span data-i18n="fontmaker.oswizard.kern_toggle">Kerning &amp; spacing — the original's letter-pair kerning, word gap and line spacing</span></label>
       <label class="chk" style="margin-top:12px;"><input type="checkbox" id="wizOsTour"> <span data-i18n="fontmaker.oswizard.tour_after">Show me around this font when it opens</span></label>
     </section>
@@ -2857,6 +2876,46 @@ function engUserMade(l) {
 }
 const _ENG_ACCENT_BASES = new Set(LATIN_PRECOMPOSED.map(p => p.base));
 function engSupportsAccents(cp) { return _ENG_ACCENT_BASES.has(cp); }
+/* ── Cyrillic letters — added on demand via the "Add Cyrillic letters" Settings toggle. The same shape as
+   English (kept out of LETTERS; seeded into project.letters tagged {cyr:true, case}) minus the accent bands:
+   Й, Ё, Ї, Ў are whole letters, so there is no placement step. Three groups, each its own band in the grid:
+   ru = the Russian alphabet in alphabetical order, ukbe = the letters Ukrainian and Belarusian add,
+   srmk = the letters Serbian and Macedonian add. Pairs are explicit because the case mapping is irregular
+   (Ё 0401 ↔ ё 0451, Ґ 0490 ↔ ґ 0491). The list is the upper band then the lower band, each ru → ukbe → srmk —
+   the order CYRILLIC_CPS hands to the Save-letter-&-next cycle and to the printable template. */
+const CYRILLIC_GROUPS = ['ru', 'ukbe', 'srmk'];
+const CYRILLIC_LETTERS = (() => {
+  const T = {   // [upper cp, lower cp, Unicode short name]
+    ru:   [['0410','0430','A'],['0411','0431','Be'],['0412','0432','Ve'],['0413','0433','Ghe'],['0414','0434','De'],
+           ['0415','0435','Ie'],['0401','0451','Io'],['0416','0436','Zhe'],['0417','0437','Ze'],['0418','0438','I'],
+           ['0419','0439','Short I'],['041A','043A','Ka'],['041B','043B','El'],['041C','043C','Em'],['041D','043D','En'],
+           ['041E','043E','O'],['041F','043F','Pe'],['0420','0440','Er'],['0421','0441','Es'],['0422','0442','Te'],
+           ['0423','0443','U'],['0424','0444','Ef'],['0425','0445','Ha'],['0426','0446','Tse'],['0427','0447','Che'],
+           ['0428','0448','Sha'],['0429','0449','Shcha'],['042A','044A','Hard Sign'],['042B','044B','Yeru'],
+           ['042C','044C','Soft Sign'],['042D','044D','E'],['042E','044E','Yu'],['042F','044F','Ya']],
+    ukbe: [['0490','0491','Ghe with Upturn'],['0404','0454','Ukrainian Ie'],['0406','0456','Byelorussian-Ukrainian I'],
+           ['0407','0457','Yi'],['040E','045E','Short U']],
+    srmk: [['0402','0452','Dje'],['0403','0453','Gje'],['0405','0455','Dze'],['0408','0458','Je'],['0409','0459','Lje'],
+           ['040A','045A','Nje'],['040B','045B','Tshe'],['040C','045C','Kje'],['040F','045F','Dzhe']]
+  };
+  const out = [];
+  [['upper', 0], ['lower', 1]].forEach(([cs, i]) => CYRILLIC_GROUPS.forEach(g => T[g].forEach(r => {
+    const cp = r[i];
+    // The short name keeps gName()'s slug unique per letter: a bare 'А (uppercase)' would slug to the same
+    // fontmaker.glyphname.uppercase for all 47 capitals, because the Cyrillic character itself is stripped.
+    out.push({ cp, name: String.fromCodePoint(parseInt(cp, 16)) + ' (Cyrillic ' + r[2] + ', ' + cs + 'case)', case: cs, group: g });
+  })));
+  return out;   // 47 per case, 94 in all
+})();
+const CYRILLIC_CPS = CYRILLIC_LETTERS.map(l => l.cp);
+const _CYR_SET = new Set(CYRILLIC_CPS);   // isCyr runs per spacing-preview cell and per tile
+function isCyr(cp) { return _CYR_SET.has(cp); }
+function cyrMeta(cp) { return CYRILLIC_LETTERS.find(l => l.cp === cp); }
+/* engUserMade's twin — the same OR of independent evidence, keyed on cyrSource. */
+function cyrUserMade(l) {
+  return !!(l && l.contours && l.contours.length
+    && (l.handEdited || l.draw || (l.source && l.source.dataUrl) || l.cyrSource !== 'import'));
+}
 function markClassFor(cp) { return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].cls) || MARK_CLASS[cp] || TROP_CLASS[cp]; }
 
 /* ── Default mark glyph outlines (font units, attach-anchor at origin 0,0) ──
@@ -3406,6 +3465,7 @@ function newProject() {
       addCustomGlyphs: false,
       svgUpload: false,
       addEnglishLetters: false,
+      addCyrillicLetters: false,
       addSpecialForms: false, addYiddish: false, addLadino: false, addWideForms: false,   // opt-in extra glyph tabs
       kerning: [],
       kernClasses: []
@@ -3436,7 +3496,7 @@ function curItem() {
   return customMark(curKind, curCp);
 }
 function curLetter() { return curItem(); }
-function letterMeta(cp) { return LETTERS.find(l => l.cp === cp) || engMeta(cp); }
+function letterMeta(cp) { return LETTERS.find(l => l.cp === cp) || engMeta(cp) || cyrMeta(cp); }
 function curMeta() { return curKind === 'letter' ? letterMeta(curCp) : null; }
 function markName(cp) { return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].name) || MARK_NAMES[cp] || TROP_NAMES[cp] || cp; }
 // kind 'accent' must resolve through LATIN_ACCENTS: MARK_CLASS has no entry, so cedilla would fall to
@@ -3461,10 +3521,11 @@ function customMark(kind, cp) {
   return store[cp];
 }
 /* Which picker tab a (kind, cp) belongs to — the ONE precedence every navigator uses (_selectItem,
-   udNavTo), so a click and an undo land on the same tab: English → wide / specialized forms → custom
+   udNavTo), so a click and an undo land on the same tab: English → Cyrillic → wide / specialized forms → custom
    glyphs → punctuation → the kind itself (letter / nikkud / trop). */
 function catTabFor(kind, cp) {
   return (kind === 'letter' && isEng(cp)) ? 'english'
+       : (kind === 'letter' && isCyr(cp)) ? 'cyrillic'
        : (kind === 'letter' && wideGlyphItemFor(cp)) ? (project.font.addWideForms ? 'wideforms'   // a materialized wide form lives in whichever tab surfaces it
            : (project.font.addSpecialForms && SPECIAL_TARGETS.indexOf(cp) >= 0) ? 'specialforms' : 'letter')
        : isCustomCp(cp) ? 'customglyphs'
@@ -3483,6 +3544,7 @@ function _selectItem(kind, cp) {
   // letter while the switch still reads Uppercase left the tile off-screen and nothing highlighted.
   // engMeta covers both bands (A-Z/a-z carry their case, the import-only forms are all 'accent').
   if (kind === 'letter' && isEng(cp)) { const em = engMeta(cp); if (em && em.case) englishCase = em.case; }
+  if (kind === 'letter' && isCyr(cp)) { const cm = cyrMeta(cp); if (cm && cm.case) cyrillicCase = cm.case; }   // the Cyrillic grid is one case at a time too
   renderGrids();
   // Cycling letter→letter while placing nikkud should STAY on the Nikkud/Trop page (final adjustments
   // shouldn't re-open the step every click). _setWorkMode('anchors') auto-falls back to Align for
@@ -3502,11 +3564,12 @@ function renderGrids() {
     else renderCustomGlyphsPanel();                                              // first build of the panel + add form
   }
   if (document.getElementById('englishGrid')) renderEnglishGrid();
+  if (document.getElementById('cyrillicGrid')) renderCyrillicGrid();
   if (document.getElementById('specialFormsPanelBody')) renderSpecialFormsPanel();
   if (document.getElementById('wideFormsPanelBody')) renderWideFormsPanel();
   if (document.getElementById('yiddishPanelBody')) renderYiddishPanel();
   if (document.getElementById('ladinoPanelBody')) renderLadinoPanel();
-  renderCatTabs();   // also (re)builds the tab bar so the Custom glyphs / English / Specialized / Yiddish / Ladino tabs appear/disappear with their toggles
+  renderCatTabs();   // also (re)builds the tab bar so the Custom glyphs / English / Cyrillic / Specialized / Yiddish / Ladino tabs appear/disappear with their toggles
   syncDrawSaveAllBtns();   // the panels were just rebuilt — restate each tab's pending count
 }
 /* ── Custom-mark geometry helpers ──
@@ -4046,7 +4109,7 @@ const ICON_WARN_SM = '<svg class="hi hi-sm hi-warning" viewBox="0 0 24 24" width
 const ICON_PENCIL_SM = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
 const ICON_GEAR_SM = '<svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg>';
 const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
-const FONT_MAKER_VERSION = '5.50';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.51';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -4194,6 +4257,11 @@ const HELP_CONTENT = {
         <button class="tbtn ghost" onclick="downloadTemplate('englishletters','png')">Picture (PNG)</button>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="flex:1 1 150px;font-weight:600;">Cyrillic Letters <span style="font-weight:400;color:var(--muted);">· А–Я &amp; а–я, plus the Ukrainian, Belarusian, Serbian &amp; Macedonian letters · 3 pages</span></span>
+        <button class="tbtn" onclick="downloadTemplate('cyrillicletters','pdf')">PDF</button>
+        <button class="tbtn ghost" onclick="downloadTemplate('cyrillicletters','png')">Picture (PNG)</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
         <span style="flex:1 1 150px;font-weight:600;">Vowels (Nikkud) <span style="font-weight:400;color:var(--muted);">· 18 marks · 1 page</span></span>
         <button class="tbtn" onclick="downloadTemplate('nikkud','pdf')">PDF</button>
         <button class="tbtn ghost" onclick="downloadTemplate('nikkud','png')">Picture (PNG)</button>
@@ -4209,7 +4277,7 @@ const HELP_CONTENT = {
         <button class="tbtn ghost" onclick="downloadTemplate('punct','png')">Picture (PNG)</button>
       </div>
     </div>
-    <div class="help-tip">⚠️ The Letters and English Letters sheets are two pages each, and Punctuation &amp; More is four — each downloads as a multi-page PDF, or as numbered images (…_1.png, …_2.png) when you choose Picture.</div>
+    <div class="help-tip">⚠️ The Letters and English Letters sheets are two pages each, Cyrillic Letters is three, and Punctuation &amp; More is four — each downloads as a multi-page PDF, or as numbered images (…_1.png, …_2.png) when you choose Picture.</div>
   `,
   licenses: `
     <h4>Choosing a license</h4>
@@ -4263,6 +4331,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.51</strong> &mdash; <strong>Cyrillic letters.</strong> A new <span class="ui">Add Cyrillic letters</span> switch in <span class="ui">Settings</span> (and in the new-font wizard) opens a <span class="ui">Cyrillic</span> tab: the Russian alphabet plus the Ukrainian, Belarusian, Serbian and Macedonian letters, each group in its own section, with an uppercase/lowercase switch. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab &mdash; print a three-page practice sheet, see them in <span class="ui">Preview PDF</span>, and a font you start from brings its own Cyrillic letters across. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.50</strong> &mdash; <strong>The Send-a-font windows finished the icon change.</strong> Both <span class="ui">Send this font&hellip;</span> dialogs head themselves with the same drawn paper-plane their buttons use, instead of an emoji. Their heading also stops resetting itself: switching language with a dialog open used to replace its title with the word <span class="ui">Notice</span>, and now leaves it alone. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.49</strong> &mdash; <strong>Every button symbol is now drawn.</strong> The last emoji in the tool &mdash; close and delete, undo and redo, the vowel nudge arrows, <span class="ui">QA Check</span>, <span class="ui">Shortcuts</span>, <span class="ui">Show Hebrew Keyboard</span>, <span class="ui">Save current font</span>, <span class="ui">Start from an existing font</span>, <span class="ui">Load from computer</span>, <span class="ui">Confirm placement</span> and the cloud save badge &mdash; are vector icons from the shared IvritSuite set, so they look identical on every computer and follow the page colours in dark mode. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.48</strong> &mdash; <strong>The last emoji buttons became drawn icons.</strong> <span class="ui">Tour</span>, <span class="ui">Help</span>, the <span class="ui">Settings</span> tab and panel, <span class="ui">Edit points</span>, <span class="ui">Edit shape</span>, <span class="ui">Edit the glyph</span>, <span class="ui">Draw with pen</span>, <span class="ui">Copy outline</span> and <span class="ui">Copy address</span> now draw the same vector symbols the rest of IvritSuite uses, so a button means the same picture in every tool. <span class="ui">Edit shape</span> also appears in your language now &mdash; it had been left in English. <span style="color:var(--muted);">(September 2026)</span></li>
@@ -4407,7 +4476,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_49','v5_48','v5_47','v5_46','v5_45','v5_44','v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_50','v5_49','v5_48','v5_47','v5_46','v5_45','v5_44','v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4420,7 +4489,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_50';
+  const CUR_KEY = 'fontmaker.changelog.v5_51';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -5411,6 +5480,7 @@ function renderLetterGrid() {
   if (document.getElementById('tropGrid')) renderTropGrid();
   if (document.getElementById('punctGrid')) renderPunctGrid();
   if (document.getElementById('englishGrid')) renderEnglishGrid();
+  if (document.getElementById('cyrillicGrid')) renderCyrillicGrid();
 }
 // One dynamic "what should I do next?" line under the letter grid. Names are focusable links that
 // jump to the letter in the right work mode (shares the guard-free navigation used by the QA grid).
@@ -5560,6 +5630,43 @@ function renderEnglishGrid() {
     }
   }
   const prog = document.getElementById('englishProgress'); if (prog) prog.textContent = total ? _pT('eng_progress', `(${done}/${total})`, {done, total}) : '';
+}
+let cyrillicCase = 'upper';
+function setCyrillicCase(c) { cyrillicCase = c === 'lower' ? 'lower' : 'upper'; renderCyrillicGrid(); }
+/* The English grid minus the accent band. One case at a time; inside the band each group is its own
+   section under a full-width label — renderPunctGrid's .punct-grp idiom — so the three alphabets read as
+   three short lists rather than one wall of 47 tiles. */
+function renderCyrillicGrid() {
+  const grid = document.getElementById('cyrillicGrid'); if (!grid) return;
+  [['cyrCaseUpper','upper'],['cyrCaseLower','lower']].forEach(([id, v]) => {
+    const b = document.getElementById(id); if (!b) return;
+    b.classList.toggle('active', cyrillicCase === v); b.setAttribute('aria-pressed', cyrillicCase === v);
+  });
+  grid.innerHTML = ''; let done = 0, total = 0, grp = null;
+  CYRILLIC_LETTERS.filter(C => C.case === cyrillicCase).forEach(C => {
+    const l = project.letters.find(x => x.codepoint === C.cp && x.cyr); if (!l) return;
+    if (C.group !== grp) {
+      grp = C.group;
+      const h = document.createElement('div');
+      h.className = 'punct-grp';
+      const k = 'fontmaker.panels.cyr_group_' + C.group;
+      h.setAttribute('data-i18n', k);
+      h.textContent = window.I18n ? I18n.t(k) : C.group;   // renderGrids can run before the deferred i18n runtime lands
+      grid.appendChild(h);
+    }
+    total++;
+    const st = letterStatus(l); if (st === 'traced' || st === 'anchored') done++;
+    const ch = String.fromCodePoint(parseInt(C.cp, 16));
+    const tile = document.createElement('div');
+    tile.className = 'ltile' + (curKind === 'letter' && C.cp === curCp ? ' sel' : '');
+    tile.innerHTML = `<span class="lt-dot ${st}"></span>
+      <span class="lt-heb" style="font-family:${esc(project.template.font)};direction:ltr;">${ch}</span>
+      <span class="lt-name">${ch}</span>`;
+    tile.onclick = () => selectItem('letter', C.cp);
+    grid.appendChild(tile);
+  });
+  a11yTiles(grid);
+  const prog = document.getElementById('cyrillicProgress'); if (prog) prog.textContent = total ? _pT('cyr_progress', `(${done}/${total})`, {done, total}) : '';
 }
 /* ── Nikkud / Trop sidebar panels (shared, parametrised by category) ── */
 function markStatusOf(m) {
@@ -5905,6 +6012,20 @@ function ensureEnglishSeeded(p) {
     if (!p.precomposed.some(x => x.target === pc.target)) p.precomposed.push({ target: pc.target, base: pc.base, mark: pc.mark, anchor: null });
   });
 }
+function setAddCyrillicLetters(on) {
+  project.font.addCyrillicLetters = !!on; markDirty();
+  if (on) ensureCyrillicSeeded();
+  else if (isCyr(curCp)) selectItem('letter', LETTER_ORDER[0]);   // leave the Cyrillic editor if it was open — the letters themselves are kept
+  renderGrids();   // rebuilds the tab bar (renderCatTabs) → shows/hides the Cyrillic tab
+}
+function ensureCyrillicSeeded(p) {   // idempotent — also what grows an old project's tab when the table grows (migrateProject re-runs it on load)
+  p = p || project;
+  CYRILLIC_LETTERS.forEach(C => {
+    if (!p.letters.some(l => l.codepoint === C.cp && l.cyr)) {
+      const it = blankLetter(C); it.cyr = true; it.case = C.case; p.letters.push(it);
+    }
+  });
+}
 /* Seed an opt-in tab's forms into project.precomposed (auto-compose targets). Existing targets
    (incl. core PRECOMPOSED like שׁ/שׂ that Ladino also surfaces) are left untouched, so their
    placement/size tweaks survive. Disabling a tab keeps the seeded forms but precompExportable()
@@ -5975,9 +6096,11 @@ document.addEventListener('click', e => {
   if (!a) return;
   e.preventDefault();
   const act = a.getAttribute('data-fmact');
-  if (act === 'tpl-english-pdf')      downloadTemplate('englishletters', 'pdf');
-  else if (act === 'tpl-english-png') downloadTemplate('englishletters', 'png');
-  else if (act === 'svg-guide')       openSvgGuide();
+  if (act === 'tpl-english-pdf')       downloadTemplate('englishletters', 'pdf');
+  else if (act === 'tpl-english-png')  downloadTemplate('englishletters', 'png');
+  else if (act === 'tpl-cyrillic-pdf') downloadTemplate('cyrillicletters', 'pdf');
+  else if (act === 'tpl-cyrillic-png') downloadTemplate('cyrillicletters', 'png');
+  else if (act === 'svg-guide')        openSvgGuide();
 });
 function cgSetType(t) {
   cgType = t;
@@ -6302,8 +6425,8 @@ function _setWorkMode(mode) {
     if (mode === 'nodes') mode = 'align';     // node editor is letters-only
     if (mode === 'draw') mode = 'align';      // draw is letters-only — marks never get a draw field
     if (curItem().designMode === 'editor') mode = 'align';
-  } else if (mode === 'anchors' && !precompTarget && (isPunctItem() || !(project.font.nikkud.enabled || project.font.trop.enabled))) {
-    mode = 'align';                            // punctuation is anchor-free; letters-only font has no marks step (but a precomposed/wide form being placed stays in anchors)
+  } else if (mode === 'anchors' && !precompTarget && (isPunctItem() || isCyr(curCp) || !(project.font.nikkud.enabled || project.font.trop.enabled))) {
+    mode = 'align';                            // punctuation and Cyrillic are anchor-free; letters-only font has no marks step (but a precomposed/wide form being placed stays in anchors)
   }
   if (curKind === 'letter') {   // Draw ⇄ Align normalization
     const cl = curLetter();
@@ -6380,14 +6503,17 @@ function renderCatTabs() {
   if (sv && project && project.font) sv.checked = !!project.font.svgUpload;
   const en = document.getElementById('addEnglishLettersChk');
   if (en && project && project.font) en.checked = !!project.font.addEnglishLetters;
+  const cy = document.getElementById('addCyrillicLettersChk');
+  if (cy && project && project.font) cy.checked = !!project.font.addCyrillicLetters;
   const sf = document.getElementById('addSpecialFormsChk'); if (sf && project && project.font) sf.checked = !!project.font.addSpecialForms;
   const wf = document.getElementById('addWideFormsChk');    if (wf && project && project.font) wf.checked = !!project.font.addWideForms;
   const yi = document.getElementById('addYiddishChk');      if (yi && project && project.font) yi.checked = !!project.font.addYiddish;
   const la = document.getElementById('addLadinoChk');       if (la && project && project.font) la.checked = !!project.font.addLadino;
-  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', english: 'English', customglyphs: 'Custom glyphs', specialforms: 'Specialized letters', wideforms: 'Wide letterforms', yiddish: 'Yiddish', ladino: 'Ladino', spacing: 'Spacing', advanced: 'Settings' };
+  const NAMES = { fontdetails: 'Font Details', letter: 'Letters', nikkud: 'Nikkud', trop: 'Trop', punct: 'Punctuation', english: 'English', cyrillic: 'Cyrillic', customglyphs: 'Custom glyphs', specialforms: 'Specialized letters', wideforms: 'Wide letterforms', yiddish: 'Yiddish', ladino: 'Ladino', spacing: 'Spacing', advanced: 'Settings' };
   const cats = ['fontdetails', 'letter', 'nikkud', 'trop', 'punct', 'spacing', 'advanced'];
   if (project && project.font && project.font.addCustomGlyphs) cats.splice(cats.indexOf('punct') + 1, 0, 'customglyphs');   // appears right after Punctuation
-  if (project && project.font && project.font.addEnglishLetters) cats.splice(cats.indexOf('punct') + 1, 0, 'english');   // English tab right after Punctuation (before Custom glyphs)
+  if (project && project.font && project.font.addCyrillicLetters) cats.splice(cats.indexOf('punct') + 1, 0, 'cyrillic');   // Cyrillic right after English — this line sits BEFORE the English splice because later splices land earlier on screen
+  if (project && project.font && project.font.addEnglishLetters) cats.splice(cats.indexOf('punct') + 1, 0, 'english');   // English tab right after Punctuation (before Cyrillic / Custom glyphs)
   if (project && project.font && project.font.addLadino)       cats.splice(cats.indexOf('punct') + 1, 0, 'ladino');        // Specialized / Wide / Yiddish / Ladino sit right after Punctuation
   if (project && project.font && project.font.addYiddish)      cats.splice(cats.indexOf('punct') + 1, 0, 'yiddish');
   if (project && project.font && project.font.addWideForms)    cats.splice(cats.indexOf('punct') + 1, 0, 'wideforms');     // later splices land earlier on screen — this line's position keeps Wide right after Specialized
@@ -7535,6 +7661,12 @@ function importFormOutline(pc, font, scale) {
 }
 const ENG_IMPORT_MIN = 20;
 const KERN_IMPORT_CAP = 2000;   // a pathological kern table must not turn the Kerning panel into a 20,000-row list
+const CYR_IMPORT_MIN = 20;   // the English floor again: a font "has" Cyrillic once it carries this many of the 94 letters
+function fontCyrillicCoverage(font) {
+  let n = 0;
+  CYRILLIC_LETTERS.forEach(C => { const g = font.charToGlyph(String.fromCodePoint(parseInt(C.cp,16))); if (g && g.index !== 0) n++; });
+  return n;
+}
 function fontLatinCoverage(font) {
   let n = 0;
   ENGLISH_LETTERS.forEach(E => { const g = font.charToGlyph(String.fromCodePoint(parseInt(E.cp,16))); if (g && g.index !== 0) n++; });
@@ -7596,16 +7728,27 @@ function askFontImportOptions(file, font, bytes) {
              { label: I18n.t('fontmaker.modals.keep_my_english'), onClick: () => { opts.engMode = 'blanks'; next(); } },
              { label: I18n.t('fontmaker.modals.replace_english'), onClick: () => { opts.engMode = 'replace'; next(); } }]);
         };
+        // The same question for Cyrillic letters the user drew — asked after the English one, before the import runs.
+        const cyrRisk = (opts.outlines && fontCyrillicCoverage(font) >= CYR_IMPORT_MIN)
+                      ? project.letters.filter(l => l.cyr && cyrUserMade(l)).length : 0;
+        const askCyr = next => {
+          if (!cyrRisk) return next();
+          askModal(I18n.t('fontmaker.modals.replace_cyrillic_title'),
+            I18n.t(cyrRisk===1?'fontmaker.modals.replace_cyrillic_body.one':'fontmaker.modals.replace_cyrillic_body.other', {count: '<b>' + cyrRisk + '</b>'}),
+            [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' },
+             { label: I18n.t('fontmaker.modals.keep_my_cyrillic'), onClick: () => { opts.cyrMode = 'blanks'; next(); } },
+             { label: I18n.t('fontmaker.modals.replace_cyrillic'), onClick: () => { opts.cyrMode = 'replace'; next(); } }]);
+        };
         // Confirm before overwriting letters the user has already drawn (only when replacing outlines).
-        // .eng items are excluded here — askEng owns them, and counting them twice asks twice.
-        const existing = opts.outlines ? project.letters.filter(x => x.contours && x.contours.length && !x.eng).length : 0;
+        // .eng / .cyr items are excluded here — askEng / askCyr own them, and counting them twice asks twice.
+        const existing = opts.outlines ? project.letters.filter(x => x.contours && x.contours.length && !x.eng && !x.cyr).length : 0;
         if (existing > 0) {
           askModal(I18n.t('fontmaker.modals.replace_letters_title'),
             I18n.t(existing===1?'fontmaker.modals.replace_letters_body.one':'fontmaker.modals.replace_letters_body.other', {count: '<b>' + existing + '</b>'}),
             [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' },
-             { label: I18n.t('fontmaker.modals.replace_import'), onClick: () => askEng(run) }]);
+             { label: I18n.t('fontmaker.modals.replace_import'), onClick: () => askEng(() => askCyr(run)) }]);
         } else {
-          askEng(run);
+          askEng(() => askCyr(run));
         }
     } }
   ]);
@@ -7696,6 +7839,20 @@ async function applyFontImport(file, font, bytes, opts) {
         if (isNew) { l = blankLetter(A); l.eng = true; l.case = 'accent'; project.letters.push(l); }
         if (importLetterOutline(l, font, scale)) { l.engSource = 'import'; nEngAcc++; }
         else if (isNew) project.letters.pop();   // no ink after all — don't leave a blank tile behind
+      });
+    }
+    // Cyrillic letters — the English rule again: opts.cyrillic true/false is an explicit choice (the partner
+    // wizard's checkbox); undefined = auto, on only when the font really carries a Cyrillic alphabet.
+    let nCyr = 0;
+    const cyrCoverage = opts.outlines ? fontCyrillicCoverage(font) : 0;
+    if (opts.outlines && opts.cyrillic !== false && (opts.cyrillic === true || cyrCoverage >= CYR_IMPORT_MIN)) {
+      const keepMine = opts.cyrMode === 'blanks';   // the import modal's "Keep mine — fill only blanks"
+      project.font.addCyrillicLetters = true;
+      ensureCyrillicSeeded();   // the UI half of setAddCyrillicLetters is the renderGrids() below
+      CYRILLIC_LETTERS.forEach(C => {
+        const l = project.letters.find(x => x.codepoint === C.cp && x.cyr);
+        if (!l || (keepMine && cyrUserMade(l))) return;
+        if (importLetterOutline(l, font, scale)) { l.cyrSource = 'import'; nCyr++; }
       });
     }
     // Combined Hebrew forms the source font already drew — שׁ שׂ אַ אָ בּ וּ כּ פּ תּ וֹ בֿ כֿ פֿ and the
@@ -7872,11 +8029,12 @@ async function applyFontImport(file, font, bytes, opts) {
     // of the workspace with the unfixed placements.
     if (!opts.autofix) ipClose();
     const pl = (k, c, o) => I18n.t(k + (c === 1 ? '.one' : '.other'), Object.assign({count: c}, o || {}));
-    if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal(I18n.t('fontmaker.modals.no_hebrew_title'), I18n.t('fontmaker.modals.no_hebrew_body') + (nEng ? ' ' + pl('fontmaker.status.import_loaded_english', nEng) : ''), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
+    if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal(I18n.t('fontmaker.modals.no_hebrew_title'), I18n.t('fontmaker.modals.no_hebrew_body') + (nEng ? ' ' + pl('fontmaker.status.import_loaded_english', nEng) : '') + (nCyr ? ' ' + pl('fontmaker.status.import_loaded_cyrillic', nCyr) : ''), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
     let msg = opts.outlines ? I18n.t('fontmaker.status.import_loaded_letters', {n: n, file: file.name}) : I18n.t('fontmaker.status.import_kept_outlines');
     if (opts.outlines && nPunct) msg += ' ' + pl('fontmaker.status.import_loaded_punct', nPunct);
     if (opts.outlines && nEng)    msg += ' ' + pl('fontmaker.status.import_loaded_english', nEng);
     if (opts.outlines && nEngAcc) msg += ' ' + pl('fontmaker.status.import_loaded_accented', nEngAcc);
+    if (opts.outlines && nCyr)    msg += ' ' + pl('fontmaker.status.import_loaded_cyrillic', nCyr);
     if (marksAny) {
       msg += ' ' + (markHits ? pl('fontmaker.status.import_replaced_marks', markHits) : I18n.t('fontmaker.status.import_no_marks'));
       if (tropImported && !project.font.trop.enabled) msg += ' ' + I18n.t('fontmaker.status.import_turn_on_trop');
@@ -8378,6 +8536,7 @@ function updateTabs() {
   const isMark = curKind !== 'letter';
   const isPunct = isPunctItem();   // punctuation/digits trace like letters but take no nikkud/trop
   const eng = !isMark && isEng(curCp);   // English letters: the placement step is for accents, not nikkud
+  const cyr = !isMark && isCyr(curCp);   // Cyrillic letters take no marks and have no accent step — no placement tabs at all
   const combined = isMark && project.font[curKind].uploadMode === 'combined';
   const editor = isMark && !combined && curItem().designMode === 'editor';
   document.getElementById('tabAlign').textContent = editor ? I18n.t('fontmaker.tabs.step_design')
@@ -8388,11 +8547,11 @@ function updateTabs() {
     ta.style.display = engSupportsAccents(curCp) ? '' : 'none';   // only the English letters that take accents
     ta.textContent = I18n.t('fontmaker.tabs.step_accents');
   } else {
-    ta.style.display = (!isMark && !isPunct && project.font.nikkud.enabled) ? '' : 'none';
+    ta.style.display = (!isMark && !isPunct && !cyr && project.font.nikkud.enabled) ? '' : 'none';
     ta.textContent = I18n.t('fontmaker.tabs.step_nikkud');
   }
   const tt = document.getElementById('tabTrop');
-  tt.style.display = (!isMark && !isPunct && !eng && project.font.trop.enabled) ? '' : 'none';
+  tt.style.display = (!isMark && !isPunct && !eng && !cyr && project.font.trop.enabled) ? '' : 'none';
   tt.textContent = I18n.t('fontmaker.tabs.step_trop');
   updateStepTicks();   // refresh per-glyph completion marks after labels/visibility are set
 }
@@ -8415,8 +8574,8 @@ function updateStepTicks() {
   setTick('tabAlign', isVectorGlyph(l) ? (l.contours ? 'done' : 'na') : (l.source && l.source.dataUrl ? 'done' : 'todo'));   // vector glyphs skip raster alignment, but the step still hosts Width/margins → 'done' once vectorized
   setTick('tabTrace', l.contours ? 'done' : 'todo');
   // Placement: the CONFIRMED flag is the done signal (carried-over + unconfirmed read as not-done).
-  // English accents have no confirm flow → no tick.
-  const placeState = isEng(l.codepoint) ? null : (l.placementSaved ? 'done' : 'todo');
+  // English accents have no confirm flow → no tick; Cyrillic has no placement step at all.
+  const placeState = (isEng(l.codepoint) || isCyr(l.codepoint)) ? null : (l.placementSaved ? 'done' : 'todo');
   setTick('tabAnchors', placeState);
   setTick('tabTrop', placeState);
 }
@@ -10389,6 +10548,7 @@ function tabDrawCps(cat) {   // the ordered drawable code points of one picker t
   const mine = f => (project.letters || []).filter(f).map(x => x.codepoint);
   const isP = cp => { const m = letterMeta(cp); return !!(m && m.cat === 'punct'); };
   if (cat === 'english') return ENGLISH_CPS.filter(cp => (project.letters || []).some(x => x.codepoint === cp && x.eng));   // A-Z, a-z, then any imported accented forms
+  if (cat === 'cyrillic') return CYRILLIC_CPS.filter(cp => (project.letters || []).some(x => x.codepoint === cp && x.cyr));   // upper band then lower band, each Russian → Ukrainian/Belarusian → Serbian/Macedonian
   if (cat === 'wideforms') return mine(x => x.wideGlyph);
   if (cat === 'customglyphs') return mine(x => x.custom);
   if (cat === 'punct') return LETTER_ORDER.filter(isP);
@@ -10396,6 +10556,7 @@ function tabDrawCps(cat) {   // the ordered drawable code points of one picker t
 }
 function _drawCatOf(cp) {   // the tab a drawable code point cycles in — _selectItem's precedence, minus the detail of which tab surfaces a wide form
   if (isEng(cp)) return 'english';
+  if (isCyr(cp)) return 'cyrillic';
   if (wideGlyphItemFor(cp)) return 'wideforms';
   if (isCustomCp(cp)) return 'customglyphs';
   const m = letterMeta(cp); return (m && m.cat === 'punct') ? 'punct' : 'letter';
@@ -14468,7 +14629,7 @@ function bidiClassOf(cell) {
   const c = parseInt(cell.cp, 16);
   if ((c >= 0x0590 && c <= 0x05FF) || (c >= 0xFB1D && c <= 0xFB4F)) return BIDI_R;   // Hebrew block + its presentation forms
   if (c >= 0x30 && c <= 0x39) return BIDI_EN;                          // European digits — they READ left-to-right but LEAN right-to-left (below)
-  if (isEng(cell.cp)) return BIDI_L;                                   // the same predicate that routes a letter to the English tab
+  if (isEng(cell.cp) || isCyr(cell.cp)) return BIDI_L;                 // the same predicates that route a letter to the English / Cyrillic tab
   return BIDI_NEUTRAL;                                                 // punctuation, symbols, custom glyphs — they take their surroundings
 }
 function bidiOrder(cells) {
@@ -15164,7 +15325,7 @@ function renderAlignUnder(U, l) {
 function renderAlignStageBelow(SB, l) {
   if (!SB) return;
   const nextBtn = isVectorGlyph(l)
-    ? (l.contours && !isPunctItem() ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button>` : '')
+    ? (l.contours && !isPunctItem() && !isCyr(l.codepoint) ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button>` : '')   // Cyrillic has no placement step to go to
     : (curImageUrl() ? `<button class="ctl-btn primary" onclick="setWorkMode('trace')">${_pT('next_trace', 'Next: Trace →')}</button>` : '');
   const applyBtn = (curKind === 'letter' && !isVectorGlyph(l) && curImageUrl())
     ? `<button class="ctl-btn" onclick="openApplyAlign()" title="${esc(window.I18n ? I18n.t('fontmaker.tip.apply_align_other') : "Copy this letter's position & scale onto other letters")}">${_pT('apply_alignment', 'Apply alignment to other letters…')}</button>` : '';
@@ -15247,7 +15408,7 @@ function renderTraceUnder(U, l) {
 /* Shared by Trace and Edit-points (both route through renderTraceUnder). */
 function renderTraceStageBelow(SB, l) {
   if (!SB) return;
-  SB.innerHTML = (l.contours && !isPunctItem())
+  SB.innerHTML = (l.contours && !isPunctItem() && !isCyr(l.codepoint))   // Cyrillic has no placement step to go to
     ? `<div class="stage-actions"><button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button></div>` : '';
 }
 
@@ -15492,6 +15653,7 @@ function renderEngAccentLeft(l) {   // English letters: accent placement = pick 
    category, skipping anchor-free punctuation, so "go over every letter" is one key/click per letter. */
 function _placementCycleCps() {
   if (isEng(curCp)) return (project.letters || []).filter(x => x.eng && x.contours && x.contours.length).map(x => x.codepoint);
+  if (isCyr(curCp)) return (project.letters || []).filter(x => x.cyr && x.contours && x.contours.length).map(x => x.codepoint);   // unreachable in practice (Cyrillic never enters the placement step) — kept so the precedence mirrors catTabFor
   if (isCustomCp(curCp)) return (project.letters || []).filter(x => x.custom).map(x => x.codepoint);
   if (wideGlyphItemFor(curCp)) return (project.letters || []).filter(x => x.wideGlyph).map(x => x.codepoint);   // cycle the converted wide forms
   return LETTER_ORDER.filter(cp => { const m = letterMeta(cp); return !(m && m.cat === 'punct'); });
@@ -16561,6 +16723,9 @@ function fontInkBounds() {
   if (project.font.addEnglishLetters) (project.letters || []).forEach(L => {
     if (L.eng && L.contours && L.contours.length) upd(polysBounds(L.contours.map(c => c.points)));
   });
+  if (project.font.addCyrillicLetters) (project.letters || []).forEach(L => {   // same reason — Д Ц Щ ф descend, Ё Й Ї ascend
+    if (L.cyr && L.contours && L.contours.length) upd(polysBounds(L.contours.map(c => c.points)));
+  });
   // Traced punctuation/symbol ink ships too (letterShips — the exact export predicate), and so do
   // custom MAIN glyphs; both were invisible to the clip box, so a tall traced bracket or custom glyph
   // could clip in Word while winAscent claimed to cover the true ink.
@@ -16885,6 +17050,16 @@ function buildFontSpec() {
     glyphs[nm] = { contours, advance: effLetterAdvance(l), lsb: (l.lsb != null ? l.lsb : null) };
     if (l.curves && l.curves.length === contours.length) glyphs[nm].curves = l.curves;
     if (!exists) { glyphOrder.push(nm); baseGlyphNames.push(nm); cmap[parseInt(l.codepoint,16)] = nm; }
+  });
+
+  // Cyrillic base letters — the English pass again (flagged .cyr; only when enabled, only traced ones)
+  if (project.font.addCyrillicLetters) (project.letters || []).filter(l => l.cyr && l.contours && l.contours.length).forEach(l => {
+    const nm = gname(l.codepoint);
+    if (glyphs[nm]) return;                                         // an explicit custom glyph already owns this cp — never clobber it
+    const contours = l.contours.map(c => c.points);
+    glyphs[nm] = { contours, advance: effLetterAdvance(l), lsb: (l.lsb != null ? l.lsb : null) };
+    if (l.curves && l.curves.length === contours.length) glyphs[nm].curves = l.curves;
+    glyphOrder.push(nm); baseGlyphNames.push(nm); cmap[parseInt(l.codepoint,16)] = nm;
   });
 
   // mark glyphs (zero width) — only when the font is Nikkud-compatible; default or custom shapes, scaled by Nikkud size
@@ -17689,7 +17864,8 @@ function buildUfoFontInfo(spec) {
     // openTypeOS2Selection carries ONLY bit 7 for both styles — UFO3 forbids bits 0/5/6 here;
     // compilers derive them from styleMapStyleName. Weight class is what makes the Bold heavy-flagged.
     openTypeOS2Selection: [7], openTypeOS2WeightClass: bold ? 700 : 400,
-    openTypeOS2VendorID: 'IVST', openTypeOS2CodePageRanges: [0, 5],
+    openTypeOS2VendorID: 'IVST',
+    openTypeOS2CodePageRanges: Object.keys(spec.cmap || {}).some(k => +k >= 0x0400 && +k <= 0x04FF) ? [0, 2, 5] : [0, 5],   // cp1251 only when a Cyrillic glyph ships — the TTF builder's rule
     openTypeOS2Type: [],   // fsType 0 = installable embedding, matching the TTF export; absent, ufo2ft/fontmake default to 4 (restricted)
     copyright: n.copyright,
     openTypeNameDesigner: n.designer || 'Made with IvritSuite Hebrew Font Maker',
@@ -17813,8 +17989,13 @@ def hfm_build(spec_json):
                 fsType=0)
     # Declare Hebrew (cp1255) + Latin-1 (cp1252) code pages so Office/Word recognizes the font for
     # Hebrew. Without this, Word substitutes a fallback (e.g. Aptos) and won't apply it to Hebrew text.
+    # Cyrillic (cp1251) is declared only when the shipped cmap really carries a Cyrillic-block glyph — a
+    # claim over an empty block would make Word pick this font for Russian text and draw fallback boxes.
     _os2 = fb.font["OS/2"]
-    _os2.ulCodePageRange1 = (1 << 0) | (1 << 5)
+    _cp1 = (1 << 0) | (1 << 5)
+    if any(0x0400 <= int(k) <= 0x04FF for k in spec["cmap"].keys()):
+        _cp1 |= (1 << 2)
+    _os2.ulCodePageRange1 = _cp1
     _os2.ulCodePageRange2 = 0
     # Unicode ranges were never set, so the font advertised cp1252 while declaring no Unicode coverage.
     # Derive them from the cmap we actually shipped. Fail-soft: an older fontTools without the helper
@@ -19879,7 +20060,7 @@ async function fidelityMeasure(ctx) {
   const rows = [];
   let skippedSubst = 0, skippedEdge = 0, skippedUser = 0, skippedOdd = 0;
   try {
-    const letters = project.letters.filter(l => !l.custom && !l.eng && !l.wideGlyph && l.contours && l.contours.length
+    const letters = project.letters.filter(l => !l.custom && !l.eng && !l.cyr && !l.wideGlyph && l.contours && l.contours.length
       && (letterMeta(l.codepoint) || {}).cat !== 'punct');
     ctx.importedMarks.forEach(([kind, cp]) => {
       const cov = ctx.markCoverage[cp];
@@ -20277,6 +20458,10 @@ async function generatePreviewPDF() {
       const traced = ENGLISH_LETTERS.filter(e => { const L = project.letters.find(x => x.codepoint === e.cp); return L && L.contours && L.contours.length; });
       if (traced.length) specimenPage(I18n.t('fontmaker.canvas.section_english'), traced.map(e => cpChar(e.cp)), { rtl: false, cols: 9, glyphPx: 38 });
     }
+    if (pf.addCyrillicLetters) {
+      const traced = CYRILLIC_LETTERS.filter(e => { const L = project.letters.find(x => x.codepoint === e.cp && x.cyr); return L && L.contours && L.contours.length; });
+      if (traced.length) specimenPage(I18n.t('fontmaker.canvas.section_cyrillic'), traced.map(e => cpChar(e.cp)), { rtl: false, cols: 9, glyphPx: 38 });
+    }
     if (pf.addSpecialForms) {
       const chars = SPECIAL_TARGETS.map(t => cpChar(t)).filter(Boolean);
       if (chars.length) specimenPage(I18n.t('fontmaker.canvas.section_specialized'), chars, { rtl: true, cols: 8, glyphPx: 44 });
@@ -20331,12 +20516,14 @@ const TEMPLATE_SPECS = {
              items: LETTERS.filter(L => L.cat === 'punct').map(L => ({ cp:L.cp, name:L.name, cls:null })) },   // 103 → 4 pages (30 slots each)
   englishletters: { kind:'latin', title:'English Letters', titleKey:'fontmaker.canvas.tpl_english', cols:6, rowsPerPage:5,
              items: ENGLISH_LETTERS.map(E => ({ cp:E.cp, name:String.fromCodePoint(parseInt(E.cp,16)), cls:null })) },   // 52 → 2 pages
+  cyrillicletters: { kind:'cyrillic', title:'Cyrillic Letters', titleKey:'fontmaker.canvas.tpl_cyrillic', cols:6, rowsPerPage:6,
+             items: CYRILLIC_LETTERS.map(C => ({ cp:C.cp, name:String.fromCodePoint(parseInt(C.cp,16)), cls:null })) },   // 94 → 3 pages (36 slots each)
 };
 // One write-in box: colored border + a small corner label (ref glyph + name + U+code + class). Interior left blank.
 function templateCellHTML(item, kind) {
   const fontFam = (project.template && project.template.font) || "'Noto Sans Hebrew', sans-serif";
   const base  = String.fromCodePoint(parseInt(item.cp, 16));
-  const glyph = (kind === 'letters' || kind === 'punct' || kind === 'latin') ? base : ('◌' + base);   // dotted circle ◌ carries an isolated combining mark (punctuation is standalone)
+  const glyph = (kind === 'letters' || kind === 'punct' || kind === 'latin' || kind === 'cyrillic') ? base : ('◌' + base);   // dotted circle ◌ carries an isolated combining mark (punctuation is standalone)
   const code  = 'U+' + item.cp.toUpperCase();
   const cls   = item.cls ? (' · ' + item.cls) : '';
   const label =
@@ -21371,13 +21558,13 @@ function migrateProject(data) {
     return ex;
   });
   // Non-LETTERS items that live in project.letters — custom MAIN glyphs (.custom), English/Latin
-  // letters (.eng) and converted wide letterforms (.wideGlyph) — are rebuilt away by the LETTERS.map
+  // letters (.eng), Cyrillic letters (.cyr) and converted wide letterforms (.wideGlyph) — are rebuilt away by the LETTERS.map
   // above, so preserve any beyond the standard 27.
   // .eng used to be dropped here and re-seeded BLANK by ensureEnglishSeeded below, which silently
   // destroyed traced/imported Latin on every save→reload and autosave restore.
   { const stdCps = new Set(LETTERS.map(L => L.cp));
     Object.values(byCp).forEach(l => {
-      if (!l || !(l.custom || l.eng || l.wideGlyph) || stdCps.has(l.codepoint)) return;
+      if (!l || !(l.custom || l.eng || l.cyr || l.wideGlyph) || stdCps.has(l.codepoint)) return;
       l.source = l.source || { kind: data.inputMode || 'single', dataUrl: null, cropRect: null, sheetId: null };
       if (l.source.sheetId === undefined) l.source.sheetId = null;
       if (!l.transform) l.transform = [1,0,0,1,0,0];
@@ -21405,7 +21592,13 @@ function migrateProject(data) {
         if (l.engSource !== 'import') delete l.engSource;           // closed domain; junk here is inert but pointless
         if (!l.name) l.name = (engMeta(l.codepoint) || {}).name || ('U+' + l.codepoint);
       }
-      if (l.wideGlyph && !l.custom && !l.eng) {
+      if (l.cyr && !l.eng) {   // the same cp-hygiene as .eng — these codepoints reach gname()/cmap and the Python int(k)
+        if (typeof l.codepoint !== 'string' || !isCyr(l.codepoint)) return;
+        l.case = (l.case === 'lower') ? 'lower' : 'upper';
+        if (l.cyrSource !== 'import') delete l.cyrSource;           // closed domain
+        if (!l.name) l.name = (cyrMeta(l.codepoint) || {}).name || ('U+' + l.codepoint);
+      }
+      if (l.wideGlyph && !l.custom && !l.eng && !l.cyr) {
         // Same cp-hygiene as .eng: a converted wide letterform is only meaningful at a wide-table
         // target — anything else is dropped and the auto-generated form takes over again.
         if (typeof l.codepoint !== 'string' || WIDE_ALL_TARGETS.indexOf(l.codepoint) < 0) return;
@@ -21504,6 +21697,8 @@ function migrateProject(data) {
     if (data.font.svgUpload == null) data.font.svgUpload = false;
     if (data.font.addEnglishLetters == null) data.font.addEnglishLetters = false;
     if (data.font.addEnglishLetters) ensureEnglishSeeded(data);
+    if (data.font.addCyrillicLetters == null) data.font.addCyrillicLetters = false;
+    if (data.font.addCyrillicLetters) ensureCyrillicSeeded(data);   // also grows the tab when CYRILLIC_LETTERS gains a letter (the note below)
     // A tab that is ON must carry its full CURRENT form set — a release can grow a tab's table
     // (SPECIAL_MORE joined SPECIAL_FORMS in v5.19), and without this an old project with the tab
     // already enabled would silently miss the new forms forever (toggle-off/on was the only path).
@@ -21608,7 +21803,7 @@ function wizardOpen(mode){
     document.getElementById('wizLicense').value = 'ofl';
     document.getElementById('wizStyleRegular').checked = true;
     document.getElementById('wizNikkud').checked = true;
-    ['wizTrop','wizEnglish','wizYiddish','wizLadino','wizTour'].forEach(id => { document.getElementById(id).checked = false; });
+    ['wizTrop','wizEnglish','wizCyrillic','wizYiddish','wizLadino','wizTour'].forEach(id => { document.getElementById(id).checked = false; });
     let im = null;
     try { im = localStorage.getItem('hebrewFontMaker_inputMode'); } catch(e){}
     if (im !== 'single' && im !== 'combined' && im !== 'font' && im !== 'draw') im = 'single';
@@ -21689,6 +21884,7 @@ function wizardCreate(){
   const nikkudOn = document.getElementById('wizNikkud').checked;
   const tropOn = document.getElementById('wizTrop').checked;
   const eng = document.getElementById('wizEnglish').checked;
+  const cyr = document.getElementById('wizCyrillic').checked;
   const yid = document.getElementById('wizYiddish').checked;
   const lad = document.getElementById('wizLadino').checked;
   const srcSel = document.querySelector('#wizStep3 input[name="wizSource"]:checked');
@@ -21702,6 +21898,7 @@ function wizardCreate(){
   setMarkEnabled('nikkud', nikkudOn);
   setMarkEnabled('trop', tropOn);
   if (eng) setAddEnglishLetters(true);
+  if (cyr) setAddCyrillicLetters(true);
   if (yid) setAddYiddish(true);
   if (lad) setAddLadino(true);
   setInputMode(src);      // persists the pref + renderControls/renderStage (which re-runs updateTabs)
@@ -21791,6 +21988,11 @@ function wizardOsPrefill(){
   // (the wizard's chrome uses the same data-i18n attribute-swap).
   if (osHint) { const k = osLatin >= ENG_IMPORT_MIN ? 'fontmaker.oswizard.latin_hint_yes' : 'fontmaker.oswizard.latin_hint_no';
                 osHint.setAttribute('data-i18n', k); osHint.textContent = I18n.t(k); }
+  const osCyr = _osStartCtx.font ? fontCyrillicCoverage(_osStartCtx.font) : 0;   // Cyrillic: the same pre-check-from-coverage rule as English
+  document.getElementById('wizOsCyrillic').checked = osCyr >= CYR_IMPORT_MIN;
+  const cyrHint = document.getElementById('wizOsCyrHint');
+  if (cyrHint) { const k = osCyr >= CYR_IMPORT_MIN ? 'fontmaker.oswizard.cyrillic_hint_yes' : 'fontmaker.oswizard.cyrillic_hint_no';
+                 cyrHint.setAttribute('data-i18n', k); cyrHint.textContent = I18n.t(k); }
   // Pre-checked, unlike the from-scratch wizard: a partner arrival came straight from someone else's
   // page and has never seen this tool, so the walkthrough is the expected next beat. Still a checkbox —
   // the tour never launches on its own (CLAUDE.md, Shared UX §1).
@@ -21845,6 +22047,7 @@ async function wizardOsFinish(){
   const tropPlace  = document.getElementById('wizOsTropPlace').checked;
   const kern = document.getElementById('wizOsKern').checked;
   const eng = document.getElementById('wizOsEnglish').checked;
+  const cyr = document.getElementById('wizOsCyrillic').checked;
   const yid = document.getElementById('wizOsYiddish').checked;
   const lad = document.getElementById('wizOsLadino').checked;
   const tour = document.getElementById('wizOsTour').checked;
@@ -21867,6 +22070,7 @@ async function wizardOsFinish(){
   setMarkEnabled('nikkud', nikkudOn);
   setMarkEnabled('trop', tropOn);
   if (eng) setAddEnglishLetters(true);
+  if (cyr) setAddCyrillicLetters(true);
   if (yid) setAddYiddish(true);
   if (lad) setAddLadino(true);
   _launchDecided = true; _autosavePromptDeferred = false;
@@ -21880,7 +22084,7 @@ async function wizardOsFinish(){
   await applyFontImport({ name: (e.file || '').split('/').pop() || e.displayName }, ctx.font, ctx.bytes,
                         { outlines: true, marksNikkud: nikShapes, marksTrop: tropShapes,
                           anchorsNikkud: nikPlace, anchorsTrop: tropPlace, kernSpacing: kern,
-                          boldAfter: false, autofix: true, english: eng });
+                          boldAfter: false, autofix: true, english: eng, cyrillic: cyr });
   setInputMode('font');   // applyFontImport stamps project.inputMode; this also persists the pref
   setCatTab('letter');
   status(I18n.t('fontmaker.oswizard.created_toast', { font: e.displayName || e.id, name }));
