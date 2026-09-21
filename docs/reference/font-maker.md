@@ -342,7 +342,10 @@ the Unicode short name (`А (Cyrillic A, uppercase)`) because `gName` strips non
 bare `(uppercase)` would collide across the whole band. A font import fills the tab the way it fills
 English (`fontCyrillicCoverage`, `CYR_IMPORT_MIN`, `opts.cyrillic` / `opts.cyrMode`, `cyrSource`), the
 export declares cp1251 in OS/2 (and the UFO code-page list) only when the shipped cmap carries a
-Cyrillic glyph, and `bidiClassOf` reads Cyrillic as strong left-to-right beside Latin.
+Cyrillic glyph, and `bidiClassOf` reads Cyrillic as strong left-to-right beside Latin. Both the English and
+the Cyrillic grid are pinned `direction: ltr` in every UI language (`#englishGrid, #cyrillicGrid`): their
+alphabets read that way, and it keeps the tile order in step with the *Save letter & next* cycle, so the
+next letter is the tile to the right; the Cyrillic band labels follow the tiles, not the UI direction.
 
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);
