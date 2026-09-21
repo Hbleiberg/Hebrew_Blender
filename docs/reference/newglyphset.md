@@ -33,8 +33,8 @@ eight sites. The rest of this file is the **alphabet** pattern, LTR or RTL.
 Pick a short stem and a category id, e.g. stem `cyr`, id `cyrillic` (English: `eng` / `english`).
 Every identifier below derives from them, so a grep for the stem finds the whole set later:
 
-- Data: `<STEM>_LETTERS` (`{cp, name, case?, group?}`; `cp` is an uppercase hex string — 4 digits in the BMP,
-  5 or 6 above it; a caseless script omits `case` and everything keyed to it), `<STEM>_CPS`,
+- Data: `<STEM>_LETTERS` (`{cp, name, case?, group?, asc?, desc?}`; `cp` is an uppercase hex string — 4 digits
+  in the BMP, 5 or 6 above it; a caseless script omits `case` and everything keyed to it), `<STEM>_CPS`,
   `is<Stem>(cp)` (a `Set` — it runs per spacing-preview cell and per tile), `<stem>Meta(cp)`,
   `<stem>UserMade(l)`; item flags `.<stem>` + `.case` (+ `.<stem>Source = 'import'`).
 - Flag: `project.font.add<Stem>Letters` (default `false` in `newProject()`); setter
@@ -67,6 +67,15 @@ are needed — the raw name is the fallback, as for English. Tiles show the char
 That emitted order is `<STEM>_CPS`, and `<STEM>_CPS` is three things at once: the tile order
 `render<Stem>Grid` lays out, the *Save letter & next* cycle (§4), and the printable template's box
 order. Never sort one of them differently from the others.
+
+**A cased set must also carry height classes**, or every letter is drawn and fitted to the same top line
+and a capital comes out the size of a lowercase. `asc: true` marks a glyph that rises above its band
+(lowercase `b d f h k l t`, a capital with a diacritic such as `Й`), `desc: true` one that hangs below the
+baseline — the same two booleans the Hebrew table has always used for lamed and the finals. `glyphBand(cp)`
+turns them into the guide lines and the fit target (`font-maker.md` → *Vertical metrics*). Classify them by
+measuring the real thing, as `LATIN_ASC` / `CYR_DESC` / `PHN_DESC` / `ARAM_DESC` were: render each glyph
+across the bilingual faces in `fonts/` and take the median of its ink top and bottom against that font's own
+cap height. A caseless set still wants `desc` — several Phoenician and Imperial Aramaic letters descend.
 
 Sections inside a band (Russian / Ukrainian & Belarusian / Serbian & Macedonian) are `group` values;
 the grid appends one `<div class="punct-grp" data-i18n="fontmaker.panels.<stem>_group_<g>">` heading

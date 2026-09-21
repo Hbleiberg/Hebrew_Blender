@@ -2821,10 +2821,19 @@ function wideGlyphShips(cp) {   // the materialized item the export will actuall
 /* ── English (Latin) letters — A–Z and a–z, added on demand via the "Add English letters" advanced toggle.
    Kept out of LETTERS (which is Hebrew-specific: RTL, kerning classes, the 27-letter count); seeded into
    project.letters tagged {eng:true} when enabled. Traced/anchored through the normal per-glyph workflow. */
+/* Which letters leave the x-height band. Classified by measuring every glyph against its own font's
+   cap height across the 61 bilingual faces in fonts/ and taking the median, so these are readings
+   rather than opinions: lowercase ascenders land at 1.04 of cap, descenders at -0.30, and Q's tail
+   at -0.23. */
+const LATIN_ASC  = new Set(['0062','0064','0066','0068','0069','006A','006B','006C','0074']);          // b d f h i j k l t
+const LATIN_DESC = new Set(['0051','0067','006A','0070','0071','0079']);                                // Q g j p q y
 const ENGLISH_LETTERS = (() => {
   const out = [];
-  for (let c = 0x41; c <= 0x5A; c++) out.push({ cp: c.toString(16).toUpperCase().padStart(4,'0'), name: String.fromCharCode(c) + ' (uppercase)', case: 'upper' });
-  for (let c = 0x61; c <= 0x7A; c++) out.push({ cp: c.toString(16).toUpperCase().padStart(4,'0'), name: String.fromCharCode(c) + ' (lowercase)', case: 'lower' });
+  const mk = (c, cs) => { const cp = c.toString(16).toUpperCase().padStart(4,'0');
+    const it = { cp, name: String.fromCharCode(c) + ' (' + cs + 'case)', case: cs };
+    if (LATIN_ASC.has(cp)) it.asc = true; if (LATIN_DESC.has(cp)) it.desc = true; return it; };
+  for (let c = 0x41; c <= 0x5A; c++) out.push(mk(c, 'upper'));
+  for (let c = 0x61; c <= 0x7A; c++) out.push(mk(c, 'lower'));
   return out;
 })();
 
@@ -2920,6 +2929,12 @@ function engSupportsAccents(cp) { return _ENG_ACCENT_BASES.has(cp); }
    (Ё 0401 ↔ ё 0451, Ґ 0490 ↔ ґ 0491). The list is the upper band then the lower band, each ru → ukbe → srmk —
    the order CYRILLIC_CPS hands to the Save-letter-&-next cycle and to the printable template. */
 const CYRILLIC_GROUPS = ['ru', 'ukbe', 'srmk'];
+/* Same measurement as LATIN_ASC/DESC. A capital counts as .asc only when a diacritic clears the cap
+   line (Й Ё Ґ Ї Ў Ѓ Ќ reach 1.17–1.25); Д Ц Щ Ђ Џ are the capitals that hang below the baseline. */
+const CYR_ASC  = new Set(['0401','0403','0407','040C','040E','0419','0490',
+                          '0431','0439','0444','0451','0452','0453','0456','0457','0458','045B','045C','045E']);
+const CYR_DESC = new Set(['0402','040F','0414','0426','0429',
+                          '0434','0440','0443','0444','0446','0449','0452','0458','045E','045F']);
 const CYRILLIC_LETTERS = (() => {
   const T = {   // [upper cp, lower cp, Unicode short name]
     ru:   [['0410','0430','A'],['0411','0431','Be'],['0412','0432','Ve'],['0413','0433','Ghe'],['0414','0434','De'],
@@ -2939,7 +2954,9 @@ const CYRILLIC_LETTERS = (() => {
     const cp = r[i];
     // The short name keeps gName()'s slug unique per letter: a bare 'А (uppercase)' would slug to the same
     // fontmaker.glyphname.uppercase for all 47 capitals, because the Cyrillic character itself is stripped.
-    out.push({ cp, name: String.fromCodePoint(parseInt(cp, 16)) + ' (Cyrillic ' + r[2] + ', ' + cs + 'case)', case: cs, group: g });
+    const it = { cp, name: String.fromCodePoint(parseInt(cp, 16)) + ' (Cyrillic ' + r[2] + ', ' + cs + 'case)', case: cs, group: g };
+    if (CYR_ASC.has(cp)) it.asc = true; if (CYR_DESC.has(cp)) it.desc = true;
+    out.push(it);
   })));
   return out;   // 47 per case, 94 in all
 })();
@@ -2962,6 +2979,9 @@ function cyrUserMade(l) {
    glyphOrder is insertion order). 1091C–1091E are unassigned. These are the first glyphs in the app above the
    BMP — 5 hex digits, so gname() names them u10900, AGL's SMP form, not uni10900. The list is the order
    PHOENICIAN_CPS hands to the Save-letter-&-next cycle and to the printable template. */
+// Mem, Pe, Qof and Rosh drop below the baseline in all three shipped faces that draw the block
+// (Ahiram, Siloam, Qumran) — unanimous, so flagged; the inscriptional hands disagree about the rest.
+const PHN_DESC = new Set(['1090C','10910','10912','10913']);
 const PHOENICIAN_GROUPS = ['alphabet', 'numbers', 'sep'];
 const PHOENICIAN_LETTERS = (() => {
   const T = {   // [cp, Unicode short name]
@@ -2978,7 +2998,9 @@ const PHOENICIAN_LETTERS = (() => {
   PHOENICIAN_GROUPS.forEach(g => T[g].forEach(r => {
     // The short name keeps gName()'s slug unique per glyph: the Phoenician character itself is stripped from
     // the slug, so a bare '(Phoenician)' would give all 29 the same key.
-    out.push({ cp: r[0], name: String.fromCodePoint(parseInt(r[0], 16)) + ' (Phoenician ' + r[1] + ')', group: g });
+    const it = { cp: r[0], name: String.fromCodePoint(parseInt(r[0], 16)) + ' (Phoenician ' + r[1] + ')', group: g };
+    if (PHN_DESC.has(r[0])) it.desc = true;
+    out.push(it);
   }));
   return out;   // 22 letters + 6 numerals + the word separator = 29
 })();
@@ -3001,6 +3023,10 @@ function phnUserMade(l) {
    not one ascending run. 10856 is unassigned and simply absent. Above the BMP like Phoenician, so gname()
    names these u10840, AGL's SMP form, not uni10840. The list is the order ARAMAIC_CPS hands to the
    Save-letter-&-next cycle and to the printable template. */
+// The descending letters of the chancery hand, taken from the two shipped faces that draw the block
+// (Imperial Yeb and VIIBCE) and kept to the ones both agree on. Kaph, Mem, Nun, Pe and Qoph descend
+// in Phoenician too — the same letters, three centuries apart.
+const ARAM_DESC = new Set(['1084A','1084C','1084D','10850','10851','10852','10855']);
 const ARAMAIC_GROUPS = ['alphabet', 'numbers', 'section'];
 const ARAMAIC_LETTERS = (() => {
   const T = {   // [cp, Unicode short name]
@@ -3018,7 +3044,9 @@ const ARAMAIC_LETTERS = (() => {
   ARAMAIC_GROUPS.forEach(g => T[g].forEach(r => {
     // The short name keeps gName()'s slug unique per glyph: the Aramaic character itself is stripped from
     // the slug, so a bare '(Imperial Aramaic)' would give all 31 the same key.
-    out.push({ cp: r[0], name: String.fromCodePoint(parseInt(r[0], 16)) + ' (Imperial Aramaic ' + r[1] + ')', group: g });
+    const it = { cp: r[0], name: String.fromCodePoint(parseInt(r[0], 16)) + ' (Imperial Aramaic ' + r[1] + ')', group: g };
+    if (ARAM_DESC.has(r[0])) it.desc = true;
+    out.push(it);
   }));
   return out;   // 22 letters + 8 numerals + the section sign = 31
 })();
@@ -3292,6 +3320,14 @@ function isStockOutline(l) {
 
 /* ── Font-unit metrics ── */
 const UPM = 1000, BASELINE = 0, LETTER_TOP = 600, LAMED_TOP = 800, DESCENDER = -250;
+/* Latin/Cyrillic case heights. Hebrew is unicase, so LETTER_TOP alone described the font until the
+   English tab arrived; a cased script needs three more lines or a capital O and a lowercase o end up
+   the same height. The numbers are measured, not chosen: across the 61 bilingual text faces in
+   fonts/, normalised to 1000 UPM, the medians are x/cap 0.726, Hebrew/cap 0.858 and ascender/cap
+   1.038. Anchoring those on this font's own LETTER_TOP of 600 gives cap 700, x 510, ascender 725 —
+   within a few units of Frank Ruhl Libre, the app's default face (cap 672, x 480, asc 692, ב 586).
+   Because cap is derived THROUGH the Hebrew ratio, one reference-font size seats both scripts. */
+const CAP_HEIGHT = 700, X_HEIGHT = 510, ASCENDER = 725;
 const DEF_LSB = 40, DEF_RSB = 40;
 const ANCHOR_Y = { below: -45, above: 640, center: 300 };
 // Default Y for a BELOW vowel anchor. Most letters sit on the baseline, so the vowel hangs just
@@ -3334,6 +3370,9 @@ function effMetrics() {
     baseline:      m.baseline      != null ? m.baseline      : BASELINE,
     letterTop:     m.letterTop     != null ? m.letterTop     : LETTER_TOP,
     lamedAscender: m.lamedAscender != null ? m.lamedAscender : LAMED_TOP,
+    capHeight:     m.capHeight     != null ? m.capHeight     : CAP_HEIGHT,
+    xHeight:       m.xHeight       != null ? m.xHeight       : X_HEIGHT,
+    ascender:      m.ascender      != null ? m.ascender      : ASCENDER,
     descender:     m.descender     != null ? m.descender     : DESCENDER,
     // The source font's own sTypo line box, scaled to 1000 UPM by an import. null = never imported,
     // and nominalBox() derives the box from the Hebrew design measurements exactly as before.
@@ -3342,6 +3381,35 @@ function effMetrics() {
     defaultLSB:    m.defaultLSB    != null ? m.defaultLSB     : DEF_LSB,
     defaultRSB:    m.defaultRSB    != null ? m.defaultRSB     : DEF_RSB
   };
+}
+/* The vertical band a glyph is drawn into, and the reference lines that describe it. This is the
+   single place that knows a capital from a lowercase: every guide, every scale-to-fit and every
+   upload span goes through it, so they can never disagree again.
+     caseless (Hebrew, Phoenician, Imperial Aramaic) → letterTop, and lamedAscender when .asc
+     uppercase                                       → capHeight, or ascender when .asc (Й, Ё, Ґ…)
+     lowercase                                       → xHeight, or ascender when .asc (b d f h k l t)
+   .desc adds the descender floor. `lines` is what the stage draws; `top` is what a fit scales to.
+   A lowercase ascender keeps its x-height line too — the bowl of a b sits there, and a person
+   drawing one needs both. */
+function glyphBand(cp) {
+  const m = effMetrics(), meta = letterMeta(cp) || {};
+  const lines = [];
+  let top;
+  if (meta.case === 'upper') {
+    top = meta.asc ? m.ascender : m.capHeight;
+    lines.push([m.capHeight, 'capHeight']);
+    if (meta.asc) lines.push([m.ascender, 'ascender']);
+  } else if (meta.case === 'lower') {
+    top = meta.asc ? m.ascender : m.xHeight;
+    lines.push([m.xHeight, 'xHeight']);
+    if (meta.asc) lines.push([m.ascender, 'ascender']);
+  } else {
+    top = meta.asc ? m.lamedAscender : m.letterTop;
+    lines.push([m.letterTop, 'letterTop']);
+    if (meta.asc) lines.push([m.lamedAscender, 'lamedAscender']);
+  }
+  if (meta.desc) lines.push([m.descender, 'descender']);
+  return { top, bottom: meta.desc ? m.descender : m.baseline, lines, cased: meta.case || null, desc: !!meta.desc };
 }
 function letterAdvance(l) { return (l && l.advance != null) ? l.advance : Math.round(effMetrics().letterTop * 0.7); }
 function letterInkLeft(l) { if (l && l.contours) { let mn=1e9; l.contours.forEach(c=>c.points.forEach(p=>{ if(p[0]<mn) mn=p[0]; })); if (mn<1e9) return Math.round(mn); } return effMetrics().defaultLSB; }   // ink left edge (min x)
@@ -3932,7 +4000,7 @@ function stageExtent(l) {              // outermost content that must stay reach
   // draw unconditionally; the lamed line (and its draggable dot) can sit higher, and _clampMetric puts
   // no upper bound on it, so an off-window dot would be an unreachable control.
   let top = em.letterTop + 80, bot = Math.min(em.descender - 30, em.baseline);
-  if (meta && meta.asc) top = Math.max(top, em.lamedAscender);
+  if (curKind === 'letter') top = Math.max(top, glyphBand(curCp).top);   // a capital, an ascender or lamed can all sit above letterTop
   // c.points is the FLATTENED polyline pathToOutline builds alongside the segments, so this is a close
   // under-approximation of true ink that the pads absorb. Cubic CONTROL points are deliberately not
   // unioned in — they can sit well outside the ink and would over-grow the canvas.
@@ -4230,7 +4298,7 @@ const ICON_WARN_SM = '<svg class="hi hi-sm hi-warning" viewBox="0 0 24 24" width
 const ICON_PENCIL_SM = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
 const ICON_GEAR_SM = '<svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg>';
 const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
-const FONT_MAKER_VERSION = '5.53';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.54';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -4462,6 +4530,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.54</strong> &mdash; <strong>Capitals and lowercase are no longer the same height.</strong> The Font Maker only ever had one top line, which suited Hebrew because Hebrew is caseless &mdash; but it meant a capital <span class="ui">O</span> and a lowercase <span class="ui">o</span> were drawn, traced and exported at exactly the same size. Latin and Cyrillic now get the three lines they need &mdash; a <strong>cap height</strong>, an <strong>x-height</strong> and an <strong>ascender</strong> &mdash; beside the descender they already had. The faint reference letter on the canvas is sized once per font instead of being stretched to the top line for every glyph, so it finally shows each letter&rsquo;s true proportion; lamed now rises above alef too. The letters that leave the body band are marked, including the Phoenician and Aramaic ones that hang below the line. Exported fonts now declare their cap height and x-height, which they never did. <strong>Nothing you have already drawn is changed.</strong> <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.53</strong> &mdash; <strong>Imperial Aramaic letters.</strong> A new <span class="ui">Add Aramaic letters</span> switch in <span class="ui">Settings</span> (and in both wizards) opens an <span class="ui">Imperial Aramaic</span> tab: the 22 letters, the eight numerals and the section sign, each group on its own. This is the official script of the Persian empire and the hand of the Elephantine papyri, and our own square letters grew out of it. It sits beside your square Hebrew at its own Unicode code points, so one font can show both. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab right to left, the way the script reads &mdash; print a one-page practice sheet, and see them in <span class="ui">Preview PDF</span>. Two of the Aramaic <span class="ui">Starting Fonts</span> &mdash; Imperial Yeb and VIIBCE &mdash; now bring their Aramaic letters across with them, instead of leaving them behind. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.52</strong> &mdash; <strong>Phoenician / Paleo-Hebrew letters.</strong> A new <span class="ui">Add Phoenician letters</span> switch in <span class="ui">Settings</span> (and in both wizards) opens a <span class="ui">Phoenician / Paleo-Hebrew</span> tab: the 22 ancient letters of the alef-bet, the six numerals and the word separator, each group in its own section. This is the script of the Siloam inscription and the Lachish ostraca, and it sits beside your square Hebrew at its own Unicode code points, so one font can show both. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab right to left, the way the script reads &mdash; print a one-page practice sheet, and see them in <span class="ui">Preview PDF</span>. They are not on any keyboard: reach them by copy-paste or Insert ▸ Symbol. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.51</strong> &mdash; <strong>Cyrillic letters.</strong> A new <span class="ui">Add Cyrillic letters</span> switch in <span class="ui">Settings</span> (and in the new-font wizard) opens a <span class="ui">Cyrillic</span> tab: the Russian alphabet plus the Ukrainian, Belarusian, Serbian and Macedonian letters, each group in its own section, with an uppercase/lowercase switch. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab &mdash; print a three-page practice sheet, see them in <span class="ui">Preview PDF</span>, and a font you start from brings its own Cyrillic letters across. The English and Cyrillic grids now read left to right, like their alphabets, so the next letter is always the tile to the right. <span style="color:var(--muted);">(September 2026)</span></li>
@@ -4609,7 +4678,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_52','v5_51','v5_50','v5_49','v5_48','v5_47','v5_46','v5_45','v5_44','v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_53','v5_52','v5_51','v5_50','v5_49','v5_48','v5_47','v5_46','v5_45','v5_44','v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4622,7 +4691,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_53';
+  const CUR_KEY = 'fontmaker.changelog.v5_54';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -5162,6 +5231,7 @@ function syncMetricInputs() {
   const l = curLetter(), m = effMetrics();
   const set = (id,v) => { const e = document.getElementById(id); if (e && document.activeElement !== e) e.value = v; };
   set('mTop', m.letterTop); set('mBase', m.baseline); set('mDesc', m.descender); set('mLamed', m.lamedAscender);
+  set('mCap', m.capHeight); set('mXh', m.xHeight); set('mAsc', m.ascender);
   if (m.typoAscent != null) { set('mTypoAsc', m.typoAscent); set('mTypoDesc', m.typoDescent); }
   set('mAdv', letterAdvance(l)); set('mLsb', letterLSB(l)); set('mRsb', letterRSB(l));
 }
@@ -5217,7 +5287,8 @@ function toggleMetricAdjust() { metricAdjust = !metricAdjust; renderStage(); ren
 function resetMetrics() {                          // restore template-font defaults
   udDo([{ t:'metrics' }, itemScope()], 'reset metrics', () => {
     project.font.metrics = { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP,
-                             descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB };
+                             descender: DESCENDER, capHeight: CAP_HEIGHT, xHeight: X_HEIGHT,
+                             ascender: ASCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB };
     const l = curLetter(); l.lsb = null; l.rsb = null;
     if (l.contours) {
       let minX=Infinity, maxX=-Infinity;
@@ -5248,7 +5319,13 @@ function metricsPanel() {
   const f = (id,label,val,fn,key) =>
     `<label class="fld metric-fld">${label}
        <input type="number" id="${id}" class="metric-num" value="${val}" step="10" oninput="${fn}('${key}', this.value)" onchange="udBurstCommit()"></label>`;
-  const lamed = (meta && meta.asc) ? f('mLamed',I18n.t('fontmaker.panels.metric_lamed_asc'), m.lamedAscender, 'setMetric','lamedAscender') : '';
+  const lamed = (meta && meta.asc && !(meta && meta.case)) ? f('mLamed',I18n.t('fontmaker.panels.metric_lamed_asc'), m.lamedAscender, 'setMetric','lamedAscender') : '';
+  // Cap / x-height / ascender appear only while a cased glyph is open, the way the lamed field does —
+  // they mean nothing on a Hebrew, Phoenician or Imperial Aramaic letter.
+  const caseFlds = (meta && meta.case)
+    ? f('mCap', I18n.t('fontmaker.panels.metric_cap'),      m.capHeight, 'setMetric','capHeight')
+    + f('mXh',  I18n.t('fontmaker.panels.metric_xheight'),  m.xHeight,   'setMetric','xHeight')
+    + f('mAsc', I18n.t('fontmaker.panels.metric_ascender'), m.ascender,  'setMetric','ascender') : '';
   // Shown only once an import has set them — with no imported box there is nothing to edit, because the
   // box is derived from the three measurements above.
   const typo = m.typoAscent != null
@@ -5263,6 +5340,7 @@ function metricsPanel() {
         ${f('mTop',I18n.t('fontmaker.panels.metric_top'),  m.letterTop, 'setMetric','letterTop')}
         ${f('mBase',I18n.t('fontmaker.panels.metric_baseline'),  m.baseline,  'setMetric','baseline')}
         ${f('mDesc',I18n.t('fontmaker.panels.metric_descender'), m.descender, 'setMetric','descender')}
+        ${caseFlds}
         ${lamed}
         ${typo}
       </div>
@@ -5284,14 +5362,20 @@ function metricsPanel() {
 function metricHandlesSVG() {
   const m = effMetrics(), L = curLetter(), meta = curMeta(), C = stageColors();
   const adv = dispAdvance(L);   // a user-set Width wins (so the dot drags); otherwise frame the reference glyph
-  const vy1 = fy(m.letterTop + 80), vy2 = fy(m.descender - 30), mid = (vy1+vy2)/2;
+  const band = (curKind === 'letter') ? glyphBand(curCp) : null;
+  const vy1 = fy(Math.max(m.letterTop, band ? band.top : 0) + 80), vy2 = fy(m.descender - 30), mid = (vy1+vy2)/2;
   const dot = (key,axis,cx,cy,col,label,title) =>
     `<circle class="metric-h" data-metric="${key}" data-axis="${axis}" cx="${(+cx).toFixed(1)}" cy="${(+cy).toFixed(1)}" r="7" fill="${col}" stroke="#fff" stroke-width="3" paint-order="stroke" style="cursor:${axis==='y'?'ns-resize':'ew-resize'};filter:drop-shadow(0 0 1px rgba(0,0,0,0.55));"><title>${title}</title></circle>`
     + (label ? `<text class="metric-h-lbl" x="${(+cx).toFixed(1)}" y="${(+cy-12).toFixed(1)}" text-anchor="middle" fill="${col}" font-size="9" font-weight="700" font-family="'Source Sans 3',sans-serif" pointer-events="none">${label}</text>` : '');
-  let h = dot('letterTop','y', 488, fy(m.letterTop), C.top, '', _pT('metric_top_drag', 'Top (cap height) — drag to set'))
-        + dot('baseline','y', 488, fy(m.baseline), C.base, '', _pT('metric_baseline_drag', 'Baseline — drag to set'));
-  if (meta && meta.desc) h += dot('descender','y', 488, fy(m.descender), C.desc, '', _pT('metric_descender_drag', 'Descender — drag to set'));
-  if (meta && meta.asc)  h += dot('lamedAscender','y', 488, fy(m.lamedAscender), C.top, '', _pT('metric_lamed_drag', 'Lamed ascender — drag to set'));
+  const DRAG_T = { letterTop: () => _pT('metric_top_drag', 'Hebrew letter top — drag to set'),
+                   capHeight: () => _pT('metric_cap_drag', 'Cap height — drag to set'),
+                   xHeight:   () => _pT('metric_xheight_drag', 'x-height — drag to set'),
+                   ascender:  () => _pT('metric_ascender_drag', 'Ascender — drag to set'),
+                   lamedAscender: () => _pT('metric_lamed_drag', 'Lamed ascender — drag to set'),
+                   descender: () => _pT('metric_descender_drag', 'Descender — drag to set') };
+  let h = dot('baseline','y', 488, fy(m.baseline), C.base, '', _pT('metric_baseline_drag', 'Baseline — drag to set'));
+  (band ? band.lines : [[m.letterTop, 'letterTop']]).forEach(([v, key]) =>
+    { h += dot(key, 'y', 488, fy(v), key === 'descender' ? C.desc : C.top, '', DRAG_T[key]()); });
   h += dot('advance','x', fx(adv), vy1+12, C.margin, _pT('metric_label_width', 'width'), _pT('metric_width_drag', 'Letter width (advance) — drag'));   // sits on the "letter width" line
   h += dot('lsb','x', fx(letterLSB(L)), mid, C.margin, _pT('metric_label_left', 'left'), _pT('metric_lsb_drag', 'Left margin — drag to slide the whole letter'));   // slides the glyph (ink) horizontally
   h += dot('rsb','x', fx(adv - letterRSB(L)), mid, C.margin, _pT('metric_label_right', 'right'), _pT('metric_rsb_drag', 'Right margin — drag'));        // inner edge of the right zone (same advance as the zone)
@@ -6905,7 +6989,7 @@ function autoThresholdFor(src, flatten) {
 async function prepImageForItem(it, file) {
   const url = await readFileAsDataUrl(file);
   const im = await loadImg(url);
-  const transform = defaultFitTransform(im);          // fit height to letter-top, left at LSB
+  const transform = defaultFitTransform(im, it.codepoint);   // fit height to this glyph's band top, left at LSB
   const binThreshold = autoThresholdFor(im, true);    // Otsu initial threshold (slider still wins later)
   return () => {
     it.source.kind = 'single'; it.source.dataUrl = url; it.source.cropRect = null;
@@ -7033,10 +7117,14 @@ async function uploadCombined(files) {
 }
 /* The working image for a letter: single = the upload; combined = the cropped region. */
 function curImageUrl() { return curLetter().source.dataUrl; }
-function defaultFitTransform(im) {
-  // scale so the image height ≈ letter-top; place top-left at (LSB, letter-top)
-  const k = (LETTER_TOP*SC)/im.height;
-  return [k,0,0,k, fx(DEF_LSB), fy(LETTER_TOP)];
+function defaultFitTransform(im, cp) {
+  // Scale so the image height ≈ the glyph's own band top; place top-left at (LSB, that top). Passing
+  // cp is what keeps a photographed 'o' from being blown up to a capital's height. Reads effMetrics
+  // rather than the LETTER_TOP const, so a user-edited Top is honoured.
+  const em = effMetrics();
+  const top = cp ? glyphBand(cp).top : em.letterTop;
+  const k = (top*SC)/im.height;
+  return [k,0,0,k, fx(em.defaultLSB), fy(top)];
 }
 
 /* ════════ Combined-sheet marquee crop ════════
@@ -7106,7 +7194,7 @@ async function finalizeCrop(l, stageBox) {
   l.flattenLighting = true;                          // new cropped image → same Otsu/lighting init as a fresh upload
   l.thresholdUserSet = false;
   l.binThreshold = autoThresholdFor(cim, true);
-  l.transform = defaultFitTransform(cim);
+  l.transform = defaultFitTransform(cim, l.codepoint);
   l.contours = null; l.anchors = null;
   renderGrids(); renderStage(); renderControls();
   status(I18n.t('fontmaker.status.area_selected', {name: gName(l.name)}));
@@ -7677,7 +7765,7 @@ async function adApply() {
       const l = project.letters.find(x => x.codepoint === p.cp); if (!l) return;
       l.source.kind = 'combined';
       l.source.cropRect = p.rect; l.source.dataUrl = p.url; l.source.sheetId = sheetId;
-      l.transform = defaultFitTransform(imgCache[p.url]);
+      l.transform = defaultFitTransform(imgCache[p.url], l.codepoint);
       l.contours = null; l.anchors = null;                    // the fields finalizeCrop clears (curves untouched — parity)
       l.flattenLighting = true; l.thresholdUserSet = false; l.binThreshold = p.th;
     });
@@ -8544,10 +8632,11 @@ function svgLoopsToContours(loops, opts) {
 function svgSpanFor(cp, kind) {             // vertical target band for the fit, by glyph type
   const em = effMetrics();
   if (kind !== 'letter') return { bottom: 0, top: Math.round(em.letterTop * 0.4) };   // marks: small; markAttachOrigin re-centers them
-  const meta = letterMeta(cp);
-  const top = (meta && meta.asc) ? em.lamedAscender : em.letterTop;
-  const bottom = (meta && meta.desc) ? -Math.round(em.letterTop * 0.30) : 0;           // descenders dip below the baseline
-  return { bottom, top };
+  const b = glyphBand(cp);
+  // Descenders dip below the baseline by the same 30%-of-band rule this has always used, so an
+  // uploaded Hebrew final lands exactly where it did before; what changes is that a capital now fits
+  // to capHeight and a lowercase to its x-height instead of both being stretched to letterTop.
+  return { bottom: b.desc ? -Math.round(b.top * 0.30) : 0, top: b.top };
 }
 function assignSvgContours(it, kind, contours, sheetId, cropRect) {   // commit prebuilt contours onto an item (runs INSIDE udDo)
   it.source = { kind: 'svg', dataUrl: null, cropRect: cropRect || null, sheetId: sheetId || null };
@@ -8651,14 +8740,17 @@ function stageColors() {
     grid:'#b9c0cc', gridSnap:'#c9922a', paper:'#ffffff'
   };   // paper = #stage's own background (var(--white)) — the halo colour a stage label is knocked out in
 }
+const GUIDE_LBL = { letterTop:'top', capHeight:'cap', xHeight:'x-height', ascender:'asc', lamedAscender:'lamed', descender:'desc' };
 function guideLinesSVG(rightX) {   // rightX (stage px): extend the reference lines under a wide form so they span its full width
-  const meta = curMeta();
   const C = stageColors();
   const m = effMetrics();
-  // baseline + letter-top always; descender / lamed-ascender only for letters that use them.
-  const lines = [ [m.letterTop, 'top ' + m.letterTop, C.top, 'letterTop'], [m.baseline, 'base ' + m.baseline, C.base, 'baseline'] ];
-  if (meta && meta.desc) lines.push([m.descender, 'desc ' + m.descender, C.desc, 'descender']);
-  if (meta && meta.asc)  lines.push([m.lamedAscender, 'lamed ' + m.lamedAscender, C.top, 'lamedAscender']);
+  // The baseline always, then whatever band this glyph belongs to (glyphBand) — cap for a capital,
+  // x-height for a lowercase, plus its ascender line when it has one, plus the descender floor.
+  // Marks have no band: they keep the plain top/base pair they always had.
+  const band = (curKind === 'letter') ? glyphBand(curCp) : null;
+  const lines = [ [m.baseline, 'base ' + m.baseline, C.base, 'baseline'] ];
+  (band ? band.lines : [[m.letterTop, 'letterTop']]).forEach(([v, key]) =>
+    lines.push([v, GUIDE_LBL[key] + ' ' + v, key === 'descender' ? C.desc : C.top, key]));
   const x2 = (rightX != null && rightX > 498) ? Math.round(rightX) : 498;
   let h = '';
   lines.forEach(([yv, label, col, key]) => {
@@ -9013,12 +9105,27 @@ function templateMetrics(family, ch) {
   if (loaded) _tplMetricsCache[key] = m;
   return m;
 }
+/* ONE type size for the whole reference family, measured from ב and seated on the Hebrew letter top.
+   This used to be measured per character and each character was then blown up until its own ink
+   touched the letter-top line — which is exactly why a capital O and a lowercase o came out the same
+   size on the stage, and why lamed was squashed down to alef's height. Size the family once and every
+   glyph shows its true proportion. Because capHeight and xHeight were derived FROM letterTop through
+   the same corpus ratios (Hebrew/cap 0.858, x/cap 0.726), the family's own O and o then land on the
+   cap and x-height guides with no per-glyph correction — one size seats both scripts.
+   Template fonts are Hebrew faces, so ב is always present; an implausible reading falls back to the
+   same 0.7 the per-character path used. */
+const TPL_ANCHOR_CH = '\u05D1';
+function templateFamilyFs(family) {
+  const a = templateMetrics(family, TPL_ANCHOR_CH);
+  const em = effMetrics();
+  const want = fy(em.baseline) - fy(em.letterTop);               // viewBox units, baseline→Hebrew top
+  return Math.max(40, Math.min(1400, want / (a.capRatio || 0.7)));
+}
 function computeTemplateFit(l) {
   const ch = String.fromCodePoint(parseInt(l.codepoint,16));
-  const m = templateMetrics(project.template.font, ch);
+  const m = templateMetrics(project.template.font, ch);          // per-character: only the horizontal seating
   const em = effMetrics();
-  const wantCap = fy(em.baseline) - fy(em.letterTop);            // viewBox units, baseline→top
-  const fs = Math.max(40, Math.min(1400, wantCap / (m.capRatio || 0.7)));
+  const fs = templateFamilyFs(project.template.font);            // per-FAMILY: the vertical size
   const inkWidthFont = (m.widthRatio * fs) / SC;                 // glyph ink width in font units
   const advance = l.contours ? l.advance : Math.round(em.defaultLSB + inkWidthFont + em.defaultRSB);
   const cx = fx(em.defaultLSB) - m.leftRatio * fs;              // seat the ink-left edge at the margin (x = LSB)
@@ -11634,10 +11741,9 @@ function nodeOverlaySVG() {
    highlight simply isn't visible while hidden). Collected once at drag start. */
 function collectSnapTargets() {
   const m = effMetrics(), meta = curMeta();
-  const ys = [ { v: m.letterTop, kind: 'metric', key: 'letterTop' },
-               { v: m.baseline,  kind: 'metric', key: 'baseline' } ];
-  if (meta && meta.desc) ys.push({ v: m.descender,     kind: 'metric', key: 'descender' });
-  if (meta && meta.asc)  ys.push({ v: m.lamedAscender, kind: 'metric', key: 'lamedAscender' });
+  const band = (curKind === 'letter') ? glyphBand(curCp) : null;
+  const ys = [ { v: m.baseline, kind: 'metric', key: 'baseline' } ];
+  (band ? band.lines : [[m.letterTop, 'letterTop']]).forEach(([v, key]) => ys.push({ v, kind: 'metric', key }));
   const xs = [], g = project.guides;
   if (g && g.show) (g.items || []).forEach(it => (it.axis === 'h' ? ys : xs).push({ v: it.pos, kind: 'guide', id: it.id }));
   return { xs, ys };
@@ -16318,10 +16424,11 @@ function nudgeSkew(d) { const l=curLetter(); const c=imgCorners(l); if(!c)return
 function snapFit() {   // "Center" button — fit to the glyph height, then center left-right in the advance
   const l = curLetter(); const im = imgCache[curImageUrl()]; if (!im) return;
   udDo([itemScope()], 'center image — ' + l.name, () => {
-    const k = (LETTER_TOP*SC)/im.height;              // scale image height ≈ letter top (as in defaultFitTransform)
-    const wFont = LETTER_TOP * im.width / im.height;  // scaled width, in font units
+    const gTop = glyphBand(l.codepoint).top;          // this glyph's band, as in defaultFitTransform
+    const k = (gTop*SC)/im.height;
+    const wFont = gTop * im.width / im.height;        // scaled width, in font units
     const cx = (effLetterAdvance(l) - wFont) / 2;     // center that width within the glyph's advance
-    l.transform = [k,0,0,k, fx(cx), fy(LETTER_TOP)];
+    l.transform = [k,0,0,k, fx(cx), fy(gTop)];
     l.contours=null; l.curves=null; l.anchors=null; renderStage(); });
 }
 function wireDrop(id, cb, multi) {
@@ -17723,12 +17830,31 @@ function buildFontSpec() {
   // fits, winAscent/winDescent equal the nominal values → byte-identical metrics for normal fonts.
   const _nb = nominalBox(), aAsc = _nb.asc, aDesc = _nb.desc, ink = fontInkBounds();
   const winAscent = Math.max(aAsc, Math.ceil(ink.top)), winDescent = Math.max(-aDesc, Math.ceil(-ink.bottom));
-  return {
+  // Cap height and x-height, measured from the ink of the glyphs actually shipped. Neither was ever
+  // declared, so every font this tool has made carries fontTools' default of 0 for both. Measured
+  // rather than taken from the metrics so the number describes the real outlines; omitted entirely
+  // when the font ships no cased script, which keeps a Hebrew-only export byte-identical.
+  const _inkTop = (...cps) => {
+    for (const cp of cps) {
+      const g = glyphs[gname(cp)];
+      if (!g || !g.contours || !g.contours.length) continue;
+      let t = -Infinity;
+      g.contours.forEach(poly => poly.forEach(p => { if (p[1] > t) t = p[1]; }));
+      if (t > -Infinity) return Math.round(t);
+    }
+    return null;
+  };
+  const capH = _inkTop('0048', '004F', '0410', '041E');   // H, O, then Cyrillic А, О
+  const xH   = _inkTop('0078', '006F', '0445', '043E');   // x, o, then Cyrillic х, о
+  const spec = {
     unitsPerEm: UPM, glyphOrder, glyphs, cmap, fea, names, bold: bold,
     ascent: aAsc, descent: aDesc, lineGap: fontSpacing().lineSpacing, version: versionFloat,
     winAscent, winDescent,
     baseGlyphNames, markGlyphNames
   };
+  if (capH) spec.capHeight = capH;
+  if (xH)   spec.xHeight   = xH;
+  return spec;
 }
 /* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp (incl. the mark-filtered
    ccmp_dagesh lookup), mark-to-base, mkmk, contextual vowel-slide lookups (vowelPair slide mode), GDEF.
@@ -18203,10 +18329,12 @@ function buildUfoFontInfo(spec) {
     familyName: n.familyName, styleName: bold ? 'Bold' : 'Regular',
     styleMapFamilyName: n.familyName, styleMapStyleName: bold ? 'bold' : 'regular',
     versionMajor: major, versionMinor: minor, unitsPerEm: spec.unitsPerEm,
-    // xHeight is deliberately omitted: Hebrew is caseless, so there is no honest x-height —
-    // baking letterTop there (as capHeight's twin) drew a bogus duplicate guide in font editors.
-    // UFO fontinfo keys are optional; absent = unspecified, matching the TTF's OS/2 defaults.
-    ascender: asc, descender: desc, capHeight: top,
+    // capHeight and xHeight are the MEASURED ink of the shipped O/H and o/x, matching the TTF's
+    // sCapHeight/sxHeight. For a Hebrew-only font there is still no honest x-height — Hebrew is
+    // caseless — so that key stays absent and capHeight keeps falling back to the Hebrew letter top,
+    // exactly as before. UFO fontinfo keys are optional; absent = unspecified.
+    ascender: asc, descender: desc, capHeight: (spec.capHeight || top),
+    ...(spec.xHeight ? { xHeight: spec.xHeight } : {}),
     openTypeOS2TypoAscender: asc, openTypeOS2TypoDescender: desc, openTypeOS2TypoLineGap: gap,
     openTypeOS2WinAscent: spec.winAscent, openTypeOS2WinDescent: spec.winDescent,
     openTypeHheaAscender: spec.winAscent, openTypeHheaDescender: -spec.winDescent, openTypeHheaLineGap: gap,
@@ -18346,6 +18474,14 @@ def hfm_build(spec_json):
         _cp1 |= (1 << 2)
     _os2.ulCodePageRange1 = _cp1
     _os2.ulCodePageRange2 = 0
+    # Cap height and x-height. setupOS2 was never passed either, so fontTools wrote its default 0 into
+    # every font this tool has produced -- which tells a layout engine the font has no case at all.
+    # buildFontSpec measures them from the shipped O/H and o/x ink and leaves them out when there is no
+    # cased script, so a Hebrew-only export is byte-for-byte what it was.
+    if spec.get("capHeight"):
+        _os2.sCapHeight = int(spec["capHeight"])
+    if spec.get("xHeight"):
+        _os2.sxHeight = int(spec["xHeight"])
     # Unicode ranges were never set, so the font advertised cp1252 while declaring no Unicode coverage.
     # Derive them from the cmap we actually shipped. Fail-soft: an older fontTools without the helper
     # just leaves the defaults, exactly as before.

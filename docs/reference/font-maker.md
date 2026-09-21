@@ -393,6 +393,41 @@ no code page for either block. `normalizeCp()` still gates
 Adding another set — LTR or RTL, or a tab of composed forms — is the recipe in `newglyphset.md`, with the
 Cyrillic set as its LTR reference implementation and the Phoenician and Imperial Aramaic sets as its RTL ones.
 
+### Vertical metrics — the band model
+
+`glyphBand(cp)` is the single answer to *how tall is this glyph meant to be*. Every guide line, every
+scale-to-fit and every upload span goes through it, so they cannot drift apart. It returns the band's
+`top`, its `bottom`, and the `lines` the stage draws:
+
+| script | top | extra lines |
+|---|---|---|
+| Hebrew, Phoenician, Imperial Aramaic (caseless) | `letterTop` 600, or `lamedAscender` 800 when `.asc` | `descender` when `.desc` |
+| Latin / Cyrillic **uppercase** | `capHeight` 700, or `ascender` 725 when `.asc` (Й Ё Ґ Ї Ў Ѓ Ќ) | `capHeight`, `descender` when `.desc` (Q, Д Ц Щ Ђ Џ) |
+| Latin / Cyrillic **lowercase** | `xHeight` 510, or `ascender` 725 when `.asc` | `xHeight` always — the bowl of a *b* sits there — plus `descender` when `.desc` |
+
+Until v5.54 there was one top line for everything, which is correct for a caseless script and was the
+whole story while the tool was Hebrew-only. Once cased sets arrived it meant a capital `O` and a
+lowercase `o` were drawn, fitted and exported at identical heights.
+
+**The defaults are measured, not chosen.** Across the 61 bilingual text faces in `fonts/`, normalised
+to 1000 UPM, the medians are `x/cap 0.726`, `Hebrew/cap 0.858`, `ascender/cap 1.038`, descender −208.
+Anchoring those on the existing `letterTop = 600` gives cap 700, x-height 510, ascender 725 — within a
+few units of Frank Ruhl Libre, the app's own default face. Deriving cap *through* the Hebrew ratio is
+what lets **one** reference-font size seat both scripts: `computeTemplateFit` sizes the family once
+from `ב` on the Hebrew top line, and the family's own `O` and `o` then land on the cap and x-height
+guides by themselves. (It used to measure every character's own ink and stretch each one to the top
+line, which is what made O and o identical on the stage and squashed lamed down to alef's height.)
+
+Which letters leave the body band is a per-letter `.asc` / `.desc` flag on the letter table — the same
+two booleans Hebrew has always carried for lamed and the finals. Those were classified by measuring
+every glyph against its own font's cap height across the same corpus, so they are readings rather than
+opinions.
+
+On export, `sCapHeight` and `sxHeight` are **measured from the shipped `O`/`H` and `o`/`x` ink** and
+omitted when the font carries no cased script — a Hebrew-only export is byte-identical to what it was.
+Before v5.54 neither was ever passed to `setupOS2`, so every font this tool produced declared `0` for
+both, which tells a layout engine the font has no case at all.
+
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);
 the OUTLINE the rest of the app works with only exists once `drawCommit` runs the tracer, and
