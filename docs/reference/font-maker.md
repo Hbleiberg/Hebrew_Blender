@@ -346,6 +346,8 @@ Cyrillic glyph, and `bidiClassOf` reads Cyrillic as strong left-to-right beside 
 the Cyrillic grid are pinned `direction: ltr` in every UI language (`#englishGrid, #cyrillicGrid`): their
 alphabets read that way, and it keeps the tile order in step with the *Save letter & next* cycle, so the
 next letter is the tile to the right; the Cyrillic band labels follow the tiles, not the UI direction.
+Adding another set — LTR or RTL, or a tab of composed forms — is the recipe in `newglyphset.md`, with
+the Cyrillic set as its reference implementation.
 
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);
