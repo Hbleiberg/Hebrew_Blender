@@ -16510,8 +16510,8 @@ function _placementCycleCps() {
   if (isPhn(curCp)) return (project.letters || []).filter(x => x.phn && x.contours && x.contours.length).map(x => x.codepoint);   // likewise unreachable — Phoenician has no placement step either
   if (isAram(curCp)) return (project.letters || []).filter(x => x.aram && x.contours && x.contours.length).map(x => x.codepoint);   // and Imperial Aramaic, same reason
   if (isSmr(curCp)) return (project.letters || []).filter(x => smrMarkBase(x) && x.contours && x.contours.length).map(x => x.codepoint);   // Samaritan: the 22 letters that carry the mark columns (a vowel letter or a punctuation mark would fold to Align mid-cycle)
+  if (wideGlyphItemFor(curCp)) return (project.letters || []).filter(x => x.wideGlyph).map(x => x.codepoint);   // cycle the converted wide forms — before the custom glyphs, the precedence catTabFor and _drawCatOf keep
   if (isCustomCp(curCp)) return (project.letters || []).filter(x => x.custom).map(x => x.codepoint);
-  if (wideGlyphItemFor(curCp)) return (project.letters || []).filter(x => x.wideGlyph).map(x => x.codepoint);   // cycle the converted wide forms
   return LETTER_ORDER.filter(cp => { const m = letterMeta(cp); return !(m && m.cat === 'punct'); });
 }
 function stepLetter(dir) {   // dir = -1 (prev) | +1 (next); selectItem keeps us on the placement page + guards unsaved moves
