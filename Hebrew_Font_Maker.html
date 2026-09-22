@@ -4106,9 +4106,13 @@ function ensureMarkPieces(it) { if (it && !it.pieces) it.pieces = defaultPieces(
 /* Per-letter aware mark contours: if this letter has its own shape override for `cp`
    (set via "Apply to current letter"), use it; otherwise fall back to the global mark
    shape from markGlyphContours(). Mark-local coords + per-mark nudge, exactly like
-   markGlyphContours() — a drop-in used by preview, QA, and the precomposed export bake. */
+   markGlyphContours() — a drop-in used by preview, QA, and the precomposed export bake.
+   A mark FAMILY (MARK_FAMILY) ships font-wide only — the export's per-letter bake is nikkud-only
+   (buildFontSpec: `const cls = MARK_CLASS[cp]`) — so a family kind never reads an override here,
+   or the stage, the tiles, the spacing sample and QA would show a shape the font does not carry.
+   An override an older save already holds stays in the blob, inert (never deleted). */
 function markContoursFor(letter, kind, cp) {
-  const m = letter && letter.markShapes && letter.markShapes[cp];
+  const m = !MARK_FAMILY[kind] && letter && letter.markShapes && letter.markShapes[cp];
   if (m) {
     const dy = markNudgeDy(cp), sh = ps => dy ? ps.map(([x,y]) => [x, y + dy]) : ps;
     if (m.designMode === 'editor') { const cs = piecesToContours(m.pieces); if (cs && cs.length) return cs.map(sh); }
@@ -14717,7 +14721,7 @@ function openMarkEdit(kind, cp, opts) {
   const curBtn = document.getElementById('meApplyCur');
   curBtn.style.display = meGlobal ? 'none' : '';   // modal DOM persists across opens — set display explicitly BOTH ways
   if (meGlobal) {
-    document.getElementById('meScopeNote').innerHTML = I18n.t('fontmaker.modals.markedit_scope_all', { name: esc(gName(meItem.name)) });
+    document.getElementById('meScopeNote').innerHTML = I18n.t(MARK_FAMILY[kind] ? 'fontmaker.modals.markedit_scope_family' : 'fontmaker.modals.markedit_scope_all', { name: esc(gName(meItem.name)) });   // a family has no per-letter shape
   } else {
     const lname = L ? gName(L.name) : I18n.t('fontmaker.modals.this_letter');
     curBtn.textContent = I18n.t('fontmaker.modals.markedit_apply_current_named', { name: lname });
@@ -16583,7 +16587,7 @@ function renderSmrAnchorLeft(l) {
     `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${anchorLabelT(k)}</button>`).join('');
   const acp = activeVowelCp(), aName = (SMR_MARK_BY_CP[acp] || {}).short || acp, ndy = markNudgeDy(acp);
   const tiles = SAMARITAN_MARKS.filter(m => SMR_COL_KEY[m.col] === cls).map(m => squareMarkBtn('smrmarks', m.cp, esc(m.short), acp, 'setSmrMark', l)).join('');
-  const editBtn = `<button class="ctl-btn hi-btn" title="${esc(I18n.t('fontmaker.tip.edit_mark_shape'))}" onclick="openMarkEdit('smrmarks','${acp}')">${ICON_PENCIL_SM}${esc(I18n.t('fontmaker.panels.edit_shape'))}</button>`;
+  const editBtn = `<button class="ctl-btn hi-btn" title="${esc(I18n.t('fontmaker.tip.edit_smr_mark_shape'))}" onclick="openMarkEdit('smrmarks','${acp}',{global:true})">${ICON_PENCIL_SM}${esc(I18n.t('fontmaker.panels.edit_shape'))}</button>`;   // font-wide scope: a family has no per-letter shape (markContoursFor)
   const grid = `<div class="ws-side-title">${I18n.t('fontmaker.panels.preview_smr_mark')}</div>
       <div class="mark-grid2">${tiles}</div>
       <hr class="ctl-divider">
