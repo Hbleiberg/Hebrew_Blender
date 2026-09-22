@@ -4915,7 +4915,25 @@ function showHelpTab(id) {
   if (isEn) { body.innerHTML = HELP_CONTENT[id] || ''; body.scrollTop = 0; return; }
   const bk = 'fontmaker.help.body_' + id, bt = window.I18n ? I18n.t(bk) : bk;
   body.innerHTML = (bt !== bk) ? bt : (HELP_CONTENT[id] || '');
+  // A CSV cell carries no buttons, so the translated Templates body told the teacher to download a
+  // template and offered nothing to click (and nikkud, trop and punctuation have no other way in).
+  if (id === 'templates' && bt !== bk) body.insertAdjacentHTML('beforeend', templateRowsHTML());
   body.scrollTop = 0;
+}
+// The download rows for the translated Templates tab: the English rows' order (read from
+// HELP_CONTENT.templates, so a new sheet's row there shows up here too), each spec's own title
+// key, and a page count from the same cols × rowsPerPage split the sheets are cut by.
+function templateRowsHTML() {
+  const kinds = [...new Set([...(HELP_CONTENT.templates || '').matchAll(/downloadTemplate\('(\w+)'/g)].map(m => m[1]))];
+  return '<div style="display:flex;flex-direction:column;gap:9px;margin:8px 0 4px;">' + kinds.filter(k => TEMPLATE_SPECS[k]).map(k => {
+    const s = TEMPLATE_SPECS[k], n = Math.ceil(s.items.length / (s.cols * s.rowsPerPage));
+    return '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+      + '<span style="flex:1 1 150px;font-weight:600;">' + esc(I18n.t(s.titleKey))
+      + ' <span style="font-weight:400;color:var(--muted);">· ' + esc(I18n.t(n === 1 ? 'fontmaker.templates.pages.one' : 'fontmaker.templates.pages.other', { count: n })) + '</span></span>'
+      + '<button class="tbtn" onclick="downloadTemplate(\'' + k + '\',\'pdf\')">' + esc(I18n.t('fontmaker.templates.export_pdf')) + '</button>'
+      + '<button class="tbtn ghost" onclick="downloadTemplate(\'' + k + '\',\'png\')">' + esc(I18n.t('fontmaker.templates.export_png')) + '</button>'
+      + '</div>';
+  }).join('') + '</div>';
 }
 function closeHelp() { aCloseModal('helpOverlay'); }
 document.addEventListener('keydown', e => {

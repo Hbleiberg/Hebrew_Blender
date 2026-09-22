@@ -237,7 +237,9 @@ Anchor patterns are the English / Cyrillic lines to sit beside.
     decides pages) + the `templateCellHTML` kind line. **Help → Download Templates**: a row with the
     PDF / Picture buttons and the page count in the multi-page tip (authored English HTML inside a
     template literal: no raw backtick, `${` or `</script>`), and the same count in the
-    `fontmaker.help.body_templates` prose (EN + HE).
+    `fontmaker.help.body_templates` prose (EN + HE). The translated tab needs nothing more: its body is
+    CSV prose, which carries no buttons, so `templateRowsHTML()` appends one row per English row (same
+    order), titled by the spec's `titleKey`, with a page count computed from `cols × rowsPerPage`.
 12. **i18n**: the rows of §1 beside their English siblings; `node scripts/build-locales.js`;
     `node scripts/check-i18n.js` must stay clean (the hint cell is quoted with doubled inner quotes;
     the plural pairs carry `.one`/`.other`).
