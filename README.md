@@ -371,7 +371,7 @@ signing in.
 | `partners/` | Partner marks shown inside a tool — currently the Open Siddur Project's logo beside the Font Maker's starting-font picker, vendored unmodified with its provenance and license terms in `NOTICE.md` (not precached) |
 | `icons/`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `og-card.png`, `og-fontmaker.png` | PWA / home-screen icons and the social cards (the suite's, and the Font Maker's own) |
 | `zelle-qr.jpg` | Donation QR code shown on the contact page |
-| `fonts/` | Bundled Hebrew display fonts (Frank Ruhl Libre, Lakhish Bold, Reuben, TzviScript, TzviScript Stroke Guide) + their license files |
+| `fonts/` | Bundled Hebrew fonts + their license files: the display faces (Frank Ruhl Libre, Lakhish Bold, Reuben, TzviScript, TzviScript Stroke Guide) and `NotoSerifHebrew-Taamim.ttf`, the Hebrew-block subset of Noto Serif Hebrew declared as `'IvritSuite Taamim'` — the te'amim fallback every Hebrew font stack ends with, because Frank Ruhl Libre has no cantillation glyphs |
 | `LICENSE` | CC BY-NC-SA 4.0 |
 | `CLAUDE.md` | Instructions for the AI coding assistant used during development |
 
