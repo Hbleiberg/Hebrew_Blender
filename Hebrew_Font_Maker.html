@@ -18611,7 +18611,7 @@ function buildUfoAnchors() {
 function buildUfoFontInfo(spec) {
   const n = spec.names, vf = Number.isFinite(spec.version) ? spec.version : 1.0;   // ||-guard would promote a legal 0.x version to 1.x (matches L10699/L11347)
   const major = Math.floor(vf), minor = Math.round((vf - major) * 1000);
-  const lic = LICENSES[project.font.license] || LICENSES.ofl, top = Math.round(effMetrics().letterTop);
+  const lic = LICENSES[project.font.license] || LICENSES.ofl;
   const asc = Math.round(spec.ascent), desc = Math.round(spec.descent), gap = Math.round(spec.lineGap || 0);
   const bold = !!spec.bold;
   const os = project.osFont;   // partner starting-font: mirror buildFontSpec's provenance branch (fontinfo is read independently)
@@ -18620,10 +18620,13 @@ function buildUfoFontInfo(spec) {
     styleMapFamilyName: n.familyName, styleMapStyleName: bold ? 'bold' : 'regular',
     versionMajor: major, versionMinor: minor, unitsPerEm: spec.unitsPerEm,
     // capHeight and xHeight are the MEASURED ink of the shipped O/H and o/x, matching the TTF's
-    // sCapHeight/sxHeight. For a Hebrew-only font there is still no honest x-height — Hebrew is
-    // caseless — so that key stays absent and capHeight keeps falling back to the Hebrew letter top,
-    // exactly as before. UFO fontinfo keys are optional; absent = unspecified.
-    ascender: asc, descender: desc, capHeight: (spec.capHeight || top),
+    // sCapHeight/sxHeight, and neither is invented: a Hebrew-only font has no honest cap height or
+    // x-height — Hebrew is caseless — so both keys stay absent, as the TTF leaves sCapHeight and
+    // sxHeight at 0. (capHeight used to fall back to the Hebrew letter top here, so one export gave
+    // two cap heights — 0 in the TTF, 600 in the UFO — and a lowercase-only Latin font an invented
+    // 600 beside its real xHeight.) UFO fontinfo keys are optional; absent = unspecified.
+    ascender: asc, descender: desc,
+    ...(spec.capHeight ? { capHeight: spec.capHeight } : {}),
     ...(spec.xHeight ? { xHeight: spec.xHeight } : {}),
     openTypeOS2TypoAscender: asc, openTypeOS2TypoDescender: desc, openTypeOS2TypoLineGap: gap,
     openTypeOS2WinAscent: spec.winAscent, openTypeOS2WinDescent: spec.winDescent,
