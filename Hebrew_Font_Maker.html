@@ -17655,6 +17655,15 @@ function fontInkBounds() {
       upd(polysBounds(qaPlace(anc, 'trop', cp, tms)));
     });
   });
+  // Samaritan marks ride the clip box too — an imported mark keeps its designed height above a column anchor
+  // (the shipped face draws them 600–1000 units up), exactly what smrShipList() exports. Read-only: a letter
+  // not yet seeded is measured at the seed the export would give it.
+  { const smr = smrShipList(); if (smr.marks.length) smr.bases.forEach(L => {
+      smr.marks.forEach(cp => {
+        const key = smrMarkKey(cp), anc = (L.anchors && L.anchors[key]) ? baseAnchorPosFor(L, key, cp) : smrAnchorSeed(L)[key];
+        if (anc) upd(polysBounds(qaPlace(anc, 'smrmarks', cp, smrMarkScale(), L)));
+      });
+    }); }
   // Precomposed forms — mirror the BAKE's gate order exactly (accent skip → wide/exportable → base
   // traced → src early-add → per-form scale), so the clip box measures precisely the glyphs that ship:
   // a non-exportable form with a stray pc.anchor must not inflate winAscent for a glyph the export
@@ -17878,6 +17887,15 @@ function fontIsBold() { return !!(project && project.font && project.font.style 
 function fontFileStem() { return fontSafeBase(project.font.familyName) + (fontIsBold() ? '-Bold' : ''); }
 
 /* Build the compact spec handed to Python. */
+/* What of the Samaritan mark family actually ships — the ONLY predicate the spec pass, the FEA, GDEF, the
+   UFO anchors and the clip box may use, so no anchor line ever names a glyph that never shipped (an
+   undefined-glyph FEA error). Marks: the family on and the mark drawn (markGlyphContours is [] for an
+   undrawn one, so it never becomes an empty glyph). Bases: the 22 letters with ink, the tab on. */
+function smrShipList() {
+  const bases = project.font.addSamaritanLetters ? (project.letters || []).filter(l => smrMarkBase(l) && l.contours && l.contours.length) : [];
+  const marks = smrMarksOn() ? SMR_MARK_CPS.filter(cp => markGlyphContours('smrmarks', cp).length) : [];
+  return { bases, marks };
+}
 function buildFontSpec() {
   const fnt = project.font;
   const glyphOrder = ['.notdef'];
@@ -18028,6 +18046,21 @@ function buildFontSpec() {
     const mcv = markGlyphCurves('customMarks', cp);
     if (mcv && mcv.length === mc.length) glyphs[nm].curves = mcv.map(cv => cv ? scaleRoundCurve(cv, cpMs) : null);
     if (!exists) { glyphOrder.push(nm); markGlyphNames.push(nm); cmap[parseInt(cp,16)] = nm; }
+  });
+
+  // Samaritan marks (MARK_FAMILY.smrmarks) — the family's own size, zero width, skip-on-clash like the
+  // set passes; builtSmr records what shipped for buildFEA (which cannot see `glyphs`).
+  const builtSmr = smrShipList();
+  builtSmr.bases = builtSmr.bases.filter(l => glyphs[gname(l.codepoint)]);   // the pass above shipped them (never a custom glyph's name)
+  builtSmr.marks = builtSmr.marks.filter(cp => {
+    const nm = gname(cp);
+    if (glyphs[nm]) return false;                                   // an older save's custom mark at this cp keeps the name
+    const sms = smrMarkScale(), mc = markGlyphContours('smrmarks', cp);
+    glyphs[nm] = { contours: mc.map(poly => poly.map(p => [Math.round(p[0]*sms), Math.round(p[1]*sms)])), advance: 0 };
+    const mcv = markGlyphCurves('smrmarks', cp);
+    if (mcv && mcv.length === mc.length) glyphs[nm].curves = mcv.map(cv => cv ? scaleRoundCurve(cv, sms) : null);
+    glyphOrder.push(nm); markGlyphNames.push(nm); cmap[parseInt(cp,16)] = nm;
+    return true;
   });
 
   // Optional "Sheva Na": a heavier sheva so mobile (na) vs. silent (nach) sheva can be told apart.
@@ -18262,7 +18295,7 @@ function buildFontSpec() {
   });
 
   // FEA
-  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh, builtWideGlyphItems, builtMetegForms);
+  const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh, builtWideGlyphItems, builtMetegForms, builtSmr);
 
   // name table — nameID 1 stays the bare family for both styles (that's the RIBBI link);
   // only nameID 2/3/4/6 carry the Regular/Bold distinction.
@@ -18331,16 +18364,20 @@ function buildFontSpec() {
 /* Generate the Adobe .fea — `languagesystem hebr dflt;`, markClass, ccmp (incl. the mark-filtered
    ccmp_dagesh lookup), mark-to-base, mkmk, contextual vowel-slide lookups (vowelPair slide mode), GDEF.
    Nikkud blocks emit only when nikOn; trop blocks only when tropOn. A letters-only font skips both. */
-function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh, builtWideGlyphItems, builtMetegForms) {
+function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh, builtWideGlyphItems, builtMetegForms, builtSmr) {
   builtPerLetter = builtPerLetter || [];
   builtWide = builtWide || [];
   builtShinDagesh = builtShinDagesh || [];
   builtYiddishPasekh = builtYiddishPasekh || [];
   builtWideGlyphItems = builtWideGlyphItems || [];
   builtMetegForms = builtMetegForms || { right: null, hataf: [] };   // the v5.36 PUA meteg forms buildFontSpec actually shipped (buildFEA can't see `glyphs`)
+  builtSmr = builtSmr || { bases: [], marks: [] };                    // the Samaritan marks + the letters that carry them, likewise
+  const smrOn = builtSmr.marks.length > 0 && builtSmr.bases.length > 0;   // the family ships marks AND letters to carry them — else nothing of it is emitted, and the file is byte-identical
   let f = '';
   f += 'languagesystem DFLT dflt;\n';
-  f += 'languagesystem hebr dflt;\n\n';
+  f += 'languagesystem hebr dflt;\n';
+  if (smrOn) f += 'languagesystem samr dflt;\n';   // HarfBuzz maps U+0800–083F to samr; a mark feature with no script statement registers under every declared system
+  f += '\n';
   // ── nikkud mark classes (each mark's attach anchor is at origin 0,0) ──
   const byClass = { below: [], above: [], center: [] };
   if (nikOn) MARK_CPS.forEach(cp => byClass[MARK_CLASS[cp]].push(gname(cp)));
@@ -18411,6 +18448,20 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
       if (g.length) f += `markClass [${g.join(' ')}] <anchor 0 0> @${TROP_MC[cls]}${HALIGN_SUFFIX[h]};\n`;   // horizontal lives in the per-letter base anchor (tropColKey column)
       tropSolo[cls][h].forEach(cp => f += `markClass [${gname(cp)}] <anchor 0 0> @${TROP_MC[cls]}${HALIGN_SUFFIX[h]}_${cp};\n`);
     }));
+    f += '\n';
+  }
+  // ── Samaritan marks (MARK_FAMILY.smrmarks): three above-the-letter columns, one markClass each; a pinned
+  //    mark leaves its column class for its own @MC_SMR_<col>_<cp>, like nikSolo. Only what buildFontSpec
+  //    shipped (builtSmr) — a class or pos line naming an unshipped glyph is an undefined-glyph feaLib error.
+  //    No mkmk: a letter takes one mark per column and the columns attach to the base independently. ──
+  const SMR_MC = { R: 'MC_SMR_R', C: 'MC_SMR_C', L: 'MC_SMR_L' };
+  const smrShared = { R: [], C: [], L: [] }, smrSolo = { R: [], C: [], L: [] };
+  if (smrOn) builtSmr.marks.forEach(cp => { const col = SMR_MARK_BY_CP[cp].col; if (pinnedMarkCps.has(cp)) smrSolo[col].push(cp); else smrShared[col].push(gname(cp)); });
+  if (smrOn) {
+    SMR_COLS.forEach(col => {
+      if (smrShared[col].length) f += `markClass [${smrShared[col].join(' ')}] <anchor 0 0> @${SMR_MC[col]};\n`;
+      smrSolo[col].forEach(cp => { f += `markClass [${gname(cp)}] <anchor 0 0> @${SMR_MC[col]}_${cp};\n`; });
+    });
     f += '\n';
   }
   const metegCcmpOn = !!(builtMetegForms.right || builtMetegForms.hataf.length);
@@ -18566,6 +18617,17 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     const cls = MARK_CLASS[YID_PASEKH.mark];
     emitBaseAnchors(gname(yp.target), Object.assign({}, m.donor, { anchors: m.anchors, markAnchors: dropKeyPins(m.markAnchors, cls) }), cls);
   });
+  // Samaritan bases: one pos line per non-empty column (+ per pin), appended after every Hebrew line so the
+  // Hebrew prefix of markLines stays byte-identical; the seeding is idempotent and every coordinate integral.
+  const emitSmrBaseAnchors = (nm, l) => {
+    seedAnchorsIfNeeded(l); ensureSmrAnchors(l);
+    SMR_COLS.forEach(col => {
+      const key = SMR_COL_KEY[col], a = l.anchors[key];
+      if (smrShared[col].length && a) markLines += `  pos base ${nm} <anchor ${a.x} ${a.y}> mark @${SMR_MC[col]};\n`;
+      smrSolo[col].forEach(cp => { const p = baseAnchorPosFor(l, key, cp); if (p) markLines += `  pos base ${nm} <anchor ${p.x} ${p.y}> mark @${SMR_MC[col]}_${cp};\n`; });
+    });
+  };
+  if (smrOn) builtSmr.bases.forEach(l => emitSmrBaseAnchors(gname(l.codepoint), l));
   if (markLines) f += 'feature mark {\n' + markLines + '} mark;\n\n';
   // ── vowel+trop slide mode (vowelPair): when a CENTER-halign trop shares the letter with a vowel,
   //    a chaining-contextual rule shifts the VOWEL sideways by dx; the trop then attaches to the
@@ -18728,7 +18790,7 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   // unconsumed joiner classed as a base would become the attachment target for a following vowel's
   // mark-to-base lookback; as an unclassed-into-any-markClass mark it is skipped, and the shaper
   // hides default ignorables anyway.
-  const allMarks = [...nikMarks, ...tropMarks, ...(nikOn ? ['uni034F', 'uni200D'] : [])];
+  const allMarks = [...nikMarks, ...tropMarks, ...(nikOn ? ['uni034F', 'uni200D'] : []), ...(smrOn ? builtSmr.marks.map(gname) : [])];   // + the shipped Samaritan marks
   f += 'table GDEF {\n';
   f += `  GlyphClassDef [${baseGlyphNames.join(' ')}], , ${allMarks.length ? `[${allMarks.join(' ')}]` : ''}, ;\n`;
   f += '} GDEF;\n';
@@ -18743,7 +18805,7 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
    anchors are present below. */
 function buildUfoSpec() {
   const spec = buildFontSpec();
-  spec.anchors     = buildUfoAnchors();
+  spec.anchors     = buildUfoAnchors(spec);
   spec.fontinfo    = buildUfoFontInfo(spec);
   spec.ufoName     = fontFileStem();
   spec.licenseText = licenseText();
@@ -18752,7 +18814,7 @@ function buildUfoSpec() {
 /* Named anchors mirroring buildFEA exactly: bases carry below/above/center (+ tropAbove/tropBelow);
    each mark carries its `_class` attach anchor at the origin (0,0); a nikkud above/below mark also
    carries the tropAbove/tropBelow base anchor (mkmk) at markMkmkAnchor()'s offset so trop stacks. */
-function buildUfoAnchors() {
+function buildUfoAnchors(spec) {
   const nikOn = project.font.nikkud.enabled, tropOn = project.font.trop.enabled, out = {};
   const push = (nm, name, x, y) => { (out[nm] || (out[nm] = [])).push({ name, x: Math.round(x), y: Math.round(y) }); };
   // A pinned mark's anchors mirror its FEA subclass split: the mark carries `_<key>_<cp>` instead of
@@ -18768,6 +18830,7 @@ function buildUfoAnchors() {
                  if (a.center) push(nm, 'center', a.center.x, a.center.y); }
     if (tropOn) ['tropAbove','tropAboveL','tropAboveR','tropBelow','tropBelowL','tropBelowR'].forEach(k => { if (a[k]) push(nm, k, a[k].x, a[k].y); });
     pinned.forEach(cp => {
+      if (isSmrMark(cp)) return;   // a file-borne Samaritan pin on a Hebrew letter names no anchor there
       if (TROP_CLASS[cp] ? !tropOn : !nikOn) return;
       const key = pinKeyFor(cp), p = baseAnchorPosFor(l, key, cp);
       if (p) push(nm, key + '_' + cp, p.x, p.y);
@@ -18785,6 +18848,21 @@ function buildUfoAnchors() {
     }
   });
   if (tropOn) TROP_CPS.forEach(cp => push(gname(cp), '_' + tropColKey(TROP_CLASS[cp], tropHalign(cp)) + (pinned.has(cp) ? '_' + cp : ''), 0, 0));
+  // Samaritan marks (MARK_FAMILY.smrmarks) — the same smrShipList() gate as the FEA, narrowed to the glyph
+  // names the spec really carries (an older save's custom mark at a Samaritan cp keeps the name): a base
+  // carries its three columns (+ <key>_<cp> per pin), a mark `_<key>` (`_<key>_<cp>` when pinned) at (0,0).
+  const smr = smrShipList(), has = nm => !!(spec && spec.glyphs && spec.glyphs[nm]);
+  smr.marks = smr.marks.filter(cp => has(gname(cp)) && !(project.font.addCustomGlyphs && project.font.customMarks && project.font.customMarks.custom[cp]));
+  smr.bases = smr.bases.filter(l => has(gname(l.codepoint)));
+  if (smr.marks.length && smr.bases.length) {
+    smr.bases.forEach(l => {
+      seedAnchorsIfNeeded(l); ensureSmrAnchors(l);
+      const nm = gname(l.codepoint);
+      SMR_ANCHOR_KEYS.forEach(k => { const a = l.anchors[k]; if (a) push(nm, k, a.x, a.y); });
+      pinned.forEach(cp => { if (!isSmrMark(cp)) return; const key = smrMarkKey(cp), p = baseAnchorPosFor(l, key, cp); if (p) push(nm, key + '_' + cp, p.x, p.y); });
+    });
+    smr.marks.forEach(cp => push(gname(cp), '_' + smrMarkKey(cp) + (pinned.has(cp) ? '_' + cp : ''), 0, 0));
+  }
   return out;
 }
 /* UFO fontinfo.plist. UFO ascender/descender + sTypo stay at the nominal design box (stable line
