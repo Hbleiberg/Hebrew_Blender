@@ -3160,6 +3160,44 @@ function smrUserMade(l) {
   return !!(l && l.contours && l.contours.length
     && (l.handEdited || l.draw || (l.source && l.source.dataUrl) || l.smrSource !== 'import'));
 }
+/* ── Samaritan combining marks (v5.56) — the block's 21 Mn code points, all ccc 230 (above the letter).
+   A mark FAMILY of its own, deliberately NOT in MARK_CLASS / MARK_CPS / NIKKUD_MARKS: those tables drive
+   the Hebrew export, QA and chart loops, and the PUA meteg forms stay out of them for the same reason.
+   col = the base-anchor column the mark reads, the way the one shipped face that draws the block
+   (Hebrew Square Samaritan) groups them in three single-class mark-to-base lookups: R = the letter's
+   start (its right edge — RTL leading), C = its middle, L = its end (left edge, trailing). The columns
+   are physical L/R like the trop columns' tropAboveL/R, and none is named 'center' (markPinFor refuses
+   that key). The names keep gName()'s slug unique the way SAMARITAN_LETTERS' do, and "Mark" keeps the
+   MARK IN (0816) apart from the LETTER IN (080F) and a vowel SIGN from its vowel LETTER (081A/0824/0828). */
+const SMR_COLS = ['R', 'C', 'L'];                                          // reading order: start, middle, end
+const SMR_COL_KEY = { R: 'smrAboveR', C: 'smrAbove', L: 'smrAboveL' };
+const SMR_ANCHOR_KEYS = SMR_COLS.map(c => SMR_COL_KEY[c]);
+const SAMARITAN_MARKS = [   // [cp, Unicode short name, column]
+  ['0816', 'In', 'R'], ['0817', 'In-Alaf', 'R'],
+  ['0818', 'Occlusion', 'C'], ['0819', 'Dagesh', 'C'], ['081B', 'Epenthetic Yut', 'C'], ['082C', 'Sukun', 'C'], ['082D', 'Nequdaa', 'C'],
+  ['081C', 'Long E', 'L'], ['081D', 'E', 'L'], ['081E', 'Overlong Aa', 'L'], ['081F', 'Long Aa', 'L'], ['0820', 'Aa', 'L'],
+  ['0821', 'Overlong A', 'L'], ['0822', 'Long A', 'L'], ['0823', 'A', 'L'], ['0825', 'Short A', 'L'],
+  ['0826', 'Long U', 'L'], ['0827', 'U', 'L'], ['0829', 'Long I', 'L'], ['082A', 'I', 'L'], ['082B', 'O', 'L']
+].map(([cp, short, col]) => ({ cp, short, col, cls: 'above', name: String.fromCodePoint(parseInt(cp, 16)) + ' (Samaritan Mark ' + short + ')' }));
+const SMR_MARK_BY_CP = {}; SAMARITAN_MARKS.forEach(m => { SMR_MARK_BY_CP[m.cp] = m; });
+const SMR_MARK_CPS = SAMARITAN_MARKS.map(m => m.cp);
+function isSmrMark(cp) { return !!SMR_MARK_BY_CP[cp]; }
+function smrMarkKey(cp) { const m = SMR_MARK_BY_CP[cp]; return m ? SMR_COL_KEY[m.col] : null; }   // the anchor key a Samaritan mark reads
+function smrMarkBase(l) { return !!(l && l.smr && (smrMeta(l.codepoint) || {}).group === 'alphabet'); }   // only the 22 letters carry the columns; the vowel letters and punctuation stay anchor-free
+function smrMarkScale() { return (project && project.font && project.font.smrMarkScale != null) ? project.font.smrMarkScale : 1; }   // the family's own size — never the nikkud slider
+function smrMarksOn() { return !!(project && project.font && project.font.addSamaritanLetters && project.font.smrmarks && project.font.smrmarks.enabled); }
+/* The non-Hebrew mark families, keyed by kind. One identifier does every job — the project.font store
+   key, the picker tab id, the panel/grid id prefix and curKind — which is what lets catTabFor's
+   `: kind` fall-through, updateTabs' project.font[curKind], renderMarkPanel's `cat + 'Grid'` and
+   setMarkEnabled serve a family with no new fork. Every nikkud/trop two-way ternary gets one prefix
+   guard on this table and keeps its Hebrew tail untouched; a second script's marks are a row here. */
+const MARK_FAMILY = {
+  smrmarks: { kind: 'smrmarks', marks: SAMARITAN_MARKS, byCp: SMR_MARK_BY_CP, cps: SMR_MARK_CPS, cls: 'above',
+              anchorKeys: SMR_ANCHOR_KEYS, keyOf: smrMarkKey, scale: smrMarkScale, baseOf: smrMarkBase, on: smrMarksOn,
+              labelKey: 'fontmaker.panels.smrmarks_label', enableKey: 'fontmaker.panels.smrmarks_enable',
+              hintKey: 'fontmaker.panels.smrmarks_hint', clickKey: 'fontmaker.panels.smrmarks_click_design', template: 'samaritanmarks' }
+};
+const MARK_STORE_KINDS = ['nikkud', 'trop', 'customMarks', 'smrmarks'];   // every project.font mark store — the one list the outline scan, the autosave stripper, the cloud packer and the loader walk
 /* The right-to-left blocks the app knows — the Hebrew block with its presentation forms, and the three
    ancient sets. One predicate for the two places that must agree on it: bidiClassOf (the spacing
    preview's run direction) and the legacy-kern importer (which skips RTL pairs, because that table's
@@ -3169,7 +3207,7 @@ function isRtlCp(hex) {
   return (c >= 0x0590 && c <= 0x05FF) || (c >= 0xFB1D && c <= 0xFB4F)
       || (c >= 0x10900 && c <= 0x1091F) || (c >= 0x10840 && c <= 0x1085F) || (c >= 0x0800 && c <= 0x083F);
 }
-function markClassFor(cp) { return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].cls) || MARK_CLASS[cp] || TROP_CLASS[cp]; }
+function markClassFor(cp) { return (SMR_MARK_BY_CP[cp] && SMR_MARK_BY_CP[cp].cls) || (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].cls) || MARK_CLASS[cp] || TROP_CLASS[cp]; }
 
 /* ── Default mark glyph outlines (font units, attach-anchor at origin 0,0) ──
    below marks hang downward from the anchor; above sit up; center centered.
@@ -3457,6 +3495,9 @@ function nikScale(cp) {   // size factor for a standard nikkud cp: dagesh, stand
   if (cp === '05B9' || cp === '05BA') return holamScale();
   return markScale();
 }
+function markCatScale(cat, cp) {   // the size a mark of category `cat` renders at on the stage — one rule for markPreviewPath / markCenterLocal / markBBoxPx
+  return cat === 'trop' ? tropScale() : cat === 'accent' ? 1 : MARK_FAMILY[cat] ? MARK_FAMILY[cat].scale() : nikScale(cp);
+}
 /* SVG upload mode (Settings): uploads are SVG-only and import directly as vectors (no trace). */
 function svgUploadOn() { return !!(project && project.font && project.font.svgUpload); }
 /* A glyph whose outline is already vector (from a font file OR an imported SVG) — skips Align/Trace. */
@@ -3534,7 +3575,7 @@ function translateLetterX(l, dx) {   // rigid horizontal slide of the glyph by d
   (l.curves||[]).forEach(cv => { if (!cv) return; cv.start[0] += dx; cv.segments.forEach(s => s.pts.forEach(pt => { pt[0] += dx; })); });
   l.lsb = null;   // position now lives in the contours; the left margin auto-derives from the ink (letterInkLeft)
 }
-function catOfCp(cp) { return LATIN_ACCENTS[cp] ? 'accent' : (TROP_CLASS[cp] ? 'trop' : 'nikkud'); }
+function catOfCp(cp) { return SMR_MARK_BY_CP[cp] ? 'smrmarks' : LATIN_ACCENTS[cp] ? 'accent' : (TROP_CLASS[cp] ? 'trop' : 'nikkud'); }   // the family test comes first: an unknown cp resolves to 'nikkud', i.e. the wrong store and the wrong size
 const TROP_GAP_ABOVE = 200, TROP_GAP_BELOW = 200;   // how far trop clears the vowel band
 // mark-to-mark attach point on a nikkud mark (where a trop stacks): its far edge + a small gap.
 function markMkmkAnchor(cp) {
@@ -3748,10 +3789,11 @@ function newProject() {
     font: {
       familyName: 'My Hebrew Hand', reservedFontName: 'My Hebrew Hand', author: '', license: 'ofl',
       style: 'regular',   // 'regular' | 'bold' — exported as the family's Regular or Bold member
-      version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0, dageshScale: 1.0, cholamScale: 1.0, holamScale: 1.0, markNudge: {}, tropSideOffset: TROP_POS_SHIFT,
+      version: '1.000', unitsPerEm: UPM, markScale: 1.0, tropScale: 1.0, dageshScale: 1.0, cholamScale: 1.0, holamScale: 1.0, smrMarkScale: 1.0, markNudge: {}, tropSideOffset: TROP_POS_SHIFT,
       nikkud: { enabled: true,  mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, shevaNa: false, metegGap: null },   // mode: 'default' | 'custom'; uploadMode: 'perSymbol' | 'combined'; shevaNa: bold sheva-na alternate; metegGap: null = Auto (see metegGap())
       trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, halign: {}, vowelPair: { below: { mode: 'stack', dx: 70 }, above: { mode: 'stack', dx: 70 } } },
       customMarks: { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // user-defined nikkud marks added via the Custom glyphs tab
+      smrmarks: { enabled: false, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // Samaritan combining marks (MARK_FAMILY.smrmarks) — off until the teacher switches the family on or an import brings marks
       accent: { mode: 'custom', custom: {} },   // Latin accent shapes taken from an imported font; empty = the built-in LATIN_ACCENTS outlines
       metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB,
                  capHeight: CAP_HEIGHT, xHeight: X_HEIGHT, ascender: ASCENDER },
@@ -3796,10 +3838,10 @@ function curItem() {
 function curLetter() { return curItem(); }
 function letterMeta(cp) { return LETTERS.find(l => l.cp === cp) || engMeta(cp) || cyrMeta(cp) || phnMeta(cp) || aramMeta(cp) || smrMeta(cp); }
 function curMeta() { return curKind === 'letter' ? letterMeta(curCp) : null; }
-function markName(cp) { return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].name) || MARK_NAMES[cp] || TROP_NAMES[cp] || cp; }
+function markName(cp) { return (SMR_MARK_BY_CP[cp] && SMR_MARK_BY_CP[cp].name) || (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].name) || MARK_NAMES[cp] || TROP_NAMES[cp] || cp; }
 // kind 'accent' must resolve through LATIN_ACCENTS: MARK_CLASS has no entry, so cedilla would fall to
 // markItem's 'above' default and markAttachOrigin would take its TOP edge as the attach point.
-function markClassOf(kind, cp) { return kind === 'accent' ? (LATIN_ACCENTS[cp] || {}).cls : (kind === 'trop' ? TROP_CLASS[cp] : MARK_CLASS[cp]); }
+function markClassOf(kind, cp) { return MARK_FAMILY[kind] ? MARK_FAMILY[kind].cls : kind === 'accent' ? (LATIN_ACCENTS[cp] || {}).cls : (kind === 'trop' ? TROP_CLASS[cp] : MARK_CLASS[cp]); }
 function markItem(kind, cp) {
   return {
     codepoint: cp, name: markName(cp), cls: markClassOf(kind, cp) || 'above',
@@ -3953,7 +3995,7 @@ function wideDonorAnchors(pc, g) {
   Object.keys(donor.anchors).forEach(k => { const a = donor.anchors[k]; anchors[k] = a ? { x: tx(a.x), y: a.y } : a; });
   return { donor, anchors, markAnchors: mapPinsX(donor.markAnchors, tx) };   // pins ride the SAME ink transform as the anchors they refine
 }
-function pinKeyFor(cp) { return TROP_CLASS[cp] ? tropColKey(TROP_CLASS[cp], tropHalign(cp)) : MARK_CLASS[cp]; }   // the anchor key a mark currently reads
+function pinKeyFor(cp) { return isSmrMark(cp) ? smrMarkKey(cp) : TROP_CLASS[cp] ? tropColKey(TROP_CLASS[cp], tropHalign(cp)) : MARK_CLASS[cp]; }   // the anchor key a mark currently reads
 function fidelityPinnedMarkCps() {
   // Mark cps with ≥1 key-current pin on any letter. At export each of these leaves its shared
   // markClass and gets its own GPOS subclass (@MC_<KEY>_<cp>) so bases can position THAT mark
@@ -4045,7 +4087,7 @@ function piecesToContours(pieces) {
 }
 function defaultPieces(kind, cp) {
   // recover editable dots/bars from the built-in default polygons (circle→dot, rect→bar)
-  const polys = (kind === 'trop' ? TROP_GLYPHS[cp] : MARK_GLYPHS[cp]) || [];
+  const polys = MARK_FAMILY[kind] ? [] : ((kind === 'trop' ? TROP_GLYPHS[cp] : MARK_GLYPHS[cp]) || []);   // a family has no built-in shapes: the editor opens empty, and ensureMarkPieces never materialises ink nobody drew
   return polys.map(poly => {
     let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
     poly.forEach(([x,y]) => { minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y); });
@@ -6187,7 +6229,8 @@ function renderMarkPanel(cat) {
    not the system font — a dotted "letter" circle with the actual mark shape attached
    above/below/center per its class, mirroring how the placement screen previews it. */
 function markTilePreviewSVG(cat, cp, forLetter) {
-  const cls = (cat === 'customMarks' ? ((project.font.customMarks.custom[cp] || {}).cls || 'below')
+  const cls = (MARK_FAMILY[cat] ? MARK_FAMILY[cat].cls
+            : cat === 'customMarks' ? ((project.font.customMarks.custom[cp] || {}).cls || 'below')
             : cat === 'nikkud' ? MARK_CLASS[cp] : TROP_CLASS[cp]) || 'below';
   const polys = forLetter ? markContoursFor(forLetter, cat, cp) : markGlyphContours(cat, cp);   // font units; origin = attach anchor
   const R = 90;                                         // base "letter" circle radius
@@ -6423,6 +6466,7 @@ function isCustomCp(cp) {
    on clash, ahead of every set pass); and migrateProject's byCp kept only one of the two, destroying
    the other on reload. addCustomGlyph refuses such a cp outright; the name is for the modal. */
 function alphabetOwnerOf(cp) {
+  if (SMR_MARK_BY_CP[cp]) return gName(SMR_MARK_BY_CP[cp].name);   // a Samaritan mark has its tile in its family's tab, not in project.letters
   const meta = letterMeta(cp);
   if (meta) return gName(meta.name);
   const it = (project.letters || []).find(l => l.codepoint === cp);
@@ -6432,6 +6476,7 @@ function whoHasCp(cp) {            // label of the existing glyph occupying cp, 
   const L = LETTERS.find(x => x.cp === cp); if (L) return L.name;
   if (MARK_NAMES[cp]) return MARK_NAMES[cp];
   if (TROP_NAMES[cp]) return TROP_NAMES[cp];
+  if (SMR_MARK_BY_CP[cp]) return SMR_MARK_BY_CP[cp].name;   // a Samaritan mark — its own family's store
   if (PRECOMPOSED.some(p => p.target === cp)) return 'a precomposed form';
   const xf = EXTRA_FORMS.find(f => f.target === cp);           // Specialized / Yiddish / Ladino composed forms (incl. their PUA slots)
   if (xf) return xf.name + ' (an optional composed form)';
@@ -8123,11 +8168,11 @@ function applyImportedAnchors(l, imp, kinds) {
 }
 /* Outlines untouched: drop only the fidelity pins of kinds whose placement this import actually
    rewrote on this letter (outcome-gated, like the class anchors). Pin kind derives from the cp:
-   TROP_CLASS membership = trop, else nikkud (MARK_CLASS). */
+   a Samaritan mark = smrmarks, TROP_CLASS membership = trop, else nikkud (MARK_CLASS). */
 function dropKindPins(l, kinds) {
   if (!l.markAnchors) return;
   for (const cp in l.markAnchors) {
-    if (TROP_CLASS[cp] ? kinds.trop : kinds.nikkud) delete l.markAnchors[cp];
+    if (isSmrMark(cp) ? kinds.smrmarks : TROP_CLASS[cp] ? kinds.trop : kinds.nikkud) delete l.markAnchors[cp];
   }
   if (!Object.keys(l.markAnchors).length) delete l.markAnchors;
 }
@@ -11592,7 +11637,7 @@ function glyphOutlineScan() {
     if (reasons.length) out.push({ name: name || 'glyph', reasons });
   };
   (project.letters || []).forEach(l => { if (l.contours) check(l.name || ('U+' + l.codepoint), l.contours); });
-  ['nikkud','trop','customMarks'].forEach(cat => {
+  MARK_STORE_KINDS.forEach(cat => {
     const store = project.font[cat] && project.font[cat].custom;
     if (store) Object.keys(store).forEach(cp => { const m = store[cp]; if (m && m.contours) check(m.name || ('U+' + cp), m.contours); });
   });
@@ -13854,21 +13899,21 @@ function coStackGhostPlacement(l, cp) {
   return { x: a.x, y: a.y, scale: precompMarkScale(pc), pc };
 }
 function markPreviewPath(cp, ax, ay, scaleOverride) {
-  const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : (cat==='trop'?tropScale():(cat==='accent'?1:nikScale(cp)));
+  const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : markCatScale(cat, cp);
   const contours = markContoursFor(curLetter(), cat, cp);
   let d = '';
   contours.forEach(poly => { poly.forEach((p,i) => { const X=fx(ax+p[0]*s), Y=fy(ay+p[1]*s); d += (i===0?'M':'L')+X.toFixed(1)+' '+Y.toFixed(1)+' '; }); d+='Z '; });
   return d;
 }
 function markCenterLocal(cp, scaleOverride) {
-  const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : (cat==='trop'?tropScale():(cat==='accent'?1:nikScale(cp)));
+  const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : markCatScale(cat, cp);
   const polys = markContoursFor(curLetter(), cat, cp);
   let sx = 0, sy = 0, n = 0;
   polys.forEach(poly => poly.forEach(p => { sx += p[0]; sy += p[1]; n++; }));
   return n ? [sx / n * s, sy / n * s] : [0, 0];
 }
 function markBBoxPx(cp, ax, ay, scaleOverride) {
-  const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : (cat==='trop'?tropScale():(cat==='accent'?1:nikScale(cp)));
+  const cat = catOfCp(cp), s = scaleOverride != null ? scaleOverride : markCatScale(cat, cp);
   const polys = markContoursFor(curLetter(), cat, cp);
   let minX=1e9, minY=1e9, maxX=-1e9, maxY=-1e9, n=0;
   polys.forEach(poly => poly.forEach(p => {
@@ -21543,7 +21588,7 @@ function stripImagesForAutosave(p) {
   // strip exists to shed. Committed letters keep their contours in the JSON, so drop their strokes
   // here; only in-progress (uncommitted) drawings ride along in the stripped fallback.
   c.letters.forEach(l => { if (l.draw && l.contours && !drawNeedsTrace(l)) l.draw = null; });   // a pending drawing — never traced, stale, or over a shipped default — is in-progress work: keep it
-  ['nikkud','trop','customMarks'].forEach(cat => {
+  MARK_STORE_KINDS.forEach(cat => {
     const cm = c.font[cat] && c.font[cat].custom;
     if (cm) Object.values(cm).forEach(m => { if (m.source && m.source.dataUrl) m.source.dataUrl = '[omitted]'; });
   });
@@ -21603,7 +21648,7 @@ function fmCloudErrorText(e) {
 function fmRasterSlots(p) {
   const out = [];
   (p.letters || []).forEach(l => { if (l && l.source) out.push({ o: l.source, k: 'dataUrl', draw: l.source.kind === 'draw', label: l.name || 'letter' }); });
-  ['nikkud', 'trop', 'customMarks'].forEach(cat => {
+  MARK_STORE_KINDS.forEach(cat => {
     const f = p.font && p.font[cat]; if (!f) return;
     Object.keys(f.custom || {}).forEach(cp => { const m = f.custom[cp]; if (m && m.source) out.push({ o: m.source, k: 'dataUrl', draw: m.source.kind === 'draw', label: cat + ' ' + cp }); });
     if (f.combinedImage) out.push({ o: f.combinedImage, k: 'dataUrl', draw: false, label: cat });
@@ -21922,15 +21967,15 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   const urls = [];
   (project.combinedSheets || []).forEach(s => { if (s.dataUrl) urls.push(s.dataUrl); });
   project.letters.forEach(l => { if (l.source.dataUrl) urls.push(l.source.dataUrl); });
-  ['nikkud','trop','customMarks'].forEach(cat => {      // preload mark sheets + cropped mark images too
-    const f = project.font[cat];
+  MARK_STORE_KINDS.forEach(cat => {      // preload mark sheets + cropped mark images too
+    const f = project.font[cat]; if (!f) return;
     if (f.combinedImage && f.combinedImage.dataUrl) urls.push(f.combinedImage.dataUrl);
     Object.values(f.custom || {}).forEach(it => { if (it.source && it.source.dataUrl) urls.push(it.source.dataUrl); });
   });
   await Promise.all(urls.map(u => loadImg(u).catch(()=>{})));
   // rebuild the runtime SVG-sheet cache (combined SVG sheets are re-parsed from their data URL — never persisted)
   (project.combinedSheets || []).forEach(s => { if (s.dataUrl && /^data:image\/svg/i.test(s.dataUrl)) cacheSvgSheet(s.dataUrl); });
-  ['nikkud','trop','customMarks'].forEach(cat => { const u = project.font[cat].combinedImage && project.font[cat].combinedImage.dataUrl; if (u && /^data:image\/svg/i.test(u)) cacheSvgSheet(u); });
+  MARK_STORE_KINDS.forEach(cat => { const u = project.font[cat] && project.font[cat].combinedImage && project.font[cat].combinedImage.dataUrl; if (u && /^data:image\/svg/i.test(u)) cacheSvgSheet(u); });
   await restoreCustomTemplateFonts();   // re-register uploaded tracing fonts before the R-panel select repopulates
   // Drawn letters restored from the image-stripped fallback lost their raster — rebuild it from
   // the strokes (deterministic) so revisit-Trace and re-commit keep working.
@@ -22269,7 +22314,8 @@ function sanitizeDraw(d) {
 }
 // 'center' is deliberately absent: a center pin is unreachable in-app and inert at every reader
 // (markPinFor refuses it), so drop it on load rather than persisting a value nothing will honor.
-const ANCHOR_KEY_SET = new Set(['below','above','tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR']);
+// The three Samaritan columns (smrAbove*) are pinnable like the trop columns.
+const ANCHOR_KEY_SET = new Set(['below','above','tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR','smrAboveR','smrAbove','smrAboveL']);
 /* A .hfm or autosave blob is untrusted text, and `1e999` is VALID JSON that parses to Infinity.
    Math.round is a no-op on a non-finite, so such a value flows through metegGap()/fontSpacing()
    straight into buildFEA, where feaLib rejects the WHOLE file ("Expected a number") — one bad
@@ -22284,7 +22330,7 @@ function sanitizeFontNumbers(f) {
     o[k] = Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : dflt;
   };
   [['markScale', 0.3, 2, 1.0], ['tropScale', 0.3, 2, 1.0], ['dageshScale', 0.3, 2, 1.0],
-   ['cholamScale', 0.3, 2, 1.0], ['holamScale', 0.3, 2, 1.0],
+   ['cholamScale', 0.3, 2, 1.0], ['holamScale', 0.3, 2, 1.0], ['smrMarkScale', 0.3, 2, 1.0],
    ['tropSideOffset', 0, 600, TROP_POS_SHIFT]].forEach(a => fix(f, a[0], a[1], a[2], a[3]));
   [['letterSpacing', -40, 200, 0], ['wordSpacing', 80, 600, 260],
    ['lineSpacing', 0, 500, 0], ['kernTarget', -40, 160, 40]].forEach(a => fix(f.spacing, a[0], a[1], a[2], a[3]));
@@ -22556,7 +22602,26 @@ function migrateProject(data) {
     if (!_isObj(data.font.customMarks)) data.font.customMarks = { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } };
     if (!_isObj(data.font.customMarks.custom)) data.font.customMarks.custom = {};
     if (!_isObj(data.font.customMarks.combinedImage)) data.font.customMarks.combinedImage = { dataUrl: null };
-    ['nikkud','trop','customMarks'].forEach(cat => { const c = data.font[cat].custom; Object.keys(c).forEach(k => { if (!_isObj(c[k])) delete c[k]; }); });   // a mark entry is an object with a source — anything else is dropped
+    // Samaritan marks (v5.56) — a mark family of its own (MARK_FAMILY.smrmarks), stored like the three Hebrew
+    // stores. Untrusted blob: a closed key domain (the 21 marks), every mark 'above', designMode from a
+    // closed set, smrSource only ever 'import', and attachAnchor integral-or-absent — the accent store's
+    // rule, since markAttachOrigin hands it straight to the FEA, where a fractional coordinate rejects the file.
+    if (data.font.smrMarkScale == null) data.font.smrMarkScale = 1.0;
+    if (!_isObj(data.font.smrmarks)) data.font.smrmarks = { enabled: false, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } };
+    if (!_isObj(data.font.smrmarks.custom)) data.font.smrmarks.custom = {};
+    if (!_isObj(data.font.smrmarks.combinedImage)) data.font.smrmarks.combinedImage = { dataUrl: null };
+    data.font.smrmarks.enabled = !!data.font.smrmarks.enabled; data.font.smrmarks.mode = 'custom';
+    if (data.font.smrmarks.uploadMode !== 'combined') data.font.smrmarks.uploadMode = 'perSymbol';
+    Object.keys(data.font.smrmarks.custom).forEach(cp => {
+      const m = data.font.smrmarks.custom[cp];
+      if (!SMR_MARK_BY_CP[cp] || !_isObj(m)) { delete data.font.smrmarks.custom[cp]; return; }
+      m.cls = 'above'; m.designMode = (m.designMode === 'editor') ? 'editor' : 'upload';
+      if (m.smrSource !== 'import') delete m.smrSource;
+      const a = m.attachAnchor;
+      if (a && Number.isFinite(a.x) && Number.isFinite(a.y)) m.attachAnchor = { x: Math.round(a.x), y: Math.round(a.y) };
+      else delete m.attachAnchor;
+    });
+    MARK_STORE_KINDS.forEach(cat => { const c = data.font[cat].custom; Object.keys(c).forEach(k => { if (!_isObj(c[k])) delete c[k]; }); });   // a mark entry is an object with a source — anything else is dropped
     data.font.customMarks.mode = 'custom';
     if (!data.font.accent || typeof data.font.accent !== 'object') data.font.accent = { mode: 'custom', custom: {} };
     if (!data.font.accent.custom || typeof data.font.accent.custom !== 'object') data.font.accent.custom = {};
