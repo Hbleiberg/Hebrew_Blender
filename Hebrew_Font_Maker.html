@@ -3721,7 +3721,8 @@ function newProject() {
       trop:   { enabled: false, mode: 'default', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null }, halign: {}, vowelPair: { below: { mode: 'stack', dx: 70 }, above: { mode: 'stack', dx: 70 } } },
       customMarks: { enabled: true, mode: 'custom', custom: {}, uploadMode: 'perSymbol', combinedImage: { dataUrl: null } },   // user-defined nikkud marks added via the Custom glyphs tab
       accent: { mode: 'custom', custom: {} },   // Latin accent shapes taken from an imported font; empty = the built-in LATIN_ACCENTS outlines
-      metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB },
+      metrics: { baseline: BASELINE, letterTop: LETTER_TOP, lamedAscender: LAMED_TOP, descender: DESCENDER, defaultLSB: DEF_LSB, defaultRSB: DEF_RSB,
+                 capHeight: CAP_HEIGHT, xHeight: X_HEIGHT, ascender: ASCENDER },
       spacing: { letterSpacing: 0, wordSpacing: 260, lineSpacing: 0, sample: 'שלום עולם', kernTarget: 40 },
       includeDigitsPunct: true,
       addCustomGlyphs: false,
@@ -22365,8 +22366,8 @@ function migrateProject(data) {
       data.font.license = 'ofl';   // orphaned lock key with no provenance — heal to the safest normal default
     }
     data.font.style = data.font.style === 'bold' ? 'bold' : 'regular';   // Regular/Bold family style — backfills old saves and coerces junk
-    if (!_isObj(data.font.metrics)) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB };
-    else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB'].forEach((k,i)=>{ const v = data.font.metrics[k]; if (typeof v !== 'number' || !Number.isFinite(v)) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB][i]; });   // a line box is numbers or the default — a string here reaches arithmetic
+    if (!_isObj(data.font.metrics)) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB, capHeight:CAP_HEIGHT, xHeight:X_HEIGHT, ascender:ASCENDER };
+    else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB','capHeight','xHeight','ascender'].forEach((k,i)=>{ const v = data.font.metrics[k]; if (typeof v !== 'number' || !Number.isFinite(v)) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB,CAP_HEIGHT,X_HEIGHT,ASCENDER][i]; });   // a line box is numbers or the default — a string here reaches arithmetic. The three cased-script lines (v5.54) included: effMetrics passes anything non-null through, so a hand-edited capHeight of "tall" reached fy() as NaN and blanked the stage
     { const _m = data.font.metrics, _ok = (v, lo, hi) => Number.isFinite(v) && v >= lo && v <= hi;   // imported line box: an .hfm / autosave blob is untrusted, and a bad value here collapses or explodes every line
       if (_m.typoAscent  != null) { if (_ok(+_m.typoAscent,  1, 3000))   _m.typoAscent  = Math.round(+_m.typoAscent);  else delete _m.typoAscent; }
       if (_m.typoDescent != null) { if (_ok(+_m.typoDescent, -1500, -1)) _m.typoDescent = Math.round(+_m.typoDescent); else delete _m.typoDescent; }
