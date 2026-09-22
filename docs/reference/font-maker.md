@@ -294,11 +294,11 @@ After mutating state, call `renderStage(); renderControls();` (+ `renderGrids()`
 selection changed) — `afterUndo` shows the canonical full refresh.
 
 **Not every letter is a Hebrew letter, and `LETTER_ORDER` only knows the Hebrew ones.** English
-(`.eng`), Cyrillic (`.cyr`), Phoenician (`.phn`), Imperial Aramaic (`.aram`), custom glyphs (`.custom`) and wide forms (`.wideGlyph`) are `project.letters` entries at
+(`.eng`), Cyrillic (`.cyr`), Phoenician (`.phn`), Imperial Aramaic (`.aram`), Samaritan (`.smr`), custom glyphs (`.custom`) and wide forms (`.wideGlyph`) are `project.letters` entries at
 code points `LETTER_ORDER` has never heard of, so any cycler that indexes into it gets `-1` and
 silently restarts at alef — walking the user out of the tab they were working in. Each one owns an
 ordered list instead: `ENGLISH_CPS` (A–Z, a–z, then the import-only accented forms) for English,
-`CYRILLIC_CPS` and `PHOENICIAN_CPS` for those two, and a `project.letters` filter on the flag for the rest; punctuation (`cat:'punct'`, which IS in
+`CYRILLIC_CPS`, `PHOENICIAN_CPS`, `ARAMAIC_CPS` and `SAMARITAN_CPS` for those four, and a `project.letters` filter on the flag for the rest; punctuation (`cat:'punct'`, which IS in
 `LETTER_ORDER`) is its own list too, in grid order. `tabDrawCps(cat)` is the one enumerator of a
 tab's drawable code points — `_drawCycleCps` (Save letter & next) reads it through `_drawCatOf(cp)`
 and so does *Save all drawings*, so the two can never disagree about a tab's members — and
@@ -401,7 +401,7 @@ scale-to-fit and every upload span goes through it, so they cannot drift apart. 
 
 | script | top | extra lines |
 |---|---|---|
-| Hebrew, Phoenician, Imperial Aramaic (caseless) | `letterTop` 600, or `lamedAscender` 800 when `.asc` | `descender` when `.desc` |
+| Hebrew, Phoenician, Imperial Aramaic, Samaritan (caseless) | `letterTop` 600, or `lamedAscender` 800 when `.asc` | `descender` when `.desc` |
 | Latin / Cyrillic **uppercase** | `capHeight` 700, or `ascender` 725 when `.asc` (Й Ё Ґ Ї Ў Ѓ Ќ) | `capHeight`, `descender` when `.desc` (Q, Д Ц Щ Ђ Џ) |
 | Latin / Cyrillic **lowercase** | `xHeight` 510, or `ascender` 725 when `.asc` | `xHeight` always — the bowl of a *b* sits there — plus `descender` when `.desc` |
 
@@ -421,7 +421,13 @@ line, which is what made O and o identical on the stage and squashed lamed down 
 Which letters leave the body band is a per-letter `.asc` / `.desc` flag on the letter table — the same
 two booleans Hebrew has always carried for lamed and the finals. Those were classified by measuring
 every glyph against its own font's cap height across the same corpus, so they are readings rather than
-opinions.
+opinions. Samaritan is the one set measured from a **single** face — `hebrew-square-samaritan` is the
+only shipped font that draws the block — and a pen hand at that, with a median letter bottom of
+−15/1000, so a raw threshold would have read overshoot as descenders. `SMR_DESC` was cut on ink width
+per scanline instead (the five letters still carrying ink at −30), and `SMR_ASC` holds nun alone, which
+tops 1.42× the median where the `letterTop`→`lamedAscender` step is 1.33×. Samaritan is also the first
+caseless set outside Hebrew to use `.asc`, so `guideLinesSVG` labels that line `asc` rather than
+`lamed` when the glyph is Samaritan.
 
 On export, `sCapHeight` and `sxHeight` are **measured from the shipped `O`/`H` and `o`/`x` ink** and
 omitted when the font carries no cased script — a Hebrew-only export is byte-identical to what it was.
