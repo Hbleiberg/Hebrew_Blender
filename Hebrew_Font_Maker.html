@@ -6413,6 +6413,18 @@ function isCustomCp(cp) {
   return customBaseLetters().some(l => l.codepoint === cp)
       || !!(((project.font.customMarks && project.font.customMarks.custom) || {})[cp]);
 }
+/* The tile that already owns cp — a Hebrew or punctuation letter, any optional set's letter (seeded,
+   or seedable the moment its tab is switched on), or anything else already in project.letters. Two
+   items at one code point were never a "replace": curItem() is first-match, so the custom-glyph editor
+   edited the seeded item; the export's custom pass shipped the blank custom outline over it (replace
+   on clash, ahead of every set pass); and migrateProject's byCp kept only one of the two, destroying
+   the other on reload. addCustomGlyph refuses such a cp outright; the name is for the modal. */
+function alphabetOwnerOf(cp) {
+  const meta = letterMeta(cp);
+  if (meta) return gName(meta.name);
+  const it = (project.letters || []).find(l => l.codepoint === cp);
+  return it ? (it.name || ('U+' + cp)) : '';
+}
 function whoHasCp(cp) {            // label of the existing glyph occupying cp, or '' if free
   const L = LETTERS.find(x => x.cp === cp); if (L) return L.name;
   if (MARK_NAMES[cp]) return MARK_NAMES[cp];
@@ -6435,7 +6447,7 @@ function normalizeCp(raw) {        // "U+05D0" | "0x05D0" | "05D0" | a pasted ch
   else if (/^[0-9a-f]{1,6}$/i.test(s)) n = parseInt(s, 16);
   else n = s.codePointAt(0);       // a single pasted character
   if (!Number.isFinite(n) || n < 0x20 || n > 0xFFFF) return null;   // custom glyphs stay in the BMP on purpose
-                                                                    // (gname() itself handles SMP — see PHOENICIAN_LETTERS and ARAMAIC_LETTERS)
+                                                                    // (gname() itself handles SMP — see PHOENICIAN_LETTERS and ARAMAIC_LETTERS; the English, Cyrillic and Samaritan sets live IN the BMP, which is why addCustomGlyph refuses a cp any tile owns)
   return n.toString(16).toUpperCase().padStart(4, '0');
 }
 function setAddCustomGlyphs(on) {
@@ -6820,7 +6832,22 @@ function addCustomGlyph() {
   // A converted wide letterform also owns its cp as a real project.letters item — two items at one
   // code point would break every find-by-cp (and migrateProject's byCp map keeps only one).
   if (wideGlyphItemFor(cp)) { askModal(I18n.t('fontmaker.modals.glyph_exists_title'), I18n.t('fontmaker.modals.wide_owns_cp_body', {cp: esc(cp)}), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
+  // A code point the font already owns as a tile is refused, not "replaced" — see alphabetOwnerOf.
+  const owner = alphabetOwnerOf(cp);
+  if (owner) { askModal(I18n.t('fontmaker.modals.glyph_exists_title'), I18n.t('fontmaker.modals.set_owns_cp_body', {cp: esc(cp), name: esc(owner)}), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
+  // A base glyph at a mark's code point pushes the same name into glyphOrder twice (the mark pass adds
+  // it unconditionally) — an export-time failure; a mark at a composed form's target would replace a
+  // base glyph with a zero-advance mark still listed as a base; the space and the PUA / joiner slots
+  // the meteg spellings bake are the font's own. All refused. What remains is the designed override —
+  // a base glyph at a composed form's target (the bake skips an owned name and the tile says so), or a
+  // mark at a standard mark's code point (the customMarks pass replaces it cleanly) — which still asks.
   const who = whoHasCp(cp);
+  const markCp = !!(MARK_NAMES[cp] || TROP_NAMES[cp]);
+  const formCp = PRECOMPOSED.some(p => p.target === cp) || EXTRA_FORMS.some(f => f.target === cp);
+  const internal = !!who && !markCp && !formCp;                       // the space, E0B0–E0B4, 034F, 200D
+  if ((cgType !== 'mark' && markCp) || (cgType === 'mark' && formCp) || internal) {
+    askModal(I18n.t('fontmaker.modals.glyph_exists_title'), I18n.t('fontmaker.modals.set_owns_cp_body', {cp: esc(cp), name: esc(who)}), [{label:I18n.t('fontmaker.modals.ok')}]); return;
+  }
   if (who && !confirm(I18n.t('fontmaker.modals.confirm_replace_cp', { cp: cp, who: who }))) return;
   const name = (document.getElementById('cgName').value || '').trim();
   if (cgType === 'mark') {
@@ -22276,7 +22303,23 @@ function migrateProject(data) {
     ['anchors', 'savedAnchors', 'markShapes', 'captureBox'].forEach(k => { if (l[k] != null && !_isObj(l[k])) l[k] = null; });
   });
   // ensure all 27 letters exist & fields present (forward-compatible)
-  const byCp = {}; data.letters.forEach(l => byCp[l.codepoint] = l);
+  // One item per code point. A save can still carry two at one cp — a custom glyph added where a letter
+  // already lived, which addCustomGlyph has refused since the review — and last-wins destroyed whichever
+  // was pushed first. Keep the one with ink, else the first (the one curItem() was showing). A survivor
+  // at a letter's own cp IS that letter: it drops .custom (deleteCustomGlyph would otherwise filter the
+  // alef itself out of project.letters) and, at an optional set's cp, takes that set's flag and name.
+  const byCp = {}; data.letters.forEach(l => {
+    if (!l || typeof l.codepoint !== 'string') return;
+    const prev = byCp[l.codepoint], ink = x => !!(x.contours && x.contours.length);
+    if (!prev || (ink(l) && !ink(prev))) byCp[l.codepoint] = l;
+  });
+  Object.keys(byCp).forEach(cp => {
+    const l = byCp[cp]; if (!l.custom) return;
+    const meta = letterMeta(cp); if (!meta) return;                                   // a free code point: stays a custom glyph
+    delete l.custom; l.name = meta.name;
+    const f = isEng(cp) ? 'eng' : isCyr(cp) ? 'cyr' : isPhn(cp) ? 'phn' : isAram(cp) ? 'aram' : isSmr(cp) ? 'smr' : null;
+    if (f) { l[f] = true; if (meta.case) l.case = meta.case; else delete l.case; }   // a set's item carries its flag (and case)
+  });
   data.letters = LETTERS.map(L => {
     const ex = byCp[L.cp] || blankLetter(L);
     ex.source = ex.source || { kind:data.inputMode||'single', dataUrl:null, cropRect:null, sheetId:null };

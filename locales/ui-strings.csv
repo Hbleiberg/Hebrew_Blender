@@ -2106,6 +2106,7 @@ fontmaker.modals.glyph_exists_body,You already have a custom glyph at U+{cp}.,כ
 fontmaker.modals.remove_recent_body,"Remove {name} from the Recent list in this browser? The project is stored only here — unless you also saved it to your computer or your account, this is the only copy.","להסיר את {name} מרשימת האחרונים בדפדפן הזה? הפרויקט שמור כאן בלבד — אלא אם שמרתם אותו גם במחשב או בחשבון שלכם, זהו העותק היחיד.",dialog body,do not translate {…}; REVIEW: machine-drafted HE — confirm
 fontmaker.modals.remove_recent_title,Remove from Recent?,להסיר מהאחרונים?,dialog title,REVIEW: machine-drafted HE — confirm
 fontmaker.modals.wide_owns_cp_body,U+{cp} is your converted wide letterform. Edit it from the Wide letterforms tab — or revert it there first to free this code point.,U+{cp} היא צורת האות הרחבה שהמרתם. ערכו אותה מלשונית האותיות הרחבות — או שחזרו אותה שם תחילה כדי לפנות את נקודת הקוד.,modal body,
+fontmaker.modals.set_owns_cp_body,"U+{cp} is already {name}, which has a tile of its own. Draw or edit it there — a custom glyph cannot take a code point the font already owns.","U+{cp} היא כבר {name}, ויש לה אריח משלה. ציירו או ערכו אותה שם — גליף מותאם אינו יכול לתפוס נקודת קוד שכבר שייכת לגופן.",dialog body,
 fontmaker.modals.glyph_exists_title,Glyph already exists,הגליף כבר קיים,dialog title,
 fontmaker.modals.gotit,Got it,הבנתי,dialog button,
 fontmaker.modals.help_close,Close,סגור,help dialog button,

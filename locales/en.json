@@ -2562,6 +2562,7 @@
   "fontmaker.modals.save_to_computer": "To computer",
   "fontmaker.modals.saved_browser_reminder": "Heads-up: this copy lives only in this browser, on this device. If you clear your browsing data or move to another computer, it's gone. ⚠️ Use Save Project → 💾 To computer every so often so you always have a backup you can't lose.",
   "fontmaker.modals.saved_browser_title": "Saved in this browser ✓",
+  "fontmaker.modals.set_owns_cp_body": "U+{cp} is already {name}, which has a tile of its own. Draw or edit it there — a custom glyph cannot take a code point the font already owns.",
   "fontmaker.modals.shaping_fail_body": "This usually means the mark anchors didn't take. You can still download, but vowels/trop may be misplaced.",
   "fontmaker.modals.shaping_fail_dagesh_plain": "A typed letter + dagesh (בּ) did not compose into its dotted form ({n} glyphs) — the dagesh ccmp lookup may be missing.",
   "fontmaker.modals.shaping_fail_dagesh_vowel": "A dagesh letter with a vowel (בָּ) did not compose into its dotted form ({n} glyphs) — the dagesh ccmp filtering set may be missing.",
