@@ -5449,7 +5449,7 @@ function metricsPanel() {
   const f = (id,label,val,fn,key) =>
     `<label class="fld metric-fld">${label}
        <input type="number" id="${id}" class="metric-num" value="${val}" step="10" oninput="${fn}('${key}', this.value)" onchange="udBurstCommit()"></label>`;
-  const lamed = (meta && meta.asc && !(meta && meta.case)) ? f('mLamed',I18n.t('fontmaker.panels.metric_lamed_asc'), m.lamedAscender, 'setMetric','lamedAscender') : '';
+  const lamed = (meta && meta.asc && !(meta && meta.case)) ? f('mLamed',I18n.t(isSmr(curCp) ? 'fontmaker.panels.metric_smr_asc' : 'fontmaker.panels.metric_lamed_asc'), m.lamedAscender, 'setMetric','lamedAscender') : '';
   // Cap / x-height / ascender appear only while a cased glyph is open, the way the lamed field does —
   // they mean nothing on a Hebrew, Phoenician, Imperial Aramaic or Samaritan letter.
   const caseFlds = (meta && meta.case)
@@ -5501,7 +5501,8 @@ function metricHandlesSVG() {
                    capHeight: () => _pT('metric_cap_drag', 'Cap height — drag to set'),
                    xHeight:   () => _pT('metric_xheight_drag', 'x-height — drag to set'),
                    ascender:  () => _pT('metric_ascender_drag', 'Ascender — drag to set'),
-                   lamedAscender: () => _pT('metric_lamed_drag', 'Lamed ascender — drag to set'),
+                   lamedAscender: () => isSmr(curCp) ? _pT('metric_smr_drag', 'Ascender — drag to set')      // the same line over a Samaritan nun, named generically
+                                                    : _pT('metric_lamed_drag', 'Lamed ascender — drag to set'),
                    descender: () => _pT('metric_descender_drag', 'Descender — drag to set') };
   let h = dot('baseline','y', 488, fy(m.baseline), C.base, '', _pT('metric_baseline_drag', 'Baseline — drag to set'));
   (band ? band.lines : [[m.letterTop, 'letterTop']]).forEach(([v, key]) =>
@@ -8991,7 +8992,7 @@ function stageColors() {
     grid:'#b9c0cc', gridSnap:'#c9922a', paper:'#ffffff'
   };   // paper = #stage's own background (var(--white)) — the halo colour a stage label is knocked out in
 }
-const GUIDE_LBL = { letterTop:'top', capHeight:'cap', xHeight:'x-height', ascender:'asc', lamedAscender:'lamed', descender:'desc' };
+const GUIDE_LBL = { letterTop:'top', capHeight:'cap', xHeight:'x-height', ascender:'asc', lamedAscender:'lamed', lamedAscenderSmr:'asc', descender:'desc' };
 function guideLinesSVG(rightX) {   // rightX (stage px): extend the reference lines under a wide form so they span its full width
   const C = stageColors();
   const m = effMetrics();
@@ -9003,7 +9004,7 @@ function guideLinesSVG(rightX) {   // rightX (stage px): extend the reference li
   // The ascender line is named after lamed, which reads right on a Hebrew letter and wrong over a
   // Samaritan nun — the only glyph outside Hebrew that reaches it (SMR_ASC; every other caseless
   // set tops out at letterTop). The metric it drags is still the same one.
-  const lbl = key => (key === 'lamedAscender' && isSmr(curCp)) ? 'asc' : GUIDE_LBL[key];
+  const lbl = key => GUIDE_LBL[(key === 'lamedAscender' && isSmr(curCp)) ? 'lamedAscenderSmr' : key];
   (band ? band.lines : [[m.letterTop, 'letterTop']]).forEach(([v, key]) =>
     lines.push([v, lbl(key) + ' ' + v, key === 'descender' ? C.desc : C.top, key]));
   const x2 = (rightX != null && rightX > 498) ? Math.round(rightX) : 498;

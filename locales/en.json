@@ -3173,6 +3173,8 @@
   "fontmaker.panels.metric_reset": "Reset to defaults",
   "fontmaker.panels.metric_right_margin": "Right margin",
   "fontmaker.panels.metric_rsb_drag": "Right margin — drag",
+  "fontmaker.panels.metric_smr_asc": "Ascender",
+  "fontmaker.panels.metric_smr_drag": "Ascender — drag to set",
   "fontmaker.panels.metric_this_letter": "{name} (this letter)",
   "fontmaker.panels.metric_top": "Letter top",
   "fontmaker.panels.metric_top_drag": "Hebrew letter top — drag to set",

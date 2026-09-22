@@ -3173,6 +3173,8 @@
   "fontmaker.panels.metric_reset": "אפס לברירות מחדל",
   "fontmaker.panels.metric_right_margin": "מרווח ימני",
   "fontmaker.panels.metric_rsb_drag": "מרווח ימני — גררו",
+  "fontmaker.panels.metric_smr_asc": "עולה",
+  "fontmaker.panels.metric_smr_drag": "עולה — גררו כדי לקבוע",
   "fontmaker.panels.metric_this_letter": "{name} (אות זו)",
   "fontmaker.panels.metric_top": "גובה אות",
   "fontmaker.panels.metric_top_drag": "גובה אות עברית — גררו כדי לקבוע",

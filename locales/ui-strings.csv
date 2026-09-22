@@ -2767,6 +2767,8 @@ fontmaker.panels.metric_ascender_drag,Ascender — drag to set,עולה — גר
 fontmaker.panels.metric_hint,"Check <b>Adjust margins manually?</b> to show draggable dots: drag the <b>left</b> dot to slide the whole letter, the <b>right</b> dot to set the right margin, and <b>width</b> to set the advance. <b>Fit margins</b> gives a redrawn letter the font's default side margins. (The reference image stays draggable either way.)","סמנו <b>התאמת מרווחים ידנית?</b> כדי להציג נקודות הניתנות לגרירה: גררו את הנקודה <b>השמאלית</b> כדי להחליק את כל האות, את הנקודה <b>הימנית</b> כדי לקבוע את המרווח הימני, ואת <b>הרוחב</b> כדי לקבוע את הקידום. <b>התאמת שוליים</b> מעניקה לאות ששורטטה מחדש את שולי הצד המוגדרים של הגופן. (תמונת הייחוס נשארת ניתנת לגרירה כך או כך.)",panel hint,
 fontmaker.panels.metric_lamed_asc,Lamed asc.,עולה למד,metric field label,
 fontmaker.panels.metric_lamed_drag,Lamed ascender — drag to set,עולה הלמד — גררו כדי לקבוע,drag handle title,
+fontmaker.panels.metric_smr_asc,Ascender,עולה,"metric field label — the lamedAscender metric over a Samaritan nun (not the Latin ascender, which metric_ascender labels)",
+fontmaker.panels.metric_smr_drag,Ascender — drag to set,עולה — גררו כדי לקבוע,"drag handle title — the lamedAscender line over a Samaritan nun (generic wording, maintainer’s choice)",
 fontmaker.panels.metric_label_left,left,שמאל,on-stage drag-handle annotation (metrics stage),
 fontmaker.panels.metric_label_right,right,ימין,on-stage drag-handle annotation (metrics stage),
 fontmaker.panels.metric_label_width,width,רוחב,on-stage drag-handle annotation (metrics stage),
