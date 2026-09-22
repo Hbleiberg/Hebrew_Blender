@@ -2919,6 +2919,27 @@ const LATIN_EXTRA = [
 /* Everything an import may add to the English tab beyond A-Z/a-z. One list, so the import loop, the
    grid and isEng() cannot drift apart. */
 const LATIN_IMPORT_ONLY = LATIN_ACCENTED.concat(LATIN_EXTRA);
+/* Which band an import-only Latin form is drawn and fitted in. glyphBand reads meta.case as exactly
+   'upper' or 'lower', so the 'accent' forms fell into the caseless branch: an É was fitted to the
+   Hebrew letter top, 600, beside an E at 700. A precomposed form takes its base letter's case and reach,
+   plus the accent's own: a mark above clears the line the way Й and ё do in CYR_ASC, a cedilla hangs
+   below. The standalone extras get their case from the character itself and their reach from a measured
+   pass over the same 60 bilingual text faces LATIN_ASC and LATIN_DESC came from (median ink against each
+   face's own cap height and x-height): ß ð þ ƒ rise like b (1.42–1.47× x-height, b = 1.47), þ and ƒ
+   also descend like g (−216 and −172 per 1000, g = −212), Å å Š š Ž ž carry a mark above; Ø and ø only
+   overshoot (−27 and −40, against Q's −149) and stay in the body band. Only the vertical band is resolved
+   here — meta.case stays 'accent' for everything that keys on it (the accent band, seeding, import). */
+const LATIN_EXTRA_ASC  = new Set(['00C5','00E5','0160','0161','017D','017E','00DF','00F0','00FE','0192']);   // Å å Š š Ž ž ß ð þ ƒ
+const LATIN_EXTRA_DESC = new Set(['00FE','0192']);                                                           // þ ƒ
+function bandMeta(meta) {   // the {case, asc, desc} glyphBand reads: resolved for an accent form, the meta itself otherwise
+  if (!meta || meta.case !== 'accent') return meta || {};
+  if (meta.base) {
+    const b = engMeta(meta.base) || {}, cls = (LATIN_ACCENTS[meta.mark] || {}).cls;
+    return { case: b.case, asc: !!(b.asc || cls === 'above'), desc: !!(b.desc || cls === 'below') };
+  }
+  const ch = String.fromCodePoint(parseInt(meta.cp, 16));
+  return { case: ch !== ch.toLowerCase() ? 'upper' : 'lower', asc: LATIN_EXTRA_ASC.has(meta.cp), desc: LATIN_EXTRA_DESC.has(meta.cp) };
+}
 /* ENGLISH_CPS spans BOTH bands, because its only consumer is isEng() — the predicate that routes an
    item to the English tab and keeps the Hebrew nikkud-anchor UI off it (_selectItem, udNavTo,
    renderStage's attachAnchorDrag). An accented form left out of it would open in the Hebrew grid with
@@ -3473,14 +3494,15 @@ function effMetrics() {
 /* The vertical band a glyph is drawn into, and the reference lines that describe it. This is the
    single place that knows a capital from a lowercase: every guide, every scale-to-fit and every
    upload span goes through it, so they can never disagree again.
-     caseless (Hebrew, Phoenician, Imperial Aramaic) → letterTop, and lamedAscender when .asc
+     caseless (Hebrew, Phoenician, Imperial Aramaic, Samaritan) → letterTop, and lamedAscender when .asc
+     an accent form (case 'accent')                            → its base letter's band, via bandMeta
      uppercase                                       → capHeight, or ascender when .asc (Й, Ё, Ґ…)
      lowercase                                       → xHeight, or ascender when .asc (b d f h k l t)
    .desc adds the descender floor. `lines` is what the stage draws; `top` is what a fit scales to.
    A lowercase ascender keeps its x-height line too — the bowl of a b sits there, and a person
    drawing one needs both. */
 function glyphBand(cp) {
-  const m = effMetrics(), meta = letterMeta(cp) || {};
+  const m = effMetrics(), meta = bandMeta(letterMeta(cp));   // an accent form resolves to its base's band (bandMeta)
   const lines = [];
   let top;
   if (meta.case === 'upper') {
@@ -5467,7 +5489,7 @@ function metricsPanel() {
   </div>`;
 }
 function metricHandlesSVG() {
-  const m = effMetrics(), L = curLetter(), meta = curMeta(), C = stageColors();
+  const m = effMetrics(), L = curLetter(), C = stageColors();
   const adv = dispAdvance(L);   // a user-set Width wins (so the dot drags); otherwise frame the reference glyph
   const band = (curKind === 'letter') ? glyphBand(curCp) : null;
   const vy1 = fy(stageChromeTop()), vy2 = fy(m.descender - 30), mid = (vy1+vy2)/2;
@@ -11941,7 +11963,7 @@ function nodeOverlaySVG() {
    it only hides the rendering, and snapping staying live is the specced behavior (the capture
    highlight simply isn't visible while hidden). Collected once at drag start. */
 function collectSnapTargets() {
-  const m = effMetrics(), meta = curMeta();
+  const m = effMetrics();
   const band = (curKind === 'letter') ? glyphBand(curCp) : null;
   const ys = [ { v: m.baseline, kind: 'metric', key: 'baseline' } ];
   (band ? band.lines : [[m.letterTop, 'letterTop']]).forEach(([v, key]) => ys.push({ v, kind: 'metric', key }));
