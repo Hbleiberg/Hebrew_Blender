@@ -37,7 +37,7 @@ A second shared block `/* ═══ My Fonts uploader (shared, identical across 
 use `onUploadFontPick(input)` (`refreshMyFonts()` + `setHebFont(name)`), the dashboard adds an extra
 `onUploadEngFontPick` (routes to `setEngFont`), and `index.html`'s gear-modal manager uses
 `onUploadFontPickIndex` (`renderMyFontsManager()` + `refreshFontsBackupCache()`). Each picker has a small
-**"⬆ Upload your own font?"** `<label>` (hidden `<input type="file" accept=".ttf,.otf,.woff,.woff2">`)
+**"Upload your own font?"** `<label>` (the shared `hi-upload` icon before a `.hi-lbl` span that carries the `data-i18n`; hidden `<input type="file" accept=".ttf,.otf,.woff,.woff2">`)
 directly **below the font grid**.
 
 ### Backup (no extra wiring)
@@ -498,7 +498,7 @@ These lines are a snapshot — verify by grep before relying on them, and update
 Non-modal spotlight: a dim full-page overlay with a spotlight cutout computed from the target's
 `getBoundingClientRect()`, a floating card (title, 1–2 sentences, "Step X of N", Back / Next / ✕ End),
 Escape to end, arrow keys to navigate, resize-safe, `scrollIntoView` the target first, and **zero project/
-settings mutations**. It **never auto-launches** — entry is a header **"❓ Tour"** button with a one-time
+settings mutations**. It **never auto-launches** — entry is a header **Tour** button (the shared `hi-help` icon + the word) with a one-time
 first-visit pulse gated by a `hebrew<Tool>_tourSeen` flag (set once so the pulse never returns).
 - **Implemented on:** `hebrew_blend_generator.html`, `hebrew_dictionary.html`, `classroom_dashboard.html`,
   `torah_trainer.html`, `Hebrew_Font_Maker.html`, `flash_cards.html`, and `trope_tutor.html`
@@ -555,8 +555,9 @@ Writing a link **never navigates**; loading a link **never clobbers** the user's
   flash-cards payload would fill the bar with a long blob) — do not "converge" it without asking.
 - **Rule:** any tool that gains shareable state uses `?s=` (a paste code may coexist where one already
   does; readable params are acceptable where the link is meant to be human-legible, as torah's is).
-- **Button label:** the affordance is **🔗**-prefixed on all four carriers — not a
-  clipboard or paperclip glyph, which read as "copy text" and "attachment" rather than "link".
+- **Button icon:** the affordance carries the shared `hi-link` glyph on all four carriers (in the markup,
+  never a 🔗 in the label) — a link, not a clipboard or paperclip, which read as "copy text" and
+  "attachment" rather than "link".
 
 ### 4. Reduced motion
 Every page must carry a `@media (prefers-reduced-motion: reduce)` block, and **every** animation added
