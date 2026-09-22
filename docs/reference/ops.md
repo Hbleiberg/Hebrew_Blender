@@ -301,10 +301,13 @@ origins. Meta CSP can't express `frame-ancestors` or `report-uri` and doesn't co
 before the tag — hence the placement. Origins currently allowlisted (re-true this list from the
 pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.html`):
 
-- **Everywhere:** Google Fonts (`fonts.googleapis.com` / `fonts.gstatic.com`) + gtag (`www.googletagmanager.com`
+- **Everywhere but the three harnesses:** Google Fonts (`fonts.googleapis.com` / `fonts.gstatic.com`) + gtag (`www.googletagmanager.com`
   in `script-src`; `*.google-analytics.com`, `*.analytics.google.com` and `www.googletagmanager.com` in
   `connect-src`); `data:` / `blob:` in `img-src` for PDF/PNG/`.ivrit`
-  export. (`i18n-test.html`, the dev harness, carries no gtag and allows only `data:` images.)
+  export — except `account.html`, which shows no images and allows neither (its zip is an `<a download>`,
+  not an image load). It is the tighter page, so never loosen it to match the others. The harnesses
+  (`i18n-test.html`, `account-test.html`, `saves-test.html`) carry no gtag and no Google Fonts and allow only
+  `data:` images.
 - **Pages that offer accounts** (Home, Generator, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, Dashboard, Font Maker, the account page `account.html`, `account-test.html`, `saves-test.html`): `cdn.jsdelivr.net` in `script-src` (the
   pinned Supabase SDK) and `hhkmqwpjsyxdeuhvcyis.supabase.co` in `connect-src` — exactly those two origins, nothing else
   (avatars are initials, Realtime is not used). The two harnesses carry no gtag.
