@@ -255,7 +255,9 @@ from `torah_trainer.html`.
   (`data-key`) and flashes `.pulse-attn`; it **deliberately marks the family visited** — unlike the
   `_i18nRerender` / `_chartPrintBuild` read-only paths — because the student really is about to
   study it. `setMode('drill')` re-shows the start screen whenever no session is active, so a Learn
-  detour from the results screen ends there (the score and the button are gone; `_lastMissed` is not).
+  detour from the results screen ends there: the score is gone, but while `_lastMissed` holds marks
+  the start screen repeats the count and "Drill these marks" (`#drillStartReview`, filled by
+  `updateDrillStart()`, so a tab switch, a language change and a reset all keep it current).
 
 ---
 

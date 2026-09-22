@@ -1000,6 +1000,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         </div>
         <button class="btn btn-lg" id="drillStartBtn" onclick="startDrill()" data-i18n="trope.drill.start_button">Start drill</button>
         <div class="tu-note" id="drillStartNote" role="status"></div>
+        <!-- The results screen's call to action, repeated here: a Learn detour ("Study →", a mastery
+             cell, the Learn tab) comes back to this screen, not to the results. updateDrillStart()
+             shows it while _lastMissed holds marks; transient like that list, nothing stored. -->
+        <div class="tu-review" id="drillStartReview" hidden>
+          <h3 class="tu-review-title" id="drillStartReviewTitle"></h3>
+          <button class="btn tu-review-drill" onclick="drillMissed()" aria-describedby="drillStartReviewTitle" data-i18n="trope.drill.drill_missed">Drill these marks</button>
+        </div>
         <div class="tu-mgrid" id="masteryGridStart" role="group" aria-label="Mastery by trope" data-i18n-aria-label="trope.drill.mastery_aria"></div>
       </div>
     </div>
@@ -2405,6 +2412,11 @@ function updateDrillStart() {
     note.classList.remove('error');
     note.textContent = '';
   }
+  const review = document.getElementById('drillStartReview');
+  review.hidden = !_lastMissed.length;
+  if (_lastMissed.length) document.getElementById('drillStartReviewTitle').textContent =
+    I18n.t(_lastMissed.length === 1 ? 'trope.drill.review_title.one' : 'trope.drill.review_title.other',
+           { count: _lastMissed.length });
   buildMasteryGrid(document.getElementById('masteryGridStart'));
 }
 
