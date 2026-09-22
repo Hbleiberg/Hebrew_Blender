@@ -4086,13 +4086,22 @@ const STAGE_PAD_TOP = 36, STAGE_PAD_BOT = 24;   // viewBox units of clear air pa
 const STAGE_VB_FLOOR = STAGE_VB.y + STAGE_VB.h + 150;   // 710 — mirrors the 150 units above the default top
 let _stageVB = { x: STAGE_VB.x, y: STAGE_VB.y, w: STAGE_VB.w, h: STAGE_VB.h };   // the box the LAST render used
 let _stageVBEdges = { top: STAGE_VB.y, bot: STAGE_VB.y + STAGE_VB.h };   // held steady while a drag is open
+/* Top of the margin zones and of the width dot that caps them, in FONT units. v5.54 made the metric
+   handles follow glyphBand (a capital, an ascender or lamed all sit above letterTop) but left the zone
+   rectangles at letterTop + 80, so on lamed the width dot floated 52 viewBox units above the rectangle it
+   caps. The four chrome sites read this one value, so they cannot part again. A mark has no band and
+   keeps letterTop + 80, as it always did. */
+function stageChromeTop() {
+  const em = effMetrics();
+  return Math.max(em.letterTop, curKind === 'letter' ? glyphBand(curCp).top : em.letterTop) + 80;
+}
 function stageExtent(l) {              // outermost content that must stay reachable, in FONT units
   const em = effMetrics(), meta = curMeta();
-  // Seeded with the margin band's own ends, the outermost chrome marginGuidesSVG/wideFormGuidesSVG
-  // draw unconditionally; the lamed line (and its draggable dot) can sit higher, and _clampMetric puts
-  // no upper bound on it, so an off-window dot would be an unreachable control.
-  let top = em.letterTop + 80, bot = Math.min(em.descender - 30, em.baseline);
-  if (curKind === 'letter') top = Math.max(top, glyphBand(curCp).top);   // a capital, an ascender or lamed can all sit above letterTop
+  // Seeded with the margin band's own ends — the outermost chrome marginGuidesSVG/wideFormGuidesSVG
+  // draw unconditionally, at stageChromeTop(), which already sits above a capital, an ascender or
+  // lamed; _clampMetric puts no upper bound on that line, so an off-window dot would be an
+  // unreachable control.
+  let top = stageChromeTop(), bot = Math.min(em.descender - 30, em.baseline);
   // c.points is the FLATTENED polyline pathToOutline builds alongside the segments, so this is a close
   // under-approximation of true ink that the pads absorb. Cubic CONTROL points are deliberately not
   // unioned in — they can sit well outside the ink and would over-grow the canvas.
@@ -5461,7 +5470,7 @@ function metricHandlesSVG() {
   const m = effMetrics(), L = curLetter(), meta = curMeta(), C = stageColors();
   const adv = dispAdvance(L);   // a user-set Width wins (so the dot drags); otherwise frame the reference glyph
   const band = (curKind === 'letter') ? glyphBand(curCp) : null;
-  const vy1 = fy(Math.max(m.letterTop, band ? band.top : 0) + 80), vy2 = fy(m.descender - 30), mid = (vy1+vy2)/2;
+  const vy1 = fy(stageChromeTop()), vy2 = fy(m.descender - 30), mid = (vy1+vy2)/2;
   const dot = (key,axis,cx,cy,col,label,title) =>
     `<circle class="metric-h" data-metric="${key}" data-axis="${axis}" cx="${(+cx).toFixed(1)}" cy="${(+cy).toFixed(1)}" r="7" fill="${col}" stroke="#fff" stroke-width="3" paint-order="stroke" style="cursor:${axis==='y'?'ns-resize':'ew-resize'};filter:drop-shadow(0 0 1px rgba(0,0,0,0.55));"><title>${title}</title></circle>`
     + (label ? `<text class="metric-h-lbl" x="${(+cx).toFixed(1)}" y="${(+cy-12).toFixed(1)}" text-anchor="middle" fill="${col}" font-size="9" font-weight="700" font-family="'Source Sans 3',sans-serif" pointer-events="none">${label}</text>` : '');
@@ -8955,7 +8964,7 @@ function guideLinesSVG(rightX) {   // rightX (stage px): extend the reference li
 function marginGuidesSVG() {
   const m = effMetrics(), L = curLetter();
   const adv = dispAdvance(L);   // frame the reference glyph until a Width is set; dots stay aligned with these zones
-  const vy1 = fy(m.letterTop + 80), vy2 = fy(m.descender - 30), mcy = (vy1+vy2)/2;
+  const vy1 = fy(stageChromeTop()), vy2 = fy(m.descender - 30), mcy = (vy1+vy2)/2;
   const C = stageColors();
   const marginZone = (x0f, x1f, side) => {
     const a = fx(x0f), b = fx(x1f), cx = (a+b)/2;
@@ -8978,7 +8987,7 @@ function marginGuidesSVG() {
    (renderStage re-runs per slider tick). Display-only, like every non-align margin overlay. */
 function wideFormGuidesSVG(g) {
   const m = effMetrics();
-  const vy1 = fy(m.letterTop + 80), vy2 = fy(m.descender - 30), mcy = (vy1+vy2)/2;
+  const vy1 = fy(stageChromeTop()), vy2 = fy(m.descender - 30), mcy = (vy1+vy2)/2;
   const C = stageColors();
   let inkR = -1e9; g.contours.forEach(poly => poly.forEach(p => { if (p[0] > inkR) inkR = p[0]; }));
   if (inkR === -1e9) inkR = g.advance;
