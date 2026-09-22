@@ -3138,6 +3138,15 @@ function smrUserMade(l) {
   return !!(l && l.contours && l.contours.length
     && (l.handEdited || l.draw || (l.source && l.source.dataUrl) || l.smrSource !== 'import'));
 }
+/* The right-to-left blocks the app knows — the Hebrew block with its presentation forms, and the three
+   ancient sets. One predicate for the two places that must agree on it: bidiClassOf (the spacing
+   preview's run direction) and the legacy-kern importer (which skips RTL pairs, because that table's
+   order is unknowable for them). A new RTL set adds its block here and nowhere else. */
+function isRtlCp(hex) {
+  const c = parseInt(hex, 16);
+  return (c >= 0x0590 && c <= 0x05FF) || (c >= 0xFB1D && c <= 0xFB4F)
+      || (c >= 0x10900 && c <= 0x1091F) || (c >= 0x10840 && c <= 0x1085F) || (c >= 0x0800 && c <= 0x083F);
+}
 function markClassFor(cp) { return (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].cls) || MARK_CLASS[cp] || TROP_CLASS[cp]; }
 
 /* ── Default mark glyph outlines (font units, attach-anchor at origin 0,0) ──
@@ -8533,7 +8542,7 @@ async function applyFontImport(file, font, bytes, opts) {
     // opentype.js cannot see Extension lookups, hence the Pyodide path). Class pairs land as class
     // rows, matching buildFEA's singles-before-classes emission and kernBetween's first-match read.
     // The legacy `kern` table is the fallback, LTR pairs only. For a left-to-right run that order is
-    // unambiguous and buildFEA emits it unchanged. For Hebrew it is NOT: the table is visual-order by
+    // unambiguous and buildFEA emits it unchanged. For a right-to-left script it is NOT: the table is visual-order by
     // spec while most tools write logical order, and — measured with HarfBuzz against a purpose-built
     // probe font — a legacy `kern` table is applied for LTR runs and IGNORED ENTIRELY for RTL ones
     // (Latin AV kerned -55, the same font's alef+bet kerned 0 in RTL and -80 only when the run was
@@ -8573,18 +8582,17 @@ async function applyFontImport(file, font, bytes, opts) {
             const h = g.unicode.toString(16).toUpperCase().padStart(4, '0');
             if (known.has(h)) cpOf[i] = h;
           }
-          const isHebCp = h => { const c = parseInt(h, 16); return (c >= 0x0590 && c <= 0x05FF) || (c >= 0xFB1D && c <= 0xFB4F); };
           const out = []; let skippedRtl = 0;
           for (const k of keys) {
             const p = k.split(','), a = cpOf[+p[0]], b = cpOf[+p[1]];
             if (!a || !b) continue;
-            if (isHebCp(a) || isHebCp(b)) { skippedRtl++; continue; }   // see above — order is unknowable, so it is not guessed
+            if (isRtlCp(a) || isRtlCp(b)) { skippedRtl++; continue; }   // see above — order is unknowable, so it is not guessed; isRtlCp is the same test bidiClassOf uses
             const v = Math.round(kp[k] * scale);
             if (!v) continue;                                  // a 0 pair is a no-op the exporter drops anyway
             if (out.length >= KERN_IMPORT_CAP) { console.warn('kern import: stopped at ' + KERN_IMPORT_CAP + ' pairs'); break; }
             out.push({ left: [a], right: [b], value: v });
           }
-          if (skippedRtl) console.warn('kern import: skipped ' + skippedRtl + ' pair(s) touching Hebrew — the legacy kern table is not applied to RTL runs, so their order is unknowable');
+          if (skippedRtl) console.warn('kern import: skipped ' + skippedRtl + ' pair(s) touching a right-to-left script — the legacy kern table is not applied to RTL runs, so their order is unknowable');
           if (out.length) { project.font.kerning = out; nKern = out.length; }   // a font with no usable pairs must not wipe the pairs the user tuned
         }
       } catch (e) {}
@@ -15230,10 +15238,7 @@ const BIDI_R = 1, BIDI_L = 2, BIDI_EN = 3, BIDI_NEUTRAL = 4;
 function bidiClassOf(cell) {
   if (cell.type !== 'glyph' || !cell.cp) return BIDI_NEUTRAL;          // the space cell, and anything without a code point
   const c = parseInt(cell.cp, 16);
-  if ((c >= 0x0590 && c <= 0x05FF) || (c >= 0xFB1D && c <= 0xFB4F)
-      || (c >= 0x10900 && c <= 0x1091F)
-      || (c >= 0x10840 && c <= 0x1085F)
-      || (c >= 0x0800 && c <= 0x083F)) return BIDI_R;                    // Hebrew block + its presentation forms + Phoenician + Imperial Aramaic + Samaritan
+  if (isRtlCp(cell.cp)) return BIDI_R;                                  // Hebrew block + its presentation forms + Phoenician + Imperial Aramaic + Samaritan
   if (c >= 0x30 && c <= 0x39) return BIDI_EN;                          // European digits — they READ left-to-right but LEAN right-to-left (below)
   if (isEng(cell.cp) || isCyr(cell.cp)) return BIDI_L;                 // the same predicates that route a letter to the English / Cyrillic tab
   return BIDI_NEUTRAL;                                                 // punctuation, symbols, custom glyphs — they take their surroundings

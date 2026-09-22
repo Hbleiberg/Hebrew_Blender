@@ -106,8 +106,9 @@ The shared `.letter-grid` is pinned `direction: rtl` for the Hebrew tiles and `.
   keep following the UI direction, as the Punctuation grid's do.
 - **Tiles**: leave `.lt-heb` at its default direction; add `lang="<bcp47>"` on the span when the
   script has a tag (Hebrew tiles carry `lang="he"`), so a screen reader picks the right voice.
-- **Bidi**: `bidiClassOf` returns `BIDI_R` for the set — add `is<Stem>(cell.cp)` to the Hebrew-block
-  test. Kerning pairs stay in logical (reading) order; the FEA convention is direction-agnostic.
+- **Bidi**: `bidiClassOf` returns `BIDI_R` for the set — add the block's range to `isRtlCp`, the one
+  predicate it shares with the legacy-`kern` importer (which skips RTL pairs, since that table's order is
+  unknowable for them). Kerning pairs stay in logical (reading) order; the FEA convention is direction-agnostic.
 - **Specimen page**: `{ rtl: true, cols: 8, glyphPx: 44 }`, like the Hebrew add-on sections.
   **Template**: the same `kind` line as LTR — standalone glyph, no dotted circle.
 - **Save letter & next** lands on the tile immediately to the **left**.
