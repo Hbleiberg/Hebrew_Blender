@@ -704,8 +704,12 @@ out of them for the same reason. One row today: `smrmarks`, the 21 Samaritan mar
 cp, Unicode short name, column). One identifier does every job — kind = `project.font` store key = picker
 tab id = panel/grid id prefix = `curKind` — which is what lets `catTabFor`'s `: kind` fall-through,
 `updateTabs`' `project.font[curKind]`, `renderMarkPanel`'s `cat + 'Grid'` and `setMarkEnabled` serve the
-family with no new fork. Every nikkud/trop two-way ternary takes one prefix guard on the table and keeps
-its Hebrew tail (`catOfCp` — whose default for an unknown cp is `'nikkud'` — `markName`, `markClassOf`,
+family with no new fork. The one exception is the tabbed layout's CSS, which names each mark grid by id:
+a grid left out of its *mark grids* rule (rows of 7) falls back to the letter grid's auto-fill columns,
+and inside the shrink-to-fit `.mark-gridside` those resolve to a single column. `#smrmarksGrid` is in
+that rule, and from a 1850px window it takes one row of all 21 tiles instead.
+Every nikkud/trop two-way ternary takes one prefix guard on the table and keeps its Hebrew tail
+(`catOfCp` — whose default for an unknown cp is `'nikkud'` — `markName`, `markClassOf`,
 `markClassFor`, `pinKeyFor`, `whoHasCp`, `alphabetOwnerOf`, `defaultPieces`, `markTilePreviewSVG`,
 `dropKindPins`, `markCatScale`); `MARK_STORE_KINDS` is the one list the outline scan, the autosave
 stripper, the cloud packer and the loader walk. A family's marks are font-wide only: the export's

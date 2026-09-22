@@ -471,11 +471,23 @@ body.dark .hi-sun{display:inline-block;}
   body.layout-tabbed #catHost .cat-panel.cat-active .panel-body { display: flex !important; flex-direction: column; gap: 9px; max-height: 320px; overflow: auto; }
   /* keep letter tiles compact & square instead of stretching across the wide workspace */
   body.layout-tabbed #catHost .letter-grid { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); }
-  /* Tabbed: mark grids — compact legible tiles in rows of 7, packed left (no awkward right-side gap) */
+  /* Tabbed: mark grids — compact legible tiles in rows of 7, packed left (no awkward right-side gap). Every
+     mark grid is named here: one left out falls back to the auto-fill rule above, which inside the
+     shrink-to-fit .mark-gridside resolves to a single column. */
   body.layout-tabbed #catHost #nikkudGrid,
-  body.layout-tabbed #catHost #tropGrid {
+  body.layout-tabbed #catHost #tropGrid,
+  body.layout-tabbed #catHost #smrmarksGrid {
     grid-template-columns: repeat(7, minmax(50px, 90px));
     justify-content: left;
+  }
+  /* The 21 Samaritan marks take ONE row beside the controls once it fits at 56px a tile, the narrowest that
+     still holds "Epenthetic": from 1850px the side has about 1280px (the 460px controls, the gap, the panel
+     padding, the body margins and a classic scrollbar take the rest). The side grows into the free width,
+     the tiles share it up to the 90px Nikkud tile, and a max-width box sits at the inline start, so the row
+     stays against the controls in either direction. Narrower, the rule above gives three rows of 7. */
+  @media (min-width: 1850px) {
+    body.layout-tabbed #catHost #smrmarksPanelBody .mark-gridside { flex: 1 1 0; }
+    body.layout-tabbed #catHost #smrmarksGrid { grid-template-columns: repeat(21, minmax(0, 1fr)); max-width: calc(21 * 90px + 20 * 5px); }
   }
   /* Tabbed: controls (toggles + hint) and the mark grid sit side by side; Sidebar keeps them stacked */
   .mark-split { display: flex; flex-direction: column; gap: 9px; }
