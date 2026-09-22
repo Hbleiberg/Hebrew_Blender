@@ -9341,19 +9341,33 @@ function templateMetrics(family, ch) {
   const loaded = !document.fonts || document.fonts.check('24px ' + primary);
   const key = family + '|' + ch;
   if (loaded && _tplMetricsCache[key]) return _tplMetricsCache[key];
-  let m = { capRatio: 0.7, leftRatio: -0.3, widthRatio: 0.62 };
+  let m = { capRatio: 0.7, leftRatio: -0.3, widthRatio: 0.62, native: true };
   try {
     const FP = 200, S = 560, drawX = S/2, baseY = Math.round(S*0.7);
     const cv = document.createElement('canvas'); cv.width = S; cv.height = S;
     const ctx = cv.getContext('2d', { willReadFrequently: true });
-    ctx.font = `${FP}px ${family}`; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center'; ctx.fillStyle = '#000';
-    ctx.fillText(ch, drawX, baseY);
-    const d = ctx.getImageData(0,0,S,S).data;
-    let top=-1, left=S, right=-1;
-    for (let y=0; y<S; y++) { const row=y*S; for (let x=0; x<S; x++) { if (d[(row+x)*4+3] > 24) { if (top<0) top=y; if (x<left) left=x; if (x>right) right=x; } } }
-    if (top>=0 && right>=left) {
-      const cap=(baseY-top)/FP;
-      m = { capRatio: (cap>0.15 && cap<1.6)?cap:0.7, leftRatio: (left-drawX)/FP, widthRatio: (right-left+1)/FP };
+    const raster = fam => {   // the ink box of ch drawn in fam, or null when nothing painted
+      ctx.clearRect(0, 0, S, S);
+      ctx.font = `${FP}px ${fam}`; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'center'; ctx.fillStyle = '#000';
+      ctx.fillText(ch, drawX, baseY);
+      const w = ctx.measureText(ch).width;
+      const d = ctx.getImageData(0,0,S,S).data;
+      let top=-1, left=S, right=-1;
+      for (let y=0; y<S; y++) { const row=y*S; for (let x=0; x<S; x++) { if (d[(row+x)*4+3] > 24) { if (top<0) top=y; if (x<left) left=x; if (x>right) right=x; } } }
+      return (top>=0 && right>=left) ? { top, left, right, w } : null;
+    };
+    const a = raster(family);
+    // Did the family draw ch itself, or did the browser fall back? Draw once more with the primary face
+    // swapped for a name that cannot exist and the same generic tail: an identical reading means the
+    // requested face lacks the glyph. document.fonts.check(font, text) cannot tell — a FontFace built
+    // from a buffer carries unicode-range U+0–10FFFF and "matches" any text. A system with no fallback
+    // for the script at all paints tofu that differs from the sentinel and reads as native; the
+    // plausibility clamp below is the only guard there, as it always was.
+    const b = raster(String(family).replace(primary, "'ivrit-no-such-face'"));
+    const native = !(a && b && a.top === b.top && a.left === b.left && a.right === b.right && Math.abs(a.w - b.w) < 0.5);
+    if (a) {
+      const cap=(baseY-a.top)/FP;
+      m = { capRatio: (cap>0.15 && cap<1.6)?cap:0.7, leftRatio: (a.left-drawX)/FP, widthRatio: (a.right-a.left+1)/FP, native };
     }
   } catch (e) {}
   if (loaded) _tplMetricsCache[key] = m;
@@ -9366,11 +9380,14 @@ function templateMetrics(family, ch) {
    glyph shows its true proportion. Because capHeight and xHeight were derived FROM letterTop through
    the same corpus ratios (Hebrew/cap 0.858, x/cap 0.726), the family's own O and o then land on the
    cap and x-height guides with no per-glyph correction — one size seats both scripts.
-   Template fonts are Hebrew faces, so ב is always present; an implausible reading falls back to the
-   same 0.7 the per-character path used. */
+   The picker's faces are Hebrew, but an uploaded reference font can be anything: when the family does
+   not draw ב itself (templateMetrics reports native: false), computeTemplateFit sizes that family per
+   character in each glyph's own band instead — the pre-v5.54 rule — rather than from a fallback font's
+   ב. An implausible reading falls back to the same 0.7 the per-character path used. */
 const TPL_ANCHOR_CH = '\u05D1';
 function templateFamilyFs(family) {
   const a = templateMetrics(family, TPL_ANCHOR_CH);
+  if (a.native === false) return null;                           // the family does not draw ב: computeTemplateFit sizes per character instead
   const em = effMetrics();
   const want = fy(em.baseline) - fy(em.letterTop);               // viewBox units, baseline→Hebrew top
   return Math.max(40, Math.min(1400, want / (a.capRatio || 0.7)));
@@ -9379,7 +9396,9 @@ function computeTemplateFit(l) {
   const ch = String.fromCodePoint(parseInt(l.codepoint,16));
   const m = templateMetrics(project.template.font, ch);          // per-character: only the horizontal seating
   const em = effMetrics();
-  const fs = templateFamilyFs(project.template.font);            // per-FAMILY: the vertical size
+  const famFs = templateFamilyFs(project.template.font);         // per-FAMILY: the vertical size — null when the family does not draw ב
+  const fs = famFs != null ? famFs
+    : Math.max(40, Math.min(1400, (fy(em.baseline) - fy(glyphBand(l.codepoint).top)) / (m.capRatio || 0.7)));   // per character, in its own band
   const inkWidthFont = (m.widthRatio * fs) / SC;                 // glyph ink width in font units
   const advance = l.contours ? l.advance : Math.round(em.defaultLSB + inkWidthFont + em.defaultRSB);
   const cx = fx(em.defaultLSB) - m.leftRatio * fs;              // seat the ink-left edge at the margin (x = LSB)
