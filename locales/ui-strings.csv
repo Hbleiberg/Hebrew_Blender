@@ -2243,10 +2243,10 @@ fontmaker.modals.replace_aramaic,Replace them,החליפו אותן,dialog butto
 fontmaker.modals.replace_samaritan,Replace them,החליפו אותן,dialog button,
 fontmaker.modals.replace_phoenician_body.one,This font has Phoenician letters. Importing them will overwrite the {count} Phoenician letter you drew yourself.,לגופן הזה יש אותיות פיניקיות. ייבוא שלהן ידרוס את {count} האות הפיניקית שציירתם בעצמכם.,dialog body,plural
 fontmaker.modals.replace_aramaic_body.one,This font has Imperial Aramaic letters. Importing them will overwrite the {count} Aramaic letter you drew yourself.,לגופן הזה יש אותיות ארמיות. ייבוא שלהן ידרוס את {count} האות הארמית שציירתם בעצמכם.,dialog body,plural
-fontmaker.modals.replace_samaritan_body.one,This font has Samaritan letters. Importing them will overwrite the {count} Samaritan letter you drew yourself.,לגופן הזה יש אותיות שומרוניות. ייבוא שלהן ידרוס את {count} האות השומרונית שציירתם בעצמכם.,dialog body,plural
+fontmaker.modals.replace_samaritan_body.one,This font has Samaritan letters and marks. Importing them will overwrite the {count} Samaritan letter or mark you drew yourself.,לגופן הזה יש אותיות וסימנים שומרוניים. ייבוא שלהם ידרוס את {count} האות או הסימן השומרוני שציירתם בעצמכם.,dialog body,plural
 fontmaker.modals.replace_phoenician_body.other,This font has Phoenician letters. Importing them will overwrite the {count} Phoenician letters you drew yourself.,לגופן הזה יש אותיות פיניקיות. ייבוא שלהן ידרוס את {count} האותיות הפיניקיות שציירתם בעצמכם.,dialog body,plural
 fontmaker.modals.replace_aramaic_body.other,This font has Imperial Aramaic letters. Importing them will overwrite the {count} Aramaic letters you drew yourself.,לגופן הזה יש אותיות ארמיות. ייבוא שלהן ידרוס את {count} האותיות הארמיות שציירתם בעצמכם.,dialog body,plural
-fontmaker.modals.replace_samaritan_body.other,This font has Samaritan letters. Importing them will overwrite the {count} Samaritan letters you drew yourself.,לגופן הזה יש אותיות שומרוניות. ייבוא שלהן ידרוס את {count} האותיות השומרוניות שציירתם בעצמכם.,dialog body,plural
+fontmaker.modals.replace_samaritan_body.other,This font has Samaritan letters and marks. Importing them will overwrite the {count} Samaritan letters or marks you drew yourself.,לגופן הזה יש אותיות וסימנים שומרוניים. ייבוא שלהם ידרוס את {count} האותיות או הסימנים השומרוניים שציירתם בעצמכם.,dialog body,plural
 fontmaker.modals.replace_phoenician_title,Replace your Phoenician letters?,להחליף את האותיות הפיניקיות שלכם?,dialog title,
 fontmaker.modals.replace_aramaic_title,Replace your Aramaic letters?,להחליף את האותיות הארמיות שלכם?,dialog title,
 fontmaker.modals.replace_samaritan_title,Replace your Samaritan letters?,להחליף את האותיות השומרוניות שלכם?,dialog title,
@@ -3081,6 +3081,8 @@ fontmaker.status.import_loaded_samaritan.one,Plus {count} Samaritan letter.,בנ
 fontmaker.status.import_loaded_phoenician.other,Plus {count} Phoenician letters.,בנוסף ל-{count} אותיות פיניקיות.,toast fragment,plural
 fontmaker.status.import_loaded_aramaic.other,Plus {count} Aramaic letters.,בנוסף ל-{count} אותיות ארמיות.,toast fragment,plural
 fontmaker.status.import_loaded_samaritan.other,Plus {count} Samaritan letters.,בנוסף ל-{count} אותיות שומרוניות.,toast fragment,plural
+fontmaker.status.import_loaded_samaritan_marks.one,Plus {count} Samaritan mark.,בנוסף לסימן שומרוני אחד.,toast fragment,plural
+fontmaker.status.import_loaded_samaritan_marks.other,Plus {count} Samaritan marks.,בנוסף ל-{count} סימנים שומרוניים.,toast fragment,plural
 fontmaker.status.import_loaded_punct.one,Plus {count} digit/punctuation glyph.,בנוסף לגליף ספרה/פיסוק אחד.,toast fragment,plural
 fontmaker.status.import_loaded_punct.other,Plus {count} digit/punctuation glyphs.,בנוסף ל-{count} גליפי ספרות/פיסוק.,toast fragment,plural
 fontmaker.status.import_no_marks,(No mark glyphs found to import.),(לא נמצאו גליפי סימנים לייבוא.),toast fragment,
@@ -5352,7 +5354,7 @@ fontmaker.oswizard.aramaic_hint_no,This font has no Imperial Aramaic letters to 
 fontmaker.oswizard.samaritan_hint_no,This font has no Samaritan letters to bring across — they start empty.,לגופן הזה אין אותיות שומרוניות להביא — הן מתחילות ריקות.,wizard hint,
 fontmaker.oswizard.phoenician_hint_yes,The original's Phoenician letters come across with it.,האותיות הפיניקיות של המקור עוברות איתו.,wizard hint,
 fontmaker.oswizard.aramaic_hint_yes,The original's Imperial Aramaic letters come across with it.,האותיות הארמיות של המקור עוברות איתו.,wizard hint,
-fontmaker.oswizard.samaritan_hint_yes,The original's Samaritan letters come across with it.,האותיות השומרוניות של המקור עוברות איתו.,wizard hint,
+fontmaker.oswizard.samaritan_hint_yes,The original's Samaritan letters and vowel signs come across with it.,האותיות וסימני התנועה השומרוניים של המקור עוברים איתו.,wizard hint,
 fontmaker.oswizard.latin_hint_no,"This font has no English letters to bring across — but any combined forms (שׁ בּ אַ) it already draws do come.","לגופן הזה אין אותיות אנגליות להביא — אבל כל צורה מורכבת (שׁ בּ אַ) שהוא כבר מצייר כן עוברת.",wizard hint,
 fontmaker.oswizard.latin_hint_yes,"The original's English letters come across with it, and so do any combined forms (שׁ בּ אַ) it already draws.","האותיות האנגליות של המקור עוברות איתו, וכך גם כל צורה מורכבת (שׁ בּ אַ) שהוא כבר מצייר.",wizard hint,
 fontmaker.oswizard.start_editing,Start editing,התחלת עריכה,partner wizard finish button,

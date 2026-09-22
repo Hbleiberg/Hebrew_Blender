@@ -8169,19 +8169,22 @@ function anchorClassMapForImport() {
   Object.keys(TROP_CLASS).forEach(cp => { m[parseInt(cp,16)] = TROP_CLASS[cp] === 'above' ? 'tropAbove' : 'tropBelow'; });
   return m;
 }
+function smrAnchorClassMapForImport() {   // the Samaritan family's own map for its own hfm_read_anchors pass: mark → its column key
+  const m = {}; SMR_MARK_CPS.forEach(cp => { m[parseInt(cp, 16)] = smrMarkKey(cp); }); return m;
+}
 /* Merge imported anchor coords onto a per-kind fresh seed. Only the ENABLED kinds' keys are written:
    the enabled kind resets to a fresh seed first (so classes the font omits keep sane defaults — the old
    whole-letter reseed intent, scoped per kind), then imported coords land on top. Keys of a disabled
    kind are never touched, so hand-dragged anchors of the kind the user chose to KEEP survive a partial
    import. The trop L/R side columns belong to the trop family's seed (the GPOS read maps every trop
    class to the center columns, never to L/R), matching the previous full-reseed behavior exactly. */
-const IMP_ANCHOR_KEYS  = { nikkud: ['below','above','center'], trop: ['tropAbove','tropBelow'] };
-const SEED_ANCHOR_KEYS = { nikkud: ['below','above','center'], trop: ['tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR'] };
+const IMP_ANCHOR_KEYS  = { nikkud: ['below','above','center'], trop: ['tropAbove','tropBelow'], smrmarks: SMR_ANCHOR_KEYS };   // + the Samaritan family's three columns
+const SEED_ANCHOR_KEYS = { nikkud: ['below','above','center'], trop: ['tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR'], smrmarks: SMR_ANCHOR_KEYS };
 function applyImportedAnchors(l, imp, kinds) {
   seedAnchorsIfNeeded(l);   // guarantee a complete base to merge into (backfill only, never clobber)
-  const t = { codepoint: l.codepoint, contours: l.contours, advance: l.advance, anchors: null };
+  const t = { codepoint: l.codepoint, contours: l.contours, advance: l.advance, anchors: null, smr: l.smr };   // .smr: a Samaritan letter's seed carries its columns
   seedAnchors(t);           // fresh per-kind base — the same derivation the old full reseed used
-  ['nikkud', 'trop'].forEach(kind => {
+  ['nikkud', 'trop', 'smrmarks'].forEach(kind => {
     if (!kinds[kind]) return;
     SEED_ANCHOR_KEYS[kind].forEach(k => { l.anchors[k] = t.anchors[k]; });
     IMP_ANCHOR_KEYS[kind].forEach(k => {
@@ -8390,7 +8393,9 @@ function askFontImportOptions(file, font, bytes) {
         };
         // And Samaritan — now the last link in the chain.
         const smrRisk = (opts.outlines && fontSamaritanCoverage(font) >= SMR_IMPORT_MIN)
-                      ? project.letters.filter(l => l.smr && smrUserMade(l)).length : 0;
+                      ? project.letters.filter(l => l.smr && smrUserMade(l)).length
+                        + Object.values((project.font.smrmarks && project.font.smrmarks.custom) || {}).filter(m => m && markStatusOf(m) === 'traced' && m.smrSource !== 'import').length   // + the marks the teacher drew
+                      : 0;
         const askSmr = next => {
           if (!smrRisk) return next();
           askModal(I18n.t('fontmaker.modals.replace_samaritan_title'),
@@ -8429,7 +8434,14 @@ async function applyFontImport(file, font, bytes, opts) {
     const marksAny = !!(opts.marksNikkud || opts.marksTrop);
     const anchorsAny = !!(opts.anchorsNikkud || opts.anchorsTrop);
     const kinds = { nikkud: !!opts.anchorsNikkud, trop: !!opts.anchorsTrop };
-    let imported = null, hadGpos = false, anchorErr = false, markAttach = null, markCoverage = null, anchorNotes = [], b64Set = false;
+    // Samaritan marks (MARK_FAMILY.smrmarks) ride the Samaritan letters' choice: opts.marksSamaritan when a
+    // caller states it, else the letters' own coverage rule (the pass below). Their anchors are read in a
+    // SECOND pass with the family's own class map and base domain — see hfm_read_anchors.
+    const smrCoverage = opts.outlines ? fontSamaritanCoverage(font) : 0;
+    const smrMarksWanted = opts.marksSamaritan != null ? !!opts.marksSamaritan
+                         : !!(opts.outlines && opts.samaritan !== false && (opts.samaritan === true || smrCoverage >= SMR_IMPORT_MIN));
+    const anchorsSmr = smrMarksWanted && anchorsAny;
+    let imported = null, hadGpos = false, anchorErr = false, markAttach = null, markCoverage = null, anchorNotes = [], b64Set = false, impSmr = null, smrAttach = null;
     if (anchorsAny) {
       try {
         await ensurePyodide();
@@ -8440,6 +8452,12 @@ async function applyFontImport(file, font, bytes, opts) {
         const r = JSON.parse(pyodide.runPython('hfm_read_anchors(hfm_anchor_b64, hfm_anchor_classmap)'));
         if (r.error) { console.warn(r.error); anchorErr = true; }
         else { imported = r.anchors || {}; hadGpos = !!r.hadGpos; markAttach = r.markAttach || null; markCoverage = r.coverage || null; anchorNotes = r.notes || []; }
+        if (smrMarksWanted) {   // the Samaritan family's own read: its 21 marks, its 22 letters (U+0800–0815) as the base domain
+          pyodide.globals.set('hfm_anchor_classmap', JSON.stringify(smrAnchorClassMapForImport()));
+          const r2 = JSON.parse(pyodide.runPython('hfm_read_anchors(hfm_anchor_b64, hfm_anchor_classmap, "[2048, 2069]")'));
+          if (r2.error) console.warn(r2.error);
+          else if (r2.hadGpos) { impSmr = r2.anchors || {}; smrAttach = r2.markAttach || null; }
+        }
       } catch (e) { console.warn('anchor import failed, will seed', e); anchorErr = true; }
     }
     // …and with it the appliedTargets exemption, so drop the form overrides the autofix wrote for the
@@ -8551,8 +8569,7 @@ async function applyFontImport(file, font, bytes, opts) {
     // (SamaritanAlaf and alef are byte-identical, all 22 of them). So it has always imported as an
     // ordinary Hebrew font — filling the Hebrew slots with Samaritan shapes, which is what its author
     // intended — while its properly-encoded Samaritan half went on the floor. Now both arrive.
-    let nSmr = 0;
-    const smrCoverage = opts.outlines ? fontSamaritanCoverage(font) : 0;
+    let nSmr = 0;   // (smrCoverage is computed with the anchors read above)
     if (opts.outlines && opts.samaritan !== false && (opts.samaritan === true || smrCoverage >= SMR_IMPORT_MIN)) {
       const keepMine = opts.smrMode === 'blanks';
       project.font.addSamaritanLetters = true;
@@ -8560,7 +8577,14 @@ async function applyFontImport(file, font, bytes, opts) {
       SAMARITAN_LETTERS.forEach(C => {
         const l = project.letters.find(x => x.codepoint === C.cp && x.smr);
         if (!l || (keepMine && smrUserMade(l))) return;
-        if (importLetterOutline(l, font, scale)) { l.smrSource = 'import'; nSmr++; }
+        if (importLetterOutline(l, font, scale)) {
+          l.smrSource = 'import'; nSmr++;
+          if (smrMarkBase(l)) {   // fresh ink → fresh columns (pins gone, like the Hebrew pass); the font's own column points land on top when the family's read found them
+            l.anchors = null; seedAnchors(l); delete l.markAnchors;
+            const imp = (anchorsSmr && impSmr) ? impSmr[C.cp] : null;
+            if (imp) applyImportedAnchors(l, imp, { smrmarks: true });
+          }
+        }
       });
     }
     // Combined Hebrew forms the source font already drew — שׁ שׂ אַ אָ בּ וּ כּ פּ תּ וֹ בֿ כֿ פֿ and the
@@ -8621,6 +8645,21 @@ async function applyFontImport(file, font, bytes, opts) {
       // GPOS attachAnchor (their classes are shared with rafe, which would skew the majority vote in
       // hfm_read_anchors) — the bbox convention traced marks already use is right for them.
       Object.keys(LATIN_ACCENTS).forEach(cp => { if (importMarkGlyph('accent', cp, font)) accHits++; });
+    }
+    // Samaritan marks (MARK_FAMILY.smrmarks): the font's own 21 mark shapes, like the nikkud above, on the
+    // letters' choice (smrMarksWanted). "Keep my Samaritan" spares a mark the teacher drew; a hit switches the
+    // family on at true size; the attach point comes from the family's own GPOS read (D1, per family). Not in
+    // importedMarks: that array is the Hebrew fidelity-check domain (MARK_CLASS keys, Hebrew bases).
+    let nSmrMarks = 0; const importedSmrMarks = [];
+    if (smrMarksWanted) {
+      const keepMine = opts.smrMode === 'blanks';
+      SAMARITAN_MARKS.forEach(m => {
+        const ex = project.font.smrmarks.custom[m.cp];
+        if (keepMine && ex && markStatusOf(ex) === 'traced' && ex.smrSource !== 'import') return;
+        if (importMarkGlyph('smrmarks', m.cp, font)) { project.font.smrmarks.custom[m.cp].smrSource = 'import'; nSmrMarks++; importedSmrMarks.push(m.cp); }
+      });
+      if (nSmrMarks) { project.font.smrmarks.enabled = true; project.font.smrmarks.mode = 'custom'; project.font.smrMarkScale = 1; }   // imported shapes are true-size — the markScale/tropScale reset rule
+      if (smrAttach && anchorsSmr) importedSmrMarks.forEach(cp => { const ma = smrAttach[cp], m = project.font.smrmarks.custom[cp]; if (m && ma && Number.isFinite(ma.x) && Number.isFinite(ma.y)) m.attachAnchor = { x: ma.x, y: ma.y }; });
     }
     // Style prefill: a source font flagged bold (OS/2 fsSelection bit 5, usWeightClass ≥ 600, or
     // head.macStyle bit 0) makes this project the family's Bold style — the "import my bold TTF,
@@ -8736,7 +8775,7 @@ async function applyFontImport(file, font, bytes, opts) {
     // of the workspace with the unfixed placements.
     if (!opts.autofix) ipClose();
     const pl = (k, c, o) => I18n.t(k + (c === 1 ? '.one' : '.other'), Object.assign({count: c}, o || {}));
-    if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal(I18n.t('fontmaker.modals.no_hebrew_title'), I18n.t('fontmaker.modals.no_hebrew_body') + (nEng ? ' ' + pl('fontmaker.status.import_loaded_english', nEng) : '') + (nCyr ? ' ' + pl('fontmaker.status.import_loaded_cyrillic', nCyr) : '') + (nPhn ? ' ' + pl('fontmaker.status.import_loaded_phoenician', nPhn) : '') + (nAram ? ' ' + pl('fontmaker.status.import_loaded_aramaic', nAram) : '') + (nSmr ? ' ' + pl('fontmaker.status.import_loaded_samaritan', nSmr) : ''), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
+    if (opts.outlines && !n && !nPunct && !markHits) { status(''); askModal(I18n.t('fontmaker.modals.no_hebrew_title'), I18n.t('fontmaker.modals.no_hebrew_body') + (nEng ? ' ' + pl('fontmaker.status.import_loaded_english', nEng) : '') + (nCyr ? ' ' + pl('fontmaker.status.import_loaded_cyrillic', nCyr) : '') + (nPhn ? ' ' + pl('fontmaker.status.import_loaded_phoenician', nPhn) : '') + (nAram ? ' ' + pl('fontmaker.status.import_loaded_aramaic', nAram) : '') + (nSmr ? ' ' + pl('fontmaker.status.import_loaded_samaritan', nSmr) : '') + (nSmrMarks ? ' ' + pl('fontmaker.status.import_loaded_samaritan_marks', nSmrMarks) : ''), [{label:I18n.t('fontmaker.modals.ok')}]); return; }
     let msg = opts.outlines ? I18n.t('fontmaker.status.import_loaded_letters', {n: n, file: file.name}) : I18n.t('fontmaker.status.import_kept_outlines');
     if (opts.outlines && nPunct) msg += ' ' + pl('fontmaker.status.import_loaded_punct', nPunct);
     if (opts.outlines && nEng)    msg += ' ' + pl('fontmaker.status.import_loaded_english', nEng);
@@ -8745,6 +8784,7 @@ async function applyFontImport(file, font, bytes, opts) {
     if (opts.outlines && nPhn)    msg += ' ' + pl('fontmaker.status.import_loaded_phoenician', nPhn);
     if (opts.outlines && nAram)   msg += ' ' + pl('fontmaker.status.import_loaded_aramaic', nAram);
     if (opts.outlines && nSmr)    msg += ' ' + pl('fontmaker.status.import_loaded_samaritan', nSmr);
+    if (nSmrMarks)                msg += ' ' + pl('fontmaker.status.import_loaded_samaritan_marks', nSmrMarks);
     if (marksAny) {
       msg += ' ' + (markHits ? pl('fontmaker.status.import_replaced_marks', markHits) : I18n.t('fontmaker.status.import_no_marks'));
       if (tropImported && !project.font.trop.enabled) msg += ' ' + I18n.t('fontmaker.status.import_turn_on_trop');
@@ -19076,7 +19116,7 @@ def hfm_ttf_to_woff2(ttf_b64):
         return json.dumps({"error": "WOFF2 conversion failed: " + str(e)})
 
 
-def hfm_read_anchors(ttf_b64, class_map_json):
+def hfm_read_anchors(ttf_b64, class_map_json, base_range_json=None):
     # Read GPOS mark-to-base data from an existing font so the editor can reproduce it exactly.
     # class_map_json maps "<unicode_int>" -> "below"|"above"|"center"|"tropAbove"|"tropBelow".
     # v2 (mark fidelity): besides the per-letter BaseAnchors ("anchors", same shape as before), returns
@@ -19125,7 +19165,11 @@ def hfm_read_anchors(ttf_b64, class_map_json):
         groups = []
         by_sig = {}
         mark_key = {}   # mark HEXCP -> its own app key (the class the EDITOR attaches it through)
-        HEB_LO, HEB_HI = 0x05D0, 0x05EA   # the 27 base letters — the domain the editor predicts on
+        # the base domain the class vote and the delta folding weigh — the 27 Hebrew letters unless the caller
+        # names another block: the Samaritan-marks read passes its own 22 letters and its own class map, so each
+        # family votes among its own marks and bases (the shipped Hebrew Square Samaritan lists the Hebrew vowels
+        # inside the Samaritan classes, and one merged map would hand those classes to the Samaritan keys)
+        HEB_LO, HEB_HI = tuple(json.loads(base_range_json)) if base_range_json else (0x05D0, 0x05EA)
         for li in idxs:
             lk = lookups[li]
             subs = []
