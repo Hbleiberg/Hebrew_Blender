@@ -20,9 +20,9 @@
 | Kind | Copy | Direction | Examples |
 |---|---|---|---|
 | **LTR alphabet** — whole letters, no Hebrew marks | Cyrillic (`.cyr` items in `project.letters`) | grid pinned `direction:ltr` | Latin, Cyrillic, Greek, Armenian |
-| **RTL alphabet without Hebrew marks** | Phoenician (`.phn` items), Imperial Aramaic (`.aram`) or Samaritan (`.smr`, the one in the BMP), with the RTL rules in §3 | grid inherits the shared `direction:rtl` | Nabataean, Judeo-Arabic base letters (Paleo-Hebrew is done — it *is* the Phoenician set; Samaritan and Imperial Aramaic are done too, as their own sets) |
+| **RTL alphabet without Hebrew marks** | Phoenician (`.phn` items), Imperial Aramaic (`.aram`) or Samaritan (`.smr`, the one in the BMP), with the RTL rules in §3 | grid inherits the shared `direction:rtl` | Nabataean, Judeo-Arabic base letters (Paleo-Hebrew is done — it *is* the Phoenician set; Samaritan and Imperial Aramaic are done too, as their own sets; Samaritan's own combining marks are a mark family, row 4) |
 | **Forms composed from the Hebrew letters** | Yiddish / Ladino / Specialized / Wide (`project.precomposed`) | RTL | a dotted form, a ligature, a wide variant |
-| **Letters that take nikkud or trop** | not a glyph set — that is the Hebrew pipeline (`LETTERS`, anchors, QA, FEA); plan it as its own feature from the anchor sections of `font-maker.md` | | |
+| **Letters that take nikkud or trop, or a script's own combining marks** | not a glyph set — Hebrew marks are the Hebrew pipeline (`LETTERS`, anchors, QA, FEA); a second script's marks are a *mark family* (`font-maker.md` → *Mark families*; `MARK_FAMILY.smrmarks`, the Samaritan marks, is the worked example); plan either as its own feature | | |
 
 A composed-forms tab is a table of `{target, base, mark}` rows seeded into `project.precomposed` by
 `ensurePrecompSeeded(FORMS, p)`, gated by one flag in `EXTRA_TAB_FLAG` (which feeds
@@ -112,7 +112,7 @@ The shared `.letter-grid` is pinned `direction: rtl` for the Hebrew tiles and `.
 - **Specimen page**: `{ rtl: true, cols: 8, glyphPx: 44 }`, like the Hebrew add-on sections.
   **Template**: the same `kind` line as LTR — standalone glyph, no dotted circle.
 - **Save letter & next** lands on the tile immediately to the **left**.
-- **Marks**: an RTL set that must carry the Hebrew nikkud is the fourth row of §0, not this recipe.
+- **Marks**: an RTL set that must carry the Hebrew nikkud is the fourth row of §0, not this recipe; a script with combining marks of its own adds a mark family after its letters ship, as Samaritan did (`font-maker.md` → *Mark families*).
 
 ### Both
 - The step tabs and the two *Next: Nikkud →* buttons are hidden for the set (§4, rule 8): a set with
@@ -214,8 +214,9 @@ Anchor patterns are the English / Cyrillic lines to sit beside.
    expecting an Aramaic bit fails a perfectly good font. A BMP block encoded after the freeze gets
    **nothing at all**: Samaritan (U+0800–U+083F) falls in the gap between bit 14 (NKo) and bit 15
    (Devanagari) and is not above Plane 0 either, so a Samaritan-only font declares no range bit —
-   correct, and not a bug to chase. Glyph naming, the FEA
-   (`DFLT` + `hebr` only), kerning and the UFO `.glif` writer need nothing.
+   correct, and not a bug to chase. Glyph naming, kerning and the UFO `.glif` writer need nothing; the FEA
+   declares `DFLT` + `hebr` only unless a mark family ships — then its own `languagesystem` (Samaritan's
+   `samr`) is emitted, and only when marks actually ship (`font-maker.md` → *Mark families*).
 8. **Persistence** `migrateProject`: the preservation guard `(l.custom || l.eng || l.cyr || l.<stem> ||
    l.wideGlyph)`; a hygiene block after the `.cyr` one (drop unless the code point is a string in the
    set — a junk one becomes `cmap[NaN]` and fails the whole export; normalise `case`; close

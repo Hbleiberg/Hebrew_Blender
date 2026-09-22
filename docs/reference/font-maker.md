@@ -337,7 +337,9 @@ Cyrillic code point right after the English test, `_selectItem` syncs `cyrillicC
 `englishCase`, and `renderCyrillicGrid` draws the active band as one `.letter-grid` with a `.punct-grp`
 label per group (the Punctuation picker's idiom). A Cyrillic letter never enters the placement step:
 `_setWorkMode` folds `anchors` back to Align for it, `updateTabs` hides both placement tabs and the two
-*Next: Nikkud* buttons skip it, so the English-only accent branches need no twin. The letter names carry
+*Next: Nikkud* buttons skip it, so the English-only accent branches need no twin. The 22 Samaritan alphabet
+letters are the one non-Hebrew set that *does* enter it — for their own mark family (*Mark families*
+below), never for nikkud; the Samaritan vowel letters and punctuation stay anchor-free like the rest. The letter names carry
 the Unicode short name (`А (Cyrillic A, uppercase)`) because `gName` strips non-ASCII from its slug and a
 bare `(uppercase)` would collide across the whole band. A font import fills the tab the way it fills
 English (`fontCyrillicCoverage`, `CYR_IMPORT_MIN`, `opts.cyrillic` / `opts.cyrMode`, `cyrSource`), the
@@ -427,7 +429,8 @@ only shipped font that draws the block — and a pen hand at that, with a median
 per scanline instead (the five letters still carrying ink at −30), and `SMR_ASC` holds nun alone, which
 tops 1.42× the median where the `letterTop`→`lamedAscender` step is 1.33×. Samaritan is also the first
 caseless set outside Hebrew to use `.asc`, so `guideLinesSVG` labels that line `asc` rather than
-`lamed` when the glyph is Samaritan.
+`lamed` when the glyph is Samaritan. Those 22 letters also carry the Samaritan marks' three columns
+(*Mark families* below).
 
 On export, `sCapHeight` and `sxHeight` are **measured from the shipped `O`/`H` and `o`/`x` ink** and
 omitted when the font carries no cased script — a Hebrew-only export is byte-identical to what it was.
@@ -670,6 +673,65 @@ measured truth exactly (this is what fixes the `classResidual` combos). Rules th
   (it would otherwise show a green "0 still flagged" over a project that deviates again) by
   **stashing it on the undo entry**, so redo hands the same report — and its runtime-only `ctx`
   bytes — back; the stacks are runtime-only, so nothing reaches autosave.
+
+The fidelity domain (`importedMarks`, `fidelityMeasure`) is nikkud and trop only: the Samaritan marks are
+imported and verified by anchor reproduction through their own `hfm_read_anchors` pass (*Mark families*),
+never by shaping against Hebrew letters.
+
+### Mark families (`MARK_FAMILY`)
+A second script's combining marks are a *mark family*, never rows in `MARK_CLASS` / `MARK_CPS` /
+`NIKKUD_MARKS` — those tables drive the Hebrew export, QA and chart loops, and the PUA meteg forms stay
+out of them for the same reason. One row today: `smrmarks`, the 21 Samaritan marks (`SAMARITAN_MARKS`:
+cp, Unicode short name, column). One identifier does every job — kind = `project.font` store key = picker
+tab id = panel/grid id prefix = `curKind` — which is what lets `catTabFor`'s `: kind` fall-through,
+`updateTabs`' `project.font[curKind]`, `renderMarkPanel`'s `cat + 'Grid'` and `setMarkEnabled` serve the
+family with no new fork. Every nikkud/trop two-way ternary takes one prefix guard on the table and keeps
+its Hebrew tail (`catOfCp` — whose default for an unknown cp is `'nikkud'` — `markName`, `markClassOf`,
+`markClassFor`, `pinKeyFor`, `whoHasCp`, `alphabetOwnerOf`, `defaultPieces`, `markTilePreviewSVG`,
+`dropKindPins`, `markCatScale`); `MARK_STORE_KINDS` is the one list the outline scan, the autosave
+stripper, the cloud packer and the loader walk. The store is sanitized on load like the accent store's
+(closed key domain, `cls` forced, `designMode` closed, `attachAnchor` integral or absent).
+
+- **Columns, not classes.** Every Samaritan mark is `above`; what differs is the column it reads on its
+  letter — `smrAboveR` (start, the letter's right edge), `smrAbove` (middle), `smrAboveL` (end) — the way
+  the one shipped face that draws the block (Hebrew Square Samaritan) groups them in three mark-to-base
+  lookups. Physical L/R like the trop columns, never `center` (`markPinFor` refuses that key). Only the 22
+  alphabet letters carry them (`smrMarkBase`); `smrAnchorSeed` seeds them at the nikkud `above` height with
+  the sides `SMR_SIDE_FRAC` (0.39) of the ink width out from the middle, rounded at the source, and
+  `ensureSmrAnchors` back-fills an older save; `seedAnchors` / `seedAnchorsIfNeeded` carry them,
+  `qaAnchors` reports them, `maybeInheritAnchors` carries placement within a family only, and the keys sit
+  in `ANCHOR_KEY_SET`, `ANCHOR_LABEL`, `ANCHOR_COL`.
+- **The placement step** is the Hebrew one re-routed: `gotoAnchors` sends a Samaritan letter to
+  `anchorCat = 'smrmarks'` whatever it was asked for (so the step tab, both *Next* buttons and QA land
+  there), `_anchorCtx` shows `SMR_ANCHOR_KEYS`, `activeVowelCp` reads `activeSmrMark[column]`, and the gate
+  everywhere is `smrMarkBase(l) && smrMarksOn()` (`_setWorkMode`, `updateTabs`, `updateStepTicks`, the two
+  *Next* buttons, `_placementCycleCps`). `#tabAnchors` is reused, relabelled *Place Marks*;
+  `renderSmrAnchorLeft` shares the Hebrew sidebar's lifted pieces (`_placementNavRowHTML`,
+  `_anchorXYBlockHTML`, `_anchorPinsSectionHTML`) and carries none of the stacking check, meteg or composed
+  forms; the family's size is `smrMarkScale` (its own slider, on the `tropTune` undo scope), never the
+  nikkud slider.
+- **Export, one gate.** `smrShipList()` — the family on and a mark drawn, the tab on and a letter inked —
+  is the only predicate `buildFontSpec`'s marks pass, `buildFEA` (through `builtSmr`, the
+  `builtMetegForms` precedent), GDEF, `buildUfoAnchors(spec)` and `fontInkBounds` may use, so no line ever
+  names an unshipped glyph. The FEA declares `languagesystem samr dflt;`, one `@MC_SMR_<col>` markClass per
+  column (a pinned mark in `@MC_SMR_<col>_<cp>`, the `nikSolo` partition), and `emitSmrBaseAnchors`
+  appends one `pos base` line per column on each shipped letter after every Hebrew line, so the Hebrew
+  prefix of the feature stays byte-identical; no mkmk (one mark per column, columns independent). Family on
+  with nothing drawn emits the same file as family off — the byte-bar rule.
+- **Import, its own pass.** `hfm_read_anchors(ttf_b64, class_map_json, base_range_json)` takes the base
+  domain as a parameter (default the 27 Hebrew letters); the Samaritan read passes
+  `smrAnchorClassMapForImport()` and `[0x0800, 0x0815]`, because the shipped face lists the Hebrew vowels
+  inside the Samaritan classes and one merged map would hand those classes to the Samaritan keys. The 21
+  shapes import like the nikkud (`importMarkGlyph('smrmarks', …)`, `smrSource: 'import'`, the family on at
+  true size, the font's own attach points), and each letter takes fresh columns with the font's own points
+  on top (`applyImportedAnchors`'s `smrmarks` kind; its temp letter carries `.smr`). The marks ride the
+  Samaritan letters' choice (`opts.marksSamaritan` overrides), and "Keep my Samaritan" spares a mark the
+  teacher drew.
+- **Previews** stack a Samaritan mark on its column in the Spacing sample (a Hebrew vowel typed after a
+  Samaritan letter stacks nothing — the export attaches none), the kern suggester skips the marks, and the
+  specimen adds an *alaf + each shipped mark* page shaped by the exported font itself. **Out of scope:**
+  the QA sheet (Hebrew rows, mkmk semantics), Hebrew nikkud on Samaritan letters, and a second Samaritan
+  face to cross-check the column fractions.
 
 ### Lazy CDNs + CSP
 pyodide v0.26.2 (+ fontTools), harfbuzzjs 0.4.6 (`hb.wasm` fetch — needs `'wasm-unsafe-eval'` +
