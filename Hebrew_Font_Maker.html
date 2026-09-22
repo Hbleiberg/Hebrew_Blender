@@ -3511,7 +3511,7 @@ function itemFlattenOn(l) { return l.flattenLighting !== false; }   // absent = 
 function itemThresholdUserSet(l) { return l.thresholdUserSet == null ? l.binThreshold !== 128 : !!l.thresholdUserSet; }   // legacy non-default threshold ⇒ treat as hand-set
 /* Spacing — single source of truth so the live preview matches the exported font exactly */
 function fontSpacing() { return (project && project.font && project.font.spacing) || { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם', kernTarget:40 }; }
-function effLetterAdvance(l) { const base = (l && l.advance != null) ? l.advance : Math.round(LETTER_TOP*0.7); return Math.max(50, base + fontSpacing().letterSpacing); }
+function effLetterAdvance(l) { return Math.max(50, letterAdvance(l) + fontSpacing().letterSpacing); }   // letterAdvance's default is effMetrics().letterTop × 0.7 — the value the Width field and the stage's width guide show, so the export never ships an advance the teacher did not see (the old LETTER_TOP constant disagreed with them the moment the letter top was edited)
 function wordAdvance() { return Math.max(80, fontSpacing().wordSpacing); }   // floor matches the slider/setter min — a stored 0 must never emit a zero-width space glyph
 function fontKerning() { return (project && project.font && Array.isArray(project.font.kerning)) ? project.font.kerning : []; }
 function kernTargetGap() { const t = fontSpacing().kernTarget; return t != null ? t : 40; }   // target whitespace "Suggest pairs" aims for
