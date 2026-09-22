@@ -26,7 +26,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## JavaScript & Python Libraries
 
-The tools load these at runtime from public CDNs (jsDelivr, cdnjs, esm.sh); none are bundled or redistributed in this repository. Each is credited below with its copyright holder, license, and project home. (*hebrew-transliteration* is the same library whose full MIT text appears in the section above; it is repeated here for a complete inventory.)
+The tools load these at runtime from public CDNs (jsDelivr, cdnjs, esm.sh) — all but one: *qrcode-generator* is vendored (a minified copy, inline) into `hebrew_blend_generator.html` so the worksheet's answer-key QR code works offline, and it is the only library this repository redistributes. Each is credited below with its copyright holder, license, and project home. (*hebrew-transliteration* is the same library whose full MIT text appears in the section above; it is repeated here for a complete inventory.)
 
 | Library | Used by | Copyright | License | Project |
 |---|---|---|---|---|
@@ -39,8 +39,9 @@ The tools load these at runtime from public CDNs (jsDelivr, cdnjs, esm.sh); none
 | HarfBuzz / harfbuzzjs 0.4.6 | Font Maker (QA shaping check) | © the HarfBuzz Project authors | "Old MIT" (permissive) | https://github.com/harfbuzz/harfbuzzjs |
 | hebrew-transliteration 2.9.1 | Worksheet, Dictionary, Flash Cards, Torah Trainer | © 2022 Charles Loder | MIT | https://github.com/charlesLoder/hebrew-transliteration |
 | @supabase/supabase-js 2.116.0 | Accounts / cloud saves — every tool page plus `account.html`; loaded lazily from the pinned UMD build, so a visitor who never signs in never downloads it | © 2020 Supabase | MIT | https://github.com/supabase/supabase-js |
+| qrcode-generator 2.0.4 | Worksheet (the answer-key QR code in a worksheet's footer) — vendored inline (minified), not loaded from a CDN | © 2009 Kazuhiko Arase | MIT | https://github.com/kazuhikoarase/qrcode-generator |
 
-**The MIT-licensed libraries above** (html2canvas, jsPDF, opentype.js, fontTools, Brotli, hebrew-transliteration, @supabase/supabase-js) are governed by the MIT License below — each project's own copyright notice, as listed in the table, applies:
+**The MIT-licensed libraries above** (html2canvas, jsPDF, opentype.js, fontTools, Brotli, hebrew-transliteration, @supabase/supabase-js, qrcode-generator) are governed by the MIT License below — each project's own copyright notice, as listed in the table, applies:
 
 ```
 MIT License
@@ -56,6 +57,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 - **Pyodide** is licensed under the **Mozilla Public License 2.0** — full text at https://www.mozilla.org/MPL/2.0/. The Pyodide distribution it loads from the CDN also bundles CPython (Python Software Foundation License) and assorted packages; their notices ship within that distribution.
 - **HarfBuzz / harfbuzzjs** use the permissive "Old MIT" license — full text at https://github.com/harfbuzz/harfbuzz/blob/main/COPYING.
+- **qrcode-generator** carries its author's notice, kept here as upstream states it: the word "QR Code" is a registered trademark of DENSO WAVE INCORPORATED.
 
 ### Analytics
 
