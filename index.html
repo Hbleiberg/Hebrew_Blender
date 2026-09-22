@@ -672,10 +672,6 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
    per-origin — so one DB ("ivritsuite-fonts") is automatically shared by all of
    them. Keep this block byte-identical in every consuming page. No library is
    needed (indexedDB + FontFace are built in), so it loads nothing at page load. */
-// Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
-// builds in script. Static markup from this file, never user data.
-const ICON_TRASH_SM = '<svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg>';
-const ICON_DOWNLOAD_SM = '<svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg>';
 const IV_FONTS_DB = 'ivritsuite-fonts', IV_FONTS_STORE = 'fonts', IV_FONTS_CAP = 10;
 function _ivOpenFontsDB() {
   return new Promise((resolve, reject) => {
@@ -715,6 +711,10 @@ function loadUserFont(name) {   // register the stored TTF as a CSS-usable FontF
   });
 }
 /* ═══ end shared: ivritsuite-fonts ═══════════════════════════════════════════ */
+// Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
+// builds in script. Static markup from this file, never user data.
+const ICON_TRASH_SM = '<svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg>';
+const ICON_DOWNLOAD_SM = '<svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg>';
 
 /* Font backup: a cache of saved fonts (with bytes, base64) kept ready so the SYNC
    All-Settings export / AllTools .ivrit gather can include them without going async.
