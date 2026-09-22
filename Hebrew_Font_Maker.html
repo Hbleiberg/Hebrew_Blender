@@ -3185,6 +3185,7 @@ const SAMARITAN_MARKS = [   // [cp, Unicode short name, column]
 ].map(([cp, short, col]) => ({ cp, short, col, cls: 'above', name: String.fromCodePoint(parseInt(cp, 16)) + ' (Samaritan Mark ' + short + ')' }));
 const SMR_MARK_BY_CP = {}; SAMARITAN_MARKS.forEach(m => { SMR_MARK_BY_CP[m.cp] = m; });
 const SMR_MARK_CPS = SAMARITAN_MARKS.map(m => m.cp);
+const SMR_MARK_INTS = new Set(SMR_MARK_CPS.map(cp => parseInt(cp, 16)));   // the same 21 as integers, for the code-point scans (the block's 081A/0824/0828 are LETTERS)
 function isSmrMark(cp) { return !!SMR_MARK_BY_CP[cp]; }
 function smrMarkKey(cp) { const m = SMR_MARK_BY_CP[cp]; return m ? SMR_COL_KEY[m.col] : null; }   // the anchor key a Samaritan mark reads
 function smrMarkBase(l) { return !!(l && l.smr && (smrMeta(l.codepoint) || {}).group === 'alphabet'); }   // only the 22 letters carry the columns; the vowel letters and punctuation stay anchor-free
@@ -15403,7 +15404,13 @@ function _spacingCellMarks(cell) {   // place a glyph cell's stacked nikkud toge
     if (pr) { pairOff[bv[0]] = pr.dv; pairOff['05BD'] = pr.dm; }
   }
   cps.forEach(mcp => {
-    const cls = MARK_CLASS[mcp]; if (!cls) return;
+    if (isSmrMark(mcp)) {   // a Samaritan mark: its column anchor on a Samaritan letter while the family is on — else consumed at zero advance, as the exported font shows nothing for it
+      if (!smrMarksOn() || !smrMarkBase(L)) return;
+      const polys = qaPlace(qaAnchorFor(L, anc, smrMarkKey(mcp), mcp), 'smrmarks', mcp, smrMarkScale(), L);
+      if (polys && polys.length) (cell.marks = cell.marks || []).push(polys);
+      return;
+    }
+    const cls = MARK_CLASS[mcp]; if (!cls || L.smr) return;   // a Samaritan letter carries no Hebrew class in the export (emitBaseAnchors is Hebrew + custom bases)
     let ancPt = qaAnchorFor(L, anc, cls, mcp), scale = nikScale(mcp);
     if (pc) {
       if (mcp === dotCp) { ancPt = precompAnchor(pc); scale = precompMarkScale(pc); }   // the baked dot
@@ -15421,12 +15428,12 @@ function spacingPreviewLayout() {   // shared by the big preview and the waterfa
   // this panel exists to judge.
   const ascender = Math.max(em.lamedAscender + 100, nb.asc), descender = Math.min(em.descender - 50, nb.desc);
   const lineH = (nb.asc - nb.desc) + sp.lineSpacing;
-  // Combining marks (U+0591–U+05C7, plus custom marks) have zero advance, so they don't affect the RTL
+  // Combining marks (U+0591–U+05C7, the Samaritan marks, plus custom marks) have zero advance, so they don't affect the RTL
   // spacing layout — but instead of stripping them we attach each nikkud to its preceding base letter and
   // stack it via the export-faithful QA kernel (qaAnchors + qaPlace), so the preview shows vowel points
   // sitting on the letters exactly where the exported font puts them (preview == QA == font).
   const cmSet = new Set(customMarkCps().map(c => parseInt(c, 16)));
-  const isMarkCp = c => (c >= 0x0591 && c <= 0x05C7) || cmSet.has(c);
+  const isMarkCp = c => (c >= 0x0591 && c <= 0x05C7) || SMR_MARK_INTS.has(c) || cmSet.has(c);
   let total = 0;
   const cells = [];
   let base = null;   // most-recent glyph cell a mark can attach to
@@ -15435,7 +15442,7 @@ function spacingPreviewLayout() {   // shared by the big preview and the waterfa
     if (isMarkCp(c)) {                                   // nikkud → stack on the current base letter (zero advance)
       if (!base || !base.contours) continue;            // no traced base to sit on → skip (preview uses your traced letters)
       const mcp = c.toString(16).toUpperCase().padStart(4,'0');
-      if (!MARK_CLASS[mcp]) continue;                   // nikkud only; trop/custom marks have no MARK_CLASS → no layout effect
+      if (!MARK_CLASS[mcp] && !isSmrMark(mcp)) continue;   // nikkud and the Samaritan marks; trop/custom marks have no MARK_CLASS → no layout effect
       (base._markCps = base._markCps || []).push(mcp);  // collect; placed together once the cell's marks are known,
       continue;                                          // so a precomposed shin/sin + holam composes like the font in any typed order
     }
@@ -15830,7 +15837,7 @@ function kernOpticalGap(la, lb) {
 function setKernTarget(v) { udBurstBegin([{t:'spacing'}], 'kern tightness'); fontSpacing().kernTarget = Math.max(-40, Math.min(160, +v||0)); const s = document.getElementById('kernTgtV'); if (s) s.textContent = fontSpacing().kernTarget; }
 function suggestKernPairs() {
   const cps = [...(fontSpacing().sample || '')]
-    .map(ch => ch.codePointAt(0)).filter(c => !(c>=0x0591 && c<=0x05C7) && c!==0x20)        // base letters only (drop marks + space)
+    .map(ch => ch.codePointAt(0)).filter(c => !(c>=0x0591 && c<=0x05C7) && !SMR_MARK_INTS.has(c) && c!==0x20)        // base letters only (drop the Hebrew and Samaritan marks + space)
     .map(c => c.toString(16).toUpperCase().padStart(4,'0'));
   const target = kernTargetGap(), MIN_CLEAR = 10, EPS = 6;
   const seen = new Set(), cand = [];
@@ -21555,6 +21562,9 @@ async function generatePreviewPDF() {
     if (pf.addSamaritanLetters) {
       const traced = SAMARITAN_LETTERS.filter(e => { const L = project.letters.find(x => x.codepoint === e.cp && x.smr); return L && L.contours && L.contours.length; });
       if (traced.length) specimenPage(I18n.t('fontmaker.canvas.section_samaritan'), traced.map(e => cpChar(e.cp)), { rtl: true, cols: 8, glyphPx: 44 });   // RTL as well — the same Hebrew add-on layout
+      // …and the Samaritan marks, each on alaf — shaped by the exported font itself, so this page is a real attachment check
+      const smr = smrShipList(), alaf = smr.bases.find(l => l.codepoint === '0800');
+      if (smr.marks.length && alaf) specimenPage(I18n.t('fontmaker.canvas.section_samaritan_marks'), smr.marks.map(cp => cpChar('0800') + cpChar(cp)), { rtl: true, cols: 8, glyphPx: 44 });
     }
     if (pf.addSpecialForms) {
       const chars = SPECIAL_TARGETS.map(t => cpChar(t)).filter(Boolean);

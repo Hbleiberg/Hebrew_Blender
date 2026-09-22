@@ -1471,6 +1471,7 @@ fontmaker.canvas.section_ladino,Ladino forms,צורות לדינו,canvas — sp
 fontmaker.canvas.section_phoenician,Phoenician / Paleo-Hebrew letters,אותיות פיניקיות / עבריות קדומות,canvas — specimen section title,canvas
 fontmaker.canvas.section_aramaic,Imperial Aramaic letters,אותיות ארמיות רשמיות,canvas — specimen section title,canvas
 fontmaker.canvas.section_samaritan,Samaritan letters,אותיות שומרוניות,canvas — specimen section title,canvas
+fontmaker.canvas.section_samaritan_marks,Samaritan letters with marks,אותיות שומרוניות עם סימנים,canvas — specimen section title,canvas
 fontmaker.canvas.section_punct,Digits & punctuation,ספרות ופיסוק,canvas — specimen section title,canvas
 fontmaker.canvas.section_specialized,Specialized — wide letterforms,מיוחדות — צורות אותיות רחבות,canvas — specimen section title,canvas
 fontmaker.canvas.section_wide,Wide letterforms,צורות אותיות רחבות,canvas — specimen section title,canvas
