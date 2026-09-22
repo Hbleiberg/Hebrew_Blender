@@ -3607,8 +3607,8 @@ let guideDrag  = null;      // active user-guide drag: { id, dragAxis:'x'|'y', g
    touched item/slice — never the image (source) and never savedAnchors (dirty-detection state).
    Scopes: {t:'item',kind,cp} | {t:'spacing'} | {t:'kerning'} | {t:'kernClasses'} | {t:'metrics'} |
    {t:'guides'} | {t:'precomp',target} | {t:'tropTune'} (font-level mark tuning: side spread +
-   per-mark halign + per-mark height nudges + mark/dagesh/holam/cholam/trop sizes + vowel+trop
-   pairing (stack | slide)). ════════ */
+   per-mark halign + per-mark height nudges + mark/dagesh/holam/cholam/trop sizes + the Samaritan
+   mark size + vowel+trop pairing (stack | slide)). ════════ */
 let undoStack = [], redoStack = [];
 const UNDO_MAX = 100;
 const ITEM_SKIP = { source: 1, savedAnchors: 1, draw: 1 };   // excluded from snapshots; preserved live on restore (draw: stroke sets are big — withDraw opts in)
@@ -3638,7 +3638,8 @@ function udSnap(s) {
     dageshScale: (project.font.dageshScale != null) ? project.font.dageshScale : null,
     cholamScale: (project.font.cholamScale != null) ? project.font.cholamScale : null,
     holamScale:  (project.font.holamScale  != null) ? project.font.holamScale  : null,
-    tropScale:   (project.font.tropScale   != null) ? project.font.tropScale   : null }));
+    tropScale:   (project.font.tropScale   != null) ? project.font.tropScale   : null,
+    smrMarkScale: (project.font.smrMarkScale != null) ? project.font.smrMarkScale : null }));
   return null;
 }
 function udRestore(s, snap) {
@@ -3665,7 +3666,7 @@ function udRestore(s, snap) {
     if (sn.vowelPair) project.font.trop.vowelPair = JSON.parse(JSON.stringify(sn.vowelPair)); else delete project.font.trop.vowelPair;   // readers go through vowelPairCfg, so absent ⇒ stack
     if (project.font.nikkud) project.font.nikkud.metegGap = (typeof sn.metegGap === 'number') ? sn.metegGap : null;   // null = Auto (metegGap() re-measures)
     project.font.markNudge = JSON.parse(JSON.stringify(sn.markNudge || {}));
-    ['markScale','dageshScale','cholamScale','holamScale','tropScale'].forEach(k => {
+    ['markScale','dageshScale','cholamScale','holamScale','tropScale','smrMarkScale'].forEach(k => {
       if (sn[k] != null) project.font[k] = sn[k]; else delete project.font[k]; }); }
 }
 function udNavTo(s) {                                    // show the affected item (no side effects — not selectItem)
@@ -6420,6 +6421,10 @@ function setIncludePunct(on) {
 function setMarkEnabled(cat, on) {
   project.font[cat].enabled = on; markDirty();
   if (!on && curKind === cat) { selectItem('letter', LETTER_ORDER[0]); return; }   // leave the now-disabled mark editor
+  if (cat === 'smrmarks') {   // the Samaritan family: a Samaritan letter's placement step comes and goes with it; Hebrew placement is untouched
+    if (workMode === 'anchors' && curKind === 'letter' && smrMarkBase(curLetter())) setWorkMode(on ? 'anchors' : 'align');
+    renderGrids(); updateTabs(); return;
+  }
   // keep the placement step on a valid category (or drop back to Align if neither is on)
   if (workMode === 'anchors' && curKind === 'letter') {
     if (!project.font.nikkud.enabled && !project.font.trop.enabled) setWorkMode('align');
@@ -7012,8 +7017,8 @@ function _setWorkMode(mode) {
     if (mode === 'nodes') mode = 'align';     // node editor is letters-only
     if (mode === 'draw') mode = 'align';      // draw is letters-only — marks never get a draw field
     if (curItem().designMode === 'editor') mode = 'align';
-  } else if (mode === 'anchors' && !precompTarget && (isPunctItem() || isCyr(curCp) || isPhn(curCp) || isAram(curCp) || isSmr(curCp) || !(project.font.nikkud.enabled || project.font.trop.enabled))) {
-    mode = 'align';                            // punctuation and Cyrillic are anchor-free; letters-only font has no marks step (but a precomposed/wide form being placed stays in anchors)
+  } else if (mode === 'anchors' && !precompTarget && (isPunctItem() || isCyr(curCp) || isPhn(curCp) || isAram(curCp) || (isSmr(curCp) ? !(smrMarkBase(curLetter()) && smrMarksOn()) : !(project.font.nikkud.enabled || project.font.trop.enabled)))) {
+    mode = 'align';                            // punctuation and Cyrillic are anchor-free; letters-only font has no marks step (but a precomposed/wide form being placed stays in anchors); a Samaritan letter has the step only while its mark family is on
   }
   if (curKind === 'letter') {   // Draw ⇄ Align normalization
     const cl = curLetter();
@@ -7034,13 +7039,14 @@ function _setWorkMode(mode) {
   drawRingHide();                                        // the cursor ring is draw-mode chrome
   if (mode !== 'anchors') precompTarget = null;   // leaving the placement step ends any precomposed-form edit
   if (mode === 'anchors') {   // keep anchorCat on an enabled category
+    if (curKind === 'letter' && smrMarkBase(curLetter())) anchorCat = 'smrmarks'; else if (anchorCat === 'smrmarks') anchorCat = (project.font.nikkud.enabled || !project.font.trop.enabled) ? 'nikkud' : 'trop';   // the Samaritan family is a Samaritan letter's only category
     if (anchorCat === 'trop' && !project.font.trop.enabled) anchorCat = 'nikkud';
     if (anchorCat === 'nikkud' && !project.font.nikkud.enabled && project.font.trop.enabled) anchorCat = 'trop';
   }
   const onAnch = mode === 'anchors';
   document.getElementById('tabAlign').classList.toggle('active', mode === 'align' || mode === 'draw');   // draw replaces align as step 1 in draw projects
   document.getElementById('tabTrace').classList.toggle('active', mode === 'trace' || mode === 'nodes');   // node editing is a sub-state of Trace
-  document.getElementById('tabAnchors').classList.toggle('active', onAnch && anchorCat === 'nikkud');
+  document.getElementById('tabAnchors').classList.toggle('active', onAnch && (anchorCat === 'nikkud' || anchorCat === 'smrmarks'));   // the Samaritan family reuses the third step tab
   document.getElementById('tabTrop').classList.toggle('active', onAnch && anchorCat === 'trop');
   _syncTablist(document.querySelector('.work-tabs'));   // mirror .active → aria-selected + roving tabindex
   // entering Trace with an image but no contours yet → trace once so the live preview shows
@@ -7058,10 +7064,12 @@ function _setWorkMode(mode) {
 }
 /* Go to the placement step for a specific category (Nikkud or Trop tab). */
 function gotoAnchors(cat) {
+  if (curKind === 'letter' && smrMarkBase(curLetter())) cat = 'smrmarks';   // a Samaritan letter's placement step is its own family's — every entry (the step tab, Next, QA) lands there
+  else if (cat === 'smrmarks') cat = 'nikkud';
   if (cat === 'trop' && !project.font.trop.enabled) cat = 'nikkud';
   if (cat === 'nikkud' && !project.font.nikkud.enabled && project.font.trop.enabled) cat = 'trop';
   anchorCat = cat;
-  activeAnchorClass = cat === 'trop' ? 'tropAbove' : 'below';
+  activeAnchorClass = cat === 'smrmarks' ? 'smrAboveR' : cat === 'trop' ? 'tropAbove' : 'below';
   setWorkMode('anchors');
 }
 /* expand/collapse-all menus removed with the Sidebar layout */
@@ -9265,8 +9273,11 @@ function updateTabs() {
   if (eng) {
     ta.style.display = engSupportsAccents(curCp) ? '' : 'none';   // only the English letters that take accents
     ta.textContent = I18n.t('fontmaker.tabs.step_accents');
+  } else if (smr) {   // a Samaritan letter: one placement step, for its own mark family (the 22 letters, while the family is on)
+    ta.style.display = (smrMarkBase(curLetter()) && smrMarksOn()) ? '' : 'none';
+    ta.textContent = I18n.t('fontmaker.tabs.step_smrmarks');
   } else {
-    ta.style.display = (!isMark && !isPunct && !cyr && !phn && !aram && !smr && project.font.nikkud.enabled) ? '' : 'none';
+    ta.style.display = (!isMark && !isPunct && !cyr && !phn && !aram && project.font.nikkud.enabled) ? '' : 'none';
     ta.textContent = I18n.t('fontmaker.tabs.step_nikkud');
   }
   const tt = document.getElementById('tabTrop');
@@ -9294,7 +9305,7 @@ function updateStepTicks() {
   setTick('tabTrace', l.contours ? 'done' : 'todo');
   // Placement: the CONFIRMED flag is the done signal (carried-over + unconfirmed read as not-done).
   // English accents have no confirm flow → no tick; Cyrillic has no placement step at all.
-  const placeState = (isEng(l.codepoint) || isCyr(l.codepoint) || isPhn(l.codepoint) || isAram(l.codepoint) || isSmr(l.codepoint)) ? null : (l.placementSaved ? 'done' : 'todo');
+  const placeState = (isEng(l.codepoint) || isCyr(l.codepoint) || isPhn(l.codepoint) || isAram(l.codepoint) || (isSmr(l.codepoint) && !(smrMarkBase(l) && smrMarksOn()))) ? null : (l.placementSaved ? 'done' : 'todo');   // a Samaritan letter's step counts while its family is on
   setTick('tabAnchors', placeState);
   setTick('tabTrop', placeState);
 }
@@ -9787,7 +9798,7 @@ function renderLegend() {
   }
   if (workMode === 'anchors') {
     const c = activeAnchorClass;
-    const col = c==='below'?'var(--below)':(c==='above'?'var(--above)':'var(--center)');
+    const col = c.indexOf('smr') === 0 ? ANCHOR_COL[c] : c==='below'?'var(--below)':(c==='above'?'var(--above)':'var(--center)');   // a Samaritan column in its own colour; the Hebrew classes as before
     if (isWideForm(precompTarget ? getPrecomp(precompTarget) : null)) {   // wide forms have no draggable handle — their nikkud follows the base letter
       el.innerHTML = `<span><span class="dot" style="background:var(--below)"></span>${_pT('legend_wideform', 'Nikkud preview — the position follows the base letter (edit it there).')}</span>`;
     } else {
@@ -13767,6 +13778,7 @@ function seedAnchors(l) {
     tropAboveL: { x: mid - tOff, y: tAboveY }, tropAboveR: { x: mid + tOff, y: tAboveY },
     tropBelowL: { x: mid - tOff, y: tBelowY }, tropBelowR: { x: mid + tOff, y: tBelowY }
   };
+  if (l.smr) ensureSmrAnchors(l);   // the Samaritan columns ride every fresh seed (reset, import) — a no-op for every other letter
 }
 function ensureTropAnchors(l) {   // back-fill trop anchors on letters seeded before trop / the L/R columns existed
   if (!l.anchors) return;
@@ -13790,13 +13802,36 @@ function ensureNikkudAnchors(l) {   // back-fill the nikkud triad on a PARTIAL .
   if (!l.anchors.above)  l.anchors.above  = { x: mid, y: Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40) };
   if (!l.anchors.center) l.anchors.center = { x: mid, y: Math.min(Math.max(Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150), 120), 380) };
 }
-function seedAnchorsIfNeeded(l) { if (!l.anchors) seedAnchors(l); else { ensureNikkudAnchors(l); ensureTropAnchors(l); } }
+function seedAnchorsIfNeeded(l) { if (!l.anchors) seedAnchors(l); else { ensureNikkudAnchors(l); ensureTropAnchors(l); ensureSmrAnchors(l); } }
+/* Samaritan marks (MARK_FAMILY.smrmarks): three above-the-letter columns on each of the 22 Samaritan
+   letters — start (its right edge), middle, end (left edge) — keyed smrAboveR / smrAbove / smrAboveL.
+   Seeded from the FULL ink extents (the columns sit at the edges, unlike the top-band midX the nikkud
+   triad uses), at the nikkud `above` height, the side columns SMR_SIDE_FRAC of the ink width out from
+   the middle: the shipped Hebrew Square Samaritan puts them at 1400 / 150 on a 30–1595 alaf, i.e.
+   mid ± 0.39·width. A seed only — the editor and an import overwrite it. Every coordinate is rounded at
+   the source (feaLib rejects a fraction). */
+const SMR_SIDE_FRAC = 0.39;
+function smrAnchorSeed(l) {   // pure: the three column points for a Samaritan letter (ensureSmrAnchors and qaAnchors share it)
+  const hasInk = !!(l.contours && l.contours.length);
+  const x0 = hasInk ? letterInkLeft(l) : 0, x1 = hasInk ? letterInkRight(l) : (l.advance != null ? l.advance : Math.round(LETTER_TOP * 0.7));
+  const mid = Math.round((x0 + x1) / 2), off = Math.round(Math.max(0, x1 - x0) * SMR_SIDE_FRAC);
+  const maxY = hasInk ? glyphBBox(l.contours, true, letterMeta(l.codepoint)).maxY : LETTER_TOP;
+  const y = (l.anchors && l.anchors.above) ? l.anchors.above.y : Math.max(ANCHOR_Y.above, Math.round(maxY) + 40);
+  return { smrAboveR: { x: mid + off, y }, smrAbove: { x: mid, y }, smrAboveL: { x: mid - off, y } };
+}
+function ensureSmrAnchors(l) {   // back-fill the columns on a mark-bearing Samaritan letter (a save from before the family, a fresh seed); idempotent
+  if (!smrMarkBase(l) || !l.anchors) return;
+  if (l.anchors.smrAboveR && l.anchors.smrAbove && l.anchors.smrAboveL) return;
+  const s = smrAnchorSeed(l);
+  SMR_ANCHOR_KEYS.forEach(k => { if (!l.anchors[k]) l.anchors[k] = s[k]; });
+}
 
 /* ════════ Anchor editor (nikkud + trop) ════════ */
 const ANCHOR_CLASSES = [['below','var(--below)'],['above','var(--above)'],['center','var(--center)'],['tropAbove','#8b5cf6'],['tropBelow','#0ea5e9']];
-const ANCHOR_LABEL = { below:'Below', above:'Above (Holam)', center:'Dagesh (Center)', tropAbove:'Trop above', tropBelow:'Trop below' };
-function anchorLabelT(k){ const slug=k.replace('tropAbove','trop_above').replace('tropBelow','trop_below'); const key='fontmaker.panels.anchor_'+slug; const v=window.I18n?I18n.t(key):key; return v===key?(ANCHOR_LABEL[k]||k):v; }
-const ANCHOR_COL = { below:'var(--below)', above:'var(--above)', center:'var(--center)', tropAbove:'#8b5cf6', tropBelow:'#0ea5e9' };
+const ANCHOR_LABEL = { below:'Below', above:'Above (Holam)', center:'Dagesh (Center)', tropAbove:'Trop above', tropBelow:'Trop below', smrAboveR:'Start (right)', smrAbove:'Middle', smrAboveL:'End (left)' };
+// anchorLabelT's slug chain replaces the two Samaritan side columns before the bare middle one, or the R / L would survive as uppercase in the key.
+function anchorLabelT(k){ const slug=k.replace('tropAbove','trop_above').replace('tropBelow','trop_below').replace('smrAboveR','smr_above_r').replace('smrAboveL','smr_above_l').replace('smrAbove','smr_above'); const key='fontmaker.panels.anchor_'+slug; const v=window.I18n?I18n.t(key):key; return v===key?(ANCHOR_LABEL[k]||k):v; }
+const ANCHOR_COL = { below:'var(--below)', above:'var(--above)', center:'var(--center)', tropAbove:'#8b5cf6', tropBelow:'#0ea5e9', smrAboveR:'#d97706', smrAbove:'#0d9488', smrAboveL:'#db2777' };
 const BELOW_VOWELS = [
   { cp:'05B8', name:'Qamats' }, { cp:'05B7', name:'Patach' }, { cp:'05B6', name:'Segol' },
   { cp:'05B5', name:'Tsere' }, { cp:'05B4', name:'Hiriq' }, { cp:'05BB', name:'Qubuts' },
@@ -13810,6 +13845,7 @@ let activeBelowVowel = '05B8';
 let activeAboveMark = '05B9';
 let activeCenterMark = '05BC';
 let activeTropCp = '0597';
+let activeSmrMark = { smrAboveR: '0816', smrAbove: '0819', smrAboveL: '0823' };   // Samaritan marks: the previewed mark per column (In, Dagesh, A)
 let coPreviewCp = null;   // Place-Nikkud "check stacking" — a 2nd mark previewed (grey ghost) on the current letter
 // A mark is NOT a plain above-mark on this letter when the letter+mark pair composes to a
 // precomposed form (shin dots → שׁ/שׂ, holam on vav → וֹ): those are edited via their form tile in
@@ -13830,6 +13866,7 @@ function activeVowelCp() {
     case 'above': return aboveMarkFor(curLetter());   // preview the SELECTED above-mark (holam/shin-dot/sin-dot/rafe), not always holam
     case 'center': return '05BC';       // dagesh
     case 'tropAbove': case 'tropBelow': return activeTropCp;
+    case 'smrAboveR': case 'smrAbove': case 'smrAboveL': return activeSmrMark[activeAnchorClass];   // Samaritan marks: the column's previewed mark
     default: return activeBelowVowel;
   }
 }
@@ -13882,6 +13919,7 @@ function metegGhostDx(activeCp, ghostCp) {
    previewed on a letter that can never carry one. Deliberately a read-side SUPPRESSION, not a clear:
    coPreviewCp survives letter walks (the dagesh-walk design), and a dot ghost restores on return to ש. */
 function coPreviewFor(l, acp) {
+  if (smrMarkBase(l)) return null;   // a Samaritan letter takes no Hebrew ghost — its family has no stacking check
   if (!coPreviewCp || coPreviewCp === acp) return null;
   if ((coPreviewCp === '05C1' || coPreviewCp === '05C2') && (!l || l.codepoint !== '05E9')) return null;
   return coPreviewCp;
@@ -14029,6 +14067,7 @@ function setAnchorClass(cls) {
 function setBelowVowel(cp) { activeBelowVowel = cp; renderStage(); renderControls(); }
 function setAboveMark(cp) { activeAboveMark = cp; renderStage(); renderControls(); }
 function setCenterMark(cp) { activeCenterMark = cp; renderStage(); renderControls(); }
+function setSmrMark(cp) { const k = smrMarkKey(cp); if (k) { activeSmrMark[k] = cp; activeAnchorClass = k; } renderStage(); renderControls(); }   // a Samaritan mark picks its own column
 
 /* ════════ Special / precomposed forms — place each form's mark (שׁ שׂ בּ כּ פּ תּ וֹ וּ) on its base ════════
    These render as single glyphs (via ccmp), so the dot position is baked in. By default it sits at the base's
@@ -14905,6 +14944,13 @@ function setTropScale(v) {
   udBurstBegin([{ t:'tropTune' }], 'trop size');   // one undo entry per slider drag
   project.font.tropScale = Math.max(0.3, Math.min(2, (+v)/100));
   const s = document.getElementById('markScaleV'); if (s) s.textContent = Math.round(project.font.tropScale*100) + '%';
+  renderStage();
+  markDirty();
+}
+function setSmrMarkScale(v) {   // the Samaritan family's own size — never the nikkud slider
+  udBurstBegin([{ t:'tropTune' }], 'Samaritan mark size');   // one undo entry per slider drag
+  project.font.smrMarkScale = Math.max(0.3, Math.min(2, (+v)/100));
+  const s = document.getElementById('smrMarkScaleV'); if (s) s.textContent = Math.round(project.font.smrMarkScale*100) + '%';
   renderStage();
   markDirty();
 }
@@ -15970,9 +16016,10 @@ function maybeInheritAnchors(l) {
   // (WeakMap guard) and only to a not-yet-placed letter, so in-progress moves are never clobbered.
   if (!lastSavedAnchors || curKind !== 'letter' || l.placementSaved || l.placementInherited || l.savedAnchors || letterHasPins(l)) return;   // a pinned letter is measured truth — never inherit-clobber it
   if (anchorInheritedFrom.get(l) === lastSavedAnchors) return;
+  if (!!lastSavedAnchors.smrAboveR !== smrMarkBase(l)) return;   // placement carries within a family only: a Samaritan letter's anchors always hold the columns, a Hebrew letter's never do
   const ibb = l.contours ? glyphBBox(l.contours, true, letterMeta(l.codepoint)) : null;
   const floatUp = !!(ibb && Math.round(ibb.minY) > 120);   // yod-like: body floats well above the baseline
-  ['below','above','center','tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR'].forEach(k => {
+  ['below','above','center','tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR','smrAboveR','smrAbove','smrAboveL'].forEach(k => {
     const s = lastSavedAnchors[k];
     if (s && l.anchors[k]) {
       l.anchors[k].x = s.x;
@@ -15992,12 +16039,13 @@ function _anchorCtx(l) {            // shared anchor-class computation (nik/trop
   maybeInheritAnchors(l);
   const nikOn = project.font.nikkud.enabled, tropOn = project.font.trop.enabled;
   let acat = anchorCat;
+  if (smrMarkBase(l)) acat = 'smrmarks'; else if (acat === 'smrmarks') acat = (nikOn || !tropOn) ? 'nikkud' : 'trop';   // a Samaritan letter has exactly one family; a Hebrew letter never shows the Samaritan columns
   if (acat === 'trop' && !tropOn) acat = 'nikkud';
   if (acat === 'nikkud' && !nikOn && tropOn) acat = 'trop';
-  const visCls = acat === 'trop' ? ['tropAbove','tropBelow'] : ['below','above','center'];
+  const visCls = acat === 'smrmarks' ? SMR_ANCHOR_KEYS : acat === 'trop' ? ['tropAbove','tropBelow'] : ['below','above','center'];
   if (!visCls.includes(activeAnchorClass)) activeAnchorClass = visCls[0];
   const cls = activeAnchorClass, isTrop = cls.indexOf('trop') === 0;
-  return { acat, visCls, cls, isTrop, want: cls === 'tropAbove' ? 'above' : 'below', a: baseAnchorPosFor(l, activeAnchorKey(), activeVowelCp()) };   // a pinned previewed mark reports (and edits) its pin
+  return { acat, visCls, cls, isTrop, isSmr: acat === 'smrmarks', want: cls === 'tropAbove' ? 'above' : 'below', a: baseAnchorPosFor(l, activeAnchorKey(), activeVowelCp()) };   // a pinned previewed mark reports (and edits) its pin
 }
 
 /* ── ALIGN ── */
@@ -16083,7 +16131,7 @@ function renderAlignUnder(U, l) {
 function renderAlignStageBelow(SB, l) {
   if (!SB) return;
   const nextBtn = isVectorGlyph(l)
-    ? (l.contours && !isPunctItem() && !isCyr(l.codepoint) && !isPhn(l.codepoint) && !isAram(l.codepoint) && !isSmr(l.codepoint) ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button>` : '')   // Cyrillic, Phoenician, Aramaic and Samaritan have no placement step to go to
+    ? (l.contours && !isPunctItem() && !isCyr(l.codepoint) && !isPhn(l.codepoint) && !isAram(l.codepoint) && (!isSmr(l.codepoint) || (smrMarkBase(l) && smrMarksOn())) ? `<button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${isSmr(l.codepoint) ? _pT('next_smrmarks', 'Next: Samaritan marks →') : _pT('next_nikkud', 'Next: Nikkud →')}</button>` : '')   // Cyrillic, Phoenician and Aramaic have no placement step to go to; a Samaritan letter has one while its mark family is on (gotoAnchors routes it there)
     : (curImageUrl() ? `<button class="ctl-btn primary" onclick="setWorkMode('trace')">${_pT('next_trace', 'Next: Trace →')}</button>` : '');
   const applyBtn = (curKind === 'letter' && !isVectorGlyph(l) && curImageUrl())
     ? `<button class="ctl-btn" onclick="openApplyAlign()" title="${esc(window.I18n ? I18n.t('fontmaker.tip.apply_align_other') : "Copy this letter's position & scale onto other letters")}">${_pT('apply_alignment', 'Apply alignment to other letters…')}</button>` : '';
@@ -16166,8 +16214,8 @@ function renderTraceUnder(U, l) {
 /* Shared by Trace and Edit-points (both route through renderTraceUnder). */
 function renderTraceStageBelow(SB, l) {
   if (!SB) return;
-  SB.innerHTML = (l.contours && !isPunctItem() && !isCyr(l.codepoint) && !isPhn(l.codepoint) && !isAram(l.codepoint) && !isSmr(l.codepoint))   // Cyrillic, Phoenician, Aramaic and Samaritan have no placement step to go to
-    ? `<div class="stage-actions"><button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${_pT('next_nikkud', 'Next: Nikkud →')}</button></div>` : '';
+  SB.innerHTML = (l.contours && !isPunctItem() && !isCyr(l.codepoint) && !isPhn(l.codepoint) && !isAram(l.codepoint) && (!isSmr(l.codepoint) || (smrMarkBase(l) && smrMarksOn())))   // Cyrillic, Phoenician and Aramaic have no placement step to go to; a Samaritan letter has one while its mark family is on
+    ? `<div class="stage-actions"><button class="ctl-btn primary" onclick="gotoAnchors('nikkud')">${isSmr(l.codepoint) ? _pT('next_smrmarks', 'Next: Samaritan marks →') : _pT('next_nikkud', 'Next: Nikkud →')}</button></div>` : '';
 }
 
 /* ── DRAW (draw letters on screen with pen / touch / mouse) ── */
@@ -16414,7 +16462,7 @@ function _placementCycleCps() {
   if (isCyr(curCp)) return (project.letters || []).filter(x => x.cyr && x.contours && x.contours.length).map(x => x.codepoint);   // unreachable in practice (Cyrillic never enters the placement step) — kept so the precedence mirrors catTabFor
   if (isPhn(curCp)) return (project.letters || []).filter(x => x.phn && x.contours && x.contours.length).map(x => x.codepoint);   // likewise unreachable — Phoenician has no placement step either
   if (isAram(curCp)) return (project.letters || []).filter(x => x.aram && x.contours && x.contours.length).map(x => x.codepoint);   // and Imperial Aramaic, same reason
-  if (isSmr(curCp)) return (project.letters || []).filter(x => x.smr && x.contours && x.contours.length).map(x => x.codepoint);   // and Samaritan, same reason
+  if (isSmr(curCp)) return (project.letters || []).filter(x => smrMarkBase(x) && x.contours && x.contours.length).map(x => x.codepoint);   // Samaritan: the 22 letters that carry the mark columns (a vowel letter or a punctuation mark would fold to Align mid-cycle)
   if (isCustomCp(curCp)) return (project.letters || []).filter(x => x.custom).map(x => x.codepoint);
   if (wideGlyphItemFor(curCp)) return (project.letters || []).filter(x => x.wideGlyph).map(x => x.codepoint);   // cycle the converted wide forms
   return LETTER_ORDER.filter(cp => { const m = letterMeta(cp); return !(m && m.cat === 'punct'); });
@@ -16426,10 +16474,97 @@ function stepLetter(dir) {   // dir = -1 (prev) | +1 (next); selectItem keeps us
   const next = order[(i + dir + order.length) % order.length];
   if (next !== curCp) selectItem('letter', next);
 }
+/* Three pieces of the placement sidebar, shared by the Hebrew sidebar below and the Samaritan one
+   (renderSmrAnchorLeft): the Prev/Next row, the X/Y block and the pins row. Lifted verbatim. */
+function _anchorXYBlockHTML(l, cls, a, xyWhat) {
+  const actPin = activePin(l);   // the previewed mark is pinned → X/Y (and the drag) edit the pin
+  const pinHint = actPin ? `<div class="hint" style="font-size:0.7rem;text-align:center;margin-top:4px;color:var(--gold);">✎ ${esc(I18n.t('fontmaker.fidelity.pinned_hint'))}
+      <button class="ctl-btn" style="font-size:0.7rem;padding:1px 8px;margin-inline-start:4px;" onclick="unpinActiveMark()">${I18n.t('fontmaker.fidelity.unpin')}</button></div>` : '';
+  return `<hr class="ctl-divider">
+    <div class="ws-side-title">${esc(_pT('pos_title', '{class} position — {name} only', {class: anchorLabelT(cls), name: l.name}))}</div>
+    <div class="anc-xy">
+      <label>X <input type="number" id="ancX" value="${a.x}" oninput="setAnchorCoord('x',this.value)" onchange="udBurstCommit()"></label>
+      <label>Y <input type="number" id="ancY" value="${a.y}" oninput="setAnchorCoord('y',this.value)" onchange="udBurstCommit()"></label>
+    </div>
+    ${pinHint}
+    <div class="ctl-row" style="margin-top:6px;justify-content:center;">
+      <button class="ctl-btn" onclick="centerAnchorH()" title="${esc(_pT('center_h_title', 'Center horizontally — halfway between the left and right margins'))}">${_pT('center_h', 'Center ↔')}</button>
+      <button class="ctl-btn" onclick="centerAnchorV()" title="${esc(_pT('center_v_title', 'Center vertically — halfway between the top and base lines'))}">${_pT('center_v', 'Center ↕')}</button>
+    </div>
+    <div class="hint" style="font-size:0.7rem;text-align:center;margin-top:5px;">${actPin ? '' : _pT('moves_xy_hint', 'Moves ' + xyWhat + ' on <b>' + esc(l.name) + '</b> only.', { what: xyWhat, name: '<b>' + esc(l.name) + '</b>' })}</div>`;
+}
+function _anchorPinsSectionHTML(l) {
+  // The COUNT is live pins only: one whose stored key no longer matches (a pinned trop whose halign
+  // moved to an edge column, a center pin from a foreign file) is inert everywhere, draws no ✎ badge
+  // and offers no Unpin — stating a number the user can't act on would be a lie. But the SECTION is
+  // gated on stored pins, so Clear pins stays reachable for a letter whose pins have all gone stale:
+  // they are still in the file, still ride autosave, and a halign change back would make them live
+  // again — an inert pin must never become unremovable.
+  const nStored = l.markAnchors ? Object.keys(l.markAnchors).length : 0;
+  const nPins = nStored ? Object.keys(l.markAnchors).filter(cp => markPinFor(l, pinKeyFor(cp), cp)).length : 0;
+  const pinsSection = nStored ? `<hr class="ctl-divider">
+    <div class="ctl-row" style="align-items:center;justify-content:space-between;gap:6px;">
+      ${nPins ? `<span class="hint" style="font-size:0.7rem;color:var(--gold);">✎ ${esc(I18n.t(nPins === 1 ? 'fontmaker.fidelity.pins_row.one' : 'fontmaker.fidelity.pins_row.other', { count: nPins }))}</span>` : '<span></span>'}
+      <button class="ctl-btn" style="font-size:0.7rem;" onclick="clearLetterPins()">${I18n.t('fontmaker.fidelity.clear_pins')}</button>
+    </div>` : '';
+  return pinsSection;
+}
+function _placementNavRowHTML() {
+  // Label Prev/Next with the actual neighbor glyph, computed from the SAME source stepLetter uses so they can't drift.
+  const _cyc = _placementCycleCps();
+  let _ci = _cyc.indexOf(curCp); if (_ci < 0) _ci = 0;
+  const _clen = _cyc.length, _single = _clen <= 1;
+  const _navChar = cp => {
+    if (isCustomCp(cp) || wideGlyphItemFor(cp)) { const it = (project.letters || []).find(x => x.codepoint === cp); return esc(((it && it.name) ? it.name[0] : '') || '?'); }
+    return `<span lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${String.fromCodePoint(parseInt(cp,16))}</span>`;
+  };
+  const _prevLbl = _single ? _pT('prev', '◀ Prev') : _pT('prev_char', '◀ Prev (' + _navChar(_cyc[(_ci - 1 + _clen) % _clen]) + ')', { char: _navChar(_cyc[(_ci - 1 + _clen) % _clen]) });
+  const _nextLbl = _single ? _pT('next', 'Next ▶') : _pT('next_char', 'Next (' + _navChar(_cyc[(_ci + 1) % _clen]) + ') ▶', { char: _navChar(_cyc[(_ci + 1) % _clen]) });
+  const navRow = `<div class="ctl-row" style="margin-bottom:6px;">
+      <button class="ctl-btn" onclick="stepLetter(-1)" title="${esc(_pT('prev_title', 'Previous letter ( [ ) — stays on this step'))}">${_prevLbl}</button>
+      <button class="ctl-btn" onclick="stepLetter(1)" title="${esc(_pT('next_title', 'Next letter ( ] ) — stays on this step'))}">${_nextLbl}</button>
+    </div>`;
+  return navRow;
+}
+/* The placement sidebar for a Samaritan letter — the mark family's three columns (start / middle / end,
+   all above), the column's marks to preview, the per-mark height nudge, the shared X/Y block and the
+   pins row. No stacking check, no meteg, no composed forms: a Samaritan letter takes one mark per column
+   and nothing composes. */
+function renderSmrAnchorLeft(l) {
+  const { visCls, cls, a } = _anchorCtx(l);
+  const classBtns = visCls.map(k =>
+    `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${anchorLabelT(k)}</button>`).join('');
+  const acp = activeVowelCp(), aName = (SMR_MARK_BY_CP[acp] || {}).short || acp, ndy = markNudgeDy(acp);
+  const tiles = SAMARITAN_MARKS.filter(m => SMR_COL_KEY[m.col] === cls).map(m => squareMarkBtn('smrmarks', m.cp, esc(m.short), acp, 'setSmrMark', l)).join('');
+  const editBtn = `<button class="ctl-btn hi-btn" title="${esc(I18n.t('fontmaker.tip.edit_mark_shape'))}" onclick="openMarkEdit('smrmarks','${acp}')">${ICON_PENCIL_SM}${esc(I18n.t('fontmaker.panels.edit_shape'))}</button>`;
+  const grid = `<div class="ws-side-title">${I18n.t('fontmaker.panels.preview_smr_mark')}</div>
+      <div class="mark-grid2">${tiles}</div>
+      <hr class="ctl-divider">
+      <div class="ws-side-title">${I18n.t('fontmaker.panels.trop_every_letter', {name: esc(aName)})}</div>
+      <div class="ctl-row" style="margin-top:6px;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
+        <span style="font-size:0.72rem;color:var(--muted);">${I18n.t('fontmaker.panels.height')}</span>
+        <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.raise_mark_title'))}" aria-label="${esc(I18n.t('fontmaker.panels.raise_mark_title'))}" onclick="nudgeActiveVowel(10)">${ICON_UP_SM}</button>
+        <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.lower_mark_title'))}" aria-label="${esc(I18n.t('fontmaker.panels.lower_mark_title'))}" onclick="nudgeActiveVowel(-10)">${ICON_DOWN_SM}</button>
+        <span id="vowelNudgeV" class="readout">${ndy>0?'+':''}${ndy}</span>
+        <button class="ctl-btn" title="${esc(I18n.t('fontmaker.panels.reset_mark_height_title'))}" aria-label="${esc(I18n.t('fontmaker.panels.reset_mark_height_title'))}" onclick="setMarkNudge(activeVowelCp(),0)">⟲</button>
+        ${editBtn}
+      </div>
+      <div class="hint" style="font-size:0.7rem;text-align:center;">${_pT('height_trop_hint', 'Raises or lowers just <b>{name}</b> on every letter — e.g. to separate two marks sharing a side.', {name: esc(aName)})}</div>`;
+  const xy = _anchorXYBlockHTML(l, cls, a, _pT('xy_what_smr', 'the marks of this column'));
+  return `
+    ${_placementNavRowHTML()}
+    <div class="ws-side-title">${esc(_pT('place_the', '{name}: place the…', {name: l.name}))}</div>
+    <div class="ctl-row">${classBtns}</div>
+    <hr class="ctl-divider">${grid}
+    ${xy}
+    ${_anchorPinsSectionHTML(l)}
+    `;
+}
 function renderAnchorLeft(L, l) {
   if (!l.contours && !project.template.showOverlay) { L.innerHTML = ''; return; }
   if (precompTarget) { L.innerHTML = renderPrecompControls(l); return; }   // placing a precomposed form's mark
   if (isEng(l.codepoint)) { L.innerHTML = renderEngAccentLeft(l); return; }   // English letters: place accents (precomposed forms)
+  if (smrMarkBase(l)) { L.innerHTML = renderSmrAnchorLeft(l); return; }   // Samaritan letters: place the Samaritan marks (their own family)
   const { visCls, cls, isTrop, want, a } = _anchorCtx(l);
   const classBtns = visCls.map(k =>
     `<button class="ctl-btn ${cls===k?'primary':''}" style="${cls===k?`background:${ANCHOR_COL[k]};color:#fff;border-color:${ANCHOR_COL[k]};`:''}" onclick="setAnchorClass('${k}')">${anchorLabelT(k)}</button>`).join('');
@@ -16537,21 +16672,7 @@ function renderAnchorLeft(L, l) {
       <div class="hint" style="font-size:0.7rem;text-align:center;">${I18n.t('fontmaker.panels.pair_hint')}</div>`;
   }
   const xyWhat = cls === 'below' ? _pT('xy_what_below', 'all under-vowels') : cls === 'above' ? _pT('xy_what_above', 'the above mark') : cls === 'center' ? _pT('xy_what_center', 'the dagesh') : _pT('xy_what_trop', "this mark's column");
-  const actPin = activePin(l);   // the previewed mark is pinned → X/Y (and the drag) edit the pin
-  const pinHint = actPin ? `<div class="hint" style="font-size:0.7rem;text-align:center;margin-top:4px;color:var(--gold);">✎ ${esc(I18n.t('fontmaker.fidelity.pinned_hint'))}
-      <button class="ctl-btn" style="font-size:0.7rem;padding:1px 8px;margin-inline-start:4px;" onclick="unpinActiveMark()">${I18n.t('fontmaker.fidelity.unpin')}</button></div>` : '';
-  const xy = `<hr class="ctl-divider">
-    <div class="ws-side-title">${esc(_pT('pos_title', '{class} position — {name} only', {class: anchorLabelT(cls), name: l.name}))}</div>
-    <div class="anc-xy">
-      <label>X <input type="number" id="ancX" value="${a.x}" oninput="setAnchorCoord('x',this.value)" onchange="udBurstCommit()"></label>
-      <label>Y <input type="number" id="ancY" value="${a.y}" oninput="setAnchorCoord('y',this.value)" onchange="udBurstCommit()"></label>
-    </div>
-    ${pinHint}
-    <div class="ctl-row" style="margin-top:6px;justify-content:center;">
-      <button class="ctl-btn" onclick="centerAnchorH()" title="${esc(_pT('center_h_title', 'Center horizontally — halfway between the left and right margins'))}">${_pT('center_h', 'Center ↔')}</button>
-      <button class="ctl-btn" onclick="centerAnchorV()" title="${esc(_pT('center_v_title', 'Center vertically — halfway between the top and base lines'))}">${_pT('center_v', 'Center ↕')}</button>
-    </div>
-    <div class="hint" style="font-size:0.7rem;text-align:center;margin-top:5px;">${actPin ? '' : _pT('moves_xy_hint', 'Moves ' + xyWhat + ' on <b>' + esc(l.name) + '</b> only.', { what: xyWhat, name: '<b>' + esc(l.name) + '</b>' })}</div>`;
+  const xy = _anchorXYBlockHTML(l, cls, a, xyWhat);
   let coRow = '';
   if (l.anchors) {   // "Check stacking" — preview a 2nd (nikkud) mark on this letter + warn on overlap (Babylonian all-above / two-vowel letters; on trop classes: trop-vs-vowel clashes like holam under a Left-above mark)
     const acp = activeVowelCp();
@@ -16595,33 +16716,8 @@ function renderAnchorLeft(L, l) {
     <div class="ws-side-title">${esc(I18n.t('fontmaker.panels.special_precomposed'))}</div>
     <div class="hint" style="font-size:0.7rem;">${esc(I18n.t('fontmaker.panels.special_precomposed_hint'))}</div>
     <div class="ctl-row" style="flex-wrap:wrap;gap:5px;">${forms.map(precompFormBtn).join('')}</div>` : '';
-  // The COUNT is live pins only: one whose stored key no longer matches (a pinned trop whose halign
-  // moved to an edge column, a center pin from a foreign file) is inert everywhere, draws no ✎ badge
-  // and offers no Unpin — stating a number the user can't act on would be a lie. But the SECTION is
-  // gated on stored pins, so Clear pins stays reachable for a letter whose pins have all gone stale:
-  // they are still in the file, still ride autosave, and a halign change back would make them live
-  // again — an inert pin must never become unremovable.
-  const nStored = l.markAnchors ? Object.keys(l.markAnchors).length : 0;
-  const nPins = nStored ? Object.keys(l.markAnchors).filter(cp => markPinFor(l, pinKeyFor(cp), cp)).length : 0;
-  const pinsSection = nStored ? `<hr class="ctl-divider">
-    <div class="ctl-row" style="align-items:center;justify-content:space-between;gap:6px;">
-      ${nPins ? `<span class="hint" style="font-size:0.7rem;color:var(--gold);">✎ ${esc(I18n.t(nPins === 1 ? 'fontmaker.fidelity.pins_row.one' : 'fontmaker.fidelity.pins_row.other', { count: nPins }))}</span>` : '<span></span>'}
-      <button class="ctl-btn" style="font-size:0.7rem;" onclick="clearLetterPins()">${I18n.t('fontmaker.fidelity.clear_pins')}</button>
-    </div>` : '';
-  // Label Prev/Next with the actual neighbor glyph, computed from the SAME source stepLetter uses so they can't drift.
-  const _cyc = _placementCycleCps();
-  let _ci = _cyc.indexOf(curCp); if (_ci < 0) _ci = 0;
-  const _clen = _cyc.length, _single = _clen <= 1;
-  const _navChar = cp => {
-    if (isCustomCp(cp) || wideGlyphItemFor(cp)) { const it = (project.letters || []).find(x => x.codepoint === cp); return esc(((it && it.name) ? it.name[0] : '') || '?'); }
-    return `<span lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${String.fromCodePoint(parseInt(cp,16))}</span>`;
-  };
-  const _prevLbl = _single ? _pT('prev', '◀ Prev') : _pT('prev_char', '◀ Prev (' + _navChar(_cyc[(_ci - 1 + _clen) % _clen]) + ')', { char: _navChar(_cyc[(_ci - 1 + _clen) % _clen]) });
-  const _nextLbl = _single ? _pT('next', 'Next ▶') : _pT('next_char', 'Next (' + _navChar(_cyc[(_ci + 1) % _clen]) + ') ▶', { char: _navChar(_cyc[(_ci + 1) % _clen]) });
-  const navRow = `<div class="ctl-row" style="margin-bottom:6px;">
-      <button class="ctl-btn" onclick="stepLetter(-1)" title="${esc(_pT('prev_title', 'Previous letter ( [ ) — stays on this step'))}">${_prevLbl}</button>
-      <button class="ctl-btn" onclick="stepLetter(1)" title="${esc(_pT('next_title', 'Next letter ( ] ) — stays on this step'))}">${_nextLbl}</button>
-    </div>`;
+  const pinsSection = _anchorPinsSectionHTML(l);
+  const navRow = _placementNavRowHTML();
   L.innerHTML = `
     ${navRow}
     <div class="ws-side-title">${esc(_pT('place_the', '{name}: place the…', {name: l.name}))}</div>
@@ -16659,6 +16755,12 @@ function renderAnchorUnder(U, l) {
       : `<div class="hint">${I18n.t('fontmaker.panels.eng_no_accents_done')}</div>`;
     return;
   }
+  if (smrMarkBase(l)) {   // Samaritan letters: the drag hint for the active column, no Apply-positioning (that copies the Hebrew classes onto the Hebrew letters)
+    const { cls } = _anchorCtx(l);
+    U.innerHTML = `<div class="hint" style="margin-top:8px;">${I18n.t('fontmaker.panels.drag_handle_hint', {class: anchorLabelT(cls).toLowerCase()})} ${I18n.t('fontmaker.panels.all_smr_share')}</div>
+    <div class="hint">${I18n.t('fontmaker.panels.smr_place_hint')}</div>`;
+    return;
+  }
   const { cls, isTrop, want } = _anchorCtx(l);
   const applyBtn = `<button class="ctl-btn" onclick="openApplyNikkud()" title="${esc(I18n.t('fontmaker.panels.apply_positioning_title'))}">${I18n.t('fontmaker.panels.apply_positioning')}</button>`;
   const fidBtn = _fidelityLast ? ` <button class="ctl-btn" onclick="openFidelityDetails()" title="${esc(I18n.t('fontmaker.fidelity.reopen_title'))}">${I18n.t('fontmaker.fidelity.reopen_btn')}</button>` : '';
@@ -16680,6 +16782,21 @@ function renderAnchorStageBelow(SB, l) {
     : l.placementInherited
     ? `<span class="placement-pill inherited" title="${esc(I18n.t('fontmaker.panels.pill_carried_title'))}">${I18n.t('fontmaker.panels.pill_carried')}</span>`
     : `<span class="placement-pill unconfirmed" title="${esc(I18n.t('fontmaker.panels.pill_unconfirmed_title'))}">${I18n.t('fontmaker.panels.pill_unconfirmed')}</span>`;
+  if (smrMarkBase(l)) {   // Samaritan marks: the family's one size slider, then the same confirm / reset row
+    const smrPct = Math.round(smrMarkScale() * 100);
+    SB.innerHTML = `
+    <div class="size-slider-col">
+      <div class="size-slider-line"><label>${I18n.t('fontmaker.panels.smrmarks_size')}</label> <input type="range" min="40" max="180" step="5" value="${smrPct}" oninput="setSmrMarkScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.smrmarks_size'))}"> <span id="smrMarkScaleV" class="readout">${smrPct}%</span></div>
+    </div>
+    <div class="anchor-confirm-panel">
+      ${placementPill}${saveBtn}
+      <div class="ctl-row">
+        <button class="ctl-btn" onclick="resetLetterAnchors()">${I18n.t('fontmaker.panels.reset_letter')}</button>
+        <button class="ctl-btn" onclick="resetAllAnchors()">${I18n.t('fontmaker.panels.reset_all')}</button>
+      </div>
+    </div>`;
+    return;
+  }
   SB.innerHTML = `
     <div class="size-slider-col">
       <div class="size-slider-line"><label>${isTrop?I18n.t('fontmaker.panels.trop_size'):I18n.t('fontmaker.panels.nikkud_size')}</label> <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.nikkud_size'))}"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
@@ -17280,6 +17397,7 @@ function qaAnchors(L) {
     o.tropAboveR = (a && a.tropAboveR) || { x: o.tropAbove.x + tOff, y: o.tropAbove.y };
     o.tropBelowL = (a && a.tropBelowL) || { x: o.tropBelow.x - tOff, y: o.tropBelow.y };
     o.tropBelowR = (a && a.tropBelowR) || { x: o.tropBelow.x + tOff, y: o.tropBelow.y };
+    if (smrMarkBase(L)) { const s = smrAnchorSeed(L); SMR_ANCHOR_KEYS.forEach(k => { o[k] = (a && a[k]) || s[k]; }); }   // the Samaritan columns (display only — never written back)
     return o;
   };
   if (a && a.below && a.above && a.center) {
