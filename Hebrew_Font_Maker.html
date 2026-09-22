@@ -1670,7 +1670,7 @@ body.dark .hi-sun{display:inline-block;}
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_aramaic_label">Imperial Aramaic letters</div>
             <label class="chk"><input type="checkbox" id="addAramaicLettersChk" onchange="setAddAramaicLetters(this.checked)"> <span data-i18n="fontmaker.panels.adv_add_aramaic">Add Aramaic letters</span></label>
-            <div class="hint" data-i18n-html="fontmaker.panels.adv_aramaic_hint">Adds an <strong>Imperial Aramaic</strong> tab to design the <strong>22 letters</strong>, the eight numerals and the section sign — the chancery script of the Persian empire, the hand of the Elephantine papyri, and the ancestor of today's square letters. They sit beside your square Hebrew at their own Unicode code points, so one font can show both. Importing a font fills this tab from its own Aramaic letters. Note they are not on any keyboard: reach them by copy-paste or Insert ▸ Symbol. Template: <a href="#" data-fmact="tpl-aramaic-pdf">PDF</a> · <a href="#" data-fmact="tpl-aramaic-png">PNG</a></div>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_aramaic_hint">Adds an <strong>Imperial Aramaic</strong> tab to design the <strong>22 letters</strong>, the eight numerals and the section sign — the chancery script of the Persian empire, the hand of the Elephantine papyri, and the ancestor of today’s square letters. They sit beside your square Hebrew at their own Unicode code points, so one font can show both. Importing a font fills this tab from its own Aramaic letters. Note they are not on any keyboard: reach them by copy-paste or Insert ▸ Symbol. Template: <a href="#" data-fmact="tpl-aramaic-pdf">PDF</a> · <a href="#" data-fmact="tpl-aramaic-png">PNG</a></div>
           </div>
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_samaritan_label">Samaritan letters</div>
@@ -2837,7 +2837,7 @@ function wideGlyphShips(cp) {   // the materialized item the export will actuall
    Kept out of LETTERS (which is Hebrew-specific: RTL, kerning classes, the 27-letter count); seeded into
    project.letters tagged {eng:true} when enabled. Traced/anchored through the normal per-glyph workflow. */
 /* Which letters leave the x-height band. Classified by measuring every glyph against its own font's
-   cap height across the 61 bilingual faces in fonts/ and taking the median, so these are readings
+   cap height across the 61 bilingual text faces in starting-fonts/ and taking the median, so these are readings
    rather than opinions: lowercase ascenders land at 1.04 of cap, descenders at -0.30, and Q's tail
    at -0.23. */
 const LATIN_ASC  = new Set(['0062','0064','0066','0068','0069','006A','006B','006C','0074']);          // b d f h i j k l t
@@ -3060,8 +3060,9 @@ function phnUserMade(l) {
    names these u10840, AGL's SMP form, not uni10840. The list is the order ARAMAIC_CPS hands to the
    Save-letter-&-next cycle and to the printable template. */
 // The descending letters of the chancery hand, taken from the two shipped faces that draw the block
-// (Imperial Yeb and VIIBCE) and kept to the ones both agree on. Kaph, Mem, Nun, Pe and Qoph descend
-// in Phoenician too — the same letters, three centuries apart.
+// (Imperial Yeb and VIIBCE) and kept to the ones both agree on. Mem, Pe and Qoph descend in Phoenician
+// too (PHN_DESC), three centuries apart; Kaph, Nun, Sadhe and Taw hang only here, and Phoenician's
+// Rosh descends where Aramaic's Resh does not.
 const ARAM_DESC = new Set(['1084A','1084C','1084D','10850','10851','10852','10855']);
 const ARAMAIC_GROUPS = ['alphabet', 'numbers', 'section'];
 const ARAMAIC_LETTERS = (() => {
@@ -3100,12 +3101,12 @@ function aramUserMade(l) {
    the paleo-Hebrew letters that never gave way to the square script, and still written today. Phoenician's
    and Imperial Aramaic's shape exactly — RTL and caseless, so no case toggle, no _selectItem case sync
    and no l.case. Three groups, each its own band in the grid: alphabet = the 22 letters, vowels = the
-   three vowels written as full-width letters rather than as marks, punctuation = the fifteen marks of
+   three vowels written as spacing letters rather than as marks, punctuation = the fifteen marks of
    the Samaritan reading tradition. Unlike the Aramaic table this one IS one ascending run, because the
    bands happen to fall in code point order. Two departures from its two siblings, both from being in the
    BMP: gname() names these uni0800, not the u10840 SMP form, and fontTools needs no format-12 cmap
    subtable for them; and the block has NO OS/2 ulUnicodeRange bit at all — it falls in the gap between
-   bit 22 (NKo) and bit 23 (Devanagari), and being BMP it does not even pick up Aramaic's bit 57
+   bit 14 (NKo) and bit 15 (Devanagari), and being BMP it does not even pick up Aramaic's bit 57
    (Non-Plane 0). The block's other 21 code points are combining marks and are deliberately absent:
    buildFEA emits mark-to-base anchors only for the Hebrew LETTERS table, so a Samaritan mark would ship
    as a glyph no Samaritan letter could carry — that is a mark-registry refactor, not a glyph set
@@ -3432,7 +3433,7 @@ const UPM = 1000, BASELINE = 0, LETTER_TOP = 600, LAMED_TOP = 800, DESCENDER = -
 /* Latin/Cyrillic case heights. Hebrew is unicase, so LETTER_TOP alone described the font until the
    English tab arrived; a cased script needs three more lines or a capital O and a lowercase o end up
    the same height. The numbers are measured, not chosen: across the 61 bilingual text faces in
-   fonts/, normalised to 1000 UPM, the medians are x/cap 0.726, Hebrew/cap 0.858 and ascender/cap
+   starting-fonts/, normalised to 1000 UPM, the medians are x/cap 0.726, Hebrew/cap 0.858 and ascender/cap
    1.038. Anchoring those on this font's own LETTER_TOP of 600 gives cap 700, x 510, ascender 725 —
    within a few units of Frank Ruhl Libre, the app's default face (cap 672, x 480, asc 692, ב 586).
    Because cap is derived THROUGH the Hebrew ratio, one reference-font size seats both scripts. */
@@ -4584,7 +4585,7 @@ const HELP_CONTENT = {
         <button class="tbtn ghost" onclick="downloadTemplate('aramaicletters','png')">Picture (PNG)</button>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <span style="flex:1 1 150px;font-weight:600;">Samaritan Letters <span style="font-weight:400;color:var(--muted);">· the 22 letters, the three vowel letters &amp; the 15 punctuation marks · 1 page</span></span>
+        <span style="flex:1 1 150px;font-weight:600;">Samaritan Letters <span style="font-weight:400;color:var(--muted);">· the 22 letters, the three vowel letters &amp; the fifteen punctuation marks · 1 page</span></span>
         <button class="tbtn" onclick="downloadTemplate('samaritanletters','pdf')">PDF</button>
         <button class="tbtn ghost" onclick="downloadTemplate('samaritanletters','png')">Picture (PNG)</button>
       </div>
@@ -4658,7 +4659,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.55</strong> &mdash; <strong>Samaritan letters.</strong> A new <span class="ui">Add Samaritan letters</span> switch in <span class="ui">Settings</span> (and in both wizards) opens a <span class="ui">Samaritan</span> tab: the 22 letters, the three vowels written as full-width letters, and the fifteen punctuation marks, each group on its own. This is the hand of the Samaritan Pentateuch &mdash; the branch of the old Hebrew letters that never gave way to the square script, and is still written today. It sits beside your square Hebrew at its own Unicode code points, so one font can show both. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab right to left, the way the script reads &mdash; print a one-page practice sheet, and see them in <span class="ui">Preview PDF</span>. One <span class="ui">Starting Font</span>, Hebrew Square Samaritan, now brings its Samaritan letters across with it instead of leaving them behind. <span style="color:var(--muted);">(September 2026)</span></li>
+      <li><strong>v5.55</strong> &mdash; <strong>Samaritan letters.</strong> A new <span class="ui">Add Samaritan letters</span> switch in <span class="ui">Settings</span> (and in both wizards) opens a <span class="ui">Samaritan</span> tab: the 22 letters, the three vowels written as spacing letters rather than as marks, and the fifteen punctuation marks, each group on its own. This is the hand of the Samaritan Pentateuch &mdash; the branch of the old Hebrew letters that never gave way to the square script, and is still written today. It sits beside your square Hebrew at its own Unicode code points, so one font can show both. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab right to left, the way the script reads &mdash; print a one-page practice sheet, and see them in <span class="ui">Preview PDF</span>. One <span class="ui">Starting Font</span>, Hebrew Square Samaritan, now brings its Samaritan letters across with it instead of leaving them behind. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.54</strong> &mdash; <strong>Capitals and lowercase are no longer the same height.</strong> The Font Maker only ever had one top line, which suited Hebrew because Hebrew is caseless &mdash; but it meant a capital <span class="ui">O</span> and a lowercase <span class="ui">o</span> were drawn, traced and exported at exactly the same size. Latin and Cyrillic now get the three lines they need &mdash; a <strong>cap height</strong>, an <strong>x-height</strong> and an <strong>ascender</strong> &mdash; beside the descender they already had. The faint reference letter on the canvas is sized once per font instead of being stretched to the top line for every glyph, so it finally shows each letter&rsquo;s true proportion; lamed now rises above alef too. The letters that leave the body band are marked, including the Phoenician and Aramaic ones that hang below the line. Exported fonts now declare their cap height and x-height, which they never did. <strong>Nothing you have already drawn is changed.</strong> <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.53</strong> &mdash; <strong>Imperial Aramaic letters.</strong> A new <span class="ui">Add Aramaic letters</span> switch in <span class="ui">Settings</span> (and in both wizards) opens an <span class="ui">Imperial Aramaic</span> tab: the 22 letters, the eight numerals and the section sign, each group on its own. This is the official script of the Persian empire and the hand of the Elephantine papyri, and our own square letters grew out of it. It sits beside your square Hebrew at its own Unicode code points, so one font can show both. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab right to left, the way the script reads &mdash; print a one-page practice sheet, and see them in <span class="ui">Preview PDF</span>. Two of the Aramaic <span class="ui">Starting Fonts</span> &mdash; Imperial Yeb and VIIBCE &mdash; now bring their Aramaic letters across with them, instead of leaving them behind. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.52</strong> &mdash; <strong>Phoenician / Paleo-Hebrew letters.</strong> A new <span class="ui">Add Phoenician letters</span> switch in <span class="ui">Settings</span> (and in both wizards) opens a <span class="ui">Phoenician / Paleo-Hebrew</span> tab: the 22 ancient letters of the alef-bet, the six numerals and the word separator, each group in its own section. This is the script of the Siloam inscription and the Lachish ostraca, and it sits beside your square Hebrew at its own Unicode code points, so one font can show both. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab right to left, the way the script reads &mdash; print a one-page practice sheet, and see them in <span class="ui">Preview PDF</span>. They are not on any keyboard: reach them by copy-paste or Insert ▸ Symbol. <span style="color:var(--muted);">(September 2026)</span></li>
@@ -5450,7 +5451,7 @@ function metricsPanel() {
        <input type="number" id="${id}" class="metric-num" value="${val}" step="10" oninput="${fn}('${key}', this.value)" onchange="udBurstCommit()"></label>`;
   const lamed = (meta && meta.asc && !(meta && meta.case)) ? f('mLamed',I18n.t('fontmaker.panels.metric_lamed_asc'), m.lamedAscender, 'setMetric','lamedAscender') : '';
   // Cap / x-height / ascender appear only while a cased glyph is open, the way the lamed field does —
-  // they mean nothing on a Hebrew, Phoenician or Imperial Aramaic letter.
+  // they mean nothing on a Hebrew, Phoenician, Imperial Aramaic or Samaritan letter.
   const caseFlds = (meta && meta.case)
     ? f('mCap', I18n.t('fontmaker.panels.metric_cap'),      m.capHeight, 'setMetric','capHeight')
     + f('mXh',  I18n.t('fontmaker.panels.metric_xheight'),  m.xHeight,   'setMetric','xHeight')
@@ -6086,8 +6087,9 @@ function renderAramaicGrid() {
 /* renderAramaicGrid once more, for the third RTL set — caseless too, so all 40 glyphs are one grid
    with a .punct-grp label per group (alphabet / vowels / punctuation). Not direction-pinned: the script
    is RTL, so it inherits the shared direction:rtl and the tile "Save letter & next" lands on is the one
-   to the LEFT. The glyph spans carry lang="und-Samr" — undetermined language, Samaritan script. "smp"
-   would claim Samaritan Aramaic, and a teacher is as likely to be setting Hebrew words in these letters. */
+   to the LEFT. The glyph spans carry lang="und-Samr" — undetermined language, Samaritan script. "sam"
+   would claim Samaritan Aramaic and "smp" Samaritan Hebrew, and a teacher is as likely to be setting
+   Hebrew words in these letters as either. */
 function renderSamaritanGrid() {
   const grid = document.getElementById('samaritanGrid'); if (!grid) return;
   grid.innerHTML = ''; let done = 0, total = 0, grp = null;

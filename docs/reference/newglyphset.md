@@ -20,7 +20,7 @@
 | Kind | Copy | Direction | Examples |
 |---|---|---|---|
 | **LTR alphabet** — whole letters, no Hebrew marks | Cyrillic (`.cyr` items in `project.letters`) | grid pinned `direction:ltr` | Latin, Cyrillic, Greek, Armenian |
-| **RTL alphabet without Hebrew marks** | Phoenician (`.phn` items), Imperial Aramaic (`.aram`) or Samaritan (`.smr`, the one in the BMP), with the RTL rules in §3 | grid inherits the shared `direction:rtl` | Nabataean, Judeo-Arabic base letters (Paleo-Hebrew is done — it *is* the Phoenician set; so are Samaritan and Aramaic) |
+| **RTL alphabet without Hebrew marks** | Phoenician (`.phn` items), Imperial Aramaic (`.aram`) or Samaritan (`.smr`, the one in the BMP), with the RTL rules in §3 | grid inherits the shared `direction:rtl` | Nabataean, Judeo-Arabic base letters (Paleo-Hebrew is done — it *is* the Phoenician set; Samaritan and Imperial Aramaic are done too, as their own sets) |
 | **Forms composed from the Hebrew letters** | Yiddish / Ladino / Specialized / Wide (`project.precomposed`) | RTL | a dotted form, a ligature, a wide variant |
 | **Letters that take nikkud or trop** | not a glyph set — that is the Hebrew pipeline (`LETTERS`, anchors, QA, FEA); plan it as its own feature from the anchor sections of `font-maker.md` | | |
 
@@ -72,11 +72,11 @@ order. Never sort one of them differently from the others.
 
 **A cased set must also carry height classes**, or every letter is drawn and fitted to the same top line
 and a capital comes out the size of a lowercase. `asc: true` marks a glyph that rises above its band
-(lowercase `b d f h k l t`, a capital with a diacritic such as `Й`), `desc: true` one that hangs below the
+(lowercase `b d f h i j k l t`, a capital with a diacritic such as `Й`), `desc: true` one that hangs below the
 baseline — the same two booleans the Hebrew table has always used for lamed and the finals. `glyphBand(cp)`
 turns them into the guide lines and the fit target (`font-maker.md` → *Vertical metrics*). Classify them by
 measuring the real thing, as `LATIN_ASC` / `CYR_DESC` / `PHN_DESC` / `ARAM_DESC` were: render each glyph
-across the bilingual faces in `fonts/` and take the median of its ink top and bottom against that font's own
+across the bilingual text faces in `starting-fonts/` and take the median of its ink top and bottom against that font's own
 cap height. A caseless set still wants `desc` — several Phoenician and Imperial Aramaic letters descend.
 
 Sections inside a band (Russian / Ukrainian & Belarusian / Serbian & Macedonian) are `group` values;
@@ -212,7 +212,7 @@ Anchor patterns are the English / Cyrillic lines to sit beside.
    only at render time, as tofu. Do not assume the block *has* a bit: the OS/2 v4 table was frozen before
    Unicode 5.2, so Phoenician gets bit 58 but Imperial Aramaic gets only bit 57 (Non-Plane 0) — a check
    expecting an Aramaic bit fails a perfectly good font. A BMP block encoded after the freeze gets
-   **nothing at all**: Samaritan (U+0800–U+083F) falls in the gap between bit 22 (NKo) and bit 23
+   **nothing at all**: Samaritan (U+0800–U+083F) falls in the gap between bit 14 (NKo) and bit 15
    (Devanagari) and is not above Plane 0 either, so a Samaritan-only font declares no range bit —
    correct, and not a bug to chase. Glyph naming, the FEA
    (`DFLT` + `hebr` only), kerning and the UFO `.glif` writer need nothing.

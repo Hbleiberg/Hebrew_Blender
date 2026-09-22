@@ -401,7 +401,7 @@ scale-to-fit and every upload span goes through it, so they cannot drift apart. 
 
 | script | top | extra lines |
 |---|---|---|
-| Hebrew, Phoenician, Imperial Aramaic, Samaritan (caseless) | `letterTop` 600, or `lamedAscender` 800 when `.asc` | `descender` when `.desc` |
+| Hebrew, Phoenician, Imperial Aramaic, Samaritan (caseless) | `letterTop` 600, or `lamedAscender` 800 when `.asc` | `letterTop` always, plus `lamedAscender` when `.asc` and `descender` when `.desc` |
 | Latin / Cyrillic **uppercase** | `capHeight` 700, or `ascender` 725 when `.asc` (Й Ё Ґ Ї Ў Ѓ Ќ) | `capHeight`, `descender` when `.desc` (Q, Д Ц Щ Ђ Џ) |
 | Latin / Cyrillic **lowercase** | `xHeight` 510, or `ascender` 725 when `.asc` | `xHeight` always — the bowl of a *b* sits there — plus `descender` when `.desc` |
 
@@ -409,7 +409,7 @@ Until v5.54 there was one top line for everything, which is correct for a casele
 whole story while the tool was Hebrew-only. Once cased sets arrived it meant a capital `O` and a
 lowercase `o` were drawn, fitted and exported at identical heights.
 
-**The defaults are measured, not chosen.** Across the 61 bilingual text faces in `fonts/`, normalised
+**The defaults are measured, not chosen.** Across the 61 bilingual text faces in `starting-fonts/`, normalised
 to 1000 UPM, the medians are `x/cap 0.726`, `Hebrew/cap 0.858`, `ascender/cap 1.038`, descender −208.
 Anchoring those on the existing `letterTop = 600` gives cap 700, x-height 510, ascender 725 — within a
 few units of Frank Ruhl Libre, the app's own default face. Deriving cap *through* the Hebrew ratio is
