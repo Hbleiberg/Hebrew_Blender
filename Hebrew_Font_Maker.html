@@ -3147,7 +3147,7 @@ const SAMARITAN_LETTERS = (() => {
   SAMARITAN_GROUPS.forEach(g => T[g].forEach(r => {
     // The short name keeps gName()'s slug unique per glyph: the Samaritan character itself is stripped
     // from the slug, so a bare '(Samaritan)' would give all 40 the same key.
-    const it = { cp: r[0], name: String.fromCodePoint(parseInt(r[0], 16)) + ' (Samaritan ' + r[1] + ')', group: g };
+    const it = { cp: r[0], short: r[1], name: String.fromCodePoint(parseInt(r[0], 16)) + ' (Samaritan ' + r[1] + ')', group: g };
     if (SMR_DESC.has(r[0])) it.desc = true;
     if (SMR_ASC.has(r[0])) it.asc = true;
     out.push(it);
@@ -4564,6 +4564,7 @@ const HELP_CONTENT = {
       <li>a <span class="ui">below</span> mark running into a letter's <strong>descender tail</strong> — the part that hangs below the line, like ך or ק.</li>
     </ul>
     <p>To fix one, go back to the <span class="ui">3 · Nikkud</span> or <span class="ui">4 · Trop</span> step for that letter and nudge its anchor (or shrink <span class="ui">Nikkud size</span>), then re-check.</p>
+    <p>With Samaritan marks on, a <span class="ui">Samaritan marks</span> tab checks the 22 Samaritan letters against every mark you drew, plus any two marks from different columns on one letter (start, middle, end); fix one on that letter's <span class="ui">Place Marks</span> step.</p>
     <div class="help-tip">💡 A note at the top warns when a tall mark or letter will <strong>expand the font's vertical box</strong> — that's expected and exports fine; it just means the font grew a little taller. And not every red cell is a disaster: glance at each and trust your eye.</div>
   `,
   export: `
@@ -4715,7 +4716,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.56</strong> &mdash; <strong>Samaritan vowel signs and marks.</strong> Beside the <span class="ui">Samaritan</span> tab a new <span class="ui">Samaritan marks</span> tab carries the block&rsquo;s 21 combining marks &mdash; the vowel signs, the dagesh and the other marks. Each attaches above its letter at the letter&rsquo;s start, middle or end (the three columns of the Hebrew Square Samaritan face), placed on a new <span class="ui">Place Marks</span> step of every Samaritan letter, sized by its own slider, printed on its own template, and brought across from a font that draws them &mdash; with the font&rsquo;s own positions. Marks you leave blank stay out of the font. <span style="color:var(--muted);">(September 2026)</span></li>
+      <li><strong>v5.56</strong> &mdash; <strong>Samaritan vowel signs and marks.</strong> Beside the <span class="ui">Samaritan</span> tab a new <span class="ui">Samaritan marks</span> tab carries the block&rsquo;s 21 combining marks &mdash; the vowel signs, the dagesh and the other marks. Each attaches above its letter at the letter&rsquo;s start, middle or end (the three columns of the Hebrew Square Samaritan face), placed on a new <span class="ui">Place Marks</span> step of every Samaritan letter, sized by its own slider, printed on its own template, and brought across from a font that draws them &mdash; with the font&rsquo;s own positions. Marks you leave blank stay out of the font, and <span class="ui">QA Check</span> gets a <span class="ui">Samaritan marks</span> tab that checks every drawn mark, and any two marks from different columns, on each Samaritan letter. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.55</strong> &mdash; <strong>Samaritan letters.</strong> A new <span class="ui">Add Samaritan letters</span> switch in <span class="ui">Settings</span> (and in both wizards) opens a <span class="ui">Samaritan</span> tab: the 22 letters, the three vowels written as spacing letters rather than as marks, and the fifteen punctuation marks, each group on its own. This is the hand of the Samaritan Pentateuch &mdash; the branch of the old Hebrew letters that never gave way to the square script, and is still written today. It sits beside your square Hebrew at its own Unicode code points, so one font can show both. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab right to left, the way the script reads &mdash; print a one-page practice sheet, and see them in <span class="ui">Preview PDF</span>. One <span class="ui">Starting Font</span>, Hebrew Square Samaritan, now brings its Samaritan letters across with it instead of leaving them behind. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.54</strong> &mdash; <strong>Capitals and lowercase are no longer the same height.</strong> The Font Maker only ever had one top line, which suited Hebrew because Hebrew is caseless &mdash; but it meant a capital <span class="ui">O</span> and a lowercase <span class="ui">o</span> were drawn, traced and exported at exactly the same size. Latin and Cyrillic now get the three lines they need &mdash; a <strong>cap height</strong>, an <strong>x-height</strong> and an <strong>ascender</strong> &mdash; beside the descender they already had. The faint reference letter on the canvas is sized once per font instead of being stretched to the top line for every glyph, so it finally shows each letter&rsquo;s true proportion; lamed now rises above alef too. The letters that leave the body band are marked, including the Phoenician and Aramaic ones that hang below the line. Exported fonts now declare their cap height and x-height, which they never did. <strong>Nothing you have already drawn is changed.</strong> <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.53</strong> &mdash; <strong>Imperial Aramaic letters.</strong> A new <span class="ui">Add Aramaic letters</span> switch in <span class="ui">Settings</span> (and in both wizards) opens an <span class="ui">Imperial Aramaic</span> tab: the 22 letters, the eight numerals and the section sign, each group on its own. This is the official script of the Persian empire and the hand of the Elephantine papyri, and our own square letters grew out of it. It sits beside your square Hebrew at its own Unicode code points, so one font can show both. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab right to left, the way the script reads &mdash; print a one-page practice sheet, and see them in <span class="ui">Preview PDF</span>. Two of the Aramaic <span class="ui">Starting Fonts</span> &mdash; Imperial Yeb and VIIBCE &mdash; now bring their Aramaic letters across with them, instead of leaving them behind. <span style="color:var(--muted);">(September 2026)</span></li>
@@ -17254,7 +17255,8 @@ let qaOnlyProblems = wsReadPrefs().qaOnlyProblems === true;
 let qaResult = null;
 let qaPairA = '05BC';   // "Two marks" tab: the fixed mark A compared against every other mark (default = dagesh)
 const QA_OVERLAP_TOL = 10;   // font units a mark vertex is inset toward its center before counting as "inside" (kissing contacts are fine)
-const QA_SIDE_COLOR  = { below:'var(--below)', above:'var(--above)', center:'var(--center)', tropAbove:'#8b5cf6', tropBelow:'#0ea5e9' };
+const QA_SIDE_COLOR  = { below:'var(--below)', above:'var(--above)', center:'var(--center)', tropAbove:'#8b5cf6', tropBelow:'#0ea5e9',
+                         smrAboveR: ANCHOR_COL.smrAboveR, smrAbove: ANCHOR_COL.smrAbove, smrAboveL: ANCHOR_COL.smrAboveL };   // the Samaritan columns, in the placement step's colours
 
 function qaLetters() { return LETTERS.filter(L => L.cat !== 'punct'); }   // the 27 letters (finals included; punct/digits excluded)
 function qaCh(cp) { try { return String.fromCodePoint(parseInt(cp, 16)); } catch (e) { return ''; } }
@@ -17418,6 +17420,30 @@ function qaRows() {
   }
   return rows;
 }
+/* The Samaritan tab's rows: the 22 alphabet letters in SAMARITAN_LETTERS order — the bases smrShipList()
+   exports (vowel letters and punctuation carry no columns). An untraced letter keeps its row like a Hebrew
+   one (empty box, the marks alone). `lang` marks the label for the template font: the UI font has no
+   Samaritan glyphs, and the row's short name has no glyphname key (the tiles show the letter itself). */
+function qaSmrRows() {
+  if (!project.font.addSamaritanLetters) return [];
+  return SAMARITAN_LETTERS.filter(m => m.group === 'alphabet').map(m => {
+    const L = (project.letters || []).find(x => x.codepoint === m.cp && x.smr); if (!L) return null;
+    return { cp: m.cp, name: m.short, labelCh: qaCh(m.cp), desc: !!m.desc, L, lang: 'und-Samr' };
+  }).filter(Boolean);
+}
+/* The Samaritan tab's cell box: ONE `top` for the whole tab (every cell at one scale), lifted above the
+   Hebrew box whenever a mark or a letter reaches higher — an imported mark sits 600–1000 units up, and nun
+   rises. Width needs nothing: the box is height-limited at the cell's 54×62 px, so `meet` already shows
+   ~1170 units around the advance and a start/end mark's overhang stays in view. */
+function qaSmrFrame(rows, cells) {
+  let top = effMetrics().lamedAscender + 100;
+  rows.forEach((row, ri) => {
+    const L = row.L;
+    if (L.contours && L.contours.length) top = Math.max(top, Math.ceil(polysBounds(L.contours.map(c => c.points)).maxY) + 40);
+    cells[ri].forEach(c => c.layers.forEach(ly => { if (ly.polys.length) top = Math.max(top, Math.ceil(polysBounds(ly.polys).maxY) + 40); }));
+  });
+  return { top };
+}
 function polysBounds(polys) {   // bounds over an array of [x,y]-point arrays (font units)
   let minX=1e9, maxX=-1e9, minY=1e9, maxY=-1e9;
   polys.forEach(poly => poly.forEach(([x,y]) => { if (x<minX)minX=x; if (x>maxX)maxX=x; if (y<minY)minY=y; if (y>maxY)maxY=y; }));
@@ -17562,6 +17588,22 @@ function qaColumns(tab) {
     return cols;
   }
   if (tab === 'trop')   return (project.font.trop.enabled   ? TROP_CPS : []).map(cp => ({ kind:'trop',   cp, side: TROP_CLASS[cp], name: markName(cp), head: '◌' + qaCh(cp) }));
+  if (tab === 'smrmarks') {   // the Samaritan family: one column per drawn mark, then three cross-column pair cells
+    const marks = smrShipList().marks;   // family on + drawn: exactly the marks the font ships
+    const cols = marks.map(cp => { const key = smrMarkKey(cp), m = SMR_MARK_BY_CP[cp];
+      return { kind:'smrmarks', cp, side: key, lang:'und-Samr', name: I18n.t('fontmaker.qa.smr_col_name', { name: m.short, col: anchorLabelT(key) }), head: '◌' + qaCh(cp) }; });
+    // start × middle, middle × end, start × end: every drawn mark of column A against every drawn mark of
+    // column B (the marks of one column share its anchor and never meet in the font). A pair whose side
+    // has nothing drawn is omitted.
+    [['R','C'], ['C','L'], ['R','L']].forEach(([ca, cb]) => {
+      const ka = SMR_COL_KEY[ca], kb = SMR_COL_KEY[cb];
+      const a = marks.filter(cp => smrMarkKey(cp) === ka), b = marks.filter(cp => smrMarkKey(cp) === kb);
+      if (!a.length || !b.length) return;
+      cols.push({ kind:'smrpair', cp: a[0], a, b, ka, kb, side: ka, lang:'und-Samr',
+                  name: I18n.t('fontmaker.qa.smr_pair_name', { colA: anchorLabelT(ka), colB: anchorLabelT(kb) }), head: '◌' + qaCh(a[0]) + qaCh(b[0]) });
+    });
+    return cols;
+  }
   if (tab === 'pairs') {   // each enabled nikkud mark B paired with the fixed mark A (qaPairA) — to spot two-mark stacking clashes on one letter
     if (!project.font.nikkud.enabled) return [];
     // Shin/sin dots are excluded: pair cells measure raw class anchors, but a dot only ever exists
@@ -17614,6 +17656,22 @@ function qaCellLayers(L, anc, col) {
     return marks.map(m => { const a2 = qaAnchorFor(L, anc, MARK_CLASS[m], m);
       return { polys: qaPlace({ x: a2.x + off[m], y: a2.y }, 'nikkud', m, nikScale(m), L), color: QA_SIDE_COLOR[MARK_CLASS[m]] }; });
   }
+  if (col.kind === 'smrmarks') return [{ polys: qaPlace(qaAnchorFor(L, anc, col.side, col.cp), 'smrmarks', col.cp, smrMarkScale()), color: QA_SIDE_COLOR[col.side], cp: col.cp }];   // no L: a family ships its global shape (markContoursFor), like trop
+  if (col.kind === 'smrpair') {   // the first clashing cross pair (registry order), else the closest pair; each layer carries its cp so the cell can jump to the mark it shows
+    const s = smrMarkScale(), place = (k, cp) => qaPlace(qaAnchorFor(L, anc, k, cp), 'smrmarks', cp, s);
+    const PBs = col.b.map(cb => place(col.kb, cb));
+    let best = null, bestD = Infinity;
+    for (const ca of col.a) { const PA = place(col.ka, ca);
+      for (let j = 0; j < col.b.length; j++) { const cb = col.b[j], PB = PBs[j];
+        const pair = [{ polys: PA, color: QA_SIDE_COLOR[col.ka], cp: ca }, { polys: PB, color: QA_SIDE_COLOR[col.kb], cp: cb }];
+        if (markPolysOverlap(PA, PB, QA_OVERLAP_TOL)) return pair;
+        if (!PA.length || !PB.length) continue;
+        const ba = polysBounds(PA), bb = polysBounds(PB);
+        const d = Math.max(ba.minX - bb.maxX, bb.minX - ba.maxX, ba.minY - bb.maxY, bb.minY - ba.maxY);   // box separation — smaller = closer
+        if (d < bestD) { bestD = d; best = pair; }
+      } }
+    return best || [];
+  }
   const nikAnc = qaAnchorFor(L, anc, col.side, col.cp), pairCfg = vowelPairCfg(col.side);
   if (pairCfg.mode === 'slide')   // slide mode mirrors the FEA: vowel shifts dx; trop attaches to the LETTER's center trop column
     return [ { polys: qaPlace({ x: nikAnc.x + pairCfg.dx, y: nikAnc.y }, 'nikkud', col.cp, ms, L), color: QA_SIDE_COLOR[col.side] },
@@ -17622,17 +17680,18 @@ function qaCellLayers(L, anc, col) {
            { polys: qaPlaceStackTrop(nikAnc, col.cp, col.trop), color: QA_SIDE_COLOR[col.side === 'above' ? 'tropAbove' : 'tropBelow'] } ];
 }
 /* Reasons a cell is flagged. 'pair' cells test mark-vs-mark only (letter-ink is already covered by the
-   Nikkud tab, and a centered dagesh sitting inside the body must NOT be flagged here). Every other kind
-   keeps the letter-ink / descender checks AND now also flags any two of its layers overlapping. */
+   Nikkud tab, and a centered dagesh sitting inside the body must NOT be flagged here); a Samaritan
+   'smrpair' cell the same (its marks' own columns cover the ink). Every other kind keeps the letter-ink /
+   descender checks AND now also flags any two of its layers overlapping. */
 function qaCellReasons(L, row, col, layers) {
-  if (col.kind === 'pair') return qaLayerClash(layers);
+  if (col.kind === 'pair' || col.kind === 'smrpair') return qaLayerClash(layers);
   const allPolys = layers.reduce((a, ly) => a.concat(ly.polys), []);
   const positional = col.kind === 'trop' && tropHalign(col.cp) !== 'center';
   return qaReasons(L, row, allPolys, col.side, positional).concat(qaLayerClash(layers));
 }
-function qaCellSvg(L, layers) {
+function qaCellSvg(L, layers, frame) {   // frame: an optional { top } (the Samaritan tab's shared, taller box — qaSmrFrame); absent = the Hebrew box
   const adv = effLetterAdvance(L);
-  const top = effMetrics().lamedAscender + 100, bottom = effMetrics().descender - 50, pad = 70;
+  const top = (frame && frame.top != null) ? frame.top : effMetrics().lamedAscender + 100, bottom = effMetrics().descender - 50, pad = 70;
   const vb = `${-pad} ${(-top-pad).toFixed(0)} ${(adv+2*pad).toFixed(0)} ${((top-bottom)+2*pad).toFixed(0)}`;   // y-up → SVG via glyphPathAt's yo-y flip
   let body = '';
   if (L.contours && L.contours.length) body += `<path d="${glyphPathAt(L.contours, 0, 0, L.curves)}" fill="currentColor" opacity="0.82"/>`;
@@ -17736,10 +17795,11 @@ function fontInkBounds() {
 /* Count flagged cells across all three tabs + compute the tall-artwork expansion, cached in qaResult. */
 function qaBuild() {
   const counts = {}; let total = 0;
-  const rows = qaRows();
-  ['nikkud','trop','stacked','pairs'].forEach(t => {
+  const rows = qaRows(), smrRows = qaSmrRows();
+  const tabs = ['nikkud','trop','stacked','pairs']; if (project.font.addSamaritanLetters) tabs.push('smrmarks');   // the Samaritan tab exists only with its letters on — a Hebrew project's counts keep their shape
+  tabs.forEach(t => {
     let n = 0; const cols = qaColumns(t);
-    if (cols.length) rows.forEach(row => {
+    if (cols.length) (t === 'smrmarks' ? smrRows : rows).forEach(row => {
       const L = row.L, anc = qaAnchors(L);
       cols.forEach(col => { if (qaCellReasons(L, row, col, qaCellLayers(L, anc, col)).length) n++; });
     });
@@ -17749,12 +17809,19 @@ function qaBuild() {
   const winAscent = Math.max(aAsc, Math.ceil(ink.top)), winDescent = Math.max(-aDesc, Math.ceil(-ink.bottom));
   qaResult = { counts, total, outline: glyphOutlineScan(), winAscent, winDescent, tall: (ink.top > aAsc || ink.bottom < aDesc) };
 }
+/* Which tabs have columns to show — ONE map for the tab bar and for openQA's fallback (two hand-kept
+   copies had already drifted: openQA's lacked `pairs`, so a sticky Two-marks tab reopened on Nikkud). */
+function qaHave() {
+  const customQaOn = project.font.addCustomGlyphs && customMarkCps().length > 0;   // custom marks attach even with built-in nikkud off — keep their QA columns reachable
+  return { nikkud: project.font.nikkud.enabled || customQaOn, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled, pairs: project.font.nikkud.enabled, smrmarks: smrMarksOn() };
+}
 function qaRenderTabs() {
   const bar = document.getElementById('qaTabs');
   const hadFocus = bar.contains(document.activeElement);   // the innerHTML below discards the focused tab
-  const customQaOn = project.font.addCustomGlyphs && customMarkCps().length > 0;   // custom marks attach even with built-in nikkud off — keep their QA columns reachable
-  const have = { nikkud: project.font.nikkud.enabled || customQaOn, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled, pairs: project.font.nikkud.enabled };
-  bar.innerHTML = [['nikkud','fontmaker.qa.tab_nikkud'],['trop','fontmaker.qa.tab_trop'],['stacked','fontmaker.qa.tab_stacked'],['pairs','fontmaker.qa.tab_pairs']].map(([id,key]) => {
+  const have = qaHave();
+  const tabs = [['nikkud','fontmaker.qa.tab_nikkud'],['trop','fontmaker.qa.tab_trop'],['stacked','fontmaker.qa.tab_stacked'],['pairs','fontmaker.qa.tab_pairs']];
+  if (project.font.addSamaritanLetters) tabs.push(['smrmarks','fontmaker.qa.tab_smrmarks']);   // listed only with the Samaritan letters on; enabled by the family switch (qaHave)
+  bar.innerHTML = tabs.map(([id,key]) => {
     const label = I18n.t(key);
     const n = qaResult ? qaResult.counts[id] : 0, badge = (have[id] && n) ? ` (${n})` : '';
     return have[id]
@@ -17794,11 +17861,13 @@ function qaRenderGrid() {
   grid.style.color = (getComputedStyle(document.body).getPropertyValue('--text') || '').trim() || (document.body.classList.contains('dark') ? '#dde4f0' : '#1a2744');   // one set → every child SVG's currentColor inherits it
   const cols = qaColumns(qaTab);
   const pairCtrl = qaTab === 'pairs' ? qaPairControlHtml() : '';
-  if (!cols.length) { qaSyncFilterUI(null, null); const kind = I18n.t(qaTab === 'stacked' ? 'fontmaker.qa.tab_stacked' : (qaTab === 'trop' ? 'fontmaker.qa.tab_trop' : 'fontmaker.qa.tab_nikkud')); grid.innerHTML = pairCtrl + `<p style="color:var(--muted);font-size:0.85rem;">${I18n.t('fontmaker.qa.no_marks', { kind })}</p>` + qaBuildCheckHtml(); return; }
+  if (!cols.length) { qaSyncFilterUI(null, null); const kind = I18n.t(qaTab === 'stacked' ? 'fontmaker.qa.tab_stacked' : (qaTab === 'trop' ? 'fontmaker.qa.tab_trop' : 'fontmaker.qa.tab_nikkud'));
+    const msg = qaTab === 'smrmarks' ? esc(I18n.t('fontmaker.qa.smr_none')) : I18n.t('fontmaker.qa.no_marks', { kind });   // the Samaritan tab is enabled only with the family on, so "empty" there means nothing drawn yet
+    grid.innerHTML = pairCtrl + `<p style="color:var(--muted);font-size:0.85rem;">${msg}</p>` + qaBuildCheckHtml(); return; }
   // One pass over the WHOLE grid before any markup: "only problems" has to know which rows and
   // which columns are clear before the first <th> is written, and the reasons are wanted twice
   // either way — so each cell's layers/reasons are computed exactly once, as before.
-  const allRows = qaRows();
+  const allRows = qaTab === 'smrmarks' ? qaSmrRows() : qaRows();
   const cells = allRows.map(row => {
     const L = row.L, anc = qaAnchors(L);
     return cols.map(col => { const layers = qaCellLayers(L, anc, col); return { layers, reasons: qaCellReasons(L, row, col, layers) }; });
@@ -17813,6 +17882,8 @@ function qaRenderGrid() {
     grid.innerHTML = pairCtrl + `<p class="qa-clear-note">${esc(I18n.t('fontmaker.qa.filter_clear'))}</p>` + qaBuildCheckHtml();
     return;
   }
+  const frame = qaTab === 'smrmarks' ? qaSmrFrame(allRows, cells) : null;   // the Samaritan tab's shared, taller cell box; Hebrew tabs keep theirs
+  const tplFont = (project.template && project.template.font) || 'serif';   // Samaritan heads and labels render in it — the UI font has no Samaritan glyphs
   let html = pairCtrl + '<table class="qa-table"><thead><tr><th></th>';
   // The visible head is a mark on a U+25CC dotted-circle carrier, so name-from-content makes every
   // column announce as "dotted circle" — the mark itself is unpronounceable and the name lives only
@@ -17823,18 +17894,21 @@ function qaRenderGrid() {
   // the name it already announced. The span is a pure visual duplicate of the aria-label — mark it
   // decorative, exactly as the Trope Tutor's Learn cards do (f207a34). Hiding the only child is
   // safe here precisely BECAUSE the name comes from aria-label, not from content.
-  colIx.forEach(ci => { const col = cols[ci]; html += `<th title="${esc(col.name)}" aria-label="${esc(col.name)}"><span class="qa-colhead" aria-hidden="true">${esc(col.head)}</span></th>`; });
+  colIx.forEach(ci => { const col = cols[ci]; html += `<th title="${esc(col.name)}" aria-label="${esc(col.name)}"><span class="qa-colhead" aria-hidden="true"${col.lang ? ` lang="${col.lang}" style="font-family:${esc(tplFont)};"` : ''}>${esc(col.head)}</span></th>`; });
   html += '</tr></thead><tbody>';
   let lastSection = null;
   rowIx.forEach(ri => {
     const row = allRows[ri];
     if (row.section && row.section !== lastSection) { lastSection = row.section; const secKey = { special: 'fontmaker.qa.section_special', wide: 'fontmaker.qa.section_wide', custom: 'fontmaker.qa.section_custom' }[row.section] || 'fontmaker.qa.section_custom'; html += `<tr class="qa-section"><td class="qa-section-h" colspan="${colIx.length + 1}">${I18n.t(secKey)}</td></tr>`; }
     const L = row.L;
-    html += `<tr><td class="qa-rowlabel" title="${esc(gName(row.name))}">${esc(row.labelCh)} <span style="color:var(--muted);">${esc(gName(row.name))}</span></td>`;
+    const nm = row.lang ? row.name : gName(row.name);   // a Samaritan row's short name has no glyphname key — no lookup (it would log a missing key per row per render)
+    const lch = row.lang ? `<span lang="${row.lang}" style="font-family:${esc(tplFont)};">${esc(row.labelCh)}</span>` : esc(row.labelCh);
+    html += `<tr><td class="qa-rowlabel" title="${esc(nm)}">${lch} <span style="color:var(--muted);">${esc(nm)}</span></td>`;
     colIx.forEach(ci => {
       const col = cols[ci], { layers, reasons } = cells[ri][ci];
       const flagged = reasons.length > 0;
-      html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${row.cp}" data-kind="${col.kind}" data-mark="${col.cp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${esc(reasons.join(' · '))}"` : ''}>${qaCellSvg(L, layers)}</td>`;
+      const mcp = (col.kind === 'smrpair' && layers[0]) ? layers[0].cp : col.cp;   // a Samaritan pair cell jumps to the mark it actually shows
+      html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${row.cp}" data-kind="${col.kind}" data-mark="${mcp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${esc(reasons.join(' · '))}"` : ''}>${qaCellSvg(L, layers, frame)}</td>`;
     });
     html += '</tr>';
   });
@@ -17868,6 +17942,7 @@ function qaGridClick(e) {
 function qaJump(cp, markCp, kind, side, tropCp) {
   closeQA();
   _selectItem('letter', cp);
+  if (kind === 'smrmarks' || kind === 'smrpair') { gotoAnchors('smrmarks'); setSmrMark(markCp); return; }   // a Samaritan letter's Place Marks step, with the cell's mark and its column selected
   if (kind === 'customMarks') { gotoAnchors('nikkud'); setAnchorClass(side); return; }   // custom marks attach at the letter's class anchors (no vowel selector — it only knows standard vowels)
   if (kind === 'nikkud' || kind === 'pair') {                        // pair → jump to mark B's nikkud anchor (data-mark = the column mark)
     gotoAnchors('nikkud');
@@ -17909,8 +17984,7 @@ function qaPairControlHtml() {
 function closeQA() { aCloseModal('qaOverlay'); }
 function openQA() {
   if (!project) { status(I18n.t('fontmaker.status.open_create_first')); return; }
-  const customQaOn = project.font.addCustomGlyphs && customMarkCps().length > 0;
-  const have = { nikkud: project.font.nikkud.enabled || customQaOn, trop: project.font.trop.enabled, stacked: project.font.nikkud.enabled && project.font.trop.enabled };
+  const have = qaHave();
   if (!have[qaTab]) qaTab = have.nikkud ? 'nikkud' : (have.trop ? 'trop' : 'nikkud');   // fall back to a tab that has columns
   qaBuild(); qaRenderTabs(); qaRenderSummary(); qaRenderGrid();
   const ov = document.getElementById('qaOverlay');
