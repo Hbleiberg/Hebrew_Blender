@@ -546,6 +546,25 @@ once per cell, exactly as before.
 checkbox and its readout in step. The checkbox lives in its own `.qa-filter` row **below** `#qaTabs`,
 not inside it — `#qaTabs` is a `role="tablist"` whose `_tabKeydown` ring walks its children.
 
+**The Samaritan marks tab** (`smrmarks`) is listed only while the Samaritan letters are on and enabled by
+the family switch — `qaHave()` is the one map behind the tab bar and `openQA`'s fallback (two hand-kept
+copies had drifted). Its rows are `qaSmrRows()`: the 22 alphabet letters in `SAMARITAN_LETTERS` order,
+untraced ones included like Hebrew rows, labelled by the short name under `lang="und-Samr"` in the
+template font (the UI font has no Samaritan glyphs, and the short name has no glyphname key, so the label
+skips `gName`). Its columns are one `smrmarks` column per mark in `smrShipList().marks` — exactly what
+ships, placed at the column anchor `qaAnchorFor` resolves (pins first) with the global shape, never a
+per-letter one (a family ships font-wide only: `markContoursFor` ignores `markShapes` for a family kind)
+— then three `smrpair` cells per letter (start×middle, middle×end, start×end): every drawn mark of one
+column against every drawn mark of the other, the cell's layers being the first clashing pair in registry
+order or else the closest pair, each layer carrying its `cp` so `data-mark` and the jump follow the pair
+the cell shows. An `smrmarks` cell keeps the letter-ink test (a mark drawn too low is a real hit; overhang
+is not flagged, only intersection); an `smrpair` cell tests mark-vs-mark only, like a Hebrew `pair` cell.
+Every cell of the tab shares one frame, `qaSmrFrame` — the Hebrew box lifted to the tallest mark or
+letter of the tab, since an imported mark sits 600–1000 units above its anchor and nun rises; width needs
+nothing, the 54×62 cell is height-limited and `meet` already shows the start/end overhang. `qaJump`
+routes an `smrmarks`/`smrpair` cell to the letter's Place Marks step through `setSmrMark`. A Hebrew-only
+project's sheet is unchanged (tab list, `qaResult.counts`, grid markup).
+
 ### Page chrome — the footer bar
 The `<footer>` is deliberately a one-row bar, not the three-column block the other chrome pages use:
 three folded `<details>` (FAQ, About, Related Hebrew Tools — an open one takes the full row,
@@ -689,7 +708,10 @@ family with no new fork. Every nikkud/trop two-way ternary takes one prefix guar
 its Hebrew tail (`catOfCp` — whose default for an unknown cp is `'nikkud'` — `markName`, `markClassOf`,
 `markClassFor`, `pinKeyFor`, `whoHasCp`, `alphabetOwnerOf`, `defaultPieces`, `markTilePreviewSVG`,
 `dropKindPins`, `markCatScale`); `MARK_STORE_KINDS` is the one list the outline scan, the autosave
-stripper, the cloud packer and the loader walk. The store is sanitized on load like the accent store's
+stripper, the cloud packer and the loader walk. A family's marks are font-wide only: the export's
+per-letter bake is nikkud-only, so `markContoursFor` ignores a letter's `markShapes` for a family kind,
+the placement sidebar's *Edit shape* opens the editor with `{ global: true }`, and the modal's scope note
+says so (`markedit_scope_family`). The store is sanitized on load like the accent store's
 (closed key domain, `cls` forced, `designMode` closed, `attachAnchor` integral or absent).
 
 - **Columns, not classes.** Every Samaritan mark is `above`; what differs is the column it reads on its
@@ -729,9 +751,9 @@ stripper, the cloud packer and the loader walk. The store is sanitized on load l
   teacher drew.
 - **Previews** stack a Samaritan mark on its column in the Spacing sample (a Hebrew vowel typed after a
   Samaritan letter stacks nothing — the export attaches none), the kern suggester skips the marks, and the
-  specimen adds an *alaf + each shipped mark* page shaped by the exported font itself. **Out of scope:**
-  the QA sheet (Hebrew rows, mkmk semantics), Hebrew nikkud on Samaritan letters, and a second Samaritan
-  face to cross-check the column fractions.
+  specimen adds an *alaf + each shipped mark* page shaped by the exported font itself. The QA Check sheet
+  has a tab of its own (*QA Check grid* above). **Out of scope:** Hebrew nikkud on Samaritan letters, and a
+  second Samaritan face to cross-check the column fractions.
 
 ### Lazy CDNs + CSP
 pyodide v0.26.2 (+ fontTools), harfbuzzjs 0.4.6 (`hb.wasm` fetch — needs `'wasm-unsafe-eval'` +
