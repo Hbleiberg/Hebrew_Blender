@@ -8849,10 +8849,16 @@ function svgSpanFor(cp, kind) {             // vertical target band for the fit,
   const em = effMetrics();
   if (kind !== 'letter') return { bottom: 0, top: Math.round(em.letterTop * 0.4) };   // marks: small; markAttachOrigin re-centers them
   const b = glyphBand(cp);
-  // Descenders dip below the baseline by the same 30%-of-band rule this has always used, so an
-  // uploaded Hebrew final lands exactly where it did before; what changes is that a capital now fits
-  // to capHeight and a lowercase to its x-height instead of both being stretched to letterTop.
-  return { bottom: b.desc ? -Math.round(b.top * 0.30) : 0, top: b.top };
+  // A descender dips below the baseline by 30 % of ONE reference per script — the cap height for a
+  // cased script, the letter top for a caseless one — so every descender in a font shares a floor:
+  // Hebrew, Phoenician, Aramaic and Samaritan finals stay at −180 exactly as they always were, and
+  // every Latin or Cyrillic tail lands at −210, the measured −0.30 × cap. v5.54 took 30 % of each
+  // glyph's OWN top, which put g at −153, Q at −210 and j at −218 in one font. What changed in v5.54
+  // and stays: a capital fits to capHeight and a lowercase to its x-height instead of both being
+  // stretched to letterTop. (The 30 % is the guess it always was about where an SVG's baseline
+  // sits; this makes it one guess, not three.)
+  const ref = b.cased ? em.capHeight : em.letterTop;
+  return { bottom: b.desc ? -Math.round(ref * 0.30) : 0, top: b.top };
 }
 function assignSvgContours(it, kind, contours, sheetId, cropRect) {   // commit prebuilt contours onto an item (runs INSIDE udDo)
   it.source = { kind: 'svg', dataUrl: null, cropRect: cropRect || null, sheetId: sheetId || null };
