@@ -2767,6 +2767,9 @@ function enumeratedVoiceCount() {
 }
 // Hard-disable only when speech synthesis is entirely absent (iOS lists voices lazily, so a
 // missing he-IL voice is a soft advisory, not a block). Also disabled for Name-the-Letter.
+// t() with its English value for the stretch before I18n.ready, when t() still returns the key: these
+// strings can be built at load, and applyI18n rebuilds them once the dictionary is in.
+function _fbT(k, en, p) { const v = window.I18n ? I18n.t(k, p) : k; return v === k ? en : v; }
 function updateListeningAvailability() {
   const t = document.getElementById('listeningToggle');
   if (!t) return;
@@ -2775,13 +2778,13 @@ function updateListeningAvailability() {
   let disabled = false, title = '', note = '';
   if (!speechSupported) {
     disabled = true;
-    title = 'Audio isn’t supported in this browser.';
-    note  = 'Audio isn’t supported in this browser, so Listening is unavailable.';
+    title = _fbT('flashcards.listening.warn_no_speech_title', 'Audio isn’t supported in this browser.');
+    note  = _fbT('flashcards.listening.warn_no_speech_note', 'Audio isn’t supported in this browser, so Listening is unavailable.');
   } else if (!isListeningSupportedMode()) {
     disabled = true;
-    title = 'Listening isn’t available for “Name the Letter”.';
+    title = _fbT('flashcards.listening.warn_name_letter', 'Listening isn’t available for “Name the Letter”.');
   } else if (!hasHebrewVoice() && enumeratedVoiceCount() > 0) {
-    note = 'No Hebrew voice detected on this device — audio may be silent or read with a default voice.';
+    note = _fbT('flashcards.listening.warn_no_voice', 'No Hebrew voice detected on this device — audio may be silent or read with a default voice.');
   }
   // The stored preference stays as it is (it travels through a sync unchanged); only what runs on this
   // device is gated — the toggle, its options row and the note show the effective state.
@@ -3453,11 +3456,15 @@ function nameSwitchRows() {
   });
 }
 
+// "1st Position" etc. above each lock row: the ordinal is the vowel pills' own key.
+function _lockHeading(pos) {
+  const en = ['1st', '2nd', '3rd', '4th'][pos - 1], ord = _fbT('flashcards.vowels.pos_' + en, en);
+  return _fbT('flashcards.lock.position_heading', ord + ' Position', { ordinal: ord });
+}
 function initLockPositionRows() {
   const container = document.getElementById('lockOptions');
   if (!container) return;
   container.innerHTML = '';
-  const labels = ['1st', '2nd', '3rd', '4th'];
   for (let pos = 1; pos <= mode; pos++) {
     if (!letterLocks[pos]) letterLocks[pos] = { enabled: false, letters: new Set() };
     const lk = letterLocks[pos];
@@ -3466,10 +3473,10 @@ function initLockPositionRows() {
     block.innerHTML = `
       <div class="row" style="align-items:center;gap:6px;">
         <label class="switch sm"><input type="checkbox" class="lock-pos-chk" ${lk.enabled ? 'checked' : ''}><span class="slider"></span></label>
-        <span class="label" style="font-size:0.82rem;">${labels[pos - 1]} Position</span>
+        <span class="label" style="font-size:0.82rem;">${esc(_lockHeading(pos))}</span>
       </div>
       <div class="lock-pos-grid ${lk.enabled ? '' : 'hide'}">
-        <div class="sub" style="margin-bottom:4px;">Locked letter(s):</div>
+        <div class="sub" style="margin-bottom:4px;">${esc(_fbT('flashcards.lock.locked_letters', 'Locked letter(s):'))}</div>
         <div class="letter-grid mini-letter-grid" id="lockGrid-${pos}"></div>
       </div>
     `;
@@ -7019,7 +7026,6 @@ function updateVowelLockUI() {
 function initVowelLockPositionRows() {
   const section = document.getElementById('vowelLockSection');
   section.innerHTML = '';
-  const labels = ['1st', '2nd', '3rd', '4th'];
   for (let pos = 1; pos <= mode; pos++) {
     if (!vowelLocks[pos]) vowelLocks[pos] = { enabled: false, vowels: new Set() };
     const lk = vowelLocks[pos];
@@ -7028,10 +7034,10 @@ function initVowelLockPositionRows() {
     block.innerHTML = `
       <div class="row" style="align-items:center;gap:6px;">
         <label class="switch sm"><input type="checkbox" class="vowel-lock-pos-chk" ${lk.enabled ? 'checked' : ''}><span class="slider"></span></label>
-        <span class="label" style="font-size:0.82rem;">${labels[pos - 1]} Position</span>
+        <span class="label" style="font-size:0.82rem;">${esc(_lockHeading(pos))}</span>
       </div>
       <div class="vowel-lock-pos-content ${lk.enabled ? '' : 'hide'}" style="margin-top:6px;padding-inline-start:10px;border-inline-start:2px solid var(--border);margin-inline-start:8px;">
-        <div class="sub" style="margin-bottom:4px;">Locked vowel(s):</div>
+        <div class="sub" style="margin-bottom:4px;">${esc(_fbT('flashcards.lock.locked_vowels', 'Locked vowel(s):'))}</div>
         <div class="vowel-lock-grid-inner" id="vowelLockGrid-${pos}" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
       </div>
     `;
@@ -8756,6 +8762,8 @@ function applyI18n() {
   initEngFontSelector();
   initCountGrid();
   initVowels();               // re-localize the vowel-group "Sound" headers
+  if (anyVowelLock) initVowelLockPositionRows();   // translated labels; the letter-lock rows rebuild inside initLetters()
+  updateListeningAvailability();                    // the Listening toggle's title and note (display only)
   initLetters();              // letter tiles carry glyphname labels; rebuild re-derives .selected
   initColorPickers();         // vowel rows too; rebuild re-reads getNikudColor, so colours survive
   renderPresets();

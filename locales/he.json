@@ -1258,7 +1258,7 @@
   "flashcards.listening.warn_no_voice": "לא זוהה קול עברי במכשיר זה — ייתכן שהשמע יהיה שקט או יוקרא בקול ברירת מחדל.",
   "flashcards.lock.locked_letters": "אותיות נעולות:",
   "flashcards.lock.locked_vowels": "תנועות נעולות:",
-  "flashcards.lock.position_heading": "מיקום {ordinal}",
+  "flashcards.lock.position_heading": "אות {ordinal}",
   "flashcards.manual.invalid_json": "JSON לא תקין: {message}",
   "flashcards.manual.no_presets_key": "לא נמצא מפתח \"presets\".",
   "flashcards.mode.choices_label": "אפשרויות:",

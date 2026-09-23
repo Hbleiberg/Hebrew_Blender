@@ -1173,7 +1173,7 @@ flashcards.listening.warn_no_speech_title,Audio isn’t supported in this browse
 flashcards.listening.warn_no_voice,No Hebrew voice detected on this device — audio may be silent or read with a default voice.,לא זוהה קול עברי במכשיר זה — ייתכן שהשמע יהיה שקט או יוקרא בקול ברירת מחדל.,listening warning note,
 flashcards.lock.locked_letters,Locked letter(s):,אותיות נעולות:,letter lock sub-label,
 flashcards.lock.locked_vowels,Locked vowel(s):,תנועות נעולות:,vowel lock sub-label,
-flashcards.lock.position_heading,{ordinal} Position,מיקום {ordinal},letter/vowel lock per-position heading,
+flashcards.lock.position_heading,{ordinal} Position,אות {ordinal},"letter/vowel lock per-position heading; {ordinal} is flashcards.vowels.pos_* (feminine in Hebrew, so the noun is אות — the card's Nth letter)",
 flashcards.manual.invalid_json,Invalid JSON: {message},JSON לא תקין: {message},manual import alert,
 flashcards.manual.no_presets_key,"No ""presets"" key found.","לא נמצא מפתח ""presets"".",manual import alert,
 flashcards.mode.choices_label,Choices:,אפשרויות:,listening choices row label,
