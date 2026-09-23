@@ -178,7 +178,7 @@ _(none)_
 
 ## Done
 
-- [x] 2026-09-23 | (S412 close-out) | branch/deploy note | **S412 = pass H + 4 fixes on `claude/improve-loop-k01p7y` / draft PR #266.** DRIFT: none. `sw.js` v831 → v832. Scripts: i18n, inline-js, 7 smokes `--sdk` 408/408, sitemap, llms, compact, check-ledger. No gates.
+- [x] 2026-09-23 | (S412 close-out) | branch/deploy note | **S412 = pass H + 4 fixes on `claude/improve-loop-k01p7y` / draft PR #266. Then landed on main by in-session authorization (`d57da36..3a9adbd`; Pages success, v832 live).** DRIFT: none. `sw.js` v831 → v832. Scripts: i18n, inline-js, 7 smokes `--sdk` 408/408, sitemap, llms, compact, check-ledger. No gates.
 
 - [x] 2026-09-23 | `d35be74` | torah_trainer.html | (S412) **The fullscreen bar's Settings button draws `hi-gear`, not ⚙️.** | verified: 8 cells vs unfixed: "⚙️" → the Dark button's 16×16 white line style; size, name, drawer unchanged
 
@@ -566,7 +566,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-17 (**S397 — 31st run, first since S383 (14 sessions); F was the stalest unattended pass (O attended-only since S346) and the S397 pointer named it AND the affordance: THE KEYBOARD BYPASS.** Census by a real Tab walk over all 14 root pages, 0 pageerrors, 120 route aborts, torah/trope as the control: **2 of 14 carried a header skip link**; chrome stops before …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S413):** **BRANCH/PR: S408–S412 on `claude/improve-loop-k01p7y` → draft PR #266 (base `d57da36`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** **DRIFT vs `d57da36`.** S412 closed at `sw.js` **v832**, FM **5.56**, SDK **2.116.0**; backend clean (migrations 0001–0003, `delete-account` v3 JWT on, keep-alive #11 green).
+**Next session (S413):** **BRANCH/PR: S408–S412 (PR #266) landed on main by in-session authorization (`d57da36..3a9adbd`, Pages success). CUT A FRESH `claude/*` off `origin/main`; open a new draft PR at close-out.** **DRIFT: compare `origin/main` with `3a9adbd` + the ledger note after it.** S412 closed at `sw.js` **v832**, FM **5.56**, SDK **2.116.0**; backend clean (migrations 0001–0003, `delete-account` v3 JWT on, keep-alive #11 green).
 
 **⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), C (S396), F (S397), B (S398), A (S399), E (S403), L (S404), K (S405), N (S406), P (S407), M (S408), G (S409), D (S410), I (S411), H (S412).** Take **C** (re-derive the tool; the coverage row has the dictionary at C S285). **Next A:** NEW `settings-lost-across-a-load` on the other settings pages + the ACTIVE rows. **Next G:** flash. **Next D:** torah. **Next H:** account.
 
