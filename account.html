@@ -183,6 +183,10 @@ body.dark .btn.danger[aria-disabled="true"]:hover{background:#a83a32;}
 .link-btn:hover{color:var(--gold-text-hover);}
 .link-btn:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
 #holdsList{list-style:none;margin:0 0 8px;padding:0;}
+/* An address has no break opportunity and a saved item's name is any 120 characters, so on a phone a long
+   school address or an unbroken preset name ran past its tile and scrolled the page sideways — at 320px
+   in both languages. The chip menu and the cloud panel already break these same strings anywhere. */
+#whoLine,#holdsList{overflow-wrap:anywhere;}
 .holds-tool{margin-block:8px 12px;}
 .holds-tool strong{display:block;font-weight:700;}
 .holds-kinds{margin:2px 0 0;padding-inline-start:18px;}
