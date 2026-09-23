@@ -179,6 +179,16 @@ body.dark .btn[aria-disabled="true"]:hover{background:#2a4070;}
 .btn.danger[aria-disabled="true"]:hover{background:var(--danger-text);}
 body.dark .btn.danger{background:#a83a32;}
 body.dark .btn.danger[aria-disabled="true"]:hover{background:#a83a32;}
+/* Dark mode had no ghost variant and no danger hover: body.dark .btn (0,2,1) outranks .btn.ghost (0,2,0), so
+   Save name, Refresh, Delete my account… and Cancel painted solid like the Download button (Cancel a second
+   primary beside Delete permanently), and body.dark .btn.danger (0,3,1) outranks .btn.danger:hover (0,3,0), so
+   the unlocked Delete permanently never answered a cursor. Restated at the dark rules' weight. The ghost hover
+   takes the dark --border, as the cloud panel's buttons do (the dark --warm-gray IS the tile surface); the danger
+   hover lightens, as every dark .btn does. Each locked restate still outranks the hover it cancels. */
+body.dark .btn.ghost{background:transparent;}
+body.dark .btn.ghost:hover{background:var(--border);}
+body.dark .btn.ghost[aria-disabled="true"]:hover{background:transparent;}
+body.dark .btn.danger:hover{background:#bb4a41;}
 .link-btn{background:none;border:0;padding:0 2px;color:var(--gold-text);font:inherit;font-size:0.85rem;text-decoration:underline;cursor:pointer;}
 .link-btn:hover{color:var(--gold-text-hover);}
 .link-btn:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
