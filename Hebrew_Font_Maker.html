@@ -8233,6 +8233,10 @@ function applyImportedAnchors(l, imp, kinds) {
         l.anchors[k] = { x: Math.round(imp[k].x), y: Math.round(imp[k].y) };
     });
   });
+  // The font's own positions get a baseline, as a reloaded project's do (migrateProject). Without one,
+  // maybeInheritAnchors took them for fresh seeds: clicking a letter in the placement step replaced its
+  // imported positions with the letter's before it.
+  l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));
 }
 /* Outlines untouched: drop only the fidelity pins of kinds whose placement this import actually
    rewrote on this letter (outcome-gated, like the class anchors). Pin kind derives from the cp:
