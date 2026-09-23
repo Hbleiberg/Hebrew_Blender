@@ -179,7 +179,7 @@ in-memory PostgREST / Auth / Storage — no network, no real project, nothing to
 
 | Script | `--sdk` | Port | What it proves |
 |---|---|---|---|
-| `scripts/smoke-account.mjs` | optional | 8080 | anonymous with the CDN blocked (0 `pageerror`, no `sb-*` key), the chip, SRI, the URL contracts |
+| `scripts/smoke-account.mjs` | optional | 8080 | anonymous with the CDN blocked (0 `pageerror`, no `sb-*` key), the chip, SRI, the URL contracts, the first email sign-in on a device (the code field appears after the send and the code signs in) |
 | `scripts/smoke-saves.mjs` | optional | 8080 | the local round trip signed out, canonical hashing, the state table, fail-soft with the API unreachable |
 | `scripts/smoke-tools.mjs` | optional | 8080 | the six wired tool pages; the full localStorage dump byte-identical to a control run with the account scripts blocked |
 | `scripts/smoke-sync.mjs` | **required** | 8081 | the second-device story: changed-in-both-places, folder-tree convergence, deletions that never propagate, fonts travelling |

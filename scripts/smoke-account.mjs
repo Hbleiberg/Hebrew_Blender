@@ -14,10 +14,12 @@
  *   F. Hebrew UI + dark mode at 800 px renders the chip in Hebrew (screenshots in the scratch dir).
  *   G. Real phone widths (320 / 390, EN + HE): the open menu and the page itself both stay
  *      inside the viewport. 800 px is a tablet — F cannot see a phone overflow.
+ *   H. The first email sign-in on a device (SDK served, a fake Auth answering /otp and /verify):
+ *      after "Email me a sign-in code" the code field is shown and focused, and the code signs in.
  *
  * Run from the repo root:  node scripts/smoke-account.mjs [--sdk path/to/supabase.js]
  * Needs the repo served on http://localhost:8080 — the script starts python3 -m http.server itself.
- * The --sdk file is optional: without it, C and D are skipped (they need the 2.116.0 UMD bytes,
+ * The --sdk file is optional: without it, C, D and H are skipped (they need the 2.116.0 UMD bytes,
  * e.g. from `npm pack @supabase/supabase-js@2.116.0` → package/dist/umd/supabase.js).
  */
 import pkg from '/opt/node22/lib/node_modules/playwright/index.js';
@@ -52,7 +54,7 @@ async function startServer() {
   throw new Error('http.server did not start');
 }
 
-async function openPage(browser, { serveSdk = false, seed = {}, viewport = { width: 1280, height: 800 }, url = PAGE } = {}) {
+async function openPage(browser, { serveSdk = false, seed = {}, viewport = { width: 1280, height: 800 }, url = PAGE, auth = null } = {}) {
   const ctx = await browser.newContext({ serviceWorkers: 'block', viewport });
   await ctx.addInitScript((seed) => { for (const k of Object.keys(seed)) localStorage.setItem(k, seed[k]); }, seed);
   const page = await ctx.newPage();
@@ -64,6 +66,7 @@ async function openPage(browser, { serveSdk = false, seed = {}, viewport = { wid
     if (serveSdk && SDK_BYTES && u === CFG.sdk) {
       return route.fulfill({ status: 200, body: SDK_BYTES, headers: { 'content-type': 'application/javascript; charset=utf-8', 'access-control-allow-origin': '*' } });
     }
+    if (auth && u.startsWith(CFG.url + '/auth/v1/')) return auth(route);
     return route.abort();
   });
   await page.goto(url, { waitUntil: 'domcontentloaded' });
@@ -204,6 +207,44 @@ try {
       await ctx.close();
     }
   }
+  // ---- H. The first email sign-in on a device ---------------------------------------------------
+  // C sends a code only to an unreachable API, so nothing drove the success path — and it was broken:
+  // the first signIn() creates the SDK client, whose INITIAL_SESSION event re-renders the open menu
+  // while the code is on its way, and the step after the send showed the field of the earlier render.
+  // The menu said "Type it here" above no field. A fake Auth answers the two calls the email path makes.
+  if (SDK_BYTES) {
+    const user = { id: '11111111-1111-4111-8111-111111111111', email: 'teacher@example.org', user_metadata: {}, app_metadata: { provider: 'email' } };
+    const auth = (route) => {
+      const p = new URL(route.request().url()).pathname;
+      const headers = { 'content-type': 'application/json', 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,PUT,OPTIONS' };
+      if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers });
+      if (p.endsWith('/otp')) return route.fulfill({ status: 200, headers, body: '{}' });
+      if (p.endsWith('/verify')) return route.fulfill({ status: 200, headers, body: JSON.stringify({ access_token: 'x', refresh_token: 'y', expires_in: 3600, expires_at: 4102444800, token_type: 'bearer', user }) });
+      if (p.endsWith('/user')) return route.fulfill({ status: 200, headers, body: JSON.stringify(user) });
+      return route.fulfill({ status: 404, headers, body: '{}' });
+    };
+    for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 700 }]) {
+      const { ctx, page, errors } = await openPage(browser, { serveSdk: true, auth, viewport });
+      const tag = `H: ${viewport.width}px`;
+      await page.click('.ivacct-btn');
+      await page.waitForFunction(() => window.supabase && window.supabase.createClient, null, { timeout: 15000 }).catch(() => {});
+      await page.fill('.ivacct-menu input[type=email]', 'teacher@example.org');
+      await page.click('.ivacct-menu button[type=submit]');
+      await page.waitForFunction(() => /6-digit/.test(document.querySelector('.ivacct-note').textContent), null, { timeout: 15000 }).catch(() => {});
+      const st = await page.evaluate(() => { const c = document.querySelector('.ivacct-menu .ivacct-code'); const i = c && c.querySelector('input'); return { shown: !!c && !c.hidden, focused: !!i && document.activeElement === i }; });
+      check(`${tag} — the code field appears after the first send`, st.shown, JSON.stringify(st));
+      check(`${tag} — and takes the focus`, st.focused, JSON.stringify(st));
+      if (st.shown) {
+        await page.fill('.ivacct-menu input[name=code]', '123456');
+        await page.click('.ivacct-menu .ivacct-code button');
+        await page.waitForFunction(() => IvritAccount.status() === 'signed-in', null, { timeout: 15000 }).catch(() => {});
+      }
+      const signedIn = await page.evaluate(() => IvritAccount.status());
+      check(`${tag} — the code signs in`, signedIn === 'signed-in', signedIn);
+      check(`${tag} — 0 pageerrors`, errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+  } else { console.log('SKIP H: no --sdk file given'); }
 } finally {
   await browser.close();
   srv.kill();
