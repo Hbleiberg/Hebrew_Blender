@@ -394,7 +394,9 @@ body.dark #tipFloat { background: #0a0f1c; }
   button, which is why the button must keep calling `ensureTimerAudio()`); recipes stay under ~1.8 s so
   they land inside the "Time!" hold. `timerSound` and `timerVolume` both travel with the account —
   `timerSoundId()` maps an id this build doesn't know to `beep`, never to silence, so an older blob can
-  never quietly mute a classroom. Restore `timerVolume` with `??`: a stored `0` is a deliberate mute.
+  never quietly mute a classroom — own keys only, so an inherited name (`constructor`, `toString`) is
+  unknown too. Restore `timerVolume` with `??`: a stored `0` is a deliberate mute. `timerVolumePct()` is
+  the one reader (the gain and the drawer's slider), and it reads a value that is not a number as `70`.
 - **Repeat until dismissed** (`timerRepeat`, off by default): `timerFinish()` swaps the 3-second hold for
   an alert that waits to be acknowledged — the sound repeats on a per-sound interval (`TIMER_SOUND_MS`;
   the recipes run 0.3–1.3 s, so one fixed spacing would either talk over the shofar or leave a gap after

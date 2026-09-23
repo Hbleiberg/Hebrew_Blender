@@ -8,13 +8,15 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S411 Pass I — F/O's, a census, not I's to fix**) | 8 pages | **~38 chrome controls still lead their label with a glyph**, against CLAUDE.md's "a control string never carries a glyph": resources' 11 category chips, FM's node-editor modes + back arrows (10), flash cards 7, dashboard 4 (`📍` ×2, `↔`, `✨`), torah's fullscreen `⚙️`, generator `🃏`, trope `🎯`. Wholesale conversion is …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P4 (**NEW S411 Pass I — K's**) | Hebrew_Font_Maker.html | **QA Check's outline warning names a glyph by its JS-built English `name` in the Hebrew UI** ("A (uppercase)"; the English, Cyrillic, Phoenician and Aramaic tables build `name` with no key, e.g. "Д (Cyrillic de, uppercase)"). | found S411
+
 - [ ] P3 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **The Spacing tab renders every kerning pair on each show and each kern edit**: FreeSerif's 2,000 imported pairs → 238ms @1×, 1.3–1.6s @4×; each row finds its members with a linear `project.letters.find` (`kernCpTraced`). | found S410
 
 - [ ] P4 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **Continue runs a synchronous `autosaveNow()` inside the click's task** (88–114ms of 575–616ms @4×), re-saving the snapshot it just restored. | found S410
 
 - [ ] P4 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **The partner wizard's Create re-renders every grid once per setter** (`setMarkEnabled` ×2, `setAddEnglishLetters`, `setInputMode`…): 3 tasks of 465–678ms @4×, top 146–201ms @1× (engine blocked; with it, Pyodide's own blocks dominate). | found S410
-
-- [ ] P4 (**NEW S409**) | Hebrew_Font_Maker.html + CSV | **`fontmaker.cloud.photos_missing` lacks `.one`/`.other`** ("1 photos"; the account twin split in `4169b72`). | found S409
 
 - [ ] P4 (**NEW S409 Pass G**) | account.html | **Printing splits cards across sheets, spends an A4 sheet on the footer and prints 6 inert controls.** | found S409
 
@@ -23,8 +25,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S409**) | classroom_dashboard.html, hebrew_blend_generator.html | **Dead drag code**: the dashboard's `.preset-item.drag-over` has no writer; the generator's `makeSortable()` no caller. | found S409
 
 - [ ] P4 (**NEW S404 — the icon sweep's one missed tab**) | trope_tutor.html + locales/ui-strings.csv | **The Drill tab's label is still `🎯 Drill` / `🎯 תרגול` (CSV note `leading-emoji`) while its sibling Learn tab carries the `hi-book` SVG with a glyph-free label** — the one mode tab the sweep did not convert. The 49-glyph set has no target shape, so the fix picks an existing glyph or adds one …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S406 Pass N arm 5**) | account.html | **The Display name field lacks the suite's name-field triplet** (`autocapitalize="words" autocorrect="off" spellcheck="false"`, as on contact, resources, the dashboard and the Font Maker): iOS autocorrect can rewrite a surname as it is typed. | found S406
 
 - [ ] P4 (**NEW S405 Pass K — the new pattern's open carriers; confirm each display first**) | Hebrew_Font_Maker.html, torah_trainer.html, flash_cards + generator + dictionary | **`translated-key-exists-page-hardcodes-english`, 3 carriers left:** FM `whoHasCp()` returns "a precomposed form", "the Sheva Na slot"… into the custom-glyph clash message (7 English strings, `fontmaker.whohas.*` has 4); …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -166,6 +166,18 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-23 | (S411 close-out) | branch/deploy note | **S411 = pass I + 4 fixes on `claude/improve-loop-k01p7y` / draft PR #266 (open, clean, base `d57da36`).** DRIFT: none (keep-alive #11 green, `delete-account` v3 JWT on, 3 migrations recorded). `sw.js` v830 → v831; FM not bumped (bug fixes). Scripts: i18n + build-locales, inline-js, 7 smokes `--sdk`, sitemap, llms, compact, check-ledger. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-23 | `4387c94` | account.html | (S411) **The Display name field carries the suite's name triplet** (iOS could autocorrect a surname; pattern `mobile-input-hints`, un-retired). | verified: signed in, EN/HE/iPhone 13 vs unfixed: "" / none / true → words / off / false, = contact's `#cfName`; a real Save sends the typed name; smoke-account-page 53/53
+
+- [x] 2026-09-23 | `cc9fb3b` | classroom_dashboard.html | (S411 Pass I) **A damaged timer-sound setting falls back to the beep** (inherited names played nothing; a non-number painted "NaN%" at full gain). | verified: oscillators counted, 12 shapes × EN/HE vs unfixed: 0 → 1, "NaN%"/gain 1 → 70%/0.49, controls identical; a real 3 s timer: "constructor" 0 → 1
+
+- [x] 2026-09-23 | `25d2277` | Hebrew_Font_Maker.html + CSV | (S411) **A cloud open's missing-photo notice stays on the strip, singular/plural right** (it lasted ~40 ms under "Opened"; pattern `error-status-clobbered-by-a-later-routine-write`). | verified: real clicks behind the fake cloud, 0/1/2 photos deleted, EN/HE vs unfixed: 38–44 ms → still shown at 5.5 s; smoke-fontmaker 33/33
+
+- [x] 2026-09-23 | `e3ceade` | Hebrew_Font_Maker.html + CSV | (S411 Pass I) **QA Check on a new project says no letter is traced yet** (was "✓ All placements clear" + a tall-artwork line over 27 empty rows). | verified: 6 project states × EN/HE vs unfixed; traced Hebrew byte-identical on every tab; the outline warning kept for an English-only font
+
+- [x] 2026-09-23 | (S411 Pass I iter 1) | the whole suite | **31st I, first since S394 (17 sessions)**: 32 virgin cells clean behind 7 planted controls; the census = S394's; 0 SDK/project requests anonymously; delta arms on FM, dashboard, generator, trope, hub, account, tours. FOUND 4 (2 fixed; a glyph-label census for F/O; English glyph names for K). Receipts + traps 102–107 in loop-findings.
+
 - [x] 2026-09-23 | (S410 close-out) | branch/deploy note | **S410 = pass D + 4 fixes on `claude/improve-loop-k01p7y` / draft PR #266 (open, clean, base `d57da36`).** DRIFT: none. `sw.js` v829 → v830; FM not bumped (a bug fix and a speed-up). Scripts: i18n, inline-js, 7 smokes `--sdk`, sitemap, llms, compact, check-ledger. No gates.
 
 - [x] 2026-09-23 | `ee38b98` | index.html | (S410) **The My Fonts row's Use / Download / Remove reach the 30px floor** (24px high; pattern `sub-floor touch target`). | verified: 8 cells vs unfixed, 6 → 0 under 30px; planted control fires; overflow 0, 0 clipped; real Download + Remove
@@ -214,19 +226,11 @@ _(none)_
 
 - [x] 2026-09-23 | (S407 Pass P iter 1) | the accounts layer + the hub's cloud panels | **3rd P, first since S390 (17 sessions); the stalest runnable pass (O blocked here), and P's first named surface after two whole-layer runs.** 8 arms, every zero behind a control that fired; the S406 promise-callback sweep run as arm 2. **FOUND:** the sign-in lock never held (P3, `e5c4784`; NEW pattern …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-23 | (S406 close-out) | branch/deploy note | **S406 = pass N + 4 fixes (full budget), CONTINUING `claude/eager-bardeen-jdve4x` / draft PR #265 (read through the API: open, unmerged, `mergeable_state` clean, base `041ddfa`, head `14c185d`) — 4 fix commits + this close-out on top of the branch's 15; a human merges and confirms the Pages run.** **DRIFT: NONE** — `origin/main` still …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-23 | `f928214` | scripts/smoke-account.mjs + ops.md | (S406) **The accounts smoke drives the first email sign-in to the end** — scenario H (fake `/otp` + `/verify`, 1280 + 390): the field appears and takes focus, the code signs in. | verified: the unfixed tree fails 6/6 of H (47/53); branch 53/53; 37/37 without `--sdk`
-
-- [x] 2026-09-23 | `2fae88d` | flash_cards.html | (S406) **A saved drill stays saved across a language switch** (`lastDrillSavedTo`, cleared at every drill start). | verified vs the unfixed tree: before, a second click banked the drill twice; after, saved in HE and back, 1 result; Try Again offers Save again; the Learning Path unchanged; matrix 8/8; smoke-tools 21/21
-
-- [x] 2026-09-23 | `4426c36` | account.html | (S406 Pass N) **A long address or saved name no longer pushes the page sideways** (`#whoLine,#holdsList{overflow-wrap:anywhere}`; 13–35px at 320–412). | verified: 12 phone cells × 6 views vs the unfixed tree — after, 72/72 fit and every cell reaches "deleted" by taps; ordinary-address boxes identical at 1280/800
-
-- [x] 2026-09-23 | `4bbdae1` | js/ivrit-account.js | (S406 Pass N) **P1: the sign-in code field appears after the first emailed code** (the first signIn's INITIAL_SESSION re-render left the send's `.then` a detached field). | verified: 8 configurations vs the unfixed tree — before no field, after shown + focused and the code signs in; 429 hidden in both; all seven smokes 400/400
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-23 | **S411** | iters: 1 pass (**I**) + 4 fixes = **5** | tools: FM ×2 (at cap), dashboard, account | patterns fixed: error-status-clobbered-by-a-later-routine-write ×1, mobile-input-hints ×1 (un-retired) | pass run: I | SW: v830→v831
 
 - 2026-09-23 | **S410** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: FM ×2 (at cap), account, index | patterns fixed: sub-floor touch target ×1 (inline-styled row) | pass run: D | SW: v829→v830
 
@@ -266,11 +270,9 @@ _(none)_
 
 - 2026-09-16 | **S391** | iters: 1 pass (**M**) + 4 fixes = **5** (full budget) | tools: index (`fa001b0`), scripts+harness (`bfcdc15`), generator (`95fe5ec`), Font Maker (`d5ee54c`) | patterns fixed: hover-feedback-survives-the-disabled-state ×2 (3 controls, closing all 3 open unconfirmed …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-09-16 | **S390** | iters: 1 pass (**P**, security-focused per user direction) + 2 fixes = **3** (4th/5th unspent: every remaining finding is backend-boundary maintainer work or was answered "leave as-is" at a gate, and padding the count with a change nobody asked for is not a win) | tools: …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S410 (2026-09-23):** index (**S410**; **N S249 — N-next**, D S352); generator (S405; G S392, D S338); flash (S406; D S393, **G S279 — G-next**, H S264); dictionary (S409; **C S285 — C-next**, D S378); dashboard (S409; G S364, H S395, D S325); torah (S409; **O-next**, G S324, **D S307 — D-next**); trope (S409; G S351, N S389, D S365); FM (**S410**; **D S410**, G S337, B S398); account (**S410**; G S409, M S408, P S407; no D — its one heavy path was measured under P S407); no M on record: generator, flash, torah, terms.
+- **S411 (2026-09-23):** I S411 on every page. index (S410; **N S249 — N-next**, D S352); generator (S405; G S392, D S338); flash (S406; D S393, **G S279 — G-next**, H S264); dictionary (S409; **C S285 — C-next**, D S378); dashboard (**S411**; G S364, H S395, D S325); torah (S409; **O-next**, G S324, **D S307 — D-next**); trope (S409; G S351, N S389, D S365); FM (**S411**; D S410, G S337, B S398); account (**S411**; G S409, M S408, P S407; no D — its heavy path measured under P S407); no M on record: generator, flash, torah, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -382,7 +384,7 @@ _(none)_
 
 - **translated-sibling stray** **S336: +1 carrier FIXED `c1e4427` — the Font Maker's nine raw `.name` display sites (header, drop zone, mark-editor modal, 4 toasts) now go through `gName()`, the sibling the tiles already used.**  (a display site rendering a raw English …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- `mobile-input-hints` (a text input that takes a code, a URL, or non-English text but carries no typing hints): **re-swept 2026-08-28 (S267 iter 3, `flash_cards.html` `#presetName` — the twin-reconciliation the S266 feature build logged) — hits: 1, fixed (`05fdcab`); clean …[full text: IMPROVEMENT_ARCHIVE.md]
+- **mobile-input-hints** (a text field for Hebrew, names, numbers or codes shipping without `inputmode`/`autocapitalize`/`autocorrect`/`spellcheck` fitting its content) | **ACTIVE — UN-RETIRED S411** (retired S343; the S267 row is in the archive): account.html's `#nameInput` arrived with accounts phase 6, after the retirement; found S406 N arm 5, FIXED `4387c94`. Clean streak 0. Detection: every `<input`/`<textarea` added in the delta, read against the file's own split; Pass N arm 5 keeps the phone-keyboard check.
 
 - **i18n cross-column parity (placeholders, plurals, inline markup)**: **re-swept 2026-09-03 (S320 Pass K, detector 1 only): `{placeholder}` sets en vs he over 5,128 keys, raw 30 → hits: 0 — all thirty are the S261-refuted `.one` plural shape (Hebrew spells the singular number; …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -404,7 +406,7 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 
 - **decorative-glyph-carrier-exposed-to-assistive-tech** (**2nd instance fixed 2026-08-15, S219, c2399f1 — Font Maker QA column heads**. That instance sharpened the pattern in a way every future sweep needs: **`aria-label` on the element is NOT a fix for this class.** The FM …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **error-status-clobbered-by-a-later-routine-write** (**NEW, registered S199**): a status/live-region line that correctly reports a FAILURE is then overwritten, on the same code path, by a later **routine** write that assumes the happy state — so the diagnostic exists in the …[full text: IMPROVEMENT_ARCHIVE.md]
+- **error-status-clobbered-by-a-later-routine-write** (**NEW, registered S199**; **S411: +1 carrier FIXED `25d2277`** — FM `fmCloudOpen`'s missing-photo notice, replaced by "Opened from your account" in ~40 ms): a status/live-region line that correctly reports a FAILURE is then …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **content-dependent-tour-step-miscounts-the-tour** (**NEW, registered S197**): a guided-tour step whose `target()` only exists once remote/corpus content has rendered. The engines all skip an unresolvable step **silently by design** ("skip gracefully when hidden"), but the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -448,7 +450,7 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 
 - **`browser-locale-date-in-a-localized-sentence`** **S371 (Pass A): 0 `toLocale(Date|Time)String(undefined` in the corpus — hits 0, clean streak 1.** (`toLocaleDateString(undefined, …)` inside a translated sentence or row): **all 3 carriers FIXED — hub `f8b716b`, flash …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **sub-floor touch target on a shared small-button class** (registered S193; **S410 FIXED the hub's inline-styled My Fonts row `ee38b98`, 6 buttons 24 → 30px — S236's class-less sub-shape**): a small-control class — `.btn-xs` and its kin — whose size comes from `padding` …[full text: IMPROVEMENT_ARCHIVE.md]
+- **sub-floor touch target on a shared small-button class** (registered S193; **S410 FIXED the hub's inline-styled My Fonts row `ee38b98`, 6 buttons 24 → 30px — S236's class-less sub-shape**): a small-control class — `.btn-xs` and its kin — whose size comes from `padding` …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - falsy-zero: swept 2026-07-17 (S93), hits: 0 (the dashboard movable-panels feature 639fcf8/53e50fc uses array-order `panelLayout` with no numeric restores; zone reorder is array-index splicing; its guards use `=== undefined`, not `||`), clean streak: **3 → RETIRED S93** (3 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -494,8 +496,6 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - panel-collapse-writer-mismatch (a `.collapsed` writer that skips `panelMemSave()`, or a panel title without the `data-i18n` key the memory is keyed by) | retired 2026-09-08 (S343) | 3 consecutive clean sweeps: first swept S303 (Pass N), then clean S317, S330, S343 (0 `.collapsed` writers added since S303). Detection: `grep -n "classList.add('collapsed')"` (and `.toggle`/`.remove`) over the six carriers, read each writer for the save call. Re-checked only in Pass A2.
 
-- mobile-input-hints (a text field for Hebrew/names/numbers shipping without `inputmode`/`autocapitalize`/`autocorrect`/`spellcheck` fitting its content) | retired 2026-09-08 (S343) | 3 consecutive clean sweeps: swept S292 (FM), then clean S317, S330 (`#pickerRoster`), S343 (`#timerCustomInput` `inputmode=numeric maxlength=5`). Detection: every `<input`/`<textarea` added in the delta, read its attributes against the file's own split. Pass N arm 5 keeps the phone-keyboard check. Re-checked only in Pass A2.
-
 - invisible-rebuild-on-a-hot-render-path (a render entry point rebuilding a container that is hidden by default under the DEFAULT view, with cost that scales with data) | retired 2026-09-03 (S330) | 3 consecutive clean sweeps: carrier fixed FM `renderSpacingPanel`/`renderKerningSection` (`fa1f88f`), then clean S299, S317, S330 (the S317→S330 delta adds no `innerHTML` writer; torah `buildPrintBand` is bounded by `TROPE_COLOR_DEFS`). Detection kept for A2: list the containers the hot renderer writes, check each at runtime with `offsetParent !== …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - var()-on-an-undefined-custom-property (a `var(--x)` with no fallback whose token is declared nowhere on that page) | retired 2026-09-03 (S330) | 3 consecutive clean sweeps: last hit `hebrew_dictionary` `--navy-deep` (`5e9a6d2`, S285), then clean S299, S317, S330 (the 14 `var()` references added since S317 — `--gold-text`, `--navy`, `--text`, `--white`, `--border` — all declared on their pages). Detection kept for A2: per file, diff `--token:` declarations + `setProperty('--token'` literals against fallback-less `var(--token)` references, …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -538,7 +538,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - D performance (one tool): 2026-09-23 (**S410 — `Hebrew_Font_Maker.html`, its 3rd D (S196 → S294 → S410); re-derived: the coverage row's `D-next` on the generator lagged the per-tool order (FM S294 < torah S307). Real engine served locally. FOUND: imported anchors overwritten by carry-forward (P2, `b006597`), QA Check 0.2–1.2s @1× (P3, `da45bb0`), the Spacing tab's 2,000 pairs (P3), Continue's …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- I first-load & empty-state: 2026-09-16 (**S394 — 30th run, first since S379 (15 sessions); I was the longest unattended gap and the S394 pointer named it. I's FIRST sight of the accounts layer: `account.html` was added three sessions AFTER S379, and the delta is 142 commits / 67 files / +26,291 — the largest I has faced.** The S379 scratchpad was gone, so `i394/` is a rebuild. **Mechanical …[full text: IMPROVEMENT_ARCHIVE.md]
+- I first-load & empty-state: 2026-09-23 (**S411 — 31st run, first since S394 (17 sessions); the stalest runnable pass (O blocked) and the pointer named it. Delta `4d58197..HEAD`: 146 commits, pages +4,170/−970. Gates clean an EIGHTEENTH run: 32 virgin cells behind 7 plants; census = S394's; 0 SDK/project requests. FOUND: QA Check's empty state (P3, `e3ceade`), the timer's stored sound/volume …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - B console/error audit: 2026-09-17 (**S398 — 31st run, first since S384 (14 sessions). B was the stalest UNATTENDED pass; O is stalest overall and attended-only, the session WAS attended, so the maintainer was asked and chose B. Aimed by the pointer at the 313 outside-loop Font Maker lines (punctuation tab, round-pen preview, Preview-PDF digits, Save-all-drawings) that no pass had loaded.** 4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -552,12 +552,12 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-17 (**S397 — 31st run, first since S383 (14 sessions); F was the stalest unattended pass (O attended-only since S346) and the S397 pointer named it AND the affordance: THE KEYBOARD BYPASS.** Census by a real Tab walk over all 14 root pages, 0 pageerrors, 120 route aborts, torah/trope as the control: **2 of 14 carried a header skip link**; chrome stops before …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S411):** **BRANCH/PR: S408–S410 on `claude/improve-loop-k01p7y` → draft PR #266 (base `d57da36`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** **DRIFT vs `d57da36`.** S410 closed at `sw.js` **v830**, FM **5.56**, SDK **2.116.0**; backend clean (migrations 0001–0003, `delete-account` v3 JWT on, keep-alive #11 green). **Never trust these numbers unread.**
+**Next session (S412):** **BRANCH/PR: S408–S411 on `claude/improve-loop-k01p7y` → draft PR #266 (base `d57da36`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** **DRIFT vs `d57da36`.** S411 closed at `sw.js` **v831**, FM **5.56**, SDK **2.116.0**; backend clean (migrations 0001–0003, `delete-account` v3 JWT on, keep-alive #11 green). **Never trust these numbers unread.**
 
-**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), I (S394), H (S395), C (S396), F (S397), B (S398), A (S399), E (S403), L (S404), K (S405), N (S406), P (S407), M (S408), G (S409), D (S410).** Take **I**. **Next C:** dictionary (S285). **Next A:** re-sweep S408's two patterns + `aria-disabled-lock-no-handler-checks`. **Next G:** flash (S279). **Next D:** torah (S307).
+**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), H (S395), C (S396), F (S397), B (S398), A (S399), E (S403), L (S404), K (S405), N (S406), P (S407), M (S408), G (S409), D (S410), I (S411).** Take **H** (one tool: re-derive it from the archive; the coverage row has flash at H S264). **Next C:** dictionary (S285). **Next A:** S408's two patterns + `aria-disabled-lock-no-handler-checks` + the un-retired `mobile-input-hints`. **Next F:** the S411 glyph-label census (conversion is gate 3). **Next G:** flash (S279). **Next D:** torah (S307).
 
-**⚑ READY TO SHIP, ungated:** the Display name triplet (account); FM `photos_missing` plural; the trope Drill tab icon; FM `whoHasCp` + `special_intro`; the Spacing tab's per-row `project.letters.find` (one Map per render).
+**⚑ READY TO SHIP, ungated:** the trope Drill tab icon; torah's fullscreen `⚙️` (its SVG gear exists); FM `whoHasCp` + `special_intro`; the Spacing tab's per-row `project.letters.find` (profile the 238 ms first: every show re-parses all 2,000 rows' markup).
 
-**⚑ HARNESS: traps 1–101 in loop-findings.** `d410/lib.mjs` = a longtask observer from the first byte, CDP throttle + profiler attribution, opentype.js 1.3.4 from npm, and **Pyodide 0.26.2 from npm + fontTools 4.51.0 from PyPI** (the sandbox proxy refuses jsDelivr; without the engine an FM import reads no GPOS). `g409/lib.mjs` = the fake cloud + `addProject()`. `compact-ledger --apply` runs ONCE; the outgoing handoff moves by hand; a Done line files under its FIRST `S###`.
+**⚑ HARNESS: traps 1–107 in loop-findings.** `i411/` = virgin contexts + `gates.mjs --plant`, the delta arms, `recipe.mjs <page>` (8 cells). `m408/lib.mjs` = the fake cloud (`i411/v2.mjs` FM cloud open, `v4.mjs` the account name). `d410/lib.mjs` = the D harness + the real font engine. `compact-ledger --apply` runs ONCE; the outgoing handoff moves by hand; a Done line files under its FIRST `S###`.
 
-**⚑ GATE BENCH:** gate 4 — the suite 16px-on-touch rule (142 fields), the flash sticky bar; gate 2 — the generator's Header Labels; gate 3 — FM stage annotations, `.dash-edit-pencil`, the hub's (and account's) type band, suite-wide `color-scheme` (F's). **Seed bench: 12.**
+**⚑ GATE BENCH:** gate 4 — the suite 16px-on-touch rule (142 fields), the flash sticky bar; gate 2 — the generator's Header Labels; gate 3 — FM stage annotations, `.dash-edit-pencil`, the hub's (and account's) type band, suite-wide `color-scheme` (F's), the glyph-led control labels (S411). **Seed bench: 12.**

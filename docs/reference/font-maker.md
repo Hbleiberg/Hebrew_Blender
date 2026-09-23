@@ -49,7 +49,9 @@ The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-save
   `_cloudNames` map (data URL → object name) means an unchanged photo is never re-encoded or re-uploaded.
   `fmCloudUnpack(data, id)` downloads the referenced objects (4 at a time) and puts data URLs back BEFORE
   `applyProjectData`, so `imgCache` keys, `traceSig` and every synchronous reader see exactly what they see
-  today. A photo that fails to download becomes `null` and is counted in a toast.
+  today. A photo that fails to download becomes `null` and is counted on the status strip
+  (`fontmaker.cloud.photos_missing.one` / `.other`); `fmCloudOpen` leaves that count as the sticky message
+  after the open, and says "Opened from your account" only when nothing is missing.
 - **Saving**: Save Project ▾ → `fmCloudMenuRow()` (a sign-in row when signed out); `fmCloudSave()` shows one
   dialog the first time, then `fmCloudWrite(mode)`: probe the row (`IvritProjects.get`), compare its
   `updated_at` with `cloudRev` (a mismatch raises the conflict dialog — Overwrite / Keep both via the Save-as
@@ -545,6 +547,16 @@ once per cell, exactly as before.
 `setQaOnlyProblems(on)` redraws the grid without re-running `qaBuild()`; `qaSyncFilterUI` keeps the
 checkbox and its readout in step. The checkbox lives in its own `.qa-filter` row **below** `#qaTabs`,
 not inside it — `#qaTabs` is a `role="tablist"` whose `_tabKeydown` ring walks its children.
+
+**Nothing traced yet.** A tab whose rows have no outline (`qaRowsInked` false: a new project, or the Hebrew
+tabs of a Samaritan-only or English-only font) renders `fontmaker.qa.none_traced` (`smr_none_traced` on the
+Samaritan tab) instead of a grid whose every cell would read clear over an empty box; the no-marks note
+(`no_marks` / `smr_none`) still comes first. The summary drops its ✓ / count sentence when `qaHasWork()` finds
+no tab pairing a traced letter with a mark column, and the clip-box line while no Hebrew letter is traced
+(`coreLetterStats().traced` is 0, so Export refuses and no box expands). The outline-health line stays:
+`glyphOutlineScan()` covers every drawn glyph, English included. Once a letter is traced the clip-box line is
+real even for a sparse font: every Hebrew letter ships (blank when untraced) with its seeded anchors, and
+`fontInkBounds()` counts the marks placed on them.
 
 **The Samaritan marks tab** (`smrmarks`) is listed only while the Samaritan letters are on and enabled by
 the family switch — `qaHave()` is the one map behind the tab bar and `openQA`'s fallback (two hand-kept
