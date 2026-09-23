@@ -137,7 +137,9 @@ Tab/Shift+Tab wrap inside, ↓/↑ move between controls (not inside text fields
 focus to the button, an outside click closes without moving focus. One injected `<style id="ivacct-style">`,
 classes `ivacct-*`, logical properties, palette vars with fallbacks, `body.dark` / `html.dark-early`
 aware, transitions neutralized under `prefers-reduced-motion`. Sized to match the language switcher
-(30 px min-height, `align-self: stretch`). Labels are `shared.account.*` keys and re-render on
+(30 px min-height, `align-self: stretch`). The email and code fields take the label's compact size on a
+desktop and 16 px under `(pointer:coarse)`: iOS Safari zooms the page into a focused text field under
+16 px and leaves it zoomed. Labels are `shared.account.*` keys and re-render on
 `I18n.ready` / `I18n.onChange`.
 
 ## Storage keys the account layer touches (all exempt from AllTools export/import)
