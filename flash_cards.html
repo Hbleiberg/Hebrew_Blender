@@ -2868,6 +2868,7 @@ let isFlipped = false;
 let savedCards = [];
 let mistakeIndices = [];
 let lastDrillResult = null;  // snapshot of the just-finished drill, for "Save Results"
+let lastDrillSavedTo = null; // the profile that drill was saved to (reset when a drill starts)
 let showSkippedAgain = true; // re-queue each skipped card once so the whole set gets seen
 let requeued = [];           // parallel to scores: true = slot was skipped & re-queued (excluded from results)
 let hasFlipped = [];         // parallel to scores: true once the user has flipped this card at least once
@@ -5284,6 +5285,7 @@ function loadPbStreak() {
 function resetSessionStats() {
   streakCur = 0; streakBest = 0; sessCorrect = 0; sessAttempted = 0;
   countedCards.clear();
+  lastDrillSavedTo = null;   // every drill start comes through here; a new drill has not been saved
   updateStatsBar();
 }
 function recordMark(correct) {
@@ -5568,6 +5570,7 @@ function saveResultToProfile(name, result) {
   renderProfiles();
   const btn = document.getElementById('saveResultsBtn');
   if (btn) { (btn.querySelector('.hi-lbl') || btn).textContent = I18n.t('flashcards.results.save_button_done', { name: name }); btn.disabled = true; }
+  lastDrillSavedTo = name;
 }
 
 async function saveCurrentResult() {
@@ -8128,7 +8131,13 @@ function showResults() {
   // Snapshot the finished drill so "Save Results" can store it to a profile
   lastDrillResult = buildResultObject();
   const saveBtn = document.getElementById('saveResultsBtn');
-  if (saveBtn) { saveBtn.disabled = !lastDrillResult; (saveBtn.querySelector('.hi-lbl') || saveBtn).textContent = I18n.t('flashcards.results.save_button'); }
+  // A language switch re-runs this for a drill that may already be saved: keep it saved, or one more
+  // click banks the same drill twice. (The Learning Path's auto-save re-asserts its own the same way.)
+  if (saveBtn) {
+    saveBtn.disabled = !lastDrillResult || lastDrillSavedTo !== null;
+    (saveBtn.querySelector('.hi-lbl') || saveBtn).textContent = lastDrillSavedTo !== null
+      ? I18n.t('flashcards.results.save_button_done', { name: lastDrillSavedTo }) : I18n.t('flashcards.results.save_button');
+  }
 
   // End-of-session summary (uses the live session stats before they reset on the next start)
   const streakEl = document.getElementById('resultsStreak');
