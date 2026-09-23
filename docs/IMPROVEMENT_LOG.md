@@ -8,7 +8,17 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S411 Pass I — F/O's, a census, not I's to fix**) | 8 pages | **~38 chrome controls still lead their label with a glyph**, against CLAUDE.md's "a control string never carries a glyph": resources' 11 category chips, FM's node-editor modes + back arrows (10), flash cards 7, dashboard 4 (`📍` ×2, `↔`, `✨`), torah's fullscreen `⚙️`, generator `🃏`, trope `🎯`. Wholesale conversion is …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P3 (**NEW S412 Pass H — `textContent-rewrite-erases-a-control-icon`**) | flash_cards.html | **Copy Code / Copy Link lose their icon at the first copy and stay English after a switch to Hebrew** (the dictionary's twin: `53d3579`, the recipe). | found S412
+
+- [ ] P3 (**NEW S412 Pass H — `translated-key-exists-page-hardcodes-english`**) | flash_cards.html | **The weakness viewer and the printed report name letters and vowels in English in the Hebrew UI**: `weakRows()` skips the page's own `letterGlyphName` / `vowelGlyphName`. | found S412
+
+- [ ] P3 (**NEW S412 Pass H**) | flash_cards.html | **"Save This Card Set as a Preset" after a Mistakes or Weak-cards drill saves the whole setup**, not those cards; a ladder level already hides it. | found S412
+
+- [ ] P4 (**NEW S412 Pass H — five small ones**) | flash_cards.html | **(1)** a tied personal best reads as new (`>=` against a `pbStreak` raised live); **(2)** a timed drill paints the previous value for 1 s; **(3)** the "New" profile button's second `class` is ignored (no `.hi-btn`); **(4)** a load in 1-letter mode narrows "Vowel on letter" `[2]` → `[1]`; **(5)** gate 2: the printed card sheet's header is the button's label, "Print card sheet". | found S412
+
+- [ ] P4 (**NEW S412 Pass H**) | data/hebrew_emojis.json | **🥝 קִיוִוי reads "kivivy"** (+ "di.en.eyy.", "beruneyy"); the fix bumps the corpus `?v=`. | found S412
+
+- [ ] P4 (**NEW S411 Pass I — F/O's, a census, not I's to fix**) | 8 pages | **~37 chrome controls still lead their label with a glyph**, against CLAUDE.md's "a control string never carries a glyph": resources' 11 category chips, FM's node-editor modes + back arrows (10), flash cards 7, dashboard 4 (`📍` ×2, `↔`, `✨`), generator `🃏`, trope `🎯`. …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S411 Pass I — K's**) | Hebrew_Font_Maker.html | **QA Check's outline warning names a glyph by its JS-built English `name` in the Hebrew UI** ("A (uppercase)"; the English, Cyrillic, Phoenician and Aramaic tables build `name` with no key, e.g. "Д (Cyrillic de, uppercase)"). | found S411
 
@@ -136,6 +146,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
 
+- [ ] S–M | flash_cards.html (reads the dashboard's class lists) | **Make student profiles from a class list.** A class already in the dashboard (`hebrewDashboard_settings.rosters`) is re-typed one `prompt()` at a time; a "From a class list…" choice is ~50 lines + 3 keys, a handshake pair. | found: S412 Pass H
+
 - [ ] S | flash_cards.html | **"Print the deck we just drilled" on the results screen.** `wireResultsScreen()` binds Save / Redo / Mistakes / Back only; the only caller of `printCardSheet()` is `#sheetPrintBtn` inside `#sheetMenu`, opened from the setup screen's sticky CTA — and `sheetPracticed` + `savedCards` already exist for exactly this moment (`openSheetMenu` unhides `#sheetPracticedRow` …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S | flash_cards.html | **Speech speed reachable mid-drill.** `speakWord()` reads `#ttsRateSlider` live, but the slider sits in `#panelAdvanced` on the setup screen, so a slower 🔊 Hear costs End Practice Early → Advanced → drag → restart. A −/+ pair beside `#fcSpeakBtn` writing the same slider is the torah `#ttLoopPauseBar` mirror shape; ~35 lines, 2 CSV keys, no storage. | found: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -165,6 +177,18 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 _(none)_
 
 ## Done
+
+- [x] 2026-09-23 | (S412 close-out) | branch/deploy note | **S412 = pass H + 4 fixes on `claude/improve-loop-k01p7y` / draft PR #266.** DRIFT: none. `sw.js` v831 → v832. Scripts: i18n, inline-js, 7 smokes `--sdk` 408/408, sitemap, llms, compact, check-ledger. No gates.
+
+- [x] 2026-09-23 | `d35be74` | torah_trainer.html | (S412) **The fullscreen bar's Settings button draws `hi-gear`, not ⚙️.** | verified: 8 cells vs unfixed: "⚙️" → the Dark button's 16×16 white line style; size, name, drawer unchanged
+
+- [x] 2026-09-23 | `53d3579` | hebrew_dictionary.html | (S412) **Copy link keeps its icon and language after a copy.** | verified: real clicks, 4 cells vs unfixed: icon lost, label frozen → kept over 2 copies; a switch translates
+
+- [x] 2026-09-23 | `abb0a1e` | flash_cards.html | (S412 Pass H) **Simple Stressed survives a reload and a share code.** | verified: each option + reload vs unfixed, EN + HE: 5/6 → 6/6; share code Default → Simple Stressed; garbage → Default
+
+- [x] 2026-09-23 | `51e8f3c` | flash_cards.html | (S412 Pass H) **Numbers / Colors / Emoji / Words mode survives a reload.** | verified: each + reload vs unfixed, EN + HE: 4/4 lost → kept, blob byte-identical, the right cards dealt; ?wl=, preset, ladder too
+
+- [x] 2026-09-23 | (S412 Pass H iter 1) | flash_cards.html | **Flash cards' first H since S264**: 3 lessons by real clicks, EN + HE (a blend review, an ulpan's vocabulary, the Learning Path and weak cards). FOUND 10 + 1 seed. Receipts + traps 108–112 in loop-findings.
 
 - [x] 2026-09-23 | (S411 close-out) | branch/deploy note | **S411 = pass I + 4 fixes on `claude/improve-loop-k01p7y` / draft PR #266 (open, clean, base `d57da36`).** DRIFT: none (keep-alive #11 green, `delete-account` v3 JWT on, 3 migrations recorded). `sw.js` v830 → v831; FM not bumped (bug fixes). Scripts: i18n + build-locales, inline-js, 7 smokes `--sdk`, sitemap, llms, compact, check-ledger. …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -214,21 +238,11 @@ _(none)_
 
 - [x] 2026-09-23 | (S408 Pass M iter 1) | account.html | **18th-ever M and the page's FIRST (it arrived with accounts phase 6); M was the stalest runnable pass (O still blocked: no detector permission rule in `.claude/`) and the pointer named the surface.** 32 cells (4 views × EN/HE × light/dark × 1280/800) behind a fake cloud, **in the REAL web fonts** — Google Fonts stubbed from npm …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-23 | (S407 close-out) | branch/deploy note | **S407 = pass P + 4 fixes (full budget), CONTINUING `claude/eager-bardeen-jdve4x` / draft PR #265 (read through the API: open, unmerged, `mergeable_state` clean, base `041ddfa`, head `374346e`) — 4 fix commits + this close-out on top of the branch's 20. Then landed on main by in-session authorization (`041ddfa..62d8b5c`; PR #265 …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-23 | `9f27dc4` | account.html | (S407) **Download everything no longer freezes a phone** — the zip's CRC-32 table-driven (the same function, one lookup per byte), and one frame before the build so "Preparing the zip…" paints (S406's D P3). | verified vs the unfixed tree: 42 inputs equal to the old loop and `zlib.crc32`; iPhone 13 at 4×, 8 MB: the zip step 733–1313 → 122–143 ms, the …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-23 | `9c97e40` | Hebrew_Font_Maker.html | (S407) **Every dialog's Cancel and outline buttons are readable** — `.modal .tbtn.ghost` takes the text and border colours, the repair the tour card and the wizard already carried (S405's C P3, widened from the Help window to all 13 overlays). | verified: 14 buttons 1.50 → 14.81:1 light, 11.00 → 11.98 dark; the toolbar's on navy unchanged; …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-23 | `dcc279e` | index.html | (S407 Pass P) **Erase All Settings removes the teacher's fonts before it reloads** — the IndexedDB deletions awaited (signed in, the erase reloads right after its alert). | verified vs the unfixed tree: instant reload, fonts left 6/8 → 0/8; signed out 0/4 in both; the same keys survive and the same dialogs in 8 configurations; smoke-tools on the hub …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-23 | `e5c4784` | js/ivrit-account.js | (S407 Pass P) **The sign-in menu's "Sending…" lock is a real lock** — a module flag every handler checks, re-applied by every rebuild, cleared by every settle (a double-click sent a second code, refused with 429, and the menu said "Too many attempts" over the code it had sent). | verified vs the unfixed tree: 5 double-submit shapes 2 → 1 …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-23 | (S407 Pass P iter 1) | the accounts layer + the hub's cloud panels | **3rd P, first since S390 (17 sessions); the stalest runnable pass (O blocked here), and P's first named surface after two whole-layer runs.** 8 arms, every zero behind a control that fired; the S406 promise-callback sweep run as arm 2. **FOUND:** the sign-in lock never held (P3, `e5c4784`; NEW pattern …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-23 | **S412** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: flash ×2 (at cap), dictionary, torah | patterns fixed: settings-lost-across-a-load ×2 (NEW), textContent-rewrite-erases-a-control-icon ×1 | pass run: H | SW: v831→v832
 
 - 2026-09-23 | **S411** | iters: 1 pass (**I**) + 4 fixes = **5** | tools: FM ×2 (at cap), dashboard, account | patterns fixed: error-status-clobbered-by-a-later-routine-write ×1, mobile-input-hints ×1 (un-retired) | pass run: I | SW: v830→v831
 
@@ -268,13 +282,13 @@ _(none)_
 
 - 2026-09-16 | **S392** | iters: 1 pass (**G**) + 2 fixes = **3** (4th/5th unspent: all 4 of G's defects are in one tool and the governor caps it at 2; the torah hover carrier stayed a VOID rather than ship half-verified) | tools: generator (`bf5126d`, `a05e1cf`) | patterns fixed: — …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-09-16 | **S391** | iters: 1 pass (**M**) + 4 fixes = **5** (full budget) | tools: index (`fa001b0`), scripts+harness (`bfcdc15`), generator (`95fe5ec`), Font Maker (`d5ee54c`) | patterns fixed: hover-feedback-survives-the-disabled-state ×2 (3 controls, closing all 3 open unconfirmed …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S411 (2026-09-23):** I S411 on every page. index (S410; **N S249 — N-next**, D S352); generator (S405; G S392, D S338); flash (S406; D S393, **G S279 — G-next**, H S264); dictionary (S409; **C S285 — C-next**, D S378); dashboard (**S411**; G S364, H S395, D S325); torah (S409; **O-next**, G S324, **D S307 — D-next**); trope (S409; G S351, N S389, D S365); FM (**S411**; D S410, G S337, B S398); account (**S411**; G S409, M S408, P S407; no D — its heavy path measured under P S407); no M on record: generator, flash, torah, terms.
+- **S412 (2026-09-23):** H S412 on flash. index (S410; **N S249 — N-next**, D S352); generator (S405; G S392, D S338); flash (**S412**; H S412, D S393, **G S279 — G-next**); dictionary (**S412**; **C S285 — C-next**, D S378); dashboard (S411; G S364, H S395, D S325); torah (**S412**; **O-next**, G S324, **D S307 — D-next**); trope (S409; G S351, N S389, D S365); FM (S411; D S410, G S337, B S398); account (S411; G S409, M S408, P S407; **never H — H-next**); no M on record: generator, flash, torah, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`settings-lost-across-a-load`** (**NEW S412 Pass H — flash ×2 FIXED `51e8f3c`, `abb0a1e`; 1 P4 open**): ACTIVE, streak 0. A stored setting comes back changed after a reload because the load path rewrites it. Detection (`h412/v1.mjs`): set each mode / enum control by a real click, reload, require the stored blob byte-identical.
 
 - **`live-region-display-none-while-empty`** (S408; **all 4 FIXED `efbc98a` S409**): ACTIVE, streak 0. Detection: `:empty{display:none}` on a `role=status`/`aria-live` line, then CDP AX on it empty (`notRendered` = hit); flex-wrap rows need `position:absolute`, not height.
 
@@ -284,9 +298,9 @@ _(none)_
 
 - **`text-field-under-16px-zooms-on-ios-focus`** (**NEW S406 Pass N — S408: the sign-in menu's 2 FIXED `0cd524c` (16px under `(pointer:coarse)`, the desktop menu unchanged); the 142 page fields open, the suite rule is gate 4**): ACTIVE, streak 0. Detection: computed `font-size` …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`textContent-rewrite-erases-a-control-icon`** (**NEW, registered 2026-09-23 (S405 Pass K) — 5 buttons / 7 writers on 2 pages, all fixed `1e8991f`**): ACTIVE, clean streak 0. The converse of `icon-markup-into-a-textContent-writer`: the icon sweep drew a control's SVG in its …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`textContent-rewrite-erases-a-control-icon`** (**NEW, registered 2026-09-23 (S405 Pass K) — 5 buttons / 7 writers on 2 pages, all fixed `1e8991f`; S412 +3: a "Copied!" flash writing another key, which arm (b) cannot match — the dictionary's FIXED `53d3579`, flash's Copy Code …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`translated-key-exists-page-hardcodes-english`** (**NEW, registered 2026-09-23 (S405 Pass K) — 2 iterations: flash `0a420fc` (7 keys), generator `b07b9fc` (1 key + 2 new siblings)**): ACTIVE, clean streak 0. The CSV holds the translation and the page never asks for it — …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`translated-key-exists-page-hardcodes-english`** (**NEW, registered 2026-09-23 (S405 Pass K) — 2 iterations: flash `0a420fc` (7 keys), generator `b07b9fc` (1 key + 2 new siblings); S412 +1 OPEN: flash `weakRows()` (the weakness viewer + the printed report) beside its own …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`per-page-code-inside-a-shared-block`** (**NEW, registered 2026-09-22 (S403 Pass E) — 2 carriers, both fixed `6e28af3`**): ACTIVE, clean streak 0. Page code pasted INSIDE a `═══` block instead of below its end marker, so the block is no longer byte-identical and the next …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -384,7 +398,7 @@ _(none)_
 
 - **translated-sibling stray** **S336: +1 carrier FIXED `c1e4427` — the Font Maker's nine raw `.name` display sites (header, drop zone, mark-editor modal, 4 toasts) now go through `gName()`, the sibling the tiles already used.**  (a display site rendering a raw English …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **mobile-input-hints** (a text field for Hebrew, names, numbers or codes shipping without `inputmode`/`autocapitalize`/`autocorrect`/`spellcheck` fitting its content) | **ACTIVE — UN-RETIRED S411** (retired S343; the S267 row is in the archive): account.html's `#nameInput` arrived with accounts phase 6, after the retirement; found S406 N arm 5, FIXED `4387c94`. Clean streak 0. Detection: every `<input`/`<textarea` added in the delta, read against the file's own split; Pass N arm 5 keeps the phone-keyboard check.
+- **mobile-input-hints** (a text field for Hebrew, names, numbers or codes shipping without `inputmode`/`autocapitalize`/`autocorrect`/`spellcheck` fitting its content) | **ACTIVE — UN-RETIRED S411** (retired S343; the S267 row is in the archive): account.html's `#nameInput` …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **i18n cross-column parity (placeholders, plurals, inline markup)**: **re-swept 2026-09-03 (S320 Pass K, detector 1 only): `{placeholder}` sets en vs he over 5,128 keys, raw 30 → hits: 0 — all thirty are the S261-refuted `.one` plural shape (Hebrew spells the singular number; …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -546,18 +560,18 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - L SEO & discoverability audit: 2026-09-22 (**S404 — 20th L, first since S387 (17 sessions); the stalest runnable pass (O blocked here). Delta `b5e1416..HEAD`: 150 commits, 15/17 pages moved, 1/17 crawler surfaces (trope's drill-length JSON-LD, accurate). 18 arm classes, every zero controlled: 0 hits. FOUND: 5 stale fallbacks (`4b7f9cc`, via the FAQ twin arm); torah/trope `og:image:alt` …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- H teacher walkthrough / paper-cuts (one tool): 2026-09-17 (**S395 — `classroom_dashboard.html`, its 3rd dedicated H (S107 → S278 → S395), across 92 commits and +1125/−171 to the file since S278 — the accounts layer and its cloud panel, the presenter blackout, the fullscreen quick strip, panel-width lock, move-panels, the video panel and the class manager, none of which any H had seen. H was the …[full text: IMPROVEMENT_ARCHIVE.md]
+- H teacher walkthrough / paper-cuts (one tool): 2026-09-23 (**S412 — `flash_cards.html`, first H since S264. 3 lessons by real clicks, EN + HE. FOUND 10 + 1 seed: Other mode lost on load (P2, `51e8f3c`), Simple Stressed lost (P3, `abb0a1e`), the copy flash erasing icons (P3; dictionary `53d3579`). H-next: `account.html` (never).**)
 
 - E freshness/site-health: 2026-09-22 (**S403 — 32nd E, first since S386 (17 sessions); the stalest RUNNABLE pass (O blocked here a 2nd time). Delta `bc62e6f..HEAD`: 150 commits, 40 files, +15,735 — E's first sight of the icon sweep and FM 5.47–5.56. 21 arms, 16 clean with controls; FIXED: My Fonts buttons printing SVG source `7552ba0` (P2, found grounding), 2 shared blocks not byte-identical …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - F cross-tool consistency: 2026-09-17 (**S397 — 31st run, first since S383 (14 sessions); F was the stalest unattended pass (O attended-only since S346) and the S397 pointer named it AND the affordance: THE KEYBOARD BYPASS.** Census by a real Tab walk over all 14 root pages, 0 pageerrors, 120 route aborts, torah/trope as the control: **2 of 14 carried a header skip link**; chrome stops before …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S412):** **BRANCH/PR: S408–S411 on `claude/improve-loop-k01p7y` → draft PR #266 (base `d57da36`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** **DRIFT vs `d57da36`.** S411 closed at `sw.js` **v831**, FM **5.56**, SDK **2.116.0**; backend clean (migrations 0001–0003, `delete-account` v3 JWT on, keep-alive #11 green). **Never trust these numbers unread.**
+**Next session (S413):** **BRANCH/PR: S408–S412 on `claude/improve-loop-k01p7y` → draft PR #266 (base `d57da36`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** **DRIFT vs `d57da36`.** S412 closed at `sw.js` **v832**, FM **5.56**, SDK **2.116.0**; backend clean (migrations 0001–0003, `delete-account` v3 JWT on, keep-alive #11 green).
 
-**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), H (S395), C (S396), F (S397), B (S398), A (S399), E (S403), L (S404), K (S405), N (S406), P (S407), M (S408), G (S409), D (S410), I (S411).** Take **H** (one tool: re-derive it from the archive; the coverage row has flash at H S264). **Next C:** dictionary (S285). **Next A:** S408's two patterns + `aria-disabled-lock-no-handler-checks` + the un-retired `mobile-input-hints`. **Next F:** the S411 glyph-label census (conversion is gate 3). **Next G:** flash (S279). **Next D:** torah (S307).
+**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), C (S396), F (S397), B (S398), A (S399), E (S403), L (S404), K (S405), N (S406), P (S407), M (S408), G (S409), D (S410), I (S411), H (S412).** Take **C** (re-derive the tool; the coverage row has the dictionary at C S285). **Next A:** NEW `settings-lost-across-a-load` on the other settings pages + the ACTIVE rows. **Next G:** flash. **Next D:** torah. **Next H:** account.
 
-**⚑ READY TO SHIP, ungated:** the trope Drill tab icon; torah's fullscreen `⚙️` (its SVG gear exists); FM `whoHasCp` + `special_intro`; the Spacing tab's per-row `project.letters.find` (profile the 238 ms first: every show re-parses all 2,000 rows' markup).
+**⚑ READY TO SHIP, ungated:** the S412 flash items at the top of Candidates (flash was at its cap); the trope Drill tab icon; FM `whoHasCp` + `special_intro`; the Spacing tab (profile first).
 
-**⚑ HARNESS: traps 1–107 in loop-findings.** `i411/` = virgin contexts + `gates.mjs --plant`, the delta arms, `recipe.mjs <page>` (8 cells). `m408/lib.mjs` = the fake cloud (`i411/v2.mjs` FM cloud open, `v4.mjs` the account name). `d410/lib.mjs` = the D harness + the real font engine. `compact-ledger --apply` runs ONCE; the outgoing handoff moves by hand; a Done line files under its FIRST `S###`.
+**⚑ HARNESS: traps 1–112 in loop-findings.** `h412/` = the flash walkthroughs (`walkA/B/C.mjs <lang> <scheme> <w>`) and `v1.mjs` (the reload diff); `i411/recipe.mjs <page>`; `m408/lib.mjs` = the fake cloud; `d410/lib.mjs` = the font engine. `compact-ledger --apply` runs ONCE; the outgoing handoff moves by hand.
 
-**⚑ GATE BENCH:** gate 4 — the suite 16px-on-touch rule (142 fields), the flash sticky bar; gate 2 — the generator's Header Labels; gate 3 — FM stage annotations, `.dash-edit-pencil`, the hub's (and account's) type band, suite-wide `color-scheme` (F's), the glyph-led control labels (S411). **Seed bench: 12.**
+**⚑ GATE BENCH:** gate 2 — the printed card sheet's header (S412), the generator's Header Labels; gate 3 — FM stage annotations, `.dash-edit-pencil`, the hub's (and account's) type band, suite-wide `color-scheme`, the glyph-led control labels; gate 4 — the 16px-on-touch rule (142 fields), the flash sticky bar. **Seed bench: 13.**
