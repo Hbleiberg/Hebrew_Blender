@@ -265,7 +265,7 @@ try {
     check('1: worksheet presets counted', /Hebrew Worksheet Generator[\s\S]*Presets: 2/.test(list), list);
     check('1: student profiles counted', /Student profiles: 2/.test(list));
     check('1: word list counted but not named', /Word lists: 1/.test(list) && !/Colors/.test(list) && !/abc/.test(list));
-    check('1: class list counted but not named; the unknown kind is mentioned, not listed', /Class lists: 1/.test(list) && !/Kitah Alef/.test(list) && /1 items saved by a newer version/.test(list) && !/thing/.test(list), list);
+    check('1: class list counted but not named; the unknown kind is mentioned, not listed', /Class lists: 1/.test(list) && !/Kitah Alef/.test(list) && /1 item saved by a newer version/.test(list) && !/thing/.test(list), list);
     check('1: settings and mastery rows listed', /Settings: 1/.test(list) && /Mastery progress: 1/.test(list));
     check('1: the suite-wide preferences row under IvritSuite', /IvritSuite[\s\S]*IvritSuite preferences: 1/.test(list), list);
     check("1: the teacher's own font is counted and its name can be expanded", /My Fonts: 1/.test(list), list);

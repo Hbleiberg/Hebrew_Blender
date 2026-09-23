@@ -506,7 +506,7 @@ function renderHolds() {
       }
       ul.appendChild(row);
     });
-    if (tl.unknown) ul.appendChild(el('li', '', t('account.holds.unknown', { n: tl.unknown })));   // rows of a kind this build does not know: in the download, not listed
+    if (tl.unknown) ul.appendChild(el('li', '', plural('account.holds.unknown', tl.unknown)));   // rows of a kind this build does not know: in the download, not listed
     li.appendChild(ul); host.appendChild(li);
   });
   const pj = projects || [];
@@ -596,18 +596,18 @@ async function downloadAll() {
     if (!bundle.count && !rows.length) { say('dlStatus', () => t('account.download.nothing')); return; }
     const ivritName = 'IvritSuite-account-' + date + '.ivrit';
     const files = [{ name: ivritName, bytes: enc.encode(JSON.stringify(bundle.file, null, 2)) }];
-    let missing = 0; const used = {};
+    let missingPhotos = 0, missingFonts = 0; const used = {};   // counted apart: a lost exported font is not a photo
     for (let i = 0; i < rows.length; i++) {
       const r = rows[i], pos = { i: i + 1, n: rows.length, name: r.name };
       say('dlStatus', () => t('account.download.prep_project', pos));
       const f = await IvritProjects.projectFile(r.id, { onProgress: (j, m) => say('dlStatus', () => t('account.download.prep_photo', { i: pos.i, n: pos.n, j: j, m: m })) });
-      missing += f.failed;
+      missingPhotos += f.failed;
       let stem = safeStem(r.name);
       if (used[stem]) { used[stem]++; stem += '-' + used[stem]; } else used[stem] = 1;
       files.push({ name: 'font-projects/' + stem + '/' + f.name, bytes: new Uint8Array(await f.blob.arrayBuffer()) });
       if (r.export_path) {
         try { const ex = await IvritProjects.downloadExport(r.id); files.push({ name: 'font-projects/' + stem + '/' + safeStem(ex.name, true), bytes: new Uint8Array(await ex.blob.arrayBuffer()) }); }
-        catch (e) { missing++; }
+        catch (e) { missingFonts++; }
       }
     }
     say('dlStatus', () => t('account.download.prep_zip'));
@@ -617,7 +617,9 @@ async function downloadAll() {
     if (!user || user.id !== me) return;
     saveBlob(new Blob([zip], { type: 'application/zip' }), 'IvritSuite-account-' + date + '.zip');
     const n = bundle.count, p = rows.length, size = fmtSize(zip.length);
-    say('dlStatus', () => t('account.download.done', { items: plural('account.count.items', n), projects: plural('account.count.projects', p), size: size }) + (missing ? ' ' + t('account.download.photos_missing', { n: missing }) : ''));
+    say('dlStatus', () => t('account.download.done', { items: plural('account.count.items', n), projects: plural('account.count.projects', p), size: size })
+      + (missingPhotos ? ' ' + plural('account.download.photos_missing', missingPhotos) : '')
+      + (missingFonts ? ' ' + plural('account.download.fonts_missing', missingFonts) : ''));
   } catch (err) {
     say('dlStatus', () => IvritSaves.errorText(err), true);
   } finally {
