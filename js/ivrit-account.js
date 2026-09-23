@@ -709,9 +709,14 @@
       signIn('email', { email: email }).then(function () {
         setBusy(false);
         menuStage = 'code';
-        codeWrap.hidden = false;
+        // The first sign-in on a page creates the SDK client, whose INITIAL_SESSION event re-renders the open
+        // menu while the code is on its way — so codeWrap and codeInput can be detached copies from the earlier
+        // render, and showing them would leave "Type it here" above no field. Show and focus the live ones.
+        var liveCode = chip && chip.menu.querySelector('.ivacct-code');
+        if (liveCode) liveCode.hidden = false;
         setNote(t('shared.account.code_sent', 'We emailed a 6-digit code to {email}. Type it here.', { email: email }), false);
-        codeInput.focus();
+        var liveInput = liveCode && liveCode.querySelector('input');
+        if (liveInput) liveInput.focus();
       }).catch(function (err) { setBusy(false); setNote(errorText(err), true); });
     });
     verify.addEventListener('click', function () {
