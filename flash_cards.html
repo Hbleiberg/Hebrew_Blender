@@ -8608,7 +8608,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initCountGrid();
   initColorTiles();
   syncOtherSubUI();
-  setLetterMode(mode);
+  // loadSettings() already reflected the stored mode, Other included. setLetterMode() is a letter
+  // pill's click, which leaves Other mode, and its save wrote that back: a teacher's Numbers,
+  // Colors, Emoji or Words setup came back as letter blends on every visit.
+  if (!otherModeActive) setLetterMode(mode);
   setCardCount(cardCount);
   renderPresets();
   renderProfiles();
