@@ -542,10 +542,14 @@ function _crc32(bytes) {
 }
 // One frame for the status line before a long synchronous step (a hidden tab paints nothing: the timer bounds the wait).
 function nextPaint() { return new Promise(r => { requestAnimationFrame(() => setTimeout(r, 0)); setTimeout(r, 100); }); }
-function makeZip(files) {   // [{name, bytes: Uint8Array}] → Uint8Array; store (no compression): the payload is already gzip/JSON
+function makeZip(files, when) {   // [{name, bytes: Uint8Array}] → Uint8Array; store (no compression): the payload is already gzip/JSON
   const u16 = n => [n & 0xff, (n >>> 8) & 0xff];
   const u32 = n => [n & 0xff, (n >>> 8) & 0xff, (n >>> 16) & 0xff, (n >>> 24) & 0xff];
-  const dosTime = u16(0), dosDate = u16(0x21);   // a fixed, valid stamp (1980-01-01): a date field of 0 is malformed
+  // Every entry carries the download's local time (a DOS stamp is local, in 2-second steps, years 1980–2107):
+  // a fixed 1980-01-01 stamp dated every unzipped file 1 January 1980.
+  const d = when || new Date(), y = Math.min(2107, Math.max(1980, d.getFullYear()));
+  const dosTime = u16((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1));
+  const dosDate = u16(((y - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate());
   const parts = [], central = [];
   let offset = 0;
   for (const f of files) {
@@ -581,7 +585,10 @@ function saveBlob(blob, filename) {
 async function downloadAll() {
   if (busyDl || !user || isDisabled($('dlBtn'))) return;
   busyDl = true; setBusy('dlBtn', true);
-  const me = user.id, email = user.email || '', date = new Date().toISOString().slice(0, 10);
+  // The teacher's own date, as every other export in the suite: toISOString() is UTC, so an evening download in
+  // the Americas was named for the next day and an early-morning one in Israel for the day before.
+  const me = user.id, email = user.email || '', now = new Date();
+  const date = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
   try {
     say('dlStatus', () => t('account.download.prep_items'));
     const bundle = await IvritSaves.bundleAll();
@@ -606,7 +613,7 @@ async function downloadAll() {
     say('dlStatus', () => t('account.download.prep_zip'));
     files.unshift({ name: 'README.txt', bytes: enc.encode(t('account.zip.readme', { date: date, email: email, ivrit: ivritName })) });
     await nextPaint();   // "Preparing the zip…" shows before the build, not after it
-    const zip = makeZip(files);
+    const zip = makeZip(files, now);
     if (!user || user.id !== me) return;
     saveBlob(new Blob([zip], { type: 'application/zip' }), 'IvritSuite-account-' + date + '.zip');
     const n = bundle.count, p = rows.length, size = fmtSize(zip.length);
