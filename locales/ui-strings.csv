@@ -4975,6 +4975,8 @@ worksheet.empty.number_range_small_title,Number range too small for bingo.,טו�
 worksheet.empty.number_ready,Click Generate to create a Number Practice sheet.,לחצו על צור כדי ליצור דף תרגול מספרים.,worksheet empty state,print-adjacent empty state
 worksheet.empty.pick_two_letters_vowel,Pick at least two letters and a vowel so there are blends to match.,בחרו לפחות שתי אותיות ותנועה כדי שיהיו צירופים להתאמה.,worksheet empty state,print-adjacent empty state
 worksheet.selfcheck.subtitle_answer,Tap each card to reveal the answer.,הקישו על כל כרטיס כדי לחשוף את התשובה.,self-check subtitle fallback,
+worksheet.selfcheck.subtitle_gematria,"Write the Gematria value of each word, then tap to check.","כתבו את ערך הגימטריה של כל מילה, ואז הקישו כדי לבדוק.",Gematria self-check subtitle fallback,REVIEW: HE draft
+worksheet.selfcheck.subtitle_gematria_inverse,"Write the Hebrew word that matches each Gematria value, then tap to check.","כתבו את המילה העברית שמתאימה לכל ערך גימטריה, ואז הקישו כדי לבדוק.",Gematria self-check subtitle fallback (inverse: the value is shown and the word is the answer),REVIEW: HE draft
 worksheet.selfcheck.subtitle_ntl,Tap each card to reveal the letter’s name.,הקישו על כל כרטיס כדי לחשוף את שם האות.,self-check subtitle fallback,
 worksheet.selfcheck.subtitle_ntl_inverse,Tap each card to reveal the Hebrew letter.,הקישו על כל כרטיס כדי לחשוף את האות העברית.,self-check subtitle fallback,
 worksheet.selfcheck.subtitle_pronunciation,Tap each card to reveal the pronunciation.,הקישו על כל כרטיס כדי לחשוף את ההגייה.,self-check subtitle fallback,

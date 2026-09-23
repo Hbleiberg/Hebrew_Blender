@@ -5666,6 +5666,8 @@
   "worksheet.selfcheck.score_line": "{correct} correct · {incorrect} incorrect · {total} total",
   "worksheet.selfcheck.session_complete": "Session Complete!",
   "worksheet.selfcheck.subtitle_answer": "Tap each card to reveal the answer.",
+  "worksheet.selfcheck.subtitle_gematria": "Write the Gematria value of each word, then tap to check.",
+  "worksheet.selfcheck.subtitle_gematria_inverse": "Write the Hebrew word that matches each Gematria value, then tap to check.",
   "worksheet.selfcheck.subtitle_ntl": "Tap each card to reveal the letter’s name.",
   "worksheet.selfcheck.subtitle_ntl_inverse": "Tap each card to reveal the Hebrew letter.",
   "worksheet.selfcheck.subtitle_pronunciation": "Tap each card to reveal the pronunciation.",

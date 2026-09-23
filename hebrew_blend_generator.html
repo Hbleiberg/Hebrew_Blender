@@ -9891,9 +9891,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
 
     const scHeader = document.createElement('div');
     scHeader.className = 'ws-header';
-    const scSub = subtitle || (inverse
-      ? 'Write the Hebrew word that matches each Gematria value, then tap to check.'
-      : 'Write the Gematria value of each word, then tap to check.');
+    const scSub = subtitle || esc(I18n.t(inverse ? 'worksheet.selfcheck.subtitle_gematria_inverse' : 'worksheet.selfcheck.subtitle_gematria'));
     scHeader.innerHTML = `<div><div class="ws-title">${title}</div><div class="ws-subtitle">${scSub}</div></div>`;
     ws.appendChild(scHeader);
 
@@ -9903,7 +9901,7 @@ function renderGematriaSheet(ws, items, showTranslit = false, showTranslation = 
     scoreBar.innerHTML = `
       <span class="score-correct">✓ 0</span>
       <span class="score-incorrect">✗ 0</span>
-      <span class="score-remaining">${items.length} left</span>
+      <span class="score-remaining">${esc(I18n.t('worksheet.selfcheck.remaining', { count: items.length }))}</span>
       <button class="btn-xs" style="margin-left:auto;" onclick="resetGematriaCheck()">${ICON_RESET_SM}${esc(I18n.t('worksheet.selfcheck.reset'))}</button>`;
     ws.appendChild(scoreBar);
 
@@ -10671,7 +10669,7 @@ function renderSelfCheck(ws, cols, title, subtitle) {
   scoreBar.innerHTML = `
     <span class="score-correct">✓ 0</span>
     <span class="score-incorrect">✗ 0</span>
-    <span class="score-remaining">${blends.length} left</span>
+    <span class="score-remaining">${esc(I18n.t('worksheet.selfcheck.remaining', { count: blends.length }))}</span>
     <button class="btn-xs" style="margin-left:auto;" onclick="resetSelfCheck()">${ICON_RESET_SM}${esc(I18n.t('worksheet.selfcheck.reset'))}</button>`;
   ws.appendChild(scoreBar);
 

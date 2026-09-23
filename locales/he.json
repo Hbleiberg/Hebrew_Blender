@@ -5666,6 +5666,8 @@
   "worksheet.selfcheck.score_line": "{correct} נכון · {incorrect} שגוי · {total} סך הכול",
   "worksheet.selfcheck.session_complete": "המפגש הושלם!",
   "worksheet.selfcheck.subtitle_answer": "הקישו על כל כרטיס כדי לחשוף את התשובה.",
+  "worksheet.selfcheck.subtitle_gematria": "כתבו את ערך הגימטריה של כל מילה, ואז הקישו כדי לבדוק.",
+  "worksheet.selfcheck.subtitle_gematria_inverse": "כתבו את המילה העברית שמתאימה לכל ערך גימטריה, ואז הקישו כדי לבדוק.",
   "worksheet.selfcheck.subtitle_ntl": "הקישו על כל כרטיס כדי לחשוף את שם האות.",
   "worksheet.selfcheck.subtitle_ntl_inverse": "הקישו על כל כרטיס כדי לחשוף את האות העברית.",
   "worksheet.selfcheck.subtitle_pronunciation": "הקישו על כל כרטיס כדי לחשוף את ההגייה.",
