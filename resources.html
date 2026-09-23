@@ -484,8 +484,8 @@ body.dark #fontToast{background:#2a4070;}
 
   <div id="linksRegion">
   <div class="filter-bar">
-    <div class="filter-row">
-      <span class="filter-label" data-i18n="resources.filters.category_label">Category</span>
+    <div class="filter-row" role="group" aria-labelledby="resCatLbl">
+      <span class="filter-label" id="resCatLbl" data-i18n="resources.filters.category_label">Category</span>
       <button class="filter-btn active" data-filter="cat" data-value="all" data-i18n="resources.filters.cat_all">All</button>
       <button class="filter-btn" data-filter="cat" data-value="lesson-planning" data-i18n="resources.filters.cat_lesson">📘 Lesson Planning</button>
       <button class="filter-btn" data-filter="cat" data-value="printable" data-i18n="resources.filters.cat_printable">🖨️ Printables</button>
@@ -494,8 +494,8 @@ body.dark #fontToast{background:#2a4070;}
       <button class="filter-btn" data-filter="cat" data-value="culture" data-i18n="resources.filters.cat_culture">🎭 Culture</button>
       <button class="filter-btn" data-filter="cat" data-value="misc" data-i18n="resources.filters.cat_misc">🧩 Miscellaneous</button>
     </div>
-    <div class="filter-row">
-      <span class="filter-label" data-i18n="resources.filters.age_label">Age Group</span>
+    <div class="filter-row" role="group" aria-labelledby="resAgeLbl">
+      <span class="filter-label" id="resAgeLbl" data-i18n="resources.filters.age_label">Age Group</span>
       <button class="filter-btn active" data-filter="age" data-value="all" data-i18n="resources.filters.age_all">All Ages</button>
       <button class="filter-btn" data-filter="age" data-value="early" data-i18n="resources.filters.age_early">Early Learners (K–2)</button>
       <button class="filter-btn" data-filter="age" data-value="elementary" data-i18n="resources.filters.age_elementary">Elementary (3–5)</button>
@@ -515,23 +515,23 @@ body.dark #fontToast{background:#2a4070;}
 
   <div id="fontsRegion" style="display:none;">
   <div class="filter-bar">
-    <div class="filter-row">
-      <span class="filter-label" data-i18n="resources.filters.ftype_label">Type</span>
+    <div class="filter-row" role="group" aria-labelledby="fontTypeLbl">
+      <span class="filter-label" id="fontTypeLbl" data-i18n="resources.filters.ftype_label">Type</span>
       <button class="filter-btn active" data-filter="ftype" data-value="all" data-i18n="resources.filters.ftype_all">All fonts</button>
       <button class="filter-btn" data-filter="ftype" data-value="block" data-i18n="resources.filters.ftype_block">Block (Print)</button>
       <button class="filter-btn" data-filter="ftype" data-value="cursive" data-i18n="resources.filters.ftype_cursive">Cursive (כתב)</button>
       <button class="filter-btn" data-filter="ftype" data-value="torah" data-i18n="resources.filters.ftype_torah">Torah</button>
       <button class="filter-btn" data-filter="ftype" data-value="other" data-i18n="resources.filters.ftype_other">Other</button>
     </div>
-    <div class="filter-row">
-      <span class="filter-label" data-i18n="resources.filters.ffeat_label">Features</span>
+    <div class="filter-row" role="group" aria-labelledby="fontFeatLbl">
+      <span class="filter-label" id="fontFeatLbl" data-i18n="resources.filters.ffeat_label">Features</span>
       <button class="filter-btn active" data-filter="ffeat" data-value="all" data-i18n="resources.filters.ffeat_all">All</button>
       <button class="filter-btn" data-filter="ffeat" data-value="nikkud" data-i18n="resources.filters.ffeat_nikkud">Nikkud Supported</button>
       <button class="filter-btn" data-filter="ffeat" data-value="trop" data-i18n="resources.filters.ffeat_trop">Trop Supported</button>
       <button class="filter-btn" data-filter="ffeat" data-value="letters" data-i18n="resources.filters.ffeat_letters">Letters Only</button>
     </div>
-    <div class="filter-row">
-      <span class="filter-label" data-i18n="resources.filters.flic_label">License</span>
+    <div class="filter-row" role="group" aria-labelledby="fontLicLbl">
+      <span class="filter-label" id="fontLicLbl" data-i18n="resources.filters.flic_label">License</span>
       <button class="filter-btn active" data-filter="flic" data-value="all" data-i18n="resources.filters.flic_all">All Licenses</button>
       <button class="filter-btn" data-filter="flic" data-value="cc0" data-i18n="resources.filters.flic_cc0">CC0</button>
       <button class="filter-btn" data-filter="flic" data-value="ofl" data-i18n="resources.filters.flic_ofl">OFL</button>
@@ -1990,8 +1990,8 @@ function openSubmitFont(pf) {
           <input type="url" id="sgResUrl" name="Resource URL" placeholder="https://…" data-i18n-placeholder="resources.suggest.url_placeholder" required>
         </div>
         <div class="sg-field">
-          <label><span data-i18n="resources.suggest.category_label">Category</span> <span class="sg-hint" data-i18n="resources.suggest.pick_one_hint">— pick one</span></label>
-          <div class="sg-pillrow" id="sgCatPills">
+          <label id="sgCatLbl"><span data-i18n="resources.suggest.category_label">Category</span> <span class="sg-hint" data-i18n="resources.suggest.pick_one_hint">— pick one</span></label>
+          <div class="sg-pillrow" id="sgCatPills" role="group" aria-labelledby="sgCatLbl">
             <button type="button" class="sg-pill" data-val="Lesson Planning" data-i18n="resources.suggest.cat_lesson">📘 Lesson Planning</button>
             <button type="button" class="sg-pill" data-val="Printables" data-i18n="resources.suggest.cat_printable">🖨️ Printables</button>
             <button type="button" class="sg-pill" data-val="Tanakh" data-i18n="resources.suggest.cat_tanakh">📖 Tanakh</button>
@@ -2002,8 +2002,8 @@ function openSubmitFont(pf) {
           <input type="hidden" name="Category" id="sgCat">
         </div>
         <div class="sg-field">
-          <label><span data-i18n="resources.suggest.format_label">Format</span> <span class="sg-hint" data-i18n="resources.suggest.pick_one_hint">— pick one</span></label>
-          <div class="sg-pillrow" id="sgFormatPills">
+          <label id="sgFormatLbl"><span data-i18n="resources.suggest.format_label">Format</span> <span class="sg-hint" data-i18n="resources.suggest.pick_one_hint">— pick one</span></label>
+          <div class="sg-pillrow" id="sgFormatPills" role="group" aria-labelledby="sgFormatLbl">
             <button type="button" class="sg-pill" data-val="Worksheet / Printable" data-i18n="resources.suggest.format_worksheet">Worksheet / Printable</button>
             <button type="button" class="sg-pill" data-val="Website / App" data-i18n="resources.suggest.format_website">Website / App</button>
             <button type="button" class="sg-pill" data-val="Video" data-i18n="resources.suggest.format_video">Video</button>
@@ -2015,8 +2015,8 @@ function openSubmitFont(pf) {
           <input type="hidden" name="Format" id="sgFormat">
         </div>
         <div class="sg-field">
-          <label><span data-i18n="resources.suggest.age_label">Intended age group</span> <span class="sg-hint" data-i18n="resources.suggest.pick_any_hint">— pick any that apply</span></label>
-          <div class="sg-pillrow" id="sgAgePills">
+          <label id="sgAgeLbl"><span data-i18n="resources.suggest.age_label">Intended age group</span> <span class="sg-hint" data-i18n="resources.suggest.pick_any_hint">— pick any that apply</span></label>
+          <div class="sg-pillrow" id="sgAgePills" role="group" aria-labelledby="sgAgeLbl">
             <button type="button" class="sg-pill" data-val="Early Learners (K–2)" data-i18n="resources.suggest.age_early">Early Learners (K–2)</button>
             <button type="button" class="sg-pill" data-val="Elementary (3–5)" data-i18n="resources.suggest.age_elementary">Elementary (3–5)</button>
             <button type="button" class="sg-pill" data-val="Middle / High (6–12)" data-i18n="resources.suggest.age_middle">Middle / High (6–12)</button>
