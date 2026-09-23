@@ -158,7 +158,7 @@ _(none)_
 
 ## Done
 
-- [x] 2026-09-23 | (S407 close-out) | branch/deploy note | **S407 = pass P + 4 fixes (full budget), CONTINUING `claude/eager-bardeen-jdve4x` / draft PR #265 (read through the API: open, unmerged, `mergeable_state` clean, base `041ddfa`, head `374346e`) — 4 fix commits + this close-out on top of the branch's 20; a human merges and confirms the Pages run.** **DRIFT: NONE** — `origin/main` still …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-09-23 | (S407 close-out) | branch/deploy note | **S407 = pass P + 4 fixes (full budget), CONTINUING `claude/eager-bardeen-jdve4x` / draft PR #265 (read through the API: open, unmerged, `mergeable_state` clean, base `041ddfa`, head `374346e`) — 4 fix commits + this close-out on top of the branch's 20. Then landed on main by in-session authorization (`041ddfa..62d8b5c`; PR #265 auto-merged; the Pages run success, v827 live).** **DRIFT: NONE** — `origin/main` still …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-23 | `9f27dc4` | account.html | (S407) **Download everything no longer freezes a phone** — the zip's CRC-32 table-driven (the same function, one lookup per byte), and one frame before the build so "Preparing the zip…" paints (S406's D P3). | verified vs the unfixed tree: 42 inputs equal to the old loop and `zlib.crc32`; iPhone 13 at 4×, 8 MB: the zip step 733–1313 → 122–143 ms, the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -536,7 +536,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-17 (**S397 — 31st run, first since S383 (14 sessions); F was the stalest unattended pass (O attended-only since S346) and the S397 pointer named it AND the affordance: THE KEYBOARD BYPASS.** Census by a real Tab walk over all 14 root pages, 0 pageerrors, 120 route aborts, torah/trope as the control: **2 of 14 carried a header skip link**; chrome stops before …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S408):** **BRANCH/PR: S403–S407 on `claude/eager-bardeen-jdve4x` → draft PR #265; if still open, continue on it; if merged, cut a FRESH branch off `origin/main` and confirm that merge's Pages run.** **DRIFT vs S406: none.** S407 closed at `sw.js` **v827**, FM **5.56**, SDK **2.116.0**; the live backend re-read clean (migrations 0001–0003, RLS on, `delete-account` v3 JWT on, keep-alive #10 green). **Never trust these numbers unread.**
+**Next session (S408):** **BRANCH/PR: S403–S407 (`claude/eager-bardeen-jdve4x`, PR #265) landed on main by in-session authorization (`041ddfa..62d8b5c`; PR #265 auto-merged; the Pages run success). CUT A FRESH `claude/*` off latest `origin/main` and open a new draft PR at close-out — never stack on the merged branch.** **DRIFT: compare `origin/main` with `62d8b5c` + the ledger note after it.** S407 closed at `sw.js` **v827**, FM **5.56**, SDK **2.116.0**; the live backend re-read clean (migrations 0001–0003, RLS on, `delete-account` v3 JWT on, keep-alive #10 green). **Never trust these numbers unread.**
 
 **⚑ STALEST PASS: O (S346 — BLOCKED here), M (S391), G (S392), D (S393), I (S394), H (S395), C (S396), F (S397), B (S398), A (S399), E (S403), L (S404), K (S405), N (S406), P (S407).** Take **M** unless the O permission rule exists: `account.html` has never had one; anything dramatic is gate 3 (unattended: log it with screenshots).
 
