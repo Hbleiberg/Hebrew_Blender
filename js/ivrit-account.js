@@ -396,6 +396,10 @@
       '.ivacct-label{display:block;margin-block:8px 3px;font-size:0.78rem;color:var(--muted,#6b6050);}' +
       '.ivacct-input{display:block;inline-size:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--border,#c8bfa8);border-radius:6px;' +
         'background:var(--white,#fff);color:inherit;font:inherit;}' +
+      // Both fields inherit the label's 0.78rem (12.48px), and iOS Safari zooms the page into a focused text
+      // field under 16px and leaves it zoomed after the sign-in. Touch pointers only (an iPad in landscape is
+      // wide and still zooms), so the desktop menu keeps its compact size. A px literal: WebKit tests 16px.
+      '@media (pointer:coarse){.ivacct-input{font-size:16px;}}' +
       '.ivacct-note{margin:8px 0 0;font-size:0.8rem;color:var(--muted,#6b6050);min-block-size:1em;overflow-wrap:anywhere;}' +
       '.ivacct-note.is-error{color:var(--danger-text,#b3261e);}' +
       '.ivacct-who{margin:0 0 6px;font-size:0.8rem;color:var(--muted,#6b6050);overflow-wrap:anywhere;}' +
