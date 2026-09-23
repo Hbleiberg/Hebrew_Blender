@@ -80,6 +80,7 @@
   var menuStage = 'email';   // 'email' | 'code' — which step of the email sign-in the form is on
   var lastEmail = '';
   var noteState = null;      // {text, isError} — the popover's note, kept across re-renders (I18n.ready, language switch)
+  var menuBusy = false;      // a sign-in or sign-out is in flight — kept here, not on the buttons, which a re-render replaces
 
   /* ---------- tiny helpers ---------- */
   function refFromUrl(u) { try { return new URL(u).hostname.split('.')[0]; } catch (e) { return ''; } }
@@ -576,7 +577,11 @@
     n.textContent = text || '';
     n.classList.toggle('is-error', !!isError);
   }
+  // The lock the handlers check: aria-disabled alone is only a look, so a double-click sent a second code,
+  // which the server refuses within a minute — and the menu then said "Too many attempts" over the code it
+  // had sent. Every settle of the action clears it (a Google sign-in resolves as the browser leaves).
   function setBusy(on) {
+    menuBusy = !!on;
     if (!chip) return;
     Array.prototype.forEach.call(chip.menu.querySelectorAll('button'), function (b) {
       if (on) b.setAttribute('aria-disabled', 'true'); else b.removeAttribute('aria-disabled');
@@ -608,8 +613,13 @@
     if (chip.open) renderMenu();
   }
 
-  // The popover: rebuilt from scratch on every render (cheap, and never stale).
+  // The popover: rebuilt from scratch on every render (cheap, and never stale). A rebuild while an action is
+  // in flight (the first sign-in's INITIAL_SESSION, a language switch) keeps the lock on the new buttons.
   function renderMenu() {
+    renderMenuBody();
+    if (menuBusy) setBusy(true);
+  }
+  function renderMenuBody() {
     if (!chip) return;
     var m = chip.menu;
     var typed = m.querySelector('input[type=email]');
@@ -636,8 +646,9 @@
       var out = el('button', 'ivacct-item', t('shared.account.sign_out', 'Sign out (this device)'));
       out.type = 'button';
       out.addEventListener('click', function () {
+        if (menuBusy) return;
         setBusy(true);
-        signOut().then(function () { closeMenu(true); }).catch(function (err) { setBusy(false); setNote(errorText(err), true); });
+        signOut().then(function () { setBusy(false); closeMenu(true); }).catch(function (err) { setBusy(false); setNote(errorText(err), true); });
       });
       m.appendChild(out);
       m.appendChild(note);
@@ -666,9 +677,10 @@
     google.appendChild(googleMark());
     google.appendChild(el('span', null, t('shared.account.google', 'Continue with Google')));
     google.addEventListener('click', function () {
+      if (menuBusy) return;
       setBusy(true);
       setNote(t('shared.account.sending', 'Sending…'), false);
-      signIn('google').catch(function (err) { setBusy(false); setNote(errorText(err), true); });
+      signIn('google').then(function () { setBusy(false); }, function (err) { setBusy(false); setNote(errorText(err), true); });
     });
 
     var emailLabel = el('label', 'ivacct-label', t('shared.account.email_label', 'Email'));
@@ -702,6 +714,7 @@
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (menuBusy) return;
       var email = emailInput.value.trim();
       lastEmail = email;
       setBusy(true);
@@ -720,9 +733,11 @@
       }).catch(function (err) { setBusy(false); setNote(errorText(err), true); });
     });
     verify.addEventListener('click', function () {
+      if (menuBusy) return;
       setBusy(true);
       setNote(t('shared.account.sending', 'Sending…'), false);
       verifyCode(emailInput.value.trim() || lastEmail, codeInput.value).then(function () {
+        setBusy(false);
         menuStage = 'email';
         closeMenu(true);
       }).catch(function (err) { setBusy(false); setNote(errorText(err), true); });
