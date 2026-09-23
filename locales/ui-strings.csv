@@ -3904,6 +3904,15 @@ torah.handout.selected_only,Print only the selected verses,הדפסת הפסוק
 torah.share.button,Copy link,העתקת קישור,top-bar button that copies a link to the current reading,leading-emoji
 torah.share.copied_range,Link copied — {ref},הקישור הועתק — {ref},toast after copying a practice link narrowed to a verse range,mixed UI+content — do not translate {…}
 torah.share.copied_span,"Link copied — a link holds one range, so it opens all of {ref}, including verses you did not tick.","הקישור הועתק — קישור מכיל טווח אחד, ולכן הוא פותח את כל {ref}, כולל פסוקים שלא סומנו.",toast when a selection with gaps in it had to be widened to its full span,mixed UI+content — do not translate {…}
+torah.share.include_settings,Include my settings,כולל ההגדרות שלי,"toggle beside Copy link — the link also carries the sender's display settings (font, colors, what shows) as ?s=",
+torah.share.include_settings_tip,"Adds your font, text sizes, vowel and trope color coding, and what the reading shows (nikkud, trope marks, transliteration, translation, layout) to the link. Whoever opens it sees the reading your way, and can keep those settings or go back to their own.","מוסיף לקישור את הגופן, גודלי הטקסט, צביעת התנועות והטעמים ומה שהקריאה מציגה (ניקוד, טעמים, תעתיק, תרגום, פריסה). מי שפותח אותו רואה את הקריאה כמו אצלכם, ויכול לשמור את ההגדרות האלה או לחזור להגדרות שלו.",tooltip,
+torah.share.with_settings,Your display settings are included.,הגדרות התצוגה שלכם כלולות בקישור.,second line of the Copy link toast when Include my settings is on,
+torah.share.with_settings_no_font,"Your display settings are included, but not your own font ""{font}"" — a link can't carry it, so the reading opens in the standard font.","הגדרות התצוגה שלכם כלולות בקישור, אבל לא הגופן האישי ""{font}"" — קישור לא יכול להעביר אותו, ולכן הקריאה תיפתח בגופן הרגיל.",second toast line when the chosen font is a My Font (stored on this device only),do-not-translate {font}
+torah.share.view_note,You're seeing this reading with the sender's display settings. Your own settings haven't changed.,אתם רואים את הקריאה עם הגדרות התצוגה של מי ששלח את הקישור. ההגדרות שלכם לא השתנו.,note above the reading when a practice link carried the sender's display settings,
+torah.share.view_keep,Keep these settings,שמירת ההגדרות האלה,button on the link note — the sender's display settings become the reader's own,
+torah.share.view_revert,Use my settings,חזרה להגדרות שלי,button on the link note — back to the reader's own settings,
+torah.share.view_kept,These settings are yours now.,ההגדרות האלה שמורות עכשיו אצלכם.,toast after Keep these settings,
+torah.share.view_reverted,Back to your own settings.,חזרתם להגדרות שלכם.,toast after Use my settings,
 torah.copy.button,Copy,העתקה,top-bar button next to Student handout,leading-emoji
 torah.copy.button_title,Copy verses to the clipboard — one verse or a selection,העתקת פסוקים ללוח — פסוק אחד או בחירה,button title,
 torah.copy.title,Copy verses,העתקת פסוקים,copy options bar title,

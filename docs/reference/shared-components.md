@@ -548,11 +548,19 @@ Writing a link **never navigates**; loading a link **never clobbers** the user's
   carried can reach Sefaria; anything it cannot rebuild is `null` and the link is ignored in
   silence. `?holiday=` may ride alongside `?ref=` to keep a narrowed holiday's name, and supplies it
   only while `refWithin` says the range really sits inside that reading. `syncShareBtn` HIDES the
-  button (never disables it) when there is no shareable reading at all.
+  button (never disables it) when there is no shareable reading at all. Its **Include my settings**
+  switch (remembered in the settings blob) adds a `?s=` beside the readable params: the display
+  settings as a versioned diff against `DEFAULTS`, validated at both ends by one table
+  (`LINK_DISPLAY`). The reading stays readable; `?s=` only says how it looks. With no presets to
+  protect, the page's clobber guard is a **link view** — the sender's look on screen, the reader's
+  own still what every save writes, until they keep it or go back (`torah-and-trope.md` → *Practice
+  link*).
 - **`replaceState` is NOT universal:** the generator and dictionary mirror the link into the address bar;
   `torah_trainer` and `flash_cards` copy to the clipboard and leave it alone. Measured and deliberately
   LEFT as-is (both persist their state independently, so a refresh loses nothing, and the
   flash-cards payload would fill the bar with a long blob) — do not "converge" it without asking.
+  (Torah's receiving side drops its consumed `?s=` once the reader decides, the generator's
+  `_stripShareParams` shape; the emitter still never touches the bar.)
 - **Rule:** any tool that gains shareable state uses `?s=` (a paste code may coexist where one already
   does; readable params are acceptable where the link is meant to be human-legible, as torah's is).
 - **Button icon:** the affordance carries the shared `hi-link` glyph on all four carriers (in the markup,

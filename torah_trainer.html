@@ -355,6 +355,7 @@ body.dark .tt-controls { background:var(--navy-deep); }
 /* [hidden] must beat .tt-ctrl's inline-flex — the same trap as #ttCopyBulkPanel and
    .tt-jumpnav above; without this the share button stays visible when it cannot act. */
 #ttShareWrap[hidden] { display:none; }
+.tt-share-opt { display:inline-flex; align-items:center; margin-inline-start:4px; }
 .tt-ctrl label { font-weight:600; color:var(--text); white-space:nowrap; }
 .tt-ctrl select, .tt-ctrl input[type="number"], .tt-ctrl input[type="text"] {
   border:1px solid var(--border); background:var(--white); color:var(--text);
@@ -630,6 +631,15 @@ body.dark .tt-resume-chip { background:var(--navy-deep); }
   font-size:0.82rem; line-height:1; padding:3px 5px; border-radius:50%;
 }
 .tt-resume-x:hover { background:var(--warm-gray); color:var(--text); }
+/* Link view note — a practice link's display settings are on screen but not saved (LINK VIEW). */
+.tt-linkview {
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; margin:0 0 14px;
+  background:var(--white); border:1px solid var(--border); border-inline-start:4px solid var(--gold);
+  border-radius:8px; padding:8px 12px; font-size:0.84rem; color:var(--text); box-shadow:var(--shadow-sm);
+}
+.tt-linkview[hidden] { display:none; }
+.tt-linkview-btns { display:inline-flex; flex-wrap:wrap; gap:6px; }
+body.fullscreen .tt-linkview { display:none; }   /* the projector shows the reading, not this reader's choice */
 /* Brief highlight flash when jumping to a verse (resume / jump nav). */
 @keyframes ttFlash {
   0%   { background:rgba(201,146,42,0.45); }
@@ -723,6 +733,7 @@ body.fullscreen .tt-jumpnav { padding-right:84px; }   /* clear the fullscreen ex
   padding:10px 16px; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.3);
   z-index:2000; max-width:88vw; text-align:center; cursor:pointer;
   opacity:0; pointer-events:none; transition:opacity 0.25s ease, transform 0.25s ease;
+  white-space:pre-line;   /* a second sentence may ride on its own line (Copy link's "settings included") */
 }
 .tt-hint-toast.show { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
 /* Same measured problem #ttBulkDock has (see its rule): the sticky karaoke bar wraps to 107px at
@@ -1493,7 +1504,7 @@ body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
    (e.g. the .tt-grid column collapse) beat the screen rules by source order (generator S30
    convention). !important rules don't care, but the layout overrides do. */
 @media print {
-  .tt-jumpnav, .tt-resume-chip, .tt-audio-bar, .tt-verse-buttons, #ttBulkDock { display:none !important; }
+  .tt-jumpnav, .tt-resume-chip, .tt-linkview, .tt-audio-bar, .tt-verse-buttons, #ttBulkDock { display:none !important; }
   /* Bulk-select tint is a screen-only affordance — never ink. */
   .tt-bulk-selected { background:none !important; box-shadow:none !important; }
   .tt-bulk-cb { display:none !important; }   /* selection checkbox is a screen-only affordance */
@@ -1888,11 +1899,14 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <span class="tt-ctrl">
     <button id="ttHandoutBtn" class="btn btn-xs btn-secondary hi-btn" onclick="toggleHandoutBar()" type="button" aria-expanded="false" aria-controls="ttHandoutBar" data-i18n-title="torah.handout.button_title" title="Print a clean Hebrew-only handout for students"><svg class="hi hi-sm hi-page" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3H7a2.2 2.2 0 0 0-2.2 2.2v13.6A2.2 2.2 0 0 0 7 21h10a2.2 2.2 0 0 0 2.2-2.2V8.7z"/><path d="M13.5 3v5.7h5.7"/><path d="M8.6 13h6.8M8.6 16.6h4.6"/></svg><span class="hi-lbl" data-i18n="torah.handout.button">Student handout</span></button>
   </span>
-  <span class="tt-ctrl" id="ttShareWrap" hidden>
-    <button id="ttShareBtn" class="btn btn-xs btn-secondary hi-btn" onclick="copyPracticeLink(this)" type="button"><svg class="hi hi-sm hi-link" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 13.7a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.7 1.7"/><path d="M13.7 10.3a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.7-1.7"/></svg><span class="hi-lbl" data-i18n="torah.share.button">Copy link</span></button>
-  </span>
   <span class="tt-ctrl">
     <button id="ttCopyBtn" class="btn btn-xs btn-secondary hi-btn" onclick="toggleCopyBar()" type="button" aria-expanded="false" aria-controls="ttCopyBar" data-i18n-title="torah.copy.button_title" title="Copy verses to the clipboard — one verse or a selection"><svg class="hi hi-sm hi-copy" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2.2"/><path d="M15.5 5.5v-.8a2.2 2.2 0 0 0-2.2-2.2H6.2A2.2 2.2 0 0 0 4 4.7v7.1a2.2 2.2 0 0 0 2.2 2.2H5"/></svg><span class="hi-lbl" data-i18n="torah.copy.button">Copy</span></button>
+  </span>
+  <span class="tt-ctrl" id="ttShareWrap" hidden>
+    <button id="ttShareBtn" class="btn btn-xs btn-secondary hi-btn" onclick="copyPracticeLink(this)" type="button"><svg class="hi hi-sm hi-link" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 13.7a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.7 1.7"/><path d="M13.7 10.3a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.7-1.7"/></svg><span class="hi-lbl" data-i18n="torah.share.button">Copy link</span></button>
+    <!-- Remembered; when on, the link also carries the sender's look as ?s= (see LINK VIEW). -->
+    <label for="ttShareSettings" class="tt-share-opt"><span id="lblShareSettings" data-i18n="torah.share.include_settings">Include my settings</span> <span class="tip-wrap" data-i18n-tip="torah.share.include_settings_tip" data-tip="Adds your font, text sizes, vowel and trope color coding, and what the reading shows (nikkud, trope marks, transliteration, translation, layout) to the link. Whoever opens it sees the reading your way, and can keep those settings or go back to their own."><i class="tip-icon">?</i></span></label>
+    <label class="toggle"><input type="checkbox" id="ttShareSettings" aria-labelledby="lblShareSettings"><span class="slider"></span></label>
   </span>
 </div>
 
@@ -2006,6 +2020,15 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 
 <div class="tt-page">
   <div class="tt-status" id="ttStatus" role="status" aria-live="polite"></div>
+  <!-- A practice link carried the sender's display settings (?s=): they are on screen, not saved,
+       until the reader keeps them or goes back to their own (LINK VIEW; linkViewApply owns `hidden`). -->
+  <div class="tt-linkview" id="ttLinkView" role="group" aria-labelledby="ttLinkViewMsg" hidden>
+    <span id="ttLinkViewMsg" data-i18n="torah.share.view_note">You're seeing this reading with the sender's display settings. Your own settings haven't changed.</span>
+    <span class="tt-linkview-btns">
+      <button class="btn btn-xs" type="button" onclick="linkViewKeep()" data-i18n="torah.share.view_keep">Keep these settings</button>
+      <button class="btn btn-xs btn-secondary" type="button" onclick="linkViewRevert()" data-i18n="torah.share.view_revert">Use my settings</button>
+    </span>
+  </div>
   <!-- In-page nav: aliyah jump chips + "you are here" readout (long readings). -->
   <div class="tt-jumpnav" id="ttJumpNav" role="navigation" aria-label="Jump to aliyah" data-i18n-aria-label="torah.jumpnav.aria" hidden></div>
   <!-- One-way discoverability chip: trope coloring is otherwise invisible until found inside
@@ -2502,6 +2525,7 @@ const DEFAULTS = {
   copyBlankLines: 0,           // 0-3 blank lines after each verse (handwriting room)
   copyColorCoding: false,      // also write a text/html flavor carrying the vowel/trope colors
   copyBulkRemember: false,     // open the Copy bar in Select-verses mode; keep the selection on close
+  shareIncludeDisplay: false,  // Copy link also carries the display settings as ?s= (see LINK VIEW)
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
 
@@ -2517,11 +2541,25 @@ let textCache = new Map();  // key: ref+version → verses array
    STORAGE (debounced save)
    ══════════════════════════════════════════════════════ */
 let _saveTimer = null;
+// A practice link's display settings on screen but not saved: { own, shown } per key (see LINK VIEW).
+let _linkView = null;
+// What a save writes: the live settings, except that a display setting still showing a practice
+// link's value keeps the reader's own. One the reader has changed since is theirs, and is saved.
+function storedSettings() {
+  if (!_linkView) return settings;
+  const out = Object.assign({}, settings);
+  Object.keys(_linkView.own).forEach(k => {
+    if (_linkSame(settings[k], _linkView.shown[k])) out[k] = _linkView.own[k];
+    else { delete _linkView.own[k]; delete _linkView.shown[k]; }
+  });
+  if (!Object.keys(_linkView.own).length) linkViewEnd();   // nothing of the link's is left on screen
+  return out;
+}
 function saveSettings() {
   if (_handoutActive) return;   // transient handout print override must never persist
   if (_saveTimer) clearTimeout(_saveTimer);
   _saveTimer = setTimeout(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(storedSettings())); }
     catch (e) { console.warn('saveSettings', e); }
   }, 300);
 }
@@ -2533,7 +2571,7 @@ function saveSettings() {
 function saveSettingsFlush() {
   if (_handoutActive || !_saveTimer) return;   // never persist the transient handout override
   clearTimeout(_saveTimer); _saveTimer = null;
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(storedSettings())); }
   catch (e) { console.warn('saveSettingsFlush', e); }
 }
 // Parse JSON from possibly-imported input, dropping keys that could pollute Object.prototype.
@@ -2571,6 +2609,7 @@ function resetAllSettings() {
   // A deliberate reset: the module forgets what this device last synced, so the next sync asks which
   // settings to keep instead of sending the reset up as "newer on this device".
   if (signedIn && window.IvritSaves && typeof IvritSaves.forgetRow === 'function') IvritSaves.forgetRow('TorahTrainer', 'settings');
+  linkViewEnd();     // a practice link's display settings go with everything else
   localStorage.removeItem(STORAGE_KEY);
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   panelMemApply();   // panelsCollapsed is null again — back to the markup defaults
@@ -6073,6 +6112,7 @@ function syncFormToSettings() {
   document.getElementById('ksNone').checked      = ks === 'none';
   document.getElementById('kfHebrew').checked    = kf === 'hebrew';
   document.getElementById('kfTranslit').checked  = kf === 'translit';
+  document.getElementById('kfBoth').checked      = kf === 'both';
   applyKaraokeAppearance();
   // Copy panel. ?? not || — copyBlankLines is legitimately 0, and `|| 0` would be a no-op
   // today but the wrong habit for the next numeric option added here.
@@ -6094,6 +6134,7 @@ function syncFormToSettings() {
   document.getElementById('optCopyBlankLines').value = String(settings.copyBlankLines ?? 0);
   document.getElementById('ttCopyColorCoding').checked  = !!settings.copyColorCoding;
   document.getElementById('ttCopyBulkRemember').checked = !!settings.copyBulkRemember;
+  document.getElementById('ttShareSettings').checked    = !!settings.shareIncludeDisplay;
   updateCopyTextarea();
   // schedule radio
   const sd = document.getElementById('schedDiaspora');
@@ -6291,6 +6332,11 @@ function wireSettingsForm() {
     r.addEventListener('change', e => {
       if (e.target.checked) { settings.layout = e.target.value; saveSettings(); renderText(); }
     });
+  });
+  // Copy link's "Include my settings": remembered, so a teacher who always sends their look sets it once.
+  document.getElementById('ttShareSettings').addEventListener('change', e => {
+    settings.shareIncludeDisplay = e.target.checked;
+    saveSettings();
   });
   // Version dropdown
   document.getElementById('ttVersionSelect').addEventListener('change', e => {
@@ -6874,7 +6920,7 @@ function _handoutEnter() {
   // fire mid-override and persist the forced-off toggles.
   if (_saveTimer) {
     clearTimeout(_saveTimer); _saveTimer = null;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); } catch (e) {}
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(storedSettings())); } catch (e) {}
   }
   _handoutActive = true;
   // Stop ALL audio/TTS before the rebuild — renderText() replaces #ttReading,
@@ -7624,6 +7670,7 @@ async function retryStaticData() {   // in-card ↻ for a failed corpus load; on
 async function init() {
   initDark();
   loadSettings();
+  linkViewApply();          // a practice link's ?s= display settings: shown from the first paint, never saved
   _watchAudioBarHeight();   // keeps the bulk dock clear of the sticky karaoke bar at any width
   _watchBulkDockFocus();    // stops the dock vanishing under a keyboard user's own Clear
   const fsBtn = document.getElementById('fsBtn');
@@ -7789,6 +7836,7 @@ document.addEventListener('DOMContentLoaded', init);
 // Re-read the settings key the cloud module wrote and repaint everything rendered from it — the
 // resetAllSettings() sequence plus the parsha box, the handout bar and the version fallback.
 function cloudReread() {
+  linkViewEnd();   // the stored settings are what the reader asked for now, not a practice link's
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   loadSettings();
   _versionFallback = null;
@@ -8237,8 +8285,14 @@ function syncShareBtn() {
   if (wrap) wrap.hidden = !practiceLinkURL();
 }
 function copyPracticeLink(btn) {
-  const url = practiceLinkURL();
+  let url = practiceLinkURL();
   if (!url) return;
+  const withDisplay = !!settings.shareIncludeDisplay;
+  if (withDisplay) {
+    const u = new URL(url);
+    u.searchParams.set('s', linkDisplayParam());
+    url = prettyLinkURL(u);   // setting a param re-escapes the reading's colons
+  }
   // Name the passage in the toast, so a teacher can see at the moment of copying whether they
   // shared the range or the whole reading — and, when their ticks had gaps in them, that the link
   // widened to the whole span, which is the one thing a single ref cannot say for itself.
@@ -8248,6 +8302,11 @@ function copyPracticeLink(btn) {
       const shared = new URL(url).searchParams.get('ref');
       if (shared) msg = I18n.t(selectionIsContiguous() ? 'torah.share.copied_range' : 'torah.share.copied_span', { ref: shared });
     } catch (e) {}
+    // A second line says the look went too, and names a font of the teacher's own, which cannot.
+    if (withDisplay) {
+      const font = linkFontLeftOut();
+      msg += '\n' + (font ? I18n.t('torah.share.with_settings_no_font', { font }) : I18n.t('torah.share.with_settings'));
+    }
     showHintToast(msg);
   };
   if (navigator.clipboard) navigator.clipboard.writeText(url).then(done).catch(done);
@@ -8257,6 +8316,131 @@ function copyPracticeLink(btn) {
     try { document.execCommand('copy'); } catch (e) {}
     document.body.removeChild(ta); done();
   }
+}
+
+/* ───── LINK VIEW: a practice link that carries the sender's look ─────
+   With "Include my settings" on, Copy link adds ?s=: the display settings (font, text sizes,
+   vowel and trope color coding, which marks and rows show, layout) as base64url JSON — only what
+   differs from a pristine page, plus a format version. The readable params still say WHICH
+   reading; ?s= says only how it looks. Never how it sounds, and never the translation version: a
+   version title would reach Sefaria, and nothing from a link may.
+   On the reader's side it is a live view, not a change to their saved settings (the suite's
+   share-link contract): linkViewApply swaps the values in at init and keeps each one's own,
+   storedSettings() goes on saving the own ones, and #ttLinkView offers Keep (they become the
+   reader's) or Use my settings. A setting the reader changes meanwhile is theirs at once. A
+   choice, a reset or a cloud download ends the view and drops ?s= from the address bar; until
+   then a reload shows the link's look again. Silent on garbage, like every param of this page. */
+function shareB64Encode(str) { return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+function shareB64Decode(b) { b = b.replace(/-/g, '+').replace(/_/g, '/'); return decodeURIComponent(escape(atob(b))); }
+const LINK_VIEW_V = 1;
+const _linkBool = v => typeof v === 'boolean' ? v : undefined;
+const _linkOneOf = (v, list) => (typeof v === 'string' && list.includes(v)) ? v : undefined;
+const _linkChoices = sel => [...document.querySelectorAll(sel)].map(el => el.value);   // the markup is the list
+function _linkSize(v, sliderId) {
+  const n = _sliderNum(v, sliderId, NaN);   // clamped to the slider's own range
+  return Number.isFinite(n) ? Math.round(n * 20) / 20 : undefined;
+}
+function _linkHexMap(v, keys) {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return undefined;
+  const out = {};
+  keys.forEach(k => {
+    const c = Object.prototype.hasOwnProperty.call(v, k) ? v[k] : null;
+    if (typeof c === 'string' && TROPE_HEX6_RE.test(c)) out[k] = c.toLowerCase();   // #rrggbb: what a picker writes
+  });
+  return out;
+}
+// Equal as settings: a color map compares by its entries, whatever order they were picked in.
+function _linkSame(a, b) {
+  const canon = x => (x && typeof x === 'object' && !Array.isArray(x))
+    ? JSON.stringify(Object.keys(x).sort().map(k => [k, x[k]])) : JSON.stringify(x);
+  return canon(a) === canon(b);
+}
+// Every setting a link can carry, with the check a value must pass (undefined = refused). Both ends
+// run it: the sender, so only what this page can re-validate ever leaves; the reader, because a
+// link is anyone's to edit.
+const LINK_DISPLAY = {
+  layout:              v => _linkOneOf(v, _linkChoices('input[name="ttLayout"]')),
+  showNikkud:          _linkBool,
+  showCantillation:    _linkBool,
+  showTranslit:        _linkBool,
+  showTranslation:     _linkBool,
+  translitStyle:       v => _linkOneOf(v, _linkChoices('#optTranslitStyle option')),
+  hebFont:             v => HEB_FONTS.some(f => f.name === v) ? v : undefined,   // a My Font stays on its device
+  hebFontSize:         v => _linkSize(v, 'optHebSize'),
+  translitFontSize:    v => _linkSize(v, 'optTranslitSize'),
+  englishFontSize:     v => _linkSize(v, 'optEnglishSize'),
+  colorCodeNikkud:     _linkBool,
+  colorCodingMode:     v => _linkOneOf(v, _linkChoices('input[name="optColorMode"]')),
+  vowelColorScheme:    v => _linkOneOf(v, ['default', 'talam']),
+  nikudColorOverrides: v => _linkHexMap(v, VOWEL_COLOR_DEFS.map(d => d.key)),
+  colorCodeTrope:      _linkBool,
+  tropeColorOverrides: v => _linkHexMap(v, TROPE_FAMILIES),
+  karaokeStyle:        v => _linkOneOf(v, _linkChoices('input[name="optKarStyle"]')),
+  karaokeFollow:       v => _linkOneOf(v, _linkChoices('input[name="optKarFollow"]')),
+};
+function linkDisplayParam() {
+  const out = { v: LINK_VIEW_V };
+  Object.keys(LINK_DISPLAY).forEach(k => {
+    const v = LINK_DISPLAY[k](settings[k]);
+    if (v !== undefined && !_linkSame(v, DEFAULTS[k])) out[k] = v;
+  });
+  return shareB64Encode(JSON.stringify(out));
+}
+// The teacher's font when it is one of their own (My Fonts, on this device only), for the toast to
+// name; '' when every copy of this page has the face.
+function linkFontLeftOut() {
+  const f = settings.hebFont;
+  return (typeof f === 'string' && f && LINK_DISPLAY.hebFont(f) === undefined) ? f : '';
+}
+function linkViewApply() {
+  let data = null;
+  try {
+    const raw = new URLSearchParams(location.search).get('s');
+    if (!raw || raw.length > 4096) return;   // no link, or far longer than any this page writes
+    data = ivritSafeParse(shareB64Decode(raw));
+  } catch (e) { return; }
+  if (!data || typeof data !== 'object' || Array.isArray(data) || data.v !== LINK_VIEW_V) return;
+  const own = {}, shown = {};
+  Object.keys(LINK_DISPLAY).forEach(k => {
+    // A setting the link leaves out is the pristine default — the sender's whole look, not a blend
+    // with the reader's; one it names but that fails its check keeps the reader's own.
+    let want = DEFAULTS[k];
+    if (Object.prototype.hasOwnProperty.call(data, k)) { want = LINK_DISPLAY[k](data[k]); if (want === undefined) return; }
+    if (_linkSame(want, settings[k])) return;
+    own[k] = settings[k];
+    shown[k] = JSON.parse(JSON.stringify(want));
+    settings[k] = JSON.parse(JSON.stringify(want));   // a copy of its own: the pickers edit the color maps in place
+  });
+  if (!Object.keys(own).length) return;   // the reader already sees it this way
+  _linkView = { own, shown };
+  const note = document.getElementById('ttLinkView');
+  if (note) note.hidden = false;
+}
+function linkViewEnd() {
+  if (!_linkView) return;
+  _linkView = null;
+  const note = document.getElementById('ttLinkView');
+  if (note) note.hidden = true;
+  // Decided: a reload now opens what the reader chose, not the link's look again.
+  try {
+    const u = new URL(location.href);
+    if (u.searchParams.has('s')) { u.searchParams.delete('s'); history.replaceState(history.state, '', prettyLinkURL(u)); }
+  } catch (e) {}
+}
+function linkViewKeep() {
+  if (!_linkView) return;
+  linkViewEnd();
+  saveSettings();   // everything on screen is the reader's now
+  showHintToast(I18n.t('torah.share.view_kept'));
+}
+function linkViewRevert() {
+  if (!_linkView) return;
+  // Land the stored form now (the reader's own values, plus anything they changed since), then
+  // re-read it: the cloud-download path already repaints every control and the reading from it.
+  if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(storedSettings())); } catch (e) {}
+  cloudReread();
+  showHintToast(I18n.t('torah.share.view_reverted'));
 }
 
 function showHintToast(msg) {

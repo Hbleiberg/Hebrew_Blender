@@ -261,6 +261,42 @@ from `torah_trainer.html`.
 
 ---
 
+## Practice link — the sender's look (`?s=`, the link view)
+
+`torah_trainer.html`'s Copy link (`copyPracticeLink`; the readable-param half is in
+`shared-components.md` → *Share links*) has an **Include my settings** switch beside it
+(`#ttShareSettings` → `settings.shareIncludeDisplay`, remembered and synced with the blob).
+
+- **What travels.** `LINK_DISPLAY` is the one list of carried keys, each with the check a value must
+  pass: layout, the four show-toggles (nikkud, te'amim, transliteration, translation), the
+  transliteration style, the Hebrew font and the three text sizes, vowel coding (on, mode, scheme,
+  overrides), trope coding (on, overrides), karaoke style and follow. Enum lists are read from the
+  page's own radios and `<option>`s, colors must be `#rrggbb` (`TROPE_HEX6_RE`), sizes are clamped to
+  their sliders, and a font must be in `HEB_FONTS`. **Both ends run the checks:** the sender, so only
+  what this page can re-validate ever leaves, and the reader, because anyone can edit a link. `?s=` is
+  base64url JSON `{v: LINK_VIEW_V, …}` holding only what differs from `DEFAULTS`.
+- **What never travels:** the reading (the readable params carry it), audio speeds and the click
+  action, copy and handout preferences, the schedule, and **`translationVersion`**. A version title
+  would reach Sefaria, and nothing from a link may. A My Font lives on its own device, so it is
+  left out, the toast names it, and the reader gets the standard font.
+- **The reader's side is a live view, never a save.** `linkViewApply()` runs right after
+  `loadSettings()`. It is silent on garbage: the payload must be an object with the current `v`, at
+  most 4096 characters. A key the link leaves out takes `DEFAULTS`, so the reader sees the sender's
+  whole look rather than a blend with their own. A key it names but whose value fails its check keeps
+  the reader's own. The keys that differ become `_linkView = {own, shown}`, and **`storedSettings()`
+  is what every write stores**: `saveSettings`, `saveSettingsFlush` (the cloud `flush`) and the
+  handout's pending-save flush. It stores the live settings with each still-shown key put back to
+  `own`. A key whose live value no longer equals `shown` was changed by the reader and is saved from
+  then on (released).
+- **Ending it.** The `#ttLinkView` note offers Keep (`linkViewKeep`: end the view, save) and Use my
+  settings (`linkViewRevert`: write the stored form, then `cloudReread()`, which already repaints every
+  control and the reading). The view also ends on Reset, on a cloud download (`cloudReread`) and once
+  every key has been released. Ending it drops `?s=` from the address bar and keeps the reading
+  params, so a later reload shows what the reader chose. Until then, a reload shows the link's look
+  again. Print and fullscreen hide the note.
+
+---
+
 
 ## Cloud saves — what the two pages round-trip
 
@@ -278,6 +314,9 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   runs `cloudReread()` — the `resetAllSettings()` sequence plus `syncParshaSelect`, `syncHandoutForm` and the
   fallback reset — afterwards. The Trope Tutor's hook also rebuilds the drill-scope box (`buildDrillScopeSel`),
   which is otherwise built once at init.
+- **A practice link's look never reaches the account.** While a link view is up, every write (the module's
+  `flush` included) stores the reader's own display values, so opening a link cannot make the settings row read
+  "newer here". A download ends the view (`cloudReread` calls `linkViewEnd` first).
 - **A font this device lacks stays chosen.** `setHebFont` on an unknown name keeps `settings.hebFont`, clears
   the `.font-opt` highlights and, once `refreshMyFonts()` has answered (`_myFontsLoaded`), shows
   `shared.fonts.missing_note` under `#fontOptions`.
