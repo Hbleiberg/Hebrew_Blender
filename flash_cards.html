@@ -4594,7 +4594,7 @@ function applySettings(s) {
   initColorPickers();
   updateVavAsLetterVisibility();
 
-  translitStyle = _clampEnum(s.translitStyle, ['default', 'sbl', 'brill', 'modernIsraeli', 'ashkenazi'], 'default');   // enum: #translitStyleSelect's options
+  translitStyle = _clampEnum(s.translitStyle, ['default', 'sbl', 'brill', 'modernIsraeli', 'ashkenazi', 'simpleStressed'], 'default');   // enum: #translitStyleSelect's options (all six)
   const tsSel = document.getElementById('translitStyleSelect');
   if (tsSel) tsSel.value = translitStyle;
   sheetDuplex = s.sheetDuplex === true;          // a stored false survives; a non-boolean is garbage, not "on"
