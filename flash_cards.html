@@ -5560,7 +5560,7 @@ function saveResultToProfile(name, result) {
   _setWeakNote(null);   // new results can change the answer — retire a stale "no mistakes" note
   renderProfiles();
   const btn = document.getElementById('saveResultsBtn');
-  if (btn) { btn.textContent = I18n.t('flashcards.results.save_button_done', { name: name }); btn.disabled = true; }
+  if (btn) { (btn.querySelector('.hi-lbl') || btn).textContent = I18n.t('flashcards.results.save_button_done', { name: name }); btn.disabled = true; }
 }
 
 async function saveCurrentResult() {
@@ -6273,7 +6273,7 @@ function renderLadderStrip(pct) {
     // Save button to its default enabled state, which would invite a duplicate manual save of an
     // already-banked drill — re-assert the saved state instead.
     const btn = document.getElementById('saveResultsBtn');
-    if (btn) { btn.textContent = I18n.t('flashcards.results.save_button_done', { name: profile }); btn.disabled = true; }
+    if (btn) { (btn.querySelector('.hi-lbl') || btn).textContent = I18n.t('flashcards.results.save_button_done', { name: profile }); btn.disabled = true; }
   }
 
   const passed = pct >= LADDER_PASS_PCT;
@@ -8122,7 +8122,7 @@ function showResults() {
   // Snapshot the finished drill so "Save Results" can store it to a profile
   lastDrillResult = buildResultObject();
   const saveBtn = document.getElementById('saveResultsBtn');
-  if (saveBtn) { saveBtn.disabled = !lastDrillResult; saveBtn.textContent = I18n.t('flashcards.results.save_button'); }
+  if (saveBtn) { saveBtn.disabled = !lastDrillResult; (saveBtn.querySelector('.hi-lbl') || saveBtn).textContent = I18n.t('flashcards.results.save_button'); }
 
   // End-of-session summary (uses the live session stats before they reset on the next start)
   const streakEl = document.getElementById('resultsStreak');

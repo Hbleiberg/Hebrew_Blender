@@ -3834,14 +3834,14 @@ function renderEmptyReading(failed) {   // friendly card shown in #ttReading whe
   // instead. Mutually exclusive with the reading-failure button by construction: a reading fetch
   // can't even resolve a selection while parshiyotData is empty, so `failed` is never set here.
   const corpusRetryHtml = (!canPick && _staticDataFailed && !failed)
-    ? `<button type="button" class="btn" id="ttCorpusRetryBtn" onclick="retryStaticData()" data-i18n-key="torah.reading.retry_button">${ICON_RETRY}${esc(I18n.t('torah.reading.retry_button'))}</button>`
+    ? `<button type="button" class="btn" id="ttCorpusRetryBtn" onclick="retryStaticData()">${ICON_RETRY}<span data-i18n-key="torah.reading.retry_button">${esc(I18n.t('torah.reading.retry_button'))}</span></button>`
     : '';
   document.getElementById('ttReading').innerHTML =
     `<div class="tt-empty">
        <div class="tt-empty-star" aria-hidden="true">✡︎</div>
        <h2 data-i18n-key="${tKey}">${esc(I18n.t(tKey))}</h2>
        <p data-i18n-key="${bKey}">${esc(I18n.t(bKey))}</p>` +
-    (failed ? `<button type="button" class="btn" id="ttRetryBtn" onclick="fetchAndRender()" data-i18n-key="torah.reading.retry_button">${ICON_RETRY}${esc(I18n.t('torah.reading.retry_button'))}</button>` : '') +
+    (failed ? `<button type="button" class="btn" id="ttRetryBtn" onclick="fetchAndRender()">${ICON_RETRY}<span data-i18n-key="torah.reading.retry_button">${esc(I18n.t('torah.reading.retry_button'))}</span></button>` : '') +
     pickerHtml + corpusRetryHtml +
     `</div>`;
   const cp = document.getElementById('ttCardParsha');
@@ -4832,7 +4832,7 @@ function stopReadAll() {
   ttsState.readAllActive = false;
   speechSynthesis.cancel();
   const btn = document.getElementById('ttReadAllBtn');
-  if (btn) { btn.textContent = I18n.t('torah.reading.read_all'); btn.classList.remove('active'); }
+  if (btn) { btn.innerHTML = ICON_SOUND + esc(I18n.t('torah.reading.read_all')); btn.classList.remove('active'); }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -4873,7 +4873,7 @@ async function toggleChantAll() {
   _verseEndStopAt = null;
   if (startVerse) _pendingChantVerse = startVerse;
   const btn = document.getElementById('ttChantAllBtn');
-  if (btn) { btn.textContent = I18n.t('torah.reading.chant_all_stop'); btn.classList.add('active'); }
+  if (btn) { btn.innerHTML = ICON_STOP + esc(I18n.t('torah.reading.chant_all_stop')); btn.classList.add('active'); }
   await playNextChant();
 }
 
