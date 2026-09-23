@@ -443,10 +443,12 @@ body.dark .tt-handout-shem-note { color:var(--gold-light); }
    while the surrounding bar mirrors; the note is a live region under it. */
 #ttCopyRange { inline-size:13ch; direction:ltr; text-align:start; }
 #ttCopyRangeNote { font-size:0.72rem; color:var(--muted); flex-basis:100%; white-space:normal; }
-#ttCopyRangeNote:empty { display:none; }
+/* An empty note leaves the flex row (no line, no 8px row gap) by position, not display:none: a hidden
+   role=status leaves the accessibility tree, so its first message could go unannounced. */
+#ttCopyRangeNote:empty { position:absolute; }
 /* Copy All's inline "select a verse first" reason — the button is aria-disabled rather than
    dead, and this states why (never an alert()). */
-#ttCopyAllNote:empty { display:none; }
+#ttCopyAllNote:empty { position:absolute; }   /* the range note's rule, for the same reason */
 #ttCopyRichNote[hidden] { display:none; }   /* [hidden] must beat the flex row, as for #ttCopyBulkPanel */
 #ttCopyPrereqNote[hidden] { display:none; }   /* same trap */
 #ttCopyAllBtn[aria-disabled="true"], #ttBulkDockCopy[aria-disabled="true"] { opacity:0.55; cursor:not-allowed; }

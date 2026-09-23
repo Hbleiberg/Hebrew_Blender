@@ -300,7 +300,9 @@ body.dark .hi-sun{display:inline-block;}
   /* Status line (export/save messages) — its own row below the toolbar, present only when there's a message. */
   #statusMsg { color: var(--gold-light); font-size: 0.78rem; padding: 5px 18px; background: var(--navy); }
   body.dark #statusMsg { background: #0d1220; }
-  #statusMsg:empty { display: none; }
+  /* Empty, it collapses by height, not display:none: a hidden role=status leaves the accessibility tree, so the
+     first message can land in a region the screen reader was never watching. */
+  #statusMsg:empty { padding-block: 0; }
 
   /* ── App layout ── */
   .app { display: flex; align-items: flex-start; gap: 0; min-height: calc(100vh - 150px); }
