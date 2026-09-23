@@ -17534,11 +17534,12 @@ function qaAnchors(L) {
 }
 /* Even-odd point-in-ink across all base contours, so letter counters/holes count as outside (same
    rule as the contour-depth logic at 3174-3177). */
-function pointInInk(pt, baseContours) {
+function pointInInk(pt, baseContours, boxes) {   // boxes: optional per-contour polysBounds, to skip the contours pt lies outside
   let c = 0;
-  baseContours.forEach(ct => { if (pointInPoly(pt, ct.points)) c++; });
+  baseContours.forEach((ct, i) => { if (!(boxes && qaOutside(pt, boxes[i])) && pointInPoly(pt, ct.points)) c++; });
   return (c % 2) === 1;
 }
+function qaOutside(p, b) { return p[0] < b.minX || p[0] > b.maxX || p[1] < b.minY || p[1] > b.maxY; }   // strictly outside a polygon's box ⇒ never inside the polygon
 function qaCentroid(poly) { let sx=0, sy=0; poly.forEach(([x,y]) => { sx+=x; sy+=y; }); return [sx/poly.length, sy/poly.length]; }
 function qaInsetToward(poly, c, d) {   // pull each vertex d units toward the centroid (overlap tolerance)
   return poly.map(([x,y]) => { const dx=c[0]-x, dy=c[1]-y, len=Math.hypot(dx,dy)||1, t=Math.min(d,len)/len; return [x+dx*t, y+dy*t]; });
@@ -17580,9 +17581,12 @@ function qaReasons(L, meta, markPolys, side, positional) {
   // (a) mark ink sitting on the letter body — inset mark vertices in base ink, OR a base vertex inside the mark
   // (a thin stem threaded through). Skip CENTER marks: a dagesh is MEANT to sit inside the letter.
   if (side !== 'center' && !positional) {   // positional (Left/Right) trop is MEANT to sit at the letter's edge — don't flag the overhang
+    // Boxes first: most of a letter's points lie far outside a small mark's box, and testing every one of
+    // them with pointInPoly was most of the time QA Check took to open.
+    const ctBoxes = L.contours.map(c => polysBounds([c.points]));
     for (const poly of markPolys) {
-      const inset = qaInsetToward(poly, qaCentroid(poly), QA_OVERLAP_TOL);
-      if (inset.some(p => pointInInk(p, L.contours)) || L.contours.some(ct => ct.points.some(p => pointInPoly(p, poly)))) {
+      const inset = qaInsetToward(poly, qaCentroid(poly), QA_OVERLAP_TOL), pb = polysBounds([poly]);
+      if (inset.some(p => pointInInk(p, L.contours, ctBoxes)) || L.contours.some(ct => ct.points.some(p => !qaOutside(p, pb) && pointInPoly(p, poly)))) {
         reasons.push('Mark overlaps the letter ink'); break;
       }
     }
