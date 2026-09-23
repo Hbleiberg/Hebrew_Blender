@@ -5580,11 +5580,14 @@ function copyDictShareLink(btn) {
   try { history.replaceState(null, '', url); } catch (e) {}
   const done = () => {
     if (!btn) return;
-    const orig = btn.textContent;
-    btn.textContent = I18n.t('dictionary.copy.copied_flash');
+    // The label span, not the button: rewriting the button deleted its link icon and the span's
+    // data-i18n with it, so the label also stopped following a language switch.
+    const lbl = btn.querySelector('.hi-lbl') || btn;
+    const orig = lbl.textContent;
+    lbl.textContent = I18n.t('dictionary.copy.copied_flash');
     btn.classList.add('copied');
     announce(I18n.t('dictionary.copy.link_copied_toast'));
-    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+    setTimeout(() => { lbl.textContent = orig; btn.classList.remove('copied'); }, 1500);
   };
   if (navigator.clipboard) { navigator.clipboard.writeText(url).then(done).catch(done); }
   else { const ta = document.createElement('textarea'); ta.value = url; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta); done(); }
