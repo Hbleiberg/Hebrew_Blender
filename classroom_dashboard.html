@@ -1629,6 +1629,7 @@
   body.dark .swm-chip { background: var(--navy); }
   .swm-chip:hover { border-color: var(--gold); }
   .swm-chip.armed { border-color: var(--gold); background: rgba(201,146,42,0.12); }
+  body.dark .swm-chip.armed { background: rgba(224, 168, 50, 0.16); }   /* body.dark .swm-chip outranks .swm-chip.armed: the armed tint never painted in dark */
   .swm-chip.armed .swm-chip-name { font-weight: 700; }
   .swm-chip-arm { background: none; border: none; padding: 0; font: inherit; color: inherit;
     cursor: pointer; display: inline-flex; align-items: center; gap: 6px; position: relative; }

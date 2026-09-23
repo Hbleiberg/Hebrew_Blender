@@ -576,6 +576,7 @@ body.dark .wm-act{background:var(--white);}
 body.dark .wm-act:hover{background:#2a3349;}   /* dark --warm-gray equals dark --white (the rest colour) AND the dark override outranks :hover — the .emoji-gender-btn value */
 .wm-act:hover{border-color:var(--gold);background:var(--warm-gray);}
 .wm-act.copied{background:var(--gold);color:var(--navy);border-color:var(--gold);}
+body.dark .wm-act.copied,body.dark .wm-act.copied:hover{background:var(--gold);}   /* body.dark .wm-act and its :hover outrank .wm-act.copied: the navy "Copied!" sat on the dark surface (1.03:1) */
 .wm-root-row{margin-bottom:12px;}
 .wm-root-btn{width:100%;padding:9px 12px;border:1px solid var(--gold);border-radius:6px;background:var(--gold);color:var(--navy);font-size:0.85rem;font-family:inherit;font-weight:600;cursor:pointer;}
 .wm-root-btn:hover{background:var(--gold-light);color:var(--navy);}
