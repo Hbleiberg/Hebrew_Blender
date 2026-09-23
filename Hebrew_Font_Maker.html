@@ -17470,6 +17470,13 @@ function qaSmrRows() {
     return { cp: m.cp, name: m.short, labelCh: qaCh(m.cp), desc: !!m.desc, L, lang: 'und-Samr' };
   }).filter(Boolean);
 }
+function qaRowsInked(rows) { return rows.some(r => r.L && r.L.contours && r.L.contours.length); }   // at least one traced letter to check against
+// True when some tab pairs a traced letter with a mark column. Without one there was nothing to check,
+// and "All placements clear" would describe a check that never ran (a new project opens QA like that).
+function qaHasWork() {
+  const heb = qaRowsInked(qaRows()), smr = qaRowsInked(qaSmrRows());
+  return ['nikkud', 'trop', 'stacked', 'pairs', 'smrmarks'].some(t => (t === 'smrmarks' ? smr : heb) && qaColumns(t).length > 0);
+}
 /* The Samaritan tab's cell box: ONE `top` for the whole tab (every cell at one scale), lifted above the
    Hebrew box whenever a mark or a letter reaches higher — an imported mark sits 600–1000 units up, and nun
    rises. Width needs nothing: the box is height-limited at the cell's 54×62 px, so `meet` already shows
@@ -17882,7 +17889,9 @@ function qaRenderSummary() {
   const el = document.getElementById('qaSummary'); if (!el) return;
   if (!qaResult) { el.innerHTML = ''; return; }
   let h;
-  if (qaResult.total === 0) {
+  if (!qaHasWork()) {
+    h = '';   // the grid says why; the outline line below still covers whatever is drawn
+  } else if (qaResult.total === 0) {
     // The key holds the whole sentence; keep the green ✓-clause emphasis by splitting at the first
     // sentence break (works in EN + HE; a translation without one degrades to all-emphasized).
     const txt = I18n.t('fontmaker.qa.summary_clear'), dot = txt.indexOf('. ');
@@ -17894,7 +17903,7 @@ function qaRenderSummary() {
     const names = qaResult.outline.map(o => esc(o.name)).join(', ');
     h += `<span class="qa-tall">${I18n.t(qaResult.outline.length === 1 ? 'fontmaker.qa.outline_warn.one' : 'fontmaker.qa.outline_warn.other', { count: qaResult.outline.length, names })}</span>`;
   }
-  if (qaResult.tall) h += `<span class="qa-tall">${I18n.t('fontmaker.qa.tall_warn', { asc: qaResult.winAscent, desc: qaResult.winDescent })}</span>`;
+  if (qaResult.tall && coreLetterStats().traced > 0) h += `<span class="qa-tall">${I18n.t('fontmaker.qa.tall_warn', { asc: qaResult.winAscent, desc: qaResult.winDescent })}</span>`;   // with no Hebrew letter traced Export refuses, so no clip box expands
   const notReady = qaBuildCheckForms().filter(pc => !qaFormReady(pc)).length;
   if (notReady) h += `<span class="qa-tall" style="color:var(--muted);">${I18n.t(notReady === 1 ? 'fontmaker.qa.notready.one' : 'fontmaker.qa.notready.other', { count: notReady })}</span>`;
   el.innerHTML = h;
@@ -17907,10 +17916,13 @@ function qaRenderGrid() {
   if (!cols.length) { qaSyncFilterUI(null, null); const kind = I18n.t(qaTab === 'stacked' ? 'fontmaker.qa.tab_stacked' : (qaTab === 'trop' ? 'fontmaker.qa.tab_trop' : 'fontmaker.qa.tab_nikkud'));
     const msg = qaTab === 'smrmarks' ? esc(I18n.t('fontmaker.qa.smr_none')) : I18n.t('fontmaker.qa.no_marks', { kind });   // the Samaritan tab is enabled only with the family on, so "empty" there means nothing drawn yet
     grid.innerHTML = pairCtrl + `<p style="color:var(--muted);font-size:0.85rem;">${msg}</p>` + qaBuildCheckHtml(); return; }
+  const allRows = qaTab === 'smrmarks' ? qaSmrRows() : qaRows();
+  if (!qaRowsInked(allRows)) {   // no letter on this tab is traced yet: every cell would read "clear" over an empty box
+    qaSyncFilterUI(null, null);
+    grid.innerHTML = pairCtrl + `<p style="color:var(--muted);font-size:0.85rem;">${esc(I18n.t(qaTab === 'smrmarks' ? 'fontmaker.qa.smr_none_traced' : 'fontmaker.qa.none_traced'))}</p>` + qaBuildCheckHtml(); return; }
   // One pass over the WHOLE grid before any markup: "only problems" has to know which rows and
   // which columns are clear before the first <th> is written, and the reasons are wanted twice
   // either way — so each cell's layers/reasons are computed exactly once, as before.
-  const allRows = qaTab === 'smrmarks' ? qaSmrRows() : qaRows();
   const cells = allRows.map(row => {
     const L = row.L, anc = qaAnchors(L);
     return cols.map(col => { const layers = qaCellLayers(L, anc, col); return { layers, reasons: qaCellReasons(L, row, col, layers) }; });
