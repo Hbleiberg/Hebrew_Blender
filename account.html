@@ -146,6 +146,11 @@ main a:hover{color:var(--gold-text-hover);}
 .note{font-size:0.88rem;color:var(--muted);margin-bottom:12px;line-height:1.55;}
 .status{margin-top:10px;font-size:0.9rem;color:var(--muted);min-height:1.3em;overflow-wrap:anywhere;}
 .status.is-error{color:var(--danger-text);}
+/* An empty status line kept its reserved line and both margins under a card's last button: 65px of blank below
+   it against 22px above the heading, on three of the four cards and in the confirm box. It collapses while empty,
+   as the trope and Font Maker status lines do, but by height rather than display:none, so each one stays a live
+   region already in the accessibility tree when its first message arrives. */
+.status:empty{min-height:0;margin-block:0;}
 .field{margin-block:10px 8px;}
 .field label{display:block;font-size:0.82rem;font-weight:600;margin-bottom:5px;}
 .field input{width:100%;max-width:420px;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);padding:9px 10px;font-family:inherit;font-size:0.95rem;}
