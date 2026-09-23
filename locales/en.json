@@ -1417,6 +1417,8 @@
   "flashcards.teachertools.generate_share": "Generate Share Code",
   "flashcards.teachertools.got_code": "Got a code from your teacher?",
   "flashcards.teachertools.history_empty": "No saved results yet for this profile.",
+  "flashcards.teachertools.include_settings": "Include my settings",
+  "flashcards.teachertools.include_settings_tip": "Adds your Hebrew and English fonts and your vowel color coding to the code and link. Turn it off to share just the drill, and each student sees it in their own fonts and colors.",
   "flashcards.teachertools.load_button": "Load",
   "flashcards.teachertools.new_profile_button": "New",
   "flashcards.teachertools.new_profile_button_title": "Create a new profile",

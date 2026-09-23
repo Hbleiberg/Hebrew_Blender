@@ -1322,6 +1322,8 @@ flashcards.actions.delete_aria,Delete {name},מחק את {name},icon-only ✕ de
 flashcards.teachertools.generate_share,Generate Share Code,צור קוד שיתוף,share-code button,
 flashcards.teachertools.got_code,Got a code from your teacher?,קיבלתם קוד מהמורה?,share-code paste subheading,
 flashcards.teachertools.history_empty,No saved results yet for this profile.,אין עדיין תוצאות שמורות לפרופיל זה.,profile history empty state,empty state
+flashcards.teachertools.include_settings,Include my settings,כולל ההגדרות שלי,share-code toggle — the code and link also carry the teacher's fonts and vowel color coding (on by default),
+flashcards.teachertools.include_settings_tip,"Adds your Hebrew and English fonts and your vowel color coding to the code and link. Turn it off to share just the drill, and each student sees it in their own fonts and colors.","מוסיף לקוד ולקישור את הגופנים בעברית ובאנגלית ואת צביעת התנועות שלכם. כבו את האפשרות כדי לשתף רק את התרגול, וכל תלמיד יראה אותו בגופנים ובצבעים שלו.",share-code toggle tooltip,
 flashcards.teachertools.load_button,Load,טען,share-code load button,
 flashcards.teachertools.new_profile_button,New,חדש,new profile button,svg-icon-in-markup
 flashcards.teachertools.new_profile_button_title,Create a new profile,צור פרופיל חדש,new profile button title,aria-label only

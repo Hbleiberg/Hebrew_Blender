@@ -1417,6 +1417,8 @@
   "flashcards.teachertools.generate_share": "צור קוד שיתוף",
   "flashcards.teachertools.got_code": "קיבלתם קוד מהמורה?",
   "flashcards.teachertools.history_empty": "אין עדיין תוצאות שמורות לפרופיל זה.",
+  "flashcards.teachertools.include_settings": "כולל ההגדרות שלי",
+  "flashcards.teachertools.include_settings_tip": "מוסיף לקוד ולקישור את הגופנים בעברית ובאנגלית ואת צביעת התנועות שלכם. כבו את האפשרות כדי לשתף רק את התרגול, וכל תלמיד יראה אותו בגופנים ובצבעים שלו.",
   "flashcards.teachertools.load_button": "טען",
   "flashcards.teachertools.new_profile_button": "חדש",
   "flashcards.teachertools.new_profile_button_title": "צור פרופיל חדש",

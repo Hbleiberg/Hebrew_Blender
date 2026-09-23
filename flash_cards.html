@@ -1922,6 +1922,11 @@ body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .f
       <div class="label adv-subhead" data-i18n="flashcards.teachertools.share_head">Teacher Share Code</div>
       <div class="adv-subbody">
         <p class="sub" style="margin-top:0;" data-i18n-html="flashcards.teachertools.share_intro">Generate a code that captures every current setting. Share it with students — when they paste it and tap <b>Load</b>, the deck opens with your exact setup.</p>
+        <!-- Off: the code and link leave out SHARE_LOOK_KEYS, and each student keeps their own (withOwnLook). -->
+        <div class="row" style="margin-top:0;">
+          <label class="switch"><input type="checkbox" id="shareLookToggle" checked><span class="slider"></span></label>
+          <span class="label has-tip" data-tip="Adds your Hebrew and English fonts and your vowel color coding to the code and link. Turn it off to share just the drill, and each student sees it in their own fonts and colors." data-i18n-tip="flashcards.teachertools.include_settings_tip" data-i18n="flashcards.teachertools.include_settings">Include my settings</span>
+        </div>
         <div class="btn-row" style="margin-bottom:8px;">
           <button class="btn primary sm" id="generateShareBtn" data-i18n="flashcards.teachertools.generate_share">Generate Share Code</button>
           <button class="btn sm ghost hi-btn" id="copyShareBtn"><svg class="hi hi-sm hi-copy" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2.2"/><path d="M15.5 5.5v-.8a2.2 2.2 0 0 0-2.2-2.2H6.2A2.2 2.2 0 0 0 4 4.7v7.1a2.2 2.2 0 0 0 2.2 2.2H5"/></svg><span class="hi-lbl" data-i18n="flashcards.teachertools.copy_code">Copy Code</span></button>
@@ -2870,6 +2875,7 @@ let mistakeIndices = [];
 let lastDrillResult = null;  // snapshot of the just-finished drill, for "Save Results"
 let lastDrillSavedTo = null; // the profile that drill was saved to (reset when a drill starts)
 let showSkippedAgain = true; // re-queue each skipped card once so the whole set gets seen
+let shareIncludeLook = true; // share code/link carries the teacher's fonts + vowel colors (SHARE_LOOK_KEYS)
 let requeued = [];           // parallel to scores: true = slot was skipped & re-queued (excluded from results)
 let hasFlipped = [];         // parallel to scores: true once the user has flipped this card at least once
 
@@ -4395,6 +4401,7 @@ function getSettings() {
     translitStyle,
     sheetDuplex,
     sheetPracticed,
+    shareIncludeLook,
   };
 }
 // One chokepoint for every member list a preset, .ivrit file or ?s= link can carry (pattern
@@ -4603,6 +4610,9 @@ function applySettings(s) {
   sheetPracticed = s.sheetPracticed === true;    // a stored false survives; a non-boolean is garbage, not "on"
   const spT = document.getElementById('sheetPracticedToggle');
   if (spT) spT.checked = sheetPracticed;
+  shareIncludeLook = s.shareIncludeLook !== false;   // on unless a stored false says otherwise (older blobs predate it)
+  const slT = document.getElementById('shareLookToggle');
+  if (slT) slT.checked = shareIncludeLook;
   // Always load the library so romanized fields on numbers/colors cards get populated
   window.HebrewTransliterator.ensureLoaded().then(() => {
     rebuildDeckTranslit();
@@ -5117,8 +5127,21 @@ function shareCodeDecode(code) {
   return ivritSafeParse(decodeURIComponent(escape(atob(b))));
 }
 const WORDS_SHARE_CAP = 300;   // max words embedded in a share code (keeps the base64/QR usable)
+// The teacher's own look: what "Include my settings" leaves out of a code or link when it is off.
+// A code carrying none of these keeps the reader's own look (withOwnLook) rather than the defaults
+// applySettings gives a missing field; one that names any of them is applied as sent, as always.
+const SHARE_LOOK_KEYS = ['hebFontId', 'engFontId', 'colorCodingEnabled', 'colorCodingMode', 'nikudColorOverrides', 'vowelColorScheme'];
+function withOwnLook(data) {
+  const own = getSettings(), out = ivritSafeAssign({}, data);
+  const has = k => Object.prototype.hasOwnProperty.call(out, k);
+  if (!SHARE_LOOK_KEYS.some(has)) SHARE_LOOK_KEYS.forEach(k => { out[k] = own[k]; });
+  out.shareIncludeLook = own.shareIncludeLook;   // the sender's switch never travels, so a code never sets the reader's
+  return out;
+}
 function generateShareCode() {
   const data = getSettings();
+  delete data.shareIncludeLook;   // how the teacher shares is theirs, not part of what they share
+  if (!shareIncludeLook) SHARE_LOOK_KEYS.forEach(k => { delete data[k]; });
   // A "My Word Lists" code is meaningless on a device without the store, so embed the
   // resolved words inline. "All Dictionary" needs no embedding (the student fetches it).
   if (data.otherModeActive && data.otherSubMode === 'words' && data.wordsSource === 'mylists') {
@@ -5267,7 +5290,7 @@ function loadShareCode() {
   const data = payload && typeof payload === 'object' ? (payload.data || (payload.tool ? null : payload)) : null;
   if (!data || typeof data !== 'object') { shareErr(I18n.t('flashcards.share.invalid_code')); return; }
   try {
-    applySettings(data);
+    applySettings(withOwnLook(data));
     saveSettings();
     shareErr('');
     startPractice();
@@ -8494,6 +8517,14 @@ function wireSetupScreen() {
   });
 
   // Teacher share code
+  // "Include my settings" is remembered with the rest. A code already in the box was made the other
+  // way, and Copy Code copies the box as it stands, so remake it.
+  document.getElementById('shareLookToggle').addEventListener('change', e => {
+    shareIncludeLook = e.target.checked;
+    saveSettings();
+    const out = document.getElementById('shareCodeOutput');
+    if (out && out.value) generateShareCode();
+  });
   document.getElementById('generateShareBtn').addEventListener('click', generateShareCode);
   document.getElementById('copyShareBtn').addEventListener('click', copyShareCode);
   document.getElementById('copyShareLinkBtn').addEventListener('click', copyShareLink);
@@ -8692,8 +8723,9 @@ document.addEventListener('DOMContentLoaded', () => {
           const payload = shareCodeDecode(sParam);
           const data = payload && typeof payload === 'object' ? (payload.data || (payload.tool ? null : payload)) : null;
           if (!data || typeof data !== 'object') return;
+          const shared = withOwnLook(data);   // read the reader's own look before the drill replaces it
           _sharedDrill = true;
-          applySettings(data);
+          applySettings(shared);
           startPractice();
           const active = document.querySelector('.screen.active');
           if (!active || active.id === 'screenSetup') _leaveSharedDrill();   // the drill could not start: the teacher's settings are back at once
