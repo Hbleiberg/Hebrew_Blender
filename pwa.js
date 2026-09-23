@@ -82,7 +82,11 @@
       '#pwaInstallBanner .pwa-banner-close:hover{background:rgba(255,255,255,0.28);}',
       '#pwaInstallBanner .pwa-banner-close:active{transform:scale(0.9);}',
       // Mobile only — hide on desktop regardless of how the banner was triggered.
-      '@media (min-width:768px){#pwaInstallBanner{display:none !important;}}'
+      '@media (min-width:768px){#pwaInstallBanner{display:none !important;}}',
+      // Never on paper. Print media is measured at the sheet's width (Letter 740px, A4 718px at
+      // the dialog's default margins), under the cutoff above, so a desktop print showed the
+      // banner that the screen hides — and a position:fixed box repeats on every printed sheet.
+      '@media print{#pwaInstallBanner{display:none !important;}}'
     ].join('');
     document.head.appendChild(s);
   }

@@ -82,6 +82,11 @@ Notes:
   next to `POCKET_TIMINGS_BASE` rather than a literal in the fetch).
 - Cross-origin requests (Google Fonts, Analytics, Sefaria, PocketTorah) bypass
   the worker, so those resources are **not** available offline.
+- **`pwa.js` also owns the phone install banner** (`#pwaInstallBanner`; its × writes the
+  erase-only `hebrewBlender_pwaDismissed`). Its own injected CSS hides it at ≥768px **and in
+  print** — print media is measured at the sheet's width (Letter 740px, A4 718px at default
+  margins), under that cutoff, and a `position:fixed` box repeats on every sheet — so no page's
+  print hide-list needs to name it.
 
 ### Rule: bump the cache version when you change a precached asset
 
