@@ -517,7 +517,9 @@ that opens the chip's menu; offline or with the SDK blocked: one line, nothing e
   `IvritSuite-account-<date>.ivrit`, the AllTools-shaped bundle from `IvritSaves.bundleAll()` (the hub's
   Import / Export modal restores it), `<date>` being the teacher's local date as in the zip's own name; and per
   project `font-projects/<name>/<stem>.hebrewfont` from `IvritProjects.projectFile()` (the stem keeps the name's
-  ASCII letters, digits, `.` and `-`, else `font`; the folder keeps the name) — the cloud copy with its photos
+  ASCII letters, digits, `.` and `-`, else `font`; the folder keeps the name, minus a trailing dot or space,
+  with `_` before a Windows device name such as `CON` or `COM1`, and numbered `-2`, `-3`… when another folder
+  already has it in any letter case, because Windows and macOS disks ignore case) — the cloud copy with its photos
   put back where the page took them out (a generic walk over the `cloud:` strings the packed manifest names,
   photos downloaded three at a time, a failed one left empty and counted) — next to the exported font when one
   is kept. Progress goes to the status line (project i of n, photo j of m); the done line names what could not
