@@ -8,13 +8,19 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S405, measured by `f78ad1b`'s verification — C's**) | Hebrew_Font_Maker.html | **The Help window's ghost buttons draw `--gold-light` (#f0d080) on white — 1.5:1** (Shortcuts; every Picture (PNG) in Download Templates, now in Hebrew too): `.tbtn.ghost` is the header's style, and `.tour-card` / `.wiz-modal` already override it to `var(--text)` on their light surfaces; the help …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P3 (**NEW S406 Pass N arm 5 — a shared-script slot**) | js/ivrit-account.js | **iOS zooms the page 1.28× when a teacher taps the sign-in menu's Email or code field, and it stays zoomed**: both compute 12.48px (they inherit `.ivacct-label`'s 0.78rem) against WebKit's 16px focus-zoom line. `.ivacct-input` at 16px under `(pointer:coarse)`. Pattern `text-field-under-16px-zooms-on-ios-focus`. | …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S405, measured in BOTH trees by `1e8991f`'s verification**) | flash_cards.html | **After a manual Save Results, a live language switch re-enables the button** (`applyI18n` re-runs `showResults`, which resets it to "Save Results", enabled), so one click banks the same drill twice. The Learning Path branch re-asserts its saved state (`_ladderActive.banked`); the manual path keeps no …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P3 (**NEW S405, measured by `f78ad1b`'s verification — C's**) | Hebrew_Font_Maker.html | **The Help window's ghost buttons draw `--gold-light` (#f0d080) on white — 1.5:1** (Shortcuts; every Picture (PNG) in Download Templates, now in Hebrew too): `.tbtn.ghost` is the header's style, and `.tour-card` / `.wiz-modal` already override it to `var(--text)` on their light surfaces; the help …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P3 (**NEW S406 Pass N arm 7 — D's**) | account.html | **Download everything freezes the page ~0.74 s per 8 MB of photos at 4× CPU**: `_crc32` is the bitwise loop (668 ms self), and "Preparing the zip…" never paints before the synchronous `makeZip()`. A table-driven CRC-32 and one `await` first; `resources.html` has the same `_crc32`. | found S406
 
 - [ ] P4 (**NEW S404 Pass L — gate 2 ANSWERED "match the image"; ready to ship, held only by the trope 2-per-session cap**) | torah_trainer.html + trope_tutor.html | **Both pages show the suite-wide link-preview card (`og-card.png`: "Free Hebrew Literacy Tools" with dashboard/worksheet screenshots) but their `og:image:alt` describes the tool** ("IvritSuite Torah Trainer — free Hebrew parsha …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S404 — the icon sweep's one missed tab**) | trope_tutor.html + locales/ui-strings.csv | **The Drill tab's label is still `🎯 Drill` / `🎯 תרגול` (CSV note `leading-emoji`) while its sibling Learn tab carries the `hi-book` SVG with a glyph-free label** — the one mode tab the sweep did not convert. The 49-glyph set has no target shape, so the fix picks an existing glyph or adds one …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P4 (**NEW S406 Pass N arm 5**) | account.html | **The Display name field lacks the suite's name-field triplet** (`autocapitalize="words" autocorrect="off" spellcheck="false"`, as on contact, resources, the dashboard and the Font Maker): iOS autocorrect can rewrite a surname as it is typed. | found S406
+
+- [ ] P4 (**NEW S406 — A's, the shape behind `4bbdae1`**) | js/ivrit-account.js, ivrit-saves.js, ivrit-projects.js | **A promise callback writing to nodes an earlier render captured**: sweep the three modules, each driven with a re-render mid-flight. Also the menu's mid-send rebuild drops the Sending… lock (a second tap sends a second code). | found S406
 
 - [ ] P4 (**NEW S405 Pass K — the new pattern's open carriers; confirm each display first**) | Hebrew_Font_Maker.html, torah_trainer.html, flash_cards + generator + dictionary | **`translated-key-exists-page-hardcodes-english`, 3 carriers left:** FM `whoHasCp()` returns "a precomposed form", "the Sheva Na slot"… into the custom-glyph clash message (7 English strings, `fontmaker.whohas.*` has 4); …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -158,6 +164,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-23 | (S406 close-out) | branch/deploy note | **S406 = pass N + 4 fixes (full budget), CONTINUING `claude/eager-bardeen-jdve4x` / draft PR #265 (read through the API: open, unmerged, `mergeable_state` clean, base `041ddfa`, head `14c185d`) — 4 fix commits + this close-out on top of the branch's 15; a human merges and confirms the Pages run.** **DRIFT: NONE** — `origin/main` still …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-23 | `f928214` | scripts/smoke-account.mjs + ops.md | (S406) **The accounts smoke drives the first email sign-in to the end** — scenario H (fake `/otp` + `/verify`, 1280 + 390): the field appears and takes focus, the code signs in. | verified: the unfixed tree fails 6/6 of H (47/53); branch 53/53; 37/37 without `--sdk`
+
+- [x] 2026-09-23 | `2fae88d` | flash_cards.html | (S406) **A saved drill stays saved across a language switch** (`lastDrillSavedTo`, cleared at every drill start). | verified vs the unfixed tree: before, a second click banked the drill twice; after, saved in HE and back, 1 result; Try Again offers Save again; the Learning Path unchanged; matrix 8/8; smoke-tools 21/21
+
+- [x] 2026-09-23 | `4426c36` | account.html | (S406 Pass N) **A long address or saved name no longer pushes the page sideways** (`#whoLine,#holdsList{overflow-wrap:anywhere}`; 13–35px at 320–412). | verified: 12 phone cells × 6 views vs the unfixed tree — after, 72/72 fit and every cell reaches "deleted" by taps; ordinary-address boxes identical at 1280/800
+
+- [x] 2026-09-23 | `4bbdae1` | js/ivrit-account.js | (S406 Pass N) **P1: the sign-in code field appears after the first emailed code** (the first signIn's INITIAL_SESSION re-render left the send's `.then` a detached field). | verified: 8 configurations vs the unfixed tree — before no field, after shown + focused and the code signs in; 429 hidden in both; all seven smokes 400/400
+
 - [x] 2026-09-23 | (S405 close-out) | branch/deploy note | **S405 = pass K + 4 fixes (full budget), CONTINUING `claude/eager-bardeen-jdve4x` / draft PR #265 (read through the API: open, unmerged, `mergeable_state` clean, base `041ddfa`, head `e58372d`) — 4 fix commits + this close-out on top of S403–S404's 10; a human merges and confirms the Pages run.** **DRIFT: NONE** — `origin/main` still …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-23 | `b07b9fc` | hebrew_blend_generator.html + CSV | (S405 Pass K) **Self-check sheets start in the interface language** (pattern `translated-key-exists-page-hardcodes-english`): the score bar's first "N left" on both self-check sheets through `worksheet.selfcheck.remaining` (its updater already used it), and the Gematria default subtitle through 2 new keys beside the three sibling …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -168,7 +184,7 @@ _(none)_
 
 - [x] 2026-09-22 | `f78ad1b` | Hebrew_Font_Maker.html + CSV + newglyphset.md | (S405 Pass K) **The translated Help → Download Templates tab offers the downloads again** (P2): a CSV body carries no buttons, so since the English-formatting fix the Hebrew tab offered no template and nikkud / trop / punctuation had no other way in; `templateRowsHTML()` appends one row per English row (order read from …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-23 | (S405 Pass K iter 1) | repo-wide | **27th K, first since S388 (17 sessions); the stalest runnable pass (O blocked here).** Delta `0a35e22..HEAD`: 151 commits, the i18n surface 19 files +4,999/−1,191; CSV 5,516 → 5,738 keys, every `en` change co-edited with `he`. **Gates A–E clean; 15 plants fire every class**; innerHTML literals are skipped by design (the header says …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-09-23 | (S405 Pass K iter 1) | repo-wide | **27th K, first since S388 (17 sessions); the stalest runnable pass (O blocked here).** Delta `0a35e22..HEAD`: 151 commits, the i18n surface 19 files +4,999/−1,191; CSV 5,516 → 5,738 keys, every `en` change co-edited with `he`. **Gates A–E clean; 15 plants fire every class**; innerHTML literals are skipped by design (the header says …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-22 | (S404 close-out) | branch/deploy note | **S404 = pass L + 4 fixes (full budget), CONTINUING `claude/eager-bardeen-jdve4x` / draft PR #265 (read through the API: open, unmerged, `mergeable_state` clean, base `041ddfa`, head `c3fa257`) — 4 fix commits + this close-out on top of S403's 5; a human merges and confirms the Pages run.** **DRIFT: NONE** — `origin/main` still `041ddfa`; …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -198,15 +214,11 @@ _(none)_
 
 - [x] 2026-09-18 | `88b2720` | hebrew_blend_generator.html + CSV + reference | **"N pages to print" under Print / Export PDF — shipped (S402, seed S367).** `updatePrintCount()` counts the units `exportPDF` captures one per page (`.sheet`, `.bingo-page`, `.caller-sheet`) through ONE `MutationObserver` on `#worksheet`'s child list (every page unit is a direct child), coalesced to a frame — **the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-09-18 | (S401 close-out) | branch/deploy note | **S401 was a feature-seeds session, not a pass — the maintainer asked for "only the S seeds for the dashboard": two `S (dual)` seeds shipped, one commit each (`92217cf` `7d7b89a`), on a FRESH branch `claude/improveloop-feature-seeds-mwdbk4` cut off `origin/main` `5f1941d` (PR #250 read through the API: merged 2026-09-18) → draft PR #251; …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-18 | `7d7b89a` | classroom_dashboard.html + CSV + sw.js + reference | **"+1 min" on the timer — shipped (S401, seed S367).** `timerAddMinute()` adds 60 s to `timerRemaining` ONLY (Reset returns to the preset), keeps a running clock running, resumes a just-finished one, leaves a paused/idle one stopped; the "Time!" hold is now `timerFinishTimeout`, cleared by …[full text: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-18 | `92217cf` | classroom_dashboard.html + CSV | **"Everyone's here" clears the class's absence marks in one tap — shipped (S401, seed S367).** `clearAbsences()` beside `resetPickerCycle()`; one `.btn-xs` in `#pickerProgress` while `absent.length`, fair cycle on or off, gone when all-present; active class only, `picked` untouched, no `confirm()`, no new state. Seed premise …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-23 | **S406** | iters: 1 pass (**N**) + 4 fixes = **5** (full budget) | tools: js/ivrit-account.js (`4bbdae1` — the session's one shared-script iteration), account (`4426c36`), flash_cards (`2fae88d`), scripts/smoke-account.mjs + ops.md (`f928214`) | patterns fixed: — (NEW …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-09-23 | **S405** | iters: 1 pass (**K**) + 4 fixes = **5** (full budget) | tools: Hebrew_Font_Maker (`f78ad1b`), flash_cards ×2 (`1e8991f`, `0a420fc` — at its cap), torah_trainer (`1e8991f`), hebrew_blend_generator (`b07b9fc`) | patterns fixed: textContent-rewrite-erases-a-control-icon ×5 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -246,13 +258,13 @@ _(none)_
 
 - 2026-09-15 | **S386** | iters: 1 pass (**E**) + 4 fixes = **5** (full budget) | tools: account (`fba22e1`), THIRD_PARTY_LICENSES (`e65f7e5`), README (`ad6bcd8`), sitemap (`e89e6dd`) | patterns fixed: hover-feedback-survives-the-disabled-state ×1 (3 controls, carrier 4 of 7) | pass run: E (31st; …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-09-15 | **S385** | iters: 1 pass (**A**) + 3 fixes = **4** (the 5th unspent: `dark-print-shadow-slab` hit its 2-per-session cap and every other arm came back clean or non-actionable) | tools: hebrew_blend_generator (`0a46f67`), trope_tutor (`7be7591`), classroom_dashboard (`902d3ff`) | …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S405 (2026-09-23):** all-page passes keep the *dedicated pass* the useful column. index (S403: `7552ba0` `6e28af3`; M S391, F S397); hebrew_blend_generator (**S405: `b07b9fc`**; S402 seeds; G S392, **D S338 — D-next**); flash_cards (**S405: `1e8991f` `0a420fc`**; D S393, **H S264 — the stalest H tool**, G S279); hebrew_dictionary (**C S285 — C-next**); classroom_dashboard (S404: `4b7f9cc`; S401 seeds; H S395); torah_trainer (**S405: `1e8991f`**; **O-next, never O-audited**; **N S248 — N-next**); trope_tutor (S404: `4b7f9cc` `92dfe01`; S400 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **S406 (2026-09-23):** index (S403; M S391, F S397; **N S249 — N-next**); generator (S405; G S392, **D S338 — D-next**); flash (**S406 `2fae88d`**; D S393, **H S264**, N S361); dictionary (**C S285 — C-next**; N S303); dashboard (S404; H S395, N S321); torah (S405; **O-next**; N S334); trope (S404; N S389); FM (S405; B S398, N S290); account (**S406 `4426c36`, N S406 — first**; C S396, P S390); js/ivrit-account.js (**S406 `4bbdae1`**); resources (N S375); contact (N S276); privacy/terms/404 (N S348).
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`text-field-under-16px-zooms-on-ios-focus`** (**NEW S406 Pass N — 142 page fields + the sign-in menu's 2, open; the suite rule is gate 4**): ACTIVE, streak 0. Detection: computed `font-size` < 16px on every text-entry field under an iPhone descriptor, hidden ones too; a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`textContent-rewrite-erases-a-control-icon`** (**NEW, registered 2026-09-23 (S405 Pass K) — 5 buttons / 7 writers on 2 pages, all fixed `1e8991f`**): ACTIVE, clean streak 0. The converse of `icon-markup-into-a-textContent-writer`: the icon sweep drew a control's SVG in its …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -496,11 +508,11 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- N mobile & touch-device (one surface): 2026-09-16 (**S389 — 17th N, `trope_tutor.html`, its 2nd (S248 -> S389; 56 commits and +518/-74 between, incl. the print chart, the drawer resize block, roving tabindex and the WHOLE accounts layer, which no N had seen on a phone). N was the stalest unattended pass (O attended-only since S346) and the pointer named both pass and surface. 4 real descriptors …[full text: IMPROVEMENT_ARCHIVE.md]
+- N mobile & touch-device (one surface): 2026-09-23 (**S406 — 18th N, `account.html`, its FIRST (the page arrived with accounts phase 6 and no N had seen it). The S405 pointer named the Torah Trainer as "N S248"; the archive has torah's Ns at S245 and S334 and S248 as trope's first, so the never-N'd account page was the stalest surface. 16 cells (SE 320, i13 390 + landscape 750, Pixel 7 412 × …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - M aesthetics & visual design (one surface): 2026-09-16 (**S391 — 17th-ever M, `index.html`, its 2nd (S246 → S391): 48 commits and +512/-66 between, and the FIRST aesthetics look at the accounts-era hub panels (cloud saves, My Fonts manager, last-backup line, erase gate). Stalest unattended pass for a second session running, and the pointer named both pass and surface. 8 cells (EN/HE × …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- K i18n / localization audit: 2026-09-23 (**S405 — 27th K, first since S388 (17 sessions); the stalest runnable pass (O blocked here). Delta `0a35e22..HEAD`: 151 commits, the i18n surface +4,999/−1,191, CSV +223 keys. Gates A–E clean, 15 plants fire every class. 12 arms, every zero controlled; 28 runtime cells clean. FOUND: the Hebrew Templates tab with no downloads (P2, `f78ad1b`), 5 …[full text: IMPROVEMENT_ARCHIVE.md]
+- K i18n / localization audit: 2026-09-23 (**S405 — 27th K, first since S388 (17 sessions); the stalest runnable pass (O blocked here). Delta `0a35e22..HEAD`: 151 commits, the i18n surface +4,999/−1,191, CSV +223 keys. Gates A–E clean, 15 plants fire every class. 12 arms, every zero controlled; 28 runtime cells clean. FOUND: the Hebrew Templates tab with no downloads (P2, `f78ad1b`), 5 …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - C accessibility (one tool): 2026-09-17 (**S396 — `account.html`, and its FIRST dedicated pass of any kind; C was the longest unattended gap (S381, 15 sessions) and the pointer named the target. ⚑ THE POINTER'S OTHER NAMED TARGET WAS WRONG: it offered `trope_tutor.html` as "a tool C has never had" — trope has had THREE (S113 → S213 → S312). Re-derived from the ARCHIVE, which is what moved the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -524,12 +536,12 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-17 (**S397 — 31st run, first since S383 (14 sessions); F was the stalest unattended pass (O attended-only since S346) and the S397 pointer named it AND the affordance: THE KEYBOARD BYPASS.** Census by a real Tab walk over all 14 root pages, 0 pageerrors, 120 route aborts, torah/trope as the control: **2 of 14 carried a header skip link**; chrome stops before …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S406):** **BRANCH/PR: S403–S405 sit on `claude/eager-bardeen-jdve4x` → draft PR #265 (S405 added `f78ad1b` `1e8991f` `0a420fc` `b07b9fc` + its close-out). If #265 is open and unmerged, continue on it; if merged, cut a FRESH branch off latest `origin/main` and confirm that merge's Pages run concluded `success`.** **DRIFT vs S404: none** (`origin/main` still `041ddfa`). S405 closed at `sw.js` **v825**, FM **5.56**, SDK **2.116.0**; backend re-read LIVE in S405 (3 recorded migrations = 0001–0003, `delete-account` v3 `verify_jwt` on, advisors = the known leaked-password WARN only; keep-alive run #10 green, the latest). **Never trust these numbers unread.**
+**Next session (S407):** **BRANCH/PR: S403–S406 sit on `claude/eager-bardeen-jdve4x` → draft PR #265 (S406 added `4bbdae1` `4426c36` `2fae88d` `f928214` + its close-out). If #265 is open and unmerged, continue on it; if merged, cut a FRESH branch off latest `origin/main` and confirm that merge's Pages run concluded `success`.** **DRIFT vs S405: none** (`origin/main` still `041ddfa`). S406 closed at `sw.js` **v826**, FM **5.56**, SDK **2.116.0**; backend re-read LIVE (migrations 0001–0003 recorded, `delete-account` v3 `verify_jwt` on, keep-alive #10 green). **Never trust these numbers unread.**
 
-**⚑ STALEST PASS: O (S346 — BLOCKED here, S399 + S403), N (S389), P (S390), M (S391), G (S392), D (S393), I (S394), H (S395), C (S396), F (S397), B (S398), A (S399), E (S403), L (S404), K (S405).** Take **N** unless the maintainer says the O permission rule exists (then test ONE `node <detector> torah_trainer.html` first). N's stalest surface per the coverage row: the Torah Trainer (N S248) — and trap 83 now makes its reading paths drivable offline.
+**⚑ STALEST PASS: O (S346 — BLOCKED here), P (S390), M (S391), G (S392), D (S393), I (S394), H (S395), C (S396), F (S397), B (S398), A (S399), E (S403), L (S404), K (S405), N (S406).** Take **P** unless the O permission rule exists. P has had only whole-layer runs (S382, S390) and S406's P1 lived in its surface since phase 1: start with the A candidate's promise-callback sweep, then the hub's cloud panels (index — also the stalest N surface). Signed-in harness: `n406/fakecloud.mjs`.
 
-**⚑ READY TO SHIP, ungated:** S404's torah/trope `og:image:alt` → `IvritSuite — Free Hebrew Literacy Tools` (gate 2 answered in S404) and the Trope Tutor's `🎯 Drill` tab icon — both touch `trope_tutor.html`, exactly its cap; the two S405 P3s at the top (the help window's 1.5:1 ghost buttons — one CSS rule; flash's duplicate save after a switch); the new pattern's 3 open carriers; S403's notes, now classified per row (method: loop-findings `## S405` (5)).
+**⚑ READY TO SHIP, ungated:** the sign-in inputs at 16px on touch (P3, the shared-script slot); the FM help ghost buttons (P3, C's); the Download CRC (P3, D's); torah/trope `og:image:alt` + the trope Drill tab icon; the Display name triplet.
 
-**⚑ RUNTIME-PROBE HARNESS (standing). Traps 1–77 in loop-findings; S405 adds 78–85 there** — **(78)** take UI-writer names from the pages' own `function` declarations; **(79)** follow a template literal across lines; **(80)** never a CSS-word noise list; **(81)** headless has no speech voices, so Read all ends by itself; **(82)** click a switch's `.slider`; **(83)** Torah readings are drivable offline through a Sefaria route stub; **(84)** interaction-only label writers need the key∩writer census; **(85)** a Done entry is filed under the first `S###` on its line — untagged, the next compaction archives it. **Also standing: `compact-ledger.mjs --apply` is NOT idempotent — run it ONCE, after writing the new pointer; the outgoing handoff is moved by hand.**
+**⚑ HARNESS: traps 1–88 in loop-findings** (S406: an overflowed `isMobile` page mis-maps taps; a framed view needs a route-fulfilled host; assert the sign-in stage by the field, not the note). `compact-ledger --apply` runs ONCE; the outgoing handoff moves by hand; a Done line files under its FIRST `S###`.
 
-**⚑ AFTER THOSE:** the older bench — the My Fonts 24px icon buttons (C's), the flash/FM/trope heading-level trio (a structure call), account's `#holdsList` (needs WebKit). **Gate bench:** gate 2 — the generator's Header Labels translating only Name/Date (S405 measured the same boundary on "Page N of M", "Word Bank", the answer-key banners); gate 3 — the FM stage annotations, account's dark `.btn.ghost`/`.btn.danger`, `.dash-edit-pencil`'s side in Hebrew, the hub's 2.4px type band; gate 4 — the flash-card sticky bar + landscape. **Seed bench: 12**, unchanged (dashboard's week-editor undo is the strongest).
+**⚑ GATE BENCH:** gate 4 — the suite 16px-on-touch rule (142 fields), the flash sticky bar; gate 2 — the generator's Header Labels; gate 3 — FM stage annotations, account's dark ghost/danger, `.dash-edit-pencil`, the hub's type band. **Seed bench: 12.**
