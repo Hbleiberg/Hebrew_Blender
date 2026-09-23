@@ -472,7 +472,8 @@ form.addEventListener('submit', async function(e){
     if (r.ok && data.success) {
       form.reset();
       if (window.hcaptcha) { try { window.hcaptcha.reset(); } catch (_) {} }
-      statusEl.style.color = 'var(--gold)';
+      // --gold-text, not --gold: raw --gold is a fill colour, 2.75:1 as text on the light tile
+      statusEl.style.color = 'var(--gold-text)';
       showStatus(() => { statusEl.textContent = I18n.t('contact.form.success'); });
     } else {
       statusEl.style.color = 'var(--muted)';
