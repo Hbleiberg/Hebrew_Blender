@@ -8,7 +8,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S409 Pass G**) | account.html | **Zip folder names collide on Windows/macOS**: case-only twins share a folder (one `.hebrewfont` replaces the other); CON/AUX… and a trailing dot fail in Explorer. Dedupe on a lowercased, trimmed stem. | found S409
+- [ ] P3 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **The Spacing tab renders every kerning pair on each show and each kern edit**: FreeSerif's 2,000 imported pairs → 238ms @1×, 1.3–1.6s @4×; each row finds its members with a linear `project.letters.find` (`kernCpTraced`). | found S410
+
+- [ ] P4 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **Continue runs a synchronous `autosaveNow()` inside the click's task** (88–114ms of 575–616ms @4×), re-saving the snapshot it just restored. | found S410
+
+- [ ] P4 (**NEW S410 Pass D**) | Hebrew_Font_Maker.html | **The partner wizard's Create re-renders every grid once per setter** (`setMarkEnabled` ×2, `setAddEnglishLetters`, `setInputMode`…): 3 tasks of 465–678ms @4×, top 146–201ms @1× (engine blocked; with it, Pyodide's own blocks dominate). | found S410
 
 - [ ] P4 (**NEW S409**) | Hebrew_Font_Maker.html + CSV | **`fontmaker.cloud.photos_missing` lacks `.one`/`.other`** ("1 photos"; the account twin split in `4169b72`). | found S409
 
@@ -33,8 +37,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S405 — found beside `f78ad1b`**) | Hebrew_Font_Maker.html | **The Upload help tab's link to Download Templates exists only in the English authored HTML** (`openHelp('templates')`); the translated Upload body is CSV prose, so a Hebrew reader gets no link. A `data-fmact` action (the dispatcher's CSV-safe route) would carry it. | found S405
 
 - [ ] P4 (**NEW S403 Pass E arm 20 — K's to fix; CLASSIFIED S405**) | locales/ui-strings.csv | **121 rows keep a `leading-emoji` note although their `en` no longer leads with a glyph** (the icon sweep re-noted 74 others `svg-icon-in-markup`); a translator adding a third language would put the emoji back. S405 read every row's use sites: 99 ICON → `svg-icon-in-markup`, 11 PLAIN → drop the token, 9 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S403, measured by `7552ba0`'s verification — C's**) | index.html | **The My Fonts row's Download and Remove buttons are icon-only at 31×24px**: WCAG 2.5.8's 24px is met, but the icons reference holds an icon-only button to the suite's 30px floor with a rule of its own (the dashboard timer's transport buttons are the example). Height is unchanged from the emoji buttons the sweep …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S398 Pass B — REPLACES the S397 flash-cards line and CORRECTS its trope verdict; measured on the RENDERED outline, not the static DOM**) | flash_cards.html, Hebrew_Font_Maker.html, trope_tutor.html | **Three pages skip a heading level for a reason the tour card is not.** Rendered at load: flash `h1,h3×8` and FM `h1,h3×16` both jump 1→3 (their h3s are panel/modal titles, all …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -164,6 +166,18 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-23 | (S410 close-out) | branch/deploy note | **S410 = pass D + 4 fixes on `claude/improve-loop-k01p7y` / draft PR #266 (open, clean, base `d57da36`).** DRIFT: none. `sw.js` v829 → v830; FM not bumped (a bug fix and a speed-up). Scripts: i18n, inline-js, 7 smokes `--sdk`, sitemap, llms, compact, check-ledger. No gates.
+
+- [x] 2026-09-23 | `ee38b98` | index.html | (S410) **The My Fonts row's Use / Download / Remove reach the 30px floor** (24px high; pattern `sub-floor touch target`). | verified: 8 cells vs unfixed, 6 → 0 under 30px; planted control fires; overflow 0, 0 clipped; real Download + Remove
+
+- [x] 2026-09-23 | `578ef4f` | account.html + accounts-and-cloud.md | (S410) **Each zip folder is unique in any letter case, without a trailing dot/space or a device name.** | verified: 2 scenarios read as a Windows/macOS disk vs unfixed: 1 + 2 replaced files → 0; 1 + 1 merged → 0; 1 + 4 device → 0; smoke 53/53
+
+- [x] 2026-09-23 | `da45bb0` | Hebrew_Font_Maker.html | (S410 Pass D) **QA Check opens up to 3.6× faster: bbox reject before `pointInPoly`.** | verified: 5 fonts, real engine: 14,878 cells byte-identical; Samaritan 1.2s → 0.35s @1× (5.5 → 1.5s @4×)
+
+- [x] 2026-09-23 | `b006597` | Hebrew_Font_Maker.html | (S410 Pass D) **An import's anchors get the reload baseline, so clicking letters no longer overwrites them.** | verified: real engine, 3 fonts × 5–7 clicks: 7/7/5 changed → 0; place-myself control still inherits 7
+
+- [x] 2026-09-23 | (S410 Pass D iter 1) | Hebrew_Font_Maker.html | **FM's 3rd D (S196 → S294 → S410)**: cold, import, reopen, clicks, QA, autosave, idle, leak at 1×/4×, real engine served locally. FOUND 5 (2 fixed, 3 logged). Receipts + traps 98–101 in loop-findings.
+
 - [x] 2026-09-23 | (S409 close-out) | branch/deploy note | **S409 = pass G + 4 fixes on `claude/improve-loop-k01p7y` / draft PR #266 (open, clean, base `d57da36`).** DRIFT: none. `sw.js` v828 → v829; FM not bumped (a11y fix). Scripts: i18n, inline-js, 7 smokes `--sdk` 408/408, sitemap, llms, compact, check-ledger. No gates.
 
 - [x] 2026-09-23 | `efbc98a` | FM + trope + torah | (S409) **Empty status lines stay in the accessibility tree** (4/4). | verified: CDP `notRendered` → `role=status` vs the tree before; layout and 12 renders identical; recipe 24 cells
@@ -210,25 +224,15 @@ _(none)_
 
 - [x] 2026-09-23 | `4bbdae1` | js/ivrit-account.js | (S406 Pass N) **P1: the sign-in code field appears after the first emailed code** (the first signIn's INITIAL_SESSION re-render left the send's `.then` a detached field). | verified: 8 configurations vs the unfixed tree — before no field, after shown + focused and the code signs in; 429 hidden in both; all seven smokes 400/400
 
-- [x] 2026-09-23 | (S405 close-out) | branch/deploy note | **S405 = pass K + 4 fixes (full budget), CONTINUING `claude/eager-bardeen-jdve4x` / draft PR #265 (read through the API: open, unmerged, `mergeable_state` clean, base `041ddfa`, head `e58372d`) — 4 fix commits + this close-out on top of S403–S404's 10; a human merges and confirms the Pages run.** **DRIFT: NONE** — `origin/main` still …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-23 | `b07b9fc` | hebrew_blend_generator.html + CSV | (S405 Pass K) **Self-check sheets start in the interface language** (pattern `translated-key-exists-page-hardcodes-english`): the score bar's first "N left" on both self-check sheets through `worksheet.selfcheck.remaining` (its updater already used it), and the Gematria default subtitle through 2 new keys beside the three sibling …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-23 | `0a420fc` | flash_cards.html + CSV | (S405 Pass K) **The lock-position rows and the Listening warnings speak Hebrew** (pattern `translated-key-exists-page-hardcodes-english`; the keys were in the CSV since the first i18n audit and never asked for): `flashcards.lock.*` ×3 with the vowel pills' own ordinals, `flashcards.listening.warn_*` ×4; the heading's never-shown Hebrew …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-23 | `1e8991f` | flash_cards.html + torah_trainer.html | (S405 Pass K) **Buttons keep their icon when a script rewrites the label** (NEW pattern `textContent-rewrite-erases-a-control-icon`: 5 buttons / 7 writers, all the icon sweep's): flash Save Results ×3 writers → the label span; torah Read all + Chant all → `innerHTML = ICON_X + esc(label)` like their siblings; both Try again …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-22 | `f78ad1b` | Hebrew_Font_Maker.html + CSV + newglyphset.md | (S405 Pass K) **The translated Help → Download Templates tab offers the downloads again** (P2): a CSV body carries no buttons, so since the English-formatting fix the Hebrew tab offered no template and nikkud / trop / punctuation had no other way in; `templateRowsHTML()` appends one row per English row (order read from …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-23 | (S405 Pass K iter 1) | repo-wide | **27th K, first since S388 (17 sessions); the stalest runnable pass (O blocked here).** Delta `0a35e22..HEAD`: 151 commits, the i18n surface 19 files +4,999/−1,191; CSV 5,516 → 5,738 keys, every `en` change co-edited with `he`. **Gates A–E clean; 15 plants fire every class**; innerHTML literals are skipped by design (the header says …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
 
+- 2026-09-23 | **S410** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: FM ×2 (at cap), account, index | patterns fixed: sub-floor touch target ×1 (inline-styled row) | pass run: D | SW: v829→v830
+
 - 2026-09-23 | **S409** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: account ×2, dictionary + dashboard + trope, FM + trope + torah | patterns fixed: dark-base-rule-outranks-variant ×3, live-region-display-none-while-empty ×4 | pass run: G | SW: v828→v829
 
-- 2026-09-23 | **S408** | iters: 1 pass (**M**) + 4 fixes = **5** (full budget) | tools: account ×2 (`4a5d353`, `4be12e3` — at its cap), js/ivrit-account.js (`0cd524c` — the session's one shared-script iteration), torah_trainer + trope_tutor (`03f5abd`) | patterns fixed: …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+- 2026-09-23 | **S408** | iters: 1 pass (**M**) + 4 fixes = **5** (full budget) | tools: account ×2 (`4a5d353`, `4be12e3` — at its cap), js/ivrit-account.js (`0cd524c` — the session's one shared-script iteration), torah_trainer + trope_tutor (`03f5abd`) | patterns fixed: …[full text: …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-09-23 | **S407** | iters: 1 pass (**P**) + 4 fixes = **5** (full budget) | tools: js/ivrit-account.js (`e5c4784` — the session's one shared-script iteration), index (`dcc279e`), Hebrew_Font_Maker (`9c97e40`), account (`9f27dc4`) | patterns fixed: aria-disabled-lock-no-handler-checks ×1 (NEW) …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -264,11 +268,9 @@ _(none)_
 
 - 2026-09-16 | **S390** | iters: 1 pass (**P**, security-focused per user direction) + 2 fixes = **3** (4th/5th unspent: every remaining finding is backend-boundary maintainer work or was answered "leave as-is" at a gate, and padding the count with a change nobody asked for is not a win) | tools: …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-09-16 | **S389** | iters: 1 pass (**N**) + 2 fixes = **3** (4th and 5th unspent: both fixes are shared `js/` modules, so every one of the 9 account-bearing pages is at the 2-per-tool cap, and the only open candidates on the uncapped chrome pages are gate-2 class, deferred unattended) | …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S409 (2026-09-23):** index (S407; **N S249 — N-next**); generator (S405; G S392, **D S338 — D-next**); flash (S406; D S393, **G S279 — G-next**, H S264); dictionary (**S409**; **C S285 — C-next**); dashboard (**S409**; G S364, H S395); torah (**S409**; **O-next**, G S324); trope (**S409**; G S351, N S389); FM (**S409**; G S337, B S398); account (**S409**; **G S409 (first)**, M S408, P S407); no M on record: generator, flash, torah, terms.
+- **S410 (2026-09-23):** index (**S410**; **N S249 — N-next**, D S352); generator (S405; G S392, D S338); flash (S406; D S393, **G S279 — G-next**, H S264); dictionary (S409; **C S285 — C-next**, D S378); dashboard (S409; G S364, H S395, D S325); torah (S409; **O-next**, G S324, **D S307 — D-next**); trope (S409; G S351, N S389, D S365); FM (**S410**; **D S410**, G S337, B S398); account (**S410**; G S409, M S408, P S407; no D — its one heavy path was measured under P S407); no M on record: generator, flash, torah, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -446,7 +448,7 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 
 - **`browser-locale-date-in-a-localized-sentence`** **S371 (Pass A): 0 `toLocale(Date|Time)String(undefined` in the corpus — hits 0, clean streak 1.** (`toLocaleDateString(undefined, …)` inside a translated sentence or row): **all 3 carriers FIXED — hub `f8b716b`, flash …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **sub-floor touch target on a shared small-button class** (NEW, registered S193): a small-control class — `.btn-xs` and its kin — whose size comes from `padding` **alone**, so its rendered height lands below the suite's ratified **30px** floor (WCAG 2.5.8 asks 24px). Because …[full text: IMPROVEMENT_ARCHIVE.md]
+- **sub-floor touch target on a shared small-button class** (registered S193; **S410 FIXED the hub's inline-styled My Fonts row `ee38b98`, 6 buttons 24 → 30px — S236's class-less sub-shape**): a small-control class — `.btn-xs` and its kin — whose size comes from `padding` …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - falsy-zero: swept 2026-07-17 (S93), hits: 0 (the dashboard movable-panels feature 639fcf8/53e50fc uses array-order `panelLayout` with no numeric restores; zone reorder is array-index splicing; its guards use `=== undefined`, not `||`), clean streak: **3 → RETIRED S93** (3 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -534,7 +536,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - G print & export fidelity (one tool): 2026-09-23 (**S409 — `account.html`, its FIRST G (flash S279 is next). The zip in 10 scenarios × 5 readers + 24 printed PDFs. FOUND: UTC date + 1980 stamps (P3, `1a2e4f7`), the missing-file line (P3, `4169b72`), folder names colliding on Windows/macOS (P3), print paper-waste (P4), Hebrew "ו-" (P4). Clean: README labels, UTF-8 flag, CRCs.**)
 
-- D performance (one tool): 2026-09-16 (**S393 — `flash_cards.html`, its 4th dedicated D (S75 -> S170 -> S266 -> S393) and the tool the coverage row had carried `D-next` on for several sessions; D was the longest unattended gap (14 sessions, S378) and the S393 pointer named both pass and tool. Delta since S266: 73 commits, +768/-208, including the WHOLE accounts layer — the cloud panel, 4 sync …[full text: IMPROVEMENT_ARCHIVE.md]
+- D performance (one tool): 2026-09-23 (**S410 — `Hebrew_Font_Maker.html`, its 3rd D (S196 → S294 → S410); re-derived: the coverage row's `D-next` on the generator lagged the per-tool order (FM S294 < torah S307). Real engine served locally. FOUND: imported anchors overwritten by carry-forward (P2, `b006597`), QA Check 0.2–1.2s @1× (P3, `da45bb0`), the Spacing tab's 2,000 pairs (P3), Continue's …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - I first-load & empty-state: 2026-09-16 (**S394 — 30th run, first since S379 (15 sessions); I was the longest unattended gap and the S394 pointer named it. I's FIRST sight of the accounts layer: `account.html` was added three sessions AFTER S379, and the delta is 142 commits / 67 files / +26,291 — the largest I has faced.** The S379 scratchpad was gone, so `i394/` is a rebuild. **Mechanical …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -550,12 +552,12 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-17 (**S397 — 31st run, first since S383 (14 sessions); F was the stalest unattended pass (O attended-only since S346) and the S397 pointer named it AND the affordance: THE KEYBOARD BYPASS.** Census by a real Tab walk over all 14 root pages, 0 pageerrors, 120 route aborts, torah/trope as the control: **2 of 14 carried a header skip link**; chrome stops before …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S410):** **BRANCH/PR: S408 + S409 on `claude/improve-loop-k01p7y` → draft PR #266 (base `d57da36`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** **DRIFT vs `d57da36`.** S409 closed at `sw.js` **v829**, FM **5.56**, SDK **2.116.0**; backend clean (migrations 0001–0003, `delete-account` v3 JWT on, keep-alive #11 green). **Never trust these numbers unread.**
+**Next session (S411):** **BRANCH/PR: S408–S410 on `claude/improve-loop-k01p7y` → draft PR #266 (base `d57da36`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** **DRIFT vs `d57da36`.** S410 closed at `sw.js` **v830**, FM **5.56**, SDK **2.116.0**; backend clean (migrations 0001–0003, `delete-account` v3 JWT on, keep-alive #11 green). **Never trust these numbers unread.**
 
-**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), D (S393), I (S394), H (S395), C (S396), F (S397), B (S398), A (S399), E (S403), L (S404), K (S405), N (S406), P (S407), M (S408), G (S409).** Take **D** (re-derive the tool). **Next C:** dictionary (S285). **Next A:** re-sweep S408's two patterns + `aria-disabled-lock-no-handler-checks`. **Next G:** flash (S279).
+**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), I (S394), H (S395), C (S396), F (S397), B (S398), A (S399), E (S403), L (S404), K (S405), N (S406), P (S407), M (S408), G (S409), D (S410).** Take **I**. **Next C:** dictionary (S285). **Next A:** re-sweep S408's two patterns + `aria-disabled-lock-no-handler-checks`. **Next G:** flash (S279). **Next D:** torah (S307).
 
-**⚑ READY TO SHIP, ungated:** the zip folder names (P3); the Display name triplet; FM `photos_missing` plural; the trope Drill tab icon; FM `whoHasCp` + `special_intro`.
+**⚑ READY TO SHIP, ungated:** the Display name triplet (account); FM `photos_missing` plural; the trope Drill tab icon; FM `whoHasCp` + `special_intro`; the Spacing tab's per-row `project.letters.find` (one Map per render).
 
-**⚑ HARNESS: traps 1–97 in loop-findings.** `g409/lib.mjs` = the `m408` fake cloud + `addProject()`. `compact-ledger --apply` runs ONCE; the outgoing handoff moves by hand; a Done line files under its FIRST `S###`.
+**⚑ HARNESS: traps 1–101 in loop-findings.** `d410/lib.mjs` = a longtask observer from the first byte, CDP throttle + profiler attribution, opentype.js 1.3.4 from npm, and **Pyodide 0.26.2 from npm + fontTools 4.51.0 from PyPI** (the sandbox proxy refuses jsDelivr; without the engine an FM import reads no GPOS). `g409/lib.mjs` = the fake cloud + `addProject()`. `compact-ledger --apply` runs ONCE; the outgoing handoff moves by hand; a Done line files under its FIRST `S###`.
 
 **⚑ GATE BENCH:** gate 4 — the suite 16px-on-touch rule (142 fields), the flash sticky bar; gate 2 — the generator's Header Labels; gate 3 — FM stage annotations, `.dash-edit-pencil`, the hub's (and account's) type band, suite-wide `color-scheme` (F's). **Seed bench: 12.**

@@ -596,6 +596,10 @@ convention applies byte-for-byte. Lifecycle: `importMarkGlyph` drops any stale `
 `assignSvgContours` drop it too; the Edit-shape modal carries it through upload-mode applies and
 drops it for editor-mode (pieces) applies; boldGen mutates contours in place and deliberately
 leaves it fixed. It rides autosave/`.hfm`/recent-projects for free (deep clones, no whitelists).
+The base side has the same guard. `applyImportedAnchors` gives a letter's imported anchors a `savedAnchors`
+baseline, as `migrateProject` gives a reloaded project's. The placement step's carry-forward
+(`maybeInheritAnchors`, which copies the last letter's anchors onto the next one opened) only touches letters
+without a baseline, so it reaches seeded anchors and never replaces a font's own positions.
 `hfm_read_anchors` (v2) walks only mark/abvm/blwm-feature lookups, assigns each app key to its
 majority GPOS class (marks × Hebrew-letter bases; the old first-wins collapsed split classes), and
 folds near-constant per-class deltas into `markAttach` so marks in losing classes (shin dots,
