@@ -1539,7 +1539,9 @@ async function eraseAllSettings() {
   // the cloud panels (and the SDK's in-memory copy of the session) start from the emptied storage.
   const accountKeys = Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_accountCache' || k === 'ivritSuite_syncMeta');
   accountKeys.forEach(k => localStorage.removeItem(k));
-  if (window.indexedDB) { listUserFonts().then(l => l.forEach(f => deleteUserFont(f.name))).catch(() => {}); _fontsBackupCache = []; renderMyFontsManager(); }
+  // Awaited: when a session was there the page reloads right after the alert, and a delete still pending
+  // then is lost — the teacher's fonts stayed behind whenever the reload was quick (offline, from the cache).
+  if (window.indexedDB) { await listUserFonts().then(l => Promise.all(l.map(f => deleteUserFont(f.name)))).catch(() => {}); _fontsBackupCache = []; renderMyFontsManager(); }
   document.getElementById('ieTextarea').value = '';
   renderIvritInventory();   // the "This file will contain:" line reads storage; it must not keep the erased counts
   alert(I18n.t('home.alltools.erase_success'));
