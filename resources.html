@@ -236,7 +236,9 @@ body.dark .card-cat-badge{background:rgba(221,228,240,0.1);color:#aab8d8;}
 [dir="rtl"] .card-desc{text-align:end;}
 .card-grade{font-size:0.72rem;font-weight:600;color:var(--gold-text);}
 body.dark .card-grade{color:var(--gold-light);}
-.card-link{display:inline-flex;align-items:center;gap:4px;font-size:0.76rem;font-weight:600;color:var(--navy);margin-top:2px;opacity:0.55;transition:opacity 0.15s;}
+/* Resting opacity is the AA floor, not a look: .55 put "Visit resource" at 3.55:1 light / 3.36:1 dark;
+   .75 reads 6.60 / 4.99 and hover still brightens it to full. */
+.card-link{display:inline-flex;align-items:center;gap:4px;font-size:0.76rem;font-weight:600;color:var(--navy);margin-top:2px;opacity:0.75;transition:opacity 0.15s;}
 body.dark .card-link{color:#aab8d8;}
 .resource-card:hover .card-link{opacity:1;}
 .resource-card:hover .card-link::after{transform:translateX(3px);}
