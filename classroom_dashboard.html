@@ -4556,9 +4556,15 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   }
 
   // Perceived loudness is not linear in the slider position, so the master gain is the square of it.
-  // ?? not ||: a deliberate 0 ("muted, but keep my sound choice") must survive the round trip.
+  // ?? not ||: a deliberate 0 ("muted, but keep my sound choice") must survive the round trip. A value
+  // that is not a number (a hand-edited blob) reads as the default: NaN painted "NaN%" and left the gain
+  // at full, since the AudioParam refuses it.
+  function timerVolumePct() {
+    const n = Number(settings.timerVolume ?? 70);
+    return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : 70;
+  }
   function timerVolumeGain() {
-    const pct = Math.max(0, Math.min(100, Number(settings.timerVolume ?? 70)));
+    const pct = timerVolumePct();
     return (pct / 100) * (pct / 100);
   }
   function applyTimerVolume() {
@@ -4667,8 +4673,8 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   // A stored blob can name a sound this build doesn't have (an older export, a hand-edited .ivrit).
   // Anything unrecognised reads as the default beep rather than silence — a timer that goes quiet
   // without being asked to is the one failure a teacher would not notice until it mattered.
-  function timerSoundId(v) {
-    return (v === 'none' || TIMER_SOUNDS[v]) ? v : 'beep';
+  function timerSoundId(v) {   // own keys only: "constructor" or "toString" would pass a bare lookup and play nothing
+    return (v === 'none' || Object.prototype.hasOwnProperty.call(TIMER_SOUNDS, v)) ? v : 'beep';
   }
 
   // The single hook: timerFinish() and the drawer's Test button both come through here.
@@ -5634,7 +5640,7 @@ function mountSidebarResize(cfg) {
     $('timerSoundSel').value = timerSoundId(settings.timerSound);   // an unknown id (older/edited blob) falls back to the beep
     syncTimerSoundTestBtn();
     { // ?? not ||: a stored 0 is "muted on purpose" and must not snap back to 70
-      const tv = Math.max(0, Math.min(100, Number(settings.timerVolume ?? 70)));
+      const tv = timerVolumePct();
       $('timerVolumeSlider').value = tv;
       $('timerVolumeVal').textContent = tv + '%';   // i18n-ignore: bare percent sign
       applyTimerVolume();
