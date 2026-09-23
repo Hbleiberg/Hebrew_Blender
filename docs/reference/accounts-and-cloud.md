@@ -125,7 +125,9 @@ Mounted by `createElement`/`textContent` only; email and name never touch `inner
 (`.ivacct-btn`, `aria-haspopup="dialog"`, `aria-expanded`) + popover (`.ivacct-menu`, `role="dialog"`,
 `aria-modal="false"`, `aria-label` from `shared.account.menu_aria`). Signed out: Google button, email
 field, "Email me a sign-in link and code", then the code field + Verify; an `aria-live="polite"` note
-carries progress and errors. The Google row (`.ivacct-gbtn`, a flex row) leads with Google's four-colour
+carries progress and errors. While a sign-in or sign-out is in flight every menu button is locked by a
+module flag the handlers check (`aria-disabled` alone is only a look, and a mid-send rebuild drops it),
+re-applied by each rebuild and cleared when the action settles, so a double-click sends one code. The Google row (`.ivacct-gbtn`, a flex row) leads with Google's four-colour
 "G", built as an inline `<svg>` by `googleMark()` from the official path data — inline so no carrier
 page's CSP grows and an offline visitor still sees it, unmodified because Google's branding terms allow
 the mark on a sign-in button only as-is, and `aria-hidden` because the button's own label already says
