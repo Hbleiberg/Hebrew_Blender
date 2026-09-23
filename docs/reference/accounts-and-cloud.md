@@ -513,13 +513,16 @@ that opens the chip's menu; offline or with the SDK blocked: one line, nothing e
   projects (letters done, size, last edit, whether an export is kept); then one total line. Folder trees count
   in the totals but are not listed.
 - **Download everything** — one store-only zip built in the page (the writer `resources.html` uses for font
-  bundles, with UTF-8 names): `README.txt`; `IvritSuite-account-<date>.ivrit`, the AllTools-shaped bundle from
-  `IvritSaves.bundleAll()` (the hub's Import / Export modal restores it); and per project
-  `font-projects/<name>/<name>.hebrewfont` from `IvritProjects.projectFile()` — the cloud copy with its photos
+  bundles, with UTF-8 names; every entry stamped with the download's local time): `README.txt`;
+  `IvritSuite-account-<date>.ivrit`, the AllTools-shaped bundle from `IvritSaves.bundleAll()` (the hub's
+  Import / Export modal restores it), `<date>` being the teacher's local date as in the zip's own name; and per
+  project `font-projects/<name>/<stem>.hebrewfont` from `IvritProjects.projectFile()` (the stem keeps the name's
+  ASCII letters, digits, `.` and `-`, else `font`; the folder keeps the name) — the cloud copy with its photos
   put back where the page took them out (a generic walk over the `cloud:` strings the packed manifest names,
   photos downloaded three at a time, a failed one left empty and counted) — next to the exported font when one
-  is kept. Progress goes to the status line (project i of n, photo j of m); the button is disabled while the
-  account holds nothing.
+  is kept. Progress goes to the status line (project i of n, photo j of m); the done line names what could not
+  be downloaded, photos and exported fonts counted apart; the button is disabled while the account holds
+  nothing.
 - **Delete my account** — a confirmation box that needs a ticked checkbox ("I have downloaded everything I want
   to keep, or I do not need it") and the account's email address typed (compared case-insensitively); the red
   button stays `aria-disabled` until both hold. Then `IvritAccount.deleteAccount()` calls the `delete-account`
