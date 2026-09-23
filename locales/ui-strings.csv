@@ -3384,7 +3384,7 @@ notfound.link.flashcards,Flash Cards,כרטיסי זיכרון,tool link,
 notfound.link.generator,Worksheet Generator,מחולל דפי עבודה,tool link,
 notfound.link.torah,Torah Trainer,מאמן התורה,tool link,
 notfound.quip,"We tried to blend it back together from a few stray letters — but without the nikkud, nobody could agree on how to pronounce it.","ניסינו להרכיב אותו מחדש מכמה אותיות תועות — אבל בלי הניקוד, אף אחד לא הצליח להסכים איך להגות אותו.",hero quip,
-notfound.subtitle,"We searched right-to-left <em>and</em> left-to-right, but this page is nowhere to be found <span class=""heb-inline"">(לֹא נִמְצָא, <em>lo nimtza</em>)</span>. It may have slipped out for a snack and forgotten its vowels.","חיפשנו מימין לשמאל <em>וגם</em> משמאל לימין, אבל הדף הזה איננו <span class=""heb-inline"">(לֹא נִמְצָא, <em>lo nimtza</em>)</span>. ייתכן שהוא יצא לחטיף ושכח את התנועות שלו.",hero subtitle,html; mixed UI+content; contains Hebrew
+notfound.subtitle,"We searched right-to-left <em>and</em> left-to-right, but this page is nowhere to be found <span class=""heb-inline"">(<span lang=""he"" dir=""rtl"">לֹא נִמְצָא</span>, <em>lo nimtza</em>)</span>. It may have slipped out for a snack and forgotten its vowels.","חיפשנו מימין לשמאל <em>וגם</em> משמאל לימין, אבל הדף הזה איננו <span class=""heb-inline"">(<span lang=""he"" dir=""rtl"">לֹא נִמְצָא</span>, <em>lo nimtza</em>)</span>. ייתכן שהוא יצא לחטיף ושכח את התנועות שלו.",hero subtitle,html; mixed UI+content; contains Hebrew
 notfound.title,This page wandered off for forty years.,הדף הזה תעה במדבר ארבעים שנה.,hero title,
 notfound.tool_links_intro,Or wander somewhere useful:,או שוטטו למקום מועיל:,tool links intro,
 privacy.a11y.skip_to_policy,Skip to the policy,דילוג למדיניות,Skip-link (a11y),aria/skip-link

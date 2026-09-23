@@ -3978,7 +3978,7 @@
   "notfound.link.generator": "מחולל דפי עבודה",
   "notfound.link.torah": "מאמן התורה",
   "notfound.quip": "ניסינו להרכיב אותו מחדש מכמה אותיות תועות — אבל בלי הניקוד, אף אחד לא הצליח להסכים איך להגות אותו.",
-  "notfound.subtitle": "חיפשנו מימין לשמאל <em>וגם</em> משמאל לימין, אבל הדף הזה איננו <span class=\"heb-inline\">(לֹא נִמְצָא, <em>lo nimtza</em>)</span>. ייתכן שהוא יצא לחטיף ושכח את התנועות שלו.",
+  "notfound.subtitle": "חיפשנו מימין לשמאל <em>וגם</em> משמאל לימין, אבל הדף הזה איננו <span class=\"heb-inline\">(<span lang=\"he\" dir=\"rtl\">לֹא נִמְצָא</span>, <em>lo nimtza</em>)</span>. ייתכן שהוא יצא לחטיף ושכח את התנועות שלו.",
   "notfound.title": "הדף הזה תעה במדבר ארבעים שנה.",
   "notfound.tool_links_intro": "או שוטטו למקום מועיל:",
   "privacy.a11y.skip_to_policy": "דילוג למדיניות",

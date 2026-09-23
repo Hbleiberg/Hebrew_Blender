@@ -3978,7 +3978,7 @@
   "notfound.link.generator": "Worksheet Generator",
   "notfound.link.torah": "Torah Trainer",
   "notfound.quip": "We tried to blend it back together from a few stray letters — but without the nikkud, nobody could agree on how to pronounce it.",
-  "notfound.subtitle": "We searched right-to-left <em>and</em> left-to-right, but this page is nowhere to be found <span class=\"heb-inline\">(לֹא נִמְצָא, <em>lo nimtza</em>)</span>. It may have slipped out for a snack and forgotten its vowels.",
+  "notfound.subtitle": "We searched right-to-left <em>and</em> left-to-right, but this page is nowhere to be found <span class=\"heb-inline\">(<span lang=\"he\" dir=\"rtl\">לֹא נִמְצָא</span>, <em>lo nimtza</em>)</span>. It may have slipped out for a snack and forgotten its vowels.",
   "notfound.title": "This page wandered off for forty years.",
   "notfound.tool_links_intro": "Or wander somewhere useful:",
   "privacy.a11y.skip_to_policy": "Skip to the policy",
