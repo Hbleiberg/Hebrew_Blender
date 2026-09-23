@@ -3013,7 +3013,8 @@ fontmaker.cloud.delete_btn,Delete,מחיקה,Confirm button of the delete dialog
 fontmaker.cloud.deleted_toast,Deleted {name} from your account.,{name} נמחק מהחשבון שלכם.,Toast after a cloud project was deleted,fontmaker; cloud; template
 fontmaker.cloud.opened_cloud,Opened from your account,נפתח מהחשבון שלכם,Toast after a cloud project opened,fontmaker; cloud
 fontmaker.cloud.opened_local,Opened this device's copy of your account project,נפתח העותק שבמכשיר הזה של הפרויקט שבחשבון,Toast when the local snapshot of the same account copy was used instead of a download,fontmaker; cloud
-fontmaker.cloud.photos_missing,{n} photos could not be loaded,{n} תמונות לא ניתן היה לטעון,Toast when some photos of a cloud project failed to download,fontmaker; cloud; template
+fontmaker.cloud.photos_missing.one,1 photo could not be loaded,תמונה אחת לא ניתן היה לטעון,Toast when one photo of a cloud project failed to download,fontmaker; cloud; plural
+fontmaker.cloud.photos_missing.other,{n} photos could not be loaded,{n} תמונות לא ניתן היה לטעון,Toast when some photos of a cloud project failed to download,fontmaker; cloud; plural; template
 fontmaker.cloud.exported_keep_btn,Keep this export in my account,לשמור את הייצוא הזה בחשבון שלי,Exported ✓ dialog button,fontmaker; cloud; svg-icon-in-markup
 fontmaker.cloud.exported_keep,You can also keep this export with the project in your account.,אפשר גם לשמור את הייצוא הזה יחד עם הפרויקט בחשבון שלכם.,Exported ✓ dialog sentence when the keep button is shown,fontmaker; cloud
 fontmaker.cloud.export_kept_toast,Export kept in your account,הייצוא נשמר בחשבון שלכם,Toast after an exported font was uploaded,fontmaker; cloud

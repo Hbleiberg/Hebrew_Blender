@@ -22273,7 +22273,7 @@ async function fmCloudLocalCopy(id, rev) {   // the local snapshot of the same a
 async function fmCloudOpen(id) {
   if (!fmCloudUser()) { fmCloudSignIn(); return; }
   ipArm(0); status(_cT('phase_open', 'Opening from your account…'), true);
-  let opened = false, local = false;
+  let opened = false, local = false, missing = 0;
   try {
     const row = await IvritProjects.get(id);
     if (!row) { const e = new Error('gone'); e.code = 'not_found'; throw e; }
@@ -22284,13 +22284,18 @@ async function fmCloudOpen(id) {
       data = ivritSafeParse(await gunzipText(res.gz));
       if (!data || data.format !== 'hebrew-font-maker-project') { const e = new Error('bad file'); e.code = 'shape'; throw e; }
       const got = await fmCloudUnpack(data, id, (d, n) => status(_cT('phase_download', 'Downloading photo {i} of {n}…', { i: d, n }), true));
-      if (got.failed) status(_cT('photos_missing', '{n} photos could not be loaded', { n: got.failed }), true);
+      missing = got.failed;
+      if (missing) status(fmCloudPhotosMissingText(missing), true);
     }
     data.cloudId = row.id; data.cloudRev = row.updated_at;
     opened = await applyProjectData(data);
   } catch (e) { status(fmCloudErrorText(e), true); }
   finally { ipClose(); }
-  if (opened) { _cloudSavedAt = new Date(); fmCloudPipRender(); status(local ? _cT('opened_local', "Opened this device's copy of your account project") : _cT('opened_cloud', 'Opened from your account')); }
+  // A missing photo is the message that stays (sticky): "Opened" used to replace it within ~40 ms.
+  if (opened) { _cloudSavedAt = new Date(); fmCloudPipRender(); status(missing ? fmCloudPhotosMissingText(missing) : (local ? _cT('opened_local', "Opened this device's copy of your account project") : _cT('opened_cloud', 'Opened from your account')), !!missing); }
+}
+function fmCloudPhotosMissingText(n) {
+  return n === 1 ? _cT('photos_missing.one', '1 photo could not be loaded', { n }) : _cT('photos_missing.other', '{n} photos could not be loaded', { n });
 }
 async function fmCloudClaim(data) {   // a file may carry another account's identity: keep cloudId only when this account owns that project
   if (!data || !data.cloudId) return;
