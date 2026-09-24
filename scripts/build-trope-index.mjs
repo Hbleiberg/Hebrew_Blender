@@ -44,8 +44,10 @@ if (SOURCE !== 'export' && SOURCE !== 'api') {
 }
 
 /* ═══ TROPES taxonomy — KEEP IN SYNC between scripts/build-trope-index.mjs and trope_tutor.html ═══
-   Per-mark taxonomy for the tutor. `chars` / `family` are ported EXACTLY from
-   torah_trainer.html's TROPE_CHAR_TO_FAMILY (the six-family pedagogical grouping);
+   Per-mark taxonomy for the tutor. `chars` are ported EXACTLY from torah_trainer.html's
+   TROPE_CHAR_TO_FAMILY and `family` follows its seven families, except that munach teaches
+   in the Etnachta clause (the chart's "munach before etnachta") while the Trainer colors it
+   by the half of the verse it stands in;
    keys are stable snake_case identifiers used in trope_index.json and in the
    tutor's progress store — never rename a key without a data migration.
    Notes:
@@ -59,27 +61,28 @@ if (SOURCE !== 'export' && SOURCE !== 'api') {
      Ashkenazi "kadma" (on the stress, U+05A8) is Sephardi "azla". Same glyph
      shape, different position — the tutor's classic confusable pair. */
 const TROPES = [
-  // 1. Sof Pasuk clause
+  // 1. Sof Pasuk clause (mercha, tipcha, sof_pasuk) and 2. Etnachta clause (munach, etnachta),
+  // in phrase order: each family's cards render in this order.
   { key: 'mercha',          chars: ['֥'], display: '֥', ashk: 'Mercha',          seph: "Ma'arich",        family: 'sofpasuk', rare: false },
   { key: 'tipcha',          chars: ['֖'], display: '֖', ashk: 'Tipcha',          seph: 'Tarcha',          family: 'sofpasuk', rare: false },
-  { key: 'munach',          chars: ['֣'], display: '֣', ashk: 'Munach',          seph: 'Shofar Holech',   family: 'sofpasuk', rare: false },
-  { key: 'etnachta',        chars: ['֑'], display: '֑', ashk: 'Etnachta',        seph: 'Atnach',          family: 'sofpasuk', rare: false },
+  { key: 'munach',          chars: ['֣'], display: '֣', ashk: 'Munach',          seph: 'Shofar Holech',   family: 'etnachta', rare: false },
+  { key: 'etnachta',        chars: ['֑'], display: '֑', ashk: 'Etnachta',        seph: 'Atnach',          family: 'etnachta', rare: false },
   { key: 'sof_pasuk',       chars: [],         display: 'ֽ׃', ashk: 'Sof Pasuk (Siluk)', seph: 'Sof Pasuk (Siluk)', family: 'sofpasuk', rare: false },
-  // 2. Zakef Katon clause
+  // 3. Zakef Katon clause
   { key: 'mahpach',         chars: ['֤'], display: '֤', ashk: 'Mahpach',         seph: 'Shofar Mehupach', family: 'katon', rare: false },
   { key: 'pashta',          chars: ['֙'], display: '֙', ashk: 'Pashta',          seph: 'Kadma',           family: 'katon', rare: false },
   { key: 'yetiv',           chars: ['֚'], display: '֚', ashk: 'Yetiv',           seph: 'Yetiv',           family: 'katon', rare: false },
   { key: 'zakef_katon',     chars: ['֔'], display: '֔', ashk: 'Zakef Katon',     seph: 'Zakef Katon',     family: 'katon', rare: false },
   { key: 'zakef_gadol',     chars: ['֕'], display: '֕', ashk: 'Zakef Gadol',     seph: 'Zakef Gadol',     family: 'katon', rare: false },
-  // 3. Segol clause
+  // 4. Segol clause
   { key: 'zarka',           chars: ['֘', '֮'], display: '֮', ashk: 'Zarka', seph: 'Zarka',           family: 'segol', rare: false },
   { key: 'segol',           chars: ['֒'], display: '֒', ashk: 'Segol',           seph: 'Segolta',         family: 'segol', rare: false },
   { key: 'shalshelet',      chars: ['֓'], display: '֓', ashk: 'Shalshelet',      seph: 'Shalshelet',      family: 'segol', rare: true },
-  // 4. Revia group
+  // 5. Revia group
   { key: 'revia',           chars: ['֗'], display: '֗', ashk: 'Revia',           seph: 'Revia',           family: 'revia', rare: false },
   { key: 'darga',           chars: ['֧'], display: '֧', ashk: 'Darga',           seph: 'Darga',           family: 'revia', rare: false },
   { key: 'tevir',           chars: ['֛'], display: '֛', ashk: 'Tevir',           seph: 'Tevir',           family: 'revia', rare: false },
-  // 5. Geresh group
+  // 6. Geresh group
   { key: 'kadma',           chars: ['֨'], display: '֨', ashk: 'Kadma',           seph: 'Azla',            family: 'geresh', rare: false },
   { key: 'geresh',          chars: ['֜'], display: '֜', ashk: 'Geresh',          seph: 'Geresh',          family: 'geresh', rare: false },
   { key: 'geresh_muqdam',   chars: ['֝'], display: '֝', ashk: 'Geresh Muqdam',   seph: 'Geresh Muqdam',   family: 'geresh', rare: true },
@@ -87,7 +90,7 @@ const TROPES = [
   { key: 'telisha_ketana',  chars: ['֩'], display: '֩', ashk: 'Telisha Ketana',  seph: 'Talsha',          family: 'geresh', rare: false },
   { key: 'telisha_gedola',  chars: ['֠'], display: '֠', ashk: 'Telisha Gedola',  seph: 'Tirtzah',         family: 'geresh', rare: false },
   { key: 'pazer',           chars: ['֡'], display: '֡', ashk: 'Pazer',           seph: 'Pazer Gadol',     family: 'geresh', rare: false },
-  // 6. Rare marks
+  // 7. Rare marks
   { key: 'mercha_kefula',   chars: ['֦'], display: '֦', ashk: 'Mercha Kefula',   seph: "Tere Ta'amei",    family: 'rare', rare: true },
   { key: 'karnei_parah',    chars: ['֟'], display: '֟', ashk: 'Karnei Parah',    seph: 'Karnei Farah',    family: 'rare', rare: true },
   { key: 'yerach_ben_yomo', chars: ['֪'], display: '֪', ashk: 'Yerach Ben Yomo', seph: 'Yareach Ben Yomo', family: 'rare', rare: true },

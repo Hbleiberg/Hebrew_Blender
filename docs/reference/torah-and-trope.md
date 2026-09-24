@@ -267,10 +267,11 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   Sephardi names, family, rare flag) kept **byte-identical** between `scripts/build-trope-index.mjs`
   and `trope_tutor.html` (same convention as the `.ivrit` engine; copy, don't rewrite). Family
   assignment mirrors torah_trainer's `TROPE_CHAR_TO_FAMILY`; family hues mirror
-  `TROPE_DEFAULTS_LIGHT/_DARK` — keep both pages' color language in sync. The one difference:
-  the tutor files etnachta under `sofpasuk`, since its cards are one per mark and mercha, tipcha
-  and munach serve both halves of the verse, while the trainer colors an Etnachta clause of its
-  own (above). `sof_pasuk` has no chars (positional; siluk = meteg U+05BD, never mapped); `zarka` matches BOTH U+0598 and U+05AE
+  `TROPE_DEFAULTS_LIGHT/_DARK` — keep both pages' color language in sync. The one difference is
+  munach: a card sits in one family, so the tutor's Etnachta clause is munach and etnachta (the
+  chart's "munach before etnachta", the figure the munach card sings) and mercha and tipcha stay
+  with sof pasuk, while the trainer colors all three by the half of the verse they stand in
+  (above). `sof_pasuk` has no chars (positional; siluk = meteg U+05BD, never mapped); `zarka` matches BOTH U+0598 and U+05AE
   (Unicode's swapped names) and displays corpus-dominant U+05AE; `geresh_muqdam` has zero corpus
   occurrences (the Learn card handles example-less tropes).
 - **Audio clip engine**: ONE `<audio id="tuAudio">`; `playClip({p,a,w,ref,he,s,e})` resolves the MP3

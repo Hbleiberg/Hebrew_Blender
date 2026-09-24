@@ -16,8 +16,8 @@
 |---|---|---|---|---|---|
 | mercha | sofpasuk | 7216 | 40 | 40 |  |
 | tipcha | sofpasuk | 9005 | 40 | 40 |  |
-| munach | sofpasuk | 7340 | 40 | 40 |  |
-| etnachta | sofpasuk | 4387 | 40 | 40 |  |
+| munach | etnachta | 7340 | 40 | 40 |  |
+| etnachta | etnachta | 4387 | 40 | 40 |  |
 | sof_pasuk | sofpasuk | 4347 | 40 | 40 |  |
 | mahpach | katon | 2437 | 40 | 40 |  |
 | pashta | katon | 4358 | 40 | 40 |  |

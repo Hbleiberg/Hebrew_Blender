@@ -299,6 +299,7 @@ body.dark .tu-status.error { color:#ff6666; }
 .tu-chip:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
 .tu-chip .visited { color:var(--gold-text); font-weight:700; }
 .tu-chip.fam-sofpasuk { border-inline-start-color:var(--trope-sofpasuk-line); }
+.tu-chip.fam-etnachta { border-inline-start-color:var(--trope-etnachta-line); }
 .tu-chip.fam-katon    { border-inline-start-color:var(--trope-katon-line); }
 .tu-chip.fam-segol    { border-inline-start-color:var(--trope-segol-line); }
 .tu-chip.fam-revia    { border-inline-start-color:var(--trope-revia-line); }
@@ -493,6 +494,7 @@ body.dark .tu-review { background:#131a29; }
   border-inline-end:4px solid transparent; padding-inline-end:8px; text-align:end;
 }
 .tu-mfam.fam-sofpasuk .tu-mfam-label { border-inline-end-color:var(--trope-sofpasuk-line); }
+.tu-mfam.fam-etnachta .tu-mfam-label { border-inline-end-color:var(--trope-etnachta-line); }
 .tu-mfam.fam-katon    .tu-mfam-label { border-inline-end-color:var(--trope-katon-line); }
 .tu-mfam.fam-segol    .tu-mfam-label { border-inline-end-color:var(--trope-segol-line); }
 .tu-mfam.fam-revia    .tu-mfam-label { border-inline-end-color:var(--trope-revia-line); }
@@ -1183,8 +1185,10 @@ const DARK_KEY     = 'hebrewBlender_darkMode';   // shared across all IvritSuite
 const POCKET_AUDIO_BASE = 'https://raw.githubusercontent.com/rneiss/PocketTorah/master/data/audio/';
 
 /* ═══ TROPES taxonomy — KEEP IN SYNC between scripts/build-trope-index.mjs and trope_tutor.html ═══
-   Per-mark taxonomy for the tutor. `chars` / `family` are ported EXACTLY from
-   torah_trainer.html's TROPE_CHAR_TO_FAMILY (the six-family pedagogical grouping);
+   Per-mark taxonomy for the tutor. `chars` are ported EXACTLY from torah_trainer.html's
+   TROPE_CHAR_TO_FAMILY and `family` follows its seven families, except that munach teaches
+   in the Etnachta clause (the chart's "munach before etnachta") while the Trainer colors it
+   by the half of the verse it stands in;
    keys are stable snake_case identifiers used in trope_index.json and in the
    tutor's progress store — never rename a key without a data migration.
    Notes:
@@ -1198,27 +1202,28 @@ const POCKET_AUDIO_BASE = 'https://raw.githubusercontent.com/rneiss/PocketTorah/
      Ashkenazi "kadma" (on the stress, U+05A8) is Sephardi "azla". Same glyph
      shape, different position — the tutor's classic confusable pair. */
 const TROPES = [
-  // 1. Sof Pasuk clause
+  // 1. Sof Pasuk clause (mercha, tipcha, sof_pasuk) and 2. Etnachta clause (munach, etnachta),
+  // in phrase order: each family's cards render in this order.
   { key: 'mercha',          chars: ['֥'], display: '֥', ashk: 'Mercha',          seph: "Ma'arich",        family: 'sofpasuk', rare: false },
   { key: 'tipcha',          chars: ['֖'], display: '֖', ashk: 'Tipcha',          seph: 'Tarcha',          family: 'sofpasuk', rare: false },
-  { key: 'munach',          chars: ['֣'], display: '֣', ashk: 'Munach',          seph: 'Shofar Holech',   family: 'sofpasuk', rare: false },
-  { key: 'etnachta',        chars: ['֑'], display: '֑', ashk: 'Etnachta',        seph: 'Atnach',          family: 'sofpasuk', rare: false },
+  { key: 'munach',          chars: ['֣'], display: '֣', ashk: 'Munach',          seph: 'Shofar Holech',   family: 'etnachta', rare: false },
+  { key: 'etnachta',        chars: ['֑'], display: '֑', ashk: 'Etnachta',        seph: 'Atnach',          family: 'etnachta', rare: false },
   { key: 'sof_pasuk',       chars: [],         display: 'ֽ׃', ashk: 'Sof Pasuk (Siluk)', seph: 'Sof Pasuk (Siluk)', family: 'sofpasuk', rare: false },
-  // 2. Zakef Katon clause
+  // 3. Zakef Katon clause
   { key: 'mahpach',         chars: ['֤'], display: '֤', ashk: 'Mahpach',         seph: 'Shofar Mehupach', family: 'katon', rare: false },
   { key: 'pashta',          chars: ['֙'], display: '֙', ashk: 'Pashta',          seph: 'Kadma',           family: 'katon', rare: false },
   { key: 'yetiv',           chars: ['֚'], display: '֚', ashk: 'Yetiv',           seph: 'Yetiv',           family: 'katon', rare: false },
   { key: 'zakef_katon',     chars: ['֔'], display: '֔', ashk: 'Zakef Katon',     seph: 'Zakef Katon',     family: 'katon', rare: false },
   { key: 'zakef_gadol',     chars: ['֕'], display: '֕', ashk: 'Zakef Gadol',     seph: 'Zakef Gadol',     family: 'katon', rare: false },
-  // 3. Segol clause
+  // 4. Segol clause
   { key: 'zarka',           chars: ['֘', '֮'], display: '֮', ashk: 'Zarka', seph: 'Zarka',           family: 'segol', rare: false },
   { key: 'segol',           chars: ['֒'], display: '֒', ashk: 'Segol',           seph: 'Segolta',         family: 'segol', rare: false },
   { key: 'shalshelet',      chars: ['֓'], display: '֓', ashk: 'Shalshelet',      seph: 'Shalshelet',      family: 'segol', rare: true },
-  // 4. Revia group
+  // 5. Revia group
   { key: 'revia',           chars: ['֗'], display: '֗', ashk: 'Revia',           seph: 'Revia',           family: 'revia', rare: false },
   { key: 'darga',           chars: ['֧'], display: '֧', ashk: 'Darga',           seph: 'Darga',           family: 'revia', rare: false },
   { key: 'tevir',           chars: ['֛'], display: '֛', ashk: 'Tevir',           seph: 'Tevir',           family: 'revia', rare: false },
-  // 5. Geresh group
+  // 6. Geresh group
   { key: 'kadma',           chars: ['֨'], display: '֨', ashk: 'Kadma',           seph: 'Azla',            family: 'geresh', rare: false },
   { key: 'geresh',          chars: ['֜'], display: '֜', ashk: 'Geresh',          seph: 'Geresh',          family: 'geresh', rare: false },
   { key: 'geresh_muqdam',   chars: ['֝'], display: '֝', ashk: 'Geresh Muqdam',   seph: 'Geresh Muqdam',   family: 'geresh', rare: true },
@@ -1226,7 +1231,7 @@ const TROPES = [
   { key: 'telisha_ketana',  chars: ['֩'], display: '֩', ashk: 'Telisha Ketana',  seph: 'Talsha',          family: 'geresh', rare: false },
   { key: 'telisha_gedola',  chars: ['֠'], display: '֠', ashk: 'Telisha Gedola',  seph: 'Tirtzah',         family: 'geresh', rare: false },
   { key: 'pazer',           chars: ['֡'], display: '֡', ashk: 'Pazer',           seph: 'Pazer Gadol',     family: 'geresh', rare: false },
-  // 6. Rare marks
+  // 7. Rare marks
   { key: 'mercha_kefula',   chars: ['֦'], display: '֦', ashk: 'Mercha Kefula',   seph: "Tere Ta'amei",    family: 'rare', rare: true },
   { key: 'karnei_parah',    chars: ['֟'], display: '֟', ashk: 'Karnei Parah',    seph: 'Karnei Farah',    family: 'rare', rare: true },
   { key: 'yerach_ben_yomo', chars: ['֪'], display: '֪', ashk: 'Yerach Ben Yomo', seph: 'Yareach Ben Yomo', family: 'rare', rare: true },
@@ -1241,7 +1246,9 @@ for (const t of TROPES) TROPE_BY_KEY[t.key] = t;
    two pages teach the same color language. */
 const TROPE_FAMILY_DEFS = [
   { key:'sofpasuk', name:'Sof Pasuk clause',
-    note:"Home base: the backbone of every verse. Mercha and tipcha lead into etnachta — the deep mid-verse resting point — and the same team walks the second half down to the final sof pasuk cadence." },
+    note:"Home base: the backbone of every verse. Mercha and tipcha walk the verse down to the final sof pasuk cadence, and the same pair leads into etnachta in the first half." },
+  { key:'etnachta', name:'Etnachta clause',
+    note:"The verse's deep mid-point rest. Etnachta splits the verse in two, and munach leads into it, often after the same mercha and tipcha that close the verse." },
   { key:'katon', name:'Zakef Katon clause',
     note:"The workhorse mid-verse clause: mahpach and pashta climb toward zakef katon's little pause. Pashta looks exactly like kadma — only its position at the end of the word gives it away." },
   { key:'segol', name:'Segol clause',
@@ -1254,12 +1261,12 @@ const TROPE_FAMILY_DEFS = [
     note:"Once-in-a-Torah specialties — mercha kefula, karnei parah, and yerach ben yomo. Karnei parah and yerach ben yomo each appear exactly once, back to back, in Numbers 35:5." },
 ];
 const TROPE_DEFAULTS_LIGHT = {
-  sofpasuk:'#d64541', katon:'#3b82c4', segol:'#8e5bbf',
-  revia:'#3a9e4e',    geresh:'#2aa6a0', rare:'#c74f8e'
+  sofpasuk:'#d64541', etnachta:'#c8651b', katon:'#3b82c4', segol:'#8e5bbf',
+  revia:'#3a9e4e',    geresh:'#2aa6a0',   rare:'#c74f8e'
 };
 const TROPE_DEFAULTS_DARK = {
-  sofpasuk:'#e0635e', katon:'#5c9fe0', segol:'#a97fe0',
-  revia:'#55c06a',    geresh:'#3fbdb6', rare:'#e07ab0'
+  sofpasuk:'#e0635e', etnachta:'#ee8a3c', katon:'#5c9fe0', segol:'#a97fe0',
+  revia:'#55c06a',    geresh:'#3fbdb6',   rare:'#e07ab0'
 };
 
 /* Per-trope placement/teaching notes (postpositive and prepositive marks sit at
@@ -1495,7 +1502,7 @@ document.addEventListener('fullscreenchange', () => {
     btn.title = window.I18n ? I18n.t(fk) : (on ? 'Exit full screen' : 'Full screen');
   }
 });
-/* Resolve the six family hues into body CSS vars (same var names as torah_trainer,
+/* Resolve the family hues into body CSS vars (same var names as torah_trainer,
    so chips/labels/mastery cells recolor on theme flips for free). */
 function applyFamilyColors() {
   const dark = document.body.classList.contains('dark');
