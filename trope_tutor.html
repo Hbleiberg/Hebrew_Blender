@@ -1397,6 +1397,7 @@ function resetAllSettings() {
   if (signedIn && window.IvritSaves && typeof IvritSaves.forgetRow === 'function') IvritSaves.forgetRow('TropeTutor', 'settings');
   localStorage.removeItem(STORAGE_KEY);
   settings = JSON.parse(JSON.stringify(DEFAULTS));
+  dropMelodyParam();   // a reset is back to defaults, a link's per-visit melody included
   applyHebFontSize();
   setHebFont(settings.hebFont);
   syncFormToSettings();
@@ -1587,7 +1588,26 @@ function examplesFor(key) {
 }
 // Settings → Melody. An unknown stored value (a newer page's melody) shows the year-round staffs but stays
 // in the stored blob, so a round trip through this page never rewrites another device's choice.
-function melodyKey() { return settings.melody === 'highholiday' ? 'highholiday' : 'torah'; }
+// ?melody=highholiday|torah (the Torah Trainer's Rosh Hashanah and Yom Kippur readings link here with
+// ?melody=highholiday) shows that melody for this visit only: never saved or synced, silent on any other
+// value. Choosing a melody in Settings, or resetting them, replaces it and drops the param.
+let _melodyOverride = null;
+function readMelodyParam() {
+  try {
+    const v = new URLSearchParams(location.search).get('melody');
+    if (v === 'highholiday' || v === 'torah') _melodyOverride = v;
+  } catch (e) {}
+}
+function dropMelodyParam() {
+  _melodyOverride = null;
+  try {
+    const u = new URL(location.href);
+    if (!u.searchParams.has('melody')) return;
+    u.searchParams.delete('melody');
+    history.replaceState(history.state, '', u.pathname + u.search + u.hash);   // other params and the hash stay
+  } catch (e) {}
+}
+function melodyKey() { const m = _melodyOverride || settings.melody; return m === 'highholiday' ? 'highholiday' : 'torah'; }
 function activeMotifs() { return MOTIF_SETS[melodyKey()]; }
 function motifFor(key, set = activeMotifs()) {
   const m = set && set.tropes && set.tropes[key];
@@ -2961,6 +2981,7 @@ function setTradition(v) {
   syncProgressSummary();
 }
 function setMelody(v) {
+  dropMelodyParam();   // a choice made here replaces a link's per-visit melody
   settings.melody = v === 'highholiday' ? 'highholiday' : 'torah';
   saveSettings();
   stopTune();       // a tune of the other melody must not keep lighting the redrawn staffs
@@ -3445,6 +3466,7 @@ function _tourKey(e) {
    ══════════════════════════════════════════════════════ */
 async function init() {
   loadSettings();
+  readMelodyParam();
   loadProgress();
   initDark();
   applyFamilyColors();

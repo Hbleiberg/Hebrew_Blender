@@ -131,7 +131,15 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   theme/picker changes recolor them for free. It shows only when trope coloring is on **and** a
   reading is loaded (hidden over the empty state). The "Learn the trope names →" link renders
   only when `const TROPE_TUTOR_URL` is non-null — set to `'trope_tutor.html'` since the Trope
-  Tutor shipped (see its section below). On paper the color→family key travels via the **print
+  Tutor shipped (see its section below). **A Rosh Hashanah or Yom Kippur reading links to the
+  tutor's High Holiday melody instead:** the four readings carry `melody:'highholiday'` in
+  `HOLIDAY_READINGS`, `readingTutorMelody()` reads it off the loaded reading (custom scope +
+  `holidayKey`, so a range narrowed inside the reading keeps it), and then the legend shows its
+  twin link `#ttTropeTutorLinkHH` (each link has its own static `data-i18n`; `syncTropeTutorLink()`,
+  called from `applyTropeColors`, flips `hidden` and sets the hrefs) and the reading header adds
+  `.tt-hh-link` whether or not trope colour is on (screen-only like the header; off in fullscreen).
+  Both open `trope_tutor.html?melody=highholiday`. The chant recordings for those readings are
+  still PocketTorah's year-round melody. On paper the color→family key travels via the **print
   band** (superseding the older in-flow legend print): `#ttPrintBand`, print-only, in flow
   directly above `#ttReading` (so it prints once, on sheet 1), populated by `buildPrintBand()`
   in the beforeprint handler: range label + compact clause key. The old card's 35%-tint
@@ -208,7 +216,12 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   each file on its own, so one failing never blanks the other melody's staffs. **Settings → Melody** (`settings.melody`,
   `'torah'` by default or `'highholiday'`) picks which file draws the staffs and feeds the tune
   button; any other stored value shows the year-round staffs and stays stored (`melodyKey()`), so a
-  newer page's choice survives a round trip. While the High Holiday melody is on, the Learn tab
+  newer page's choice survives a round trip. **`?melody=highholiday` or `?melody=torah`** (the Torah
+  Trainer's Rosh Hashanah and Yom Kippur readings link with the first) shows that melody for the
+  visit only — `_melodyOverride`, read once at init, never saved or synced, silent on any other
+  value; the Settings radios show it. Choosing a melody in Settings, or Reset all, replaces it and
+  drops the param with `history.replaceState` (the other params and the hash stay), so a reload
+  after a choice does not bring the link's melody back. While the High Holiday melody is on, the Learn tab
   shows a banner naming it (`#tuMelodyNote` — it prints with the chart; its Change button, which
   opens the setting, does not), a card with no High Holiday figure says why where its staff would
   be, and the staff's aria-label names the melody. The builder never reads or writes this file —

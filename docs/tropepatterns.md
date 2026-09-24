@@ -279,8 +279,9 @@ pass):
 
 ## F. Ideas this chart suggests
 
-1. Opening the tutor from the Torah Trainer's Rosh Hashanah and Yom Kippur readings with the High
-   Holiday melody already chosen (the melody setting itself is built).
+1. High Holiday recordings for the Torah Trainer's Rosh Hashanah and Yom Kippur readings: those
+   readings now link to the tutor on the High Holiday melody, but their chant buttons still play
+   PocketTorah's year-round recordings.
 2. A phrases tab: the 41 rows above as playable, printable lines grouped by clause, with the
    Hebrew phrase and mark chips.
 3. A "what comes next" drill: a phrase with one mark hidden, or the marks of a phrase to put in
