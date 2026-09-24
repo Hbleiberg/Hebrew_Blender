@@ -186,8 +186,15 @@ from `torah_trainer.html`.
   `docs/tropepatterns.md`** (each `source` names the chart row it comes from; grace notes are
   left out; `geresh_muqdam` has no figure and no entry). To change a motif, edit the JSON by hand,
   keep `verified:true`, update the row in `docs/tropepatterns.md`, bump the `?v=`, and audition it
-  with the page's `?debug=motifs` mode (tap a staff to hear it as tones). Figures longer than
-  eight notes widen their staff; the card header wraps it below the names.
+  with the card's tune button. Figures longer than eight notes widen their staff; the card header
+  wraps it below the names.
+  **The tune button** (beside the names on every card with a motif) plays the staff as Web Audio
+  oscillator tones at the written pitch (B4 = 493.88 Hz, the octave children and women sing), one
+  `d` unit = 0.32 s divided by the Settings speed slider, lighting each `.tu-motif-note` with
+  `.is-sounding` as it sounds; one tune at a time, it stops the clip engine before starting and a
+  clip start or a mode switch stops it (`stopTune()`). The highlight re-finds the card by its
+  `data-key` on every note, so a language-switch re-render mid-tune keeps working. No new CSP
+  origin: it is `AudioContext` only.
   The machine path still exists: **`node scripts/build-trope-motifs.mjs`** `[--force]
   [--only=<tropeKey>]` pitch-tracks (YIN) the same PocketTorah clips the Learn cards play and takes
   the medoid contour across 2–3 examples, writing `verified:false` drafts and rewriting

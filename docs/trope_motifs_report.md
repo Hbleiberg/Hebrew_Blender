@@ -10,7 +10,7 @@
 - **License:** transcriptions derived from PocketTorah audio © Russel Neiss & Rabbi Charlie Schwartz — [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); this report and the output JSON are likewise CC BY-SA 4.0.
 
 Every non-kept entry is `verified: false` — a machine draft awaiting by-ear
-verification (audition via `trope_tutor.html?debug=motifs`, correct the JSON,
+verification (play it with the Learn card's tune button, correct the JSON,
 flip `verified` to `true`; re-runs keep verified entries).
 
 ## Per-trope contours

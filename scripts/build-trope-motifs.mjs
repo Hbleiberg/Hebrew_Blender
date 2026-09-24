@@ -11,7 +11,7 @@
  * clip's final sustained pitch, rendered as B on the middle line of a treble
  * staff) and d = relative duration units 1–4. Every emitted entry is
  * verified:false — a DRAFT. A human verifies each motif by ear (the page's
- * ?debug=motifs audition mode), hand-corrects the JSON, and flips verified to
+ * Learn card's play-the-tune button), hand-corrects the JSON, and flips verified to
  * true; re-running this script preserves verified entries verbatim (extra
  * fields on them, such as the `source` pointer into docs/tropepatterns.md, and
  * the file's top-level `key`, ride through every run). The shipped file is
@@ -504,7 +504,7 @@ let report = `# Trope motifs build report
 - **License:** transcriptions derived from PocketTorah audio © Russel Neiss & Rabbi Charlie Schwartz — [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); this report and the output JSON are likewise CC BY-SA 4.0.
 
 Every non-kept entry is \`verified: false\` — a machine draft awaiting by-ear
-verification (audition via \`trope_tutor.html?debug=motifs\`, correct the JSON,
+verification (play it with the Learn card's tune button, correct the JSON,
 flip \`verified\` to \`true\`; re-runs keep verified entries).
 
 ## Per-trope contours

@@ -73,7 +73,7 @@ A reader for the weekly Torah portion (parsha) with toggleable translit, transla
 ### Trope Tutor (`trope_tutor.html`)
 An interactive tutor for the Torah cantillation marks (trope / te'amim) — the companion to the Torah Trainer's trope color coding.
 
-- **Learn mode** — the marks taught one clause family at a time: symbol, **Ashkenazi and Sephardi names** (switchable primary tradition), a teaching note, and 3–4 **real chanted examples** per mark with one-tap playback
+- **Learn mode** — the marks taught one clause family at a time: symbol, **Ashkenazi and Sephardi names** (switchable primary tradition), a teaching note, a **play-the-tune button** that sounds the mark's melody as tones while each note on its staff lights up, and 3–4 **real chanted examples** per mark with one-tap playback
 - **Drill mode** — 10-question sessions in three directions: see a marked word → name the trope; hear a clip → pick the symbol; see a symbol → pick the matching melody
 - **Per-trope mastery + personal-best streak** — misses resurface more often, and distractors lean into same-shape confusables (pashta vs. kadma) as you improve
 - **Real audio, zero live dependencies** — every example is clipped from [PocketTorah](https://pockettorah.com)'s recordings using their word-level timings, via a pre-built static index (`data/trope/trope_index.json`, generated offline by `scripts/build-trope-index.mjs` from Sefaria's Hebrew text)

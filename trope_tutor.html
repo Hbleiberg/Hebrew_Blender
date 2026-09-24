@@ -354,6 +354,14 @@ body.dark .tu-glyph { background:var(--navy-deep); }
 .tu-ex-play:hover { filter:brightness(1.08); }
 .tu-ex-play:focus-visible { outline:2px solid var(--navy); outline-offset:2px; }
 body.dark .tu-ex-play:focus-visible { outline-color:var(--gold-light); }
+/* Tune button (beside the names) and the follow-along highlight: colour changes only, no motion. */
+.tu-tune-play.is-playing { background:var(--navy); color:var(--gold-light); box-shadow:0 0 0 3px var(--gold-light); }
+body.dark .tu-tune-play.is-playing { background:var(--gold-light); color:var(--navy-deep); box-shadow:0 0 0 3px var(--gold); }
+.tu-motif.is-playing { background:rgba(201,146,42,.14); border-radius:8px; }
+.tu-motif .tu-motif-note.is-sounding { color:var(--gold); }
+body.dark .tu-motif .tu-motif-note.is-sounding { color:var(--gold-light); }
+.tu-motif .tu-motif-note.is-sounding ellipse { stroke:var(--navy); stroke-width:1.6; }
+body.dark .tu-motif .tu-motif-note.is-sounding ellipse { stroke:var(--gold-light); }
 .tu-ex-word {
   font-family:var(--heb-font); font-size:var(--tu-heb-size); direction:rtl; line-height:1.6;
   flex:1; text-align:right; color:var(--text);
@@ -1364,10 +1372,6 @@ let progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
 let INDEX = null;        // data/trope/trope_index.json (validated)
 let MANIFEST = null;     // data/pockettorah/manifest.json (audioBase lookup)
 let MOTIFS = null;       // data/trope/trope_motifs.json (validated; null = no staffs)
-// Dev-only motif audition (?debug=motifs): tap a card's staff to hear the
-// notated pitches as oscillator tones — for by-ear verification of the
-// machine-drafted transcriptions. Not a user-facing feature.
-const DEBUG_MOTIFS = new URLSearchParams(location.search).get('debug') === 'motifs';
 let currentFamily = 'sofpasuk';
 
 /* ══════════════════════════════════════════════════════
@@ -1729,6 +1733,7 @@ function _awaitSeeked(ms) {
  */
 async function playClip(ex, cbs) {
   cbs = cbs || {};
+  stopTune();                                        // one sound at a time
   const key = clipFileKey(ex);
   const url = clipUrl(ex);
   if (!url || _badFiles.has(key)) { if (cbs.onError) cbs.onError(new Error('file unavailable')); return; }
@@ -1980,33 +1985,78 @@ function renderMotifStaff(t, motif) {
   return svg;
 }
 
-/* Dev-only (?debug=motifs): play a motif as plain Web Audio oscillator tones
-   so a human can compare the notated draft against the recording by ear.
-   CSP-clean — no new origins. */
-let _dbgCtx = null, _dbgOscs = [];
-function auditionMotif(motif) {
+/* ══════════════════════════════════════════════════════
+   TUNE PLAYER — the Learn card's play button sounds the staff as plain Web
+   Audio oscillator tones (CSP-clean, no new origins) and lights each note as
+   it sounds, so a child can follow the tune along the staff. Written pitch
+   (B4 = 493.88 Hz — the octave children and women sing); the Settings speed
+   slider sets the tempo. One tune at a time: starting one stops the clip
+   engine, and a clip or a mode switch stops the tune (stopTune()).
+   ══════════════════════════════════════════════════════ */
+let _tuneCtx = null, _tuneOscs = [], _tuneTimers = [], _tuneKey = null, _tuneBtn = null, _tuneName = '';
+function _tuneStaff(key) {   // re-found on every note: a language-switch re-render mid-tune must not break the highlight
+  const card = document.querySelector('.tu-card[data-key="' + key + '"]');
+  return card ? card.querySelector('.tu-motif') : null;
+}
+function stopTune() {
+  for (const o of _tuneOscs) { try { o.stop(); } catch (e) {} }
+  _tuneOscs = [];
+  for (const id of _tuneTimers) clearTimeout(id);
+  _tuneTimers = [];
+  document.querySelectorAll('.tu-motif-note.is-sounding').forEach((g) => g.classList.remove('is-sounding'));
+  document.querySelectorAll('.tu-motif.is-playing').forEach((el) => el.classList.remove('is-playing'));
+  const btn = _tuneBtn || (_tuneKey && document.querySelector('.tu-tune-play[data-key="' + _tuneKey + '"]'));
+  if (btn) {
+    btn.classList.remove('is-playing');
+    btn.setAttribute('aria-pressed', 'false');
+    btn.setAttribute('aria-label', I18n.t('trope.learn.play_tune_aria', { name: _tuneName }));
+  }
+  _tuneBtn = null; _tuneKey = null;
+}
+function playTune(t, motif, btn) {
   stopClip();                                        // never fight the real clip engine
-  for (const o of _dbgOscs) { try { o.stop(); } catch (e) {} }
-  _dbgOscs = [];
-  if (!_dbgCtx) _dbgCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if (_dbgCtx.state === 'suspended') _dbgCtx.resume();
-  const UNIT = 0.28;                                 // seconds per d unit
-  const REF_HZ = 246.94;                             // B3 — the sung octave of the notated B4
-  let t0 = _dbgCtx.currentTime + 0.03;
-  for (const n of motif.notes) {
+  stopTune();
+  if (!_tuneCtx) {
+    try { _tuneCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
+  }
+  if (_tuneCtx.state === 'suspended') _tuneCtx.resume();
+  const rate = Math.max(0.25, Number(settings.playbackRate) || 1);
+  const UNIT = 0.32 / rate;                          // seconds per d unit (an eighth) at 1×
+  const REF_HZ = 493.88;                             // B4, the written pitch
+  const t0 = _tuneCtx.currentTime + 0.05;
+  _tuneKey = t.key; _tuneBtn = btn; _tuneName = tropeName(t);
+  btn.classList.add('is-playing');
+  btn.setAttribute('aria-pressed', 'true');
+  btn.setAttribute('aria-label', I18n.t('trope.learn.stop_tune_aria', { name: _tuneName }));
+  const staff = _tuneStaff(t.key);
+  if (staff) staff.classList.add('is-playing');
+  let at = 0;
+  motif.notes.forEach((n, i) => {
     const dur = n.d * UNIT;
-    const osc = _dbgCtx.createOscillator(), g = _dbgCtx.createGain();
+    const osc = _tuneCtx.createOscillator(), g = _tuneCtx.createGain();
     osc.type = 'triangle';
     osc.frequency.value = REF_HZ * Math.pow(2, n.p / 12);
-    g.gain.setValueAtTime(0.0001, t0);
-    g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.02);
-    g.gain.setValueAtTime(0.25, Math.max(t0 + 0.02, t0 + dur - 0.06));
-    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur - 0.005);
-    osc.connect(g); g.connect(_dbgCtx.destination);
-    osc.start(t0); osc.stop(t0 + dur);
-    _dbgOscs.push(osc);
-    t0 += dur;
-  }
+    g.gain.setValueAtTime(0.0001, t0 + at);
+    g.gain.exponentialRampToValueAtTime(0.28, t0 + at + 0.02);
+    g.gain.setValueAtTime(0.28, Math.max(t0 + at + 0.02, t0 + at + dur - 0.06));
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + at + dur - 0.005);
+    osc.connect(g); g.connect(_tuneCtx.destination);
+    osc.start(t0 + at); osc.stop(t0 + at + dur);
+    _tuneOscs.push(osc);
+    _tuneTimers.push(setTimeout(() => {
+      const st = _tuneStaff(t.key);
+      if (!st) return;
+      st.classList.add('is-playing');
+      st.querySelectorAll('.tu-motif-note.is-sounding').forEach((x) => x.classList.remove('is-sounding'));
+      const note = st.querySelector('.tu-motif-note[data-i="' + i + '"]');
+      if (note) note.classList.add('is-sounding');
+    }, Math.round((at + 0.05) * 1000)));
+    at += dur;
+  });
+  _tuneTimers.push(setTimeout(stopTune, Math.round((at + 0.05) * 1000) + 120));
+}
+function toggleTune(t, motif, btn) {
+  if (_tuneKey === t.key) stopTune(); else playTune(t, motif, btn);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2086,6 +2136,7 @@ function buildMasteryGrid(container) {
    ══════════════════════════════════════════════════════ */
 function setMode(mode) {
   stopClip();
+  stopTune();
   const learn = mode === 'learn';
   document.getElementById('tabLearn').setAttribute('aria-selected', learn ? 'true' : 'false');
   document.getElementById('tabDrill').setAttribute('aria-selected', learn ? 'false' : 'true');
@@ -2155,6 +2206,7 @@ function renderLearn() {
   for (const t of TROPES.filter(x => x.family === fam.key)) {
     const card = document.createElement('div');
     card.className = 'tu-card';
+    card.dataset.key = t.key;
     card.dataset.key = t.key;   // the jump target for openLearnFor(); cards carry no other identity
 
     const head = document.createElement('div');
@@ -2193,11 +2245,19 @@ function renderLearn() {
     head.appendChild(names);
     const motif = motifFor(t.key);
     if (motif) {
+      const tune = document.createElement('button');   // play the staff as tones, notes lighting up in turn
+      tune.type = 'button';
+      tune.className = 'tu-ex-play tu-tune-play';
+      tune.innerHTML = ICON_PLAY;
+      tune.dataset.key = t.key;
+      tune.setAttribute('aria-pressed', _tuneKey === t.key ? 'true' : 'false');
+      if (_tuneKey === t.key) tune.classList.add('is-playing');
+      tune.setAttribute('aria-label', I18n.t(_tuneKey === t.key ? 'trope.learn.stop_tune_aria' : 'trope.learn.play_tune_aria', { name: tropeName(t) }));
+      tune.title = I18n.t('trope.learn.play_tune_title');
+      tune.onclick = () => toggleTune(t, motif, tune);
+      head.appendChild(tune);
       const staff = renderMotifStaff(t, motif);
-      if (DEBUG_MOTIFS) {
-        staff.style.cursor = 'pointer';
-        staff.addEventListener('click', () => auditionMotif(motif));
-      }
+      if (_tuneKey === t.key) staff.classList.add('is-playing');
       head.appendChild(staff);
     }
     card.appendChild(head);

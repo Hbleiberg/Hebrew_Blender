@@ -197,8 +197,8 @@ Torah rows 1–8, rows 30–33 are the end-of-aliyah endings.
   both draw as an eighth. Grace notes are not drawn. Shalshelet, karnei parah and telisha gedola
   keep their full length (up to sixteen notes), so those staffs widen.
 - To re-verify an entry: read its row in section A, convert with the `p` scale above (A4 = −2,
-  each semitone down is −1), and compare with the JSON; the developer view
-  `trope_tutor.html?debug=motifs` plays a card's staff as tones so the tune can be checked by ear.
+  each semitone down is −1), and compare with the JSON; the card's play button plays the staff as
+  tones, lighting each note, so the tune can be checked by ear.
 - The High Holiday set (section C) is not in the tutor. It would be a second motif file with its
   own `system` value and no sharps, and a setting to choose it.
 
@@ -212,7 +212,8 @@ Torah rows 1–8, rows 30–33 are the end-of-aliyah endings.
    order.
 4. Context variants on the Learn card: munach's shapes and the tevir-context mercha and kadma,
    each with the phrase they belong to.
-5. A real "hear the tune" button on the staff, with tempo and a key to match a student's range.
+5. A key control for the tune button, so a teacher can move the tones into a student's range
+   (the Settings speed slider already sets its tempo).
 6. Teaching the end-of-aliyah sof pasuk, on the card and as a highlight of an aliyah's last verse
    in the Torah Trainer.
 7. A munach legarmeh card.
