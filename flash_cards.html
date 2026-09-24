@@ -1216,6 +1216,7 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
 }
 .results-actions .btn { padding: 14px; font-size: 1rem; font-weight: 600; }
 .results-savedeck { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.results-savedeck[hidden] { display: none; } /* its own flex beats the UA hidden rule too: without this the ladder / Mistakes hide never showed */
 .results-savedeck .preset-row[hidden] { display: none; } /* .preset-row's flex beats the UA hidden rule */
 
 /* ============== GUIDED TOUR (ported from hebrew_blend_generator.html) ============== */
@@ -2871,6 +2872,7 @@ let currentIndex = 0;
 let scores = []; // null = unscored, true = correct, false = wrong
 let isFlipped = false;
 let savedCards = [];
+let savedCardsFromSetup = true; // false while savedCards is a Mistakes or Weak-cards deck: no setting describes it
 let mistakeIndices = [];
 let lastDrillResult = null;  // snapshot of the just-finished drill, for "Save Results"
 let lastDrillSavedTo = null; // the profile that drill was saved to (reset when a drill starts)
@@ -5871,6 +5873,7 @@ async function practiceWeaknesses(name) {
   const deck = available.slice(0, n).map(c => ({ ...c }));
   currentCards = deck;
   savedCards = deck.slice();
+  savedCardsFromSetup = false;
   currentIndex = 0;
   scores = new Array(deck.length).fill(null);
   requeued = new Array(deck.length).fill(false);
@@ -7633,6 +7636,7 @@ function startPractice() {
   if (deck.length === 0) { _setStartNote(['flashcards.start.err_no_cards']); return; }
   currentCards = deck;
   savedCards = deck.slice();
+  savedCardsFromSetup = true;
   currentIndex = 0;
   scores = new Array(deck.length).fill(null);
   requeued = new Array(deck.length).fill(false);
@@ -8177,10 +8181,12 @@ function showResults() {
 
   renderLadderStrip(pct);   // no-op unless a Learner Ladder level is running
   // Save-this-card-set resets each visit, and hides during a ladder level: getSettings()
-  // would snapshot the ladder's temporary overrides, not the teacher's own deck.
+  // would snapshot the ladder's temporary overrides, not the teacher's own deck. It hides after
+  // a Mistakes or Weak-cards drill too (and its Redo): a preset holds settings, and those would
+  // rebuild the whole setup, not the cards just drilled.
   const sd = document.getElementById('resultsSaveDeck');
   if (sd) {
-    sd.hidden = !!_ladderActive;
+    sd.hidden = !!_ladderActive || !savedCardsFromSetup;
     document.getElementById('saveDeckRow').hidden = true;
     document.getElementById('saveDeckName').value = '';
     _setSaveDeckNote('');
@@ -8212,6 +8218,7 @@ function practiceMistakes() {
   _ladderDetach();
   currentCards = mistakeIndices.map(i => { const c = { ...currentCards[i] }; delete c.isSkippedReshow; return c; });
   savedCards = currentCards.slice();
+  savedCardsFromSetup = false;
   currentIndex = 0;
   scores = new Array(currentCards.length).fill(null);
   requeued = new Array(currentCards.length).fill(false);
