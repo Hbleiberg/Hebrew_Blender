@@ -429,7 +429,10 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
 - **The dark toggle holds both `hi-moon` and `hi-sun`.** Its scripts write only `aria-pressed` and, on the
   labelled variant, the label text — `(_db.querySelector('.hi-lbl') || _db).textContent = …` — never the
   button's `textContent`. A second or third dark button (the dashboard and Trope Tutor drawers, the Torah
-  Trainer's fullscreen bar) carries the same pair and the same rule.
+  Trainer's fullscreen bar) carries the same pair and the same rule. **Every dark button also carries a fixed
+  `aria-label` with `data-i18n-aria-label="shared.darkmode.toggle_title"`**: the visible label flips between
+  *Dark* and *Light*, and without the fixed name a screen reader hears "Light, pressed" while dark mode is on.
+  The label says what a click does; `aria-pressed` carries the state.
 - **Full screen** keeps each page's own swap code; the constants it swaps (`FS_ENTER` / `FS_EXIT` or
   `FS_ENTER_ICON` / `FS_EXIT_ICON`) hold the shared `hi-fs-enter` / `hi-fs-exit` snippets, and the button's
   initial markup holds `hi-fs-enter`.
