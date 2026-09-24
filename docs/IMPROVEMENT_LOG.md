@@ -184,9 +184,9 @@ _(none)_
 
 ## Done
 
-- [x] 2026-09-24 | (S415 close-out) | branch/deploy note | **S415 = pass B + 4 fixes on `claude/charming-euler-4lppft` / draft PR #270 (open).** DRIFT: none. `sw.js` v837 → v838; FM not bumped (bug fixes). Scripts: i18n, inline-js, 3 smokes `--sdk` 241/241, sitemap, llms, compact, check-ledger. No gates.
+- [x] 2026-09-24 | (S415 close-out) | branch/deploy note | **S415 = pass B + 4 fixes on `claude/charming-euler-4lppft` / PR #270, then landed on main by in-session authorization (`7ddc273..323771f`; Pages success, v838).** DRIFT: none. `sw.js` v837 → v838; FM not bumped (bug fixes). Scripts: i18n, inline-js, 3 smokes `--sdk` 241/241, sitemap, llms, compact, check-ledger; no gates.
 
-- [x] 2026-09-24 | `f4bbfe8` | 11 footers + FM picker | (S415) **Pinned-English credits carry `lang="en"`** (3.1.2). | verified: HE "he" 80/80 → "en" 80/80; planted no-lang span stays "he"; 88/88 crops identical
+- [x] 2026-09-24 | `f4bbfe8` | 11 footers + FM picker | (S415) **Pinned-English credits carry `lang="en"`** (3.1.2). | verified: HE "he" 80/80 → "en" 80/80; a planted span stays "he"; 88/88 crops identical
 
 - [x] 2026-09-24 | `9856b9d` | generator, FM, torah | (S415) **4 Full Screen buttons are named by their visible words** (2.5.3). | verified: AX tree, 7 pages × 8 cells, at rest + in fullscreen: 24 → 0
 
@@ -194,7 +194,7 @@ _(none)_
 
 - [x] 2026-09-24 | `38e5b62` | flash_cards.html | (S415) **Copy Code / Link keep their icon and language after a copy.** | verified: real clicks vs unfixed, 8 cells: icon lost, "Copied!" stuck → kept
 
-- [x] 2026-09-24 | (S415 Pass B iter 1) | all 17 pages | **32nd B**: 136 load cells (EN + HE), 52 interactions, 3 delta arms; every zero controlled. FOUND 1 (fixed) + 2 P4. Receipts, traps 127–131: loop-findings.
+- [x] 2026-09-24 | (S415 Pass B iter 1) | all 17 pages | **32nd B**: 136 load cells, 52 interactions, 3 delta arms, all controlled. FOUND 1 (fixed) + 2 P4. Receipts: loop-findings.
 
 - [x] 2026-09-24 | (S414 close-out) | branch/deploy note | **S414 = pass F + 4 fixes, continued on `claude/charming-euler-4lppft` / draft PR #270 (open).** DRIFT: none. `sw.js` v836 → v837; FM not bumped (bug fixes). Scripts: i18n, inline-js, sitemap, llms, compact, check-ledger. No gates asked.
 
@@ -248,7 +248,7 @@ _(none)_
 
 ### Per-session log (one line per session)
 
-- 2026-09-24 | **S415** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: flash ×2, FM ×2 + i18n.js, gen. ×2, torah, 8 more footers | patterns fixed: textContent-rewrite ×2, 3 NEW (label-in-name ×4, key-miss probe ×1, pinned-english ×20) | pass run: B | SW: v837→v838
+- 2026-09-24 | **S415** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: flash ×2, FM ×2 + i18n.js, gen. ×2, torah, 8 more footers | patterns fixed: textContent-rewrite ×2, 3 NEW (label-in-name, key-miss probe, pinned-english) | pass run: B | SW: v837→v838
 
 - 2026-09-24 | **S414** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: flash ×2, dict., FM, gen. | patterns fixed: author-display-defeats-the-hidden-attribute (un-retired), translated-key-exists-page-hardcodes-english, toggle-name-flips-with-its-pressed-state ×2 | pass run: F | SW: v836→v837
 
@@ -570,7 +570,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - I first-load & empty-state: 2026-09-23 (**S411 — 31st run, first since S394 (17 sessions); the stalest runnable pass (O blocked) and the pointer named it. Delta `4d58197..HEAD`: 146 commits, pages +4,170/−970. Gates clean an EIGHTEENTH run: 32 virgin cells behind 7 plants; census = S394's; 0 SDK/project requests. FOUND: QA Check's empty state (P3, `e3ceade`), the timer's stored sound/volume …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- B console/error audit: 2026-09-24 (**S415 — 32nd B, first since S398; stalest runnable. 136 load cells (EN + HE), 52 interactions, 3 delta arms; every zero controlled. FOUND: FM's 273 keyless glyph names warning (P4, `95d5f46`); else clean.**)
+- B console/error audit: 2026-09-24 (**S415 — 32nd B, first since S398; stalest runnable. 136 load cells, 52 interactions, 3 delta arms, all controlled. FOUND: FM's 273 keyless glyph names warning (P4, `95d5f46`); else clean.**)
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
@@ -582,7 +582,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-24 (**S414 — 32nd F, first since S397; stalest runnable (O blocked). THE HEADER CHROME on 14 pages: 84 loads + a toggle-name detector (plant 14/14); DOM = visual order 84/84. FOUND: the dark toggle's flipping name (P3, `f9e67b2`), the Arial Full Screen (P4, `b018f98`), 9 P4 logged.**)
 
-**Next session (S416):** **BRANCH/PR: S413–S415 on `claude/charming-euler-4lppft` → draft PR #270 (base `7ddc273`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** S415 closed at `sw.js` **v838**, FM **5.56**, SDK **2.116.0**; backend clean (migrations 0001–0003, keep-alive #11 green).
+**Next session (S416):** **BRANCH/PR: S413–S415 LANDED on main by in-session authorization (`7ddc273..323771f`; PR #270 merged; Pages success) → cut a fresh `claude/*` off `origin/main`.** S415 closed at `sw.js` **v838**, FM **5.56**, SDK **2.116.0**; backend clean (migrations 0001–0003, keep-alive #11 green).
 
 **⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), A (S399), E (S403), L (S404), then K N P M G D I H C F B.** Take **A**: every ACTIVE row, above all `toggle-name-flips-with-its-pressed-state`, UN-RETIRED `author-display-defeats-the-hidden-attribute` (add its static arm) and S415's three NEW rows. **Next C:** dictionary. **Next G:** flash. **Next D:** torah. **Next H:** account.
 
