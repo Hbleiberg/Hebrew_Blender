@@ -324,6 +324,16 @@ body.dark .tu-card { background:#131a29; }
    inline-end edge (margin-inline-start:auto) rather than scaling into illegibility.
    Notation itself is inherently LTR (direction pinned; SVG coords are absolute). */
 .tu-motif { inline-size:165px; block-size:52px; flex-shrink:0; margin-inline-start:auto; color:var(--text); direction:ltr; }
+/* High Holiday melody: a mark with no figure in that set says so where its staff would be. */
+.tu-motif-none { margin-inline-start:auto; max-inline-size:240px; font-size:0.76rem; font-style:italic; line-height:1.35; color:var(--muted); }
+/* Learn tab: names the melody the staffs show whenever it is not the year-round one. */
+.tu-melody-note {
+  display:flex; align-items:center; flex-wrap:wrap; gap:6px 12px; margin:0 0 14px; padding:8px 12px;
+  border:1px solid var(--border); border-inline-start:4px solid var(--gold); border-radius:8px;
+  background:var(--cream); font-size:0.86rem; line-height:1.45; color:var(--text);
+}
+.tu-melody-note[hidden] { display:none; }
+body.dark .tu-melody-note { background:#131a29; }
 .tu-glyph {
   font-family:var(--heb-font); font-size:calc(var(--tu-heb-size) * 1.35); line-height:1.15;
   min-width:64px; min-height:64px; display:flex; align-items:center; justify-content:center;
@@ -740,7 +750,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
   /* `.tu-toast` is position:fixed, so a toast still on screen at print time repeats on EVERY
      sheet — measured S253 at 14 of 14 pages of a Learn-tab print, text and shadow both. Same
      shape the dictionary closed in S252; torah_trainer already hides its `.tt-hint-toast` here. */
-  header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay, .tu-toast { display:none !important; }
+  header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay, .tu-toast, .tu-melody-change { display:none !important; }
   /* The footer's FAQ/how-to disclosures are screen navigation; on paper they print as a row of
      closed summaries and, at Letter, spilled onto a 14th sheet holding nothing else. The credits
      stay: the motif staffs derive from PocketTorah audio, so the CC BY-SA notice belongs on the
@@ -901,10 +911,16 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <!-- ════════ LEARN ════════ -->
   <section class="tu-view" id="learnView" role="tabpanel" aria-labelledby="tabLearn">
     <p class="tu-intro" data-i18n-html="trope.learn.intro">Trope (te'amim) are the cantillation marks that tell you how to chant the Torah.
-      Each card shows the mark's melody on a small music staff: the standard Ashkenazi tune as printed in cantillation charts, written in A major. The recordings are one reader's rendition, so a note may differ here and there.
+      Each card shows the mark's melody on a small music staff, the standard Ashkenazi tune as printed in cantillation charts: the year-round melody in A major, or the High Holiday melody if you choose it in Settings. The recordings are one reader's year-round rendition, so a note may differ here and there.
       Work through them one clause family at a time, then switch to <strong>Drill</strong> to test yourself.
       When you're ready to see them in context, open the companion reader:
       <a href="torah_trainer.html">Torah Trainer →</a></p>
+    <!-- Shown only while Settings → Melody is the High Holiday one (renderLearn), so nobody takes those
+         staffs for the year-round tune; it prints with the chart, its button does not. -->
+    <div class="tu-melody-note" id="tuMelodyNote" hidden>
+      <span data-i18n="trope.learn.melody_hh_note">These staffs show the High Holiday melody, for the Torah reading on Rosh Hashanah and Yom Kippur.</span>
+      <button class="btn btn-xs btn-secondary tu-melody-change" type="button" onclick="openMelodySetting()" aria-label="Change the melody in Settings" data-i18n="trope.learn.melody_change" data-i18n-aria-label="trope.learn.melody_change_aria">Change</button>
+    </div>
     <div class="tu-chips" id="tuFamilyChips" role="group" aria-label="Trope clause families" data-i18n-aria-label="trope.learn.families_aria"></div>
     <div class="tu-family-note" id="tuFamilyNote"></div>
     <div class="tu-cards" id="tuCards"></div>
@@ -1000,6 +1016,17 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
               <label for="tradSeph" data-i18n="trope.tradition.sephardi">Sephardi</label>
             </span>
             <p class="settings-note" data-i18n="trope.tradition.note">The recordings themselves follow PocketTorah's Ashkenazi melody either way.</p>
+          </div>
+          <div class="tu-set-item">
+            <div class="tu-set-label"><span data-i18n="trope.melody.label">Melody</span>
+              <span class="tip-wrap" data-i18n-tip="trope.melody.tip" data-tip="The year-round melody is chanted on Shabbat, weekdays and festivals; the High Holiday melody on Rosh Hashanah and Yom Kippur. Four rare marks never occur in the High Holiday readings, so they have no High Holiday staff."><i class="tip-icon">?</i></span></div>
+            <span class="radio-group" role="radiogroup" aria-label="Melody for the staffs" data-i18n-aria-label="trope.melody.aria">
+              <input type="radio" id="melTorah" name="tuMelody" value="torah" onchange="setMelody('torah')">
+              <label for="melTorah" data-i18n="trope.melody.torah">Year-round</label>
+              <input type="radio" id="melHH" name="tuMelody" value="highholiday" onchange="setMelody('highholiday')">
+              <label for="melHH" data-i18n="trope.melody.highholiday">High Holidays</label>
+            </span>
+            <p class="settings-note" data-i18n="trope.melody.note">The staffs and their play buttons follow this choice. The recordings and the drill use the year-round melody either way.</p>
           </div>
         </div>
       </div>
@@ -1272,6 +1299,7 @@ const GLYPH_CARRIER = '◌';   // dotted-circle carrier for lone marks; flip to 
 const DEFAULTS = {
   v: 1,
   tradition: 'ashk',            // 'ashk' | 'seph'
+  melody: 'torah',              // 'torah' | 'highholiday' — which motif file draws the Learn-card staffs
   hebFont: 'Frank Ruhl Libre',
   hebFontSize: 2.2,             // rem; applied via --tu-heb-size
   drillIdentify: true,
@@ -1288,7 +1316,8 @@ let progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
 
 let INDEX = null;        // data/trope/trope_index.json (validated)
 let MANIFEST = null;     // data/pockettorah/manifest.json (audioBase lookup)
-let MOTIFS = null;       // data/trope/trope_motifs.json (validated; null = no staffs)
+// The Learn-card staffs, one validated file per melody; a set left null (missing or malformed file) draws no staffs.
+const MOTIF_SETS = { torah: null, highholiday: null };   // data/trope/trope_motifs.json · trope_motifs_hh.json
 let currentFamily = 'sofpasuk';
 
 /* ══════════════════════════════════════════════════════
@@ -1504,13 +1533,14 @@ function setStatusKey(key, en, isError) {
 async function loadData() {
   setStatusKey('trope.status.loading_index', 'Loading the trope index…');
   try {
-    const [idxRes, manRes, motifRes] = await Promise.all([
+    const [idxRes, manRes, motifRes, motifHhRes] = await Promise.all([
       // ?v= is the DATA_CACHE refresh mechanism (sw.js serves /data/ cache-first,
       // matched by exact URL) — bump it whenever the committed index is rebuilt.
       fetch('data/trope/trope_index.json?v=2'),
       fetch('data/pockettorah/manifest.json?v=1'),
-      // ?v= bump rule applies here too (on every trope_motifs.json change).
+      // ?v= bump rule applies here too (on every trope_motifs.json / trope_motifs_hh.json change).
       fetch('data/trope/trope_motifs.json?v=3').catch(() => null),
+      fetch('data/trope/trope_motifs_hh.json?v=1').catch(() => null),
     ]);
     if (!idxRes.ok || !manRes.ok) throw new Error('HTTP ' + idxRes.status + '/' + manRes.status);
     const idx = await idxRes.json();          // same-origin data/ corpus — trusted
@@ -1518,14 +1548,15 @@ async function loadData() {
     if (!idx || idx.v !== 1 || idx.system !== 'torah' || !idx.tropes) throw new Error('bad index shape');
     INDEX = idx;
     MANIFEST = man;
-    try {   // motifs are cosmetic — a bad/missing file must never take the index down
-      if (motifRes && motifRes.ok) {
+    for (const [res, system] of [[motifRes, 'torah'], [motifHhRes, 'highholiday']]) {
+      try {   // motifs are cosmetic — a bad/missing file must never take the index (or the other melody) down
+        if (!res || !res.ok) continue;
         // ivritSafeParse rather than res.json(): motif entries are hand-edited
         // during by-ear verification, so treat the file like imported data.
-        const mot = ivritSafeParse(await motifRes.text());
-        if (mot && mot.v === 1 && mot.system === 'torah' && mot.tropes && typeof mot.tropes === 'object') MOTIFS = mot;
-      }
-    } catch (e) { console.warn('trope motifs load failed', e); }
+        const mot = ivritSafeParse(await res.text());
+        if (mot && mot.v === 1 && mot.system === system && mot.tropes && typeof mot.tropes === 'object') MOTIF_SETS[system] = mot;
+      } catch (e) { console.warn('trope motifs load failed', system, e); }
+    }
     setStatus('');
     _setRetryVisible(false);
   } catch (e) {
@@ -1554,8 +1585,12 @@ async function retryLoadData() {
 function examplesFor(key) {
   return (INDEX && INDEX.tropes && INDEX.tropes[key]) || [];
 }
-function motifFor(key) {
-  const m = MOTIFS && MOTIFS.tropes && MOTIFS.tropes[key];
+// Settings → Melody. An unknown stored value (a newer page's melody) shows the year-round staffs but stays
+// in the stored blob, so a round trip through this page never rewrites another device's choice.
+function melodyKey() { return settings.melody === 'highholiday' ? 'highholiday' : 'torah'; }
+function activeMotifs() { return MOTIF_SETS[melodyKey()]; }
+function motifFor(key, set = activeMotifs()) {
+  const m = set && set.tropes && set.tropes[key];
   return (m && Array.isArray(m.notes) && m.notes.length &&
           m.notes.every(n => n && Number.isFinite(n.p) && Number.isFinite(n.d) && n.d > 0)) ? m : null;
 }
@@ -1835,14 +1870,19 @@ function motifPitchPos(p, key) {
   return { step: step + oct, acc };
 }
 function renderMotifStaff(t, motif) {
-  const key = MOTIFS && typeof MOTIFS.key === 'string' ? MOTIFS.key : '';
+  const set = activeMotifs();
+  const key = set && typeof set.key === 'string' ? set.key : '';
   const sig = keySignature(key);
   const count = motif.notes.length;
+  const MID = 28, STEP = 3;
   // Long figures (shalshelet, karnei parah…) widen the staff instead of cramping; the card header wraps it.
-  const W = 180 + Math.max(0, count - 8) * 11 + sig.length * 6, H = 56, MID = 28, STEP = 3, X0 = 30 + sig.length * 6, XEND = W - 8;
+  // A figure reaching below A3 (the High Holiday zarka ends on G3) deepens it just enough for that head.
+  const low = Math.min(0, ...motif.notes.map((n) => motifPitchPos(n.p, key).step));
+  const W = 180 + Math.max(0, count - 8) * 11 + sig.length * 6, H = Math.max(56, MID - low * STEP + 4), X0 = 30 + sig.length * 6, XEND = W - 8;
   const svg = _svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'tu-motif', role: 'img' });
   if (W !== 180) svg.style.inlineSize = Math.round(W * 165 / 180) + 'px';
-  svg.setAttribute('aria-label', I18n.t('trope.learn.motif_aria', { name: tropeName(t) }));
+  if (H !== 56) svg.style.blockSize = Math.ceil(H * 165 / 180) + 'px';
+  svg.setAttribute('aria-label', I18n.t(melodyKey() === 'highholiday' ? 'trope.learn.motif_aria_hh' : 'trope.learn.motif_aria', { name: tropeName(t) }));
   for (let i = -2; i <= 2; i++)
     svg.appendChild(_svgEl('line', { x1: 1, y1: MID + i * 6, x2: W - 1, y2: MID + i * 6,
       stroke: 'currentColor', 'stroke-width': 0.8, opacity: 0.55 }));
@@ -1873,8 +1913,8 @@ function renderMotifStaff(t, motif) {
     for (let s = -6; s >= step; s -= 2)     // and below
       g.appendChild(_svgEl('line', { x1: cx - 6, y1: MID - s * STEP, x2: cx + 6, y2: MID - s * STEP,
         stroke: 'currentColor', 'stroke-width': 0.8 }));
-    if (acc) {
-      const a = _svgEl('text', { x: cx - 12, y: cy + 3, 'font-size': 8, fill: 'currentColor' });
+    if (acc) {   // hugs its own head: at cx − 12 it sat on the previous note's stem in a crowded run (pazer's B♭)
+      const a = _svgEl('text', { x: cx - 9.5, y: cy + 3, 'font-size': 9, fill: 'currentColor' });
       a.textContent = acc;
       g.appendChild(a);
     }
@@ -2113,6 +2153,7 @@ function renderLearn() {
   if (!_chartPrintBuild && !_i18nRerender && !progress.families[fam.key]) { progress.families[fam.key] = true; saveProgress(); }
   renderFamilyChips();
   document.getElementById('tuFamilyNote').textContent = I18n.t('trope.learn.family_note_' + fam.key);
+  document.getElementById('tuMelodyNote').hidden = melodyKey() !== 'highholiday';
 
   const cards = document.getElementById('tuCards');
   cards.innerHTML = '';
@@ -2172,6 +2213,12 @@ function renderLearn() {
       const staff = renderMotifStaff(t, motif);
       if (_tuneKey === t.key) staff.classList.add('is-playing');
       head.appendChild(staff);
+    } else if (melodyKey() === 'highholiday' && MOTIF_SETS.highholiday && motifFor(t.key, MOTIF_SETS.torah)) {
+      // The four rare marks the High Holiday readings never use: say why the staff is missing.
+      const none = document.createElement('span');
+      none.className = 'tu-motif-none';
+      none.textContent = I18n.t('trope.learn.no_hh_figure');
+      head.appendChild(none);
     }
     card.appendChild(head);
 
@@ -2875,6 +2922,8 @@ function openSettings() { setMode('settings'); }
 function syncFormToSettings() {
   document.getElementById('tradAshk').checked = settings.tradition !== 'seph';
   document.getElementById('tradSeph').checked = settings.tradition === 'seph';
+  document.getElementById('melTorah').checked = melodyKey() === 'torah';
+  document.getElementById('melHH').checked = melodyKey() === 'highholiday';
   document.getElementById('optDrillIdentify').checked = !!settings.drillIdentify;
   document.getElementById('optDrillHear').checked = !!settings.drillHear;
   document.getElementById('optDrillMelody').checked = !!settings.drillMelody;
@@ -2899,6 +2948,18 @@ function setTradition(v) {
   renderLearn();
   updateDrillStart();
   syncProgressSummary();
+}
+function setMelody(v) {
+  settings.melody = v === 'highholiday' ? 'highholiday' : 'torah';
+  saveSettings();
+  stopTune();       // a tune of the other melody must not keep lighting the redrawn staffs
+  renderLearn();
+}
+// The Learn banner's "Change": straight to the Melody choice on the Settings tab.
+function openMelodySetting() {
+  openSettings();
+  const r = document.getElementById(melodyKey() === 'highholiday' ? 'melHH' : 'melTorah');
+  if (r) { r.closest('.tu-set-item').scrollIntoView({ block: 'center' }); r.focus({ preventScroll: true }); }
 }
 function setDrillType(field, input) {
   const next = { ...settings, [field]: input.checked };

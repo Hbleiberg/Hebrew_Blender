@@ -73,7 +73,7 @@ A reader for the weekly Torah portion (parsha) with toggleable translit, transla
 ### Trope Tutor (`trope_tutor.html`)
 An interactive tutor for the Torah cantillation marks (trope / te'amim) — the companion to the Torah Trainer's trope color coding.
 
-- **Learn mode** — the marks taught one clause family at a time: symbol, **Ashkenazi and Sephardi names** (switchable primary tradition), a teaching note, a **play-the-tune button** that sounds the mark's melody as tones while each note on its staff lights up, and 3–4 **real chanted examples** per mark with one-tap playback
+- **Learn mode** — the marks taught one clause family at a time: symbol, **Ashkenazi and Sephardi names** (switchable primary tradition), a teaching note, a **play-the-tune button** that sounds the mark's melody as tones while each note on its staff lights up (the year-round melody, or the **High Holiday melody** chosen in Settings), and 3–4 **real chanted examples** per mark with one-tap playback
 - **Drill mode** — 10-question sessions in three directions: see a marked word → name the trope; hear a clip → pick the symbol; see a symbol → pick the matching melody
 - **Per-trope mastery + personal-best streak** — misses resurface more often, and distractors lean into same-shape confusables (pashta vs. kadma) as you improve
 - **Real audio, zero live dependencies** — every example is clipped from [PocketTorah](https://pockettorah.com)'s recordings using their word-level timings, via a pre-built static index (`data/trope/trope_index.json`, generated offline by `scripts/build-trope-index.mjs` from Sefaria's Hebrew text)
@@ -358,9 +358,10 @@ signing in.
 | `scripts/build-trope-index.mjs` | Offline builder for the trope index (plain Node, zero deps); writes `docs/trope_index_report.md` |
 | `docs/trope_index_report.md` | Build report for the trope index — per-trope counts, excluded aliyot, zarka codepoint finding |
 | `data/trope/trope_motifs.json` | The melodic motif (Western notation) per cantillation mark, shown on the Trope Tutor's Learn cards — hand-transcribed from a printed Ashkenazi cantillation chart and marked verified |
+| `data/trope/trope_motifs_hh.json` | The same for the High Holiday melody (Rosh Hashanah and Yom Kippur) — 21 marks, from the same book's High Holiday chart; drawn when Settings → Melody is *High Holidays* |
 | `scripts/build-trope-motifs.mjs` | Offline builder for the motifs — pitch-tracks the same PocketTorah clips; writes `docs/trope_motifs_report.md` (`--force` discards human-verified motifs; prefer `--only=<key>`) |
 | `docs/trope_motifs_report.md` | Build report for the motif builder — the machine drafts' per-mark contours; verified entries are kept verbatim |
-| `docs/tropepatterns.md` | The printed cantillation chart transcribed: one figure per mark (the source of `trope_motifs.json`), the 41 Torah and 33 High Holiday phrase patterns, and what the chart teaches about context |
+| `docs/tropepatterns.md` | The printed cantillation chart transcribed: one figure per mark for each melody (the source of `trope_motifs.json` and `trope_motifs_hh.json`), the 41 Torah and 33 High Holiday phrase patterns, and what the chart teaches about context |
 | `docs/phonotactic_blending_filter_spec.md` | Linguistic specification for the phonotactic validity filter used by the generator |
 | `docs/theme_tagging_report.md` | Build report for the dictionary's `themes` tags (an offline, LLM-assisted pipeline with adversarial review); the spot-check surface — to fix a word, edit its `themes` array in `data/hebrew_words.json` and bump the `?v=` |
 | `docs/reference/` | How each component works (storage, i18n, shared blocks, Font Maker, dashboard, generator, Torah/trope, ops) — indexed from `CLAUDE.md` |

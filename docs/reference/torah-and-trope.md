@@ -162,7 +162,8 @@ stop and reconsider. Shell (dark mode, tooltips, tour, toast, My Fonts) is copie
 (Learn | Drill | Settings) laid out like the Font Maker's Settings tab: a serif heading per group over a
 hairline rule, the group's items in a grid (three across, two below 1024px, one below 640px) with small
 uppercase item labels, and nothing to collapse — so the page carries no panel-collapse memory. The
-groups are names and tradition, drill, Hebrew font, and a shared row of progress, cloud saves and about.
+groups are names and tradition (primary names, melody), drill, Hebrew font, and a shared row of progress,
+cloud saves and about.
 There is no header gear; `openSettings()` survives only as `setMode('settings')` for the account chip's
 "Cloud saves…" item (which then scrolls to `#setCloud`) and the tools smoke. Switching to the tab
 re-syncs the controls from `settings`; every control saves on change. Print hides the tab like Drill.
@@ -193,8 +194,22 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   `docs/tropepatterns.md`** (each `source` names the chart row it comes from; grace notes are
   left out; `geresh_muqdam` has no figure and no entry). To change a motif, edit the JSON by hand,
   keep `verified:true`, update the row in `docs/tropepatterns.md`, bump the `?v=`, and audition it
-  with the card's tune button. Figures longer than eight notes widen their staff; the card header
-  wraps it below the names.
+  with the card's tune button. Figures longer than eight notes widen their staff, and one reaching
+  below A3 deepens it; the card header wraps it below the names.
+  **The High Holiday melody is a second file, `data/trope/trope_motifs_hh.json`** (same shape,
+  `system:"highholiday"`, `key:"C"` — no signature, so its B♭ draws as a flat), transcribed from the
+  same book's High Holiday chart for the 21 marks it covers; shalshelet, mercha kefula, karnei parah
+  and yerach ben yomo have no entry (they never occur in the Rosh Hashanah or Yom Kippur readings).
+  It is fetched `?v=1` beside the Torah file and validated the same way, each file on its own, so
+  one failing never blanks the other melody's staffs. **Settings → Melody** (`settings.melody`,
+  `'torah'` by default or `'highholiday'`) picks which file draws the staffs and feeds the tune
+  button; any other stored value shows the year-round staffs and stays stored (`melodyKey()`), so a
+  newer page's choice survives a round trip. While the High Holiday melody is on, the Learn tab
+  shows a banner naming it (`#tuMelodyNote` — it prints with the chart; its Change button, which
+  opens the setting, does not), a card with no High Holiday figure says why where its staff would
+  be, and the staff's aria-label names the melody. The builder never reads or writes this file —
+  there are no High Holiday recordings to draft from — so it is edited by hand like a verified
+  entry, and its `?v=` is bumped on every change.
   **The tune button** (beside the names on every card with a motif) plays the staff as Web Audio
   oscillator tones at the written pitch (B4 = 493.88 Hz, the octave children and women sing), one
   `d` unit = 0.32 s divided by the Settings speed slider, lighting each `.tu-motif-note` with

@@ -1,9 +1,9 @@
 # Trope patterns — the printed cantillation chart, transcribed
 
-The Trope Tutor's Learn-card staffs (`data/trope/trope_motifs.json`) follow the standard
-Ashkenazi Torah melody as printed in the teacher's cantillation chart: Appendix H, *Torah
-Cantillation* (41 numbered phrase patterns, treble clef, three sharps = A major) and *High Holiday
-Torah Cantillation* (33 patterns, no key signature). This file is the transcription of those pages,
+The Trope Tutor's Learn-card staffs follow the standard Ashkenazi melodies as printed in the
+teacher's cantillation chart: Appendix H, *Torah Cantillation* (41 numbered phrase patterns, treble
+clef, three sharps = A major), the source of `data/trope/trope_motifs.json`, and *High Holiday Torah
+Cantillation* (33 patterns, no key signature), the source of `data/trope/trope_motifs_hh.json`. This file is the transcription of those pages,
 kept so the tutor's data can be re-checked against its source without the book, and so the phrase
 patterns are on hand for future features. The page photographs are not in the repository (they are
 copyrighted scans); the melodies themselves are traditional. This transcription is CC BY-SA 4.0,
@@ -12,7 +12,8 @@ like the motif file it feeds.
 ## How to read this file
 
 - **Pitches** are scientific pitch names as printed in the treble clef: C4 is middle C, A3 the A
-  below it, so the Torah chart lives between A3 and B4 (men sing it an octave lower).
+  below it, so the Torah chart lives between A3 and B4 and the High Holiday chart between G3 and
+  B♭4 (men sing both an octave lower).
 - **Key.** In the Torah chart every F, C and G is sharp unless a natural sign is printed; the
   chart's own naturals are written `G♮`. The High Holiday chart has no key signature and prints a
   flat where it wants `B♭`.
@@ -21,9 +22,9 @@ like the motif file it feeds.
   slur to the next note, `>` an accent, *grace* a small slashed grace note. `|` separates the
   words of a phrase; syllables are the chart's own (MER-CHA, TIP-CHA …).
 - **Scale degrees** are given relative to A for the Torah chart (A = 1, B = 2, C♯ = 3, D = 4,
-  E = 5, F♯ = 6, G♯ = 7). The tutor stores `p` = semitones from B4 (A4 = −2, E4 = −7, D4 = −9,
-  C♯4 = −10, B3 = −12, A3 = −14) and `d` = 1 for eighths, sixteenths and triplet eighths, 2 for
-  quarters, 3 for dotted quarters, 4 for halves.
+  E = 5, F♯ = 6, G♯ = 7). The tutor stores `p` = semitones from B4 (B♭4 = −1, A4 = −2, G4 = −4,
+  F4 = −6, E4 = −7, D4 = −9, C♯4 = −10, C4 = −11, B3 = −12, A3 = −14, G3 = −16) and `d` = 1 for
+  eighths, sixteenths and triplet eighths, 2 for quarters, 3 for dotted quarters, 4 for halves.
 
 ## A. One figure per mark (Torah chart)
 
@@ -118,10 +119,12 @@ shown above.
 
 ## C. The 33 High Holiday phrase patterns
 
-A first-pass reading, pitch by pitch from the photographs with the rhythm sketched; not yet in the
-tutor. The set has no key signature and sits on C/D: its sof pasuk ends on C4, its etnachta on D4,
-and it prints B♭ where the Torah chart prints G♮ (the same lowered seventh). Rows 1–8 pair with
-Torah rows 1–8, rows 30–33 are the end-of-aliyah endings.
+The set has no key signature and sits on C/D: its sof pasuk ends on C4, its etnachta on D4, and it
+prints B♭ where the Torah chart prints G♮ (the same lowered seventh). Rows 1–8 pair with Torah rows
+1–8, rows 30–33 are the end-of-aliyah endings. The phrase table is a first-pass reading, pitch by
+pitch from the photographs with the rhythm sketched. Each mark's figure was then re-read note by
+note from zoomed crops (the table after this one, which feeds the tutor); that reading wins
+wherever the two differ, and the first-pass slips it found are listed after it.
 
 | # | Phrase | As printed (first pass) |
 |---|---|---|
@@ -158,6 +161,64 @@ Torah rows 1–8, rows 30–33 are the end-of-aliyah endings.
 | 31 | מֵרְכָא טִפְּחָא סוֹף־פָּסוּק׃ (end of aliyah) | MER D4 CHA D4 D4 \| TIP-CHA G4 F4 E4 D4 (s) \| (rest) SOF D4 PA E4 SUK E4 D4 C4 B3 ~D4 C4(q) |
 | 32 | טִפְּחָא מֵרְכָא סוֹף־פָּסוּק׃ (end of aliyah) | TIP A4(e) CHA G4 F4 G4 F4 E4 D4 \| (rest) MER E4 CHA D4 ~E4 \| SOF D4 PA E4 SUK E4 D4 C4 B3 ~D4 C4(q) |
 | 33 | טִפְּחָא סוֹף־פָּסוּק׃ (end of aliyah) | TIP A4(e) CHA E4(e) ~G4 F4 E4 D4 (s) \| (rest) SOF D4(e) PA E4(e) SUK E4(s) D4(s) C4(s) B3(s) ~D4(e) C4(q) |
+
+### High Holiday figure per mark
+
+These readings feed `data/trope/trope_motifs_hh.json`. As in section A, grace notes are left out
+and a tie becomes one held note. Values are marked only where a note is longer than an eighth —
+(q) a quarter, (dq) a dotted quarter or a tie merged into one longer note — because the staff draws
+eighths, sixteenths and triplet eighths alike. Shalshelet, mercha kefula, karnei parah and yerach
+ben yomo have no row: they never occur in the Rosh Hashanah or Yom Kippur readings.
+
+| Mark (tutor key) | Figure | Chart row |
+|---|---|---|
+| mercha | D4 D4 | High Holiday #1 |
+| tipcha | D4 G4 D4(q) | High Holiday #4 |
+| munach (before etnachta) | D4 C4 | High Holiday #2 |
+| etnachta | C4 C4 F4 E4 D4(q) | High Holiday #4 |
+| sof_pasuk | B3 B3 B3 D4 C4(dq) | High Holiday #8 |
+| mahpach | G4 G4 D4 C4 | High Holiday #11 |
+| pashta | D4 A4 G4 | High Holiday #10 |
+| yetiv | A4 G4 | High Holiday #24 |
+| zakef_katon | G4 G4 D4(dq) | High Holiday #10 |
+| zakef_gadol | D4 D4 D4 A4 G4 F4 E4 F4 E4 D4(q) | High Holiday #25 |
+| zarka | D4 D4 D4 C4 B3 A3 B3 A3 G3(q) | High Holiday #29 |
+| segol | G4 G4 G4 F4 E4 D4 E4 F4 E4 D4(q) | High Holiday #29 |
+| revia | G4 G4 G4 F4 E4 D4 E4 D4 C4(q) | High Holiday #16 |
+| darga | D4 A4 G4 F4 E4 D4(dq) | High Holiday #13 |
+| tevir | D4 D4 C4 D4 F4 E4 D4(q) | High Holiday #13 |
+| kadma | D4 G4 | High Holiday #20 |
+| geresh | B♭4 A4 G4 A4 G4(q) | High Holiday #21 |
+| gershayim | D4 D4 D4 E4 F4 C4 G4(dq) | High Holiday #22 |
+| telisha_ketana | D4 D4 D4 D4 G4 F4 G4 D4(dq) | High Holiday #18 |
+| telisha_gedola | D4 D4 D4 D4 D4 E4 F4 G4 F4 E4 D4(q) | High Holiday #17 |
+| pazer | D4 D4 E4 F4 G4 A4 B♭4 A4 G4 F4 E4 D4 G4 E4 D4(q) | High Holiday #19 |
+
+- Yetiv's Y′ and the munach before the telishas each sing their first syllable on a small grace
+  note, so their staffs start with the notes after it.
+- Zakef gadol opens with a triplet (ZA-KEF-GA) and, like pazer, accents its last three notes. Zarka
+  ends on G3 below two ledger lines, the lowest note in either chart.
+- Azla, the second word of kadma v'azla (row 20), sings the geresh figure, as in the Torah chart.
+
+**First-pass slips the figure reading corrected** (the phrase table above still shows the first
+pass):
+
+- Sof pasuk (rows 5–8): three B3s, not four — SOF B3, PA B3, SUK B3 ~D4 C4, the C4 tied into the
+  closing quarter (row 8).
+- Mahpach and pashta (rows 9–12): mahpach is G4 G4 D4 C4, and the D4 the first pass gave
+  mahpach's end is pashta's first note (pashta D4 A4 G4; rows 10–11).
+- Darga and tevir (row 13): darga's closing D4 is a quarter tied to an eighth, and T′ is a D4
+  eighth of its own, so tevir opens D4 D4.
+- Munach before the telishas (rows 17–18): MU is a grace note and NACH is E4 ~D4, then an eighth
+  rest; telisha gedola's LA starts on a fifth D4 before its run up to G4 (row 17).
+- Gershayim (row 22): the fourth note of YIM's run is C4 (the print draws C4 with no ledger line
+  throughout).
+- Yetiv (rows 23–24): Y′ is a grace note (about B4) and TIV is A4 ~G4 in two slurred eighths,
+  then an eighth rest — not C5 A4 E4.
+- Zarka (rows 26–29): the "C5" after the melisma is an eighth rest; the run is D4 C4 B3 A3 (s),
+  B3 A3, and it ends on G3 (q) (row 29).
+- Segol (rows 26–29): SE is a sixteenth G4, and GOL repeats G4 before its run — G4, then
+  G4 F4 E4 D4 (s), E4 (e), F4 E4 D4 (s, triplet) tied into the closing D4 (row 29).
 
 ## D. What the chart teaches beyond single marks
 
@@ -199,13 +260,17 @@ Torah rows 1–8, rows 30–33 are the end-of-aliyah endings.
 - To re-verify an entry: read its row in section A, convert with the `p` scale above (A4 = −2,
   each semitone down is −1), and compare with the JSON; the card's play button plays the staff as
   tones, lighting each note, so the tune can be checked by ear.
-- The High Holiday set (section C) is not in the tutor. It would be a second motif file with its
-  own `system` value and no sharps, and a setting to choose it.
+- The High Holiday figures (section C) live in `data/trope/trope_motifs_hh.json`
+  (`system: "highholiday"`, `key: "C"`: no signature, and B♭ drawn as a flat), each entry
+  `verified: true` with `source: "tropepatterns.md High Holiday #N"`. The builder never reads or
+  writes that file (there are no High Holiday recordings to draft from), so it is edited by hand.
+  The tutor draws it when Settings → Melody is *High Holidays*; the four marks it lacks say so on
+  their cards.
 
 ## F. Ideas this chart suggests
 
-1. A High Holiday melody setting: a second motif file and a Shabbat / High Holidays choice in
-   Settings, with the Torah Trainer's Rosh Hashanah and Yom Kippur readings pointing to it.
+1. Opening the tutor from the Torah Trainer's Rosh Hashanah and Yom Kippur readings with the High
+   Holiday melody already chosen (the melody setting itself is built).
 2. A phrases tab: the 41 rows above as playable, printable lines grouped by clause, with the
    Hebrew phrase and mark chips.
 3. A "what comes next" drill: a phrase with one mark hidden, or the marks of a phrase to put in
