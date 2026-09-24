@@ -102,11 +102,18 @@ every read with the **strict `TROPE_HEX6_RE`** (`#rrggbb` only, not the looser `
 imported blobs are untrusted, AND the value takes an appended `59` alpha suffix and seeds
 `<input type=color>`, both of which require the 6-digit form).
 
-- **Taxonomy**: `TROPE_CHAR_TO_FAMILY` maps codepoints to 6 families (`sofpasuk`, `katon`,
-  `segol`, `revia`, `geresh`, `rare`; ordered defs in `TROPE_COLOR_DEFS` — the single source of
-  truth: `TROPE_FAMILIES` and the legend chips are derived from it). Sof pasuk is
-  **positional** — the last Hebrew token of each verse (tokenizeHebrew is one-verse-per-call);
-  U+05BD is never mapped (Unicode unifies siluk with meteg). Zarqa/zinor U+0598 **and** U+05AE
+- **Taxonomy**: `TROPE_CHAR_TO_FAMILY` maps codepoints to 7 families (`sofpasuk`, `etnachta`,
+  `katon`, `segol`, `revia`, `geresh`, `rare`; ordered defs in `TROPE_COLOR_DEFS` — the single
+  source of truth: `TROPE_FAMILIES`, the pickers, the legend chips and the print key are derived
+  from it). Sof pasuk is **positional** — the last Hebrew token of each verse (tokenizeHebrew is
+  one-verse-per-call); U+05BD is never mapped (Unicode unifies siluk with meteg). **The Etnachta
+  clause is half positional:** the etnachta mark (U+0591) is its own family, while mercha, tipcha
+  and munach map to `sofpasuk` per mark, and `tokenizeHebrew` then moves every `sofpasuk` word
+  before the verse's etnachta word into `etnachta` (the first half leads into etnachta, the second
+  into sof pasuk). A verse without an etnachta keeps them all; in a double-cantillation verse
+  the last word resolved to `etnachta` splits; a realign desync that stops short of the
+  etnachta uncolors those words rather than guess their half. Etnachta's default is orange
+  beside sof pasuk's red. Zarqa/zinor U+0598 **and** U+05AE
   both map to `segol` (Unicode names are swapped in the wild). U+05AB/AC/AD (poetic accents)
   deliberately unmapped. Multi-family word → **last** mark wins (`tropeFamilyOf`). The chart is
   a **deliberate per-mark pedagogical approximation**: conjunctives (munach, mercha, kadma,
@@ -260,8 +267,10 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   Sephardi names, family, rare flag) kept **byte-identical** between `scripts/build-trope-index.mjs`
   and `trope_tutor.html` (same convention as the `.ivrit` engine; copy, don't rewrite). Family
   assignment mirrors torah_trainer's `TROPE_CHAR_TO_FAMILY`; family hues mirror
-  `TROPE_DEFAULTS_LIGHT/_DARK` — keep both pages' color language in sync. `sof_pasuk` has no chars
-  (positional; siluk = meteg U+05BD, never mapped); `zarka` matches BOTH U+0598 and U+05AE
+  `TROPE_DEFAULTS_LIGHT/_DARK` — keep both pages' color language in sync. The one difference:
+  the tutor files etnachta under `sofpasuk`, since its cards are one per mark and mercha, tipcha
+  and munach serve both halves of the verse, while the trainer colors an Etnachta clause of its
+  own (above). `sof_pasuk` has no chars (positional; siluk = meteg U+05BD, never mapped); `zarka` matches BOTH U+0598 and U+05AE
   (Unicode's swapped names) and displays corpus-dominant U+05AE; `geresh_muqdam` has zero corpus
   occurrences (the Learn card handles example-less tropes).
 - **Audio clip engine**: ONE `<audio id="tuAudio">`; `playClip({p,a,w,ref,he,s,e})` resolves the MP3
