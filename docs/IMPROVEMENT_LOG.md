@@ -202,6 +202,24 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] S | trope_tutor.html | **A typed confirmation before “Reset mastery & personal best”** so a curious student can't wipe a class record. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
+- [ ] M | trope_tutor.html | **A Phrases tab**: the chart's 41 phrase rows as playable, printable lines grouped by clause, with the Hebrew phrase and mark chips. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] M | trope_tutor.html | **A "what comes next?" drill**: a chart phrase with one mark hidden to pick, or its marks to put in order. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] M | trope_tutor.html | **Context variants on the Learn card**: munach's shapes and the tevir-context mercha and kadma, each a small staff with its phrase. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M | trope_tutor.html | **The end-of-aliyah sof pasuk on the sof pasuk card** (Torah row 41, High Holiday rows 30–33), once row 41 is checked by ear. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M | torah_trainer.html | **Mark each aliyah's last verse** as the one sung to the end-of-aliyah sof pasuk, linking to that card. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] M | trope_tutor.html | **A munach legarmeh card** (munach + paseq) with its own figure and examples. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] M | trope_tutor.html | **A one-sheet printable phrase chart** in the teacher's chosen key: the phrases, their marks and a staff each. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S | torah_trainer.html | **Say that a Rosh Hashanah or Yom Kippur chant is the year-round recording**, beside the reading's High Holiday link. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] L | torah_trainer.html | **High Holiday recordings for the Rosh Hashanah and Yom Kippur readings** — needs a licensed recording source; not micro. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
 ## In progress
 
 _(none)_
@@ -271,22 +289,6 @@ _(none)_
 - 2026-09-23 | **S405** | iters: 1 pass (**K**) + 4 fixes = **5** (full budget) | tools: Hebrew_Font_Maker (`f78ad1b`), flash_cards ×2 (`1e8991f`, `0a420fc` — at its cap), torah_trainer (`1e8991f`), hebrew_blend_generator (`b07b9fc`) | patterns fixed: textContent-rewrite-erases-a-control-icon ×5 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-09-22 | **S404** | iters: 1 pass (**L**) + 4 fixes = **5** (full budget) | tools: account, classroom_dashboard, torah_trainer (`4b7f9cc`), trope_tutor ×2 (`4b7f9cc`, `92dfe01` — at its cap), ops.md (`46959bf`), README (`1d4943b`) | patterns fixed: stale-html-fallback-behind-its-csv-value ×5 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- 2026-09-22 | **S403** | iters: 1 pass (**E**) + 4 fixes = **5** (full budget) | tools: index ×2 (`7552ba0`, `6e28af3`), Hebrew_Font_Maker (`6e28af3`), THIRD_PARTY_LICENSES (`7820327`), CLAUDE.md + shared-components (`9dfc1e1`) | patterns fixed: per-page-code-inside-a-shared-block ×2 carriers …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- 2026-09-18 | **S402** | iters: 3 micro-features, no pass (feature-seeds session at the maintainer's direction, outside the 1-per-session micro budget) = **3** | tools: hebrew_blend_generator ×3 (`88b2720`, `7345060`, `58fc2cd`) | patterns fixed: — | pass run: none | SW: v778→v779
-
-- 2026-09-18 | **S401** | iters: 2 micro-features, no pass (feature-seeds session at the maintainer's direction, outside the 1-per-session micro budget) = **2** | tools: classroom_dashboard ×2 (`92217cf`, `7d7b89a`) | patterns fixed: — | pass run: none | SW: v777→v778
-
-- 2026-09-17 | **S400** | iters: 3 micro-features, no pass (feature-seeds session, outside the 1-per-session micro budget) = **3** | tools: trope_tutor ×3 (`4ce56bb`, `3249dba`, `c57eb53`) | patterns fixed: — | pass run: none | SW: v776→v777
-
-- 2026-09-17 | **S399** | iters: 1 pass (**A**) + 4 fixes = **5** (full budget) | tools: hebrew_dictionary (`273f449`), Hebrew_Font_Maker ×2 (`05341a7`, `ab491a7`), resources (`9568ad3`) | patterns fixed: light-literal-text-on-the-gold-token ×7 carriers (its first sweep hit), …[full text: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- 2026-09-17 | **S398** | iters: 1 pass (**B**) + 4 fixes = **5** (full budget) | tools: hebrew_blend_generator ×2 (`12ecb5f`, `3f93c03`), resources (`c71b556`), hebrew_dictionary ×2 (`3f93c03`, `e53b78e`), classroom_dashboard + torah_trainer (`3f93c03`) | patterns fixed: …[full text: …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- 2026-09-17 | **S397** | iters: 1 pass (**F**) + 3 fixes + 1 refutation = **5** (full budget) | tools: suite-wide sweep ×14 (`1348930`, `bc6df0f`), hebrew_dictionary + classroom_dashboard (`7e8b427`), Hebrew_Font_Maker (`ecb9706`) | patterns fixed: physical-property-that-never-mirrors ×2 (the …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- 2026-09-17 | **S396** | iters: 1 pass (**C**) + 3 fixes + 1 measurement = **5** (full budget) | tools: account ×2 (`b15ef0e`, `ffe9d9a`), js/ivrit-account (`3cc3ae5`, the one shared-script iteration), suite-wide (measured, no code) | patterns fixed: light-literal-text-on-the-gold-token ×1 …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Tool coverage (last-touched date per tool)
 
@@ -590,4 +592,4 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 **⚑ HARNESS: traps 1–131 in loop-findings.** `b415/`: `lib.mjs` (collectors before `goto`, a pre-`goto` stub hook, `base` = an unfixed `git archive` tree on :8081), `census.mjs`, `interact.mjs`, `fsname.mjs`. `compact-ledger --apply` runs ONCE; the old handoff moves by hand.
 
-**⚑ GATE BENCH:** gate 2 — the card sheet's header (S412), the generator's Header Labels, S414's "Back"/"Home", the toggles' visible labels (dark + FM panels), the 404's tool list; gate 3 — FM stage annotations, `.dash-edit-pencil`, the hub's type band, `color-scheme`, glyph-led labels, the 404's star, S414's header order; gate 4 — 16px-on-touch (142 fields), the flash sticky bar. **Seed bench: 25** (12 new Trope Tutor settings seeds, maintainer request 2026-09-24; they extend its Settings tab and tune button).
+**⚑ GATE BENCH:** gate 2 — the card sheet's header (S412), the generator's Header Labels, S414's "Back"/"Home", the toggles' visible labels (dark + FM panels), the 404's tool list; gate 3 — FM stage annotations, `.dash-edit-pencil`, the hub's type band, `color-scheme`, glyph-led labels, the 404's star, S414's header order; gate 4 — 16px-on-touch (142 fields), the flash sticky bar. **Seed bench: 34** (21 new trope seeds from the maintainer, 2026-09-24: 12 Trope Tutor settings ideas, 9 chart-based ideas).

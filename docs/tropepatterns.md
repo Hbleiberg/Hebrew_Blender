@@ -279,6 +279,9 @@ pass):
 
 ## F. Ideas this chart suggests
 
+Each of these is a Feature seed in the improvement loop's ledger (`docs/IMPROVEMENT_LOG.md`), the key
+control among the Trope Tutor settings seeds, so a loop session can pick one up.
+
 1. High Holiday recordings for the Torah Trainer's Rosh Hashanah and Yom Kippur readings: those
    readings now link to the tutor on the High Holiday melody, but their chant buttons still play
    PocketTorah's year-round recordings.
