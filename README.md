@@ -357,9 +357,10 @@ signing in.
 | `data/trope/trope_index.json` | Pre-built Trope Tutor index — example words + audio clip bounds per cantillation mark (~75 KB) |
 | `scripts/build-trope-index.mjs` | Offline builder for the trope index (plain Node, zero deps); writes `docs/trope_index_report.md` |
 | `docs/trope_index_report.md` | Build report for the trope index — per-trope counts, excluded aliyot, zarka codepoint finding |
-| `data/trope/trope_motifs.json` | Pre-built melodic motif (Western notation) per cantillation mark, shown on the Trope Tutor's Learn cards |
+| `data/trope/trope_motifs.json` | The melodic motif (Western notation) per cantillation mark, shown on the Trope Tutor's Learn cards — hand-transcribed from a printed Ashkenazi cantillation chart and marked verified |
 | `scripts/build-trope-motifs.mjs` | Offline builder for the motifs — pitch-tracks the same PocketTorah clips; writes `docs/trope_motifs_report.md` (`--force` discards human-verified motifs; prefer `--only=<key>`) |
-| `docs/trope_motifs_report.md` | Build report for the motifs — per-mark confidence and the hand-verified overrides |
+| `docs/trope_motifs_report.md` | Build report for the motif builder — the machine drafts' per-mark contours; verified entries are kept verbatim |
+| `docs/tropepatterns.md` | The printed cantillation chart transcribed: one figure per mark (the source of `trope_motifs.json`), the 41 Torah and 33 High Holiday phrase patterns, and what the chart teaches about context |
 | `docs/phonotactic_blending_filter_spec.md` | Linguistic specification for the phonotactic validity filter used by the generator |
 | `docs/theme_tagging_report.md` | Build report for the dictionary's `themes` tags (an offline, LLM-assisted pipeline with adversarial review); the spot-check surface — to fix a word, edit its `themes` array in `data/hebrew_words.json` and bump the `?v=` |
 | `docs/reference/` | How each component works (storage, i18n, shared blocks, Font Maker, dashboard, generator, Torah/trope, ops) — indexed from `CLAUDE.md` |
