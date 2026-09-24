@@ -64029,3 +64029,59 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 - L SEO & discoverability audit: 2026-09-22 (**S404 — 20th L, first since S387 (17 sessions); the stalest runnable pass (O blocked here). Delta `b5e1416..HEAD`: 150 commits, 15/17 pages moved, 1/17 crawler surfaces (trope's drill-length JSON-LD, accurate). 18 arm classes, every zero controlled: 0 hits. FOUND: 5 stale fallbacks (`4b7f9cc`, via the FAQ twin arm); torah/trope `og:image:alt` …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - E freshness/site-health: 2026-09-22 (**S403 — 32nd E, first since S386 (17 sessions); the stalest RUNNABLE pass (O blocked here a 2nd time). Delta `bc62e6f..HEAD`: 150 commits, 40 files, +15,735 — E's first sight of the icon sweep and FM 5.47–5.56. 21 arms, 16 clean with controls; FIXED: My Fonts buttons printing SVG source `7552ba0` (P2, found grounding), 2 shared blocks not byte-identical …[full text: IMPROVEMENT_ARCHIVE.md]
+
+## Seed intake (2026-09-24, maintainer request on PR #271) — moved verbatim from the live ledger
+
+_Twelve Trope Tutor settings-tab ideas from the maintainer's chat became Feature seeds; the ledger sat at its 100 KB limit, so the two oldest sessions' Done entries (S411 and S412, due out at the S416 and S417 close-outs) moved here early: room for the seeds, and the same headroom S416's close-out would have had._
+
+### from Done
+
+- [x] 2026-09-23 | (S411 close-out) | branch/deploy note | **S411 = pass I + 4 fixes on `claude/improve-loop-k01p7y` / draft PR #266 (open, clean, base `d57da36`).** DRIFT: none (keep-alive #11 green, `delete-account` v3 JWT on, 3 migrations recorded). `sw.js` v830 → v831; FM not bumped (bug fixes). Scripts: i18n + build-locales, inline-js, 7 smokes `--sdk`, sitemap, llms, compact, check-ledger. …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-23 | `4387c94` | account.html | (S411) **The Display name field carries the suite's name triplet** (iOS could autocorrect a surname; pattern `mobile-input-hints`, un-retired). | verified: signed in, EN/HE/iPhone 13 vs unfixed: "" / none / true → words / off / false, = contact's `#cfName`; a real Save sends the typed name; smoke-account-page 53/53
+
+- [x] 2026-09-23 | `cc9fb3b` | classroom_dashboard.html | (S411 Pass I) **A damaged timer-sound setting falls back to the beep** (inherited names played nothing; a non-number painted "NaN%" at full gain). | verified: oscillators counted, 12 shapes × EN/HE vs unfixed: 0 → 1, "NaN%"/gain 1 → 70%/0.49, controls identical; a real 3 s timer: "constructor" 0 → 1
+
+- [x] 2026-09-23 | `25d2277` | Hebrew_Font_Maker.html + CSV | (S411) **A cloud open's missing-photo notice stays on the strip, singular/plural right** (it lasted ~40 ms under "Opened"; pattern `error-status-clobbered-by-a-later-routine-write`). | verified: real clicks behind the fake cloud, 0/1/2 photos deleted, EN/HE vs unfixed: 38–44 ms → still shown at 5.5 s; smoke-fontmaker 33/33
+
+- [x] 2026-09-23 | `e3ceade` | Hebrew_Font_Maker.html + CSV | (S411 Pass I) **QA Check on a new project says no letter is traced yet** (was "✓ All placements clear" + a tall-artwork line over 27 empty rows). | verified: 6 project states × EN/HE vs unfixed; traced Hebrew byte-identical on every tab; the outline warning kept for an English-only font
+
+- [x] 2026-09-23 | (S411 Pass I iter 1) | the whole suite | **31st I, first since S394 (17 sessions)**: 32 virgin cells clean behind 7 planted controls; the census = S394's; 0 SDK/project requests anonymously; delta arms on FM, dashboard, generator, trope, hub, account, tours. FOUND 4 (2 fixed; a glyph-label census for F/O; English glyph names for K). Receipts + traps 102–107 in loop-findings.
+
+- [x] 2026-09-23 | (S412 close-out) | branch/deploy note | **S412 = pass H + 4 fixes on `claude/improve-loop-k01p7y` / draft PR #266. Then landed on main by in-session authorization (`d57da36..3a9adbd`; Pages success, v832 live).** DRIFT: none. `sw.js` v831 → v832. Scripts: i18n, inline-js, 7 smokes `--sdk` 408/408, sitemap, llms, compact, check-ledger. No gates.
+
+- [x] 2026-09-23 | `d35be74` | torah_trainer.html | (S412) **The fullscreen bar's Settings button draws `hi-gear`, not ⚙️.** | verified: 8 cells vs unfixed: "⚙️" → the Dark button's 16×16 white line style; size, name, drawer unchanged
+
+- [x] 2026-09-23 | `53d3579` | hebrew_dictionary.html | (S412) **Copy link keeps its icon and language after a copy.** | verified: real clicks, 4 cells vs unfixed: icon lost, label frozen → kept over 2 copies; a switch translates
+
+- [x] 2026-09-23 | `abb0a1e` | flash_cards.html | (S412 Pass H) **Simple Stressed survives a reload and a share code.** | verified: each option + reload vs unfixed, EN + HE: 5/6 → 6/6; share code Default → Simple Stressed; garbage → Default
+
+- [x] 2026-09-23 | `51e8f3c` | flash_cards.html | (S412 Pass H) **Numbers / Colors / Emoji / Words mode survives a reload.** | verified: each + reload vs unfixed, EN + HE: 4/4 lost → kept, blob byte-identical, the right cards dealt; ?wl=, preset, ladder too
+
+- [x] 2026-09-23 | (S412 Pass H iter 1) | flash_cards.html | **Flash cards' first H since S264**: 3 lessons by real clicks, EN + HE (a blend review, an ulpan's vocabulary, the Learning Path and weak cards). FOUND 10 + 1 seed. Receipts + traps 108–112 in loop-findings.
+
+### from Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
+
+- [ ] S | trope_tutor.html | **Tune key: transpose the play button ±6 semitones for a child's voice** (the staff stays as printed). `playTune` sounds `REF_HZ × 2^(p/12)` at the written pitch (B4 = 493.88 Hz), which can sit high or low for a class. A Settings slider `tuneShift` (−6…+6 semitones, default 0, with a reset button) multiplies by `2^(shift/12)`; the staff keeps the printed key and a note under the slider says so. Both melodies. ~35 lines + 3 CSV keys; the field rides the existing `settings` sync row. The first pick in the original suggestions. | found: 2026-09-24, maintainer (settings-tab ideas, PR #271 chat)
+
+- [ ] S | trope_tutor.html | **Tune practice: its own tempo with a “slow for learning” preset, a repeat count (1–3) and an echo gap** for the class to sing it back. The tune's pace follows the clip slider (`settings.playbackRate`) today. Add `tuneRate` (0.5–1.5, a Slow preset ≈ 0.7), `tuneRepeats` (1–3) and `tuneEcho` (after each play, a silence as long as the tune, the staff held in a "your turn" state). `stopTune()` must cancel the whole sequence and its timers. ~60 lines + ~6 CSV keys. | found: 2026-09-24, maintainer (settings-tab ideas, PR #271 chat)
+
+- [ ] S–M | trope_tutor.html | **Note names while the tune plays** — letters or do-re-mi under the lit staff note; off by default. Letter names (A B C…, with ♯/♭ from `motifPitchPos`) or solfège (do re mi / דו רה מי) under each `.tu-motif-note`, the lit one emphasised. Needs room under the staff (viewBox height, like the G3 deepening) and a Hebrew solfège string set. ~60 lines + CSV keys. | found: 2026-09-24, maintainer (settings-tab ideas, PR #271 chat)
+
+- [ ] S | trope_tutor.html | **Calmer Learn cards for young grades: examples per card (2/3/4) and a primary-name-only switch.** `renderLearn` shows `spreadPick(pool, 4)`; a `learnExamples` setting picks 2, 3 or 4. A `showSecondName` switch hides `.tu-name-secondary` (the other tradition's name) for beginners. ~25 lines + 4 CSV keys. | found: 2026-09-24, maintainer (settings-tab ideas, PR #271 chat)
+
+- [ ] M | trope_tutor.html | **The mark in its phrase on its Learn card, and the chart's clause order as a family order.** A line under each card naming the mark's most common phrase (mercha in "mercha tipcha munach etnachta") from `docs/tropepatterns.md` §B, and an option to walk the families in the chart's teaching order. The phrase table is data: an inline constant, or a `data/` corpus (not micro). Check the micro budget, or split into two seeds. | found: 2026-09-24, maintainer (settings-tab ideas, PR #271 chat)
+
+- [ ] S | trope_tutor.html | **Drill answer count (2/3/4) and a second chance** before a miss counts. All three question builders call `pickDistractors(q.key, 3)`; a `drillChoices` setting makes a two-choice drill for first grade. `secondChance` marks and disables the first wrong pick and allows one more try; decide what a second-try right answer records in mastery (right, or half). ~50 lines + CSV keys. | found: 2026-09-24, maintainer (settings-tab ideas, PR #271 chat)
+
+- [ ] S–M | trope_tutor.html | **Drill sounds and a finish celebration**, each switchable and still under reduced motion. A soft chime on a right answer (Web Audio, no files, no CSP change) and a short end-of-session celebration, each a Settings switch; the celebration's animation joins the page's reduced-motion block (the 0.001ms neutralizer). Hear questions already autoplay their clip — nothing to add there. ~60 lines. | found: 2026-09-24, maintainer (settings-tab ideas, PR #271 chat)
+
+- [ ] S | trope_tutor.html | **Kid mode preset**: one switch for 2 answers, a second chance, the slow tune, 2 examples and bigger Hebrew. Sets those values and restores the teacher's own when turned off. Build it after the answer-count, tune-practice and Learn-card seeds it bundles. | found: 2026-09-24, maintainer (settings-tab ideas, PR #271 chat)
+
+- [ ] S–M | trope_tutor.html | **Share this setup as a `?s=` link** (length, scope, question types, melody) for a teacher to send the class. Per CLAUDE.md shared-UX rule 3: a diff against pristine defaults, silent on garbage, never navigates, never clobbers saved settings; the `hi-link` icon, never 🔗 in the label. The generator's and flash cards' `?s=` code is the precedent. The tutor's `?melody=` link contract (a per-visit view) is the nearest local shape. | found: 2026-09-24, maintainer (settings-tab ideas, PR #271 chat)
+
+- [ ] L | trope_tutor.html | **Student profiles: per-child mastery** on a shared class device (flash cards' model) — not micro. The tutor keeps one `hebrewTropeTutor_progress`. Per-student mastery and streaks need new key(s), all three AllTools sites and `IVRIT_CFG`, a sync-registry row, and `privacy.legal.*` / `terms.legal.*` text (children's names plus progress are a new kind of stored data) — so not micro; split before building. | found: 2026-09-24, maintainer (settings-tab ideas, PR #271 chat)
+
+- [ ] S–M | trope_tutor.html | **Printable mastery report**: the mastery grid, personal best and missed marks on one sheet. Today the drill's mastery grid is screen-only. One printed sheet, per student once profiles exist. | found: 2026-09-24, maintainer (settings-tab ideas, PR #271 chat)
+
+- [ ] S | trope_tutor.html | **A typed confirmation before “Reset mastery & personal best”** so a curious student can't wipe a class record. `resetProgress()` asks one `confirm()`; add a typed word on top of it (CLAUDE.md keeps the existing confirm guard), with the suite's inline-validation pattern (`aria-live` note + `aria-disabled`). | found: 2026-09-24, maintainer (settings-tab ideas, PR #271 chat)

@@ -178,6 +178,30 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] L | classroom_dashboard.html | **A/B or rotating week cycles.** Needs a cycle dimension on `scheduleWeek` (cells per cycle-week), a "which week is it" anchor date, and cycle awareness in `computeWeekState`'s next-school-day scan — a real model change, not a sidecar. | found: 2026-08-06, weekly-grid build
 
+- [ ] S | trope_tutor.html | **Tune key: transpose the play button ±6 semitones for a child's voice** (the staff stays as printed). | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S | trope_tutor.html | **Tune practice: its own tempo with a “slow for learning” preset, a repeat count (1–3) and an echo gap** for the class to sing it back. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M | trope_tutor.html | **Note names while the tune plays** — letters or do-re-mi under the lit staff note; off by default. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S | trope_tutor.html | **Calmer Learn cards for young grades: examples per card (2/3/4) and a primary-name-only switch.** | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] M | trope_tutor.html | **The mark in its phrase on its Learn card, and the chart's clause order as a family order.** | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S | trope_tutor.html | **Drill answer count (2/3/4) and a second chance** before a miss counts. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M | trope_tutor.html | **Drill sounds and a finish celebration**, each switchable and still under reduced motion. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S | trope_tutor.html | **Kid mode preset**: one switch for 2 answers, a second chance, the slow tune, 2 examples and bigger Hebrew. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M | trope_tutor.html | **Share this setup as a `?s=` link** (length, scope, question types, melody) for a teacher to send the class. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] L | trope_tutor.html | **Student profiles: per-child mastery** on a shared class device (flash cards' model) — not micro. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S–M | trope_tutor.html | **Printable mastery report**: the mastery grid, personal best and missed marks on one sheet. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] S | trope_tutor.html | **A typed confirmation before “Reset mastery & personal best”** so a curious student can't wipe a class record. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
 ## In progress
 
 _(none)_
@@ -219,30 +243,6 @@ _(none)_
 - [x] 2026-09-23 | `f40d142` | contact.html | (S413 Pass C) **"Message sent" readable in light mode** (`--gold` 2.75 → `--gold-text` 6.22; dark 7.16; REOPENED `dark-mode-token-as-text-on-a-light-ground`). | verified: stubbed sends, 4 paths × EN/HE × both themes
 
 - [x] 2026-09-23 | (S413 Pass C iter 1) | resources, contact, privacy/terms, 404 | **The C-stale chrome pages** (resources last C S92; the rest never): 40 census cells, 20 Tab walks, 2 dialogs, 4 send paths; every zero controlled. FOUND 4 P3 (fixed) + 5 P4. Receipts + traps 113–119 in loop-findings.
-
-- [x] 2026-09-23 | (S412 close-out) | branch/deploy note | **S412 = pass H + 4 fixes on `claude/improve-loop-k01p7y` / draft PR #266. Then landed on main by in-session authorization (`d57da36..3a9adbd`; Pages success, v832 live).** DRIFT: none. `sw.js` v831 → v832. Scripts: i18n, inline-js, 7 smokes `--sdk` 408/408, sitemap, llms, compact, check-ledger. No gates.
-
-- [x] 2026-09-23 | `d35be74` | torah_trainer.html | (S412) **The fullscreen bar's Settings button draws `hi-gear`, not ⚙️.** | verified: 8 cells vs unfixed: "⚙️" → the Dark button's 16×16 white line style; size, name, drawer unchanged
-
-- [x] 2026-09-23 | `53d3579` | hebrew_dictionary.html | (S412) **Copy link keeps its icon and language after a copy.** | verified: real clicks, 4 cells vs unfixed: icon lost, label frozen → kept over 2 copies; a switch translates
-
-- [x] 2026-09-23 | `abb0a1e` | flash_cards.html | (S412 Pass H) **Simple Stressed survives a reload and a share code.** | verified: each option + reload vs unfixed, EN + HE: 5/6 → 6/6; share code Default → Simple Stressed; garbage → Default
-
-- [x] 2026-09-23 | `51e8f3c` | flash_cards.html | (S412 Pass H) **Numbers / Colors / Emoji / Words mode survives a reload.** | verified: each + reload vs unfixed, EN + HE: 4/4 lost → kept, blob byte-identical, the right cards dealt; ?wl=, preset, ladder too
-
-- [x] 2026-09-23 | (S412 Pass H iter 1) | flash_cards.html | **Flash cards' first H since S264**: 3 lessons by real clicks, EN + HE (a blend review, an ulpan's vocabulary, the Learning Path and weak cards). FOUND 10 + 1 seed. Receipts + traps 108–112 in loop-findings.
-
-- [x] 2026-09-23 | (S411 close-out) | branch/deploy note | **S411 = pass I + 4 fixes on `claude/improve-loop-k01p7y` / draft PR #266 (open, clean, base `d57da36`).** DRIFT: none (keep-alive #11 green, `delete-account` v3 JWT on, 3 migrations recorded). `sw.js` v830 → v831; FM not bumped (bug fixes). Scripts: i18n + build-locales, inline-js, 7 smokes `--sdk`, sitemap, llms, compact, check-ledger. …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-23 | `4387c94` | account.html | (S411) **The Display name field carries the suite's name triplet** (iOS could autocorrect a surname; pattern `mobile-input-hints`, un-retired). | verified: signed in, EN/HE/iPhone 13 vs unfixed: "" / none / true → words / off / false, = contact's `#cfName`; a real Save sends the typed name; smoke-account-page 53/53
-
-- [x] 2026-09-23 | `cc9fb3b` | classroom_dashboard.html | (S411 Pass I) **A damaged timer-sound setting falls back to the beep** (inherited names played nothing; a non-number painted "NaN%" at full gain). | verified: oscillators counted, 12 shapes × EN/HE vs unfixed: 0 → 1, "NaN%"/gain 1 → 70%/0.49, controls identical; a real 3 s timer: "constructor" 0 → 1
-
-- [x] 2026-09-23 | `25d2277` | Hebrew_Font_Maker.html + CSV | (S411) **A cloud open's missing-photo notice stays on the strip, singular/plural right** (it lasted ~40 ms under "Opened"; pattern `error-status-clobbered-by-a-later-routine-write`). | verified: real clicks behind the fake cloud, 0/1/2 photos deleted, EN/HE vs unfixed: 38–44 ms → still shown at 5.5 s; smoke-fontmaker 33/33
-
-- [x] 2026-09-23 | `e3ceade` | Hebrew_Font_Maker.html + CSV | (S411 Pass I) **QA Check on a new project says no letter is traced yet** (was "✓ All placements clear" + a tall-artwork line over 27 empty rows). | verified: 6 project states × EN/HE vs unfixed; traced Hebrew byte-identical on every tab; the outline warning kept for an English-only font
-
-- [x] 2026-09-23 | (S411 Pass I iter 1) | the whole suite | **31st I, first since S394 (17 sessions)**: 32 virgin cells clean behind 7 planted controls; the census = S394's; 0 SDK/project requests anonymously; delta arms on FM, dashboard, generator, trope, hub, account, tours. FOUND 4 (2 fixed; a glyph-label census for F/O; English glyph names for K). Receipts + traps 102–107 in loop-findings.
 
 ## Metrics
 
@@ -590,4 +590,4 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 **⚑ HARNESS: traps 1–131 in loop-findings.** `b415/`: `lib.mjs` (collectors before `goto`, a pre-`goto` stub hook, `base` = an unfixed `git archive` tree on :8081), `census.mjs`, `interact.mjs`, `fsname.mjs`. `compact-ledger --apply` runs ONCE; the old handoff moves by hand.
 
-**⚑ GATE BENCH:** gate 2 — the card sheet's header (S412), the generator's Header Labels, S414's "Back"/"Home", the toggles' visible labels (dark + FM panels), the 404's tool list; gate 3 — FM stage annotations, `.dash-edit-pencil`, the hub's type band, `color-scheme`, glyph-led labels, the 404's star, S414's header order; gate 4 — 16px-on-touch (142 fields), the flash sticky bar. **Seed bench: 13.**
+**⚑ GATE BENCH:** gate 2 — the card sheet's header (S412), the generator's Header Labels, S414's "Back"/"Home", the toggles' visible labels (dark + FM panels), the 404's tool list; gate 3 — FM stage annotations, `.dash-edit-pencil`, the hub's type band, `color-scheme`, glyph-led labels, the 404's star, S414's header order; gate 4 — 16px-on-touch (142 fields), the flash sticky bar. **Seed bench: 25** (12 new Trope Tutor settings seeds, maintainer request 2026-09-24; they extend its Settings tab and tune button).
