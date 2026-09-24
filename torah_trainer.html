@@ -1080,7 +1080,7 @@ body.fullscreen #ttBulkDock { display:none; }
    [dir=rtl] .settings-modal has the SAME specificity as .settings-modal.open (attr+class), so the
    OPEN state needs its own equally-scoped [dir=rtl] rule to win back translateX(0). */
 [dir="rtl"] .settings-modal { transform:translateX(-100%); }
-/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/trope_tutor — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
+/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
 .sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
 .sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
 .sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
@@ -5921,8 +5921,8 @@ function panelKeyOf(t) { return (t.dataset.i18n || '').replace('torah.settings.p
    dashboard rails. Copy this block verbatim, together with the matching
    `shared: sidebar-resize CSS` block (keep both byte-identical across
    carriers; carriers: hebrew_dictionary.html, hebrew_blend_generator.html,
-   classroom_dashboard.html, torah_trainer.html, trope_tutor.html), then
-   mount per handle from the page's own init (below the end marker):
+   classroom_dashboard.html, torah_trainer.html), then mount per handle
+   from the page's own init (below the end marker):
 
      mountSidebarResize({
        handle: el,                   // .sbr-split element (role="separator",

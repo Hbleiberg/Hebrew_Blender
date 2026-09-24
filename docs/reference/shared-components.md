@@ -228,7 +228,8 @@ tp = mountTestPhrases({ container, getInput, onChange });   // container: an emp
 Every fixed-width side panel is drag-resizable through one shared engine: grab the seam (or focus
 it and use arrow keys) to scale the panel; double-click or Enter restores the default. Current
 surfaces: the **Dictionary + Generator options sidebars**, the **settings drawers** on the
-Dashboard / Torah Trainer / Trope Tutor, and the **Dashboard's two widget rails**. The Font
+Dashboard / Torah Trainer, and the **Dashboard's two widget rails**. (The Trope Tutor's settings are
+a tab, like the Font Maker's, so it carries no resize handle.) The Font
 Maker's `.ws-split` workspace rails predate this block and deliberately stay on their own engine
 (pointer-only) — don't fold them in as a drive-by.
 
@@ -236,12 +237,12 @@ Maker's `.ws-split` workspace rails predate this block and deliberately stay on 
 `/* ═══ shared: sidebar-resize ═══ … */` (JS — `mountSidebarResize(cfg)`) and
 `/* ═══ shared: sidebar-resize CSS ═══ … */` (the `.sbr-*` rules). **Copy both verbatim; never
 rewrite.** Carriers: `hebrew_dictionary.html`, `hebrew_blend_generator.html`,
-`classroom_dashboard.html`, `torah_trainer.html`, `trope_tutor.html`. When a page adopts them,
+`classroom_dashboard.html`, `torah_trainer.html`. When a page adopts or drops them,
 re-true the carrier list in the marker comments of **all** carriers and re-verify byte-identity
 by sha (same rule as the keyboard/app-toast blocks). Per-page wiring — the cfg object inside a
 small `init…Resize()` mount call — lives **below** the end marker. The CSS block is
 self-contained including its own reduced-motion tail, so a page whose reduced-motion block
-enumerates selectors (the Trope Tutor) needs no extra entry.
+enumerates selectors needs no extra entry.
 
 ### Host contract
 ```js
@@ -299,7 +300,7 @@ print list, collapse interplay, ak-view-style overrides).
    (Generator extra: `positionSidebarTab` is the `onChange`, and the fixed hide-tab sits at the
    seam's inline-end **+4px** so it never swallows drags — the dictionary's collapse tab bakes the
    same 4px into its `inset-inline-start: calc(var(--dict-sidebar-w) + 4px)`.)
-2. **Settings drawer** (dashboard, torah, trope): handle class `sbr-split sbr-abs`, **first child**
+2. **Settings drawer** (dashboard, torah): handle class `sbr-split sbr-abs`, **first child**
    of `#settingsModal`, page rule `#settingsResize { inset-inline-start:-4px; }` (straddles the
    border seam; the handle intercepts its own pointerdowns, so a drag start never reaches the
    backdrop's click-to-close). `anchor:'end'`;
@@ -333,8 +334,10 @@ monitor, not the teacher**, so register it ONLY in `index.html` `eraseAllSetting
 existing per-device comment) — never in `exportAllSettings`/`importAllSettings`/`IVRIT_CFG`, and
 never inside a tool's settings blob or `getSettings()`. Current keys:
 `hebrewDictionary_sidebarW`, `hebrewBlender_sidebarW`, `hebrewDashboard_drawerW`,
-`hebrewDashboard_railLeftW`, `hebrewDashboard_railRightW`, `hebrewTorahTrainer_drawerW`,
-`hebrewTropeTutor_drawerW`.
+`hebrewDashboard_railLeftW`, `hebrewDashboard_railRightW`, `hebrewTorahTrainer_drawerW`.
+`hebrewTropeTutor_drawerW` is legacy: the Trope Tutor's drawer became a tab and nothing writes the
+key any more, but `eraseAllSettings()` keeps it so Erase still clears it from devices that resized
+the old drawer.
 
 ### Rule for any new tool
 A new fixed-width options sidebar, settings drawer, or layout rail ships drag-resize via these

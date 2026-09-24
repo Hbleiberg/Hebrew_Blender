@@ -533,68 +533,13 @@ body.dark .btn-secondary:hover { background:#2a3349; }
 .btn-secondary[aria-disabled="true"]:hover, .btn-secondary:disabled:hover { background:transparent; border-color:var(--border); }
 body.dark .btn-secondary[aria-disabled="true"]:hover, body.dark .btn-secondary:disabled:hover { background:transparent; }
 
-/* ───── Settings drawer (house pattern) ───── */
-.settings-backdrop {
-  position:fixed; inset:0; background:rgba(13,18,32,0.45);
-  z-index:90; opacity:0; pointer-events:none; transition:opacity 0.25s;
-}
-.settings-backdrop.open { opacity:1; pointer-events:auto; }
-/* Registered NON-INHERITED: the drag-resize engine writes --drawer-w on the drawer itself (its
-   `scope`), and a non-inherited property lets a drag frame restyle that one element instead of
-   the drawer's whole subtree. Browsers without @property keep the var() default. */
-@property --drawer-w { syntax: '<length>'; inherits: false; initial-value: 380px; }
-.settings-modal {
-  position:fixed; top:0; inset-inline-end:0;   /* right in LTR, left in RTL (drawer flips to the inline-end edge) */
-  /* Drag-resizable from its inline-start edge (see the shared sidebar-resize block); the 92vw
-     clamp still wins on phones, and the % translateX keeps closed correct at any width. */
-  width:var(--drawer-w, 380px); max-width:92vw;
-  height:100vh; height:100dvh;   /* dvh wins where supported: 100vh is taller than the VISIBLE
-     viewport while a phone URL bar is expanded, stranding the tail of this scroll container */
-  background:var(--white); border-inline-start:1px solid var(--border);
-  box-shadow:var(--shadow-md); z-index:100;
-  transform:translateX(100%); transition:transform 0.3s ease, visibility 0s 0.3s;
-  visibility:hidden;   /* the CLOSED drawer must leave the tab order + a11y tree — hidden once the slide-out ends */
-  display:flex; flex-direction:column;
-}
-.settings-modal.open { transform:translateX(0); visibility:visible; transition:transform 0.3s ease; }
-/* RTL: drawer anchors to the left edge; the CLOSED slide-out goes the other way. [dir=rtl] .settings-modal
-   ties specificity with .settings-modal.open (attr+class), so the OPEN state needs its own [dir=rtl] rule. */
-[dir="rtl"] .settings-modal { transform:translateX(-100%); }
-/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/trope_tutor — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
-.sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
-.sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
-.sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
-.sbr-split:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:-1px;}
-/* placement variants — the block styles the handle, the page positions it: */
-.sbr-flex{flex:0 0 7px;align-self:stretch;position:relative;margin-inline-start:-3px;}   /* in-flow seam between a sidebar and its main column */
-.sbr-abs{position:absolute;top:0;bottom:0;width:9px;}                                    /* edge handle (drawers, rails); page CSS sets the inset */
-@media (prefers-reduced-motion: reduce){ .sbr-split::before{transition:none !important;} }
-/* ═══ end shared: sidebar-resize CSS ═══ */
-/* Drawer resize handle: straddles the border-inline-start seam (4px over the backdrop — the
-   handle intercepts its own pointerdowns, so a drag start never reaches the backdrop's
-   click-to-close). Hidden on phones, where max-width:92vw pins the width anyway. */
-#settingsResize { inset-inline-start:-4px; }
-@media (max-width:760px) { .settings-modal .sbr-split { display:none; } }
-[dir="rtl"] .settings-modal.open { transform:translateX(0); }
-.settings-header {
-  padding:14px 20px; background:var(--navy); color:#fff;
-  display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
-}
-body.dark .settings-header { background:var(--navy-deep); }
-.settings-header h2 {
-  font-family:'Libre Baskerville',serif; font-size:1rem;
-  letter-spacing:0.05em; color:#fff;
-  display:flex; align-items:center; gap:7px;   /* the gear sits beside the title (icon set, not an emoji) */
-}
-.settings-close {
-  background:rgba(255,255,255,0.12); color:#fff; border:none;
-  border-radius:4px; width:40px; height:40px;
-  cursor:pointer; font-size:1.2rem; line-height:1; transition:background 0.15s;
-}
-.settings-close:hover { background:rgba(255,255,255,0.22); }
-.settings-hbtns { display:flex; gap:6px; flex-shrink:0; }
-#drawerDarkBtn { font-size:1rem; }
-.settings-body { flex:1; overflow-y:auto; padding:16px; }
+/* ───── Settings tab ─────
+   The panels were built for a 380px drawer (a label and its toggle at either end of a row), so the
+   tab lays them out in columns of about that width instead of stretching one across the page:
+   three side by side on a desktop, two at ~800px, one on a phone. align-items:start keeps a
+   collapsed neighbour from stretching to an open panel's height. */
+.settings-body { display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap:14px; align-items:start; }
+.settings-body .panel { margin-bottom:0; }
 
 .panel { background:var(--cream); border:1px solid var(--border); border-radius:8px; margin-bottom:14px; overflow:hidden; }
 body.dark .panel { background:var(--navy-deep); }
@@ -653,7 +598,7 @@ body.dark .radio-group input:checked + label { background:#1e2535; color:var(--g
 
 .slider-row { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
 .slider-row label { font-size:0.78rem; color:var(--muted); font-weight:600; white-space:nowrap; flex-shrink:0; }
-.slider-row input[type="range"] { flex:1; accent-color:var(--gold); cursor:pointer; height:24px; /* operable box at the slider floor (3ae6891 pattern) — an explicit 4px shrank the hit area to a strip */ }
+.slider-row input[type="range"] { flex:1; min-width:0; accent-color:var(--gold); cursor:pointer; height:24px; /* operable box at the slider floor (3ae6891 pattern) — an explicit 4px shrank the hit area to a strip. min-width:0 lets the track give way: a range input's built-in ~130px minimum pushed the reset button past the panel edge in a Settings column and on phones */ }
 .slider-row .sval {
   font-size:0.72rem; color:var(--muted); min-width:44px; text-align:right;
   font-variant-numeric:tabular-nums;
@@ -665,7 +610,7 @@ body.dark .radio-group input:checked + label { background:#1e2535; color:var(--g
 }
 .slider-row .sreset:hover { border-color:var(--gold); color:var(--gold-text); }
 .settings-note { font-size:0.76rem; color:var(--muted); line-height:1.45; margin-top:6px; min-height:1em; }
-/* The About panel's two prose links are the only anchors inside the drawer, and `footer a` does not
+/* The About panel's two prose links are the only anchors inside the Settings tab, and `footer a` does not
    reach them — so they fell back to the UA default #0000EE: 8.9:1 on the light card, but 2.0:1 on the
    dark one, i.e. effectively invisible in dark. --gold-text is the page's link colour everywhere else
    (.tu-intro a / .tu-card-links a / footer a) and is the token authored for readable small text in
@@ -809,9 +754,6 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      sheet — measured S253 at 14 of 14 pages of a Learn-tab print, text and shadow both. Same
      shape the dictionary closed in S252; torah_trainer already hides its `.tt-hint-toast` here. */
   header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay, .tu-toast { display:none !important; }
-  /* The settings drawer and its backdrop are position:fixed too: left open at Ctrl+P they
-     stamp every sheet (the backdrop as a full-page tint). torah_trainer hides its twin pair. */
-  .settings-modal, .settings-backdrop { display:none !important; }
   /* The footer's FAQ/how-to disclosures are screen navigation; on paper they print as a row of
      closed summaries and, at Letter, spilled onto a 14th sheet holding nothing else. The credits
      stay: the motif staffs derive from PocketTorah audio, so the CC BY-SA notice belongs on the
@@ -879,11 +821,11 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      paper no longer has, and one chip carried a screen-only "✓". */
   #tuFamilyChips, #tuFamilyNote, #tuCards, .tu-learn-nav { display:none !important; }
   .tu-print-sheet { display:block !important; }
-  /* Ctrl+P on the Drill tab: the sheet lives inside #learnView, which is [hidden] while Drill is
-     open, so the start screen (the mark picker as 26 "—" rows) or a live question printed instead
-     of the chart. Paper always gets the chart, whichever tab is open. */
+  /* Ctrl+P on the Drill or Settings tab: the sheet lives inside #learnView, which is [hidden] while
+     another tab is open, so the start screen (the mark picker as 26 "—" rows), a live question or
+     the settings panels printed instead of the chart. Paper always gets the chart, whichever tab is open. */
   #learnView { display:block !important; }
-  #drillView { display:none !important; }
+  #drillView, #settingsView { display:none !important; }
   .tu-print-fam-title {
     font-family:'Libre Baskerville', serif; font-size:0.95rem; letter-spacing:0.04em;
     color:var(--navy); margin:16px 0 6px;
@@ -917,7 +859,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
 }
 
 /* ── Reduced motion: honor the OS "reduce motion" preference for everything this
-   tool animates (tour spotlight, first-visit pulse, toast, drawer slide, panel caret,
+   tool animates (tour spotlight, first-visit pulse, toast, panel caret,
    tile/chip transitions). ── */
 /* Keyboard-operable font upload (suite-wide S54): `hidden` (display:none) removed the file
    input from the tab order, making the uploader mouse-only. The input is now visually hidden
@@ -930,11 +872,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
   .tour-spot { transition: none !important; }
   .tu-toast { transition: none !important; }
-  .settings-modal { transition: none !important; }
   .panel-title::after { transition: none !important; }
-  .tu-tab, .tu-chip, .tu-choice, .font-opt, .hbtn, .btn, .tu-ex-play, .settings-close, .radio-group label { transition: none !important; }
+  .tu-tab, .tu-chip, .tu-choice, .font-opt, .hbtn, .btn, .tu-ex-play, .radio-group label { transition: none !important; }
   .slider, .slider::before { transition: none !important; }   /* settings toggle knob */
-  .settings-backdrop { transition: none !important; }
 }
 </style>
 </head>
@@ -952,13 +892,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <button id="tourBtn" class="hbtn" onclick="tourStart()" title="Take a quick tour" data-i18n-title="trope.header.tour_title"><svg class="hi hi-help" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.9"/><circle cx="12" cy="17" r=".7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="trope.header.tour_button">Tour</span></button>
     <button id="darkBtn" class="hbtn icon-btn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg></button>
     <button id="fsBtn" class="hbtn icon-btn" onclick="toggleFullscreen()" title="Present fullscreen" aria-label="Toggle fullscreen" data-i18n-title="shared.fullscreen.enter_title" data-i18n-aria-label="shared.fullscreen.toggle_aria"><svg class="hi hi-fs-enter" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
-    <button id="gearBtn" class="hbtn icon-btn" onclick="openSettings()" title="Settings" aria-label="Settings" data-i18n-title="trope.header.settings_title" data-i18n-aria-label="trope.header.settings_title"><svg class="hi hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg></button>
   </div>
 </header>
 
 <div class="tu-tabs" role="tablist" aria-label="Tutor mode" data-i18n-aria-label="trope.tabs.aria">
   <button class="tu-tab hi-btn" id="tabLearn" role="tab" aria-selected="true" aria-controls="learnView" onclick="setMode('learn')"><svg class="hi hi-sm hi-book" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.2v12.4"/><path d="M12 7.2S10 5.4 6 5.4a18 18 0 0 0-2.4.2v12.6A18 18 0 0 1 6 18c4 0 6 1.6 6 1.6s2-1.6 6-1.6a18 18 0 0 1 2.4.2V5.6A18 18 0 0 0 18 5.4c-4 0-6 1.8-6 1.8Z"/></svg><span class="hi-lbl" data-i18n="trope.tabs.learn">Learn</span></button>
   <button class="tu-tab" id="tabDrill" role="tab" aria-selected="false" tabindex="-1" aria-controls="drillView" onclick="setMode('drill')" data-i18n="trope.tabs.drill">🎯 Drill</button>
+  <button class="tu-tab hi-btn" id="tabSettings" role="tab" aria-selected="false" tabindex="-1" aria-controls="settingsView" onclick="setMode('settings')"><svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg><span class="hi-lbl" data-i18n="trope.tabs.settings">Settings</span></button>
 </div>
 
 <main class="tu-page" id="tuMain" tabindex="-1">
@@ -1052,6 +992,99 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     </div>
 
   </section>
+
+  <!-- ════════ SETTINGS ════════ -->
+  <!-- The settings live in a tab, like the Font Maker's: the same six panels the old drawer held,
+       ids unchanged, so every control, the font picker and the cloud-saves panel wire up as before. -->
+  <section class="tu-view" id="settingsView" role="tabpanel" aria-labelledby="tabSettings" hidden>
+    <div class="settings-body">
+
+      <div class="panel">
+        <div class="panel-title" data-i18n="trope.settings.panel_names">Names &amp; Tradition</div>
+        <div class="panel-body">
+          <div class="form-row">
+            <label><span data-i18n="trope.tradition.primary_label">Primary trope names</span>
+              <span class="tip-wrap" data-i18n-tip="trope.tradition.primary_tip" data-tip="Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'."><i class="tip-icon">?</i></span>
+            </label>
+            <span class="radio-group" role="radiogroup" aria-label="Primary trope names" data-i18n-aria-label="trope.tradition.primary_aria">
+              <input type="radio" id="tradAshk" name="tuTradition" value="ashk" onchange="setTradition('ashk')">
+              <label for="tradAshk" data-i18n="trope.tradition.ashkenazi">Ashkenazi</label>
+              <input type="radio" id="tradSeph" name="tuTradition" value="seph" onchange="setTradition('seph')">
+              <label for="tradSeph" data-i18n="trope.tradition.sephardi">Sephardi</label>
+            </span>
+          </div>
+          <p class="settings-note" data-i18n="trope.tradition.note">The recordings themselves follow PocketTorah's Ashkenazi melody either way.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title" data-i18n="trope.settings.panel_drill">Drill</div>
+        <div class="panel-body">
+          <div class="form-row">
+            <label for="optDrillIdentify" data-i18n="trope.drill.opt_identify">Identify: see a word → name the trope</label>
+            <label class="toggle"><input type="checkbox" id="optDrillIdentify" onchange="setDrillType('drillIdentify', this)"><span class="slider"></span></label>
+          </div>
+          <div class="form-row">
+            <label for="optDrillHear" data-i18n="trope.drill.opt_hear">Hear: play a clip → pick the symbol</label>
+            <label class="toggle"><input type="checkbox" id="optDrillHear" onchange="setDrillType('drillHear', this)"><span class="slider"></span></label>
+          </div>
+          <div class="form-row">
+            <label for="optDrillMelody" data-i18n="trope.drill.opt_melody">Melody: see a symbol → pick its melody</label>
+            <label class="toggle"><input type="checkbox" id="optDrillMelody" onchange="setDrillType('drillMelody', this)"><span class="slider"></span></label>
+          </div>
+          <div class="settings-note" id="drillTypesNote" aria-live="polite"></div>
+          <div class="slider-row" style="margin-top:10px;">
+            <label for="optRate" data-i18n="trope.drill.playback_speed">Playback speed</label>
+            <input type="range" id="optRate" min="0.5" max="1.5" step="0.05" oninput="setPlaybackRate(parseFloat(this.value))">
+            <span class="sval" id="optRateVal">1.00×</span>
+            <button class="sreset" onclick="resetPlaybackRate()" title="Reset speed" aria-label="Reset playback speed" data-i18n-title="trope.drill.reset_speed_title" data-i18n-aria-label="trope.drill.reset_speed_aria"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel collapsed">
+        <div class="panel-title" data-i18n="trope.settings.panel_font">Hebrew Font</div>
+        <div class="panel-body">
+          <div class="font-options" id="fontOptions"></div>
+          <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+          <div class="slider-row" style="margin-top:10px;">
+            <label for="optFontSize" data-i18n="trope.settings.heb_size">Hebrew size</label>
+            <input type="range" id="optFontSize" min="1.4" max="3.2" step="0.1" oninput="setHebFontSize(parseFloat(this.value))">
+            <span class="sval" id="optFontSizeVal"></span>
+            <button class="sreset" onclick="resetHebFontSize()" title="Reset size" aria-label="Reset Hebrew size" data-i18n-title="trope.settings.reset_size_title" data-i18n-aria-label="trope.settings.reset_size_aria"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel collapsed">
+        <div class="panel-title" data-i18n="trope.settings.panel_progress">Progress</div>
+        <div class="panel-body">
+          <p class="settings-note" id="progressSummary" style="margin-top:0;"></p>
+          <button class="btn btn-xs btn-secondary hi-btn" onclick="resetProgress()" type="button"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="trope.progress.reset_button">Reset mastery &amp; personal best</span></button>
+        </div>
+      </div>
+
+      <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into the body; see initCloudSaves() -->
+      <div class="panel collapsed">
+        <div class="panel-title" data-i18n="trope.settings.panel_cloud">Cloud saves</div>
+        <div class="panel-body" id="cloudSavesPanel"></div>
+      </div>
+
+      <div class="panel collapsed">
+        <div class="panel-title" data-i18n="trope.settings.panel_about">About</div>
+        <div class="panel-body">
+          <p class="settings-note" style="margin-top:0;" data-i18n-html="trope.about.body">
+            Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from
+            <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> recordings
+            (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press Tour in the header.
+            Companion reader: <a href="torah_trainer.html">Torah Trainer</a>.
+          </p>
+          <button class="btn btn-xs btn-secondary hi-btn" onclick="resetAllSettings()" type="button" style="margin-top:8px;"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="trope.about.reset_all">Reset all Trope Tutor settings</span></button>
+        </div>
+      </div>
+
+    </div>
+  </section>
 </main>
 
 <!-- preload="metadata": no src at page load so nothing is fetched up front, but once
@@ -1108,114 +1141,6 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   </div>
 </div>
 
-<!-- Settings drawer -->
-<div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
-<div class="settings-modal" id="settingsModal" role="dialog" aria-modal="true" aria-label="Trope Tutor settings" data-i18n-aria-label="trope.settings.aria">
-  <!-- Drawer resize handle on the inline-start edge (see the shared sidebar-resize block) -->
-  <div class="sbr-split sbr-abs" id="settingsResize" role="separator" aria-orientation="vertical"
-       tabindex="0" aria-valuemin="320" aria-valuemax="640" aria-valuenow="380"
-       title="Drag to resize the settings drawer (double-click to reset)"
-       aria-label="Drag to resize the settings drawer (double-click to reset)"
-       data-i18n-title="shared.resize.drawer_title"
-       data-i18n-aria-label="shared.resize.drawer_title"></div>
-  <div class="settings-header">
-    <h2><svg class="hi hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg><span data-i18n="trope.settings.title">Settings</span></h2>
-    <div class="settings-hbtns">
-      <!-- The open drawer covers the header's dark toggle — so the drawer offers the
-           toggle itself (torah convergence, S180 Pass H). Synced with #darkBtn by
-           toggleDark()/initDark(). -->
-      <button class="settings-close" id="drawerDarkBtn" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode" data-i18n-title="shared.darkmode.toggle_title" data-i18n-aria-label="shared.darkmode.toggle_title" aria-pressed="false"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg></button>
-      <button class="settings-close" onclick="closeSettings()" aria-label="Close settings" data-i18n-aria-label="trope.settings.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
-    </div>
-  </div>
-  <div class="settings-body">
-
-    <div class="panel">
-      <div class="panel-title" data-i18n="trope.settings.panel_names">Names &amp; Tradition</div>
-      <div class="panel-body">
-        <div class="form-row">
-          <label><span data-i18n="trope.tradition.primary_label">Primary trope names</span>
-            <span class="tip-wrap" data-i18n-tip="trope.tradition.primary_tip" data-tip="Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'."><i class="tip-icon">?</i></span>
-          </label>
-          <span class="radio-group" role="radiogroup" aria-label="Primary trope names" data-i18n-aria-label="trope.tradition.primary_aria">
-            <input type="radio" id="tradAshk" name="tuTradition" value="ashk" onchange="setTradition('ashk')">
-            <label for="tradAshk" data-i18n="trope.tradition.ashkenazi">Ashkenazi</label>
-            <input type="radio" id="tradSeph" name="tuTradition" value="seph" onchange="setTradition('seph')">
-            <label for="tradSeph" data-i18n="trope.tradition.sephardi">Sephardi</label>
-          </span>
-        </div>
-        <p class="settings-note" data-i18n="trope.tradition.note">The recordings themselves follow PocketTorah's Ashkenazi melody either way.</p>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title" data-i18n="trope.settings.panel_drill">Drill</div>
-      <div class="panel-body">
-        <div class="form-row">
-          <label for="optDrillIdentify" data-i18n="trope.drill.opt_identify">Identify: see a word → name the trope</label>
-          <label class="toggle"><input type="checkbox" id="optDrillIdentify" onchange="setDrillType('drillIdentify', this)"><span class="slider"></span></label>
-        </div>
-        <div class="form-row">
-          <label for="optDrillHear" data-i18n="trope.drill.opt_hear">Hear: play a clip → pick the symbol</label>
-          <label class="toggle"><input type="checkbox" id="optDrillHear" onchange="setDrillType('drillHear', this)"><span class="slider"></span></label>
-        </div>
-        <div class="form-row">
-          <label for="optDrillMelody" data-i18n="trope.drill.opt_melody">Melody: see a symbol → pick its melody</label>
-          <label class="toggle"><input type="checkbox" id="optDrillMelody" onchange="setDrillType('drillMelody', this)"><span class="slider"></span></label>
-        </div>
-        <div class="settings-note" id="drillTypesNote" aria-live="polite"></div>
-        <div class="slider-row" style="margin-top:10px;">
-          <label for="optRate" data-i18n="trope.drill.playback_speed">Playback speed</label>
-          <input type="range" id="optRate" min="0.5" max="1.5" step="0.05" oninput="setPlaybackRate(parseFloat(this.value))">
-          <span class="sval" id="optRateVal">1.00×</span>
-          <button class="sreset" onclick="resetPlaybackRate()" title="Reset speed" aria-label="Reset playback speed" data-i18n-title="trope.drill.reset_speed_title" data-i18n-aria-label="trope.drill.reset_speed_aria"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="trope.settings.panel_font">Hebrew Font</div>
-      <div class="panel-body">
-        <div class="font-options" id="fontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
-        <div class="slider-row" style="margin-top:10px;">
-          <label for="optFontSize" data-i18n="trope.settings.heb_size">Hebrew size</label>
-          <input type="range" id="optFontSize" min="1.4" max="3.2" step="0.1" oninput="setHebFontSize(parseFloat(this.value))">
-          <span class="sval" id="optFontSizeVal"></span>
-          <button class="sreset" onclick="resetHebFontSize()" title="Reset size" aria-label="Reset Hebrew size" data-i18n-title="trope.settings.reset_size_title" data-i18n-aria-label="trope.settings.reset_size_aria"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="trope.settings.panel_progress">Progress</div>
-      <div class="panel-body">
-        <p class="settings-note" id="progressSummary" style="margin-top:0;"></p>
-        <button class="btn btn-xs btn-secondary hi-btn" onclick="resetProgress()" type="button"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="trope.progress.reset_button">Reset mastery &amp; personal best</span></button>
-      </div>
-    </div>
-
-    <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into the body; see initCloudSaves() -->
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="trope.settings.panel_cloud">Cloud saves</div>
-      <div class="panel-body" id="cloudSavesPanel"></div>
-    </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="trope.settings.panel_about">About</div>
-      <div class="panel-body">
-        <p class="settings-note" style="margin-top:0;" data-i18n-html="trope.about.body">
-          Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from
-          <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> recordings
-          (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press Tour in the header.
-          Companion reader: <a href="torah_trainer.html">Torah Trainer</a>.
-        </p>
-        <button class="btn btn-xs btn-secondary hi-btn" onclick="resetAllSettings()" type="button" style="margin-top:8px;"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="trope.about.reset_all">Reset all Trope Tutor settings</span></button>
-      </div>
-    </div>
-
-  </div>
-</div>
 
 <script>
 'use strict';
@@ -1225,7 +1150,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
    Consumes ONLY the pre-built static index (data/trope/trope_index.json, built
    offline by scripts/build-trope-index.mjs) plus PocketTorah's MP3 streams.
    Zero runtime Sefaria dependency — by design; see CLAUDE.md.
-   Shell patterns (dark mode, settings drawer, tooltips, tour, toast, My Fonts)
+   Shell patterns (dark mode, settings panels, tooltips, tour, toast, My Fonts)
    follow torah_trainer.html.
    ───────────────────────────────────────────────────────────────────────────── */
 
@@ -1362,7 +1287,7 @@ const DEFAULTS = {
   drillScope: 'all',            // 'all' | a TROPE_FAMILY_DEFS key — answers-only filter (distractors stay global)
   drillLength: 10,              // questions per session; one of DRILL_LENGTHS, validated on every read
   playbackRate: 1.0,
-  panelsCollapsed: null,        // settings-drawer per-panel collapse map {data-i18n key: bool}; null = markup defaults
+  panelsCollapsed: null,        // Settings-tab per-panel collapse map {data-i18n key: bool}; null = markup defaults
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
 
@@ -1481,8 +1406,6 @@ function toggleDark() {
   localStorage.setItem(DARK_KEY, isDark ? '1' : '0');
   const _db = document.getElementById('darkBtn');
   _db.setAttribute('aria-pressed', isDark ? 'true' : 'false');
-  const _db2 = document.getElementById('drawerDarkBtn');
-  if (_db2) _db2.setAttribute('aria-pressed', _db.getAttribute('aria-pressed'));
   applyFamilyColors();
 }
 function initDark() {
@@ -1491,8 +1414,6 @@ function initDark() {
     document.body.classList.add('dark');
     const _db = document.getElementById('darkBtn');
     _db.setAttribute('aria-pressed', 'true');
-    const _db2 = document.getElementById('drawerDarkBtn');
-    if (_db2) _db2.setAttribute('aria-pressed', 'true');
   }
   document.documentElement.classList.remove('dark-early');
 }
@@ -2134,26 +2055,26 @@ function buildMasteryGrid(container) {
 /* ══════════════════════════════════════════════════════
    MODE TABS
    ══════════════════════════════════════════════════════ */
+const TU_TAB_IDS = { learn: 'tabLearn', drill: 'tabDrill', settings: 'tabSettings' };
 function setMode(mode) {
+  if (!TU_TAB_IDS[mode]) mode = 'learn';
   stopClip();
   stopTune();
-  const learn = mode === 'learn';
-  document.getElementById('tabLearn').setAttribute('aria-selected', learn ? 'true' : 'false');
-  document.getElementById('tabDrill').setAttribute('aria-selected', learn ? 'false' : 'true');
-  // Roving tabindex (APG tabs): only the selected tab sits in the Tab sequence; arrows move between tabs.
-  document.getElementById('tabLearn').tabIndex = learn ? 0 : -1;
-  document.getElementById('tabDrill').tabIndex = learn ? -1 : 0;
-  document.getElementById('learnView').hidden = !learn;
-  document.getElementById('drillView').hidden = learn;
-  if (!learn) {
-    // (re)show the start screen unless a session is mid-flight
-    if (!drill.active) {
-      document.getElementById('drillStart').hidden = false;
-      document.getElementById('drillQ').hidden = true;
-      document.getElementById('drillResults').hidden = true;
-      updateDrillStart();
-    }
+  for (const m of Object.keys(TU_TAB_IDS)) {
+    const on = m === mode, tab = document.getElementById(TU_TAB_IDS[m]);
+    tab.setAttribute('aria-selected', on ? 'true' : 'false');
+    // Roving tabindex (APG tabs): only the selected tab sits in the Tab sequence; arrows move between tabs.
+    tab.tabIndex = on ? 0 : -1;
+    document.getElementById(m + 'View').hidden = !on;
   }
+  if (mode === 'drill' && !drill.active) {
+    // (re)show the start screen unless a session is mid-flight
+    document.getElementById('drillStart').hidden = false;
+    document.getElementById('drillQ').hidden = true;
+    document.getElementById('drillResults').hidden = true;
+    updateDrillStart();
+  }
+  if (mode === 'settings') syncFormToSettings();   // the controls always show what is stored (a cloud download may have changed it)
 }
 
 /* ══════════════════════════════════════════════════════
@@ -2953,7 +2874,7 @@ function showResults() {
 }
 
 /* ══════════════════════════════════════════════════════
-   SETTINGS DRAWER + FORM SYNC (house pattern)
+   SETTINGS TAB + FORM SYNC (house pattern)
    ══════════════════════════════════════════════════════ */
 function syncPanelTitleAria() {
   document.querySelectorAll('.panel-title').forEach(t => {
@@ -3002,174 +2923,9 @@ function panelMemApply() {
 }
 /* ═══════════ end shared: panel-collapse memory ═══════════ */
 
-/* ═══ shared: sidebar-resize ═════════════════════════════════════════════════
-   Drag/keyboard-resizable panel widths — in-flow sidebars, settings drawers,
-   dashboard rails. Copy this block verbatim, together with the matching
-   `shared: sidebar-resize CSS` block (keep both byte-identical across
-   carriers; carriers: hebrew_dictionary.html, hebrew_blend_generator.html,
-   classroom_dashboard.html, torah_trainer.html, trope_tutor.html), then
-   mount per handle from the page's own init (below the end marker):
-
-     mountSidebarResize({
-       handle: el,                   // .sbr-split element (role="separator",
-                                     //   aria-orientation="vertical", tabindex="0")
-       cssVar: '--tool-sidebar-w',   // width var, written on `scope` (default: documentElement)
-       scope: el,                    // optional: the element that receives the var. Name the
-                                     //   consumers' nearest common ancestor: a custom-property
-                                     //   write restyles that element's whole subtree, so a root
-                                     //   write recalcs the entire document on every drag frame
-       storageKey: 'hebrewTool_sidebarW',   // bare per-device key (erase-only registration)
-       anchor: 'start',              // inline edge the PANEL is anchored to:
-                                     //   'start' (sidebar, left rail) | 'end' (drawer, right rail)
-       min: 240, dflt: 300,          // px floor + the dblclick / Enter-Space reset width
-       max: () => px,                // px ceiling — a number, or a function for dynamic bounds
-       onChange: (w) => {}           // optional: runs after every applied width, drag frames too
-     }) → { set(px, persist), refresh() } | null   (null when the handle is absent)
-
-   The width is a PER-DEVICE pref (it tracks the monitor, not the teacher), so
-   like hebrewBlender_zoom its key is export/import-exempt but IS cleared by
-   Erase All Settings — see CLAUDE.md "Resizable panels". One storage write per
-   drag (on pointerup), never per frame. Pointer deltas are divided by the
-   handle's visual/layout scale, so a zoomed ancestor (the dashboard's
-   style.zoom) still tracks the pointer 1:1. */
-function mountSidebarResize(cfg) {
-  const handle = cfg.handle;
-  if (!handle) return null;
-  const scope = cfg.scope || document.documentElement;
-  /* Upper bound may be dynamic (a function): never returns less than cfg.min. */
-  const hiNow = () => {
-    const m = (typeof cfg.max === 'function') ? cfg.max() : cfg.max;
-    return Math.max(cfg.min, Math.round(m));
-  };
-  const cur = () => {
-    const v = parseFloat(getComputedStyle(scope).getPropertyValue(cfg.cssVar));
-    return Number.isFinite(v) && v > 0 ? v : cfg.dflt;
-  };
-  /* 'end'-anchored panels (drawers, a right rail) grow toward inline-start, so the
-     physical delta flips — and flips AGAIN under RTL, where the whole row mirrors
-     (same rule as the Font Maker's .ws-split; see CLAUDE.md i18n rule 5). */
-  const sign = () =>
-    (cfg.anchor === 'end' ? -1 : 1) * (document.documentElement.dir === 'rtl' ? -1 : 1);
-  let desired = cfg.dflt;   // the user's chosen width, pre-clamp — see the resize handler
-  let resizeT = null;
-  const set = (px, persist) => {
-    const hi = hiNow();
-    const w = Math.round(Math.max(cfg.min, Math.min(hi, px)));
-    scope.style.setProperty(cfg.cssVar, w + 'px');
-    handle.setAttribute('aria-valuenow', String(w));
-    handle.setAttribute('aria-valuemax', String(hi));
-    if (persist) {
-      desired = w;
-      try { localStorage.setItem(cfg.storageKey, String(w)); } catch (e) { /* private mode / quota */ }
-    }
-    if (cfg.onChange) cfg.onChange(w);
-    return w;
-  };
-  let saved = NaN;
-  try { saved = parseFloat(localStorage.getItem(cfg.storageKey)); } catch (e) { /* private mode */ }
-  // Seed the aria-value* trio even with no stored pref, so the splitter reports live numbers.
-  handle.setAttribute('aria-valuemin', String(cfg.min));
-  desired = Number.isFinite(saved) ? saved : cfg.dflt;
-  set(desired, false);
-
-  let startX = 0, startW = 0, scale = 1, active = false;
-  const onMove = (e) => {
-    if (!active) return;
-    set(startW + ((e.clientX - startX) / scale) * sign(), false);
-    if (e.cancelable) e.preventDefault();
-  };
-  const onUp = () => {
-    if (!active) return;
-    active = false;
-    handle.classList.remove('dragging');
-    window.removeEventListener('pointermove', onMove);
-    window.removeEventListener('pointerup', onUp);
-    window.removeEventListener('pointercancel', onUp);
-    set(cur(), true);          // one write to storage per drag, not per frame
-  };
-  handle.addEventListener('pointerdown', (e) => {
-    if (e.button != null && e.button !== 0) return;
-    if (getComputedStyle(handle).display === 'none') return;   // stacked-layout guard
-    active = true; startX = e.clientX; startW = cur();
-    /* Visual px → layout px: inside a zoomed ancestor the rect is scaled while offsetWidth
-       is not. The 0.05 dead zone absorbs offsetWidth's integer rounding at scale 1. */
-    const r = handle.getBoundingClientRect().width / (handle.offsetWidth || 1);
-    scale = (Number.isFinite(r) && r > 0 && Math.abs(r - 1) >= 0.05) ? r : 1;
-    handle.classList.add('dragging');
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-    window.addEventListener('pointercancel', onUp);
-    if (e.cancelable) e.preventDefault();
-  });
-  handle.addEventListener('dblclick', () => set(cfg.dflt, true));
-  // Keyboard parity (CLAUDE.md shared-UX rule 7): a focusable separator is an APG window
-  // splitter, so arrows resize, Home/End jump to the bounds, Enter/Space restores the default.
-  handle.addEventListener('keydown', (e) => {
-    const step = (e.shiftKey ? 48 : 16) * sign();
-    let w;
-    if      (e.key === 'ArrowLeft')  w = cur() - step;
-    else if (e.key === 'ArrowRight') w = cur() + step;
-    else if (e.key === 'Home')       w = cfg.min;
-    else if (e.key === 'End')        w = hiNow();
-    else if (e.key === 'Enter' || e.key === ' ') w = cfg.dflt;
-    else return;
-    e.preventDefault();
-    set(w, true);
-  });
-  // A shrinking window tightens the max. Re-clamp from `desired` rather than the live
-  // width, so a squeeze is temporary: widen the window again and the chosen width returns.
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeT);
-    resizeT = setTimeout(() => set(desired, false), 150);
-  });
-  return { set: set, refresh: () => set(desired, false) };
-}
-/* ═══ end shared: sidebar-resize ═════════════════════════════════════════════ */
-
-/* Settings-drawer resize wiring (per-page; the engine is the shared block above). */
-function initDrawerResize() {
-  mountSidebarResize({
-    handle: document.getElementById('settingsResize'),
-    cssVar: '--drawer-w',
-    scope: document.getElementById('settingsModal'),   // the drawer is the var's only consumer; with the @property rule a drag frame restyles one element
-    storageKey: 'hebrewTropeTutor_drawerW',
-    anchor: 'end',
-    min: 320, dflt: 380,
-    max: () => Math.min(640, Math.round(window.innerWidth * 0.92))
-  });
-}
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initDrawerResize);
-else initDrawerResize();
-
-let _settingsOpener = null;
-function _settingsTrapKey(e) {
-  if (e.key !== 'Tab') return;
-  const modal = document.getElementById('settingsModal');
-  const focusables = [...modal.querySelectorAll('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])')]
-    .filter(el => el.offsetParent !== null && !el.disabled);
-  if (!focusables.length) return;
-  const first = focusables[0], last = focusables[focusables.length - 1];
-  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-}
-function openSettings() {
-  _settingsOpener = document.activeElement;
-  document.getElementById('settingsBackdrop').classList.add('open');
-  const modal = document.getElementById('settingsModal');
-  modal.classList.add('open');
-  modal.addEventListener('keydown', _settingsTrapKey);
-  syncFormToSettings();
-  const c = modal.querySelector('.settings-close:not(#drawerDarkBtn)'); if (c) c.focus();
-}
-function closeSettings() {
-  document.getElementById('settingsBackdrop').classList.remove('open');
-  const modal = document.getElementById('settingsModal');
-  modal.classList.remove('open');
-  modal.removeEventListener('keydown', _settingsTrapKey);
-  saveSettings();
-  const o = _settingsOpener; _settingsOpener = null;
-  if (o && o.focus) { try { o.focus(); } catch (e) {} }
-}
+// Settings is a tab (Learn | Drill | Settings). The name stays for its callers: the header chip's
+// "Cloud saves…" item opens it by name, and so does the tools smoke.
+function openSettings() { setMode('settings'); }
 function syncFormToSettings() {
   document.getElementById('tradAshk').checked = settings.tradition !== 'seph';
   document.getElementById('tradSeph').checked = settings.tradition === 'seph';
@@ -3574,7 +3330,7 @@ const TOUR_STEPS = [
     titleKey: 'trope.tour.s4_title', bodyKey: 'trope.tour.s4_body' },
   { target: () => document.getElementById('tabDrill'),
     titleKey: 'trope.tour.s5_title', bodyKey: 'trope.tour.s5_body' },
-  { target: () => document.getElementById('gearBtn'),
+  { target: () => document.getElementById('tabSettings'),
     titleKey: 'trope.tour.s6_title', bodyKey: 'trope.tour.s6_body' },
 ];
 let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourRepoTimer = null;
@@ -3685,14 +3441,14 @@ async function init() {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
     });
   });
-  panelMemApply();   // restore the teacher's saved open/closed drawer panels (syncs aria too)
+  panelMemApply();   // restore the teacher's saved open/closed Settings panels (syncs aria too)
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveSettingsFlush(); });
   window.addEventListener('pagehide', saveSettingsFlush);   // leaving the page → flush the debounced save
   // tablist arrow-key nav (APG): Left/Right/Home/End move focus + activate
   document.querySelector('.tu-tabs').addEventListener('keydown', e => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
     e.preventDefault();
-    const tabs = [document.getElementById('tabLearn'), document.getElementById('tabDrill')];
+    const tabs = Object.values(TU_TAB_IDS).map(id => document.getElementById(id));
     const cur = tabs.indexOf(document.activeElement);
     let next;
     if (e.key === 'Home') next = 0;
@@ -3704,9 +3460,6 @@ async function init() {
     }
     tabs[next].focus();
     tabs[next].click();
-  });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && document.getElementById('settingsModal').classList.contains('open')) closeSettings();
   });
   syncFormToSettings();
   initFontSelector();
@@ -3737,7 +3490,7 @@ function initCloudSaves() {
   IvritSaves.attach({
     tool: 'TropeTutor',
     panel: '#cloudSavesPanel',
-    title: false,                 // the drawer panel's own title is the heading
+    title: false,                 // the Settings panel's own title is the heading
     flush: saveSettingsFlush,     // a pending debounced save lands before the module reads the key
     onLocalChanged: function (kind) {
       if (kind === 'settings') {
@@ -3781,7 +3534,7 @@ function applyI18n() {
   try { if (!document.getElementById('learnView').hidden) { _i18nRerender = true; renderLearn(); } } catch (e) {} finally { _i18nRerender = false; }   // family/trope notes, name prefixes
   try { syncDrillSelects(); } catch (e) {}                 // scope options ("All marks" + family names) and the length options
   try { updateDrillStart(); } catch (e) {}                 // drill start summary + note
-  try { syncProgressSummary(); } catch (e) {}              // "{n} of {total} tropes attempted" line in the settings drawer
+  try { syncProgressSummary(); } catch (e) {}              // "{n} of {total} tropes attempted" line on the Settings tab
   // The missed-marks list is JS-built from _lastMissed; re-render it only while the results
   // view is actually showing, so a language change never repopulates a hidden panel.
   try { if (!document.getElementById('drillResults').hidden) buildMissedReview(); } catch (e) {}

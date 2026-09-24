@@ -4325,7 +4325,6 @@ trope.glyphname.zakef_gadol.ashk,Zakef Gadol,זקף גדול,trope name (both tr
 trope.glyphname.zakef_katon.ashk,Zakef Katon,זקף קטון,trope name (both traditions),"glyph-name | REVIEW: 'Zakef Katon' rendered זקף קטון — confirm (trope pronunciation name; JS-driven, key unreferenced)"
 trope.glyphname.zarka.ashk,Zarka,זרקא,trope name (both traditions),"glyph-name | REVIEW: 'Zarka' rendered זרקא — confirm (trope pronunciation name; JS-driven, key unreferenced)"
 trope.header.home,Home,בית,header nav button,
-trope.header.settings_title,Settings,הגדרות,header gear title + aria,
 trope.header.subtitle,"Learn the Torah cantillation marks — names, symbols, and melodies — with real chanted examples.","למדו את טעמי המקרא של התורה — שמות, סימנים ומנגינות — עם דוגמאות מושרות אמיתיות.",header subtitle,
 trope.header.title,Trope Tutor,מאמן הטעמים,h1 header,
 trope.header.tour_button,Tour,סיור,header button,svg-icon-in-markup
@@ -4373,19 +4372,16 @@ trope.learn.trope_note_zarka,Postpositive — curls off the end of the word and 
 trope.learn.visited_aria,visited,נצפה,family chip visited badge aria,aria-label only
 trope.progress.reset_button,Reset mastery & personal best,איפוס שליטה ושיא אישי,button,leading-emoji
 trope.progress.summary,{n} of {total} tropes attempted · personal best streak {pb} 🔥,{n} מתוך {total} טעמים נוסו · רצף שיא אישי {pb} 🔥,progress summary,do-not-translate {n}/{total}/{pb}
-trope.settings.aria,Trope Tutor settings,הגדרות מאמן הטעמים,settings drawer aria,aria-label only
-trope.settings.close_aria,Close settings,סגירת ההגדרות,close button aria,aria-label only
 trope.settings.font_default_tag,[DEFAULT],[ברירת מחדל],font picker default marker,
 trope.settings.heb_size,Hebrew size,גודל עברית,slider label,
 trope.settings.panel_about,About,אודות,panel title,
-trope.settings.panel_cloud,Cloud saves,שמירות בענן,settings drawer panel title (hosts the shared cloud-saves panel),
+trope.settings.panel_cloud,Cloud saves,שמירות בענן,Settings tab panel title (hosts the shared cloud-saves panel),
 trope.settings.panel_drill,Drill,תרגול,panel title,
 trope.settings.panel_font,Hebrew Font,גופן עברי,panel title,
 trope.settings.panel_names,Names & Tradition,שמות ומסורת,panel title,
 trope.settings.panel_progress,Progress,התקדמות,panel title,
 trope.settings.reset_size_aria,Reset Hebrew size,איפוס גודל עברית,reset button aria,aria-label only
 trope.settings.reset_size_title,Reset size,איפוס גודל,reset button title,
-trope.settings.title,Settings,הגדרות,settings drawer header,leading-emoji
 trope.status.index_unavailable,Example clips unavailable (couldn’t load the trope index) — Learn mode still shows every mark.,קטעי הדוגמה אינם זמינים (טעינת מפתח הטעמים נכשלה) — מצב הלימוד עדיין מציג כל טעם.,status,
 trope.status.retry_button,Try again,נסו שוב,retry button beside the index-load failure status,he mirrors torah.reading.retry_button
 trope.status.loading_audio,Loading audio…,טוען שמע…,status,
@@ -4394,6 +4390,7 @@ trope.status.tap_to_hear,Tap ▶ to hear the melody.,הקישו על ▶ כדי 
 trope.tabs.aria,Tutor mode,מצב המאמן,tablist aria,aria-label only
 trope.tabs.drill,🎯 Drill,🎯 תרגול,mode tab,leading-emoji
 trope.tabs.learn,Learn,לימוד,mode tab,svg-icon-in-markup
+trope.tabs.settings,Settings,הגדרות,mode tab label (the gear icon lives in the markup),svg-icon-in-markup
 trope.tip.more_info,More information,מידע נוסף,tooltip fallback aria,aria-label only
 trope.toast.audio_new_question,Audio for that trope wouldn’t load — new question.,השמע של הטעם הזה לא נטען — שאלה חדשה.,toast,
 trope.toast.audio_unavailable,Audio unavailable right now — check your connection.,השמע אינו זמין כרגע — בדקו את החיבור.,toast,
