@@ -200,7 +200,8 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   `system:"highholiday"`, `key:"C"` — no signature, so its B♭ draws as a flat), transcribed from the
   same book's High Holiday chart for the 21 marks it covers; shalshelet, mercha kefula, karnei parah
   and yerach ben yomo have no entry (they never occur in the Rosh Hashanah or Yom Kippur readings).
-  It is fetched `?v=1` beside the Torah file and validated the same way, each file on its own, so
+  Its grace notes are left out as in the Torah file, except yetiv's: the chart sings the syllable Y′
+  on it, so it is written as a full eighth (A4 A4 G4). It is fetched `?v=2` beside the Torah file and validated the same way, each file on its own, so
   one failing never blanks the other melody's staffs. **Settings → Melody** (`settings.melody`,
   `'torah'` by default or `'highholiday'`) picks which file draws the staffs and feeds the tune
   button; any other stored value shows the year-round staffs and stays stored (`melodyKey()`), so a

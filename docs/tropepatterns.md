@@ -165,7 +165,7 @@ wherever the two differ, and the first-pass slips it found are listed after it.
 ### High Holiday figure per mark
 
 These readings feed `data/trope/trope_motifs_hh.json`. As in section A, grace notes are left out
-and a tie becomes one held note. Values are marked only where a note is longer than an eighth —
+(except yetiv's, below) and a tie becomes one held note. Values are marked only where a note is longer than an eighth —
 (q) a quarter, (dq) a dotted quarter or a tie merged into one longer note — because the staff draws
 eighths, sixteenths and triplet eighths alike. Shalshelet, mercha kefula, karnei parah and yerach
 ben yomo have no row: they never occur in the Rosh Hashanah or Yom Kippur readings.
@@ -179,7 +179,7 @@ ben yomo have no row: they never occur in the Rosh Hashanah or Yom Kippur readin
 | sof_pasuk | B3 B3 B3 D4 C4(dq) | High Holiday #8 |
 | mahpach | G4 G4 D4 C4 | High Holiday #11 |
 | pashta | D4 A4 G4 | High Holiday #10 |
-| yetiv | A4 G4 | High Holiday #24 |
+| yetiv | A4 A4 G4 | High Holiday #24 |
 | zakef_katon | G4 G4 D4(dq) | High Holiday #10 |
 | zakef_gadol | D4 D4 D4 A4 G4 F4 E4 F4 E4 D4(q) | High Holiday #25 |
 | zarka | D4 D4 D4 C4 B3 A3 B3 A3 G3(q) | High Holiday #29 |
@@ -195,7 +195,9 @@ ben yomo have no row: they never occur in the Rosh Hashanah or Yom Kippur readin
 | pazer | D4 D4 E4 F4 G4 A4 B♭4 A4 G4 F4 E4 D4 G4 E4 D4(q) | High Holiday #19 |
 
 - Yetiv's Y′ and the munach before the telishas each sing their first syllable on a small grace
-  note, so their staffs start with the notes after it.
+  note. Yetiv's sits on A4, the pitch of the note after it, and the tutor draws it as a full eighth
+  so the syllable has its own note on the staff and in the tune (the munach before the telishas is
+  not a tutor figure).
 - Zakef gadol opens with a triplet (ZA-KEF-GA) and, like pazer, accents its last three notes. Zarka
   ends on G3 below two ledger lines, the lowest note in either chart.
 - Azla, the second word of kadma v'azla (row 20), sings the geresh figure, as in the Torah chart.
@@ -213,8 +215,9 @@ pass):
   rest; telisha gedola's LA starts on a fifth D4 before its run up to G4 (row 17).
 - Gershayim (row 22): the fourth note of YIM's run is C4 (the print draws C4 with no ledger line
   throughout).
-- Yetiv (rows 23–24): Y′ is a grace note (about B4) and TIV is A4 ~G4 in two slurred eighths,
-  then an eighth rest — not C5 A4 E4.
+- Yetiv (rows 23–24): Y′ is a grace note on A4 (measured against the staff lines; it sits in the
+  same space as the note after it) and TIV is A4 ~G4 in two slurred eighths, then an eighth rest —
+  not C5 A4 E4.
 - Zarka (rows 26–29): the "C5" after the melisma is an eighth rest; the run is D4 C4 B3 A3 (s),
   B3 A3, and it ends on G3 (q) (row 29).
 - Segol (rows 26–29): SE is a sixteenth G4, and GOL repeats G4 before its run — G4, then
@@ -255,7 +258,8 @@ pass):
 - The file's top-level `key: "A"` tells the Learn-card staff to draw three sharps and to spell
   in-key notes without accidentals, so a natural sign appears only where the chart prints one.
 - Rhythm is reduced to the staff's four values (`d` 1–4); a dotted eighth and a triplet eighth
-  both draw as an eighth. Grace notes are not drawn. Shalshelet, karnei parah and telisha gedola
+  both draw as an eighth. Grace notes are not drawn, except the High Holiday yetiv's, which carries
+  the syllable Y′ and is drawn as a full eighth. Shalshelet, karnei parah and telisha gedola
   keep their full length (up to sixteen notes), so those staffs widen.
 - To re-verify an entry: read its row in section A, convert with the `p` scale above (A4 = −2,
   each semitone down is −1), and compare with the JSON; the card's play button plays the staff as

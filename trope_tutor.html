@@ -1540,7 +1540,7 @@ async function loadData() {
       fetch('data/pockettorah/manifest.json?v=1'),
       // ?v= bump rule applies here too (on every trope_motifs.json / trope_motifs_hh.json change).
       fetch('data/trope/trope_motifs.json?v=3').catch(() => null),
-      fetch('data/trope/trope_motifs_hh.json?v=1').catch(() => null),
+      fetch('data/trope/trope_motifs_hh.json?v=2').catch(() => null),
     ]);
     if (!idxRes.ok || !manRes.ok) throw new Error('HTTP ' + idxRes.status + '/' + manRes.status);
     const idx = await idxRes.json();          // same-origin data/ corpus — trusted
