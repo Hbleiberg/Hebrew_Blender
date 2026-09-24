@@ -5184,9 +5184,12 @@ function copyShareCode() {
     announce(I18n.t('flashcards.share.copied'));
     const btn = document.getElementById('copyShareBtn');
     if (!btn) return;
-    const orig = btn.textContent;
-    btn.textContent = I18n.t('flashcards.share.copied');
-    setTimeout(() => btn.textContent = orig, 1500);
+    // The label span, not the button: rewriting the button deleted its icon and the span's data-i18n,
+    // so the label stopped following a language switch. It returns to its own key, not the text it
+    // replaced, so a second click during the flash cannot leave "Copied!" behind.
+    const lbl = btn.querySelector('.hi-lbl') || btn;
+    lbl.textContent = I18n.t('flashcards.share.copied');
+    setTimeout(() => lbl.textContent = I18n.t('flashcards.teachertools.copy_code'), 1500);
   };
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(done).catch(() => { out.select(); document.execCommand('copy'); done(); });
@@ -5206,9 +5209,9 @@ function copyShareLink() {
     announce(I18n.t('flashcards.share.copied'));
     const btn = document.getElementById('copyShareLinkBtn');
     if (!btn) return;
-    const orig = btn.textContent;
-    btn.textContent = I18n.t('flashcards.share.copied');
-    setTimeout(() => btn.textContent = orig, 1500);
+    const lbl = btn.querySelector('.hi-lbl') || btn;   // as copyShareCode: the label span, back to its own key
+    lbl.textContent = I18n.t('flashcards.share.copied');
+    setTimeout(() => lbl.textContent = I18n.t('flashcards.teachertools.copy_link'), 1500);
   };
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).then(done).catch(() => copyViaTextarea(url, done));
