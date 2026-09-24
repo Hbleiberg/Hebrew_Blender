@@ -158,12 +158,14 @@ A standalone Learn + Drill page for the cantillation marks. **Zero runtime Sefar
 it consumes only the pre-built static index plus PocketTorah MP3 streams. Its CSP therefore has
 **no `sefaria.org`** (and no `esm.sh`); if a change seems to need either, the design has drifted —
 stop and reconsider. Shell (dark mode, tooltips, tour, toast, My Fonts) is copied from
-`torah_trainer.html`. **Settings are the third tab** (Learn | Drill | Settings, the Font Maker's
-shape), not a drawer: `#settingsView` holds the six collapsible panels (names and tradition, drill,
-Hebrew font, progress, cloud saves, about) in a grid of drawer-width columns, there is no header
-gear, and `openSettings()` survives only as `setMode('settings')` for the account chip's "Cloud
-saves…" item and the tools smoke. Switching to the tab re-syncs the controls from `settings`;
-every control saves on change, so nothing waits for a close. Print hides the tab like Drill.
+`torah_trainer.html`. **Settings are the third tab**
+(Learn | Drill | Settings) laid out like the Font Maker's Settings tab: a serif heading per group over a
+hairline rule, the group's items in a grid (three across, two below 1024px, one below 640px) with small
+uppercase item labels, and nothing to collapse — so the page carries no panel-collapse memory. The
+groups are names and tradition, drill, Hebrew font, and a shared row of progress, cloud saves and about.
+There is no header gear; `openSettings()` survives only as `setMode('settings')` for the account chip's
+"Cloud saves…" item (which then scrolls to `#setCloud`) and the tools smoke. Switching to the tab
+re-syncs the controls from `settings`; every control saves on change. Print hides the tab like Drill.
 
 - **Index**: `data/trope/trope_index.json` — `{v:1, system:"torah", built, tropes:{<key>:[{p,a,w,ref,he,s,e}]}}`
   where `p` = parsha pocket key, `a` = aliyah "1"–"7", `w` = 0-based sung-word index (= timings

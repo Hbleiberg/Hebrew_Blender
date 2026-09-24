@@ -533,31 +533,18 @@ body.dark .btn-secondary:hover { background:#2a3349; }
 .btn-secondary[aria-disabled="true"]:hover, .btn-secondary:disabled:hover { background:transparent; border-color:var(--border); }
 body.dark .btn-secondary[aria-disabled="true"]:hover, body.dark .btn-secondary:disabled:hover { background:transparent; }
 
-/* ───── Settings tab ─────
-   The panels were built for a 380px drawer (a label and its toggle at either end of a row), so the
-   tab lays them out in columns of about that width instead of stretching one across the page:
-   three side by side on a desktop, two at ~800px, one on a phone. align-items:start keeps a
-   collapsed neighbour from stretching to an open panel's height. */
-.settings-body { display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap:14px; align-items:start; }
-.settings-body .panel { margin-bottom:0; }
-
-.panel { background:var(--cream); border:1px solid var(--border); border-radius:8px; margin-bottom:14px; overflow:hidden; }
-body.dark .panel { background:var(--navy-deep); }
-.panel:last-child { margin-bottom:0; }
-.panel-title {
-  background:var(--navy); color:#fff;
-  font-family:'Libre Baskerville',serif; font-size:0.72rem;
-  letter-spacing:0.1em; text-transform:uppercase;
-  padding:9px 14px; cursor:pointer; user-select:none;
-  display:flex; justify-content:space-between; align-items:center;
-}
-body.dark .panel-title { background:#0a0f1c; }
-.panel-title::after { content:'▾'; color:var(--gold-light); font-size:1rem; transition:transform 0.2s; flex-shrink:0; }
-.panel.collapsed .panel-title::after { transform:rotate(-90deg); }
-.panel-title:hover { background:#24345c; }   /* the suite's navy-control hover (contact/resources/FM primary); a collapse bar had no hover state (S317 → F S328) */
-body.dark .panel-title:hover { background:var(--navy); }   /* one step up from the dark bar's #0a0f1c */
-.panel-body { padding:14px; }
-.panel.collapsed .panel-body { display:none; }
+/* ───── Settings tab — the Font Maker's Settings layout ─────
+   A serif group heading over a hairline rule (the Font Maker's .adv-group-title), then the group's items in
+   an even grid (its .adv-grid: three columns, two below 1024px, one below 640px), each item led by a small
+   uppercase label (its .ctl-label). Groups are flat: no card, no navy bar, nothing to collapse. */
+.tu-set { display:flex; flex-direction:column; gap:22px; }
+.tu-set-title { font-family:'Libre Baskerville', serif; font-size:0.8rem; font-weight:400; color:var(--text); padding-bottom:4px; border-bottom:1px solid var(--border); margin:0 0 12px; }
+.tu-set-grid, .tu-set-row { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:18px 30px; align-items:start; }
+.tu-set-wide { grid-column:1 / -1; }
+@media (max-width:1024px) { .tu-set-grid, .tu-set-row { grid-template-columns:repeat(2, minmax(0, 1fr)); } }
+@media (max-width:640px)  { .tu-set-grid, .tu-set-row { grid-template-columns:1fr; } }
+.tu-set-label { display:block; font-size:0.74rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; }
+.tu-set-first { margin-top:0; }
 
 .form-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:10px; }
 .form-row:last-child { margin-bottom:0; }
@@ -621,7 +608,7 @@ body.dark .radio-group input:checked + label { background:#1e2535; color:var(--g
 body.dark .settings-note.error { color:#ff6666; }
 
 /* ───── Font selector (house pattern) ───── */
-.font-options { display:grid; grid-template-columns:1fr 1fr; gap:4px; }
+.font-options { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:4px; }   /* the picker spans the Settings tab (it was two columns in the old 380px drawer): ~6 across on a desktop, 4 at 800px, 2 on a phone */
 .font-missing-note { margin: 4px 0 0; font-size: 0.78rem; color: var(--muted, #6b6050); }
 .font-section-hdr {
   font-size:0.7rem; color:var(--muted); font-weight:700;
@@ -872,7 +859,6 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
   .tour-spot { transition: none !important; }
   .tu-toast { transition: none !important; }
-  .panel-title::after { transition: none !important; }
   .tu-tab, .tu-chip, .tu-choice, .font-opt, .hbtn, .btn, .tu-ex-play, .radio-group label { transition: none !important; }
   .slider, .slider::before { transition: none !important; }   /* settings toggle knob */
 }
@@ -994,92 +980,99 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   </section>
 
   <!-- ════════ SETTINGS ════════ -->
-  <!-- The settings live in a tab, like the Font Maker's: the same six panels the old drawer held,
-       ids unchanged, so every control, the font picker and the cloud-saves panel wire up as before. -->
+  <!-- Laid out like the Font Maker's Settings tab: a serif heading per group with a rule under it, and the
+       group's items in a grid (three across on a desktop, two below 1024px, one below 640px), each item a
+       small uppercase label, its control and a hint. Nothing collapses. Control ids are unchanged, so every
+       control, the font picker and the cloud-saves panel wire up as before. -->
   <section class="tu-view" id="settingsView" role="tabpanel" aria-labelledby="tabSettings" hidden>
-    <div class="settings-body">
+    <div class="tu-set">
 
-      <div class="panel">
-        <div class="panel-title" data-i18n="trope.settings.panel_names">Names &amp; Tradition</div>
-        <div class="panel-body">
-          <div class="form-row">
-            <label><span data-i18n="trope.tradition.primary_label">Primary trope names</span>
-              <span class="tip-wrap" data-i18n-tip="trope.tradition.primary_tip" data-tip="Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'."><i class="tip-icon">?</i></span>
-            </label>
+      <div class="tu-set-group">
+        <h2 class="tu-set-title" data-i18n="trope.settings.panel_names">Names &amp; Tradition</h2>
+        <div class="tu-set-grid">
+          <div class="tu-set-item">
+            <div class="tu-set-label"><span data-i18n="trope.tradition.primary_label">Primary trope names</span>
+              <span class="tip-wrap" data-i18n-tip="trope.tradition.primary_tip" data-tip="Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'."><i class="tip-icon">?</i></span></div>
             <span class="radio-group" role="radiogroup" aria-label="Primary trope names" data-i18n-aria-label="trope.tradition.primary_aria">
               <input type="radio" id="tradAshk" name="tuTradition" value="ashk" onchange="setTradition('ashk')">
               <label for="tradAshk" data-i18n="trope.tradition.ashkenazi">Ashkenazi</label>
               <input type="radio" id="tradSeph" name="tuTradition" value="seph" onchange="setTradition('seph')">
               <label for="tradSeph" data-i18n="trope.tradition.sephardi">Sephardi</label>
             </span>
-          </div>
-          <p class="settings-note" data-i18n="trope.tradition.note">The recordings themselves follow PocketTorah's Ashkenazi melody either way.</p>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title" data-i18n="trope.settings.panel_drill">Drill</div>
-        <div class="panel-body">
-          <div class="form-row">
-            <label for="optDrillIdentify" data-i18n="trope.drill.opt_identify">Identify: see a word → name the trope</label>
-            <label class="toggle"><input type="checkbox" id="optDrillIdentify" onchange="setDrillType('drillIdentify', this)"><span class="slider"></span></label>
-          </div>
-          <div class="form-row">
-            <label for="optDrillHear" data-i18n="trope.drill.opt_hear">Hear: play a clip → pick the symbol</label>
-            <label class="toggle"><input type="checkbox" id="optDrillHear" onchange="setDrillType('drillHear', this)"><span class="slider"></span></label>
-          </div>
-          <div class="form-row">
-            <label for="optDrillMelody" data-i18n="trope.drill.opt_melody">Melody: see a symbol → pick its melody</label>
-            <label class="toggle"><input type="checkbox" id="optDrillMelody" onchange="setDrillType('drillMelody', this)"><span class="slider"></span></label>
-          </div>
-          <div class="settings-note" id="drillTypesNote" aria-live="polite"></div>
-          <div class="slider-row" style="margin-top:10px;">
-            <label for="optRate" data-i18n="trope.drill.playback_speed">Playback speed</label>
-            <input type="range" id="optRate" min="0.5" max="1.5" step="0.05" oninput="setPlaybackRate(parseFloat(this.value))">
-            <span class="sval" id="optRateVal">1.00×</span>
-            <button class="sreset" onclick="resetPlaybackRate()" title="Reset speed" aria-label="Reset playback speed" data-i18n-title="trope.drill.reset_speed_title" data-i18n-aria-label="trope.drill.reset_speed_aria"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+            <p class="settings-note" data-i18n="trope.tradition.note">The recordings themselves follow PocketTorah's Ashkenazi melody either way.</p>
           </div>
         </div>
       </div>
 
-      <div class="panel collapsed">
-        <div class="panel-title" data-i18n="trope.settings.panel_font">Hebrew Font</div>
-        <div class="panel-body">
-          <div class="font-options" id="fontOptions"></div>
-          <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
-          <div class="slider-row" style="margin-top:10px;">
-            <label for="optFontSize" data-i18n="trope.settings.heb_size">Hebrew size</label>
-            <input type="range" id="optFontSize" min="1.4" max="3.2" step="0.1" oninput="setHebFontSize(parseFloat(this.value))">
-            <span class="sval" id="optFontSizeVal"></span>
-            <button class="sreset" onclick="resetHebFontSize()" title="Reset size" aria-label="Reset Hebrew size" data-i18n-title="trope.settings.reset_size_title" data-i18n-aria-label="trope.settings.reset_size_aria"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+      <div class="tu-set-group">
+        <h2 class="tu-set-title" data-i18n="trope.settings.panel_drill">Drill</h2>
+        <div class="tu-set-grid">
+          <div class="tu-set-item">
+            <div class="tu-set-label" data-i18n="trope.settings.question_types">Question types</div>
+            <div class="form-row">
+              <label for="optDrillIdentify" data-i18n="trope.drill.opt_identify">Identify: see a word → name the trope</label>
+              <label class="toggle"><input type="checkbox" id="optDrillIdentify" onchange="setDrillType('drillIdentify', this)"><span class="slider"></span></label>
+            </div>
+            <div class="form-row">
+              <label for="optDrillHear" data-i18n="trope.drill.opt_hear">Hear: play a clip → pick the symbol</label>
+              <label class="toggle"><input type="checkbox" id="optDrillHear" onchange="setDrillType('drillHear', this)"><span class="slider"></span></label>
+            </div>
+            <div class="form-row">
+              <label for="optDrillMelody" data-i18n="trope.drill.opt_melody">Melody: see a symbol → pick its melody</label>
+              <label class="toggle"><input type="checkbox" id="optDrillMelody" onchange="setDrillType('drillMelody', this)"><span class="slider"></span></label>
+            </div>
+            <div class="settings-note" id="drillTypesNote" aria-live="polite"></div>
+          </div>
+          <div class="tu-set-item">
+            <label class="tu-set-label" for="optRate" data-i18n="trope.drill.playback_speed">Playback speed</label>
+            <div class="slider-row">
+              <input type="range" id="optRate" min="0.5" max="1.5" step="0.05" oninput="setPlaybackRate(parseFloat(this.value))">
+              <span class="sval" id="optRateVal">1.00×</span>
+              <button class="sreset" onclick="resetPlaybackRate()" title="Reset speed" aria-label="Reset playback speed" data-i18n-title="trope.drill.reset_speed_title" data-i18n-aria-label="trope.drill.reset_speed_aria"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="panel collapsed">
-        <div class="panel-title" data-i18n="trope.settings.panel_progress">Progress</div>
-        <div class="panel-body">
-          <p class="settings-note" id="progressSummary" style="margin-top:0;"></p>
+      <div class="tu-set-group">
+        <h2 class="tu-set-title" data-i18n="trope.settings.panel_font">Hebrew Font</h2>
+        <div class="tu-set-grid">
+          <div class="tu-set-item tu-set-wide">
+            <div class="font-options" id="fontOptions"></div>
+            <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+          </div>
+          <div class="tu-set-item">
+            <label class="tu-set-label" for="optFontSize" data-i18n="trope.settings.heb_size">Hebrew size</label>
+            <div class="slider-row">
+              <input type="range" id="optFontSize" min="1.4" max="3.2" step="0.1" oninput="setHebFontSize(parseFloat(this.value))">
+              <span class="sval" id="optFontSizeVal"></span>
+              <button class="sreset" onclick="resetHebFontSize()" title="Reset size" aria-label="Reset Hebrew size" data-i18n-title="trope.settings.reset_size_title" data-i18n-aria-label="trope.settings.reset_size_aria"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Three short groups share one row on a desktop instead of three near-empty rows. -->
+      <div class="tu-set-row">
+        <div class="tu-set-group">
+          <h2 class="tu-set-title" data-i18n="trope.settings.panel_progress">Progress</h2>
+          <p class="settings-note tu-set-first" id="progressSummary"></p>
           <button class="btn btn-xs btn-secondary hi-btn" onclick="resetProgress()" type="button"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="trope.progress.reset_button">Reset mastery &amp; personal best</span></button>
         </div>
-      </div>
-
-      <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into the body; see initCloudSaves() -->
-      <div class="panel collapsed">
-        <div class="panel-title" data-i18n="trope.settings.panel_cloud">Cloud saves</div>
-        <div class="panel-body" id="cloudSavesPanel"></div>
-      </div>
-
-      <div class="panel collapsed">
-        <div class="panel-title" data-i18n="trope.settings.panel_about">About</div>
-        <div class="panel-body">
-          <p class="settings-note" style="margin-top:0;" data-i18n-html="trope.about.body">
+        <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into #cloudSavesPanel; see initCloudSaves() -->
+        <div class="tu-set-group" id="setCloud">
+          <h2 class="tu-set-title" data-i18n="trope.settings.panel_cloud">Cloud saves</h2>
+          <div id="cloudSavesPanel"></div>
+        </div>
+        <div class="tu-set-group">
+          <h2 class="tu-set-title" data-i18n="trope.settings.panel_about">About</h2>
+          <p class="settings-note tu-set-first" data-i18n-html="trope.about.body">
             Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from
             <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> recordings
             (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press Tour in the header.
             Companion reader: <a href="torah_trainer.html">Torah Trainer</a>.
           </p>
-          <button class="btn btn-xs btn-secondary hi-btn" onclick="resetAllSettings()" type="button" style="margin-top:8px;"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="trope.about.reset_all">Reset all Trope Tutor settings</span></button>
+          <button class="btn btn-xs btn-secondary hi-btn" onclick="resetAllSettings()" type="button" style="margin-top:10px;"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="trope.about.reset_all">Reset all Trope Tutor settings</span></button>
         </div>
       </div>
 
@@ -1287,7 +1280,6 @@ const DEFAULTS = {
   drillScope: 'all',            // 'all' | a TROPE_FAMILY_DEFS key — answers-only filter (distractors stay global)
   drillLength: 10,              // questions per session; one of DRILL_LENGTHS, validated on every read
   playbackRate: 1.0,
-  panelsCollapsed: null,        // Settings-tab per-panel collapse map {data-i18n key: bool}; null = markup defaults
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
 
@@ -2876,52 +2868,6 @@ function showResults() {
 /* ══════════════════════════════════════════════════════
    SETTINGS TAB + FORM SYNC (house pattern)
    ══════════════════════════════════════════════════════ */
-function syncPanelTitleAria() {
-  document.querySelectorAll('.panel-title').forEach(t => {
-    if (t.getAttribute('role') === 'button') t.setAttribute('aria-expanded', t.parentElement.classList.contains('collapsed') ? 'false' : 'true');
-  });
-}
-const PANEL_MEM_CFG = {
-  scope: '.panel-title',
-  read() { return settings.panelsCollapsed; },
-  write(map) { settings.panelsCollapsed = map; saveSettings(); },
-  afterApply() { syncPanelTitleAria(); }
-};
-/* ═══════════ IvritSuite panel-collapse memory (shared, identical across pages) ═══════════
-   Remembers which panels the teacher left open, so a drawer that was tidied once stays tidy on
-   the next visit. A panel is keyed by the data-i18n key on its title: language-independent,
-   unique per panel, and already present on every collapsible title in the suite — so there are
-   no ids to invent or keep in sync. WHERE the map is stored is per-page and lives in
-   PANEL_MEM_CFG (the settings blob on tools that have one, a dedicated key on the rest); this
-   engine never touches localStorage itself. A panel whose key is absent from the stored map
-   keeps its markup default, so a panel added in a later release opens or closes per its own
-   markup instead of inheriting whatever a neighbour happened to be doing. */
-const PANEL_MEM_DEFAULTS = {};   // markup defaults, captured once before the first restore
-function panelMemTitles() { return document.querySelectorAll(PANEL_MEM_CFG.scope); }
-function panelMemSave() {
-  const map = {};
-  panelMemTitles().forEach(t => {
-    const p = t.closest('.panel'), k = t.dataset.i18n;
-    if (p && k) map[k] = p.classList.contains('collapsed');
-  });
-  PANEL_MEM_CFG.write(map);
-}
-function panelMemApply() {
-  panelMemTitles().forEach(t => {
-    const p = t.closest('.panel'), k = t.dataset.i18n;
-    if (p && k && !(k in PANEL_MEM_DEFAULTS)) PANEL_MEM_DEFAULTS[k] = p.classList.contains('collapsed');
-  });
-  const map = PANEL_MEM_CFG.read();
-  panelMemTitles().forEach(t => {
-    const p = t.closest('.panel'), k = t.dataset.i18n;
-    if (!p || !k) return;
-    let collapsed = PANEL_MEM_DEFAULTS[k];
-    if (map && typeof map === 'object' && Object.prototype.hasOwnProperty.call(map, k)) collapsed = !!map[k];
-    if (collapsed !== undefined) p.classList.toggle('collapsed', collapsed);
-  });
-  if (PANEL_MEM_CFG.afterApply) PANEL_MEM_CFG.afterApply();
-}
-/* ═══════════ end shared: panel-collapse memory ═══════════ */
 
 // Settings is a tab (Learn | Drill | Settings). The name stays for its callers: the header chip's
 // "Cloud saves…" item opens it by name, and so does the tools smoke.
@@ -3431,17 +3377,6 @@ async function init() {
   initDark();
   applyFamilyColors();
   applyHebFontSize();
-  // panel collapse (house pattern: keyboard-operable titles)
-  document.querySelectorAll('.panel-title').forEach(t => {
-    t.tabIndex = 0;
-    t.setAttribute('role', 'button');
-    const toggle = () => { t.parentElement.classList.toggle('collapsed'); syncPanelTitleAria(); panelMemSave(); };
-    t.addEventListener('click', toggle);
-    t.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
-    });
-  });
-  panelMemApply();   // restore the teacher's saved open/closed Settings panels (syncs aria too)
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveSettingsFlush(); });
   window.addEventListener('pagehide', saveSettingsFlush);   // leaving the page → flush the debounced save
   // tablist arrow-key nav (APG): Left/Right/Home/End move focus + activate
@@ -3490,7 +3425,7 @@ function initCloudSaves() {
   IvritSaves.attach({
     tool: 'TropeTutor',
     panel: '#cloudSavesPanel',
-    title: false,                 // the Settings panel's own title is the heading
+    title: false,                 // the Settings group's own heading is the title
     flush: saveSettingsFlush,     // a pending debounced save lands before the module reads the key
     onLocalChanged: function (kind) {
       if (kind === 'settings') {
@@ -3498,7 +3433,6 @@ function initCloudSaves() {
         loadSettings();
         applyHebFontSize();
         setHebFont(settings.hebFont);
-        panelMemApply();
         syncFormToSettings();
         syncDrillSelects();   // the drill reads the downloaded scope and length, so both boxes must say them too
       } else if (kind === 'progress') {
@@ -3512,12 +3446,8 @@ function initCloudSaves() {
     },
     open: function () {         // the header chip's "Cloud saves…" item
       openSettings();
-      const title = document.querySelector('.panel-title[data-i18n="trope.settings.panel_cloud"]');
-      if (!title) return;
-      title.parentElement.classList.remove('collapsed');
-      syncPanelTitleAria();
-      panelMemSave();
-      title.scrollIntoView({ block: 'start' });
+      const group = document.getElementById('setCloud');
+      if (group) group.scrollIntoView({ block: 'start' });
     }
   });
 }

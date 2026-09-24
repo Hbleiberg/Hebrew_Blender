@@ -56,7 +56,7 @@ const PAGES = [
       hebrewTropeTutor_settings: JSON.stringify({ v: 1, tradition: 'seph', hebFont: 'Frank Ruhl Libre', hebFontSize: 2.2, drillIdentify: true, drillHear: true, drillMelody: false, drillScope: 'all', playbackRate: 1, panelsCollapsed: { 'trope.settings.panel_font': true } })
     },
     rows: ['progress:default', 'settings:default'],
-    expand: `openSettings(); const t = document.querySelector('.panel-title[data-i18n="trope.settings.panel_cloud"]'); t.parentElement.classList.remove('collapsed');`
+    expand: `openSettings(); document.getElementById('setCloud').scrollIntoView();`
   },
   {
     file: 'torah_trainer.html', tool: 'TorahTrainer', host: '#cloudSavesPanel',

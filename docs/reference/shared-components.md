@@ -378,8 +378,8 @@ upload, send and page, and the **dashboard's board controls**: the fullscreen qu
 Text, Video, Blank), the student picker's Pick One / Make Groups pair (in the sidebar and in the strip's pick
 popup) and the board's edit pencil, and the **Torah Trainer's picker controls**: Holiday Torah Readings
 (a calendar), Student handout (the page glyph the flash cards' worksheet handoff already carries), the
-trope-colour chip (a palette) and the settings drawer's heading gear — the gear the dashboard's and the
-Trope Tutor's drawer headings carry too.
+trope-colour chip (a palette) and the settings drawer's heading gear — the gear the dashboard's drawer
+heading and the Trope Tutor's Settings tab carry too.
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
 `account`, `404`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
@@ -431,7 +431,7 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   moving between tools sees the headings side by side.
 - **The dark toggle holds both `hi-moon` and `hi-sun`.** Its scripts write only `aria-pressed` and, on the
   labelled variant, the label text — `(_db.querySelector('.hi-lbl') || _db).textContent = …` — never the
-  button's `textContent`. A second or third dark button (the dashboard and Trope Tutor drawers, the Torah
+  button's `textContent`. A second or third dark button (the dashboard drawer, the Torah
   Trainer's fullscreen bar) carries the same pair and the same rule. **Every dark button also carries a fixed
   `aria-label` with `data-i18n-aria-label="shared.darkmode.toggle_title"`**: the visible label flips between
   *Dark* and *Light*, and without the fixed name a screen reader hears "Light, pressed" while dark mode is on.
@@ -724,12 +724,14 @@ const PANEL_MEM_CFG = {
   `PANEL_MEM_DEFAULTS`) — so a panel added in a later release opens or closes per its own markup instead
   of inheriting a neighbour's state. This is why the engine never treats "missing" as "expanded".
 - **Where the map lives is per-page, and the engine never touches localStorage itself.** Tools with a
-  settings blob keep it there as `settings.panelsCollapsed` (dashboard, torah, trope — so it rides the
+  settings blob keep it there as `settings.panelsCollapsed` (dashboard, torah — so it rides the
   existing AllTools entry for free); the other three use a dedicated `hebrew<Tool>_panels` key, read via
   `ivritSafeParse` and registered in all five AllTools sites.
-- **Implemented on:** all six collapse carriers — `torah_trainer.html` (the origin, later converged onto the shared block, with a read-side migration for its
-  older bare-tail keys), `classroom_dashboard.html`, `trope_tutor.html`,
-  `hebrew_blend_generator.html`, `flash_cards.html`, `hebrew_dictionary.html`. Sub-section headers
+- **Implemented on:** all five collapse carriers — `torah_trainer.html` (the origin, later converged onto the shared block, with a read-side migration for its
+  older bare-tail keys), `classroom_dashboard.html`,
+  `hebrew_blend_generator.html`, `flash_cards.html`, `hebrew_dictionary.html`. (The Trope Tutor left the
+  list when its Settings became a flat tab in the Font Maker's layout; an old `panelsCollapsed` in its
+  settings blob is simply carried along unread.) Sub-section headers
   (`.sub-section-hdr`, `.adv-section-title`, `.pos-sec-hdr`, `.rw-section-header`) are **not** covered —
   only `.panel`.
 - **Rule:** a new tool with collapsible panels ships this block + its `PANEL_MEM_CFG`, calls
