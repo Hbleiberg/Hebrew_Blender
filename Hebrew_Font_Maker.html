@@ -5866,10 +5866,13 @@ function placementDot(l) {
   return { cls: letterStatus(l), glyph: '' };   // 'img'/'' — a11yTiles injects the I cue
 }
 /* Glyph display name → Hebrew in a Hebrew UI (falls back to the English name when the
-   slug has no key). Used only at DISPLAY sites; internal undo labels keep the raw name. */
+   slug has no key). Used only at DISPLAY sites; internal undo labels keep the raw name.
+   It asks I18n.has first: the English, Cyrillic, Phoenician, Aramaic and Samaritan tables and the
+   Latin accents have no glyphname rows by design (newglyphset.md), and I18n.t() warns on every miss. */
 function gName(n) {
   if (!window.I18n || !n) return n;
   const k = 'fontmaker.glyphname.' + String(n).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  if (I18n.has && !I18n.has(k)) return n;
   const v = I18n.t(k);
   return v === k ? n : v;
 }

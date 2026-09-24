@@ -7,6 +7,8 @@
  *   I18n.dir                'ltr' | 'rtl'
  *   I18n.ready              Promise that resolves once /locales/<lang>.json is loaded
  *   I18n.t(key, params)     translate; substitutes {placeholders}; returns key (+ warn) if missing
+ *   I18n.has(key)           true if the active locale carries key, with no warning: for a caller whose
+ *                           fallback for an absent key is by design (a glyph table with no rows)
  *   I18n.setLang(code)      switch language LIVE (no reload): swaps the locale, flips dir/lang,
  *                           updates switchers, then fires every onChange handler
  *   I18n.onChange(fn)       register fn(lang, dir) to re-render the page after a live switch
@@ -98,6 +100,13 @@
       return key;
     }
     return substitute(dict[key], params);
+  }
+
+  // Whether the active dictionary carries a key, without t()'s warning, for a caller whose fallback for
+  // an absent key is by design (the Font Maker's glyph tables with no rows show their raw name). That
+  // keeps the warning meaning "a key is missing". False before I18n.ready, like every key in t().
+  function has(key) {
+    return Object.prototype.hasOwnProperty.call(dict, key);
   }
 
   // ---- Static-DOM pass -----------------------------------------------------------------------
@@ -340,6 +349,7 @@
     supported: SUPPORTED.slice(),
     ready: ready,
     t: t,
+    has: has,
     setLang: setLang,
     onChange: onChange,
     applyStaticI18n: applyStaticI18n,

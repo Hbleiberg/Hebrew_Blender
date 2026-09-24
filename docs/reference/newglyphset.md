@@ -58,8 +58,8 @@ Letter names: `<char> + ' (<Script> <Unicode short name>, uppercase|lowercase)'`
 `'А (Cyrillic A, uppercase)'`. `gName()` slugs a name with `/[^a-z0-9]+/`, so a non-ASCII character
 vanishes from the slug and a bare `'А (uppercase)'` would give every capital the same
 `fontmaker.glyphname.uppercase` key; the short name keeps each slug unique. No `glyphname.*` CSV rows
-are needed — the raw name is the fallback, as for English. Tiles show the character itself as
-`.lt-name`.
+are needed — the raw name is the fallback, as for English (`gName()` asks `I18n.has()` before `I18n.t()`,
+so the fallback logs no missing-key warning). Tiles show the character itself as `.lt-name`.
 
 ## 2. The table — order is behaviour
 
