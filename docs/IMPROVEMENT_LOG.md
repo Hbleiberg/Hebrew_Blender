@@ -8,21 +8,21 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S412 Pass H — `textContent-rewrite-erases-a-control-icon`**) | flash_cards.html | **Copy Code / Copy Link lose their icon at the first copy and stay English after a switch to Hebrew** (the dictionary's twin: `53d3579`, the recipe). | found S412
-
 - [ ] P4 (**NEW S412 Pass H — five small ones**) | flash_cards.html | **(1)** a tied personal best reads as new (`>=` against a `pbStreak` raised live); **(2)** a timed drill paints the previous value for 1 s; **(3)** the "New" profile button's second `class` is ignored (no `.hi-btn`); **(4)** a load in 1-letter mode narrows "Vowel on letter" `[2]` → `[1]`; **(5)** gate 2: the printed card …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S412 Pass H**) | data/hebrew_emojis.json | **🥝 קִיוִוי reads "kivivy"** (+ "di.en.eyy.", "beruneyy"); the fix bumps the corpus `?v=`. | found S412
-
-- [ ] P4 (**NEW S413 Pass C — a sweep, ungated**) | 11 root pages' footers | **The pinned-English credits have `dir="ltr"` but no `lang="en"`**: the Hebrew UI voices them as Hebrew (WCAG 3.1.2). | found S413
 
 - [ ] P4 (**NEW S413 Pass C — three**) | resources.html | **(1)** English directory text lacks `lang="en"` in the Hebrew UI; **(2)** card focus lacks hover's affordances; **(3)** the ✓ (`.fp-yes`) is 3.41:1 on light. | found S413
 
 - [ ] P4 (**NEW S413 Pass C — gate 3**) | 404.html | **The lost star wanders forever with no pause** (WCAG 2.2.2); only reduced motion stops it. | found S413
 
-- [ ] P4 (**NEW S414 Pass F — header chrome, 4 ungated**) | dictionary, resources, generator, FM, 404 | **(1)** Home/Back sits after the language picker on the dictionary and resources (10 pages lead with it); **(2)** resources' Back is white, not the gold outline of its dark toggle and the chrome pages' Back; **(3)** generator + FM say "Full Screen" but are named "Toggle fullscreen" (2.5.3: drop the aria-label); **(4)** 404's "← Back…" arrow points forward in Hebrew (use `hi-arrow`). | found S414
+- [ ] P4 (**NEW S414 Pass F — header chrome, 4 ungated**) | dictionary, resources, 404 | **(1)** Home/Back sits after the language picker on the dictionary and resources (10 pages lead with it); **(2)** resources' Back is white, not the gold outline of its dark toggle and the chrome pages' Back; **(3)** 404's "← Back…" arrow points forward in Hebrew (use `hi-arrow`). (The Full Screen names …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**NEW S414 Pass F — gates 2/3 + K**) | chrome pages, the 7 tools, 404, CSV | gate 2: **(1)** dark mode's visible "Light" is not in the fixed name (2.5.3); **(2)** "Back" goes to the home page (tools say "Home"); **(3)** 404 lists 4 of 7 tools. Gate 3: **(4)** Tour / Dark / Full Screen / Settings order differs per tool. K: **(5)** "Take a quick tour" has two Hebrew titles ("סיור קצר", "צאו לסיור מהיר"). | found S414
+- [ ] P4 (**NEW S414 Pass F — gates 2/3 + K**) | chrome pages, the 7 tools, 404, CSV | gate 2: **(1)** dark mode's visible "Light", and FM's fullscreen "Show/Hide Panels" (S415), are not in their fixed toggle names (2.5.3); **(2)** "Back" goes to the home page (tools say "Home"); **(3)** 404 lists 4 of 7 tools. Gate 3: **(4)** Tour / Dark / Full Screen / Settings order differs per tool. K: …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P4 (**NEW S415**) | hebrew_dictionary.html, flash_cards.html | **A 2nd click during a "✓ Copied!" flash leaves it behind**: the dictionary's Copy link (measured), flash's backup Copy (by reading). Restore from the key, as `38e5b62`. | found S415
+
+- [ ] P4 (**NEW S415**) | torah_trainer.html, trope_tutor.html | **The Sefaria / PocketTorah credits are pinned English with no `dir="ltr"` or `lang="en"`**; `dir` changes the Hebrew rendering, so compare crops. | found S415
 
 - [ ] P4 (**NEW S411 Pass I — F/O's, a census, not I's to fix**) | 8 pages | **~37 chrome controls still lead their label with a glyph**, against CLAUDE.md's "a control string never carries a glyph": resources' 11 category chips, FM's node-editor modes + back arrows (10), flash cards 7, dashboard 4 (`📍` ×2, `↔`, `✨`), generator `🃏`, trope `🎯`. …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -184,6 +184,18 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-24 | (S415 close-out) | branch/deploy note | **S415 = pass B + 4 fixes on `claude/charming-euler-4lppft` / draft PR #270 (open).** DRIFT: none. `sw.js` v837 → v838; FM not bumped (bug fixes). Scripts: i18n, inline-js, 3 smokes `--sdk` 241/241, sitemap, llms, compact, check-ledger. No gates.
+
+- [x] 2026-09-24 | `f4bbfe8` | 11 footers + FM picker | (S415) **Pinned-English credits carry `lang="en"`** (3.1.2). | verified: HE "he" 80/80 → "en" 80/80; planted no-lang span stays "he"; 88/88 crops identical
+
+- [x] 2026-09-24 | `9856b9d` | generator, FM, torah | (S415) **4 Full Screen buttons are named by their visible words** (2.5.3). | verified: AX tree, 7 pages × 8 cells, at rest + in fullscreen: 24 → 0
+
+- [x] 2026-09-24 | `95d5f46` | FM + js/i18n.js | (S415 Pass B) **`gName()` asks the new `I18n.has()` first**: 273 keyless names stop warning. | verified: 8 cells: 29 → 0; 403 names identical; a planted miss still warns
+
+- [x] 2026-09-24 | `38e5b62` | flash_cards.html | (S415) **Copy Code / Link keep their icon and language after a copy.** | verified: real clicks vs unfixed, 8 cells: icon lost, "Copied!" stuck → kept
+
+- [x] 2026-09-24 | (S415 Pass B iter 1) | all 17 pages | **32nd B**: 136 load cells (EN + HE), 52 interactions, 3 delta arms; every zero controlled. FOUND 1 (fixed) + 2 P4. Receipts, traps 127–131: loop-findings.
+
 - [x] 2026-09-24 | (S414 close-out) | branch/deploy note | **S414 = pass F + 4 fixes, continued on `claude/charming-euler-4lppft` / draft PR #270 (open).** DRIFT: none. `sw.js` v836 → v837; FM not bumped (bug fixes). Scripts: i18n, inline-js, sitemap, llms, compact, check-ledger. No gates asked.
 
 - [x] 2026-09-24 | `b018f98` | hebrew_blend_generator.html | (S414 Pass F) **The Full Screen label uses the header's font** (UA Arial → Source Sans 3). | verified: 8 cells, the font served locally; platform font = its siblings'
@@ -232,21 +244,11 @@ _(none)_
 
 - [x] 2026-09-23 | (S411 Pass I iter 1) | the whole suite | **31st I, first since S394 (17 sessions)**: 32 virgin cells clean behind 7 planted controls; the census = S394's; 0 SDK/project requests anonymously; delta arms on FM, dashboard, generator, trope, hub, account, tours. FOUND 4 (2 fixed; a glyph-label census for F/O; English glyph names for K). Receipts + traps 102–107 in loop-findings.
 
-- [x] 2026-09-23 | (S410 close-out) | branch/deploy note | **S410 = pass D + 4 fixes on `claude/improve-loop-k01p7y` / draft PR #266 (open, clean, base `d57da36`).** DRIFT: none. `sw.js` v829 → v830; FM not bumped (a bug fix and a speed-up). Scripts: i18n, inline-js, 7 smokes `--sdk`, sitemap, llms, compact, check-ledger. No gates.
-
-- [x] 2026-09-23 | `ee38b98` | index.html | (S410) **The My Fonts row's Use / Download / Remove reach the 30px floor** (24px high; pattern `sub-floor touch target`). | verified: 8 cells vs unfixed, 6 → 0 under 30px; planted control fires; overflow 0, 0 clipped; real Download + Remove
-
-- [x] 2026-09-23 | `578ef4f` | account.html + accounts-and-cloud.md | (S410) **Each zip folder is unique in any letter case, without a trailing dot/space or a device name.** | verified: 2 scenarios read as a Windows/macOS disk vs unfixed: 1 + 2 replaced files → 0; 1 + 1 merged → 0; 1 + 4 device → 0; smoke 53/53
-
-- [x] 2026-09-23 | `da45bb0` | Hebrew_Font_Maker.html | (S410 Pass D) **QA Check opens up to 3.6× faster: bbox reject before `pointInPoly`.** | verified: 5 fonts, real engine: 14,878 cells byte-identical; Samaritan 1.2s → 0.35s @1× (5.5 → 1.5s @4×)
-
-- [x] 2026-09-23 | `b006597` | Hebrew_Font_Maker.html | (S410 Pass D) **An import's anchors get the reload baseline, so clicking letters no longer overwrites them.** | verified: real engine, 3 fonts × 5–7 clicks: 7/7/5 changed → 0; place-myself control still inherits 7
-
-- [x] 2026-09-23 | (S410 Pass D iter 1) | Hebrew_Font_Maker.html | **FM's 3rd D (S196 → S294 → S410)**: cold, import, reopen, clicks, QA, autosave, idle, leak at 1×/4×, real engine served locally. FOUND 5 (2 fixed, 3 logged). Receipts + traps 98–101 in loop-findings.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-24 | **S415** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: flash ×2, FM ×2 + i18n.js, gen. ×2, torah, 8 more footers | patterns fixed: textContent-rewrite ×2, 3 NEW (label-in-name ×4, key-miss probe ×1, pinned-english ×20) | pass run: B | SW: v837→v838
 
 - 2026-09-24 | **S414** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: flash ×2, dict., FM, gen. | patterns fixed: author-display-defeats-the-hidden-attribute (un-retired), translated-key-exists-page-hardcodes-english, toggle-name-flips-with-its-pressed-state ×2 | pass run: F | SW: v836→v837
 
@@ -286,17 +288,21 @@ _(none)_
 
 - 2026-09-17 | **S396** | iters: 1 pass (**C**) + 3 fixes + 1 measurement = **5** (full budget) | tools: account ×2 (`b15ef0e`, `ffe9d9a`), js/ivrit-account (`3cc3ae5`, the one shared-script iteration), suite-wide (measured, no code) | patterns fixed: light-literal-text-on-the-gold-token ×1 …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-09-17 | **S395** | iters: 1 pass (**H**) + 3 fixes + 1 measurement = **5** (full budget) | tools: classroom_dashboard ×2 (`3e40f28`, `dd2aac6`), hebrew_blend_generator (`04892f3`), Hebrew_Font_Maker (measured, no code) | patterns fixed: selector-declared-twice-in-one-stylesheet ×1 (3 …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S414 (2026-09-24):** index (S410; **N S249 — N-next**); generator (**S414**; G S392); flash (**S414**; **G S279 — G-next**); dictionary (**S414**; **C S285 — C-next**); dashboard (S411); torah (S412; **O-next**, **D S307 — D-next**); trope (S409); FM (**S414**; D S410); account (S411; **never H — H-next**); resources/contact/404 (S413); privacy/terms (S413); no M on record: generator, flash, torah, terms.
+- **S415 (2026-09-24):** index (**S415**; **N S249 — N-next**); generator (**S415**; G S392); flash (**S415**; **G S279 — G-next**); dictionary (**S415**; **C S285 — C-next**); dashboard (S411); torah (**S415**; **O-next**, **D S307 — D-next**); trope (S409); FM (**S415**; D S410); account (**S415**; **never H — H-next**); resources/contact/404 (**S415**); privacy/terms (**S415**); js/i18n.js (**S415**); no M on record: generator, flash, torah, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
+- **`visible-label-missing-from-the-accessible-name`** (NEW S415; 4 FIXED `9856b9d`): ACTIVE, streak 0. Detection `b415/fsname.mjs`: a SHOWN control whose AX name lacks its visible text, also in fullscreen. EXEMPT: fixed toggle names (gate 2).
+
+- **`designed-key-miss-probed-through-t`** (NEW S415; FM `gName()` FIXED `95d5f46`): ACTIVE, streak 0. Detection: `[i18n] missing key` in B's interaction arm; static: `=== k ?` fallbacks without `I18n.has`.
+
+- **`pinned-english-without-lang`** (NEW S415; 20 FIXED `f4bbfe8`; torah/trope open): ACTIVE, streak 0. Detection: HE UI, `closest('[lang]')` of each pinned-English element = "en"; control: a planted span reads "he".
+
 - **`toggle-name-flips-with-its-pressed-state`** (NEW S414; dictionary + FM dark toggles FIXED `f9e67b2`): ACTIVE, streak 0. Detection `f414/toggles2.mjs`: real click per `[aria-pressed]` control; hit = pressed AND AX name both change. Fix: a fixed `aria-label`.
 
-- **`author-display-defeats-the-hidden-attribute`** (UN-RETIRED S414: flash `.results-savedeck`, FIXED `391114b`): ACTIVE, streak 0. Detection: rendered `[hidden]` with display ≠ none, plus a static arm for `el.hidden =` writers whose class sets display. Fix: `.x[hidden]{display:none}`.
+- **`author-display-defeats-the-hidden-attribute`** (UN-RETIRED S414: flash `.results-savedeck`, FIXED `391114b`): ACTIVE, streak 0. Detection: rendered `[hidden]` with display ≠ none, plus a static arm for `el.hidden =` writers whose class sets display. Fix: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`button-group-label-not-programmatic`** (**NEW S413 Pass C — resources ×8 rows FIXED `945b397`; generator, dictionary, hub unmeasured (no `role="group"` at all)**): ACTIVE, streak 0. A row of `aria-pressed` buttons sits under a visible label (a `<span>`, or a `<label>` with …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -310,9 +316,9 @@ _(none)_
 
 - **`text-field-under-16px-zooms-on-ios-focus`** (**NEW S406 Pass N — S408: the sign-in menu's 2 FIXED `0cd524c` (16px under `(pointer:coarse)`, the desktop menu unchanged); the 142 page fields open, the suite rule is gate 4**): ACTIVE, streak 0. Detection: computed `font-size` …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`textContent-rewrite-erases-a-control-icon`** (**NEW, registered 2026-09-23 (S405 Pass K) — 5 buttons / 7 writers on 2 pages, all fixed `1e8991f`; S412 +3: a "Copied!" flash writing another key, which arm (b) cannot match — the dictionary's FIXED `53d3579`, flash's Copy Code …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`textContent-rewrite-erases-a-control-icon`** (S405; 7 writers FIXED `1e8991f`; "Copied!" flashes: dictionary `53d3579`, flash ×2 `38e5b62` S415): ACTIVE, streak 0. Detection: (a) EN→HE→EN icon count; (b) key census vs whole-control writers; (c) a flash writing the control …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`translated-key-exists-page-hardcodes-english`** (**NEW, registered 2026-09-23 (S405 Pass K) — 3 iterations: flash `0a420fc` (7 keys), generator `b07b9fc`, flash `weakRows()` `d20028f` (S414: the weakness viewer + printed report now go through `letterGlyphName` / …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`translated-key-exists-page-hardcodes-english`** (**NEW, registered 2026-09-23 (S405 Pass K) — 3 iterations: flash `0a420fc` (7 keys), generator `b07b9fc`, flash `weakRows()` `d20028f` (S414: the weakness viewer + printed report now go through `letterGlyphName` / …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`per-page-code-inside-a-shared-block`** (**NEW, registered 2026-09-22 (S403 Pass E) — 2 carriers, both fixed `6e28af3`**): ACTIVE, clean streak 0. Page code pasted INSIDE a `═══` block instead of below its end marker, so the block is no longer byte-identical and the next …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -564,7 +570,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - I first-load & empty-state: 2026-09-23 (**S411 — 31st run, first since S394 (17 sessions); the stalest runnable pass (O blocked) and the pointer named it. Delta `4d58197..HEAD`: 146 commits, pages +4,170/−970. Gates clean an EIGHTEENTH run: 32 virgin cells behind 7 plants; census = S394's; 0 SDK/project requests. FOUND: QA Check's empty state (P3, `e3ceade`), the timer's stored sound/volume …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- B console/error audit: 2026-09-17 (**S398 — 31st run, first since S384 (14 sessions). B was the stalest UNATTENDED pass; O is stalest overall and attended-only, the session WAS attended, so the maintainer was asked and chose B. Aimed by the pointer at the 313 outside-loop Font Maker lines (punctuation tab, round-pen preview, Preview-PDF digits, Save-all-drawings) that no pass had loaded.** 4 …[full text: IMPROVEMENT_ARCHIVE.md]
+- B console/error audit: 2026-09-24 (**S415 — 32nd B, first since S398; stalest runnable. 136 load cells (EN + HE), 52 interactions, 3 delta arms; every zero controlled. FOUND: FM's 273 keyless glyph names warning (P4, `95d5f46`); else clean.**)
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
@@ -576,12 +582,12 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-24 (**S414 — 32nd F, first since S397; stalest runnable (O blocked). THE HEADER CHROME on 14 pages: 84 loads + a toggle-name detector (plant 14/14); DOM = visual order 84/84. FOUND: the dark toggle's flipping name (P3, `f9e67b2`), the Arial Full Screen (P4, `b018f98`), 9 P4 logged.**)
 
-**Next session (S415):** **BRANCH/PR: S413 + S414 on `claude/charming-euler-4lppft` → draft PR #270 (base `7ddc273`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** S414 closed at `sw.js` **v837**, FM **5.56**, SDK **2.116.0**; backend clean (migrations 0001–0003, keep-alive #11 green).
+**Next session (S416):** **BRANCH/PR: S413–S415 on `claude/charming-euler-4lppft` → draft PR #270 (base `7ddc273`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** S415 closed at `sw.js` **v838**, FM **5.56**, SDK **2.116.0**; backend clean (migrations 0001–0003, keep-alive #11 green).
 
-**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), B (S398), A (S399), E (S403), L (S404), then K N P M G D I H C F.** Take **B**. **Next A:** `button-group-label-not-programmatic`, `dark-mode-token-as-text-on-a-light-ground`, `settings-lost-across-a-load`, UN-RETIRED `author-display-defeats-the-hidden-attribute` (add its static arm), NEW `toggle-name-flips-with-its-pressed-state`. **Next C:** dictionary. **Next G:** flash. **Next D:** torah. **Next H:** account.
+**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), A (S399), E (S403), L (S404), then K N P M G D I H C F B.** Take **A**: every ACTIVE row, above all `toggle-name-flips-with-its-pressed-state`, UN-RETIRED `author-display-defeats-the-hidden-attribute` (add its static arm) and S415's three NEW rows. **Next C:** dictionary. **Next G:** flash. **Next D:** torah. **Next H:** account.
 
-**⚑ READY TO SHIP, ungated:** flash Copy Code / Link icon (recipe `53d3579`); S414's 4 header items; the S413 footer `lang="en"` sweep; the trope Drill tab icon; FM `whoHasCp` + `special_intro`.
+**⚑ READY TO SHIP, ungated:** the dictionary's double-click "Copied!" (recipe `38e5b62`); S414's 3 header items; the torah/trope credits' `lang` (+ `dir`, compare crops); the trope Drill tab icon; FM `whoHasCp` + `special_intro`.
 
-**⚑ HARNESS: traps 1–126 in loop-findings.** `f414/`: `header.mjs` (header census), `toggles2.mjs` (fresh page per toggle), `fsfont.mjs` (`fontStub`: Source Sans 3 via the CSP's gstatic origin). `compact-ledger --apply` runs ONCE; the outgoing handoff moves by hand.
+**⚑ HARNESS: traps 1–131 in loop-findings.** `b415/`: `lib.mjs` (collectors before `goto`, a pre-`goto` stub hook, `base` = an unfixed `git archive` tree on :8081), `census.mjs`, `interact.mjs`, `fsname.mjs`. `compact-ledger --apply` runs ONCE; the old handoff moves by hand.
 
-**⚑ GATE BENCH:** gate 2 — the card sheet's header (S412), the generator's Header Labels, S414's "Back"/"Home", the dark toggle's visible label, the 404's tool list; gate 3 — FM stage annotations, `.dash-edit-pencil`, the hub's type band, `color-scheme`, glyph-led labels, the 404's star, S414's header order; gate 4 — 16px-on-touch (142 fields), the flash sticky bar. **Seed bench: 13.**
+**⚑ GATE BENCH:** gate 2 — the card sheet's header (S412), the generator's Header Labels, S414's "Back"/"Home", the toggles' visible labels (dark + FM panels), the 404's tool list; gate 3 — FM stage annotations, `.dash-edit-pencil`, the hub's type band, `color-scheme`, glyph-led labels, the 404's star, S414's header order; gate 4 — 16px-on-touch (142 fields), the flash sticky bar. **Seed bench: 13.**
