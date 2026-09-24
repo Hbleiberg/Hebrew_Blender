@@ -5980,22 +5980,24 @@ function analyzeWeaknesses(name) {
   return stats;
 }
 
+// Labels go through letterGlyphName / vowelGlyphName, as the picker tiles do, so the viewer and the
+// printed report name letters and vowels in the UI language (both take the raw table name once).
 function weakRows(map, tab) {
   return Object.keys(map).map(key => {
     const { seen, missed } = map[key];
     let glyph = '', label = '';
     if (tab === 'vowels') {
       const info = WEAK_VOWEL_INFO[key] || { name: key, example: '' };
-      glyph = info.example; label = info.name;
+      glyph = info.example; label = vowelGlyphName(info.name);
     } else if (tab === 'letters') {
-      glyph = key; label = weakLetterName(key);
+      glyph = key; label = letterGlyphName(weakLetterName(key));
     } else if (tab === 'other') {
       const info = OTHER_INFO[key] || { glyph: '?', labelKey: null };
       glyph = info.glyph; label = info.labelKey ? I18n.t(info.labelKey) : key;
     } else {
       const [cons, vkey] = key.split('|');
       glyph = cons + (WEAK_VOWEL_MARK[vkey] || '');
-      label = (weakLetterName(cons) || cons) + ' + ' + ((WEAK_VOWEL_INFO[vkey] || {}).name || vkey);
+      label = (letterGlyphName(weakLetterName(cons)) || cons) + ' + ' + (vowelGlyphName((WEAK_VOWEL_INFO[vkey] || {}).name) || vkey);
     }
     return { glyph, label, seen, missed, rate: seen ? missed / seen : 0 };
   }).sort((a, b) => b.missed - a.missed || b.rate - a.rate || b.seen - a.seen);
