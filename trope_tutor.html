@@ -2010,8 +2010,7 @@ function playTune(t, motif, btn) {
   const t0 = _tuneCtx.currentTime + 0.05;
   _tuneKey = t.key; _tuneBtn = btn; _tuneName = tropeName(t);
   btn.classList.add('is-playing');
-  btn.setAttribute('aria-pressed', 'true');
-  btn.setAttribute('aria-label', I18n.t('trope.learn.stop_tune_aria', { name: _tuneName }));
+  btn.setAttribute('aria-pressed', 'true');   // the name stays "Play the tune of …": pressed says it is playing
   const staff = _tuneStaff(t.key);
   if (staff) staff.classList.add('is-playing');
   let at = 0;
@@ -2237,7 +2236,7 @@ function renderLearn() {
       tune.dataset.key = t.key;
       tune.setAttribute('aria-pressed', _tuneKey === t.key ? 'true' : 'false');
       if (_tuneKey === t.key) tune.classList.add('is-playing');
-      tune.setAttribute('aria-label', I18n.t(_tuneKey === t.key ? 'trope.learn.stop_tune_aria' : 'trope.learn.play_tune_aria', { name: tropeName(t) }));
+      tune.setAttribute('aria-label', I18n.t('trope.learn.play_tune_aria', { name: tropeName(t) }));   // one name; aria-pressed carries the state
       tune.title = I18n.t('trope.learn.play_tune_title');
       tune.onclick = () => toggleTune(t, motif, tune);
       head.appendChild(tune);
