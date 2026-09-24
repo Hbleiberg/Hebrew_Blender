@@ -4225,7 +4225,10 @@ function initPanelCollapse() {
     el.setAttribute('tabindex', '0');
     el.setAttribute('role', 'button');
     el.setAttribute('aria-expanded', 'false');
-    if (!el.getAttribute('aria-label')) { el.setAttribute('aria-label', 'More information'); el.setAttribute('data-i18n-aria-label', 'shared.tip.aria_more_info'); }
+    // "More information" names a trigger with no words of its own. Every trigger here is a switch's
+    // visible label, which the switch reads through aria-labelledby (nameSwitchRows), so a generic
+    // aria-label on it renamed all of those switches "More information" too.
+    if (!el.getAttribute('aria-label') && !/\p{L}/u.test(el.textContent)) { el.setAttribute('aria-label', 'More information'); el.setAttribute('data-i18n-aria-label', 'shared.tip.aria_more_info'); }
     el.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); isShown(el) ? hide() : show(el); });
     el.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); isShown(el) ? hide() : show(el); }
