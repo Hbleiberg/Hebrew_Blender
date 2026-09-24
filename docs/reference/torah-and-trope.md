@@ -326,6 +326,73 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
 
 ---
 
+## Chant pitch (`torah_trainer.html`)
+
+The chant transposes in whole semitones (`settings.karaokePitch`, −12…12, default 0) without changing its
+tempo: the speed slider stays the element's `playbackRate` time-stretch, and the two compose.
+
+- **The graph.** `<audio id="ttAudio" crossorigin="anonymous">` → `MediaElementAudioSourceNode` →
+  `AudioWorkletNode('tt-pitch')` → destination, built lazily by `ensurePitchGraph()`. The processor is
+  `js/tt-pitch-worklet.js` (same origin, so `script-src 'self'` covers it — no CSP change; the MP3 host
+  sends `access-control-allow-origin: *`, which is what lets the graph read the samples): a time-domain
+  WSOLA shifter with a constant latency (~61 ms at 48 kHz) whose 0-semitone output is the input exactly, so
+  nothing jumps when the slider passes 0 and the word highlight needs no compensation.
+- **When it exists.** Never before a non-zero pitch was chosen. `createMediaElementSource` is called once
+  per element for the page's lifetime (the element is reused across aliyot; `teardownKaraokeAudio` only
+  drops `src`), and only while the context is `running` — a captured element behind a suspended context is
+  silent, so `ensurePitchGraph` leaves the element native until a gesture has started the context. The
+  slider's `input` is that gesture; a stored pitch waits for the first tap or key (`_pitchKick`, capturing
+  on `document`) or the next `play`. `_pitchGuard` pauses and toasts (`torah.audio.pitch_tap_play`) if a
+  captured element is playing while the context is not running (an iOS interruption, an autoplay block).
+- **Failing soft.** No `AudioWorklet`, a module that will not load, or a host that refused the CORS load
+  (the element's `onerror` retries the same source once plainly; when the plain load succeeds the host, not
+  the network, refused CORS — `_pitchState = 'cors'` and later loads stay plain) → `pitchUnavailable()`:
+  both sliders `disabled`, a status line under the drawer slider, the chip drops the pitch. The stored
+  value is kept — the blob syncs, and a browser that cannot shift must never overwrite the pitch the same
+  teacher chose on one that can. The chant keeps playing natively, at its recorded pitch.
+- **One writer.** `applyKaraokePitch(v)` (both sliders and the reset); `syncPitchControls()` is the
+  read-only settings→controls half (sliders, readouts, `aria-valuetext`, the collapsed-bar chip through
+  `syncMiniRate`, and the running node's `semitones` param), called from `syncFormToSettings` and
+  `applyI18n`.
+- **Storage.** `karaokePitch` lives in the settings blob like `karaokeRate` (it syncs and exports) and is
+  never in `LINK_DISPLAY` — a link says how a reading looks, never how it sounds.
+
+---
+
+## Transliteration under each word (`torah_trainer.html`)
+
+`settings.translitPlacement` is `'row'` (the verse-level row / column / block that `tokenizeTranslit`
+builds) or `'word'`. With `'word'` and the transliteration on, `renderText` drops the separate row and
+`tokenizeHebrew(text, ref, opts, underWord)` makes each word a two-item cell:
+`<span class="tt-word" data-twi="N"><span class="tt-wh">Hebrew</span><span class="tt-wtl" lang="he-Latn" dir="ltr">latin</span></span>`.
+
+- **The contract.** There is still exactly one `.tt-word` per Hebrew word, and `.tt-wtl` is never a
+  `.tt-word` and never carries `data-twi` — every consumer that counts words (`updateKaraokeWordRefs`,
+  `paintKaraokeIdx`, click-to-seek, `computeVerseAudioBounds`, `hebWordIndexInVerse`, the rover, the copy
+  path) is unchanged. `body.translit-under` is written by `renderText` only, so it is on exactly when the
+  cells exist: never with a dead library (the `_translitDead` chip still decides), never on the empty card.
+- **Per word, from the raw token.** `translitForWord(raw, maqafAfter)` transliterates one word at a time
+  (the verse-level output cannot tell a maqaf from a Simple-stressed syllable hyphen, so it is never split
+  for this), from the RAW token so a hidden-nikkud display still transliterates, memoized by style + word
+  in `_wtlMemo` (`wireTranslit` clears it on a style change; `''` is never stored, so the
+  `translitlibloaded` rebuild fills the cells). A proclitic is tried with its maqaf first, for the
+  library's stress and dagesh context, then plainly.
+- **Follow.** `karaokeFollowEffective()` returns `'hebrew'` while the placement is `'word'` (the Latin line
+  moves with its Hebrew cell; a stored `'translit'` would otherwise neutralise every highlight) and is what
+  `applyKaraokeAppearance` and `updateKaraokeWordRefs` read; the Follow radios keep their value and
+  `#kfUnderNote` says so.
+- **CSS.** The cell is an `inline-flex` column (its baseline is the Hebrew item's, so the bare maqaf text
+  between cells stays on the line). `text-decoration` on the cell would propagate into both items, so the
+  karaoke *Under* style and the trope clause underline (screen fallback and print) are re-homed on
+  `.tt-wh` — the family colour rides a `--tt-tl` custom property set beside each `text-decoration-color`;
+  backgrounds, outline, hover and focus stay on the whole cell. `.tt-wtl` reads `--tt-translit-size`, so
+  the Translit size slider sizes it.
+- **Storage.** `translitPlacement` is in the settings blob and in `LINK_DISPLAY` (how a reading looks). The
+  copy path never receives `underWord`, so a paste never carries the Latin line; the handout forces the
+  transliteration off as before.
+
+---
+
 ## Practice link — the sender's look (`?s=`, the link view)
 
 `torah_trainer.html`'s Copy link (`copyPracticeLink`; the readable-param half is in
@@ -334,7 +401,7 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
 
 - **What travels.** `LINK_DISPLAY` is the one list of carried keys, each with the check a value must
   pass: layout, the four show-toggles (nikkud, te'amim, transliteration, translation), the
-  transliteration style, the Hebrew font and the three text sizes, vowel coding (on, mode, scheme,
+  transliteration style and placement, the Hebrew font and the three text sizes, vowel coding (on, mode, scheme,
   overrides), trope coding (on, overrides), karaoke style and follow. Enum lists are read from the
   page's own radios and `<option>`s, colors must be `#rrggbb` (`TROPE_HEX6_RE`), sizes are clamped to
   their sliders, and a font must be in `HEB_FONTS`. **Both ends run the checks:** the sender, so only

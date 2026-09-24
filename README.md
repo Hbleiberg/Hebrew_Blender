@@ -67,9 +67,9 @@ A reader for the weekly Torah portion (parsha) with toggleable translit, transla
 - **Translations** — version dropdown from Sefaria, filtered to openly-licensed editions (defaults to JPS 1917 Public Domain)
 - **Cantillation + nikkud toggles** — strip te'amim (U+0591–U+05AF) independently of vowel points
 - **Vowel color coding** with per-vowel pickers, three modes, and Default/TaL AM schemes
-- **Chanted-audio karaoke** — streams [PocketTorah](https://pockettorah.com) audio on demand with word-level highlighting synced to playback and a speed slider
+- **Chanted-audio karaoke** — streams [PocketTorah](https://pockettorah.com) audio on demand with word-level highlighting synced to playback, a speed slider and a pitch slider (transpose the chant into your own voice, tempo unchanged)
 - **Verse looping** — loop a single verse for practice (with configurable silence between repeats) plus an audio-bar loop-stop control
-- Hebrew TTS (per-verse + read-all), transliteration styles, Hebrew font picker, fullscreen for projection
+- Hebrew TTS (per-verse + read-all), transliteration styles (on their own line or under each word), Hebrew font picker, fullscreen for projection
 
 ### Trope Tutor (`trope_tutor.html`)
 An interactive tutor for the Torah cantillation marks (trope / te'amim) — the companion to the Torah Trainer's trope color coding.
