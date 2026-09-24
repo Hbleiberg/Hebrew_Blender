@@ -947,6 +947,8 @@ body.dark .hi-sun{display:inline-block;}
   /* "Start from an existing font" picker (#osPickOverlay) — a wide sheet: the card grid is the only
      scroller, so the search/filter row and the license note stay put while 130+ cards scroll. */
   .wiz-head-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  /* wizardOpen hides this button in the partner (?start=) wizard; .hi-btn's display:inline-flex beats the UA [hidden] rule. */
+  #wizStartFromFont[hidden] { display: none; }
   .os-pick-modal { max-width: 940px; width: 94%; max-height: 92vh; max-height: 92dvh; display: flex; flex-direction: column; }
   /* Logo + intro on one row: the mark carries the partner identity so the sentence can stay short.
      align-items:start keeps the logo pinned to the first line when the text wraps to two or three. */
