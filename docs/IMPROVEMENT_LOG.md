@@ -8,6 +8,16 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW S416 — gate 2; shared script; smokes `--sdk`**) | js/ivrit-account.js | **The account chip reads "Sign in" (a name, "Offline") but is named "Account"** on 11 pages (2.5.3). | found S416
+
+- [ ] P4 (**NEW S416**) | trope_tutor.html | **After a mid-tune language switch the rebuilt tune button stays pressed and lit**: `stopTune()` resets the detached `_tuneBtn`. | found S416
+
+- [ ] P4 (**NEW S416**) | trope_tutor.html | **With the HH motif file unavailable, the HH banner still claims staffs over none.** | found S416
+
+- [ ] P4 (**NEW S416, K's prune list**) | locales/ui-strings.csv | **6 trope keys are unreferenced**: `trope.drill.melody_choice_num`, `.streak_line`, `trope.footer.cantillation_credit`, `.sefaria_credit`, `trope.settings.font_default_tag`, `trope.tip.more_info`. | found S416
+
+- [ ] P4 (**NEW S416**) | docs/reference/shared-components.md | **Panel-collapse memory says "all six carriers"; five since trope's Settings tab.** | found S416
+
 - [ ] P4 (**NEW S412 Pass H — five small ones**) | flash_cards.html | **(1)** a tied personal best reads as new (`>=` against a `pbStreak` raised live); **(2)** a timed drill paints the previous value for 1 s; **(3)** the "New" profile button's second `class` is ignored (no `.hi-btn`); **(4)** a load in 1-letter mode narrows "Vowel on letter" `[2]` → `[1]`; **(5)** gate 2: the printed card …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S412 Pass H**) | data/hebrew_emojis.json | **🥝 קִיוִוי reads "kivivy"** (+ "di.en.eyy.", "beruneyy"); the fix bumps the corpus `?v=`. | found S412
@@ -16,9 +26,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S413 Pass C — gate 3**) | 404.html | **The lost star wanders forever with no pause** (WCAG 2.2.2); only reduced motion stops it. | found S413
 
-- [ ] P4 (**NEW S414 Pass F — header chrome, 4 ungated**) | dictionary, resources, 404 | **(1)** Home/Back sits after the language picker on the dictionary and resources (10 pages lead with it); **(2)** resources' Back is white, not the gold outline of its dark toggle and the chrome pages' Back; **(3)** 404's "← Back…" arrow points forward in Hebrew (use `hi-arrow`). (The Full Screen names …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S414 Pass F — header chrome, 4 ungated**) | dictionary, resources, 404 | **(1)** Home/Back sits after the language picker on the dictionary and resources (10 pages lead with it); **(2)** resources' Back is white, not the gold outline of its dark toggle and the chrome pages' Back; **(3)** 404's "← Back…" arrow points forward in Hebrew (use `hi-arrow`). (The Full Screen names …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**NEW S414 Pass F — gates 2/3 + K**) | chrome pages, the 7 tools, 404, CSV | gate 2: **(1)** dark mode's visible "Light", and FM's fullscreen "Show/Hide Panels" (S415), are not in their fixed toggle names (2.5.3); **(2)** "Back" goes to the home page (tools say "Home"); **(3)** 404 lists 4 of 7 tools. Gate 3: **(4)** Tour / Dark / Full Screen / Settings order differs per tool. K: …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S414 Pass F — gates 2/3 + K**) | chrome pages, the 7 tools, 404, CSV | gate 2: **(1)** dark mode's visible "Light", and FM's fullscreen "Show/Hide Panels" (S415), are not in their fixed toggle names (2.5.3); **(2)** "Back" goes to the home page (tools say "Home"); **(3)** 404 lists 4 of 7 tools. Gate 3: **(4)** Tour / Dark / Full Screen / Settings order differs per tool. K: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S415**) | hebrew_dictionary.html, flash_cards.html | **A 2nd click during a "✓ Copied!" flash leaves it behind**: the dictionary's Copy link (measured), flash's backup Copy (by reading). Restore from the key, as `38e5b62`. | found S415
 
@@ -226,6 +236,18 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-24 | (S416 close-out) | branch/deploy note | **S416 = pass A + 4 fixes on `claude/improve-loop-tburch` / draft PR #272.** DRIFT: 12 outside-loop commits (`9582fb4..fbfd338`: the trope HH melody, Settings tab, tune button; v838 → v846); backend clean. `sw.js` v846 → v847; FM not bumped. Scripts: build-locales, i18n, inline-js, sitemap, llms, compact, check-ledger. No gates.
+
+- [x] 2026-09-24 | `3bf0112` | Hebrew_Font_Maker.html | (S416) **The partner wizard hides "Start from an existing font"** (`.hi-btn` beat `[hidden]`). | verified: real `?start=` wizard, 8 cells: 209×31 → none; gate/new identical
+
+- [x] 2026-09-24 | `3331a54` | trope_tutor.html | (S416) **The Drill's tradition prefix is Hebrew in the Hebrew UI** (the Learn card's keys). | verified: 26 marks: EN identical, HE 30 → 0; real drills, 8 cells
+
+- [x] 2026-09-24 | `96275c2` | trope_tutor.html | (S416) **The tune button keeps one name; aria-pressed says playing.** | verified: AX per click, 8 cells: 1 flip → 0; detector 5 → 0
+
+- [x] 2026-09-24 | `66b8021` | flash_cards.html | (S416) **Five settings switches keep their names** (were "More information"). | verified: 8 → 0 wrong names, 8 cells; tips + crops unchanged
+
+- [x] 2026-09-24 | (S416 Pass A iter 1) | 16 pages | **33rd A**: the trope delta + S414/S415 rows; 11 arms (2 NEW), zeros controlled. FOUND 5 P2–P3 + 4 P4. Receipts: loop-findings.
+
 - [x] 2026-09-24 | (S415 close-out) | branch/deploy note | **S415 = pass B + 4 fixes on `claude/charming-euler-4lppft` / PR #270, then landed on main by in-session authorization (`7ddc273..323771f`; Pages success, v838).** DRIFT: none. `sw.js` v837 → v838; FM not bumped (bug fixes). Scripts: i18n, inline-js, 3 smokes `--sdk` 241/241, sitemap, llms, compact, check-ledger; no gates.
 
 - [x] 2026-09-24 | `f4bbfe8` | 11 footers + FM picker | (S415) **Pinned-English credits carry `lang="en"`** (3.1.2). | verified: HE "he" 80/80 → "en" 80/80; a planted span stays "he"; 88/88 crops identical
@@ -266,6 +288,8 @@ _(none)_
 
 ### Per-session log (one line per session)
 
+- 2026-09-24 | **S416** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: flash, trope ×2, FM | patterns fixed: visible-label, toggle-name, translated-key, author-display | pass run: A | SW: v846→v847
+
 - 2026-09-24 | **S415** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: flash ×2, FM ×2 + i18n.js, gen. ×2, torah, 8 more footers | patterns fixed: textContent-rewrite ×2, 3 NEW (label-in-name, key-miss probe, pinned-english) | pass run: B | SW: v837→v838
 
 - 2026-09-24 | **S414** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: flash ×2, dict., FM, gen. | patterns fixed: author-display-defeats-the-hidden-attribute (un-retired), translated-key-exists-page-hardcodes-english, toggle-name-flips-with-its-pressed-state ×2 | pass run: F | SW: v836→v837
@@ -292,19 +316,19 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **S415 (2026-09-24):** index (**S415**; **N S249 — N-next**); generator (**S415**; G S392); flash (**S415**; **G S279 — G-next**); dictionary (**S415**; **C S285 — C-next**); dashboard (S411); torah (**S415**; **O-next**, **D S307 — D-next**); trope (S409); FM (**S415**; D S410); account (**S415**; **never H — H-next**); resources/contact/404 (**S415**); privacy/terms (**S415**); js/i18n.js (**S415**); no M on record: generator, flash, torah, terms.
+- **S416 (2026-09-24):** index (S415; **N S249 — N-next**); generator (S415; G S392); flash (**S416**; **G S279 — G-next**); dictionary (S415; **C S285 — C-next**); dashboard (S411); torah (S415; **O-next**, **D S307 — D-next**); trope (**S416**); FM (**S416**; D S410); account (S415; **never H — H-next**); resources/contact/404 (S415); privacy/terms (S415); js/i18n.js (S415); no M on record: generator, flash, torah, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`visible-label-missing-from-the-accessible-name`** (NEW S415; 4 FIXED `9856b9d`): ACTIVE, streak 0. Detection `b415/fsname.mjs`: a SHOWN control whose AX name lacks its visible text, also in fullscreen. EXEMPT: fixed toggle names (gate 2).
+- **`visible-label-missing-from-the-accessible-name`** (S415 `9856b9d`; S416 flash `66b8021`, chip open): ACTIVE, streak 0. Detection `a416/labelname.mjs` + `fieldnames.mjs`. EXEMPT: …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`designed-key-miss-probed-through-t`** (NEW S415; FM `gName()` FIXED `95d5f46`): ACTIVE, streak 0. Detection: `[i18n] missing key` in B's interaction arm; static: `=== k ?` fallbacks without `I18n.has`.
+- **`designed-key-miss-probed-through-t`** (NEW S415; FM `gName()` FIXED `95d5f46`): ACTIVE, streak 1 (S416: 0 on the delta). Detection: `[i18n] missing key` in B's interaction arm; static: `=== k ?` fallbacks without `I18n.has`.
 
-- **`pinned-english-without-lang`** (NEW S415; 20 FIXED `f4bbfe8`; torah/trope open): ACTIVE, streak 0. Detection: HE UI, `closest('[lang]')` of each pinned-English element = "en"; control: a planted span reads "he".
+- **`pinned-english-without-lang`** (NEW S415; 20 FIXED `f4bbfe8`; torah/trope open): ACTIVE, streak 0 (S416 `a416/pinned.mjs`: only those). Detection: HE UI, `closest('[lang]')` of each pinned-English element = "en"; control: a planted span …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`toggle-name-flips-with-its-pressed-state`** (NEW S414; dictionary + FM dark toggles FIXED `f9e67b2`): ACTIVE, streak 0. Detection `f414/toggles2.mjs`: real click per `[aria-pressed]` control; hit = pressed AND AX name both change. Fix: a fixed `aria-label`.
+- **`toggle-name-flips-with-its-pressed-state`** (NEW S414 `f9e67b2`; S416 trope tune `96275c2`): ACTIVE, streak 0. Detection `f414/toggles2.mjs`: real click per `[aria-pressed]` control; hit = pressed AND AX …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`author-display-defeats-the-hidden-attribute`** (UN-RETIRED S414: flash `.results-savedeck`, FIXED `391114b`): ACTIVE, streak 0. Detection: rendered `[hidden]` with display ≠ none, plus a static arm for `el.hidden =` writers whose class sets display. Fix: …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`author-display-defeats-the-hidden-attribute`** (S414 `391114b`; S416 FM `3bf0112` via the NEW static arm `a416/hiddenwriters.py` + `hiddensafe.mjs`): ACTIVE, streak 0. Detection: rendered `[hidden]` with display ≠ none, plus a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`button-group-label-not-programmatic`** (**NEW S413 Pass C — resources ×8 rows FIXED `945b397`; generator, dictionary, hub unmeasured (no `role="group"` at all)**): ACTIVE, streak 0. A row of `aria-pressed` buttons sits under a visible label (a `<span>`, or a `<label>` with …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -318,11 +342,11 @@ _(none)_
 
 - **`text-field-under-16px-zooms-on-ios-focus`** (**NEW S406 Pass N — S408: the sign-in menu's 2 FIXED `0cd524c` (16px under `(pointer:coarse)`, the desktop menu unchanged); the 142 page fields open, the suite rule is gate 4**): ACTIVE, streak 0. Detection: computed `font-size` …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`textContent-rewrite-erases-a-control-icon`** (S405; 7 writers FIXED `1e8991f`; "Copied!" flashes: dictionary `53d3579`, flash ×2 `38e5b62` S415): ACTIVE, streak 0. Detection: (a) EN→HE→EN icon count; (b) key census vs whole-control writers; (c) a flash writing the control …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`textContent-rewrite-erases-a-control-icon`** (S405; 7 writers FIXED `1e8991f`; "Copied!" flashes: dictionary `53d3579`, flash ×2 `38e5b62` S415): ACTIVE, streak 1 (S416). Detection: (a) EN→HE→EN icon count; (b) key census vs whole-control …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`translated-key-exists-page-hardcodes-english`** (**NEW, registered 2026-09-23 (S405 Pass K) — 3 iterations: flash `0a420fc` (7 keys), generator `b07b9fc`, flash `weakRows()` `d20028f` (S414: the weakness viewer + printed report now go through `letterGlyphName` / …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`translated-key-exists-page-hardcodes-english`** (S416 trope `3331a54`; registered S405 Pass K — 3 iterations: flash `0a420fc` (7 keys), generator `b07b9fc`, flash `weakRows()` `d20028f` (S414: the weakness viewer + printed report now go through …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`per-page-code-inside-a-shared-block`** (**NEW, registered 2026-09-22 (S403 Pass E) — 2 carriers, both fixed `6e28af3`**): ACTIVE, clean streak 0. Page code pasted INSIDE a `═══` block instead of below its end marker, so the block is no longer byte-identical and the next …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`per-page-code-inside-a-shared-block`** (**NEW, registered 2026-09-22 (S403 Pass E) — 2 carriers, both fixed `6e28af3`**): ACTIVE, clean streak 1 (S416). Page code pasted INSIDE a `═══` block instead of below its end …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`icon-markup-into-a-textContent-writer`** (**NEW, registered 2026-09-22 (S403 Pass E) — 1 carrier (2 buttons), fixed `7552ba0`**): ACTIVE, clean streak 0. An `ICON_*`/`FT_ICON_*`/`HK_ICON` SVG const reaches a helper that writes `textContent`, so the button prints its SVG …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -464,7 +488,7 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 
 - **print-trailing-dead-space** (padding/margin BELOW the last line of a print flow — page-container bottom padding, a scroll wrapper's, the last block's own margin — which paginates exactly like content, so a document ending near a page boundary pushes empty box onto a sheet of …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **lazily-loaded-dependency-renders-an-empty-shell** (a feature whose data comes from a lazily-loaded external module keeps rendering its full chrome — column, header, row label, legend — when the module never arrives, so the user gets a labelled void with the toggle still …[full text: IMPROVEMENT_ARCHIVE.md]
+- **lazily-loaded-dependency-renders-an-empty-shell** (S416: +1 open, trope HH) (a feature whose data comes from a lazily-loaded external module keeps rendering its full chrome — column, header, row label, legend — when the module never arrives, so …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **print-media-leak / var-chain-overridden-by-a-literal** (a screen-only `@media (max-width:N)` block whose declarations also apply to PAPER — print media has a width too — or, more generally, a literal `font-size`/colour declaration that out-specifies a `var(--x)` chain the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -564,7 +588,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - C accessibility (one tool): 2026-09-23 (**S413 — the C-stale chrome pages: resources (C S92), contact, privacy/terms, 404 (never). 40 census cells, 20 Tab walks, 2 dialogs, 4 send paths; every zero controlled. FOUND 4 P3, all fixed (`f40d142`, `5572169`, `945b397`, `12daa8a`) + 5 P4. C-next: the dictionary (S285).**)
 
-- A recurring-pattern sweep: 2026-09-17 (**S399 — 32nd A, first since S385 (14 sessions). A was NOT the stalest: the maintainer chose O, the sandbox refused to execute the detector, and A was taken on a second question — recorded as a divergence, not as staleness.** Delta `eb53e8e..HEAD`: 18 files, 1,172 insertions. **6 arms, 5 clean with proven zeros, 1 arm with 7 carriers.** (1) …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
+- A recurring-pattern sweep: 2026-09-24 (**S416 — 33rd A; stalest runnable. The trope delta `9582fb4..fbfd338` + the S414/S415 rows: 11 arms, 2 NEW, every zero controlled. FOUND 5 P2–P3 (4 fixed) + 4 P4.**)
 
 - G print & export fidelity (one tool): 2026-09-23 (**S409 — `account.html`, its FIRST G (flash S279 is next). The zip in 10 scenarios × 5 readers + 24 printed PDFs. FOUND: UTC date + 1980 stamps (P3, `1a2e4f7`), the missing-file line (P3, `4169b72`), folder names colliding on Windows/macOS (P3), print paper-waste (P4), Hebrew "ו-" (P4). Clean: README labels, UTF-8 flag, CRCs.**)
 
@@ -584,12 +608,12 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-24 (**S414 — 32nd F, first since S397; stalest runnable (O blocked). THE HEADER CHROME on 14 pages: 84 loads + a toggle-name detector (plant 14/14); DOM = visual order 84/84. FOUND: the dark toggle's flipping name (P3, `f9e67b2`), the Arial Full Screen (P4, `b018f98`), 9 P4 logged.**)
 
-**Next session (S416):** **BRANCH/PR: S413–S415 LANDED on main by in-session authorization (`7ddc273..323771f`; PR #270 merged; Pages success) → cut a fresh `claude/*` off `origin/main`.** S415 closed at `sw.js` **v838**, FM **5.56**, SDK **2.116.0**; backend clean (migrations 0001–0003, keep-alive #11 green).
+**Next session (S417):** **BRANCH/PR: S416 on `claude/improve-loop-tburch` → draft PR #272 (base `fbfd338`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** S416 closed at `sw.js` **v847**, FM **5.56**, SDK **2.116.0**; backend clean (0001–0003, keep-alive #12 green).
 
-**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), A (S399), E (S403), L (S404), then K N P M G D I H C F B.** Take **A**: every ACTIVE row, above all `toggle-name-flips-with-its-pressed-state`, UN-RETIRED `author-display-defeats-the-hidden-attribute` (add its static arm) and S415's three NEW rows. **Next C:** dictionary. **Next G:** flash. **Next D:** torah. **Next H:** account.
+**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), E (S403), L (S404), then K N P M G D I H C F B A.** Take **E** (first sight of trope's Settings tab + HH melody). **Next C:** dictionary. **Next G:** flash. **Next D:** torah. **Next H:** account.
 
-**⚑ READY TO SHIP, ungated:** the dictionary's double-click "Copied!" (recipe `38e5b62`); S414's 3 header items; the torah/trope credits' `lang` (+ `dir`, compare crops); the trope Drill tab icon; FM `whoHasCp` + `special_intro`.
+**⚑ READY TO SHIP, ungated:** trope's stale `_tuneBtn` and HH banner; the dictionary's double-click "Copied!" (recipe `38e5b62`); S414's 3 header items; the torah/trope credits' `lang` (+ `dir`, compare crops); the trope Drill tab icon; FM `whoHasCp` + `special_intro`.
 
-**⚑ HARNESS: traps 1–131 in loop-findings.** `b415/`: `lib.mjs` (collectors before `goto`, a pre-`goto` stub hook, `base` = an unfixed `git archive` tree on :8081), `census.mjs`, `interact.mjs`, `fsname.mjs`. `compact-ledger --apply` runs ONCE; the old handoff moves by hand.
+**⚑ HARNESS: traps 1–135 in loop-findings;** `a416/` probes named in its S416 receipts. `compact-ledger --apply` runs ONCE; the old handoff moves by hand.
 
-**⚑ GATE BENCH:** gate 2 — the card sheet's header (S412), the generator's Header Labels, S414's "Back"/"Home", the toggles' visible labels (dark + FM panels), the 404's tool list; gate 3 — FM stage annotations, `.dash-edit-pencil`, the hub's type band, `color-scheme`, glyph-led labels, the 404's star, S414's header order; gate 4 — 16px-on-touch (142 fields), the flash sticky bar. **Seed bench: 34** (21 new trope seeds from the maintainer, 2026-09-24: 12 Trope Tutor settings ideas, 9 chart-based ideas).
+**⚑ GATE BENCH:** gate 2 — **the account chip's spoken name (S416)**, the card sheet's header (S412), the generator's Header Labels, S414's "Back"/"Home", the toggles' visible labels (dark + FM panels), the 404's tool list; gate 3 — FM stage annotations, `.dash-edit-pencil`, the hub's type band, `color-scheme`, glyph-led labels, the 404's star, S414's header order; gate 4 — 16px-on-touch (142 fields), the flash sticky bar. **Seed bench: 34.**
