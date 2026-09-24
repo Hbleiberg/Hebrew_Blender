@@ -4345,8 +4345,8 @@ trope.learn.melody_change_aria,Change the melody in Settings,שינוי המנג
 trope.learn.melody_hh_note,"These staffs show the High Holiday melody, for the Torah reading on Rosh Hashanah and Yom Kippur.","החמשות מציגות את מנגינת הימים הנוראים, לקריאת התורה בראש השנה וביום כיפור.",Learn tab banner (shown while the High Holiday melody is chosen),
 trope.learn.motif_aria,Melody contour for {name},מתאר המנגינה של {name},Learn card staff aria-label,aria-label only; do-not-translate {name} (a glyph-name)
 trope.learn.motif_aria_hh,High Holiday melody contour for {name},מתאר מנגינת הימים הנוראים של {name},Learn card staff aria-label (High Holiday melody),aria-label only; do-not-translate {name} (a glyph-name)
-trope.learn.name_ashkenazi_prefix,Ashkenazi: {name},אשכנזי: {name},secondary-name label on card,do-not-translate {name} (a glyph-name)
-trope.learn.name_sephardi_prefix,Sephardi: {name},ספרדי: {name},secondary-name label on card,do-not-translate {name} (a glyph-name)
+trope.learn.name_ashkenazi_prefix,Ashkenazi: {name},אשכנזי: {name},secondary-name label (Learn card; the Drill name line / verdict / review list),do-not-translate {name} (a glyph-name)
+trope.learn.name_sephardi_prefix,Sephardi: {name},ספרדי: {name},secondary-name label (Learn card; the Drill name line / verdict / review list),do-not-translate {name} (a glyph-name)
 trope.learn.next_family,Next family →,המשפחה הבאה →,button,
 trope.learn.no_example,No chanted example in this corpus.,אין דוגמה מושרת בקורפוס זה.,card empty state,
 trope.learn.no_hh_figure,No High Holiday staff — this mark isn't in the Rosh Hashanah or Yom Kippur readings.,אין חמשה של הימים הנוראים — הטעם הזה אינו מופיע בקריאות של ראש השנה ויום כיפור.,Learn card note in place of the staff (High Holiday melody),

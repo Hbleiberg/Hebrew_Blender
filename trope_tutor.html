@@ -1785,9 +1785,10 @@ function tropeGlyphSpan(t, cls) {
 }
 function tropeName(t) { return settings.tradition === 'seph' ? t.seph : t.ashk; }
 function tropeAltName(t) { return settings.tradition === 'seph' ? t.ashk : t.seph; }
-function tropeNameLine(t) {
+function tropeNameLine(t) {   // the Drill's name line, verdict and review list; the prefixes are the Learn card's keys
   return tropeName(t) + (t.ashk === t.seph ? '' :
-    ' (' + (settings.tradition === 'seph' ? 'Ashkenazi: ' + t.ashk : 'Sephardi: ' + t.seph) + ')');
+    ' (' + (settings.tradition === 'seph' ? I18n.t('trope.learn.name_ashkenazi_prefix', { name: t.ashk })
+                                          : I18n.t('trope.learn.name_sephardi_prefix', { name: t.seph })) + ')');
 }
 
 /**
