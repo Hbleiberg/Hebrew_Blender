@@ -15,22 +15,22 @@ like the motif file it feeds.
   below it, so the Torah chart lives between A3 and B4 and the High Holiday chart between G3 and
   B♭4 (men sing both an octave lower).
 - **Key.** In the Torah chart every F, C and G is sharp unless a natural sign is printed; the
-  chart's own naturals are written `G♮`. The High Holiday chart has no key signature and prints a
-  flat where it wants `B♭`.
+  chart's own naturals are written `G♮`. The High Holiday chart has no key signature and prints each
+  accidental where it wants one: a flat on `B♭`, and one sharp, on telisha ketana's `F♯`.
 - **Values:** `e` eighth, `s` sixteenth, `q` quarter, `de` dotted eighth, `dq` dotted quarter,
   `h` half, `t` triplet eighth (three in the time of two, bracketed `3` in the print). `~` is a
   slur to the next note, `>` an accent, *grace* a small slashed grace note. `|` separates the
   words of a phrase; syllables are the chart's own (MER-CHA, TIP-CHA …).
 - **Scale degrees** are given relative to A for the Torah chart (A = 1, B = 2, C♯ = 3, D = 4,
   E = 5, F♯ = 6, G♯ = 7). The tutor stores `p` = semitones from B4 (B♭4 = −1, A4 = −2, G4 = −4,
-  F4 = −6, E4 = −7, D4 = −9, C♯4 = −10, C4 = −11, B3 = −12, A3 = −14, G3 = −16) and `d` = 1 for
+  F♯4 = −5, F4 = −6, E4 = −7, D4 = −9, C♯4 = −10, C4 = −11, B3 = −12, A3 = −14, G3 = −16) and `d` = 1 for
   eighths, sixteenths and triplet eighths, 2 for quarters, 3 for dotted quarters, 4 for halves.
 
 ## A. One figure per mark (Torah chart)
 
 The row named in the last column is the one whose reading feeds the tutor's motif for that mark:
-the row where the mark stands alone, or last, in its phrase. Grace notes are omitted from the
-motif; everything else is note for note.
+the row where the mark stands alone, or last, in its phrase. A grace note becomes a full eighth in
+the motif (the staff has no smaller value); everything else is note for note.
 
 | Mark (tutor key) | Figure as printed | Degrees | Chart row |
 |---|---|---|---|
@@ -44,7 +44,7 @@ motif; everything else is note for note.
 | yetiv | B4(q) ~A4(de) | 2′ 1′ | Torah #33 |
 | zakef_katon | F♯4(e) A4(q) ~E4(q) | 6 1′ 5 | Torah #13 |
 | zakef_gadol | D4(e) D4(e) F♯4(e) A4(e) ~B4(e) A4(e) F♯4(e) E4(q) | 4 4 6 1′ 2′ 1′ 6 5 | Torah #31 |
-| zarka | E4(e) *grace* E4(de) ~D4(s) C♯4(s) B3(s) C♯4(s) A3(e >) | 5 5 4 3 2 3 1 | Torah #37 |
+| zarka | E4(e) *grace* F♯4 E4(de) ~D4(s) C♯4(s) B3(s) C♯4(s) A3(e >) | 5 6 5 4 3 2 3 1 | Torah #37 |
 | segol | D4(s) F♯4(q) ~E4(e) | 4 6 5 | Torah #37 |
 | shalshelet | D4(e) D4(e) ~F♯4 A4 F♯4 D4 F♯4 A4 F♯4 D4 F♯4 A4 F♯4 (e) B4(q >) ~A4(q) | 4 4 6 1′ 6 4 … 2′ 1′ | Torah #38 |
 | revia | F♯4(e) E4(de) ~D4(s) C♯4(s) B3(e) | 6 5 4 3 2 | Torah #19 |
@@ -53,8 +53,8 @@ motif; everything else is note for note.
 | kadma (in kadma v'azla) | A3(e) D4(e) | 1 4 | Torah #15 |
 | geresh (azla) | A4(e) ~F♯4(e) B4(q) A4(e) | 1′ 6 2′ 1′ | Torah #16 |
 | gershayim | D4(e) E4(e) F♯4(de) ~E4 D4 E4 (triplet s) F♯4(e) | 4 5 6 5 4 5 6 | Torah #20 |
-| telisha_ketana | *grace* D4 D4(e) D4(e) D4(e) D4(e) ~C♯4 D4 E4 D4 (e) | 4 4 4 4 3 4 5 4 | Torah #29 |
-| telisha_gedola | *grace* D4 D4(e) D4(e) D4(e) D4(e) ~E4 F♯4 G♮4 A4 F♯4 E4 D4 (e) | 4 4 4 4 5 6 ♭7 1′ 6 5 4 | Torah #28 |
+| telisha_ketana | *grace* D4 D4(e) D4(e) D4(e) D4(e) ~C♯4 D4 E4 D4 (e) | 4 4 4 4 4 3 4 5 4 | Torah #29 |
+| telisha_gedola | *grace* D4 D4(e) D4(e) D4(e) D4(e) ~E4 F♯4 G♮4 A4 F♯4 E4 D4 (e) | 4 4 4 4 4 5 6 ♭7 1′ 6 5 4 | Torah #28 |
 | pazer | D4(e) D4(s) ~E4 F♯4 G♮4 A4 (s) B4 A4 F♯4 E4 (e, tenuto on B4 A4 F♯4) | 4 4 5 6 ♭7 1′ 2′ 1′ 6 5 | Torah #30 |
 | mercha_kefula | E4(e) E4(e) E4(e) E4(e) ~F♯4 G♮4 A4 G♮4 F♯4 (e) E4(q) | 5 5 5 5 6 ♭7 1′ ♭7 6 5 | Torah #39 |
 | karnei_parah | D4(e) D4(e) D4(e) ~C♯4 D4 D4 (triplet s, > on the last) D4 E4 F♯4 G♮4 A4 F♯4 E4 D4 (s) | 4 4 4 3 4 4 4 5 6 ♭7 1′ 6 5 4 | Torah #40 |
@@ -64,10 +64,11 @@ motif; everything else is note for note.
 
 `geresh_muqdam` has no figure in the chart and keeps no entry, as before.
 
-Three things the chart does that the staffs cannot show: the lowered seventh (G♮ in A major) is
-printed with a natural sign in darga, telisha gedola, pazer, mercha kefula and karnei parah, and in
+The lowered seventh (G♮ in A major) is printed with a natural sign in darga, telisha gedola, pazer,
+mercha kefula and karnei parah. Three things the chart does that the staffs do not show: in
 mercha kefula the second G carries no sign (a natural persists through the phrase, so it is read
-as G♮ too); zarka and both telishas open with a small slashed grace note on the first pitch; and
+as G♮ too; the staff marks each G); the grace notes are small and slashed — one on F♯4 opens
+zarka's KA, and each telisha sings T′ on one on D4 — where the staff draws a full eighth; and
 pazer, zakef gadol, zarka, shalshelet and karnei parah carry accent or tenuto marks on the notes
 shown above.
 
@@ -108,10 +109,10 @@ shown above.
 | 31 | זָקֵף גָּדוֹל | ZA D4(e, tenuto) KEF D4(e, tenuto) GA F♯4(e) DOL A4(e) ~B4(e) A4(e) F♯4(e) E4(q) |
 | 32 | יְתִיב מֻנַּח קָטֹן | (eighth rest) Y' B4(q) ~TIV A4(de) \| MU F♯4(s) NACH F♯4(s) ~E4(s) F♯4(de) \| KA F♯4(e) TON A4(q) ~E4(q) |
 | 33 | יְתִיב קָטֹן | (eighth rest) Y' B4(q) ~TIV A4(de) \| KA F♯4(s) TON A4(q) ~E4(q) |
-| 34 | מֻנַּח זַרְקָא מֻנַּח סֶגוֹל | MU G♮4(e) NACH F♯4(e) ~E4(e) \| ZAR E4(e) KA *grace* E4(de) ~D4(s) C♯4(s) B3(s) C♯4(s) A3(e >) \| MU A3(q) NACH D4(e) ~D4(e) \| SE D4(s) GOL F♯4(q) ~E4(e) |
-| 35 | מֻנַּח זַרְקָא סֶגוֹל | MU G♮4(e) NACH F♯4(e) ~E4(e) \| ZAR E4(e) KA *grace* E4(de) ~D4(s) C♯4(s) B3(s) C♯4(s) A3(e >) \| SE D4(s) GOL F♯4(q) ~E4(e) |
-| 36 | זַרְקָא מֻנַּח סֶגוֹל | ZAR E4(e) KA *grace* E4(de) ~D4(s) C♯4(s) B3(s) C♯4(s) A3(e >) \| MU A3(q) NACH D4(e) ~D4(e) \| SE D4(s) GOL F♯4(q) ~E4(e) |
-| 37 | זַרְקָא סֶגוֹל | ZAR E4(e) KA *grace* E4(de) ~D4(s) C♯4(s) B3(s) C♯4(s) A3(e >) \| SE D4(s) GOL F♯4(q) ~E4(e) |
+| 34 | מֻנַּח זַרְקָא מֻנַּח סֶגוֹל | MU G♮4(e) NACH F♯4(e) ~E4(e) \| ZAR E4(e) KA *grace* F♯4 E4(de) ~D4(s) C♯4(s) B3(s) C♯4(s) A3(e >) \| MU A3(q) NACH D4(e) ~D4(e) \| SE D4(s) GOL F♯4(q) ~E4(e) |
+| 35 | מֻנַּח זַרְקָא סֶגוֹל | MU G♮4(e) NACH F♯4(e) ~E4(e) \| ZAR E4(e) KA *grace* F♯4 E4(de) ~D4(s) C♯4(s) B3(s) C♯4(s) A3(e >) \| SE D4(s) GOL F♯4(q) ~E4(e) |
+| 36 | זַרְקָא מֻנַּח סֶגוֹל | ZAR E4(e) KA *grace* F♯4 E4(de) ~D4(s) C♯4(s) B3(s) C♯4(s) A3(e >) \| MU A3(q) NACH D4(e) ~D4(e) \| SE D4(s) GOL F♯4(q) ~E4(e) |
+| 37 | זַרְקָא סֶגוֹל | ZAR E4(e) KA *grace* F♯4 E4(de) ~D4(s) C♯4(s) B3(s) C♯4(s) A3(e >) \| SE D4(s) GOL F♯4(q) ~E4(e) |
 | 38 | שַׁלְשֶׁלֶת | SHAL D4(e) SHE D4(e) ~F♯4 A4 F♯4 D4 F♯4 A4 F♯4 D4 F♯4 A4 F♯4 (e) LET B4(q >) ~A4(q) |
 | 39 | מֵרְכָא כְפוּלָה | MER E4(e) CHA E4(e) CH'FU E4(e) LA E4(e) ~F♯4 G♮4 A4 G♮4 F♯4 (e) E4(q) |
 | 40 | יֵרַח בֶּן יוֹמוֹ קַרְנֵי פָרָה | YE D4(s) RACH D4(s) BEN D4(s) YO D4(s) MO F♯4(q) ~E4(q) \| KAR D4(e) NEI D4(e) FA D4(e) ~C♯4 D4 D4 (triplet s, >) RA D4(s) ~E4 F♯4 G♮4 A4(>) F♯4 E4 D4 (s) |
@@ -120,7 +121,8 @@ shown above.
 ## C. The 33 High Holiday phrase patterns
 
 The set has no key signature and sits on C/D: its sof pasuk ends on C4, its etnachta on D4, and it
-prints B♭ where the Torah chart prints G♮ (the same lowered seventh). Rows 1–8 pair with Torah rows
+prints B♭ where the Torah chart prints G♮ (the same lowered seventh); its one other accidental is
+the F♯ in telisha ketana's run (row 18). Rows 1–8 pair with Torah rows
 1–8, rows 30–33 are the end-of-aliyah endings. The phrase table is a first-pass reading, pitch by
 pitch from the photographs with the rhythm sketched. Each mark's figure was then re-read note by
 note from zoomed crops (the table after this one, which feeds the tutor); that reading wins
@@ -164,8 +166,8 @@ wherever the two differ, and the first-pass slips it found are listed after it.
 
 ### High Holiday figure per mark
 
-These readings feed `data/trope/trope_motifs_hh.json`. As in section A, grace notes are left out
-(except yetiv's, below) and a tie becomes one held note. Values are marked only where a note is longer than an eighth —
+These readings feed `data/trope/trope_motifs_hh.json`. As in section A, a grace note becomes a
+full eighth and a tie becomes one held note. Values are marked only where a note is longer than an eighth —
 (q) a quarter, (dq) a dotted quarter or a tie merged into one longer note — because the staff draws
 eighths, sixteenths and triplet eighths alike. Shalshelet, mercha kefula, karnei parah and yerach
 ben yomo have no row: they never occur in the Rosh Hashanah or Yom Kippur readings.
@@ -190,14 +192,14 @@ ben yomo have no row: they never occur in the Rosh Hashanah or Yom Kippur readin
 | kadma | D4 G4 | High Holiday #20 |
 | geresh | B♭4 A4 G4 A4 G4(q) | High Holiday #21 |
 | gershayim | D4 D4 D4 E4 F4 C4 G4(dq) | High Holiday #22 |
-| telisha_ketana | D4 D4 D4 D4 G4 F4 G4 D4(dq) | High Holiday #18 |
+| telisha_ketana | D4 D4 D4 D4 G4 F♯4 G4 D4(dq) | High Holiday #18 |
 | telisha_gedola | D4 D4 D4 D4 D4 E4 F4 G4 F4 E4 D4(q) | High Holiday #17 |
 | pazer | D4 D4 E4 F4 G4 A4 B♭4 A4 G4 F4 E4 D4 G4 E4 D4(q) | High Holiday #19 |
 
 - Yetiv's Y′ and the munach before the telishas each sing their first syllable on a small grace
-  note. Yetiv's sits on A4, the pitch of the note after it, and the tutor draws it as a full eighth
-  so the syllable has its own note on the staff and in the tune (the munach before the telishas is
-  not a tutor figure).
+  note. Yetiv's sits on A4, the pitch of the note after it, and is drawn as a full eighth like every
+  grace note, so the syllable has its own note on the staff and in the tune (the munach before the
+  telishas is not a tutor figure). It is the chart's only grace note in the figures above.
 - Zakef gadol opens with a triplet (ZA-KEF-GA) and, like pazer, accents its last three notes. Zarka
   ends on G3 below two ledger lines, the lowest note in either chart.
 - Azla, the second word of kadma v'azla (row 20), sings the geresh figure, as in the Torah chart.
@@ -215,6 +217,8 @@ pass):
   rest; telisha gedola's LA starts on a fifth D4 before its run up to G4 (row 17).
 - Gershayim (row 22): the fourth note of YIM's run is C4 (the print draws C4 with no ledger line
   throughout).
+- Telisha ketana (row 18): the small mark in NAH's run is a sharp on its F, not a grace note, so
+  the run is G4 F♯4 G4 (the figure reading first took it for a grace note and kept the F natural).
 - Yetiv (rows 23–24): Y′ is a grace note on A4 (measured against the staff lines; it sits in the
   same space as the note after it) and TIV is A4 ~G4 in two slurred eighths, then an eighth rest —
   not C5 A4 E4.
@@ -241,7 +245,7 @@ pass):
 - **The lowered seventh is part of the mode.** Every run that touches the seventh degree flattens
   it (G♮ in A major, B♭ in the High Holiday set), so the melody is Mixolydian on those notes even
   though the signature says major.
-- **Ornaments are notated, not improvised:** grace notes open zarka and the telishas, triplets
+- **Ornaments are notated, not improvised:** grace notes open zarka's KA and the telishas' T′, triplets
   sit inside tevir, gershayim, karnei parah, munach-revia and the end-of-aliyah mercha, and
   accents mark the peak of pazer, zakef gadol, zarka, shalshelet and karnei parah.
 - **The chart's own order is a teaching order:** the etnachta clause (1–4), the sof pasuk clause
@@ -256,16 +260,18 @@ pass):
   (`scripts/build-trope-motifs.mjs`) copies verified entries through untouched; only `--force`
   would replace them with machine drafts.
 - The file's top-level `key: "A"` tells the Learn-card staff to draw three sharps and to spell
-  in-key notes without accidentals, so a natural sign appears only where the chart prints one.
+  in-key notes without accidentals, so a natural sign appears only where the chart prints one. A
+  note outside the key is spelled the way the charts print chromatic notes (raised 1st and 4th,
+  lowered 3rd, 6th and 7th): G♮ here, F♯ and B♭ in the High Holiday file.
 - Rhythm is reduced to the staff's four values (`d` 1–4); a dotted eighth and a triplet eighth
-  both draw as an eighth. Grace notes are not drawn, except the High Holiday yetiv's, which carries
-  the syllable Y′ and is drawn as a full eighth. Shalshelet, karnei parah and telisha gedola
+  both draw as an eighth. A grace note is drawn as a full eighth: zarka's F♯4 before KA, the D4
+  each telisha sings T′ on, and the High Holiday yetiv's Y′. Shalshelet, karnei parah and telisha gedola
   keep their full length (up to sixteen notes), so those staffs widen.
 - To re-verify an entry: read its row in section A, convert with the `p` scale above (A4 = −2,
   each semitone down is −1), and compare with the JSON; the card's play button plays the staff as
   tones, lighting each note, so the tune can be checked by ear.
 - The High Holiday figures (section C) live in `data/trope/trope_motifs_hh.json`
-  (`system: "highholiday"`, `key: "C"`: no signature, and B♭ drawn as a flat), each entry
+  (`system: "highholiday"`, `key: "C"`: no signature, so B♭ and F♯ carry their accidentals), each entry
   `verified: true` with `source: "tropepatterns.md High Holiday #N"`. The builder never reads or
   writes that file (there are no High Holiday recordings to draft from), so it is edited by hand.
   The tutor draws it when Settings → Melody is *High Holidays*; the four marks it lacks say so on

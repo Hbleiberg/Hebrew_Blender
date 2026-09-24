@@ -187,22 +187,25 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   middle line: the chart's tonic A4 is `-2`, its low A3 `-14`) and `d` = relative duration 1–4
   (eighths, sixteenths and triplet eighths 1, quarters 2, dotted quarters 3, halves 4). The
   top-level `key` is a major key name (`"A"`); the page draws that signature and spells in-key
-  notes without accidentals, so a natural appears only where the chart prints one. **The file is
-  the Learn cards' staff, nothing else** — the drill's Melody questions play PocketTorah
-  recordings, not the motifs — and it is fetched `?v=3`. **Every shipped entry is `verified:true`,
+  notes without accidentals, so a natural appears only where the chart prints one. A note outside
+  the key is spelled the way the charts print chromatic notes — raised 1st and 4th, lowered 3rd,
+  6th and 7th (`motifPitchPos`) — so A major's lowered seventh is G♮ and C major writes F♯ and B♭.
+  **The file is the Learn cards' staff, nothing else** — the drill's Melody questions play
+  PocketTorah recordings, not the motifs — and it is fetched `?v=4`. **Every shipped entry is `verified:true`,
   hand-transcribed from the printed Ashkenazi cantillation chart recorded in
-  `docs/tropepatterns.md`** (each `source` names the chart row it comes from; grace notes are
-  left out; `geresh_muqdam` has no figure and no entry). To change a motif, edit the JSON by hand,
+  `docs/tropepatterns.md`** (each `source` names the chart row it comes from; a grace note is
+  written as a full eighth, since the staff has no smaller value — zarka's F♯4 before KA and the D4
+  each telisha sings T′ on; `geresh_muqdam` has no figure and no entry). To change a motif, edit the JSON by hand,
   keep `verified:true`, update the row in `docs/tropepatterns.md`, bump the `?v=`, and audition it
   with the card's tune button. Figures longer than eight notes widen their staff, and one reaching
   below A3 deepens it; the card header wraps it below the names.
   **The High Holiday melody is a second file, `data/trope/trope_motifs_hh.json`** (same shape,
-  `system:"highholiday"`, `key:"C"` — no signature, so its B♭ draws as a flat), transcribed from the
-  same book's High Holiday chart for the 21 marks it covers; shalshelet, mercha kefula, karnei parah
-  and yerach ben yomo have no entry (they never occur in the Rosh Hashanah or Yom Kippur readings).
-  Its grace notes are left out as in the Torah file, except yetiv's: the chart sings the syllable Y′
-  on it, so it is written as a full eighth (A4 A4 G4). It is fetched `?v=2` beside the Torah file and validated the same way, each file on its own, so
-  one failing never blanks the other melody's staffs. **Settings → Melody** (`settings.melody`,
+  `system:"highholiday"`, `key:"C"` — no signature, so its B♭ and telisha ketana's F♯ draw with their
+  accidentals), transcribed from the same book's High Holiday chart for the 21 marks it covers;
+  shalshelet, mercha kefula, karnei parah and yerach ben yomo have no entry (they never occur in the
+  Rosh Hashanah or Yom Kippur readings). Its one grace note, yetiv's Y′, is a full eighth as in the
+  Torah file (A4 A4 G4). It is fetched `?v=3` beside the Torah file and validated the same way,
+  each file on its own, so one failing never blanks the other melody's staffs. **Settings → Melody** (`settings.melody`,
   `'torah'` by default or `'highholiday'`) picks which file draws the staffs and feeds the tune
   button; any other stored value shows the year-round staffs and stays stored (`melodyKey()`), so a
   newer page's choice survives a round trip. While the High Holiday melody is on, the Learn tab

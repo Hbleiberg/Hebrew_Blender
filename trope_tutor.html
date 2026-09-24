@@ -1539,8 +1539,8 @@ async function loadData() {
       fetch('data/trope/trope_index.json?v=2'),
       fetch('data/pockettorah/manifest.json?v=1'),
       // ?v= bump rule applies here too (on every trope_motifs.json / trope_motifs_hh.json change).
-      fetch('data/trope/trope_motifs.json?v=3').catch(() => null),
-      fetch('data/trope/trope_motifs_hh.json?v=2').catch(() => null),
+      fetch('data/trope/trope_motifs.json?v=4').catch(() => null),
+      fetch('data/trope/trope_motifs_hh.json?v=3').catch(() => null),
     ]);
     if (!idxRes.ok || !manRes.ok) throw new Error('HTTP ' + idxRes.status + '/' + manRes.status);
     const idx = await idxRes.json();          // same-origin data/ corpus — trusted
@@ -1851,6 +1851,17 @@ function motifPitchPos(p, key) {
     };
     const pcOf = (L, alt) => (((LETTER_PC[L] + alt) % 12) + 12) % 12;
     for (const L in LETTER_PC) if (pcOf(L, sig[L] || 0) === pc) return pos(L, sig[L] || 0, '');
+    // Out of the key: spelled the way the charts print chromatic notes — raised 1st and 4th, lowered
+    // 3rd, 6th and 7th — so C major writes F♯ and B♭, and A major's lowered seventh is G♮.
+    const T = key[0], tAlt = key[1] === '#' ? 1 : key[1] === 'b' ? -1 : 0;
+    const DEG = { 1: [0, 1], 3: [2, -1], 6: [3, 1], 8: [5, -1], 10: [6, -1] };   // semitones above the tonic → [letter offset, direction]
+    const deg = DEG[(((pc - pcOf(T, tAlt)) % 12) + 12) % 12];
+    if (deg) {
+      const LETTERS = 'CDEFGAB', L = LETTERS[(LETTERS.indexOf(T) + deg[0]) % 7];
+      const total = ((((pc - LETTER_PC[L]) % 12) + 18) % 12) - 6;   // the sounding alteration that letter needs
+      const SIGN = { '-1': '♭', 0: '♮', 1: '♯' };
+      if (total === (sig[L] || 0) + deg[1] && SIGN[total] !== undefined) return pos(L, total, SIGN[total]);
+    }
     const opts = [];
     for (const L in LETTER_PC) {
       const a = sig[L] || 0;

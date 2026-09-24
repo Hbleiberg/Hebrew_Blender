@@ -74,7 +74,7 @@ Notes:
   and every existing visitor keeps the old bytes forever with nothing to see. Where two pages
   fetch the same corpus they must use the **same** value (mismatched ones evict each other's
   copy on alternate visits). Current: `hebrew_words.json?v=6`,
-  `trope/trope_index.json?v=2`, `trope/trope_motifs.json?v=3`, `trope/trope_motifs_hh.json?v=2`,
+  `trope/trope_index.json?v=2`, `trope/trope_motifs.json?v=4`, `trope/trope_motifs_hh.json?v=3`,
   `hebrew_emojis.json?v=1`,
   `parshiyot.json?v=1`, `pockettorah/manifest.json?v=1`, `pockettorah/aliyah.json?v=1`
   (the last four had originally shipped with no buster at all), and the
