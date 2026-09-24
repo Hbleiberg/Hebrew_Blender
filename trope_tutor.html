@@ -967,7 +967,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <!-- ════════ LEARN ════════ -->
   <section class="tu-view" id="learnView" role="tabpanel" aria-labelledby="tabLearn">
     <p class="tu-intro" data-i18n-html="trope.learn.intro">Trope (te'amim) are the cantillation marks that tell you how to chant the Torah.
-      Each card sketches the mark's melody on a small music staff — a rough picture of how the tune rises and falls, not notes to read.
+      Each card shows the mark's melody on a small music staff: the standard Ashkenazi tune as printed in cantillation charts, written in A major. The recordings are one reader's rendition, so a note may differ here and there.
       Work through them one clause family at a time, then switch to <strong>Drill</strong> to test yourself.
       When you're ready to see them in context, open the companion reader:
       <a href="torah_trainer.html">Torah Trainer →</a></p>
@@ -1593,7 +1593,7 @@ async function loadData() {
       fetch('data/trope/trope_index.json?v=2'),
       fetch('data/pockettorah/manifest.json?v=1'),
       // ?v= bump rule applies here too (on every trope_motifs.json change).
-      fetch('data/trope/trope_motifs.json?v=2').catch(() => null),
+      fetch('data/trope/trope_motifs.json?v=3').catch(() => null),
     ]);
     if (!idxRes.ok || !manRes.ok) throw new Error('HTTP ' + idxRes.status + '/' + manRes.status);
     const idx = await idxRes.json();          // same-origin data/ corpus — trusted
@@ -1861,9 +1861,13 @@ function renderMarkedWord(he, trope) {
 
 /* ══════════════════════════════════════════════════════
    MOTIF STAFF — hand-rolled inline SVG (createElementNS, no libraries).
-   Motif pitches are semitones relative to the reciting tone, notated with the
-   reference on B4 (middle line, treble clef, no key signature) — an octave
-   above the sung male voice, the conventional treble transposition.
+   Motif pitches are semitones from B4 (the treble middle line), so the
+   printed chart's A major puts its tonic A4 at p = -2 and its low A3 at
+   -14 — the chart's own register, an octave above the sung male voice.
+   The motif file's `key` (a major key name such as "A") draws that
+   signature and spells in-key notes without accidentals, so a natural
+   appears only where the chart prints one; with no key, rising notes take
+   sharps and falling notes flats. docs/tropepatterns.md is the source.
    ══════════════════════════════════════════════════════ */
 const SVG_NS = 'http://www.w3.org/2000/svg';
 function _svgEl(tag, attrs) {
@@ -1871,21 +1875,55 @@ function _svgEl(tag, attrs) {
   for (const k in attrs) el.setAttribute(k, attrs[k]);
   return el;
 }
-// Semitones-from-B4 → diatonic steps above the middle line + accidental.
-// Ascending spelled with sharps, descending with flats; beyond ±12 fold by
-// an octave (±7 diatonic steps).
-function motifPitchPos(p) {
+// Major-key signatures (sharps positive, flats negative) and the order the accidentals are written.
+const KEY_SHARPS = { C: 0, G: 1, D: 2, A: 3, E: 4, B: 5, 'F#': 6, 'C#': 7, F: -1, Bb: -2, Eb: -3, Ab: -4, Db: -5, Gb: -6, Cb: -7 };
+const SHARP_ORDER = ['F', 'C', 'G', 'D', 'A', 'E', 'B'], FLAT_ORDER = ['B', 'E', 'A', 'D', 'G', 'C', 'F'];
+const LETTER_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };   // pitch class of each natural letter
+const LETTER_STEP = { C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6 };  // diatonic step within an octave
+function keySignature(key) {                 // [{letter, acc}] in writing order; [] when the key is unknown
+  const n = KEY_SHARPS[key];
+  if (!Number.isInteger(n) || n === 0) return [];
+  return (n > 0 ? SHARP_ORDER.slice(0, n) : FLAT_ORDER.slice(0, -n)).map((letter) => ({ letter, acc: n > 0 ? 1 : -1 }));
+}
+// Semitones-from-B4 → diatonic steps above the middle line + the accidental to draw.
+function motifPitchPos(p, key) {
+  const q = Math.round(p);
+  const sig = {};
+  keySignature(key).forEach((k) => { sig[k.letter] = k.acc; });
+  if (Number.isInteger(KEY_SHARPS[key])) {
+    const m = 71 + q, pc = ((m % 12) + 12) % 12;      // B4 is MIDI 71
+    const pos = (L, total, acc) => {                   // total = sounding alteration of the natural letter
+      const oct = Math.round((m - LETTER_PC[L] - total) / 12) - 1;
+      return { step: oct * 7 + LETTER_STEP[L] - 34, acc };   // B4 = octave 4, step 6 → 34
+    };
+    const pcOf = (L, alt) => (((LETTER_PC[L] + alt) % 12) + 12) % 12;
+    for (const L in LETTER_PC) if (pcOf(L, sig[L] || 0) === pc) return pos(L, sig[L] || 0, '');
+    const opts = [];
+    for (const L in LETTER_PC) {
+      const a = sig[L] || 0;
+      if (a + 1 <= 1 && pcOf(L, a + 1) === pc) opts.push(pos(L, a + 1, a + 1 === 0 ? '♮' : '♯'));
+      if (a - 1 >= -1 && pcOf(L, a - 1) === pc) opts.push(pos(L, a - 1, a - 1 === 0 ? '♮' : '♭'));
+    }
+    const pref = KEY_SHARPS[key] > 0 ? '♯' : '♭';
+    return opts.find((o) => o.acc === '♮') || opts.find((o) => o.acc === pref) || opts[0];
+  }
+  // No key: ascending spelled with sharps, descending with flats; beyond ±12 fold by an octave (±7 diatonic steps).
   const UP = [[0,''],[1,''],[1,'♯'],[2,''],[2,'♯'],[3,''],[4,''],[4,'♯'],[5,''],[5,'♯'],[6,''],[6,'♯']];
   const DN = [[0,''],[0,'♭'],[-1,''],[-1,'♭'],[-2,''],[-2,'♭'],[-3,''],[-4,''],[-4,'♭'],[-5,''],[-5,'♭'],[-6,'']];
-  let oct = 0, q = Math.round(p);
-  while (q >= 12) { q -= 12; oct += 7; }
-  while (q <= -12) { q += 12; oct -= 7; }
-  const [step, acc] = q >= 0 ? UP[q] : DN[-q];
+  let oct = 0, r = q;
+  while (r >= 12) { r -= 12; oct += 7; }
+  while (r <= -12) { r += 12; oct -= 7; }
+  const [step, acc] = r >= 0 ? UP[r] : DN[-r];
   return { step: step + oct, acc };
 }
 function renderMotifStaff(t, motif) {
-  const W = 180, H = 56, MID = 28, STEP = 3, X0 = 30, XEND = W - 8;
+  const key = MOTIFS && typeof MOTIFS.key === 'string' ? MOTIFS.key : '';
+  const sig = keySignature(key);
+  const count = motif.notes.length;
+  // Long figures (shalshelet, karnei parah…) widen the staff instead of cramping; the card header wraps it.
+  const W = 180 + Math.max(0, count - 8) * 11 + sig.length * 6, H = 56, MID = 28, STEP = 3, X0 = 30 + sig.length * 6, XEND = W - 8;
   const svg = _svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'tu-motif', role: 'img' });
+  if (W !== 180) svg.style.inlineSize = Math.round(W * 165 / 180) + 'px';
   svg.setAttribute('aria-label', I18n.t('trope.learn.motif_aria', { name: tropeName(t) }));
   for (let i = -2; i <= 2; i++)
     svg.appendChild(_svgEl('line', { x1: 1, y1: MID + i * 6, x2: W - 1, y2: MID + i * 6,
@@ -1893,6 +1931,14 @@ function renderMotifStaff(t, motif) {
   const clef = _svgEl('text', { x: 2, y: 38, 'font-size': 30, fill: 'currentColor', 'aria-hidden': 'true' });
   clef.textContent = '\u{1D11E}';   // 𝄞 treble-clef symbol, not a UI string — i18n-ignore
   svg.appendChild(clef);
+  // Key signature: F♯ on the top line, C♯ in the third space… (treble-clef positions as diatonic steps from B4).
+  const SIG_STEP = { F: 4, C: 1, G: 5, D: 2, A: -1, E: 3, B: 0 }, FLAT_STEP = { B: 0, E: 3, A: -1, D: 2, G: -2, C: 1, F: -3 };
+  sig.forEach((k, i) => {
+    const step = k.acc > 0 ? SIG_STEP[k.letter] : FLAT_STEP[k.letter];
+    const a = _svgEl('text', { x: 23 + i * 6, y: MID - step * STEP + 3, 'font-size': 9, fill: 'currentColor', 'aria-hidden': 'true' });
+    a.textContent = k.acc > 0 ? '♯' : '♭';
+    svg.appendChild(a);
+  });
   // Horizontal slots ∝ d+1 (the +1 keeps short notes from cramping together).
   const total = motif.notes.reduce((a, n) => a + (n.d + 1), 0);
   let cum = 0;
@@ -1900,7 +1946,7 @@ function renderMotifStaff(t, motif) {
     const share = n.d + 1;
     const cx = X0 + ((cum + share / 2) / total) * (XEND - X0);
     cum += share;
-    const { step, acc } = motifPitchPos(n.p);
+    const { step, acc } = motifPitchPos(n.p, key);
     const cy = MID - step * STEP;
     const g = _svgEl('g', { class: 'tu-motif-note', 'data-i': i, 'data-d': n.d, 'aria-hidden': 'true' });
     for (let s = 6; s <= step; s += 2)      // ledger lines above the staff

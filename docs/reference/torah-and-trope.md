@@ -174,31 +174,40 @@ from `torah_trainer.html`.
   commit both files together, AND bump the `?v=` on the page's index fetch (the sw.js `DATA_CACHE`
   matches exact URLs — the `?v=` bump is what refreshes returning users) whenever the taxonomy or
   selection rules change.
-- **Melody motifs**: `data/trope/trope_motifs.json` — `{v:1, system:"torah", built, license,
-  tropes:{<key>:{notes:[{p,d}], verified}}}`, where `p` = pitch in semitones relative to the clip's
-  final sustained tone (rendered as B on the treble middle line) and `d` = relative duration 1–4.
-  It feeds the drill's **Melody** questions and is fetched `?v=2`. Built offline by
-  **`node scripts/build-trope-motifs.mjs`** `[--force] [--only=<tropeKey>]`, which pitch-tracks
-  (YIN) the same PocketTorah clips the Learn cards play and takes the medoid contour across 2–3
-  examples; it rewrites `docs/trope_motifs_report.md`, so **commit both files together and bump the
-  `?v=` on the page's motifs fetch**, exactly as for the index above. Three things that make this
-  builder unlike every other script here:
-  - **`verified:true` entries are HUMAN work and the default run preserves them verbatim.** Every
-    emitted motif starts `verified:false` (a machine draft); a person auditions it via the page's
-    `?debug=motifs` mode, hand-corrects the JSON, and flips the flag. **`--force` re-analyzes
-    verified entries too and will silently discard those corrections** — it is the one destructive
-    flag in `scripts/`. Prefer `--only=<tropeKey>`, which carries every other entry through untouched.
-    (At the time of writing **0 of the 25 entries are verified**, so `--force` currently destroys nothing —
-    but that is a fact about today's data, not a property of the flag. 25, not 26: `geresh_muqdam`
-    has no corpus occurrence to analyze.)
+- **Melody motifs**: `data/trope/trope_motifs.json` — `{v:1, system:"torah", key, built, license,
+  tropes:{<key>:{notes:[{p,d}], verified, source}}}`, where `p` = semitones from B4 (the treble
+  middle line: the chart's tonic A4 is `-2`, its low A3 `-14`) and `d` = relative duration 1–4
+  (eighths, sixteenths and triplet eighths 1, quarters 2, dotted quarters 3, halves 4). The
+  top-level `key` is a major key name (`"A"`); the page draws that signature and spells in-key
+  notes without accidentals, so a natural appears only where the chart prints one. **The file is
+  the Learn cards' staff, nothing else** — the drill's Melody questions play PocketTorah
+  recordings, not the motifs — and it is fetched `?v=3`. **Every shipped entry is `verified:true`,
+  hand-transcribed from the printed Ashkenazi cantillation chart recorded in
+  `docs/tropepatterns.md`** (each `source` names the chart row it comes from; grace notes are
+  left out; `geresh_muqdam` has no figure and no entry). To change a motif, edit the JSON by hand,
+  keep `verified:true`, update the row in `docs/tropepatterns.md`, bump the `?v=`, and audition it
+  with the page's `?debug=motifs` mode (tap a staff to hear it as tones). Figures longer than
+  eight notes widen their staff; the card header wraps it below the names.
+  The machine path still exists: **`node scripts/build-trope-motifs.mjs`** `[--force]
+  [--only=<tropeKey>]` pitch-tracks (YIN) the same PocketTorah clips the Learn cards play and takes
+  the medoid contour across 2–3 examples, writing `verified:false` drafts and rewriting
+  `docs/trope_motifs_report.md`; commit both files together and bump the `?v=` exactly as for the
+  index above. Three things that make this builder unlike every other script here:
+  - **`verified:true` entries are HUMAN work and the default run preserves them verbatim**, extra
+    fields (`source`) and the top-level `key` included; with the whole file verified, a default run
+    rewrites only the top level and the report. **`--force` re-analyzes verified entries too and
+    will silently discard those corrections** — it is the one destructive flag in `scripts/`.
+    Prefer `--only=<tropeKey>`, which carries every other entry through untouched. The smoke test
+    allows up to sixteen notes per entry (drafts are cut at eight).
   - **It is the ONE builder with an npm dependency** — a deliberate, documented exception to the
     repo's zero-dep rule: MP3 decoding needs `mpg123-decoder` (`npm install` it at the repo root;
     `node_modules/`, `package.json`, `package-lock.json` are gitignored, so nothing is committed).
     Downloads go through `curl` because Node's `fetch` ignores `HTTPS_PROXY`; MP3s cache in
     gitignored `source-data/motif-cache/`, so re-runs are offline and byte-identical.
-  - **Its output is CC BY-SA 4.0**, not the repo's license — the transcriptions derive from
-    PocketTorah recordings (© Russel Neiss & Rabbi Charlie Schwartz). Both the JSON and the report
-    carry that notice; keep it on anything derived from them.
+  - **Its output is CC BY-SA 4.0**, not the repo's license: the hand transcriptions are released
+    that way to match, and any machine draft derives from PocketTorah recordings (© Russel Neiss &
+    Rabbi Charlie Schwartz). Both the JSON and the report carry the notice; keep it on anything
+    derived from them.
   The script exits non-zero if a smoke test fails — never commit its output without a green run.
 - **`TROPES` taxonomy** — one `═══`-marked table (26 entries — zarka is a single entry carrying
   both codepoints: key, chars, display, Ashkenazi +

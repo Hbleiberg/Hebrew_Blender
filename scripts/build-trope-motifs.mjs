@@ -12,7 +12,11 @@
  * staff) and d = relative duration units 1–4. Every emitted entry is
  * verified:false — a DRAFT. A human verifies each motif by ear (the page's
  * ?debug=motifs audition mode), hand-corrects the JSON, and flips verified to
- * true; re-running this script preserves verified entries verbatim.
+ * true; re-running this script preserves verified entries verbatim (extra
+ * fields on them, such as the `source` pointer into docs/tropepatterns.md, and
+ * the file's top-level `key`, ride through every run). The shipped file is
+ * fully hand-verified against a printed chart, so a default run rewrites only
+ * the top level and the report.
  *
  * Pipeline per trope: pick 2–3 example clips (prefer longer, multi-syllable
  * words; prefer aliyah MP3s already being downloaded), download + cache the
@@ -61,7 +65,7 @@ const CACHE_DIR = join(repoRoot, 'source-data', 'motif-cache');
 
 const POCKET_AUDIO_BASE = 'https://raw.githubusercontent.com/rneiss/PocketTorah/master/data/audio/';
 const LICENSE_NOTE =
-  'Motif transcriptions machine-drafted from PocketTorah recordings © Russel Neiss & Rabbi Charlie Schwartz (CC BY-SA 4.0); this file is likewise CC BY-SA 4.0.';
+  'Motifs marked verified:true are hand transcriptions of the traditional Ashkenazi Torah melody from a printed cantillation chart (see docs/tropepatterns.md); any unverified entry is machine-drafted from PocketTorah recordings (c) Russel Neiss & Rabbi Charlie Schwartz (CC BY-SA 4.0). This file is CC BY-SA 4.0.';
 
 const FORCE = process.argv.includes('--force');
 const ONLY = (process.argv.find((a) => a.startsWith('--only=')) || '').split('=')[1] || null;
@@ -81,7 +85,8 @@ const RMS_GATE = 0.35;                // frame RMS < gate × clip median RMS →
 const REF_MIN_SEC = 0.12;             // min length of the final "sustained" segment
 const BLIP_SEC = 0.06;                // segments shorter than this merge into a neighbor
 const GAP_SEC = 0.06;                 // voiced-frame gap that breaks a note segment
-const MAX_NOTES = 8;
+const MAX_NOTES_DRAFT = 8;            // notes per machine draft
+const MAX_NOTES = 16;                 // smoke-test cap: hand-verified figures (shalshelet, karnei parah) run longer
 const MAX_D = 4;
 const SIZE_BUDGET = 16 * 1024;        // bytes, output JSON
 
@@ -311,7 +316,7 @@ function transcribe(frames) {
   mergeAdjacentEqual(notes);
   // cap: merge the shortest note into its shorter neighbor
   let capped = false;
-  while (notes.length > MAX_NOTES) {
+  while (notes.length > MAX_NOTES_DRAFT) {
     capped = true;
     let mi = 0;
     for (let i = 1; i < notes.length; i++) if (notes[i].sec < notes[mi].sec) mi = i;
@@ -452,7 +457,9 @@ reportRows.sort((a, b) => tropeKeys.indexOf(a.key) - tropeKeys.indexOf(b.key));
 const ordered = {};
 for (const key of tropeKeys) if (outTropes[key]) ordered[key] = outTropes[key];
 const built = new Date().toISOString().slice(0, 10);
-const output = { v: 1, system: 'torah', built, license: LICENSE_NOTE, tropes: ordered };
+const output = { v: 1, system: 'torah' };
+if (existing && typeof existing.key === 'string') output.key = existing.key;   // the chart's key signature (drawn by the page) rides through every run
+Object.assign(output, { built, license: LICENSE_NOTE, tropes: ordered });
 const json = JSON.stringify(output);
 writeFileSync(MOTIFS_PATH, json + '\n');
 const bytes = json.length + 1;
