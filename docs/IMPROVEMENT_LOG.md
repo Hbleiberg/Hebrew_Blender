@@ -232,7 +232,7 @@ _(none)_
 
 ## Done
 
-- [x] 2026-09-25 | (S417 close-out) | branch/deploy note | **S417 = pass E + 4 fixes on `claude/improve-loop-r5h9ea` / draft PR (number in the follow-up commit) off `93330b5`.** DRIFT: 4 outside-loop commits (torah pitch worklet + under-word translit, trope Etnachta; v847 → v850); backend clean. `sw.js` v850 → v851; FM not bumped. Scripts all diff-clean. Unattended; gate 2 deferred.
+- [x] 2026-09-25 | (S417 close-out) | branch/deploy note | **S417 = pass E + 4 fixes on `claude/improve-loop-r5h9ea` / draft PR #275 (base `93330b5`).** DRIFT: 4 outside-loop commits (torah pitch worklet + under-word translit, trope Etnachta; v847 → v850); backend clean. `sw.js` v850 → v851; FM not bumped. Scripts all diff-clean. Unattended; gate 2 deferred.
 
 - [x] 2026-09-25 | `ebdff91` | trope_tutor.html | (S417) **The tune button resets after a mid-tune language switch.** | verified: real clicks, 16 cells: stuck 8 → 0
 
@@ -606,7 +606,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-24 (**S414 — 32nd F, first since S397; stalest runnable (O blocked). THE HEADER CHROME on 14 pages: 84 loads + a toggle-name detector (plant 14/14); DOM = visual order 84/84. FOUND: the dark toggle's flipping name (P3, `f9e67b2`), the Arial Full Screen (P4, `b018f98`), 9 P4 logged.**)
 
-**Next session (S418):** **BRANCH/PR: S417 on `claude/improve-loop-r5h9ea` → its draft PR (base `93330b5`; number in the follow-up commit). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** Closed at `sw.js` **v851**, FM **5.56**, SDK **2.116.0**; backend clean (0001–0003, keep-alive #12 green).
+**Next session (S418):** **BRANCH/PR: S417 on `claude/improve-loop-r5h9ea` → draft PR #275 (base `93330b5`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** Closed at `sw.js` **v851**, FM **5.56**, SDK **2.116.0**; backend clean (0001–0003, keep-alive #12 green).
 
 **⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), L (S404), then K N P M G D I H C F B A E.** Take **L** (first sight of the torah pitch / under-word copy, trope's Etnachta FAQ line, the manifest description). Next C/G/D/H: Tool coverage.
 
