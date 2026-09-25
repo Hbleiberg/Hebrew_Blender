@@ -6230,7 +6230,11 @@ function mountSidebarResize(cfg) {
   /* ────────── STUDENT PICKER / GROUP MAKER ────────── */
   const PICKER_MAX = 60;
 
-  // Canonical roster parse: trim, drop blanks, dedupe (first wins), cap at PICKER_MAX.
+  // Canonical roster parse: trim, drop blanks, dedupe (first wins), cap at PICKER_MAX — or at `keep` when the
+  // class already holds more: a class list merged from two devices, or restored from a backup, may exceed
+  // the picker's cap (mergeRoster is uncapped on purpose), and re-parsing it through the cap silently cut
+  // it back to 60 on the next edit or restore — a sync then carried the cut list to the account. The cap
+  // still bounds what is typed beyond what the class holds; nothing already in it is ever dropped.
   // One class list from two sources — pure and UNCAPPED: the cloud panel's merge (IvritSaves.attach's
   // merges.roster) for a class edited on two devices. Names are unioned (trimmed, mine first, no
   // duplicates); a cap here would silently drop the other side's students, so a merged class may exceed
@@ -6245,14 +6249,16 @@ function mountSidebarResize(cfg) {
     if (!a.name || a.name === 'My class') out.name = b.name || a.name || 'My class';
     return out;
   }
-  function parseRoster(str) {
+  function parseRoster(str, keep) {
     const seen = new Set(), out = [];
     String(str || '').split('\n').forEach(line => {
       const n = line.trim();
       if (n && !seen.has(n)) { seen.add(n); out.push(n); }
     });
-    return out.slice(0, PICKER_MAX);
+    return out.slice(0, Math.max(PICKER_MAX, keep || 0));
   }
+  // What the active class may hold on a re-parse: the cap, or its current size when that is larger.
+  function rosterKeep() { return (curClass().names || []).length; }
   // The active class's roster names (already canonicalized on commit; capped defensively).
   function rosterNames() { return (curClass().names || []).slice(0, PICKER_MAX); }
 
@@ -6297,14 +6303,14 @@ function mountSidebarResize(cfg) {
     if (!el) return;
     const ta = document.getElementById('pickerRoster');
     const raw = ta ? ta.value : (curClass().names || []).join('\n');
-    const n = parseRoster(raw).length;
+    const n = parseRoster(raw, rosterKeep()).length;
     el.textContent = I18n.t(n === 1 ? 'dashboard.picker.roster_count.one' : 'dashboard.picker.roster_count.other', { count: n }) + (n >= PICKER_MAX ? ' ' + I18n.t('dashboard.picker.roster_count_max_suffix', { max: PICKER_MAX }) : '');
   }
   // Commit the textarea into the ACTIVE class on blur; reconcile (not reset) that class's session.
   function commitRosterFromTextarea() {
     const ta = document.getElementById('pickerRoster');
     if (!ta) return;
-    const names = parseRoster(ta.value);
+    const names = parseRoster(ta.value, rosterKeep());
     curClass().names = names;
     ta.value = names.join('\n');
     const set = new Set(names);
@@ -7246,7 +7252,8 @@ function mountFolderTree(cfg){
           if (id === '__proto__' || id === 'constructor' || id === 'prototype') return;
           const inc = rs[id];
           if (!inc || typeof inc !== 'object' || Array.isArray(inc)) return;
-          const clean = { name: (typeof inc.name === 'string' && inc.name) ? inc.name : 'My class', names: parseRoster((Array.isArray(inc.names) ? inc.names : []).filter(n => typeof n === 'string').join('\n')) };
+          const incNames = (Array.isArray(inc.names) ? inc.names : []).filter(n => typeof n === 'string');
+          const clean = { name: (typeof inc.name === 'string' && inc.name) ? inc.name : 'My class', names: parseRoster(incNames.join('\n'), incNames.length) };   // a backup's class is restored whole, as the hub restores it
           settings.rosters[id] = settings.rosters[id] ? mergeRoster(settings.rosters[id], clean) : clean;
         });
         ensureActiveClass();
@@ -10318,7 +10325,7 @@ async function onUploadEngFontPick(input){
   function flushRosterIfTyping() {
     const ta = document.getElementById('pickerRoster');
     if (!ta || document.activeElement !== ta) return;
-    curClass().names = parseRoster(ta.value);
+    curClass().names = parseRoster(ta.value, rosterKeep());
   }
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') acquireWakeLock();
