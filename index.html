@@ -781,8 +781,10 @@ async function renderMyFontsManager() {
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--border);flex-wrap:wrap;';
     const nm = document.createElement('span');
-    nm.style.cssText = 'flex:1 1 120px;min-width:0;font-weight:600;font-size:0.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
-    nm.textContent = f.name; nm.title = f.name;
+    // The name wraps (the cloud panels' .ivsav-name idiom) instead of being cut to an ellipsis whose full
+    // text lived only in a hover title: a 32-character name lost half of itself at 320px and in the sheet.
+    nm.style.cssText = 'flex:1 1 120px;min-width:0;font-weight:600;font-size:0.9rem;overflow-wrap:anywhere;';
+    nm.textContent = f.name;
     const meta = document.createElement('span');
     meta.style.cssText = 'flex:0 0 auto;font-size:0.72rem;opacity:0.65;';
     meta.textContent = _ivFmt(f.created) + ' · ' + Math.max(1, Math.round((f.size || 0) / 1024)) + ' KB';
