@@ -706,7 +706,7 @@ whose text is majority-English (e.g. mixed `<option>` labels). Verify: `document
 A teacher who collapses the panels they don't use should not have to do it again next lesson. Every
 collapsible `.panel` remembers its open/closed state across visits, via one `═══`-marked shared block
 (`/* ═══ IvritSuite panel-collapse memory ═══ */ … /* ═══ end shared: panel-collapse memory ═══ */`),
-byte-identical across all six carriers (sha-verify when you touch it) — copy it, don't
+byte-identical across all five carriers (sha-verify when you touch it) — copy it, don't
 rewrite it. It exposes `panelMemSave()` / `panelMemApply()` and depends only on a per-page
 **`PANEL_MEM_CFG`** (the `IVRIT_CFG` pattern):
 ```js
