@@ -3378,7 +3378,7 @@ home.hero.subtitle,Free Hebrew Learning Tools for Teachers and Students,כלים
 notfound.a11y.skip_to_links,Skip to the links,דילוג לקישורים,Skip-link (a11y),aria/skip-link
 notfound.header.brand,IvritSuite,IvritSuite,header wordmark,brand name
 notfound.header.tagline,Tools for Hebrew literacy instruction,כלים להוראת אוריינות עברית,header subtitle,
-notfound.home_button,← Back to the Promised Home Page,← חזרה לדף הבית המובטח,primary button,leading-arrow
+notfound.home_button,Back to the Promised Home Page,חזרה לדף הבית המובטח,primary button,the arrow is the shared hi-arrow icon in the markup (mirrors in RTL)
 notfound.link.dictionary,Dictionary,מילון,tool link,
 notfound.link.flashcards,Flash Cards,כרטיסי זיכרון,tool link,
 notfound.link.generator,Worksheet Generator,מחולל דפי עבודה,tool link,

@@ -146,7 +146,7 @@ header .hright{margin-inline-start:auto;display:flex;gap:10px;align-items:center
 .hero-sub .heb-inline{font-family:'Frank Ruhl Libre',serif;unicode-bidi:isolate;}
 .hero-quip{font-size:0.88rem;color:var(--muted);max-width:520px;line-height:1.5;font-style:italic;margin-bottom:36px;}
 
-.home-btn{background:var(--navy);color:var(--gold-light);border:none;border-radius:8px;padding:13px 34px;font-size:1rem;font-family:'Source Sans 3',sans-serif;font-weight:600;letter-spacing:0.02em;text-decoration:none;cursor:pointer;transition:background 0.15s,color 0.15s,transform 0.15s;}
+.home-btn{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:var(--gold-light);border:none;border-radius:8px;padding:13px 34px;font-size:1rem;font-family:'Source Sans 3',sans-serif;font-weight:600;letter-spacing:0.02em;text-decoration:none;cursor:pointer;transition:background 0.15s,color 0.15s,transform 0.15s;}
 .home-btn:hover{background:var(--gold);color:var(--navy);transform:translateY(-2px);}
 
 .tool-links{margin-top:26px;font-size:0.85rem;color:var(--muted);line-height:1.9;}
@@ -218,7 +218,7 @@ body.dark .hi-sun{display:inline-block;}
   <p class="hero-sub" data-i18n-html="notfound.subtitle">We searched right-to-left <em>and</em> left-to-right, but this page is nowhere to be found <span class="heb-inline">(<span lang="he" dir="rtl">לֹא נִמְצָא</span>, <em>lo nimtza</em>)</span>. It may have slipped out for a snack and forgotten its vowels.</p>
   <p class="hero-quip" data-i18n="notfound.quip">We tried to blend it back together from a few stray letters — but without the nikkud, nobody could agree on how to pronounce it.</p>
 
-  <a class="home-btn" href="index.html" data-i18n="notfound.home_button">← Back to the Promised Home Page</a>
+  <a class="home-btn" href="index.html"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="notfound.home_button">Back to the Promised Home Page</span></a>
 
   <div class="tool-links">
     <span data-i18n="notfound.tool_links_intro">Or wander somewhere useful:</span>
