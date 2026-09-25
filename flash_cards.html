@@ -3721,11 +3721,14 @@ function wlReadStoreLocal() {
   if (!s || typeof s !== 'object' || !s.lists || typeof s.lists !== 'object') return { v: 1, lists: {} };
   return { v: 1, lists: s.lists };
 }
+// The display name of a list saved without one — shown in the picker and carried in the settings beside its id, so it
+// comes from its key (flashcards.wordlist.untitled), not an English literal inside the Hebrew UI.
+function wlUntitledName() { return I18n.t('flashcards.wordlist.untitled'); }
 function wlListsArray() {
   const lists = wlReadStoreLocal().lists;
   return Object.keys(lists).map(id => {
     const l = lists[id] || {};
-    return { id, name: String(l.name || 'Untitled list'), words: Array.isArray(l.words) ? l.words : [] };
+    return { id, name: String(l.name || wlUntitledName()), words: Array.isArray(l.words) ? l.words : [] };
   });
 }
 function wlNameIndex() {          // { name: id } — last occurrence wins on collision
@@ -3735,7 +3738,7 @@ function wlNameIndex() {          // { name: id } — last occurrence wins on co
 }
 function wlGetListName(id) {
   const l = wlReadStoreLocal().lists[id];
-  return l ? String(l.name || 'Untitled list') : null;
+  return l ? String(l.name || wlUntitledName()) : null;
 }
 // Same lookup for a whole SET of ids, against ONE store read. getSettings() resolves every
 // selected list id to its name, and saveSettings() calls getSettings() on every control
@@ -3746,7 +3749,7 @@ function wlNamesForIds(ids) {
   if (!arr.length) return [];   // nothing selected → don't read the store at all (as before)
   const lists = wlReadStoreLocal().lists;
   const out = [];
-  for (const id of arr) { const l = lists[id]; if (l) out.push(String(l.name || 'Untitled list')); }
+  for (const id of arr) { const l = lists[id]; if (l) out.push(String(l.name || wlUntitledName())); }
   return out;
 }
 let _wlAppliedNames = null;   // { key, names }: the names the last applied settings carried, for the selection they applied to
