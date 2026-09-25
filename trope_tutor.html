@@ -2194,7 +2194,9 @@ function renderLearn() {
   if (!_chartPrintBuild && !_i18nRerender && !progress.families[fam.key]) { progress.families[fam.key] = true; saveProgress(); }
   renderFamilyChips();
   document.getElementById('tuFamilyNote').textContent = I18n.t('trope.learn.family_note_' + fam.key);
-  document.getElementById('tuMelodyNote').hidden = melodyKey() !== 'highholiday';
+  // The note says these staffs show the High Holiday melody, so it stays hidden while that motif file
+  // is missing or malformed (MOTIF_SETS.highholiday null): the cards then draw no staffs to speak of.
+  document.getElementById('tuMelodyNote').hidden = melodyKey() !== 'highholiday' || !MOTIF_SETS.highholiday;
 
   const cards = document.getElementById('tuCards');
   cards.innerHTML = '';
