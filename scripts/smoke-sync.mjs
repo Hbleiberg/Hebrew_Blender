@@ -584,8 +584,8 @@ try {
     const st1 = await waitStatus(page, 'Deleted "Morning"');
     const memPresets = await memoryOf(page, 'preset');
     check('10: "Delete from your account too" asked first, then removed the row and its memory', c1.ok && !cloud.find('preset', 'Morning') && !memPresets.includes('Morning') && /Delete "Morning" from your account too\? It is already gone from this device/.test((await confirms())[0] || ''), JSON.stringify({ c1, st1, rows: cloud.rows.map(r => r.kind + ':' + r.name), memPresets, confirms: await confirms() }));
-    const c2 = await clickRowButton(page, 'lap_0', 'Bring it back');   // gone here, the class list is listed by its row id
-    const st2 = await waitStatus(page, 'Downloaded "lap_0"');
+    const c2 = await clickRowButton(page, 'Kitah Alef', 'Bring it back');   // gone here, the class list is still named from the account row's data, not by its id
+    const st2 = await waitStatus(page, 'Downloaded "Kitah Alef"');
     states = await planStates(page);
     d = await dashState(page);
     check('10: "Bring it back" restored the class and the row reads Same', c2.ok && d.rosters.includes('lap_0') && states['roster:lap_0'] === 'synced', JSON.stringify({ c2, st2, rosters: d.rosters, states }));

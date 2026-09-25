@@ -847,10 +847,28 @@
       return hashText(text).then(function (h) { it.hash = h; return it; });
     });
   }
+  // A class list or word list only the account holds is keyed by an id, and its display name lives inside
+  // the row's data, which the listing does not carry: read it once per row version (kept for the page's
+  // life), so the panel says "Kitah Alef", not the id. A failed read keeps the id; nothing else changes.
+  var cloudLabels = {};   // row id → { u: updated_at, label }
+  function noteCloudLabel(entry, row, full) {
+    var v = full && full.data, label = null;
+    if (isPlainObject(v) && typeof v[entry.nameField] === 'string' && v[entry.nameField]) label = v[entry.nameField];
+    cloudLabels[row.id] = { u: row.updated_at, label: label };
+    return label;
+  }
+  function cloudLabelFor(entry, row) {
+    var c = cloudLabels[row.id];
+    if (c && c.u === row.updated_at) return Promise.resolve(c.label);
+    return cloudLoad(row.id).then(function (full) { return noteCloudLabel(entry, row, full); }, function () { return null; });
+  }
   function cloudHashFor(entry, row, mem) {
     if (mem && mem.id === row.id && mem.u === row.updated_at) return Promise.resolve(mem.h);
     if (typeof row.data_hash === 'string' && row.data_hash.indexOf(currentPrefix()) === 0) return Promise.resolve(row.data_hash);
-    return cloudLoad(row.id).then(function (full) { return hashItem(entry, full.data); });   // unknown: hash it here
+    return cloudLoad(row.id).then(function (full) {   // unknown: hash it here — and a row read for its hash also gives its name
+      if (entry.shape === 'mapIn' && entry.nameField) noteCloudLabel(entry, row, full);
+      return hashItem(entry, full.data);
+    });
   }
   // A virtual store backed by something asynchronous (the fonts IndexedDB) reads itself into a snapshot
   // first, so the plan below can stay synchronous. Never on an anonymous page: opening a database an
@@ -885,6 +903,7 @@
               order.push(k);
             }
             rows[k].cloud = { id: r.id, hash: h, bytes: r.bytes, updatedAt: r.updated_at };
+            if (!rows[k].local && e.shape === 'mapIn' && e.nameField) return cloudLabelFor(e, r).then(function (label) { if (label) rows[k].label = label; });
           });
         }).then(function () { return finishPlan(tool, uid, rows, order, cloudRows); });
       });

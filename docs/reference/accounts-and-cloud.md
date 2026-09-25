@@ -220,7 +220,7 @@ per localStorage key: `{ tool, kind, lsKey, shape, path?, nameField?, envelope?,
 
 | Field | Meaning |
 |---|---|
-| `shape` | `map` (`{name: value}` → one row per name), `mapIn` (`{…, [path]: {key: value}}` → one row per key; label from `value[nameField]`; `envelope` = the other top-level fields, e.g. `{v:1}`), `single` (one settings object → one row named `default`), `tree` (`{v:1, root:[…]}` → `default`, synced after `follows`), `scalar` (a plain string → `default`, travelling as `{value}`) |
+| `shape` | `map` (`{name: value}` → one row per name), `mapIn` (`{…, [path]: {key: value}}` → one row per key; label from `value[nameField]` — for a row only the account holds, read from the row's data once per row version, `cloudLabelFor`, so a class list or word list is named rather than shown by its id, and the read that hashes a hashless row supplies it too; `envelope` = the other top-level fields, e.g. `{v:1}`), `single` (one settings object → one row named `default`), `tree` (`{v:1, root:[…]}` → `default`, synced after `follows`), `scalar` (a plain string → `default`, travelling as `{value}`) |
 | `merge` | how a downloaded copy lands on a differing local one: `item` (replace that item), `assign` (cloud fields over a copy of local — the `.ivrit` Merge teachers know; also the "Use cloud copy" button), `deepMax` (lossless: numbers max, booleans or, objects recurse, arrays keep local), `max` (scalar), `page` (the page's pure `merges[kind](local, cloud) → merged`) |
 | `omit` | field names (a trailing/leading `*` glob allowed) that never travel: stripped before hashing and upload, this device's values put back after a download, cloud values of them dropped |
 | `follows` | trees only: the kind whose items the tree names |
