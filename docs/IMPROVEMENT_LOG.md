@@ -208,13 +208,13 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] S | trope_tutor.html | **A typed confirmation before “Reset mastery & personal best”** so a curious student can't wipe a class record. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] M | trope_tutor.html | **A Phrases tab**: the chart's 41 phrase rows as playable, printable lines grouped by clause, with the Hebrew phrase and mark chips. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] M | trope_tutor.html | **A Phrases tab**: the chart's 41 phrase rows as playable, printable lines grouped by clause, with the Hebrew phrase and mark chips. Data half done: `data/trope/trope_phrases.json` (unfetched; first fetch `?v=1`). | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] M | trope_tutor.html | **A "what comes next?" drill**: a chart phrase with one mark hidden to pick, or its marks to put in order. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] M | trope_tutor.html | **Context variants on the Learn card**: munach's shapes and the tevir-context mercha and kadma, each a small staff with its phrase. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] S–M | trope_tutor.html | **The end-of-aliyah sof pasuk on the sof pasuk card** (Torah row 41, High Holiday rows 30–33), once row 41 is checked by ear. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] S–M | trope_tutor.html | **The end-of-aliyah sof pasuk on the sof pasuk card** (Torah row 41, High Holiday rows 30–33; row 41 settled from clean scans). | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S–M | torah_trainer.html | **Mark each aliyah's last verse** as the one sung to the end-of-aliyah sof pasuk, linking to that card. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -225,6 +225,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] S | torah_trainer.html | **Say that a Rosh Hashanah or Yom Kippur chant is the year-round recording**, beside the reading's High Holiday link. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] L | torah_trainer.html | **High Holiday recordings for the Rosh Hashanah and Yom Kippur readings** — needs a licensed recording source; not micro. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] L | torah_trainer.html (+ trope_tutor.html) | **A staff for a whole reading** (verse → parasha) drawn and played under the Hebrew, from `trope_phrases.json`; `docs/tropepatterns.md` § G is the design and `docs/trope_contexts_report.md` the gaps. | found: 2026-09-25, maintainer
 
 ## In progress
 
@@ -590,6 +592,6 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 **⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), M (S408), then G D I H C F B A E L K N P.** Take **M**: the coverage row's "no M" list (generator, flash, torah, terms) names the surfaces never audited — pick one; unattended, small refinements only, anything dramatic is gate 3 → log with screenshots.
 
-**⚑ STRONGEST UNTAKEN (ungated):** the torah/trope credits' `lang`; S413's three resources items; the S412 flash five; FM's `special_intro` fallback; K's doc-only gate-comment item; the dashboard's adopt toast and its 60-chip picker (S421). **Seed bench: 33.** Gated items wait in Candidates.
+**⚑ STRONGEST UNTAKEN (ungated):** the torah/trope credits' `lang`; S413's three resources items; the S412 flash five; FM's `special_intro` fallback; K's doc-only gate-comment item; the dashboard's adopt toast and its 60-chip picker (S421). **Seed bench: 34.** Gated items wait in Candidates.
 
 **⚑ HARNESS: traps 1–153 in loop-findings** (`p421/` probes in its S421 receipts: a fake cloud beside the 2.116.0 fixture, fetched with `npm pack` from the sandbox); `compact-ledger --apply` runs ONCE, only after the edit script succeeded (trap 140); the old handoff moves by hand; the ledger sits at its 100 KB ceiling — the oldest session's Done entries go to the archive by hand (S421 moved S419's).

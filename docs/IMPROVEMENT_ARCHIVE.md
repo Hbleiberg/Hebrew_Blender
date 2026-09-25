@@ -66648,3 +66648,16 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 
 - [x] S | trope_tutor.html | **Tune key: transpose the play button ±6 semitones for a child's voice** (the staff stays as printed). | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
   **SHIPPED 2026-09-25 as `899af2c`, outside the loop, at the maintainer's request (branch `claude/beautiful-clarke-lpax6y`), in a different form from the seed:** the maintainer chose to REDRAW the staff in the new key (the seed kept it as printed), to put the control on the Learn tab (a key bar above the family chips: down / up a half step, ±6, "As printed") as well as in Settings (a new "Sing along" group), and to add a Low voices choice (every tune an octave down in a fuller PeriodicWave tone, the 8 under the treble clef). Fields `tuneShift` (−6…6) and `tuneVoice` ride the settings blob; `smoke-migration` now proves they travel. Verified: 3,627 notes × 26 melody/shift combinations spelled = sounding; the printed-key staffs byte-identical to the previous page (25 + 21); 40 Playwright checks (keys, focus at the ends, frequencies, reload, reset, melody rename, print, EN/HE, tour); smoke-tools 14/14 and smoke-migration 28/28 with the 2.116.0 fixture. Details: `docs/reference/torah-and-trope.md` → *Key and voice*. `sw.js` v856 → v857.
+
+## Updated outside the loop (2026-09-25) — the printed chart transcribed from clean scans
+
+The maintainer uploaded clean scans of the cantillation chart and asked for every note a staff of a whole parasha would need. `docs/tropepatterns.md` §B/§C became machine-read row blocks (41 Torah rows, 33 High Holiday + row 20's second setting, each read twice independently and engraved back against its scan); `scripts/build-trope-phrases.mjs` builds `data/trope/trope_phrases.json` + `docs/trope_phrases_report.md` from them and checks every Trope Tutor staff against its row; `--census` writes `docs/trope_contexts_report.md`. Eight staffs were corrected (`trope_motifs.json?v=6`, `trope_motifs_hh.json?v=4`). Live seed lines as they stood before this update, moved verbatim:
+
+### from Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
+
+- [ ] M | trope_tutor.html | **A Phrases tab**: the chart's 41 phrase rows as playable, printable lines grouped by clause, with the Hebrew phrase and mark chips. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+  **UPDATED 2026-09-25:** its data half (the seed's "Split: the data file first") is done — `data/trope/trope_phrases.json`, not fetched by any page yet (the first fetch adds `?v=1`).
+- [ ] S–M | trope_tutor.html | **The end-of-aliyah sof pasuk on the sof pasuk card** (Torah row 41, High Holiday rows 30–33), once row 41 is checked by ear. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
+  **UPDATED 2026-09-25:** row 41 is settled from the clean scans (its last note is B3, 1½ spaces below the staff, printed without a ledger line), so the "check by ear" condition is gone.
+- **ADDED 2026-09-25:** the seed "A staff for a whole reading" (L), the maintainer's stated goal for the transcription.
+
