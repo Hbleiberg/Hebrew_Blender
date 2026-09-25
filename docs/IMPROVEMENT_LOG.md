@@ -234,6 +234,8 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-25 | (S421 landing) | branch/deploy note | **S417–S421 landed on main by maintainer authorization in-session: main fast-forwarded `93330b5`..`52f36e8` (26 commits), PR #275 closed as merged, and the Pages run #1267 for `52f36e8` concluded success (sw v855 live).** The loop branch is spent: S422 cuts a fresh `claude/improve-loop-r5h9ea` off `origin/main` (same name) and opens a new draft PR at close-out.
+
 - [x] 2026-09-25 | (S421 close-out) | branch/deploy note | **S421 = pass P + 3 fixes on `claude/improve-loop-r5h9ea` / draft PR #275 (base `93330b5`), continuing S417–S420's.** DRIFT: none (origin/main `93330b5`; backend read-only: 3 migrations recorded = 0001–0003 live, delete-account v3 ACTIVE, JWT check on, deployed source byte-equal to the repo's; advisors: the known auth WARN only, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-09-25 | `aa2a21f` | js/ivrit-saves.js (+ smoke-sync scenario 10, accounts-and-cloud.md) | (S421 Pass P) **A class list or word list only the account holds is named in every panel, not shown by its id** (the label lives in the row's data, which the listing never fetched; one read per row version, kept for the page's life; the hash read of a hashless row supplies it too). | verified: …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -586,7 +588,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-24 (**S414 — 32nd F, first since S397; stalest runnable (O blocked). THE HEADER CHROME on 14 pages: 84 loads + a toggle-name detector (plant 14/14); DOM = visual order 84/84. FOUND: the dark toggle's flipping name (P3, `f9e67b2`), the Arial Full Screen (P4, `b018f98`), 9 P4 logged.**)
 
-**Next session (S422):** **BRANCH/PR: S417–S421 on `claude/improve-loop-r5h9ea` → draft PR #275 (base `93330b5`). Open → CONTINUE; merged → restart the branch from `origin/main`.** Closed at `sw.js` **v855**, FM **5.56**, SDK **2.116.0**; backend clean (0001–0003 live, delete-account v3 = repo source, keep-alive #13 green; the auth advisor WARN stays a candidate).
+**Next session (S422):** **BRANCH/PR: PR #275 (S417–S421) is MERGED — main fast-forwarded to `52f36e8`, Pages run #1267 success (sw v855 live). Cut a fresh `claude/improve-loop-r5h9ea` off `origin/main` (same name, `git checkout -B`) and open a new draft PR at close-out.** Closed at `sw.js` **v855**, FM **5.56**, SDK **2.116.0**; backend clean (0001–0003 live, delete-account v3 = repo source, keep-alive #13 green; the auth advisor WARN stays a candidate).
 
 **⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), M (S408), then G D I H C F B A E L K N P.** Take **M**: the coverage row's "no M" list (generator, flash, torah, terms) names the surfaces never audited — pick one; unattended, small refinements only, anything dramatic is gate 3 → log with screenshots.
 
