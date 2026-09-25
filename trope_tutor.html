@@ -1997,7 +1997,10 @@ function stopTune() {
   _tuneTimers = [];
   document.querySelectorAll('.tu-motif-note.is-sounding').forEach((g) => g.classList.remove('is-sounding'));
   document.querySelectorAll('.tu-motif.is-playing').forEach((el) => el.classList.remove('is-playing'));
-  const btn = _tuneBtn || (_tuneKey && document.querySelector('.tu-tune-play[data-key="' + _tuneKey + '"]'));
+  // The live button first, found by key: a language-switch re-render mid-tune rebuilds the card and
+  // paints its new button pressed, while _tuneBtn still points at the detached old one — resetting
+  // only that left the fresh button lit for good.
+  const btn = (_tuneKey && document.querySelector('.tu-tune-play[data-key="' + _tuneKey + '"]')) || _tuneBtn;
   if (btn) {
     btn.classList.remove('is-playing');
     btn.setAttribute('aria-pressed', 'false');
