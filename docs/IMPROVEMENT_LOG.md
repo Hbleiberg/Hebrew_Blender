@@ -12,9 +12,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S417 Pass E — gate 2**) | manifest.webmanifest | **The install manifest's description names six tools, not the Trope Tutor**; add it after "Torah Trainer" as the home page does. | found S417
 
-- [ ] P4 (**NEW S418 Pass L — gate 2**) | torah_trainer.html (`torah.about.faq_a8` + its JSON-LD twin) | **The copy FAQ says "the Copy panel in the Options drawer", but the drawer is titled "Torah Trainer Settings" (header button "Settings")** — no "Options" anywhere in torah's strings. | found S418
+- [ ] P4 (**NEW S418 Pass L — gate 2**) | torah_trainer.html (`torah.about.faq_a8` + JSON-LD twin) | **The copy FAQ says "the Copy panel in the Options drawer"; the drawer is titled "Settings"** (no "Options" in torah's strings). | found S418
 
-- [ ] P4 (**NEW S418 — the maintainer's dashboard, never the loop's**) | Supabase project settings | **The security advisor warns that leaked-password protection is off**; sign-in is e-mail code + Google and passwords are never used (README), so enable the toggle or accept it as moot. | found S418
+- [ ] P4 (**NEW S418 — the maintainer's dashboard**) | Supabase project | **Security advisor: leaked-password protection is off**; passwords are never used (e-mail code + Google), so enable the toggle or accept it as moot. | found S418
 
 - [ ] P4 (**NEW S416**) | trope_tutor.html | **With the HH motif file unavailable, the HH banner still claims staffs over none.** | found S416
 
@@ -234,17 +234,17 @@ _(none)_
 
 ## Done
 
-- [x] 2026-09-25 | (S418 close-out) | branch/deploy note | **S418 = pass L + 4 fixes on `claude/improve-loop-r5h9ea` / draft PR #275 (base `93330b5`), continuing S417's.** DRIFT: none (`origin/main` still `93330b5`); backend clean (0001–0003 live, delete-account v3, keep-alive #12 green; 1 auth advisor WARN → candidate). `sw.js` v851 → v852 (torah, 404, dictionary, resources, locales); FM not …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-09-25 | (S418 close-out) | branch/deploy note | **S418 = pass L + 4 fixes on `claude/improve-loop-r5h9ea` / draft PR #275 (base `93330b5`), continuing S417's.** DRIFT: none; backend clean (0001–0003 live, delete-account v3, keep-alive #12 green; 1 auth advisor WARN → candidate). `sw.js` v851 → v852; FM not bumped. Scripts all clean. Unattended; gate 2 deferred.
 
 - [x] 2026-09-25 | `faf08c3` | resources.html | (S418) **The Back button takes the chrome pages' gold outline** (= its own dark toggle). | verified: computed styles, 8 cells: 6/11 → 11/11 properties equal; privacy's Back = reference
 
-- [x] 2026-09-25 | `240aa59` | hebrew_dictionary.html, resources.html | (S418) **Home leads the header controls** (10 pages did; these two led with the language picker). | verified: DOM, visual order and real Tab walks, 16 cells + the torah reference: Home first everywhere
+- [x] 2026-09-25 | `240aa59` | hebrew_dictionary.html, resources.html | (S418) **Home leads the header controls** (as on the other 10 pages). | verified: DOM, visual + Tab order, 16 cells + the torah reference
 
-- [x] 2026-09-25 | `f99f1ae` | 404.html + CSV | (S418) **The Back button's arrow is the shared `hi-arrow` icon, so it points back in Hebrew** (the string carried a literal ←). | verified: 8 cells: scaleX(−1) in RTL, icon at the inline start, kept across a live language switch, 0 errors
+- [x] 2026-09-25 | `f99f1ae` | 404.html + CSV | (S418) **The Back button's arrow is the shared `hi-arrow` icon** (it pointed forward in Hebrew). | verified: 8 cells: mirrored in RTL, kept across a live language switch, 0 errors
 
 - [x] 2026-09-25 | `c84973e` | torah_trainer.html | (S418) **3 static fallbacks catch up with the CSV** (the pitch commit's share tip + speed chip title/aria; `stale-html-fallback-behind-its-csv-value`, 6th sweep). | verified: 8 live cells identical before/after; i18n-aborted now reads the CSV; detector 3 → 0
 
-- [x] 2026-09-25 | (S418 Pass L iter 1) | suite-wide | **21st L over `e58372d..HEAD`** (70 commits; 14/17 pages moved, the crawler surface on 3 lines): 18 audit arms + the fallback detector + a claims assist, every zero controlled (16 plants → 17 hits; 2 fallback controls). Clean: titles, descriptions, canonicals, the noindex set, OG/Twitter, images, JSON-LD, 51 FAQ pairs, crawl, h1, alt, …[full text: IMPROVEMENT_ARCHIVE.md]
+- [x] 2026-09-25 | (S418 Pass L iter 1) | suite-wide | **21st L over `e58372d..HEAD`** (70 commits, 14/17 pages moved): 18 audit arms + the fallback detector + a claims assist, every zero controlled (16 plants → 17 hits). FOUND 3 stale torah fallbacks (fixed) + 1 gate-2 item. Receipts + traps 139–140 in loop-findings.
 
 - [x] 2026-09-25 | (S417 close-out) | branch/deploy note | **S417 = pass E + 4 fixes on `claude/improve-loop-r5h9ea` / draft PR #275 (base `93330b5`).** DRIFT: 4 outside-loop commits (torah pitch worklet + under-word translit, trope Etnachta; v847 → v850); backend clean. `sw.js` v850 → v851; FM not bumped. Scripts all diff-clean. Unattended; gate 2 deferred.
 
@@ -418,7 +418,7 @@ _(none)_
 
 - **fixed-width-third-party-embed-inflates-phone-layout**: **REGISTERED + first swept suite-wide 2026-08-28 (S276 Pass N) — hits: 2 carriers, BOTH fixed in-session (`23b2387` contact inline auto-render → data-size=compact ≤388 + ≤430 containment belt; `e4aaa44` resources …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **RE-SWEPT 2026-09-25 (S418 Pass L, 6th sweep): 2,512 sites (1,939 text + 72 `data-i18n-html` + 501 attr twins) → 3 hits, all torah, the outside-loop pitch commit's; fixed `c84973e`, re-swept 0.** Detection …[full text: IMPROVEMENT_ARCHIVE.md]
+- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **RE-SWEPT 2026-09-25 (S418 Pass L, 6th sweep): 2,512 sites (1,939 text + 72 html + 501 attr twins) → 3 hits, all torah (the pitch commit's); fixed `c84973e`, re-swept 0.** Detection + controls in loop-findings (S418): `l418/fallback.py` — plain `data-i18n` text, the 4 attr twins, `data-i18n-html` as a token stream, vs `en.json`.
 
 - **undocumented-global-keyboard-shortcut**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A, delta-only): 0 new `document`-level `keydown` handlers (the erase gate's is scoped to its overlay: Escape + Tab trap, exempt shapes) — hits 0, clean streak 2.** S264 1 hit fixed (`f65ce58`); …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -602,7 +602,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
-- L SEO & discoverability audit: 2026-09-25 (**S418 — 21st L, first since S404 (14 sessions); stalest runnable (O blocked). Delta `e58372d..HEAD`: 70 commits, 14/17 pages moved, 3 crawler lines (torah/trope `og:image:alt`, torah's Etnachta FAQ twin — all fine). 18 arm classes + the fallback detector + a claims assist, every zero controlled (16 plants → 17 hits): 0 audit hits, 51 FAQ pairs, …[full text: IMPROVEMENT_ARCHIVE.md]
+- L SEO & discoverability audit: 2026-09-25 (**S418 — 21st L, first since S404 (14 sessions); stalest runnable (O blocked). Delta `e58372d..HEAD`: 70 commits, 14/17 pages moved, 3 crawler lines, all fine. 18 arm classes + the fallback detector + a claims assist, every zero controlled: 0 audit hits, 51 FAQ pairs. FOUND: 3 stale torah fallbacks (`c84973e`); gate 2: torah FAQ a8's "Options drawer".**)
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-09-23 (**S412 — `flash_cards.html`, first H since S264. 3 lessons by real clicks, EN + HE. FOUND 10 + 1 seed: Other mode lost on load (P2, `51e8f3c`), Simple Stressed lost (P3, `abb0a1e`), the copy flash erasing icons (P3; dictionary `53d3579`). H-next: `account.html` (never).**)
 
@@ -616,4 +616,4 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 **⚑ STRONGEST UNTAKEN (ungated):** trope's HH banner; the 6 unreferenced trope CSV keys; the torah/trope credits' `dir`; S413's three resources items. **Seed bench: 34.** Gated items wait in Candidates (torah's "Options drawer" FAQ joined them).
 
-**⚑ HARNESS: traps 1–140 in loop-findings** (`l418/` probes in its S418 receipts — `audit.py ROOT`, `plant.py`, `fallback.py`, `fallback_plant.py`, `claims.py`); `compact-ledger --apply` runs ONCE and only after the edit script has succeeded (a run on an unedited ledger still appends ~68 KB of already-archived text), the old handoff moves by hand; the ledger sits at its 100 KB ceiling every session — the oldest session's Done entries go to the archive by hand.
+**⚑ HARNESS: traps 1–140 in loop-findings** (`l418/` probes in its S418 receipts); `compact-ledger --apply` runs ONCE, only after the edit script succeeded (trap 140); the old handoff moves by hand; the ledger sits at its 100 KB ceiling — the oldest session's Done entries go to the archive by hand.
