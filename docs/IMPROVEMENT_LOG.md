@@ -12,6 +12,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S417 Pass E — gate 2**) | manifest.webmanifest | **The install manifest's description names six tools, not the Trope Tutor**; add it after "Torah Trainer" as the home page does. | found S417
 
+- [ ] P4 (**NEW S418 Pass L — gate 2**) | torah_trainer.html (`torah.about.faq_a8` + its JSON-LD twin) | **The copy FAQ says "the Copy panel in the Options drawer", but the drawer is titled "Torah Trainer Settings" (header button "Settings")** — no "Options" anywhere in torah's strings. | found S418
+
+- [ ] P4 (**NEW S418 — the maintainer's dashboard, never the loop's**) | Supabase project settings | **The security advisor warns that leaked-password protection is off**; sign-in is e-mail code + Google and passwords are never used (README), so enable the toggle or accept it as moot. | found S418
+
 - [ ] P4 (**NEW S416**) | trope_tutor.html | **With the HH motif file unavailable, the HH banner still claims staffs over none.** | found S416
 
 - [ ] P4 (**NEW S416, K's prune list**) | locales/ui-strings.csv | **6 trope keys are unreferenced**: `trope.drill.melody_choice_num`, `.streak_line`, `trope.footer.cantillation_credit`, `.sefaria_credit`, `trope.settings.font_default_tag`, `trope.tip.more_info`. | found S416
@@ -23,8 +27,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S413 Pass C — three**) | resources.html | **(1)** English directory text lacks `lang="en"` in the Hebrew UI; **(2)** card focus lacks hover's affordances; **(3)** the ✓ (`.fp-yes`) is 3.41:1 on light. | found S413
 
 - [ ] P4 (**NEW S413 Pass C — gate 3**) | 404.html | **The lost star wanders forever with no pause** (WCAG 2.2.2); only reduced motion stops it. | found S413
-
-- [ ] P4 (**NEW S414 Pass F — header chrome, 4 ungated**) | dictionary, resources, 404 | **(1)** Home/Back sits after the language picker on the dictionary and resources (10 pages lead with it); **(2)** resources' Back is white, not the gold outline of its dark toggle and the chrome pages' Back; **(3)** 404's "← Back…" arrow points forward in Hebrew (use `hi-arrow`). (The Full Screen names …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S414 Pass F — gates 2/3 + K**) | chrome pages, the 7 tools, 404, CSV | gate 2: **(1)** dark mode's visible "Light", and FM's fullscreen "Show/Hide Panels" (S415), are not in their fixed toggle names (2.5.3); **(2)** "Back" goes to the home page (tools say "Home"); **(3)** 404 lists 4 of 7 tools. Gate 3: **(4)** Tour / Dark / Full Screen / Settings order differs per tool. K: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -232,6 +234,18 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-25 | (S418 close-out) | branch/deploy note | **S418 = pass L + 4 fixes on `claude/improve-loop-r5h9ea` / draft PR #275 (base `93330b5`), continuing S417's.** DRIFT: none (`origin/main` still `93330b5`); backend clean (0001–0003 live, delete-account v3, keep-alive #12 green; 1 auth advisor WARN → candidate). `sw.js` v851 → v852 (torah, 404, dictionary, resources, locales); FM not …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-25 | `faf08c3` | resources.html | (S418) **The Back button takes the chrome pages' gold outline** (= its own dark toggle). | verified: computed styles, 8 cells: 6/11 → 11/11 properties equal; privacy's Back = reference
+
+- [x] 2026-09-25 | `240aa59` | hebrew_dictionary.html, resources.html | (S418) **Home leads the header controls** (10 pages did; these two led with the language picker). | verified: DOM, visual order and real Tab walks, 16 cells + the torah reference: Home first everywhere
+
+- [x] 2026-09-25 | `f99f1ae` | 404.html + CSV | (S418) **The Back button's arrow is the shared `hi-arrow` icon, so it points back in Hebrew** (the string carried a literal ←). | verified: 8 cells: scaleX(−1) in RTL, icon at the inline start, kept across a live language switch, 0 errors
+
+- [x] 2026-09-25 | `c84973e` | torah_trainer.html | (S418) **3 static fallbacks catch up with the CSV** (the pitch commit's share tip + speed chip title/aria; `stale-html-fallback-behind-its-csv-value`, 6th sweep). | verified: 8 live cells identical before/after; i18n-aborted now reads the CSV; detector 3 → 0
+
+- [x] 2026-09-25 | (S418 Pass L iter 1) | suite-wide | **21st L over `e58372d..HEAD`** (70 commits; 14/17 pages moved, the crawler surface on 3 lines): 18 audit arms + the fallback detector + a claims assist, every zero controlled (16 plants → 17 hits; 2 fallback controls). Clean: titles, descriptions, canonicals, the noindex set, OG/Twitter, images, JSON-LD, 51 FAQ pairs, crawl, h1, alt, …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-09-25 | (S417 close-out) | branch/deploy note | **S417 = pass E + 4 fixes on `claude/improve-loop-r5h9ea` / draft PR #275 (base `93330b5`).** DRIFT: 4 outside-loop commits (torah pitch worklet + under-word translit, trope Etnachta; v847 → v850); backend clean. `sw.js` v850 → v851; FM not bumped. Scripts all diff-clean. Unattended; gate 2 deferred.
 
 - [x] 2026-09-25 | `ebdff91` | trope_tutor.html | (S417) **The tune button resets after a mid-tune language switch.** | verified: real clicks, 16 cells: stuck 8 → 0
@@ -266,21 +280,11 @@ _(none)_
 
 - [x] 2026-09-24 | (S415 Pass B iter 1) | all 17 pages | **32nd B**: 136 load cells, 52 interactions, 3 delta arms, all controlled. FOUND 1 (fixed) + 2 P4. Receipts: loop-findings.
 
-- [x] 2026-09-24 | (S414 close-out) | branch/deploy note | **S414 = pass F + 4 fixes, continued on `claude/charming-euler-4lppft` / draft PR #270 (open).** DRIFT: none. `sw.js` v836 → v837; FM not bumped (bug fixes). Scripts: i18n, inline-js, sitemap, llms, compact, check-ledger. No gates asked.
-
-- [x] 2026-09-24 | `b018f98` | hebrew_blend_generator.html | (S414 Pass F) **The Full Screen label uses the header's font** (UA Arial → Source Sans 3). | verified: 8 cells, the font served locally; platform font = its siblings'
-
-- [x] 2026-09-24 | `f9e67b2` | hebrew_dictionary.html, Hebrew_Font_Maker.html | (S414 Pass F) **The dark toggle keeps one name** (dark mode read "Light, pressed"). | verified: AX name + pressed, 16 cells; crops identical (reduced motion)
-
-- [x] 2026-09-24 | `d20028f` | flash_cards.html | (S414) **The weakness viewer and printed report name letters and vowels in Hebrew**. | verified: seeded deck, 4 cells: HE 44/44 Hebrew, EN identical
-
-- [x] 2026-09-24 | `391114b` | flash_cards.html | (S414) **Save This Card Set hides after a Mistakes / Weak drill and their Redo**; the ladder hide now shows (flex beat `[hidden]`). | verified: real clicks, 4 cells, rendered box
-
-- [x] 2026-09-24 | (S414 Pass F iter 1) | the 14 root pages | **The header chrome**: 84 page-loads + a toggle-name detector; every zero controlled. FOUND 1 P3 + 10 P4 (2 fixed). Receipts, traps 120–126: loop-findings.
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-25 | **S418** | iters: 1 pass (**L**) + 4 fixes = **5** | tools: torah, 404, dictionary + resources, resources | patterns fixed: stale-html-fallback-behind-its-csv-value ×3 | pass run: L | SW: v851→v852
 
 - 2026-09-25 | **S417** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: README, shared-components.md, dictionary + flash, trope | patterns fixed: flash-restores-captured-text-not-its-key ×2 (NEW) | pass run: E | SW: v850→v851
 
@@ -312,11 +316,11 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **S417 (2026-09-25):** index (S415; **N-next**, N S249); generator (S415; G S392); flash (**S417**; **G-next**, G S279); dictionary (**S417**; **C-next**, C S285); dashboard (S411); torah (S415; **O-next**, **D-next**, D S307); trope (**S417**); FM (S416); account (S415; **H-next**); the chrome pages + js/i18n.js (S415); no M: generator, flash, torah, terms.
+- **S418 (2026-09-25):** index (S415; **N-next**, N S249); generator (S415; G S392); flash (S417; **G-next**, G S279); dictionary (**S418**; **C-next**, C S285); dashboard (S411); torah (**S418**; **O-next**, **D-next**, D S307); trope (S417); FM (S416); account (S415; **H-next**); resources + 404 (**S418**); the other chrome pages + js/i18n.js (S415); no M: generator, flash, torah, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`flash-restores-captured-text-not-its-key`** (NEW S417 — 2 FIXED `1f7f869`; S415 `38e5b62`): ACTIVE, streak 0. A "Copied!" flash restoring the text captured at click time, so a 2nd click captures the flash. Detection: `orig = (btn|lbl)\.(textContent|innerHTML)` + `setTimeout(… = orig` — 0 left; restore from `I18n.t(key)`.
+- **`flash-restores-captured-text-not-its-key`** (NEW S417 — 2 FIXED `1f7f869`; S415 `38e5b62`): ACTIVE, streak 0. A "Copied!" flash restoring the text captured at click time, so a 2nd click captures the flash. Detection: `orig = (btn|lbl)\.(textContent|innerHTML)` + …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`visible-label-missing-from-the-accessible-name`** (S415 `9856b9d`; S416 flash `66b8021`, chip open): ACTIVE, streak 0. Detection `a416/labelname.mjs` + `fieldnames.mjs`. EXEMPT: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -414,7 +418,7 @@ _(none)_
 
 - **fixed-width-third-party-embed-inflates-phone-layout**: **REGISTERED + first swept suite-wide 2026-08-28 (S276 Pass N) — hits: 2 carriers, BOTH fixed in-session (`23b2387` contact inline auto-render → data-size=compact ≤388 + ≤430 containment belt; `e4aaa44` resources …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **RE-SWEPT 2026-09-22 (S404 Pass L, 5th sweep): 2,485 sites (1,919 text + 72 `data-i18n-html` + 494 attr twins) → hits 5, all fixed `4b7f9cc`, re-swept 0** — the icon sweep's ❓ ×2, S400's drill-length FAQ, …[full text: IMPROVEMENT_ARCHIVE.md]
+- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **RE-SWEPT 2026-09-25 (S418 Pass L, 6th sweep): 2,512 sites (1,939 text + 72 `data-i18n-html` + 501 attr twins) → 3 hits, all torah, the outside-loop pitch commit's; fixed `c84973e`, re-swept 0.** Detection …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **undocumented-global-keyboard-shortcut**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A, delta-only): 0 new `document`-level `keydown` handlers (the erase gate's is scoped to its overlay: Escape + Tab trap, exempt shapes) — hits 0, clean streak 2.** S264 1 hit fixed (`f65ce58`); …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -598,18 +602,18 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
-- L SEO & discoverability audit: 2026-09-22 (**S404 — 20th L, first since S387 (17 sessions); the stalest runnable pass (O blocked here). Delta `b5e1416..HEAD`: 150 commits, 15/17 pages moved, 1/17 crawler surfaces (trope's drill-length JSON-LD, accurate). 18 arm classes, every zero controlled: 0 hits. FOUND: 5 stale fallbacks (`4b7f9cc`, via the FAQ twin arm); torah/trope `og:image:alt` …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+- L SEO & discoverability audit: 2026-09-25 (**S418 — 21st L, first since S404 (14 sessions); stalest runnable (O blocked). Delta `e58372d..HEAD`: 70 commits, 14/17 pages moved, 3 crawler lines (torah/trope `og:image:alt`, torah's Etnachta FAQ twin — all fine). 18 arm classes + the fallback detector + a claims assist, every zero controlled (16 plants → 17 hits): 0 audit hits, 51 FAQ pairs, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-09-23 (**S412 — `flash_cards.html`, first H since S264. 3 lessons by real clicks, EN + HE. FOUND 10 + 1 seed: Other mode lost on load (P2, `51e8f3c`), Simple Stressed lost (P3, `abb0a1e`), the copy flash erasing icons (P3; dictionary `53d3579`). H-next: `account.html` (never).**)
 
-- E freshness/site-health: 2026-09-25 (**S417 — 33rd E, first since S403; stalest runnable (O blocked). Delta `82af0d8..93330b5` (torah pitch worklet, under-word translit, trope Etnachta). 25 arms, every zero controlled: precache, CSP static + runtime + a worklet control, links, sitemap/llms/locales, licences, shared blocks, icons, starting fonts, storage keys, workflows, doc identifiers. FIXED README's worklet row `6c3d19d`; OPEN the manifest description (gate 2).**)
+- E freshness/site-health: 2026-09-25 (**S417 — 33rd E, first since S403; stalest runnable (O blocked). Delta `82af0d8..93330b5` (torah pitch worklet, under-word translit, trope Etnachta). 25 arms, every zero controlled: precache, CSP static + runtime + a worklet control, links, sitemap/llms/locales, licences, shared blocks, icons, starting fonts, storage keys, workflows, doc identifiers. FIXED …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - F cross-tool consistency: 2026-09-24 (**S414 — 32nd F, first since S397; stalest runnable (O blocked). THE HEADER CHROME on 14 pages: 84 loads + a toggle-name detector (plant 14/14); DOM = visual order 84/84. FOUND: the dark toggle's flipping name (P3, `f9e67b2`), the Arial Full Screen (P4, `b018f98`), 9 P4 logged.**)
 
-**Next session (S418):** **BRANCH/PR: S417 on `claude/improve-loop-r5h9ea` → draft PR #275 (base `93330b5`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** Closed at `sw.js` **v851**, FM **5.56**, SDK **2.116.0**; backend clean (0001–0003, keep-alive #12 green).
+**Next session (S419):** **BRANCH/PR: S417 + S418 on `claude/improve-loop-r5h9ea` → draft PR #275 (base `93330b5`). Open → CONTINUE; merged → a fresh `claude/*` off `origin/main`.** Closed at `sw.js` **v852**, FM **5.56**, SDK **2.116.0**; backend clean (0001–0003 live, delete-account v3, keep-alive #12 green; 1 auth advisor WARN logged as a candidate).
 
-**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), L (S404), then K N P M G D I H C F B A E.** Take **L** (first sight of the torah pitch / under-word copy, trope's Etnachta FAQ line, the manifest description). Next C/G/D/H: Tool coverage.
+**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), K (S405), then N P M G D I H C F B A E L.** Take **K** (the delta since S405: the torah pitch / under-word strings, trope's Etnachta group, the S412–S418 rows; Check B's backlog). Next C/G/D/H: Tool coverage.
 
-**⚑ STRONGEST UNTAKEN (ungated):** trope's HH banner; the 6 unreferenced trope CSV keys; S414's header items; the torah/trope credits' `dir`. **Seed bench: 34.** Gated items wait in Candidates.
+**⚑ STRONGEST UNTAKEN (ungated):** trope's HH banner; the 6 unreferenced trope CSV keys; the torah/trope credits' `dir`; S413's three resources items. **Seed bench: 34.** Gated items wait in Candidates (torah's "Options drawer" FAQ joined them).
 
-**⚑ HARNESS: traps 1–138 in loop-findings** (`e417/` probes in its S417 receipts); `compact-ledger --apply` runs ONCE, the old handoff moves by hand.
+**⚑ HARNESS: traps 1–140 in loop-findings** (`l418/` probes in its S418 receipts — `audit.py ROOT`, `plant.py`, `fallback.py`, `fallback_plant.py`, `claims.py`); `compact-ledger --apply` runs ONCE and only after the edit script has succeeded (a run on an unedited ledger still appends ~68 KB of already-archived text), the old handoff moves by hand; the ledger sits at its 100 KB ceiling every session — the oldest session's Done entries go to the archive by hand.
