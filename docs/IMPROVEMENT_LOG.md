@@ -298,7 +298,7 @@ _(none)_
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`install-banner-over-a-sheet's-bottom-controls`** (**NEW S420 Pass N — the hub FIXED `f44a17e` (a CSS state hides it while the sheet is open); 6 other sheet-bearing pages unmeasured**): ACTIVE, streak 0. pwa.js's `#pwaInstallBanner` (fixed, bottom, z 2147483000, phones under …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`install-banner-over-a-sheet's-bottom-controls`** (**NEW S420 Pass N — the hub FIXED `f44a17e`, a CSS state hiding it while the sheet is open; 6 other sheet pages unmeasured**): ACTIVE, streak 0. pwa.js's `#pwaInstallBanner` (fixed, bottom, z 2147483000, phones under 768px) paints over the bottom ~76px of a centered sheet. Detection (`n420/banner.mjs`): iPhone SE + 13, `navigator.standalone=false`, the sheet open, scrolled to its end, `elementFromPoint` at its lowest control = the banner; control `standalone=true` hits it. A lower z-index alone is no suite fix (loop-findings `## S420`).
 
 - **`flash-restores-captured-text-not-its-key`** (NEW S417 — 2 FIXED `1f7f869`; S415 `38e5b62`): ACTIVE, streak 0. A "Copied!" flash restoring the text captured at click time, so a 2nd click captures the flash. Detection: `orig = (btn|lbl)\.(textContent|innerHTML)` + …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
