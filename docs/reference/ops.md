@@ -61,6 +61,10 @@ Notes:
   always gets the fresh file, so a deploy is never hidden behind a stale cached
   page. The cache is only the offline fallback for these.
 - **Static media (icons, splash images, manifest) is cache-first** for speed.
+- **`js/tt-pitch-worklet.js` (the Torah Trainer's chant pitch shifter) is precached but is NOT in the
+  network-first branch:** `audioWorklet.addModule()` fetches with destination `audioworklet`, not
+  `script`, so it takes the cache-first catch-all — an edit to it reaches users only through a `VERSION`
+  bump, like any precached file.
 - **`/data/` corpora live in a separate, version-independent cache**
   (`DATA_CACHE = 'ivritsuite-data-v1'`): a routine `VERSION` bump does NOT evict
   the ~7 MB of dictionary/emoji/parshiyot/pockettorah data, so users don't
@@ -327,7 +331,8 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
 - **Dashboard:** `www.hebcal.com`, `api.open-meteo.com`, `geocoding-api.open-meteo.com`, `nominatim.openstreetmap.org`
   in `connect-src`; `www.youtube.com` + `www.youtube-nocookie.com` in `frame-src`.
 - **Torah Trainer:** `www.sefaria.org` in `connect-src`; `raw.githubusercontent.com` + `blob:` in `media-src`
-  (PocketTorah audio).
+  (PocketTorah audio). The chant pitch shifter adds nothing: its AudioWorklet module is same-origin
+  (`script-src 'self'` covers a worklet fetch) and the `<audio crossorigin>` load is the same media host.
 - **Trope Tutor:** `raw.githubusercontent.com` + `blob:` in `media-src` only — deliberately neither `sefaria.org`
   nor `esm.sh` (its index and clips are pre-built).
 - **Home, Torah Trainer:** `files.readme.io` in `img-src` — the host of Sefaria's attribution wordmark (hot-linked,

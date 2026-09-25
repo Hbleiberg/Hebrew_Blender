@@ -6,7 +6,9 @@
      any script/style loads. script-src keeps 'unsafe-inline' because all app JS is inline by design; the
      value here is blocking REMOTE script injection, object/base-uri hijacks, and unexpected connect/frame
      origins. Note: meta CSP can't express frame-ancestors or report-uri and does not cover content parsed
-     before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md). -->
+     before this tag. Update this when adding any external script/font/fetch/iframe (see CLAUDE.md).
+     The chant pitch shifter's AudioWorklet module (js/tt-pitch-worklet.js) is same-origin — covered by
+     script-src 'self' — and its media host is already in media-src, so no origin was added for it. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://files.readme.io; media-src 'self' blob: https://raw.githubusercontent.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://esm.sh https://cdn.jsdelivr.net https://www.sefaria.org https://hhkmqwpjsyxdeuhvcyis.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -843,6 +845,35 @@ body.dark .tt-word:hover {
 }
 .tt-word:focus-visible { outline:2px solid var(--gold); outline-offset:1px; }
 
+/* ───── Transliteration under each word (settings.translitPlacement === 'word') ─────
+   tokenizeHebrew makes each .tt-word a two-item cell: <span class="tt-wh">Hebrew</span> over
+   <span class="tt-wtl">Latin</span>. There is still exactly one .tt-word per Hebrew word and .tt-wtl never
+   carries data-twi, so karaoke, click-to-seek, the rover and the copy path see the same word list as
+   before. body.translit-under is written by renderText only. An inline-flex cell's baseline is its first
+   item's, so the Hebrew (and the bare maqaf text between cells) keeps the line's baseline. text-decoration
+   set on the cell would propagate into both items, so every underline (karaoke Under, the trope clause
+   fallback) is re-homed on .tt-wh; backgrounds, outline, hover and focus stay on the whole cell on purpose. */
+body.translit-under :where(.tt-heb, .tt-cell.heb) .tt-word {
+  display:inline-flex; flex-direction:column; align-items:center; vertical-align:baseline;
+  padding:1px 3px; text-decoration:none;
+}
+body.translit-under .tt-wtl {
+  font-family:'Source Sans 3', sans-serif; font-style:italic; font-weight:400;
+  font-size:var(--tt-translit-size, 0.95rem); color:var(--muted); line-height:1.2;
+  white-space:nowrap; letter-spacing:0; word-spacing:0; margin-block-start:0.12em;
+  direction:ltr; unicode-bidi:isolate;
+}
+body.translit-under.trope-underline-fallback .tt-wtl { margin-block-start:0.4em; }   /* room for the 4px clause line at 0.68em */
+body.kar-style-highlight .tt-word.active > .tt-wtl { color:inherit; }   /* muted grey on gold fails contrast; the cell's navy reads */
+body.translit-under.kar-style-underline .tt-word.active { text-decoration:none; }
+body.translit-under.kar-style-underline .tt-word.active > .tt-wh {
+  text-decoration:underline solid var(--gold); text-decoration-thickness:3px; text-underline-offset:0.2em;
+}
+:where(body.translit-under.trope-underline-fallback) .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) > .tt-wh {
+  text-decoration-line:underline; text-decoration-thickness:4px;
+  text-underline-offset:0.68em; text-decoration-skip-ink:none; text-decoration-color:var(--tt-tl);
+}
+
 /* ───── Nikkud vowel color coding ─────
    colorizeHebrew wraps each vowel-bearing syllable in <span class="nik nik-<key>">.
    applyNikkudColors() resolves the active scheme's per-key colors (override or default,
@@ -899,13 +930,13 @@ body.nik-mode-underline .nik { text-decoration-line:underline !important; text-d
   text-decoration-line:underline; text-decoration-thickness:4px;
   text-underline-offset:0.68em; text-decoration-skip-ink:none;
 }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-sofpasuk) { text-decoration-color:var(--trope-sofpasuk-line); }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-etnachta) { text-decoration-color:var(--trope-etnachta-line); }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-katon)    { text-decoration-color:var(--trope-katon-line); }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-segol)    { text-decoration-color:var(--trope-segol-line); }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-revia)    { text-decoration-color:var(--trope-revia-line); }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-geresh)   { text-decoration-color:var(--trope-geresh-line); }
-:where(body.trope-underline-fallback) .tt-word:where(.trope-rare)     { text-decoration-color:var(--trope-rare-line); }
+:where(body.trope-underline-fallback) .tt-word:where(.trope-sofpasuk) { text-decoration-color:var(--trope-sofpasuk-line); --tt-tl:var(--trope-sofpasuk-line); }
+:where(body.trope-underline-fallback) .tt-word:where(.trope-etnachta) { text-decoration-color:var(--trope-etnachta-line); --tt-tl:var(--trope-etnachta-line); }
+:where(body.trope-underline-fallback) .tt-word:where(.trope-katon)    { text-decoration-color:var(--trope-katon-line); --tt-tl:var(--trope-katon-line); }
+:where(body.trope-underline-fallback) .tt-word:where(.trope-segol)    { text-decoration-color:var(--trope-segol-line); --tt-tl:var(--trope-segol-line); }
+:where(body.trope-underline-fallback) .tt-word:where(.trope-revia)    { text-decoration-color:var(--trope-revia-line); --tt-tl:var(--trope-revia-line); }
+:where(body.trope-underline-fallback) .tt-word:where(.trope-geresh)   { text-decoration-color:var(--trope-geresh-line); --tt-tl:var(--trope-geresh-line); }
+:where(body.trope-underline-fallback) .tt-word:where(.trope-rare)     { text-decoration-color:var(--trope-rare-line); --tt-tl:var(--trope-rare-line); }
 
 /* Legend strip above #ttReading (card look borrowed from .tt-jumpnav, non-sticky).
    Swatches read the same body vars, so theme/picker changes recolor them for free. */
@@ -1642,13 +1673,21 @@ body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
     text-decoration-line:underline; text-decoration-thickness:4px;
     text-underline-offset:0.68em; text-decoration-skip-ink:none;
   }
-  body.trope-on .tt-word.trope-sofpasuk { text-decoration-color:var(--trope-sofpasuk-line); }
-  body.trope-on .tt-word.trope-etnachta { text-decoration-color:var(--trope-etnachta-line); }
-  body.trope-on .tt-word.trope-katon    { text-decoration-color:var(--trope-katon-line); }
-  body.trope-on .tt-word.trope-segol    { text-decoration-color:var(--trope-segol-line); }
-  body.trope-on .tt-word.trope-revia    { text-decoration-color:var(--trope-revia-line); }
-  body.trope-on .tt-word.trope-geresh   { text-decoration-color:var(--trope-geresh-line); }
-  body.trope-on .tt-word.trope-rare     { text-decoration-color:var(--trope-rare-line); }
+  body.trope-on .tt-word.trope-sofpasuk { text-decoration-color:var(--trope-sofpasuk-line); --tt-tl:var(--trope-sofpasuk-line); }
+  body.trope-on .tt-word.trope-etnachta { text-decoration-color:var(--trope-etnachta-line); --tt-tl:var(--trope-etnachta-line); }
+  body.trope-on .tt-word.trope-katon    { text-decoration-color:var(--trope-katon-line); --tt-tl:var(--trope-katon-line); }
+  body.trope-on .tt-word.trope-segol    { text-decoration-color:var(--trope-segol-line); --tt-tl:var(--trope-segol-line); }
+  body.trope-on .tt-word.trope-revia    { text-decoration-color:var(--trope-revia-line); --tt-tl:var(--trope-revia-line); }
+  body.trope-on .tt-word.trope-geresh   { text-decoration-color:var(--trope-geresh-line); --tt-tl:var(--trope-geresh-line); }
+  body.trope-on .tt-word.trope-rare     { text-decoration-color:var(--trope-rare-line); --tt-tl:var(--trope-rare-line); }
+  /* Under-word transliteration on paper: as on screen, the clause line moves onto the Hebrew item so the
+     Latin line under it is not underlined. */
+  body.translit-under.trope-on .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) { text-decoration-line:none; }
+  body.translit-under.trope-on .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) > .tt-wh {
+    text-decoration-line:underline; text-decoration-thickness:4px;
+    text-underline-offset:0.68em; text-decoration-skip-ink:none; text-decoration-color:var(--tt-tl);
+  }
+  body.translit-under.trope-on .tt-wtl { margin-block-start:0.4em; }
   /* That 4px band needs somewhere to live. At the screen leading of 1.7 it lands in the
      interline gap with NOTHING to spare: measured from print renderings (band rows taken
      with trope on, glyph rows with it off, same wrapping), the band ends on the very row
@@ -2102,12 +2141,19 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <option value="2000" data-i18n="torah.audio.loop_pause_2">2 seconds</option>
     </select>
   </span>
-  <audio id="ttAudio" controls preload="none" aria-label="Chanted Torah audio" data-i18n-aria-label="torah.audio.element_aria"></audio>
+  <!-- crossorigin: the CORS load is what lets the chant pitch graph (Web Audio) read the samples — the MP3 host
+       answers with access-control-allow-origin: *. A host that refuses it is retried plainly once (see loadKaraoke). -->
+  <audio id="ttAudio" controls preload="none" crossorigin="anonymous" aria-label="Chanted Torah audio" data-i18n-aria-label="torah.audio.element_aria"></audio>
   <span class="tt-audio-rates">
     <span class="row">
       <label for="ttKaraokeRate" data-i18n="torah.audio.chant_label">Chant</label>
       <input type="range" id="ttKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0" aria-label="Chanting playback speed" data-i18n-aria-label="torah.audio.chant_rate_aria">
       <span class="val" id="ttKaraokeRateVal">1.00×</span>
+    </span>
+    <span class="row">
+      <label for="ttKaraokePitch" data-i18n="torah.audio.pitch_label">Pitch</label>
+      <input type="range" id="ttKaraokePitch" min="-12" max="12" step="1" value="0" aria-label="Chant pitch in semitones" data-i18n-aria-label="torah.audio.pitch_aria">
+      <span class="val" id="ttKaraokePitchVal">0</span>
     </span>
     <span class="row">
       <label for="ttTTSRateBar" data-i18n="torah.audio.read_label">Read</label>
@@ -2204,6 +2250,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
             <input type="radio" name="optKarFollow" id="kfBoth"     value="both"><label for="kfBoth" data-i18n="torah.display.follow_both">Both</label>
           </span>
         </div>
+        <div id="kfUnderNote" style="font-size:0.7rem;color:var(--muted);margin-top:4px;line-height:1.4;" data-i18n="torah.display.follow_under_note" hidden>With the transliteration under each word, the highlight follows the Hebrew word and its transliteration moves with it.</div>
       </div>
     </div>
 
@@ -2335,8 +2382,15 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title" data-i18n="torah.settings.panel_translit">Transliteration scheme</div>
+      <div class="panel-title" data-i18n="torah.settings.panel_translit">Transliteration</div>
       <div class="panel-body">
+        <div class="form-row">
+          <label data-i18n="torah.trans.place_label">Show it</label>
+          <span class="radio-group">
+            <input type="radio" name="optTranslitPlace" id="tpRow"  value="row"><label for="tpRow" data-i18n="torah.trans.place_row">Own line</label>
+            <input type="radio" name="optTranslitPlace" id="tpWord" value="word"><label for="tpWord" data-i18n="torah.trans.place_word">Under each word</label>
+          </span>
+        </div>
         <div class="form-row">
           <label for="optTranslitStyle" data-i18n="torah.trans.style_label">Style</label>
           <select id="optTranslitStyle">
@@ -2352,7 +2406,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     </div>
 
     <div class="panel collapsed">
-      <div class="panel-title" data-i18n="torah.settings.panel_audio">Audio speeds</div>
+      <div class="panel-title" data-i18n="torah.settings.panel_audio">Audio speeds &amp; pitch</div>
       <div class="panel-body">
         <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.45;" data-i18n-html="torah.audio.speeds_intro">
           Click <strong>🔊 Read</strong> on any verse for browser TTS in Hebrew, or <strong>🎵 Chant</strong> to stream PocketTorah's recording with real-time word highlighting. These sliders mirror the ones in the audio bar at the bottom of the page.
@@ -2363,6 +2417,15 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <span class="sval" id="optKaraokeRateVal">1.00×</span>
           <button class="sreset" onclick="resetKaraokeRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
+        <div class="slider-row">
+          <label for="optKaraokePitch"><span id="optKaraokePitchLbl" data-i18n="torah.audio.pitch_label">Pitch</span>
+            <span class="tip-wrap" data-i18n-tip="torah.audio.pitch_tip" data-tip="Moves the chant up or down in half-steps so it sits in your voice. Speed and word highlighting stay as they are. The first change loads a small audio module."><i class="tip-icon">?</i></span>
+          </label>
+          <input type="range" id="optKaraokePitch" min="-12" max="12" step="1" value="0" aria-labelledby="optKaraokePitchLbl">
+          <span class="sval" id="optKaraokePitchVal">0</span>
+          <button class="sreset" onclick="resetKaraokePitch()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div id="optPitchStatus" role="status" aria-live="polite" style="font-size:0.7rem;color:var(--muted);margin-top:-4px;margin-bottom:8px;line-height:1.4;" hidden></div>
         <div class="slider-row">
           <label for="optTTSRate" data-i18n="torah.audio.speed_read">Read</label>
           <input type="range" id="optTTSRate" min="0.5" max="1.5" step="0.05" value="0.75">
@@ -2511,8 +2574,10 @@ const DEFAULTS = {
   colorCodeTrope: false,       // tint each word by its cantillation clause family
   tropeColorOverrides: {},     // family key → hex (HEX_COLOR_RE-validated on read)
   translitStyle: 'modernIsraeli',
+  translitPlacement: 'row',    // 'row' (its own line / column / block) | 'word' (under each Hebrew word)
   // TTS + Chanting are always available; rate sliders apply.
   karaokeRate: 1.0,
+  karaokePitch: 0,           // chant transposition in semitones (−12…12); its Web Audio graph exists only once non-zero
   ttsRate: 0.75,
   loopPauseMs: 0,            // silence between verse-loop repeats (0/500/1000/2000 ms)
   loopVerse: null,           // last-looped verse "C:V" — re-armed (never auto-played) on the next visit
@@ -2611,6 +2676,7 @@ function loadSettings() {
   // are the contract; anything non-finite takes the default (the dashboard's _sizeNum shape).
   settings.karaokeRate = _sliderNum(settings.karaokeRate, 'optKaraokeRate', DEFAULTS.karaokeRate);
   settings.ttsRate = _sliderNum(settings.ttsRate, 'optTTSRate', DEFAULTS.ttsRate);
+  settings.karaokePitch = Math.round(_sliderNum(settings.karaokePitch, 'optKaraokePitch', DEFAULTS.karaokePitch));
 }
 function _sliderNum(val, sliderId, dflt) {
   const sl = document.getElementById(sliderId);
@@ -3763,8 +3829,9 @@ function processHebrewForDisplay(s) {
 /* ══════════════════════════════════════════════════════
    TOKENIZE: split Hebrew text into per-word spans
    ══════════════════════════════════════════════════════ */
-function tokenizeHebrew(text, wordIdxStartRef, opts) {
+function tokenizeHebrew(text, wordIdxStartRef, opts, underWord) {
   // Returns HTML with <span class="tt-word" data-twi="N">...</span> per Hebrew word.
+  // underWord (screen renderers only) nests each word's transliteration inside its span — see the emit site.
   // wordIdxStartRef is a {value:N} object so karaoke can assign sequential indices
   // across consecutive verses. Split on whitespace AND maqaf (U+05BE "־") because
   // PocketTorah counts each side of a maqaf-joined pair as a separate sung word.
@@ -3857,7 +3924,18 @@ function tokenizeHebrew(text, wordIdxStartRef, opts) {
         : esc(tok);
       let tropeCls = '';
       if (tropeOn && famOf[ti]) tropeCls = ' trope-' + famOf[ti];   // fam ∈ TROPE_FAMILIES — internal constant, not user data
-      out.push(`<span class="tt-word${tropeCls}" data-twi="${idx}">${inner}</span>`);
+      // Under-word transliteration (screen renders only — the copy path passes opts and never asks): the
+      // Hebrew and its Latin line become the two items of the same .tt-word cell. .tt-wtl is never a
+      // .tt-word and never carries data-twi — every karaoke/rover/copy consumer counts one .tt-word per
+      // Hebrew word. The source is the RAW token (nikkud intact; the display copy may have its vowels
+      // stripped); with no raw alignment the word gets no line — nothing, never the wrong word's.
+      let body = inner;
+      if (underWord) {
+        const src = rawAligned ? rawTokens[ti] : null;
+        const tl = src ? translitForWord(src, tokens[ti + 1] === '־') : '';
+        body = `<span class="tt-wh">${inner}</span>${tl ? `<span class="tt-wtl" lang="he-Latn" dir="ltr">${esc(tl)}</span>` : ''}`;
+      }
+      out.push(`<span class="tt-word${tropeCls}" data-twi="${idx}">${body}</span>`);
     } else {
       out.push(esc(tok));
     }
@@ -3878,6 +3956,25 @@ function applyTranslit(hebrewText) {
     return window.HebrewTransliterator.apply(stripped, '', settings.translitStyle) || '';
   }
   return '';  // library still loading; will re-render on translitlibloaded event
+}
+
+// One word's transliteration for the under-word placement (tokenizeHebrew). Per word rather than a split of
+// the verse-level output: the alignment is then 1:1 by construction (the verse split cannot tell a maqaf
+// from a Simple-stressed syllable hyphen). A proclitic is first tried with its maqaf, which gives the
+// library its stress/dagesh context; if the library rejects the dangling maqaf the plain word is used.
+// Memoized by style + raw word (Torah vocabulary repeats; a full parsha is a few thousand distinct forms);
+// '' is never stored, so a render while the library is still loading caches nothing and the
+// translitlibloaded rebuild fills every cell in. wireTranslit clears it on a style change.
+const _wtlMemo = new Map();
+function translitForWord(raw, maqafAfter) {
+  const key = settings.translitStyle + '|' + raw + (maqafAfter ? '|m' : '');
+  const hit = _wtlMemo.get(key);
+  if (hit !== undefined) return hit;
+  let tl = maqafAfter ? applyTranslit(raw + '־').replace(/[-‐]+$/, '').trim() : '';
+  if (!tl) tl = applyTranslit(raw).trim();
+  tl = tl.replace(/\s+/g, ' ');
+  if (tl) { if (_wtlMemo.size > 20000) _wtlMemo.clear(); _wtlMemo.set(key, tl); }
+  return tl;
 }
 
 // Tokenize translit text into per-word .tt-word spans, matching Hebrew word
@@ -3968,6 +4065,7 @@ function renderText() {
   const _kh = document.getElementById('ttKeyHints');
   if (_kh) _kh.hidden = !(currentVerses && currentVerses.length > 0);
   if (!currentVerses || !currentVerses.length) {
+    document.body.classList.remove('translit-under');
     renderEmptyReading();
     return;
   }
@@ -3984,6 +4082,12 @@ function renderText() {
   const _translitDead = settings.showTranslit &&
     currentVerses.every(v => !applyTranslit(v.hebrew));
   const includeTranslit = settings.showTranslit && !_translitDead;
+  // Placement 'word' puts each word's transliteration under it (inside its .tt-word cell — tokenizeHebrew)
+  // and drops the separate row / column / block. body.translit-under is written HERE ONLY, so it is on
+  // exactly when those cells exist: never with a dead library, never on the empty card.
+  const underWord = includeTranslit && settings.translitPlacement === 'word';
+  const withTranslitRow = includeTranslit && !underWord;
+  document.body.classList.toggle('translit-under', underWord);
   const includeTrans    = settings.showTranslation;
   // Chanting streams PocketTorah audio keyed by parsha/aliyah. It's available
   // whenever the current reading maps to a parsha with audio — including
@@ -4012,11 +4116,11 @@ function renderText() {
   if (_aliyahStarts) for (const a of _aliyahStarts) aStartByLabel[a.label] = a.num;
   const wordIdxRef = { value: 0 };
   if (layout === 'biblepage') {
-    html += renderBiblePage(currentVerses, includeTranslit, includeTrans, wordIdxRef, canChant, aStartByLabel);
+    html += renderBiblePage(currentVerses, withTranslitRow, includeTrans, wordIdxRef, canChant, aStartByLabel, underWord);
   } else if (layout === 'interlinear') {
-    html += renderInterlinear(currentVerses, includeTranslit, includeTrans, wordIdxRef, canChant, canLoop, aStartByLabel);
+    html += renderInterlinear(currentVerses, withTranslitRow, includeTrans, wordIdxRef, canChant, canLoop, aStartByLabel, underWord);
   } else {
-    html += renderSideBySide(currentVerses, includeTranslit, includeTrans, wordIdxRef, canChant, canLoop, aStartByLabel);
+    html += renderSideBySide(currentVerses, withTranslitRow, includeTrans, wordIdxRef, canChant, canLoop, aStartByLabel, underWord);
   }
   root.innerHTML = html;
   // The tooltip IIFE only auto-binds at DOMContentLoaded — the freshly-built
@@ -4035,7 +4139,7 @@ function renderText() {
   initReadingRover();   // innerHTML rebuild dropped any prior rover word
   _tourOnReadingChanged();   // a parked tour reading-step can now resolve
 }
-function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant, canLoop, aStartByLabel) {
+function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant, canLoop, aStartByLabel, underWord) {
   aStartByLabel = aStartByLabel || {};
   let html = '<div class="tt-interlinear">';
   for (const v of verses) {
@@ -4055,7 +4159,7 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
     html += `    </span>`;
     html += `  </div>`;
     const firstTwi = wordIdxRef.value;
-    const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef);
+    const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef, undefined, underWord);
     const hebCount = wordIdxRef.value - firstTwi;
     // The row label only earns its space when it tells rows apart. With translit and
     // translation both off the Hebrew is the only row, so "HEBREW" labels nothing —
@@ -4074,13 +4178,13 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
   html += '</div>';
   return html;
 }
-function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant, canLoop, aStartByLabel) {
+function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant, canLoop, aStartByLabel, underWord) {
   aStartByLabel = aStartByLabel || {};
   // Pre-tokenize Hebrew for each verse so the translit column (rendered first
   // visually but needing the Hebrew data-twi indices) can match up.
   const perVerse = verses.map(v => {
     const firstTwi = wordIdxRef.value;
-    const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef);
+    const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef, undefined, underWord);
     const hebCount = wordIdxRef.value - firstTwi;
     return { v, firstTwi, hebHtml, hebCount };
   });
@@ -4146,7 +4250,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
   html += `</div>`;
   return html;
 }
-function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, aStartByLabel) {
+function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, aStartByLabel, underWord) {
   aStartByLabel = aStartByLabel || {};
   // "Page view": continuous, justified text like a printed Chumash/Bible page.
   // Verse numbers are inline superscripts; the opening chapter shows as a drop-cap.
@@ -4159,7 +4263,7 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, 
   // highlights them with no engine-side changes.
   const perVerse = verses.map(v => {
     const firstTwi = wordIdxRef.value;
-    const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef);
+    const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef, undefined, underWord);
     const hebCount = wordIdxRef.value - firstTwi;
     return { v, firstTwi, hebHtml, hebCount };
   });
@@ -5124,7 +5228,7 @@ function teardownKaraokeAudio() {
   clearKaraokeHighlight();
   document.getElementById('ttAudioBar').classList.remove('open');
   document.body.classList.remove('tt-karaoke-active');
-  if (currentAudio) currentAudio.removeAttribute('src');
+  if (currentAudio) currentAudio.removeAttribute('src');   // the pitch graph (if built) stays attached: once per element, for the page's lifetime
   currentTimings = null;
   _holidayKaraoke = null;
   _loadedChantKey = null;
@@ -5166,9 +5270,14 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   const audioUrl = POCKET_AUDIO_BASE + encodeURIComponent(`${audioBase}-${suffix}.mp3`);
   currentTimings = timings;
   if (!currentAudio) currentAudio = document.getElementById('ttAudio');
+  // The CORS load is what lets the pitch graph read the samples; a host that refused it once (state 'cors')
+  // is loaded plainly from then on. A fresh source starts with no retry pending.
+  currentAudio.crossOrigin = (_pitchState === 'cors') ? null : 'anonymous';
+  _pitchCorsRetry = null;
   currentAudio.src = audioUrl;
   currentAudio.playbackRate = parseFloat(settings.karaokeRate) || 1.0;
   currentAudio.onplay = () => {
+    _pitchOnPlay();   // a stored pitch builds its graph now; a built one is checked to be running
     if (ttsState.readAllActive) stopReadAll();   // mutual exclusion with TTS
     speechSynthesis.cancel();
     updatePlayPauseIcon();
@@ -5181,7 +5290,17 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
     }
   };
   currentAudio.onpause = () => updatePlayPauseIcon();
-  currentAudio.onloadedmetadata = () => updatePlayPauseIcon();
+  currentAudio.onloadedmetadata = () => {
+    updatePlayPauseIcon();
+    if (_pitchCorsRetry) {
+      // The plain reload succeeded where the CORS one failed: the host refused CORS, not the network. Pitch
+      // shifting is off for this session (a captured element would be silent); playback carries on where it was.
+      const r = _pitchCorsRetry; _pitchCorsRetry = null;
+      _pitchState = 'cors';
+      pitchUnavailable('blocked');
+      if (r.at) { try { currentAudio.currentTime = r.at; } catch (e) {} }
+    }
+  };
   // The MP3 streams from a CDN. Offline, or on a school network that blocks it, the element
   // just errors: playback never starts, and until now nothing said so — the Chant-all button
   // sat there reading "Stop chant" over total silence, and #ttStatus stayed empty, because the
@@ -5190,6 +5309,20 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   // playing. Also drop the chant queue: every aliyah comes from the same unreachable host,
   // so chaining to the next one would just repeat the silence.
   currentAudio.onerror = () => {
+    // A CORS-mode load can fail on a network that strips the header while a plain load would work: retry
+    // once plainly before reporting. Only until the pitch graph has captured the element — after that a
+    // plain copy would be silent, and the host has already proven it allows CORS.
+    if (!_pitchSrc && currentAudio.crossOrigin === 'anonymous' && !_pitchCorsRetry) {
+      _pitchCorsRetry = { at: currentAudio.currentTime };   // currentTime reads back the pending seek
+      currentAudio.crossOrigin = null;
+      currentAudio.src = audioUrl;
+      // preload="none": nothing fetches until a play — and a load only ever failed here because one was
+      // asked for, so ask again (a browser that wants a fresh gesture just leaves it paused; the next
+      // tap plays the plain copy).
+      currentAudio.play().catch(() => {});
+      return;
+    }
+    if (_pitchCorsRetry) { _pitchCorsRetry = null; currentAudio.crossOrigin = 'anonymous'; }   // plain failed too: the network
     const msg = I18n.t('torah.status.audio_load_failed');
     setKaraokeStatus(msg);
     setStatus(msg, true, 'torah.status.audio_load_failed');
@@ -5261,7 +5394,7 @@ function updateKaraokeWordRefs() {
   // in karaokeWordSpans is an array — for follow=both, a single twi maps to
   // both the Hebrew and the Translit span. Click-to-seek still works on any
   // .tt-word in any row (handled in onReadingClick).
-  const f = settings.karaokeFollow || 'hebrew';
+  const f = karaokeFollowEffective();
   karaokeWordSpans = [];
   // Holiday/custom reading: the displayed range isn't the loaded aliyah, so map
   // each rendered word to its aliyah timing index via the verse-start map.
@@ -5375,7 +5508,10 @@ function closeKaraoke() {
 
 function syncMiniRate() {
   const el = document.getElementById('ttMiniRate');
-  if (el) el.textContent = (parseFloat(settings.karaokeRate) || 1.0).toFixed(2) + '×';
+  if (!el) return;
+  const p = settings.karaokePitch | 0;
+  const applied = p && _pitchState !== 'unsupported' && _pitchState !== 'failed' && _pitchState !== 'cors';
+  el.textContent = (parseFloat(settings.karaokeRate) || 1.0).toFixed(2) + '×' + (applied ? ' · ' + pitchReadout(p) : '');
 }
 function toggleAudioBarCollapse() {
   const bar = document.getElementById('ttAudioBar');
@@ -5514,6 +5650,126 @@ function resetKaraokeRate() {
   syncMiniRate();
   if (currentAudio) currentAudio.playbackRate = settings.karaokeRate;
   saveSettings();
+}
+
+/* ══════════════════════════════════════════════════════
+   CHANT PITCH (Web Audio)
+   The chant transposes through one lazily-built graph: <audio id="ttAudio"> (crossorigin; the MP3 host
+   sends ACAO: *) → MediaElementAudioSourceNode → AudioWorkletNode('tt-pitch', js/tt-pitch-worklet.js: a
+   WSOLA shifter, tempo untouched) → destination. Nothing is created until a non-zero pitch is chosen (the
+   slider is a gesture; a stored value waits for the next tap or play). createMediaElementSource is called
+   once per element for the page's lifetime (the element is reused across aliyot), and only while the
+   context is RUNNING — a captured element behind a suspended context is silent, so a context that will
+   not run leaves the element native and the next gesture retries. Everything fails soft: no AudioWorklet,
+   a module that will not load, or a host that refused the CORS load → the slider is disabled with a
+   status line and the chant plays at its recorded pitch (the stored value is kept: it syncs, and another
+   device may be applying it). playbackRate stays on the element (its
+   time-stretch) and composes with the graph (the transposition). Never in a ?s= link (how it sounds).
+   ══════════════════════════════════════════════════════ */
+let _pitchCtx = null, _pitchSrc = null, _pitchNode = null, _pitchLoad = null, _pitchCorsRetry = null;
+let _pitchState = 'idle';   // idle | loading | ready | unsupported | failed | cors
+const PITCH_SUPPORTED = !!(window.AudioContext && window.AudioWorkletNode && ('audioWorklet' in AudioContext.prototype));
+function pitchReadout(n) { n = n | 0; return n > 0 ? '+' + n : n < 0 ? '\u2212' + (-n) : '0'; }
+// Settings → controls (both sliders, both readouts, the collapsed-bar chip, the running graph). Never saves.
+function syncPitchControls() {
+  const v = settings.karaokePitch | 0;
+  const txt = pitchReadout(v);
+  const vt = I18n.t('torah.audio.pitch_valuetext', { n: txt });
+  ['optKaraokePitch', 'ttKaraokePitch'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (parseInt(el.value, 10) !== v) el.value = v;
+    el.setAttribute('aria-valuetext', vt);
+  });
+  ['optKaraokePitchVal', 'ttKaraokePitchVal'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = txt; });
+  syncMiniRate();
+  if (_pitchNode && _pitchCtx) {
+    try { _pitchNode.parameters.get('semitones').setTargetAtTime(v, _pitchCtx.currentTime, 0.02); } catch (e) {}
+  }
+}
+// The single writer (the applyTtsRate idiom): both sliders route here.
+function applyKaraokePitch(v) {
+  v = Math.round(_sliderNum(v, 'optKaraokePitch', DEFAULTS.karaokePitch));
+  settings.karaokePitch = v;
+  syncPitchControls();
+  saveSettings();
+  if (v !== 0) ensurePitchGraph();
+}
+function resetKaraokePitch() { applyKaraokePitch(DEFAULTS.karaokePitch); }
+// The stored value is deliberately KEPT (never zeroed and saved): the blob syncs, and a browser that cannot
+// shift must not overwrite the pitch the same teacher chose on a device that can. Here it only shows what
+// was asked for, disabled, with the reason under it; the chip drops it (nothing is applied).
+function pitchUnavailable(reason) {
+  ['optKaraokePitch', 'ttKaraokePitch'].forEach(id => { const el = document.getElementById(id); if (el) el.disabled = true; });
+  const st = document.getElementById('optPitchStatus');
+  if (st) {
+    const key = 'torah.audio.pitch_' + reason;   // unsupported | load_failed | blocked
+    st.textContent = I18n.t(key);
+    st.dataset.i18nKey = key;   // applyI18n re-resolves it (a pre-ready write, a language switch)
+    st.hidden = false;
+  }
+  syncMiniRate();
+}
+function ensurePitchGraph() {
+  if (_pitchLoad) return _pitchLoad;
+  if (!PITCH_SUPPORTED) {
+    if (_pitchState !== 'unsupported') { _pitchState = 'unsupported'; pitchUnavailable('unsupported'); }
+    return Promise.resolve(false);
+  }
+  if (_pitchState === 'failed' || _pitchState === 'cors') return Promise.resolve(false);
+  _pitchLoad = (async () => {
+    try {
+      if (!_pitchCtx) _pitchCtx = new AudioContext();
+      if (_pitchCtx.state !== 'running') { try { await _pitchCtx.resume(); } catch (e) {} }
+      if (_pitchCtx.state !== 'running') return false;   // no activation yet: the element stays native, the next gesture retries
+      _pitchState = 'loading';
+      await _pitchCtx.audioWorklet.addModule('/js/tt-pitch-worklet.js');
+      const audio = document.getElementById('ttAudio');
+      _pitchSrc = _pitchCtx.createMediaElementSource(audio);   // once per element — from here on the element plays through the graph
+      try {
+        _pitchNode = new AudioWorkletNode(_pitchCtx, 'tt-pitch', { parameterData: { semitones: settings.karaokePitch | 0 } });
+        _pitchSrc.connect(_pitchNode).connect(_pitchCtx.destination);
+      } catch (e) {
+        _pitchNode = null;
+        _pitchSrc.connect(_pitchCtx.destination);   // captured already: pass it through, never silence
+        throw e;
+      }
+      _pitchCtx.onstatechange = _pitchGuard;
+      _pitchState = 'ready';
+      return true;
+    } catch (e) {
+      console.warn('[tt-pitch]', e);
+      _pitchState = 'failed';
+      pitchUnavailable('load_failed');
+      return false;
+    } finally {
+      if (_pitchState !== 'ready' && _pitchState !== 'failed') _pitchLoad = null;   // not running yet: allow the retry
+    }
+  })();
+  return _pitchLoad;
+}
+// Runs on every tap/key (capturing) and on becoming visible: a stored pitch builds its graph inside a real
+// gesture (what a browser needs to start a context); a built one is resumed if the browser suspended it.
+function _pitchKick() {
+  if (!_pitchCtx) {
+    if ((settings.karaokePitch | 0) !== 0 && PITCH_SUPPORTED && _pitchState === 'idle') ensurePitchGraph();
+    return;
+  }
+  if (_pitchCtx.state !== 'running') _pitchCtx.resume().catch(() => {});
+}
+function _pitchOnPlay() {
+  if ((settings.karaokePitch | 0) !== 0 || _pitchNode) ensurePitchGraph().then(ok => { if (ok) _pitchGuard(); });
+}
+// A captured element must never play silently (iOS 'interrupted' after a call, an autoplay block): if the
+// context is still not running shortly after a play, pause and say so — the next tap is a gesture.
+function _pitchGuard() {
+  _pitchKick();
+  setTimeout(() => {
+    if (_pitchSrc && _pitchCtx && _pitchCtx.state !== 'running' && currentAudio && !currentAudio.paused) {
+      currentAudio.pause();
+      showHintToast(I18n.t('torah.audio.pitch_tap_play'));
+    }
+  }, 400);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -5737,12 +5993,21 @@ function applyFontSizes() {
   root.style.setProperty('--tt-translit-size',(isFinite(tr)  ? tr  : DEFAULTS.translitFontSize)    + 'rem');
   root.style.setProperty('--tt-english-size', (isFinite(en)  ? en  : DEFAULTS.englishFontSize)     + 'rem');
 }
+// With the transliteration under each word there is no translit row to follow: the Hebrew cell carries its
+// Latin line, so the highlight follows the Hebrew whatever the Follow radio says (a stored 'translit' would
+// otherwise neutralise every highlight). The radio keeps its value for when the placement goes back.
+function karaokeFollowEffective() {
+  return (settings.showTranslit && settings.translitPlacement === 'word') ? 'hebrew' : (settings.karaokeFollow || 'hebrew');
+}
 function applyKaraokeAppearance() {
   const body = document.body;
   ['highlight','outline','underline','none'].forEach(s =>
     body.classList.toggle('kar-style-' + s, settings.karaokeStyle === s));
+  const follow = karaokeFollowEffective();
   ['hebrew','translit','both'].forEach(s =>
-    body.classList.toggle('kar-follow-' + s, settings.karaokeFollow === s));
+    body.classList.toggle('kar-follow-' + s, follow === s));
+  const note = document.getElementById('kfUnderNote');
+  if (note) note.hidden = !(settings.showTranslit && settings.translitPlacement === 'word');
 }
 /* One map, three former copies (resetFontSize, syncFormToSettings' sizeMap, the wireSize call
    list). Keyed by the argument the ↺ buttons already pass in their onclick=. */
@@ -5892,6 +6157,7 @@ function wireTranslit() {
   sel.addEventListener('change', () => {
     settings.translitStyle = sel.value;
     saveSettings();
+    _wtlMemo.clear();   // the under-word memo is keyed by style
     if (settings.showTranslit) {
       window.HebrewTransliterator.ensureLoaded().then(() => renderText());
     }
@@ -6215,6 +6481,9 @@ function syncFormToSettings() {
   toggleTropeOptionsVisibility(settings.colorCodeTrope);
   // translit style
   document.getElementById('optTranslitStyle').value = settings.translitStyle || 'modernIsraeli';
+  const tp = settings.translitPlacement === 'word' ? 'word' : 'row';
+  document.getElementById('tpRow').checked = tp === 'row';
+  document.getElementById('tpWord').checked = tp === 'word';
   // TTS rate (drawer + audio-bar sliders mirror each other)
   const ttsR = parseFloat(settings.ttsRate) || 0.75;
   document.getElementById('optTTSRate').value = ttsR;
@@ -6240,6 +6509,7 @@ function syncFormToSettings() {
   document.getElementById('ttKaraokeRate').value = settings.karaokeRate;
   document.getElementById('ttKaraokeRateVal').textContent = (parseFloat(settings.karaokeRate) || 1.0).toFixed(2) + '×';
   syncMiniRate();
+  syncPitchControls();
   document.getElementById('ttVersionWrap').style.display = settings.showTranslation ? '' : 'none';
 }
 function toggleColorOptionsVisibility(show) {
@@ -6363,6 +6633,11 @@ function wireSettingsForm() {
     if (currentAudio) currentAudio.playbackRate = settings.karaokeRate;
     saveSettings();
   });
+  // Chant pitch — drawer + audio bar, one writer (applyKaraokePitch); the drag is the gesture the graph needs.
+  ['optKaraokePitch', 'ttKaraokePitch'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', e => applyKaraokePitch(parseInt(e.target.value, 10)));
+  });
   // Pause between verse-loop repeats — the drawer select and the audio bar's loop-scoped
   // mirror both write settings.loopPauseMs and sync each other (the applyTtsRate idiom).
   // The loop reads the value live at each verse end, so a mid-loop change applies to the
@@ -6384,7 +6659,18 @@ function wireSettingsForm() {
     settings.showTranslit = e.target.checked;
     saveSettings();
     maybeEnsureTranslit();
+    applyKaraokeAppearance();   // the effective Follow depends on whether the under-word placement is showing
     renderText();
+  });
+  document.querySelectorAll('input[name="optTranslitPlace"]').forEach(r => {
+    r.addEventListener('change', e => {
+      if (!e.target.checked) return;
+      settings.translitPlacement = e.target.value === 'word' ? 'word' : 'row';
+      saveSettings();
+      maybeEnsureTranslit();
+      applyKaraokeAppearance();
+      renderText();
+    });
   });
   document.getElementById('ttShowTranslation').addEventListener('change', e => {
     settings.showTranslation = e.target.checked;
@@ -7882,6 +8168,12 @@ async function init() {
     _pendingLoopVerse = settings.loopVerse;
     _pendingLoopArmOnly = true;
   }
+  // Chant pitch: a stored non-zero pitch builds its graph on the first tap or key (a real gesture — what a
+  // browser needs to start an AudioContext), and every later one re-checks that the context is running.
+  // With pitch at 0 and no graph these are no-ops.
+  document.addEventListener('pointerup', _pitchKick, true);
+  document.addEventListener('keydown', _pitchKick, true);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') _pitchKick(); });
   initCloudSaves();
   await fetchAndRender();
   if (deepVerse) flashVerse(deepVerse);   // scroll+flash the deep-linked verse (no-ops if not rendered)
@@ -7959,6 +8251,7 @@ function applyI18n() {
   try { updateTransFooter(); } catch (e) {}         // translation credit line
   try { syncTTSVoiceStatus(); } catch (e) {}        // TTS voice readout — written pre-ready, never re-rendered
   try { updateCopyTextarea(); } catch (e) {}        // re-localize the "{count} selected" line
+  try { syncPitchControls(); } catch (e) {}         // pitch sliders' aria-valuetext carries the translated unit
   // The empty-reading card and the status line are written BEFORE I18n.ready whenever a data
   // fetch fails fast (blocked/offline network), and the reading re-render below only covers a
   // LOADED reading — so on that path both stayed frozen at their raw key strings, in both
@@ -7978,6 +8271,8 @@ function applyI18n() {
     if (st && st.dataset.i18nKey) st.textContent = I18n.t(st.dataset.i18nKey);
     const ts = document.getElementById('optTranslitStatus');
     if (ts && ts.dataset.i18nKey) ts.textContent = I18n.t(ts.dataset.i18nKey);
+    const ps = document.getElementById('optPitchStatus');
+    if (ps && ps.dataset.i18nKey) ps.textContent = I18n.t(ps.dataset.i18nKey);
     // The range-picker note IS interpolated, so it also carries its params (own data, but read
     // back through ivritSafeParse — the house rule for every parse that isn't a trusted literal).
     const rn = document.getElementById('ttCopyRangeNote');
@@ -8426,6 +8721,7 @@ const LINK_DISPLAY = {
   showTranslit:        _linkBool,
   showTranslation:     _linkBool,
   translitStyle:       v => _linkOneOf(v, _linkChoices('#optTranslitStyle option')),
+  translitPlacement:   v => _linkOneOf(v, _linkChoices('input[name="optTranslitPlace"]')),
   hebFont:             v => HEB_FONTS.some(f => f.name === v) ? v : undefined,   // a My Font stays on its device
   hebFontSize:         v => _linkSize(v, 'optHebSize'),
   translitFontSize:    v => _linkSize(v, 'optTranslitSize'),

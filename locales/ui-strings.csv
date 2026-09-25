@@ -3852,7 +3852,15 @@ torah.audio.loop_pause_none,None,ללא,select option,
 torah.audio.loop_pause_tip,"When you loop a verse (🔁), wait this long before repeating it — handy for practicing along.","כשאתם חוזרים על פסוק בלולאה (🔁), המתינו זמן זה לפני החזרה — נוח לתרגול תוך כדי.",tooltip,
 torah.audio.loopstop_aria,Stop looping,עצירת הלולאה,loop-stop button aria + title,
 torah.audio.loopstop_text,Stop loop,עצירת הלולאה,loop-stop button text,leading-emoji
-torah.audio.mini_rate_title,Chant speed — expand the audio bar for speed controls,מהירות השירה — הרחיבו את סרגל השמע לפקדי המהירות,collapsed-bar speed chip title + aria,
+torah.audio.mini_rate_title,Chant speed and pitch — expand the audio bar for the controls,מהירות וגובה השירה — הרחיבו את סרגל השמע לפקדים,collapsed-bar speed chip title + aria,
+torah.audio.pitch_aria,Chant pitch in semitones,גובה השירה בחצאי טונים,audio-bar + drawer pitch slider aria,aria-label only
+torah.audio.pitch_blocked,This network didn't allow pitch shifting; the chant plays at its recorded pitch.,הרשת כאן לא אפשרה שינוי גובה צליל; השירה מושמעת בגובה המוקלט.,status under the drawer's pitch slider when the host refused the CORS load,
+torah.audio.pitch_label,Pitch,גובה צליל,pitch slider label (audio bar + drawer),
+torah.audio.pitch_load_failed,The pitch module couldn't be loaded (offline?). The chant plays at its recorded pitch.,לא ניתן היה לטעון את מודול גובה הצליל (אולי אין חיבור). השירה מושמעת בגובה המוקלט.,status under the drawer's pitch slider,
+torah.audio.pitch_tap_play,Tap play again to hear the chant at the new pitch.,הקישו שוב על נגן כדי לשמוע את השירה בגובה החדש.,toast when the audio context could not resume,
+torah.audio.pitch_tip,Moves the chant up or down in half-steps so it sits in your voice. Speed and word highlighting stay as they are. The first change loads a small audio module.,מעביר את השירה למעלה או למטה בחצאי טונים כדי שתתאים לקול שלכם. המהירות והדגשת המילים נשארות כפי שהן. השינוי הראשון טוען מודול שמע קטן.,tooltip beside the drawer's pitch slider,
+torah.audio.pitch_unsupported,Pitch shifting isn't available in this browser.,שינוי גובה הצליל אינו זמין בדפדפן זה.,status under the drawer's pitch slider,
+torah.audio.pitch_valuetext,{n} semitones,{n} חצאי טון,aria-valuetext of both pitch sliders; {n} is the signed number,do-not-translate {n}
 torah.audio.pause_aria,Pause,השהה,play/pause button aria (dynamic),aria-label only
 torah.audio.play_aria,Play,נגן,play/pause button aria (dynamic),aria-label only
 torah.audio.playpause_aria,Play or pause,נגן או השהה,play/pause button aria,aria-label only
@@ -3907,7 +3915,7 @@ torah.share.button,Copy link,העתקת קישור,top-bar button that copies a 
 torah.share.copied_range,Link copied — {ref},הקישור הועתק — {ref},toast after copying a practice link narrowed to a verse range,mixed UI+content — do not translate {…}
 torah.share.copied_span,"Link copied — a link holds one range, so it opens all of {ref}, including verses you did not tick.","הקישור הועתק — קישור מכיל טווח אחד, ולכן הוא פותח את כל {ref}, כולל פסוקים שלא סומנו.",toast when a selection with gaps in it had to be widened to its full span,mixed UI+content — do not translate {…}
 torah.share.include_settings,Include my settings,כולל ההגדרות שלי,"toggle beside Copy link — the link also carries the sender's display settings (font, colors, what shows) as ?s=",
-torah.share.include_settings_tip,"Adds your font, text sizes, vowel and trope color coding, and what the reading shows (nikkud, trope marks, transliteration, translation, layout) to the link. Whoever opens it sees the reading your way, and can keep those settings or go back to their own.","מוסיף לקישור את הגופן, גודלי הטקסט, צביעת התנועות והטעמים ומה שהקריאה מציגה (ניקוד, טעמים, תעתיק, תרגום, פריסה). מי שפותח אותו רואה את הקריאה כמו אצלכם, ויכול לשמור את ההגדרות האלה או לחזור להגדרות שלו.",tooltip,
+torah.share.include_settings_tip,"Adds your font, text sizes, vowel and trope color coding, and what the reading shows (nikkud, trope marks, transliteration and where it sits, translation, layout) to the link. Whoever opens it sees the reading your way, and can keep those settings or go back to their own.","מוסיף לקישור את הגופן, גודלי הטקסט, צביעת התנועות והטעמים ומה שהקריאה מציגה (ניקוד, טעמים, תעתיק ומיקומו, תרגום, פריסה). מי שפותח אותו רואה את הקריאה כמו אצלכם, ויכול לשמור את ההגדרות האלה או לחזור להגדרות שלו.",tooltip,
 torah.share.with_settings,Your display settings are included.,הגדרות התצוגה שלכם כלולות בקישור.,second line of the Copy link toast when Include my settings is on,
 torah.share.with_settings_no_font,"Your display settings are included, but not your own font ""{font}"" — a link can't carry it, so the reading opens in the standard font.","הגדרות התצוגה שלכם כלולות בקישור, אבל לא הגופן האישי ""{font}"" — קישור לא יכול להעביר אותו, ולכן הקריאה תיפתח בגופן הרגיל.",second toast line when the chosen font is a My Font (stored on this device only),do-not-translate {font}
 torah.share.view_note,You're seeing this reading with the sender's display settings. Your own settings haven't changed.,אתם רואים את הקריאה עם הגדרות התצוגה של מי ששלח את הקישור. ההגדרות שלכם לא השתנו.,note above the reading when a practice link carried the sender's display settings,
@@ -4003,6 +4011,7 @@ torah.display.follow_both,Both,שניהם,radio label,
 torah.display.follow_hebrew,Hebrew,עברית,radio label,
 torah.display.follow_label,Follow,מעקב,settings label,
 torah.display.follow_translit,Translit,תעתיק,radio label,
+torah.display.follow_under_note,"With the transliteration under each word, the highlight follows the Hebrew word and its transliteration moves with it.","כשהתעתיק מתחת לכל מילה, ההדגשה עוקבת אחרי המילה העברית והתעתיק שלה נע יחד איתה.",note under the Follow radios (shown only while the transliteration sits under each word),
 torah.display.font_default_tag,[DEFAULT],[ברירת מחדל],font picker default marker,
 torah.display.font_sizes_header,Font sizes,גודלי גופן,settings subheader,
 torah.display.karaoke_header,Karaoke settings,הגדרות קריוקי,settings subheader,
@@ -4115,13 +4124,13 @@ torah.settings.color_for_aria,Color for {name},צבע עבור {name},vowel/trop
 torah.settings.expand_all,Expand all menus,הרחבת כל התפריטים,button,
 torah.settings.panel_about,About & FAQ,אודות ושאלות נפוצות,panel title,
 torah.settings.panel_cloud,Cloud saves,שמירות בענן,settings drawer panel title (hosts the shared cloud-saves panel),
-torah.settings.panel_audio,Audio speeds,מהירויות שמע,panel title,
+torah.settings.panel_audio,Audio speeds & pitch,מהירויות שמע וגובה צליל,panel title,
 torah.settings.panel_copy,Copy,העתקה,panel title,
 torah.settings.panel_display,Display,תצוגה,panel title,
 torah.settings.panel_font,Hebrew font,גופן עברי,panel title,
 torah.settings.panel_reset,Reset,איפוס,panel title,
 torah.settings.panel_schedule,Reading schedule,לוח קריאה,panel title,
-torah.settings.panel_translit,Transliteration scheme,סגנון תעתיק,panel title,
+torah.settings.panel_translit,Transliteration,תעתיק,panel title,
 torah.settings.panel_trope_color,Trope color coding,צביעת טעמים,panel title,
 torah.settings.panel_vowel_color,Vowel color coding,צביעת תנועות,panel title,
 torah.settings.reset_all,Reset all Torah Trainer settings,איפוס כל הגדרות מאמן התורה,button,leading-emoji
@@ -4178,6 +4187,9 @@ torah.trans.footer_line,"Translation: <em>{version}</em> · {license} (via <a hr
 torah.trans.footer_none,Translation: (none selected — toggle Translation off or pick a version),תרגום: (לא נבחר — כבו את התרגום או בחרו גרסה),footer translation line,
 torah.trans.lib_failed,Transliteration library failed to load (offline?).,טעינת ספריית התעתיק נכשלה (לא מקוון?).,translit status,
 torah.trans.lib_loaded,Library loaded.,הספרייה נטענה.,translit status,
+torah.trans.place_label,Show it,הצגה,settings label for the transliteration placement radios,
+torah.trans.place_row,Own line,בשורה נפרדת,radio label,
+torah.trans.place_word,Under each word,מתחת לכל מילה,radio label,
 torah.trans.license_cc0,CC0,CC0,license label,
 torah.trans.license_ccby,CC BY,CC BY,license label,
 torah.trans.license_ccbync,CC BY-NC,CC BY-NC,license label,
