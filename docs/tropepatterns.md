@@ -276,11 +276,18 @@ pass):
   writes that file (there are no High Holiday recordings to draft from), so it is edited by hand.
   The tutor draws it when Settings → Melody is *High Holidays*; the four marks it lacks say so on
   their cards.
+- Neither file is ever rewritten for another key. The Learn tab's key bar (and Settings → Sing along →
+  Key) moves every note of the melody on screen by whole half steps, up to six either way, and redraws
+  the staff in the key it lands on; the chart's chromatic notes keep their degree (the lowered 7th,
+  the High Holiday raised 4th), so each figure keeps its printed shape. *Low voices* leaves the notes
+  where they are, writes the small 8 under the clef and sounds the tune an octave down — the octave
+  men sing both charts in. `docs/reference/torah-and-trope.md` → *Key and voice* has the details.
 
 ## F. Ideas this chart suggests
 
-Each of these is a Feature seed in the improvement loop's ledger (`docs/IMPROVEMENT_LOG.md`), the key
-control among the Trope Tutor settings seeds, so a loop session can pick one up.
+Each of these is a Feature seed in the improvement loop's ledger (`docs/IMPROVEMENT_LOG.md`), so a loop
+session can pick one up. (The key control for the tune button that stood fifth here has shipped, as the
+key bar described in section E.)
 
 1. High Holiday recordings for the Torah Trainer's Rosh Hashanah and Yom Kippur readings: those
    readings now link to the tutor on the High Holiday melody, but their chant buttons still play
@@ -291,9 +298,7 @@ control among the Trope Tutor settings seeds, so a loop session can pick one up.
    order.
 4. Context variants on the Learn card: munach's shapes and the tevir-context mercha and kadma,
    each with the phrase they belong to.
-5. A key control for the tune button, so a teacher can move the tones into a student's range
-   (the Settings speed slider already sets its tempo).
-6. Teaching the end-of-aliyah sof pasuk, on the card and as a highlight of an aliyah's last verse
+5. Teaching the end-of-aliyah sof pasuk, on the card and as a highlight of an aliyah's last verse
    in the Torah Trainer.
-7. A munach legarmeh card.
-8. A one-sheet phrase chart to print in the teacher's chosen key.
+6. A munach legarmeh card.
+7. A one-sheet phrase chart to print in the teacher's chosen key (the key bar's setting).

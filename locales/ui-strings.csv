@@ -4347,6 +4347,32 @@ trope.header.subtitle,"Learn the Torah cantillation marks — names, symbols, an
 trope.header.title,Trope Tutor,מאמן הטעמים,h1 header,
 trope.header.tour_button,Tour,סיור,header button,svg-icon-in-markup
 trope.header.tour_title,Take a quick tour,צאו לסיור מהיר,header button title,
+trope.key.down_aria,Lower the staffs a half step,הורדת החמשות בחצי טון,Learn key bar down button aria-label + title,aria-label only
+trope.key.label,Key,סולם,Settings → Sing along item label + the Learn key bar's label,
+trope.key.low_tag,Low voices: an octave lower,קולות נמוכים: אוקטבה למטה,Learn key bar tag shown while Settings → Voice is Low voices,
+trope.key.name,{note} major,{note} מז'ור,the key the staffs are drawn in (Learn key bar + Settings readout),do-not-translate {note} (a trope.key.note_* name)
+trope.key.note_a,A,לָה,note name inside trope.key.name,Hebrew: pointed solfège as in the intro's לָה מז'ור
+trope.key.note_ab,A♭,לָה במול,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.note_b,B,סִי,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.note_bb,B♭,סִי במול,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.note_c,C,דוֹ,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.note_d,D,רֵה,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.note_db,D♭,רֵה במול,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.note_e,E,מִי,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.note_eb,E♭,מִי במול,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.note_f,F,פָה,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.note_fs,F♯,פָה דיאז,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.note_g,G,סוֹל,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.rel_down.one,1 half step lower,חצי טון אחד למטה,how far the staffs moved from the printed key (Learn key bar + Settings note),plural
+trope.key.rel_down.other,{count} half steps lower,{count} חצאי טון למטה,how far the staffs moved from the printed key (Learn key bar + Settings note),plural; do-not-translate {count}
+trope.key.rel_printed,as printed,כמו בדפוס,the staffs are in the printed key (Learn key bar + Settings note),
+trope.key.rel_up.one,1 half step higher,חצי טון אחד למעלה,how far the staffs moved from the printed key (Learn key bar + Settings note),plural
+trope.key.rel_up.other,{count} half steps higher,{count} חצאי טון למעלה,how far the staffs moved from the printed key (Learn key bar + Settings note),plural; do-not-translate {count}
+trope.key.reset,As printed,כמו בדפוס,Learn key bar reset button (shown while the staffs are moved),svg-icon-in-markup
+trope.key.reset_aria,Back to the printed key,חזרה לסולם המודפס,reset title/aria (Learn key bar + Settings slider),
+trope.key.tip,"Moves every staff and its tune up or down in half steps so it sits in your voice. The staffs are redrawn in the new key, and a printed chart follows. The recordings keep the reader's own pitch.","מעביר כל חמשה ואת המנגינה שלה למעלה או למטה בחצאי טון, כדי שתתאים לקול שלכם. החמשות מצוירות מחדש בסולם החדש, וכך גם טבלה מודפסת. ההקלטות נשארות בגובה הצליל של הקורא.",tooltip,
+trope.key.up_aria,Raise the staffs a half step,הגבהת החמשות בחצי טון,Learn key bar up button aria-label + title,aria-label only
+trope.key.valuetext,"{key}, {rel}","{key}, {rel}",Settings key slider aria-valuetext + the key bar's screen-reader announcement,do-not-translate {key} {rel}
 trope.learn.examples_unavailable,Examples unavailable (index not loaded).,הדוגמאות אינן זמינות (המפתח לא נטען).,card empty state,
 trope.learn.families_aria,Trope clause families,משפחות הטעמים,family chip group aria,aria-label only
 trope.learn.family_note_etnachta,"The verse's deep mid-point rest. Etnachta splits the verse in two, and munach leads into it, often after the same mercha and tipcha that close the verse.","נקודת המנוחה העמוקה שבאמצע הפסוק. האתנחתא חוצה את הפסוק לשניים, ומונח מוביל אליה, לרוב אחרי אותם מרכא וטפחא שחותמים את הפסוק.",family teaching note (Learn),pedagogical prose; scope-ambiguous
@@ -4408,6 +4434,7 @@ trope.settings.panel_drill,Drill,תרגול,Settings tab group heading,
 trope.settings.panel_font,Hebrew Font,גופן עברי,Settings tab group heading,
 trope.settings.panel_names,Names & Tradition,שמות ומסורת,Settings tab group heading,
 trope.settings.panel_progress,Progress,התקדמות,Settings tab group heading,
+trope.settings.panel_sing,Sing along,שרים יחד,Settings tab group heading (Key + Voice),
 trope.settings.question_types,Question types,סוגי שאלות,Settings tab item label above the three drill toggles (small caps style),
 trope.settings.reset_size_aria,Reset Hebrew size,איפוס גודל עברית,reset button aria,aria-label only
 trope.settings.reset_size_title,Reset size,איפוס גודל,reset button title,
@@ -4426,6 +4453,8 @@ trope.toast.audio_unreachable_skipped,Audio isn’t reachable — this question 
 trope.toast.clip_switched,That clip wouldn’t load — switched to another example.,הקטע הזה לא נטען — עברנו לדוגמה אחרת.,toast,
 trope.toast.clip_trying_another,That clip wouldn’t load — trying another example.,הקטע הזה לא נטען — מנסים דוגמה אחרת.,toast,
 trope.toast.clip_wont_load,That clip wouldn’t load.,הקטע הזה לא נטען.,toast,
+trope.tour.key_body,"Use the arrows to move every staff and its tune up or down a half step at a time, until it sits in your voice. Press ▶ beside a mark's name to hear its tune.","השתמשו בחצים כדי להעביר כל חמשה ואת המנגינה שלה חצי טון למעלה או למטה בכל פעם, עד שתתאים לקול שלכם. לחצו על ▶ ליד שם הטעם כדי לשמוע את המנגינה שלו.",tour step body,
+trope.tour.key_title,Sing in your key,שירו בסולם שלכם,tour step title,
 trope.tour.s1_body,Learn walks the marks family by family; Drill quizzes you on them.,הלימוד עובר על הטעמים משפחה אחר משפחה; התרגול בוחן אתכם עליהם.,tour step body,
 trope.tour.s1_title,Two modes,שני מצבים,tour step title,
 trope.tour.s2_body,The marks come in seven melodic families — the same color families as the Torah Trainer reader.,הטעמים מגיעים בשבע משפחות מלודיות — אותן משפחות צבע כמו בקורא של מאמן התורה.,tour step body,
@@ -4436,7 +4465,7 @@ trope.tour.s4_body,"Step through all seven families, then test yourself.","עב�
 trope.tour.s4_title,Work through them,עברו עליהם,tour step title,
 trope.tour.s5_body,"10 questions per session: name the marked word, match melody to symbol, or symbol to melody.","10 שאלות בכל מפגש: נקבו את המילה המסומנת, התאימו מנגינה לסימן, או סימן למנגינה.",tour step body,
 trope.tour.s5_title,Drill mode,מצב תרגול,tour step title,
-trope.tour.s6_body,"Naming tradition, melody (year-round or High Holidays), Hebrew font, question types, and playback speed live here.","מסורת השמות, המנגינה (כל השנה או ימים נוראים), הגופן העברי, סוגי השאלות ומהירות ההשמעה נמצאים כאן.",tour step body,
+trope.tour.s6_body,"Naming tradition, melody (year-round or High Holidays), key and voice, Hebrew font, question types, and playback speed live here.","מסורת השמות, המנגינה (כל השנה או ימים נוראים), הסולם והקול, הגופן העברי, סוגי השאלות ומהירות ההשמעה נמצאים כאן.",tour step body,
 trope.tour.s6_title,Settings,הגדרות,tour step title,
 trope.tradition.ashkenazi,Ashkenazi,אשכנזי,radio label,
 trope.tradition.note,The recordings themselves follow PocketTorah's Ashkenazi melody either way.,ההקלטות עצמן הולכות אחר המנגינה האשכנזית של PocketTorah כך או כך.,settings note,
@@ -4444,6 +4473,11 @@ trope.tradition.primary_aria,Primary trope names,שמות הטעמים העיק�
 trope.tradition.primary_label,Primary trope names,שמות הטעמים העיקריים,settings label,
 trope.tradition.primary_tip,"Both names are always shown on each card; this picks which one leads. Note the classic collision: Ashkenazi 'pashta' is Sephardi 'kadma', while Ashkenazi 'kadma' is Sephardi 'azla'.","שני השמות מוצגים תמיד בכל כרטיס; כאן בוחרים איזה מהם מוביל. שימו לב להתנגשות הקלאסית: 'פשטא' האשכנזי הוא 'קדמא' הספרדי, בעוד 'קדמא' האשכנזי הוא 'אזלא' הספרדי.",tooltip,
 trope.tradition.sephardi,Sephardi,ספרדי,radio label,
+trope.voice.aria,Voice for the tunes,הקול של המנגינות,radiogroup aria,aria-label only
+trope.voice.high,High voices,קולות גבוהים,radio label,
+trope.voice.label,Voice,קול,settings label,
+trope.voice.low,Low voices,קולות נמוכים,radio label,
+trope.voice.note,"Low voices hear every tune an octave lower, the way men sing the chart. The staffs keep their notes and show a small 8 under the clef.","בקולות נמוכים כל מנגינה נשמעת אוקטבה נמוכה יותר, כמו שגברים שרים את הטבלה. החמשות שומרות על התווים שלהן ומציגות 8 קטן מתחת למפתח.",settings note,
 trope.a11y.skip_to_tutor,Skip to the tutor,דלגו למאמן,Skip-link (a11y),aria/skip-link
 worksheet.a11y.skip_to_worksheet,Skip to the worksheet,דילוג לדף העבודה,Skip-link (a11y),aria/skip-link
 worksheet.actions.copy_link,Copy shareable link,העתק קישור לשיתוף,action button,leading-emoji

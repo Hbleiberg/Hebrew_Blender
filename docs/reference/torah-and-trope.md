@@ -177,8 +177,8 @@ stop and reconsider. Shell (dark mode, tooltips, tour, toast, My Fonts) is copie
 (Learn | Drill | Settings) laid out like the Font Maker's Settings tab: a serif heading per group over a
 hairline rule, the group's items in a grid (three across, two below 1024px, one below 640px) with small
 uppercase item labels, and nothing to collapse — so the page carries no panel-collapse memory. The
-groups are names and tradition (primary names, melody), drill, Hebrew font, and a shared row of progress,
-cloud saves and about.
+groups are names and tradition (primary names, melody), sing along (key, voice — see *Key and voice*
+below), drill, Hebrew font, and a shared row of progress, cloud saves and about.
 There is no header gear; `openSettings()` survives only as `setMode('settings')` for the account chip's
 "Cloud saves…" item (which then scrolls to `#setCloud`) and the tools smoke. Switching to the tab
 re-syncs the controls from `settings`; every control saves on change. Print hides the tab like Drill.
@@ -213,7 +213,8 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   each telisha sings T′ on; `geresh_muqdam` has no figure and no entry). To change a motif, edit the JSON by hand,
   keep `verified:true`, update the row in `docs/tropepatterns.md`, bump the `?v=`, and audition it
   with the card's tune button. Figures longer than eight notes widen their staff, and one reaching
-  below A3 deepens it; the card header wraps it below the names.
+  below A3 deepens it; the card header wraps it below the names (and on a phone a staff too wide for
+  its card shrinks to fit, `max-inline-size:100%`).
   **The High Holiday melody is a second file, `data/trope/trope_motifs_hh.json`** (same shape,
   `system:"highholiday"`, `key:"C"` — no signature, so its B♭ and telisha ketana's F♯ draw with their
   accidentals), transcribed from the same book's High Holiday chart for the 21 marks it covers;
@@ -235,7 +236,8 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   there are no High Holiday recordings to draft from — so it is edited by hand like a verified
   entry, and its `?v=` is bumped on every change.
   **The tune button** (beside the names on every card with a motif) plays the staff as Web Audio
-  oscillator tones at the written pitch (B4 = 493.88 Hz, the octave children and women sing), one
+  oscillator tones at the staff's pitch — the written pitch (B4 = 493.88 Hz, the octave children and
+  women sing) moved by the Key setting, an octave lower with Low voices (below) — one
   `d` unit = 0.32 s divided by the Settings speed slider, lighting each `.tu-motif-note` with
   `.is-sounding` as it sounds; one tune at a time, it stops the clip engine before starting and a
   clip start or a mode switch stops it (`stopTune()`). The highlight re-finds the card by its
@@ -262,6 +264,43 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     Rabbi Charlie Schwartz). Both the JSON and the report carry the notice; keep it on anything
     derived from them.
   The script exits non-zero if a smoke test fails — never commit its output without a green run.
+- **Key and voice** (Settings → *Sing along*, and the Learn tab's key bar `#tuKeyBar`). Two fields of the
+  settings blob move every staff and its tune; the motif files are never touched.
+  - **`tuneShift`** (whole half steps, −6…6, default 0) moves every note of both melodies and redraws the
+    staff in the key it lands on: `staffKey()` = `shiftedKey(file key, shift)`, which reads the tonic's new
+    pitch class off `MAJOR_KEY_BY_PC` (C, D♭, D, E♭, E, F, F♯, G, A♭, A, B♭, B — the fewer-accidentals
+    spelling, F♯ for the tritone), and an unmoved chart keeps its own key name. `keySignature` and
+    `motifPitchPos` take the new key as they took the printed one, so the chart's chromatic notes keep
+    their degree — the lowered 7th and the High Holiday raised 4th — which is why D♭ major writes C♭ and
+    F♯ major B♯: respelling them would bend the figure's shape. Every combination was checked note by
+    note (spelled pitch = sounding pitch), and at 0 every staff is byte-identical to the unmoved page.
+    The deepest staff is the High Holiday melody at −6 (C♯3, four ledger lines; the existing height
+    rule deepens it), the highest note F5 (Torah +6), so nothing grows at the top.
+  - **`tuneVoice`** (`'high'` or `'low'`, read through `tuneVoiceKey()`: any other stored value shows as
+    high and stays stored) never moves a note: Low voices writes a small `8` under the clef (the treble
+    clef that sounds an octave down, as men sing the printed chart) and the tune plays an octave lower,
+    in a fuller tone — a cached `PeriodicWave` of five harmonics, falling back to the triangle if one
+    cannot be built — because a triangle's faint overtones cannot carry A2–B3 through a phone or
+    Chromebook speaker.
+  - **One writer, one reader.** `setTuneShift(v)` (clamped through `_sliderNum`, like `loadSettings`) is
+    called by the Settings slider, the bar's arrows (`stepTuneShift`; `aria-disabled` at the ends so
+    focus stays) and both resets; it saves, stops a playing tune (the `setMelody` precedent) and
+    re-renders Learn. `setTuneVoice(v)` does the same for the voice. `syncTuneControls()` is the read-only
+    half, called from `renderLearn`, `syncFormToSettings` and `applyI18n`, so a melody change (which
+    renames the key: +3 is C major on the year-round staffs, E♭ major on the High Holiday ones), a reset,
+    a cloud download and a language switch all repaint both controls. It writes no text before
+    `_i18nReady`, and the bar stays hidden until then and while the melody's motif file is missing.
+  - **Text.** The key name is `trope.key.name` around one of twelve `trope.key.note_*` names (Hebrew: the
+    pointed solfège of the page's intro, "לָה מז'ור"); the distance is `trope.key.rel_*` (plural
+    `.one`/`.other`). The Settings readout is the signed number ("+3", pinned `dir="ltr"`) so its width
+    never moves the slider's track; the note under it and the slider's `aria-valuetext` name the key.
+    Only the bar's own buttons write its polite live region (`#tuKeyLive`), so the slider and a
+    language switch do not announce twice.
+  - **Paper.** The print chart is built by `renderLearn`, so it prints in the chosen key. The bar prints
+    only while moved (`.is-moved`: a shift or Low voices), without its arrows and reset, so a moved chart
+    names its key and a printed-key chart carries no key line.
+  - The recordings (Learn examples and the drill) keep the reader's own pitch; the Torah Trainer's
+    chant pitch is the tool for moving a recording.
 - **`TROPES` taxonomy** — one `═══`-marked table (26 entries — zarka is a single entry carrying
   both codepoints: key, chars, display, Ashkenazi +
   Sephardi names, family, rare flag) kept **byte-identical** between `scripts/build-trope-index.mjs`
@@ -290,9 +329,8 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   (`fonts/NotoSerifHebrew-Taamim.ttf`); without it every mark is tofu on stock macOS/iOS.
   Postpositive/prepositive marks sitting at word edges is **correct**, not a bug.
 - **Persistence** (no presets, no `.ivrit` engine — AllTools-only backup):
-  `hebrewTropeTutor_settings` (tradition ashk/seph, hebFont, hebFontSize, drill-type toggles,
-  `drillScope`, `drillLength`,
-  playbackRate) and `hebrewTropeTutor_progress` (`{v:1, tropes:{key:{r,w}}, families:{}, pbStreak}`).
+  `hebrewTropeTutor_settings` (tradition ashk/seph, `melody`, `tuneShift`, `tuneVoice`, hebFont,
+  hebFontSize, drill-type toggles, `drillScope`, `drillLength`, playbackRate) and `hebrewTropeTutor_progress` (`{v:1, tropes:{key:{r,w}}, families:{}, pbStreak}`).
   Registered in all five AllTools sites in `index.html`; progress imports go through
   `tropeProgressMerge` (r/w/pbStreak = max, families = union). `hebrewTropeTutor_tourSeen` is the
   export-exempt, erase-cleared tour flag.

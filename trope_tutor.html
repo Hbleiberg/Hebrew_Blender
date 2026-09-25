@@ -325,6 +325,9 @@ body.dark .tu-card { background:#131a29; }
    inline-end edge (margin-inline-start:auto) rather than scaling into illegibility.
    Notation itself is inherently LTR (direction pinned; SVG coords are absolute). */
 .tu-motif { inline-size:165px; block-size:52px; flex-shrink:0; margin-inline-start:auto; color:var(--text); direction:ltr; }
+/* A long figure in a many-accidental key (shalshelet in F♯ major draws ~270px) shrinks to the card on a phone
+   instead of being clipped by the card's overflow:hidden; the viewBox keeps its proportions. */
+.tu-motif { max-inline-size:100%; }
 /* High Holiday melody: a mark with no figure in that set says so where its staff would be. */
 .tu-motif-none { margin-inline-start:auto; max-inline-size:240px; font-size:0.76rem; font-style:italic; line-height:1.35; color:var(--muted); }
 /* Learn tab: names the melody the staffs show whenever it is not the year-round one. */
@@ -335,6 +338,25 @@ body.dark .tu-card { background:#131a29; }
 }
 .tu-melody-note[hidden] { display:none; }
 body.dark .tu-melody-note { background:#131a29; }
+/* Learn tab: the key bar (Settings → Key's twin). The name keeps a floor width so the arrows beside it
+   do not jump as "C major" becomes "D♭ major"; the reset sits at the row's end and wraps below on a phone. */
+.tu-key-bar {
+  display:flex; align-items:center; flex-wrap:wrap; gap:6px 10px; margin:0 0 14px; padding:6px 12px;
+  border:1px solid var(--border); border-radius:8px; background:var(--cream);
+  font-size:0.86rem; line-height:1.45; color:var(--text);
+}
+.tu-key-bar[hidden] { display:none; }
+body.dark .tu-key-bar { background:#131a29; }
+.tu-key-lbl { font-size:0.74rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; }
+.tu-key-name { display:inline-block; min-inline-size:4.5em; text-align:center; }   /* widest: "D♭ major" 4.2em */
+html[lang="he"] .tu-key-name { min-inline-size:6.5em; }                          /* widest: "לָה במול מז'ור" 6.2em */
+.tu-key-rel { color:var(--muted); }
+.tu-key-voice {
+  font-size:0.74rem; font-weight:700; color:var(--gold-text);
+  border:1px solid var(--gold); border-radius:4px; padding:1px 6px;
+}
+.tu-key-voice[hidden], .tu-key-reset[hidden] { display:none; }
+.tu-key-reset { margin-inline-start:auto; }
 .tu-glyph {
   font-family:var(--heb-font); font-size:calc(var(--tu-heb-size) * 1.35); line-height:1.15;
   min-width:64px; min-height:64px; display:flex; align-items:center; justify-content:center;
@@ -753,6 +775,9 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
      sheet — measured S253 at 14 of 14 pages of a Learn-tab print, text and shadow both. Same
      shape the dictionary closed in S252; torah_trainer already hides its `.tt-hint-toast` here. */
   header .hright, .tu-tabs, footer nav, .tu-ex-play, .tu-qplay, .tu-toast, .tu-melody-change { display:none !important; }
+  /* The key bar's arrows and reset are screen controls; the line itself prints only while the staffs are
+     moved, so a chart in the printed key carries no key line and a moved one names its key. */
+  .tu-key-step, .tu-key-reset, .tu-key-bar:not(.is-moved) { display:none !important; }
   /* The footer's FAQ/how-to disclosures are screen navigation; on paper they print as a row of
      closed summaries and, at Letter, spilled onto a 14th sheet holding nothing else. The credits
      stay: the motif staffs derive from PocketTorah audio, so the CC BY-SA notice belongs on the
@@ -794,7 +819,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
   body.dark .mark-hit { color:#8a6216; }
   /* These slabs only surface when the teacher turns background graphics ON to get the card
      rules; then they print as solid blocks of ink. */
-  body.dark .tu-card, body.dark .tu-family-note, body.dark .tu-glyph { background:#fff; }
+  body.dark .tu-card, body.dark .tu-family-note, body.dark .tu-glyph, body.dark .tu-melody-note, body.dark .tu-key-bar { background:#fff; }
   /* A card is one self-contained reference unit — its mark, its name in both traditions, its
      melody staff and its examples only mean anything together, so it must not be split across
      sheets (the torah_trainer .tt-verse treatment). Best-effort: a card taller than the page
@@ -923,6 +948,22 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <span data-i18n="trope.learn.melody_hh_note">These staffs show the High Holiday melody, for the Torah reading on Rosh Hashanah and Yom Kippur.</span>
       <button class="btn btn-xs btn-secondary tu-melody-change" type="button" onclick="openMelodySetting()" aria-label="Change the melody in Settings" data-i18n="trope.learn.melody_change" data-i18n-aria-label="trope.learn.melody_change_aria">Change</button>
     </div>
+    <!-- The key bar: moves every staff and its tune a half step at a time (settings.tuneShift — the same
+         setting as Settings → Sing along → Key). syncTuneControls() writes its text and states; it stays
+         hidden while no motif file is loaded (no staffs to move). The arrows and the reset are screen-only;
+         the line prints only while the staffs are moved (.is-moved), so a moved chart names its key. -->
+    <div class="tu-key-bar" id="tuKeyBar" role="group" aria-labelledby="tuKeyLbl" hidden>
+      <span class="tu-key-lbl" id="tuKeyLbl" data-i18n="trope.key.label">Key</span>
+      <button class="btn btn-xs btn-secondary tu-key-step" id="tuKeyDown" type="button" onclick="stepTuneShift(-1)" title="Lower the staffs a half step" aria-label="Lower the staffs a half step" data-i18n-title="trope.key.down_aria" data-i18n-aria-label="trope.key.down_aria"><svg class="hi hi-sm hi-down" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.6 8.8 12 15.2l6.4-6.4"/></svg></button>
+      <strong class="tu-key-name" id="tuKeyName"></strong>
+      <button class="btn btn-xs btn-secondary tu-key-step" id="tuKeyUp" type="button" onclick="stepTuneShift(1)" title="Raise the staffs a half step" aria-label="Raise the staffs a half step" data-i18n-title="trope.key.up_aria" data-i18n-aria-label="trope.key.up_aria"><svg class="hi hi-sm hi-up" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.6 15.2 12 8.8l6.4 6.4"/></svg></button>
+      <span class="tu-key-rel" id="tuKeyRel"></span>
+      <span class="tu-key-voice" id="tuKeyVoice" data-i18n="trope.key.low_tag" hidden>Low voices: an octave lower</span>
+      <button class="btn btn-xs btn-secondary hi-btn tu-key-reset" id="tuKeyReset" type="button" onclick="resetTuneShiftFromBar()" title="Back to the printed key" data-i18n-title="trope.key.reset_aria" hidden><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="trope.key.reset">As printed</span></button>
+      <!-- What the arrows just did, for a screen reader: written only by the bar's own buttons, so the
+           Settings slider (which announces its own aria-valuetext) and a language switch stay quiet. -->
+      <span class="vh" id="tuKeyLive" aria-live="polite"></span>
+    </div>
     <div class="tu-chips" id="tuFamilyChips" role="group" aria-label="Trope clause families" data-i18n-aria-label="trope.learn.families_aria"></div>
     <div class="tu-family-note" id="tuFamilyNote"></div>
     <div class="tu-cards" id="tuCards"></div>
@@ -1029,6 +1070,34 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
               <label for="melHH" data-i18n="trope.melody.highholiday">High Holidays</label>
             </span>
             <p class="settings-note" data-i18n="trope.melody.note">The staffs and their play buttons follow this choice. The recordings and the drill use the year-round melody either way.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sing along: Key is the Learn tab's key bar twin (one setting, settings.tuneShift, one writer
+           setTuneShift); Voice sounds every tune an octave down. syncTuneControls() fills the readouts. -->
+      <div class="tu-set-group">
+        <h2 class="tu-set-title" data-i18n="trope.settings.panel_sing">Sing along</h2>
+        <div class="tu-set-grid">
+          <div class="tu-set-item">
+            <div class="tu-set-label"><span id="optTuneShiftLbl" data-i18n="trope.key.label">Key</span>
+              <span class="tip-wrap" data-i18n-tip="trope.key.tip" data-tip="Moves every staff and its tune up or down in half steps so it sits in your voice. The staffs are redrawn in the new key, and a printed chart follows. The recordings keep the reader's own pitch."><i class="tip-icon">?</i></span></div>
+            <div class="slider-row">
+              <input type="range" id="optTuneShift" min="-6" max="6" step="1" value="0" aria-labelledby="optTuneShiftLbl" oninput="setTuneShift(parseInt(this.value, 10))">
+              <span class="sval" id="optTuneShiftVal" dir="ltr"></span>
+              <button class="sreset" type="button" onclick="setTuneShift(0)" title="Back to the printed key" aria-label="Back to the printed key" data-i18n-title="trope.key.reset_aria" data-i18n-aria-label="trope.key.reset_aria"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+            </div>
+            <p class="settings-note" id="optTuneShiftNote"></p>
+          </div>
+          <div class="tu-set-item">
+            <div class="tu-set-label"><span data-i18n="trope.voice.label">Voice</span></div>
+            <span class="radio-group" role="radiogroup" aria-label="Voice for the tunes" data-i18n-aria-label="trope.voice.aria">
+              <input type="radio" id="voiceHigh" name="tuVoice" value="high" onchange="setTuneVoice('high')">
+              <label for="voiceHigh" data-i18n="trope.voice.high">High voices</label>
+              <input type="radio" id="voiceLow" name="tuVoice" value="low" onchange="setTuneVoice('low')">
+              <label for="voiceLow" data-i18n="trope.voice.low">Low voices</label>
+            </span>
+            <p class="settings-note" data-i18n="trope.voice.note">Low voices hear every tune an octave lower, the way men sing the chart. The staffs keep their notes and show a small 8 under the clef.</p>
           </div>
         </div>
       </div>
@@ -1307,6 +1376,8 @@ const DEFAULTS = {
   v: 1,
   tradition: 'ashk',            // 'ashk' | 'seph'
   melody: 'torah',              // 'torah' | 'highholiday' — which motif file draws the Learn-card staffs
+  tuneShift: 0,                 // half steps (−6…6) the staffs and their tunes move from the printed key
+  tuneVoice: 'high',            // 'high' | 'low' — low voices hear every tune an octave down (the staff shows the 8)
   hebFont: 'Frank Ruhl Libre',
   hebFontSize: 2.2,             // rem; applied via --tu-heb-size
   drillIdentify: true,
@@ -1374,6 +1445,7 @@ function loadSettings() {
   // the default (the dashboard's _sizeNum shape). No .ivrit engine here: this is the only restore path.
   settings.hebFontSize = _sliderNum(settings.hebFontSize, 'optFontSize', DEFAULTS.hebFontSize);
   settings.playbackRate = _sliderNum(settings.playbackRate, 'optRate', DEFAULTS.playbackRate);
+  settings.tuneShift = Math.round(_sliderNum(settings.tuneShift, 'optTuneShift', DEFAULTS.tuneShift));   // whole half steps only
 }
 function _sliderNum(val, sliderId, dflt) {
   const sl = document.getElementById(sliderId);
@@ -1849,6 +1921,10 @@ function renderMarkedWord(he, trope) {
    signature and spells in-key notes without accidentals, so a natural
    appears only where the chart prints one; with no key, rising notes take
    sharps and falling notes flats. docs/tropepatterns.md is the source.
+   Settings → Key (`tuneShift`, −6…6 half steps) moves every note and
+   redraws the staff in the key it lands on (staffKey()); Low voices
+   (`tuneVoice`) never moves a note — it writes the 8 under the clef and
+   the tune sounds an octave down, the way men sing the printed chart.
    ══════════════════════════════════════════════════════ */
 const SVG_NS = 'http://www.w3.org/2000/svg';
 function _svgEl(tag, attrs) {
@@ -1908,15 +1984,36 @@ function motifPitchPos(p, key) {
   const [step, acc] = r >= 0 ? UP[r] : DN[-r];
   return { step: step + oct, acc };
 }
-function renderMotifStaff(t, motif) {
-  const set = activeMotifs();
+// Key: the major key each tonic pitch class is written in once the staffs move (the fewer-accidentals
+// spelling; F♯ for the tritone). Every name is in KEY_SHARPS, so keySignature and motifPitchPos take it as is.
+const MAJOR_KEY_BY_PC = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+const TUNE_SHIFT_MAX = 6;   // half steps either way; #optTuneShift's min/max say the same
+function keyPc(key) { return (((LETTER_PC[key[0]] + (key[1] === '#' ? 1 : key[1] === 'b' ? -1 : 0)) % 12) + 12) % 12; }
+function shiftedKey(key, shift) {   // an unknown key (a file without one) stays as it is: its notes still move
+  if (!shift) return key;           // unmoved, a chart keeps its own spelling (a G♭ file is never respelled F♯)
+  return Number.isInteger(KEY_SHARPS[key]) ? MAJOR_KEY_BY_PC[(((keyPc(key) + shift) % 12) + 12) % 12] : key;
+}
+// Both read at use time, never trusted from the blob: loadSettings clamps tuneShift, and an unknown
+// tuneVoice (a newer page's choice) shows as high voices but stays stored, like melodyKey().
+function tuneShiftVal() {
+  const v = Math.round(Number(settings.tuneShift));
+  return Number.isFinite(v) ? Math.max(-TUNE_SHIFT_MAX, Math.min(TUNE_SHIFT_MAX, v)) : 0;
+}
+function tuneVoiceKey() { return settings.tuneVoice === 'low' ? 'low' : 'high'; }
+function staffKey(set = activeMotifs()) {   // the key the staffs are drawn in; '' while no motif file is loaded
   const key = set && typeof set.key === 'string' ? set.key : '';
+  return shiftedKey(key, tuneShiftVal());
+}
+function renderMotifStaff(t, motif) {
+  const key = staffKey();
+  const shift = tuneShiftVal();
   const sig = keySignature(key);
   const count = motif.notes.length;
   const MID = 28, STEP = 3;
   // Long figures (shalshelet, karnei parah…) widen the staff instead of cramping; the card header wraps it.
-  // A figure reaching below A3 (the High Holiday zarka ends on G3) deepens it just enough for that head.
-  const low = Math.min(0, ...motif.notes.map((n) => motifPitchPos(n.p, key).step));
+  // A figure reaching below A3 (the High Holiday zarka ends on G3, and a lowered key lower still) deepens it
+  // just enough for that head.
+  const low = Math.min(0, ...motif.notes.map((n) => motifPitchPos(n.p + shift, key).step));
   const W = 180 + Math.max(0, count - 8) * 11 + sig.length * 6, H = Math.max(56, MID - low * STEP + 4), X0 = 30 + sig.length * 6, XEND = W - 8;
   const svg = _svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'tu-motif', role: 'img' });
   if (W !== 180) svg.style.inlineSize = Math.round(W * 165 / 180) + 'px';
@@ -1928,6 +2025,11 @@ function renderMotifStaff(t, motif) {
   const clef = _svgEl('text', { x: 2, y: 38, 'font-size': 30, fill: 'currentColor', 'aria-hidden': 'true' });
   clef.textContent = '\u{1D11E}';   // 𝄞 treble-clef symbol, not a UI string — i18n-ignore
   svg.appendChild(clef);
+  if (tuneVoiceKey() === 'low') {   // treble clef with an 8 below: sung an octave lower than written
+    const eight = _svgEl('text', { x: 12, y: 55, 'font-size': 9, 'text-anchor': 'middle', fill: 'currentColor', 'aria-hidden': 'true', class: 'tu-motif-8vb' });
+    eight.textContent = '8';   // the octave figure of the notation, not a UI string — i18n-ignore
+    svg.appendChild(eight);
+  }
   // Key signature: F♯ on the top line, C♯ in the third space… (treble-clef positions as diatonic steps from B4).
   const SIG_STEP = { F: 4, C: 1, G: 5, D: 2, A: -1, E: 3, B: 0 }, FLAT_STEP = { B: 0, E: 3, A: -1, D: 2, G: -2, C: 1, F: -3 };
   sig.forEach((k, i) => {
@@ -1943,7 +2045,7 @@ function renderMotifStaff(t, motif) {
     const share = n.d + 1;
     const cx = X0 + ((cum + share / 2) / total) * (XEND - X0);
     cum += share;
-    const { step, acc } = motifPitchPos(n.p, key);
+    const { step, acc } = motifPitchPos(n.p + shift, key);
     const cy = MID - step * STEP;
     const g = _svgEl('g', { class: 'tu-motif-note', 'data-i': i, 'data-d': n.d, 'aria-hidden': 'true' });
     for (let s = 6; s <= step; s += 2)      // ledger lines above the staff
@@ -1981,11 +2083,22 @@ function renderMotifStaff(t, motif) {
    TUNE PLAYER — the Learn card's play button sounds the staff as plain Web
    Audio oscillator tones (CSP-clean, no new origins) and lights each note as
    it sounds, so a child can follow the tune along the staff. Written pitch
-   (B4 = 493.88 Hz — the octave children and women sing); the Settings speed
-   slider sets the tempo. One tune at a time: starting one stops the clip
-   engine, and a clip or a mode switch stops the tune (stopTune()).
+   (B4 = 493.88 Hz — the octave children and women sing), moved by the Key
+   setting like the staff it lights; Low voices sounds it an octave down.
+   The Settings speed slider sets the tempo. One tune at a time: starting one
+   stops the clip engine, and a clip or a mode switch stops the tune (stopTune()).
    ══════════════════════════════════════════════════════ */
 let _tuneCtx = null, _tuneOscs = [], _tuneTimers = [], _tuneKey = null, _tuneBtn = null, _tuneName = '';
+// Low voices get a fuller tone: A2–B3 sits below the bass roll-off of phone and Chromebook speakers, and a
+// triangle's overtones (1/9, 1/25 of the fundamental) are too faint to carry the pitch there. Built once per context.
+let _tuneLowWave = null;
+function _tuneLowWaveFor(ctx) {   // null when the browser cannot build one: the tune then plays its triangle rather than not at all
+  if (!_tuneLowWave) {
+    try { _tuneLowWave = ctx.createPeriodicWave(new Float32Array([0, 0, 0, 0, 0, 0]), new Float32Array([0, 1, 0.5, 0.33, 0.25, 0.2])); }
+    catch (e) { return null; }
+  }
+  return _tuneLowWave;
+}
 function _tuneStaff(key) {   // re-found on every note: a language-switch re-render mid-tune must not break the highlight
   const card = document.querySelector('.tu-card[data-key="' + key + '"]');
   return card ? card.querySelector('.tu-motif') : null;
@@ -2018,6 +2131,8 @@ function playTune(t, motif, btn) {
   const rate = Math.max(0.25, Number(settings.playbackRate) || 1);
   const UNIT = 0.32 / rate;                          // seconds per d unit (an eighth) at 1×
   const REF_HZ = 493.88;                             // B4, the written pitch
+  const low = tuneVoiceKey() === 'low';
+  const shift = tuneShiftVal() + (low ? -12 : 0);   // the staff's key, and the octave the 8 under the clef asks for
   const t0 = _tuneCtx.currentTime + 0.05;
   _tuneKey = t.key; _tuneBtn = btn; _tuneName = tropeName(t);
   btn.classList.add('is-playing');
@@ -2028,8 +2143,9 @@ function playTune(t, motif, btn) {
   motif.notes.forEach((n, i) => {
     const dur = n.d * UNIT;
     const osc = _tuneCtx.createOscillator(), g = _tuneCtx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.value = REF_HZ * Math.pow(2, n.p / 12);
+    const wave = low ? _tuneLowWaveFor(_tuneCtx) : null;
+    if (wave) osc.setPeriodicWave(wave); else osc.type = 'triangle';
+    osc.frequency.value = REF_HZ * Math.pow(2, (n.p + shift) / 12);
     g.gain.setValueAtTime(0.0001, t0 + at);
     g.gain.exponentialRampToValueAtTime(0.28, t0 + at + 0.02);
     g.gain.setValueAtTime(0.28, Math.max(t0 + at + 0.02, t0 + at + dur - 0.06));
@@ -2197,6 +2313,7 @@ function renderLearn() {
   // The note says these staffs show the High Holiday melody, so it stays hidden while that motif file
   // is missing or malformed (MOTIF_SETS.highholiday null): the cards then draw no staffs to speak of.
   document.getElementById('tuMelodyNote').hidden = melodyKey() !== 'highholiday' || !MOTIF_SETS.highholiday;
+  syncTuneControls();   // the key bar names the key these staffs are drawn in (a melody change renames it)
 
   const cards = document.getElementById('tuCards');
   cards.innerHTML = '';
@@ -2974,6 +3091,7 @@ function syncFormToSettings() {
   document.getElementById('optRateVal').textContent = (settings.playbackRate ?? 1).toFixed(2) + '×';
   document.getElementById('optFontSize').value = settings.hebFontSize ?? DEFAULTS.hebFontSize;
   document.getElementById('optFontSizeVal').textContent = (settings.hebFontSize ?? DEFAULTS.hebFontSize).toFixed(1) + 'rem';
+  syncTuneControls();
   syncProgressSummary();
 }
 function syncProgressSummary() {
@@ -3004,6 +3122,88 @@ function openMelodySetting() {
   openSettings();
   const r = document.getElementById(melodyKey() === 'highholiday' ? 'melHH' : 'melTorah');
   if (r) { r.closest('.tu-set-item').scrollIntoView({ block: 'center' }); r.focus({ preventScroll: true }); }
+}
+/* ── Sing along: Key (settings.tuneShift) and Voice (settings.tuneVoice) ──
+   One writer for the key — the Settings slider, the Learn bar's arrows and both resets all call
+   setTuneShift — and one read-only settings→controls half, syncTuneControls(), which renderLearn,
+   syncFormToSettings and applyI18n call, so a melody change, a reset, a cloud download and a language
+   switch all repaint both controls. */
+const _KEY_NOTE = { C: 'c', Db: 'db', D: 'd', Eb: 'eb', E: 'e', F: 'f', 'F#': 'fs', G: 'g', Ab: 'ab', A: 'a', Bb: 'bb', B: 'b' };
+function keyNameText(key) {   // "C major"; '' for a key outside the table (a motif file without one)
+  const n = _KEY_NOTE[key];
+  return n ? I18n.t('trope.key.name', { note: I18n.t('trope.key.note_' + n) }) : '';
+}
+function tuneRelText(s) {     // "As printed" / "3 half steps higher" / "1 half step lower"
+  if (!s) return I18n.t('trope.key.rel_printed');
+  const n = Math.abs(s);
+  return I18n.t('trope.key.rel_' + (s > 0 ? 'up' : 'down') + (n === 1 ? '.one' : '.other'), { count: n });
+}
+function tuneValueText() {    // the Settings note, its slider's aria-valuetext and the bar's announcement: "C major, 3 half steps higher"
+  const name = keyNameText(staffKey()), rel = tuneRelText(tuneShiftVal());
+  return name ? I18n.t('trope.key.valuetext', { key: name, rel: rel }) : rel;
+}
+// The slider's readout: signed half steps, the Torah Trainer's pitch readout ("+3", "−2", "0"). A number keeps
+// the readout's width steady, so the track never shifts under a dragging thumb; the note line names the key.
+function tuneShiftReadout(n) { return n > 0 ? '+' + n : n < 0 ? '\u2212' + (-n) : '0'; }
+function setTuneShift(v) {
+  v = Math.round(_sliderNum(v, 'optTuneShift', DEFAULTS.tuneShift));
+  if (v === settings.tuneShift) { syncTuneControls(); return; }
+  settings.tuneShift = v;
+  saveSettings();
+  stopTune();       // a tune in the old key must not keep lighting the redrawn staffs
+  renderLearn();    // redraws every staff; renderLearn ends by syncing both controls
+}
+function stepTuneShift(d) {   // the Learn bar's arrows; aria-disabled (not disabled) at the ends, so focus stays put
+  const btn = document.getElementById(d < 0 ? 'tuKeyDown' : 'tuKeyUp');
+  if (btn && btn.getAttribute('aria-disabled') === 'true') return;
+  setTuneShift(tuneShiftVal() + d);
+  _announceKey();
+}
+function resetTuneShiftFromBar() {
+  const had = document.activeElement === document.getElementById('tuKeyReset');
+  setTuneShift(0);
+  if (had) document.getElementById('tuKeyUp').focus();   // the reset hides at the printed key: keep the keyboard on the bar
+  _announceKey();
+}
+function _announceKey() {     // only the bar's own buttons speak; the slider announces its own aria-valuetext
+  const live = document.getElementById('tuKeyLive');
+  if (live && _i18nReady) live.textContent = tuneValueText();
+}
+function setTuneVoice(v) {
+  v = v === 'low' ? 'low' : 'high';
+  if (v === settings.tuneVoice) { syncTuneControls(); return; }
+  settings.tuneVoice = v;
+  saveSettings();
+  stopTune();       // the next play sounds in the new octave
+  renderLearn();    // the 8 under every clef
+}
+function syncTuneControls() {
+  const s = tuneShiftVal(), low = tuneVoiceKey() === 'low';
+  const bar = document.getElementById('tuKeyBar');
+  if (bar) {
+    // No staffs to move while the melody's motif file is missing (the melody note's rule), and nothing to
+    // name before the dictionary has loaded: the bar waits for both rather than show an empty line.
+    bar.hidden = !activeMotifs() || !_i18nReady;
+    bar.classList.toggle('is-moved', s !== 0 || low);
+    document.getElementById('tuKeyDown').setAttribute('aria-disabled', s <= -TUNE_SHIFT_MAX ? 'true' : 'false');
+    document.getElementById('tuKeyUp').setAttribute('aria-disabled', s >= TUNE_SHIFT_MAX ? 'true' : 'false');
+    document.getElementById('tuKeyReset').hidden = s === 0;
+    document.getElementById('tuKeyVoice').hidden = !low;
+  }
+  const sl = document.getElementById('optTuneShift');
+  if (sl && parseInt(sl.value, 10) !== s) sl.value = s;
+  document.getElementById('optTuneShiftVal').textContent = tuneShiftReadout(s);
+  document.getElementById('voiceHigh').checked = !low;
+  document.getElementById('voiceLow').checked = low;
+  // Pre-ready I18n.t returns raw keys; applyI18n runs this again once the dictionary has loaded.
+  if (!_i18nReady || !window.I18n) return;
+  if (bar) {
+    document.getElementById('tuKeyName').textContent = keyNameText(staffKey());
+    document.getElementById('tuKeyRel').textContent = tuneRelText(s);
+  }
+  const vt = tuneValueText();   // "C major, 3 half steps higher" — just the half steps while no motif file names a key
+  document.getElementById('optTuneShiftNote').textContent = vt;
+  if (sl) sl.setAttribute('aria-valuetext', vt);
 }
 function setDrillType(field, input) {
   const next = { ...settings, [field]: input.checked };
@@ -3377,6 +3577,8 @@ const TOUR_STEPS = [
     titleKey: 'trope.tour.s2_title', bodyKey: 'trope.tour.s2_body' },
   { target: () => document.querySelector('#tuCards .tu-card'),
     titleKey: 'trope.tour.s3_title', bodyKey: 'trope.tour.s3_body' },
+  { target: () => document.getElementById('tuKeyBar'),   // skipped while hidden (no motif file loaded)
+    titleKey: 'trope.tour.key_title', bodyKey: 'trope.tour.key_body' },
   { target: () => document.getElementById('tuNextFamily'),
     titleKey: 'trope.tour.s4_title', bodyKey: 'trope.tour.s4_body' },
   { target: () => document.getElementById('tabDrill'),
@@ -3571,6 +3773,7 @@ function applyI18n() {
   try { syncDrillSelects(); } catch (e) {}                 // scope options ("All marks" + family names) and the length options
   try { updateDrillStart(); } catch (e) {}                 // drill start summary + note
   try { syncProgressSummary(); } catch (e) {}              // "{n} of {total} tropes attempted" line on the Settings tab
+  try { syncTuneControls(); } catch (e) {}                 // the key's name + half steps (bar and Settings), whichever tab is open
   // The missed-marks list is JS-built from _lastMissed; re-render it only while the results
   // view is actually showing, so a language change never repopulates a hidden panel.
   try { if (!document.getElementById('drillResults').hidden) buildMissedReview(); } catch (e) {}
