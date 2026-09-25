@@ -339,6 +339,7 @@ signing in.
 | `manifest.webmanifest` | PWA manifest (name, icons, theme/background color) |
 | `js/i18n.js` | Shared i18n runtime (`window.I18n`) loaded by every page — the EN / עברית switcher, `data-i18n*` filling, RTL flip |
 | `js/supabase-config.js`, `js/ivrit-account.js`, `js/ivrit-saves.js`, `js/ivrit-projects.js` | The optional account layer — public project settings, sign-in + the header chip, cloud saves + the account screen, Font Maker cloud projects; the only files that talk to Supabase (see *Accounts*) |
+| `js/tt-pitch-worklet.js` | The Torah Trainer's chant pitch shifter — an AudioWorklet processor (time-domain WSOLA) that transposes the PocketTorah recording by whole semitones without changing its tempo; same-origin, precached and served cache-first, so an edit needs the `sw.js` `VERSION` bump |
 | `locales/ui-strings.csv`, `locales/<lang>.json` | UI strings — the CSV is the single source of truth; `scripts/build-locales.js` compiles the committed per-language JSON |
 | `scripts/check-i18n.js` (+ `check-i18n-baseline.txt`) | Gate for hardcoded UI strings, physical CSS and CSV quoting; the baseline lists accepted findings |
 | `scripts/check-inline-js.mjs` | Parses every inline `<script>` in every root page — one syntax error kills a page's whole app while the HTML still renders |
