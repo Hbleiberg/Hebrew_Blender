@@ -4,7 +4,7 @@ package.json
 __pycache__/
 *.pyc
 
-# build-trope-index.mjs HTTP cache (raw Sefaria text responses; re-fetched on demand)
+# build-trope-index.mjs and build-trope-phrases.mjs --census HTTP cache (raw Sefaria text responses; re-fetched on demand)
 source-data/trope-cache/
 
 # build-trope-motifs.mjs MP3 cache (PocketTorah aliyah audio; re-fetched on demand)

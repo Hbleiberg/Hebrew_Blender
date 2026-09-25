@@ -231,11 +231,15 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   **The file is the Learn cards' staff, nothing else** — the drill's Melody questions play
   PocketTorah recordings, not the motifs — and it is fetched `?v=6`. **Every shipped entry is `verified:true`,
   hand-transcribed from the printed Ashkenazi cantillation chart recorded in
-  `docs/tropepatterns.md`** (each `source` names the chart row it comes from; a grace note is
-  written as a full eighth, since the staff has no smaller value — zarka's F♯4 before KA, the D4
-  each telisha sings T′ on and yetiv's Y′; pazer holds its two opening D4s as one quarter, the maintainer's
-  correction of the print, noted in section A there; `geresh_muqdam` has no figure and no entry). To change a motif, edit the JSON by hand,
-  keep `verified:true`, update the row in `docs/tropepatterns.md`, bump the `?v=`, and audition it
+  `docs/tropepatterns.md`** (each `source` names the chart row it comes from; the row is read onto
+  the staff's four values as section A there says — a grace note is a full eighth, since the staff has
+  no smaller value (zarka's F♯4 before KA, the D4 each telisha sings T′ on, yetiv's Y′), tied notes are
+  one held note, rests drop; pazer holds its two opening D4s as one quarter, the maintainer's
+  correction of the print; `geresh_muqdam` has no figure and no entry). **`node
+  scripts/build-trope-phrases.mjs` checks every entry of both motif files against its row on each run**
+  and fails on a difference, printing the notes the row gives (the pazer correction is applied before
+  it compares). To change a motif, fix the row in `docs/tropepatterns.md` first, edit the JSON by hand
+  to match, keep `verified:true`, run the phrases builder green, bump the `?v=`, and audition it
   with the card's tune button. Figures longer than eight notes widen their staff, and one reaching
   below A3 deepens it; the card header wraps it below the names (and on a phone a staff too wide for
   its card shrinks to fit, `max-inline-size:100%`).
@@ -288,6 +292,46 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     Rabbi Charlie Schwartz). Both the JSON and the report carry the notice; keep it on anything
     derived from them.
   The script exits non-zero if a smoke test fails — never commit its output without a green run.
+- **Phrases**: `data/trope/trope_phrases.json` — every row of both printed charts note for note (41
+  Torah, 33 High Holiday + row 20's second setting), for a staff of a whole reading. **No page fetches
+  it yet**; the first page to load it adds a `?v=1` and joins `docs/reference/ops.md`'s list.
+  - It is built by `node scripts/build-trope-phrases.mjs` from the fenced row blocks in
+    `docs/tropepatterns.md` sections B and C, which are **the only hand-edited copy of the notes**:
+    fix a note there and re-run the builder, never edit the JSON.
+  - Zero dependencies, offline. It writes `docs/trope_phrases_report.md`: every figure of every mark
+    in every printed context, and the staff check above.
+  - **Shape.** `{v:1, built, license, source, tpq:48, values, melodies:{torah|highholiday:{key, rows}},
+    figures}`. Each row is flat: `{n, he, tags, notes:[{p, v, t, g?, r?, tie?, a?}], syl:[{t, hyphen,
+    unit, from, to}], units:[{k, from, to}], tup:[{from, to}], slur:[{from, to, dashed?}]}`.
+    - `p` is semitones from B4, as in the motif files.
+    - `t` is ticks at 48 to the quarter; a triplet note carries its real length.
+    - Syllables, marks, triplets and slurs are spans of note indices, so a triplet or slur may cross
+      from one mark into the next.
+    - `figures.<melody>.<mark>` lists each distinct figure by `[row, mark index]`, with the marks
+      printed before (`prev`) and after (`next`) it; `^` and `$` are the row's edges.
+  - **Checks.** The builder refuses any line that does not read back exactly as written. It also
+    refuses:
+    - a missing or doubled row;
+    - an unknown mark or value;
+    - a Torah F, C or G written without its ♯ or ♮;
+    - an accidental the chart never prints;
+    - a triplet that is not three of one value;
+    - a header whose Hebrew marks differ from its lines.
+
+    `built` keeps its date when nothing changed, so a re-run is byte-identical. It is CC BY-SA 4.0,
+    like the motif files.
+  - It reads the **`TROPES` taxonomy** from both carriers, which it requires to be byte-identical, and
+    adds `munach_legarmeh`; it carries no copy of the block.
+  - **`--census`** is the one networked path. It reads the whole Torah text (Sefaria's public export,
+    the same gitignored `source-data/trope-cache/merged-<Book>.json` files and curl fallback as the
+    index builder) and the four `melody:'highholiday'` readings parsed from `torah_trainer.html`'s
+    `HOLIDAY_READINGS`. It counts every mark-before-mark context against the chart and writes
+    `docs/trope_contexts_report.md`.
+    - A maqaf compound is one word; a paseq after munach makes munach legarmeh.
+    - Genesis 35:22 and the two Decalogues are left out, because they carry two cantillation systems.
+    - Its smoke tests: Genesis 1:1's seven marks, 5,846 verses, 122 High Holiday verses, and none of
+      the four marks the High Holiday chart omits in those readings.
+    - `docs/tropepatterns.md` → *G. Toward a parasha staff* reads the result.
 - **Key and voice** (Settings → *Sing along*, and the Learn tab's key bar `#tuKeyBar`). Two fields of the
   settings blob move every staff and its tune; the motif files are never touched.
   - **`tuneShift`** (whole half steps, −6…6, default 0) moves every note of both melodies and redraws the

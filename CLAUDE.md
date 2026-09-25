@@ -141,7 +141,7 @@ Full internals: `docs/reference/font-maker.md`. Locate everything by pattern —
 - Precached app shell lives in `ivritsuite-v<VERSION>`; pages and `pwa.js` are network-first, static media cache-first. **Bump `VERSION` after editing any precached file.**
 - `/data/` corpora live in the version-independent `ivritsuite-data-v1`, cache-first and **exact-URL-keyed**: every `/data/` fetch carries `?v=N`, an edit bumps it, and pages sharing a corpus use the same value (mismatches evict each other). `starting-fonts/manifest.json` is network-first, so a font intake needs no bump.
 - The user-facing app version is `VERSION` in `splash/gen_splash.py`; a version bump edits only that constant — regenerate the splash PNGs only when explicitly asked.
-- The Trope Tutor's index/motifs builders rewrite `data/trope/*.json` + their `docs/*_report.md` together — commit both and bump that fetch's `?v=`. `build-trope-motifs.mjs --force` discards human-verified motifs; prefer `--only=<key>`.
+- The Trope Tutor's index/motifs/phrases builders rewrite `data/trope/*.json` + their `docs/*_report.md` together — commit both and bump that fetch's `?v=`. `build-trope-motifs.mjs --force` discards human-verified motifs; prefer `--only=<key>`. `build-trope-phrases.mjs` builds `trope_phrases.json` from `docs/tropepatterns.md`'s row blocks and checks every motif against its row — edit the blocks, never that JSON, and never commit a motif it fails (the rows are the only hand-kept copy of the chart).
 
 ## Deploy (GitHub Pages, no build step)
 - A push to `main` triggers the "pages build and deployment" run; **that run's `success` is the deploy**, and rapid pushes cancel in-flight runs — batch, then confirm the last run. A hung/failed deploy is re-triggered with an empty commit.
