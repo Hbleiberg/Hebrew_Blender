@@ -375,7 +375,7 @@ Blank-the-screen, and the account chip) carry inline SVG glyphs from one shared 
 do the in-page **control buttons**: play, pause, stop, reset / restore-default, retry / replay, loop, sound
 and the music note on the chant buttons, and the **action buttons**: copy, copy-link, print, save, download,
 upload, send and page, and the **dashboard's board controls**: the fullscreen quick strip (Settings, Timer, Pick,
-Text, Video, Blank), the student picker's Pick One / Make Groups pair (in the sidebar and in the strip's pick
+Text, Video, Blank, Intermission), the student picker's Pick One / Make Groups pair (in the sidebar and in the strip's pick
 popup) and the board's edit pencil, and the **Torah Trainer's picker controls**: Holiday Torah Readings
 (a calendar), Student handout (the page glyph the flash cards' worksheet handoff already carries), the
 trope-colour chip (a palette) and the settings drawer's heading gear — the gear the dashboard's drawer
@@ -400,7 +400,8 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   plus the control family `hi-play`,
   `hi-pause`, `hi-stop`, `hi-reset`, `hi-retry`, `hi-loop`, `hi-sound` and `hi-music`, and the action family
   `hi-copy`, `hi-link`, `hi-print`, `hi-save`, `hi-download`, `hi-upload`, `hi-send` and `hi-page`, and the dashboard
-  family `hi-timer`, `hi-dice`, `hi-group`, `hi-pencil` and `hi-video`, plus `hi-calendar` (a festival
+  family `hi-timer`, `hi-dice`, `hi-group`, `hi-pencil`, `hi-video` and `hi-intermission` (the Blank/Video
+  screen with two pause bars — symmetric, so it needs no RTL flip), plus `hi-calendar` (a festival
   reading on the Torah Trainer, the dashboard's calendar import) and `hi-palette` (turning colour coding on) — the strip's Settings and Blank reuse `hi-gear` and
   `hi-blank`, the Torah Trainer's handout reuses `hi-page`, and so does the generator's **Generate
   Worksheet** — `hi-page` was already a lined sheet, which is exactly what that button produces, so it took
@@ -440,7 +441,7 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   `FS_ENTER_ICON` / `FS_EXIT_ICON`) hold the shared `hi-fs-enter` / `hi-fs-exit` snippets, and the button's
   initial markup holds `hi-fs-enter`.
 - **A page sizes a glyph for its own control with a rule on the wrapper, never by editing the block** — the
-  dashboard's fullscreen strip shows its six at 22px through `.fs-strip-btn .fss-ico .hi` (a strip read from
+  dashboard's fullscreen strip shows its seven at 22px through `.fs-strip-btn .fss-ico .hi` (a strip read from
   across the room; the emoji it replaced drew at ~19px) while the shared `.hi` stays 16px everywhere else.
 - **Icon + label spacing** comes from the button's own `gap` (every labelled header button is
   `display:inline-flex; align-items:center; gap:5–6px`) or from `.hi-btn`; nothing in the block adds margins.
@@ -652,7 +653,7 @@ touch-primary tools get gesture equivalents; every new interactive element must 
   `?` cheat sheet via `shortcutGroups()`/`openShortcuts()` + `<kbd>` hints + 5 `aria-keyshortcuts`
   (the three node-panel mode buttons — `Escape`/`M`/`P` — plus undo `Control+Z` and redo
   `Control+Shift+Z Control+Y`). The right shape for a tool with dozens of shortcuts, and the only one.
-  **Three light surfaces, all `<kbd>` hint rows without a cheat sheet.** `flash_cards.html`:
+  **Four light surfaces, all `<kbd>` hints without a cheat sheet.** `flash_cards.html`:
   two `.fc-kh-set` rows under the card nav that swap with `setListenChrome()`, because a listening round
   takes different keys (no flip, no Y/N), plus numbered `.lc-key` badges on the listening tiles — the
   first home the 1–9 tile keys ever had. `torah_trainer.html`: one `.tt-key-hints`
@@ -660,6 +661,9 @@ touch-primary tools get gesture equivalents; every new interactive element must 
   word by word, Home/End jump to the ends), which had been implemented since the rover shipped and
   surfaced **nowhere** — no `<kbd>`, no `aria-keyshortcuts`, no `title`, no visible copy.
   `hebrew_dictionary.html`: a single inline `<kbd>/</kbd>` beside the search box.
+  `classroom_dashboard.html`: its two bare-letter presenter keys, **B** (Blank) and **I** (Intermission),
+  as `.fss-key` corner badges on those two buttons of the fullscreen strip (Flash Cards' `.lc-key` idiom),
+  each button carrying `aria-keyshortcuts` and the key in its `title`.
   All are gated `@media (pointer: fine)` — a touch device has no keys to press.
   **⚑ The arrow caps do NOT mirror the same way in the two carriers that have them, and that is
   deliberate.** Flash cards' caps carry `.dir-arrow` because its nav follows *visual* direction via
@@ -668,12 +672,12 @@ touch-primary tools get gesture equivalents; every new interactive element must 
   word — measured identical in the EN and HE UIs. Mirroring those caps would make the hint state the
   opposite of what the keys do. Do not "converge" them in an RTL sweep.
   **`aria-keyshortcuts` is the suite's way of exposing a shortcut whose visible badge is `aria-hidden`**:
-  the dictionary's `/`, and flash cards' Y/N buttons and 1–9 listening tiles. It states the key
+  the dictionary's `/`, flash cards' Y/N buttons and 1–9 listening tiles, and the dashboard strip's B / I. It states the key
   without touching the element's accessible name. Not added where the key is a role's *default*
   activation (Space/Enter on a `role="button"`), per ARIA authoring practice.
-  **Nothing surfaced in the other three, and that is correct, not a gap:** `hebrew_blend_generator.html`,
-  `classroom_dashboard.html` and `trope_tutor.html` have no documented *global* shortcuts to surface.
-  Their document-level handlers bind only Escape-to-close (dashboard, trope) and, in the generator,
+  **Nothing surfaced in the other two, and that is correct, not a gap:** `hebrew_blend_generator.html`
+  and `trope_tutor.html` have no documented *global* shortcuts to surface.
+  Their document-level handlers bind only Escape-to-close (trope) and, in the generator,
   Escape plus Enter/Space — and that Enter/Space is default activation on a focused tooltip trigger,
   not a shortcut. Nothing there is a key a user must be told about. Beyond that,
   `trope_tutor.html` applies APG-standard **widget** keyboard operability: roving arrow-key nav

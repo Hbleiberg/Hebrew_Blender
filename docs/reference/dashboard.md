@@ -423,6 +423,65 @@ body.dark #tipFloat { background: #0a0f1c; }
 
 ---
 
+## Presenter sheets — Blank and Intermission (`classroom_dashboard.html`)
+
+- **Two full-black sheets on one layer.** `#blackout` (Blank) and `#intermission` sit at z-index 100000,
+  above every other layer, and never stack: `setBlackout(true)` closes the Intermission screen and
+  `setIntermission(true)` closes Blank, so **B** over one swaps to the other. Both are **transient** — no
+  storage key for open/closed (a sheet that survived a reload would read as a broken dashboard). Blank has
+  a header button and a strip button; Intermission lives on the fullscreen strip only (right after Blank)
+  plus its **I** key, which works in and out of fullscreen.
+- **One key handler serves both.** Escape closes whichever sheet is up (`stopImmediatePropagation`, so the
+  drawer underneath never closes with it); B and I are bare letters that yield to every text surface and
+  to the tour. The strip's two buttons carry the keys as `.fss-key` badges (`@media (pointer: fine)`),
+  `aria-keyshortcuts` and their `title`.
+- **Intermission's words** are `settings.intermissionHTML` — sanitized HTML, `''` meaning "the default
+  word", which is projected content and so follows `headerLang` (`'he'` → `hebDisplay('הַפְסָקָה')` with
+  `lang="he"`, otherwise *Intermission*), never `I18n.lang`. `#intermissionText` deliberately has no
+  `data-i18n` (`applyStaticI18n` would overwrite the teacher's words); `renderIntermission()` fills it on
+  every open and from `applySettings`, and skips while it is being edited. It is **one message for the
+  whole board**: deleted from `getSettings({forPreset:true})` (Schedule Sync would otherwise swap it at every
+  period change) and from `PRISTINE_DEFAULTS` (a starter layout never wipes it), while `.ivrit` files,
+  AllTools and the cloud settings row carry it. Every write into the page goes through `sanitizeDashHTML`.
+- **Tap to return, except…** the sheet's click closes it unless the click is on the pencil, on a link or a
+  spoiler in the text (the shared `spoilerClick` stops propagation once it reveals), inside the text while
+  editing, or **the tap that just finished an edit** — `_inplaceOutside` records that pointerdown and the
+  sheet's own pointerdown/click pair compares against it, so the first tap outside ends the edit and the
+  next one closes the sheet. Opening focuses the sheet (so Tab reaches the pencil) and closing hands focus
+  back first; like Blank, Tab past the pencil walks the live board beneath, by design. The closed sheet is
+  `visibility: hidden` once its fade ends (it holds a button, unlike Blank's lone hint). The **sheet** is the
+  scroller for a message too tall for the screen, and the text centres with `margin: auto`: a scroller on
+  the text itself became a Tab stop on every one-word screen, because a font's ascent/descent outgrows
+  `line-height: 1.2` by a few pixels.
+
+### The in-place editor serves two surfaces
+The toolbar commands already act on `activeEditor()` (`_activeEditable || #dashEditor`). The pencil on the
+sheet calls `enterIntermissionEdit()`, which makes `#intermissionText` the `_activeEditable`, adds
+`body.im-editing` (lifting `#inplaceToolbar` above the sheet) and registers the same capture listeners.
+**`exitInPlaceEdit()` dispatches** to `exitIntermissionEdit()` when the Intermission text is active, so
+every existing caller — Done, Escape, an outside tap, the drawer, a schedule switch, leaving fullscreen,
+`pagehide` — reaches the right surface unchanged. Both Done and Escape keep the words there (what Escape
+effectively does on the board's message too). `syncActive()` returns early for this surface (it would
+re-render the board's message); an `input` mirror keeps `settings.intermissionHTML` current for the
+visibility/pagehide saves. An untouched screen is seeded with its default word as plain text, and a commit
+that leaves the seed unchanged keeps the field `''`. With nothing selected, the font menu restyles the whole
+Intermission text rather than the page-wide `settings.engFont`, which belongs to the board's message. On
+this surface `<font size>` scales from its own base (`--im-size`), because the toolbar's Small…XXL are
+absolute keywords that would all come out smaller than a projected word.
+
+## Text effects — Glow and Shadow (`classroom_dashboard.html`)
+Two toolbar buttons after Strikethrough (both toolbars are built from `EDITOR_COMMANDS`), each toggling a
+class-carrying span through `toggleWrapClass(cls)` — the spoiler's wrap/unwrap algorithm, which
+`insertSpoiler()` now calls too. The sanitizer keeps `class`, so `fx-glow` / `fx-shadow` survive save,
+paste, presets, `.ivrit` and the cloud. Each sets its own custom property (`--fx-glow`, `--fx-shadow`) and
+both feed one `text-shadow`, so a run can wear both, nested either way. Light surfaces get a gold halo and
+a dark drop shadow; dark ones (`body.dark`, and always the black Intermission sheet) a neon glow in the
+text's own colour and a light offset. An unrevealed spoiler on a display surface gets `text-shadow: none`
+(it paints even when the text is transparent, so the effect would draw the hidden letters). The buttons'
+faces are sample letters, so `nameFromTitle` gives them their title as the accessible name.
+
+---
+
 ## Cloud saves (optional accounts)
 
 The shared module (`docs/reference/accounts-and-cloud.md`) owns everything that talks to Supabase; the

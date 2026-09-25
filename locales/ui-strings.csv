@@ -120,7 +120,7 @@ dashboard.about.howto_2,Pick which panels to show in <em>Display Options</em>.,�
 dashboard.about.howto_3,Customize the Hebrew font and nikkud display.,התאימו את הגופן העברי ותצוגת הניקוד.,how-to step,
 dashboard.about.howto_4,Use the fullscreen button to project to your SmartBoard.,השתמשו בכפתור מסך מלא כדי להקרין ללוח החכם.,how-to step,
 dashboard.about.howto_5,Save your setup as a preset — or start from a Quick-start layout in the Presets panel.,שמרו את ההגדרה שלכם כתבנית — או התחילו מפריסת התחלה מהירה בפאנל התבניות.,how-to step,
-dashboard.about.howto_6,"In fullscreen, move the mouse to reveal quick controls (settings, timer, student picker, text, video, blank screen).","במסך מלא, הזיזו את העכבר כדי לחשוף פקדים מהירים (הגדרות, טיימר, הגרלה, טקסט, וידאו, החשכה).",how-to step,
+dashboard.about.howto_6,"In fullscreen, move the mouse to reveal quick controls (settings, timer, student picker, text, video, blank screen, intermission screen).","במסך מלא, הזיזו את העכבר כדי לחשוף פקדים מהירים (הגדרות, טיימר, הגרלה, טקסט, וידאו, החשכה, מסך הפסקה).",how-to step,
 dashboard.about.howto_7,Click the pencil on the dashboard message to edit it right on the board.,לחצו על סמל העיפרון בהודעת הלוח כדי לערוך אותה ישירות על הלוח.,how-to step,svg-icon-in-markup
 dashboard.about.howto_summary,How To Use,איך להשתמש,how-to section summary,
 dashboard.backup.auto_explainer,"Save all your presets, saved schedules, and current settings to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.","שמרו את כל התבניות, מערכות השעות השמורות וההגדרות הנוכחיות שלכם לקובץ <b>.ivrit</b> במכשיר שלכם. שחזרו על ידי גרירת הקובץ למטה או איתורו בעיון.",backup panel explainer,html
@@ -238,6 +238,8 @@ dashboard.editor.spoiler_title,Wrap selection in spoiler (hidden until tapped),�
 dashboard.editor.strikethrough,Strikethrough,קו חוצה,Editor toolbar button title,
 dashboard.editor.text_color,Text color,צבע טקסט,Editor toolbar color input title,
 dashboard.editor.underline,Underline,קו תחתון,Editor toolbar button title,
+dashboard.editor.glow,Glow,זוהר,Editor toolbar button title and aria-label (text effect; the face is a glowing sample letter),
+dashboard.editor.shadow,Shadow,צל,Editor toolbar button title and aria-label (text effect; the face is a shadowed sample letter),
 dashboard.font.default_tag,[DEFAULT],[ברירת מחדל],default-font marker,
 dashboard.fs.controls_aria,Fullscreen controls,פקדי מסך מלא,fullscreen strip toolbar aria,aria-label only
 dashboard.fs.strip_pick,Pick,הגרלה,fullscreen strip button,
@@ -5592,7 +5594,10 @@ flashcards.worksheet.need_selection,Pick at least one letter and one vowel to ma
 flashcards.worksheet.other_mode,Worksheets cover letters and vowels. Turn off Other mode first.,"דפי עבודה מיועדים לאותיות ולתנועות. כבו תחילה את מצב ""אחר"".",inline note when the deck is drilling numbers/colours/emojis instead of blends,
 dashboard.header.blackout_btn,Blank the screen (B),החשכת המסך ⁦(B)⁩,Dashboard header button that blacks out the projected board,Keep the U+2066/U+2069 isolates around (B) — a lone paren is a mirrorable neutral in RTL
 dashboard.fs.strip_blackout,Blank,החשכה,Fullscreen-strip button label for the presenter blackout,
-dashboard.blackout.hint,"Tap, or press Esc, to return","הקישו, או לחצו ⁦Esc⁩, כדי לחזור",Dim hint shown on the blackout overlay itself,
+dashboard.fs.strip_intermission,Intermission,הפסקה,Fullscreen-strip button label for the Intermission screen (a black sheet with big editable text),
+dashboard.intermission.btn_title,Intermission screen (I),מסך הפסקה ⁦(I)⁩,Title of the fullscreen-strip button that opens the Intermission screen,Keep the U+2066/U+2069 isolates around (I) — a lone paren is a mirrorable neutral in RTL
+dashboard.intermission.edit,Edit the intermission text,עריכת טקסט ההפסקה,Title and aria-label of the pencil button on the Intermission screen,
+dashboard.blackout.hint,"Tap, or press Esc, to return","הקישו, או לחצו ⁦Esc⁩, כדי לחזור",Dim hint shown on the blackout overlay and the Intermission screen themselves,
 fontmaker.panels.letter_multi_hint,"Pick or drop several at once — the rest fill the next empty letters (a file named <b>alef</b> or <b>05D0</b> goes straight to that letter).","אפשר לבחור או לשחרר כמה בבת אחת — השאר ימלאו את האותיות הריקות הבאות (קובץ בשם <b>alef</b> או <b>05D0</b> יגיע ישירות לאות ההיא).",hint under the Individual-pictures drop zone,contains <b> markup; REVIEW: machine-drafted HE — confirm
 fontmaker.status.upload_no_room,"Every letter already has a picture or an outline — open one letter and drop a single photo onto it to replace what is there.","לכל אות כבר יש תמונה או קו מתאר — פתחו אות אחת ושחררו עליה תמונה בודדת כדי להחליף את מה שיש.",toast,REVIEW: machine-drafted HE — confirm
 fontmaker.status.upload_all_failed,None of those files could be read as images.,אף אחד מהקבצים האלה לא נקרא כתמונה.,toast,REVIEW: machine-drafted HE — confirm

@@ -116,7 +116,7 @@
     { "@type": "HowToStep", "position": 3, "name": "Customize Hebrew", "text": "Pick a Hebrew font and nikkud display style." },
     { "@type": "HowToStep", "position": 4, "name": "Project fullscreen", "text": "Click the fullscreen button to project to your SmartBoard." },
     { "@type": "HowToStep", "position": 5, "name": "Save a preset", "text": "Save your setup as a preset, or start from a Quick-start layout in the Presets panel." },
-    { "@type": "HowToStep", "position": 6, "name": "Use fullscreen quick controls", "text": "In fullscreen, move the mouse to reveal quick controls for settings, timer, student picker, text, video, and screen blanking." },
+    { "@type": "HowToStep", "position": 6, "name": "Use fullscreen quick controls", "text": "In fullscreen, move the mouse to reveal quick controls for settings, timer, student picker, text, video, screen blanking, and an intermission screen." },
     { "@type": "HowToStep", "position": 7, "name": "Edit text on the board", "text": "Click the pencil on the dashboard message to edit it in place." }
   ]
 }
@@ -878,6 +878,58 @@
   #blackout .bo-hint {
     color: #8a8a8a; font-size: 0.8rem; padding-block-end: 24px; user-select: none;
   }
+  /* Intermission screen — the blackout's sibling: the same black sheet on the same layer (each one
+     closes the other, so they never stack), the same exits (a tap, Esc, its own key), plus big text the
+     teacher edits in place with the message toolbar. The sheet is black in both themes, so the text is
+     literal #fff. <font size> from the toolbar scales off this surface's own base: its Small…XXL are
+     absolute keywords (x-small…xxx-large) that would all come out smaller than a projected word. */
+  #intermission {
+    position: fixed; inset: 0; background: #000;
+    z-index: 100000;
+    opacity: 0; pointer-events: none;
+    /* Unlike the blackout's lone hint, this sheet holds a button: hidden once the fade ends, so the
+       closed sheet leaves the tab order and the a11y tree (the settings drawer's idiom). */
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0s 0.2s;
+    /* The sheet itself is the scroller — a message too tall for the screen scrolls here, on the element
+       that takes focus when the sheet opens — and the text centres with margin:auto, which (unlike
+       align-items:center) never pushes the top of a tall message out of reach. The block padding keeps
+       the words clear of the hint row. A scroller on the text itself would turn every one-word screen
+       into a Tab stop: a font's ascent/descent outgrows line-height 1.2 by a few px. */
+    display: flex; overflow-y: auto; box-sizing: border-box; padding-block: 64px;
+  }
+  #intermission.open { opacity: 1; pointer-events: auto; cursor: pointer; visibility: visible; transition: opacity 0.2s; }
+  #intermission:focus { outline: none; }   /* focused on open so Tab reaches the pencil; the sheet itself is no control */
+  #intermissionText {
+    --im-size: clamp(2.5rem, 11vmin, 9rem);
+    font-size: var(--im-size); line-height: 1.2; color: #fff;
+    font-family: var(--eng-font), var(--heb-font);
+    margin: auto; text-align: center; max-width: 92vw;
+    overflow-wrap: break-word; padding: 0.05em 0.25em; cursor: default;
+  }
+  #intermissionText font[size="1"] { font-size: calc(var(--im-size) * 0.45); }
+  #intermissionText font[size="2"] { font-size: calc(var(--im-size) * 0.6); }
+  #intermissionText font[size="3"] { font-size: var(--im-size); }
+  #intermissionText font[size="4"] { font-size: calc(var(--im-size) * 1.15); }
+  #intermissionText font[size="5"] { font-size: calc(var(--im-size) * 1.35); }
+  #intermissionText font[size="6"] { font-size: calc(var(--im-size) * 1.7); }
+  #intermissionText font[size="7"] { font-size: calc(var(--im-size) * 2.2); }
+  #intermissionText a { color: var(--gold-light); text-decoration: underline; cursor: pointer; }
+  #intermissionText .spoiler { background: #3a3a3a; }   /* the board's #111 plate vanishes into the black sheet */
+  #intermissionText .spoiler:not(.revealed):hover { background: #555; }
+  #intermissionText .spoiler.revealed { background: rgba(255,255,255,0.12); }
+  #intermissionText.editing { outline: 2px dashed var(--gold); outline-offset: 10px; border-radius: 6px;
+    cursor: text; min-width: 2ch; min-height: 1.2em; }
+  #intermissionText.editing .spoiler { background: #c0392b55; color: inherit; cursor: text; user-select: text; }
+  #intermission .im-foot { position: fixed; inset-inline: 0; bottom: 0; padding-block-end: 16px;
+    display: flex; align-items: center; justify-content: center; gap: 12px; }
+  #intermission.editing .im-foot { display: none; }
+  #intermission .bo-hint { color: #8a8a8a; font-size: 0.8rem; user-select: none; }   /* the blackout's dim hint — keep it dim */
+  .im-edit { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 8px; border: 1px solid #333; background: transparent; color: #8a8a8a; cursor: pointer; }
+  .im-edit:hover, .im-edit:focus-visible { color: #fff; border-color: var(--gold); }
+  /* The floating toolbar sits at 210, under the sheet: lift it while it is editing this surface. */
+  body.im-editing .inplace-toolbar { z-index: 100001; }
   .settings-modal {
     position: fixed;
     top: 0; inset-inline-end: 0;
@@ -1447,6 +1499,21 @@
   /* Links */
   #dashEditor a, .dash-text-display a { color: #8a6216; text-decoration: underline; cursor: pointer; }   /* darker gold: AA text contrast on cream */
   body.dark #dashEditor a, body.dark .dash-text-display a { color: var(--gold-light); }
+  /* ── Text effects (the toolbar's Glow and Shadow) — class-carrying spans, like the spoiler ──
+     Each sets its own custom property and both feed one text-shadow, so a run can wear the two at
+     once, nested either way (the inner span inherits the outer's variable). Light surfaces get a
+     gold halo and a dark drop shadow; dark ones (dark mode, and the Intermission screen, which is
+     black in both themes) get a neon glow in the text's own colour and a light offset instead — a
+     dark shadow vanishes on black. */
+  .fx-glow   { --fx-glow: 0 0 0.08em var(--gold), 0 0 0.3em var(--gold-light); }
+  .fx-shadow { --fx-shadow: 0.06em 0.08em 0.12em rgba(0, 0, 0, 0.45); }
+  .fx-glow, .fx-shadow { text-shadow: var(--fx-shadow, 0 0 transparent), var(--fx-glow, 0 0 transparent); }
+  body.dark .fx-glow, #intermissionText .fx-glow { --fx-glow: 0 0 0.05em currentColor, 0 0 0.22em currentColor, 0 0 0.55em currentColor; }
+  body.dark .fx-shadow, #intermissionText .fx-shadow { --fx-shadow: 0.06em 0.07em 0 rgba(255, 255, 255, 0.3); }
+  /* A hidden spoiler stays hidden: text-shadow paints even when the text itself is transparent, so an
+     effect inside (or around) an unrevealed spoiler would draw its letters. Editors show spoilers anyway. */
+  .dash-text-display:not(.editing) .spoiler:not(.revealed), .dash-text-display:not(.editing) .spoiler:not(.revealed) *,
+  #intermissionText:not(.editing) .spoiler:not(.revealed), #intermissionText:not(.editing) .spoiler:not(.revealed) * { text-shadow: none; }
 
   /* ───── Font selector ───── */
   .font-options { display: flex; flex-direction: column; gap: 4px; }
@@ -1599,17 +1666,24 @@
   .fr-tour { color: var(--gold-text); font-weight: 600; }
   .fr-skip:hover, .fr-tour:hover { text-decoration: underline; }
   @media (max-width: 560px) { .fr-starters { grid-template-columns: 1fr; } }
-  /* Phone portrait: the six-button fullscreen strip is ~435px wide, so on a 320–430px screen its
+  /* Phone portrait: the six-button fullscreen strip was ~435px wide, so on a 320–430px screen its
      end buttons hung off both edges (at 390px "Settings" and "Blank" measured 11px off-screen each
-     side, unreachable). Fill the width and lay the six out as two rows of three; a plain flex-wrap
-     gave a 2×3 stack 182px tall that covered a third of the board. Scoped to the page's existing
-     phone breakpoint so nothing above 430px changes. (S321 Pass N arm 1) */
+     side, unreachable); a plain flex-wrap gave a stack that covered a third of the board. (S321 Pass N arm 1)
+     The zoom bar and exit button keep the page's phone breakpoint. */
   @media (max-width: 430px) {
-    #fsStrip { width: calc(100vw - 16px); }
     body.fullscreen #zoomBar { padding-right: 20px; }   /* the bar's content needs the whole width here */
     body.fullscreen:not(.zoombar-hidden) #fsExitBtn { top: 60px; }   /* below the 46px bar */
+  }
+  /* With Intermission the strip holds seven and measures 539px in English (507px in Hebrew), so it
+     starts hanging off the edges below ~555px, not 430px. Under this gate, fill the width and lay
+     the seven out as two rows, four then three: the long "Intermission" label lands in the wider
+     row of three, the tighter side padding keeps "Settings" inside a quarter-width button at 320px,
+     and two rows stay as short as the old 3+3 did (three rows of thirds stood 202px tall). */
+  @media (max-width: 560px) {
+    #fsStrip { width: calc(100vw - 16px); }
     .fs-strip-inner { flex-wrap: wrap; justify-content: center; width: 100%; box-sizing: border-box; }
-    .fs-strip-btn { flex: 0 0 calc((100% - 16px) / 3); box-sizing: border-box; }
+    .fs-strip-btn { flex: 0 0 calc((100% - 24px) / 4); box-sizing: border-box; padding-inline: 4px; }
+    .fs-strip-btn:nth-child(n+5) { flex-basis: calc((100% - 16px) / 3); }
   }
 
   /* ── Weekly Schedule Sync editor (modal stacked over the settings drawer) ──
@@ -1732,14 +1806,22 @@
   .fs-strip-inner { display: flex; gap: 8px; align-items: center;
     background: rgba(13,18,32,0.72); backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.18); border-radius: 14px; padding: 8px 10px; box-shadow: 0 3px 12px rgba(0,0,0,0.32); }
-  .fs-strip-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 62px; min-height: 48px;
+  .fs-strip-btn { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 62px; min-height: 48px;
     cursor: pointer; background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15);
     border-radius: 10px; padding: 7px 12px; font-family: inherit; font-size: 0.7rem; letter-spacing: 0.03em; }
-    /* 0.7rem (11.2px) is the suite's text floor; the six labels sat at 9.6px on the projected view. The
-       strip grows 435→441px at 1280 and not at all on phones (min-width / the 430px thirds govern). (S322 Pass M) */
+    /* 0.7rem (11.2px) is the suite's text floor; the labels sat at 9.6px on the projected view. The
+       strip grows with the font at 1280 and not at all on phones (min-width / the narrow 4+3 rows govern). (S322 Pass M) */
   .fs-strip-btn .fss-ico { font-size: 1.2rem; line-height: 1; color: var(--gold-light); }
   .fs-strip-btn .fss-ico .hi { width: 22px; height: 22px; display: block; }   /* the shared 16px glyph, sized for a strip read from across the room (the emoji it replaced drew at ~19px) */
   .fs-strip-btn:hover { background: rgba(255,255,255,0.18); border-color: var(--gold); }
+  /* Shortcut badges for the two presenter keys (B blank, I intermission), shown only where there is a
+     keyboard to press — Flash Cards' .lc-key idiom: a corner badge, never mirrored. The badge is
+     aria-hidden; the button's aria-keyshortcuts and title carry the key. */
+  .fss-key { display: none; position: absolute; inset-block-start: 3px; inset-inline-end: 4px;
+    direction: ltr; unicode-bidi: isolate; font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    font-size: 0.66rem; line-height: 1; padding: 1px 4px; color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.3); border-bottom-width: 2px; border-radius: 3px; }
+  @media (pointer: fine) { .fss-key { display: block; } }
   .fs-pop { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; background: rgba(13,18,32,0.85); backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 7px 9px; box-shadow: 0 3px 12px rgba(0,0,0,0.32); }
   .fs-pop-btn { cursor: pointer; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.15);
@@ -1906,6 +1988,7 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
        #000 sheet — with background graphics on, paper came out black) and the in-place text
        editor's floating toolbar; the dashed editing outline is the same edit affordance. */
     #blackout, #inplaceToolbar,
+    #intermission,
     #weatherBody button { display: none !important; }
     #dashTextDisplay.editing { outline: none; }
     /* An instruction to click is an edit affordance, not board content — same reasoning as the
@@ -2105,10 +2188,22 @@ body.dark .hi-sun{display:inline-block;}
     <button class="fs-strip-btn" type="button" id="fsPickBtn" onclick="fsStripPickToggle()"><span class="fss-ico"><svg class="hi hi-dice" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3.5"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg></span><span data-i18n="dashboard.fs.strip_pick">Pick</span></button>
     <button class="fs-strip-btn" type="button" onclick="fsStripText()"><span class="fss-ico"><svg class="hi hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg></span><span data-i18n="dashboard.fs.strip_text">Text</span></button>
     <button class="fs-strip-btn" type="button" onclick="fsStripVideo()"><span class="fss-ico"><svg class="hi hi-video" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M10.2 7.6l5.2 2.9-5.2 2.9Z" fill="currentColor"/></svg></span><span data-i18n="dashboard.fs.strip_video">Video</span></button>
-    <button class="fs-strip-btn" type="button" onclick="toggleBlackout()"><span class="fss-ico"><svg class="hi hi-blank" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M6 6.5l12 8"/></svg></span><span data-i18n="dashboard.fs.strip_blackout">Blank</span></button>
+    <button class="fs-strip-btn" type="button" onclick="toggleBlackout()" title="Blank the screen (B)" data-i18n-title="dashboard.header.blackout_btn" aria-keyshortcuts="B"><span class="fss-ico"><svg class="hi hi-blank" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M6 6.5l12 8"/></svg></span><span data-i18n="dashboard.fs.strip_blackout">Blank</span><kbd class="fss-key" aria-hidden="true">B</kbd></button>
+    <button class="fs-strip-btn" type="button" onclick="toggleIntermission()" title="Intermission screen (I)" data-i18n-title="dashboard.intermission.btn_title" aria-keyshortcuts="I"><span class="fss-ico"><svg class="hi hi-intermission" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M9.3 7.8h.8v5.4h-.8zM13.9 7.8h.8v5.4h-.8z" fill="currentColor"/></svg></span><span data-i18n="dashboard.fs.strip_intermission">Intermission</span><kbd class="fss-key" aria-hidden="true">I</kbd></button>
   </div>
 </div>
 <div id="blackout" aria-hidden="true" onclick="setBlackout(false)"><span class="bo-hint" data-i18n="dashboard.blackout.hint">Tap, or press Esc, to return</span></div>
+<!-- Intermission screen: the blackout's sibling (the same sheet and the same exits) with big text the
+     teacher edits in place. #intermissionText carries no data-i18n on purpose: applyStaticI18n rewrites
+     every [data-i18n] element on load and on each language switch, which would erase the teacher's words;
+     renderIntermission() fills it instead. -->
+<div id="intermission" role="dialog" aria-labelledby="intermissionText" aria-hidden="true" tabindex="-1">
+  <div id="intermissionText" dir="auto"></div>
+  <div class="im-foot">
+    <span class="bo-hint" data-i18n="dashboard.blackout.hint">Tap, or press Esc, to return</span>
+    <button id="intermissionEdit" class="im-edit" type="button" title="Edit the intermission text" data-i18n-title="dashboard.intermission.edit" aria-label="Edit the intermission text" data-i18n-aria-label="dashboard.intermission.edit"><svg class="hi hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg></button>
+  </div>
+</div>
 <div id="pickOverlay" role="dialog" aria-modal="true" aria-label="Student picker" data-i18n-aria-label="dashboard.picker.overlay_aria" style="display:none;">
   <button class="pick-close" type="button" onclick="closePickOverlay()" aria-label="Close" data-i18n-aria-label="dashboard.picker.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   <div class="pick-note" id="pickNote"></div>
@@ -2975,7 +3070,7 @@ body.dark .hi-sun{display:inline-block;}
         <li data-i18n="dashboard.about.howto_3">Customize the Hebrew font and nikkud display.</li>
         <li data-i18n="dashboard.about.howto_4">Use the fullscreen button to project to your SmartBoard.</li>
         <li data-i18n="dashboard.about.howto_5">Save your setup as a preset — or start from a Quick-start layout in the Presets panel.</li>
-        <li data-i18n="dashboard.about.howto_6">In fullscreen, move the mouse to reveal quick controls (settings, timer, student picker, text, video, blank screen).</li>
+        <li data-i18n="dashboard.about.howto_6">In fullscreen, move the mouse to reveal quick controls (settings, timer, student picker, text, video, blank screen, intermission screen).</li>
         <li data-i18n="dashboard.about.howto_7">Click the pencil on the dashboard message to edit it right on the board.</li>
       </ol>
     </details>
@@ -3302,6 +3397,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     hideDOW: false,
     enableDashText: true,
     dashTextHTML: '',
+    intermissionHTML: '',   // the Intermission screen's words (sanitized HTML); '' = the default word, which follows headerLang
     hebFont: 'Frank Ruhl Libre',
     engFont: 'Source Sans 3',
     showNikkud: true,
@@ -3380,6 +3476,14 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   let _inplacePrevFocus = null;
   let _inplaceEditPreset = null;   // scheduled preset whose board is being edited in place (frozen at entry)
   let _fsStripTimer = null;
+  // Intermission screen state (see setIntermission). The default word is projected board content, so it
+  // follows headerLang like the column titles — never I18n.lang.
+  const INTERMISSION_WORD_HE = 'הַפְסָקָה';
+  const INTERMISSION_WORD_EN = 'Intermission';   // i18n-ignore — projected board content: follows headerLang, not I18n.lang
+  let _imPrevFocus = null;     // what had focus before the sheet opened, handed back when it closes
+  let _imSeed = null;          // the default word an edit started from; committed unchanged, the field stays ''
+  let _imEditEndDown = null;   // the pointerdown that finished an edit (set by _inplaceOutside)…
+  let _imTapEndsEdit = false;  // …and whether the sheet's current tap is that one (then it doesn't close)
 
   /* ────────── FIRST-RUN SETUP + STARTER LAYOUTS ────────── */
   // Pristine copy of the shipped defaults, captured before any load mutates `settings`.
@@ -3388,7 +3492,9 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   // reset must never touch them. Dropping these keys from the baseline means applyStarter()'s merge
   // leaves rosters/active class/colors alone. (scheduleWeek is absent from the literal, so it's
   // naturally absent here too.)
-  ['rosters', 'activeRosterId', 'pickerSessions', 'presetColors'].forEach(k => delete PRISTINE_DEFAULTS[k]);
+  // intermissionHTML joins them: a starter is a look for the board, never a reason to lose the
+  // teacher's Intermission words.
+  ['rosters', 'activeRosterId', 'pickerSessions', 'presetColors', 'intermissionHTML'].forEach(k => delete PRISTINE_DEFAULTS[k]);
   // Starter layouts (shared by the first-run card and the Presets panel). Each is a settings-diff
   // applied on tap over the pristine defaults — never injected into the user's preset store.
   const STARTERS = [
@@ -5983,25 +6089,32 @@ function mountSidebarResize(cfg) {
       // Empty message surface = a "click to add" affordance (matches the placeholder). Not in the
       // projected/fullscreen view, where editing is done from the quick strip (✎ hidden there too).
       if (!e.currentTarget.firstChild && !document.body.classList.contains('fullscreen')) { enterInPlaceEdit(); return; }
-      const sp = e.target.closest('.spoiler');
-      if (!sp) return;
-      if (!sp.classList.contains('revealed')) {
-        e.preventDefault(); sp.classList.add('revealed'); e.stopPropagation();
-      } else if (!e.target.closest('a')) {
-        sp.classList.remove('revealed'); e.stopPropagation();
-      }
-      sp.setAttribute('aria-pressed', String(sp.classList.contains('revealed')));
-      // revealed + clicking a link → fall through to default
+      spoilerClick(e);
     });
-    document.getElementById('dashTextDisplay').addEventListener('keydown', e => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      if (e.currentTarget.classList.contains('editing')) return;   // typing, not toggling
-      const sp = e.target.closest('.spoiler');
-      if (!sp) return;
-      e.preventDefault();
-      sp.classList.toggle('revealed');
-      sp.setAttribute('aria-pressed', String(sp.classList.contains('revealed')));
-    });
+    document.getElementById('dashTextDisplay').addEventListener('keydown', spoilerKey);
+  }
+  // Spoiler reveal on a display surface (the board's message and the Intermission screen). The click
+  // stops propagation once it acts, which is what keeps a reveal on the Intermission sheet from closing it.
+  function spoilerClick(e) {
+    if (e.currentTarget.classList.contains('editing')) return;   // spoilers stay revealed while editing
+    const sp = e.target.closest('.spoiler');
+    if (!sp) return;
+    if (!sp.classList.contains('revealed')) {
+      e.preventDefault(); sp.classList.add('revealed'); e.stopPropagation();
+    } else if (!e.target.closest('a')) {
+      sp.classList.remove('revealed'); e.stopPropagation();
+    }
+    sp.setAttribute('aria-pressed', String(sp.classList.contains('revealed')));
+    // revealed + clicking a link → fall through to default
+  }
+  function spoilerKey(e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    if (e.currentTarget.classList.contains('editing')) return;   // typing, not toggling
+    const sp = e.target.closest('.spoiler');
+    if (!sp) return;
+    e.preventDefault();
+    sp.classList.toggle('revealed');
+    sp.setAttribute('aria-pressed', String(sp.classList.contains('revealed')));
   }
 
   function applySettings(s, opts) {
@@ -6066,6 +6179,7 @@ function mountSidebarResize(cfg) {
     syncDashText();
     toggleDashText(settings.enableDashText);
     setDashTextSize(settings.dashTextSize ?? 1.8);
+    renderIntermission();   // an .ivrit restore or a cloud download can land while the sheet is up (skips an edit in progress)
     setColTitleSize(settings.colTitleSize ?? 0.78);
     setEngDateSize(settings.engDateSize ?? 1.35);
     setHebDateSize(settings.hebDateSize ?? 2.6);
@@ -6103,6 +6217,9 @@ function mountSidebarResize(cfg) {
     // presets (self-reference) nor the shared color map.
     if (opts && opts.forPreset) {
       delete out.rosters; delete out.scheduleWeek; delete out.presetColors;
+      // The Intermission screen's words are one message for the whole board: in a preset, Schedule
+      // Sync would swap them at every period change. (.ivrit files and the cloud row still carry them.)
+      delete out.intermissionHTML;
       // Class ids are per device: a preset names its class, and applySettings resolves the name here.
       const live = settings.rosters && settings.rosters[settings.activeRosterId];
       out.activeRosterName = (live && typeof live.name === 'string') ? live.name : '';
@@ -9574,31 +9691,34 @@ else ivritInit();
     }
     syncActive();
   }
-  function insertSpoiler() {
+  // Toggle a class-carrying <span> over the selection: unwrap every such span the selection touches,
+  // else wrap the selection in a new one. The spoiler and the glow/shadow text effects all work this
+  // way (the sanitizer keeps `class`, so each survives save, paste, presets, .ivrit and the cloud).
+  function toggleWrapClass(cls) {
     restoreEditorFocus();
     const sel = window.getSelection();
     if (!sel || !sel.rangeCount) return;
     const range = sel.getRangeAt(0);
     const nodeEl = n => n?.nodeType === 3 ? n.parentElement : n;
-    // Collect all spoilers that overlap the selection
+    // Collect all wrappers that overlap the selection
     const ed = activeEditor();
-    const overlappingSpoilers = [];
-    ed.querySelectorAll('.spoiler').forEach(sp => {
+    const overlapping = [];
+    ed.querySelectorAll('.' + cls).forEach(sp => {
       const r = document.createRange();
       r.selectNode(sp);
       if (range.compareBoundaryPoints(Range.END_TO_START, r) < 0 &&
           range.compareBoundaryPoints(Range.START_TO_END, r) > 0) {
-        overlappingSpoilers.push(sp);
+        overlapping.push(sp);
       }
     });
-    // Also check if anchor/focus node is inside a spoiler not fully in range
-    const anchorSpoiler = nodeEl(sel.anchorNode)?.closest('.spoiler');
-    const focusSpoiler  = nodeEl(sel.focusNode)?.closest('.spoiler');
-    [anchorSpoiler, focusSpoiler].forEach(sp => {
-      if (sp && !overlappingSpoilers.includes(sp)) overlappingSpoilers.push(sp);
+    // Also check if anchor/focus node is inside a wrapper not fully in range
+    const anchorWrap = nodeEl(sel.anchorNode)?.closest('.' + cls);
+    const focusWrap  = nodeEl(sel.focusNode)?.closest('.' + cls);
+    [anchorWrap, focusWrap].forEach(sp => {
+      if (sp && ed.contains(sp) && !overlapping.includes(sp)) overlapping.push(sp);
     });
-    if (overlappingSpoilers.length > 0) {
-      overlappingSpoilers.forEach(sp => {
+    if (overlapping.length > 0) {
+      overlapping.forEach(sp => {
         const parent = sp.parentNode;
         while (sp.firstChild) parent.insertBefore(sp.firstChild, sp);
         parent.removeChild(sp);
@@ -9608,7 +9728,7 @@ else ivritInit();
     }
     if (range.collapsed) return;
     const span = document.createElement('span');
-    span.className = 'spoiler';
+    span.className = cls;
     try {
       range.surroundContents(span);
     } catch(e) {
@@ -9617,6 +9737,7 @@ else ivritInit();
     }
     syncActive();
   }
+  function insertSpoiler() { toggleWrapClass('spoiler'); }
 
   /* ── Shared editor toolbar (drawer editor + floating in-place toolbar) ── */
   const SVG_ALIGN_R = '<svg width="14" height="11" viewBox="0 0 14 11" fill="currentColor"><rect x="0" y="0" width="14" height="1.5" rx="0.75"/><rect x="5" y="4" width="9" height="1.5" rx="0.75"/><rect x="2" y="8" width="12" height="1.5" rx="0.75"/></svg>';
@@ -9629,6 +9750,9 @@ else ivritInit();
     { type:'btn', titleKey:'dashboard.editor.italic',        html:'<i>I</i>', run:() => fmt('italic') },
     { type:'btn', titleKey:'dashboard.editor.underline',     html:'<u>U</u>', run:() => fmt('underline') },
     { type:'btn', titleKey:'dashboard.editor.strikethrough', html:'<s>S</s>', run:() => fmt('strikeThrough') },
+    // Text effects: the face is a sample letter wearing the effect, so the title is the name (nameFromTitle).
+    { type:'btn', titleKey:'dashboard.editor.glow',   html:'<span class="fx-glow">A</span>',   nameFromTitle:true, run:() => toggleWrapClass('fx-glow') },
+    { type:'btn', titleKey:'dashboard.editor.shadow', html:'<span class="fx-shadow">A</span>', nameFromTitle:true, run:() => toggleWrapClass('fx-shadow') },
     { type:'sep' },
     { type:'btn', titleKey:'dashboard.editor.align_right',  html:SVG_ALIGN_R, run:() => setAlign('Right') },
     { type:'btn', titleKey:'dashboard.editor.align_center', html:SVG_ALIGN_C, run:() => setAlign('Center') },
@@ -9667,7 +9791,7 @@ else ivritInit();
         node = document.createElement('button'); node.type = 'button'; node.className = 'ed-btn'; node.title = I18n.t(c.titleKey);
         node.innerHTML = c.htmlKey ? esc(I18n.t(c.htmlKey)) : c.html; node.addEventListener('click', c.run);
         // "🔗" and friends name themselves with the glyph; the translated title is the real name.
-        if (!/\p{L}|\p{N}/u.test(node.textContent || '')) node.setAttribute('aria-label', node.title);
+        if (c.nameFromTitle || !/\p{L}|\p{N}/u.test(node.textContent || '')) node.setAttribute('aria-label', node.title);
       }
       container.appendChild(node);
     });
@@ -9717,13 +9841,26 @@ else ivritInit();
     // <select> moves focus out of the editor and collapses the DOM selection.
     const r = _savedEditorRange;
     const inEditor = r && activeEditor().contains(r.commonAncestorContainer);
+    // Append the Hebrew family. .dash-text-display/.editor are `var(--eng-font), var(--heb-font)`,
+    // so a bare face="Nunito" would strip that fallback and leave Hebrew inside a restyled run in
+    // a browser default face. face= is a presentational attribute, so var() can't resolve there —
+    // the Hebrew family is baked in at apply time and won't follow a later Hebrew-font change.
+    const heb = (allFonts().find(f => f.name === settings.hebFont) || HEB_FONTS[0]).family;
     if (inEditor && !r.collapsed) {
-      // Append the Hebrew family. .dash-text-display/.editor are `var(--eng-font), var(--heb-font)`,
-      // so a bare face="Nunito" would strip that fallback and leave Hebrew inside a restyled run in
-      // a browser default face. face= is a presentational attribute, so var() can't resolve there —
-      // the Hebrew family is baked in at apply time and won't follow a later Hebrew-font change.
-      const heb = (allFonts().find(f => f.name === settings.hebFont) || HEB_FONTS[0]).family;
       fmt('fontName', font.family + ', ' + heb);
+    } else if (isIntermissionEditing()) {
+      // The Intermission screen has no base font of its own, and the page-wide one (settings.engFont)
+      // belongs to the board's message — so with nothing selected the pick restyles this screen's
+      // whole text instead, and the caret goes back to the end.
+      const el = _activeEditable, all = document.createRange();
+      all.selectNodeContents(el);
+      _savedEditorRange = all;
+      fmt('fontName', font.family + ', ' + heb);
+      const end = document.createRange();
+      end.selectNodeContents(el); end.collapse(false);
+      const sel = window.getSelection();
+      if (sel) { sel.removeAllRanges(); sel.addRange(end); }
+      _savedEditorRange = end.cloneRange();
     } else {
       setEngFont(font.name);
       // The old grid relied on the editor's blur to persist; this path is reachable without ever
@@ -9750,11 +9887,12 @@ else ivritInit();
 
   /* ── Two-way sync + in-place editing on the dashboard ── */
   function activeEditor() { return _activeEditable || document.getElementById('dashEditor'); }
-  function normalizeSpoilers() {
+  function normalizeSpoilers(root) {
     // Display-side spoiler spans are recreated on every innerHTML write, so keyboard
     // affordances must be re-applied after each write (the reveal handlers themselves are
     // delegated on the container and survive). Sanitize passes strip these attributes.
-    document.querySelectorAll('#dashTextDisplay .spoiler').forEach(sp => {
+    // `root` defaults to the board's message; the Intermission screen passes its own.
+    (root || document.getElementById('dashTextDisplay')).querySelectorAll('.spoiler').forEach(sp => {
       sp.setAttribute('tabindex', '0');
       sp.setAttribute('role', 'button');
       sp.setAttribute('aria-pressed', String(sp.classList.contains('revealed')));
@@ -9785,6 +9923,9 @@ else ivritInit();
     normalizeSpoilers();
   }
   function syncActive() {                             // fast mirror of whichever surface is active (no re-sanitize)
+    // The Intermission screen has no mirror — it commits on exit (and its input listener keeps the
+    // settings copy current). Falling through would re-render the board's message under it.
+    if (isIntermissionEditing()) return;
     const disp = document.getElementById('dashTextDisplay'), ed = document.getElementById('dashEditor');
     if (_activeEditable === disp) { ed.innerHTML = disp.innerHTML; settings.dashTextHTML = disp.innerHTML; }
     else { disp.innerHTML = ed.innerHTML; settings.dashTextHTML = ed.innerHTML; }
@@ -9822,6 +9963,9 @@ else ivritInit();
     window.addEventListener('resize', positionInplaceToolbar);
   }
   function exitInPlaceEdit(commit) {
+    // One exit for both in-place surfaces: every caller (Done, Esc, an outside tap, the drawer, a
+    // schedule switch, leaving fullscreen, pagehide) keeps calling this and reaches the right one.
+    if (isIntermissionEditing()) { exitIntermissionEdit(); return; }
     const disp = document.getElementById('dashTextDisplay');
     if (_activeEditable !== disp) return;
     document.removeEventListener('keydown', _inplaceKey, true);
@@ -9848,13 +9992,16 @@ else ivritInit();
     if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); exitInPlaceEdit(false); }
   }
   function _inplaceOutside(e) {
-    if (e.target.closest('#dashTextDisplay') || e.target.closest('#inplaceToolbar')) return;
+    if (e.target.closest('#inplaceToolbar') || (_activeEditable && _activeEditable.contains(e.target))) return;
+    // On the Intermission sheet this tap only finishes the edit: the sheet's own click compares its
+    // pointerdown against this event and stays open (the next tap closes it).
+    if (isIntermissionEditing()) _imEditEndDown = e;
     exitInPlaceEdit(true);
   }
   function positionInplaceToolbar() {
     const bar = document.getElementById('inplaceToolbar');
     if (!bar || bar.style.display === 'none') return;
-    const r = document.getElementById('dashTextDisplay').getBoundingClientRect();
+    const r = (_activeEditable || document.getElementById('dashTextDisplay')).getBoundingClientRect();
     const bw = bar.offsetWidth || 320, bh = bar.offsetHeight || 40;
     const fs = document.body.classList.contains('fullscreen');
     let left = r.left + r.width / 2 - bw / 2;
@@ -10263,6 +10410,7 @@ async function onUploadEngFontPick(input){
   function setBlackout(on) {
     const ov = document.getElementById('blackout');
     if (!ov) return;
+    if (on) setIntermission(false);   // one presenter sheet at a time: B over the Intermission screen swaps them
     ov.classList.toggle('open', on);
     ov.setAttribute('aria-hidden', on ? 'false' : 'true');
     const b = document.getElementById('blackoutBtn');
@@ -10272,19 +10420,156 @@ async function onUploadEngFontPick(input){
     const ov = document.getElementById('blackout');
     setBlackout(!(ov && ov.classList.contains('open')));
   }
-  // Bare-letter shortcut, so it must yield to every text surface the dashboard has (the panel
-  // editors are contenteditable, not inputs) and to the tour's own key handling.
+
+  /* Intermission screen — the blackout's sibling: the same black sheet on the same layer, the same
+     exits (a tap, Esc, its own key: I), plus big text the teacher edits in place with the message
+     toolbar. The open state is TRANSIENT like the blackout's (no storage key). The words are
+     settings.intermissionHTML: one message for the whole board (kept out of presets and starter
+     resets), '' meaning "the default word", which follows headerLang. Every write of the stored
+     HTML into the page goes through sanitizeDashHTML — it arrives from .ivrit files and the cloud. */
+  function isIntermissionOpen() {
+    const ov = document.getElementById('intermission');
+    return !!(ov && ov.classList.contains('open'));
+  }
+  function isIntermissionEditing() { return !!_activeEditable && _activeEditable.id === 'intermissionText'; }
+  function intermissionIsHeb() { return (settings.headerLang || 'he') === 'he'; }   // 'none' → English, as the column titles fall back
+  function intermissionCustomHTML() {
+    return sanitizeDashHTML(typeof settings.intermissionHTML === 'string' ? settings.intermissionHTML : '');
+  }
+  function renderIntermission() {
+    const el = document.getElementById('intermissionText');
+    if (!el || isIntermissionEditing()) return;   // never re-render under the teacher's caret
+    const custom = intermissionCustomHTML();
+    if (custom) { el.innerHTML = custom; el.removeAttribute('lang'); }
+    else if (intermissionIsHeb()) { el.innerHTML = hebDisplay(INTERMISSION_WORD_HE); el.setAttribute('lang', 'he'); }
+    else { el.textContent = INTERMISSION_WORD_EN; el.setAttribute('lang', 'en'); }
+    normalizeSpoilers(el);
+  }
+  function setIntermission(on) {
+    const ov = document.getElementById('intermission');
+    if (!ov) return;
+    const was = ov.classList.contains('open');
+    if (on) {
+      if (_activeEditable) exitInPlaceEdit(true);   // one editor at a time: the board's message commits first
+      setBlackout(false);
+      renderIntermission();
+      if (!was) _imPrevFocus = document.activeElement;
+      ov.classList.add('open');
+      ov.setAttribute('aria-hidden', 'false');
+      // Focus the sheet so Tab reaches its pencil (the page beneath is covered, not inert).
+      if (!was) { try { ov.focus({ preventScroll: true }); } catch (e) {} }
+      return;
+    }
+    if (isIntermissionEditing()) exitInPlaceEdit(true);   // closing never drops the words being typed
+    if (was && ov.contains(document.activeElement)) {
+      // Hand focus back before aria-hidden goes on, so it never sits inside a hidden subtree.
+      const f = _imPrevFocus;
+      if (f && f !== document.body && f.focus && document.contains(f)) { try { f.focus({ preventScroll: true }); } catch (e) {} }
+      else document.activeElement.blur();
+    }
+    _imPrevFocus = null;
+    ov.classList.remove('open');
+    ov.setAttribute('aria-hidden', 'true');
+  }
+  function toggleIntermission() { setIntermission(!isIntermissionOpen()); }
+  // The input mirror keeps settings current mid-edit, so the visibilitychange/pagehide saves hold the
+  // words being typed; the default word committed unchanged stays '' (it keeps following headerLang).
+  function intermissionMirror() {
+    const el = document.getElementById('intermissionText');
+    settings.intermissionHTML = (_imSeed !== null && el.innerHTML === _imSeed) ? '' : sanitizeDashHTML(el.innerHTML);
+  }
+  function enterIntermissionEdit() {
+    const el = document.getElementById('intermissionText');
+    if (!el || !isIntermissionOpen() || isIntermissionEditing()) return;
+    if (_activeEditable) exitInPlaceEdit(true);
+    _inplacePrevFocus = document.activeElement;
+    _inplaceEditPreset = null;   // this surface never folds into a preset
+    // An untouched screen starts from its default word as plain text, so it can be styled like any
+    // other text (the display may have colour-coded its nikkud; the seed is the bare word).
+    _imSeed = null;
+    if (!intermissionCustomHTML()) {
+      el.textContent = intermissionIsHeb()
+        ? (settings.showNikkud ? INTERMISSION_WORD_HE : stripNikkud(INTERMISSION_WORD_HE))
+        : INTERMISSION_WORD_EN;
+      _imSeed = el.innerHTML;
+    }
+    _activeEditable = el;
+    el.classList.add('editing');
+    document.getElementById('intermission').classList.add('editing');
+    document.body.classList.add('im-editing');
+    el.setAttribute('contenteditable', 'true');
+    const bar = document.getElementById('inplaceToolbar');
+    bar.style.display = 'flex';
+    positionInplaceToolbar();
+    el.focus();
+    const sel = window.getSelection(), r = document.createRange();
+    r.selectNodeContents(el); r.collapse(false);
+    sel.removeAllRanges(); sel.addRange(r);
+    document.addEventListener('keydown', _inplaceKey, true);
+    document.addEventListener('pointerdown', _inplaceOutside, true);
+    window.addEventListener('resize', positionInplaceToolbar);
+  }
+  // Reached only through exitInPlaceEdit. Done and Esc both keep the words — what Esc effectively
+  // does on the board's message too — sanitized, saved, and re-rendered for display.
+  function exitIntermissionEdit() {
+    if (!isIntermissionEditing()) return;
+    const el = _activeEditable;
+    document.removeEventListener('keydown', _inplaceKey, true);
+    document.removeEventListener('pointerdown', _inplaceOutside, true);
+    window.removeEventListener('resize', positionInplaceToolbar);
+    intermissionMirror();
+    el.removeAttribute('contenteditable');
+    el.classList.remove('editing');
+    document.getElementById('intermission').classList.remove('editing');
+    document.body.classList.remove('im-editing');
+    document.getElementById('inplaceToolbar').style.display = 'none';
+    _activeEditable = null;
+    _imSeed = null;
+    saveSettingsToStorage();
+    renderIntermission();
+    const f = _inplacePrevFocus;
+    _inplacePrevFocus = null;
+    if (f && f.focus && document.contains(f)) { try { f.focus({ preventScroll: true }); } catch (e) {} }
+  }
+  (function wireIntermission() {
+    const ov = document.getElementById('intermission');
+    const txt = document.getElementById('intermissionText');
+    const pencil = document.getElementById('intermissionEdit');
+    if (!ov || !txt || !pencil) return;
+    // Tap anywhere to return, like the blackout — except the tap that just finished an edit (it only
+    // finishes the edit), a tap in the text while typing, and the pencil / a link, which act themselves.
+    ov.addEventListener('pointerdown', e => { _imTapEndsEdit = (e === _imEditEndDown); });
+    ov.addEventListener('click', e => {
+      if (_imTapEndsEdit) { _imTapEndsEdit = false; return; }
+      if (isIntermissionEditing()) return;
+      if (e.target.closest('#intermissionEdit, #intermissionText a')) return;
+      setIntermission(false);
+    });
+    pencil.addEventListener('click', e => { e.stopPropagation(); enterIntermissionEdit(); });
+    txt.addEventListener('click', spoilerClick);   // a reveal stops propagation, so it never closes the sheet
+    txt.addEventListener('keydown', spoilerKey);
+    txt.addEventListener('paste', e => { if (isIntermissionEditing()) _pasteSanitized(e); });
+    txt.addEventListener('input', () => { if (isIntermissionEditing()) intermissionMirror(); });
+  })();
+  // Bare-letter shortcuts (B blank, I intermission), so they must yield to every text surface the
+  // dashboard has (the panel editors are contenteditable, not inputs) and to the tour's own key handling.
   document.addEventListener('keydown', e => {
     const ov = document.getElementById('blackout');
     const on = !!(ov && ov.classList.contains('open'));
-    if (e.key === 'Escape') { if (on) { setBlackout(false); e.stopImmediatePropagation(); } return; }   // topmost layer wins: don't also close the drawer underneath
-    if (e.key !== 'b' && e.key !== 'B') return;
+    const im = isIntermissionOpen();
+    if (e.key === 'Escape') {   // topmost layer wins: don't also close the drawer underneath
+      if (on) { setBlackout(false); e.stopImmediatePropagation(); }
+      else if (im) { setIntermission(false); e.stopImmediatePropagation(); }
+      return;
+    }
+    const isB = e.key === 'b' || e.key === 'B', isI = e.key === 'i' || e.key === 'I';
+    if (!isB && !isI) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     const t = e.target;
     if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
     if (typeof _tourActive !== 'undefined' && _tourActive) return;
     e.preventDefault();
-    setBlackout(!on);
+    if (isB) setBlackout(!on); else setIntermission(!im);
   });
   document.addEventListener('fullscreenchange', () => {
     const isFs = !!document.fullscreenElement;
