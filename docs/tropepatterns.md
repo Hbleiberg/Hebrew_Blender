@@ -30,7 +30,8 @@ like the motif file it feeds.
 
 The row named in the last column is the one whose reading feeds the tutor's motif for that mark:
 the row where the mark stands alone, or last, in its phrase. A grace note becomes a full eighth in
-the motif (the staff has no smaller value); everything else is note for note.
+the motif (the staff has no smaller value); everything else is note for note, except pazer's
+opening (below the table).
 
 | Mark (tutor key) | Figure as printed | Degrees | Chart row |
 |---|---|---|---|
@@ -55,7 +56,7 @@ the motif (the staff has no smaller value); everything else is note for note.
 | gershayim | D4(e) E4(e) F♯4(de) ~E4 D4 E4 (triplet s) F♯4(e) | 4 5 6 5 4 5 6 | Torah #20 |
 | telisha_ketana | *grace* D4 D4(e) D4(e) D4(e) D4(e) ~C♯4 D4 E4 D4 (e) | 4 4 4 4 4 3 4 5 4 | Torah #29 |
 | telisha_gedola | *grace* D4 D4(e) D4(e) D4(e) D4(e) ~E4 F♯4 G♮4 A4 F♯4 E4 D4 (e) | 4 4 4 4 4 5 6 ♭7 1′ 6 5 4 | Torah #28 |
-| pazer | D4(e) D4(s) ~E4 F♯4 G♮4 A4 (s) B4 A4 F♯4 E4 (e, tenuto on B4 A4 F♯4) | 4 4 5 6 ♭7 1′ 2′ 1′ 6 5 | Torah #30 |
+| pazer | D4(e) D4(s) ~E4 F♯4 G♮4 A4 (s) B4 A4 F♯4 E4 (e, tenuto on B4 A4 F♯4); the tutor sings the two opening D4s as one D4(q) | 4 4 5 6 ♭7 1′ 2′ 1′ 6 5 (tutor: 4 5 6 ♭7 1′ 2′ 1′ 6 5) | Torah #30 |
 | mercha_kefula | E4(e) E4(e) E4(e) E4(e) ~F♯4 G♮4 A4 G♮4 F♯4 (e) E4(q) | 5 5 5 5 6 ♭7 1′ ♭7 6 5 | Torah #39 |
 | karnei_parah | D4(e) D4(e) D4(e) ~C♯4 D4 D4 (triplet s, > on the last) D4 E4 F♯4 G♮4 A4 F♯4 E4 D4 (s) | 4 4 4 3 4 4 4 5 6 ♭7 1′ 6 5 4 | Torah #40 |
 | yerach_ben_yomo | D4(s) D4(s) D4(s) D4(s) F♯4(q) ~E4(q) | 4 4 4 4 6 5 | Torah #40 |
@@ -63,6 +64,11 @@ the motif (the staff has no smaller value); everything else is note for note.
 | sof pasuk, end of an aliyah (no tutor card) | see Torah #41 | | Torah #41 |
 
 `geresh_muqdam` has no figure in the chart and keeps no entry, as before.
+
+Pazer is the one figure that departs from its row on purpose. The chart prints PA on a D4 eighth
+and ZER on a D4 sixteenth before the run; the maintainer corrected the tutor to hold that opening
+D as a single quarter note, so the motif has nine notes and begins `{p:-9, d:2}`. The High Holiday
+pazer (section C) keeps its two printed D4s.
 
 The lowered seventh (G♮ in A major) is printed with a natural sign in darga, telisha gedola, pazer,
 mercha kefula and karnei parah. Three things the chart does that the staffs do not show: in
@@ -265,7 +271,8 @@ pass):
   lowered 3rd, 6th and 7th): G♮ here, F♯ and B♭ in the High Holiday file.
 - Rhythm is reduced to the staff's four values (`d` 1–4); a dotted eighth and a triplet eighth
   both draw as an eighth. A grace note is drawn as a full eighth: zarka's F♯4 before KA, the D4
-  each telisha sings T′ on, and the High Holiday yetiv's Y′. Shalshelet, karnei parah and telisha gedola
+  each telisha sings T′ on, and the High Holiday yetiv's Y′. Pazer's two opening D4s are one
+  quarter note on the year-round staff (section A). Shalshelet, karnei parah and telisha gedola
   keep their full length (up to sixteen notes), so those staffs widen.
 - To re-verify an entry: read its row in section A, convert with the `p` scale above (A4 = −2,
   each semitone down is −1), and compare with the JSON; the card's play button plays the staff as

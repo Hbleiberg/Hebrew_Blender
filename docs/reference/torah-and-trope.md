@@ -206,11 +206,12 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   the key is spelled the way the charts print chromatic notes — raised 1st and 4th, lowered 3rd,
   6th and 7th (`motifPitchPos`) — so A major's lowered seventh is G♮ and C major writes F♯ and B♭.
   **The file is the Learn cards' staff, nothing else** — the drill's Melody questions play
-  PocketTorah recordings, not the motifs — and it is fetched `?v=4`. **Every shipped entry is `verified:true`,
+  PocketTorah recordings, not the motifs — and it is fetched `?v=5`. **Every shipped entry is `verified:true`,
   hand-transcribed from the printed Ashkenazi cantillation chart recorded in
   `docs/tropepatterns.md`** (each `source` names the chart row it comes from; a grace note is
   written as a full eighth, since the staff has no smaller value — zarka's F♯4 before KA and the D4
-  each telisha sings T′ on; `geresh_muqdam` has no figure and no entry). To change a motif, edit the JSON by hand,
+  each telisha sings T′ on; pazer holds its two opening D4s as one quarter, the maintainer's
+  correction of the print, noted in section A there; `geresh_muqdam` has no figure and no entry). To change a motif, edit the JSON by hand,
   keep `verified:true`, update the row in `docs/tropepatterns.md`, bump the `?v=`, and audition it
   with the card's tune button. Figures longer than eight notes widen their staff, and one reaching
   below A3 deepens it; the card header wraps it below the names (and on a phone a staff too wide for
