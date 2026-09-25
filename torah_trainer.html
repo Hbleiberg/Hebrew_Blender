@@ -7136,6 +7136,16 @@ function shortenLicense(lic) {
   if (/cc[-\s]?by/i.test(s))            return 'CC BY';
   return s.slice(0, 24);
 }
+// The licence as the UI shows it: a known short code through its torah.trans.license_* key (only
+// "Public Domain" and the unknown fallback differ in Hebrew), anything else as Sefaria wrote it.
+// Version titles are Sefaria's and stay as they are.
+const LICENSE_LABEL_KEYS = { 'Public Domain': 'public_domain', 'CC0': 'cc0', 'CC BY-NC-SA': 'ccbyncsa', 'CC BY-SA': 'ccbysa', 'CC BY-NC': 'ccbync', 'CC BY': 'ccby' };
+function licenseLabel(lic) {
+  const s = shortenLicense(lic);
+  if (!s) return I18n.t('torah.trans.license_unknown');
+  return LICENSE_LABEL_KEYS[s] ? I18n.t('torah.trans.license_' + LICENSE_LABEL_KEYS[s]) : s;
+}
+function versionOptionText(title, lic) { return I18n.t('torah.trans.version_opt', { title: title.slice(0, 56), license: licenseLabel(lic) }); }
 
 async function populateVersionDropdown(book) {
   const sel = document.getElementById('ttVersionSelect');
@@ -7152,9 +7162,8 @@ async function populateVersionDropdown(book) {
   safe.forEach(v => {
     const opt = document.createElement('option');
     const title = (v.versionTitle || v.title || 'Untitled').trim();
-    const lic = shortenLicense(v.license);
     opt.value = title;
-    opt.textContent = `${title.slice(0, 56)} — ${lic}`;
+    opt.textContent = versionOptionText(title, v.license);
     opt.dataset.license = v.license || '';
     sel.appendChild(opt);
   });
@@ -7197,8 +7206,7 @@ function updateTransFooter() {
     el.textContent = I18n.t('torah.trans.footer_none');
     return;
   }
-  const lic = opt.dataset.license || 'unknown license';
-  el.innerHTML = I18n.t('torah.trans.footer_line', { version: esc(sel.value), license: esc(shortenLicense(lic)) });
+  el.innerHTML = I18n.t('torah.trans.footer_line', { version: esc(sel.value), license: esc(licenseLabel(opt.dataset.license)) });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -8249,6 +8257,9 @@ function applyI18n() {
   try { syncWeekStepLabels(); } catch (e) {}        // week-step buttons name their destination
   try { syncFsBar(); } catch (e) {}                // fullscreen bar: aliyah state + disabled reason
   try { updateTransFooter(); } catch (e) {}         // translation credit line
+  try {                                             // version options: built once per book, so relabel their licence here
+    document.querySelectorAll('#ttVersionSelect option').forEach(o => { if (o.value && o.dataset.license !== undefined) o.textContent = versionOptionText(o.value, o.dataset.license); });
+  } catch (e) {}
   try { syncTTSVoiceStatus(); } catch (e) {}        // TTS voice readout — written pre-ready, never re-rendered
   try { updateCopyTextarea(); } catch (e) {}        // re-localize the "{count} selected" line
   try { syncPitchControls(); } catch (e) {}         // pitch sliders' aria-valuetext carries the translated unit
