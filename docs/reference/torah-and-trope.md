@@ -229,11 +229,11 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   the key is spelled the way the charts print chromatic notes — raised 1st and 4th, lowered 3rd,
   6th and 7th (`motifPitchPos`) — so A major's lowered seventh is G♮ and C major writes F♯ and B♭.
   **The file is the Learn cards' staff, nothing else** — the drill's Melody questions play
-  PocketTorah recordings, not the motifs — and it is fetched `?v=5`. **Every shipped entry is `verified:true`,
+  PocketTorah recordings, not the motifs — and it is fetched `?v=6`. **Every shipped entry is `verified:true`,
   hand-transcribed from the printed Ashkenazi cantillation chart recorded in
   `docs/tropepatterns.md`** (each `source` names the chart row it comes from; a grace note is
-  written as a full eighth, since the staff has no smaller value — zarka's F♯4 before KA and the D4
-  each telisha sings T′ on; pazer holds its two opening D4s as one quarter, the maintainer's
+  written as a full eighth, since the staff has no smaller value — zarka's F♯4 before KA, the D4
+  each telisha sings T′ on and yetiv's Y′; pazer holds its two opening D4s as one quarter, the maintainer's
   correction of the print, noted in section A there; `geresh_muqdam` has no figure and no entry). To change a motif, edit the JSON by hand,
   keep `verified:true`, update the row in `docs/tropepatterns.md`, bump the `?v=`, and audition it
   with the card's tune button. Figures longer than eight notes widen their staff, and one reaching
@@ -244,7 +244,7 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   accidentals), transcribed from the same book's High Holiday chart for the 21 marks it covers;
   shalshelet, mercha kefula, karnei parah and yerach ben yomo have no entry (they never occur in the
   Rosh Hashanah or Yom Kippur readings). Its one grace note, yetiv's Y′, is a full eighth as in the
-  Torah file (A4 A4 G4). It is fetched `?v=3` beside the Torah file and validated the same way,
+  Torah file (A4 A4 G4; the Torah yetiv is B4 B4 A4). It is fetched `?v=4` beside the Torah file and validated the same way,
   each file on its own, so one failing never blanks the other melody's staffs. **Settings → Melody** (`settings.melody`,
   `'torah'` by default or `'highholiday'`) picks which file draws the staffs and feeds the tune
   button; any other stored value shows the year-round staffs and stays stored (`melodyKey()`), so a

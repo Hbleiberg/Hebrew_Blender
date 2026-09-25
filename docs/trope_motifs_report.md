@@ -2,7 +2,7 @@
 
 - **Built:** 2026-09-25
 - **Source:** PocketTorah aliyah recordings (raw.githubusercontent.com/rneiss/PocketTorah), clips selected from `data/trope/trope_index.json`
-- **Output:** `data/trope/trope_motifs.json` — 4558 bytes (budget 16,384)
+- **Output:** `data/trope/trope_motifs.json` — 4587 bytes (budget 16,384)
 - **Decoder:** mpg123-decoder (WASM); pitch detection: YIN (80–400 Hz band, 10 ms hop, threshold 0.15)
 - **Reference pitch:** each clip's final sustained segment (≥120 ms); p = semitones relative to it (notated as B, middle line, treble clef)
 - **Examples analyzed:** 0 clips across 0 aliyah MP3s (0 downloaded, 0 cache hits)
@@ -37,7 +37,7 @@ flip `verified` to `true`; re-runs keep verified entries).
 
 ### mahpach
 
-- **kept (human-verified)** — motif: `-5:1 · -5:1 · -14:1 · -9:1` (verified: true)
+- **kept (human-verified)** — motif: `-5:1 · -5:1 · -14:1 · -9:2` (verified: true)
 
 ### pashta
 
@@ -45,7 +45,7 @@ flip `verified` to `true`; re-runs keep verified entries).
 
 ### yetiv
 
-- **kept (human-verified)** — motif: `0:2 · -2:1` (verified: true)
+- **kept (human-verified)** — motif: `0:1 · 0:2 · -2:1` (verified: true)
 
 ### zakef_katon
 
@@ -57,7 +57,7 @@ flip `verified` to `true`; re-runs keep verified entries).
 
 ### zarka
 
-- **kept (human-verified)** — motif: `-7:1 · -5:1 · -7:1 · -9:1 · -10:1 · -12:1 · -10:1 · -14:1` (verified: true)
+- **kept (human-verified)** — motif: `-7:1 · -5:1 · -7:1 · -9:1 · -10:1 · -12:1 · -10:1 · -14:2` (verified: true)
 
 ### segol
 
@@ -77,7 +77,7 @@ flip `verified` to `true`; re-runs keep verified entries).
 
 ### tevir
 
-- **kept (human-verified)** — motif: `-7:1 · -9:1 · -10:1 · -9:1 · -7:1` (verified: true)
+- **kept (human-verified)** — motif: `-7:1 · -9:1 · -10:1 · -9:1 · -7:2` (verified: true)
 
 ### kadma
 
@@ -97,11 +97,11 @@ flip `verified` to `true`; re-runs keep verified entries).
 
 ### telisha_gedola
 
-- **kept (human-verified)** — motif: `-9:1 · -9:1 · -9:1 · -9:1 · -9:1 · -7:1 · -5:1 · -4:1 · -2:1 · -5:1 · -7:1 · -9:1` (verified: true)
+- **kept (human-verified)** — motif: `-9:1 · -9:1 · -9:1 · -9:1 · -9:1 · -7:1 · -5:1 · -4:1 · -2:1 · -5:1 · -7:1 · -9:2` (verified: true)
 
 ### pazer
 
-- **kept (human-verified)** — motif: `-9:2 · -7:1 · -5:1 · -4:1 · -2:1 · 0:1 · -2:1 · -5:1 · -7:1` (verified: true)
+- **kept (human-verified)** — motif: `-9:2 · -7:1 · -5:1 · -4:1 · -2:1 · 0:1 · -2:1 · -5:1 · -7:2` (verified: true)
 
 ### mercha_kefula
 
@@ -109,7 +109,7 @@ flip `verified` to `true`; re-runs keep verified entries).
 
 ### karnei_parah
 
-- **kept (human-verified)** — motif: `-9:1 · -9:1 · -9:1 · -10:1 · -9:1 · -9:1 · -9:1 · -7:1 · -5:1 · -4:1 · -2:1 · -5:1 · -7:1 · -9:1` (verified: true)
+- **kept (human-verified)** — motif: `-9:1 · -9:1 · -9:1 · -10:1 · -9:1 · -7:1 · -9:1 · -9:1 · -7:1 · -5:1 · -4:1 · -2:1 · -5:1 · -7:1 · -9:2` (verified: true)
 
 ### yerach_ben_yomo
 
