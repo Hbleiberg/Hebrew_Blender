@@ -97,10 +97,30 @@ the CSS class→var mapping is manual).
 
 A second, composable color dimension alongside nikkud coloring: each **word** is classed by its
 cantillation **clause family**. Settings keys (in the `hebrewTorahTrainer_settings` blob, so no
-AllTools wiring): `colorCodeTrope` (bool) + `tropeColorOverrides` (family → hex, validated on
+AllTools wiring): `colorCodeTrope` (bool) + `tropeCodingMode` (`'highlight'` tint by default or
+`'underline'`, read through `tropeModeKey()`: any other stored value shows as Highlight and stays
+stored) + `tropeColorOverrides` (family → hex, validated on
 every read with the **strict `TROPE_HEX6_RE`** (`#rrggbb` only, not the looser `HEX_COLOR_RE`) —
 imported blobs are untrusted, AND the value takes an appended `59` alpha suffix and seeds
 `<input type=color>`, both of which require the 6-digit form).
+
+- **The drawer's two color panels are one list each, and the list is the on/off switch.** Vowel
+  color coding is No highlight · Letter · Highlight · Underline (radios `optColorMode`), trope
+  color coding No highlight · Highlight · Underline (`optTropeMode`). No highlight writes
+  `colorCodeNikkud` / `colorCodeTrope` = `false` and keeps the stored mode, so choosing a look
+  again brings back the last one; the booleans stay the storage because older pages, practice
+  links, cloud rows and AllTools files all read them. `syncFormToSettings` (and
+  `syncTropeModeRadios()`, which the "Color-code the trope" chip above the reading also calls)
+  is the settings → list half: an unknown vowel mode shows as Letter, the way
+  `applyNikkudColors` draws it. Turning vowel coloring on or off re-renders (the `.nik` spans
+  exist only while it is on); every other change is a var/class swap. Layout: each list drops
+  under its label when it does not fit beside it, no choice breaks mid-label, and the vowel list
+  is a 2×2 block (`.tt-color-grid`), because its four English choices need about 321px of the
+  default drawer's 317px row. The page's
+  `.radio-group` radios are visually hidden but focusable (the Trope Tutor's rule, with
+  `position:relative` on the group so they scroll with the drawer), so the lists stay
+  keyboard-operable like the switches they replaced; the drawer's focus trap skips unchecked
+  radios.
 
 - **Taxonomy**: `TROPE_CHAR_TO_FAMILY` maps codepoints to 7 families (`sofpasuk`, `etnachta`,
   `katon`, `segol`, `revia`, `geresh`, `rare`; ordered defs in `TROPE_COLOR_DEFS` — the single
@@ -130,9 +150,12 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   `--trope-<fam>-bg`/`-line` CSS vars set on `<body>` by `applyTropeColors()` (the chokepoint,
   called at the top of `renderText()`). All trope selectors are **`:where()`-wrapped** at
   (0,1,0) specificity so `.tt-word:hover` and karaoke `.active` always win — keep it that way.
-- **Collision rule (automatic, no setting)**: nikkud coloring on **and** `colorCodingMode ===
-  'highlight'` (and nikkud shown) → `body.trope-underline-fallback` switches words from
-  background tint to a thick `text-decoration` clause underline (offset below the nikkud).
+- **The underline look**: `body.trope-underline-fallback` switches words from background tint
+  to a thick `text-decoration` clause underline (offset below the nikkud) when the teacher
+  chooses Underline, **or automatically by the collision rule**: nikkud coloring on **and**
+  `colorCodingMode === 'highlight'` (and nikkud shown), whatever the trope list says (the tip
+  says so). The class keeps its old name; the translit-under rules and the copy path
+  (`_inlineCopyStyles`) read it, so both follow either cause. Print always underlines.
 - **Legend** `#ttTropeLegend` sits above `#ttReading` (renderText never touches it); chips are
   generated once at init from `TROPE_COLOR_DEFS`, and swatches read the body vars so
   theme/picker changes recolor them for free. It shows only when trope coloring is on **and** a
@@ -441,8 +464,9 @@ builds) or `'word'`. With `'word'` and the transliteration on, `renderText` drop
 - **What travels.** `LINK_DISPLAY` is the one list of carried keys, each with the check a value must
   pass: layout, the four show-toggles (nikkud, te'amim, transliteration, translation), the
   transliteration style and placement, the Hebrew font and the three text sizes, vowel coding (on, mode, scheme,
-  overrides), trope coding (on, overrides), karaoke style and follow. Enum lists are read from the
-  page's own radios and `<option>`s, colors must be `#rrggbb` (`TROPE_HEX6_RE`), sizes are clamped to
+  overrides), trope coding (on, look, overrides), karaoke style and follow. Enum lists are read from the
+  page's own radios and `<option>`s (a color list's No highlight is left out: it travels as the
+  on/off boolean, never as a mode), colors must be `#rrggbb` (`TROPE_HEX6_RE`), sizes are clamped to
   their sliders, and a font must be in `HEB_FONTS`. **Both ends run the checks:** the sender, so only
   what this page can re-validate ever leaves, and the reader, because anyone can edit a link. `?s=` is
   base64url JSON `{v: LINK_VIEW_V, …}` holding only what differs from `DEFAULTS`.

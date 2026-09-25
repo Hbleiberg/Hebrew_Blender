@@ -3882,10 +3882,10 @@ torah.audio.tts_unsupported,Speech synthesis not supported.,סינתזת דיב�
 torah.audio.looping_label,🔁 Looping {verse},🔁 לולאה על {verse},Audio-bar label while a verse loops,leading-glyph; {verse} content
 torah.color.code_nikkud,Color-code nikkud,צביעת ניקוד,settings label,
 torah.color.code_trope,Color-code trope families,צביעת משפחות טעמים,settings label,
-torah.color.code_trope_tip,"Tints each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. When vowel coloring is in Highlight mode, trope shows as an underline instead.","צובע כל מילה לפי משפחת הטעם שלה — סוף פסוק, אתנחתא, זקף קטון, סגול, רביע, גרש וטעמים נדירים — כך שמבנה הביטויים של הפסוק נשאר גלוי גם כשהטעמים מוסתרים. כשצביעת התנועות במצב הדגשה, הטעמים מוצגים כקו תחתון במקום.",tooltip,
+torah.color.code_trope_tip,"Colors each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. Highlight tints the word; Underline draws a colored line under it. When vowel coloring is in Highlight mode, trope shows as an underline instead.","צובע כל מילה לפי משפחת הטעם שלה — סוף פסוק, אתנחתא, זקף קטון, סגול, רביע, גרש וטעמים נדירים — כך שמבנה הביטויים של הפסוק נשאר גלוי גם כשהטעמים מוסתרים. הדגשה צובעת את רקע המילה; קו תחתון מוסיף קו צבעוני מתחתיה. כשצביעת התנועות במצב הדגשה, הטעמים מוצגים כקו תחתון במקום.",tooltip,
 torah.color.mode_highlight,Highlight,הדגשה,radio label,
-torah.color.mode_label,Mode,מצב,settings label,
 torah.color.mode_letter,Letter,אות,radio label,
+torah.color.mode_none,No highlight,ללא הדגשה,radio label: first choice of the vowel and trope color lists; turns that coloring off,
 torah.color.mode_underline,Underline,קו תחתון,radio label,
 torah.color.scheme_default,Default,ברירת מחדל,vowel scheme button,
 torah.color.scheme_reset,Reset,איפוס,vowel scheme button,

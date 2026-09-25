@@ -921,9 +921,10 @@ body.nik-mode-underline .nik { text-decoration-line:underline !important; text-d
 :where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-revia)    { background-color:var(--trope-revia-bg); }
 :where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-geresh)   { background-color:var(--trope-geresh-bg); }
 :where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-rare)     { background-color:var(--trope-rare-bg); }
-/* Collision fallback: when nikkud color coding is in Highlight mode it owns word
-   backgrounds (per-syllable tints), so trope shows as a thick clause underline
-   pushed below the nikkud zone instead. text-decoration longhands on purpose:
+/* The underline look (body.trope-underline-fallback, set by applyTropeColors): the teacher
+   chose Underline in the trope list, or the collision fallback. When nikkud color coding
+   is in Highlight mode it owns word backgrounds (per-syllable tints), so trope shows as a
+   thick clause underline pushed below the nikkud zone instead. text-decoration longhands on purpose:
    box-shadow is contended by hover/karaoke (flicker) and border-bottom reflows
    justified text; kar-style-underline's .active shorthand still overrides these. */
 :where(body.trope-underline-fallback) .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) {
@@ -1219,12 +1220,29 @@ input:focus-visible + .slider { outline:2px solid var(--gold); outline-offset:2p
      ENGLISH labels that overflow (265.4px vs Hebrew's 246.5), which is why an RTL-only check
      never saw it. Inert above the wrap point: a row that already fits lays out identically. */
   flex-wrap:wrap;
+  /* Anchors the hidden radios below to their own group. Without it they would anchor to the
+     fixed, transformed settings drawer and not scroll with its body. */
+  position:relative;
 }
 body.dark .radio-group { background:#2a3349; }
 /* Unselected options: --muted measures 4.13:1 on the dark #2a3349 track — below
    the 4.5:1 AA minimum at this size. Dedicated literal (4.92:1); token untouched. */
 body.dark .radio-group label { color:#99a2b8; }
-.radio-group input { display:none; }
+/* Visually hidden but focusable (the Trope Tutor's rule): display:none dropped every radio from
+   the tab order, and the vowel and trope color lists replaced keyboard-operable switches. */
+.radio-group input { position:absolute; opacity:0; width:1px; height:1px; margin:0; pointer-events:none; }
+.radio-group input:focus-visible + label { outline:2px solid var(--gold); outline-offset:1px; }
+/* The drawer's two color lists. A choice never breaks mid-label. The vowel list's four choices
+   sit in a 2×2 block: in English they need about 321px of the default drawer's 317px row (less
+   still beside a classic scrollbar), and a row that breaks leaves one choice alone on a second
+   line. The trope list's three fit one line, except in English with the drawer dragged to its
+   320px minimum, where they wrap two and one. */
+.tt-color-list label { white-space:nowrap; }
+/* Its row label keeps its natural width (the row rule's flex:1 starts it at zero), so a list
+   that does not fit beside it drops to the next line instead of squeezing the label to one
+   word per line — the Hebrew trope label did. */
+.form-row.tt-color-row > label { flex:1 1 auto; }
+.radio-group.tt-color-grid { display:inline-grid; grid-template-columns:repeat(2, 1fr); }
 .radio-group label {
   text-align:center; padding:4px 10px; border-radius:3px;
   font-size:0.78rem; cursor:pointer; font-weight:600; color:var(--muted);
@@ -2346,13 +2364,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <div class="panel collapsed">
       <div class="panel-title" data-i18n="torah.settings.panel_vowel_color">Vowel color coding</div>
       <div class="panel-body">
-        <div class="form-row">
-          <label for="optColorCode" data-i18n="torah.color.code_nikkud">Color-code nikkud</label>
-          <label class="toggle"><input type="checkbox" id="optColorCode"><span class="slider"></span></label>
-        </div>
-        <div class="form-row" id="colorModeRow" style="display:none;">
-          <label data-i18n="torah.color.mode_label">Mode</label>
-          <span class="radio-group">
+        <!-- One list is both the on/off switch and the look: No highlight writes colorCodeNikkud:false
+             and keeps colorCodingMode (wireSettingsForm). The list drops under its label, end-aligned
+             (the dashboard's Date format idiom), as a 2×2 block (.tt-color-grid). -->
+        <div class="form-row tt-color-row" style="flex-wrap:wrap;">
+          <label id="lblColorCode" data-i18n="torah.color.code_nikkud">Color-code nikkud</label>
+          <span class="radio-group tt-color-list tt-color-grid" role="group" aria-labelledby="lblColorCode" style="margin-inline-start:auto;">
+            <input type="radio" name="optColorMode" id="cmNone" value="none"><label for="cmNone" data-i18n="torah.color.mode_none">No highlight</label>
             <input type="radio" name="optColorMode" id="cmLetter" value="letter"><label for="cmLetter" data-i18n="torah.color.mode_letter">Letter</label>
             <input type="radio" name="optColorMode" id="cmHighlight" value="highlight"><label for="cmHighlight" data-i18n="torah.color.mode_highlight">Highlight</label>
             <input type="radio" name="optColorMode" id="cmUnderline" value="underline"><label for="cmUnderline" data-i18n="torah.color.mode_underline">Underline</label>
@@ -2370,9 +2388,14 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <div class="panel collapsed">
       <div class="panel-title" data-i18n="torah.settings.panel_trope_color">Trope color coding</div>
       <div class="panel-body">
-        <div class="form-row">
-          <label><span id="lblColorCodeTrope" data-i18n="torah.color.code_trope">Color-code trope families</span> <span class="tip-wrap" data-i18n-tip="torah.color.code_trope_tip" data-tip="Tints each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. When vowel coloring is in Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
-          <label class="toggle"><input type="checkbox" id="optColorCodeTrope" aria-labelledby="lblColorCodeTrope"><span class="slider"></span></label>
+        <!-- Same shape as the vowel list: No highlight writes colorCodeTrope:false and keeps tropeCodingMode. -->
+        <div class="form-row tt-color-row" style="flex-wrap:wrap;">
+          <label><span id="lblColorCodeTrope" data-i18n="torah.color.code_trope">Color-code trope families</span> <span class="tip-wrap" data-i18n-tip="torah.color.code_trope_tip" data-tip="Colors each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. Highlight tints the word; Underline draws a colored line under it. When vowel coloring is in Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
+          <span class="radio-group tt-color-list" role="group" aria-labelledby="lblColorCodeTrope" style="margin-inline-start:auto;">
+            <input type="radio" name="optTropeMode" id="tmNone" value="none"><label for="tmNone" data-i18n="torah.color.mode_none">No highlight</label>
+            <input type="radio" name="optTropeMode" id="tmHighlight" value="highlight"><label for="tmHighlight" data-i18n="torah.color.mode_highlight">Highlight</label>
+            <input type="radio" name="optTropeMode" id="tmUnderline" value="underline"><label for="tmUnderline" data-i18n="torah.color.mode_underline">Underline</label>
+          </span>
         </div>
         <div class="color-pick-list" id="tropeColorPickerList" style="display:none;"></div>
         <div class="form-row vowel-scheme-row" id="tropeResetRow" style="display:none;">
@@ -2571,7 +2594,8 @@ const DEFAULTS = {
   colorCodingMode: 'letter',
   nikudColorOverrides: {},
   vowelColorScheme: 'default',
-  colorCodeTrope: false,       // tint each word by its cantillation clause family
+  colorCodeTrope: false,       // color each word by its cantillation clause family
+  tropeCodingMode: 'highlight', // 'highlight' (tint) | 'underline' (clause line); read through tropeModeKey()
   tropeColorOverrides: {},     // family key → hex (HEX_COLOR_RE-validated on read)
   translitStyle: 'modernIsraeli',
   translitPlacement: 'row',    // 'row' (its own line / column / block) | 'word' (under each Hebrew word)
@@ -3510,21 +3534,25 @@ function getTropeColor(fam) {
   return ((_printForceLight ? false : document.body.classList.contains('dark'))
     ? TROPE_DEFAULTS_DARK : TROPE_DEFAULTS_LIGHT)[fam] || '#888888';
 }
+// The trope look the drawer's list stores. Any other value (a newer page's choice) shows as
+// Highlight and stays stored.
+function tropeModeKey() { return settings.tropeCodingMode === 'underline' ? 'underline' : 'highlight'; }
 // Resolve the family colors into --trope-<fam>-bg / --trope-<fam>-line custom
 // properties on <body>, and sync the body-class switches + legend visibility.
-// Pure CSS-var recolor: theme, scheme, and picker changes never need a
+// Pure CSS-var recolor: theme, scheme, look and picker changes never need a
 // renderText() for the trope layer.
 function applyTropeColors() {
   const body = document.body;
   const on = !!settings.colorCodeTrope;
   body.classList.toggle('trope-on', on);
-  // COLLISION RULE: nikkud Highlight mode already paints per-syllable backgrounds,
-  // so a word-level tint would stack with them — automatically fall back to a thick
-  // clause underline below the text instead (no extra setting). showNikkud matters
+  // THE UNDERLINE LOOK (a thick clause underline below the text instead of a tint) has two
+  // causes: the teacher chose Underline, or the COLLISION RULE. Nikkud Highlight mode already
+  // paints per-syllable backgrounds, so a word-level tint would stack with them; trope then
+  // underlines automatically and the stored Highlight choice is kept. showNikkud matters
   // because syllable highlights only render while nikkud is shown.
-  const fallback = on && settings.colorCodeNikkud && settings.showNikkud
-                   && settings.colorCodingMode === 'highlight';
-  body.classList.toggle('trope-underline-fallback', fallback);
+  const underline = on && (tropeModeKey() === 'underline'
+                    || (settings.colorCodeNikkud && settings.showNikkud && settings.colorCodingMode === 'highlight'));
+  body.classList.toggle('trope-underline-fallback', underline);
   for (const fam of TROPE_FAMILIES) {
     const c = getTropeColor(fam);   // override-or-theme-default, 6-digit guaranteed
     body.style.setProperty('--trope-' + fam + '-bg', c + '59');   // 0x59 ≈ 35% alpha
@@ -3541,15 +3569,23 @@ function applyTropeColors() {
   if (chip) chip.hidden = !(!on && currentVerses && currentVerses.length > 0);
 }
 
-// The chip's turn-ON is the drawer checkbox's change handler verbatim, with the checkbox
-// mirrored so the drawer agrees; applyTropeColors then swaps chip → legend. Off stays in
-// the drawer (once coloring is visible, the drawer's full controls are discoverable).
+// The chip turns coloring on in the stored look, with the drawer's list mirrored so the drawer
+// agrees; applyTropeColors then swaps chip → legend. Off stays in the drawer's list (once
+// coloring is visible, the drawer's full controls are discoverable).
 function tropeChipEnable() {
   settings.colorCodeTrope = true;
-  const cb = document.getElementById('optColorCodeTrope');
-  if (cb) cb.checked = true;
-  toggleTropeOptionsVisibility(true);
+  syncTropeModeRadios();
   saveSettings(); applyTropeColors();
+}
+// Settings → the drawer's trope list, which is the on/off switch and the look in one: No
+// highlight while off, else the stored look. Read-only; the pickers show only while on.
+function syncTropeModeRadios() {
+  const on = !!settings.colorCodeTrope, m = tropeModeKey();
+  const check = (id, v) => { const r = document.getElementById(id); if (r) r.checked = v; };
+  check('tmNone', !on);
+  check('tmHighlight', on && m === 'highlight');
+  check('tmUnderline', on && m === 'underline');
+  toggleTropeOptionsVisibility(on);
 }
 
 // Build (or rebuild, on a language switch) the trope-legend family chips from TROPE_COLOR_DEFS.
@@ -6391,8 +6427,10 @@ let _settingsOpener = null;
 function _settingsTrapKey(e) {
   if (e.key !== 'Tab') return;
   const modal = document.getElementById('settingsModal');
+  // An unchecked radio is not a Tab stop (Tab enters its group at the checked one), so it can
+  // be neither end of the loop.
   const focusables = [...modal.querySelectorAll('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])')]
-    .filter(el => el.offsetParent !== null && !el.disabled);
+    .filter(el => el.offsetParent !== null && !el.disabled && !(el.type === 'radio' && !el.checked));
   if (!focusables.length) return;
   const first = focusables[0], last = focusables[focusables.length - 1];
   if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -6470,15 +6508,16 @@ function syncFormToSettings() {
   const sd = document.getElementById('schedDiaspora');
   const si = document.getElementById('schedIsrael');
   if (settings.schedule === 'israel') si.checked = true; else sd.checked = true;
-  // color
-  document.getElementById('optColorCode').checked = !!settings.colorCodeNikkud;
-  const cm = settings.colorCodingMode || 'letter';
-  document.getElementById('cmLetter').checked = cm === 'letter';
-  document.getElementById('cmHighlight').checked = cm === 'highlight';
-  document.getElementById('cmUnderline').checked = cm === 'underline';
-  toggleColorOptionsVisibility(settings.colorCodeNikkud);
-  document.getElementById('optColorCodeTrope').checked = !!settings.colorCodeTrope;
-  toggleTropeOptionsVisibility(settings.colorCodeTrope);
+  // color: each list is the on/off switch and the look in one (No highlight while off). An
+  // unknown vowel mode draws as Letter (applyNikkudColors), so its list shows Letter.
+  const nikOn = !!settings.colorCodeNikkud;
+  const cm = (settings.colorCodingMode === 'highlight' || settings.colorCodingMode === 'underline') ? settings.colorCodingMode : 'letter';
+  document.getElementById('cmNone').checked      = !nikOn;
+  document.getElementById('cmLetter').checked    = nikOn && cm === 'letter';
+  document.getElementById('cmHighlight').checked = nikOn && cm === 'highlight';
+  document.getElementById('cmUnderline').checked = nikOn && cm === 'underline';
+  toggleColorOptionsVisibility(nikOn);
+  syncTropeModeRadios();
   // translit style
   document.getElementById('optTranslitStyle').value = settings.translitStyle || 'modernIsraeli';
   const tp = settings.translitPlacement === 'word' ? 'word' : 'row';
@@ -6513,7 +6552,6 @@ function syncFormToSettings() {
   document.getElementById('ttVersionWrap').style.display = settings.showTranslation ? '' : 'none';
 }
 function toggleColorOptionsVisibility(show) {
-  document.getElementById('colorModeRow').style.display = show ? '' : 'none';
   document.getElementById('colorPickerList').style.display = show ? '' : 'none';
   document.getElementById('colorResetRow').style.display = show ? '' : 'none';
   if (show) syncSchemeButtons();
@@ -6571,29 +6609,35 @@ function wireSettingsForm() {
       if (e.target.checked) { settings.schedule = e.target.value; saveSettings(); }
     });
   });
-  // Color coding
-  document.getElementById('optColorCode').addEventListener('change', e => {
-    settings.colorCodeNikkud = e.target.checked;
-    toggleColorOptionsVisibility(settings.colorCodeNikkud);
-    saveSettings(); renderText();
-  });
+  // Color coding. Each list is the on/off switch and the look in one: No highlight turns the
+  // coloring off and keeps the stored look for the next time the coloring comes back.
   document.querySelectorAll('input[name="optColorMode"]').forEach(r => {
     r.addEventListener('change', e => {
-      if (e.target.checked) {
-        settings.colorCodingMode = e.target.value; saveSettings();
+      if (!e.target.checked) return;
+      const on = e.target.value !== 'none', was = !!settings.colorCodeNikkud;
+      settings.colorCodeNikkud = on;
+      if (on) settings.colorCodingMode = e.target.value;
+      toggleColorOptionsVisibility(on);
+      saveSettings();
+      if (on !== was) renderText();   // the .nik syllable spans exist only while coloring is on
+      else {
         applyNikkudColors();   // mode = a body-class swap, no reading rebuild
         applyTropeColors();    // keep the Highlight-mode ↔ trope-underline collision fallback in sync
       }
     });
   });
   // Trope color coding (renderText's applyTropeColors chokepoint syncs the
-  // body classes/vars, including the Highlight-mode underline fallback)
-  document.getElementById('optColorCodeTrope').addEventListener('change', e => {
-    settings.colorCodeTrope = e.target.checked;
-    toggleTropeOptionsVisibility(settings.colorCodeTrope);
-    // tokenizeHebrew emits the family classes unconditionally, so the toggle is a pure
-    // var+class swap — no reading rebuild, and the karaoke data-twi indices are untouched.
-    saveSettings(); applyTropeColors();
+  // body classes/vars, including the underline look)
+  document.querySelectorAll('input[name="optTropeMode"]').forEach(r => {
+    r.addEventListener('change', e => {
+      if (!e.target.checked) return;
+      settings.colorCodeTrope = e.target.value !== 'none';
+      if (settings.colorCodeTrope) settings.tropeCodingMode = e.target.value;
+      toggleTropeOptionsVisibility(settings.colorCodeTrope);
+      // tokenizeHebrew emits the family classes unconditionally, so on/off and the look are a
+      // pure var+class swap — no reading rebuild, and the karaoke data-twi indices are untouched.
+      saveSettings(); applyTropeColors();
+    });
   });
   // TTS rate sliders — drawer + audio bar both write to settings.ttsRate and
   // mirror each other so the user sees the same value wherever they adjust.
@@ -7497,8 +7541,9 @@ function _inlineCopyStyles(container) {
     }
     sp.removeAttribute('class');
   });
-  // Same collision rule the screen uses: per-syllable highlights already paint backgrounds,
-  // so a word-level trope tint becomes a clause underline instead of stacking with them.
+  // The screen's underline look: the teacher's Underline choice, or the collision rule
+  // (per-syllable highlights already paint backgrounds, so a word-level trope tint becomes a
+  // clause underline instead of stacking with them).
   const fallback = document.body.classList.contains('trope-underline-fallback');
   container.querySelectorAll('span.tt-word').forEach(sp => {
     const fam = (sp.className.match(/trope-([a-z]+)/) || [])[1];
@@ -8738,10 +8783,12 @@ const LINK_DISPLAY = {
   translitFontSize:    v => _linkSize(v, 'optTranslitSize'),
   englishFontSize:     v => _linkSize(v, 'optEnglishSize'),
   colorCodeNikkud:     _linkBool,
-  colorCodingMode:     v => _linkOneOf(v, _linkChoices('input[name="optColorMode"]')),
+  // A list's No highlight is the on/off boolean above it, never a stored mode.
+  colorCodingMode:     v => _linkOneOf(v, _linkChoices('input[name="optColorMode"]:not([value="none"])')),
   vowelColorScheme:    v => _linkOneOf(v, ['default', 'talam']),
   nikudColorOverrides: v => _linkHexMap(v, VOWEL_COLOR_DEFS.map(d => d.key)),
   colorCodeTrope:      _linkBool,
+  tropeCodingMode:     v => _linkOneOf(v, _linkChoices('input[name="optTropeMode"]:not([value="none"])')),
   tropeColorOverrides: v => _linkHexMap(v, TROPE_FAMILIES),
   karaokeStyle:        v => _linkOneOf(v, _linkChoices('input[name="optKarStyle"]')),
   karaokeFollow:       v => _linkOneOf(v, _linkChoices('input[name="optKarFollow"]')),
