@@ -6536,19 +6536,19 @@ function alphabetOwnerOf(cp) {
   const it = (project.letters || []).find(l => l.codepoint === cp);
   return it ? (it.name || ('U+' + cp)) : '';
 }
-function whoHasCp(cp) {            // label of the existing glyph occupying cp, or '' if free
-  const L = LETTERS.find(x => x.cp === cp); if (L) return L.name;
-  if (MARK_NAMES[cp]) return MARK_NAMES[cp];
-  if (TROP_NAMES[cp]) return TROP_NAMES[cp];
-  if (SMR_MARK_BY_CP[cp]) return SMR_MARK_BY_CP[cp].name;   // a Samaritan mark — its own family's store
-  if (PRECOMPOSED.some(p => p.target === cp)) return 'a precomposed form';
+function whoHasCp(cp) {            // label of the existing glyph occupying cp, or '' if free — localized, it is read inside a dialog
+  const L = LETTERS.find(x => x.cp === cp); if (L) return gName(L.name);
+  if (MARK_NAMES[cp]) return gName(MARK_NAMES[cp]);
+  if (TROP_NAMES[cp]) return gName(TROP_NAMES[cp]);
+  if (SMR_MARK_BY_CP[cp]) return gName(SMR_MARK_BY_CP[cp].name);   // a Samaritan mark — its own family's store
+  if (PRECOMPOSED.some(p => p.target === cp)) return I18n.t('fontmaker.whohas.precomposed');
   const xf = EXTRA_FORMS.find(f => f.target === cp);           // Specialized / Yiddish / Ladino composed forms (incl. their PUA slots)
-  if (xf) return xf.name + ' (an optional composed form)';
-  if (cp === '0020') return 'the space';
-  if (cp === 'E0B0') return 'the Sheva Na slot';
-  if (cp === 'E0B1') return 'the right-side meteg form';           // v5.36 PUA bakes (see METEG_RIGHT_CP / HATAF_METEG_CPS)
-  if (cp === 'E0B2' || cp === 'E0B3' || cp === 'E0B4') return 'a hataf + meteg form';
-  if (cp === '034F' || cp === '200D') return 'a joiner the meteg spellings need';
+  if (xf) return I18n.t('fontmaker.whohas.optional_form', { name: gName(xf.name) });
+  if (cp === '0020') return I18n.t('fontmaker.whohas.space');
+  if (cp === 'E0B0') return I18n.t('fontmaker.whohas.shevana');
+  if (cp === 'E0B1') return I18n.t('fontmaker.whohas.meteg_right');           // v5.36 PUA bakes (see METEG_RIGHT_CP / HATAF_METEG_CPS)
+  if (cp === 'E0B2' || cp === 'E0B3' || cp === 'E0B4') return I18n.t('fontmaker.whohas.hataf_meteg');
+  if (cp === '034F' || cp === '200D') return I18n.t('fontmaker.whohas.joiner');
   return '';
 }
 function normalizeCp(raw) {        // "U+05D0" | "0x05D0" | "05D0" | a pasted char → 4-digit UPPER hex (BMP), or null

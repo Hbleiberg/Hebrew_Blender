@@ -3273,6 +3273,9 @@ fontmaker.whohas.optional_form,{name} (an optional composed form),{name} (צור
 fontmaker.whohas.precomposed,a precomposed form,צורה מורכבת מראש,glyph-owner phrase,
 fontmaker.whohas.shevana,the Sheva Na slot,משבצת שווא נע,glyph-owner phrase,
 fontmaker.whohas.space,the space,הרווח,glyph-owner phrase,
+fontmaker.whohas.meteg_right,the right-side meteg form,צורת המתג הימנית,glyph-owner phrase,
+fontmaker.whohas.hataf_meteg,a hataf + meteg form,צורת חטף + מתג,glyph-owner phrase,
+fontmaker.whohas.joiner,a joiner the meteg spellings need,תו מחבר שאיותי המתג צריכים,glyph-owner phrase,
 fontmaker.workspace.resize_left_aria,Resize left panel,שינוי גודל הלוח השמאלי,left panel resize handle,aria-label only
 fontmaker.workspace.resize_right_aria,Resize right panel,שינוי גודל הלוח הימני,right panel resize handle,aria-label only
 fontmaker.workspace.steps_aria,Workspace step,שלב עבודה,workspace step tablist,aria-label only
