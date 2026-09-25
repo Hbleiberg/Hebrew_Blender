@@ -269,6 +269,10 @@ body:has(#ieBackdrop.open) #pwaInstallBanner{visibility:hidden;}
 .ie-modal-body>*{flex-shrink:0;}
 .ie-modal-body textarea{width:100%;height:200px;font-family:monospace;font-size:0.72rem;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--cream);color:var(--text);resize:vertical;}
 body.dark .ie-modal-body textarea{background:#0d1220;}
+/* Under a finger the box computes 11.52px, and iOS Safari zooms the page to 16/11.52 = 1.39× when a field under 16px
+   takes focus — and keeps that zoom after the paste, leaving the sheet wider than the screen. 16px only where the
+   pointer is coarse; the desktop box keeps its size. (S420 Pass N, the sign-in menu's fields set the same rule) */
+@media (pointer:coarse){.ie-modal-body textarea{font-size:16px;}}
 /* The export/import box holds JSON — machine text a teacher copies or pastes, never reads as prose. In the Hebrew UI it inherited dir="rtl", so every line started at the right edge with its punctuation reordered. Only the filled state goes LTR: the (localized) placeholder keeps the UI's direction. */
 .ie-modal-body textarea:not(:placeholder-shown){direction:ltr;text-align:start;}
 .ie-modal-body .btn-row{display:flex;gap:8px;flex-wrap:wrap;}
