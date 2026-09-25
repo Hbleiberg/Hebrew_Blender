@@ -8,6 +8,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S421 Pass P**) | classroom_dashboard.html | **The "Now showing {name} — the classes from your account are in the class list" switch runs on every signed-in load and credits the account even when it holds nothing**: with the pointer on the untouched default and a class this device made itself, the page switches to that class and says it came from the account …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P4 (**NEW S421 Pass P — for H**) | classroom_dashboard.html | **A class list beyond the picker's cap keeps its names now (`288af4a`) but the picker draws only the first 60 chips** (`rosterNames()` slices), so students 61+ of a merged class are stored and counted ("65 names (max 60)") yet never picked; say so in the drawer or raise the chip cap. | found S421
+
 - [ ] P3 (**NEW S416 — gate 2; shared script; smokes `--sdk`**) | js/ivrit-account.js | **The account chip reads "Sign in" (a name, "Offline") but is named "Account"** on 11 pages (2.5.3). | found S416
 
 - [ ] P4 (**NEW S417 Pass E — gate 2**) | manifest.webmanifest | **The install manifest's description names six tools, not the Trope Tutor**; add it after "Torah Trainer" as the home page does. | found S417
@@ -17,8 +21,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S418 — the maintainer's dashboard**) | Supabase project | **Security advisor: leaked-password protection is off**; passwords are never used (e-mail code + Google), so enable the toggle or accept it as moot. | found S418
 
 - [ ] P4 (**NEW S420 Pass N — for F or A; the z-index table is in loop-findings**) | pwa.js + the 7 sheet-bearing pages | **The install banner (position:fixed, z-index 2147483000) floats over any open sheet's bottom band on a short phone**; the hub hides it by its own state (`f44a17e`), and a lower z-index alone is not the suite fix (the generator's `.gen-fab` z 90 equals the dashboard/torah …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S420 Pass N arm 4**) | index.html | **A saved font's name in the My Fonts manager is cut with an ellipsis and its full text lives only in a hover `title`**: a 32-char name is cut in 12/16 phone cells (155px on an iPhone SE) and in the 520px desktop sheet (182px); wrap it (`overflow-wrap:anywhere`, the cloud panels' `.ivsav-name` idiom) instead. | found S420
 
 - [ ] P4 (**NEW S412 Pass H — five small ones**) | flash_cards.html | **(1)** a tied personal best reads as new (`>=` against a `pbStreak` raised live); **(2)** a timed drill paints the previous value for 1 s; **(3)** the "New" profile button's second `class` is ignored (no `.hi-btn`); **(4)** a load in 1-letter mode narrows "Vowel on letter" `[2]` → `[1]`; **(5)** gate 2: the printed card …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -232,31 +234,23 @@ _(none)_
 
 ## Done
 
+- [x] 2026-09-25 | (S421 close-out) | branch/deploy note | **S421 = pass P + 3 fixes on `claude/improve-loop-r5h9ea` / draft PR #275 (base `93330b5`), continuing S417–S420's.** DRIFT: none (origin/main `93330b5`; backend read-only: 3 migrations recorded = 0001–0003 live, delete-account v3 ACTIVE, JWT check on, deployed source byte-equal to the repo's; advisors: the known auth WARN only, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-25 | `aa2a21f` | js/ivrit-saves.js (+ smoke-sync scenario 10, accounts-and-cloud.md) | (S421 Pass P) **A class list or word list only the account holds is named in every panel, not shown by its id** (the label lives in the row's data, which the listing never fetched; one read per row version, kept for the page's life; the hash read of a hashless row supplies it too). | verified: …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-25 | `f71ee36` | index.html | (S421, the S420 N candidate) **A saved font's name in My Fonts wraps instead of being cut to an ellipsis with its text only in a hover title** (`overflow-wrap:anywhere`, the `.ivsav-name` idiom; the title dropped). | verified: 12 cells (iPhone SE + Pixel 7 descriptors, 800, 1280 × EN/HE; dark on the SE and 1280) vs a pre-fix copy: cut 12/12 before, 0/12 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-25 | `288af4a` | classroom_dashboard.html (+ accounts-and-cloud.md) | (S421 Pass P) **A class list beyond the picker's 60 is never cut back by an edit or a restore** (`editor-re-parse-caps-a-merged-list`, NEW: one drawer edit cut a merged 65-name class to 60 and Sync now carried 60 to the account; an `.ivrit` restore landed 60). | verified: fake cloud vs a pre-fix copy — 65 kept and …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-09-25 | (S421 Pass P iter 1) | classroom_dashboard.html's own cloud wiring | **The 4th P, the first on one tool page's wiring**: 8 arms + 9 fake-cloud scenarios + 17 static checks, every zero behind a control (a session load for the request census; a planted removeItem, CSP origin, gtag key and registry key; a travelling control for the omit zero; an anonymous run for the delete …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-09-25 | (S420 close-out) | branch/deploy note | **S420 = pass N + 3 fixes on `claude/improve-loop-r5h9ea` / draft PR #275 (base `93330b5`), continuing S417–S419's.** DRIFT: none; backend clean (0001–0003 live, delete-account v3, keep-alive #13 green). `sw.js` v853 → v854 (index, flash); FM not bumped (untouched). Scripts all clean. Unattended; nothing gated arose; O stays blocked. The …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-25 | `73554ab` | flash_cards.html | (S420) **A nameless word list shows its localized fallback** in the Words picker and the settings (`translated-key-exists-page-hardcodes-english`, the S405 census' last carrier). | verified: 16 cells vs a pre-fix copy, a seeded nameless list: "רשימה ללא שם" in HE, "Untitled list" in EN and in the control's HE UI
-
-- [x] 2026-09-25 | `b9ea89f` | index.html | (S420 Pass N arm 5) **The manual backup box is 16px under a coarse pointer** (11.52px had iOS Safari zoom the sheet 1.39× on focus and keep it; `text-field-under-16px-zooms-on-ios-focus`, the S408 rule). | verified: 12 phone cells 16px, the sheet fits; 8 desktop cells 11.52px unchanged
-
-- [x] 2026-09-25 | `f44a17e` | index.html | (S420 Pass N arm 1) **The install banner is hidden while the AllTools sheet is open** (in Safari's tab on an iPhone SE / 13 it covered the Erase button 100% / 91% and took its tap). | verified: SE + i13 × EN/HE vs a pre-fix copy: the tap hits the banner 4/4 before, the button 4/4 after; back and dismissable after close; Pixel 7, standalone and desktop …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-09-25 | (S420 Pass N iter 1) | index.html | **The 19th N, the hub's 2nd (S249 → S420)**: 16 cells on real descriptors × 14 views, 7 arms, every tap real, the hover scan behind a 2/2 plant. FOUND: the banner over the sheet (P3, fixed), the 11.52px box (P4, fixed), the cut font name (P4), the suite banner question (P4); arm 7 clean. Receipts, traps 145–148: loop-findings.
-
-- [x] 2026-09-25 | (S419 close-out) | branch/deploy note | **S419 = pass K + 4 fixes on `claude/improve-loop-r5h9ea` / draft PR #275 (base `93330b5`), continuing S417 + S418's.** DRIFT: none; backend clean (0001–0003 live, delete-account v3, keep-alive #13 green). `sw.js` v852 → v853; FM not bumped. Scripts all clean. Unattended; nothing gated arose.
-
-- [x] 2026-09-25 | `e3700cc` | torah_trainer.html | (S419) **Translation licence labels come from their keys** (options + footer, relabelled on a live switch; `translated-key-exists-page-hardcodes-english`, the S405 carrier). | verified: stubbed Sefaria versions, 8 cells + control: "נחלת הכלל" / "רישיון לא ידוע" in HE, English identical
-
-- [x] 2026-09-25 | `6ffce11` | locales/ui-strings.csv | (S419) **6 unreferenced trope rows pruned** (5,792 → 5,786 keys; the census with a 7-key control of every reference shape). | verified: trope 8 cells, 3 tabs + a drill + a live switch: 0 missing keys, the deliberate miss warned
-
-- [x] 2026-09-25 | `f6a137d` | trope_tutor.html | (S419) **The High Holiday note hides while its motif file is unavailable** (it claimed staffs over none). | verified: 24 cells (HH file aborted / present / year-round) + control: hidden over 0 staffs, shown over 3
-
-- [x] 2026-09-25 | `58a04a2` | Hebrew_Font_Maker.html + CSV | (S419) **The custom-glyph clash dialog names its owner in the UI language** (7 phrases → `fontmaker.whohas.*`, 3 new rows; names via `gName()`; the S405 carrier). | verified: the real add-glyph form, 8 cells + control: E0B0 / 05B0 / FB35 dialogs in Hebrew, English identical
-
-- [x] 2026-09-25 | (S419 Pass K iter 1) | the i18n surface | **The 28th K over `14c185d..HEAD`** (89 commits; CSV +54/−7, 13 en edits all with he): gates A–E clean behind 7 plants; 9 arms, every zero controlled; 28 runtime cells clean. FOUND 0 new defects; 2 S405 carriers confirmed and fixed. Receipts, traps 141–144: loop-findings.
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-25 | **S421** | iters: 1 pass (**P**) + 3 fixes = **4** | tools: dashboard, index, js/ivrit-saves.js (shared) | patterns fixed: editor-re-parse-caps-a-merged-list ×1 (NEW) | pass run: P | SW: v854→v855
 
 - 2026-09-25 | **S420** | iters: 1 pass (**N**) + 3 fixes = **4** | tools: index ×2, flash | patterns fixed: text-field-under-16px ×1, translated-key-exists-page-hardcodes-english ×1 (NEW install-banner-over-a-sheet's-bottom-controls ×1) | pass run: N | SW: v853→v854
 
@@ -294,11 +288,13 @@ _(none)_
 
 ### Tool coverage (last-touched date per tool)
 
-- **S420 (2026-09-25):** index (**S420**; N S420); generator (S415; G S392; **N-next**, N S262); flash (**S420**; **G-next**, G S279); dictionary (S418; **C-next**, C S285); dashboard (S411); torah (S419; **O-next**, **D-next**, D S307); trope (S419); FM (S419); account (S415; **H-next**); resources + 404 (S418); the other chrome pages + js/i18n.js (S415); no M: generator, flash, torah, terms.
+- **S421 (2026-09-25):** index (**S421**; N S420); generator (S415; G S392; **N-next**, N S262); flash (S420; **G-next**, G S279; **P-next**, its own wiring never); dictionary (S418; **C-next**, C S285); dashboard (**S421**; P S421); torah (S419; **O-next**, **D-next**, D S307); trope (S419); FM (S419); account (S415; **H-next**); resources + 404 (S418); the other chrome pages + js/i18n.js (S415); js/ivrit-saves.js (**S421**); no M: generator, flash, torah, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`install-banner-over-a-sheet's-bottom-controls`** (**NEW S420 Pass N — the hub FIXED `f44a17e`, a CSS state hiding it while the sheet is open; 6 other sheet pages unmeasured**): ACTIVE, streak 0. pwa.js's `#pwaInstallBanner` (fixed, bottom, z 2147483000, phones under 768px) paints over the bottom ~76px of a centered sheet. Detection (`n420/banner.mjs`): iPhone SE + 13, `navigator.standalone=false`, the sheet open, scrolled to its end, `elementFromPoint` at its lowest control = the banner; control `standalone=true` hits it. A lower z-index alone is no suite fix (loop-findings `## S420`).
+- **`editor-re-parse-caps-a-merged-list`** (**NEW S421 Pass P — 1 carrier, FIXED `288af4a`**): ACTIVE, consequence-critical (a sync carries the cut list to the account); never retires. A list the sync merges uncapped is re-parsed by its tool's editor or restore path through the …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- **`install-banner-over-a-sheet's-bottom-controls`** (**NEW S420 Pass N — the hub FIXED `f44a17e`, a CSS state hiding it while the sheet is open; 6 other sheet pages unmeasured**): ACTIVE, streak 0. pwa.js's `#pwaInstallBanner` (fixed, bottom, z 2147483000, phones under 768px) …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`flash-restores-captured-text-not-its-key`** (NEW S417 — 2 FIXED `1f7f869`; S415 `38e5b62`): ACTIVE, streak 0. A "Copied!" flash restoring the text captured at click time, so a 2nd click captures the flash. Detection: `orig = (btn|lbl)\.(textContent|innerHTML)` + …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -346,7 +342,7 @@ _(none)_
 
 - **`physical-property-that-never-mirrors`** (**NEW, registered 2026-09-16 (S388 Pass K) — the shape has now surfaced in THREE sessions (S248, S376, S388), which is what makes it recurring rather than incidental**): ACTIVE. **S397 (Pass F): 2 carriers FIXED (`1348930`) — the …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`synced-key-wiped-without-forgetRow`** (**NEW, registered 2026-09-15 (S382 Pass P arm 4) — 1 carrier found and fixed**): ACTIVE, consequence-critical (it turns a local reset into an account-wide deletion offer), so it never retires on streak. **S382: 1 FIXED (`a44a181`, the …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`synced-key-wiped-without-forgetRow`** (**S382 Pass P arm 4 — 1 carrier, fixed `a44a181`**): ACTIVE, consequence-critical (a local reset becomes an account-wide deletion offer); never retires. **S421: the dashboard swept clean** (0 `removeItem`, no defaults write over a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`tile-grid-built-hidden-never-roved`** (registered 2026-09-15 (S382) — 11 carriers, all fixed): ACTIVE. A `roveTileGrid()` call placed in a builder that runs while the container is `display:none` silently does nothing: the helper's tile list filters `offsetParent !== null`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -558,7 +554,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 ### Discovery-pass rotation (run one per session, stalest first)
 
-- P accounts & cloud (one surface): 2026-09-23 (**S407 — 3rd P, first since S390 (17 sessions); the stalest runnable pass (O blocked here). Surface: the S406 promise-callback sweep across the three modules, then the hub's cloud panels — P's first named surface after two whole-layer runs. 8 arms, every zero behind a control that fired (a planted anonymous write, an uncovered wipe, CSP / gtag / …[full text: IMPROVEMENT_ARCHIVE.md]
+- P accounts & cloud (one surface): 2026-09-25 (**S421 — 4th P, first since S407; stalest runnable (O blocked). Surface: the dashboard's own wiring, the first P on one tool page. 8 arms + 9 fake-cloud scenarios + 17 static checks, every zero controlled. FOUND + FIXED: a merged 65-name class cut to 60 by one edit and carried to the account (P2, `288af4a`, NEW pattern); a cloud-only class/word list …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - O deslop — AI-design-tell sweep (one surface): 2026-09-08 (**S346 — 6th O, `flash_cards.html`. ⚑ BLOCKED HERE TWICE (S399, S403) — NOT "needs an attended session". Clone + the 4 parsers install fine; EXECUTING the detector is refused by the sandbox's auto-mode classifier ("Code from External"), and the refusal names the remedy: the maintainer adds a Bash permission rule for the detector (or …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -590,10 +586,10 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-24 (**S414 — 32nd F, first since S397; stalest runnable (O blocked). THE HEADER CHROME on 14 pages: 84 loads + a toggle-name detector (plant 14/14); DOM = visual order 84/84. FOUND: the dark toggle's flipping name (P3, `f9e67b2`), the Arial Full Screen (P4, `b018f98`), 9 P4 logged.**)
 
-**Next session (S421):** **BRANCH/PR: S417 + S418 + S419 + S420 on `claude/improve-loop-r5h9ea` → draft PR #275 (base `93330b5`). Open → CONTINUE; merged → restart the branch from `origin/main`.** Closed at `sw.js` **v854**, FM **5.56**, SDK **2.116.0**; backend clean (0001–0003 live, delete-account v3, keep-alive #13 green; the auth advisor WARN stays a candidate).
+**Next session (S422):** **BRANCH/PR: S417–S421 on `claude/improve-loop-r5h9ea` → draft PR #275 (base `93330b5`). Open → CONTINUE; merged → restart the branch from `origin/main`.** Closed at `sw.js` **v855**, FM **5.56**, SDK **2.116.0**; backend clean (0001–0003 live, delete-account v3 = repo source, keep-alive #13 green; the auth advisor WARN stays a candidate).
 
-**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), P (S407), then M G D I H C F B A E L K N.** Take **P** (S390 was whole-layer, S407 the modules + the hub's panels; a tool page's own wiring is the least-recently-audited surface — pick by the archive's P history).
+**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), M (S408), then G D I H C F B A E L K N P.** Take **M**: the coverage row's "no M" list (generator, flash, torah, terms) names the surfaces never audited — pick one; unattended, small refinements only, anything dramatic is gate 3 → log with screenshots.
 
-**⚑ STRONGEST UNTAKEN (ungated):** the hub's cut font name (S420, one cssText line); the torah/trope credits' `lang`; S413's three resources items; the S412 flash five; FM's `special_intro` fallback; K's doc-only gate-comment item. **Seed bench: 34.** Gated items wait in Candidates.
+**⚑ STRONGEST UNTAKEN (ungated):** the torah/trope credits' `lang`; S413's three resources items; the S412 flash five; FM's `special_intro` fallback; K's doc-only gate-comment item; the dashboard's adopt toast and its 60-chip picker (S421). **Seed bench: 34.** Gated items wait in Candidates.
 
-**⚑ HARNESS: traps 1–148 in loop-findings** (`n420/` probes in its S420 receipts); `compact-ledger --apply` runs ONCE, only after the edit script succeeded (trap 140); the old handoff moves by hand; the ledger sits at its 100 KB ceiling — the oldest session's Done entries go to the archive by hand (S420 moved S416's).
+**⚑ HARNESS: traps 1–153 in loop-findings** (`p421/` probes in its S421 receipts: a fake cloud beside the 2.116.0 fixture, fetched with `npm pack` from the sandbox); `compact-ledger --apply` runs ONCE, only after the edit script succeeded (trap 140); the old handoff moves by hand; the ledger sits at its 100 KB ceiling — the oldest session's Done entries go to the archive by hand (S421 moved S419's).
