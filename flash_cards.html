@@ -5113,9 +5113,10 @@ function copyTextarea() {
   ta.select();
   document.execCommand('copy');
   const btn = document.getElementById('copyBtn');
-  const orig = btn.textContent;
+  // Back to its own key, not the text it replaced: a second click during the flash would otherwise
+  // capture "Copied!" as the label to restore and leave it behind.
   btn.textContent = I18n.t('shared.toast.copied');
-  setTimeout(() => btn.textContent = orig, 1200);
+  setTimeout(() => btn.textContent = I18n.t('shared.ivrit.manual_copy'), 1200);
 }
 
 /* =========================================================================
