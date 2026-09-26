@@ -822,8 +822,9 @@ The aim is a staff under any reading — a verse, an aliyah, a whole parasha —
 cantillation. The chart supplies the figures. This section records what a builder of that staff needs
 to know, and what the chart leaves open.
 
-- **The data** is `data/trope/trope_phrases.json`, built from sections B and C. No page fetches it
-  yet; the first page to load it adds a `?v=1` (`docs/reference/torah-and-trope.md`). For each
+- **The data** is `data/trope/trope_phrases.json`, built from sections B and C. The Trope Tutor's
+  Phrases tab draws every row of it, and its renderer (`renderPhraseStaff`,
+  `docs/reference/torah-and-trope.md`) is the first building block of this staff. For each
   melody it gives the key and every row as flat arrays:
   - `notes`: `p` in semitones from B4, `v` the printed value, `t` ticks at 48 to the quarter with a
     triplet note's real length, `g` grace, `r` rest, `tie` tied to the next, and `a` accents and

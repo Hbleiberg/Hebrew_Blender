@@ -4419,6 +4419,34 @@ trope.learn.trope_note_yetiv,"Prepositive — printed at the very start of the w
 trope.learn.trope_note_zakef_gadol,Zakef katon's louder sibling — a vertical bar joins the two dots when the word stands alone in its clause.,אחיו הרם יותר של זקף קטון — קו אנכי מצטרף לשתי הנקודות כשהמילה עומדת לבדה במשפטה.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
 trope.learn.trope_note_zarka,Postpositive — curls off the end of the word and always throws ahead to a segol.,טעם מאחר — מסתלסל בסוף המילה ותמיד משליך קדימה אל סגול.,per-trope teaching note (Learn card),pedagogical prose; scope-ambiguous
 trope.learn.visited_aria,visited,נצפה,family chip visited badge aria,aria-label only
+trope.phrases.aliyah_end_tag,Last verse of an aliyah,פסוק אחרון בעלייה,Phrases card tag on the end-of-aliyah rows,
+trope.phrases.chip_aria,Open the {name} card,פתיחת הכרטיס של {name},Phrases card mark chip aria-label (the chip shows the name),aria-label only; do-not-translate {name} (a glyph-name)
+trope.phrases.chip_title,Open this mark's card in Learn,פתיחת כרטיס הטעם בלימוד,Phrases card mark chip title,title tooltip
+trope.phrases.group_closing,Last verse of an aliyah,הפסוק האחרון בעלייה,Phrases group chip + printed heading,
+trope.phrases.group_etnachta,Etnachta clause,פסוקית האתנחתא,Phrases group chip + printed heading,
+trope.phrases.group_gadol,Zakef gadol and yetiv,זקף גדול ויתיב,Phrases group chip + printed heading,
+trope.phrases.group_geresh,Kadma v'azla and geresh,קדמא ואזלא וגרש,Phrases group chip + printed heading,
+trope.phrases.group_gershayim,Gershayim,גרשיים,Phrases group chip + printed heading,
+trope.phrases.group_katon,Zakef katon clause,פסוקית הזקף קטן,Phrases group chip + printed heading,
+trope.phrases.group_other,More phrases,צירופים נוספים,Phrases group chip + printed heading (rows the group table does not name),
+trope.phrases.group_rare,Rare marks,טעמים נדירים,Phrases group chip + printed heading,
+trope.phrases.group_revia,Revia,רביע,Phrases group chip + printed heading,
+trope.phrases.group_segol,Segol clause,פסוקית הסגול,Phrases group chip + printed heading,
+trope.phrases.group_sofpasuk,Sof pasuk clause,פסוקית סוף הפסוק,Phrases group chip + printed heading,
+trope.phrases.group_telisha,Telishas and pazer,תלישות ופזר,Phrases group chip + printed heading,
+trope.phrases.group_tevir,Darga and tevir,דרגא ותביר,Phrases group chip + printed heading,
+trope.phrases.groups_aria,Phrase groups,קבוצות צירופים,Phrases group chips aria-label,aria-label only
+trope.phrases.intro,"Each card is one line of the printed cantillation chart: marks as they are sung together, with the whole melody on a staff. Play a card to hear it as the notes light up, or choose a mark to open its Learn card.","כל כרטיס הוא שורה אחת מטבלת הטעמים המודפסת: טעמים כפי שהם מושרים יחד, עם המנגינה כולה על חמשה. הפעילו כרטיס כדי לשמוע אותו בזמן שהתווים נדלקים, או בחרו טעם כדי לפתוח את כרטיס הלימוד שלו.",Phrases tab intro (data-i18n-html),
+trope.phrases.loading,Loading the phrase chart…,טוען את טבלת הצירופים…,Phrases tab status,
+trope.phrases.melody_hh_note,"These phrases show the High Holiday melody, for the Torah reading on Rosh Hashanah and Yom Kippur. There are no High Holiday recordings yet, so the examples show the words only.","הצירופים מוצגים במנגינת הימים הנוראים, לקריאת התורה בראש השנה וביום כיפור. עדיין אין הקלטות במנגינת הימים הנוראים, ולכן הדוגמאות מציגות את המילים בלבד.",Phrases tab banner (shown while the High Holiday melody is chosen),
+trope.phrases.next_group,Next group →,הקבוצה הבאה →,button,
+trope.phrases.play_aria,Play phrase {n} as tones,השמעת צירוף {n} בצלילים,Phrases card tune button aria-label (one name while idle and playing; aria-pressed carries the state),aria-label only; do-not-translate {n} (the chart row number)
+trope.phrases.play_title,Play the phrase — each note lights up as it sounds,השמעת הצירוף — כל תו נדלק בזמן שהוא נשמע,Phrases card tune button title,title tooltip
+trope.phrases.print,Print phrases,הדפסת הצירופים,button (the print icon lives in the markup),svg-icon-in-markup
+trope.phrases.print_title,"Print every phrase of this melody as one chart, in the key shown","הדפיסו את כל הצירופים של המנגינה הזו כטבלה אחת, בסולם המוצג",button title,
+trope.phrases.staff_aria,Staff of phrase {n}: {marks},חמשה של צירוף {n}: {marks},Phrases card staff aria-label,"aria-label only; do-not-translate {n}/{marks} (row number, glyph-names)"
+trope.phrases.staff_aria_hh,High Holiday staff of phrase {n}: {marks},חמשה של צירוף {n} במנגינת הימים הנוראים: {marks},Phrases card staff aria-label (High Holiday melody),"aria-label only; do-not-translate {n}/{marks} (row number, glyph-names)"
+trope.phrases.unavailable,The phrase chart couldn’t be loaded. Check your connection and try again.,לא ניתן היה לטעון את טבלת הצירופים. בדקו את החיבור ונסו שוב.,Phrases tab status (load failed; a Try again button follows),
 trope.melody.aria,Melody for the staffs,המנגינה של החמשות,radiogroup aria,aria-label only
 trope.melody.highholiday,High Holidays,ימים נוראים,radio label,
 trope.melody.label,Melody,מנגינה,settings label,
@@ -4446,6 +4474,7 @@ trope.status.tap_to_hear,Tap ▶ to hear the melody.,הקישו על ▶ כדי 
 trope.tabs.aria,Tutor mode,מצב המאמן,tablist aria,aria-label only
 trope.tabs.drill,🎯 Drill,🎯 תרגול,mode tab,leading-emoji
 trope.tabs.learn,Learn,לימוד,mode tab,svg-icon-in-markup
+trope.tabs.phrases,Phrases,צירופים,mode tab label (the music icon lives in the markup),svg-icon-in-markup
 trope.tabs.settings,Settings,הגדרות,mode tab label (the gear icon lives in the markup),svg-icon-in-markup
 trope.toast.audio_new_question,Audio for that trope wouldn’t load — new question.,השמע של הטעם הזה לא נטען — שאלה חדשה.,toast,
 trope.toast.audio_unavailable,Audio unavailable right now — check your connection.,השמע אינו זמין כרגע — בדקו את החיבור.,toast,
@@ -4455,8 +4484,10 @@ trope.toast.clip_trying_another,That clip wouldn’t load — trying another exa
 trope.toast.clip_wont_load,That clip wouldn’t load.,הקטע הזה לא נטען.,toast,
 trope.tour.key_body,"Use the arrows to move every staff and its tune up or down a half step at a time, until it sits in your voice. Press ▶ beside a mark's name to hear its tune.","השתמשו בחצים כדי להעביר כל חמשה ואת המנגינה שלה חצי טון למעלה או למטה בכל פעם, עד שתתאים לקול שלכם. לחצו על ▶ ליד שם הטעם כדי לשמוע את המנגינה שלו.",tour step body,
 trope.tour.key_title,Sing in your key,שירו בסולם שלכם,tour step title,
-trope.tour.s1_body,Learn walks the marks family by family; Drill quizzes you on them.,הלימוד עובר על הטעמים משפחה אחר משפחה; התרגול בוחן אתכם עליהם.,tour step body,
-trope.tour.s1_title,Two modes,שני מצבים,tour step title,
+trope.tour.phrases_body,"Every line of the printed chart, grouped by clause: hear each phrase, see its whole melody, and find it in the Torah.","כל שורה בטבלה המודפסת, מקובצת לפי פסוקיות: שמעו כל צירוף, ראו את המנגינה כולה ומצאו אותו בתורה.",tour step body,
+trope.tour.phrases_title,Phrases,צירופים,tour step title,
+trope.tour.s1_body,Learn walks the marks family by family; Phrases shows them sung together; Drill quizzes you on them.,הלימוד עובר על הטעמים משפחה אחר משפחה; הצירופים מראים אותם מושרים יחד; התרגול בוחן אתכם עליהם.,tour step body,
+trope.tour.s1_title,"Learn, Phrases, Drill","לימוד, צירופים, תרגול",tour step title,
 trope.tour.s2_body,The marks come in seven melodic families — the same color families as the Torah Trainer reader.,הטעמים מגיעים בשבע משפחות מלודיות — אותן משפחות צבע כמו בקורא של מאמן התורה.,tour step body,
 trope.tour.s2_title,Clause families,משפחות טעמים,tour step title,
 trope.tour.s3_body,"Symbol, both naming traditions, a teaching note, and real chanted example words. Press ▶ to hear one.","סימן, שתי מסורות השמות, הערת לימוד, ומילות דוגמה מושרות אמיתיות. לחצו על ▶ כדי לשמוע אחת.",tour step body,

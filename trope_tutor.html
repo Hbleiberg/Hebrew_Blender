@@ -411,6 +411,56 @@ body.dark .mark-hit { color:var(--gold-light); background:rgba(224,168,50,0.2); 
 .tu-learn-nav { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; flex-wrap:wrap; }
 .tu-print-sheet { display:none; }   /* paper only — @media print reveals it */
 
+/* ───── Phrases: one card per chart row ───── */
+.tu-pcards { display:flex; flex-direction:column; gap:14px; }
+.tu-pcard { border:1px solid var(--border); border-radius:10px; background:var(--cream); padding:10px 14px 10px; min-width:0; }
+body.dark .tu-pcard { background:#131a29; }
+.tu-pcard-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.tu-pnum { font-family:'Libre Baskerville',serif; font-size:0.9rem; font-weight:700; color:var(--gold-text); min-inline-size:1.6em; text-align:center; font-variant-numeric:tabular-nums; }
+.tu-phe { font-family:var(--heb-font); font-size:calc(var(--tu-heb-size) * 0.8); line-height:1.5; color:var(--text); flex:1; min-width:0; text-align:start; }
+/* The chips follow the notes, which read left to right in either language: pinned LTR like the staff. */
+.tu-pchips { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0; direction:ltr; }
+.tu-pchip {
+  display:inline-flex; align-items:center; gap:6px; padding:3px 10px 3px 8px; font:inherit; font-size:0.78rem; font-weight:700;
+  border:1px solid var(--border); border-inline-start:5px solid var(--border); border-radius:6px;
+  background:transparent; color:var(--text); cursor:pointer; min-block-size:30px; transition:border-color 0.15s, background-color 0.15s;
+}
+.tu-pchip:hover, .tu-pchip:focus-visible { border-color:var(--gold); background:var(--warm-gray); }
+.tu-pchip:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+body.dark .tu-pchip:hover, body.dark .tu-pchip:focus-visible { background:#1d2638; }
+.tu-pchip.is-static { cursor:default; }
+.tu-pchip.is-static:hover { border-color:var(--border); background:transparent; }
+.tu-pchip-glyph { font-family:var(--heb-font); font-size:1.15rem; line-height:1; }
+.tu-pchip.fam-sofpasuk { border-inline-start-color:var(--trope-sofpasuk-line); }
+.tu-pchip.fam-etnachta { border-inline-start-color:var(--trope-etnachta-line); }
+.tu-pchip.fam-katon    { border-inline-start-color:var(--trope-katon-line); }
+.tu-pchip.fam-segol    { border-inline-start-color:var(--trope-segol-line); }
+.tu-pchip.fam-revia    { border-inline-start-color:var(--trope-revia-line); }
+.tu-pchip.fam-geresh   { border-inline-start-color:var(--trope-geresh-line); }
+.tu-pchip.fam-rare     { border-inline-start-color:var(--trope-rare-line); }
+.tu-pstaff-wrap { overflow-x:auto; padding:2px 0 4px; border-radius:8px; }
+.tu-pstaff-wrap:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.tu-pstaff { display:block; color:var(--text); }
+.tu-pstaff .tu-pbar { fill:var(--border); }
+.tu-pstaff .tu-pbar.fam-sofpasuk { fill:var(--trope-sofpasuk-line); }
+.tu-pstaff .tu-pbar.fam-etnachta { fill:var(--trope-etnachta-line); }
+.tu-pstaff .tu-pbar.fam-katon    { fill:var(--trope-katon-line); }
+.tu-pstaff .tu-pbar.fam-segol    { fill:var(--trope-segol-line); }
+.tu-pstaff .tu-pbar.fam-revia    { fill:var(--trope-revia-line); }
+.tu-pstaff .tu-pbar.fam-geresh   { fill:var(--trope-geresh-line); }
+.tu-pstaff .tu-pbar.fam-rare     { fill:var(--trope-rare-line); }
+/* A chip lights its mark's notes, bar and syllables; the tune lights the sounding note. Colour only. */
+.tu-pstaff .tu-pn.is-hl, .tu-pstaff .tu-ps.is-hl { color:var(--gold-text); fill:var(--gold-text); }
+body.dark .tu-pstaff .tu-pn.is-hl, body.dark .tu-pstaff .tu-ps.is-hl { color:var(--gold-light); fill:var(--gold-light); }
+.tu-pstaff .tu-pbar.is-hl { stroke:var(--text); stroke-width:0.8; }
+.tu-pstaff.is-playing { background:rgba(201,146,42,.14); border-radius:8px; }
+.tu-pstaff .tu-pn.is-sounding { color:var(--gold); }
+body.dark .tu-pstaff .tu-pn.is-sounding { color:var(--gold-light); }
+.tu-pstaff .tu-pn.is-sounding ellipse { stroke:var(--navy); stroke-width:1.6; }
+body.dark .tu-pstaff .tu-pn.is-sounding ellipse { stroke:var(--gold-light); }
+.tu-phr-status { display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; margin:0 0 14px; font-size:0.86rem; color:var(--muted); }
+.tu-phr-status[hidden] { display:none; }
+
 /* ───── Drill ───── */
 .tu-drill-head {
   display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -856,6 +906,16 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
     break-after:avoid; page-break-after:avoid;   /* never strand a family heading at a page foot */
   }
   .tu-print-fam:first-child .tu-print-fam-title { margin-top:0; }
+  /* Ctrl+P (or "Print phrases") on the Phrases tab prints its own sheet, every group of the melody on
+     screen, in place of the Learn chart; the examples are screen-only. */
+  #phrasesView { display:none !important; }
+  body.tu-print-phrases #learnView { display:none !important; }
+  body.tu-print-phrases #phrasesView { display:block !important; }
+  #tuPhraseChips, #tuPhraseCards, #tuPhraseNav, #tuPhrStatus { display:none !important; }
+  .tu-pcard { break-inside:avoid; page-break-inside:avoid; padding:6px 12px; }
+  .tu-pstaff-wrap { overflow:visible; }
+  .tu-pstaff { max-inline-size:100%; block-size:auto !important; }
+  body.dark .tu-pcard { background:#fff; }
 }
 
 /* ───── Mobile ───── */
@@ -896,7 +956,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
   .tour-spot { transition: none !important; }
   .tu-toast { transition: none !important; }
-  .tu-tab, .tu-chip, .tu-choice, .font-opt, .hbtn, .btn, .tu-ex-play, .radio-group label { transition: none !important; }
+  .tu-tab, .tu-chip, .tu-pchip, .tu-choice, .font-opt, .hbtn, .btn, .tu-ex-play, .radio-group label { transition: none !important; }
   .slider, .slider::before { transition: none !important; }   /* settings toggle knob */
 }
 </style>
@@ -920,6 +980,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 
 <div class="tu-tabs" role="tablist" aria-label="Tutor mode" data-i18n-aria-label="trope.tabs.aria">
   <button class="tu-tab hi-btn" id="tabLearn" role="tab" aria-selected="true" aria-controls="learnView" onclick="setMode('learn')"><svg class="hi hi-sm hi-book" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.2v12.4"/><path d="M12 7.2S10 5.4 6 5.4a18 18 0 0 0-2.4.2v12.6A18 18 0 0 1 6 18c4 0 6 1.6 6 1.6s2-1.6 6-1.6a18 18 0 0 1 2.4.2V5.6A18 18 0 0 0 18 5.4c-4 0-6 1.8-6 1.8Z"/></svg><span class="hi-lbl" data-i18n="trope.tabs.learn">Learn</span></button>
+  <button class="tu-tab hi-btn" id="tabPhrases" role="tab" aria-selected="false" tabindex="-1" aria-controls="phrasesView" onclick="setMode('phrases')"><svg class="hi hi-sm hi-music" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17.5V5.2l10-2v12.3"/><ellipse cx="6.4" cy="17.8" rx="2.7" ry="2.3" fill="currentColor"/><ellipse cx="16.4" cy="15.5" rx="2.7" ry="2.3" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="trope.tabs.phrases">Phrases</span></button>
   <button class="tu-tab" id="tabDrill" role="tab" aria-selected="false" tabindex="-1" aria-controls="drillView" onclick="setMode('drill')" data-i18n="trope.tabs.drill">🎯 Drill</button>
   <button class="tu-tab hi-btn" id="tabSettings" role="tab" aria-selected="false" tabindex="-1" aria-controls="settingsView" onclick="setMode('settings')"><svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg><span class="hi-lbl" data-i18n="trope.tabs.settings">Settings</span></button>
 </div>
@@ -973,6 +1034,29 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     </div>
     <!-- Built on demand by buildPrintChart() and shown only on paper — see the @media print block. -->
     <div class="tu-print-sheet" id="tuPrintSheet" aria-hidden="true"></div>
+  </section>
+
+  <!-- ════════ PHRASES ════════ -->
+  <section class="tu-view" id="phrasesView" role="tabpanel" aria-labelledby="tabPhrases" hidden>
+    <p class="tu-intro" data-i18n-html="trope.phrases.intro">Each card is one line of the printed cantillation chart: marks as they are sung together, with the whole melody on a staff. Play a card to hear it as the notes light up, or choose a mark to open its Learn card.</p>
+    <div class="tu-melody-note" id="tuPhrMelodyNote" hidden>
+      <span data-i18n="trope.phrases.melody_hh_note">These phrases show the High Holiday melody, for the Torah reading on Rosh Hashanah and Yom Kippur. There are no High Holiday recordings yet, so the examples show the words only.</span>
+      <button class="btn btn-xs btn-secondary tu-melody-change" type="button" onclick="openMelodySetting()" aria-label="Change the melody in Settings" data-i18n="trope.learn.melody_change" data-i18n-aria-label="trope.learn.melody_change_aria">Change</button>
+    </div>
+    <!-- The key bar moves here from the Learn tab while this tab is open (setMode). -->
+    <div id="tuKeySlotPhrases"></div>
+    <div class="tu-phr-status" id="tuPhrStatus" hidden>
+      <span id="tuPhrStatusText" role="status"></span>
+      <button class="btn btn-xs btn-secondary hi-btn" id="tuPhrRetry" type="button" hidden onclick="retryLoadData()"><svg class="hi hi-sm hi-retry" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 18.58 A7.6 7.6 0 1 1 15.8 18.58 M15.8 18.58 L16.96 15.39 M15.8 18.58 L19.15 19.17"/></svg><span class="hi-lbl" data-i18n="trope.status.retry_button">Try again</span></button>
+    </div>
+    <div class="tu-chips" id="tuPhraseChips" role="group" aria-label="Phrase groups" data-i18n-aria-label="trope.phrases.groups_aria"></div>
+    <div class="tu-pcards" id="tuPhraseCards"></div>
+    <div class="tu-learn-nav" id="tuPhraseNav" hidden>
+      <button class="btn btn-secondary hi-btn" id="tuPrintPhrases" onclick="printPhrases()" title="Print every phrase of this melody as one chart, in the key shown" data-i18n-title="trope.phrases.print_title"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="trope.phrases.print">Print phrases</span></button>
+      <button class="btn" id="tuNextGroup" onclick="nextPhraseGroup()" data-i18n="trope.phrases.next_group">Next group →</button>
+    </div>
+    <!-- Built on demand by buildPhrasePrint() and shown only on paper — see the @media print block. -->
+    <div class="tu-print-sheet" id="tuPhrasePrintSheet" aria-hidden="true"></div>
   </section>
 
   <!-- ════════ DRILL ════════ -->
@@ -1482,6 +1566,7 @@ function resetAllSettings() {
   syncFormToSettings();
   syncDrillSelects();   // both selects are JS-built: without this they keep showing the pre-reset choice
   renderLearn();
+  renderPhrasesIfShown();
   updateDrillStart();
 }
 function resetProgress() {
@@ -1613,7 +1698,7 @@ function setStatusKey(key, en, isError) {
 async function loadData() {
   setStatusKey('trope.status.loading_index', 'Loading the trope index…');
   try {
-    const [idxRes, manRes, motifRes, motifHhRes] = await Promise.all([
+    const [idxRes, manRes, motifRes, motifHhRes, phrRes] = await Promise.all([
       // ?v= is the DATA_CACHE refresh mechanism (sw.js serves /data/ cache-first,
       // matched by exact URL) — bump it whenever the committed index is rebuilt.
       fetch('data/trope/trope_index.json?v=2'),
@@ -1621,6 +1706,7 @@ async function loadData() {
       // ?v= bump rule applies here too (on every trope_motifs.json / trope_motifs_hh.json change).
       fetch('data/trope/trope_motifs.json?v=6').catch(() => null),
       fetch('data/trope/trope_motifs_hh.json?v=4').catch(() => null),
+      fetch('data/trope/trope_phrases.json?v=1').catch(() => null),   // the Phrases tab; ?v= bumps with the file
     ]);
     if (!idxRes.ok || !manRes.ok) throw new Error('HTTP ' + idxRes.status + '/' + manRes.status);
     const idx = await idxRes.json();          // same-origin data/ corpus — trusted
@@ -1637,6 +1723,9 @@ async function loadData() {
         if (mot && mot.v === 1 && mot.system === system && mot.tropes && typeof mot.tropes === 'object') MOTIF_SETS[system] = mot;
       } catch (e) { console.warn('trope motifs load failed', system, e); }
     }
+    try {   // the phrase chart is the Phrases tab's alone: a bad or missing file never takes the rest down
+      if (phrRes && phrRes.ok) PHRASES = _phraseSetsFrom(ivritSafeParse(await phrRes.text())) || PHRASES;
+    } catch (e) { console.warn('trope phrases load failed', e); }
     setStatus('');
     _setRetryVisible(false);
   } catch (e) {
@@ -1644,6 +1733,8 @@ async function loadData() {
     INDEX = null; MANIFEST = null;
     _setRetryVisible(true);
     setStatusKey('trope.status.index_unavailable', 'Example clips unavailable (couldn’t load the trope index) — Learn mode still shows every mark.', true);
+  } finally {
+    _phrasesTried = true;
   }
 }
 function _setRetryVisible(on) {
@@ -1658,6 +1749,7 @@ async function retryLoadData() {
   const b = document.getElementById('tuRetryBtn');
   if (b) b.disabled = true;
   await loadData();
+  renderPhrasesIfShown();
   if (!INDEX) { if (b) b.disabled = false; return; }
   renderLearn();
   updateDrillStart();
@@ -2214,6 +2306,629 @@ function toggleTune(t, motif, btn) {
 }
 
 /* ══════════════════════════════════════════════════════
+   PHRASE STAFF — one chart row in full notation (data/trope/trope_phrases.json):
+   every value, dot, rest, beam and flag, tie, slur, triplet, grace note, accent
+   and accidental as the chart prints it (an accidental holds to the end of the
+   row: the chart has no bar lines), the syllables under the notes, and a colour
+   bar above each mark's notes. Pure: it reads only its arguments — the row, the
+   key it is drawn in, the half steps it moves, whether the 8 goes under the clef
+   — so a whole reading's staff can later be built from the same pieces
+   (docs/tropepatterns.md → G). layoutPhraseStaff() places everything in
+   coordinates around the middle line; renderPhraseStaff() draws the layout.
+   Beams join the notes of one syllable (a run over eight splits at the quarter),
+   break at rests and grace notes, and turn their stems by the note farthest from
+   the middle line; notation is LTR, so the SVG is too.
+   ══════════════════════════════════════════════════════ */
+const PHRASE_VALUE = {
+  32: { flags: 3 }, s: { flags: 2 }, ds: { flags: 2, dot: true }, e: { flags: 1 }, de: { flags: 1, dot: true },
+  q: { flags: 0 }, dq: { flags: 0, dot: true }, h: { flags: 0, open: true }, dh: { flags: 0, open: true, dot: true }, g: { flags: 1 },
+};
+const PHRASE_STEP = 3, PHRASE_STEM = 18, PHRASE_SYL_SIZE = 8.5;
+// Estimated advance of one capital (the syllables are the chart's transliterations), in ems.
+function _phraseTextWidth(s) {
+  let w = 0;
+  for (const ch of s) w += /['’.,]/.test(ch) ? 0.28 : /[IJ1]/.test(ch) ? 0.34 : /[MW]/.test(ch) ? 0.86 : 0.68;
+  return w * PHRASE_SYL_SIZE;
+}
+function layoutPhraseStaff(row, key, shift) {
+  const STEP = PHRASE_STEP;
+  const sig = keySignature(key), sigAlt = {};
+  sig.forEach((k) => { sigAlt[k.letter] = k.acc; });
+  const letterOf = (step) => 'BCDEFGA'[((step % 7) + 7) % 7];   // step 0 is B4
+  const N = row.notes.length;
+  const unitOf = new Array(N).fill(0), sylOf = new Array(N).fill(-1);
+  row.units.forEach((u, ui) => { for (let i = u.from; i <= u.to; i++) unitOf[i] = ui; });
+  row.syl.forEach((s, si) => { for (let i = s.from; i <= s.to; i++) sylOf[i] = si; });
+  const notes = row.notes.map((n, i) => {
+    const o = { i, u: unitOf[i], s: sylOf[i], rest: !!n.r, grace: !!n.g, val: PHRASE_VALUE[n.v] || PHRASE_VALUE.q, t: n.t,
+      tie: !!n.tie, marks: Array.isArray(n.a) ? n.a : [] };
+    if (!o.rest) {
+      const { step, acc } = motifPitchPos(n.p + shift, key);
+      o.step = step; o.y = -step * STEP;
+      o.alt = acc === '♯' ? 1 : acc === '♭' ? -1 : acc === '♮' ? 0 : (sigAlt[letterOf(step)] || 0);
+    }
+    return o;
+  });
+  // Accidentals: printed where a line or space changes from what the signature (or an earlier sign) set.
+  const inForce = {};
+  for (const o of notes) if (!o.rest) {
+    const had = o.step in inForce ? inForce[o.step] : (sigAlt[letterOf(o.step)] || 0);
+    if (o.alt !== had) o.accText = o.alt === 1 ? '♯' : o.alt === -1 ? '♭' : '♮';
+    inForce[o.step] = o.alt;
+  }
+  // Beams: the flagged notes of one syllable; a grace-note pair beams on its own.
+  const beams = [];
+  let cur = [];
+  const flush = () => { if (cur.length > 1) beams.push(cur); cur = []; };
+  for (const o of notes) {
+    const beamable = !o.rest && o.val.flags > 0;
+    if (!beamable || (cur.length && (notes[cur[0]].grace !== o.grace || notes[cur[0]].s !== o.s))) flush();
+    if (beamable) cur.push(o.i);
+  }
+  flush();
+  const split = [];
+  for (const b of beams) {
+    if (b.length <= 8) { split.push(b); continue; }
+    let sub = [], ticks = 0;
+    for (const i of b) {
+      sub.push(i); ticks += notes[i].t;
+      if (ticks % 48 === 0 && sub.length > 1) { split.push(sub); sub = []; }
+    }
+    if (sub.length > 1) split.push(sub); else if (sub.length) notes[sub[0]].solo = true;
+  }
+  split.forEach((b, bi) => b.forEach((i) => { notes[i].beam = bi; }));
+  // Stems: a beam's by the note farthest from the middle line; a lone note's by its own side; grace notes up.
+  for (const o of notes) if (!o.rest && o.beam === undefined) o.up = o.grace || o.step < 0;
+  for (const b of split) {
+    const above = Math.max(...b.map((i) => notes[i].step)), below = Math.max(...b.map((i) => -notes[i].step));
+    const up = notes[b[0]].grace || below > above;
+    for (const i of b) notes[i].up = up;
+  }
+  // Horizontal spacing: log of the sounding length, widened so accidentals, dots, flags and syllables fit.
+  const sigW = sig.length * 6, X0 = 36 + sigW;
+  const space = (o) => (o.grace ? 7 : 9 + 6.5 * Math.log2(1 + o.t / 12));
+  const leftExt = (o) => (o.accText ? (o.grace ? 8 : 12) : (o.grace ? 3 : 4));
+  const rightExt = (o) => (o.rest ? 4 : (o.val.dot ? 8 : 4) + (o.up && o.val.flags && o.beam === undefined && !o.grace ? 5 : 0));
+  const sylW = row.syl.map((s) => _phraseTextWidth(s.t));
+  const sylStart = [], sylEnd = [];
+  let x = X0 + leftExt(notes[0] || { accText: false });
+  for (const o of notes) {
+    const i = o.i;
+    if (i > 0) {
+      const p = notes[i - 1];
+      x = Math.max(x + space(p) + (p.u !== o.u ? 6 : 0), notes[i - 1].x + rightExt(p) + leftExt(o) + 2);
+    }
+    const s = row.syl[o.s];
+    if (s && s.from === i) {
+      const width = sylW[o.s], single = s.from === s.to;
+      const startAt = (xx) => (single ? xx - width / 2 : xx - 3.4);
+      if (o.s > 0) {
+        const need = sylEnd[o.s - 1] + (row.syl[o.s - 1].hyphen ? 10 : 8);
+        if (startAt(x) < need) x += need - startAt(x);
+      } else if (startAt(x) < 4) x += 4 - startAt(x);
+      sylStart[o.s] = startAt(x); sylEnd[o.s] = startAt(x) + width;
+    }
+    o.x = x;
+  }
+  const last = notes[N - 1];
+  const W = Math.ceil(Math.max(last.x + rightExt(last), sylEnd[sylEnd.length - 1] || 0) + 8);
+  // Stems and beams (y grows downward, 0 is the middle line).
+  const sx = (o) => (o.grace ? o.x + (o.up ? 2 : -2) : o.x + (o.up ? 3.1 : -3.1));
+  const beamLines = [];
+  for (const b of split) {
+    const ns = b.map((i) => notes[i]), up = ns[0].up, grace = ns[0].grace;
+    const levels = Math.max(...ns.map((o) => o.val.flags));
+    const len = grace ? 11 : PHRASE_STEM + 3 * Math.max(0, levels - 2);
+    const x0 = sx(ns[0]), x1 = sx(ns[ns.length - 1]);
+    let slope = x1 > x0 ? (ns[ns.length - 1].y - ns[0].y) / (x1 - x0) : 0;
+    slope = Math.max(-0.12, Math.min(0.12, slope)) * 0.6;
+    let y0 = up ? Math.min(...ns.map((o) => o.y - len - slope * (sx(o) - x0)))
+                : Math.max(...ns.map((o) => o.y + len - slope * (sx(o) - x0)));
+    const at = (xx) => y0 + slope * (xx - x0);
+    for (const o of ns) o.tip = at(sx(o));
+    beamLines.push({ b, up, grace, x0, x1, at, levels });
+  }
+  for (const o of notes) if (!o.rest && o.tip === undefined) o.tip = o.y + (o.up ? -1 : 1) * (o.grace ? 11 : PHRASE_STEM + 3 * Math.max(0, o.val.flags - 2));
+  // Beam segments: level 1 spans the group; deeper levels span runs of notes that deep, a lone one a stub.
+  const segs = [];
+  for (const bl of beamLines) {
+    const ns = bl.b.map((i) => notes[i]), dir = bl.up ? 1 : -1, thick = bl.grace ? 1.6 : 2.6, gap = bl.grace ? 2.6 : 4;
+    for (let lev = 1; lev <= bl.levels; lev++) {
+      const off = (lev - 1) * gap * dir;
+      for (let k = 0; k < ns.length;) {
+        if (ns[k].val.flags < lev) { k++; continue; }
+        let m = k;
+        while (m + 1 < ns.length && ns[m + 1].val.flags >= lev) m++;
+        let xa = sx(ns[k]), xb = sx(ns[m]);
+        if (m === k) {   // a stub toward the note it belongs with
+          const left = k === ns.length - 1 || (k > 0 && ns[k - 1].val.dot);
+          if (left) xa = xb - 5; else xb = xa + 5;
+        }
+        segs.push({ xa, xb, ya: bl.at(xa) + off, yb: bl.at(xb) + off, thick, up: bl.up });
+        k = m + 1;
+      }
+    }
+  }
+  // Accents and tenuto lines: above the staff, or above the note where it stands higher.
+  for (const o of notes) if (o.marks.length) {
+    const top = Math.min(o.y - 4, o.up ? o.tip - 2 : o.y - 4, -15);
+    o.markY = top - 4;
+  }
+  // Ties (away from the stem) and slurs (on the heads' side when every stem in them rises, else above).
+  const ties = [];
+  notes.forEach((o, i) => {
+    if (!o.tie || i + 1 >= N || notes[i + 1].rest) return;
+    const q = notes[i + 1], below = o.up;
+    ties.push({ xa: o.x + 3.5, xb: q.x - 3.5, y: o.y + (below ? 4 : -4), dir: below ? 1 : -1 });
+  });
+  // A slur is a cubic whose inner control points share one height: fitted to clear every note inside it by
+  // 2, its ends lifted (up to 12) when a note near an end stands higher than the end's own note.
+  const fitArc = (ns, xa, xb, ya, yb, side, edge) => {   // side -1 above, +1 below; edge(o) = what to clear
+    const fit = (a, b) => {
+      let c = side < 0 ? Math.min(a, b) - 4 : Math.max(a, b) + 4;
+      for (const o of ns) {
+        const u = (o.x - xa) / (xb - xa || 1);
+        if (u <= 0.02 || u >= 0.98) continue;
+        const need = (edge(o) + side * 2 - (1 - u) ** 3 * a - u ** 3 * b) / (3 * u * (1 - u));
+        c = side < 0 ? Math.min(c, need) : Math.max(c, need);
+      }
+      return c;
+    };
+    let c = fit(ya, yb);
+    const deep = side < 0 ? Math.min(ya, yb) - 16 : Math.max(ya, yb) + 16;
+    if (side * (c - deep) > 0) {
+      const lift = Math.min(12, Math.abs(c - deep));
+      ya += side * lift; yb += side * lift;
+      c = fit(ya, yb);
+    }
+    return { ya, yb, c };
+  };
+  const slurs = row.slur.map((sl) => {
+    const ns = notes.slice(sl.from, sl.to + 1).filter((o) => !o.rest);
+    const a = notes[sl.from], b = notes[sl.to];
+    if (ns.every((o) => o.up)) {
+      const xa = a.x, xb = b.x, f = fitArc(ns, xa, xb, a.y + 5, b.y + 5, 1, (o) => o.y + 4);
+      return { from: sl.from, to: sl.to, above: false, xa, xb, ya: f.ya, yb: f.yb, c: f.c, dashed: !!sl.dashed };
+    }
+    const topOf = (o) => Math.min(o.up ? o.tip - 1 : o.y - 4, o.markY === undefined ? Infinity : o.markY - 3 - 6 * (o.marks.length - 1));
+    const xa = a.x + (a.up ? 3 : 0), xb = b.x + (b.up ? 3 : 0);
+    const f = fitArc(ns, xa, xb, topOf(a) - 3, topOf(b) - 3, -1, topOf);
+    return { from: sl.from, to: sl.to, above: true, xa, xb, ya: f.ya, yb: f.yb, c: f.c, dashed: !!sl.dashed };
+  });
+  // Triplets: a bare 3 on the beam when the triplet is exactly one beam, else a bracket above.
+  const tups = row.tup.map((tp) => {
+    const ns = notes.slice(tp.from, tp.to + 1);
+    const bi = ns[0].beam;
+    const oneBeam = bi !== undefined && ns.every((o) => o.beam === bi) && split[bi].length === ns.length;
+    const xm = (ns[0].x + ns[ns.length - 1].x) / 2;
+    if (oneBeam) {
+      const bl = beamLines[bi];
+      return { bracket: false, x: (sx(ns[0]) + sx(ns[ns.length - 1])) / 2, y: bl.at(xm) + (bl.up ? -4 : 11) };
+    }
+    let top = Math.min(...ns.map((o) => (o.rest ? -6 : Math.min(o.y - 4, o.up ? o.tip : o.y - 4,
+      o.markY === undefined ? Infinity : o.markY - 3 - 6 * (o.marks.length - 1)))), -12);
+    for (const sl of slurs) if (sl.above && sl.from <= tp.to && sl.to >= tp.from) top = Math.min(top, sl.c + 1);
+    return { bracket: true, xa: ns[0].x - 4, xb: ns[ns.length - 1].x + 4, x: xm, y: top - 6 };
+  });
+  // Vertical extent: the mark bars ride above everything, the syllables below.
+  let top = -12, bottom = 12;
+  const see = (y) => { top = Math.min(top, y); bottom = Math.max(bottom, y); };
+  for (const o of notes) {
+    if (o.rest) continue;
+    see(o.y - 4); see(o.y + 4); see(o.tip);
+    if (o.markY !== undefined) see(o.markY - 3);
+  }
+  for (const s of segs) { see(s.ya + (s.up ? 0 : s.thick)); see(s.yb + (s.up ? 0 : s.thick)); }
+  for (const tp of tups) { see(tp.y - 8); see(tp.y + 2); }
+  for (const sl of slurs) { see(sl.ya); see(sl.yb); see(sl.c); }
+  for (const ti of ties) see(ti.y + ti.dir * 4);
+  const barY = Math.min(-26, top - 9);
+  const lyricY = Math.max(22, bottom + 11);
+  return { notes, segs, tups, ties, slurs, W, X0, sig, barY, lyricY, sylStart, sylEnd, sylW,
+    units: row.units.map((u) => ({ k: u.k, xa: notes[u.from].x, xb: notes[u.to].x })) };
+}
+
+// The row drawn: an <svg class="tu-pstaff"> at SCALE px per unit. opts: {key, shift, low, ariaLabel,
+// famOf(markKey) -> the family whose colour its bar takes}; without an ariaLabel the SVG is hidden from
+// assistive tech (its host names it). Every note is a <g class="tu-pn" data-i data-u>, every syllable a
+// <text class="tu-ps" data-s data-u>, every bar a <rect class="tu-pbar" data-u>: the tune lights notes by
+// data-i, and a mark chip lights its notes, bar and syllables by data-u.
+function renderPhraseStaff(row, opts) {
+  const L = layoutPhraseStaff(row, opts.key, opts.shift);
+  const SCALE = 1.5, pad = 3;
+  const MID = -L.barY + pad + 2, H = Math.ceil(Math.max(MID + L.lyricY + 4, opts.low ? MID + 30 : 0));   // room for the 8
+  const Y = (y) => Math.round((MID + y) * 100) / 100;
+  const svg = _svgEl('svg', { viewBox: '0 0 ' + L.W + ' ' + H, class: 'tu-pstaff' });
+  svg.style.inlineSize = Math.round(L.W * SCALE) + 'px';
+  svg.style.blockSize = Math.round(H * SCALE) + 'px';
+  if (opts.ariaLabel) { svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', opts.ariaLabel); }
+  else svg.setAttribute('aria-hidden', 'true');
+  const deco = _svgEl('g', { 'aria-hidden': 'true' });
+  svg.appendChild(deco);
+  staffLines(deco, L.W, MID);
+  staffClef(deco, MID, !!opts.low);
+  staffKeySig(deco, L.sig, MID, PHRASE_STEP);
+  // Mark bars, one per mark, split halfway between the marks' notes, and a faint divider there.
+  L.units.forEach((u, ui) => {
+    const prev = L.units[ui - 1], next = L.units[ui + 1];
+    const xa = prev ? (prev.xb + u.xa) / 2 + 1.5 : u.xa - 6, xb = next ? (u.xb + next.xa) / 2 - 1.5 : u.xb + 6;
+    const fam = opts.famOf ? opts.famOf(u.k) : '';
+    deco.appendChild(_svgEl('rect', { class: 'tu-pbar' + (fam ? ' fam-' + fam : ''), 'data-u': ui, x: Math.round(xa * 100) / 100,
+      y: Y(L.barY), width: Math.round((xb - xa) * 100) / 100, height: 3.5, rx: 1.5 }));
+    if (next) {
+      const xd = Math.round(((u.xb + next.xa) / 2) * 100) / 100;
+      deco.appendChild(_svgEl('line', { class: 'tu-pdiv', x1: xd, y1: Y(-15), x2: xd, y2: Y(15), stroke: 'currentColor',
+        'stroke-width': 0.7, 'stroke-dasharray': '2 2', opacity: 0.35 }));
+    }
+  });
+  // Beams under the notes' groups, so a sounding head's colour sits on top.
+  for (const s of L.segs) {
+    const t = s.up ? s.thick : -s.thick;
+    deco.appendChild(_svgEl('path', { d: 'M ' + s.xa + ' ' + Y(s.ya) + ' L ' + s.xb + ' ' + Y(s.yb) + ' L ' + s.xb + ' ' + Y(s.yb + t) +
+      ' L ' + s.xa + ' ' + Y(s.ya + t) + ' Z', fill: 'currentColor' }));
+  }
+  for (const o of L.notes) {
+    const g = _svgEl('g', { class: 'tu-pn' + (o.rest ? ' is-rest' : ''), 'data-i': o.i, 'data-u': o.u });
+    const cx = Math.round(o.x * 100) / 100;
+    if (o.rest) {   // an eighth rest
+      g.appendChild(_svgEl('circle', { cx: cx - 1.6, cy: Y(-2.6), r: 1.5, fill: 'currentColor' }));
+      g.appendChild(_svgEl('path', { d: 'M ' + (cx - 1.6) + ' ' + Y(-2.6) + ' Q ' + (cx + 0.6) + ' ' + Y(-1.2) + ' ' + (cx + 2.6) + ' ' + Y(-3.8) +
+        ' L ' + (cx - 0.4) + ' ' + Y(6.5), fill: 'none', stroke: 'currentColor', 'stroke-width': 1.1, 'stroke-linecap': 'round' }));
+      svg.appendChild(g);
+      continue;
+    }
+    const cy = Y(o.y);
+    staffLedgers(g, cx, o.step, MID, PHRASE_STEP, o.grace ? 4.5 : 6);
+    if (o.accText) {
+      const a = _svgEl('text', { x: cx - (o.grace ? 7 : 9.5), y: cy + 3, 'font-size': o.grace ? 7 : 9, fill: 'currentColor' });
+      a.textContent = o.accText;
+      g.appendChild(a);
+    }
+    if (o.grace) staffHead(g, cx, cy, false, 2.2, 1.6);
+    else staffHead(g, cx, cy, !!o.val.open);
+    const stx = Math.round((o.grace ? o.x + (o.up ? 2 : -2) : o.x + (o.up ? 3.1 : -3.1)) * 100) / 100;
+    g.appendChild(_svgEl('line', { x1: stx, y1: cy + (o.up ? -1 : 1), x2: stx, y2: Y(o.tip), stroke: 'currentColor', 'stroke-width': o.grace ? 0.8 : 1.1 }));
+    if (o.beam === undefined && o.val.flags) {   // flags off the stem tip
+      const dir = o.up ? 1 : -1, k = o.grace ? 0.62 : 1;
+      for (let f = 0; f < o.val.flags; f++) {
+        const fy = Y(o.tip) + f * 4 * dir * k;
+        g.appendChild(_svgEl('path', { d: 'M ' + stx + ' ' + fy + ' q ' + 4.5 * k + ' ' + 3 * dir * k + ' ' + 3 * k + ' ' + 8.5 * dir * k,
+          fill: 'none', stroke: 'currentColor', 'stroke-width': o.grace ? 0.8 : 1.1 }));
+      }
+      if (o.grace) g.appendChild(_svgEl('line', { x1: cx - 1, y1: Y(o.tip) + 8, x2: cx + 5, y2: Y(o.tip) + 3, stroke: 'currentColor', 'stroke-width': 0.8 }));
+    }
+    if (o.val.dot) g.appendChild(_svgEl('circle', { cx: cx + 6, cy: cy - (o.step % 2 === 0 ? 3 : 0) * 1, r: 1.15, fill: 'currentColor' }));
+    let my = o.markY;
+    for (const m of o.marks) {
+      if (m === '>') g.appendChild(_svgEl('path', { d: 'M ' + (cx - 3.2) + ' ' + Y(my - 2.2) + ' L ' + (cx + 3.2) + ' ' + Y(my) + ' L ' + (cx - 3.2) + ' ' + Y(my + 2.2),
+        fill: 'none', stroke: 'currentColor', 'stroke-width': 0.9 }));
+      else if (m === '-') g.appendChild(_svgEl('line', { x1: cx - 3.2, y1: Y(my), x2: cx + 3.2, y2: Y(my), stroke: 'currentColor', 'stroke-width': 1.1 }));
+      my -= 6;
+    }
+    svg.appendChild(g);
+  }
+  const over = _svgEl('g', { 'aria-hidden': 'true' });
+  for (const ti of L.ties) {
+    const xm = (ti.xa + ti.xb) / 2, y = Y(ti.y);
+    over.appendChild(_svgEl('path', { d: 'M ' + ti.xa + ' ' + y + ' Q ' + xm + ' ' + (y + ti.dir * 5) + ' ' + ti.xb + ' ' + y, fill: 'none', stroke: 'currentColor', 'stroke-width': 0.9 }));
+  }
+  for (const sl of L.slurs) {
+    const dx = (sl.xb - sl.xa) / 4;
+    const attrs = { d: 'M ' + sl.xa + ' ' + Y(sl.ya) + ' C ' + (sl.xa + dx) + ' ' + Y(sl.c) + ' ' + (sl.xb - dx) + ' ' + Y(sl.c) + ' ' + sl.xb + ' ' + Y(sl.yb),
+      fill: 'none', stroke: 'currentColor', 'stroke-width': 0.9 };
+    if (sl.dashed) attrs['stroke-dasharray'] = '2 2';
+    over.appendChild(_svgEl('path', attrs));
+  }
+  for (const tp of L.tups) {
+    if (tp.bracket) {
+      const y = Y(tp.y), gapL = tp.x - 4, gapR = tp.x + 4;
+      over.appendChild(_svgEl('path', { d: 'M ' + tp.xa + ' ' + (y + 3) + ' L ' + tp.xa + ' ' + y + ' L ' + gapL + ' ' + y + ' M ' + gapR + ' ' + y + ' L ' + tp.xb + ' ' + y + ' L ' + tp.xb + ' ' + (y + 3),
+        fill: 'none', stroke: 'currentColor', 'stroke-width': 0.8 }));
+    }
+    const n3 = _svgEl('text', { x: Math.round(tp.x * 100) / 100, y: Y(tp.y) + 3, 'font-size': 8, 'font-style': 'italic', 'text-anchor': 'middle', fill: 'currentColor' });
+    n3.textContent = '3';   // the triplet figure of the notation, not a UI string — i18n-ignore
+    over.appendChild(n3);
+  }
+  svg.appendChild(over);
+  // Syllables, as the chart prints them (transliterations — i18n-ignore), with their hyphens.
+  row.syl.forEach((s, si) => {
+    const single = s.from === s.to, xs = L.notes[s.from].x;
+    const txt = _svgEl('text', { class: 'tu-ps', 'data-s': si, 'data-u': s.unit, x: Math.round((single ? xs : xs - 3.4) * 100) / 100, y: Y(L.lyricY),
+      'font-size': PHRASE_SYL_SIZE, 'text-anchor': single ? 'middle' : 'start', fill: 'currentColor' });
+    txt.textContent = s.t;
+    svg.appendChild(txt);
+    if (s.hyphen && si + 1 < row.syl.length) {
+      const a = L.sylEnd[si], b = L.sylStart[si + 1], xm = (a + b) / 2, half = Math.min(2.5, Math.max(1.2, (b - a) / 2 - 1.5));
+      svg.appendChild(_svgEl('line', { class: 'tu-ph', x1: Math.round((xm - half) * 100) / 100, y1: Y(L.lyricY - 3), x2: Math.round((xm + half) * 100) / 100, y2: Y(L.lyricY - 3),
+        stroke: 'currentColor', 'stroke-width': 0.8, 'aria-hidden': 'true' }));
+    }
+  });
+  return svg;
+}
+/* ══════════════════════════════════════════════════════
+   PHRASES TAB — every row of the printed charts (data/trope/trope_phrases.json, built by
+   scripts/build-trope-phrases.mjs from docs/tropepatterns.md), one clause group at a time,
+   in the melody Settings chooses and the key the key bar sets: the row's Hebrew, a chip per
+   mark (it opens that mark's Learn card; munach legarmeh has none), the full-notation staff,
+   and a play button that sounds it as tones and lights each note. Read-only and lazy: the
+   view is built when it is shown, and rebuilt by the settings, retry, cloud and language
+   paths that rebuild Learn only while it is showing. The group on screen is this visit's
+   only (no stored key).
+   ══════════════════════════════════════════════════════ */
+let PHRASES = null;          // {torah, highholiday}: each {key, rows} of rows that hold together, or null
+let _phrasesTried = false;   // a load has finished (the tab then says "unavailable", not "loading")
+let currentPhraseGroup = null;
+// The charts' own order, which is a teaching order (docs/tropepatterns.md → D); `key` names the
+// group's title (trope.phrases.group_<key>) and, through PHRASE_GROUP_FAMILY, its chip's colour.
+const PHRASE_GROUPS = {
+  torah: [
+    { key: 'etnachta', rows: ['1', '2', '3', '4'] },
+    { key: 'sofpasuk', rows: ['5', '6', '7', '8'] },
+    { key: 'katon', rows: ['9', '10', '11', '12', '13', '14'] },
+    { key: 'geresh', rows: ['15', '16'] },
+    { key: 'revia', rows: ['17', '18', '19'] },
+    { key: 'gershayim', rows: ['20'] },
+    { key: 'tevir', rows: ['21', '22', '23', '24', '25', '26', '27'] },
+    { key: 'telisha', rows: ['28', '29', '30'] },
+    { key: 'gadol', rows: ['31', '32', '33'] },
+    { key: 'segol', rows: ['34', '35', '36', '37'] },
+    { key: 'rare', rows: ['38', '39', '40'] },
+    { key: 'closing', rows: ['41'] },
+  ],
+  highholiday: [
+    { key: 'etnachta', rows: ['1', '2', '3', '4'] },
+    { key: 'sofpasuk', rows: ['5', '6', '7', '8'] },
+    { key: 'katon', rows: ['9', '10', '11', '12'] },
+    { key: 'tevir', rows: ['13', '14'] },
+    { key: 'revia', rows: ['15', '16'] },
+    { key: 'telisha', rows: ['17', '18', '19'] },
+    { key: 'geresh', rows: ['20', '20b', '21'] },
+    { key: 'gershayim', rows: ['22'] },
+    { key: 'gadol', rows: ['23', '24', '25'] },
+    { key: 'segol', rows: ['26', '27', '28', '29'] },
+    { key: 'closing', rows: ['30', '31', '32', '33'] },
+  ],
+};
+const PHRASE_GROUP_FAMILY = { etnachta: 'etnachta', sofpasuk: 'sofpasuk', katon: 'katon', geresh: 'geresh', revia: 'revia',
+  gershayim: 'geresh', tevir: 'revia', telisha: 'geresh', gadol: 'katon', segol: 'segol', rare: 'rare', closing: 'sofpasuk', other: 'rare' };
+// The one phrase mark the tutor has no card for: munach with the legarmeh line after it. Names stay in their
+// tradition's transliteration, like every mark name (i18n-ignore).
+const PHRASE_LEGARMEH = { key: 'munach_legarmeh', ashk: 'Munach Legarmeh', seph: 'Legarmeh', family: 'revia' };
+function _phraseMark(k) { return TROPE_BY_KEY[k] || (k === PHRASE_LEGARMEH.key ? PHRASE_LEGARMEH : null); }
+function _phraseFamily(k) { const t = _phraseMark(k); return t ? t.family : ''; }
+// The file is hand-transcribed, so it is parsed like imported data and checked row by row: a row that
+// does not hold together is left out rather than drawn wrong.
+function _validPhraseRow(r) {
+  if (!r || typeof r.n !== 'string' || typeof r.he !== 'string' || !Array.isArray(r.tags) || !Array.isArray(r.notes) || !r.notes.length) return false;
+  const N = r.notes.length;
+  const span = (x) => !!x && Number.isInteger(x.from) && Number.isInteger(x.to) && x.from >= 0 && x.from <= x.to && x.to < N;
+  if (!r.notes.every((n) => n && typeof n.v === 'string' && PHRASE_VALUE[n.v] && Number.isFinite(n.t) && n.t >= 0
+      && (n.r || (Number.isFinite(n.p) && Math.abs(n.p) <= 36)) && (!n.a || Array.isArray(n.a)))) return false;
+  if (!Array.isArray(r.units) || !r.units.length || !r.units.every((u) => span(u) && typeof u.k === 'string')) return false;
+  if (!Array.isArray(r.syl) || !r.syl.every((s) => span(s) && typeof s.t === 'string')) return false;
+  return ['tup', 'slur'].every((k) => Array.isArray(r[k]) && r[k].every(span));
+}
+function _phraseSetsFrom(j) {
+  if (!j || j.v !== 1 || j.tpq !== 48 || !j.melodies || typeof j.melodies !== 'object') return null;
+  const out = {};
+  for (const m of ['torah', 'highholiday']) {
+    const s = j.melodies[m];
+    const rows = s && Number.isInteger(KEY_SHARPS[s.key]) && Array.isArray(s.rows) ? s.rows.filter(_validPhraseRow) : [];
+    out[m] = rows.length ? { key: s.key, rows } : null;
+  }
+  return out.torah || out.highholiday ? out : null;
+}
+function phraseSet() { return PHRASES && PHRASES[melodyKey()]; }
+function phraseStaffKey() { const s = phraseSet(); return s ? shiftedKey(s.key, tuneShiftVal()) : ''; }
+function phrasesShown() { const v = document.getElementById('phrasesView'); return !!v && !v.hidden; }
+function renderPhrasesIfShown() { if (phrasesShown()) renderPhrases(); }
+// A melody's rows in PHRASE_GROUPS order: a row the table does not name joins a last group of its own and
+// a group with none of its rows is dropped, so every row shows exactly once.
+function phraseGroups(set, m) {
+  const byN = new Map(set.rows.map((r) => [r.n, r])), seen = new Set(), groups = [];
+  for (const g of PHRASE_GROUPS[m] || []) {
+    const rows = g.rows.filter((n) => byN.has(n) && !seen.has(n)).map((n) => { seen.add(n); return byN.get(n); });
+    if (rows.length) groups.push({ key: g.key, rows });
+  }
+  const rest = set.rows.filter((r) => !seen.has(r.n));
+  if (rest.length) groups.push({ key: 'other', rows: rest });
+  return groups;
+}
+function phraseMarksText(row) {   // "Mercha, Tipcha, Munach, Etnachta", in the tradition Settings chooses
+  return row.units.map((u) => { const t = _phraseMark(u.k); return t ? tropeName(t) : u.k; }).join(', ');
+}
+function renderPhrases() {
+  const m = melodyKey(), set = phraseSet();
+  document.getElementById('tuPhrMelodyNote').hidden = m !== 'highholiday' || !set;
+  syncTuneControls();   // the key bar names the key these staffs are drawn in
+  const chipsEl = document.getElementById('tuPhraseChips'), cards = document.getElementById('tuPhraseCards');
+  chipsEl.innerHTML = '';
+  cards.innerHTML = '';
+  const status = document.getElementById('tuPhrStatus');
+  document.getElementById('tuPhraseNav').hidden = !set;
+  status.hidden = !!set;
+  if (!set) {
+    document.getElementById('tuPhrStatusText').textContent = I18n.t(_phrasesTried ? 'trope.phrases.unavailable' : 'trope.phrases.loading');
+    document.getElementById('tuPhrRetry').hidden = !_phrasesTried;
+    return;
+  }
+  const groups = phraseGroups(set, m);
+  const g = groups.find((x) => x.key === currentPhraseGroup) || groups[0];
+  currentPhraseGroup = g.key;
+  for (const gr of groups) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tu-chip fam-' + (PHRASE_GROUP_FAMILY[gr.key] || 'rare') + (gr === g ? ' active' : '');
+    b.setAttribute('aria-pressed', gr === g ? 'true' : 'false');
+    b.textContent = I18n.t('trope.phrases.group_' + gr.key);
+    b.onclick = () => { currentPhraseGroup = gr.key; stopTune(); renderPhrases(); };
+    chipsEl.appendChild(b);
+  }
+  for (const row of g.rows) cards.appendChild(buildPhraseCard(m, set, row, false));
+  const isLast = groups[groups.length - 1] === g;
+  document.getElementById('tuNextGroup').textContent = I18n.t(isLast ? 'trope.learn.ready_drill' : 'trope.phrases.next_group');
+}
+function nextPhraseGroup() {
+  const set = phraseSet();
+  if (!set) return;
+  const groups = phraseGroups(set, melodyKey());
+  const i = groups.findIndex((x) => x.key === currentPhraseGroup);
+  if (i >= groups.length - 1) { setMode('drill'); return; }
+  currentPhraseGroup = groups[i + 1].key;
+  stopTune();
+  renderPhrases();
+  document.getElementById('tuPhraseChips').scrollIntoView({ block: 'nearest' });
+}
+// One row as a card. forPrint drops the screen's controls (play button, chip buttons, the scroller's
+// focus stop): the paper copy is the same builder, so it can never drift from the screen.
+function buildPhraseCard(m, set, row, forPrint) {
+  const card = document.createElement('article');
+  card.className = 'tu-pcard';
+  card.dataset.phrase = m + ':' + row.n;
+  const id = 'phrase:' + m + ':' + row.n;
+  const head = document.createElement('div');
+  head.className = 'tu-pcard-head';
+  if (!forPrint) {
+    const play = document.createElement('button');   // the row as tones, notes lighting up in turn
+    play.type = 'button';
+    play.className = 'tu-ex-play tu-tune-play tu-ptune';
+    play.innerHTML = ICON_PLAY;
+    play.dataset.tune = id;
+    play.setAttribute('aria-pressed', _tuneKey === id ? 'true' : 'false');
+    if (_tuneKey === id) play.classList.add('is-playing');
+    play.setAttribute('aria-label', I18n.t('trope.phrases.play_aria', { n: row.n }));
+    play.title = I18n.t('trope.phrases.play_title');
+    play.onclick = () => togglePhraseTune(m, row, play);
+    head.appendChild(play);
+  }
+  const num = document.createElement('span');
+  num.className = 'tu-pnum';
+  num.textContent = row.n;   // the chart's own row number — i18n-ignore
+  head.appendChild(num);
+  const he = document.createElement('span');
+  he.className = 'tu-phe';
+  he.setAttribute('lang', 'he');
+  he.dir = 'rtl';
+  he.textContent = row.he;
+  head.appendChild(he);
+  if (row.tags.includes('aliyah-end')) {
+    const tag = document.createElement('span');
+    tag.className = 'tu-rare-tag';
+    tag.textContent = I18n.t('trope.phrases.aliyah_end_tag');
+    head.appendChild(tag);
+  }
+  card.appendChild(head);
+  const chips = document.createElement('div');
+  chips.className = 'tu-pchips';
+  row.units.forEach((u, ui) => {
+    const t = _phraseMark(u.k), card0 = !!TROPE_BY_KEY[u.k] && !forPrint;
+    const chip = document.createElement(card0 ? 'button' : 'span');
+    chip.className = 'tu-pchip' + (t ? ' fam-' + t.family : '') + (card0 ? '' : ' is-static');
+    chip.dataset.u = ui;
+    if (t) {
+      const glyph = document.createElement('span');
+      glyph.className = 'tu-pchip-glyph';
+      glyph.setAttribute('lang', 'he');
+      glyph.dir = 'rtl';
+      glyph.setAttribute('aria-hidden', 'true');
+      glyph.textContent = TROPE_BY_KEY[u.k] ? tropeGlyphText(t) : tropeGlyphText(TROPE_BY_KEY.munach) + ' ׀';
+      chip.appendChild(glyph);
+    }
+    const nm = document.createElement('span');
+    nm.textContent = t ? tropeName(t) : u.k;
+    chip.appendChild(nm);
+    if (card0) {
+      chip.type = 'button';
+      chip.setAttribute('aria-label', I18n.t('trope.phrases.chip_aria', { name: tropeName(t) }));
+      chip.title = I18n.t('trope.phrases.chip_title');
+      chip.onclick = () => openLearnFor(u.k);
+      // The chip lights its notes, its bar and its syllables on the staff: by pointer or keyboard alike.
+      const hl = (on) => () => card.querySelectorAll('.tu-pstaff [data-u="' + ui + '"]').forEach((x) => x.classList.toggle('is-hl', on));
+      chip.addEventListener('mouseenter', hl(true));
+      chip.addEventListener('mouseleave', hl(false));
+      chip.addEventListener('focus', hl(true));
+      chip.addEventListener('blur', hl(false));
+    }
+    chips.appendChild(chip);
+  });
+  card.appendChild(chips);
+  // The staff scrolls sideways inside its card when the row is wider than the card; notation reads
+  // left to right in either language, so the scroller is pinned LTR and opens at the row's start.
+  const wrap = document.createElement('div');
+  wrap.className = 'tu-pstaff-wrap';
+  wrap.dir = 'ltr';
+  if (!forPrint) {
+    wrap.tabIndex = 0;   // a keyboard can scroll a wide row
+    wrap.setAttribute('role', 'group');
+    wrap.setAttribute('aria-label', I18n.t(m === 'highholiday' ? 'trope.phrases.staff_aria_hh' : 'trope.phrases.staff_aria', { n: row.n, marks: phraseMarksText(row) }));
+  }
+  const svg = renderPhraseStaff(row, { key: shiftedKey(set.key, tuneShiftVal()), shift: tuneShiftVal(), low: tuneVoiceKey() === 'low', famOf: _phraseFamily });
+  if (!forPrint && _tuneKey === id) svg.classList.add('is-playing');
+  wrap.appendChild(svg);
+  card.appendChild(wrap);
+  return card;
+}
+// The row as tones, on the Learn tune's scale (an eighth is 0.32 s at 1×): ties sound as one note, rests
+// are silent, and a grace note is quick and taken from the note it leads into.
+function togglePhraseTune(m, row, btn) {
+  const id = 'phrase:' + m + ':' + row.n;
+  if (_tuneKey === id) { stopTune(); return; }
+  const rate = Math.max(0.25, Number(settings.playbackRate) || 1);
+  const tick = 0.32 / 24 / rate;
+  const low = tuneVoiceKey() === 'low';
+  const shift = tuneShiftVal() + (low ? -12 : 0);   // the staff's key, and the octave the 8 under the clef asks for
+  const sounds = [], lights = [];
+  let at = 0, borrowed = 0;
+  row.notes.forEach((n, i) => {
+    if (n.r) { at += n.t * tick; return; }
+    if (n.g) {
+      const d = Math.max(0.05, Math.min(0.09, 0.07 / rate));
+      sounds.push({ p: n.p + shift, at, dur: d });
+      lights.push({ at, i });
+      at += d; borrowed += d;
+      return;
+    }
+    const len = Math.max(0.05, n.t * tick - borrowed);
+    borrowed = 0;
+    const prev = row.notes[i - 1];
+    if (prev && prev.tie && !prev.r && prev.p === n.p && sounds.length) sounds[sounds.length - 1].dur += len;
+    else sounds.push({ p: n.p + shift, at, dur: len });
+    lights.push({ at, i });
+    at += len;
+  });
+  _playTuneCore({ id, btn, btnSel: '#tuPhraseCards .tu-ptune[data-tune="' + id + '"]',
+    ariaFn: () => I18n.t('trope.phrases.play_aria', { n: row.n }), low, sounds, lights, total: at,
+    find: () => document.querySelector('#tuPhraseCards .tu-pcard[data-phrase="' + m + ':' + row.n + '"] .tu-pstaff'), noteSel: '.tu-pn' });
+}
+/* ── Print: from the Phrases tab, every group of the melody on screen, in the key on screen (the key bar
+   prints its line while the staffs are moved), without the examples; from any other tab, the Learn
+   chart as before. The sheet is built by the card builder itself and cleared after printing. ── */
+function buildPhrasePrint() {
+  const host = document.getElementById('tuPhrasePrintSheet'), set = phraseSet(), m = melodyKey();
+  if (!host || host.childElementCount || !set) return;
+  for (const gr of phraseGroups(set, m)) {
+    const sec = document.createElement('section');
+    sec.className = 'tu-print-fam';
+    const h = document.createElement('h2');
+    h.className = 'tu-print-fam-title';
+    h.textContent = I18n.t('trope.phrases.group_' + gr.key);
+    sec.appendChild(h);
+    const list = document.createElement('div');
+    list.className = 'tu-pcards';
+    for (const row of gr.rows) list.appendChild(buildPhraseCard(m, set, row, true));
+    sec.appendChild(list);
+    host.appendChild(sec);
+  }
+}
+function printPhrases() { document.body.classList.add('tu-print-phrases'); buildPhrasePrint(); window.print(); }
+window.addEventListener('beforeprint', () => { if (phrasesShown()) { document.body.classList.add('tu-print-phrases'); buildPhrasePrint(); } });
+window.addEventListener('afterprint', () => {
+  document.body.classList.remove('tu-print-phrases');
+  const h = document.getElementById('tuPhrasePrintSheet');
+  if (h) h.innerHTML = '';
+});
+
+/* ══════════════════════════════════════════════════════
    PROGRESS / MASTERY
    ══════════════════════════════════════════════════════ */
 function statsOf(key) {
@@ -2288,7 +3003,7 @@ function buildMasteryGrid(container) {
 /* ══════════════════════════════════════════════════════
    MODE TABS
    ══════════════════════════════════════════════════════ */
-const TU_TAB_IDS = { learn: 'tabLearn', drill: 'tabDrill', settings: 'tabSettings' };
+const TU_TAB_IDS = { learn: 'tabLearn', phrases: 'tabPhrases', drill: 'tabDrill', settings: 'tabSettings' };
 function setMode(mode) {
   if (!TU_TAB_IDS[mode]) mode = 'learn';
   stopClip();
@@ -2300,6 +3015,13 @@ function setMode(mode) {
     tab.tabIndex = on ? 0 : -1;
     document.getElementById(m + 'View').hidden = !on;
   }
+  // One key bar for both staff tabs: it moves to the one on screen (its place in Learn is just above the
+  // family chips).
+  const bar = document.getElementById('tuKeyBar');
+  if (bar && mode === 'phrases') document.getElementById('tuKeySlotPhrases').appendChild(bar);
+  else if (bar && mode === 'learn') document.getElementById('learnView').insertBefore(bar, document.getElementById('tuFamilyChips'));
+  if (mode === 'phrases') renderPhrases();
+  else if (mode === 'learn') syncTuneControls();
   if (mode === 'drill' && !drill.active) {
     // (re)show the start screen unless a session is mid-flight
     document.getElementById('drillStart').hidden = false;
@@ -2516,6 +3238,7 @@ function buildPrintChart() {
   const live = document.getElementById('tuCards');
   if (!host || !live) return;
   if (host.childElementCount) return;   // already assembled for this print job (button + beforeprint)
+  if (phrasesShown()) return;           // the Phrases tab prints its own sheet (buildPhrasePrint)
   const keep = currentFamily;
   _chartPrintBuild = true;
   try {
@@ -3151,6 +3874,7 @@ function setTradition(v) {
   settings.tradition = v === 'seph' ? 'seph' : 'ashk';
   saveSettings();
   renderLearn();
+  renderPhrasesIfShown();
   updateDrillStart();
   syncProgressSummary();
 }
@@ -3160,6 +3884,7 @@ function setMelody(v) {
   saveSettings();
   stopTune();       // a tune of the other melody must not keep lighting the redrawn staffs
   renderLearn();
+  renderPhrasesIfShown();
 }
 // The Learn banner's "Change": straight to the Melody choice on the Settings tab.
 function openMelodySetting() {
@@ -3196,6 +3921,7 @@ function setTuneShift(v) {
   saveSettings();
   stopTune();       // a tune in the old key must not keep lighting the redrawn staffs
   renderLearn();    // redraws every staff; renderLearn ends by syncing both controls
+  renderPhrasesIfShown();
 }
 function stepTuneShift(d) {   // the Learn bar's arrows; aria-disabled (not disabled) at the ends, so focus stays put
   const btn = document.getElementById(d < 0 ? 'tuKeyDown' : 'tuKeyUp');
@@ -3220,6 +3946,7 @@ function setTuneVoice(v) {
   saveSettings();
   stopTune();       // the next play sounds in the new octave
   renderLearn();    // the 8 under every clef
+  renderPhrasesIfShown();
 }
 function syncTuneControls() {
   const s = tuneShiftVal(), low = tuneVoiceKey() === 'low';
@@ -3227,7 +3954,8 @@ function syncTuneControls() {
   if (bar) {
     // No staffs to move while the melody's motif file is missing (the melody note's rule), and nothing to
     // name before the dictionary has loaded: the bar waits for both rather than show an empty line.
-    bar.hidden = !activeMotifs() || !_i18nReady;
+    // On the Phrases tab the bar moves that tab's staffs, so it waits for the phrase chart instead.
+    bar.hidden = !(phrasesShown() ? phraseSet() : activeMotifs()) || !_i18nReady;
     bar.classList.toggle('is-moved', s !== 0 || low);
     document.getElementById('tuKeyDown').setAttribute('aria-disabled', s <= -TUNE_SHIFT_MAX ? 'true' : 'false');
     document.getElementById('tuKeyUp').setAttribute('aria-disabled', s >= TUNE_SHIFT_MAX ? 'true' : 'false');
@@ -3242,7 +3970,7 @@ function syncTuneControls() {
   // Pre-ready I18n.t returns raw keys; applyI18n runs this again once the dictionary has loaded.
   if (!_i18nReady || !window.I18n) return;
   if (bar) {
-    document.getElementById('tuKeyName').textContent = keyNameText(staffKey());
+    document.getElementById('tuKeyName').textContent = keyNameText(phrasesShown() ? phraseStaffKey() : staffKey());
     document.getElementById('tuKeyRel').textContent = tuneRelText(s);
   }
   const vt = tuneValueText();   // "C major, 3 half steps higher" — just the half steps while no motif file names a key
@@ -3625,6 +4353,8 @@ const TOUR_STEPS = [
     titleKey: 'trope.tour.key_title', bodyKey: 'trope.tour.key_body' },
   { target: () => document.getElementById('tuNextFamily'),
     titleKey: 'trope.tour.s4_title', bodyKey: 'trope.tour.s4_body' },
+  { target: () => document.getElementById('tabPhrases'),
+    titleKey: 'trope.tour.phrases_title', bodyKey: 'trope.tour.phrases_body' },
   { target: () => document.getElementById('tabDrill'),
     titleKey: 'trope.tour.s5_title', bodyKey: 'trope.tour.s5_body' },
   { target: () => document.getElementById('tabSettings'),
@@ -3794,6 +4524,7 @@ function initCloudSaves() {
       }
       _i18nRerender = true;   // a read-only re-render: must not mark the current family as visited
       try { renderLearn(); } finally { _i18nRerender = false; }
+      renderPhrasesIfShown();
       updateDrillStart();
     },
     open: function () {         // the header chip's "Cloud saves…" item
@@ -3814,6 +4545,7 @@ function applyI18n() {
   // Read-only re-render: the family on screen was marked visited when it was first shown, so a
   // language switch must not touch the progress record (the _chartPrintBuild precedent).
   try { if (!document.getElementById('learnView').hidden) { _i18nRerender = true; renderLearn(); } } catch (e) {} finally { _i18nRerender = false; }   // family/trope notes, name prefixes
+  try { renderPhrasesIfShown(); } catch (e) {}              // group names, chips' names and labels (read-only)
   try { syncDrillSelects(); } catch (e) {}                 // scope options ("All marks" + family names) and the length options
   try { updateDrillStart(); } catch (e) {}                 // drill start summary + note
   try { syncProgressSummary(); } catch (e) {}              // "{n} of {total} tropes attempted" line on the Settings tab

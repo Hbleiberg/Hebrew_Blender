@@ -201,12 +201,12 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
 
 ## Trope Tutor (`trope_tutor.html`)
 
-A standalone Learn + Drill page for the cantillation marks. **Zero runtime Sefaria dependency** —
+A standalone Learn + Phrases + Drill page for the cantillation marks. **Zero runtime Sefaria dependency** —
 it consumes only the pre-built static index plus PocketTorah MP3 streams. Its CSP therefore has
 **no `sefaria.org`** (and no `esm.sh`); if a change seems to need either, the design has drifted —
 stop and reconsider. Shell (dark mode, tooltips, tour, toast, My Fonts) is copied from
-`torah_trainer.html`. **Settings are the third tab**
-(Learn | Drill | Settings) laid out like the Font Maker's Settings tab: a serif heading per group over a
+`torah_trainer.html`. **Settings are the last tab**
+(Learn | Phrases | Drill | Settings) laid out like the Font Maker's Settings tab: a serif heading per group over a
 hairline rule, the group's items in a grid (three across, two below 1024px, one below 640px) with small
 uppercase item labels, and nothing to collapse — so the page carries no panel-collapse memory. The
 groups are names and tradition (primary names, melody), sing along (key, voice — see *Key and voice*
@@ -308,8 +308,8 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     derived from them.
   The script exits non-zero if a smoke test fails — never commit its output without a green run.
 - **Phrases**: `data/trope/trope_phrases.json` — every row of both printed charts note for note (41
-  Torah, 33 High Holiday + row 20's second setting), for a staff of a whole reading. **No page fetches
-  it yet**; the first page to load it adds a `?v=1` and joins `docs/reference/ops.md`'s list.
+  Torah, 33 High Holiday + row 20's second setting), for a staff of a whole reading. The Phrases tab
+  fetches it (`?v=1`, in `docs/reference/ops.md`'s list); bump that with every rebuild that changes it.
   - It is built by `node scripts/build-trope-phrases.mjs` from the fenced row blocks in
     `docs/tropepatterns.md` sections B and C, which are **the only hand-edited copy of the notes**:
     fix a note there and re-run the builder, never edit the JSON.
@@ -386,7 +386,53 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
         longer follow the chart. The contexts report's last section lists every pick with its clip
         times: listen to a few before trusting a new build.
     - `docs/tropepatterns.md` → *G. Toward a parasha staff* reads the result.
-- **Key and voice** (Settings → *Sing along*, and the Learn tab's key bar `#tuKeyBar`). Two fields of the
+- **The Phrases tab** (`#phrasesView`) draws that file: one clause group at a time (`PHRASE_GROUPS`, the
+  charts' own teaching order, 12 Torah and 11 High Holiday groups; a row the table misses joins a last
+  "More phrases" group, so every row shows exactly once), in the melody Settings chooses.
+  - **A card per row**: its number, the Hebrew as printed, a chip per mark (glyph and name in the chosen
+    tradition; it opens that mark's Learn card through `openLearnFor`, and hovering or focusing it lights
+    the mark's notes, bar and syllables), the staff, and a play button.
+    - Munach legarmeh has no Learn card (it is not in `TROPES`): its chip is a plain label, from the
+      page-local `PHRASE_LEGARMEH`.
+    - The chips row is pinned LTR like the staff, so the chips stand in the notes' order in either
+      language.
+  - **`renderPhraseStaff(row, opts)`** is full notation and pure: `layoutPhraseStaff` places everything
+    around the middle line from the row and `{key, shift}` alone, and the drawing turns that into SVG with
+    the staff primitives the Learn staff uses. It is the first building block of a whole reading's staff
+    (`docs/tropepatterns.md` → G). It draws:
+    - every value, dot and eighth rest;
+    - beams per syllable, which break at rests and grace notes and split a run over eight at the
+      quarter, with deeper beams and stubs for sixteenths and 32nds; the note farthest from the middle
+      line turns a beam's stems;
+    - flags, ties, slurs (fitted to clear the notes and accents inside them) and triplets (a bare 3 on
+      a beam that is exactly the triplet, else a bracket above);
+    - grace notes, small and slashed (row 41's pair is beamed);
+    - accents and tenuto lines above the staff;
+    - accidentals held to the end of the row, since the chart has no bar lines;
+    - the syllables with their hyphens, and a family-coloured bar over each mark's notes.
+
+    Spacing grows with the log of each note's length and widens for accidentals, dots, flags and
+    syllables. A row wider than its card scrolls inside an LTR wrapper, which is also its keyboard stop
+    and carries its label.
+  - **The tune** is `togglePhraseTune`, on the Learn tune's scale (an eighth is 0.32 s at 1×): ties sound
+    as one note, rests are silent, and a grace note is quick and borrowed from the note it leads into.
+    Both tunes go through `_playTuneCore`, so `stopTune()` stops either, and a clip, a tab switch or a
+    settings change stops both. A phrase tune's id is `phrase:<melody>:<row>`.
+  - **One key bar.** `setMode` moves `#tuKeyBar` into `#tuKeySlotPhrases` and back above the family
+    chips. On the Phrases tab, `syncTuneControls` names the phrase chart's key and waits for that file,
+    not the motif file.
+  - **Rendering is read-only and lazy.** The tab renders when it is shown, and then only while it is
+    showing: through `renderPhrasesIfShown()` beside every `renderLearn()` (melody, key, voice,
+    tradition, reset, cloud reread, retry) and in `applyI18n`. The group on screen belongs to the visit
+    and is never stored.
+  - **Failure.** The file is parsed with `ivritSafeParse` and checked row by row (`_validPhraseRow`); a
+    row that does not hold together is left out. A missing or bad file never touches Learn or Drill:
+    the tab says so and offers *Try again* (`retryLoadData`).
+  - **Print.** Ctrl+P or *Print phrases* on this tab sets `body.tu-print-phrases` and prints
+    `#tuPhrasePrintSheet`: every group of the melody, built by the same card builder, in the key on
+    screen (the key bar's line prints while the staffs are moved), without controls or examples. From
+    any other tab, the Learn chart prints as before.
+- **Key and voice** (Settings → *Sing along*, and the key bar `#tuKeyBar`, on the Learn and Phrases tabs). Two fields of the
   settings blob move every staff and its tune; the motif files are never touched.
   - **`tuneShift`** (whole half steps, −6…6, default 0) moves every note of both melodies and redraws the
     staff in the key it lands on: `staffKey()` = `shiftedKey(file key, shift)`, which reads the tonic's new
