@@ -307,9 +307,11 @@ function unitTokens(row, u, melody) {
 function headerTokens(row) { return [`#${row.n}`, ...row.tags.map((t) => `[${t}]`), ...(row.he ? row.he.split(/\s+/) : [])]; }
 
 /* ---------- the Hebrew line: its printed marks must name the same marks as the lines below ---------- */
-// Three mark names are two words, each printed with the mark (זָקֵ֕ף גָּד֕וֹל): such a pair is one mark.
-// Every other repeat is a mark of its own, in the Hebrew and in the lines alike.
-const TWO_WORD_NAMES = { zakef_gadol: 'זקף גדול', yerach_ben_yomo: 'ירח בן\u05BEיומו', karnei_parah: 'קרני פרה' };
+// A mark whose name is two words may be printed on both of them: this chart prints telisha gedola
+// at each end of its name (תְּ֠לִישָׁא גְּדוֹלָה֠), and such a pair is one mark. It prints zakef gadol and
+// karnei parah on one word, but a doubled print of those is one mark too. Every other repeat is a
+// mark of its own, in the Hebrew and in the lines alike.
+const TWO_WORD_NAMES = { telisha_gedola: 'תלישא גדולה', zakef_gadol: 'זקף גדול', karnei_parah: 'קרני פרה' };
 const lettersOf = (w) => w.replace(/[^א-ת\u05BE]/g, '');   // consonants and maqaf only
 function marksOfHebrew(he) {
   const keys = [];

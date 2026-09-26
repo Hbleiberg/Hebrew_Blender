@@ -335,8 +335,9 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     - a tie across two mark lines, from a rest or touching a grace note, and a slur from a rest;
     - a syllable of rests only, or a `-` on a mark line's last syllable;
     - a tag anywhere but right after the row number, or a bracket or Latin letter in the Hebrew;
-    - a header whose Hebrew marks differ from its lines, compared one for one (only zakef gadol,
-      yerach ben yomo and karnei parah are one mark printed on two words).
+    - a header whose Hebrew marks differ from its lines, compared one for one (a two-word mark
+      name printed with its mark on both words counts once: telisha gedola in this chart, and zakef
+      gadol or karnei parah if a print doubles them).
 
     `--doc` and `--lenient` build a second reading, so they need an `--out` outside `data/` and
     `docs/`. `built` keeps its date when nothing changed, so a re-run is byte-identical. It is CC BY-SA 4.0,
