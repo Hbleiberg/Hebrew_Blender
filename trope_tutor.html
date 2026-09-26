@@ -457,6 +457,7 @@ body.dark .tu-pstaff .tu-pn.is-hl, body.dark .tu-pstaff .tu-ps.is-hl { color:var
 .tu-pstaff .tu-pbar.is-hl { stroke:var(--text); stroke-width:0.8; }
 .tu-pstaff.is-playing { background:rgba(201,146,42,.14); border-radius:8px; }
 .tu-pstaff .tu-pn.is-sounding { color:var(--gold); }
+.tu-pstaff .tu-pn.is-rest.is-sounding { color:var(--gold-text); }   /* all thin strokes, no head to outline */
 body.dark .tu-pstaff .tu-pn.is-sounding { color:var(--gold-light); }
 .tu-pstaff .tu-pn.is-sounding ellipse { stroke:var(--navy); stroke-width:1.6; }
 body.dark .tu-pstaff .tu-pn.is-sounding ellipse { stroke:var(--gold-light); }
@@ -2352,6 +2353,37 @@ function _phraseTextWidth(s) {
   for (const ch of s) w += /['’.,]/.test(ch) ? 0.28 : /[IJ1]/.test(ch) ? 0.34 : /[MW]/.test(ch) ? 0.86 : 0.68;
   return w * PHRASE_SYL_SIZE;
 }
+// A rest of any value, in the staff's units around its x (y down, 6 to a space, 0 the middle line), where
+// engravers put it: a hooked rest hangs a knob in the third space and one more in each space below (a 32nd's
+// third in the fourth space) off a slanting stem that reaches the second line for an eighth and the bottom
+// line for a 16th or 32nd; a quarter rest's zigzag spans the middle three spaces; a half rest sits on the
+// middle line; a dot rides in the third space. l, r, top and bottom are its reach, which the layout spaces by.
+function phraseRestGlyph(val) {
+  const g = { knobs: [], strokes: [], block: null, dot: null };
+  if (val.flags) {
+    const ks = [-2.6, 3.4, -8.6].slice(0, val.flags).sort((a, b) => a - b);   // knob centres, top first
+    const slope = 3 / 10.3, yT = ks[0] - 1.2, yB = val.flags > 1 ? 12 : 6.5;
+    const xT = (5.2 + slope * (ks[ks.length - 1] - ks[0])) / 2;              // the stem's top, set to centre the rest
+    const stemX = (y) => xT - slope * (y - yT);
+    ks.forEach((ky, k) => {
+      const fx = stemX(ky - 1.2), kx = fx - 4.2;
+      g.knobs.push({ x: kx, y: ky });
+      const d = [['M', kx, ky], ['Q', kx + 2.2, ky + 1.4, fx, ky - 1.2]];
+      if (k === 0) d.push(['L', stemX(yB), yB]);   // the top knob's hook runs on down the stem
+      g.strokes.push({ d, w: 1.1 });
+    });
+    Object.assign(g, { l: 1.5 - Math.min(...g.knobs.map((k) => k.x)), r: xT + 0.55, top: yT - 0.55, bottom: yB + 0.55 });
+  } else if (!val.open) {   // quarter
+    g.strokes.push({ d: [['M', -1.3, -9], ['L', 1.9, -4.9]], w: 1 }, { d: [['M', 1.9, -4.9], ['L', -1.3, -0.9]], w: 2.4 },
+      { d: [['M', -1.3, -0.9], ['L', 1.8, 3.2]], w: 1 }, { d: [['M', 1.8, 3.2], ['C', -0.6, 2.6, -3, 6.4, 0.9, 8.9]], w: 1.6 });
+    Object.assign(g, { l: 2.6, r: 3.1, top: -9.5, bottom: 9.7 });
+  } else {                  // half
+    g.block = { x: -3.4, y: -3, w: 6.8, h: 3 };
+    Object.assign(g, { l: 3.4, r: 3.4, top: -3, bottom: 0 });
+  }
+  if (val.dot) { g.dot = { x: g.r + 2.2, y: -3 }; g.r += 3.35; }
+  return g;
+}
 function layoutPhraseStaff(row, key, shift) {
   const STEP = PHRASE_STEP;
   const sig = keySignature(key), sigAlt = {};
@@ -2368,7 +2400,7 @@ function layoutPhraseStaff(row, key, shift) {
       const { step, acc } = motifPitchPos(n.p + shift, key);
       o.step = step; o.y = -step * STEP;
       o.alt = acc === '♯' ? 1 : acc === '♭' ? -1 : acc === '♮' ? 0 : (sigAlt[letterOf(step)] || 0);
-    }
+    } else o.rg = phraseRestGlyph(o.val);
     return o;
   });
   // Accidentals: printed where a line or space changes from what the signature (or an earlier sign) set.
@@ -2409,8 +2441,8 @@ function layoutPhraseStaff(row, key, shift) {
   // Horizontal spacing: log of the sounding length, widened so accidentals, dots, flags and syllables fit.
   const sigW = sig.length * 6, X0 = 36 + sigW;
   const space = (o) => (o.grace ? 7 : 9 + 6.5 * Math.log2(1 + o.t / 12));
-  const leftExt = (o) => (o.accText ? (o.grace ? 8 : 12) : (o.grace ? 3 : 4));
-  const rightExt = (o) => (o.rest ? 4 : (o.val.dot ? 8 : 4) + (o.up && o.val.flags && o.beam === undefined && !o.grace ? 5 : 0));
+  const leftExt = (o) => (o.rest ? Math.max(4, o.rg.l + 0.6) : o.accText ? (o.grace ? 8 : 12) : (o.grace ? 3 : 4));
+  const rightExt = (o) => (o.rest ? Math.max(4, o.rg.r + 0.6) : (o.val.dot ? 8 : 4) + (o.up && o.val.flags && o.beam === undefined && !o.grace ? 5 : 0));
   const sylW = row.syl.map((s) => _phraseTextWidth(s.t));
   const sylStart = [], sylEnd = [];
   let x = X0 + leftExt(notes[0] || { accText: false });
@@ -2527,7 +2559,7 @@ function layoutPhraseStaff(row, key, shift) {
       const bl = beamLines[bi];
       return { bracket: false, x: (sx(ns[0]) + sx(ns[ns.length - 1])) / 2, y: bl.at(xm) + (bl.up ? -4 : 11) };
     }
-    let top = Math.min(...ns.map((o) => (o.rest ? -6 : Math.min(o.y - 4, o.up ? o.tip : o.y - 4,
+    let top = Math.min(...ns.map((o) => (o.rest ? o.rg.top - 2 : Math.min(o.y - 4, o.up ? o.tip : o.y - 4,
       o.markY === undefined ? Infinity : o.markY - 3 - 6 * (o.marks.length - 1)))), -12);
     for (const sl of slurs) if (sl.above && sl.from <= tp.to && sl.to >= tp.from) top = Math.min(top, sl.c + 1);
     return { bracket: true, xa: ns[0].x - 4, xb: ns[ns.length - 1].x + 4, x: xm, y: top - 6 };
@@ -2536,7 +2568,7 @@ function layoutPhraseStaff(row, key, shift) {
   let top = -12, bottom = 12;
   const see = (y) => { top = Math.min(top, y); bottom = Math.max(bottom, y); };
   for (const o of notes) {
-    if (o.rest) continue;
+    if (o.rest) { see(o.rg.top); see(o.rg.bottom); continue; }
     see(o.y - 4); see(o.y + 4); see(o.tip);
     if (o.markY !== undefined) see(o.markY - 3);
   }
@@ -2592,10 +2624,13 @@ function renderPhraseStaff(row, opts) {
   for (const o of L.notes) {
     const g = _svgEl('g', { class: 'tu-pn' + (o.rest ? ' is-rest' : ''), 'data-i': o.i, 'data-u': o.u });
     const cx = Math.round(o.x * 100) / 100;
-    if (o.rest) {   // an eighth rest
-      g.appendChild(_svgEl('circle', { cx: cx - 1.6, cy: Y(-2.6), r: 1.5, fill: 'currentColor' }));
-      g.appendChild(_svgEl('path', { d: 'M ' + (cx - 1.6) + ' ' + Y(-2.6) + ' Q ' + (cx + 0.6) + ' ' + Y(-1.2) + ' ' + (cx + 2.6) + ' ' + Y(-3.8) +
-        ' L ' + (cx - 0.4) + ' ' + Y(6.5), fill: 'none', stroke: 'currentColor', 'stroke-width': 1.1, 'stroke-linecap': 'round' }));
+    if (o.rest) {
+      const rg = o.rg, X = (v) => Math.round((cx + v) * 100) / 100;
+      for (const k of rg.knobs) g.appendChild(_svgEl('circle', { cx: X(k.x), cy: Y(k.y), r: 1.5, fill: 'currentColor' }));
+      for (const s of rg.strokes) g.appendChild(_svgEl('path', { d: s.d.map(([c, ...v]) => c + ' ' + v.map((n, j) => (j % 2 ? Y(n) : X(n))).join(' ')).join(' '),
+        fill: 'none', stroke: 'currentColor', 'stroke-width': s.w, 'stroke-linecap': 'round' }));
+      if (rg.block) g.appendChild(_svgEl('rect', { x: X(rg.block.x), y: Y(rg.block.y), width: rg.block.w, height: rg.block.h, fill: 'currentColor' }));
+      if (rg.dot) g.appendChild(_svgEl('circle', { cx: X(rg.dot.x), cy: Y(rg.dot.y), r: 1.15, fill: 'currentColor' }));
       svg.appendChild(g);
       continue;
     }
@@ -2996,10 +3031,12 @@ function togglePhraseExample(pid, ex, btn) {
     if (_pexId === pid && _stopAt === null && tuAudio.paused) _pexReset();
   });
 }
-// The row as tones, on the Learn tune's scale (an eighth is 0.32 s at 1×): ties sound as one note, rests
-// are silent, and a grace note is quick and taken from the note it leads into. No other note sounds shorter
-// than PHRASE_MIN_NOTE (at 1×): the chart's 32nds and triplet 32nds (80 and 53 ms at this tempo — gershayim's
-// turn, segol's run) blur into one sound, so each is held long enough to hear and the tune stretches around it.
+// The row as tones, on the Learn tune's scale (an eighth is 0.32 s at 1×): ties sound as one note, a rest is
+// silent for its whole value and lit while it lasts (the note before it goes dark, so nothing looks held
+// through the pause), and a grace note is quick and taken from the note it leads into. No other note sounds
+// shorter than PHRASE_MIN_NOTE (at 1×): the chart's 32nds and triplet 32nds (80 and 53 ms at this tempo —
+// gershayim's turn, segol's run) blur into one sound, so each is held long enough to hear and the tune
+// stretches around it.
 const PHRASE_MIN_NOTE = 0.1;
 function togglePhraseTune(m, row, btn) {
   const id = 'phrase:' + m + ':' + row.n;
@@ -3011,7 +3048,7 @@ function togglePhraseTune(m, row, btn) {
   const sounds = [], lights = [];
   let at = 0, borrowed = 0;
   row.notes.forEach((n, i) => {
-    if (n.r) { at += n.t * tick; return; }
+    if (n.r) { lights.push({ at, i }); at += n.t * tick; return; }
     if (n.g) {
       const d = Math.max(0.05, Math.min(0.09, 0.07 / rate));
       sounds.push({ p: n.p + shift, at, dur: d });

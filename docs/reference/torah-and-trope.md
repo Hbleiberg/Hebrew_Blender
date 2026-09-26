@@ -400,7 +400,11 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     around the middle line from the row and `{key, shift}` alone, and the drawing turns that into SVG with
     the staff primitives the Learn staff uses. It is the first building block of a whole reading's staff
     (`docs/tropepatterns.md` → G). It draws:
-    - every value, dot and eighth rest;
+    - every value and dot, and a rest of any value at its engraved height (`phraseRestGlyph`): a
+      hooked rest has a knob per flag, from the third space down (a 32nd's third in the fourth), on a
+      stem to the second line (eighth) or the bottom line; a quarter rest spans the middle three
+      spaces; a half rest sits on the middle line; a dot rides in the third space. The layout spaces a
+      rest by the glyph's own reach (both charts print only eighth rests);
     - beams per syllable, which break at rests and grace notes and split a run over eight at the
       quarter, with deeper beams and stubs for sixteenths and 32nds; the note farthest from the middle
       line turns a beam's stems;
@@ -429,7 +433,9 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
       day 1 or 2; Yom Kippur morning or afternoon). The melody banner says there are no recordings,
       and a row the readings never sing says so.
   - **The tune** is `togglePhraseTune`, on the Learn tune's scale (an eighth is 0.32 s at 1×): ties sound
-    as one note, rests are silent, and a grace note is quick and borrowed from the note it leads into.
+    as one note, a rest is silent for its whole value and lit while it lasts (the note before it goes
+    dark, so nothing looks held through the pause), and a grace note is quick and borrowed from the
+    note it leads into.
     No other note is shorter than `PHRASE_MIN_NOTE` (0.1 s at 1×, scaled by the speed setting). The
     chart's 32nds (80 ms at this tempo) and triplet 32nds (53 ms: gershayim's turn, the High Holiday
     segol's run) would blur into one sound, so they are held that long and the tune stretches around
