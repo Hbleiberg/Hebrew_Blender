@@ -101,7 +101,7 @@
     { "@type": "Question", "name": "Does Torah Trainer include chanted-audio karaoke?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. PocketTorah's recordings of all 54 parshiyot and their haftarot stream on demand, with word-level highlighting synchronized to the audio. The audio bar lets you adjust playback speed without re-fetching." } },
     { "@type": "Question", "name": "Where do the Hebrew text and English translations come from?", "acceptedAnswer": { "@type": "Answer", "text": "Sefaria's public API. The translation dropdown is populated automatically and defaults to JPS 1985 when available." } },
     { "@type": "Question", "name": "Can I read without nikkud or cantillation marks?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The settings drawer has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). The cantillation strip uses Unicode range U+0591-U+05AF and leaves nikkud intact." } },
-    { "@type": "Question", "name": "Can it color-code the Torah trope (cantillation) families?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Trope color coding tints each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings." } },
+    { "@type": "Question", "name": "Can it color-code the Torah trope (cantillation) families?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Trope color coding highlights or underlines each word in the color of its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings." } },
     { "@type": "Question", "name": "Does it work for both diaspora and Israel reading schedules?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The default is diaspora; flip the Reading Schedule toggle in settings to switch to the Israel schedule. The 'Jump to this week's parsha' button fetches the current parsha from Sefaria using the chosen schedule." } },
     { "@type": "Question", "name": "Can I copy the Hebrew text out of the reader?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Copy panel in the Options drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting." } },
     { "@type": "Question", "name": "Is the Torah Trainer free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0." } }
@@ -960,7 +960,10 @@ body.dark .tt-trope-chip:hover { background:rgba(255,255,255,0.07); }
 .tt-trope-chip:focus-visible { outline:2px solid var(--gold); outline-offset:1px; }
 /* Sample mark on its alef carrier — the family's "what does this look like" cue. */
 .tt-trope-glyph { font-family:var(--heb-font); font-size:1.15rem; line-height:1; flex-shrink:0; }
-.tt-trope-swatch { width:14px; height:14px; border-radius:4px; border:1px solid var(--border); flex-shrink:0; }
+.tt-trope-swatch { width:14px; height:14px; border-radius:4px; border:1px solid var(--border); flex-shrink:0; background:var(--tt-sw-bg); }
+/* The underline look draws each clause in the family's solid line color, so the key does too
+   (the print band's swatches already use it: paper always underlines). */
+body.trope-underline-fallback .tt-trope-swatch { background:var(--tt-sw-line); }
 .tt-trope-link { margin-inline-start:auto; font-size:0.72rem; color:var(--muted); text-decoration:none; }
 .tt-trope-link[hidden] { display:none; }
 .tt-trope-link:hover { color:var(--gold-text); text-decoration:underline; }
@@ -1934,8 +1937,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     </select>
   </span>
   <span class="tt-ctrl">
-    <label data-i18n="torah.controls.layout_label">Layout:</label>
-    <span class="radio-group">
+    <label id="lblLayout" data-i18n="torah.controls.layout_label">Layout:</label>
+    <span class="radio-group" role="group" aria-labelledby="lblLayout">
       <input type="radio" name="ttLayout" id="ttLayoutSide" value="sidebyside"><label for="ttLayoutSide" data-i18n-html="torah.controls.layout_side">Side&nbsp;by&nbsp;side</label>
       <input type="radio" name="ttLayout" id="ttLayoutInter" value="interlinear"><label for="ttLayoutInter" data-i18n="torah.controls.layout_interlinear">Interlinear</label>
       <input type="radio" name="ttLayout" id="ttLayoutBible" value="biblepage"><label for="ttLayoutBible" data-i18n-html="torah.controls.layout_page">Page&nbsp;view</label>
@@ -2024,8 +2027,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <label class="toggle"><input type="checkbox" id="ttHandoutHideNums"><span class="slider"></span></label>
   </span>
   <span class="tt-ctrl">
-    <label data-i18n="torah.handout.font_size">Font size:</label>
-    <span class="radio-group">
+    <label id="lblHandoutSize" data-i18n="torah.handout.font_size">Font size:</label>
+    <span class="radio-group" role="group" aria-labelledby="lblHandoutSize">
       <input type="radio" name="ttHandoutSize" id="hsNormal" value="normal"><label for="hsNormal" data-i18n="torah.handout.size_normal">Normal</label>
       <input type="radio" name="ttHandoutSize" id="hsLarge" value="large"><label for="hsLarge" data-i18n="torah.handout.size_large">Large</label>
       <input type="radio" name="ttHandoutSize" id="hsXL" value="xl"><label for="hsXL" data-i18n="torah.handout.size_xl">Extra large</label>
@@ -2223,8 +2226,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <label class="toggle"><input type="checkbox" id="optShowNikkud"><span class="slider"></span></label>
         </div>
         <div class="form-row">
-          <label><span data-i18n="torah.display.click_word_label">Click on word to</span> <span class="tip-wrap" data-i18n-tip="torah.display.click_word_tip" data-tip="Chant: jump the karaoke audio to that word (auto-loads the right aliyah). Read: speak the verse containing the word via Hebrew TTS."><i class="tip-icon">?</i></span></label>
-          <span class="radio-group">
+          <label><span id="lblClickAction" data-i18n="torah.display.click_word_label">Click on word to</span> <span class="tip-wrap" data-i18n-tip="torah.display.click_word_tip" data-tip="Chant: jump the karaoke audio to that word (auto-loads the right aliyah). Read: speak the verse containing the word via Hebrew TTS."><i class="tip-icon">?</i></span></label>
+          <span class="radio-group" role="group" aria-labelledby="lblClickAction">
             <input type="radio" name="optClickAction" id="caChant" value="chant"><label for="caChant" data-i18n="torah.display.click_chant">Chant</label>
             <input type="radio" name="optClickAction" id="caRead"  value="read"><label for="caRead" data-i18n="torah.display.click_read">Read</label>
           </span>
@@ -2250,10 +2253,12 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <button class="sreset" onclick="resetFontSize('english')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <hr style="border:none; border-top:1px solid var(--border); margin:12px 0 8px;">
-        <div style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;" data-i18n="torah.display.karaoke_header">Karaoke settings</div>
+        <div id="lblKaraokeHdr" style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;" data-i18n="torah.display.karaoke_header">Karaoke settings</div>
+        <!-- The two karaoke groups take this heading into their names: a bare "Style" with its Highlight
+             choice would sound like the vowel and trope color lists to a screen reader. -->
         <div class="form-row">
-          <label data-i18n="torah.display.style_label">Style</label>
-          <span class="radio-group">
+          <label id="lblKarStyle" data-i18n="torah.display.style_label">Style</label>
+          <span class="radio-group" role="group" aria-labelledby="lblKaraokeHdr lblKarStyle">
             <input type="radio" name="optKarStyle" id="ksHighlight" value="highlight"><label for="ksHighlight" data-i18n="torah.display.style_highlight">Highlight</label>
             <input type="radio" name="optKarStyle" id="ksOutline"   value="outline"><label for="ksOutline" data-i18n="torah.display.style_outline">Outline</label>
             <input type="radio" name="optKarStyle" id="ksUnderline" value="underline"><label for="ksUnderline" data-i18n="torah.display.style_under">Under</label>
@@ -2261,8 +2266,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           </span>
         </div>
         <div class="form-row">
-          <label data-i18n="torah.display.follow_label">Follow</label>
-          <span class="radio-group">
+          <label id="lblKarFollow" data-i18n="torah.display.follow_label">Follow</label>
+          <span class="radio-group" role="group" aria-labelledby="lblKaraokeHdr lblKarFollow">
             <input type="radio" name="optKarFollow" id="kfHebrew"   value="hebrew"><label for="kfHebrew" data-i18n="torah.display.follow_hebrew">Hebrew</label>
             <input type="radio" name="optKarFollow" id="kfTranslit" value="translit"><label for="kfTranslit" data-i18n="torah.display.follow_translit">Translit</label>
             <input type="radio" name="optKarFollow" id="kfBoth"     value="both"><label for="kfBoth" data-i18n="torah.display.follow_both">Both</label>
@@ -2341,8 +2346,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="torah.settings.panel_schedule">Reading schedule</div>
       <div class="panel-body">
         <div class="form-row">
-          <label><span data-i18n="torah.schedule.schedule_label">Schedule</span> <span class="tip-wrap" data-i18n-tip="torah.schedule.schedule_tip" data-tip="Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'."><i class="tip-icon">?</i></span></label>
-          <span class="radio-group">
+          <label><span id="lblSchedule" data-i18n="torah.schedule.schedule_label">Schedule</span> <span class="tip-wrap" data-i18n-tip="torah.schedule.schedule_tip" data-tip="Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'."><i class="tip-icon">?</i></span></label>
+          <span class="radio-group" role="group" aria-labelledby="lblSchedule">
             <input type="radio" name="optSchedule" id="schedDiaspora" value="diaspora"><label for="schedDiaspora" data-i18n="torah.schedule.diaspora">Diaspora</label>
             <input type="radio" name="optSchedule" id="schedIsrael" value="israel"><label for="schedIsrael" data-i18n="torah.schedule.israel">Israel</label>
           </span>
@@ -2408,8 +2413,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="torah.settings.panel_translit">Transliteration</div>
       <div class="panel-body">
         <div class="form-row">
-          <label data-i18n="torah.trans.place_label">Show it</label>
-          <span class="radio-group">
+          <label id="lblTranslitPlace" data-i18n="torah.trans.place_label">Show it</label>
+          <span class="radio-group" role="group" aria-labelledby="lblTranslitPlace">
             <input type="radio" name="optTranslitPlace" id="tpRow"  value="row"><label for="tpRow" data-i18n="torah.trans.place_row">Own line</label>
             <input type="radio" name="optTranslitPlace" id="tpWord" value="word"><label for="tpWord" data-i18n="torah.trans.place_word">Under each word</label>
           </span>
@@ -2486,7 +2491,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q2">Does it include chanted-audio karaoke?</summary><p data-i18n-html="torah.about.faq_a2" style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener" style="color:var(--gold-text);">PocketTorah</a>'s recordings of all 54 parshiyot and haftarot stream on demand, with word-level highlighting synchronized to the audio. Adjust playback speed without re-fetching.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q3">Where do the Hebrew texts and translations come from?</summary><p data-i18n-html="torah.about.faq_a3" style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);"><a href="https://www.sefaria.org" target="_blank" rel="noopener" style="color:var(--gold-text);">Sefaria</a>'s public API. The translation dropdown defaults to JPS 1985 when available; pick any other version from the same dropdown.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q4">Can I hide nikkud or cantillation marks?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a4">Yes. The Display panel has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). They can be hidden independently.</p></details>
-            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q5">Can it color-code the Torah trope (cantillation) families?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a5">Yes. Trope color coding tints each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q5">Can it color-code the Torah trope (cantillation) families?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a5">Yes. Trope color coding highlights or underlines each word in the color of its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q6">Diaspora or Israel schedule?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a6">The default is diaspora. Flip the Reading Schedule toggle to switch to Israel. Use "Jump to this week's parsha" to auto-pick the current week's reading from Sefaria's calendar.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q8">Can I copy the Hebrew text out of the reader?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a8">Yes. The Copy panel in the Options drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q7">Is it free?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a7">Yes. Materials incorporating PocketTorah audio are licensed CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0.</p></details>
@@ -3571,9 +3576,11 @@ function applyTropeColors() {
 
 // The chip turns coloring on in the stored look, with the drawer's list mirrored so the drawer
 // agrees; applyTropeColors then swaps chip → legend. Off stays in the drawer's list (once
-// coloring is visible, the drawer's full controls are discoverable).
+// coloring is visible, the drawer's full controls are discoverable). It is the list's choice of
+// that look, so during a practice link's view it claims the same two settings a pick in the list does.
 function tropeChipEnable() {
   settings.colorCodeTrope = true;
+  linkViewClaim(['colorCodeTrope', 'tropeCodingMode']);
   syncTropeModeRadios();
   saveSettings(); applyTropeColors();
 }
@@ -3600,7 +3607,10 @@ function buildTropeLegend() {
     chip.className = 'tt-trope-chip';
     const sw = document.createElement('span');
     sw.className = 'tt-trope-swatch';
-    sw.style.background = 'var(--trope-' + def.key + '-bg)';
+    // Both of the family's colors; the CSS shows the tint, or the solid line color while the words
+    // carry the underline look (body.trope-underline-fallback), so the key matches the reading.
+    sw.style.setProperty('--tt-sw-bg', 'var(--trope-' + def.key + '-bg)');
+    sw.style.setProperty('--tt-sw-line', 'var(--trope-' + def.key + '-line)');
     chip.appendChild(sw);
     // The family's representative mark, on its alef carrier (already in TROPE_COLOR_DEFS).
     // Hebrew content, so lang="he" at this rendering chokepoint.
@@ -6617,6 +6627,7 @@ function wireSettingsForm() {
       const on = e.target.value !== 'none', was = !!settings.colorCodeNikkud;
       settings.colorCodeNikkud = on;
       if (on) settings.colorCodingMode = e.target.value;
+      linkViewClaim(on ? ['colorCodeNikkud', 'colorCodingMode'] : ['colorCodeNikkud']);   // one choice, one decision
       toggleColorOptionsVisibility(on);
       saveSettings();
       if (on !== was) renderText();   // the .nik syllable spans exist only while coloring is on
@@ -6633,6 +6644,7 @@ function wireSettingsForm() {
       if (!e.target.checked) return;
       settings.colorCodeTrope = e.target.value !== 'none';
       if (settings.colorCodeTrope) settings.tropeCodingMode = e.target.value;
+      linkViewClaim(settings.colorCodeTrope ? ['colorCodeTrope', 'tropeCodingMode'] : ['colorCodeTrope']);   // one choice, one decision
       toggleTropeOptionsVisibility(settings.colorCodeTrope);
       // tokenizeHebrew emits the family classes unconditionally, so on/off and the look are a
       // pure var+class swap — no reading rebuild, and the karaoke data-twi indices are untouched.
@@ -7529,8 +7541,15 @@ function _copySetStyle(el, decls) {
   const all = (prev ? [prev] : []).concat(decls);
   if (all.length) el.setAttribute('style', all.join(';'));
 }
-function _inlineCopyStyles(container) {
+function _inlineCopyStyles(container, opts) {
   const mode = settings.colorCodingMode;
+  // The copy's own marks decide its trope look, not the screen's body class: they can differ from
+  // the display's (Copy → Nikkud "Include" with the vowels hidden on screen). The underline look is
+  // the teacher's Underline choice, or the collision rule: syllable highlights IN THIS COPY already
+  // paint backgrounds, so a word-level trope tint becomes a clause underline instead of stacking
+  // with them. `o` mirrors tokenizeHebrew's own reads, which put the .nik spans in the copy.
+  const o = opts || settings;
+  const underline = tropeModeKey() === 'underline' || (!!o.colorCodeNikkud && !!o.showNikkud && mode === 'highlight');
   container.querySelectorAll('span.nik').forEach(sp => {
     const key = (sp.className.match(/nik-([a-z]+)/) || [])[1];
     const c = key ? getNikudColor(key) : null;
@@ -7541,17 +7560,13 @@ function _inlineCopyStyles(container) {
     }
     sp.removeAttribute('class');
   });
-  // The screen's underline look: the teacher's Underline choice, or the collision rule
-  // (per-syllable highlights already paint backgrounds, so a word-level trope tint becomes a
-  // clause underline instead of stacking with them).
-  const fallback = document.body.classList.contains('trope-underline-fallback');
   container.querySelectorAll('span.tt-word').forEach(sp => {
     const fam = (sp.className.match(/trope-([a-z]+)/) || [])[1];
     if (fam) {
       const c = getTropeColor(fam);
-      if (fallback) _copySetStyle(sp, [`text-decoration:underline solid ${c}`,
-                                       'text-decoration-thickness:3px', 'text-underline-offset:0.6em']);
-      else          _copySetStyle(sp, [`background-color:${_copyBlendOnWhite(c, 0x59)}`]);
+      if (underline) _copySetStyle(sp, [`text-decoration:underline solid ${c}`,
+                                        'text-decoration-thickness:3px', 'text-underline-offset:0.6em']);
+      else           _copySetStyle(sp, [`background-color:${_copyBlendOnWhite(c, 0x59)}`]);
     }
     sp.removeAttribute('class');
   });
@@ -7570,7 +7585,7 @@ function _copyHebHTML(v, opts) {
   const div = document.createElement('div');
   // A fresh local word-index ref — karaoke's running data-twi sequence is never touched.
   div.innerHTML = tokenizeHebrew(v.hebrew || '', { value: 0 }, opts);
-  _inlineCopyStyles(div);
+  _inlineCopyStyles(div, opts);
   return div.innerHTML;
 }
 
@@ -8793,11 +8808,21 @@ const LINK_DISPLAY = {
   karaokeStyle:        v => _linkOneOf(v, _linkChoices('input[name="optKarStyle"]')),
   karaokeFollow:       v => _linkOneOf(v, _linkChoices('input[name="optKarFollow"]')),
 };
+// Each color list's look, with the on/off switch it shows under. A look is on screen only while its
+// coloring is on, so it rides a link only then, and a reader takes one only then.
+const LINK_LOOK_SWITCH = { colorCodingMode: 'colorCodeNikkud', tropeCodingMode: 'colorCodeTrope' };
 function linkDisplayParam() {
   const out = { v: LINK_VIEW_V };
   Object.keys(LINK_DISPLAY).forEach(k => {
     const v = LINK_DISPLAY[k](settings[k]);
     if (v !== undefined && !_linkSame(v, DEFAULTS[k])) out[k] = v;
+  });
+  // A look with its coloring off would reach the reader as a difference they cannot see, offered
+  // as "the sender's settings" all the same: it travels only when the switch the reader will read
+  // (the link's value, else the pristine default) is on.
+  Object.keys(LINK_LOOK_SWITCH).forEach(k => {
+    const sw = LINK_LOOK_SWITCH[k];
+    if (!(Object.prototype.hasOwnProperty.call(out, sw) ? out[sw] : DEFAULTS[sw])) delete out[k];
   });
   return shareB64Encode(JSON.stringify(out));
 }
@@ -8815,8 +8840,20 @@ function linkViewApply() {
     data = ivritSafeParse(shareB64Decode(raw));
   } catch (e) { return; }
   if (!data || typeof data !== 'object' || Array.isArray(data) || data.v !== LINK_VIEW_V) return;
+  // The on/off each look will show under during the view: the link's value, the reader's own where
+  // the link names one it refuses, the pristine default where it leaves it out. A look whose
+  // coloring will be off is not taken at all — the reader keeps their own, untracked — since nothing
+  // on screen differs (an older sender's link can still carry one).
+  const lookOn = {};
+  Object.keys(LINK_LOOK_SWITCH).forEach(k => {
+    const sw = LINK_LOOK_SWITCH[k];
+    let on = DEFAULTS[sw];
+    if (Object.prototype.hasOwnProperty.call(data, sw)) { const v = LINK_DISPLAY[sw](data[sw]); on = v === undefined ? settings[sw] : v; }
+    lookOn[k] = !!on;
+  });
   const own = {}, shown = {};
   Object.keys(LINK_DISPLAY).forEach(k => {
+    if (Object.prototype.hasOwnProperty.call(lookOn, k) && !lookOn[k]) return;
     // A setting the link leaves out is the pristine default — the sender's whole look, not a blend
     // with the reader's; one it names but that fails its check keeps the reader's own.
     let want = DEFAULTS[k];
@@ -8841,6 +8878,14 @@ function linkViewEnd() {
     const u = new URL(location.href);
     if (u.searchParams.has('s')) { u.searchParams.delete('s'); history.replaceState(history.state, '', prettyLinkURL(u)); }
   } catch (e) {}
+}
+// One choice that sets several settings (a color list's pick sets its coloring and its look) makes
+// them all the reader's at once. storedSettings() compares each on its own, so an "on" that happens
+// to equal the link's would otherwise go on saving the reader's old "off".
+function linkViewClaim(keys) {
+  if (!_linkView) return;
+  keys.forEach(k => { delete _linkView.own[k]; delete _linkView.shown[k]; });
+  if (!Object.keys(_linkView.own).length) linkViewEnd();   // nothing of the link's is left on screen
 }
 function linkViewKeep() {
   if (!_linkView) return;

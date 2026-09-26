@@ -107,9 +107,12 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
 - **The drawer's two color panels are one list each, and the list is the on/off switch.** Vowel
   color coding is No highlight · Letter · Highlight · Underline (radios `optColorMode`), trope
   color coding No highlight · Highlight · Underline (`optTropeMode`). No highlight writes
-  `colorCodeNikkud` / `colorCodeTrope` = `false` and keeps the stored mode, so choosing a look
-  again brings back the last one; the booleans stay the storage because older pages, practice
-  links, cloud rows and AllTools files all read them. `syncFormToSettings` (and
+  `colorCodeNikkud` / `colorCodeTrope` = `false` and keeps the stored mode (the "Color-code the
+  trope" chip turns trope coloring back on in it); the booleans stay the storage because older
+  pages, practice links, cloud rows and AllTools files all read them. During a practice link's view
+  a pick is one decision (`linkViewClaim`): a look makes both of its list's settings the reader's at
+  once, No highlight only the on/off, and the chip, the list's choice of the stored look, claims
+  both. `syncFormToSettings` (and
   `syncTropeModeRadios()`, which the "Color-code the trope" chip above the reading also calls)
   is the settings → list half: an unknown vowel mode shows as Letter, the way
   `applyNikkudColors` draws it. Turning vowel coloring on or off re-renders (the `.nik` spans
@@ -120,7 +123,9 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   `.radio-group` radios are visually hidden but focusable (the Trope Tutor's rule, with
   `position:relative` on the group so they scroll with the drawer), so the lists stay
   keyboard-operable like the switches they replaced; the drawer's focus trap skips unchecked
-  radios.
+  radios. Every `.radio-group` on the page is a `role="group"` named by `aria-labelledby` from its
+  visible label; the two karaoke groups also take the *Karaoke settings* heading, so their
+  Highlight does not sound like the color lists'.
 
 - **Taxonomy**: `TROPE_CHAR_TO_FAMILY` maps codepoints to 7 families (`sofpasuk`, `etnachta`,
   `katon`, `segol`, `revia`, `geresh`, `rare`; ordered defs in `TROPE_COLOR_DEFS` — the single
@@ -154,11 +159,15 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   to a thick `text-decoration` clause underline (offset below the nikkud) when the teacher
   chooses Underline, **or automatically by the collision rule**: nikkud coloring on **and**
   `colorCodingMode === 'highlight'` (and nikkud shown), whatever the trope list says (the tip
-  says so). The class keeps its old name; the translit-under rules and the copy path
-  (`_inlineCopyStyles`) read it, so both follow either cause. Print always underlines.
+  says so). The one class carries both causes. The translit-under rules read it, and so do the
+  legend's swatches, which switch from the tint to the solid `-line` color under it (`--tt-sw-bg` /
+  `--tt-sw-line`). The copy path (`_inlineCopyStyles`) never reads it: it decides from the copy's
+  own options, the Underline choice or syllable highlights actually in the copy (Copy → Nikkud can
+  include vowels the screen hides, or drop ones it shows). Print always underlines.
 - **Legend** `#ttTropeLegend` sits above `#ttReading` (renderText never touches it); chips are
-  generated once at init from `TROPE_COLOR_DEFS`, and swatches read the body vars so
-  theme/picker changes recolor them for free. It shows only when trope coloring is on **and** a
+  generated once at init from `TROPE_COLOR_DEFS`, and swatches read the body vars (the tint, or
+  the solid line color while `body.trope-underline-fallback` is set), so theme, picker and look
+  changes recolor them for free. It shows only when trope coloring is on **and** a
   reading is loaded (hidden over the empty state). The "Learn the trope names →" link renders
   only when `const TROPE_TUTOR_URL` is non-null — set to `'trope_tutor.html'` since the Trope
   Tutor shipped (see its section below). **A Rosh Hashanah or Yom Kippur reading links to the
@@ -529,7 +538,8 @@ builds) or `'word'`. With `'word'` and the transliteration on, `renderText` drop
   transliteration style and placement, the Hebrew font and the three text sizes, vowel coding (on, mode, scheme,
   overrides), trope coding (on, look, overrides), karaoke style and follow. Enum lists are read from the
   page's own radios and `<option>`s (a color list's No highlight is left out: it travels as the
-  on/off boolean, never as a mode), colors must be `#rrggbb` (`TROPE_HEX6_RE`), sizes are clamped to
+  on/off boolean, never as a mode, and a list's look travels only while its coloring is on,
+  `LINK_LOOK_SWITCH`), colors must be `#rrggbb` (`TROPE_HEX6_RE`), sizes are clamped to
   their sliders, and a font must be in `HEB_FONTS`. **Both ends run the checks:** the sender, so only
   what this page can re-validate ever leaves, and the reader, because anyone can edit a link. `?s=` is
   base64url JSON `{v: LINK_VIEW_V, …}` holding only what differs from `DEFAULTS`.
@@ -541,11 +551,16 @@ builds) or `'word'`. With `'word'` and the transliteration on, `renderText` drop
   `loadSettings()`. It is silent on garbage: the payload must be an object with the current `v`, at
   most 4096 characters. A key the link leaves out takes `DEFAULTS`, so the reader sees the sender's
   whole look rather than a blend with their own. A key it names but whose value fails its check keeps
-  the reader's own. The keys that differ become `_linkView = {own, shown}`, and **`storedSettings()`
+  the reader's own. A look (`colorCodingMode`, `tropeCodingMode`) is taken only when the coloring the
+  view will show is on (the link's value, the reader's own where the link's is refused, `DEFAULTS`,
+  off for both, where it is left out); otherwise the reader keeps their own look, untracked, so a
+  link carrying a look whose coloring is off raises no note and gives Keep nothing to take. The keys that differ become `_linkView = {own, shown}`, and **`storedSettings()`
   is what every write stores**: `saveSettings`, `saveSettingsFlush` (the cloud `flush`) and the
   handout's pending-save flush. It stores the live settings with each still-shown key put back to
   `own`. A key whose live value no longer equals `shown` was changed by the reader and is saved from
-  then on (released).
+  then on (released). A choice that writes several keys releases all of them at once
+  (`linkViewClaim`), because its "on" may equal the link's: a color-list look releases the list's
+  on/off and look, No highlight the on/off only, the trope chip both.
 - **Ending it.** The `#ttLinkView` note offers Keep (`linkViewKeep`: end the view, save) and Use my
   settings (`linkViewRevert`: write the stored form, then `cloudReread()`, which already repaints every
   control and the reading). The view also ends on Reset, on a cloud download (`cloudReread`) and once

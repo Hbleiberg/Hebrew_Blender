@@ -213,7 +213,7 @@ Yes. The settings drawer has separate toggles for nikkud (vowel points) and cant
 
 **Can it color-code the Torah trope (cantillation) families?**
 
-Yes. Trope color coding tints each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings.
+Yes. Trope color coding highlights or underlines each word in the color of its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings.
 
 **Does it work for both diaspora and Israel reading schedules?**
 
