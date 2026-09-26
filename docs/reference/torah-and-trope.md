@@ -239,9 +239,12 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   no smaller value (zarka's F♯4 before KA, the D4 each telisha sings T′ on, yetiv's Y′), tied notes are
   one held note, rests drop; pazer holds its two opening D4s as one quarter, the maintainer's
   correction of the print; `geresh_muqdam` has no figure and no entry). **`node
-  scripts/build-trope-phrases.mjs` checks every entry of both motif files against its row on each run**
-  and fails on a difference, printing the notes the row gives (the pazer correction is applied before
-  it compares). To change a motif, fix the row in `docs/tropepatterns.md` first, edit the JSON by hand
+  scripts/build-trope-phrases.mjs` checks both motif files on each run**: they must carry exactly the
+  cards section A's table names, each `verified:true`, its `source` naming the table's row, with
+  whole-number `p` and `d` 1–4, and each must equal its row reduced as above. It fails on a
+  difference, printing the notes the row gives. The pazer correction is applied before it compares,
+  and only while row 30 still prints PA D4(e) ZER D4(s): otherwise the build fails with "departure no
+  longer applies". To change a motif, fix the row in `docs/tropepatterns.md` first, edit the JSON by hand
   to match, keep `verified:true`, run the phrases builder green, bump the `?v=`, and audition it
   with the card's tune button. Figures longer than eight notes widen their staff, and one reaching
   below A3 deepens it; the card header wraps it below the names (and on a phone a staff too wide for
@@ -319,10 +322,15 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     - an unknown mark or value;
     - a Torah F, C or G written without its ♯ or ♮;
     - an accidental the chart never prints;
-    - a triplet that is not three of one value;
-    - a header whose Hebrew marks differ from its lines.
+    - a triplet that is not at least two sounding notes worth three of one value;
+    - a tie across two mark lines, from a rest or touching a grace note, and a slur from a rest;
+    - a syllable of rests only, or a `-` on a mark line's last syllable;
+    - a tag anywhere but right after the row number, or a bracket or Latin letter in the Hebrew;
+    - a header whose Hebrew marks differ from its lines, compared one for one (only zakef gadol,
+      yerach ben yomo and karnei parah are one mark printed on two words).
 
-    `built` keeps its date when nothing changed, so a re-run is byte-identical. It is CC BY-SA 4.0,
+    `--doc` and `--lenient` build a second reading, so they need an `--out` outside `data/` and
+    `docs/`. `built` keeps its date when nothing changed, so a re-run is byte-identical. It is CC BY-SA 4.0,
     like the motif files.
   - It reads the **`TROPES` taxonomy** from both carriers, which it requires to be byte-identical, and
     adds `munach_legarmeh`; it carries no copy of the block.
@@ -330,7 +338,11 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     the same gitignored `source-data/trope-cache/merged-<Book>.json` files and curl fallback as the
     index builder) and the four `melody:'highholiday'` readings parsed from `torah_trainer.html`'s
     `HOLIDAY_READINGS`. It counts every mark-before-mark context against the chart and writes
-    `docs/trope_contexts_report.md`.
+    `docs/trope_contexts_report.md`; nothing is written until the census passes too.
+    - The report names the phrase JSON's sha1 on its Chart line, and a plain run warns when the JSON
+      it builds differs (re-run with `--census`). It keeps its own date while its content is unchanged.
+    - The aliyot are `data/pockettorah/aliyah.json`'s (the Torah Trainer's), each paired with its
+      parasha by its first verse; the report notes the two aliyah ends Hebcal's calendar puts elsewhere.
     - A maqaf compound is one word. The text draws the legarmeh line full-size and a paseq small
       (`<small>׀</small>`): the line after a munach makes it munach legarmeh, and a paseq leaves the
       mark before it as it is. The loader refuses any edition but *Miqra according to the Masorah*,

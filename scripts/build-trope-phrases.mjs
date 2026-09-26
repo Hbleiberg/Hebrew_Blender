@@ -9,7 +9,8 @@
  * notes: fix a note there and re-run this script — never edit the JSON. The block grammar is
  * documented in the doc's "How to read this file"; in short:
  *
- *   #<row>[b] [tag]… <Hebrew as printed>           tags: [aliyah-end] [unverified]
+ *   #<row>[b] [tag]… <Hebrew as printed>           tags: [aliyah-end] [unverified], lowercase, right
+ *                                                  after the number (no bracket or Latin letter after)
  *   <tropeKey> <SYL>[-] <note>… <SYL>[-] <note>…   one line per mark, keys from TROPES + munach_legarmeh
  *   note  = [3{][~|~~|=|~=]PITCH(VALUE[,>][,-])[}]   PITCH as it sounds (C♯4, G♮4, B♭4)
  *   VALUE = 32 s ds e de q dq h dh | g (grace)       ~ slur from the previous note, ~~ dashed slur,
@@ -28,11 +29,13 @@
  * before (`prev`, ^ = row start) and after (`next`, $ = row end) every place it is printed.
  * docs/trope_phrases_report.md shows the same catalog in the doc's notation, plus the check below.
  *
- * It also cross-checks the Trope Tutor: every entry of data/trope/trope_motifs.json and
- * trope_motifs_hh.json must equal the chart row its `source` names, reduced to the staff's four
- * values (a grace note becomes an eighth, tied notes merge, rests drop, anything shorter than a
- * quarter is d 1 and a longer note the nearest of d 2–4; see reduceUnit) — apart from the
- * documented departures (DEPARTURES), which are applied before the comparison.
+ * It also cross-checks the Trope Tutor: data/trope/trope_motifs.json and trope_motifs_hh.json must
+ * carry exactly the Learn cards the doc's section A table names, each `verified`, sourced from the
+ * row the table gives it, with whole-number pitches and d 1–4, and equal to that row reduced to the
+ * staff's four values (a grace note becomes an eighth, tied notes merge, rests drop, anything shorter
+ * than a quarter is d 1 and a longer note the nearest of d 2–4; see reduceUnit) — apart from the
+ * documented departures (DEPARTURES), which are applied before the comparison while the print still
+ * matches what they were decided for.
  *
  *   node scripts/build-trope-phrases.mjs              build, check, write the JSON + report
  *   node scripts/build-trope-phrases.mjs --census     also count every mark-before-mark context of
@@ -42,19 +45,23 @@
  *                                                     cached in gitignored source-data/trope-cache/,
  *                                                     shared with build-trope-index.mjs)
  *   --doc=<path> --out=<dir> --lenient                parse another transcription (a second reading)
- *                                                     into <dir>; --lenient skips the Hebrew, row-count,
- *                                                     tutor and smoke checks
+ *                                                     into <dir>; --lenient skips the Hebrew-marks,
+ *                                                     row-count, tutor and smoke checks. --doc and
+ *                                                     --lenient need an --out outside data/ and docs/.
  *
  * The TROPES taxonomy is read from both of its carriers (trope_tutor.html and
  * scripts/build-trope-index.mjs), which must be byte-identical; this script only reads it.
- * Zero dependencies. Outputs are written only when every check passes; the script exits
- * non-zero otherwise — never commit its output without a green run. `built` keeps its old date
- * when nothing else in the JSON changed, so a re-run is byte-identical.
+ * Zero dependencies. Outputs are written only when every check passes — with --census, the
+ * census's too; the script exits non-zero otherwise — never commit its output without a green
+ * run. `built` keeps its old date when nothing else in the JSON changed, so a re-run is
+ * byte-identical. The contexts report names the sha1 of the JSON it was counted against, and a
+ * plain run warns when that is not the JSON it just built (re-run with --census).
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { dirname, resolve, join } from 'node:path';
+import { dirname, resolve, join, relative, isAbsolute } from 'node:path';
 import vm from 'node:vm';
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -75,6 +82,10 @@ const LICENSE = 'Hand transcriptions of the traditional Ashkenazi Torah and High
 const failures = [];
 const fail = (msg) => failures.push(msg);
 function die(msg) { console.error(`build-trope-phrases: ${msg}`); process.exit(1); }
+// A second reading (--doc) or a lenient run skips checks, so it never writes over the committed files.
+const outside = (dir) => { const r = relative(join(repoRoot, dir), OUT_DIR); return r.startsWith('..') || isAbsolute(r); };
+if ((LENIENT || argv.some((a) => a === '--doc' || a.startsWith('--doc='))) && !(OUT_DIR && outside('data') && outside('docs')))
+  die('--doc and --lenient build a second reading: give --out=<dir> outside the repo\'s data/ and docs/, so the committed JSON and reports stay as they are');
 
 /* ---------- TROPES taxonomy: read (not carried) from both carriers, which must agree ---------- */
 function tropesBlock(rel) {
@@ -97,7 +108,8 @@ const CONJUNCTIVE = new Set(['munach', 'mahpach', 'mercha', 'mercha_kefula', 'da
 /* ---------- the notation ---------- */
 const TPQ = 48;
 const VALUES = { 32: 6, s: 12, ds: 18, e: 24, de: 36, q: 48, dq: 72, h: 96, dh: 144, g: 0 };
-const TRIPLET_TOTALS = new Set([3 * VALUES[32], 3 * VALUES.s, 3 * VALUES.e, 3 * VALUES.q]);   // three of one value
+// A triplet is two or more sounding notes whose written values add up to three of one value, sung in the time of two.
+const TRIPLET_TOTALS = new Set([3 * VALUES[32], 3 * VALUES.s, 3 * VALUES.e, 3 * VALUES.q]);
 const MELODIES = {
   torah: { info: 'trope-torah', key: 'A', rows: 41, extra: [], motifs: 'data/trope/trope_motifs.json', label: 'Torah',
     // Every F, C and G is written with its ♯ or ♮ (the key signature makes a bare one ambiguous);
@@ -142,10 +154,14 @@ function parseRow(block, path) {
   const where = (l) => `${path}:${l}`;
   const lines = block.body.filter((b) => b.text.trim() !== '');
   if (!lines.length) { fail(`${where(block.line)}: empty block`); return null; }
-  const hm = lines[0].text.trim().match(/^#(\d+b?)((?:\s+\[[a-z-]+\])*)\s*(.*)$/);
+  const hm = lines[0].text.trim().match(/^#(\d+b?)((?:\s+\[[^\]]*\])*)\s*(.*)$/);
   if (!hm) { fail(`${where(lines[0].line)}: the first line must be "#<row> [tags] <Hebrew>"`); return null; }
-  const tags = [...hm[2].matchAll(/\[([a-z-]+)\]/g)].map((x) => x[1]);
-  for (const t of tags) if (!TAGS.has(t)) fail(`${where(lines[0].line)}: unknown tag [${t}]`);
+  // Tags come right after the number and only as spelled in TAGS; anything bracketed or Latin after
+  // them would otherwise be kept as Hebrew, and the row would silently lose its tag.
+  const tags = [...hm[2].matchAll(/\[([^\]]*)\]/g)].map((x) => x[1]);
+  for (const t of tags) if (!TAGS.has(t)) fail(`${where(lines[0].line)}: unknown tag [${t}] — the tags are ${[...TAGS].map((x) => `[${x}]`).join(' ')}, lowercase, right after #${hm[1]}`);
+  const stray = hm[3].match(/[\[\]A-Za-z]/);
+  if (stray) fail(`${where(lines[0].line)}: row #${hm[1]}'s Hebrew holds "${stray[0]}" — tags go right after #${hm[1]}, and the rest of the line is only the Hebrew as printed`);
   const row = { n: hm[1], he: hm[3].trim(), tags, notes: [], syl: [], units: [], tup: [], slur: [] };
   const spell = MELODIES[block.melody].spell;
   let tupOpen = -1, slurOpen = null;
@@ -160,6 +176,7 @@ function parseRow(block, path) {
       if (!cur) return;
       cur.to = row.notes.length - 1;
       if (cur.to < cur.from) fail(`${where(ln.line)}: syllable ${cur.t} has no notes`);
+      else if (row.notes.slice(cur.from, cur.to + 1).every((n) => n.r)) fail(`${where(ln.line)}: syllable ${cur.t} is sung on nothing but rests`);
       row.syl.push(cur); cur = null;
     };
     for (const raw of um[2].trim().split(/\s+/)) {
@@ -176,7 +193,7 @@ function parseRow(block, path) {
         const [, o, lk, letter, acc, oct, inner, c] = m;
         open = !!o; close = !!c; link = lk || '';
         const [val, ...flags] = inner.split(',');
-        if (!(val in VALUES)) { fail(`${where(ln.line)}: unknown value "${val}" in ${tok}`); continue; }
+        if (!Object.hasOwn(VALUES, val)) { fail(`${where(ln.line)}: unknown value "${val}" in ${tok}`); continue; }
         if (!spell[letter].includes(acc))
           fail(`${where(ln.line)}: ${letter}${acc || ''}${oct} — ${block.melody === 'torah'
             ? 'in the Torah chart write every F, C and G with its ♯ or ♮ (G♮ is the only natural); no other accidental is printed'
@@ -195,7 +212,7 @@ function parseRow(block, path) {
       } else if ((m = tok.match(REST_RE))) {
         const [, o, val, c] = m;
         open = !!o; close = !!c;
-        if (!(val in VALUES) || val === 'g') { fail(`${where(ln.line)}: bad rest value in ${tok}`); continue; }
+        if (!Object.hasOwn(VALUES, val) || val === 'g') { fail(`${where(ln.line)}: bad rest value in ${tok}`); continue; }
         note.r = 1; note.v = val; note.t = VALUES[val];
       } else {
         fail(`${where(ln.line)}: cannot read "${tok}"`);
@@ -208,8 +225,13 @@ function parseRow(block, path) {
         tupOpen = idx;
       }
       if (link === '=' || link === '~=') {
+        // A tie holds one sound inside one mark's line: each staff merges its own tied notes, and a
+        // grace note has no length to hold.
         const prev = row.notes[idx - 1];
-        if (!prev || prev.r || prev.p !== note.p) fail(`${where(ln.line)}: ${tok} ties from a note of another pitch`);
+        if (!prev) fail(`${where(ln.line)}: ${tok} ties from nothing (the row's first note)`);
+        else if (idx === unit.from) fail(`${where(ln.line)}: ${tok} ties from the previous mark's line — a tie must stay inside one mark's line`);
+        else if (prev.r || prev.p !== note.p) fail(`${where(ln.line)}: ${tok} ties from ${prev.r ? 'a rest' : 'a note of another pitch'}`);
+        else if (note.g || prev.g) fail(`${where(ln.line)}: ${tok} — a grace note cannot be tied, to or from`);
         else prev.tie = 1;
       }
       if (link === '~' || link === '~~' || link === '~=') {
@@ -217,19 +239,21 @@ function parseRow(block, path) {
         if (slurOpen && slurOpen.to === idx - 1 && !!slurOpen.dashed === dashed) slurOpen.to = idx;
         else {
           if (idx === 0) fail(`${where(ln.line)}: a slur arrives at the row's first note`);
+          else if (row.notes[idx - 1].r) fail(`${where(ln.line)}: ${tok} — a slur cannot arrive from a rest`);
           slurOpen = { from: idx - 1, to: idx };
           if (dashed) slurOpen.dashed = 1;
           row.slur.push(slurOpen);
         }
       }
-      if (note.g && (note.tie || link === '=')) fail(`${where(ln.line)}: a grace note cannot be tied`);
       row.notes.push(note);
       if (close) {
         if (tupOpen < 0) fail(`${where(ln.line)}: "}" closes no triplet`);
         else {
           const members = row.notes.slice(tupOpen, idx + 1);
           const written = members.reduce((a, n) => a + n.t, 0);
-          if (!TRIPLET_TOTALS.has(written)) fail(`${where(ln.line)}: triplet written as ${written} ticks — not three of one value`);
+          const sounding = members.filter((n) => !n.r && !n.g).length;
+          if (sounding < 2 || !TRIPLET_TOTALS.has(written))
+            fail(`${where(ln.line)}: triplet of ${sounding} sounding note${sounding === 1 ? '' : 's'} written as ${written} ticks — a triplet is at least two sounding notes whose written values add up to three of one value (three 32nds, sixteenths, eighths or quarters: 18, 36, 72 or 144 ticks), sung in the time of two`);
           for (const n of members) n.t = n.t * 2 / 3;
           row.tup.push({ from: tupOpen, to: idx });
           tupOpen = -1;
@@ -239,6 +263,8 @@ function parseRow(block, path) {
     closeSyl();
     unit.to = row.notes.length - 1;
     if (!row.syl.some((s) => s.unit === unitIdx)) fail(`${where(ln.line)}: ${unit.k} has no syllables`);
+    // each mark's line is whole words, so its last syllable ends one
+    else if (row.syl[row.syl.length - 1].hyphen) fail(`${where(ln.line)}: ${unit.k}'s last syllable ${row.syl[row.syl.length - 1].t}- runs on, but the next syllable is another mark's word`);
     row.units.push(unit);
   }
   if (tupOpen >= 0) fail(`${where(block.line)}: row #${row.n} ends inside a triplet`);
@@ -281,11 +307,15 @@ function unitTokens(row, u, melody) {
 function headerTokens(row) { return [`#${row.n}`, ...row.tags.map((t) => `[${t}]`), ...(row.he ? row.he.split(/\s+/) : [])]; }
 
 /* ---------- the Hebrew line: its printed marks must name the same marks as the lines below ---------- */
+// Three mark names are two words, each printed with the mark (זָקֵ֕ף גָּד֕וֹל): such a pair is one mark.
+// Every other repeat is a mark of its own, in the Hebrew and in the lines alike.
+const TWO_WORD_NAMES = { zakef_gadol: 'זקף גדול', yerach_ben_yomo: 'ירח בן\u05BEיומו', karnei_parah: 'קרני פרה' };
+const lettersOf = (w) => w.replace(/[^א-ת\u05BE]/g, '');   // consonants and maqaf only
 function marksOfHebrew(he) {
   const keys = [];
-  const words = he.split(/\s+/).filter(Boolean);
-  words.forEach((w) => {
-    if (w === '׀') { if (keys.length && keys[keys.length - 1] === 'munach') keys[keys.length - 1] = 'munach_legarmeh'; return; }
+  let prevWord = null, prevKs = [];
+  for (const w of he.split(/\s+/).filter(Boolean)) {
+    if (w === '׀') { if (keys.length && keys[keys.length - 1] === 'munach') keys[keys.length - 1] = 'munach_legarmeh'; prevWord = null; continue; }
     const ks = [];
     for (const ch of w) {
       const k = CHAR_TO_KEY[ch];
@@ -293,9 +323,11 @@ function marksOfHebrew(he) {
     }
     if (w.includes('׃')) ks.push('sof_pasuk');
     if (w.includes('׀') && ks.length && ks[ks.length - 1] === 'munach') ks[ks.length - 1] = 'munach_legarmeh';
-    keys.push(...ks);
-  });
-  return keys.filter((k, i) => i === 0 || k !== keys[i - 1]);
+    const pair = prevWord && ks.length === 1 && prevKs.length === 1 && prevKs[0] === ks[0] && TWO_WORD_NAMES[ks[0]];
+    if (!(pair && pair === `${lettersOf(prevWord)} ${lettersOf(w)}`)) keys.push(...ks);
+    prevWord = w; prevKs = ks;
+  }
+  return keys;
 }
 
 /* ---------- build ---------- */
@@ -319,7 +351,7 @@ for (const b of blocks) {
     if (!row.he) fail(`${MELODIES[b.melody].label} row #${row.n}: no Hebrew line`);
     else {
       const printed = marksOfHebrew(row.he);
-      const lines = row.units.map((u) => u.k).filter((k, i, a) => i === 0 || k !== a[i - 1]);
+      const lines = row.units.map((u) => u.k);
       if (JSON.stringify(printed) !== JSON.stringify(lines))
         fail(`${MELODIES[b.melody].label} row #${row.n}: the Hebrew's marks (${printed.join(' ')}) are not the lines' marks (${lines.join(' ')})`);
     }
@@ -364,11 +396,18 @@ for (const [m, mel] of Object.entries(melodies)) {
 }
 
 /* ---------- the Trope Tutor's staffs against their chart rows ---------- */
-// A deliberate, documented departure from the print: applied to the reduced row, then compared.
+// A deliberate, documented departure from the print: applied to the reduced row, then compared — and
+// only while the print is still the one it was decided for (`holds`); otherwise the build fails, so a
+// re-read row can never slip under a correction made for different notes.
 const DEPARTURES = {
   'torah:pazer': {
     why: "the maintainer holds PA-ZER's two opening D4s as one quarter note",
-    apply: (notes) => (notes.length > 1 && notes[0].p === notes[1].p ? [{ p: notes[0].p, t: TPQ }, ...notes.slice(2)] : notes),
+    print: 'PA- D4(e) ZER D4(s), two separate sounding D4s',
+    holds: (row, unit) => {
+      const [a, b] = row.notes.slice(unit.from, unit.from + 2);
+      return !!(a && b) && [a, b].every((n) => !n.r && !n.g && !n.tie && n.p === -9) && a.v === 'e' && b.v === 's';
+    },
+    apply: (notes) => [{ p: notes[0].p, t: TPQ }, ...notes.slice(2)],
   },
 };
 // The staff's four values are d 1–4 (eighth, quarter, dotted quarter, half). A chart note reduces to
@@ -376,7 +415,7 @@ const DEPARTURES = {
 // its length decides which d values may draw it: anything shorter than a quarter (sixteenths, dotted
 // eighths, every triplet value) is d 1; a longer one may use any d within a sixteenth of its length
 // (a tied 52 ticks is a quarter, a tied 60 either a quarter or a dotted quarter), and anything from a
-// half and a dotted eighth up is a half, the staff's longest value.
+// half and a sixteenth (108 ticks) up is a half, the staff's longest value.
 function reduceUnit(row, unit) {
   const out = [];
   for (let i = unit.from; i <= unit.to; i++) {
@@ -385,10 +424,31 @@ function reduceUnit(row, unit) {
     if (n.g) { out.push({ p: n.p, t: VALUES.e, grace: true }); continue; }
     let t = n.t, j = i;
     while (row.notes[j].tie && j + 1 <= unit.to) { j++; t += row.notes[j].t; }
+    out.push({ p: n.p, t, tied: j > i });
     i = j;
-    out.push({ p: n.p, t });
   }
   return out;
+}
+// Section A's table: for each Learn card (a row whose first cell starts with a TROPES key; "(no card)"
+// rows are skipped), the chart row its staff is read from in each melody, or — for none.
+function cardTable(text, path) {
+  const lines = text.split('\n');
+  const head = lines.findIndex((l) => /^\|\s*Mark \(tutor key\)\s*\|\s*Torah row\s*\|\s*High Holiday row\s*\|/.test(l));
+  if (head < 0) { fail(`${path}: no section A table ("| Mark (tutor key) | Torah row | High Holiday row | … |")`); return null; }
+  const cards = { torah: {}, highholiday: {} };
+  for (let i = head + 2; i < lines.length && lines[i].startsWith('|'); i++) {
+    const cells = lines[i].split('|').slice(1, -1).map((c) => c.trim());
+    if (cells[0].includes('(no card)')) continue;
+    const key = cells[0].split(/\s+/)[0];
+    if (!TROPES.some((t) => t.key === key)) { fail(`${path}:${i + 1}: section A's "${cells[0]}" starts with no TROPES key (mark a row without a Learn card "(no card)")`); continue; }
+    [['torah', cells[1]], ['highholiday', cells[2]]].forEach(([m, cell]) => {
+      if (cell === '—') return;
+      if (!/^\d+b?$/.test(cell || '')) fail(`${path}:${i + 1}: section A gives ${key} the ${MELODIES[m].label} row "${cell}" — a row number, or — for no staff`);
+      else if (Object.hasOwn(cards[m], key)) fail(`${path}:${i + 1}: section A names ${key} twice`);
+      else cards[m][key] = cell;
+    });
+  }
+  return cards;
 }
 const staffOk = (t, d) => (t < TPQ ? d === 1 : t >= TPQ * 2.25 ? d === 4 : d >= 2 && d <= 4 && Math.abs(d * VALUES.e - t) <= VALUES.s);
 function staffD(t, prefer) {   // the value a paste-ready suggestion uses: the file's own when it fits, else the nearest
@@ -399,25 +459,43 @@ function staffD(t, prefer) {   // the value a paste-ready suggestion uses: the f
 }
 const crossCheck = [];
 if (!LENIENT) {
+  const cards = cardTable(docText, DOC_PATH.replace(repoRoot + '/', '')) || { torah: {}, highholiday: {} };
   for (const [m, d] of Object.entries(MELODIES)) {
     const file = JSON.parse(readFileSync(join(repoRoot, d.motifs), 'utf8'));
     if (file.key !== d.key) fail(`${d.motifs}: key "${file.key}" but the ${d.label} chart is written in ${d.key}`);
-    for (const [key, entry] of Object.entries(file.tropes || {})) {
+    const tropes = file.tropes || {};
+    // exactly section A's cards: a missing entry would leave a Learn card without its staff
+    for (const [key, n] of Object.entries(cards[m]))
+      if (!Object.hasOwn(tropes, key)) fail(`${d.motifs}: no "${key}" entry, but section A reads its staff from ${d.label} row #${n}`);
+    for (const [key, entry] of Object.entries(tropes)) {
       const rec = { melody: m, key, file: d.motifs, source: entry.source || '', status: '', note: '' };
       crossCheck.push(rec);
-      const sm = (entry.source || '').match(/^tropepatterns\.md (Torah|High Holiday) #(\d+b?)$/);
-      if (!sm || sm[1] !== d.label) { rec.status = 'MISMATCH'; rec.note = `source "${entry.source}" does not name a ${d.label} row`; fail(`${d.motifs} ${key}: ${rec.note}`); continue; }
-      const row = melodies[m].rows.find((r) => r.n === sm[2]);
+      const bad = (why) => { rec.status = 'MISMATCH'; rec.note = why; fail(`${d.motifs} ${key}: ${why}`); };
+      if (!Object.hasOwn(cards[m], key)) { bad(`section A gives ${key} no ${d.label} row, so it has no staff to check`); continue; }
+      const source = `tropepatterns.md ${d.label} #${cards[m][key]}`;
+      if (entry.source !== source) { bad(`source "${entry.source}", but section A reads this staff from "${source}"`); continue; }
+      if (entry.verified !== true) { bad(`verified is ${JSON.stringify(entry.verified)} — every staff is a checked transcription (verified: true)`); continue; }
+      // the tutor draws d 1–4 and skips a staff whose p or d is not a number, so both must be whole
+      const notes = Array.isArray(entry.notes) ? entry.notes : [];
+      const odd = notes.map((n, i) => (n && Number.isInteger(n.p) && Number.isInteger(n.d) && n.d >= 1 && n.d <= 4 ? 0 : i + 1)).filter(Boolean);
+      if (!notes.length || odd.length) { bad(`${notes.length ? `note ${odd.join(', ')} of ${notes.length}` : 'no notes'} — every p must be a whole number and every d one of 1, 2, 3, 4`); continue; }
+      const row = melodies[m].rows.find((r) => r.n === cards[m][key]);
       const units = row ? row.units.filter((u) => u.k === key) : [];
-      if (units.length !== 1) { rec.status = 'MISMATCH'; rec.note = `${d.label} row #${sm[2]} has ${units.length} "${key}" lines (needs exactly one)`; fail(`${d.motifs} ${key}: ${rec.note}`); continue; }
+      if (units.length !== 1) { bad(`${d.label} row #${cards[m][key]} has ${units.length} "${key}" lines (needs exactly one)`); continue; }
       let want = reduceUnit(row, units[0]);
       const dep = DEPARTURES[`${m}:${key}`];
-      if (dep) { want = dep.apply(want); rec.departure = dep.why; }
-      const have = (entry.notes || []).map((n) => ({ p: n.p, d: n.d }));
+      if (dep) {
+        if (!dep.holds(row, units[0])) { bad(`departure no longer applies — "${dep.why}" was decided for ${dep.print}, and ${d.label} row #${row.n} now opens ${unitTokens(row, row.units.indexOf(units[0]), m).slice(0, 4).join(' ')}; re-check the staff, then DEPARTURES`); continue; }
+        want = dep.apply(want); rec.departure = dep.why;
+      }
+      const have = notes.map((n) => ({ p: n.p, d: n.d }));
       const ok = have.length === want.length && have.every((h, i) => h.p === want[i].p && staffOk(want[i].t, h.d));
       if (ok) {
-        const rounded = want.filter((w, i) => w.t >= TPQ && have[i].d * VALUES.e !== w.t).length;
-        rec.status = (dep ? 'match (documented departure)' : 'match') + (rounded ? ` — ${rounded} tied note${rounded > 1 ? 's' : ''} drawn at the nearest value` : '');
+        const rounded = want.filter((w, i) => w.t >= TPQ && have[i].d * VALUES.e !== w.t);
+        const tied = rounded.filter((w) => w.tied).length, long = rounded.length - tied;
+        const plural = (n, what) => `${n} ${what} note${n > 1 ? 's' : ''}`;
+        const drawn = [tied && plural(tied, 'tied'), long && plural(long, 'long')].filter(Boolean).join(' and ');
+        rec.status = (dep ? 'match (documented departure)' : 'match') + (drawn ? ` — ${drawn} drawn at the nearest value` : '');
       } else {
         rec.status = 'MISMATCH';
         const sug = want.map((w, i) => ({ p: w.p, d: staffD(w.t, have[i] && have[i].p === w.p ? have[i].d : 0) }));
@@ -517,16 +595,10 @@ function report() {
   return L.join('\n');
 }
 
-/* ---------- write ---------- */
-if (failures.length) {
-  console.error(`build-trope-phrases: ${failures.length} problem(s):`);
-  for (const f of failures) console.error(`  ✗ ${f}`);
-  process.exit(1);
-}
-mkdirSync(dirname(JSON_PATH), { recursive: true });
-writeFileSync(JSON_PATH, json);
-if (!LENIENT) writeFileSync(REPORT_PATH, report() + '\n');
-console.log(`build-trope-phrases: ${melodies.torah.rows.length} Torah + ${melodies.highholiday.rows.length} High Holiday rows -> ${JSON_PATH.replace(repoRoot + '/', '')} (${bytes} bytes)${LENIENT ? ' [lenient]' : `; ${crossCheck.length} staffs checked`}`);
+/* ---------- write: at the end of the file, once the census (with --census) has passed too ---------- */
+// The contexts report names the JSON it was counted against by this digest (the file's sha1, as written).
+const jsonDigest = createHash('sha1').update(json).digest('hex').slice(0, 12);
+const DIGEST_RE = /^- \*\*Chart:\*\* .*?\(sha1 ([0-9a-f]{12})\)/m;
 /* ══════════════════════════════════════════════════════════════════════════════════════
    CENSUS (--census) — which mark-before-mark contexts the Torah text needs, against the chart.
    docs/tropepatterns.md → G. Toward a parasha staff explains how the report is used.
@@ -557,6 +629,9 @@ const DOUBLE_ACCENTED = [
   { book: 'Deuteronomy', from: [5, 6], to: [5, 18] },
 ];
 const HH_BANNED = ['shalshelet', 'mercha_kefula', 'karnei_parah', 'yerach_ben_yomo'];   // docs/tropepatterns.md → A
+// The aliyot are PocketTorah's (data/pockettorah/aliyah.json), the ones the Torah Trainer shows. Hebcal's
+// calendar (@hebcal/leyning) ends two of them elsewhere; the report counts what those ends would change.
+const OTHER_CALENDAR_ENDS = [{ parasha: 'Terumah', aliyah: '2', end: '25:40' }, { parasha: 'Masei', aliyah: '1', end: '33:10' }];
 const MARK_RANGE_G = /[֑-֯]/g;
 
 function readRepo(rel) {
@@ -729,21 +804,37 @@ async function census() {
       }
     }
   }
-  // aliyah-final verses (full kriyah, aliyot 1–7): the closing run of mercha / tipcha / sof pasuk
-  const endings = {};
-  parshiyot.forEach((p, i) => {
-    for (const al of aliyahData[i].fullkriyah.aliyah) {
-      if (!/^[1-7]$/.test(al._num)) continue;
-      const [c, v] = al._end.split(':').map(Number);
-      const units = verseUnitsCache[`${p.book} ${c}:${v}`];
-      if (!units) continue;
-      let j = units.length;
-      while (j > 0 && ['mercha', 'tipcha', 'sof_pasuk'].includes(units[j - 1].k) && units.length - j < 4) j--;
-      const pat = units.slice(j).map((u) => u.k).join(' ');
-      endings[pat] = endings[pat] || { n: 0, ex: `${p.book} ${c}:${v}` };
-      endings[pat].n++;
+  // aliyah-final verses (full kriyah, aliyot 1–7): the closing run of mercha / tipcha / sof pasuk. Each
+  // parasha finds its aliyot by its first verse (aliyah.json's `_verse`), never by its place in the list.
+  const firstVerse = (s) => (String(s || '').match(/^[A-Za-z]+ \d+:\d+/) || [''])[0];
+  const aliyotOf = new Map(aliyahData.map((a) => [firstVerse(a._verse), a]));
+  if (aliyotOf.size !== aliyahData.length) cf.push('data/pockettorah/aliyah.json lists two parshiyot that open on the same verse');
+  const closingRun = (ref) => {   // null for a verse the census leaves out
+    const units = verseUnitsCache[ref];
+    if (!units) return null;
+    let j = units.length;
+    while (j > 0 && ['mercha', 'tipcha', 'sof_pasuk'].includes(units[j - 1].k) && units.length - j < 4) j--;
+    return units.slice(j).map((u) => u.k).join(' ');
+  };
+  const endings = {}, otherEndings = {}, otherEnds = [], otherSeen = new Set();
+  for (const p of parshiyot) {
+    const al = aliyotOf.get(firstVerse(p.ref));
+    if (!al) { cf.push(`data/pockettorah/aliyah.json has no parasha opening at ${firstVerse(p.ref)} (${p.en})`); continue; }
+    const seven = al.fullkriyah.aliyah.filter((x) => /^[1-7]$/.test(x._num));
+    if (seven.length !== 7) cf.push(`data/pockettorah/aliyah.json gives ${p.en} ${seven.length} of the full reading's aliyot 1–7`);
+    for (const x of seven) {
+      const [c, v] = x._end.split(':').map(Number);
+      const ref = `${p.book} ${c}:${v}`, pat = closingRun(ref);
+      if (pat !== null) (endings[pat] ||= { n: 0, ex: ref }).n++;
+      const other = OTHER_CALENDAR_ENDS.find((o) => o.parasha === p.en && o.aliyah === x._num);
+      if (other) otherSeen.add(other);
+      const moved = other && other.end !== `${c}:${v}`;
+      if (moved) otherEnds.push({ ...other, book: p.book, here: `${c}:${v}` });
+      const otherPat = moved ? closingRun(`${p.book} ${other.end}`) : pat;
+      if (otherPat !== null) otherEndings[otherPat] = (otherEndings[otherPat] || 0) + 1;
     }
-  });
+  }
+  for (const o of OTHER_CALENDAR_ENDS) if (!otherSeen.has(o)) cf.push(`OTHER_CALENDAR_ENDS names ${o.parasha} aliyah ${o.aliyah}, which the aliyah data does not have`);
 
   // smoke tests
   if (gen11 !== 'tipcha munach etnachta mercha tipcha mercha sof_pasuk') cf.push(`Genesis 1:1 reads "${gen11}"`);
@@ -758,19 +849,19 @@ async function census() {
     for (const f of cf) console.error(`  ✗ ${f}`);
     process.exit(1);
   }
-  // The report's own date, kept while its content is unchanged (like `built` in the JSON).
-  const args = { tor, hh, pTorah, pHH, endings, hhReadings, hhVerses };
+  // The report's own date, kept while its content is unchanged (like `built` in the JSON). The caller
+  // writes it, after the JSON and the phrases report.
+  const args = { tor, hh, pTorah, pHH, endings, otherEndings, otherEnds, hhReadings, hhVerses, digest: jsonDigest };
   let reportBuilt = today;
   if (existsSync(CENSUS_PATH)) {
     const old = readFileSync(CENSUS_PATH, 'utf8');
     const m = old.match(/^- \*\*Built:\*\* (\d{4}-\d{2}-\d{2})$/m);
     if (m && censusReport({ ...args, built: m[1] }) + '\n' === old) reportBuilt = m[1];
   }
-  writeFileSync(CENSUS_PATH, censusReport({ ...args, built: reportBuilt }) + '\n');
-  console.log(`build-trope-phrases --census: ${tor.verses} verses, ${tor.units} marks -> ${CENSUS_PATH.replace(repoRoot + '/', '')}`);
+  return { text: censusReport({ ...args, built: reportBuilt }) + '\n', verses: tor.verses, marks: tor.units };
 }
 
-function censusReport({ tor, hh, pTorah, pHH, endings, hhReadings, hhVerses, built }) {
+function censusReport({ tor, hh, pTorah, pHH, endings, otherEndings, otherEnds, hhReadings, hhVerses, digest, built }) {
   const L = [];
   const fmt = (n) => n.toLocaleString('en-US');
   const pct = (a, b) => (b ? `${(100 * a / b).toFixed(1)}%` : '—');
@@ -804,9 +895,10 @@ function censusReport({ tor, hh, pTorah, pHH, endings, hhReadings, hhVerses, bui
   L.push('# Trope contexts report — what a parasha needs against what the chart prints', '');
   L.push(`- **Built:** ${built}`);
   L.push('- **Text:** Sefaria public text export (storage.googleapis.com/sefaria-export, Hebrew merged.json per Torah book), whose Torah text is the *Miqra according to the Masorah* edition (MAM, from Hebrew Wikisource), which Sefaria lists as CC BY-SA. The example words below are quoted from it.');
-  L.push('- **Chart:** `data/trope/trope_phrases.json`, built from `docs/tropepatterns.md` sections B and C');
-  L.push(`- **Torah:** ${fmt(tor.verses)} verses, ${fmt(tor.words)} words, ${fmt(tor.units)} marks (${tor.excluded.length} double-accented verses left out: ${tor.excluded.join(', ')})`);
+  L.push(`- **Chart:** \`data/trope/trope_phrases.json\` (sha1 ${digest}), built from \`docs/tropepatterns.md\` sections B and C`);
+  L.push(`- **Torah:** ${fmt(tor.verses)} verses (${tor.excluded.length} double-accented ones left out, so ${fmt(tor.verses - tor.excluded.length)} counted): ${fmt(tor.words)} marked words, ${fmt(tor.units)} marks. Left out: ${tor.excluded.join(', ')}`);
   L.push(`- **High Holiday readings:** ${hhReadings.map((r) => `${r.name} (${r.book} ${r.from.join(':')}–${r.to.join(':')})`).join('; ')} — ${hhVerses} verses`);
+  L.push('- **Aliyot:** `data/pockettorah/aliyah.json`, PocketTorah\'s full-reading divisions — the aliyot the Torah Trainer shows — each paired with its parasha in `data/parshiyot.json` by the parasha\'s first verse');
   L.push('', 'Generated by `node scripts/build-trope-phrases.mjs --census`; do not edit by hand. How to read it:',
     '`docs/tropepatterns.md` → *G. Toward a parasha staff*.', '');
   const ct = coverage(tor, pTorah), ch = coverage(hh, pHH);
@@ -840,11 +932,17 @@ function censusReport({ tor, hh, pTorah, pHH, endings, hhReadings, hhVerses, bui
     'the 54 parshiyot, `data/pockettorah/aliyah.json`), against the chart\'s end-of-aliyah rows (Torah 41; High Holiday',
     `30–33: ${[...pHH.endings].join('; ')}).`, '');
   L.push('| Closing run | Aliyot | Printed as an end-of-aliyah row (Torah) | Example |', '|---|---|---|---|');
-  for (const [pat, rec] of Object.entries(endings).sort((a, b) => b[1].n - a[1].n))
+  const runs = Object.entries(endings).sort((a, b) => b[1].n - a[1].n);
+  for (const [pat, rec] of runs)
     L.push(`| ${pat} | ${fmt(rec.n)} | ${pTorah.endings.has(pat) ? '✓' : '—'} | ${rec.ex} |`);
   L.push('');
+  if (otherEnds.length) {
+    const and = (xs) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}` : xs.join(''));
+    const order = [...runs.map(([pat]) => pat), ...Object.keys(otherEndings).filter((pat) => !endings[pat])];
+    L.push(`Other calendars end ${['', 'one aliyah', 'two aliyot'][otherEnds.length] || `${otherEnds.length} aliyot`} elsewhere: Hebcal ends ${and(otherEnds.map((o) => `${o.parasha}'s aliyah ${o.aliyah} at ${o.book} ${o.end} (here ${o.here})`))}, which would make the Aliyot column read ${and(order.map((pat) => fmt(otherEndings[pat] || 0)))}.`, '');
+  }
   L.push('## Disjunctive → next mark (for reference)', '');
-  L.push('A disjunctive\'s figure does not change with the mark after it in this chart; the counts show what follows each.', '');
+  L.push('A disjunctive\'s figure does not change with the mark after it in the Torah chart (some High Holiday ones do: `docs/tropepatterns.md` → G); the counts show what follows each.', '');
   const dis = {};
   for (const [key, rec] of Object.entries(tor.pairs)) {
     const [a, b] = key.split('>');
@@ -874,5 +972,24 @@ function censusReport({ tor, hh, pTorah, pHH, endings, hhReadings, hhVerses, bui
   return L.join('\n');
 }
 
-// Last, after every declaration above: the census reads the constants of its section.
-if (CENSUS) await census();
+// Last, after every declaration above: the census reads the constants of its section, and nothing is
+// written until every check — the census's too — has passed.
+if (failures.length) {
+  console.error(`build-trope-phrases: ${failures.length} problem(s):`);
+  for (const f of failures) console.error(`  ✗ ${f}`);
+  process.exit(1);
+}
+const counted = CENSUS ? await census() : null;   // exits non-zero, having written nothing, on a census failure
+mkdirSync(dirname(JSON_PATH), { recursive: true });
+writeFileSync(JSON_PATH, json);
+if (!LENIENT) writeFileSync(REPORT_PATH, report() + '\n');
+console.log(`build-trope-phrases: ${melodies.torah.rows.length} Torah + ${melodies.highholiday.rows.length} High Holiday rows -> ${JSON_PATH.replace(repoRoot + '/', '')} (${bytes} bytes)${LENIENT ? ' [lenient]' : `; ${crossCheck.length} staffs checked`}`);
+if (counted) {
+  writeFileSync(CENSUS_PATH, counted.text);
+  console.log(`build-trope-phrases --census: ${counted.verses} verses, ${counted.marks} marks -> ${CENSUS_PATH.replace(repoRoot + '/', '')}`);
+} else if (existsSync(CENSUS_PATH)) {
+  // the contexts report was counted against another chart: warn, since only --census can bring it up to date
+  const named = (readFileSync(CENSUS_PATH, 'utf8').match(DIGEST_RE) || [])[1];
+  if (named !== jsonDigest)
+    console.warn(`build-trope-phrases: WARNING — ${CENSUS_PATH.replace(repoRoot + '/', '')} was counted against ${named ? `trope_phrases.json ${named}` : 'an unnamed trope_phrases.json'}, not this build's ${jsonDigest}: re-run with --census`);
+}
