@@ -2004,6 +2004,47 @@ function staffKey(set = activeMotifs()) {   // the key the staffs are drawn in; 
   const key = set && typeof set.key === 'string' ? set.key : '';
   return shiftedKey(key, tuneShiftVal());
 }
+// Staff primitives, shared by the Learn cards' staffs and the Phrases tab's. MID is the middle line's
+// y and STEP half a staff space, one diatonic step; every staff draws in currentColor.
+const STAFF_SIG_STEP = { F: 4, C: 1, G: 5, D: 2, A: -1, E: 3, B: 0 }, STAFF_FLAT_STEP = { B: 0, E: 3, A: -1, D: 2, G: -2, C: 1, F: -3 };
+function staffLines(svg, W, MID) {
+  for (let i = -2; i <= 2; i++)
+    svg.appendChild(_svgEl('line', { x1: 1, y1: MID + i * 6, x2: W - 1, y2: MID + i * 6,
+      stroke: 'currentColor', 'stroke-width': 0.8, opacity: 0.55 }));
+}
+function staffClef(svg, MID, low) {
+  const clef = _svgEl('text', { x: 2, y: MID + 10, 'font-size': 30, fill: 'currentColor', 'aria-hidden': 'true' });
+  clef.textContent = '\u{1D11E}';   // 𝄞 treble-clef symbol, not a UI string — i18n-ignore
+  svg.appendChild(clef);
+  if (low) {   // treble clef with an 8 below: sung an octave lower than written
+    const eight = _svgEl('text', { x: 12, y: MID + 27, 'font-size': 9, 'text-anchor': 'middle', fill: 'currentColor', 'aria-hidden': 'true', class: 'tu-motif-8vb' });
+    eight.textContent = '8';   // the octave figure of the notation, not a UI string — i18n-ignore
+    svg.appendChild(eight);
+  }
+}
+// Key signature: F♯ on the top line, C♯ in the third space… (treble-clef positions as diatonic steps from B4).
+function staffKeySig(svg, sig, MID, STEP) {
+  sig.forEach((k, i) => {
+    const step = k.acc > 0 ? STAFF_SIG_STEP[k.letter] : STAFF_FLAT_STEP[k.letter];
+    const a = _svgEl('text', { x: 23 + i * 6, y: MID - step * STEP + 3, 'font-size': 9, fill: 'currentColor', 'aria-hidden': 'true' });
+    a.textContent = k.acc > 0 ? '♯' : '♭';
+    svg.appendChild(a);
+  });
+}
+function staffLedgers(g, cx, step, MID, STEP, half = 6) {
+  for (let s = 6; s <= step; s += 2)      // ledger lines above the staff
+    g.appendChild(_svgEl('line', { x1: cx - half, y1: MID - s * STEP, x2: cx + half, y2: MID - s * STEP,
+      stroke: 'currentColor', 'stroke-width': 0.8 }));
+  for (let s = -6; s >= step; s -= 2)     // and below
+    g.appendChild(_svgEl('line', { x1: cx - half, y1: MID - s * STEP, x2: cx + half, y2: MID - s * STEP,
+      stroke: 'currentColor', 'stroke-width': 0.8 }));
+}
+function staffHead(g, cx, cy, open, rx = 3.4, ry = 2.5) {   // open: a half note's hollow head
+  g.appendChild(_svgEl('ellipse', open
+    ? { cx, cy, rx, ry, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.2,
+        transform: 'rotate(-18 ' + cx + ' ' + cy + ')' }
+    : { cx, cy, rx, ry, fill: 'currentColor', transform: 'rotate(-18 ' + cx + ' ' + cy + ')' }));
+}
 function renderMotifStaff(t, motif) {
   const key = staffKey();
   const shift = tuneShiftVal();
@@ -2019,25 +2060,9 @@ function renderMotifStaff(t, motif) {
   if (W !== 180) svg.style.inlineSize = Math.round(W * 165 / 180) + 'px';
   if (H !== 56) svg.style.blockSize = Math.ceil(H * 165 / 180) + 'px';
   svg.setAttribute('aria-label', I18n.t(melodyKey() === 'highholiday' ? 'trope.learn.motif_aria_hh' : 'trope.learn.motif_aria', { name: tropeName(t) }));
-  for (let i = -2; i <= 2; i++)
-    svg.appendChild(_svgEl('line', { x1: 1, y1: MID + i * 6, x2: W - 1, y2: MID + i * 6,
-      stroke: 'currentColor', 'stroke-width': 0.8, opacity: 0.55 }));
-  const clef = _svgEl('text', { x: 2, y: 38, 'font-size': 30, fill: 'currentColor', 'aria-hidden': 'true' });
-  clef.textContent = '\u{1D11E}';   // 𝄞 treble-clef symbol, not a UI string — i18n-ignore
-  svg.appendChild(clef);
-  if (tuneVoiceKey() === 'low') {   // treble clef with an 8 below: sung an octave lower than written
-    const eight = _svgEl('text', { x: 12, y: 55, 'font-size': 9, 'text-anchor': 'middle', fill: 'currentColor', 'aria-hidden': 'true', class: 'tu-motif-8vb' });
-    eight.textContent = '8';   // the octave figure of the notation, not a UI string — i18n-ignore
-    svg.appendChild(eight);
-  }
-  // Key signature: F♯ on the top line, C♯ in the third space… (treble-clef positions as diatonic steps from B4).
-  const SIG_STEP = { F: 4, C: 1, G: 5, D: 2, A: -1, E: 3, B: 0 }, FLAT_STEP = { B: 0, E: 3, A: -1, D: 2, G: -2, C: 1, F: -3 };
-  sig.forEach((k, i) => {
-    const step = k.acc > 0 ? SIG_STEP[k.letter] : FLAT_STEP[k.letter];
-    const a = _svgEl('text', { x: 23 + i * 6, y: MID - step * STEP + 3, 'font-size': 9, fill: 'currentColor', 'aria-hidden': 'true' });
-    a.textContent = k.acc > 0 ? '♯' : '♭';
-    svg.appendChild(a);
-  });
+  staffLines(svg, W, MID);
+  staffClef(svg, MID, tuneVoiceKey() === 'low');
+  staffKeySig(svg, sig, MID, STEP);
   // Horizontal slots ∝ d+1 (the +1 keeps short notes from cramping together).
   const total = motif.notes.reduce((a, n) => a + (n.d + 1), 0);
   let cum = 0;
@@ -2048,22 +2073,13 @@ function renderMotifStaff(t, motif) {
     const { step, acc } = motifPitchPos(n.p + shift, key);
     const cy = MID - step * STEP;
     const g = _svgEl('g', { class: 'tu-motif-note', 'data-i': i, 'data-d': n.d, 'aria-hidden': 'true' });
-    for (let s = 6; s <= step; s += 2)      // ledger lines above the staff
-      g.appendChild(_svgEl('line', { x1: cx - 6, y1: MID - s * STEP, x2: cx + 6, y2: MID - s * STEP,
-        stroke: 'currentColor', 'stroke-width': 0.8 }));
-    for (let s = -6; s >= step; s -= 2)     // and below
-      g.appendChild(_svgEl('line', { x1: cx - 6, y1: MID - s * STEP, x2: cx + 6, y2: MID - s * STEP,
-        stroke: 'currentColor', 'stroke-width': 0.8 }));
+    staffLedgers(g, cx, step, MID, STEP);
     if (acc) {   // hugs its own head: at cx − 12 it sat on the previous note's stem in a crowded run (pazer's B♭)
       const a = _svgEl('text', { x: cx - 9.5, y: cy + 3, 'font-size': 9, fill: 'currentColor' });
       a.textContent = acc;
       g.appendChild(a);
     }
-    const open = n.d >= 3;                  // long tones drawn open (half-note style)
-    g.appendChild(_svgEl('ellipse', open
-      ? { cx, cy, rx: 3.4, ry: 2.5, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.2,
-          transform: 'rotate(-18 ' + cx + ' ' + cy + ')' }
-      : { cx, cy, rx: 3.4, ry: 2.5, fill: 'currentColor', transform: 'rotate(-18 ' + cx + ' ' + cy + ')' }));
+    staffHead(g, cx, cy, n.d >= 3);         // long tones drawn open (half-note style)
     const up = step < 0;                    // engraving convention: stem up below the middle line
     const sx = up ? cx + 3.1 : cx - 3.1;
     const sy2 = cy + (up ? -17 : 17);
@@ -2087,8 +2103,12 @@ function renderMotifStaff(t, motif) {
    setting like the staff it lights; Low voices sounds it an octave down.
    The Settings speed slider sets the tempo. One tune at a time: starting one
    stops the clip engine, and a clip or a mode switch stops the tune (stopTune()).
+   The Learn cards and the Phrases tab share the scheduler (_playTuneCore): each
+   tune has an id (a Learn card's mark key, or 'phrase:<melody>:<row>'), and
+   stopTune() resets whichever is playing.
    ══════════════════════════════════════════════════════ */
-let _tuneCtx = null, _tuneOscs = [], _tuneTimers = [], _tuneKey = null, _tuneBtn = null, _tuneName = '';
+let _tuneCtx = null, _tuneOscs = [], _tuneTimers = [], _tuneKey = null, _tuneBtn = null;
+let _tuneBtnSel = '', _tuneAriaFn = null;   // the live play button's selector, and its label when stopped
 // Low voices get a fuller tone: A2–B3 sits below the bass roll-off of phone and Chromebook speakers, and a
 // triangle's overtones (1/9, 1/25 of the fundamental) are too faint to carry the pitch there. Built once per context.
 let _tuneLowWave = null;
@@ -2108,44 +2128,57 @@ function stopTune() {
   _tuneOscs = [];
   for (const id of _tuneTimers) clearTimeout(id);
   _tuneTimers = [];
-  document.querySelectorAll('.tu-motif-note.is-sounding').forEach((g) => g.classList.remove('is-sounding'));
-  document.querySelectorAll('.tu-motif.is-playing').forEach((el) => el.classList.remove('is-playing'));
-  // The live button first, found by key: a language-switch re-render mid-tune rebuilds the card and
-  // paints its new button pressed, while _tuneBtn still points at the detached old one — resetting
+  document.querySelectorAll('.tu-motif-note.is-sounding, .tu-pn.is-sounding').forEach((g) => g.classList.remove('is-sounding'));
+  document.querySelectorAll('.tu-motif.is-playing, .tu-pstaff.is-playing').forEach((el) => el.classList.remove('is-playing'));
+  // The live button first, found by its selector: a language-switch re-render mid-tune rebuilds the card
+  // and paints its new button pressed, while _tuneBtn still points at the detached old one — resetting
   // only that left the fresh button lit for good.
-  const btn = (_tuneKey && document.querySelector('.tu-tune-play[data-key="' + _tuneKey + '"]')) || _tuneBtn;
+  const btn = (_tuneKey && _tuneBtnSel && document.querySelector(_tuneBtnSel)) || _tuneBtn;
   if (btn) {
     btn.classList.remove('is-playing');
     btn.setAttribute('aria-pressed', 'false');
-    btn.setAttribute('aria-label', I18n.t('trope.learn.play_tune_aria', { name: _tuneName }));
+    if (_tuneAriaFn) btn.setAttribute('aria-label', _tuneAriaFn());
   }
-  _tuneBtn = null; _tuneKey = null;
+  _tuneBtn = null; _tuneKey = null; _tuneBtnSel = ''; _tuneAriaFn = null;
 }
-function playTune(t, motif, btn) {
+// One tune: `sounds` [{p, at, dur}] (p in semitones from the written B4, already moved; at/dur in
+// seconds) and `lights` [{at, i}] (the note whose data-i lights at that moment, in the staff find()
+// returns, among its `noteSel` groups). The button is pressed until the last sound ends + 120 ms.
+function _playTuneCore(o) {
   stopClip();                                        // never fight the real clip engine
   stopTune();
   if (!_tuneCtx) {
     try { _tuneCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
   }
   if (_tuneCtx.state === 'suspended') _tuneCtx.resume();
-  const rate = Math.max(0.25, Number(settings.playbackRate) || 1);
-  const UNIT = 0.32 / rate;                          // seconds per d unit (an eighth) at 1×
   const REF_HZ = 493.88;                             // B4, the written pitch
-  const low = tuneVoiceKey() === 'low';
-  const shift = tuneShiftVal() + (low ? -12 : 0);   // the staff's key, and the octave the 8 under the clef asks for
   const t0 = _tuneCtx.currentTime + 0.05;
-  _tuneKey = t.key; _tuneBtn = btn; _tuneName = tropeName(t);
-  btn.classList.add('is-playing');
-  btn.setAttribute('aria-pressed', 'true');   // the name stays "Play the tune of …": pressed says it is playing
-  const staff = _tuneStaff(t.key);
+  _tuneKey = o.id; _tuneBtn = o.btn; _tuneBtnSel = o.btnSel; _tuneAriaFn = o.ariaFn;
+  o.btn.classList.add('is-playing');
+  o.btn.setAttribute('aria-pressed', 'true');   // the name stays "Play the tune of …": pressed says it is playing
+  const staff = o.find();
   if (staff) staff.classList.add('is-playing');
-  let at = 0;
-  motif.notes.forEach((n, i) => {
-    const dur = n.d * UNIT;
+  let li = 0;
+  const light = (i) => {
+    const st = o.find();
+    if (!st) return;
+    st.classList.add('is-playing');
+    st.querySelectorAll(o.noteSel + '.is-sounding').forEach((x) => x.classList.remove('is-sounding'));
+    const note = st.querySelector(o.noteSel + '[data-i="' + i + '"]');
+    if (note) note.classList.add('is-sounding');
+  };
+  const lightsUntil = (at) => {   // each light is scheduled after the sounds that start before or with it
+    for (; li < o.lights.length && o.lights[li].at <= at; li++) {
+      const { at: la, i } = o.lights[li];
+      _tuneTimers.push(setTimeout(() => light(i), Math.round((la + 0.05) * 1000)));
+    }
+  };
+  for (const n of o.sounds) {
+    const { at, dur } = n;
     const osc = _tuneCtx.createOscillator(), g = _tuneCtx.createGain();
-    const wave = low ? _tuneLowWaveFor(_tuneCtx) : null;
+    const wave = o.low ? _tuneLowWaveFor(_tuneCtx) : null;
     if (wave) osc.setPeriodicWave(wave); else osc.type = 'triangle';
-    osc.frequency.value = REF_HZ * Math.pow(2, (n.p + shift) / 12);
+    osc.frequency.value = REF_HZ * Math.pow(2, n.p / 12);
     g.gain.setValueAtTime(0.0001, t0 + at);
     g.gain.exponentialRampToValueAtTime(0.28, t0 + at + 0.02);
     g.gain.setValueAtTime(0.28, Math.max(t0 + at + 0.02, t0 + at + dur - 0.06));
@@ -2153,17 +2186,28 @@ function playTune(t, motif, btn) {
     osc.connect(g); g.connect(_tuneCtx.destination);
     osc.start(t0 + at); osc.stop(t0 + at + dur);
     _tuneOscs.push(osc);
-    _tuneTimers.push(setTimeout(() => {
-      const st = _tuneStaff(t.key);
-      if (!st) return;
-      st.classList.add('is-playing');
-      st.querySelectorAll('.tu-motif-note.is-sounding').forEach((x) => x.classList.remove('is-sounding'));
-      const note = st.querySelector('.tu-motif-note[data-i="' + i + '"]');
-      if (note) note.classList.add('is-sounding');
-    }, Math.round((at + 0.05) * 1000)));
+    lightsUntil(at);
+  }
+  lightsUntil(Infinity);
+  _tuneTimers.push(setTimeout(stopTune, Math.round((o.total + 0.05) * 1000) + 120));
+}
+function playTune(t, motif, btn) {
+  const rate = Math.max(0.25, Number(settings.playbackRate) || 1);
+  const UNIT = 0.32 / rate;                          // seconds per d unit (an eighth) at 1×
+  const low = tuneVoiceKey() === 'low';
+  const shift = tuneShiftVal() + (low ? -12 : 0);   // the staff's key, and the octave the 8 under the clef asks for
+  const sounds = [], lights = [];
+  let at = 0;
+  motif.notes.forEach((n, i) => {
+    const dur = n.d * UNIT;
+    sounds.push({ p: n.p + shift, at, dur });
+    lights.push({ at, i });
     at += dur;
   });
-  _tuneTimers.push(setTimeout(stopTune, Math.round((at + 0.05) * 1000) + 120));
+  const name = tropeName(t);
+  _playTuneCore({ id: t.key, btn, btnSel: '.tu-tune-play[data-key="' + t.key + '"]',
+    ariaFn: () => I18n.t('trope.learn.play_tune_aria', { name }),
+    low, sounds, lights, total: at, find: () => _tuneStaff(t.key), noteSel: '.tu-motif-note' });
 }
 function toggleTune(t, motif, btn) {
   if (_tuneKey === t.key) stopTune(); else playTune(t, motif, btn);
