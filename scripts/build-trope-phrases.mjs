@@ -40,10 +40,19 @@
  *   node scripts/build-trope-phrases.mjs              build, check, write the JSON + report
  *   node scripts/build-trope-phrases.mjs --census     also count every mark-before-mark context of
  *                                                     the Torah and the High Holiday readings against
- *                                                     the chart -> docs/trope_contexts_report.md
+ *                                                     the chart -> docs/trope_contexts_report.md, and
+ *                                                     find each row's real examples (PocketTorah's
+ *                                                     timings) -> data/trope/trope_phrase_examples.json
  *                                                     (the only networked path: Sefaria's text export,
  *                                                     cached in gitignored source-data/trope-cache/,
  *                                                     shared with build-trope-index.mjs)
+ *   --census --audit-audio                           also listen to every PocketTorah recording for
+ *                                                     the pause before each verse, and fail unless
+ *                                                     TIMING_SLIPS lists exactly the stretches whose
+ *                                                     taps slip by a word (downloads ~640 MB once; keeps
+ *                                                     only a loudness envelope in source-data/trope-cache/;
+ *                                                     needs `npm install mpg123-decoder`, like
+ *                                                     build-trope-motifs.mjs)
  *   --doc=<path> --out=<dir> --lenient                parse another transcription (a second reading)
  *                                                     into <dir>; --lenient skips the Hebrew-marks,
  *                                                     row-count, tutor and smoke checks. --doc and
@@ -51,13 +60,13 @@
  *
  * The TROPES taxonomy is read from both of its carriers (trope_tutor.html and
  * scripts/build-trope-index.mjs), which must be byte-identical; this script only reads it.
- * Zero dependencies. Outputs are written only when every check passes — with --census, the
+ * Zero dependencies (--audit-audio aside). Outputs are written only when every check passes — with --census, the
  * census's too; the script exits non-zero otherwise — never commit its output without a green
  * run. `built` keeps its old date when nothing else in the JSON changed, so a re-run is
  * byte-identical. The contexts report names the sha1 of the JSON it was counted against, and a
  * plain run warns when that is not the JSON it just built (re-run with --census).
  */
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
@@ -70,11 +79,13 @@ const flag = (name) => argv.includes(`--${name}`);
 const opt = (name) => { const a = argv.find((x) => x.startsWith(`--${name}=`)); return a ? a.slice(name.length + 3) : null; };
 const LENIENT = flag('lenient');
 const CENSUS = flag('census');
+const AUDIT_AUDIO = flag('audit-audio');
 const DOC_PATH = opt('doc') ? resolve(opt('doc')) : join(repoRoot, 'docs', 'tropepatterns.md');
 const OUT_DIR = opt('out') ? resolve(opt('out')) : null;
 const JSON_PATH = OUT_DIR ? join(OUT_DIR, 'trope_phrases.json') : join(repoRoot, 'data', 'trope', 'trope_phrases.json');
 const REPORT_PATH = OUT_DIR ? join(OUT_DIR, 'trope_phrases_report.md') : join(repoRoot, 'docs', 'trope_phrases_report.md');
 const CENSUS_PATH = OUT_DIR ? join(OUT_DIR, 'trope_contexts_report.md') : join(repoRoot, 'docs', 'trope_contexts_report.md');
+const EXAMPLES_PATH = OUT_DIR ? join(OUT_DIR, 'trope_phrase_examples.json') : join(repoRoot, 'data', 'trope', 'trope_phrase_examples.json');
 const CACHE_DIR = join(repoRoot, 'source-data', 'trope-cache');
 const SIZE_BUDGET = 128 * 1024;
 const LICENSE = 'Hand transcriptions of the traditional Ashkenazi Torah and High Holiday cantillation melodies from a printed chart (docs/tropepatterns.md, sections B and C). This file is CC BY-SA 4.0.';
@@ -82,6 +93,7 @@ const LICENSE = 'Hand transcriptions of the traditional Ashkenazi Torah and High
 const failures = [];
 const fail = (msg) => failures.push(msg);
 function die(msg) { console.error(`build-trope-phrases: ${msg}`); process.exit(1); }
+if (AUDIT_AUDIO && !CENSUS) die('--audit-audio listens to the recordings the census aligns: give --census too');
 // A second reading (--doc) or a lenient run skips checks, so it never writes over the committed files.
 const outside = (dir) => { const r = relative(join(repoRoot, dir), OUT_DIR); return r.startsWith('..') || isAbsolute(r); };
 if ((LENIENT || argv.some((a) => a === '--doc' || a.startsWith('--doc='))) && !(OUT_DIR && outside('data') && outside('docs')))
@@ -681,16 +693,23 @@ function inRange(book, c, v, r) {
   return r.book === book && at >= r.from[0] * 1000 + r.from[1] && at <= r.to[0] * 1000 + r.to[1];
 }
 
-// A verse -> [{k, word, w, withinWord}] units; stats collects what the rules above had to decide.
-function verseUnits(text, stats, ref) {
-  const toks = text.split(' ').filter(Boolean);
+// A cleaned verse -> its sung words [{text, line, paseq, parts}], unmarked ones included. `parts` counts
+// the word's maqaf-joined pieces: PocketTorah times each piece, so a word takes that many timing slots.
+// stats (optional) collects what the rules had to decide.
+function verseWords(text, stats) {
   const words = [];
-  for (const t of toks) {
-    if (t === PASEQ_TOKEN) { if (words.length) words[words.length - 1].paseq = true; else stats.anomalies.push('a paseq opens a verse'); continue; }
-    if (t === '׀') { if (words.length) words[words.length - 1].line = true; else stats.anomalies.push('a legarmeh line opens a verse'); continue; }
+  for (const t of text.split(' ').filter(Boolean)) {
+    if (t === PASEQ_TOKEN) { if (words.length) words[words.length - 1].paseq = true; else if (stats) stats.anomalies.push('a paseq opens a verse'); continue; }
+    if (t === '׀') { if (words.length) words[words.length - 1].line = true; else if (stats) stats.anomalies.push('a legarmeh line opens a verse'); continue; }
     if (!/[א-ת]/.test(t)) continue;
-    words.push({ text: t.replace(/׀/g, ''), line: t.includes('׀') });
+    const bare = t.replace(/׀/g, '');
+    words.push({ text: bare, line: t.includes('׀'), parts: bare.split('־').filter((x) => /[א-ת]/.test(x)).length });
   }
+  return words;
+}
+// A verse -> [{k, word, w, withinWord}] units, w indexing verseWords' list.
+function verseUnits(text, stats, ref) {
+  const words = verseWords(text, stats);
   const units = [];
   words.forEach((w, wi) => {
     const chars = w.text.match(MARK_RANGE_G) || [];
@@ -761,6 +780,364 @@ function tally(stats, units, ref) {
       rec.disj[d] = (rec.disj[d] || 0) + 1;
     }
   });
+}
+
+/* ---------- real examples of every row, for the Trope Tutor's Phrases tab (with --census) ----------
+   A row's example is a run of consecutive words in one verse that carry the row's marks, one mark per
+   word, in order, with no pause (paseq or legarmeh line) inside it. It is complete when no connecting
+   mark leads into it (the word before is not a conjunctive), so an ending such as tipcha etnachta is
+   not taken out of a longer phrase. An [aliyah-end] row's run ends an aliyah; no other row's does.
+   - Year-round rows search the whole Torah and keep PocketTorah's timing of the words, so the tutor
+     can play the recording: a run starts at its first word's onset and ends at the next word's (an
+     aliyah's last word has none: e is null and the recording plays out). A run whose onsets step
+     backwards, repeat, or wait longer than GAP_MAX (a timing slip) is dropped, and so is every run in
+     a verse TIMING_SLIPS lists. Complete runs are preferred; a row with none (mercha kefula, yerach
+     ben yomo) takes any.
+   - High Holiday rows search the four Rosh Hashanah and Yom Kippur readings and keep only the words:
+     PocketTorah has no recording in that melody. Complete runs only.
+   Picks spread over books, then parshiyot (the readings, for High Holiday rows), preferring a typical
+   length. */
+const EXAMPLES_PER_ROW = 4;
+const EXAMPLES_BUDGET = 64 * 1024;
+const GAP_MAX = 4, GAP_MAX_RARE = 10;   // seconds from one word onset to the next (10 where a rare mark is sung)
+const EXAMPLES_LICENSE = "Real examples of docs/tropepatterns.md's rows: Hebrew words from the Miqra according to the Masorah edition (Sefaria's export; Sefaria lists it as CC BY-SA), clip times from PocketTorah's word timings (c) Russel Neiss & Rabbi Charlie Schwartz (CC BY-SA 4.0). This file is CC BY-SA 4.0.";
+// The High Holiday readings' aliyah ends: the weekday and Shabbat divisions together, from @hebcal/leyning
+// 10.0.0's holiday readings (Yom Kippur afternoon: the traditional reading, ending at 18:30).
+const HH_ALIYAH_ENDS = {
+  'rosh-hashanah-1': ['21:4', '21:8', '21:12', '21:17', '21:21', '21:27', '21:34'],
+  'rosh-hashanah-2': ['22:3', '22:8', '22:14', '22:19', '22:24'],
+  'yom-kippur': ['16:3', '16:6', '16:11', '16:17', '16:24', '16:30', '16:34'],
+  'yom-kippur-mincha': ['18:5', '18:21', '18:30'],
+};
+// The aliyot whose word and timing counts still differ, and the five onsets known to step backwards or
+// repeat (each must fail the gap rule, so no example spans one).
+const EXPECTED_UNALIGNED = ["Beha'alotcha 5", 'Nasso 6', 'Tetzaveh 3'];
+const KNOWN_TIMING_GLITCHES = [['Shemot', '5', 53], ['Shemot', '7', 188], ['Tetzaveh', '1', 203], ['Nasso', '4', 557], ['Eikev', '3', 66]];
+
+/* ---------- --audit-audio: are the taps where the recording says? (with --census) ----------
+   A timing file can slip by a word for a stretch and slip back later (an extra tap in one place, a
+   missing one in another), so its count still matches the words and only the recording can tell.
+   Nearly every verse opens after a pause, and a tap well placed for a verse's first word sits right
+   beside it (just before the pause or just after it, as each tapper worked). A verse start whose own
+   tap is in singing while the tap before or after it sits beside the pause has slipped. A run of verse
+   starts that slipped or are unclear, at least one of them slipped, marks its verses, from the verse
+   before the run to the run's last; runs at most SLIP_JOIN verses apart join. The marked verses are
+   TIMING_SLIPS, and no example is taken from them: --audit-audio fails unless the table is exactly what
+   it hears. It downloads each recording once, decodes it with mpg123-decoder (npm install it, as for
+   build-trope-motifs.mjs) and keeps only a 10 ms loudness envelope in source-data/trope-cache/audio-env/. */
+const TIMING_SLIPS = {
+  'Noach 6': ['10:16-10:17'],
+  'Vayera 3': ['19:7-19:18'],
+  'Vayera 4': ['19:38-20:1'],
+  'Vayera 5': ['21:11-21:12'],
+  'Vayishlach 5': ['34:30-34:31'],
+  'Vayishlach 6': ['35:16-35:17', '35:28-35:29'],
+  'Vayishlach 7': ['36:35-36:36'],
+  'Vayeshev 3': ['37:26-37:27'],
+  'Vayeshev 4': ['38:24-38:25'],
+  'Vayigash 3': ['45:14-45:15'],
+  'Shemot 1': ['1:5-1:6'],
+  'Shemot 5': ['3:18-3:19'],
+  "Va'eira 5": ['8:11-8:12'],
+  'Tetzaveh 1': ['28:4-28:11'],
+  'Shemini 6': ['11:8-11:32'],
+  'Bamidbar 3': ['2:12-2:13', '2:25-2:32'],
+  'Nasso 5': ['7:11-7:14'],
+};
+const AUDIO_ENV_DIR = join(CACHE_DIR, 'audio-env');
+const AUDIT_NEAR = 0.35;   // seconds either side of a tap
+// Loudness on the recording's own scale: 0 is its median, -1 its 5th percentile.
+const AUDIT_OK = -0.55, AUDIT_SUNG = -0.35, AUDIT_PAUSE = -0.6;
+const SLIP_JOIN = 3;
+const inSlip = (id, c, v) => (TIMING_SLIPS[id] || []).some((r) => {
+  const [a, b] = r.split('-').map((x) => x.split(':').map(Number)), k = c * 1000 + v;
+  return k >= a[0] * 1000 + a[1] && k <= b[0] * 1000 + b[1];
+});
+async function audioEnvelope(decoder, id, url) {
+  const path = join(AUDIO_ENV_DIR, `${id.replace(/[^A-Za-z0-9]+/g, '_')}.json`);
+  if (existsSync(path)) {
+    const rec = JSON.parse(readFileSync(path, 'utf8'));
+    if (rec.url === url) return rec;
+  }
+  mkdirSync(AUDIO_ENV_DIR, { recursive: true });
+  const mp3 = `${path}.mp3`;
+  for (let i = 0; ; i++) {
+    try { execFileSync('curl', ['-sS', '--fail', '--max-time', '300', '-o', mp3, url]); break; }
+    catch { if (i === 3) throw new Error(`could not download ${url}`); await new Promise((r) => setTimeout(r, 2000 * 2 ** i)); }
+  }
+  await decoder.reset();
+  const { channelData, sampleRate } = decoder.decode(new Uint8Array(readFileSync(mp3)));
+  unlinkSync(mp3);
+  const d = channelData[0], hop = Math.round(sampleRate / 100), env = new Int8Array(Math.floor(d.length / hop));
+  for (let f = 0; f < env.length; f++) {
+    let sum = 0;
+    for (let i = f * hop; i < (f + 1) * hop; i++) sum += d[i] * d[i];
+    env[f] = Math.max(-127, Math.round(10 * Math.log10(sum / hop + 1e-13)));
+  }
+  const rec = { url, env: Buffer.from(env.buffer).toString('base64') };
+  writeFileSync(path, JSON.stringify(rec));
+  return rec;
+}
+// Each verse start after the aliyah's first: 'ok', '+1' (the pause sits by the next tap: the taps run a
+// word early), '-1' (by the tap before: a word late) or '?'.
+function tapVerdicts(al, env) {
+  const sorted = Int8Array.from(env).sort();
+  const med = sorted[sorted.length >> 1], scale = Math.max(3, med - sorted[Math.floor(sorted.length * 0.05)]);
+  const near = (t) => {   // the quietest 100 ms within AUDIT_NEAR of t
+    const f0 = Math.max(0, Math.round((t - AUDIT_NEAR) * 100)), f1 = Math.min(env.length, Math.round((t + AUDIT_NEAR) * 100));
+    let lo = Infinity;
+    for (let g = f0; g + 10 <= f1; g++) { let sum = 0; for (let k = g; k < g + 10; k++) sum += env[k]; lo = Math.min(lo, sum / 10); }
+    return lo === Infinity ? 0 : (lo - med) / scale;
+  };
+  return al.verses.slice(1).map((vs) => {
+    const b = vs.slots[0];
+    const [before, at, after] = [b - 1, b, b + 1].map((k) => (k >= 1 && k < al.t.length ? near(al.t[k]) : 0));
+    if (at <= AUDIT_OK) return 'ok';
+    if (at >= AUDIT_SUNG && after <= AUDIT_PAUSE) return '+1';
+    if (at >= AUDIT_SUNG && before <= AUDIT_PAUSE) return '-1';
+    return '?';
+  });
+}
+function slipRanges(al, verdicts) {
+  const ranges = [];   // [first, last] indices into al.verses
+  for (let i = 0; i < verdicts.length;) {
+    if (verdicts[i] === 'ok') { i++; continue; }
+    let j = i;
+    while (j + 1 < verdicts.length && verdicts[j + 1] !== 'ok') j++;
+    if (verdicts.slice(i, j + 1).some((x) => x !== '?')) {
+      const prev = ranges[ranges.length - 1];   // verdicts[i] is the start of al.verses[i + 1]
+      if (prev && i - prev[1] <= SLIP_JOIN + 1) prev[1] = j + 1; else ranges.push([i, j + 1]);
+    }
+    i = j + 1;
+  }
+  return ranges.map(([f, l]) => `${al.verses[f].c}:${al.verses[f].v}-${al.verses[l].c}:${al.verses[l].v}`);
+}
+async function auditAudio(aligned, manifest, cf) {
+  let MPEGDecoder;
+  try { ({ MPEGDecoder } = await import('mpg123-decoder')); }
+  catch { die('--audit-audio needs mpg123-decoder: npm install mpg123-decoder (node_modules/ and package*.json are gitignored)'); }
+  const base = (readRepo('trope_tutor.html').match(/const POCKET_AUDIO_BASE = '([^']+)'/) || [])[1];
+  if (!base) die("--audit-audio: trope_tutor.html's POCKET_AUDIO_BASE was not found");
+  const decoder = new MPEGDecoder();
+  await decoder.ready;
+  const found = {}, tally = { ok: 0, '+1': 0, '-1': 0, '?': 0 };
+  let n = 0;
+  for (const al of aligned) {
+    let rec;
+    try { rec = await audioEnvelope(decoder, al.id, base + encodeURIComponent(`${manifest[al.p].audioBase}-${al.a}.mp3`)); }
+    catch (e) { cf.push(`--audit-audio: ${e.message}`); continue; }
+    const buf = Buffer.from(rec.env, 'base64');
+    const verdicts = tapVerdicts(al, new Int8Array(buf.buffer, buf.byteOffset, buf.length));
+    for (const x of verdicts) tally[x]++;
+    const r = slipRanges(al, verdicts);
+    if (r.length) found[al.id] = r;
+    if (++n % 50 === 0) console.log(`  --audit-audio: ${n} of ${aligned.length} recordings`);
+  }
+  decoder.free();
+  const show = (o) => aligned.filter((al) => o[al.id]).map((al) => `  ${JSON.stringify(al.id)}: [${o[al.id].map((x) => `'${x}'`).join(', ')}],`).join('\n');
+  if (show(found) !== show(TIMING_SLIPS)) cf.push(`--audit-audio: TIMING_SLIPS is not what the recordings show; they show:\n${show(found)}`);
+  if (found['Bereshit 1']) cf.push('--audit-audio: Bereshit 1, whose taps are known good, was heard slipping (the thresholds have drifted)');
+  console.log(`build-trope-phrases --audit-audio: ${n} recordings; verse starts ${Object.entries(tally).map(([k, v]) => `${k} ${v}`).join(', ')}; ${Object.values(found).flat().length} slipped stretches in ${Object.keys(found).length} aliyot`);
+}
+const round2 = (x) => Math.round(x * 100) / 100;
+const cmpTuple = (a, b) => { for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] < b[i] ? -1 : 1; return 0; };
+
+// Up to EXAMPLES_PER_ROW of the ranked candidates: new books first (for High Holiday rows, new
+// readings), then new parshiyot, then any — returned in text order.
+function spreadPick(ranked, passes, order) {
+  const chosen = [];
+  const seen = passes.map(() => new Set());
+  for (let pi = 0; pi < passes.length && chosen.length < EXAMPLES_PER_ROW; pi++) {
+    for (const c of ranked) {
+      if (chosen.length >= EXAMPLES_PER_ROW) break;
+      if (chosen.includes(c)) continue;
+      if (passes[pi] && seen[pi].has(passes[pi](c))) continue;
+      chosen.push(c);
+      passes.forEach((f, i) => { if (f) seen[i].add(f(c)); });
+    }
+  }
+  return chosen.sort((a, b) => cmpTuple(order(a), order(b)));
+}
+
+async function buildExamples({ texts, parshiyot, aliyotOf, firstVerse, verseUnitsCache, hhReadings, cf }) {
+  const manifest = JSON.parse(readRepo('data/pockettorah/manifest.json'));
+  const rare = new Set(TROPES.filter((t) => t.rare).map((t) => t.key));
+  // one verse: every sung word (marked or not, each takes its timing slots) and each word's marks
+  const verseOf = (book, c, v) => {
+    const raw = (texts[book][c - 1] || [])[v - 1];
+    if (typeof raw !== 'string' || !raw.trim()) return null;
+    const ref = `${book} ${c}:${v}`, units = verseUnitsCache[ref] || null;   // none: a double-accented verse
+    const words = verseWords(cleanVerseText(raw), null);
+    const keys = words.map(() => []);
+    if (units) for (const u of units) keys[u.w].push(u.k);
+    return { ref, c, v, words, keys, marked: !!units };
+  };
+  // runs of the row's marks K in one verse -> [{j, complete}]
+  const runsIn = (vs, K, endsAliyahVerse, aliyahEnd) => {
+    const out = [];
+    if (!vs.marked) return out;
+    for (let j = 0; j + K.length <= vs.words.length; j++) {
+      let hit = true;
+      for (let q = 0; q < K.length && hit; q++) {
+        const ks = vs.keys[j + q], w = vs.words[j + q];
+        if (ks.length !== 1 || ks[0] !== K[q]) hit = false;
+        else if (q < K.length - 1 && (w.paseq || (w.line && ks[0] !== 'munach_legarmeh'))) hit = false;   // a pause inside the run
+      }
+      if (!hit) continue;
+      if ((endsAliyahVerse && j + K.length === vs.words.length) !== aliyahEnd) continue;
+      const pk = j > 0 ? vs.keys[j - 1] : [];
+      out.push({ j, complete: !pk.length || !CONJUNCTIVE.has(pk[pk.length - 1]) });
+    }
+    return out;
+  };
+  const wordsOfRun = (vs, j, n) => vs.words.slice(j, j + n).map((w) => w.text + (w.line ? ' ׀' : '')).join(' ');
+
+  // PocketTorah's aliyot, each word given its first timing slot (a maqaf-joined word takes one per piece)
+  const aligned = [], unaligned = [];
+  parshiyot.forEach((p, pi) => {
+    const al = aliyotOf.get(firstVerse(p.ref));
+    if (!al) return;   // the census has already failed on it
+    const m = manifest[p.pocket];
+    for (const x of al.fullkriyah.aliyah.filter((y) => /^[1-7]$/.test(y._num))) {
+      const id = `${p.pocket} ${x._num}`;
+      const label = m && !(m.missing || []).includes(x._num) && m.labels && m.labels[x._num];
+      if (!label) { unaligned.push({ id, why: 'no recording' }); continue; }
+      const [bc, bv] = x._begin.split(':').map(Number), [ec, ev] = x._end.split(':').map(Number);
+      const verses = [];
+      let slot = 0, ok = true;
+      for (let c = bc; c <= ec && ok; c++) {
+        const n = (texts[p.book][c - 1] || []).length;
+        for (let v = c === bc ? bv : 1; v <= (c === ec ? ev : n); v++) {
+          const vs = verseOf(p.book, c, v);
+          if (!vs) { ok = false; break; }
+          vs.slots = vs.words.map((w) => { const s0 = slot; slot += w.parts; return s0; });
+          verses.push(vs);
+        }
+      }
+      if (!ok || !verses.length) { unaligned.push({ id, why: 'verse range unresolved' }); continue; }
+      let t = readFileSync(join(repoRoot, 'data', 'pockettorah', 'timings', label), 'utf8')
+        .trim().split(',').map(parseFloat).filter((n) => !isNaN(n));
+      if (t.length > 1 && t[0] === 0 && t.length === slot + 1) t = t.slice(0, -1);   // a trailing end marker (the index builder's rule)
+      if (t.length !== slot) { unaligned.push({ id, why: `${slot} words vs ${t.length} timings` }); continue; }
+      aligned.push({ id, p: p.pocket, a: x._num, pi, book: p.book, verses, t });
+    }
+  });
+  if (AUDIT_AUDIO) await auditAudio(aligned, manifest, cf);
+
+  let gapRejects = 0, slipRejects = 0;
+  const torah = melodies.torah.rows.map((row) => {
+    const K = row.units.map((u) => u.k), isEnd = row.tags.includes('aliyah-end');
+    const cap = K.some((k) => rare.has(k)) ? GAP_MAX_RARE : GAP_MAX;
+    const cands = [];
+    for (const al of aligned) al.verses.forEach((vs, vi) => {
+      const slipped = inSlip(al.id, vs.c, vs.v);
+      for (const r of runsIn(vs, K, vi === al.verses.length - 1, isEnd)) {
+        if (slipped) { slipRejects++; continue; }
+        const last = r.j + K.length - 1;
+        const s0 = vs.slots[r.j], s1 = vs.slots[last] + vs.words[last].parts;   // the run's slots are [s0, s1)
+        let slip = false;
+        for (let n = s0; n < s1 && n + 1 < al.t.length && !slip; n++) {
+          const gap = al.t[n + 1] - al.t[n];
+          if (gap <= 0 || gap > cap) slip = true;
+        }
+        if (slip) { gapRejects++; continue; }
+        const s = al.t[s0], e = isEnd ? null : al.t[s1];
+        cands.push({ p: al.p, a: al.a, pi: al.pi, book: al.book, ref: vs.ref, he: wordsOfRun(vs, r.j, K.length),
+          s, e, dur: (e ?? al.t[s1 - 1]) - s, slot: s0, complete: r.complete });
+      }
+    });
+    const complete = cands.filter((c) => c.complete);
+    const pool = complete.length ? complete : cands;
+    const durs = pool.map((c) => c.dur).sort((x, y) => x - y);
+    const med = durs.length ? durs[Math.floor((durs.length - 1) / 2)] : 0;
+    const ranked = pool.slice().sort((x, y) => cmpTuple(
+      [x.dur < 0.6 * med ? 1 : 0, x.dur > 1.3 * med ? 1 : 0, Math.abs(x.dur - 0.85 * med), x.pi, +x.a, x.slot],
+      [y.dur < 0.6 * med ? 1 : 0, y.dur > 1.3 * med ? 1 : 0, Math.abs(y.dur - 0.85 * med), y.pi, +y.a, y.slot]));
+    const chosen = spreadPick(ranked, [(c) => c.book, (c) => c.pi, null], (c) => [c.pi, +c.a, c.slot]);
+    return { n: row.n, k: K.join(' '), matches: cands.length, complete: complete.length, cands, chosen,
+      ex: chosen.map((c) => ({ p: c.p, a: c.a, ref: c.ref, he: c.he, s: round2(c.s), e: c.e === null ? null : round2(c.e) })) };
+  });
+
+  const highholiday = melodies.highholiday.rows.map((row) => {
+    const K = row.units.map((u) => u.k), isEnd = row.tags.includes('aliyah-end');
+    const cands = [];
+    let matches = 0;
+    hhReadings.forEach((r, ri) => {
+      const ends = new Set(HH_ALIYAH_ENDS[r.key] || []);
+      for (let c = r.from[0]; c <= r.to[0]; c++) {
+        const vTo = c === r.to[0] ? r.to[1] : (texts[r.book][c - 1] || []).length;
+        for (let v = c === r.from[0] ? r.from[1] : 1; v <= vTo; v++) {
+          const vs = verseOf(r.book, c, v);
+          if (!vs) continue;
+          for (const m of runsIn(vs, K, ends.has(`${c}:${v}`), isEnd)) {
+            matches++;
+            if (m.complete) cands.push({ ri, c, v, j: m.j, ref: vs.ref, he: wordsOfRun(vs, m.j, K.length) });
+          }
+        }
+      }
+    });
+    const ranked = cands.slice().sort((x, y) => cmpTuple([x.ri, x.c, x.v, x.j], [y.ri, y.c, y.v, y.j]));
+    const chosen = spreadPick(ranked, [(c) => c.ri, null], (c) => [c.ri, c.c, c.v, c.j]);
+    return { n: row.n, k: K.join(' '), matches, complete: cands.length, chosen, ex: chosen.map(({ ref, he }) => ({ ref, he })) };
+  });
+
+  // smoke tests
+  const ids = unaligned.map((u) => u.id).sort();
+  if (aligned.length !== 375 || JSON.stringify(ids) !== JSON.stringify(EXPECTED_UNALIGNED))
+    cf.push(`examples: ${aligned.length} aliyot align (expected 375); not aligned: ${unaligned.map((u) => `${u.id} (${u.why})`).join(', ')}`);
+  const row1 = torah.find((r) => r.n === '1'), row2 = torah.find((r) => r.n === '2');
+  const gen13 = row1 && row1.cands.find((c) => c.ref === 'Genesis 1:3');
+  if (!gen13 || gen13.p !== 'Bereshit' || gen13.a !== '1' || !gen13.complete || round2(gen13.s) !== 23.6 || round2(gen13.e) !== 26.3
+      || gen13.he !== 'וַיֹּ֥אמֶר אֱלֹהִ֖ים יְהִ֣י א֑וֹר')
+    cf.push(`examples: row 1 should find Genesis 1:3 (Bereshit 1, 23.60–26.30 s, complete); found ${JSON.stringify(gen13 || null)}`);
+  if (!row2 || !row2.cands.some((c) => c.ref === 'Genesis 1:1' && c.complete)) cf.push('examples: row 2 should find Genesis 1:1');
+  for (const [id, ranges] of Object.entries(TIMING_SLIPS)) {
+    const al = aligned.find((x) => x.id === id);
+    if (!al) { cf.push(`TIMING_SLIPS names ${id}, which does not align`); continue; }
+    const at = (c, v) => al.verses.findIndex((vs) => vs.c === c && vs.v === v);
+    for (const r of ranges) {
+      const m = r.match(/^(\d+):(\d+)-(\d+):(\d+)$/);
+      if (!m || at(+m[1], +m[2]) < 0 || at(+m[3], +m[4]) < at(+m[1], +m[2])) cf.push(`TIMING_SLIPS ${id} ${r} is not a verse range inside that aliyah`);
+    }
+  }
+  if (!inSlip('Shemini 6', 11, 9)) cf.push('TIMING_SLIPS should cover Shemini 6 at Leviticus 11:9, where the taps run a word early');
+  for (const [p, a, idx] of KNOWN_TIMING_GLITCHES) {
+    const al = aligned.find((x) => x.p === p && x.a === a);
+    if (!al || !(al.t[idx + 1] - al.t[idx] <= 0)) cf.push(`examples: the known timing slip ${p} ${a} at ${idx} is ${al ? 'not a backward or repeated onset' : 'in an aliyah that did not align'}`);
+  }
+  for (const r of torah) {
+    const isEnd = r.n === '41';
+    if (!r.ex.length) cf.push(`examples: Torah row #${r.n} (${r.k}) has no example`);
+    const pool = r.complete ? r.cands.filter((c) => c.complete) : r.cands;
+    if (new Set(pool.map((c) => c.book)).size >= EXAMPLES_PER_ROW && new Set(r.chosen.map((c) => c.book)).size < EXAMPLES_PER_ROW)
+      cf.push(`examples: Torah row #${r.n} has candidates in ${new Set(pool.map((c) => c.book)).size} books but picks fewer`);
+    for (const x of r.ex) {
+      if ((x.e === null) !== isEnd) cf.push(`examples: Torah row #${r.n} ${x.ref} has e ${x.e} (only the end-of-aliyah row plays to the recording's end)`);
+      if (x.e !== null && !(x.s >= 0 && x.s < x.e && x.e - x.s <= 12)) cf.push(`examples: Torah row #${r.n} ${x.ref} runs ${x.s}–${x.e} s`);
+      if (!manifest[x.p] || !manifest[x.p].labels[x.a]) cf.push(`examples: Torah row #${r.n} ${x.ref} names ${x.p} ${x.a}, not in the manifest`);
+    }
+  }
+  const row40 = torah.find((r) => r.n === '40');
+  if (!row40 || row40.ex.length !== 1 || row40.ex[0].ref !== 'Numbers 35:5') cf.push(`examples: Torah row #40 should have exactly Numbers 35:5, has ${JSON.stringify(row40 && row40.ex.map((x) => x.ref))}`);
+  const hhKeys = hhReadings.map((r) => r.key).sort().join(','), endKeys = Object.keys(HH_ALIYAH_ENDS).sort().join(',');
+  if (hhKeys !== endKeys) cf.push(`examples: HH_ALIYAH_ENDS names ${endKeys}, the readings are ${hhKeys}`);
+  for (const r of hhReadings) {
+    const ends = HH_ALIYAH_ENDS[r.key] || [];
+    if (!ends.includes(`${r.to[0]}:${r.to[1]}`)) cf.push(`examples: ${r.key}'s last verse ${r.to.join(':')} is not among its aliyah ends`);
+    for (const e of ends) { const [c, v] = e.split(':').map(Number); if (c * 1000 + v < r.from[0] * 1000 + r.from[1] || c * 1000 + v > r.to[0] * 1000 + r.to[1]) cf.push(`examples: ${r.key} aliyah end ${e} lies outside the reading`); }
+  }
+  const keyOf = (row) => row.units.map((u) => u.k).join(' ');
+  for (const [m, list] of [['torah', torah], ['highholiday', highholiday]])
+    if (list.map((r) => `${r.n}:${r.k}`).join('|') !== melodies[m].rows.map((row) => `${row.n}:${keyOf(row)}`).join('|'))
+      cf.push(`examples: the ${m} rows do not follow the chart's rows`);
+  return { torah, highholiday, aligned: aligned.length, unaligned, gapRejects, slipRejects };
+}
+function serializeExamples(built, ex) {
+  const head = { v: 1, built, license: EXAMPLES_LICENSE, source: "docs/tropepatterns.md's rows; the words from Sefaria's MAM export; the clip times from PocketTorah's word timings" };
+  let s = JSON.stringify(head).slice(0, -1) + ',"melodies":{\n';
+  s += [['torah', ex.torah], ['highholiday', ex.highholiday]].map(([m, rows]) =>
+    `${JSON.stringify(m)}:[\n` + rows.map((r) => JSON.stringify({ n: r.n, k: r.k, ex: r.ex })).join(',\n') + '\n]').join(',\n');
+  return s + '\n}}\n';
 }
 
 async function census() {
@@ -846,6 +1223,7 @@ async function census() {
   for (const k of HH_BANNED) if (hh.markCount[k]) cf.push(`${k} occurs ${hh.markCount[k].n}× in the High Holiday readings (${hh.markCount[k].ex}) — docs/tropepatterns.md says it never does`);
   if (!tor.legarmeh) cf.push('no munach legarmeh found (legarmeh-line handling broke)');
   if (!Object.keys(tor.paseqAfter).length) cf.push('no small paseq found: the text no longer draws paseq apart from the legarmeh line, so munach + paseq would pass for munach legarmeh');
+  const ex = await buildExamples({ texts, parshiyot, aliyotOf, firstVerse, verseUnitsCache, hhReadings, cf });
   if (cf.length) {
     console.error(`build-trope-phrases --census: ${cf.length} problem(s):`);
     for (const f of cf) console.error(`  ✗ ${f}`);
@@ -853,17 +1231,30 @@ async function census() {
   }
   // The report's own date, kept while its content is unchanged (like `built` in the JSON). The caller
   // writes it, after the JSON and the phrases report.
-  const args = { tor, hh, pTorah, pHH, endings, otherEndings, otherEnds, hhReadings, hhVerses, digest: jsonDigest };
+  let exBuilt = today;
+  if (existsSync(EXAMPLES_PATH)) {
+    const old = readFileSync(EXAMPLES_PATH, 'utf8');
+    const m = old.match(/^\{"v":1,"built":"(\d{4}-\d{2}-\d{2})"/);
+    if (m && serializeExamples(m[1], ex) === old) exBuilt = m[1];
+  }
+  const examples = serializeExamples(exBuilt, ex);
+  if (Buffer.byteLength(examples) > EXAMPLES_BUDGET) {
+    console.error(`build-trope-phrases --census: trope_phrase_examples.json is ${Buffer.byteLength(examples)} bytes, over its ${EXAMPLES_BUDGET}-byte budget`);
+    process.exit(1);
+  }
+  const args = { tor, hh, pTorah, pHH, endings, otherEndings, otherEnds, hhReadings, hhVerses, digest: jsonDigest,
+    ex, exBytes: Buffer.byteLength(examples) };
   let reportBuilt = today;
   if (existsSync(CENSUS_PATH)) {
     const old = readFileSync(CENSUS_PATH, 'utf8');
     const m = old.match(/^- \*\*Built:\*\* (\d{4}-\d{2}-\d{2})$/m);
     if (m && censusReport({ ...args, built: m[1] }) + '\n' === old) reportBuilt = m[1];
   }
-  return { text: censusReport({ ...args, built: reportBuilt }) + '\n', verses: tor.verses, marks: tor.units };
+  return { text: censusReport({ ...args, built: reportBuilt }) + '\n', verses: tor.verses, marks: tor.units, examples,
+    exRows: ex.torah.length + ex.highholiday.length, exCount: [...ex.torah, ...ex.highholiday].reduce((a, r) => a + r.ex.length, 0) };
 }
 
-function censusReport({ tor, hh, pTorah, pHH, endings, otherEndings, otherEnds, hhReadings, hhVerses, digest, built }) {
+function censusReport({ tor, hh, pTorah, pHH, endings, otherEndings, otherEnds, hhReadings, hhVerses, digest, built, ex, exBytes }) {
   const L = [];
   const fmt = (n) => n.toLocaleString('en-US');
   const pct = (a, b) => (b ? `${(100 * a / b).toFixed(1)}%` : '—');
@@ -971,6 +1362,35 @@ function censusReport({ tor, hh, pTorah, pHH, endings, otherEndings, otherEnds, 
   L.push(`- Words with no mark: ${fmt(tor.unmarked)}${tor.unmarkedEx.length ? ` (e.g. ${tor.unmarkedEx.join(', ')})` : ''}.`);
   if (tor.anomalies.length) L.push(`- ${tor.anomalies.join('; ')}.`);
   L.push('');
+  L.push('## Real examples for the Phrases tab', '');
+  L.push(`\`data/trope/trope_phrase_examples.json\` (${fmt(exBytes)} bytes) gives each chart row up to ${EXAMPLES_PER_ROW} places where the Torah`,
+    'sings it: a run of consecutive words carrying the row\'s marks, one mark per word and in order, with no pause (paseq',
+    'or legarmeh line) inside it. A run is *complete* when no connecting mark leads into it, so an ending such as tipcha',
+    'etnachta is not lifted out of a longer phrase; complete runs are preferred. An end-of-aliyah row\'s run ends an',
+    'aliyah; no other row\'s does. Double-accented verses are left out.', '');
+  L.push(`- **Year-round rows:** the whole Torah, timed by PocketTorah's word timings (\`data/pockettorah/timings\`). ${fmt(ex.aligned)} of the`,
+    `  ${fmt(ex.aligned + ex.unaligned.length)} aliyot align word for word; not aligned: ${ex.unaligned.map((u) => `${u.id} (${u.why})`).join(', ') || 'none'}.`,
+    '  A clip starts at its first word\'s onset and ends at the next word\'s (an aliyah\'s last word has none: the',
+    `  clip plays out the recording). ${fmt(ex.gapRejects)} runs were dropped for a timing slip: an onset that steps back, repeats, or`,
+    `  comes more than ${GAP_MAX} s after the one before (${GAP_MAX_RARE} s where a rare mark is sung), and ${fmt(ex.slipRejects)} more`,
+    '  for lying where the taps slip by a word for a stretch while the count still matches (an extra tap in one place,',
+    '  a missing one in another). `--audit-audio` finds those stretches by listening for the pause before each verse:',
+    `  ${Object.entries(TIMING_SLIPS).map(([id, rs]) => `${id} ${rs.map((r) => r.replace('-', '–')).join(', ')}`).join('; ') || 'none'}.`,
+    '  Picks spread over books, then parshiyot, preferring a typical length; a row with no complete run takes any.');
+  L.push(`- **High Holiday rows:** the four readings above, words only (PocketTorah has no recording in that melody).`,
+    `  Complete runs only. Aliyah ends (the weekday and Shabbat divisions together): ${Object.entries(HH_ALIYAH_ENDS).map(([k, v]) => `${k} ${v.join(', ')}`).join('; ')}.`, '');
+  L.push('Listen to a few of these against the chart before trusting a new build: a slip neither rule catches (a tap',
+    'missing and another extra inside one verse) plays the wrong words.', '');
+  const exTable = (rows, timed) => {
+    const out = ['| Row | Marks | Runs | Complete | Examples |', '|---|---|---|---|---|'];
+    for (const r of rows) {
+      const list = r.ex.map((x) => `${x.ref}${timed ? ` (${x.p} ${x.a}, ${x.s.toFixed(2)}–${x.e === null ? 'end' : x.e.toFixed(2)} s)` : ''}`).join('; ');
+      out.push(`| ${r.n} | ${r.k} | ${fmt(r.matches)} | ${fmt(r.complete)} | ${list || 'none'} |`);
+    }
+    return out;
+  };
+  L.push('### Year-round melody', '', ...exTable(ex.torah, true), '');
+  L.push('### High Holiday melody', '', ...exTable(ex.highholiday, false), '');
   return L.join('\n');
 }
 
@@ -988,10 +1408,23 @@ if (!LENIENT) writeFileSync(REPORT_PATH, report() + '\n');
 console.log(`build-trope-phrases: ${melodies.torah.rows.length} Torah + ${melodies.highholiday.rows.length} High Holiday rows -> ${JSON_PATH.replace(repoRoot + '/', '')} (${bytes} bytes)${LENIENT ? ' [lenient]' : `; ${crossCheck.length} staffs checked`}`);
 if (counted) {
   writeFileSync(CENSUS_PATH, counted.text);
-  console.log(`build-trope-phrases --census: ${counted.verses} verses, ${counted.marks} marks -> ${CENSUS_PATH.replace(repoRoot + '/', '')}`);
-} else if (existsSync(CENSUS_PATH)) {
-  // the contexts report was counted against another chart: warn, since only --census can bring it up to date
-  const named = (readFileSync(CENSUS_PATH, 'utf8').match(DIGEST_RE) || [])[1];
-  if (named !== jsonDigest)
-    console.warn(`build-trope-phrases: WARNING — ${CENSUS_PATH.replace(repoRoot + '/', '')} was counted against ${named ? `trope_phrases.json ${named}` : 'an unnamed trope_phrases.json'}, not this build's ${jsonDigest}: re-run with --census`);
+  writeFileSync(EXAMPLES_PATH, counted.examples);
+  console.log(`build-trope-phrases --census: ${counted.verses} verses, ${counted.marks} marks -> ${CENSUS_PATH.replace(repoRoot + '/', '')}; ${counted.exCount} examples of ${counted.exRows} rows -> ${EXAMPLES_PATH.replace(repoRoot + '/', '')} (${Buffer.byteLength(counted.examples)} bytes)`);
+} else {
+  // the contexts report and the examples were counted against another chart: warn, since only --census can
+  // bring them up to date
+  if (existsSync(CENSUS_PATH)) {
+    const named = (readFileSync(CENSUS_PATH, 'utf8').match(DIGEST_RE) || [])[1];
+    if (named !== jsonDigest)
+      console.warn(`build-trope-phrases: WARNING — ${CENSUS_PATH.replace(repoRoot + '/', '')} was counted against ${named ? `trope_phrases.json ${named}` : 'an unnamed trope_phrases.json'}, not this build's ${jsonDigest}: re-run with --census`);
+  }
+  if (existsSync(EXAMPLES_PATH)) {
+    let same = false;
+    try {
+      const old = JSON.parse(readFileSync(EXAMPLES_PATH, 'utf8'));
+      same = Object.keys(MELODIES).every((m) => (old.melodies[m] || []).map((r) => `${r.n}:${r.k}`).join('|')
+        === melodies[m].rows.map((row) => `${row.n}:${row.units.map((u) => u.k).join(' ')}`).join('|'));
+    } catch { /* unreadable: stale */ }
+    if (!same) console.warn(`build-trope-phrases: WARNING — ${EXAMPLES_PATH.replace(repoRoot + '/', '')} no longer follows the chart's rows: re-run with --census`);
+  }
 }

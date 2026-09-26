@@ -360,6 +360,31 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     - Genesis 35:22 and the two Decalogues are left out, because they carry two cantillation systems.
     - Its smoke tests: Genesis 1:1's seven marks, 5,846 verses, 122 High Holiday verses, and none of
       the four marks the High Holiday chart omits in those readings.
+    - **Real examples.** The same run writes `data/trope/trope_phrase_examples.json` (CC BY-SA 4.0,
+      budget 64 KB): up to four places where the Torah sings each chart row. A match is a run of
+      consecutive words carrying the row's marks, one mark per word, with no paseq or legarmeh line
+      inside it; runs no conjunctive leads into are preferred, and an `[aliyah-end]` row's run ends an
+      aliyah while no other row's does.
+      - Year-round rows are `{p, a, ref, he, s, e}`: PocketTorah's parasha and aliyah and the clip
+        from the first word's onset to the next word's; `e` is `null` at an aliyah's end, where the
+        clip plays out. High Holiday rows are `{ref, he}`: PocketTorah recorded only the year-round
+        melody. Their aliyah ends are the builder's `HH_ALIYAH_ENDS`.
+      - An aliyah is used only when its words and taps agree one for one (a maqaf-joined word takes
+        one tap per piece; 375 of 378 do). A run is dropped when its onsets step back, repeat or wait
+        over 4 s (10 s where a rare mark is sung), or when it lies in `TIMING_SLIPS`.
+      - **`TIMING_SLIPS`** lists the stretches where the taps slip by a word while the count still
+        matches: an extra tap in one place and a missing one in another. **`--census --audit-audio`**
+        re-derives the table by listening. It downloads every recording once (about 640 MB), decodes
+        it with `mpg123-decoder` as the motif builder does, and keeps only a 10 ms loudness envelope in
+        the gitignored `source-data/trope-cache/audio-env/`. Nearly every verse opens after a pause,
+        and a good tap for a verse's first word sits right beside it. The run fails unless the table
+        is exactly what it hears, and unless Bereshit 1 listens clean.
+      - Smoke tests: row 1 finds Genesis 1:3 at Bereshit 1 (23.60–26.30 s); row 40 has Numbers 35:5
+        alone; only row 41 has `e: null`; Shemini 6 is slipped at Leviticus 11:9; and each of the
+        five backward or repeated onsets fails the gap rule.
+      - The file keeps its own `built` date while unchanged, and a plain run warns when its rows no
+        longer follow the chart. The contexts report's last section lists every pick with its clip
+        times: listen to a few before trusting a new build.
     - `docs/tropepatterns.md` → *G. Toward a parasha staff* reads the result.
 - **Key and voice** (Settings → *Sing along*, and the Learn tab's key bar `#tuKeyBar`). Two fields of the
   settings blob move every staff and its tune; the motif files are never touched.

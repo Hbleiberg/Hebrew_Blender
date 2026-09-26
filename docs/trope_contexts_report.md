@@ -129,3 +129,111 @@ a double pashta as two pashta signs, merged under *Anomalies and counts*).
 - Marks outside the tutor's taxonomy: none.
 - Words with no mark: 1 (e.g. הַ (Deuteronomy 32:6)).
 
+## Real examples for the Phrases tab
+
+`data/trope/trope_phrase_examples.json` (32,267 bytes) gives each chart row up to 4 places where the Torah
+sings it: a run of consecutive words carrying the row's marks, one mark per word and in order, with no pause (paseq
+or legarmeh line) inside it. A run is *complete* when no connecting mark leads into it, so an ending such as tipcha
+etnachta is not lifted out of a longer phrase; complete runs are preferred. An end-of-aliyah row's run ends an
+aliyah; no other row's does. Double-accented verses are left out.
+
+- **Year-round rows:** the whole Torah, timed by PocketTorah's word timings (`data/pockettorah/timings`). 375 of the
+  378 aliyot align word for word; not aligned: Tetzaveh 3 (182 words vs 181 timings), Nasso 6 (330 words vs 332 timings), Beha'alotcha 5 (254 words vs 256 timings).
+  A clip starts at its first word's onset and ends at the next word's (an aliyah's last word has none: the
+  clip plays out the recording). 81 runs were dropped for a timing slip: an onset that steps back, repeats, or
+  comes more than 4 s after the one before (10 s where a rare mark is sung), and 514 more
+  for lying where the taps slip by a word for a stretch while the count still matches (an extra tap in one place,
+  a missing one in another). `--audit-audio` finds those stretches by listening for the pause before each verse:
+  Noach 6 10:16–10:17; Vayera 3 19:7–19:18; Vayera 4 19:38–20:1; Vayera 5 21:11–21:12; Vayishlach 5 34:30–34:31; Vayishlach 6 35:16–35:17, 35:28–35:29; Vayishlach 7 36:35–36:36; Vayeshev 3 37:26–37:27; Vayeshev 4 38:24–38:25; Vayigash 3 45:14–45:15; Shemot 1 1:5–1:6; Shemot 5 3:18–3:19; Va'eira 5 8:11–8:12; Tetzaveh 1 28:4–28:11; Shemini 6 11:8–11:32; Bamidbar 3 2:12–2:13, 2:25–2:32; Nasso 5 7:11–7:14.
+  Picks spread over books, then parshiyot, preferring a typical length; a row with no complete run takes any.
+- **High Holiday rows:** the four readings above, words only (PocketTorah has no recording in that melody).
+  Complete runs only. Aliyah ends (the weekday and Shabbat divisions together): rosh-hashanah-1 21:4, 21:8, 21:12, 21:17, 21:21, 21:27, 21:34; rosh-hashanah-2 22:3, 22:8, 22:14, 22:19, 22:24; yom-kippur 16:3, 16:6, 16:11, 16:17, 16:24, 16:30, 16:34; yom-kippur-mincha 18:5, 18:21, 18:30.
+
+Listen to a few of these against the chart before trusting a new build: a slip neither rule catches (a tap
+missing and another extra inside one verse) plays the wrong words.
+
+### Year-round melody
+
+| Row | Marks | Runs | Complete | Examples |
+|---|---|---|---|---|
+| 1 | mercha tipcha munach etnachta | 1,026 | 1,026 | Genesis 16:3 (Lech Lecha 6, 178.17–181.66 s); Exodus 28:3 (Tetzaveh 1, 72.56–76.03 s); Leviticus 15:14 (Metzora 5, 224.98–228.46 s); Numbers 1:36 (Bamidbar 2, 175.21–178.70 s) |
+| 2 | tipcha munach etnachta | 2,259 | 1,231 | Genesis 14:13 (Lech Lecha 4, 150.56–153.26 s); Exodus 4:19 (Shemot 6, 30.15–32.85 s); Leviticus 5:17 (Vayikra 7, 119.52–122.23 s); Numbers 10:10 (Beha'alotcha 4, 243.40–246.10 s) |
+| 3 | mercha tipcha etnachta | 1,752 | 1,752 | Genesis 26:5 (Toldot 1, 261.34–264.13 s); Exodus 1:11 (Shemot 1, 95.22–98.00 s); Leviticus 11:2 (Shemini 6, 12.25–15.04 s); Numbers 31:13 (Matot 3, 8.65–11.43 s) |
+| 4 | tipcha etnachta | 3,051 | 1,298 | Genesis 25:18 (Chayei Sara 7, 71.85–74.05 s); Exodus 12:18 (Bo 4, 415.01–417.23 s); Leviticus 25:10 (Behar 1, 121.17–123.38 s); Numbers 2:6 (Bamidbar 3, 52.71–54.92 s) |
+| 5 | mercha tipcha mercha sof_pasuk | 990 | 990 | Genesis 19:21 (Vayera 4, 9.37–12.94 s); Exodus 29:34 (Tetzaveh 5, 296.57–300.15 s); Leviticus 4:5 (Vayikra 5, 64.32–67.88 s); Deuteronomy 28:18 (Ki Tavo 6, 222.54–226.09 s) |
+| 6 | tipcha mercha sof_pasuk | 2,144 | 1,149 | Genesis 2:24 (Bereshit 3, 76.50–79.27 s); Exodus 34:2 (Ki Tisa 5, 36.37–39.13 s); Leviticus 26:42 (Bechukotai 3, 438.36–441.12 s); Numbers 5:27 (Nasso 4, 305.23–308.00 s) |
+| 7 | mercha tipcha sof_pasuk | 1,728 | 1,728 | Genesis 25:32 (Toldot 1, 166.39–169.27 s); Exodus 18:17 (Yitro 2, 83.41–86.29 s); Leviticus 4:21 (Vayikra 5, 292.17–295.05 s); Numbers 13:30 (Sh'lach 2, 142.99–145.87 s) |
+| 8 | tipcha sof_pasuk | 3,108 | 1,375 | Genesis 45:16 (Vayigash 3, 133.81–136.15 s); Exodus 40:36 (Pekudei 7, 118.40–120.74 s); Leviticus 26:8 (Bechukotai 2, 33.99–36.33 s); Numbers 31:7 (Matot 2, 70.90–73.24 s) |
+| 9 | kadma mahpach pashta munach zakef_katon | 190 | 160 | Genesis 26:24 (Toldot 4, 4.39–9.06 s); Exodus 13:5 (Bo 7, 64.23–69.02 s); Numbers 7:86 (Nasso 7, 157.64–162.37 s); Deuteronomy 28:32 (Ki Tavo 6, 420.61–425.46 s) |
+| 10 | mahpach pashta munach zakef_katon | 1,158 | 932 | Genesis 26:34 (Toldot 5, 42.53–46.50 s); Exodus 30:36 (Ki Tisa 1, 288.93–292.90 s); Leviticus 13:20 (Tazria 3, 22.02–25.98 s); Numbers 5:30 (Nasso 4, 337.12–341.09 s) |
+| 11 | mahpach pashta zakef_katon | 1,550 | 1,241 | Genesis 26:10 (Toldot 2, 69.89–72.81 s); Exodus 6:8 (Va'eira 1, 105.69–108.61 s); Leviticus 26:6 (Bechukotai 2, 9.29–12.21 s); Numbers 20:5 (Chukat 2, 168.34–171.26 s) |
+| 12 | pashta munach zakef_katon | 2,473 | 1,252 | Genesis 5:13 (Bereshit 6, 188.76–191.82 s); Exodus 17:5 (Beshalach 7, 72.17–75.24 s); Leviticus 8:2 (Tzav 4, 18.76–21.82 s); Numbers 19:18 (Chukat 2, 20.44–23.51 s) |
+| 13 | pashta zakef_katon | 2,341 | 702 | Genesis 28:17 (Vayetzei 1, 137.10–139.40 s); Leviticus 16:15 (Achrei Mot 1, 225.02–227.33 s); Numbers 17:14 (Korach 4, 83.54–85.83 s); Deuteronomy 15:9 (Re'eh 6, 180.40–182.71 s) |
+| 14 | munach mahpach pashta munach zakef_katon | 36 | 36 | Genesis 31:35 (Vayetzei 6, 301.19–305.82 s); Exodus 10:17 (Bo 2, 117.56–121.94 s); Leviticus 17:14 (Achrei Mot 5, 134.60–138.91 s); Numbers 8:17 (Beha'alotcha 2, 29.57–33.89 s) |
+| 15 | kadma geresh | 934 | 612 | Genesis 47:1 (Vayigash 6, 115.82–118.35 s); Leviticus 27:5 (Bechukotai 4, 43.63–46.16 s); Numbers 33:2 (Masei 1, 15.72–18.25 s); Deuteronomy 28:56 (Ki Tavo 6, 753.25–755.78 s) |
+| 16 | geresh | 1,043 | 95 | Genesis 14:7 (Lech Lecha 4, 73.43–75.28 s); Exodus 28:15 (Tetzaveh 2, 23.38–25.20 s); Leviticus 7:21 (Tzav 3, 147.28–149.08 s); Deuteronomy 8:2 (Eikev 1, 390.09–391.95 s) |
+| 17 | munach_legarmeh munach revia | 233 | 226 | Genesis 40:19 (Vayeshev 7, 304.67–308.87 s); Exodus 29:27 (Tetzaveh 5, 176.78–181.03 s); Leviticus 8:2 (Tzav 4, 14.52–18.76 s); Numbers 7:7 (Nasso 5, 96.86–101.06 s) |
+| 18 | munach revia | 1,335 | 1,277 | Genesis 15:18 (Lech Lecha 6, 110.07–112.74 s); Exodus 27:20 (Tetzaveh 1, 5.71–8.38 s); Numbers 6:2 (Nasso 4, 363.52–366.19 s); Deuteronomy 31:29 (Vayeilech 7, 84.87–87.54 s) |
+| 19 | revia | 2,358 | 1,019 | Genesis 20:8 (Vayera 4, 312.36–314.27 s); Exodus 16:31 (Beshalach 6, 300.11–302.01 s); Leviticus 5:22 (Vayikra 7, 178.41–180.31 s); Numbers 13:20 (Sh'lach 1, 155.34–157.24 s) |
+| 20 | gershayim | 481 | 427 | Genesis 43:11 (Miketz 5, 538.70–540.67 s); Leviticus 12:7 (Tazria 1, 76.83–78.80 s); Numbers 19:4 (Chukat 1, 55.64–57.61 s); Deuteronomy 28:31 (Ki Tavo 6, 397.28–399.25 s) |
+| 21 | darga | 1,053 | 800 | Genesis 35:20 (Vayishlach 6, 114.85–116.54 s); Exodus 16:23 (Beshalach 6, 202.05–203.74 s); Leviticus 18:21 (Achrei Mot 6, 169.24–170.93 s); Numbers 3:1 (Bamidbar 4, 7.53–9.23 s) |
+| 22 | tevir | 2,580 | 943 | Genesis 8:18 (Noach 4, 31.49–33.19 s); Exodus 2:18 (Shemot 3, 112.57–114.28 s); Leviticus 25:17 (Behar 2, 44.26–45.98 s); Numbers 34:13 (Masei 3, 253.18–254.89 s) |
+| 23 | darga tevir | 974 | 735 | Genesis 23:7 (Chayei Sara 1, 62.34–65.70 s); Exodus 12:2 (Bo 4, 122.66–126.01 s); Leviticus 7:18 (Tzav 3, 104.17–107.53 s); Numbers 16:1 (Korach 1, 9.46–12.82 s) |
+| 24 | mercha tevir | 642 | 491 | Genesis 21:21 (Vayera 5, 189.32–191.76 s); Exodus 4:5 (Shemot 5, 199.93–202.38 s); Leviticus 13:26 (Tazria 4, 49.74–52.20 s); Numbers 3:20 (Bamidbar 5, 56.85–59.28 s) |
+| 25 | kadma darga tevir | 205 | 185 | Genesis 14:11 (Lech Lecha 4, 133.39–137.32 s); Exodus 16:15 (Beshalach 6, 78.54–82.51 s); Leviticus 4:13 (Vayikra 5, 180.99–184.96 s); Numbers 32:21 (Matot 7, 11.01–14.94 s) |
+| 26 | kadma mercha tevir | 125 | 111 | Genesis 11:8 (Noach 7, 76.77–79.98 s); Exodus 12:21 (Bo 5, 11.10–14.33 s); Leviticus 13:14 (Tazria 2, 113.06–116.10 s); Numbers 1:18 (Bamidbar 1, 136.68–139.91 s) |
+| 27 | munach darga tevir | 34 | 34 | Genesis 7:3 (Noach 2, 28.73–32.31 s); Leviticus 5:18 (Vayikra 7, 127.63–131.25 s); Numbers 32:32 (Matot 7, 137.72–141.55 s); Deuteronomy 28:29 (Ki Tavo 6, 375.93–379.73 s) |
+| 28 | munach telisha_gedola | 69 | 56 | Genesis 1:30 (Bereshit 1, 389.74–392.86 s); Exodus 28:30 (Tetzaveh 2, 269.86–273.41 s); Numbers 14:3 (Sh'lach 2, 229.80–232.94 s); Deuteronomy 2:19 (Devarim 5, 371.21–374.40 s) |
+| 29 | munach telisha_ketana | 79 | 76 | Genesis 47:24 (Vayigash 7, 251.64–254.22 s); Exodus 23:15 (Mishpatim 5, 107.34–109.95 s); Leviticus 4:22 (Vayikra 5, 300.31–302.85 s); Numbers 35:18 (Masei 6, 106.33–108.92 s) |
+| 30 | munach pazer | 38 | 28 | Exodus 5:3 (Shemot 7, 42.19–45.87 s); Leviticus 6:2 (Tzav 1, 12.23–15.74 s); Numbers 16:26 (Korach 3, 59.81–63.45 s); Deuteronomy 14:29 (Re'eh 5, 154.45–158.45 s) |
+| 31 | zakef_gadol | 510 | 510 | Genesis 45:10 (Vayigash 3, 52.41–54.40 s); Leviticus 27:32 (Bechukotai 7, 40.03–42.03 s); Numbers 15:15 (Sh'lach 5, 72.42–74.44 s); Deuteronomy 27:17 (Ki Tavo 5, 99.58–101.58 s) |
+| 32 | yetiv munach zakef_katon | 275 | 275 | Genesis 44:34 (Vayigash 2, 50.85–53.60 s); Leviticus 13:12 (Tazria 2, 89.81–92.59 s); Numbers 1:17 (Bamidbar 1, 117.97–120.74 s); Deuteronomy 20:1 (Shoftim 6, 132.13–134.91 s) |
+| 33 | yetiv zakef_katon | 52 | 52 | Genesis 6:15 (Noach 1, 71.20–73.15 s); Leviticus 1:8 (Vayikra 1, 92.51–94.53 s); Numbers 35:24 (Masei 6, 173.80–175.80 s); Deuteronomy 15:12 (Re'eh 6, 246.38–248.47 s) |
+| 34 | munach zarka munach segol | 103 | 77 | Genesis 38:18 (Vayeshev 4, 274.99–280.15 s); Exodus 6:13 (Va'eira 1, 166.74–172.16 s); Leviticus 7:18 (Tzav 3, 96.13–101.70 s); Numbers 19:18 (Chukat 2, 3.48–8.75 s) |
+| 35 | munach zarka segol | 113 | 91 | Genesis 37:10 (Vayeshev 1, 182.16–187.15 s); Exodus 30:36 (Ki Tisa 1, 281.43–286.33 s); Leviticus 5:24 (Vayikra 7, 213.64–218.61 s); Numbers 11:31 (Beha'alotcha 7, 13.43–18.46 s) |
+| 36 | zarka munach segol | 176 | 56 | Genesis 24:30 (Chayei Sara 4, 39.91–44.77 s); Exodus 14:2 (Beshalach 1, 110.59–115.66 s); Leviticus 12:6 (Tazria 1, 60.70–65.32 s); Numbers 18:11 (Korach 6, 231.41–236.04 s) |
+| 37 | zarka segol | 146 | 19 | Genesis 32:10 (Vayishlach 1, 108.56–113.02 s); Leviticus 5:12 (Vayikra 7, 30.65–35.44 s); Numbers 21:13 (Chukat 6, 30.04–34.75 s); Deuteronomy 19:6 (Shoftim 5, 277.74–283.06 s) |
+| 38 | shalshelet | 3 | 3 | Genesis 24:12 (Chayei Sara 3, 27.48–34.13 s); Genesis 39:8 (Vayeshev 6, 20.25–29.50 s); Leviticus 8:23 (Tzav 6, 16.01–23.53 s) |
+| 39 | mercha_kefula | 5 | 0 | Genesis 27:25 (Toldot 5, 332.11–333.62 s); Exodus 5:15 (Shemot 7, 218.51–221.24 s); Leviticus 10:1 (Shemini 3, 46.56–49.51 s); Numbers 14:3 (Sh'lach 2, 245.24–247.66 s) |
+| 40 | yerach_ben_yomo karnei_parah | 1 | 0 | Numbers 35:5 (Masei 5, 63.02–72.35 s) |
+| 41 | mercha tipcha mercha sof_pasuk | 65 | 65 | Genesis 18:14 (Vayera 1, 151.55–end s); Exodus 33:11 (Ki Tisa 2, 897.19–end s); Leviticus 3:17 (Vayikra 4, 218.98–end s); Numbers 14:7 (Sh'lach 2, 288.72–end s) |
+
+### High Holiday melody
+
+| Row | Marks | Runs | Complete | Examples |
+|---|---|---|---|---|
+| 1 | mercha tipcha munach etnachta | 29 | 29 | Genesis 21:1; Genesis 22:19; Leviticus 16:10; Leviticus 18:3 |
+| 2 | tipcha munach etnachta | 52 | 23 | Genesis 21:5; Genesis 22:3; Leviticus 16:1; Leviticus 18:5 |
+| 3 | mercha tipcha etnachta | 31 | 31 | Genesis 21:6; Genesis 22:12; Leviticus 16:3; Leviticus 18:10 |
+| 4 | tipcha etnachta | 60 | 29 | Genesis 21:2; Genesis 22:1; Leviticus 16:2; Leviticus 18:2 |
+| 5 | mercha tipcha mercha sof_pasuk | 12 | 12 | Genesis 21:25; Genesis 22:13; Leviticus 16:13; Leviticus 18:1 |
+| 6 | tipcha mercha sof_pasuk | 41 | 29 | Genesis 21:1; Genesis 22:1; Leviticus 16:7; Leviticus 18:2 |
+| 7 | mercha tipcha sof_pasuk | 35 | 35 | Genesis 21:2; Genesis 22:4; Leviticus 16:1; Leviticus 18:7 |
+| 8 | tipcha sof_pasuk | 58 | 23 | Genesis 21:6; Genesis 22:9; Leviticus 16:2; Leviticus 18:6 |
+| 9 | kadma mahpach pashta munach zakef_katon | 5 | 5 | Genesis 22:17; Leviticus 16:24; Leviticus 16:27; Leviticus 18:9 |
+| 10 | kadma mahpach pashta zakef_katon | 4 | 3 | Genesis 21:23; Genesis 22:2; Genesis 22:9 |
+| 11 | mahpach pashta munach zakef_katon | 29 | 23 | Genesis 21:4; Genesis 22:7; Leviticus 16:2; Leviticus 18:10 |
+| 12 | munach mahpach pashta zakef_katon | 0 | 0 | none |
+| 13 | darga tevir | 26 | 23 | Genesis 21:1; Genesis 22:14; Leviticus 16:3; Leviticus 18:3 |
+| 14 | mercha tevir | 15 | 10 | Genesis 21:21; Genesis 22:8; Leviticus 16:4; Leviticus 18:7 |
+| 15 | munach_legarmeh munach revia | 4 | 4 | Genesis 22:12; Leviticus 16:13; Leviticus 16:17; Leviticus 16:27 |
+| 16 | munach revia | 22 | 22 | Genesis 21:22; Genesis 22:4; Leviticus 16:13; Leviticus 18:26 |
+| 17 | munach telisha_gedola | 3 | 3 | Genesis 21:14; Leviticus 16:12; Leviticus 16:29 |
+| 18 | munach telisha_ketana | 1 | 1 | Leviticus 18:3 |
+| 19 | munach pazer | 1 | 1 | Leviticus 18:3 |
+| 20 | kadma geresh | 21 | 18 | Genesis 21:3; Genesis 22:3; Leviticus 16:2; Leviticus 18:30 |
+| 20b | kadma geresh | 21 | 18 | Genesis 21:3; Genesis 22:3; Leviticus 16:2; Leviticus 18:30 |
+| 21 | geresh | 23 | 2 | Genesis 21:19; Genesis 21:23 |
+| 22 | gershayim | 10 | 10 | Genesis 21:26; Genesis 22:3; Leviticus 16:12; Leviticus 18:17 |
+| 23 | yetiv munach zakef_katon | 5 | 5 | Genesis 21:18; Genesis 21:30; Genesis 22:2; Leviticus 18:27 |
+| 24 | yetiv zakef_katon | 1 | 1 | Leviticus 16:2 |
+| 25 | zakef_gadol | 8 | 8 | Genesis 21:2; Genesis 21:6; Genesis 22:13; Leviticus 16:34 |
+| 26 | munach zarka munach segol | 1 | 1 | Genesis 21:17 |
+| 27 | zarka munach segol | 3 | 2 | Leviticus 16:2; Leviticus 16:4 |
+| 28 | munach zarka segol | 1 | 0 | none |
+| 29 | zarka segol | 1 | 0 | none |
+| 30 | mercha tipcha mercha sof_pasuk | 6 | 6 | Genesis 21:17; Genesis 22:19; Leviticus 16:6; Leviticus 18:21 |
+| 31 | mercha tipcha sof_pasuk | 8 | 8 | Genesis 21:4; Genesis 21:12; Genesis 22:8; Leviticus 16:11 |
+| 32 | tipcha mercha sof_pasuk | 12 | 6 | Genesis 21:8; Genesis 22:3; Leviticus 16:3; Leviticus 18:30 |
+| 33 | tipcha sof_pasuk | 10 | 2 | Genesis 22:24; Leviticus 18:5 |
+
