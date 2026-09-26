@@ -4846,6 +4846,8 @@
   "torah.reading.empty_title": "בחרו פרשה כדי להתחיל",
   "torah.reading.failed_body": "בדקו את חיבור האינטרנט ונסו שוב — ייתכן ש-Sefaria, מקור הטקסט, אינו זמין כרגע.",
   "torah.reading.failed_title": "הקריאה לא נטענה",
+  "torah.reading.hh_chant_chip": "ההקלטה: מנגינת כל השנה",
+  "torah.reading.hh_chant_tip": "כפתורי השירה מנגנים את ההקלטות של PocketTorah, שמושרות במנגינת כל השנה. בראש השנה וביום כיפור קוראים את הקריאה הזו במנגינת הימים הנוראים, ומאמן הטעמים מראה אותה בחמשות שלו.",
   "torah.reading.hh_trope_link": "מנגינת הימים הנוראים — למדו את הטעמים →",
   "torah.reading.jump_chip_aria": "קפיצה לעלייה {n} ({label})",
   "torah.reading.kbd_end": "End",

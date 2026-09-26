@@ -178,7 +178,13 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   called from `applyTropeColors`, flips `hidden` and sets the hrefs) and the reading header adds
   `.tt-hh-link` whether or not trope colour is on (screen-only like the header; off in fullscreen).
   Both open `trope_tutor.html?melody=highholiday`. The chant recordings for those readings are
-  still PocketTorah's year-round melody. On paper the color→family key travels via the **print
+  still PocketTorah's year-round melody, and the header says so: while Chant can play the reading
+  (`currentReadingChantable()`), a `.tt-notice-chip` right after `.tt-hh-link` reads
+  `torah.reading.hh_chant_chip`, and its tap tip (`torah.reading.hh_chant_tip`) says the day's
+  reading is chanted to the High Holiday melody the tutor's staffs show. It carries its own
+  `aria-label` (`bindTip` names a chip without one "More information", hiding its text from a
+  screen reader); like the page's other notice chip it stays in fullscreen, where the link is left
+  off, and is print-hidden. On paper the color→family key travels via the **print
   band** (superseding the older in-flow legend print): `#ttPrintBand`, print-only, in flow
   directly above `#ttReading` (so it prints once, on sheet 1), populated by `buildPrintBand()`
   in the beforeprint handler: range label + compact clause key. The old card's 35%-tint

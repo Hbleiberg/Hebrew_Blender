@@ -4142,6 +4142,11 @@ function renderText() {
   // Verse looping is chant-only and not offered for holiday/custom readings
   // (mapped-timings path has no cheap verse-end boundary — see loopVerse note).
   const canLoop = canChant && settings.scope !== 'custom';
+  // A Rosh Hashanah / Yom Kippur reading links to the tutor's High Holiday melody; while Chant can play it, a notice
+  // chip beside the link says the recordings are PocketTorah's year-round melody, so a student practising with Chant
+  // is told the day's tune is another. The chip carries its own aria-label: bindTip would otherwise name it
+  // "More information" and hide its text from a screen reader.
+  const hhChantChip = TROPE_TUTOR_URL && readingTutorMelody() && canChant;
   let html = `<div class="tt-ref-hdr">
     <span>${esc(currentRangeLabel)}${_readingHasShem
       ? ` <span class="tt-shem-chip" lang="he" data-i18n-tip="torah.shem.chip_tip" data-tip="${esc(I18n.t('torah.shem.chip_tip'))}">${esc(I18n.t('torah.shem.chip_label'))}</span>`
@@ -4149,6 +4154,8 @@ function renderText() {
       ? ` <span class="tt-notice-chip" data-i18n-tip="torah.trans.unavailable_tip" data-tip="${esc(I18n.t('torah.trans.unavailable_tip'))}">${esc(I18n.t('torah.trans.unavailable_chip'))}</span>`
       : ''}${TROPE_TUTOR_URL && readingTutorMelody()
       ? ` <a class="tt-hh-link" href="${esc(tropeTutorHref())}" data-i18n="torah.reading.hh_trope_link">${esc(I18n.t('torah.reading.hh_trope_link'))}</a>`
+      : ''}${hhChantChip
+      ? ` <span class="tt-notice-chip" data-i18n="torah.reading.hh_chant_chip" data-i18n-aria-label="torah.reading.hh_chant_chip" aria-label="${esc(I18n.t('torah.reading.hh_chant_chip'))}" data-i18n-tip="torah.reading.hh_chant_tip" data-tip="${esc(I18n.t('torah.reading.hh_chant_tip'))}">${esc(I18n.t('torah.reading.hh_chant_chip'))}</span>`
       : ''}</span>
     <span style="display:flex;gap:6px;">
       <button class="tt-readall hi-btn" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? ICON_STOP + esc(I18n.t('torah.reading.stop')) : ICON_SOUND + esc(I18n.t('torah.reading.read_all'))}</button>

@@ -4846,6 +4846,8 @@
   "torah.reading.empty_title": "Pick a parsha to start",
   "torah.reading.failed_body": "Check your internet connection, then try again — Sefaria, the text source, may be briefly unavailable.",
   "torah.reading.failed_title": "This reading didn't load",
+  "torah.reading.hh_chant_chip": "Recording: year-round melody",
+  "torah.reading.hh_chant_tip": "The Chant buttons play PocketTorah's recordings, which are sung to the year-round melody. On Rosh Hashanah and Yom Kippur this reading is chanted to the High Holiday melody, which the Trope Tutor shows on its staffs.",
   "torah.reading.hh_trope_link": "High Holiday melody — learn its trope →",
   "torah.reading.jump_chip_aria": "Jump to aliyah {n} ({label})",
   "torah.reading.kbd_end": "End",

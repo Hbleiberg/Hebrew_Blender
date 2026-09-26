@@ -804,7 +804,7 @@ Phrases tab, with real Torah examples of each row.)
 
 1. High Holiday recordings for the Torah Trainer's Rosh Hashanah and Yom Kippur readings: those
    readings now link to the tutor on the High Holiday melody, but their chant buttons still play
-   PocketTorah's year-round recordings.
+   PocketTorah's year-round recordings (a chip beside the link says so).
 2. A "what comes next" drill: a phrase with one mark hidden, or the marks of a phrase to put in
    order.
 3. Context variants on the Learn card: munach's shapes and the tevir-context mercha and kadma,
