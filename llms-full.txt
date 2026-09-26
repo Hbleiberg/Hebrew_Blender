@@ -233,21 +233,22 @@ Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritS
 
 https://ivritsuite.com/trope_tutor.html
 
-Learn the Torah cantillation marks (trope / te'amim) one clause family at a time — symbol, Ashkenazi and Sephardi names, and melody with real chanted examples — then drill yourself with three quiz modes and per-mark mastery tracking.
+Learn the Torah cantillation marks (trope / te'amim) one clause family at a time — symbol, Ashkenazi and Sephardi names, and melody with real chanted examples — see every line of the printed chart on a full staff with real Torah examples, then drill yourself with three quiz modes and per-mark mastery tracking.
 
 ### How to learn the Torah trope (cantillation marks) with the Trope Tutor (about 5 minutes)
 
 1. **Pick a clause family** — Start in Learn mode. The trope marks are grouped by clause family — use the chips above the cards to move between families.
 2. **Study each mark's card** — Every card shows the mark's symbol on a Hebrew word plus its Ashkenazi and Sephardi names. Switch the primary naming tradition in settings.
 3. **Play the chanted example** — Each card plays a real word from the Torah reading, clipped from PocketTorah's recordings, so you hear the mark's actual melody.
-4. **Switch to Drill** — Drill sessions ask 5, 10 or 20 questions of three kinds: name the trope on a marked word, hear a clip and pick the symbol, or pick the melody that matches a symbol.
-5. **Track your mastery** — The per-mark mastery grid shows your progress. Marks you miss come up more often, and distractors get sneakier as your mastery grows.
+4. **Hear the marks together** — Open the Phrases tab to see each line of the printed chart as it is sung, on a full staff: play it as tones, then hear real verses where the Torah sings it.
+5. **Switch to Drill** — Drill sessions ask 5, 10 or 20 questions of three kinds: name the trope on a marked word, hear a clip and pick the symbol, or pick the melody that matches a symbol.
+6. **Track your mastery** — The per-mark mastery grid shows your progress. Marks you miss come up more often, and distractors get sneakier as your mastery grows.
 
 ### Questions
 
 **What is the Trope Tutor?**
 
-A free interactive tutor for the Torah cantillation marks (trope / te'amim). Learn mode teaches the marks one clause family at a time — symbol, names, and melody with real chanted examples — and Drill mode quizzes you three ways with per-mark mastery tracking.
+A free interactive tutor for the Torah cantillation marks. Learn mode teaches each mark's symbol, names, and melody with real chanted examples; Phrases shows every line of the printed chart on a full staff; Drill mode quizzes you three ways with per-mark mastery tracking.
 
 **What melody tradition is this?**
 
@@ -272,6 +273,10 @@ Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritS
 **Can I print a chart of all the trope marks?**
 
 Yes. In Learn mode, the Print chart button prints all 26 marks as one reference sheet — each mark's symbol with its Ashkenazi and Sephardi names, grouped by clause family.
+
+**What does the Phrases tab show?**
+
+Every line of the printed cantillation chart, marks as they are sung together, on a full music staff you can play, in the year-round or High Holiday melody and in any key. Each phrase lists real verses where the Torah sings it, with PocketTorah's recording for the year-round melody, and the whole chart prints on one sheet.
 
 ---
 
