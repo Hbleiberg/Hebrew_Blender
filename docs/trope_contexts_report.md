@@ -2,7 +2,7 @@
 
 - **Built:** 2026-09-26
 - **Text:** Sefaria public text export (storage.googleapis.com/sefaria-export, Hebrew merged.json per Torah book), whose Torah text is the *Miqra according to the Masorah* edition (MAM, from Hebrew Wikisource), which Sefaria lists as CC BY-SA. The example words below are quoted from it.
-- **Chart:** `data/trope/trope_phrases.json` (sha1 52421e86f817), built from `docs/tropepatterns.md` sections B and C
+- **Chart:** `data/trope/trope_phrases.json` (sha1 0ecafe75eeef), built from `docs/tropepatterns.md` sections B and C
 - **Torah:** 5,846 verses (27 double-accented ones left out, so 5,819 counted): 68,187 marked words, 68,771 marks. Left out: Genesis 35:22, Exodus 20:2, Exodus 20:3, Exodus 20:4, Exodus 20:5, Exodus 20:6, Exodus 20:7, Exodus 20:8, Exodus 20:9, Exodus 20:10, Exodus 20:11, Exodus 20:12, Exodus 20:13, Exodus 20:14, Deuteronomy 5:6, Deuteronomy 5:7, Deuteronomy 5:8, Deuteronomy 5:9, Deuteronomy 5:10, Deuteronomy 5:11, Deuteronomy 5:12, Deuteronomy 5:13, Deuteronomy 5:14, Deuteronomy 5:15, Deuteronomy 5:16, Deuteronomy 5:17, Deuteronomy 5:18
 - **High Holiday readings:** Rosh Hashanah — Day 1 (Genesis 21:1–21:34); Rosh Hashanah — Day 2 (Genesis 22:1–22:24); Yom Kippur — Morning (Leviticus 16:1–16:34); Yom Kippur — Afternoon (Leviticus 18:1–18:30) — 122 verses
 - **Aliyot:** `data/pockettorah/aliyah.json`, PocketTorah's full-reading divisions — the aliyot the Torah Trainer shows — each paired with its parasha in `data/parshiyot.json` by the parasha's first verse

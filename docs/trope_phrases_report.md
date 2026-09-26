@@ -1,8 +1,8 @@
 # Trope phrases build report
 
-- **Built:** 2026-09-25
+- **Built:** 2026-09-26
 - **Source:** `docs/tropepatterns.md` sections B and C — the printed chart's rows, transcribed from clean scans
-- **Output:** `data/trope/trope_phrases.json` — 72,111 bytes (budget 131,072)
+- **Output:** `data/trope/trope_phrases.json` — 72,037 bytes (budget 131,072)
 - **Rows:** Torah 41 (436 notes) · High Holiday 34 (459 notes)
 - **License:** hand transcriptions of the traditional melodies — [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), like the JSON.
 
@@ -213,9 +213,7 @@ only) count from A = 1; ′ is the octave above.
 
 #### segol
 
-- `SE- G4(s) GOL G4(e) =G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) 3{~F4(32) ~E4(32) ~D4(32)} ~=D4(q)` — rows 26, 27 · after munach · before $
-- `SE- G4(e) GOL G4(e) =G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) 3{~F4(32) ~E4(32) ~D4(32)} ~=D4(q)` — rows 28 · after zarka · before $
-- `SE- G4(e) GOL G4(e) ~=G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) 3{~F4(32) ~E4(32) ~D4(32)} ~=D4(q)` — rows 29 · after zarka · before $
+- `SE- G4(s) GOL G4(e) ~=G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) 3{~F4(32) ~E4(32) ~D4(32)} ~=D4(q)` — rows 26, 27, 28, 29 · after munach, zarka · before $
 
 #### revia
 

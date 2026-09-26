@@ -619,27 +619,27 @@ zakef_gadol ZA- 3{D4(e) KEF D4(e) GA- D4(e)} DOL A4(s) ~G4(s) ~F4(s) ~E4(s) ~F4(
 munach    MU- C4(e) NACH 3{E4(e) ~D4(e)
 zarka     ZAR- D4(e)} KA D4(e) ~D4(32) ~C4(32) ~B3(32) ~A3(32) ~B3(e,-) ~A3(e,-) ~G3(q,-) rest(e)
 munach    MU- D4(e) NACH G4(de)
-segol     SE- G4(s) GOL G4(e) =G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) 3{~F4(32) ~E4(32) ~D4(32)} ~=D4(q)
+segol     SE- G4(s) GOL G4(e) ~=G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) 3{~F4(32) ~E4(32) ~D4(32)} ~=D4(q)
 ```
 
 ```trope-hh
 #27 זַרְקָא֮ מֻנַּ֣ח סֶגוֹל֒
 zarka     ZAR- D4(e) KA D4(e) ~D4(32) ~C4(32) ~B3(32) ~A3(32) ~B3(e,-) ~A3(e,-) ~G3(q,-) rest(e)
 munach    MU- D4(e) NACH G4(de)
-segol     SE- G4(s) GOL G4(e) =G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) 3{~F4(32) ~E4(32) ~D4(32)} ~=D4(q)
+segol     SE- G4(s) GOL G4(e) ~=G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) 3{~F4(32) ~E4(32) ~D4(32)} ~=D4(q)
 ```
 
 ```trope-hh
 #28 מֻנַּ֣ח זַרְקָא֮ סֶגוֹל֒
 munach    MU- C4(e) NACH 3{E4(e) D4(e)
 zarka     ZAR- D4(e)} KA D4(e) ~=D4(32) ~C4(32) ~B3(32) ~A3(32) ~B3(e,-) ~A3(e,-) ~G3(q,-) rest(e)
-segol     SE- G4(e) GOL G4(e) =G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) 3{~F4(32) ~E4(32) ~D4(32)} ~=D4(q)
+segol     SE- G4(s) GOL G4(e) ~=G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) 3{~F4(32) ~E4(32) ~D4(32)} ~=D4(q)
 ```
 
 ```trope-hh
 #29 זַרְקָא֮ סֶגוֹל֒
 zarka     ZAR- D4(e) KA D4(e) ~D4(32) ~C4(32) ~B3(32) ~A3(32) ~B3(e,-) ~A3(e,-) ~G3(q,-) rest(e)
-segol     SE- G4(e) GOL G4(e) ~=G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) 3{~F4(32) ~E4(32) ~D4(32)} ~=D4(q)
+segol     SE- G4(s) GOL G4(e) ~=G4(32) ~F4(32) ~E4(32) ~D4(32) ~E4(e) 3{~F4(32) ~E4(32) ~D4(32)} ~=D4(q)
 ```
 
 ```trope-hh
