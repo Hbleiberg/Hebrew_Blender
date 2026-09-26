@@ -799,22 +799,22 @@ sof_pasuk SOF- D4(e) PA- E4(e) SUK E4(s) ~D4(s) ~C4(s) ~B3(s) ~D4(e) ~C4(q)
 
 Each of these is a Feature seed in the improvement loop's ledger (`docs/IMPROVEMENT_LOG.md`), so a loop
 session can pick one up. (The key control for the tune button that stood fifth here has shipped, as the
-key bar described in section E.)
+key bar described in section E, and so has the phrases tab that stood second: the Trope Tutor's
+Phrases tab, with real Torah examples of each row.)
 
 1. High Holiday recordings for the Torah Trainer's Rosh Hashanah and Yom Kippur readings: those
    readings now link to the tutor on the High Holiday melody, but their chant buttons still play
    PocketTorah's year-round recordings.
-2. A phrases tab: the rows above as playable, printable lines grouped by clause, with the Hebrew
-   phrase and mark chips. Its data exists: `data/trope/trope_phrases.json`.
-3. A "what comes next" drill: a phrase with one mark hidden, or the marks of a phrase to put in
+2. A "what comes next" drill: a phrase with one mark hidden, or the marks of a phrase to put in
    order.
-4. Context variants on the Learn card: munach's shapes and the tevir-context mercha and kadma,
+3. Context variants on the Learn card: munach's shapes and the tevir-context mercha and kadma,
    each with the phrase they belong to (the figures are in `docs/trope_phrases_report.md`).
-5. Teaching the end-of-aliyah sof pasuk, on the card and as a highlight of an aliyah's last verse
+4. Teaching the end-of-aliyah sof pasuk, on the card and as a highlight of an aliyah's last verse
    in the Torah Trainer.
-6. A munach legarmeh card.
-7. A one-sheet phrase chart to print in the teacher's chosen key (the key bar's setting).
-8. A staff for a whole reading, a verse to a parasha, drawn and played under the Hebrew (section G).
+5. A munach legarmeh card.
+6. A one-sheet phrase chart to print in the teacher's chosen key (the Phrases tab prints the
+   whole chart in that key, over several sheets).
+7. A staff for a whole reading, a verse to a parasha, drawn and played under the Hebrew (section G).
 
 ## G. Toward a parasha staff
 

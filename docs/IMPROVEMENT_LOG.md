@@ -12,6 +12,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S421 Pass P — for H**) | classroom_dashboard.html | **A class list beyond the picker's cap keeps its names now (`288af4a`) but the picker draws only the first 60 chips** (`rosterNames()` slices), so students 61+ of a merged class are stored and counted ("65 names (max 60)") yet never picked; say so in the drawer or raise the chip cap. | found S421
 
+- [ ] P3 (**NEW 2026-09-26**) | trope_tutor.html (trope_index.json) | **8 Learn example clips sit where PocketTorah's taps slip by a word** (`build-trope-phrases.mjs` TIMING_SLIPS), so each likely plays a neighbouring word; the index builder could skip those verses. | found 2026-09-26
+
+- [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
+
 - [ ] P3 (**NEW S416 — gate 2; shared script; smokes `--sdk`**) | js/ivrit-account.js | **The account chip reads "Sign in" (a name, "Offline") but is named "Account"** on 11 pages (2.5.3). | found S416
 
 - [ ] P4 (**NEW S417 Pass E — gate 2**) | manifest.webmanifest | **The install manifest's description names six tools, not the Trope Tutor**; add it after "Torah Trainer" as the home page does. | found S417
@@ -207,8 +211,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] S–M | trope_tutor.html | **Printable mastery report**: the mastery grid, personal best and missed marks on one sheet. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S | trope_tutor.html | **A typed confirmation before “Reset mastery & personal best”** so a curious student can't wipe a class record. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] M | trope_tutor.html | **A Phrases tab**: the chart's 41 phrase rows as playable, printable lines grouped by clause, with the Hebrew phrase and mark chips. Data half done: `data/trope/trope_phrases.json` (unfetched; first fetch `?v=1`). | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] M | trope_tutor.html | **A "what comes next?" drill**: a chart phrase with one mark hidden to pick, or its marks to put in order. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -592,6 +594,6 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 **⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), M (S408), then G D I H C F B A E L K N P.** Take **M**: the coverage row's "no M" list (generator, flash, torah, terms) names the surfaces never audited — pick one; unattended, small refinements only, anything dramatic is gate 3 → log with screenshots.
 
-**⚑ STRONGEST UNTAKEN (ungated):** the torah/trope credits' `lang`; S413's three resources items; the S412 flash five; FM's `special_intro` fallback; K's doc-only gate-comment item; the dashboard's adopt toast and its 60-chip picker (S421). **Seed bench: 34.** Gated items wait in Candidates.
+**⚑ STRONGEST UNTAKEN (ungated):** the torah/trope credits' `lang`; S413's three resources items; the S412 flash five; FM's `special_intro` fallback; K's doc-only gate-comment item; the dashboard's adopt toast and its 60-chip picker (S421). **Seed bench: 33.** Gated items wait in Candidates.
 
 **⚑ HARNESS: traps 1–153 in loop-findings** (`p421/` probes in its S421 receipts: a fake cloud beside the 2.116.0 fixture, fetched with `npm pack` from the sandbox); `compact-ledger --apply` runs ONCE, only after the edit script succeeded (trap 140); the old handoff moves by hand; the ledger sits at its 100 KB ceiling — the oldest session's Done entries go to the archive by hand (S421 moved S419's).
