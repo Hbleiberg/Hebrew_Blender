@@ -414,6 +414,20 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     Spacing grows with the log of each note's length and widens for accidentals, dots, flags and
     syllables. A row wider than its card scrolls inside an LTR wrapper, which is also its keyboard stop
     and carries its label.
+  - **Examples** (`buildPhraseExamples`, screen only) come from `data/trope/trope_phrase_examples.json`
+    (`?v=1`; *Real examples* above), checked like the chart. A row whose marks (`k`) no longer match the
+    chart shows *Examples could not be loaded* rather than another phrase's words.
+    - Each example's words light every mark in its own word (the Learn cards' `renderMarkedWord`, one
+      word at a time), with the parasha and verse as the Learn cards write them.
+    - On the year-round melody a button plays PocketTorah's recording of those words through
+      `playClip`. It stays pressed until the clip ends or anything stops it (`_pexId`, reset from
+      `stopClip`).
+    - An `[aliyah-end]` example has `e: null`: `playClip` then sets `_stopAt` to `Infinity`, so the
+      seek watcher still heals a snapped-back seek, and the recording's `ended` event closes the clip
+      and calls its `onEnd`.
+    - On the High Holiday melody the examples are words only, named by their reading (Rosh Hashanah,
+      day 1 or 2; Yom Kippur morning or afternoon). The melody banner says there are no recordings,
+      and a row the readings never sing says so.
   - **The tune** is `togglePhraseTune`, on the Learn tune's scale (an eighth is 0.32 s at 1×): ties sound
     as one note, rests are silent, and a grace note is quick and borrowed from the note it leads into.
     Both tunes go through `_playTuneCore`, so `stopTune()` stops either, and a clip, a tab switch or a

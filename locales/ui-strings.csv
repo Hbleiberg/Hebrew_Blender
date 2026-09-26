@@ -4447,6 +4447,18 @@ trope.phrases.print_title,"Print every phrase of this melody as one chart, in th
 trope.phrases.staff_aria,Staff of phrase {n}: {marks},חמשה של צירוף {n}: {marks},Phrases card staff aria-label,"aria-label only; do-not-translate {n}/{marks} (row number, glyph-names)"
 trope.phrases.staff_aria_hh,High Holiday staff of phrase {n}: {marks},חמשה של צירוף {n} במנגינת הימים הנוראים: {marks},Phrases card staff aria-label (High Holiday melody),"aria-label only; do-not-translate {n}/{marks} (row number, glyph-names)"
 trope.phrases.unavailable,The phrase chart couldn’t be loaded. Check your connection and try again.,לא ניתן היה לטעון את טבלת הצירופים. בדקו את החיבור ונסו שוב.,Phrases tab status (load failed; a Try again button follows),
+trope.phrases.examples_title,In the Torah,בתורה,Phrases card examples heading (year-round melody),
+trope.phrases.examples_title_hh,In the High Holiday readings,בקריאות הימים הנוראים,Phrases card examples heading (High Holiday melody),
+trope.phrases.examples_unavailable,Examples could not be loaded.,לא ניתן היה לטעון את הדוגמאות.,Phrases card examples empty state (file missing or stale),
+trope.phrases.hh_reading_rh1,"Rosh Hashanah, day 1","ראש השנה, יום א׳",Phrases card High Holiday example: the reading it comes from,
+trope.phrases.hh_reading_rh2,"Rosh Hashanah, day 2","ראש השנה, יום ב׳",Phrases card High Holiday example: the reading it comes from,
+trope.phrases.hh_reading_yk,Yom Kippur morning,"יום הכיפורים, שחרית",Phrases card High Holiday example: the reading it comes from,
+trope.phrases.hh_reading_ykm,Yom Kippur afternoon,"יום הכיפורים, מנחה",Phrases card High Holiday example: the reading it comes from,
+trope.phrases.hh_ref,{reading} · {ref},{reading} · {ref},Phrases card High Holiday example location,do-not-translate {reading}/{ref}
+trope.phrases.no_example,The Torah has no example of this exact phrase.,אין בתורה דוגמה לצירוף הזה בדיוק.,Phrases card examples empty state (year-round melody),
+trope.phrases.no_example_hh,The High Holiday readings have no example of this exact phrase.,אין בקריאות הימים הנוראים דוגמה לצירוף הזה בדיוק.,Phrases card examples empty state (High Holiday melody),
+trope.phrases.play_example_aria,Play phrase {n} as chanted in {parsha} {ref},השמעת צירוף {n} כפי שהוא נקרא ב-{parsha} {ref},Phrases card example play button aria-label (aria-pressed carries the state),aria-label only; do-not-translate {n}/{parsha}/{ref}
+trope.phrases.play_example_title,Hear these words chanted (PocketTorah),האזינו למילים בקריאה (PocketTorah),Phrases card example play button title,title tooltip
 trope.melody.aria,Melody for the staffs,המנגינה של החמשות,radiogroup aria,aria-label only
 trope.melody.highholiday,High Holidays,ימים נוראים,radio label,
 trope.melody.label,Melody,מנגינה,settings label,

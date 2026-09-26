@@ -458,6 +458,12 @@ body.dark .tu-pstaff .tu-pn.is-hl, body.dark .tu-pstaff .tu-ps.is-hl { color:var
 body.dark .tu-pstaff .tu-pn.is-sounding { color:var(--gold-light); }
 .tu-pstaff .tu-pn.is-sounding ellipse { stroke:var(--navy); stroke-width:1.6; }
 body.dark .tu-pstaff .tu-pn.is-sounding ellipse { stroke:var(--gold-light); }
+.tu-pex { margin-top:2px; }
+.tu-pex-title { font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin:4px 0 0; }
+.tu-pex .tu-ex-list { padding:4px 0 0; }
+.tu-pex .tu-pex-words { font-size:calc(var(--tu-heb-size) * 0.72); flex:0 1 auto; text-align:start; }   /* beside its button on a wide card */
+.tu-pex-play.is-playing { background:var(--navy); color:var(--gold-light); box-shadow:0 0 0 3px var(--gold-light); }
+body.dark .tu-pex-play.is-playing { background:var(--gold-light); color:var(--navy-deep); box-shadow:0 0 0 3px var(--gold); }
 .tu-phr-status { display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; margin:0 0 14px; font-size:0.86rem; color:var(--muted); }
 .tu-phr-status[hidden] { display:none; }
 
@@ -911,7 +917,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
   #phrasesView { display:none !important; }
   body.tu-print-phrases #learnView { display:none !important; }
   body.tu-print-phrases #phrasesView { display:block !important; }
-  #tuPhraseChips, #tuPhraseCards, #tuPhraseNav, #tuPhrStatus { display:none !important; }
+  #tuPhraseChips, #tuPhraseCards, #tuPhraseNav, #tuPhrStatus, .tu-pex { display:none !important; }
   .tu-pcard { break-inside:avoid; page-break-inside:avoid; padding:6px 12px; }
   .tu-pstaff-wrap { overflow:visible; }
   .tu-pstaff { max-inline-size:100%; block-size:auto !important; }
@@ -1698,7 +1704,7 @@ function setStatusKey(key, en, isError) {
 async function loadData() {
   setStatusKey('trope.status.loading_index', 'Loading the trope index…');
   try {
-    const [idxRes, manRes, motifRes, motifHhRes, phrRes] = await Promise.all([
+    const [idxRes, manRes, motifRes, motifHhRes, phrRes, phrExRes] = await Promise.all([
       // ?v= is the DATA_CACHE refresh mechanism (sw.js serves /data/ cache-first,
       // matched by exact URL) — bump it whenever the committed index is rebuilt.
       fetch('data/trope/trope_index.json?v=2'),
@@ -1707,6 +1713,7 @@ async function loadData() {
       fetch('data/trope/trope_motifs.json?v=6').catch(() => null),
       fetch('data/trope/trope_motifs_hh.json?v=4').catch(() => null),
       fetch('data/trope/trope_phrases.json?v=1').catch(() => null),   // the Phrases tab; ?v= bumps with the file
+      fetch('data/trope/trope_phrase_examples.json?v=1').catch(() => null),
     ]);
     if (!idxRes.ok || !manRes.ok) throw new Error('HTTP ' + idxRes.status + '/' + manRes.status);
     const idx = await idxRes.json();          // same-origin data/ corpus — trusted
@@ -1725,6 +1732,7 @@ async function loadData() {
     }
     try {   // the phrase chart is the Phrases tab's alone: a bad or missing file never takes the rest down
       if (phrRes && phrRes.ok) PHRASES = _phraseSetsFrom(ivritSafeParse(await phrRes.text())) || PHRASES;
+      if (phrExRes && phrExRes.ok) PHRASE_EXAMPLES = _phraseExamplesFrom(ivritSafeParse(await phrExRes.text())) || PHRASE_EXAMPLES;
     } catch (e) { console.warn('trope phrases load failed', e); }
     setStatus('');
     _setRetryVisible(false);
@@ -1796,6 +1804,7 @@ const tuAudio = document.getElementById('tuAudio');
 let _curFileKey = null;
 let _stopAt = null;          // when set, audio auto-pauses at this currentTime
 let _clipToken = 0;          // invalidates stale async play flows
+let _pexId = null;           // the Phrases tab's example whose clip is playing (its button shows pressed)
 let _rafId = null;
 let _clipEndCb = null;
 let _clipStart = null;       // clip start (s); set/cleared in lockstep with _stopAt, drives seek self-heal
@@ -1811,6 +1820,7 @@ function clipUrl(ex) {
   return POCKET_AUDIO_BASE + encodeURIComponent(m.audioBase + '-' + ex.a + '.mp3');
 }
 function stopClip() {
+  _pexReset();
   _clipToken++;
   _stopAt = null; _clipStart = null; _clipEndCb = null;
   if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null; }
@@ -1850,6 +1860,15 @@ tuAudio.addEventListener('timeupdate', () => {   // background-tab fallback for 
     if (!tuAudio.paused) tuAudio.pause();
     if (cb) cb();
   }
+});
+// A clip with no end time (the Phrases tab's end-of-aliyah examples: the aliyah's last word has no next
+// onset) runs to the recording's end, and ends here instead of at _stopAt.
+tuAudio.addEventListener('ended', () => {
+  if (_stopAt === null) return;
+  const cb = _clipEndCb;
+  _stopAt = null; _clipStart = null; _clipEndCb = null;
+  if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null; }
+  if (cb) cb();
 });
 tuAudio.addEventListener('play', () => {
   tuAudio.playbackRate = settings.playbackRate ?? 1;   // iOS resets rate on src change/play
@@ -1918,7 +1937,7 @@ async function playClip(ex, cbs) {
       tuAudio.currentTime = ex.s;                 // clamped/dropped — re-assert once
     }
     tuAudio.playbackRate = settings.playbackRate ?? 1;
-    _stopAt = ex.e;
+    _stopAt = ex.e == null ? Infinity : ex.e;   // null: play to the end (the 'ended' listener closes it)
     _clipStart = ex.s;
     _clipReseeks = 0;
     _clipEndCb = cbs.onEnd || null;
@@ -2656,6 +2675,11 @@ function renderPhraseStaff(row, opts) {
    only (no stored key).
    ══════════════════════════════════════════════════════ */
 let PHRASES = null;          // {torah, highholiday}: each {key, rows} of rows that hold together, or null
+// data/trope/trope_phrase_examples.json (build-trope-phrases.mjs --census): per melody, row number ->
+// {k: the row's marks, ex: [...]} — {p, a, ref, he, s, e} for the year-round melody (e null: to the
+// recording's end), {ref, he} for the High Holiday one (no recordings). A row whose marks no longer match
+// the chart shows no examples: a stale file never pairs a phrase with the wrong words.
+let PHRASE_EXAMPLES = null;
 let _phrasesTried = false;   // a load has finished (the tab then says "unavailable", not "loading")
 let currentPhraseGroup = null;
 // The charts' own order, which is a teaching order (docs/tropepatterns.md → D); `key` names the
@@ -2717,6 +2741,20 @@ function _phraseSetsFrom(j) {
     out[m] = rows.length ? { key: s.key, rows } : null;
   }
   return out.torah || out.highholiday ? out : null;
+}
+function _phraseExamplesFrom(j) {
+  if (!j || j.v !== 1 || !j.melodies || typeof j.melodies !== 'object') return null;
+  const out = {};
+  for (const m of ['torah', 'highholiday']) {
+    const map = new Map();
+    for (const r of Array.isArray(j.melodies[m]) ? j.melodies[m] : []) {
+      if (!r || typeof r.n !== 'string' || typeof r.k !== 'string' || !Array.isArray(r.ex)) continue;
+      map.set(r.n, { k: r.k, ex: r.ex.filter((x) => x && typeof x.ref === 'string' && typeof x.he === 'string' && (m !== 'torah'
+        || (typeof x.p === 'string' && typeof x.a === 'string' && Number.isFinite(x.s) && x.s >= 0 && (x.e === null || (Number.isFinite(x.e) && x.e > x.s))))) });
+    }
+    out[m] = map;
+  }
+  return out;
 }
 function phraseSet() { return PHRASES && PHRASES[melodyKey()]; }
 function phraseStaffKey() { const s = phraseSet(); return s ? shiftedKey(s.key, tuneShiftVal()) : ''; }
@@ -2866,7 +2904,94 @@ function buildPhraseCard(m, set, row, forPrint) {
   if (!forPrint && _tuneKey === id) svg.classList.add('is-playing');
   wrap.appendChild(svg);
   card.appendChild(wrap);
+  if (!forPrint) card.appendChild(buildPhraseExamples(m, row));
   return card;
+}
+// Where the Torah sings the row: each example's words with every mark lit, where it is, and (year-round
+// melody) a button that plays PocketTorah's recording of those words. On screen only.
+const PHRASE_HH_READING = { 'Genesis 21': 'rh1', 'Genesis 22': 'rh2', 'Leviticus 16': 'yk', 'Leviticus 18': 'ykm' };
+function buildPhraseExamples(m, row) {
+  const box = document.createElement('div');
+  box.className = 'tu-pex';
+  const title = document.createElement('div');
+  title.className = 'tu-pex-title';
+  title.textContent = I18n.t(m === 'highholiday' ? 'trope.phrases.examples_title_hh' : 'trope.phrases.examples_title');
+  box.appendChild(title);
+  const list = document.createElement('ul');
+  list.className = 'tu-ex-list';
+  const keys = row.units.map((u) => u.k);
+  const entry = PHRASE_EXAMPLES && PHRASE_EXAMPLES[m] && PHRASE_EXAMPLES[m].get(row.n);
+  const none = (key) => { const li = document.createElement('li'); li.className = 'tu-ex-none'; li.textContent = I18n.t(key); list.appendChild(li); };
+  if (!entry || entry.k !== keys.join(' ')) none('trope.phrases.examples_unavailable');
+  else if (!entry.ex.length) none(m === 'highholiday' ? 'trope.phrases.no_example_hh' : 'trope.phrases.no_example');
+  else entry.ex.forEach((ex, xi) => {
+    const li = document.createElement('li');
+    li.className = 'tu-ex-row';
+    const cv = ex.ref.split(' ').pop(), hh = PHRASE_HH_READING[ex.ref.replace(/:\d+$/, '')];
+    const where = m === 'torah' ? ex.p + ' ' + cv   // PocketTorah's parasha name and chapter:verse, as the Learn cards write them
+      : hh ? I18n.t('trope.phrases.hh_ref', { reading: I18n.t('trope.phrases.hh_reading_' + hh), ref: cv }) : ex.ref;
+    if (m === 'torah') {
+      const pid = m + ':' + row.n + ':' + xi;
+      const play = document.createElement('button');
+      play.type = 'button';
+      play.className = 'tu-ex-play tu-pex-play';
+      play.innerHTML = ICON_PLAY;
+      play.dataset.pex = pid;
+      play.setAttribute('aria-pressed', _pexId === pid ? 'true' : 'false');
+      if (_pexId === pid) play.classList.add('is-playing');
+      play.setAttribute('aria-label', I18n.t('trope.phrases.play_example_aria', { n: row.n, parsha: ex.p, ref: cv }));
+      play.title = I18n.t('trope.phrases.play_example_title');
+      play.onclick = () => togglePhraseExample(pid, ex, play);
+      li.appendChild(play);
+    }
+    li.appendChild(_phraseExampleWords(ex.he, keys));
+    const ref = document.createElement('span');
+    ref.className = 'tu-ex-ref';
+    ref.textContent = where;
+    li.appendChild(ref);
+    list.appendChild(li);
+  });
+  box.appendChild(list);
+  return box;
+}
+function _phraseExampleWords(he, keys) {   // each word with its own mark lit (the Learn cards' .mark-hit)
+  const wrap = document.createElement('span');
+  wrap.className = 'tu-ex-word tu-pex-words';
+  wrap.setAttribute('lang', 'he');
+  wrap.dir = 'rtl';
+  const toks = String(he).split(' ').filter(Boolean);
+  if (toks.filter((t) => t !== '׀').length !== keys.length) { wrap.textContent = he; return wrap; }
+  let q = 0;
+  toks.forEach((tok, i) => {
+    if (i) wrap.appendChild(document.createTextNode(' '));
+    if (tok === '׀') { wrap.appendChild(document.createTextNode(tok)); return; }
+    const k = keys[q++];
+    const w = renderMarkedWord(tok, TROPE_BY_KEY[k === 'munach_legarmeh' ? 'munach' : k] || null);
+    w.removeAttribute('class'); w.removeAttribute('lang'); w.removeAttribute('dir');
+    wrap.appendChild(w);
+  });
+  return wrap;
+}
+// One example plays at a time, like every clip; its button stays pressed until the clip ends or anything
+// stops it (stopClip, which a tune, a tab switch or another clip calls). _pexId lives with the clip engine.
+function _pexReset() {
+  if (!_pexId) return;
+  const b = document.querySelector('.tu-pex-play[data-pex="' + _pexId + '"]');
+  if (b) { b.classList.remove('is-playing'); b.setAttribute('aria-pressed', 'false'); }
+  _pexId = null;
+}
+function togglePhraseExample(pid, ex, btn) {
+  if (_pexId === pid) { stopClip(); return; }
+  _pexReset();
+  _pexId = pid;
+  btn.classList.add('is-playing');
+  btn.setAttribute('aria-pressed', 'true');
+  playClip(ex, {
+    onEnd: () => { if (_pexId === pid) _pexReset(); },
+    onError: () => { if (_pexId === pid) _pexReset(); showToast(I18n.t('trope.toast.audio_unavailable')); },
+  }).then(() => {   // a blocked play() returns without either callback: nothing is playing, so release the button
+    if (_pexId === pid && _stopAt === null && tuAudio.paused) _pexReset();
+  });
 }
 // The row as tones, on the Learn tune's scale (an eighth is 0.32 s at 1×): ties sound as one note, rests
 // are silent, and a grace note is quick and taken from the note it leads into.
