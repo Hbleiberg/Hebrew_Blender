@@ -531,7 +531,8 @@ console.log(`build-trope-phrases: ${melodies.torah.rows.length} Torah + ${melodi
    CENSUS (--census) — which mark-before-mark contexts the Torah text needs, against the chart.
    docs/tropepatterns.md → G. Toward a parasha staff explains how the report is used.
 
-   Text: Sefaria's public export (the Masoretic text with cantillation), one merged.json per book,
+   Text: Sefaria's public export, one merged.json per book, whose Torah text is the Miqra according to
+   the Masorah edition (MAM; the loader refuses any other),
    through the same cache files and curl fallback as build-trope-index.mjs. Each verse is cleaned
    (footnotes, the unpointed ketiv of a ketiv/qere pair, paragraph marks and tags removed) and split
    on whitespace only: a maqaf compound (a־b) is one word with one accent, as it is sung.
@@ -540,12 +541,16 @@ console.log(`build-trope-phrases: ${melodies.torah.rows.length} Torah + ${melodi
        that also carries pashta is the first half of a double pashta (Unicode texts encode the
        stressed-syllable pashta with the kadma code point), so it is dropped;
      - the verse's last word adds sof_pasuk (its siluk is METEG, outside the mark range);
-     - a paseq (׀) after a munach makes it munach_legarmeh; after any other mark it is only counted;
+     - the text draws two vertical lines apart: the legarmeh line is a full-size ׀, and a paseq (a
+       pause that leaves the mark before it as it is) is a small one, <small>׀</small>. The legarmeh
+       line after a munach makes it munach_legarmeh; after any other mark it is only counted, and a
+       paseq is only counted;
      - two different marks on one word stay two units, and their pair is reported apart.
    The double-accented passages (Genesis 35:22 and the two Decalogues) carry two cantillation
    systems at once and are left out and listed.
    ══════════════════════════════════════════════════════════════════════════════════════ */
 const BOOKS = ['Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy'];
+const TEXT_EDITION = 'Miqra according to the Masorah';
 const DOUBLE_ACCENTED = [
   { book: 'Genesis', from: [35, 22], to: [35, 22] },
   { book: 'Exodus', from: [20, 2], to: [20, 14] },
@@ -569,16 +574,22 @@ function loadBookText(book) {
     mkdirSync(CACHE_DIR, { recursive: true });
     writeFileSync(path, body);
   }
-  const text = JSON.parse(readFileSync(path, 'utf8')).text;
-  if (!Array.isArray(text)) die(`unexpected shape in ${path}`);
-  return text;
+  const file = JSON.parse(readFileSync(path, 'utf8'));
+  if (!Array.isArray(file.text)) die(`unexpected shape in ${path}`);
+  // The paseq rule reads MAM's markup, and the report names MAM as the source, so another edition
+  // must stop the census rather than be counted.
+  const eds = (file.versions || []).map((v) => v[0]);
+  if (eds.length !== 1 || eds[0] !== TEXT_EDITION) die(`${path} merges ${JSON.stringify(eds)}, not only "${TEXT_EDITION}": check its paseq markup and the report's source line before trusting a census`);
+  return file.text;
 }
 const ENTITIES = { nbsp: ' ', thinsp: ' ', mdash: '—', ndash: '–', amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
+const PASEQ_TOKEN = '⟨paseq⟩';   // the small ׀, kept apart from the legarmeh line before tags go
 function cleanVerseText(s) {
   let out = s
     .replace(/<sup[^>]*>.*?<\/sup>/g, ' ')
     .replace(/<i class="footnote">.*?<\/i>/g, ' ')
     .replace(/<span class="mam-kq-k">.*?<\/span>/g, ' ')   // ketiv (read the qere)
+    .replace(/<small>\s*׀\s*<\/small>/g, ` ${PASEQ_TOKEN} `)
     .replace(/<br\s*\/?>/g, ' ')
     .replace(/<[^>]*>/g, '')
     .replace(/\{[^}]*\}/g, ' ')
@@ -598,9 +609,10 @@ function verseUnits(text, stats, ref) {
   const toks = text.split(' ').filter(Boolean);
   const words = [];
   for (const t of toks) {
-    if (t === '׀') { if (words.length) words[words.length - 1].paseq = true; else stats.anomalies.push('a paseq opens a verse'); continue; }
+    if (t === PASEQ_TOKEN) { if (words.length) words[words.length - 1].paseq = true; else stats.anomalies.push('a paseq opens a verse'); continue; }
+    if (t === '׀') { if (words.length) words[words.length - 1].line = true; else stats.anomalies.push('a legarmeh line opens a verse'); continue; }
     if (!/[א-ת]/.test(t)) continue;
-    words.push({ text: t.replace(/׀/g, ''), paseq: t.includes('׀') });
+    words.push({ text: t.replace(/׀/g, ''), line: t.includes('׀') });
   }
   const units = [];
   words.forEach((w, wi) => {
@@ -616,11 +628,12 @@ function verseUnits(text, stats, ref) {
     const last = wi === words.length - 1;
     if (last) keys.push('sof_pasuk');
     if (!keys.length) { stats.unmarked++; if (stats.unmarkedEx.length < 5) stats.unmarkedEx.push(`${w.text} (${ref})`); return; }
-    if (w.paseq) {
-      const lk = keys[keys.length - 1];
+    const lk = keys[keys.length - 1];
+    if (w.line) {
       if (lk === 'munach') keys[keys.length - 1] = 'munach_legarmeh';
-      else stats.paseqAfter[lk] = (stats.paseqAfter[lk] || 0) + 1;
+      else stats.lineAfter[lk] = (stats.lineAfter[lk] || 0) + 1;
     }
+    if (w.paseq) stats.paseqAfter[lk] = (stats.paseqAfter[lk] || 0) + 1;
     if (keys.length > 1) { const combo = keys.join(' + '); stats.multi[combo] = stats.multi[combo] || { n: 0, ex: w.text }; stats.multi[combo].n++; }
     keys.forEach((k, i) => units.push({ k, word: w.text, w: wi, withinWord: i > 0 }));
   });
@@ -650,7 +663,7 @@ function printedContexts(melody) {
 
 function newStats() {
   return { verses: 0, words: 0, units: 0, excluded: [], anomalies: [], unknownMarks: {}, repeated: {}, doublePashta: 0,
-    unmarked: 0, unmarkedEx: [], paseqAfter: {}, multi: {}, markCount: {}, pairs: {}, legarmeh: 0 };
+    unmarked: 0, unmarkedEx: [], paseqAfter: {}, lineAfter: {}, multi: {}, markCount: {}, pairs: {}, legarmeh: 0 };
 }
 function tally(stats, units, ref) {
   stats.units += units.length;
@@ -738,17 +751,26 @@ async function census() {
   if (tor.verses !== 5846) cf.push(`${tor.verses} Torah verses (expected 5,846)`);
   if (hhVerses !== 122) cf.push(`${hhVerses} verses in the High Holiday readings (expected 122)`);
   for (const k of HH_BANNED) if (hh.markCount[k]) cf.push(`${k} occurs ${hh.markCount[k].n}× in the High Holiday readings (${hh.markCount[k].ex}) — docs/tropepatterns.md says it never does`);
-  if (!tor.legarmeh) cf.push('no munach legarmeh found (paseq handling broke)');
+  if (!tor.legarmeh) cf.push('no munach legarmeh found (legarmeh-line handling broke)');
+  if (!Object.keys(tor.paseqAfter).length) cf.push('no small paseq found: the text no longer draws paseq apart from the legarmeh line, so munach + paseq would pass for munach legarmeh');
   if (cf.length) {
     console.error(`build-trope-phrases --census: ${cf.length} problem(s):`);
     for (const f of cf) console.error(`  ✗ ${f}`);
     process.exit(1);
   }
-  writeFileSync(CENSUS_PATH, censusReport({ tor, hh, pTorah, pHH, endings, hhReadings, hhVerses }) + '\n');
+  // The report's own date, kept while its content is unchanged (like `built` in the JSON).
+  const args = { tor, hh, pTorah, pHH, endings, hhReadings, hhVerses };
+  let reportBuilt = today;
+  if (existsSync(CENSUS_PATH)) {
+    const old = readFileSync(CENSUS_PATH, 'utf8');
+    const m = old.match(/^- \*\*Built:\*\* (\d{4}-\d{2}-\d{2})$/m);
+    if (m && censusReport({ ...args, built: m[1] }) + '\n' === old) reportBuilt = m[1];
+  }
+  writeFileSync(CENSUS_PATH, censusReport({ ...args, built: reportBuilt }) + '\n');
   console.log(`build-trope-phrases --census: ${tor.verses} verses, ${tor.units} marks -> ${CENSUS_PATH.replace(repoRoot + '/', '')}`);
 }
 
-function censusReport({ tor, hh, pTorah, pHH, endings, hhReadings, hhVerses }) {
+function censusReport({ tor, hh, pTorah, pHH, endings, hhReadings, hhVerses, built }) {
   const L = [];
   const fmt = (n) => n.toLocaleString('en-US');
   const pct = (a, b) => (b ? `${(100 * a / b).toFixed(1)}%` : '—');
@@ -781,7 +803,7 @@ function censusReport({ tor, hh, pTorah, pHH, endings, hhReadings, hhVerses }) {
   }
   L.push('# Trope contexts report — what a parasha needs against what the chart prints', '');
   L.push(`- **Built:** ${built}`);
-  L.push('- **Text:** Sefaria public text export (storage.googleapis.com/sefaria-export, Hebrew merged.json per Torah book — the Masoretic text with cantillation, public domain)');
+  L.push('- **Text:** Sefaria public text export (storage.googleapis.com/sefaria-export, Hebrew merged.json per Torah book), whose Torah text is the *Miqra according to the Masorah* edition (MAM, from Hebrew Wikisource), which Sefaria lists as CC BY-SA. The example words below are quoted from it.');
   L.push('- **Chart:** `data/trope/trope_phrases.json`, built from `docs/tropepatterns.md` sections B and C');
   L.push(`- **Torah:** ${fmt(tor.verses)} verses, ${fmt(tor.words)} words, ${fmt(tor.units)} marks (${tor.excluded.length} double-accented verses left out: ${tor.excluded.join(', ')})`);
   L.push(`- **High Holiday readings:** ${hhReadings.map((r) => `${r.name} (${r.book} ${r.from.join(':')}–${r.to.join(':')})`).join('; ')} — ${hhVerses} verses`);
@@ -840,8 +862,10 @@ function censusReport({ tor, hh, pTorah, pHH, endings, hhReadings, hhVerses }) {
   for (const [combo, rec] of Object.entries(tor.multi).sort((a, b) => b[1].n - a[1].n)) L.push(`| ${combo} | ${fmt(rec.n)} | ${rec.ex} |`);
   L.push('');
   L.push('## Anomalies and counts', '');
-  L.push(`- Paseq after a mark other than munach (kept as that mark): ${Object.entries(tor.paseqAfter).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${n}`).join(', ') || 'none'}.`);
-  L.push(`- Munach legarmeh (munach + paseq): ${fmt(tor.legarmeh)}.`);
+  const byCount = (o) => Object.entries(o).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${k} ${n}`).join(', ') || 'none';
+  L.push(`- Munach legarmeh (munach + the full-size legarmeh line ׀): ${fmt(tor.legarmeh)}.`);
+  L.push(`- The legarmeh line after a mark other than munach (kept as that mark): ${byCount(tor.lineAfter)}.`);
+  L.push(`- Paseq (the small ׀, a pause that leaves the mark before it as it is): after ${byCount(tor.paseqAfter)}.`);
   L.push(`- Repeated marks merged: ${Object.entries(tor.repeated).map(([k, n]) => `${k} ${n}`).join(', ') || 'none'}.`);
   L.push(`- Marks outside the tutor's taxonomy: ${Object.entries(tor.unknownMarks).map(([k, n]) => `${k} ${n}`).join(', ') || 'none'}.`);
   L.push(`- Words with no mark: ${fmt(tor.unmarked)}${tor.unmarkedEx.length ? ` (e.g. ${tor.unmarkedEx.join(', ')})` : ''}.`);

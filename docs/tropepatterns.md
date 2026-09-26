@@ -815,8 +815,11 @@ to know, and what the chart leaves open.
     aliyah, whose closing mercha, tipcha and sof pasuk take the `[aliyah-end]` rows.
   - The melody (`torah` or `highholiday`) picks the half of the file.
 - **Words, as the text gives them.** A word joined to the next by a maqaf (־) has no mark of its own,
-  so the pair is one word with one figure. A paseq (׀) after a munach makes it munach legarmeh. A
-  double pashta, and the doubled telishas, segol and zarka, are one mark written twice: one sign at the
+  so the pair is one word with one figure. A vertical line (׀) after a munach is one of two signs
+  that print alike. It is either the legarmeh line, which makes the munach munach legarmeh, or a
+  paseq, a short pause that leaves the munach a connecting mark (Genesis 22:11, אַבְרָהָ֣ם ׀ אַבְרָהָ֑ם).
+  The census's text draws the paseq smaller, and a staff builder's text has to tell the two apart as
+  well. A double pashta, and the doubled telishas, segol and zarka, are one mark written twice: one sign at the
   word's edge, the other on its stressed syllable. A word can carry two different marks, most often a
   munach or kadma on an earlier syllable before a zakef katon, or a kadma before a geresh. They are sung
   in order, like two words.
@@ -832,27 +835,28 @@ to know, and what the chart leaves open.
 - **Keys and voices.** The tutor's key bar functions (`shiftedKey`, `motifPitchPos`) transpose and
   spell these notes the way they do the Learn-card staffs, and *Low voices* works the same way.
 - **What the Torah needs that the chart does not print.** `node scripts/build-trope-phrases.mjs --census`
-  reads the whole Torah text (Sefaria's public export) and writes `docs/trope_contexts_report.md`.
+  reads the whole Torah text (Sefaria's public export, the *Miqra according to the Masorah* edition)
+  and writes `docs/trope_contexts_report.md`.
   - **Every mark has a figure.** Geresh muqdam, the only mark without one, never occurs.
-  - **Conjunctives.** 95.4% of them stand before a mark the chart prints them before, and 96.0% with
+  - **Conjunctives.** 95.4% of them stand before a mark the chart prints them before, and 96.1% with
     the chain fallback.
   - **The largest gaps:**
     - telisha ketana before kadma: 450, since the chart prints telisha ketana only at the end of a row;
     - kadma before zakef katon on one word: 159;
     - mercha before pashta: 147;
-    - munach before munach: 120, nearly all covered by the fallback;
+    - munach before munach: 141, nearly all covered by the fallback;
     - munach before gershayim: 59;
     - darga before munach: 59;
-    - kadma before a munach that leads to zarka: 40;
-    - mercha before zarka: 31;
-    - a conjunctive before munach legarmeh: 31.
+    - kadma before a munach that leads to zarka: 41;
+    - munach before mercha: 37, all covered by the fallback;
+    - mercha before zarka: 31.
   - **The last verse of an aliyah.** The Torah chart's one closing formula (mercha tipcha mercha sof
     pasuk) fits 65 of the 376 aliyah-final verses the census reads. The two others end inside the
     excluded Decalogues. Of the rest, 139 end mercha tipcha sof pasuk, 100 tipcha mercha sof pasuk,
     71 tipcha sof pasuk and one sof pasuk alone. The High Holiday chart prints all four common closings,
     but in its own melody.
   - **The High Holiday readings.** In the four Rosh Hashanah and Yom Kippur readings, 94.0% of the
-    conjunctives stand before a printed context, 95.0% with the fallback. None of the four marks the
+    conjunctives stand before a printed context, 95.2% with the fallback. None of the four marks the
     High Holiday chart leaves out occurs there.
   - **Left out.** Genesis 35:22 and the two Decalogues are marked with two cantillation systems at
     once, so the census leaves them out.

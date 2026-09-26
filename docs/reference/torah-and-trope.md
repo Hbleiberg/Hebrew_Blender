@@ -327,7 +327,10 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     index builder) and the four `melody:'highholiday'` readings parsed from `torah_trainer.html`'s
     `HOLIDAY_READINGS`. It counts every mark-before-mark context against the chart and writes
     `docs/trope_contexts_report.md`.
-    - A maqaf compound is one word; a paseq after munach makes munach legarmeh.
+    - A maqaf compound is one word. The text draws the legarmeh line full-size and a paseq small
+      (`<small>׀</small>`): the line after a munach makes it munach legarmeh, and a paseq leaves the
+      mark before it as it is. The loader refuses any edition but *Miqra according to the Masorah*,
+      and the census fails if no small paseq is found.
     - Genesis 35:22 and the two Decalogues are left out, because they carry two cantillation systems.
     - Its smoke tests: Genesis 1:1's seven marks, 5,846 verses, 122 High Holiday verses, and none of
       the four marks the High Holiday chart omits in those readings.

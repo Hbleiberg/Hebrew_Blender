@@ -93,7 +93,7 @@ The site loads **Google Analytics 4** (`gtag.js`) from `googletagmanager.com` on
 
 **Used by `scripts/build-trope-index.mjs` (build-time only):** the Trope Tutor's index extracts individual Hebrew Torah words (public-domain Masoretic Text with cantillation) from Sefaria's public text export bucket (`storage.googleapis.com/sefaria-export`) or the same v3 API. `trope_tutor.html` itself never calls Sefaria at runtime.
 
-**Used by `scripts/build-trope-phrases.mjs --census` (build-time only):** it reads the same export to count which cantillation contexts the Torah text uses. `docs/trope_contexts_report.md` quotes a few Hebrew words from the public-domain text as examples; nothing from Sefaria is shipped to a page.
+**Used by `scripts/build-trope-phrases.mjs --census` (build-time only):** it reads the same export to count which cantillation contexts the Torah text uses. The export's Torah text is the *Miqra according to the Masorah* edition (MAM, from Hebrew Wikisource), which Sefaria lists as CC BY-SA, and the census refuses any other edition. `docs/trope_contexts_report.md` names that edition and quotes a few of its words as examples; nothing from Sefaria is shipped to a page.
 
 **Translation filtering:** the page filters the version dropdown by the `license` field returned for each version. Only translations licensed Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, or CC BY-NC-SA are offered. Versions with a "Copyright: …" license (e.g. *Tanakh: The Holy Scriptures, JPS 1985*; Robert Alter's *The Hebrew Bible*; the JPS *Contemporary Torah, 2006*) are excluded so that copyrighted text is not republished on ivritsuite.com without permission. The default selection is *The Holy Scriptures: A New Translation (JPS 1917)* (Public Domain) when present.
 
