@@ -222,12 +222,15 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   selection rules change.
 - **Melody motifs**: `data/trope/trope_motifs.json` — `{v:1, system:"torah", key, built, license,
   tropes:{<key>:{notes:[{p,d}], verified, source}}}`, where `p` = semitones from B4 (the treble
-  middle line: the chart's tonic A4 is `-2`, its low A3 `-14`) and `d` = relative duration 1–4
-  (eighths, sixteenths and triplet eighths 1, quarters 2, dotted quarters 3, halves 4). The
+  middle line: the chart's tonic A4 is `-2`, its low A3 `-14`) and `d` = relative duration 1–4,
+  read from the row as `docs/tropepatterns.md` section A says: anything shorter than a quarter
+  (a triplet note or a grace note included) is 1, and a longer note, tied notes merged, takes the
+  nearest of 2 (quarter), 3 (dotted quarter) and 4 (half). The
   top-level `key` is a major key name (`"A"`); the page draws that signature and spells in-key
   notes without accidentals, so a natural appears only where the chart prints one. A note outside
-  the key is spelled the way the charts print chromatic notes — raised 1st and 4th, lowered 3rd,
-  6th and 7th (`motifPitchPos`) — so A major's lowered seventh is G♮ and C major writes F♯ and B♭.
+  the key is spelled by `motifPitchPos`'s rule — raised 1st and 4th, lowered 3rd, 6th and 7th —
+  which gives the charts' own spellings: A major's lowered seventh is G♮, and C major writes F♯ and
+  B♭.
   **The file is the Learn cards' staff, nothing else** — the drill's Melody questions play
   PocketTorah recordings, not the motifs — and it is fetched `?v=6`. **Every shipped entry is `verified:true`,
   hand-transcribed from the printed Ashkenazi cantillation chart recorded in
@@ -260,9 +263,9 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   after a choice does not bring the link's melody back. While the High Holiday melody is on, the Learn tab
   shows a banner naming it (`#tuMelodyNote` — it prints with the chart; its Change button, which
   opens the setting, does not), a card with no High Holiday figure says why where its staff would
-  be, and the staff's aria-label names the melody. The builder never reads or writes this file —
-  there are no High Holiday recordings to draft from — so it is edited by hand like a verified
-  entry, and its `?v=` is bumped on every change.
+  be, and the staff's aria-label names the melody. The motif builder never reads or writes this
+  file — there are no High Holiday recordings to draft from — so it is edited by hand like a verified
+  entry (the phrases builder checks it against its rows), and its `?v=` is bumped on every change.
   **The tune button** (beside the names on every card with a motif) plays the staff as Web Audio
   oscillator tones at the staff's pitch — the written pitch (B4 = 493.88 Hz, the octave children and
   women sing) moved by the Key setting, an octave lower with Low voices (below) — one
@@ -303,12 +306,13 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   - **Shape.** `{v:1, built, license, source, tpq:48, values, melodies:{torah|highholiday:{key, rows}},
     figures}`. Each row is flat: `{n, he, tags, notes:[{p, v, t, g?, r?, tie?, a?}], syl:[{t, hyphen,
     unit, from, to}], units:[{k, from, to}], tup:[{from, to}], slur:[{from, to, dashed?}]}`.
-    - `p` is semitones from B4, as in the motif files.
+    - `p` is semitones from B4, as in the motif files; a rest (`r`) has no `p`.
     - `t` is ticks at 48 to the quarter; a triplet note carries its real length.
     - Syllables, marks, triplets and slurs are spans of note indices, so a triplet or slur may cross
-      from one mark into the next.
-    - `figures.<melody>.<mark>` lists each distinct figure by `[row, mark index]`, with the marks
-      printed before (`prev`) and after (`next`) it; `^` and `$` are the row's edges.
+      from one mark into the next. `dashed` marks a dashed slur (`~~`), which no row prints yet.
+    - `figures.<melody>.<mark>` lists each distinct figure as `{refs, prev, next}`: `refs` holds the
+      `[row, mark index]` pairs that sing it, and `prev`/`next` the marks printed before and after
+      it (`^` and `$` are the row's edges).
   - **Checks.** The builder refuses any line that does not read back exactly as written. It also
     refuses:
     - a missing or doubled row;

@@ -91,7 +91,7 @@ The site loads **Google Analytics 4** (`gtag.js`) from `googletagmanager.com` on
 
 **Used by `torah_trainer.html`:** Hebrew text and English translations are fetched at runtime via Sefaria's REST API (`/api/v3/texts/...` for text, `/api/texts/versions/...` for the per-book version list, and `/api/calendars` for the current parsha).
 
-**Used by `scripts/build-trope-index.mjs` (build-time only):** the Trope Tutor's index extracts individual Hebrew Torah words (public-domain Masoretic Text with cantillation) from Sefaria's public text export bucket (`storage.googleapis.com/sefaria-export`) or the same v3 API. `trope_tutor.html` itself never calls Sefaria at runtime.
+**Used by `scripts/build-trope-index.mjs` (build-time only):** the Trope Tutor's index extracts individual Hebrew Torah words (the Masoretic Text with cantillation, in the export's *Miqra according to the Masorah* edition described below) from Sefaria's public text export bucket (`storage.googleapis.com/sefaria-export`) or the same v3 API. `trope_tutor.html` itself never calls Sefaria at runtime.
 
 **Used by `scripts/build-trope-phrases.mjs --census` (build-time only):** it reads the same export to count which cantillation contexts the Torah text uses. The export's Torah text is the *Miqra according to the Masorah* edition (MAM, from Hebrew Wikisource), which Sefaria lists as CC BY-SA, and the census refuses any other edition. `docs/trope_contexts_report.md` names that edition and quotes a few of its words as examples; nothing from Sefaria is shipped to a page.
 
