@@ -16,6 +16,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The שם ה׳ and "No transliteration" chips are named "More information" to a screen reader**: `bindTip` gives any wrap without an `aria-label` that name, which replaces the chip's visible words (2.5.3); the year-round recording chip (`d92b6b4`) passes its own. | found 2026-09-26
+
 - [ ] P3 (**NEW S416 — gate 2; shared script; smokes `--sdk`**) | js/ivrit-account.js | **The account chip reads "Sign in" (a name, "Offline") but is named "Account"** on 11 pages (2.5.3). | found S416
 
 - [ ] P4 (**NEW S417 Pass E — gate 2**) | manifest.webmanifest | **The install manifest's description names six tools, not the Trope Tutor**; add it after "Torah Trainer" as the home page does. | found S417
@@ -221,8 +223,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] M | trope_tutor.html | **A munach legarmeh card** (munach + the legarmeh line) with its own figure and examples. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] M | trope_tutor.html | **A one-sheet printable phrase chart** in the teacher's chosen key: the phrases, their marks and a staff each. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] S | torah_trainer.html | **Say that a Rosh Hashanah or Yom Kippur chant is the year-round recording**, beside the reading's High Holiday link. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] L | torah_trainer.html | **High Holiday recordings for the Rosh Hashanah and Yom Kippur readings** — needs a licensed recording source; not micro. | found: 2026-09-24, maintainer …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -592,6 +592,6 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 **⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), M (S408), then G D I H C F B A E L K N P.** Take **M**: the coverage row's "no M" list (generator, flash, torah, terms) names the surfaces never audited — pick one; unattended, small refinements only, anything dramatic is gate 3 → log with screenshots.
 
-**⚑ STRONGEST UNTAKEN (ungated):** the torah/trope credits' `lang`; S413's three resources items; the S412 flash five; FM's `special_intro` fallback; K's doc-only gate-comment item; the dashboard's adopt toast and its 60-chip picker (S421). **Seed bench: 32.** Gated items wait in Candidates.
+**⚑ STRONGEST UNTAKEN (ungated):** the torah/trope credits' `lang`; S413's three resources items; the S412 flash five; FM's `special_intro` fallback; K's doc-only gate-comment item; the dashboard's adopt toast and its 60-chip picker (S421). **Seed bench: 31.** Gated items wait in Candidates.
 
 **⚑ HARNESS: traps 1–153 in loop-findings** (`p421/` probes in its S421 receipts: a fake cloud beside the 2.116.0 fixture, fetched with `npm pack` from the sandbox); `compact-ledger --apply` runs ONCE, only after the edit script succeeded (trap 140); the old handoff moves by hand; the ledger sits at its 100 KB ceiling — the oldest session's Done entries go to the archive by hand (S421 moved S419's).
