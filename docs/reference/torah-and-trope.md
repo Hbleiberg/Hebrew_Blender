@@ -430,6 +430,10 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
       and a row the readings never sing says so.
   - **The tune** is `togglePhraseTune`, on the Learn tune's scale (an eighth is 0.32 s at 1×): ties sound
     as one note, rests are silent, and a grace note is quick and borrowed from the note it leads into.
+    No other note is shorter than `PHRASE_MIN_NOTE` (0.1 s at 1×, scaled by the speed setting). The
+    chart's 32nds (80 ms at this tempo) and triplet 32nds (53 ms: gershayim's turn, the High Holiday
+    segol's run) would blur into one sound, so they are held that long and the tune stretches around
+    them. The staff still shows the printed rhythm.
     Both tunes go through `_playTuneCore`, so `stopTune()` stops either, and a clip, a tab switch or a
     settings change stops both. A phrase tune's id is `phrase:<melody>:<row>`.
   - **One key bar.** `setMode` moves `#tuKeyBar` into `#tuKeySlotPhrases` and back above the family

@@ -2997,7 +2997,10 @@ function togglePhraseExample(pid, ex, btn) {
   });
 }
 // The row as tones, on the Learn tune's scale (an eighth is 0.32 s at 1×): ties sound as one note, rests
-// are silent, and a grace note is quick and taken from the note it leads into.
+// are silent, and a grace note is quick and taken from the note it leads into. No other note sounds shorter
+// than PHRASE_MIN_NOTE (at 1×): the chart's 32nds and triplet 32nds (80 and 53 ms at this tempo — gershayim's
+// turn, segol's run) blur into one sound, so each is held long enough to hear and the tune stretches around it.
+const PHRASE_MIN_NOTE = 0.1;
 function togglePhraseTune(m, row, btn) {
   const id = 'phrase:' + m + ':' + row.n;
   if (_tuneKey === id) { stopTune(); return; }
@@ -3016,7 +3019,7 @@ function togglePhraseTune(m, row, btn) {
       at += d; borrowed += d;
       return;
     }
-    const len = Math.max(0.05, n.t * tick - borrowed);
+    const len = Math.max(PHRASE_MIN_NOTE / rate, n.t * tick - borrowed);
     borrowed = 0;
     const prev = row.notes[i - 1];
     if (prev && prev.tie && !prev.r && prev.p === n.p && sounds.length) sounds[sounds.length - 1].dur += len;
