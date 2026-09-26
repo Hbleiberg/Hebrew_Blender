@@ -461,6 +461,13 @@ body.dark .tu-pstaff .tu-pn.is-hl, body.dark .tu-pstaff .tu-ps.is-hl { color:var
 body.dark .tu-pstaff .tu-pn.is-sounding { color:var(--gold-light); }
 .tu-pstaff .tu-pn.is-sounding ellipse { stroke:var(--navy); stroke-width:1.6; }
 body.dark .tu-pstaff .tu-pn.is-sounding ellipse { stroke:var(--gold-light); }
+/* Note names (Settings → Note names), on both staffs: muted under every note; the sounding note's name turns the
+   readable gold and bold with its head, and a chip lights its mark's names with its notes. Colour and weight only. */
+.tu-motif .tu-nn, .tu-pstaff .tu-nn { fill:var(--muted); }
+.tu-motif .tu-motif-note.is-sounding .tu-nn, .tu-pstaff .tu-pn.is-sounding .tu-nn { fill:var(--gold-text); font-weight:700; }
+.tu-pstaff .tu-pn.is-hl .tu-nn { fill:var(--gold-text); }
+body.dark .tu-motif .tu-motif-note.is-sounding .tu-nn, body.dark .tu-pstaff .tu-pn.is-sounding .tu-nn,
+body.dark .tu-pstaff .tu-pn.is-hl .tu-nn { fill:var(--gold-light); }
 .tu-pex { margin-top:2px; }
 .tu-pex-title { font-size:0.72rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin:4px 0 0; }
 .tu-pex .tu-ex-list { padding:4px 0 0; }
@@ -1168,7 +1175,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       </div>
 
       <!-- Sing along: Key is the Learn tab's key bar twin (one setting, settings.tuneShift, one writer
-           setTuneShift); Voice sounds every tune an octave down. syncTuneControls() fills the readouts. -->
+           setTuneShift); Voice sounds every tune an octave down; Note names writes a name under every
+           staff note (settings.noteNames, one writer setNoteNames). syncTuneControls() fills the readouts
+           and checks the radios. -->
       <div class="tu-set-group">
         <h2 class="tu-set-title" data-i18n="trope.settings.panel_sing">Sing along</h2>
         <div class="tu-set-grid">
@@ -1191,6 +1200,18 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
               <label for="voiceLow" data-i18n="trope.voice.low">Low voices</label>
             </span>
             <p class="settings-note" data-i18n="trope.voice.note">Low voices hear every tune an octave lower, the way men sing the chart. The staffs keep their notes and show a small 8 under the clef.</p>
+          </div>
+          <div class="tu-set-item">
+            <div class="tu-set-label"><span data-i18n="trope.notes.label">Note names</span></div>
+            <span class="radio-group" role="radiogroup" aria-label="Names under the notes" data-i18n-aria-label="trope.notes.aria">
+              <input type="radio" id="namesOff" name="tuNoteNames" value="off" onchange="setNoteNames('off')">
+              <label for="namesOff" data-i18n="trope.notes.off">Off</label>
+              <input type="radio" id="namesLetters" name="tuNoteNames" value="letters" onchange="setNoteNames('letters')">
+              <label for="namesLetters" data-i18n="trope.notes.letters">A B C</label>
+              <input type="radio" id="namesSolfa" name="tuNoteNames" value="solfa" onchange="setNoteNames('solfa')">
+              <label for="namesSolfa" data-i18n="trope.notes.solfa">Do re mi</label>
+            </span>
+            <p class="settings-note" data-i18n="trope.notes.note">Writes a name under every note, and it lights up with its note as the tune plays. Do re mi starts from the note the key is named after (in A major, do is A), so the names stay the same in any key.</p>
           </div>
         </div>
       </div>
@@ -1472,6 +1493,7 @@ const DEFAULTS = {
   melody: 'torah',              // 'torah' | 'highholiday' — which motif file draws the Learn-card staffs
   tuneShift: 0,                 // half steps (−6…6) the staffs and their tunes move from the printed key
   tuneVoice: 'high',            // 'high' | 'low' — low voices hear every tune an octave down (the staff shows the 8)
+  noteNames: 'off',             // 'off' | 'letters' | 'solfa' — a name under every staff note (solfa: movable do)
   hebFont: 'Frank Ruhl Libre',
   hebFontSize: 2.2,             // rem; applied via --tu-heb-size
   drillIdentify: true,
@@ -2040,6 +2062,8 @@ function renderMarkedWord(he, trope) {
    redraws the staff in the key it lands on (staffKey()); Low voices
    (`tuneVoice`) never moves a note — it writes the 8 under the clef and
    the tune sounds an octave down, the way men sing the printed chart.
+   Settings → Note names (`noteNames`) writes a name under every note:
+   its letter, or its movable-do syllable (noteNameAt()).
    ══════════════════════════════════════════════════════ */
 const SVG_NS = 'http://www.w3.org/2000/svg';
 function _svgEl(tag, attrs) {
@@ -2119,6 +2143,50 @@ function staffKey(set = activeMotifs()) {   // the key the staffs are drawn in; 
   const key = set && typeof set.key === 'string' ? set.key : '';
   return shiftedKey(key, tuneShiftVal());
 }
+// Note names, read like tuneVoiceKey(): any other stored value (a newer page's choice) shows no names and stays
+// stored. The staffs write none before the dictionary has loaded (the key bar's rule: the syllables and the staff's
+// spoken label are translated); applyI18n re-renders them once it has.
+function noteNamesKey() { return settings.noteNames === 'letters' || settings.noteNames === 'solfa' ? settings.noteNames : 'off'; }
+function noteNamesMode() { return _i18nReady && window.I18n ? noteNamesKey() : 'off'; }
+// The name under one note (p in semitones from B4, already moved into the staff's key), read from where the staff
+// writes it: its letter, and the alteration it sounds (its own sign, or else the key signature's). 'letters' writes
+// that letter with its ♯ or ♭ (C♯ in A major, though the signature carries the sharp). 'solfa' is movable do,
+// counted from the tonic (the note the key is named after), so a moved staff keeps its names; a note outside the key
+// carries the sign it takes against the signature (A major's G♮ is ti♭, C major's F♯ is fa♯). '' when names are
+// off, and for do re mi on a staff with no key to count from.
+const NOTE_SIGN = { '-1': '♭', 0: '', 1: '♯' };
+function noteNameAt(p, key, mode) {
+  if (mode !== 'letters' && mode !== 'solfa') return '';
+  const { step, acc } = motifPitchPos(p, key);
+  const letter = 'BCDEFGA'[((step % 7) + 7) % 7];   // step 0 is B4; the letters are notation, not UI text — i18n-ignore
+  const inSig = (keySignature(key).find((k) => k.letter === letter) || { acc: 0 }).acc;
+  const alt = acc === '♯' ? 1 : acc === '♭' ? -1 : acc === '♮' ? 0 : inSig;
+  if (mode === 'letters') return letter + (NOTE_SIGN[alt] || '');
+  if (!Number.isInteger(KEY_SHARPS[key])) return '';
+  const degree = (LETTER_STEP[letter] - LETTER_STEP[key[0]] + 7) % 7;
+  return I18n.t('trope.notes.solfa_' + (degree + 1)) + (NOTE_SIGN[alt - inSig] || '');
+}
+// Estimated advance of a name, in the staff's units, at its bold (sounding) weight, so a name that lights up never
+// touches its neighbour: Hebrew points take no room.
+function noteNameWidth(s, size) {
+  let w = 0;
+  for (const ch of s) {
+    const cp = ch.codePointAt(0);
+    w += cp >= 0x0591 && cp <= 0x05C7 ? 0 : /[A-Z]/.test(ch) ? 0.72 : /[א-ת]/.test(ch) ? 0.64 : 0.6;
+  }
+  return w * size;
+}
+function noteNameEl(name, x, y, size) {   // one name, centred under its note; a Hebrew syllable reads right to left
+  const attrs = { class: 'tu-nn', x, y, 'font-size': size, 'text-anchor': 'middle' };
+  if (/[א-ת]/.test(name)) { attrs.direction = 'rtl'; attrs.lang = 'he'; }
+  const el = _svgEl('text', attrs);
+  el.textContent = name;
+  return el;
+}
+function noteNamesAria(label, names) {   // a staff's spoken label, with its names when they are shown
+  return I18n.t('trope.notes.staff_aria', { label, names: names.filter(Boolean).join(' ') });
+}
+const MOTIF_NAME_SIZE = 9, PHRASE_NAME_SIZE = 7.5, PHRASE_GRACE_NAME_SIZE = 6;
 // Staff primitives, shared by the Learn cards' staffs and the Phrases tab's. MID is the middle line's
 // y and STEP half a staff space, one diatonic step; every staff draws in currentColor.
 const STAFF_SIG_STEP = { F: 4, C: 1, G: 5, D: 2, A: -1, E: 3, B: 0 }, STAFF_FLAT_STEP = { B: 0, E: 3, A: -1, D: 2, G: -2, C: 1, F: -3 };
@@ -2166,20 +2234,43 @@ function renderMotifStaff(t, motif) {
   const sig = keySignature(key);
   const count = motif.notes.length;
   const MID = 28, STEP = 3;
+  const mode = noteNamesMode();
+  const names = mode === 'off' ? null : motif.notes.map((n) => noteNameAt(n.p + shift, key, mode));
   // Long figures (shalshelet, karnei parah…) widen the staff instead of cramping; the card header wraps it.
   // A figure reaching below A3 (the High Holiday zarka ends on G3, and a lowered key lower still) deepens it
   // just enough for that head.
   const low = Math.min(0, ...motif.notes.map((n) => motifPitchPos(n.p + shift, key).step));
-  const W = 180 + Math.max(0, count - 8) * 11 + sig.length * 6, H = Math.max(56, MID - low * STEP + 4), X0 = 30 + sig.length * 6, XEND = W - 8;
+  const X0 = 30 + sig.length * 6;
+  let W = 180 + Math.max(0, count - 8) * 11 + sig.length * 6, H = Math.max(56, MID - low * STEP + 4);
+  // Horizontal slots ∝ d+1 (the +1 keeps short notes from cramping together).
+  const total = motif.notes.reduce((a, n) => a + (n.d + 1), 0);
+  let nameY = 0;
+  if (names) {
+    // The names share one line under the lowest ink (a head below the staff and its accidental, or a stem hanging
+    // down from a note on or above the middle line), and the staff widens until no two neighbours touch: note i sits
+    // (dᵢ₋₁ + dᵢ + 2) / 2 slots after note i − 1.
+    const ink = Math.max(MID + 12, ...motif.notes.map((n) => {
+      const { step: s, acc } = motifPitchPos(n.p + shift, key), cy = MID - s * STEP;
+      return s < 0 ? cy + (acc ? 6 : 3) : cy + 17;
+    }));
+    nameY = ink + 9.5;
+    H = Math.max(H, nameY + 4);
+    let span = 0;
+    for (let i = 1; i < count; i++) {
+      const apart = (motif.notes[i - 1].d + motif.notes[i].d + 2) / 2 / total;
+      span = Math.max(span, ((noteNameWidth(names[i - 1], MOTIF_NAME_SIZE) + noteNameWidth(names[i], MOTIF_NAME_SIZE)) / 2 + 3) / apart);
+    }
+    W = Math.max(W, Math.ceil(X0 + span + 8));
+  }
+  const XEND = W - 8;
   const svg = _svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'tu-motif', role: 'img' });
   if (W !== 180) svg.style.inlineSize = Math.round(W * 165 / 180) + 'px';
   if (H !== 56) svg.style.blockSize = Math.ceil(H * 165 / 180) + 'px';
-  svg.setAttribute('aria-label', I18n.t(melodyKey() === 'highholiday' ? 'trope.learn.motif_aria_hh' : 'trope.learn.motif_aria', { name: tropeName(t) }));
+  const label = I18n.t(melodyKey() === 'highholiday' ? 'trope.learn.motif_aria_hh' : 'trope.learn.motif_aria', { name: tropeName(t) });
+  svg.setAttribute('aria-label', names ? noteNamesAria(label, names) : label);
   staffLines(svg, W, MID);
   staffClef(svg, MID, tuneVoiceKey() === 'low');
   staffKeySig(svg, sig, MID, STEP);
-  // Horizontal slots ∝ d+1 (the +1 keeps short notes from cramping together).
-  const total = motif.notes.reduce((a, n) => a + (n.d + 1), 0);
   let cum = 0;
   motif.notes.forEach((n, i) => {
     const share = n.d + 1;
@@ -2205,6 +2296,7 @@ function renderMotifStaff(t, motif) {
       g.appendChild(_svgEl('path', { d: 'M ' + sx + ' ' + sy2 + ' q 4.5 ' + (3 * dir) + ' 3 ' + (8.5 * dir),
         fill: 'none', stroke: 'currentColor', 'stroke-width': 1.1 }));
     }
+    if (names && names[i]) g.appendChild(noteNameEl(names[i], cx, nameY, MOTIF_NAME_SIZE));   // lights with its note
     svg.appendChild(g);
   });
   return svg;
@@ -2384,7 +2476,8 @@ function phraseRestGlyph(val) {
   if (val.dot) { g.dot = { x: g.r + 2.2, y: -3 }; g.r += 3.35; }
   return g;
 }
-function layoutPhraseStaff(row, key, shift) {
+// names (optional): the name to write under each note, index-aligned with row.notes (noteNameAt, read by the caller).
+function layoutPhraseStaff(row, key, shift, names) {
   const STEP = PHRASE_STEP;
   const sig = keySignature(key), sigAlt = {};
   sig.forEach((k) => { sigAlt[k.letter] = k.acc; });
@@ -2401,6 +2494,8 @@ function layoutPhraseStaff(row, key, shift) {
       o.step = step; o.y = -step * STEP;
       o.alt = acc === '♯' ? 1 : acc === '♭' ? -1 : acc === '♮' ? 0 : (sigAlt[letterOf(step)] || 0);
     } else o.rg = phraseRestGlyph(o.val);
+    o.name = !o.rest && names && names[i] || '';   // a grace note's name is smaller, like its head
+    o.nw = o.name ? noteNameWidth(o.name, o.grace ? PHRASE_GRACE_NAME_SIZE : PHRASE_NAME_SIZE) : 0;
     return o;
   });
   // Accidentals: printed where a line or space changes from what the signature (or an earlier sign) set.
@@ -2446,12 +2541,14 @@ function layoutPhraseStaff(row, key, shift) {
   const sylW = row.syl.map((s) => _phraseTextWidth(s.t));
   const sylStart = [], sylEnd = [];
   let x = X0 + leftExt(notes[0] || { accText: false });
+  let nameEnd = -Infinity;   // the right edge of the last name written (with names on)
   for (const o of notes) {
     const i = o.i;
     if (i > 0) {
       const p = notes[i - 1];
       x = Math.max(x + space(p) + (p.u !== o.u ? 6 : 0), notes[i - 1].x + rightExt(p) + leftExt(o) + 2);
     }
+    if (o.nw) x = Math.max(x, nameEnd + 3 + o.nw / 2);   // a name never touches the one before it
     const s = row.syl[o.s];
     if (s && s.from === i) {
       const width = sylW[o.s], single = s.from === s.to;
@@ -2463,9 +2560,10 @@ function layoutPhraseStaff(row, key, shift) {
       sylStart[o.s] = startAt(x); sylEnd[o.s] = startAt(x) + width;
     }
     o.x = x;
+    if (o.nw) nameEnd = x + o.nw / 2;
   }
   const last = notes[N - 1];
-  const W = Math.ceil(Math.max(last.x + rightExt(last), sylEnd[sylEnd.length - 1] || 0) + 8);
+  const W = Math.ceil(Math.max(last.x + rightExt(last), sylEnd[sylEnd.length - 1] || 0, nameEnd) + 8);
   // Stems and beams (y grows downward, 0 is the middle line).
   const sx = (o) => (o.grace ? o.x + (o.up ? 2 : -2) : o.x + (o.up ? 3.1 : -3.1));
   const beamLines = [];
@@ -2577,18 +2675,21 @@ function layoutPhraseStaff(row, key, shift) {
   for (const sl of slurs) { see(sl.ya); see(sl.yb); see(sl.c); }
   for (const ti of ties) see(ti.y + ti.dir * 4);
   const barY = Math.min(-26, top - 9);
-  const lyricY = Math.max(22, bottom + 11);
-  return { notes, segs, tups, ties, slurs, W, X0, sig, barY, lyricY, sylStart, sylEnd, sylW,
+  // With names on they take the line under the staff, and the syllables move down a line beneath them.
+  const nameY = Math.max(22, bottom + 10);
+  const lyricY = notes.some((o) => o.nw) ? nameY + 11 : Math.max(22, bottom + 11);
+  return { notes, segs, tups, ties, slurs, W, X0, sig, barY, nameY, lyricY, sylStart, sylEnd, sylW,
     units: row.units.map((u) => ({ k: u.k, xa: notes[u.from].x, xb: notes[u.to].x })) };
 }
 
 // The row drawn: an <svg class="tu-pstaff"> at SCALE px per unit. opts: {key, shift, low, ariaLabel,
-// famOf(markKey) -> the family whose colour its bar takes}; without an ariaLabel the SVG is hidden from
-// assistive tech (its host names it). Every note is a <g class="tu-pn" data-i data-u>, every syllable a
-// <text class="tu-ps" data-s data-u>, every bar a <rect class="tu-pbar" data-u>: the tune lights notes by
-// data-i, and a mark chip lights its notes, bar and syllables by data-u.
+// famOf(markKey) -> the family whose colour its bar takes, names (optional, layoutPhraseStaff's)}; without an
+// ariaLabel the SVG is hidden from assistive tech (its host names it). Every note is a <g class="tu-pn" data-i
+// data-u> (holding its name, <text class="tu-nn">, when names are on), every syllable a <text class="tu-ps"
+// data-s data-u>, every bar a <rect class="tu-pbar" data-u>: the tune lights notes by data-i, and a mark chip
+// lights its notes, bar and syllables by data-u.
 function renderPhraseStaff(row, opts) {
-  const L = layoutPhraseStaff(row, opts.key, opts.shift);
+  const L = layoutPhraseStaff(row, opts.key, opts.shift, opts.names);
   const SCALE = 1.5, pad = 3;
   const MID = -L.barY + pad + 2, H = Math.ceil(Math.max(MID + L.lyricY + 4, opts.low ? MID + 30 : 0));   // room for the 8
   const Y = (y) => Math.round((MID + y) * 100) / 100;
@@ -2662,6 +2763,7 @@ function renderPhraseStaff(row, opts) {
       else if (m === '-') g.appendChild(_svgEl('line', { x1: cx - 3.2, y1: Y(my), x2: cx + 3.2, y2: Y(my), stroke: 'currentColor', 'stroke-width': 1.1 }));
       my -= 6;
     }
+    if (o.name) g.appendChild(noteNameEl(o.name, cx, Y(L.nameY), o.grace ? PHRASE_GRACE_NAME_SIZE : PHRASE_NAME_SIZE));
     svg.appendChild(g);
   }
   const over = _svgEl('g', { 'aria-hidden': 'true' });
@@ -2933,12 +3035,15 @@ function buildPhraseCard(m, set, row, forPrint) {
   const wrap = document.createElement('div');
   wrap.className = 'tu-pstaff-wrap';
   wrap.dir = 'ltr';
+  const key = shiftedKey(set.key, tuneShiftVal()), shift = tuneShiftVal(), mode = noteNamesMode();
+  const names = mode === 'off' ? null : row.notes.map((n) => (n.r ? '' : noteNameAt(n.p + shift, key, mode)));
   if (!forPrint) {
     wrap.tabIndex = 0;   // a keyboard can scroll a wide row
     wrap.setAttribute('role', 'group');
-    wrap.setAttribute('aria-label', I18n.t(m === 'highholiday' ? 'trope.phrases.staff_aria_hh' : 'trope.phrases.staff_aria', { n: row.n, marks: phraseMarksText(row) }));
+    const label = I18n.t(m === 'highholiday' ? 'trope.phrases.staff_aria_hh' : 'trope.phrases.staff_aria', { n: row.n, marks: phraseMarksText(row) });
+    wrap.setAttribute('aria-label', names ? noteNamesAria(label, names) : label);
   }
-  const svg = renderPhraseStaff(row, { key: shiftedKey(set.key, tuneShiftVal()), shift: tuneShiftVal(), low: tuneVoiceKey() === 'low', famOf: _phraseFamily });
+  const svg = renderPhraseStaff(row, { key, shift, low: tuneVoiceKey() === 'low', famOf: _phraseFamily, names });
   if (!forPrint && _tuneKey === id) svg.classList.add('is-playing');
   wrap.appendChild(svg);
   card.appendChild(wrap);
@@ -4060,11 +4165,11 @@ function openMelodySetting() {
   const r = document.getElementById(melodyKey() === 'highholiday' ? 'melHH' : 'melTorah');
   if (r) { r.closest('.tu-set-item').scrollIntoView({ block: 'center' }); r.focus({ preventScroll: true }); }
 }
-/* ── Sing along: Key (settings.tuneShift) and Voice (settings.tuneVoice) ──
+/* ── Sing along: Key (settings.tuneShift), Voice (settings.tuneVoice) and Note names (settings.noteNames) ──
    One writer for the key — the Settings slider, the Learn bar's arrows and both resets all call
    setTuneShift — and one read-only settings→controls half, syncTuneControls(), which renderLearn,
    syncFormToSettings and applyI18n call, so a melody change, a reset, a cloud download and a language
-   switch all repaint both controls. */
+   switch all repaint every control. */
 const _KEY_NOTE = { C: 'c', Db: 'db', D: 'd', Eb: 'eb', E: 'e', F: 'f', 'F#': 'fs', G: 'g', Ab: 'ab', A: 'a', Bb: 'bb', B: 'b' };
 function keyNameText(key) {   // "C major"; '' for a key outside the table (a motif file without one)
   const n = _KEY_NOTE[key];
@@ -4116,6 +4221,16 @@ function setTuneVoice(v) {
   renderLearn();    // the 8 under every clef
   renderPhrasesIfShown();
 }
+function setNoteNames(v) {
+  v = v === 'letters' || v === 'solfa' ? v : 'off';
+  if (v === settings.noteNames) { syncTuneControls(); return; }
+  settings.noteNames = v;
+  saveSettings();
+  // Every staff gains, changes or drops its names. A tune that is playing keeps playing: the names never
+  // change a note, and the tune finds its staff again at each note.
+  renderLearn();
+  renderPhrasesIfShown();
+}
 function syncTuneControls() {
   const s = tuneShiftVal(), low = tuneVoiceKey() === 'low';
   const bar = document.getElementById('tuKeyBar');
@@ -4135,6 +4250,10 @@ function syncTuneControls() {
   document.getElementById('optTuneShiftVal').textContent = tuneShiftReadout(s);
   document.getElementById('voiceHigh').checked = !low;
   document.getElementById('voiceLow').checked = low;
+  const names = noteNamesKey();
+  document.getElementById('namesOff').checked = names === 'off';
+  document.getElementById('namesLetters').checked = names === 'letters';
+  document.getElementById('namesSolfa').checked = names === 'solfa';
   // Pre-ready I18n.t returns raw keys; applyI18n runs this again once the dictionary has loaded.
   if (!_i18nReady || !window.I18n) return;
   if (bar) {

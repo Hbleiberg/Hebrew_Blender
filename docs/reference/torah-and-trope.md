@@ -209,8 +209,8 @@ stop and reconsider. Shell (dark mode, tooltips, tour, toast, My Fonts) is copie
 (Learn | Phrases | Drill | Settings) laid out like the Font Maker's Settings tab: a serif heading per group over a
 hairline rule, the group's items in a grid (three across, two below 1024px, one below 640px) with small
 uppercase item labels, and nothing to collapse — so the page carries no panel-collapse memory. The
-groups are names and tradition (primary names, melody), sing along (key, voice — see *Key and voice*
-below), drill, Hebrew font, and a shared row of progress, cloud saves and about.
+groups are names and tradition (primary names, melody), sing along (key, voice, note names — see *Key and
+voice* and *Note names* below), drill, Hebrew font, and a shared row of progress, cloud saves and about.
 There is no header gear; `openSettings()` survives only as `setMode('settings')` for the account chip's
 "Cloud saves…" item (which then scrolls to `#setCloud`) and the tools smoke. Switching to the tab
 re-syncs the controls from `settings`; every control saves on change. Print hides the tab like Drill.
@@ -397,9 +397,9 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     - The chips row is pinned LTR like the staff, so the chips stand in the notes' order in either
       language.
   - **`renderPhraseStaff(row, opts)`** is full notation and pure: `layoutPhraseStaff` places everything
-    around the middle line from the row and `{key, shift}` alone, and the drawing turns that into SVG with
-    the staff primitives the Learn staff uses. It is the first building block of a whole reading's staff
-    (`docs/tropepatterns.md` → G). It draws:
+    around the middle line from the row, `{key, shift}` and (with note names on) the caller's `names` alone,
+    and the drawing turns that into SVG with the staff primitives the Learn staff uses. It is the first
+    building block of a whole reading's staff (`docs/tropepatterns.md` → G). It draws:
     - every value and dot, and a rest of any value at its engraved height (`phraseRestGlyph`): a
       hooked rest has a knob per flag, from the third space down (a 32nd's third in the fourth), on a
       stem to the second line (eighth) or the bottom line; a quarter rest spans the middle three
@@ -413,7 +413,9 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     - grace notes, small and slashed (row 41's pair is beamed);
     - accents and tenuto lines above the staff;
     - accidentals held to the end of the row, since the chart has no bar lines;
-    - the syllables with their hyphens, and a family-coloured bar over each mark's notes.
+    - the syllables with their hyphens, and a family-coloured bar over each mark's notes;
+    - the note names, when shown (*Note names* below), on their own line between the staff and the
+      syllables.
 
     Spacing grows with the log of each note's length and widens for accidentals, dots, flags and
     syllables. A row wider than its card scrolls inside an LTR wrapper, which is also its keyboard stop
@@ -493,6 +495,38 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     names its key and a printed-key chart carries no key line.
   - The recordings (Learn examples and the drill) keep the reader's own pitch; the Torah Trainer's
     chant pitch is the tool for moving a recording.
+- **Note names** (Settings → *Sing along* → Note names: Off, A B C, Do re mi). One field of the settings blob,
+  `noteNames` (`'off'` by default, `'letters'` or `'solfa'`, read through `noteNamesKey()`: any other stored
+  value shows no names and stays stored), writes a name under every note of every staff, on the Learn cards and
+  the Phrases tab alike. The data files are never touched, and with names off every staff is byte-identical to one
+  drawn without the feature.
+  - **What a name says.** `noteNameAt(p, key, mode)` reads a note where the staff writes it: `motifPitchPos`'s line
+    or space, and the alteration it sounds (its own sign, else the key signature's), in the key the staff is drawn
+    in. *A B C* is that letter with its ♯ or ♭, so C♯ in A major although the signature carries the sharp.
+    *Do re mi* is movable do, not fixed do: do is the tonic of the drawn key (the note the key is named after), so a
+    staff moved by the Key setting keeps its names, and a note outside the key carries the sign it takes against the
+    signature (A major's G♮ is ti♭, the High Holiday C major's F♯ is fa♯). Every staff's names were checked in all
+    13 keys: each letter sounds its note, and each syllable names the note's distance from the tonic and never changes
+    with the key.
+  - **Text.** The syllables are `trope.notes.solfa_1`…`_7` (English do re mi fa sol la ti; Hebrew the pointed דוֹ רֵה מִי
+    פָה סוֹל לָה סִי of the key names). A Hebrew syllable's `<text>` carries `lang="he"` and `direction="rtl"`, so its ♯
+    or ♭ reads after it. The key bar still names keys in fixed do in Hebrew (לָה מז'ור), so the Settings note says
+    that do starts from the note the key is named after.
+  - **Where.** On a Learn card the names share one line under the lowest ink (a head below the staff with its
+    accidental, or a stem hanging from a note on or above the middle line), the staff deepening to hold it, and the
+    staff widens until no two neighbouring names touch (`noteNameWidth` estimates each at its bold width). On the
+    Phrases tab `buildPhraseCard` passes `names` to `renderPhraseStaff` (index-aligned with the row's notes; a rest
+    has none and a grace note's is smaller). Its layout gives them the line under the staff, moves the syllables one
+    line down, and spaces the notes so that a name never touches the one before it. Every name is a
+    `<text class="tu-nn">` inside its note's group.
+  - **Lit.** Names are `--muted`. The sounding note's name turns `--gold-text` (dark: `--gold-light`) and bold with
+    its head, and a Phrases chip lights its mark's names with its notes: colour and weight only, no motion.
+  - **Spoken.** While names are shown, the staff's label ends with them (`trope.notes.staff_aria`): the Learn SVG's
+    `aria-label`, and the Phrases scroller's.
+  - **One writer.** `setNoteNames(v)` saves, then re-renders Learn and, while it shows, the Phrases tab. A tune that
+    is playing keeps playing, since the tune finds its staff again at each note. `syncTuneControls()` checks the
+    radios. The staffs draw no names before the dictionary has loaded (`noteNamesMode()`, the key bar's rule), and
+    `applyI18n` re-renders them in the new language. Both print sheets carry the names, printed muted.
 - **`TROPES` taxonomy** — one `═══`-marked table (26 entries — zarka is a single entry carrying
   both codepoints: key, chars, display, Ashkenazi +
   Sephardi names, family, rare flag) kept **byte-identical** between `scripts/build-trope-index.mjs`
@@ -521,7 +555,7 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   (`fonts/NotoSerifHebrew-Taamim.ttf`); without it every mark is tofu on stock macOS/iOS.
   Postpositive/prepositive marks sitting at word edges is **correct**, not a bug.
 - **Persistence** (no presets, no `.ivrit` engine — AllTools-only backup):
-  `hebrewTropeTutor_settings` (tradition ashk/seph, `melody`, `tuneShift`, `tuneVoice`, hebFont,
+  `hebrewTropeTutor_settings` (tradition ashk/seph, `melody`, `tuneShift`, `tuneVoice`, `noteNames`, hebFont,
   hebFontSize, drill-type toggles, `drillScope`, `drillLength`, playbackRate) and `hebrewTropeTutor_progress` (`{v:1, tropes:{key:{r,w}}, families:{}, pbStreak}`).
   Registered in all five AllTools sites in `index.html`; progress imports go through
   `tropeProgressMerge` (r/w/pbStreak = max, families = union). `hebrewTropeTutor_tourSeen` is the

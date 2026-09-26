@@ -4467,6 +4467,20 @@ trope.melody.label,Melody,מנגינה,settings label,
 trope.melody.note,The staffs and their play buttons follow this choice. The recordings and the drill use the year-round melody either way.,החמשות וכפתורי הנגינה שלהן הולכים אחר הבחירה הזו. ההקלטות והתרגול משתמשים במנגינת כל השנה בכל מקרה.,settings note,
 trope.melody.tip,"The year-round melody is chanted on Shabbat, weekdays and festivals; the High Holiday melody on Rosh Hashanah and Yom Kippur. Four rare marks never occur in the High Holiday readings, so they have no High Holiday staff.","מנגינת כל השנה נקראת בשבתות, בימי חול ובחגים; מנגינת הימים הנוראים — בראש השנה וביום כיפור. ארבעה טעמים נדירים אינם מופיעים בקריאות של הימים הנוראים, ולכן אין להם חמשה במנגינה הזו.",tooltip,
 trope.melody.torah,Year-round,כל השנה,radio label,
+trope.notes.aria,Names under the notes,שמות מתחת לתווים,Settings → Sing along note names radiogroup aria,aria-label only
+trope.notes.label,Note names,שמות התווים,Settings → Sing along item label,
+trope.notes.letters,A B C,A B C,Note names radio: each note's letter name,
+trope.notes.note,"Writes a name under every note, and it lights up with its note as the tune plays. Do re mi starts from the note the key is named after (in A major, do is A), so the names stay the same in any key.","כותב שם מתחת לכל תו, והשם נדלק יחד עם התו כשהמנגינה מתנגנת. דוֹ רֵה מִי מתחילים מהצליל שהסולם נקרא על שמו (בסולם לָה מז'ור, דוֹ הוא לָה), ולכן השמות נשארים זהים בכל סולם.",settings note,
+trope.notes.off,Off,כבוי,Note names radio: no names,
+trope.notes.solfa,Do re mi,דוֹ רֵה מִי,Note names radio: movable-do syllables,
+trope.notes.solfa_1,do,דוֹ,movable-do syllable under a staff note: the key's 1st degree (its tonic),Hebrew: pointed solfège as the trope.key.note_* names
+trope.notes.solfa_2,re,רֵה,movable-do syllable under a staff note: the key's 2nd degree,Hebrew: pointed solfège as the trope.key.note_* names
+trope.notes.solfa_3,mi,מִי,movable-do syllable under a staff note: the key's 3rd degree,Hebrew: pointed solfège as the trope.key.note_* names
+trope.notes.solfa_4,fa,פָה,movable-do syllable under a staff note: the key's 4th degree,Hebrew: pointed solfège as the trope.key.note_* names
+trope.notes.solfa_5,sol,סוֹל,movable-do syllable under a staff note: the key's 5th degree,Hebrew: pointed solfège as the trope.key.note_* names
+trope.notes.solfa_6,la,לָה,movable-do syllable under a staff note: the key's 6th degree,Hebrew: pointed solfège as the trope.key.note_* names
+trope.notes.solfa_7,ti,סִי,movable-do syllable under a staff note: the key's 7th degree,Hebrew: pointed solfège as the trope.key.note_* names
+trope.notes.staff_aria,{label}. Notes: {names},{label}. תווים: {names},Learn card and Phrases staff aria-label while note names are shown,"aria-label only; do-not-translate {label} (the staff's own label) and {names} (the names, space-separated)"
 trope.progress.reset_button,Reset mastery & personal best,איפוס שליטה ושיא אישי,button,leading-emoji
 trope.progress.summary,{n} of {total} tropes attempted · personal best streak {pb} 🔥,{n} מתוך {total} טעמים נוסו · רצף שיא אישי {pb} 🔥,progress summary,do-not-translate {n}/{total}/{pb}
 trope.settings.heb_size,Hebrew size,גודל עברית,slider label,
@@ -4476,7 +4490,7 @@ trope.settings.panel_drill,Drill,תרגול,Settings tab group heading,
 trope.settings.panel_font,Hebrew Font,גופן עברי,Settings tab group heading,
 trope.settings.panel_names,Names & Tradition,שמות ומסורת,Settings tab group heading,
 trope.settings.panel_progress,Progress,התקדמות,Settings tab group heading,
-trope.settings.panel_sing,Sing along,שרים יחד,Settings tab group heading (Key + Voice),
+trope.settings.panel_sing,Sing along,שרים יחד,Settings tab group heading (Key + Voice + Note names),
 trope.settings.question_types,Question types,סוגי שאלות,Settings tab item label above the three drill toggles (small caps style),
 trope.settings.reset_size_aria,Reset Hebrew size,איפוס גודל עברית,reset button aria,aria-label only
 trope.settings.reset_size_title,Reset size,איפוס גודל,reset button title,

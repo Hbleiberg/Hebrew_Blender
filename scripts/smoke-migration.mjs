@@ -274,7 +274,7 @@ function mutate(key, base, changes) {
 function buildDeviceA(D) {
   const s = {};
   const base = (key) => parse(D[key]) || {};
-  s.hebrewTropeTutor_settings = J(mutate('hebrewTropeTutor_settings', base('hebrewTropeTutor_settings'), { tradition: 'seph', hebFontSize: 2.6, playbackRate: 1.25, tuneShift: 3, tuneVoice: 'low', panelsCollapsed: { 'trope.settings.panel_font': true } }));
+  s.hebrewTropeTutor_settings = J(mutate('hebrewTropeTutor_settings', base('hebrewTropeTutor_settings'), { tradition: 'seph', hebFontSize: 2.6, playbackRate: 1.25, tuneShift: 3, tuneVoice: 'low', noteNames: 'solfa', panelsCollapsed: { 'trope.settings.panel_font': true } }));
   s.hebrewTropeTutor_progress = J({ v: 1, tropes: { etnachta: { r: 3, w: 1 }, sofpasuk: { r: 5, w: 0 } }, families: { disjunctive: true }, pbStreak: 4 });
   s.hebrewTorahTrainer_settings = J(mutate('hebrewTorahTrainer_settings', base('hebrewTorahTrainer_settings'), {
     parshahKey: 'bereshit', layout: 'stacked', translationVersion: 'The Holy Scriptures: A New Translation (JPS 1917)', hebFontSize: 2.0, translitFontSize: 1.1, englishFontSize: 1.1,
