@@ -4160,14 +4160,14 @@ function renderText() {
   const canLoop = canChant && settings.scope !== 'custom';
   // A Rosh Hashanah / Yom Kippur reading links to the tutor's High Holiday melody; while Chant can play it, a notice
   // chip beside the link says the recordings are PocketTorah's year-round melody, so a student practising with Chant
-  // is told the day's tune is another. The chip carries its own aria-label: bindTip would otherwise name it
-  // "More information" and hide its text from a screen reader.
+  // is told the day's tune is another. Every chip here carries its own aria-label: bindTip would otherwise name
+  // it "More information" and hide its text from a screen reader.
   const hhChantChip = TROPE_TUTOR_URL && readingTutorMelody() && canChant;
   let html = `<div class="tt-ref-hdr">
     <span>${esc(currentRangeLabel)}${_readingHasShem
-      ? ` <span class="tt-shem-chip" lang="he" data-i18n-tip="torah.shem.chip_tip" data-tip="${esc(I18n.t('torah.shem.chip_tip'))}">${esc(I18n.t('torah.shem.chip_label'))}</span>`
+      ? ` <span class="tt-shem-chip" lang="he" data-i18n="torah.shem.chip_label" data-i18n-aria-label="torah.shem.chip_label" aria-label="${esc(I18n.t('torah.shem.chip_label'))}" data-i18n-tip="torah.shem.chip_tip" data-tip="${esc(I18n.t('torah.shem.chip_tip'))}">${esc(I18n.t('torah.shem.chip_label'))}</span>`
       : ''}${_translitDead
-      ? ` <span class="tt-notice-chip" data-i18n-tip="torah.trans.unavailable_tip" data-tip="${esc(I18n.t('torah.trans.unavailable_tip'))}">${esc(I18n.t('torah.trans.unavailable_chip'))}</span>`
+      ? ` <span class="tt-notice-chip" data-i18n="torah.trans.unavailable_chip" data-i18n-aria-label="torah.trans.unavailable_chip" aria-label="${esc(I18n.t('torah.trans.unavailable_chip'))}" data-i18n-tip="torah.trans.unavailable_tip" data-tip="${esc(I18n.t('torah.trans.unavailable_tip'))}">${esc(I18n.t('torah.trans.unavailable_chip'))}</span>`
       : ''}${TROPE_TUTOR_URL && readingTutorMelody()
       ? ` <a class="tt-hh-link" href="${esc(tropeTutorHref())}" data-i18n="torah.reading.hh_trope_link">${esc(I18n.t('torah.reading.hh_trope_link'))}</a>`
       : ''}${hhChantChip
