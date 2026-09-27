@@ -4662,7 +4662,7 @@
   "torah.audio.tts_unsupported": "Speech synthesis not supported.",
   "torah.color.code_nikkud": "Color-code nikkud",
   "torah.color.code_trope": "Color-code trope families",
-  "torah.color.code_trope_tip": "Colors each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. Highlight tints the word; Underline draws a colored line under it. When vowel coloring is in Highlight mode, trope shows as an underline instead.",
+  "torah.color.code_trope_tip": "Colors each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. Highlight tints the word; Underline draws a colored line under it. When vowel coloring is in Letter or Highlight mode, trope shows as an underline instead.",
   "torah.color.mode_highlight": "Highlight",
   "torah.color.mode_letter": "Letter",
   "torah.color.mode_none": "No highlight",

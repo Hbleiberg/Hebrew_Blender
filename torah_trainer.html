@@ -923,7 +923,8 @@ body.nik-mode-underline .nik { text-decoration-line:underline !important; text-d
 :where(body.trope-on:not(.trope-underline-fallback)) .tt-word:where(.trope-rare)     { background-color:var(--trope-rare-bg); }
 /* The underline look (body.trope-underline-fallback, set by applyTropeColors): the teacher
    chose Underline in the trope list, or the collision fallback. When nikkud color coding
-   is in Highlight mode it owns word backgrounds (per-syllable tints), so trope shows as a
+   is in Highlight mode it owns word backgrounds (per-syllable tints), and in Letter mode its
+   colored letters fail contrast on a tint, so trope shows as a
    thick clause underline pushed below the nikkud zone instead. text-decoration longhands on purpose:
    box-shadow is contended by hover/karaoke (flicker) and border-bottom reflows
    justified text; kar-style-underline's .active shorthand still overrides these. */
@@ -2395,7 +2396,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-body">
         <!-- Same shape as the vowel list: No highlight writes colorCodeTrope:false and keeps tropeCodingMode. -->
         <div class="form-row tt-color-row" style="flex-wrap:wrap;">
-          <label><span id="lblColorCodeTrope" data-i18n="torah.color.code_trope">Color-code trope families</span> <span class="tip-wrap" data-i18n-tip="torah.color.code_trope_tip" data-tip="Colors each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. Highlight tints the word; Underline draws a colored line under it. When vowel coloring is in Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
+          <label><span id="lblColorCodeTrope" data-i18n="torah.color.code_trope">Color-code trope families</span> <span class="tip-wrap" data-i18n-tip="torah.color.code_trope_tip" data-tip="Colors each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. Highlight tints the word; Underline draws a colored line under it. When vowel coloring is in Letter or Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
           <span class="radio-group tt-color-list" role="group" aria-labelledby="lblColorCodeTrope" style="margin-inline-start:auto;">
             <input type="radio" name="optTropeMode" id="tmNone" value="none"><label for="tmNone" data-i18n="torah.color.mode_none">No highlight</label>
             <input type="radio" name="optTropeMode" id="tmHighlight" value="highlight"><label for="tmHighlight" data-i18n="torah.color.mode_highlight">Highlight</label>
@@ -3552,11 +3553,14 @@ function applyTropeColors() {
   body.classList.toggle('trope-on', on);
   // THE UNDERLINE LOOK (a thick clause underline below the text instead of a tint) has two
   // causes: the teacher chose Underline, or the COLLISION RULE. Nikkud Highlight mode already
-  // paints per-syllable backgrounds, so a word-level tint would stack with them; trope then
-  // underlines automatically and the stored Highlight choice is kept. showNikkud matters
-  // because syllable highlights only render while nikkud is shown.
+  // paints per-syllable backgrounds, so a word-level tint would stack with them; Letter mode
+  // colors the letters themselves, and a gold or teal letter on a clause tint measured
+  // 1.85–2.1:1, under the 3:1 floor for 24px text. Trope then underlines automatically and the
+  // stored Highlight choice is kept. Only vowel Underline shares a word with a tint cleanly; an
+  // unknown stored mode draws as Letter, so it collides too. showNikkud matters because the
+  // vowel colors only render while nikkud is shown.
   const underline = on && (tropeModeKey() === 'underline'
-                    || (settings.colorCodeNikkud && settings.showNikkud && settings.colorCodingMode === 'highlight'));
+                    || (settings.colorCodeNikkud && settings.showNikkud && settings.colorCodingMode !== 'underline'));
   body.classList.toggle('trope-underline-fallback', underline);
   for (const fam of TROPE_FAMILIES) {
     const c = getTropeColor(fam);   // override-or-theme-default, 6-digit guaranteed
@@ -6640,7 +6644,7 @@ function wireSettingsForm() {
       if (on !== was) renderText();   // the .nik syllable spans exist only while coloring is on
       else {
         applyNikkudColors();   // mode = a body-class swap, no reading rebuild
-        applyTropeColors();    // keep the Highlight-mode ↔ trope-underline collision fallback in sync
+        applyTropeColors();    // keep the vowel-mode ↔ trope-underline collision fallback in sync
       }
     });
   });
@@ -7552,11 +7556,12 @@ function _inlineCopyStyles(container, opts) {
   const mode = settings.colorCodingMode;
   // The copy's own marks decide its trope look, not the screen's body class: they can differ from
   // the display's (Copy → Nikkud "Include" with the vowels hidden on screen). The underline look is
-  // the teacher's Underline choice, or the collision rule: syllable highlights IN THIS COPY already
-  // paint backgrounds, so a word-level trope tint becomes a clause underline instead of stacking
-  // with them. `o` mirrors tokenizeHebrew's own reads, which put the .nik spans in the copy.
+  // the teacher's Underline choice, or the collision rule: syllable highlights or colored letters
+  // IN THIS COPY (every vowel look but Underline) would sit on a word-level trope tint, so it
+  // becomes a clause underline instead. `o` mirrors tokenizeHebrew's own reads, which put the
+  // .nik spans in the copy.
   const o = opts || settings;
-  const underline = tropeModeKey() === 'underline' || (!!o.colorCodeNikkud && !!o.showNikkud && mode === 'highlight');
+  const underline = tropeModeKey() === 'underline' || (!!o.colorCodeNikkud && !!o.showNikkud && mode !== 'underline');
   container.querySelectorAll('span.nik').forEach(sp => {
     const key = (sp.className.match(/nik-([a-z]+)/) || [])[1];
     const c = key ? getNikudColor(key) : null;

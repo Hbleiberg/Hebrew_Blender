@@ -157,13 +157,15 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   (0,1,0) specificity so `.tt-word:hover` and karaoke `.active` always win — keep it that way.
 - **The underline look**: `body.trope-underline-fallback` switches words from background tint
   to a thick `text-decoration` clause underline (offset below the nikkud) when the teacher
-  chooses Underline, **or automatically by the collision rule**: nikkud coloring on **and**
-  `colorCodingMode === 'highlight'` (and nikkud shown), whatever the trope list says (the tip
-  says so). The one class carries both causes. The translit-under rules read it, and so do the
+  chooses Underline, **or automatically by the collision rule**: nikkud coloring on **and** any
+  vowel look but Underline (`colorCodingMode !== 'underline'`: Highlight's syllable tints would
+  stack with the word tint, and Letter's colored letters measured 1.85–2.1:1 on it; an unknown
+  mode draws as Letter) with nikkud shown, whatever the trope list says (the tip says so). The
+  one class carries both causes. The translit-under rules read it, and so do the
   legend's swatches, which switch from the tint to the solid `-line` color under it (`--tt-sw-bg` /
-  `--tt-sw-line`). The copy path (`_inlineCopyStyles`) never reads it: it decides from the copy's
-  own options, the Underline choice or syllable highlights actually in the copy (Copy → Nikkud can
-  include vowels the screen hides, or drop ones it shows). Print always underlines.
+  `--tt-sw-line`). The copy path (`_inlineCopyStyles`) never reads it: it applies the same rule to
+  the copy's own options and marks (Copy → Nikkud can include vowels the screen hides, or drop ones
+  it shows). Print always underlines.
 - **Legend** `#ttTropeLegend` sits above `#ttReading` (renderText never touches it); chips are
   generated once at init from `TROPE_COLOR_DEFS`, and swatches read the body vars (the tint, or
   the solid line color while `body.trope-underline-fallback` is set), so theme, picker and look
