@@ -665,6 +665,18 @@ builds) or `'word'`. With `'word'` and the transliteration on, `renderText` drop
 
 ---
 
+## Side by side — one row per verse (`torah_trainer.html`)
+
+`renderSideBySide` builds one `.tt-grid-col` per text (translation, transliteration, Hebrew) and gives every
+cell an explicit `grid-row` (the verse's row; an aliyah divider owns a row of its own and spans `1 / -1`) and
+`grid-column`. With a second text beside the Hebrew the grid carries `.tt-print-parallel` and
+`data-print-cols`, and the column wrappers become `display:contents` — on screen above the 720px collapse and on
+paper alike — so a verse's cells share one row and can never drift apart; the column count comes from
+`data-print-cols`, which the explicit column numbers assume. At 720px and below the columns stack; with the
+Hebrew alone the wrappers stay plain blocks.
+
+---
+
 ## Practice link — the sender's look (`?s=`, the link view)
 
 `torah_trainer.html`'s Copy link (`copyPracticeLink`; the readable-param half is in

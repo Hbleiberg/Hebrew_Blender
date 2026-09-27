@@ -793,6 +793,18 @@ body.dark .tt-hint-toast { background:#0a0f1c; }
 }
 .tt-cell.heb { font-family:var(--heb-font); font-size:var(--tt-heb-size, 1.5rem); line-height:1.7; }
 .tt-cell.translit { font-style:italic; color:var(--muted); font-size:var(--tt-translit-size, 0.95rem); }
+/* On screen as on paper (the print block's parallel grid): with a second text beside the Hebrew,
+   the column wrappers step aside so every cell is a grid item on its verse's explicit row. Two
+   column-major flows drifted apart, because the Hebrew cell is taller (its verse buttons stack):
+   the English beside Hebrew 1:5 was 1:14. The column count is data-print-cols, which the builder's
+   explicit grid-column numbers assume (.has-translit alone left an empty column when the
+   translation was off). Above the 720px collapse only; paper keeps the print block's copy. */
+@media screen and (min-width:721px) {
+  .tt-grid.tt-print-parallel[data-print-cols="2"] { grid-template-columns:1fr 1fr; }
+  .tt-grid.tt-print-parallel[data-print-cols="3"] { grid-template-columns:1fr 1fr 1fr; }
+  .tt-grid.tt-print-parallel { row-gap:0; align-items:stretch; }
+  .tt-grid.tt-print-parallel > .tt-grid-col { display:contents; }
+}
 
 /* Page view: flowing, justified "printed page" layout */
 .tt-bible { max-width:46rem; margin:0 auto; }
