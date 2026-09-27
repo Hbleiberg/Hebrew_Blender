@@ -2462,14 +2462,26 @@ function hebrewNumber(n, gender) {
   if (thou) { parts.push(NUM_THOUSANDS[thou]); n %= 1000; }
   const hund = Math.floor(n / 100);
   if (hund) { parts.push(NUM_HUNDREDS[hund * 100]); n %= 100; }
-  if (n >= 11 && n <= 19) {
-    parts.push(teens[n]);
+  if (n >= 10 && n <= 19) {
+    parts.push(n === 10 ? units[10] : teens[n]);   // NUM_TENS starts at 20: 10 drew nothing, 110 ended in a bare "and"
   } else {
     const ten = Math.floor(n / 10) * 10;
     if (ten) { parts.push(NUM_TENS[ten]); n %= 10; }
     if (n) parts.push(units[n]);
   }
-  return parts.join(' וְ');
+  if (parts.length > 1) parts.push(hebAnd(parts.pop()));
+  return parts.join(' ');
+}
+// The "and" of a number joins its last part only (1985: אֶלֶף תְּשַׁע מֵאוֹת שְׁמֹנִים וְחָמֵשׁ), and its vowel follows the
+// word it joins: וּ before ב, מ, פ or a sheva, the chataf's own short vowel before a chataf (וַחֲמִישָּׁה), וְ otherwise.
+// A בגדכפת letter after it drops its dagesh (וּתְשַׁע).
+function hebAnd(word) {
+  const m = /^([א-ת])([֑-ׇ]*)/.exec(word);
+  if (!m) return 'וְ' + word;
+  const letter = m[1], marks = m[2], rest = word.slice(m[0].length);
+  const vav = ('במפ'.includes(letter) || marks.includes('ְ')) ? 'וּ'
+    : marks.includes('ֲ') ? 'וַ' : marks.includes('ֱ') ? 'וֶ' : marks.includes('ֳ') ? 'וָ' : 'וְ';
+  return vav + letter + ('בגדכפת'.includes(letter) ? marks.replace('ּ', '') : marks) + rest;
 }
 
 const SOFIT_BASE = { 'ך':'כ', 'ם':'מ', 'ן':'נ', 'ף':'פ', 'ץ':'צ' };
