@@ -756,10 +756,14 @@ body.dark .tt-hint-toast { background:#0a0f1c; }
 /* Accessible tooltip trigger: focus ring for keyboard users. */
 .tip-wrap:focus-visible { outline:2px solid var(--gold); outline-offset:2px; border-radius:50%; }
 
-/* Side-by-side layout: 2 or 3 columns */
+/* Side-by-side layout: 2 or 3 columns. ltr pins the column ORDER, as a bilingual Chumash does in either
+   language: the translation first on the left, the Hebrew last on the right (in the Hebrew UI the grid used
+   to mirror and put the Hebrew on the left). Each column still sets its own direction below, and the headers
+   keep the UI's (the [dir="rtl"] rule after them). */
 .tt-grid {
   display:grid; gap:20px; align-items:start;
   grid-template-columns:1fr 1fr;
+  direction:ltr;
 }
 .tt-grid.has-translit { grid-template-columns:1fr 1fr 1fr; }
 .tt-grid-col h3 {
@@ -776,6 +780,7 @@ body.dark .tt-hint-toast { background:#0a0f1c; }
    pin their own equivalents (.tt-translit/.tt-translation, and dir="ltr" on the bible blocks). */
 .tt-grid-col.tt-col-translation .tt-grid-row,
 .tt-grid-col.tt-col-translit .tt-grid-row { direction:ltr; }
+[dir="rtl"] .tt-grid-col h3 { direction:rtl; }
 .tt-grid-row {
   padding:6px 0; border-bottom:1px solid var(--border);
   display:flex; gap:6px;

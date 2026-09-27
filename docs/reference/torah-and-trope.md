@@ -675,6 +675,12 @@ paper alike — so a verse's cells share one row and can never drift apart; the 
 `data-print-cols`, which the explicit column numbers assume. At 720px and below the columns stack; with the
 Hebrew alone the wrappers stay plain blocks.
 
+The column ORDER does not mirror: `.tt-grid` is pinned `direction:ltr`, so column 1 (the translation) is on the
+left and the Hebrew, the last column, on the right in the English and the Hebrew UI alike, as in a bilingual
+Chumash — on screen and on paper. Each column sets its own direction (the Hebrew column `rtl`, the Latin rows
+`ltr`), and `[dir="rtl"] .tt-grid-col h3` gives the headers back the Hebrew UI's direction (they are translated
+chrome). An RTL sweep must not "fix" the pin.
+
 ---
 
 ## Practice link — the sender's look (`?s=`, the link view)
