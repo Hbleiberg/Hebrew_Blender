@@ -1025,15 +1025,18 @@ function render() {
     const cat = CAT_META[r.cat] || { label: r.cat, icon: '📌' };
     const badgeLabel = CAT_BADGE_KEY[r.cat] ? I18n.t('resources.cat_badge.' + CAT_BADGE_KEY[r.cat]) : cat.label;
     const target = r.url === 'index.html' ? '_self' : '_blank';
+    // The directory's own text stays English in both UIs (third-party data): lang="en" has a Hebrew screen
+    // reader voice it in English, and the grade label's dir="ltr" keeps its ranges and parentheses in
+    // English order inside the Hebrew sentence (Sefaria's read "6–8, 9–12, Adult/Teacher ,(guided) 5–3").
     return `
     <a class="resource-card" href="${r.url}" target="${target}" rel="noopener">
       <div class="card-top">
         <div class="card-icon">${cat.icon}</div>
         <span class="card-cat-badge">${badgeLabel}</span>
       </div>
-      <div class="card-title">${r.title}</div>
-      <div class="card-desc" dir="ltr">${r.desc}</div>
-      <div class="card-grade">${I18n.t('resources.card.grades_prefix', {gradeLabel: r.gradeLabel})}</div>
+      <div class="card-title" lang="en">${r.title}</div>
+      <div class="card-desc" dir="ltr" lang="en">${r.desc}</div>
+      <div class="card-grade">${I18n.t('resources.card.grades_prefix', {gradeLabel: `<span dir="ltr" lang="en">${r.gradeLabel}</span>`})}</div>
       <span class="card-link">${I18n.t('resources.card.visit_link')}</span>
     </a>`;
   }).join('');
