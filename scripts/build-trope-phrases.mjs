@@ -58,8 +58,8 @@
  *                                                     row-count, tutor and smoke checks. --doc and
  *                                                     --lenient need an --out outside data/ and docs/.
  *
- * The TROPES taxonomy is read from both of its carriers (trope_tutor.html and
- * scripts/build-trope-index.mjs), which must be byte-identical; this script only reads it.
+ * The TROPES taxonomy is read from both of its carriers (js/trope-staff.js, the staff engine
+ * both pages load, and scripts/build-trope-index.mjs), which must be byte-identical; this script only reads it.
  * Zero dependencies (--audit-audio aside). Outputs are written only when every check passes — with --census, the
  * census's too; the script exits non-zero otherwise — never commit its output without a green
  * run. `built` keeps its old date when nothing else in the JSON changed, so a re-run is
@@ -106,9 +106,9 @@ function tropesBlock(rel) {
   if (a < 0 || b < a) die(`no TROPES block in ${rel}`);
   return s.slice(a, b);
 }
-const TROPES_SRC = tropesBlock('trope_tutor.html');
+const TROPES_SRC = tropesBlock('js/trope-staff.js');
 if (TROPES_SRC !== tropesBlock('scripts/build-trope-index.mjs'))
-  die('the TROPES block differs between trope_tutor.html and scripts/build-trope-index.mjs (it must be byte-identical)');
+  die('the TROPES block differs between js/trope-staff.js and scripts/build-trope-index.mjs (it must be byte-identical)');
 const TROPES = vm.runInNewContext(`${TROPES_SRC}\nTROPES;`);
 const KEYS = [...TROPES.map((t) => t.key), 'munach_legarmeh'];
 const KEY_SET = new Set(KEYS);

@@ -43,7 +43,7 @@ if (SOURCE !== 'export' && SOURCE !== 'api') {
   process.exit(1);
 }
 
-/* ═══ TROPES taxonomy — KEEP IN SYNC between scripts/build-trope-index.mjs and trope_tutor.html ═══
+/* ═══ TROPES taxonomy — KEEP IN SYNC between scripts/build-trope-index.mjs and js/trope-staff.js ═══
    Per-mark taxonomy for the tutor. `chars` are ported EXACTLY from torah_trainer.html's
    TROPE_CHAR_TO_FAMILY and `family` follows its seven families, except that munach teaches
    in the Etnachta clause (the chart's "munach before etnachta") while the Trainer colors it

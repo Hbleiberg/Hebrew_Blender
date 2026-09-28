@@ -46,7 +46,7 @@ their rows. To change a note, edit its row here and re-run the builder; never ed
     lines below, one for one: ׃ counts as sof pasuk, a ׀ after a munach makes it munach legarmeh,
     and telisha gedola, printed at both ends of its name, counts once.
   - Then one line per mark, left to right as printed. The mark is the tutor's key (`TROPES` in
-    `trope_tutor.html`) or `munach_legarmeh`.
+    `js/trope-staff.js`, the staff engine both pages load) or `munach_legarmeh`.
   - A syllable (MER, CHA, T′ …) starts at the note printed above it and runs to the next syllable; a
     `-` after it means the next syllable continues the same word. Each mark's line is whole words, so
     its last syllable has no `-`, and every syllable has at least one sounding note.

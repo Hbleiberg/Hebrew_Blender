@@ -538,7 +538,8 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
 - **`TROPES` taxonomy** — one `═══`-marked table (26 entries — zarka is a single entry carrying
   both codepoints: key, chars, display, Ashkenazi +
   Sephardi names, family, rare flag) kept **byte-identical** between `scripts/build-trope-index.mjs`
-  and `trope_tutor.html` (same convention as the `.ivrit` engine; copy, don't rewrite). Family
+  and `js/trope-staff.js` — the staff engine both the tutor and the Torah Trainer load, which is where
+  the tutor reads it from (same convention as the `.ivrit` engine; copy, don't rewrite). Family
   assignment mirrors torah_trainer's `TROPE_CHAR_TO_FAMILY`; family hues mirror
   `TROPE_DEFAULTS_LIGHT/_DARK` — keep both pages' color language in sync. The one difference is
   munach: a card sits in one family, so the tutor's Etnachta clause is munach and etnachta (the
