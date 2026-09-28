@@ -3924,7 +3924,7 @@ torah.share.button,Copy link,העתקת קישור,top-bar button that copies a 
 torah.share.copied_range,Link copied — {ref},הקישור הועתק — {ref},toast after copying a practice link narrowed to a verse range,mixed UI+content — do not translate {…}
 torah.share.copied_span,"Link copied — a link holds one range, so it opens all of {ref}, including verses you did not tick.","הקישור הועתק — קישור מכיל טווח אחד, ולכן הוא פותח את כל {ref}, כולל פסוקים שלא סומנו.",toast when a selection with gaps in it had to be widened to its full span,mixed UI+content — do not translate {…}
 torah.share.include_settings,Include my settings,כולל ההגדרות שלי,"toggle beside Copy link — the link also carries the sender's display settings (font, colors, what shows) as ?s=",
-torah.share.include_settings_tip,"Adds your font, text sizes, vowel and trope color coding, and what the reading shows (nikkud, trope marks, transliteration and where it sits, translation, layout) to the link. Whoever opens it sees the reading your way, and can keep those settings or go back to their own.","מוסיף לקישור את הגופן, גודלי הטקסט, צביעת התנועות והטעמים ומה שהקריאה מציגה (ניקוד, טעמים, תעתיק ומיקומו, תרגום, פריסה). מי שפותח אותו רואה את הקריאה כמו אצלכם, ויכול לשמור את ההגדרות האלה או לחזור להגדרות שלו.",tooltip,
+torah.share.include_settings_tip,"Adds your font, text sizes, vowel and trope color coding, and what the reading shows (nikkud, trope marks, transliteration and where it sits, translation, layout, and the trope staff's words, key and voice) to the link. Whoever opens it sees the reading your way, and can keep those settings or go back to their own.","מוסיף לקישור את הגופן, גודלי הטקסט, צביעת התנועות והטעמים ומה שהקריאה מציגה (ניקוד, טעמים, תעתיק ומיקומו, תרגום, פריסה, ומילות חמשת הטעמים, הסולם והקול שלה). מי שפותח אותו רואה את הקריאה כמו אצלכם, ויכול לשמור את ההגדרות האלה או לחזור להגדרות שלו.",tooltip,
 torah.share.with_settings,Your display settings are included.,הגדרות התצוגה שלכם כלולות בקישור.,second line of the Copy link toast when Include my settings is on,
 torah.share.with_settings_no_font,"Your display settings are included, but not your own font ""{font}"" — a link can't carry it, so the reading opens in the standard font.","הגדרות התצוגה שלכם כלולות בקישור, אבל לא הגופן האישי ""{font}"" — קישור לא יכול להעביר אותו, ולכן הקריאה תיפתח בגופן הרגיל.",second toast line when the chosen font is a My Font (stored on this device only),do-not-translate {font}
 torah.share.view_note,You're seeing this reading with the sender's display settings. Your own settings haven't changed.,אתם רואים את הקריאה עם הגדרות התצוגה של מי ששלח את הקישור. ההגדרות שלכם לא השתנו.,note above the reading when a practice link carried the sender's display settings,
@@ -5892,3 +5892,32 @@ shared.cloud.error_file_type,The cloud does not accept that file type.,הענן 
 shared.cloud.error_not_found,That file is no longer in your account.,הקובץ הזה כבר אינו בחשבון שלכם.,Error line when a project file or photo is missing in Storage,shared; cloud
 shared.cloud.error_project_limit,Your account has reached its limit of 25 font projects.,החשבון שלכם הגיע למגבלה של 25 פרויקטים של גופנים.,Error line when the font_projects cap is hit,shared; cloud
 shared.cloud.error_project_too_big,This project is too big for your account (20 MB after compression).,הפרויקט הזה גדול מדי עבור החשבון (20 MB אחרי דחיסה).,Error line when a packed Font Maker project exceeds the bucket cap,shared; cloud
+shared.badge.beta,BETA,בטא,beta badge beside a feature name (Torah Trainer: the Trope staff layout choice + its settings panel),keep short; uppercase in English
+torah.controls.layout_staff,Trope staff,חמשת הטעמים,Layout radio label (beta) — the reading drawn on a music staff,
+torah.settings.panel_staff,Trope staff,חמשת הטעמים,settings drawer panel title (panel-collapse memory key); a BETA badge follows it,
+torah.staff.words_label,Words,מילים,staff panel: what sits under the notes (radio group label),
+torah.staff.words_hebrew,Hebrew,עברית,staff panel Words choice,
+torah.staff.words_translit,Transliteration,תעתיק,staff panel Words choice,
+torah.staff.words_both,Both,שניהם,staff panel Words choice (Hebrew with the transliteration under it),
+torah.staff.key_label,Key,סולם,staff panel key slider label,
+torah.staff.key_tip,"Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody).","מצייר את החמשה בסולם גבוה או נמוך יותר ומזיז איתה את המנגינה, בחצאי טונים, כדי שתתאים לקול שלכם. הטבלה המודפסת היא בלָה מז'ור (דוֹ מז'ור למנגינת הימים הנוראים).",tooltip,
+torah.staff.voice_label,Voice,קול,staff panel voice radio group label,
+torah.staff.voice_high,High voices,קולות גבוהים,"staff panel voice choice (the written octave, as children and women sing)",
+torah.staff.voice_low,Low voices,קולות נמוכים,"staff panel voice choice (an 8 under the clef; the tune sounds an octave down, as men sing)",
+torah.staff.tune_speed_label,Tune speed,מהירות המנגינה,"staff panel slider label (the synthesized tune, not the recording)",
+torah.staff.beta_note,"Beta: each word's figure follows the printed cantillation chart. Where the chart prints no figure for a word's context the nearest one is used, and each word sits whole under its notes (no syllable placement yet).","בטא: המנגינה של כל מילה עוקבת אחרי טבלת הטעמים המודפסת. במקום שהטבלה לא מדפיסה מנגינה להקשר של המילה נבחרת הקרובה ביותר, וכל מילה יושבת בשלמותה מתחת לתווים שלה (עדיין בלי חלוקה להברות).",staff panel note,
+torah.staff.verse_tune,Tune,מנגינה,verse button: play this verse's figures as tones (beside Read / Chant),keep short
+torah.staff.verse_tune_aria,Play the tune of verse {verseRef},נגינת המנגינה של פסוק {verseRef},aria-label of the verse Tune button,"{verseRef} is ""1:1"""
+torah.staff.verse_tune_stop_aria,Stop the tune of verse {verseRef},עצירת המנגינה של פסוק {verseRef},aria-label of the verse Tune button while it plays,"{verseRef} is ""1:1"""
+torah.staff.tune_all,Play tune,נגינת המנגינה,reading header button: the tune of every verse in turn (beside Chant all),
+torah.staff.tune_all_stop,Stop tune,עצירת המנגינה,reading header button while the tune plays,
+torah.staff.loading_chip,Loading the staff…,החמשה נטענת…,reading header chip while the melody file loads,
+torah.staff.loading_tip,The melody file is being fetched; the staff draws as soon as it arrives.,קובץ המנגינה נטען; החמשה תצויר ברגע שיגיע.,tooltip,
+torah.staff.failed_chip,Staff unavailable,החמשה לא זמינה,reading header chip when the melody file could not be loaded,
+torah.staff.failed_tip,"The melody file could not be loaded, so the words show without their notes. Check the connection and try again.","לא ניתן היה לטעון את קובץ המנגינה, ולכן המילים מוצגות בלי התווים. בדקו את החיבור ונסו שוב.",tooltip,
+torah.staff.retry,Try again,ניסיון נוסף,reading header button beside the failed chip,
+torah.staff.no_haftarah_chip,No staff for a haftarah,אין חמשה להפטרה,reading header chip on a haftarah reading,
+torah.staff.no_haftarah_tip,"The staff draws the Torah's cantillation melody. A haftarah is chanted to its own melody, which the chart does not print.","החמשה מציירת את מנגינת טעמי התורה. ההפטרה נקראת במנגינה משלה, שהטבלה לא מדפיסה.",tooltip,
+torah.staff.double_chip,Two cantillations,שתי מערכות טעמים,"verse chip: the verse is printed with two sets of marks at once (the Decalogues, Genesis 35:22), so it shows words only",
+torah.staff.double_tip,"This verse is printed with two sets of cantillation marks at once, so the staff leaves it to the words.","הפסוק הזה מודפס עם שתי מערכות טעמים בו־זמנית, ולכן החמשה משאירה אותו למילים בלבד.",tooltip,
+torah.staff.follow_note,"In the Trope staff layout the highlight follows each word under its notes; the transliteration, when shown, moves with it.","בפריסת חמשת הטעמים ההדגשה עוקבת אחרי כל מילה מתחת לתווים שלה; התעתיק, כשהוא מוצג, זז יחד איתה.",note under the karaoke Follow radios while the staff layout is on,

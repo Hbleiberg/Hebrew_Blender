@@ -386,7 +386,7 @@ function layoutPhraseStaff(row, key, shift, names, opts = {}) {
         for (let k = wd.from; k < N; k++) notes[k].x += d;
         cx += d;
       }
-      words.push({ ci: wd.ci, cx, w, from: wd.from, to: wd.to });
+      words.push(Object.assign({}, wd, { cx, w }));   // the word's own fields (ci, cells…) ride along with its centre
       prevEnd = cx + w / 2;
       wordEnd = Math.max(wordEnd, prevEnd + 2);
     }

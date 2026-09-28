@@ -528,7 +528,7 @@ body.dark .tt-ref-hdr .tt-chantall:hover { background:var(--navy); }   /* one st
   flex:1; direction:ltr; text-align:center;
   font-size:var(--tt-english-size, 0.95rem); color:var(--text); line-height:1.5;
 }
-.tt-speak, .tt-chant, .tt-loop, .tt-copy {
+.tt-speak, .tt-chant, .tt-loop, .tt-copy, .tt-tune {
   background:transparent; border:1px solid var(--border); border-radius:4px;
   padding:2px 7px; font-size:0.7rem; font-weight:600; cursor:pointer;
   color:var(--muted); transition:border-color 0.15s, color 0.15s, background 0.15s, opacity 0.15s; flex-shrink:0;
@@ -544,7 +544,7 @@ body.dark .tt-ref-hdr .tt-chantall:hover { background:var(--navy); }   /* one st
    against the PADDING box, so the 1px border eats 1px per side and -3px measured
    a 23px target — one short of the floor. It clears the tappable Hebrew words
    below (measured 7px away), which stay hit-testable as themselves. */
-.tt-speak::after, .tt-chant::after, .tt-loop::after, .tt-copy::after {
+.tt-speak::after, .tt-chant::after, .tt-loop::after, .tt-copy::after, .tt-tune::after {
   content:''; position:absolute; inset-inline:0; inset-block:-4px;
 }
 .tt-speak:hover { border-color:var(--gold); color:var(--gold-text); }
@@ -553,6 +553,8 @@ body.dark .tt-ref-hdr .tt-chantall:hover { background:var(--navy); }   /* one st
 .tt-chant:disabled { opacity:0.45; cursor:not-allowed; }
 .tt-loop:hover:not(:disabled) { border-color:var(--gold); color:var(--gold-text); }
 .tt-loop.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
+.tt-tune:hover { border-color:var(--gold); color:var(--gold-text); }
+.tt-tune.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
 .tt-copy:hover { border-color:var(--gold); color:var(--gold-text); }
 .tt-verse-buttons {
   display:inline-flex; margin-inline-start:6px;
@@ -983,6 +985,47 @@ body.dark .tt-trope-chip:hover { background:rgba(255,255,255,0.07); }
 /* The underline look draws each clause in the family's solid line color, so the key does too
    (the print band's swatches already use it: paper always underlines). */
 body.trope-underline-fallback .tt-trope-swatch { background:var(--tt-sw-line); }
+
+/* ── Trope staff layout (beta): one wrapped staff system per verse, the words under their figures.
+   The systems are LTR (notation) whatever the UI's direction; each word cell is RTL inside. The word cells
+   are the reading's own .tt-word spans, so the karaoke styles, the vowel and trope colours, hover and the
+   rover apply as everywhere else. The SVG's classes are js/trope-staff.js's (tu-pstaff, tu-pn, tu-pbar). ── */
+.beta-tag { font-size:0.7rem; background:var(--gold); color:var(--navy); padding:1px 5px; border-radius:3px; font-weight:700; letter-spacing:0.05em; vertical-align:middle; }   /* the suite's Beta badge (flash_cards.html) */
+.radio-group label .beta-tag, .panel-title .beta-tag { font-size:0.58rem; padding:0 4px; }
+.tt-staff-rows { direction:ltr; inline-size:100%; }
+.tt-staff-sys { position:relative; max-inline-size:100%; direction:ltr; margin-block:6px 2px; }
+.tt-staff-sys > svg, .tt-staff-sys > .tt-staff-svg { display:block; inline-size:100%; block-size:auto; color:var(--text); }
+.tt-staff-words.tt-heb { position:relative; display:block; flex:none; direction:ltr; text-align:start; line-height:1.3; word-spacing:0; margin:0; block-size:calc(var(--tt-heb-size, 1.5rem) * 1.5); }
+body.staff-words-both .tt-staff-words.tt-heb { block-size:calc(var(--tt-heb-size, 1.5rem) * 1.5 + var(--tt-translit-size, 0.95rem) * 1.6); }
+body.staff-words-translit .tt-staff-words.tt-heb { block-size:calc(var(--tt-translit-size, 0.95rem) * 1.7); }
+body.staff-words-translit .tt-staff-cell .tt-wh { display:none; }
+.tt-staff-cell { position:absolute; inset-block-start:0; transform:translateX(-50%); white-space:nowrap; direction:rtl; text-align:center; }
+.tt-staff-cell .tt-word { vertical-align:top; }
+.tt-staff-probe { position:absolute; inset-block-start:0; inset-inline-start:-9999px; visibility:hidden; white-space:nowrap; pointer-events:none; }
+.tt-staff-probe-he { font-family:var(--heb-font); font-size:var(--tt-heb-size, 1.5rem); }
+.tt-staff-probe-tl { font-size:var(--tt-translit-size, 0.95rem); }
+.tt-staff-sys .tu-pbar { fill:var(--border); }
+body.trope-on .tt-staff-sys .tu-pbar.fam-sofpasuk { fill:var(--trope-sofpasuk-line); }
+body.trope-on .tt-staff-sys .tu-pbar.fam-etnachta { fill:var(--trope-etnachta-line); }
+body.trope-on .tt-staff-sys .tu-pbar.fam-katon    { fill:var(--trope-katon-line); }
+body.trope-on .tt-staff-sys .tu-pbar.fam-segol    { fill:var(--trope-segol-line); }
+body.trope-on .tt-staff-sys .tu-pbar.fam-revia    { fill:var(--trope-revia-line); }
+body.trope-on .tt-staff-sys .tu-pbar.fam-geresh   { fill:var(--trope-geresh-line); }
+body.trope-on .tt-staff-sys .tu-pbar.fam-rare     { fill:var(--trope-rare-line); }
+/* The chant lights the sung word's whole figure (.is-hl); the tune lights the sounding note (.is-sounding). Colour only. */
+.tt-staff-sys .tu-pn.is-hl { color:var(--gold-text); }
+.tt-staff-sys .tu-pbar.is-hl { stroke:var(--text); stroke-width:0.8; }
+.tt-staff-sys svg.is-playing { background:rgba(201,146,42,.14); border-radius:8px; }
+.tt-staff-sys .tu-pn.is-sounding { color:var(--gold); }
+.tt-staff-sys .tu-pn.is-rest.is-sounding { color:var(--gold-text); }
+.tt-staff-sys .tu-pn.is-sounding ellipse { stroke:var(--navy); stroke-width:1.6; }
+body.dark .tt-staff-sys .tu-pn.is-hl, body.dark .tt-staff-sys .tu-pn.is-sounding { color:var(--gold-light); }
+body.dark .tt-staff-sys .tu-pn.is-sounding ellipse { stroke:var(--gold-light); }
+.tt-tuneall.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
+@media print {
+  .tt-staff-sys svg.is-playing { background:none; }
+  .tt-staff-sys { break-inside:avoid; page-break-inside:avoid; }
+}
 .tt-trope-link { margin-inline-start:auto; font-size:0.72rem; color:var(--muted); text-decoration:none; }
 .tt-trope-link[hidden] { display:none; }
 .tt-trope-link:hover { color:var(--gold-text); text-decoration:underline; }
@@ -1961,6 +2004,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <input type="radio" name="ttLayout" id="ttLayoutSide" value="sidebyside"><label for="ttLayoutSide" data-i18n-html="torah.controls.layout_side">Side&nbsp;by&nbsp;side</label>
       <input type="radio" name="ttLayout" id="ttLayoutInter" value="interlinear"><label for="ttLayoutInter" data-i18n="torah.controls.layout_interlinear">Interlinear</label>
       <input type="radio" name="ttLayout" id="ttLayoutBible" value="biblepage"><label for="ttLayoutBible" data-i18n-html="torah.controls.layout_page">Page&nbsp;view</label>
+      <input type="radio" name="ttLayout" id="ttLayoutStaff" value="staff"><label for="ttLayoutStaff" style="white-space:nowrap;"><span data-i18n="torah.controls.layout_staff">Trope staff</span> <span class="beta-tag" data-i18n="shared.badge.beta">BETA</span></label>
     </span>
   </span>
   <span class="tt-ctrl tt-stack-toggles">
@@ -2293,6 +2337,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           </span>
         </div>
         <div id="kfUnderNote" style="font-size:0.7rem;color:var(--muted);margin-top:4px;line-height:1.4;" data-i18n="torah.display.follow_under_note" hidden>With the transliteration under each word, the highlight follows the Hebrew word and its transliteration moves with it.</div>
+        <div id="kfStaffNote" style="font-size:0.7rem;color:var(--muted);margin-top:4px;line-height:1.4;" data-i18n="torah.staff.follow_note" hidden>In the Trope staff layout the highlight follows each word under its notes; the transliteration, when shown, moves with it.</div>
       </div>
     </div>
 
@@ -2425,6 +2470,46 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <div class="form-row vowel-scheme-row" id="tropeResetRow" style="display:none;">
           <button class="vowel-scheme-btn" onclick="resetTropeColors()" type="button" data-i18n="torah.color.trope_reset">Reset</button>
         </div>
+      </div>
+    </div>
+
+    <div class="panel collapsed">
+      <div class="panel-title"><span data-i18n="torah.settings.panel_staff">Trope staff</span> <span class="beta-tag" data-i18n="shared.badge.beta">BETA</span></div>
+      <div class="panel-body">
+        <!-- The Trope staff layout (a Layout choice): what sits under the notes, the key the staff is drawn in and the
+             tune moved by, the voice (Low voices: the 8 under the clef, the tune an octave down) and the tune's speed.
+             Words, key and voice travel in a practice link (how the reading looks); the speed stays on this device. -->
+        <div class="form-row">
+          <label id="lblStaffWords" data-i18n="torah.staff.words_label">Words</label>
+          <span class="radio-group" role="group" aria-labelledby="lblStaffWords" style="margin-inline-start:auto;">
+            <input type="radio" name="optStaffWords" id="swHebrew" value="hebrew"><label for="swHebrew" data-i18n="torah.staff.words_hebrew">Hebrew</label>
+            <input type="radio" name="optStaffWords" id="swTranslit" value="translit"><label for="swTranslit" data-i18n="torah.staff.words_translit">Transliteration</label>
+            <input type="radio" name="optStaffWords" id="swBoth" value="both"><label for="swBoth" data-i18n="torah.staff.words_both">Both</label>
+          </span>
+        </div>
+        <div class="slider-row">
+          <label for="optStaffShift"><span id="optStaffShiftLbl" data-i18n="torah.staff.key_label">Key</span>
+            <span class="tip-wrap" data-i18n-tip="torah.staff.key_tip" data-tip="Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody)."><i class="tip-icon">?</i></span>
+          </label>
+          <input type="range" id="optStaffShift" min="-6" max="6" step="1" value="0" aria-labelledby="optStaffShiftLbl">
+          <span class="sval" id="optStaffShiftVal" dir="ltr">0</span>
+          <button class="sreset" onclick="resetStaffShift()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div id="optStaffShiftNote" style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;"></div>
+        <div class="form-row">
+          <label id="lblStaffVoice" data-i18n="torah.staff.voice_label">Voice</label>
+          <span class="radio-group" role="group" aria-labelledby="lblStaffVoice" style="margin-inline-start:auto;">
+            <input type="radio" name="optStaffVoice" id="svHigh" value="high"><label for="svHigh" data-i18n="torah.staff.voice_high">High voices</label>
+            <input type="radio" name="optStaffVoice" id="svLow" value="low"><label for="svLow" data-i18n="torah.staff.voice_low">Low voices</label>
+          </span>
+        </div>
+        <div class="slider-row">
+          <label for="optStaffTuneRate" data-i18n="torah.staff.tune_speed_label">Tune speed</label>
+          <input type="range" id="optStaffTuneRate" min="0.5" max="1.5" step="0.05" value="1.0">
+          <span class="sval" id="optStaffTuneRateVal">1.00×</span>
+          <button class="sreset" onclick="resetStaffTuneRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);line-height:1.45;" data-i18n="torah.staff.beta_note">Beta: each word's figure follows the printed cantillation chart. Where the chart prints no figure for a word's context the nearest one is used, and each word sits whole under its notes (no syllable placement yet).</div>
       </div>
     </div>
 
@@ -2567,6 +2652,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     </ul>
   </nav>
 </footer>
+<script src="/js/trope-staff.js"></script>
 <script>
 'use strict';
 
@@ -2654,6 +2740,13 @@ const DEFAULTS = {
   copyColorCoding: false,      // also write a text/html flavor carrying the vowel/trope colors
   copyBulkRemember: false,     // open the Copy bar in Select-verses mode; keep the selection on close
   shareIncludeDisplay: false,  // Copy link also carries the display settings as ?s= (see LINK VIEW)
+  // Trope staff layout (beta; layout === 'staff'): what sits under the notes, the key the staff is drawn in and the
+  // tune moved by (half steps), whether the tune sounds an octave down (the 8 under the clef), and the tune's speed.
+  // The first three travel in a practice link (how the reading looks); the speed is how it sounds and stays home.
+  staffWords: 'hebrew',        // 'hebrew' | 'translit' | 'both' — read through staffWordsKey()
+  staffShift: 0,               // −6…6 half steps — staffShiftVal()
+  staffVoice: 'high',          // 'high' | 'low' — staffVoiceKey()
+  staffTuneRate: 1.0,          // 0.5–1.5× — staffRateVal()
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
 
@@ -2725,6 +2818,8 @@ function loadSettings() {
   settings.karaokeRate = _sliderNum(settings.karaokeRate, 'optKaraokeRate', DEFAULTS.karaokeRate);
   settings.ttsRate = _sliderNum(settings.ttsRate, 'optTTSRate', DEFAULTS.ttsRate);
   settings.karaokePitch = Math.round(_sliderNum(settings.karaokePitch, 'optKaraokePitch', DEFAULTS.karaokePitch));
+  settings.staffShift = Math.round(_sliderNum(settings.staffShift, 'optStaffShift', DEFAULTS.staffShift));
+  settings.staffTuneRate = _sliderNum(settings.staffTuneRate, 'optStaffTuneRate', DEFAULTS.staffTuneRate);
 }
 function _sliderNum(val, sliderId, dflt) {
   const sl = document.getElementById(sliderId);
@@ -2757,6 +2852,7 @@ function resetAllSettings() {
 // Inline SVGs from the shared icon set (the header-icons CSS block) for the buttons this page
 // builds in script. Static markup from this file, never user data.
 const ICON_PLAY = '<svg class="hi hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
+const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
 const ICON_PAUSE = '<svg class="hi hi-pause" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.8" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/><rect x="13.6" y="5" width="3.6" height="14" rx="1.4" fill="currentColor"/></svg>';
 const ICON_STOP = '<svg class="hi hi-sm hi-stop" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2.2" fill="currentColor"/></svg>';
 const ICON_SOUND = '<svg class="hi hi-sm hi-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" fill="currentColor"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg>';
@@ -3561,6 +3657,12 @@ function getTropeColor(fam) {
 // The trope look the drawer's list stores. Any other value (a newer page's choice) shows as
 // Highlight and stays stored.
 function tropeModeKey() { return settings.tropeCodingMode === 'underline' ? 'underline' : 'highlight'; }
+// The Trope staff layout's settings, read at use time the same way: an unknown stored value (a newer page's choice,
+// an edited link) shows as the default and stays stored; the numbers are clamped again for a value written since load.
+function staffWordsKey() { return settings.staffWords === 'translit' || settings.staffWords === 'both' ? settings.staffWords : 'hebrew'; }
+function staffVoiceKey() { return settings.staffVoice === 'low' ? 'low' : 'high'; }
+function staffShiftVal() { const v = Math.round(Number(settings.staffShift)); return Number.isFinite(v) ? Math.max(-TUNE_SHIFT_MAX, Math.min(TUNE_SHIFT_MAX, v)) : 0; }
+function staffRateVal() { const v = Number(settings.staffTuneRate); return Number.isFinite(v) && v > 0 ? Math.max(0.25, Math.min(3, v)) : 1; }
 // Resolve the family colors into --trope-<fam>-bg / --trope-<fam>-line custom
 // properties on <body>, and sync the body-class switches + legend visibility.
 // Pure CSS-var recolor: theme, scheme, look and picker changes never need a
@@ -3897,8 +3999,10 @@ function processHebrewForDisplay(s) {
 /* ══════════════════════════════════════════════════════
    TOKENIZE: split Hebrew text into per-word spans
    ══════════════════════════════════════════════════════ */
-function tokenizeHebrew(text, wordIdxStartRef, opts, underWord) {
+function tokenizeHebrew(text, wordIdxStartRef, opts, underWord, sink) {
   // Returns HTML with <span class="tt-word" data-twi="N">...</span> per Hebrew word.
+  // sink (optional, the Trope staff layout): an array that receives {ti, twi, html, fam, raw, maqafAfter} per
+  // Hebrew piece as it is emitted — the same spans, one by one — so a caller can lay them out itself.
   // underWord (screen renderers only) nests each word's transliteration inside its span — see the emit site.
   // wordIdxStartRef is a {value:N} object so karaoke can assign sequential indices
   // across consecutive verses. Split on whitespace AND maqaf (U+05BE "־") because
@@ -4003,7 +4107,9 @@ function tokenizeHebrew(text, wordIdxStartRef, opts, underWord) {
         const tl = src ? translitForWord(src, tokens[ti + 1] === '־') : '';
         body = `<span class="tt-wh">${inner}</span>${tl ? `<span class="tt-wtl" lang="he-Latn" dir="ltr">${esc(tl)}</span>` : ''}`;
       }
-      out.push(`<span class="tt-word${tropeCls}" data-twi="${idx}">${body}</span>`);
+      const wordHtml = `<span class="tt-word${tropeCls}" data-twi="${idx}">${body}</span>`;
+      if (sink) sink.push({ ti, twi: idx, html: wordHtml, fam: (tropeOn && famOf[ti]) || null, raw: rawAligned ? rawTokens[ti] : null, maqafAfter: tokens[ti + 1] === '־' });
+      out.push(wordHtml);
     } else {
       out.push(esc(tok));
     }
@@ -4136,6 +4242,7 @@ function renderText() {
   // also re-syncs the trope body classes/vars/legend AND the nikkud vars/mode-class here.
   applyTropeColors();
   applyNikkudColors();
+  stopStaffTune();   // the staff it lights is about to be rebuilt
   // The keyboard-hint row documents the reading rover, so it follows the reading itself — the
   // same loaded-reading guard the legend uses. Set before the empty-state return: a hint over
   // the empty card would point at keys that have no words to move between.
@@ -4156,15 +4263,22 @@ function renderText() {
   // and say so on screen so the column does not just silently vanish.
   // .every() short-circuits on the first verse that DOES transliterate, so when the
   // library is present this costs exactly one extra call.
-  const _translitDead = settings.showTranslit &&
+  const wantStaffTl = layout === 'staff' && staffWordsKey() !== 'hebrew';   // the Trope staff's Words choice asks for the Latin line too
+  if (wantStaffTl) maybeEnsureTranslit();
+  const _translitDead = (settings.showTranslit || wantStaffTl) &&
     currentVerses.every(v => !applyTranslit(v.hebrew));
   const includeTranslit = settings.showTranslit && !_translitDead;
   // Placement 'word' puts each word's transliteration under it (inside its .tt-word cell — tokenizeHebrew)
   // and drops the separate row / column / block. body.translit-under is written HERE ONLY, so it is on
   // exactly when those cells exist: never with a dead library, never on the empty card.
-  const underWord = includeTranslit && settings.translitPlacement === 'word';
-  const withTranslitRow = includeTranslit && !underWord;
+  // In the Trope staff layout the cells carry the Latin line whenever its Words choice asks for it (the Translit
+  // switch and its placement are the other layouts'); a dead library falls back to the Hebrew, with the chip.
+  const underWord = layout === 'staff' ? (wantStaffTl && !_translitDead) : (includeTranslit && settings.translitPlacement === 'word');
+  const withTranslitRow = includeTranslit && !underWord && layout !== 'staff';
   document.body.classList.toggle('translit-under', underWord);
+  document.body.classList.toggle('layout-staff', layout === 'staff');
+  document.body.classList.toggle('staff-words-both', layout === 'staff' && underWord && staffWordsKey() === 'both');
+  document.body.classList.toggle('staff-words-translit', layout === 'staff' && underWord && staffWordsKey() === 'translit');
   const includeTrans    = settings.showTranslation;
   // Chanting streams PocketTorah audio keyed by parsha/aliyah. It's available
   // whenever the current reading maps to a parsha with audio — including
@@ -4187,10 +4301,11 @@ function renderText() {
       ? ` <a class="tt-hh-link" href="${esc(tropeTutorHref())}" data-i18n="torah.reading.hh_trope_link">${esc(I18n.t('torah.reading.hh_trope_link'))}</a>`
       : ''}${hhChantChip
       ? ` <span class="tt-notice-chip" data-i18n="torah.reading.hh_chant_chip" data-i18n-aria-label="torah.reading.hh_chant_chip" aria-label="${esc(I18n.t('torah.reading.hh_chant_chip'))}" data-i18n-tip="torah.reading.hh_chant_tip" data-tip="${esc(I18n.t('torah.reading.hh_chant_tip'))}">${esc(I18n.t('torah.reading.hh_chant_chip'))}</span>`
-      : ''}</span>
+      : ''}${staffHeaderChipsHTML(layout)}</span>
     <span style="display:flex;gap:6px;">
       <button class="tt-readall hi-btn" id="ttReadAllBtn" onclick="toggleReadAll()" type="button">${ttsState.readAllActive ? ICON_STOP + esc(I18n.t('torah.reading.stop')) : ICON_SOUND + esc(I18n.t('torah.reading.read_all'))}</button>
       ${canChant ? `<button class="tt-readall tt-chantall hi-btn${chantAllState.active ? ' active' : ''}" id="ttChantAllBtn" onclick="toggleChantAll()" type="button">${chantAllState.active ? ICON_STOP + esc(I18n.t('torah.reading.chant_all_stop')) : ICON_MUSIC + esc(I18n.t('torah.reading.chant_all'))}</button>` : ''}
+      ${layout === 'staff' ? staffTuneAllButtonHTML() : ''}
     </span>
   </div>`;
   // Aliyah landmarks (full-parsha only) — inline dividers + jump targets.
@@ -4199,7 +4314,9 @@ function renderText() {
   const aStartByLabel = {};
   if (_aliyahStarts) for (const a of _aliyahStarts) aStartByLabel[a.label] = a.num;
   const wordIdxRef = { value: 0 };
-  if (layout === 'biblepage') {
+  if (layout === 'staff') {
+    html += renderStaffView(currentVerses, wordIdxRef, canChant, canLoop, aStartByLabel, underWord);
+  } else if (layout === 'biblepage') {
     html += renderBiblePage(currentVerses, withTranslitRow, includeTrans, wordIdxRef, canChant, aStartByLabel, underWord);
   } else if (layout === 'interlinear') {
     html += renderInterlinear(currentVerses, withTranslitRow, includeTrans, wordIdxRef, canChant, canLoop, aStartByLabel, underWord);
@@ -4221,6 +4338,7 @@ function renderText() {
   setupVerseObserver();
   buildJumpNav();
   initReadingRover();   // innerHTML rebuild dropped any prior rover word
+  staffAfterRender();   // the staff's element maps + its lazy SVG observer (a no-op in the other layouts)
   _tourOnReadingChanged();   // a parked tour reading-step can now resolve
 }
 function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant, canLoop, aStartByLabel, underWord) {
@@ -4423,6 +4541,498 @@ let _readingLoading = false;   // true while a Sefaria reading fetch is in fligh
 // the Version box (a new choice).
 let _versionFallback = null;
 function effectiveVersion() { return _versionFallback || settings.translationVersion; }
+/* ══════════════════════════════════════════════════════
+   TROPE STAFF LAYOUT (beta) — the reading drawn on a music staff, a verse at a
+   time, figure by figure, the words under their notes. The notation comes from
+   js/trope-staff.js (the Trope Tutor's engine, loaded before this script): every
+   verse's marks are read into units (tropeUnitsOfVerse), each unit takes a figure
+   of the printed chart chosen by the marks around it (tropeChooseFigures over
+   data/trope/trope_phrases.json — docs/tropepatterns.md → G), the figures are
+   stitched into one row (tropeBuildReadingRow) and wrapped between words to the
+   reading's width (tropeSplitSystems). Each system is an SVG (drawn lazily, when it
+   nears the viewport) over an HTML row of word cells, each cell holding that word's
+   own .tt-word[data-twi] span(s) from tokenizeHebrew — one per piece, in reading
+   order, inside .tt-heb, inside [data-vk] — so karaoke, click-to-seek, the rover,
+   bulk select and the copy path work on the staff exactly as on the other layouts.
+   Tune sounds the figures as oscillator tones (the tutor's rules), lighting each
+   note and its word; Chant is the recording, and paintKaraokeIdx lights the whole
+   figure of the word being sung. docs/reference/torah-and-trope.md → Trope staff.
+   ══════════════════════════════════════════════════════ */
+let STAFF_SETS = null;          // {torah, highholiday}: the phrase sets (_phraseSetsFrom), once loaded
+let STAFF_CTX = {};             // per melody: tropeContextsOf(set)
+let _staffLoad = null;          // the in-flight fetch, so two renders start one load
+let _staffFailed = false;       // the last load failed (the header chip offers Try again)
+const STAFF_PHRASES_URL = 'data/trope/trope_phrases.json?v=1';   // the ?v= the Trope Tutor fetches — bump both together (ops.md)
+// Verses printed with two sets of cantillation marks at once (the census leaves them out too): words only.
+const STAFF_DOUBLE_CANT = {
+  Genesis: new Set(['35:22']),
+  Exodus: new Set(Array.from({ length: 13 }, (_, i) => '20:' + (i + 2))),
+  Deuteronomy: new Set(Array.from({ length: 13 }, (_, i) => '5:' + (i + 6))),
+};
+const STAFF_MIN_NOTE = 0.1;     // the tutor's PHRASE_MIN_NOTE: no note sounds shorter than this at 1×
+let _staffSystems = {};         // vk -> [{row, L, key, shift, low, cells, sink, twisOfUnit}] of the reading on screen
+let _staffSysEls = {};          // vk -> [.tt-staff-sys elements], rebuilt after every render
+let _staffUnitsByTwi = {};      // twi -> [{el, uis}]: the units (per system) of the cell that piece belongs to
+let _staffIO = null;            // draws each system's SVG as it nears the viewport
+let _staffRenderedWidth = -1;   // #ttReading's width the systems were wrapped to
+let _staffRelayoutTimer = null, _staffRelayoutPending = false;
+function ensureStaffData() {
+  if (STAFF_SETS) return Promise.resolve(true);
+  if (_staffLoad) return _staffLoad;
+  _staffFailed = false;
+  _staffLoad = fetch(STAFF_PHRASES_URL)
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+    .then(txt => {
+      const sets = _phraseSetsFrom(ivritSafeParse(txt));
+      if (!sets) throw new Error('the phrase file did not validate');
+      STAFF_SETS = sets;
+      STAFF_CTX = {};
+      for (const m of ['torah', 'highholiday']) if (sets[m]) STAFF_CTX[m] = tropeContextsOf(sets[m]);
+      return true;
+    })
+    .catch(e => { console.warn('Trope staff: the phrase file is unavailable', e); _staffFailed = true; return false; })
+    .then(ok => {
+      _staffLoad = null;
+      try { syncStaffControls(); } catch (e) {}
+      if (settings.layout === 'staff' && currentVerses && currentVerses.length) renderText();
+      return ok;
+    });
+  return _staffLoad;
+}
+function retryStaffData() { if (!STAFF_SETS) ensureStaffData(); }
+function staffMelody() { return readingTutorMelody() || 'torah'; }
+function staffSetName() { const m = staffMelody(); return STAFF_SETS && STAFF_SETS[m] ? m : 'torah'; }   // a missing melody half draws the year-round one
+function staffSet() { return STAFF_SETS ? STAFF_SETS[staffSetName()] : null; }
+function staffKeyName(key) {   // the note the key is named after, as the tutor's trope.key.note_* spells it; '' outside the table
+  const n = { C: 'c', Db: 'db', D: 'd', Eb: 'eb', E: 'e', F: 'f', 'F#': 'fs', G: 'g', Ab: 'ab', A: 'a', Bb: 'bb', B: 'b' }[key];
+  return n ? I18n.t('trope.key.note_' + n) : '';
+}
+function staffDrawKey() { const s = staffSet(); return shiftedKey(s ? s.key : 'A', staffShiftVal()); }
+// The last verse of a PocketTorah aliyah (the divisions the census read) takes the chart's closing formula.
+function staffIsAliyahEnd(c, v) {
+  const p = currentReadingCtx && currentReadingCtx.parshahEntry;
+  const al = p && aliyahLookup(p.en);
+  if (!al || !al.aliyot) return false;
+  return Object.values(al.aliyot).some(r => r && r.endC === c && r.endV === v);
+}
+function staffBook() {
+  const p = currentReadingCtx && currentReadingCtx.parshahEntry;
+  const ref = (currentReadingCtx && currentReadingCtx.ref) || (p && p.ref) || '';
+  const m = String(ref).match(/^([A-Za-z ]+?)\s+\d/);
+  return m ? m[1].trim() : (p && p.book) || '';
+}
+/* ── Word widths: the underlay's text measured in its own font (canvas measureText on the computed font of
+   two hidden probe spans, one Hebrew and one Latin), memoized by font + text. ── */
+let _staffProbeHe = null, _staffProbeTl = null, _staffCanvas = null;
+const _staffMeasureMemo = new Map();
+const _staffTpl = document.createElement('template');
+function _staffProbe(kind) {
+  if (!_staffProbeHe) {
+    _staffProbeHe = document.createElement('span');
+    _staffProbeHe.className = 'tt-staff-probe tt-staff-probe-he'; _staffProbeHe.lang = 'he'; _staffProbeHe.setAttribute('aria-hidden', 'true');
+    _staffProbeTl = document.createElement('span');
+    _staffProbeTl.className = 'tt-staff-probe tt-staff-probe-tl'; _staffProbeTl.setAttribute('aria-hidden', 'true');
+    document.body.append(_staffProbeHe, _staffProbeTl);
+  }
+  return kind === 'tl' ? _staffProbeTl : _staffProbeHe;
+}
+function staffMeasurePx(text, kind) {
+  if (!text) return 0;
+  const cs = getComputedStyle(_staffProbe(kind));
+  const font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+  const k = kind + '\u0001' + font + '\u0001' + text;
+  let w = _staffMeasureMemo.get(k);
+  if (w === undefined) {
+    if (!_staffCanvas) _staffCanvas = document.createElement('canvas');
+    const g = _staffCanvas.getContext('2d');
+    g.font = font;
+    w = g.measureText(text).width;
+    _staffMeasureMemo.set(k, w);
+  }
+  return w;
+}
+function staffPieceTexts(html) {   // {he, tl}: the text a piece's span draws on each line
+  _staffTpl.innerHTML = html;
+  const root = _staffTpl.content.firstElementChild;
+  if (!root) return { he: '', tl: '' };
+  const wh = root.querySelector('.tt-wh'), tl = root.querySelector('.tt-wtl');
+  return { he: (wh || root).textContent, tl: tl ? tl.textContent : '' };
+}
+// A word cell's width in px: its pieces side by side (each as wide as the wider of its two lines), maqafs
+// between them, a space between merged cells, and a little air.
+function staffWordWidthPx(word, cells, sink, underWord, wordsMode) {
+  let w = 0;
+  word.cells.forEach((ci, c) => {
+    if (c) w += 6;
+    cells[ci].pieces.forEach((pi, j) => {
+      const t = staffPieceTexts(sink[pi].html);
+      const he = wordsMode === 'translit' && underWord ? 0 : staffMeasurePx(t.he, 'he');
+      const tl = underWord ? staffMeasurePx(t.tl, 'tl') : 0;
+      w += Math.max(he, tl);
+      if (j) w += staffMeasurePx('־', 'he');
+    });
+  });
+  return w + 6;
+}
+function staffCellHTML(word, cells, sink) {
+  return word.cells.map(ci => cells[ci].pieces.map(pi => sink[pi].html).join('־')).join(' ');
+}
+function staffNoticeChip(k, tipK) {
+  return ` <span class="tt-notice-chip" data-i18n="${k}" data-i18n-aria-label="${k}" aria-label="${esc(I18n.t(k))}" data-i18n-tip="${tipK}" data-tip="${esc(I18n.t(tipK))}">${esc(I18n.t(k))}</span>`;
+}
+// The reading header's chips while the staff cannot draw: the file is loading or failed (Try again), or the
+// reading is a haftarah (its melody is not the Torah's). The words still show on every path.
+function staffHeaderChipsHTML(layout) {
+  if (layout !== 'staff') return '';
+  if (!STAFF_SETS && _staffFailed) return staffNoticeChip('torah.staff.failed_chip', 'torah.staff.failed_tip')
+    + ` <button class="tt-readall hi-btn" type="button" onclick="retryStaffData()">${ICON_RETRY}${esc(I18n.t('torah.staff.retry'))}</button>`;
+  if (!STAFF_SETS) return staffNoticeChip('torah.staff.loading_chip', 'torah.staff.loading_tip');
+  if (currentReadingCtx && currentReadingCtx.isHaftarah) return staffNoticeChip('torah.staff.no_haftarah_chip', 'torah.staff.no_haftarah_tip');
+  return '';
+}
+function staffTuneAllButtonHTML() {   // renderText stops any tune first, so the button is always born unpressed
+  return `<button class="tt-readall tt-tuneall hi-btn" id="ttTuneAllBtn" onclick="staffTuneAll()" type="button" aria-pressed="false">${ICON_PLAY_SM}${esc(I18n.t('torah.staff.tune_all'))}</button>`;
+}
+// The layout: renderInterlinear's verse shell (so every consumer of [data-vk] / .tt-verse-buttons is
+// unchanged) plus a Tune button, then the systems. Systems are built synchronously as strings — the SVG
+// itself waits for staffEnsureSvg — so data-twi numbering, updateKaraokeWordRefs and the rover see the
+// finished DOM at once. A verse the staff cannot draw (no data yet, a haftarah, a double-cantillation
+// verse, a word count that disagrees with the marks) shows its words as the interlinear layout would.
+function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, underWord) {
+  aStartByLabel = aStartByLabel || {};
+  _staffSystems = {};
+  const set = staffSet(), setName = staffSetName(), ctx = STAFF_CTX[setName], fbCtx = STAFF_CTX.torah;
+  if (!set && !_staffFailed) ensureStaffData();
+  const shift = staffShiftVal(), key = staffDrawKey(), low = staffVoiceKey() === 'low', wordsMode = staffWordsKey();
+  const root = document.getElementById('ttReading');
+  _staffRenderedWidth = root ? root.clientWidth : -1;
+  const maxW = Math.max(240, (root ? root.clientWidth : 800) - 8) / PHRASE_SCALE;
+  const haftarah = !!(currentReadingCtx && currentReadingCtx.isHaftarah);
+  const dbl = STAFF_DOUBLE_CANT[staffBook()];
+  const layoutOpts = { lyrics: false, accidentals: 'unit' };
+  let html = '<div class="tt-interlinear tt-staff-reading">';
+  for (const v of verses) {
+    const numLabel = `${v.chapter}:${v.verse}`;
+    const vkEsc = cssEscape(numLabel);
+    const aNum = aStartByLabel[numLabel];
+    if (aNum > 1) html += aliyahDividerHTML(aNum, numLabel);
+    const isDouble = !!(dbl && dbl.has(numLabel));
+    html += `<div class="tt-verse tt-staff-verse" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
+    html += `    <input type="checkbox" class="tt-bulk-cb" aria-label="${esc(I18n.t('torah.copy.bulk_cb_aria',{verseRef:numLabel}))}"${ttBulkSelected.has(numLabel) ? ' checked' : ''}>`;
+    html += `  <div class="tt-verse-row" style="align-items:center;">`;
+    html += `    <span class="tt-verse-num">${esc(numLabel)}</span>`;
+    if (isDouble) html += staffNoticeChip('torah.staff.double_chip', 'torah.staff.double_tip');
+    html += `    <span class="tt-verse-buttons">`;
+    html += `      <button class="tt-speak hi-btn" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${ICON_SOUND}${esc(I18n.t('torah.reading.verse_read'))}</button>`;
+    if (canChant) html += `      <button class="tt-chant hi-btn" onclick="chantVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_chant_aria',{verseRef:numLabel}))}">${ICON_MUSIC}${esc(I18n.t('torah.reading.verse_chant'))}</button>`;
+    html += `      <button class="tt-tune hi-btn" onclick="staffTune('${vkEsc}')" type="button" aria-pressed="false" aria-label="${esc(I18n.t('torah.staff.verse_tune_aria',{verseRef:numLabel}))}">${ICON_PLAY_SM}${esc(I18n.t('torah.staff.verse_tune'))}</button>`;
+    if (canLoop) html += `      <button class="tt-loop hi-btn" onclick="loopVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_loop_aria',{verseRef:numLabel}))}">${ICON_LOOP}${esc(I18n.t('torah.reading.verse_loop'))}</button>`;
+    html += `      <button class="tt-copy hi-btn" onclick="copyVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_copy_aria',{verseRef:numLabel}))}">${ICON_COPY}${esc(I18n.t('torah.reading.verse_copy'))}</button>`;
+    html += `    </span>`;
+    html += `  </div>`;
+    const sink = [];
+    const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef, undefined, underWord, sink);
+    let systems = null, units = null;
+    if (set && !haftarah && !isDouble) {
+      units = tropeUnitsOfVerse(v.hebrew);
+      if (units.pieces.length === sink.length && units.units.length) {   // the marks and the page's words agree piece for piece
+        units.units.forEach(u => { u.fam = sink[u.pi].fam || ''; u.twi = sink[u.pi].twi; });
+        const picks = tropeChooseFigures(units.units, ctx, { melody: setName, aliyahEnd: staffIsAliyahEnd(v.chapter, v.verse), fallbackCtx: fbCtx, fallbackMelody: 'torah' });
+        const row = tropeBuildReadingRow(units.units, picks, units.cells, STAFF_SETS, { n: numLabel });
+        if (row.notes.length && row.words.length) {
+          for (const w of row.words) w.w = staffWordWidthPx(w, units.cells, sink, underWord, wordsMode) / PHRASE_SCALE;
+          systems = tropeSplitSystems(row, key, shift, maxW, layoutOpts);
+        }
+      }
+    }
+    if (!systems) {
+      html += `  <div class="tt-verse-row"><span class="tt-heb" lang="he">${hebHtml}</span></div>`;
+    } else {
+      const list = _staffSystems[numLabel] = [];
+      html += `  <div class="tt-staff-rows">`;
+      systems.forEach((sys, k) => {
+        const L = layoutPhraseStaff(sys.row, key, shift, null, layoutOpts);
+        const MID = -L.barY + 5, H = Math.ceil(Math.max(MID + L.lyricY + 4, low ? MID + 30 : 0));   // renderPhraseStaff's own height
+        const twisOfUnit = sys.row.units.map(u => {
+          const word = sys.row.words.find(w => w.cells.includes(u.ci));
+          return word ? word.cells.flatMap(ci => units.cells[ci].pieces.map(pi => sink[pi].twi)) : [sink[u.pi].twi];
+        });
+        list.push({ row: sys.row, L, key, shift, low, H, cells: units.cells, sink, twisOfUnit });
+        html += `<div class="tt-staff-sys" data-vk="${esc(numLabel)}" data-sys="${k}" style="inline-size:${Math.round(L.W * PHRASE_SCALE)}px">`;
+        html += `<div class="tt-staff-svg" style="aspect-ratio:${L.W} / ${H}"></div>`;
+        html += `<div class="tt-staff-words tt-heb" lang="he">`;
+        for (const w of L.words) html += `<span class="tt-staff-cell" dir="rtl" style="left:${(w.cx / L.W * 100).toFixed(3)}%">${staffCellHTML(w, units.cells, sink)}</span>`;
+        html += `</div></div>`;
+      });
+      html += `  </div>`;
+    }
+    html += `</div>`;
+  }
+  html += '</div>';
+  return html;
+}
+// After every render: the element lists, the twi → units map the chant highlight reads, and the observer
+// that draws each system's SVG as it nears the viewport (a whole parsha is thousands of notes — drawn
+// eagerly they would cost seconds; the layouts, which every consumer needs, are already done).
+function staffAfterRender() {
+  if (_staffIO) { _staffIO.disconnect(); _staffIO = null; }
+  _staffSysEls = {}; _staffUnitsByTwi = {};
+  if (settings.layout !== 'staff') return;
+  const els = document.querySelectorAll('#ttReading .tt-staff-sys');
+  if (!els.length) return;
+  els.forEach(el => {
+    const vk = el.dataset.vk, k = +el.dataset.sys, sys = _staffSystems[vk] && _staffSystems[vk][k];
+    if (!sys) return;
+    (_staffSysEls[vk] = _staffSysEls[vk] || [])[k] = el;
+    const byCi = new Map();
+    sys.row.units.forEach((u, ui) => { if (!byCi.has(u.ci)) byCi.set(u.ci, []); byCi.get(u.ci).push(ui); });
+    for (const w of sys.row.words) {
+      const uis = w.cells.flatMap(ci => byCi.get(ci) || []);
+      for (const ci of w.cells) for (const pi of sys.cells[ci].pieces) (_staffUnitsByTwi[sys.sink[pi].twi] = _staffUnitsByTwi[sys.sink[pi].twi] || []).push({ el, uis });
+    }
+  });
+  if (!window.IntersectionObserver) { els.forEach(staffEnsureSvg); return; }
+  _staffIO = new IntersectionObserver(entries => {
+    for (const e of entries) if (e.isIntersecting) { staffEnsureSvg(e.target); _staffIO.unobserve(e.target); }
+  }, { rootMargin: '1200px 0px' });
+  els.forEach(el => _staffIO.observe(el));
+}
+function staffSysOf(el) { const list = el && _staffSystems[el.dataset.vk]; return list ? list[+el.dataset.sys] : null; }
+function staffEnsureSvg(el) {
+  if (!el || el.querySelector('svg')) return;
+  const sys = staffSysOf(el), ph = el.querySelector('.tt-staff-svg');
+  if (!sys || !ph) return;
+  const svg = renderPhraseStaff(sys.row, { key: sys.key, shift: sys.shift, low: sys.low, layout: sys.L, lyrics: false,
+    famOf: (k, ui, u) => (u && u.fam) || '' });
+  svg.style.inlineSize = ''; svg.style.blockSize = '';   // the CSS sizes it to its system (100% / auto), so paper and a narrow viewport shrink it
+  ph.replaceWith(svg);
+}
+function staffEnsureAllSvg() { document.querySelectorAll('#ttReading .tt-staff-sys').forEach(staffEnsureSvg); }
+/* ── Tune: the verse's figures as oscillator tones — the tutor's rules (an eighth is 0.32 s at 1×, ties sound
+   as one note, a rest is silent for its value, a grace note is quick and borrowed from the note it leads
+   into, nothing sounds shorter than STAFF_MIN_NOTE) and its envelope; the written pitch (B4 = 493.88 Hz)
+   moved by the key, an octave down in a fuller tone with Low voices. Each note lights on the staff as it
+   sounds and its word lights below (the teacher's karaoke style). Tune all plays verse after verse. ── */
+let _staffCtx = null, _staffLowWave = null, _staffOscs = [], _staffTimers = [], _staffVk = null, _staffAll = false, _staffQueue = null, _staffLitTwis = [];
+function staffAudioCtx() {
+  if (!_staffCtx) { try { _staffCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+  if (_staffCtx.state === 'suspended') _staffCtx.resume();
+  return _staffCtx;
+}
+function _staffLowWaveFor(ctx) {   // null when the browser cannot build one: the tune then plays its triangle rather than not at all
+  if (!_staffLowWave) {
+    try { _staffLowWave = ctx.createPeriodicWave(new Float32Array([0, 0, 0, 0, 0, 0]), new Float32Array([0, 1, 0.5, 0.33, 0.25, 0.2])); }
+    catch (e) { return null; }
+  }
+  return _staffLowWave;
+}
+function staffStopOthers() {   // the tune never shares the air: the handout's own list of everything that can be sounding
+  clearLoop();
+  if (ttsState.readAllActive) stopReadAll();
+  if (chantAllState.active) stopChantAll();
+  pauseKaraoke(); clearKaraokeHighlight();
+  if (window.speechSynthesis) speechSynthesis.cancel();
+}
+function _staffTuneBtn(vk) { return vk ? document.querySelector('#ttReading .tt-verse[data-vk="' + CSS.escape(vk) + '"] .tt-tune') : null; }
+function _staffUnlightWords() {
+  for (const twi of _staffLitTwis) document.querySelectorAll('#ttReading .tt-staff-cell .tt-word[data-twi="' + twi + '"]').forEach(w => { w.classList.remove('active'); w.removeAttribute('aria-current'); });
+  _staffLitTwis = [];
+}
+function _staffClearPlayback() {
+  for (const o of _staffOscs) { try { o.stop(); } catch (e) {} }
+  _staffOscs = [];
+  for (const id of _staffTimers) clearTimeout(id);
+  _staffTimers = [];
+  document.querySelectorAll('#ttReading .tt-staff-sys .tu-pn.is-sounding').forEach(x => x.classList.remove('is-sounding'));
+  document.querySelectorAll('#ttReading .tt-staff-sys svg.is-playing').forEach(x => x.classList.remove('is-playing'));
+  _staffUnlightWords();
+  const btn = _staffTuneBtn(_staffVk);
+  if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-pressed', 'false'); btn.innerHTML = ICON_PLAY_SM + esc(I18n.t('torah.staff.verse_tune')); btn.setAttribute('aria-label', I18n.t('torah.staff.verse_tune_aria', { verseRef: _staffVk })); }
+  _staffVk = null;
+}
+function stopStaffTune() {
+  _staffClearPlayback();
+  _staffAll = false; _staffQueue = null;
+  const all = document.getElementById('ttTuneAllBtn');
+  if (all) { all.classList.remove('active'); all.setAttribute('aria-pressed', 'false'); all.innerHTML = ICON_PLAY_SM + esc(I18n.t('torah.staff.tune_all')); }
+  if (_staffRelayoutPending) { _staffRelayoutPending = false; staffRelayoutSoon(true); }
+}
+function _staffLight(vk, k, i) {
+  const el = _staffSysEls[vk] && _staffSysEls[vk][k];
+  if (!el) return;
+  staffEnsureSvg(el);
+  const svg = el.querySelector('svg');
+  if (!svg) return;
+  if (!svg.classList.contains('is-playing')) {
+    document.querySelectorAll('#ttReading .tt-staff-sys svg.is-playing').forEach(s => s.classList.remove('is-playing'));
+    svg.classList.add('is-playing');
+  }
+  svg.querySelectorAll('.tu-pn.is-sounding').forEach(x => x.classList.remove('is-sounding'));
+  const note = svg.querySelector('.tu-pn[data-i="' + i + '"]');
+  if (note) note.classList.add('is-sounding');
+}
+function _staffLightWord(vk, k, ui) {
+  const sys = _staffSystems[vk] && _staffSystems[vk][k];
+  if (!sys) return;
+  const twis = sys.twisOfUnit[ui] || [];
+  if (twis.join(',') === _staffLitTwis.join(',')) return;   // a second mark on the same word: it stays lit
+  _staffUnlightWords();
+  _staffLitTwis = twis;
+  for (const twi of twis) document.querySelectorAll('#ttReading .tt-staff-cell .tt-word[data-twi="' + twi + '"]').forEach(w => { w.classList.add('active'); w.setAttribute('aria-current', 'true'); });
+}
+function _staffStart(vk, onEnd) {
+  const systems = _staffSystems[vk];
+  if (!systems || !systems.length) return false;
+  const ctx = staffAudioCtx();
+  if (!ctx) return false;
+  _staffClearPlayback();
+  _staffVk = vk;
+  const rate = staffRateVal(), tick = 0.32 / 24 / rate, low = staffVoiceKey() === 'low', shift = staffShiftVal() + (low ? -12 : 0);
+  const sounds = [], lights = [], wordLights = [];
+  let at = 0;
+  systems.forEach((sys, k) => {
+    let borrowed = 0;
+    const notes = sys.row.notes, unitAt = new Map();
+    sys.row.units.forEach((u, ui) => unitAt.set(u.from, ui));
+    notes.forEach((n, i) => {
+      if (unitAt.has(i)) wordLights.push({ at, k, ui: unitAt.get(i) });
+      lights.push({ at, k, i });
+      if (n.r) { at += n.t * tick; return; }
+      if (n.g) {
+        const d = Math.max(0.05, Math.min(0.09, 0.07 / rate));
+        sounds.push({ p: n.p + shift, at, dur: d });
+        at += d; borrowed += d;
+        return;
+      }
+      const len = Math.max(STAFF_MIN_NOTE / rate, n.t * tick - borrowed);
+      borrowed = 0;
+      const prev = notes[i - 1];
+      if (prev && prev.tie && !prev.r && prev.p === n.p && sounds.length) sounds[sounds.length - 1].dur += len;
+      else sounds.push({ p: n.p + shift, at, dur: len });
+      at += len;
+    });
+    at += 0.12;   // a breath where the verse's staff breaks onto its next line
+  });
+  const REF_HZ = 493.88, t0 = ctx.currentTime + 0.05;
+  const wave = low ? _staffLowWaveFor(ctx) : null;
+  for (const n of sounds) {
+    const osc = ctx.createOscillator(), g = ctx.createGain();
+    if (wave) osc.setPeriodicWave(wave); else osc.type = 'triangle';
+    osc.frequency.value = REF_HZ * Math.pow(2, n.p / 12);
+    g.gain.setValueAtTime(0.0001, t0 + n.at);
+    g.gain.exponentialRampToValueAtTime(0.28, t0 + n.at + 0.02);
+    g.gain.setValueAtTime(0.28, Math.max(t0 + n.at + 0.02, t0 + n.at + n.dur - 0.06));
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + n.at + n.dur - 0.005);
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(t0 + n.at); osc.stop(t0 + n.at + n.dur);
+    _staffOscs.push(osc);
+  }
+  for (const l of lights) _staffTimers.push(setTimeout(() => _staffLight(vk, l.k, l.i), Math.round((l.at + 0.05) * 1000)));
+  for (const l of wordLights) _staffTimers.push(setTimeout(() => _staffLightWord(vk, l.k, l.ui), Math.round((l.at + 0.05) * 1000)));
+  _staffTimers.push(setTimeout(() => { if (onEnd) onEnd(); else stopStaffTune(); }, Math.round((at + 0.05) * 1000) + 120));
+  const btn = _staffTuneBtn(vk);
+  if (btn) { btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true'); btn.innerHTML = ICON_STOP + esc(I18n.t('torah.staff.verse_tune')); btn.setAttribute('aria-label', I18n.t('torah.staff.verse_tune_stop_aria', { verseRef: vk })); }
+  return true;
+}
+function staffTune(vk) {   // the verse's Tune button: pressed again, it stops
+  if (_staffVk === vk && !_staffAll) { stopStaffTune(); return; }
+  stopStaffTune();
+  staffStopOthers();
+  _staffStart(vk, null);
+}
+function _staffNext() {
+  if (!_staffAll || !_staffQueue) return;
+  const vk = _staffQueue.shift();
+  if (!vk) { stopStaffTune(); return; }
+  const verse = document.querySelector('#ttReading .tt-verse[data-vk="' + CSS.escape(vk) + '"]');
+  if (verse) verse.scrollIntoView({ block: 'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  if (!_staffStart(vk, () => { _staffTimers.push(setTimeout(_staffNext, 350)); })) _staffNext();
+}
+function staffTuneAll() {
+  if (_staffAll) { stopStaffTune(); return; }
+  stopStaffTune();
+  staffStopOthers();
+  const vks = [...document.querySelectorAll('#ttReading .tt-verse[data-vk]')].map(el => el.dataset.vk).filter(vk => _staffSystems[vk] && _staffSystems[vk].length);
+  if (!vks.length) return;
+  _staffAll = true; _staffQueue = vks;
+  const all = document.getElementById('ttTuneAllBtn');
+  if (all) { all.classList.add('active'); all.setAttribute('aria-pressed', 'true'); all.innerHTML = ICON_STOP + esc(I18n.t('torah.staff.tune_all_stop')); }
+  _staffNext();
+}
+/* ── Chant: the recording's highlight (paintKaraokeIdx) also lights the whole figure of the word being sung —
+   every note and the bar of each unit of that word's cell — by section, not note by note. ── */
+function staffPaintPiece(twi, on) {
+  const list = _staffUnitsByTwi[twi];
+  if (!list) return;
+  for (const { el, uis } of list) {
+    if (on) staffEnsureSvg(el);
+    const svg = el.querySelector('svg');
+    if (!svg) continue;
+    for (const ui of uis) svg.querySelectorAll('.tu-pn[data-u="' + ui + '"], .tu-pbar[data-u="' + ui + '"]').forEach(x => x.classList.toggle('is-hl', !!on));
+  }
+}
+/* ── Re-wrapping: the systems were wrapped to #ttReading's width in the underlay's font, so a resize, the
+   font arriving (or a My Font), a font or size change re-render — debounced, only in this layout, only when
+   the width really changed, and never under a playing tune or chant (it waits for the stop). ── */
+function staffRelayoutSoon(force) {
+  if (settings.layout !== 'staff' || !currentVerses || !currentVerses.length) return;
+  if (force) _staffRenderedWidth = -1;
+  clearTimeout(_staffRelayoutTimer);
+  _staffRelayoutTimer = setTimeout(() => {
+    _staffRelayoutTimer = null;
+    if (settings.layout !== 'staff' || !currentVerses || !currentVerses.length) return;
+    const root = document.getElementById('ttReading');
+    if (!root || root.clientWidth === _staffRenderedWidth) return;
+    if (_staffVk || _staffAll || (currentAudio && !currentAudio.paused)) { _staffRelayoutPending = true; return; }
+    renderText();
+  }, 150);
+}
+function staffInitWatchers() {
+  const root = document.getElementById('ttReading');
+  if (root && window.ResizeObserver) new ResizeObserver(() => staffRelayoutSoon(false)).observe(root);
+  if (document.fonts) {
+    document.fonts.ready.then(() => staffRelayoutSoon(true)).catch(() => {});
+    document.fonts.addEventListener('loadingdone', () => staffRelayoutSoon(true));
+  }
+  const a = document.getElementById('ttAudio');
+  if (a) a.addEventListener('pause', () => { if (_staffRelayoutPending) { _staffRelayoutPending = false; staffRelayoutSoon(true); } });
+}
+/* ── The staff panel's settings: one writer per field, syncStaffControls the read-only settings → controls half. ── */
+function setStaffShift(v) {
+  v = Math.round(_sliderNum(v, 'optStaffShift', DEFAULTS.staffShift));
+  if (v === staffShiftVal()) { syncStaffControls(); return; }
+  settings.staffShift = v;
+  saveSettings();
+  stopStaffTune();   // a tune in the old key must not keep lighting the redrawn staffs
+  syncStaffControls();
+  if (settings.layout === 'staff') renderText();
+}
+function setStaffVoice(v) {
+  v = v === 'low' ? 'low' : 'high';
+  if (v === staffVoiceKey()) return;
+  settings.staffVoice = v;
+  saveSettings();
+  stopStaffTune();   // the next play sounds in the new octave; the 8 under every clef
+  if (settings.layout === 'staff') renderText();
+}
+function resetStaffShift() { setStaffShift(DEFAULTS.staffShift); }
+function resetStaffTuneRate() { settings.staffTuneRate = DEFAULTS.staffTuneRate; saveSettings(); syncStaffControls(); }
+function syncStaffControls() {
+  const sh = staffShiftVal(), rate = staffRateVal();
+  const sl = document.getElementById('optStaffShift'), val = document.getElementById('optStaffShiftVal'), note = document.getElementById('optStaffShiftNote');
+  const rs = document.getElementById('optStaffTuneRate'), rv = document.getElementById('optStaffTuneRateVal');
+  if (sl) sl.value = sh;
+  if (val) val.textContent = (sh > 0 ? '+' : '') + sh;
+  if (rs) rs.value = rate;
+  if (rv) rv.textContent = rate.toFixed(2) + '×';
+  if (!window.I18n || !note) return;
+  const name = staffKeyName(staffDrawKey());
+  const keyText = name ? I18n.t('trope.key.name', { note: name }) : '';
+  const rel = !sh ? I18n.t('trope.key.rel_printed') : I18n.t('trope.key.rel_' + (sh > 0 ? 'up' : 'down') + (Math.abs(sh) === 1 ? '.one' : '.other'), { count: Math.abs(sh) });
+  note.textContent = keyText ? I18n.t('trope.key.valuetext', { key: keyText, rel }) : rel;
+  if (sl) sl.setAttribute('aria-valuetext', note.textContent);
+}
+
 async function fetchAndRender() {
   const r = resolveRef();
   const seq = ++_fetchSeq;
@@ -4767,6 +5377,7 @@ const ttsState = { readAllActive: false, readAllIdx: 0, currentBtn: null };
 function speakVerse(numLabel) {
   // stop karaoke if playing (mutual exclusion)
   clearLoop();
+  stopStaffTune();
   pauseKaraoke();
   const v = currentVerses.find(x => `${x.chapter}:${x.verse}` === numLabel);
   if (!v) return;
@@ -4779,6 +5390,7 @@ function speakVerse(numLabel) {
 // is ready.
 let _pendingChantVerse = null;
 async function chantVerse(numLabel) {
+  stopStaffTune();   // the recording and the tune never sound together
   // Holiday/custom reading: chant in place (don't navigate to the parsha aliyah).
   if (settings.scope === 'custom') {
     const ok = await chantHolidayWord(numLabel, 0);
@@ -4823,6 +5435,7 @@ function computeVerseAudioBounds(numLabel) {
 // so playback pauses at the end of just that verse.
 function seekToVerseInLoadedAudio(numLabel, silent) {
   if (!currentTimings || !currentAudio) return false;
+  stopStaffTune();
   const b = computeVerseAudioBounds(numLabel);
   if (!b) { if (!silent) setStatus(I18n.t('torah.status.verse_not_found', { verseRef: numLabel }), true); return false; }
   if (ttsState.readAllActive) stopReadAll();
@@ -4858,6 +5471,7 @@ async function loopVerse(numLabel) {
   _navigateToVerseAliyahAndQueue(numLabel, 'loop');
 }
 function startLoop(numLabel, bounds, armOnly) {
+  stopStaffTune();
   if (ttsState.readAllActive) stopReadAll();
   // Loop supersedes chant-all — the mirror of toggleChantAll's clearLoop(). Without it the
   // ⏹ chant button stays lit after the loop, and a lingering chantAllState.active suppresses
@@ -5022,6 +5636,7 @@ async function getAliyahVerseWordMap(p, n, range) {
 // Seek the loaded audio to a specific word-timing index and play.
 function seekToTimingIndex(idx) {
   if (!currentTimings || !currentAudio) return;
+  stopStaffTune();
   if (idx < 0 || idx >= currentTimings.length) return;
   const t = currentTimings[idx];
   if (typeof t !== 'number' || isNaN(t)) return;
@@ -5047,6 +5662,7 @@ function hebWordIndexInVerse(verseEl, wordEl) {
 // Chant a word (wordInVerse, 0 = verse start) in a holiday/custom reading WITHOUT
 // leaving it. Returns true if handled, false if not chantable (caller → TTS).
 async function chantHolidayWord(numLabel, wordInVerse) {
+  stopStaffTune();
   const m = numLabel && numLabel.match(/^(\d+):(\d+)$/);
   if (!m) return false;
   const tc = +m[1], tv = +m[2];
@@ -5103,6 +5719,7 @@ function toggleReadAll() {
   if (ttsState.readAllActive) { stopReadAll(); return; }
   clearLoop();
   pauseKaraoke();
+  stopStaffTune();
   ttsState.readAllActive = true;
   ttsState.readAllIdx = 0;
   document.getElementById('ttReadAllBtn').innerHTML = ICON_STOP + esc(I18n.t('torah.reading.stop'));
@@ -5135,6 +5752,7 @@ function stopReadAll() {
 async function toggleChantAll() {
   if (chantAllState.active) { stopChantAll(); return; }
   clearLoop();   // Chant all supersedes a single-verse loop
+  stopStaffTune();
   if (ttsState.readAllActive) stopReadAll();
   speechSynthesis.cancel();
   // Build the queue based on the current scope.
@@ -5267,6 +5885,7 @@ function paintKaraokeIdx(idx, on) {
     // Expose the chanting position non-visually (the highlight is CSS-only).
     if (on) el.setAttribute('aria-current', 'true');
     else el.removeAttribute('aria-current');
+    staffPaintPiece(el.dataset.twi, on);   // the Trope staff layout: the sung word's whole figure lights with it
   });
 }
 function firstKaraokeSpan(idx) {
@@ -5369,6 +5988,7 @@ async function loadKaraoke(parshahEntry, suffix, expectedWords) {
   currentAudio.src = audioUrl;
   currentAudio.playbackRate = parseFloat(settings.karaokeRate) || 1.0;
   currentAudio.onplay = () => {
+    stopStaffTune();   // the audio bar's own button and an iOS resume come through here too
     _pitchOnPlay();   // a stored pitch builds its graph now; a built one is checked to be running
     if (ttsState.readAllActive) stopReadAll();   // mutual exclusion with TTS
     speechSynthesis.cancel();
@@ -5587,6 +6207,7 @@ function clearKaraokeHighlight() {
   // race where the binary search paints ahead of the auto-pause still wipes
   // cleanly. (Cheap: at most ~hundreds of nodes per aliyah.)
   document.querySelectorAll('#ttReading .tt-word.active').forEach(el => { el.classList.remove('active'); el.removeAttribute('aria-current'); });
+  document.querySelectorAll('#ttReading .tt-staff-sys .is-hl').forEach(el => el.classList.remove('is-hl'));
   lastHighlightedIdx = -1;
 }
 function pauseKaraoke() {
@@ -5620,7 +6241,7 @@ function toggleAudioBarCollapse() {
 
 function toggleAudioPlay() {
   if (!currentAudio || !currentAudio.src) return;
-  if (currentAudio.paused) currentAudio.play().catch(() => {});
+  if (currentAudio.paused) { stopStaffTune(); currentAudio.play().catch(() => {}); }
   else currentAudio.pause();
 }
 function updatePlayPauseIcon() {
@@ -5662,6 +6283,7 @@ function onReadingKeydown(e) {
   if (e.key === 'ArrowLeft') delta = 1;         // Hebrew is RTL: left = next word
   else if (e.key === 'ArrowRight') delta = -1;  // right = previous word
   else if (e.key !== 'Home' && e.key !== 'End') return;
+  if (delta !== null && settings.layout === 'staff') delta = -delta;   // the staff reads left to right: the arrows follow the notation there, not the Hebrew
   const words = readingRoverWords();
   const i = words.indexOf(wordEl);
   if (i === -1) return;
@@ -6073,6 +6695,7 @@ function setHebFont(name) {
     el.setAttribute('aria-pressed', String(on));
   });
   saveSettings();
+  staffRelayoutSoon(true);   // the staff's words were measured in the old face
 }
 
 /* ──────────── Per-row font sizes (Hebrew / Translit / English) ──────────── */
@@ -6089,7 +6712,8 @@ function applyFontSizes() {
 // Latin line, so the highlight follows the Hebrew whatever the Follow radio says (a stored 'translit' would
 // otherwise neutralise every highlight). The radio keeps its value for when the placement goes back.
 function karaokeFollowEffective() {
-  return (settings.showTranslit && settings.translitPlacement === 'word') ? 'hebrew' : (settings.karaokeFollow || 'hebrew');
+  // The Trope staff layout has no transliteration row: its Latin line, when shown, sits in the Hebrew word's cell.
+  return (settings.layout === 'staff' || (settings.showTranslit && settings.translitPlacement === 'word')) ? 'hebrew' : (settings.karaokeFollow || 'hebrew');
 }
 function applyKaraokeAppearance() {
   const body = document.body;
@@ -6098,8 +6722,9 @@ function applyKaraokeAppearance() {
   const follow = karaokeFollowEffective();
   ['hebrew','translit','both'].forEach(s =>
     body.classList.toggle('kar-follow-' + s, follow === s));
-  const note = document.getElementById('kfUnderNote');
-  if (note) note.hidden = !(settings.showTranslit && settings.translitPlacement === 'word');
+  const note = document.getElementById('kfUnderNote'), staffNote = document.getElementById('kfStaffNote');
+  if (note) note.hidden = settings.layout === 'staff' || !(settings.showTranslit && settings.translitPlacement === 'word');
+  if (staffNote) staffNote.hidden = settings.layout !== 'staff';
 }
 /* One map, three former copies (resetFontSize, syncFormToSettings' sizeMap, the wireSize call
    list). Keyed by the argument the ↺ buttons already pass in their onclick=. */
@@ -6128,6 +6753,7 @@ function setFontSize(which, v) {
   if (val) val.textContent = safe.toFixed(2) + 'rem';
   applyFontSizes();
   saveSettings();
+  staffRelayoutSoon(true);   // the staff's words were measured at the old size
 }
 function resetFontSize(which) {
   const entry = FONT_SIZE_UI[which];
@@ -6257,7 +6883,7 @@ function wireTranslit() {
   window.addEventListener('translitlibloaded', () => {
     status.textContent = I18n.t('torah.trans.lib_loaded');
     status.dataset.i18nKey = 'torah.trans.lib_loaded';   // lets applyI18n heal a pre-ready raw key + follow language switches
-    if (settings.showTranslit) renderText();
+    if (settings.showTranslit || (settings.layout === 'staff' && staffWordsKey() !== 'hebrew')) renderText();
     // The copy bar reads the same library: a late arrival has to clear its prerequisite note
     // AND fill the transliteration back into the preview, neither of which renderText touches.
     updateCopyTextarea();
@@ -6268,7 +6894,7 @@ function wireTranslit() {
   });
 }
 function maybeEnsureTranslit() {
-  if (settings.showTranslit && window.HebrewTransliterator) {
+  if ((settings.showTranslit || (settings.layout === 'staff' && staffWordsKey() !== 'hebrew')) && window.HebrewTransliterator) {
     window.HebrewTransliterator.ensureLoaded();
   }
 }
@@ -6601,6 +7227,10 @@ function syncFormToSettings() {
   document.getElementById('ttLayoutSide').checked = settings.layout === 'sidebyside';
   document.getElementById('ttLayoutInter').checked = settings.layout === 'interlinear';
   document.getElementById('ttLayoutBible').checked = settings.layout === 'biblepage';
+  document.getElementById('ttLayoutStaff').checked = settings.layout === 'staff';
+  document.querySelectorAll('input[name="optStaffWords"]').forEach(r => { r.checked = r.value === staffWordsKey(); });
+  document.querySelectorAll('input[name="optStaffVoice"]').forEach(r => { r.checked = r.value === staffVoiceKey(); });
+  syncStaffControls();
   document.getElementById('ttKaraokeRate').value = settings.karaokeRate;
   document.getElementById('ttKaraokeRateVal').textContent = (parseFloat(settings.karaokeRate) || 1.0).toFixed(2) + '×';
   syncMiniRate();
@@ -6782,8 +7412,26 @@ function wireSettingsForm() {
   });
   document.querySelectorAll('input[name="ttLayout"]').forEach(r => {
     r.addEventListener('change', e => {
-      if (e.target.checked) { settings.layout = e.target.value; saveSettings(); renderText(); }
+      if (e.target.checked) { settings.layout = e.target.value; saveSettings(); applyKaraokeAppearance(); renderText(); }
     });
+  });
+  // The Trope staff panel: Words re-renders the staff (and asks for the transliteration library); Key and Voice
+  // go through their one writer; the tune speed is read at the next play.
+  document.querySelectorAll('input[name="optStaffWords"]').forEach(r => {
+    r.addEventListener('change', e => {
+      if (!e.target.checked) return;
+      settings.staffWords = e.target.value; saveSettings();
+      maybeEnsureTranslit(); applyKaraokeAppearance();
+      if (settings.layout === 'staff') renderText();
+    });
+  });
+  document.querySelectorAll('input[name="optStaffVoice"]').forEach(r => {
+    r.addEventListener('change', e => { if (e.target.checked) setStaffVoice(e.target.value); });
+  });
+  document.getElementById('optStaffShift').addEventListener('input', e => setStaffShift(e.target.value));
+  document.getElementById('optStaffTuneRate').addEventListener('input', e => {
+    settings.staffTuneRate = _sliderNum(e.target.value, 'optStaffTuneRate', DEFAULTS.staffTuneRate);
+    saveSettings(); syncStaffControls();
   });
   // Copy link's "Include my settings": remembered, so a teacher who always sends their look sets it once.
   document.getElementById('ttShareSettings').addEventListener('change', e => {
@@ -7390,6 +8038,7 @@ function _handoutEnter() {
   if (chantAllState.active) stopChantAll();
   pauseKaraoke(); clearKaraokeHighlight();
   if (window.speechSynthesis) speechSynthesis.cancel();
+  stopStaffTune();
   _handoutSnap = {
     showTranslit: settings.showTranslit,
     showTranslation: settings.showTranslation,
@@ -8158,6 +8807,7 @@ async function init() {
   populateParshaPicker();
   syncFormToSettings();
   wireSettingsForm();
+  staffInitWatchers();      // the Trope staff layout re-wraps on a width or font change
   wireTranslit();
   checkTTSVoiceAvailability();
   document.getElementById('ttReading').addEventListener('click', onReadingClick);
@@ -8353,6 +9003,7 @@ function applyI18n() {
   // key string forever (19 inputs, Hebrew only). Both are pure re-renders of current settings.
   try { initColorPickers(); } catch (e) {}          // vowel colour inputs — aria-label is I18n.t(...{name})
   try { initTropeColorPickers(); } catch (e) {}     // trope-family colour inputs — same
+  try { syncStaffControls(); } catch (e) {}         // the staff panel's key name (trope.key.*)
   try { buildTropeLegend(); } catch (e) {}          // family chips (glyphname keys)
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
   // refreshScopeLabels leaves custom scope alone — that option is injected by
@@ -8421,6 +9072,7 @@ else _wireTorahI18n();
 // the print-CSS backstop covers the non-decoration styles.
 window.addEventListener('beforeprint', () => {
   pauseKaraoke(); clearKaraokeHighlight();
+  stopStaffTune(); staffEnsureAllSvg();   // every staff system drawn before the snapshot (they are drawn lazily on screen)
   // Dark-mode nikkud/trope palettes live in inline --nikv-*/--trope-*-line body vars that beat
   // the print-CSS token reset, so they'd print washed-out (e.g. tzere #aaaadd ≈1.9:1 on paper).
   // Re-resolve both to the LIGHT scheme for the snapshot; afterprint restores the dark palette.
@@ -8854,6 +9506,11 @@ const LINK_DISPLAY = {
   tropeColorOverrides: v => _linkHexMap(v, TROPE_FAMILIES),
   karaokeStyle:        v => _linkOneOf(v, _linkChoices('input[name="optKarStyle"]')),
   karaokeFollow:       v => _linkOneOf(v, _linkChoices('input[name="optKarFollow"]')),
+  // The Trope staff layout: what sits under the notes, the key it is drawn in and the voice (the 8 under the clef)
+  // are how the reading looks; the tune's speed is how it sounds and stays home like karaokeRate.
+  staffWords:          v => _linkOneOf(v, _linkChoices('input[name="optStaffWords"]')),
+  staffShift:          v => { const n = _sliderNum(v, 'optStaffShift', NaN); return Number.isFinite(n) ? Math.round(n) : undefined; },
+  staffVoice:          v => _linkOneOf(v, _linkChoices('input[name="optStaffVoice"]')),
 };
 // Each color list's look, with the on/off switch it shows under. A look is on screen only while its
 // coloring is on, so it rides a link only then, and a reader takes one only then.
