@@ -30,7 +30,7 @@ account.holds.names_hide,Hide names,הסתרת השמות,Account page listing t
 account.holds.projects_label,Font Maker projects,פרויקטים של יוצר הגופנים,Account page listing group for cloud font projects,
 account.holds.project_line,{name}: {letters} · {size} · edited {date},{name}: {letters} · {size} · נערך ב-{date},Account page listing line for one font project (letters = an account.count.letters fragment),template
 account.holds.project_export,with an exported font,עם גופן מיוצא,Account page listing suffix when a project keeps an export,
-account.holds.total,"Everything together: {items} and {projects}, about {size}.","הכול יחד: {items} ו-{projects}, בערך {size}.",Account page total line under the listing (items / projects = account.count fragments),template
+account.holds.total,"Everything together: {items} {and_projects}, about {size}.","הכול יחד: {items} {and_projects}, בערך {size}.","Account page total line under the listing (items = account.count.items; and_projects = account.count.and_projects, which carries the and)",template
 account.holds.unknown.one,1 item saved by a newer version of the site (kept in the download; not shown here),פריט אחד שנשמר בגרסה חדשה יותר של האתר (נשמר בהורדה; לא מוצג כאן),Account page listing line for cloud rows of a kind this build does not know,plural
 account.holds.unknown.other,{n} items saved by a newer version of the site (kept in the download; not shown here),{n} פריטים שנשמרו בגרסה חדשה יותר של האתר (נשמרים בהורדה; לא מוצגים כאן),Account page listing line for cloud rows of a kind this build does not know,plural; template
 account.holds.refresh,Refresh,רענון,Account page button,
@@ -38,6 +38,8 @@ account.count.items.one,1 item,פריט אחד,Account page count fragment,plura
 account.count.items.other,{n} items,{n} פריטים,Account page count fragment,plural; template
 account.count.projects.one,1 project,פרויקט אחד,Account page count fragment,plural
 account.count.projects.other,{n} projects,{n} פרויקטים,Account page count fragment,plural; template
+account.count.and_projects.one,and 1 project,ופרויקט אחד,"Account page count fragment that follows {items} in a sentence. It carries the and, because Hebrew joins ו to a word and writes ו- only before a digit",plural
+account.count.and_projects.other,and {n} projects,ו-{n} פרויקטים,"Account page count fragment that follows {items} in a sentence. It carries the and, because Hebrew joins ו to a word and writes ו- only before a digit",plural; template
 account.count.files.one,1 file,קובץ אחד,Account page count fragment,plural
 account.count.files.other,{n} files,{n} קבצים,Account page count fragment,plural; template
 account.count.letters.one,1 letter,אות אחת,Account page count fragment (a font project's finished letters),plural
@@ -49,7 +51,7 @@ account.download.prep_items,Collecting your saved items…,אוסף את הפר�
 account.download.prep_project,Project {i} of {n}: {name}…,פרויקט {i} מתוך {n}: {name}…,"Account page download progress (i/n = position, name = the project)",template
 account.download.prep_photo,Project {i} of {n}: photo {j} of {m}…,פרויקט {i} מתוך {n}: תמונה {j} מתוך {m}…,Account page download progress,template
 account.download.prep_zip,Packing the file…,אורז את הקובץ…,Account page download progress,
-account.download.done,Downloaded {items} and {projects} ({size}).,הורדו {items} ו-{projects} ({size}).,Account page download finished (items / projects = account.count fragments),template
+account.download.done,Downloaded {items} {and_projects} ({size}).,הורדו {items} {and_projects} ({size}).,Account page download finished (items = account.count.items; and_projects = account.count.and_projects),template
 account.download.photos_missing.one,1 photo could not be downloaded and is missing from the file.,תמונה אחת לא ניתן היה להוריד והיא חסרה בקובץ.,Account page download finished with a Font Maker photo missing,plural
 account.download.photos_missing.other,{n} photos could not be downloaded and are missing from the file.,{n} תמונות לא ניתן היה להוריד והן חסרות בקובץ.,Account page download finished with Font Maker photos missing,plural; template
 account.download.fonts_missing.one,1 exported font could not be downloaded and is missing from the file.,גופן מיוצא אחד לא ניתן היה להוריד והוא חסר בקובץ.,Account page download finished with a Font Maker project's exported font missing (counted apart from photos),plural

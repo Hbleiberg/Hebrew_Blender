@@ -535,7 +535,7 @@ function renderHolds() {
     li.appendChild(ul); host.appendChild(li);
   }
   if (!shown) host.appendChild(el('li', 'muted', t('shared.cloud.acct_no_cloud')));
-  else $('holdsTotal').textContent = t('account.holds.total', { items: plural('account.count.items', items), projects: plural('account.count.projects', pj.length), size: fmtSize(bytes + pbytes) });
+  else $('holdsTotal').textContent = t('account.holds.total', { items: plural('account.count.items', items), and_projects: plural('account.count.and_projects', pj.length), size: fmtSize(bytes + pbytes) });
   setBusy('dlBtn', !shown);
   if (refocus) refocus.focus();
 }
@@ -634,7 +634,7 @@ async function downloadAll() {
     if (!user || user.id !== me) return;
     saveBlob(new Blob([zip], { type: 'application/zip' }), 'IvritSuite-account-' + date + '.zip');
     const n = bundle.count, p = rows.length, size = fmtSize(zip.length);
-    say('dlStatus', () => t('account.download.done', { items: plural('account.count.items', n), projects: plural('account.count.projects', p), size: size })
+    say('dlStatus', () => t('account.download.done', { items: plural('account.count.items', n), and_projects: plural('account.count.and_projects', p), size: size })
       + (missingPhotos ? ' ' + plural('account.download.photos_missing', missingPhotos) : '')
       + (missingFonts ? ' ' + plural('account.download.fonts_missing', missingFonts) : ''));
   } catch (err) {
