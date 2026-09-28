@@ -4,6 +4,40 @@
 > previous session already refuted. Never read it whole. Entries are moved here verbatim from the ledger's Candidates
 > by `scripts/compact-ledger.mjs`; they are records, not open work. Full history: `docs/IMPROVEMENT_ARCHIVE.md`.
 
+## S426 (2026-09-28) — pass H on the account page (its first)
+
+- [ ] P4 (**NEW S426 Pass H — the walkthrough's receipts, lesson by lesson, so the next account H starts here**) | account.html |
+  **Harness `h426/`** (scratchpad): `cloud.mjs` is `smoke-account-page`'s fake cloud plus the email path's `/otp` and `/verify`, the pinned SDK served from `npm pack @supabase/supabase-js@2.116.0` (its SRI recomputed equal to `sdkIntegrity`); `walk.mjs <lang> <light|dark> <width>` runs six lessons, every step a real click; EN light 1280 and HE dark 800, SW blocked, foreign origins aborted, 0 pageerrors in every lesson.
+  - **A, a first visit from the privacy policy:** the "account page" link lands on "Sign in to see your account." and 0 SDK requests; Sign in opens the chip's menu on Continue with Google; email, send, code, Verify: the four tiles in 549–658 ms, and the "Sync settings from your last login?" splash over them, the focus left on the chip (candidate).
+  - **B, the display name:** Save sends PUT /user (`full_name`) and PATCH profiles, the chip turns "Morah" at once, a blank name is refused inline with 0 requests, Enter saves, a reload keeps it.
+  - **C, what the account holds:** 7 tool groups and the Font Maker project line, 2 names toggles (presets, student profiles, never word or class lists); a toggle dropped the focus to `<body>` (fixed `e091820`).
+  - **D, download everything, then a new computer:** progress lines in order, `IvritSuite-account-<date>.zip` = README + `.ivrit` + `.hebrewfont` + `.ttf`, every CRC good; the README's steps work as written on a fresh hub (Import / Export → file → one alert, "…so nothing was replaced").
+  - **E, the emailed link:** in a browser that did not ask, the menu opens at the code step, the code in, the focus in the empty address, and Verify without one says "Please enter a valid email address."; in the asking browser the address is in too and Enter on Verify signs in; exactly one `/verify` with the address, the code and `type: email`.
+  - **F, deleting:** the box, the tick, the address in capitals and padded both unlock it; the gone tile counts 10 items, 1 project, 3 files; this device's preset stays, the session and the sync memory go; Back to the home page shows Sign in.
+  - **Also:** an empty account says "Nothing is saved in your account yet." with Download locked (the seed); on this page the chip's Account… opens the account screen, whose "Manage your account…" link reloads the page (candidate).
+
+  | found S426
+
+- [ ] P4 (**NEW S426 — measurements, recorded so no pass re-derives them**) | account.html + the account layer |
+  - **(1)** The splash opening on `account.html` after a sign-in by code is the suite-wide design (`maybeWelcome`, `sessionSource() === 'new'`), not an account-page defect; only where the focus lands is (candidate).
+  - **(2)** The holds total adds the rows' `bytes` and each project's `project_bytes + sources_bytes`: it leaves out the exported fonts and the `.ivrit`'s pretty-printing, so a tiny account reads "about 1 KB" and downloads 3 KB. "About" covers it; for photo projects the sources dominate.
+  - **(3)** The account's `.ivrit` is `partial: true`: the hub merges it without the Merge / Replace question, so the README's "never replacing anything" holds (a local preset kept, 2 added). Its `suitePrefs` dark mode turns the new device dark: a synced suite preference, by design.
+  - **(4)** Saving an unchanged display name sends PUT /user and PATCH profiles again (no dirty check): harmless.
+  - **(5)** Refresh lists `saves` once per tool (7) plus `font_projects` once: "one listing per tool", by design.
+  - **(6)** The HE listing's mixed runs ("IvritSuite: 1 · 1 KB העדפות", "KB 1") read in the right order for an RTL reader.
+  - **(7)** The HE "ו-{param}" census: 6 templates; only `account.holds.total` and `account.download.done` put a word-initial fragment there (`פרויקט אחד`); the other four take digits, names or a file name, where the hyphen is right.
+  - **(8)** `modal-focus-trap` had never seen the account screen: its last sweep (S179) predates the accounts layer. The pattern's detection on 9 pages found 7 / 6 escapes (the Font Maker 8 / 7) on every one; fixed `91c45d6`.
+
+  | found S426
+
+- [ ] P4 (**NEW S426 — traps 175–178**) | probe harness |
+  - **(175)** A code sign-in fires the SIGNED_IN listeners before `verifyOtp` resolves: a dialog they open is focused BEFORE the menu's own `closeMenu(true)` runs. Read `document.activeElement` once the whole chain has settled (≥1 s), never at the dialog's first paint.
+  - **(176)** A signed-in seed that carries the `welcomed` mark opens no splash: a lesson that needs the "Sync settings…" screen signs in on the page (a fresh session).
+  - **(177)** Clicking a button that already has the focus keeps its keyboard `:focus-visible`: a "no ring for a mouse" check needs a page where nothing was Tabbed to first.
+  - **(178)** The account screen's recorded opener can already be hidden (the chip menu's Account… item): a focus-return probe presses Escape and reads `document.activeElement`, never trusts that `opener.focus()` was called.
+
+  | found S426
+
 ## S425 (2026-09-28) — pass I on the whole suite (its 32nd)
 
 - [ ] P4 (**NEW S425 Pass I — the 32nd run's receipts, arm by arm, so the next I starts here**) | the whole suite |

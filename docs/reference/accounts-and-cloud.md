@@ -382,7 +382,8 @@ its own may land at the root of the folder list; *Sync now* keeps the folders.
 
 ### The account screen
 
-`IvritSaves.openAccount()` — an overlay (`.ivsav-overlay` / `.ivsav-card`, `role="dialog"`, Escape and
+`IvritSaves.openAccount()` — an overlay (`.ivsav-overlay` / `.ivsav-card`, `role="dialog"` + `aria-modal="true"`;
+Tab and Shift+Tab wrap inside the card and a Tab from outside it comes in at its first control; Escape and
 an outside click close it, focus returns to the opener) reached from the chip's **Account…** item. Under
 the title it says when the account was last saved (the newest `updated_at` across every tool's rows) or
 that nothing is saved yet, then lists every tool that has anything, on either side, with plain counts
@@ -557,8 +558,9 @@ that opens the chip's menu; offline or with the SDK blocked: one line, nothing e
   be downloaded, photos and exported fonts counted apart; the button is disabled while the account holds
   nothing.
 - **Delete my account** — a confirmation box that needs a ticked checkbox ("I have downloaded everything I want
-  to keep, or I do not need it") and the account's email address typed (compared case-insensitively); the red
-  button stays `aria-disabled` until both hold. Then `IvritAccount.deleteAccount()` calls the `delete-account`
+  to keep, or I do not need it") and the account's email address typed (the field's label names it; compared case-insensitively); the red
+  button stays `aria-disabled` until both hold, and a press while it is locked says what is still missing on the
+  box's status line. Then `IvritAccount.deleteAccount()` calls the `delete-account`
   Edge Function (`db/functions/delete-account/index.ts`): the platform's JWT check runs first, the function asks
   Auth who the token belongs to, removes every object under `<uid>/` in the three buckets (paged, subfolders
   included), then `auth.admin.deleteUser(uid)` — the `profiles`, `saves` and `font_projects` rows cascade. It
