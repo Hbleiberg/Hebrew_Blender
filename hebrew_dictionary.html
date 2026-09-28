@@ -2138,13 +2138,22 @@ function wlOpenManager() {
   // The cloud panel lists again each time the manager opens signed in (the module coalesces repeats).
   if (window.IvritSaves && window.IvritAccount && IvritAccount.status() === 'signed-in') IvritSaves.refresh('Dictionary').catch(() => {});
 }
-function wlRefreshManager() {
+function wlRefreshManager(focusKey) {
   const body = document.getElementById('wmBody');
   if (!body) return;
+  // The rebuild removes the control that held the focus (pattern button-focus-lost-to-its-own-rebuild): hand it
+  // to the control the caller names by its data-wl-focus key, else back to one the rebuild re-parents (the
+  // cloud panel), else to the close button — never to <body>, where a keyboard user loses their place.
+  const ov = document.getElementById('wordModal'), a = document.activeElement;
+  const had = ov.classList.contains('open') && (body.contains(a) || a === document.body) ? a : null;
   body.innerHTML = '';
   const b = document.createElement('div');
   wlRenderManagerInto(b);
   body.appendChild(b);
+  if (!had) return;
+  const next = (focusKey && [...body.querySelectorAll('[data-wl-focus]')].find(n => n.dataset.wlFocus === focusKey))
+    || (had !== document.body && body.contains(had) ? had : null) || document.getElementById('wmClose');
+  if (next) next.focus();
 }
 function wlRenderManagerInto(root) {
   root.appendChild(wlEl('div', { style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 12px;' }, I18n.t('dictionary.wordlist.manager_title')));
@@ -2173,8 +2182,9 @@ function wlRenderManagerInto(root) {
     row.appendChild(head);
 
     const acts = wlEl('div', { style: 'display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;' });
-    const btn = (label, handler, extra) => {
+    const btn = (label, handler, extra, key) => {
       const bb = wlEl('button', { cls: 'pos-all-btn', type: 'button', style: 'font-size:0.7rem;' + (extra || '') }, label);
+      bb.dataset.wlFocus = id + ':' + key;   // wlRefreshManager() hands the focus back here after a rebuild
       bb.addEventListener('click', handler);
       acts.appendChild(bb);
       return bb;
@@ -2187,6 +2197,10 @@ function wlRenderManagerInto(root) {
       // wlRefreshManager would collapse this expansion). Word removal still does a full refresh
       // (the header word-count changes).
       const paint = () => {
+        // Re-painting removes the pressed ↑/↓: hand the focus to the same word's replacement, or to its other
+        // arrow once the word has reached an end and this one is disabled.
+        const had = wrap.contains(document.activeElement) ? document.activeElement : null;
+        const hadWord = had && had.dataset.wlWord, hadDir = had && had.dataset.wlDir;
         wrap.textContent = '';
         const words = (wlGetList(id) || { words: [] }).words;
         if (!words.length) { wrap.appendChild(wlEl('div', { style: 'color:var(--muted);font-size:0.75rem;' }, I18n.t('dictionary.wordlist.list_empty'))); return; }
@@ -2204,14 +2218,20 @@ function wlRenderManagerInto(root) {
           dn.addEventListener('click', () => { wlMoveWord(id, w.word, 1); paint(); });
           const x = wlEl('button', { cls: 'wm-mini', type: 'button', title: I18n.t('dictionary.wordlist.remove_word_title') }, '✕');
           x.setAttribute('aria-label', I18n.t('dictionary.wordlist.remove_word_title'));
-          x.addEventListener('click', () => { wlRemoveWord(id, w.word); wlRefreshManager(); });
+          x.addEventListener('click', () => { wlRemoveWord(id, w.word); wlRefreshManager(id + ':view'); });
+          [[up, 'up'], [dn, 'down']].forEach(([bt, d]) => { bt.dataset.wlWord = w.word; bt.dataset.wlDir = d; });
           wr.appendChild(up); wr.appendChild(dn); wr.appendChild(x);
           wrap.appendChild(wr);
         });
+        if (hadWord) {
+          const mine = [...wrap.querySelectorAll('button')].filter(n => n.dataset.wlWord === hadWord);
+          const next = mine.find(n => n.dataset.wlDir === hadDir && !n.disabled) || mine.find(n => !n.disabled);
+          if (next) next.focus();
+        }
       };
       paint();
       row.appendChild(wrap);
-    });
+    }, '', 'view');
     btn(I18n.t('dictionary.wordlist.rename'), () => {
       // Inline styled rename (replaces the legacy prompt()) with a duplicate-name guard
       // matching the Save flow — a list can't be renamed onto another list's name.
@@ -2231,20 +2251,20 @@ function wlRenderManagerInto(root) {
         const dup = Object.keys(lists).some(lid => lid !== id && lists[lid].name === t);   // exclude self
         if (dup) { wlSetStatus(st, I18n.t('dictionary.wordlist.dup_name_suffix'), true); input.focus(); input.select(); return; }
         if (t !== list.name) wlRenameList(id, t);
-        wlRefreshManager();
+        wlRefreshManager(id + ':rename');
       };
       okBtn.addEventListener('click', commit);
-      cancelBtn.addEventListener('click', () => wlRefreshManager());
+      cancelBtn.addEventListener('click', () => wlRefreshManager(id + ':rename'));
       input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); commit(); } });
       ed.appendChild(input); ed.appendChild(st); ed.appendChild(okBtn); ed.appendChild(cancelBtn);
       row.appendChild(ed);
       input.focus(); input.select();
-    });
+    }, '', 'rename');
     btn(I18n.t('dictionary.wordlist.delete'), () => {
       if (!confirm(I18n.t('dictionary.wordlist.delete_confirm', { name: list.name }))) return;
       wlDeleteList(id);
-      wlRefreshManager();
-    }, 'color:var(--danger-text);');
+      wlRefreshManager();   // the row is gone: the focus goes to the close button
+    }, 'color:var(--danger-text);', 'delete');
     row.appendChild(acts);
     if (list.words.length) {
       const loadBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button', style: 'margin-top:8px;font-size:0.8rem;padding:7px 12px;' }, I18n.t('dictionary.wordlist.load_as_filter'));
@@ -5817,6 +5837,7 @@ function _wmFocusables() {
 function _openWordModal(bodyEl) {
   const ov = document.getElementById('wordModal');
   const body = document.getElementById('wmBody');
+  if (_modalKeyHandler) document.removeEventListener('keydown', _modalKeyHandler, true);   // opened from inside itself
   body.innerHTML = '';
   body.appendChild(bodyEl);
   _modalOpener = document.activeElement;
@@ -5824,7 +5845,11 @@ function _openWordModal(bodyEl) {
   document.body.classList.add('wm-open');
   const close = document.getElementById('wmClose');
   if (close) close.focus();
+  // On the document, not the overlay: a rebuild inside the window can drop the focus to <body>, and Escape and
+  // Tab must still reach the window then. A dialog opened above it (the account screen) keeps its own keys.
   _modalKeyHandler = e => {
+    const a = document.activeElement;
+    if (a && a !== document.body && !ov.contains(a) && a.closest('[aria-modal="true"]')) return;
     if (e.key === 'Escape') { e.preventDefault(); closeWordModal(); return; }
     if (e.key === 'Tab') {
       const f = _wmFocusables();
@@ -5834,14 +5859,14 @@ function _openWordModal(bodyEl) {
       else { if (i === -1 || i === f.length - 1) { e.preventDefault(); f[0].focus(); } }
     }
   };
-  ov.addEventListener('keydown', _modalKeyHandler, true);
+  document.addEventListener('keydown', _modalKeyHandler, true);
 }
 function closeWordModal() {
   const ov = document.getElementById('wordModal');
   if (!ov.classList.contains('open')) return;
   ov.classList.remove('open');
   document.body.classList.remove('wm-open');
-  if (_modalKeyHandler) { ov.removeEventListener('keydown', _modalKeyHandler, true); _modalKeyHandler = null; }
+  if (_modalKeyHandler) { document.removeEventListener('keydown', _modalKeyHandler, true); _modalKeyHandler = null; }
   if (_modalOpener && _modalOpener.focus) { try { _modalOpener.focus(); } catch (e) {} }
   _modalOpener = null;
   // The one-click theme bridge turned Bulk Copy Mode on only so the save modal had a selection;
