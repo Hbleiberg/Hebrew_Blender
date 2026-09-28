@@ -648,7 +648,9 @@ builds) or `'word'`. With `'word'` and the transliteration on, `renderText` drop
   for this), from the RAW token so a hidden-nikkud display still transliterates, memoized by style + word
   in `_wtlMemo` (`wireTranslit` clears it on a style change; `''` is never stored, so the
   `translitlibloaded` rebuild fills the cells). A proclitic is tried with its maqaf first, for the
-  library's stress and dagesh context, then plainly.
+  library's stress and dagesh context, then plainly. Beneath both placements `applyTranslit` memoizes every
+  input by style + text in `_tlMemo` (never `''`; the style is in the key, so nothing clears it), so a
+  re-render never runs the library again over a reading it has already transliterated.
 - **Follow.** `karaokeFollowEffective()` returns `'hebrew'` while the placement is `'word'` (the Latin line
   moves with its Hebrew cell; a stored `'translit'` would otherwise neutralise every highlight) and is what
   `applyKaraokeAppearance` and `updateKaraokeWordRefs` read; the Follow radios keep their value and

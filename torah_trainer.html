@@ -4013,6 +4013,10 @@ function tokenizeHebrew(text, wordIdxStartRef, opts, underWord) {
 /* ══════════════════════════════════════════════════════
    TRANSLITERATION
    ══════════════════════════════════════════════════════ */
+// Memoized by style + text: every re-render (layout, translation, nikkud, colouring, language) used to run the
+// library over every verse again — 0.6–1.2 s on a full parsha, 4–7 s on a slow laptop. '' is never stored (the
+// library is still loading), so the translitlibloaded rebuild fills in; the style is in the key, so nothing clears it.
+const _tlMemo = new Map();
 function applyTranslit(hebrewText) {
   // Strip cantillation marks before transliterating (library handles nikkud).
   // Substitute the Tetragrammaton with אֲדֹנָי so the library outputs "Adonai"
@@ -4020,7 +4024,12 @@ function applyTranslit(hebrewText) {
   const stripped = replaceTetragrammaton(stripTeamim(hebrewText || ''));
   if (!stripped) return '';
   if (window.HebrewTransliterator && window.HebrewTransliterator.ready) {
-    return window.HebrewTransliterator.apply(stripped, '', settings.translitStyle) || '';
+    const key = settings.translitStyle + '|' + stripped;
+    const hit = _tlMemo.get(key);
+    if (hit !== undefined) return hit;
+    const out = window.HebrewTransliterator.apply(stripped, '', settings.translitStyle) || '';
+    if (out) { if (_tlMemo.size > 20000) _tlMemo.clear(); _tlMemo.set(key, out); }
+    return out;
   }
   return '';  // library still loading; will re-render on translitlibloaded event
 }
