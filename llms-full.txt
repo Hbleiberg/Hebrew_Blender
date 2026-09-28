@@ -221,7 +221,7 @@ Yes. The default is diaspora; flip the Reading Schedule toggle in settings to sw
 
 **Can I copy the Hebrew text out of the reader?**
 
-Yes. The Copy panel in the Options drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting.
+Yes. The Copy panel in the Settings drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting.
 
 **Is the Torah Trainer free?**
 
