@@ -3877,6 +3877,8 @@ torah.audio.pause_aria,Pause,השהה,play/pause button aria (dynamic),aria-labe
 torah.audio.play_aria,Play,נגן,play/pause button aria (dynamic),aria-label only
 torah.audio.playpause_aria,Play or pause,נגן או השהה,play/pause button aria,aria-label only
 torah.audio.playpause_title,Play / pause,נגן / השהה,play/pause button title,
+torah.audio.tune_label,Tune,מנגינה,"audio bar rate slider label: the Trope staff's synthesized tune, shown only in that layout",
+torah.audio.tune_rate_aria,Tune playback speed,מהירות השמעת המנגינה,audio bar tune rate slider aria,aria-label only
 torah.audio.read_label,Read,הקראה,rate slider label,
 torah.audio.read_rate_aria,TTS reading speed,מהירות ההקראה הקולית,rate slider aria,aria-label only
 torah.audio.region_aria,Cantillation audio playback,השמעת שמע הטעמים,audio bar region aria,aria-label only

@@ -1123,6 +1123,10 @@ body.fullscreen #ttBulkDock { display:none; }
   font-size:0.72rem; color:#fff;
 }
 .tt-audio-bar .tt-audio-rates .row { display:flex; align-items:center; gap:6px; }
+/* The Tune row (the Trope staff's tune speed) shows only in that layout — a body class, since the row's own
+   display:flex would beat the hidden attribute; it hides with the other rows while the bar is collapsed. */
+.tt-audio-bar .tt-audio-rates .row.tt-audio-tune { display:none; }
+body.layout-staff .tt-audio-bar .tt-audio-rates .row.tt-audio-tune { display:flex; }
 .tt-audio-bar .tt-audio-rates .row label {
   color:var(--gold-light); font-weight:600; min-width:42px; letter-spacing:0.02em;
 }
@@ -2254,6 +2258,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <label for="ttTTSRateBar" data-i18n="torah.audio.read_label">Read</label>
       <input type="range" id="ttTTSRateBar" min="0.5" max="1.5" step="0.05" value="0.75" aria-label="TTS reading speed" data-i18n-aria-label="torah.audio.read_rate_aria">
       <span class="val" id="ttTTSRateBarVal">0.75×</span>
+    </span>
+    <!-- The Trope staff's tune speed (settings.staffTuneRate, mirrored with the drawer's slider through
+         setStaffTuneRate): shown only in that layout (body.layout-staff), read by the tune at its next play. -->
+    <span class="row tt-audio-tune">
+      <label for="ttStaffTuneRate" data-i18n="torah.audio.tune_label">Tune</label>
+      <input type="range" id="ttStaffTuneRate" min="0.5" max="1.5" step="0.05" value="1.0" aria-label="Tune playback speed" data-i18n-aria-label="torah.audio.tune_rate_aria">
+      <span class="val" id="ttStaffTuneRateVal">1.00×</span>
     </span>
   </span>
   <span class="tt-audio-credit">
@@ -5111,15 +5122,24 @@ function setStaffNoteNames(v) {
   if (settings.layout === 'staff') renderText();   // every system gains, changes or drops its names (renderText stops a playing tune)
 }
 function resetStaffShift() { setStaffShift(DEFAULTS.staffShift); }
-function resetStaffTuneRate() { settings.staffTuneRate = DEFAULTS.staffTuneRate; saveSettings(); syncStaffControls(); }
+// The tune's speed: one writer for the drawer slider, the audio bar's Tune row and the reset (the tune reads it at its
+// next play — _staffStart schedules a whole verse at once).
+function setStaffTuneRate(v) {
+  settings.staffTuneRate = _sliderNum(v, 'optStaffTuneRate', DEFAULTS.staffTuneRate);
+  saveSettings(); syncStaffControls();
+}
+function resetStaffTuneRate() { setStaffTuneRate(DEFAULTS.staffTuneRate); }
 function syncStaffControls() {
   const sh = staffShiftVal(), rate = staffRateVal();
   const sl = document.getElementById('optStaffShift'), val = document.getElementById('optStaffShiftVal'), note = document.getElementById('optStaffShiftNote');
   const rs = document.getElementById('optStaffTuneRate'), rv = document.getElementById('optStaffTuneRateVal');
+  const bs = document.getElementById('ttStaffTuneRate'), bv = document.getElementById('ttStaffTuneRateVal');   // the audio bar's mirror
   if (sl) sl.value = sh;
   if (val) val.textContent = (sh > 0 ? '+' : '') + sh;
   if (rs) rs.value = rate;
   if (rv) rv.textContent = rate.toFixed(2) + '×';
+  if (bs) bs.value = rate;
+  if (bv) bv.textContent = rate.toFixed(2) + '×';
   if (!window.I18n || !note) return;
   const name = staffKeyName(staffDrawKey());
   const keyText = name ? I18n.t('trope.key.name', { note: name }) : '';
@@ -7533,9 +7553,9 @@ function wireSettingsForm() {
     r.addEventListener('change', e => { if (e.target.checked) setStaffNoteNames(e.target.value); });
   });
   document.getElementById('optStaffShift').addEventListener('input', e => setStaffShift(e.target.value));
-  document.getElementById('optStaffTuneRate').addEventListener('input', e => {
-    settings.staffTuneRate = _sliderNum(e.target.value, 'optStaffTuneRate', DEFAULTS.staffTuneRate);
-    saveSettings(); syncStaffControls();
+  ['optStaffTuneRate', 'ttStaffTuneRate'].forEach(id => {   // the drawer's slider and the audio bar's Tune row: one writer
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', e => setStaffTuneRate(e.target.value));
   });
   // Copy link's "Include my settings": remembered, so a teacher who always sends their look sets it once.
   document.getElementById('ttShareSettings').addEventListener('change', e => {

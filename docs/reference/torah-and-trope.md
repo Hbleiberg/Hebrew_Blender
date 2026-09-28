@@ -697,7 +697,9 @@ Design: `docs/tropepatterns.md` → G.
   drawn by `staffEnsureSvg` when an `IntersectionObserver` sees it near the viewport, when the tune or the
   chant highlight reaches it, and all at once in `beforeprint`. A 146-verse reading lays out in ~130 ms.
 - **Tune** (`staffTune(vk)`, the header's *Play tune* = `staffTuneAll`): the verse's notes as oscillator
-  tones by the tutor's rules (an eighth is 0.32 s ÷ `staffTuneRate`; ties one note; rests silent; a grace
+  tones by the tutor's rules (an eighth is 0.32 s ÷ `staffTuneRate` — the drawer's Tune speed slider, mirrored by
+  the audio bar's Tune row in this layout under `body.layout-staff`, one writer `setStaffTuneRate`, read at the
+  tune's next play; ties one note; rests silent; a grace
   note quick and borrowed; nothing under `STAFF_MIN_NOTE`; B4 = 493.88 Hz moved by the key, an octave down
   in the 5-harmonic wave with Low voices), on its own lazily created `AudioContext`. Each note lights
   `.tu-pn.is-sounding` (the system `svg.is-playing`) and its word's spans take `.active` — the teacher's
@@ -715,8 +717,8 @@ Design: `docs/tropepatterns.md` → G.
   `tu-pn`, `tu-pbar`), rescoped under `.tt-staff-sys`.
 - **Settings** (`DEFAULTS`, clamped in `loadSettings`, read through `staffWordsKey` / `staffShiftVal` /
   `staffVoiceKey` / `staffNoteNamesKey` / `staffRateVal`; one writer each: `setStaffShift`, `setStaffVoice`,
-  `setStaffNoteNames`, the Words radios, the rate slider; `syncStaffControls` the read-only half, also from
-  `applyI18n`): the drawer's *Trope staff* panel — Words, Key (−6…+6; the readout names the key with the
+  `setStaffNoteNames`, the Words radios, `setStaffTuneRate` (the drawer's slider, the audio bar's Tune row and
+  the reset); `syncStaffControls` the read-only half, also from `applyI18n`): the drawer's *Trope staff* panel — Words, Key (−6…+6; the readout names the key with the
   tutor's `trope.key.*` strings), Voice, Note names, Tune speed. Words, key, voice and note names ride the
   practice link (`LINK_DISPLAY`); the speed syncs in the blob like `karaokeRate` and never travels. The systems are pinned `direction:ltr` in both UIs (notation), and the
   rover's arrows follow the notation there (`onReadingKeydown` flips `delta`).
