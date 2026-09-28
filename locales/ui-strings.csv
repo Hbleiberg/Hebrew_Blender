@@ -906,6 +906,7 @@ dictionary.pos.proper_noun,Proper Noun,שם פרטי,part-of-speech filter label
 dictionary.pos.proverb,Proverb,פתגם,part-of-speech filter label,REVIEW: HE draft
 dictionary.pos.root,Root (שׁורש),שורש,part-of-speech filter label,mixed UI+content — do not translate {…}
 dictionary.pos.verb,Verb,פועל,part-of-speech filter label,
+dictionary.print.filters_label,Filters:,מסננים:,print-only header — the label before the active-filter list,printed in the UI language — the dictionary's print is the on-screen view (like the saved-list banner) and not headerLang worksheet output
 dictionary.results.count_emojis.one,{count} emoji,אימוג׳י אחד,result count (emoji mode),plural
 dictionary.results.count_emojis.other,{count} emojis,{count} אימוג׳ים,result count (emoji mode),plural
 dictionary.results.count_related.one,{count} related word,מילה קשורה אחת,shoresh result count,plural

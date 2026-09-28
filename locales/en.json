@@ -919,6 +919,7 @@
   "dictionary.pos.proverb": "Proverb",
   "dictionary.pos.root": "Root (שׁורש)",
   "dictionary.pos.verb": "Verb",
+  "dictionary.print.filters_label": "Filters:",
   "dictionary.results.count_emojis.one": "{count} emoji",
   "dictionary.results.count_emojis.other": "{count} emojis",
   "dictionary.results.count_related.one": "{count} related word",

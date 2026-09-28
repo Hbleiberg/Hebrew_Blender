@@ -541,6 +541,8 @@ body.fullscreen .app{height:100vh;min-height:unset;}
 .wl-active-label{color:var(--text);font-weight:600;}
 .wl-active-exit{margin-inline-start:auto;background:var(--white);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:0.74rem;padding:3px 10px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:border-color 0.15s,background 0.15s;}
 .wl-active-exit:hover{border-color:var(--gold);background:var(--gold);color:var(--navy);}
+/* Print header — never on screen; fillPrintHead() fills it on beforeprint and the print block shows it. */
+#printHead{display:none;}
 .fchip-body:focus-visible,.fchip-x:focus-visible,.fchip-reset:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
 .sort-sel:focus-visible,.dict-tool-btn:focus-visible,.word-card:focus-visible,.emoji-card:focus-visible,.lpt:focus-visible,.panel-title:focus-visible,.adv-section-title:focus-visible,.pos-sec-hdr:focus-visible,.shoresh-patterns-title:focus-visible,.shoresh-pat.filled:focus-visible,.emoji-cat-arrow:focus-visible,.vowel-group-section div[role="button"]:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
 .fchip-reset{font-size:0.74rem;background:var(--navy);color:#fff;border:1px solid var(--navy);border-radius:14px;padding:4px 11px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;}
@@ -961,7 +963,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
   /* Screen affordances that reached paper after the S252 list was written (S377 Pass G): the
      emoji cards' 🔊 button (audio on: 1,785 of them across an emoji print, five extra sheets),
      the bulk-select box on every card, and the saved-list banner's Exit button — the banner's
-     label stays, it is the only line naming what was printed. A box-shadow is a drawing, not a
+     label stays, it names the saved list under the print header. A box-shadow is a drawing, not a
      background, so the dialog's background-graphics-off default never drops it: the card the
      mouse rests on at Ctrl+P printed its hover halo as a card-sized grey plate. Same universal
      rule as the flash cards' print block (pattern dark-print-shadow-slab). */
@@ -975,6 +977,12 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
   .content { padding-bottom:0; }
   .results-grid { margin-bottom:0; }
   .word-card, .emoji-card { break-inside:avoid; }
+  /* The print header (fillPrintHead): the tool, the date, the count and the filters, once, at the top
+     of sheet 1 — the page header, toolbar and chips that name the view on screen are all hidden above.
+     Inset like #wlActiveBanner, which prints right under it. */
+  #printHead:not([hidden]) { display:block; margin-inline:20px; margin-block:0 10px; padding-block-end:6px; border-block-end:1px solid var(--border); break-inside:avoid; }
+  #printHead .ph-title { font-family:'Libre Baskerville',serif; font-weight:700; font-size:1.05rem; color:var(--navy); }
+  #printHead .ph-meta, #printHead .ph-filters { font-size:0.78rem; color:var(--muted); margin-block-start:2px; }
   /* Background-graphics-off (the print-dialog default) drops every fill, so elements whose only
      legibility channel was a background need a text+border channel to survive on paper — and
      dark-theme label colors must revert to the legible light-theme values (S127 Pass G). */
@@ -1357,6 +1365,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
       <button class="dict-tool-btn hi-btn" id="dictResetBtn" onclick="resetDictFilters()" title="Reset all filters to their defaults" style="display:none;" data-i18n-title="dictionary.toolbar.reset_filters_title"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="dictionary.toolbar.reset_filters">Reset filters</span></button>
     </div>
     <div class="filter-chips" id="filterChips" aria-label="Active filters" data-i18n-aria-label="dictionary.toolbar.active_filters_aria"></div>
+    <div id="printHead" hidden aria-hidden="true"></div><!-- print-only: fillPrintHead() -->
     <div id="wlActiveBanner" role="status" aria-live="polite" style="display:none;"></div>
     <div class="content">
       <div id="shoreshControls">
@@ -3166,6 +3175,47 @@ window.addEventListener('afterprint', () => {
   document.getElementById('loadMoreWrap').style.display = shown < total ? 'block' : 'none';
   _printExpandedFrom = null;
 });
+// Print header: the page header, toolbar and chips (all that name the view) are print-hidden, so a
+// printed sheet never said what it was. Filled on every print (the 🖨️ button and Ctrl+P) by its OWN
+// listeners: a throw here can't stop the row materialization above, and it runs past that handler's
+// early returns. The shape of the Torah Trainer's #ttPrintBand. It follows the UI language: this print
+// is the on-screen view, not headerLang worksheet output.
+function fillPrintHead() {
+  const ph = document.getElementById('printHead');
+  if (!ph) return;
+  ph.hidden = true; ph.textContent = '';   // a failure below prints no header, never a stale one
+  if (!window.I18n || !I18n.has('dictionary.header.h1')) return;   // before the locale loads, t() returns the raw key
+  const line = cls => { const d = document.createElement('div'); d.className = cls; ph.appendChild(d); return d; };
+  const iso = (el, text) => { const s = document.createElement('span'); s.className = 'bidi-isolate'; s.textContent = text; el.appendChild(s); };
+  line('ph-title').textContent = I18n.t('dictionary.header.h1');
+  let date = '';
+  try { date = new Date().toLocaleDateString(I18n.lang || undefined, { year: 'numeric', month: 'short', day: 'numeric' }); } catch (e) {}
+  // The count, only when it counts what is on screen: #resultCount also says "Loading…", "Enter a root" or
+  // "No words found", and a saved list's view has its own count on the banner printed right below. A list
+  // override that outlived its banner (a switch to Emojis or Shoresh) can leave its count behind: none,
+  // never a wrong one.
+  const ready = emojiMode ? !!EMOJI_DATA : (typeof _wordsReady !== 'undefined' && _wordsReady);
+  let count = '';
+  if (!wlFilterOverride && ready && dictHasPrintable()) {
+    count = (document.getElementById('resultCount').textContent || '').trim();
+    if (count === I18n.t('dictionary.toolbar.loading')) count = '';
+  }
+  const parts = [date, count].filter(Boolean);
+  if (parts.length) {
+    const meta = line('ph-meta');
+    parts.forEach((p, i) => { if (i) meta.appendChild(document.createTextNode(' · ')); iso(meta, p); });
+  }
+  // A saved list's chips are stale (they describe the sidebar, which the list ignores); Shoresh has none.
+  const chips = _wlActiveListName || typeof computeActiveChips !== 'function' ? [] : computeActiveChips();
+  if (chips.length) {
+    const f = line('ph-filters');
+    f.appendChild(document.createTextNode(I18n.t('dictionary.print.filters_label') + ' '));
+    chips.forEach((c, i) => { if (i) f.appendChild(document.createTextNode(' · ')); iso(f, c.label); });   // a chip can hold a Hebrew query
+  }
+  ph.hidden = false;
+}
+window.addEventListener('beforeprint', fillPrintHead);
+window.addEventListener('afterprint', () => { const ph = document.getElementById('printHead'); if (ph) ph.hidden = true; });
 function copyWord(btn, text) {
   const finish = () => { btn.innerHTML = CHECK_ICON; btn.classList.add('copied'); announce(I18n.t('dictionary.copy.copied_toast')); setTimeout(() => { btn.innerHTML = COPY_ICON; btn.classList.remove('copied'); }, 1500); };
   if (navigator.clipboard) { navigator.clipboard.writeText(text).then(finish).catch(finish); }

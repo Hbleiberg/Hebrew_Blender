@@ -919,6 +919,7 @@
   "dictionary.pos.proverb": "פתגם",
   "dictionary.pos.root": "שורש",
   "dictionary.pos.verb": "פועל",
+  "dictionary.print.filters_label": "מסננים:",
   "dictionary.results.count_emojis.one": "אימוג׳י אחד",
   "dictionary.results.count_emojis.other": "{count} אימוג׳ים",
   "dictionary.results.count_related.one": "מילה קשורה אחת",
