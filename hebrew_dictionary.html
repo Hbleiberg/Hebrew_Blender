@@ -2026,12 +2026,14 @@ function wlOpenSaveModal() {
   const store = wlReadStore();
   const listIds = Object.keys(store.lists);
   const body = document.createElement('div');
-  body.appendChild(wlEl('div', { cls: 'wl-mtitle', style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 4px;' }, I18n.t('dictionary.wordlist.save_modal_title')));
+  // Each window's title carries the #wmTitle the dialog's aria-labelledby names it by (the word window's heading
+  // is gone once its body is replaced), and each field is labelled by the text above it, not its example.
+  body.appendChild(wlEl('div', { id: 'wmTitle', cls: 'wl-mtitle', style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 4px;' }, I18n.t('dictionary.wordlist.save_modal_title')));
   body.appendChild(wlEl('div', { style: 'text-align:center;color:var(--muted);font-size:0.82rem;margin-bottom:14px;' }, I18n.t(sel.length === 1 ? 'dictionary.wordlist.selected_count.one' : 'dictionary.wordlist.selected_count.other', { count: sel.length })));
 
   // Create new
-  body.appendChild(wlEl('div', { style: 'font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, I18n.t('dictionary.wordlist.create_new')));
-  const nameIn = wlEl('input', { type: 'text', maxLength: 80, placeholder: I18n.t('dictionary.wordlist.name_placeholder'), style: 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;' });
+  body.appendChild(wlEl('label', { htmlFor: 'wlNewName', style: 'display:block;font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, I18n.t('dictionary.wordlist.create_new')));
+  const nameIn = wlEl('input', { id: 'wlNewName', type: 'text', maxLength: 80, placeholder: I18n.t('dictionary.wordlist.name_placeholder'), style: 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;' });
   if (_wlPrefillName) { nameIn.value = _wlPrefillName.slice(0, 80); _wlPrefillName = ''; }   // one-shot; only the theme bridge sets it
   body.appendChild(nameIn);
   const createBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button' }, I18n.t('dictionary.wordlist.save_as_new'));
@@ -2040,8 +2042,9 @@ function wlOpenSaveModal() {
   // Add to existing
   if (listIds.length) {
     body.appendChild(wlEl('div', { style: 'border-top:1px solid var(--border);margin:14px 0 10px;' }));
-    body.appendChild(wlEl('div', { style: 'font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, I18n.t('dictionary.wordlist.add_to_existing')));
+    body.appendChild(wlEl('label', { htmlFor: 'wlAddExisting', style: 'display:block;font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, I18n.t('dictionary.wordlist.add_to_existing')));
     const sel2 = document.createElement('select');
+    sel2.id = 'wlAddExisting';
     sel2.setAttribute('style', 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;');
     listIds.sort((a, b) => (store.lists[b].updated || 0) - (store.lists[a].updated || 0)).forEach(id => {
       const o = document.createElement('option');
@@ -2098,12 +2101,13 @@ function wlOpenAddToListModal(w) {
   const store = wlReadStore();
   const listIds = Object.keys(store.lists);
   const body = document.createElement('div');
-  body.appendChild(wlEl('div', { cls: 'wl-mtitle', style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 4px;' }, I18n.t('dictionary.wordlist.add_word_title')));
+  body.appendChild(wlEl('div', { id: 'wmTitle', cls: 'wl-mtitle', style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 4px;' }, I18n.t('dictionary.wordlist.add_word_title')));
   const wline = wlEl('div', { style: 'text-align:center;color:var(--muted);font-size:0.85rem;margin-bottom:14px;' });
   wline.appendChild(wlEl('span', { lang: 'he', style: 'font-family:var(--heb-font);font-size:1.15rem;color:var(--text);' }, w.word));
   if (w.translation) wline.appendChild(document.createTextNode(' — ' + w.translation));
   body.appendChild(wline);
   const sel2 = document.createElement('select');
+  sel2.setAttribute('aria-labelledby', 'wmTitle');
   sel2.setAttribute('style', 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;');
   listIds.sort((a, b) => (store.lists[b].updated || 0) - (store.lists[a].updated || 0)).forEach(id => {
     const o = document.createElement('option');
@@ -2156,7 +2160,7 @@ function wlRefreshManager(focusKey) {
   if (next) next.focus();
 }
 function wlRenderManagerInto(root) {
-  root.appendChild(wlEl('div', { style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 12px;' }, I18n.t('dictionary.wordlist.manager_title')));
+  root.appendChild(wlEl('div', { id: 'wmTitle', style: 'font-family:var(--heb-font);font-size:1.3rem;font-weight:600;text-align:center;color:var(--text);margin:2px 24px 12px;' }, I18n.t('dictionary.wordlist.manager_title')));
   // Cloud saves (optional accounts): the shared js/ivrit-saves.js panel lives inside this manager, above
   // the lists — before the empty-state return, so a first download is possible on a fresh device. #wmBody
   // is rebuilt on every refresh, so the panel is (re)mounted here each render; the module re-parents its root.
@@ -2238,8 +2242,8 @@ function wlRenderManagerInto(root) {
       if (row.querySelector('.wl-rename')) return;   // already editing this row
       acts.style.display = 'none';
       const ed = wlEl('div', { cls: 'wl-rename', style: 'margin-top:8px;border-top:1px solid var(--border);padding-top:8px;' });
-      ed.appendChild(wlEl('div', { style: 'font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, I18n.t('dictionary.wordlist.rename_prompt')));
-      const input = wlEl('input', { type: 'text', maxLength: 80, value: list.name, placeholder: I18n.t('dictionary.wordlist.name_placeholder'), style: 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;' });
+      ed.appendChild(wlEl('label', { htmlFor: 'wlRename_' + id, style: 'display:block;font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, I18n.t('dictionary.wordlist.rename_prompt')));
+      const input = wlEl('input', { id: 'wlRename_' + id, type: 'text', maxLength: 80, value: list.name, placeholder: I18n.t('dictionary.wordlist.name_placeholder'), style: 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;' });
       const st = wlEl('div', { style: 'font-size:0.75rem;margin:0 0 6px;min-height:1em;' });
       st.setAttribute('role', 'status'); st.setAttribute('aria-live', 'polite');
       const okBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button', style: 'margin-bottom:6px;' }, I18n.t('dictionary.wordlist.rename_save'));
