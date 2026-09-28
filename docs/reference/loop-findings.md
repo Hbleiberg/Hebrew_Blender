@@ -4,6 +4,88 @@
 > previous session already refuted. Never read it whole. Entries are moved here verbatim from the ledger's Candidates
 > by `scripts/compact-ledger.mjs`; they are records, not open work. Full history: `docs/IMPROVEMENT_ARCHIVE.md`.
 
+## S425 (2026-09-28) — pass I on the whole suite (its 32nd)
+
+- [ ] P4 (**NEW S425 Pass I — the 32nd run's receipts, arm by arm, so the next I starts here**) | the whole suite |
+  **Delta since S411 (`3bb0567`): 116 commits.** The biggest landings were outside the loop:
+  - trope +2,303 lines: the Phrases tab, the key bar, Low voices, note names, the High Holiday melody, the Settings tab;
+  - torah +1,020: the pitch slider, under-word transliteration, "No highlight", Copy link's "Include my settings", the High Holiday chip;
+  - the dashboard's Intermission screen with Glow/Shadow text effects (`fdc91f1`);
+  - flash's "Include my settings" (`a137221`).
+
+  Harness `i425/`.
+
+  **Gates, 34 virgin cells** (17 pages × EN light 1280 / HE dark 800, dark through the OS `colorScheme`):
+  - Clean: 0 pageerrors, 0 same-origin failures, 0 4xx, 0 raw keys, 0 `[i18n] missing key`, 0 junk text, and `lang`/`dir` right in 34/34.
+  - `i18n-test` shows its keys by design.
+  - `--plant` injects:
+    - a boot throw;
+    - a 404 fetch and a same-origin abort;
+    - a `data-i18n` key that does not exist, plus a JS `I18n.t` miss;
+    - `undefined` / `{name}` / `&amp;amp;`;
+    - a forced `lang`/`dir`.
+  - Every plant fired on every page. On the two harnesses the static-key plant stays silent because they never run `applyStaticI18n`; the key-miss gate fires there. The dashboard counts the plants 2–3× because its frames run the init script too.
+
+  **Census:** the localStorage, sessionStorage, IndexedDB names and foreign origins of all 34 cells equal the S411 tree's (the same gates on `git archive 3bb0567`, port 8081).
+
+  **Accounts rule 3:** 0 SDK or project requests on all 17 pages. A planted SDK `<script>` is counted: 1 / 1 / 3 (the dashboard's frames).
+
+  **The hidden-attribute detector** (the ACTIVE row's runtime definition):
+  - 13 pages × 2 cells, plus trope's four tabs and its missing-chart state.
+  - The plant fired on all 13.
+  - `account.html` is immune by its global `[hidden]{display:none!important}`, which explains its silent control.
+  - 1 carrier, trope `#tuPhraseNav` (`7f18933`). The loading state found a 2nd, `#tuPhrRetry` (`c4bfff7`).
+
+  **Delta arms, real clicks, EN light 1280 + HE dark 800:**
+  - **Trope:**
+    - The Phrases tab shows 12 group chips and 4 cards, with the key bar at "A major" / "לָה מז'ור".
+    - A card's ▶ lights a note and stops.
+    - Note names add 38 labels.
+    - Settings' defaults: Ashkenazi, year-round, 0, high voice, off.
+    - The Drill says 10.
+    - The chart missing gives its message and Retry, which restores it.
+    - A corrupt settings/progress blob reads as the defaults.
+    - `?melody=highholiday` gives 11 groups in C major with the note shown, nothing saved.
+  - **Torah:**
+    - Offline: "This reading didn't load… Try again".
+    - Virgin: Bereshit, 2,117 words, interlinear, Translit adding 146 rows, the colour lists on "No highlight".
+    - Copy link carries `?s=` only with "Include my settings", and a virgin reader of that link gets the banner with their own blob untouched.
+    - Rosh Hashanah Day 1 links `trope_tutor.html?melody=highholiday`.
+  - **Dashboard:**
+    - The first-run card closes by ×.
+    - I opens הַפְסָקָה with `lang=he`, and Esc closes it.
+    - A pencil edit survives a reload.
+    - A stored `<img onerror>` / `<script>` renders "Hi" with nothing run; a number or array falls back to the default word.
+  - **Flash:** "Include my settings" is on by default, and a real click drops the six look keys (2,356 → 2,128 chars), stored.
+  - **Account:** "Sign in to see your account."
+  - **Hub:** My Fonts' empty copy, and 7/7 cloud panels signed-out (trap 102).
+
+  **Tours**, by real clicks, 7 tools × 2 cells:
+  - Every table step is shown, each with a non-zero spotlight. Torah has the stubbed reading, so its reading steps appear.
+  - The Font Maker's tour follows its gate wizard: name + author are required, and Draw needs no tile.
+  - A planted missing step: table +1, shown unchanged, on all 7.
+
+  | found S425
+
+- [ ] P4 (**NEW S425 — measurements, recorded so no pass re-derives them**) |
+  - **(1) Torah, one junk field at a time** (the Sefaria stub):
+    - An unknown `parshahKey` gives "Pick a parsha to start". That is instructive, not a defect.
+    - `scope` / `holidayKey` / `schedule` / `lastPos` junk are harmless.
+    - `layout:'grid'` renders side by side (the `renderText` else-branch) with no layout radio checked.
+    - `translitStyle:'nope'` gives blank transliteration (the wrapper returns its `''` default) and a blank select. Logged P4 against CLAUDE.md accounts rule 7's "only the display falls back".
+  - **(2) Trope's tour with `trope_motifs.json` missing** skips the key-bar step by design, and counts "Step 3 of 8 → Step 5 of 8". Torah and the dictionary carry the honest `_tourCounter`; trope, dashboard, flash, generator and FM count `idx + 1 / length`.
+  - **(3) Hebrew arrows:** 22 HE strings end in "→" (the home cards' CTAs, trope's Learn/Drill/Phrases nav, torah's trope and resume links) and 25 in "←" (the shared nav, FM's next buttons, the first-run tour links).
+
+  | found S425
+
+- [ ] P4 (**NEW S425 — traps 171–174**) | probe harness |
+  - **(171)** The Font Maker's first-visit wizard is a gate: Escape does nothing and Cancel is hidden. Walk it with a name and an author (Next stays `aria-disabled` without both); the Draw source needs no tile click.
+  - **(172)** A segmented radio (`input` under its `label`) cannot be clicked: Playwright resolves the input, and the next label intercepts. Click `label[for=…]`.
+  - **(173)** Flash cards' share switch sits in the collapsed Teacher Tools panel on a virgin load. Open the panel by its `.panel-title` before clicking the switch.
+  - **(174)** A hidden-attribute plant is silent on `account.html` by design: its global `[hidden]{display:none!important}` beats an inline `display`. Diagnose a silent plant this way before calling a page blind.
+
+  | found S425
+
 ## S424 (2026-09-28) — pass D on the Torah Trainer (its 4th D)
 
 - [ ] P4 (**NEW S424 Pass D — `torah_trainer.html`'s 4th D (S184/S185 → S307 → S424, 71 commits between), its receipts, recorded so the next D on it starts here**) | torah_trainer.html | **Harness `d424/`**: m422's MAM-phrase Sefaria stub, widened to real Genesis chapter lengths (Bereshit = 146 verses / 2,117 words, four clauses a verse); the real web fonts; hebrew-transliteration 2.9.1 bundled from npm; a buffered longtask observer and a first-word ready stamp by `addInitScript`; real-click controls `#__ctl` (a 300 ms busy click, read 301–311 in every run) and `#__noop` (read nothing); CDP CPU throttle; the sampling profiler. **Cold (15 cells):**
