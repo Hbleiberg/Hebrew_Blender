@@ -92,10 +92,11 @@ sequenceDiagram
   participant M as Email provider
   T->>P: clicks Sign in, types the email
   P->>A: send a code to this address (signInWithOtp)
-  A->>M: the email with the 6-digit code
+  A->>M: the email with the 6-digit code, and a link back to this page
   M-->>T: arrives in the inbox
-  T->>P: types the code
-  P->>A: verify it (verifyOtp)
+  T->>P: types the code, or opens the link, which fills it in and sends nothing
+  T->>P: presses Verify code
+  P->>A: verify it with the address typed here (verifyOtp)
   A-->>P: a session for this browser (access token + refresh token)
   Note over P: kept in this browser's storage only (sb-…-auth-token)
   P->>P: the chip shows the name, the account screen offers Sync
@@ -211,6 +212,7 @@ only when someone presses *Delete my account*.
 | The chip says *Offline* or that the account is unavailable | the SDK could not load: the device's connection, or a school filter blocking `cdn.jsdelivr.net`; the browser console — each module logs one line and never throws into the page |
 | The chip looks normal, but every sign-in or sync fails with one error line | the project paused (Supabase dashboard → *Restore*; the keep-alive's tracking issue says so first), or a school filter blocking `*.supabase.co`; the browser console |
 | The code email never arrives | Supabase → *Authentication → Logs*: "Email address not authorized" means custom SMTP is not set up yet (README, dashboard step 4); "rate limit" means *Rate Limits → emails per hour*; otherwise the email provider's own dashboard |
+| The sign-in email holds only a link — no code, no *Sign in to IvritSuite* button | the dashboard's two email templates are still Supabase's defaults: paste `db/email-templates/sign-in-code.html` into both (README, dashboard step 3; `db/README.md` → *The sign-in email*). A push never changes them |
 | A panel row could not upload | Supabase → *Logs → API*: `42501` is a policy, `23514` a cap (2 MB / 2000 rows / 25 projects), `23505` a taken name — `db/README.md`, *If something goes wrong* |
 | A Font Maker upload is refused | *Logs → Storage*: the file's type or size against the bucket's allow-list (`db/README.md`) |
 | *Delete my account* fails | Supabase → *Edge Functions → delete-account → Logs* (every call, every error); a 401 before the function runs is the platform's own token check |

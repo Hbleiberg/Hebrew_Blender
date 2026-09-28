@@ -172,13 +172,17 @@ How it works inside: `docs/reference/accounts-and-cloud.md`.
    `http://localhost:8080/**`, `http://127.0.0.1:8080/**` (the last two are for local testing). The
    delete-account Edge Function keeps its own hardcoded copy of this list — changing one means changing both.
 2. *Sign In / Providers → Email* — enabled, sign-ups allowed, Email OTP length 6. Passwords are never
-   used; people get an email with a 6-digit code.
-3. *Emails → Templates* — make **both** *Confirm signup* (a person's first email) and *Magic Link*
-   (every later one) code-only: the body shows `{{ .Token }}` and has **no** `{{ .ConfirmationURL }}`
-   link. School mail filters open every link in an incoming email to scan it, which spends a one-time
-   sign-in link seconds after it is sent (seen in the auth logs: two scanners hit the link before the
-   teacher could); a code cannot be spent that way. Suggested subject: "Your IvritSuite sign-in code".
-   If the *Email OTP Expiration* setting changes, change the "expires in" wording in the templates too.
+   used; people get an email with a 6-digit code, and a link that opens the site with the code filled in.
+3. *Emails → Templates* — for **both** *Confirm signup* (a person's first email) and *Magic Link*
+   (every later one): open it, set the subject to **Your IvritSuite sign-in code**, replace the whole
+   body with the whole of `db/email-templates/sign-in-code.html` (the same text in both), and save. The
+   body shows the code (`{{ .Token }}`) and one link back to the page it was asked from,
+   `{{ .RedirectTo }}#ivsignin={{ .Token }}`, which only fills the code in; it has **no**
+   `{{ .ConfirmationURL }}`. Supabase's own defaults hold only that link, so until this step is done every
+   sign-in email is a link with no code. School mail filters open every link in an incoming email to scan
+   it, which spends Supabase's one-time link seconds after it is sent (seen in the auth logs: two scanners
+   hit the link before the teacher could); the site's link and the code cannot be spent that way. A push
+   never changes these templates — only pasting does (`db/README.md` → *The sign-in email*).
 4. *Emails → SMTP Settings* — **required before anyone but the project's team members can sign in**:
    Supabase's built-in sender refuses other addresses ("Email address not authorized") and allows only a
    few messages per hour. Use a transactional provider with a free tier (Resend, Brevo, Postmark), sender
@@ -279,7 +283,9 @@ signing in.
   dashboard → the project → *Restore* (possible within Supabase's restore window — 90 days at the time of writing;
   check the current policy); nothing in the repository changes.
 - **Before other people sign in** (once): custom SMTP configured and proven with a sign-in from an address that is
-  not on the project's team (dashboard step 4 above — the built-in sender refuses other addresses); *Rate Limits →
+  not on the project's team (dashboard step 4 above — the built-in sender refuses other addresses); both email
+  templates pasted (step 3), proven by a sign-in email that shows a 6-digit code and a *Sign in to IvritSuite*
+  button that opens the page with the code filled in; *Rate Limits →
   emails per hour* raised; the Google consent screen published (step 5); the redirect URLs (step 1); a
   scheduled run of the keep-alive on `main` green (Actions → *Supabase keep-alive*).
 - **Rotating the publishable key:** create the new key in the dashboard (*Project Settings → API Keys*), paste it

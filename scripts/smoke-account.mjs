@@ -16,10 +16,15 @@
  *      inside the viewport. 800 px is a tablet — F cannot see a phone overflow.
  *   H. The first email sign-in on a device (SDK served, a fake Auth answering /otp and /verify):
  *      after "Email me a sign-in code" the code field is shown and focused, and the code signs in.
+ *   I. The emailed link (#ivsignin=<code>): taken out of the address bar at once, the menu opens with
+ *      the code filled in (and the address, in the browser that asked), nothing is sent until Verify
+ *      is pressed; another browser types its address; an expired code is explained; a signed-in
+ *      device ignores the link; Hebrew + dark at 800 / 390; two real tool pages.
+ *   J. Every analytics page leaves the link's code out of page_location and strips it from the URL.
  *
  * Run from the repo root:  node scripts/smoke-account.mjs [--sdk path/to/supabase.js]
  * Needs the repo served on http://localhost:8080 — the script starts python3 -m http.server itself.
- * The --sdk file is optional: without it, C, D and H are skipped (they need the 2.116.0 UMD bytes,
+ * The --sdk file is optional: without it, C, D, H and I2–I6 are skipped (they need the 2.116.0 UMD bytes,
  * e.g. from `npm pack @supabase/supabase-js@2.116.0` → package/dist/umd/supabase.js).
  */
 import pkg from '/opt/node22/lib/node_modules/playwright/index.js';
@@ -245,6 +250,192 @@ try {
       await ctx.close();
     }
   } else { console.log('SKIP H: no --sdk file given'); }
+  // ---- I. The emailed link (#ivsignin=<code>) ---------------------------------------------------
+  // The sign-in email carries the code and a link back to the page it was asked from with the code in the
+  // hash (db/email-templates/sign-in-code.html). School mail filters open every link to scan it, so the link
+  // must spend nothing by being opened: the code is taken out of the address bar at once and only filled in,
+  // and nothing is sent until Verify is pressed — checked against the address in the field, which is the one
+  // this browser asked with (ivritSuite_signInRequest), else the person's to type. A code is only ever valid
+  // for the address it was sent to, so a link someone else sent cannot sign anyone into their account.
+  const CODE = '482913';
+  const LINK_URL = PAGE + '?s=abc#ivsignin=' + CODE;
+  const REQUEST_KEY = 'ivritSuite_signInRequest';
+  const asked = (e) => ({ [REQUEST_KEY]: JSON.stringify({ e, at: Date.now() }) });
+  const linkState = (page) => page.evaluate(() => {
+    const m = document.querySelector('.ivacct-menu');
+    const email = m && m.querySelector('input[type=email]');
+    const code = m && m.querySelector('input[name=code]');
+    const a = document.activeElement;
+    return {
+      hash: location.hash, search: location.search, open: !!m && !m.hidden,
+      email: email ? email.value : null, code: code ? code.value : null,
+      focus: a === email ? 'email' : (a && a.closest && a.closest('.ivacct-code') && a.tagName === 'BUTTON') ? 'verify' : (a ? a.tagName : ''),
+      note: (document.querySelector('.ivacct-note') || {}).textContent || ''
+    };
+  });
+  function fakeAuth(user, calls, verifyStatus = 200) {
+    return (route) => {
+      const req = route.request();
+      const p = new URL(req.url()).pathname;
+      const headers = { 'content-type': 'application/json', 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,PUT,OPTIONS' };
+      if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers });
+      if (p.endsWith('/otp')) return route.fulfill({ status: 200, headers, body: '{}' });
+      if (p.endsWith('/verify')) {
+        let body = {}; try { body = JSON.parse(req.postData() || '{}'); } catch (e) {}
+        calls.push(body);
+        if (verifyStatus !== 200) return route.fulfill({ status: verifyStatus, headers, body: JSON.stringify({ code: verifyStatus, error_code: 'otp_expired', msg: 'Token has expired or is invalid' }) });
+        return route.fulfill({ status: 200, headers, body: JSON.stringify({ access_token: 'x', refresh_token: 'y', expires_in: 3600, expires_at: 4102444800, token_type: 'bearer', user }) });
+      }
+      if (p.endsWith('/user')) return route.fulfill({ status: 200, headers, body: JSON.stringify(user) });
+      if (p.endsWith('/logout')) return route.fulfill({ status: 204, headers });
+      return route.fulfill({ status: 404, headers, body: '{}' });
+    };
+  }
+  const TEACHER = { id: '22222222-2222-4222-8222-222222222222', email: 'teacher@example.org', user_metadata: {}, app_metadata: { provider: 'email' } };
+  // I1 — no SDK (CDN blocked), opened in a browser that did not ask: stripped, filled in, nothing else.
+  {
+    const { ctx, page, errors } = await openPage(browser, { url: LINK_URL });
+    await page.waitForSelector('.ivacct-menu:not([hidden])', { timeout: 5000 }).catch(() => {});
+    const s = await linkState(page);
+    check('I1: the code is taken out of the address bar, ?s= kept', s.hash === '' && s.search === '?s=abc', JSON.stringify(s));
+    check('I1: the menu opens by itself at the code step', s.open && s.code === CODE, JSON.stringify(s));
+    check('I1: another browser: the address is left for the person, and focused', s.email === '' && s.focus === 'email', JSON.stringify(s));
+    check('I1: nothing written for an anonymous visit', await page.evaluate((k) => localStorage.getItem(k) === null && !Object.keys(localStorage).some(x => x.startsWith('sb-')), REQUEST_KEY));
+    check('I1: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  if (SDK_BYTES) {
+    // I2 — the browser that asked: address and code filled in, focus on Verify; opening sends nothing; one press signs in.
+    {
+      const calls = [];
+      const { ctx, page, errors } = await openPage(browser, { url: LINK_URL, serveSdk: true, seed: asked('teacher@example.org'), auth: fakeAuth(TEACHER, calls) });
+      await page.waitForSelector('.ivacct-menu:not([hidden])', { timeout: 5000 }).catch(() => {});
+      await page.waitForFunction(() => window.supabase && window.supabase.createClient, null, { timeout: 15000 }).catch(() => {});
+      await page.waitForTimeout(1500);
+      const s = await linkState(page);
+      check('I2: stripped, ?s= kept', s.hash === '' && s.search === '?s=abc', JSON.stringify(s));
+      check('I2: the address this browser asked with and the code are filled in', s.email === 'teacher@example.org' && s.code === CODE, JSON.stringify(s));
+      check('I2: focus on Verify, the note names it', s.focus === 'verify' && /filled in/.test(s.note) && /Verify code/.test(s.note), JSON.stringify(s));
+      check('I2: opening the link sent nothing (a scanner spends nothing)', calls.length === 0, JSON.stringify(calls));
+      await page.click('.ivacct-menu .ivacct-code button');
+      await page.waitForFunction(() => IvritAccount.status() === 'signed-in', null, { timeout: 15000 }).catch(() => {});
+      const after = await page.evaluate((k) => ({ st: IvritAccount.status(), src: IvritAccount.sessionSource(), req: localStorage.getItem(k), open: !document.querySelector('.ivacct-menu').hidden }), REQUEST_KEY);
+      check('I2: one press signs in', after.st === 'signed-in', JSON.stringify(after));
+      check('I2: exactly one verify, with this address, this code, type email', calls.length === 1 && calls[0].email === 'teacher@example.org' && calls[0].token === CODE && calls[0].type === 'email', JSON.stringify(calls));
+      check('I2: a fresh sign-in (the sync screen may offer itself)', after.src === 'new', JSON.stringify(after));
+      check('I2: the request record is gone and the menu closed', after.req === null && !after.open, JSON.stringify(after));
+      check('I2: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+    // I3 — another browser: the address is the person's to give; an empty one is refused inline, sends nothing.
+    {
+      const calls = [];
+      const { ctx, page, errors } = await openPage(browser, { url: LINK_URL, serveSdk: true, auth: fakeAuth(TEACHER, calls) });
+      await page.waitForSelector('.ivacct-menu:not([hidden])', { timeout: 5000 }).catch(() => {});
+      await page.waitForFunction(() => window.supabase && window.supabase.createClient, null, { timeout: 15000 }).catch(() => {});
+      const s = await linkState(page);
+      check('I3: code filled in, address empty and focused, the note asks for it', s.code === CODE && s.email === '' && s.focus === 'email' && /Enter your email/.test(s.note), JSON.stringify(s));
+      await page.click('.ivacct-menu .ivacct-code button');
+      const n1 = await page.textContent('.ivacct-note');
+      check('I3: Verify without an address is refused inline and sends nothing', /valid email/i.test(n1) && calls.length === 0, n1 + ' ' + JSON.stringify(calls));
+      await page.fill('.ivacct-menu input[type=email]', 'teacher@example.org');
+      await page.click('.ivacct-menu .ivacct-code button');
+      await page.waitForFunction(() => IvritAccount.status() === 'signed-in', null, { timeout: 15000 }).catch(() => {});
+      check('I3: with the address typed, Verify signs in', await page.evaluate(() => IvritAccount.status()) === 'signed-in' && calls.length === 1 && calls[0].email === 'teacher@example.org' && calls[0].token === CODE, JSON.stringify(calls));
+      check('I3: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+    // I4 — a used or expired code: the refusal is explained, nobody is signed in.
+    {
+      const calls = [];
+      const { ctx, page, errors } = await openPage(browser, { url: LINK_URL, serveSdk: true, seed: asked('teacher@example.org'), auth: fakeAuth(TEACHER, calls, 403) });
+      await page.waitForSelector('.ivacct-menu:not([hidden])', { timeout: 5000 }).catch(() => {});
+      await page.click('.ivacct-menu .ivacct-code button');
+      await page.waitForFunction(() => document.querySelector('.ivacct-note').classList.contains('is-error'), null, { timeout: 15000 }).catch(() => {});
+      const n = await page.textContent('.ivacct-note');
+      check('I4: an expired code says so', /not valid or has expired/.test(n), n);
+      check('I4: still signed out', await page.evaluate(() => IvritAccount.status()) === 'anonymous');
+      check('I4: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+    // I5 — already signed in here: the link has nothing to finish; no menu, nothing sent, still stripped.
+    {
+      const calls = [];
+      const seed = asked('teacher@example.org');
+      seed[AUTH_KEY] = JSON.stringify({ access_token: 'x', refresh_token: 'y', expires_in: 3600, expires_at: 4102444800, token_type: 'bearer', user: TEACHER });
+      const { ctx, page, errors } = await openPage(browser, { url: LINK_URL, serveSdk: true, seed, auth: fakeAuth(TEACHER, calls) });
+      await page.evaluate(() => Promise.race([IvritAccount.ready, new Promise(r => setTimeout(r, 15000))]));
+      await page.waitForTimeout(800);
+      const s = await linkState(page);
+      const st = await page.evaluate(() => IvritAccount.status());
+      check('I5: signed in from the stored session', st === 'signed-in', st);
+      check('I5: no menu, nothing sent, the code stripped', !s.open && calls.length === 0 && s.hash === '', JSON.stringify(s) + ' ' + JSON.stringify(calls));
+      check('I5: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+    // I6 — Hebrew + dark, tablet and phone: the filled-in step reads in Hebrew and stays on screen.
+    for (const viewport of [{ width: 800, height: 700 }, { width: 390, height: 700 }]) {
+      const seed = Object.assign({ hebrewBlender_lang: 'he', hebrewBlender_darkMode: '1' }, asked('teacher@example.org'));
+      const { ctx, page, errors } = await openPage(browser, { url: LINK_URL, serveSdk: true, seed, viewport });
+      await page.waitForSelector('.ivacct-menu:not([hidden])', { timeout: 5000 }).catch(() => {});
+      await page.waitForFunction(() => /הקוד מקישור האימייל/.test(document.querySelector('.ivacct-note').textContent), null, { timeout: 8000 }).catch(() => {});
+      const s = await linkState(page);
+      const box = await page.evaluate(() => { const r = document.querySelector('.ivacct-menu').getBoundingClientRect(); const d = document.documentElement; return { l: Math.round(r.left), r: Math.round(r.right), w: innerWidth, sw: d.scrollWidth, cw: d.clientWidth }; });
+      const tag = `I6: he dark ${viewport.width}px`;
+      check(`${tag} — the note is Hebrew and names אימות הקוד`, /הקוד מקישור האימייל/.test(s.note) && /אימות הקוד/.test(s.note), s.note);
+      check(`${tag} — menu inside the viewport, no sideways scroll`, box.l >= 0 && box.r <= box.w && box.sw <= box.cw, JSON.stringify(box));
+      check(`${tag} — 0 pageerrors`, errors.length === 0, errors.join(' | '));
+      await page.screenshot({ path: path.join(SHOTS, `I6-he-dark-${viewport.width}.png`) });
+      await ctx.close();
+    }
+  } else { console.log('SKIP I2-I6: no --sdk file given'); }
+  // I7 — real tool pages (CDN blocked): the chip in their own header opens at the filled-in step.
+  for (const p of ['index.html', 'hebrew_blend_generator.html']) {
+    const { ctx, page, errors } = await openPage(browser, { url: BASE + '/' + p + '?s=abc#ivsignin=' + CODE });
+    await page.waitForSelector('.ivacct-menu:not([hidden])', { timeout: 5000 }).catch(() => {});
+    const s = await linkState(page);
+    check(`I7: ${p} — stripped (?s= kept), the menu opens with the code filled in`, s.hash === '' && s.search === '?s=abc' && s.open && s.code === CODE, JSON.stringify(s));
+    check(`I7: ${p} — 0 pageerrors`, errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- J. The code never reaches Analytics ------------------------------------------------------
+  // Every page's inline gtag('config') runs during parse, before the module strips the hash, and reports an
+  // explicit page_location: it must drop a hash carrying the link and keep any other hash as before.
+  {
+    const gaPages = fs.readdirSync(ROOT).filter(f => f.endsWith('.html') && fs.readFileSync(path.join(ROOT, f), 'utf8').includes('page_location')).sort();
+    // Five of them (404, contact, privacy, resources, terms) do not load the account module: no sign-in is asked
+    // from them, so no link returns to them, and only their analytics tag has to hold.
+    const loadsModule = (f) => /<script src="\/js\/ivrit-account\.js"/.test(fs.readFileSync(path.join(ROOT, f), 'utf8'));
+    const pageLocation = async (url) => {
+      const ctx = await browser.newContext({ serviceWorkers: 'block' });
+      const page = await ctx.newPage();
+      const errors = [];
+      page.on('pageerror', e => errors.push(String(e && e.message || e)));
+      await page.route('**/*', route => { const u = route.request().url(); return (u.startsWith(BASE) || u.startsWith('data:') || u.startsWith('blob:')) ? route.continue() : route.abort(); });
+      await page.goto(url, { waitUntil: 'load' });
+      const r = await page.evaluate(() => {
+        const cfg = (window.dataLayer || []).map(a => Array.from(a)).find(a => a[0] === 'config');
+        return { loc: cfg && cfg[2] ? String(cfg[2].page_location) : null, hash: location.hash };
+      });
+      await ctx.close();
+      return Object.assign(r, { errors });
+    };
+    let leaks = [], unstripped = [], missing = [], errs = [];
+    for (const f of gaPages) {
+      const r = await pageLocation(BASE + '/' + f + '?s=abc#ivsignin=' + CODE);
+      if (!r.loc) missing.push(f);
+      else if (/ivsignin|482913/.test(r.loc) || !/\?s=abc$/.test(r.loc)) leaks.push(f + ' → ' + r.loc);
+      if (loadsModule(f) && r.hash !== '') unstripped.push(f + ' ' + r.hash);
+      if (r.errors.length) errs.push(f + ': ' + r.errors.join(' | '));
+    }
+    check(`J: ${gaPages.length} analytics pages found`, gaPages.length >= 14, gaPages.join(','));
+    check('J: every page reports a page_location', missing.length === 0, missing.join(', '));
+    check('J: no page reports the link\'s code to Analytics (?s= kept)', leaks.length === 0, leaks.join(' ; '));
+    check(`J: every page with the account module (${gaPages.filter(loadsModule).length}) takes the code out of the address bar`, gaPages.filter(loadsModule).length >= 9 && unstripped.length === 0, unstripped.join(' ; '));
+    check('J: 0 pageerrors across the analytics pages', errs.length === 0, errs.join(' ; '));
+    const ctl = await pageLocation(BASE + '/resources.html#fonts');
+    check('J: an unrelated hash is still reported as before', /resources\.html#fonts$/.test(ctl.loc || ''), ctl.loc);
+  }
 } finally {
   await browser.close();
   srv.kill();

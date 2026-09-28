@@ -51,9 +51,10 @@
   // The sign-in return leg carries ?code= (and ?error…): the Supabase SDK still needs them in the URL,
   // and js/ivrit-account.js strips them — but only once it has run, which is after this tag. Report the
   // cleaned URL so no authorization code or error text ever reaches Analytics. The key list mirrors
-  // AUTH_QUERY_KEYS in js/ivrit-account.js; a deferred module cannot be read from here.
+  // AUTH_QUERY_KEYS in js/ivrit-account.js; a deferred module cannot be read from here. An emailed
+  // sign-in link lands with its code in the hash (#ivsignin=, LINK_HASH_KEY there): that hash is dropped.
   gtag('config', 'G-CMLC81Z0HC', { page_location: (function () {
-    try { var u = new URL(location.href); ['code', 'error', 'error_code', 'error_description'].forEach(function (k) { u.searchParams.delete(k); }); return u.toString(); }
+    try { var u = new URL(location.href); ['code', 'error', 'error_code', 'error_description'].forEach(function (k) { u.searchParams.delete(k); }); if (/(^#|&)ivsignin=/.test(u.hash)) u.hash = ''; return u.toString(); }
     catch (e) { return location.href; }
   })() });
 </script>

@@ -258,6 +258,11 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
         ['strip leaves an untouched URL identical', T.stripAuthParams(base + 'hebrew_dictionary.html?s=q&wordlists=open'), base + 'hebrew_dictionary.html?s=q&wordlists=open'],
         ['strip removes auth hash, keeps others', T.stripAuthParams(base + 'index.html#access_token=x&refresh_token=y&type=recovery'), base + 'index.html'],
         ['redirect target = same page, own params, no hash', T.redirectTarget(base + 'Hebrew_Font_Maker.html?start=alef&code=x#foo'), base + 'Hebrew_Font_Maker.html?start=alef'],
+        ['emailed link: the code is read from the hash', T.parseLinkHash(base + 'classroom_dashboard.html?s=abc#ivsignin=482913'), { code: '482913' }],
+        ['emailed link: a malformed code is never filled in', T.parseLinkHash(base + 'index.html#ivsignin=12ab'), { code: '' }],
+        ['emailed link: an unrelated hash is not a link', T.parseLinkHash(base + 'resources.html#fonts'), null],
+        ['emailed link: strip keeps the page and ?s=, drops the code', T.stripLinkHash(base + 'classroom_dashboard.html?s=abc#ivsignin=482913'), base + 'classroom_dashboard.html?s=abc'],
+        ['emailed link: strip leaves a URL without it identical', T.stripLinkHash(base + 'resources.html#fonts'), base + 'resources.html#fonts'],
         ['AUTH_KEY names this project', T.AUTH_KEY, 'sb-hhkmqwpjsyxdeuhvcyis-auth-token']
       ];
       var ul = $('checks'); ul.textContent = '';

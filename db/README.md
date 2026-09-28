@@ -2,7 +2,7 @@
 
 Everything the cloud side of IvritSuite needs in Postgres and Storage is written down here as plain
 SQL files, one per change, applied in order — plus the one server-side function the browser cannot do
-itself (`functions/`, below). The live project is `IvritSuite` (`hhkmqwpjsyxdeuhvcyis`, free plan). How
+itself (`functions/`, below) and the text of the sign-in email (`email-templates/`, below). The live project is `IvritSuite` (`hhkmqwpjsyxdeuhvcyis`, free plan). How
 the tables are used from the browser: `docs/reference/accounts-and-cloud.md`.
 
 ## The files
@@ -114,6 +114,39 @@ surprises:
   development. They are untidy rather than dangerous — a caller still needs a valid token for the account
   it is deleting — but adding or removing an origin means editing the function and redeploying it, not a
   dashboard setting.
+
+## The sign-in email (`email-templates/`)
+
+| File | Live? | Where it goes |
+|---|---|---|
+| `email-templates/sign-in-code.html` | no — until it is pasted; the project still sends Supabase's default emails, which hold Supabase's own link and no code | Supabase dashboard → *Authentication → Emails → Templates* → **both** *Confirm signup* and *Magic Link*: subject **Your IvritSuite sign-in code**, body = the whole file |
+
+Supabase writes the sign-in email from two templates kept in its dashboard, not in this repository, so a
+push never changes what a teacher receives: the file here is the text to paste, and *Live?* says whether
+the dashboard holds it. A person's **first** email uses *Confirm signup*; every later one uses *Magic
+Link*. Both get the same text, and the site's sign-in box accepts the code from either (`verifyOtp` with
+type `email`).
+
+**The code, and a link that only fills it in.** The body carries `{{ .Token }}` (the 6-digit code) and
+one link, `{{ .RedirectTo }}#ivsignin={{ .Token }}`: back to the page the code was asked from (its own
+parameters kept — the address the site sent, checked against the dashboard's redirect list, else the Site
+URL), where `js/ivrit-account.js` takes the code out of the address bar, fills it into the sign-in box and
+waits for a press on *Verify code* (`docs/reference/accounts-and-cloud.md` → *Auth flow decisions*). The
+body never carries `{{ .ConfirmationURL }}` or a link built from `{{ .TokenHash }}` — not even inside an
+HTML comment, since the template engine fills in variables there too. Those are Supabase's own sign-in
+links, and two things go wrong with them. First, school mail filters open every link in an incoming email
+to scan it, which spends a one-time sign-in link before the teacher can tap it. Opening IvritSuite's link
+spends nothing. Second, a sign-in link works for whoever opens it, so a link someone else sent could sign
+a browser into their account. A code is checked against the address it is typed with, so that cannot happen.
+
+**Checking it:** ask for a code from any page's *Sign in* chip. The email should show a large 6-digit
+number and a *Sign in to IvritSuite* button; the button opens that page with the menu open and the code
+filled in, and nothing happens until *Verify code* is pressed. In *Authentication → Logs*, a code arriving
+by either route shows up as a `POST /verify`; a `GET /verify` means someone opened Supabase's own link, so
+the old template is still in place.
+
+The other templates (*Invite user*, *Change email address*, *Reset password*, *Reauthentication*) are
+never sent: the site has no passwords, invitations or email changes.
 
 ## Applying a migration
 

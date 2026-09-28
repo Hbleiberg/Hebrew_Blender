@@ -12,7 +12,8 @@
  *   user()                     { id, email, name, provider } | null
  *   onChange(fn)               fn(user|null, status): called once when known, then on every change
  *   signIn('google')           Promise<void> — full-page redirect to Google and back to THIS page
- *   signIn('email', {email})   Promise<{sent:true}> — emails a sign-in link + a 6-digit code
+ *   signIn('email', {email})   Promise<{sent:true}> — emails a 6-digit code and a link that fills it in
+ *                              (the email's text: db/email-templates/sign-in-code.html)
  *   verifyCode(email, code)    Promise<user> — signs in with the emailed code (works on any device)
  *   signOut()                  Promise<void> — this device only
  *   client()                   Promise<SupabaseClient> — loads the SDK on demand; rejects with
@@ -39,8 +40,14 @@
  *     click on the chip. Anonymous visitors download nothing extra.
  *   - Everything fails soft. Offline, a blocked CDN, a missing config: the chip says so and the rest
  *     of the page (local saves, .ivrit files) works exactly as before. Nothing here throws.
- *   - PKCE flow, never implicit: only a one-time ?code= ever appears in the URL, so the analytics
- *     snippet that runs before this script can never see a token.
+ *   - PKCE flow, never implicit: no session token ever appears in the URL — only a one-time ?code=
+ *     (Google's return leg) or an emailed link's #ivsignin=, both of which the pages' analytics
+ *     snippet, running before this script, leaves out of what it reports.
+ *   - The emailed link cannot be spent by a school mail filter that opens every link to scan it: it
+ *     lands on the page it was asked from with #ivsignin=<the code>, which is taken out of the address
+ *     bar at once and only filled into the code field. Nothing is sent until the person presses
+ *     Verify, and the code is checked against the email address in that field (the one this browser
+ *     asked with, else typed there), so a link someone else sent cannot sign anyone into their account.
  *   - Redirects come back to the SAME page with its own query string intact (?s=, ?parsha=, …);
  *     only the auth parameters are removed afterwards.
  *   - Nothing user- or server-supplied is ever written with innerHTML (createElement/textContent only).
@@ -58,12 +65,19 @@
   var AUTH_QUERY_KEYS = ['code', 'error', 'error_code', 'error_description'];
   var AUTH_HASH_KEYS = ['access_token', 'refresh_token', 'expires_in', 'expires_at', 'token_type', 'type',
     'provider_token', 'provider_refresh_token', 'error', 'error_code', 'error_description'];
+  // The emailed link's hash key (#ivsignin=<code>). The pages' inline analytics tag drops a hash carrying it,
+  // spelled out there as a literal — keep the two in step, as with AUTH_QUERY_KEYS.
+  var LINK_HASH_KEY = 'ivsignin';
+  var REQUEST_KEY = 'ivritSuite_signInRequest';      // {e, at}: this browser asked for a sign-in email for e, at ms
+  var REQUEST_TTL_MS = 24 * 3600 * 1000;             // the longest Supabase lets an email code live; the server keeps the real clock
 
   var status = enabled ? 'anonymous' : 'disabled';
   var currentUser = null;
   var sessionSource = null;   // 'new' | 'restored' | null — how the current session came to be (see sessionSource())
   var bootCallback = false;   // this page load carried an auth callback (?code=): the session it yields is a fresh sign-in
   var initialSeen = false;    // the SDK's INITIAL_SESSION has fired: a user arriving after it signed in during this page's life
+  var codeInFlight = false;   // verifyCode() is running: a user arriving now signed in here, even when the client it just
+                              // created has not yet reported its INITIAL_SESSION (a link's code is often the first call)
   var client = null;
   var sdkPromise = null;
   var clientPromise = null;
@@ -81,6 +95,8 @@
   var lastEmail = '';
   var noteState = null;      // {text, isError} — the popover's note, kept across re-renders (I18n.ready, language switch)
   var menuBusy = false;      // a sign-in or sign-out is in flight — kept here, not on the buttons, which a re-render replaces
+  var pendingCode = '';      // the code an emailed link brought (#ivsignin=): filled into the field, never sent without a press
+  var linkSettled = false;   // what that link does here has been decided (settleLink), so the menu opens for it only once
 
   /* ---------- tiny helpers ---------- */
   function refFromUrl(u) { try { return new URL(u).hostname.split('.')[0]; } catch (e) { return ''; } }
@@ -167,6 +183,54 @@
     cleanUrlNow();
     return true;
   }
+  // The emailed link lands here as #ivsignin=<code> (a hash never reaches a server). null when there is no
+  // such key; a malformed value comes back as code '' — stripped all the same, never filled in.
+  function parseLinkHash(href) {
+    try {
+      var u = new URL(href);
+      var h = u.hash && u.hash.charAt(0) === '#' ? u.hash.slice(1) : '';
+      if (!h) return null;
+      var hp = new URLSearchParams(h);
+      if (!hp.has(LINK_HASH_KEY)) return null;
+      var code = hp.get(LINK_HASH_KEY) || '';
+      return { code: /^\d{6,8}$/.test(code) ? code : '' };   // the code field's own maxLength is 8
+    } catch (e) { return null; }
+  }
+  // The same URL without the link's key; the path, the query and any other hash key survive.
+  function stripLinkHash(href) {
+    try {
+      var u = new URL(href);
+      var h = u.hash && u.hash.charAt(0) === '#' ? u.hash.slice(1) : '';
+      if (!h) return href;
+      var hp = new URLSearchParams(h);
+      if (!hp.has(LINK_HASH_KEY)) return href;
+      hp.delete(LINK_HASH_KEY);
+      var rest = hp.toString();
+      u.hash = rest ? '#' + rest : '';
+      return u.toString();
+    } catch (e) { return href; }
+  }
+  // Read at boot and removed at once — before the SDK or anything else runs — so the code is never
+  // bookmarked, shared or left in the history. It waits in memory for settleLink().
+  function consumeLinkHash() {
+    var l = parseLinkHash(location.href);
+    if (!l) return;
+    var after = stripLinkHash(location.href);
+    if (after !== location.href) { try { history.replaceState(history.state, '', after); } catch (e) {} }
+    if (l.code && enabled) pendingCode = l.code;
+  }
+  // "This browser asked for a sign-in email for e": what lets an emailed link fill in the address as well as
+  // the code, so one press signs in. Typed here, so it can be trusted to pick the account — a link only
+  // ever brings a code, and a code is checked against the address it is verified with.
+  function rememberRequest(email) { lsSet(REQUEST_KEY, JSON.stringify({ e: String(email || '').trim(), at: Date.now() })); }   // as sent
+  function signInRequest() {
+    try {
+      var r = JSON.parse(lsGet(REQUEST_KEY) || 'null');
+      if (!r || typeof r.e !== 'string' || !r.e || typeof r.at !== 'number') return null;
+      var age = Date.now() - r.at;
+      return (age >= -60000 && age <= REQUEST_TTL_MS) ? { e: r.e, at: r.at } : null;
+    } catch (e) { return null; }
+  }
 
   /* ---------- SDK loading (lazy, memoised, retry-able) ---------- */
   function loadSdk() {
@@ -227,10 +291,12 @@
       // session as SIGNED_IN *before* its INITIAL_SESSION, so "before INITIAL_SESSION, no callback in the
       // URL" is a restored session; anything after it (the emailed code, a later sign-in) or a callback
       // load is a fresh one. Token refreshes and re-emitted events later keep the answer.
-      if (!sessionSource) sessionSource = (initialSeen || bootCallback) ? 'new' : 'restored';
+      if (!sessionSource) sessionSource = (initialSeen || bootCallback || codeInFlight) ? 'new' : 'restored';
       currentUser = u;
       setStatus('signed-in');
       lsSet(CACHE_KEY, JSON.stringify({ email: u.email, name: u.name }));
+      lsRemove(REQUEST_KEY);   // signed in: an earlier request has nothing left to fill in
+      pendingCode = '';        // nor has a link opened while already signed in here
     } else {
       sessionSource = null;
       currentUser = null;
@@ -241,6 +307,7 @@
     if (event === 'INITIAL_SESSION') { initialSeen = true; resolveReady(); }
     renderChip();
     fire();
+    settleLink();
   }
 
   /* ---------- public actions ---------- */
@@ -255,7 +322,7 @@
         var email = String(opts.email || '').trim();
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw makeError('invalid_email', 'IvritAccount: a valid email is required');
         return c.auth.signInWithOtp({ email: email, options: { emailRedirectTo: redirectTarget(), shouldCreateUser: true } })
-          .then(function (r) { if (r && r.error) throw r.error; return { sent: true }; });
+          .then(function (r) { if (r && r.error) throw r.error; rememberRequest(email); return { sent: true }; });
       }
       throw makeError('bad_method', 'IvritAccount: unknown sign-in method ' + method);
     });
@@ -265,8 +332,10 @@
     return getClient().then(function (c) {
       var token = String(code || '').replace(/\s+/g, '');
       if (!token) throw makeError('invalid_code', 'IvritAccount: a code is required');
+      codeInFlight = true;
       return c.auth.verifyOtp({ email: String(email || '').trim(), token: token, type: 'email' })
-        .then(function (r) { if (r && r.error) throw r.error; return userFromSession(r.data && r.data.session); });
+        .then(function (r) { codeInFlight = false; if (r && r.error) throw r.error; return userFromSession(r.data && r.data.session); },
+          function (e) { codeInFlight = false; throw e; });
     });
   }
 
@@ -294,6 +363,27 @@
     if (code === 'unreachable' || /failed to fetch|networkerror|load failed|network request failed/.test(msg)) return t('shared.account.error_unreachable', 'The cloud is unreachable right now. Try again later.');
     if (code === 'fn_failed' || /^fn_/.test(code)) return t('shared.account.error_delete', 'Your account could not be deleted. Nothing was changed — try again in a moment.');
     return t('shared.account.error_generic', 'Something went wrong. Please try again.');
+  }
+  // What an emailed link does here, decided once the session state is known: already signed in, nothing
+  // (the code is dropped); otherwise the menu opens once at the code step with the code filled in, and the
+  // address too when this browser asked for it. Only the Verify press sends anything.
+  function settleLink() {
+    if (!pendingCode || linkSettled || status === 'loading') return;
+    if (status === 'signed-in') { pendingCode = ''; return; }
+    linkSettled = true;
+    var req = signInRequest();
+    if (req && !lastEmail) lastEmail = req.e;
+    menuStage = 'code';
+    if (!chip || !mounted) return;   // mountChip() opens it
+    if (chip.open) renderMenu(); else openMenu();
+    focusLinkStep();
+  }
+  // The next step after a link: Verify when the address is known, else the address field.
+  function focusLinkStep() {
+    if (!chip || !chip.open) return;
+    var email = chip.menu.querySelector('input[type=email]');
+    var target = email && !email.value ? email : chip.menu.querySelector('.ivacct-code button');
+    if (target) target.focus();
   }
   function pendingErrorText() {
     if (!pendingError) return '';
@@ -621,16 +711,25 @@
   }
 
   // The popover: rebuilt from scratch on every render (cheap, and never stale). A rebuild while an action is
-  // in flight (the first sign-in's INITIAL_SESSION, a language switch) keeps the lock on the new buttons.
+  // in flight (the first sign-in's INITIAL_SESSION, a language switch) keeps the lock on the new buttons, and
+  // the focus on the same control: a menu that opened by itself (an emailed link, an auth error) is rebuilt
+  // again when the page's dictionary lands, which dropped the focus onto the page body.
   function renderMenu() {
+    var act = document.activeElement;
+    var key = (chip && act && chip.menu.contains(act)) ? act.getAttribute('data-ivk') : null;
     renderMenuBody();
     if (menuBusy) setBusy(true);
+    if (key && chip) { var n = chip.menu.querySelector('[data-ivk="' + key + '"]'); if (n && !n.closest('[hidden]')) n.focus(); }
   }
   function renderMenuBody() {
     if (!chip) return;
     var m = chip.menu;
     var typed = m.querySelector('input[type=email]');
     if (typed && typed.value) lastEmail = typed.value;
+    // The code survives a rebuild too: the first Verify after a link creates the SDK client, whose
+    // INITIAL_SESSION re-renders the open menu while the code is being checked.
+    var typedCode = m.querySelector('input[name=code]');
+    var keepCode = typedCode ? typedCode.value : '';
     while (m.firstChild) m.removeChild(m.firstChild);
     m.setAttribute('aria-label', t('shared.account.menu_aria', 'Account'));
     var note = el('p', 'ivacct-note');
@@ -640,17 +739,20 @@
       m.appendChild(el('p', 'ivacct-who', t('shared.account.signed_in_as', 'Signed in as {email}', { email: currentUser.email })));
       if (openAccountFn) {
         var acct = el('button', 'ivacct-item', t('shared.account.account_item', 'Account…'));
+        acct.setAttribute('data-ivk', 'account');
         acct.type = 'button';
         acct.addEventListener('click', function () { closeMenu(false); try { openAccountFn(); } catch (e) { console.warn('[account] onOpenAccount failed:', e); } });
         m.appendChild(acct);
       }
       if (openSavesFn) {
         var saves = el('button', 'ivacct-item', t('shared.account.cloud_saves', 'Cloud saves…'));
+        saves.setAttribute('data-ivk', 'saves');
         saves.type = 'button';
         saves.addEventListener('click', function () { closeMenu(false); try { openSavesFn(); } catch (e) { console.warn('[account] onOpenSaves failed:', e); } });
         m.appendChild(saves);
       }
       var out = el('button', 'ivacct-item', t('shared.account.sign_out', 'Sign out (this device)'));
+      out.setAttribute('data-ivk', 'signout');
       out.type = 'button';
       out.addEventListener('click', function () {
         if (menuBusy) return;
@@ -680,6 +782,7 @@
     var form = el('form', 'ivacct-form');
     form.setAttribute('novalidate', '');
     var google = el('button', 'ivacct-gbtn ivacct-item');
+    google.setAttribute('data-ivk', 'google');
     google.type = 'button';
     google.appendChild(googleMark());
     google.appendChild(el('span', null, t('shared.account.google', 'Continue with Google')));
@@ -692,6 +795,7 @@
 
     var emailLabel = el('label', 'ivacct-label', t('shared.account.email_label', 'Email'));
     var emailInput = el('input', 'ivacct-input');
+    emailInput.setAttribute('data-ivk', 'email');
     emailInput.type = 'email';
     emailInput.name = 'email';
     emailInput.autocomplete = 'email';
@@ -701,20 +805,24 @@
     emailInput.value = lastEmail;
     emailLabel.appendChild(emailInput);
     var send = el('button', 'ivacct-item', t('shared.account.send_code', 'Email me a sign-in code'));
+    send.setAttribute('data-ivk', 'send');
     send.type = 'submit';
 
     var codeWrap = el('div', 'ivacct-code');
     codeWrap.hidden = menuStage !== 'code';
     var codeLabel = el('label', 'ivacct-label', t('shared.account.code_label', '6-digit code from the email'));
     var codeInput = el('input', 'ivacct-input');
+    codeInput.setAttribute('data-ivk', 'code');
     codeInput.type = 'text';
     codeInput.name = 'code';
     codeInput.inputMode = 'numeric';
     codeInput.autocomplete = 'one-time-code';
     codeInput.maxLength = 8;
     codeInput.dir = 'ltr';
+    codeInput.value = keepCode || pendingCode;
     codeLabel.appendChild(codeInput);
     var verify = el('button', 'ivacct-item', t('shared.account.verify', 'Verify code'));
+    verify.setAttribute('data-ivk', 'verify');
     verify.type = 'button';
     codeWrap.appendChild(codeLabel);
     codeWrap.appendChild(verify);
@@ -729,6 +837,7 @@
       signIn('email', { email: email }).then(function () {
         setBusy(false);
         menuStage = 'code';
+        pendingCode = '';   // a new code replaces the one a link brought: the server has just retired it
         // The first sign-in on a page creates the SDK client, whose INITIAL_SESSION event re-renders the open
         // menu while the code is on its way — so codeWrap and codeInput can be detached copies from the earlier
         // render, and showing them would leave "Type it here" above no field. Show and focus the live ones.
@@ -736,18 +845,21 @@
         if (liveCode) liveCode.hidden = false;
         setNote(t('shared.account.code_sent', 'We emailed a 6-digit code to {email}. Type it here.', { email: email }), false);
         var liveInput = liveCode && liveCode.querySelector('input');
-        if (liveInput) liveInput.focus();
+        if (liveInput) { liveInput.value = ''; liveInput.focus(); }
       }).catch(function (err) { setBusy(false); setNote(errorText(err), true); });
     });
     verify.addEventListener('click', function () {
       if (menuBusy) return;
+      var email = emailInput.value.trim() || lastEmail;
+      // A link opened in another browser fills in only the code; the address is the person's to give.
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setNote(t('shared.account.error_email', 'Please enter a valid email address.'), true); emailInput.focus(); return; }
       setBusy(true);
       setNote(t('shared.account.sending', 'Sending…'), false);
-      verifyCode(emailInput.value.trim() || lastEmail, codeInput.value).then(function () {
+      verifyCode(email, codeInput.value).then(function () {
         setBusy(false);
         menuStage = 'email';
         closeMenu(true);
-      }).catch(function (err) { setBusy(false); setNote(errorText(err), true); });
+      }).catch(function (err) { setBusy(false); pendingCode = ''; setNote(errorText(err), true); });
     });
     codeInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); verify.click(); } });
 
@@ -770,6 +882,11 @@
       pendingError = null;
     } else if (noteState) {
       setNote(noteState.text, noteState.isError);
+    } else if (pendingCode && menuStage === 'code') {
+      // Written straight to the line, not kept in noteState, so a language switch re-renders it translated.
+      note.textContent = emailInput.value
+        ? t('shared.account.link_filled', 'The code from your email link is filled in. Press “Verify code” to sign in on this device.')
+        : t('shared.account.link_filled_email', 'The code from your email link is filled in. Enter your email address, then press “Verify code”.');
     } else if (status === 'offline') {
       setNote(t('shared.account.needs_internet', 'Sign-in needs an internet connection.'), false);
     }
@@ -792,14 +909,17 @@
     if (mode === 'after') host.insertAdjacentElement('afterend', root); else host.appendChild(root);
     mounted = true;
     renderChip();
-    // A sign-in that came back with an error is the one case worth opening the menu unasked: the
-    // person just clicked a link and needs to see why nothing happened.
-    if (pendingError) openMenu();
+    // A sign-in that came back with an error, and an emailed link, are the cases worth opening the menu
+    // unasked: the person just clicked a link and needs to see what it did.
+    settleLink();   // opens the menu itself when the session state is already known
+    if (pendingError && !chip.open) openMenu();
+    else if (pendingCode && linkSettled && !chip.open) { openMenu(); focusLinkStep(); }
     return root;
   }
 
   /* ---------- boot ---------- */
   function boot() {
+    consumeLinkHash();   // first, and even with accounts switched off: the code never stays in the address bar
     if (!enabled) { setStatus('disabled'); resolveReady(); return; }
     consumeErrorParams();
     var p = parseAuthParams(location.href);
@@ -814,13 +934,13 @@
       setStatus('loading');
       getClient().catch(function (err) {
         setStatus(err && err.code === 'offline' ? 'offline' : 'unavailable');
-        resolveReady(); renderChip(); fire();
+        resolveReady(); renderChip(); fire(); settleLink();
       });
       // Belt and braces: never leave the page "loading" if the SDK's own init hangs.
       setTimeout(function () {
         if (readyDone) return;
         if (status === 'loading') setStatus(hasStoredSession() ? 'offline' : 'anonymous');
-        resolveReady(); renderChip(); fire();
+        resolveReady(); renderChip(); fire(); settleLink();
       }, SDK_TIMEOUT_MS + 3000);
     } else {
       setStatus('anonymous');
@@ -882,6 +1002,6 @@
     setDisplayName: setDisplayName,
     deleteAccount: deleteAccount,
     errorText: errorText,
-    _test: { isAuthCallback: isAuthCallback, stripAuthParams: stripAuthParams, redirectTarget: redirectTarget, parseAuthParams: parseAuthParams, hasStoredSession: hasStoredSession, AUTH_KEY: AUTH_KEY, VERIFIER_KEY: VERIFIER_KEY, CACHE_KEY: CACHE_KEY }
+    _test: { isAuthCallback: isAuthCallback, stripAuthParams: stripAuthParams, redirectTarget: redirectTarget, parseAuthParams: parseAuthParams, hasStoredSession: hasStoredSession, parseLinkHash: parseLinkHash, stripLinkHash: stripLinkHash, AUTH_KEY: AUTH_KEY, VERIFIER_KEY: VERIFIER_KEY, CACHE_KEY: CACHE_KEY, REQUEST_KEY: REQUEST_KEY, LINK_HASH_KEY: LINK_HASH_KEY }
   };
 })();

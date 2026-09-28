@@ -4194,6 +4194,8 @@
   "shared.account.error_session": "Your sign-in has expired. Sign in again.",
   "shared.account.error_unreachable": "The cloud is unreachable right now. Try again later.",
   "shared.account.google": "Continue with Google",
+  "shared.account.link_filled": "The code from your email link is filled in. Press “Verify code” to sign in on this device.",
+  "shared.account.link_filled_email": "The code from your email link is filled in. Enter your email address, then press “Verify code”.",
   "shared.account.loading": "Loading…",
   "shared.account.menu_aria": "Account",
   "shared.account.needs_internet": "Sign-in needs an internet connection.",

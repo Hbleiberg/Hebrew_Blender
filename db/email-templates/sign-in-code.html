@@ -1,0 +1,13 @@
+<!-- IvritSuite sign-in email. Paste all of it into BOTH Supabase templates (Authentication > Emails > Templates > "Confirm signup" and "Magic Link"), subject for both: Your IvritSuite sign-in code. Why its link only fills in the code: db/README.md > The sign-in email. -->
+<div style="background:#ffffff;color:#1a2744;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;max-width:480px;margin:0 auto;padding:24px 16px">
+  <h2 style="margin:0 0 16px;font-size:20px">Your IvritSuite sign-in code</h2>
+  <p style="margin:0 0 12px">Type this code in the IvritSuite sign-in box:</p>
+  <p style="margin:0 0 20px"><span style="display:inline-block;background:#eef2f9;border-radius:8px;padding:10px 18px;font-family:'Courier New',Courier,monospace;font-size:32px;font-weight:bold;letter-spacing:6px">{{ .Token }}</span></p>
+  <p style="margin:0 0 12px">Or open this link on the device you want to sign in on. The code is filled in for you:</p>
+  <p style="margin:0 0 20px"><a href="{{ .RedirectTo }}#ivsignin={{ .Token }}" style="display:inline-block;background:#1a2744;color:#ffffff;text-decoration:none;font-weight:bold;padding:10px 18px;border-radius:8px">Sign in to IvritSuite</a></p>
+  <p style="margin:0 0 24px;color:#4a5670">The code works once. If you did not ask to sign in, you can ignore this email.</p>
+  <div dir="rtl" lang="he" style="text-align:right;border-top:1px solid #dde3ee;padding-top:16px">
+    <p style="margin:0 0 12px">הקלידו את הקוד שלמעלה בחלון הכניסה של IvritSuite, או פתחו את הקישור שלמעלה במכשיר שבו תרצו להיכנס — הקוד ימולא בשבילכם.</p>
+    <p style="margin:0;color:#4a5670">הקוד תקף לשימוש אחד בלבד. אם לא ביקשתם להיכנס, אפשר להתעלם מהודעה זו.</p>
+  </div>
+</div>

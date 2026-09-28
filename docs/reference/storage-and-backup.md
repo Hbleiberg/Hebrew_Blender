@@ -105,11 +105,12 @@ functions *or* consciously in the exempt set above. Treat a key that is real dat
 export/import as a bug to fix, not a pattern to copy.
 
 - **Account session keys are not settings.** `sb-hhkmqwpjsyxdeuhvcyis-auth-token` (+ its transient
-  `-code-verifier`) is written by the Supabase SDK, `ivritSuite_accountCache` by `js/ivrit-account.js`,
+  `-code-verifier`) is written by the Supabase SDK, `ivritSuite_accountCache` and `ivritSuite_signInRequest` (the
+  address a sign-in code was last asked for here, which an emailed link fills in) by `js/ivrit-account.js`,
   and `ivritSuite_syncMeta` (what this device last synced to the cloud, per account; also the write stamps other tabs
   re-read on, and `held` — the suite-wide preference fields this device could not apply) by `js/ivrit-saves.js`;
   none of them ride export/import (a session must never travel in a file, and sync memory is per device),
-  and `eraseAllSettings` removes every `sb-` key plus the two `ivritSuite_*` keys — "erase" also means
+  and `eraseAllSettings` removes every `sb-` key plus the three `ivritSuite_*` keys — "erase" also means
   signed out on this device — then reloads when a session was there. Which of the keys above have a cloud
   copy is decided in one place, `IVRIT_SYNC_REGISTRY` in `js/ivrit-saves.js` (never here). Details:
   `docs/reference/accounts-and-cloud.md`.

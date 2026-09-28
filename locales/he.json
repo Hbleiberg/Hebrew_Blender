@@ -4194,6 +4194,8 @@
   "shared.account.error_session": "תוקף הכניסה פג. היכנסו שוב.",
   "shared.account.error_unreachable": "הענן אינו זמין כרגע. נסו שוב מאוחר יותר.",
   "shared.account.google": "המשך עם Google",
+  "shared.account.link_filled": "הקוד מקישור האימייל כבר מולא. לחצו על ״אימות הקוד״ כדי להיכנס במכשיר הזה.",
+  "shared.account.link_filled_email": "הקוד מקישור האימייל כבר מולא. הזינו את כתובת האימייל שלכם ולחצו על ״אימות הקוד״.",
   "shared.account.loading": "טוען…",
   "shared.account.menu_aria": "חשבון",
   "shared.account.needs_internet": "הכניסה דורשת חיבור לאינטרנט.",

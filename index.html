@@ -53,9 +53,10 @@
   // The sign-in return leg carries ?code= (and ?error…): the Supabase SDK still needs them in the URL,
   // and js/ivrit-account.js strips them — but only once it has run, which is after this tag. Report the
   // cleaned URL so no authorization code or error text ever reaches Analytics. The key list mirrors
-  // AUTH_QUERY_KEYS in js/ivrit-account.js; a deferred module cannot be read from here.
+  // AUTH_QUERY_KEYS in js/ivrit-account.js; a deferred module cannot be read from here. An emailed
+  // sign-in link lands with its code in the hash (#ivsignin=, LINK_HASH_KEY there): that hash is dropped.
   gtag('config', 'G-CMLC81Z0HC', { page_location: (function () {
-    try { var u = new URL(location.href); ['code', 'error', 'error_code', 'error_description'].forEach(function (k) { u.searchParams.delete(k); }); return u.toString(); }
+    try { var u = new URL(location.href); ['code', 'error', 'error_code', 'error_description'].forEach(function (k) { u.searchParams.delete(k); }); if (/(^#|&)ivsignin=/.test(u.hash)) u.hash = ''; return u.toString(); }
     catch (e) { return location.href; }
   })() });
 </script>
@@ -1548,10 +1549,11 @@ async function eraseAllSettings() {
   ];
   keys.forEach(k => localStorage.removeItem(k));
   // The account layer's own keys (all erase-only, never exported): the SDK's session — any `sb-` key,
-  // incl. a PKCE verifier mid-flow — the chip's name cache and the cloud-saves sync memory. Erase =
+  // incl. a PKCE verifier mid-flow — the chip's name cache, the address a sign-in code was last asked
+  // for, and the cloud-saves sync memory. Erase =
   // signed out on this device; when a session was there the page reloads afterwards, so the chip and
   // the cloud panels (and the SDK's in-memory copy of the session) start from the emptied storage.
-  const accountKeys = Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_accountCache' || k === 'ivritSuite_syncMeta');
+  const accountKeys = Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_accountCache' || k === 'ivritSuite_signInRequest' || k === 'ivritSuite_syncMeta');
   accountKeys.forEach(k => localStorage.removeItem(k));
   // Awaited: when a session was there the page reloads right after the alert, and a delete still pending
   // then is lost — the teacher's fonts stayed behind whenever the reload was quick (offline, from the cache).

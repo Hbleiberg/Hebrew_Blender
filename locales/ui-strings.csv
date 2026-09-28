@@ -5721,6 +5721,8 @@ shared.account.code_label,6-digit code from the email,הקוד בן 6 הספרו
 shared.account.verify,Verify code,אימות הקוד,Account popover verify button,shared
 shared.account.sending,Sending…,שולח…,Account popover note while a request is in flight,shared
 shared.account.code_sent,"We emailed a 6-digit code to {email}. Type it here.","שלחנו קוד בן 6 ספרות אל {email}. הקלידו אותו כאן.",Account popover note after the email was sent,shared; template
+shared.account.link_filled,The code from your email link is filled in. Press “Verify code” to sign in on this device.,הקוד מקישור האימייל כבר מולא. לחצו על ״אימות הקוד״ כדי להיכנס במכשיר הזה.,Account popover note when the page was opened from the emailed sign-in link in the browser that asked for the code (the address is filled in too); names the Verify code button,shared
+shared.account.link_filled_email,"The code from your email link is filled in. Enter your email address, then press “Verify code”.",הקוד מקישור האימייל כבר מולא. הזינו את כתובת האימייל שלכם ולחצו על ״אימות הקוד״.,Account popover note when the emailed link was opened in a browser that did not ask for the code (only the code is filled in); names the Verify code button,shared
 shared.account.signed_in_as,Signed in as {email},מחוברים בתור {email},Account popover first line when signed in,shared; template
 shared.account.account_item,Account…,חשבון…,Account popover item that opens the saves module's account screen,shared
 shared.account.cloud_saves,Cloud saves…,שמירות בענן…,Account popover item (only when the page registered a cloud panel),shared

@@ -18,7 +18,7 @@ Supabase — no tool page ever calls the SDK directly:
 | `saves-test.html` | Same rules. Mounts the real panel with four page-only registry entries, runs the local round trip, the pure self-checks and the scripted cloud checks. |
 | `account.html` | The account page (in the sitemap, precached, own CSP): who the account is and its display name, what it holds tool by tool, **Download everything** (one zip) and **Delete my account**. Only the shared modules talk to Supabase; see "The account page and data rights" below. |
 | `db/functions/delete-account/` | The one Edge Function: removes the caller's Storage files, then the auth user (rows cascade). Deployed through the connector with the platform's JWT check on; `db/README.md` says how, and why it is not under `supabase/`. |
-| `scripts/smoke-account.mjs`, `scripts/smoke-saves.mjs` | Headless Playwright smokes: anonymous with the CDN blocked, remembered session offline, SDK served locally, URL contracts, Hebrew + dark at 800 px. |
+| `scripts/smoke-account.mjs`, `scripts/smoke-saves.mjs` | Headless Playwright smokes: anonymous with the CDN blocked, remembered session offline, SDK served locally, URL contracts, Hebrew + dark at 800 px; the account smoke also replays the emailed link (the code stripped and filled in, nothing sent before *Verify code*, the address filled in only where it was asked from) and checks every analytics tag leaves the code out. |
 | `scripts/smoke-sync.mjs` | Headless end-to-end sync test against a fake cloud (`--sdk` required, port 8081): Playwright answers the project's `/rest/v1/saves` from an in-memory table and replays the second-device flow — settings changed in both places, Sync everything, the account screen's settings choice, the dashboard opening with Schedule Sync live, the picker switching to the first class from the account when this device's own is the untouched default, and the resume-time re-read of another tab's write; then the Phase 9 scenarios — a page re-apply pushed up as one PATCH, skipped rows named and a run that reaches the dashboard past a bad row, deletions that read *Deleted on this device* / *Removed from your account* and never propagate by themselves, a preset naming its class, a same-named class folding into the account's, a weekly grid removed elsewhere removed here, the suite-wide preferences applying live (Hebrew and dark without a reload; a field this build cannot apply held), and the hub's account screen — the signpost to the owning tool, the split counts, a run that outlives the screen, the seed that is never uploaded; and a teacher's own font travelling, with the eleventh refused by name on a device whose My Fonts is already full rather than one of theirs being evicted. |
 | `scripts/smoke-fontmaker.mjs` | Headless end-to-end test of Font Maker cloud projects (`--sdk` required, port 8082): the fake cloud also answers the Storage endpoints; anonymous control, save, autosave, open in a fresh browser, conflict (Overwrite / Keep both), delete, export keep, a refused upload, the `?start=` contract, Hebrew + dark. |
 | `scripts/smoke-account-page.mjs` | Headless end-to-end test of the account page (`--sdk` required, port 8083): anonymous control, the listing, the display name, the download-everything zip parsed and checked in Node, delete (accepted and refused), Hebrew + dark. |
@@ -48,7 +48,7 @@ module's own boot listener and use `inventory` / `bundleAll` / `forgetUser` / `e
 | `user()` | `{ id, email, name, provider }` or `null` in every non-signed-in state |
 | `onChange(fn)` | `fn(user|null, status)` — once when known, then on every change, including sign-outs in other tabs |
 | `signIn('google')` | Full-page OAuth redirect and back to the same page |
-| `signIn('email', {email})` | Sends the email (a sign-in link **and** a 6-digit code) |
+| `signIn('email', {email})` | Sends the email: a 6-digit code and a link that opens this page with the code filled in (`db/email-templates/sign-in-code.html`); on success remembers the address in `ivritSuite_signInRequest` |
 | `verifyCode(email, code)` | Signs in with the emailed code — works in any browser or device |
 | `signOut()` | This device only (`scope: 'local'`) |
 | `client()` | Promise → the Supabase client, loading the SDK on demand; rejects with `err.code` `'disabled' \| 'offline' \| 'blocked'` |
@@ -71,6 +71,8 @@ module's own boot listener and use `inventory` / `bundleAll` / `forgetUser` / `e
 read IVRIT_SUPABASE
   ├─ missing or enabled:false                 → 'disabled': no chip, no network
   ├─ auth callback in the URL, or a stored session → load the SDK now ('loading')
+  ├─ an emailed link (#ivsignin=)             → 'anonymous'; the menu opens by itself at the code step,
+  │                                             which warms the SDK as any open does (a sign-in under way)
   └─ otherwise                                → 'anonymous': chip says "Sign in"; SDK loads on first click
 ```
 - The session key is `sb-<project ref>-auth-token`; the module derives it from the config URL and hands
@@ -91,23 +93,47 @@ read IVRIT_SUPABASE
   but it lives in a deferred module and the inline `gtag('config', …)` runs during parse, so GA4's
   default `page_location` (= `document.location.href`) carried the code and any `?error_description=`.
   Every carrier's `config` call therefore passes an **explicit `page_location`** with the four
-  `AUTH_QUERY_KEYS` removed. `location.href` itself must stay intact — the SDK reads `?code=` from it
+  `AUTH_QUERY_KEYS` removed, and with the hash dropped when it carries the emailed link's `#ivsignin=`
+  (`LINK_HASH_KEY`, below). `location.href` itself must stay intact — the SDK reads `?code=` from it
   to complete the exchange — so never "simplify" this by cleaning the URL before the SDK runs, and
-  keep the key list in step with `AUTH_QUERY_KEYS` (an inline tag cannot read a deferred module).
+  keep the key list and the hash key in step with the module (an inline tag cannot read a deferred
+  module). The five pages with the tag but without the module (404, contact, privacy, resources, terms)
+  never receive a link — no code is asked from them — so only their tag has to hold.
 - **`account.html` refuses to render in a frame**; the tool pages stay embeddable on purpose, so a
   teacher can put one in an LMS. `frame-ancestors` is not an option: it is **ignored in a `<meta>` tag**
   (measured — the same directive works as an HTTP header) and GitHub Pages serves no custom headers.
   So an inline script sets `.ivframed` on `<html>` when `window.top !== window.self` and CSS hides
   everything but a `target="_top"` link out. Deleting an account was never clickjackable anyway: it
   needs the account's own email typed into a field.
-- **Email sends a 6-digit code.** `signInWithOtp` (`shouldCreateUser: true`) sends it; `verifyOtp`
-  (type `email`) signs in anywhere — another device, a mail app's in-app browser, the installed PWA.
-  The dashboard templates (*Confirm signup* for a person's first email, *Magic Link* after that) are
-  **code-only, with no `{{ .ConfirmationURL }}`**: school mail filters open every link in an incoming
-  email to scan it, which spends a one-time link seconds after it is sent (two scanners hit the first
-  real sign-in link before the teacher could). The link-handling code stays — `?code=` callbacks and the
-  expired / other-browser notes — because Google OAuth returns through the same path and a template
-  could re-add the link. Inside an installed app the email option is listed first.
+- **Email sends a 6-digit code, and a link that only fills it in.** `signInWithOtp` (`shouldCreateUser:
+  true`) sends it; `verifyOtp` (type `email`, with the address) signs in anywhere — another device, a
+  mail app's in-app browser, the installed PWA. The email's text is `db/email-templates/sign-in-code.html`,
+  pasted into both dashboard templates (*Confirm signup* for a person's first email, *Magic Link* after
+  that), and it **never carries `{{ .ConfirmationURL }}`**: school mail filters open every link in an
+  incoming email to scan it, which spends Supabase's one-time link seconds after it is sent (two scanners
+  hit the first real sign-in link before the teacher could), and that link signs in whoever opens it. Its
+  one link is `{{ .RedirectTo }}#ivsignin={{ .Token }}` — back to the page the code was asked from (the
+  module's `redirectTarget()`), with the code in the hash, which never reaches a server:
+  - `consumeLinkHash()` runs first in `boot()` — before the SDK, and even with accounts switched off — and
+    takes the code out of the address bar (`history.replaceState`) so it is never bookmarked or shared; it
+    waits in memory (`pendingCode`).
+  - `settleLink()` decides once the session state is known: already signed in here, the code is dropped
+    silently; otherwise the menu opens once at the code step with the code filled in, and the address
+    too when this browser asked for the code (`ivritSuite_signInRequest`, written by a successful
+    `signIn('email')`, ignored after 24 h, removed by a sign-in and by Erase All). Focus goes to *Verify
+    code*, or to the address field when it is empty; the note says which (`shared.account.link_filled` /
+    `link_filled_email`).
+  - **Nothing is sent until *Verify code* is pressed**, and the code is verified with the address in the
+    field — the one typed in this browser, never one taken from the link. A code is valid only for the
+    address it was sent to, so a scanner that opens the link spends nothing, and a link someone else sent
+    cannot sign this browser into their account (their code fails against this person's address). A link
+    carrying a token hash would lose both properties: that is why the template carries the code.
+  - Verify without a valid address is refused inline (`shared.account.error_email`) and sends nothing; a
+    used or expired code reads `error_invalid_code`; a new code sent from the menu clears the old one from
+    the field.
+  The link-handling code for Supabase's own links stays — `?code=` callbacks and the expired /
+  other-browser notes — because Google OAuth returns through the same path. Inside an installed app the
+  email option is listed first.
 - **Redirects return to the same page with its own params intact.** `redirectTarget()` = the current
   URL minus `code`, `error`, `error_code`, `error_description` and minus the hash. After the round
   trip the SDK removes `code`; the module removes any remaining auth keys (`stripAuthParams`) and
@@ -125,8 +151,11 @@ Mounted by `createElement`/`textContent` only; email and name never touch `inner
 (`.ivacct-btn`, `aria-haspopup="dialog"`, `aria-expanded`, `aria-label` from `shared.account.chip_aria`:
 the words on the chip, then "account", so a voice command naming what it shows reaches it) + popover (`.ivacct-menu`, `role="dialog"`,
 `aria-modal="false"`, `aria-label` from `shared.account.menu_aria`). Signed out: Google button, email
-field, "Email me a sign-in link and code", then the code field + Verify; an `aria-live="polite"` note
-carries progress and errors. While a sign-in or sign-out is in flight every menu button is locked by a
+field, "Email me a sign-in code", then the code field + Verify; an `aria-live="polite"` note
+carries progress and errors. An emailed link opens the menu by itself at the code step (see *Auth flow
+decisions*). A rebuild — the page's dictionary landing after that auto-open, a language switch, the first
+sign-in's `INITIAL_SESSION` — keeps the typed or filled-in code and puts the focus back on the same
+control (each carries a `data-ivk` key), instead of dropping it onto the page body. While a sign-in or sign-out is in flight every menu button is locked by a
 module flag the handlers check (`aria-disabled` alone is only a look, and a mid-send rebuild drops it),
 re-applied by each rebuild and cleared when the action settles, so a double-click sends one code. The Google row (`.ivacct-gbtn`, a flex row) leads with Google's four-colour
 "G", built as an inline `<svg>` by `googleMark()` from the official path data — inline so no carrier
@@ -150,9 +179,10 @@ desktop and 16 px under `(pointer:coarse)`: iOS Safari zooms the page into a foc
 | `sb-hhkmqwpjsyxdeuhvcyis-auth-token` | the SDK | the session; erase-only (Erase All = signed out on this device) |
 | `sb-hhkmqwpjsyxdeuhvcyis-auth-token-code-verifier` | the SDK | transient, only during a PKCE round trip |
 | `ivritSuite_accountCache` | the module | `{email, name}` for the loading/offline chip; erase-only |
+| `ivritSuite_signInRequest` | the module | `{e, at}`: the address this browser last asked a sign-in code for, as typed, and when — what lets an emailed link fill in the address too; written by a successful `signIn('email')`, ignored after 24 h, removed by any sign-in; erase-only, never exported |
 | `ivritSuite_syncMeta` | `js/ivrit-saves.js` | what this device last synced, per account: `{v:1, users:{[uid]:…}}` keyed `[tool][kind][name]` → `{h, id, u, at}`, **plus four more fields at the same top level**: `held` (the `SUITE_PREFS` fields this build could not apply), `welcomed`, `lastWrite` and `written`. Two tabs read-modify-write this key, so `metaSave()` re-reads the stored copy first and keeps the newer write stamp per tool and kind. Erase-only, never exported |
 
-The hub's `eraseAllSettings` removes every `sb-` key plus the two `ivritSuite_*` keys (Erase All = signed
+The hub's `eraseAllSettings` removes every `sb-` key plus the three `ivritSuite_*` keys (Erase All = signed
 out on this device) and reloads the page when a session was there, so the chip, the panels and the SDK's
 in-memory session all start from the emptied storage.
 
@@ -549,7 +579,9 @@ zip in Node (the CRC of every entry, the bundle's keys, the `.hebrewfont`'s phot
 
 The step-by-step walkthrough lives in `README.md` § "Accounts (optional, Supabase)": URL configuration
 and redirect allow-list (`https://ivritsuite.com/**`, `http://localhost:8080/**`), Email provider + the
-two email templates (*Confirm signup* and *Magic Link*) carrying `{{ .Token }}` only, Google OAuth
+two email templates (*Confirm signup* and *Magic Link*), both the text of `db/email-templates/sign-in-code.html`
+(the code, and a link that fills it in — never `{{ .ConfirmationURL }}`; `db/README.md` says how to paste and
+check it), Google OAuth
 client and callback, and the custom SMTP provider that is **required before anyone but the project's
 team members can receive a sign-in email** (the built-in sender refuses other addresses and allows only
 a few messages per hour).
