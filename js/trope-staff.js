@@ -275,8 +275,13 @@ function phraseRestGlyph(val) {
   return g;
 }
 // names (optional): the name to write under each note, index-aligned with row.notes (noteNameAt, read by the caller).
-function layoutPhraseStaff(row, key, shift, names) {
+function layoutPhraseStaff(row, key, shift, names, opts = {}) {
   const STEP = PHRASE_STEP;
+  // opts (all default-off; the tutor passes none): lyrics:false — no syllable text under the staff, so the
+  // syllables neither space the notes nor take a line (a caller lays its own words under the SVG);
+  // accidentals:'unit' — an accidental holds only to the end of its mark's figure, not the row (a reading
+  // has no bar lines, and each figure is printed on the chart with its own signs).
+  const lyrics = opts.lyrics !== false;
   const sig = keySignature(key), sigAlt = {};
   sig.forEach((k) => { sigAlt[k.letter] = k.acc; });
   const letterOf = (step) => 'BCDEFGA'[((step % 7) + 7) % 7];   // step 0 is B4
@@ -298,7 +303,9 @@ function layoutPhraseStaff(row, key, shift, names) {
   });
   // Accidentals: printed where a line or space changes from what the signature (or an earlier sign) set.
   const inForce = {};
+  let accU = -1;
   for (const o of notes) if (!o.rest) {
+    if (opts.accidentals === 'unit' && o.u !== accU) { for (const k of Object.keys(inForce)) delete inForce[k]; accU = o.u; }
     const had = o.step in inForce ? inForce[o.step] : (sigAlt[letterOf(o.step)] || 0);
     if (o.alt !== had) o.accText = o.alt === 1 ? '♯' : o.alt === -1 ? '♭' : '♮';
     inForce[o.step] = o.alt;
@@ -348,7 +355,7 @@ function layoutPhraseStaff(row, key, shift, names) {
     }
     if (o.nw) x = Math.max(x, nameEnd + 3 + o.nw / 2);   // a name never touches the one before it
     const s = row.syl[o.s];
-    if (s && s.from === i) {
+    if (lyrics && s && s.from === i) {
       const width = sylW[o.s], single = s.from === s.to;
       const startAt = (xx) => (single ? xx - width / 2 : xx - 3.4);
       if (o.s > 0) {
@@ -360,8 +367,32 @@ function layoutPhraseStaff(row, key, shift, names) {
     o.x = x;
     if (o.nw) nameEnd = x + o.nw / 2;
   }
+  // Word labels (row.words, a reading staff's underlay: [{from, to, w}] — the notes each label spans and its
+  // width in staff units): each label is centred under its notes and must clear the label before it, so a
+  // label that would collide shifts every note from its first one on (a rigid tail shift keeps everything
+  // laid out so far), and the staff widens to the last label's edge. Their centres come back as `words`.
+  const words = [];
+  let wordEnd = -Infinity;
+  if (Array.isArray(row.words)) {
+    let prevEnd = 1;
+    for (const wd of row.words) {
+      const a = notes[wd.from], b = notes[wd.to];
+      if (!a || !b) continue;
+      const w = Number.isFinite(wd.w) ? wd.w : 0;
+      let cx = (a.x + b.x) / 2;
+      const need = prevEnd + (words.length ? 6 : 0);
+      if (cx - w / 2 < need) {
+        const d = need - (cx - w / 2);
+        for (let k = wd.from; k < N; k++) notes[k].x += d;
+        cx += d;
+      }
+      words.push({ ci: wd.ci, cx, w, from: wd.from, to: wd.to });
+      prevEnd = cx + w / 2;
+      wordEnd = Math.max(wordEnd, prevEnd + 2);
+    }
+  }
   const last = notes[N - 1];
-  const W = Math.ceil(Math.max(last.x + rightExt(last), sylEnd[sylEnd.length - 1] || 0, nameEnd) + 8);
+  const W = Math.ceil(Math.max(last.x + rightExt(last), sylEnd[sylEnd.length - 1] || 0, nameEnd, wordEnd) + 8);
   // Stems and beams (y grows downward, 0 is the middle line).
   const sx = (o) => (o.grace ? o.x + (o.up ? 2 : -2) : o.x + (o.up ? 3.1 : -3.1));
   const beamLines = [];
@@ -475,19 +506,23 @@ function layoutPhraseStaff(row, key, shift, names) {
   const barY = Math.min(-26, top - 9);
   // With names on they take the line under the staff, and the syllables move down a line beneath them.
   const nameY = Math.max(22, bottom + 10);
-  const lyricY = notes.some((o) => o.nw) ? nameY + 11 : Math.max(22, bottom + 11);
-  return { notes, segs, tups, ties, slurs, W, X0, sig, barY, nameY, lyricY, sylStart, sylEnd, sylW,
+  const lyricY = !lyrics ? (notes.some((o) => o.nw) ? nameY + 2 : Math.max(20, bottom + 2))
+    : notes.some((o) => o.nw) ? nameY + 11 : Math.max(22, bottom + 11);
+  const out = { notes, segs, tups, ties, slurs, W, X0, sig, barY, nameY, lyricY, sylStart, sylEnd, sylW,
     units: row.units.map((u) => ({ k: u.k, xa: notes[u.from].x, xb: notes[u.to].x })) };
+  if (Array.isArray(row.words)) out.words = words;
+  return out;
 }
 
 // The row drawn: an <svg class="tu-pstaff"> at SCALE px per unit. opts: {key, shift, low, ariaLabel,
-// famOf(markKey) -> the family whose colour its bar takes, names (optional, layoutPhraseStaff's)}; without an
+// famOf(markKey, unitIndex, rowUnit) -> the family whose colour its bar takes, names (optional, layoutPhraseStaff's),
+// layout (a precomputed layoutPhraseStaff result), lyrics:false (no syllable text), accidentals}; without an
 // ariaLabel the SVG is hidden from assistive tech (its host names it). Every note is a <g class="tu-pn" data-i
 // data-u> (holding its name, <text class="tu-nn">, when names are on), every syllable a <text class="tu-ps"
 // data-s data-u>, every bar a <rect class="tu-pbar" data-u>: the tune lights notes by data-i, and a mark chip
 // lights its notes, bar and syllables by data-u.
 function renderPhraseStaff(row, opts) {
-  const L = layoutPhraseStaff(row, opts.key, opts.shift, opts.names);
+  const L = opts.layout || layoutPhraseStaff(row, opts.key, opts.shift, opts.names, opts);   // opts.layout: the caller already laid the row out (to wrap or place words)
   const SCALE = PHRASE_SCALE, pad = 3;
   const MID = -L.barY + pad + 2, H = Math.ceil(Math.max(MID + L.lyricY + 4, opts.low ? MID + 30 : 0));   // room for the 8
   const Y = (y) => Math.round((MID + y) * 100) / 100;
@@ -505,7 +540,7 @@ function renderPhraseStaff(row, opts) {
   L.units.forEach((u, ui) => {
     const prev = L.units[ui - 1], next = L.units[ui + 1];
     const xa = prev ? (prev.xb + u.xa) / 2 + 1.5 : u.xa - 6, xb = next ? (u.xb + next.xa) / 2 - 1.5 : u.xb + 6;
-    const fam = opts.famOf ? opts.famOf(u.k) : '';
+    const fam = opts.famOf ? opts.famOf(u.k, ui, row.units[ui]) : '';   // the row's unit rides along (a reading's unit carries its word's family)
     deco.appendChild(_svgEl('rect', { class: 'tu-pbar' + (fam ? ' fam-' + fam : ''), 'data-u': ui, x: Math.round(xa * 100) / 100,
       y: Y(L.barY), width: Math.round((xb - xa) * 100) / 100, height: 3.5, rx: 1.5 }));
     if (next) {
@@ -587,8 +622,9 @@ function renderPhraseStaff(row, opts) {
     over.appendChild(n3);
   }
   svg.appendChild(over);
-  // Syllables, as the chart prints them (transliterations — i18n-ignore), with their hyphens.
-  row.syl.forEach((s, si) => {
+  // Syllables, as the chart prints them (transliterations — i18n-ignore), with their hyphens. Not with
+  // opts.lyrics === false: a reading staff lays its own words under the SVG.
+  if (opts.lyrics !== false) row.syl.forEach((s, si) => {
     const single = s.from === s.to, xs = L.notes[s.from].x;
     const txt = _svgEl('text', { class: 'tu-ps', 'data-s': si, 'data-u': s.unit, x: Math.round((single ? xs : xs - 3.4) * 100) / 100, y: Y(L.lyricY),
       'font-size': PHRASE_SYL_SIZE, 'text-anchor': single ? 'middle' : 'start', fill: 'currentColor' });
@@ -623,4 +659,209 @@ function _phraseSetsFrom(j) {
     out[m] = rows.length ? { key: s.key, rows } : null;
   }
   return out.torah || out.highholiday ? out : null;
+}
+
+/* ══════════════════════════════════════════════════════
+   READING STAFF — a verse of real Torah text on the staff, figure by figure
+   (the Torah Trainer's Trope staff layout; docs/tropepatterns.md → G is the
+   design, docs/reference/torah-and-trope.md → Trope staff the contract).
+   tropeUnitsOfVerse reads a verse's marks the way the Trainer splits its words;
+   tropeContextsOf indexes every printed figure by the marks around it;
+   tropeChooseFigures picks a figure per mark from those contexts;
+   tropeBuildReadingRow stitches the picked figures into one row in the phrase
+   file's shape (with `words`, the underlay); tropeSplitSystems wraps that row
+   into staff systems that fit a width. All pure: no DOM, no settings.
+   ══════════════════════════════════════════════════════ */
+// The connecting ("servant") marks, whose figure depends on the mark they lead into (the builder's list).
+const TROPE_CONJUNCTIVE = new Set(['munach', 'mahpach', 'mercha', 'mercha_kefula', 'darga', 'kadma', 'telisha_ketana', 'yerach_ben_yomo']);
+// The row each Learn card draws its figure from (docs/tropepatterns.md → A): the last resort when the chart
+// prints no figure of a mark in a verse's context, so a word is never left without notes.
+const TROPE_LEARN_ROW = {
+  torah: { mercha: '1', tipcha: '4', munach: '2', etnachta: '4', sof_pasuk: '8', mahpach: '11', pashta: '13', yetiv: '33',
+    zakef_katon: '13', zakef_gadol: '31', zarka: '37', segol: '37', shalshelet: '38', revia: '19', darga: '21', tevir: '22',
+    kadma: '15', geresh: '16', gershayim: '20', telisha_ketana: '29', telisha_gedola: '28', pazer: '30', mercha_kefula: '39',
+    karnei_parah: '40', yerach_ben_yomo: '40', munach_legarmeh: '17' },
+  highholiday: { mercha: '1', tipcha: '4', munach: '2', etnachta: '4', sof_pasuk: '8', mahpach: '11', pashta: '10', yetiv: '24',
+    zakef_katon: '10', zakef_gadol: '25', zarka: '29', segol: '29', revia: '16', darga: '13', tevir: '13', kadma: '20',
+    geresh: '21', gershayim: '22', telisha_ketana: '18', telisha_gedola: '17', pazer: '19', munach_legarmeh: '15' },
+};
+const TROPE_MARK_RE = /[֑-֯]/g;   // the te'amim block; U+05BD (meteg / siluk) is deliberately outside it
+// A verse's marks, word by word, on the Torah Trainer's own split (whitespace AND maqaf, one piece per
+// Hebrew-bearing token — PocketTorah times each piece), so piece i here is the i-th .tt-word the page emits.
+// Returns {pieces:[{ti, tok, keys}], cells:[{pieces:[pi…], keys:[{k, pi}], line}], units:[{k, ci, pi, withinWord}]}.
+// A cell is a sung word: a maqaf joins the next piece to it; a ׀ token after it sets `line` (a munach before
+// it is then munach legarmeh — a paseq prints the same and cannot be told apart in the page's text); a
+// repeated mark counts once; pashta written twice (its second glyph is kadma's) is one pashta; the last cell
+// takes sof_pasuk (siluk shares meteg's codepoint); a cell with no mark of its own joins the cell after it,
+// as its pieces are chanted (the pieces keep their own spans, so the page's word count is untouched).
+function tropeUnitsOfVerse(text) {
+  const toks = String(text || '').split(/(\s+|־)/);
+  const pieces = [], cells = [];
+  let cell = null, joinNext = false;
+  for (let ti = 0; ti < toks.length; ti++) {
+    const tok = toks[ti];
+    if (!tok || /^\s+$/.test(tok)) continue;
+    if (tok === '־') { joinNext = !!cell; continue; }
+    if (!/[א-ת]/.test(tok)) { if (tok.includes('׀') && cell) cell.line = true; continue; }
+    const keys = [];
+    for (const ch of tok.match(TROPE_MARK_RE) || []) { const k = TROPE_CHAR_TO_KEY[ch]; if (k && !keys.includes(k)) keys.push(k); }
+    const pi = pieces.length;
+    pieces.push({ ti, tok, keys });
+    if (joinNext && cell) cell.pieces.push(pi);
+    else { cell = { pieces: [pi], line: false }; cells.push(cell); }
+    joinNext = false;
+  }
+  cells.forEach((c, ci) => {
+    let keys = [];
+    for (const pi of c.pieces) for (const k of pieces[pi].keys) keys.push({ k, pi });
+    if (keys.some((x) => x.k === 'kadma') && keys.some((x) => x.k === 'pashta')) keys = keys.filter((x) => x.k !== 'kadma');
+    if (ci === cells.length - 1) keys.push({ k: 'sof_pasuk', pi: c.pieces[c.pieces.length - 1] });
+    if (c.line && keys.length && keys[keys.length - 1].k === 'munach') keys[keys.length - 1] = { k: 'munach_legarmeh', pi: keys[keys.length - 1].pi };
+    c.keys = keys;
+  });
+  for (let ci = cells.length - 2; ci >= 0; ci--) if (!cells[ci].keys.length) {   // an unmarked word sings with the next
+    cells[ci + 1].pieces.unshift(...cells[ci].pieces);
+    cells.splice(ci, 1);
+  }
+  const units = [];
+  cells.forEach((c, ci) => c.keys.forEach((x, j) => units.push({ k: x.k, ci, pi: x.pi, withinWord: j > 0 })));
+  return { pieces, cells, units };
+}
+// Every printed figure of a melody indexed by its mark: for each row unit, the marks printed before and
+// after it (^ and $ at the row's edges), the row's marks, and whether the row is an [aliyah-end] closing.
+function tropeContextsOf(set) {
+  const ctx = new Map();
+  if (!set || !Array.isArray(set.rows)) return ctx;
+  for (const row of set.rows) {
+    const ks = row.units.map((u) => u.k), end = row.tags.includes('aliyah-end');
+    ks.forEach((k, ui) => {
+      if (!ctx.has(k)) ctx.set(k, []);
+      ctx.get(k).push({ n: row.n, ui, prev: ui > 0 ? ks[ui - 1] : '^', next: ui + 1 < ks.length ? ks[ui + 1] : '$', end, keys: ks });
+    });
+  }
+  return ctx;
+}
+// One figure per unit of a verse (docs/tropepatterns.md → G): a connecting mark takes the figure printed before
+// the very mark that follows it, else before the pausing mark its chain leads to; a pausing mark the figure
+// printed between its neighbours; then the Learn card's row; then the mark's first figure. With aliyahEnd, the
+// longest [aliyah-end] row whose marks close the verse takes those last units. A mark the melody's chart lacks
+// is looked up in fallbackCtx (the year-round chart) — picks say which set they came from.
+// Returns picks[i] = {set, n, ui} or null.
+function tropeChooseFigures(units, ctx, opts = {}) {
+  const ks = units.map((u) => u.k), N = ks.length, picks = new Array(N).fill(null);
+  const melody = opts.melody || 'torah', fbMelody = opts.fallbackMelody || 'torah';
+  let endFrom = N;
+  if (opts.aliyahEnd && ctx) {
+    let best = null;
+    for (const list of ctx.values()) for (const c of list) {
+      if (!c.end || c.ui !== 0 || c.keys.length > N) continue;
+      if (c.keys.every((x, j) => x === ks[N - c.keys.length + j]) && (!best || c.keys.length > best.keys.length)) best = c;
+    }
+    if (best) {
+      endFrom = N - best.keys.length;
+      best.keys.forEach((x, j) => { picks[endFrom + j] = { set: melody, n: best.n, ui: j }; });
+    }
+  }
+  const chainOf = (i) => { for (let j = i + 1; j < N; j++) if (!TROPE_CONJUNCTIVE.has(ks[j])) return ks[j]; return '$'; };
+  const rowNum = (n) => parseInt(n, 10) || 0;
+  const pickFrom = (list, i, learn) => {
+    const k = ks[i], prevK = i > 0 ? ks[i - 1] : '^', nextK = i + 1 < N ? ks[i + 1] : '$', chainK = chainOf(i);
+    let best = null, bs = -1;
+    for (const c of list) {
+      if (c.end) continue;
+      let s = 0;
+      if (TROPE_CONJUNCTIVE.has(k)) { if (c.next === nextK) s += 40; else if (c.next === chainK) s += 20; if (c.prev === prevK) s += 4; }
+      else { if (c.next === nextK) s += 20; if (c.prev === prevK) s += 10; }
+      if (learn && c.n === learn) s += 2;
+      if (s > bs || (s === bs && rowNum(c.n) < rowNum(best.n))) { best = c; bs = s; }
+    }
+    return best ? { n: best.n, ui: best.ui } : null;
+  };
+  for (let i = 0; i < endFrom; i++) {
+    const k = ks[i];
+    let p = ctx && ctx.has(k) ? pickFrom(ctx.get(k), i, (TROPE_LEARN_ROW[melody] || {})[k]) : null, set = melody;
+    if (!p && opts.fallbackCtx && opts.fallbackCtx.has(k)) { p = pickFrom(opts.fallbackCtx.get(k), i, (TROPE_LEARN_ROW[fbMelody] || {})[k]); set = fbMelody; }
+    if (p) picks[i] = { set, n: p.n, ui: p.ui };
+  }
+  return picks;
+}
+// The picked figures stitched into one row in the phrase file's shape — notes, each figure's own syllables
+// (they carry the beaming), units (with the verse's ci/pi/fam/twi), the triplets and slurs that lie inside
+// one figure (one cut at a figure's edge is drawn by value), and `words`: one per cell, spanning its units'
+// notes, `w` left 0 for the caller to measure. A cell none of whose units got a figure has no notes: its
+// pieces join the word before it (the first cell, the word after), so every piece is still on the page.
+// sets: {torah, highholiday} phrase sets (a pick names its set).
+function tropeBuildReadingRow(units, picks, cells, sets, opts = {}) {
+  const notes = [], syl = [], outUnits = [], tup = [], slur = [];
+  const byN = {};
+  const rowOf = (set, n) => {
+    const s = sets && sets[set];
+    if (!s) return null;
+    if (!byN[set]) byN[set] = new Map(s.rows.map((r) => [r.n, r]));
+    return byN[set].get(n) || null;
+  };
+  const cellSpan = new Map();
+  units.forEach((u, i) => {
+    const p = picks[i], row = p && rowOf(p.set, p.n);
+    const su = row && row.units[p.ui];
+    if (!su) return;
+    const off = notes.length - su.from;
+    for (let j = su.from; j <= su.to; j++) {
+      const n = Object.assign({}, row.notes[j]);
+      if (j === su.to) delete n.tie;
+      notes.push(n);
+    }
+    const ui = outUnits.length;
+    for (const s of row.syl) if (s.unit === p.ui) syl.push({ t: s.t, hyphen: !!s.hyphen, unit: ui, from: s.from + off, to: s.to + off });
+    for (const t of row.tup) if (t.from >= su.from && t.to <= su.to) tup.push({ from: t.from + off, to: t.to + off });
+    for (const sl of row.slur) if (sl.from >= su.from && sl.to <= su.to) slur.push({ from: sl.from + off, to: sl.to + off, dashed: !!sl.dashed });
+    const from = su.from + off, to = su.to + off;
+    outUnits.push({ k: u.k, from, to, ci: u.ci, pi: u.pi, fam: u.fam || '', twi: u.twi });
+    const cs = cellSpan.get(u.ci);
+    if (cs) cs.to = to; else cellSpan.set(u.ci, { from, to });
+  });
+  const words = [];
+  let orphans = [];
+  cells.forEach((c, ci) => {
+    const cs = cellSpan.get(ci);
+    if (!cs) { if (words.length) words[words.length - 1].cells.push(ci); else orphans.push(ci); return; }
+    words.push({ ci, cells: [...orphans, ci], from: cs.from, to: cs.to, w: 0 });
+    orphans = [];
+  });
+  if (orphans.length && words.length) words[0].cells.push(...orphans);
+  return { n: String(opts.n || ''), he: '', tags: [], notes, syl, units: outUnits, tup, slur, words };
+}
+// The rows of a reading row's words a..b (inclusive), re-indexed from 0; a tie into the cut is dropped.
+function tropeSubRow(row, a, b) {
+  const wa = row.words[a], wb = row.words[b];
+  const from = wa.from, to = wb.to, N = to - from + 1;
+  const inside = (x) => x.from >= from && x.to <= to;
+  const shift = (x) => Object.assign({}, x, { from: x.from - from, to: x.to - from });
+  const notes = row.notes.slice(from, to + 1).map((n, i) => (i === N - 1 && n.tie ? Object.assign({}, n, { tie: false }) : n));
+  const units = row.units.filter(inside).map(shift);
+  const unitIndex = new Map(row.units.map((u, i) => [i, units.findIndex((v) => v.from === u.from - from && v.k === u.k)]));
+  const syl = row.syl.filter(inside).map((s) => Object.assign(shift(s), { unit: unitIndex.get(s.unit) }));
+  return { n: row.n, he: row.he, tags: row.tags, notes, syl, units, tup: row.tup.filter(inside).map(shift), slur: row.slur.filter(inside).map(shift),
+    words: row.words.slice(a, b + 1).map((w) => Object.assign({}, w, { from: w.from - from, to: w.to - from })) };
+}
+// The reading row wrapped into systems no wider than maxW (staff units), breaking only between words: each
+// word's width is measured on its own once, words are packed by those widths, and each system is then laid
+// out for real, shedding its last word while it overflows (a system always keeps at least one word).
+// Returns [{row}] in order; the caller lays each out (or reads its layout) and draws it.
+function tropeSplitSystems(row, key, shift, maxW, opts = {}) {
+  const words = row.words || [];
+  if (!words.length) return [{ row }];
+  const lay = (r) => layoutPhraseStaff(r, key, shift, null, opts);
+  const single = words.map((w, i) => { const L = lay(tropeSubRow(row, i, i)); return L.W - L.X0; });
+  const X0 = lay(tropeSubRow(row, 0, 0)).X0;
+  const systems = [];
+  let a = 0;
+  while (a < words.length) {
+    let b = a, x = X0 + single[a];
+    while (b + 1 < words.length && x + 6 + single[b + 1] <= maxW) { b++; x += 6 + single[b]; }
+    while (b > a && lay(tropeSubRow(row, a, b)).W > maxW) b--;
+    systems.push({ row: tropeSubRow(row, a, b) });
+    a = b + 1;
+  }
+  return systems;
 }
