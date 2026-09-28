@@ -1002,10 +1002,13 @@ body.trope-underline-fallback .tt-trope-swatch { background:var(--tt-sw-line); }
 .tt-staff-words.tt-heb { position:relative; display:block; flex:none; direction:ltr; text-align:start; line-height:1.3; word-spacing:0; margin:0; block-size:calc(var(--tt-heb-size, 1.5rem) * 1.5); }
 body.staff-words-both .tt-staff-words.tt-heb { block-size:calc(var(--tt-heb-size, 1.5rem) * 1.5 + var(--tt-translit-size, 0.95rem) * 1.6); }
 body.staff-words-translit .tt-staff-words.tt-heb { block-size:calc(var(--tt-translit-size, 0.95rem) * 1.7); }
-body.staff-words-translit .tt-staff-cell .tt-wh { display:none; }
+body.staff-words-translit .tt-staff-reading .tt-wh { display:none; }   /* the systems' cells and the words-only fallback rows alike */
+/* With the Hebrew hidden the karaoke Under style has no .tt-wh to underline: the sung word's line moves to its Latin line. */
+body.staff-words-translit.kar-style-underline .tt-staff-reading .tt-word.active > .tt-wtl { text-decoration:underline solid var(--gold); text-decoration-thickness:3px; text-underline-offset:0.2em; }
 .tt-staff-cell { position:absolute; inset-block-start:0; transform:translateX(-50%); white-space:nowrap; direction:rtl; text-align:center; }
 .tt-staff-cell .tt-word { vertical-align:top; }
-.tt-staff-verse .tt-translation { text-align:start; margin-block-start:2px; }   /* the Translation switch's line under the systems: left-aligned to the notation, sized by --tt-english-size */
+.tt-staff-verse .tt-translation { margin-block-start:2px; }   /* the Translation switch's line, sized by --tt-english-size */
+.tt-staff-verse .tt-staff-rows + .tt-verse-row .tt-translation { text-align:start; }   /* under notation, left-aligned to it; a words-only row keeps its centred Hebrew's alignment */
 .tt-staff-probe { position:absolute; inset-block-start:0; inset-inline-start:-9999px; visibility:hidden; white-space:nowrap; pointer-events:none; }
 .tt-staff-probe-he { font-family:var(--heb-font); font-size:var(--tt-heb-size, 1.5rem); }
 .tt-staff-probe-tl { font-size:var(--tt-translit-size, 0.95rem); }
@@ -2264,7 +2267,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <span class="row tt-audio-tune">
       <label for="ttStaffTuneRate" data-i18n="torah.audio.tune_label">Tune</label>
       <input type="range" id="ttStaffTuneRate" min="0.5" max="1.5" step="0.05" value="1.0" aria-label="Tune playback speed" data-i18n-aria-label="torah.audio.tune_rate_aria">
-      <span class="val" id="ttStaffTuneRateVal">1.00×</span>
+      <span class="val" id="ttStaffTuneRateVal" dir="ltr">1.00×</span>
     </span>
   </span>
   <span class="tt-audio-credit">
@@ -2501,15 +2504,16 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <!-- The Trope staff layout (a Layout choice): what sits under the notes while the Translit switch is on (the
              Hebrew with its Latin line, or the Latin line alone), the key the staff is drawn in and the tune moved by,
              the voice (Low voices: the 8 under the clef, the tune an octave down), the note names and the tune's speed.
-             All but the speed travel in a practice link (how the reading looks); the speed stays on this device. -->
+             All but the speed travel in a practice link (how the reading looks); the speed never does (it syncs with the
+             account's settings like karaokeRate). -->
         <div class="form-row">
           <label id="lblStaffWords" data-i18n="torah.staff.words_label">Words</label>
-          <span class="radio-group" role="group" aria-labelledby="lblStaffWords" style="margin-inline-start:auto;">
+          <span class="radio-group" role="group" aria-labelledby="lblStaffWords" aria-describedby="staffWordsNote" style="margin-inline-start:auto;">
             <input type="radio" name="optStaffWords" id="swBoth" value="both"><label for="swBoth" data-i18n="torah.staff.words_both">Hebrew + transliteration</label>
             <input type="radio" name="optStaffWords" id="swTranslit" value="translit"><label for="swTranslit" data-i18n="torah.staff.words_translit">Transliteration only</label>
           </span>
         </div>
-        <div style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.words_note">Applies while the Translit switch is on.</div>
+        <div id="staffWordsNote" style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.words_note">Applies while the Translit switch is on.</div>
         <div class="slider-row">
           <label for="optStaffShift"><span id="optStaffShiftLbl" data-i18n="torah.staff.key_label">Key</span>
             <span class="tip-wrap" data-i18n-tip="torah.staff.key_tip" data-tip="Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody)."><i class="tip-icon">?</i></span>
@@ -2538,7 +2542,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <div class="slider-row">
           <label for="optStaffTuneRate" data-i18n="torah.staff.tune_speed_label">Tune speed</label>
           <input type="range" id="optStaffTuneRate" min="0.5" max="1.5" step="0.05" value="1.0">
-          <span class="sval" id="optStaffTuneRateVal">1.00×</span>
+          <span class="sval" id="optStaffTuneRateVal" dir="ltr">1.00×</span>
           <button class="sreset" onclick="resetStaffTuneRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <div style="font-size:0.72rem;color:var(--muted);line-height:1.45;" data-i18n="torah.staff.beta_note">Beta: each word's figure follows the printed cantillation chart. Where the chart prints no figure for a word's context the nearest one is used, and each word sits whole under its notes (no syllable placement yet).</div>
@@ -2555,7 +2559,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
             <input type="radio" name="optTranslitPlace" id="tpWord" value="word"><label for="tpWord" data-i18n="torah.trans.place_word">Under each word</label>
           </span>
         </div>
-        <div id="tpStaffNote" style="font-size:0.7rem;color:var(--muted);margin-top:4px;line-height:1.4;" data-i18n="torah.trans.place_staff_note" hidden>In the Trope staff layout the transliteration always sits under each word; the Trope staff panel's Words choice says whether the Hebrew shows with it.</div>
+        <div id="tpStaffNote" style="font-size:0.7rem;color:var(--muted);margin-top:4px;margin-bottom:10px;line-height:1.4;" data-i18n="torah.trans.place_staff_note" hidden>In the Trope staff layout the transliteration always sits under each word; the Trope staff panel's Words choice says whether the Hebrew shows with it.</div>
         <div class="form-row">
           <label for="optTranslitStyle" data-i18n="torah.trans.style_label">Style</label>
           <select id="optTranslitStyle">
@@ -6833,8 +6837,9 @@ function karaokeFollowEffective() {
 function applyKaraokeAppearance() {
   const body = document.body;
   // body.layout-staff follows the Layout setting from here (every layout write path ends in this function: the
-  // radio, syncFormToSettings at init / reset / cloud re-read), so the audio bar's Tune row and the drawer's staff
-  // notes see it on the empty card too, not only after a render.
+  // radio, syncFormToSettings at init / reset / cloud re-read), so the audio bar's Tune row (its one CSS reader) shows
+  // on the empty card too, not only after a render; the drawer's staff notes get their `hidden` set below for the
+  // same reason.
   body.classList.toggle('layout-staff', settings.layout === 'staff');
   ['highlight','outline','underline','none'].forEach(s =>
     body.classList.toggle('kar-style-' + s, settings.karaokeStyle === s));
@@ -7543,7 +7548,7 @@ function wireSettingsForm() {
     r.addEventListener('change', e => {
       if (!e.target.checked) return;
       settings.staffWords = e.target.value; saveSettings();
-      if (settings.layout === 'staff') renderText();
+      if (settings.layout === 'staff' && settings.showTranslit) renderText();   // inert while the switch is off: the next render picks it up (and a playing tune is not stopped for nothing)
     });
   });
   document.querySelectorAll('input[name="optStaffVoice"]').forEach(r => {
@@ -9697,7 +9702,10 @@ function linkViewApply() {
     // with the reader's; one it names but that fails its check keeps the reader's own.
     let want = DEFAULTS[k];
     if (Object.prototype.hasOwnProperty.call(data, k)) { want = LINK_DISPLAY[k](data[k]); if (want === undefined) return; }
-    if (_linkSame(want, settings[k])) return;
+    // Compared with what the reader sees: a stored value a reader never sees (the staff's retired 'hebrew' Words
+    // choice, an unknown note-names value) must not open the link view for a difference that is invisible.
+    const seen = k === 'staffWords' ? staffWordsKey() : k === 'staffNoteNames' ? staffNoteNamesKey() : settings[k];
+    if (_linkSame(want, seen)) return;
     own[k] = settings[k];
     shown[k] = JSON.parse(JSON.stringify(want));
     settings[k] = JSON.parse(JSON.stringify(want));   // a copy of its own: the pickers edit the color maps in place

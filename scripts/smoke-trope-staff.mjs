@@ -138,9 +138,11 @@ const row12 = (() => {
     assert.ok(L.notes.every((o) => o.rest || o.name === 'MMMMMMMM'), 'every note carries its name');
   }
   assert.ok(named.length > sys.length, 'the names were consulted: more systems than without them');
+  assert.ok(named.some((s) => s.row.words.length > 1), 'some named system packs two or more words (the fit check is not only its one-word escape)');
   same(named.flatMap((s) => s.row.words.map((w) => w.ci)), wr.words.map((w) => w.ci));
   assert.ok(sys.some((s) => api.layoutPhraseStaff(s.row, 'A', 0, namesOf(s.row), opts).W > 300), 'control: a system wrapped without names overflows once named');
-  same(api.tropeSplitSystems(wr, 'A', 0, 300, opts), sys);
-  ok('with namesOf the systems wrap at their named width, keep the words in order, and without it nothing changes');
+  same(api.tropeSplitSystems(wr, 'A', 0, 300, opts), sys);   // the named run left the row untouched
+  same(api.tropeSplitSystems(wr, 'A', 0, 300, Object.assign({ namesOf: () => null }, opts)), sys);   // null names = no names, as before
+  ok('with namesOf the systems wrap at their named width and keep the words in order; null or absent names wrap as before');
 }
 console.log(`smoke-trope-staff: ${n} checks passed`);

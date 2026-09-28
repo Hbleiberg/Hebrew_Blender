@@ -217,7 +217,9 @@ layout uses (below). It reads no `settings`, no `I18n` and no DOM but `createEle
 needs a page's state (`tuneShiftVal`, `staffKey`, `noteNameAt`, `renderMotifStaff`, the tune players)
 stays in its page. A change to the engine is proved by snapshotting every Learn and Phrases staff's
 `outerHTML` before and after (the melody × key × voice × note-names matrix) — the two must be byte-identical
-unless the change means to move a note.
+unless the change means to move a note; the reading-staff half the tutor never calls (`tropeUnitsOfVerse`,
+`tropeContextsOf`, `tropeChooseFigures`, `tropeBuildReadingRow`, `tropeSubRow`, `tropeSplitSystems`) is proved by
+`node scripts/smoke-trope-staff.mjs` instead.
 
 A standalone Learn + Phrases + Drill page for the cantillation marks. **Zero runtime Sefaria dependency** —
 it consumes only the pre-built static index plus PocketTorah MP3 streams. Its CSP therefore has
@@ -729,7 +731,9 @@ Design: `docs/tropepatterns.md` → G.
   `tropeSplitSystems` (so a system is wrapped at the width it is drawn at once names widen it) and to each
   system's `layoutPhraseStaff`; `renderPhraseStaff` then draws the `<text class="tu-nn">` from the layout and the
   system's height follows `L.lyricY`. Do re mi waits for the dictionary (`staffNoteNamesMode`: `'solfa'` reads
-  `'off'` until `trope.notes.solfa_1` is there; `applyI18n`'s re-render brings it, and a language switch moves it).
+  `'off'` until `trope.notes.solfa_1` is there; `applyI18n`'s re-render brings it, and a language switch moves it —
+  except while Chant, a loop or a clip plays, when `applyI18n` skips the re-render and the names, like the rest of
+  the reading, follow at the next `renderText`).
   The names are `--muted`, gold while their note sounds (the tune's `.is-sounding`) or is chanted (`.is-hl`), and
   print muted; the SVG stays hidden from assistive tech, so no spoken list is built.
 - **Known beta limits** (said in the panel's note): a word sits whole under its figure (no syllable
