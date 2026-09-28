@@ -1005,6 +1005,7 @@ body.staff-words-translit .tt-staff-words.tt-heb { block-size:calc(var(--tt-tran
 body.staff-words-translit .tt-staff-cell .tt-wh { display:none; }
 .tt-staff-cell { position:absolute; inset-block-start:0; transform:translateX(-50%); white-space:nowrap; direction:rtl; text-align:center; }
 .tt-staff-cell .tt-word { vertical-align:top; }
+.tt-staff-verse .tt-translation { text-align:start; margin-block-start:2px; }   /* the Translation switch's line under the systems: left-aligned to the notation, sized by --tt-english-size */
 .tt-staff-probe { position:absolute; inset-block-start:0; inset-inline-start:-9999px; visibility:hidden; white-space:nowrap; pointer-events:none; }
 .tt-staff-probe-he { font-family:var(--heb-font); font-size:var(--tt-heb-size, 1.5rem); }
 .tt-staff-probe-tl { font-size:var(--tt-translit-size, 0.95rem); }
@@ -2480,17 +2481,18 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <div class="panel collapsed">
       <div class="panel-title"><span data-i18n="torah.settings.panel_staff">Trope staff</span> <span class="beta-tag" data-i18n="shared.badge.beta">BETA</span></div>
       <div class="panel-body">
-        <!-- The Trope staff layout (a Layout choice): what sits under the notes, the key the staff is drawn in and the
-             tune moved by, the voice (Low voices: the 8 under the clef, the tune an octave down) and the tune's speed.
+        <!-- The Trope staff layout (a Layout choice): what sits under the notes while the Translit switch is on (the
+             Hebrew with its Latin line, or the Latin line alone), the key the staff is drawn in and the tune moved by,
+             the voice (Low voices: the 8 under the clef, the tune an octave down) and the tune's speed.
              Words, key and voice travel in a practice link (how the reading looks); the speed stays on this device. -->
         <div class="form-row">
           <label id="lblStaffWords" data-i18n="torah.staff.words_label">Words</label>
           <span class="radio-group" role="group" aria-labelledby="lblStaffWords" style="margin-inline-start:auto;">
-            <input type="radio" name="optStaffWords" id="swHebrew" value="hebrew"><label for="swHebrew" data-i18n="torah.staff.words_hebrew">Hebrew</label>
-            <input type="radio" name="optStaffWords" id="swTranslit" value="translit"><label for="swTranslit" data-i18n="torah.staff.words_translit">Transliteration</label>
-            <input type="radio" name="optStaffWords" id="swBoth" value="both"><label for="swBoth" data-i18n="torah.staff.words_both">Both</label>
+            <input type="radio" name="optStaffWords" id="swBoth" value="both"><label for="swBoth" data-i18n="torah.staff.words_both">Hebrew + transliteration</label>
+            <input type="radio" name="optStaffWords" id="swTranslit" value="translit"><label for="swTranslit" data-i18n="torah.staff.words_translit">Transliteration only</label>
           </span>
         </div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.words_note">Applies while the Translit switch is on.</div>
         <div class="slider-row">
           <label for="optStaffShift"><span id="optStaffShiftLbl" data-i18n="torah.staff.key_label">Key</span>
             <span class="tip-wrap" data-i18n-tip="torah.staff.key_tip" data-tip="Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody)."><i class="tip-icon">?</i></span>
@@ -2527,6 +2529,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
             <input type="radio" name="optTranslitPlace" id="tpWord" value="word"><label for="tpWord" data-i18n="torah.trans.place_word">Under each word</label>
           </span>
         </div>
+        <div id="tpStaffNote" style="font-size:0.7rem;color:var(--muted);margin-top:4px;line-height:1.4;" data-i18n="torah.trans.place_staff_note" hidden>In the Trope staff layout the transliteration always sits under each word; the Trope staff panel's Words choice says whether the Hebrew shows with it.</div>
         <div class="form-row">
           <label for="optTranslitStyle" data-i18n="torah.trans.style_label">Style</label>
           <select id="optTranslitStyle">
@@ -2744,10 +2747,11 @@ const DEFAULTS = {
   copyColorCoding: false,      // also write a text/html flavor carrying the vowel/trope colors
   copyBulkRemember: false,     // open the Copy bar in Select-verses mode; keep the selection on close
   shareIncludeDisplay: false,  // Copy link also carries the display settings as ?s= (see LINK VIEW)
-  // Trope staff layout (beta; layout === 'staff'): what sits under the notes, the key the staff is drawn in and the
-  // tune moved by (half steps), whether the tune sounds an octave down (the 8 under the clef), and the tune's speed.
-  // The first three travel in a practice link (how the reading looks); the speed is how it sounds and stays home.
-  staffWords: 'hebrew',        // 'hebrew' | 'translit' | 'both' — read through staffWordsKey()
+  // Trope staff layout (beta; layout === 'staff'): what sits under the notes while the Translit switch is on (the
+  // Hebrew with its Latin line, or the Latin line alone), the key the staff is drawn in and the tune moved by (half
+  // steps), whether the tune sounds an octave down (the 8 under the clef), and the tune's speed. The first three
+  // travel in a practice link (how the reading looks); the speed is how it sounds and stays home.
+  staffWords: 'both',          // 'both' | 'translit' — read through staffWordsKey()
   staffShift: 0,               // −6…6 half steps — staffShiftVal()
   staffVoice: 'high',          // 'high' | 'low' — staffVoiceKey()
   staffTuneRate: 1.0,          // 0.5–1.5× — staffRateVal()
@@ -3663,7 +3667,7 @@ function getTropeColor(fam) {
 function tropeModeKey() { return settings.tropeCodingMode === 'underline' ? 'underline' : 'highlight'; }
 // The Trope staff layout's settings, read at use time the same way: an unknown stored value (a newer page's choice,
 // an edited link) shows as the default and stays stored; the numbers are clamped again for a value written since load.
-function staffWordsKey() { return settings.staffWords === 'translit' || settings.staffWords === 'both' ? settings.staffWords : 'hebrew'; }
+function staffWordsKey() { return settings.staffWords === 'translit' ? 'translit' : 'both'; }   // the sub-choice under the Translit switch; a stored 'hebrew' (the retired third choice) reads 'both' and stays stored
 function staffVoiceKey() { return settings.staffVoice === 'low' ? 'low' : 'high'; }
 function staffShiftVal() { const v = Math.round(Number(settings.staffShift)); return Number.isFinite(v) ? Math.max(-TUNE_SHIFT_MAX, Math.min(TUNE_SHIFT_MAX, v)) : 0; }
 function staffRateVal() { const v = Number(settings.staffTuneRate); return Number.isFinite(v) && v > 0 ? Math.max(0.25, Math.min(3, v)) : 1; }
@@ -4267,20 +4271,19 @@ function renderText() {
   // and say so on screen so the column does not just silently vanish.
   // .every() short-circuits on the first verse that DOES transliterate, so when the
   // library is present this costs exactly one extra call.
-  const wantStaffTl = layout === 'staff' && staffWordsKey() !== 'hebrew';   // the Trope staff's Words choice asks for the Latin line too
+  const wantStaffTl = layout === 'staff' && settings.showTranslit;   // the Translit switch drives the staff's Latin line too (Words says whether the Hebrew shows with it)
   if (wantStaffTl) maybeEnsureTranslit();
-  const _translitDead = (settings.showTranslit || wantStaffTl) &&
+  const _translitDead = settings.showTranslit &&
     currentVerses.every(v => !applyTranslit(v.hebrew));
   const includeTranslit = settings.showTranslit && !_translitDead;
   // Placement 'word' puts each word's transliteration under it (inside its .tt-word cell — tokenizeHebrew)
   // and drops the separate row / column / block. body.translit-under is written HERE ONLY, so it is on
   // exactly when those cells exist: never with a dead library, never on the empty card.
-  // In the Trope staff layout the cells carry the Latin line whenever its Words choice asks for it (the Translit
-  // switch and its placement are the other layouts'); a dead library falls back to the Hebrew, with the chip.
-  const underWord = layout === 'staff' ? (wantStaffTl && !_translitDead) : (includeTranslit && settings.translitPlacement === 'word');
+  // In the Trope staff layout the Translit switch puts the Latin line under each word whatever the placement radios
+  // say (a separate row would duplicate the .tt-word spans); a dead library falls back to the Hebrew, with the chip.
+  const underWord = layout === 'staff' ? includeTranslit : (includeTranslit && settings.translitPlacement === 'word');
   const withTranslitRow = includeTranslit && !underWord && layout !== 'staff';
   document.body.classList.toggle('translit-under', underWord);
-  document.body.classList.toggle('layout-staff', layout === 'staff');
   document.body.classList.toggle('staff-words-both', layout === 'staff' && underWord && staffWordsKey() === 'both');
   document.body.classList.toggle('staff-words-translit', layout === 'staff' && underWord && staffWordsKey() === 'translit');
   const includeTrans    = settings.showTranslation;
@@ -4319,7 +4322,7 @@ function renderText() {
   if (_aliyahStarts) for (const a of _aliyahStarts) aStartByLabel[a.label] = a.num;
   const wordIdxRef = { value: 0 };
   if (layout === 'staff') {
-    html += renderStaffView(currentVerses, wordIdxRef, canChant, canLoop, aStartByLabel, underWord);
+    html += renderStaffView(currentVerses, wordIdxRef, canChant, canLoop, aStartByLabel, underWord, includeTrans);
   } else if (layout === 'biblepage') {
     html += renderBiblePage(currentVerses, withTranslitRow, includeTrans, wordIdxRef, canChant, aStartByLabel, underWord);
   } else if (layout === 'interlinear') {
@@ -4710,7 +4713,7 @@ function staffTuneAllButtonHTML() {   // renderText stops any tune first, so the
 // itself waits for staffEnsureSvg — so data-twi numbering, updateKaraokeWordRefs and the rover see the
 // finished DOM at once. A verse the staff cannot draw (no data yet, a haftarah, a double-cantillation
 // verse, a word count that disagrees with the marks) shows its words as the interlinear layout would.
-function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, underWord) {
+function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, underWord, withTrans) {
   aStartByLabel = aStartByLabel || {};
   _staffSystems = {};
   const set = staffSet(), setName = staffSetName(), ctx = STAFF_CTX[setName], fbCtx = STAFF_CTX.torah;
@@ -4791,6 +4794,9 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
       });
       html += `  </div>`;
     }
+    // The Translation switch: the verse's translation under its systems (or its words-only row), with no row label
+    // (the staff has none), left-aligned to the notation by the CSS and sized by --tt-english-size.
+    if (withTrans && v.translation) html += `  <div class="tt-verse-row"><span class="tt-translation">${stripHTML(v.translation)}</span></div>`;
     html += `</div>`;
   }
   html += '</div>';
@@ -6756,6 +6762,10 @@ function karaokeFollowEffective() {
 }
 function applyKaraokeAppearance() {
   const body = document.body;
+  // body.layout-staff follows the Layout setting from here (every layout write path ends in this function: the
+  // radio, syncFormToSettings at init / reset / cloud re-read), so the audio bar's Tune row and the drawer's staff
+  // notes see it on the empty card too, not only after a render.
+  body.classList.toggle('layout-staff', settings.layout === 'staff');
   ['highlight','outline','underline','none'].forEach(s =>
     body.classList.toggle('kar-style-' + s, settings.karaokeStyle === s));
   const follow = karaokeFollowEffective();
@@ -6764,6 +6774,8 @@ function applyKaraokeAppearance() {
   const note = document.getElementById('kfUnderNote'), staffNote = document.getElementById('kfStaffNote');
   if (note) note.hidden = settings.layout === 'staff' || !(settings.showTranslit && settings.translitPlacement === 'word');
   if (staffNote) staffNote.hidden = settings.layout !== 'staff';
+  const tpNote = document.getElementById('tpStaffNote');   // the placement radios do not apply in the staff layout
+  if (tpNote) tpNote.hidden = settings.layout !== 'staff';
 }
 /* One map, three former copies (resetFontSize, syncFormToSettings' sizeMap, the wireSize call
    list). Keyed by the argument the ↺ buttons already pass in their onclick=. */
@@ -6922,7 +6934,7 @@ function wireTranslit() {
   window.addEventListener('translitlibloaded', () => {
     status.textContent = I18n.t('torah.trans.lib_loaded');
     status.dataset.i18nKey = 'torah.trans.lib_loaded';   // lets applyI18n heal a pre-ready raw key + follow language switches
-    if (settings.showTranslit || (settings.layout === 'staff' && staffWordsKey() !== 'hebrew')) renderText();
+    if (settings.showTranslit) renderText();
     // The copy bar reads the same library: a late arrival has to clear its prerequisite note
     // AND fill the transliteration back into the preview, neither of which renderText touches.
     updateCopyTextarea();
@@ -6933,7 +6945,7 @@ function wireTranslit() {
   });
 }
 function maybeEnsureTranslit() {
-  if ((settings.showTranslit || (settings.layout === 'staff' && staffWordsKey() !== 'hebrew')) && window.HebrewTransliterator) {
+  if (settings.showTranslit && window.HebrewTransliterator) {
     window.HebrewTransliterator.ensureLoaded();
   }
 }
@@ -7454,13 +7466,12 @@ function wireSettingsForm() {
       if (e.target.checked) { settings.layout = e.target.value; saveSettings(); applyKaraokeAppearance(); renderText(); }
     });
   });
-  // The Trope staff panel: Words re-renders the staff (and asks for the transliteration library); Key and Voice
-  // go through their one writer; the tune speed is read at the next play.
+  // The Trope staff panel: Words re-renders the staff (the Translit switch is what asks for the library); Key and
+  // Voice go through their one writer; the tune speed is read at the next play.
   document.querySelectorAll('input[name="optStaffWords"]').forEach(r => {
     r.addEventListener('change', e => {
       if (!e.target.checked) return;
       settings.staffWords = e.target.value; saveSettings();
-      maybeEnsureTranslit(); applyKaraokeAppearance();
       if (settings.layout === 'staff') renderText();
     });
   });

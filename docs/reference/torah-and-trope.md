@@ -682,10 +682,15 @@ Design: `docs/tropepatterns.md` → G.
   the reading, so every render on that path is bracketed by `genizaMarkOut` / `genizaMarkIn`. The handout's
   Large / Extra large sizes reach the text layouts only: the staff's words are measured and sized at the
   screen size.
-- **Words** (`staffWords`: Hebrew, transliteration, both): the cells are `tokenizeHebrew`'s under-word cells
-  (`.tt-wh` + `.tt-wtl`) whenever the Latin line is wanted, whatever the Translit switch says; `body.translit-under`
-  is on then, and `karaokeFollowEffective()` is `'hebrew'` in this layout. Transliteration only hides `.tt-wh`
-  (`body.staff-words-translit`). A dead library falls back to the Hebrew with the existing chip.
+- **Words.** The Translit switch drives the Latin line here too: with it on, the cells are `tokenizeHebrew`'s
+  under-word cells (`.tt-wh` + `.tt-wtl`) whatever the placement radios say (a separate transliteration row
+  would duplicate the `.tt-word[data-twi]` spans; the Transliteration panel's note says so in this layout), so
+  `body.translit-under` is on and `karaokeFollowEffective()` is `'hebrew'`. `staffWords` is the sub-choice under
+  the switch — `'both'` (the Hebrew with its Latin line) or `'translit'` (the Latin line alone;
+  `body.staff-words-translit` hides `.tt-wh`); a stored `'hebrew'` (the retired third choice) reads `'both'` and
+  stays stored. A dead library falls back to the Hebrew with the existing chip, and the handout, which turns the
+  switch off, prints the Hebrew alone. The Translation switch adds the verse's translation under its systems
+  (`.tt-verse-row > .tt-translation`, no row label, left-aligned to the notation, sized by `--tt-english-size`).
 - **Lazy SVG.** Layouts are computed for every verse at render (they place the words); each system's SVG is
   drawn by `staffEnsureSvg` when an `IntersectionObserver` sees it near the viewport, when the tune or the
   chant highlight reaches it, and all at once in `beforeprint`. A 146-verse reading lays out in ~130 ms.
