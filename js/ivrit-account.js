@@ -661,7 +661,10 @@
     document.removeEventListener('pointerdown', onDocPointer, true);
     window.removeEventListener('resize', clampMenu);
     window.removeEventListener('orientationchange', clampMenu);
-    if (refocus) chip.btn.focus();
+    // Hand the focus back to the chip only while it is still in the menu or nowhere: a code sign-in's SIGNED_IN
+    // listeners open the "Sync settings…" window before verifyOtp resolves, and that window keeps the focus.
+    var a = document.activeElement;
+    if (refocus && (!a || a === document.body || a === chip.btn || chip.menu.contains(a))) chip.btn.focus();
   }
   function setNote(text, isError) {
     noteState = text ? { text: text, isError: !!isError } : null;
