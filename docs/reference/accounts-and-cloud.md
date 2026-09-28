@@ -164,7 +164,9 @@ the mark on a sign-in button only as-is, and `aria-hidden` because the button's 
 Google. It sits on the inline-start edge, so it mirrors to the right under the Hebrew UI. Signed in: "Signed in as {email}", "Cloud saves…" (when registered), "Sign
 out (this device)". Keyboard: Enter/Space/click toggle, ↓ opens, focus lands on the first control,
 Tab/Shift+Tab wrap inside, ↓/↑ move between controls (not inside text fields), Escape closes and returns
-focus to the button, an outside click closes without moving focus. One injected `<style id="ivacct-style">`,
+focus to the button, an outside click closes without moving focus. A sign-in by code or Sign out closes the
+menu and hands the focus to the button only if the focus is still in the menu or nowhere: the "Sync
+settings…" window a code sign-in opens keeps it. One injected `<style id="ivacct-style">`,
 classes `ivacct-*`, logical properties, palette vars with fallbacks, `body.dark` / `html.dark-early`
 aware, transitions neutralized under `prefers-reduced-motion`. Sized to match the language switcher
 (30 px min-height, `align-self: stretch`). The email and code fields take the label's compact size on a

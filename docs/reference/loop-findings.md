@@ -4,6 +4,43 @@
 > previous session already refuted. Never read it whole. Entries are moved here verbatim from the ledger's Candidates
 > by `scripts/compact-ledger.mjs`; they are records, not open work. Full history: `docs/IMPROVEMENT_ARCHIVE.md`.
 
+## S427 (2026-09-28) — pass C on the dictionary (its first since S285)
+
+- [ ] P4 (**NEW S427 Pass C — the dictionary's receipts, arm by arm, so the next C on it starts here**) | hebrew_dictionary.html |
+  **Harness `c427/`** (scratchpad): `lib.mjs` blocks the SW, aborts foreign origins, stubs Google Fonts from `npm pack @fontsource/frank-ruhl-libre @fontsource/source-sans-3 @fontsource/libre-baskerville` (trap 94), seeds dark through `hebrewBlender_darkMode` and asserts `body.dark`; `census.mjs`, `arm1`–`arm5.mjs` and the probes beside them; the account arms reuse `h426/cloud.mjs` with the pinned SDK. 0 pageerrors everywhere; 0 account-layer requests from an anonymous visit (trap 186).
+  - **(1) Census, 8 cells** (EN/HE × light/dark × 1280/800, every sidebar menu opened by its own button): 484 controls; 0 nameless (the `main` landmark, `tabindex=-1` for the skip link, needs no name), 0 title-only / placeholder-only / symbol-only, 0 `aria-hidden` focusables, 0 class-only selected, one `h1`, 0 level jumps, 0 overflow. Plants on EN light 1280 and HE dark 800 fired every detector (nameless, title-only, placeholder-only, ×, an `aria-hidden` focusable, 1.92:1, 20 px targets 22 px apart, a class-only pair). **Contrast at rest:** only the dimmed export box (candidate). **Targets:** only the known `.tip-wrap` ×3 (S271) and the sr-only `.skip-results`.
+  - **(2) Tab walks, 4 cells** (EN light and dark 1280, HE dark and light 800): 471 stops each, wrapping; 0 ringless, 0 without `:focus-visible`, 0 out of view, 0 clipped, 0 covered. Controls: 2/2 stripped rings (the Home link, the sort select), 1/1 covered (a sheet over Tour), 2/2 off-screen or `overflow:clip`.
+  - **(3) 13 keyboard scenarios × 2 cells** (EN light 1280, HE dark 800): the word window takes the focus on ×, 0/40 Tab escapes, Shift+Tab wraps, Escape returns to the card, and emoji cards match; the tour focuses Next, Escape returns to Tour; Show more keeps the focus. HEAD: a chip's ✕, Reset all, the toolbar's Reset and all four Word Lists actions → `<body>`, with Escape dead after the last (FIXED `7a631f6`); Save as Word List's name field placeholder-named and its menu nameless (FIXED `ee5f6f2`); the export error 2.35:1 / 2.79:1 with no live region.
+  - **(4) Modes:** Emoji (223 controls) and Shoresh (191) censused in both cells: the emoji tree's ▾ 15×9 px with 21 px rows fails 2.5.8, "♀ Feminine" 4.42:1 (light only), Shoresh's empty pattern tiles 2.79:1 / 3.13:1; the tree's arrows, the patterns title and the root chips all work by Enter and Space.
+  - **(5) Widgets:** each letter grid is one Tab stop (S398's roving holds); the arrows follow the grid's own RTL order in both UIs; Home, End, and Enter / Space toggle `aria-pressed` with the focus kept; the resize separator moves 16 px per arrow with `aria-valuenow`; panel titles are `role=button` with `aria-expanded` on Enter and Space.
+  - **(6) Inside the three dialogs:** the word window's 11 controls clean, Word Lists' 20 (the `.wm-mini` targets: candidate), Save's 5. HEAD: the Save, Add and Word Lists dialogs were nameless, their `aria-labelledby="wmTitle"` pointing at the word heading their body replaced (FIXED `ee5f6f2`).
+  - **(7) Reduced motion:** 0 declared or running under `reduce` (684 declared without it; an inline `!important` plant runs in both, trap 114). **1.4.12 text spacing:** 0 clipped, EN and HE. **320 px reflow:** 0 overflow, EN and HE.
+
+  | found S427
+
+- [ ] P4 (**NEW S427 — measurements and refutations, recorded so no pass re-files them**) | hebrew_dictionary.html + the account layer |
+  - **(1)** After a focused chip is removed, the next Tab lands on "Skip past results", not the top: Chromium keeps the sequential-focus starting point where the removed node was. The defect is `document.activeElement` being `<body>` (no ring; a screen reader loses its place), not a jump.
+  - **(2)** The tour card is non-modal by design (`aria-modal="false"`, a read-only overlay): Tab from Next reaches the page's FAQ, and Escape still ends the tour from there.
+  - **(3)** The on-screen keyboard is a disclosure (`aria-expanded`), not a popup: Escape leaving it open is right.
+  - **(4)** The letter grids move in the grid's own direction (RTL in both UIs), so in the English UI → moves toward Alef: S398's design.
+  - **(5)** Shoresh's empty pattern tiles are placeholders, not controls: logged at P4 as legibility, not under a disabled control's exemption.
+  - **(6)** The dimmed Export buttons are live (a press explains itself), so WCAG's inactive-component exemption covers neither their 2.87:1 / 4.1:1 labels nor the error beneath them.
+  - **(7)** Every page that loads `js/ivrit-account.js` loads `js/ivrit-saves.js` too (the harnesses aside), so a fresh code sign-in always opens the "Sync settings…" window; the chip's own refocus runs alone only when the saves module is missing.
+
+  | found S427
+
+- [ ] P4 (**NEW S427 — traps 179–186**) | probe harness |
+  - **(179)** A ring detector comparing the whole outline tuple reads an invisible `outline-offset` change as a ring when `outline-style` is `none`: the planted strip passed as ringed. Compare only a drawn outline (style not none, width > 0), and include descendants and `::before` / `::after`: the dictionary's `.tip-wrap` rings its `.tip-icon`.
+  - **(180)** Focusing a control inside `overflow:hidden` scrolls that box to reveal it, so a "clipped" plant there shows unclipped; plant with `overflow:clip` or an off-screen `position:fixed`.
+  - **(181)** Read `document.activeElement` right after the action: the next Tab lands near the removed control anyway (Chromium's sequential-focus starting point), so "Tab went somewhere sensible" never proves the focus was kept.
+  - **(182)** A fresh code sign-in opens the "Sync settings…" window on every page with `js/ivrit-saves.js`, whatever the `welcomed` mark says (trap 176 covers a restored session only); to test a sign-in with no window, route-abort `/js/ivrit-saves.js`.
+  - **(183)** The chrome pages (resources, contact, privacy, terms, 404) name `js/ivrit-account.js` only in their gtag comment: no module, no chip.
+  - **(184)** After Sign out the status is `'anonymous'`, not `'signed-out'`.
+  - **(185)** `git ls-files | tar -T -` fails on the PocketTorah timing files with a curly apostrophe (git quotes the names); copy a tree with `git archive HEAD | tar -x`.
+  - **(186)** "Expand all menus" opens the font picker, whose previews fetch `cdn.jsdelivr.net/gh/aharonium/fonts`: count account traffic by the SDK URL and the project origin, never by the CDN host.
+
+  | found S427
+
 ## S426 (2026-09-28) — pass H on the account page (its first)
 
 - [ ] P4 (**NEW S426 Pass H — the walkthrough's receipts, lesson by lesson, so the next account H starts here**) | account.html |
