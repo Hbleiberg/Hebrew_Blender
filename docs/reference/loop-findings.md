@@ -4,6 +4,55 @@
 > previous session already refuted. Never read it whole. Entries are moved here verbatim from the ledger's Candidates
 > by `scripts/compact-ledger.mjs`; they are records, not open work. Full history: `docs/IMPROVEMENT_ARCHIVE.md`.
 
+## S424 (2026-09-28) — pass D on the Torah Trainer (its 4th D)
+
+- [ ] P4 (**NEW S424 Pass D — `torah_trainer.html`'s 4th D (S184/S185 → S307 → S424, 71 commits between), its receipts, recorded so the next D on it starts here**) | torah_trainer.html | **Harness `d424/`**: m422's MAM-phrase Sefaria stub, widened to real Genesis chapter lengths (Bereshit = 146 verses / 2,117 words, four clauses a verse); the real web fonts; hebrew-transliteration 2.9.1 bundled from npm; a buffered longtask observer and a first-word ready stamp by `addInitScript`; real-click controls `#__ctl` (a 300 ms busy click, read 301–311 in every run) and `#__noop` (read nothing); CDP CPU throttle; the sampling profiler. **Cold (15 cells):**
+  - Translit off, 8 EN + 2 HE cells: 0 tasks over 200 ms at 1× and at 4× (max 168); ready 178–255 / 784–913 ms.
+  - Side by side + translit + translation: 602 + 267 @1×; 3,915 + 810 @4× (HE dark 800: 3,140).
+  - Under-word: 86 / 454.
+
+  **Interactions (21, by real input):**
+  - Translit on: 562–1,198 ms @1× for layout, translation, nikkud, vowel colour, language, style and placement; 3,747–6,798 @4×.
+  - Translit off: ≤175 @1× (side by side 219–283); side by side 452–933 @4×, interlinear ≤195.
+
+  **Chant + pitch:** the pitch graph built by a real ArrowRight = 0 longtasks @1×/@4×; Chant all was found broken (P1, fixed in `50d48bd`). **Idle 10 s:** 0 longtasks, 0 mutations (a planted append counted 1). **Heap after a forced GC over 60 re-renders:** translit off 3.2 → 4.2 MB; translit on 15.9 → 161 MB (a plateau; the library alone plateaus at 52.6); after `40c5154` 6.7 → 7.6 MB. | found S424
+
+- [ ] P4 (**NEW S424 — measurements, recorded so no pass re-derives them**) | torah_trainer.html |
+  - **(1) Where the time goes:**
+    - The translit-on boot task (686 ms @1×): `fetchAndRender` → `renderText` 539 → `applyTranslit` 503 → the library's `transliterate` 503, i.e. 93%.
+    - A translit-off side-by-side re-render at 4× (635 ms): `renderText` 148 ms of JS and `(program)` 721 ms of style/layout.
+  - **(2) Not a regression:** the same stub on the S307-era page (`280965f~1`) and the pre-S422 page (`6198b80~1`), each served through `page.route` with its hit counted:
+
+    | Layout at 4× | S307-era | Pre-S422 | Today |
+    |---|---|---|---|
+    | Side by side | 461–676 | 469–626 | 539–774 |
+    | Interlinear | 77–134 | 113–195 | 117–177 |
+
+  - **(3) Chant all, traced:**
+    - Cause: `playNextChant` played right after `await fetchAndRender()`, but `maybeLoadKaraoke` fires `loadKaraoke` without awaiting it, and `loadKaraoke` sets `currentAudio` and the aliyah's `src` only after the timings fetch.
+    - From the whole-parsha view: 0 `play()` calls (counted by a wrapper installed by `addInitScript`) and 0 audio requests.
+    - At an aliyah boundary: `play()` on the previous `src`, then the new `src` paused at t=0.
+    - The S307-era page and `38da95c` (May) behave the same.
+    - The holiday path (`_pendingChantVerse`) seeks to 21:1 at 453.0 s in Vayera aliyah 4, before and after the fix.
+  - **(4) By design:**
+    - Chant all on an aliyah scope chants only that aliyah (queue `[N]`).
+    - The open audio bar hides its mini play button; the native `<audio controls>` is the transport.
+  - **(5) Output identity after `40c5154`:**
+    - 30/30 readings are byte-identical (5 styles × 3 layouts × row/under-word).
+    - Switching a style away and back equals a fresh render.
+    - The copy text is identical.
+
+  | found S424
+
+- [ ] P4 (**NEW S424 — traps 166–170**) | probe harness |
+  - **(166)** `<audio preload="none">` requests nothing until `play()`. A route counter reading 0 means "never played", not "not routed"; record `play()` with a prototype wrapper.
+  - **(167)** A stand-in clip must be longer than the seek target. With a 120 s WAV, a holiday Chant all seeking to 453 s ended at once and chained on, which read as "skips aliyah 4"; use a 10-minute clip.
+  - **(168)** Chant all from an aliyah scope queues only that aliyah, so a chain test must start from the whole-parsha scope.
+  - **(169)** The composed stub repeats verses (60 distinct of 146), so a memo flatters a first render. Quote re-renders, or stub distinct text.
+  - **(170)** `documentElement.scrollHeight` never reads below the viewport height, so measure the sheet element for a print height.
+
+  | found S424
+
 ## S423 (2026-09-27) — pass G on flash cards (its 4th G)
 
 - [ ] P4 (**NEW S423 Pass G — `flash_cards.html`'s 4th G, its receipts, recorded so the next G on it starts here**) | flash_cards.html | **Harness `g423/`** (SW blocked, every foreign origin aborted, the real web fonts from `m422/fonts` (trap 94), the transliteration bundle from `m422/tl` (trap 154), `window.print` stubbed and counted in `addInitScript`, dialogs accepted). **S1 census** (`census.mjs`): every card the sheet can print — 13,081 dictionary words, 275 emoji (both genders, every visible sub), 26 colours, numbers 0–9999 (928 sampled, both genders) — through the page's own `fcsCell` and print CSS at Letter 0.4in (739px), A4 0.4 (716), Letter 1 (624) and A4 1 (601); the controls (60 alefs, a 2,000-character gloss, שָׁלוֹם) fire wide / tall / clean, 3 of 3. **S2 sheet PDFs** (`sheet.mjs`, 9 cells, real clicks: `#printSheetBtn` → the duplex switch → `#sheetPrintBtn`): pages = DOM = ceil(n/9) × (duplex ? 2 : 1) in 9 of 9, "k / N" on every page, 0 chrome leaks (the screen-media control prints "Start Practicing!"), duplex 84 of 84 answers behind their own card (checked against the deck the page generated, trap 165), colour swatches print, the teardown runs. **R report** (`report.mjs`: a maximal profile written through `saveResultToProfile`, 100 drills, 6 focus + 6 strengths + 8 drills + the ladder line + the cap note) × EN/HE × light/dark × Letter 0.4/0.5/1 and A4 0.4/0.5. **C certificate** × EN/HE × Letter/A4 × 4 names (3, 35 and 40 characters, a pointed Hebrew name): 16 of 16 on one landscape page, frame overflow 0, teardown. **P plain print** (`plain.mjs`, a 5-card drill marked by real clicks). **X .ivrit** (`ivrit.mjs`): Both / Presets / Profiles by real click → a real download; the keys equal `gather()` per scope; a real upload into an EMPTY profile + Replace gives 6 of 6 keys canonical-equal (the control differed on 6 of 6). **Sh share** (`share.mjs`, the real clipboard): look ON → the teacher's font and colour coding, OFF → the student's own; 5 inline words byte-exact; the student's stored settings unchanged during the drill and back on setup. **W** the worksheet hand-off (`handoff.mjs`): letters, vowels, blendType, inverse, dagesh and vav equal in the generator's popup. 0 pageerrors in every arm. | found S423
