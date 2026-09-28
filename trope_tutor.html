@@ -477,6 +477,7 @@ body.dark .tu-pstaff .tu-pn.is-hl .tu-nn { fill:var(--gold-light); }
 body.dark .tu-pex-play.is-playing { background:var(--gold-light); color:var(--navy-deep); box-shadow:0 0 0 3px var(--gold); }
 .tu-phr-status { display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; margin:0 0 14px; font-size:0.86rem; color:var(--muted); }
 .tu-phr-status[hidden] { display:none; }
+#tuPhrRetry[hidden] { display:none; }   /* .btn-xs / .hi-btn set inline-flex: without this "Try again" shows under "Loading…" */
 
 /* ───── Drill ───── */
 .tu-drill-head {
@@ -4772,6 +4773,7 @@ async function init() {
   refreshMyFonts();
   initCloudSaves();
   await loadData();
+  renderPhrasesIfShown();   // a Phrases tab opened while the chart downloaded shows it now (or says it failed), as retryLoadData does
   renderLearn();
   updateDrillStart();
 }
