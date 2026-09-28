@@ -598,22 +598,25 @@
     var btn = chip.btn;
     while (btn.firstChild) btn.removeChild(btn.firstChild);
     btn.setAttribute('data-state', status);
-    btn.setAttribute('aria-label', t('shared.account.menu_aria', 'Account'));
     var u = currentUser || cachedUser();
+    var text;
     if (status === 'signed-in' && currentUser) {
       btn.appendChild(el('span', 'ivacct-avatar', initialsOf(currentUser)));
-      btn.appendChild(el('span', 'ivacct-text', shortName(currentUser)));
+      text = shortName(currentUser);
     } else if (status === 'loading') {
       btn.appendChild(el('span', 'ivacct-avatar', u ? initialsOf(u) : '…'));
-      btn.appendChild(el('span', 'ivacct-text', u ? shortName(u) : t('shared.account.loading', 'Loading…')));
+      text = u ? shortName(u) : t('shared.account.loading', 'Loading…');
     } else if ((status === 'offline' || status === 'unavailable') && u) {
       btn.appendChild(el('span', 'ivacct-avatar', initialsOf(u)));
-      btn.appendChild(el('span', 'ivacct-text', t('shared.account.offline', 'Offline')));
+      text = t('shared.account.offline', 'Offline');
     } else {
       var ico = el('span', 'ivacct-ico'); ico.innerHTML = ICON_USER;   // static markup from this file, never user data
       btn.appendChild(ico);
-      btn.appendChild(el('span', 'ivacct-text', t('shared.account.sign_in', 'Sign in')));
+      text = t('shared.account.sign_in', 'Sign in');
     }
+    btn.appendChild(el('span', 'ivacct-text', text));
+    // The name starts with the chip's own words, so "click Sign in" reaches it by voice (WCAG 2.5.3), then says what it opens.
+    btn.setAttribute('aria-label', t('shared.account.chip_aria', '{label} – account', { label: text }));
     if (chip.open) renderMenu();
   }
 

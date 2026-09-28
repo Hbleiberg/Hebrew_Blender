@@ -122,7 +122,8 @@ read IVRIT_SUPABASE
 ## The chip
 
 Mounted by `createElement`/`textContent` only; email and name never touch `innerHTML`. Button
-(`.ivacct-btn`, `aria-haspopup="dialog"`, `aria-expanded`) + popover (`.ivacct-menu`, `role="dialog"`,
+(`.ivacct-btn`, `aria-haspopup="dialog"`, `aria-expanded`, `aria-label` from `shared.account.chip_aria`:
+the words on the chip, then "account", so a voice command naming what it shows reaches it) + popover (`.ivacct-menu`, `role="dialog"`,
 `aria-modal="false"`, `aria-label` from `shared.account.menu_aria`). Signed out: Google button, email
 field, "Email me a sign-in link and code", then the code field + Verify; an `aria-live="polite"` note
 carries progress and errors. While a sign-in or sign-out is in flight every menu button is locked by a

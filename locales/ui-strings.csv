@@ -5709,7 +5709,8 @@ fontmaker.qa.only_problems,Only show problems,הצגת בעיות בלבד,QA gr
 fontmaker.qa.filter_note,Showing {rows} of {rowTotal} letters and {cols} of {colTotal} marks.,מוצגות {rows} מתוך {rowTotal} אותיות ו-{cols} מתוך {colTotal} סימנים.,QA grid filter readout,REVIEW: machine-drafted HE — confirm
 fontmaker.qa.filter_clear,"Nothing to fix on this tab — every combination here is clear. Untick to see the whole grid.","אין מה לתקן בלשונית הזו — כל השילובים כאן תקינים. בטלו את הסימון כדי לראות את כל הטבלה.",QA grid filter empty state,REVIEW: machine-drafted HE — confirm
 shared.account.sign_in,Sign in,כניסה,Header account chip label while signed out,shared; account chip
-shared.account.menu_aria,Account,חשבון,Account chip aria-label + popover dialog name,shared; aria-label only
+shared.account.menu_aria,Account,חשבון,Account popover dialog name,shared; aria-label only
+shared.account.chip_aria,{label} – account,{label} – חשבון,Account chip button name: {label} is the text on the chip (Sign in / the short name / Loading… / Offline) so voice control reaches it (WCAG 2.5.3),shared; aria-label only
 shared.account.loading,Loading…,טוען…,Chip label while the stored session is being checked,shared
 shared.account.offline,Offline,לא מקוון,Chip label when a session is remembered but the network/SDK is unavailable,shared
 shared.account.google,Continue with Google,המשך עם Google,Account popover button,shared

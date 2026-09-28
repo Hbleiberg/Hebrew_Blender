@@ -4176,6 +4176,7 @@
   "resources.view.fonts": "🔤 Fonts",
   "resources.view.links": "Links",
   "shared.account.account_item": "Account…",
+  "shared.account.chip_aria": "{label} – account",
   "shared.account.cloud_saves": "Cloud saves…",
   "shared.account.code_label": "6-digit code from the email",
   "shared.account.code_sent": "We emailed a 6-digit code to {email}. Type it here.",

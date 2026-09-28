@@ -4176,6 +4176,7 @@
   "resources.view.fonts": "🔤 גופנים",
   "resources.view.links": "קישורים",
   "shared.account.account_item": "חשבון…",
+  "shared.account.chip_aria": "{label} – חשבון",
   "shared.account.cloud_saves": "שמירות בענן…",
   "shared.account.code_label": "הקוד בן 6 הספרות מהאימייל",
   "shared.account.code_sent": "שלחנו קוד בן 6 ספרות אל {email}. הקלידו אותו כאן.",
