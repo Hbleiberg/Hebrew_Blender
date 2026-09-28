@@ -4703,7 +4703,10 @@ function staffTuneAllButtonHTML() {   // renderText stops any tune first, so the
   return `<button class="tt-readall tt-tuneall hi-btn" id="ttTuneAllBtn" onclick="staffTuneAll()" type="button" aria-pressed="false">${ICON_PLAY_SM}${esc(I18n.t('torah.staff.tune_all'))}</button>`;
 }
 // The layout: renderInterlinear's verse shell (so every consumer of [data-vk] / .tt-verse-buttons is
-// unchanged) plus a Tune button, then the systems. Systems are built synchronously as strings — the SVG
+// unchanged) plus a Tune button, then the systems. A system names its verse in data-svk (with data-sys, its
+// index) and never in data-vk: every verse consumer walks [data-vk] — the custom-reading word map in
+// updateKaraokeWordRefs, click-to-seek's hebWordIndexInVerse, the verse observer, bulk select — and a system
+// carrying it would be read as a verse (the map then lit a later system's words with the verse's first ones). Systems are built synchronously as strings — the SVG
 // itself waits for staffEnsureSvg — so data-twi numbering, updateKaraokeWordRefs and the rover see the
 // finished DOM at once. A verse the staff cannot draw (no data yet, a haftarah, a double-cantillation
 // verse, a word count that disagrees with the marks) shows its words as the interlinear layout would.
@@ -4780,7 +4783,7 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
         // shrinks, so the cells never collide; at full width the vars equal the page's own sizes.
         const natW = Math.round(L.W * PHRASE_SCALE), boxW = _staffPrintWrap ? Math.max(wrapPx, natW) : natW;
         const sizeVars = STAFF_CQ && boxW > 0 ? ` style="--tt-heb-size:${(hePx * 100 / boxW).toFixed(4)}cqw;--tt-translit-size:${(tlPx * 100 / boxW).toFixed(4)}cqw"` : '';
-        html += `<div class="tt-staff-sys" data-vk="${esc(numLabel)}" data-sys="${k}" style="inline-size:${boxW}px;--tt-sys-w:${(natW / boxW * 100).toFixed(4)}%">`;
+        html += `<div class="tt-staff-sys" data-svk="${esc(numLabel)}" data-sys="${k}" style="inline-size:${boxW}px;--tt-sys-w:${(natW / boxW * 100).toFixed(4)}%">`;
         html += `<div class="tt-staff-svg" style="aspect-ratio:${L.W} / ${H}"></div>`;
         html += `<div class="tt-staff-words tt-heb" lang="he"${sizeVars}>`;
         for (const w of L.words) html += `<span class="tt-staff-cell" dir="rtl" style="left:${(w.cx * PHRASE_SCALE / boxW * 100).toFixed(4)}%">${staffCellHTML(w, units.cells, sink)}</span>`;
@@ -4804,7 +4807,7 @@ function staffAfterRender() {
   const els = document.querySelectorAll('#ttReading .tt-staff-sys');
   if (!els.length) return;
   els.forEach(el => {
-    const vk = el.dataset.vk, k = +el.dataset.sys, sys = _staffSystems[vk] && _staffSystems[vk][k];
+    const vk = el.dataset.svk, k = +el.dataset.sys, sys = _staffSystems[vk] && _staffSystems[vk][k];
     if (!sys) return;
     (_staffSysEls[vk] = _staffSysEls[vk] || [])[k] = el;
     const byCi = new Map();
@@ -4820,7 +4823,7 @@ function staffAfterRender() {
   }, { rootMargin: '1200px 0px' });
   els.forEach(el => _staffIO.observe(el));
 }
-function staffSysOf(el) { const list = el && _staffSystems[el.dataset.vk]; return list ? list[+el.dataset.sys] : null; }
+function staffSysOf(el) { const list = el && _staffSystems[el.dataset.svk]; return list ? list[+el.dataset.sys] : null; }
 function staffEnsureSvg(el) {
   if (!el || el.querySelector('svg')) return;
   const sys = staffSysOf(el), ph = el.querySelector('.tt-staff-svg');

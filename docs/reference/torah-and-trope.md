@@ -641,9 +641,13 @@ Design: `docs/tropepatterns.md` → G.
   chart); the key is `shiftedKey(set.key, staffShift)`; Low voices draws the 8 under every clef.
 - **The markup contract.** `renderStaffView` mirrors `renderInterlinear`'s verse shell — `.tt-verse[data-vk]`,
   the bulk checkbox, `.tt-verse-num`, Read / Chant / **Tune** / Loop / Copy — then `.tt-staff-rows` holding
-  one `.tt-staff-sys` per system: an SVG (or its `aspect-ratio` placeholder, either `--tt-sys-w` wide — the
-  SVG's share of the system's box) over `.tt-staff-words.tt-heb`, a row of absolutely placed `.tt-staff-cell`s
-  (`left` in percent of the box, `dir="rtl"` inside) each holding its word's piece span(s) — **the very `.tt-word[data-twi]` spans `tokenizeHebrew` emits**,
+  one `.tt-staff-sys` per system (`data-svk` = its verse, `data-sys` = its index — **never `data-vk`**, which
+  every verse consumer walks: the custom-reading word map in `updateKaraokeWordRefs`, click-to-seek's
+  `hebWordIndexInVerse`, the verse observer, bulk select — so a system carrying it was read as a verse, and
+  the map lit a later system's words together with the verse's first ones): an SVG (or its `aspect-ratio`
+  placeholder, either `--tt-sys-w` wide — the SVG's share of the system's box) over `.tt-staff-words.tt-heb`,
+  a row of absolutely placed `.tt-staff-cell`s (`left` in percent of the box, `dir="rtl"` inside) each holding
+  its word's piece span(s) — **the very `.tt-word[data-twi]` spans `tokenizeHebrew` emits**,
   collected through its optional `sink` argument, one per piece in reading order, inside `.tt-heb`, inside
   `[data-vk]`. So `updateKaraokeWordRefs`, click-to-seek, `hebWordIndexInVerse`, the rover, the verse
   observer, bulk select and the copy path work unchanged; **never special-case the staff in a `.tt-word`
@@ -695,7 +699,9 @@ Design: `docs/tropepatterns.md` → G.
   element's `onplay`), by `renderText`, the handout and `beforeprint`; `staffStopOthers()` is the reverse.
 - **Chant** is untouched: `paintKaraokeIdx` additionally calls `staffPaintPiece(twi, on)`, which lights
   `.is-hl` on every `.tu-pn` / `.tu-pbar` of the unit(s) of the sung piece's cell (`_staffUnitsByTwi`,
-  rebuilt by `staffAfterRender`) — the whole figure, by section; `clearKaraokeHighlight` clears it.
+  rebuilt by `staffAfterRender`) — the whole figure, by section; `clearKaraokeHighlight` clears it. In a
+  custom or holiday reading (the word map keyed by verse) the sung word lights alone, because only the
+  `.tt-verse` is a `[data-vk]`.
 - **Colour.** The bar over each figure takes the piece's Trainer family (positional etnachta / sof pasuk
   halves, from `tokenizeHebrew`'s sink) and is coloured only under `body.trope-on`; the words are coloured,
   underlined and hovered by the reading's own rules. The SVG's class names are the engine's (`tu-pstaff`,
