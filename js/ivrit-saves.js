@@ -1945,7 +1945,23 @@
     card.appendChild(button(opts.first ? t('shared.cloud.acct_not_now', 'Not now') : t('shared.cloud.acct_close', 'Close'), '', closeAccount));
     overlay.appendChild(card);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeAccount(); });
-    var onKey = function (e) { if (e.key === 'Escape') { e.preventDefault(); closeAccount(); } };
+    // A modal holds the keyboard (pattern modal-focus-trap): aria-modal tells a screen reader the page behind is
+    // gone and the overlay hides it, yet Tab walked out onto it after the last control, and Shift+Tab after the
+    // first. Tab and Shift+Tab now wrap inside the card, and a Tab from outside it (a focus the page took back
+    // after this opened) comes in at the first control.
+    var onKey = function (e) {
+      if (e.key === 'Escape') { e.preventDefault(); closeAccount(); return; }
+      if (e.key !== 'Tab') return;
+      var items = Array.prototype.filter.call(card.querySelectorAll('button,a[href],input,select,textarea'), function (n) {
+        return !n.disabled && n.getClientRects().length > 0;
+      });
+      var a = document.activeElement;
+      if (!items.length) { e.preventDefault(); card.focus(); return; }
+      var first = items[0], last = items[items.length - 1];
+      if (!card.contains(a)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+      else if (e.shiftKey && (a === first || a === card)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+    };
     document.addEventListener('keydown', onKey);
     document.body.appendChild(overlay);
     account = { root: overlay, opener: document.activeElement, onKey: onKey, first: !!opts.first, splash: !!opts.splash, lang: currentLang(), busy: false, listing: false, langStale: false, doneText: opts.doneText || '' };
