@@ -641,9 +641,9 @@ Design: `docs/tropepatterns.md` → G.
   chart); the key is `shiftedKey(set.key, staffShift)`; Low voices draws the 8 under every clef.
 - **The markup contract.** `renderStaffView` mirrors `renderInterlinear`'s verse shell — `.tt-verse[data-vk]`,
   the bulk checkbox, `.tt-verse-num`, Read / Chant / **Tune** / Loop / Copy — then `.tt-staff-rows` holding
-  one `.tt-staff-sys` per system: an SVG (or its `aspect-ratio` placeholder) over `.tt-staff-words.tt-heb`,
-  a row of absolutely placed `.tt-staff-cell`s (`left` in percent of the system's width, `dir="rtl"` inside)
-  each holding its word's piece span(s) — **the very `.tt-word[data-twi]` spans `tokenizeHebrew` emits**,
+  one `.tt-staff-sys` per system: an SVG (or its `aspect-ratio` placeholder, either `--tt-sys-w` wide — the
+  SVG's share of the system's box) over `.tt-staff-words.tt-heb`, a row of absolutely placed `.tt-staff-cell`s
+  (`left` in percent of the box, `dir="rtl"` inside) each holding its word's piece span(s) — **the very `.tt-word[data-twi]` spans `tokenizeHebrew` emits**,
   collected through its optional `sink` argument, one per piece in reading order, inside `.tt-heb`, inside
   `[data-vk]`. So `updateKaraokeWordRefs`, click-to-seek, `hebWordIndexInVerse`, the rover, the verse
   observer, bulk select and the copy path work unchanged; **never special-case the staff in a `.tt-word`
@@ -658,6 +658,26 @@ Design: `docs/tropepatterns.md` → G.
   `staffRelayoutSoon()` re-renders (debounced, this layout only, only when the width really changed, never
   under a playing tune or chant — it waits for the stop or pause) from a `ResizeObserver`, `fonts.ready`,
   the fonts' `loadingdone` (a My Font arrives late), `setHebFont` and `setFontSize`.
+- **A system's box and its scaling.** Each `.tt-staff-sys` is a size container (`container-type:inline-size`)
+  whose box is the system's natural width on screen; `.tt-staff-words` restates `--tt-heb-size` and
+  `--tt-translit-size` in `cqw` of that box (`staffFontPx` — at full width they equal the page's sizes, so the
+  screen is unchanged), and the SVG and the cells' `left` are shares of it. A box drawn narrower than its
+  container — `max-inline-size:100%` — therefore shrinks its SVG, its cells and their words by the one factor,
+  never colliding the words (the Playwright recipe's print emulation cannot show the difference: the resize
+  observer re-wraps a live page; `page.pdf()` fires the print events). Without `cqw` support (`STAFF_CQ`) the
+  vars are not written and the words keep their size.
+- **Paper.** `beforeprint` (`staffPrintEnter`, before `staffEnsureAllSvg`) re-renders once with `_staffPrintWrap`
+  on: the systems are wrapped to `STAFF_PRINT_W` (a landscape Letter sheet's reading width at Chrome's default
+  margins; A4 landscape is wider) and every system's box is that wrap (a one-word system wider than it keeps its
+  own), so a landscape sheet prints them at full size and a portrait one scales the whole page by one factor
+  instead of squeezing only the wide systems. The flag lives only around that render; `staffAfterRender` notes
+  in `_staffPaperShown` whether the screen holds the paper wrap, `afterprint` (`staffPrintExit`) renders the
+  screen wrap back while it does — except under a handout, whose own exit render (its listener runs after) is
+  the screen's — and any other render (a resize, a handout exit that beat `afterprint`) is the screen's too, so
+  a browser that never fires `afterprint` heals on its next relayout. The handout's geniza marker rides inside
+  the reading, so every render on that path is bracketed by `genizaMarkOut` / `genizaMarkIn`. The handout's
+  Large / Extra large sizes reach the text layouts only: the staff's words are measured and sized at the
+  screen size.
 - **Words** (`staffWords`: Hebrew, transliteration, both): the cells are `tokenizeHebrew`'s under-word cells
   (`.tt-wh` + `.tt-wtl`) whenever the Latin line is wanted, whatever the Translit switch says; `body.translit-under`
   is on then, and `karaokeFollowEffective()` is `'hebrew'` in this layout. Transliteration only hides `.tt-wh`
@@ -689,7 +709,8 @@ Design: `docs/tropepatterns.md` → G.
   rover's arrows follow the notation there (`onReadingKeydown` flips `delta`).
 - **Known beta limits** (said in the panel's note): a word sits whole under its figure (no syllable
   placement); a context the chart never prints takes the nearest figure; a triplet or slur cut at a
-  figure's edge draws by value; a wide system shrinks on paper with its cells but not its labels.
+  figure's edge draws by value; a sheet narrower than the print wrap (portrait, wide margins) prints the
+  staff smaller than the chosen size, uniformly.
 
 ---
 

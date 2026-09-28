@@ -993,8 +993,12 @@ body.trope-underline-fallback .tt-trope-swatch { background:var(--tt-sw-line); }
 .beta-tag { font-size:0.7rem; background:var(--gold); color:var(--navy); padding:1px 5px; border-radius:3px; font-weight:700; letter-spacing:0.05em; vertical-align:middle; }   /* the suite's Beta badge (flash_cards.html) */
 .radio-group label .beta-tag, .panel-title .beta-tag { font-size:0.58rem; padding:0 4px; }
 .tt-staff-rows { direction:ltr; inline-size:100%; }
-.tt-staff-sys { position:relative; max-inline-size:100%; direction:ltr; margin-block:6px 2px; }
-.tt-staff-sys > svg, .tt-staff-sys > .tt-staff-svg { display:block; inline-size:100%; block-size:auto; color:var(--text); }
+/* A system's box is its natural width on screen and the wrap width on paper (renderStaffView; --tt-sys-w is the
+   SVG's share of it), and a box wider than its container — a wide wrap on a narrow sheet, a viewport shrunk under
+   a playing tune — shrinks through max-inline-size:100%: the SVG, the cells' positions and, because .tt-staff-words
+   carries the two size vars in cqw of this container, the words too, all by the one factor. */
+.tt-staff-sys { position:relative; max-inline-size:100%; direction:ltr; margin-block:6px 2px; container-type:inline-size; }
+.tt-staff-sys > svg, .tt-staff-sys > .tt-staff-svg { display:block; inline-size:var(--tt-sys-w, 100%); block-size:auto; color:var(--text); }
 .tt-staff-words.tt-heb { position:relative; display:block; flex:none; direction:ltr; text-align:start; line-height:1.3; word-spacing:0; margin:0; block-size:calc(var(--tt-heb-size, 1.5rem) * 1.5); }
 body.staff-words-both .tt-staff-words.tt-heb { block-size:calc(var(--tt-heb-size, 1.5rem) * 1.5 + var(--tt-translit-size, 0.95rem) * 1.6); }
 body.staff-words-translit .tt-staff-words.tt-heb { block-size:calc(var(--tt-translit-size, 0.95rem) * 1.7); }
@@ -4576,6 +4580,9 @@ let _staffUnitsByTwi = {};      // twi -> [{el, uis}]: the units (per system) of
 let _staffIO = null;            // draws each system's SVG as it nears the viewport
 let _staffRenderedWidth = -1;   // #ttReading's width the systems were wrapped to
 let _staffRelayoutTimer = null, _staffRelayoutPending = false;
+const STAFF_PRINT_W = 931;      // px: the reading's width on a landscape Letter sheet at Chrome's default 0.4in margins (979px less .tt-page's 24px padding each side); A4 landscape is wider, a portrait sheet scales the systems down
+let _staffPrintWrap = false;    // the render under way wraps to STAFF_PRINT_W (set around staffPrintEnter's render only)
+let _staffPaperShown = false;   // the reading on screen is that paper wrap (staffAfterRender), until a screen render replaces it
 function ensureStaffData() {
   if (STAFF_SETS) return Promise.resolve(true);
   if (_staffLoad) return _staffLoad;
@@ -4651,6 +4658,8 @@ function staffMeasurePx(text, kind) {
   }
   return w;
 }
+function staffFontPx(kind) { return parseFloat(getComputedStyle(_staffProbe(kind)).fontSize) || 0; }   // the size the words are measured at
+const STAFF_CQ = !!(window.CSS && CSS.supports && CSS.supports('font-size', '1cqw'));   // container-query units; without them the words keep their size on a shrunk system (the older behaviour)
 function staffPieceTexts(html) {   // {he, tl}: the text a piece's span draws on each line
   _staffTpl.innerHTML = html;
   const root = _staffTpl.content.firstElementChild;
@@ -4705,8 +4714,13 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
   if (!set && !_staffFailed) ensureStaffData();
   const shift = staffShiftVal(), key = staffDrawKey(), low = staffVoiceKey() === 'low', wordsMode = staffWordsKey();
   const root = document.getElementById('ttReading');
-  _staffRenderedWidth = root ? root.clientWidth : -1;
-  const maxW = Math.max(240, (root ? root.clientWidth : 800) - 8) / PHRASE_SCALE;
+  // On paper the systems are wrapped to STAFF_PRINT_W, not the screen (staffPrintEnter); -1 makes the next screen
+  // relayout unconditional.
+  const wrapW = _staffPrintWrap ? STAFF_PRINT_W : (root ? root.clientWidth : 800);
+  _staffRenderedWidth = _staffPrintWrap || !root ? -1 : root.clientWidth;
+  const maxW = Math.max(240, wrapW - 8) / PHRASE_SCALE;
+  const wrapPx = Math.round(maxW * PHRASE_SCALE);   // on paper every system's box, so a narrower sheet scales the whole page by one factor
+  const hePx = staffFontPx('he'), tlPx = staffFontPx('tl');
   const haftarah = !!(currentReadingCtx && currentReadingCtx.isHaftarah);
   const dbl = STAFF_DOUBLE_CANT[staffBook()];
   const layoutOpts = { lyrics: false, accidentals: 'unit' };
@@ -4758,10 +4772,18 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
           return word ? word.cells.flatMap(ci => units.cells[ci].pieces.map(pi => sink[pi].twi)) : [sink[u.pi].twi];
         });
         list.push({ row: sys.row, L, key, shift, low, H, cells: units.cells, sink, twisOfUnit });
-        html += `<div class="tt-staff-sys" data-vk="${esc(numLabel)}" data-sys="${k}" style="inline-size:${Math.round(L.W * PHRASE_SCALE)}px">`;
+        // The system's box: its natural width on screen; on paper the wrap width (a one-word system wider than the
+        // wrap keeps its own), so a sheet narrower than the wrap shrinks every system by the same factor. The SVG
+        // takes its share of the box (--tt-sys-w) and the cells sit at their share of it. The words' two size vars
+        // are in cqw of the box (the box's full width is 100cqw): a box drawn narrower than that — a wide wrap on
+        // a narrow sheet, a viewport shrunk under a playing tune — scales its words by the very factor its SVG
+        // shrinks, so the cells never collide; at full width the vars equal the page's own sizes.
+        const natW = Math.round(L.W * PHRASE_SCALE), boxW = _staffPrintWrap ? Math.max(wrapPx, natW) : natW;
+        const sizeVars = STAFF_CQ && boxW > 0 ? ` style="--tt-heb-size:${(hePx * 100 / boxW).toFixed(4)}cqw;--tt-translit-size:${(tlPx * 100 / boxW).toFixed(4)}cqw"` : '';
+        html += `<div class="tt-staff-sys" data-vk="${esc(numLabel)}" data-sys="${k}" style="inline-size:${boxW}px;--tt-sys-w:${(natW / boxW * 100).toFixed(4)}%">`;
         html += `<div class="tt-staff-svg" style="aspect-ratio:${L.W} / ${H}"></div>`;
-        html += `<div class="tt-staff-words tt-heb" lang="he">`;
-        for (const w of L.words) html += `<span class="tt-staff-cell" dir="rtl" style="left:${(w.cx / L.W * 100).toFixed(3)}%">${staffCellHTML(w, units.cells, sink)}</span>`;
+        html += `<div class="tt-staff-words tt-heb" lang="he"${sizeVars}>`;
+        for (const w of L.words) html += `<span class="tt-staff-cell" dir="rtl" style="left:${(w.cx * PHRASE_SCALE / boxW * 100).toFixed(4)}%">${staffCellHTML(w, units.cells, sink)}</span>`;
         html += `</div></div>`;
       });
       html += `  </div>`;
@@ -4775,6 +4797,7 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
 // that draws each system's SVG as it nears the viewport (a whole parsha is thousands of notes — drawn
 // eagerly they would cost seconds; the layouts, which every consumer needs, are already done).
 function staffAfterRender() {
+  _staffPaperShown = _staffPrintWrap;
   if (_staffIO) { _staffIO.disconnect(); _staffIO = null; }
   _staffSysEls = {}; _staffUnitsByTwi = {};
   if (settings.layout !== 'staff') return;
@@ -4996,6 +5019,19 @@ function staffInitWatchers() {
   }
   const a = document.getElementById('ttAudio');
   if (a) a.addEventListener('pause', () => { if (_staffRelayoutPending) { _staffRelayoutPending = false; staffRelayoutSoon(true); } });
+}
+/* ── Paper: beforeprint re-wraps the systems to STAFF_PRINT_W, so a wide screen's wrap never shrinks on landscape
+   paper and a portrait sheet scales every system by one factor (the cqw vars) instead of squeezing only the wide
+   ones; afterprint wraps them back to the screen. A handout print arrives with the geniza marker inside the
+   reading, so the re-render brackets it (genizaMarkOut / genizaMarkIn). ── */
+function staffPrintEnter() {
+  if (settings.layout !== 'staff' || !currentVerses || !currentVerses.length) return;
+  _staffPrintWrap = true;   // one render only: any later render (a resize, a handout exit that beat afterprint) is the screen's again
+  try { genizaMarkOut(); renderText(); genizaMarkIn(); } finally { _staffPrintWrap = false; }
+}
+function staffPrintExit() {
+  if (!_staffPaperShown || _handoutActive) return;   // a handout's own exit render (its afterprint listener runs after this one) is the screen wrap
+  if (settings.layout === 'staff' && currentVerses && currentVerses.length) renderText();
 }
 /* ── The staff panel's settings: one writer per field, syncStaffControls the read-only settings → controls half. ── */
 function setStaffShift(v) {
@@ -8064,14 +8100,25 @@ function _handoutEnter() {
   b.classList.toggle('tt-handout-size-xl', fs === 'xl');
   b.classList.toggle('tt-handout-geniza', !!(settings.handoutGenizaMark && _readingHasShem));
   renderText();
-  // Print the geniza marker as the last verse's tail: its static predecessor #ttReading is one
-  // block already fragmented across pages, so break-before:avoid has nothing to pull back and
-  // the marker can strand alone on its own sheet (S182). .tt-verse / .tt-grid-row carry
-  // break-inside:avoid in the print block, so verse + marker become one unbreakable group.
-  // _handoutExit re-homes it before its renderText() would otherwise wipe it with #ttReading.
+  genizaMarkIn();
+}
+// The geniza marker prints as the last verse's tail: its static predecessor #ttReading is one
+// block already fragmented across pages, so break-before:avoid has nothing to pull back and
+// the marker can strand alone on its own sheet (S182). .tt-verse / .tt-grid-row carry
+// break-inside:avoid in the print block, so verse + marker become one unbreakable group.
+// Any renderText() while it is inside would wipe it with #ttReading, so every re-render on the
+// handout path (_handoutExit's, the staff's print re-wrap) re-homes it first, and a handout puts
+// it back after.
+function genizaMarkIn() {
+  if (!_handoutActive) return;
   const gm = document.getElementById('ttGenizaMark');
   const rows = document.querySelectorAll('#ttReading .tt-verse, #ttReading .tt-col-heb .tt-grid-row');
   if (gm && rows.length) rows[rows.length - 1].appendChild(gm);
+}
+function genizaMarkOut() {
+  const gm = document.getElementById('ttGenizaMark');   // back outside #ttReading before a
+  const rd = document.getElementById('ttReading');      // re-render wipes its subtree
+  if (gm && rd && rd.parentNode) rd.parentNode.insertBefore(gm, rd.nextSibling);
 }
 function _handoutExit() {
   if (!_handoutActive) return;
@@ -8085,9 +8132,7 @@ function _handoutExit() {
   }
   document.body.classList.remove('tt-handout-print', 'tt-handout-hidenums',
     'tt-handout-size-large', 'tt-handout-size-xl', 'tt-handout-geniza');
-  const gm = document.getElementById('ttGenizaMark');   // back outside #ttReading before the
-  const rd = document.getElementById('ttReading');      // re-render wipes its subtree
-  if (gm && rd && rd.parentNode) rd.parentNode.insertBefore(gm, rd.nextSibling);
+  genizaMarkOut();
   if (_handoutVersesSnap) { currentVerses = _handoutVersesSnap; _handoutVersesSnap = null; }
   renderText();   // no saveSettings — the persisted settings never changed
   if (_pendingCloudReread) { _pendingCloudReread = false; cloudReread(); }
@@ -9072,7 +9117,7 @@ else _wireTorahI18n();
 // the print-CSS backstop covers the non-decoration styles.
 window.addEventListener('beforeprint', () => {
   pauseKaraoke(); clearKaraokeHighlight();
-  stopStaffTune(); staffEnsureAllSvg();   // every staff system drawn before the snapshot (they are drawn lazily on screen)
+  stopStaffTune(); staffPrintEnter(); staffEnsureAllSvg();   // the systems re-wrapped for paper, then every one drawn before the snapshot (they are drawn lazily on screen)
   // Dark-mode nikkud/trope palettes live in inline --nikv-*/--trope-*-line body vars that beat
   // the print-CSS token reset, so they'd print washed-out (e.g. tzere #aaaadd ≈1.9:1 on paper).
   // Re-resolve both to the LIGHT scheme for the snapshot; afterprint restores the dark palette.
@@ -9081,6 +9126,7 @@ window.addEventListener('beforeprint', () => {
 });
 window.addEventListener('afterprint', () => {
   if (_printForceLight) { _printForceLight = false; applyNikkudColors(); applyTropeColors(); }
+  staffPrintExit();   // the systems wrapped back to the screen — before _handoutExit's listener below, whose render must see the screen wrap
   const _pb = document.getElementById('ttPrintBand'); if (_pb) _pb.hidden = true;
   setPrintMarginVars('');
 });
