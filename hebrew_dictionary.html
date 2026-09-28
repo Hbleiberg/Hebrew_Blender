@@ -3106,8 +3106,16 @@ function announce(msg) { const s = document.getElementById('a11yStatus'); if (s)
 // Print the current results (surfaces the @media print stylesheet — parity with Ctrl+P). Guard the
 // empty state so a stray click never opens a blank print dialog; the toolbar/chrome is print-hidden.
 function printDictionary() {
-  if (!filtered || !filtered.length) { announce(I18n.t('dictionary.toolbar.print_empty')); return; }
+  if (!dictHasPrintable()) { announce(I18n.t('dictionary.toolbar.print_empty')); return; }
   window.print();
+}
+// Whether the current mode has results on screen. `filtered` is the Words set only: a session restored
+// straight into Emojis or Shoresh never runs the Words filter (it stays []), and one that switched modes
+// keeps the last Words set — so the guard refused a full screen and opened the dialog for an empty one.
+// Shoresh counts what is rendered: its root and family outlive a root cut below two letters.
+function dictHasPrintable() {
+  if (shoreshMode) return !!document.querySelector('#shoreshResults .shoresh-group-grid');
+  return (emojiMode ? emojiFiltered : filtered).length > 0;
 }
 // Print-size heads-up (S252 Pass G). The beforeprint handler below materializes EVERY filtered
 // row, so an unfiltered Print is the whole corpus: 13,081 words measured at ~840 sheets / 22 MB.
