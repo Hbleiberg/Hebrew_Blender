@@ -484,7 +484,12 @@ function loadInventory() {
     .then(() => setBusy('refreshBtn', false));
 }
 function renderHolds() {
-  const host = $('holdsList'); while (host.firstChild) host.removeChild(host.firstChild);
+  const host = $('holdsList');
+  // A rebuild replaces every names toggle, the focused one too: note which one held the focus and hand it to its
+  // replacement below, or a keyboard user who pressed "Show names" is dropped to <body> and starts again from the top.
+  const had = host.contains(document.activeElement) ? document.activeElement.dataset.names : null;
+  let refocus = null;
+  while (host.firstChild) host.removeChild(host.firstChild);
   $('holdsTotal').textContent = '';
   if (!inv) { setBusy('dlBtn', true); return; }
   let items = 0, bytes = 0, shown = 0;
@@ -500,6 +505,8 @@ function renderHolds() {
         const btn = el('button', 'link-btn', namesOpen[key] ? t('account.holds.names_hide') : t('account.holds.names_show'));
         btn.type = 'button';
         btn.setAttribute('aria-expanded', namesOpen[key] ? 'true' : 'false');
+        btn.dataset.names = key;
+        if (key === had) refocus = btn;
         btn.addEventListener('click', () => { namesOpen[key] = !namesOpen[key]; renderHolds(); });
         row.appendChild(document.createTextNode(' '));
         row.appendChild(btn);
@@ -527,6 +534,7 @@ function renderHolds() {
   if (!shown) host.appendChild(el('li', 'muted', t('shared.cloud.acct_no_cloud')));
   else $('holdsTotal').textContent = t('account.holds.total', { items: plural('account.count.items', items), projects: plural('account.count.projects', pj.length), size: fmtSize(bytes + pbytes) });
   setBusy('dlBtn', !shown);
+  if (refocus) refocus.focus();
 }
 
 /* ── download everything: one store-only zip built here (the writer resources.html uses for font bundles) ── */
