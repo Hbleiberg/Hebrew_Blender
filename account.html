@@ -345,7 +345,7 @@ body.dark .hi-sun{display:inline-block;}
         <h3 data-i18n="account.delete.confirm_head">Are you sure?</h3>
         <label class="check"><input type="checkbox" id="delCheck"> <span data-i18n="account.delete.check">I have downloaded everything I want to keep, or I do not need it.</span></label>
         <div class="field">
-          <label for="delEmail" data-i18n="account.delete.email_label">Type your email address to confirm</label>
+          <label for="delEmail" id="delEmailLabel" data-i18n="account.delete.email_label">Type your email address to confirm</label>
           <input type="email" id="delEmail" name="email" autocomplete="off" dir="ltr">
         </div>
         <button class="btn danger" type="button" id="delGo" aria-disabled="true" data-i18n="account.delete.go">Delete permanently</button>
@@ -450,6 +450,9 @@ function renderWho() {
   $('whoLine').textContent = t('shared.account.signed_in_as', { email: user.email || '' });
   $('whoProvider').textContent = user.provider === 'google' ? t('account.who.provider_google') : t('account.who.provider_email');
   $('sinceLine').textContent = prof && prof.createdAt ? t('account.who.since', { date: fmtDate(prof.createdAt) }) : '';
+  // The confirmation names the address it wants: the Who tile that shows it sits a screen or more above the box.
+  // applyI18n() runs applyStaticI18n() (the unnamed label) before this, so the named one wins in both languages.
+  $('delEmailLabel').textContent = t('account.delete.email_label_named', { email: user.email || '' });
   const input = $('nameInput');
   if (document.activeElement !== input && !input.dataset.touched) input.value = (prof && prof.displayName) || user.name || '';
 }
@@ -642,9 +645,13 @@ async function downloadAll() {
 }
 
 /* ── delete my account ── */
+// Pressed while locked, Delete permanently says what it still needs (UX rule 5: the note beside aria-disabled);
+// it had done nothing at all. The note goes once the box and the address are right.
+const lockedHint = () => t('account.delete.locked_hint');
 function validateDel() {
   const ok = !!user && $('delCheck').checked && $('delEmail').value.trim().toLowerCase() === String(user.email || '').toLowerCase();
   setBusy('delGo', !ok || deleting);
+  if (ok && lines.delStatus === lockedHint) say('delStatus', null);
   return ok;
 }
 function openDel() {
@@ -659,7 +666,8 @@ function cancelDel() {
   $('delBtn').focus();
 }
 async function deleteNow() {
-  if (deleting || !validateDel()) return;
+  if (deleting) return;
+  if (!validateDel()) { say('delStatus', lockedHint, true); return; }
   deleting = true; setBusy('delGo', true); setBusy('delCancel', true);
   const uid = user.id;
   say('delStatus', () => t('account.delete.working'));

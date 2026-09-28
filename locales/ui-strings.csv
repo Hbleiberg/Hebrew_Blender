@@ -62,6 +62,8 @@ account.delete.btn,Delete my account…,מחיקת החשבון שלי…,Accoun
 account.delete.confirm_head,Are you sure?,בטוחים?,Account page delete confirmation heading,
 account.delete.check,"I have downloaded everything I want to keep, or I do not need it.","הורדתי את כל מה שאני רוצה לשמור, או שאין לי צורך בו.",Account page delete confirmation checkbox,
 account.delete.email_label,Type your email address to confirm,הקלידו את כתובת האימייל שלכם לאישור,Account page delete confirmation field label,
+account.delete.email_label_named,Type this account's email address to confirm: {email},הקלידו את כתובת האימייל של החשבון לאישור: {email},"Account page delete confirmation field label once signed in, naming the address to type (email = the account's address, kept last so it reads in order in RTL)",template
+account.delete.locked_hint,"To delete, tick the box above and type this account's email address.","כדי למחוק, סמנו את התיבה שלמעלה והקלידו את כתובת האימייל של החשבון.",Account page delete confirmation: the note when Delete permanently is pressed while it is still locked,
 account.delete.go,Delete permanently,מחיקה לצמיתות,Account page delete confirmation button,
 account.delete.cancel,Cancel,ביטול,Account page delete confirmation button,
 account.delete.working,Deleting your account…,מוחק את החשבון…,Account page status during deletion,
