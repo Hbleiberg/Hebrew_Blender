@@ -22,6 +22,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S427 Pass C — four small ones**) | hebrew_dictionary.html | **(1)** the emoji tree's ▾ 15×9 px, rows 21 px apart; **(2)** "♀ Feminine" 4.42:1 at 0.62rem; **(3)** Shoresh's empty tiles 2.79:1 / 3.13:1; **(4)** Enter in Save as Word List's name field does nothing. | found S427
 
+- [ ] P4 (**NEW 2026-09-28**) | hebrew_dictionary.html | **A loaded Word List outlives a switch to Emojis or Shoresh**: `setDictMode` hides the banner but keeps `wlFilterOverride`, so a language switch then writes the list's count into `#resultCount` ("2 מילים" over 1,581 emojis). | found 2026-09-28
+
+- [ ] P4 (**NEW 2026-09-28**) | hebrew_dictionary.html | **A word card's copy button says "Copied" when the clipboard refused** (`copyWord`: `.then(finish).catch(finish)`); `1a4b669` fixed the same shape in `_wmCopyFlash`. | found 2026-09-28
+
 - [ ] P4 (**NEW S421 Pass P**) | classroom_dashboard.html | **The "Now showing {name} — the classes from your account are in the class list" switch runs on every signed-in load and credits the account even when it holds nothing**: with the pointer on the untouched default and a class this device made itself, the page switches to that class and says it came from the account …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S421 Pass P — for H**) | classroom_dashboard.html | **A class list beyond the picker's cap keeps its names now (`288af4a`) but the picker draws only the first 60 chips** (`rosterNames()` slices), so students 61+ of a merged class are stored and counted ("65 names (max 60)") yet never picked; say so in the drawer or raise the chip cap. | found S421
@@ -203,10 +207,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] S | torah_trainer.html | **Maftir in the Reading picker.** `data/pockettorah/aliyah.json` carries a `_num:"M"` entry with `_begin`/`_end` for every parsha (210 entries verified S367) and `aliyahLookup()` keys `aliyot[num]` by the raw `_num`, so `aliyot['M']` is built on every lookup and read nowhere: `resolveRef` matches `/parsha-aliyah-(\d)/`, `refreshScopeLabels` loops 1–7 and `.filter(n …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S | torah_trainer.html | **Projector mode can't turn the translation / transliteration off.** `#ttShowTranslit` and `#ttShowTranslation` exist only inside `.tt-controls`, which `body.fullscreen .tt-controls { display:none }` removes; the drawer's Display panel (reachable via `#ttFsSettings`) carries cantillation and nikkud but not these two. Two more `.tt-fs-btn` toggles dispatching …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] S | hebrew_dictionary.html | **A print header — every printed page is anonymous.** No `@page` rule; the print CSS hides `header, .toolbar, .filter-chips`, the only elements naming the view, so a filtered set for a sub carries no title, date or filter. `computeActiveChips()` already returns `{key,label}` per active filter; fill a print-only header inside the existing `beforeprint` handler …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] S | hebrew_dictionary.html | **Saved Word List actions: Copy this list / Export to Anki / Quizlet.** `exportAnki()` / `exportQuizlet()` take no arguments and read `exportSelectedWords()` (the live bulk selection), and `copyBulkText()` reads `bulkSelected` — so a list that is already saved must be reloaded as a filter, bulk-mode enabled and select-all'd first; `wlRenderManagerInto` offers …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] S–M | classroom_dashboard.html | **One-deep undo in the week editor.** `applyCalendarImport` replaces `settings.scheduleWeek` wholesale, `clearWeekDay` / `copyWeekDayToWeekdays` / `removeWeekPeriod` guard with a native `confirm()` at most, and `weekChanged()` (the choke point) saves immediately with no history. A `weekSnapshot()` at the head of the ~8 mutators + `undoWeek()` + one toolbar …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -622,6 +622,6 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 **⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), F (S414), then B A E L K N P M G D I H C.** Take **F**.
 
-**⚑ STRONGEST UNTAKEN:** the P3s — the account screen's focus return (shared), the dictionary's chip/Reset focus, export error, 8 px list buttons; trope/torah TIMING_SLIPS. **Seed bench: 32.**
+**⚑ STRONGEST UNTAKEN:** the P3s — the account screen's focus return (shared), the dictionary's chip/Reset focus, export error, 8 px list buttons; trope/torah TIMING_SLIPS. **Seed bench: 30.**
 
-**⚑ HARNESS: traps 1–186 in loop-findings** (`c427/` in S427's receipts; `--sdk` = `npm pack @supabase/supabase-js@2.116.0`); compaction runs ONCE, after the edit script (trap 140); the old handoff and the oldest Done move by hand.
+**⚑ HARNESS: traps 1–187 in loop-findings** (`c427/` in S427's receipts; `--sdk` = `npm pack @supabase/supabase-js@2.116.0`); compaction runs ONCE, after the edit script (trap 140); the old handoff and the oldest Done move by hand.

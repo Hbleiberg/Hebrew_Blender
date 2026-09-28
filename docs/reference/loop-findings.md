@@ -4,6 +4,13 @@
 > previous session already refuted. Never read it whole. Entries are moved here verbatim from the ledger's Candidates
 > by `scripts/compact-ledger.mjs`; they are records, not open work. Full history: `docs/IMPROVEMENT_ARCHIVE.md`.
 
+## 2026-09-28 — outside the loop: the dictionary's print header and saved-list exports
+
+- [ ] P4 (**NEW 2026-09-28 — trap 187**) | probe harness |
+  - **(187)** This container's Chromium runs with no `LANG`, and under that POSIX locale a download whose name holds any Hebrew letter is saved as `download` (8 names measured; a UTF-8 locale keeps every one, as a teacher's machine does). Launch with `chromium.launch({ env: { ...process.env, LANG: 'C.UTF-8', LC_ALL: 'C.UTF-8' } })` before judging a download's name.
+
+  | found 2026-09-28
+
 ## S427 (2026-09-28) — pass C on the dictionary (its first since S285)
 
 - [ ] P4 (**NEW S427 Pass C — the dictionary's receipts, arm by arm, so the next C on it starts here**) | hebrew_dictionary.html |

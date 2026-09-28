@@ -69335,3 +69335,16 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 
 - [ ] P4 (**NEW S427**) | hebrew_dictionary.html | **Closing Add to Word List (from a word's details) drops the focus to `<body>`**: the opener is read after the body is replaced. | found S427
 
+## Shipped outside the loop (2026-09-28) — the dictionary's print header — moved verbatim from the live ledger
+
+### from Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
+
+- [x] S | hebrew_dictionary.html | **A print header — every printed page is anonymous.** No `@page` rule; the print CSS hides `header, .toolbar, .filter-chips`, the only elements naming the view, so a filtered set for a sub carries no title, date or filter. `computeActiveChips()` already returns `{key,label}` per active filter; fill a print-only header inside the existing `beforeprint` handler …[full text: IMPROVEMENT_ARCHIVE.md]
+  **SHIPPED 2026-09-28 as `78cc7e8`, outside the loop, at the maintainer's request (branch `claude/nice-bohr-q3afuj`), after `3211e00` made Print itself mode-aware.** Not inside the existing `beforeprint` handler, which returns early in Shoresh and for any set of 100 or fewer and must never throw: `fillPrintHead()` has its own listeners and fills `#printHead` (the Torah Trainer's `#ttPrintBand` shape) with the tool, the date · the on-screen count, and "Filters:" with each chip isolated. The count only when it counts what is on screen (never "Loading…", "Enter a root" or "No words found"); a saved list prints title and date only (its banner names it; its chips are stale); 1 CSV key. `3211e00`: Print had checked the Words set in every mode, so a restored Emojis or Shoresh session refused and an empty Shoresh or emoji view opened the dialog (5 of 8 cases wrong). Verified headless: 8 + 45 checks, both print widths, EN/HE, light/dark, `page.pdf()` in both languages.
+
+## Shipped outside the loop (2026-09-28) — Copy / Export for Anki / Export for Quizlet on each saved list — moved verbatim from the live ledger
+
+### from Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
+
+- [x] S | hebrew_dictionary.html | **Saved Word List actions: Copy this list / Export to Anki / Quizlet.** `exportAnki()` / `exportQuizlet()` take no arguments and read `exportSelectedWords()` (the live bulk selection), and `copyBulkText()` reads `bulkSelected` — so a list that is already saved must be reloaded as a filter, bulk-mode enabled and select-all'd first; `wlRenderManagerInto` offers …[full text: IMPROVEMENT_ARCHIVE.md]
+  **SHIPPED 2026-09-28 as `1a4b669`, outside the loop, at the maintainer's request (branch `claude/nice-bohr-q3afuj`).** A Copy list / Export for Anki / Export for Quizlet row under View / Rename / Delete. The seed's "stored row shape" was half right: All Info with gematria threw on a row without `bare`, so each click re-reads the list through `wlToCardObj`, as Load does. The exporters take an optional `{name, words}` and name the file after the list; `_wmCopyFlash` no longer flashes "Copied!" over a refused clipboard (the word card's `copyWord` still does: a P4). 2 CSV keys. Verified headless, 40 checks: Copy list = Load → Select all → Copy All in 5 modes × gematria; files byte-identical to the sidebar's; EN/HE, light/dark, 1280/800/390; smoke-tools 22/22 with `--sdk` 2.116.0.
