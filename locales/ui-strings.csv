@@ -1000,6 +1000,8 @@ dictionary.wordlist.added.other,Added {count} words.,נוספו {count} מילי
 dictionary.wordlist.all_already_in,All selected words were already in that list.,כל המילים הנבחרות כבר היו ברשימה הזו.,merge status,
 dictionary.wordlist.card_count.one,{count} word,מילה אחת,word-list card count,plural
 dictionary.wordlist.card_count.other,{count} words,{count} מילים,word-list card count,plural
+dictionary.wordlist.copy_list,Copy list,העתקת הרשימה,word-list card button,
+dictionary.wordlist.copy_list_title,"Copy every word in this list, one per line, in the Copy Mode you chose","העתקת כל המילים ברשימה, מילה בכל שורה, לפי מצב ההעתקה שבחרתם",word-list Copy list button title,names the sidebar's Copy Mode (dictionary.copy.mode_label)
 dictionary.wordlist.create_new,Create a new list,יצירת רשימה חדשה,save word-list modal section,
 dictionary.wordlist.delete,Delete,מחיקה,word-list card button,
 dictionary.wordlist.delete_confirm,"Delete the word list ""{name}""? This can't be undone.","למחוק את רשימת המילים ""{name}""? לא ניתן לבטל פעולה זו.",confirm dialog,mixed UI+content — do not translate {…}

@@ -459,6 +459,9 @@ body.dark .vowel-chip-sub{color:#adb6c9;}
    uses (S102): the inline-flex is what turns min-height into a taller BOX rather than taller text. */
 .pos-all-btn{flex:1;padding:3px 0;min-height:30px;display:inline-flex;align-items:center;justify-content:center;font-size:0.72rem;font-family:'Source Sans 3',sans-serif;background:var(--warm-gray);color:var(--text);border:1px solid var(--border);border-radius:4px;cursor:pointer;}
 .pos-all-btn:hover{border-color:var(--gold);color:var(--gold-text);}
+/* The Word Lists "Copy list" flash (_wmCopyFlash). :hover is restated: it has the same specificity, and in dark
+   mode its gold text drew "✓ Copied!" gold on gold under the pointer that just clicked. */
+.pos-all-btn.copied,.pos-all-btn.copied:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
 /* The word-list controls hand-rolled the locked look with an inline style.opacity and no
    cursor change, so #wlSaveBtn kept cursor:pointer and still took the gold hover above while
    disabled, and the ↑/↓ sat at 0.3 — below every rule-based disabled opacity in the suite
@@ -1829,6 +1832,15 @@ function exportDateStamp() {
   const d = new Date(), p = n => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
+// A saved list's export is named after the list, so three lists exported on one day stay three files a
+// teacher can tell apart. What a file system refuses becomes a separator; control and zero-width/bidi-control
+// characters go (a U+202E would draw the extension backwards on screen), as does a leading or trailing dot or
+// dash; the name is capped by code point so an emoji is never split. No list: today's name, byte for byte.
+function exportFileName(kind, list, ext) {
+  const nm = list ? [...String(list.name || '').replace(/[\\/:*?"<>|]/g, ' ').replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069]/g, '')
+    .trim().replace(/\s+/g, '-')].slice(0, 60).join('').replace(/^[-.]+|[-.]+$/g, '') : '';
+  return `ivrit-${kind}-${nm || 'export'}-${exportDateStamp()}.${ext}`;
+}
 function downloadTextFile(name, text, mime) {
   const blob = new Blob([text], { type: mime + ';charset=utf-8' });
   const url = URL.createObjectURL(blob);
@@ -1838,9 +1850,12 @@ function downloadTextFile(name, text, mime) {
   setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 120);
 }
 function exportTagify(s) { return (s || '').toLowerCase().trim().replace(/\s+/g, '_'); }
-function exportAnki() {
-  const err = document.getElementById('exportErr');
-  const words = exportSelectedWords();
+// `list` ({name, words}, from the Word Lists window) exports that saved list; without it, the words picked
+// in Bulk Copy Mode (the sidebar button). The same for exportQuizlet.
+function exportAnki(list) {
+  const fromList = !!(list && Array.isArray(list.words));
+  const err = fromList ? null : document.getElementById('exportErr');
+  const words = fromList ? list.words : exportSelectedWords();
   if (!words.length) { if (err) err.textContent = I18n.t('dictionary.export.err_select_first'); return; }
   if (err) err.textContent = '';
   const lines = ['#separator:tab', '#html:false', '#tags column:6'];
@@ -1853,15 +1868,16 @@ function exportAnki() {
     const tags = ['ivritsuite', 'hebrew', exportTagify(w.era), exportTagify(w.pos)].filter(Boolean).join(' ');
     lines.push([w.word, w.translation || '', tr, w.pos || '', w.era || '', tags].map(ankiField).join('\t'));
   });
-  downloadTextFile(`ivrit-anki-export-${exportDateStamp()}.txt`, lines.join('\n'), 'text/plain');
+  downloadTextFile(exportFileName('anki', fromList ? list : null, 'txt'), lines.join('\n'), 'text/plain');
 }
 function csvEscape(s) {
   s = String(s == null ? '' : s);
   return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
 }
-function exportQuizlet() {
-  const err = document.getElementById('exportErr');
-  const words = exportSelectedWords();
+function exportQuizlet(list) {
+  const fromList = !!(list && Array.isArray(list.words));
+  const err = fromList ? null : document.getElementById('exportErr');
+  const words = fromList ? list.words : exportSelectedWords();
   if (!words.length) { if (err) err.textContent = I18n.t('dictionary.export.err_select_first'); return; }
   if (err) err.textContent = '';
   const rows = ['Term,Definition'];
@@ -1874,7 +1890,7 @@ function exportQuizlet() {
   // Lead with a UTF-8 BOM so Windows-Excel (the documented Quizlet import path — see the
   // "Import from Word/Excel" hint) renders Hebrew correctly instead of mojibake. The BOM is an
   // encoding marker Excel consumes, not cell content, so the Excel→paste→Quizlet flow stays clean.
-  downloadTextFile(`ivrit-quizlet-export-${exportDateStamp()}.csv`, '\uFEFF' + rows.join('\n'), 'text/csv');
+  downloadTextFile(exportFileName('quizlet', fromList ? list : null, 'csv'), '\uFEFF' + rows.join('\n'), 'text/csv');
 }
 
 /* ===== Word Lists — suite-wide store (localStorage['ivritSuite_wordLists']) =====
@@ -2195,11 +2211,11 @@ function wlRenderManagerInto(root) {
     row.appendChild(head);
 
     const acts = wlEl('div', { style: 'display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;' });
-    const btn = (label, handler, extra, key) => {
+    const btn = (label, handler, extra, key, parent) => {
       const bb = wlEl('button', { cls: 'pos-all-btn', type: 'button', style: 'font-size:0.7rem;' + (extra || '') }, label);
       bb.dataset.wlFocus = id + ':' + key;   // wlRefreshManager() hands the focus back here after a rebuild
       bb.addEventListener('click', handler);
-      acts.appendChild(bb);
+      (parent || acts).appendChild(bb);
       return bb;
     };
     btn(I18n.t('dictionary.wordlist.view_words'), () => {
@@ -2250,6 +2266,7 @@ function wlRenderManagerInto(root) {
       // matching the Save flow — a list can't be renamed onto another list's name.
       if (row.querySelector('.wl-rename')) return;   // already editing this row
       acts.style.display = 'none';
+      const xacts = row.querySelector('.wl-xacts'); if (xacts) xacts.style.display = 'none';   // the Copy / export row too
       const ed = wlEl('div', { cls: 'wl-rename', style: 'margin-top:8px;border-top:1px solid var(--border);padding-top:8px;' });
       ed.appendChild(wlEl('label', { htmlFor: 'wlRename_' + id, style: 'display:block;font-size:0.72rem;font-weight:600;color:var(--text);margin-bottom:4px;' }, I18n.t('dictionary.wordlist.rename_prompt')));
       const input = wlEl('input', { id: 'wlRename_' + id, type: 'text', maxLength: 80, value: list.name, placeholder: I18n.t('dictionary.wordlist.name_placeholder'), style: 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);color:var(--text);font-family:inherit;font-size:0.85rem;margin-bottom:6px;' });
@@ -2280,6 +2297,25 @@ function wlRenderManagerInto(root) {
     }, 'color:var(--danger-text);', 'delete');
     row.appendChild(acts);
     if (list.words.length) {
+      // Copy or export the saved list itself, without the Load → Bulk Copy Mode → Select all detour. Each
+      // click re-reads the list (it may have changed since this render) and maps it through wlToCardObj, as
+      // Load does: computeCopyText's gematria segment needs the `bare` a stored row lacks. A fresh parse,
+      // never written back (translitDisplayOf writes into what it is given).
+      const fresh = () => {
+        const l = wlGetList(id);
+        if (!l || !l.words.length) { wlRefreshManager(); return null; }
+        return { name: l.name, words: l.words.map(wlToCardObj) };
+      };
+      const xacts = wlEl('div', { cls: 'wl-xacts', style: 'display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;' });
+      const copyLabel = I18n.t('dictionary.wordlist.copy_list');
+      const copyBtn = btn(copyLabel, () => {
+        const l = fresh();
+        if (l) _wmCopyFlash(copyBtn, l.words.map(w => computeCopyText(w, copyMode)).join('\n'), copyLabel);   // the sidebar's Copy Mode, as Copy All
+      }, '', 'copy', xacts);
+      copyBtn.title = I18n.t('dictionary.wordlist.copy_list_title');
+      btn(I18n.t('dictionary.export.anki_button'), () => { const l = fresh(); if (l) exportAnki(l); }, '', 'anki', xacts);
+      btn(I18n.t('dictionary.export.quizlet_button'), () => { const l = fresh(); if (l) exportQuizlet(l); }, '', 'quizlet', xacts);
+      row.appendChild(xacts);
       const loadBtn = wlEl('button', { cls: 'wm-root-btn', type: 'button', style: 'margin-top:8px;font-size:0.8rem;padding:7px 12px;' }, I18n.t('dictionary.wordlist.load_as_filter'));
       loadBtn.addEventListener('click', () => wlLoadListAsFilter(id));
       row.appendChild(loadBtn);
@@ -5941,8 +5977,18 @@ function closeWordModal() {
 }
 function _wmCopyFlash(btn, text, label) {
   const done = () => { btn.textContent = I18n.t('dictionary.copy.copied_flash'); btn.classList.add('copied'); announce(I18n.t('dictionary.copy.copied_toast')); setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1400); };
-  if (navigator.clipboard) navigator.clipboard.writeText(text).then(done).catch(done);
-  else { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta); done(); }
+  // The textarea route, for a browser without the async clipboard and for one that refuses it (a page framed
+  // in an LMS without clipboard permission — which used to flash "Copied!" over an empty clipboard): only a
+  // copy that happened says so, and the focus select() moved goes back to the button.
+  const viaTextarea = () => {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;inset-block-start:0;opacity:0;';
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta); btn.focus();
+    if (ok) done();
+  };
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, viaTextarea);
+  else viaTextarea();
 }
 function _wmBadge(cls, text) { const s = document.createElement('span'); s.className = 'badge ' + cls; s.textContent = text; return s; }
 function _wmCopyButtons(container, textFor) {

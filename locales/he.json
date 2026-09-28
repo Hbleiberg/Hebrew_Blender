@@ -1034,6 +1034,8 @@
   "dictionary.wordlist.all_already_in": "כל המילים הנבחרות כבר היו ברשימה הזו.",
   "dictionary.wordlist.card_count.one": "מילה אחת",
   "dictionary.wordlist.card_count.other": "{count} מילים",
+  "dictionary.wordlist.copy_list": "העתקת הרשימה",
+  "dictionary.wordlist.copy_list_title": "העתקת כל המילים ברשימה, מילה בכל שורה, לפי מצב ההעתקה שבחרתם",
   "dictionary.wordlist.create_new": "יצירת רשימה חדשה",
   "dictionary.wordlist.delete": "מחיקה",
   "dictionary.wordlist.delete_confirm": "למחוק את רשימת המילים \"{name}\"? לא ניתן לבטל פעולה זו.",
