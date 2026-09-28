@@ -1360,7 +1360,7 @@
   "flashcards.report.need_results": "יש לשמור לפחות תוצאת תרגול אחת לתלמיד זה לפני הדפסת דוח.",
   "flashcards.report.period": "לתקופה {from} – {to}",
   "flashcards.report.period_one": "לתאריך {date}",
-  "flashcards.report.privacy_line": "הופק על ידי IvritSuite · נתוני הכרטיסיות נשמרים במכשיר זה בלבד.",
+  "flashcards.report.privacy_line": "הופק על ידי IvritSuite.",
   "flashcards.report.signature_label": "חתימת המורה",
   "flashcards.report.strength_stat": "{seen} הופעות · ללא טעויות",
   "flashcards.report.strengths_heading": "נקודות חוזק",
