@@ -1026,6 +1026,12 @@ body.trope-on .tt-staff-sys .tu-pbar.fam-rare     { fill:var(--trope-rare-line);
 .tt-staff-sys .tu-pn.is-sounding ellipse { stroke:var(--navy); stroke-width:1.6; }
 body.dark .tt-staff-sys .tu-pn.is-hl, body.dark .tt-staff-sys .tu-pn.is-sounding { color:var(--gold-light); }
 body.dark .tt-staff-sys .tu-pn.is-sounding ellipse { stroke:var(--gold-light); }
+/* The note names (Settings → Trope staff → Note names): muted, gold while their note sounds (the tune) or is chanted;
+   an SVG <text> has no fill of its own, so without these they would print black in the dark theme too. */
+.tt-staff-sys .tu-nn { fill:var(--muted); }
+.tt-staff-sys .tu-pn.is-sounding .tu-nn { fill:var(--gold-text); font-weight:700; }
+.tt-staff-sys .tu-pn.is-hl .tu-nn { fill:var(--gold-text); }
+body.dark .tt-staff-sys .tu-pn.is-sounding .tu-nn, body.dark .tt-staff-sys .tu-pn.is-hl .tu-nn { fill:var(--gold-light); }
 .tt-tuneall.active { background:var(--gold); border-color:var(--gold); color:var(--navy); }
 @media print {
   .tt-staff-sys svg.is-playing { background:none; }
@@ -2483,8 +2489,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-body">
         <!-- The Trope staff layout (a Layout choice): what sits under the notes while the Translit switch is on (the
              Hebrew with its Latin line, or the Latin line alone), the key the staff is drawn in and the tune moved by,
-             the voice (Low voices: the 8 under the clef, the tune an octave down) and the tune's speed.
-             Words, key and voice travel in a practice link (how the reading looks); the speed stays on this device. -->
+             the voice (Low voices: the 8 under the clef, the tune an octave down), the note names and the tune's speed.
+             All but the speed travel in a practice link (how the reading looks); the speed stays on this device. -->
         <div class="form-row">
           <label id="lblStaffWords" data-i18n="torah.staff.words_label">Words</label>
           <span class="radio-group" role="group" aria-labelledby="lblStaffWords" style="margin-inline-start:auto;">
@@ -2509,6 +2515,15 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
             <input type="radio" name="optStaffVoice" id="svLow" value="low"><label for="svLow" data-i18n="torah.staff.voice_low">Low voices</label>
           </span>
         </div>
+        <div class="form-row">
+          <label id="lblStaffNames" data-i18n="torah.staff.names_label">Note names</label>
+          <span class="radio-group" role="group" aria-labelledby="lblStaffNames" style="margin-inline-start:auto;">
+            <input type="radio" name="optStaffNames" id="snOff" value="off"><label for="snOff" data-i18n="torah.staff.names_off">Off</label>
+            <input type="radio" name="optStaffNames" id="snLetters" value="letters"><label for="snLetters" data-i18n="torah.staff.names_letters">A B C</label>
+            <input type="radio" name="optStaffNames" id="snSolfa" value="solfa"><label for="snSolfa" data-i18n="torah.staff.names_solfa">Do re mi</label>
+          </span>
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.names_note">Writes a name under every note. Do re mi starts from the note the key is named after, so the names stay the same in any key.</div>
         <div class="slider-row">
           <label for="optStaffTuneRate" data-i18n="torah.staff.tune_speed_label">Tune speed</label>
           <input type="range" id="optStaffTuneRate" min="0.5" max="1.5" step="0.05" value="1.0">
@@ -2749,11 +2764,13 @@ const DEFAULTS = {
   shareIncludeDisplay: false,  // Copy link also carries the display settings as ?s= (see LINK VIEW)
   // Trope staff layout (beta; layout === 'staff'): what sits under the notes while the Translit switch is on (the
   // Hebrew with its Latin line, or the Latin line alone), the key the staff is drawn in and the tune moved by (half
-  // steps), whether the tune sounds an octave down (the 8 under the clef), and the tune's speed. The first three
-  // travel in a practice link (how the reading looks); the speed is how it sounds and stays home.
+  // steps), whether the tune sounds an octave down (the 8 under the clef), the note names (a letter or do re mi under
+  // every note) and the tune's speed. All but the speed travel in a practice link (how the reading looks); the speed
+  // is how it sounds and stays home.
   staffWords: 'both',          // 'both' | 'translit' — read through staffWordsKey()
   staffShift: 0,               // −6…6 half steps — staffShiftVal()
   staffVoice: 'high',          // 'high' | 'low' — staffVoiceKey()
+  staffNoteNames: 'off',       // 'off' | 'letters' | 'solfa' — staffNoteNamesKey(); a name under every staff note
   staffTuneRate: 1.0,          // 0.5–1.5× — staffRateVal()
 };
 let settings = JSON.parse(JSON.stringify(DEFAULTS));
@@ -3671,6 +3688,10 @@ function staffWordsKey() { return settings.staffWords === 'translit' ? 'translit
 function staffVoiceKey() { return settings.staffVoice === 'low' ? 'low' : 'high'; }
 function staffShiftVal() { const v = Math.round(Number(settings.staffShift)); return Number.isFinite(v) ? Math.max(-TUNE_SHIFT_MAX, Math.min(TUNE_SHIFT_MAX, v)) : 0; }
 function staffRateVal() { const v = Number(settings.staffTuneRate); return Number.isFinite(v) && v > 0 ? Math.max(0.25, Math.min(3, v)) : 1; }
+function staffNoteNamesKey() { return settings.staffNoteNames === 'letters' || settings.staffNoteNames === 'solfa' ? settings.staffNoteNames : 'off'; }   // an unknown stored value shows no names and stays stored
+// Do re mi is the dictionary's (trope.notes.solfa_*): none before it has loaded — applyI18n re-renders then, and on a
+// language switch. A B C is notation and needs no dictionary.
+function staffNoteNamesMode() { const k = staffNoteNamesKey(); return k === 'solfa' && !(window.I18n && I18n.has && I18n.has('trope.notes.solfa_1')) ? 'off' : k; }
 // Resolve the family colors into --trope-<fam>-bg / --trope-<fam>-line custom
 // properties on <body>, and sync the body-class switches + legend visibility.
 // Pure CSS-var recolor: theme, scheme, look and picker changes never need a
@@ -4618,6 +4639,24 @@ function staffKeyName(key) {   // the note the key is named after, as the tutor'
   return n ? I18n.t('trope.key.note_' + n) : '';
 }
 function staffDrawKey() { const s = staffSet(); return shiftedKey(s ? s.key : 'A', staffShiftVal()); }
+// The name under one note (p in semitones from B4, already moved into the staff's key), read from where the staff
+// writes it — the tutor's noteNameAt, kept page-local on purpose: the engine reads no I18n (do re mi is the
+// dictionary's), and the tutor's own copy shares this global scope, so this one carries its own names. 'letters'
+// writes the letter with its ♯ or ♭ (its own sign, or else the key signature's); 'solfa' is movable do, counted from
+// the note the key is named after, so a moved staff keeps its names, and a note outside the key carries the sign it
+// takes against the signature. '' with names off, and for do re mi in a key the table does not know.
+const STAFF_NOTE_SIGN = { '-1': '♭', 0: '', 1: '♯' };
+function staffNoteNameAt(p, key, mode) {
+  if (mode !== 'letters' && mode !== 'solfa') return '';
+  const { step, acc } = motifPitchPos(p, key);
+  const letter = 'BCDEFGA'[((step % 7) + 7) % 7];   // step 0 is B4; the letters are notation, not UI text — i18n-ignore
+  const inSig = (keySignature(key).find((k) => k.letter === letter) || { acc: 0 }).acc;
+  const alt = acc === '♯' ? 1 : acc === '♭' ? -1 : acc === '♮' ? 0 : inSig;
+  if (mode === 'letters') return letter + (STAFF_NOTE_SIGN[alt] || '');
+  if (!Number.isInteger(KEY_SHARPS[key])) return '';
+  const degree = (LETTER_STEP[letter] - LETTER_STEP[key[0]] + 7) % 7;
+  return I18n.t('trope.notes.solfa_' + (degree + 1)) + (STAFF_NOTE_SIGN[alt - inSig] || '');
+}
 // The last verse of a PocketTorah aliyah (the divisions the census read) takes the chart's closing formula.
 function staffIsAliyahEnd(c, v) {
   const p = currentReadingCtx && currentReadingCtx.parshahEntry;
@@ -4718,7 +4757,7 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
   _staffSystems = {};
   const set = staffSet(), setName = staffSetName(), ctx = STAFF_CTX[setName], fbCtx = STAFF_CTX.torah;
   if (!set && !_staffFailed) ensureStaffData();
-  const shift = staffShiftVal(), key = staffDrawKey(), low = staffVoiceKey() === 'low', wordsMode = staffWordsKey();
+  const shift = staffShiftVal(), key = staffDrawKey(), low = staffVoiceKey() === 'low', wordsMode = staffWordsKey(), nmode = staffNoteNamesMode();
   const root = document.getElementById('ttReading');
   // On paper the systems are wrapped to STAFF_PRINT_W, not the screen (staffPrintEnter); -1 makes the next screen
   // relayout unconditional.
@@ -4729,7 +4768,11 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
   const hePx = staffFontPx('he'), tlPx = staffFontPx('tl');
   const haftarah = !!(currentReadingCtx && currentReadingCtx.isHaftarah);
   const dbl = STAFF_DOUBLE_CANT[staffBook()];
-  const layoutOpts = { lyrics: false, accidentals: 'unit' };
+  // Note names, index-aligned with a row's notes (a rest has none): namesOf lets tropeSplitSystems wrap each system at
+  // the width it is drawn at, and the same names go to its layout below. The SVG stays aria-hidden (the words are the
+  // accessible content), so no spoken list of names is built.
+  const namesOf = nmode === 'off' ? null : (r) => r.notes.map(n => (n.r ? '' : staffNoteNameAt(n.p + shift, key, nmode)));
+  const layoutOpts = { lyrics: false, accidentals: 'unit', namesOf };
   let html = '<div class="tt-interlinear tt-staff-reading">';
   for (const v of verses) {
     const numLabel = `${v.chapter}:${v.verse}`;
@@ -4771,7 +4814,7 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
       const list = _staffSystems[numLabel] = [];
       html += `  <div class="tt-staff-rows">`;
       systems.forEach((sys, k) => {
-        const L = layoutPhraseStaff(sys.row, key, shift, null, layoutOpts);
+        const L = layoutPhraseStaff(sys.row, key, shift, namesOf ? namesOf(sys.row) : null, layoutOpts);
         const MID = -L.barY + 5, H = Math.ceil(Math.max(MID + L.lyricY + 4, low ? MID + 30 : 0));   // renderPhraseStaff's own height
         const twisOfUnit = sys.row.units.map(u => {
           const word = sys.row.words.find(w => w.cells.includes(u.ci));
@@ -5059,6 +5102,13 @@ function setStaffVoice(v) {
   saveSettings();
   stopStaffTune();   // the next play sounds in the new octave; the 8 under every clef
   if (settings.layout === 'staff') renderText();
+}
+function setStaffNoteNames(v) {
+  v = v === 'letters' || v === 'solfa' ? v : 'off';
+  if (v === staffNoteNamesKey()) return;
+  settings.staffNoteNames = v;
+  saveSettings();
+  if (settings.layout === 'staff') renderText();   // every system gains, changes or drops its names (renderText stops a playing tune)
 }
 function resetStaffShift() { setStaffShift(DEFAULTS.staffShift); }
 function resetStaffTuneRate() { settings.staffTuneRate = DEFAULTS.staffTuneRate; saveSettings(); syncStaffControls(); }
@@ -7281,6 +7331,7 @@ function syncFormToSettings() {
   document.getElementById('ttLayoutStaff').checked = settings.layout === 'staff';
   document.querySelectorAll('input[name="optStaffWords"]').forEach(r => { r.checked = r.value === staffWordsKey(); });
   document.querySelectorAll('input[name="optStaffVoice"]').forEach(r => { r.checked = r.value === staffVoiceKey(); });
+  document.querySelectorAll('input[name="optStaffNames"]').forEach(r => { r.checked = r.value === staffNoteNamesKey(); });
   syncStaffControls();
   document.getElementById('ttKaraokeRate').value = settings.karaokeRate;
   document.getElementById('ttKaraokeRateVal').textContent = (parseFloat(settings.karaokeRate) || 1.0).toFixed(2) + '×';
@@ -7477,6 +7528,9 @@ function wireSettingsForm() {
   });
   document.querySelectorAll('input[name="optStaffVoice"]').forEach(r => {
     r.addEventListener('change', e => { if (e.target.checked) setStaffVoice(e.target.value); });
+  });
+  document.querySelectorAll('input[name="optStaffNames"]').forEach(r => {
+    r.addEventListener('change', e => { if (e.target.checked) setStaffNoteNames(e.target.value); });
   });
   document.getElementById('optStaffShift').addEventListener('input', e => setStaffShift(e.target.value));
   document.getElementById('optStaffTuneRate').addEventListener('input', e => {
@@ -9566,11 +9620,12 @@ const LINK_DISPLAY = {
   tropeColorOverrides: v => _linkHexMap(v, TROPE_FAMILIES),
   karaokeStyle:        v => _linkOneOf(v, _linkChoices('input[name="optKarStyle"]')),
   karaokeFollow:       v => _linkOneOf(v, _linkChoices('input[name="optKarFollow"]')),
-  // The Trope staff layout: what sits under the notes, the key it is drawn in and the voice (the 8 under the clef)
-  // are how the reading looks; the tune's speed is how it sounds and stays home like karaokeRate.
+  // The Trope staff layout: what sits under the notes, the key it is drawn in, the voice (the 8 under the clef) and
+  // the note names are how the reading looks; the tune's speed is how it sounds and stays home like karaokeRate.
   staffWords:          v => _linkOneOf(v, _linkChoices('input[name="optStaffWords"]')),
   staffShift:          v => { const n = _sliderNum(v, 'optStaffShift', NaN); return Number.isFinite(n) ? Math.round(n) : undefined; },
   staffVoice:          v => _linkOneOf(v, _linkChoices('input[name="optStaffVoice"]')),
+  staffNoteNames:      v => _linkOneOf(v, _linkChoices('input[name="optStaffNames"]')),
 };
 // Each color list's look, with the on/off switch it shows under. A look is on screen only while its
 // coloring is on, so it rides a link only then, and a reader takes one only then.

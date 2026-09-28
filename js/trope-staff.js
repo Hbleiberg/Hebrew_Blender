@@ -5,7 +5,8 @@
    before each page's inline <script>, so every name below is a plain global the
    page's own code calls unqualified. It reads no `settings`, no `I18n` and no DOM
    but document.createElementNS: anything that needs a page's state stays in that
-   page (the tutor's tuneShiftVal/staffKey/noteNameAt, the trainer's staff view).
+   page (the tutor's tuneShiftVal/staffKey/noteNameAt, the trainer's staff view and
+   its staffNoteNameAt).
    Contents: the TROPES taxonomy (byte-identical with scripts/build-trope-index.mjs;
    scripts/build-trope-phrases.mjs reads both and refuses a difference), the pitch
    model (semitones from B4 → staff position and accidental, in a key), the staff
@@ -670,7 +671,8 @@ function _phraseSetsFrom(j) {
    tropeChooseFigures picks a figure per mark from those contexts;
    tropeBuildReadingRow stitches the picked figures into one row in the phrase
    file's shape (with `words`, the underlay); tropeSplitSystems wraps that row
-   into staff systems that fit a width. All pure: no DOM, no settings.
+   into staff systems that fit a width (with opts.namesOf, at the width each is
+   drawn at with its note names). All pure: no DOM, no settings.
    ══════════════════════════════════════════════════════ */
 // The connecting ("servant") marks, whose figure depends on the mark they lead into (the builder's list).
 const TROPE_CONJUNCTIVE = new Set(['munach', 'mahpach', 'mercha', 'mercha_kefula', 'darga', 'kadma', 'telisha_ketana', 'yerach_ben_yomo']);
@@ -847,11 +849,15 @@ function tropeSubRow(row, a, b) {
 // The reading row wrapped into systems no wider than maxW (staff units), breaking only between words: each
 // word's width is measured on its own once, words are packed by those widths, and each system is then laid
 // out for real, shedding its last word while it overflows (a system always keeps at least one word).
+// opts.namesOf(subRow) (optional) returns the note names index-aligned with that sub-row's notes, so a system
+// is wrapped at the width it is drawn at when names widen it — a callback, because tropeSubRow re-indexes the
+// notes from 0, and a name depends only on the note's pitch, the key and the mode. Without it the names are
+// null, exactly as before.
 // Returns [{row}] in order; the caller lays each out (or reads its layout) and draws it.
 function tropeSplitSystems(row, key, shift, maxW, opts = {}) {
   const words = row.words || [];
   if (!words.length) return [{ row }];
-  const lay = (r) => layoutPhraseStaff(r, key, shift, null, opts);
+  const lay = (r) => layoutPhraseStaff(r, key, shift, opts.namesOf ? opts.namesOf(r) : null, opts);
   const single = words.map((w, i) => { const L = lay(tropeSubRow(row, i, i)); return L.W - L.X0; });
   const X0 = lay(tropeSubRow(row, 0, 0)).X0;
   const systems = [];

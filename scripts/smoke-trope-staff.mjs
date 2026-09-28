@@ -128,5 +128,19 @@ const row12 = (() => {
   const one = api.tropeSplitSystems(wr, 'A', 0, 100000, {});
   assert.equal(one.length, 1); assert.equal(one[0].row.notes.length, wr.notes.length);
   ok('systems wrap between words, fit the width, re-index from 0, and a wide enough width gives one system');
+  // 6. wrapping with note names (opts.namesOf): each system fits at the width it is drawn at
+  const opts = { lyrics: false, accidentals: 'unit' };
+  const namesOf = (r) => { assert.equal(r.units[0].from, 0, 'a re-indexed sub-row'); return r.notes.map((n) => (n.r ? '' : 'MMMMMMMM')); };   // a wide fake name
+  const named = api.tropeSplitSystems(wr, 'A', 0, 300, Object.assign({ namesOf }, opts));
+  for (const s of named) {
+    const L = api.layoutPhraseStaff(s.row, 'A', 0, namesOf(s.row), opts);
+    assert.ok(L.W <= 300 || s.row.words.length === 1, 'each named system fits (or is one word)');
+    assert.ok(L.notes.every((o) => o.rest || o.name === 'MMMMMMMM'), 'every note carries its name');
+  }
+  assert.ok(named.length > sys.length, 'the names were consulted: more systems than without them');
+  same(named.flatMap((s) => s.row.words.map((w) => w.ci)), wr.words.map((w) => w.ci));
+  assert.ok(sys.some((s) => api.layoutPhraseStaff(s.row, 'A', 0, namesOf(s.row), opts).W > 300), 'control: a system wrapped without names overflows once named');
+  same(api.tropeSplitSystems(wr, 'A', 0, 300, opts), sys);
+  ok('with namesOf the systems wrap at their named width, keep the words in order, and without it nothing changes');
 }
 console.log(`smoke-trope-staff: ${n} checks passed`);

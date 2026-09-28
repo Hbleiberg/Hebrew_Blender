@@ -523,7 +523,8 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   `noteNames` (`'off'` by default, `'letters'` or `'solfa'`, read through `noteNamesKey()`: any other stored
   value shows no names and stays stored), writes a name under every note of every staff, on the Learn cards and
   the Phrases tab alike. The data files are never touched, and with names off every staff is byte-identical to one
-  drawn without the feature.
+  drawn without the feature. The Torah Trainer's Trope staff offers the same choice (`staffNoteNames`; *Trope
+  staff* → *Note names* below).
   - **What a name says.** `noteNameAt(p, key, mode)` reads a note where the staff writes it: `motifPitchPos`'s line
     or space, and the alteration it sounds (its own sign, else the key signature's), in the key the staff is drawn
     in. *A B C* is that letter with its ♯ or ♭, so C♯ in A major although the signature carries the sharp.
@@ -636,7 +637,8 @@ Design: `docs/tropepatterns.md` → G.
   (`staffIsAliyahEnd`, from `aliyahLookup`'s `endC/endV`) takes the `[aliyah-end]` closing whose marks end
   it. `tropeBuildReadingRow` stitches the picks into one row in the phrase file's shape (each figure's own
   syllables, which carry the beaming; a triplet or slur only when it lies inside one figure) plus `words`,
-  one per cell; `tropeSplitSystems` wraps it between words to `#ttReading`'s width.
+  one per cell; `tropeSplitSystems` wraps it between words to `#ttReading`'s width (with `opts.namesOf`, at the
+  width each system is drawn at with its note names).
 - **The melody** is `readingTutorMelody() || 'torah'` (the four High Holiday readings draw the High Holiday
   chart); the key is `shiftedKey(set.key, staffShift)`; Low voices draws the 8 under every clef.
 - **The markup contract.** `renderStaffView` mirrors `renderInterlinear`'s verse shell — `.tt-verse[data-vk]`,
@@ -712,12 +714,22 @@ Design: `docs/tropepatterns.md` → G.
   underlined and hovered by the reading's own rules. The SVG's class names are the engine's (`tu-pstaff`,
   `tu-pn`, `tu-pbar`), rescoped under `.tt-staff-sys`.
 - **Settings** (`DEFAULTS`, clamped in `loadSettings`, read through `staffWordsKey` / `staffShiftVal` /
-  `staffVoiceKey` / `staffRateVal`; one writer each: `setStaffShift`, `setStaffVoice`, the Words radios, the
-  rate slider; `syncStaffControls` the read-only half, also from `applyI18n`): the drawer's *Trope staff*
-  panel — Words, Key (−6…+6; the readout names the key with the tutor's `trope.key.*` strings), Voice, Tune
-  speed. Words, key and voice ride the practice link (`LINK_DISPLAY`); the speed syncs in the blob like
-  `karaokeRate` and never travels. The systems are pinned `direction:ltr` in both UIs (notation), and the
+  `staffVoiceKey` / `staffNoteNamesKey` / `staffRateVal`; one writer each: `setStaffShift`, `setStaffVoice`,
+  `setStaffNoteNames`, the Words radios, the rate slider; `syncStaffControls` the read-only half, also from
+  `applyI18n`): the drawer's *Trope staff* panel — Words, Key (−6…+6; the readout names the key with the
+  tutor's `trope.key.*` strings), Voice, Note names, Tune speed. Words, key, voice and note names ride the
+  practice link (`LINK_DISPLAY`); the speed syncs in the blob like `karaokeRate` and never travels. The systems are pinned `direction:ltr` in both UIs (notation), and the
   rover's arrows follow the notation there (`onReadingKeydown` flips `delta`).
+- **Note names** (`staffNoteNames`: `'off'`, `'letters'`, `'solfa'`; an unknown stored value shows none and stays
+  stored). The tutor's option for the reading: `renderStaffView` builds `namesOf`, a callback giving a row's names
+  index-aligned with its notes (a rest has none) from `staffNoteNameAt` — the tutor's `noteNameAt` kept page-local,
+  because the engine reads no `I18n` and the tutor's copy shares the global scope — and hands it to
+  `tropeSplitSystems` (so a system is wrapped at the width it is drawn at once names widen it) and to each
+  system's `layoutPhraseStaff`; `renderPhraseStaff` then draws the `<text class="tu-nn">` from the layout and the
+  system's height follows `L.lyricY`. Do re mi waits for the dictionary (`staffNoteNamesMode`: `'solfa'` reads
+  `'off'` until `trope.notes.solfa_1` is there; `applyI18n`'s re-render brings it, and a language switch moves it).
+  The names are `--muted`, gold while their note sounds (the tune's `.is-sounding`) or is chanted (`.is-hl`), and
+  print muted; the SVG stays hidden from assistive tech, so no spoken list is built.
 - **Known beta limits** (said in the panel's note): a word sits whole under its figure (no syllable
   placement); a context the chart never prints takes the nearest figure; a triplet or slur cut at a
   figure's edge draws by value; a sheet narrower than the print wrap (portrait, wide margins) prints the
@@ -821,9 +833,9 @@ chrome). An RTL sweep must not "fix" the pin.
 - **What travels.** `LINK_DISPLAY` is the one list of carried keys, each with the check a value must
   pass: layout, the four show-toggles (nikkud, te'amim, transliteration, translation), the
   transliteration style and placement, the Hebrew font and the three text sizes, vowel coding (on, mode, scheme,
-  overrides), trope coding (on, look, overrides), karaoke style and follow, and the Trope staff's words, key
-  and voice (`staffWords`, `staffShift` as a whole number of half steps, `staffVoice`; the layout itself
-  travels as `layout: 'staff'`). Enum lists are read from the
+  overrides), trope coding (on, look, overrides), karaoke style and follow, and the Trope staff's words, key,
+  voice and note names (`staffWords`, `staffShift` as a whole number of half steps, `staffVoice`,
+  `staffNoteNames`; the layout itself travels as `layout: 'staff'`). Enum lists are read from the
   page's own radios and `<option>`s (a color list's No highlight is left out: it travels as the
   on/off boolean, never as a mode, and a list's look travels only while its coloring is on,
   `LINK_LOOK_SWITCH`), colors must be `#rrggbb` (`TROPE_HEX6_RE`), sizes are clamped to
