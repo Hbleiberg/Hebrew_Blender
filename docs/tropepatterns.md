@@ -814,9 +814,15 @@ Phrases tab, with real Torah examples of each row.)
 5. A munach legarmeh card.
 6. A one-sheet phrase chart to print in the teacher's chosen key (the Phrases tab prints the
    whole chart in that key, over several sheets).
-7. A staff for a whole reading, a verse to a parasha, drawn and played under the Hebrew (section G).
+7. A staff for a whole reading, a verse to a parasha, drawn and played under the Hebrew (section G) —
+   shipped as the Torah Trainer's *Trope staff* layout (beta): `js/trope-staff.js`'s `tropeUnitsOfVerse`,
+   `tropeChooseFigures`, `tropeBuildReadingRow` and `tropeSplitSystems` are section G's rules as code;
+   `docs/reference/torah-and-trope.md` → *Trope staff* is the contract.
 
 ## G. Toward a parasha staff
+
+*Implemented (beta) as the Torah Trainer's Trope staff layout — see `docs/reference/torah-and-trope.md` →
+Trope staff for what the code does with each point below, and which it leaves open.*
 
 The aim is a staff under any reading — a verse, an aliyah, a whole parasha — that draws and plays its
 cantillation. The chart supplies the figures. This section records what a builder of that staff needs

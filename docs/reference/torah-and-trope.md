@@ -209,6 +209,16 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
 
 ## Trope Tutor (`trope_tutor.html`)
 
+**The staff engine is `js/trope-staff.js`**, one classic same-origin script both this page and the Torah
+Trainer load right before their inline `<script>` (plain globals): the `TROPES` taxonomy, the pitch model
+(`keySignature`, `motifPitchPos`, `shiftedKey`…), the staff primitives, `layoutPhraseStaff` /
+`renderPhraseStaff`, the phrase-file validation, and the reading-staff functions the Trainer's *Trope staff*
+layout uses (below). It reads no `settings`, no `I18n` and no DOM but `createElementNS`; a function that
+needs a page's state (`tuneShiftVal`, `staffKey`, `noteNameAt`, `renderMotifStaff`, the tune players)
+stays in its page. A change to the engine is proved by snapshotting every Learn and Phrases staff's
+`outerHTML` before and after (the melody × key × voice × note-names matrix) — the two must be byte-identical
+unless the change means to move a note.
+
 A standalone Learn + Phrases + Drill page for the cantillation marks. **Zero runtime Sefaria dependency** —
 it consumes only the pre-built static index plus PocketTorah MP3 streams. Its CSP therefore has
 **no `sefaria.org`** (and no `esm.sh`); if a change seems to need either, the design has drifted —
@@ -406,8 +416,14 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
       language.
   - **`renderPhraseStaff(row, opts)`** is full notation and pure: `layoutPhraseStaff` places everything
     around the middle line from the row, `{key, shift}` and (with note names on) the caller's `names` alone,
-    and the drawing turns that into SVG with the staff primitives the Learn staff uses. It is the first
-    building block of a whole reading's staff (`docs/tropepatterns.md` → G). It draws:
+    and the drawing turns that into SVG with the staff primitives the Learn staff uses. It is the building
+    block of the Torah Trainer's reading staff (`docs/tropepatterns.md` → G; *Trope staff* below), which
+    passes the options the tutor never does — all default-off, so the tutor's output is unchanged:
+    `opts.lyrics === false` (no syllable text; the syllables neither space the notes nor take a line),
+    `row.words` (one label per word, `{from, to, w}`: each is centred under its notes and pushes the
+    next one clear; their centres come back as `L.words`), `opts.accidentals === 'unit'` (a sign holds
+    to the end of its mark's figure, not the row), `opts.layout` (a layout already computed, so wrapping
+    and drawing share one), and `famOf(k, ui, rowUnit)`'s extra arguments. It draws:
     - every value and dot, and a rest of any value at its engraved height (`phraseRestGlyph`): a
       hooked rest has a knob per flag, from the third space down (a 32nd's third in the fourth), on a
       stem to the second line (eighth) or the bottom line; a quarter rest spans the middle three
@@ -599,6 +615,84 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
 
 ---
 
+## Trope staff (beta) — `torah_trainer.html`
+
+A fourth Layout (`settings.layout === 'staff'`, the radio beside Page view with the suite's `.beta-tag`): the
+reading drawn on a music staff, a verse at a time, the words under their notes. Engine: `js/trope-staff.js`
+(above); data: `data/trope/trope_phrases.json`, fetched lazily on the first staff render with the **same `?v=`
+the tutor uses** (`STAFF_PHRASES_URL`; bump both together) through `ivritSafeParse` + `_phraseSetsFrom`.
+Design: `docs/tropepatterns.md` → G.
+
+- **From text to notes.** `tropeUnitsOfVerse(v.hebrew)` reads the verse's marks on the Trainer's own split
+  (`/(\s+|־)/`: one *piece* per Hebrew-bearing token, the way `tokenizeHebrew` emits `.tt-word`s): a maqaf
+  joins the next piece to the cell (one sung word), a repeated mark counts once, pashta written twice (its
+  second glyph is kadma's) is one pashta, the last cell takes `sof_pasuk`, a `׀` token after a munach makes
+  it `munach_legarmeh` (**a paseq prints the same and cannot be told apart in the API text — accepted for
+  the beta**), and an unmarked cell sings with the cell after it. `tropeContextsOf(set)` indexes every
+  printed figure by the marks before and after it; `tropeChooseFigures` picks one per unit — a connecting
+  mark by the mark it leads into, else the pause its chain reaches; a pausing mark by its neighbours; then
+  the Learn card's row (`TROPE_LEARN_ROW`, § A's table); then the mark's first figure; a mark the melody's
+  chart lacks falls back to the year-round chart — and the last verse of a PocketTorah aliyah
+  (`staffIsAliyahEnd`, from `aliyahLookup`'s `endC/endV`) takes the `[aliyah-end]` closing whose marks end
+  it. `tropeBuildReadingRow` stitches the picks into one row in the phrase file's shape (each figure's own
+  syllables, which carry the beaming; a triplet or slur only when it lies inside one figure) plus `words`,
+  one per cell; `tropeSplitSystems` wraps it between words to `#ttReading`'s width.
+- **The melody** is `readingTutorMelody() || 'torah'` (the four High Holiday readings draw the High Holiday
+  chart); the key is `shiftedKey(set.key, staffShift)`; Low voices draws the 8 under every clef.
+- **The markup contract.** `renderStaffView` mirrors `renderInterlinear`'s verse shell — `.tt-verse[data-vk]`,
+  the bulk checkbox, `.tt-verse-num`, Read / Chant / **Tune** / Loop / Copy — then `.tt-staff-rows` holding
+  one `.tt-staff-sys` per system: an SVG (or its `aspect-ratio` placeholder) over `.tt-staff-words.tt-heb`,
+  a row of absolutely placed `.tt-staff-cell`s (`left` in percent of the system's width, `dir="rtl"` inside)
+  each holding its word's piece span(s) — **the very `.tt-word[data-twi]` spans `tokenizeHebrew` emits**,
+  collected through its optional `sink` argument, one per piece in reading order, inside `.tt-heb`, inside
+  `[data-vk]`. So `updateKaraokeWordRefs`, click-to-seek, `hebWordIndexInVerse`, the rover, the verse
+  observer, bulk select and the copy path work unchanged; **never special-case the staff in a `.tt-word`
+  consumer.** Every verse's staff is dropped for its interlinear Hebrew row — never a misaligned staff —
+  when the data is not there yet (a header chip; the render re-runs on arrival) or failed (chip + Try
+  again), for a haftarah (its melody is not the chart's), for a double-cantillation verse
+  (`STAFF_DOUBLE_CANT`: Genesis 35:22, the two Decalogues), and when the marks' piece count disagrees with
+  the page's.
+- **Widths** are measured (canvas `measureText`) in the computed font of two hidden probe spans outside
+  `#ttReading` (Hebrew at `--tt-heb-size`, Latin at `--tt-translit-size`), memoized by font + text, so the
+  layout spreads figures apart for a long word. The systems are wrapped to `#ttReading`'s width, so
+  `staffRelayoutSoon()` re-renders (debounced, this layout only, only when the width really changed, never
+  under a playing tune or chant — it waits for the stop or pause) from a `ResizeObserver`, `fonts.ready`,
+  the fonts' `loadingdone` (a My Font arrives late), `setHebFont` and `setFontSize`.
+- **Words** (`staffWords`: Hebrew, transliteration, both): the cells are `tokenizeHebrew`'s under-word cells
+  (`.tt-wh` + `.tt-wtl`) whenever the Latin line is wanted, whatever the Translit switch says; `body.translit-under`
+  is on then, and `karaokeFollowEffective()` is `'hebrew'` in this layout. Transliteration only hides `.tt-wh`
+  (`body.staff-words-translit`). A dead library falls back to the Hebrew with the existing chip.
+- **Lazy SVG.** Layouts are computed for every verse at render (they place the words); each system's SVG is
+  drawn by `staffEnsureSvg` when an `IntersectionObserver` sees it near the viewport, when the tune or the
+  chant highlight reaches it, and all at once in `beforeprint`. A 146-verse reading lays out in ~130 ms.
+- **Tune** (`staffTune(vk)`, the header's *Play tune* = `staffTuneAll`): the verse's notes as oscillator
+  tones by the tutor's rules (an eighth is 0.32 s ÷ `staffTuneRate`; ties one note; rests silent; a grace
+  note quick and borrowed; nothing under `STAFF_MIN_NOTE`; B4 = 493.88 Hz moved by the key, an octave down
+  in the 5-harmonic wave with Low voices), on its own lazily created `AudioContext`. Each note lights
+  `.tu-pn.is-sounding` (the system `svg.is-playing`) and its word's spans take `.active` — the teacher's
+  karaoke style. `stopStaffTune()` is the one exit and is called wherever another sound starts (`speakVerse`,
+  `chantVerse`, `startLoop`, both seeks, `chantHolidayWord`, Read all, Chant all, `toggleAudioPlay`, the
+  element's `onplay`), by `renderText`, the handout and `beforeprint`; `staffStopOthers()` is the reverse.
+- **Chant** is untouched: `paintKaraokeIdx` additionally calls `staffPaintPiece(twi, on)`, which lights
+  `.is-hl` on every `.tu-pn` / `.tu-pbar` of the unit(s) of the sung piece's cell (`_staffUnitsByTwi`,
+  rebuilt by `staffAfterRender`) — the whole figure, by section; `clearKaraokeHighlight` clears it.
+- **Colour.** The bar over each figure takes the piece's Trainer family (positional etnachta / sof pasuk
+  halves, from `tokenizeHebrew`'s sink) and is coloured only under `body.trope-on`; the words are coloured,
+  underlined and hovered by the reading's own rules. The SVG's class names are the engine's (`tu-pstaff`,
+  `tu-pn`, `tu-pbar`), rescoped under `.tt-staff-sys`.
+- **Settings** (`DEFAULTS`, clamped in `loadSettings`, read through `staffWordsKey` / `staffShiftVal` /
+  `staffVoiceKey` / `staffRateVal`; one writer each: `setStaffShift`, `setStaffVoice`, the Words radios, the
+  rate slider; `syncStaffControls` the read-only half, also from `applyI18n`): the drawer's *Trope staff*
+  panel — Words, Key (−6…+6; the readout names the key with the tutor's `trope.key.*` strings), Voice, Tune
+  speed. Words, key and voice ride the practice link (`LINK_DISPLAY`); the speed syncs in the blob like
+  `karaokeRate` and never travels. The systems are pinned `direction:ltr` in both UIs (notation), and the
+  rover's arrows follow the notation there (`onReadingKeydown` flips `delta`).
+- **Known beta limits** (said in the panel's note): a word sits whole under its figure (no syllable
+  placement); a context the chart never prints takes the nearest figure; a triplet or slur cut at a
+  figure's edge draws by value; a wide system shrinks on paper with its cells but not its labels.
+
+---
+
 ## Chant pitch (`torah_trainer.html`)
 
 The chant transposes in whole semitones (`settings.karaokePitch`, −12…12, default 0) without changing its
@@ -695,7 +789,9 @@ chrome). An RTL sweep must not "fix" the pin.
 - **What travels.** `LINK_DISPLAY` is the one list of carried keys, each with the check a value must
   pass: layout, the four show-toggles (nikkud, te'amim, transliteration, translation), the
   transliteration style and placement, the Hebrew font and the three text sizes, vowel coding (on, mode, scheme,
-  overrides), trope coding (on, look, overrides), karaoke style and follow. Enum lists are read from the
+  overrides), trope coding (on, look, overrides), karaoke style and follow, and the Trope staff's words, key
+  and voice (`staffWords`, `staffShift` as a whole number of half steps, `staffVoice`; the layout itself
+  travels as `layout: 'staff'`). Enum lists are read from the
   page's own radios and `<option>`s (a color list's No highlight is left out: it travels as the
   on/off boolean, never as a mode, and a list's look travels only while its coloring is on,
   `LINK_LOOK_SWITCH`), colors must be `#rrggbb` (`TROPE_HEX6_RE`), sizes are clamped to
