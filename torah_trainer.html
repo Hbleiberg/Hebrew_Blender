@@ -5177,6 +5177,10 @@ async function playNextChant() {
     // Same scope but audio not loaded yet — trigger render to pick it up.
     await fetchAndRender();
   }
+  // Wait for the aliyah's audio: without this the first aliyah never started (currentAudio was still null) and
+  // each later one replayed the previous aliyah's src until the new src landed and paused it. A pending start
+  // verse (holiday/custom) is left to loadKaraoke, which seeks there and plays.
+  if (!_pendingChantVerse && _karaokeLoad) await _karaokeLoad;
   if (!currentAudio || !chantAllState.active) return;
   // Wire the chain: when this aliyah ends, hop to the next.
   currentAudio.onended = () => {
@@ -5272,12 +5276,16 @@ let _loopPauseTimer = null;     // pending "pause between repeats" resume
 let _audioBaseLabel = '';       // #ttAudioLabel text when not looping (aliyah name)
 const LOOP_EPS = 0.04;          // seconds of slack before the verse-end wrap
 
+// The latest loadKaraoke() promise. fetchAndRender starts the load without awaiting it; Chant all awaits it
+// (playNextChant), since the element and the aliyah's src are only set once the timings arrive.
+let _karaokeLoad = null;
 function maybeLoadKaraoke(rangeInfo) {
   // rangeInfo: { ref, label, parshahEntry, aliyahNum, isHaftarah }
   // Karaoke is always available — only load audio when the user has picked an
   // aliyah/haftarah scope. Otherwise just keep the audio bar hidden quietly;
   // the per-verse 🎵 Chant button auto-switches scope on click.
   if (!rangeInfo || !rangeInfo.parshahEntry || rangeInfo.aliyahNum == null) {
+    _karaokeLoad = null;
     teardownKaraokeAudio();
     return;
   }
@@ -5290,7 +5298,7 @@ function maybeLoadKaraoke(rangeInfo) {
   // The rendered text IS the full aliyah here, so its word count lets loadKaraoke
   // decide whether a leading 0.0 timing is a real onset (keep) or a sentinel (drop).
   const expectedWords = (currentVerses || []).reduce((s, v) => s + countHebrewWords(v.hebrew), 0);
-  loadKaraoke(rangeInfo.parshahEntry, sfx, expectedWords || null);
+  _karaokeLoad = loadKaraoke(rangeInfo.parshahEntry, sfx, expectedWords || null);
 }
 
 // Hide the audio bar + drop the audio source without flipping the karaoke
