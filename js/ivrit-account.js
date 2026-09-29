@@ -26,7 +26,8 @@
  *   sessionSource()            'new' when this page load established the session (a sign-in here, or an auth
  *                              callback), 'restored' when it came from storage, null when signed out
  *   openMenu()                 opens the chip's menu (false when no chip is mounted) — for a panel's Sign in button
- *   profile()                  Promise<{displayName, createdAt}> — the account's profiles row (signed in only)
+ *   focusChip()                puts the focus on the chip (false when none is shown) — for a screen whose opener is gone
+ *   profile()                 Promise<{displayName, createdAt}> — the account's profiles row (signed in only)
  *   setDisplayName(name)       Promise<name> — 1–80 characters; writes the user's metadata (what the chip shows)
  *                              and profiles.display_name
  *   deleteAccount()            Promise<{ok, deleted}> — the delete-account Edge Function (files, rows, the auth
@@ -1001,6 +1002,7 @@
     onOpenAccount: function (fn) { openAccountFn = (typeof fn === 'function') ? fn : null; renderChip(); },
     sessionSource: function () { return sessionSource; },
     openMenu: function () { if (!chip || !mounted) return false; openMenu(); return true; },   // a page's own "Sign in" button opens the chip's menu
+    focusChip: function () { if (!chip || !mounted || !chip.btn.getClientRects().length) return false; chip.btn.focus(); return true; },
     profile: profile,
     setDisplayName: setDisplayName,
     deleteAccount: deleteAccount,

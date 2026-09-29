@@ -1835,6 +1835,11 @@
     document.removeEventListener('keydown', a.onKey);
     if (a.root.parentNode) a.root.parentNode.removeChild(a.root);
     if (a.opener && typeof a.opener.focus === 'function') { try { a.opener.focus(); } catch (e) {} }
+    // The recorded opener can be gone by now — the chip menu's "Account…" item hides with the menu, and after a
+    // code sign-in the Verify button that had the focus is rebuilt away — so the focus would fall to <body>.
+    // Every way into this screen starts at the account chip: hand the focus there instead.
+    var f = document.activeElement, acc = A();
+    if ((!f || f === document.body) && acc && typeof acc.focusChip === 'function') acc.focusChip();
   }
   function acctSay(text, isError) {
     if (!account) return;

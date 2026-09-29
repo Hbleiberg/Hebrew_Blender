@@ -59,6 +59,7 @@ module's own boot listener and use `inventory` / `bundleAll` / `forgetUser` / `e
 | `onOpenAccount(fn)` | The saves module registers its account screen; "Account…" appears in the menu only then |
 | `sessionSource()` | `'new'` when this page load established the session (a sign-in here, or an auth callback), `'restored'` when it came from storage, `null` when signed out — what decides the sign-in splash |
 | `openMenu()` | Opens the chip's menu (`false` when no chip is mounted) — what the saves panel's own Sign in button calls |
+| `focusChip()` | Puts the focus on the chip (`false` when none is shown) — where the account screen hands it when its opener is gone |
 | `profile()` | Promise → `{ displayName, createdAt }` from the account's `profiles` row |
 | `setDisplayName(name)` | 1–80 characters: writes the user's metadata (`full_name`, what the chip reads everywhere) and mirrors it into `profiles.display_name`; the chip re-renders on the SDK's `USER_UPDATED` |
 | `deleteAccount()` | Calls the `delete-account` Edge Function with the session's token, then signs this device out; resolves with the function's `{ ok, deleted: {saves, projects, files} }`. Nothing on the device is touched |
@@ -391,7 +392,8 @@ its own may land at the root of the folder list; *Sync now* keeps the folders.
 
 `IvritSaves.openAccount()` — an overlay (`.ivsav-overlay` / `.ivsav-card`, `role="dialog"` + `aria-modal="true"`;
 Tab and Shift+Tab wrap inside the card and a Tab from outside it comes in at its first control; Escape and
-an outside click close it, focus returns to the opener) reached from the chip's **Account…** item. Under
+an outside click close it, focus returns to the opener — or to the chip when that opener is gone, as the
+**Account…** item hides with its menu and a code sign-in's Verify button is rebuilt away) reached from the chip's **Account…** item. Under
 the title it says when the account was last saved (the newest `updated_at` across every tool's rows) or
 that nothing is saved yet, then lists every tool that has anything, on either side, with plain counts
 ("3 not in your account yet", "2 only in your account", "1 changed in both places" — rows a button on this
