@@ -166,4 +166,38 @@ const row12 = (() => {
   same(api.tropeSplitSystems(wr, 'A', 0, 300, Object.assign({ namesOf: () => null }, opts)), sys);   // null names = no names, as before
   ok('with namesOf the systems wrap at their named width and keep the words in order; null or absent names wrap as before');
 }
+// 7. renderPhraseStaff's rtl option: the same drawing inside a reflecting group, every glyph turned back upright and
+// every rest too; without the option, the tree is exactly the LTR one (the tutor never passes it).
+{
+  const mk = (tag) => { const el = { tag, attrs: {}, children: [], style: {}, textContent: '', setAttribute(k, v) { this.attrs[k] = String(v); }, appendChild(c) { this.children.push(c); return c; } }; return el; };
+  const api2 = vm.runInNewContext(src + '\n;({ renderPhraseStaff, _phraseSetsFrom })', { document: { createElementNS: (ns, tag) => mk(tag) }, console });
+  const sets2 = api2._phraseSetsFrom(JSON.parse(readFileSync(join(root, 'data/trope/trope_phrases.json'), 'utf8')));
+  const row = sets2.torah.rows.find((r) => r.notes.some((x) => x.r) && r.notes.some((x) => x.a)) || sets2.torah.rows[0];   // a row with a rest and an accidental, if the chart has one
+  const walk = (el, f) => { f(el); el.children.forEach((c) => walk(c, f)); };
+  const count = (root) => { let c = 0; walk(root, () => c++); return c; };
+  const ltr = api2.renderPhraseStaff(row, { key: 'A', shift: 0, low: true });
+  const rtl = api2.renderPhraseStaff(row, { key: 'A', shift: 0, low: true, rtl: true });
+  const plain = api2.renderPhraseStaff(row, { key: 'A', shift: 0, low: true, rtl: false });
+  assert.equal(JSON.stringify(plain), JSON.stringify(ltr), 'rtl:false draws the LTR tree exactly');
+  assert.ok(ltr.children.length > 3 && ltr.children[0].tag === 'g' && ltr.children.every((c) => c.tag !== 'g' || c.attrs.class !== 'tu-rtl'), 'LTR: deco, notes, over and syllables straight under the svg, no reflecting group');
+  assert.equal(rtl.children.length, 1, 'RTL: one child, the reflecting group');
+  const g = rtl.children[0];
+  assert.equal(g.tag, 'g'); assert.equal(g.attrs.class, 'tu-rtl'); assert.equal(g.attrs.transform, 'matrix(-1 0 0 1 ' + ltr.attrs.viewBox.split(' ')[2] + ' 0)', 'reflected about the row\'s middle');
+  assert.equal(count(g), count(ltr), 'the same number of elements under the group as under the LTR svg');
+  const texts = []; walk(g, (el) => { if (el.tag === 'text') texts.push(el); });
+  assert.ok(texts.length >= 3, 'a clef, an 8, a signature…');
+  for (const t of texts) {
+    assert.equal(t.attrs.transform, 'matrix(-1 0 0 1 ' + Math.round(2 * Number(t.attrs.x) * 100) / 100 + ' 0)', 'every glyph is turned back about its own x');
+    assert.ok(['middle', 'end', 'start'].includes(t.attrs['text-anchor']), 'anchored');
+  }
+  const ltrTexts = []; walk(ltr, (el) => { if (el.tag === 'text') ltrTexts.push(el); });
+  assert.ok(ltrTexts.every((t) => t.attrs.transform === undefined), 'the LTR glyphs carry no transform');
+  assert.ok(ltrTexts.some((t) => (t.attrs['text-anchor'] || 'start') === 'start'), 'control: the clef and signature are start-anchored');
+  texts.forEach((t, i) => { const a = ltrTexts[i].attrs['text-anchor'] || 'start'; assert.equal(t.attrs['text-anchor'], a === 'middle' ? 'middle' : a === 'end' ? 'start' : 'end', 'a start-anchored glyph anchors at its end, the middle stays'); });
+  const rests = []; walk(g, (el) => { if (el.tag === 'g' && /is-rest/.test(el.attrs.class || '')) rests.push(el); });
+  assert.equal(rests.length, row.notes.filter((x) => x.r).length);
+  for (const r of rests) assert.ok(/^matrix\(-1 0 0 1 [\d.]+ 0\)$/.test(r.attrs.transform), 'a rest is turned back upright');
+  ok('rtl: the reflecting group, every glyph and rest upright, anchors swapped; rtl:false and absent draw the same LTR tree');
+}
+
 console.log(`smoke-trope-staff: ${n} checks passed`);

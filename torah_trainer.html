@@ -998,6 +998,7 @@ body.trope-underline-fallback .tt-trope-swatch { background:var(--tt-sw-line); }
    a playing tune — shrinks through max-inline-size:100%: the SVG, the cells' positions and, because .tt-staff-words
    carries the two size vars in cqw of this container, the words too, all by the one factor. */
 .tt-staff-sys { position:relative; max-inline-size:100%; direction:ltr; margin-block:6px 2px; container-type:inline-size; }
+.tt-staff-sys.is-rtl { margin-inline-start:auto; }   /* a mirrored staff (Direction: Right to left) hugs the right edge, as Hebrew lines do; its cells sit inside it either way */
 .tt-staff-sys > svg, .tt-staff-sys > .tt-staff-svg { display:block; inline-size:var(--tt-sys-w, 100%); block-size:auto; color:var(--text); }
 .tt-staff-words.tt-heb { position:relative; display:block; flex:none; direction:ltr; text-align:start; line-height:1.3; word-spacing:0; margin:0; block-size:calc(var(--tt-heb-size, 1.5rem) * 1.5); }
 body.staff-words-both .tt-staff-words.tt-heb { block-size:calc(var(--tt-heb-size, 1.5rem) * 1.5 + var(--tt-translit-size, 0.95rem) * 1.6); }
@@ -2557,6 +2558,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           </span>
         </div>
         <div id="staffWordsNote" style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.words_note">Applies while the Translit switch is on.</div>
+        <div class="form-row">
+          <label><span id="lblStaffDir" data-i18n="torah.staff.dir_label">Direction</span> <span class="tip-wrap" data-i18n-tip="torah.staff.dir_tip" data-tip="Left to right is standard notation. Right to left mirrors the staff so the notes run in the Hebrew's reading order, as some Hebrew music is printed: the clef sits at the right and the words read under their notes from right to left."><i class="tip-icon">?</i></span></label>
+          <span class="radio-group" role="group" aria-labelledby="lblStaffDir" style="margin-inline-start:auto;">
+            <input type="radio" name="optStaffDir" id="sdLtr" value="ltr"><label for="sdLtr" data-i18n="torah.staff.dir_ltr">Left to right</label>
+            <input type="radio" name="optStaffDir" id="sdRtl" value="rtl"><label for="sdRtl" data-i18n="torah.staff.dir_rtl">Right to left</label>
+          </span>
+        </div>
         <div class="slider-row">
           <label for="optStaffShift"><span id="optStaffShiftLbl" data-i18n="torah.staff.key_label">Key</span>
             <span class="tip-wrap" data-i18n-tip="torah.staff.key_tip" data-tip="Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody); the Haftarah tune is written in D minor, with F major's one flat."><i class="tip-icon">?</i></span>
@@ -2829,6 +2837,7 @@ const DEFAULTS = {
   // every note) and the tune's speed. All but the speed travel in a practice link (how the reading looks); the speed
   // is how it sounds and stays home.
   staffWords: 'both',          // 'both' | 'translit' — read through staffWordsKey()
+  staffDir: 'ltr',             // 'ltr' | 'rtl' — staffDirKey(); the notation's direction (rtl: the mirror image, the Hebrew's reading order)
   staffShift: 0,               // −6…6 half steps — staffShiftVal()
   staffVoice: 'high',          // 'high' | 'low' — staffVoiceKey()
   staffNoteNames: 'off',       // 'off' | 'letters' | 'solfa' — staffNoteNamesKey(); a name under every staff note
@@ -3983,6 +3992,7 @@ function tropeModeKey() { return settings.tropeCodingMode === 'underline' ? 'und
 // an edited link) shows as the default and stays stored; the numbers are clamped again for a value written since load.
 function staffWordsKey() { return settings.staffWords === 'translit' ? 'translit' : 'both'; }   // the sub-choice under the Translit switch; a stored 'hebrew' (the retired third choice) reads 'both' and stays stored
 function staffVoiceKey() { return settings.staffVoice === 'low' ? 'low' : 'high'; }
+function staffDirKey() { return settings.staffDir === 'rtl' ? 'rtl' : 'ltr'; }   // an unknown stored value reads left to right and stays stored
 function staffShiftVal() { const v = Math.round(Number(settings.staffShift)); return Number.isFinite(v) ? Math.max(-TUNE_SHIFT_MAX, Math.min(TUNE_SHIFT_MAX, v)) : 0; }
 function staffRateVal() { const v = Number(settings.staffTuneRate); return Number.isFinite(v) && v > 0 ? Math.max(0.25, Math.min(3, v)) : 1; }
 function staffNoteNamesKey() { return settings.staffNoteNames === 'letters' || settings.staffNoteNames === 'solfa' ? settings.staffNoteNames : 'off'; }   // an unknown stored value shows no names and stays stored
@@ -5088,7 +5098,7 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
   const set = staffSet(), setName = staffSetName(), ctx = setName ? STAFF_CTX[setName] : null;
   const fbCtx = setName === 'haftarah' ? null : STAFF_CTX.torah;   // the Haftarah rows stand alone: never a Torah figure inside a D-minor staff
   if (!set && !_staffFailed) ensureStaffData();
-  const shift = staffShiftVal(), key = staffDrawKey(), low = staffVoiceKey() === 'low', wordsMode = staffWordsKey(), nmode = staffNoteNamesMode();
+  const shift = staffShiftVal(), key = staffDrawKey(), low = staffVoiceKey() === 'low', wordsMode = staffWordsKey(), nmode = staffNoteNamesMode(), rtlStaff = staffDirKey() === 'rtl';
   const root = document.getElementById('ttReading');
   // On paper the systems are wrapped to STAFF_PRINT_W, not the screen (staffPrintEnter); -1 makes the next screen
   // relayout unconditional.
@@ -5160,10 +5170,11 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
         // shrinks, so the cells never collide; at full width the vars equal the page's own sizes.
         const natW = Math.round(L.W * PHRASE_SCALE), boxW = _staffPrintWrap ? Math.max(wrapPx, natW) : natW;
         const sizeVars = STAFF_CQ && boxW > 0 ? ` style="--tt-heb-size:${(hePx * 100 / boxW).toFixed(4)}cqw;--tt-translit-size:${(tlPx * 100 / boxW).toFixed(4)}cqw"` : '';
-        html += `<div class="tt-staff-sys" data-svk="${esc(numLabel)}" data-sys="${k}" style="inline-size:${boxW}px;--tt-sys-w:${(natW / boxW * 100).toFixed(4)}%">`;
+        html += `<div class="tt-staff-sys${rtlStaff ? ' is-rtl' : ''}" data-svk="${esc(numLabel)}" data-sys="${k}" style="inline-size:${boxW}px;--tt-sys-w:${(natW / boxW * 100).toFixed(4)}%">`;
         html += `<div class="tt-staff-svg" style="aspect-ratio:${L.W} / ${H}"></div>`;
         html += `<div class="tt-staff-words tt-heb" lang="he"${sizeVars}>`;
-        for (const w of L.words) html += `<span class="tt-staff-cell" dir="rtl" style="left:${(w.cx * PHRASE_SCALE / boxW * 100).toFixed(4)}%">${staffCellHTML(w, units.cells, sink)}</span>`;
+        // Right to left: the SVG is the mirror image (renderPhraseStaff rtl), so each word's cell sits at the mirrored share of the box.
+        for (const w of L.words) { const share = w.cx * PHRASE_SCALE / boxW * 100; html += `<span class="tt-staff-cell" dir="rtl" style="left:${(rtlStaff ? natW / boxW * 100 - share : share).toFixed(4)}%">${staffCellHTML(w, units.cells, sink)}</span>`; }
         html += `</div></div>`;
       });
       html += `  </div>`;
@@ -5208,7 +5219,7 @@ function staffEnsureSvg(el) {
   if (!el || el.querySelector('svg')) return;
   const sys = staffSysOf(el), ph = el.querySelector('.tt-staff-svg');
   if (!sys || !ph) return;
-  const svg = renderPhraseStaff(sys.row, { key: sys.key, shift: sys.shift, low: sys.low, layout: sys.L, lyrics: false,
+  const svg = renderPhraseStaff(sys.row, { key: sys.key, shift: sys.shift, low: sys.low, layout: sys.L, lyrics: false, rtl: el.classList.contains('is-rtl'),
     famOf: (k, ui, u) => (u && u.fam) || '' });
   svg.style.inlineSize = ''; svg.style.blockSize = '';   // the CSS sizes it to its system (100% / auto), so paper and a narrow viewport shrink it
   ph.replaceWith(svg);
@@ -5433,6 +5444,14 @@ function setStaffVoice(v) {
   saveSettings();
   stopStaffTune();   // the next play sounds in the new octave; the 8 under every clef
   if (settings.layout === 'staff') renderText();
+}
+function setStaffDir(v) {
+  v = v === 'rtl' ? 'rtl' : 'ltr';
+  if (v === staffDirKey()) return;
+  settings.staffDir = v;
+  saveSettings();
+  stopStaffTune();
+  if (settings.layout === 'staff') renderText();   // every system is redrawn in the other direction
 }
 function setStaffNoteNames(v) {
   v = v === 'letters' || v === 'solfa' ? v : 'off';
@@ -6770,7 +6789,7 @@ function onReadingKeydown(e) {
   if (e.key === 'ArrowLeft') delta = 1;         // Hebrew is RTL: left = next word
   else if (e.key === 'ArrowRight') delta = -1;  // right = previous word
   else if (e.key !== 'Home' && e.key !== 'End') return;
-  if (delta !== null && settings.layout === 'staff') delta = -delta;   // the staff reads left to right: the arrows follow the notation there, not the Hebrew
+  if (delta !== null && settings.layout === 'staff' && staffDirKey() === 'ltr') delta = -delta;   // a left-to-right staff: the arrows follow the notation there, not the Hebrew (a mirrored staff reads the Hebrew's way)
   const words = readingRoverWords();
   const i = words.indexOf(wordEl);
   if (i === -1) return;
@@ -7725,6 +7744,7 @@ function syncFormToSettings() {
   document.getElementById('ttLayoutStaff').checked = settings.layout === 'staff';
   document.querySelectorAll('input[name="optStaffWords"]').forEach(r => { r.checked = r.value === staffWordsKey(); });
   document.querySelectorAll('input[name="optStaffVoice"]').forEach(r => { r.checked = r.value === staffVoiceKey(); });
+  document.querySelectorAll('input[name="optStaffDir"]').forEach(r => { r.checked = r.value === staffDirKey(); });
   document.querySelectorAll('input[name="optStaffNames"]').forEach(r => { r.checked = r.value === staffNoteNamesKey(); });
   syncStaffControls();
   document.getElementById('ttKaraokeRate').value = settings.karaokeRate;
@@ -7962,6 +7982,9 @@ function wireSettingsForm() {
   });
   document.querySelectorAll('input[name="optStaffNames"]').forEach(r => {
     r.addEventListener('change', e => { if (e.target.checked) setStaffNoteNames(e.target.value); });
+  });
+  document.querySelectorAll('input[name="optStaffDir"]').forEach(r => {
+    r.addEventListener('change', e => { if (e.target.checked) setStaffDir(e.target.value); });
   });
   document.getElementById('optStaffShift').addEventListener('input', e => setStaffShift(e.target.value));
   ['optStaffTuneRate', 'ttStaffTuneRate'].forEach(id => {   // the drawer's slider and the audio bar's Tune row: one writer
@@ -10087,6 +10110,7 @@ const LINK_DISPLAY = {
   staffWords:          v => _linkOneOf(v, _linkChoices('input[name="optStaffWords"]')),
   staffShift:          v => { const n = _sliderNum(v, 'optStaffShift', NaN); return Number.isFinite(n) ? Math.round(n) : undefined; },
   staffVoice:          v => _linkOneOf(v, _linkChoices('input[name="optStaffVoice"]')),
+  staffDir:            v => _linkOneOf(v, _linkChoices('input[name="optStaffDir"]')),
   staffNoteNames:      v => _linkOneOf(v, _linkChoices('input[name="optStaffNames"]')),
 };
 // Each color list's look, with the on/off switch it shows under. A look is on screen only while its

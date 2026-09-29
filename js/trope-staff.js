@@ -94,8 +94,10 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 function _svgEl(tag, attrs) {
   const el = document.createElementNS(SVG_NS, tag);
   for (const k in attrs) el.setAttribute(k, attrs[k]);
+  if (_textSink && tag === 'text') _textSink.push({ el, x: Number(attrs.x) || 0, anchor: attrs['text-anchor'] || 'start' });   // a mirrored staff's glyphs (renderPhraseStaff, opts.rtl)
   return el;
 }
+let _textSink = null;   // set only while renderPhraseStaff draws a mirrored staff: every <text> it makes, to turn back upright
 // Major-key signatures (sharps positive, flats negative) and the order the accidentals are written.
 const KEY_SHARPS = { C: 0, G: 1, D: 2, A: 3, E: 4, B: 5, 'F#': 6, 'C#': 7, F: -1, Bb: -2, Eb: -3, Ab: -4, Db: -5, Gb: -6, Cb: -7 };
 const SHARP_ORDER = ['F', 'C', 'G', 'D', 'A', 'E', 'B'], FLAT_ORDER = ['B', 'E', 'A', 'D', 'G', 'C', 'F'];
@@ -230,7 +232,15 @@ function staffHead(g, cx, cy, open, rx = 3.4, ry = 2.5) {   // open: a half note
    coordinates around the middle line; renderPhraseStaff() draws the layout.
    Beams join the notes of one syllable (a run over eight splits at the quarter),
    break at rests and grace notes, and turn their stems by the note farthest from
-   the middle line; notation is LTR, so the SVG is too.
+   the middle line; notation is LTR, so the SVG is too — unless opts.rtl asks for the
+   mirror image (the Torah Trainer's Right-to-left choice: the reading order of the
+   Hebrew, as some Hebrew music is printed): the geometry is drawn as usual inside a
+   group that reflects it about the row's middle, and every glyph that must still be
+   read — the clef, the 8, the signature and accidentals, the triplet 3, the names
+   and syllables — and every rest is reflected back about its own x, so it stands
+   upright at its mirrored place; a start-anchored glyph anchors at its end there,
+   so it still sits on the reading side of its note. Without the option the output
+   is byte-identical to before it existed.
    ══════════════════════════════════════════════════════ */
 const PHRASE_VALUE = {
   32: { flags: 3 }, s: { flags: 2 }, ds: { flags: 2, dot: true }, e: { flags: 1 }, de: { flags: 1, dot: true },
@@ -517,7 +527,8 @@ function layoutPhraseStaff(row, key, shift, names, opts = {}) {
 
 // The row drawn: an <svg class="tu-pstaff"> at SCALE px per unit. opts: {key, shift, low, ariaLabel,
 // famOf(markKey, unitIndex, rowUnit) -> the family whose colour its bar takes, names (optional, layoutPhraseStaff's),
-// layout (a precomputed layoutPhraseStaff result), lyrics:false (no syllable text), accidentals}; without an
+// layout (a precomputed layoutPhraseStaff result), lyrics:false (no syllable text), accidentals, rtl (the mirror
+// image, glyphs upright — the header above)}; without an
 // ariaLabel the SVG is hidden from assistive tech (its host names it). Every note is a <g class="tu-pn" data-i
 // data-u> (holding its name, <text class="tu-nn">, when names are on), every syllable a <text class="tu-ps"
 // data-s data-u>, every bar a <rect class="tu-pbar" data-u>: the tune lights notes by data-i, and a mark chip
@@ -532,8 +543,11 @@ function renderPhraseStaff(row, opts) {
   svg.style.blockSize = Math.round(H * SCALE) + 'px';
   if (opts.ariaLabel) { svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', opts.ariaLabel); }
   else svg.setAttribute('aria-hidden', 'true');
+  const rtl = !!opts.rtl;
+  let host = svg;   // where the drawing goes: the SVG, or the reflecting group of a mirrored staff
+  if (rtl) { host = _svgEl('g', { class: 'tu-rtl', transform: 'matrix(-1 0 0 1 ' + L.W + ' 0)' }); svg.appendChild(host); _textSink = []; }
   const deco = _svgEl('g', { 'aria-hidden': 'true' });
-  svg.appendChild(deco);
+  host.appendChild(deco);
   staffLines(deco, L.W, MID);
   staffClef(deco, MID, !!opts.low);
   staffKeySig(deco, L.sig, MID, PHRASE_STEP);
@@ -566,7 +580,8 @@ function renderPhraseStaff(row, opts) {
         fill: 'none', stroke: 'currentColor', 'stroke-width': s.w, 'stroke-linecap': 'round' }));
       if (rg.block) g.appendChild(_svgEl('rect', { x: X(rg.block.x), y: Y(rg.block.y), width: rg.block.w, height: rg.block.h, fill: 'currentColor' }));
       if (rg.dot) g.appendChild(_svgEl('circle', { cx: X(rg.dot.x), cy: Y(rg.dot.y), r: 1.15, fill: 'currentColor' }));
-      svg.appendChild(g);
+      if (rtl) g.setAttribute('transform', 'matrix(-1 0 0 1 ' + Math.round(2 * cx * 100) / 100 + ' 0)');   // a rest is a glyph: upright at its mirrored place
+      host.appendChild(g);
       continue;
     }
     const cy = Y(o.y);
@@ -598,7 +613,7 @@ function renderPhraseStaff(row, opts) {
       my -= 6;
     }
     if (o.name) g.appendChild(noteNameEl(o.name, cx, Y(L.nameY), o.grace ? PHRASE_GRACE_NAME_SIZE : PHRASE_NAME_SIZE));
-    svg.appendChild(g);
+    host.appendChild(g);
   }
   const over = _svgEl('g', { 'aria-hidden': 'true' });
   for (const ti of L.ties) {
@@ -622,7 +637,7 @@ function renderPhraseStaff(row, opts) {
     n3.textContent = '3';   // the triplet figure of the notation, not a UI string — i18n-ignore
     over.appendChild(n3);
   }
-  svg.appendChild(over);
+  host.appendChild(over);
   // Syllables, as the chart prints them (transliterations — i18n-ignore), with their hyphens. Not with
   // opts.lyrics === false: a reading staff lays its own words under the SVG.
   if (opts.lyrics !== false) row.syl.forEach((s, si) => {
@@ -630,13 +645,20 @@ function renderPhraseStaff(row, opts) {
     const txt = _svgEl('text', { class: 'tu-ps', 'data-s': si, 'data-u': s.unit, x: Math.round((single ? xs : xs - 3.4) * 100) / 100, y: Y(L.lyricY),
       'font-size': PHRASE_SYL_SIZE, 'text-anchor': single ? 'middle' : 'start', fill: 'currentColor' });
     txt.textContent = s.t;
-    svg.appendChild(txt);
+    host.appendChild(txt);
     if (s.hyphen && si + 1 < row.syl.length) {
       const a = L.sylEnd[si], b = L.sylStart[si + 1], xm = (a + b) / 2, half = Math.min(2.5, Math.max(1.2, (b - a) / 2 - 1.5));
-      svg.appendChild(_svgEl('line', { class: 'tu-ph', x1: Math.round((xm - half) * 100) / 100, y1: Y(L.lyricY - 3), x2: Math.round((xm + half) * 100) / 100, y2: Y(L.lyricY - 3),
+      host.appendChild(_svgEl('line', { class: 'tu-ph', x1: Math.round((xm - half) * 100) / 100, y1: Y(L.lyricY - 3), x2: Math.round((xm + half) * 100) / 100, y2: Y(L.lyricY - 3),
         stroke: 'currentColor', 'stroke-width': 0.8, 'aria-hidden': 'true' }));
     }
   });
+  if (rtl) {   // every glyph back upright about its own x; a start-anchored one anchors at its end, so it keeps its side of the note
+    for (const t of _textSink) {
+      t.el.setAttribute('transform', 'matrix(-1 0 0 1 ' + Math.round(2 * t.x * 100) / 100 + ' 0)');
+      if (t.anchor !== 'middle') t.el.setAttribute('text-anchor', t.anchor === 'end' ? 'start' : 'end');
+    }
+    _textSink = null;
+  }
   return svg;
 }
 // Phrase file validation: hand-transcribed data is parsed like imported data and checked row by row —

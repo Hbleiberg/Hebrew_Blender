@@ -5981,6 +5981,10 @@ torah.staff.names_solfa,Do re mi,דוֹ רֵה מִי,staff panel Note names cho
 torah.staff.names_note,"Writes a name under every note. Do re mi starts from the note the key is named after, so the names stay the same in any key.","כותב שם מתחת לכל תו. דוֹ רֵה מִי מתחילים מהצליל שהסולם נקרא על שמו, ולכן השמות נשארים זהים בכל סולם.",staff panel note under the Note names radios,
 torah.staff.tune_speed_label,Tune speed,מהירות המנגינה,"staff panel slider label (the synthesized tune, not the recording)",
 torah.staff.beta_note,"Beta: each word's figure follows the printed cantillation chart. Where the chart prints no figure for a word's context the nearest one is used, and each word sits whole under its notes (no syllable placement yet).","בטא: המנגינה של כל מילה עוקבת אחרי טבלת הטעמים המודפסת. במקום שהטבלה לא מדפיסה מנגינה להקשר של המילה נבחרת הקרובה ביותר, וכל מילה יושבת בשלמותה מתחת לתווים שלה (עדיין בלי חלוקה להברות).",staff panel note,
+torah.staff.dir_label,Direction,כיוון,Trope staff panel label,
+torah.staff.dir_tip,"Left to right is standard notation. Right to left mirrors the staff so the notes run in the Hebrew's reading order, as some Hebrew music is printed: the clef sits at the right and the words read under their notes from right to left.","משמאל לימין הוא הכתיב המוזיקלי הרגיל. מימין לשמאל משקף את החמשה כך שהתווים רצים בכיוון הקריאה של העברית, כפי שנדפסת מוזיקה עברית לעיתים: מפתח הסול בצד ימין והמילים נקראות תחת התווים מימין לשמאל.",tooltip,
+torah.staff.dir_ltr,Left to right,משמאל לימין,radio label,
+torah.staff.dir_rtl,Right to left,מימין לשמאל,radio label,
 torah.staff.verse_tune,Tune,מנגינה,verse button: play this verse's figures as tones (beside Read / Chant),keep short
 torah.staff.verse_tune_aria,Play the tune of verse {verseRef},נגינת המנגינה של פסוק {verseRef},aria-label of the verse Tune button,"{verseRef} is ""1:1"""
 torah.staff.verse_tune_stop_aria,Stop the tune of verse {verseRef},עצירת המנגינה של פסוק {verseRef},aria-label of the verse Tune button while it plays,"{verseRef} is ""1:1"""
