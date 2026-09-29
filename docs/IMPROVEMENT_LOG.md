@@ -16,11 +16,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S428**) | torah_trainer.html | **Colour-coded copy's rich fallback leaves the focus on `<body>`** (a framed page; HEAD too). | found S428
 
-- [ ] P3 (**NEW S426**) | js/ivrit-saves.js + js/ivrit-account.js | **Closing the account screen drops the focus to `<body>`**: its opener, the chip menu's Account… item, is already hidden. | found S426
+- [ ] P4 (**NEW S429 B; NEW pattern**) | torah_trainer.html + hebrew_blend_generator.html | **Two panels forget their open/closed state on a reload** (torah "Trope staff", generator "Saved Presets"): their title keys sit on an inner span the panel memory never reads. | found S429
 
-- [ ] P3 (**NEW S427 Pass C**) | hebrew_dictionary.html | **A filter chip's ✕, Reset all and the toolbar's Reset drop the focus to `<body>`** (the row rebuilds; Reset hides). | found S427
-
-- [ ] P3 (**NEW S427 Pass C**) | hebrew_dictionary.html | **The Word Lists ↑ ↓ ✕ buttons are 8–13 × 18–19 px** (WCAG 2.5.8; `.wm-mini`). | found S427
+- [ ] P4 (**NEW S429**) | hebrew_dictionary.html | **The empty state's "Clear search" and "Search without vowels" drop the focus to `<body>`**; reuse `refocusAfterFilterReset`. | found S429
 
 - [ ] P4 (**NEW S426 — shared script**) | js/ivrit-saves.js | **On `account.html` the account screen's "Manage your account…" link reloads that page.** | found S426
 
@@ -264,21 +262,23 @@ _(none)_
 
 ## Done
 
-- [x] 2026-09-29 | (S428 close-out) | branch/deploy note | **S428 = pass F + 4 fixes → draft PR #290.** DRIFT: 21 outside-loop commits; backend clean, keep-alive #17. sw v883→v884; FM not bumped. Smokes: all seven.
+- [x] 2026-09-29 | (S429 close-out) | branch/deploy note | **S429 = pass B + 4 fixes → draft PR #291.** DRIFT: none. sw v884→v885; FM not bumped. Smokes: all seven.
 
-- [x] 2026-09-29 | `3afb1aa` | hebrew_dictionary.html | (S428) **The export error is readable and announced.** | verified: 8 cells, HEAD 2.35 → 6.26:1; pixel diff
+- [x] 2026-09-29 | `359e0e2` | hebrew_dictionary.html | (S429) **Word Lists ↑ ↓ ✕ at the 24px floor.** | verified: 9/9 24×24 vs HEAD 8–13 wide
 
-- [x] 2026-09-29 | `0d2a941` | hebrew_dictionary.html | (S428) **Copy buttons say "Copied" only when they copied.** | verified: 4 × 3 contexts vs HEAD; 8 cells
+- [x] 2026-09-29 | `9963de7` | js/ivrit-saves.js + js/ivrit-account.js | (S429; shared) **Closing the account screen focuses the chip when its opener is gone.** | verified: 16/16 vs HEAD; smokes
 
-- [x] 2026-09-29 | `6a63604` | js/ivrit-saves.js | (S428; shared) **A listing refused as not signed in is retried once.** | verified: fake cloud × 4 vs HEAD; 7 smokes
+- [x] 2026-09-29 | `cea92bf` | hebrew_dictionary.html | (S429) **A chip's ✕ and every Reset keep the focus.** | verified: 11/11 vs HEAD, EN + HE; 8 cells
 
-- [x] 2026-09-29 | `bbd5f65` | torah_trainer.html | (S428) **Copy link says "Copied" only when it copied.** | verified: 3 × 3 vs HEAD; 8 cells
+- [x] 2026-09-29 | `3b0bebd` | trope_tutor.html | (S429 B) **The mode tabs fit a phone** | verified: 478→320px vs HEAD; 3 devices
 
-- [x] 2026-09-29 | (S428 Pass F iter 1) | 14 pages | **F on the copy contract.** FOUND 1 P3 (3 carriers) + 3 P4. Receipts: loop-findings S428.
+- [x] 2026-09-29 | (S429 Pass B iter 1) | all 17 pages | **B on the console.** 0 pageerrors in 216 cells. FOUND 1 P3 (fixed) + 1 P4. Receipts: loop-findings S429.
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-29 | **S429** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: trope, dictionary ×2, shared ×2 | patterns fixed: button-focus-lost, sub-floor | pass run: B | SW: v884→v885
 
 - 2026-09-29 | **S428** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: torah, dictionary ×2, js/ivrit-saves.js | patterns fixed: copy-claims-success-on-a-refused-clipboard ×2 (NEW) | pass run: F | SW: v883→v884
 
@@ -318,17 +318,17 @@ _(none)_
 
 - 2026-09-23 | **S410** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: FM ×2 (at cap), account, index | patterns fixed: sub-floor touch target ×1 (inline-styled row) | pass run: D | SW: v829→v830
 
-- 2026-09-23 | **S409** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: account ×2, dictionary + dashboard + trope, FM + trope + torah | patterns fixed: dark-base-rule-outranks-variant ×3, live-region-display-none-while-empty ×4 | pass run: G | SW: v828→v829
-
 ### Tool coverage (last-touched date per tool)
 
-- **S428 (2026-09-29):** dictionary (**S428**; **H-next** H S292); torah (**S428**; **C-next** C S298); js/ivrit-saves.js (**S428**); account + js/ivrit-account.js (S427); manifest (S426); trope (S425); flash (S424; **P-next**); resources (S422); index (S421; **G-next**); dashboard (S421; **D-next**); FM (S419); 404 (S418); generator (S415; **N-next**); chrome + i18n.js (S415); no M: generator, flash, terms.
+- **S429 (2026-09-29):** dictionary (**S429**; **H-next** H S292); trope (**S429**); js/ivrit-saves.js + js/ivrit-account.js (**S429**); torah (S428; **C-next** C S298); account (S427); manifest (S426); flash (S424; **P-next**); resources (S422); index (S421; **G-next**); dashboard (S421; **D-next**); FM (S419); 404 (S418); generator (S415; **N-next**); chrome + i18n.js (S415); no M: generator, flash, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
+- **`panel-title-keyed-on-an-inner-span`** (NEW S429; torah, generator open): ACTIVE, streak 0. Detection: a `.panel-title` with no own `data-i18n`, then toggle + reload.
+
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; 7 open): ACTIVE, streak 0. Detection `f428/copy.mjs`: sentinel, real click, 3 contexts.
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, its chips/Reset OPEN**): ACTIVE, streak 0. Detection: press each button of a JS-built list; `document.activeElement` must not be `<body>` right after (trap 181). …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, chips/Reset FIXED `cea92bf`; empty-state Clear OPEN**): ACTIVE, streak 0. Detection: press each button of a JS-built list; `document.activeElement` must not be …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`editor-re-parse-caps-a-merged-list`** (**NEW S421 Pass P — 1 carrier, FIXED `288af4a`**): ACTIVE, consequence-critical (a sync carries the cut list to the account); never retires. A list the sync merges uncapped is re-parsed by its tool's editor or restore path through the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -406,7 +406,7 @@ _(none)_
 
 - **`light-literal-text-on-the-gold-token`** (registered 2026-09-17 (S396)): ACTIVE — **S399 (Pass A), FIRST real sweep: 7 NEW carriers, all on `hebrew_dictionary.html`, all fixed `273f449`; clean streak stays 0.** `color:#fff` (or another light literal) painted on `var(--gold)` …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`sub-floor touch target`**: ACTIVE. **S427 Pass C: 2 NEW dictionary carriers logged (`.wm-mini`, the emoji tree's ▾); streak 0.** …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`sub-floor touch target`**: ACTIVE. **S429: `.wm-mini` FIXED `359e0e2`; the emoji ▾ open.** …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`vh-capped-sheet-without-dvh-twin`**: ACTIVE (registered S375). **S385 (Pass A), first re-sweep since the S377 fixes: 20 raw → 0 real, clean streak 1 of the 3 that retire it.** Every raw hit is an exemption the row names — 11 inner scrollers with their own `overflow:auto`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -612,7 +612,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - I first-load & empty-state: 2026-09-28 (**S425 — 32nd run, first since S411; the stalest runnable pass (O blocked). Delta `3bb0567..HEAD`: 116 commits, the trope Phrases tab, torah's pitch/under-word/link settings and the dashboard's Intermission landing outside the loop. Gates clean on 34 virgin cells behind 7 plants; census = S411's; 0 SDK/project requests (plant counted); tours 7/7 (plant …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- B console/error audit: 2026-09-24 (**S415 — 32nd B, first since S398; stalest runnable. 136 load cells, 52 interactions, 3 delta arms, all controlled. FOUND: FM's 273 keyless glyph names warning (P4, `95d5f46`); else clean.**)
+- B console/error audit: 2026-09-29 (**S429 — 33rd B. 136 loads, 68 interactions, 12 delta scenarios, all controlled: 0 pageerrors. FOUND the trope tabs' overflow (P3, `3b0bebd`) + 2 forgetful panels (P4).**)
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
@@ -624,10 +624,10 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-29 (**S428 — the copy contract: 13 controls × direct / LMS frame / planted double failure, every zero controlled. FOUND 3 claiming over the old clipboard (P3, FIXED `bbd5f65`, `0d2a941`), 9 ignoring execCommand (2 fixed), 4 unannounced.**)
 
-**Next session (S429):** **BRANCH/PR: S428 on `claude/improve-loop-s428` → draft PR #290 (base `6e385a4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v884**, FM **5.56**, SDK **2.116.0**; backend clean (keep-alive #17); email template `Live?` = no.
+**Next session (S430):** **BRANCH/PR: S429 on `claude/improve-loop-s429` → draft PR #291 (base `43a5fd1`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v885**, FM **5.56**, SDK **2.116.0**; backend clean (keep-alive #17); email template `Live?` = no.
 
-**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), B (S415), then A E L K N P M G D I H C F.** Take **B**.
+**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), A (S416), then E L K N P M G D I H C F B.** Take **A**.
 
-**⚑ STRONGEST UNTAKEN:** the P3s — re-listing on every auth event (shared; maintainer's trade-off), the account screen's focus return (shared), the dictionary's chip/Reset focus, 8 px list buttons. **Seed bench: 30.**
+**⚑ STRONGEST UNTAKEN:** the P3 re-listing (shared; the maintainer's call); P4s: the inner-span panels, the dictionary's empty-state focus, 7 copy carriers. **Seed bench: 30.**
 
-**⚑ HARNESS: traps 1–194 in loop-findings** (`f428/`; `--sdk` = `npm pack @supabase/supabase-js@2.116.0`); compaction once, after the edits (trap 140); the old handoff and the oldest Done move by hand.
+**⚑ HARNESS: traps 1–201 in loop-findings** (`b429/`; `--sdk` = `npm pack @supabase/supabase-js@2.116.0`; real fonts, trap 199); compaction once, after the edits (trap 140); the old handoff and the oldest Done move by hand.
