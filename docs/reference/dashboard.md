@@ -521,3 +521,13 @@ An untouched empty default class ("My class", no names — the one every fresh d
 cloud, not a class list: the registry's roster entry says so (`skipUpload`), its row reads *Empty default — not
 uploaded*, has no button, and *Sync everything* never sends it by itself; a name added to it makes it a class
 like any other. The ninth "My class" row a phone once uploaded was such a seed.
+
+---
+
+## Hebrew calendar converter (`classroom_dashboard.html`)
+
+The dashboard's Hebrew date and Omer count come from its inline Reingold-Dershowitz block (`gregorianToJDN`,
+`hebrewCalendarElapsedDays`, `hebrewToJDN`, `jdnToHebrew`, `numToHebLetters`, `formatHebDate`). The same converter
+is the first block of `js/hebrew-calendar.js`, the Torah Trainer's module (which adds the weekly reading table;
+`torah-and-trope.md` → *Reading schedule*). The two copies are meant to stay identical; making the dashboard load
+the module instead of its inline copy is the next adoption, not yet done. The parasha is never computed here.

@@ -83,7 +83,10 @@ Notes:
   `trope/trope_phrase_examples.json?v=1`,
   `hebrew_emojis.json?v=1`,
   `parshiyot.json?v=1`, `pockettorah/manifest.json?v=1`, `pockettorah/aliyah.json?v=1`
-  (the last four had originally shipped with no buster at all), and the
+  (the last four had originally shipped with no buster at all), `leyning/weekday.json?v=1` and
+  `leyning/triennial.json?v=1` (the Torah Trainer's Triennial and Weekday cycles, fetched only once such a
+  cycle is chosen; both are written by `scripts/build-leyning-data.mjs` — never hand-edited — and a rebuild
+  bumps both), and the
   432-file `pockettorah/timings/*.txt` corpus via **`POCKET_TIMINGS_V`** in `torah_trainer.html`
   (`?v=1` — the URL is built by concatenation, so the buster is a named constant
   next to `POCKET_TIMINGS_BASE` rather than a literal in the fetch).

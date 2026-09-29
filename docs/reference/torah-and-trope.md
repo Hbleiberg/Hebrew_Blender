@@ -752,7 +752,27 @@ Design: `docs/tropepatterns.md` → G.
   the reset); `syncStaffControls` the read-only half, also from `applyI18n`): the drawer's *Trope staff* panel — Words, Key (−6…+6; the readout names the key with the
   tutor's `trope.key.*` strings), Voice, Note names, Tune speed. Words, key, voice and note names ride the
   practice link (`LINK_DISPLAY`); the speed syncs in the blob like `karaokeRate` and never travels. The systems are pinned `direction:ltr` in both UIs (notation), and the
-  rover's arrows follow the notation there (`onReadingKeydown` flips `delta`).
+  rover's arrows follow the notation there (`onReadingKeydown` flips `delta`) — unless the Direction below is Right to left.
+- **Direction** (`staffDir`: `'ltr'` or `'rtl'`, read through `staffDirKey()`; an unknown stored value reads left to right
+  and stays stored; one writer `setStaffDir`; the Direction radios in the panel; it rides the practice link). Right to
+  left is the mirror image, the Hebrew's reading order, as some Hebrew music is printed: `renderStaffView` marks each
+  system `.is-rtl`, `staffEnsureSvg` passes `rtl: true` to `renderPhraseStaff`, and the engine draws the row as usual
+  inside a `<g class="tu-rtl" transform="matrix(-1 0 0 1 W 0)">` that reflects it about the row's middle, then turns
+  every `<text>` (the clef, the 8, the signature and accidentals, the triplet 3, the names, the syllables — collected
+  through `_textSink` while it draws) and every rest back upright about its own x, a start-anchored glyph anchoring at
+  its end so it keeps its side of the note. The page places each word cell at the mirrored share of the box
+  (`natW/boxW − share`), a mirrored system hugs the right edge (`.tt-staff-sys.is-rtl { margin-inline-start:auto }`),
+  and the rover's arrows follow the Hebrew. Without the option the engine's tree is byte-identical (the tutor never
+  passes it; its Learn and Phrases staffs snapshot the same across melody × key × voice × names, and
+  `smoke-trope-staff.mjs` has the rtl case). Tune, chant highlight, click-to-seek and print are untouched: they are
+  class- and `data-twi`-based, and the paper render is the same render.
+- **The melodies' names.** The maintainer identifies the transcribed charts as the Avery/Binder (Reform) melody (the
+  year-round and High Holiday charts; the Haftarah rows stay a beta rendering) and PocketTorah's recordings as the
+  Spiro (Conservative) melody. Both pages say so where the staffs and the recordings are: the Trainer's Trope staff
+  panel (`torah.staff.melody_credit`), Audio panel (`torah.audio.recording_credit`), audio-bar credit
+  (`torah.audio.recording_melody`) and High Holiday recording chip; the tutor's Learn intro, key-bar caption
+  (`#tuKeyCredit`, `trope.key.melody_credit`, hidden by `syncTuneControls` on the Haftarah melody), Melody and
+  tradition notes, example play buttons, FAQ and footer credit. The repo holds no other source for either name.
 - **Note names** (`staffNoteNames`: `'off'`, `'letters'`, `'solfa'`; an unknown stored value shows none and stays
   stored). The tutor's option for the reading: `renderStaffView` builds `namesOf`, a callback giving a row's names
   index-aligned with its notes (a rest has none) from `staffNoteNameAt` — the tutor's `noteNameAt` kept page-local,
@@ -769,6 +789,75 @@ Design: `docs/tropepatterns.md` → G.
   placement); a context the chart never prints takes the nearest figure; a triplet or slur cut at a
   figure's edge draws by value; a sheet narrower than the print wrap (portrait, wide margins) prints the
   staff smaller than the chosen size, uniformly.
+
+---
+
+## Reading schedule, reading cycle & portion lookup (`torah_trainer.html`)
+
+The drawer's *Reading schedule* panel holds the calendar (`settings.schedule`, `'diaspora'` | `'israel'`), the
+reading cycle (`settings.readingCycle`, `'full'` | `'triennial'` | `'weekday'`, read through `cycleKey()`: an unknown
+stored value reads Full and stays stored) and the triennial year (`settings.triennialYear`, `'auto'` | 1 | 2 | 3,
+`triYearKey()`). All three ride the settings blob (sync, AllTools, reset) and none rides a practice link.
+
+- **The calendar is local.** `js/hebrew-calendar.js` (`window.HebCal`; loaded before `js/trope-staff.js`, in
+  `CORE_ASSETS`) carries the dashboard's Reingold-Dershowitz converter and the weekly reading table of a year,
+  `sedraForYear(hyear, israel)`: not Hebcal's year-type tables (GPL) but a **count-based fit** — every Shabbat from
+  Shabbat Bereshit (the first after 22 Tishrei) to the Shabbat before the next Bereshit, the festival Shabbatot
+  dropped (Tishrei 1–2, 10, 15–22, 23 in the Diaspora; Nisan 15–21, 22 in the Diaspora; Sivan 6, 7 in the
+  Diaspora), cut by the traditional anchors into segments each fitted on its own: Tishrei after Rosh Hashanah
+  (two open Shabbatot → Vayeilech and Ha'azinu, one → Ha'azinu with Nitzavim-Vayeilech doubled), Tisha B'Av →
+  Rosh Hashanah (always seven: Va'etchanan … Nitzavim), Bereshit → Pesach (to Tzav, Metzora in a leap year, one
+  further to Achrei Mot when the Shabbatot outnumber the parshiyot; short → Vayakhel-Pekudei, then
+  Tazria-Metzora), Pesach → Shavuot (to Bamidbar, to Nasso with a spare Shabbat — Israel when Pesach's eighth
+  day is one; short → Tazria-Metzora, Achrei Mot-Kedoshim, then Behar-Bechukotai) and Shavuot → Tisha B'Av (to
+  Devarim; short → Matot-Masei, then Chukat-Balak). Israel and the Diaspora differ only in their festival
+  Shabbatot, so both schedules fall out of the one fit. `parshaForDate(date, {israel})` gives the Shabbat on or
+  after a date with its Hebrew date and reading (`kind:'parsha'`, `idx` of one or two parshiyot, or
+  `kind:'holiday'` with a key and day); its `hyear` is the *reading year* (a Tishrei Shabbat before Bereshit
+  belongs to the year before its date's — the year whose cycle it closes, as the triennial counts).
+  **Proof:** `node scripts/smoke-hebrew-calendar.mjs` (converter round-trips over two centuries, known Shabbatot
+  on both schedules, every year 5660–5900 placed once each in order) and, with `--hebcal`, every Shabbat of
+  5700–5900 on both schedules against `@hebcal/core`'s `getSedra` (installed outside the repo, `HEBCAL_DIR`; the
+  oracle is GPL and nothing of it is copied) — 20,976 agree. A change to the rules is not done until both pass.
+- **This week** (`goToCurrentParshah`, and the first visit in `init`) reads the local calendar first: a parasha
+  opens (a doubled week its first, as the Sefaria path always did), a festival Shabbat whose reading is in
+  `HOLIDAY_READINGS` opens it (`HOLIDAY_KEY_BY_CAL`), and only a Shabbat Chol HaMoed still asks Sefaria's
+  calendar for the day's reading (`fetchCurrentParshah`, the old path, kept as the fallback). An ordinary week
+  therefore needs no network.
+- **The cycles.** Full is PocketTorah's `aliyah.json`, as before. Triennial and Weekday read `data/leyning/*.json`
+  — `weekday.json` (each parasha's Monday/Thursday reading, its first aliyah in three) and `triennial.json` (the
+  three-year divisions: every parasha's `variations`, the seven combined entries' `years` and `patterns`) — built
+  by `scripts/build-leyning-data.mjs` from `@hebcal/leyning` and `@hebcal/triennial` (BSD-2-Clause; the license
+  sits beside them and the builder pins the versions), keyed by parasha number, fetched `?v=1` the first time a
+  non-Full cycle is chosen (`loadLeyningData` / `ensureLeyningData`; the full aliyot stand in until they land,
+  the panel's note says loading or failed with Try again). `aliyahLookup(parshahEn, cycle)` returns the cycle's
+  aliyot (`cycle` defaults to `cycleKey()`; **every audio caller asks for `'full'`** — PocketTorah's files are
+  the full-kriyah aliyot whatever the cycle); `resolveRef` builds the Full-reading range from the cycle's first
+  and last aliyah and marks the result `overlay: true` with `aliyahNum: null`. The triennial year:
+  `triennialContext(p)` = the reading year the parasha next falls in (`HebCal.nextOccurrence`) → `triennialYear`
+  (`((hyear − 5744) mod 3) + 1`) unless chosen by hand, and for a sometimes-doubled parasha the cycle's
+  Together/Separate pattern (`HebCal.doubledPattern`) — a together year reads the combined entry's `Y.n`, a
+  separate year the single's `<letter>.n` where the letter is the combined entry's `patterns[pattern]` (`'Y'`
+  for never-doubled and `TTT`), `@hebcal/triennial`'s own rule; the panel's note names the year and, in a
+  together year, the partner. The Weekday cycle offers aliyot 1–3 and no haftarah: `clampScopeToCycle()` (run
+  before every resolve) sends any other stored scope, a link's included, back to the whole reading, and
+  `updateScopeSelectState` hides the options (`cycleAliyahMax()` also bounds the fullscreen stepper).
+- **Audio for a cycle range is the holiday overlay.** `readingIsOverlay()` = custom scope or a resolved
+  `overlay` reading, `overlayRef()` its range; `chantVerse`, click-to-seek, the Loop guard and the verse controls'
+  `canLoop` read it, so a Triennial or Weekday verse chants through `chantHolidayWord` (the containing full
+  aliyah's file under the reading, the words mapped by verse). *Chant all* on such a range (`chantOverlayNext`,
+  `chantAllState.overlay`) plays the full aliyot the range spans under the reading in turn — the first from the
+  range's first word — and on the last sets `_verseEndStopAt` at the first word after the range
+  (`chantAllState.stopsAtRange`, which the timeupdate stop turns into `stopChantAll`); a holiday reading keeps
+  its old navigate-away chain. `readingKey()` adds the cycle (and a triennial range) so `lastPos` never crosses
+  cycles.
+- **Torah portion lookup** is the next panel: a date field (today by default; never stored) → `lookupRender()`
+  writes the Shabbat's civil date (`toLocaleDateString` in the UI's language) and Hebrew date (`torah.lookup.hebdate`
+  with the 14 `torah.lookup.month_*` keys), the parasha (`torah.lookup.parsha`, a doubled week joined and noted)
+  or the festival (`torah.lookup.holiday_*`, the day for Pesach, Sukkot, Shavuot and Rosh Hashanah) on the chosen
+  calendar, and the triennial year while that cycle is on; **Open** (`lookupOpen`) loads the parasha through the
+  picker's own writes, or the festival reading when `HOLIDAY_KEY_BY_CAL` names one. The calendar radios, the
+  cycle radios and `applyI18n` re-render it.
 
 ---
 
@@ -869,8 +958,8 @@ chrome). An RTL sweep must not "fix" the pin.
   pass: layout, the four show-toggles (nikkud, te'amim, transliteration, translation), the
   transliteration style and placement, the Hebrew font and the three text sizes, vowel coding (on, mode, scheme,
   overrides), trope coding (on, look, overrides), karaoke style and follow, and the Trope staff's words, key,
-  voice and note names (`staffWords`, `staffShift` as a whole number of half steps, `staffVoice`,
-  `staffNoteNames`; the layout itself travels as `layout: 'staff'`). Enum lists are read from the
+  voice, direction and note names (`staffWords`, `staffShift` as a whole number of half steps, `staffVoice`,
+  `staffDir`, `staffNoteNames`; the layout itself travels as `layout: 'staff'`). Enum lists are read from the
   page's own radios and `<option>`s (a color list's No highlight is left out: it travels as the
   on/off boolean, never as a mode, and a list's look travels only while its coloring is on,
   `LINK_LOOK_SWITCH`), colors must be `#rrggbb` (`TROPE_HEX6_RE`), sizes are clamped to
@@ -878,7 +967,8 @@ chrome). An RTL sweep must not "fix" the pin.
   what this page can re-validate ever leaves, and the reader, because anyone can edit a link. `?s=` is
   base64url JSON `{v: LINK_VIEW_V, …}` holding only what differs from `DEFAULTS`.
 - **What never travels:** the reading (the readable params carry it), audio speeds and the click
-  action, copy and handout preferences, the schedule, and **`translationVersion`**. A version title
+  action, copy and handout preferences, the schedule (the calendar, the reading cycle and the triennial year),
+  and **`translationVersion`**. A version title
   would reach Sefaria, and nothing from a link may. A My Font lives on its own device, so it is
   left out, the toast names it, and the reader gets the standard font.
 - **The reader's side is a live view, never a save.** `linkViewApply()` runs right after
