@@ -962,6 +962,12 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
    the header gains a control; ungating moves layouts that already fit. */
 @media (max-width: 478px) {
   .hright { flex-wrap:wrap; max-width:100%; justify-content:flex-end; }
+  /* The four mode tabs (Learn, Phrases, Drill, Settings) need ~474px at their desktop padding, so
+     below it they pushed the page sideways and left Settings off-screen. Here they share the row:
+     tighter padding and type, and a tab shrinks rather than overflows. Measured one line down to
+     320px in EN and HE; re-measure when a tab is added. */
+  .tu-tabs { gap:4px; padding-inline:8px; }
+  .tu-tab { flex:1 1 auto; min-width:0; padding:8px 6px; font-size:0.8rem; }
 }
 
 /* ── Reduced motion: honor the OS "reduce motion" preference for everything this
