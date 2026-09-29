@@ -353,6 +353,8 @@ body.dark .tu-melody-note { background:#131a29; }
 }
 .tu-key-bar[hidden] { display:none; }
 body.dark .tu-key-bar { background:#131a29; }
+.tu-key-credit { font-size:0.72rem; color:var(--muted); margin-inline-start:auto; }
+.tu-key-credit[hidden] { display:none; }
 .tu-key-lbl { font-size:0.74rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; }
 .tu-key-name { display:inline-block; min-inline-size:4.5em; text-align:center; }   /* widest: "D♭ major" 4.2em */
 html[lang="he"] .tu-key-name { min-inline-size:6.5em; }                          /* widest: "לָה במול מז'ור" 6.2em */
@@ -1054,6 +1056,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <!-- What the arrows just did, for a screen reader: written only by the bar's own buttons, so the
            Settings slider (which announces its own aria-valuetext) and a language switch stay quiet. -->
       <span class="vh" id="tuKeyLive" aria-live="polite"></span>
+      <!-- The staffs' source, named where the staffs are (the Torah Trainer's Trope staff panel says the same):
+           the year-round and High Holiday charts; hidden on the Haftarah melody, a rendering from memory. -->
+      <span class="tu-key-credit" id="tuKeyCredit" data-i18n="trope.key.melody_credit">Avery/Binder (Reform) melody</span>
     </div>
     <div class="tu-chips" id="tuFamilyChips" role="group" aria-label="Trope clause families" data-i18n-aria-label="trope.learn.families_aria"></div>
     <div class="tu-family-note" id="tuFamilyNote"></div>
@@ -1317,7 +1322,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
 <footer>
   <div class="footer-credits">
     <span>Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a> · public domain (extracted at build time — this page never calls Sefaria)</span>
-    <span>Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></span>
+    <span>Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz, <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener">PocketTorah</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> · <span data-i18n="trope.footer.recording_melody">Spiro (Conservative) melody</span></span>
     <span data-i18n="trope.footer.materials_note">Materials incorporating PocketTorah audio (including this page's example clips and notated melody motifs) are CC BY-SA 4.0.</span>
   </div>
   <div style="margin-top:10px;">
@@ -3687,6 +3692,8 @@ function syncTuneControls() {
     // name before the dictionary has loaded: the bar waits for both rather than show an empty line.
     // On the Phrases tab the bar moves that tab's staffs, so it waits for the phrase chart instead.
     bar.hidden = !(phrasesShown() ? phraseSet() : activeMotifs()) || !_i18nReady;
+    const credit = document.getElementById('tuKeyCredit');
+    if (credit) credit.hidden = melodyKey() === 'haftarah';   // the Haftarah rows are a rendering from memory, not the chart's
     bar.classList.toggle('is-moved', s !== 0 || low);
     document.getElementById('tuKeyDown').setAttribute('aria-disabled', s <= -TUNE_SHIFT_MAX ? 'true' : 'false');
     document.getElementById('tuKeyUp').setAttribute('aria-disabled', s >= TUNE_SHIFT_MAX ? 'true' : 'false');
