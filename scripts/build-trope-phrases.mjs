@@ -8,7 +8,8 @@
  * fenced ```trope-torah / ```trope-hh blocks, and the Haftarah rows (36, D minor written with F
  * major's one flat — an unverified rendering from memory, every row tagged) in ```trope-haftarah
  * blocks. Those blocks are the only hand-edited copy of the
- * notes: fix a note there and re-run this script — never edit the JSON. The block grammar is
+ * notes: fix a note there and re-run this script — never edit the JSON (nor trope_motifs_haftarah.json,
+ * the Learn-card file this script derives from the Haftarah rows). The block grammar is
  * documented in the doc's "How to read this file"; in short:
  *
  *   #<row>[b] [tag]… <Hebrew as printed>           tags: [aliyah-end] [unverified], lowercase, right
@@ -136,9 +137,10 @@ const MELODIES = {
     rule: 'the High Holiday chart prints only B♭ and F♯' },
   // The Haftarah rows (section H) are not from the book: an unverified rendering from memory, in D minor
   // written with F major's one flat, so every B carries its sign and nothing else is altered (a C♯ would be
-  // spelled D♭ by the tutor's pitch model). No motif file — the tutor's Learn cards do not draw this
-  // melody — and no examples: the census reads no Nevi'im text.
-  haftarah: { info: 'trope-haftarah', key: 'F', rows: 36, extra: [], motifs: null, label: 'Haftarah', examples: false,
+  // spelled D♭ by the tutor's pitch model). Its motif file (the tutor's Learn cards) is DERIVED from the rows
+  // on every run (`derived`), never hand-edited — each entry verified:false while its row carries
+  // [unverified] — and there are no examples: the census reads no Nevi'im text.
+  haftarah: { info: 'trope-haftarah', key: 'F', rows: 36, extra: [], motifs: 'data/trope/trope_motifs_haftarah.json', derived: true, label: 'Haftarah', examples: false,
     spell: { A: [''], B: ['♭', '♮'], C: [''], D: [''], E: [''], F: [''], G: [''] },
     rule: 'the Haftarah rows write every B with its ♭ or ♮ and no other accidental' },
 };
@@ -457,15 +459,15 @@ function reduceUnit(row, unit) {
 // rows are skipped), the chart row its staff is read from in each melody, or — for none.
 function cardTable(text, path) {
   const lines = text.split('\n');
-  const head = lines.findIndex((l) => /^\|\s*Mark \(tutor key\)\s*\|\s*Torah row\s*\|\s*High Holiday row\s*\|/.test(l));
-  if (head < 0) { fail(`${path}: no section A table ("| Mark (tutor key) | Torah row | High Holiday row | … |")`); return null; }
-  const cards = { torah: {}, highholiday: {} };
+  const head = lines.findIndex((l) => /^\|\s*Mark \(tutor key\)\s*\|\s*Torah row\s*\|\s*High Holiday row\s*\|\s*Haftarah row\s*\|/.test(l));
+  if (head < 0) { fail(`${path}: no section A table ("| Mark (tutor key) | Torah row | High Holiday row | Haftarah row | … |")`); return null; }
+  const cards = { torah: {}, highholiday: {}, haftarah: {} };
   for (let i = head + 2; i < lines.length && lines[i].startsWith('|'); i++) {
     const cells = lines[i].split('|').slice(1, -1).map((c) => c.trim());
     if (cells[0].includes('(no card)')) continue;
     const key = cells[0].split(/\s+/)[0];
     if (!TROPES.some((t) => t.key === key)) { fail(`${path}:${i + 1}: section A's "${cells[0]}" starts with no TROPES key (mark a row without a Learn card "(no card)")`); continue; }
-    [['torah', cells[1]], ['highholiday', cells[2]]].forEach(([m, cell]) => {
+    [['torah', cells[1]], ['highholiday', cells[2]], ['haftarah', cells[3]]].forEach(([m, cell]) => {
       if (cell === '—') return;
       if (!/^\d+b?$/.test(cell || '')) fail(`${path}:${i + 1}: section A gives ${key} the ${MELODIES[m].label} row "${cell}" — a row number, or — for no staff`);
       else if (Object.hasOwn(cards[m], key)) fail(`${path}:${i + 1}: section A names ${key} twice`);
@@ -482,11 +484,34 @@ function staffD(t, prefer) {   // the value a paste-ready suggestion uses: the f
   return Math.max(2, Math.min(4, Math.round(t / VALUES.e)));
 }
 const crossCheck = [];
+// A derived motif file (MELODIES[m].derived): the Learn-card staff of every mark section A names, reduced from
+// its row exactly as the check below reduces a hand-edited file's row, so the two can never disagree. Written
+// after every check has passed; `built` keeps its date while the entries are unchanged.
+const derivedMotifs = {};
+function deriveMotifs(m, d, cards) {
+  const tropes = {};
+  for (const [key, n] of Object.entries(cards)) {
+    const row = melodies[m].rows.find((r) => r.n === n);
+    const units = row ? row.units.filter((u) => u.k === key) : [];
+    if (units.length !== 1) { fail(`${d.motifs}: ${d.label} row #${n} has ${units.length} "${key}" lines (needs exactly one)`); continue; }
+    tropes[key] = { notes: reduceUnit(row, units[0]).map((w) => ({ p: w.p, d: staffD(w.t, 0) })), verified: !row.tags.includes('unverified'), source: `tropepatterns.md ${d.label} #${n}` };
+  }
+  const file = { v: 1, system: m, key: d.key, built: new Date().toISOString().slice(0, 10), license: `An unverified rendering of the Ashkenazi ${d.label} melody written from memory, reduced from docs/tropepatterns.md section H by scripts/build-trope-phrases.mjs (never edit this file: fix the row and re-run the builder). This file is CC BY-SA 4.0.`, tropes };
+  const path = join(repoRoot, d.motifs);
+  if (existsSync(path)) {
+    try {
+      const old = JSON.parse(readFileSync(path, 'utf8'));
+      if (old.built && JSON.stringify({ ...file, built: old.built }) === JSON.stringify(old)) file.built = old.built;
+    } catch { /* unreadable old file: rebuild */ }
+  }
+  derivedMotifs[m] = file;
+  return file;
+}
 if (!LENIENT) {
-  const cards = cardTable(docText, DOC_PATH.replace(repoRoot + '/', '')) || { torah: {}, highholiday: {} };
+  const cards = cardTable(docText, DOC_PATH.replace(repoRoot + '/', '')) || { torah: {}, highholiday: {}, haftarah: {} };
   for (const [m, d] of Object.entries(MELODIES)) {
-    if (!d.motifs) continue;   // a melody the tutor's Learn cards do not draw (the Haftarah rows) has no motif file to check
-    const file = JSON.parse(readFileSync(join(repoRoot, d.motifs), 'utf8'));
+    if (!d.motifs) continue;
+    const file = d.derived ? deriveMotifs(m, d, cards[m]) : JSON.parse(readFileSync(join(repoRoot, d.motifs), 'utf8'));
     if (file.key !== d.key) fail(`${d.motifs}: key "${file.key}" but the ${d.label} chart is written in ${d.key}`);
     const tropes = file.tropes || {};
     // exactly section A's cards: a missing entry would leave a Learn card without its staff
@@ -499,7 +524,10 @@ if (!LENIENT) {
       if (!Object.hasOwn(cards[m], key)) { bad(`section A gives ${key} no ${d.label} row, so it has no staff to check`); continue; }
       const source = `tropepatterns.md ${d.label} #${cards[m][key]}`;
       if (entry.source !== source) { bad(`source "${entry.source}", but section A reads this staff from "${source}"`); continue; }
-      if (entry.verified !== true) { bad(`verified is ${JSON.stringify(entry.verified)} — every staff is a checked transcription (verified: true)`); continue; }
+      // a checked transcription is verified:true; a derived entry follows its row's [unverified] tag
+      const rowOf = melodies[m].rows.find((r) => r.n === cards[m][key]);
+      const wantVerified = !(d.derived && rowOf && rowOf.tags.includes('unverified'));
+      if (entry.verified !== wantVerified) { bad(wantVerified ? `verified is ${JSON.stringify(entry.verified)} — every staff is a checked transcription (verified: true)` : `verified is ${JSON.stringify(entry.verified)}, but ${d.label} row #${cards[m][key]} is tagged [unverified]`); continue; }
       // the tutor draws d 1–4 and skips a staff whose p or d is not a number, so both must be whole
       const notes = Array.isArray(entry.notes) ? entry.notes : [];
       const odd = notes.map((n, i) => (n && Number.isInteger(n.p) && Number.isInteger(n.d) && n.d >= 1 && n.d <= 4 ? 0 : i + 1)).filter(Boolean);
@@ -520,7 +548,7 @@ if (!LENIENT) {
         const tied = rounded.filter((w) => w.tied).length, long = rounded.length - tied;
         const plural = (n, what) => `${n} ${what} note${n > 1 ? 's' : ''}`;
         const drawn = [tied && plural(tied, 'tied'), long && plural(long, 'long')].filter(Boolean).join(' and ');
-        rec.status = (dep ? 'match (documented departure)' : 'match') + (drawn ? ` — ${drawn} drawn at the nearest value` : '');
+        rec.status = (dep ? 'match (documented departure)' : d.derived ? 'derived from the row' : 'match') + (drawn ? ` — ${drawn} drawn at the nearest value` : '');
       } else {
         rec.status = 'MISMATCH';
         const sug = want.map((w, i) => ({ p: w.p, d: staffD(w.t, have[i] && have[i].p === w.p ? have[i].d : 0) }));
@@ -1426,6 +1454,7 @@ if (failures.length) {
 const counted = CENSUS ? await census() : null;   // exits non-zero, having written nothing, on a census failure
 mkdirSync(dirname(JSON_PATH), { recursive: true });
 writeFileSync(JSON_PATH, json);
+if (!LENIENT) for (const [m, d] of Object.entries(MELODIES)) if (d.derived && derivedMotifs[m]) writeFileSync(join(repoRoot, d.motifs), JSON.stringify(derivedMotifs[m]) + '\n');
 if (!LENIENT) writeFileSync(REPORT_PATH, report() + '\n');
 console.log(`build-trope-phrases: ${Object.entries(MELODIES).map(([m, d]) => `${melodies[m].rows.length} ${d.label}`).join(' + ')} rows -> ${JSON_PATH.replace(repoRoot + '/', '')} (${bytes} bytes)${LENIENT ? ' [lenient]' : `; ${crossCheck.length} staffs checked`}`);
 if (counted) {

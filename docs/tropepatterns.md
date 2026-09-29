@@ -82,39 +82,42 @@ The builder checks every staff against its row on each run (`docs/trope_phrases_
 Trope Tutor's staffs against their rows*); the figures themselves, for both melodies and in every
 context, are listed in the same report.
 
-| Mark (tutor key) | Torah row | High Holiday row | On the staff |
-|---|---|---|---|
-| mercha | 1 | 1 | |
-| tipcha | 4 | 4 | |
-| munach (before etnachta) | 2 | 2 | |
-| etnachta | 4 | 4 | |
-| sof_pasuk | 8 | 8 | |
-| mahpach | 11 | 11 | |
-| pashta | 13 | 10 | |
-| yetiv | 33 | 24 | Y′ is sung on a grace note, drawn as an eighth |
-| zakef_katon | 13 | 10 | |
-| zakef_gadol | 31 | 25 | |
-| zarka | 37 | 29 | Torah: the grace note on F♯4 before KA is drawn as an eighth |
-| segol | 37 | 29 | |
-| shalshelet | 38 | — | |
-| revia | 19 | 16 | |
-| darga | 21 | 13 | |
-| tevir | 22 | 13 | |
-| kadma (in kadma v'azla) | 15 | 20 | |
-| geresh (azla) | 16 | 21 | |
-| gershayim | 20 | 22 | |
-| telisha_ketana | 29 | 18 | Torah: T′ is sung on a grace note, drawn as an eighth |
-| telisha_gedola | 28 | 17 | Torah: as telisha ketana |
-| pazer | 30 | 19 | Torah: PA-ZER's two D4s are held as one quarter — the maintainer's correction of the print; the High Holiday staff keeps both |
-| mercha_kefula | 39 | — | |
-| karnei_parah | 40 | — | |
-| yerach_ben_yomo | 40 | — | |
-| munach legarmeh (no card) | 17 | 15 | |
-| sof pasuk at the end of an aliyah (no card) | 41 | 30–33 | |
+| Mark (tutor key) | Torah row | High Holiday row | Haftarah row | On the staff |
+|---|---|---|---|---|
+| mercha | 1 | 1 | 1 | |
+| tipcha | 4 | 4 | 4 | |
+| munach (before etnachta) | 2 | 2 | 2 | |
+| etnachta | 4 | 4 | 4 | |
+| sof_pasuk | 8 | 8 | 8 | |
+| mahpach | 11 | 11 | 10 | |
+| pashta | 13 | 10 | 12 | |
+| yetiv | 33 | 24 | 15 | Y′ is sung on a grace note, drawn as an eighth |
+| zakef_katon | 13 | 10 | 12 | |
+| zakef_gadol | 31 | 25 | 13 | |
+| zarka | 37 | 29 | 29 | Torah: the grace note on F♯4 before KA is drawn as an eighth |
+| segol | 37 | 29 | 29 | |
+| shalshelet | 38 | — | 30 | |
+| revia | 19 | 16 | 18 | |
+| darga | 21 | 13 | 19 | |
+| tevir | 22 | 13 | 19 | |
+| kadma (in kadma v'azla) | 15 | 20 | 21 | |
+| geresh (azla) | 16 | 21 | 22 | |
+| gershayim | 20 | 22 | 23 | |
+| telisha_ketana | 29 | 18 | 25 | Torah: T′ is sung on a grace note, drawn as an eighth |
+| telisha_gedola | 28 | 17 | 24 | Torah: as telisha ketana |
+| pazer | 30 | 19 | 27 | Torah: PA-ZER's two D4s are held as one quarter — the maintainer's correction of the print; the High Holiday staff keeps both |
+| mercha_kefula | 39 | — | 31 | |
+| karnei_parah | 40 | — | 32 | |
+| yerach_ben_yomo | 40 | — | 32 | |
+| munach legarmeh (no card) | 17 | 15 | 16 | |
+| sof pasuk at the end of an aliyah (no card) | 41 | 30–33 | 33–36 | |
 
 `geresh_muqdam` has no figure in either chart and no entry (it never occurs in the Torah text either;
 see section G). Shalshelet, mercha kefula, karnei parah and yerach ben yomo have no High Holiday row:
 they never occur in the Rosh Hashanah or Yom Kippur readings (the census in section G checks this).
+The Haftarah column names section H's rows: every mark but geresh muqdam has one, and the builder
+derives `data/trope/trope_motifs_haftarah.json` from them (section H) rather than checking a hand-edited
+file.
 
 The lowered seventh is printed with a natural sign (G♮) in the Torah chart's darga, telisha gedola,
 pazer, mercha kefula and karnei parah, and on the munach before zarka (rows 34–35); the High Holiday
@@ -925,9 +928,11 @@ taught, so that the Torah Trainer's Trope staff can draw a haftarah at all. Ever
 the one a reader knows. The staff says so — the Trainer's *Haftarah tune: unverified* chip shows while
 the rows carry the tag. PocketTorah's haftarah recordings, which the Trainer's Chant buttons play, are
 the authority. To correct a row, edit it here, re-run `node scripts/build-trope-phrases.mjs`, bump the
-phrase file's `?v=` on both pages, and drop the tag once the row is settled. The Trope Tutor does not
-draw this melody (its Learn cards and Phrases tab have the two printed charts only), so the rows have
-no motif file and no section A column.
+phrase file's `?v=` on both pages, and drop the tag once the row is settled. The Trope Tutor draws the
+melody too (Settings → Melody → *Haftarah*, tagged beta): its Learn-card staffs come from
+`data/trope/trope_motifs_haftarah.json`, which the builder derives from these rows through section A's
+Haftarah column on every run — never edit that file by hand — each entry `verified: false` while its row
+carries the tag, so a row's `?v=` bump covers both files.
 
 **Key and range.** The tune is minor. The tutor's pitch model knows major keys only, so the rows are
 written in D minor with F major's one flat (`key: F`): the tonic is D4, the rows lie between A3 and
@@ -938,38 +943,9 @@ model would spell a C♯ as D♭, so no row needs one. Row numbers are this file
 **The rows.** Rows 1–8 pair with Torah rows 1–8 (the etnachta and sof pasuk clauses); rows 33–36 are
 the end-of-haftarah closings, on the four verse endings the census counts (section G), for the
 haftarah's last verse; the closing sof pasuk falls to A3, the fifth below the tonic. The Hebrew of each
-row is copied from the printed row with the same marks. The row each mark's figure is taken from when
-a verse's context matches nothing printed (`TROPE_LEARN_ROW.haftarah` in `js/trope-staff.js`):
-
-| Mark | Row |
-|---|---|
-| mercha | 1 |
-| tipcha | 4 |
-| munach (before etnachta) | 2 |
-| etnachta | 4 |
-| sof_pasuk | 8 |
-| mahpach | 10 |
-| pashta | 12 |
-| zakef_katon | 12 |
-| zakef_gadol | 13 |
-| yetiv | 15 |
-| munach legarmeh | 16 |
-| revia | 18 |
-| darga | 19 |
-| tevir | 19 |
-| kadma (in kadma v'azla) | 21 |
-| geresh (azla) | 22 |
-| gershayim | 23 |
-| telisha_gedola | 24 |
-| telisha_ketana | 25 |
-| pazer | 27 |
-| zarka | 29 |
-| segol | 29 |
-| shalshelet | 30 |
-| mercha_kefula | 31 |
-| karnei_parah | 32 |
-| yerach_ben_yomo | 32 |
-| sof pasuk at the end of the haftarah | 33–36 |
+row is copied from the printed row with the same marks. The row each mark's Learn-card figure is read
+from — and the Trainer's last resort when a verse's context matches nothing printed
+(`TROPE_LEARN_ROW.haftarah` in `js/trope-staff.js`) — is section A's Haftarah column.
 
 ```trope-haftarah
 #1 [unverified] מֵרְכָ֥א טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א

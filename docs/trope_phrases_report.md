@@ -422,4 +422,29 @@ drop, and anything shorter than a quarter is `d` 1 (quarter 2, dotted quarter 3,
 | High Holiday | telisha_ketana | tropepatterns.md High Holiday #18 | match — 1 tied note drawn at the nearest value |
 | High Holiday | telisha_gedola | tropepatterns.md High Holiday #17 | match |
 | High Holiday | pazer | tropepatterns.md High Holiday #19 | match |
+| Haftarah | mercha | tropepatterns.md Haftarah #1 | derived from the row |
+| Haftarah | tipcha | tropepatterns.md Haftarah #4 | derived from the row |
+| Haftarah | munach | tropepatterns.md Haftarah #2 | derived from the row |
+| Haftarah | etnachta | tropepatterns.md Haftarah #4 | derived from the row |
+| Haftarah | sof_pasuk | tropepatterns.md Haftarah #8 | derived from the row |
+| Haftarah | mahpach | tropepatterns.md Haftarah #10 | derived from the row |
+| Haftarah | pashta | tropepatterns.md Haftarah #12 | derived from the row |
+| Haftarah | yetiv | tropepatterns.md Haftarah #15 | derived from the row |
+| Haftarah | zakef_katon | tropepatterns.md Haftarah #12 | derived from the row |
+| Haftarah | zakef_gadol | tropepatterns.md Haftarah #13 | derived from the row |
+| Haftarah | zarka | tropepatterns.md Haftarah #29 | derived from the row |
+| Haftarah | segol | tropepatterns.md Haftarah #29 | derived from the row |
+| Haftarah | shalshelet | tropepatterns.md Haftarah #30 | derived from the row |
+| Haftarah | revia | tropepatterns.md Haftarah #18 | derived from the row |
+| Haftarah | darga | tropepatterns.md Haftarah #19 | derived from the row |
+| Haftarah | tevir | tropepatterns.md Haftarah #19 | derived from the row |
+| Haftarah | kadma | tropepatterns.md Haftarah #21 | derived from the row |
+| Haftarah | geresh | tropepatterns.md Haftarah #22 | derived from the row |
+| Haftarah | gershayim | tropepatterns.md Haftarah #23 | derived from the row |
+| Haftarah | telisha_ketana | tropepatterns.md Haftarah #25 | derived from the row |
+| Haftarah | telisha_gedola | tropepatterns.md Haftarah #24 | derived from the row |
+| Haftarah | pazer | tropepatterns.md Haftarah #27 | derived from the row |
+| Haftarah | mercha_kefula | tropepatterns.md Haftarah #31 | derived from the row |
+| Haftarah | karnei_parah | tropepatterns.md Haftarah #32 | derived from the row |
+| Haftarah | yerach_ben_yomo | tropepatterns.md Haftarah #32 | derived from the row |
 
