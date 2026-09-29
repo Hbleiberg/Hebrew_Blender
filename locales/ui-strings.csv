@@ -4121,7 +4121,7 @@ torah.reading.aliyah_divider,Aliyah {n} · {label},עלייה {n} · {label},Ali
 torah.schedule.diaspora,Diaspora,תפוצות,radio label,
 torah.schedule.israel,Israel,ישראל,radio label,
 torah.schedule.jump_this_week,Jump to this week's parsha,קפיצה לפרשת השבוע,button,
-torah.schedule.schedule_label,Schedule,לוח,settings label,
+torah.schedule.schedule_label,Calendar,לוח שנה,settings label (Diaspora / Israel),
 torah.schedule.schedule_tip,Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'.,לוחות הקריאה של התפוצות וישראל נבדלים במשך כמה שבועות בכל מחזור (כשיום טוב חל בשבת). משפיע על הפרשה הנבחרת כ'פרשת השבוע'.,tooltip,
 torah.schedule.scope_aliyah,Aliyah {n},עלייה {n},scope option,do-not-translate {n}
 torah.schedule.scope_aliyah_1,Aliyah 1,עלייה 1,scope option static fallback (runtime label via scope_aliyah),
@@ -4134,6 +4134,24 @@ torah.schedule.scope_aliyah_7,Aliyah 7,עלייה 7,scope option static fallback
 torah.schedule.scope_full,Full parsha,פרשה מלאה,scope option,
 torah.schedule.scope_full_reading,Full reading,קריאה מלאה,scope option (holiday/custom),
 torah.schedule.scope_haftarah,Haftarah,הפטרה,scope option,
+torah.schedule.cycle_label,Reading cycle,מחזור קריאה,settings label (Reading schedule panel),
+torah.schedule.cycle_tip,"Full: the whole parasha in its seven aliyot, as read on Shabbat morning. Triennial: the three-year division used in many Conservative congregations (a third of the parasha each year, in seven aliyot). Weekday: the Monday, Thursday and Shabbat-afternoon reading — the coming parasha's first aliyah, in three.","מלא: כל הפרשה בשבע עליותיה, כפי שנקראת בשבת בבוקר. תלת-שנתי: החלוקה לשלוש שנים הנהוגה בקהילות קונסרבטיביות רבות (שליש מהפרשה בכל שנה, בשבע עליות). ימי חול: קריאת שני, חמישי ומנחה של שבת — העלייה הראשונה של פרשת השבוע הבאה, בשלוש עליות.",tooltip,
+torah.schedule.cycle_full,Full (annual),מלא (שנתי),radio label,
+torah.schedule.cycle_triennial,Triennial,תלת-שנתי,radio label,
+torah.schedule.cycle_weekday,Weekday (Mon/Thu),ימי חול (ב׳/ה׳),radio label,
+torah.schedule.triyear_label,Triennial year,שנת המחזור,settings label (shown while the cycle is Triennial),
+torah.schedule.triyear_auto,Auto,אוטומטי,radio label — the calendar picks the year,
+torah.schedule.cycle_loading,Loading the reading divisions…,טוען את חלוקת הקריאה…,note under the cycle radios while data/leyning loads,
+torah.schedule.cycle_failed,The reading divisions could not be loaded.,לא ניתן היה לטעון את חלוקת הקריאה.,note + status when data/leyning failed to load,
+torah.schedule.cycle_retry,Try again,נסו שוב,retry button beside cycle_failed,
+torah.schedule.triyear_auto_note,"Year {n} of the triennial cycle ({hyear}), the year this parasha next falls in.","שנה {n} במחזור התלת-שנתי ({hyear}), השנה שבה הפרשה הזו חלה בפעם הבאה.",note under the cycle radios,do-not-translate {n} {hyear}
+torah.schedule.triyear_manual_note,Year {n} chosen; the calendar's year for this parasha is {auto}.,נבחרה שנה {n}; שנת המחזור של הפרשה הזו לפי הלוח היא {auto}.,note under the cycle radios,do-not-translate {n} {auto}
+torah.schedule.triyear_combined_note,That year it is read together with {name}: the combined division.,באותה שנה היא נקראת יחד עם {name}: החלוקה המשולבת.,note under the cycle radios (a doubled week),do-not-translate {name}
+torah.schedule.weekday_note,"Monday, Thursday and Shabbat afternoon: the coming parasha's first aliyah, in three.","שני, חמישי ומנחה של שבת: העלייה הראשונה של פרשת השבוע הבאה, בשלוש עליות.",note under the cycle radios,
+torah.schedule.scope_triennial,Triennial portion (year {n}),קטע תלת-שנתי (שנה {n}),scope option (Full reading under the Triennial cycle),do-not-translate {n}
+torah.schedule.scope_weekday,Weekday reading,קריאת ימי חול,scope option (Full reading under the Weekday cycle),
+torah.schedule.label_triennial,Triennial year {n},שנה תלת-שנתית {n},reading label part (status line),do-not-translate {n}
+torah.schedule.label_weekday,Weekday reading,קריאת ימי חול,reading label part (status line),
 torah.settings.close_aria,Close settings,סגירת ההגדרות,close button aria,aria-label only
 torah.settings.close_title,Close,סגירה,close button title,
 torah.settings.collapse_all,Collapse all menus,כיווץ כל התפריטים,button,

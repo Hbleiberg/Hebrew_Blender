@@ -2436,12 +2436,35 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <div class="panel-title" data-i18n="torah.settings.panel_schedule">Reading schedule</div>
       <div class="panel-body">
         <div class="form-row">
-          <label><span id="lblSchedule" data-i18n="torah.schedule.schedule_label">Schedule</span> <span class="tip-wrap" data-i18n-tip="torah.schedule.schedule_tip" data-tip="Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'."><i class="tip-icon">?</i></span></label>
+          <label><span id="lblSchedule" data-i18n="torah.schedule.schedule_label">Calendar</span> <span class="tip-wrap" data-i18n-tip="torah.schedule.schedule_tip" data-tip="Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'."><i class="tip-icon">?</i></span></label>
           <span class="radio-group" role="group" aria-labelledby="lblSchedule">
             <input type="radio" name="optSchedule" id="schedDiaspora" value="diaspora"><label for="schedDiaspora" data-i18n="torah.schedule.diaspora">Diaspora</label>
             <input type="radio" name="optSchedule" id="schedIsrael" value="israel"><label for="schedIsrael" data-i18n="torah.schedule.israel">Israel</label>
           </span>
         </div>
+        <!-- The reading cycle: which division of the parasha the Reading picker offers. Full is the annual
+             reading (PocketTorah's aliyot); Triennial the three-year division (data/leyning/triennial.json,
+             the year from the calendar unless chosen below); Weekday the Monday/Thursday reading (the coming
+             parasha's first aliyah in three, data/leyning/weekday.json). Neither choice travels in a practice
+             link — the schedule never does — and both ride the settings blob like the calendar. -->
+        <div class="form-row">
+          <label><span id="lblCycle" data-i18n="torah.schedule.cycle_label">Reading cycle</span> <span class="tip-wrap" data-i18n-tip="torah.schedule.cycle_tip" data-tip="Full: the whole parasha in its seven aliyot, as read on Shabbat morning. Triennial: the three-year division used in many Conservative congregations (a third of the parasha each year, in seven aliyot). Weekday: the Monday, Thursday and Shabbat-afternoon reading — the coming parasha's first aliyah, in three."><i class="tip-icon">?</i></span></label>
+          <span class="radio-group" role="group" aria-labelledby="lblCycle">
+            <input type="radio" name="optCycle" id="cycFull" value="full"><label for="cycFull" data-i18n="torah.schedule.cycle_full">Full (annual)</label>
+            <input type="radio" name="optCycle" id="cycTriennial" value="triennial"><label for="cycTriennial" data-i18n="torah.schedule.cycle_triennial">Triennial</label>
+            <input type="radio" name="optCycle" id="cycWeekday" value="weekday"><label for="cycWeekday" data-i18n="torah.schedule.cycle_weekday">Weekday (Mon/Thu)</label>
+          </span>
+        </div>
+        <div class="form-row" id="triYearRow" hidden>
+          <label id="lblTriYear" data-i18n="torah.schedule.triyear_label">Triennial year</label>
+          <span class="radio-group" role="group" aria-labelledby="lblTriYear" style="margin-inline-start:auto;">
+            <input type="radio" name="optTriYear" id="tyAuto" value="auto"><label for="tyAuto" data-i18n="torah.schedule.triyear_auto">Auto</label>
+            <input type="radio" name="optTriYear" id="ty1" value="1"><label for="ty1">1</label>
+            <input type="radio" name="optTriYear" id="ty2" value="2"><label for="ty2">2</label>
+            <input type="radio" name="optTriYear" id="ty3" value="3"><label for="ty3">3</label>
+          </span>
+        </div>
+        <div id="cycleNote" style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" aria-live="polite"></div>
         <div class="form-row">
           <button class="btn btn-xs btn-secondary" onclick="goToCurrentParshah()" type="button" data-i18n="torah.schedule.jump_this_week">Jump to this week's parsha</button>
         </div>
@@ -2690,6 +2713,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     </ul>
   </nav>
 </footer>
+<script src="/js/hebrew-calendar.js"></script>
 <script src="/js/trope-staff.js"></script>
 <script>
 'use strict';
@@ -2727,6 +2751,8 @@ const DEFAULTS = {
   holidayKey: null,        // selected HOLIDAY_READINGS key when a holiday reading is showing
   scope: 'parsha-full',
   schedule: 'diaspora',
+  readingCycle: 'full',    // 'full' | 'triennial' | 'weekday' — cycleKey(); which division the Reading picker offers
+  triennialYear: 'auto',   // 'auto' | 1 | 2 | 3 — triYearKey(); auto = the calendar's year for the chosen parasha
   translationVersion: '',
   layout: 'interlinear',
   showTranslit: false,
@@ -3039,7 +3065,7 @@ function stepFsAliyah(dir) {
   }
   const m = (settings.scope || '').match(/^parsha-aliyah-([1-7])$/);
   if (!m) return;
-  const n = Math.max(1, Math.min(7, parseInt(m[1], 10) + dir));
+  const n = Math.max(1, Math.min(cycleAliyahMax(), parseInt(m[1], 10) + dir));   // the Weekday cycle has three
   const sel = document.getElementById('scopeSelect');
   if (!sel || sel.disabled) return;
   sel.value = 'parsha-aliyah-' + n;
@@ -3266,7 +3292,18 @@ function resolveRef() {
   const p = parshiyotData.find(x => x.en === settings.parshahKey);
   if (!p) return null;
   const scope = settings.scope || 'parsha-full';
+  // A Triennial or Weekday division (readingIsOverlay): the range is its aliyot's span, never a PocketTorah file.
+  const cyc = cycleKey() !== 'full' ? aliyahLookup(p.en) : null;
+  const cycAl = cyc && !cyc.pending && cyc.aliyot && cyc.aliyot[1] ? cyc.aliyot : null;
+  const cycLabel = cyc ? (cyc.cycle === 'weekday' ? I18n.t('torah.schedule.label_weekday') : I18n.t('torah.schedule.label_triennial', { n: cyc.tri ? cyc.tri.yearNum : '?' })) : '';
+  const cycName = cyc && cyc.tri && triennialPartner(p, cyc.tri) ? [p, triennialPartner(p, cyc.tri)].sort((a, b) => a.n - b.n).map(x => x.en).join('-') : p.en;
   if (scope === 'parsha-full') {
+    if (cycAl) {
+      const nums = Object.keys(cycAl).filter(k => /^\d$/.test(k)).map(Number).sort((a, b) => a - b);
+      const first = cycAl[nums[0]], last = cycAl[nums[nums.length - 1]];
+      const ref = `${p.book} ${first.startC}:${first.startV}-${last.endC}:${last.endV}`;
+      return { ref, label: `${cycName} — ${cycLabel} (${ref})`, parshahEntry: p, aliyahNum: null, isHaftarah: false, overlay: true, cycle: cyc.cycle };
+    }
     return { ref: p.ref, label: `${p.en} — ${p.ref}`, parshahEntry: p, aliyahNum: null, isHaftarah: false };
   }
   if (scope === 'parsha-haftarah') {
@@ -3279,7 +3316,12 @@ function resolveRef() {
   const m = scope.match(/parsha-aliyah-(\d)/);
   if (m) {
     const n = parseInt(m[1], 10);
-    const al = aliyahLookup(p.en);
+    if (cycAl && cycAl[n]) {
+      const range = cycAl[n];
+      const ref = `${p.book} ${range.startC}:${range.startV}-${range.endC}:${range.endV}`;
+      return { ref, label: `${cycName} — ${cycLabel}, Aliyah ${n} (${ref})`, parshahEntry: p, aliyahNum: null, isHaftarah: false, overlay: true, cycle: cyc.cycle, cycleAliyah: n };
+    }
+    const al = aliyahLookup(p.en, 'full');
     if (al && al.aliyot[n]) {
       const range = al.aliyot[n];
       const ref = `${p.book} ${range.startC}:${range.startV}-${range.endC}:${range.endV}`;
@@ -3289,7 +3331,7 @@ function resolveRef() {
   }
   return { ref: p.ref, label: p.en, parshahEntry: p, aliyahNum: null, isHaftarah: false };
 }
-function aliyahLookup(parshahEn) {
+function aliyahLookup(parshahEn, cycle) {
   if (!aliyahData || !aliyahData.parshiot) return null;
   const list = aliyahData.parshiot.parsha || [];
   // Match by parsha number first — it's stable across the apostrophe/spelling
@@ -3312,7 +3354,165 @@ function aliyahLookup(parshahEn) {
       };
     }
   }
-  return { aliyot, haftarah: entry._haftara || null };
+  const base = { aliyot, haftarah: entry._haftara || null, cycle: 'full' };
+  // The reading cycle (below): the Triennial and Weekday divisions replace the aliyot; PocketTorah's
+  // files stay the full-kriyah ones, so every audio caller asks for 'full' explicitly.
+  cycle = cycle || cycleKey();
+  if (cycle === 'full' || !pEntry) return base;
+  base.cycle = cycle;
+  if (!leyningData) { base.pending = true; return base; }   // the full aliyot stand in until the divisions arrive
+  if (cycle === 'weekday') {
+    const w = leyningData.weekday.parshiyot[String(pEntry.n)];
+    if (w) { base.aliyot = _aliyotFromPairs(w); base.haftarah = null; }
+    return base;
+  }
+  const ctx = triennialContext(pEntry);
+  const tri = ctx && triennialAliyot(pEntry, ctx);
+  if (tri) { base.aliyot = tri; base.tri = ctx; }
+  return base;
+}
+
+/* ══════════════════════════════════════════════════════
+   READING CYCLE — Full / Triennial / Weekday (settings.readingCycle, settings.triennialYear)
+   The Full cycle is PocketTorah's aliyah.json. The other two read data/leyning/*.json (built from
+   Hebcal's BSD data by scripts/build-leyning-data.mjs), fetched the first time one is chosen. A
+   Triennial or Weekday range is not a PocketTorah file, so its reading is an *overlay* like a holiday
+   reading: readingIsOverlay() routes Chant through the containing full aliyah's audio. The triennial
+   year comes from js/hebrew-calendar.js — the reading year the chosen parasha next falls in — unless
+   the teacher picked one; a sometimes-doubled parasha takes the variation its cycle's
+   Together/Separate pattern names (@hebcal/triennial's rule, docs/reference/torah-and-trope.md).
+   ══════════════════════════════════════════════════════ */
+const CYCLE_KEYS = ['full', 'triennial', 'weekday'];
+function cycleKey() { return CYCLE_KEYS.includes(settings.readingCycle) ? settings.readingCycle : 'full'; }   // an unknown stored value reads Full and stays stored
+function triYearKey() { const n = Number(settings.triennialYear); return (n === 1 || n === 2 || n === 3) ? n : 'auto'; }
+function cycleAliyahMax() { return cycleKey() === 'weekday' ? 3 : 7; }
+let leyningData = null;      // { weekday, triennial } once both files have arrived
+let _leyningLoad = null;     // the in-flight fetch
+let _leyningFailed = false;
+function loadLeyningData() {
+  if (leyningData) return Promise.resolve(leyningData);
+  if (_leyningLoad) return _leyningLoad;
+  const get = (url) => fetch(url).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });   // same-origin data/ — the exempt parse
+  _leyningLoad = Promise.all([get('data/leyning/weekday.json?v=1'), get('data/leyning/triennial.json?v=1')])
+    .then(([w, t]) => { leyningData = { weekday: w, triennial: t }; _leyningFailed = false; return leyningData; })
+    .catch(e => { _leyningFailed = true; _leyningLoad = null; throw e; });
+  return _leyningLoad;
+}
+// Start the fetch for a non-Full cycle; on arrival the reading re-resolves once (the full aliyot stood in).
+function ensureLeyningData() {
+  if (cycleKey() === 'full' || leyningData) return;
+  loadLeyningData().then(() => { syncCycleControls(); fetchAndRender(); })
+    .catch(() => { syncCycleControls(); setStatus(I18n.t('torah.schedule.cycle_failed'), true); });
+}
+function _cv(s) { const m = /^(\d+):(\d+)$/.exec(s || ''); return m ? [parseInt(m[1], 10), parseInt(m[2], 10)] : null; }
+function _aliyotFromPairs(o) {   // {"1":["35:1","35:10"],…} → {1:{startC,startV,endC,endV},…}; a malformed pair is left out
+  const out = {};
+  for (const k of Object.keys(o)) {
+    const a = _cv(o[k] && o[k][0]), b = _cv(o[k] && o[k][1]);
+    if (a && b) out[k] = { startC: a[0], startV: a[1], endC: b[0], endV: b[1] };
+  }
+  return out;
+}
+// Which year of the cycle a parasha reads, from the reading year it next falls in (or the chosen year), and
+// — for a sometimes-doubled parasha — whether that year reads it together with its partner.
+function triennialContext(p) {
+  if (!window.HebCal || !p) return null;
+  const idx = p.n - 1, israel = settings.schedule === 'israel';
+  let nx = null;
+  try { nx = HebCal.nextOccurrence(idx, new Date(), { israel }); } catch (e) { nx = null; }
+  if (!nx) return null;
+  const autoYear = HebCal.triennialYear(nx.hyear), manual = triYearKey();
+  const yearNum = manual === 'auto' ? autoYear : manual;
+  const cycleStart = HebCal.triennialCycleStart(nx.hyear);
+  const first = HebCal.doubledFirstOf(idx);
+  let pattern = null, together = false;
+  if (first !== null) {
+    try { pattern = HebCal.doubledPattern(first, cycleStart, { israel }); } catch (e) { pattern = null; }
+    together = !!pattern && pattern[yearNum - 1] === 'T';
+  }
+  return { hyear: nx.hyear, autoYear, yearNum, manual: manual !== 'auto', cycleStart, first, pattern, together };
+}
+function triennialAliyot(p, ctx) {
+  const t = leyningData && leyningData.triennial;
+  if (!t || !ctx) return null;
+  let src = null;
+  if (ctx.together) {
+    const c = t.combined[(ctx.first + 1) + '-' + (ctx.first + 2)];
+    src = c && c.years && c.years['Y.' + ctx.yearNum];
+  } else {
+    const single = t.parshiyot[String(p.n)];
+    let letter = 'Y';
+    if (ctx.first !== null && ctx.pattern && ctx.pattern !== 'TTT') {
+      const c = t.combined[(ctx.first + 1) + '-' + (ctx.first + 2)];
+      letter = (c && c.patterns && c.patterns[ctx.pattern]) || 'Y';
+    }
+    src = single && single.variations && (single.variations[letter + '.' + ctx.yearNum] || single.variations['Y.' + ctx.yearNum]);
+  }
+  if (!src) return null;
+  const out = _aliyotFromPairs(src);
+  return out[1] ? out : null;
+}
+// The partner a together-year reads with: the other parasha of the pair (for labels).
+function triennialPartner(p, ctx) {
+  if (!ctx || !ctx.together) return null;
+  const other = (p.n - 1 === ctx.first) ? ctx.first + 1 : ctx.first;
+  return parshiyotData.find(x => x.n === other + 1) || null;
+}
+// A holiday reading (custom scope) and a Triennial or Weekday range both chant through the containing full
+// aliyah's audio (the holiday overlay path): the rendered words are mapped onto that file's timings.
+function readingIsOverlay() { return settings.scope === 'custom' || !!(currentReadingCtx && currentReadingCtx.overlay); }
+function overlayRef() { return settings.scope === 'custom' ? (settings.customRef || null) : ((currentReadingCtx && currentReadingCtx.overlay && currentReadingCtx.ref) || null); }
+// The Weekday cycle offers aliyot 1–3 and no haftarah: a stored scope outside its list falls back to the
+// whole reading. Called before every resolve, so a cycle change, a link and a cloud download all land in range.
+function clampScopeToCycle() {
+  if (cycleKey() !== 'weekday') return false;
+  const m = /^parsha-aliyah-([1-7])$/.exec(settings.scope || '');
+  if ((m && parseInt(m[1], 10) > 3) || settings.scope === 'parsha-haftarah') { settings.scope = 'parsha-full'; return true; }
+  return false;
+}
+// This week's reading from the local calendar (no network): the Shabbat on or after today, on the chosen schedule.
+function localWeekReading(date) {
+  if (!window.HebCal) return null;
+  try { return HebCal.parshaForDate(date || new Date(), { israel: settings.schedule === 'israel' }); } catch (e) { return null; }
+}
+// The festival Shabbatot whose reading is one of HOLIDAY_READINGS (a Shabbat Chol HaMoed has none here).
+const HOLIDAY_KEY_BY_CAL = {
+  'rosh_hashanah:1': 'rosh-hashanah-1', 'rosh_hashanah:2': 'rosh-hashanah-2', 'yom_kippur:1': 'yom-kippur',
+  'sukkot:1': 'sukkot-1', 'sukkot:2': 'sukkot-2', 'shmini_atzeret:1': 'shemini-atzeret', 'simchat_torah:1': 'simchat-torah',
+  'pesach:1': 'pesach-1', 'pesach:2': 'pesach-2', 'pesach:7': 'pesach-7', 'pesach:8': 'pesach-8', 'shavuot:1': 'shavuot-1', 'shavuot:2': 'shavuot-2',
+};
+function holidayKeyForCal(r) { return r && r.kind === 'holiday' ? (HOLIDAY_KEY_BY_CAL[r.holiday + ':' + r.day] || null) : null; }
+function parshaByIdx(i) { return parshiyotData.find(x => x.n === i + 1) || null; }
+// The panel's read-only half: the radios, the year row and the note under them (called from
+// syncFormToSettings, after every render and from applyI18n).
+function syncCycleControls() {
+  const cycle = cycleKey(), yr = triYearKey();
+  document.querySelectorAll('input[name="optCycle"]').forEach(r => { r.checked = r.value === cycle; });
+  document.querySelectorAll('input[name="optTriYear"]').forEach(r => { r.checked = r.value === String(yr); });
+  const row = document.getElementById('triYearRow');
+  if (row) row.hidden = cycle !== 'triennial';
+  const note = document.getElementById('cycleNote');
+  if (!note || !window.I18n) return;
+  note.textContent = '';
+  if (cycle === 'full') return;
+  if (_leyningFailed && !leyningData) {
+    note.textContent = I18n.t('torah.schedule.cycle_failed') + ' ';
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn btn-xs btn-secondary'; b.textContent = I18n.t('torah.schedule.cycle_retry');
+    b.addEventListener('click', () => { _leyningFailed = false; ensureLeyningData(); syncCycleControls(); });
+    note.appendChild(b);
+    return;
+  }
+  if (!leyningData) { note.textContent = I18n.t('torah.schedule.cycle_loading'); return; }
+  if (cycle === 'weekday') { note.textContent = I18n.t('torah.schedule.weekday_note'); return; }
+  const p = parshiyotData.find(x => x.en === settings.parshahKey);
+  const ctx = p ? triennialContext(p) : null;
+  if (!ctx) return;
+  let txt = ctx.manual ? I18n.t('torah.schedule.triyear_manual_note', { n: ctx.yearNum, auto: ctx.autoYear })
+                       : I18n.t('torah.schedule.triyear_auto_note', { n: ctx.yearNum, hyear: ctx.hyear });
+  const partner = triennialPartner(p, ctx);
+  if (partner) txt += ' ' + I18n.t('torah.schedule.triyear_combined_note', { name: partner.en });
+  note.textContent = txt;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -3426,7 +3626,7 @@ function labelForCustomRef(ref, holidayKey) {
 }
 // Aliyah numbers (1–7) of `parshaEn` that intersect the given verse range.
 function overlappingAliyot(parshaEn, r) {
-  const al = aliyahLookup(parshaEn);
+  const al = aliyahLookup(parshaEn, 'full');   // PocketTorah's files
   if (!al || !al.aliyot) return [];
   const out = [];
   for (const num of ['1','2','3','4','5','6','7']) {
@@ -4335,7 +4535,7 @@ function renderText() {
   const canChant = currentReadingChantable();
   // Verse looping is chant-only and not offered for holiday/custom readings
   // (mapped-timings path has no cheap verse-end boundary — see loopVerse note).
-  const canLoop = canChant && settings.scope !== 'custom';
+  const canLoop = canChant && !readingIsOverlay();   // nor for a Triennial/Weekday range: the same mapped-timings path
   // A Rosh Hashanah / Yom Kippur reading links to the tutor's High Holiday melody; while Chant can play it, a notice
   // chip beside the link says the recordings are PocketTorah's year-round melody, so a student practising with Chant
   // is told the day's tune is another. Every chip here carries its own aria-label: bindTip would otherwise name
@@ -5192,6 +5392,7 @@ function syncStaffControls() {
 }
 
 async function fetchAndRender() {
+  if (clampScopeToCycle()) { saveSettings(); const _ss = document.getElementById('scopeSelect'); if (_ss) _ss.value = settings.scope; }
   const r = resolveRef();
   const seq = ++_fetchSeq;
   currentReadingCtx = r;
@@ -5346,7 +5547,8 @@ const LASTPOS_MAX_AGE = 30 * 24 * 60 * 60 * 1000;  // 30 days
 // Unique id for the loaded reading: parsha+scope, or the custom ref for holidays.
 function readingKey() {
   if (settings.scope === 'custom') return 'custom:' + (settings.customRef || '');
-  return (settings.parshahKey || '') + '|' + (settings.scope || 'parsha-full');
+  const cyc = currentReadingCtx && currentReadingCtx.overlay ? '|' + currentReadingCtx.cycle + (currentReadingCtx.cycle === 'triennial' && currentReadingCtx.ref ? ':' + currentReadingCtx.ref : '') : '';
+  return (settings.parshahKey || '') + '|' + (settings.scope || 'parsha-full') + cyc;
 }
 function getCurrentVerseLabel() { return _currentVerseLabel; }
 // (Re)build the observer over the freshly-rendered verses. Cheap; skips work
@@ -5549,8 +5751,8 @@ function speakVerse(numLabel) {
 let _pendingChantVerse = null;
 async function chantVerse(numLabel) {
   stopStaffTune();   // the recording and the tune never sound together
-  // Holiday/custom reading: chant in place (don't navigate to the parsha aliyah).
-  if (settings.scope === 'custom') {
+  // Holiday/custom reading, or a Triennial/Weekday range: chant in place (don't navigate to the parsha aliyah).
+  if (readingIsOverlay()) {
     const ok = await chantHolidayWord(numLabel, 0);
     if (!ok) speakVerse(numLabel);
     return;
@@ -5617,7 +5819,7 @@ function seekToVerseInLoadedAudio(numLabel, silent) {
    when settings.scope === 'custom'.
    ────────────────────────────────────────────────────────── */
 async function loopVerse(numLabel) {
-  if (settings.scope === 'custom') return;   // Loop button is hidden here anyway
+  if (readingIsOverlay()) return;   // Loop button is hidden here anyway
   // Clicking the verse that's already looping stops it.
   if (loopState.active && loopState.verseLabel === numLabel) { stopLoop(); return; }
   // Fast path: audio for this verse's aliyah is already loaded.
@@ -5713,7 +5915,7 @@ function _navigateToVerseAliyahAndQueue(numLabel, mode) {
   const p = (currentReadingCtx && currentReadingCtx.parshahEntry)
             || parshiyotData.find(x => x.en === settings.parshahKey);
   if (!p) { setStatus(I18n.t('torah.status.pick_parsha_chant_verses'), false, 'torah.status.pick_parsha_chant_verses'); return false; }
-  const al = aliyahLookup(p.en);
+  const al = aliyahLookup(p.en, 'full');
   if (!al || !al.aliyot) { setStatus(I18n.t('torah.status.no_aliyah_data'), true); return false; }
   let aliyahNum = null;
   for (const num of ['1','2','3','4','5','6','7']) {
@@ -5826,7 +6028,7 @@ async function chantHolidayWord(numLabel, wordInVerse) {
   const tc = +m[1], tv = +m[2];
   const p = currentReadingCtx && currentReadingCtx.parshahEntry;
   if (!p || !manifestData[p.pocket]) return false;
-  const al = aliyahLookup(p.en);
+  const al = aliyahLookup(p.en, 'full');   // the recording is a full-kriyah aliyah whatever the cycle
   if (!al || !al.aliyot) return false;
   let n = null;
   for (const num of ['1','2','3','4','5','6','7']) {
@@ -5915,6 +6117,25 @@ async function toggleChantAll() {
   speechSynthesis.cancel();
   // Build the queue based on the current scope.
   let p, queue, startVerse = null;
+  if (settings.scope !== 'custom' && readingIsOverlay()) {
+    // A Triennial or Weekday range: its aliyot are not PocketTorah's, so the reading stays on screen and the
+    // full aliyot it spans play underneath it in turn (chantOverlayNext), stopping at the range's last word.
+    p = currentReadingCtx.parshahEntry;
+    const rng = parseRefRange(overlayRef());
+    if (!p || !manifestData[p.pocket] || !rng) { const _cu = I18n.t('torah.status.chant_unavailable'); setStatus(_cu, true); showHintToast(_cu); return; }
+    queue = overlappingAliyot(p.en, rng);
+    if (!queue.length) { const _cu = I18n.t('torah.status.chant_unavailable'); setStatus(_cu, true); showHintToast(_cu); return; }
+    chantAllState.active = true;
+    chantAllState.queue = queue;
+    chantAllState.parsha = p;
+    chantAllState.overlay = rng;
+    _verseEndStopAt = null;
+    const btn = document.getElementById('ttChantAllBtn');
+    if (btn) { btn.innerHTML = ICON_STOP + esc(I18n.t('torah.reading.chant_all_stop')); btn.classList.add('active'); }
+    await chantOverlayNext();
+    return;
+  }
+  chantAllState.overlay = null;
   if (settings.scope === 'custom') {
     // Holiday/custom range: chant the aliyot it spans, seeking into the first
     // one so we start at the reading's opening verse rather than the aliyah's.
@@ -5983,9 +6204,40 @@ async function playNextChant() {
   currentAudio.play().catch(() => {});
 }
 
+// The overlay chain: play the next full aliyah the range spans under the reading, from the range's first word
+// on the first one, and on the last one stop where the range ends (the file runs on into verses the reading
+// does not show). Each hop goes through chantHolidayWord, so the words light by the holiday word map.
+async function chantOverlayNext() {
+  if (!chantAllState.active || !chantAllState.queue || !chantAllState.queue.length) { stopChantAll(); return; }
+  const sfx = chantAllState.queue.shift(), p = chantAllState.parsha, rng = chantAllState.overlay;
+  const al = aliyahLookup(p.en, 'full');
+  const a = al && al.aliyot && al.aliyot[sfx];
+  if (!a) { stopChantAll(); return; }
+  const startsInside = vcmp(rng.startC, rng.startV, a.startC, a.startV) > 0;
+  const startVerse = startsInside ? `${rng.startC}:${rng.startV}` : `${a.startC}:${a.startV}`;
+  const ok = await chantHolidayWord(startVerse, 0);
+  if (!ok || !chantAllState.active) { if (chantAllState.active) chantOverlayNext(); return; }
+  if (!currentAudio) { stopChantAll(); return; }
+  currentAudio.onended = () => {
+    clearKaraokeHighlight();
+    updatePlayPauseIcon();
+    if (chantAllState.active) chantOverlayNext();
+  };
+  // The last file: stop at the first word after the range (the word map lists the aliyah's verses in order).
+  if (vcmp(a.endC, a.endV, rng.endC, rng.endV) > 0 && !chantAllState.queue.length) {
+    const map = _aliyahWordMaps[p.en + '|' + sfx];
+    const keys = map ? Object.keys(map) : [];
+    const after = keys[keys.indexOf(`${rng.endC}:${rng.endV}`) + 1];
+    const idx = after != null ? map[after] : null;
+    const t = idx != null && currentTimings ? currentTimings[idx] : null;
+    if (typeof t === 'number' && !isNaN(t)) { _verseEndStopAt = t; chantAllState.stopsAtRange = true; }
+  }
+}
 function stopChantAll() {
   chantAllState.active = false;
   chantAllState.queue = null;
+  chantAllState.overlay = null;
+  chantAllState.stopsAtRange = false;
   if (currentAudio) {
     if (!currentAudio.paused) currentAudio.pause();
     // Restore the default ended handler set by loadKaraoke().
@@ -6053,7 +6305,7 @@ function firstKaraokeSpan(idx) {
 let karaokeRafId = null;
 let lastHighlightedIdx = -1;
 let _verseEndStopAt = null;  // when set, audio auto-pauses at this currentTime
-const chantAllState = { active: false, queue: null, parsha: null };
+const chantAllState = { active: false, queue: null, parsha: null, overlay: null, stopsAtRange: false };   // overlay: the Triennial/Weekday range chanting under the reading (chantOverlayNext)
 // Verse looping (practice mode): while active, the chant audio repeats one verse
 // hands-free. Mutually exclusive with the single-verse _verseEndStopAt stop.
 let loopState = { active: false, verseLabel: null, startTime: null, stopAt: null };
@@ -6335,6 +6587,7 @@ function onAudioTimeUpdate() {
   if (_verseEndStopAt !== null && t >= _verseEndStopAt) {
     if (!currentAudio.paused) currentAudio.pause();
     clearKaraokeHighlight();
+    if (chantAllState.active && chantAllState.stopsAtRange) stopChantAll();   // the overlay chain's range has ended
     return;
   }
   // binary search for largest timing <= t
@@ -6490,9 +6743,9 @@ function onReadingClick(e) {
     if (numLabel) speakVerse(numLabel);
     return;
   }
-  // Holiday/custom reading: stay on it and chant the exact clicked word by
+  // Holiday/custom reading (or a Triennial/Weekday range): stay on it and chant the exact clicked word by
   // mapping it onto the containing aliyah's PocketTorah timings.
-  if (settings.scope === 'custom') {
+  if (readingIsOverlay()) {
     if (!numLabel) return;
     const wiv = hebWordIndexInVerse(verseEl, wordEl);
     chantHolidayWord(numLabel, wiv).then(ok => { if (!ok) speakVerse(numLabel); });
@@ -7355,6 +7608,7 @@ function syncFormToSettings() {
   const sd = document.getElementById('schedDiaspora');
   const si = document.getElementById('schedIsrael');
   if (settings.schedule === 'israel') si.checked = true; else sd.checked = true;
+  syncCycleControls();
   // color: each list is the on/off switch and the look in one (No highlight while off). An
   // unknown vowel mode draws as Letter (applyNikkudColors), so its list shows Letter.
   const nikOn = !!settings.colorCodeNikkud;
@@ -7458,7 +7712,32 @@ function wireSettingsForm() {
   // Schedule
   document.querySelectorAll('input[name="optSchedule"]').forEach(r => {
     r.addEventListener('change', e => {
-      if (e.target.checked) { settings.schedule = e.target.value; saveSettings(); }
+      if (!e.target.checked) return;
+      settings.schedule = e.target.value; saveSettings();
+      if (typeof lookupRender === 'function') lookupRender();   // the portion lookup follows the calendar
+      if (cycleKey() === 'triennial') { syncCycleControls(); fetchAndRender(); }   // a doubled parasha's pattern can differ between the schedules
+    });
+  });
+  // Reading cycle + triennial year
+  document.querySelectorAll('input[name="optCycle"]').forEach(r => {
+    r.addEventListener('change', e => {
+      if (!e.target.checked) return;
+      clearLoop();
+      settings.readingCycle = e.target.value;
+      clampScopeToCycle();
+      saveSettings();
+      ensureLeyningData();
+      syncCycleControls();
+      fetchAndRender();
+    });
+  });
+  document.querySelectorAll('input[name="optTriYear"]').forEach(r => {
+    r.addEventListener('change', e => {
+      if (!e.target.checked) return;
+      settings.triennialYear = e.target.value === 'auto' ? 'auto' : parseInt(e.target.value, 10);
+      saveSettings();
+      syncCycleControls();
+      if (cycleKey() === 'triennial') fetchAndRender();
     });
   });
   // Color coding. Each list is the on/off switch and the look in one: No highlight turns the
@@ -7841,14 +8120,16 @@ function refreshScopeLabels() {
   // Holiday/custom scope: the disabled "Full reading" option is managed by
   // updateScopeSelectState — leave the weekly-scope labels untouched.
   if (settings.scope === 'custom') return;
-  const BASE = { 'parsha-full': I18n.t('torah.schedule.scope_full'), 'parsha-haftarah': I18n.t('torah.schedule.scope_haftarah') };
+  const p = parshiyotData.find(x => x.en === settings.parshahKey);
+  const al = p ? aliyahLookup(p.en) : null;   // the cycle's own division (its aliyot label the options)
+  const fullKey = al && !al.pending && al.cycle === 'weekday' ? 'torah.schedule.scope_weekday' : al && !al.pending && al.cycle === 'triennial' && al.tri ? 'torah.schedule.scope_triennial' : 'torah.schedule.scope_full';
+  const fullLabel = I18n.t(fullKey, { n: al && al.tri ? al.tri.yearNum : '' });
+  const BASE = { 'parsha-full': fullLabel, 'parsha-haftarah': I18n.t('torah.schedule.scope_haftarah') };
   for (let i = 1; i <= 7; i++) BASE['parsha-aliyah-' + i] = I18n.t('torah.schedule.scope_aliyah', { n: i });
   const setLabel = (val, txt) => {
     const opt = scopeSel.querySelector(`option[value="${val}"]`);
     if (opt) opt.textContent = txt;
   };
-  const p = parshiyotData.find(x => x.en === settings.parshahKey);
-  const al = p ? aliyahLookup(p.en) : null;
   const mark = (p && manifestData[p.pocket]) ? '🎵 ' : '';  // 🎵 when chantable
   if (!al || !al.aliyot) {
     // Data unavailable → plain labels (still marked if the parsha has audio).
@@ -7859,9 +8140,9 @@ function refreshScopeLabels() {
   if (nums.length) {
     const first = al.aliyot[nums[0]], last = al.aliyot[nums[nums.length - 1]];
     const span = fmtRange({ startC: first.startC, startV: first.startV, endC: last.endC, endV: last.endV });
-    setLabel('parsha-full', `${mark}${I18n.t('torah.schedule.scope_full')}${span ? ' · ' + span : ''}`);
+    setLabel('parsha-full', `${mark}${fullLabel}${span ? ' · ' + span : ''}`);
   } else {
-    setLabel('parsha-full', `${mark}${I18n.t('torah.schedule.scope_full')}`);
+    setLabel('parsha-full', `${mark}${fullLabel}`);
   }
   for (let n = 1; n <= 7; n++) {
     const rng = al.aliyot[n] ? fmtRange(al.aliyot[n]) : '';
@@ -7883,7 +8164,15 @@ function refreshScopeLabels() {
 function updateScopeSelectState() {
   const scopeSel = document.getElementById('scopeSelect');
   if (!scopeSel) return;
+  // The Weekday cycle has three aliyot and no haftarah: the other options leave the list (values never change).
+  const maxN = cycleAliyahMax();
+  scopeSel.querySelectorAll('option').forEach(o => {
+    const m = /^parsha-aliyah-([1-7])$/.exec(o.value);
+    const off = (m && parseInt(m[1], 10) > maxN) || (o.value === 'parsha-haftarah' && cycleKey() === 'weekday');
+    o.hidden = !!off; o.disabled = !!off;
+  });
   refreshScopeLabels();
+  syncCycleControls();
   const isCustom = settings.scope === 'custom';
   let customOpt = scopeSel.querySelector('option[value="custom"]');
   if (isCustom) {
@@ -8901,9 +9190,18 @@ function openSettingsAtPanel(key) {
   title.scrollIntoView({ block: 'start' });
 }
 async function goToCurrentParshah() {
-  const cur = await fetchCurrentParshah(settings.schedule !== 'israel');
-  if (!cur) { setStatus(I18n.t('torah.status.cant_determine_parsha'), true); return; }
-  const match = findParshaByName(cur.name);
+  // The local calendar first (js/hebrew-calendar.js: no network, any week); a doubled week opens its first
+  // parasha, as the Sefaria path below always did. A festival Shabbat with a reading in HOLIDAY_READINGS opens
+  // it; a Shabbat Chol HaMoed still asks Sefaria's calendar for the day's reading.
+  const wk = localWeekReading();
+  let match = wk && wk.kind === 'parsha' ? parshaByIdx(wk.idx[0]) : null;
+  if (!match) {
+    const hk = holidayKeyForCal(wk), h = hk ? holidayByKey(hk) : null;
+    if (h) { applyHolidayReading(h); return; }
+  }
+  const cur = match ? null : await fetchCurrentParshah(settings.schedule !== 'israel');
+  if (!match && !cur) { setStatus(I18n.t('torah.status.cant_determine_parsha'), true); return; }
+  if (!match) match = findParshaByName(cur.name);
   if (match) {
     settings.parshahKey = match.en;
     settings.scope = 'parsha-full';
@@ -8990,6 +9288,7 @@ async function init() {
   populateParshaPicker();
   syncFormToSettings();
   wireSettingsForm();
+  ensureLeyningData();      // a stored Triennial/Weekday cycle fetches its divisions now (the first render shows the full aliyot until they land)
   staffInitWatchers();      // the Trope staff layout re-wraps on a width or font change
   wireTranslit();
   checkTTSVoiceAvailability();
@@ -9067,9 +9366,17 @@ async function init() {
     }
   } catch (e) { /* never let a bad URL break init */ }
 
-  // Determine starting parsha
+  // Determine starting parsha: the local calendar first (offline, no Sefaria call), Sefaria for a Shabbat
+  // Chol HaMoed (its reading is not one of HOLIDAY_READINGS) or when the calendar module is missing.
   if (!settings.parshahKey) {
-    const cur = await fetchCurrentParshah(settings.schedule !== 'israel');
+    const wk = localWeekReading();
+    const lp = wk && wk.kind === 'parsha' ? parshaByIdx(wk.idx[0]) : null;
+    const lh = holidayKeyForCal(wk) ? holidayByKey(holidayKeyForCal(wk)) : null;
+    if (lp) settings.parshahKey = lp.en;
+    else if (lh && !settings.holidayKey && !deepRefApplied) {
+      settings.holidayKey = lh.key; settings.customRef = lh.ref; settings.customLabel = `${lh.name} — ${lh.ref}`; settings.scope = 'custom';
+    }
+    const cur = settings.parshahKey || settings.customRef ? null : await fetchCurrentParshah(settings.schedule !== 'israel');
     if (cur) {
       const match = findParshaByName(cur.name);
       if (match) {
@@ -9150,6 +9457,7 @@ function cloudReread() {
   applyTropeColors();
   applyDisplayClasses();
   syncParshaSelect();
+  ensureLeyningData();   // a downloaded blob may name a cycle this device has not loaded yet
   fetchAndRender();
 }
 function initCloudSaves() {
@@ -9189,6 +9497,7 @@ function applyI18n() {
   try { syncStaffControls(); } catch (e) {}         // the staff panel's key name (trope.key.*)
   try { buildTropeLegend(); } catch (e) {}          // family chips (glyphname keys)
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
+  try { syncCycleControls(); } catch (e) {}         // the reading-cycle note (year, loading, failed)
   // refreshScopeLabels leaves custom scope alone — that option is injected by
   // updateScopeSelectState, which only runs on a render — so a language switch while a custom
   // range or a holiday reading is open would strand it in the old language. Every ?ref= link
