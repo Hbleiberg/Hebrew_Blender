@@ -1685,7 +1685,7 @@ async function loadData() {
       // ?v= bump rule applies here too (on every trope_motifs.json / trope_motifs_hh.json change).
       fetch('data/trope/trope_motifs.json?v=6').catch(() => null),
       fetch('data/trope/trope_motifs_hh.json?v=4').catch(() => null),
-      fetch('data/trope/trope_phrases.json?v=1').catch(() => null),   // the Phrases tab; ?v= bumps with the file
+      fetch('data/trope/trope_phrases.json?v=2').catch(() => null),   // the Phrases tab; ?v= bumps with the file
       fetch('data/trope/trope_phrase_examples.json?v=1').catch(() => null),
     ]);
     if (!idxRes.ok || !manRes.ok) throw new Error('HTTP ' + idxRes.status + '/' + manRes.status);

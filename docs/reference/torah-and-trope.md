@@ -328,14 +328,19 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     derived from them.
   The script exits non-zero if a smoke test fails — never commit its output without a green run.
 - **Phrases**: `data/trope/trope_phrases.json` — every row of both printed charts note for note (41
-  Torah, 33 High Holiday + row 20's second setting), for a staff of a whole reading. The Phrases tab
-  fetches it (`?v=1`, in `docs/reference/ops.md`'s list); bump that with every rebuild that changes it.
+  Torah, 33 High Holiday + row 20's second setting), for a staff of a whole reading, and the 36 Haftarah
+  rows of section H (an unverified rendering written from memory, drawn only by the Torah Trainer's Trope
+  staff: the tutor reads the file through `melodyKey()`, which names the two charts, so the third melody is
+  inert here). The Phrases tab fetches it (`?v=2`, in `docs/reference/ops.md`'s list); bump that with every
+  rebuild that changes it.
   - It is built by `node scripts/build-trope-phrases.mjs` from the fenced row blocks in
-    `docs/tropepatterns.md` sections B and C, which are **the only hand-edited copy of the notes**:
-    fix a note there and re-run the builder, never edit the JSON.
+    `docs/tropepatterns.md` sections B, C and H, which are **the only hand-edited copy of the notes**:
+    fix a note there and re-run the builder, never edit the JSON. A melody without a motif file (the
+    Haftarah rows) skips the Learn-card check; its rows are smoke-tested on their own (every mark printed,
+    the four verse endings as closings, A3–B♭4).
   - Zero dependencies, offline. It writes `docs/trope_phrases_report.md`: every figure of every mark
     in every printed context, and the staff check above.
-  - **Shape.** `{v:1, built, license, source, tpq:48, values, melodies:{torah|highholiday:{key, rows}},
+  - **Shape.** `{v:1, built, license, source, tpq:48, values, melodies:{torah|highholiday|haftarah:{key, rows}},
     figures}`. Each row is flat: `{n, he, tags, notes:[{p, v, t, g?, r?, tie?, a?}], syl:[{t, hyphen,
     unit, from, to}], units:[{k, from, to}], tup:[{from, to}], slur:[{from, to, dashed?}]}`.
     - `p` is semitones from B4, as in the motif files; a rest (`r`) has no `p`.
@@ -634,15 +639,26 @@ Design: `docs/tropepatterns.md` → G.
   the beta**), and an unmarked cell sings with the cell after it. `tropeContextsOf(set)` indexes every
   printed figure by the marks before and after it; `tropeChooseFigures` picks one per unit — a connecting
   mark by the mark it leads into, else the pause its chain reaches; a pausing mark by its neighbours; then
-  the Learn card's row (`TROPE_LEARN_ROW`, § A's table); then the mark's first figure; a mark the melody's
-  chart lacks falls back to the year-round chart — and the last verse of a PocketTorah aliyah
-  (`staffIsAliyahEnd`, from `aliyahLookup`'s `endC/endV`) takes the `[aliyah-end]` closing whose marks end
-  it. `tropeBuildReadingRow` stitches the picks into one row in the phrase file's shape (each figure's own
+  the Learn card's row (`TROPE_LEARN_ROW`, § A's table, § H's for the Haftarah rows); then the mark's first
+  figure; a mark the High Holiday chart lacks falls back to the year-round chart (the Haftarah rows print
+  every mark and stand alone) — and the last verse of a PocketTorah aliyah (`staffIsAliyahEnd`, from
+  `aliyahLookup`'s `endC/endV`), or of a haftarah (`staffIsHaftarahEnd`: the `C:V` after the last ` - ` of
+  the reading's ref, so a two-part haftarah closes at its second part's end), takes the `[aliyah-end]`
+  closing whose marks end it. `tropeBuildReadingRow` stitches the picks into one row in the phrase file's shape (each figure's own
   syllables, which carry the beaming; a triplet or slur only when it lies inside one figure) plus `words`,
   one per cell; `tropeSplitSystems` wraps it between words to `#ttReading`'s width (with `opts.namesOf`, at the
   width each system is drawn at with its note names).
-- **The melody** is `readingTutorMelody() || 'torah'` (the four High Holiday readings draw the High Holiday
-  chart); the key is `shiftedKey(set.key, staffShift)`; Low voices draws the 8 under every clef.
+- **The melody** is `staffMelody()`: `readingTutorMelody()` (the four High Holiday readings draw the High
+  Holiday chart), else the Haftarah rows for a haftarah (`currentReadingCtx.isHaftarah` — the haftarah scope is
+  the only Nevi'im text the page shows: practice links and the Custom range picker accept the five Torah
+  books only), else the year-round chart; the key is `shiftedKey(set.key, staffShift)` — the Haftarah rows are
+  D minor written in F, so the drawer's readout names the relative minor (`staffKeyText`, through
+  `trope.key.name_minor`); Low voices draws the 8 under every clef. **The Haftarah rows stand alone:**
+  `staffSetName()` never falls back to the Torah chart for them (no Haftarah rows in the file → the words alone
+  and the `no_haftarah` chip), `fallbackCtx` is null, and the haftarah's last verse takes their `[aliyah-end]`
+  closing through `staffIsHaftarahEnd`, never `staffIsAliyahEnd`'s Torah aliyah ends. While the rows carry the
+  `unverified` tag (`docs/tropepatterns.md` → H: a rendering from memory, not a transcription of the chart)
+  the header shows the `haftarah_beta` chip; dropping the tag retires it with no page change.
 - **The markup contract.** `renderStaffView` mirrors `renderInterlinear`'s verse shell — `.tt-verse[data-vk]`,
   the bulk checkbox, `.tt-verse-num`, Read / Chant / **Tune** / Loop / Copy — then `.tt-staff-rows` holding
   one `.tt-staff-sys` per system (`data-svk` = its verse, `data-sys` = its index — **never `data-vk`**, which
@@ -657,7 +673,7 @@ Design: `docs/tropepatterns.md` → G.
   observer, bulk select and the copy path work unchanged; **never special-case the staff in a `.tt-word`
   consumer.** Every verse's staff is dropped for its interlinear Hebrew row — never a misaligned staff —
   when the data is not there yet (a header chip; the render re-runs on arrival) or failed (chip + Try
-  again), for a haftarah (its melody is not the chart's), for a double-cantillation verse
+  again), for a haftarah only while the loaded file has no Haftarah rows (chip), for a double-cantillation verse
   (`STAFF_DOUBLE_CANT`: Genesis 35:22, the two Decalogues), and when the marks' piece count disagrees with
   the page's.
 - **Widths** are measured (canvas `measureText`) in the computed font of two hidden probe spans outside

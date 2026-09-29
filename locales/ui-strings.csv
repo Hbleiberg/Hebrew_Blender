@@ -4364,18 +4364,22 @@ trope.key.down_aria,Lower the staffs a half step,הורדת החמשות בחצ�
 trope.key.label,Key,סולם,Settings → Sing along item label + the Learn key bar's label,
 trope.key.low_tag,Low voices: an octave lower,קולות נמוכים: אוקטבה למטה,Learn key bar tag shown while Settings → Voice is Low voices,
 trope.key.name,{note} major,{note} מז'ור,the key the staffs are drawn in (Learn key bar + Settings readout),do-not-translate {note} (a trope.key.note_* name)
+trope.key.name_minor,{note} minor,{note} מינור,the key the Torah Trainer's Trope staff readout names for the Haftarah rows (D minor written with F major's one flat; a moved staff names the minor it lands in),do-not-translate {note} (a trope.key.note_* name)
 trope.key.note_a,A,לָה,note name inside trope.key.name,Hebrew: pointed solfège as in the intro's לָה מז'ור
 trope.key.note_ab,A♭,לָה במול,note name inside trope.key.name,Hebrew: pointed solfège
 trope.key.note_b,B,סִי,note name inside trope.key.name,Hebrew: pointed solfège
 trope.key.note_bb,B♭,סִי במול,note name inside trope.key.name,Hebrew: pointed solfège
 trope.key.note_c,C,דוֹ,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.note_cs,C♯,דוֹ דיאז,note name inside trope.key.name_minor (the Torah Trainer's Haftarah readout),Hebrew: pointed solfège
 trope.key.note_d,D,רֵה,note name inside trope.key.name,Hebrew: pointed solfège
 trope.key.note_db,D♭,רֵה במול,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.note_ds,D♯,רֵה דיאז,note name inside trope.key.name_minor (the Torah Trainer's Haftarah readout),Hebrew: pointed solfège
 trope.key.note_e,E,מִי,note name inside trope.key.name,Hebrew: pointed solfège
 trope.key.note_eb,E♭,מִי במול,note name inside trope.key.name,Hebrew: pointed solfège
 trope.key.note_f,F,פָה,note name inside trope.key.name,Hebrew: pointed solfège
 trope.key.note_fs,F♯,פָה דיאז,note name inside trope.key.name,Hebrew: pointed solfège
 trope.key.note_g,G,סוֹל,note name inside trope.key.name,Hebrew: pointed solfège
+trope.key.note_gs,G♯,סוֹל דיאז,note name inside trope.key.name_minor (the Torah Trainer's Haftarah readout),Hebrew: pointed solfège
 trope.key.rel_down.one,1 half step lower,חצי טון אחד למטה,how far the staffs moved from the printed key (Learn key bar + Settings note),plural
 trope.key.rel_down.other,{count} half steps lower,{count} חצאי טון למטה,how far the staffs moved from the printed key (Learn key bar + Settings note),plural; do-not-translate {count}
 trope.key.rel_printed,as printed,כמו בדפוס,the staffs are in the printed key (Learn key bar + Settings note),
@@ -5906,7 +5910,7 @@ torah.staff.words_both,Hebrew + transliteration,עברית + תעתיק,staff pa
 torah.staff.words_note,Applies while the Translit switch is on.,חל כשמתג התעתיק דולק.,note under the staff panel's Words radios,
 torah.trans.place_staff_note,In the Trope staff layout the transliteration always sits under each word; the Trope staff panel's Words choice says whether the Hebrew shows with it.,בפריסת חמשת הטעמים התעתיק יושב תמיד מתחת לכל מילה; בחירת המילים בלוח חמשת הטעמים קובעת אם העברית מוצגת איתו.,note under the transliteration placement radios; shown only in the Trope staff layout,
 torah.staff.key_label,Key,סולם,staff panel key slider label,
-torah.staff.key_tip,"Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody).","מצייר את החמשה בסולם גבוה או נמוך יותר ומזיז איתה את המנגינה, בחצאי טונים, כדי שתתאים לקול שלכם. הטבלה המודפסת היא בלָה מז'ור (דוֹ מז'ור למנגינת הימים הנוראים).",tooltip,
+torah.staff.key_tip,"Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody); the Haftarah tune is written in D minor, with F major's one flat.","מצייר את החמשה בסולם גבוה או נמוך יותר ומזיז איתה את המנגינה, בחצאי טונים, כדי שתתאים לקול שלכם. הטבלה המודפסת היא בלָה מז'ור (דוֹ מז'ור למנגינת הימים הנוראים); מנגינת ההפטרה כתובה ברֶה מינור, עם הבֶּמול היחיד של פָה מז'ור.",tooltip,
 torah.staff.voice_label,Voice,קול,staff panel voice radio group label,
 torah.staff.voice_high,High voices,קולות גבוהים,"staff panel voice choice (the written octave, as children and women sing)",
 torah.staff.voice_low,Low voices,קולות נמוכים,"staff panel voice choice (an 8 under the clef; the tune sounds an octave down, as men sing)",
@@ -5927,8 +5931,10 @@ torah.staff.loading_tip,The melody file is being fetched; the staff draws as soo
 torah.staff.failed_chip,Staff unavailable,החמשה לא זמינה,reading header chip when the melody file could not be loaded,
 torah.staff.failed_tip,"The melody file could not be loaded, so the words show without their notes. Check the connection and try again.","לא ניתן היה לטעון את קובץ המנגינה, ולכן המילים מוצגות בלי התווים. בדקו את החיבור ונסו שוב.",tooltip,
 torah.staff.retry,Try again,ניסיון נוסף,reading header button beside the failed chip,
-torah.staff.no_haftarah_chip,No staff for a haftarah,אין חמשה להפטרה,reading header chip on a haftarah reading,
-torah.staff.no_haftarah_tip,"The staff draws the Torah's cantillation melody. A haftarah is chanted to its own melody, which the chart does not print.","החמשה מציירת את מנגינת טעמי התורה. ההפטרה נקראת במנגינה משלה, שהטבלה לא מדפיסה.",tooltip,
+torah.staff.no_haftarah_chip,Haftarah tune unavailable,מנגינת ההפטרה לא זמינה,reading header chip on a haftarah reading when the loaded melody file has no haftarah tune,
+torah.staff.no_haftarah_tip,"The melody file that loaded has no Haftarah tune, so the words show without their notes. Reload the page to fetch the current file.","קובץ המנגינה שנטען אינו כולל את מנגינת ההפטרה, ולכן המילים מוצגות בלי התווים. טענו את הדף מחדש כדי לקבל את הקובץ העדכני.",tooltip,
+torah.staff.haftarah_beta_chip,Haftarah tune: unverified,מנגינת ההפטרה: לא מאומתת,reading header chip on a haftarah while the Haftarah rows carry the [unverified] tag (docs/tropepatterns.md → H),
+torah.staff.haftarah_beta_tip,"The staff follows the standard Ashkenazi haftarah melody as it is commonly taught, written from memory rather than from a printed chart, so a figure may differ from the one you know. Chant plays PocketTorah's recording, which is the authority.","החמשה עוקבת אחרי מנגינת ההפטרה האשכנזית המקובלת כפי שנהוג ללמד אותה, שנכתבה מהזיכרון ולא מטבלה מודפסת, ולכן מנגינה של טעם עשויה להיות שונה מזו שאתם מכירים. השירה מנגנת את ההקלטה של PocketTorah, והיא הקובעת.",tooltip,
 torah.staff.double_chip,Two cantillations,שתי מערכות טעמים,"verse chip: the verse is printed with two sets of marks at once (the Decalogues, Genesis 35:22), so it shows words only",
 torah.staff.double_tip,"This verse is printed with two sets of cantillation marks at once, so the staff leaves it to the words.","הפסוק הזה מודפס עם שתי מערכות טעמים בו־זמנית, ולכן החמשה משאירה אותו למילים בלבד.",tooltip,
 torah.staff.follow_note,"In the Trope staff layout the highlight follows each word under its notes; the transliteration, when shown, moves with it.","בפריסת חמשת הטעמים ההדגשה עוקבת אחרי כל מילה מתחת לתווים שלה; התעתיק, כשהוא מוצג, זז יחד איתה.",note under the karaoke Follow radios while the staff layout is on,

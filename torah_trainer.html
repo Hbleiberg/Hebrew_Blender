@@ -2516,7 +2516,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <div id="staffWordsNote" style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.words_note">Applies while the Translit switch is on.</div>
         <div class="slider-row">
           <label for="optStaffShift"><span id="optStaffShiftLbl" data-i18n="torah.staff.key_label">Key</span>
-            <span class="tip-wrap" data-i18n-tip="torah.staff.key_tip" data-tip="Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody)."><i class="tip-icon">?</i></span>
+            <span class="tip-wrap" data-i18n-tip="torah.staff.key_tip" data-tip="Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody); the Haftarah tune is written in D minor, with F major's one flat."><i class="tip-icon">?</i></span>
           </label>
           <input type="range" id="optStaffShift" min="-6" max="6" step="1" value="0" aria-labelledby="optStaffShiftLbl">
           <span class="sval" id="optStaffShiftVal" dir="ltr">0</span>
@@ -4366,6 +4366,7 @@ function renderText() {
   } else {
     html += renderSideBySide(currentVerses, withTranslitRow, includeTrans, wordIdxRef, canChant, canLoop, aStartByLabel, underWord);
   }
+  try { syncStaffControls(); } catch (e) {}   // the key readout names the reading's melody (a haftarah reads D minor)
   root.innerHTML = html;
   // The tooltip IIFE only auto-binds at DOMContentLoaded — the freshly-built
   // chip needs an explicit bind each render for tap/keyboard accessibility.
@@ -4601,11 +4602,11 @@ function effectiveVersion() { return _versionFallback || settings.translationVer
    note and its word; Chant is the recording, and paintKaraokeIdx lights the whole
    figure of the word being sung. docs/reference/torah-and-trope.md → Trope staff.
    ══════════════════════════════════════════════════════ */
-let STAFF_SETS = null;          // {torah, highholiday}: the phrase sets (_phraseSetsFrom), once loaded
+let STAFF_SETS = null;          // {torah, highholiday, haftarah}: the phrase sets (_phraseSetsFrom), once loaded
 let STAFF_CTX = {};             // per melody: tropeContextsOf(set)
 let _staffLoad = null;          // the in-flight fetch, so two renders start one load
 let _staffFailed = false;       // the last load failed (the header chip offers Try again)
-const STAFF_PHRASES_URL = 'data/trope/trope_phrases.json?v=1';   // the ?v= the Trope Tutor fetches — bump both together (ops.md)
+const STAFF_PHRASES_URL = 'data/trope/trope_phrases.json?v=2';   // the ?v= the Trope Tutor fetches — bump both together (ops.md)
 // Verses printed with two sets of cantillation marks at once (the census leaves them out too): words only.
 const STAFF_DOUBLE_CANT = {
   Genesis: new Set(['35:22']),
@@ -4633,7 +4634,7 @@ function ensureStaffData() {
       if (!sets) throw new Error('the phrase file did not validate');
       STAFF_SETS = sets;
       STAFF_CTX = {};
-      for (const m of ['torah', 'highholiday']) if (sets[m]) STAFF_CTX[m] = tropeContextsOf(sets[m]);
+      for (const m of Object.keys(sets)) if (sets[m]) STAFF_CTX[m] = tropeContextsOf(sets[m]);
       return true;
     })
     .catch(e => { console.warn('Trope staff: the phrase file is unavailable', e); _staffFailed = true; return false; })
@@ -4646,14 +4647,27 @@ function ensureStaffData() {
   return _staffLoad;
 }
 function retryStaffData() { if (!STAFF_SETS) ensureStaffData(); }
-function staffMelody() { return readingTutorMelody() || 'torah'; }
-function staffSetName() { const m = staffMelody(); return STAFF_SETS && STAFF_SETS[m] ? m : 'torah'; }   // a missing melody half draws the year-round one
-function staffSet() { return STAFF_SETS ? STAFF_SETS[staffSetName()] : null; }
+// The melody a reading is drawn in: the four High Holiday readings take the High Holiday chart, a haftarah (the
+// haftarah scope — the only Nevi'im text the page shows: practice links and the Custom range picker accept the
+// five Torah books only) the Haftarah rows, everything else the year-round chart.
+function staffMelody() { return readingTutorMelody() || (currentReadingCtx && currentReadingCtx.isHaftarah ? 'haftarah' : 'torah'); }
+// A missing High Holiday half draws the year-round one; a haftarah is never drawn in the Torah tune — without the
+// Haftarah rows it shows its words, and the header chip says why (staffHeaderChipsHTML).
+function staffSetName() { const m = staffMelody(); return STAFF_SETS && STAFF_SETS[m] ? m : m === 'haftarah' ? null : 'torah'; }
+function staffSet() { const n = staffSetName(); return STAFF_SETS && n ? STAFF_SETS[n] : null; }
 function staffKeyName(key) {   // the note the key is named after, as the tutor's trope.key.note_* spells it; '' outside the table
   const n = { C: 'c', Db: 'db', D: 'd', Eb: 'eb', E: 'e', F: 'f', 'F#': 'fs', G: 'g', Ab: 'ab', A: 'a', Bb: 'bb', B: 'b' }[key];
   return n ? I18n.t('trope.key.note_' + n) : '';
 }
 function staffDrawKey() { const s = staffSet(); return shiftedKey(s ? s.key : 'A', staffShiftVal()); }
+// The drawer's readout for the drawn key: "{note} major" as the tutor names it, or the relative minor for the
+// Haftarah rows, which are D minor written with F major's one flat (a moved staff names the minor it lands in).
+const STAFF_MINOR_OF = { C: 'a', Db: 'bb', D: 'b', Eb: 'c', E: 'cs', F: 'd', 'F#': 'ds', G: 'e', Ab: 'f', A: 'fs', Bb: 'g', B: 'gs' };
+function staffKeyText(key) {
+  if (staffSetName() === 'haftarah') { const n = STAFF_MINOR_OF[key]; return n ? I18n.t('trope.key.name_minor', { note: I18n.t('trope.key.note_' + n) }) : ''; }
+  const name = staffKeyName(key);
+  return name ? I18n.t('trope.key.name', { note: name }) : '';
+}
 // The name under one note (p in semitones from B4, already moved into the staff's key), read from where the staff
 // writes it — the tutor's noteNameAt, kept page-local on purpose: the engine reads no I18n (do re mi is the
 // dictionary's), and the tutor's own copy shares this global scope, so this one carries its own names. 'letters'
@@ -4679,10 +4693,23 @@ function staffIsAliyahEnd(c, v) {
   if (!al || !al.aliyot) return false;
   return Object.values(al.aliyot).some(r => r && r.endC === c && r.endV === v);
 }
-function staffBook() {
+// The haftarah's last verse takes the Haftarah rows' closing: the C:V after the last " - " of the reading's own
+// ref (the aliyah file's "Book C:V - C:V", or "…; C:V - C:V" for a two-part haftarah, which closes at its second
+// part's end). Compared by verse label, so a handout selection that leaves the last verse out gets no closing.
+let _staffHafEnd = { ref: null, end: null };
+function staffIsHaftarahEnd(c, v) {
+  const ctx = currentReadingCtx;
+  if (!ctx || !ctx.isHaftarah) return false;
+  if (_staffHafEnd.ref !== ctx.ref) {
+    const m = String(ctx.ref || '').match(/-\s*(\d+):(\d+)\s*$/);
+    _staffHafEnd = { ref: ctx.ref, end: m ? { c: +m[1], v: +m[2] } : null };
+  }
+  return !!_staffHafEnd.end && _staffHafEnd.end.c === +c && _staffHafEnd.end.v === +v;
+}
+function staffBook() {   // the aliyah file's numbered books carry an underscore ("Kings_1 18:46 - 19:21")
   const p = currentReadingCtx && currentReadingCtx.parshahEntry;
   const ref = (currentReadingCtx && currentReadingCtx.ref) || (p && p.ref) || '';
-  const m = String(ref).match(/^([A-Za-z ]+?)\s+\d/);
+  const m = String(ref).match(/^([A-Za-z_ ]+?)\s+\d/);
   return m ? m[1].trim() : (p && p.book) || '';
 }
 /* ── Word widths: the underlay's text measured in its own font (canvas measureText on the computed font of
@@ -4746,14 +4773,19 @@ function staffCellHTML(word, cells, sink) {
 function staffNoticeChip(k, tipK) {
   return ` <span class="tt-notice-chip" data-i18n="${k}" data-i18n-aria-label="${k}" aria-label="${esc(I18n.t(k))}" data-i18n-tip="${tipK}" data-tip="${esc(I18n.t(tipK))}">${esc(I18n.t(k))}</span>`;
 }
-// The reading header's chips while the staff cannot draw: the file is loading or failed (Try again), or the
-// reading is a haftarah (its melody is not the Torah's). The words still show on every path.
+// The reading header's chips: while the staff cannot draw — the file is loading or failed (Try again), or a
+// haftarah's file has no Haftarah rows — and, on a haftarah, while the Haftarah rows are the unverified rendering
+// of docs/tropepatterns.md → H (their [unverified] tag; dropping it retires the chip). The words show on every path.
 function staffHeaderChipsHTML(layout) {
   if (layout !== 'staff') return '';
   if (!STAFF_SETS && _staffFailed) return staffNoticeChip('torah.staff.failed_chip', 'torah.staff.failed_tip')
     + ` <button class="tt-readall hi-btn" type="button" onclick="retryStaffData()">${ICON_RETRY}${esc(I18n.t('torah.staff.retry'))}</button>`;
   if (!STAFF_SETS) return staffNoticeChip('torah.staff.loading_chip', 'torah.staff.loading_tip');
-  if (currentReadingCtx && currentReadingCtx.isHaftarah) return staffNoticeChip('torah.staff.no_haftarah_chip', 'torah.staff.no_haftarah_tip');
+  if (staffMelody() === 'haftarah') {
+    const set = STAFF_SETS.haftarah;
+    if (!set) return staffNoticeChip('torah.staff.no_haftarah_chip', 'torah.staff.no_haftarah_tip');
+    if (set.rows.some(r => r.tags.includes('unverified'))) return staffNoticeChip('torah.staff.haftarah_beta_chip', 'torah.staff.haftarah_beta_tip');
+  }
   return '';
 }
 function staffTuneAllButtonHTML() {   // renderText stops any tune first, so the button is always born unpressed
@@ -4765,12 +4797,14 @@ function staffTuneAllButtonHTML() {   // renderText stops any tune first, so the
 // updateKaraokeWordRefs, click-to-seek's hebWordIndexInVerse, the verse observer, bulk select — and a system
 // carrying it would be read as a verse (the map then lit a later system's words with the verse's first ones). Systems are built synchronously as strings — the SVG
 // itself waits for staffEnsureSvg — so data-twi numbering, updateKaraokeWordRefs and the rover see the
-// finished DOM at once. A verse the staff cannot draw (no data yet, a haftarah, a double-cantillation
-// verse, a word count that disagrees with the marks) shows its words as the interlinear layout would.
+// finished DOM at once. A verse the staff cannot draw (no data yet, a haftarah whose file has no Haftarah rows,
+// a double-cantillation verse, a word count that disagrees with the marks) shows its words as the interlinear
+// layout would.
 function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, underWord, withTrans) {
   aStartByLabel = aStartByLabel || {};
   _staffSystems = {};
-  const set = staffSet(), setName = staffSetName(), ctx = STAFF_CTX[setName], fbCtx = STAFF_CTX.torah;
+  const set = staffSet(), setName = staffSetName(), ctx = setName ? STAFF_CTX[setName] : null;
+  const fbCtx = setName === 'haftarah' ? null : STAFF_CTX.torah;   // the Haftarah rows stand alone: never a Torah figure inside a D-minor staff
   if (!set && !_staffFailed) ensureStaffData();
   const shift = staffShiftVal(), key = staffDrawKey(), low = staffVoiceKey() === 'low', wordsMode = staffWordsKey(), nmode = staffNoteNamesMode();
   const root = document.getElementById('ttReading');
@@ -4781,7 +4815,6 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
   const maxW = Math.max(240, wrapW - 8) / PHRASE_SCALE;
   const wrapPx = Math.round(maxW * PHRASE_SCALE);   // on paper every system's box, so a narrower sheet scales the whole page by one factor
   const hePx = staffFontPx('he'), tlPx = staffFontPx('tl');
-  const haftarah = !!(currentReadingCtx && currentReadingCtx.isHaftarah);
   const dbl = STAFF_DOUBLE_CANT[staffBook()];
   // Note names, index-aligned with a row's notes (a rest has none): namesOf lets tropeSplitSystems wrap each system at
   // the width it is drawn at, and the same names go to its layout below. The SVG stays aria-hidden (the words are the
@@ -4811,11 +4844,12 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
     const sink = [];
     const hebHtml = tokenizeHebrew(v.hebrew, wordIdxRef, undefined, underWord, sink);
     let systems = null, units = null;
-    if (set && !haftarah && !isDouble) {
+    if (set && !isDouble) {
       units = tropeUnitsOfVerse(v.hebrew);
       if (units.pieces.length === sink.length && units.units.length) {   // the marks and the page's words agree piece for piece
         units.units.forEach(u => { u.fam = sink[u.pi].fam || ''; u.twi = sink[u.pi].twi; });
-        const picks = tropeChooseFigures(units.units, ctx, { melody: setName, aliyahEnd: staffIsAliyahEnd(v.chapter, v.verse), fallbackCtx: fbCtx, fallbackMelody: 'torah' });
+        const atEnd = setName === 'haftarah' ? staffIsHaftarahEnd(v.chapter, v.verse) : staffIsAliyahEnd(v.chapter, v.verse);
+        const picks = tropeChooseFigures(units.units, ctx, { melody: setName, aliyahEnd: atEnd, fallbackCtx: fbCtx, fallbackMelody: 'torah' });
         const row = tropeBuildReadingRow(units.units, picks, units.cells, STAFF_SETS, { n: numLabel });
         if (row.notes.length && row.words.length) {
           for (const w of row.words) w.w = staffWordWidthPx(w, units.cells, sink, underWord, wordsMode) / PHRASE_SCALE;
@@ -5145,8 +5179,7 @@ function syncStaffControls() {
   if (bs) bs.value = rate;
   if (bv) bv.textContent = rate.toFixed(2) + '×';
   if (!window.I18n || !note) return;
-  const name = staffKeyName(staffDrawKey());
-  const keyText = name ? I18n.t('trope.key.name', { note: name }) : '';
+  const keyText = staffKeyText(staffDrawKey());
   const rel = !sh ? I18n.t('trope.key.rel_printed') : I18n.t('trope.key.rel_' + (sh > 0 ? 'up' : 'down') + (Math.abs(sh) === 1 ? '.one' : '.other'), { count: Math.abs(sh) });
   note.textContent = keyText ? I18n.t('trope.key.valuetext', { key: keyText, rel }) : rel;
   if (sl) sl.setAttribute('aria-valuetext', note.textContent);
