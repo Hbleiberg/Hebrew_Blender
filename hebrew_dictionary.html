@@ -883,7 +883,9 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
     grid-column: 1 / -1; }
 
   /* Export Selected Words */
-  .export-disabled { opacity: 0.5; }
+  /* The dim is on the box's children, not the box, so the error a press of a dimmed Export explains itself with
+     keeps its full colour (a child cannot undo its parent's opacity: at 0.5 it read 2.35:1 / 2.79:1). */
+  .export-disabled > :not(#exportErr) { opacity: 0.5; }
   .export-disabled #exportCount { color: var(--muted); }
 
   /* Shoresh (Root) Explorer mode */
@@ -1247,7 +1249,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
                 <button class="pos-all-btn hi-btn" style="flex:1;" onclick="exportQuizlet()"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="dictionary.export.quizlet_button">Export for Quizlet</span></button>
               </div>
               <div id="exportCount" class="bidi-isolate" style="font-size:0.7rem;color:var(--muted);margin-top:5px;">0 words selected for export.</div>
-              <div id="exportErr" style="font-size:0.72rem;color:var(--danger-text);margin-top:3px;min-height:1em;"></div>
+              <div id="exportErr" role="status" aria-live="polite" style="font-size:0.72rem;color:var(--danger-text);margin-top:3px;min-height:1em;"></div>
               <div style="font-size:0.65rem;color:var(--muted);margin-top:5px;line-height:1.4;" data-i18n="dictionary.export.instructions">Anki: import via File → Import. Quizlet: use Import from Word/Excel on the study set creation page.</div>
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
