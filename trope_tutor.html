@@ -102,7 +102,7 @@
     { "@type": "Question", "name": "Where do the chanted examples come from?", "acceptedAnswer": { "@type": "Answer", "text": "Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (by Russel Neiss & Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria." } },
     { "@type": "Question", "name": "Is the Trope Tutor free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account required, no ads." } },
     { "@type": "Question", "name": "Can I print a chart of all the trope marks?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. In Learn mode, the Print chart button prints all 26 marks as one reference sheet — each mark's symbol with its Ashkenazi and Sephardi names, grouped by clause family." } },
-    { "@type": "Question", "name": "What does the Phrases tab show?", "acceptedAnswer": { "@type": "Answer", "text": "Every line of the printed cantillation chart, marks as they are sung together, on a full music staff you can play, in the year-round or High Holiday melody and in any key. Each phrase lists real verses where the Torah sings it, with PocketTorah's recording for the year-round melody, and the whole chart prints on one sheet." } }
+    { "@type": "Question", "name": "What does the Phrases tab show?", "acceptedAnswer": { "@type": "Answer", "text": "Every line of the printed cantillation chart, marks as they are sung together, on a full music staff you can play, in the year-round, High Holiday or Haftarah melody and in any key. Each phrase lists real verses where the Torah sings it, with PocketTorah's recording for the year-round melody, and the whole chart prints on one sheet." } }
   ]
 }
 </script>
@@ -341,6 +341,9 @@ body.dark .tu-card { background:#131a29; }
 }
 .tu-melody-note[hidden] { display:none; }
 body.dark .tu-melody-note { background:#131a29; }
+/* The suite's Beta badge (flash_cards.html; the Torah Trainer's Trope staff radio): on the Haftarah melody choice. */
+.beta-tag { font-size:0.7rem; background:var(--gold); color:var(--navy); padding:1px 5px; border-radius:3px; font-weight:700; letter-spacing:0.05em; vertical-align:middle; }
+.radio-group label .beta-tag { font-size:0.58rem; padding:0 4px; }
 /* Learn tab: the key bar (Settings → Key's twin). The name keeps a floor width so the arrows beside it
    do not jump as "C major" becomes "D♭ major"; the reset sits at the row's end and wraps below on a phone. */
 .tu-key-bar {
@@ -1018,14 +1021,16 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <!-- ════════ LEARN ════════ -->
   <section class="tu-view" id="learnView" role="tabpanel" aria-labelledby="tabLearn">
     <p class="tu-intro" data-i18n-html="trope.learn.intro">Trope (te'amim) are the cantillation marks that tell you how to chant the Torah.
-      Each card shows the mark's melody on a small music staff, the standard Ashkenazi tune as printed in cantillation charts: the year-round melody in A major, or the High Holiday melody if you choose it in Settings. The recordings are one reader's year-round rendition, so a note may differ here and there.
+      Each card shows the mark's melody on a small music staff, the standard Ashkenazi tune as printed in cantillation charts: the year-round melody in A major, or the High Holiday or Haftarah melody if you choose it in Settings (the Haftarah staffs are a rendering from memory, still being checked). The recordings are one reader's year-round rendition, so a note may differ here and there.
       Work through them one clause family at a time, then switch to <strong>Drill</strong> to test yourself.
       When you're ready to see them in context, open the companion reader:
       <a href="torah_trainer.html">Torah Trainer →</a></p>
-    <!-- Shown only while Settings → Melody is the High Holiday one (renderLearn), so nobody takes those
-         staffs for the year-round tune; it prints with the chart, its button does not. -->
+    <!-- Shown while Settings → Melody is the High Holiday or the Haftarah one (renderLearn; one span per melody,
+         each with its own static data-i18n), so nobody takes those staffs for the year-round tune; it prints with
+         the chart, its button does not. -->
     <div class="tu-melody-note" id="tuMelodyNote" hidden>
-      <span data-i18n="trope.learn.melody_hh_note">These staffs show the High Holiday melody, for the Torah reading on Rosh Hashanah and Yom Kippur.</span>
+      <span id="tuMelodyNoteHH" data-i18n="trope.learn.melody_hh_note">These staffs show the High Holiday melody, for the Torah reading on Rosh Hashanah and Yom Kippur.</span>
+      <span id="tuMelodyNoteHaf" hidden data-i18n="trope.learn.melody_haf_note">These staffs show the Haftarah melody, for the reading from the Prophets — a rendering written from memory, not yet checked against a printed chart (beta).</span>
       <button class="btn btn-xs btn-secondary tu-melody-change" type="button" onclick="openMelodySetting()" aria-label="Change the melody in Settings" data-i18n="trope.learn.melody_change" data-i18n-aria-label="trope.learn.melody_change_aria">Change</button>
     </div>
     <!-- The key bar: moves every staff and its tune a half step at a time (settings.tuneShift — the same
@@ -1059,7 +1064,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <section class="tu-view" id="phrasesView" role="tabpanel" aria-labelledby="tabPhrases" hidden>
     <p class="tu-intro" data-i18n-html="trope.phrases.intro">Each card is one line of the printed cantillation chart: marks as they are sung together, with the whole melody on a staff. Play a card to hear it as the notes light up, or choose a mark to open its Learn card.</p>
     <div class="tu-melody-note" id="tuPhrMelodyNote" hidden>
-      <span data-i18n="trope.phrases.melody_hh_note">These phrases show the High Holiday melody, for the Torah reading on Rosh Hashanah and Yom Kippur. There are no High Holiday recordings yet, so the examples show the words only.</span>
+      <span id="tuPhrMelodyNoteHH" data-i18n="trope.phrases.melody_hh_note">These phrases show the High Holiday melody, for the Torah reading on Rosh Hashanah and Yom Kippur. There are no High Holiday recordings yet, so the examples show the words only.</span>
+      <span id="tuPhrMelodyNoteHaf" hidden data-i18n="trope.phrases.melody_haf_note">These phrases show the Haftarah melody — a rendering written from memory, not yet checked against a printed chart (beta). There are no examples for it yet.</span>
       <button class="btn btn-xs btn-secondary tu-melody-change" type="button" onclick="openMelodySetting()" aria-label="Change the melody in Settings" data-i18n="trope.learn.melody_change" data-i18n-aria-label="trope.learn.melody_change_aria">Change</button>
     </div>
     <!-- The key bar moves here from the Learn tab while this tab is open (setMode). -->
@@ -1165,12 +1171,14 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           </div>
           <div class="tu-set-item">
             <div class="tu-set-label"><span data-i18n="trope.melody.label">Melody</span>
-              <span class="tip-wrap" data-i18n-tip="trope.melody.tip" data-tip="The year-round melody is chanted on Shabbat, weekdays and festivals; the High Holiday melody on Rosh Hashanah and Yom Kippur. Four rare marks never occur in the High Holiday readings, so they have no High Holiday staff."><i class="tip-icon">?</i></span></div>
+              <span class="tip-wrap" data-i18n-tip="trope.melody.tip" data-tip="The year-round melody is chanted on Shabbat, weekdays and festivals; the High Holiday melody on Rosh Hashanah and Yom Kippur; the Haftarah melody for the reading from the Prophets. Four rare marks never occur in the High Holiday readings, so they have no High Holiday staff. The Haftarah staffs are a rendering from memory, not yet checked against a printed chart (beta)."><i class="tip-icon">?</i></span></div>
             <span class="radio-group" role="radiogroup" aria-label="Melody for the staffs" data-i18n-aria-label="trope.melody.aria">
               <input type="radio" id="melTorah" name="tuMelody" value="torah" onchange="setMelody('torah')">
               <label for="melTorah" data-i18n="trope.melody.torah">Year-round</label>
               <input type="radio" id="melHH" name="tuMelody" value="highholiday" onchange="setMelody('highholiday')">
               <label for="melHH" data-i18n="trope.melody.highholiday">High Holidays</label>
+              <input type="radio" id="melHaf" name="tuMelody" value="haftarah" onchange="setMelody('haftarah')">
+              <label for="melHaf"><span data-i18n="trope.melody.haftarah">Haftarah</span> <span class="beta-tag" data-i18n="shared.badge.beta">BETA</span></label>
             </span>
             <p class="settings-note" data-i18n="trope.melody.note">The staffs and their play buttons follow this choice. The recordings and the drill use the year-round melody either way.</p>
           </div>
@@ -1317,7 +1325,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q5">Where do the chanted examples come from?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a5">Every example is a real word from the Torah reading, clipped from PocketTorah's recordings (Russel Neiss &amp; Rabbi Charlie Schwartz, CC BY-SA 4.0) using their word-level timings. The Hebrew text comes from Sefaria.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q6">Is the Trope Tutor free?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a6">Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0. No account required, no ads.</p></details>
         <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q7">Can I print a chart of all the trope marks?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a7">Yes. In Learn mode, the Print chart button prints all 26 marks as one reference sheet — each mark's symbol with its Ashkenazi and Sephardi names, grouped by clause family.</p></details>
-        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q8">What does the Phrases tab show?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a8">Every line of the printed cantillation chart, marks as they are sung together, on a full music staff you can play, in the year-round or High Holiday melody and in any key. Each phrase lists real verses where the Torah sings it, with PocketTorah's recording for the year-round melody, and the whole chart prints on one sheet.</p></details>
+        <details style="margin:4px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;color:var(--text);padding:5px 0;" data-i18n="trope.footer.faq_q8">What does the Phrases tab show?</summary><p style="margin:4px 0 6px;font-size:0.78rem;line-height:1.5;" data-i18n="trope.footer.faq_a8">Every line of the printed cantillation chart, marks as they are sung together, on a full music staff you can play, in the year-round, High Holiday or Haftarah melody and in any key. Each phrase lists real verses where the Torah sings it, with PocketTorah's recording for the year-round melody, and the whole chart prints on one sheet.</p></details>
       </div>
     </details>
   </div>
@@ -1458,7 +1466,7 @@ let progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
 let INDEX = null;        // data/trope/trope_index.json (validated)
 let MANIFEST = null;     // data/pockettorah/manifest.json (audioBase lookup)
 // The Learn-card staffs, one validated file per melody; a set left null (missing or malformed file) draws no staffs.
-const MOTIF_SETS = { torah: null, highholiday: null };   // data/trope/trope_motifs.json · trope_motifs_hh.json
+const MOTIF_SETS = { torah: null, highholiday: null, haftarah: null };   // data/trope/trope_motifs.json · trope_motifs_hh.json · trope_motifs_haftarah.json (derived by the phrases builder)
 let currentFamily = 'sofpasuk';
 
 /* ══════════════════════════════════════════════════════
@@ -1677,7 +1685,7 @@ function setStatusKey(key, en, isError) {
 async function loadData() {
   setStatusKey('trope.status.loading_index', 'Loading the trope index…');
   try {
-    const [idxRes, manRes, motifRes, motifHhRes, phrRes, phrExRes] = await Promise.all([
+    const [idxRes, manRes, motifRes, motifHhRes, motifHafRes, phrRes, phrExRes] = await Promise.all([
       // ?v= is the DATA_CACHE refresh mechanism (sw.js serves /data/ cache-first,
       // matched by exact URL) — bump it whenever the committed index is rebuilt.
       fetch('data/trope/trope_index.json?v=2'),
@@ -1685,6 +1693,7 @@ async function loadData() {
       // ?v= bump rule applies here too (on every trope_motifs.json / trope_motifs_hh.json change).
       fetch('data/trope/trope_motifs.json?v=6').catch(() => null),
       fetch('data/trope/trope_motifs_hh.json?v=4').catch(() => null),
+      fetch('data/trope/trope_motifs_haftarah.json?v=1').catch(() => null),
       fetch('data/trope/trope_phrases.json?v=2').catch(() => null),   // the Phrases tab; ?v= bumps with the file
       fetch('data/trope/trope_phrase_examples.json?v=1').catch(() => null),
     ]);
@@ -1694,7 +1703,7 @@ async function loadData() {
     if (!idx || idx.v !== 1 || idx.system !== 'torah' || !idx.tropes) throw new Error('bad index shape');
     INDEX = idx;
     MANIFEST = man;
-    for (const [res, system] of [[motifRes, 'torah'], [motifHhRes, 'highholiday']]) {
+    for (const [res, system] of [[motifRes, 'torah'], [motifHhRes, 'highholiday'], [motifHafRes, 'haftarah']]) {
       try {   // motifs are cosmetic — a bad/missing file must never take the index (or the other melody) down
         if (!res || !res.ok) continue;
         // ivritSafeParse rather than res.json(): motif entries are hand-edited
@@ -1740,14 +1749,14 @@ function examplesFor(key) {
 }
 // Settings → Melody. An unknown stored value (a newer page's melody) shows the year-round staffs but stays
 // in the stored blob, so a round trip through this page never rewrites another device's choice.
-// ?melody=highholiday|torah (the Torah Trainer's Rosh Hashanah and Yom Kippur readings link here with
-// ?melody=highholiday) shows that melody for this visit only: never saved or synced, silent on any other
-// value. Choosing a melody in Settings, or resetting them, replaces it and drops the param.
+// ?melody=highholiday|haftarah|torah (the Torah Trainer's Rosh Hashanah and Yom Kippur readings link here with
+// ?melody=highholiday, its haftarot with ?melody=haftarah) shows that melody for this visit only: never saved or
+// synced, silent on any other value. Choosing a melody in Settings, or resetting them, replaces it and drops the param.
 let _melodyOverride = null;
 function readMelodyParam() {
   try {
     const v = new URLSearchParams(location.search).get('melody');
-    if (v === 'highholiday' || v === 'torah') _melodyOverride = v;
+    if (v === 'highholiday' || v === 'haftarah' || v === 'torah') _melodyOverride = v;
   } catch (e) {}
 }
 function dropMelodyParam() {
@@ -1759,7 +1768,7 @@ function dropMelodyParam() {
     history.replaceState(history.state, '', u.pathname + u.search + u.hash);   // other params and the hash stay
   } catch (e) {}
 }
-function melodyKey() { const m = _melodyOverride || settings.melody; return m === 'highholiday' ? 'highholiday' : 'torah'; }
+function melodyKey() { const m = _melodyOverride || settings.melody; return m === 'highholiday' || m === 'haftarah' ? m : 'torah'; }
 function activeMotifs() { return MOTIF_SETS[melodyKey()]; }
 function motifFor(key, set = activeMotifs()) {
   const m = set && set.tropes && set.tropes[key];
@@ -2081,7 +2090,7 @@ function renderMotifStaff(t, motif) {
   const svg = _svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'tu-motif', role: 'img' });
   if (W !== 180) svg.style.inlineSize = Math.round(W * 165 / 180) + 'px';
   if (H !== 56) svg.style.blockSize = Math.ceil(H * 165 / 180) + 'px';
-  const label = I18n.t(melodyKey() === 'highholiday' ? 'trope.learn.motif_aria_hh' : 'trope.learn.motif_aria', { name: tropeName(t) });
+  const label = I18n.t(melodyKey() === 'highholiday' ? 'trope.learn.motif_aria_hh' : melodyKey() === 'haftarah' ? 'trope.learn.motif_aria_haf' : 'trope.learn.motif_aria', { name: tropeName(t) });
   svg.setAttribute('aria-label', names ? noteNamesAria(label, names) : label);
   staffLines(svg, W, MID);
   staffClef(svg, MID, tuneVoiceKey() === 'low');
@@ -2283,6 +2292,20 @@ const PHRASE_GROUPS = {
     { key: 'segol', rows: ['26', '27', '28', '29'] },
     { key: 'closing', rows: ['30', '31', '32', '33'] },
   ],
+  haftarah: [   // docs/tropepatterns.md → H, in the Torah chart's order
+    { key: 'etnachta', rows: ['1', '2', '3', '4'] },
+    { key: 'sofpasuk', rows: ['5', '6', '7', '8'] },
+    { key: 'katon', rows: ['9', '10', '11', '12'] },
+    { key: 'gadol', rows: ['13', '14', '15'] },
+    { key: 'revia', rows: ['16', '17', '18'] },
+    { key: 'tevir', rows: ['19', '20'] },
+    { key: 'geresh', rows: ['21', '22'] },
+    { key: 'gershayim', rows: ['23'] },
+    { key: 'telisha', rows: ['24', '25', '26', '27'] },
+    { key: 'segol', rows: ['28', '29'] },
+    { key: 'rare', rows: ['30', '31', '32'] },
+    { key: 'closing', rows: ['33', '34', '35', '36'] },
+  ],
 };
 const PHRASE_GROUP_FAMILY = { etnachta: 'etnachta', sofpasuk: 'sofpasuk', katon: 'katon', geresh: 'geresh', revia: 'revia',
   gershayim: 'geresh', tevir: 'revia', telisha: 'geresh', gadol: 'katon', segol: 'segol', rare: 'rare', closing: 'sofpasuk', other: 'rare' };
@@ -2326,7 +2349,9 @@ function phraseMarksText(row) {   // "Mercha, Tipcha, Munach, Etnachta", in the 
 }
 function renderPhrases() {
   const m = melodyKey(), set = phraseSet();
-  document.getElementById('tuPhrMelodyNote').hidden = m !== 'highholiday' || !set;
+  document.getElementById('tuPhrMelodyNote').hidden = m === 'torah' || !set;
+  document.getElementById('tuPhrMelodyNoteHH').hidden = m !== 'highholiday';
+  document.getElementById('tuPhrMelodyNoteHaf').hidden = m !== 'haftarah';
   syncTuneControls();   // the key bar names the key these staffs are drawn in
   const chipsEl = document.getElementById('tuPhraseChips'), cards = document.getElementById('tuPhraseCards');
   chipsEl.innerHTML = '';
@@ -2449,14 +2474,14 @@ function buildPhraseCard(m, set, row, forPrint) {
   if (!forPrint) {
     wrap.tabIndex = 0;   // a keyboard can scroll a wide row
     wrap.setAttribute('role', 'group');
-    const label = I18n.t(m === 'highholiday' ? 'trope.phrases.staff_aria_hh' : 'trope.phrases.staff_aria', { n: row.n, marks: phraseMarksText(row) });
+    const label = I18n.t(m === 'highholiday' ? 'trope.phrases.staff_aria_hh' : m === 'haftarah' ? 'trope.phrases.staff_aria_haf' : 'trope.phrases.staff_aria', { n: row.n, marks: phraseMarksText(row) });
     wrap.setAttribute('aria-label', names ? noteNamesAria(label, names) : label);
   }
   const svg = renderPhraseStaff(row, { key, shift, low: tuneVoiceKey() === 'low', famOf: _phraseFamily, names });
   if (!forPrint && _tuneKey === id) svg.classList.add('is-playing');
   wrap.appendChild(svg);
   card.appendChild(wrap);
-  if (!forPrint) card.appendChild(buildPhraseExamples(m, row));
+  if (!forPrint && m !== 'haftarah') card.appendChild(buildPhraseExamples(m, row));   // no haftarah examples yet (the census reads no Nevi'im text); the banner says so
   return card;
 }
 // Where the Torah sings the row: each example's words with every mark lit, where it is, and (year-round
@@ -2758,9 +2783,12 @@ function renderLearn() {
   if (!_chartPrintBuild && !_i18nRerender && !progress.families[fam.key]) { progress.families[fam.key] = true; saveProgress(); }
   renderFamilyChips();
   document.getElementById('tuFamilyNote').textContent = I18n.t('trope.learn.family_note_' + fam.key);
-  // The note says these staffs show the High Holiday melody, so it stays hidden while that motif file
-  // is missing or malformed (MOTIF_SETS.highholiday null): the cards then draw no staffs to speak of.
-  document.getElementById('tuMelodyNote').hidden = melodyKey() !== 'highholiday' || !MOTIF_SETS.highholiday;
+  // The note names the melody these staffs show (High Holiday or Haftarah, one span each), so it stays hidden
+  // while that motif file is missing or malformed (MOTIF_SETS[m] null): the cards then draw no staffs to speak of.
+  const mel = melodyKey();
+  document.getElementById('tuMelodyNote').hidden = mel === 'torah' || !MOTIF_SETS[mel];
+  document.getElementById('tuMelodyNoteHH').hidden = mel !== 'highholiday';
+  document.getElementById('tuMelodyNoteHaf').hidden = mel !== 'haftarah';
   syncTuneControls();   // the key bar names the key these staffs are drawn in (a melody change renames it)
 
   const cards = document.getElementById('tuCards');
@@ -3533,6 +3561,7 @@ function syncFormToSettings() {
   document.getElementById('tradSeph').checked = settings.tradition === 'seph';
   document.getElementById('melTorah').checked = melodyKey() === 'torah';
   document.getElementById('melHH').checked = melodyKey() === 'highholiday';
+  document.getElementById('melHaf').checked = melodyKey() === 'haftarah';
   document.getElementById('optDrillIdentify').checked = !!settings.drillIdentify;
   document.getElementById('optDrillHear').checked = !!settings.drillHear;
   document.getElementById('optDrillMelody').checked = !!settings.drillMelody;
@@ -3562,7 +3591,7 @@ function setTradition(v) {
 }
 function setMelody(v) {
   dropMelodyParam();   // a choice made here replaces a link's per-visit melody
-  settings.melody = v === 'highholiday' ? 'highholiday' : 'torah';
+  settings.melody = v === 'highholiday' || v === 'haftarah' ? v : 'torah';
   saveSettings();
   stopTune();       // a tune of the other melody must not keep lighting the redrawn staffs
   renderLearn();
@@ -3571,7 +3600,7 @@ function setMelody(v) {
 // The Learn banner's "Change": straight to the Melody choice on the Settings tab.
 function openMelodySetting() {
   openSettings();
-  const r = document.getElementById(melodyKey() === 'highholiday' ? 'melHH' : 'melTorah');
+  const r = document.getElementById({ highholiday: 'melHH', haftarah: 'melHaf' }[melodyKey()] || 'melTorah');
   if (r) { r.closest('.tu-set-item').scrollIntoView({ block: 'center' }); r.focus({ preventScroll: true }); }
 }
 /* ── Sing along: Key (settings.tuneShift), Voice (settings.tuneVoice) and Note names (settings.noteNames) ──
@@ -3580,7 +3609,11 @@ function openMelodySetting() {
    syncFormToSettings and applyI18n call, so a melody change, a reset, a cloud download and a language
    switch all repaint every control. */
 const _KEY_NOTE = { C: 'c', Db: 'db', D: 'd', Eb: 'eb', E: 'e', F: 'f', 'F#': 'fs', G: 'g', Ab: 'ab', A: 'a', Bb: 'bb', B: 'b' };
-function keyNameText(key) {   // "C major"; '' for a key outside the table (a motif file without one)
+// The trope.key.note_* id of each major key's relative minor: the Haftarah rows are D minor written with F major's
+// one flat, so their readout names the minor (a moved staff names the minor it lands in), as the Torah Trainer's does.
+const _MINOR_NOTE = { C: 'a', Db: 'bb', D: 'b', Eb: 'c', E: 'cs', F: 'd', 'F#': 'ds', G: 'e', Ab: 'f', A: 'fs', Bb: 'g', B: 'gs' };
+function keyNameText(key) {   // "C major" — "D minor" on the Haftarah melody; '' for a key outside the table (a motif file without one)
+  if (melodyKey() === 'haftarah') { const mn = _MINOR_NOTE[key]; return mn ? I18n.t('trope.key.name_minor', { note: I18n.t('trope.key.note_' + mn) }) : ''; }
   const n = _KEY_NOTE[key];
   return n ? I18n.t('trope.key.name', { note: I18n.t('trope.key.note_' + n) }) : '';
 }

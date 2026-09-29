@@ -276,7 +276,7 @@ Yes. In Learn mode, the Print chart button prints all 26 marks as one reference 
 
 **What does the Phrases tab show?**
 
-Every line of the printed cantillation chart, marks as they are sung together, on a full music staff you can play, in the year-round or High Holiday melody and in any key. Each phrase lists real verses where the Torah sings it, with PocketTorah's recording for the year-round melody, and the whole chart prints on one sheet.
+Every line of the printed cantillation chart, marks as they are sung together, on a full music staff you can play, in the year-round, High Holiday or Haftarah melody and in any key. Each phrase lists real verses where the Torah sings it, with PocketTorah's recording for the year-round melody, and the whole chart prints on one sheet.
 
 ---
 

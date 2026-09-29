@@ -179,7 +179,11 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   twin link `#ttTropeTutorLinkHH` (each link has its own static `data-i18n`; `syncTropeTutorLink()`,
   called from `applyTropeColors`, flips `hidden` and sets the hrefs) and the reading header adds
   `.tt-hh-link` whether or not trope colour is on (screen-only like the header; off in fullscreen).
-  Both open `trope_tutor.html?melody=highholiday`. The chant recordings for those readings are
+  Both open `trope_tutor.html?melody=highholiday`. **A haftarah links to the tutor's Haftarah melody the same
+  way:** `readingTutorMelody()` returns `'haftarah'` for the haftarah scope (it is also what the Trope staff
+  draws), the legend's third link `#ttTropeTutorLinkHaf` and the header link (`torah.reading.haf_trope_link`)
+  open `?melody=haftarah`, and the recording chip stays off — PocketTorah's haftarah recordings are in that
+  melody. The chant recordings for those readings are
   still PocketTorah's year-round melody, and the header says so: while Chant can play the reading
   (`currentReadingChantable()`), a `.tt-notice-chip` right after `.tt-hh-link` reads
   `torah.reading.hh_chant_chip`, and its tap tip (`torah.reading.hh_chant_tip`) says the day's
@@ -284,18 +288,25 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
   shalshelet, mercha kefula, karnei parah and yerach ben yomo have no entry (they never occur in the
   Rosh Hashanah or Yom Kippur readings). Its one grace note, yetiv's Y′, is a full eighth as in the
   Torah file (A4 A4 G4; the Torah yetiv is B4 B4 A4). It is fetched `?v=4` beside the Torah file and validated the same way,
-  each file on its own, so one failing never blanks the other melody's staffs. **Settings → Melody** (`settings.melody`,
-  `'torah'` by default or `'highholiday'`) picks which file draws the staffs and feeds the tune
-  button; any other stored value shows the year-round staffs and stays stored (`melodyKey()`), so a
-  newer page's choice survives a round trip. **`?melody=highholiday` or `?melody=torah`** (the Torah
-  Trainer's Rosh Hashanah and Yom Kippur readings link with the first) shows that melody for the
-  visit only — `_melodyOverride`, read once at init, never saved or synced, silent on any other
-  value; the Settings radios show it. Choosing a melody in Settings, or Reset all, replaces it and
+  each file on its own, so one failing never blanks the other melody's staffs. **The Haftarah melody is a third
+  file, `data/trope/trope_motifs_haftarah.json`** (`system:"haftarah"`, `key:"F"` — D minor written with F major's
+  one flat), which the phrases builder **derives** from `docs/tropepatterns.md` section H through section A's
+  Haftarah column on every run (never hand-edited; each entry `verified:false` while its row carries
+  `[unverified]`), fetched `?v=1` and validated like the others; every mark but geresh muqdam has a figure in it.
+  **Settings → Melody** (`settings.melody`, `'torah'` by default, `'highholiday'` or `'haftarah'` — the Haftarah
+  radio's label carries the suite's Beta badge, `shared.badge.beta`) picks which file draws the staffs and feeds
+  the tune button; any other stored value shows the year-round staffs and stays stored (`melodyKey()`), so a
+  newer page's choice survives a round trip. **`?melody=highholiday`, `?melody=haftarah` or `?melody=torah`** (the
+  Torah Trainer's Rosh Hashanah and Yom Kippur readings link with the first, its haftarot with the second) shows
+  that melody for the visit only — `_melodyOverride`, read once at init, never saved or synced, silent on any
+  other value; the Settings radios show it. Choosing a melody in Settings, or Reset all, replaces it and
   drops the param with `history.replaceState` (the other params and the hash stay), so a reload
-  after a choice does not bring the link's melody back. While the High Holiday melody is on, the Learn tab
-  shows a banner naming it (`#tuMelodyNote` — it prints with the chart; its Change button, which
-  opens the setting, does not), a card with no High Holiday figure says why where its staff would
-  be, and the staff's aria-label names the melody. The motif builder never reads or writes this
+  after a choice does not bring the link's melody back. While the High Holiday or the Haftarah melody is on, the
+  Learn tab shows a banner naming it (`#tuMelodyNote`, one span per melody with its own static `data-i18n` — it
+  prints with the chart; its Change button, which opens the setting, does not), a card with no High Holiday
+  figure says why where its staff would be, the staff's aria-label names the melody, and on the Haftarah melody
+  the key bar and Settings readout name the relative minor (`keyNameText` through `trope.key.name_minor`, as the
+  Trainer's staff readout does). The motif builder never reads or writes the High Holiday
   file — there are no High Holiday recordings to draft from — so it is edited by hand like a verified
   entry (the phrases builder checks it against its rows), and its `?v=` is bumped on every change.
   **The tune button** (beside the names on every card with a motif) plays the staff as Web Audio
@@ -412,7 +423,7 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
         times: listen to a few before trusting a new build.
     - `docs/tropepatterns.md` → *G. Toward a parasha staff* reads the result.
 - **The Phrases tab** (`#phrasesView`) draws that file: one clause group at a time (`PHRASE_GROUPS`, the
-  charts' own teaching order, 12 Torah and 11 High Holiday groups; a row the table misses joins a last
+  charts' own teaching order, 12 Torah, 11 High Holiday and 12 Haftarah groups; a row the table misses joins a last
   "More phrases" group, so every row shows exactly once), in the melody Settings chooses.
   - **A card per row**: its number, the Hebrew as printed, a chip per mark (glyph and name in the chosen
     tradition; it opens that mark's Learn card through `openLearnFor`, and hovering or focusing it lights
@@ -465,6 +476,8 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
     - On the High Holiday melody the examples are words only, named by their reading (Rosh Hashanah,
       day 1 or 2; Yom Kippur morning or afternoon). The melody banner says there are no recordings,
       and a row the readings never sing says so.
+    - On the Haftarah melody a card has no examples block at all (the census reads no Nevi'im text); the
+      melody banner (`#tuPhrMelodyNote`, one span per melody) says so.
   - **The tune** is `togglePhraseTune`, on the Learn tune's scale (an eighth is 0.32 s at 1×): ties sound
     as one note, a rest is silent for its whole value and lit while it lasts (the note before it goes
     dark, so nothing looks held through the pause), and a grace note is quick and borrowed from the
@@ -648,10 +661,10 @@ Design: `docs/tropepatterns.md` → G.
   syllables, which carry the beaming; a triplet or slur only when it lies inside one figure) plus `words`,
   one per cell; `tropeSplitSystems` wraps it between words to `#ttReading`'s width (with `opts.namesOf`, at the
   width each system is drawn at with its note names).
-- **The melody** is `staffMelody()`: `readingTutorMelody()` (the four High Holiday readings draw the High
-  Holiday chart), else the Haftarah rows for a haftarah (`currentReadingCtx.isHaftarah` — the haftarah scope is
-  the only Nevi'im text the page shows: practice links and the Custom range picker accept the five Torah
-  books only), else the year-round chart; the key is `shiftedKey(set.key, staffShift)` — the Haftarah rows are
+- **The melody** is `staffMelody()` = `readingTutorMelody() || 'torah'`: the four High Holiday readings draw
+  the High Holiday chart, a haftarah (`currentReadingCtx.isHaftarah` — the haftarah scope is the only Nevi'im
+  text the page shows: practice links and the Custom range picker accept the five Torah books only) the
+  Haftarah rows, everything else the year-round chart; the key is `shiftedKey(set.key, staffShift)` — the Haftarah rows are
   D minor written in F, so the drawer's readout names the relative minor (`staffKeyText`, through
   `trope.key.name_minor`); Low voices draws the 8 under every clef. **The Haftarah rows stand alone:**
   `staffSetName()` never falls back to the Torah chart for them (no Haftarah rows in the file → the words alone

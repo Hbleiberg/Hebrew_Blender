@@ -2196,6 +2196,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <div class="tt-trope-legend" id="ttTropeLegend" hidden>
     <a class="tt-trope-link" id="ttTropeTutorLink" hidden data-i18n="torah.trope_legend.tutor_link">Learn the trope names →</a>
     <a class="tt-trope-link" id="ttTropeTutorLinkHH" hidden data-i18n="torah.trope_legend.tutor_link_hh">Learn the High Holiday trope →</a>
+    <a class="tt-trope-link" id="ttTropeTutorLinkHaf" hidden data-i18n="torah.trope_legend.tutor_link_haf">Learn the Haftarah trope →</a>
   </div>
   <!-- Print-only sheet-1 key (range label + compact clause key), in flow above the reading.
        Populated by the beforeprint handler; sheets 2..N carry the label in the @page margin
@@ -3614,12 +3615,15 @@ const TROPE_DEFAULTS_DARK = {
 // Cross-link to the Trope Tutor (Learn + Drill page for the trope names/melodies).
 // The legend's "Learn the trope names →" link renders only when this is a real URL.
 const TROPE_TUTOR_URL = 'trope_tutor.html';
-// 'highholiday' while a Rosh Hashanah or Yom Kippur reading is showing (HOLIDAY_READINGS[].melody),
-// else null. Such a reading's tutor links carry ?melody=highholiday, which the tutor shows for that
-// visit only (it never changes the tutor's saved Melody setting).
+// The melody the reading's tutor links carry and its Trope staff draws: 'highholiday' while a Rosh Hashanah or
+// Yom Kippur reading is showing (HOLIDAY_READINGS[].melody), 'haftarah' on a haftarah (the haftarah scope — the
+// only Nevi'im text the page shows: practice links and the Custom range picker accept the five Torah books only),
+// else null (the year-round chart). The links carry ?melody=<that>, which the tutor shows for that visit only
+// (it never changes the tutor's saved Melody setting).
 function readingTutorMelody() {
   const h = settings.scope === 'custom' && settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
-  return h && h.melody === 'highholiday' ? 'highholiday' : null;
+  if (h && h.melody === 'highholiday') return 'highholiday';
+  return currentReadingCtx && currentReadingCtx.isHaftarah ? 'haftarah' : null;
 }
 function tropeTutorHref() {
   const m = readingTutorMelody();
@@ -3628,13 +3632,15 @@ function tropeTutorHref() {
 // The legend carries one link per melody (each with its own static data-i18n, so a language switch
 // needs no re-render); only the one matching the reading shows.
 function syncTropeTutorLink() {
-  const plain = document.getElementById('ttTropeTutorLink'), hh = document.getElementById('ttTropeTutorLinkHH');
-  if (!plain || !hh || !TROPE_TUTOR_URL) return;
-  const isHH = !!readingTutorMelody();
+  const plain = document.getElementById('ttTropeTutorLink'), hh = document.getElementById('ttTropeTutorLinkHH'), haf = document.getElementById('ttTropeTutorLinkHaf');
+  if (!plain || !hh || !haf || !TROPE_TUTOR_URL) return;
+  const m = readingTutorMelody();
   plain.href = TROPE_TUTOR_URL;
   hh.href = tropeTutorHref();
-  plain.hidden = isHH;
-  hh.hidden = !isHH;
+  haf.href = tropeTutorHref();
+  plain.hidden = !!m;
+  hh.hidden = m !== 'highholiday';
+  haf.hidden = m !== 'haftarah';
 }
 
 // Clause family of one word (raw token, marks intact), or null.
@@ -4334,14 +4340,15 @@ function renderText() {
   // chip beside the link says the recordings are PocketTorah's year-round melody, so a student practising with Chant
   // is told the day's tune is another. Every chip here carries its own aria-label: bindTip would otherwise name
   // it "More information" and hide its text from a screen reader.
-  const hhChantChip = TROPE_TUTOR_URL && readingTutorMelody() && canChant;
+  const hhChantChip = TROPE_TUTOR_URL && readingTutorMelody() === 'highholiday' && canChant;   // a haftarah's recording IS its melody
+  const tutorLinkKey = readingTutorMelody() === 'haftarah' ? 'torah.reading.haf_trope_link' : 'torah.reading.hh_trope_link';
   let html = `<div class="tt-ref-hdr">
     <span>${esc(currentRangeLabel)}${_readingHasShem
       ? ` <span class="tt-shem-chip" lang="he" data-i18n="torah.shem.chip_label" data-i18n-aria-label="torah.shem.chip_label" aria-label="${esc(I18n.t('torah.shem.chip_label'))}" data-i18n-tip="torah.shem.chip_tip" data-tip="${esc(I18n.t('torah.shem.chip_tip'))}">${esc(I18n.t('torah.shem.chip_label'))}</span>`
       : ''}${_translitDead
       ? ` <span class="tt-notice-chip" data-i18n="torah.trans.unavailable_chip" data-i18n-aria-label="torah.trans.unavailable_chip" aria-label="${esc(I18n.t('torah.trans.unavailable_chip'))}" data-i18n-tip="torah.trans.unavailable_tip" data-tip="${esc(I18n.t('torah.trans.unavailable_tip'))}">${esc(I18n.t('torah.trans.unavailable_chip'))}</span>`
       : ''}${TROPE_TUTOR_URL && readingTutorMelody()
-      ? ` <a class="tt-hh-link" href="${esc(tropeTutorHref())}" data-i18n="torah.reading.hh_trope_link">${esc(I18n.t('torah.reading.hh_trope_link'))}</a>`
+      ? ` <a class="tt-hh-link" href="${esc(tropeTutorHref())}" data-i18n="${tutorLinkKey}">${esc(I18n.t(tutorLinkKey))}</a>`
       : ''}${hhChantChip
       ? ` <span class="tt-notice-chip" data-i18n="torah.reading.hh_chant_chip" data-i18n-aria-label="torah.reading.hh_chant_chip" aria-label="${esc(I18n.t('torah.reading.hh_chant_chip'))}" data-i18n-tip="torah.reading.hh_chant_tip" data-tip="${esc(I18n.t('torah.reading.hh_chant_tip'))}">${esc(I18n.t('torah.reading.hh_chant_chip'))}</span>`
       : ''}${staffHeaderChipsHTML(layout)}</span>
@@ -4647,10 +4654,9 @@ function ensureStaffData() {
   return _staffLoad;
 }
 function retryStaffData() { if (!STAFF_SETS) ensureStaffData(); }
-// The melody a reading is drawn in: the four High Holiday readings take the High Holiday chart, a haftarah (the
-// haftarah scope — the only Nevi'im text the page shows: practice links and the Custom range picker accept the
-// five Torah books only) the Haftarah rows, everything else the year-round chart.
-function staffMelody() { return readingTutorMelody() || (currentReadingCtx && currentReadingCtx.isHaftarah ? 'haftarah' : 'torah'); }
+// The melody a reading is drawn in: the four High Holiday readings take the High Holiday chart, a haftarah the
+// Haftarah rows, everything else the year-round chart (readingTutorMelody: the same melody its tutor links carry).
+function staffMelody() { return readingTutorMelody() || 'torah'; }
 // A missing High Holiday half draws the year-round one; a haftarah is never drawn in the Torah tune — without the
 // Haftarah rows it shows its words, and the header chip says why (staffHeaderChipsHTML).
 function staffSetName() { const m = staffMelody(); return STAFF_SETS && STAFF_SETS[m] ? m : m === 'haftarah' ? null : 'torah'; }
