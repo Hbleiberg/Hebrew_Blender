@@ -6,9 +6,11 @@ clef, three sharps = A major), the source of `data/trope/trope_motifs.json`, and
 Cantillation* (33 patterns, no key signature), the source of `data/trope/trope_motifs_hh.json`. This
 file is the transcription of those pages, every row note for note, read from clean scans of the
 chart. The scans are not in the repository (the pages are copyrighted); the melodies themselves are
-traditional. This transcription is CC BY-SA 4.0, like the data files it feeds.
+traditional. This transcription is CC BY-SA 4.0, like the data files it feeds. Section H is not from the
+book: the haftarah rows there were written from memory of the commonly taught melody, and every one of
+them is tagged `[unverified]` until it has been checked against a printed chart.
 
-**Sections B and C are data.** `node scripts/build-trope-phrases.mjs` reads their row blocks and writes
+**Sections B, C and H are data.** `node scripts/build-trope-phrases.mjs` reads their row blocks and writes
 `data/trope/trope_phrases.json` — every row's notes, syllables, triplets, ties and slurs, the input for
 a staff of a whole parasha (section G) — together with `docs/trope_phrases_report.md`, which lists
 every figure of every mark in every context the chart prints and checks the tutor's staffs against
@@ -17,19 +19,22 @@ their rows. To change a note, edit its row here and re-run the builder; never ed
 ## How to read this file
 
 - **Pitches** are scientific pitch names as printed in the treble clef: C4 is middle C, A3 the A
-  below it, so the Torah chart lives between A3 and B4 and the High Holiday chart between G3 and
-  B♭4 (men sing both an octave lower).
+  below it, so the Torah chart lives between A3 and B4, the High Holiday chart between G3 and
+  B♭4 and the Haftarah rows between A3 and B♭4 (men sing all of them an octave lower).
 - **Key and accidentals.** In the Torah chart every F, C and G is sharp unless a natural sign is
   printed; the rows write every one of them with its sign (`F♯4`, `C♯4`, `G♮4`), so a letter without
   one cannot pass for a misreading, and the builder refuses any accidental the chart does not print.
   A row has no bar lines, so a printed accidental holds to the end of its row: mercha kefula's second
   G carries no sign and is G♮ (row 39). The High Holiday chart has no key signature and prints each
-  accidental where it wants one: a flat on `B♭`, and one sharp, on telisha ketana's `F♯`.
+  accidental where it wants one: a flat on `B♭`, and one sharp, on telisha ketana's `F♯`. The Haftarah
+  rows are written in D minor with F major's one flat, so every B carries its sign (`B♭4`, `B♮4`) and no
+  other accidental appears (section H).
 - **Scale degrees** are given relative to A for the Torah chart (A = 1, B = 2, C♯ = 3, D = 4,
   E = 5, F♯ = 6, G♯ = 7; ′ is the octave above). The tutor stores `p` = semitones from B4 (B♭4 = −1,
   A4 = −2, G4 = −4, F♯4 = −5, F4 = −6, E4 = −7, D4 = −9, C♯4 = −10, C4 = −11, B3 = −12, A3 = −14,
   G3 = −16).
-- **The row blocks** (sections B and C) are fenced ` ```trope-torah ` / ` ```trope-hh ` blocks:
+- **The row blocks** (sections B, C and H) are fenced ` ```trope-torah ` / ` ```trope-hh ` /
+  ` ```trope-haftarah ` blocks:
 
   ```
   #<row> [tag] <the Hebrew names, pointed and marked as printed>
@@ -39,7 +44,8 @@ their rows. To change a note, edit its row here and re-run the builder; never ed
   - The first line is the row number (High Holiday row 20's parenthesized second setting is `#20b`;
     the chart gives it no Hebrew of its own, so it repeats row 20's). Then come the tags, right after
     the number and in lowercase: `[aliyah-end]` for the closing formula of an aliyah's last verse
-    (Torah 41, High Holiday 30–33), `[unverified]` for a row the scans could not settle (none is).
+    (Torah 41, High Holiday 30–33, Haftarah 33–36), `[unverified]` for a row that has not been checked
+    against a printed chart (none of the book's rows is; every Haftarah row is).
     Then the Hebrew exactly as printed, with its points, dagesh and marks on the letters where the
     chart puts them (High Holiday row 12, whose printed line is a misprint, follows its staff; see
     section C). It holds no brackets or Latin letters, and its marks must name the same marks as the
@@ -855,7 +861,7 @@ to know, and what the chart leaves open.
     and geresh each have two or three forms. So a disjunctive's figure is chosen like a
     conjunctive's, by `prev` and `next`, and the last verse of an aliyah takes the `[aliyah-end]`
     rows for its closing mercha, tipcha and sof pasuk.
-  - The melody (`torah` or `highholiday`) picks the half of the file.
+  - The melody (`torah`, `highholiday` or `haftarah`) picks its part of the file.
 - **Words, as the text gives them.** A word joined to the next by a maqaf (־) usually has no mark
   of its own, so the pair is one word with one figure. Where the first word keeps one (a kadma 84
   times in the Torah, a tipcha once, Genesis 8:18), the pair is one word with two marks, sung in
@@ -909,3 +915,289 @@ to know, and what the chart leaves open.
 
   Each gap is a place where a parasha staff needs a decision, a recording to listen to or a second
   source. The report lists every one with an example verse.
+
+## H. The Haftarah phrase patterns (unverified)
+
+*This section is not a transcription of the book.* The teacher's chart has no haftarah page, so these
+rows were written down from memory of the standard Eastern-Ashkenazi haftarah melody as it is commonly
+taught, so that the Torah Trainer's Trope staff can draw a haftarah at all. Every row is tagged
+`[unverified]`: no figure here has been checked against a printed chart, and a figure may differ from
+the one a reader knows. The staff says so — the Trainer's *Haftarah tune: unverified* chip shows while
+the rows carry the tag. PocketTorah's haftarah recordings, which the Trainer's Chant buttons play, are
+the authority. To correct a row, edit it here, re-run `node scripts/build-trope-phrases.mjs`, bump the
+phrase file's `?v=` on both pages, and drop the tag once the row is settled. The Trope Tutor does not
+draw this melody (its Learn cards and Phrases tab have the two printed charts only), so the rows have
+no motif file and no section A column.
+
+**Key and range.** The tune is minor. The tutor's pitch model knows major keys only, so the rows are
+written in D minor with F major's one flat (`key: F`): the tonic is D4, the rows lie between A3 and
+B♭4, and *do re mi* names read as la-based minor (do = F, the tonic D = la). Every B is written with
+its sign (`B♭4`, `B♮4`), as the Torah chart writes every F, C and G; no other accidental is used — the
+model would spell a C♯ as D♭, so no row needs one. Row numbers are this file's own.
+
+**The rows.** Rows 1–8 pair with Torah rows 1–8 (the etnachta and sof pasuk clauses); rows 33–36 are
+the end-of-haftarah closings, on the four verse endings the census counts (section G), for the
+haftarah's last verse; the closing sof pasuk falls to A3, the fifth below the tonic. The Hebrew of each
+row is copied from the printed row with the same marks. The row each mark's figure is taken from when
+a verse's context matches nothing printed (`TROPE_LEARN_ROW.haftarah` in `js/trope-staff.js`):
+
+| Mark | Row |
+|---|---|
+| mercha | 1 |
+| tipcha | 4 |
+| munach (before etnachta) | 2 |
+| etnachta | 4 |
+| sof_pasuk | 8 |
+| mahpach | 10 |
+| pashta | 12 |
+| zakef_katon | 12 |
+| zakef_gadol | 13 |
+| yetiv | 15 |
+| munach legarmeh | 16 |
+| revia | 18 |
+| darga | 19 |
+| tevir | 19 |
+| kadma (in kadma v'azla) | 21 |
+| geresh (azla) | 22 |
+| gershayim | 23 |
+| telisha_gedola | 24 |
+| telisha_ketana | 25 |
+| pazer | 27 |
+| zarka | 29 |
+| segol | 29 |
+| shalshelet | 30 |
+| mercha_kefula | 31 |
+| karnei_parah | 32 |
+| yerach_ben_yomo | 32 |
+| sof pasuk at the end of the haftarah | 33–36 |
+
+```trope-haftarah
+#1 [unverified] מֵרְכָ֥א טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א
+mercha    MER- D4(e) CHA E4(q)
+tipcha    TIP- F4(e) CHA E4(e) ~D4(q)
+munach    MU- C4(e) NACH D4(q)
+etnachta  ET- E4(e) NACH- F4(e) ~E4(e) TA D4(q)
+```
+
+```trope-haftarah
+#2 [unverified] טִפְּחָ֖א מֻנָּ֣ח אֶתְנַחְתָּ֑א
+tipcha    TIP- F4(e) CHA E4(e) ~D4(q)
+munach    MU- C4(e) NACH D4(q)
+etnachta  ET- E4(e) NACH- F4(e) ~E4(e) TA D4(q)
+```
+
+```trope-haftarah
+#3 [unverified] מֵרְכָ֥א טִפְּחָ֖א אֶתְנַחְתָּ֑א
+mercha    MER- D4(e) CHA E4(q)
+tipcha    TIP- F4(e) CHA E4(e) ~D4(q)
+etnachta  ET- E4(e) NACH- F4(e) ~E4(e) TA D4(q)
+```
+
+```trope-haftarah
+#4 [unverified] טִפְּחָ֖א אֶתְנַחְתָּ֑א
+tipcha    TIP- F4(e) CHA E4(e) ~D4(q)
+etnachta  ET- E4(e) NACH- F4(e) ~E4(e) TA D4(q)
+```
+
+```trope-haftarah
+#5 [unverified] מֵרְכָ֥א טִפְּחָ֖א מֵרְכָ֥א סוֹף־פָּסֽוּק׃
+mercha    MER- D4(e) CHA E4(q)
+tipcha    TIP- F4(e) CHA E4(e) ~D4(q)
+mercha    MER- D4(e) CHA E4(q)
+sof_pasuk SOF- F4(e) PA- E4(e) ~D4(e) SUK C4(e) ~D4(q)
+```
+
+```trope-haftarah
+#6 [unverified] טִפְּחָ֖א מֵרְכָ֥א סוֹף־פָּסֽוּק׃
+tipcha    TIP- F4(e) CHA E4(e) ~D4(q)
+mercha    MER- D4(e) CHA E4(q)
+sof_pasuk SOF- F4(e) PA- E4(e) ~D4(e) SUK C4(e) ~D4(q)
+```
+
+```trope-haftarah
+#7 [unverified] מֵרְכָ֥א טִפְּחָ֖א סוֹף־פָּסֽוּק׃
+mercha    MER- D4(e) CHA E4(q)
+tipcha    TIP- F4(e) CHA E4(e) ~D4(q)
+sof_pasuk SOF- F4(e) PA- E4(e) ~D4(e) SUK C4(e) ~D4(q)
+```
+
+```trope-haftarah
+#8 [unverified] טִפְּחָ֖א סוֹף־פָּסֽוּק׃
+tipcha    TIP- F4(e) CHA E4(e) ~D4(q)
+sof_pasuk SOF- F4(e) PA- E4(e) ~D4(e) SUK C4(e) ~D4(q)
+```
+
+```trope-haftarah
+#9 [unverified] מַהְפָּ֤ךְ פַּשְׁטָא֙ מֻנָּ֣ח קָטֹ֔ן
+mahpach   MAH- D4(e) PACH E4(e) ~F4(e)
+pashta    PASH- F4(e) ~G4(e) TA F4(e) ~E4(q)
+munach    MU- D4(e) NACH E4(q)
+zakef_katon ZA- F4(e) KEF G4(e) KA- A4(e) TON G4(q)
+```
+
+```trope-haftarah
+#10 [unverified] מַהְפָּ֤ךְ פַּשְׁטָא֙ קָטֹ֔ן
+mahpach   MAH- D4(e) PACH E4(e) ~F4(e)
+pashta    PASH- F4(e) ~G4(e) TA F4(e) ~E4(q)
+zakef_katon ZA- F4(e) KEF G4(e) KA- A4(e) TON G4(q)
+```
+
+```trope-haftarah
+#11 [unverified] פַּשְׁטָא֙ מֻנָּ֣ח קָטֹ֔ן
+pashta    PASH- F4(e) ~G4(e) TA F4(e) ~E4(q)
+munach    MU- D4(e) NACH E4(q)
+zakef_katon ZA- F4(e) KEF G4(e) KA- A4(e) TON G4(q)
+```
+
+```trope-haftarah
+#12 [unverified] פַּשְׁטָא֙ קָטֹ֔ן
+pashta    PASH- F4(e) ~G4(e) TA F4(e) ~E4(q)
+zakef_katon ZA- F4(e) KEF G4(e) KA- A4(e) TON G4(q)
+```
+
+```trope-haftarah
+#13 [unverified] זָקֵף גָּד֕וֹל
+zakef_gadol ZA- F4(e) KEF A4(q) GA- A4(e) DOL G4(e) ~F4(q)
+```
+
+```trope-haftarah
+#14 [unverified] יְ֚תִיב מֻנָּ֣ח קָטֹ֔ן
+yetiv     YE- D4(e) TIV C4(e) ~D4(q)
+munach    MU- D4(e) NACH E4(q)
+zakef_katon ZA- F4(e) KEF G4(e) KA- A4(e) TON G4(q)
+```
+
+```trope-haftarah
+#15 [unverified] יְ֚תִיב קָטֹ֔ן
+yetiv     YE- D4(e) TIV C4(e) ~D4(q)
+zakef_katon ZA- F4(e) KEF G4(e) KA- A4(e) TON G4(q)
+```
+
+```trope-haftarah
+#16 [unverified] מֻנָּ֣ח ׀ מֻנָּ֣ח רְבִיעִ֗י
+munach_legarmeh MU- D4(e) NACH E4(e) LE- F4(e) GAR- E4(e) MEH D4(q)
+munach    MU- D4(e) NACH E4(q)
+revia     RE- A4(e) VI- G4(e) ~F4(e) A E4(e) ~D4(q)
+```
+
+```trope-haftarah
+#17 [unverified] מֻנָּ֣ח רְבִיעִ֗י
+munach    MU- D4(e) NACH E4(q)
+revia     RE- A4(e) VI- G4(e) ~F4(e) A E4(e) ~D4(q)
+```
+
+```trope-haftarah
+#18 [unverified] רְבִיעִ֗י
+revia     RE- A4(e) VI- G4(e) ~F4(e) A E4(e) ~D4(q)
+```
+
+```trope-haftarah
+#19 [unverified] דַּרְגָּ֧א תְּבִ֛יר
+darga     DAR- C4(e) ~D4(e) GA E4(e) ~D4(q)
+tevir     TE- E4(e) VIR F4(e) ~E4(e) ~D4(e) ~C4(q)
+```
+
+```trope-haftarah
+#20 [unverified] מֵרְכָ֥א תְּבִ֛יר
+mercha    MER- D4(e) CHA E4(q)
+tevir     TE- E4(e) VIR F4(e) ~E4(e) ~D4(e) ~C4(q)
+```
+
+```trope-haftarah
+#21 [unverified] קַדְמָ֨א וְאַזְלָ֜א
+kadma     KAD- E4(e) MA F4(e) ~G4(e)
+geresh    AZ- A4(e) LA A4(e) ~G4(e) ~F4(q)
+```
+
+```trope-haftarah
+#22 [unverified] גֵּ֜רֵשׁ
+geresh    GE- A4(e) RESH A4(e) ~G4(e) ~F4(q)
+```
+
+```trope-haftarah
+#23 [unverified] גֵּרְשַׁיִ֞ם
+gershayim GER- A4(e) ~B♭4(e) SHA- A4(e) YIM G4(e) ~F4(q)
+```
+
+```trope-haftarah
+#24 [unverified] מֻנָּ֣ח תְּ֠לִישָׁא גְּדוֹלָה֠
+munach    MU- D4(e) NACH E4(q)
+telisha_gedola TE- F4(e) LI- G4(e) SHA A4(e) GE- B♭4(e) DO- A4(e) LA G4(e) ~F4(q)
+```
+
+```trope-haftarah
+#25 [unverified] מֻנָּ֣ח תְּלִישָׁא קְטַנָּה֩
+munach    MU- D4(e) NACH E4(q)
+telisha_ketana TE- A4(e) LI- A4(e) SHA B♭4(e) KE- A4(e) TA- G4(e) NA A4(q)
+```
+
+```trope-haftarah
+#26 [unverified] תְּלִישָׁא קְטַנָּה֩ קַדְמָ֨א וְאַזְלָ֜א
+telisha_ketana TE- A4(e) LI- A4(e) SHA B♭4(e) KE- A4(e) TA- G4(e) NA A4(q)
+kadma     KAD- E4(e) MA F4(e) ~G4(e)
+geresh    AZ- A4(e) LA A4(e) ~G4(e) ~F4(q)
+```
+
+```trope-haftarah
+#27 [unverified] מֻנָּ֣ח פָּזֵ֡ר
+munach    MU- D4(e) NACH E4(q)
+pazer     PA- F4(e) ZER G4(e) ~A4(e) ~B♭4(e) ~A4(e) ~G4(e) ~F4(q)
+```
+
+```trope-haftarah
+#28 [unverified] מֻנָּ֣ח זַרְקָא֮ מֻנָּ֣ח סֶגּוֹל֒
+munach    MU- D4(e) NACH E4(q)
+zarka     ZAR- D4(e) ~E4(e) KA F4(e) ~G4(e) ~F4(e) ~E4(q)
+munach    MU- D4(e) NACH E4(q)
+segol     SE- A4(e) GOL G4(e) ~F4(e) ~E4(e) ~D4(q)
+```
+
+```trope-haftarah
+#29 [unverified] זַרְקָא֮ סֶגּוֹל֒
+zarka     ZAR- D4(e) ~E4(e) KA F4(e) ~G4(e) ~F4(e) ~E4(q)
+segol     SE- A4(e) GOL G4(e) ~F4(e) ~E4(e) ~D4(q)
+```
+
+```trope-haftarah
+#30 [unverified] שַׁלְשֶׁ֓לֶת
+shalshelet SHAL- D4(e) ~E4(e) ~F4(e) ~E4(e) ~D4(e) ~E4(e) ~F4(e) ~E4(e) SHE- D4(e) LET C4(e) ~D4(q)
+```
+
+```trope-haftarah
+#31 [unverified] מֵרְכָא כְּפוּלָ֦ה
+mercha_kefula MER- D4(e) CHA E4(e) KE- F4(e) FU- E4(e) LA D4(e) ~C4(e) ~D4(q)
+```
+
+```trope-haftarah
+#32 [unverified] יָרֵחַ בֶּן יוֹמ֪וֹ קַרְנֵי פָּרָה֟
+yerach_ben_yomo YE- D4(e) RACH C4(e) ~D4(e) BEN E4(e) YO- F4(e) MO E4(e) ~D4(q)
+karnei_parah KAR- F4(e) NEI G4(e) ~A4(e) PA- B♭4(e) ~A4(e) RAH G4(e) ~F4(q)
+```
+
+```trope-haftarah
+#33 [aliyah-end] [unverified] מֵרְכָ֥א טִפְּחָ֖א מֵרְכָ֥א סוֹף־פָּסֽוּק׃
+mercha    MER- D4(e) CHA E4(q)
+tipcha    TIP- F4(e) CHA E4(e) ~D4(q)
+mercha    MER- D4(e) CHA E4(q)
+sof_pasuk SOF- F4(q) PA- E4(q) SUK D4(q) ~C4(q) ~B♭3(q) ~A3(h)
+```
+
+```trope-haftarah
+#34 [aliyah-end] [unverified] מֵרְכָ֥א טִפְּחָ֖א סוֹף־פָּסֽוּק׃
+mercha    MER- D4(e) CHA E4(q)
+tipcha    TIP- F4(e) CHA E4(e) ~D4(q)
+sof_pasuk SOF- F4(q) PA- E4(q) SUK D4(q) ~C4(q) ~B♭3(q) ~A3(h)
+```
+
+```trope-haftarah
+#35 [aliyah-end] [unverified] טִפְּחָ֖א מֵרְכָ֥א סוֹף־פָּסֽוּק׃
+tipcha    TIP- F4(e) CHA E4(e) ~D4(q)
+mercha    MER- D4(e) CHA E4(q)
+sof_pasuk SOF- F4(q) PA- E4(q) SUK D4(q) ~C4(q) ~B♭3(q) ~A3(h)
+```
+
+```trope-haftarah
+#36 [aliyah-end] [unverified] טִפְּחָ֖א סוֹף־פָּסֽוּק׃
+tipcha    TIP- F4(e) CHA E4(e) ~D4(q)
+sof_pasuk SOF- F4(q) PA- E4(q) SUK D4(q) ~C4(q) ~B♭3(q) ~A3(h)
+```

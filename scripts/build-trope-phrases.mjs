@@ -2,10 +2,12 @@
 /**
  * build-trope-phrases.mjs — build data/trope/trope_phrases.json from the printed cantillation chart.
  *
- * The source is docs/tropepatterns.md, sections B and C: every row of the book's *Torah
+ * The source is docs/tropepatterns.md, sections B, C and H: every row of the book's *Torah
  * Cantillation* chart (41 rows, three sharps) and *High Holiday Torah Cantillation* chart (33 rows
  * + row 20's second setting, no key signature), transcribed note for note from clean scans into
- * fenced ```trope-torah / ```trope-hh blocks. Those blocks are the only hand-edited copy of the
+ * fenced ```trope-torah / ```trope-hh blocks, and the Haftarah rows (36, D minor written with F
+ * major's one flat — an unverified rendering from memory, every row tagged) in ```trope-haftarah
+ * blocks. Those blocks are the only hand-edited copy of the
  * notes: fix a note there and re-run this script — never edit the JSON. The block grammar is
  * documented in the doc's "How to read this file"; in short:
  *
@@ -18,7 +20,7 @@
  *
  * Output (CC BY-SA 4.0, like the motif files):
  *   { v:1, built, license, source, tpq:48, values:{<code>:ticks},
- *     melodies: { torah:{key:"A", rows:[…]}, highholiday:{key:"C", rows:[…]} },
+ *     melodies: { torah:{key:"A", rows:[…]}, highholiday:{key:"C", rows:[…]}, haftarah:{key:"F", rows:[…]} },
  *     figures:  { <melody>: { <tropeKey>: [ {refs:[[row, unitIdx]…], prev:[…], next:[…]} ] } } }
  * where each row is flat — { n, he, tags, notes:[{p, v, t, g?, r?, tie?, a?}], syl:[{t, hyphen,
  * unit, from, to}], units:[{k, from, to}], tup:[{from, to}], slur:[{from, to, dashed?}] } — p =
@@ -88,7 +90,7 @@ const CENSUS_PATH = OUT_DIR ? join(OUT_DIR, 'trope_contexts_report.md') : join(r
 const EXAMPLES_PATH = OUT_DIR ? join(OUT_DIR, 'trope_phrase_examples.json') : join(repoRoot, 'data', 'trope', 'trope_phrase_examples.json');
 const CACHE_DIR = join(repoRoot, 'source-data', 'trope-cache');
 const SIZE_BUDGET = 128 * 1024;
-const LICENSE = 'Hand transcriptions of the traditional Ashkenazi Torah and High Holiday cantillation melodies from a printed chart (docs/tropepatterns.md, sections B and C). This file is CC BY-SA 4.0.';
+const LICENSE = 'Hand transcriptions of the traditional Ashkenazi Torah and High Holiday cantillation melodies from a printed chart (docs/tropepatterns.md, sections B and C), and an unverified rendering of the Ashkenazi Haftarah melody written from memory (section H). This file is CC BY-SA 4.0.';
 
 const failures = [];
 const fail = (msg) => failures.push(msg);
@@ -126,10 +128,19 @@ const MELODIES = {
   torah: { info: 'trope-torah', key: 'A', rows: 41, extra: [], motifs: 'data/trope/trope_motifs.json', label: 'Torah',
     // Every F, C and G is written with its ♯ or ♮ (the key signature makes a bare one ambiguous);
     // G♮ (the lowered seventh) is the chart's only chromatic note.
-    spell: { F: ['♯'], C: ['♯'], G: ['♯', '♮'], A: [''], B: [''], D: [''], E: [''] } },
+    spell: { F: ['♯'], C: ['♯'], G: ['♯', '♮'], A: [''], B: [''], D: [''], E: [''] },
+    rule: 'in the Torah chart write every F, C and G with its ♯ or ♮ (G♮ is the only natural); no other accidental is printed' },
   highholiday: { info: 'trope-hh', key: 'C', rows: 33, extra: ['20b'], motifs: 'data/trope/trope_motifs_hh.json', label: 'High Holiday',
     // No signature: B♭ (the lowered seventh) and F♯ (telisha ketana's raised fourth) are its accidentals.
-    spell: { A: [''], B: ['', '♭'], C: [''], D: [''], E: [''], F: ['', '♯'], G: [''] } },
+    spell: { A: [''], B: ['', '♭'], C: [''], D: [''], E: [''], F: ['', '♯'], G: [''] },
+    rule: 'the High Holiday chart prints only B♭ and F♯' },
+  // The Haftarah rows (section H) are not from the book: an unverified rendering from memory, in D minor
+  // written with F major's one flat, so every B carries its sign and nothing else is altered (a C♯ would be
+  // spelled D♭ by the tutor's pitch model). No motif file — the tutor's Learn cards do not draw this
+  // melody — and no examples: the census reads no Nevi'im text.
+  haftarah: { info: 'trope-haftarah', key: 'F', rows: 36, extra: [], motifs: null, label: 'Haftarah', examples: false,
+    spell: { A: [''], B: ['♭', '♮'], C: [''], D: [''], E: [''], F: [''], G: [''] },
+    rule: 'the Haftarah rows write every B with its ♭ or ♮ and no other accidental' },
 };
 const INFO_TO_MELODY = Object.fromEntries(Object.entries(MELODIES).map(([m, d]) => [d.info, m]));
 const TAGS = new Set(['aliyah-end', 'unverified']);
@@ -207,9 +218,7 @@ function parseRow(block, path) {
         const [val, ...flags] = inner.split(',');
         if (!Object.hasOwn(VALUES, val)) { fail(`${where(ln.line)}: unknown value "${val}" in ${tok}`); continue; }
         if (!spell[letter].includes(acc))
-          fail(`${where(ln.line)}: ${letter}${acc || ''}${oct} — ${block.melody === 'torah'
-            ? 'in the Torah chart write every F, C and G with its ♯ or ♮ (G♮ is the only natural); no other accidental is printed'
-            : 'the High Holiday chart prints only B♭ and F♯'}`);
+          fail(`${where(ln.line)}: ${letter}${acc || ''}${oct} — ${MELODIES[block.melody].rule}`);
         note.p = pitchOf(letter, acc, +oct);
         if (note.p < P_MIN || note.p > P_MAX) fail(`${where(ln.line)}: ${tok} is outside G3–F5`);
         note.v = val;
@@ -290,6 +299,7 @@ function parseRow(block, path) {
 const SPELLING = {
   torah: { 1: 'C♯', 2: 'D', 4: 'E', 6: 'F♯', 7: 'G♮', 8: 'G♯', 9: 'A', 11: 'B' },
   highholiday: { 0: 'C', 2: 'D', 4: 'E', 5: 'F', 6: 'F♯', 7: 'G', 9: 'A', 10: 'B♭', 11: 'B' },
+  haftarah: { 0: 'C', 2: 'D', 4: 'E', 5: 'F', 7: 'G', 9: 'A', 10: 'B♭', 11: 'B♮' },
 };
 function spellPitch(p, melody) {
   const midi = p + 71, pc = ((midi % 12) + 12) % 12, oct = Math.floor(midi / 12) - 1;
@@ -475,6 +485,7 @@ const crossCheck = [];
 if (!LENIENT) {
   const cards = cardTable(docText, DOC_PATH.replace(repoRoot + '/', '')) || { torah: {}, highholiday: {} };
   for (const [m, d] of Object.entries(MELODIES)) {
+    if (!d.motifs) continue;   // a melody the tutor's Learn cards do not draw (the Haftarah rows) has no motif file to check
     const file = JSON.parse(readFileSync(join(repoRoot, d.motifs), 'utf8'));
     if (file.key !== d.key) fail(`${d.motifs}: key "${file.key}" but the ${d.label} chart is written in ${d.key}`);
     const tropes = file.tropes || {};
@@ -532,12 +543,23 @@ if (!LENIENT) {
   const hhMissing = TROPES.map((t) => t.key).filter((k) => !hh.has(k)).sort().join(',');
   if (hhMissing !== 'geresh_muqdam,karnei_parah,mercha_kefula,shalshelet,yerach_ben_yomo')
     fail(`smoke: the High Holiday rows lack ${hhMissing}; expected exactly shalshelet, mercha kefula, karnei parah and yerach ben yomo (+ geresh muqdam)`);
+  // The Haftarah rows draw a whole haftarah on their own (the Trainer never falls back to the Torah chart
+  // for them), so every mark but geresh muqdam is printed, the four verse endings the census counts are
+  // the closings, and no note leaves A3–B♭4 (the rows are D minor, written in F).
+  const haf = melodies.haftarah.rows;
+  const hafPrinted = new Set(haf.flatMap((r) => r.units.map((u) => u.k)));
+  for (const k of KEYS) if (k !== 'geresh_muqdam' && !hafPrinted.has(k)) fail(`smoke: no Haftarah row prints ${k}`);
+  const hafEnds = haf.filter((r) => r.tags.includes('aliyah-end')).map((r) => r.units.map((u) => u.k).join(' ')).sort();
+  const wantEnds = ['mercha tipcha mercha sof_pasuk', 'mercha tipcha sof_pasuk', 'tipcha mercha sof_pasuk', 'tipcha sof_pasuk'].sort();
+  if (JSON.stringify(hafEnds) !== JSON.stringify(wantEnds)) fail(`smoke: the Haftarah closings are ${hafEnds.join(' | ') || '(none)'}; expected the four verse endings`);
+  if (MELODIES.haftarah.key !== 'F') fail('smoke: the Haftarah rows are D minor written with F major\'s signature');
+  for (const r of haf) for (const n of r.notes) if (!n.r && (n.p < -14 || n.p > -1)) fail(`smoke: Haftarah row #${r.n} leaves A3–B♭4`);
 }
 
 /* ---------- JSON (one row per line, so a diff shows the row that changed) ---------- */
 const clean = (row) => { const { _src, ...r } = row; return r; };
 function serialize(built) {
-  const head = { v: 1, built, license: LICENSE, source: 'docs/tropepatterns.md, sections B and C', tpq: TPQ, values: VALUES };
+  const head = { v: 1, built, license: LICENSE, source: 'docs/tropepatterns.md, sections B, C and H', tpq: TPQ, values: VALUES };
   let s = JSON.stringify(head).slice(0, -1) + ',"melodies":{\n';
   s += Object.entries(melodies).map(([m, mel]) =>
     `${JSON.stringify(m)}:{"key":${JSON.stringify(mel.key)},"rows":[\n` + mel.rows.map((r) => JSON.stringify(clean(r))).join(',\n') + '\n]}').join(',\n');
@@ -572,9 +594,9 @@ function report() {
   const total = (m) => melodies[m].rows.reduce((a, r) => a + r.notes.filter((n) => !n.r).length, 0);
   L.push('# Trope phrases build report', '');
   L.push(`- **Built:** ${built}`);
-  L.push('- **Source:** `docs/tropepatterns.md` sections B and C — the printed chart\'s rows, transcribed from clean scans');
+  L.push('- **Source:** `docs/tropepatterns.md` sections B and C — the printed chart\'s rows, transcribed from clean scans — and H, the Haftarah rows (unverified: written from memory of the commonly taught melody)');
   L.push(`- **Output:** \`data/trope/trope_phrases.json\` — ${bytes.toLocaleString('en-US')} bytes (budget ${SIZE_BUDGET.toLocaleString('en-US')})`);
-  L.push(`- **Rows:** Torah ${melodies.torah.rows.length} (${total('torah')} notes) · High Holiday ${melodies.highholiday.rows.length} (${total('highholiday')} notes)`);
+  L.push(`- **Rows:** ${Object.entries(MELODIES).map(([m, d]) => `${d.label} ${melodies[m].rows.length} (${total(m)} notes)`).join(' · ')}`);
   L.push('- **License:** hand transcriptions of the traditional melodies — [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), like the JSON.');
   L.push('', 'Generated by `node scripts/build-trope-phrases.mjs`; do not edit by hand. To change a note, edit its row',
     'in `docs/tropepatterns.md` and re-run the script.', '');
@@ -1288,7 +1310,7 @@ function censusReport({ tor, hh, pTorah, pHH, endings, otherEndings, otherEnds, 
   L.push('# Trope contexts report — what a parasha needs against what the chart prints', '');
   L.push(`- **Built:** ${built}`);
   L.push('- **Text:** Sefaria public text export (storage.googleapis.com/sefaria-export, Hebrew merged.json per Torah book), whose Torah text is the *Miqra according to the Masorah* edition (MAM, from Hebrew Wikisource), which Sefaria lists as CC BY-SA. The example words below are quoted from it.');
-  L.push(`- **Chart:** \`data/trope/trope_phrases.json\` (sha1 ${digest}), built from \`docs/tropepatterns.md\` sections B and C`);
+  L.push(`- **Chart:** \`data/trope/trope_phrases.json\` (sha1 ${digest}), built from \`docs/tropepatterns.md\` sections B, C and H`);
   L.push(`- **Torah:** ${fmt(tor.verses)} verses (${tor.excluded.length} double-accented ones left out, so ${fmt(tor.verses - tor.excluded.length)} counted): ${fmt(tor.words)} marked words, ${fmt(tor.units)} marks. Left out: ${tor.excluded.join(', ')}`);
   L.push(`- **High Holiday readings:** ${hhReadings.map((r) => `${r.name} (${r.book} ${r.from.join(':')}–${r.to.join(':')})`).join('; ')} — ${hhVerses} verses`);
   L.push('- **Aliyot:** `data/pockettorah/aliyah.json`, PocketTorah\'s full-reading divisions — the aliyot the Torah Trainer shows — each paired with its parasha in `data/parshiyot.json` by the parasha\'s first verse');
@@ -1405,7 +1427,7 @@ const counted = CENSUS ? await census() : null;   // exits non-zero, having writ
 mkdirSync(dirname(JSON_PATH), { recursive: true });
 writeFileSync(JSON_PATH, json);
 if (!LENIENT) writeFileSync(REPORT_PATH, report() + '\n');
-console.log(`build-trope-phrases: ${melodies.torah.rows.length} Torah + ${melodies.highholiday.rows.length} High Holiday rows -> ${JSON_PATH.replace(repoRoot + '/', '')} (${bytes} bytes)${LENIENT ? ' [lenient]' : `; ${crossCheck.length} staffs checked`}`);
+console.log(`build-trope-phrases: ${Object.entries(MELODIES).map(([m, d]) => `${melodies[m].rows.length} ${d.label}`).join(' + ')} rows -> ${JSON_PATH.replace(repoRoot + '/', '')} (${bytes} bytes)${LENIENT ? ' [lenient]' : `; ${crossCheck.length} staffs checked`}`);
 if (counted) {
   writeFileSync(CENSUS_PATH, counted.text);
   writeFileSync(EXAMPLES_PATH, counted.examples);
@@ -1422,7 +1444,7 @@ if (counted) {
     let same = false;
     try {
       const old = JSON.parse(readFileSync(EXAMPLES_PATH, 'utf8'));
-      same = Object.keys(MELODIES).every((m) => (old.melodies[m] || []).map((r) => `${r.n}:${r.k}`).join('|')
+      same = Object.keys(MELODIES).filter((m) => MELODIES[m].examples !== false).every((m) => (old.melodies[m] || []).map((r) => `${r.n}:${r.k}`).join('|')
         === melodies[m].rows.map((row) => `${row.n}:${row.units.map((u) => u.k).join(' ')}`).join('|'));
     } catch { /* unreadable: stale */ }
     if (!same) console.warn(`build-trope-phrases: WARNING — ${EXAMPLES_PATH.replace(repoRoot + '/', '')} no longer follows the chart's rows: re-run with --census`);
