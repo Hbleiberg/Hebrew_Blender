@@ -12,3 +12,6 @@ source-data/motif-cache/
 
 # Claude Code personal settings (project-local, not shared)
 .claude/settings.local.json
+
+# build-leyning-data.mjs tarball cache (@hebcal/leyning + @hebcal/triennial; re-fetched on demand)
+source-data/leyning-cache/
