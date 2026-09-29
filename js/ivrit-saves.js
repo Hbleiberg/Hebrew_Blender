@@ -661,7 +661,12 @@
     return a.client();
   }
   function currentUser() { var a = A(); return (a && typeof a.user === 'function') ? a.user() : null; }
-  function unwrap(r) { if (r && r.error) throw r.error; return r ? r.data : null; }
+  // A PostgREST error carries no HTTP status of its own (the response does): keep it on the error, so a 401 —
+  // the request reached the database as not signed in, a token mid-refresh in another tab — takes the retry below.
+  function unwrap(r) {
+    if (r && r.error) { var e = r.error; if (r.status && e && typeof e === 'object' && !e.status) { try { e.status = r.status; } catch (x) {} } throw e; }
+    return r ? r.data : null;
+  }
   function isAuthError(err) {
     var code = String((err && err.code) || ''), st = err && (err.status || err.statusCode);
     return code === 'PGRST301' || st === 401 || /jwt/i.test(String((err && err.message) || ''));
