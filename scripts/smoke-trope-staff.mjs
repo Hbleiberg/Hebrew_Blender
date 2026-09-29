@@ -17,8 +17,9 @@ const stubEl = () => ({ setAttribute() {}, appendChild() {}, style: {}, textCont
 const api = vm.runInNewContext(src + '\n;({ TROPES, TROPE_CHAR_TO_KEY, tropeUnitsOfVerse, tropeContextsOf, tropeChooseFigures, tropeBuildReadingRow, tropeSubRow, tropeSplitSystems, layoutPhraseStaff, _phraseSetsFrom, shiftedKey, KEY_SHARPS })',
   { document: { createElementNS: stubEl }, console });
 const sets = api._phraseSetsFrom(JSON.parse(readFileSync(join(root, 'data/trope/trope_phrases.json'), 'utf8')));
-assert.ok(sets && sets.torah && sets.highholiday, 'phrase sets load');
-const ctx = { torah: api.tropeContextsOf(sets.torah), highholiday: api.tropeContextsOf(sets.highholiday) };
+assert.ok(sets && sets.torah && sets.highholiday && sets.haftarah, 'phrase sets load');
+assert.equal(sets.haftarah.key, 'F', 'the Haftarah rows are D minor written in F');
+const ctx = { torah: api.tropeContextsOf(sets.torah), highholiday: api.tropeContextsOf(sets.highholiday), haftarah: api.tropeContextsOf(sets.haftarah) };
 
 const G = {
   '1:1': 'בְּרֵאשִׁ֖ית בָּרָ֣א אֱלֹהִ֑ים אֵ֥ת הַשָּׁמַ֖יִם וְאֵ֥ת הָאָֽרֶץ׃',
@@ -49,14 +50,34 @@ const merged = api.tropeUnitsOfVerse('וַיֹּאמֶר אֱלֹהִ֖ים יְ
 same(merged.cells.map((c) => c.pieces), [[0, 1], [2], [3]]); assert.equal(merged.pieces.length, 4);
 ok('an unmarked word joins the word after it; every piece is kept');
 
-// 2. figures for every unit, both melodies
-for (const m of ['torah', 'highholiday']) for (const ref of Object.keys(G)) {
+// 2. figures for every unit, all three melodies (the Haftarah rows stand alone: no fallback chart)
+for (const m of ['torah', 'highholiday', 'haftarah']) for (const ref of Object.keys(G)) {
   const u = api.tropeUnitsOfVerse(G[ref]);
-  const picks = api.tropeChooseFigures(u.units, ctx[m], { melody: m, fallbackCtx: ctx.torah, fallbackMelody: 'torah' });
+  const picks = api.tropeChooseFigures(u.units, ctx[m], { melody: m, fallbackCtx: m === 'haftarah' ? null : ctx.torah, fallbackMelody: 'torah' });
   assert.ok(picks.every(Boolean), `${m} ${ref}: every unit picks a figure`);
   picks.forEach((p, i) => { const row = sets[p.set].rows.find((r) => r.n === p.n); assert.equal(row.units[p.ui].k, u.units[i].k, 'the pick is a figure of the same mark'); });
+  if (m === 'haftarah') assert.ok(picks.every((p) => p.set === 'haftarah'), `${ref}: every haftarah pick is from the Haftarah rows`);
 }
-ok('every unit of the three verses gets a figure of its own mark, on both melodies');
+ok('every unit of the three verses gets a figure of its own mark, on all three melodies');
+// a haftarah verse (Isaiah 40:1) on the Haftarah rows: its own figures throughout, and the closing only on the haftarah's last verse
+{
+  const u = api.tropeUnitsOfVerse('נַחֲמ֥וּ נַחֲמ֖וּ עַמִּ֑י יֹאמַ֖ר אֱלֹהֵיכֶֽם׃');
+  same(u.units.map((x) => x.k), ['mercha', 'tipcha', 'etnachta', 'tipcha', 'sof_pasuk']);
+  const plain = api.tropeChooseFigures(u.units, ctx.haftarah, { melody: 'haftarah' });
+  assert.ok(plain.every((p) => p && p.set === 'haftarah'), 'every unit picks a Haftarah figure with no fallback chart');
+  const isEnd = (p) => sets.haftarah.rows.find((r) => r.n === p.n).tags.includes('aliyah-end');
+  assert.ok(!plain.some(isEnd), 'an ordinary verse never takes a closing row');
+  const end = api.tropeChooseFigures(u.units, ctx.haftarah, { melody: 'haftarah', aliyahEnd: true });
+  assert.ok(end.slice(3).every(isEnd) && !end.slice(0, 3).some(isEnd), 'the last verse closes on the [aliyah-end] tipcha sof pasuk');
+  assert.ok(end.slice(3).every((p) => p.n === end[3].n), 'one closing row');
+  const row = api.tropeBuildReadingRow(u.units, end, u.cells, sets, { n: '40:1' });
+  assert.equal(row.units.length, 5); assert.ok(row.notes.every((n) => n.r || (n.p >= -14 && n.p <= -1)), 'A3–B♭4');
+  row.words.forEach((w) => { w.w = 80; });
+  const L = api.layoutPhraseStaff(row, 'F', 0, null, { lyrics: false, accidentals: 'unit' });
+  for (let i = 1; i < L.words.length; i++) assert.ok(L.words[i].cx - L.words[i].w / 2 >= L.words[i - 1].cx + L.words[i - 1].w / 2 + 6 - 1e-9, 'words do not overlap in F');
+  assert.ok(L.W > 0 && L.notes.length === row.notes.length);
+  ok('Isaiah 40:1 draws from the Haftarah rows alone, closes only as the haftarah\'s last verse, and lays out in F');
+}
 // Genesis 1:1's munach stands before etnachta: the chart prints that (rows 1–2), never munach before zakef katon
 {
   const picks = api.tropeChooseFigures(u11.units, ctx.torah, { melody: 'torah' });
