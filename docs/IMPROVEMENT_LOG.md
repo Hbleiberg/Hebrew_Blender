@@ -8,11 +8,17 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P3 (**NEW S428 — Supabase report; shared**) | js/ivrit-saves.js | **Every auth event re-lists every attached tool** (8 per Torah Trainer load); give `listen()` `account.html`'s same-user guard (the refocus trade-off is the maintainer's). | found S428
+
+- [ ] P4 (**NEW S428 — shared**) | js/ivrit-saves.js | **A panel's error outlives later good listings** (`plan()` never clears the status). | found S428
+
+- [ ] P4 (**NEW S428 Pass F — 7 carriers**) | index, dashboard, generator ×2, flash ×3 | **A copy both routes refused still says "Copied"** (`execCommand`'s answer ignored; model `dictCopyText`); the backup-textarea Copy buttons go unannounced. | found S428
+
+- [ ] P4 (**NEW S428**) | torah_trainer.html | **Colour-coded copy's rich fallback leaves the focus on `<body>`** (a framed page; HEAD too). | found S428
+
 - [ ] P3 (**NEW S426**) | js/ivrit-saves.js + js/ivrit-account.js | **Closing the account screen drops the focus to `<body>`**: its opener, the chip menu's Account… item, is already hidden. | found S426
 
 - [ ] P3 (**NEW S427 Pass C**) | hebrew_dictionary.html | **A filter chip's ✕, Reset all and the toolbar's Reset drop the focus to `<body>`** (the row rebuilds; Reset hides). | found S427
-
-- [ ] P3 (**NEW S427 Pass C**) | hebrew_dictionary.html | **The export error reads 2.35:1 light / 2.79:1 dark (`#exportBox` opacity .5) and is never announced.** | found S427
 
 - [ ] P3 (**NEW S427 Pass C**) | hebrew_dictionary.html | **The Word Lists ↑ ↓ ✕ buttons are 8–13 × 18–19 px** (WCAG 2.5.8; `.wm-mini`). | found S427
 
@@ -23,8 +29,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S427 Pass C — four small ones**) | hebrew_dictionary.html | **(1)** the emoji tree's ▾ 15×9 px, rows 21 px apart; **(2)** "♀ Feminine" 4.42:1 at 0.62rem; **(3)** Shoresh's empty tiles 2.79:1 / 3.13:1; **(4)** Enter in Save as Word List's name field does nothing. | found S427
 
 - [ ] P4 (**NEW 2026-09-28**) | hebrew_dictionary.html | **A loaded Word List outlives a switch to Emojis or Shoresh**: `setDictMode` hides the banner but keeps `wlFilterOverride`, so a language switch then writes the list's count into `#resultCount` ("2 מילים" over 1,581 emojis). | found 2026-09-28
-
-- [ ] P4 (**NEW 2026-09-28**) | hebrew_dictionary.html | **A word card's copy button says "Copied" when the clipboard refused** (`copyWord`: `.then(finish).catch(finish)`); `1a4b669` fixed the same shape in `_wmCopyFlash`. | found 2026-09-28
 
 - [ ] P4 (**NEW S421 Pass P**) | classroom_dashboard.html | **The "Now showing {name} — the classes from your account are in the class list" switch runs on every signed-in load and credits the account even when it holds nothing**: with the pointer on the untouched default and a class this device made itself, the page switches to that class and says it came from the account …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -260,21 +264,23 @@ _(none)_
 
 ## Done
 
-- [x] 2026-09-28 | (S427 close-out) | branch/deploy note | **S427 = pass C + 4 fixes → draft PR #284.** DRIFT: none; backend clean, keep-alive #16. sw v870→v871; FM not bumped. Gates: 0 asked. Smokes `--sdk`: all seven.
+- [x] 2026-09-29 | (S428 close-out) | branch/deploy note | **S428 = pass F + 4 fixes → draft PR #290.** DRIFT: 21 outside-loop commits; backend clean, keep-alive #17. sw v883→v884; FM not bumped. Smokes: all seven.
 
-- [x] 2026-09-28 | `b61dcf6` | account.html + CSV | (S427; gate 2 at S426) **One project takes Hebrew "ו" unhyphenated**; closes S409's P4. | verified: HEAD, 0/1/3 projects × EN/HE; smoke 53/53
+- [x] 2026-09-29 | `3afb1aa` | hebrew_dictionary.html | (S428) **The export error is readable and announced.** | verified: 8 cells, HEAD 2.35 → 6.26:1; pixel diff
 
-- [x] 2026-09-28 | `ee5f6f2` | hebrew_dictionary.html | (S427) **The Word Lists windows and fields have names.** | verified: CDP HEAD → fixed; boxes identical; smoke 22/22
+- [x] 2026-09-29 | `0d2a941` | hebrew_dictionary.html | (S428) **Copy buttons say "Copied" only when they copied.** | verified: 4 × 3 contexts vs HEAD; 8 cells
 
-- [x] 2026-09-28 | `7a631f6` | hebrew_dictionary.html | (S427) **The Word Lists window keeps the focus; Escape always closes it.** | verified: 4 actions × 4 cells; guard control; 3 smokes
+- [x] 2026-09-29 | `6a63604` | js/ivrit-saves.js | (S428; shared) **A listing refused as not signed in is retried once.** | verified: fake cloud × 4 vs HEAD; 7 smokes
 
-- [x] 2026-09-28 | `e74cbab` | js/ivrit-account.js | (S427; shared) **A code sign-in leaves the focus in the "Sync settings…" window.** | verified: 5 pages (HEAD: the chip); all seven smokes
+- [x] 2026-09-29 | `bbd5f65` | torah_trainer.html | (S428) **Copy link says "Copied" only when it copied.** | verified: 3 × 3 vs HEAD; 8 cells
 
-- [x] 2026-09-28 | (S427 Pass C iter 1) | hebrew_dictionary.html | **C on the dictionary, first since S285.** FOUND 5 P3 + 4 P4. Receipts: loop-findings S427.
+- [x] 2026-09-29 | (S428 Pass F iter 1) | 14 pages | **F on the copy contract.** FOUND 1 P3 (3 carriers) + 3 P4. Receipts: loop-findings S428.
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-29 | **S428** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: torah, dictionary ×2, js/ivrit-saves.js | patterns fixed: copy-claims-success-on-a-refused-clipboard ×2 (NEW) | pass run: F | SW: v883→v884
 
 - 2026-09-28 | **S427** | iters: 1 pass (**C**) + 4 fixes = **5** | tools: dictionary ×2, js/ivrit-account.js (shared), account | patterns fixed: button-focus-lost ×1, visible-label-missing ×1 | pass run: C | SW: v870→v871
 
@@ -314,13 +320,13 @@ _(none)_
 
 - 2026-09-23 | **S409** | iters: 1 pass (**G**) + 4 fixes = **5** | tools: account ×2, dictionary + dashboard + trope, FM + trope + torah | patterns fixed: dark-base-rule-outranks-variant ×3, live-region-display-none-while-empty ×4 | pass run: G | SW: v828→v829
 
-- 2026-09-23 | **S408** | iters: 1 pass (**M**) + 4 fixes = **5** (full budget) | tools: account ×2 (`4a5d353`, `4be12e3` — at its cap), js/ivrit-account.js (`0cd524c` — the session's one shared-script iteration), torah_trainer + trope_tutor (`03f5abd`) | patterns fixed: …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **S427 (2026-09-28):** dictionary (**S427**; **H-next** H S292); account + js/ivrit-account.js (**S427**); js/ivrit-saves.js + manifest (S426); trope, torah (S425; torah **C-next** C S298); flash (S424; **P-next**); resources (S422); index (S421; **G-next**); dashboard (S421; **D-next**); FM (S419); 404 (S418); generator (S415; **N-next**); other chrome + i18n.js (S415); no M: generator, flash, terms.
+- **S428 (2026-09-29):** dictionary (**S428**; **H-next** H S292); torah (**S428**; **C-next** C S298); js/ivrit-saves.js (**S428**); account + js/ivrit-account.js (S427); manifest (S426); trope (S425); flash (S424; **P-next**); resources (S422); index (S421; **G-next**); dashboard (S421; **D-next**); FM (S419); 404 (S418); generator (S415; **N-next**); chrome + i18n.js (S415); no M: generator, flash, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
+
+- **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; 7 open): ACTIVE, streak 0. Detection `f428/copy.mjs`: sentinel, real click, 3 contexts.
 
 - **`button-focus-lost-to-its-own-rebuild`** (**S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, its chips/Reset OPEN**): ACTIVE, streak 0. Detection: press each button of a JS-built list; `document.activeElement` must not be `<body>` right after (trap 181). …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -616,12 +622,12 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - E freshness/site-health: 2026-09-25 (**S417 — 33rd E, first since S403; stalest runnable (O blocked). Delta `82af0d8..93330b5` (torah pitch worklet, under-word translit, trope Etnachta). 25 arms, every zero controlled: precache, CSP static + runtime + a worklet control, links, sitemap/llms/locales, licences, shared blocks, icons, starting fonts, storage keys, workflows, doc identifiers. FIXED …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- F cross-tool consistency: 2026-09-24 (**S414 — 32nd F, first since S397; stalest runnable (O blocked). THE HEADER CHROME on 14 pages: 84 loads + a toggle-name detector (plant 14/14); DOM = visual order 84/84. FOUND: the dark toggle's flipping name (P3, `f9e67b2`), the Arial Full Screen (P4, `b018f98`), 9 P4 logged.**)
+- F cross-tool consistency: 2026-09-29 (**S428 — the copy contract: 13 controls × direct / LMS frame / planted double failure, every zero controlled. FOUND 3 claiming over the old clipboard (P3, FIXED `bbd5f65`, `0d2a941`), 9 ignoring execCommand (2 fixed), 4 unannounced.**)
 
-**Next session (S428):** **BRANCH/PR: S426 + S427 on `claude/eager-galileo-q7pqqb` → draft PR #284 (base `fe88194`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v871**, FM **5.56**, SDK **2.116.0**; backend clean (keep-alive #16); PR #283's email template `Live?` = no.
+**Next session (S429):** **BRANCH/PR: S428 on `claude/improve-loop-s428` → draft PR #290 (base `6e385a4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v884**, FM **5.56**, SDK **2.116.0**; backend clean (keep-alive #17); email template `Live?` = no.
 
-**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), F (S414), then B A E L K N P M G D I H C.** Take **F**.
+**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), B (S415), then A E L K N P M G D I H C F.** Take **B**.
 
-**⚑ STRONGEST UNTAKEN:** the P3s — the account screen's focus return (shared), the dictionary's chip/Reset focus, export error, 8 px list buttons; trope/torah TIMING_SLIPS. **Seed bench: 30.**
+**⚑ STRONGEST UNTAKEN:** the P3s — re-listing on every auth event (shared; maintainer's trade-off), the account screen's focus return (shared), the dictionary's chip/Reset focus, 8 px list buttons. **Seed bench: 30.**
 
-**⚑ HARNESS: traps 1–187 in loop-findings** (`c427/` in S427's receipts; `--sdk` = `npm pack @supabase/supabase-js@2.116.0`); compaction runs ONCE, after the edit script (trap 140); the old handoff and the oldest Done move by hand.
+**⚑ HARNESS: traps 1–194 in loop-findings** (`f428/`; `--sdk` = `npm pack @supabase/supabase-js@2.116.0`); compaction once, after the edits (trap 140); the old handoff and the oldest Done move by hand.

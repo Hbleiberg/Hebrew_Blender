@@ -579,6 +579,13 @@ Writing a link **never navigates**; loading a link **never clobbers** the user's
 - **Button icon:** the affordance carries the shared `hi-link` glyph on all four carriers (in the markup,
   never a 🔗 in the label) — a link, not a clipboard or paperclip, which read as "copy text" and
   "attachment" rather than "link".
+- **A copy says "Copied" only when it copied** (every copy button, share links included): the async
+  clipboard first, then the textarea route when it is missing or refuses — a page framed in an LMS without
+  clipboard permission refuses the async clipboard, yet `execCommand('copy')` still works there — and the
+  confirmation only when one of them succeeded (`execCommand`'s return value counts), the focus the
+  textarea took handed back to the button. **Implemented on:** the dictionary (`dictCopyText`, every copy
+  button) and the Torah Trainer (`ttCopyToClipboard`, verse copies and Copy link). The hub, dashboard,
+  generator and flash cards fall back to the textarea but confirm without reading its answer.
 
 ### 4. Reduced motion
 Every page must carry a `@media (prefers-reduced-motion: reduce)` block, and **every** animation added

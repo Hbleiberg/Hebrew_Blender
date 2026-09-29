@@ -222,6 +222,11 @@ two round trips per tool.
 
 Limits come back as Postgres `check_violation` (`23514`) with a readable message; a duplicate name is
 `23505`; anything RLS refuses is `42501`. The saves adapter maps these to the panel's strings (`errorText`).
+A call that comes back **401** is retried once after the session is re-read (`withClient`): an expired token,
+or a request that reached the database as not signed in, which is what a listing fired while another tab
+refreshes the same sign-in can do (PostgREST answers an anonymous `42501` with 401 and a signed-in one with
+403, which is not retried). A PostgREST error carries no status of its own, so `unwrap` copies the
+response's onto it; without that the retry never fired and the panel said the cloud refused.
 
 **Buckets** (all private): `font-projects` (20 MB, gzip), `font-exports` (5 MB; `font/ttf`, `font/woff2`, `application/zip` **and `application/octet-stream`** — the fourth is not optional, it is what a browser often types a `.ttf` `Blob` as),
 `font-sources` (15 MB, jpeg / png / webp — raised from 2 MB by migration 0002 so photos keep their
