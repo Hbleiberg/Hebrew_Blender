@@ -8556,13 +8556,19 @@ function _ttCopyRichFallback(text, done, html) {
   sel.removeAllRanges(); d.remove();
   if (ok) done(); else _ttCopyFallback(text, done);
 }
+// Only a copy that happened says so (a page framed in an LMS refuses the async clipboard, and a
+// refused fallback used to toast "Copied!" over the old clipboard); the focus select() took goes back.
 function _ttCopyFallback(text, done) {
+  const prev = document.activeElement;
   const ta = document.createElement('textarea');
   ta.value = text; ta.setAttribute('readonly', '');
   ta.style.position = 'fixed'; ta.style.opacity = '0';
   document.body.appendChild(ta); ta.select();
-  try { document.execCommand('copy'); } catch (e) {}
-  ta.remove(); done();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) {}
+  ta.remove();
+  if (prev && prev !== document.body && prev.focus) prev.focus({ preventScroll: true });
+  if (ok) done();
 }
 function copyVerse(numLabel) {
   const v = currentVerses && currentVerses.find(x => `${x.chapter}:${x.verse}` === numLabel);
@@ -9613,13 +9619,7 @@ function copyPracticeLink(btn) {
     }
     showHintToast(msg);
   };
-  if (navigator.clipboard) navigator.clipboard.writeText(url).then(done).catch(done);
-  else {
-    const ta = document.createElement('textarea');
-    ta.value = url; document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); } catch (e) {}
-    document.body.removeChild(ta); done();
-  }
+  ttCopyToClipboard(url, done);   // the page's one writer: a refused clipboard tries the textarea route, and only a copy says so
 }
 
 /* ───── LINK VIEW: a practice link that carries the sender's look ─────
