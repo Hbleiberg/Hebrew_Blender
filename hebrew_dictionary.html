@@ -5717,6 +5717,18 @@ function resetDictFilters() {
   if (!DICT_SHARE_DEFAULTS) return;
   const curMode = getDictState().mode;
   applyDictState(ivritSafeAssign(_dictClone(DICT_SHARE_DEFAULTS), { mode: curMode }));
+  refocusAfterFilterReset(0);
+}
+// A chip's ✕ and every Reset remove the control that held the focus — the chip row rebuilds, the toolbar's
+// Reset hides (pattern button-focus-lost-to-its-own-rebuild). Hand the focus to the ✕ now in the same place
+// (else the row's last), else Reset all, else the mode's own search field — never to <body>.
+function refocusAfterFilterReset(i) {
+  const a = document.activeElement;
+  if (a && a !== document.body && a.isConnected && a.getClientRects().length) return;   // it kept, or already found, a home
+  const xs = document.querySelectorAll('#filterChips .fchip-x');
+  const field = ['searchInput', 'shoreshInput'].map(id => document.getElementById(id)).find(el => el && el.getClientRects().length);
+  const t = xs[Math.min(i, xs.length - 1)] || document.querySelector('#filterChips .fchip-reset') || field;
+  if (t) t.focus();
 }
 
 function captureDictDefaultsAndRestore() {
@@ -5866,7 +5878,7 @@ function resetChipGroup(key) {
   if (!box) return;
   box.addEventListener('click', e => {
     const x = e.target.closest('[data-reset]');
-    if (x) { e.stopPropagation(); resetChipGroup(x.dataset.reset); return; }
+    if (x) { e.stopPropagation(); const i = [...box.querySelectorAll('.fchip-x')].indexOf(x); resetChipGroup(x.dataset.reset); refocusAfterFilterReset(i); return; }
     const body = e.target.closest('[data-chip]');
     if (!body) return;
     if (body.dataset.chip === 'resetAll') { resetDictFilters(); return; }
