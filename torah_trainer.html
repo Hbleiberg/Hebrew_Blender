@@ -1268,15 +1268,16 @@ body.dark .panel-title:hover { background:var(--navy); }   /* one step up from t
 .form-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:10px; }
 .form-row:last-child { margin-bottom:0; }
 .form-row label:not(.toggle) { font-size:0.85rem; font-weight:600; flex:1; color:var(--text); }
-.form-row select, .form-row input[type="text"], .form-row input[type="number"] {
+.form-row select, .form-row input[type="text"], .form-row input[type="number"], .form-row input[type="date"] {
   border:1px solid var(--border); background:var(--white); color:var(--text);
   padding:5px 8px; border-radius:4px; font:inherit; font-size:0.82rem;
   max-width:170px;
   min-height:30px;   /* the 30px floor, as above — these measured 29px in the settings drawer */
 }
-body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .form-row input[type="number"] {
+body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .form-row input[type="number"], body.dark .form-row input[type="date"] {
   background:var(--navy-deep); color:var(--text);
 }
+body.dark .form-row input[type="date"] { color-scheme: dark; }   /* the picker's own popup and icon follow the theme */
 .toggle { position:relative; display:inline-block; width:38px; height:24px; flex-shrink:0; }   /* 24px = the WCAG 2.5.8 touch floor */
 .toggle input { opacity:0; width:0; height:0; }
 .slider {
@@ -2472,6 +2473,24 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     </div>
 
     <div class="panel collapsed">
+      <div class="panel-title" data-i18n="torah.settings.panel_lookup">Torah portion lookup</div>
+      <div class="panel-body">
+        <!-- Any date, past or future → the Shabbat on or after it and what it reads, from js/hebrew-calendar.js on
+             the calendar chosen in Reading schedule (no network). Nothing here is stored: the date belongs to the
+             visit. Open loads the parasha (a doubled week's first; the picker's › reaches the second) or, on a
+             festival Shabbat with a reading in HOLIDAY_READINGS, that reading. -->
+        <div class="form-row">
+          <label for="lookupDate"><span data-i18n="torah.lookup.date_label">Date</span> <span class="tip-wrap" data-i18n-tip="torah.lookup.date_tip" data-tip="Any date, past or future: the reading of the Shabbat on or after it, on the calendar chosen under Reading schedule (Diaspora or Israel)."><i class="tip-icon">?</i></span></label>
+          <input type="date" id="lookupDate" min="1900-01-01" max="2200-12-31">
+        </div>
+        <div id="lookupResult" aria-live="polite" style="font-size:0.82rem;line-height:1.5;margin-bottom:10px;"></div>
+        <div class="form-row" id="lookupOpenRow" hidden>
+          <button class="btn btn-xs btn-secondary" id="lookupOpenBtn" type="button" data-i18n="torah.lookup.open">Open this reading</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel collapsed">
       <div class="panel-title" data-i18n="torah.settings.panel_font">Hebrew font</div>
       <div class="panel-body">
         <div class="font-options" id="fontOptions"></div>
@@ -3513,6 +3532,63 @@ function syncCycleControls() {
   const partner = triennialPartner(p, ctx);
   if (partner) txt += ' ' + I18n.t('torah.schedule.triyear_combined_note', { name: partner.en });
   note.textContent = txt;
+}
+
+/* ══════════════════════════════════════════════════════
+   TORAH PORTION LOOKUP — the drawer's date → parasha panel (js/hebrew-calendar.js, no network).
+   lookupRender() is read-only (applyI18n and the calendar radios call it); lookupOpen() loads what
+   it found through the same writes the picker and the holiday strip use. The date is never stored.
+   ══════════════════════════════════════════════════════ */
+let _lookupTarget = null;   // { parsha, second } | { holiday } — what Open loads
+const LOOKUP_DAY_HOLIDAYS = ['pesach', 'sukkot', 'shavuot', 'rosh_hashanah'];   // the festivals whose day is named
+function lookupTodayISO() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function lookupRender() {
+  const out = document.getElementById('lookupResult'), row = document.getElementById('lookupOpenRow'), inp = document.getElementById('lookupDate');
+  if (!out || !inp || !window.I18n) return;
+  out.textContent = '';
+  if (row) row.hidden = true;
+  _lookupTarget = null;
+  const line = (t) => { const d = document.createElement('div'); d.textContent = t; out.appendChild(d); return d; };
+  if (!inp.value) { line(I18n.t('torah.lookup.empty')); return; }
+  let r = null;
+  try { r = window.HebCal ? HebCal.parshaForDate(inp.value, { israel: settings.schedule === 'israel' }) : null; } catch (e) { r = null; }
+  if (!r) { line(I18n.t('torah.lookup.invalid')); return; }
+  const schedule = I18n.t(settings.schedule === 'israel' ? 'torah.schedule.israel' : 'torah.schedule.diaspora');
+  let civil = '';
+  try { civil = r.date.toLocaleDateString(I18n.lang === 'he' ? 'he-IL' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); } catch (e) { civil = `${r.shabbat.y}-${r.shabbat.m}-${r.shabbat.d}`; }
+  const heb = I18n.t('torah.lookup.hebdate', { d: r.heb.d, month: I18n.t('torah.lookup.month_' + r.heb.monthKey), y: r.heb.y });
+  const when = line(civil + ' · ' + heb);
+  when.style.fontWeight = '600';
+  if (r.kind === 'parsha') {
+    const ps = r.idx.map(parshaByIdx).filter(Boolean);
+    if (!ps.length) { line(I18n.t('torah.lookup.invalid')); return; }
+    const name = ps.map(x => x.en).join('-') + ' (' + ps.map(x => x.he).join('–') + ')';
+    line(I18n.t('torah.lookup.parsha', { name, schedule }));
+    if (cycleKey() === 'triennial') line(I18n.t('torah.lookup.triennial_year', { n: HebCal.triennialYear(r.hyear) }));
+    if (ps[1]) { const n = line(I18n.t('torah.lookup.doubled_note', { first: ps[0].en, second: ps[1].en })); n.style.color = 'var(--muted)'; }
+    _lookupTarget = { parsha: ps[0], second: ps[1] || null };
+    if (row) row.hidden = false;
+    return;
+  }
+  let holiday = I18n.t('torah.lookup.holiday_' + r.holiday);
+  if (LOOKUP_DAY_HOLIDAYS.includes(r.holiday) && r.day > 0) holiday += ' ' + I18n.t('torah.lookup.day', { n: r.day });
+  line(I18n.t('torah.lookup.holiday', { holiday, schedule }));
+  const hk = holidayKeyForCal(r), h = hk ? holidayByKey(hk) : null;
+  if (h) { _lookupTarget = { holiday: h }; if (row) row.hidden = false; }
+}
+function lookupOpen() {
+  const t = _lookupTarget;
+  if (!t) return;
+  clearLoop();
+  if (t.holiday) { applyHolidayReading(t.holiday); return; }
+  settings.parshahKey = t.parsha.en;
+  settings.scope = 'parsha-full';
+  settings.holidayKey = null; settings.customRef = null; settings.customLabel = null;
+  saveSettings();
+  syncParshaSelect();
+  const sel = document.getElementById('scopeSelect');
+  if (sel) sel.value = 'parsha-full';
+  fetchAndRender();
 }
 
 /* ══════════════════════════════════════════════════════
@@ -7728,6 +7804,7 @@ function wireSettingsForm() {
       saveSettings();
       ensureLeyningData();
       syncCycleControls();
+      lookupRender();
       fetchAndRender();
     });
   });
@@ -7737,9 +7814,20 @@ function wireSettingsForm() {
       settings.triennialYear = e.target.value === 'auto' ? 'auto' : parseInt(e.target.value, 10);
       saveSettings();
       syncCycleControls();
+      lookupRender();   // its triennial line follows the year
       if (cycleKey() === 'triennial') fetchAndRender();
     });
   });
+  // Torah portion lookup: today by default; every keystroke of the date re-reads the calendar
+  const ld = document.getElementById('lookupDate');
+  if (ld) {
+    ld.value = lookupTodayISO();
+    lookupRender();   // raw keys until I18n.ready, whose applyI18n renders it again
+    ld.addEventListener('input', lookupRender);
+    ld.addEventListener('change', lookupRender);
+  }
+  const lo = document.getElementById('lookupOpenBtn');
+  if (lo) lo.addEventListener('click', lookupOpen);
   // Color coding. Each list is the on/off switch and the look in one: No highlight turns the
   // coloring off and keeps the stored look for the next time the coloring comes back.
   document.querySelectorAll('input[name="optColorMode"]').forEach(r => {
@@ -9498,6 +9586,7 @@ function applyI18n() {
   try { buildTropeLegend(); } catch (e) {}          // family chips (glyphname keys)
   try { refreshScopeLabels(); } catch (e) {}        // scope dropdown per-parsha labels
   try { syncCycleControls(); } catch (e) {}         // the reading-cycle note (year, loading, failed)
+  try { lookupRender(); } catch (e) {}              // the portion lookup's result, in the new language
   // refreshScopeLabels leaves custom scope alone — that option is injected by
   // updateScopeSelectState, which only runs on a render — so a language switch while a custom
   // range or a holiday reading is open would strand it in the old language. Every ?ref= link
