@@ -1236,7 +1236,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
                 <button class="pos-all-btn" style="flex:1;font-size:0.65rem;" onclick="selectAllMatching()" data-i18n="dictionary.copy.select_all_matching">Select all matching</button>
               </div>
               <textarea id="bulkTextarea" readonly rows="6" aria-label="Bulk-copied words" data-i18n-aria-label="dictionary.copy.bulk_textarea_aria" style="width:100%;font-size:0.75rem;font-family:var(--heb-font);direction:ltr;resize:vertical;border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:var(--white);color:var(--text);box-sizing:border-box;"></textarea>
-              <button class="pos-all-btn" style="width:100%;margin-top:5px;" onclick="copyBulkText()" data-i18n="dictionary.copy.copy_all">Copy All</button>
+              <button class="pos-all-btn" style="width:100%;margin-top:5px;" onclick="copyBulkText(this)" data-i18n="dictionary.copy.copy_all">Copy All</button>
             </div>
             <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
             <div style="font-size:0.72rem;font-weight:600;margin-bottom:2px;color:var(--text);" data-i18n="dictionary.export.head">Export Selected Words</div>
@@ -1795,10 +1795,10 @@ function saveThemeAsWordList() {
   wlOpenSaveModal();        // reads the bulk selection, prompts for a list name
 }
 
-function copyBulkText() {
+function copyBulkText(btn) {
   const ta = document.getElementById('bulkTextarea');
   if (!ta.value) return;
-  navigator.clipboard.writeText(ta.value).then(() => announce(I18n.t('dictionary.copy.copied_toast'))).catch(() => { ta.select(); document.execCommand('copy'); announce(I18n.t('dictionary.copy.copied_toast')); });
+  dictCopyText(ta.value, btn, () => announce(I18n.t('dictionary.copy.copied_toast')));   // the share script's copy route
 }
 
 /* ===== Export Selected Words (Anki / Quizlet) ===== */
@@ -3254,8 +3254,7 @@ window.addEventListener('beforeprint', fillPrintHead);
 window.addEventListener('afterprint', () => { const ph = document.getElementById('printHead'); if (ph) ph.hidden = true; });
 function copyWord(btn, text) {
   const finish = () => { btn.innerHTML = CHECK_ICON; btn.classList.add('copied'); announce(I18n.t('dictionary.copy.copied_toast')); setTimeout(() => { btn.innerHTML = COPY_ICON; btn.classList.remove('copied'); }, 1500); };
-  if (navigator.clipboard) { navigator.clipboard.writeText(text).then(finish).catch(finish); }
-  else { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e) {} document.body.removeChild(ta); finish(); }
+  dictCopyText(text, btn, finish);   // the share script's copy route: only a copy that happened says so
 }
 
 // Basic (browser) TTS depends on the OS having a Hebrew voice — Firefox on Windows
@@ -5709,8 +5708,7 @@ function copyDictShareLink(btn) {
     announce(I18n.t('dictionary.copy.link_copied_toast'));
     setTimeout(() => { lbl.textContent = I18n.t('dictionary.toolbar.copy_link'); btn.classList.remove('copied'); }, 1500);
   };
-  if (navigator.clipboard) { navigator.clipboard.writeText(url).then(done).catch(done); }
-  else { const ta = document.createElement('textarea'); ta.value = url; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta); done(); }
+  dictCopyText(url, btn, done);
 }
 
 function resetDictFilters() {
@@ -5975,20 +5973,24 @@ function closeWordModal() {
     toggleBulkMode(false);
   }
 }
-function _wmCopyFlash(btn, text, label) {
-  const done = () => { btn.textContent = I18n.t('dictionary.copy.copied_flash'); btn.classList.add('copied'); announce(I18n.t('dictionary.copy.copied_toast')); setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1400); };
-  // The textarea route, for a browser without the async clipboard and for one that refuses it (a page framed
-  // in an LMS without clipboard permission — which used to flash "Copied!" over an empty clipboard): only a
-  // copy that happened says so, and the focus select() moved goes back to the button.
+// The page's one copy route (every copy button, this script's and the main one's): the async clipboard, else the
+// textarea route, for a browser without it and for one that refuses it (a page framed in an LMS without clipboard
+// permission — which used to flash "Copied!" over an empty clipboard): only a copy that happened calls done, and
+// the focus select() moved goes back to the button.
+function dictCopyText(text, btn, done) {
   const viaTextarea = () => {
     const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;inset-block-start:0;opacity:0;';
     document.body.appendChild(ta); ta.select();
     let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
-    document.body.removeChild(ta); btn.focus();
+    document.body.removeChild(ta); if (btn) btn.focus();
     if (ok) done();
   };
   if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, viaTextarea);
   else viaTextarea();
+}
+function _wmCopyFlash(btn, text, label) {
+  const done = () => { btn.textContent = I18n.t('dictionary.copy.copied_flash'); btn.classList.add('copied'); announce(I18n.t('dictionary.copy.copied_toast')); setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 1400); };
+  dictCopyText(text, btn, done);
 }
 function _wmBadge(cls, text) { const s = document.createElement('span'); s.className = 'badge ' + cls; s.textContent = text; return s; }
 function _wmCopyButtons(container, textFor) {
