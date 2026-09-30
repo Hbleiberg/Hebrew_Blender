@@ -2373,13 +2373,6 @@
     forgetUser: forgetUser,
     errorText: errorText,
     t: t,
-    // Transitional shims for pages not yet converted (removed once every page passes `status`): a listing, no screen.
-    mountPanel: function (target, tool) { return mountStatus(target, tool); },
-    refresh: function (tool) { return currentUser() ? hydrate([tool]).then(function () { return plans[tool]; }) : planTool(tool); },
-    plan: function (tool) { return planTool(tool); },
-    openAccount: noop, closeAccount: noop,
-    forgetRow: function () { warn('forgetRow is gone: a reset writes its defaults through'); },
-    registerSummary: function () { warn('registerSummary is gone: the account screen was replaced by account.html'); },
     _test: {
       canonJson: canonJson, hashText: hashText, classify: classify, deepMax: deepMax, maxValue: maxValue,
       project: project, restoreOmitted: restoreOmitted, safeParse: safeParse, copyNameFor: copyNameFor,
