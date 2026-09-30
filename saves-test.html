@@ -275,7 +275,7 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
           var ok = H(mk('synced'), false) === null && H(mk('cloud-only'), false) === 'download' && H(mk('local-changed'), false) === 'upload' && H(mk('cloud-changed'), false) === 'download' &&
                    H(mk('local-only'), true) === 'extra' && H(mk('local-only'), false) === 'upload' && H(mk('local-only', { seed: true }), true) === null &&
                    H(mk('local-only', { memory: { h: 'a' } }), false) === 'removeLocal' && H(mk('local-only', { memory: { h: 'z' } }), false) === 'upload' &&
-                   H(mk('deleted-here', { memory: { h: 'b', u: 't' }, local: null }), false) === 'deleteCloud' && H(mk('deleted-here', { memory: { h: 'b', u: 't' }, local: null }), true) === 'download' &&
+                   H(mk('deleted-here', { memory: { h: 'b', u: 't' }, local: null }), false, true) === 'deleteCloud' && H(mk('deleted-here', { memory: { h: 'b', u: 't' }, local: null }), false, false) === 'download' && H(mk('deleted-here', { memory: { h: 'b', u: 't' }, local: null }), true, true) === 'download' &&
                    H(mk('conflict'), false) === 'keepBoth' && H(mk('conflict', { entry: settingsEntry }), false) === 'useCloud' && H(mk('conflict', { entry: settingsEntry, memory: { h: 'q' } }), false) === 'keepMine' &&
                    H(mk('conflict', { entry: scalarEntry, mergeable: true }), false) === 'merge' && H(mk('conflict', { seed: true }), false) === 'download';
           return { ok: ok, detail: '' };

@@ -116,6 +116,7 @@
   //   virtual    instead of lsKey: a store assembled from several keys ({ read, write, remove, applied }) —
   //              the suite-wide preferences row below is the one such store
   //   skipUpload (name, value) → true for a local item that is only a seed (an untouched empty default class):
+  //              never uploaded, and its name is left out of the folder tree that follows the kind (project())
   //              it is listed as "Empty default — not uploaded" and never sent by itself
   // The suite-wide preferences (`Suite` / `prefs`): the small site-wide keys every page reads — one row,
   // assembled from those keys. What travels: the UI language, the theme, the on-screen keyboard layout,
@@ -448,12 +449,38 @@
     for (var i = 0; i < list.length; i++) if (omitMatches(field, String(list[i]))) return true;
     return false;
   }
-  // What travels: the value minus its per-device fields (only a plain object has fields to strip).
+  // What travels: the value minus its per-device fields (only a plain object has fields to strip). A folder tree
+  // travels minus the names of seeds (an item its followed kind never uploads, such as the dashboard's untouched
+  // "Default" preset): the shared tree component appends every local name to the tree and prunes every name it
+  // lacks, so a seed's name in the account's tree would make a device that holds the seed and one that does not
+  // trade a tree write on every load. Dropped from the hash on both sides, the seed stays a local placement only.
   function project(entry, value) {
+    if (entry.shape === 'tree' && entry.follows && isPlainObject(value) && Array.isArray(value.root)) return stripSeedItems(entry, value);
     if (!entry.omit || !entry.omit.length || !isPlainObject(value)) return value;
     var out = {};
     for (var k in value) if (hasOwn(value, k) && !isOmitted(entry, k)) out[k] = value[k];
     return out;
+  }
+  function stripSeedItems(entry, tree) {
+    var followed = entryFor(entry.tool, entry.follows);
+    if (!followed || typeof followed.skipUpload !== 'function') return tree;
+    var seeds = {}, any = false;
+    localItems(followed).forEach(function (it) { if (isSeed(followed, it.name, it.value)) { seeds[it.name] = true; any = true; } });
+    if (!any) return tree;
+    var walk = function (nodes) {
+      var out = [];
+      nodes.forEach(function (n) {
+        if (!isPlainObject(n)) return;
+        if (n.t === 'item') { if (!seeds[n.name]) out.push(n); return; }
+        if (n.t === 'folder') { var c = {}; for (var k in n) if (hasOwn(n, k)) c[k] = n[k]; c.children = walk(Array.isArray(n.children) ? n.children : []); out.push(c); return; }
+        out.push(n);
+      });
+      return out;
+    };
+    var copy = {};
+    for (var k in tree) if (hasOwn(tree, k)) copy[k] = tree[k];
+    copy.root = walk(tree.root);
+    return copy;
   }
   // What lands: the incoming copy minus per-device fields, with this device's own values of those put back.
   function restoreOmitted(entry, incoming, local) {
@@ -1515,12 +1542,15 @@
   //   cloud-changed  download; local-changed → upload
   //   conflict       item → keep both; settings → the account's fields on a row never synced here, this device's
   //                  afterwards; progress / rosters / word lists → the lossless merge; a seed → download
-  function hydrateActionFor(r, first) {
+  // `saw`: this tab saw the item present at its last hydrate or flush and the kind is not stale — the only case a
+  // remembered row that is now absent here is a deletion made here. A tab that never saw it (another tab added it
+  // after this tab's last read, or this tab's page rewrote the key from a stale in-memory copy) lands it again.
+  function hydrateActionFor(r, first, saw) {
     var m = r.entry.merge, shape = r.entry.shape;
     if (r.state === 'synced' || r.state === 'none') return null;
     if (r.state === 'cloud-only') return r.downloadable ? 'download' : null;
     if (r.state === 'deleted-here') {
-      if (first || r.entry.noDeleteByAbsence) return r.entry.noDeleteByAbsence ? null : (r.downloadable ? 'download' : null);
+      if (first || r.entry.noDeleteByAbsence || !saw) return r.entry.noDeleteByAbsence ? null : (r.downloadable ? 'download' : null);
       return 'deleteCloud';
     }
     if (r.state === 'local-only' || r.state === 'cloud-deleted') {
@@ -1602,9 +1632,13 @@
   function landedNote(landed, tool, kind) { if (!landed[tool]) landed[tool] = []; if (landed[tool].indexOf(kind) < 0) landed[tool].push(kind); }
   // Runs one phase of a tool's plan: 'down' (what the account has that this device lacks or has older) or
   // 'rest' (everything else). Row errors skip the row and are named; a connection error stops the run.
+  function sawHere(tool, r) {
+    if (stale[tool] && stale[tool][r.kind]) return false;
+    return !!(seenNames[tool] && seenNames[tool][r.kind] && seenNames[tool][r.kind][r.name]);
+  }
   function runPhase(tool, p, uid, first, phase, res) {
     var order = p.rows.filter(function (r) {
-      var a = hydrateActionFor(r, first);
+      var a = hydrateActionFor(r, first, sawHere(tool, r));
       if (!a || a === 'extra') return false;
       var down = (a === 'download');
       if (phase === 'down') return down;
@@ -1612,7 +1646,7 @@
       return true;
     });
     return seqMap(order, function (row) {
-      var action = hydrateActionFor(row, first);
+      var action = hydrateActionFor(row, first, sawHere(tool, row));
       if (action === 'upload' && !localItem(row.entry, row.name)) return Promise.resolve();   // gone meanwhile (folded into another item)
       if (action === 'upload' && noUploadUntilChanged[tool] && noUploadUntilChanged[tool][row.kind]) return Promise.resolve();
       return runHydrateAction(tool, action, row, uid).then(function (r) {
@@ -1733,8 +1767,9 @@
     if (prefs) Object.keys(SUITE_PREFS.fields).forEach(function (f) { var k = SUITE_PREFS.fields[f].key; if (!entriesByKey[k]) entriesByKey[k] = []; entriesByKey[k].push(prefs); });
     return entriesByKey;
   }
-  // The wrapper's contract: while `purging` a write to a registered key returns without touching storage (the
-  // page's own pagehide writers must not re-create what a sign-out removed); otherwise the original runs first
+  // The wrapper's contract: while `purging` a PAGE write to a registered key returns without touching storage (the
+  // page's own pagehide writers must not re-create what a sign-out removed; the module's own removals, made under
+  // selfWrite, are the purge itself and go through); otherwise the original runs first
   // and its exception propagates unchanged (writeText relies on QuotaExceededError), and only then, guarded,
   // the module notes a page write. The prototype is wrapped once, and only after a signed-in hydration.
   function installHook() {
@@ -1745,7 +1780,7 @@
       return function (key) {
         var mine = false;
         try { mine = this === window.localStorage && !!keyMap()[key]; } catch (e) { mine = false; }
-        if (mine && purging) return;
+        if (mine && purging && selfWrite === 0) return;
         var r = orig.apply(this, arguments);
         try { if (mine && hookOn && selfWrite === 0 && !suspended) onPageWrite(key); } catch (e) {}
         return r;
@@ -1810,7 +1845,7 @@
       var entry = entryFor(tool, kind);
       if (!entry) return Promise.resolve();
       stampWrite(entry, null, 'page');   // other tabs of this tool read before their next save
-      if (stale[tool] && stale[tool][kind]) { delete stale[tool][kind]; res.needHydrate = true; return Promise.resolve(); }
+      if (stale[tool] && stale[tool][kind]) { res.needHydrate = true; return Promise.resolve(); }   // the flag clears when that hydration finishes
       if (entry.shape === 'tree') return flushTree(uid, tool, entry, res);
       return flushKind(uid, tool, entry, res);
     }).then(function () {
@@ -2167,7 +2202,10 @@
     if (cardPending) { cardPending = null; }
     Object.keys(timers).forEach(function (tool) { if (timers[tool]) { clearTimeout(timers[tool]); timers[tool] = null; } });
     if (opts.keepLocal) { forgetUser(uid); hookOn = false; return Promise.resolve({ removed: 0, kept: true }); }
-    var removed = 0;
+    var removed = 0, removedRows = [];
+    var hinted = {};   // from another tab's broadcast: the rows it removed (its memory records are gone by now)
+    (Array.isArray(opts.rows) ? opts.rows : []).forEach(function (x) { if (x && x.tool && x.kind && x.name && x.h) hinted[x.tool + '\u0001' + x.kind + '\u0001' + x.name] = { h: x.h }; });
+    var memOf = function (tool, kind, name) { return metaGet(uid, tool, kind, name) || hinted[tool + '\u0001' + kind + '\u0001' + name] || null; };
     var finalFlush = Promise.resolve().then(function () {
       Object.keys(pages).forEach(function (tool) { var cfg = pages[tool]; if (cfg && !cfg.pulled) withSelfWrite(function () { try { if (typeof cfg.finalFlush === 'function') cfg.finalFlush(); else flushPage(tool); } catch (e) { warn('finalFlush failed:', e); } }); });
       Object.keys(hydratedTools).forEach(function (tool) { if (hydratedTools[tool] !== uid) return; registryFor(tool).forEach(function (e) { if (!dirty[tool]) dirty[tool] = {}; dirty[tool][e.kind] = true; }); });
@@ -2183,7 +2221,7 @@
         var entries = registryFor(tool), removedByKey = {};
         return seqMap(entries.filter(function (e) { return e.shape !== 'tree'; }), function (entry) {
           return seqMap(localItems(entry), function (it) {
-            var mem = metaGet(uid, tool, entry.kind, it.name);
+            var mem = memOf(tool, entry.kind, it.name);
             if (!mem) return Promise.resolve();
             return hashItem(entry, it.value).then(function (h) {
               if (h !== mem.h) return;
@@ -2191,14 +2229,14 @@
               if (entry.shape === 'map' || entry.shape === 'mapIn') op = localRemove(entry, it.name);
               else if (sharesKey(entry)) op = localStripProjected(entry);   // the sibling's items on this key are decided on their own
               else op = localRemove(entry, it.name);
-              return op.then(function () { removed++; metaDelete(uid, tool, entry.kind, it.name); removedByKey[entry.lsKey] = true; });
+              return op.then(function () { removed++; removedRows.push({ tool: tool, kind: entry.kind, name: it.name, h: h }); metaDelete(uid, tool, entry.kind, it.name); removedByKey[entry.lsKey] = true; });
             });
           });
         }).then(function () {
           return seqMap(entries.filter(function (e) { return e.shape === 'tree'; }), function (entry) {
-            var local = localTree(entry), mem = metaGet(uid, tool, entry.kind, DEFAULT_NAME);
+            var local = localTree(entry), mem = memOf(tool, entry.kind, DEFAULT_NAME);
             if (!local || !mem) return Promise.resolve();
-            return hashItem(entry, local).then(function (h) { if (h === mem.h) return localRemove(entry, DEFAULT_NAME).then(function () { metaDelete(uid, tool, entry.kind, DEFAULT_NAME); }); });
+            return hashItem(entry, local).then(function (h) { if (h === mem.h) return localRemove(entry, DEFAULT_NAME).then(function () { removedRows.push({ tool: tool, kind: entry.kind, name: DEFAULT_NAME, h: h }); metaDelete(uid, tool, entry.kind, DEFAULT_NAME); }); });
           });
         });
       });
@@ -2208,8 +2246,7 @@
       metaSave(m);
       delete firstHydrationDone[uid];
       var st = stampsAll();
-      st.signedOut = { uid: uid, at: Date.now() };
-      stampsSave(st);
+      if (!Array.isArray(opts.rows)) { st.signedOut = { uid: uid, at: Date.now(), rows: removedRows }; stampsSave(st); }   // the broadcast (a tab following one does not re-broadcast)
       return { removed: removed };
     });
   }
@@ -2221,7 +2258,7 @@
     if (mine) return;   // this tab's own sign-out: the hook already ran (or keepLocal said not to)
     if (bc && bc.uid === prevUid && Date.now() - bc.at < 120000) {
       // a button sign-out in another tab: the same removal here, then a reload so the in-memory copy goes too
-      removeAccountCache(prevUid, {}).catch(noop).then(function () { location.reload(); });
+      removeAccountCache(prevUid, { rows: bc.rows || [] }).catch(noop).then(function () { location.reload(); });
       return;
     }
     // a session that ended by itself: the copies stay as this device's own data
@@ -2239,7 +2276,7 @@
     lw = isPlainObject(m.lastWrite) ? m.lastWrite : {};
     if (isPlainObject(m.signedOut) && eventUser && m.signedOut.uid === eventUser && Date.now() - m.signedOut.at < 120000) {
       var a = A();
-      if (!(a && typeof a.signOutHandled === 'function' && a.signOutHandled())) { eventUser = null; removeAccountCache(m.signedOut.uid, {}).catch(noop).then(function () { location.reload(); }); return true; }
+      if (!(a && typeof a.signOutHandled === 'function' && a.signOutHandled())) { eventUser = null; removeAccountCache(m.signedOut.uid, { rows: m.signedOut.rows || [] }).catch(noop).then(function () { location.reload(); }); return true; }
     }
     Object.keys(stamps).forEach(function (tool) {
       Object.keys(stamps[tool]).forEach(function (kind) {
