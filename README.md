@@ -347,6 +347,8 @@ signing in.
 | `js/i18n.js` | Shared i18n runtime (`window.I18n`) loaded by every page — the EN / עברית switcher, `data-i18n*` filling, RTL flip |
 | `js/supabase-config.js`, `js/ivrit-account.js`, `js/ivrit-saves.js`, `js/ivrit-projects.js` | The optional account layer — public project settings, sign-in + the header chip, cloud saves + the account screen, Font Maker cloud projects; the only files that talk to Supabase (see *Accounts*) |
 | `js/tt-pitch-worklet.js` | The Torah Trainer's chant pitch shifter — an AudioWorklet processor (time-domain WSOLA) that transposes the PocketTorah recording by whole semitones without changing its tempo; same-origin, precached and served cache-first, so an edit needs the `sw.js` `VERSION` bump |
+| `js/hebrew-calendar.js` (+ `scripts/smoke-hebrew-calendar.mjs`) | The Torah Trainer's Hebrew calendar (`window.HebCal`): the date converter, the weekly parasha for any Shabbat on the Israel and Diaspora schedules, and the triennial-cycle helpers — no network, so finding an ordinary week's parasha asks Sefaria nothing. The smoke proves it without a browser (`--hebcal` adds a check against Hebcal, installed for the check and never committed) |
+| `js/trope-staff.js` (+ `scripts/smoke-trope-staff.mjs`) | The one trope staff engine, loaded by the Trope Tutor (Learn cards, Phrases tab) and the Torah Trainer (the Trope staff layout): the `TROPES` taxonomy (kept identical with `build-trope-index.mjs`'s), the pitch model and the staff drawing. The smoke checks the Torah Trainer's reading-staff half without a browser |
 | `locales/ui-strings.csv`, `locales/<lang>.json` | UI strings — the CSV is the single source of truth; `scripts/build-locales.js` compiles the committed per-language JSON |
 | `scripts/check-i18n.js` (+ `check-i18n-baseline.txt`) | Gate for hardcoded UI strings, physical CSS and CSV quoting; the baseline lists accepted findings |
 | `scripts/check-inline-js.mjs` | Parses every inline `<script>` in every root page — one syntax error kills a page's whole app while the HTML still renders |
@@ -363,6 +365,8 @@ signing in.
 | `data/pockettorah/aliyah.json` | Mirrored from [PocketTorah](https://github.com/rneiss/PocketTorah) — full kriyah verse ranges per parsha |
 | `data/pockettorah/manifest.json` | Maps each parsha+aliyah to its actual upstream label filename |
 | `data/pockettorah/timings/*.txt` | Mirrored PocketTorah word-level timing files (432 files, ~2 MB) |
+| `data/leyning/weekday.json`, `data/leyning/triennial.json` (+ `LICENSE.txt`) | The Torah Trainer's Weekday (each parasha's Monday/Thursday reading) and Triennial (the three-year divisions) cycles, fetched the first time one is chosen — Hebcal's data, BSD 2-Clause, with its notice beside it; never hand-edited |
+| `scripts/build-leyning-data.mjs` | Builds the two leyning files from pinned `@hebcal/leyning` and `@hebcal/triennial` releases (plain Node, zero deps; the tarballs cache in the gitignored `source-data/leyning-cache/`); a rebuild bumps both fetches' `?v=` |
 | `data/trope/trope_index.json` | Pre-built Trope Tutor index — example words + audio clip bounds per cantillation mark (~75 KB) |
 | `scripts/build-trope-index.mjs` | Offline builder for the trope index (plain Node, zero deps); writes `docs/trope_index_report.md` |
 | `docs/trope_index_report.md` | Build report for the trope index — per-trope counts, excluded aliyot, zarka codepoint finding |
