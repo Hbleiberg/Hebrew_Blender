@@ -8,7 +8,19 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**NEW S428 — Supabase report; shared**) | js/ivrit-saves.js | **Every auth event re-lists every attached tool** (8 per Torah Trainer load); give `listen()` `account.html`'s same-user guard (the refocus trade-off is the maintainer's). | found S428
+- [ ] P3 (**S430 A**) | torah_trainer.html | **The Trope staff's Tune buttons flip their name with `aria-pressed`**: Tune all → drop it (as Chant all); verse Tune → one name (`96275c2`). | found S430
+
+- [ ] P4 (**S430 A**) | torah_trainer.html | **`torah.share.include_settings_tip`'s static fallback is behind its CSV** (`560de59`). | found S430
+
+- [ ] P4 (**S430 A**) | torah_trainer.html | **The cycle note's "Try again" drops the focus to `<body>`** (a failed load). | found S430
+
+- [ ] P4 (**S430 A; NEW pattern**) | torah ×3 + generator | **Four fields are named "… More information"** (the label's tip joins the name; model `#ttShareSettings`). | found S430
+
+- [ ] P4 (**S430 A — the maintainer's call**) | torah_trainer.html | **The reading header keeps "Aliyah {n}" English in the Hebrew UI** beside a translated cycle label (also the copy heading, the handout). | found S430
+
+- [ ] P4 (**S430 — shared; smokes**) | js/ivrit-saves.js | **A late `attach()` gets the sync offer only at a later auth event** (HEAD too): its own listing never runs `offerOnce`. | found S430
+
+- [ ] P4 (**S430 A — for E**) | THIRD_PARTY_LICENSES.md | **The Hebcal section omits `data/leyning/`** (BSD-2 data; its LICENSE.txt is present). | found S430
 
 - [ ] P4 (**NEW S428 — shared**) | js/ivrit-saves.js | **A panel's error outlives later good listings** (`plan()` never clears the status). | found S428
 
@@ -262,21 +274,21 @@ _(none)_
 
 ## Done
 
-- [x] 2026-09-29 | (S429 close-out) | branch/deploy note | **S429 = pass B + 4 fixes → draft PR #291.** DRIFT: none. sw v884→v885; FM not bumped. Smokes: all seven.
+- [x] 2026-09-30 | (S430 close-out) | branch/deploy note | **S430 = pass A + 4 fixes → draft PR #293.** DRIFT: 7 outside-loop torah/trope commits (v885→v886); backend unchanged. sw v886→v887; FM not bumped. Gates 2/2. Smokes ×7.
 
-- [x] 2026-09-29 | `359e0e2` | hebrew_dictionary.html | (S429) **Word Lists ↑ ↓ ✕ at the 24px floor.** | verified: 9/9 24×24 vs HEAD 8–13 wide
+- [x] 2026-09-30 | `13cee18` | js/ivrit-saves.js | (S430; shared) **A token refresh no longer re-lists every panel** (a per-tool same-user guard). | verified: refreshes 1/1/1 → 0/0/0; a plant loses the offer; smokes ×7
 
-- [x] 2026-09-29 | `9963de7` | js/ivrit-saves.js + js/ivrit-account.js | (S429; shared) **Closing the account screen focuses the chip when its opener is gone.** | verified: 16/16 vs HEAD; smokes
+- [x] 2026-09-30 | `cb46f67` | trope_tutor.html | (S430) **The static text names the melodies** (3 fallbacks + the FAQ JSON-LD). | verified: runtime identical ×4; static 0/3 → 3/3
 
-- [x] 2026-09-29 | `cea92bf` | hebrew_dictionary.html | (S429) **A chip's ✕ and every Reset keep the focus.** | verified: 11/11 vs HEAD, EN + HE; 8 cells
+- [x] 2026-09-30 | `136cf30` | torah_trainer.html | (S430) **Two drawer rows hide when they should** (`.form-row[hidden]`). | verified: HEAD vs fix, 8 states; probe 2 → 0
 
-- [x] 2026-09-29 | `3b0bebd` | trope_tutor.html | (S429 B) **The mode tabs fit a phone** | verified: 478→320px vs HEAD; 3 devices
-
-- [x] 2026-09-29 | (S429 Pass B iter 1) | all 17 pages | **B on the console.** 0 pageerrors in 216 cells. FOUND 1 P3 (fixed) + 1 P4. Receipts: loop-findings S429.
+- [x] 2026-09-30 | `8cb1a2c` | torah_trainer.html | (S430) **This week's festival reading is the day's own** (IL Shemini Atzeret; D Pesach 8 / Shavuot 2). | verified: vs Hebcal ×894, 117 wrong → 0; a set clock
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-30 | **S430** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: torah ×2, trope, js/ivrit-saves.js (shared) | patterns fixed: author-display ×2, stale-fallback ×3 | pass run: A | SW: v886→v887
 
 - 2026-09-29 | **S429** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: trope, dictionary ×2, shared ×2 | patterns fixed: button-focus-lost, sub-floor | pass run: B | SW: v884→v885
 
@@ -316,19 +328,19 @@ _(none)_
 
 - 2026-09-23 | **S411** | iters: 1 pass (**I**) + 4 fixes = **5** | tools: FM ×2 (at cap), dashboard, account | patterns fixed: error-status-clobbered-by-a-later-routine-write ×1, mobile-input-hints ×1 (un-retired) | pass run: I | SW: v830→v831
 
-- 2026-09-23 | **S410** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: FM ×2 (at cap), account, index | patterns fixed: sub-floor touch target ×1 (inline-styled row) | pass run: D | SW: v829→v830
-
 ### Tool coverage (last-touched date per tool)
 
-- **S429 (2026-09-29):** dictionary (**S429**; **H-next** H S292); trope (**S429**); js/ivrit-saves.js + js/ivrit-account.js (**S429**); torah (S428; **C-next** C S298); account (S427); manifest (S426); flash (S424; **P-next**); resources (S422); index (S421; **G-next**); dashboard (S421; **D-next**); FM (S419); 404 (S418); generator (S415; **N-next**); chrome + i18n.js (S415); no M: generator, flash, terms.
+- **S430 (2026-09-30):** torah (**S430** ×2; **C-next** C S298); trope (**S430**); js/ivrit-saves.js (**S430**); dictionary (S429; **H-next** H S292); js/ivrit-account.js (S429); account (S427); manifest (S426); flash (S424; **P-next**); resources (S422); index (S421; **G-next**); dashboard (S421; **D-next**); FM (S419); 404 (S418); generator (S415; **N-next**); chrome + i18n.js (S415); no M: generator, flash, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`panel-title-keyed-on-an-inner-span`** (NEW S429; torah, generator open): ACTIVE, streak 0. Detection: a `.panel-title` with no own `data-i18n`, then toggle + reload.
+- **`tip-name-joins-its-field's-name`** (NEW S430; torah ×3 + generator OPEN): ACTIVE, streak 0. A `<label>` holding a `.tip-wrap` names its field "… More information". Detection `a430/moreinfo.mjs` (AX tree, panels open, a planted control). Fix: `aria-labelledby` on the text span.
+
+- **`panel-title-keyed-on-an-inner-span`** (NEW S429; torah, generator open; S430: the lookup panel clean): ACTIVE, streak 0. Detection: a `.panel-title` with no own `data-i18n`, then toggle + reload.
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; 7 open): ACTIVE, streak 0. Detection `f428/copy.mjs`: sentinel, real click, 3 contexts.
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, chips/Reset FIXED `cea92bf`; empty-state Clear OPEN**): ACTIVE, streak 0. Detection: press each button of a JS-built list; `document.activeElement` must not be …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, chips/Reset FIXED `cea92bf`; empty-state Clear OPEN; S430 torah's cycle-note Try again OPEN**): ACTIVE, streak 0. Detection: press each button of a JS-built list; …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`editor-re-parse-caps-a-merged-list`** (**NEW S421 Pass P — 1 carrier, FIXED `288af4a`**): ACTIVE, consequence-critical (a sync carries the cut list to the account); never retires. A list the sync merges uncapped is re-parsed by its tool's editor or restore path through the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -342,9 +354,9 @@ _(none)_
 
 - **`pinned-english-without-lang`** (NEW S415; 20 FIXED `f4bbfe8`; S422 resources ×43 `8c56a89`; torah/trope open): ACTIVE, streak 0 (S416 `a416/pinned.mjs`: only those). Detection: HE UI, `closest('[lang]')` of each pinned-English element = "en"; control: a planted span …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`toggle-name-flips-with-its-pressed-state`** (NEW S414 `f9e67b2`; S416 trope tune `96275c2`): ACTIVE, streak 0. Detection `f414/toggles2.mjs`: real click per `[aria-pressed]` control; hit = pressed AND AX …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`toggle-name-flips-with-its-pressed-state`** (NEW S414 `f9e67b2`; S416 trope tune `96275c2`; **S430: torah's Trope staff Tune all + every verse Tune OPEN**): ACTIVE, streak 0. Detection `f414/toggles2.mjs`: real click per `[aria-pressed]` control; hit = pressed AND AX name both change. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`author-display-defeats-the-hidden-attribute`** (S414 `391114b`; S416 FM `3bf0112`; **S425 trope ×2 `7f18933`, `c4bfff7`**): ACTIVE, streak 0. Detection: rendered `[hidden]` with display ≠ none (the S425 …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`author-display-defeats-the-hidden-attribute`** (S414 `391114b`; S416 FM `3bf0112`; S425 trope ×2; **S430 torah ×2 `136cf30`**): ACTIVE, streak 0. Detection: rendered `[hidden]` with display ≠ none (S430 `a430/hiddenrec.mjs`: every `hidden` write + a flex plant) …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`button-group-label-not-programmatic`** (**NEW S413 Pass C — resources ×8 rows FIXED `945b397`; generator, dictionary, hub unmeasured (no `role="group"` at all)**): ACTIVE, streak 0. A row of `aria-pressed` buttons sits under a visible label (a `<span>`, or a `<label>` with …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -358,7 +370,7 @@ _(none)_
 
 - **`text-field-under-16px-zooms-on-ios-focus`** (**NEW S406 Pass N — S408: the sign-in menu's 2 FIXED `0cd524c`; S420: the hub's backup box FIXED `b9ea89f` (16px under `(pointer:coarse)`, the desktop box unchanged); the switcher `<select>` (12.48px on 14 pages, js/i18n.js — …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`textContent-rewrite-erases-a-control-icon`** (S405; 7 writers FIXED `1e8991f`; "Copied!" flashes: dictionary `53d3579`, flash ×2 `38e5b62` S415): ACTIVE, streak 1 (S416). Detection: (a) EN→HE→EN icon count; (b) key census vs whole-control …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`textContent-rewrite-erases-a-control-icon`** (S405; 7 writers FIXED `1e8991f`; "Copied!" flashes: dictionary `53d3579`, flash ×2 `38e5b62` S415): ACTIVE, streak 2 (S416; S430 torah + trope, a plant −1). Detection: (a) EN→HE→EN icon count; (b) key census vs whole-control …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`translated-key-exists-page-hardcodes-english`** (S420: flash "Untitled list" `73554ab`, the S405 census' LAST carrier — 0 known open; S419: FM `whoHasCp` `58a04a2` + torah licence labels `e3700cc`; S416 trope `3331a54`; registered S405 Pass K — flash `0a420fc`, generator …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -432,7 +444,7 @@ _(none)_
 
 - **fixed-width-third-party-embed-inflates-phone-layout**: **REGISTERED + first swept suite-wide 2026-08-28 (S276 Pass N) — hits: 2 carriers, BOTH fixed in-session (`23b2387` contact inline auto-render → data-size=compact ≤388 + ≤430 containment belt; `e4aaa44` resources …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **RE-SWEPT 2026-09-25 (S418 Pass L, 6th sweep): 2,512 sites (1,939 text + 72 html + 501 attr twins) → 3 hits, all torah (the pitch commit's); fixed `c84973e`, re-swept 0.** Detection + controls in …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+- **stale-html-fallback-behind-its-csv-value**: ACTIVE, clean streak 0. **S430 (7th sweep, `a430/stale.py`, a plant caught): 4 hits — trope ×3 FIXED `cb46f67`, torah 1 open.** Detection + controls in …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **undocumented-global-keyboard-shortcut**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A, delta-only): 0 new `document`-level `keydown` handlers (the erase gate's is scoped to its overlay: Escape + Tab trap, exempt shapes) — hits 0, clean streak 2.** S264 1 hit fixed (`f65ce58`); …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -475,8 +487,6 @@ _(none)_
 - **async-store-backed-choice-clobbered-by-a-sync-fallback**: **swept 2026-08-19 (S226 Pass A, 2nd sweep) — CLEAN with receipts, extended past fonts as its own note directed. clean streak: 1 — ACTIVE, and consequence-critical (it destroys saved user data), so it does NOT retire …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **rebuild-where-a-class-swap-would-do**: **REGISTERED 2026-08-16 (S220)** — not yet swept suite-wide, hits: 1 (`26b9e7e`), clean streak: 0 — ACTIVE. **Definition:** a settings toggle whose visual effect is ALREADY gated in CSS on a body/root class, yet whose handler calls the …[full text: IMPROVEMENT_ARCHIVE.md]
-
-_(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added lines, 13 files. **2 classes HIT and reset to streak 0** (`animation-outside-its-reduced-motion-block`, `decorative-glyph-carrier-exposed-to-assistive-tech`); the consequence-critical trio …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **decorative-glyph-carrier-exposed-to-assistive-tech** (**2nd instance fixed 2026-08-15, S219, c2399f1 — Font Maker QA column heads**. That instance sharpened the pattern in a way every future sweep needs: **`aria-label` on the element is NOT a fix for this class.** The FM …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -546,8 +556,6 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 
 - pre-ready-i18n / never-re-rendered — **4th instance fixed 2026-08-06 (S185)**: torah_trainer's TTS voice readout, which `applyI18n` had never re-run (30fe852). **Fix-shape note for the next instance: adding the function to `applyI18n` is only half the fix.** If the pre-ready …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- _(**shadowed-global helper RETIRED at S73** — 3 consecutive clean sweeps (registered S40 w/ 2 torah hits fixed, then clean S64 + S73 over the i18n rollout: one `esc`/`applyI18n` per file; FM `t()` + `pwa.js` `t()` are intentional in-scope locals); correctness-scoped, not …[full text: IMPROVEMENT_ARCHIVE.md]
-
 - _**Retirement rule (as applied):** a pattern retires after 3 consecutive clean sweeps **UNLESS it is consequence-critical** (security or data-loss). The three that hit 3-clean at S64 — unescaped-input/unsafe-parse (XSS), localStorage-vs-AllTools (backup), destructive-bulk …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **placeholder-as-only-accessible-name** (a text input/textarea whose ONLY name source is its `placeholder` — no `aria-label`, `aria-labelledby`, `label[for]`, wrapping `<label>` or `title`. Under ACCNAME `placeholder` is the last-resort source, so the name is announced on an …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -559,8 +567,6 @@ _(**S214 Pass A swept the delta `b0414e5..HEAD`** — 58 commits, 1,747 added li
 - **`custom-property-written-on-documentElement-per-frame`**: RETIRED 2026-09-09 (S357 Pass A, clean streak 3: S330, S343, S357 — the delta's 5 new `setProperty('--heb-font'` writers are one-shot). Shape: a per-frame writer sets a root custom property. Detection: `grep -n 'documentElement.style.setProperty' *.html`, keep writers on a drag/slider/rAF path. Fix: write on the consumers' nearest ancestor. An A2 hit un-retires.
 
 - **`dark-hover-resolves-to-the-rest-colour`**: RETIRED 2026-09-09 (S357 Pass A, clean streak 3: S330, S343, S357 — the delta's 17 new `:hover` rules all measured with feedback). Shape: a `:hover` that resolves to the rest background in the OTHER theme (dark `--warm-gray` = dark `--white`). Detection: `warm-gray` hover rules minus those with a `body.dark X:hover` twin, confirmed by a real dark hover. Fix shape: `body.dark X:hover{background:#2a3349;}`. An A2 hit un-retires.
-
-_(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the whole retired set in one pass.** Delta-only (`30d653f..HEAD`, 611 added lines), per-class receipts in the sweep-status entry above. None un-retired.)_
 
 - elevation-cue-doubled-or-dead (a box-shadow that doubles a border cue, or resolves invisible in the theme it is used in) | retired 2026-09-08 (S343) | 3 consecutive clean sweeps: last hits S311 (14 in the FM help popup, `0c86195`/`88f4940`), then clean S317, S330, S343 (the delta's one new shadow, dictionary `.sidebar-toggle-btn`, is `border:none` + the generator twin's ratified shape). Detector caveat stands: the Impeccable rule id is unreliable as a counter and its threshold is exactly 16px. Re-checked only in Pass A2 / O.
 
@@ -577,8 +583,6 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 - shadowed-global helper (a top-level helper — `esc`/`status`/`applyI18n`/`t`/… — shadowed by an inner decl so a global-expecting call site gets the wrong one) | retired 2026-07-13 (S73) | 3 consecutive clean sweeps: registered S40 (2 torah `esc`-shadow hits fixed, d88fa99), clean S64, clean S73 over the site-wide i18n rollout (one `esc`/`applyI18n` per file; FM's local `t()` in `shortcutGroups()` and `pwa.js`'s self-contained `t(key,fallback)` are intentional in-scope locals, never reach a global-`t` call site). Correctness-scoped, not …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - listener/interval accumulation (a `setInterval`/`setTimeout`/`addEventListener` attached repeatedly without clear/remove) | retired 2026-07-10 (S64) | 3 consecutive clean sweeps (S52, and S64 over the S53–S63 surface — generator chunked-build timer single/self-chaining + `cancelWorksheetBuild` clears on re-entry, `beforeprint` attached once, torah color fns add no listeners, `_appToastTimer` clear-guarded). Structural/perf-scoped → auto-retired. Re-checked only in Pass A2.
-
-- ~~JSON-LD ↔ visible-content parity~~ **← UN-RETIRED 2026-08-08 (S190); it now has an ACTIVE Pattern-health line above. Kept here for its history only.** (an `application/ld+json` FAQ/HowTo/ItemList claim drifting from the visible UI or code constants) | retired 2026-07-10 (S64) | 3 consecutive clean sweeps (S52, and S64 — no `ld+json` block changed across S53–S63; spot-checked torah/generator/trope/FM claims still accurate). SEO/cosmetic-scoped → auto-retired. **Re-check ownership moved from Pass A2 → Pass L (SEO & discoverability) on L's …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - workMode/step reachability (controls reachable in only one workMode/step while the workflow steers users past it) | retired 2026-07-10 (S52) | 3 consecutive clean sweeps (S36, S41-scoped, S52 — trope_tutor's drawer/tabs/tour-skip/mid-drill-return all reachable-by-design). Re-checked only in Pass A2.
 
@@ -604,7 +608,7 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - C accessibility (one tool): 2026-09-28 (**S427 — `hebrew_dictionary.html`, first since S285. Census, Tab walks, 13 scenarios, modes, dialogs; every zero controlled. FOUND 5 P3 + 4 P4; FIXED `7a631f6`, `ee5f6f2`. C-next: torah (S298).**)
 
-- A recurring-pattern sweep: 2026-09-24 (**S416 — 33rd A; stalest runnable. The trope delta `9582fb4..fbfd338` + the S414/S415 rows: 11 arms, 2 NEW, every zero controlled. FOUND 5 P2–P3 (4 fixed) + 4 P4.**)
+- A recurring-pattern sweep: 2026-09-30 (**S430 — 34th A: the delta `a907bf1..99f9fa5` + S416→now; 14 arms, every zero controlled, Hebcal as oracle. FOUND P2, P3 ×2, 4 stale fallbacks, NEW pattern ×4, 3 P4s; FIXED 3.**)
 
 - G print & export fidelity (one tool): 2026-09-27 (**S423 — `flash_cards.html`, its 4th G (S159 → S219 → S279 → S423), over 80 commits since. 8 arms, every zero behind a control: a census of every printable card (13,081 words, 275 emoji, 26 colours, 0–9999) at 4 paper widths, 9 sheet PDFs (duplex 84/84), 20 report + 16 certificate PDFs, plain print, the .ivrit Replace round trip 6/6, share links …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -624,10 +628,10 @@ _(**All six re-confirmed dead 2026-08-01, S179 — the first A2 to cover the who
 
 - F cross-tool consistency: 2026-09-29 (**S428 — the copy contract: 13 controls × direct / LMS frame / planted double failure, every zero controlled. FOUND 3 claiming over the old clipboard (P3, FIXED `bbd5f65`, `0d2a941`), 9 ignoring execCommand (2 fixed), 4 unannounced.**)
 
-**Next session (S430):** **BRANCH/PR: S429 on `claude/improve-loop-s429` → draft PR #291 (base `43a5fd1`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v885**, FM **5.56**, SDK **2.116.0**; backend clean (keep-alive #17); email template `Live?` = no.
+**Next session (S431):** **BRANCH/PR: S430 on `claude/improve-loop-s430` → draft PR #293 (base `99f9fa5`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v887**, FM **5.56**, SDK **2.116.0**; backend unchanged (keep-alive #17); email template `Live?` = no.
 
-**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), A (S416), then E L K N P M G D I H C F B.** Take **A**.
+**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), E (S417), then L K N P M G D I H C F B A.** Take **E** (the Hebcal licence note waits there).
 
-**⚑ STRONGEST UNTAKEN:** the P3 re-listing (shared; the maintainer's call); P4s: the inner-span panels, the dictionary's empty-state focus, 7 copy carriers. **Seed bench: 30.**
+**⚑ STRONGEST UNTAKEN:** P3 torah's Tune toggles (torah was capped); P4s: tip-name ×4, torah's stale tip, Try again, the inner-span panels, 7 copy carriers; "Aliyah" is the maintainer's call. **Seed bench: 30.**
 
-**⚑ HARNESS: traps 1–201 in loop-findings** (`b429/`; `--sdk` = `npm pack @supabase/supabase-js@2.116.0`; real fonts, trap 199); compaction once, after the edits (trap 140); the old handoff and the oldest Done move by hand.
+**⚑ HARNESS: traps 1–207 in loop-findings** (`a430/`; `--sdk` = `npm pack @supabase/supabase-js@2.116.0`; the Hebcal oracle in the scratchpad, trap 206); compaction once (trap 140); the old handoff and the oldest Done move by hand.
