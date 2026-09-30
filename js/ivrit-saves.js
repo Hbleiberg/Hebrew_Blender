@@ -313,6 +313,8 @@
   var pendingRefresh = {};   // tool → the listing promise in flight, so two callers share one listing
   var seen = {};             // tool → kind → the write stamp this tab last acted on, or made itself (recheckWrites)
   var listening = false;
+  var listedFor = {};        // tool → the user id an account event last listed it for (listen)
+  var eventUser = null;      // the user id the last account event was handled for (listen)
   var account = null;        // the open account screen: { root, opener, first } or null
   var splashShown = false;   // the fresh-sign-in splash opens at most once per page load
   // The tool names the account screen shows (the home page's card titles, present in every dictionary).
@@ -2196,9 +2198,17 @@
     var a = A();
     if (a && typeof a.onChange === 'function') {
       a.onChange(function (user) {
+        // The same user again — a token refresh, a refocus, a re-emitted event — lists nothing (account.html's
+        // guard): only a tool not yet listed for this user by an event is, so a tool attached after the first
+        // event (listen() runs at boot) is still listed by the next one, and offerOnce still follows it.
+        var uid = user ? user.id : null;
+        var todo = Object.keys(pages).filter(function (tool) { return listedFor[tool] !== uid; });
+        if (user && uid === eventUser && !todo.length) return;
+        eventUser = uid;
+        if (!user) listedFor = {};
         var listings = [];
         Object.keys(pages).forEach(function (tool) {
-          if (user) listings.push(refresh(tool).catch(noop));
+          if (user) { if (todo.indexOf(tool) > -1) { listedFor[tool] = uid; listings.push(refresh(tool).catch(noop)); } }
           else { plans[tool] = null; say(tool, '', false); render(tool); }
         });
         if (user) { maybeWelcome(user); Promise.all(listings).then(function () { offerOnce(user); }); }

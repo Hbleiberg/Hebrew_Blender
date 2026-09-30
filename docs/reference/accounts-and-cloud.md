@@ -372,7 +372,12 @@ re-reads the key and lists again when the key's `storage` event arrives — and 
 against the stamps it last saw, whenever it becomes visible or returns from the back-forward cache
 (`recheckWrites()`; a background tab on iOS may never get the event, and its next in-memory save would
 otherwise revert the download unseen; a tab's own writes are already seen). `refresh()` coalesces:
-callers that ask while a listing is queued share it, so sign-in lists each tool once.
+callers that ask while a listing is queued share it, so sign-in lists each tool once. An account event for
+the user already listed — a token refresh, a refocus, a re-emitted event — lists nothing: `listen()` keeps,
+per tool, the user an event last listed it for (`account.html`'s same-user guard). A tool attached after the
+first event (`listen()` runs at boot, a page may attach later) is listed by the next event, which `offerOnce`
+still follows; a sign-out forgets them all. So another device's changes reach an open panel at the next
+click, listing or reload, not on refocus.
 
 **Trees follow their items**: the shared tree component prunes nodes whose names are not in the store,
 so a tree is never a row. After actions and after Sync, each tree entry is reconciled once all `follows`
