@@ -829,11 +829,12 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
   - **Text** — `display` (Display: the Layout row first — the four `ttLayout` radios, Side by side / Interlinear /
     Page view / Trope staff, a `.form-row.tt-color-row` holding a `.radio-group.tt-color-list`, the Colors tab's
     wrap-whole idiom, so a group that does not fit beside its label drops whole to the next line — then the
-    show-toggles, the click action, the Font sizes sub-block), `font` (Hebrew font), `translit` (Transliteration:
-    the *Show transliteration* switch `#ttShowTranslit` first, then the placement and scheme controls),
-    `translation` (Translation: the *Show translation* switch `#ttShowTranslation` and, only while it is on, the
-    version list `#ttVersionWrap` / `#ttVersionSelect`, stacked under its label because version titles run long;
-    `syncFormToSettings` and the switch write its `display`).
+    show-toggles, the click action, the Font sizes sub-block), `translation` (Translation, right under the
+    Layout section: the *Show translation* switch `#ttShowTranslation` and, only while it is on, the version list
+    `#ttVersionWrap` / `#ttVersionSelect`, stacked under its label because version titles run long;
+    `syncFormToSettings` and the switch write its `display`), `translit` (Transliteration: the *Show
+    transliteration* switch `#ttShowTranslit` first, then the placement and scheme controls), and `font` (Hebrew
+    font, last: the picker is the tallest section, so the switches a teacher flips most stay above the fold).
   - **Colors** — `vowel_color`, `trope_color` (the two lists of *Trope color coding* above).
   - **Audio** — `audio` (Audio speeds & pitch), `karaoke` (Karaoke highlighting: the Style and Follow groups
     that used to sit under Display's *Karaoke settings* sub-heading; the `h3` keeps `id="lblKaraokeHdr"`, so

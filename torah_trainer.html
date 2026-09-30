@@ -2369,10 +2369,18 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <button class="sreset" onclick="resetFontSize('english')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
       </div>
-      <div class="tt-set" data-set="font">
-        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_font">Hebrew font</h3>
-        <div class="font-options" id="fontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+      <div class="tt-set" data-set="translation">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_translation">Translation</h3>
+        <div class="form-row">
+          <label for="ttShowTranslation" data-i18n="torah.controls.translation_toggle">Show translation</label>
+          <label class="toggle"><input type="checkbox" id="ttShowTranslation"><span class="slider"></span></label>
+        </div>
+        <!-- The version list shows only while the translation is on (syncFormToSettings and the switch write
+             style.display); it stacks under its label because version titles run long. -->
+        <div class="form-row" id="ttVersionWrap" style="display:none; flex-wrap:wrap;">
+          <label for="ttVersionSelect" data-i18n="torah.controls.version_label">Version</label>
+          <select id="ttVersionSelect" style="flex:1 1 100%; max-width:100%;"><option value="" data-i18n="torah.controls.version_loading">Loading…</option></select>
+        </div>
       </div>
       <div class="tt-set" data-set="translit">
         <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_translit">Transliteration</h3>
@@ -2400,18 +2408,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         </div>
         <div id="optTranslitStatus" style="font-size:0.72rem;color:var(--muted);"></div>
       </div>
-      <div class="tt-set" data-set="translation">
-        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_translation">Translation</h3>
-        <div class="form-row">
-          <label for="ttShowTranslation" data-i18n="torah.controls.translation_toggle">Show translation</label>
-          <label class="toggle"><input type="checkbox" id="ttShowTranslation"><span class="slider"></span></label>
-        </div>
-        <!-- The version list shows only while the translation is on (syncFormToSettings and the switch write
-             style.display); it stacks under its label because version titles run long. -->
-        <div class="form-row" id="ttVersionWrap" style="display:none; flex-wrap:wrap;">
-          <label for="ttVersionSelect" data-i18n="torah.controls.version_label">Version</label>
-          <select id="ttVersionSelect" style="flex:1 1 100%; max-width:100%;"><option value="" data-i18n="torah.controls.version_loading">Loading…</option></select>
-        </div>
+      <div class="tt-set" data-set="font">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_font">Hebrew font</h3>
+        <div class="font-options" id="fontOptions"></div>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
       </div>
     </div>
     <div class="tt-tabpanel" id="ttTabPanelColors" role="tabpanel" aria-labelledby="ttTabColors" hidden>
