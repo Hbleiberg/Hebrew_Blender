@@ -226,14 +226,16 @@ A section is a flat `.tt-set` carrying `data-set="<key>"` — the key is the old
 Tab loop) keyed by the old `dashboard.settings.panel_*` string; a group inside one is a `.tt-set-sub` label (the
 former `.sub-section-hdr`s: *English Date* / *Hebrew Date* / *Time*, *Schedule Sync Options*, *Hebrew Font*).
 `.tt-set hr` keeps the rule the panels drew between groups; `.tt-set details > summary:hover` the FAQ rows' underline.
-The fifteen sections by tab (`TT_SECTION_TAB`):
+The sixteen sections by tab (`TT_SECTION_TAB`):
 - **Display** — `display` (Display Options; keeps `id="displayPanel"`).
 - **Calendar** — `datetime`, `dow`, `omer` (last; keeps `id="omerSettingsPanel"` and its inline `display:none` —
   `updateOmerDisplay()` shows the section only during the Omer, so out of season the tab holds two sections).
 - **Weather** — `location` (the first-run card captures location on its own, so first-run never needs this tab; the
   Shabbat-times hint on the Calendar tab, `dashboard.days.shabbat_location_hint`, points here), `weather`.
 - **Class** — `timer`, `picker`.
-- **Text** — `dashtext` (the hidden `#engFontUploadInput` follows it, outside both toolbar copies), `hebrew`.
+- **Text** — `dashtext`, `intermission` (Intermission screen: the mini rendering `#intermissionPreview` and its three
+  buttons — *Presenter sheets* below; the hidden `#engFontUploadInput` follows it, outside both toolbar copies),
+  `hebrew`.
 - **Presets** — `presets` (keeps `id="presetsPanel"`: the tour's Quick-start step and `scripts/smoke-sync.mjs` read
   it), `schedule` (keeps `id="schedulePanel"`, the tour's target).
 - **More** — `backup` (`dashboard.settings.panel_backup`: the `.ivrit` engine's standard markup with its inline
@@ -423,6 +425,24 @@ body.dark #tipFloat { background: #0a0f1c; }
   scroller for a message too tall for the screen, and the text centres with `margin: auto`: a scroller on
   the text itself became a Tab stop on every one-word screen, because a font's ascent/descent outgrows
   `line-height: 1.2` by a few pixels.
+- **The drawer's Intermission screen section** (Text tab, under Dashboard Text) is the sheet's mirror in the
+  settings: `#intermissionPreview`, a 16:9 black card that is a size container, holds `#intermissionPreviewText`, and
+  `renderIntermission()` fills both surfaces from the same words through `renderIntermissionInto(el, interactive)` —
+  the sheet's text (interactive: `normalizeSpoilers` makes its spoilers buttons; skipped while it is being edited)
+  and the preview (a picture, `aria-hidden`, its spoilers left as plates). The typography moved from the id to the
+  shared class **`.im-text`** (both elements carry it), placed after the board's spoiler and effect rules so its class
+  selectors win by order where the id used to win by specificity; each surface keeps its own box and `--im-size` —
+  the sheet's `clamp(2.5rem, 11vmin, 9rem)` and `92vw`, the preview's `11cqmin` and `92cqw` of its card, so the
+  words scale with the card the way they scale with the screen (a browser without container units shows the card
+  with the drawer's text size). The preview refreshes wherever the words or their look can change: every
+  `renderIntermission()` caller (the sheet opening, an edit ending, `applySettings`), `syncFormToSettings` (init and
+  every drawer open), the `headerLang` radios (the default word follows them) and the form's `refreshAll` (the
+  nikkud switches reach `hebDisplay`). Its buttons: *Show screen* → `setIntermission(true)` (the sheet opens over
+  the drawer, which stays; Escape closes the sheet first); *Edit words* → `editIntermissionFromDrawer()` =
+  `setIntermission(true)` + `enterIntermissionEdit()`, the sheet's own in-place editor — the words have one editing
+  surface, never a second contenteditable in the drawer; *Use the default word* → `resetIntermissionWords()`,
+  a `confirm()` then `intermissionHTML = ''`, disabled by `syncIntermissionControls()` while the sheet already shows
+  the default. No new setting: the section reads and writes `intermissionHTML` only.
 
 ### The in-place editor serves two surfaces
 The toolbar commands already act on `activeEditor()` (`_activeEditable || #dashEditor`). The pencil on the

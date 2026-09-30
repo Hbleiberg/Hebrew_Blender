@@ -903,22 +903,11 @@
   #intermission:focus { outline: none; }   /* focused on open so Tab reaches the pencil; the sheet itself is no control */
   #intermissionText {
     --im-size: clamp(2.5rem, 11vmin, 9rem);
-    font-size: var(--im-size); line-height: 1.2; color: #fff;
-    font-family: var(--eng-font), var(--heb-font);
-    margin: auto; text-align: center; max-width: 92vw;
-    overflow-wrap: break-word; padding: 0.05em 0.25em; cursor: default;
+    margin: auto; max-width: 92vw; cursor: default;
   }
-  #intermissionText font[size="1"] { font-size: calc(var(--im-size) * 0.45); }
-  #intermissionText font[size="2"] { font-size: calc(var(--im-size) * 0.6); }
-  #intermissionText font[size="3"] { font-size: var(--im-size); }
-  #intermissionText font[size="4"] { font-size: calc(var(--im-size) * 1.15); }
-  #intermissionText font[size="5"] { font-size: calc(var(--im-size) * 1.35); }
-  #intermissionText font[size="6"] { font-size: calc(var(--im-size) * 1.7); }
-  #intermissionText font[size="7"] { font-size: calc(var(--im-size) * 2.2); }
-  #intermissionText a { color: var(--gold-light); text-decoration: underline; cursor: pointer; }
-  #intermissionText .spoiler { background: #3a3a3a; }   /* the board's #111 plate vanishes into the black sheet */
-  #intermissionText .spoiler:not(.revealed):hover { background: #555; }
-  #intermissionText .spoiler.revealed { background: rgba(255,255,255,0.12); }
+  /* The words' typography, <font size> scale, links, spoilers and effects are .im-text's (after the board's
+     spoiler and effect rules, whose specificity they must beat): the sheet's #intermissionText and the settings
+     drawer's mini rendering (.im-pv-text) share them. */
   #intermissionText.editing { outline: 2px dashed var(--gold); outline-offset: 10px; border-radius: 6px;
     cursor: text; min-width: 2ch; min-height: 1.2em; }
   #intermissionText.editing .spoiler { background: #c0392b55; color: inherit; cursor: text; user-select: text; }
@@ -1512,12 +1501,45 @@
   .fx-glow   { --fx-glow: 0 0 0.08em var(--gold), 0 0 0.3em var(--gold-light); }
   .fx-shadow { --fx-shadow: 0.06em 0.08em 0.12em rgba(0, 0, 0, 0.45); }
   .fx-glow, .fx-shadow { text-shadow: var(--fx-shadow, 0 0 transparent), var(--fx-glow, 0 0 transparent); }
-  body.dark .fx-glow, #intermissionText .fx-glow { --fx-glow: 0 0 0.05em currentColor, 0 0 0.22em currentColor, 0 0 0.55em currentColor; }
-  body.dark .fx-shadow, #intermissionText .fx-shadow { --fx-shadow: 0.06em 0.07em 0 rgba(255, 255, 255, 0.3); }
+  body.dark .fx-glow { --fx-glow: 0 0 0.05em currentColor, 0 0 0.22em currentColor, 0 0 0.55em currentColor; }   /* the Intermission words repeat these two under .im-text below */
+  body.dark .fx-shadow { --fx-shadow: 0.06em 0.07em 0 rgba(255, 255, 255, 0.3); }
   /* A hidden spoiler stays hidden: text-shadow paints even when the text itself is transparent, so an
      effect inside (or around) an unrevealed spoiler would draw its letters. Editors show spoilers anyway. */
-  .dash-text-display:not(.editing) .spoiler:not(.revealed), .dash-text-display:not(.editing) .spoiler:not(.revealed) *,
-  #intermissionText:not(.editing) .spoiler:not(.revealed), #intermissionText:not(.editing) .spoiler:not(.revealed) * { text-shadow: none; }
+  .dash-text-display:not(.editing) .spoiler:not(.revealed), .dash-text-display:not(.editing) .spoiler:not(.revealed) * { text-shadow: none; }
+
+  /* ── The Intermission words, on two surfaces: the sheet's #intermissionText and the settings drawer's mini
+     rendering (.im-pv-text). Typography, the <font size> scale off --im-size, links, spoilers (the board's #111
+     plate vanishes into black) and the dark-surface effects — placed after the board's spoiler and effect rules,
+     because where the specificity ties these class selectors must win by order (the id used to win outright).
+     Each surface sets its own --im-size and box: the sheet clamps 11vmin, the preview takes 11cqmin of its box. ── */
+  .im-text {
+    font-size: var(--im-size); line-height: 1.2; color: #fff;
+    font-family: var(--eng-font), var(--heb-font);
+    text-align: center; overflow-wrap: break-word; padding: 0.05em 0.25em;
+  }
+  .im-text font[size="1"] { font-size: calc(var(--im-size) * 0.45); }
+  .im-text font[size="2"] { font-size: calc(var(--im-size) * 0.6); }
+  .im-text font[size="3"] { font-size: var(--im-size); }
+  .im-text font[size="4"] { font-size: calc(var(--im-size) * 1.15); }
+  .im-text font[size="5"] { font-size: calc(var(--im-size) * 1.35); }
+  .im-text font[size="6"] { font-size: calc(var(--im-size) * 1.7); }
+  .im-text font[size="7"] { font-size: calc(var(--im-size) * 2.2); }
+  .im-text a { color: var(--gold-light); text-decoration: underline; cursor: pointer; }
+  .im-text .spoiler { background: #3a3a3a; }
+  .im-text .spoiler:not(.revealed):hover { background: #555; }
+  .im-text .spoiler.revealed, body.dark .im-text .spoiler.revealed { background: rgba(255,255,255,0.12); }
+  .im-text .fx-glow { --fx-glow: 0 0 0.05em currentColor, 0 0 0.22em currentColor, 0 0 0.55em currentColor; }
+  .im-text .fx-shadow { --fx-shadow: 0.06em 0.07em 0 rgba(255, 255, 255, 0.3); }
+  .im-text:not(.editing) .spoiler:not(.revealed), .im-text:not(.editing) .spoiler:not(.revealed) * { text-shadow: none; }
+  /* The drawer's mini rendering: a 16:9 black card that is a size container, so the words scale with it the way the
+     sheet's scale with the screen (11cqmin ↔ 11vmin, 92cqw ↔ 92vw). Container units measure the container's
+     CONTENT box, so the card carries no padding (measured: 3.3% block padding shrank the words by 12%); the 1px
+     border costs a tenth of a pixel. A browser without container units falls back to the drawer's text size — still
+     a black card with the words on it. aria-hidden in the markup and pointer-events off: a picture of the screen,
+     whose words the screen itself carries — a link in it never navigates, a spoiler never toggles or hovers. */
+  .im-preview { background: #000; border: 1px solid var(--border); border-radius: 8px; aspect-ratio: 16 / 9;
+    container-type: size; display: flex; overflow: hidden; margin-block-end: 8px; pointer-events: none; }
+  .im-pv-text { --im-size: 11cqmin; margin: auto; max-width: 92cqw; }
 
   /* ───── Font selector ───── */
   .font-options { display: flex; flex-direction: column; gap: 4px; }
@@ -2202,7 +2224,7 @@ body.dark .hi-sun{display:inline-block;}
      every [data-i18n] element on load and on each language switch, which would erase the teacher's words;
      renderIntermission() fills it instead. -->
 <div id="intermission" role="dialog" aria-labelledby="intermissionText" aria-hidden="true" tabindex="-1">
-  <div id="intermissionText" dir="auto"></div>
+  <div id="intermissionText" class="im-text" dir="auto"></div>
   <div class="im-foot">
     <span class="bo-hint" data-i18n="dashboard.blackout.hint">Tap, or press Esc, to return</span>
     <button id="intermissionEdit" class="im-edit" type="button" title="Edit the intermission text" data-i18n-title="dashboard.intermission.edit" aria-label="Edit the intermission text" data-i18n-aria-label="dashboard.intermission.edit"><svg class="hi hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg></button>
@@ -2882,6 +2904,18 @@ body.dark .hi-sun{display:inline-block;}
         <div class="form-row" style="margin-top:10px;">
           <label data-i18n="dashboard.text.hide">Hide dashboard text</label>
           <label class="toggle"><input type="checkbox" id="hideDashText"><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="tt-set" data-set="intermission">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_intermission">Intermission screen</h3>
+        <!-- A mini rendering of the sheet: renderIntermission() fills it beside the sheet itself, from the same words
+             through the same .im-text rules. aria-hidden — a picture of the screen; the buttons open the real one. -->
+        <div class="im-preview" id="intermissionPreview" aria-hidden="true"><div class="im-text im-pv-text" id="intermissionPreviewText" dir="auto"></div></div>
+        <p class="tt-set-note" style="margin:0 0 8px;" data-i18n="dashboard.intermission.note">The black screen the I key and the fullscreen strip show. Edit the words on the screen itself; until you do, it shows the default word in the column-header language.</p>
+        <div class="form-row" style="justify-content:flex-start;flex-wrap:wrap;gap:6px;">
+          <button type="button" class="btn btn-xs hi-btn" onclick="setIntermission(true)" title="Intermission screen (I)" data-i18n-title="dashboard.intermission.btn_title" aria-keyshortcuts="I"><svg class="hi hi-sm hi-intermission" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M9.3 7.8h.8v5.4h-.8zM13.9 7.8h.8v5.4h-.8z" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="dashboard.intermission.show">Show screen</span></button>
+          <button type="button" class="btn btn-xs btn-secondary hi-btn" onclick="editIntermissionFromDrawer()" title="Edit the intermission text" data-i18n-title="dashboard.intermission.edit"><svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg><span class="hi-lbl" data-i18n="dashboard.intermission.edit_words">Edit words</span></button>
+          <button type="button" class="btn btn-xs btn-secondary hi-btn" id="intermissionResetBtn" onclick="resetIntermissionWords()"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="dashboard.intermission.reset">Use the default word</span></button>
         </div>
       </div>
       <!-- The English font picker lives in the editor toolbar (both copies of it), so its file input has
@@ -5012,7 +5046,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     datetime: 'calendar', dow: 'calendar', omer: 'calendar',
     location: 'weather', weather: 'weather',
     timer: 'class', picker: 'class',
-    dashtext: 'text', hebrew: 'text',
+    dashtext: 'text', intermission: 'text', hebrew: 'text',
     presets: 'presets', schedule: 'presets',
     backup: 'more', cloud: 'more', about: 'more'
   };
@@ -5741,6 +5775,7 @@ function mountSidebarResize(cfg) {
 
   function syncFormToSettings() {
     const $ = id => document.getElementById(id);
+    renderIntermission();   // the drawer's mini rendering of the Intermission screen (init and every open); the sheet skips while edited
     // A stored value matching no radio — a hand-edited .ivrit, an older build's enum — made the
     // bare querySelector below return null, so `.checked` threw and the whole form sync aborted:
     // the board never rendered, and because the junk had already been saved the next load failed
@@ -5889,7 +5924,7 @@ function mountSidebarResize(cfg) {
       tabs[next].focus();
       tabs[next].click();
     });
-    const refreshAll = () => { updateDateTimeDisplay(); renderDaysList(); renderWeather(); };
+    const refreshAll = () => { updateDateTimeDisplay(); renderDaysList(); renderWeather(); renderIntermission(); };   // the Intermission preview shows the default word through hebDisplay, so nikkud switches reach it too
     document.getElementById('showHolidayCountdown').addEventListener('change', e => {
       settings.showHolidayCountdown = e.target.checked;
       saveSettingsToStorage();
@@ -6059,7 +6094,7 @@ function mountSidebarResize(cfg) {
     document.querySelectorAll('input[name="colorMode"]').forEach(r =>
       r.addEventListener('change', () => { settings.colorCodingMode = r.value; refreshAll(); saveSettingsToStorage(); }));
     document.querySelectorAll('input[name="headerLang"]').forEach(r =>
-      r.addEventListener('change', () => { settings.headerLang = r.value; updateColTitles(); saveSettingsToStorage(); }));
+      r.addEventListener('change', () => { settings.headerLang = r.value; updateColTitles(); renderIntermission(); saveSettingsToStorage(); }));   // the default Intermission word follows headerLang
     document.getElementById('colTitleSizeSlider').addEventListener('input', e => { setColTitleSize(e.target.value); saveSettingsToStorage(); });
     document.getElementById('showTextSizeOptions').addEventListener('change', e => {
       settings.showTextSizeOptions = e.target.checked;
@@ -10460,14 +10495,37 @@ async function onUploadEngFontPick(input){
   function intermissionCustomHTML() {
     return sanitizeDashHTML(typeof settings.intermissionHTML === 'string' ? settings.intermissionHTML : '');
   }
-  function renderIntermission() {
-    const el = document.getElementById('intermissionText');
-    if (!el || isIntermissionEditing()) return;   // never re-render under the teacher's caret
+  // One writer for both surfaces that show the words: the sheet's text (interactive: spoilers become buttons) and
+  // the settings drawer's mini rendering (a picture — its spoilers stay plates inside an aria-hidden box).
+  function renderIntermissionInto(el, interactive) {
     const custom = intermissionCustomHTML();
     if (custom) { el.innerHTML = custom; el.removeAttribute('lang'); }
     else if (intermissionIsHeb()) { el.innerHTML = hebDisplay(INTERMISSION_WORD_HE); el.setAttribute('lang', 'he'); }
     else { el.textContent = INTERMISSION_WORD_EN; el.setAttribute('lang', 'en'); }
-    normalizeSpoilers(el);
+    if (interactive) normalizeSpoilers(el);
+  }
+  function renderIntermission() {
+    const el = document.getElementById('intermissionText');
+    if (el && !isIntermissionEditing()) renderIntermissionInto(el, true);   // never re-render under the teacher's caret
+    // The drawer's mini rendering follows every change — mid-edit too, since intermissionMirror keeps settings current.
+    const pv = document.getElementById('intermissionPreviewText');
+    if (pv) renderIntermissionInto(pv, false);
+    syncIntermissionControls();
+  }
+  // The drawer's buttons: Show opens the sheet (setIntermission, the I key's path); Edit words opens it straight into
+  // the in-place editor, the one editing surface these words have; Use the default word drops the teacher's words —
+  // destructive, so it confirms first — and is disabled while the sheet already shows the default.
+  function syncIntermissionControls() {
+    const b = document.getElementById('intermissionResetBtn');
+    if (b) b.disabled = !intermissionCustomHTML();
+  }
+  function editIntermissionFromDrawer() { setIntermission(true); enterIntermissionEdit(); }
+  function resetIntermissionWords() {
+    if (!intermissionCustomHTML()) return;
+    if (!confirm(I18n.t('dashboard.intermission.reset_confirm'))) return;
+    settings.intermissionHTML = '';
+    saveSettingsToStorage();
+    renderIntermission();
   }
   function setIntermission(on) {
     const ov = document.getElementById('intermission');
