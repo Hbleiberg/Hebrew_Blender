@@ -2166,8 +2166,6 @@ function wlOpenManager() {
   const b = document.createElement('div');
   wlRenderManagerInto(b);
   _openWordModal(b);
-  // The cloud panel lists again each time the manager opens signed in (the module coalesces repeats).
-  if (window.IvritSaves && window.IvritAccount && IvritAccount.status() === 'signed-in') IvritSaves.refresh('Dictionary').catch(() => {});
 }
 function wlRefreshManager(focusKey) {
   const body = document.getElementById('wmBody');
@@ -2194,7 +2192,7 @@ function wlRenderManagerInto(root) {
   if (window.IvritSaves) {
     const host = wlEl('div', { id: 'wlCloudPanel', style: 'margin:0 0 12px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;' });
     root.appendChild(host);
-    IvritSaves.mountPanel(host, 'Dictionary');
+    IvritSaves.mountStatus(host, 'Dictionary');
   }
   const store = wlReadStore();
   const ids = Object.keys(store.lists).sort((a, b) => (store.lists[b].updated || 0) - (store.lists[a].updated || 0));
@@ -5342,8 +5340,7 @@ document.addEventListener('DOMContentLoaded', () => {
     IvritSaves.attach({
       tool: 'Dictionary',
       merges: { wordList: mergeWordList },
-      onLocalChanged: function () { if (document.getElementById('wlCloudPanel')) wlRefreshManager(); },
-      open: wlOpenManager   // the header chip's "Cloud saves…" item
+      onLocalChanged: function () { if (document.getElementById('wlCloudPanel')) wlRefreshManager(); }
     });
   }
   // Deep-link (e.g. from Flash Cards' "My Word Lists" empty state): open the

@@ -6634,7 +6634,7 @@ function mountSidebarResize(cfg) {
   }
   function deleteClass() {
     const c = curClass();
-    const signedIn = !!(window.IvritAccount && typeof IvritAccount.user === 'function' && IvritAccount.user());
+    const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
     if (!confirm(I18n.t(signedIn ? 'dashboard.picker.delete_class_confirm_cloud' : 'dashboard.picker.delete_class_confirm', { name: c.name }))) return;
     const id = settings.activeRosterId;
     delete settings.rosters[id];
@@ -6985,7 +6985,8 @@ function mountSidebarResize(cfg) {
     savePresetsStorage();
   }
   function deletePreset(name) {
-    if (!confirm(I18n.t('dashboard.preset.delete_confirm', { name: name }))) return;
+    const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
+    if (!confirm(I18n.t(signedIn ? 'dashboard.preset.delete_confirm_cloud' : 'dashboard.preset.delete_confirm', { name: name }))) return;
     delete presets[name];
     // Weekly-grid housekeeping: drop the class color; cells keep the name (rendered as "missing",
     // recoverable if the preset is re-created).
@@ -7480,24 +7481,34 @@ function mountFolderTree(cfg){
     // A font from the account landed in the shared store: re-list My Fonts, which also re-applies a face
     // this page had chosen by name but could not show until now.
     window.addEventListener('ivritsuite:fonts', () => { try { refreshMyFonts(); } catch (e) {} });
+    // Signed in, the Backup section's note says the saves live in the account (the key swap survives a language switch).
+    if (window.IvritAccount && typeof IvritAccount.onChange === 'function') {
+      IvritAccount.onChange(u => {
+        const note = document.querySelector('[data-i18n-html="dashboard.backup.auto_explainer"],[data-i18n-html="dashboard.backup.auto_explainer_signed_in"]');
+        if (note) { const k = u ? 'dashboard.backup.auto_explainer_signed_in' : 'dashboard.backup.auto_explainer'; note.setAttribute('data-i18n-html', k); if (window.I18n) note.innerHTML = I18n.t(k); }   // a trusted locale string (the CSV's own markup)
+      });
+    }
     // ftMergeTrees is pure (the shared block's one merge rule); the module writes the result and tells the page.
     IvritSaves.attach({
       tool: 'Dashboard',
-      panel: '#cloudSavesPanel',
-      title: false,                        // the sub-section heading is the heading
-      flush: saveSettingsToStorage,        // synchronous; it also reads the board text off the editor first
+      status: '#cloudSavesPanel',
+      // The module calls flush at every hydration and before every write-through: a roster being typed is
+      // committed and the board text mirrored, but nobody is thrown out of an in-place edit — that only
+      // happens in finalFlush (pagehide, sign-out), as the page's own pagehide handler does.
+      flush: () => { flushRosterIfTyping(); if (_activeEditable) syncActive(); saveSettingsToStorage(); },
+      finalFlush: () => { if (_activeEditable) exitInPlaceEdit(true); flushRosterIfTyping(); saveSettingsToStorage(); },
       merges: {
         presetFolders: ftMergeTrees,
         scheduleFolders: ftMergeTrees,
         roster: mergeRoster
       },
-      onLocalChanged: function (kind, name) {
+      onLocalChanged: function (kind, name, names, opts) {
         if (kind === 'preset' || kind === 'presetFolders') { loadPresets(); renderPresets(); return; }
         if (kind === 'schedule' || kind === 'scheduleFolders') { loadSchedulesStorage(); renderSavedSchedules(); return; }
         // settings and class lists share one key: re-read it, then repaint what the kind touches
         if (kind === 'roster') {
           loadSettingsFromStorage();
-          foldSameNamedClass(name);  // a class this device made under the same name and never synced joins the one that landed
+          if (!(opts && opts.pending)) (names || (name ? [name] : [])).forEach(foldSameNamedClass);  // a class this device made under the same name and never synced joins the one that landed — not while the device-extras card is still asking
           ensureActiveClass();
           normalizePickerSession();
           renderClassManager();
@@ -7530,8 +7541,7 @@ function mountFolderTree(cfg){
         else fetchShabbat(false);
         fetchHolidays();
         updateOmerDisplay();
-      },
-      open: function () { openSettingsAtPanel('cloud'); }   // the header chip's "Cloud saves…" item — the More tab's Cloud saves section
+      }
     });
     // A sync that ran on another page (the home page, the generator) wrote the class lists without this
     // page's hook: adopt the pointer when the dashboard next loads signed in. Fires once when the account
@@ -9414,7 +9424,8 @@ else ivritInit();
   }
 
   function deleteSavedSchedule(name) {
-    if (!confirm(I18n.t('dashboard.schedule.delete_confirm', { name: name }))) return;
+    const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
+    if (!confirm(I18n.t(signedIn ? 'dashboard.schedule.delete_confirm_cloud' : 'dashboard.schedule.delete_confirm', { name: name }))) return;
     delete savedSchedules[name];
     saveSchedulesStorage();
     renderSavedSchedules();
@@ -10901,7 +10912,23 @@ async function onUploadEngFontPick(input){
     if (!localStorage.getItem('hebrewDashboard_tourSeen') && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
       const tb = document.getElementById('tourBtn'); if (tb) tb.classList.add('pulse-attn');
     }
-    if (isFirstVisit && !localStorage.getItem('hebrewDashboard_setupSeen')) openFirstRun();
+    // A fresh device with a stored session: the account's settings may be about to land — the starter card
+    // then has nothing to set up, so it waits for the first hydration and opens only if no settings row came.
+    if (isFirstVisit && !localStorage.getItem('hebrewDashboard_setupSeen')) {
+      const pending = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession() && window.IvritSaves);
+      if (!pending) openFirstRun();
+      else {
+        let decided = false;
+        const decide = (landed) => { if (decided) return; decided = true; if (!landed && !localStorage.getItem('hebrewDashboard_setupSeen')) openFirstRun(); };
+        window.addEventListener('ivritsuite:hydrated', function onHyd(e) {
+          const d = (e && e.detail) || {};
+          if (!Array.isArray(d.tools) || d.tools.indexOf('Dashboard') < 0) return;
+          window.removeEventListener('ivritsuite:hydrated', onHyd);
+          decide(!!(d.landed && d.landed.Dashboard && d.landed.Dashboard.indexOf('settings') >= 0));
+        });
+        setTimeout(() => decide(false), 10000);
+      }
+    }
 
     // ── i18n: re-render dynamic surfaces on load + live language switch ──
     // Static chrome is handled by applyStaticI18n; the rest are JS-built strings that must be
