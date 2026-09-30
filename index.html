@@ -277,9 +277,7 @@ body.dark .ie-modal-body textarea{background:#0d1220;}
 /* The export/import box holds JSON — machine text a teacher copies or pastes, never reads as prose. In the Hebrew UI it inherited dir="rtl", so every line started at the right edge with its punctuation reordered. Only the filled state goes LTR: the (localized) placeholder keeps the UI's direction. */
 .ie-modal-body textarea:not(:placeholder-shown){direction:ltr;text-align:start;}
 .ie-modal-body .btn-row{display:flex;gap:8px;flex-wrap:wrap;}
-.ie-cloud-tool{border:1px solid var(--border);border-radius:6px;padding:4px 10px;margin-block-end:6px;}
-.ie-cloud-tool>summary{cursor:pointer;font-weight:600;font-size:0.9rem;padding:4px 0;}
-.ie-cloud-tool>.ie-cloud-host{padding:4px 0 8px;}
+#cloudStatus{padding:4px 0 8px;}
 .ie-action-btn{padding:7px 16px;border-radius:6px;font-size:0.82rem;font-family:'Source Sans 3',sans-serif;font-weight:600;cursor:pointer;border:none;transition:background 0.15s;}
 .ie-action-btn.primary{background:var(--navy);color:#fff;}
 .ie-action-btn.primary:hover{background:var(--gold);color:var(--navy);}
@@ -643,17 +641,12 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <label class="ie-action-btn secondary" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;margin-bottom:8px;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="home.alltools.myfonts.upload_button">Upload a font</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPickIndex(this)"></label>
         <div id="myFontsList"></div>
       </div>
-      <!-- Cloud saves (optional accounts): one shared js/ivrit-saves.js panel per tool, mounted by initCloudSaves() -->
+      <!-- Your account (optional accounts): the shared js/ivrit-saves.js status line, mounted by initCloudSaves() -->
       <div id="cloudSavesSection" style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
-        <h4 style="margin:0 0 4px;font-size:0.95rem;" class="hi-btn" style="justify-content:flex-start;"><svg class="hi hi-sm hi-cloud" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.2 18.4h9.9a3.9 3.9 0 0 0 .5-7.77 5.6 5.6 0 0 0-10.72-1.2A4.5 4.5 0 0 0 7.2 18.4Z"/></svg><span data-i18n="home.alltools.cloud.title">Cloud saves</span></h4>
-        <p class="ie-note" style="margin:0 0 8px;" data-i18n="home.alltools.cloud.note">One panel per tool: what is saved in this browser next to the copies in your account. A change made in both places to a student profile, a class list or a word list is merged inside that tool.</p>
-        <details class="ie-cloud-tool"><summary data-i18n="shared.cloud.kind_suite_prefs">IvritSuite preferences</summary><div class="ie-cloud-host" data-tool="Suite"></div></details>
-        <details class="ie-cloud-tool"><summary data-i18n="home.card.generator.name">Hebrew Worksheet Generator</summary><div class="ie-cloud-host" data-tool="Worksheet"></div></details>
-        <details class="ie-cloud-tool"><summary data-i18n="home.card.flashcards.name">Hebrew Flash Cards</summary><div class="ie-cloud-host" data-tool="FlashCards"></div></details>
-        <details class="ie-cloud-tool"><summary data-i18n="home.card.dictionary.name">Hebrew Word Lookup</summary><div class="ie-cloud-host" data-tool="Dictionary"></div></details>
-        <details class="ie-cloud-tool"><summary data-i18n="home.card.torah.name">Torah Trainer</summary><div class="ie-cloud-host" data-tool="TorahTrainer"></div></details>
-        <details class="ie-cloud-tool"><summary data-i18n="home.card.trope.name">Trope Tutor</summary><div class="ie-cloud-host" data-tool="TropeTutor"></div></details>
-        <details class="ie-cloud-tool"><summary data-i18n="home.card.dashboard.name">Hebrew Classroom Dashboard</summary><div class="ie-cloud-host" data-tool="Dashboard"></div></details>
+        <h4 style="margin:0 0 4px;font-size:0.95rem;justify-content:flex-start;" class="hi-btn"><svg class="hi hi-sm hi-cloud" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.2 18.4h9.9a3.9 3.9 0 0 0 .5-7.77 5.6 5.6 0 0 0-10.72-1.2A4.5 4.5 0 0 0 7.2 18.4Z"/></svg><span data-i18n="home.alltools.cloud.title">Your account</span></h4>
+        <p class="ie-note" style="margin:0 0 8px;" data-i18n="home.alltools.cloud.note">Signed in, every tool's saved items live in your account and follow you to any device. Manage the account — download everything or delete it — on the account page.</p>
+        <div id="cloudStatus"></div>
+        <p class="ie-note" style="margin:0;"><a href="/account.html" data-i18n="shared.cloud.acct_manage_link">Manage your account: download everything or delete the account…</a></p>
       </div>
       <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
         <button class="ie-action-btn danger hi-btn" onclick="eraseAllSettings()"><svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg><span class="hi-lbl" data-i18n="home.alltools.erase_button">Erase All Settings</span></button>
@@ -811,7 +804,8 @@ async function downloadMyFontFile(name) {
 }
 function deleteMyFontFile(name) {
   if (!confirm(I18n.t('home.alltools.myfonts.remove_confirm', {name: name}))) return;
-  deleteUserFont(name).then(renderMyFontsManager).catch(e => console.error(e));
+  // A teacher's own deletion: the account's row goes too (the shared block's cap eviction never does — that is not a deletion).
+  deleteUserFont(name).then(() => { if (window.IvritSaves && window.IvritAccount && IvritAccount.hasStoredSession()) IvritSaves.fontDeleted(name); }).then(renderMyFontsManager).catch(e => console.error(e));
 }
 function useFontEverywhere(name) {
   // Write the chosen font into every tool's own setting so they all adopt it on next load
@@ -1471,7 +1465,11 @@ async function eraseAllSettings() {
     if (act === 'backup') { ivritSaveFile(); continue; }   // the download starts; the question comes back
     break;
   }
-  if (!confirm(I18n.t('home.alltools.erase_confirm2'))) return;
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
+  if (!confirm(I18n.t(signedIn ? 'home.alltools.erase_confirm2_signed_in' : 'home.alltools.erase_confirm2'))) return;
+  // Signed in, nothing below may reach the account: write-through stops before the first key goes (after the
+  // confirms, so a cancelled Erase leaves it running).
+  if (window.IvritSaves && typeof IvritSaves.suspend === 'function') IvritSaves.suspend();
   const keys = [
     'hebrewBlender_presets',
     'hebrewBlender_lastState',
@@ -1562,7 +1560,7 @@ async function eraseAllSettings() {
   // for, and the cloud-saves sync memory. Erase =
   // signed out on this device; when a session was there the page reloads afterwards, so the chip and
   // the cloud panels (and the SDK's in-memory copy of the session) start from the emptied storage.
-  const accountKeys = Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_accountCache' || k === 'ivritSuite_signInRequest' || k === 'ivritSuite_syncMeta');
+  const accountKeys = Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_accountCache' || k === 'ivritSuite_signInRequest' || k === 'ivritSuite_syncMeta' || k === 'ivritSuite_syncMeta2');
   accountKeys.forEach(k => localStorage.removeItem(k));
   // Awaited: when a session was there the page reloads right after the alert, and a delete still pending
   // then is lost — the teacher's fonts stayed behind whenever the reload was quick (offline, from the cache).
@@ -1835,11 +1833,14 @@ function ivritAskMode() {
     box.style.cssText = 'background:var(--white,#fff);color:var(--text,#1a2744);max-width:360px;width:100%;border-radius:10px;padding:18px;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,0.35);';
     // The shared.ivrit.* values are trusted locale strings; render the body's lightweight markdown (**bold**, \n) to HTML.
     const bodyHtml = I18n.t('shared.ivrit.restore_dialog_body').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+    // Signed in (a session stored), Replace is not offered: it would delete, from the account and every
+    // signed-in device, everything not in the file. Merge adds the file's items to the account.
+    const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
     box.innerHTML = '<div id="ivritAskTitle" style="font-weight:700;font-size:1rem;margin-bottom:8px;">' + I18n.t('shared.ivrit.restore_dialog_title') + '</div>'
-      + '<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;">' + bodyHtml + '</div>'
+      + '<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;">' + bodyHtml + (signedIn ? '<br><br>' + I18n.t('shared.ivrit.restore_signed_in_note') : '') + '</div>'
       + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
       + '<button class="ivrit-ask-btn" data-act="merge">' + I18n.t('shared.ivrit.restore_merge_button') + '</button>'
-      + '<button class="ivrit-ask-btn" data-act="replace">' + I18n.t('shared.ivrit.restore_replace_button') + '</button>'
+      + (signedIn ? '' : '<button class="ivrit-ask-btn" data-act="replace">' + I18n.t('shared.ivrit.restore_replace_button') + '</button>')
       + '<button class="ivrit-ask-btn" data-act="cancel">' + I18n.t('shared.ivrit.restore_cancel_button') + '</button>'
       + '</div>';
     // Accessible dialog (the shared engine's clause): label, modal role, Escape, Tab focus-trap across
@@ -1968,6 +1969,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } catch(e) {}
   if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+  // The account page's zip-restore path and the tools' backup notes send people here to import a file.
+  if (new URLSearchParams(location.search).get('alltools') === 'open') openIEModal();
   initCloudSaves();
 });
 
@@ -1976,11 +1979,6 @@ document.addEventListener('DOMContentLoaded', () => {
    state in memory, so every shape may be downloaded here; the folder trees merge through this page's own
    ftMergeTrees copy, while a profile or word-list changed in both places is left for the tool that owns
    that merge (a second copy of those rules here would drift from the tool's). ── */
-function openCloudSaves() {
-  openIEModal();
-  const s = document.getElementById('cloudSavesSection');
-  if (s) s.scrollIntoView({ block: 'start' });
-}
 function initCloudSaves() {
   if (!window.IvritSaves) return;
   // A suite-wide preference from the account landed (the module's IvritSuite row): follow the theme now —
@@ -1989,27 +1987,27 @@ function initCloudSaves() {
     const want = localStorage.getItem('hebrewBlender_darkMode');
     if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
   });
-  // ftMergeTrees is pure (the shared block's one merge rule); the module writes the result and tells the page.
-  const merges = {
-    Worksheet:  { presetFolders: ftMergeTrees },
-    FlashCards: { presetFolders: ftMergeTrees, profileFolders: ftMergeTrees },
-    Dashboard:  { presetFolders: ftMergeTrees, scheduleFolders: ftMergeTrees },
-    TorahTrainer: { favoriteFolders: ftMergeTrees }
-  };
-  document.querySelectorAll('#cloudSavesSection .ie-cloud-host').forEach(host => {
-    const tool = host.getAttribute('data-tool');
-    IvritSaves.attach({
-      tool,
-      panel: host,
-      title: false,                              // the <summary> names the tool
-      merges: merges[tool] || {},
-      onLocalChanged: () => renderIvritInventory(),   // the "This file will contain:" counts read storage
-      open: openCloudSaves,                      // the header chip's "Cloud saves…" item
-      deviceBackup: openIEModal                  // the account screen's "Back up everything on this device"
+  // A font from the account landed in the shared store: the My Fonts manager and the export cache re-read it.
+  window.addEventListener('ivritsuite:fonts', () => { try { refreshFontsBackupCache(); renderMyFontsManager(); } catch (e) {} });
+  // Signed in, the AllTools note says where the saves live; the Backup panel keeps its file paths for sharing.
+  if (window.IvritAccount && typeof IvritAccount.onChange === 'function') {
+    IvritAccount.onChange(u => {
+      const n = document.querySelector('[data-i18n-html="home.alltools.note"],[data-i18n-html="home.alltools.note_signed_in"]');
+      if (!n) return;
+      n.setAttribute('data-i18n-html', u ? 'home.alltools.note_signed_in' : 'home.alltools.note');
+      if (window.I18n) n.innerHTML = I18n.t(n.getAttribute('data-i18n-html'));   // a trusted locale string (the CSV's own markup), as applyStaticI18n renders it
     });
+  }
+  // One attach for the hub: the suite-wide row plus every tool (nothing on this page holds a tool's state in
+  // memory, so every shape may land here). ftMergeTrees is pure (the shared block's one merge rule); a profile
+  // or word list changed in both places is left for the tool that owns that merge.
+  IvritSaves.attach({
+    tool: 'Suite',
+    status: '#cloudStatus',
+    alsoPull: ['Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard'],
+    merges: { presetFolders: ftMergeTrees, profileFolders: ftMergeTrees, scheduleFolders: ftMergeTrees, favoriteFolders: ftMergeTrees },
+    onLocalChanged: (kind) => { renderIvritInventory(); if (kind === 'font') { try { refreshFontsBackupCache(); renderMyFontsManager(); } catch (e) {} } }   // the "This file will contain:" counts read storage
   });
-  // The account screen on other pages sends people here for the device backup.
-  if (new URLSearchParams(location.search).get('alltools') === 'open') openIEModal();
 }
 document.addEventListener('keydown', e => {
   const bd = document.getElementById('ieBackdrop');
