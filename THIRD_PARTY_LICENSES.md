@@ -90,7 +90,7 @@ The site loads **Google Analytics 4** (`gtag.js`) from `googletagmanager.com` on
 - **Hebrew Tanakh text:** Public domain (Masoretic Text).
 - **English translations:** Each Sefaria version has its own license (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA, or proprietary "Copyright: …" for publisher-licensed editions like JPS 1985 and Robert Alter's translation).
 
-**Used by `torah_trainer.html`:** Hebrew text and English translations are fetched at runtime via Sefaria's REST API (`/api/v3/texts/...` for text, `/api/texts/versions/...` for the per-book version list, and `/api/calendars` for the current parsha).
+**Used by `torah_trainer.html`:** Hebrew text and English translations are fetched at runtime via Sefaria's REST API (`/api/v3/texts/...` for text, `/api/texts/versions/...` for the per-book version list, and `/api/calendars` for a festival Shabbat whose reading the page's own calendar does not hold — the weekly parasha itself is computed locally).
 
 **Used by `scripts/build-trope-index.mjs` (build-time only):** the Trope Tutor's index extracts individual Hebrew Torah words (the Masoretic Text with cantillation, in the export's *Miqra according to the Masorah* edition described below) from Sefaria's public text export bucket (`storage.googleapis.com/sefaria-export`) or the same v3 API. `trope_tutor.html` itself never calls Sefaria at runtime.
 
@@ -132,6 +132,15 @@ The curation, filtering, transliteration fields, era classification, and JSON st
 
 ---
 
+## Torah reading divisions (Hebcal: `@hebcal/leyning`, `@hebcal/triennial`)
+
+- **Project:** https://github.com/hebcal
+- **License:** BSD 2-Clause — Copyright (c) 2020, hebcal. The full notice ships beside the data as `data/leyning/LICENSE.txt`.
+
+**Used by `torah_trainer.html`:** the Weekday and Triennial reading cycles read `data/leyning/weekday.json` (each parasha's Monday/Thursday reading) and `data/leyning/triennial.json` (the three-year divisions). `scripts/build-leyning-data.mjs` builds both from `@hebcal/leyning` 10.0.2 and `@hebcal/triennial` 6.3.3 (the versions are pinned in the script), and this repository redistributes them. Hebcal's calendar code, `@hebcal/core` (GPL-2.0-or-later), is neither shipped nor copied: the weekly parasha comes from the page's own calendar, `js/hebrew-calendar.js` (`scripts/smoke-hebrew-calendar.mjs --hebcal` can check it against a locally installed copy, never committed).
+
+---
+
 ## Third-Party Web Services & APIs
 
 The Classroom Dashboard and the contact / resources forms call these external services at runtime. They
@@ -147,7 +156,8 @@ documented under *Analytics* above.)
 
 **Used by `classroom_dashboard.html`:** candle-lighting / Shabbat times, Jewish-holiday dates and
 countdowns, and the Omer count are fetched at runtime from the Hebcal REST API (`/hebcal` and
-`/shabbat`). No Hebcal code is redistributed here.
+`/shabbat`). No Hebcal code is redistributed here; the Torah Trainer's reading-cycle data is, under its own
+license (*Torah reading divisions* above).
 
 ### Open-Meteo
 
