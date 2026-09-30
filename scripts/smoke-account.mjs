@@ -21,6 +21,8 @@
  *      is pressed; another browser types its address; an expired code is explained; a signed-in
  *      device ignores the link; Hebrew + dark at 800 / 390; two real tool pages.
  *   J. Every analytics page leaves the link's code out of page_location and strips it from the URL.
+ *   K. The name step: a nameless sign-in gets one required step (Continue → PUT /auth/v1/user), "Not now" after a
+ *      failed save, "Sign out instead" signs out, a failing getUser() or a named sign-in gets no step.
  *
  * Run from the repo root:  node scripts/smoke-account.mjs [--sdk path/to/supabase.js]
  * Needs the repo served on http://localhost:8080 — the script starts python3 -m http.server itself.
@@ -41,6 +43,7 @@ const cfgSandbox = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(ROOT, 'js/supabase-config.js'), 'utf8'), cfgSandbox);
 const CFG = cfgSandbox.window.IVRIT_SUPABASE;
 const AUTH_KEY = 'sb-' + new URL(CFG.url).hostname.split('.')[0] + '-auth-token';
+const IvritAccount_CACHE_KEY = 'ivritSuite_accountCache';
 const sdkArg = process.argv.indexOf('--sdk');
 const SDK_FILE = sdkArg > -1 ? process.argv[sdkArg + 1] : null;
 const SDK_BYTES = SDK_FILE && fs.existsSync(SDK_FILE) ? fs.readFileSync(SDK_FILE) : null;
@@ -322,7 +325,7 @@ try {
       const after = await page.evaluate((k) => ({ st: IvritAccount.status(), src: IvritAccount.sessionSource(), req: localStorage.getItem(k), open: !document.querySelector('.ivacct-menu').hidden }), REQUEST_KEY);
       check('I2: one press signs in', after.st === 'signed-in', JSON.stringify(after));
       check('I2: exactly one verify, with this address, this code, type email', calls.length === 1 && calls[0].email === 'teacher@example.org' && calls[0].token === CODE && calls[0].type === 'email', JSON.stringify(calls));
-      check('I2: a fresh sign-in (the sync screen may offer itself)', after.src === 'new', JSON.stringify(after));
+      check('I2: a fresh sign-in (the name step and the device-extras card may follow)', after.src === 'new', JSON.stringify(after));
       check('I2: the request record is gone and the menu closed', after.req === null && !after.open, JSON.stringify(after));
       check('I2: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
@@ -398,6 +401,155 @@ try {
     check(`I7: ${p} — 0 pageerrors`, errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
+  // ---- K. The name step: a sign-in without a name asks for one, once, and fails soft ----------------
+  // An emailed-code account carries no name (Google's does), so the header would read the address forever and
+  // the account page's own field would be the only way to give one. After a signed-in event the module asks
+  // GET /auth/v1/user once (never offline); a user without full_name gets a small required step: Continue →
+  // PUT /auth/v1/user with data.full_name (the profiles mirror fails soft), "Sign out instead" is a real sign-out,
+  // a connection failure turns Continue into "Not now"; getUser() failing means no step this load (outcome 'none').
+  if (SDK_BYTES) {
+    const NAMELESS = { id: '33333333-3333-4333-8333-333333333333', email: 'teacher@example.org', user_metadata: {}, app_metadata: { provider: 'email' } };
+    const nameAuth = (opts) => {   // opts: { userStatus, putStatus, calls }
+      const u = Object.assign({}, NAMELESS, { user_metadata: Object.assign({}, NAMELESS.user_metadata) });
+      return (route) => {
+        const req = route.request();
+        const p = new URL(req.url()).pathname;
+        const headers = { 'content-type': 'application/json', 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,PUT,OPTIONS' };
+        if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers });
+        if (p.endsWith('/otp')) return route.fulfill({ status: 200, headers, body: '{}' });
+        if (p.endsWith('/verify')) return route.fulfill({ status: 200, headers, body: JSON.stringify({ access_token: 'x', refresh_token: 'y', expires_in: 3600, expires_at: 4102444800, token_type: 'bearer', user: u }) });
+        if (p.endsWith('/user')) {
+          if (req.method() === 'PUT') {
+            let body = {}; try { body = JSON.parse(req.postData() || '{}'); } catch (e) {}
+            opts.calls.push({ m: 'PUT', body });
+            if (opts.putStatus && opts.putStatus !== 200) return route.fulfill({ status: opts.putStatus, headers, body: JSON.stringify({ msg: 'refused' }) });
+            if (body.data) u.user_metadata = Object.assign({}, u.user_metadata, body.data);
+            return route.fulfill({ status: 200, headers, body: JSON.stringify(u) });
+          }
+          opts.calls.push({ m: 'GET' });
+          if (opts.userStatus && opts.userStatus !== 200) return route.fulfill({ status: opts.userStatus, headers, body: JSON.stringify({ msg: 'down' }) });
+          return route.fulfill({ status: 200, headers, body: JSON.stringify(u) });
+        }
+        if (p.endsWith('/logout')) { opts.calls.push({ m: 'LOGOUT' }); return route.fulfill({ status: 204, headers }); }
+        return route.fulfill({ status: 404, headers, body: '{}' });
+      };
+    };
+    const signInByCode = async (page) => {
+      await page.click('.ivacct-btn');
+      await page.waitForFunction(() => window.supabase && window.supabase.createClient, null, { timeout: 15000 }).catch(() => {});
+      await page.fill('.ivacct-menu input[type=email]', 'teacher@example.org');
+      await page.click('.ivacct-menu button[type=submit]');
+      await page.waitForFunction(() => { const c = document.querySelector('.ivacct-menu .ivacct-code'); return !!c && !c.hidden; }, null, { timeout: 15000 });
+      await page.fill('.ivacct-menu input[name=code]', '123456');
+      await page.click('.ivacct-menu .ivacct-code button');
+      await page.waitForFunction(() => IvritAccount.status() === 'signed-in', null, { timeout: 15000 });
+    };
+    const stepState = (page) => page.evaluate(() => {
+      const m = document.querySelector('.ivacct-modal');
+      const cont = m && m.querySelector('[data-ivk=continue]');
+      const later = m && [...m.querySelectorAll('button')].find(b => /Not now/.test(b.textContent));
+      return { open: !!m, contDisabled: !!cont && cont.getAttribute('aria-disabled') === 'true', later: !!later && !later.hidden,
+        note: m ? (m.querySelector('.ivacct-note') || {}).textContent : '', outcome: IvritAccount._test.nameStepOutcome(),
+        chip: (document.querySelector('[data-ivacct] .ivacct-text') || {}).textContent || '', focusInStep: !!m && m.contains(document.activeElement) };
+    });
+    // K1 — the happy path: the step opens after the code signs in, Continue waits for a name, the name goes up.
+    {
+      const calls = [];
+      const { ctx, page, errors } = await openPage(browser, { serveSdk: true, auth: nameAuth({ calls }) });
+      await signInByCode(page);
+      await page.waitForSelector('.ivacct-modal', { timeout: 10000 }).catch(() => {});
+      const s1 = await stepState(page);
+      check('K1: the name step opens after a nameless sign-in, Continue locked, focus inside', s1.open && s1.contDisabled && s1.focusInStep && s1.outcome === null, JSON.stringify(s1));
+      check('K1: the module asked GET /auth/v1/user first and sent nothing else', calls.filter(c => c.m === 'GET').length >= 1 && calls.filter(c => c.m === 'PUT').length === 0, JSON.stringify(calls));
+      await page.click('.ivacct-modal [data-ivk=continue]', { force: true });   // aria-disabled, not disabled: the press must reach the handler
+      const s2 = await stepState(page);
+      check('K1: a locked Continue press says why and sends nothing', /1 to 80/.test(s2.note) && calls.filter(c => c.m === 'PUT').length === 0, JSON.stringify(s2));
+      await page.fill('#ivacct-name-input', '  Morah   Rivka ');
+      await page.click('.ivacct-modal [data-ivk=continue]');
+      await page.waitForFunction(() => !document.querySelector('.ivacct-modal'), null, { timeout: 10000 }).catch(() => {});
+      const s3 = await stepState(page);
+      const put = calls.find(c => c.m === 'PUT');
+      check('K1: PUT /auth/v1/user carries the normalized full_name; the profiles mirror (aborted here) fails soft', !!put && put.body.data && put.body.data.full_name === 'Morah Rivka', JSON.stringify(calls));
+      check('K1: the step closes with outcome "named" and the chip shows the first name', !s3.open && s3.outcome === 'named' && s3.chip === 'Morah', JSON.stringify(s3));
+      check('K1: Escape never closed it, the name cache holds the name', await page.evaluate((k) => { const c = JSON.parse(localStorage.getItem(k) || '{}'); return c.name === 'Morah Rivka'; }, IvritAccount_CACHE_KEY), 'cache');
+      check('K1: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await page.screenshot({ path: path.join(SHOTS, 'K1-named.png') });
+      await ctx.close();
+    }
+    // K2 — a remembered session without a name asks on the next load too (once), and Escape is ignored.
+    {
+      const calls = [];
+      const seed = { [AUTH_KEY]: JSON.stringify({ access_token: 'x', refresh_token: 'y', expires_at: 4102444800, token_type: 'bearer', user: NAMELESS }), ivritSuite_accountCache: JSON.stringify({ email: NAMELESS.email, name: '' }) };
+      const { ctx, page, errors } = await openPage(browser, { serveSdk: true, seed, auth: nameAuth({ calls }) });
+      await page.waitForSelector('.ivacct-modal', { timeout: 15000 }).catch(() => {});
+      await page.keyboard.press('Escape');
+      const s = await stepState(page);
+      check('K2: a stored nameless session gets the step on load; Escape does not close it', s.open && s.outcome === null, JSON.stringify(s));
+      check('K2: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+    // K3 — GET /auth/v1/user fails: no step this load, outcome 'none', the page stays usable.
+    {
+      const calls = [];
+      const { ctx, page, errors } = await openPage(browser, { serveSdk: true, auth: nameAuth({ calls, userStatus: 500 }) });
+      await signInByCode(page);
+      await page.waitForFunction(() => IvritAccount._test.nameStepOutcome() !== null, null, { timeout: 10000 }).catch(() => {});
+      const s = await stepState(page);
+      check('K3: getUser() failing → no step, outcome "none", still signed in', !s.open && s.outcome === 'none' && (await page.evaluate(() => IvritAccount.status())) === 'signed-in', JSON.stringify(s));
+      check('K3: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+    // K4 — the PUT fails (the connection, not the name): Continue is joined by "Not now", which closes with 'later'.
+    {
+      const calls = [];
+      const { ctx, page, errors } = await openPage(browser, { serveSdk: true, auth: nameAuth({ calls, putStatus: 503 }) });
+      await signInByCode(page);
+      await page.waitForSelector('.ivacct-modal', { timeout: 10000 });
+      await page.fill('#ivacct-name-input', 'Morah Rivka');
+      await page.click('.ivacct-modal [data-ivk=continue]');
+      await page.waitForFunction(() => { const m = document.querySelector('.ivacct-modal'); return !!m && [...m.querySelectorAll('button')].some(b => /Not now/.test(b.textContent) && !b.hidden); }, null, { timeout: 10000 }).catch(() => {});
+      const s1 = await stepState(page);
+      check('K4: a failed save shows the error and offers "Not now"', s1.open && s1.later && s1.note.length > 0, JSON.stringify(s1));
+      await page.click('.ivacct-modal button:has-text("Not now")');
+      const s2 = await stepState(page);
+      check('K4: "Not now" closes the step with outcome "later"; still signed in', !s2.open && s2.outcome === 'later' && (await page.evaluate(() => IvritAccount.status())) === 'signed-in', JSON.stringify(s2));
+      check('K4: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+    // K5 — "Sign out instead" is a real sign-out: logout is called and the page comes back anonymous.
+    {
+      const calls = [];
+      const { ctx, page, errors } = await openPage(browser, { serveSdk: true, auth: nameAuth({ calls }) });
+      await signInByCode(page);
+      await page.waitForSelector('.ivacct-modal', { timeout: 10000 });
+      await Promise.all([page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {}), page.click('.ivacct-modal [data-ivk=signout]')]);
+      await page.waitForSelector('.ivacct-btn', { timeout: 10000 });
+      await page.waitForFunction(() => window.IvritAccount && IvritAccount.status() !== 'loading', null, { timeout: 10000 }).catch(() => {});
+      const st = await page.evaluate((k) => ({ status: IvritAccount.status(), key: localStorage.getItem(k), modal: !!document.querySelector('.ivacct-modal') }), AUTH_KEY);
+      check('K5: "Sign out instead" logged out and reloaded anonymous, no session key, no step', calls.some(c => c.m === 'LOGOUT') && st.status === 'anonymous' && st.key === null && !st.modal, JSON.stringify(st) + ' ' + JSON.stringify(calls));
+      check('K5: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+    // K6 — a user whose sign-in already carries a name never sees the step.
+    {
+      const calls = [];
+      const named = nameAuth({ calls });
+      const withName = (route) => { const req = route.request(); const p = new URL(req.url()).pathname;
+        if (p.endsWith('/verify') || (p.endsWith('/user') && req.method() === 'GET')) {
+          const headers = { 'content-type': 'application/json', 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,PUT,OPTIONS' };
+          const u = Object.assign({}, NAMELESS, { user_metadata: { full_name: 'Test Teacher' } });
+          return route.fulfill({ status: 200, headers, body: JSON.stringify(p.endsWith('/verify') ? { access_token: 'x', refresh_token: 'y', expires_in: 3600, expires_at: 4102444800, token_type: 'bearer', user: u } : u) });
+        }
+        return named(route); };
+      const { ctx, page, errors } = await openPage(browser, { serveSdk: true, auth: withName });
+      await signInByCode(page);
+      await page.waitForFunction(() => IvritAccount._test.nameStepOutcome() !== null, null, { timeout: 10000 }).catch(() => {});
+      const s = await stepState(page);
+      check('K6: a named sign-in gets no step (outcome "none") and the chip shows the name', !s.open && s.outcome === 'none' && s.chip === 'Test', JSON.stringify(s));
+      check('K6: 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+  } else { console.log('SKIP K: no --sdk file given'); }
   // ---- J. The code never reaches Analytics ------------------------------------------------------
   // Every page's inline gtag('config') runs during parse, before the module strips the hash, and reports an
   // explicit page_location: it must drop a hash carrying the link and keep any other hash as before.
