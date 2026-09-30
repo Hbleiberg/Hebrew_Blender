@@ -3505,13 +3505,20 @@ function localWeekReading(date) {
   if (!window.HebCal) return null;
   try { return HebCal.parshaForDate(date || new Date(), { israel: settings.schedule === 'israel' }); } catch (e) { return null; }
 }
-// The festival Shabbatot whose reading is one of HOLIDAY_READINGS (a Shabbat Chol HaMoed has none here).
+// The festival Shabbatot whose reading is one of HOLIDAY_READINGS as the table holds it. Not here: a Shabbat Chol
+// HaMoed, and the Diaspora's Pesach 8 and Shavuot 2, which on Shabbat read from Deuteronomy 14:22 while the table's
+// entries start at 15:19 — those still ask Sefaria's calendar for the day's reading. In Israel Shemini Atzeret is
+// also Simchat Torah, and its reading is V'Zot HaBerachah (holidayKeyForCal).
 const HOLIDAY_KEY_BY_CAL = {
   'rosh_hashanah:1': 'rosh-hashanah-1', 'rosh_hashanah:2': 'rosh-hashanah-2', 'yom_kippur:1': 'yom-kippur',
   'sukkot:1': 'sukkot-1', 'sukkot:2': 'sukkot-2', 'shmini_atzeret:1': 'shemini-atzeret', 'simchat_torah:1': 'simchat-torah',
-  'pesach:1': 'pesach-1', 'pesach:2': 'pesach-2', 'pesach:7': 'pesach-7', 'pesach:8': 'pesach-8', 'shavuot:1': 'shavuot-1', 'shavuot:2': 'shavuot-2',
+  'pesach:1': 'pesach-1', 'pesach:2': 'pesach-2', 'pesach:7': 'pesach-7', 'shavuot:1': 'shavuot-1',
 };
-function holidayKeyForCal(r) { return r && r.kind === 'holiday' ? (HOLIDAY_KEY_BY_CAL[r.holiday + ':' + r.day] || null) : null; }
+function holidayKeyForCal(r) {
+  if (!r || r.kind !== 'holiday') return null;
+  if (r.israel && r.holiday === 'shmini_atzeret') return 'simchat-torah';
+  return HOLIDAY_KEY_BY_CAL[r.holiday + ':' + r.day] || null;
+}
 function parshaByIdx(i) { return parshiyotData.find(x => x.n === i + 1) || null; }
 // The panel's read-only half: the radios, the year row and the note under them (called from
 // syncFormToSettings, after every render and from applyI18n).

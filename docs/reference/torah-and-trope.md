@@ -821,9 +821,12 @@ stored value reads Full and stays stored) and the triennial year (`settings.trie
   oracle is GPL and nothing of it is copied) — 20,976 agree. A change to the rules is not done until both pass.
 - **This week** (`goToCurrentParshah`, and the first visit in `init`) reads the local calendar first: a parasha
   opens (a doubled week its first, as the Sefaria path always did), a festival Shabbat whose reading is in
-  `HOLIDAY_READINGS` opens it (`HOLIDAY_KEY_BY_CAL`), and only a Shabbat Chol HaMoed still asks Sefaria's
-  calendar for the day's reading (`fetchCurrentParshah`, the old path, kept as the fallback). An ordinary week
-  therefore needs no network.
+  `HOLIDAY_READINGS` as the table holds it opens it (`holidayKeyForCal`: in Israel Shemini Atzeret is also Simchat
+  Torah, so it opens V'Zot HaBerachah), and a Shabbat the table does not hold still asks Sefaria's calendar for the
+  day's reading (`fetchCurrentParshah`, the old path, kept as the fallback): Chol HaMoed, and the Diaspora's
+  Pesach 8 and Shavuot 2, which on Shabbat read from Deuteronomy 14:22 (the table's entries start at 15:19). Every
+  festival Shabbat it opens, 5760–5900 on both calendars (438 of 894), agrees with `@hebcal/leyning`'s Torah
+  reading (the oracle, never shipped). An ordinary week therefore needs no network.
 - **The cycles.** Full is PocketTorah's `aliyah.json`, as before. Triennial and Weekday read `data/leyning/*.json`
   — `weekday.json` (each parasha's Monday/Thursday reading, its first aliyah in three) and `triennial.json` (the
   three-year divisions: every parasha's `variations`, the seven combined entries' `years` and `patterns`) — built
@@ -856,7 +859,7 @@ stored value reads Full and stays stored) and the triennial year (`settings.trie
   with the 14 `torah.lookup.month_*` keys), the parasha (`torah.lookup.parsha`, a doubled week joined and noted)
   or the festival (`torah.lookup.holiday_*`, the day for Pesach, Sukkot, Shavuot and Rosh Hashanah) on the chosen
   calendar, and the triennial year while that cycle is on; **Open** (`lookupOpen`) loads the parasha through the
-  picker's own writes, or the festival reading when `HOLIDAY_KEY_BY_CAL` names one. The calendar radios, the
+  picker's own writes, or the festival reading when `holidayKeyForCal` names one. The calendar radios, the
   cycle radios and `applyI18n` re-render it.
 
 ---
