@@ -109,7 +109,7 @@ dashboard.about.faq_a2,"Yes. The dashboard is designed for SmartBoards, projecto
 dashboard.about.faq_a3,Yes. The dashboard is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes.,כן. לוח המחוונים חינמי לשימוש תחת רישיון CC BY-NC-SA 4.0 למטרות חינוכיות לא-מסחריות.,FAQ answer,
 dashboard.about.faq_a4,Yes. The Hebrew (Jewish) date and the corresponding Gregorian date are shown live and update automatically each day.,כן. התאריך העברי (היהודי) והתאריך הלועזי המקביל מוצגים בזמן אמת ומתעדכנים אוטומטית מדי יום.,FAQ answer,
 dashboard.about.faq_a5,"Click <strong>Tour</strong> in the top bar for a quick walkthrough. First-time teachers also get a setup card. To switch layouts, open Settings → Presets and tap a Quick-start layout — Hebrew classroom, Morning routine, or a General classroom layout for non-Judaics rooms — then tweak it and Save your own preset.","לחצו על <strong>סיור</strong> בסרגל העליון לסיור מהיר. מורים חדשים מקבלים גם כרטיס הגדרה. כדי להחליף פריסות, פתחו הגדרות ← תבניות והקישו על פריסת התחלה מהירה — כיתת עברית, שגרת בוקר, או פריסת כיתה כללית לכיתות שאינן לימודי יהדות — ואז התאימו אותה ושמרו תבנית משלכם.",FAQ answer,html
-dashboard.about.faq_a6,"Yes. Settings → Schedule Sync lets you build a weekly grid — paint each class across your periods and days, or import the whole grid from your school calendar's .ics or .csv export; the board reconfigures itself through the day and shows a live Now / Next display and a countdown.","כן. הגדרות ← סנכרון מערכת שעות מאפשר לבנות רשת שבועית — לצבוע כל כיתה על פני השיעורים והימים, או לייבא את הרשת כולה מייצוא ‎.ics או ‎.csv של יומן בית הספר; הלוח מגדיר את עצמו מחדש במהלך היום ומציג תצוגת עכשיו / הבא בזמן אמת וספירה לאחור.",FAQ answer,REVIEW: HE draft
+dashboard.about.faq_a6,"Yes. Settings → Presets → Schedule Sync lets you build a weekly grid — paint each class across your periods and days, or import the whole grid from your school calendar's .ics or .csv export; the board reconfigures itself through the day and shows a live Now / Next display and a countdown.","כן. הגדרות ← תבניות ← סנכרון מערכת שעות מאפשר לבנות רשת שבועית — לצבוע כל כיתה על פני השיעורים והימים, או לייבא את הרשת כולה מייצוא ‎.ics או ‎.csv של יומן בית הספר; הלוח מגדיר את עצמו מחדש במהלך היום ומציג תצוגת עכשיו / הבא בזמן אמת וספירה לאחור.",FAQ answer,REVIEW: HE draft
 dashboard.about.faq_a7,"Fullscreen keeps the screen awake automatically. Otherwise turn on <strong>Keep screen awake</strong> in Settings → Display Options, where the browser supports it.","מסך מלא שומר את המסך פעיל אוטומטית. אחרת, הפעילו את <strong>שמור מסך פעיל</strong> בהגדרות ← אפשרויות תצוגה, במקומות שהדפדפן תומך בכך.",FAQ answer,html
 dashboard.about.faq_q1,What is the Hebrew classroom dashboard for?,למה מיועד לוח המחוונים לכיתת עברית?,FAQ question,
 dashboard.about.faq_q2,Does it work on SmartBoards?,האם הוא עובד על לוחות חכמים?,FAQ question,
@@ -123,7 +123,7 @@ dashboard.about.howto_1,Set your location for accurate weather and Hebrew date.,
 dashboard.about.howto_2,Pick which panels to show in <em>Display Options</em>.,בחרו אילו פאנלים להציג ב<em>אפשרויות תצוגה</em>.,how-to step,html
 dashboard.about.howto_3,Customize the Hebrew font and nikkud display.,התאימו את הגופן העברי ותצוגת הניקוד.,how-to step,
 dashboard.about.howto_4,Use the fullscreen button to project to your SmartBoard.,השתמשו בכפתור מסך מלא כדי להקרין ללוח החכם.,how-to step,
-dashboard.about.howto_5,Save your setup as a preset — or start from a Quick-start layout in the Presets panel.,שמרו את ההגדרה שלכם כתבנית — או התחילו מפריסת התחלה מהירה בפאנל התבניות.,how-to step,
+dashboard.about.howto_5,Save your setup as a preset — or start from a Quick-start layout on the Presets tab.,שמרו את ההגדרה שלכם כתבנית — או התחילו מפריסת התחלה מהירה בלשונית התבניות.,how-to step,
 dashboard.about.howto_6,"In fullscreen, move the mouse to reveal quick controls (settings, timer, student picker, text, video, blank screen, intermission screen).","במסך מלא, הזיזו את העכבר כדי לחשוף פקדים מהירים (הגדרות, טיימר, הגרלה, טקסט, וידאו, החשכה, מסך הפסקה).",how-to step,
 dashboard.about.howto_7,Click the pencil on the dashboard message to edit it right on the board.,לחצו על סמל העיפרון בהודעת הלוח כדי לערוך אותה ישירות על הלוח.,how-to step,svg-icon-in-markup
 dashboard.about.howto_summary,How To Use,איך להשתמש,how-to section summary,
@@ -164,9 +164,9 @@ dashboard.datetime.hide_time,Hide time,הסתר שעה,settings label,
 dashboard.datetime.show_eng_dow,Show day of the week,הצג את יום השבוע,settings label,
 dashboard.datetime.show_holiday_countdown,Show Countdown to Next Holiday,הצג ספירה לחג הבא,settings label,
 dashboard.datetime.show_seconds,Show seconds,הצג שניות,settings label,
-dashboard.datetime.sub_english_date,English Date,תאריך לועזי,settings sub-section header,
-dashboard.datetime.sub_hebrew_date,Hebrew Date,תאריך עברי,settings sub-section header,
-dashboard.datetime.sub_time,Time,שעה,settings sub-section header,
+dashboard.datetime.sub_english_date,English Date,תאריך לועזי,settings drawer sub-group label (.tt-set-sub),
+dashboard.datetime.sub_hebrew_date,Hebrew Date,תאריך עברי,settings drawer sub-group label (.tt-set-sub),
+dashboard.datetime.sub_time,Time,שעה,settings drawer sub-group label (.tt-set-sub),
 dashboard.datetime.time_format,Time format,פורמט שעה,settings label,
 dashboard.datetime.time_size,Time size,גודל השעה,size slider label,
 dashboard.days.col_title,Days of the Week,ימות השבוע,live-card column title,RTL / hebDisplay; Hebrew fork אֵיזֶה יוֹם הַיוֹם?
@@ -199,7 +199,7 @@ dashboard.days.omer_show_panel,Show Omer panel,הצג פאנל עומר,settings
 dashboard.days.omer_show_progress,Show progress bar,הצג סרגל התקדמות,settings label,
 dashboard.days.shabbat_candle,🕯️ Candle lighting: {date} at {time},🕯️ הדלקת נרות: {date} בשעה {time},Shabbat times line,leading-emoji; mixed UI+content — do not translate {…}
 dashboard.days.shabbat_havdalah,✨ Havdalah: {day} at {time},✨ הבדלה: {day} בשעה {time},Shabbat times line,leading-emoji; mixed UI+content — do not translate {…}
-dashboard.days.shabbat_location_hint,Uses the same location as the weather widget above.,משתמש באותו מיקום כמו רכיב מזג האוויר שלמעלה.,settings hint,
+dashboard.days.shabbat_location_hint,Uses the location set on the Weather tab.,משתמש במיקום שהוגדר בלשונית מזג האוויר.,settings hint (Calendar tab; the Location section sits on the Weather tab),
 dashboard.days.shabbat_unavailable,Shabbat times unavailable,זמני שבת אינם זמינים,Shabbat error state,
 dashboard.days.show_shabbat,Show Candle Lighting / Havdalah times,הצג זמני הדלקת נרות / הבדלה,settings label,
 dashboard.days.show_today,Show Today marker,הצג סמן היום,settings label,
@@ -456,7 +456,7 @@ dashboard.schedule.show_nownext,Show Now / Next on dashboard,הצג עכשיו /
 dashboard.schedule.show_preset_name,Show preset name,הצג שם תבנית,settings label,
 dashboard.schedule.show_weekend,Show weekend,הצג סוף שבוע,weekly editor toolbar toggle adding Sun/Sat columns,
 dashboard.schedule.start_label,Start,התחלה,weekly grid time-column header,
-dashboard.schedule.sub_options,Schedule Sync Options,אפשרויות סנכרון מערכת שעות,settings sub-section header,
+dashboard.schedule.sub_options,Schedule Sync Options,אפשרויות סנכרון מערכת שעות,settings drawer sub-group label (.tt-set-sub),
 dashboard.schedule.sub_saved,Saved Schedules,מערכות שעות שמורות,weekly editor sub-section header,
 dashboard.schedule.suffix_on_day,(on {day}),(ב{day}),countdown/now-next suffix,{day} is the localized weekday name — do not translate {…}
 dashboard.schedule.suffix_tomorrow,(tomorrow),(מחר),countdown/now-next suffix,
@@ -479,24 +479,31 @@ dashboard.schedule.touch_paint_hint,"Hold a square for a moment, then drag to fi
 dashboard.settings.close_aria,Close settings,סגור הגדרות,settings drawer close aria,aria-label only
 dashboard.settings.close_title,Close,סגור,settings drawer close title,
 dashboard.settings.drawer_aria,Dashboard settings,הגדרות לוח המחוונים,settings drawer aria-label,aria-label only
-dashboard.settings.collapse_all,Collapse all menus,כווץ את כל התפריטים,settings drawer button,
-dashboard.settings.expand_all,Expand all menus,הרחב את כל התפריטים,settings drawer button,
 dashboard.settings.header,Dashboard Settings,הגדרות לוח המחוונים,settings drawer header,leading-emoji
-dashboard.settings.panel_about,About & FAQ,אודות ושאלות נפוצות,panel title,
-dashboard.settings.panel_dashtext,Dashboard Text,טקסט הלוח,panel title,
-dashboard.settings.panel_datetime,Date & Time,תאריך ושעה,panel title,
-dashboard.settings.panel_display,Display Options,אפשרויות תצוגה,panel title,
-dashboard.settings.panel_dow,Day of Week,יום בשבוע,panel title,
-dashboard.settings.panel_hebrew,Hebrew Settings,הגדרות עברית,panel title,
-dashboard.settings.panel_location,Location,מיקום,panel title,
-dashboard.settings.panel_omer,Omer,עומר,panel title,
-dashboard.settings.panel_picker,Student Picker,בורר תלמידים,panel title,
-dashboard.settings.panel_presets,Presets,תבניות,panel title,
-dashboard.settings.cloud_head,Cloud saves,שמירות בענן,Presets panel sub-section heading (hosts the shared cloud-saves panel),
-dashboard.settings.panel_schedule,Schedule Sync,סנכרון מערכת שעות,panel title,
-dashboard.settings.panel_timer,Timer,טיימר,panel title,
-dashboard.settings.panel_weather,Weather,מזג אוויר,panel title,
-dashboard.settings.sub_hebrew_font,Hebrew Font,גופן עברי,settings sub-section header,
+dashboard.settings.panel_about,About & FAQ,אודות ושאלות נפוצות,section heading (More tab),
+dashboard.settings.panel_dashtext,Dashboard Text,טקסט הלוח,section heading (Text tab),
+dashboard.settings.panel_datetime,Date & Time,תאריך ושעה,section heading (Calendar tab),
+dashboard.settings.panel_display,Display Options,אפשרויות תצוגה,section heading (Display tab),
+dashboard.settings.panel_dow,Day of Week,יום בשבוע,section heading (Calendar tab),
+dashboard.settings.panel_hebrew,Hebrew Settings,הגדרות עברית,section heading (Text tab),
+dashboard.settings.panel_location,Location,מיקום,section heading (Weather tab; also the aria-label of the Location field and the first-run card's),
+dashboard.settings.panel_omer,Omer,עומר,section heading (Calendar tab; the section shows only during the Omer),
+dashboard.settings.panel_picker,Student Picker,בורר תלמידים,section heading (Class tab),
+dashboard.settings.panel_presets,Presets,תבניות,section heading (Presets tab),
+dashboard.settings.cloud_head,Cloud saves,שמירות בענן,section heading (More tab; hosts the shared cloud-saves panel #cloudSavesPanel),
+dashboard.settings.panel_schedule,Schedule Sync,סנכרון מערכת שעות,section heading (Presets tab),
+dashboard.settings.panel_timer,Timer,טיימר,section heading (Class tab),
+dashboard.settings.panel_weather,Weather,מזג אוויר,section heading (Weather tab),
+dashboard.settings.sub_hebrew_font,Hebrew Font,גופן עברי,settings drawer sub-group label (.tt-set-sub),
+dashboard.settings.panel_backup,Backup,גיבוי,section heading (More tab; the .ivrit file backup block that used to sit inside Presets),
+dashboard.tabs.aria,Settings sections,חלקי ההגדרות,settings drawer tablist aria,aria-label only
+dashboard.tabs.display,Display,תצוגה,"settings drawer tab label (layout icon in the markup); the first tab, the one the drawer opens on: Display Options",svg-icon-in-markup; keep short — seven tabs share a 380px drawer
+dashboard.tabs.calendar,Calendar,לוח שנה,"settings drawer tab label (calendar icon in the markup): Date & Time, Day of Week, Omer",svg-icon-in-markup; keep short — seven tabs share a 380px drawer
+dashboard.tabs.weather,Weather,מזג אוויר,"settings drawer tab label (sun-behind-cloud icon in the markup): Location, Weather",svg-icon-in-markup; keep short
+dashboard.tabs.class,Class,כיתה,"settings drawer tab label (group icon in the markup): Timer, Student Picker",svg-icon-in-markup; keep short
+dashboard.tabs.text,Text,טקסט,"settings drawer tab label (pencil icon in the markup): Dashboard Text, Hebrew Settings",svg-icon-in-markup; keep short
+dashboard.tabs.presets,Presets,תבניות,"settings drawer tab label (bookmark icon in the markup): Presets, Schedule Sync",svg-icon-in-markup; keep short
+dashboard.tabs.more,More,עוד,"settings drawer tab label (gear icon in the markup): Backup, Cloud saves, About & FAQ",svg-icon-in-markup; keep short
 dashboard.setup.close_aria,Close,סגור,first-run setup close aria,aria-label only
 dashboard.setup.skip,Skip for now,דלג בינתיים,first-run setup link,
 dashboard.setup.starter_general_desc,"Secular layout — English date, big clock, weather, timer. No Hebrew calendar.","פריסה חילונית — תאריך לועזי, שעון גדול, מזג אוויר, טיימר. ללא לוח שנה עברי.",starter layout description,
@@ -584,7 +591,7 @@ dashboard.tour.step3_body,"Local weather for your set location, refreshed automa
 dashboard.tour.step3_title,Live weather,מזג אוויר בזמן אמת,tour step title,
 dashboard.tour.step4_body,"Go fullscreen — it scales everything up, keeps the screen awake, and shows quick controls when you move the mouse.","עברו למסך מלא — זה מגדיל הכול, שומר על המסך פעיל, ומציג פקדים מהירים כשמזיזים את העכבר.",tour step body,
 dashboard.tour.step4_title,Project to your SmartBoard,הקרינו ללוח החכם,tour step title,
-dashboard.tour.step5_body,"Everything is customizable here — location, panels, fonts, nikkud colors, and a classroom timer.","כאן הכול ניתן להתאמה — מיקום, פאנלים, גופנים, צבעי ניקוד, וטיימר כיתתי.",tour step body,
+dashboard.tour.step5_body,"Everything is customizable here, one tab at a time — Display, Calendar, Weather, Class, Text, Presets and More.","כאן הכול ניתן להתאמה, לשונית אחר לשונית — תצוגה, לוח שנה, מזג אוויר, כיתה, טקסט, תבניות ועוד.",tour step body (names the seven drawer tabs — keep in step with dashboard.tabs.*),
 dashboard.tour.step5_title,Settings,הגדרות,tour step title,
 dashboard.tour.step6_body,One-tap starter setups — including a general-classroom layout — and save your own presets.,הגדרות התחלה בהקשה אחת — כולל פריסת כיתה כללית — ושמירת תבניות משלכם.,tour step body,
 dashboard.tour.step6_title,Quick-start layouts,פריסות התחלה מהירה,tour step title,

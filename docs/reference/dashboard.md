@@ -177,124 +177,94 @@ a press on the drawer's edge handle still can't fall through to the backdrop's c
 Being a `settings` field it rides presets, share codes and `.ivrit` files; `applyI18n` re-calls
 the apply so a language switch can't restore an unlocked tooltip on a locked seam.
 
-## Settings Drawer & Panel Collapse (`classroom_dashboard.html`)
+## Settings drawer (`classroom_dashboard.html`)
 
-### Drawer structure
-The settings UI is a slide-in modal from the right edge. Three elements:
+`#settingsModal` is still the overlay it was — `#settingsBackdrop` (a click closes), the `_settingsTrapKey` →
+`_trapTabWithin` focus trap (Tab wraps inside; a roving `tabindex="-1"` tab and an unchecked radio are neither end
+of the loop — the two filters also guard the first-run card and the student-picker overlay, which share the trap),
+Escape from the page's global keydown handler, focus back to the opener on close, the shared `sidebar-resize` handle
+`#settingsResize` (`--drawer-w`, written on the drawer itself — see [Resizable panels](#resizable-panels-sidebars-drawers-rails--shared-component))
+and the drawer's own dark toggle `#drawerDarkBtn` — but nothing inside it collapses any more: the thirteen
+collapsible `.panel`s behind *Expand all menus / Collapse all menus* became **seven tabs of flat sections**, the
+Torah Trainer's drawer idiom (itself the Trope Tutor's Settings tab inside a drawer), copied rather than reinvented.
 
+### Structure
 | Element | Role |
 |---|---|
-| `.settings-backdrop` | Full-screen dark overlay; click closes drawer |
-| `.settings-modal` | The panel (`width: var(--drawer-w, 380px)`, `max-width: 92vw`); slides in via `transform: translateX`; drag-resizable from its inline-start edge — see [Resizable panels](#resizable-panels-sidebars-drawers-rails--shared-component) | `--drawer-w` is written on the drawer element itself (sidebar-resize `scope`) and registered `@property … inherits:false`, like the rails' `--dash-rail-l/-r` on `.dashboard` — a drag frame restyles one element, not the page.
-| `.settings-header` | Navy bar with title + close button (`×`) |
-| `.settings-body` | Scrollable content area holding all `.panel` blocks |
+| `.settings-backdrop` | Full-screen dark overlay; click closes the drawer |
+| `.settings-modal` | The drawer (`width: var(--drawer-w, 380px)`, `max-width: 92vw`), slides in via `transform: translateX`; `role="dialog" aria-modal="true"` |
+| `.settings-header` | Navy bar: the shared `hi-gear` + `dashboard.settings.header`, the dark toggle, the close button (`#fff` text, never `var(--white)`) |
+| `.tt-tabs` | The tab strip — a sibling of the body, so it stays put while the body scrolls; `role="tablist"` (`dashboard.tabs.aria`) |
+| `.settings-body` | Scrolls; holds the seven `.tt-tabpanel`s |
 
-Open/close is controlled by toggling the `.open` class on both backdrop and modal:
-```js
-function openSettings() {
-  document.getElementById('settingsBackdrop').classList.add('open');
-  document.getElementById('settingsModal').classList.add('open');
-  syncFormToSettings();
-}
-function closeSettings() {
-  document.getElementById('settingsBackdrop').classList.remove('open');
-  document.getElementById('settingsModal').classList.remove('open');
-  saveSettingsToStorage();
-}
-```
-Settings are saved to `localStorage` on close.
+`openSettings()` commits an in-place board edit first, remembers the opener, adds `.open` to backdrop and drawer,
+arms the trap, calls **`setSettingsTab('display')`** — every open starts on Display, no tab memory, no new key — then
+`syncFormToSettings()` and focuses the close button. `closeSettings()` reverses it and `saveSettingsToStorage()`.
 
-### Drawer CSS
-```css
-.settings-backdrop {
-  position: fixed; inset: 0;
-  background: rgba(13, 18, 32, 0.45);
-  z-index: 90;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.3s;
-}
-.settings-backdrop.open { opacity: 1; pointer-events: auto; }
+### The tab strip
+- **`TT_TAB_IDS`**: `display` / `calendar` / `weather` / `class` / `text` / `presets` / `more` → `#dashTabDisplay` …
+  `#dashTabMore`. Each is a `role="tab"` button carrying an inline SVG from the shared header-icons set over its
+  label on a `.hi-lbl` span keyed `dashboard.tabs.<name>` — the `data-i18n` stays on the span, never on the button
+  (`applyStaticI18n` would replace the SVG). Glyphs, in order: `hi-layout` (new, markup only — a board with a header
+  bar and a side column), `hi-calendar`, `hi-weather` (new, markup only — a sun behind a cloud), `hi-group`,
+  `hi-pencil`, `hi-bookmark` (copied from the hub), `hi-gear`.
+- **CSS.** `.settings-modal .tt-tab` stacks icon above label (0.7rem, 700), `.hi-btn` still supplying the alignment;
+  `.tt-tabs` is a container (`container-type: inline-size`) and two `@container` steps placed *after* the base rule
+  (same specificity — source order decides) shrink the label to 0.6rem at 345px or narrower and 0.58rem at 318px or
+  narrower — the drawer is resized by hand, so a viewport query would be the wrong lever, and a browser without
+  container queries keeps the ellipsis. Measured headless in the sandbox's fallback font: at the 380px default each
+  tab has ~53px and the longest labels need 48px ("Calendar") and 45px ("מזג אוויר"); a 360px phone gives a 330px
+  strip (0.6rem: 41px / 38px) and the 320px minimum a 319px strip (0.58rem: 40px / 37px) — no label ellipsizes at
+  any of the three, in either language. The tab has no transition, so there is nothing to neutralize under reduced
+  motion (the old `.panel-title::after` arrow left that list).
+- Each tab `aria-controls` one `.tt-tabpanel` (`#dashTabPanel<Name>`, `role="tabpanel"`, `aria-labelledby` its
+  tab, `hidden` unless selected).
 
-.settings-modal {
-  position: fixed; top: 0; inset-inline-end: 0;
-  width: var(--drawer-w, 380px); max-width: 92vw; height: 100vh;
-  background: var(--white);
-  border-inline-start: 1px solid var(--border);
-  box-shadow: var(--shadow-lg);
-  z-index: 100;
-  transform: translateX(100%);
-  transition: transform 0.3s ease;
-  display: flex; flex-direction: column;
-}
-.settings-modal.open { transform: translateX(0); }
+### Sections
+A section is a flat `.tt-set` carrying `data-set="<key>"` — the key is the old panel key — under a
+`h3.tt-set-title` (serif over a hairline rule, `tabindex="-1"` so it takes programmatic focus without joining the
+Tab loop) keyed by the old `dashboard.settings.panel_*` string; a group inside one is a `.tt-set-sub` label (the
+former `.sub-section-hdr`s: *English Date* / *Hebrew Date* / *Time*, *Schedule Sync Options*, *Hebrew Font*).
+`.tt-set hr` keeps the rule the panels drew between groups; `.tt-set details > summary:hover` the FAQ rows' underline.
+The fifteen sections by tab (`TT_SECTION_TAB`):
+- **Display** — `display` (Display Options; keeps `id="displayPanel"`).
+- **Calendar** — `datetime`, `dow`, `omer` (last; keeps `id="omerSettingsPanel"` and its inline `display:none` —
+  `updateOmerDisplay()` shows the section only during the Omer, so out of season the tab holds two sections).
+- **Weather** — `location` (the first-run card captures location on its own, so first-run never needs this tab; the
+  Shabbat-times hint on the Calendar tab, `dashboard.days.shabbat_location_hint`, points here), `weather`.
+- **Class** — `timer`, `picker`.
+- **Text** — `dashtext` (the hidden `#engFontUploadInput` follows it, outside both toolbar copies), `hebrew`.
+- **Presets** — `presets` (keeps `id="presetsPanel"`: the tour's Quick-start step and `scripts/smoke-sync.mjs` read
+  it), `schedule` (keeps `id="schedulePanel"`, the tour's target).
+- **More** — `backup` (`dashboard.settings.panel_backup`: the `.ivrit` engine's standard markup with its inline
+  `<style>`, which used to sit at the end of Presets under an `<hr>` — every control id is unchanged), `cloud`
+  (`dashboard.settings.cloud_head`, hosts `#cloudSavesPanel`; `IvritSaves.attach` passes `title: false` because the
+  heading is the heading), `about`.
 
-.settings-header {
-  padding: 14px 20px;
-  background: var(--navy);    /* use #fff for text, not var(--white) */
-  color: #fff;
-  display: flex; align-items: center; justify-content: space-between;
-  flex-shrink: 0;
-}
-body.dark .settings-header { background: var(--navy-deep); }
+### One writer, two openers
+`setSettingsTab(name)` is the only writer of tab state — `aria-selected`, the roving `tabIndex` (the selected tab
+alone is in the Tab sequence), `hidden` on every tab panel, and `.settings-body` scrolled to the top; an unknown
+name reads `display`. `openSettingsAtPanel(key)` opens the drawer, maps the section key through `TT_SECTION_TAB`,
+scrolls the section to the top of the body and focuses its heading, so the next Tab enters the section's controls.
+Its callers: the cloud module's `open` (`'cloud'`, the header chip's *Cloud saves…* item) and
+`scripts/smoke-tools.mjs` (`'cloud'`). The tour's three drawer steps target controls, not sections, so their
+`reveal` calls `_tourOpenDrawer()` then `setSettingsTab('display')` (Move panels) or `setSettingsTab('presets')`
+(Quick-start layouts, Schedule Sync); `tourEnd` closes a drawer it opened and restores nothing else — the drawer
+reopens on Display anyway.
 
-.settings-header h2 {          /* holds the shared hi-gear + a span carrying the data-i18n */
-  font-family: 'Libre Baskerville', serif;
-  font-size: 1rem; letter-spacing: 0.05em; color: #fff;
-  display: flex; align-items: center; gap: 7px;
-}
+### Keyboard
+The tablist's keydown handler (in `wireFormListeners()`) is the Trope Tutor's: Left/Right move by **visual**
+direction (the strip mirrors in the Hebrew UI, so under `dir="rtl"` the keys swap), Home/End, wrapping, and moving
+focus activates the tab (automatic activation). Tab inside the drawer is the trap's.
 
-.settings-close {
-  background: rgba(255,255,255,0.12); color: #fff;
-  border: none; border-radius: 4px;
-  width: 32px; height: 32px;
-  cursor: pointer; font-size: 1.2rem;
-}
-.settings-close:hover { background: rgba(255,255,255,0.22); }
-
-.settings-body { flex: 1; overflow-y: auto; padding: 16px; }
-```
-
-### Panel (collapsible section) CSS
-```css
-.panel {
-  background: var(--cream);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 14px;
-  overflow: hidden;
-}
-body.dark .panel { background: var(--navy-deep); }
-
-.panel-title {
-  background: var(--navy); color: #fff;   /* always #fff, not var(--white) */
-  font-family: 'Libre Baskerville', serif;
-  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
-  padding: 9px 14px;
-  cursor: pointer; user-select: none;
-  display: flex; justify-content: space-between; align-items: center;
-}
-body.dark .panel-title { background: #0a0f1c; }
-
-/* Collapse indicator — ▾ rotates −90° when collapsed (matches generator/dictionary) */
-.panel-title::after { content: '▾'; color: var(--gold-light); font-size: 1rem; transition: transform 0.2s; flex-shrink: 0; }
-.panel.collapsed .panel-title::after { transform: rotate(-90deg); }
-
-.panel-body { padding: 14px; }
-.panel.collapsed .panel-body { display: none; }
-```
-
-### Panel collapse JS
-```js
-function initPanelCollapse() {
-  document.querySelectorAll('.panel-title').forEach(t => {
-    t.addEventListener('click', () => { t.parentElement.classList.toggle('collapsed'); panelMemSave(); });
-  });
-}
-```
-Called once at `DOMContentLoaded`. Toggling `.collapsed` on the `.panel` element hides `.panel-body` and
-swaps the `::after` arrow via CSS. The `panelMemSave()` call — and the `panelMemApply()` that must follow
-`initPanelCollapse()` at init — are the shared panel-collapse memory; see
-[Shared UX components → Panel-collapse memory](#shared-ux-components--the-conventions-all-tools-are-converging-on).
+### Retired
+The shared panel-collapse memory block, `PANEL_MEM_CFG`, `expandAllMenus` / `collapseAllMenus`, `_syncPanelHdrAria`,
+the tour's `_tourExpandPanel` and `panelsCollapsed` in `DEFAULTS` are gone — an older blob's map rides along unread
+through `ivritSafeAssign`, and the cloud row's `*Collapsed` omit still covers the board columns' and video panel's
+own `dowCollapsed` / `weatherCollapsed` / `timerCollapsed` / `pickerCollapsed` / `videoCollapsed`. The `.panel*` CSS
+is gone with them. What stays: the `.sub-section*` CSS and `initSubSectionCollapse()` (through `_wireCollapseHdr`,
+which the board column titles also use) for the one collapsible left on the page, the week editor's *Saved
+Schedules*; and the `.radio-group { flex-wrap: wrap }` rule under 430px (the drawer still clips at its edge).
 
 ---
 
@@ -308,7 +278,7 @@ swaps the `::after` arrow via CSS. The `panelMemSave()` call — and the `panelM
 
 ### Why not pure CSS
 
-`.panel` has `overflow: hidden` (needed to clip `.panel-title` to rounded corners) and `.settings-body` has `overflow-y: auto`. Both cut off `position: absolute` children, clipping any CSS-only tooltip bubble.
+`.settings-body` has `overflow-y: auto` (and the collapsible `.panel` the drawer used to hold clipped with `overflow: hidden` too), which cuts off `position: absolute` children, clipping any CSS-only tooltip bubble.
 
 ### Pattern: `position: fixed` floating div driven by JS
 
@@ -371,7 +341,7 @@ body.dark #tipFloat { background: #0a0f1c; }
 ```
 
 **Key points:**
-- `position: fixed` escapes all `overflow` clipping from `.panel` and `.settings-body`
+- `position: fixed` escapes the `overflow` clipping of `.settings-body`
 - Tooltip appears **above** the `?` icon by default; flips **below** if near the top of the viewport
 - Viewport clamping prevents left/right overflow
 - One `#tipFloat` element is reused for all tooltips — never create per-tooltip bubble spans

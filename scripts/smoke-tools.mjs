@@ -227,7 +227,7 @@ const PAGES = [
       hebrewDashboard_schedulesFolders: JSON.stringify({ v: 1, root: [{ t: 'item', name: 'Week A' }, { t: 'item', name: 'Old day' }] })
     },
     rows: ['preset:Morning', 'preset:Tefillah', 'schedule:Week A', 'schedule:Old day', 'settings:default', 'roster:m1r_0', 'roster:m1r_1'],
-    expand: `openSettings(); const p = document.getElementById('presetsPanel'); if (p.classList.contains('collapsed')) p.querySelector('.panel-title').click(); document.getElementById('cloudSavesPanel').scrollIntoView();`,
+    expand: `openSettingsAtPanel('cloud');`,
     urlKeep: 'lang=en'
   }
 ];

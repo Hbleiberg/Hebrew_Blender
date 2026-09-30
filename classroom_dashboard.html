@@ -115,7 +115,7 @@
     { "@type": "HowToStep", "position": 2, "name": "Choose panels", "text": "Pick which panels to show under Display Options." },
     { "@type": "HowToStep", "position": 3, "name": "Customize Hebrew", "text": "Pick a Hebrew font and nikkud display style." },
     { "@type": "HowToStep", "position": 4, "name": "Project fullscreen", "text": "Click the fullscreen button to project to your SmartBoard." },
-    { "@type": "HowToStep", "position": 5, "name": "Save a preset", "text": "Save your setup as a preset, or start from a Quick-start layout in the Presets panel." },
+    { "@type": "HowToStep", "position": 5, "name": "Save a preset", "text": "Save your setup as a preset, or start from a Quick-start layout on the Presets tab." },
     { "@type": "HowToStep", "position": 6, "name": "Use fullscreen quick controls", "text": "In fullscreen, move the mouse to reveal quick controls for settings, timer, student picker, text, video, screen blanking, and an intermission screen." },
     { "@type": "HowToStep", "position": 7, "name": "Edit text on the board", "text": "Click the pencil on the dashboard message to edit it in place." }
   ]
@@ -1059,40 +1059,43 @@
     padding: 16px;
   }
 
-  /* ───── Panel ───── */
-  .panel {
-    background: var(--cream);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-bottom: 14px;
-    overflow: hidden;
-  }
-  body.dark .panel { background: var(--navy-deep); }
-  .panel:last-child { margin-bottom: 0; }
-  .panel-title {
-    background: var(--navy);
-    color: #fff;
-    font-family: 'Libre Baskerville', serif;
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 9px 14px;
-    cursor: pointer;
-    user-select: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  body.dark .panel-title { background: #0a0f1c; }
-  .panel-title::after { content: '▾'; color: var(--gold-light); font-size: 1rem; transition: transform 0.2s; flex-shrink: 0; }
-  .panel.collapsed .panel-title::after { transform: rotate(-90deg); }
-  .panel-title:hover { background: #24345c; }   /* the suite's navy-control hover (contact/resources/FM primary); a collapse bar had no hover state (S317 → F S328) */
-  body.dark .panel-title:hover { background: var(--navy); }   /* one step up from the dark bar's #0a0f1c */
-  .panel-body { padding: 14px; }
-  .panel-body details > summary:hover { text-decoration: underline; }   /* FAQ / How-To rows: the Font Maker footer's hover idiom — inline styles carry no hover */
-  .panel.collapsed .panel-body { display: none; }
+  /* ───── Drawer tabs (APG tablist; icon above label so seven fit the 380px drawer and a 92vw phone) — the Torah Trainer's ───── */
+  .tt-tabs { display:flex; flex-shrink:0; background:var(--cream); border-block-end:1px solid var(--border); padding-inline:4px; container-type:inline-size; }
+  body.dark .tt-tabs { background:var(--navy-deep); }
+  .settings-modal .tt-tab {                       /* (0,2,0) beats .hi-btn's row layout */
+    flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    padding-block:8px 6px; padding-inline:0; margin:0; border:none; border-block-end:3px solid transparent; border-radius:0;
+    background:transparent; color:var(--muted); font:inherit; font-size:0.7rem; font-weight:700; line-height:1.1; cursor:pointer;
+  }                                               /* no transition — nothing to neutralize under reduced motion */
+  .settings-modal .tt-tab .hi { width:16px; height:16px; }
+  .settings-modal .tt-tab .hi-lbl { max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .settings-modal .tt-tab:hover { color:var(--gold-text); }
+  .settings-modal .tt-tab[aria-selected="true"] { background:var(--white); color:var(--text); border-block-end-color:var(--gold); }
+  body.dark .settings-modal .tt-tab { color:#99a2b8; }            /* the page's dark radio-label literal, as on the Trainer */
+  body.dark .settings-modal .tt-tab[aria-selected="true"] { color:var(--text); }
+  .settings-modal .tt-tab:focus-visible { outline:2px solid var(--gold); outline-offset:-2px; }
+  .tt-tabpanel[hidden] { display:none; }
+  /* Seven labels share ~53px each at the default width (measured headless in the fallback font: "Calendar" needs 48px at
+     0.7rem, "מזג אוויר" 45px, so the tabs carry no side padding), ~47px on a 360px phone (92vw drawer, a 330px strip) and
+     ~44px at the 320px minimum the resize handle allows — a viewport query is the wrong lever, the drawer is resized by
+     hand, so the steps key on the strip's own width (0.6rem: "Calendar" 41px, "מזג אוויר" 38px; 0.58rem: 40px / 37px).
+     After the base rule (same specificity — source order decides); a browser without container queries keeps the
+     ellipsis. */
+  @container (max-width: 345px) { .settings-modal .tt-tab { font-size:0.6rem; } }
+  @container (max-width: 318px) { .settings-modal .tt-tab { font-size:0.58rem; } }
 
-  /* ───── Sub-section (collapsible within a panel) ───── */
+  /* ───── Sections: a serif heading over a hairline rule (the Trope Tutor's .tu-set-title, the Trainer's .tt-set-title); flat, nothing collapses ───── */
+  .tt-set + .tt-set { margin-block-start:22px; }
+  .tt-set-title { font-family:'Libre Baskerville',serif; font-size:0.84rem; font-weight:400; letter-spacing:0.02em; color:var(--navy); padding-block-end:4px; border-block-end:1px solid var(--border); margin:0; margin-block-end:12px; display:flex; align-items:center; gap:6px; }
+  body.dark .tt-set-title { color:var(--gold-light); }
+  .tt-set-title:focus { outline:none; }            /* openSettingsAtPanel's programmatic target */
+  .tt-set-title:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+  .tt-set-title .beta-tag { font-size:0.58rem; padding:0 4px; }
+  .tt-set-sub { font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-block:12px 6px; padding-block-start:12px; border-block-start:1px solid var(--border); }
+  .tt-set-note { font-size:0.72rem; color:var(--muted); line-height:1.4; }
+  .tt-set details > summary:hover { text-decoration: underline; }   /* FAQ / How-To rows: the Font Maker footer's hover idiom — inline styles carry no hover */
+
+  /* ───── Sub-section (collapsible; the week editor's Saved Schedules — the drawer's groups are flat .tt-set-sub) ───── */
   .sub-section { border-bottom: 1px solid var(--border); margin-bottom: 10px; padding-bottom: 6px; }
   .sub-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
   .sub-section-hdr {
@@ -1155,7 +1158,7 @@
     pointer-events: none;
   }
   body.dark #tipFloat { background: #0a0f1c; }
-  .panel hr {
+  .tt-set hr {
     margin: 12px 0;
     border: none;
     border-top: 1px solid var(--border);
@@ -1917,7 +1920,7 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
     .tour-spot, .tour-card, #fsStrip, .now-next, .dash-edit-pencil, #tipFloat,
     /* .day-item.day-today scales to 1.02 — the "today" cue animated in over 0.2s. The scale
        still applies; only the movement into it is dropped. */
-    .fr-modal, .settings-modal, .settings-backdrop, .panel-title::after, .day-item { transition: none !important; }
+    .fr-modal, .settings-modal, .settings-backdrop, .day-item { transition: none !important; }
     .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
     .timer-display.done, #timerCol.running, #timerCol.running.urgent { animation: none !important; }
     .pick-name.flicker, .pick-name.landed { animation: none !important; }
@@ -1965,7 +1968,7 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-o
   /* The settings drawer keeps its own 430px scope: it is not a header lever, and its own note
      below is explicit that widening it is a desktop change made in service of phones. */
   @media (max-width: 430px) {
-    /* Segmented controls wrap on phones. .panel is overflow:hidden and .form-row does not wrap, so
+    /* Segmented controls wrap on phones. .form-row does not wrap and the drawer clips at its edge, so
        a group wider than the drawer is CLIPPED with no scrollbar and no way to reach it: at 320px
        the "Long" date format measured 0% visible and elementFromPoint returned null, i.e. the
        option could not be selected at all (same in Hebrew, and "Both" on the Hebrew-date row was
@@ -2427,97 +2430,87 @@ body.dark .hi-sun{display:inline-block;}
       <button class="settings-close" onclick="closeSettings()" title="Close" data-i18n-title="dashboard.settings.close_title" aria-label="Close settings" data-i18n-aria-label="dashboard.settings.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     </div>
   </div>
+  <!-- Seven tabs of flat sections (nothing collapses; the panel-collapse memory this page carried is retired —
+       an older blob's panelsCollapsed rides along unread, as on the Trope Tutor and the Torah Trainer). The drawer
+       always opens on Display (setSettingsTab in openSettings); openSettingsAtPanel(key) picks a tab + section by
+       data-set. Icons: the shared header-icons set (hi-layout and hi-weather are new, markup only); the label keeps
+       its data-i18n on the .hi-lbl span, never on the button (applyStaticI18n would replace the SVG). -->
+  <div class="tt-tabs" role="tablist" aria-label="Settings sections" data-i18n-aria-label="dashboard.tabs.aria">
+    <button type="button" class="tt-tab hi-btn" role="tab" id="dashTabDisplay" aria-controls="dashTabPanelDisplay" aria-selected="true" tabindex="0" onclick="setSettingsTab('display')"><svg class="hi hi-sm hi-layout" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="4.2" width="17.6" height="15.6" rx="2.2"/><path d="M3.2 9.4h17.6"/><path d="M9.6 9.4v10.4"/></svg><span class="hi-lbl" data-i18n="dashboard.tabs.display">Display</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="dashTabCalendar" aria-controls="dashTabPanelCalendar" aria-selected="false" tabindex="-1" onclick="setSettingsTab('calendar')"><svg class="hi hi-sm hi-calendar" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="5.4" width="17.6" height="15.2" rx="2.2"/><path d="M3.2 10.2h17.6"/><path d="M8.2 3v4.4M15.8 3v4.4"/><circle cx="12" cy="15.6" r="1.7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="dashboard.tabs.calendar">Calendar</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="dashTabWeather" aria-controls="dashTabPanelWeather" aria-selected="false" tabindex="-1" onclick="setSettingsTab('weather')"><svg class="hi hi-sm hi-weather" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.6" cy="8.4" r="3.1"/><path d="M8.6 2.6v1.4M2.8 8.4h1.4M4.5 4.3l1 1M12.7 4.3l-1 1M4.5 12.5l1-1"/><path d="M8.2 20.6h9.4a3.3 3.3 0 0 0 .5-6.55 4.7 4.7 0 0 0-9-1.2 3.9 3.9 0 0 0-.9 7.75Z"/></svg><span class="hi-lbl" data-i18n="dashboard.tabs.weather">Weather</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="dashTabClass" aria-controls="dashTabPanelClass" aria-selected="false" tabindex="-1" onclick="setSettingsTab('class')"><svg class="hi hi-sm hi-group" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7.5" r="3.4"/><path d="M2.5 20.5v-1.6a4.2 4.2 0 0 1 4.2-4.2h4.6a4.2 4.2 0 0 1 4.2 4.2v1.6"/><path d="M15.6 4.3a3.2 3.2 0 0 1 0 6.4"/><path d="M21.5 20.5v-1.6a4.2 4.2 0 0 0-3.2-4.1"/></svg><span class="hi-lbl" data-i18n="dashboard.tabs.class">Class</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="dashTabText" aria-controls="dashTabPanelText" aria-selected="false" tabindex="-1" onclick="setSettingsTab('text')"><svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg><span class="hi-lbl" data-i18n="dashboard.tabs.text">Text</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="dashTabPresets" aria-controls="dashTabPanelPresets" aria-selected="false" tabindex="-1" onclick="setSettingsTab('presets')"><svg class="hi hi-sm hi-bookmark" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.4h11a1 1 0 0 1 1 1v14.2l-6.5-4-6.5 4V5.4a1 1 0 0 1 1-1Z"/></svg><span class="hi-lbl" data-i18n="dashboard.tabs.presets">Presets</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="dashTabMore" aria-controls="dashTabPanelMore" aria-selected="false" tabindex="-1" onclick="setSettingsTab('more')"><svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg><span class="hi-lbl" data-i18n="dashboard.tabs.more">More</span></button>
+  </div>
   <div class="settings-body">
-<div style="display:flex; gap:6px; margin-bottom:14px;">
-  <button class="btn btn-xs" style="flex:1;" onclick="expandAllMenus()" data-i18n="dashboard.settings.expand_all">Expand all menus</button>
-  <button class="btn btn-xs" style="flex:1;" onclick="collapseAllMenus()" data-i18n="dashboard.settings.collapse_all">Collapse all menus</button>
-</div>
-<div class="panel">
-  <div class="panel-title" data-i18n="dashboard.settings.panel_location">Location</div>
-  <div class="panel-body">
-    <div class="form-row">
-      <input type="text" id="locationInput" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="City, e.g. New York" data-i18n-placeholder="dashboard.display.location_placeholder" aria-label="Location" data-i18n-aria-label="dashboard.settings.panel_location" style="max-width:220px;">
-      <button class="btn btn-xs" onclick="updateLocation()" data-i18n="dashboard.display.location_update">Update</button>
-    </div>
-    <div class="form-row" style="margin-top:4px;">
-      <button class="btn btn-xs" id="currentLocBtn" onclick="useCurrentLocation()" style="width:100%;" data-i18n="dashboard.display.current_location">📍 Current Location</button>
-    </div>
-    <!-- A denied location prompt is routine, not exceptional: school-managed devices block
-         geolocation by policy, so a brand-new teacher hits this on first run. It reports inline
-         here (reusing the .schedule-validation/.sched-warn styling) instead of a blocking alert. -->
-    <div id="locNote" class="schedule-validation" role="status" aria-live="polite" style="display:none;"></div>
-  </div>
-</div>
-
-<div class="panel" id="displayPanel">
-  <div class="panel-title" data-i18n="dashboard.settings.panel_display">Display Options</div>
-  <div class="panel-body">
-    <div class="form-row">
-      <label data-i18n="dashboard.layout.move_panels_label">Panel arrangement</label>
-      <button class="btn btn-xs" id="movePanelsBtn" onclick="enterLayoutEdit()" data-i18n="dashboard.layout.move_panels_button">↔ Move panels</button>
-    </div>
-    <div class="form-row">
-      <label for="lockPanelWidths" data-i18n="dashboard.layout.lock_widths_label">Lock panel widths</label>
-      <label class="toggle"><input type="checkbox" id="lockPanelWidths"><span class="slider"></span></label>
-    </div>
-    <div style="padding-inline-start:18px;margin:-4px 0 8px;">
-      <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.layout.lock_widths_hint">Freezes the draggable edges between the columns and on the settings drawer, so a stray touch can't resize them. Widths you already set stay exactly as they are.</span>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.display.column_headers">Column headers</label>
-      <div class="radio-group">
-        <input type="radio" name="headerLang" id="hl-he" value="he"><label for="hl-he">עִבְרִית</label>
-        <input type="radio" name="headerLang" id="hl-en" value="en"><label for="hl-en" data-i18n="dashboard.common.opt_english">English</label>
-        <input type="radio" name="headerLang" id="hl-none" value="none"><label for="hl-none" data-i18n="dashboard.common.opt_none">None</label>
+    <div class="tt-tabpanel" id="dashTabPanelDisplay" role="tabpanel" aria-labelledby="dashTabDisplay">
+      <div class="tt-set" data-set="display" id="displayPanel">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_display">Display Options</h3>
+        <div class="form-row">
+          <label data-i18n="dashboard.layout.move_panels_label">Panel arrangement</label>
+          <button class="btn btn-xs" id="movePanelsBtn" onclick="enterLayoutEdit()" data-i18n="dashboard.layout.move_panels_button">↔ Move panels</button>
+        </div>
+        <div class="form-row">
+          <label for="lockPanelWidths" data-i18n="dashboard.layout.lock_widths_label">Lock panel widths</label>
+          <label class="toggle"><input type="checkbox" id="lockPanelWidths"><span class="slider"></span></label>
+        </div>
+        <div style="padding-inline-start:18px;margin:-4px 0 8px;">
+          <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.layout.lock_widths_hint">Freezes the draggable edges between the columns and on the settings drawer, so a stray touch can't resize them. Widths you already set stay exactly as they are.</span>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.display.column_headers">Column headers</label>
+          <div class="radio-group">
+            <input type="radio" name="headerLang" id="hl-he" value="he"><label for="hl-he">עִבְרִית</label>
+            <input type="radio" name="headerLang" id="hl-en" value="en"><label for="hl-en" data-i18n="dashboard.common.opt_english">English</label>
+            <input type="radio" name="headerLang" id="hl-none" value="none"><label for="hl-none" data-i18n="dashboard.common.opt_none">None</label>
+          </div>
+        </div>
+        <div class="size-row">
+          <label for="colTitleSizeSlider" data-i18n="dashboard.display.header_size">Header size</label>
+          <input type="range" id="colTitleSizeSlider" min="0.5" max="1.8" step="0.05" value="0.78" oninput="setColTitleSize(this.value)">
+          <span class="size-val" id="colTitleSizeVal">0.78rem</span>
+          <button class="btn-xs" onclick="setColTitleSize(0.78)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div class="form-row" style="margin-top:8px;">
+          <label data-i18n="dashboard.display.show_text_size_options">Show text size options</label>
+          <label class="toggle"><input type="checkbox" id="showTextSizeOptions"><span class="slider"></span></label>
+        </div>
+        <div style="padding-inline-start:18px;margin-bottom:6px;">
+          <button class="btn btn-xs btn-secondary hi-btn" onclick="resetAllTextSizes()"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="dashboard.display.reset_all_text_sizes">Reset all text sizes</span></button>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.display.hide_zoom_bar">Hide zoom bar</label>
+          <label class="toggle"><input type="checkbox" id="hideZoomBar"><span class="slider"></span></label>
+        </div>
+        <div class="form-row" id="keepAwakeRow">
+          <label><span data-i18n="dashboard.display.keep_awake">Keep screen awake</span> <span class="tip-wrap" data-tip="Prevents the display from dimming or sleeping while the dashboard is open (Screen Wake Lock). Fullscreen keeps the screen awake automatically." data-i18n-tip="dashboard.display.keep_awake_tip"><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="keepAwake"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.display.show_video_embed">Show video embed</label>
+          <label class="toggle"><input type="checkbox" id="showVideoEmbed"><span class="slider"></span></label>
+        </div>
+        <div id="videoUrlRow" style="display:none;flex-direction:column;gap:8px;margin-top:4px;padding:8px;background:var(--cream);border:1px solid var(--border);border-radius:6px;">
+          <div style="display:flex;gap:14px;font-size:0.78rem;">
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+              <input type="radio" name="videoLayout" id="vlBelow" value="below" style="accent-color:var(--gold);"> <span data-i18n="dashboard.video.layout_below">Under dashboard</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+              <input type="radio" name="videoLayout" id="vlSidebar" value="sidebar" style="accent-color:var(--gold);"> <span data-i18n="dashboard.video.layout_sidebar">In sidebar</span>
+            </label>
+          </div>
+          <input type="url" id="videoUrlInput" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Paste YouTube URL…" data-i18n-placeholder="dashboard.video.url_placeholder" aria-label="Paste YouTube URL…" data-i18n-aria-label="dashboard.video.url_placeholder" style="width:100%;box-sizing:border-box;">
+          <button class="btn btn-xs" onclick="updateVideoEmbed()" data-i18n="dashboard.video.update_button">Update Video</button>
+        </div>
       </div>
     </div>
-    <div class="size-row">
-      <label for="colTitleSizeSlider" data-i18n="dashboard.display.header_size">Header size</label>
-      <input type="range" id="colTitleSizeSlider" min="0.5" max="1.8" step="0.05" value="0.78" oninput="setColTitleSize(this.value)">
-      <span class="size-val" id="colTitleSizeVal">0.78rem</span>
-      <button class="btn-xs" onclick="setColTitleSize(0.78)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-    </div>
-    <div class="form-row" style="margin-top:8px;">
-      <label data-i18n="dashboard.display.show_text_size_options">Show text size options</label>
-      <label class="toggle"><input type="checkbox" id="showTextSizeOptions"><span class="slider"></span></label>
-    </div>
-    <div style="padding-inline-start:18px;margin-bottom:6px;">
-      <button class="btn btn-xs btn-secondary hi-btn" onclick="resetAllTextSizes()"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="dashboard.display.reset_all_text_sizes">Reset all text sizes</span></button>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.display.hide_zoom_bar">Hide zoom bar</label>
-      <label class="toggle"><input type="checkbox" id="hideZoomBar"><span class="slider"></span></label>
-    </div>
-    <div class="form-row" id="keepAwakeRow">
-      <label><span data-i18n="dashboard.display.keep_awake">Keep screen awake</span> <span class="tip-wrap" data-tip="Prevents the display from dimming or sleeping while the dashboard is open (Screen Wake Lock). Fullscreen keeps the screen awake automatically." data-i18n-tip="dashboard.display.keep_awake_tip"><i class="tip-icon">?</i></span></label>
-      <label class="toggle"><input type="checkbox" id="keepAwake"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.display.show_video_embed">Show video embed</label>
-      <label class="toggle"><input type="checkbox" id="showVideoEmbed"><span class="slider"></span></label>
-    </div>
-    <div id="videoUrlRow" style="display:none;flex-direction:column;gap:8px;margin-top:4px;padding:8px;background:var(--cream);border:1px solid var(--border);border-radius:6px;">
-      <div style="display:flex;gap:14px;font-size:0.78rem;">
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
-          <input type="radio" name="videoLayout" id="vlBelow" value="below" style="accent-color:var(--gold);"> <span data-i18n="dashboard.video.layout_below">Under dashboard</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
-          <input type="radio" name="videoLayout" id="vlSidebar" value="sidebar" style="accent-color:var(--gold);"> <span data-i18n="dashboard.video.layout_sidebar">In sidebar</span>
-        </label>
-      </div>
-      <input type="url" id="videoUrlInput" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Paste YouTube URL…" data-i18n-placeholder="dashboard.video.url_placeholder" aria-label="Paste YouTube URL…" data-i18n-aria-label="dashboard.video.url_placeholder" style="width:100%;box-sizing:border-box;">
-      <button class="btn btn-xs" onclick="updateVideoEmbed()" data-i18n="dashboard.video.update_button">Update Video</button>
-    </div>
-  </div>
-</div>
+    <div class="tt-tabpanel" id="dashTabPanelCalendar" role="tabpanel" aria-labelledby="dashTabCalendar" hidden>
+      <div class="tt-set" data-set="datetime">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_datetime">Date &amp; Time</h3>
 
-<div class="panel">
-  <div class="panel-title" data-i18n="dashboard.settings.panel_datetime">Date &amp; Time</div>
-  <div class="panel-body">
-
-    <div class="sub-section">
-      <div class="sub-section-hdr" data-i18n="dashboard.datetime.sub_english_date">English Date</div>
-      <div class="sub-section-body">
+        <div class="tt-set-sub" data-i18n="dashboard.datetime.sub_english_date">English Date</div>
         <!-- flex-wrap: the three-option group (277px) does not fit beside the label in the 380px drawer,
              so the label wrapped to two lines and the group ran 13px past the row; the group now drops
              under the label, end-aligned like the row's toggles. (S327 Pass C) -->
@@ -2543,12 +2536,8 @@ body.dark .hi-sun{display:inline-block;}
           <label data-i18n="dashboard.datetime.hide_eng_date">Hide English date</label>
           <label class="toggle"><input type="checkbox" id="hideEngDate"><span class="slider"></span></label>
         </div>
-      </div>
-    </div>
 
-    <div class="sub-section">
-      <div class="sub-section-hdr" data-i18n="dashboard.datetime.sub_hebrew_date">Hebrew Date</div>
-      <div class="sub-section-body">
+        <div class="tt-set-sub" data-i18n="dashboard.datetime.sub_hebrew_date">Hebrew Date</div>
         <div class="form-row">
           <label data-i18n="dashboard.datetime.hebdate_display">Display</label>
           <div class="radio-group">
@@ -2571,12 +2560,8 @@ body.dark .hi-sun{display:inline-block;}
           <label data-i18n="dashboard.datetime.show_holiday_countdown">Show Countdown to Next Holiday</label>
           <label class="toggle"><input type="checkbox" id="showHolidayCountdown"><span class="slider"></span></label>
         </div>
-      </div>
-    </div>
 
-    <div class="sub-section">
-      <div class="sub-section-hdr" data-i18n="dashboard.datetime.sub_time">Time</div>
-      <div class="sub-section-body">
+        <div class="tt-set-sub" data-i18n="dashboard.datetime.sub_time">Time</div>
         <div class="form-row">
           <label data-i18n="dashboard.datetime.time_format">Time format</label>
           <div class="radio-group">
@@ -2599,385 +2584,378 @@ body.dark .hi-sun{display:inline-block;}
           <label class="toggle"><input type="checkbox" id="hideTime"><span class="slider"></span></label>
         </div>
       </div>
+      <div class="tt-set" data-set="dow">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_dow">Day of Week</h3>
+        <div class="form-row">
+          <label data-i18n="dashboard.days.display_label">Display</label>
+          <div class="radio-group">
+            <input type="radio" name="dowLang" id="dl-he" value="he"><label for="dl-he">עִבְרִית</label>
+            <input type="radio" name="dowLang" id="dl-both" value="both"><label for="dl-both" data-i18n="dashboard.common.opt_both">Both</label>
+            <input type="radio" name="dowLang" id="dl-en" value="en"><label for="dl-en" data-i18n="dashboard.common.opt_english">English</label>
+          </div>
+        </div>
+        <div class="size-row text-size-opt" style="display:none;">
+          <label for="dowDisplaySizeSlider" data-i18n="dashboard.days.display_size">Display size</label>
+          <input type="range" id="dowDisplaySizeSlider" min="0.5" max="3" step="0.05" value="1.35" oninput="setDowDisplaySize(this.value)">
+          <span class="size-val" id="dowDisplaySizeVal">1.35rem</span>
+          <button class="btn-xs" onclick="setDowDisplaySize(1.35)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.days.color_days">Color days of the week</label>
+          <label class="toggle"><input type="checkbox" id="colorDays"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.days.show_yesterday">Show Yesterday marker</label>
+          <label class="toggle"><input type="checkbox" id="showYesterday"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.days.show_today">Show Today marker</label>
+          <label class="toggle"><input type="checkbox" id="showToday"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.days.show_tomorrow">Show Tomorrow marker</label>
+          <label class="toggle"><input type="checkbox" id="showTomorrow"><span class="slider"></span></label>
+        </div>
+        <div class="size-row text-size-opt" style="display:none;">
+          <label for="dowYTTSizeSlider" data-i18n="dashboard.days.ytt_size">Y/T/T size</label>
+          <input type="range" id="dowYTTSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setDowYTTSize(this.value)">
+          <span class="size-val" id="dowYTTSizeVal">0.72rem</span>
+          <button class="btn-xs" onclick="setDowYTTSize(0.72)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.days.emoji_sequence">Emoji sequence</label>
+          <div class="emoji-set-btns" id="emojiSetBtns">
+            <button class="emoji-set-btn" aria-pressed="false" data-set="chick" aria-label="Chicks" data-i18n-aria-label="dashboard.days.emoji_set_chick">🥚🐣🐔</button>
+            <button class="emoji-set-btn" aria-pressed="false" data-set="city" aria-label="City" data-i18n-aria-label="dashboard.days.emoji_set_city">🌇🏙️🌃</button>
+            <button class="emoji-set-btn" aria-pressed="false" data-set="time" aria-label="Time" data-i18n-aria-label="dashboard.days.emoji_set_time">⏪️▶️⏩️</button>
+            <button class="emoji-set-btn" aria-pressed="false" data-set="arrow" aria-label="Arrows" data-i18n-aria-label="dashboard.days.emoji_set_arrow">🔼⏹️🔽</button>
+            <button class="emoji-set-btn" aria-pressed="false" data-set="plant" aria-label="Plants" data-i18n-aria-label="dashboard.days.emoji_set_plant">🌱🪴🌲</button>
+            <button class="emoji-set-btn" aria-pressed="false" data-set="boy" aria-label="Boy" data-i18n-aria-label="dashboard.days.emoji_set_boy">👶👦🧔‍♂️</button>
+            <button class="emoji-set-btn" aria-pressed="false" data-set="girl" aria-label="Girl" data-i18n-aria-label="dashboard.days.emoji_set_girl">👶👧👩</button>
+            <button class="emoji-set-btn" aria-pressed="false" data-set="none" data-i18n="dashboard.days.emoji_none">None</button>
+          </div>
+        </div>
+        <div class="size-row text-size-opt" style="display:none;">
+          <label for="dowEmojiSizeSlider" data-i18n="dashboard.days.emoji_size">Emoji size</label>
+          <input type="range" id="dowEmojiSizeSlider" min="0.5" max="4" step="0.1" value="1.4" oninput="setDowEmojiSize(this.value)">
+          <span class="size-val" id="dowEmojiSizeVal">1.4rem</span>
+          <button class="btn-xs" onclick="setDowEmojiSize(1.4)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div class="form-row">
+          <label><span data-i18n="dashboard.days.tap_to_read">Tap to read</span> <span class="beta-tag" data-i18n="dashboard.common.beta_badge">BETA</span></label>
+          <label class="toggle"><input type="checkbox" id="tapToReadDow"><span class="slider"></span></label>
+        </div>
+        <hr>
+        <div class="form-row">
+          <label data-i18n="dashboard.days.show_shabbat">Show Candle Lighting / Havdalah times</label>
+          <label class="toggle"><input type="checkbox" id="showShabbatTimes"><span class="slider"></span></label>
+        </div>
+        <div class="form-row" id="candleZipRow" style="margin-top:4px;">
+          <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.days.shabbat_location_hint">Uses the same location as the weather widget above.</span>
+        </div>
+        <hr>
+        <div class="form-row">
+          <label data-i18n="dashboard.days.hide_panel">Hide Day of Week panel</label>
+          <label class="toggle"><input type="checkbox" id="hideDOW"><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="tt-set" data-set="omer" id="omerSettingsPanel" style="display:none;">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_omer">Omer</h3>
+        <div class="form-row">
+          <label data-i18n="dashboard.days.omer_show_panel">Show Omer panel</label>
+          <label class="toggle"><input type="checkbox" id="showOmerCounter"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.days.omer_show_english">Show English day/week label</label>
+          <label class="toggle"><input type="checkbox" id="showOmerEnglish"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.days.omer_show_progress">Show progress bar</label>
+          <label class="toggle"><input type="checkbox" id="showOmerProgress"><span class="slider"></span></label>
+        </div>
+      </div>
     </div>
+    <div class="tt-tabpanel" id="dashTabPanelWeather" role="tabpanel" aria-labelledby="dashTabWeather" hidden>
+      <div class="tt-set" data-set="location">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_location">Location</h3>
+        <div class="form-row">
+          <input type="text" id="locationInput" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="City, e.g. New York" data-i18n-placeholder="dashboard.display.location_placeholder" aria-label="Location" data-i18n-aria-label="dashboard.settings.panel_location" style="max-width:220px;">
+          <button class="btn btn-xs" onclick="updateLocation()" data-i18n="dashboard.display.location_update">Update</button>
+        </div>
+        <div class="form-row" style="margin-top:4px;">
+          <button class="btn btn-xs" id="currentLocBtn" onclick="useCurrentLocation()" style="width:100%;" data-i18n="dashboard.display.current_location">📍 Current Location</button>
+        </div>
+        <!-- A denied location prompt is routine, not exceptional: school-managed devices block
+             geolocation by policy, so a brand-new teacher hits this on first run. It reports inline
+             here (reusing the .schedule-validation/.sched-warn styling) instead of a blocking alert. -->
+        <div id="locNote" class="schedule-validation" role="status" aria-live="polite" style="display:none;"></div>
+      </div>
+      <div class="tt-set" data-set="weather">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_weather">Weather</h3>
+        <div class="form-row">
+          <label data-i18n="dashboard.weather.temp_unit">Temperature unit</label>
+          <div class="radio-group">
+            <input type="radio" name="tempUnit" id="tu-f" value="F"><label for="tu-f" data-i18n="dashboard.weather.unit_f">°F</label>
+            <input type="radio" name="tempUnit" id="tu-c" value="C"><label for="tu-c" data-i18n="dashboard.weather.unit_c">°C</label>
+          </div>
+        </div>
+        <div class="size-row text-size-opt" style="display:none;">
+          <label for="tempSizeSlider" data-i18n="dashboard.weather.temp_size">Temp size</label>
+          <input type="range" id="tempSizeSlider" min="0.5" max="4" step="0.1" value="2" oninput="setTempSize(this.value)">
+          <span class="size-val" id="tempSizeVal">2rem</span>
+          <button class="btn-xs" onclick="setTempSize(2)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.weather.label_language">Label language</label>
+          <div class="radio-group">
+            <input type="radio" name="weatherLabelLang" id="wl-he" value="he"><label for="wl-he">עִבְרִית</label>
+            <input type="radio" name="weatherLabelLang" id="wl-en" value="en"><label for="wl-en" data-i18n="dashboard.common.opt_english">English</label>
+          </div>
+        </div>
+        <div class="size-row text-size-opt" style="display:none;">
+          <label for="weatherLabelSizeSlider" data-i18n="dashboard.weather.label_size">Label size</label>
+          <input type="range" id="weatherLabelSizeSlider" min="0.5" max="3" step="0.05" value="1.1" oninput="setWeatherLabelSize(this.value)">
+          <span class="size-val" id="weatherLabelSizeVal">1.1rem</span>
+          <button class="btn-xs" onclick="setWeatherLabelSize(1.1)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div class="form-row">
+          <label><span data-i18n="dashboard.weather.simple_desc">Simple weather description</span> <span class="tip-wrap" data-tip="Limits description to: Sun, Clouds, Sun &amp; Clouds, Rain, Snow, or Fog — instead of full WMO detail." data-i18n-tip="dashboard.weather.simple_desc_tip"><i class="tip-icon">?</i></span></label>
+          <label class="toggle"><input type="checkbox" id="simpleWeatherDesc"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.weather.hide_temperature">Hide temperature</label>
+          <label class="toggle"><input type="checkbox" id="hideTemperature"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.weather.hide_emoji">Hide weather emoji</label>
+          <label class="toggle"><input type="checkbox" id="hideWeatherEmoji"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.weather.hide_highlow">Hide High/Low</label>
+          <label class="toggle"><input type="checkbox" id="hideHighLow"><span class="slider"></span></label>
+        </div>
+        <div class="size-row text-size-opt" style="display:none;">
+          <label for="weatherHLSizeSlider" data-i18n="dashboard.weather.hl_size">H/L size</label>
+          <input type="range" id="weatherHLSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setWeatherHLSize(this.value)">
+          <span class="size-val" id="weatherHLSizeVal">0.72rem</span>
+          <button class="btn-xs" onclick="setWeatherHLSize(0.72)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.weather.hide_desc">Hide weather description</label>
+          <label class="toggle"><input type="checkbox" id="hideWeatherDesc"><span class="slider"></span></label>
+        </div>
+        <div class="size-row text-size-opt" style="display:none;">
+          <label for="weatherDescSizeSlider" data-i18n="dashboard.weather.desc_size">Description size</label>
+          <input type="range" id="weatherDescSizeSlider" min="0.4" max="3" step="0.05" value="1.05" oninput="setWeatherDescSize(this.value)">
+          <span class="size-val" id="weatherDescSizeVal">1.05rem</span>
+          <button class="btn-xs" onclick="setWeatherDescSize(1.05)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div class="form-row">
+          <label><span data-i18n="dashboard.weather.tap_to_read">Tap to read</span> <span class="beta-tag" data-i18n="dashboard.common.beta_badge">BETA</span></label>
+          <label class="toggle"><input type="checkbox" id="tapToReadWeather"><span class="slider"></span></label>
+        </div>
+        <hr>
+        <div class="form-row">
+          <label data-i18n="dashboard.weather.hide_panel">Hide weather panel</label>
+          <label class="toggle"><input type="checkbox" id="hideWeather"><span class="slider"></span></label>
+        </div>
+      </div>
+    </div>
+    <div class="tt-tabpanel" id="dashTabPanelClass" role="tabpanel" aria-labelledby="dashTabClass" hidden>
+      <div class="tt-set" data-set="timer">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_timer">Timer</h3>
+        <div class="form-row">
+          <label data-i18n="dashboard.timer.show_panel">Show Timer panel</label>
+          <label class="toggle"><input type="checkbox" id="showTimer"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.timer.show_fullscreen">Show timer in fullscreen mode</label>
+          <label class="toggle"><input type="checkbox" id="showTimerFullscreen"><span class="slider"></span></label>
+        </div>
+        <hr>
+        <!-- Finish sound: every option is synthesized from the page's one AudioContext (TIMER_SOUNDS),
+             so there is no asset to fetch and nothing to add to the CSP. The <option> labels carry
+             data-i18n — applyStaticI18n sets textContent only, so the selection survives a language switch. -->
+        <div class="form-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+          <label for="timerSoundSel" data-i18n="dashboard.timer.sound_label">Finish sound</label>
+          <div style="display:flex;gap:5px;align-items:center;">
+            <select id="timerSoundSel" style="flex:1;min-width:0;max-width:none;">
+              <option value="none" data-i18n="dashboard.timer.sound_none">Silent</option>
+              <option value="beep" data-i18n="dashboard.timer.sound_beep">Beep</option>
+              <option value="chime" data-i18n="dashboard.timer.sound_chime">Chime</option>
+              <option value="bell" data-i18n="dashboard.timer.sound_bell">Bell</option>
+              <option value="dingdong" data-i18n="dashboard.timer.sound_dingdong">Ding-dong</option>
+              <option value="triple" data-i18n="dashboard.timer.sound_triple">Triple beep</option>
+              <option value="gentle" data-i18n="dashboard.timer.sound_gentle">Gentle</option>
+              <option value="shofar" data-i18n="dashboard.timer.sound_shofar">Shofar</option>
+            </select>
+            <button type="button" class="btn-xs hi-btn" id="timerSoundTestBtn" onclick="timerTestSound()" title="Play the selected sound" data-i18n-title="dashboard.timer.sound_test_title" data-i18n-aria-label="dashboard.timer.sound_test_title" aria-label="Play the selected sound"><svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="dashboard.timer.sound_test">Test</span></button>
+          </div>
+        </div>
+        <div class="size-row">
+          <label for="timerVolumeSlider" data-i18n="dashboard.timer.volume">Volume</label>
+          <input type="range" id="timerVolumeSlider" min="0" max="100" step="5" value="70" oninput="setTimerVolume(this.value)">
+          <span class="size-val" id="timerVolumeVal">70%</span>
+          <button class="btn-xs" onclick="setTimerVolume(70)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.timer.repeat">Repeat until dismissed</label>
+          <label class="toggle"><input type="checkbox" id="timerRepeat"><span class="slider"></span></label>
+        </div>
+        <!-- Only meaningful while the repeat is on, so it rides the parent toggle (the #colorModeRow idiom). -->
+        <div class="form-row" id="timerRepeatStopRow" style="display:none;">
+          <label for="timerRepeatMax" data-i18n="dashboard.timer.repeat_stop_after">Give up after</label>
+          <select id="timerRepeatMax">
+            <option value="30" data-i18n="dashboard.timer.repeat_30s">30 sec</option>
+            <option value="60" data-i18n="dashboard.timer.repeat_1min">1 min</option>
+            <option value="120" data-i18n="dashboard.timer.repeat_2min">2 min</option>
+            <option value="300" data-i18n="dashboard.timer.repeat_5min">5 min</option>
+            <option value="0" data-i18n="dashboard.timer.repeat_never">Never</option>
+          </select>
+        </div>
+      </div>
+      <div class="tt-set" data-set="picker">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_picker">Student Picker</h3>
+        <div class="form-row">
+          <label data-i18n="dashboard.picker.show_panel">Show Student Picker panel</label>
+          <label class="toggle"><input type="checkbox" id="showStudentPicker"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.picker.show_fullscreen">Show in fullscreen mode</label>
+          <label class="toggle"><input type="checkbox" id="showStudentPickerFullscreen"><span class="slider"></span></label>
+        </div>
+        <hr>
+        <div class="form-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+          <label for="pickerClassSel" data-i18n="dashboard.picker.class_label">Class</label>
+          <div style="display:flex;gap:5px;align-items:center;">
+            <select id="pickerClassSel" onchange="switchClass(this.value)" style="flex:1;min-width:0;max-width:none;"></select>
+            <button type="button" class="btn-xs" title="New class" aria-label="New class" data-i18n-aria-label="dashboard.picker.new_class_title" data-i18n-title="dashboard.picker.new_class_title" onclick="newClass()"><svg class="hi hi-sm hi-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.8v8.4M7.8 12h8.4"/></svg></button>
+            <button type="button" class="btn-xs" title="Rename class" aria-label="Rename class" data-i18n-aria-label="dashboard.picker.rename_class_title" data-i18n-title="dashboard.picker.rename_class_title" onclick="renameClass()"><svg class="hi hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg></button>
+            <button type="button" class="btn-xs" title="Delete class" aria-label="Delete class" data-i18n-aria-label="dashboard.picker.delete_class_title" data-i18n-title="dashboard.picker.delete_class_title" onclick="deleteClass()"><svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg></button>
+          </div>
+          <span id="pickerClassNote" style="font-size:0.72rem;color:var(--gold-text);display:none;"></span>
+        </div>
+        <div class="form-row" style="flex-direction:column;align-items:stretch;gap:4px;">
+          <label for="pickerRoster" id="pickerRosterLabel" data-i18n="dashboard.picker.roster_label">Roster — one name per line</label>
+          <textarea id="pickerRoster" autocapitalize="words" autocorrect="off" spellcheck="false" rows="6" data-i18n-placeholder="dashboard.picker.roster_placeholder" placeholder="e.g. Ava&#10;Noah&#10;&#1491;&#1464;&#1468;&#1493;&#1460;&#1491;&#10;&#1502;&#1463;&#1497;&#1464;&#1492;" style="width:100%;resize:vertical;font-family:inherit;"></textarea><!-- i18n-ignore: roster placeholder is example student names (mixed EN/HE) with encoded newlines — illustrative content, not translatable chrome -->
+          <span id="pickerRosterCount" style="font-size:0.72rem;color:var(--muted);">0 names</span>
+          <!-- On-screen Hebrew keyboard for the roster. This field's own placeholder is already
+               Hebrew names, but the teacher typing it is — per the component's founding rationale —
+               often on a school-managed device with no Hebrew layout installed. The toggle carries
+               NO data-i18n: its label is state-dependent (Show/Hide) and JS owns it, so the English
+               text here is only the pre-I18n.ready fallback; applyStaticI18n would otherwise stomp
+               the expanded-state label on a language switch. -->
+          <button type="button" class="hk-toggle" id="rosterKbdToggle" aria-expanded="false" aria-controls="rosterKbdPanel">&#9000; Show Hebrew Keyboard</button>
+          <div class="hk-panel" id="rosterKbdPanel" hidden></div>
+        </div>
+        <div class="form-row" id="pickerRosterHint" style="margin-top:2px;">
+          <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.picker.roster_hint">Presets and Schedule Sync remember which class is active — rosters themselves are shared, so editing a list updates it everywhere.</span>
+        </div>
+        <hr>
+        <div class="form-row">
+          <label data-i18n="dashboard.picker.fair_cycle">Don't repeat until everyone's been picked</label>
+          <label class="toggle"><input type="checkbox" id="pickerFairCycle"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.picker.group_mode">Group Maker mode</label>
+          <div class="radio-group">
+            <input type="radio" name="groupMode" id="gm-size" value="size"><label for="gm-size" data-i18n="dashboard.picker.group_of_n">Groups of N</label>
+            <input type="radio" name="groupMode" id="gm-count" value="count"><label for="gm-count" data-i18n="dashboard.picker.n_groups">N groups</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="groupN" id="groupNLabel" data-i18n="dashboard.picker.group_size_label">Group size (N)</label>
+          <input type="number" id="groupN" min="2" max="60" step="1" value="4" style="width:64px;text-align:center;">
+        </div>
+      </div>
+    </div>
+    <div class="tt-tabpanel" id="dashTabPanelText" role="tabpanel" aria-labelledby="dashTabText" hidden>
+      <div class="tt-set" data-set="dashtext">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_dashtext">Dashboard Text</h3>
+        <div class="size-row">
+          <label for="dashTextSizeSlider" data-i18n="dashboard.text.display_size">Display size</label>
+          <input type="range" id="dashTextSizeSlider" min="0.8" max="5" step="0.1" value="1.8" oninput="setDashTextSize(this.value)">
+          <span class="size-val" id="dashTextSizeVal">1.8rem</span>
+        </div>
+        <div class="editor-toolbar" id="drawerToolbar"></div>
+        <div id="dashEditor" class="editor" contenteditable="true" oninput="syncDashText()" aria-label="Dashboard Text" data-i18n-aria-label="dashboard.settings.panel_dashtext"></div>
+        <div class="form-row" style="margin-top:10px;">
+          <label data-i18n="dashboard.text.hide">Hide dashboard text</label>
+          <label class="toggle"><input type="checkbox" id="hideDashText"><span class="slider"></span></label>
+        </div>
+      </div>
+      <!-- The English font picker lives in the editor toolbar (both copies of it), so its file input has
+           to sit outside — buildToolbar renders into two containers and would otherwise duplicate the id. -->
+      <input type="file" id="engFontUploadInput" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadEngFontPick(this)" tabindex="-1" aria-hidden="true">
+      <div class="tt-set" data-set="hebrew">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_hebrew">Hebrew Settings</h3>
+        <div class="tt-set-sub" data-i18n="dashboard.settings.sub_hebrew_font">Hebrew Font</div>
+        <div class="font-options" id="fontOptions"></div>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+        <div class="form-row">
+          <label data-i18n="dashboard.color.show_nikkud">Show nikkud</label>
+          <label class="toggle"><input type="checkbox" id="showNikkud"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label data-i18n="dashboard.color.color_code_nikkud">Color-code nikkud</label>
+          <label class="toggle"><input type="checkbox" id="colorCodeNikkud"><span class="slider"></span></label>
+        </div>
+        <div class="form-row" id="colorModeRow" style="display:none;">
+          <label data-i18n="dashboard.color.color_style">Color style</label>
+          <div class="radio-group">
+            <input type="radio" name="colorMode" id="cm-letter" value="letter"><label for="cm-letter" data-i18n="dashboard.color.mode_color">Color</label>
+            <input type="radio" name="colorMode" id="cm-highlight" value="highlight"><label for="cm-highlight" data-i18n="dashboard.color.mode_highlight">Highlight</label>
+            <input type="radio" name="colorMode" id="cm-underline" value="underline"><label for="cm-underline" data-i18n="dashboard.color.mode_underline">Underline</label>
+          </div>
+        </div>
+        <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
+        <div class="vowel-scheme-row" id="vowelSchemeRow" style="display:none;">
+          <button class="vowel-scheme-btn active" id="vowelSchemeDefault" aria-pressed="true" onclick="setVowelScheme('default')" data-i18n="dashboard.color.scheme_default">Default</button>
+          <button class="vowel-scheme-btn" id="vowelSchemeTalAm" aria-pressed="false" onclick="setVowelScheme('talam')" data-i18n="dashboard.color.scheme_talam">TaL AM</button>
+          <button class="vowel-scheme-btn" id="nikudResetBtn" onclick="resetNikudColors()" data-i18n="dashboard.color.reset">Reset</button>
+        </div>
 
-  </div>
-</div>
-
-<div class="panel">
-  <div class="panel-title" data-i18n="dashboard.settings.panel_weather">Weather</div>
-  <div class="panel-body">
-    <div class="form-row">
-      <label data-i18n="dashboard.weather.temp_unit">Temperature unit</label>
-      <div class="radio-group">
-        <input type="radio" name="tempUnit" id="tu-f" value="F"><label for="tu-f" data-i18n="dashboard.weather.unit_f">°F</label>
-        <input type="radio" name="tempUnit" id="tu-c" value="C"><label for="tu-c" data-i18n="dashboard.weather.unit_c">°C</label>
+        <div class="form-row" style="margin-top:12px;flex-direction:column;align-items:stretch;gap:4px;">
+          <label style="font-size:0.78rem;font-weight:600;"><span id="ttsRateSliderLabel" data-i18n="dashboard.color.tts_speed_label">Hebrew TTS Reading Speed</span> <span class="beta-tag" data-i18n="dashboard.common.beta_badge">BETA</span></label>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:0.65rem;color:var(--muted);" data-i18n="dashboard.color.tts_slow">Slow</span>
+            <input type="range" id="ttsRateSlider" aria-labelledby="ttsRateSliderLabel" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);cursor:pointer;height:24px;"
+                   oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
+            <span id="ttsRateVal" style="font-size:0.72rem;color:var(--text);min-width:36px;text-align:right;">0.75×</span>
+            <button class="btn btn-xs btn-secondary" style="padding:2px 6px;font-size:0.65rem;"
+                    title="Restore default" data-i18n-title="dashboard.common.restore_default"
+                    aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default"
+                    onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';settings.ttsRate=0.75;saveSettingsToStorage();"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);padding:0 1px;">
+            <span data-i18n="dashboard.color.tts_slower">Slower</span><span data-i18n="dashboard.color.tts_fast">Fast</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="size-row text-size-opt" style="display:none;">
-      <label for="tempSizeSlider" data-i18n="dashboard.weather.temp_size">Temp size</label>
-      <input type="range" id="tempSizeSlider" min="0.5" max="4" step="0.1" value="2" oninput="setTempSize(this.value)">
-      <span class="size-val" id="tempSizeVal">2rem</span>
-      <button class="btn-xs" onclick="setTempSize(2)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.weather.label_language">Label language</label>
-      <div class="radio-group">
-        <input type="radio" name="weatherLabelLang" id="wl-he" value="he"><label for="wl-he">עִבְרִית</label>
-        <input type="radio" name="weatherLabelLang" id="wl-en" value="en"><label for="wl-en" data-i18n="dashboard.common.opt_english">English</label>
+    <div class="tt-tabpanel" id="dashTabPanelPresets" role="tabpanel" aria-labelledby="dashTabPresets" hidden>
+      <div class="tt-set" data-set="presets" id="presetsPanel">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_presets">Presets</h3>
+        <button class="btn btn-xs btn-secondary" id="starterLayoutsBtn" onclick="openFirstRun()" style="width:100%;margin-bottom:8px;" data-i18n="dashboard.preset.quickstart_button">✨ Quick-start layouts…</button>
+        <p style="font-size:0.72rem;color:var(--muted);margin:0 0 10px;line-height:1.4;" data-i18n="dashboard.preset.quickstart_desc">Apply a ready-made setup — including a general-classroom layout — then tweak it and Save it as your own preset.</p>
+        <div class="form-row">
+          <input type="text" id="presetName" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="Preset name" data-i18n-placeholder="dashboard.preset.name_placeholder" aria-label="Preset name" data-i18n-aria-label="dashboard.preset.name_placeholder" style="max-width:200px;" oninput="onPresetNameInput()">
+          <button class="btn btn-xs" id="savePresetBtn" onclick="savePreset()" data-i18n="dashboard.preset.save">Save</button>
+        </div>
+        <div id="presetNameNote" role="status" aria-live="polite" style="display:none;font-size:0.72rem;color:var(--gold-text);margin:-4px 0 8px;"></div>
+        <div class="preset-list" id="presetList"></div>
       </div>
-    </div>
-    <div class="size-row text-size-opt" style="display:none;">
-      <label for="weatherLabelSizeSlider" data-i18n="dashboard.weather.label_size">Label size</label>
-      <input type="range" id="weatherLabelSizeSlider" min="0.5" max="3" step="0.05" value="1.1" oninput="setWeatherLabelSize(this.value)">
-      <span class="size-val" id="weatherLabelSizeVal">1.1rem</span>
-      <button class="btn-xs" onclick="setWeatherLabelSize(1.1)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-    </div>
-    <div class="form-row">
-      <label><span data-i18n="dashboard.weather.simple_desc">Simple weather description</span> <span class="tip-wrap" data-tip="Limits description to: Sun, Clouds, Sun &amp; Clouds, Rain, Snow, or Fog — instead of full WMO detail." data-i18n-tip="dashboard.weather.simple_desc_tip"><i class="tip-icon">?</i></span></label>
-      <label class="toggle"><input type="checkbox" id="simpleWeatherDesc"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.weather.hide_temperature">Hide temperature</label>
-      <label class="toggle"><input type="checkbox" id="hideTemperature"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.weather.hide_emoji">Hide weather emoji</label>
-      <label class="toggle"><input type="checkbox" id="hideWeatherEmoji"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.weather.hide_highlow">Hide High/Low</label>
-      <label class="toggle"><input type="checkbox" id="hideHighLow"><span class="slider"></span></label>
-    </div>
-    <div class="size-row text-size-opt" style="display:none;">
-      <label for="weatherHLSizeSlider" data-i18n="dashboard.weather.hl_size">H/L size</label>
-      <input type="range" id="weatherHLSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setWeatherHLSize(this.value)">
-      <span class="size-val" id="weatherHLSizeVal">0.72rem</span>
-      <button class="btn-xs" onclick="setWeatherHLSize(0.72)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.weather.hide_desc">Hide weather description</label>
-      <label class="toggle"><input type="checkbox" id="hideWeatherDesc"><span class="slider"></span></label>
-    </div>
-    <div class="size-row text-size-opt" style="display:none;">
-      <label for="weatherDescSizeSlider" data-i18n="dashboard.weather.desc_size">Description size</label>
-      <input type="range" id="weatherDescSizeSlider" min="0.4" max="3" step="0.05" value="1.05" oninput="setWeatherDescSize(this.value)">
-      <span class="size-val" id="weatherDescSizeVal">1.05rem</span>
-      <button class="btn-xs" onclick="setWeatherDescSize(1.05)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-    </div>
-    <div class="form-row">
-      <label><span data-i18n="dashboard.weather.tap_to_read">Tap to read</span> <span class="beta-tag" data-i18n="dashboard.common.beta_badge">BETA</span></label>
-      <label class="toggle"><input type="checkbox" id="tapToReadWeather"><span class="slider"></span></label>
-    </div>
-    <hr>
-    <div class="form-row">
-      <label data-i18n="dashboard.weather.hide_panel">Hide weather panel</label>
-      <label class="toggle"><input type="checkbox" id="hideWeather"><span class="slider"></span></label>
-    </div>
-  </div>
-</div>
-
-<div class="panel">
-  <div class="panel-title" data-i18n="dashboard.settings.panel_timer">Timer</div>
-  <div class="panel-body">
-    <div class="form-row">
-      <label data-i18n="dashboard.timer.show_panel">Show Timer panel</label>
-      <label class="toggle"><input type="checkbox" id="showTimer"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.timer.show_fullscreen">Show timer in fullscreen mode</label>
-      <label class="toggle"><input type="checkbox" id="showTimerFullscreen"><span class="slider"></span></label>
-    </div>
-    <hr>
-    <!-- Finish sound: every option is synthesized from the page's one AudioContext (TIMER_SOUNDS),
-         so there is no asset to fetch and nothing to add to the CSP. The <option> labels carry
-         data-i18n — applyStaticI18n sets textContent only, so the selection survives a language switch. -->
-    <div class="form-row" style="flex-direction:column;align-items:stretch;gap:6px;">
-      <label for="timerSoundSel" data-i18n="dashboard.timer.sound_label">Finish sound</label>
-      <div style="display:flex;gap:5px;align-items:center;">
-        <select id="timerSoundSel" style="flex:1;min-width:0;max-width:none;">
-          <option value="none" data-i18n="dashboard.timer.sound_none">Silent</option>
-          <option value="beep" data-i18n="dashboard.timer.sound_beep">Beep</option>
-          <option value="chime" data-i18n="dashboard.timer.sound_chime">Chime</option>
-          <option value="bell" data-i18n="dashboard.timer.sound_bell">Bell</option>
-          <option value="dingdong" data-i18n="dashboard.timer.sound_dingdong">Ding-dong</option>
-          <option value="triple" data-i18n="dashboard.timer.sound_triple">Triple beep</option>
-          <option value="gentle" data-i18n="dashboard.timer.sound_gentle">Gentle</option>
-          <option value="shofar" data-i18n="dashboard.timer.sound_shofar">Shofar</option>
-        </select>
-        <button type="button" class="btn-xs hi-btn" id="timerSoundTestBtn" onclick="timerTestSound()" title="Play the selected sound" data-i18n-title="dashboard.timer.sound_test_title" data-i18n-aria-label="dashboard.timer.sound_test_title" aria-label="Play the selected sound"><svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="dashboard.timer.sound_test">Test</span></button>
-      </div>
-    </div>
-    <div class="size-row">
-      <label for="timerVolumeSlider" data-i18n="dashboard.timer.volume">Volume</label>
-      <input type="range" id="timerVolumeSlider" min="0" max="100" step="5" value="70" oninput="setTimerVolume(this.value)">
-      <span class="size-val" id="timerVolumeVal">70%</span>
-      <button class="btn-xs" onclick="setTimerVolume(70)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.timer.repeat">Repeat until dismissed</label>
-      <label class="toggle"><input type="checkbox" id="timerRepeat"><span class="slider"></span></label>
-    </div>
-    <!-- Only meaningful while the repeat is on, so it rides the parent toggle (the #colorModeRow idiom). -->
-    <div class="form-row" id="timerRepeatStopRow" style="display:none;">
-      <label for="timerRepeatMax" data-i18n="dashboard.timer.repeat_stop_after">Give up after</label>
-      <select id="timerRepeatMax">
-        <option value="30" data-i18n="dashboard.timer.repeat_30s">30 sec</option>
-        <option value="60" data-i18n="dashboard.timer.repeat_1min">1 min</option>
-        <option value="120" data-i18n="dashboard.timer.repeat_2min">2 min</option>
-        <option value="300" data-i18n="dashboard.timer.repeat_5min">5 min</option>
-        <option value="0" data-i18n="dashboard.timer.repeat_never">Never</option>
-      </select>
-    </div>
-  </div>
-</div>
-
-<div class="panel">
-  <div class="panel-title" data-i18n="dashboard.settings.panel_picker">Student Picker</div>
-  <div class="panel-body">
-    <div class="form-row">
-      <label data-i18n="dashboard.picker.show_panel">Show Student Picker panel</label>
-      <label class="toggle"><input type="checkbox" id="showStudentPicker"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.picker.show_fullscreen">Show in fullscreen mode</label>
-      <label class="toggle"><input type="checkbox" id="showStudentPickerFullscreen"><span class="slider"></span></label>
-    </div>
-    <hr>
-    <div class="form-row" style="flex-direction:column;align-items:stretch;gap:6px;">
-      <label for="pickerClassSel" data-i18n="dashboard.picker.class_label">Class</label>
-      <div style="display:flex;gap:5px;align-items:center;">
-        <select id="pickerClassSel" onchange="switchClass(this.value)" style="flex:1;min-width:0;max-width:none;"></select>
-        <button type="button" class="btn-xs" title="New class" aria-label="New class" data-i18n-aria-label="dashboard.picker.new_class_title" data-i18n-title="dashboard.picker.new_class_title" onclick="newClass()"><svg class="hi hi-sm hi-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.8v8.4M7.8 12h8.4"/></svg></button>
-        <button type="button" class="btn-xs" title="Rename class" aria-label="Rename class" data-i18n-aria-label="dashboard.picker.rename_class_title" data-i18n-title="dashboard.picker.rename_class_title" onclick="renameClass()"><svg class="hi hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg></button>
-        <button type="button" class="btn-xs" title="Delete class" aria-label="Delete class" data-i18n-aria-label="dashboard.picker.delete_class_title" data-i18n-title="dashboard.picker.delete_class_title" onclick="deleteClass()"><svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg></button>
-      </div>
-      <span id="pickerClassNote" style="font-size:0.72rem;color:var(--gold-text);display:none;"></span>
-    </div>
-    <div class="form-row" style="flex-direction:column;align-items:stretch;gap:4px;">
-      <label for="pickerRoster" id="pickerRosterLabel" data-i18n="dashboard.picker.roster_label">Roster — one name per line</label>
-      <textarea id="pickerRoster" autocapitalize="words" autocorrect="off" spellcheck="false" rows="6" data-i18n-placeholder="dashboard.picker.roster_placeholder" placeholder="e.g. Ava&#10;Noah&#10;&#1491;&#1464;&#1468;&#1493;&#1460;&#1491;&#10;&#1502;&#1463;&#1497;&#1464;&#1492;" style="width:100%;resize:vertical;font-family:inherit;"></textarea><!-- i18n-ignore: roster placeholder is example student names (mixed EN/HE) with encoded newlines — illustrative content, not translatable chrome -->
-      <span id="pickerRosterCount" style="font-size:0.72rem;color:var(--muted);">0 names</span>
-      <!-- On-screen Hebrew keyboard for the roster. This field's own placeholder is already
-           Hebrew names, but the teacher typing it is — per the component's founding rationale —
-           often on a school-managed device with no Hebrew layout installed. The toggle carries
-           NO data-i18n: its label is state-dependent (Show/Hide) and JS owns it, so the English
-           text here is only the pre-I18n.ready fallback; applyStaticI18n would otherwise stomp
-           the expanded-state label on a language switch. -->
-      <button type="button" class="hk-toggle" id="rosterKbdToggle" aria-expanded="false" aria-controls="rosterKbdPanel">&#9000; Show Hebrew Keyboard</button>
-      <div class="hk-panel" id="rosterKbdPanel" hidden></div>
-    </div>
-    <div class="form-row" id="pickerRosterHint" style="margin-top:2px;">
-      <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.picker.roster_hint">Presets and Schedule Sync remember which class is active — rosters themselves are shared, so editing a list updates it everywhere.</span>
-    </div>
-    <hr>
-    <div class="form-row">
-      <label data-i18n="dashboard.picker.fair_cycle">Don't repeat until everyone's been picked</label>
-      <label class="toggle"><input type="checkbox" id="pickerFairCycle"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.picker.group_mode">Group Maker mode</label>
-      <div class="radio-group">
-        <input type="radio" name="groupMode" id="gm-size" value="size"><label for="gm-size" data-i18n="dashboard.picker.group_of_n">Groups of N</label>
-        <input type="radio" name="groupMode" id="gm-count" value="count"><label for="gm-count" data-i18n="dashboard.picker.n_groups">N groups</label>
-      </div>
-    </div>
-    <div class="form-row">
-      <label for="groupN" id="groupNLabel" data-i18n="dashboard.picker.group_size_label">Group size (N)</label>
-      <input type="number" id="groupN" min="2" max="60" step="1" value="4" style="width:64px;text-align:center;">
-    </div>
-  </div>
-</div>
-
-<div class="panel">
-  <div class="panel-title" data-i18n="dashboard.settings.panel_dow">Day of Week</div>
-  <div class="panel-body">
-    <div class="form-row">
-      <label data-i18n="dashboard.days.display_label">Display</label>
-      <div class="radio-group">
-        <input type="radio" name="dowLang" id="dl-he" value="he"><label for="dl-he">עִבְרִית</label>
-        <input type="radio" name="dowLang" id="dl-both" value="both"><label for="dl-both" data-i18n="dashboard.common.opt_both">Both</label>
-        <input type="radio" name="dowLang" id="dl-en" value="en"><label for="dl-en" data-i18n="dashboard.common.opt_english">English</label>
-      </div>
-    </div>
-    <div class="size-row text-size-opt" style="display:none;">
-      <label for="dowDisplaySizeSlider" data-i18n="dashboard.days.display_size">Display size</label>
-      <input type="range" id="dowDisplaySizeSlider" min="0.5" max="3" step="0.05" value="1.35" oninput="setDowDisplaySize(this.value)">
-      <span class="size-val" id="dowDisplaySizeVal">1.35rem</span>
-      <button class="btn-xs" onclick="setDowDisplaySize(1.35)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.days.color_days">Color days of the week</label>
-      <label class="toggle"><input type="checkbox" id="colorDays"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.days.show_yesterday">Show Yesterday marker</label>
-      <label class="toggle"><input type="checkbox" id="showYesterday"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.days.show_today">Show Today marker</label>
-      <label class="toggle"><input type="checkbox" id="showToday"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.days.show_tomorrow">Show Tomorrow marker</label>
-      <label class="toggle"><input type="checkbox" id="showTomorrow"><span class="slider"></span></label>
-    </div>
-    <div class="size-row text-size-opt" style="display:none;">
-      <label for="dowYTTSizeSlider" data-i18n="dashboard.days.ytt_size">Y/T/T size</label>
-      <input type="range" id="dowYTTSizeSlider" min="0.3" max="2" step="0.05" value="0.72" oninput="setDowYTTSize(this.value)">
-      <span class="size-val" id="dowYTTSizeVal">0.72rem</span>
-      <button class="btn-xs" onclick="setDowYTTSize(0.72)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.days.emoji_sequence">Emoji sequence</label>
-      <div class="emoji-set-btns" id="emojiSetBtns">
-        <button class="emoji-set-btn" aria-pressed="false" data-set="chick" aria-label="Chicks" data-i18n-aria-label="dashboard.days.emoji_set_chick">🥚🐣🐔</button>
-        <button class="emoji-set-btn" aria-pressed="false" data-set="city" aria-label="City" data-i18n-aria-label="dashboard.days.emoji_set_city">🌇🏙️🌃</button>
-        <button class="emoji-set-btn" aria-pressed="false" data-set="time" aria-label="Time" data-i18n-aria-label="dashboard.days.emoji_set_time">⏪️▶️⏩️</button>
-        <button class="emoji-set-btn" aria-pressed="false" data-set="arrow" aria-label="Arrows" data-i18n-aria-label="dashboard.days.emoji_set_arrow">🔼⏹️🔽</button>
-        <button class="emoji-set-btn" aria-pressed="false" data-set="plant" aria-label="Plants" data-i18n-aria-label="dashboard.days.emoji_set_plant">🌱🪴🌲</button>
-        <button class="emoji-set-btn" aria-pressed="false" data-set="boy" aria-label="Boy" data-i18n-aria-label="dashboard.days.emoji_set_boy">👶👦🧔‍♂️</button>
-        <button class="emoji-set-btn" aria-pressed="false" data-set="girl" aria-label="Girl" data-i18n-aria-label="dashboard.days.emoji_set_girl">👶👧👩</button>
-        <button class="emoji-set-btn" aria-pressed="false" data-set="none" data-i18n="dashboard.days.emoji_none">None</button>
-      </div>
-    </div>
-    <div class="size-row text-size-opt" style="display:none;">
-      <label for="dowEmojiSizeSlider" data-i18n="dashboard.days.emoji_size">Emoji size</label>
-      <input type="range" id="dowEmojiSizeSlider" min="0.5" max="4" step="0.1" value="1.4" oninput="setDowEmojiSize(this.value)">
-      <span class="size-val" id="dowEmojiSizeVal">1.4rem</span>
-      <button class="btn-xs" onclick="setDowEmojiSize(1.4)" title="Restore default" aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default" data-i18n-title="dashboard.common.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-    </div>
-    <div class="form-row">
-      <label><span data-i18n="dashboard.days.tap_to_read">Tap to read</span> <span class="beta-tag" data-i18n="dashboard.common.beta_badge">BETA</span></label>
-      <label class="toggle"><input type="checkbox" id="tapToReadDow"><span class="slider"></span></label>
-    </div>
-    <hr>
-    <div class="form-row">
-      <label data-i18n="dashboard.days.show_shabbat">Show Candle Lighting / Havdalah times</label>
-      <label class="toggle"><input type="checkbox" id="showShabbatTimes"><span class="slider"></span></label>
-    </div>
-    <div class="form-row" id="candleZipRow" style="margin-top:4px;">
-      <span style="font-size:0.78rem;color:var(--muted);font-style:italic;" data-i18n="dashboard.days.shabbat_location_hint">Uses the same location as the weather widget above.</span>
-    </div>
-    <hr>
-    <div class="form-row">
-      <label data-i18n="dashboard.days.hide_panel">Hide Day of Week panel</label>
-      <label class="toggle"><input type="checkbox" id="hideDOW"><span class="slider"></span></label>
-    </div>
-  </div>
-</div>
-
-<div class="panel" id="omerSettingsPanel" style="display:none;">
-  <div class="panel-title" data-i18n="dashboard.settings.panel_omer">Omer</div>
-  <div class="panel-body">
-    <div class="form-row">
-      <label data-i18n="dashboard.days.omer_show_panel">Show Omer panel</label>
-      <label class="toggle"><input type="checkbox" id="showOmerCounter"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.days.omer_show_english">Show English day/week label</label>
-      <label class="toggle"><input type="checkbox" id="showOmerEnglish"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.days.omer_show_progress">Show progress bar</label>
-      <label class="toggle"><input type="checkbox" id="showOmerProgress"><span class="slider"></span></label>
-    </div>
-  </div>
-</div>
-
-<div class="panel">
-  <div class="panel-title" data-i18n="dashboard.settings.panel_dashtext">Dashboard Text</div>
-  <div class="panel-body">
-    <div class="size-row">
-      <label for="dashTextSizeSlider" data-i18n="dashboard.text.display_size">Display size</label>
-      <input type="range" id="dashTextSizeSlider" min="0.8" max="5" step="0.1" value="1.8" oninput="setDashTextSize(this.value)">
-      <span class="size-val" id="dashTextSizeVal">1.8rem</span>
-    </div>
-    <div class="editor-toolbar" id="drawerToolbar"></div>
-    <div id="dashEditor" class="editor" contenteditable="true" oninput="syncDashText()" aria-label="Dashboard Text" data-i18n-aria-label="dashboard.settings.panel_dashtext"></div>
-    <div class="form-row" style="margin-top:10px;">
-      <label data-i18n="dashboard.text.hide">Hide dashboard text</label>
-      <label class="toggle"><input type="checkbox" id="hideDashText"><span class="slider"></span></label>
-    </div>
-  </div>
-</div>
-<!-- The English font picker lives in the editor toolbar (both copies of it), so its file input has
-     to sit outside — buildToolbar renders into two containers and would otherwise duplicate the id. -->
-<input type="file" id="engFontUploadInput" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadEngFontPick(this)" tabindex="-1" aria-hidden="true">
-
-<div class="panel collapsed" id="presetsPanel">
-  <div class="panel-title" data-i18n="dashboard.settings.panel_presets">Presets</div>
-  <div class="panel-body">
-    <button class="btn btn-xs btn-secondary" id="starterLayoutsBtn" onclick="openFirstRun()" style="width:100%;margin-bottom:8px;" data-i18n="dashboard.preset.quickstart_button">✨ Quick-start layouts…</button>
-    <p style="font-size:0.72rem;color:var(--muted);margin:0 0 10px;line-height:1.4;" data-i18n="dashboard.preset.quickstart_desc">Apply a ready-made setup — including a general-classroom layout — then tweak it and Save it as your own preset.</p>
-    <div class="form-row">
-      <input type="text" id="presetName" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="Preset name" data-i18n-placeholder="dashboard.preset.name_placeholder" aria-label="Preset name" data-i18n-aria-label="dashboard.preset.name_placeholder" style="max-width:200px;" oninput="onPresetNameInput()">
-      <button class="btn btn-xs" id="savePresetBtn" onclick="savePreset()" data-i18n="dashboard.preset.save">Save</button>
-    </div>
-    <div id="presetNameNote" role="status" aria-live="polite" style="display:none;font-size:0.72rem;color:var(--gold-text);margin:-4px 0 8px;"></div>
-    <div class="preset-list" id="presetList"></div>
-    <hr>
-    <style>
-      .ivrit-mode-toggle{display:flex;border:1px solid var(--border,#ccc);border-radius:6px;overflow:hidden;margin-bottom:10px;}
-      .ivrit-mode-btn{flex:1;padding:6px 4px;border:none;background:var(--white,#fff);color:var(--text,#222);font-family:inherit;font-size:0.74rem;cursor:pointer;}
-      .ivrit-mode-btn.active{background:var(--navy,#1a2744);color:#fff;}
-      .ivrit-drop{border:2px dashed var(--border,#ccc);border-radius:8px;padding:14px 10px;text-align:center;transition:border-color 0.15s,background 0.15s;}
-      .ivrit-drop.ivrit-drag{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
-      .ivrit-ask-btn{flex:1;min-width:96px;padding:9px;border:1px solid transparent;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.85rem;}
-      .ivrit-ask-btn[data-act="merge"]{background:var(--navy,#1a2744);color:#fff;}
-      .ivrit-ask-btn[data-act="merge"]:hover{background:var(--gold,#c9922a);color:var(--navy,#1a2744);}
-      .ivrit-ask-btn[data-act="replace"]{background:#a83232;color:#fff;}
-      .ivrit-ask-btn[data-act="replace"]:hover{background:#8a2828;}
-      .ivrit-ask-btn[data-act="cancel"]{background:transparent;color:inherit;border-color:var(--border,#ccc);}
-      .ivrit-ask-btn[data-act="cancel"]:hover{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
-    </style>
-    <div class="ivrit-mode-toggle">
-      <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" aria-pressed="true" onclick="setIvritMode('auto')" data-i18n="shared.ivrit.mode_auto">Automatic Input</button>
-      <button type="button" id="ivritModeManual" class="ivrit-mode-btn" aria-pressed="false" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
-    </div>
-    <div id="ivritAuto">
-      <div style="font-size:0.72rem;color:var(--muted);line-height:1.4;margin-bottom:8px;" data-i18n-html="dashboard.backup.auto_explainer">Save all your presets, saved schedules, and current settings to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.</div>
-      <button class="btn btn-xs btn-secondary hi-btn" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.ivrit.save_button">Save to .ivrit file</span></button>
-      <div id="ivritDrop" class="ivrit-drop">
-        <button class="btn btn-xs btn-secondary" type="button" onclick="document.getElementById('ivritFileInput').click()" data-i18n="shared.ivrit.browse_button">Browse…</button>
-        <div style="font-size:0.7rem;color:var(--muted);margin:4px 0;" data-i18n="shared.ivrit.or_divider">— or —</div>
-        <div style="font-size:0.78rem;" data-i18n-html="shared.ivrit.drop_hint">Drop a <b>.ivrit</b> file here</div>
-        <input type="file" id="ivritFileInput" accept=".ivrit,application/json,text/plain" style="display:none;">
-      </div>
-      <div id="ivritStatus" role="status" style="font-size:0.7rem;color:var(--muted);margin-top:8px;min-height:1em;text-align:center;"></div>
-    </div>
-    <div id="ivritManual" style="display:none;">
-      <div style="display:flex;gap:6px;margin-bottom:8px;">
-        <button class="btn btn-xs btn-secondary" onclick="exportPresets()" style="flex:1;" data-i18n="shared.ivrit.manual_export">Export</button>
-        <button class="btn btn-xs btn-secondary" onclick="importPresets()" style="flex:1;" data-i18n="shared.ivrit.manual_import">Import</button>
-      </div>
-      <div style="position:relative;">
-        <textarea id="presetBackupBox" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Paste backup JSON here, or click Export…" data-i18n-placeholder="dashboard.backup.placeholder" aria-label="Paste backup JSON here, or click Export…" data-i18n-aria-label="dashboard.backup.placeholder" style="height:80px;font-family:monospace;font-size:0.72rem;width:100%;"></textarea>
-        <button onclick="copyPresetBackup()" id="presetCopyBtn" class="preset-copy-btn" title="Copy" data-i18n-title="shared.ivrit.manual_copy" data-i18n="shared.ivrit.manual_copy">Copy</button>
-      </div>
-    </div>
-    <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into #cloudSavesPanel; see initCloudSaves() -->
-    <div class="sub-section" style="margin-top:14px;">
-      <div class="sub-section-hdr" data-i18n="dashboard.settings.cloud_head">Cloud saves</div>
-      <div class="sub-section-body"><div id="cloudSavesPanel"></div></div>
-    </div>
-  </div>
-</div>
-
-<div class="panel collapsed" id="schedulePanel">
-  <div class="panel-title" data-i18n="dashboard.settings.panel_schedule">Schedule Sync</div>
-  <div class="panel-body">
-    <div class="form-row" style="margin-bottom:12px;">
-      <label data-i18n="dashboard.schedule.enable">Enable Schedule Sync</label>
-      <label class="toggle"><input type="checkbox" id="scheduleEnabled" onchange="toggleScheduleSync(this.checked)"><span class="slider"></span></label>
-    </div>
-    <div id="scheduleSyncBody" style="display:none;">
-      <button class="btn" id="swmOpenBtn" onclick="openWeekEditor()" data-i18n="dashboard.schedule.editor_button">Set up Schedule Sync…</button>
-      <div id="weekSummary" class="wk-summary" style="display:none;"></div>
-      <div id="schedulePreview" class="sched-preview"></div>
-      <div class="sub-section" style="margin-top:12px;">
-        <div class="sub-section-hdr" data-i18n="dashboard.schedule.sub_options">Schedule Sync Options</div>
-        <div class="sub-section-body">
+      <div class="tt-set" data-set="schedule" id="schedulePanel">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_schedule">Schedule Sync</h3>
+        <div class="form-row" style="margin-bottom:12px;">
+          <label data-i18n="dashboard.schedule.enable">Enable Schedule Sync</label>
+          <label class="toggle"><input type="checkbox" id="scheduleEnabled" onchange="toggleScheduleSync(this.checked)"><span class="slider"></span></label>
+        </div>
+        <div id="scheduleSyncBody" style="display:none;">
+          <button class="btn" id="swmOpenBtn" onclick="openWeekEditor()" data-i18n="dashboard.schedule.editor_button">Set up Schedule Sync…</button>
+          <div id="weekSummary" class="wk-summary" style="display:none;"></div>
+          <div id="schedulePreview" class="sched-preview"></div>
+          <div class="tt-set-sub" data-i18n="dashboard.schedule.sub_options">Schedule Sync Options</div>
           <div class="form-row">
             <label data-i18n="dashboard.schedule.show_countdown">Show countdown to next class</label>
             <label class="toggle"><input type="checkbox" id="scheduleShowCountdown" onchange="setScheduleCountdown(this.checked)"><span class="slider"></span></label>
@@ -2993,109 +2971,100 @@ body.dark .hi-sun{display:inline-block;}
         </div>
       </div>
     </div>
-  </div>
-</div>
-
-<div class="panel">
-  <div class="panel-title" data-i18n="dashboard.settings.panel_hebrew">Hebrew Settings</div>
-  <div class="panel-body">
-    <div class="sub-section">
-      <div class="sub-section-hdr" data-i18n="dashboard.settings.sub_hebrew_font">Hebrew Font</div>
-      <div class="sub-section-body">
-        <div class="font-options" id="fontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+    <div class="tt-tabpanel" id="dashTabPanelMore" role="tabpanel" aria-labelledby="dashTabMore" hidden>
+      <div class="tt-set" data-set="backup">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_backup">Backup</h3>
+        <style>
+          .ivrit-mode-toggle{display:flex;border:1px solid var(--border,#ccc);border-radius:6px;overflow:hidden;margin-bottom:10px;}
+          .ivrit-mode-btn{flex:1;padding:6px 4px;border:none;background:var(--white,#fff);color:var(--text,#222);font-family:inherit;font-size:0.74rem;cursor:pointer;}
+          .ivrit-mode-btn.active{background:var(--navy,#1a2744);color:#fff;}
+          .ivrit-drop{border:2px dashed var(--border,#ccc);border-radius:8px;padding:14px 10px;text-align:center;transition:border-color 0.15s,background 0.15s;}
+          .ivrit-drop.ivrit-drag{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
+          .ivrit-ask-btn{flex:1;min-width:96px;padding:9px;border:1px solid transparent;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.85rem;}
+          .ivrit-ask-btn[data-act="merge"]{background:var(--navy,#1a2744);color:#fff;}
+          .ivrit-ask-btn[data-act="merge"]:hover{background:var(--gold,#c9922a);color:var(--navy,#1a2744);}
+          .ivrit-ask-btn[data-act="replace"]{background:#a83232;color:#fff;}
+          .ivrit-ask-btn[data-act="replace"]:hover{background:#8a2828;}
+          .ivrit-ask-btn[data-act="cancel"]{background:transparent;color:inherit;border-color:var(--border,#ccc);}
+          .ivrit-ask-btn[data-act="cancel"]:hover{border-color:var(--gold,#c9922a);background:rgba(201,146,42,0.12);}
+        </style>
+        <div class="ivrit-mode-toggle">
+          <button type="button" id="ivritModeAuto" class="ivrit-mode-btn active" aria-pressed="true" onclick="setIvritMode('auto')" data-i18n="shared.ivrit.mode_auto">Automatic Input</button>
+          <button type="button" id="ivritModeManual" class="ivrit-mode-btn" aria-pressed="false" onclick="setIvritMode('manual')" data-i18n="shared.ivrit.mode_manual">Manual Input</button>
+        </div>
+        <div id="ivritAuto">
+          <div style="font-size:0.72rem;color:var(--muted);line-height:1.4;margin-bottom:8px;" data-i18n-html="dashboard.backup.auto_explainer">Save all your presets, saved schedules, and current settings to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.</div>
+          <button class="btn btn-xs btn-secondary hi-btn" type="button" onclick="ivritSaveFile()" style="width:100%;margin-bottom:10px;"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.ivrit.save_button">Save to .ivrit file</span></button>
+          <div id="ivritDrop" class="ivrit-drop">
+            <button class="btn btn-xs btn-secondary" type="button" onclick="document.getElementById('ivritFileInput').click()" data-i18n="shared.ivrit.browse_button">Browse…</button>
+            <div style="font-size:0.7rem;color:var(--muted);margin:4px 0;" data-i18n="shared.ivrit.or_divider">— or —</div>
+            <div style="font-size:0.78rem;" data-i18n-html="shared.ivrit.drop_hint">Drop a <b>.ivrit</b> file here</div>
+            <input type="file" id="ivritFileInput" accept=".ivrit,application/json,text/plain" style="display:none;">
+          </div>
+          <div id="ivritStatus" role="status" style="font-size:0.7rem;color:var(--muted);margin-top:8px;min-height:1em;text-align:center;"></div>
+        </div>
+        <div id="ivritManual" style="display:none;">
+          <div style="display:flex;gap:6px;margin-bottom:8px;">
+            <button class="btn btn-xs btn-secondary" onclick="exportPresets()" style="flex:1;" data-i18n="shared.ivrit.manual_export">Export</button>
+            <button class="btn btn-xs btn-secondary" onclick="importPresets()" style="flex:1;" data-i18n="shared.ivrit.manual_import">Import</button>
+          </div>
+          <div style="position:relative;">
+            <textarea id="presetBackupBox" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Paste backup JSON here, or click Export…" data-i18n-placeholder="dashboard.backup.placeholder" aria-label="Paste backup JSON here, or click Export…" data-i18n-aria-label="dashboard.backup.placeholder" style="height:80px;font-family:monospace;font-size:0.72rem;width:100%;"></textarea>
+            <button onclick="copyPresetBackup()" id="presetCopyBtn" class="preset-copy-btn" title="Copy" data-i18n-title="shared.ivrit.manual_copy" data-i18n="shared.ivrit.manual_copy">Copy</button>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.color.show_nikkud">Show nikkud</label>
-      <label class="toggle"><input type="checkbox" id="showNikkud"><span class="slider"></span></label>
-    </div>
-    <div class="form-row">
-      <label data-i18n="dashboard.color.color_code_nikkud">Color-code nikkud</label>
-      <label class="toggle"><input type="checkbox" id="colorCodeNikkud"><span class="slider"></span></label>
-    </div>
-    <div class="form-row" id="colorModeRow" style="display:none;">
-      <label data-i18n="dashboard.color.color_style">Color style</label>
-      <div class="radio-group">
-        <input type="radio" name="colorMode" id="cm-letter" value="letter"><label for="cm-letter" data-i18n="dashboard.color.mode_color">Color</label>
-        <input type="radio" name="colorMode" id="cm-highlight" value="highlight"><label for="cm-highlight" data-i18n="dashboard.color.mode_highlight">Highlight</label>
-        <input type="radio" name="colorMode" id="cm-underline" value="underline"><label for="cm-underline" data-i18n="dashboard.color.mode_underline">Underline</label>
+      <div class="tt-set" data-set="cloud">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.cloud_head">Cloud saves</h3>
+        <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into #cloudSavesPanel; see initCloudSaves() -->
+        <div id="cloudSavesPanel"></div>
       </div>
-    </div>
-    <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
-    <div class="vowel-scheme-row" id="vowelSchemeRow" style="display:none;">
-      <button class="vowel-scheme-btn active" id="vowelSchemeDefault" aria-pressed="true" onclick="setVowelScheme('default')" data-i18n="dashboard.color.scheme_default">Default</button>
-      <button class="vowel-scheme-btn" id="vowelSchemeTalAm" aria-pressed="false" onclick="setVowelScheme('talam')" data-i18n="dashboard.color.scheme_talam">TaL AM</button>
-      <button class="vowel-scheme-btn" id="nikudResetBtn" onclick="resetNikudColors()" data-i18n="dashboard.color.reset">Reset</button>
-    </div>
-
-    <div class="form-row" style="margin-top:12px;flex-direction:column;align-items:stretch;gap:4px;">
-      <label style="font-size:0.78rem;font-weight:600;"><span id="ttsRateSliderLabel" data-i18n="dashboard.color.tts_speed_label">Hebrew TTS Reading Speed</span> <span class="beta-tag" data-i18n="dashboard.common.beta_badge">BETA</span></label>
-      <div style="display:flex;align-items:center;gap:6px;">
-        <span style="font-size:0.65rem;color:var(--muted);" data-i18n="dashboard.color.tts_slow">Slow</span>
-        <input type="range" id="ttsRateSlider" aria-labelledby="ttsRateSliderLabel" min="0.5" max="1.5" step="0.05" value="0.75" style="flex:1;accent-color:var(--gold);cursor:pointer;height:24px;"
-               oninput="document.getElementById('ttsRateVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
-        <span id="ttsRateVal" style="font-size:0.72rem;color:var(--text);min-width:36px;text-align:right;">0.75×</span>
-        <button class="btn btn-xs btn-secondary" style="padding:2px 6px;font-size:0.65rem;"
-                title="Restore default" data-i18n-title="dashboard.common.restore_default"
-                aria-label="Restore default" data-i18n-aria-label="dashboard.common.restore_default"
-                onclick="document.getElementById('ttsRateSlider').value=0.75;document.getElementById('ttsRateVal').textContent='0.75×';settings.ttsRate=0.75;saveSettingsToStorage();"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+      <div class="tt-set" data-set="about">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="dashboard.settings.panel_about">About &amp; FAQ</h3>
+        <details style="margin:0 0 10px;">
+          <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:5px 0;" data-i18n="dashboard.about.faq_summary">Frequently Asked Questions</summary>
+          <div style="padding:4px 0;">
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q1">What is the Hebrew classroom dashboard for?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a1">It displays the live Hebrew date, time, weather, and days of the week for use on classroom SmartBoards or projectors during morning routine and Hebrew instruction.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q2">Does it work on SmartBoards?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a2">Yes. The dashboard is designed for SmartBoards, projectors, and large displays. A built-in fullscreen mode and zoom control let you size content for any classroom screen.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q3">Is the dashboard free?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a3">Yes. The dashboard is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q4">Can I project the Hebrew date?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a4">Yes. The Hebrew (Jewish) date and the corresponding Gregorian date are shown live and update automatically each day.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q5">Is there a guided tour, and how do I switch layouts?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n-html="dashboard.about.faq_a5">Click <strong>Tour</strong> in the top bar for a quick walkthrough. First-time teachers also get a setup card. To switch layouts, open Settings → Presets and tap a Quick-start layout — Hebrew classroom, Morning routine, or a General classroom layout for non-Judaics rooms — then tweak it and Save your own preset.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q6">Can the dashboard switch between periods by itself?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a6">Yes. Settings → Schedule Sync lets you build a weekly grid — paint each class across your periods and days, or import the whole grid from your school calendar's .ics or .csv export; the board reconfigures itself through the day and shows a live Now / Next display and a countdown.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q7">How do I keep the display from going to sleep?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n-html="dashboard.about.faq_a7">Fullscreen keeps the screen awake automatically. Otherwise turn on <strong>Keep screen awake</strong> in Settings → Display Options, where the browser supports it.</p></details>
+          </div>
+        </details>
+        <details style="margin:0 0 10px;">
+          <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:5px 0;" data-i18n="dashboard.about.howto_summary">How To Use</summary>
+          <ol style="padding:6px 0 4px;padding-inline-start:20px;margin:0;font-size:0.8rem;line-height:1.5;color:var(--muted);">
+            <li data-i18n="dashboard.about.howto_1">Set your location for accurate weather and Hebrew date.</li>
+            <li data-i18n-html="dashboard.about.howto_2">Pick which panels to show in <em>Display Options</em>.</li>
+            <li data-i18n="dashboard.about.howto_3">Customize the Hebrew font and nikkud display.</li>
+            <li data-i18n="dashboard.about.howto_4">Use the fullscreen button to project to your SmartBoard.</li>
+            <li data-i18n="dashboard.about.howto_5">Save your setup as a preset — or start from a Quick-start layout in the Presets panel.</li>
+            <li data-i18n="dashboard.about.howto_6">In fullscreen, move the mouse to reveal quick controls (settings, timer, student picker, text, video, blank screen, intermission screen).</li>
+            <li data-i18n="dashboard.about.howto_7">Click the pencil on the dashboard message to edit it right on the board.</li>
+          </ol>
+        </details>
+        <div>
+          <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px;">
+            <li><a href="hebrew_blend_generator.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;display:inline-block;padding-block:5px;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
+            <li><a href="flash_cards.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;display:inline-block;padding-block:5px;" data-i18n="shared.nav.link_flashcards">Hebrew alphabet flash cards →</a></li>
+            <li><a href="hebrew_dictionary.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;display:inline-block;padding-block:5px;" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
+            <li><a href="trope_tutor.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;display:inline-block;padding-block:5px;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
+            <li><a href="resources.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;display:inline-block;padding-block:5px;" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
+          </ul>
+        </div>
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:var(--muted);padding:0 1px;">
-        <span data-i18n="dashboard.color.tts_slower">Slower</span><span data-i18n="dashboard.color.tts_fast">Fast</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="panel collapsed">
-  <div class="panel-title" data-i18n="dashboard.settings.panel_about">About &amp; FAQ</div>
-  <div class="panel-body">
-    <details style="margin:0 0 10px;">
-      <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:5px 0;" data-i18n="dashboard.about.faq_summary">Frequently Asked Questions</summary>
-      <div style="padding:4px 0;">
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q1">What is the Hebrew classroom dashboard for?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a1">It displays the live Hebrew date, time, weather, and days of the week for use on classroom SmartBoards or projectors during morning routine and Hebrew instruction.</p></details>
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q2">Does it work on SmartBoards?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a2">Yes. The dashboard is designed for SmartBoards, projectors, and large displays. A built-in fullscreen mode and zoom control let you size content for any classroom screen.</p></details>
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q3">Is the dashboard free?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a3">Yes. The dashboard is free to use under CC BY-NC-SA 4.0 for non-commercial educational purposes.</p></details>
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q4">Can I project the Hebrew date?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a4">Yes. The Hebrew (Jewish) date and the corresponding Gregorian date are shown live and update automatically each day.</p></details>
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q5">Is there a guided tour, and how do I switch layouts?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n-html="dashboard.about.faq_a5">Click <strong>Tour</strong> in the top bar for a quick walkthrough. First-time teachers also get a setup card. To switch layouts, open Settings → Presets and tap a Quick-start layout — Hebrew classroom, Morning routine, or a General classroom layout for non-Judaics rooms — then tweak it and Save your own preset.</p></details>
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q6">Can the dashboard switch between periods by itself?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="dashboard.about.faq_a6">Yes. Settings → Schedule Sync lets you build a weekly grid — paint each class across your periods and days, or import the whole grid from your school calendar's .ics or .csv export; the board reconfigures itself through the day and shows a live Now / Next display and a countdown.</p></details>
-        <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:5px 0;" data-i18n="dashboard.about.faq_q7">How do I keep the display from going to sleep?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n-html="dashboard.about.faq_a7">Fullscreen keeps the screen awake automatically. Otherwise turn on <strong>Keep screen awake</strong> in Settings → Display Options, where the browser supports it.</p></details>
-      </div>
-    </details>
-    <details style="margin:0 0 10px;">
-      <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:5px 0;" data-i18n="dashboard.about.howto_summary">How To Use</summary>
-      <ol style="padding:6px 0 4px;padding-inline-start:20px;margin:0;font-size:0.8rem;line-height:1.5;color:var(--muted);">
-        <li data-i18n="dashboard.about.howto_1">Set your location for accurate weather and Hebrew date.</li>
-        <li data-i18n-html="dashboard.about.howto_2">Pick which panels to show in <em>Display Options</em>.</li>
-        <li data-i18n="dashboard.about.howto_3">Customize the Hebrew font and nikkud display.</li>
-        <li data-i18n="dashboard.about.howto_4">Use the fullscreen button to project to your SmartBoard.</li>
-        <li data-i18n="dashboard.about.howto_5">Save your setup as a preset — or start from a Quick-start layout in the Presets panel.</li>
-        <li data-i18n="dashboard.about.howto_6">In fullscreen, move the mouse to reveal quick controls (settings, timer, student picker, text, video, blank screen, intermission screen).</li>
-        <li data-i18n="dashboard.about.howto_7">Click the pencil on the dashboard message to edit it right on the board.</li>
-      </ol>
-    </details>
-    <div>
-      <div style="font-family:'Libre Baskerville',serif;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;" data-i18n="shared.nav.header">Related Hebrew Tools</div>
-      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px;">
-        <li><a href="hebrew_blend_generator.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;display:inline-block;padding-block:5px;" data-i18n="shared.nav.link_worksheets">printable Hebrew worksheets →</a></li>
-        <li><a href="flash_cards.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;display:inline-block;padding-block:5px;" data-i18n="shared.nav.link_flashcards">Hebrew alphabet flash cards →</a></li>
-        <li><a href="hebrew_dictionary.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;display:inline-block;padding-block:5px;" data-i18n="shared.nav.link_dictionary">Hebrew word lookup →</a></li>
-        <li><a href="trope_tutor.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;display:inline-block;padding-block:5px;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
-        <li><a href="resources.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;display:inline-block;padding-block:5px;" data-i18n="shared.nav.link_resources">free Hebrew teaching resources →</a></li>
-      </ul>
     </div>
   </div>
-</div>
-
-</div>
 </div><script>
   /*
    * Classroom Dashboard — UX upgrades (2026-07):
    *   1. Screen Wake Lock — keep the projected display awake in fullscreen or via a
    *      "Keep screen awake" toggle (support-gated; indicator dot).
    *   2. First-run setup card + three starter layouts (Hebrew classroom / Morning
-   *      routine / General classroom), also reachable from the Presets panel.
+   *      routine / General classroom), also reachable from the Presets tab.
    *   3. Fullscreen auto-hiding quick-controls strip (Settings / Timer / Text / Video);
    *      the corner button stays the single exit.
    *   4. Schedule Sync clarity — shared computeScheduleState(), on-dashboard Now/Next,
@@ -3406,7 +3375,6 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     colorCodingMode: 'letter',
     nikudColorOverrides: {},
     vowelColorScheme: 'default',
-    panelsCollapsed: null,   // settings-drawer per-panel collapse map {data-i18n key: bool}; null = markup defaults
     dashTextSize: 1.8,
     zoomLevel: 100,
     hideZoomBar: false,
@@ -3496,7 +3464,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   // intermissionHTML joins them: a starter is a look for the board, never a reason to lose the
   // teacher's Intermission words.
   ['rosters', 'activeRosterId', 'pickerSessions', 'presetColors', 'intermissionHTML'].forEach(k => delete PRISTINE_DEFAULTS[k]);
-  // Starter layouts (shared by the first-run card and the Presets panel). Each is a settings-diff
+  // Starter layouts (shared by the first-run card and the Presets tab). Each is a settings-diff
   // applied on tap over the pristine defaults — never injected into the user's preset store.
   const STARTERS = [
     { key:'hebrew', label:'Hebrew classroom', desc:'Everything on — Hebrew headers & date, Shabbat, Omer, holidays, weather.',
@@ -5030,6 +4998,47 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   }
 
   /* ────────── SETTINGS DRAWER ────────── */
+  /* ── Drawer tabs (APG tablist) — the Torah Trainer's ──
+     Seven tabs of flat sections; nothing collapses, so this page carries no panel-collapse memory any more (an older
+     blob's panelsCollapsed rides along unread through ivritSafeAssign, and the cloud row's '*Collapsed' omit still
+     covers the board columns' dowCollapsed / weatherCollapsed / timerCollapsed / pickerCollapsed / videoCollapsed).
+     setSettingsTab is the one writer of tab state; the drawer always opens on Display (no tab memory — see
+     openSettings), and openSettingsAtPanel(key) lands on a section by its data-set key. */
+  const TT_TAB_IDS = { display: 'dashTabDisplay', calendar: 'dashTabCalendar', weather: 'dashTabWeather', class: 'dashTabClass', text: 'dashTabText', presets: 'dashTabPresets', more: 'dashTabMore' };
+  // Section key → tab. The keys are the old panel keys (dashboard.settings.panel_*), so openSettingsAtPanel's callers —
+  // the cloud module's open ('cloud', the header chip's "Cloud saves…" item) and scripts/smoke-tools.mjs — read as before.
+  const TT_SECTION_TAB = {
+    display: 'display',
+    datetime: 'calendar', dow: 'calendar', omer: 'calendar',
+    location: 'weather', weather: 'weather',
+    timer: 'class', picker: 'class',
+    dashtext: 'text', hebrew: 'text',
+    presets: 'presets', schedule: 'presets',
+    backup: 'more', cloud: 'more', about: 'more'
+  };
+  function setSettingsTab(name) {
+    if (!Object.prototype.hasOwnProperty.call(TT_TAB_IDS, name)) name = 'display';
+    for (const n of Object.keys(TT_TAB_IDS)) {
+      const on = n === name, tab = document.getElementById(TT_TAB_IDS[n]);
+      tab.setAttribute('aria-selected', on ? 'true' : 'false');
+      tab.tabIndex = on ? 0 : -1;   // roving tabindex: only the selected tab sits in the Tab sequence; arrows move between tabs
+      document.getElementById(tab.getAttribute('aria-controls')).hidden = !on;
+    }
+    const body = document.querySelector('#settingsModal .settings-body');
+    if (body) body.scrollTop = 0;
+  }
+  // Open the drawer on the tab that holds a section and bring the section to the top of the body; focus lands on its
+  // heading (tabindex=-1, outside the Tab loop) so the next Tab enters the section's controls.
+  function openSettingsAtPanel(key) {
+    openSettings();
+    if (!Object.prototype.hasOwnProperty.call(TT_SECTION_TAB, key)) return;
+    setSettingsTab(TT_SECTION_TAB[key]);
+    const sec = document.querySelector('#settingsModal .tt-set[data-set="' + key + '"]');
+    if (!sec) return;
+    sec.scrollIntoView({ block: 'start' });
+    const h = sec.querySelector('.tt-set-title');
+    if (h) h.focus({ preventScroll: true });
+  }
   // Keyboard focus management for the drawer: focus in on open, Tab wraps inside
   // the modal while open, and focus returns to the opener (the gear) on close.
   // Shared Tab wrap for this page's aria-modal="true" dialogs (settings drawer, first-run card,
@@ -5039,7 +5048,9 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   function _trapTabWithin(container, e) {
     if (e.key !== 'Tab' || !container) return;
     const focusables = [...container.querySelectorAll('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])')]
-      .filter(el => el.offsetParent !== null && !el.disabled);
+      // A roving tabindex=-1 (the drawer's unselected tabs) and an unchecked radio are not Tab stops (Tab enters a
+      // radio group at the checked one), so neither can be an end of the loop.
+      .filter(el => el.offsetParent !== null && !el.disabled && el.tabIndex !== -1 && !(el.type === 'radio' && !el.checked));
     if (!focusables.length) return;
     const first = focusables[0], last = focusables[focusables.length - 1];
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -5054,6 +5065,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
     const modal = document.getElementById('settingsModal');
     modal.classList.add('open');
     modal.addEventListener('keydown', _settingsTrapKey);
+    setSettingsTab('display');   // no tab memory: every open starts on Display (before the sync, so the body is at the top before anything is measured)
     syncFormToSettings();
     const c = modal.querySelector('.settings-close:not(#drawerDarkBtn)'); if (c) c.focus();
   }
@@ -5860,6 +5872,23 @@ function mountSidebarResize(cfg) {
 
   let _rosterKbd = null;   // shared Hebrew-keyboard controller for #pickerRoster
   function wireFormListeners() {
+    // Drawer tabs (APG tablist): Left/Right by VISUAL direction (the strip mirrors in RTL), Home/End, wrap;
+    // moving focus activates (automatic activation) — the Trope Tutor's handler, as on the Torah Trainer.
+    document.querySelector('#settingsModal .tt-tabs').addEventListener('keydown', e => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+      e.preventDefault();
+      const tabs = Object.values(TT_TAB_IDS).map(id => document.getElementById(id));
+      const cur = tabs.indexOf(document.activeElement);
+      let next;
+      if (e.key === 'Home') next = 0;
+      else if (e.key === 'End') next = tabs.length - 1;
+      else {
+        const fwd = (document.documentElement.dir === 'rtl') ? (e.key === 'ArrowLeft') : (e.key === 'ArrowRight');
+        next = cur === -1 ? 0 : (cur + (fwd ? 1 : tabs.length - 1)) % tabs.length;
+      }
+      tabs[next].focus();
+      tabs[next].click();
+    });
     const refreshAll = () => { updateDateTimeDisplay(); renderDaysList(); renderWeather(); };
     document.getElementById('showHolidayCountdown').addEventListener('change', e => {
       settings.showHolidayCountdown = e.target.checked;
@@ -7454,13 +7483,7 @@ function mountFolderTree(cfg){
         fetchHolidays();
         updateOmerDisplay();
       },
-      open: function () {                  // the header chip's "Cloud saves…" item — through the page's own toggle
-        openSettings();
-        const p = document.getElementById('presetsPanel');
-        if (p && p.classList.contains('collapsed')) { const t = p.querySelector('.panel-title'); if (t) t.click(); }
-        const host = document.getElementById('cloudSavesPanel');
-        if (host) host.scrollIntoView({ block: 'start' });
-      }
+      open: function () { openSettingsAtPanel('cloud'); }   // the header chip's "Cloud saves…" item — the More tab's Cloud saves section
     });
     // A sync that ran on another page (the home page, the generator) wrote the class lists without this
     // page's hook: adopt the pointer when the dashboard next loads signed in. Fires once when the account
@@ -10636,12 +10659,12 @@ async function onUploadEngFontPick(input){
   document.getElementById('fsStrip').addEventListener('pointerleave', showFsStrip);
   document.getElementById('fsStrip').addEventListener('focusin', () => { if (_fsStripTimer) clearTimeout(_fsStripTimer); });
 
-  /* ────────── PANEL COLLAPSE ────────── */
-  function expandAllMenus()   { document.querySelectorAll('.panel, .sub-section').forEach(p => p.classList.remove('collapsed')); panelMemSave(); }
-  function collapseAllMenus() { document.querySelectorAll('.panel, .sub-section').forEach(p => p.classList.add('collapsed')); panelMemSave(); }
-  // Keyboard operability for the click-only collapse headers (Pass C): focusable with
-  // button semantics, Enter/Space toggles, aria-expanded tracks state. Register the
-  // aria-sync click listener AFTER the toggle listener so it reads post-toggle state.
+  /* ────────── COLLAPSE HEADERS (the board columns, the video panel and the week editor's Saved Schedules) ────────── */
+  // The settings drawer collapses nothing any more (seven tabs of flat sections — setSettingsTab above), so the
+  // shared panel-collapse memory block, its per-page cfg and the Expand-all / Collapse-all buttons left this page.
+  // Keyboard operability for the click-only collapse headers (Pass C): focusable with button semantics, Enter/Space
+  // toggles, aria-expanded tracks state. Register the aria-sync click listener AFTER the toggle listener so it
+  // reads post-toggle state.
   function _wireCollapseHdr(el, expandedFn) {
     if (!el) return;
     el.setAttribute('tabindex', '0');
@@ -10652,57 +10675,7 @@ async function onUploadEngFontPick(input){
     });
     el.addEventListener('click', () => el.setAttribute('aria-expanded', String(!!expandedFn())));
   }
-  function _syncPanelHdrAria(container) {
-    const hdr = container.querySelector(':scope > .panel-title, :scope > .sub-section-hdr');
-    if (hdr && hdr.hasAttribute('aria-expanded')) hdr.setAttribute('aria-expanded', String(!container.classList.contains('collapsed')));
-  }
-const PANEL_MEM_CFG = {
-  scope: '.panel-title',
-  read() { return settings.panelsCollapsed; },
-  write(map) { settings.panelsCollapsed = map; saveSettingsToStorage(); },
-  afterApply() { document.querySelectorAll('.panel').forEach(p => _syncPanelHdrAria(p)); }
-};
-/* ═══════════ IvritSuite panel-collapse memory (shared, identical across pages) ═══════════
-   Remembers which panels the teacher left open, so a drawer that was tidied once stays tidy on
-   the next visit. A panel is keyed by the data-i18n key on its title: language-independent,
-   unique per panel, and already present on every collapsible title in the suite — so there are
-   no ids to invent or keep in sync. WHERE the map is stored is per-page and lives in
-   PANEL_MEM_CFG (the settings blob on tools that have one, a dedicated key on the rest); this
-   engine never touches localStorage itself. A panel whose key is absent from the stored map
-   keeps its markup default, so a panel added in a later release opens or closes per its own
-   markup instead of inheriting whatever a neighbour happened to be doing. */
-const PANEL_MEM_DEFAULTS = {};   // markup defaults, captured once before the first restore
-function panelMemTitles() { return document.querySelectorAll(PANEL_MEM_CFG.scope); }
-function panelMemSave() {
-  const map = {};
-  panelMemTitles().forEach(t => {
-    const p = t.closest('.panel'), k = t.dataset.i18n;
-    if (p && k) map[k] = p.classList.contains('collapsed');
-  });
-  PANEL_MEM_CFG.write(map);
-}
-function panelMemApply() {
-  panelMemTitles().forEach(t => {
-    const p = t.closest('.panel'), k = t.dataset.i18n;
-    if (p && k && !(k in PANEL_MEM_DEFAULTS)) PANEL_MEM_DEFAULTS[k] = p.classList.contains('collapsed');
-  });
-  const map = PANEL_MEM_CFG.read();
-  panelMemTitles().forEach(t => {
-    const p = t.closest('.panel'), k = t.dataset.i18n;
-    if (!p || !k) return;
-    let collapsed = PANEL_MEM_DEFAULTS[k];
-    if (map && typeof map === 'object' && Object.prototype.hasOwnProperty.call(map, k)) collapsed = !!map[k];
-    if (collapsed !== undefined) p.classList.toggle('collapsed', collapsed);
-  });
-  if (PANEL_MEM_CFG.afterApply) PANEL_MEM_CFG.afterApply();
-}
-/* ═══════════ end shared: panel-collapse memory ═══════════ */
-
-  function initPanelCollapse() {
-    document.querySelectorAll('.panel-title').forEach(t => {
-      t.addEventListener('click', () => { t.parentElement.classList.toggle('collapsed'); panelMemSave(); });
-      _wireCollapseHdr(t, () => !t.parentElement.classList.contains('collapsed'));
-    });
+  function initSubSectionCollapse() {   // the week editor's Saved Schedules; the drawer's groups are flat .tt-set-sub
     document.querySelectorAll('.sub-section-hdr').forEach(h => {
       h.addEventListener('click', () => h.parentElement.classList.toggle('collapsed'));
       _wireCollapseHdr(h, () => !h.parentElement.classList.contains('collapsed'));
@@ -10735,8 +10708,7 @@ function panelMemApply() {
     initDark();
     initFontSelector();
     initEngFontSelector();
-    initPanelCollapse();
-    panelMemApply();   // restore the teacher's saved open/closed drawer panels
+    initSubSectionCollapse();
     nameToggleSwitches();
     setHebFont(settings.hebFont);
     setEngFont(settings.engFont);
@@ -10878,15 +10850,13 @@ function panelMemApply() {
 
   /* ────────── GUIDED TOUR (spotlight engine ported from Hebrew_Font_Maker.html) ────────── */
   let _tourIdx = -1, _tourActive = false, _tourOpener = null, _tourUncollapsed = null, _tourRepoTimer = null;
-  let _tourDrawerWasOpen = null, _tourExpandedPanels = [];
+  let _tourDrawerWasOpen = null;
   function _tourOpenDrawer() {
     if (_tourDrawerWasOpen === null) _tourDrawerWasOpen = document.getElementById('settingsModal').classList.contains('open');
     if (!document.getElementById('settingsModal').classList.contains('open')) openSettings();
   }
-  function _tourExpandPanel(id) {
-    const p = document.getElementById(id);
-    if (p && p.classList.contains('collapsed')) { p.classList.remove('collapsed'); _syncPanelHdrAria(p); _tourExpandedPanels.push(p); }
-  }
+  // A step that points into the drawer picks the tab its target sits on (setSettingsTab, the one writer of tab
+  // state); the drawer reopens on Display, so there is nothing to restore when the tour ends.
   const TOUR_STEPS = [
     { target: () => document.getElementById('dowCol'), titleKey: 'dashboard.tour.step1_title', bodyKey: 'dashboard.tour.step1_body' },
     { target: () => document.getElementById('dateTimeBlock'), titleKey: 'dashboard.tour.step2_title', bodyKey: 'dashboard.tour.step2_body' },
@@ -10894,11 +10864,11 @@ function panelMemApply() {
     { target: () => document.getElementById('fsBtn'), titleKey: 'dashboard.tour.step4_title', bodyKey: 'dashboard.tour.step4_body' },
     { target: () => document.getElementById('gearBtn'), reveal: _tourOpenDrawer, titleKey: 'dashboard.tour.step5_title', bodyKey: 'dashboard.tour.step5_body' },
     { target: () => document.getElementById('movePanelsBtn'),
-      reveal: () => { _tourOpenDrawer(); _tourExpandPanel('displayPanel'); }, titleKey: 'dashboard.tour.step_layout_title', bodyKey: 'dashboard.tour.step_layout_body' },
+      reveal: () => { _tourOpenDrawer(); setSettingsTab('display'); }, titleKey: 'dashboard.tour.step_layout_title', bodyKey: 'dashboard.tour.step_layout_body' },
     { target: () => document.getElementById('starterLayoutsBtn'),
-      reveal: () => { _tourOpenDrawer(); _tourExpandPanel('presetsPanel'); }, titleKey: 'dashboard.tour.step6_title', bodyKey: 'dashboard.tour.step6_body' },
+      reveal: () => { _tourOpenDrawer(); setSettingsTab('presets'); }, titleKey: 'dashboard.tour.step6_title', bodyKey: 'dashboard.tour.step6_body' },
     { target: () => document.getElementById('schedulePanel'),
-      reveal: () => { _tourOpenDrawer(); _tourExpandPanel('schedulePanel'); }, titleKey: 'dashboard.tour.step7_title', bodyKey: 'dashboard.tour.step7_body' },
+      reveal: () => { _tourOpenDrawer(); setSettingsTab('presets'); }, titleKey: 'dashboard.tour.step7_title', bodyKey: 'dashboard.tour.step7_body' },
   ];
 
   function tourStart() {
@@ -10907,7 +10877,7 @@ function panelMemApply() {
     try { localStorage.setItem('hebrewDashboard_tourSeen', '1'); } catch (e) {}
     const tb = document.getElementById('tourBtn'); if (tb) tb.classList.remove('pulse-attn');
     _tourActive = true; _tourIdx = -1; _tourUncollapsed = null;
-    _tourDrawerWasOpen = null; _tourExpandedPanels = [];
+    _tourDrawerWasOpen = null;
     _tourOpener = document.activeElement;
     document.getElementById('tourSpot').hidden = false;
     document.getElementById('tourCard').hidden = false;
@@ -10952,8 +10922,7 @@ function panelMemApply() {
     document.getElementById('tourSpot').hidden = true;
     document.getElementById('tourCard').hidden = true;
     if (_tourUncollapsed) { _tourUncollapsed.classList.add('collapsed'); _tourUncollapsed = null; }
-    // Restore the drawer + panel-collapse state we changed for the tour
-    _tourExpandedPanels.forEach(p => { p.classList.add('collapsed'); _syncPanelHdrAria(p); }); _tourExpandedPanels = [];
+    // Restore the drawer state we changed for the tour (a tab needs no restoring: the drawer reopens on Display)
     if (_tourDrawerWasOpen === false) closeSettings();
     _tourDrawerWasOpen = null;
     if (completed) { try { localStorage.setItem('hebrewDashboard_tourSeen', '1'); } catch (e) {} }

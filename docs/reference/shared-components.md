@@ -403,7 +403,10 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   selection as favorite* button), `hi-bookmark` (save for later: it
   replaced `★`, `⭑` and the browser-bookmark `🔖`), `hi-star` (the Torah Trainer's Favorites tab — a saved
   reading, distinct from `hi-bookmark`'s save-for-later; its only carrier so far, markup only: the CSS block
-  needed nothing), `hi-cloud`, `hi-keyboard`, `hi-search`, `hi-warning`,
+  needed nothing), `hi-layout` and `hi-weather` (the dashboard's drawer tabs Display and Weather — a board with
+  a header bar and a side column, and a sun behind a cloud; the dashboard is their only carrier so far, markup
+  only as well; the strip's other five tabs reuse `hi-calendar`, `hi-group`, `hi-pencil`, `hi-bookmark` and
+  `hi-gear`), `hi-cloud`, `hi-keyboard`, `hi-search`, `hi-warning`,
   `hi-undo` / `hi-redo`, `hi-up` / `hi-down`, `hi-book` (now also on `torah_trainer.html`, its drawer's Text
   tab, copied verbatim from the Trope Tutor), `hi-folder` / `hi-folder-plus` and `hi-move` —
   plus the control family `hi-play`,
@@ -732,14 +735,14 @@ whose text is majority-English (e.g. mixed `<option>` labels). Verify: `document
 A teacher who collapses the panels they don't use should not have to do it again next lesson. Every
 collapsible `.panel` remembers its open/closed state across visits, via one `═══`-marked shared block
 (`/* ═══ IvritSuite panel-collapse memory ═══ */ … /* ═══ end shared: panel-collapse memory ═══ */`),
-byte-identical across all four carriers (sha-verify when you touch it) — copy it, don't
+byte-identical across its three carriers (sha-verify when you touch it) — copy it, don't
 rewrite it. It exposes `panelMemSave()` / `panelMemApply()` and depends only on a per-page
 **`PANEL_MEM_CFG`** (the `IVRIT_CFG` pattern):
 ```js
 const PANEL_MEM_CFG = {
-  scope: '.panel-title',                 // '#settingsModal .panel-title' where the page has panels outside the drawer
-  read()      { return settings.panelsCollapsed; },              // or ivritSafeParse(localStorage…)
-  write(map)  { settings.panelsCollapsed = map; saveSettings(); },
+  scope: '.panel-title',                 // '#screenSetup .panel-title' where the page has panels outside the sidebar
+  read()      { return ivritSafeParse(localStorage.getItem('hebrew<Tool>_panels')); },   // the dedicated key
+  write(map)  { localStorage.setItem('hebrew<Tool>_panels', JSON.stringify(map)); },
   afterApply() { syncPanelTitleAria(); }                          // the page's own aria-expanded sync
 };
 ```
@@ -749,16 +752,17 @@ const PANEL_MEM_CFG = {
 - **A key absent from the stored map keeps that panel's markup default** (captured once, pre-restore, in
   `PANEL_MEM_DEFAULTS`) — so a panel added in a later release opens or closes per its own markup instead
   of inheriting a neighbour's state. This is why the engine never treats "missing" as "expanded".
-- **Where the map lives is per-page, and the engine never touches localStorage itself.** The dashboard,
-  the one carrier with a settings blob, keeps it there as `settings.panelsCollapsed` (so it rides the
-  existing AllTools entry for free); the other three use a dedicated `hebrew<Tool>_panels` key, read via
-  `ivritSafeParse` and registered in all five AllTools sites.
-- **Implemented on:** all four collapse carriers — `classroom_dashboard.html`,
-  `hebrew_blend_generator.html`, `flash_cards.html`, `hebrew_dictionary.html`. (The Trope Tutor and the
-  Torah Trainer left the list when their settings became flat tabs — the Tutor's in the Font Maker's layout,
-  the Trainer's inside its drawer, though the Trainer was the block's origin; an old `panelsCollapsed` in
-  either settings blob is simply carried along unread, and the Trainer's cloud row still omits
-  `*Collapsed`.) Sub-section headers
+- **Where the map lives is per-page, and the engine never touches localStorage itself.** Every carrier keeps
+  it in a dedicated `hebrew<Tool>_panels` key, read via `ivritSafeParse` and registered in all five AllTools
+  sites (the dashboard, the one carrier that kept the map inside its settings blob, left the list — below).
+- **Implemented on:** the three collapse carriers — `hebrew_blend_generator.html`, `flash_cards.html`,
+  `hebrew_dictionary.html`. (The Trope Tutor, the Torah Trainer and the Classroom Dashboard left the list when
+  their settings became flat tabs — the Tutor's in the Font Maker's layout, the Trainer's and the dashboard's
+  inside their drawers, though the Trainer was the block's origin; an old `panelsCollapsed` in any of the three
+  settings blobs is simply carried along unread, and the Trainer's and the dashboard's cloud rows still omit
+  `*Collapsed` — on the dashboard that glob now covers only the board columns' and video panel's own
+  `dowCollapsed` / `weatherCollapsed` / `timerCollapsed` / `pickerCollapsed` / `videoCollapsed`, which are not
+  this block.) Sub-section headers
   (`.sub-section-hdr`, `.adv-section-title`, `.pos-sec-hdr`, `.rw-section-header`) are **not** covered —
   only `.panel`.
 - **Rule:** a new tool with collapsible panels ships this block + its `PANEL_MEM_CFG`, calls
