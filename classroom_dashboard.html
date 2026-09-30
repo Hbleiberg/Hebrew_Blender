@@ -7844,11 +7844,14 @@ function ivritAskMode() {
     // Render the trusted body string's lightweight markdown (**bold**, \n) to HTML.
     const bodyHtml = esc(I18n.t('shared.ivrit.restore_dialog_body'))
       .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+    // Signed in (a session stored), Replace is not offered: it would delete, from the account and every
+    // signed-in device, everything not in the file. Merge adds the file's items to the account.
+    const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
     box.innerHTML = `<div id="ivritAskTitle" style="font-weight:700;font-size:1rem;margin-bottom:8px;">${esc(I18n.t('shared.ivrit.restore_dialog_title'))}</div>`
-      + `<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;">${bodyHtml}</div>`
+      + `<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;">${bodyHtml}${signedIn ? '<br><br>' + esc(I18n.t('shared.ivrit.restore_signed_in_note')) : ''}</div>`
       + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
       + `<button class="ivrit-ask-btn" data-act="merge">${esc(I18n.t('shared.ivrit.restore_merge_button'))}</button>`
-      + `<button class="ivrit-ask-btn" data-act="replace">${esc(I18n.t('shared.ivrit.restore_replace_button'))}</button>`
+      + (signedIn ? '' : `<button class="ivrit-ask-btn" data-act="replace">${esc(I18n.t('shared.ivrit.restore_replace_button'))}</button>`)
       + `<button class="ivrit-ask-btn" data-act="cancel">${esc(I18n.t('shared.ivrit.restore_cancel_button'))}</button>`
       + '</div>';
     // Accessible dialog: label, modal role, Escape, Tab focus-trap across the 3 buttons, focus save/restore.

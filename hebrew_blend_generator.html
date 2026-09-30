@@ -5428,7 +5428,8 @@ function overwritePreset(name) {
   localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));
 }
 function deletePreset(name) {
-  if (!confirm(I18n.t('worksheet.presets.delete_confirm', { name: name }))) return;
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
+  if (!confirm(I18n.t(signedIn ? 'worksheet.presets.delete_confirm_cloud' : 'worksheet.presets.delete_confirm', { name: name }))) return;
   const presets = readPresets();
   delete presets[name];
   localStorage.setItem('hebrewBlender_presets', JSON.stringify(presets));
@@ -5897,11 +5898,14 @@ function ivritAskMode() {
     // Render the trusted body string's lightweight markdown (**bold**, \n) to HTML.
     const bodyHtml = esc(I18n.t('shared.ivrit.restore_dialog_body'))
       .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+    // Signed in (a session stored), Replace is not offered: it would delete, from the account and every
+    // signed-in device, everything not in the file. Merge adds the file's items to the account.
+    const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
     box.innerHTML = `<div id="ivritAskTitle" style="font-weight:700;font-size:1rem;margin-bottom:8px;">${esc(I18n.t('shared.ivrit.restore_dialog_title'))}</div>`
-      + `<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;">${bodyHtml}</div>`
+      + `<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;">${bodyHtml}${signedIn ? '<br><br>' + esc(I18n.t('shared.ivrit.restore_signed_in_note')) : ''}</div>`
       + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
       + `<button class="ivrit-ask-btn" data-act="merge">${esc(I18n.t('shared.ivrit.restore_merge_button'))}</button>`
-      + `<button class="ivrit-ask-btn" data-act="replace">${esc(I18n.t('shared.ivrit.restore_replace_button'))}</button>`
+      + (signedIn ? '' : `<button class="ivrit-ask-btn" data-act="replace">${esc(I18n.t('shared.ivrit.restore_replace_button'))}</button>`)
       + `<button class="ivrit-ask-btn" data-act="cancel">${esc(I18n.t('shared.ivrit.restore_cancel_button'))}</button>`
       + '</div>';
     // Accessible dialog: label, modal role, Escape, Tab focus-trap across the 3 buttons, focus save/restore.
@@ -13777,6 +13781,7 @@ const LAST_SETUP_KEY = 'hebrewBlender_lastState';
 let _lastSetupRestoring = false;   // suppress saves while a restore (or a deliberate reset) is in flight
 let _lastSetupHeld = false;        // a remembered setup this page could not apply: kept as it is until a Generate replaces it
 let _answerKeyView = false;        // the ?ak= view shows no setup of its own — nothing is remembered from it
+let _urlSetupActive = false;       // a ?s= / ?wl= link's setup is on the controls: a remembered setup landing from the account must not replace it
 
 // force: a deliberate save (Generate, a restored file) replaces a held setup too; the routine saves —
 // pagehide and the cloud module's flush — leave a held one alone.
@@ -13800,6 +13805,7 @@ function restoreLastSetup() {
   let saved = null;
   try { saved = ivritSafeParse(localStorage.getItem(LAST_SETUP_KEY) || 'null'); } catch (e) { return; }
   if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return;
+  if (saved.pristine === true) return;   // "Start fresh" (here or on another device): nothing to restore
   // A snapshot with no letter set (a hand-edited key; ivritSafeParse leaves `{}` of a __proto__
   // payload) would restore an EMPTY selection over the defaults — drop it like an unapplicable one.
   if (!Array.isArray(saved.selectedLetters)) { try { localStorage.removeItem(LAST_SETUP_KEY); } catch (e2) {} return; }
@@ -13818,11 +13824,13 @@ function restoreLastSetup() {
 // the pagehide save below from writing the current (non-default) state straight back.
 function startFreshSetup() {
   _lastSetupRestoring = true;
-  // A deliberate reset: the module forgets what this device last synced, so the account reads the
-  // remembered setup as "only in the cloud" (offering Download) instead of "deleted on this device"
-  // — which would invite the teacher to delete the setup their other device still has.
-  if (window.IvritSaves && typeof IvritSaves.forgetRow === 'function') IvritSaves.forgetRow('Worksheet', 'lastState');
-  try { localStorage.removeItem(LAST_SETUP_KEY); } catch (e) {}
+  // Signed in, a plain removal would only be re-inserted by another device's copy at its next load (a
+  // settings row gone from the account is re-uploaded, never removed there): write a pristine marker
+  // instead, which goes up as the newer value — "start fresh" reaches the account too. Signed out, the
+  // key simply goes.
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
+  try { if (signedIn) localStorage.setItem(LAST_SETUP_KEY, JSON.stringify({ v: 1, pristine: true })); else localStorage.removeItem(LAST_SETUP_KEY); } catch (e) {}
+  if (signedIn && window.IvritSaves && typeof IvritSaves.flush === 'function') { Promise.resolve(IvritSaves.flush('Worksheet')).catch(() => {}).then(() => location.replace(location.pathname)); return; }
   location.replace(location.pathname);
 }
 
@@ -13846,6 +13854,7 @@ function restoreFromURL() {
       const rwT = document.getElementById('realWordsToggle');
       if (rwT) rwT.checked = true;
       selectedWordListIds = new Set([wlParam]);
+      _urlSetupActive = true;
       rwSource = 'lists';        // set before toggleRealWordsUI so its setRwSource(rwSource) skips the corpus load
       toggleRealWordsUI();       // enter Real-Words mode; setRwSource('lists') renders the picker (list pre-checked)
       try { generate(); } catch(e) {}
@@ -13861,6 +13870,7 @@ function restoreFromURL() {
   try { diff = ivritSafeParse(shareB64Decode(s)); } catch(e) { return; } // garbage → ignore
   if (!diff || typeof diff !== 'object') return;
   try { applySettings(ivritSafeAssign(Object.assign({}, SHARE_DEFAULTS), diff)); } catch(e) { return; }
+  _urlSetupActive = true;
   // Auto-generate. Real-words drills need REAL_WORDS; generateRealWords() lazy-loads
   // it via ensureRealWords() and re-renders when ready, so a plain generate() suffices.
   try { generate(); } catch(e) {}
@@ -14019,31 +14029,30 @@ function initCloudSaves() {
   // A font from the account landed in the shared store: re-list My Fonts, which also re-applies a face
   // this page had chosen by name but could not show until now.
   window.addEventListener('ivritsuite:fonts', () => { try { refreshMyFonts(); } catch (e) {} });
-  // Signed in, "Start fresh" forgets only this device's copy — its tooltip says so (the key swap survives a language switch).
+  // Signed in, "Start fresh" reaches the account too — its tooltip says so — and the Backup panel's note says
+  // the saves live in the account (the key swaps survive a language switch).
   if (window.IvritAccount && typeof IvritAccount.onChange === 'function') {
     IvritAccount.onChange(u => {
       const key = u ? 'worksheet.lastsetup.start_fresh_title_cloud' : 'worksheet.lastsetup.start_fresh_title';
       document.querySelectorAll('[onclick="startFreshSetup()"]').forEach(b => { b.setAttribute('data-i18n-title', key); if (window.I18n) b.title = I18n.t(key); });
+      const note = document.querySelector('[data-i18n-html="worksheet.advanced.backup_auto_explainer"],[data-i18n-html="worksheet.advanced.backup_auto_explainer_signed_in"]');
+      if (note) { const k = u ? 'worksheet.advanced.backup_auto_explainer_signed_in' : 'worksheet.advanced.backup_auto_explainer'; note.setAttribute('data-i18n-html', k); if (window.I18n) note.innerHTML = I18n.t(k); }   // a trusted locale string (the CSV's own markup)
     });
   }
   // ftMergeTrees is pure (the shared block's one merge rule); the module writes the result and tells the page.
+  // alsoPull: the word lists (the Dictionary's rows) — this page reads them for ?wl= and the Real Words picker,
+  // and its "Save as Word List" writes one; they land and go up with this page's hooks.
   IvritSaves.attach({
     tool: 'Worksheet',
-    panel: '#cloudSavesPanel',
-    title: false,                 // the sub-panel's own title is the heading
+    status: '#cloudSavesPanel',
     flush: rememberSetup,         // the remembered setup is read off the live controls
     merges: { presetFolders: ftMergeTrees },
+    alsoPull: ['Dictionary'],
+    paused: () => _answerKeyView,   // the answer-key view has no setup of its own to send
     onLocalChanged: function (kind) {
-      if (kind === 'lastState') restoreLastSetup();   // re-applies the controls under _lastSetupRestoring; the next Generate uses them
+      if (kind === 'wordList') return;   // read on demand by the picker
+      if (kind === 'lastState') { if (_answerKeyView || _urlSetupActive) return; restoreLastSetup(); }   // a link's setup stays; else re-applies the controls under _lastSetupRestoring
       else renderPresets();
-    },
-    open: function () {           // the header chip's "Cloud saves…" item — through the page's own toggles
-      const adv = document.getElementById('panelAdvanced');
-      if (adv && adv.classList.contains('collapsed')) { const t = adv.querySelector(':scope > .panel-title'); if (t) t.click(); }
-      const title = document.querySelector('.panel-title[data-i18n="worksheet.advanced.cloud_title"]');
-      if (!title) return;
-      if (title.parentElement.classList.contains('collapsed')) title.click();
-      title.scrollIntoView({ block: 'start' });
     }
   });
 }

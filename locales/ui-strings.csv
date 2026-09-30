@@ -1052,9 +1052,10 @@ dictionary.wordlists.save_button,Save as Word List…,שמירה כרשימת מ
 flashcards.a11y.skip_to_cards,Skip to the cards,דילוג לכרטיסים,Skip-link (a11y),aria/skip-link
 flashcards.advanced.audio_label,Audio,שמע,advanced toggle label,
 flashcards.advanced.backup_head,Backup Presets,גיבוי הגדרות,advanced subheading,
-flashcards.advanced.cloud_head,Cloud saves,שמירות בענן,Advanced Settings sub-section heading (hosts the shared cloud-saves panel),
+flashcards.advanced.cloud_head,Your account,החשבון שלכם,Advanced Settings sub-section heading (hosts the shared account status line),
 flashcards.advanced.backup_include_label,Include in backup:,כלול בגיבוי:,backup scope label,
 flashcards.advanced.backup_intro,Save your data to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it. Use the toggle below to choose what's included.,"שמרו את הנתונים שלכם לקובץ <b>‎.ivrit</b> במכשיר. לשחזור, גררו את הקובץ למטה או עיינו אליו. השתמשו במתג למטה כדי לבחור מה כלול.",backup area intro,
+flashcards.advanced.backup_intro_signed_in,Your decks and settings are saved in your account. A <b>.ivrit</b> file is for sharing them or keeping an offline copy; restoring one merges its items into your account. Use the toggle below to choose what's included.,הערכות וההגדרות שלכם נשמרות בחשבון. קובץ <b>.ivrit</b> נועד לשיתוף או לעותק לא מקוון; שחזור קובץ ממזג את הפריטים שבו לחשבון שלכם. בחרו למטה מה לכלול.,Backup note while signed in (swapped in by initCloudSaves),html
 flashcards.advanced.backup_manual_placeholder,Exported preset JSON appears here…,קובץ JSON מיוצא של ההגדרות יופיע כאן…,manual backup textarea placeholder,placeholder
 flashcards.advanced.backup_scope_both,Both,שניהם,backup scope button,
 flashcards.advanced.backup_scope_presets,Presets,הגדרות,backup scope button,
@@ -1254,11 +1255,11 @@ flashcards.mode.words_source_mylists,My Word Lists,רשימות המילים ש�
 flashcards.profile.button_label,{name}  ·  {count} saved,{name}  ·  {count} שמורים,save-to-profile choice button,
 flashcards.profile.cancel,Cancel,ביטול,save-to-profile cancel button,
 flashcards.profile.delete_confirm,"Delete profile ""{name}"" and all of its saved results? This cannot be undone.","למחוק את הפרופיל ""{name}"" ואת כל התוצאות השמורות שלו? לא ניתן לבטל זאת.",confirm dialog,mixed UI+content — do not translate {…}
-flashcards.profile.delete_confirm_cloud,"Delete profile ""{name}"" and all of its saved results on this device? The copy in your account stays until you delete it there (Cloud saves → Delete from your account too).","למחוק את הפרופיל ""{name}"" ואת כל התוצאות השמורות שלו במכשיר הזה? העותק בחשבון נשאר עד שתמחקו אותו שם (שמירות בענן ← למחוק גם מהחשבון).",confirm dialog while signed in (the account keeps its copy),mixed UI+content — do not translate {…}
+flashcards.profile.delete_confirm_cloud,"Delete profile ""{name}"" and all of its saved results? You are signed in, so it is removed from your account and from every device. This cannot be undone.","למחוק את הפרופיל ""{name}"" ואת כל התוצאות השמורות שלו? אתם מחוברים, ולכן הוא יוסר מהחשבון ומכל מכשיר. לא ניתן לבטל.",confirm dialog while signed in,mixed UI+content
 flashcards.profile.delete_result_confirm,Delete this saved result?,למחוק את התוצאה השמורה הזו?,confirm dialog,
 flashcards.profile.history_pct_frac,({correct}/{total}),({correct}/{total}),history item score fraction,
 flashcards.profile.merge_confirm,"Profile ""{newName}"" already exists — merge ""{oldName}"" into it?","הפרופיל ""{newName}"" כבר קיים — למזג את ""{oldName}"" אליו?",confirm dialog,mixed UI+content — do not translate {…}
-flashcards.profile.merge_confirm_cloud,"Profile ""{newName}"" already exists — merge ""{oldName}"" into it? The account's copy of ""{oldName}"" stays until you delete it there (Cloud saves → Delete from your account too).","הפרופיל ""{newName}"" כבר קיים — למזג את ""{oldName}"" אליו? העותק של ""{oldName}"" בחשבון נשאר עד שתמחקו אותו שם (שמירות בענן ← למחוק גם מהחשבון).",confirm dialog while signed in (the account keeps the old name's copy),mixed UI+content — do not translate {…}
+flashcards.profile.merge_confirm_cloud,"Profile ""{newName}"" already exists — merge ""{oldName}"" into it? You are signed in, so the merge is saved to your account.","הפרופיל ""{newName}"" כבר קיים — למזג את ""{oldName}"" אליו? אתם מחוברים, ולכן המיזוג נשמר בחשבון שלכם.",confirm dialog while signed in,mixed UI+content
 flashcards.profile.new_profile_heading,New profile,פרופיל חדש,save-to-profile modal section,
 flashcards.profile.new_prompt,New profile name:,שם פרופיל חדש:,prompt dialog,
 flashcards.profile.no_profiles_option,— no profiles —,— אין פרופילים —,active-profile dropdown empty option,
@@ -4688,10 +4689,11 @@ worksheet.actions.print_count.other,📄 {count} pages to print,📄 {count} ע�
 worksheet.actions.print_tip,"💡 <strong>Print tip:</strong> In the print dialog, uncheck <em>Headers and footers</em> to remove the URL and date.","💡 <strong>טיפ להדפסה:</strong> בתיבת ההדפסה, בטלו את הסימון של <em>כותרות עליונות ותחתונות</em> כדי להסיר את הכתובת והתאריך.",tip box,leading-emoji;html
 worksheet.actions.regenerate,Regenerate,צור מחדש,action button,leading-emoji
 worksheet.advanced.backup_auto_explainer,Save all your presets and current settings to a <b>.ivrit</b> save file on your device. Restore later by dropping the file below or browsing for it.,"שמרו את כל ההגדרות השמורות וההגדרות הנוכחיות שלכם לקובץ שמירה <b>.ivrit</b> במכשיר. לשחזור מאוחר יותר, גררו את הקובץ למטה או עיינו אליו.",backup panel explainer,html
+worksheet.advanced.backup_auto_explainer_signed_in,Your presets and settings are saved in your account. A <b>.ivrit</b> file is for sharing them or keeping an offline copy; restoring one merges its items into your account.,ההגדרות והתבניות שלכם נשמרות בחשבון. קובץ <b>.ivrit</b> נועד לשיתוף או לעותק לא מקוון; שחזור קובץ ממזג את הפריטים שבו לחשבון שלכם.,Backup note while signed in (swapped in by initCloudSaves),html
 worksheet.advanced.backup_manual_explainer,Export your saved presets as text you can copy and store. Paste it back to restore.,ייצאו את ההגדרות השמורות שלכם כטקסט שאפשר להעתיק ולשמור. הדביקו אותו בחזרה כדי לשחזר.,backup panel explainer,
 worksheet.advanced.backup_placeholder,Paste backup here to import…,הדביקו כאן גיבוי כדי לייבא…,textarea placeholder,
 worksheet.advanced.backup_title,Backup Presets,גיבוי הגדרות,sub-panel title,
-worksheet.advanced.cloud_title,Cloud saves,שמירות בענן,Advanced panel: nested sub-panel title (hosts the shared cloud-saves panel),
+worksheet.advanced.cloud_title,Your account,החשבון שלכם,Advanced panel: nested sub-panel title (hosts the shared account status line),
 worksheet.advanced.colorcode_enable,Enable color coding,הפעל צביעה,toggle-row label,
 worksheet.advanced.colorcode_title,Color Code Nikkud,צביעת ניקוד,sub-panel title,
 worksheet.advanced.colormode.highlight,Highlight,הדגשה,color-mode button,
@@ -5000,6 +5002,7 @@ worksheet.output.qr_answer_key,QR Answer Key,מפתח תשובות QR,output tog
 worksheet.output.qr_answer_key_tooltip,"Adds a small QR code to the worksheet footer. Students scan it with a phone to open a scan-to-check answer key that matches their sheet — handy for self-checking at centers. Works for reading, inverse, name-the-letter, fill-vowels, gematria, matching, number practice, and the real-words drills (including word search & crossword).","מוסיף קוד QR קטן לכותרת התחתונה של דף העבודה. התלמידים סורקים אותו בטלפון כדי לפתוח מפתח תשובות לסריקה ובדיקה שתואם לדף שלהם — נוח לבדיקה עצמית בעמדות. פועל עבור קריאה, הפוך, שם האות, מילוי תנועות, גימטריה, התאמה, תרגול מספרים ותרגולי המילים האמיתיות (כולל תפזורת ותשבץ).",tooltip,
 worksheet.output.timer,Timer,טיימר,self-check option,
 worksheet.presets.delete_confirm,"Are you sure you want to delete the preset ""{name}""?","האם אתם בטוחים שברצונכם למחוק את ההגדרה ""{name}""?",confirm dialog,mixed UI+content — do not translate {…}
+worksheet.presets.delete_confirm_cloud,"Delete the preset ""{name}""? You are signed in, so it is removed from your account and from every device.","למחוק את ההגדרה ""{name}""? אתם מחוברים, ולכן היא תוסר מהחשבון ומכל מכשיר.",confirm dialog while signed in,mixed UI+content — do not translate {name}
 worksheet.presets.delete_title,Delete,מחק,preset action button title,aria-label only
 worksheet.presets.duplicate_title,Duplicate,שכפול,preset action button title,aria-label only
 worksheet.presets.import_empty,Paste a backup into the text box first.,הדביקו קודם גיבוי בתיבת הטקסט.,alert,
@@ -5030,7 +5033,7 @@ worksheet.quickstart.numbers,Numbers 0–20,מספרים 0–20,quick-start chip
 worksheet.lastsetup.restored,Your last worksheet setup is back.,המערך האחרון שלכם חזר.,sidebar notice shown when the previous visit's configuration was restored,REVIEW: HE draft
 worksheet.lastsetup.start_fresh,Start fresh,להתחיל מחדש,button that forgets the remembered setup and reloads the defaults,leading-glyph; REVIEW: HE draft
 worksheet.lastsetup.start_fresh_title,Forget the saved setup and start from the defaults,שכחו את המערך השמור והתחילו מברירת המחדל,tooltip for the Start fresh button,REVIEW: HE draft
-worksheet.lastsetup.start_fresh_title_cloud,Forget the saved setup on this device. The copy in your account stays until you delete it from Cloud saves.,לשכוח את ההגדרה השמורה במכשיר הזה. העותק בחשבון נשאר עד שתמחקו אותו משמירות בענן.,Tooltip of the generator's Start fresh button while signed in (only this device's copy is forgotten),worksheet; last setup
+worksheet.lastsetup.start_fresh_title_cloud,Forget the saved setup and start from the defaults — in your account too,לשכוח את המערך השמור ולהתחיל מברירת המחדל — גם בחשבון שלכם,tooltip for the Start fresh button while signed in,
 worksheet.realwords.bingo.title,Bingo Options,אפשרויות בינגו,rw section header,
 worksheet.realwords.clear_btn,Clear,נקה,button,svg-icon-in-markup
 worksheet.realwords.clear_confirm,Clear the imported word list?,לנקות את רשימת המילים שיובאה?,confirm dialog,
@@ -5225,6 +5228,7 @@ worksheet.vowels.sub.uh,UH / silent,UH / שקט,vowel chip subtext,
 worksheet.zoom.slider_aria,Zoom,זום,zoom bar slider aria-label,
 flashcards.teachertools.preset_overwrite_confirm,"Overwrite preset ""{name}""?","לדרוס על ההגדרה השמורה ""{name}""?",Confirm before overwriting an existing preset on save,has {name}
 flashcards.teachertools.preset_delete_confirm,"Delete preset ""{name}""?","למחוק את ההגדרה השמורה ""{name}""?",Confirm before deleting a preset,has {name}
+flashcards.teachertools.preset_delete_confirm_cloud,"Delete preset ""{name}""? You are signed in, so it is removed from your account and from every device.","למחוק את ההגדרה השמורה ""{name}""? אתם מחוברים, ולכן היא תוסר מהחשבון ומכל מכשיר.",Confirm before deleting a preset while signed in,has {name}
 flashcards.teachertools.preset_overwrite_current_confirm,"Overwrite preset ""{name}"" with current settings?","לדרוס על ההגדרה ""{name}"" עם ההגדרות הנוכחיות?",Confirm overwrite from the preset row save action,has {name}
 flashcards.teachertools.preset_name_required,Enter a preset name to save.,הזינו שם להגדרה כדי לשמור.,Inline note when Save pressed with empty preset name,
 flashcards.results.no_results_to_save,No drill results to save.,אין תוצאות תרגול לשמירה.,Guard when tapping Save Results with nothing to save,

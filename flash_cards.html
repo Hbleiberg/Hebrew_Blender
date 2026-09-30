@@ -4766,7 +4766,8 @@ function playPreset(name) {
   startPractice();
 }
 function deletePreset(name) {
-  if (!confirm(I18n.t('flashcards.teachertools.preset_delete_confirm', { name: name }))) return;
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
+  if (!confirm(I18n.t(signedIn ? 'flashcards.teachertools.preset_delete_confirm_cloud' : 'flashcards.teachertools.preset_delete_confirm', { name: name }))) return;
   const presets = readPresets();
   delete presets[name];
   writePresets(presets);
@@ -5456,7 +5457,7 @@ function createProfile(name) {
 function deleteProfile(name) {
   const db = readProfiles();
   if (!db.profiles[name]) return;
-  const signedIn = !!(window.IvritAccount && typeof IvritAccount.user === 'function' && IvritAccount.user());
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
   if (!confirm(I18n.t(signedIn ? 'flashcards.profile.delete_confirm_cloud' : 'flashcards.profile.delete_confirm', { name: name }))) return;
   delete db.profiles[name];
   if (db.activeProfile === name) db.activeProfile = Object.keys(db.profiles)[0] || null;
@@ -5468,7 +5469,7 @@ function renameProfile(oldName, newName) {
   if (!newName || newName === oldName) return;
   const db = readProfiles();
   if (!db.profiles[oldName]) return;
-  const signedIn = !!(window.IvritAccount && typeof IvritAccount.user === 'function' && IvritAccount.user());
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
   if (db.profiles[newName] && !confirm(I18n.t(signedIn ? 'flashcards.profile.merge_confirm_cloud' : 'flashcards.profile.merge_confirm', { newName: newName, oldName: oldName }))) return;
   const dest = db.profiles[newName] || { created: db.profiles[oldName].created, order: db.profiles[oldName].order, results: [] };
   dest.results = dest.results.concat(db.profiles[oldName].results || []).slice(-MAX_RESULTS_PER_PROFILE);
@@ -6962,11 +6963,14 @@ function ivritAskMode() {
     // Render the trusted body string's lightweight markdown (**bold**, \n) to HTML.
     const bodyHtml = esc(I18n.t('shared.ivrit.restore_dialog_body'))
       .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+    // Signed in (a session stored), Replace is not offered: it would delete, from the account and every
+    // signed-in device, everything not in the file. Merge adds the file's items to the account.
+    const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
     box.innerHTML = `<div id="ivritAskTitle" style="font-weight:700;font-size:1rem;margin-bottom:8px;">${esc(I18n.t('shared.ivrit.restore_dialog_title'))}</div>`
-      + `<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;">${bodyHtml}</div>`
+      + `<div style="font-size:0.82rem;line-height:1.5;margin-bottom:16px;opacity:0.9;">${bodyHtml}${signedIn ? '<br><br>' + esc(I18n.t('shared.ivrit.restore_signed_in_note')) : ''}</div>`
       + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
       + `<button class="ivrit-ask-btn" data-act="merge">${esc(I18n.t('shared.ivrit.restore_merge_button'))}</button>`
-      + `<button class="ivrit-ask-btn" data-act="replace">${esc(I18n.t('shared.ivrit.restore_replace_button'))}</button>`
+      + (signedIn ? '' : `<button class="ivrit-ask-btn" data-act="replace">${esc(I18n.t('shared.ivrit.restore_replace_button'))}</button>`)
       + `<button class="ivrit-ask-btn" data-act="cancel">${esc(I18n.t('shared.ivrit.restore_cancel_button'))}</button>`
       + '</div>';
     // Accessible dialog: label, modal role, Escape, Tab focus-trap across the 3 buttons, focus save/restore.
@@ -8818,11 +8822,20 @@ function initCloudSaves() {
   // A font from the account landed in the shared store: re-list My Fonts, which also re-applies a face
   // this page had chosen by name but could not show until now.
   window.addEventListener('ivritsuite:fonts', () => { try { refreshMyFonts(); } catch (e) {} });
+  // Signed in, the Backup panel's note says the saves live in the account (the key swap survives a language switch).
+  if (window.IvritAccount && typeof IvritAccount.onChange === 'function') {
+    IvritAccount.onChange(u => {
+      const note = document.querySelector('[data-i18n-html="flashcards.advanced.backup_intro"],[data-i18n-html="flashcards.advanced.backup_intro_signed_in"]');
+      if (note) { const k = u ? 'flashcards.advanced.backup_intro_signed_in' : 'flashcards.advanced.backup_intro'; note.setAttribute('data-i18n-html', k); if (window.I18n) note.innerHTML = I18n.t(k); }   // a trusted locale string (the CSV's own markup)
+    });
+  }
   // ftMergeTrees is pure (the shared block's one merge rule); the module writes the result and tells the page.
+  // alsoPull: the word lists (the Dictionary's rows) — the ?wl= link and the picker read them here. No `paused`:
+  // saveSettings() already no-ops under a ladder or a shared drill, and a student's results written mid-ladder must go up.
   IvritSaves.attach({
     tool: 'FlashCards',
-    panel: '#cloudSavesPanel',
-    title: false,                 // the sub-section heading is the heading
+    status: '#cloudSavesPanel',
+    alsoPull: ['Dictionary'],
     flush: saveSettings,          // the live settings object is what the module must read
     merges: {
       presetFolders: ftMergeTrees,
@@ -8830,6 +8843,7 @@ function initCloudSaves() {
       profile: mergeProfileEntry
     },
     onLocalChanged: function (kind) {
+      if (kind === 'wordList') return;   // read on demand by the picker
       if (kind === 'preset' || kind === 'presetFolders') renderPresets();
       else if (kind === 'profile' || kind === 'profileFolders') renderProfiles();
       else if (kind === 'pbStreak') { loadPbStreak(); updateStatsBar(); }
@@ -8844,14 +8858,6 @@ function initCloudSaves() {
         loadSettings();
         saveSettings();   // applySettings' inner saves wrote a partial blob (the late-assigned fields were still the old ones): write the whole one
       }
-    },
-    open: function () {           // the header chip's "Cloud saves…" item — through the page's own toggles
-      const panel = document.getElementById('panelAdvanced');
-      if (panel && panel.classList.contains('collapsed')) { const t = panel.querySelector('.panel-title'); if (t) t.click(); }
-      const head = document.querySelector('.adv-subhead[data-i18n="flashcards.advanced.cloud_head"]');
-      if (!head) return;
-      if (head.classList.contains('collapsed')) head.click();
-      head.scrollIntoView({ block: 'start' });
     }
   });
 }
