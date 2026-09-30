@@ -196,7 +196,7 @@ in-memory PostgREST / Auth / Storage — no network, no real project, nothing to
 |---|---|---|---|
 | `scripts/smoke-account.mjs` | optional | 8080 | anonymous with the CDN blocked (0 `pageerror`, no `sb-*` key), the chip, SRI, the URL contracts, the first email sign-in on a device (the code field appears after the send and the code signs in), the emailed link (`#ivsignin=`: stripped, filled in, nothing sent before *Verify code*; the sent-to-elsewhere, expired and signed-in cases need `--sdk`), and every analytics page's `page_location` leaving the code out |
 | `scripts/smoke-saves.mjs` | optional | 8080 | the local round trip signed out, canonical hashing, the state table, fail-soft with the API unreachable |
-| `scripts/smoke-tools.mjs` | optional | 8080 | the six wired tool pages; the full localStorage dump byte-identical to a control run with the account scripts blocked |
+| `scripts/smoke-tools.mjs` | optional | 8080 | the six wired tool pages and the hub; the full localStorage dump byte-identical to a control run with the account scripts blocked |
 | `scripts/smoke-sync.mjs` | **required** | 8081 | the second-device story: changed-in-both-places, folder-tree convergence, deletions that never propagate, fonts travelling |
 | `scripts/smoke-fontmaker.mjs` | **required** | 8082 | cloud projects + Storage: upload/download/list/remove, Overwrite vs Keep both, a refused 413, `?start=` param stripping |
 | `scripts/smoke-account-page.mjs` | **required** | 8083 | `account.html`: the listing, the display name, the download-everything zip (parsed in Node, per-entry CRC), delete-account accepted and refused |
@@ -318,9 +318,9 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
 
 - **Everywhere but the three harnesses:** Google Fonts (`fonts.googleapis.com` / `fonts.gstatic.com`) + gtag (`www.googletagmanager.com`
   in `script-src`; `*.google-analytics.com`, `*.analytics.google.com` and `www.googletagmanager.com` in
-  `connect-src`); `data:` / `blob:` in `img-src` for PDF/PNG/`.ivrit`
-  export — except `account.html`, which shows no images and allows neither (its zip is an `<a download>`,
-  not an image load). It is the tighter page, so never loosen it to match the others. The harnesses
+  `connect-src`; `www.googletagmanager.com` and `*.google-analytics.com` in `img-src`); `data:` / `blob:` in
+  `img-src` for PDF/PNG/`.ivrit` export — except `account.html`, which shows no images and allows neither
+  `data:` nor `blob:` (its zip is an `<a download>`, not an image load). It is the tighter page, so never loosen it to match the others. The harnesses
   (`i18n-test.html`, `account-test.html`, `saves-test.html`) carry no gtag and no Google Fonts and allow only
   `data:` images.
 - **Pages that offer accounts** (Home, Generator, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, Dashboard, Font Maker, the account page `account.html`, `account-test.html`, `saves-test.html`): `cdn.jsdelivr.net` in `script-src` (the

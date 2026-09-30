@@ -857,7 +857,7 @@ opens that font pre-imported into a fresh, **license-locked** project via a 3-st
   modal's only flex-grower (every sibling is `flex: 0 0 auto`, the grid keeps a `min-block-size` floor),
   so an open keyboard cannot squeeze it away. The OpenSiddur mark sits beside the intro line
   (`#osPickLogo`, vendored unmodified at `partners/opensiddur/logo.svg` — same-origin like the fonts,
-  never hotlinked; the page's CSP allows `img-src 'self'` only). It is decorative (`alt=""`,
+  never hotlinked; the page's `img-src` names no host but its own and the analytics ones). It is decorative (`alt=""`,
   `aria-hidden`) because the intro's own link already points at the partner page, and `osPickRender`
   shows it only while EVERY manifest entry carries `partner: "opensiddur"`, so a second partner's fonts
   hide it rather than mis-credit. It is **CC BY-SA 4.0**, so the required
