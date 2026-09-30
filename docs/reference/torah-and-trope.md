@@ -851,7 +851,7 @@ became **six tabs of flat sections**, the Trope Tutor's Settings-tab idiom insid
   `TT_SECTION_TAB`, scrolls the section to the top of the body and focuses its heading, so the next Tab
   enters the section's controls. Its callers: the Copy bar's *Copy options…* (`'copy'`), the cloud module's
   `open` (`'cloud'`, the header chip's *Cloud saves…* item) and `scripts/smoke-tools.mjs` (`'cloud'`); nothing
-  opens it at `'share'` any more — the Share tab is reached through the header gear (`#gearBtn` →
+  opens it at `'share'` any more — the Share tab is reached through the toolbar's Settings button (`#gearBtn` →
   `openSettings()`) like every other tab.
 - **Keyboard.** The tablist's keydown handler is the Trope Tutor's: Left/Right move by **visual** direction
   (the strip mirrors in the Hebrew UI, so under `dir="rtl"` the keys swap), Home/End, wrapping, and moving
@@ -882,8 +882,9 @@ became **six tabs of flat sections**, the Trope Tutor's Settings-tab idiom insid
   `setShowTranslation` are the only writers, and `syncShowSwitches()` (from `syncFormToSettings`) keeps both
   pairs in step. Everything else the toolbar once held lives in the drawer — the Layout radios and the
   Version list on the Text tab; the Holiday Torah readings and the Custom range on the Calendar tab; Print,
-  Student handout, Copy and Copy link + Include my settings on the Share tab — and the header gear
-  (`#gearBtn`) is the drawer's one entry. Gone with them: the toolbar's own Share button `#ttShareOpenBtn`,
+  Student handout, Copy and Copy link + Include my settings on the Share tab — and the toolbar's Settings button
+  (`#gearBtn`: the gear with its label, primary-styled at the inline end of the Parsha row — the header carries no
+  gear any more, so the one door to everything else is in the row a teacher already looks at) is the drawer's one entry. Gone with them: the toolbar's own Share button `#ttShareOpenBtn`,
   `#ttHandoutBar` / `toggleHandoutBar()`, the inline holiday strip's `#ttHolidayBtn` / `toggleHolidayPicker()`
   and the `#ttCustomPicker` bar with `toggleCustomPicker()` (the fullscreen and print hide-lists no longer
   name it). The tour's third step therefore points at `#ttJumpWeekTop`, its text naming the two switches
@@ -891,7 +892,7 @@ became **six tabs of flat sections**, the Trope Tutor's Settings-tab idiom insid
   and the JSON-LD how-to do.
   `#ttCopyBar` stays on the page (it is the selection UI), with *Copy options…* → `openSettingsAtPanel('copy')`
   and its own Close button (`closeCopyBar()`: closes through `toggleCopyBar`, which still owns
-  `copyBulkRemember` and the bulk mode, then hands focus to the header gear `#gearBtn` — the way back to the
+  `copyBulkRemember` and the bulk mode, then hands focus to the toolbar's Settings button `#gearBtn` — the way back to the
   Share tab — rather than dropping it on `<body>`).
 - **Retired.** The panel-collapse memory block, `PANEL_MEM_CFG`, `expandAllMenus` / `collapseAllMenus`,
   `syncPanelTitleAria` and `panelKeyOf` are gone, and `panelsCollapsed` left `DEFAULTS`: an older blob's map
@@ -1063,7 +1064,7 @@ chrome). An RTL sweep must not "fix" the pin.
 ## Practice link — the sender's look (`?s=`, the link view)
 
 `torah_trainer.html`'s Copy link (`copyPracticeLink`, in the settings drawer's Share tab, reached through the
-header gear; the readable-param half is in `shared-components.md` → *Share links*) has an **Include my
+toolbar's Settings button; the readable-param half is in `shared-components.md` → *Share links*) has an **Include my
 settings** switch under it in that tab (`#ttShareSettings` → `settings.shareIncludeDisplay`, remembered and
 synced with the blob).
 

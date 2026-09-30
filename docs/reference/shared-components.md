@@ -380,9 +380,10 @@ popup) and the board's edit pencil, and the **Torah Trainer's picker controls**:
 palette), the settings drawer's heading gear — the gear the dashboard's drawer heading and the Trope Tutor's
 Settings tab carry too — and that drawer's six tab glyphs (book, palette, music, calendar, link, gear: icon
 above label through the page's own `.tt-tab` rule, `.hi-btn` still supplying the alignment). The toolbar
-above that page's reading holds no glyph button any more: its Holiday Torah Readings (calendar) and Share
-(link) buttons moved into the drawer, so the calendar glyph is the Calendar tab's and the link glyph the
-Share tab's (and its Copy link's), and the header gear is the drawer's entry.
+above that page's reading keeps one glyph button, **Settings** (the gear beside its label, primary-styled at
+the end of the Parsha row — the drawer's one entry, moved out of the header where a gear among six icon
+buttons was overlooked); its Holiday Torah Readings (calendar) and Share (link) buttons moved into the
+drawer, so the calendar glyph is the Calendar tab's and the link glyph the Share tab's (and its Copy link's).
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
 `account`, `404`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
@@ -567,7 +568,7 @@ Writing a link **never navigates**; loading a link **never clobbers** the user's
   silence. `?holiday=` may ride alongside `?ref=` to keep a narrowed holiday's name, and supplies it
   only while `refWithin` says the range really sits inside that reading. Copy link and its **Include my
   settings** switch live in the settings drawer's Share tab (*Practice link* section), reached through the
-  header gear — the toolbar above the reading holds no Share button; `syncShareBtn` HIDES the
+  toolbar's Settings button (`#gearBtn`) — the toolbar holds no Share button; `syncShareBtn` HIDES the
   link rows (`#ttShareWrap`, never disables them) and shows the tab's `#ttShareNone` note when there is no
   shareable reading at all. The switch (remembered in the settings blob) adds a `?s=` beside the readable
   params: the display

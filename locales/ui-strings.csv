@@ -4070,7 +4070,7 @@ torah.glyphname.vowel_shva,Shva,שְׁוָא,vowel color-picker label,glyph-name
 torah.glyphname.vowel_tzere,Tzere,צֵירֵי,vowel color-picker label,glyph-name
 torah.glyphname.vowel_vav_holam,Vav Holam,חוֹלָם מָלֵא,vowel color-picker label,glyph-name
 torah.header.home,Home,בית,header nav button,
-torah.header.settings_title,Settings,הגדרות,header gear button title,
+torah.header.settings_title,Settings,הגדרות,the toolbar's Settings button (label + title); the drawer's one entry,svg-icon-in-markup
 torah.header.subtitle,"Read the weekly parsha with vowel coloring, transliteration, translations, and chanted-audio karaoke.","קראו את פרשת השבוע עם צביעת תנועות, תעתיק, תרגומים וקריוקי בטעמים.",header subtitle,
 torah.header.title,Torah Trainer,מאמן התורה,h1 header,
 torah.header.tour_button,Tour,סיור,header button,svg-icon-in-markup
