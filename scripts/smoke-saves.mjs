@@ -3,13 +3,13 @@
  * smoke-saves.mjs — headless smoke test for the shared saves module (js/ivrit-saves.js).
  *
  * What it proves, without any real network:
- *   A. Anonymous page, CDN blocked: 0 pageerrors, the panel shows the sign-in line, the local backend
+ *   A. Anonymous page, CDN blocked: 0 pageerrors, the status line shows the sign-in line, the local backend
  *      round trip passes and every other localStorage key is byte-identical, no sync memory and no
  *      sb-* key is created.
  *   B. The pure self-checks (canonical hashing, the state table, merges, guards) all pass.
- *   C. A remembered (fake) session with the SDK served locally and the API unreachable: the panel
- *      renders and fails soft (a status line or the signed-out note), 0 pageerrors.
- *   D. Hebrew UI + dark mode at 800 px: the panel title is Hebrew, the status line is aria-live.
+ *   C. A remembered (fake) session with the SDK served locally and the API unreachable: the status line
+ *      renders and fails soft (an error line or the signed-out note), 0 pageerrors.
+ *   D. Hebrew UI + dark mode at 800 px: the sign-in line is Hebrew, the status line is aria-live.
  *
  * Run from the repo root:  node scripts/smoke-saves.mjs [--sdk path/to/supabase.js]
  * Needs the repo served on http://localhost:8080 — the script starts python3 -m http.server itself.
@@ -76,8 +76,8 @@ try {
     const { ctx, page, errors } = await openPage(browser, { seed });
     await page.waitForFunction(() => window.I18n && document.querySelector('.ivsav-note'), null, { timeout: 8000 }).catch(() => {});
     const note = await page.textContent('.ivsav-note').catch(() => '');
-    check('A: signed-out panel shows the sign-in line', /Sign in/.test(note), note);
-    check('A: the panel has a Sign in button and no list', await page.evaluate(() => !!document.querySelector('.ivsav .ivsav-btn') && !document.querySelector('.ivsav-list')));
+    check('A: signed-out status line shows the sign-in line', /Sign in/.test(note), note);
+    check('A: the status line has a Sign in button and no list', await page.evaluate(() => !!document.querySelector('.ivsav .ivsav-btn') && !document.querySelector('.ivsav-list')));
     const before = await page.evaluate(() => JSON.stringify(Object.entries(localStorage).sort()));
     await page.click('#localChecksBtn');
     await page.waitForFunction(() => { const l = document.querySelector('#localChecks li:last-child'); return l && /passed/.test(l.textContent); }, null, { timeout: 15000 }).catch(() => {});
@@ -85,7 +85,7 @@ try {
     check('A: local backend checks all pass', summaryOk(local), await page.evaluate(() => [...document.querySelectorAll('#localChecks li')].filter(l => /FAIL/.test(l.textContent)).map(l => l.textContent).join(' | ')));
     const after = await page.evaluate(() => JSON.stringify(Object.entries(localStorage).sort()));
     check('A: localStorage is byte-identical after the round trip', before === after, after);
-    const bad = await page.evaluate(() => Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_syncMeta'));
+    const bad = await page.evaluate(() => Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_syncMeta' || k === 'ivritSuite_syncMeta2'));
     check('A: no sb-* key and no sync memory created', bad.length === 0, bad.join(','));
     check('A: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await page.screenshot({ path: path.join(SHOTS, 'A-anon-light-1280.png'), fullPage: true });
@@ -113,16 +113,16 @@ try {
       return (st && st.classList.contains('is-error') && st.textContent.trim()) || (note && note.textContent.trim());
     }, null, { timeout: 25000 }).catch(() => {});
     const st = await page.evaluate(() => ({ account: IvritAccount.status(), status: (document.querySelector('.ivsav-status') || {}).textContent, note: (document.querySelector('.ivsav-note') || {}).textContent }));
-    check('C: panel failed soft (an error status line or the signed-out note)', /\S/.test(st.status || '') || /\S/.test(st.note || ''), JSON.stringify(st));
+    check('C: status line failed soft (an error line or the signed-out note)', /\S/.test(st.status || '') || /\S/.test(st.note || ''), JSON.stringify(st));
     check('C: 0 pageerrors with the API unreachable', errors.length === 0, errors.join(' | '));
     await ctx.close();
   } else { console.log('SKIP C: no --sdk file given'); }
   // ---- D. Hebrew + dark at 800px -------------------------------------------------------------
   {
     const { ctx, page, errors } = await openPage(browser, { seed: { hebrewBlender_lang: 'he', hebrewBlender_darkMode: '1' }, viewport: { width: 800, height: 900 } });
-    await page.waitForFunction(() => document.querySelector('.ivsav-title') && /שמירות/.test(document.querySelector('.ivsav-title').textContent), null, { timeout: 8000 }).catch(() => {});
-    const title = await page.textContent('.ivsav-title').catch(() => '');
-    check('D: Hebrew panel title', /שמירות בענן/.test(title), title);
+    await page.waitForFunction(() => document.querySelector('.ivsav-note') && /[א-ת]/.test(document.querySelector('.ivsav-note').textContent), null, { timeout: 8000 }).catch(() => {});
+    const line = await page.textContent('.ivsav-note').catch(() => '');
+    check('D: Hebrew sign-in line', /היכנסו/.test(line), line);
     check('D: dark mode applied', await page.evaluate(() => document.body.classList.contains('dark')));
     check('D: status line is aria-live', await page.evaluate(() => { const s = document.querySelector('.ivsav-status'); return !!s && s.getAttribute('aria-live') === 'polite'; }));
     check('D: RTL document', await page.evaluate(() => document.documentElement.dir === 'rtl'));

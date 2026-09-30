@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 /*
  * smoke-tools.mjs — headless smoke test for every tool page that carries the account chip and the
- * cloud-saves panel (js/ivrit-account.js + js/ivrit-saves.js). No real network is used.
+ * account status line (js/ivrit-account.js + js/ivrit-saves.js). No real network is used.
  *
  * Per page in PAGES:
  *   A. Anonymous, CDN blocked: 0 pageerrors; the chip sits in the same parent as the language switcher;
- *      the panel shell holds the module's sign-in line; IvritSaves.plan(tool) returns exactly the seeded
- *      items; and the full localStorage dump is byte-identical to a CONTROL run of the same page with the
- *      three account scripts blocked (the "anonymous flow unchanged" bar, measured rather than argued).
- *   B. A remembered (fake) session with the SDK served locally and the API unreachable: 0 pageerrors and
- *      the panel fails soft (a status line or the signed-out note).
- *   C. Hebrew UI + dark mode at 800 px with the panel's host expanded: the sign-in line is Hebrew.
+ *      the status host holds the module's sign-in line; IvritSaves.local.list(tool) returns exactly the
+ *      seeded items; no overlay opens by itself; and the full localStorage dump is byte-identical to a
+ *      CONTROL run of the same page with the three account scripts blocked (the "anonymous flow unchanged"
+ *      bar, measured rather than argued).
+ *   B. A remembered (fake) session with the SDK served locally and the API unreachable: 0 pageerrors, the
+ *      status line fails soft (an error line or the signed-out note), no name step and no card open.
+ *   C. Hebrew UI + dark mode at 800 px with the host expanded: the sign-in line is Hebrew.
  *   D. URL contracts (pages that declare `urlKeep`): an auth-error return keeps the page's own params.
  *
  * Run from the repo root:  node scripts/smoke-tools.mjs [--sdk path/to/supabase.js] [--only <file>]
@@ -313,22 +314,15 @@ try {
         check(tag + ' A: ' + P.panels + ' panels mounted', n === P.panels, String(n));
       }
       for (const T of (P.tools || [{ tool: P.tool, rows: P.rows }])) {
-        const rows = await page.evaluate((tool) => window.IvritSaves.plan(tool).then(p => p.rows.map(r => r.kind + ':' + r.name).sort()), T.tool).catch(e => ['error: ' + e]);
-        check(tag + ' A: plan(' + T.tool + ') lists exactly the seeded items', JSON.stringify(rows) === JSON.stringify([...T.rows].sort()), JSON.stringify(rows));
+        const rows = await page.evaluate((tool) => window.IvritSaves.local.list(tool).then(items => items.map(i => i.id).sort()), T.tool).catch(e => ['error: ' + e]);
+        check(tag + ' A: local.list(' + T.tool + ') lists exactly the seeded items', JSON.stringify(rows) === JSON.stringify([...T.rows].sort()), JSON.stringify(rows));
       }
       const after = await dump(page);
       check(tag + ' A: localStorage byte-identical to the control run', after === control, diffKeys(control, after));
-      const bad = await page.evaluate(() => Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_syncMeta'));
+      const bad = await page.evaluate(() => Object.keys(localStorage).filter(k => k.startsWith('sb-') || k === 'ivritSuite_syncMeta' || k === 'ivritSuite_syncMeta2'));
       check(tag + ' A: no sb-* key and no sync memory', bad.length === 0, bad.join(','));
-      const acct = await page.evaluate(() => {
-        const before = !!document.querySelector('.ivsav-overlay');
-        window.IvritSaves.openAccount();
-        const card = document.querySelector('.ivsav-overlay .ivsav-card');
-        const opened = !!card && /Sign in/.test(card.textContent) && document.activeElement === card;
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-        return { before, opened, closed: !document.querySelector('.ivsav-overlay') };
-      });
-      check(tag + ' A: no account screen by itself; openAccount() shows the signed-out card and Escape closes it', !acct.before && acct.opened && acct.closed, JSON.stringify(acct));
+      const overlays = await page.evaluate(() => document.querySelectorAll('.ivsav-overlay, .ivacct-modal').length);
+      check(tag + ' A: no card and no name step open by themselves', overlays === 0, String(overlays));
       check(tag + ' A: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
     }
@@ -344,21 +338,12 @@ try {
         return (st && st.classList.contains('is-error') && st.textContent.trim()) || (note && note.textContent.trim());
       }, P.host, { timeout: 25000 }).catch(() => {});
       const st = await page.evaluate((host) => { const h = document.querySelector(host); return { account: IvritAccount.status(), status: (h.querySelector('.ivsav-status') || {}).textContent, note: (h.querySelector('.ivsav-note') || {}).textContent }; }, P.host);
-      check(tag + ' B: panel failed soft with the API unreachable', /\S/.test(st.status || '') || /\S/.test(st.note || ''), JSON.stringify(st));
-      // The welcome screen opens once for a remembered session on a device with items; here its listing fails soft.
-      await page.waitForFunction(() => { const s = document.querySelector('.ivsav-overlay .ivsav-status'); return s && s.classList.contains('is-error') && s.textContent.trim(); }, null, { timeout: 25000 }).catch(() => {});
-      await page.screenshot({ path: path.join(SHOTS, tag + '-welcome-1280.png') });
-      const wel = await page.evaluate(() => {
-        const o = document.querySelector('.ivsav-overlay'), st = o && o.querySelector('.ivsav-status');
-        const welcomed = (() => { try { return !!JSON.parse(localStorage.getItem('ivritSuite_syncMeta')).welcomed['11111111-1111-4111-8111-111111111111']; } catch (e) { return false; } })();
-        const title = o && o.querySelector('.ivsav-card-title');
-        // a remembered session is 'restored', so the screen is the once-per-device welcome, not the sign-in splash
-        const info = { opened: !!o, error: !!(st && st.classList.contains('is-error') && st.textContent.trim()), welcomed, source: IvritAccount.sessionSource(), welcomeTitle: !!title && /Welcome/.test(title.textContent) };
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-        info.closed = !document.querySelector('.ivsav-overlay');
-        return info;
-      });
-      check(tag + ' B: the welcome screen opened once (restored session, welcome title), failed soft, is remembered and closes on Escape', wel.opened && wel.error && wel.welcomed && wel.closed && wel.source === 'restored' && wel.welcomeTitle, JSON.stringify(wel));
+      check(tag + ' B: status line failed soft with the API unreachable', /\S/.test(st.status || '') || /\S/.test(st.note || ''), JSON.stringify(st));
+      await page.waitForFunction(() => window.IvritSaves && IvritSaves._test.settled(), null, { timeout: 25000 }).catch(() => {});
+      await page.screenshot({ path: path.join(SHOTS, tag + '-offline-1280.png') });
+      // The fixture has no name and the API is unreachable: the name step must not open (rule 3 — offline never changes the page), nor the card.
+      const gates = await page.evaluate(() => ({ overlays: document.querySelectorAll('.ivsav-overlay, .ivacct-modal').length, source: IvritAccount.sessionSource(), name: IvritAccount._test.nameStepOutcome(), hydrated: !!localStorage.getItem('ivritSuite_syncMeta2') && /hydrated/.test(localStorage.getItem('ivritSuite_syncMeta2')) }));
+      check(tag + ' B: no name step and no card with the API unreachable (restored session, name step outcome none)', gates.overlays === 0 && gates.source === 'restored' && gates.name === 'none', JSON.stringify(gates));
       check(tag + ' B: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
     } else { console.log('SKIP ' + tag + ' B: no --sdk file given'); }

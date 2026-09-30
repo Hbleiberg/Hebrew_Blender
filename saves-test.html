@@ -55,8 +55,8 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
     <ul class="checks" id="localChecks"></ul>
   </section>
   <section>
-    <h2>3. The panel</h2>
-    <p class="hint">The real panel, mounted by <code>IvritSaves.attach()</code>. The buttons below change the local stores the way a tool would; the dump shows the four stores and this account's sync memory.</p>
+    <h2>3. The status line</h2>
+    <p class="hint">The real status line, mounted by <code>IvritSaves.attach()</code> with <code>hydrate: false</code> (this harness runs nothing by itself against the real project: no automatic hydration, no card, no write-through). The buttons below change the local stores the way a tool would; the dump shows the four stores and this account's sync memory.</p>
     <div id="cloudPanel"></div>
     <button class="act" type="button" id="seedBtn">Seed local test data</button>
     <button class="act" type="button" id="editPresetBtn">Edit preset "Alef" locally</button>
@@ -73,7 +73,7 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
   </section>
   <section>
     <h2>5. Cloud self-checks (sign in first)</h2>
-    <p class="hint">A scripted run through the real table: upload, a change "from another device", download, a two-sided change with Keep both, a settings and a score conflict, a stale write refused, folders following their items, delete, cleanup. It uses only the harness rows (<code>Suite</code> / test, folders, settings, score) and removes them at the end.</p>
+    <p class="hint">A scripted run through the real table on the new rules: a hydration uploads what only this device has and the folders follow; a change "from another device" lands at the next hydration; a two-sided change keeps both; a settings conflict on a synced row keeps this device's fields; a score conflict merges to the larger; a stale write is refused; a local delete reaches the account through a flush; cleanup. It uses only the harness rows (<code>Suite</code> / test, folders, settings, score) and removes them at the end.</p>
     <button class="act" type="button" id="cloudChecksBtn">Run cloud self-checks</button>
     <button class="act" type="button" id="cloudWipeBtn">Remove harness rows from the cloud</button>
     <ul class="checks" id="cloudChecks"></ul>
@@ -91,7 +91,7 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
 
   var STORE = 'ivritSuite_testStore', FOLDERS = 'ivritSuite_testFolders', SETTINGS = 'ivritSuite_testSettings', SCORE = 'ivritSuite_testScore';
   var KEYS = [STORE, FOLDERS, SETTINGS, SCORE];
-  var META_KEY = 'ivritSuite_syncMeta';
+  var META_KEY = 'ivritSuite_syncMeta2';   // the sync memory (v2); the old key holds only cross-tab stamps
   var KINDS = ['test', 'folders', 'settings', 'score'];
   var ENTRIES = [
     { tool: 'Suite', kind: 'test', lsKey: STORE, shape: 'map', merge: 'item', ivritKey: 'ivritTestStore' },
@@ -121,6 +121,14 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
     var m = readJson(META_KEY);
     if (m && m.users && uid && m.users[uid] && m.users[uid].Suite) { delete m.users[uid].Suite; lsSet(META_KEY, JSON.stringify(m)); }
   }
+  // The scripted run must never be a device's first hydration (that lists every tool of the real account and
+  // opens the device-extras card): mark this account hydrated here first.
+  function markHydratedHere(uid) {
+    var m = readJson(META_KEY) || { v: 2, users: {}, legacy: {}, hydrated: {} };
+    if (!m.hydrated) m.hydrated = {};
+    m.hydrated[uid] = new Date().toISOString();
+    lsSet(META_KEY, JSON.stringify(m));
+  }
   function editStore(name, patch) {
     var st = readJson(STORE) || {};
     st[name] = Object.assign({}, st[name] || {}, patch);
@@ -129,7 +137,7 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
   // Every localStorage key except the harness's own (the account cache and the language/theme prefs count as "other").
   function snapshot() {
     var o = {};
-    for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (KEYS.indexOf(k) < 0 && k !== META_KEY) o[k] = localStorage.getItem(k); }
+    for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (KEYS.indexOf(k) < 0 && k !== META_KEY && k !== 'ivritSuite_syncMeta') o[k] = localStorage.getItem(k); }
     return o;
   }
   function sameSnapshot(a, b) {
@@ -184,9 +192,9 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
     if (!A || !S) { show($('state'), 'IvritAccount / IvritSaves not defined — did the /js/ modules load?'); return; }
     var T = S._test;
 
-    // ---- 3. the real panel, wired the way a tool page will wire it ----
+    // ---- 3. the real status line, wired the way a tool page wires it (minus the automatic hydration) ----
     S.attach({
-      tool: 'Suite', panel: '#cloudPanel', entries: ENTRIES,
+      tool: 'Suite', status: '#cloudPanel', entries: ENTRIES, hydrate: false,
       merges: {
         // A tiny additive tree merge standing in for the shared ftImportTree: top-level nodes the local
         // tree lacks (by name) are appended; nothing local is removed.
@@ -198,9 +206,9 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
         }
       },
       flush: function () { flushes++; },
-      onLocalChanged: function (kind, name) { changes.push(kind + ':' + name); renderDump(); },
-      open: function () { $('cloudPanel').scrollIntoView(); }
+      onLocalChanged: function (kind, name) { changes.push(kind + ':' + name); renderDump(); }
     });
+    function hyd() { return S.hydrate(['Suite']); }
 
     function refreshState() {
       show($('state'), { status: A.status(), user: A.user(), registry: S.registry().map(function (e) { return e.kind + ' (' + e.shape + '/' + e.merge + (e.follows ? ', follows ' + e.follows : '') + ')'; }), time: new Date().toISOString() });
@@ -210,16 +218,17 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
     A.ready.then(refreshState);
     $('refreshBtn').addEventListener('click', refreshState);
 
-    $('seedBtn').addEventListener('click', function () { seedLocal(); renderDump(); if (A.user()) S.refresh('Suite').catch(function () {}); });
-    $('editPresetBtn').addEventListener('click', function () { var st = readJson(STORE) || {}; editStore('Alef', { n: ((st.Alef && st.Alef.n) || 0) + 1, editedAt: new Date().toISOString() }); renderDump(); if (A.user()) S.refresh('Suite').catch(function () {}); });
-    $('editSettingsBtn').addEventListener('click', function () { var s = readJson(SETTINGS) || {}; s.fontSize = (s.fontSize || 20) + 1; s.zoom = (s.zoom || 0) + 1; lsSet(SETTINGS, JSON.stringify(s)); renderDump(); if (A.user()) S.refresh('Suite').catch(function () {}); });
-    $('editScoreBtn').addEventListener('click', function () { lsSet(SCORE, String((parseInt(lsGet(SCORE), 10) || 0) + 1)); renderDump(); if (A.user()) S.refresh('Suite').catch(function () {}); });
+    $('seedBtn').addEventListener('click', function () { seedLocal(); renderDump(); if (A.user()) hyd().catch(function () {}); });
+    $('editPresetBtn').addEventListener('click', function () { var st = readJson(STORE) || {}; editStore('Alef', { n: ((st.Alef && st.Alef.n) || 0) + 1, editedAt: new Date().toISOString() }); renderDump(); if (A.user()) hyd().catch(function () {}); });
+    $('editSettingsBtn').addEventListener('click', function () { var s = readJson(SETTINGS) || {}; s.fontSize = (s.fontSize || 20) + 1; s.zoom = (s.zoom || 0) + 1; lsSet(SETTINGS, JSON.stringify(s)); renderDump(); if (A.user()) hyd().catch(function () {}); });
+    $('editScoreBtn').addEventListener('click', function () { lsSet(SCORE, String((parseInt(lsGet(SCORE), 10) || 0) + 1)); renderDump(); if (A.user()) hyd().catch(function () {}); });
     $('flatFolderBtn').addEventListener('click', function () { var st = readJson(STORE) || {}; lsSet(FOLDERS, JSON.stringify({ v: 1, root: Object.keys(st).map(function (n) { return { t: 'item', name: n }; }) })); renderDump(); });
-    $('clearLocalBtn').addEventListener('click', function () { clearLocal(); clearMeta(A.user() && A.user().id); renderDump(); if (A.user()) S.refresh('Suite').catch(function () {}); });
+    $('clearLocalBtn').addEventListener('click', function () { clearLocal(); clearMeta(A.user() && A.user().id); renderDump(); if (A.user()) hyd().catch(function () {}); });
 
     // ---- 2. local backend round trip, signed out or in ----
     $('localChecksBtn').addEventListener('click', function () {
       var c = checker('localChecks');
+      var settingsEntry = ENTRIES[2], mapEntry = ENTRIES[0], scalarEntry = ENTRIES[3];
       var before = snapshot(), hadMeta = lsGet(META_KEY);
       clearLocal();
       seedLocal();
@@ -256,9 +265,20 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
         ['save: a value of the wrong shape is refused', function () {
           return S.local.save('Suite', 'settings', 'default', ['not', 'an', 'object']).then(function () { return { ok: false, detail: 'written (bad)' }; }, function (e) { return { ok: e && e.code === 'shape', detail: e && e.code }; });
         }],
-        ['plan while signed out: every item is "Only on this device", no cloud call', function () {
+        ['the classification while signed out: every item is local-only, no cloud call', function () {
           if (A.user()) return { ok: true, detail: 'skipped: signed in' };
-          return S.plan('Suite').then(function (p) { var rows = p.rows.filter(function (r) { return r.kind !== 'prefs'; }); return { ok: p.userId === null && rows.length === 4 && rows.every(function (r) { return r.state === 'local-only'; }), detail: rows.map(function (r) { return r.kind + '/' + r.name + ':' + r.state; }).join(', ') }; });
+          return T.planTool('Suite').then(function (p) { var rows = p.rows.filter(function (r) { return r.kind !== 'prefs'; }); return { ok: p.userId === null && rows.length === 4 && rows.every(function (r) { return r.state === 'local-only'; }), detail: rows.map(function (r) { return r.kind + '/' + r.name + ':' + r.state; }).join(', ') }; });
+        }],
+        ['the hydration action table: what each state means for the device', function () {
+          var mk = function (state, extra) { return Object.assign({ state: state, entry: mapEntry, kind: 'test', local: { hash: 'a' }, cloud: { hash: 'b' }, memory: null, downloadable: true, mergeable: false, seed: false, legacy: false }, extra || {}); };
+          var H = T.hydrateActionFor;
+          var ok = H(mk('synced'), false) === null && H(mk('cloud-only'), false) === 'download' && H(mk('local-changed'), false) === 'upload' && H(mk('cloud-changed'), false) === 'download' &&
+                   H(mk('local-only'), true) === 'extra' && H(mk('local-only'), false) === 'upload' && H(mk('local-only', { seed: true }), true) === null &&
+                   H(mk('local-only', { memory: { h: 'a' } }), false) === 'removeLocal' && H(mk('local-only', { memory: { h: 'z' } }), false) === 'upload' &&
+                   H(mk('deleted-here', { memory: { h: 'b', u: 't' }, local: null }), false) === 'deleteCloud' && H(mk('deleted-here', { memory: { h: 'b', u: 't' }, local: null }), true) === 'download' &&
+                   H(mk('conflict'), false) === 'keepBoth' && H(mk('conflict', { entry: settingsEntry }), false) === 'useCloud' && H(mk('conflict', { entry: settingsEntry, memory: { h: 'q' } }), false) === 'keepMine' &&
+                   H(mk('conflict', { entry: scalarEntry, mergeable: true }), false) === 'merge' && H(mk('conflict', { seed: true }), false) === 'download';
+          return { ok: ok, detail: '' };
         }],
         ['no sync memory was created by local work', function () {
           return { ok: lsGet(META_KEY) === hadMeta, detail: String(lsGet(META_KEY)).slice(0, 80) };
@@ -277,6 +297,11 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
       var settingsEntry = ENTRIES[2], mapEntry = ENTRIES[0], treeEntry = ENTRIES[1], scalarEntry = ENTRIES[3];
       var L = function (h) { return { hash: h }; }, C = function (h, u) { return { hash: h, updatedAt: u }; }, M = function (h, u) { return { h: h, u: u }; };
       c.run([
+        ['deepMax with a reset watermark: the side with the older resetAt counts as empty, the newest watermark is kept', function () {
+          var m = T.deepMax({ v: 1, tropes: { a: { r: 9 } }, pbStreak: 9 }, { v: 1, tropes: { a: { r: 1 } }, pbStreak: 1, resetAt: 5 }, 'resetAt');
+          var n = T.deepMax({ v: 1, tropes: { a: { r: 2 } }, resetAt: 5 }, { v: 1, tropes: { a: { r: 9 } }, resetAt: 5 }, 'resetAt');
+          return { ok: m.tropes.a.r === 1 && m.pbStreak === 1 && m.resetAt === 5 && n.tropes.a.r === 9 && n.resetAt === 5, detail: JSON.stringify([m, n]) };
+        }],
         ['canonJson sorts keys at every depth and drops undefined', function () {
           var a = T.canonJson({ b: 1, a: [{ d: 2, c: 1 }], z: undefined });
           return { ok: a === '{"a":[{"c":1,"d":2}],"b":1}', detail: a };
@@ -361,12 +386,12 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
           var ok = /2 MB/.test(big) && /limit/.test(lim) && /name/.test(dup) && /unreachable/.test(net) && big !== lim && lim !== dup;
           return { ok: ok, detail: [big, lim, dup, net].join(' | ') };
         }],
-        ['copyNameFor: "(cloud copy)", then "(cloud copy 2)" when that is taken', function () {
+        ['copyNameFor: "(from another device)", then "(from another device 2)" when that is taken', function () {
           var keep = lsGet(STORE);
-          lsSet(STORE, JSON.stringify({ Alef: { n: 1 }, 'Alef (cloud copy)': { n: 2 } }));
+          lsSet(STORE, JSON.stringify({ Alef: { n: 1 }, 'Alef (from another device)': { n: 2 } }));
           var n1 = T.copyNameFor('Suite', mapEntry, 'Alef'), n2 = T.copyNameFor('Suite', mapEntry, 'Bet');
           if (keep === null) lsRemove(STORE); else lsSet(STORE, keep);
-          return { ok: n1 === 'Alef (cloud copy 2)' && n2 === 'Bet (cloud copy)', detail: n1 + ' / ' + n2 };
+          return { ok: n1 === 'Alef (from another device 2)' && n2 === 'Bet (from another device)', detail: n1 + ' / ' + n2 };
         }],
         ['ivritFile: a map item becomes an AllTools bundle under its ivritKey', function () {
           var f = T.ivritFile(mapEntry, 'Alef', { n: 1 });
@@ -391,32 +416,33 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
     $('cloudWipeBtn').addEventListener('click', function () {
       if (!A.user()) { show($('cloudOut'), 'sign in first'); return; }
       show($('cloudOut'), 'working…');
-      cloudWipe().then(function () { return S.refresh('Suite'); }).then(function (p) { show($('cloudOut'), { removed: true, rows: p.rows.length }); }, function (e) { show($('cloudOut'), { ok: false, error: errText(e) }); });
+      cloudWipe().then(function () { clearLocal(); clearMeta(A.user().id); return T.planTool('Suite'); }).then(function (p) { show($('cloudOut'), { removed: true, rows: p.rows.length }); }, function (e) { show($('cloudOut'), { ok: false, error: errText(e) }); });
     });
     $('cloudChecksBtn').addEventListener('click', function () {
       var c = checker('cloudChecks');
       var me = A.user();
       if (!me) { c.line(false, 'signed in', 'sign in first (the header chip), then run the checks'); c.done(); return; }
       show($('cloudOut'), 'running…');
+      function plan() { return T.planTool('Suite'); }
       c.run([
-        ['cleanup first: no harness rows in the cloud, none on this device', function () {
-          return cloudWipe().then(function () { clearLocal(); clearMeta(me.id); return S.refresh('Suite'); })
+        ['cleanup first: no harness rows in the cloud, none on this device; this account marked hydrated here', function () {
+          return cloudWipe().then(function () { clearLocal(); clearMeta(me.id); markHydratedHere(me.id); return plan(); })
             .then(function (p) { return { ok: p.rows.length === 0, detail: p.rows.length + ' rows' }; });
         }],
-        ['seed: four local items read "Only on this device" (the folder tree is not a row)', function () {
+        ['seed: four local items read local-only (the folder tree is not a row)', function () {
           seedLocal();
-          return S.refresh('Suite').then(function (p) { return { ok: p.rows.length === 4 && p.rows.every(function (r) { return r.state === 'local-only'; }) && p.counts.safe === 4, detail: states(p) }; });
+          return plan().then(function (p) { return { ok: p.rows.length === 4 && p.rows.every(function (r) { return r.state === 'local-only'; }), detail: states(p) }; });
         }],
-        ['Sync now uploads all four, then the folder tree follows them', function () {
-          return S.syncNow('Suite').then(function (sum) {
+        ['hydrate uploads all four (this device is not on its first hydration), then the folder tree follows them', function () {
+          return hyd().then(function (r) {
             return harnessRows().then(function (rows) {
-              var kinds = rows.map(function (r) { return r.kind + '/' + r.name; }).sort().join(', ');
-              return { ok: !sum.error && sum.up === 4 && rows.length === 5 && kinds.indexOf('folders/default') >= 0, detail: 'up=' + sum.up + ' rows: ' + kinds + (sum.error ? ' error: ' + errText(sum.error) : '') };
+              var kinds = rows.map(function (x) { return x.kind + '/' + x.name; }).sort().join(', ');
+              return { ok: r.ok && rows.length === 5 && kinds.indexOf('folders/default') >= 0, detail: 'ok=' + r.ok + ' rows: ' + kinds + (r.error ? ' error: ' + errText(r.error) : '') };
             });
           });
         }],
-        ['after the sync every row reads "Same" and every cloud row carries a 1. hash', function () {
-          return S.refresh('Suite').then(function (p) {
+        ['after the hydration every row reads synced and every cloud row carries a 1. hash', function () {
+          return plan().then(function (p) {
             return harnessRows().then(function (rows) {
               return { ok: allSynced(p) && rows.every(function (r) { return typeof r.data_hash === 'string' && r.data_hash.indexOf(T.HASH_PREFIX) === 0; }), detail: states(p) };
             });
@@ -426,103 +452,81 @@ ul.checks{padding-inline-start:18px;} ul.checks li{margin:3px 0;}
           return cloudRow('settings', 'default').then(function (r) { return S.cloud.load(r.id); })
             .then(function (full) { return { ok: full.data.fontSize === 20 && !('zoom' in full.data) && !('leftCollapsed' in full.data), detail: JSON.stringify(full.data) }; });
         }],
-        ['another device edits Alef in the cloud (no hash) → "Newer in the cloud"', function () {
-          return simulate('test', 'Alef', { n: 2, letters: ['א'], from: 'another device' }).then(function () { return S.refresh('Suite'); })
-            .then(function (p) { return { ok: rowOf(p, 'test', 'Alef').state === 'cloud-changed' && rowOf(p, 'test', 'Alef').safeAction === 'download', detail: states(p) }; });
-        }],
-        ['Download brings n=2 here, the page was told, the row reads "Same", and the write is stamped for other tabs', function () {
+        ['another device edits Alef in the cloud (no hash) → the next hydration brings n=2 here, tells the page and stamps the write', function () {
           changes.length = 0;
-          return S.plan('Suite').then(function (p) { return S.act('Suite', 'download', rowOf(p, 'test', 'Alef')); })
-            .then(function () { return S.refresh('Suite'); })
+          return simulate('test', 'Alef', { n: 2, letters: ['א'], from: 'another device' }).then(hyd).then(plan)
             .then(function (p) {
-              var st = readJson(STORE), lw = (readJson(S._test.META_KEY) || {}).lastWrite || {};
-              return { ok: st.Alef.n === 2 && st.Alef.from === 'another device' && rowOf(p, 'test', 'Alef').state === 'synced' && changes.indexOf('test:Alef') >= 0 && lw.tool === 'Suite' && lw.kind === 'test' && lw.name === 'Alef' && typeof lw.at === 'number', detail: 'n=' + st.Alef.n + '; lastWrite=' + JSON.stringify(lw) + '; ' + states(p) };
+              var st = readJson(STORE), lw = (readJson('ivritSuite_syncMeta') || {}).lastWrite || {};
+              return { ok: st.Alef.n === 2 && st.Alef.from === 'another device' && rowOf(p, 'test', 'Alef').state === 'synced' && changes.indexOf('test:Alef') >= 0 && lw.tool === 'Suite' && lw.kind === 'test' && lw.name === 'Alef', detail: 'n=' + st.Alef.n + '; lastWrite=' + JSON.stringify(lw) + '; ' + states(p) };
             });
         }],
-        ['a local edit (n=3) and a cloud edit (n=4) → "Changed in both places" with Keep both / Use cloud copy / Keep mine', function () {
+        ['a local edit (n=3) and a cloud edit (n=4) → keep both: "Alef (from another device)" (n=4) lands here, the cloud Alef becomes n=3', function () {
           editStore('Alef', { n: 3 });
-          return simulate('test', 'Alef', { n: 4, letters: ['א'] }).then(function () { return S.refresh('Suite'); })
-            .then(function (p) { var r = rowOf(p, 'test', 'Alef'); return { ok: r.state === 'conflict' && r.choices.join() === 'keepBoth,useCloud,keepMine' && r.safeAction === null, detail: states(p) }; });
-        }],
-        ['Keep both: "Alef (cloud copy)" (n=4) lands here, the cloud Alef becomes n=3, the copy goes up, all "Same"', function () {
-          return S.plan('Suite').then(function (p) { return S.act('Suite', 'keepBoth', rowOf(p, 'test', 'Alef')); })
-            .then(function (res) {
-              var st = readJson(STORE);
-              return cloudRow('test', 'Alef').then(function (r) { return S.cloud.load(r.id); }).then(function (full) {
-                return S.refresh('Suite').then(function (p) {
-                  var ok = res.copy === 'Alef (cloud copy)' && st['Alef (cloud copy)'] && st['Alef (cloud copy)'].n === 4 && st.Alef.n === 3 && full.data.n === 3 &&
-                           p.rows.filter(function (r) { return r.kind === 'test'; }).length === 3 && allSynced(p);
-                  return { ok: ok, detail: 'copy=' + res.copy + '; cloud Alef n=' + full.data.n + '; ' + states(p) };
-                });
+          return simulate('test', 'Alef', { n: 4, letters: ['א'] }).then(hyd).then(function () {
+            var st = readJson(STORE);
+            return cloudRow('test', 'Alef').then(function (r) { return S.cloud.load(r.id); }).then(function (full) {
+              return plan().then(function (p) {
+                var ok = st['Alef (from another device)'] && st['Alef (from another device)'].n === 4 && st.Alef.n === 3 && full.data.n === 3 && p.rows.filter(function (r) { return r.kind === 'test'; }).length === 3 && allSynced(p);
+                return { ok: ok, detail: 'cloud Alef n=' + full.data.n + '; ' + states(p) };
               });
             });
+          });
         }],
-        ['settings: local fontSize 21 + zoom 9, cloud fontSize 22 + theme → "Changed in both" with Use cloud copy / Keep mine', function () {
+        ['settings (a row synced here): local fontSize 21 + zoom 9, cloud fontSize 22 + theme → this device\'s fields win, theme survives, zoom stays local', function () {
           lsSet(SETTINGS, JSON.stringify({ fontSize: 21, zoom: 9, leftCollapsed: true }));
-          return simulate('settings', 'default', { fontSize: 22, theme: 'dark' }).then(function () { return S.refresh('Suite'); })
-            .then(function (p) { var r = rowOf(p, 'settings', 'default'); return { ok: r.state === 'conflict' && r.choices.join() === 'useCloud,keepMine', detail: states(p) }; });
-        }],
-        ['Use cloud copy: fontSize 22 + theme land here, zoom 9 and leftCollapsed stay, the cloud row has neither', function () {
-          return S.plan('Suite').then(function (p) { return S.act('Suite', 'useCloud', rowOf(p, 'settings', 'default')); })
+          return simulate('settings', 'default', { fontSize: 22, theme: 'dark' }).then(hyd)
             .then(function () { return cloudRow('settings', 'default'); }).then(function (r) { return S.cloud.load(r.id); })
             .then(function (full) {
               var s = readJson(SETTINGS);
-              return S.refresh('Suite').then(function (p) {
-                var ok = s.fontSize === 22 && s.theme === 'dark' && s.zoom === 9 && s.leftCollapsed === true && full.data.fontSize === 22 && full.data.theme === 'dark' && !('zoom' in full.data) && rowOf(p, 'settings', 'default').state === 'synced';
+              return plan().then(function (p) {
+                var ok = s.fontSize === 21 && s.theme === 'dark' && s.zoom === 9 && s.leftCollapsed === true && full.data.fontSize === 21 && full.data.theme === 'dark' && !('zoom' in full.data) && rowOf(p, 'settings', 'default').state === 'synced';
                 return { ok: ok, detail: JSON.stringify(s) + ' / cloud ' + JSON.stringify(full.data) };
               });
             });
         }],
-        ['score: local 9 vs cloud 12 → Merge is the safe action → 12 on both sides', function () {
-          lsSet(SCORE, '9');
-          return simulate('score', 'default', { value: '12' }).then(function () { return S.refresh('Suite'); })
-            .then(function (p) {
-              var r = rowOf(p, 'score', 'default');
-              if (!(r.state === 'conflict' && r.safeAction === 'merge')) return { ok: false, detail: states(p) };
-              return S.act('Suite', 'merge', r).then(function () { return cloudRow('score', 'default'); }).then(function (cr) { return S.cloud.load(cr.id); })
-                .then(function (full) { return S.refresh('Suite').then(function (p2) { return { ok: lsGet(SCORE) === '12' && full.data.value === '12' && rowOf(p2, 'score', 'default').state === 'synced', detail: 'local ' + lsGet(SCORE) + ', cloud ' + JSON.stringify(full.data) }; }); });
-            });
+        ['settings (no memory here): the account\'s fields win, this device\'s per-device fields stay', function () {
+          clearMeta(me.id);
+          lsSet(SETTINGS, JSON.stringify({ fontSize: 30, zoom: 4 }));
+          return simulate('settings', 'default', { fontSize: 25, theme: 'light' }).then(hyd)
+            .then(function () { var s = readJson(SETTINGS); return { ok: s.fontSize === 25 && s.theme === 'light' && s.zoom === 4, detail: JSON.stringify(s) }; });
         }],
-        ['score raised here to 15 → "Newer on this device" → Sync now uploads it', function () {
+        ['score: local 9 vs cloud 12 → merged to 12 on both sides', function () {
+          lsSet(SCORE, '9');
+          return simulate('score', 'default', { value: '12' }).then(hyd).then(function () { return cloudRow('score', 'default'); }).then(function (cr) { return S.cloud.load(cr.id); })
+            .then(function (full) { return plan().then(function (p2) { return { ok: lsGet(SCORE) === '12' && full.data.value === '12' && rowOf(p2, 'score', 'default').state === 'synced', detail: 'local ' + lsGet(SCORE) + ', cloud ' + JSON.stringify(full.data) }; }); });
+        }],
+        ['score raised here to 15 → the next hydration uploads it', function () {
           lsSet(SCORE, '15');
-          return S.refresh('Suite').then(function (p) {
-            if (rowOf(p, 'score', 'default').state !== 'local-changed') return { ok: false, detail: states(p) };
-            return S.syncNow('Suite').then(function (sum) { return cloudRow('score', 'default'); }).then(function (cr) { return S.cloud.load(cr.id); })
-              .then(function (full) { return { ok: full.data.value === '15', detail: 'cloud ' + JSON.stringify(full.data) }; });
-          });
+          return hyd().then(function () { return cloudRow('score', 'default'); }).then(function (cr) { return S.cloud.load(cr.id); })
+            .then(function (full) { return { ok: full.data.value === '15', detail: 'cloud ' + JSON.stringify(full.data) }; });
         }],
         ['a stale conditional update is refused, nothing overwritten', function () {
           return cloudRow('test', 'Bet').then(function (r) { return S.cloud.updateIf(r.id, '2000-01-01T00:00:00+00:00', { n: 99 }, null); })
             .then(function () { return { ok: false, detail: 'the update went through (bad)' }; },
                   function (e) { return cloudRow('test', 'Bet').then(function (r) { return S.cloud.load(r.id); }).then(function (full) { return { ok: e && e.code === 'changed' && full.data.n === 1, detail: (e && e.code) + ', cloud Bet n=' + full.data.n }; }); });
         }],
-        ['a download is refused when this device changed the item after the list was built', function () {
-          return simulate('test', 'Bet', { n: 5, letters: ['ב'] }).then(function () { return S.plan('Suite'); }).then(function (p) {
-            var r = rowOf(p, 'test', 'Bet');
-            editStore('Bet', { n: 6 });   // the "tool" writes after the list was built
-            return S.act('Suite', 'download', r).then(function () { return { ok: false, detail: 'download went through (bad)' }; },
-              function (e) { return { ok: e && e.code === 'changed' && readJson(STORE).Bet.n === 6, detail: (e && e.code) + '; local Bet n=' + readJson(STORE).Bet.n }; });
-          });
-        }],
-        ['…and Keep both then settles it', function () {
-          return S.plan('Suite').then(function (p) { var r = rowOf(p, 'test', 'Bet'); return r.state === 'conflict' ? S.act('Suite', 'keepBoth', r) : Promise.reject(new Error('expected a conflict, got ' + r.state)); })
-            .then(function () { return S.refresh('Suite'); }).then(function (p) { return { ok: allSynced(p) && !!readJson(STORE)['Bet (cloud copy)'], detail: states(p) }; });
-        }],
-        ['a flat local folder tree takes the cloud folders back after Sync now', function () {
+        ['a flat local folder tree takes the cloud folders back at the next hydration', function () {
           var st = readJson(STORE) || {};
           lsSet(FOLDERS, JSON.stringify({ v: 1, root: Object.keys(st).map(function (n) { return { t: 'item', name: n }; }) }));
-          return S.syncNow('Suite').then(function () {
+          return hyd().then(function () {
             var tr = readJson(FOLDERS);
             return { ok: !!tr && tr.root.some(function (n) { return n.t === 'folder' && n.name === 'Unit 1'; }), detail: JSON.stringify(tr) };
           });
         }],
-        ['Delete from cloud removes only the cloud row; the local copy stays', function () {
-          return S.plan('Suite').then(function (p) { return S.act('Suite', 'delete', rowOf(p, 'test', 'Bet')); })
-            .then(function () { return S.refresh('Suite'); })
-            .then(function (p) { return { ok: rowOf(p, 'test', 'Bet').state === 'local-only' && !!readJson(STORE).Bet, detail: states(p) }; });
+        ['a preset deleted here is deleted from the account by the flush (write-through), and stays gone', function () {
+          var st = readJson(STORE); delete st.Bet; lsSet(STORE, JSON.stringify(st));
+          T.markDirty('Suite', 'test');
+          return S.flush('Suite').then(function () { return harnessRows(); }).then(function (rows) {
+            var has = rows.some(function (r) { return r.kind === 'test' && r.name === 'Bet'; });
+            return hyd().then(function () { return { ok: !has && !readJson(STORE).Bet, detail: rows.map(function (r) { return r.kind + '/' + r.name; }).join(', ') }; });
+          });
+        }],
+        ['a row deleted in the account (another device) leaves this device at the next hydration', function () {
+          return cloudRow('test', 'Alef (from another device)').then(function (r) { return S.cloud.remove(r.id); }).then(hyd)
+            .then(function () { return { ok: !readJson(STORE)['Alef (from another device)'] && !!readJson(STORE).Alef, detail: Object.keys(readJson(STORE)).join(', ') }; });
         }],
         ['cleanup: harness rows deleted, local keys and sync memory cleared', function () {
-          return cloudWipe().then(function () { clearLocal(); clearMeta(me.id); return S.refresh('Suite'); })
+          return cloudWipe().then(function () { clearLocal(); clearMeta(me.id); return plan(); })
             .then(function (p) { return harnessRows().then(function (rows) { return { ok: p.rows.length === 0 && rows.length === 0, detail: p.rows.length + ' rows here, ' + rows.length + ' in the cloud' }; }); });
         }]
       ]).then(function () { show($('cloudOut'), 'done — see the lines above'); renderDump(); });

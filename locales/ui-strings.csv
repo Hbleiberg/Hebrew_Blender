@@ -5883,7 +5883,7 @@ shared.account.card_name_continue,Continue,המשך,Required-name step: the prim
 shared.account.card_name_later,Not now — ask again next time,לא עכשיו — לשאול שוב בפעם הבאה,Required-name step: shown only after a failure that was not the name itself (network; the page stays usable),shared
 shared.account.card_name_signout,Sign out instead,לצאת במקום זאת,Required-name step: the way out without a name (a real sign-out),shared
 shared.cloud.title,Cloud saves,שמירות בענן,Cloud-saves panel title,shared; cloud panel
-shared.cloud.signed_out,Sign in to keep copies of your saved items in the cloud and get them back on any device.,היכנסו כדי לשמור עותקים של הפריטים השמורים שלכם בענן ולקבל אותם בחזרה בכל מכשיר.,Cloud-saves panel note while signed out,shared; cloud panel
+shared.cloud.signed_out,Sign in to keep your saved items in your account and see them on any device.,היכנסו כדי לשמור את הפריטים השמורים שלכם בחשבון ולראות אותם בכל מכשיר.,Status line while signed out (above the Sign in button),shared; cloud status
 shared.cloud.sign_in,Sign in,כניסה,Cloud-saves panel button while signed out (opens the header chip's menu),shared; cloud panel
 shared.cloud.loading,Checking your account…,בודק את החשבון…,Cloud-saves panel note while the stored session is being checked,shared; cloud panel
 shared.cloud.offline,Cloud saves need an internet connection. Your local saves still work.,שמירות בענן דורשות חיבור לאינטרנט. השמירות המקומיות ממשיכות לעבוד.,Cloud-saves panel note when offline,shared; cloud panel
@@ -5892,7 +5892,7 @@ shared.cloud.refresh,Refresh,רענון,Cloud-saves panel button: list both side
 shared.cloud.sync,Sync now,סנכרון עכשיו,Cloud-saves panel button: run every safe action (nothing to do),shared; cloud panel
 shared.cloud.sync_count,Sync now ({n}),סנכרון עכשיו ({n}),Cloud-saves panel button with the number of safe actions waiting,shared; cloud panel; template
 shared.cloud.working,Working…,מעבד…,Cloud-saves panel status while a cloud operation runs,shared; cloud panel
-shared.cloud.listing,Loading your cloud saves…,טוען את השמירות שלכם בענן…,Cloud-saves panel status during the first listing,shared; cloud panel
+shared.cloud.listing,Loading your account…,טוען את החשבון שלכם…,Status line while the account's rows are landing,shared; cloud status
 shared.cloud.list_aria,Saved items on this device and in the cloud,פריטים שמורים במכשיר הזה ובענן,Cloud-saves panel list aria-label,shared; cloud panel; aria-label only
 shared.cloud.empty,Nothing saved yet. Items you save in this tool will appear here.,עדיין אין שמירות. פריטים שתשמרו בכלי הזה יופיעו כאן.,Cloud-saves panel note when both sides are empty,shared; cloud panel
 shared.cloud.all_synced,Everything is in sync.,הכול מסונכרן.,Cloud-saves panel status when no action is waiting,shared; cloud panel
@@ -5920,6 +5920,26 @@ shared.cloud.delete,Delete from cloud,מחיקה מהענן,Cloud-saves row acti
 shared.cloud.delete_confirm,"Delete ""{name}"" from your account? The copy on this device stays and is not uploaded again unless you change it or press Upload again.","למחוק את ""{name}"" מהחשבון? העותק במכשיר הזה נשאר ולא יועלה שוב אלא אם תשנו אותו או תלחצו ""להעלות שוב"".",Cloud-saves confirm before deleting a cloud row (the local copy stays; the memory keeps a tombstone so it is not re-uploaded unchanged),shared; cloud panel; template
 shared.cloud.updated,Updated {date},עודכן {date},Cloud-saves row meta: the cloud row's last change,shared; cloud panel; template
 shared.cloud.size_kb,{kb} KB,{kb} KB,A size in kilobytes (under a megabyte),shared; template
+shared.cloud.status_saved,Saved in your account · {when},נשמר בחשבון שלכם · {when},Status line when everything is in the account ({when} is just now or the newest save date),shared; cloud status; template
+shared.cloud.status_just_now,just now,ממש עכשיו,Status line: the {when} right after a save,shared; cloud status
+shared.cloud.status_saving,Saving…,שומר…,Status line while a change is on its way up,shared; cloud status
+shared.cloud.status_error,Couldn't save — will retry.,השמירה נכשלה — ננסה שוב.,Status line after a failed upload (a Retry button follows),shared; cloud status
+shared.cloud.status_error_row,"Couldn't save ""{name}"": {why}","לא ניתן לשמור את ""{name}"": {why}",Status line naming one item that could not be saved,shared; cloud status; template
+shared.cloud.status_offline,Offline — your changes are saved to your account when you are back online.,לא מקוון — השינויים יישמרו בחשבון כשתחזרו להיות מקוונים.,Status line while offline with changes waiting,shared; cloud status
+shared.cloud.status_retry,Retry,נסו שוב,Status line: the retry button,shared; cloud status
+shared.cloud.status_nothing,Nothing saved in your account yet,עדיין לא נשמר דבר בחשבון שלכם,Status line when the account holds nothing for this tool,shared; cloud status
+shared.cloud.status_font_full,"""{name}"" was not added here: My Fonts is full.","""{name}"" לא נוסף כאן: הגופנים שלי מלא.",Status line note: a font in the account could not land on a device that already holds ten,shared; cloud status; template
+shared.cloud.card_saves_title,Add this device's saves to your account?,להוסיף את השמירות של המכשיר הזה לחשבון שלכם?,Device-extras card (first sign-in on a device with its own saves): title,shared; card
+shared.cloud.card_saves_note,This device holds saved items that are not in your account yet:,במכשיר הזה יש פריטים שמורים שעדיין אינם בחשבון שלכם:,Device-extras card: the line above the list,shared; card
+shared.cloud.card_saves_kind,{tool} — {label}: {n},{tool} — {label}: {n},Device-extras card: one list line per tool and kind,shared; card; template
+shared.cloud.card_saves_add,Add to my account,להוסיף לחשבון שלי,Device-extras card: the primary button,shared; card
+shared.cloud.card_saves_add_note,An item named like one already in your account keeps both.,פריט ששמו כשם פריט שכבר בחשבון — שניהם נשמרים.,Device-extras card: note under Add,shared; card
+shared.cloud.card_saves_download,Download a backup (.ivrit),להוריד גיבוי (.ivrit),Device-extras card: downloads those items as one .ivrit file,shared; card
+shared.cloud.card_saves_downloaded.one,Downloaded a backup with 1 item.,הורד גיבוי עם פריט אחד.,Device-extras card: after the download (one item),shared; card; plural
+shared.cloud.card_saves_downloaded.other,Downloaded a backup with {n} items.,הורד גיבוי עם {n} פריטים.,Device-extras card: after the download,shared; card; plural; template
+shared.cloud.card_saves_remove,Remove from this device,להסיר מהמכשיר הזה,Device-extras card: the other choice,shared; card
+shared.cloud.card_saves_remove_confirm.one,"Remove this item from this device? It is not in your account, so this deletes it unless you downloaded the backup.","להסיר את הפריט הזה מהמכשיר? הוא אינו בחשבון שלכם, ולכן זו מחיקה אלא אם הורדתם את הגיבוי.",confirm() before Remove (one item),shared; card; plural
+shared.cloud.card_saves_remove_confirm.other,"Remove these {n} items from this device? They are not in your account, so this deletes them unless you downloaded the backup.","להסיר {n} פריטים אלה מהמכשיר? הם אינם בחשבון שלכם, ולכן זו מחיקה אלא אם הורדתם את הגיבוי.",confirm() before Remove,shared; card; plural; template
 shared.cloud.done_upload,"Uploaded ""{name}"".","""{name}"" הועלה.",Cloud-saves status after an upload,shared; cloud panel; template
 shared.cloud.done_download,"Downloaded ""{name}"" to this device.","""{name}"" הורד למכשיר הזה.",Cloud-saves status after a download,shared; cloud panel; template
 shared.cloud.done_download_pushed,"Downloaded ""{name}"" and put this device's version in your account.","""{name}"" הורד, והגרסה של המכשיר הזה נשמרה בחשבון.",Cloud-saves status after a download the page re-applied differently (the store's version was then put in the account so both sides match),shared; cloud panel; template
@@ -5941,8 +5961,8 @@ shared.cloud.skip_cap,this device already holds ten fonts,במכשיר הזה כ
 shared.cloud.folders_error,The folder layout was not synced: {reason},סידור התיקיות לא סונכרן: {reason},Cloud-saves status note appended when the folder-tree pass after a sync failed,shared; cloud panel; template
 shared.cloud.reload_hint,"If this tool is open in other tabs, reload them.","אם הכלי פתוח בלשוניות אחרות, רעננו אותן.",Cloud-saves status hint after a download,shared; cloud panel
 shared.cloud.suite_reload_hint,"Reload open pages to see the font, keyboard and dictionary preferences.","רעננו דפים פתוחים כדי לראות את העדפות הגופן, המקלדת והמילון.","Cloud-saves status tail after the suite-wide preferences changed (the language and theme apply at once; the rest shows at the next load)",shared; cloud panel
-shared.cloud.copy_suffix,{name} (cloud copy),{name} (עותק מהענן),Name given to the cloud version after Keep both,shared; cloud panel; template
-shared.cloud.copy_suffix_n,{name} (cloud copy {n}),{name} (עותק מהענן {n}),Name given to the cloud version after Keep both when the first name is taken,shared; cloud panel; template
+shared.cloud.copy_suffix,{name} (from another device),{name} (ממכשיר אחר),The name an item changed on both sides gets for the account's version when both are kept,shared; template
+shared.cloud.copy_suffix_n,{name} (from another device {n}),{name} (ממכשיר אחר {n}),"Same, when that name is taken too",shared; template
 shared.cloud.kind_preset,Presets,הגדרות שמורות,Cloud-saves list group header for a tool's saved presets / decks,shared; cloud panel
 shared.cloud.kind_settings,Settings,הגדרות,Cloud-saves row name for a tool's one settings blob,shared; cloud panel
 shared.cloud.kind_progress,Mastery progress,התקדמות בשליטה,Cloud-saves row name for the Trope Tutor's mastery counts,shared; cloud panel

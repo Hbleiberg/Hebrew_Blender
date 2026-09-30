@@ -1,5 +1,5 @@
 /*
- * ivrit-saves.js — optional cloud copies of a tool's saved items (IvritSuite accounts, phase 3).
+ * ivrit-saves.js — a signed-in teacher's saves live in the account (IvritSuite accounts).
  *
  * Load on a page AFTER /js/ivrit-account.js (all four deferred, in this order):
  *   <script src="/js/i18n.js" defer></script>
@@ -7,19 +7,32 @@
  *   <script src="/js/ivrit-account.js" defer></script>
  *   <script src="/js/ivrit-saves.js" defer></script>
  *
- * What it is — a LOCAL-FIRST MIRROR:
- *   - The localStorage keys a tool already renders from stay the source of truth. Local save, .ivrit
- *     files and JSON import are untouched; the cloud (the `saves` table) is a third place that holds
- *     one row per saved item, which the person uploads and downloads from a small panel.
- *   - Anonymous use never writes anything: no localStorage key, no network request.
- *   - Nothing on the device is ever deleted by this module, and nothing newer is ever overwritten by
- *     something older unless the person chooses that in a "changed in both places" row.
+ * What it is — SIGNED OUT, the device is its own; SIGNED IN, the account is where saves live:
+ *   - Anonymous use never writes anything: no localStorage key, no network request, no IndexedDB open,
+ *     and the Storage prototype is untouched. Local save, .ivrit files and JSON import stay as they were.
+ *   - Signed in, each tool's registered localStorage keys are that device's cache of the account:
+ *       hydrate  — at every page load with a session (and after a sign-in) one listing, without data, for
+ *                  the tools this page reads; rows whose hash differs are fetched and written into the
+ *                  keys, items before their folder trees, and the page's onLocalChanged re-renders;
+ *       write-through — a Storage.prototype.setItem/removeItem hook (installed only after a signed-in
+ *                  hydration) marks a registered kind dirty, waits 2 s after the last write, then diffs
+ *                  the store against this device's sync memory: insert / conditional update / conditional
+ *                  delete (only names this tab saw) / nothing when the hash is unchanged.
+ *   - Conflicts never open a dialog (an item keeps both, a settings blob takes the account's fields on a
+ *     row this device never synced and this device's fields afterwards, progress/rosters/word
+ *     lists/trees merge losslessly); deletions propagate both ways, the later human action wins; a
+ *     single/scalar row gone from the account is re-uploaded, a font evicted by the cap is not a
+ *     deletion, and a listing that lacks every remembered row is checked with getUser() first.
+ *   - The first hydration for an account on a device asks once about the device's own saves that are not
+ *     in the account (Add / Download a backup / Remove); a button sign-out flushes, then removes what the
+ *     account is known to hold (unsynced rows stay as the device's own data; preferences and My Fonts
+ *     stay); a session that ends by itself removes nothing.
  *   - Every entry point resolves or rejects; nothing throws into the page. The DOM is built with
  *     createElement/textContent only, and JSON from the cloud passes through a prototype-safe parser.
  *
  * IVRIT_SYNC_REGISTRY (below) is the only place that names synced keys: one entry per localStorage
  * key, with `shape` (how items are found inside it) and `merge` (how a downloaded copy lands on a
- * differing local one). A tool page adds its entries there and wires the panel with
+ * differing local one). A tool page adds its entries there and wires the status line with
  * IvritSaves.attach({...}) — nothing else.
  *
  * Three facts that shaped the code:
@@ -32,33 +45,29 @@
  *      entry `follows` its items' kind and is synced after them, never on its own row in the list.
  *
  * Exposes window.IvritSaves:
- *   attach(cfg)               { tool, panel?, title?, entries?, merges?, flush?, onLocalChanged?, open?, deviceBackup? }
- *                             title: false → no title of its own (the page's panel heading is the heading);
- *                             an i18n key → that title (the hub names each panel after its tool);
- *                             deviceBackup: how this page saves everything on the device to an .ivrit file
- *                             (the hub passes its Import / Export modal; other pages send people there)
- *   openAccount()             the account screen: when the account was last saved, what every tool holds on
- *                             this device and in the account, "Sync everything" (every safe action across
- *                             tools) or — while the account is empty — "Upload everything on this device"
- *                             (a copy; nothing leaves the device), and the backup buttons. Opens by itself
- *                             after every fresh sign-in ("Sync settings from your last login?") and once per
- *                             account on a device that already has saved items; the chip's "Account…"
- *                             item reopens it.
- *   mountPanel(target, tool)  element | selector — renders the panel there
- *   refresh(tool)             Promise<plan> — re-lists both sides and re-renders
- *   plan(tool)                Promise<plan> — the per-item state table (no rendering)
- *   syncNow(tool)             Promise<summary> — every safe action in the list, in order
- *   act(tool, action, row)    Promise<result> — one row action ('upload' | 'download' | 'merge' | 'useCloud' |
- *                             'keepBoth' | 'keepMine' | 'delete' | 'file') on a row from plan(); the status line reports it
+ *   attach(cfg)               { tool, status?, entries?, merges?, flush?, finalFlush?, onLocalChanged?, alsoPull?, paused?, hydrate? }
+ *                             status: element | selector for the status line; alsoPull: other tools this page
+ *                             reads (hydrated with this page's hooks); paused(): the hook only postpones while
+ *                             true; finalFlush(): pagehide / sign-out only; hydrate: false (a harness) = nothing
+ *                             automatic. onLocalChanged(kind, name, names, { pending }).
+ *   hydrate(tools)            Promise — list, download, upload, merge for those tools (queued, deduplicated)
+ *   flush(tool)               Promise — write this tool's dirty kinds through now
+ *   suspend()                 stop write-through for this page (the hub's Erase All calls it first)
+ *   fontDeleted(name)         a teacher deleted a font on purpose: remove its account row
+ *   pendingSignOut()          { unsynced } — what a sign-out would leave on this device (the confirm names it)
+ *   mountStatus(target, tool) element | selector — renders the status line there
+ *   lastPlan(tool)            the last classification for a tool (a page hook reads a row's state from it)
  *   inventory()               Promise<[{tool, name, kinds:[{kind, label, count, bytes, names}], count, bytes}]> — what the
  *                             account holds, tool by tool, without the data (the account page's listing)
- *   bundleAll()               Promise<{file, count}> — every cloud row as one AllTools-shaped .ivrit object (the
- *                             account screen downloads it; the account page zips it with the Font Maker projects)
+ *   bundleAll()               Promise<{file, count}> — every cloud row as one AllTools-shaped .ivrit object (the account
+ *                             page zips it with the Font Maker projects)
  *   forgetUser(uid)           drops this device's sync memory of an account that was deleted
  *   local / cloud             the two backends (used by saves-test.html)
  *   registry()                a copy of the effective registry
  *   t(key, fallback, params)  translate via IvritAccount.t (I18n when loaded, else the English fallback)
- *   _test                     pure helpers for saves-test.html and scripts/smoke-saves.mjs
+ *   _test                     pure helpers for saves-test.html and the smokes
+ * Events on window: ivritsuite:prefs (a suite-wide preference landed), ivritsuite:fonts (a font landed),
+ *   ivritsuite:hydrated ({ tools, ok, first, landed }) after every hydration.
  */
 (function () {
   'use strict';
@@ -68,7 +77,8 @@
   var KIND_RE = /^[A-Za-z]{1,32}$/;
   var SHAPES = ['map', 'mapIn', 'single', 'tree', 'scalar'];
   var MERGES = ['item', 'assign', 'deepMax', 'max', 'page'];
-  var META_KEY = 'ivritSuite_syncMeta';   // what this device last synced, per account (erase-only, never exported)
+  var META_KEY = 'ivritSuite_syncMeta';    // the cross-tab write stamps and the sign-out broadcast (both module versions read it)
+  var META2_KEY = 'ivritSuite_syncMeta2';  // what this device last synced, per account (v2; erase-only, never exported)
   var HASH_PREFIX = '1.';                 // SHA-256 over the canonical JSON, base64url, 45 chars
   var FALLBACK_PREFIX = '0.';             // FNV-1a pair, only where crypto.subtle is missing (a plain http:// host)
   var MAX_BYTES = 1887436;                // 1.8 MB of canonical JSON; the server allows 2 MB of its own, slightly wider, text
@@ -77,7 +87,12 @@
   var PAGE_SIZE = 1000;                   // PostgREST's maximum rows per request
   var NEEDS_HOOK = { single: true, scalar: true, tree: true, mapIn: true };   // shapes a page must re-read after a download
   var ROW_COLS = 'id, kind, name, data_hash, bytes, updated_at';
-
+  var FLUSH_DEBOUNCE_MS = 2000;           // write-through waits this long after the last write to a key
+  var SIGNOUT_FLUSH_MS = 10000;           // the longest a sign-out waits for its final flush
+  // The Classroom Dashboard seeds one preset named "Default" on every fresh device (its loadPresets()); untouched, it
+  // is a seed, not a teacher's work: never listed as a device extra, never uploaded by itself. The canonical JSON of
+  // that seed (scripts/smoke-sync.mjs asserts it still matches the page's DEFAULT_PRESET.Default).
+  var DASHBOARD_DEFAULT_PRESET_CANON = "{\"colorCodeNikkud\":false,\"colorCodingMode\":\"letter\",\"colorDays\":true,\"dashTextHTML\":\"<div>This dashboard has support for <b>bold</b>, <i>italics</i>, <u>underline</u> and <strike>strikethrough</strike>. You can insert <a href=\\\"https://google.com\\\" target=\\\"_blank\\\" rel=\\\"noopener noreferrer\\\">links</a>.</div><div><br></div><div style=\\\"text-align: center;\\\">You can center text.</div><div>Change the <font size=\\\"6\\\">size</font>.</div><div>And you can also <span class=\\\"spoiler\\\">hide spoilers</span>. (Click the box.)</div><div><br></div><div>Click the gear icon at the top to edit this text and change how this dashboard works!</div>\",\"dashTextSize\":1.8,\"dowEmojiSet\":\"chick\",\"dowLang\":\"he\",\"enableDashText\":true,\"engDateFmt\":\"MDY\",\"engFont\":\"Source Sans 3\",\"headerLang\":\"he\",\"hebDateScript\":\"translit\",\"hebFont\":\"Frank Ruhl Libre\",\"hideDOW\":false,\"hideEngDate\":false,\"hideHebDate\":false,\"hideTime\":false,\"hideWeather\":false,\"hideWeatherDesc\":false,\"hideWeatherEmoji\":false,\"location\":\"New York\",\"nikudColorOverrides\":{},\"showEngDOW\":true,\"showNikkud\":true,\"showTimer\":true,\"showTimerFullscreen\":true,\"showToday\":true,\"showTomorrow\":true,\"showYesterday\":true,\"simpleWeatherDesc\":false,\"tempUnit\":\"F\",\"timeFmt\":\"12\",\"weatherLabelLang\":\"he\"}";
   /* ---------- the registry ---------- */
   // One entry per synced localStorage key:
   //   tool       the tool id used in the saves table (one of TOOLS)
@@ -253,14 +268,16 @@
     }
   };
   var IVRIT_SYNC_REGISTRY = [
-    // every page — the suite-wide preferences as one row (see SUITE_PREFS above); the hub shows its panel
+    // every page — the suite-wide preferences as one row (see SUITE_PREFS above); the hub shows its status line
     { tool: 'Suite', kind: 'prefs', virtual: SUITE_PREFS, shape: 'single', merge: 'assign', ivritKey: 'suitePrefs', label: 'shared.cloud.kind_suite_prefs' },
     // every page with a Hebrew font picker — a teacher's own fonts, one row each with the TTF base64 inside
     // (a Font Maker export or a handwriting face, tens to a few hundred KB; the 1.8 MB row guard refuses a
     // bigger one by name). Without this a synced font name arrives on a second device with no face behind it.
-    { tool: 'Suite', kind: 'font', virtual: USER_FONTS, shape: 'map', merge: 'item', ivritKey: 'userFonts', label: 'shared.cloud.kind_font' },
-    // trope_tutor.html — mastery counts merge losslessly (max / union); the drawer layout never travels
-    { tool: 'TropeTutor', kind: 'progress', lsKey: 'hebrewTropeTutor_progress', shape: 'single', merge: 'deepMax', ivritKey: 'tropeTutorProgress', label: 'shared.cloud.kind_progress' },
+    // noDeleteByAbsence: the shared uploader block evicts the oldest font at the ten-font cap, which is not a
+    // deletion — a font row leaves the account only through fontDeleted() (the hub's and the Font Maker's delete).
+    { tool: 'Suite', kind: 'font', virtual: USER_FONTS, shape: 'map', merge: 'item', ivritKey: 'userFonts', label: 'shared.cloud.kind_font', noDeleteByAbsence: true },
+    // trope_tutor.html — mastery counts merge losslessly (max / union) above a reset watermark; the drawer layout never travels
+    { tool: 'TropeTutor', kind: 'progress', lsKey: 'hebrewTropeTutor_progress', shape: 'single', merge: 'deepMax', watermark: 'resetAt', ivritKey: 'tropeTutorProgress', label: 'shared.cloud.kind_progress' },
     { tool: 'TropeTutor', kind: 'settings', lsKey: 'hebrewTropeTutor_settings', shape: 'single', merge: 'assign', omit: ['panelsCollapsed'], ivritKey: 'tropeTutorSettings', label: 'shared.cloud.kind_settings' },
     // torah_trainer.html — one settings blob; the drawer/karaoke-bar layout and the reading position
     // (lastPos carries a timestamp on every scroll, which would keep the row "newer" forever) stay per device
@@ -269,8 +286,8 @@
     { tool: 'TorahTrainer', kind: 'favorite', lsKey: 'hebrewTorahTrainer_favorites', shape: 'map', merge: 'item', ivritKey: 'torahTrainerFavorites', label: 'shared.cloud.kind_favorite' },
     { tool: 'TorahTrainer', kind: 'favoriteFolders', lsKey: 'hebrewTorahTrainer_favoritesFolders', shape: 'tree', merge: 'page', follows: 'favorite', ivritKey: 'torahTrainerFavoriteFolders' },
     // flash_cards.html — decks (the page calls them presets) and their folders, the live settings, the best
-    // streak, and one row per student profile — a teacher's choice to upload (privacy.legal.* says so) —
-    // with the profile folders; the page supplies the tree and profile merges
+    // streak, and one row per student profile (privacy.legal.* says student names reach the account while a
+    // teacher is signed in) with the profile folders; the page supplies the tree and profile merges
     { tool: 'FlashCards', kind: 'preset', lsKey: 'hebrewFlashCards_presets', shape: 'map', merge: 'item', ivritKey: 'flashCardPresets', label: 'shared.cloud.kind_preset' },
     { tool: 'FlashCards', kind: 'presetFolders', lsKey: 'hebrewFlashCards_presetsFolders', shape: 'tree', merge: 'page', follows: 'preset', ivritKey: 'flashCardPresetFolders' },
     // omit: the four fields shaped by the machine in front of the teacher, not by the lesson — whether this
@@ -293,9 +310,10 @@
     // classroom_dashboard.html — presets and saved schedules with their folders; ONE settings blob whose
     // per-device state (zoom, layout, collapsed panels, wake lock, the ephemeral picker sessions, the
     // derived coordinates, the live class pointer) never travels; and the class lists (rosters), which live
-    // inside that same blob, as their own rows — a teacher's choice to upload (privacy.legal.* says so) —
-    // so the settings row omits them. The page supplies the tree and roster merges.
-    { tool: 'Dashboard', kind: 'preset', lsKey: 'hebrewDashboard_presets', shape: 'map', merge: 'item', ivritKey: 'dashboardPresets', label: 'shared.cloud.kind_preset' },
+    // inside that same blob, as their own rows (privacy.legal.* names them) — so the settings row omits
+    // them. The page supplies the tree and roster merges.
+    { tool: 'Dashboard', kind: 'preset', lsKey: 'hebrewDashboard_presets', shape: 'map', merge: 'item', ivritKey: 'dashboardPresets', label: 'shared.cloud.kind_preset',
+      skipUpload: function (name, value) { return name === 'Default' && canonJson(value) === DASHBOARD_DEFAULT_PRESET_CANON; } },
     { tool: 'Dashboard', kind: 'presetFolders', lsKey: 'hebrewDashboard_presetsFolders', shape: 'tree', merge: 'page', follows: 'preset', ivritKey: 'dashboardPresetFolders' },
     { tool: 'Dashboard', kind: 'schedule', lsKey: 'hebrewDashboard_schedules', shape: 'map', merge: 'item', ivritKey: 'dashboardSchedules', label: 'shared.cloud.kind_schedule' },
     { tool: 'Dashboard', kind: 'scheduleFolders', lsKey: 'hebrewDashboard_schedulesFolders', shape: 'tree', merge: 'page', follows: 'schedule', ivritKey: 'dashboardScheduleFolders' },
@@ -307,27 +325,35 @@
   ];
   var extraEntries = [];   // entries a page registered through attach({ entries }) — the test harness
 
-  var pages = {};      // tool → the cfg given to attach()
-  var panels = {};     // tool → { root, mounted }
-  var plans = {};      // tool → the last plan
-  var queues = {};     // tool → promise chain: one cloud operation at a time
-  var busy = {};       // tool → true while its queue runs
-  var messages = {};   // tool → { text, isError }
-  var pendingRefresh = {};   // tool → the listing promise in flight, so two callers share one listing
-  var seen = {};             // tool → kind → the write stamp this tab last acted on, or made itself (recheckWrites)
+  var pages = {};          // tool → the cfg given to attach() (an alsoPull tool: a copy marked pulled)
+  var statuses = {};       // tool → { root, state, detail } — the status lines
+  var plans = {};          // tool → the last classification
+  var queues = {};         // tool → promise chain: one cloud operation at a time
+  var busy = {};           // tool → true while its queue runs
+  var pendingHydrate = {}; // tool → the hydration in flight, so two callers share one
+  var hydrating = {};      // tool → true while its rows are being hydrated (the hook only postpones)
+  var hydratedTools = {};  // tool → the uid a successful hydration ran for (the hook's install condition)
+  var dirty = {};          // tool → kind → true: a page wrote that key since the last flush
+  var timers = {};         // tool → the debounce timer
+  var stale = {};          // tool → kind → true: another tab wrote that kind; hydrate before diffing
+  var seenNames = {};      // tool → kind → { name: true } this tab saw present at its last hydrate / flush
+  var noUploadUntilChanged = {};   // tool → kind → true after "Remove from this device": a settings blob goes up only once changed
+  var hookOn = false;      // write-through is armed (a signed-in hydration ran on this page)
+  var hookInstalled = false;
+  var selfWrite = 0;       // > 0 while the module itself writes localStorage (the hook ignores those writes)
+  var purging = false;     // sign-out removed the cache: registry-key writes are swallowed until the page unloads
+  var suspended = false;   // Erase All: nothing goes up any more on this page
+  var seen = {};           // tool → kind → the write stamp this tab last acted on, or made itself (recheckWrites)
   var listening = false;
-  var listedFor = {};        // tool → the user id an account event last listed it for (listen)
-  var eventUser = null;      // the user id the last account event was handled for (listen)
-  var account = null;        // the open account screen: { root, opener, first } or null
-  var splashShown = false;   // the fresh-sign-in splash opens at most once per page load
-  // The tool names the account screen shows (the home page's card titles, present in every dictionary).
+  var listedFor = {};      // tool → the user id an account event last hydrated it for (listen)
+  var eventUser = null;    // the user id the last account event was handled for (listen)
+  var card = null;         // the open device-extras card: { root, opener, onKey } or null
+  var cardPending = null;  // extras waiting for the card's choice: { uid, tools, extras, resolve }
+  var firstHydrationDone = {};   // uid → true once the card's choice settled on this page load
+  // The tool names the status line and the card show (the home page's card titles, present in every dictionary).
   var TOOL_NAMES = { Worksheet: ['home.card.generator.name', 'Hebrew Worksheet Generator'], FlashCards: ['home.card.flashcards.name', 'Hebrew Flash Cards'],
                      Dictionary: ['home.card.dictionary.name', 'Hebrew Word Lookup'], TorahTrainer: ['home.card.torah.name', 'Torah Trainer'],
                      TropeTutor: ['home.card.trope.name', 'Trope Tutor'], Dashboard: ['home.card.dashboard.name', 'Hebrew Classroom Dashboard'], Suite: ['shared.cloud.tool_suite', 'IvritSuite'] };
-
-  // Where each tool lives, for the "open {tool} to merge it" signpost on a page that cannot merge that row.
-  var TOOL_PAGES = { Worksheet: '/hebrew_blend_generator.html', FlashCards: '/flash_cards.html', Dictionary: '/hebrew_dictionary.html?wordlists=open',
-                     TorahTrainer: '/torah_trainer.html', TropeTutor: '/trope_tutor.html', Dashboard: '/classroom_dashboard.html', Suite: '/index.html?alltools=open' };
   // The dashboard mints one empty class named "My class" on every fresh device (the literal, in both
   // languages, plus the localized default); untouched, it is a seed, not a class list worth a row.
   function isUntouchedDefaultClass(value) {
@@ -448,19 +474,36 @@
     return a;   // not comparable: this device's value stays
   }
   // Lossless merge for progress-style blobs: numbers → the larger, booleans → true if either is,
-  // objects recurse, arrays and anything else keep this device's side. Nothing recorded goes down.
-  function deepMax(a, b) {
+  // objects recurse, arrays and anything else keep this device's side. Nothing recorded goes down —
+  // except below a reset: with a `watermark` field (the Trope Tutor's resetAt), the side whose watermark
+  // is older counts as empty, so a deliberate reset is not undone by another device's older mastery, and
+  // the result keeps the newest watermark.
+  function deepMaxInner(a, b) {
     if (a === undefined || a === null) return b;
     if (b === undefined || b === null) return a;
     if (typeof a === 'boolean' && typeof b === 'boolean') return a || b;
     if (isPlainObject(a) && isPlainObject(b)) {
       var out = {}, k;
-      for (k in a) if (hasOwn(a, k) && !badName(k)) out[k] = hasOwn(b, k) ? deepMax(a[k], b[k]) : a[k];
+      for (k in a) if (hasOwn(a, k) && !badName(k)) out[k] = hasOwn(b, k) ? deepMaxInner(a[k], b[k]) : a[k];
       for (k in b) if (hasOwn(b, k) && !badName(k) && !hasOwn(a, k)) out[k] = b[k];
       return out;
     }
     if (numeric(a) && numeric(b)) return maxValue(a, b);
     return a;
+  }
+  function deepMax(a, b, watermark) {
+    if (watermark && isPlainObject(a) && isPlainObject(b)) {
+      var wa = numeric(a[watermark]) ? Number(a[watermark]) : 0, wb = numeric(b[watermark]) ? Number(b[watermark]) : 0;
+      if (wa !== wb) {
+        var newer = wa > wb ? a : b, older = wa > wb ? b : a;
+        var kept = {};   // the older side keeps only its watermark-free scaffolding, not its counts
+        for (var k in older) if (hasOwn(older, k) && !badName(k) && (k === 'v')) kept[k] = older[k];
+        var out = deepMaxInner(newer, kept);
+        out[watermark] = Math.max(wa, wb);
+        return out;
+      }
+    }
+    return deepMaxInner(a, b);
   }
   // A downloaded row must look like what the entry stores, or it is not written anywhere.
   function validateShape(entry, data) {
@@ -472,6 +515,9 @@
   }
 
   /* ---------- the local backend (reads never write; writes are read back) ---------- */
+  // Every write the module makes runs inside selfWrite(), so the write-through hook (below) never mistakes
+  // a download or a memory save for a page write.
+  function withSelfWrite(fn) { selfWrite++; try { return fn(); } finally { selfWrite--; } }
   function readStore(entry) {
     if (entry.virtual) { try { return entry.virtual.read(); } catch (e) { return null; } }
     var raw = lsGet(entry.lsKey);
@@ -509,8 +555,9 @@
     for (var i = 0; i < items.length; i++) if (items[i].name === name) return items[i];
     return null;
   }
+  function isSeed(entry, name, value) { try { return !!(typeof entry.skipUpload === 'function' && entry.skipUpload(name, value)); } catch (e) { return false; } }
   function writeText(key, text) {
-    try { localStorage.setItem(key, text); } catch (e) { return Promise.reject(makeError('quota', 'IvritSaves: localStorage write failed')); }
+    try { withSelfWrite(function () { localStorage.setItem(key, text); }); } catch (e) { return Promise.reject(makeError('quota', 'IvritSaves: localStorage write failed')); }
     if (lsGet(key) !== text) return Promise.reject(makeError('quota', 'IvritSaves: localStorage read-back mismatch'));
     return Promise.resolve();
   }
@@ -520,7 +567,7 @@
   function localWrite(entry, name, value) {
     if (badName(name)) return Promise.reject(makeError('name'));
     if (entry.virtual) {
-      return Promise.resolve().then(function () { return entry.virtual.write(value, name); }).then(function (changed) {
+      return Promise.resolve().then(function () { return withSelfWrite(function () { return entry.virtual.write(value, name); }); }).then(function (changed) {
         virtualChanged = changed || null;
         stampWrite(entry, name);
       }, function (e) { throw (e && e.code) ? e : makeError('quota', 'IvritSaves: the write failed'); });
@@ -542,24 +589,97 @@
     }
     return writeText(entry.lsKey, text).then(function () { stampWrite(entry, name); });
   }
-  // Other tabs of the same tool learn about a module write through the sync-memory key — its `storage`
-  // event, or a look at the stamps when the tab next becomes visible (see recheckWrites) — and re-read
-  // the key; otherwise their next in-memory save would revert it. `lastWrite` names the write; `written`
-  // keeps one stamp per tool and kind, overwritten in place, so it never grows past the registry.
-  // Signed in only: anonymous use never creates the key (the harness's local round trip stays silent).
-  function stampWrite(entry, name) {
+  // Removes one item (map / mapIn) or the whole key (single / scalar / tree). Used by hydration (a row gone
+  // from the account), the card's "Remove from this device", sign-out, and the harness's cleanup.
+  function localRemove(entry, name) {
+    if (entry.virtual) return Promise.resolve().then(function () { return withSelfWrite(function () { return entry.virtual.remove(name); }); });
+    var store = readStore(entry);
+    if (entry.shape === 'map') {
+      if (store && hasOwn(store, name)) { delete store[name]; return writeText(entry.lsKey, JSON.stringify(store)); }
+      return Promise.resolve();
+    }
+    if (entry.shape === 'mapIn') {
+      if (store && isPlainObject(store[entry.path]) && hasOwn(store[entry.path], name)) { delete store[entry.path][name]; return writeText(entry.lsKey, JSON.stringify(store)); }
+      return Promise.resolve();
+    }
+    withSelfWrite(function () { lsRemove(entry.lsKey); });
+    return Promise.resolve();
+  }
+  // A single entry whose lsKey another entry shares (the Dashboard's settings and rosters): strip only this
+  // entry's projected fields, so a sibling's items survive.
+  function localStripProjected(entry) {
+    var store = readStore(entry);
+    if (!isPlainObject(store)) return Promise.resolve();
+    var kept = {};
+    for (var k in store) if (hasOwn(store, k) && isOmitted(entry, k)) kept[k] = store[k];
+    return writeText(entry.lsKey, JSON.stringify(kept));
+  }
+  function sharesKey(entry) {
+    return !entry.virtual && registryAll().some(function (e) { return e !== entry && !e.virtual && e.lsKey === entry.lsKey; });
+  }
+
+  /* ---------- cross-tab write stamps (the old key, read by every module version) ---------- */
+  // Other tabs of the same tool learn about a write through this key — its `storage` event, or a look at the
+  // stamps when the tab next becomes visible (see recheckWrites) — and re-read the key; otherwise their next
+  // in-memory save would revert it. `lastWrite` names the write; `written` keeps one stamp per tool and kind,
+  // overwritten in place; `source` says whether a page or the module wrote (a page write only marks other
+  // tabs stale, a module write — a download — makes them re-read). Signed in only: anonymous use never creates
+  // the key (the harness's local round trip stays silent).
+  function stampsAll() {
+    try { var m = safeParse(lsGet(META_KEY) || 'null'); if (isPlainObject(m)) return m; } catch (e) {}
+    return { v: 1, users: {} };
+  }
+  function stampsSave(m) {
+    try {
+      var cur = null;
+      try { cur = safeParse(lsGet(META_KEY) || 'null'); } catch (e) {}
+      if (isPlainObject(cur)) {   // another tab may have moved a stamp meanwhile: keep the newer one per tool and kind
+        var w = isPlainObject(cur.written) ? cur.written : {};
+        Object.keys(w).forEach(function (tool) {
+          if (!isPlainObject(w[tool])) return;
+          Object.keys(w[tool]).forEach(function (kind) {
+            var at = w[tool][kind];
+            if (typeof at !== 'number') return;
+            if (!isPlainObject(m.written)) m.written = {};
+            if (!isPlainObject(m.written[tool])) m.written[tool] = {};
+            if (!(m.written[tool][kind] >= at)) m.written[tool][kind] = at;
+          });
+        });
+        var pwc = isPlainObject(cur.pageWrites) ? cur.pageWrites : {};
+        Object.keys(pwc).forEach(function (tool) {
+          if (!isPlainObject(pwc[tool])) return;
+          Object.keys(pwc[tool]).forEach(function (kind) {
+            var at = pwc[tool][kind];
+            if (typeof at !== 'number') return;
+            if (!isPlainObject(m.pageWrites)) m.pageWrites = {};
+            if (!isPlainObject(m.pageWrites[tool])) m.pageWrites[tool] = {};
+            if (!(m.pageWrites[tool][kind] >= at)) m.pageWrites[tool][kind] = at;
+          });
+        });
+        var lw = cur.lastWrite;
+        if (isPlainObject(lw) && typeof lw.at === 'number' && !(isPlainObject(m.lastWrite) && m.lastWrite.at >= lw.at)) m.lastWrite = lw;
+        if (isPlainObject(cur.signedOut) && !(isPlainObject(m.signedOut) && m.signedOut.at >= cur.signedOut.at)) m.signedOut = cur.signedOut;
+      }
+      withSelfWrite(function () { localStorage.setItem(META_KEY, JSON.stringify(m)); });
+    } catch (e) {}
+  }
+  function stampWrite(entry, name, source) {
     if (!currentUser()) return;
-    var m = metaAll(), at = Date.now();
-    m.lastWrite = { tool: entry.tool, kind: entry.kind, name: name, at: at };
+    var m = stampsAll(), at = Date.now();
+    m.lastWrite = { tool: entry.tool, kind: entry.kind, name: name, at: at, source: source || 'module' };
     if (!isPlainObject(m.written)) m.written = {};
     if (!isPlainObject(m.written[entry.tool])) m.written[entry.tool] = {};
     m.written[entry.tool][entry.kind] = at;
+    if (source === 'page') {   // which stamps were page writes (other tabs only mark those stale)
+      if (!isPlainObject(m.pageWrites)) m.pageWrites = {};
+      if (!isPlainObject(m.pageWrites[entry.tool])) m.pageWrites[entry.tool] = {};
+      m.pageWrites[entry.tool][entry.kind] = at;
+    }
     markSeen(entry.tool, entry.kind, at);   // this tab's own write is not news to it
-    metaSave(m);
+    stampsSave(m);
   }
   function markSeen(tool, kind, at) { if (!isPlainObject(seen[tool])) seen[tool] = {}; seen[tool][kind] = at; }
-  // The stamps as one map tool → kind → at: `written`, with `lastWrite` folded in (a tab still running the
-  // previous module stamps only that one).
+  // The stamps as one map tool → kind → at: `written`, with `lastWrite` folded in.
   function stampsOf(m) {
     var out = {}, w = isPlainObject(m.written) ? m.written : {}, lw = isPlainObject(m.lastWrite) ? m.lastWrite : null;
     Object.keys(w).forEach(function (tool) {
@@ -576,56 +696,22 @@
     }
     return out;
   }
-  // Only the test harness removes local data (its own keys). The panel never calls this.
-  function localRemove(entry, name) {
-    if (entry.virtual) return Promise.resolve().then(function () { return entry.virtual.remove(name); });
-    var store = readStore(entry);
-    if (entry.shape === 'map') {
-      if (store && hasOwn(store, name)) { delete store[name]; return writeText(entry.lsKey, JSON.stringify(store)); }
-      return Promise.resolve();
-    }
-    if (entry.shape === 'mapIn') {
-      if (store && isPlainObject(store[entry.path]) && hasOwn(store[entry.path], name)) { delete store[entry.path][name]; return writeText(entry.lsKey, JSON.stringify(store)); }
-      return Promise.resolve();
-    }
-    lsRemove(entry.lsKey);
-    return Promise.resolve();
-  }
 
-  /* ---------- sync memory: what this device last synced, per account ---------- */
-  // The suite-wide preferences this device could not apply (SUITE_PREFS): { field: { v, was } } — the
-  // account's value and what the key held when it arrived. Device-level, like the write stamps.
-  function suiteHeld() { var m = metaAll(); return isPlainObject(m.held) ? m.held : {}; }
-  function suiteHeldSave(held) { var m = metaAll(); if (Object.keys(held).length) m.held = held; else delete m.held; metaSave(m); }
+  /* ---------- sync memory v2: what this device last synced, per account ---------- */
+  // { v:2, users:{ [uid]: { tool: { kind: { name: {h,id,u,at} } } } }, legacy:{ [uid]: … }, hydrated:{ [uid]: ISO }, held }
+  // A stored v1 memory (the old module's key) becomes `legacy`: a hint used only to tell "newer here" from
+  // "newer in the account" on a row's first classification — never for a deletion. Under the old model a
+  // local delete deliberately kept the account copy, so an old memory read by the new rules would DELETE rows.
   function metaAll() {
-    try { var m = safeParse(lsGet(META_KEY) || 'null'); if (isPlainObject(m) && m.v === 1 && isPlainObject(m.users)) return m; } catch (e) {}
-    return { v: 1, users: {} };
-  }
-  // Two tabs read-modify-write this key. The write stamps (`written`, `lastWrite`) are the part another tab
-  // may have moved meanwhile, so the newer stamp per tool and kind is taken from the stored copy before
-  // writing — a lost stamp would leave a tab's stale in-memory copy unread. Everything else is this tab's.
-  function metaSave(m) {
+    try { var m = safeParse(lsGet(META2_KEY) || 'null'); if (isPlainObject(m) && m.v === 2 && isPlainObject(m.users)) return m; } catch (e) {}
+    var fresh = { v: 2, users: {}, legacy: {}, hydrated: {} };
     try {
-      var cur = null;
-      try { cur = safeParse(lsGet(META_KEY) || 'null'); } catch (e) {}
-      if (isPlainObject(cur)) {
-        var w = isPlainObject(cur.written) ? cur.written : {};
-        Object.keys(w).forEach(function (tool) {
-          if (!isPlainObject(w[tool])) return;
-          Object.keys(w[tool]).forEach(function (kind) {
-            var at = w[tool][kind];
-            if (typeof at !== 'number') return;
-            if (!isPlainObject(m.written)) m.written = {};
-            if (!isPlainObject(m.written[tool])) m.written[tool] = {};
-            if (!(m.written[tool][kind] >= at)) m.written[tool][kind] = at;
-          });
-        });
-        var lw = cur.lastWrite;
-        if (isPlainObject(lw) && typeof lw.at === 'number' && !(isPlainObject(m.lastWrite) && m.lastWrite.at >= lw.at)) m.lastWrite = lw;
-      }
-      localStorage.setItem(META_KEY, JSON.stringify(m));
+      var old = safeParse(lsGet(META_KEY) || 'null');
+      if (isPlainObject(old) && old.v === 1 && isPlainObject(old.users)) { fresh.legacy = clone(old.users); if (isPlainObject(old.held)) fresh.held = clone(old.held); }
     } catch (e) {}
+    return fresh;
   }
+  function metaSave(m) { try { withSelfWrite(function () { localStorage.setItem(META2_KEY, JSON.stringify(m)); }); } catch (e) {} }
   function metaBranch(m, uid, tool, kind, create) {
     var u = m.users[uid]; if (!isPlainObject(u)) { if (!create) return null; u = m.users[uid] = {}; }
     var tl = u[tool]; if (!isPlainObject(tl)) { if (!create) return null; tl = u[tool] = {}; }
@@ -636,19 +722,27 @@
     var b = metaBranch(metaAll(), uid, tool, kind, false);
     return (b && hasOwn(b, name) && isPlainObject(b[name])) ? b[name] : null;
   }
+  // The v1 hint for a row (h, id, u), or null; consumed by the first v2 record of that row.
+  function legacyGet(uid, tool, kind, name) {
+    var m = metaAll(), l = isPlainObject(m.legacy) && isPlainObject(m.legacy[uid]) ? m.legacy[uid] : null;
+    var b = l && isPlainObject(l[tool]) && isPlainObject(l[tool][kind]) ? l[tool][kind] : null;
+    var r = b && hasOwn(b, name) && isPlainObject(b[name]) ? b[name] : null;
+    return (r && typeof r.h === 'string' && !r.deletedCloud) ? { h: r.h, id: r.id, u: r.u } : null;
+  }
   function metaSet(uid, tool, kind, name, rec) {
     if (!uid || badName(name)) return;
     var m = metaAll();
     metaBranch(m, uid, tool, kind, true)[name] = rec;
+    var l = isPlainObject(m.legacy) && isPlainObject(m.legacy[uid]) && isPlainObject(m.legacy[uid][tool]) && isPlainObject(m.legacy[uid][tool][kind]) ? m.legacy[uid][tool][kind] : null;
+    if (l && hasOwn(l, name)) delete l[name];
     metaSave(m);
   }
   function metaDelete(uid, tool, kind, name) {
     var m = metaAll(), b = metaBranch(m, uid, tool, kind, false);
     if (b && hasOwn(b, name)) { delete b[name]; metaSave(m); }
   }
-  // Whether the account screen already introduced itself to this account on this device.
-  function welcomedAt(uid) { var m = metaAll(); return (isPlainObject(m.welcomed) && m.welcomed[uid]) || null; }
-  function markWelcomed(uid) { var m = metaAll(); if (!isPlainObject(m.welcomed)) m.welcomed = {}; m.welcomed[uid] = now(); metaSave(m); }
+  function hydratedAt(uid) { var m = metaAll(); return (isPlainObject(m.hydrated) && m.hydrated[uid]) || null; }
+  function markHydrated(uid) { var m = metaAll(); if (!isPlainObject(m.hydrated)) m.hydrated = {}; m.hydrated[uid] = now(); metaSave(m); }
   // Forget items that are gone on both sides. keep = { kind: { name: true } }.
   function metaPrune(uid, tool, keep) {
     var m = metaAll(), u = m.users[uid], tl = isPlainObject(u) && u[tool], changed = false;
@@ -658,6 +752,9 @@
     }
     if (changed) metaSave(m);
   }
+  // The suite-wide preferences this device could not apply (SUITE_PREFS): { field: { v, was } }.
+  function suiteHeld() { var m = metaAll(); return isPlainObject(m.held) ? m.held : {}; }
+  function suiteHeldSave(held) { var m = metaAll(); if (Object.keys(held).length) m.held = held; else delete m.held; metaSave(m); }
 
   /* ---------- the cloud backend (the saves table through IvritAccount.client()) ---------- */
   function client() {
@@ -685,13 +782,18 @@
       });
     });
   }
-  function cloudList(tool) {
-    var all = [];
+  // One tool (a string) or several (an array — one request, the rows carrying their `tool`: kinds repeat
+  // across tools, so the caller groups by it). No data: about 150 bytes per row.
+  function cloudList(toolOrTools) {
+    var many = Array.isArray(toolOrTools), all = [];
     function page(from) {
       return withClient(function (c) {
-        return c.from('saves').select(ROW_COLS).eq('tool', tool).order('kind').order('name').order('id').range(from, from + PAGE_SIZE - 1);
+        var q = c.from('saves').select(many ? 'tool, ' + ROW_COLS : ROW_COLS);
+        q = many ? q.in('tool', toolOrTools) : q.eq('tool', toolOrTools);
+        return q.order('tool').order('kind').order('name').order('id').range(from, from + PAGE_SIZE - 1);
       }).then(function (rows) {
         rows = rows || [];
+        if (!many) rows.forEach(function (r) { r.tool = toolOrTools; });
         all = all.concat(rows);
         return rows.length === PAGE_SIZE ? page(from + PAGE_SIZE) : all;
       });
@@ -726,7 +828,7 @@
     });
   }
   // Writes only if the row is still the one that was listed, so another device's newer copy is never
-  // overwritten unseen; zero rows back means "changed meanwhile: list again and choose again".
+  // overwritten unseen; zero rows back means "changed meanwhile: list again and decide again".
   function cloudUpdateIf(id, expectedUpdatedAt, data, hash) {
     return withClient(function (c) {
       return c.from('saves').update({ data: data, data_hash: hash, client_updated_at: now() }).eq('id', id).eq('updated_at', expectedUpdatedAt).select(ROW_COLS);
@@ -737,6 +839,20 @@
   }
   function cloudRemove(id) {
     return withClient(function (c) { return c.from('saves').delete().eq('id', id).select('id'); }).then(function () { return true; });
+  }
+  // Deletes only if the row is still the one this device synced: zero rows back means another device wrote
+  // it since — the later human action wins, so the caller downloads instead.
+  function cloudRemoveIf(id, expectedUpdatedAt) {
+    return withClient(function (c) { return c.from('saves').delete().eq('id', id).eq('updated_at', expectedUpdatedAt).select('id'); })
+      .then(function (rows) { if (!rows || !rows.length) throw makeError('changed', 'IvritSaves: the row changed meanwhile'); return true; });
+  }
+  // Does the account still exist? (A listing that lacks every remembered row is checked here first: a
+  // still-valid token on a device whose account was deleted elsewhere lists nothing under RLS.)
+  function accountAlive() {
+    return client().then(function (c) { return c.auth.getUser(); }).then(function (r) {
+      if (!r || r.error || !r.data || !r.data.user) return false;
+      return withClient(function (c) { return c.from('profiles').select('id').eq('id', r.data.user.id).maybeSingle(); }).then(function (p) { return !!p; }, function () { return true; });   // profiles unreachable: not a deletion
+    }, function () { return false; });
   }
   // Every failure becomes one localized sentence.
   function errorText(err) {
@@ -778,8 +894,9 @@
   }
 
   /* ---------- registry access ---------- */
+  function registryAll() { return IVRIT_SYNC_REGISTRY.concat(extraEntries); }
   function registryFor(tool) {
-    return IVRIT_SYNC_REGISTRY.concat(extraEntries).filter(function (e) { return e.tool === tool; });
+    return registryAll().filter(function (e) { return e.tool === tool; });
   }
   function entryFor(tool, kind) {
     var list = registryFor(tool);
@@ -803,14 +920,17 @@
   function keyOf(kind, name) { return kind + ':' + name; }   // a kind is letters only, so the first ':' always ends it
   function hashItem(entry, value) { return hashText(canonJson(project(entry, value))); }
 
-  /* ---------- the plan: one row per kind + name across both sides ---------- */
+  /* ---------- the classification: one row per kind + name across both sides ---------- */
   // local / cloud: { hash } or null (cloud also carries updatedAt); memory: what this device last synced
   // for the item, or null. The row's updated_at matching the memory is what says "the cloud copy is
   // the one I synced" — the hash in `data_hash` is only a shortcut.
-  // Two derived states never act on their own: a cloud-only row this device once synced (the memory knows
-  // that very row) was deleted or renamed here — `deleted-here`, the person chooses; a local-only row
-  // whose memory carries the tombstone "Delete from cloud" left, with the same hash, is `cloud-deleted`
-  // and is not uploaded again until it changes or the person asks.
+  //   local-only     the device has it, the account does not (a new save, a device extra, or — with memory —
+  //                  a row the account lost: "cloud gone")
+  //   cloud-only     the account has it, the device does not (with memory: "deleted here")
+  //   synced         the same on both sides
+  //   cloud-changed  only the account moved since the last sync → download
+  //   local-changed  only this device moved → upload
+  //   conflict       both moved, or no memory and different hashes
   function classify(local, cloud, memory) {
     if (local && !cloud) return (memory && memory.deletedCloud && memory.h === local.hash) ? 'cloud-deleted' : 'local-only';
     if (!local && cloud) return (memory && memory.id === cloud.id && (memory.u === cloud.updatedAt || memory.h === cloud.hash)) ? 'deleted-here' : 'cloud-only';
@@ -825,29 +945,6 @@
     }
     return 'conflict';
   }
-  function safeActionFor(r) {
-    if (r.seed && r.state === 'local-only') return null;   // an untouched seed is never sent by itself
-    if (r.state === 'local-only' || r.state === 'local-changed') return 'upload';
-    if (r.state === 'cloud-only' || r.state === 'cloud-changed') return r.downloadable ? 'download' : null;
-    if (r.state === 'conflict' && r.mergeable && r.downloadable) return 'merge';
-    return null;
-  }
-  function choicesFor(r) {
-    if (r.seed && r.state === 'local-only') return [];
-    if (r.state === 'deleted-here') return r.downloadable ? ['deleteCloud', 'download'] : ['deleteCloud'];
-    if (r.state === 'cloud-deleted') return ['upload'];
-    if (r.state !== 'conflict') return r.safeAction ? [r.safeAction] : [];
-    var m = r.entry.merge;
-    if (m === 'item') return r.downloadable ? ['keepBoth', 'useCloud', 'keepMine'] : ['keepMine'];
-    if (m === 'assign') return r.downloadable ? ['useCloud', 'keepMine'] : ['keepMine'];
-    if (r.mergeable && r.downloadable) return ['merge'];
-    return m === 'page' ? [] : ['keepMine'];   // no helper on this page: the tool that owns the merge resolves it
-  }
-  // A settings blob that differs on both sides on a device with no memory of a sync is the everyday case
-  // on a second device (every tool writes its settings blob the first time it opens there), not a rare
-  // clash — so the account screen resolves every such row in one step. Items (a preset named the same
-  // on both sides) keep their per-row choices in the tool's panel.
-  function isSettingsChoice(r) { return r.state === 'conflict' && r.entry.merge === 'assign' && r.choices.indexOf('useCloud') >= 0; }
   function localSide(tool) {
     var items = [];
     registryFor(tool).forEach(function (e) { if (e.shape !== 'tree') items = items.concat(localItems(e)); });
@@ -889,24 +986,26 @@
       return Promise.resolve().then(function () { return e.virtual.prime(); }).catch(function (err) { warn('prime failed for', e.kind, err); });
     });
   }
-  function planTool(tool) {
+  // The classification of one tool: the local side hashed, the account's rows (pre-listed by hydrate for
+  // several tools at once, or listed here), the memory — a v1 hint standing in for a row this device never
+  // recorded under v2 — and a state per row. Signed out, every local item reads local-only.
+  function planTool(tool, preRows) {
     var user = currentUser();
     var uid = user ? user.id : null;
-    if (uid) flushPage(tool);   // a pending debounced write must land before the listing, or the first action sees a moved item
     return (uid ? primeVirtual(tool) : Promise.resolve()).then(function () { return localSide(tool); }).then(function (locals) {
       var rows = {}, order = [];
       locals.forEach(function (it) {
         var k = keyOf(it.kind, it.name);
         rows[k] = { key: k, kind: it.kind, name: it.name, label: it.label, entry: it.entry, local: { hash: it.hash, bytes: it.bytes }, cloud: null, memory: null,
-                    seed: !!(typeof it.entry.skipUpload === 'function' && it.entry.skipUpload(it.name, it.value)) };
+                    seed: isSeed(it.entry, it.name, it.value) };
         order.push(k);
       });
       if (!uid) return finishPlan(tool, null, rows, order, []);
-      return cloudList(tool).then(function (cloudRows) {
+      return (preRows ? Promise.resolve(preRows.filter(function (r) { return r.tool === tool; })) : cloudList(tool)).then(function (cloudRows) {
         var listed = cloudRows.filter(function (r) { var e = entryFor(tool, r.kind); return e && e.shape !== 'tree' && !badName(r.name); });
         return seqMap(listed, function (r) {
           var e = entryFor(tool, r.kind);
-          return cloudHashFor(e, r, metaGet(uid, tool, r.kind, r.name)).then(function (h) {
+          return cloudHashFor(e, r, metaGet(uid, tool, r.kind, r.name) || legacyGet(uid, tool, r.kind, r.name)).then(function (h) {
             var k = keyOf(r.kind, r.name);
             if (!rows[k]) {
               rows[k] = { key: k, kind: r.kind, name: r.name, label: (e.shape === 'map' || e.shape === 'mapIn') ? r.name : kindLabel(e), entry: e, local: null, cloud: null, memory: null };
@@ -926,18 +1025,21 @@
     var list = order.map(function (k) {
       var r = rows[k];
       r.memory = uid ? metaGet(uid, tool, r.kind, r.name) : null;
-      r.state = classify(r.local, r.cloud, r.memory);
+      // A v1 hint decides only between the two moved states, never a deletion: with a hint and no v2 memory a
+      // row present on both sides classifies as under v1; one present on one side only is local-only / cloud-only.
+      var hint = (uid && !r.memory && r.local && r.cloud) ? legacyGet(uid, tool, r.kind, r.name) : null;
+      r.legacy = !!hint;
+      r.state = classify(r.local, r.cloud, r.memory || hint);
       keep[r.kind] = keep[r.kind] || {};
       keep[r.kind][r.name] = true;
       if (uid && r.state === 'synced' && r.local && r.cloud && (!r.memory || r.memory.h !== r.local.hash || r.memory.u !== r.cloud.updatedAt)) {
         metaSet(uid, tool, r.kind, r.name, { h: r.local.hash, id: r.cloud.id, u: r.cloud.updatedAt, at: now() });
+        r.memory = metaGet(uid, tool, r.kind, r.name);
       }
       // A tool this page renders needs its re-read hook before a settings blob may land; a tool this page
       // does not render holds nothing in memory here (other tabs re-read through the write stamp).
       r.downloadable = pages[tool] ? !(NEEDS_HOOK[r.entry.shape] && typeof cfg.onLocalChanged !== 'function') : true;
       r.mergeable = r.entry.merge === 'deepMax' || r.entry.merge === 'max' || (r.entry.merge === 'page' && typeof (cfg.merges && cfg.merges[r.kind]) === 'function');
-      r.safeAction = safeActionFor(r);
-      r.choices = choicesFor(r);
       return r;
     });
     // Trees are not rows, but their memory must survive pruning while either side has one.
@@ -953,20 +1055,10 @@
       var d = (kindOrder[a.kind] || 0) - (kindOrder[b.kind] || 0);
       return d || String(a.label).localeCompare(String(b.label));
     });
-    // conflicts: rows a button on this page can resolve; mergeInTool: rows only the owning tool can merge.
-    var counts = { safe: 0, conflicts: 0, mergeInTool: 0, synced: 0, deleted: 0 };
-    list.forEach(function (r) {
-      if (r.safeAction) counts.safe++;
-      if (r.state === 'conflict' && !r.safeAction) { if (r.choices.length) counts.conflicts++; else counts.mergeInTool++; }
-      if (r.state === 'synced') counts.synced++;
-      if (r.state === 'deleted-here') counts.deleted++;
-    });
-    var p = { tool: tool, userId: uid, rows: list, cloudRows: cloudRows, counts: counts, treesDiffer: [] };
-    // A folder tree is never a row, but a layout that differs is work the Sync buttons must offer.
+    var p = { tool: tool, userId: uid, rows: list, cloudRows: cloudRows, treesDiffer: [] };
     var trees = uid ? entries.filter(function (e) { return e.shape === 'tree'; }) : [];
     return seqMap(trees, function (e) { return treeDiffers(tool, uid, e, cloudRows, list); }).then(function (diffs) {
       p.treesDiffer = diffs.filter(Boolean);
-      counts.safe += p.treesDiffer.length;
       plans[tool] = p;
       return p;
     });
@@ -1004,10 +1096,11 @@
   }
   // Tells the page to re-read the key. Returns false when the page's hook threw: its in-memory copy is then
   // stale and would write back over what was just stored, so the caller must not remember the write.
-  function notifyPage(tool, kind, name) {
+  // `pending`: the device-extras card is still open, so a page's same-name fold must wait (the dashboard).
+  function notifyPage(tool, kind, name, names) {
     var cfg = pages[tool];
     if (!cfg || typeof cfg.onLocalChanged !== 'function') return true;
-    try { cfg.onLocalChanged(kind, name); return true; } catch (e) { warn('onLocalChanged failed:', e); return false; }
+    try { cfg.onLocalChanged(kind, name, names || (name ? [name] : []), { pending: !!cardPending }); return true; } catch (e) { warn('onLocalChanged failed:', e); return false; }
   }
   // The local side may have moved since the list was built (the page kept working): a download or a
   // merge onto a value newer than the one the person looked at — or onto an item that was not there when
@@ -1126,7 +1219,7 @@
         var local = it ? it.value : null;
         var cloudVal = restoreOmitted(row.entry, full.data, local);
         var m = row.entry.merge, merged;
-        if (m === 'deepMax') merged = deepMax(local, cloudVal);
+        if (m === 'deepMax') merged = deepMax(local, cloudVal, row.entry.watermark);
         else if (m === 'max') merged = { value: maxValue(local ? local.value : undefined, cloudVal.value) };
         else if (m === 'page') {
           var fn = cfg.merges && cfg.merges[row.kind];
@@ -1227,19 +1320,6 @@
       });
     });
   }
-  // "Delete from cloud" leaves a tombstone in the memory when a copy stays on this device, so that copy
-  // reads "Removed from your account" and is not uploaded again unless it changes or the person asks.
-  function actDelete(tool, row) {
-    var uid = ensureUser();
-    flushPage(tool);
-    var it = localItem(row.entry, row.name);
-    return (it ? hashItem(row.entry, it.value) : Promise.resolve(null)).then(function (h) {
-      return cloudRemove(row.cloud.id).then(function () {
-        if (stillMe(uid)) { if (h) metaSet(uid, tool, row.kind, row.name, { deletedCloud: true, h: h, at: now() }); else metaDelete(uid, tool, row.kind, row.name); }
-        return { action: 'delete', row: row };
-      });
-    });
-  }
   // An .ivrit file of the cloud copy: an AllTools-shaped bundle when the entry names its bundle key.
   function ivritFile(entry, name, data) {
     var payload;
@@ -1283,28 +1363,6 @@
     a.parentNode.removeChild(a);
     setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
   }
-  function fileStem(s) { return String(s).replace(/[^\w֐-׿.-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 60) || 'item'; }
-  function actDownloadFile(tool, row) {
-    ensureUser();
-    return cloudLoad(row.cloud.id).then(function (full) {
-      downloadJson(ivritFile(row.entry, row.name, full.data), fileStem(row.entry.tool + '_' + row.kind + '_' + row.name) + '.ivrit');
-      return { action: 'file', row: row };
-    });
-  }
-  function runAction(tool, action, row) {
-    return Promise.resolve().then(function () {
-      if (action === 'upload') return actUpload(tool, row);
-      if (action === 'keepMine') return actUpload(tool, row, true);
-      if (action === 'download') return actDownload(tool, row);
-      if (action === 'merge') return actMerge(tool, row);
-      if (action === 'useCloud') return actUseCloud(tool, row);
-      if (action === 'keepBoth') return actKeepBoth(tool, row);
-      if (action === 'delete' || action === 'deleteCloud') return actDelete(tool, row);
-      if (action === 'file') return actDownloadFile(tool, row);
-      throw makeError('bad_action', 'IvritSaves: unknown action ' + action);
-    });
-  }
-
   /* ---------- trees follow their items (fact 3) ---------- */
   function treeIsFlat(tree) { return !tree.root.some(function (n) { return isPlainObject(n) && n.t === 'folder'; }); }
   // Runs after the items of `entry.follows` were dealt with. While any of them is still only in the cloud
@@ -1381,91 +1439,8 @@
     return errorText(err);
   }
   function noteSkip(sum, row, err) { sum.skipped++; sum.skips.push({ name: row.label, why: skipReason(err) }); }
-  // The finishing line's tail naming the skipped rows ('' when none), and the note for a failed tree pass.
-  function skippedText(skips) {
-    if (!skips || !skips.length) return '';
-    var list = skips.map(function (s) { return t('shared.cloud.skipped_item', '{name} ({why})', { name: s.name, why: s.why }); }).join(', ');
-    return ' ' + t('shared.cloud.sync_skipped_named', '{n} skipped: {list}.', { n: skips.length, list: list });
-  }
-  function foldersText(err) { return err ? ' ' + t('shared.cloud.folders_error', 'The folder layout was not synced: {reason}', { reason: errorText(err) }) : ''; }
-  // The re-listing and the tree pass that end every run: a failed listing is the run's stop, a failed tree
-  // pass is noted beside the result, and the tool's latest plan comes back either way.
-  function finishRun(tool, p, sum) {
-    return planTool(tool).then(function (p2) {
-      return syncTrees(tool, p2).then(function (n) { if (n) sum.merged = (sum.merged || 0) + n; }, function (err) { sum.treeError = err; }).then(function () { return p2; });
-    }, function (err) { if (!sum.error) sum.error = err; return p; });
-  }
-  function syncNowInner(tool) {
-    return planTool(tool).then(function (p) {
-      // Downloads and merges first, uploads after: what lands may change this device (a same-named class
-      // folds into the one that arrived), and an upload of an item that is then gone is skipped quietly.
-      var todo = p.rows.filter(function (r) { return r.safeAction && r.safeAction !== 'upload'; })
-                 .concat(p.rows.filter(function (r) { return r.safeAction === 'upload'; }));
-      var sum = { tool: tool, done: 0, total: todo.length, up: 0, down: 0, merged: 0, skipped: 0, skips: [], left: 0, error: null, treeError: null };
-      return seqMap(todo, function (row) {
-        if (row.safeAction === 'upload' && !localItem(row.entry, row.name)) { sum.total--; return Promise.resolve(); }   // gone meanwhile (folded into another item): nothing to send
-        return runAction(tool, row.safeAction, row).then(function (res) {
-          sum.done++;
-          if (res && res.hint) sum.hint = true;
-          if (row.safeAction === 'upload') sum.up++; else if (row.safeAction === 'download') sum.down++; else sum.merged++;
-        }, function (err) { if (!isRowError(err)) throw err; noteSkip(sum, row, err); });
-      }).catch(function (err) { sum.error = err; })
-        .then(function () { return finishRun(tool, p, sum); })
-        .then(function (p2) { sum.left = p2.counts.conflicts; sum.mergeInTool = p2.counts.mergeInTool; return sum; });
-    });
-  }
-
-  // The account screen's "Upload everything on this device": every upload the plan calls safe, nothing else.
-  function uploadAllInner(tool) {
-    return planTool(tool).then(function (p) {
-      var todo = p.rows.filter(function (r) { return r.safeAction === 'upload'; });
-      var sum = { tool: tool, done: 0, total: todo.length, skipped: 0, skips: [], error: null, treeError: null };
-      return seqMap(todo, function (row) {
-        return actUpload(tool, row).then(function () { sum.done++; }, function (err) { if (!isRowError(err)) throw err; noteSkip(sum, row, err); });
-      }).catch(function (err) { sum.error = err; })
-        .then(function () { return finishRun(tool, p, sum); })
-        .then(function () { return sum; });
-    });
-  }
   function toolsWithEntries() { return TOOLS.filter(function (tool) { return registryFor(tool).length > 0; }); }
   function toolName(tool) { var n = TOOL_NAMES[tool]; return n ? t(n[0], n[1]) : tool; }
-  // What every tool holds, for the account screen: listings run one at a time through each tool's queue.
-  function accountSummary() {
-    return seqMap(toolsWithEntries(), function (tool) {
-      return enqueue(tool, function () { return planTool(tool); }).then(function (p) {
-        render(tool);
-        var up = 0, cloudOnly = 0, conflicts = 0, mergeInTool = 0, settings = 0, deleted = 0, lastSaved = null;
-        p.rows.forEach(function (r) {
-          if (r.safeAction === 'upload') up++;
-          else if (r.state === 'cloud-only') cloudOnly++;
-          else if (r.state === 'deleted-here') deleted++;
-          else if (r.state === 'conflict' && !r.safeAction) {
-            if (!r.choices.length) mergeInTool++;                          // only the owning tool can merge it
-            else { conflicts++; if (isSettingsChoice(r)) settings++; }     // a button on this page resolves it
-          }
-        });
-        (p.cloudRows || []).forEach(function (r) { if (r.updated_at && (!lastSaved || r.updated_at > lastSaved)) lastSaved = r.updated_at; });
-        return { tool: tool, name: toolName(tool), total: p.rows.length, cloud: (p.cloudRows || []).length, safe: p.counts.safe, up: up, cloudOnly: cloudOnly, conflicts: conflicts, mergeInTool: mergeInTool, settings: settings, deleted: deleted, folders: (p.treesDiffer || []).length, lastSaved: lastSaved };
-      });
-    });
-  }
-  // Another module (the Font Maker's projects) adds one line to the account screen's list: a function
-  // returning a string or a promise of one; an empty string or a failure adds nothing.
-  var summaryHooks = [];
-  function registerSummary(fn) { if (typeof fn === 'function' && summaryHooks.indexOf(fn) < 0) summaryHooks.push(fn); }
-  function summaryLines() {
-    var out = [];
-    return seqMap(summaryHooks, function (fn) {
-      return Promise.resolve().then(fn).then(function (text) { if (text) out.push(String(text)); }, function (err) { warn('summary hook failed:', err); });
-    }).then(function () { return out; });
-  }
-  // Does this device hold anything the registry knows about? (No network; decides whether the account
-  // screen introduces itself after the first sign-in.)
-  function deviceHasItems() {
-    return toolsWithEntries().some(function (tool) {
-      return registryFor(tool).some(function (e) { return e.shape !== 'tree' && localItems(e).length > 0; });
-    });
-  }
   // Everything in the account as one AllTools-shaped .ivrit object (the hub's Import / Export modal restores
   // it): the account screen downloads it as a file, the account page puts it in the download-everything zip.
   // The account's every row as one AllTools-shaped file. `partial`: it holds the account's copies only (the
@@ -1483,12 +1458,6 @@
     }).then(function () {
       if (unknown.length) bundle.cloudUnknown = unknown;
       return { file: { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', partial: true, savedAt: now(), data: bundle }, count: count };
-    });
-  }
-  function accountBackup() {
-    return bundleAll().then(function (b) {
-      downloadJson(b.file, 'IvritSuite_account_backup_' + now().slice(0, 10) + '.ivrit');
-      return b.count;
     });
   }
   // What the account holds, tool by tool, without the data (the account page's listing): per kind a count, the
@@ -1513,37 +1482,471 @@
       });
     });
   }
-  // After the account was deleted: drop what this device remembered about it (the sync memory and the welcome
-  // mark). Never touches a tool's own keys.
+  // After the account was deleted: drop what this device remembered about it (the sync memory, the v1 hint and
+  // the first-hydration mark). Never touches a tool's own keys.
   function forgetUser(uid) {
     if (!uid) return;
     var m = metaAll();
     if (isPlainObject(m.users)) delete m.users[uid];
-    if (isPlainObject(m.welcomed)) delete m.welcomed[uid];
+    if (isPlainObject(m.legacy)) delete m.legacy[uid];
+    if (isPlainObject(m.hydrated)) delete m.hydrated[uid];
     metaSave(m);
+    delete firstHydrationDone[uid];
   }
 
   /* ---------- queue ---------- */
   function enqueue(tool, fn) {
     var q = queues[tool] || Promise.resolve();
-    var run = q.then(function () { busy[tool] = true; render(tool); return fn(); });
+    var run = q.then(function () { busy[tool] = true; return fn(); });
     var settled = run.then(function (v) { busy[tool] = false; return v; }, function (e) { busy[tool] = false; throw e; });
     queues[tool] = settled.catch(function () {});
     return settled;
   }
 
-  /* ---------- the panel ---------- */
+  /* ---------- hydration: the account lands on this device ---------- */
+  // What a row's state means for the device (pure; exported for the harness). `first`: this account has not
+  // hydrated on this device yet (the extras card decides local-only items; deletions never fire before it).
+  //   synced         nothing (the plan remembered it)
+  //   cloud-only     download; with memory (deleted here) after the first hydration → the account's row goes
+  //                  (conditional: 0 rows = it moved since → download instead, the later human action wins)
+  //   local-only     a seed → nothing; with memory (the account lost it) → an item with the same hash goes here
+  //                  too, a changed one or a single/scalar is re-inserted; no memory → first hydration: a device
+  //                  extra (card) for items, fonts and progress/streak, else upload
+  //   cloud-changed  download; local-changed → upload
+  //   conflict       item → keep both; settings → the account's fields on a row never synced here, this device's
+  //                  afterwards; progress / rosters / word lists → the lossless merge; a seed → download
+  function hydrateActionFor(r, first) {
+    var m = r.entry.merge, shape = r.entry.shape;
+    if (r.state === 'synced' || r.state === 'none') return null;
+    if (r.state === 'cloud-only') return r.downloadable ? 'download' : null;
+    if (r.state === 'deleted-here') {
+      if (first || r.entry.noDeleteByAbsence) return r.entry.noDeleteByAbsence ? null : (r.downloadable ? 'download' : null);
+      return 'deleteCloud';
+    }
+    if (r.state === 'local-only' || r.state === 'cloud-deleted') {
+      if (r.seed) return null;
+      if (r.memory) {   // cloud gone
+        if ((shape === 'map' || shape === 'mapIn') && r.local.hash === r.memory.h) return 'removeLocal';
+        return 'upload';
+      }
+      if (first && (shape === 'map' || shape === 'mapIn' || r.kind === 'font' || m === 'deepMax' || m === 'max')) return 'extra';
+      return 'upload';
+    }
+    if (r.state === 'cloud-changed') return r.downloadable ? 'download' : null;
+    if (r.state === 'local-changed') return 'upload';
+    if (r.state === 'conflict') {
+      if (r.seed) return r.downloadable ? 'download' : null;
+      if (m === 'item') return r.downloadable ? 'keepBoth' : 'keepMine';
+      if (m === 'assign') return (r.memory && !r.legacy) ? 'keepMine' : (r.downloadable ? 'useCloud' : 'keepMine');
+      return (r.mergeable && r.downloadable) ? 'merge' : null;
+    }
+    return null;
+  }
+  function runHydrateAction(tool, action, row, uid) {
+    return Promise.resolve().then(function () {
+      if (action === 'download') return actDownload(tool, row);
+      if (action === 'upload') return actUpload(tool, row);
+      if (action === 'keepMine') return actUpload(tool, row, true);
+      if (action === 'keepBoth') return actKeepBoth(tool, row);
+      if (action === 'merge') return actMerge(tool, row);
+      if (action === 'useCloud') return actUseCloud(tool, row);
+      if (action === 'deleteCloud') {
+        return cloudRemoveIf(row.cloud.id, row.memory.u).then(function () { metaDelete(uid, tool, row.kind, row.name); return { action: 'deleteCloud', row: row }; },
+          function (err) { if (err && err.code === 'changed' && row.downloadable) return actDownload(tool, row); throw err; });
+      }
+      if (action === 'removeLocal') {
+        return localRemove(row.entry, row.name).then(function () { metaDelete(uid, tool, row.kind, row.name); notifyPage(tool, row.kind, row.name); return { action: 'removeLocal', row: row }; });
+      }
+      throw makeError('bad_action', 'IvritSaves: unknown action ' + action);
+    });
+  }
+  function normTools(tools) {
+    var out = [];
+    (tools || []).forEach(function (t) { if (TOOLS.indexOf(t) >= 0 && out.indexOf(t) < 0) out.push(t); });
+    return TOOLS.filter(function (t) { return out.indexOf(t) >= 0; });
+  }
+  // Hold every listed tool's queue (in TOOLS order) while fn runs, so nothing else touches those rows.
+  function enqueueAll(tools, fn) {
+    if (!tools.length) return Promise.resolve().then(fn);
+    return enqueue(tools[0], function () { return enqueueAll(tools.slice(1), fn); });
+  }
+  // The public entry: queued and deduplicated per tool set; the first hydration for an account on this device
+  // lists every tool (the device-extras diff is device-wide) and opens the card when it finds extras.
+  function hydrate(tools) {
+    tools = normTools(tools);
+    if (!currentUser()) return Promise.reject(makeError('signed_out'));
+    if (!tools.length) return Promise.resolve({ ok: true, tools: [] });
+    var key = tools.join(',');
+    if (pendingHydrate[key]) return pendingHydrate[key];
+    var p = enqueueAll(tools, function () { return hydrateInner(tools); });
+    pendingHydrate[key] = p;
+    p.then(function () { delete pendingHydrate[key]; }, function () { delete pendingHydrate[key]; });
+    return p;
+  }
+  function memoryNames(uid, tool) {
+    var m = metaAll(), u = m.users[uid], tl = isPlainObject(u) && u[tool], out = [];
+    if (!isPlainObject(tl)) return out;
+    Object.keys(tl).forEach(function (kind) { if (isPlainObject(tl[kind])) Object.keys(tl[kind]).forEach(function (name) { if (isPlainObject(tl[kind][name]) && tl[kind][name].id) out.push(tl[kind][name].id); }); });
+    return out;
+  }
+  // The listing lacks every row this device remembers for some tool: a deleted account still answers a
+  // still-valid token with an empty list, and "cloud gone" would then remove every copy here. Ask first.
+  function accountGoneCheck(uid, listTools, rows) {
+    var suspect = listTools.some(function (tool) {
+      var ids = memoryNames(uid, tool);
+      return ids.length > 0 && !rows.some(function (r) { return ids.indexOf(r.id) >= 0; });
+    });
+    if (!suspect) return Promise.resolve(false);
+    return accountAlive().then(function (alive) { return !alive; });
+  }
+  function landedNote(landed, tool, kind) { if (!landed[tool]) landed[tool] = []; if (landed[tool].indexOf(kind) < 0) landed[tool].push(kind); }
+  // Runs one phase of a tool's plan: 'down' (what the account has that this device lacks or has older) or
+  // 'rest' (everything else). Row errors skip the row and are named; a connection error stops the run.
+  function runPhase(tool, p, uid, first, phase, res) {
+    var order = p.rows.filter(function (r) {
+      var a = hydrateActionFor(r, first);
+      if (!a || a === 'extra') return false;
+      var down = (a === 'download');
+      if (phase === 'down') return down;
+      if (phase === 'rest') return !down;
+      return true;
+    });
+    return seqMap(order, function (row) {
+      var action = hydrateActionFor(row, first);
+      if (action === 'upload' && !localItem(row.entry, row.name)) return Promise.resolve();   // gone meanwhile (folded into another item)
+      if (action === 'upload' && noUploadUntilChanged[tool] && noUploadUntilChanged[tool][row.kind]) return Promise.resolve();
+      return runHydrateAction(tool, action, row, uid).then(function (r) {
+        res.done++;
+        if (action === 'download' || action === 'merge' || action === 'useCloud' || action === 'keepBoth' || action === 'removeLocal') landedNote(res.landed, tool, row.kind);
+        if (r && r.hint) res.hint = true;
+      }, function (err) {
+        if (err && err.code === 'cap' && action === 'download') { res.fontFull.push(row.label); return; }   // a font this device has no room for: not an error
+        if (!isRowError(err)) throw err;
+        noteSkip(res, row, err);
+      });
+    });
+  }
+  function snapshotNames(tool, p) {
+    seenNames[tool] = {};
+    p.rows.forEach(function (r) { if (r.local) { if (!seenNames[tool][r.kind]) seenNames[tool][r.kind] = {}; seenNames[tool][r.kind][r.name] = true; } });
+  }
+  function hydrateInner(tools) {
+    var uid = ensureUser();
+    var first = !hydratedAt(uid) && !firstHydrationDone[uid];
+    var listTools = first ? toolsWithEntries() : tools;
+    var res = { tools: tools, ok: false, first: first, done: 0, skipped: 0, skips: [], fontFull: [], landed: {}, error: null, hint: false };
+    tools.forEach(function (tool) { hydrating[tool] = true; setStatus(tool, 'loading'); });
+    return Promise.resolve().then(function () {
+      tools.forEach(function (tool) { if (pages[tool] && !pages[tool].pulled) flushPage(tool); });
+      return primeVirtual('Suite');
+    }).then(function () {
+      return cloudList(listTools);
+    }).then(function (rows) {
+      return accountGoneCheck(uid, listTools, rows).then(function (gone) {
+        if (gone) { var e = makeError('signed_out', 'IvritSaves: the account is gone'); e.accountGone = true; throw e; }
+        return seqMap(listTools, function (tool) { return planTool(tool, rows); });
+      });
+    }).then(function (allPlans) {
+      var byTool = {};
+      allPlans.forEach(function (p) { byTool[p.tool] = p; });
+      // 1. Suite first (preferences apply live, fonts land), then what the account has for this page's tools.
+      return seqMap(tools, function (tool) { return runPhase(tool, byTool[tool], uid, first, 'down', res); }).then(function () {
+        if (!first) return null;
+        // 2. The device's own items across every tool: the card decides before anything goes up or merges.
+        var extras = [];
+        listTools.forEach(function (tool) {
+          byTool[tool].rows.forEach(function (r) { if (hydrateActionFor(r, true) === 'extra') extras.push({ tool: tool, row: r }); });
+        });
+        if (!extras.length) { markHydrated(uid); firstHydrationDone[uid] = true; return null; }
+        return openCard(uid, extras).then(function (choice) {
+          if (choice === 'add') {
+            return seqMap(extras, function (x) {
+              return actUpload(x.tool, x.row).then(function () { res.done++; }, function (err) { if (!isRowError(err)) throw err; noteSkip(res, x.row, err); });
+            });
+          }
+          // 'remove': the extras leave the device; nothing else of the device goes up until it is changed
+          return seqMap(extras, function (x) {
+            return localRemove(x.row.entry, x.row.name).then(function () { notifyPage(x.tool, x.row.kind, x.row.name); }, function (err) { warn('remove failed:', err); });
+          }).then(function () {
+            listTools.forEach(function (tool) { noUploadUntilChanged[tool] = {}; registryFor(tool).forEach(function (e) { if (e.merge === 'assign' || e.shape === 'tree') noUploadUntilChanged[tool][e.kind] = true; }); });
+          });
+        }).then(function () { markHydrated(uid); firstHydrationDone[uid] = true; return cloudList(tools).then(function (rows2) { return seqMap(tools, function (tool) { return planTool(tool, rows2).then(function (p) { byTool[tool] = p; }); }); }); });
+      }).then(function () {
+        // 3. Uploads, merges, the account's deletions, this device's deletions.
+        return seqMap(tools, function (tool) { return runPhase(tool, byTool[tool], uid, false, 'rest', res); });
+      });
+    }).then(function () {
+      // 4. List again, then the folder trees follow their items (never on a stale plan).
+      return cloudList(tools).then(function (rows2) {
+        return seqMap(tools, function (tool) {
+          return planTool(tool, rows2).then(function (p2) {
+            return syncTrees(tool, p2).then(function (n) { if (n) landedNote(res.landed, tool, 'trees'); }, function (err) { res.treeError = err; }).then(function () { snapshotNames(tool, p2); });
+          });
+        });
+      });
+    }).then(function () {
+      res.ok = true;
+      tools.forEach(function (tool) { hydratedTools[tool] = uid; delete stale[tool]; });
+      if (tools.some(function (tool) { return !(pages[tool] && pages[tool].hydrate === false); })) armHook();   // a harness attached with hydrate:false never arms write-through
+      return res;
+    }).catch(function (err) {
+      res.error = err;
+      return res;
+    }).then(function (r) {
+      tools.forEach(function (tool) { hydrating[tool] = false; });
+      if (r.error) {
+        if (r.error.accountGone) {
+          forgetUser(uid); hookOn = false;
+          tools.forEach(function (tool) { setStatus(tool, 'error', errorText(r.error)); });
+          var a = A(); if (a && typeof a.signOut === 'function') a.signOut({ keepLocal: true }).catch(noop);
+        } else {
+          var offline = navigator.onLine === false || String(r.error.code || '') === 'offline';
+          tools.forEach(function (tool) { setStatus(tool, offline ? 'offline_pending' : 'error', errorText(r.error)); });
+          if (isConnectionError(r.error)) r.retry = true;
+        }
+      } else {
+        var tail = r.fontFull.length ? t('shared.cloud.status_font_full', '"{name}" was not added here: My Fonts is full.', { name: r.fontFull.join(', ') }) : '';
+        var skipped = r.skips.length ? r.skips.map(function (s) { return t('shared.cloud.status_error_row', 'Couldn\'t save "{name}": {why}', { name: s.name, why: s.why }); }).join(' ') : '';
+        tools.forEach(function (tool) { if (skipped) setStatus(tool, 'error_row', skipped); else setStatus(tool, 'saved', { when: newestUpdatedAt(tool), note: tail }); });
+      }
+      hydratedEvents.push({ tools: tools, ok: !r.error });
+      try { window.dispatchEvent(new CustomEvent('ivritsuite:hydrated', { detail: { tools: tools, ok: !r.error, first: first, landed: r.landed } })); } catch (e) {}
+      // Anything a page wrote while its rows were landing goes up now.
+      tools.forEach(function (tool) { if (!r.error && dirty[tool] && Object.keys(dirty[tool]).length) scheduleFlush(tool, 0); });
+      return r;
+    });
+  }
+  var hydratedEvents = [];
+  function newestUpdatedAt(tool) {
+    var p = plans[tool], best = null;
+    if (p && p.cloudRows) p.cloudRows.forEach(function (r) { if (r.updated_at && (!best || r.updated_at > best)) best = r.updated_at; });
+    return best;
+  }
+
+  /* ---------- write-through: a page's own writes reach the account ---------- */
+  var entriesByKey = null;
+  function keyMap() {
+    if (entriesByKey) return entriesByKey;
+    entriesByKey = {};
+    registryAll().forEach(function (e) { if (!e.virtual && e.lsKey) { if (!entriesByKey[e.lsKey]) entriesByKey[e.lsKey] = []; entriesByKey[e.lsKey].push(e); } });
+    var prefs = entryFor('Suite', 'prefs');
+    if (prefs) Object.keys(SUITE_PREFS.fields).forEach(function (f) { var k = SUITE_PREFS.fields[f].key; if (!entriesByKey[k]) entriesByKey[k] = []; entriesByKey[k].push(prefs); });
+    return entriesByKey;
+  }
+  // The wrapper's contract: while `purging` a write to a registered key returns without touching storage (the
+  // page's own pagehide writers must not re-create what a sign-out removed); otherwise the original runs first
+  // and its exception propagates unchanged (writeText relies on QuotaExceededError), and only then, guarded,
+  // the module notes a page write. The prototype is wrapped once, and only after a signed-in hydration.
+  function installHook() {
+    if (hookInstalled || typeof Storage === 'undefined' || !Storage.prototype) return;
+    hookInstalled = true;
+    var origSet = Storage.prototype.setItem, origRemove = Storage.prototype.removeItem;
+    function wrap(orig) {
+      return function (key) {
+        var mine = false;
+        try { mine = this === window.localStorage && !!keyMap()[key]; } catch (e) { mine = false; }
+        if (mine && purging) return;
+        var r = orig.apply(this, arguments);
+        try { if (mine && hookOn && selfWrite === 0 && !suspended) onPageWrite(key); } catch (e) {}
+        return r;
+      };
+    }
+    Storage.prototype.setItem = wrap(origSet);
+    Storage.prototype.removeItem = wrap(origRemove);
+    // The shared uploader block's saveUserFont is a global function declaration on every carrier: a bare call
+    // resolves through window at call time, so wrapping it here catches every teacher upload. deleteUserFont
+    // is left alone — the block calls it to evict at the cap, and an eviction is not a deletion.
+    if (typeof window.saveUserFont === 'function' && !window.saveUserFont._ivritWrapped) {
+      var origSave = window.saveUserFont;
+      var wrapped = function (name) {
+        var args = arguments;
+        return Promise.resolve(origSave.apply(this, args)).then(function (r) {
+          if (hookOn && !suspended && currentUser()) { USER_FONTS.prime().then(function () { flushFont(String(name)); }); }
+          return r;
+        });
+      };
+      wrapped._ivritWrapped = true;
+      window.saveUserFont = wrapped;
+    }
+  }
+  function armHook() { installHook(); hookOn = true; }
+  function onPageWrite(key) {
+    var user = currentUser();
+    if (!user) return;
+    (keyMap()[key] || []).forEach(function (e) {
+      if (hydratedTools[e.tool] !== user.id) return;
+      if (noUploadUntilChanged[e.tool]) delete noUploadUntilChanged[e.tool][e.kind];
+      markDirty(e.tool, e.kind);
+    });
+  }
+  function markDirty(tool, kind) {
+    if (!dirty[tool]) dirty[tool] = {};
+    dirty[tool][kind] = true;
+    setStatus(tool, 'saving');
+    scheduleFlush(tool, FLUSH_DEBOUNCE_MS);
+  }
+  function scheduleFlush(tool, ms) {
+    if (timers[tool]) clearTimeout(timers[tool]);
+    timers[tool] = setTimeout(function () { timers[tool] = null; flush(tool).catch(noop); }, ms);
+  }
+  function isPaused(tool) { var cfg = pages[tool]; try { return !!(cfg && typeof cfg.paused === 'function' && cfg.paused()); } catch (e) { return false; } }
+  // The public flush: this tool's dirty kinds, now, through its queue (a paused page or a hydration in flight
+  // only postpones).
+  function flush(tool) {
+    if (timers[tool]) { clearTimeout(timers[tool]); timers[tool] = null; }
+    if (!dirty[tool] || !Object.keys(dirty[tool]).length) return Promise.resolve({ tool: tool, done: 0 });
+    if (isPaused(tool) || hydrating[tool]) { scheduleFlush(tool, FLUSH_DEBOUNCE_MS); return Promise.resolve({ tool: tool, done: 0, postponed: true }); }
+    return enqueue(tool, function () { return flushInner(tool); });
+  }
+  function flushInner(tool) {
+    var user = currentUser();
+    if (!user || suspended || purging) { dirty[tool] = {}; return Promise.resolve({ tool: tool, done: 0 }); }
+    var uid = user.id;
+    var kinds = Object.keys(dirty[tool] || {});
+    dirty[tool] = {};
+    var res = { tool: tool, done: 0, skipped: 0, skips: [], error: null, needHydrate: false };
+    if (pages[tool] && !pages[tool].pulled) withSelfWrite(function () { flushPage(tool); });
+    return seqMap(kinds, function (kind) {
+      var entry = entryFor(tool, kind);
+      if (!entry) return Promise.resolve();
+      stampWrite(entry, null, 'page');   // other tabs of this tool read before their next save
+      if (stale[tool] && stale[tool][kind]) { delete stale[tool][kind]; res.needHydrate = true; return Promise.resolve(); }
+      if (entry.shape === 'tree') return flushTree(uid, tool, entry, res);
+      return flushKind(uid, tool, entry, res);
+    }).then(function () {
+      if (res.needHydrate) return hydrateInner([tool]).then(function () { return res; });
+      return res;
+    }).catch(function (err) {
+      res.error = err;
+      kinds.forEach(function (k) { if (!dirty[tool]) dirty[tool] = {}; dirty[tool][k] = true; });   // retried by the next flush, online event, or load
+      return res;
+    }).then(function (r) {
+      if (r.error) {
+        var offline = navigator.onLine === false || String(r.error.code || '') === 'offline';
+        setStatus(tool, offline ? 'offline_pending' : 'error', errorText(r.error));
+      } else if (r.skips.length) {
+        setStatus(tool, 'error_row', r.skips.map(function (s) { return t('shared.cloud.status_error_row', 'Couldn\'t save "{name}": {why}', { name: s.name, why: s.why }); }).join(' '));
+      } else if (!dirty[tool] || !Object.keys(dirty[tool]).length) {
+        setStatus(tool, 'saved', { when: 'now' });
+      }
+      return r;
+    });
+  }
+  // One kind: every item hashed against the memory — insert / conditional update / nothing; then the names
+  // this tab saw before and cannot see now → a conditional delete (a name it never saw → hydrate instead).
+  function flushKind(uid, tool, entry, res) {
+    var items = localItems(entry).filter(function (it) { return !isSeed(entry, it.name, it.value); });
+    var present = {};
+    return seqMap(items, function (it) {
+      present[it.name] = true;
+      var projected = project(entry, it.value);
+      var g = guardUpload(entry, it.name, projected);
+      if (g) { noteSkip(res, { label: it.label }, g); return Promise.resolve(); }
+      return hashText(canonJson(projected)).then(function (h) {
+        var mem = metaGet(uid, tool, entry.kind, it.name);
+        if (mem && mem.h === h) return null;
+        if (!mem) {
+          var hint = legacyGet(uid, tool, entry.kind, it.name);
+          if (hint && hint.id && hint.u) {   // a row this device synced under the old module: update it in place
+            return cloudUpdateIf(hint.id, hint.u, projected, h).then(function (saved) { remember(uid, tool, entry.kind, it.name, h, saved); res.done++; },
+              function (err) { if (err && err.code === 'changed') { res.needHydrate = true; return; } throw err; });
+          }
+          return cloudInsert(entry, it.name, projected, h).then(function (saved) { remember(uid, tool, entry.kind, it.name, h, saved); res.done++; },
+            function (err) { if (err && err.code === '23505') { res.needHydrate = true; return; } throw err; });
+        }
+        return cloudUpdateIf(mem.id, mem.u, projected, h).then(function (saved) { remember(uid, tool, entry.kind, it.name, h, saved); res.done++; },
+          function (err) { if (err && err.code === 'changed') { res.needHydrate = true; return; } throw err; });
+      }).catch(function (err) { if (!isRowError(err)) throw err; noteSkip(res, { label: it.label }, err); });
+    }).then(function () {
+      if (entry.noDeleteByAbsence) return;
+      var m = metaAll(), b = metaBranch(m, uid, tool, entry.kind, false);
+      var gone = b ? Object.keys(b).filter(function (name) { return !present[name] && isPlainObject(b[name]) && b[name].id; }) : [];
+      var sawBefore = (seenNames[tool] && seenNames[tool][entry.kind]) || {};
+      return seqMap(gone, function (name) {
+        if (!sawBefore[name]) { res.needHydrate = true; return Promise.resolve(); }   // another tab's item this tab never saw: not a deletion
+        var mem = b[name];
+        return cloudRemoveIf(mem.id, mem.u).then(function () { metaDelete(uid, tool, entry.kind, name); res.done++; },
+          function (err) { if (err && err.code === 'changed') { res.needHydrate = true; return; } throw err; });
+      });
+    }).then(function () {
+      if (!seenNames[tool]) seenNames[tool] = {};
+      seenNames[tool][entry.kind] = present;
+    });
+  }
+  // A folder tree is flushed like one row: hash vs memory → conditional update / insert; a refusal → hydrate.
+  function flushTree(uid, tool, entry, res) {
+    var local = localTree(entry);
+    if (!local) return Promise.resolve();
+    var g = guardUpload(entry, DEFAULT_NAME, local);
+    if (g) { noteSkip(res, { label: kindLabel(entry) }, g); return Promise.resolve(); }
+    return hashItem(entry, local).then(function (h) {
+      var mem = metaGet(uid, tool, entry.kind, DEFAULT_NAME);
+      if (mem && mem.h === h) return;
+      var write = mem ? cloudUpdateIf(mem.id, mem.u, local, h) : cloudInsert(entry, DEFAULT_NAME, local, h);
+      return write.then(function (saved) { remember(uid, tool, entry.kind, DEFAULT_NAME, h, saved); res.done++; },
+        function (err) { if (err && (err.code === 'changed' || err.code === '23505')) { res.needHydrate = true; return; } throw err; });
+    });
+  }
+  // A font the teacher just added or replaced (the wrapped saveUserFont): its one row, through the Suite queue.
+  function flushFont(name) {
+    var entry = entryFor('Suite', 'font');
+    if (!entry || !currentUser()) return Promise.resolve();
+    return enqueue('Suite', function () {
+      var uid = ensureUser(), it = localItem(entry, name);
+      if (!it) return null;
+      var projected = project(entry, it.value), g = guardUpload(entry, name, projected);
+      if (g) { setStatus('Suite', 'error_row', t('shared.cloud.status_error_row', 'Couldn\'t save "{name}": {why}', { name: name, why: skipReason(g) })); return null; }
+      return hashText(canonJson(projected)).then(function (h) {
+        var mem = metaGet(uid, 'Suite', 'font', name);
+        if (mem && mem.h === h) return null;
+        var write = mem ? cloudUpdateIf(mem.id, mem.u, projected, h) : cloudInsert(entry, name, projected, h);
+        return write.then(function (saved) { remember(uid, 'Suite', 'font', name, h, saved); if (!seenNames.Suite) seenNames.Suite = {}; if (!seenNames.Suite.font) seenNames.Suite.font = {}; seenNames.Suite.font[name] = true; },
+          function (err) { if (err && (err.code === 'changed' || err.code === '23505')) return hydrateInner(['Suite']); throw err; });
+      });
+    }).catch(function (err) { setStatus('Suite', 'error', errorText(err)); });
+  }
+  // A teacher deleted a font on purpose (the hub's My Fonts manager, the Font Maker's remove): the account's row goes too.
+  function fontDeleted(name) {
+    var user = currentUser();
+    if (!user) return Promise.resolve(false);
+    return enqueue('Suite', function () {
+      var mem = metaGet(user.id, 'Suite', 'font', name);
+      if (!mem) return false;
+      return cloudRemoveIf(mem.id, mem.u).then(function () { metaDelete(user.id, 'Suite', 'font', name); return true; },
+        function (err) { if (err && err.code === 'changed') { metaDelete(user.id, 'Suite', 'font', name); return false; } throw err; });
+    }).catch(function (err) { setStatus('Suite', 'error', errorText(err)); return false; });
+  }
+  function suspend() {
+    suspended = true; hookOn = false;
+    Object.keys(timers).forEach(function (tool) { if (timers[tool]) { clearTimeout(timers[tool]); timers[tool] = null; } });
+    dirty = {};
+  }
+  // What a sign-out would leave on this device (a synchronous estimate from the last classifications and the
+  // dirty kinds; the chip's confirm names the count).
+  function pendingSignOut() {
+    var n = 0;
+    Object.keys(plans).forEach(function (tool) {
+      var p = plans[tool];
+      if (!p || !p.rows) return;
+      p.rows.forEach(function (r) { if (!r.seed && (r.state === 'local-only' || r.state === 'local-changed' || r.state === 'conflict')) n++; });
+    });
+    Object.keys(dirty).forEach(function (tool) { n += Object.keys(dirty[tool] || {}).length; });
+    return { unsynced: n };
+  }
+  function flushAllNow() {
+    var tools = Object.keys(hydratedTools).filter(function (tool) { return dirty[tool] && Object.keys(dirty[tool]).length; });
+    Object.keys(timers).forEach(function (tool) { if (timers[tool]) { clearTimeout(timers[tool]); timers[tool] = null; } });
+    return seqMap(tools, function (tool) { return enqueue(tool, function () { return flushInner(tool); }).catch(noop); });
+  }
+
+  /* ---------- the status line ---------- */
   var STYLE_ID = 'ivsav-style';
   function injectStyle() {
     if (document.getElementById(STYLE_ID)) return;
     var css =
       '.ivsav{font-family:inherit;color:var(--text,#1a2744);}' +
-      '.ivsav-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-block-end:6px;}' +
-      '.ivsav-title{font-weight:700;flex:1 1 auto;}' +
       '.ivsav-btn{padding:5px 10px;border:1px solid var(--border,#c8bfa8);border-radius:6px;background:var(--white,#fff);color:inherit;' +
-        'font-family:inherit;font-size:0.8rem;line-height:1.3;cursor:pointer;}' +
-      // Every .ivsav-btn[data-act] is aria-disabled while a sync is in flight; the hover is guarded to
-      // match the dimming below, so a locked row does not keep offering a click mid-upload.
+        'font-family:inherit;font-size:0.8rem;line-height:1.3;cursor:pointer;margin-inline-end:6px;}' +
       '.ivsav-btn:hover:not([aria-disabled="true"]){background:var(--warm-gray,#e8e0d0);}' +
       'body.dark .ivsav-btn:hover:not([aria-disabled="true"]){background:#2a3349;}' +
       '.ivsav-btn:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:1px;}' +
@@ -1551,43 +1954,18 @@
       '.ivsav-btn.ivsav-primary{border-color:var(--gold,#c9922a);font-weight:600;}' +
       '.ivsav-status{margin:4px 0 8px;font-size:0.82rem;color:var(--muted,#6b6050);min-block-size:1.2em;overflow-wrap:anywhere;}' +
       '.ivsav-status.is-error{color:var(--danger-text,#b3261e);}' +
+      '.ivsav-status.is-saved::before{content:"\\2713\\00a0";}' +
       '.ivsav-note{margin:6px 0;font-size:0.85rem;overflow-wrap:anywhere;}' +
-      '.ivsav-list{list-style:none;margin:0;padding:0;}' +
-      '.ivsav-kind{margin-block:10px 4px;font-size:0.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted,#6b6050);}' +
-      '.ivsav-note-row{margin-block:2px 8px;font-size:0.8rem;color:var(--muted,#6b6050);overflow-wrap:anywhere;}' +
-      '.ivsav-signpost{flex:1 1 100%;font-size:0.8rem;color:var(--muted,#6b6050);overflow-wrap:anywhere;}' +
-      '.ivsav-signpost a{color:var(--gold-text,var(--text,#1a2744));text-decoration:underline;}' +
-      '.ivsav-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:6px 8px;margin-block:3px;border:1px solid var(--border,#c8bfa8);' +
-        'border-radius:6px;background:var(--white,#fff);}' +
-      '.ivsav-main{flex:1 1 180px;min-inline-size:0;}' +
-      '.ivsav-name{font-weight:600;overflow-wrap:anywhere;}' +
-      '.ivsav-state{display:inline-block;margin-inline-start:6px;padding:1px 7px;border-radius:999px;font-size:0.72rem;font-weight:600;' +
-        'background:var(--warm-gray,#e8e0d0);color:var(--text,#1a2744);white-space:nowrap;}' +
-      '.ivsav-row[data-state="synced"] .ivsav-state{background:#dff2e1;color:#1b5e20;}' +
-      '.ivsav-row[data-state="conflict"] .ivsav-state{background:#fde7e7;color:#8a1c1c;}' +
-      '.ivsav-row[data-state="cloud-changed"] .ivsav-state,.ivsav-row[data-state="cloud-only"] .ivsav-state{background:#e3ecfa;color:#1a3d7a;}' +
-      '.ivsav-row[data-state="local-changed"] .ivsav-state,.ivsav-row[data-state="local-only"] .ivsav-state{background:#fbf0d9;color:#6b4a00;}' +
-      '.ivsav-row[data-state="deleted-here"] .ivsav-state,.ivsav-row[data-state="cloud-deleted"] .ivsav-state{background:#ececec;color:#555;}' +
-      'body.dark .ivsav-row[data-state="deleted-here"] .ivsav-state,body.dark .ivsav-row[data-state="cloud-deleted"] .ivsav-state{background:#3a3a3a;color:#ddd;}' +
-      'body.dark .ivsav-row[data-state="synced"] .ivsav-state{background:#1f4d2a;color:#c9f0cf;}' +
-      'body.dark .ivsav-row[data-state="conflict"] .ivsav-state{background:#5a2323;color:#ffd6d6;}' +
-      'body.dark .ivsav-row[data-state="cloud-changed"] .ivsav-state,body.dark .ivsav-row[data-state="cloud-only"] .ivsav-state{background:#23385c;color:#d6e4ff;}' +
-      'body.dark .ivsav-row[data-state="local-changed"] .ivsav-state,body.dark .ivsav-row[data-state="local-only"] .ivsav-state{background:#5a4416;color:#ffe9b8;}' +
-      '.ivsav-meta{flex:1 1 140px;font-size:0.75rem;color:var(--muted,#6b6050);}' +
-      '.ivsav-actions{display:flex;flex-wrap:wrap;gap:4px;}' +
-      '.ivsav-actions .ivsav-btn{font-size:0.75rem;padding:3px 8px;}' +
       '.ivsav-overlay{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.45);}' +
       '.ivsav-card{box-sizing:border-box;inline-size:100%;max-inline-size:540px;max-block-size:90vh;overflow:auto;padding:16px 18px;border:1px solid var(--border,#c8bfa8);' +
         'border-radius:10px;background:var(--white,#fff);color:var(--text,#1a2744);box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:inherit;}' +
       '.ivsav-card-head{display:flex;align-items:center;gap:8px;}' +
       '.ivsav-card-title{flex:1 1 auto;margin:0;font-size:1.1rem;}' +
-      '.ivsav-card h3{margin:14px 0 4px;font-size:0.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted,#6b6050);}' +
       '.ivsav-card p{margin:6px 0;font-size:0.9rem;line-height:1.45;}' +
       '.ivsav-card ul{margin:4px 0 8px;padding-inline-start:18px;font-size:0.9rem;line-height:1.5;}' +
       '.ivsav-card .ivsav-btn{margin:4px 0;margin-inline-end:6px;font-size:0.88rem;padding:7px 12px;}' +
       '.ivsav-card .ivsav-status{margin:8px 0 0;}' +
-      '.ivsav-acct-manage{display:inline-block;margin-block:6px 2px;font-size:0.9rem;color:var(--gold-text,#7f5a13);}' +
-      '@media (prefers-reduced-motion: reduce){.ivsav,.ivsav *{transition-duration:0.001ms!important;animation-duration:0.001ms!important;}}';
+      '@media (prefers-reduced-motion: reduce){.ivsav,.ivsav *,.ivsav-overlay,.ivsav-overlay *{transition-duration:0.001ms!important;animation-duration:0.001ms!important;}}';
     var el = document.createElement('style');
     el.id = STYLE_ID;
     el.textContent = css;
@@ -1609,64 +1987,6 @@
   function fmtDate(iso) {
     try { return new Date(iso).toLocaleString(locale(), { dateStyle: 'medium', timeStyle: 'short' }); } catch (e) { return String(iso).slice(0, 16).replace('T', ' '); }
   }
-  function fmtKb(bytes) { return t('shared.cloud.size_kb', '{kb} KB', { kb: Math.max(1, Math.round((bytes || 0) / 1024)) }); }
-  // "Changed in both places — open {tool} to merge it", the tool name a link to its page when this page is not it.
-  function signpost(tool) {
-    var box = el('div', 'ivsav-signpost');
-    var name = toolName(tool), href = TOOL_PAGES[tool];
-    var text = t('shared.cloud.resolve_in_tool', 'Changed in both places — open {tool} to merge it', { tool: '\u0001' });
-    var parts = text.split('\u0001');
-    box.appendChild(document.createTextNode(parts[0]));
-    var here = false;
-    try { here = window.location.pathname === href.split('?')[0]; } catch (e) {}
-    if (href && !here) { var a = el('a', '', name); a.href = href; box.appendChild(a); }   // a link unless this page is that tool
-    else box.appendChild(document.createTextNode(name));
-    box.appendChild(document.createTextNode(parts.length > 1 ? parts.slice(1).join(name) : ''));
-    return box;
-  }
-  function stateText(state) {
-    if (state === 'local-only') return t('shared.cloud.state_local_only', 'Only on this device');
-    if (state === 'cloud-only') return t('shared.cloud.state_cloud_only', 'Only in the cloud');
-    if (state === 'synced') return t('shared.cloud.state_synced', 'Same');
-    if (state === 'cloud-changed') return t('shared.cloud.state_cloud_changed', 'Newer in the cloud');
-    if (state === 'local-changed') return t('shared.cloud.state_local_changed', 'Newer on this device');
-    if (state === 'deleted-here') return t('shared.cloud.state_deleted_here', 'Deleted on this device');
-    if (state === 'cloud-deleted') return t('shared.cloud.state_cloud_deleted', 'Removed from your account');
-    return t('shared.cloud.state_conflict', 'Changed in both places');
-  }
-  function actionText(action, state) {
-    if (action === 'upload') return state === 'cloud-deleted' ? t('shared.cloud.upload_again', 'Upload again') : t('shared.cloud.upload', 'Upload');
-    if (action === 'download') return state === 'deleted-here' ? t('shared.cloud.bring_back', 'Bring it back') : t('shared.cloud.download', 'Download');
-    if (action === 'deleteCloud') return t('shared.cloud.delete_cloud_too', 'Delete from your account too');
-    if (action === 'merge') return t('shared.cloud.merge', 'Merge');
-    if (action === 'keepBoth') return t('shared.cloud.keep_both', 'Keep both');
-    if (action === 'useCloud') return t('shared.cloud.use_cloud', 'Use cloud copy');
-    if (action === 'keepMine') return t('shared.cloud.keep_mine', 'Keep mine');
-    return action;
-  }
-  // After the suite-wide preferences changed: the fields that only show after a reload.
-  function suiteHintText(hint) { return hint ? ' ' + t('shared.cloud.suite_reload_hint', 'Reload open pages to see the font, keyboard and dictionary preferences.') : ''; }
-  function doneText(res) {
-    var name = res.row ? res.row.label : '';
-    if (res.action === 'upload') return t('shared.cloud.done_upload', 'Uploaded "{name}".', { name: name });
-    if (res.action === 'download') {
-      var line = res.pushed ? t('shared.cloud.done_download_pushed', 'Downloaded "{name}" and put this device\'s version in your account.', { name: name })
-                            : t('shared.cloud.done_download', 'Downloaded "{name}" to this device.', { name: name });
-      if (res.row && res.row.entry && res.row.entry.virtual) return line + suiteHintText(res.hint);
-      return line + ' ' + t('shared.cloud.reload_hint', 'If this tool is open in other tabs, reload them.');
-    }
-    if (res.action === 'merge') return t('shared.cloud.done_merge', 'Merged "{name}" on both sides.', { name: name }) + suiteHintText(res.hint);
-    if (res.action === 'keepBoth') return t('shared.cloud.done_keep_both', 'Kept both: the cloud version is now "{copy}" on this device.', { copy: res.copy });
-    if (res.action === 'delete') return t('shared.cloud.done_delete', 'Deleted "{name}" from the cloud.', { name: name });
-    return '';
-  }
-  function say(tool, text, isError) {
-    messages[tool] = text ? { text: text, isError: !!isError } : null;
-    var st = panels[tool] && panels[tool].root && panels[tool].root.querySelector('.ivsav-status');
-    if (st) { st.textContent = text || ''; st.classList.toggle('is-error', !!isError); }
-    // A toast too, so a line inside a collapsed drawer is still seen; an error stays up longer.
-    if (text && typeof window.showAppToast === 'function') { try { window.showAppToast(text, isError ? 6000 : undefined); } catch (e) {} }
-  }
   function accountState() {
     var a = A();
     if (!a) return 'unavailable';
@@ -1677,523 +1997,271 @@
     if (s === 'anonymous') return 'anonymous';
     return 'unavailable';
   }
-  function render(tool) {
-    var panel = panels[tool];
-    if (!panel || !panel.root) return;
-    var root = panel.root;
+  // state: 'loading' | 'saved' | 'saving' | 'error' | 'error_row' | 'offline_pending'; detail: { when, note } for saved, a sentence otherwise.
+  function setStatus(tool, state, detail) {
+    var s = statuses[tool] || (statuses[tool] = {});
+    s.state = state; s.detail = detail; s.at = Date.now();
+    renderStatus(tool);
+    if ((state === 'error' || state === 'error_row') && detail && typeof window.showAppToast === 'function') { try { window.showAppToast(String(detail), 6000); } catch (e) {} }
+  }
+  function renderStatus(tool) {
+    var s = statuses[tool];
+    if (!s || !s.root) return;
+    var root = s.root;
     while (root.firstChild) root.removeChild(root.firstChild);
-    var cfg = pages[tool] || {};
-    var head = el('div', 'ivsav-head');
-    if (cfg.title !== false) head.appendChild(el('span', 'ivsav-title', typeof cfg.title === 'string' ? t(cfg.title, 'Cloud saves') : t('shared.cloud.title', 'Cloud saves')));
-    var state = accountState();
-    var p = plans[tool];
-    var isBusy = !!busy[tool];
-    if (state === 'signed-in') {
-      var refreshBtn = button(t('shared.cloud.refresh', 'Refresh'), '', function () { refresh(tool).catch(noop); });
-      head.appendChild(refreshBtn);
-      var n = p ? p.counts.safe : 0;
-      var syncBtn = button(n ? t('shared.cloud.sync_count', 'Sync now ({n})', { n: n }) : t('shared.cloud.sync', 'Sync now'), 'ivsav-primary', function () { syncNow(tool).catch(noop); });
-      if (!n) syncBtn.setAttribute('aria-disabled', 'true');
-      head.appendChild(syncBtn);
-    }
-    if (head.firstChild) root.appendChild(head);   // signed out with title:false there is nothing to show up here
-    var status = el('p', 'ivsav-status');
-    status.setAttribute('role', 'status');
-    status.setAttribute('aria-live', 'polite');
-    var msg = messages[tool];
-    if (isBusy) status.textContent = t('shared.cloud.working', 'Working…');
-    else if (msg) { status.textContent = msg.text; if (msg.isError) status.classList.add('is-error'); }
-    root.appendChild(status);
-
-    if (state !== 'signed-in') {
+    var line = el('p', 'ivsav-status');
+    line.setAttribute('role', 'status');
+    line.setAttribute('aria-live', 'polite');
+    root.appendChild(line);
+    var acct = accountState();
+    if (acct !== 'signed-in') {
       var note = el('p', 'ivsav-note');
-      if (state === 'anonymous') {
-        note.textContent = t('shared.cloud.signed_out', 'Sign in to keep copies of your saved items in the cloud and get them back on any device.');
+      if (acct === 'anonymous') {
+        note.textContent = t('shared.cloud.signed_out', 'Sign in to keep your saved items in your account and see them on any device.');
         root.appendChild(note);
         root.appendChild(button(t('shared.cloud.sign_in', 'Sign in'), 'ivsav-primary', function () {
           var a = A();
-          if (!(a && typeof a.openMenu === 'function' && a.openMenu())) say(tool, t('shared.cloud.signed_out', 'Sign in to keep copies of your saved items in the cloud and get them back on any device.'), false);
+          if (!(a && typeof a.openMenu === 'function' && a.openMenu())) line.textContent = note.textContent;
         }));
-      } else if (state === 'loading') {
-        note.textContent = t('shared.cloud.loading', 'Checking your account…');
-        root.appendChild(note);
-      } else if (state === 'offline') {
-        note.textContent = t('shared.cloud.offline', 'Cloud saves need an internet connection. Your local saves still work.');
-        root.appendChild(note);
-      } else {
-        note.textContent = t('shared.cloud.unavailable', 'Cloud saves are unavailable right now. Your local saves still work.');
-        root.appendChild(note);
-      }
+      } else if (acct === 'loading') note.textContent = t('shared.cloud.loading', 'Checking your account…');
+      else if (acct === 'offline') note.textContent = t('shared.cloud.offline', 'Cloud saves need an internet connection. Your local saves still work.');
+      else note.textContent = t('shared.cloud.unavailable', 'Cloud saves are unavailable right now. Your local saves still work.');
+      if (acct !== 'anonymous') root.appendChild(note);
       return;
     }
-    if (!p) { status.textContent = t('shared.cloud.listing', 'Loading your cloud saves…'); return; }
-    var list = el('ul', 'ivsav-list');
-    list.setAttribute('aria-label', t('shared.cloud.list_aria', 'Saved items on this device and in the cloud'));
-    var treesDiffer = p.treesDiffer || [];
-    if (!p.rows.length && !treesDiffer.length) {
-      root.appendChild(el('p', 'ivsav-note', t('shared.cloud.empty', 'Nothing saved yet. Items you save in this tool will appear here.')));
-      return;
-    }
-    // A folder tree that differs is not a row: it is a note under the group of the kind it follows.
-    var treeNote = {};
-    treesDiffer.forEach(function (kind) { var e = entryFor(tool, kind); treeNote[(e && e.follows) || kind] = true; });
-    function noteFor(kind) {
-      if (!treeNote[kind]) return;
-      delete treeNote[kind];
-      list.appendChild(el('li', 'ivsav-note-row', t('shared.cloud.folders_differ', 'Folder layout: different here and in your account — Sync now merges it.')));
-    }
-    var lastKind = null;
-    p.rows.forEach(function (row) {
-      if (row.kind !== lastKind) {
-        if (lastKind) noteFor(lastKind);
-        lastKind = row.kind;
-        // a group header only where a kind can hold many rows; a settings / streak row already reads as its kind
-        if (row.entry.shape === 'map' || row.entry.shape === 'mapIn') list.appendChild(el('li', 'ivsav-kind', kindLabel(row.entry)));
-      }
-      var li = el('li', 'ivsav-row');
-      li.setAttribute('data-state', row.state);
-      var main = el('div', 'ivsav-main');
-      main.appendChild(el('span', 'ivsav-name', row.label));
-      main.appendChild(el('span', 'ivsav-state', row.seed && row.state === 'local-only' ? t('shared.cloud.state_seed', 'Empty default — not uploaded') : stateText(row.state)));
-      li.appendChild(main);
-      // A row only its own tool can merge: say so, with the way there (a page that is that tool has no helper either — plain text then).
-      if (row.state === 'conflict' && !row.choices.length && row.entry.merge === 'page') li.appendChild(signpost(tool));
-      var metaBits = [];
-      if (row.cloud) metaBits.push(fmtKb(row.cloud.bytes), t('shared.cloud.updated', 'Updated {date}', { date: fmtDate(row.cloud.updatedAt) }));
-      else if (row.local) metaBits.push(fmtKb(row.local.bytes));
-      li.appendChild(el('div', 'ivsav-meta', metaBits.join(' · ')));
-      var actions = el('div', 'ivsav-actions');
-      row.choices.forEach(function (action) {
-        var b = button(actionText(action, row.state), action === row.safeAction || action === 'keepBoth' ? 'ivsav-primary' : '', function () {
-          if (action === 'deleteCloud' && !window.confirm(t('shared.cloud.delete_cloud_too_confirm', 'Delete "{name}" from your account too? It is already gone from this device, so this removes the last copy.', { name: row.label }))) return;
-          act(tool, action, row).catch(noop);
-        });
-        if (isBusy) b.setAttribute('aria-disabled', 'true');
-        actions.appendChild(b);
-      });
-      if (row.cloud) {
-        var fileBtn = button(t('shared.cloud.download_json', 'Download file'), '', function () { act(tool, 'file', row).catch(noop); });
-        if (isBusy) fileBtn.setAttribute('aria-disabled', 'true');
-        actions.appendChild(fileBtn);
-        if (row.state !== 'deleted-here') {   // that row's own choice button is the delete
-          var delBtn = button(t('shared.cloud.delete', 'Delete from cloud'), '', function () {
-            if (!window.confirm(t('shared.cloud.delete_confirm', 'Delete "{name}" from your account? The copy on this device stays and is not uploaded again unless you change it or press Upload again.', { name: row.label }))) return;
-            act(tool, 'delete', row).catch(noop);
-          });
-          if (isBusy) delBtn.setAttribute('aria-disabled', 'true');
-          actions.appendChild(delBtn);
-        }
-      }
-      li.appendChild(actions);
-      list.appendChild(li);
-    });
-    if (lastKind) noteFor(lastKind);
-    Object.keys(treeNote).forEach(noteFor);
-    root.appendChild(list);
-    if (p.counts.safe === 0 && p.counts.conflicts === 0 && !p.counts.mergeInTool && !p.counts.deleted && !msg && !isBusy) status.textContent = t('shared.cloud.all_synced', 'Everything is in sync.');
-  }
-  // One row action, from a panel button or a page's own control: resolves with { action, row, copy? },
-  // rejects with the mapped error after the status line has shown it (a "changed meanwhile" re-lists first).
-  function act(tool, action, row) {
-    say(tool, '', false);
-    return enqueue(tool, function () {
-      return runAction(tool, action, row).then(function (res) {
-        return planTool(tool).then(function (p) { return syncTrees(tool, p).catch(function (err) { res.treeError = err; }); }).then(function () { return res; });
-      }).catch(function (err) {
-        if (err && (err.code === 'changed' || err.code === 'changed_here')) return planTool(tool).catch(noop).then(function () { throw err; });
-        throw err;
-      });
-    }).then(function (res) {
-      say(tool, doneText(res) + foldersText(res.treeError), false);
-      render(tool);
-      return res;
-    }, function (err) {
-      say(tool, errorText(err), true);
-      render(tool);
-      throw err;
-    });
-  }
-  // One listing serves every caller that asks while it is queued or running (sign-in, Refresh, other tabs).
-  function refresh(tool) {
-    if (pendingRefresh[tool]) return pendingRefresh[tool];
-    say(tool, '', false);
-    var p = enqueue(tool, function () { return planTool(tool); }).then(function (plan) { render(tool); return plan; }, function (err) { say(tool, errorText(err), true); render(tool); throw err; });
-    pendingRefresh[tool] = p;
-    p.then(function () { delete pendingRefresh[tool]; }, function () { delete pendingRefresh[tool]; });
-    return p;
-  }
-  function syncNow(tool) {
-    say(tool, '', false);
-    return enqueue(tool, function () { return syncNowInner(tool); }).then(function (sum) {
-      var tail = mergeInToolText(sum.mergeInTool) + skippedText(sum.skips) + foldersText(sum.treeError) + suiteHintText(sum.hint);
-      if (sum.error) say(tool, t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: sum.done, total: sum.total, reason: errorText(sum.error) }) + tail, true);
-      else say(tool, t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: sum.up, down: sum.down, merged: sum.merged, left: sum.left }) + tail, false);
-      render(tool);
-      return sum;
-    }, function (err) { say(tool, errorText(err), true); render(tool); throw err; });
-  }
-
-  /* ---------- the account screen ---------- */
-  function closeAccount() {
-    if (!account) return;
-    var a = account; account = null;
-    document.removeEventListener('keydown', a.onKey);
-    if (a.root.parentNode) a.root.parentNode.removeChild(a.root);
-    if (a.opener && typeof a.opener.focus === 'function') { try { a.opener.focus(); } catch (e) {} }
-    // The recorded opener can be gone by now — the chip menu's "Account…" item hides with the menu, and after a
-    // code sign-in the Verify button that had the focus is rebuilt away — so the focus would fall to <body>.
-    // Every way into this screen starts at the account chip: hand the focus there instead.
-    var f = document.activeElement, acc = A();
-    if ((!f || f === document.body) && acc && typeof acc.focusChip === 'function') acc.focusChip();
-  }
-  function acctSay(text, isError) {
-    if (!account) return;
-    var st = account.root.querySelector('.ivsav-status');
-    if (st) { st.textContent = text || ''; st.classList.toggle('is-error', !!isError); }
-  }
-  function acctDone(text, isError) { acctSay(text, isError); if (account) account.doneText = text || ''; }   // the line a rebuilt screen keeps
-  function acctBusy(on) {
-    if (!account) return;
-    account.busy = !!on;
-    account.root.querySelectorAll('.ivsav-btn[data-act]').forEach(function (b) { if (on) b.setAttribute('aria-disabled', 'true'); else b.removeAttribute('aria-disabled'); });
-  }
-  // The screen is built in the language of the moment; when a synced preference switches the language
-  // (I18n.setLang, live) it is rebuilt in the new one — between runs, keeping its last status line.
-  function currentLang() { return (window.I18n && window.I18n.lang) || null; }
-  function reopenAccountForLang(doneText) {
-    var me = account;
-    if (!me) return;
-    openAccount({ first: me.first, splash: me.splash, doneText: doneText });
-  }
-  // A live switch while the screen is idle rebuilds it now; during a run or a listing the rebuild waits for
-  // the listing's last line (fillAccount), so nothing transient is carried over.
-  function onLangSwitched() {
-    if (!account || account.lang === currentLang()) return;
-    if (account.busy || account.listing) { account.langStale = true; return; }
-    reopenAccountForLang(account.doneText || '');
-  }
-  // opts.first: the once-per-device introduction right after the first sign-in.
-  function openAccount(opts) {
-    opts = opts || {};
-    closeAccount();
-    injectStyle();
-    var user = currentUser();
-    var overlay = el('div', 'ivsav-overlay');
-    var card = el('div', 'ivsav-card');
-    card.setAttribute('role', 'dialog');
-    card.setAttribute('aria-modal', 'true');
-    card.setAttribute('tabindex', '-1');
-    var head = el('div', 'ivsav-card-head');
-    var title = el('h2', 'ivsav-card-title', opts.first ? t('shared.cloud.acct_welcome_title', 'Welcome! Keep your saved items in your account') : t('shared.cloud.acct_title', 'Your account'));
-    if (opts.splash) title.textContent = t('shared.cloud.splash_title', 'Sync settings from your last login?');
-    title.id = 'ivsav-acct-title';
-    card.setAttribute('aria-labelledby', title.id);
-    head.appendChild(title);
-    var x = button('✕', '', closeAccount);
-    x.setAttribute('aria-label', t('shared.cloud.acct_close', 'Close'));
-    head.appendChild(x);
-    card.appendChild(head);
-    var status = el('p', 'ivsav-status');
-    status.setAttribute('role', 'status');
-    status.setAttribute('aria-live', 'polite');
-    if (!user) {
-      card.appendChild(el('p', 'ivsav-note', t('shared.cloud.signed_out', 'Sign in to keep copies of your saved items in the cloud and get them back on any device.')));
-      card.appendChild(button(t('shared.cloud.sign_in', 'Sign in'), 'ivsav-primary', function () { closeAccount(); var a = A(); if (a && typeof a.openMenu === 'function') a.openMenu(); }));
+    var st = s.state || 'loading';
+    if (st === 'loading') line.textContent = t('shared.cloud.listing', 'Loading your account…');
+    else if (st === 'saving') line.textContent = t('shared.cloud.status_saving', 'Saving…');
+    else if (st === 'saved') {
+      var d = s.detail || {}, when = d.when === 'now' ? t('shared.cloud.status_just_now', 'just now') : (d.when ? fmtDate(d.when) : null);
+      line.textContent = (when ? t('shared.cloud.status_saved', 'Saved in your account · {when}', { when: when }) : t('shared.cloud.status_nothing', 'Nothing saved in your account yet')) + (d.note ? ' ' + d.note : '');
+      line.classList.add('is-saved');
+    } else if (st === 'offline_pending') {
+      line.textContent = t('shared.cloud.status_offline', 'Offline — your changes are saved to your account when you are back online.');
     } else {
-      card.appendChild(el('p', 'ivsav-note', t('shared.account.signed_in_as', 'Signed in as {email}', { email: user.email || '' })));
-      if (opts.first) card.appendChild(el('p', '', t('shared.cloud.acct_welcome_note', 'This device already has saved items. Copy them to your account and they will be there on any device you sign in on. Nothing is removed from this device.')));
-      card.appendChild(el('p', 'ivsav-acct-last', ''));
-      card.appendChild(el('h3', '', t('shared.cloud.acct_device_head', 'On this device')));
-      var list = el('ul', 'ivsav-acct-list');
-      card.appendChild(list);
-      var syncBtn = button(t('shared.cloud.acct_sync_all', 'Sync everything'), 'ivsav-primary', function () { syncAll(); });
-      syncBtn.setAttribute('data-act', 'sync');
-      syncBtn.setAttribute('aria-disabled', 'true');
-      syncBtn.hidden = true;
-      card.appendChild(syncBtn);
-      var uploadBtn = button(t('shared.cloud.acct_upload_all', 'Upload everything on this device'), 'ivsav-primary', function () { uploadAll(); });
-      uploadBtn.setAttribute('data-act', 'upload');
-      uploadBtn.setAttribute('aria-disabled', 'true');
-      card.appendChild(uploadBtn);
-      card.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_upload_note', 'Your items stay on this device too.')));
-      var hint = el('p', 'ivsav-note ivsav-acct-hint', t('shared.cloud.acct_cloud_only_hint', 'Items that are only in your account: Sync everything brings them to this device.'));
-      hint.hidden = true;
-      card.appendChild(hint);
-      // "Settings that differ": a settings blob changed in both places is chosen here for every tool at once.
-      var sec = el('div', 'ivsav-acct-settings');
-      sec.hidden = true;
-      sec.appendChild(el('h3', '', t('shared.cloud.acct_settings_head', 'Settings that differ')));
-      sec.appendChild(el('p', 'ivsav-acct-settings-note', ''));
-      var useBtn = button(t('shared.cloud.acct_use_account', "Use my account's settings"), 'ivsav-primary', function () { resolveSettings('useCloud'); });
-      useBtn.title = t('shared.cloud.acct_use_account_title', "Replace this device's settings with the copy in your account and put the result back in your account");
-      useBtn.setAttribute('data-act', 'use-account');
-      sec.appendChild(useBtn);
-      var keepBtn = button(t('shared.cloud.acct_keep_device', "Keep this device's settings"), '', function () { resolveSettings('keepMine'); });
-      keepBtn.title = t('shared.cloud.acct_keep_device_title', "Put this device's settings in your account instead");
-      keepBtn.setAttribute('data-act', 'keep-device');
-      sec.appendChild(keepBtn);
-      sec.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_settings_aside', "Either way, per-device choices stay as they are here: zoom, panel layout, which panels are open, and the Dictionary's sound switch and last search.")));
-      card.appendChild(sec);
-      var other = el('p', 'ivsav-note ivsav-acct-other', t('shared.cloud.acct_other_conflicts_hint', 'Other items marked "changed in both places" are chosen one by one in that tool\'s Cloud saves panel.'));
-      other.hidden = true;
-      card.appendChild(other);
-      card.appendChild(el('h3', '', t('shared.cloud.acct_backup_head', 'Backups')));
-      var dl = button(t('shared.cloud.acct_download_cloud', 'Download everything in your account (.ivrit)'), '', function () { backupAccount(); });
-      dl.setAttribute('data-act', 'backup');
-      card.appendChild(dl);
-      var dev = button(t('shared.cloud.acct_device_backup', 'Back up everything on this device (.ivrit)'), '', function () {
-        var fn = null;
-        Object.keys(pages).forEach(function (k) { if (!fn && typeof pages[k].deviceBackup === 'function') fn = pages[k].deviceBackup; });
-        if (fn) { closeAccount(); try { fn(); } catch (e) { warn('deviceBackup failed:', e); } return; }
-        // Another page: the hub's Import / Export modal in a new tab, so this page (a Font Maker canvas, a drill) stays as it is.
-        var w = null;
-        try { w = window.open('/index.html?alltools=open', '_blank', 'noopener'); } catch (e) {}
-        if (!w) { closeAccount(); window.location.href = '/index.html?alltools=open'; }
-      });
-      card.appendChild(dev);
-      card.appendChild(el('p', 'ivsav-meta', t('shared.cloud.acct_download_note', 'Restore a file with Import / Export All Settings on the home page: it is merged into what is on that device (per-device settings such as zoom and panel layout are not in it).')));
-      var manage = el('a', 'ivsav-acct-manage', t('shared.cloud.acct_manage_link', 'Manage your account: download everything or delete the account…'));
-      manage.href = '/account.html';
-      card.appendChild(manage);
+      line.textContent = (st === 'error' ? t('shared.cloud.status_error', 'Couldn\'t save — will retry.') + ' ' : '') + (typeof s.detail === 'string' ? s.detail : '');
+      line.classList.add('is-error');
+      if (st === 'error') root.appendChild(button(t('shared.cloud.status_retry', 'Retry'), '', function () { retry(tool); }));
     }
-    card.appendChild(status);
-    card.appendChild(button(opts.first ? t('shared.cloud.acct_not_now', 'Not now') : t('shared.cloud.acct_close', 'Close'), '', closeAccount));
-    overlay.appendChild(card);
-    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeAccount(); });
-    // A modal holds the keyboard (pattern modal-focus-trap): aria-modal tells a screen reader the page behind is
-    // gone and the overlay hides it, yet Tab walked out onto it after the last control, and Shift+Tab after the
-    // first. Tab and Shift+Tab now wrap inside the card, and a Tab from outside it (a focus the page took back
-    // after this opened) comes in at the first control.
-    var onKey = function (e) {
-      if (e.key === 'Escape') { e.preventDefault(); closeAccount(); return; }
-      if (e.key !== 'Tab') return;
-      var items = Array.prototype.filter.call(card.querySelectorAll('button,a[href],input,select,textarea'), function (n) {
-        return !n.disabled && n.getClientRects().length > 0;
-      });
-      var a = document.activeElement;
-      if (!items.length) { e.preventDefault(); card.focus(); return; }
-      var first = items[0], last = items[items.length - 1];
-      if (!card.contains(a)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
-      else if (e.shiftKey && (a === first || a === card)) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
-    };
-    document.addEventListener('keydown', onKey);
-    document.body.appendChild(overlay);
-    account = { root: overlay, opener: document.activeElement, onKey: onKey, first: !!opts.first, splash: !!opts.splash, lang: currentLang(), busy: false, listing: false, langStale: false, doneText: opts.doneText || '' };
-    if (user && (opts.first || opts.splash)) markWelcomed(user.id);   // a self-opened screen was shown: once per account and device
-    try { card.focus(); } catch (e) {}
-    if (user) fillAccount(opts.doneText);
   }
-  // doneText (optional): what the status line shows once the listing is in — the finishing line of the
-  // action that asked for the re-listing, which would otherwise be wiped by "Checking…".
-  function fillAccount(doneText) {
-    var me = account;
-    if (!me) return Promise.resolve();
-    if (me.lang !== currentLang()) { reopenAccountForLang(doneText); return Promise.resolve(); }
-    me.listing = true;
-    acctSay(t('shared.cloud.acct_checking', 'Checking what is on this device and in your account…'), false);
-    return accountSummary().then(function (tools) {
-      return summaryLines().then(function (extra) { return { tools: tools, extra: extra }; });
-    }).then(function (res) {
-      if (account !== me) return;
-      var tools = res.tools, extra = res.extra;
-      var list = me.root.querySelector('.ivsav-acct-list');
-      while (list.firstChild) list.removeChild(list.firstChild);
-      var up = 0, cloudOnly = 0, shown = 0, safe = 0, cloud = 0, lastSaved = null, settingsTools = [], others = 0;
-      tools.forEach(function (x) {
-        safe += x.safe; cloud += x.cloud;
-        if (x.lastSaved && (!lastSaved || x.lastSaved > lastSaved)) lastSaved = x.lastSaved;
-        if (!x.total && !x.folders) return;
-        shown++;
-        var bits = [];
-        if (x.up) bits.push(t('shared.cloud.acct_tool_up', '{n} not in your account yet', { n: x.up }));
-        if (x.cloudOnly) bits.push(t('shared.cloud.acct_tool_cloud_only', '{n} only in your account', { n: x.cloudOnly }));
-        if (x.conflicts) bits.push(t('shared.cloud.acct_tool_conflicts', '{n} changed in both places', { n: x.conflicts }));
-        if (x.mergeInTool) bits.push(t('shared.cloud.acct_tool_merge_in_tool', '{n} to merge inside {tool}', { n: x.mergeInTool, tool: x.name }));
-        if (x.deleted) bits.push(t('shared.cloud.acct_tool_deleted', '{n} deleted on this device — choose in the Cloud saves panel', { n: x.deleted }));
-        if (!bits.length && x.folders) bits.push(t('shared.cloud.acct_tool_folders', 'the folder layout differs'));
-        if (!bits.length) bits.push(t('shared.cloud.acct_tool_synced', 'everything is in your account'));
-        list.appendChild(el('li', '', x.name + ': ' + bits.join(' · ')));
-        up += x.up; cloudOnly += x.cloudOnly;
-        if (x.settings) settingsTools.push(x.name);
-        others += x.conflicts - x.settings;
-      });
-      extra.forEach(function (text) { list.appendChild(el('li', '', text)); shown++; });
-      if (!shown) list.appendChild(el('li', '', t('shared.cloud.acct_nothing', 'Nothing saved on this device or in your account yet.')));
-      // The line under the title: when the account was last saved. With an empty account the screen is
-      // about moving this device's items up; with a filled one, about syncing — one primary button each.
-      var last = me.root.querySelector('.ivsav-acct-last');
-      if (last) last.textContent = cloud ? t('shared.cloud.acct_last_saved', 'Your account was last saved on {date}.', { date: fmtDate(lastSaved) }) : t('shared.cloud.acct_no_cloud', 'Nothing is saved in your account yet.');
-      var title = me.root.querySelector('.ivsav-card-title');
-      if (title && me.splash) title.textContent = cloud ? t('shared.cloud.splash_title', 'Sync settings from your last login?') : t('shared.cloud.acct_welcome_title', 'Welcome! Keep your saved items in your account');
-      var sb = me.root.querySelector('.ivsav-btn[data-act="sync"]');
-      var b = me.root.querySelector('.ivsav-btn[data-act="upload"]');
-      if (sb) { sb.hidden = !cloud; if (safe) sb.removeAttribute('aria-disabled'); else sb.setAttribute('aria-disabled', 'true'); }
-      if (b) { b.hidden = !!cloud; if (up) b.removeAttribute('aria-disabled'); else b.setAttribute('aria-disabled', 'true'); }
-      var hint = me.root.querySelector('.ivsav-acct-hint');
-      if (hint) hint.hidden = !cloudOnly;
-      var sec = me.root.querySelector('.ivsav-acct-settings');
-      if (sec) {
-        sec.hidden = !settingsTools.length;
-        var note = sec.querySelector('.ivsav-acct-settings-note');
-        if (note) note.textContent = t('shared.cloud.acct_settings_note', '{tools}: the settings on this device are not the same as the ones in your account. Choose which to keep.', { tools: settingsTools.join(', ') });
-      }
-      var other = me.root.querySelector('.ivsav-acct-other');
-      if (other) other.hidden = !others;
-      me.listing = false;
-      acctDone(doneText || '', false);
-      if (me.langStale || me.lang !== currentLang()) reopenAccountForLang(doneText || '');   // the language moved while this listing ran
-    }).catch(function (err) { if (account === me) { me.listing = false; acctDone(errorText(err), true); } });
+  function retry(tool) {
+    if (!currentUser()) return;
+    hydrate([tool]).then(function () { return flush(tool); }).catch(noop);
   }
-  // A bulk run over every tool, one tool at a time. A tool that stops does not end the run unless its error
-  // would fail every tool the same way (the connection, the session): the finishing line then names the
-  // stop, the counts so far and the tools not reached. Each tool's panel gets its own stop line.
-  function newRun() { return { up: 0, down: 0, merged: 0, done: 0, total: 0, left: 0, mergeInTool: 0, skips: [], treeError: null, stopped: null, halt: false, notReached: [], hint: false }; }
-  function mergeInToolText(n) { return n ? ' ' + t('shared.cloud.done_merge_in_tool', "{n} to merge inside a tool's own Cloud saves panel.", { n: n }) : ''; }
-  function runNote(run, tool, sum) {
-    run.up += sum.up || 0; run.down += sum.down || 0; run.merged += sum.merged || 0; run.done += sum.done || 0; run.total += sum.total || 0; run.left += sum.left || 0; run.mergeInTool += sum.mergeInTool || 0;
-    if (sum.hint) run.hint = true;
-    (sum.skips || []).forEach(function (s) { run.skips.push(s); });
-    if (sum.treeError && !run.treeError) run.treeError = sum.treeError;
-    if (!sum.error) return;
-    if (!run.stopped) run.stopped = { tool: tool, error: sum.error };
-    if (isConnectionError(sum.error)) run.halt = true;
-    say(tool, t('shared.cloud.sync_stopped', 'Stopped after {done} of {total}: {reason}', { done: sum.done || 0, total: sum.total || 0, reason: errorText(sum.error) }), true);
-  }
-  // The screen's close controls stay live during a run: closing it stops only the screen's updates, never the
-  // run (every tool is still checked); the finishing line then goes to the page's toast when it has one.
-  function acctSayFor(me, text, isError) { if (account === me) acctSay(text, isError); }
-  function finishAccountRun(me, line, isError) {
-    if (account === me) { acctBusy(false); if (isError) acctDone(line, true); else return fillAccount(line); return Promise.resolve(); }
-    if (line && typeof window.showAppToast === 'function') { try { window.showAppToast(line, isError ? 6000 : undefined); } catch (e) {} }
-    return Promise.resolve();
-  }
-  function runTools(run, me, sayKey, sayFallback, fn) {
-    return seqMap(toolsWithEntries(), function (tool) {
-      if (run.halt) { run.notReached.push(tool); return Promise.resolve(); }
-      acctSayFor(me, t(sayKey, sayFallback, { tool: toolName(tool) }), false);
-      return enqueue(tool, function () { return fn(tool); }).then(function (sum) { runNote(run, tool, sum || {}); render(tool); }, function (err) { runNote(run, tool, { error: err }); render(tool); });
-    });
-  }
-  function stoppedText(run, key, fallback) {
-    var text = t(key, fallback, { tool: toolName(run.stopped.tool), reason: errorText(run.stopped.error) })
-      + ' ' + t('shared.cloud.acct_done_so_far', '{done} of {total} done so far.', { done: run.done, total: run.total });
-    if (run.notReached.length) text += ' ' + t('shared.cloud.acct_not_reached', 'Not checked yet: {tools}.', { tools: run.notReached.map(toolName).join(', ') });
-    return text + skippedText(run.skips);
-  }
-  function uploadAll() {
-    var me = account;
-    if (!me || !currentUser()) return Promise.resolve();
-    acctBusy(true);
-    var run = newRun();
-    return runTools(run, me, 'shared.cloud.acct_uploading', 'Uploading {tool}…', uploadAllInner).then(function () {
-      if (run.stopped) return finishAccountRun(me, stoppedText(run, 'shared.cloud.acct_upload_stopped_at', 'Stopped while uploading {tool}: {reason}'), true);
-      return finishAccountRun(me, t('shared.cloud.acct_uploaded', 'Uploaded {n} items to your account.', { n: run.done }) + skippedText(run.skips) + foldersText(run.treeError), false);
-    });
-  }
-  // "Sync everything": each tool's Sync now, one after another — downloads, uploads and lossless merges,
-  // conflicts left listed; tools this page does not render may take their settings too (nothing is in memory).
-  function syncAll() {
-    var me = account;
-    if (!me || !currentUser()) return Promise.resolve();
-    acctBusy(true);
-    var run = newRun();
-    return runTools(run, me, 'shared.cloud.acct_syncing', 'Syncing {tool}…', syncNowInner).then(function () {
-      if (run.stopped) return finishAccountRun(me, stoppedText(run, 'shared.cloud.acct_stopped_at', 'Stopped while syncing {tool}: {reason}'), true);
-      return finishAccountRun(me, t('shared.cloud.done_sync', 'Sync finished: {up} uploaded, {down} downloaded, {merged} merged, {left} still need a choice.', { up: run.up, down: run.down, merged: run.merged, left: run.left }) + mergeInToolText(run.mergeInTool) + skippedText(run.skips) + foldersText(run.treeError) + suiteHintText(run.hint), false);
-    });
-  }
-  // The "Settings that differ" block: for every tool, every settings blob changed in both places takes the
-  // chosen side — 'useCloud' (the account's copy lands here, per-device fields kept) or 'keepMine' (this
-  // device's copy goes up, a field only the account had kept) — then both sides hold it and the sync memory
-  // remembers it.
-  function resolveSettingsInner(tool, choice) {
-    return planTool(tool).then(function (p) {
-      var rows = p.rows.filter(isSettingsChoice);
-      var sum = { tool: tool, done: 0, total: rows.length, skipped: 0, skips: [], error: null, treeError: null };
-      if (!rows.length) return sum;
-      return seqMap(rows, function (row) {
-        return runAction(tool, choice, row).then(function (res) { sum.done++; if (res && res.hint) sum.hint = true; }, function (err) { if (!isRowError(err)) throw err; noteSkip(sum, row, err); });
-      }).catch(function (err) { sum.error = err; })
-        .then(function () { return finishRun(tool, p, sum); })
-        .then(function () { return sum; });
-    });
-  }
-  function resolveSettings(choice) {
-    var me = account;
-    if (!me || !currentUser()) return Promise.resolve();
-    acctBusy(true);
-    var run = newRun();
-    return runTools(run, me, 'shared.cloud.acct_updating', 'Updating {tool}…', function (tool) { return resolveSettingsInner(tool, choice); }).then(function () {
-      if (run.stopped) return finishAccountRun(me, stoppedText(run, 'shared.cloud.acct_update_stopped_at', 'Stopped while updating {tool}: {reason}'), true);
-      var line = choice === 'useCloud' ? t('shared.cloud.acct_settings_done_cloud', "Your account's settings are now on this device.")
-                                       : t('shared.cloud.acct_settings_done_mine', "This device's settings are now in your account.");
-      return finishAccountRun(me, line + skippedText(run.skips) + foldersText(run.treeError) + suiteHintText(run.hint), false);
-    });
-  }
-  function backupAccount() {
-    var me = account;
-    if (!me || !currentUser()) return Promise.resolve();
-    acctBusy(true);
-    acctSay(t('shared.cloud.acct_preparing', 'Preparing the file…'), false);
-    return accountBackup().then(function (n) {
-      if (account !== me) return;
-      acctBusy(false);
-      acctSay(t('shared.cloud.acct_downloaded', 'Downloaded a backup with {n} items.', { n: n }), false);
-    }, function (err) { if (account === me) { acctBusy(false); acctSay(errorText(err), true); } });
-  }
-  // After a fresh sign-in (this page load established the session): "Sync settings from your last login?".
-  // Otherwise, once per account on a device that already holds saved items: introduce the account screen.
-  // The mark is set when a screen was actually shown (openAccount, for `first` / `splash`): a device with
-  // nothing on it is not marked here — the first listing that finds rows in the account offers the sync
-  // once (offerOnce), so a teacher already signed in elsewhere is not left without the way in.
-  function maybeWelcome(user) {
-    if (!user) return;
-    var a = A();
-    var fresh = !!(a && typeof a.sessionSource === 'function' && a.sessionSource() === 'new');
-    if (fresh && !splashShown) { splashShown = true; openAccount({ splash: true }); return; }
-    if (welcomedAt(user.id)) return;
-    if (deviceHasItems()) openAccount({ first: true });
-  }
-  function offerOnce(user) {
-    if (!user || !stillMe(user.id) || welcomedAt(user.id) || account) return;
-    var any = Object.keys(pages).some(function (tool) { var p = plans[tool]; return !!(p && p.cloudRows && p.cloudRows.length); });
-    if (any) openAccount({ splash: true });
-  }
-
-  /* ---------- mounting and wiring ---------- */
-  function mountPanel(target, tool) {
+  function mountStatus(target, tool) {
     var host = typeof target === 'string' ? document.querySelector(target) : target;
     if (!host || host.nodeType !== 1) return null;
     injectStyle();
-    var panel = panels[tool] || (panels[tool] = {});
-    if (panel.root && panel.root.parentNode) panel.root.parentNode.removeChild(panel.root);
-    panel.root = el('div', 'ivsav');
-    panel.root.setAttribute('data-tool', tool);
-    host.appendChild(panel.root);
-    render(tool);
-    return panel.root;
+    var s = statuses[tool] || (statuses[tool] = {});
+    if (s.root && s.root.parentNode) s.root.parentNode.removeChild(s.root);
+    s.root = el('div', 'ivsav ivsav-statusline');
+    s.root.setAttribute('data-tool', tool);
+    host.appendChild(s.root);
+    renderStatus(tool);
+    return s.root;
   }
-  // A module write in another tab that this tab has not acted on: re-read that key here (no flush — the
-  // point is to drop this tab's stale in-memory copy, exactly as the storage event always did), then list
-  // again. Per tool and kind, against the stamps this tab last saw; its own writes are already seen.
-  // Returns whether anything was re-read (the sync smoke asserts a quiet second call).
+  function renderAllStatuses() { Object.keys(statuses).forEach(renderStatus); }
+
+  /* ---------- the device-extras card ---------- */
+  // The first hydration for an account on this device found saved items the account does not hold: the
+  // teacher's own work here, or a previous user's on a shared computer. One required choice — Add to my
+  // account, or Remove from this device — with a .ivrit download of exactly those items on the way.
+  function closeCard() {
+    if (!card) return;
+    var c = card; card = null;
+    document.removeEventListener('keydown', c.onKey, true);
+    if (c.root.parentNode) c.root.parentNode.removeChild(c.root);
+    var f = document.activeElement, acc = A();
+    if ((!f || f === document.body) && acc && typeof acc.focusChip === 'function' && !acc.focusChip() && c.opener && typeof c.opener.focus === 'function') { try { c.opener.focus(); } catch (e) {} }
+  }
+  function plural(base, n, one, other) { return t(base + (n === 1 ? '.one' : '.other'), n === 1 ? one : other, { n: n }); }
+  function extrasBundle(extras) {
+    var bundle = {}, count = 0;
+    var byTool = {};
+    extras.forEach(function (x) { if (!byTool[x.tool]) byTool[x.tool] = []; byTool[x.tool].push({ tool: x.tool, kind: x.row.kind, name: x.row.name, data: (localItem(x.row.entry, x.row.name) || {}).value }); });
+    Object.keys(byTool).forEach(function (tool) { var b = bundleFromRows(registryFor(tool), byTool[tool]); safeAssign(bundle, b.data); count += b.count; });
+    return { file: { _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', partial: true, savedAt: now(), data: bundle }, count: count };
+  }
+  function openCard(uid, extras) {
+    return new Promise(function (resolve) {
+      var open = function () {
+        closeCard();
+        injectStyle();
+        var overlay = el('div', 'ivsav-overlay');
+        var box = el('div', 'ivsav-card');
+        box.setAttribute('role', 'dialog');
+        box.setAttribute('aria-modal', 'true');
+        box.setAttribute('tabindex', '-1');
+        var head = el('div', 'ivsav-card-head');
+        var title = el('h2', 'ivsav-card-title', t('shared.cloud.card_saves_title', 'Add this device\'s saves to your account?'));
+        title.id = 'ivsav-card-title';
+        box.setAttribute('aria-labelledby', title.id);
+        head.appendChild(title);
+        box.appendChild(head);
+        box.appendChild(el('p', '', t('shared.cloud.card_saves_note', 'This device holds saved items that are not in your account yet:')));
+        var list = el('ul');
+        var counts = {};
+        extras.forEach(function (x) { var k = x.tool + '\u0001' + x.row.kind; if (!counts[k]) counts[k] = { tool: x.tool, entry: x.row.entry, n: 0 }; counts[k].n++; });
+        Object.keys(counts).forEach(function (k) { var c = counts[k]; list.appendChild(el('li', '', t('shared.cloud.card_saves_kind', '{tool} — {label}: {n}', { tool: toolName(c.tool), label: kindLabel(c.entry), n: c.n }))); });
+        box.appendChild(list);
+        var status = el('p', 'ivsav-status');
+        status.setAttribute('role', 'status');
+        status.setAttribute('aria-live', 'polite');
+        var busyNow = false;
+        var add = button(t('shared.cloud.card_saves_add', 'Add to my account'), 'ivsav-primary', function () { if (busyNow) return; busyNow = true; closeCard(); resolve('add'); });
+        add.setAttribute('data-act', 'add');
+        box.appendChild(add);
+        box.appendChild(el('p', 'ivsav-note', t('shared.cloud.card_saves_add_note', 'An item named like one already in your account keeps both.')));
+        var dl = button(t('shared.cloud.card_saves_download', 'Download a backup (.ivrit)'), '', function () {
+          try { var b = extrasBundle(extras); downloadJson(b.file, 'IvritSuite_device_saves_' + now().slice(0, 10) + '.ivrit'); status.textContent = plural('shared.cloud.card_saves_downloaded', b.count, 'Downloaded a backup with 1 item.', 'Downloaded a backup with {n} items.'); }
+          catch (e) { status.textContent = errorText(e); }
+        });
+        dl.setAttribute('data-act', 'download');
+        box.appendChild(dl);
+        var rm = button(t('shared.cloud.card_saves_remove', 'Remove from this device'), '', function () {
+          if (busyNow) return;
+          if (!window.confirm(plural('shared.cloud.card_saves_remove_confirm', extras.length, 'Remove this item from this device? It is not in your account, so this deletes it unless you downloaded the backup.', 'Remove these {n} items from this device? They are not in your account, so this deletes them unless you downloaded the backup.'))) return;
+          busyNow = true; closeCard(); resolve('remove');
+        });
+        rm.setAttribute('data-act', 'remove');
+        box.appendChild(rm);
+        box.appendChild(status);
+        overlay.appendChild(box);
+        // A required choice: no ✕, no outside click, Escape ignored; Tab and Shift+Tab wrap inside the card.
+        var onKey = function (e) {
+          if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); return; }
+          if (e.key !== 'Tab') return;
+          var items = Array.prototype.filter.call(box.querySelectorAll('button,a[href],input'), function (n) { return !n.disabled && n.getClientRects().length > 0; });
+          var a = document.activeElement;
+          if (!items.length) { e.preventDefault(); box.focus(); return; }
+          var first = items[0], last = items[items.length - 1];
+          if (!box.contains(a)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+          else if (e.shiftKey && (a === first || a === box)) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+        };
+        document.addEventListener('keydown', onKey, true);
+        (document.body || document.documentElement).appendChild(overlay);
+        card = { root: overlay, opener: document.activeElement, onKey: onKey };
+        try { add.focus(); } catch (e) {}
+      };
+      cardPending = { uid: uid, open: open };
+      // The name step (the account module) comes first; the card follows on any outcome.
+      var a = A();
+      if (a && typeof a.onNameStep === 'function' && a.needsName && a.needsName() && !nameStepDone) nameStepWaiting = open;
+      else whenReady(open);
+    }).then(function (choice) { cardPending = null; return choice; }, function (e) { cardPending = null; throw e; });
+  }
+  var nameStepDone = false, nameStepWaiting = null;
+
+  /* ---------- sign-out: the account's cache leaves this device ---------- */
+  // Registered with IvritAccount.onSignOut and awaited before the SDK sign-out (the token is still valid for the
+  // final flush). keepLocal (account deletion): memory and mark only. Otherwise: the last edits go up, then every
+  // row the account is known to hold (memory-confirmed) leaves; rows with no memory, a differing hash or an
+  // unfinished flush stay as this device's own data; preferences and My Fonts stay; the memory of removed rows
+  // goes, the mark goes, other tabs are told through the broadcast stamp, and the page's own writers are
+  // swallowed until the reload.
+  function removeAccountCache(uid, opts) {
+    opts = opts || {};
+    if (!uid) return Promise.resolve({ removed: 0 });
+    closeCard();
+    if (cardPending) { cardPending = null; }
+    Object.keys(timers).forEach(function (tool) { if (timers[tool]) { clearTimeout(timers[tool]); timers[tool] = null; } });
+    if (opts.keepLocal) { forgetUser(uid); hookOn = false; return Promise.resolve({ removed: 0, kept: true }); }
+    var removed = 0;
+    var finalFlush = Promise.resolve().then(function () {
+      Object.keys(pages).forEach(function (tool) { var cfg = pages[tool]; if (cfg && !cfg.pulled) withSelfWrite(function () { try { if (typeof cfg.finalFlush === 'function') cfg.finalFlush(); else flushPage(tool); } catch (e) { warn('finalFlush failed:', e); } }); });
+      Object.keys(hydratedTools).forEach(function (tool) { if (hydratedTools[tool] !== uid) return; registryFor(tool).forEach(function (e) { if (!dirty[tool]) dirty[tool] = {}; dirty[tool][e.kind] = true; }); });
+      return flushAllNow();
+    });
+    var bounded = Promise.race([finalFlush, new Promise(function (r) { setTimeout(r, SIGNOUT_FLUSH_MS); })]);
+    return bounded.catch(noop).then(function () {
+      hookOn = false;
+      installHook();
+      purging = true;
+      var tools = toolsWithEntries().filter(function (tool) { return tool !== 'Suite'; });
+      return seqMap(tools, function (tool) {
+        var entries = registryFor(tool), removedByKey = {};
+        return seqMap(entries.filter(function (e) { return e.shape !== 'tree'; }), function (entry) {
+          return seqMap(localItems(entry), function (it) {
+            var mem = metaGet(uid, tool, entry.kind, it.name);
+            if (!mem) return Promise.resolve();
+            return hashItem(entry, it.value).then(function (h) {
+              if (h !== mem.h) return;
+              var op;
+              if (entry.shape === 'map' || entry.shape === 'mapIn') op = localRemove(entry, it.name);
+              else if (sharesKey(entry)) op = localStripProjected(entry);   // the sibling's items on this key are decided on their own
+              else op = localRemove(entry, it.name);
+              return op.then(function () { removed++; metaDelete(uid, tool, entry.kind, it.name); removedByKey[entry.lsKey] = true; });
+            });
+          });
+        }).then(function () {
+          return seqMap(entries.filter(function (e) { return e.shape === 'tree'; }), function (entry) {
+            var local = localTree(entry), mem = metaGet(uid, tool, entry.kind, DEFAULT_NAME);
+            if (!local || !mem) return Promise.resolve();
+            return hashItem(entry, local).then(function (h) { if (h === mem.h) return localRemove(entry, DEFAULT_NAME).then(function () { metaDelete(uid, tool, entry.kind, DEFAULT_NAME); }); });
+          });
+        });
+      });
+    }).then(function () {
+      var m = metaAll();
+      if (isPlainObject(m.hydrated)) delete m.hydrated[uid];
+      metaSave(m);
+      delete firstHydrationDone[uid];
+      var st = stampsAll();
+      st.signedOut = { uid: uid, at: Date.now() };
+      stampsSave(st);
+      return { removed: removed };
+    });
+  }
+  // Another tab pressed Sign out (its broadcast stamp), or this tab's session ended by itself.
+  function onSignedOutElsewhere(prevUid) {
+    var a = A();
+    var st = stampsAll(), bc = isPlainObject(st.signedOut) ? st.signedOut : null;
+    var mine = a && typeof a.signOutHandled === 'function' && a.signOutHandled();
+    if (mine) return;   // this tab's own sign-out: the hook already ran (or keepLocal said not to)
+    if (bc && bc.uid === prevUid && Date.now() - bc.at < 120000) {
+      // a button sign-out in another tab: the same removal here, then a reload so the in-memory copy goes too
+      removeAccountCache(prevUid, {}).catch(noop).then(function () { location.reload(); });
+      return;
+    }
+    // a session that ended by itself: the copies stay as this device's own data
+    forgetUser(prevUid);
+    hookOn = false;
+  }
+
+  /* ---------- wiring ---------- */
+  // Another tab's write: a module write (a download there) → re-read that key here and hydrate; a page write →
+  // mark the kind stale here (the next flush hydrates before diffing, and never deletes by absence), because
+  // replacing a live setup or a board mid-edit with another tab's write would be worse than a moment's staleness.
   function recheckWrites() {
     var m, stamps, lw, touched = {};
-    try { m = metaAll(); stamps = stampsOf(m); } catch (e) { return false; }
+    try { m = stampsAll(); stamps = stampsOf(m); } catch (e) { return false; }
     lw = isPlainObject(m.lastWrite) ? m.lastWrite : {};
+    if (isPlainObject(m.signedOut) && eventUser && m.signedOut.uid === eventUser && Date.now() - m.signedOut.at < 120000) {
+      var a = A();
+      if (!(a && typeof a.signOutHandled === 'function' && a.signOutHandled())) { eventUser = null; removeAccountCache(m.signedOut.uid, {}).catch(noop).then(function () { location.reload(); }); return true; }
+    }
     Object.keys(stamps).forEach(function (tool) {
       Object.keys(stamps[tool]).forEach(function (kind) {
         var at = stamps[tool][kind];
         if (seen[tool] && seen[tool][kind] === at) return;
         markSeen(tool, kind, at);
         if (!pages[tool]) return;
+        var pw = isPlainObject(m.pageWrites) && isPlainObject(m.pageWrites[tool]) ? m.pageWrites[tool][kind] : null;
+        var pageWrite = pw === at || (lw.tool === tool && lw.kind === kind && lw.at === at && lw.source === 'page');
+        if (pageWrite) { if (!stale[tool]) stale[tool] = {}; stale[tool][kind] = true; return; }
         notifyPage(tool, kind, (lw.tool === tool && lw.kind === kind) ? lw.name : null);
         touched[tool] = true;
       });
     });
-    Object.keys(touched).forEach(function (tool) { if (currentUser()) refresh(tool).catch(function () {}); else render(tool); });
+    Object.keys(touched).forEach(function (tool) { if (currentUser()) hydrate([tool]).catch(noop); else renderStatus(tool); });
     return Object.keys(touched).length > 0;
+  }
+  function toolsOf(cfg) { return normTools([cfg.tool, 'Suite'].concat(cfg.alsoPull || [])); }
+  function attachedTools() {
+    var out = [];
+    Object.keys(pages).forEach(function (tool) { if (!pages[tool].pulled && pages[tool].hydrate !== false) out = out.concat(toolsOf(pages[tool])); });
+    return normTools(out);
   }
   function listen() {
     if (listening) return;
@@ -2201,37 +2269,51 @@
     var a = A();
     if (a && typeof a.onChange === 'function') {
       a.onChange(function (user) {
-        // The same user again — a token refresh, a refocus, a re-emitted event — lists nothing (account.html's
-        // guard): only a tool not yet listed for this user by an event is, so a tool attached after the first
-        // event (listen() runs at boot) is still listed by the next one, and offerOnce still follows it.
         var uid = user ? user.id : null;
-        var todo = Object.keys(pages).filter(function (tool) { return listedFor[tool] !== uid; });
-        if (user && uid === eventUser && !todo.length) return;
-        eventUser = uid;
-        if (!user) listedFor = {};
-        var listings = [];
-        Object.keys(pages).forEach(function (tool) {
-          if (user) { if (todo.indexOf(tool) > -1) { listedFor[tool] = uid; listings.push(refresh(tool).catch(noop)); } }
-          else { plans[tool] = null; say(tool, '', false); render(tool); }
-        });
-        if (user) { maybeWelcome(user); Promise.all(listings).then(function () { offerOnce(user); }); }
-        else { splashShown = false; closeAccount(); }
+        if (user) {
+          if (uid !== eventUser) { listedFor = {}; stale = {}; seenNames = {}; hydratedTools = {}; noUploadUntilChanged = {}; }
+          var todo = attachedTools().filter(function (tool) { return listedFor[tool] !== uid; });
+          eventUser = uid;
+          renderAllStatuses();
+          if (!todo.length) return;
+          todo.forEach(function (tool) { listedFor[tool] = uid; });
+          hydrate(todo).catch(noop);
+          return;
+        }
+        var prev = eventUser;
+        eventUser = null; listedFor = {}; plans = {}; hookOn = false;
+        Object.keys(statuses).forEach(function (tool) { statuses[tool].state = null; });
+        renderAllStatuses();
+        closeCard();
+        if (prev) onSignedOutElsewhere(prev);
       });
     }
-    if (a && typeof a.onOpenAccount === 'function') a.onOpenAccount(function () { openAccount(); });
-    // Writes by other tabs: their `storage` event, and — because a tab in the background (iOS suspends
-    // them) may never get that event — a look at the stamps whenever this tab becomes visible again or
-    // returns from the back-forward cache. Nothing stamped before this page load is news.
-    try { seen = stampsOf(metaAll()); } catch (e) {}
+    if (a && typeof a.onSignOut === 'function') a.onSignOut(function (uid, opts) { return removeAccountCache(uid, opts); });
+    if (a && typeof a.onNameStep === 'function') a.onNameStep(function () { nameStepDone = true; if (nameStepWaiting) { var open = nameStepWaiting; nameStepWaiting = null; whenReady(open); } });
+    try { seen = stampsOf(stampsAll()); } catch (e) {}
     window.addEventListener('storage', function (e) { if (e.key === META_KEY && e.newValue) recheckWrites(); });
-    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') recheckWrites(); });
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') recheckWrites(); else finalFlushNow(); });
     window.addEventListener('pageshow', function () { recheckWrites(); });
-    // Labels render before the dictionary arrives and again when it does, and on every language switch.
+    window.addEventListener('pagehide', finalFlushNow);
+    window.addEventListener('online', function () {
+      if (!currentUser()) return;
+      var failed = Object.keys(statuses).filter(function (tool) { var s = statuses[tool]; return s && (s.state === 'error' || s.state === 'offline_pending'); });
+      Object.keys(dirty).forEach(function (tool) { if (Object.keys(dirty[tool] || {}).length) scheduleFlush(tool, 0); });
+      if (failed.length) hydrate(failed).catch(noop);
+    });
     if (window.I18n) {
-      try { if (window.I18n.ready && window.I18n.ready.then) window.I18n.ready.then(function () { Object.keys(panels).forEach(render); }); } catch (e) {}
-      try { if (typeof window.I18n.onChange === 'function') window.I18n.onChange(function () { Object.keys(panels).forEach(render); onLangSwitched(); }); } catch (e) {}
+      try { if (window.I18n.ready && window.I18n.ready.then) window.I18n.ready.then(renderAllStatuses); } catch (e) {}
+      try { if (typeof window.I18n.onChange === 'function') window.I18n.onChange(renderAllStatuses); } catch (e) {}
     }
   }
+  // The page is leaving or hidden: the last edits go up now (their pagehide writers ran first — the pages add
+  // theirs in their own DOMContentLoaded, before this deferred module's listener is added at boot).
+  function finalFlushNow() {
+    if (!hookOn || purging || suspended || !currentUser()) return;
+    Object.keys(pages).forEach(function (tool) { var cfg = pages[tool]; if (cfg && !cfg.pulled && typeof cfg.finalFlush === 'function') withSelfWrite(function () { try { cfg.finalFlush(); } catch (e) {} }); });
+    Object.keys(dirty).forEach(function (tool) { if (Object.keys(dirty[tool] || {}).length) { if (timers[tool]) { clearTimeout(timers[tool]); timers[tool] = null; } flush(tool).catch(noop); } });
+  }
+  function whenReady(fn) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { fn(); }); else fn(); }
   function attach(cfg) {
     cfg = cfg || {};
     var tool = cfg.tool;
@@ -2242,59 +2324,82 @@
       if (e.tool !== tool) { warn('attach: entry for another tool skipped', e); return; }
       extraEntries = extraEntries.filter(function (x) { return !(x.tool === e.tool && x.kind === e.kind); });
       extraEntries.push(e);
+      entriesByKey = null;
     });
     var bad = IVRIT_SYNC_REGISTRY.filter(function (e) { return e.tool === tool && validEntry(e); });
     bad.forEach(function (e) { warn('registry entry is invalid and ignored:', validEntry(e), e); });
     registryFor(tool).forEach(function (e) {
       if (NEEDS_HOOK[e.shape] && typeof cfg.onLocalChanged !== 'function') warn('attach:', tool, e.kind, 'is upload-only: the page gave no onLocalChanged, so a download could be undone by its own in-memory state');
     });
+    if (cfg.panel && !cfg.status) { cfg.status = cfg.panel; warn('attach: `panel` is now `status`'); }
+    if (cfg.open || cfg.deviceBackup || cfg.title !== undefined) warn('attach: `open`, `title` and `deviceBackup` are no longer used');
     pages[tool] = cfg;
-    var a = A();
-    if (a && typeof a.onOpenSaves === 'function' && typeof cfg.open === 'function') a.onOpenSaves(cfg.open);
-    if (cfg.panel) mountPanel(cfg.panel, tool);
-    listen();   // IvritAccount.onChange fires once when the state is known — that call lists every attached tool
-    if (currentUser()) refresh(tool).catch(function () {});   // …unless it already fired before this attach (listen() runs at boot)
+    (cfg.alsoPull || []).forEach(function (other) {
+      if (TOOLS.indexOf(other) < 0 || other === tool) return;
+      if (pages[other] && !pages[other].pulled) return;   // that tool's own page is here: its hooks win
+      pages[other] = safeAssign({ pulled: true }, { merges: cfg.merges, onLocalChanged: cfg.onLocalChanged, paused: cfg.paused, hydrate: cfg.hydrate });
+    });
+    if (cfg.status) mountStatus(cfg.status, tool);
+    listen();   // IvritAccount.onChange fires once when the state is known — that call hydrates every attached tool
+    if (cfg.hydrate !== false && currentUser()) {
+      var uid = currentUser().id;
+      var todo = toolsOf(cfg).filter(function (t2) { return listedFor[t2] !== uid; });
+      todo.forEach(function (t2) { listedFor[t2] = uid; });
+      if (todo.length) hydrate(todo).catch(noop);
+    }
     return true;
   }
 
   /* ---------- public surface ---------- */
   window.IvritSaves = {
     attach: attach,
-    mountPanel: mountPanel,
-    openAccount: function (opts) { openAccount(opts); },
-    closeAccount: closeAccount,
-    refresh: refresh,
-    // A listing for the caller's own use; the panel is re-rendered afterwards (the queue renders it busy while it runs).
-    plan: function (tool) { return enqueue(tool, function () { return planTool(tool); }).then(function (p) { render(tool); return p; }, function (e) { render(tool); throw e; }); },
-    lastPlan: function (tool) { return plans[tool] || null; },   // the last listing, synchronously (a page hook reads a row's state from it)
-    // A deliberate reset on a page: forget what this device last synced for that row, so the next listing
-    // asks (a settings blob) or merges (progress) instead of sending the reset up as "newer here".
-    forgetRow: function (tool, kind, name) { var u = currentUser(); if (u) metaDelete(u.id, tool, kind, name || DEFAULT_NAME); },
-    syncNow: syncNow,
-    act: act,
-    registry: function () { return IVRIT_SYNC_REGISTRY.concat(extraEntries).map(function (e) { return safeAssign({}, e); }); },
+    mountStatus: mountStatus,
+    hydrate: hydrate,
+    flush: flush,
+    suspend: suspend,
+    fontDeleted: fontDeleted,
+    pendingSignOut: pendingSignOut,
+    lastPlan: function (tool) { return plans[tool] || null; },   // the last classification, synchronously (a page hook reads a row's state from it)
+    registry: function () { return registryAll().map(function (e) { return safeAssign({}, e); }); },
     local: {
       list: function (tool) { return localSide(tool).then(function (items) { return items.map(function (it) { return { id: it.kind + ':' + it.name, kind: it.kind, name: it.name, label: it.label, hash: it.hash, bytes: it.bytes }; }); }); },
       load: function (tool, kind, name) { var e = entryFor(tool, kind); var it = e && localItem(e, name); return Promise.resolve(it ? { kind: it.kind, name: it.name, data: clone(it.value) } : null); },
       save: function (tool, kind, name, value) { var e = entryFor(tool, kind); if (!e) return Promise.reject(makeError('bad_kind')); if (!validateShape(e, value)) return Promise.reject(makeError('shape')); return localWrite(e, name, value); },
       remove: function (tool, kind, name) { var e = entryFor(tool, kind); if (!e) return Promise.reject(makeError('bad_kind')); return localRemove(e, name); }
     },
-    cloud: { list: cloudList, load: cloudLoad, insert: cloudInsert, updateIf: cloudUpdateIf, remove: cloudRemove },
-    registerSummary: registerSummary,
+    cloud: { list: cloudList, load: cloudLoad, insert: cloudInsert, updateIf: cloudUpdateIf, remove: cloudRemove, removeIf: cloudRemoveIf },
     inventory: inventory,
     bundleAll: bundleAll,
     forgetUser: forgetUser,
     errorText: errorText,
     t: t,
+    // Transitional shims for pages not yet converted (removed once every page passes `status`): a listing, no screen.
+    mountPanel: function (target, tool) { return mountStatus(target, tool); },
+    refresh: function (tool) { return currentUser() ? hydrate([tool]).then(function () { return plans[tool]; }) : planTool(tool); },
+    plan: function (tool) { return planTool(tool); },
+    openAccount: noop, closeAccount: noop,
+    forgetRow: function () { warn('forgetRow is gone: a reset writes its defaults through'); },
+    registerSummary: function () { warn('registerSummary is gone: the account screen was replaced by account.html'); },
     _test: {
       canonJson: canonJson, hashText: hashText, classify: classify, deepMax: deepMax, maxValue: maxValue,
       project: project, restoreOmitted: restoreOmitted, safeParse: safeParse, copyNameFor: copyNameFor,
       validateShape: validateShape, errorText: errorText, guardUpload: guardUpload, ivritFile: ivritFile,
       treeIsFlat: treeIsFlat, bundleFromRows: bundleFromRows, recheckWrites: recheckWrites, isRowError: isRowError, isConnectionError: isConnectionError,
-      suitePrefs: SUITE_PREFS, userFonts: USER_FONTS, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, isUntouchedDefaultClass: isUntouchedDefaultClass, copyLabelFor: copyLabelFor, TOOL_PAGES: TOOL_PAGES, META_KEY: META_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES
+      suitePrefs: SUITE_PREFS, userFonts: USER_FONTS, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, isUntouchedDefaultClass: isUntouchedDefaultClass, copyLabelFor: copyLabelFor,
+      hydrateActionFor: hydrateActionFor, hydrate: function (tools) { return hydrate(tools); }, flush: flush, markDirty: markDirty, markHydrated: markHydrated, openCard: openCard, removeAccountCache: removeAccountCache, planTool: planTool,
+      idle: function () { return !Object.keys(dirty).some(function (t2) { return Object.keys(dirty[t2] || {}).length > 0; }) && !Object.keys(busy).some(function (t2) { return busy[t2]; }) && !Object.keys(hydrating).some(function (t2) { return hydrating[t2]; }) && !Object.keys(pendingHydrate).length; },
+      settled: function (tools) {
+        var a = A(), st = a ? a.status() : 'unavailable';
+        if (st === 'anonymous' || st === 'disabled' || st === 'unavailable' || st === 'offline') return window.IvritSaves._test.idle();
+        if (st === 'loading') return false;
+        tools = normTools(tools && tools.length ? tools : attachedTools());
+        var done = tools.every(function (tool) { return hydratedEvents.some(function (ev) { return ev.tools.indexOf(tool) >= 0; }); });
+        return done && !cardPending && window.IvritSaves._test.idle();
+      },
+      META_KEY: META_KEY, META2_KEY: META2_KEY, HASH_PREFIX: HASH_PREFIX, MAX_BYTES: MAX_BYTES, DASHBOARD_DEFAULT_PRESET_CANON: DASHBOARD_DEFAULT_PRESET_CANON, TOOLS: TOOLS
     }
   };
-  // The chip's "Account…" item and the sign-in splash belong to every page that loads this module, including
-  // one with no registry rows of its own (the Font Maker): start listening at boot, not only on attach().
+  // The sign-out hook, the name-step follow-up and the cross-tab listeners belong to every page that loads this
+  // module, including one with no registry rows of its own: start listening at boot, not only on attach().
   if (A()) listen();
 })();
