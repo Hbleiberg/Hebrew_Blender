@@ -1540,6 +1540,12 @@
   .im-preview { background: #000; border: 1px solid var(--border); border-radius: 8px; aspect-ratio: 16 / 9;
     container-type: size; display: flex; overflow: hidden; margin-block-end: 8px; pointer-events: none; }
   .im-pv-text { --im-size: 11cqmin; margin: auto; max-width: 92cqw; }
+  /* The drawer's Intermission editor — the third surface the shared toolbar serves (with the board's editor and the sheet's
+     in-place edit). Black like the sheet, so colours, effects and spoilers read as they will project; .im-text gives the
+     white centred words and the <font size> steps off a readable --im-size. Spoilers show their words while editing, as
+     in the other editors. The id beats .editor's cream plate and dark mode's navy one. */
+  #intermissionEditor { --im-size: 1.15rem; background: #000; color: #fff; padding: 10px 12px; }
+  #intermissionEditor .spoiler { background: #c0392b55; color: inherit; cursor: text; user-select: text; }
 
   /* ───── Font selector ───── */
   .font-options { display: flex; flex-direction: column; gap: 4px; }
@@ -2899,7 +2905,7 @@ body.dark .hi-sun{display:inline-block;}
           <input type="range" id="dashTextSizeSlider" min="0.8" max="5" step="0.1" value="1.8" oninput="setDashTextSize(this.value)">
           <span class="size-val" id="dashTextSizeVal">1.8rem</span>
         </div>
-        <div class="editor-toolbar" id="drawerToolbar"></div>
+        <div class="editor-toolbar" id="drawerToolbar" data-editor="dashEditor"></div>
         <div id="dashEditor" class="editor" contenteditable="true" oninput="syncDashText()" aria-label="Dashboard Text" data-i18n-aria-label="dashboard.settings.panel_dashtext"></div>
         <div class="form-row" style="margin-top:10px;">
           <label data-i18n="dashboard.text.hide">Hide dashboard text</label>
@@ -2911,10 +2917,15 @@ body.dark .hi-sun{display:inline-block;}
         <!-- A mini rendering of the sheet: renderIntermission() fills it beside the sheet itself, from the same words
              through the same .im-text rules. aria-hidden — a picture of the screen; the buttons open the real one. -->
         <div class="im-preview" id="intermissionPreview" aria-hidden="true"><div class="im-text im-pv-text" id="intermissionPreviewText" dir="auto"></div></div>
-        <p class="tt-set-note" style="margin:0 0 8px;" data-i18n="dashboard.intermission.note">The black screen the I key and the fullscreen strip show. Edit the words on the screen itself; until you do, it shows the default word in the column-header language.</p>
+        <!-- The words' editor: the shared toolbar (EDITOR_COMMANDS, bound to this editor by data-editor) over a contenteditable
+             that is black like the sheet and wears .im-text, so colours, effects, spoilers and <font size> read as they project;
+             intermissionEditorMirror keeps settings, the preview and the sheet in step on every keystroke. -->
+        <div class="editor-toolbar" id="intermissionToolbar" data-editor="intermissionEditor"></div>
+        <div id="intermissionEditor" class="editor im-text" contenteditable="true" dir="auto" aria-label="Intermission screen" data-i18n-aria-label="dashboard.settings.panel_intermission"></div>
+        <p class="tt-set-note" style="margin:8px 0;" data-i18n="dashboard.intermission.note">The black screen the I key and the fullscreen strip show. Type its words here, or edit them on the screen itself; empty means the default word in the column-header language.</p>
         <div class="form-row" style="justify-content:flex-start;flex-wrap:wrap;gap:6px;">
           <button type="button" class="btn btn-xs hi-btn" onclick="setIntermission(true)" title="Intermission screen (I)" data-i18n-title="dashboard.intermission.btn_title" aria-keyshortcuts="I"><svg class="hi hi-sm hi-intermission" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M9.3 7.8h.8v5.4h-.8zM13.9 7.8h.8v5.4h-.8z" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="dashboard.intermission.show">Show screen</span></button>
-          <button type="button" class="btn btn-xs btn-secondary hi-btn" onclick="editIntermissionFromDrawer()" title="Edit the intermission text" data-i18n-title="dashboard.intermission.edit"><svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg><span class="hi-lbl" data-i18n="dashboard.intermission.edit_words">Edit words</span></button>
+          <button type="button" class="btn btn-xs btn-secondary hi-btn" onclick="editIntermissionFromDrawer()" title="Edit the intermission text" data-i18n-title="dashboard.intermission.edit"><svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg><span class="hi-lbl" data-i18n="dashboard.intermission.edit_on_screen">Edit on the screen</span></button>
           <button type="button" class="btn btn-xs btn-secondary hi-btn" id="intermissionResetBtn" onclick="resetIntermissionWords()"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="dashboard.intermission.reset">Use the default word</span></button>
         </div>
       </div>
@@ -3476,6 +3487,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   let clockInterval = null;
   let _wakeLock = null;
   let _activeEditable = null;
+  let _drawerEditorId = 'dashEditor';   // which drawer editor the shared toolbar serves while no in-place edit is on (setDrawerEditor)
   let _inplacePrevFocus = null;
   let _inplaceEditPreset = null;   // scheduled preset whose board is being edited in place (frozen at entry)
   let _fsStripTimer = null;
@@ -3485,6 +3497,7 @@ const ICON_RESET_SM = '<svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width=
   const INTERMISSION_WORD_EN = 'Intermission';   // i18n-ignore — projected board content: follows headerLang, not I18n.lang
   let _imPrevFocus = null;     // what had focus before the sheet opened, handed back when it closes
   let _imSeed = null;          // the default word an edit started from; committed unchanged, the field stays ''
+  let _imEdSeed = null;        // the same seed for the drawer's Intermission editor (#intermissionEditor)
   let _imEditEndDown = null;   // the pointerdown that finished an edit (set by _inplaceOutside)…
   let _imTapEndsEdit = false;  // …and whether the sheet's current tap is that one (then it doesn't close)
 
@@ -9660,6 +9673,7 @@ else ivritInit();
   }
   function restoreEditorFocus() {
     const ed = activeEditor();
+    if (_savedEditorRange && !ed.contains(_savedEditorRange.commonAncestorContainer)) _savedEditorRange = null;   // never restore another editor's range into this one
     ed.focus();
     if (_savedEditorRange) {
       const sel = window.getSelection();
@@ -9907,11 +9921,11 @@ else ivritInit();
     const heb = (allFonts().find(f => f.name === settings.hebFont) || HEB_FONTS[0]).family;
     if (inEditor && !r.collapsed) {
       fmt('fontName', font.family + ', ' + heb);
-    } else if (isIntermissionEditing()) {
+    } else if (isIntermissionEditing() || activeEditor().id === 'intermissionEditor') {
       // The Intermission screen has no base font of its own, and the page-wide one (settings.engFont)
       // belongs to the board's message — so with nothing selected the pick restyles this screen's
-      // whole text instead, and the caret goes back to the end.
-      const el = _activeEditable, all = document.createRange();
+      // whole text instead (on the sheet or in the drawer's editor), and the caret goes back to the end.
+      const el = activeEditor(), all = document.createRange();
       all.selectNodeContents(el);
       _savedEditorRange = all;
       fmt('fontName', font.family + ', ' + heb);
@@ -9945,7 +9959,17 @@ else ivritInit();
   }
 
   /* ── Two-way sync + in-place editing on the dashboard ── */
-  function activeEditor() { return _activeEditable || document.getElementById('dashEditor'); }
+  function activeEditor() { return _activeEditable || document.getElementById(_drawerEditorId); }
+  // Two drawer editors share the toolbar code (the board's message and the Intermission words), so the target follows
+  // focus and the toolbar pressed; a saved selection from the other editor is dropped for a caret at this one's end.
+  function setDrawerEditor(id) {
+    const ed = document.getElementById(id);
+    if (!ed || _drawerEditorId === id) return;
+    _drawerEditorId = id;
+    if (!(_savedEditorRange && ed.contains(_savedEditorRange.commonAncestorContainer))) {
+      const r = document.createRange(); r.selectNodeContents(ed); r.collapse(false); _savedEditorRange = r;
+    }
+  }
   function normalizeSpoilers(root) {
     // Display-side spoiler spans are recreated on every innerHTML write, so keyboard
     // affordances must be re-applied after each write (the reveal handlers themselves are
@@ -9985,6 +10009,7 @@ else ivritInit();
     // The Intermission screen has no mirror — it commits on exit (and its input listener keeps the
     // settings copy current). Falling through would re-render the board's message under it.
     if (isIntermissionEditing()) return;
+    if (!_activeEditable && _drawerEditorId === 'intermissionEditor') { intermissionEditorMirror(); return; }   // the drawer's Intermission editor mirrors into settings, the preview and the sheet
     const disp = document.getElementById('dashTextDisplay'), ed = document.getElementById('dashEditor');
     if (_activeEditable === disp) { ed.innerHTML = disp.innerHTML; settings.dashTextHTML = disp.innerHTML; }
     else { disp.innerHTML = ed.innerHTML; settings.dashTextHTML = ed.innerHTML; }
@@ -10504,13 +10529,34 @@ async function onUploadEngFontPick(input){
     else { el.textContent = INTERMISSION_WORD_EN; el.setAttribute('lang', 'en'); }
     if (interactive) normalizeSpoilers(el);
   }
-  function renderIntermission() {
+  function renderIntermission(opts) {
     const el = document.getElementById('intermissionText');
     if (el && !isIntermissionEditing()) renderIntermissionInto(el, true);   // never re-render under the teacher's caret
     // The drawer's mini rendering follows every change — mid-edit too, since intermissionMirror keeps settings current.
     const pv = document.getElementById('intermissionPreviewText');
     if (pv) renderIntermissionInto(pv, false);
     syncIntermissionControls();
+    if (!(opts && opts.skipEditor)) syncIntermissionEditor();   // the mirror passes skipEditor: it is the editor's own keystroke
+  }
+  // The drawer's editor (#intermissionEditor): the third surface the shared toolbar serves. It shows the stored words,
+  // or — like the sheet's in-place edit — the default word as a plain-text seed; a commit that leaves the seed unchanged
+  // (or empties the editor) keeps the field '', so the screen keeps following headerLang.
+  function intermissionSeedText() {
+    return intermissionIsHeb() ? (settings.showNikkud ? INTERMISSION_WORD_HE : stripNikkud(INTERMISSION_WORD_HE)) : INTERMISSION_WORD_EN;
+  }
+  function syncIntermissionEditor() {
+    const ed = document.getElementById('intermissionEditor');
+    if (!ed || document.activeElement === ed) return;   // never rewrite under the teacher's caret
+    const custom = intermissionCustomHTML();
+    if (custom) { ed.innerHTML = custom; _imEdSeed = null; }
+    else { ed.textContent = intermissionSeedText(); _imEdSeed = ed.innerHTML; }
+  }
+  function intermissionEditorMirror() {
+    const ed = document.getElementById('intermissionEditor');
+    if (!ed) return;
+    const html = ed.innerHTML;
+    settings.intermissionHTML = ((_imEdSeed !== null && html === _imEdSeed) || _dashTextEmpty(html)) ? '' : sanitizeDashHTML(html);
+    renderIntermission({ skipEditor: true });   // the preview and the sheet follow every keystroke
   }
   // The drawer's buttons: Show opens the sheet (setIntermission, the I key's path); Edit words opens it straight into
   // the in-place editor, the one editing surface these words have; Use the default word drops the teacher's words —
@@ -10570,9 +10616,7 @@ async function onUploadEngFontPick(input){
     // other text (the display may have colour-coded its nikkud; the seed is the bare word).
     _imSeed = null;
     if (!intermissionCustomHTML()) {
-      el.textContent = intermissionIsHeb()
-        ? (settings.showNikkud ? INTERMISSION_WORD_HE : stripNikkud(INTERMISSION_WORD_HE))
-        : INTERMISSION_WORD_EN;
+      el.textContent = intermissionSeedText();
       _imSeed = el.innerHTML;
     }
     _activeEditable = el;
@@ -10775,7 +10819,23 @@ async function onUploadEngFontPick(input){
     wireFormListeners();
     buildToolbar(document.getElementById('drawerToolbar'));
     buildToolbar(document.getElementById('inplaceToolbarCmds'));
+    buildToolbar(document.getElementById('intermissionToolbar'));
     document.getElementById('dashEditor').addEventListener('paste', _pasteSanitized);
+    document.getElementById('dashEditor').addEventListener('focusin', () => setDrawerEditor('dashEditor'));
+    // The drawer's Intermission editor: input mirrors into settings / preview / sheet, paste is sanitized, focus points
+    // the shared toolbar at it, blur keeps the range (a <select> in the toolbar takes focus), saves, and refills the
+    // default-word seed when the teacher emptied it (a rewrite while words stand would detach the saved selection).
+    const imEd = document.getElementById('intermissionEditor');
+    imEd.addEventListener('input', intermissionEditorMirror);
+    imEd.addEventListener('paste', _pasteSanitized);
+    imEd.addEventListener('focusin', () => setDrawerEditor('intermissionEditor'));
+    imEd.addEventListener('blur', () => {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) _savedEditorRange = sel.getRangeAt(0).cloneRange();
+      intermissionEditorMirror();
+      saveSettingsToStorage();
+      if (_dashTextEmpty(imEd.innerHTML)) syncIntermissionEditor();
+    });
     document.getElementById('dashTextDisplay').addEventListener('paste', e => {
       if (_activeEditable === document.getElementById('dashTextDisplay')) _pasteSanitized(e);
     });
@@ -10858,6 +10918,7 @@ async function onUploadEngFontPick(input){
       try { if (_pickNoteKey) setPickNote(_pickNoteKey); } catch (e) {}                 // ditto for the pick overlay's new-round note
       try { if (_timerCustomNoteShown) timerCustomNote(true); } catch (e) {}            // ditto for the timer's invalid-duration note
       try { buildToolbar(document.getElementById('drawerToolbar')); } catch (e) {}      // editor toolbar titles/labels build via t()
+      try { buildToolbar(document.getElementById('intermissionToolbar')); } catch (e) {}
       try { buildToolbar(document.getElementById('inplaceToolbarCmds')); } catch (e) {}
       try { if (_rosterKbd) _rosterKbd.applyI18n(); } catch (e) {}   // key names/tips are shared.kbd.* strings
       try { updateColTitles(); } catch (e) {}
@@ -10893,9 +10954,13 @@ async function onUploadEngFontPick(input){
 
   // Prevent toolbar buttons from stealing focus/selection from the editor
   // Don't preventDefault on select/input so they remain interactive
-  document.querySelectorAll('.editor-toolbar').forEach(tb => tb.addEventListener('mousedown', e => {
-    if (e.target.tagName === 'BUTTON' || e.target.closest('button')) e.preventDefault();
-  }));
+  document.querySelectorAll('.editor-toolbar').forEach(tb => {
+    tb.addEventListener('mousedown', e => {
+      if (tb.dataset.editor && !_activeEditable) setDrawerEditor(tb.dataset.editor);   // a drawer toolbar serves its own editor (data-editor)
+      if (e.target.tagName === 'BUTTON' || e.target.closest('button')) e.preventDefault();
+    });
+    tb.addEventListener('focusin', () => { if (tb.dataset.editor && !_activeEditable) setDrawerEditor(tb.dataset.editor); });   // keyboard: Tab into the toolbar
+  });
 
   // Always keep _savedEditorRange current while the active editable has focus
   document.addEventListener('selectionchange', () => {

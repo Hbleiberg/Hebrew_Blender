@@ -437,15 +437,31 @@ body.dark #tipFloat { background: #0a0f1c; }
   with the drawer's text size). The preview refreshes wherever the words or their look can change: every
   `renderIntermission()` caller (the sheet opening, an edit ending, `applySettings`), `syncFormToSettings` (init and
   every drawer open), the `headerLang` radios (the default word follows them) and the form's `refreshAll` (the
-  nikkud switches reach `hebDisplay`). Its buttons: *Show screen* → `setIntermission(true)` (the sheet opens over
-  the drawer, which stays; Escape closes the sheet first); *Edit words* → `editIntermissionFromDrawer()` =
-  `setIntermission(true)` + `enterIntermissionEdit()`, the sheet's own in-place editor — the words have one editing
-  surface, never a second contenteditable in the drawer; *Use the default word* → `resetIntermissionWords()`,
-  a `confirm()` then `intermissionHTML = ''`, disabled by `syncIntermissionControls()` while the sheet already shows
-  the default. No new setting: the section reads and writes `intermissionHTML` only.
+  nikkud switches reach `hebDisplay`). Under the card sits **the words' editor**: `#intermissionToolbar` (built from
+  `EDITOR_COMMANDS` like the other two toolbars, rebuilt on a language switch) over `#intermissionEditor`, a
+  contenteditable that is black like the sheet and wears `.im-text` (a readable `--im-size` of its own), so colours,
+  the two effects, spoilers and `<font size>` read as they will project. It shows the stored words, or the default word
+  as a plain-text seed (`intermissionSeedText()`, `_imEdSeed`) exactly as the sheet's in-place edit does; every
+  keystroke runs `intermissionEditorMirror()` — the seed unchanged or an emptied editor keeps the field `''`, anything
+  else is `sanitizeDashHTML`'d into `intermissionHTML` — and re-renders the preview and the sheet
+  (`renderIntermission({ skipEditor: true })`, so the editor is never rewritten under the caret; `syncIntermissionEditor()`
+  refills it on every other render while it is not focused, and on blur only when it was emptied — a rewrite while
+  words stand would detach the toolbar's saved selection). Its buttons: *Show screen* → `setIntermission(true)` (the
+  sheet opens over the drawer, which stays; Escape closes the sheet first); *Edit on the screen* →
+  `editIntermissionFromDrawer()` = `setIntermission(true)` + `enterIntermissionEdit()`, the sheet's own in-place editor
+  at full size; *Use the default word* → `resetIntermissionWords()`, a `confirm()` then `intermissionHTML = ''`,
+  disabled by `syncIntermissionControls()` while the sheet already shows the default. No new setting: the section
+  reads and writes `intermissionHTML` only.
 
-### The in-place editor serves two surfaces
-The toolbar commands already act on `activeEditor()` (`_activeEditable || #dashEditor`). The pencil on the
+### The shared toolbar serves three surfaces
+The toolbar commands act on `activeEditor()` = `_activeEditable || document.getElementById(_drawerEditorId)`: an
+in-place surface while one is being edited, else **the drawer editor the toolbar is about** — `_drawerEditorId`
+(`dashEditor` by default) follows `focusin` on either drawer editor and any `mousedown` or `focusin` on a drawer
+toolbar, each of which names its editor in `data-editor` (`setDrawerEditor(id)`; the switch drops a saved selection
+that lies in the other editor for a caret at this one's end, and `restoreEditorFocus` refuses to restore another
+editor's range). `syncActive()` mirrors the drawer's Intermission editor through `intermissionEditorMirror()`;
+`pickEditorFont` with nothing selected restyles that editor's whole text, as it does the sheet's. The two in-place
+surfaces below are unchanged. The pencil on the
 sheet calls `enterIntermissionEdit()`, which makes `#intermissionText` the `_activeEditable`, adds
 `body.im-editing` (lifting `#inplaceToolbar` above the sheet) and registers the same capture listeners.
 **`exitInPlaceEdit()` dispatches** to `exitIntermissionEdit()` when the Intermission text is active, so
