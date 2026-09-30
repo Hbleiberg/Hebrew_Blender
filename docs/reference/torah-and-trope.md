@@ -957,10 +957,12 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
   `.tt-stack-toggles` pair). Those are mirrors of the Text tab's *Show transliteration* / *Show translation*
   rows — one setting shown twice, the way the audio bar's sliders mirror the Audio tab's: `setShowTranslit` /
   `setShowTranslation` are the only writers, and `syncShowSwitches()` (from `syncFormToSettings`) keeps both
-  pairs in step. **The Custom range** (`.tt-ctrl.tt-custom`: Book `#ttCustomBook`, Chapter `#ttCustomChapter`,
-  Verses `#ttCustomVStart`–`#ttCustomVEnd` and Go → `applyCustomRange()`) is the toolbar's one compact group after
-  the Reading scope; `prefillCustomPicker()` runs from `syncParshaSelect`, so Book and Chapter follow the reading on
-  screen after every change (the chapter and verse boxes carry aria-labels, their visible text is a placeholder).
+  pairs in step. **The Custom range** is a toolbar button `#ttCustomBtn` (`aria-expanded`, `aria-controls`) that
+  unfolds one compact group `#ttCustomWrap` (`.tt-ctrl.tt-custom`, `hidden` until pressed: Book `#ttCustomBook`,
+  Chapter `#ttCustomChapter`, Verses `#ttCustomVStart`–`#ttCustomVEnd` and Go → `applyCustomRange()`);
+  `toggleCustomRange(force?)` is the one writer of the group's hidden state and focuses the Book select on open;
+  `prefillCustomPicker()` runs from `syncParshaSelect`, so Book and Chapter follow the reading on screen after every
+  change (the chapter and verse boxes carry aria-labels, their visible text is a placeholder).
   Everything else the toolbar once held lives in the drawer — the Layout radios and the
   Version list on the Text tab; the Holiday Torah readings on the Calendar tab; Print,
   Student handout, Copy and Copy link + Include my settings on the Share tab — and the toolbar's Settings button

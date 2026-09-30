@@ -373,6 +373,7 @@ body.dark .tt-ctrl select, body.dark .tt-ctrl input[type="number"], body.dark .t
 }
 .tt-ctrl select { min-width:110px; max-width:100%; }
 .tt-custom { flex-wrap:wrap; }        /* on a phone the verse boxes and Go drop to a second line instead of crushing the select */
+.tt-custom[hidden] { display:none; }  /* [hidden] must beat the inline-flex rule (the #triYearRow trap) */
 .tt-custom select { min-width:96px; }  /* "Deuteronomy" fits; the 110px floor is the parsha picker's */
 .tt-custom input[type="number"] { padding-inline:6px; }
 .tt-ctrl select:focus, .tt-ctrl input:focus { outline:2px solid var(--gold); outline-offset:0; }
@@ -2109,12 +2110,15 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <option value="parsha-haftarah" data-i18n="torah.schedule.scope_haftarah">Haftarah</option>
     </select>
   </span>
-  <!-- Custom range (moved back from the Calendar tab): any Torah verses, one compact group. prefillCustomPicker seeds
-       Book and Chapter from the current reading after every reading change (syncParshaSelect); Go loads the range
-       through applyCustomRange. The chapter and verse boxes carry aria-labels (their visible text is a placeholder). -->
-  <span class="tt-ctrl tt-custom">
-    <label for="ttCustomBook" data-i18n="torah.custom.range_label">Custom:</label>
-    <select id="ttCustomBook" onchange="customBookChanged()" title="Book" data-i18n-title="torah.custom.book_label">
+  <!-- Custom range: a toolbar button unfolds one compact group (hidden until pressed; toggleCustomRange is the one
+       writer of its hidden state + aria-expanded). prefillCustomPicker seeds Book and Chapter from the current reading
+       after every reading change (syncParshaSelect); Go loads the range through applyCustomRange. The chapter and
+       verse boxes carry aria-labels (their visible text is a placeholder). -->
+  <span class="tt-ctrl">
+    <button class="btn btn-xs btn-secondary" id="ttCustomBtn" type="button" onclick="toggleCustomRange()" aria-expanded="false" aria-controls="ttCustomWrap" title="Read any Torah verses" data-i18n-title="torah.custom.toggle_title" data-i18n="torah.custom.toggle_button">Custom range</button>
+  </span>
+  <span class="tt-ctrl tt-custom" id="ttCustomWrap" hidden>
+    <select id="ttCustomBook" onchange="customBookChanged()" title="Book" data-i18n-title="torah.custom.book_label" aria-label="Book" data-i18n-aria-label="torah.custom.book_label">
       <option value="Genesis" data-i18n="torah.custom.book_genesis">Genesis</option>
       <option value="Exodus" data-i18n="torah.custom.book_exodus">Exodus</option>
       <option value="Leviticus" data-i18n="torah.custom.book_leviticus">Leviticus</option>
@@ -9097,6 +9101,16 @@ function prefillCustomPicker() {
 }
 // The chapter box's max follows the book (Deuteronomy has 34 chapters, Genesis 50), so the spinner
 // and native validation catch a chapter the book does not have before Sefaria's error does (S336).
+// The toolbar's Custom range button: the group is hidden until pressed (a teacher who never types a range never sees
+// five boxes); opening focuses the Book select. The one writer of the group's hidden state and the button's aria-expanded.
+function toggleCustomRange(force) {
+  const wrap = document.getElementById('ttCustomWrap'), btn = document.getElementById('ttCustomBtn');
+  if (!wrap || !btn) return;
+  const open = typeof force === 'boolean' ? force : wrap.hidden;
+  wrap.hidden = !open;
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open) { const b = document.getElementById('ttCustomBook'); if (b) b.focus({ preventScroll: true }); }
+}
 function customBookChanged() {
   const chapIn = document.getElementById('ttCustomChapter');
   const max = TORAH_BOOK_CHAPTERS[document.getElementById('ttCustomBook').value] || 50;

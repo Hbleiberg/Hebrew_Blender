@@ -4015,7 +4015,8 @@ torah.custom.book_leviticus,Leviticus,ויקרא,book option,glyph-name
 torah.custom.book_numbers,Numbers,במדבר,book option,glyph-name
 torah.custom.chapter_label,Chapter,פרק,toolbar Custom range: the chapter box's aria-label and title,aria-label only
 torah.custom.chapter_ph,ch.,פרק,toolbar Custom range: chapter box placeholder,placeholder
-torah.custom.range_label,Custom:,מותאם:,"toolbar label before the Custom range group (book select, chapter, verses, Go)",
+torah.custom.toggle_button,Custom range,טווח מותאם,"toolbar button that unfolds the Custom range group (book, chapter, verses, Go)",
+torah.custom.toggle_title,Read any Torah verses,קריאת פסוקים כלשהם מהתורה,toolbar Custom range button title,
 torah.custom.go_button,Go,מעבר,button,
 torah.custom.verse_from_aria,First verse,פסוק ראשון,custom-range start-verse input aria-label,aria-label only
 torah.custom.verse_from_ph,from,מ,input placeholder,placeholder
