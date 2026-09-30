@@ -240,16 +240,16 @@ The sixteen sections by tab (`TT_SECTION_TAB`):
   it), `schedule` (keeps `id="schedulePanel"`, the tour's target).
 - **More** — `backup` (`dashboard.settings.panel_backup`: the `.ivrit` engine's standard markup with its inline
   `<style>`, which used to sit at the end of Presets under an `<hr>` — every control id is unchanged), `cloud`
-  (`dashboard.settings.cloud_head`, hosts `#cloudSavesPanel`; `IvritSaves.attach` passes `title: false` because the
-  heading is the heading), `about`.
+  (`dashboard.settings.cloud_head`, "Your account"; hosts `#cloudSavesPanel`, where `IvritSaves.attach({ status })`
+  mounts the shared account status line), `about`.
 
 ### One writer, two openers
 `setSettingsTab(name)` is the only writer of tab state — `aria-selected`, the roving `tabIndex` (the selected tab
 alone is in the Tab sequence), `hidden` on every tab panel, and `.settings-body` scrolled to the top; an unknown
 name reads `display`. `openSettingsAtPanel(key)` opens the drawer, maps the section key through `TT_SECTION_TAB`,
 scrolls the section to the top of the body and focuses its heading, so the next Tab enters the section's controls.
-Its callers: the cloud module's `open` (`'cloud'`, the header chip's *Cloud saves…* item) and
-`scripts/smoke-tools.mjs` (`'cloud'`). The tour's three drawer steps target controls, not sections, so their
+Its caller: `scripts/smoke-tools.mjs` (`'cloud'`) — the chip's menu no longer opens a
+section. The tour's three drawer steps target controls, not sections, so their
 `reveal` calls `_tourOpenDrawer()` then `setSettingsTab('display')` (Move panels) or `setSettingsTab('presets')`
 (Quick-start layouts, Schedule Sync); `tourEnd` closes a drawer it opened and restores nothing else — the drawer
 reopens on Display anyway.
@@ -488,45 +488,59 @@ faces are sample letters, so `nameFromTitle` gives them their title as the acces
 
 ---
 
-## Cloud saves (optional accounts)
+## Your account (optional accounts)
 
 The shared module (`docs/reference/accounts-and-cloud.md`) owns everything that talks to Supabase; the
-dashboard only says which keys it owns and how to re-read them. What matters here: `saveSettingsToStorage()`
-is the `flush` (synchronous, and it reads `#dashEditor` into `settings` first); the settings row **omits**
-every per-device field (`*Collapsed`, `panelLayout`, `videoLayout`, `zoomLevel`, `hideZoomBar`, `keepAwake`,
-`lockPanelWidths`, `showTextSizeOptions`), the ephemeral `pickerSessions`, the derived `_geoCoords`, the live
-`activeRosterId` and the `rosters` — the class lists are their own rows on the same key (one per class,
-labelled by the class name), so a projector's zoom or layout never lands on the laptop and a class list
-uploads only when the teacher chooses it. After the module writes the settings key the page re-reads it
-(`loadSettingsFromStorage()`), then runs the `IVRIT_CFG.apply` tail — `applySettings` on a clone, the three
-render caches nulled, `renderWeekSummary` / `renderScheduleUI` / the week editor — and `ensureActiveClass()`
-self-heals a dangling class pointer after a roster download. The pointer is per device, so a second device
-that downloads the account's classes would keep showing its own untouched default (`My class`, no names):
-`adoptClassFromAccount()` switches it to the first class from the account — after each roster row lands,
-and once per signed-in load (`IvritAccount.onChange`) for a sync that ran on another page — and says so
-(`dashboard.picker.cloud_switched`: the drawer's class note plus a toast); the empty default stays listed
-(sync never deletes). A class list that lands under the same name as a class this device made itself and
-never synced (the module's last listing, `IvritSaves.lastPlan('Dashboard')`, said *only on this device*) is
-folded into the landed one — `foldSameNamedClass`: names unioned, pick session and pointer moved, the
-duplicate dropped, a toast (`dashboard.picker.merged_same_name`); a class synced before, or one that differs,
-stays as a second class. The settings branch of the hook replaces the in-memory object outright (every own
-key deleted, `PRISTINE_DEFAULTS` back, the stored blob on top) so a weekly grid removed elsewhere is removed
-here too — a merge could never delete a field; when `location` changed it drops `_geoCoords` and refetches
-weather and Shabbat times, and it repaints the holiday countdown, the Shabbat block and the Omer display
-at once. Presets carry the class **name** (`activeRosterName`, written by `getSettings({forPreset:true})`,
-never the per-device id): `applySettings` picks the class with that name here, else an older preset's id
-when it exists here, else keeps the current class; `presetClassName` (the schedule's class-for-preset
-lookup) resolves by name first. `IVRIT_CFG.apply` also takes class lists (`dashboardRosters` from the
-account backup, `roster` from a single row's file), merged by id, and returns whether anything landed. A
-blob a sync wrote before this dashboard was ever opened here (class lists only) still counts as a first run
-(`_storedBlobIsFirstRun`). The 30-second `checkSchedule` can write storage at a period boundary (through
-`applySettings` → `applyZoom`); the module re-reads the store after every write and treats a row that
-moved between its listing and an action as a skip, not a stop.
+dashboard only says which keys it owns and how to re-read them. Signed in, the account is where its presets,
+schedules, settings and class lists live: they land at every load (one listing, then only what differs) and
+every save, delete or reset reaches the account two seconds after the last write — the *Your account* section
+of the More tab holds the module's status line, nothing else. What matters here: `flush` is
+`flushRosterIfTyping()` + a non-exiting commit of the in-place editor (`syncActive()`) + `saveSettingsToStorage()`
+(synchronous, and it reads `#dashEditor` into `settings` first) — the module calls it at every hydration and
+before every write-through, so it must never throw a teacher out of an edit; `finalFlush` adds
+`exitInPlaceEdit(true)` and runs only on `pagehide` and sign-out, as the page's own `pagehide` handler does. The
+settings row **omits** every per-device field (`*Collapsed`, `panelLayout`, `videoLayout`, `zoomLevel`,
+`hideZoomBar`, `keepAwake`, `lockPanelWidths`, `showTextSizeOptions`), the ephemeral `pickerSessions`, the
+derived `_geoCoords`, the live `activeRosterId` and the `rosters` — the class lists are their own rows on the
+same key (one per class, labelled by the class name), so a projector's zoom or layout never lands on the laptop,
+and a sign-out that removes the account's rows strips only the fields each row carries (`localStripProjected`:
+the settings blob's fields and the rosters are decided on their own). After the module writes the settings key
+the page re-reads it (`loadSettingsFromStorage()`), then runs the `IVRIT_CFG.apply` tail — `applySettings` on a
+clone, the three render caches nulled, `renderWeekSummary` / `renderScheduleUI` / the week editor — and
+`ensureActiveClass()` self-heals a dangling class pointer after a roster landed. The pointer is per device, so a
+second device that receives the account's classes would keep showing its own untouched default (`My class`, no
+names): `adoptClassFromAccount()` switches it to the first class from the account — after each roster row lands,
+and once per signed-in load (`IvritAccount.onChange`) for rows that landed on another page — and says so
+(`dashboard.picker.cloud_switched`: the drawer's class note plus a toast). A class list that lands under the same
+name as a class this device made itself and never synced (the module's last listing,
+`IvritSaves.lastPlan('Dashboard')`, said *only on this device*) is folded into the landed one —
+`foldSameNamedClass`: names unioned, pick session and pointer moved, the duplicate dropped, a toast
+(`dashboard.picker.merged_same_name`); the fold waits while the device-extras card is still asking
+(`onLocalChanged(kind, name, names, { pending })`), and a class synced before, or one that differs, stays as a
+second class. The settings branch of the hook replaces the in-memory object outright (every own key deleted,
+`PRISTINE_DEFAULTS` back, the stored blob on top) so a weekly grid removed elsewhere is removed here too — a
+merge could never delete a field; when `location` changed it drops `_geoCoords` and refetches weather and
+Shabbat times, and it repaints the holiday countdown, the Shabbat block and the Omer display at once. Presets
+carry the class **name** (`activeRosterName`, written by `getSettings({forPreset:true})`, never the per-device
+id): `applySettings` picks the class with that name here, else an older preset's id when it exists here, else
+keeps the current class; `presetClassName` (the schedule's class-for-preset lookup) resolves by name first.
+`IVRIT_CFG.apply` also takes class lists (`dashboardRosters` from the account backup, `roster` from a single
+row's file), merged by id, and returns whether anything landed. A blob a hydration wrote before this dashboard
+was ever opened here (class lists only) still counts as a first run (`_storedBlobIsFirstRun`), and with a
+stored session the Quick-start card (`openFirstRun()`) waits for the first `ivritsuite:hydrated` naming
+`Dashboard` (10 s fallback) and opens only if no settings row landed. Deleting a class (`deleteClass`) is a
+write like any other and reaches the account; while a session is stored its confirm says so
+(`dashboard.picker.delete_class_confirm_cloud`). The 30-second `checkSchedule` can write storage at a period
+boundary (through `applySettings` → `applyZoom`); the module re-reads the store after every write and treats a
+row that moved between its listing and an action as a skip, not a stop.
 
-An untouched empty default class ("My class", no names — the one every fresh device mints) is a **seed** for the
-cloud, not a class list: the registry's roster entry says so (`skipUpload`), its row reads *Empty default — not
-uploaded*, has no button, and *Sync everything* never sends it by itself; a name added to it makes it a class
-like any other. The ninth "My class" row a phone once uploaded was such a seed.
+Two seeds are never sent by themselves: an untouched empty default class ("My class", no names — the one every
+fresh device mints) and the untouched "Default" preset `loadPresets()` seeds (the registry's `skipUpload` on
+the roster and preset entries; the preset's is a canonical-JSON constant, `DASHBOARD_DEFAULT_PRESET_CANON`,
+that `smoke-sync` asserts still equals `DEFAULT_PRESET.Default`). Neither is listed on the device-extras card
+nor uploaded; a name added to the class, or any change to the preset, makes it an item like any other, and a
+seed with a same-named row in the account takes the account's copy. The ninth "My class" row a phone once
+uploaded was such a seed.
 
 ---
 

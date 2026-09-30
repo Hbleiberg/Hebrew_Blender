@@ -47,12 +47,21 @@ Because they live in IndexedDB (not `localStorage`), they need **no** per-tool k
 export/import/erase functions beyond that already-present `userFonts` handling.
 
 ### Rule for any new tool with a Hebrew font selector
-`js/ivrit-saves.js` reads and writes this same store for the account's `Suite`/`font` rows, through its own
-small copy of the open/transaction pair rather than the page's (it has to work on any carrier). Its write is
-deliberately **not** `saveUserFont`: that one drops the oldest font once `IV_FONTS_CAP` is reached, which is
-right for an upload the teacher just chose and wrong for a sync, so at the cap the module refuses the row and
-names it instead. After it writes, it fires `ivritsuite:fonts` on `window`; every picker page listens and
-re-runs `refreshMyFonts()`.
+`js/ivrit-saves.js` reads and writes this same store for the account's `Suite`/`font` rows (one row per font,
+the TTF base64 inside it), through its own small copy of the open/transaction pair rather than the page's (it
+has to work on any carrier). Signed in, the fonts land at every page load and a new upload goes up by itself:
+the module wraps the block's `saveUserFont` once write-through is armed (after it resolves, that one font's
+row is sent), and never `deleteUserFont` — the block calls it to evict the oldest font at `IV_FONTS_CAP`,
+which is not a deletion. Its own download write is deliberately **not** `saveUserFont`: eviction is right for
+an upload the teacher just chose and wrong for a font arriving from the account, so at the cap the eleventh
+font is skipped quietly (a note on the status line, `shared.cloud.status_font_full`, never a toast) and the
+account keeps its row; an eleventh *upload* evicts locally as the block always did, and the account keeps the
+evicted font too. A font leaves the account only through an explicit delete — the hub's `deleteMyFontFile`
+and the Font Maker's remove-font modal call `IvritSaves.fontDeleted(name)` while a session is stored
+(`IvritAccount.hasStoredSession()`). After a font lands, the module fires `ivritsuite:fonts` on `window`;
+every picker page (the Font Maker and the hub included) listens and re-runs `refreshMyFonts()`. Every module
+page hydrates `Suite`: a tool page through its own `attach()`, the hub, the Font Maker and the account page
+through `attach({ tool: 'Suite' })`.
 
 It **must**: (1) paste the shared `ivritsuite-fonts` block, (2) implement the consumer pattern above so a
 **"My Fonts"** group appears and `refreshMyFonts()` runs at init, and (3) paste the **My Fonts uploader**

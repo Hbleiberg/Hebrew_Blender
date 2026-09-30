@@ -69,13 +69,19 @@ The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-save
   no download), else download → unpack → `applyProjectData`. `fmCloudDelete(id)` closes the menu, confirms,
   removes row + objects, reopens the menu. The Exported ✓ dialog gains `fmCloudKeepExport(dlFile)` (the
   snapshotted file, ≤ 5 MB) and a row with an export shows ⬇ (`fmCloudDownloadExport`).
-- **Guards**: `udShortcutBlocked()` and the global keydown return early while the account screen
-  (`.ivsav-overlay`) is open, so its Escape does not close the editor's own modal. Strings are
+- **Guards**: `udShortcutBlocked()` and the global keydown return early while the saves module's device-extras
+  card (`.ivsav-overlay`, the one overlay it opens) is up, so a keypress meant for it does not reach the editor's
+  own modal. Strings are
   `fontmaker.cloud.*` through `_cT(key, fallback, params)` (the `_pT` shape); `fmMb` formats sizes.
 - **The account page** (`account.html`) never opens a project here: its download-everything zip rebuilds a
   `.hebrewfont` from the cloud copy through `IvritProjects.projectFile(id)` — the module's own generic walk over
   the `cloud:` strings the packed manifest names, photos put back as data URLs, `cloudSources` dropped — so the
   file is what Save Project writes. `fmCloudUnpack` stays the path for opening in this page.
+- **The account's own rows**: the boot wiring calls `IvritSaves.attach({ tool: 'Suite' })`, so the suite-wide
+  preferences (`hebrewFontMaker_lastAuthor` among them) and My Fonts hydrate here like on every module page (the
+  `ivritsuite:fonts` listener re-lists them); the remove-font modal calls `IvritSaves.fontDeleted(name)` while a
+  session is stored (`IvritAccount.hasStoredSession()`) — the one way a font leaves the account. No status line
+  and no summary hook here: the account page counts the projects.
 - **Test**: `node scripts/smoke-fontmaker.mjs --sdk <supabase.js>` (port 8082) replays the whole flow
   against a fake cloud that also fakes Storage.
 

@@ -287,8 +287,8 @@ deduped by `word` under the Dictionary's caps (50 lists, 200 words — `CW_SAVE_
 `setRwSource('lists')`), so the next preset, remembered setup, `.ivrit` file or share link carries it
 by id. It never edits or removes a list. Validation is inline (`#cwImportStatus` + `aria-disabled`
 on the button, the preset-name flow's shape); the confirmation lives in `#rwListSaveNote` above the
-picker and `_syncRwSourceUI()` clears it on the next source change. Cloud: the store is the
-Dictionary's `wordList` row, so the new list reads *Only on this device* at the next listing.
+picker and `_syncRwSourceUI()` clears it on the next source change. Signed in, the store is the
+Dictionary's `wordList` row, and the generator's `alsoPull: ['Dictionary']` hooks send the new list up like any other write.
 
 ---
 

@@ -221,15 +221,17 @@ run. A pass defined here but absent from the table (no ledgered removal or SKIP)
   arm to confirm the rule id is gone. Never present an AFTER you did not render. Prefer converging a
   token or shared block over patching call sites.
 - **P. Accounts & cloud (one surface)** — the layer no other pass can see. Pick the least-recently-audited
-  wired surface (the 7 tools, the hub's cloud panels, `account.html`). Arms, running what the surface has:
+  wired surface (the 7 tools, the hub's account block, `account.html`). Arms, running what the surface has:
   **1** anonymous parity — the page's full localStorage dump byte-identical to a control run with the account
   scripts blocked (`smoke-tools.mjs --only <file>`, with `--sdk` or its signed-in arms silently skip), the bar
   being that an anonymous visit is unchanged;
   **2** signed-in behaviour through the matching smoke, never the generic recipe (see iteration step 4);
   **3** registry integrity — every `IVRIT_SYNC_REGISTRY` key registered at all three AllTools sites and in the
   page's own `IVRIT_CFG`, and the kind of data it carries named in `privacy.legal.*` / `terms.legal.*`
-  (CLAUDE.md accounts rule 8); **4** every reset control on a syncing page calls `forgetRow(tool, kind)` — its
-  absence turns a local reset into an account-wide one and nothing else detects it; **5** the two CSP origins
+  (CLAUDE.md accounts rule 8); **4** every reset or delete control on a syncing page is a plain write (it
+  reaches the account by design) whose confirm, while a session is stored (`IvritAccount.hasStoredSession()`),
+  names the account-wide effect (the `*_cloud` confirm keys), and no `forgetRow` reference remains anywhere —
+  that memory-forgetting call is gone with the panels; **5** the two CSP origins
   present exactly where the account scripts are, and nowhere else, and every gtag page carrying the
   `page_location` snippet with the same keys as `AUTH_QUERY_KEYS` (the A-sweep pattern owns detection; P
   confirms the carrier count); **6** the four `js/` modules and `account.html` in `sw.js` `CORE_ASSETS`;
@@ -238,7 +240,7 @@ run. A pass defined here but absent from the table (no ledgered removal or SKIP)
   history row, so an absent record alone is not drift), the security and performance advisors clean,
   `delete-account` deployed with its JWT check on and its deployed source equal to
   `db/functions/delete-account/index.ts`, and the keep-alive's latest scheduled run green. **Control:**
-  plant a defect — rename a registry key, delete a `forgetRow` call — and confirm the probe fires before any
+  plant a defect — rename a registry key, swap a `_cloud` confirm key for its plain twin — and confirm the probe fires before any
   clean result counts; a fake cloud that answered nothing looks exactly like a layer with no bugs. Findings
   needing a migration, a deploy or a key stop at the backend boundary and are logged, not shipped.
 

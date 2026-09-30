@@ -18,11 +18,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**S430 A — the maintainer's call**) | torah_trainer.html | **The reading header keeps "Aliyah {n}" English in the Hebrew UI** beside a translated cycle label (also the copy heading, the handout). | found S430
 
-- [ ] P4 (**S430 — shared; smokes**) | js/ivrit-saves.js | **A late `attach()` gets the sync offer only at a later auth event** (HEAD too): its own listing never runs `offerOnce`. | found S430
-
 - [ ] P4 (**NEW S431 E**) | torah_trainer.html | **Two comments name only Chol HaMoed as the Sefaria fallback** (`goToCurrentParshah`, `init`); since `8cb1a2c` the Diaspora's Pesach 8 / Shavuot 2 too. | found S431
-
-- [ ] P4 (**NEW S428 — shared**) | js/ivrit-saves.js | **A panel's error outlives later good listings** (`plan()` never clears the status). | found S428
 
 - [ ] P4 (**NEW S428 Pass F — 7 carriers**) | index, dashboard, generator ×2, flash ×3 | **A copy both routes refused still says "Copied"** (`execCommand`'s answer ignored; model `dictCopyText`); the backup-textarea Copy buttons go unannounced. | found S428
 
@@ -31,8 +27,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S429 B; NEW pattern**) | torah_trainer.html + hebrew_blend_generator.html | **Two panels forget their open/closed state on a reload** (torah "Trope staff", generator "Saved Presets"): their title keys sit on an inner span the panel memory never reads. | found S429
 
 - [ ] P4 (**NEW S429**) | hebrew_dictionary.html | **The empty state's "Clear search" and "Search without vowels" drop the focus to `<body>`**; reuse `refocusAfterFilterReset`. | found S429
-
-- [ ] P4 (**NEW S426 — shared script**) | js/ivrit-saves.js | **On `account.html` the account screen's "Manage your account…" link reloads that page.** | found S426
 
 - [ ] P4 (**NEW S427**) | hebrew_dictionary.html | **Closing Add to Word List, opened from a word's details, drops the focus to `<body>`.** | found S427
 
@@ -59,8 +53,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S422 Pass M — five small ones**) | torah_trainer.html | **(1)** page view's drop cap is `--gold`, 2.6:1 on light (print uses `--gold-text`); **(2)** drawer segments break mid-label at 380px; **(3)** Audio tracks start ragged; **(4)** Translit Style clips "[DEFAULT]"; **(5)** "Custom range…" has no icon. | found S422
 
 - [ ] P4 (**NEW S422 Pass M — gate 3 / gate 2**) | torah_trainer.html | **(1)** dark Chant all is 1.1:1 on the page; **(2)** Hebrew-only side by side keeps an empty half; **(3)** "עִבְרִית" in Libre Baskerville; **(4)** gate 2: the Audio help's 🔊 / 🎵, not the icons. | found S422
-
-- [ ] P4 (**NEW S422 Pass M — shared script; smokes**) | js/ivrit-saves.js | **The Cloud saves panel opens with a ~42px empty band** (the signed-out, empty `p.ivsav-status`); collapse it by height, never `display:none` (trap 95). | found S422
 
 - [ ] P4 (**NEW S425 Pass I**) | torah_trainer.html | **A stored layout or translit style this page does not know gets no display fallback** (`layout:'grid'`: side by side, no radio checked; an unknown style: blank); accounts rule 7. | found S425
 
@@ -125,8 +117,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S388 Pass K RTL arm — MEASURED and deliberately logged, not shipped; the third session to adjudicate this shape the same way (S248 `#fsExitBtn`, S376 `.pick-close`)**) | classroom_dashboard.html | **`.dash-edit-pencil` is pinned `top:4px; right:4px` and does not mirror — logical start-offset 520px in `en`, 4px in `he`, the physical right corner in both.** Held back because the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S382 Pass P census — a JUDGEMENT call, not the same defect: these are action toolbars, not homogeneous selection grids, and one stop per button is defensible**) | classroom_dashboard.html + torah_trainer.html | **`.fs-strip-btn` ×6, `.timer-preset-btn` ×5, `drawerToolbar .ed-btn` ×9; torah `.tt-fs-btn` ×6, `#ttTropeLegend .tt-trope-chip` ×6.** ARIA APG would rove a toolbar; the …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S382 Pass P arm 4 — the sibling of the shipped `a44a181`, deliberately NOT changed**) | hebrew_blend_generator.html | **`restoreLastSetup()` drops a corrupt snapshot (`!Array.isArray(saved.selectedLetters)`) with `removeItem(LAST_SETUP_KEY)` and no `forgetRow`, so that row also reads "Deleted on this device".** Forgetting it would offer to download the same bad row back, so the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S380 Pass H — dead copy or a hint-logic choice; the copy half is gate 2**) | Hebrew_Font_Maker.html | **`nexthint_nikkud` ("Letters done! Place nikkud on {name} — {count} to go.") and the `export_nikkud_*` guard can never fire in the trace flow: `finalizeWithOutline` seeds `l.anchors` on every trace, so `coreLetterStats().unanchored` is always empty and the hint jumps from the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -208,8 +198,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
 
-- [ ] S | account.html | **An empty account names the way in.** "Nothing is saved in your account yet." has no next step; a button opening the account screen's Upload everything, ~15 lines, 1–2 keys. | found: S426 Pass H
-
 - [ ] S–M | flash_cards.html (reads the dashboard's class lists) | **Make student profiles from a class list.** A class already in the dashboard (`hebrewDashboard_settings.rosters`) is re-typed one `prompt()` at a time; a "From a class list…" choice is ~50 lines + 3 keys, a handshake pair. | found: S412 Pass H
 
 - [ ] S | flash_cards.html | **"Print the deck we just drilled" on the results screen.** `wireResultsScreen()` binds Save / Redo / Mistakes / Back only; the only caller of `printCardSheet()` is `#sheetPrintBtn` inside `#sheetMenu`, opened from the setup screen's sticky CTA — and `sheetPracticed` + `savedCards` already exist for exactly this moment (`openSheetMenu` unhides `#sheetPracticedRow` …[full text: IMPROVEMENT_ARCHIVE.md]
@@ -273,6 +261,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 _(none)_
 
 ## Done
+
+- [x] 2026-09-30 | (account cleanup — outside the loop, branch `claude/account-system-cleanup-iv9j2n`) | js/ivrit-saves.js, js/ivrit-account.js, the 7 wired pages | **The Cloud saves panels, the account screen, the splash, `forgetRow` and `registerSummary` are gone: signed in, the account is where saves live** (hydrate at load, write-through, one status line, two gates). Closed as moot: the late-`attach()` offer (session 430), the panel error (428), the screen's self-link (426), the empty band (422), the `restoreLastSetup` sibling (382), the empty-account seed (426 H).
 
 - [x] 2026-09-30 | (S432 close-out) | branch/deploy note | **S432 = pass L + 4 fixes → draft PR #293.** DRIFT: none. sw v888→v889; FM not bumped. Gates 5/5. Smokes: none owed.
 
@@ -391,8 +381,6 @@ _(none)_
 - **`hover-feedback-survives-the-disabled-state`** (registered 2026-09-15, S383 Pass F): ACTIVE — consequence-adjacent (a locked destructive control that still lights up invites the click), so it never retires on a clean streak. **S394: the LAST open carrier CLOSED (`767064e`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`physical-property-that-never-mirrors`** (**NEW, registered 2026-09-16 (S388 Pass K) — the shape has now surfaced in THREE sessions (S248, S376, S388), which is what makes it recurring rather than incidental**): ACTIVE. **S422: 2 torah carriers open (`.tt-jump-pos`, …[full …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- **`synced-key-wiped-without-forgetRow`** (**S382 Pass P arm 4 — 1 carrier, fixed `a44a181`**): ACTIVE, consequence-critical (a local reset becomes an account-wide deletion offer); never retires. **S421: the dashboard swept clean** (0 `removeItem`, no defaults write over a …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`tile-grid-built-hidden-never-roved`** (registered 2026-09-15 (S382) — 11 carriers, all fixed): ACTIVE. A `roveTileGrid()` call placed in a builder that runs while the container is `display:none` silently does nothing: the helper's tile list filters `offsetParent !== null`, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -552,7 +540,7 @@ _(none)_
 
 - dead-feature-guard (a `typeof X === 'function'` / feature-detection guard whose **preferred** implementation does not exist on that page, so the guarded branch can never run and control silently falls through to a worse path — or to nothing): **re-swept 2026-07-25 (S158, Pass …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **modal-focus-trap** (**S426: HIT — the account screen, js/ivrit-saves.js, which the S179 sweep predates; FIXED `91c45d6`; streak 0**) …[full text: IMPROVEMENT_ARCHIVE.md]
+- **modal-focus-trap** (**S426: HIT — the account screen (gone since the account cleanup; the layer's dialogs are now the name step and the device-extras card), js/ivrit-saves.js, which the S179 sweep predates; FIXED `91c45d6`; streak 0**) …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - pre-ready-i18n / never-re-rendered — **4th instance fixed 2026-08-06 (S185)**: torah_trainer's TTS voice readout, which `applyI18n` had never re-run (30fe852). **Fix-shape note for the next instance: adding the function to `applyI18n` is only half the fix.** If the pre-ready …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -561,6 +549,8 @@ _(none)_
 - **placeholder-as-only-accessible-name** (a text input/textarea whose ONLY name source is its `placeholder` — no `aria-label`, `aria-labelledby`, `label[for]`, wrapping `<label>` or `title`. Under ACCNAME `placeholder` is the last-resort source, so the name is announced on an …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Retired patterns
+
+- **`synced-key-wiped-without-forgetRow`**: RETIRED 2026-09-30 (the account cleanup, outside the loop — not a clean streak). Shape: a reset wiping a synced key without `forgetRow`, so the wiped copy read "newer here" and offered an account-wide reset. `forgetRow` and the panels are gone: signed in, resets and deletes write through by design, and the guard is the confirm (the `*_cloud` keys while `hasStoredSession()`), which pass P arm 4 now checks. Un-retires only if a memory-forgetting path returns.
 
 - **`uncompressed-jspdf-raster`**: RETIRED 2026-09-10 (S371 Pass A, clean streak 3: S343, S357, S371 — 0 new `addImage(` sites, 3/3 carry `'FAST'`). Shape: a jsPDF `addImage(...)` with no `compression` argument stores the raster raw (~11 MB per Letter page); S337 fixed 2 (`e0caf12`), S338 the 3rd (`5b55d19`). Detection: `grep -n "addImage(" *.html` and read the argument list; verify by the PDF's `FlateDecode` streams. Un-retires on any new `addImage(` without `'FAST'` (A2 spot-check).
 

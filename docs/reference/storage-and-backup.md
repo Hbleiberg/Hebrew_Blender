@@ -108,13 +108,15 @@ export/import as a bug to fix, not a pattern to copy.
 - **Account session keys are not settings.** `sb-hhkmqwpjsyxdeuhvcyis-auth-token` (+ its transient
   `-code-verifier`) is written by the Supabase SDK, `ivritSuite_accountCache` and `ivritSuite_signInRequest` (the
   address a sign-in code was last asked for here, which an emailed link fills in) by `js/ivrit-account.js`,
-  and `ivritSuite_syncMeta` (what this device last synced to the cloud, per account; also the write stamps other tabs
-  re-read on, and `held` — the suite-wide preference fields this device could not apply) by `js/ivrit-saves.js`;
-  none of them ride export/import (a session must never travel in a file, and sync memory is per device),
-  and `eraseAllSettings` removes every `sb-` key plus the three `ivritSuite_*` keys — "erase" also means
-  signed out on this device — then reloads when a session was there. Which of the keys above have a cloud
-  copy is decided in one place, `IVRIT_SYNC_REGISTRY` in `js/ivrit-saves.js` (never here). Details:
-  `docs/reference/accounts-and-cloud.md`.
+  and, by `js/ivrit-saves.js`, `ivritSuite_syncMeta2` (what this device last synced, per account — the v2 sync
+  memory, the old v1 memory kept as a hint, the once-per-account mark that the device-extras card was asked, and
+  `held`, the suite-wide preference fields this device could not apply) and `ivritSuite_syncMeta` (now only the
+  write stamps other tabs re-read on and the sign-out broadcast); none of them ride export/import (a session must
+  never travel in a file, and sync memory is per device), and `eraseAllSettings` calls `IvritSaves.suspend()`
+  right after its final confirm (so nothing it removes goes up as a deletion) and removes every `sb-` key plus
+  the four `ivritSuite_*` keys — "erase" also means signed out on this device — then reloads when a session was
+  there. Which of the keys above have an account copy is decided in one place, `IVRIT_SYNC_REGISTRY` in
+  `js/ivrit-saves.js` (never here). Details: `docs/reference/accounts-and-cloud.md`.
 
 ---
 
@@ -152,8 +154,15 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
 `ivritRestore()` shows a small modal (`ivritAskMode()`) on every import:
 - **Merge** — keep current data, add the file's (matching keys overwritten via `ivritSafeAssign`).
 - **Replace** — clear current data first, then load only the file's.
-- **`partial: true` skips the question and merges.** The cloud module writes it on the account backup
-  (`IvritSaves.bundleAll()`) and on a cloud row's *Download file*: those files hold the account's copies only
+- **While a session is stored, Merge is the only choice** (`IvritAccount.hasStoredSession()`; the dialog says
+  so with `shared.ivrit.restore_signed_in_note`): signed in, the tool's keys are the account's cache and write
+  through, so a Replace would delete the account's items on every device. Every carrier's `ivritAskMode` — the
+  three byte-identical tool copies and the hub's adapted AllTools copy — applies the rule, and a Merge while
+  signed in writes through like any edit, which is how a `.ivrit` file or the account page's zip refills an
+  account.
+- **`partial: true` skips the question and merges.** The saves module writes it on the account backup
+  (`IvritSaves.bundleAll()`, the account page's zip) and on the device-extras card's backup of the device's own
+  items: those files hold one side's copies only
   — a settings row omits the per-device fields (zoom, panel layout, collapsed panels…) — so a Replace would
   delete what the device alone holds. Every carrier's `ivritRestore` and the hub's copy read the flag, apply
   with `mode = 'merge'` and say so (`shared.ivrit.status_partial_merged`); `IVRIT_CFG.apply` is awaited and

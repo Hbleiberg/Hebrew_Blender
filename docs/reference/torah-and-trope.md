@@ -235,9 +235,10 @@ stop and reconsider. Shell (dark mode, tooltips, tour, toast, My Fonts) is copie
 hairline rule, the group's items in a grid (three across, two below 1024px, one below 640px) with small
 uppercase item labels, and nothing to collapse — so the page carries no panel-collapse memory. The
 groups are names and tradition (primary names, melody), sing along (key, voice, note names — see *Key and
-voice* and *Note names* below), drill, Hebrew font, and a shared row of progress, cloud saves and about.
-There is no header gear; `openSettings()` survives only as `setMode('settings')` for the account chip's
-"Cloud saves…" item (which then scrolls to `#setCloud`) and the tools smoke. Switching to the tab
+voice* and *Note names* below), drill, Hebrew font, and a shared row of progress, your account and about.
+There is no header gear; `openSettings()` survives only as `setMode('settings')` for the Learn banner's *Change*
+(`openMelodySetting`) and the tools smoke; the *Your account* group (`#setCloud`, `trope.settings.panel_cloud`)
+hosts the shared account status line (`#cloudSavesPanel`). Switching to the tab
 re-syncs the controls from `settings`; every control saves on change. Print hides the tab like Drill.
 
 - **Index**: `data/trope/trope_index.json` — `{v:1, system:"torah", built, tropes:{<key>:[{p,a,w,ref,he,s,e}]}}`
@@ -849,7 +850,7 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
     range is not here: it sits in the toolbar (below).
   - **Share** — `print` (Print), `share` (Practice link), `copy` (Copy verses), `handout` (Student handout);
     *The Share tab* below.
-  - **More** — `cloud` (Cloud saves, `#cloudSavesPanel`), `about` (About & FAQ), `reset` (Reset).
+  - **More** — `cloud` (Your account: the shared account status line in `#cloudSavesPanel`), `about` (About & FAQ), `reset` (Reset).
 - **One writer, two openers.** `setSettingsTab(name)` is the only writer of tab state — `aria-selected`,
   the roving `tabindex` (the selected tab alone is in the Tab sequence), `hidden` on every tab panel, and
   `.settings-body` scrolled to the top; an unknown name reads `favorites`. `openSettings()` calls it with
@@ -857,8 +858,8 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
   new key.
   `openSettingsAtPanel(key)` keeps its name: it opens the drawer, maps the section key through
   `TT_SECTION_TAB`, scrolls the section to the top of the body and focuses its heading, so the next Tab
-  enters the section's controls. Its callers: the Copy bar's *Copy options…* (`'copy'`), the cloud module's
-  `open` (`'cloud'`, the header chip's *Cloud saves…* item) and `scripts/smoke-tools.mjs` (`'cloud'`); nothing
+  enters the section's controls. Its callers: the Copy bar's *Copy options…* (`'copy'`) and `scripts/smoke-tools.mjs` (`'cloud'`) — the
+  chip's menu no longer opens a section; nothing
   opens it at `'share'` any more — the Share tab is reached through the toolbar's Settings button (`#gearBtn` →
   `openSettings()`) like every other tab.
 - **Keyboard.** The tablist's keydown handler is the Trope Tutor's: Left/Right move by **visual** direction
@@ -935,14 +936,14 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
     the same fields the `?parsha=` / `?holiday=` / `?ref=` branches write (a range seeds `parshahKey` only
     when the device has none, through `parshaContainingRef`), then `saveSettings(); syncParshaSelect();
     fetchAndRender(); closeSettings()` and a `torah.fav.opened` toast. `clearLoop()` runs before either.
-  - **Delete and reset.** Deleting a favorite deliberately does **not** call `IvritSaves.forgetRow`: with its
-    sync memory kept, the next listing shows *Deleted on this device → Delete from your account / Bring it
-    back*; forgetting would make the listing silently download the row again. `resetAllSettings` leaves both
-    favorites keys alone (they are not settings).
+  - **Delete and reset.** Deleting a favorite is a write like any other: signed in it leaves the account and
+    every other device at its next load, and the confirm says so while a session is stored
+    (`torah.fav.delete_confirm_cloud`). `resetAllSettings` leaves both favorites keys alone (they are not
+    settings).
   - **Where they travel.** Two `IVRIT_SYNC_REGISTRY` rows — `favorite` (map / item, `ivritKey`
     `torahTrainerFavorites`, label `shared.cloud.kind_favorite`) and `favoriteFolders` (tree / page, follows
     `favorite`, `torahTrainerFavoriteFolders`) — with `merges: { favoriteFolders: ftMergeTrees }` passed to
-    this page's `IvritSaves.attach` (*Cloud saves* below); no migration was needed (`TorahTrainer` is already
+    this page's `IvritSaves.attach` (*Your account* below); no migration was needed (`TorahTrainer` is already
     in `saves.tool`'s CHECK and `kind` is free text). The AllTools file on `index.html` carries both keys
     (`ivritSafeAssign` merge for the map, `ftImportTree(key, incoming, false)` for the tree), its inventory
     counts `favorites`, and its cloud `merges` map names `TorahTrainer: { favoriteFolders: ftMergeTrees }`; the
@@ -1192,7 +1193,7 @@ synced with the blob).
 ---
 
 
-## Cloud saves — what the two pages round-trip
+## Your account — what the two pages round-trip
 
 Both pages sync one settings blob (and the Trope Tutor its mastery progress) through the shared module
 (`docs/reference/accounts-and-cloud.md`); what matters here is what a download must not change.
@@ -1207,9 +1208,10 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   reading) and `favoriteFolders` (its tree, merged through the page's `merges: { favoriteFolders: ftMergeTrees }`).
   `onLocalChanged(kind)` branches on the kind: the two favorites kinds only re-render the list
   (`renderFavorites`, which re-reads its keys); everything else takes the handout-guarded `cloudReread`
-  below. Deleting a favorite keeps its sync memory on purpose (*Settings drawer → Favorites*).
+  below. Deleting a favorite reaches the account like any other write (*Settings drawer → Favorites*).
 - **A download during the handout print override waits.** `onLocalChanged` sets `_pendingCloudReread` while
-  `_handoutActive` (the module's flush is a no-op then, so the download stays in the store) and `_handoutExit`
+  `_handoutActive` (the module's flush is a no-op then and `paused: () => _handoutActive` postpones write-through,
+  so the download stays in the store and the override never goes up) and `_handoutExit`
   runs `cloudReread()` — the `resetAllSettings()` sequence plus `syncParshaSelect` and the fallback reset
   (`syncFormToSettings` re-syncs the handout section too) — afterwards. The Trope Tutor's hook also rebuilds the drill-scope box (`buildDrillScopeSel`),
   which is otherwise built once at init.
@@ -1219,10 +1221,14 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
 - **A font this device lacks stays chosen.** `setHebFont` on an unknown name keeps `settings.hebFont`, clears
   the `.font-opt` highlights and, once `refreshMyFonts()` has answered (`_myFontsLoaded`), shows
   `shared.fonts.missing_note` under `#fontOptions`.
-- **A deliberate reset forgets the sync memory** (`IvritSaves.forgetRow`) so the next listing reads the row as
-  changed in both places: the settings blob is asked about on the account screen, the Trope mastery is merged
-  back losslessly — a reset never overwrites the account's copy by itself. The confirms say so while signed in
-  (`*.confirm.reset_*_cloud`).
+- **A deliberate reset is a write like any other** and reaches the account and every other signed-in device
+  at its next load; while a session is stored the confirms say so (`torah.confirm.reset_all_cloud`,
+  `trope.confirm.reset_all_cloud`, `trope.confirm.reset_progress_cloud`). The Trope Tutor's progress reset also
+  stamps `resetAt = Date.now()` — the registry's `watermark` for that row — so the lossless merge (max per
+  trope) cannot bring older mastery straight back from another device: the side whose watermark is older
+  counts as empty, the newest watermark is kept, and `loadProgress()` and the hook's re-read keep the field
+  (the hub's `tropeProgressMerge` and the `.ivrit` apply carry it too). Practice on a device that had not yet
+  loaded the reset is dropped, and the confirm says so.
 - By design: `?parsha=` / `?holiday=` / `?ref=` deep links persist the reading and travel (a bookmark on one
   device is the next device's starting point, and a favorite is the durable form of the same reading); a
   `?ref=` range seeds `parshahKey` only when the device has none, so a teacher's own week survives opening a

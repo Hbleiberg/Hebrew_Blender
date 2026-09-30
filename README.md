@@ -1,6 +1,6 @@
 # IvritSuite (Hebrew Blender)
 
-A suite of browser-based tools for Hebrew literacy instruction — no installation, no build step, no server required (accounts are optional and additive). Open any HTML file directly in a browser or serve the folder statically.
+A suite of browser-based tools for Hebrew literacy instruction — no installation, no build step, no server required (accounts are optional; signed in, the account is where saves live). Open any HTML file directly in a browser or serve the folder statically.
 
 **IvritSuite** is the brand the live site carries (every page's `<title>`); **Hebrew Blender** is the repository/project name and the name in the license credit. They refer to the same thing.
 
@@ -145,14 +145,17 @@ How it works:
 
 ## Accounts (optional, Supabase)
 
-Accounts are optional: everything works anonymously exactly as before, and the cloud is a third place
-to keep copies of your work next to the browser's own storage and `.ivrit` files. The whole account
-layer is four shared files — `js/supabase-config.js` (public project settings), `js/ivrit-account.js`
-(sign-in, sign-out, the header chip), `js/ivrit-saves.js` (the cloud-saves panel and the sync rules) and
+Accounts are optional: signed out, everything works anonymously exactly as before and the device is its own;
+signed in, the account is where saves live — every tool's presets, decks, settings, lists, profiles and class
+lists follow you to any device, with the browser's own storage as that device's copy and `.ivrit` files as
+your own backups. The whole account layer is four shared files — `js/supabase-config.js` (public project
+settings), `js/ivrit-account.js` (sign-in, sign-out, the header chip, the required-name step),
+`js/ivrit-saves.js` (bringing the account onto a device at load, writing changes through, the status line) and
 `js/ivrit-projects.js` (Font Maker projects) — plus two throwaway pages for trying it out,
-`account-test.html` and `saves-test.html`. The chip and the panel are on the home page, the Worksheet
+`account-test.html` and `saves-test.html`. The chip and the status line are on the home page, the Worksheet
 Generator, Flash Cards, the Dictionary, the Torah Trainer, the Trope Tutor and the Classroom Dashboard;
-the Font Maker keeps whole projects instead (next paragraph).
+the Font Maker keeps whole projects instead (next paragraph) and, like the account page, takes the
+suite-wide preferences and My Fonts from the account.
 How it works inside: `docs/reference/accounts-and-cloud.md`.
 
 **Where the config values come from** (Supabase dashboard → project *IvritSuite*):
@@ -202,12 +205,16 @@ Use the chip (or the buttons) to sign in with your email or Google, watch the st
 console, sign out. `node scripts/smoke-account.mjs` runs the
 headless checks (with `--sdk <path to dist/umd/supabase.js>` it also exercises the loaded SDK).
 
-**Privacy, in one paragraph:** nothing is stored on a server unless a signed-in person clicks upload.
-An account holds the email address (and a Google name when Google is used), a display name and only the
-items uploaded from a tool's *Cloud saves* panel — which, when a teacher chooses it, can include student
-names and practice results from Flash Cards and class lists from the Classroom Dashboard. Accounts are for teachers and other adults; students never
-need one. Every cloud item can be downloaded as a file or deleted from the panel, and nothing on the
-device is ever deleted by the cloud. The full wording lives in `privacy.html` and `terms.html` (the
+**Privacy, in one paragraph:** unless you sign in, nothing is stored on a server. An account holds the email
+address (and a Google name when Google is used), a display name you give when you first sign in, and — while
+you are signed in — the items the tools save, automatically: presets, decks, settings, word lists, practice
+progress and fonts, which can include student names and practice results from Flash Cards and class lists
+from the Classroom Dashboard; using the tools signed out keeps everything on the device. Accounts are for
+teachers and other adults; students never need one. The first time you sign in on a device that already holds
+saved items you choose whether to add them to the account or remove them from the device; signing out with the
+account button removes the account's items from that device (they stay in the account), and a session that
+ends by itself removes nothing. Everything in the account can be downloaded as one zip or deleted from the
+account page. The full wording lives in `privacy.html` and `terms.html` (the
 `privacy.legal.*` / `terms.legal.*` rows of `locales/ui-strings.csv`, English and Hebrew); a change to
 what an account can store updates that text in the same commit.
 
@@ -215,33 +222,31 @@ what an account can store updates that text in the same commit.
 `db/migrations/`, applied once per file; `db/README.md` explains how to apply one and how to check the
 live project. The one server-side function (delete my account) lives under `db/functions/`, in the same README.
 
-**Cloud saves:** each tool's saved items stay in the browser exactly as before; signed in, a "Cloud saves"
-panel lists them next to the copies in your account with plain words (*Only on this device*, *Newer in
-the cloud*, *Changed in both places*…) and one button per row — Upload, Download, Merge, Keep both. Nothing
-on the device is ever deleted by the cloud, and nothing newer is overwritten by something older unless you
-choose it. Where the panel sits: the Generator and Flash Cards under *Advanced* next to the `.ivrit` backup,
-the Dictionary inside the Word Lists manager, the Torah Trainer, Trope Tutor and Classroom Dashboard in their
-settings drawer, and
-the home page's *Import / Export All Settings* modal holds one panel per tool — the place to bring a fresh
-browser up to date. The chip's **Account…** item opens the account screen: when the account was last
-saved, what each tool holds on this device and in the account, **Sync everything** (or, while the account
-is empty, **Upload everything on this device** — a copy; nothing is removed from the device), and two
-backup buttons — everything in the account as one `.ivrit` file, or the home page's modal for everything
-on the device. It opens by itself after every fresh sign-in ("Sync settings from your last login?") and
-once on a device that already has saved items. When a tool's settings differ on this device and in the
-account — the usual case on a second device, which wrote its own settings the first time the tool opened —
-the screen offers **Use my account's settings** or **Keep this device's settings** in one step (per-device
-choices such as zoom stay either way). The site-wide preferences — language, theme, keyboard layout, the
-Hebrew font and size, the Font Maker author name, the Dictionary's romanization, speech rate, emoji choices and nikkud colours
-— sync as one row, **IvritSuite preferences**, and the language and theme switch live when it lands. Fonts you
-made or uploaded travel too, one row each, so a font chosen on the laptop actually renders on the phone; a
-device already holding the ten My Fonts allows says so rather than dropping one of yours to make room. A preset,
-deck, student or class deleted on one device is never removed anywhere by itself: its row reads *Deleted on
-this device* with *Bring it back* / *Delete from your account too*, and *Sync everything* leaves it alone.
-The account's `.ivrit` backup is *partial* — the account's copies only — so the home page merges it without
-the Merge/Replace question, class lists included. `saves-test.html` exercises the panel on a set of throwaway test items;
-`node scripts/smoke-saves.mjs` and `node scripts/smoke-tools.mjs` run the headless checks, and
-`node scripts/smoke-sync.mjs --sdk <supabase.js>` replays the second-device sync flow against a fake cloud.
+**Signed in:** the account is where every tool's saved items live. Opening a tool while signed in brings the
+account's copies to that device (one listing, then only what differs), and every save, rename, delete or reset
+reaches the account two seconds after your last change and every other signed-in device at its next load — no
+Sync, Upload or Download buttons anywhere. Where the old panels sat, one status line says *Saved in your
+account · just now*, *Saving…*, *Couldn't save — will retry* (with Retry) or *Offline — your changes are saved to your
+account when you are back online*: the Generator and Flash Cards under *Advanced* next to the `.ivrit` backup, the
+Dictionary inside the Word Lists manager, the Torah Trainer, Trope Tutor and Classroom Dashboard in their
+settings drawer, and the home page's *Import / Export All Settings* modal under *Your account*. Nothing asks you
+to choose between two versions: an item changed in two places is kept twice (the other copy named "… (from
+another device)"), a tool's settings take the account's copy the first time a device syncs them and the device's
+own edits afterwards, and practice progress, class lists, word lists and folder layouts merge without losing
+anything. The first time you sign in on a device that already holds saved items, one card asks what to do with
+them — **Add to my account**, **Download a backup (.ivrit)** or **Remove from this device** — and a sign-in
+without a name (an emailed code) asks for one first. The chip's menu has **Account…** (the account page) and
+**Sign out**, which sends the last edits, removes the account's items from that device and keeps your
+suite-wide preferences and My Fonts. The site-wide preferences — language, theme, keyboard layout, the Hebrew
+font and size, the Font Maker author name, the Dictionary's romanization, speech rate, emoji choices and nikkud
+colours — travel as one row, and the language and theme switch live when they land. Fonts you made or uploaded
+travel too, one row each, so a font chosen on the laptop actually renders on the phone; a device already holding
+the ten My Fonts allows skips the eleventh quietly and the account keeps it. `.ivrit` files and the AllTools
+export work as before (a backup is still yours to keep); while signed in, a restore offers *Merge* only, since a
+Replace would delete account items on every device. `saves-test.html` exercises the module on a set of
+throwaway test items; `node scripts/smoke-saves.mjs` and `node scripts/smoke-tools.mjs` run the headless checks,
+and `node scripts/smoke-sync.mjs --sdk <supabase.js>` replays the signed-in model — hydration, write-through,
+deletions, fonts, the card, the sign-out cases — against a fake cloud.
 
 **Font Maker projects:** *Save Project ▾ → Save to my account* keeps a whole project — the outlines, the
 settings, and the photos you traced from, at full size — in your account, and *Load Project ▾ → In your
@@ -249,23 +254,25 @@ account* opens it on any device. From then on changes keep saving by themselves 
 shows Saved, Saving or Unsaved); a change made on another device is never overwritten without asking
 (Overwrite / Keep both / Not now); an exported font can be kept with the project. Your `.hebrewfont` files
 and the browser's Recent copies are untouched. Photo projects are large (often 20–40 MB), so the Load menu
-and the account screen show each project's size; an account holds up to 25 projects.
+and the account page show each project's size; an account holds up to 25 projects.
 `node scripts/smoke-fontmaker.mjs --sdk <supabase.js>` replays the whole flow against a fake cloud.
-**Your account page** (`account.html`, linked from the account screen and the privacy policy): who the
+**Your account page** (`account.html`, the chip's **Account…** item; also linked from the home page's account
+block and the privacy policy): who the
 account is and its display name; everything it holds tool by tool (counts, sizes, the names of presets and
 student profiles); **Download everything** — one zip with an `.ivrit` of every saved item plus each Font
 Maker project as a `.hebrewfont` with its photos and its exported font; and **Delete my account**, which
-asks for a checkbox and the account's email address, then removes the account with everything in it through
+first offers the *Download everything* zip (the only copy once the account is gone), then asks for a checkbox
+and the account's email address, then removes the account with everything in it through
 the one piece of code that runs outside the browser (`db/functions/delete-account/`, a Supabase Edge
 Function — it needs the project's secret key, which never ships in a page). A deletion touches nothing on any
-device. `node scripts/smoke-account-page.mjs --sdk <supabase.js>` replays the page against a fake cloud.
+device: this one keeps its copies as its own data. `node scripts/smoke-account-page.mjs --sdk <supabase.js>` replays the page against a fake cloud.
 
 `node scripts/smoke-migration.mjs --sdk <supabase.js>` is the golden migration replay: a device A built from the
 tools' real defaults (every setting changed, folders, students, word lists, classes, a weekly grid, the suite-wide
-preferences) uploads everything, a fresh device B syncs it all, and every difference left between the two is
-classified — anything unexplained fails the run. It also replays a round trip, a folder move, deletions that never
-propagate by themselves, the account backup on a third device, and a second device that opened every tool before
-signing in.
+preferences) signs in and adds its items to the account from the first-sign-in card, a fresh device B brings it
+all down, and every difference left between the two is classified — anything unexplained fails the run. It also
+replays deletions made on B reaching A, a second device that opened every tool before signing in, and the
+upgrade of an older device's sync memory (nothing deleted, nothing removed from it).
 
 **Keeping it running (operations):**
 - **The free project must stay awake.** Supabase pauses a Free-plan project after about a week with too little
@@ -307,8 +314,9 @@ signing in.
   page's *Import / Export All Settings → Import* (choose *Merge*; it restores every tool's saved items on that
   device); each `font-projects/<name>/<name>.hebrewfont` opens in the Font Maker through *Load Project ▾ → 📂 Load
   from computer…*; an exported `.ttf` (unzip a zip export first) can be added to *My Fonts* through the *Upload
-  your own font* control under any tool's Hebrew font picker. Then, signed in, *Upload everything on this device* (the account screen)
-  and *Save to my account* (the Font Maker) fill the account again. A deleted account cannot be recovered on the
+  your own font* control under any tool's Hebrew font picker. Do the import while signed in and choose *Merge* (the only choice offered then): the
+  merge writes through, so the account is refilled as the items land; *Save to my account* in the Font Maker
+  refills the projects. A deleted account cannot be recovered on the
   server side — the zip is the only copy.
 - **When something fails:** the browser console first (the modules log one line per failure and never throw into
   the page); then the Supabase dashboard → *Logs* (API, Auth, Postgres, Storage, and Edge Functions →
@@ -340,12 +348,12 @@ signing in.
 | `terms.html` | Terms of use |
 | `404.html` | Custom not-found page |
 | `i18n-test.html` | Developer harness for the i18n runtime (not indexed, not precached) |
-| `account-test.html`, `saves-test.html` | Developer harnesses for the account and cloud-saves modules — each exercises one `js/ivrit-*.js` module on its own, away from a real tool page (not linked, not indexed, not precached) |
+| `account-test.html`, `saves-test.html` | Developer harnesses for the account and saves modules — each exercises one `js/ivrit-*.js` module on its own, away from a real tool page (not linked, not indexed, not precached) |
 | `pwa.js` | Service-worker registration + install-prompt handling |
 | `sw.js` | Service worker — precaches the app shell for offline use (cache `ivritsuite-v<VERSION>`) |
 | `manifest.webmanifest` | PWA manifest (name, icons, theme/background color) |
 | `js/i18n.js` | Shared i18n runtime (`window.I18n`) loaded by every page — the EN / עברית switcher, `data-i18n*` filling, RTL flip |
-| `js/supabase-config.js`, `js/ivrit-account.js`, `js/ivrit-saves.js`, `js/ivrit-projects.js` | The optional account layer — public project settings, sign-in + the header chip, cloud saves + the account screen, Font Maker cloud projects; the only files that talk to Supabase (see *Accounts*) |
+| `js/supabase-config.js`, `js/ivrit-account.js`, `js/ivrit-saves.js`, `js/ivrit-projects.js` | The optional account layer — public project settings; sign-in, the header chip and the required-name step; the account's saves (brought onto the device at load, written through two seconds after an edit, one status line, the sign-out removal); Font Maker cloud projects; the only files that talk to Supabase (see *Accounts*) |
 | `js/tt-pitch-worklet.js` | The Torah Trainer's chant pitch shifter — an AudioWorklet processor (time-domain WSOLA) that transposes the PocketTorah recording by whole semitones without changing its tempo; same-origin, precached and served cache-first, so an edit needs the `sw.js` `VERSION` bump |
 | `js/hebrew-calendar.js` (+ `scripts/smoke-hebrew-calendar.mjs`) | The Torah Trainer's Hebrew calendar (`window.HebCal`): the date converter, the weekly parasha for any Shabbat on the Israel and Diaspora schedules, and the triennial-cycle helpers — no network, so finding an ordinary week's parasha asks Sefaria nothing. The smoke proves it without a browser (`--hebcal` adds a check against Hebcal, installed for the check and never committed) |
 | `js/trope-staff.js` (+ `scripts/smoke-trope-staff.mjs`) | The one trope staff engine, loaded by the Trope Tutor (Learn cards, Phrases tab) and the Torah Trainer (the Trope staff layout): the `TROPES` taxonomy (kept identical with `build-trope-index.mjs`'s), the pitch model and the staff drawing. The smoke checks the Torah Trainer's reading-staff half without a browser |
