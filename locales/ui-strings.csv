@@ -5858,9 +5858,8 @@ shared.account.code_sent,"We emailed a 6-digit code to {email}. Type it here.","
 shared.account.link_filled,The code from your email link is filled in. Press “Verify code” to sign in on this device.,הקוד מקישור האימייל כבר מולא. לחצו על ״אימות הקוד״ כדי להיכנס במכשיר הזה.,Account popover note when the page was opened from the emailed sign-in link in the browser that asked for the code (the address is filled in too); names the Verify code button,shared
 shared.account.link_filled_email,"The code from your email link is filled in. Enter your email address, then press “Verify code”.",הקוד מקישור האימייל כבר מולא. הזינו את כתובת האימייל שלכם ולחצו על ״אימות הקוד״.,Account popover note when the emailed link was opened in a browser that did not ask for the code (only the code is filled in); names the Verify code button,shared
 shared.account.signed_in_as,Signed in as {email},מחוברים בתור {email},Account popover first line when signed in,shared; template
-shared.account.account_item,Account…,חשבון…,Account popover item that opens the saves module's account screen,shared
-shared.account.cloud_saves,Cloud saves…,שמירות בענן…,Account popover item (only when the page registered a cloud panel),shared
-shared.account.sign_out,Sign out (this device),יציאה (מהמכשיר הזה),Account popover item,shared
+shared.account.account_item,Account…,חשבון…,Account popover link to the account page (what the account holds; download everything; delete it),shared
+shared.account.sign_out,Sign out,יציאה,Account popover item: signs this device out (the saves module first flushes pending edits and removes the account's cached items),shared
 shared.account.needs_internet,Sign-in needs an internet connection.,הכניסה דורשת חיבור לאינטרנט.,Account popover note when offline,shared
 shared.account.unavailable,Cloud sign-in is unavailable right now. Your local saves still work.,הכניסה לענן אינה זמינה כרגע. השמירות המקומיות ממשיכות לעבוד.,Account popover note when the SDK is blocked or the config is missing,shared
 shared.account.error_generic,Something went wrong. Please try again.,משהו השתבש. נסו שוב.,Account popover error,shared
@@ -5874,6 +5873,15 @@ shared.account.error_session,Your sign-in has expired. Sign in again.,תוקף �
 shared.account.error_name,A display name is 1 to 80 characters.,שם תצוגה הוא באורך 1 עד 80 תווים.,Account page: the display name field refused,shared
 shared.account.error_unreachable,The cloud is unreachable right now. Try again later.,הענן אינו זמין כרגע. נסו שוב מאוחר יותר.,Account error: a call could not reach the server,shared
 shared.account.error_delete,Your account could not be deleted. Nothing was changed — try again in a moment.,לא ניתן היה למחוק את החשבון. שום דבר לא השתנה — נסו שוב בעוד רגע.,Account page: the delete-account call failed,shared
+shared.account.sign_out_confirm,Sign out? Your saved items stay in your account and are removed from this device. Your preferences and My Fonts stay here.,לצאת? הפריטים השמורים שלכם נשארים בחשבון ומוסרים מהמכשיר הזה. ההעדפות והגופנים שלי נשארים כאן.,confirm() before a sign-out (nothing on this device is unsynced),shared
+shared.account.sign_out_confirm_kept.one,Sign out? Your saved items stay in your account and are removed from this device. 1 item on this device is not in your account yet and stays here as this device's own data. Your preferences and My Fonts stay here.,לצאת? הפריטים השמורים שלכם נשארים בחשבון ומוסרים מהמכשיר הזה. פריט אחד במכשיר הזה עדיין אינו בחשבון ויישאר כאן כנתונים של המכשיר. ההעדפות והגופנים שלי נשארים כאן.,confirm() before a sign-out when one item has not reached the account,shared; plural
+shared.account.sign_out_confirm_kept.other,Sign out? Your saved items stay in your account and are removed from this device. {n} items on this device are not in your account yet and stay here as this device's own data. Your preferences and My Fonts stay here.,לצאת? הפריטים השמורים שלכם נשארים בחשבון ומוסרים מהמכשיר הזה. {n} פריטים במכשיר הזה עדיין אינם בחשבון ויישארו כאן כנתונים של המכשיר. ההעדפות והגופנים שלי נשארים כאן.,confirm() before a sign-out when {n} items have not reached the account,shared; plural; template
+shared.account.card_name_title,What should we call you?,איך לקרוא לכם?,Required-name step (after a sign-in without a name): title,shared
+shared.account.card_name_note,Shown in the header while you are signed in and stored with your account.,מוצג בכותרת בזמן שאתם מחוברים ונשמר עם החשבון שלכם.,Required-name step: note under the title,shared
+shared.account.card_name_label,Display name,שם תצוגה,Required-name step: the field label,shared
+shared.account.card_name_continue,Continue,המשך,Required-name step: the primary button,shared
+shared.account.card_name_later,Not now — ask again next time,לא עכשיו — לשאול שוב בפעם הבאה,Required-name step: shown only after a failure that was not the name itself (network; the page stays usable),shared
+shared.account.card_name_signout,Sign out instead,לצאת במקום זאת,Required-name step: the way out without a name (a real sign-out),shared
 shared.cloud.title,Cloud saves,שמירות בענן,Cloud-saves panel title,shared; cloud panel
 shared.cloud.signed_out,Sign in to keep copies of your saved items in the cloud and get them back on any device.,היכנסו כדי לשמור עותקים של הפריטים השמורים שלכם בענן ולקבל אותם בחזרה בכל מכשיר.,Cloud-saves panel note while signed out,shared; cloud panel
 shared.cloud.sign_in,Sign in,כניסה,Cloud-saves panel button while signed out (opens the header chip's menu),shared; cloud panel

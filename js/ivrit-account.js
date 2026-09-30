@@ -15,14 +15,26 @@
  *   signIn('email', {email})   Promise<{sent:true}> — emails a 6-digit code and a link that fills it in
  *                              (the email's text: db/email-templates/sign-in-code.html)
  *   verifyCode(email, code)    Promise<user> — signs in with the emailed code (works on any device)
- *   signOut()                  Promise<void> — this device only
+ *   signOut(opts)              Promise<void> — this device only. Runs every onSignOut hook first (the saves
+ *                              module flushes pending edits and removes the account's cached items), then the
+ *                              SDK sign-out. { keepLocal: true } (account deletion) tells the hooks to leave
+ *                              the device's copies alone.
  *   client()                   Promise<SupabaseClient> — loads the SDK on demand; rejects with
  *                              err.code = 'disabled' | 'offline' | 'blocked'
  *   mountChip(target)          element | selector | 'auto' — renders the header chip
- *   init(opts)                 optional { mount: 'auto' | selector | element | false }
+ *   init(opts)                 optional { mount: 'auto' | selector | element | false, nameStep: false }
+ *                              (nameStep: false — account.html has its own name form)
  *   t(key, fallback)           translate via I18n when loaded, else the English fallback
- *   onOpenSaves(fn)            a tool registers how to open its cloud panel (adds a menu item)
- *   onOpenAccount(fn)          the saves module registers its account screen ("Account…" menu item)
+ *   onSignOut(fn)              fn(uid, { keepLocal }) → void | Promise — run and awaited (bounded) before the
+ *                              SDK sign-out, while the session is still valid
+ *   onNameStep(fn)             fn('named' | 'later' | 'none') — how the required-name step ended on this page
+ *                              load ('none': the account already has a name, or the step could not be shown)
+ *   needsName()                true while the signed-in account has no display name
+ *   hasStoredSession()         true when a session is signed in, loading, or remembered but offline — what page
+ *                              code keys its "signed in" branches on (user() is null while loading or offline)
+ *   signOutHandled()           the uid this tab's own signOut() handled (or null) — the saves module tells an
+ *                              explicit sign-out apart from a session that ended by itself
+ *   openNameStep()             shows the required-name step (the saves module never calls it; tests do)
  *   sessionSource()            'new' when this page load established the session (a sign-in here, or an auth
  *                              callback), 'restored' when it came from storage, null when signed out
  *   openMenu()                 opens the chip's menu (false when no chip is mounted) — for a panel's Sign in button
@@ -83,8 +95,13 @@
   var sdkPromise = null;
   var clientPromise = null;
   var handlers = [];
-  var openSavesFn = null;
-  var openAccountFn = null;
+  var signOutHooks = [];         // onSignOut(fn): run before the SDK sign-out (the saves module's cache removal)
+  var signOutHandledUid = null;  // the uid this tab's own signOut() handled — a session ending by itself has none
+  var SIGNOUT_HOOK_MS = 10000;   // the longest a sign-out waits for its hooks (a flush of pending edits)
+  var nameStepHooks = [];        // onNameStep(fn): 'named' | 'later' | 'none'
+  var nameStepOutcome = null;    // set once per page load; null while the step is pending or not yet decided
+  var nameStepAsked = false;     // the step was attempted this page load (asked at most once)
+  var nameStep = null;           // the open step: { root, input, cont, note }
   var pendingError = null;   // an error the auth server sent back in the URL; shown once the chip exists
   var initOpts = null;
   var mounted = false;
@@ -309,6 +326,142 @@
     renderChip();
     fire();
     settleLink();
+    settleNameStep();
+  }
+
+  /* ---------- the required-name step ---------- */
+  // An account needs a display name: Google supplies one, an emailed code does not. The step is one modal
+  // card shown once per page load after a signed-in event for a user with no name — only after a getUser()
+  // round trip proved the network (never offline, never on a page whose SDK loaded but whose API is
+  // blocked: rule 3 — offline changes the chip's label, never the page). Continue writes the name; a failure
+  // that is not the name itself turns Continue into "Not now" so the page stays usable; "Sign out instead"
+  // is a real sign-out (the saves module removes what the first hydration already brought down).
+  function needsName() { return !!currentUser && !currentUser.name; }
+  function fireNameStep(outcome) {
+    if (nameStepOutcome) return;
+    nameStepOutcome = outcome;
+    nameStepHooks.forEach(function (fn) { try { fn(outcome); } catch (e) { console.warn('[account] onNameStep handler failed:', e); } });
+  }
+  function settleNameStep() {
+    if (nameStepOutcome || nameStep) return;
+    if (!currentUser) return;                       // signed out: nothing to settle (a later sign-in decides)
+    if (currentUser.name) { fireNameStep('none'); return; }
+    if (nameStepAsked) return;
+    nameStepAsked = true;
+    var uid = currentUser.id;
+    // After DOMContentLoaded: the page's init() (account.html opts out with nameStep: false) has run by then.
+    whenReady(function () {
+      if (nameStepOutcome || !currentUser || currentUser.id !== uid || currentUser.name) { if (!nameStepOutcome) fireNameStep('none'); return; }
+      if ((initOpts && initOpts.nameStep === false) || navigator.onLine === false || !client) { fireNameStep('none'); return; }
+      client.auth.getUser().then(function (r) {
+        if (nameStepOutcome || !currentUser || currentUser.id !== uid) { fireNameStep('none'); return; }
+        if (r && r.error) { fireNameStep('none'); return; }
+        var md = (r && r.data && r.data.user && r.data.user.user_metadata) || null;
+        var fresh = md ? String(md.full_name || md.name || '') : '';
+        if (fresh) { currentUser.name = fresh; renderChip(); fireNameStep('none'); return; }
+        if (!openNameStep()) fireNameStep('none');
+      }, function () { fireNameStep('none'); });
+    });
+  }
+  function nameStepFocusables() {
+    if (!nameStep) return [];
+    return Array.prototype.filter.call(nameStep.root.querySelectorAll('button,input'), function (n) { return !n.disabled && n.offsetParent !== null; });
+  }
+  function openNameStep() {
+    if (nameStep || !currentUser) return false;
+    injectStyle();
+    var overlay = el('div', 'ivacct-modal');
+    var card = el('div', 'ivacct-card');
+    card.setAttribute('role', 'dialog');
+    card.setAttribute('aria-modal', 'true');
+    card.setAttribute('tabindex', '-1');
+    var title = el('h2', null, t('shared.account.card_name_title', 'What should we call you?'));
+    title.id = 'ivacct-name-title';
+    card.setAttribute('aria-labelledby', title.id);
+    card.appendChild(title);
+    card.appendChild(el('p', null, t('shared.account.card_name_note', 'Shown in the header while you are signed in and stored with your account.')));
+    var label = el('label', 'ivacct-label', t('shared.account.card_name_label', 'Display name'));
+    label.htmlFor = 'ivacct-name-input';
+    var input = el('input', 'ivacct-input');
+    input.id = 'ivacct-name-input';
+    input.type = 'text';
+    input.name = 'name';
+    input.maxLength = 80;
+    input.autocomplete = 'name';
+    input.setAttribute('autocapitalize', 'words');
+    input.setAttribute('data-ivk', 'name');
+    card.appendChild(label);
+    card.appendChild(input);
+    var note = el('p', 'ivacct-note');
+    note.setAttribute('role', 'status');
+    note.setAttribute('aria-live', 'polite');
+    var cont = el('button', 'ivacct-item ivacct-primary', t('shared.account.card_name_continue', 'Continue'));
+    cont.type = 'button';
+    cont.setAttribute('data-ivk', 'continue');
+    cont.setAttribute('aria-disabled', 'true');
+    var later = el('button', 'ivacct-item', t('shared.account.card_name_later', 'Not now — ask again next time'));
+    later.type = 'button';
+    later.hidden = true;
+    later.addEventListener('click', function () { closeNameStep('later'); });
+    var out = el('button', 'ivacct-item', t('shared.account.card_name_signout', 'Sign out instead'));
+    out.type = 'button';
+    out.setAttribute('data-ivk', 'signout');
+    var busy = false;
+    function valid() { var v = input.value.replace(/\s+/g, ' ').trim(); return v.length >= 1 && v.length <= 80; }
+    function sync() { if (valid() && !busy) cont.removeAttribute('aria-disabled'); else cont.setAttribute('aria-disabled', 'true'); }
+    function say(text, isError) { note.textContent = text || ''; note.classList.toggle('is-error', !!isError); }
+    input.addEventListener('input', function () { sync(); if (note.classList.contains('is-error') && valid()) say('', false); });
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); cont.click(); } });
+    cont.addEventListener('click', function () {
+      if (busy) return;
+      if (!valid()) { say(t('shared.account.error_name', 'A display name is 1 to 80 characters.'), true); input.focus(); return; }
+      busy = true; sync(); out.setAttribute('aria-disabled', 'true');
+      say(t('shared.account.sending', 'Sending…'), false);
+      setDisplayName(input.value).then(function () { closeNameStep('named'); }, function (err) {
+        busy = false; sync(); out.removeAttribute('aria-disabled');
+        say(errorText(err), true);
+        // Not the name's fault: the network, the session, the server. The page stays usable — ask next time.
+        if (!(err && err.code === 'invalid_name')) later.hidden = false;
+        input.focus();
+      });
+    });
+    out.addEventListener('click', function () {
+      if (busy) return;
+      busy = true; sync(); out.setAttribute('aria-disabled', 'true');
+      signOut().then(function () { location.reload(); }, function () { location.reload(); });
+    });
+    var row = el('div');
+    row.appendChild(cont); row.appendChild(later); row.appendChild(out);
+    card.appendChild(row);
+    card.appendChild(note);
+    overlay.appendChild(card);
+    // A required step: no ✕, no outside click, Escape ignored; Tab and Shift+Tab wrap inside the card.
+    var onKey = function (e) {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); return; }
+      if (e.key !== 'Tab') return;
+      var items = nameStepFocusables();
+      if (!items.length) { e.preventDefault(); card.focus(); return; }
+      var a = document.activeElement, first = items[0], last = items[items.length - 1];
+      if (!card.contains(a)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+      else if (e.shiftKey && (a === first || a === card)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', onKey, true);
+    (document.body || document.documentElement).appendChild(overlay);
+    nameStep = { root: overlay, input: input, cont: cont, note: note, onKey: onKey, opener: document.activeElement };
+    sync();
+    try { input.focus(); } catch (e) {}
+    return true;
+  }
+  // outcome: 'named' | 'later' — or null when the step is torn down by a sign-out (no outcome this load).
+  function closeNameStep(outcome) {
+    if (!nameStep) return;
+    var s = nameStep; nameStep = null;
+    document.removeEventListener('keydown', s.onKey, true);
+    if (s.root.parentNode) s.root.parentNode.removeChild(s.root);
+    var f = document.activeElement;
+    if (!f || f === document.body) { if (!(chip && mounted && chip.btn.getClientRects().length && (chip.btn.focus(), true)) && s.opener && typeof s.opener.focus === 'function') { try { s.opener.focus(); } catch (e) {} } }
+    if (outcome) fireNameStep(outcome);
   }
 
   /* ---------- public actions ---------- */
@@ -340,13 +493,32 @@
     });
   }
 
-  function signOut() {
-    lsRemove(CACHE_KEY);
-    function forgetLocally() { lsRemove(AUTH_KEY); currentUser = null; noteState = null; menuStage = 'email'; setStatus(enabled ? 'anonymous' : 'disabled'); renderChip(); fire(); }
-    if (!client) { forgetLocally(); return Promise.resolve(); }
-    return client.auth.signOut({ scope: 'local' })
-      .then(function (r) { if (r && r.error) throw r.error; forgetLocally(); })
-      .catch(function (e) { forgetLocally(); throw e; });
+  // The hooks run first, while the token is still valid, so the saves module can flush what this device
+  // changed in the last seconds and then remove the account's cached items; each is awaited, bounded, and a
+  // failing hook never stops the sign-out. The device is signed out whether or not the server call succeeds.
+  function runSignOutHooks(uid, opts) {
+    return signOutHooks.reduce(function (chain, fn) {
+      return chain.then(function () {
+        return new Promise(function (resolve) {
+          var done = false, timer = setTimeout(function () { if (!done) { done = true; console.warn('[account] onSignOut hook timed out'); resolve(); } }, SIGNOUT_HOOK_MS);
+          Promise.resolve().then(function () { return fn(uid, opts); }).then(function () { if (!done) { done = true; clearTimeout(timer); resolve(); } },
+            function (e) { console.warn('[account] onSignOut hook failed:', e); if (!done) { done = true; clearTimeout(timer); resolve(); } });
+        });
+      });
+    }, Promise.resolve());
+  }
+  function signOut(opts) {
+    opts = opts || {};
+    var uid = currentUser ? currentUser.id : null;
+    signOutHandledUid = uid || '(none)';   // an explicit sign-out from this tab, keepLocal or not
+    closeNameStep(null);
+    function forgetLocally() { lsRemove(CACHE_KEY); lsRemove(AUTH_KEY); currentUser = null; noteState = null; menuStage = 'email'; setStatus(enabled ? 'anonymous' : 'disabled'); renderChip(); fire(); }
+    return runSignOutHooks(uid, { keepLocal: !!opts.keepLocal }).then(function () {
+      if (!client) { forgetLocally(); return; }
+      return client.auth.signOut({ scope: 'local' })
+        .then(function (r) { if (r && r.error) throw r.error; forgetLocally(); })
+        .catch(function (e) { forgetLocally(); throw e; });
+    });
   }
 
   // Map any failure to one localized sentence for the note line.
@@ -404,16 +576,22 @@
       return { displayName: p ? String(p.display_name || '') : '', createdAt: p ? (p.created_at || null) : null };
     });
   }
-  // The display name lives in the user's metadata (what the chip reads on every page) and is mirrored into
-  // profiles.display_name (the row the account was created with). A Google sign-in later may put Google's
-  // name back into the metadata; the profiles copy keeps what was typed here.
+  // The display name lives in the user's metadata (what the chip reads on every page, and what the required-name
+  // step checks) and is mirrored into profiles.display_name (the row the account was created with). A Google
+  // sign-in later may put Google's name back into the metadata; the profiles copy keeps what was typed here.
+  // The mirror fails soft: a refused or unreachable profiles row (the harness aborts /rest/v1/) still resolves
+  // with the name once the metadata took it, and the account page's next save catches the mirror up.
   function setDisplayName(name) {
     name = String(name === undefined || name === null ? '' : name).replace(/\s+/g, ' ').trim();
     if (!name || name.length > 80) return Promise.reject(makeError('invalid_name', 'IvritAccount: a display name is 1 to 80 characters'));
     return getClient().then(function (c) {
       var u = requireUser();
       return c.auth.updateUser({ data: { full_name: name } }).then(unwrap)
-        .then(function () { return c.from('profiles').update({ display_name: name }).eq('id', u.id); }).then(unwrap)
+        .then(function () {
+          if (currentUser && currentUser.id === u.id) { currentUser.name = name; lsSet(CACHE_KEY, JSON.stringify({ email: currentUser.email, name: name })); renderChip(); }
+          return Promise.resolve().then(function () { return c.from('profiles').update({ display_name: name }).eq('id', u.id); }).then(unwrap)
+            .catch(function (e) { console.warn('[account] profiles mirror failed:', e); });
+        })
         .then(function () { return name; });
     });
   }
@@ -442,7 +620,8 @@
       var data = r && r.data;
       if (!data || data.ok !== true) throw makeError('fn_failed', 'IvritAccount: unexpected reply from delete-account');
       // The session is dead on the server; forgetting it here is what matters (the sign-out call itself may 401).
-      return signOut().then(function () { return data; }, function () { return data; });
+      // keepLocal: the device's copies stay — the account is gone, so they are the teacher's last copy besides the zip.
+      return signOut({ keepLocal: true }).then(function () { return data; }, function () { return data; });
     });
   }
 
@@ -496,7 +675,16 @@
       '.ivacct-who{margin:0 0 6px;font-size:0.8rem;color:var(--muted,#6b6050);overflow-wrap:anywhere;}' +
       '.ivacct-sep{border:0;border-top:1px solid var(--border,#c8bfa8);margin:8px 0;}' +
       '[hidden].ivacct-code,[hidden].ivacct-form{display:none;}' +
-      '@media (prefers-reduced-motion: reduce){.ivacct,.ivacct *{transition-duration:0.001ms!important;animation-duration:0.001ms!important;}}';
+      // The required-name step: one modal card, the same palette vars as the menu.
+      '.ivacct-modal{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.45);font-family:inherit;}' +
+      '.ivacct-card{box-sizing:border-box;inline-size:100%;max-inline-size:420px;padding:16px 18px;border:1px solid var(--border,#c8bfa8);border-radius:10px;' +
+        'background:var(--white,#fff);color:var(--text,#1a2744);box-shadow:0 10px 30px rgba(0,0,0,.25);text-align:start;}' +
+      '.ivacct-card h2{margin:0 0 6px;font-size:1.1rem;}' +
+      '.ivacct-card p{margin:6px 0;font-size:0.9rem;line-height:1.45;}' +
+      '.ivacct-card .ivacct-item{inline-size:auto;display:inline-block;margin-inline-end:6px;}' +
+      '.ivacct-card .ivacct-item.ivacct-primary{border-color:var(--gold,#c9922a);}' +
+      '.ivacct-card .ivacct-note{min-block-size:1.2em;}' +
+      '@media (prefers-reduced-motion: reduce){.ivacct,.ivacct *,.ivacct-modal,.ivacct-modal *{transition-duration:0.001ms!important;animation-duration:0.001ms!important;}}';
     var el = document.createElement('style');
     el.id = STYLE_ID;
     el.textContent = css;
@@ -741,27 +929,31 @@
 
     if (status === 'signed-in' && currentUser) {
       m.appendChild(el('p', 'ivacct-who', t('shared.account.signed_in_as', 'Signed in as {email}', { email: currentUser.email })));
-      if (openAccountFn) {
-        var acct = el('button', 'ivacct-item', t('shared.account.account_item', 'Account…'));
-        acct.setAttribute('data-ivk', 'account');
-        acct.type = 'button';
-        acct.addEventListener('click', function () { closeMenu(false); try { openAccountFn(); } catch (e) { console.warn('[account] onOpenAccount failed:', e); } });
-        m.appendChild(acct);
-      }
-      if (openSavesFn) {
-        var saves = el('button', 'ivacct-item', t('shared.account.cloud_saves', 'Cloud saves…'));
-        saves.setAttribute('data-ivk', 'saves');
-        saves.type = 'button';
-        saves.addEventListener('click', function () { closeMenu(false); try { openSavesFn(); } catch (e) { console.warn('[account] onOpenSaves failed:', e); } });
-        m.appendChild(saves);
-      }
-      var out = el('button', 'ivacct-item', t('shared.account.sign_out', 'Sign out (this device)'));
+      // The account page: who the account is, what it holds, download everything, delete it.
+      var acct = el('a', 'ivacct-item', t('shared.account.account_item', 'Account…'));
+      acct.setAttribute('data-ivk', 'account');
+      acct.href = '/account.html';
+      m.appendChild(acct);
+      var out = el('button', 'ivacct-item', t('shared.account.sign_out', 'Sign out'));
       out.setAttribute('data-ivk', 'signout');
       out.type = 'button';
       out.addEventListener('click', function () {
         if (menuBusy) return;
+        // Signed in, the saves module keeps the account's items on this device as a cache; a sign-out flushes
+        // the last edits and removes that cache (the confirm says so, and names what has not reached the
+        // account yet, which stays here as this device's own data). The page reloads either way: it holds
+        // in-memory copies of its settings, and a reload is the one reliable way to drop them.
+        var n = 0;
+        try { var S = window.IvritSaves; if (S && typeof S.pendingSignOut === 'function') n = Number((S.pendingSignOut() || {}).unsynced) || 0; } catch (e) { n = 0; }
+        var msg = n
+          ? t('shared.account.sign_out_confirm_kept' + (n === 1 ? '.one' : '.other'), n === 1
+              ? 'Sign out? Your saved items stay in your account and are removed from this device. 1 item on this device is not in your account yet and stays here as this device\'s own data. Your preferences and My Fonts stay here.'
+              : 'Sign out? Your saved items stay in your account and are removed from this device. {n} items on this device are not in your account yet and stay here as this device\'s own data. Your preferences and My Fonts stay here.', { n: n })
+          : t('shared.account.sign_out_confirm', 'Sign out? Your saved items stay in your account and are removed from this device. Your preferences and My Fonts stay here.');
+        if (!window.confirm(msg)) return;
         setBusy(true);
-        signOut().then(function () { setBusy(false); closeMenu(true); }).catch(function (err) { setBusy(false); setNote(errorText(err), true); });
+        setNote(t('shared.account.sending', 'Sending…'), false);
+        signOut().then(function () { location.reload(); }, function () { location.reload(); });
       });
       m.appendChild(out);
       m.appendChild(note);
@@ -998,8 +1190,16 @@
     mountChip: mountChip,
     init: init,
     t: t,
-    onOpenSaves: function (fn) { openSavesFn = (typeof fn === 'function') ? fn : null; renderChip(); },
-    onOpenAccount: function (fn) { openAccountFn = (typeof fn === 'function') ? fn : null; renderChip(); },
+    onSignOut: function (fn) { if (typeof fn === 'function' && signOutHooks.indexOf(fn) < 0) signOutHooks.push(fn); },
+    onNameStep: function (fn) {
+      if (typeof fn !== 'function') return;
+      nameStepHooks.push(fn);
+      if (nameStepOutcome) Promise.resolve().then(function () { try { fn(nameStepOutcome); } catch (e) { console.warn('[account] onNameStep handler failed:', e); } });
+    },
+    needsName: needsName,
+    hasStoredSession: function () { return enabled && (!!currentUser || hasStoredSession()); },
+    signOutHandled: function () { return signOutHandledUid; },
+    openNameStep: openNameStep,
     sessionSource: function () { return sessionSource; },
     openMenu: function () { if (!chip || !mounted) return false; openMenu(); return true; },   // a page's own "Sign in" button opens the chip's menu
     focusChip: function () { if (!chip || !mounted || !chip.btn.getClientRects().length) return false; chip.btn.focus(); return true; },
@@ -1007,6 +1207,6 @@
     setDisplayName: setDisplayName,
     deleteAccount: deleteAccount,
     errorText: errorText,
-    _test: { isAuthCallback: isAuthCallback, stripAuthParams: stripAuthParams, redirectTarget: redirectTarget, parseAuthParams: parseAuthParams, hasStoredSession: hasStoredSession, parseLinkHash: parseLinkHash, stripLinkHash: stripLinkHash, AUTH_KEY: AUTH_KEY, VERIFIER_KEY: VERIFIER_KEY, CACHE_KEY: CACHE_KEY, REQUEST_KEY: REQUEST_KEY, LINK_HASH_KEY: LINK_HASH_KEY }
+    _test: { isAuthCallback: isAuthCallback, stripAuthParams: stripAuthParams, redirectTarget: redirectTarget, parseAuthParams: parseAuthParams, hasStoredSession: hasStoredSession, parseLinkHash: parseLinkHash, stripLinkHash: stripLinkHash, nameStepOutcome: function () { return nameStepOutcome; }, AUTH_KEY: AUTH_KEY, VERIFIER_KEY: VERIFIER_KEY, CACHE_KEY: CACHE_KEY, REQUEST_KEY: REQUEST_KEY, LINK_HASH_KEY: LINK_HASH_KEY }
   };
 })();
