@@ -252,7 +252,7 @@ A free interactive tutor for the Torah cantillation marks. Learn mode teaches ea
 
 **What melody tradition is this?**
 
-The recordings are PocketTorah's, chanted in a widely-taught Ashkenazi melody. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.
+The recordings are PocketTorah's, chanted in the Spiro (Conservative) melody; the staffs follow the Avery/Binder (Reform) charts. Both Ashkenazi and Sephardi trope names are shown, and you can switch the primary naming tradition in settings.
 
 **What are trope (te'amim)?**
 
