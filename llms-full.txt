@@ -217,7 +217,7 @@ Yes. Trope color coding highlights or underlines each word in the color of its c
 
 **Does it work for both diaspora and Israel reading schedules?**
 
-Yes. The default is diaspora; flip the Reading Schedule toggle in settings to switch to the Israel schedule. The 'Jump to this week's parsha' button fetches the current parsha from Sefaria using the chosen schedule.
+Yes. The default is diaspora; set Calendar to Israel under Reading schedule to switch. "Jump to this week's parsha" opens this week's reading, which the page works out from the Hebrew calendar itself (only a few festival Shabbatot ask Sefaria's calendar). Reading cycle, in the same panel, switches between the full, triennial and Monday/Thursday readings.
 
 **Can I copy the Hebrew text out of the reader?**
 
