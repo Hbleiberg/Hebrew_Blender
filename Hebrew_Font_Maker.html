@@ -20689,7 +20689,7 @@ async function downloadMyFont(name) {
 function deleteMyFontUI(name) {
   askModal(I18n.t('fontmaker.modals.remove_font_title'),
     I18n.t('fontmaker.modals.remove_font_body', {name: '<b>' + esc(name) + '</b>'}),
-    [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' }, { label: I18n.t('fontmaker.modals.remove'), onClick: async () => { try { await deleteUserFont(name); } catch (e) { console.error(e); } if (_myFontsOpen) renderMyFontsList(); } }]);
+    [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' }, { label: I18n.t('fontmaker.modals.remove'), onClick: async () => { try { await deleteUserFont(name); if (window.IvritSaves && window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) IvritSaves.fontDeleted(name); } catch (e) { console.error(e); } if (_myFontsOpen) renderMyFontsList(); } }]);
 }
 async function saveCurrentToMyFonts(bytes) {
   // Same gate as exportFont: the pre-drawn punctuation glyphs carry contours on a brand-new project,
@@ -22338,14 +22338,6 @@ async function fmCloudKeepExport(file) {
     status(_cT('export_kept_toast', 'Export kept in your account'));
   } catch (e) { status(fmCloudErrorText(e), true); }
 }
-function fmCloudSummaryLine() {   // the account screen's line for this tool
-  if (!fmCloudUser() || !window.IvritSaves) return '';
-  return IvritProjects.count().then(c => c.n
-    ? IvritSaves.t(c.n === 1 ? 'shared.cloud.acct_tool_projects.one' : 'shared.cloud.acct_tool_projects.other',
-        c.n === 1 ? '{name}: 1 project in your account ({size})' : '{name}: {n} projects in your account ({size})',
-        { name: I18n.t('fontmaker.about.app_title'), n: c.n, size: fmMb(c.bytes) })
-    : '');
-}
 async function loadProjectFile(file) {
   let data;
   try {
@@ -23845,10 +23837,11 @@ function init() {
   window.addEventListener('beforeunload', e => { if (_projectDirty || _cloudDirty || _cloudBusy) { e.preventDefault(); e.returnValue = ''; } });   // warn before losing unsaved work
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushAutosave(); });   // tab hidden → flush the debounced autosave now
   window.addEventListener('pagehide', flushAutosave);   // closing/navigating away → last-chance flush
-  // Cloud projects: retry a pending cloud save when the connection returns; keep the badge in step with sign-in; the account screen's line.
+  // Cloud projects: retry a pending cloud save when the connection returns; keep the badge in step with sign-in.
   window.addEventListener('online', () => { if (_cloudDirty) fmCloudArm(); });
   if (window.IvritAccount && typeof IvritAccount.onChange === 'function') IvritAccount.onChange(u => { if (!u) clearTimeout(_cloudTimer); else if (_cloudDirty) fmCloudArm(); fmCloudPipRender(); });
-  if (window.IvritSaves && window.IvritProjects && typeof IvritSaves.registerSummary === 'function') IvritSaves.registerSummary(fmCloudSummaryLine);
+  // Suite-wide preferences and My Fonts live in the account too: attaching Suite hydrates them on a signed-in load (no status host here).
+  if (window.IvritSaves && typeof IvritSaves.attach === 'function') { try { IvritSaves.attach({ tool: 'Suite' }); } catch (e) { console.warn(e); } }
   // Defer the restore prompt until translations have loaded — window.I18n exists by DOMContentLoaded,
   // but I18n.ready (the locale-JSON fetch) may not have resolved, so building the modal now would
   // render its labels as raw i18n keys (fontmaker.modals.continue_body, …).

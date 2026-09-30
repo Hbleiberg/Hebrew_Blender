@@ -141,8 +141,10 @@ class FakeCloud {
     const tm = /\/rest\/v1\/([A-Za-z_]+)$/.exec(url.pathname);
     if (!tm || !this.tables[tm[1]]) { this.log.push({ m, path: url.pathname, unexpected: true }); return json(404, { message: 'not found' }); }
     const table = tm[1], q = url.searchParams;
-    const filters = [...q.entries()].filter(([k, v]) => !['select', 'order', 'offset', 'limit'].includes(k) && v.startsWith('eq.')).map(([k, v]) => [k, v.slice(3)]);
-    const match = r => filters.every(([k, v]) => String(r[k]) === v);
+    if (this.failListing && table === 'saves' && m === 'GET') { this.log.push({ m, table, failed: true }); return json(500, { message: 'listing refused (smoke)' }); }
+    const filters = [...q.entries()].filter(([k, v]) => !['select', 'order', 'offset', 'limit'].includes(k) && /^(eq|in)\./.test(v))
+      .map(([k, v]) => v.startsWith('in.') ? [k, v.slice(4, -1).split(',').map(x => x.replace(/^"|"$/g, ''))] : [k, v.slice(3)]);
+    const match = r => filters.every(([k, v]) => Array.isArray(v) ? v.includes(String(r[k])) : String(r[k]) === v);
     const single = /vnd\.pgrst\.object/.test(req.headers().accept || '');
     const entry = { m, table, search: url.search, body: req.postData() ? JSON.parse(req.postData()) : null, status: 200 };
     this.log.push(entry);
@@ -184,7 +186,7 @@ function seedFor(signedIn, extra) {
   if (signedIn) {
     s[AUTH_KEY] = JSON.stringify(SESSION);
     s.ivritSuite_accountCache = JSON.stringify({ email: EMAIL, name: 'Test Teacher' });
-    s.ivritSuite_syncMeta = JSON.stringify({ v: 1, users: { [UID]: { Worksheet: {} } }, welcomed: { [UID]: '2026-09-14T00:00:00.000Z' } });
+    s.ivritSuite_syncMeta2 = JSON.stringify({ v: 2, users: { [UID]: { Worksheet: {} } }, legacy: {}, hydrated: { [UID]: '2026-09-14T00:00:00.000Z' } });
   }
   return s;
 }
@@ -209,7 +211,8 @@ async function openPage(ctx, { signedIn = false } = {}) {
   await page.waitForFunction(() => window.I18n && document.readyState !== 'loading', null, { timeout: 20000 }).catch(() => {});
   if (signedIn) {
     await page.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'signed-in', null, { timeout: 25000 });
-    await page.waitForFunction(() => document.getElementById('holdsTotal').textContent.length > 0 || document.getElementById('holdsStatus').classList.contains('is-error'), null, { timeout: 25000 });
+    // the listing landed: a total line, an error line, or (an empty account) Refresh released again
+    await page.waitForFunction(() => document.getElementById('holdsTotal').textContent.length > 0 || document.getElementById('holdsStatus').classList.contains('is-error') || document.getElementById('refreshBtn').getAttribute('aria-disabled') === 'false', null, { timeout: 25000 });
   }
   await page.waitForTimeout(500);
   return { page, errors };
@@ -234,6 +237,8 @@ function readZip(buf) {   // store-only zip: walk the local file headers; each e
 }
 async function fillDelete(page, email) {
   await page.click('#delBtn');
+  await page.waitForFunction(() => !document.getElementById('delBefore').hidden && document.getElementById('delContinue').getAttribute('aria-disabled') !== 'true', null, { timeout: 5000 });
+  await page.click('#delContinue');
   await page.waitForFunction(() => !document.getElementById('delConfirm').hidden, null, { timeout: 5000 });
   await page.check('#delCheck');
   await page.fill('#delEmail', email);
@@ -275,7 +280,7 @@ try {
     check('1: the font project line', /Smoke Font: 3 letters/.test(list2) && /with an exported font/.test(list2));
     check('1: the total line', /12 items and 1 project,/.test(await text(page, '#holdsTotal')), await text(page, '#holdsTotal'));
     check('1: who — email, provider, since', (await text(page, '#whoLine')).includes(EMAIL) && /emailed code/.test(await text(page, '#whoProvider')) && (await text(page, '#sinceLine')).length > 0);
-    check('1: display name from profiles', (await page.inputValue('#nameInput')) === 'Test Teacher');
+    check('1: display name from profiles, the field required, no name step here', (await page.inputValue('#nameInput')) === 'Test Teacher' && (await page.evaluate(() => document.getElementById('nameInput').required && !document.querySelector('.ivacct-modal') && !document.querySelector('.ivsav-overlay'))));
     check('1: download enabled, delete box closed', !(await disabled(page, '#dlBtn')) && !(await visible(page, '#delConfirm')));
     await page.screenshot({ path: path.join(SHOTS, '1-signed-in.png'), fullPage: true });
   }
@@ -348,7 +353,19 @@ try {
   // ---- 4. delete my account -----------------------------------------------------------------------
   {
     await page.click('#delBtn');
+    await page.waitForFunction(() => !document.getElementById('delBefore').hidden, null, { timeout: 5000 });
+    check('4: the backup offer opens first, with Download enabled and the confirmation still closed', !(await disabled(page, '#delDl')) && !(await disabled(page, '#delContinue')) && !(await visible(page, '#delConfirm')));
+    const dlBefore = cloud.log.length;
+    const [dl2] = await Promise.all([page.waitForEvent('download', { timeout: 60000 }), page.click('#delDl')]);
+    check('4: Download everything from the offer builds the same zip', /^IvritSuite-account-\d{4}-\d{2}-\d{2}\.zip$/.test(dl2.suggestedFilename()) && cloud.log.length > dlBefore, dl2.suggestedFilename());
+    await page.waitForFunction(() => /Downloaded/.test(document.getElementById('delDlStatus').textContent), null, { timeout: 30000 });
+    check('4: the offer\'s own status line reports the download', /Downloaded 12 items and 1 project/.test(await text(page, '#delDlStatus')), await text(page, '#delDlStatus'));
+    await page.keyboard.press('Escape');
+    check('4: Escape closes the offer back to the button', (await visible(page, '#delBtn')) && !(await visible(page, '#delBefore')));
+    await page.click('#delBtn');
+    await page.click('#delContinue');
     await page.waitForFunction(() => !document.getElementById('delConfirm').hidden, null, { timeout: 5000 });
+    check('4: Continue opens the confirmation, headed "This cannot be undone"', /cannot be undone/.test(await text(page, '#delConfirm h3')) && !(await visible(page, '#delBefore')));
     check('4: Delete permanently starts disabled', await disabled(page, '#delGo'));
     await page.check('#delCheck');
     check('4: still disabled with the box alone', await disabled(page, '#delGo'));
@@ -363,8 +380,8 @@ try {
     check('4: the deleted tile with the counts', /12 items, 1 project, 4 files/.test(await text(page, '#goneCounts')), await text(page, '#goneCounts'));
     const ls = await page.evaluate(() => Object.assign({}, localStorage));
     check('4: session and name cache removed', !(AUTH_KEY in ls) && !('ivritSuite_accountCache' in ls));
-    const meta = JSON.parse(ls.ivritSuite_syncMeta || '{}');
-    check('4: the sync memory forgets the account', !!meta.users && !meta.users[UID] && !(meta.welcomed || {})[UID]);
+    const meta = JSON.parse(ls.ivritSuite_syncMeta2 || '{}');
+    check('4: the sync memory forgets the account (memory and the hydrated mark)', !(meta.users || {})[UID] && !(meta.hydrated || {})[UID]);
     check('4: a tool\'s own key untouched', ls.hebrewBlender_presets === seedFor(true).hebrewBlender_presets);
     check('4: the chip is signed out', await page.evaluate(() => IvritAccount.status() === 'anonymous'));
     check('4: 0 pageerrors through scenarios 1–4', errors.length === 0, errors.join(' | '));
@@ -384,6 +401,28 @@ try {
     check('5: still signed in, session intact, box still open', (await p5.evaluate(() => IvritAccount.status())) === 'signed-in' && (await p5.evaluate((k) => !!localStorage.getItem(k), AUTH_KEY)) && (await visible(p5, '#delConfirm')) && !(await visible(p5, '#acctGone')));
     check('5: 0 pageerrors', e5.length === 0, e5.join(' | '));
     await ctx5.close();
+  }
+  // ---- 5b. the listing fails → the offer still lets the teacher continue (and download) --------------
+  {
+    const cloudB = new FakeCloud(); cloudB.failListing = true;
+    const ctxB = await openContext(browser, cloudB, seedFor(true));
+    const { page: pB, errors: eB } = await openPage(ctxB, { signedIn: true });
+    await pB.click('#delBtn');
+    await pB.waitForFunction(() => !document.getElementById('delBefore').hidden && document.getElementById('delContinue').getAttribute('aria-disabled') !== 'true', null, { timeout: 5000 });
+    check('5b: listing failed → Continue and Download enabled, the line says the count is unknown', !(await disabled(pB, '#delDl')) && /Could not check/.test(await text(pB, '#delDlStatus')), await text(pB, '#delDlStatus'));
+    check('5b: 0 pageerrors', eB.length === 0, eB.join(' | '));
+    await ctxB.close();
+  }
+  // ---- 5c. an empty account → nothing to download, Continue enabled -------------------------------
+  {
+    const cloudC = new FakeCloud(); cloudC.tables.saves = []; cloudC.tables.font_projects = []; cloudC.objects = {};
+    const ctxC = await openContext(browser, cloudC, seedFor(true));
+    const { page: pC, errors: eC } = await openPage(ctxC, { signedIn: true });
+    await pC.click('#delBtn');
+    await pC.waitForFunction(() => !document.getElementById('delBefore').hidden && document.getElementById('delContinue').getAttribute('aria-disabled') !== 'true', null, { timeout: 5000 });
+    check('5c: empty account → Download disabled, Continue enabled, the line says so', (await disabled(pC, '#delDl')) && /nothing to download/.test(await text(pC, '#delDlStatus')), await text(pC, '#delDlStatus'));
+    check('5c: 0 pageerrors', eC.length === 0, eC.join(' | '));
+    await ctxC.close();
   }
   // ---- 6. Hebrew + dark at 800 px -----------------------------------------------------------------
   {

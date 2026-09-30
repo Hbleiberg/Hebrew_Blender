@@ -313,7 +313,7 @@ body.dark .hi-sun{display:inline-block;}
       <form id="nameForm" novalidate>
         <div class="field">
           <label for="nameInput" data-i18n="account.who.name_label">Display name</label>
-          <input type="text" id="nameInput" name="name" maxlength="80" autocomplete="name" autocapitalize="words" autocorrect="off" spellcheck="false">
+          <input type="text" id="nameInput" name="name" required maxlength="80" autocomplete="name" autocapitalize="words" autocorrect="off" spellcheck="false">
         </div>
         <p class="note" data-i18n="account.who.name_note">Shown in the header when you are signed in. Only you see it.</p>
         <button class="btn ghost" type="submit" id="nameSave" data-i18n="account.who.name_save">Save name</button>
@@ -341,8 +341,19 @@ body.dark .hi-sun{display:inline-block;}
       <h2 id="delHead" data-i18n="account.delete.head">Delete my account</h2>
       <p class="note" data-i18n="account.delete.note">This deletes your account and everything in it — every saved item, every Font Maker project with its photos and exported fonts — right away and for good. Nothing on this device or any other device is touched: your browsers keep their own copies, and your .ivrit and .hebrewfont files stay yours.</p>
       <button class="btn ghost" type="button" id="delBtn" data-i18n="account.delete.btn">Delete my account…</button>
+      <!-- Step 1: the backup offer. Download everything is the same zip as the section above (downloadAll with
+           this box's button and status line); Continue opens the real confirmation below. -->
+      <div class="confirm-box" id="delBefore" hidden>
+        <h3 data-i18n="account.delete.before_head">Before you delete: download your backup</h3>
+        <p class="note" data-i18n="account.delete.before_note">Deleting the account removes everything it holds, for good. Download everything first — the .zip is the only copy once the account is gone.</p>
+        <button class="btn" type="button" id="delDl" aria-disabled="true" data-i18n="account.download.btn">Download everything (.zip)</button>
+        <button class="btn ghost" type="button" id="delContinue" aria-disabled="true" data-i18n="account.delete.before_continue">Continue without downloading</button>
+        <button class="btn ghost" type="button" id="delBeforeCancel" data-i18n="account.delete.cancel">Cancel</button>
+        <p class="status" id="delDlStatus" role="status" aria-live="polite"></p>
+      </div>
+      <!-- Step 2: the confirmation proper. -->
       <div class="confirm-box" id="delConfirm" hidden>
-        <h3 data-i18n="account.delete.confirm_head">Are you sure?</h3>
+        <h3 data-i18n="account.delete.confirm_head">Are you sure? This cannot be undone.</h3>
         <label class="check"><input type="checkbox" id="delCheck"> <span data-i18n="account.delete.check">I have downloaded everything I want to keep, or I do not need it.</span></label>
         <div class="field">
           <label for="delEmail" id="delEmailLabel" data-i18n="account.delete.email_label">Type your email address to confirm</label>
@@ -398,7 +409,7 @@ let user = null;          // IvritAccount.user() as last reported
 let prof = null;          // { displayName, createdAt } from profiles
 let inv = null;           // IvritSaves.inventory()
 let projects = null;      // IvritProjects.list()
-let deleting = false, gone = false, goneCounts = null, busyDl = false;
+let deleting = false, gone = false, goneCounts = null, busyDl = false, invFailed = false;   // invFailed: the last listing failed (the pre-deletion box says the count is unknown)
 const namesOpen = {};     // tool:kind → the names list is expanded
 // Status lines keep their RENDERER so a live language switch can repaint them (pattern: contact.html).
 const lines = {};
@@ -477,13 +488,13 @@ function saveName(e) {
 function loadInventory() {
   const me = user && user.id; if (!me) return;
   say('holdsStatus', () => t('account.holds.checking'));
-  setBusy('refreshBtn', true);
+  setBusy('refreshBtn', true); invFailed = false; syncBeforeBox();
   Promise.all([IvritSaves.inventory(), IvritProjects.list({ fresh: true })]).then(res => {
     if (!user || user.id !== me) return;
     inv = res[0]; projects = res[1];
     renderHolds();
     say('holdsStatus', null);
-  }).catch(err => { if (user && user.id === me) say('holdsStatus', () => IvritSaves.errorText(err), true); })
+  }).catch(err => { if (user && user.id === me) { invFailed = true; say('holdsStatus', () => IvritSaves.errorText(err), true); syncBeforeBox(); } })
     .then(() => setBusy('refreshBtn', false));
 }
 function renderHolds() {
@@ -537,6 +548,7 @@ function renderHolds() {
   if (!shown) host.appendChild(el('li', 'muted', t('shared.cloud.acct_no_cloud')));
   else $('holdsTotal').textContent = t('account.holds.total', { items: plural('account.count.items', items), and_projects: plural('account.count.and_projects', pj.length), size: fmtSize(bytes + pbytes) });
   setBusy('dlBtn', !shown);
+  if (!$('delBefore').hidden) syncBeforeBox();
   if (refocus) refocus.focus();
 }
 
@@ -594,25 +606,27 @@ function saveBlob(blob, filename) {
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
-async function downloadAll() {
-  if (busyDl || !user || isDisabled($('dlBtn'))) return;
-  busyDl = true; setBusy('dlBtn', true);
+async function downloadAll(btnId, statusId) {
+  // Shared by the Download everything section (#dlBtn / #dlStatus) and the pre-deletion box (#delDl / #delDlStatus).
+  btnId = btnId || 'dlBtn'; statusId = statusId || 'dlStatus';
+  if (busyDl || !user || isDisabled($(btnId))) return;
+  busyDl = true; setBusy('dlBtn', true); setBusy('delDl', true);
   // The teacher's own date, as every other export in the suite: toISOString() is UTC, so an evening download in
   // the Americas was named for the next day and an early-morning one in Israel for the day before.
   const me = user.id, email = user.email || '', now = new Date();
   const date = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
   try {
-    say('dlStatus', () => t('account.download.prep_items'));
+    say(statusId, () => t('account.download.prep_items'));
     const bundle = await IvritSaves.bundleAll();
     const rows = await IvritProjects.list({ fresh: true });
-    if (!bundle.count && !rows.length) { say('dlStatus', () => t('account.download.nothing')); return; }
+    if (!bundle.count && !rows.length) { say(statusId, () => t('account.download.nothing')); return; }
     const ivritName = 'IvritSuite-account-' + date + '.ivrit';
     const files = [{ name: ivritName, bytes: enc.encode(JSON.stringify(bundle.file, null, 2)) }];
     let missingPhotos = 0, missingFonts = 0; const used = {};   // counted apart: a lost exported font is not a photo
     for (let i = 0; i < rows.length; i++) {
       const r = rows[i], pos = { i: i + 1, n: rows.length, name: r.name };
-      say('dlStatus', () => t('account.download.prep_project', pos));
-      const f = await IvritProjects.projectFile(r.id, { onProgress: (j, m) => say('dlStatus', () => t('account.download.prep_photo', { i: pos.i, n: pos.n, j: j, m: m })) });
+      say(statusId, () => t('account.download.prep_project', pos));
+      const f = await IvritProjects.projectFile(r.id, { onProgress: (j, m) => say(statusId, () => t('account.download.prep_photo', { i: pos.i, n: pos.n, j: j, m: m })) });
       missingPhotos += f.failed;
       // One folder per project on every desktop: Windows and macOS disks ignore case, so "Alef" and "alef" shared a
       // folder and one .hebrewfont replaced the other; Windows drops a trailing dot or space ("Font." became "Font")
@@ -627,21 +641,29 @@ async function downloadAll() {
         catch (e) { missingFonts++; }
       }
     }
-    say('dlStatus', () => t('account.download.prep_zip'));
+    say(statusId, () => t('account.download.prep_zip'));
     files.unshift({ name: 'README.txt', bytes: enc.encode(t('account.zip.readme', { date: date, email: email, ivrit: ivritName })) });
     await nextPaint();   // "Preparing the zip…" shows before the build, not after it
     const zip = makeZip(files, now);
     if (!user || user.id !== me) return;
     saveBlob(new Blob([zip], { type: 'application/zip' }), 'IvritSuite-account-' + date + '.zip');
     const n = bundle.count, p = rows.length, size = fmtSize(zip.length);
-    say('dlStatus', () => t('account.download.done', { items: plural('account.count.items', n), and_projects: plural('account.count.and_projects', p), size: size })
+    say(statusId, () => t('account.download.done', { items: plural('account.count.items', n), and_projects: plural('account.count.and_projects', p), size: size })
       + (missingPhotos ? ' ' + plural('account.download.photos_missing', missingPhotos) : '')
       + (missingFonts ? ' ' + plural('account.download.fonts_missing', missingFonts) : ''));
   } catch (err) {
-    say('dlStatus', () => IvritSaves.errorText(err), true);
+    say(statusId, () => IvritSaves.errorText(err), true);
   } finally {
-    busyDl = false; setBusy('dlBtn', !inv || !(inv.some(x => x.count) || (projects && projects.length)));
+    busyDl = false; syncDlButtons();
   }
+}
+
+// The two Download everything buttons share one lock: busy while a zip builds, otherwise on when the account
+// holds anything (the pre-deletion box's Continue is never busy-locked; it waits only for the listing).
+function holdsAnything() { return !!inv && (inv.some(x => x.count) || (projects && projects.length > 0)); }
+function syncDlButtons() {
+  setBusy('dlBtn', busyDl || !holdsAnything());
+  if (!$('delBefore').hidden) syncBeforeBox();
 }
 
 /* ── delete my account ── */
@@ -654,15 +676,36 @@ function validateDel() {
   if (ok && lines.delStatus === lockedHint) say('delStatus', null);
   return ok;
 }
+// Deleting is two steps: the backup offer (#delBefore: Download everything / Continue / Cancel), then the
+// confirmation (#delConfirm). The offer's buttons follow the listing: while it loads both wait (holds.checking);
+// an empty account skips the download (before_empty); a failed listing enables both and says the count is unknown.
 function openDel() {
-  $('delConfirm').hidden = false; $('delBtn').hidden = true;
+  $('delBefore').hidden = false; $('delBtn').hidden = true; $('delConfirm').hidden = true;
+  syncBeforeBox();
+  $('delDl').focus();
+}
+function syncBeforeBox() {
+  if ($('delBefore').hidden) return;
+  const before = (key, isError) => { const r = () => t(key); r.before = true; say('delDlStatus', r, isError); };   // a line this box owns (a download's own line is left alone)
+  if (busyDl) { setBusy('delDl', true); setBusy('delContinue', false); return; }        // downloadAll owns the line meanwhile
+  if (!inv && !invFailed) { setBusy('delDl', true); setBusy('delContinue', true); before('account.holds.checking'); return; }
+  setBusy('delContinue', false);
+  if (!inv) { setBusy('delDl', false); before('account.delete.before_unknown', true); return; }
+  if (!holdsAnything()) { setBusy('delDl', true); before('account.delete.before_empty'); return; }
+  setBusy('delDl', false);
+  if (lines.delDlStatus && lines.delDlStatus.before) say('delDlStatus', null);
+}
+function continueDel() {
+  if (isDisabled($('delContinue'))) return;
+  $('delBefore').hidden = true; $('delConfirm').hidden = false;
   $('delCheck').checked = false; $('delEmail').value = '';
   say('delStatus', null); validateDel();
   $('delCheck').focus();
 }
 function cancelDel() {
   if (deleting) return;
-  $('delConfirm').hidden = true; $('delBtn').hidden = false;
+  $('delConfirm').hidden = true; $('delBefore').hidden = true; $('delBtn').hidden = false;
+  say('delDlStatus', null);
   $('delBtn').focus();
 }
 async function deleteNow() {
@@ -714,8 +757,11 @@ document.addEventListener('DOMContentLoaded', () => {
   $('nameForm').addEventListener('submit', saveName);
   $('nameInput').addEventListener('input', () => { $('nameInput').dataset.touched = '1'; });
   $('refreshBtn').addEventListener('click', () => { if (!isDisabled($('refreshBtn'))) loadInventory(); });
-  $('dlBtn').addEventListener('click', downloadAll);
+  $('dlBtn').addEventListener('click', () => downloadAll('dlBtn', 'dlStatus'));
+  $('delDl').addEventListener('click', () => downloadAll('delDl', 'delDlStatus'));
   $('delBtn').addEventListener('click', openDel);
+  $('delContinue').addEventListener('click', continueDel);
+  $('delBeforeCancel').addEventListener('click', cancelDel);
   $('delCancel').addEventListener('click', cancelDel);
   // Escape leaves the confirm box the same way Cancel does. openDel() moves focus INTO the box and
   // cancelDel() moves it back, so the box already behaves like the suite's other focus-managed
@@ -724,11 +770,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // nothing; cancelDel() already refuses while a deletion is in flight, so a mid-delete Escape is
   // a no-op rather than a way to hide a running request.
   $('delConfirm').addEventListener('keydown', (e) => { if (e.key === 'Escape') cancelDel(); });
+  $('delBefore').addEventListener('keydown', (e) => { if (e.key === 'Escape') cancelDel(); });
   $('delCheck').addEventListener('change', validateDel);
   $('delEmail').addEventListener('input', validateDel);
   $('delGo').addEventListener('click', deleteNow);
-  if (window.IvritAccount && window.IvritSaves && window.IvritProjects) IvritAccount.onChange(onAccount);
-  else { say('busyNote', () => t('account.out.offline')); show('acctBusy'); }
+  if (window.IvritAccount && window.IvritSaves && window.IvritProjects) {
+    // This page has its own (required) name field, so the post-sign-in name step stays closed here; attaching Suite
+    // keeps the suite-wide preferences and My Fonts hydrated like every other module page.
+    IvritAccount.init({ nameStep: false });
+    try { IvritSaves.attach({ tool: 'Suite' }); } catch (e) { console.warn(e); }
+    IvritAccount.onChange(onAccount);
+  } else { say('busyNote', () => t('account.out.offline')); show('acctBusy'); }
 });
 </script>
 </body>
