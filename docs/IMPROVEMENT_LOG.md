@@ -8,8 +8,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P3 (**S430 A**) | torah_trainer.html | **The Trope staff's Tune buttons flip their name with `aria-pressed`**: Tune all → drop it (as Chant all); verse Tune → one name (`96275c2`). | found S430
-
 - [ ] P4 (**S430 A**) | torah_trainer.html | **`torah.share.include_settings_tip`'s static fallback is behind its CSV** (`560de59`). | found S430
 
 - [ ] P4 (**S430 A**) | torah_trainer.html | **The cycle note's "Try again" drops the focus to `<body>`** (a failed load). | found S430
@@ -20,7 +18,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**S430 — shared; smokes**) | js/ivrit-saves.js | **A late `attach()` gets the sync offer only at a later auth event** (HEAD too): its own listing never runs `offerOnce`. | found S430
 
-- [ ] P4 (**S430 A — for E**) | THIRD_PARTY_LICENSES.md | **The Hebcal section omits `data/leyning/`** (BSD-2 data; its LICENSE.txt is present). | found S430
+- [ ] P4 (**NEW S431 E**) | torah_trainer.html | **Two comments name only Chol HaMoed as the Sefaria fallback** (`goToCurrentParshah`, `init`); since `8cb1a2c` the Diaspora's Pesach 8 / Shavuot 2 too. | found S431
 
 - [ ] P4 (**NEW S428 — shared**) | js/ivrit-saves.js | **A panel's error outlives later good listings** (`plan()` never clears the status). | found S428
 
@@ -40,7 +38,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW 2026-09-28**) | hebrew_dictionary.html | **A loaded Word List outlives a switch to Emojis or Shoresh**: `setDictMode` hides the banner but keeps `wlFilterOverride`, so a language switch then writes the list's count into `#resultCount` ("2 מילים" over 1,581 emojis). | found 2026-09-28
 
-- [ ] P4 (**NEW S421 Pass P**) | classroom_dashboard.html | **The "Now showing {name} — the classes from your account are in the class list" switch runs on every signed-in load and credits the account even when it holds nothing**: with the pointer on the untouched default and a class this device made itself, the page switches to that class and says it came from the account …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S421 Pass P**) | classroom_dashboard.html | **The "Now showing {name} — the classes from your account are in the class list" switch runs on every signed-in load and credits the account even when it holds nothing**: with the pointer on the untouched default and a class this device made itself, the page switches to that class and says it came from the account …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S421 Pass P — for H**) | classroom_dashboard.html | **A class list beyond the picker's cap keeps its names now (`288af4a`) but the picker draws only the first 60 chips** (`rosterNames()` slices), so students 61+ of a merged class are stored and counted ("65 names (max 60)") yet never picked; say so in the drawer or raise the chip cap. | found S421
 
@@ -114,7 +112,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S396 Pass C — filed rather than fixed BECAUSE it cannot be measured in this harness; do not ship it on an assertion**) | account.html | **`#holdsList` carries `list-style:none`, which is the shape that makes WebKit/VoiceOver drop a list's semantics** (the count and the "list" role), leaving the account's holdings as loose text. The nested `.holds-kinds` / `.holds-names` keep their …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P4 (**S394 census, retuned S395 — `04892f3` took the three SHADOWED ones that were accidents; what is left here is judgement, not dead code**) | hebrew_blend_generator.html | **The `.bingo-card-num` / `.bingo-grid` IDENTICAL twins and the `.bingo-card` SHADOWED one sit inside a deliberate later layer that re-declares the bingo shapes in print-safe literals, and `body.dark …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**S394 census, retuned S395 — `04892f3` took the three SHADOWED ones that were accidents; what is left here is judgement, not dead code**) | hebrew_blend_generator.html | **The `.bingo-card-num` / `.bingo-grid` IDENTICAL twins and the `.bingo-card` SHADOWED one sit inside a deliberate later layer that re-declares the bingo shapes in print-safe literals, and `body.dark …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S394 — the non-generator half of the same census; all DIVERGENT, i.e. the earlier rule still contributes, so each needs reading rather than deleting**) | Hebrew_Font_Maker.html, classroom_dashboard.html, hebrew_dictionary.html, privacy.html, terms.html | **5 selectors declared twice with overlapping properties: FM `#fsPanelsBtn`; dashboard `textarea` and `.fr-tour`; dictionary …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -274,19 +272,21 @@ _(none)_
 
 ## Done
 
-- [x] 2026-09-30 | (S430 close-out) | branch/deploy note | **S430 = pass A + 4 fixes → draft PR #293.** DRIFT: 7 outside-loop torah/trope commits (v885→v886); backend unchanged. sw v886→v887; FM not bumped. Gates 2/2. Smokes ×7.
+- [x] 2026-09-30 | (S431 close-out) | branch/deploy note | **S431 = pass E + 4 fixes → draft PR #293.** DRIFT: none; backend unchanged. sw v887→v888; FM not bumped. Smokes: none owed.
 
-- [x] 2026-09-30 | `13cee18` | js/ivrit-saves.js | (S430; shared) **A token refresh no longer re-lists every panel** (a per-tool same-user guard). | verified: refreshes 1/1/1 → 0/0/0; a plant loses the offer; smokes ×7
+- [x] 2026-09-30 | `86cfe30` | docs/reference/ops.md + font-maker.md | (S431 E) **The CSP allowlist and smoke table match the pages** (gtag's `img-src`; FM; the hub). | verified: 220 claims both ways (was 28 uncovered); plants
 
-- [x] 2026-09-30 | `cb46f67` | trope_tutor.html | (S430) **The static text names the melodies** (3 fallbacks + the FAQ JSON-LD). | verified: runtime identical ×4; static 0/3 → 3/3
+- [x] 2026-09-30 | `ac0aaa4` | README.md | (S431 E) **The repository map names 7 Torah files** (calendar, staff engine, leyning data + builder, 2 smokes). | verified: js 8/8, scripts 25/25 (were 6/8, 22/25); 12 new identifiers resolve
 
-- [x] 2026-09-30 | `136cf30` | torah_trainer.html | (S430) **Two drawer rows hide when they should** (`.form-row[hidden]`). | verified: HEAD vs fix, 8 states; probe 2 → 0
+- [x] 2026-09-30 | `59504cf` | THIRD_PARTY_LICENSES.md | (S431 E) **The Hebcal reading-cycle data is credited** (BSD-2, `data/leyning/`); Sefaria's calendar is the festival fallback. | verified: line by line vs the notice, the builder's pins, both callers
 
-- [x] 2026-09-30 | `8cb1a2c` | torah_trainer.html | (S430) **This week's festival reading is the day's own** (IL Shemini Atzeret; D Pesach 8 / Shavuot 2). | verified: vs Hebcal ×894, 117 wrong → 0; a set clock
+- [x] 2026-09-30 | `aa97e2e` | torah_trainer.html | (S431) **The Trope staff's Tune buttons say their state once** (Play tune: no `aria-pressed`, as Chant all; the verse Tune: one name). | verified: HEAD vs fix ×4 cells, 2 flips → 0 per button; detector 12/12 → 0/12, plant 10/12
 
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-09-30 | **S431** | iters: 1 pass (**E**) + 4 fixes = **5** | tools: torah, THIRD_PARTY_LICENSES, README, ops.md + font-maker.md | patterns fixed: toggle-name-flips-with-its-pressed-state ×1 | pass run: E | SW: v887→v888
 
 - 2026-09-30 | **S430** | iters: 1 pass (**A**) + 4 fixes = **5** | tools: torah ×2, trope, js/ivrit-saves.js (shared) | patterns fixed: author-display ×2, stale-fallback ×3 | pass run: A | SW: v886→v887
 
@@ -326,15 +326,13 @@ _(none)_
 
 - 2026-09-23 | **S412** | iters: 1 pass (**H**) + 4 fixes = **5** | tools: flash ×2 (at cap), dictionary, torah | patterns fixed: settings-lost-across-a-load ×2 (NEW), textContent-rewrite-erases-a-control-icon ×1 | pass run: H | SW: v831→v832
 
-- 2026-09-23 | **S411** | iters: 1 pass (**I**) + 4 fixes = **5** | tools: FM ×2 (at cap), dashboard, account | patterns fixed: error-status-clobbered-by-a-later-routine-write ×1, mobile-input-hints ×1 (un-retired) | pass run: I | SW: v830→v831
-
 ### Tool coverage (last-touched date per tool)
 
-- **S430 (2026-09-30):** torah (**S430** ×2; **C-next** C S298); trope (**S430**); js/ivrit-saves.js (**S430**); dictionary (S429; **H-next** H S292); js/ivrit-account.js (S429); account (S427); manifest (S426); flash (S424; **P-next**); resources (S422); index (S421; **G-next**); dashboard (S421; **D-next**); FM (S419); 404 (S418); generator (S415; **N-next**); chrome + i18n.js (S415); no M: generator, flash, terms.
+- **S431 (2026-09-30):** torah (**S431**; S430 ×2; **C-next** C S298); THIRD_PARTY_LICENSES, README, ops.md, font-maker.md (**S431**); trope (S430); js/ivrit-saves.js (S430); dictionary (S429; **H-next** H S292); js/ivrit-account.js (S429); account (S427); manifest (S426); flash (S424; **P-next**); resources (S422); index (S421; **G-next**); dashboard (S421; **D-next**); FM (S419); 404 (S418); generator (S415; **N-next**); chrome + i18n.js (S415); no M: generator, flash, terms.
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`tip-name-joins-its-field's-name`** (NEW S430; torah ×3 + generator OPEN): ACTIVE, streak 0. A `<label>` holding a `.tip-wrap` names its field "… More information". Detection `a430/moreinfo.mjs` (AX tree, panels open, a planted control). Fix: `aria-labelledby` on the text span.
+- **`tip-name-joins-its-field's-name`** (NEW S430; torah ×3 + generator OPEN): ACTIVE, streak 0. A `<label>` holding a `.tip-wrap` names its field "… More information". Detection `a430/moreinfo.mjs` (AX tree, panels open, a planted control). Fix: `aria-labelledby` on the text …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`panel-title-keyed-on-an-inner-span`** (NEW S429; torah, generator open; S430: the lookup panel clean): ACTIVE, streak 0. Detection: a `.panel-title` with no own `data-i18n`, then toggle + reload.
 
@@ -354,9 +352,9 @@ _(none)_
 
 - **`pinned-english-without-lang`** (NEW S415; 20 FIXED `f4bbfe8`; S422 resources ×43 `8c56a89`; torah/trope open): ACTIVE, streak 0 (S416 `a416/pinned.mjs`: only those). Detection: HE UI, `closest('[lang]')` of each pinned-English element = "en"; control: a planted span …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`toggle-name-flips-with-its-pressed-state`** (NEW S414 `f9e67b2`; S416 trope tune `96275c2`; **S430: torah's Trope staff Tune all + every verse Tune OPEN**): ACTIVE, streak 0. Detection `f414/toggles2.mjs`: real click per `[aria-pressed]` control; hit = pressed AND AX name both change. …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`toggle-name-flips-with-its-pressed-state`** (NEW S414 `f9e67b2`; S416 trope tune `96275c2`; S430 found torah's Trope staff Tune all + every verse Tune; **S431 FIXED `aa97e2e`**): ACTIVE, streak 0 (last swept S430). Detection `f414/toggles2.mjs`: real click per …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`author-display-defeats-the-hidden-attribute`** (S414 `391114b`; S416 FM `3bf0112`; S425 trope ×2; **S430 torah ×2 `136cf30`**): ACTIVE, streak 0. Detection: rendered `[hidden]` with display ≠ none (S430 `a430/hiddenrec.mjs`: every `hidden` write + a flex plant) …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`author-display-defeats-the-hidden-attribute`** (S414 `391114b`; S416 FM `3bf0112`; S425 trope ×2; **S430 torah ×2 `136cf30`**): ACTIVE, streak 0. Detection: rendered `[hidden]` with display ≠ none (S430 `a430/hiddenrec.mjs`: every `hidden` write + a flex plant) …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`button-group-label-not-programmatic`** (**NEW S413 Pass C — resources ×8 rows FIXED `945b397`; generator, dictionary, hub unmeasured (no `role="group"` at all)**): ACTIVE, streak 0. A row of `aria-pressed` buttons sits under a visible label (a `<span>`, or a `<label>` with …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -428,7 +426,7 @@ _(none)_
 
 - **`non-finite-number-from-a-loaded-file`**: ACTIVE (consequence-critical). **S374: the 4 S371 carriers FIXED (`31a84f7` torah `karaokeRate`/`ttsRate`; `5d1d13a` trope `hebFontSize`/`playbackRate`) via `_sliderNum` at `loadSettings`; open hits 0, clean streak 0.** Shape: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **slider-focus-lost-to-its-own-rebuild**: **CLASS CLOSED 2026-08-29 (S286 iter 2) — the last 6 known carriers fixed (`9a01f3b`); hits: 6, clean streak: 0 — ACTIVE.** Registered S284 (3 fixed, 6 logged unreachable). All six routed through the shared re-focus helper …[full text: IMPROVEMENT_ARCHIVE.md]
+- **slider-focus-lost-to-its-own-rebuild**: **CLASS CLOSED 2026-08-29 (S286 iter 2) — the last 6 known carriers fixed (`9a01f3b`); hits: 6, clean streak: 0 — ACTIVE.** Registered S284 (3 fixed, 6 logged unreachable). All six routed through the shared re-focus helper …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **class-only-selected-state**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A, runtime, 11 delta pages incl. the torah handout bar and trope Drill tab): 0 visible `.active/.selected/.current/.on` controls with siblings and no `aria-pressed/-selected/-current/-checked` — hits 0, …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -482,7 +480,7 @@ _(none)_
 
 - **dark-override-outranks-hover**: ACTIVE. **Re-swept 2026-09-09 (S357 Pass A): static detector 0/14 pages; runtime 34 cells on the 8 fixed carriers, every one with real-hover feedback (light as the control) — hits 0, clean streak 1.** S354–S356: 8 carriers fixed. Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **contrast-below-AA-on-a-tinted-or-coloured-plate**: **S422: torah's vowel Letter on the trope tint FIXED `e55b811` (1.85:1; streak 0).** **re-swept 2026-08-23 (S249 Pass M, `flash_cards.html` — card front AND back, results screen, and setup screen with every …[full text: IMPROVEMENT_ARCHIVE.md]
+- **contrast-below-AA-on-a-tinted-or-coloured-plate**: **S422: torah's vowel Letter on the trope tint FIXED `e55b811` (1.85:1; streak 0).** **re-swept 2026-08-23 (S249 Pass M, `flash_cards.html` — card front AND back, results screen, and setup screen with every …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **async-store-backed-choice-clobbered-by-a-sync-fallback**: **swept 2026-08-19 (S226 Pass A, 2nd sweep) — CLEAN with receipts, extended past fonts as its own note directed. clean streak: 1 — ACTIVE, and consequence-critical (it destroys saved user data), so it does NOT retire …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -514,7 +512,7 @@ _(none)_
 
 - **print-trailing-dead-space** (padding/margin BELOW the last line of a print flow — page-container bottom padding, a scroll wrapper's, the last block's own margin — which paginates exactly like content, so a document ending near a page boundary pushes empty box onto a sheet of …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **lazily-loaded-dependency-renders-an-empty-shell** (S416: +1 open, trope HH) (a feature whose data comes from a lazily-loaded external module keeps rendering its full chrome — column, header, row label, legend — when the module never arrives, so …[full text: IMPROVEMENT_ARCHIVE.md]
+- **lazily-loaded-dependency-renders-an-empty-shell** (S416: +1 open, trope HH) (a feature whose data comes from a lazily-loaded external module keeps rendering its full chrome — column, header, row label, legend — when the module never arrives, so …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **print-media-leak / var-chain-overridden-by-a-literal** (a screen-only `@media (max-width:N)` block whose declarations also apply to PAPER — print media has a width too — or, more generally, a literal `font-size`/colour declaration that out-specifies a `var(--x)` chain the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -548,7 +546,7 @@ _(none)_
 
 - **symbol-only accessible name** (an icon-only control whose ENTIRE accessible name is a glyph with no letter or digit — "×", "↺", "✕", "⬛", an emoji run — because for `button`/`a`/`role=button` the ACCNAME chain takes **name-from-content BEFORE `title`**, so a correct …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- nameless-adjacent-text-labeled control (a visible interactive control — toggle switch, slider, number field, select, colour well — whose only label is **adjacent text** that is never programmatically associated, so it has NO accessible name; the wrapping `<label …[full text: IMPROVEMENT_ARCHIVE.md]
+- nameless-adjacent-text-labeled control (a visible interactive control — toggle switch, slider, number field, select, colour well — whose only label is **adjacent text** that is never programmatically associated, so it has NO accessible name; the wrapping `<label …[full text: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - dead-feature-guard (a `typeof X === 'function'` / feature-detection guard whose **preferred** implementation does not exist on that page, so the guarded branch can never run and control silently falls through to a worse path — or to nothing): **re-swept 2026-07-25 (S158, Pass …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -624,14 +622,14 @@ _(none)_
 
 - H teacher walkthrough / paper-cuts (one tool): 2026-09-28 (**S426 — `account.html`, its FIRST H. 6 lessons by real clicks on a fake cloud + the pinned SDK, EN 1280 + HE dark 800. FOUND 7 + 1 seed; FIXED `e091820`, `91c45d6`, `ffef51d`. H-next: the dictionary (S292).**)
 
-- E freshness/site-health: 2026-09-25 (**S417 — 33rd E, first since S403; stalest runnable (O blocked). Delta `82af0d8..93330b5` (torah pitch worklet, under-word translit, trope Etnachta). 25 arms, every zero controlled: precache, CSP static + runtime + a worklet control, links, sitemap/llms/locales, licences, shared blocks, icons, starting fonts, storage keys, workflows, doc identifiers. FIXED …[full text: IMPROVEMENT_ARCHIVE.md]
+- E freshness/site-health: 2026-09-30 (**S431 — 34th E, first since S417 (127 commits). 17 arms, every zero controlled. FOUND 4 (Hebcal data uncredited, README map, CSP/smoke doc claims, 2 comments); FIXED 3.**)
 
 - F cross-tool consistency: 2026-09-29 (**S428 — the copy contract: 13 controls × direct / LMS frame / planted double failure, every zero controlled. FOUND 3 claiming over the old clipboard (P3, FIXED `bbd5f65`, `0d2a941`), 9 ignoring execCommand (2 fixed), 4 unannounced.**)
 
-**Next session (S431):** **BRANCH/PR: S430 on `claude/improve-loop-s430` → draft PR #293 (base `99f9fa5`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v887**, FM **5.56**, SDK **2.116.0**; backend unchanged (keep-alive #17); email template `Live?` = no.
+**Next session (S432):** **BRANCH/PR: S430 + S431 on `claude/improve-loop-s430` → draft PR #293 (base `99f9fa5`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v888**, FM **5.56**, SDK **2.116.0**; backend unchanged (keep-alive #17); email template `Live?` = no.
 
-**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), E (S417), then L K N P M G D I H C F B A.** Take **E** (the Hebcal licence note waits there).
+**⚑ STALEST PASS: O (S346 — BLOCKED, no permission rule), L (S418), then K N P M G D I H C F B A E.** Take **L**.
 
-**⚑ STRONGEST UNTAKEN:** P3 torah's Tune toggles (torah was capped); P4s: tip-name ×4, torah's stale tip, Try again, the inner-span panels, 7 copy carriers; "Aliyah" is the maintainer's call. **Seed bench: 30.**
+**⚑ STRONGEST UNTAKEN:** P4s: tip-name ×4 (torah ×3 + generator), torah's stale tip, Try again, the inner-span panels, 7 copy carriers, torah's two Sefaria-fallback comments; "Aliyah" is the maintainer's call. **Seed bench: 30.**
 
-**⚑ HARNESS: traps 1–207 in loop-findings** (`a430/`; `--sdk` = `npm pack @supabase/supabase-js@2.116.0`; the Hebcal oracle in the scratchpad, trap 206); compaction once (trap 140); the old handoff and the oldest Done move by hand.
+**⚑ HARNESS: traps 1–210 in loop-findings** (`e431/`, `a430/`; `--sdk` = `npm pack @supabase/supabase-js@2.116.0`; the Hebcal oracle in the scratchpad, trap 206); compaction once (trap 140); the old handoff and the oldest Done move by hand.
