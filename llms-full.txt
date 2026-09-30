@@ -223,6 +223,10 @@ Yes. The default is diaspora; open the Calendar tab of the settings drawer and, 
 
 Yes. The Share tab of the settings drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting.
 
+**Can I save readings I use often?**
+
+Yes. The Favorites tab of the settings drawer (the first tab) saves the reading on screen — a parsha, an aliyah, a holiday reading or a custom verse range — under a name and a color, with your display settings too if you tick the box. Favorites can be filed into folders, ride your AllTools backup file and your account, and open again with one click.
+
 **Is the Torah Trainer free?**
 
 Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0.

@@ -104,6 +104,7 @@
     { "@type": "Question", "name": "Can it color-code the Torah trope (cantillation) families?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Trope color coding highlights or underlines each word in the color of its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings." } },
     { "@type": "Question", "name": "Does it work for both diaspora and Israel reading schedules?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The default is diaspora; open the Calendar tab of the settings drawer and, under Reading schedule, set the Diaspora / Israel choice to Israel. \"Jump to this week's parsha\" opens this week's reading, which the page works out from the Hebrew calendar itself (only a few festival Shabbatot ask Sefaria's calendar). Reading cycle, in the same section, switches between the full, triennial and Monday/Thursday readings." } },
     { "@type": "Question", "name": "Can I copy the Hebrew text out of the reader?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Share tab of the settings drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting." } },
+    {"@type": "Question", "name": "Can I save readings I use often?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The Favorites tab of the settings drawer (the first tab) saves the reading on screen — a parsha, an aliyah, a holiday reading or a custom verse range — under a name and a color, with your display settings too if you tick the box. Favorites can be filed into folders, ride your AllTools backup file and your account, and open again with one click."}},
     { "@type": "Question", "name": "Is the Torah Trainer free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0." } }
   ]
 }
@@ -1245,12 +1246,12 @@ body.dark .settings-header { background:var(--navy-deep); }
 #drawerDarkBtn { font-size:1rem; }
 .settings-body { flex:1; overflow-y:auto; padding:16px; }
 
-/* ───── Drawer tabs (APG tablist; icon above label so six fit the 380px drawer and a 92vw phone) ───── */
-.tt-tabs { display:flex; flex-shrink:0; background:var(--cream); border-block-end:1px solid var(--border); padding-inline:4px; }
+/* ───── Drawer tabs (APG tablist; icon above label so seven fit the 380px drawer and a 92vw phone) ───── */
+.tt-tabs { display:flex; flex-shrink:0; background:var(--cream); border-block-end:1px solid var(--border); padding-inline:4px; container-type:inline-size; }
 body.dark .tt-tabs { background:var(--navy-deep); }
 .settings-modal .tt-tab {                       /* (0,2,0) beats .hi-btn's row layout */
   flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
-  padding-block:8px 6px; padding-inline:2px; margin:0; border:none; border-block-end:3px solid transparent; border-radius:0;
+  padding-block:8px 6px; padding-inline:0; margin:0; border:none; border-block-end:3px solid transparent; border-radius:0;
   background:transparent; color:var(--muted); font:inherit; font-size:0.7rem; font-weight:700; line-height:1.1; cursor:pointer;
 }                                               /* no transition — nothing to neutralize under reduced motion */
 .settings-modal .tt-tab .hi { width:16px; height:16px; }
@@ -1261,6 +1262,12 @@ body.dark .settings-modal .tt-tab { color:#99a2b8; }            /* the page's da
 body.dark .settings-modal .tt-tab[aria-selected="true"] { color:var(--text); }
 .settings-modal .tt-tab:focus-visible { outline:2px solid var(--gold); outline-offset:-2px; }
 .tt-tabpanel[hidden] { display:none; }
+/* Seven labels share ~53px each at the default width (measured: "Favorites" needs 50px at 0.7rem, so the tabs carry no
+   side padding), ~46px on a 360px phone (92vw drawer) and ~44px at the 320px minimum the resize handle allows — a
+   viewport query is the wrong lever, the drawer is resized by hand, so the steps key on the strip's own width
+   (0.6rem: "Favorites" 43px; 0.58rem: 42px). After the base rule (same specificity — source order decides); a browser without container queries keeps the ellipsis. */
+@container (max-width: 345px) { .settings-modal .tt-tab { font-size:0.6rem; } }
+@container (max-width: 318px) { .settings-modal .tt-tab { font-size:0.58rem; } }
 
 /* ───── Sections: a serif heading over a hairline rule (the Trope Tutor's .tu-set-title); flat, nothing collapses ───── */
 .tt-set + .tt-set { margin-block-start:22px; }
@@ -1272,6 +1279,78 @@ body.dark .tt-set-title { color:var(--gold-light); }
 .tt-set-sub { font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-block:12px 6px; padding-block-start:12px; border-block-start:1px solid var(--border); }
 .tt-set-note { font-size:0.72rem; color:var(--muted); line-height:1.4; }
 .tt-set details > summary:hover { text-decoration:underline; }   /* FAQ / How-To rows: the Font Maker footer's hover idiom — inline styles carry no hover */
+
+/* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */
+.ft-tree { display:flex; flex-direction:column; gap:4px; }
+.ft-folder { border:1px solid var(--border,#c8bfa8); border-radius:6px; background:var(--white,#fff); }
+.ft-folder-head { display:flex; align-items:center; gap:6px; padding:5px 7px; cursor:pointer; user-select:none; }
+.ft-twisty { transition:transform .2s; font-size:.8rem; flex:0 0 auto; width:11px; text-align:center; color:var(--muted,#6b6050); }
+.ft-folder.ft-collapsed > .ft-folder-head .ft-twisty { transform:rotate(-90deg); }
+.ft-folder.ft-collapsed > .ft-folder-body { display:none; }
+.ft-folder-name { font-weight:600; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ft-folder-count { font-size:.72rem; color:var(--muted,#6b6050); flex:0 0 auto; }
+.ft-folder-actions { display:flex; gap:1px; flex:0 0 auto; }
+.ft-mini { background:none; border:none; cursor:pointer; font-size:.82rem; padding:0 3px; color:var(--muted,#6b6050); font-family:inherit; line-height:1; display:inline-flex; align-items:center; justify-content:center; min-width:22px; min-height:22px; }
+.ft-mini:hover { color:var(--gold,#c9922a); }
+.ft-folder-body { padding-block:3px 5px; padding-inline:16px 5px; display:flex; flex-direction:column; gap:4px; }
+.ft-empty-folder { font-size:.72rem; color:var(--muted,#6b6050); font-style:italic; padding:3px 4px; }
+.ft-folder.ft-drop > .ft-folder-head { outline:2px dashed var(--gold,#c9922a); outline-offset:-2px; border-radius:4px; }
+.ft-row-drop { box-shadow:inset 0 2px 0 0 var(--gold,#c9922a); }
+.ft-root-drop { min-height:8px; border-radius:4px; }
+.ft-move-wrap { position:relative; display:inline-flex; flex:0 0 auto; }
+.ft-move-btn { font-size:.7rem; cursor:pointer; font-family:inherit; background:transparent; border:1px solid var(--border,#c8bfa8); border-radius:3px; padding:2px 6px; color:var(--text,#1a2744); min-block-size:24px; }
+.ft-move-btn:hover { background:var(--warm-gray,#e8e0d0); }
+.ft-move-menu { position:fixed; z-index:9999; background:var(--white,#fff); border:1px solid var(--border,#c8bfa8); border-radius:6px; box-shadow:0 2px 10px rgba(0,0,0,.22); min-width:150px; max-height:260px; overflow:auto; padding:4px; }
+.ft-move-menu button { display:block; width:100%; text-align:start; background:none; border:none; padding:5px 8px; cursor:pointer; font-size:.78rem; border-radius:4px; color:var(--text,#1a2744); font-family:inherit; white-space:nowrap; }
+.ft-move-menu button:hover { background:var(--warm-gray,#e8e0d0); }
+.ft-newfolder { margin-top:6px; font-size:.74rem; font-family:inherit; cursor:pointer; padding:3px 9px; border:1px solid var(--border,#c8bfa8); border-radius:5px; background:transparent; color:var(--text,#1a2744); min-block-size:24px; }
+.ft-newfolder:hover { background:var(--warm-gray,#e8e0d0); }
+body.dark .ft-folder { background:#1e2535; }
+body.dark .ft-move-menu, body.dark .ft-move-btn, body.dark .ft-newfolder { background:#1e2535; color:#dde4f0; }
+body.dark .ft-move-menu button { color:#dde4f0; }
+body.dark .ft-move-menu button:hover, body.dark .ft-move-btn:hover, body.dark .ft-newfolder:hover { background:#2a3349; }
+/* ═══ end folder-tree component CSS ═══ */
+/* Favorites list rows (page CSS around the shared block, the dashboard's .preset-item rules): the name wraps inside
+   its own column instead of propping the row wider than the list; the floor reserves the handle + the color dot,
+   so every row takes the same shape (name on top, actions wrapped below) instead of breaking at a different button. */
+.preset-item { display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:6px 10px; background:var(--white); border:1px solid var(--border); border-radius:4px; font-size:0.82rem; }
+body.dark .preset-item { background:var(--navy-deep); }
+.preset-item .ft-item-name { min-inline-size:calc(100% - 64px); overflow-wrap:anywhere; }
+.drag-handle { cursor:grab; color:var(--muted); font-size:0.85rem; padding:0 2px; flex-shrink:0; line-height:1; user-select:none; }
+.drag-handle:active { cursor:grabbing; }
+.preset-item.drag-over { border-color:var(--gold); background:rgba(201,146,42,0.08); }
+.preset-item.dragging { opacity:0.4; }
+
+/* ───── Favorites tab: the color dot rides in buildItemRow's fragment (after the name in DOM order, which the shared
+   block owns) and is placed between the handle and the name by `order`, so the block stays byte-identical. ───── */
+#ttFavList .ft-tree > .ft-empty-folder { display:none; }   /* the page's own #ttFavEmpty note says it (the block's noun list has no 'favorite') */
+#ttFavList .preset-item > .drag-handle { order:-2; }
+.tt-fav-dot { order:-1; position:relative; flex:0 0 auto; width:14px; height:14px; border-radius:50%; border:1px solid rgba(0,0,0,0.25); background:var(--fav-c,#9e9e9e); padding:0; margin:0; cursor:pointer; }
+.tt-fav-dot::after { content:''; position:absolute; inset:-5px; }   /* a 24px hit box on a 14px dot */
+.tt-fav-dot:hover, .tt-fav-dot:focus-visible { box-shadow:0 0 0 2px var(--gold); outline:none; }
+.tt-fav-swatches { display:flex; flex-wrap:wrap; gap:8px; }
+.tt-fav-swatch { width:24px; height:24px; border-radius:6px; border:1px solid rgba(0,0,0,0.25); background:var(--fav-c,#9e9e9e); padding:0; margin:0; cursor:pointer; }
+.tt-fav-swatch:hover, .tt-fav-swatch:focus-visible { box-shadow:0 0 0 2px var(--gold-light); outline:none; }
+.tt-fav-swatch[aria-pressed="true"] { box-shadow:0 0 0 2px var(--white), 0 0 0 4px var(--gold); }
+/* The save popup sits OUTSIDE the drawer (a sibling in <body>) so the drawer's Tab trap never sees its keys; it has
+   its own trap and stops Escape from reaching the drawer's document-level handler. Above the drawer (100), below
+   the tour (500) and the toast (2000). No transition — nothing for the reduced-motion block. */
+.tt-fav-backdrop { position:fixed; inset:0; background:rgba(13,18,32,0.45); z-index:110; }
+.tt-fav-dialog { position:fixed; inset-inline-start:50%; top:50%; transform:translate(-50%,-50%); width:min(420px, 92vw); max-height:88vh; overflow:auto; background:var(--white); border:1px solid var(--border); border-radius:10px; box-shadow:0 8px 32px rgba(0,0,0,0.28); padding:16px 18px; z-index:120; }
+[dir="rtl"] .tt-fav-dialog { transform:translate(50%,-50%); }
+body.dark .tt-fav-dialog { background:var(--navy-deep); }
+.tt-fav-backdrop[hidden], .tt-fav-dialog[hidden] { display:none; }
+.tt-fav-dialog .form-row input[type="text"], .tt-fav-dialog .form-row select { max-width:none; flex:1 1 60%; }
+.tt-fav-dialog .form-row label:not(.toggle) { flex:0 0 auto; min-inline-size:56px; }
+.tt-fav-reading { font-size:0.8rem; margin:0 0 12px; line-height:1.4; }
+.tt-fav-check { display:flex; align-items:flex-start; gap:8px; font-size:0.82rem; font-weight:600; margin-block:12px 4px; cursor:pointer; }
+.tt-fav-check input { margin:2px 0 0; flex:0 0 auto; }
+.tt-fav-summary { font-size:0.72rem; color:var(--muted); line-height:1.4; margin:0 0 8px; }
+.tt-fav-summary[hidden] { display:none; }
+.tt-fav-note { font-size:0.74rem; color:#b3261e; margin:0 0 8px; }
+body.dark .tt-fav-note { color:#ffb4a9; }
+.tt-fav-note[hidden] { display:none; }
+.tt-fav-actions { display:flex; justify-content:flex-end; gap:8px; margin-block-start:12px; }
 
 /* ───── Form rows + toggle ───── */
 .form-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:10px; }
@@ -2216,12 +2295,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <button class="settings-close" onclick="closeSettings()" title="Close" data-i18n-title="torah.settings.close_title" aria-label="Close settings" data-i18n-aria-label="torah.settings.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     </div>
   </div>
-  <!-- Six tabs of flat sections (nothing collapses; the panel-collapse memory this page carried is retired —
+  <!-- Seven tabs of flat sections (nothing collapses; the panel-collapse memory this page carried is retired —
        an older blob's panelsCollapsed rides along unread, as on the Trope Tutor). The drawer always opens
        on Text (setSettingsTab in openSettings); openSettingsAtPanel(key) picks a tab + section by data-set.
        Icons: the shared header-icons set; the label keeps its data-i18n on the .hi-lbl span. -->
   <div class="tt-tabs" role="tablist" aria-label="Settings sections" data-i18n-aria-label="torah.tabs.aria">
-    <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabText" aria-controls="ttTabPanelText" aria-selected="true" tabindex="0" onclick="setSettingsTab('text')"><svg class="hi hi-sm hi-book" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.2v12.4"/><path d="M12 7.2S10 5.4 6 5.4a18 18 0 0 0-2.4.2v12.6A18 18 0 0 1 6 18c4 0 6 1.6 6 1.6s2-1.6 6-1.6a18 18 0 0 1 2.4.2V5.6A18 18 0 0 0 18 5.4c-4 0-6 1.8-6 1.8Z"/></svg><span class="hi-lbl" data-i18n="torah.tabs.text">Text</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabFavorites" aria-controls="ttTabPanelFavorites" aria-selected="true" tabindex="0" onclick="setSettingsTab('favorites')"><svg class="hi hi-sm hi-star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6l2.6 5.4 5.9.8-4.3 4.1 1.1 5.9L12 17l-5.3 2.8 1.1-5.9-4.3-4.1 5.9-.8Z"/></svg><span class="hi-lbl" data-i18n="torah.tabs.favorites">Favorites</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabText" aria-controls="ttTabPanelText" aria-selected="false" tabindex="-1" onclick="setSettingsTab('text')"><svg class="hi hi-sm hi-book" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.2v12.4"/><path d="M12 7.2S10 5.4 6 5.4a18 18 0 0 0-2.4.2v12.6A18 18 0 0 1 6 18c4 0 6 1.6 6 1.6s2-1.6 6-1.6a18 18 0 0 1 2.4.2V5.6A18 18 0 0 0 18 5.4c-4 0-6 1.8-6 1.8Z"/></svg><span class="hi-lbl" data-i18n="torah.tabs.text">Text</span></button>
     <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabColors" aria-controls="ttTabPanelColors" aria-selected="false" tabindex="-1" onclick="setSettingsTab('colors')"><svg class="hi hi-sm hi-palette" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2a8.8 8.8 0 0 0 0 17.6c1.3 0 2.3-1 2.3-2.2 0-.6-.2-1.1-.6-1.5-.3-.4-.5-.8-.5-1.3 0-1.2 1-2.2 2.3-2.2h1.5a4.7 4.7 0 0 0 4.7-4.7c0-3.4-4.1-5.7-9.7-5.7Z"/><circle cx="7.5" cy="12.8" r="1.15" fill="currentColor" stroke="none"/><circle cx="9.2" cy="8.5" r="1.15" fill="currentColor" stroke="none"/><circle cx="13.8" cy="7.7" r="1.15" fill="currentColor" stroke="none"/><circle cx="17.2" cy="10.7" r="1.15" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="torah.tabs.colors">Colors</span></button>
     <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabAudio" aria-controls="ttTabPanelAudio" aria-selected="false" tabindex="-1" onclick="setSettingsTab('audio')"><svg class="hi hi-sm hi-music" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17.5V5.2l10-2v12.3"/><ellipse cx="6.4" cy="17.8" rx="2.7" ry="2.3" fill="currentColor"/><ellipse cx="16.4" cy="15.5" rx="2.7" ry="2.3" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="torah.tabs.audio">Audio</span></button>
     <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabCalendar" aria-controls="ttTabPanelCalendar" aria-selected="false" tabindex="-1" onclick="setSettingsTab('calendar')"><svg class="hi hi-sm hi-calendar" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="5.4" width="17.6" height="15.2" rx="2.2"/><path d="M3.2 10.2h17.6"/><path d="M8.2 3v4.4M15.8 3v4.4"/><circle cx="12" cy="15.6" r="1.7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="torah.tabs.calendar">Calendar</span></button>
@@ -2229,7 +2309,19 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabMore" aria-controls="ttTabPanelMore" aria-selected="false" tabindex="-1" onclick="setSettingsTab('more')"><svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg><span class="hi-lbl" data-i18n="torah.tabs.more">More</span></button>
   </div>
   <div class="settings-body">
-    <div class="tt-tabpanel" id="ttTabPanelText" role="tabpanel" aria-labelledby="ttTabText">
+    <!-- Favorites: saved readings, one row each, in the shared folder-tree component (folders, drag-drop, Move ▾).
+         The plus button opens the save popup (#ttFavDialog, a sibling of the drawer). -->
+    <div class="tt-tabpanel" id="ttTabPanelFavorites" role="tabpanel" aria-labelledby="ttTabFavorites">
+      <div class="tt-set" data-set="favorites">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.fav.title">Favorite readings</h3>
+        <div class="form-row">
+          <button type="button" class="btn btn-xs hi-btn" id="ttFavAddBtn" onclick="openFavoriteDialog()" title="Save current selection as favorite" data-i18n-title="torah.fav.add_title"><svg class="hi hi-sm hi-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.8v8.4M7.8 12h8.4"/></svg><span class="hi-lbl" data-i18n="torah.fav.add">Save current selection as favorite</span></button>
+        </div>
+        <p class="tt-set-note" id="ttFavEmpty" data-i18n="torah.fav.empty" hidden>No favorites yet. Open a reading, then save it with the button above.</p>
+        <div id="ttFavList"></div>
+      </div>
+    </div>
+    <div class="tt-tabpanel" id="ttTabPanelText" role="tabpanel" aria-labelledby="ttTabText" hidden>
       <div class="tt-set" data-set="display">
         <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_display">Display</h3>
         <!-- Layout (was the toolbar's): the four readings of one text; the Trope staff's own options sit on the Audio tab. -->
@@ -2721,6 +2813,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q5">Can it color-code the Torah trope (cantillation) families?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a5">Yes. Trope color coding highlights or underlines each word in the color of its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q6">Diaspora or Israel schedule?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a6">The default is diaspora; open the Calendar tab of the settings drawer and, under Reading schedule, set the Diaspora / Israel choice to Israel. "Jump to this week's parsha" opens this week's reading, which the page works out from the Hebrew calendar itself (only a few festival Shabbatot ask Sefaria's calendar). Reading cycle, in the same section, switches between the full, triennial and Monday/Thursday readings.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q8">Can I copy the Hebrew text out of the reader?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a8">Yes. The Share tab of the settings drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q9">Can I save readings I use often?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a9">Yes. The Favorites tab of the settings drawer (the first tab) saves the reading on screen — a parsha, an aliyah, a holiday reading or a custom verse range — under a name and a color, with your display settings too if you tick the box. Favorites can be filed into folders, ride your AllTools backup file and your account, and open again with one click.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q7">Is it free?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a7">Yes. Materials incorporating PocketTorah audio are licensed CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0.</p></details>
           </div>
         </details>
@@ -2742,6 +2835,23 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <button class="btn btn-xs btn-secondary hi-btn" onclick="resetAllSettings()" type="button"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="torah.settings.reset_all">Reset all Torah Trainer settings</span></button>
       </div>
     </div>
+  </div>
+</div>
+<!-- Save-as-favorite popup: outside #settingsModal on purpose (see the .tt-fav-dialog CSS note). Swatches are built by
+     buildFavSwatches; the folder list by openFavoriteDialog from the tree (labels from the shared block's own keys). -->
+<div class="tt-fav-backdrop" id="ttFavBackdrop" hidden onclick="closeFavoriteDialog()"></div>
+<div class="tt-fav-dialog" id="ttFavDialog" role="dialog" aria-modal="true" aria-labelledby="ttFavDlgTitle" hidden>
+  <h3 class="tt-set-title" id="ttFavDlgTitle" data-i18n="torah.fav.dlg_title">Save as favorite</h3>
+  <p class="tt-fav-reading"><span data-i18n="torah.fav.dlg_reading">Reading:</span> <strong id="ttFavDlgReading"></strong></p>
+  <div class="form-row"><label for="ttFavName" data-i18n="torah.fav.dlg_name">Name</label><input type="text" id="ttFavName" maxlength="120" autocomplete="off" oninput="favNote('')"></div>
+  <div class="form-row"><label for="ttFavFolder" data-i18n="torah.fav.dlg_folder">Folder</label><select id="ttFavFolder"></select></div>
+  <div class="form-row"><span class="tt-fav-lbl" id="ttFavColorLbl" data-i18n="torah.fav.dlg_color" style="font-size:0.85rem;font-weight:600;">Color</span><div class="tt-fav-swatches" id="ttFavSwatches" role="group" aria-labelledby="ttFavColorLbl"></div></div>
+  <label class="tt-fav-check"><input type="checkbox" id="ttFavWithSettings" onchange="syncFavSummary()"><span data-i18n="torah.fav.dlg_with_settings">Also save my display settings (layout, font, colors, what the reading shows)</span></label>
+  <p class="tt-fav-summary" id="ttFavSummary" hidden></p>
+  <p class="tt-fav-note" id="ttFavNote" aria-live="polite" hidden></p>
+  <div class="tt-fav-actions">
+    <button type="button" class="btn btn-xs btn-secondary" onclick="closeFavoriteDialog()" data-i18n="torah.fav.dlg_cancel">Cancel</button>
+    <button type="button" class="btn btn-xs" id="ttFavSaveBtn" onclick="saveFavoriteFromDialog()" data-i18n="torah.fav.dlg_save">Save</button>
   </div>
 </div>
 
@@ -2788,6 +2898,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
    STATE + DEFAULTS
    ══════════════════════════════════════════════════════ */
 const STORAGE_KEY = 'hebrewTorahTrainer_settings';
+const FAV_KEY = 'hebrewTorahTrainer_favorites';              // favorite readings (a flat map by name — see FAVORITES below)
+const FAV_TREE_KEY = 'hebrewTorahTrainer_favoritesFolders';  // their folder tree (the shared folder-tree block owns its shape)
 const DARK_KEY    = 'hebrewBlender_darkMode';   // shared across all IvritSuite tools
 const SEFARIA_API = 'https://www.sefaria.org/api';
 const POCKET_AUDIO_BASE = 'https://raw.githubusercontent.com/rneiss/PocketTorah/master/data/audio/';
@@ -2953,7 +3065,7 @@ function resetAllSettings() {
   // settings to keep instead of sending the reset up as "newer on this device".
   if (signedIn && window.IvritSaves && typeof IvritSaves.forgetRow === 'function') IvritSaves.forgetRow('TorahTrainer', 'settings');
   linkViewEnd();     // a practice link's display settings go with everything else
-  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(STORAGE_KEY);   // favorites (FAV_KEY, FAV_TREE_KEY) deliberately stay: they are the teacher's content, not settings
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   syncFormToSettings();
   setHebFont(settings.hebFont);
@@ -2976,6 +3088,7 @@ const ICON_STOP = '<svg class="hi hi-sm hi-stop" viewBox="0 0 24 24" width="16" 
 const ICON_SOUND = '<svg class="hi hi-sm hi-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" fill="currentColor"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg>';
 const ICON_COPY = '<svg class="hi hi-sm hi-copy" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2.2"/><path d="M15.5 5.5v-.8a2.2 2.2 0 0 0-2.2-2.2H6.2A2.2 2.2 0 0 0 4 4.7v7.1a2.2 2.2 0 0 0 2.2 2.2H5"/></svg>';
 const ICON_MUSIC = '<svg class="hi hi-sm hi-music" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17.5V5.2l10-2v12.3"/><ellipse cx="6.4" cy="17.8" rx="2.7" ry="2.3" fill="currentColor"/><ellipse cx="16.4" cy="15.5" rx="2.7" ry="2.3" fill="currentColor"/></svg>';
+const ICON_PENCIL_SM = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
 const ICON_CLOSE_SM = '<svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg>';
 const ICON_LOOP = '<svg class="hi hi-sm hi-loop" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.2V9.6A3.6 3.6 0 0 1 7.6 6H19.4"/><path d="M16.2 2.8 19.9 6 16.2 9.2"/><path d="M20 12.8v1.6a3.6 3.6 0 0 1-3.6 3.6H4.6"/><path d="M7.8 21.2 4.1 18 7.8 14.8"/></svg>';
 const ICON_RETRY = '<svg class="hi hi-sm hi-retry" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.2 18.58 A7.6 7.6 0 1 1 15.8 18.58 M15.8 18.58 L16.96 15.39 M15.8 18.58 L19.15 19.17"/></svg>';
@@ -7448,16 +7561,17 @@ function maybeEnsureTranslit() {
    SETTINGS DRAWER + FORM SYNC
    ══════════════════════════════════════════════════════ */
 /* ── Drawer tabs (APG tablist) ──
-   Six tabs of flat sections; nothing collapses, so this page carries no panel-collapse memory any more
+   Seven tabs of flat sections; nothing collapses, so this page carries no panel-collapse memory any more
    (an older blob's panelsCollapsed rides along unread through ivritSafeAssign, and the cloud row's
    '*Collapsed' omit still covers karaokeBarCollapsed). setSettingsTab is the one writer of tab state;
-   the drawer always opens on Text (no tab memory — see openSettings), and openSettingsAtPanel(key)
+   the drawer always opens on Favorites (no tab memory — see openSettings), and openSettingsAtPanel(key)
    lands on a section by its data-set key. */
-const TT_TAB_IDS = { text: 'ttTabText', colors: 'ttTabColors', audio: 'ttTabAudio', calendar: 'ttTabCalendar', share: 'ttTabShare', more: 'ttTabMore' };
+const TT_TAB_IDS = { favorites: 'ttTabFavorites', text: 'ttTabText', colors: 'ttTabColors', audio: 'ttTabAudio', calendar: 'ttTabCalendar', share: 'ttTabShare', more: 'ttTabMore' };
 // Section key → tab. The keys are the old panel keys, so openSettingsAtPanel's callers — the Copy bar's
 // "Copy options…" ('copy'), IvritSaves.attach's open ('cloud'), the toolbar's Share ('share') — and
 // scripts/smoke-tools.mjs keep working.
 const TT_SECTION_TAB = {
+  favorites: 'favorites',
   display: 'text', font: 'text', translit: 'text', translation: 'text',
   vowel_color: 'colors', trope_color: 'colors',
   audio: 'audio', karaoke: 'audio', staff: 'audio',
@@ -7466,7 +7580,7 @@ const TT_SECTION_TAB = {
   cloud: 'more', about: 'more', reset: 'more'
 };
 function setSettingsTab(name) {
-  if (!Object.prototype.hasOwnProperty.call(TT_TAB_IDS, name)) name = 'text';
+  if (!Object.prototype.hasOwnProperty.call(TT_TAB_IDS, name)) name = 'favorites';
   for (const n of Object.keys(TT_TAB_IDS)) {
     const on = n === name, tab = document.getElementById(TT_TAB_IDS[n]);
     tab.setAttribute('aria-selected', on ? 'true' : 'false');
@@ -7601,6 +7715,606 @@ function mountSidebarResize(cfg) {
 }
 /* ═══ end shared: sidebar-resize ═════════════════════════════════════════════ */
 
+/* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */
+/* Sidecar overlay: the preset/schedule/profile store stays a flat {name:...} object and is the
+   source of truth for which items EXIST. This tree only organizes them (references items by name).
+   Stored as JSON under a per-list key. mountFolderTree(cfg) renders + wires DnD and a Move menu. */
+/* Icons for the row buttons and the move menu. FT_-prefixed and self-contained, like the
+   keyboard block's HK_ set, so the block drops into a page that already has its own icon consts. */
+const FT_ICON_NEW    = '<svg class="hi hi-sm hi-folder-plus" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 7a1.8 1.8 0 0 1 1.8-1.8h3.9l2 2.4h7.7A1.8 1.8 0 0 1 20.6 9.4v8.4a1.8 1.8 0 0 1-1.8 1.8H5.2a1.8 1.8 0 0 1-1.8-1.8Z"/><path d="M12 11.4v5.2M9.4 14h5.2"/></svg>';
+const FT_ICON_RENAME = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
+const FT_ICON_MOVE   = '<svg class="hi hi-sm hi-move" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.4 12.8v5.8a1.8 1.8 0 0 1-1.8 1.8H5.8A1.8 1.8 0 0 1 4 18.6V6.8A1.8 1.8 0 0 1 5.8 5h5.8"/><path d="M15 4.2h5v5"/><path d="M11.6 12.6 19.8 4.4"/></svg>';
+const FT_ICON_DEL    = '<svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg>';
+const FT_ICON_FOLDER = '<svg class="hi hi-sm hi-folder" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 7a1.8 1.8 0 0 1 1.8-1.8h3.9l2 2.4h7.7A1.8 1.8 0 0 1 20.6 9.4v8.4a1.8 1.8 0 0 1-1.8 1.8H5.2a1.8 1.8 0 0 1-1.8-1.8Z"/></svg>';
+
+function ftRead(key){ try { const o = ivritSafeParse(localStorage.getItem(key) || 'null'); if (o && Array.isArray(o.root)) return o; } catch(e){} return { v:1, root:[] }; }
+function ftWrite(key, tree){ try { localStorage.setItem(key, JSON.stringify(tree)); } catch(e){} }
+function ftGenId(){ return 'f_' + Math.random().toString(36).slice(2,9); }
+function syncTree(tree, names){
+  let changed = false;
+  if (!tree || !Array.isArray(tree.root)) { tree = { v:1, root:[] }; changed = true; }
+  const present = new Set(names), seen = new Set(), ids = new Set();
+  (function walk(arr){
+    for (let i = 0; i < arr.length; i++){
+      const n = arr[i];
+      if (!n || (n.t !== 'item' && n.t !== 'folder')) { arr.splice(i,1); changed = true; i--; continue; }
+      if (n.t === 'item'){
+        if (!present.has(n.name) || seen.has(n.name)) { arr.splice(i,1); changed = true; i--; }
+        else seen.add(n.name);
+      } else {
+        if (!n.id || ids.has(n.id)) { n.id = ftGenId(); changed = true; }
+        ids.add(n.id);
+        if (typeof n.collapsed !== 'boolean') { n.collapsed = !!n.collapsed; changed = true; }
+        if (typeof n.name !== 'string') { n.name = 'Folder'; changed = true; }
+        if (!Array.isArray(n.children)) { n.children = []; changed = true; }
+        walk(n.children);
+      }
+    }
+  })(tree.root);
+  names.forEach(nm => { if (!seen.has(nm)) { tree.root.push({ t:'item', name: nm }); seen.add(nm); changed = true; } });
+  return { tree, changed };
+}
+function ftLocate(tree, pred){
+  let res = null;
+  (function walk(arr){
+    for (let i=0;i<arr.length;i++){
+      const n = arr[i];
+      if (pred(n)) { res = { parent: arr, index: i, node: n }; return true; }
+      if (n.t === 'folder' && walk(n.children)) return true;
+    }
+    return false;
+  })(tree.root);
+  return res;
+}
+function ftRemove(tree, pred){ const loc = ftLocate(tree, pred); if (loc){ loc.parent.splice(loc.index,1); return loc.node; } return null; }
+function ftFolderArray(tree, folderId){ if (folderId == null) return tree.root; const loc = ftLocate(tree, n => n.t==='folder' && n.id===folderId); return loc ? loc.node.children : tree.root; }
+function ftIsDescendant(tree, folderId, candId){
+  if (folderId == null || candId == null) return false;
+  if (candId === folderId) return true;
+  const loc = ftLocate(tree, n => n.t==='folder' && n.id===folderId);
+  if (!loc) return false;
+  let found = false;
+  (function walk(arr){ for (const n of arr){ if (n.t==='folder'){ if (n.id===candId){ found = true; return; } walk(n.children); } } })(loc.node.children);
+  return found;
+}
+function ftPaths(tree, excludeId){
+  const out = [{ id:null, label: I18n.t('shared.folders.move_root') }];
+  (function walk(arr, prefix){
+    for (const n of arr){
+      if (n.t !== 'folder') continue;
+      if (excludeId && ftIsDescendant(tree, excludeId, n.id)) continue; // skip self + descendants
+      const path = prefix ? prefix + ' / ' + n.name : n.name;
+      out.push({ id:n.id, label: I18n.t('shared.folders.move_path', { path: path }) });
+      walk(n.children, path);
+    }
+  })(tree.root, '');
+  return out;
+}
+// Pure merge of two trees (this device's first, the incoming one second) — the one rule for an .ivrit
+// import and for a cloud sync. Level by level: folders match by name and merge recursively (the local
+// folder's id and collapsed state win); an item appears exactly once — filed inside a folder on either
+// side beats unfiled at the root, and this device's placement wins when both sides file it; local order
+// first, the incoming side's new nodes appended in its order; empty folders from both sides are kept.
+function ftMergeTrees(existing, incoming){
+  const A = (existing && Array.isArray(existing.root)) ? existing.root : [], B = (incoming && Array.isArray(incoming.root)) ? incoming.root : [];
+  const filedLoc = new Set(), rootLoc = new Set(), filedIn = new Set(), ids = new Set(), placed = new Set();
+  function scan(arr, depth, filed, root){ for (const n of arr){ if (!n) continue; if (n.t==='item') (depth ? filed : root).add(n.name); else if (n.t==='folder') scan(n.children||[], depth+1, filed, root); } }
+  scan(A, 0, filedLoc, rootLoc); scan(B, 0, filedIn, new Set());
+  (function walk(arr){ for (const n of arr){ if (n && n.t==='folder'){ if (n.id) ids.add(n.id); walk(n.children||[]); } } })(A);
+  const keepLocal = (name, depth) => !placed.has(name) && (depth > 0 || !filedIn.has(name));
+  const keepIncoming = (name, depth) => !placed.has(name) && !filedLoc.has(name) && (depth > 0 || (!rootLoc.has(name) && !filedIn.has(name)));
+  const folder = (n, children) => ({ t:'folder', id: n.id, name: n.name, collapsed: !!n.collapsed, children });
+  function level(a, b, depth){
+    const out = [], used = new Set();
+    for (const n of a){
+      if (!n) continue;
+      if (n.t==='item'){ if (keepLocal(n.name, depth)) { placed.add(n.name); out.push({ t:'item', name: n.name }); } }
+      else if (n.t==='folder'){
+        const j = b.findIndex((m, i) => m && m.t==='folder' && m.name===n.name && !used.has(i));
+        if (j >= 0) used.add(j);
+        out.push(folder(n, level(n.children||[], j >= 0 ? (b[j].children||[]) : [], depth+1)));
+      }
+    }
+    b.forEach((n, i) => {
+      if (!n || used.has(i)) return;
+      if (n.t==='item'){ if (keepIncoming(n.name, depth)) { placed.add(n.name); out.push({ t:'item', name: n.name }); } }
+      else if (n.t==='folder'){
+        const f = folder(n, level([], n.children||[], depth+1));
+        if (!f.id || ids.has(f.id)) f.id = ftGenId();
+        ids.add(f.id);
+        out.push(f);
+      }
+    });
+    return out;
+  }
+  return { v:1, root: level(A, B, 0) };
+}
+function ftImportTree(key, incoming, replace){
+  if (!incoming || !Array.isArray(incoming.root)) return;
+  if (replace) { ftWrite(key, { v:1, root: incoming.root }); return; }
+  ftWrite(key, ftMergeTrees(ftRead(key), incoming));
+}
+function ftDuplicateName(name, exists){
+  const m = String(name).match(/^(.*?)\s+(\d+)$/);
+  const base = m ? m[1] : name;
+  let n = m ? parseInt(m[2],10) : 0, cand;
+  do { n++; cand = base + ' ' + n; } while (exists(cand));
+  return cand;
+}
+function ftInsertAfter(treeKey, origName, newName){
+  const tree = ftRead(treeKey);
+  const loc = ftLocate(tree, x => x.t==='item' && x.name===origName);
+  if (loc){ loc.parent.splice(loc.index + 1, 0, { t:'item', name:newName }); ftWrite(treeKey, tree); }
+}
+function mountFolderTree(cfg){
+  const container = (typeof cfg.container === 'string') ? document.querySelector(cfg.container) : cfg.container;
+  if (!container) return;
+  let tree, dragNode = null, openMenu = null;
+  const r = syncTree(ftRead(cfg.treeKey), cfg.listItemNames());
+  tree = r.tree; if (r.changed) ftWrite(cfg.treeKey, tree);
+
+  function commit(){ ftWrite(cfg.treeKey, tree); render(); if (cfg.onAfterChange) cfg.onAfterChange(); }
+  function clearCues(){ container.querySelectorAll('.ft-drop,.ft-row-drop').forEach(x => x.classList.remove('ft-drop','ft-row-drop')); }
+  function canDrop(target){ if (!dragNode || dragNode === target) return false; if (dragNode.t==='folder' && target && target.t==='folder' && ftIsDescendant(tree, dragNode.id, target.id)) return false; return true; }
+
+  // Keyboard contract (the flash-cards sheet-menu idiom): the trigger carries aria-haspopup/aria-expanded,
+  // the menu is a role=menu of menuitems, focus moves to its first item on open, Tab/Shift+Tab and ↓/↑
+  // cycle inside it (the menu sits at the end of <body>, so Tab would otherwise walk out of the page),
+  // and Escape closes it and returns focus to the trigger — stopped there, so a page-level Escape (a
+  // settings drawer) does not also fire. An outside click keeps its own target; a chosen destination
+  // re-renders the tree, so focus is put back on the moved node's own Move button.
+  let menuBtn = null;
+  function closeMenu(refocus){ if (openMenu){ openMenu.remove(); openMenu = null; document.removeEventListener('click', onDoc, true); window.removeEventListener('resize', closeMenu); window.removeEventListener('scroll', closeMenu, true); if (menuBtn){ menuBtn.setAttribute('aria-expanded','false'); if (refocus === true) menuBtn.focus(); menuBtn = null; } } }
+  function onDoc(e){ if (openMenu && !openMenu.contains(e.target)) closeMenu(); }
+  function moveBtnFor(node){ const rows = [...container.querySelectorAll(node.t==='folder' ? '[data-ft-folder]' : '[data-ft-item]')]; const row = rows.find(r => node.t==='folder' ? r.dataset.ftFolder===node.id : r.dataset.ftItem===node.name); return row && row.querySelector(node.t==='folder' ? ':scope > .ft-folder-head [aria-haspopup]' : '.ft-move-btn'); }
+  function openMoveMenu(btn, node){
+    closeMenu();
+    const menu = document.createElement('div'); menu.className = 'ft-move-menu'; menu.setAttribute('role','menu'); menu.setAttribute('aria-label', btn.title || btn.textContent);
+    ftPaths(tree, node.t==='folder' ? node.id : null).forEach(p => {
+      const b = document.createElement('button'); b.type='button'; b.setAttribute('role','menuitem'); b.textContent = p.label; if (p.id !== null) b.insertAdjacentHTML('afterbegin', FT_ICON_FOLDER);
+      b.addEventListener('click', () => { const mv = ftRemove(tree, x => x===node); if (mv){ ftFolderArray(tree, p.id).push(mv); commit(); const fb = moveBtnFor(node); if (fb) fb.focus(); } closeMenu(); });
+      menu.appendChild(b);
+    });
+    menu.addEventListener('keydown', e => {
+      if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); closeMenu(true); return; }
+      if (e.key !== 'Tab' && e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      const items = [...menu.querySelectorAll('button')], i = items.indexOf(document.activeElement), d = (e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey)) ? -1 : 1;
+      e.preventDefault(); items[(i + d + items.length) % items.length].focus();
+    });
+    document.body.appendChild(menu);
+    const rc = btn.getBoundingClientRect();
+    let left = Math.max(6, rc.right - menu.offsetWidth), top = rc.bottom + 4;
+    if (top + menu.offsetHeight > window.innerHeight - 6) top = Math.max(6, rc.top - menu.offsetHeight - 4);
+    if (left + menu.offsetWidth > window.innerWidth - 6) left = window.innerWidth - menu.offsetWidth - 6;
+    menu.style.left = left + 'px'; menu.style.top = top + 'px';
+    openMenu = menu; menuBtn = btn; btn.setAttribute('aria-expanded','true');
+    const first = menu.querySelector('button'); if (first) first.focus();
+    setTimeout(() => { document.addEventListener('click', onDoc, true); window.addEventListener('resize', closeMenu); window.addEventListener('scroll', closeMenu, true); }, 0);
+  }
+
+  function makeDraggable(el, node){
+    el.draggable = true;
+    el.addEventListener('dragstart', e => { e.stopPropagation(); dragNode = node; el.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain',''); } catch(_){} });
+    el.addEventListener('dragend', e => { e.stopPropagation(); el.classList.remove('dragging'); clearCues(); dragNode = null; });
+  }
+  function insertRelative(target, after){
+    const dn = dragNode; if (!canDrop(target)) return;
+    ftRemove(tree, x => x===dn);
+    const loc = ftLocate(tree, x => x===target);
+    if (!loc){ tree.root.push(dn); commit(); return; }
+    loc.parent.splice(loc.index + (after?1:0), 0, dn); commit();
+  }
+  function dropInto(folderNode){ const dn = dragNode; if (!canDrop(folderNode)) return; ftRemove(tree, x => x===dn); folderNode.children.push(dn); commit(); }
+
+  function renderItem(node){
+    const row = document.createElement('div'); row.className = 'preset-item'; row.dataset.ftItem = node.name;
+    const h = document.createElement('span'); h.className='drag-handle'; h.title=I18n.t('shared.folders.drag_item'); h.textContent='⠿'; h.style.flex='0 0 auto';
+    const nm = document.createElement('span'); nm.className='ft-item-name'; nm.style.flex='1'; nm.textContent = node.name;
+    row.appendChild(h); row.appendChild(nm);
+    const acts = cfg.buildItemRow(node.name); if (acts) row.appendChild(acts);
+    const mw = document.createElement('span'); mw.className='ft-move-wrap';
+    const mb = document.createElement('button'); mb.type='button'; mb.className='ft-move-btn'; mb.textContent=I18n.t('shared.folders.move_button'); mb.setAttribute('aria-haspopup','menu'); mb.setAttribute('aria-expanded','false');
+    mb.addEventListener('click', e => { e.stopPropagation(); openMoveMenu(mb, node); });
+    mw.appendChild(mb); row.appendChild(mw);
+    makeDraggable(row, node);
+    row.addEventListener('dragover', e => { if (!canDrop(node)) return; e.preventDefault(); e.dataTransfer.dropEffect='move'; clearCues(); row.classList.add('ft-row-drop'); });
+    row.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); const b = row.getBoundingClientRect(); insertRelative(node, (e.clientY - b.top) > b.height/2); });
+    return row;
+  }
+  function mkMini(label, title, fn){ const b=document.createElement('button'); b.type='button'; b.className='ft-mini';
+    // A leading '<' means inline SVG from the set above (static markup in this block, never user data).
+    if (label.charAt(0) === '<') { b.innerHTML = label; b.setAttribute('aria-label', title); } else b.textContent = label;
+    b.title=title; b.addEventListener('click', e => { e.stopPropagation(); fn(b); }); return b; }
+  function renderFolder(node){
+    const fol = document.createElement('div'); fol.className = 'ft-folder' + (node.collapsed?' ft-collapsed':''); fol.dataset.ftFolder = node.id;
+    const head = document.createElement('div'); head.className='ft-folder-head';
+    const tw = document.createElement('span'); tw.className='ft-twisty'; tw.textContent='▾';
+    const h = document.createElement('span'); h.className='drag-handle'; h.title=I18n.t('shared.folders.drag_folder'); h.textContent='⠿'; h.style.flex='0 0 auto';
+    const nm = document.createElement('span'); nm.className='ft-folder-name'; nm.textContent = node.name;
+    const cnt = document.createElement('span'); cnt.className='ft-folder-count'; cnt.textContent = '(' + node.children.length + ')';
+    const acts = document.createElement('span'); acts.className='ft-folder-actions';
+    acts.appendChild(mkMini(FT_ICON_NEW,I18n.t('shared.folders.new_subfolder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_new_subfolder'))||'').trim(); if(!x) return; node.children.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); }));
+    acts.appendChild(mkMini(FT_ICON_RENAME,I18n.t('shared.folders.rename_folder'), () => { const x=(prompt(I18n.t('shared.folders.prompt_rename'), node.name)||'').trim(); if(!x) return; node.name=x; commit(); }));
+    const mvb = mkMini(FT_ICON_MOVE,I18n.t('shared.folders.move_folder'), (b) => openMoveMenu(b, node)); mvb.setAttribute('aria-haspopup','menu'); mvb.setAttribute('aria-expanded','false'); acts.appendChild(mvb);
+    acts.appendChild(mkMini(FT_ICON_DEL,I18n.t('shared.folders.delete_folder'), () => { if(!confirm(I18n.t('shared.folders.delete_confirm', { name: node.name }))) return; const loc=ftLocate(tree, x=>x===node); if(loc){ loc.parent.splice(loc.index, 1, ...node.children); commit(); } }));
+    head.appendChild(tw); head.appendChild(h); head.appendChild(nm); head.appendChild(cnt); head.appendChild(acts);
+    head.addEventListener('click', e => { if (e.target.closest('.ft-folder-actions')) return; node.collapsed = !node.collapsed; commit(); });
+    makeDraggable(fol, node);
+    head.addEventListener('dragover', e => { if (!canDrop(node)) return; e.preventDefault(); e.dataTransfer.dropEffect='move'; clearCues(); fol.classList.add('ft-drop'); });
+    head.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); dropInto(node); });
+    const body = document.createElement('div'); body.className='ft-folder-body';
+    if (node.children.length === 0){
+      const em = document.createElement('div'); em.className='ft-empty-folder'; em.textContent=I18n.t('shared.folders.empty_folder');
+      em.addEventListener('dragover', e => { if (!canDrop(node)) return; e.preventDefault(); clearCues(); fol.classList.add('ft-drop'); });
+      em.addEventListener('drop', e => { if (!canDrop(node)) return; e.preventDefault(); e.stopPropagation(); dropInto(node); });
+      body.appendChild(em);
+    } else renderInto(node.children, body);
+    fol.appendChild(head); fol.appendChild(body);
+    return fol;
+  }
+  function renderInto(arr, parentEl){ arr.forEach(n => parentEl.appendChild(n.t==='item' ? renderItem(n) : renderFolder(n))); }
+  function render(){
+    closeMenu(); container.innerHTML = '';
+    const wrap = document.createElement('div'); wrap.className='ft-tree';
+    renderInto(tree.root, wrap);
+    if (tree.root.length === 0){ const em=document.createElement('div'); em.className='ft-empty-folder'; const _n=['preset','profile','schedule'].indexOf(cfg.noun)>=0?cfg.noun:'item'; em.textContent=I18n.t('shared.folders.empty_'+_n); wrap.appendChild(em); }
+    const rootDrop = document.createElement('div'); rootDrop.className='ft-root-drop';
+    rootDrop.addEventListener('dragover', e => { if (!dragNode) return; e.preventDefault(); clearCues(); rootDrop.classList.add('ft-row-drop'); });
+    rootDrop.addEventListener('drop', e => { if (!dragNode) return; e.preventDefault(); e.stopPropagation(); const dn=dragNode; ftRemove(tree, x=>x===dn); tree.root.push(dn); commit(); });
+    wrap.appendChild(rootDrop);
+    container.appendChild(wrap);
+    const add = document.createElement('button'); add.type='button'; add.className='ft-newfolder hi-btn'; add.textContent=I18n.t('shared.folders.new_folder'); add.insertAdjacentHTML('afterbegin', FT_ICON_NEW);
+    add.addEventListener('click', () => { const x=(prompt(I18n.t('shared.folders.prompt_new_folder'))||'').trim(); if(!x) return; tree.root.push({t:'folder',id:ftGenId(),name:x,collapsed:false,children:[]}); commit(); });
+    container.appendChild(add);
+  }
+  render();
+}
+/* ═══ end folder-tree component ═══ */
+/* Rename the tree's item node in place so the item keeps its folder (the dashboard's helper, page code): letting
+   syncTree discover the change instead would prune the old node and re-append the new name at ROOT. */
+function _ftRenameNode(treeKey, oldName, newName) {
+  const tree = ftRead(treeKey);
+  const loc = ftLocate(tree, x => x.t === 'item' && x.name === oldName);
+  if (!loc) return;
+  loc.node.name = newName;
+  ftWrite(treeKey, tree);
+}
+
+/* ══════════════════════════════════════════════════════
+   FAVORITES — saved readings (the Favorites tab)
+   ══════════════════════════════════════════════════════
+   Store: FAV_KEY = { [name]: { v:1, ref, color:'#rrggbb', ts, settings? } } — the name is the identity, as in every
+   preset store of the suite; FAV_TREE_KEY is the folder tree the shared folder-tree block owns. `ref` is one of the
+   three forms a practice link carries, never the reading cycle or the triennial year (those are how this device
+   reads, not what it reads):
+     { kind:'parsha',  parshahKey, scope }        a weekly parsha: full, one aliyah, or the haftarah
+     { kind:'holiday', holidayKey }               one of HOLIDAY_READINGS, whole
+     { kind:'ref',     customRef, holidayKey? }   a verse range (holidayKey only while the range sits inside it)
+   `settings` (optional) is the LINK_DISPLAY vocabulary — exactly what "Include my settings" puts in a link — captured
+   only when the teacher ticks the box in the save popup. Opening a favorite is a real change (saved), never a link
+   view. Deleting one is per item and deliberately does NOT call IvritSaves.forgetRow: with its sync memory kept the
+   module offers "Deleted on this device → Delete from your account / Bring it back"; without it the next listing
+   would quietly download the row again. Reset all settings leaves favorites alone.
+   Both keys ride the AllTools export (index.html) and the account (two IVRIT_SYNC_REGISTRY rows; the tree merges
+   through the block's ftMergeTrees, passed to IvritSaves.attach as `merges`). */
+const FAV_PALETTE = ['#e69f00', '#56b4e9', '#009e73', '#f0e442', '#0072b2', '#d55e00', '#cc79a7', '#000000'];   // the dashboard's preset palette (Okabe–Ito)
+const FAV_HEX_RE = /^#[0-9a-f]{6}$/i;
+let _favOpener = null;
+function readFavorites() {
+  try {
+    const m = ivritSafeParse(localStorage.getItem(FAV_KEY) || '{}');
+    return (m && typeof m === 'object' && !Array.isArray(m)) ? m : {};
+  } catch (e) { return {}; }
+}
+function writeFavorites(map) {
+  try { localStorage.setItem(FAV_KEY, JSON.stringify(map)); } catch (e) { console.warn('writeFavorites', e); }
+}
+function favColorOf(fav) {
+  return (fav && typeof fav.color === 'string' && FAV_HEX_RE.test(fav.color)) ? fav.color.toLowerCase() : '#9e9e9e';
+}
+// The loaded reading in the shape a practice link carries (never the Copy bar's selection); null when nothing is loaded.
+function favoriteRefNow() {
+  if (settings.scope === 'custom') {
+    const h = settings.holidayKey ? holidayByKey(settings.holidayKey) : null;
+    const ref = parseSharedRef(settings.customRef);
+    if (h && (!ref || ref === parseSharedRef(h.ref))) return { kind: 'holiday', holidayKey: h.key };
+    if (!ref) return null;
+    const out = { kind: 'ref', customRef: ref };
+    if (h && refWithin(ref, h.ref)) out.holidayKey = h.key;
+    return out;
+  }
+  if (!settings.parshahKey || settings.holidayKey) return null;
+  if (!parshiyotData.some(p => p.en === settings.parshahKey)) return null;
+  const scope = /^parsha-(full|aliyah-[1-7]|haftarah)$/.test(settings.scope || '') ? settings.scope : 'parsha-full';
+  return { kind: 'parsha', parshahKey: settings.parshahKey, scope };
+}
+function favoriteLabelNow() {
+  if (currentRangeLabel) return currentRangeLabel;
+  try { return (resolveRef() || {}).label || ''; } catch (e) { return ''; }
+}
+// A stored favorite's reading, named the way the picker names it (reading names are content, like the <option> labels).
+function favoriteLabelOf(fav) {
+  const r = fav && fav.ref;
+  if (!r || typeof r !== 'object') return '';
+  if (r.kind === 'holiday') { const h = holidayByKey(r.holidayKey); return h ? `${h.name} — ${h.ref}` : ''; }
+  if (r.kind === 'ref') { const ref = parseSharedRef(r.customRef); return ref ? (labelForCustomRef(ref, r.holidayKey || null) || ref) : ''; }
+  if (r.kind === 'parsha') {
+    const p = parshiyotData.find(x => x.en === r.parshahKey);
+    if (!p) return '';
+    const m = /^parsha-aliyah-([1-7])$/.exec(r.scope || '');
+    if (m) return `${p.en} — ${I18n.t('torah.schedule.scope_aliyah', { n: m[1] })}`;
+    if (r.scope === 'parsha-haftarah') return `${p.en} — ${I18n.t('torah.schedule.scope_haftarah')}`;
+    return `${p.en} — ${p.ref}`;
+  }
+  return '';
+}
+// Every display setting a link may carry, as the sender's copy: a look whose coloring is off is left out (it is
+// nothing on screen), and a My Font is refused by LINK_DISPLAY.hebFont (the popup's summary names it).
+function favoriteSettingsNow() {
+  const out = {};
+  Object.keys(LINK_DISPLAY).forEach(k => {
+    const v = LINK_DISPLAY[k](settings[k]);
+    if (v !== undefined) out[k] = JSON.parse(JSON.stringify(v));
+  });
+  Object.keys(LINK_LOOK_SWITCH).forEach(k => { if (!out[LINK_LOOK_SWITCH[k]]) delete out[k]; });
+  return out;
+}
+function favoriteSettingsSummary() {
+  const lay = document.querySelector('input[name="ttLayout"]:checked');
+  const layLbl = lay ? document.querySelector(`label[for="${lay.id}"]`) : null;
+  const onOff = b => I18n.t(b ? 'torah.fav.on' : 'torah.fav.off');
+  const font = LINK_DISPLAY.hebFont(settings.hebFont) || I18n.t('torah.fav.font_standard');
+  let s = I18n.t('torah.fav.settings_summary', {
+    layout: layLbl ? layLbl.textContent.replace(/\s+/g, ' ').trim() : String(settings.layout || ''),
+    translit: onOff(settings.showTranslit), translation: onOff(settings.showTranslation), font
+  });
+  const left = linkFontLeftOut();
+  if (left) s += ' ' + I18n.t('torah.fav.font_left_out', { font: left });
+  return s;
+}
+function syncFavSummary() {
+  const el = document.getElementById('ttFavSummary');
+  if (!el) return;
+  const on = document.getElementById('ttFavWithSettings').checked;
+  el.hidden = !on;
+  if (on) el.textContent = favoriteSettingsSummary();
+}
+function favNote(msg) {
+  const el = document.getElementById('ttFavNote'), btn = document.getElementById('ttFavSaveBtn');
+  el.textContent = msg || '';
+  el.hidden = !msg;
+  if (btn) btn.setAttribute('aria-disabled', msg ? 'true' : 'false');
+}
+function buildFavSwatches(container, current, onPick) {
+  container.innerHTML = '';
+  FAV_PALETTE.forEach((c, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'tt-fav-swatch';
+    b.style.setProperty('--fav-c', c); b.dataset.color = c;
+    b.setAttribute('aria-pressed', c === current ? 'true' : 'false');
+    b.setAttribute('aria-label', I18n.t('torah.fav.color_aria', { n: i + 1 }));
+    b.addEventListener('click', () => {
+      container.querySelectorAll('.tt-fav-swatch').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+      if (onPick) onPick(c);
+    });
+    container.appendChild(b);
+  });
+}
+function favPickedColor() {
+  const b = document.querySelector('#ttFavSwatches .tt-fav-swatch[aria-pressed="true"]');
+  return b ? b.dataset.color : FAV_PALETTE[0];
+}
+// The first palette color no favorite uses yet; past eight, round-robin (the dashboard's assignPresetColors idea).
+function favNextFreeColor() {
+  const map = readFavorites();
+  const used = new Set(Object.keys(map).map(n => favColorOf(map[n])));
+  return FAV_PALETTE.find(c => !used.has(c)) || FAV_PALETTE[Object.keys(map).length % FAV_PALETTE.length];
+}
+function openFavoriteDialog() {
+  const ref = favoriteRefNow();
+  if (!ref) { showHintToast(I18n.t('torah.fav.none_loaded')); return; }
+  const dlg = document.getElementById('ttFavDialog'), bd = document.getElementById('ttFavBackdrop');
+  const label = favoriteLabelNow() || favoriteLabelOf({ ref });
+  document.getElementById('ttFavDlgReading').textContent = label;
+  const nameEl = document.getElementById('ttFavName');
+  nameEl.value = label;
+  const sel = document.getElementById('ttFavFolder');
+  sel.innerHTML = '';
+  ftPaths(ftRead(FAV_TREE_KEY), null).forEach(p => {   // the block's own "(top level)" / path labels
+    const o = document.createElement('option');
+    o.value = p.id == null ? '' : p.id; o.textContent = p.label;
+    sel.appendChild(o);
+  });
+  buildFavSwatches(document.getElementById('ttFavSwatches'), favNextFreeColor(), null);
+  document.getElementById('ttFavWithSettings').checked = false;
+  syncFavSummary();
+  favNote('');
+  _favOpener = document.activeElement;
+  bd.hidden = false; dlg.hidden = false;
+  dlg.addEventListener('keydown', _favDialogKey);
+  nameEl.focus(); nameEl.select();
+}
+function _favDialogKey(e) {
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeFavoriteDialog(); return; }   // stopped: the drawer's Escape is on document
+  if (e.key === 'Enter' && e.target && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'SELECT') { e.preventDefault(); saveFavoriteFromDialog(); return; }
+  if (e.key !== 'Tab') return;
+  const dlg = document.getElementById('ttFavDialog');
+  const focusables = [...dlg.querySelectorAll('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])')]
+    .filter(el => el.offsetParent !== null && !el.disabled && el.tabIndex !== -1);
+  if (!focusables.length) return;
+  const first = focusables[0], last = focusables[focusables.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
+function closeFavoriteDialog() {
+  const dlg = document.getElementById('ttFavDialog'), bd = document.getElementById('ttFavBackdrop');
+  if (!dlg || dlg.hidden) return;
+  dlg.hidden = true; bd.hidden = true;
+  dlg.removeEventListener('keydown', _favDialogKey);
+  const o = _favOpener; _favOpener = null;
+  const back = (o && o.focus && o.isConnected && o !== document.body) ? o : document.getElementById('ttFavAddBtn');
+  try { back.focus(); } catch (e) {}
+}
+function saveFavoriteFromDialog() {
+  const nameEl = document.getElementById('ttFavName');
+  const name = nameEl.value.trim();
+  if (!name) { favNote(I18n.t('torah.fav.name_empty')); nameEl.focus(); return; }
+  const map = readFavorites();
+  if (Object.prototype.hasOwnProperty.call(map, name)) { favNote(I18n.t('torah.fav.name_exists', { name })); nameEl.focus(); nameEl.select(); return; }
+  const ref = favoriteRefNow();
+  if (!ref) { closeFavoriteDialog(); showHintToast(I18n.t('torah.fav.none_loaded')); return; }
+  const fav = { v: 1, ref, color: favPickedColor(), ts: Date.now() };
+  if (document.getElementById('ttFavWithSettings').checked) fav.settings = favoriteSettingsNow();
+  map[name] = fav;
+  writeFavorites(map);
+  const fid = document.getElementById('ttFavFolder').value;
+  if (fid) {   // filed straight into the chosen folder; without this syncTree would append the new name at root
+    const tree = ftRead(FAV_TREE_KEY);
+    ftFolderArray(tree, fid).push({ t: 'item', name });
+    ftWrite(FAV_TREE_KEY, tree);
+  }
+  renderFavorites();
+  closeFavoriteDialog();
+  showHintToast(I18n.t('torah.fav.saved', { name }));
+}
+function renderFavorites() {
+  if (!window.I18n || !document.getElementById('ttFavList')) return;
+  const map = readFavorites();
+  const empty = document.getElementById('ttFavEmpty');
+  if (empty) empty.hidden = Object.keys(map).length > 0;
+  mountFolderTree({
+    treeKey: FAV_TREE_KEY,
+    container: document.getElementById('ttFavList'),
+    noun: 'favorite',   // not one of the block's nouns: its generic placeholder is hidden by CSS, #ttFavEmpty speaks instead
+    listItemNames: () => Object.keys(readFavorites()),
+    buildItemRow: (name) => {
+      const f = document.createDocumentFragment();
+      const fav = readFavorites()[name] || {};
+      // A leading '<' means an inline SVG from the shared icon set (static markup in this file, never user data);
+      // such a button carries no text, so it always takes the title as its accessible name.
+      const mk = (txt, title, cls, fn) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = cls;
+        const isIcon = txt.charAt(0) === '<';
+        if (isIcon) b.innerHTML = txt; else b.textContent = txt;
+        if (title) { b.title = title; if (isIcon || !/\p{L}|\p{N}/u.test(txt)) b.setAttribute('aria-label', title); }
+        b.addEventListener('click', fn); return b;
+      };
+      const dot = document.createElement('button');
+      dot.type = 'button'; dot.className = 'tt-fav-dot';
+      dot.style.setProperty('--fav-c', favColorOf(fav));
+      dot.title = I18n.t('torah.fav.recolor_title'); dot.setAttribute('aria-label', dot.title);
+      dot.addEventListener('click', () => recolorFavorite(name));
+      f.appendChild(dot);
+      f.appendChild(mk(I18n.t('torah.fav.open'), I18n.t('torah.fav.open_title', { ref: favoriteLabelOf(fav) }), 'btn btn-xs', () => openFavorite(name)));
+      f.appendChild(mk(ICON_PENCIL_SM, I18n.t('torah.fav.rename_title'), 'btn btn-xs btn-secondary', () => renameFavorite(name)));
+      f.appendChild(mk('⧉', I18n.t('torah.fav.duplicate_title'), 'btn btn-xs btn-secondary', () => duplicateFavorite(name)));
+      f.appendChild(mk(ICON_CLOSE_SM, I18n.t('torah.fav.delete_title'), 'btn btn-xs btn-secondary', () => deleteFavorite(name)));
+      return f;
+    }
+  });
+}
+// Re-validates the stored reading with the deep-link reader's own gates, then writes settings the way that reader
+// and the pickers do (the same fields, then save → sync the picker → render). A snapshot of display settings lands
+// first, through LINK_DISPLAY's checks, as a real change: a practice link's view ends, and the choice is saved.
+function openFavorite(name) {
+  const fav = readFavorites()[name];
+  const r = fav && fav.ref;
+  const stale = () => showHintToast(I18n.t('torah.fav.stale', { name }));
+  if (!r || typeof r !== 'object') { stale(); return; }
+  let apply = null;
+  if (r.kind === 'parsha') {
+    const p = parshiyotData.find(x => x.en === r.parshahKey);
+    if (!p) { stale(); return; }
+    const scope = /^parsha-(full|aliyah-[1-7]|haftarah)$/.test(r.scope || '') ? r.scope : 'parsha-full';
+    apply = () => {
+      settings.parshahKey = p.en; settings.scope = scope;
+      settings.holidayKey = null; settings.customRef = null; settings.customLabel = null;
+    };
+  } else if (r.kind === 'holiday') {
+    const h = (typeof r.holidayKey === 'string' && /^[a-z0-9-]+$/.test(r.holidayKey)) ? holidayByKey(r.holidayKey) : null;
+    if (!h) { stale(); return; }
+    apply = () => {
+      settings.holidayKey = h.key; settings.customRef = h.ref;
+      settings.customLabel = `${h.name} — ${h.ref}`; settings.scope = 'custom';
+    };
+  } else if (r.kind === 'ref') {
+    const ref = parseSharedRef(r.customRef);
+    if (!ref) { stale(); return; }
+    const h = (typeof r.holidayKey === 'string' && /^[a-z0-9-]+$/.test(r.holidayKey)) ? holidayByKey(r.holidayKey) : null;
+    const inHol = !!(h && refWithin(ref, h.ref));
+    apply = () => {
+      settings.holidayKey = inHol ? h.key : null;
+      settings.customRef = ref;
+      settings.customLabel = labelForCustomRef(ref, settings.holidayKey);
+      settings.scope = 'custom';
+      if (!settings.parshahKey) { const rp = parshaContainingRef(ref); if (rp) settings.parshahKey = rp.en; }
+    };
+  } else { stale(); return; }
+  clearLoop();
+  if (fav.settings && typeof fav.settings === 'object' && !Array.isArray(fav.settings)) {
+    linkViewEnd();
+    Object.keys(LINK_DISPLAY).forEach(k => {
+      if (!Object.prototype.hasOwnProperty.call(fav.settings, k)) return;
+      const v = LINK_DISPLAY[k](fav.settings[k]);
+      if (v === undefined) return;
+      settings[k] = JSON.parse(JSON.stringify(v));   // a copy of its own: the pickers edit the color maps in place
+    });
+    syncFormToSettings();
+    setHebFont(settings.hebFont);
+    initColorPickers();
+    initTropeColorPickers();
+    applyTropeColors();
+    applyDisplayClasses();
+  }
+  apply();
+  saveSettings();
+  syncParshaSelect();
+  if (r.kind === 'parsha') document.getElementById('scopeSelect').value = settings.scope;
+  fetchAndRender();
+  closeSettings();
+  showHintToast(I18n.t('torah.fav.opened', { name }));
+}
+function renameFavorite(name) {
+  const map = readFavorites();
+  if (!Object.prototype.hasOwnProperty.call(map, name)) return;
+  const raw = prompt(I18n.t('torah.fav.rename_prompt'), name);
+  if (raw === null) return;
+  const nn = raw.trim();
+  if (!nn || nn === name) return;
+  if (Object.prototype.hasOwnProperty.call(map, nn)) { showHintToast(I18n.t('torah.fav.name_exists', { name: nn })); return; }
+  const rebuilt = {};   // re-keyed in place so the list keeps its order
+  Object.keys(map).forEach(k => { rebuilt[k === name ? nn : k] = map[k]; });
+  writeFavorites(rebuilt);
+  _ftRenameNode(FAV_TREE_KEY, name, nn);
+  renderFavorites();
+}
+function recolorFavorite(name) {
+  const map = readFavorites();
+  if (!map[name]) return;
+  const i = FAV_PALETTE.indexOf(favColorOf(map[name]));
+  map[name].color = FAV_PALETTE[(i + 1) % FAV_PALETTE.length];
+  writeFavorites(map);
+  renderFavorites();
+}
+function duplicateFavorite(name) {
+  const map = readFavorites();
+  if (!map[name]) return;
+  const nn = ftDuplicateName(name, x => map[x] !== undefined);
+  map[nn] = JSON.parse(JSON.stringify(map[name]));
+  map[nn].ts = Date.now();
+  writeFavorites(map);
+  ftInsertAfter(FAV_TREE_KEY, name, nn);
+  renderFavorites();
+}
+function deleteFavorite(name) {
+  const map = readFavorites();
+  if (!map[name]) return;
+  if (!confirm(I18n.t('torah.fav.delete_confirm', { name }))) return;
+  delete map[name];
+  writeFavorites(map);   // no IvritSaves.forgetRow here — see the section note
+  renderFavorites();
+}
+
 /* Settings-drawer resize wiring (per-page; the engine is the shared block above). */
 function initDrawerResize() {
   mountSidebarResize({
@@ -7637,7 +8351,7 @@ function openSettings() {
   const modal = document.getElementById('settingsModal');
   modal.classList.add('open');
   modal.addEventListener('keydown', _settingsTrapKey);
-  setSettingsTab('text');   // no tab memory: every open starts on Text (before the sync, so the body is at the top before anything is measured)
+  setSettingsTab('favorites');   // no tab memory: every open starts on Favorites (before the sync, so the body is at the top before anything is measured)
   syncFormToSettings();
   const c = modal.querySelector('.settings-close:not(#drawerDarkBtn)'); if (c) c.focus();
 }
@@ -9607,7 +10321,12 @@ function initCloudSaves() {
     flush: saveSettingsFlush,     // a pending debounced save lands before the module reads the key
     // While the handout print override is up the stored blob is not what is on screen: the re-read waits
     // for _handoutExit (the module's flush is a no-op meanwhile, so the download stays in the store).
-    onLocalChanged: function () { if (_handoutActive) { _pendingCloudReread = true; return; } cloudReread(); },
+    onLocalChanged: function (kind) {
+      if (kind === 'favorite' || kind === 'favoriteFolders') { renderFavorites(); return; }   // the list re-reads its own keys
+      if (_handoutActive) { _pendingCloudReread = true; return; }
+      cloudReread();
+    },
+    merges: { favoriteFolders: ftMergeTrees },   // the folder tree's pure merge (the shared block's)
     open: function () { openSettingsAtPanel('cloud'); }   // the header chip's "Cloud saves…" item
   });
 }
@@ -9618,6 +10337,7 @@ function applyI18n() {
   if (!window.I18n) return;
   I18n.applyStaticI18n();
   try { initFontSelector(); } catch (e) {}          // My Fonts section headers + [DEFAULT] marker
+  try { renderFavorites(); } catch (e) {}           // the Favorites list: first paint on I18n.ready, then every language switch (its buttons are I18n.t'd)
   // Both picker lists set their input aria-label via I18n.t() while building. They build at init,
   // which is BEFORE I18n.ready resolves, so without a rebuild here the aria-label stays the raw
   // key string forever (19 inputs, Hebrew only). Both are pure re-renders of current settings.

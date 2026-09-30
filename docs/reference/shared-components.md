@@ -378,8 +378,9 @@ upload, send and page, and the **dashboard's board controls**: the fullscreen qu
 Text, Video, Blank, Intermission), the student picker's Pick One / Make Groups pair (in the sidebar and in the strip's pick
 popup) and the board's edit pencil, and the **Torah Trainer's picker controls**: the trope-colour chip (a
 palette), the settings drawer's heading gear — the gear the dashboard's drawer heading and the Trope Tutor's
-Settings tab carry too — and that drawer's six tab glyphs (book, palette, music, calendar, link, gear: icon
-above label through the page's own `.tt-tab` rule, `.hi-btn` still supplying the alignment). The toolbar
+Settings tab carry too — and that drawer's seven tab glyphs (star, book, palette, music, calendar, link, gear: icon
+above label through the page's own `.tt-tab` rule, `.hi-btn` still supplying the alignment; the star is the
+Favorites tab, first in the strip, and its `hi-plus` Save-as-favorite button reuses the plus). The toolbar
 above that page's reading keeps one glyph button, **Settings** (the gear beside its label, primary-styled at
 the end of the Parsha row — the drawer's one entry, moved out of the header where a gear among six icon
 buttons was overlooked); its Holiday Torah Readings (calendar) and Share (link) buttons moved into the
@@ -398,8 +399,11 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   `hi-help`, `hi-fs-enter` / `hi-fs-exit`, `hi-blank`, `hi-user`, the set that replaced the last emoji
   controls — `hi-close` (dismiss, clear, remove a row; it also unified the three characters `✕`, `×` and a
   literal `×` that were all doing this one job), `hi-trash` (destroy — deliberately NOT the same picture as
-  close, because a teacher's only backup may be behind it), `hi-plus`, `hi-bookmark` (save for later: it
-  replaced `★`, `⭑` and the browser-bookmark `🔖`), `hi-cloud`, `hi-keyboard`, `hi-search`, `hi-warning`,
+  close, because a teacher's only backup may be behind it), `hi-plus` (also the Torah Trainer's *Save current
+  selection as favorite* button), `hi-bookmark` (save for later: it
+  replaced `★`, `⭑` and the browser-bookmark `🔖`), `hi-star` (the Torah Trainer's Favorites tab — a saved
+  reading, distinct from `hi-bookmark`'s save-for-later; its only carrier so far, markup only: the CSS block
+  needed nothing), `hi-cloud`, `hi-keyboard`, `hi-search`, `hi-warning`,
   `hi-undo` / `hi-redo`, `hi-up` / `hi-down`, `hi-book` (now also on `torah_trainer.html`, its drawer's Text
   tab, copied verbatim from the Trope Tutor), `hi-folder` / `hi-folder-plus` and `hi-move` —
   plus the control family `hi-play`,

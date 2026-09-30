@@ -16,7 +16,7 @@
 | `dashboardSettings` | `hebrewDashboard_settings` | All Classroom Dashboard settings (zoom, video URL, header size, Jewish-calendar widget toggles `showHolidayCountdown`/`showShabbatTimes` (Shabbat times reuse the weather `location`), Timer toggles `showTimer`/`showTimerFullscreen`, Omer toggles `showOmerCounter`/`showOmerEnglish`/`showOmerProgress`, the weekly Schedule Sync grid `scheduleWeek` (present only once a user builds/imports one — its presence selects the weekly engine) + the class-color map `presetColors`, the drawer's `panelsCollapsed` map, etc.) |
 | `flashCardPresets` | `hebrewFlashCards_presets` | Flash Cards saved presets |
 | `blenderLastState` | `hebrewBlender_lastState` | Generator last-session state (the `?s=` share-state diff, persisted on change); object blob, empty = never-set (skipped on import) |
-| `generatorPresetFolders` / `dashboardPresetFolders` / `dashboardScheduleFolders` / `flashCardPresetFolders` / `flashCardProfileFolders` | `hebrewBlender_presetsFolders` / `hebrewDashboard_presetsFolders` / `hebrewDashboard_schedulesFolders` / `hebrewFlashCards_presetsFolders` / `hebrewFlashCards_profilesFolders` | The five folder trees (`{v:1,root:[…]}`) that organize the preset lists — see "Nested Folders" below. Always merged via `ftImportTree(key, incoming, false)`, **never** `Object.assign` (that clobbers `root`) |
+| `generatorPresetFolders` / `dashboardPresetFolders` / `dashboardScheduleFolders` / `flashCardPresetFolders` / `flashCardProfileFolders` / `torahTrainerFavoriteFolders` | `hebrewBlender_presetsFolders` / `hebrewDashboard_presetsFolders` / `hebrewDashboard_schedulesFolders` / `hebrewFlashCards_presetsFolders` / `hebrewFlashCards_profilesFolders` / `hebrewTorahTrainer_favoritesFolders` | The six folder trees (`{v:1,root:[…]}`) that organize the preset lists — see "Nested Folders" below. Always merged via `ftImportTree(key, incoming, false)`, **never** `Object.assign` (that clobbers `root`) |
 | `flashCardSettings` | `hebrewFlashCards_settings` | All Flash Cards live settings (mode, selected letters/vowels, color-coding, fonts, timer, number/color/emoji sub-modes, word-list selections, etc.); flat settings blob merged field-by-field via `ivritSafeAssign` |
 | `flashCardPbStreak` | `hebrewFlashCards_pbStreak` | Flash Cards personal-best streak (scalar string; imported as the **max** of existing vs incoming) |
 | `flashCardProfiles` | `hebrewFlashCards_profiles` | Flash Cards saved profiles (import merges via `mergeFlashCardProfiles`) |
@@ -24,6 +24,7 @@
 | `dictLastState` | `hebrewDictionary_lastState` | Dictionary last filter/session state (`getDictState()` minus the search query); object blob merged via `ivritSafeAssign`, empty = never-set (skipped on import) |
 | `wordLists` | `ivritSuite_wordLists` | Suite-wide saved Word Lists (`{v:1,lists:{}}`); merged one level deep via `wlMergeIntoStorage` so a shallow assign can't clobber `lists`. Written by the Dictionary's manager and by the generator's *⭑ Save as Word List* (one new list from the pasted import, the same id shape and caps); Flash Cards and the generator's picker read it |
 | `torahTrainerSettings` | `hebrewTorahTrainer_settings` | Torah Trainer settings |
+| `torahTrainerFavorites` | `hebrewTorahTrainer_favorites` | Torah Trainer favorite readings (the drawer's Favorites tab): a flat map by name, `{ [name]: { v:1, ref, color, ts, settings? } }` — `ref` is one of the three practice-link forms (`parsha` / `holiday` / `ref`), `settings` an optional display snapshot in the `LINK_DISPLAY` vocabulary; merged via `ivritSafeAssign`. Its tree is `torahTrainerFavoriteFolders` in the folder-trees row above. The Torah Trainer has no `IVRIT_CFG` of its own, so both travel only through this file and the account (`docs/reference/torah-and-trope.md` → *Settings drawer → Favorites*) |
 | `tropeTutorSettings` | `hebrewTropeTutor_settings` | Trope Tutor settings (tradition, melody, key and voice, font, drill toggles, playback rate); object blob merged via `ivritSafeAssign`, empty = never-set (skipped on import) |
 | `tropeTutorProgress` | `hebrewTropeTutor_progress` | Trope Tutor mastery (`{v:1,tropes:{key:{r,w}},families:{},pbStreak}`); imported via `tropeProgressMerge` — per-trope `r`/`w` and `pbStreak` as **max** of existing vs incoming, visited families as **union** (never a shallow assign) |
 | `userFonts` | *(IndexedDB `ivritsuite-fonts`, not localStorage)* | Custom fonts, base64-bundled at export — see "My Fonts" section. With an account each font is also one `Suite`/`font` row (`docs/reference/accounts-and-cloud.md` → *A teacher's own fonts*); the backup accepts either shape, an array from this page's own export or one entry per font name from the account |
@@ -126,7 +127,7 @@ Users back up and restore via a downloadable **`.ivrit` file** (a plain JSON tex
 
 The toggle choice is remembered site-wide in `localStorage['hebrewBlender_inputMode']` (`'auto'` | `'manual'`).
 
-Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_dashboard.html` (`Dashboard`), `flash_cards.html` (`FlashCards`), and `index.html` (`AllTools`). The Dictionary, Torah Trainer, and Trope Tutor have no presets of their own — their settings are backed up **only** through the `AllTools` file on `index.html`.
+Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_dashboard.html` (`Dashboard`), `flash_cards.html` (`FlashCards`), and `index.html` (`AllTools`). The Dictionary, Torah Trainer, and Trope Tutor have no `IVRIT_CFG` of their own — their settings (and the Torah Trainer's favorite readings + folder tree, its one saved-item list) are backed up **only** through the `AllTools` file on `index.html` and, with an account, the cloud rows.
 
 ### File format
 
@@ -247,7 +248,9 @@ values, flash cards' `numberFront:'translit'`) run before the check so they stil
 
 (`torah_trainer.html`, `hebrew_dictionary.html`, and `trope_tutor.html` have no preset collection
 of their own — they persist a single `settings`/last-state object instead, so the equivalent
-obligation there is to add every new control to that object's save/restore path.)
+obligation there is to add every new control to that object's save/restore path. The Torah Trainer's
+favorites are the one exception: a saved-item list beside its settings blob, with its own folder tree,
+that `resetAllSettings` leaves alone.)
 
 **Restore paths use `??`, never `||`, for numeric/boolean fields.** `x = s.field || default`
 silently discards a legitimately-stored `0`/`''`/`false` (the recurring "falsy-zero" bug —
@@ -260,11 +263,11 @@ possibly-missing DOM and for array/object defaults (`s.list || []`), which carry
 
 ## Preset Lists — Nested Folders (file tree)
 
-All six saved-item lists are organized by a **nested folder tree** with drag-and-drop and a
+All seven saved-item lists are organized by a **nested folder tree** with drag-and-drop and a
 touch-friendly **"Move ▾"** menu, via one shared component:
 
 - Generator presets, Flash Cards presets, Flash Cards profiles, Dashboard presets, Dashboard
-  saved schedules. (Flash Cards' active-profile dropdown stays a flat list.)
+  saved schedules, Torah Trainer favorite readings. (Flash Cards' active-profile dropdown stays a flat list.)
 
 ### Sidecar overlay model — never restructure the stores
 The item store stays a flat `{name:...}` object and is the **source of truth for which items
@@ -275,14 +278,17 @@ seeding working untouched. Tree shape:
 { "v":1, "root":[ {"t":"item","name":"X"},
                   {"t":"folder","id":"f_ab12","name":"Unit 1","collapsed":false,"children":[ ... ]} ] }
 ```
-Five folder keys (naming `hebrew<Tool>_<thing>Folders`): `hebrewBlender_presetsFolders`,
+Six folder keys (naming `hebrew<Tool>_<thing>Folders`): `hebrewBlender_presetsFolders`,
 `hebrewFlashCards_presetsFolders`, `hebrewFlashCards_profilesFolders`,
-`hebrewDashboard_presetsFolders`, `hebrewDashboard_schedulesFolders`.
+`hebrewDashboard_presetsFolders`, `hebrewDashboard_schedulesFolders`,
+`hebrewTorahTrainer_favoritesFolders`.
 
 ### Shared component (one byte-identical block per file, like the `.ivrit` engine)
 Marked `/* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */` (JS) plus a
-matching `.ft-*` CSS block. Carried by generator, flash_cards, dashboard (which render trees and have
-the `.ft-*` CSS) **and `index.html`**, which deliberately uses only the block's data helpers
+matching `.ft-*` CSS block. Carried by generator, flash_cards, dashboard, torah_trainer (which render trees
+and have the `.ft-*` CSS; the Torah Trainer's Favorites list adds its own color dot to each row from
+`buildItemRow` and positions it with CSS `order` rather than touching the block) **and `index.html`**, which
+deliberately uses only the block's data helpers
 (`ftRead`/`ftImportTree`/`ftDuplicateName`) for AllTools import/export — it never calls
 `mountFolderTree` and has no `.ft-*` CSS. That's by design, not dead code. Entry point:
 ```js
@@ -327,13 +333,15 @@ mountFolderTree({ treeKey, container, listItemNames(), buildItemRow(name)→acti
 3. Add the key to the tool's own `IVRIT_CFG.gather()`/`apply()` (gather via `ftRead`, apply via
    `ftImportTree(key, incoming, mode==='replace')`) so folders travel with the tool's `.ivrit`.
    **Never `Object.assign` a tree** — that clobbers `root`; always go through `ftImportTree`.
+   (The Torah Trainer has no `IVRIT_CFG`, so its favorites tree skips this step: it travels through
+   AllTools and the account only, like the rest of that page's data.)
 4. Give each item a **Duplicate (⧉)** button. The per-tool `duplicate<Thing>(name)` deep-copies the
    stored value under `ftDuplicateName(name, existsFn)` (file-system style: "X" → "X 1" → "X 2"; the
    trailing number is the base for the next free one), then places the copy right after the original
    in the same folder via `ftInsertAfter(treeKey, name, newName)`, then re-renders. It's additive, so
    no `confirm`. `ftDuplicateName`/`ftInsertAfter` live in the shared folder-tree block.
 
-## Preset Lists — Drag-to-Reorder (superseded for the six foldered lists above)
+## Preset Lists — Drag-to-Reorder (superseded for the seven foldered lists above)
 
 Every preset list (`.preset-list` / `.saved-schedule-list`) must support drag-to-reorder. Use the shared `makeSortable` helper defined in each file.
 

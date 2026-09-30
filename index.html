@@ -1236,6 +1236,8 @@ function exportAllSettings() {
     dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
     blenderLastState:    lsJSON('hebrewBlender_lastState', {}),
     torahTrainerSettings: lsJSON('hebrewTorahTrainer_settings', {}),
+    torahTrainerFavorites: lsJSON('hebrewTorahTrainer_favorites', {}),
+    torahTrainerFavoriteFolders: ftRead('hebrewTorahTrainer_favoritesFolders'),
     tropeTutorSettings:  lsJSON('hebrewTropeTutor_settings', {}),
     tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress', {}),
     inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
@@ -1323,6 +1325,7 @@ async function importAllSettings() {
     if (parsed.dashboardScheduleFolders) ftImportTree('hebrewDashboard_schedulesFolders', parsed.dashboardScheduleFolders, false);
     if (parsed.flashCardPresetFolders)   ftImportTree('hebrewFlashCards_presetsFolders',  parsed.flashCardPresetFolders,   false);
     if (parsed.flashCardProfileFolders)  ftImportTree('hebrewFlashCards_profilesFolders', parsed.flashCardProfileFolders,  false);
+    if (parsed.torahTrainerFavoriteFolders) ftImportTree('hebrewTorahTrainer_favoritesFolders', parsed.torahTrainerFavoriteFolders, false);
     if (parsed.flashCardPbStreak !== undefined) {
       const existing = parseInt(localStorage.getItem('hebrewFlashCards_pbStreak') || '0', 10) || 0;
       const incoming = parseInt(parsed.flashCardPbStreak, 10) || 0;
@@ -1356,6 +1359,10 @@ async function importAllSettings() {
     if (parsed.torahTrainerSettings) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewTorahTrainer_settings') || '{}');
       localStorage.setItem('hebrewTorahTrainer_settings', JSON.stringify(ivritSafeAssign(existing, parsed.torahTrainerSettings)));
+    }
+    if (parsed.torahTrainerFavorites) {
+      const existing = ivritSafeParse(localStorage.getItem('hebrewTorahTrainer_favorites') || '{}');
+      localStorage.setItem('hebrewTorahTrainer_favorites', JSON.stringify(ivritSafeAssign(existing, parsed.torahTrainerFavorites)));
     }
     // Trope Tutor: settings = flat blob merge; progress = never-lose-mastery merge
     // (per-trope r/w and pbStreak as max, visited families as union). Empty = never set, skip.
@@ -1521,6 +1528,8 @@ async function eraseAllSettings() {
     // that lives in _autosave and _recentProjects, both deliberately preserved (see the note below).
     'hebrewFontMaker_uiPrefs',
     'hebrewTorahTrainer_settings',
+    'hebrewTorahTrainer_favorites',
+    'hebrewTorahTrainer_favoritesFolders',
     'hebrewTropeTutor_settings',
     'hebrewTropeTutor_progress',
     'hebrewBlender_inputMode',
@@ -1587,6 +1596,8 @@ const IVRIT_CFG = {
       dictLastState:       lsJSON('hebrewDictionary_lastState', {}),
       blenderLastState:    lsJSON('hebrewBlender_lastState',    {}),
       torahTrainerSettings:lsJSON('hebrewTorahTrainer_settings',    {}),
+      torahTrainerFavorites: lsJSON('hebrewTorahTrainer_favorites', {}),
+      torahTrainerFavoriteFolders: ftRead('hebrewTorahTrainer_favoritesFolders'),
       tropeTutorSettings:  lsJSON('hebrewTropeTutor_settings',      {}),
       tropeTutorProgress:  lsJSON('hebrewTropeTutor_progress',      {}),
       inputMode:           localStorage.getItem('hebrewBlender_inputMode') || 'auto',
@@ -1631,6 +1642,7 @@ const IVRIT_CFG = {
     if (data.dashboardScheduleFolders) { ftImportTree('hebrewDashboard_schedulesFolders', data.dashboardScheduleFolders, repl); touched = true; }
     if (data.flashCardPresetFolders)   { ftImportTree('hebrewFlashCards_presetsFolders',  data.flashCardPresetFolders,   repl); touched = true; }
     if (data.flashCardProfileFolders)  { ftImportTree('hebrewFlashCards_profilesFolders', data.flashCardProfileFolders,  repl); touched = true; }
+    if (data.torahTrainerFavoriteFolders) { ftImportTree('hebrewTorahTrainer_favoritesFolders', data.torahTrainerFavoriteFolders, repl); touched = true; }
     if (data.flashCardPbStreak !== undefined) {
       const existing = mode === 'replace' ? 0 : (parseInt(localStorage.getItem('hebrewFlashCards_pbStreak') || '0', 10) || 0);
       const incoming = parseInt(data.flashCardPbStreak, 10) || 0;
@@ -1642,6 +1654,7 @@ const IVRIT_CFG = {
     if (data.dictLastState && Object.keys(data.dictLastState).length) { mergeObj('hebrewDictionary_lastState', data.dictLastState); touched = true; }
     if (data.blenderLastState && Object.keys(data.blenderLastState).length) { mergeObj('hebrewBlender_lastState', data.blenderLastState); touched = true; }
     if (data.torahTrainerSettings){ mergeObj('hebrewTorahTrainer_settings',   data.torahTrainerSettings); touched = true; }
+    if (data.torahTrainerFavorites){ mergeObj('hebrewTorahTrainer_favorites', data.torahTrainerFavorites); touched = true; }
     if (data.tropeTutorSettings && Object.keys(data.tropeTutorSettings).length) { mergeObj('hebrewTropeTutor_settings', data.tropeTutorSettings); touched = true; }
     if (data.tropeTutorProgress && Object.keys(data.tropeTutorProgress).length) { tropeProgressMerge(data.tropeTutorProgress, mode === 'replace'); touched = true; }
     if (data.wordLists)           { wlMergeIntoStorage(data.wordLists, mode === 'replace'); touched = true; }
@@ -1761,6 +1774,7 @@ function mergeDashboardRosters(incoming, replace) {
 }
 const IVRIT_INV_PARTS = [
   ['presets',   d => Object.keys(d.generatorPresets   || {}).length],
+  ['favorites', d => Object.keys(d.torahTrainerFavorites || {}).length],
   ['layouts',   d => Object.keys(d.dashboardPresets   || {}).length],
   ['schedules', d => Object.keys(d.dashboardSchedules || {}).length],
   ['classes',   d => Object.keys((d.dashboardRosters || {}).rosters || {}).length],
@@ -1979,7 +1993,8 @@ function initCloudSaves() {
   const merges = {
     Worksheet:  { presetFolders: ftMergeTrees },
     FlashCards: { presetFolders: ftMergeTrees, profileFolders: ftMergeTrees },
-    Dashboard:  { presetFolders: ftMergeTrees, scheduleFolders: ftMergeTrees }
+    Dashboard:  { presetFolders: ftMergeTrees, scheduleFolders: ftMergeTrees },
+    TorahTrainer: { favoriteFolders: ftMergeTrees }
   };
   document.querySelectorAll('#cloudSavesSection .ie-cloud-host').forEach(host => {
     const tool = host.getAttribute('data-tool');

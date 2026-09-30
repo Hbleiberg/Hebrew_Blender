@@ -61,9 +61,11 @@ const PAGES = [
   {
     file: 'torah_trainer.html', tool: 'TorahTrainer', host: '#cloudSavesPanel',
     seed: {
-      hebrewTorahTrainer_settings: JSON.stringify({ parshahKey: 'bereshit', scope: 'parsha-full', layout: 'stacked', showTranslit: true, hebFont: 'Frank Ruhl Libre', hebFontSize: 2.4, vowelColorScheme: 'default', lastPos: { readingKey: 'bereshit', verse: '1:3', ts: 1700000000000 }, panelsCollapsed: { 'torah.settings.panel_copy': true }, karaokeBarCollapsed: false })
+      hebrewTorahTrainer_settings: JSON.stringify({ parshahKey: 'bereshit', scope: 'parsha-full', layout: 'stacked', showTranslit: true, hebFont: 'Frank Ruhl Libre', hebFontSize: 2.4, vowelColorScheme: 'default', lastPos: { readingKey: 'bereshit', verse: '1:3', ts: 1700000000000 }, panelsCollapsed: { 'torah.settings.panel_copy': true }, karaokeBarCollapsed: false }),
+      hebrewTorahTrainer_favorites: JSON.stringify({ 'Bereshit — Aliyah 1': { v: 1, ref: { kind: 'parsha', parshahKey: 'Bereshit', scope: 'parsha-aliyah-1' }, color: '#e69f00', ts: 1700000000000 } }),
+      hebrewTorahTrainer_favoritesFolders: JSON.stringify({ v: 1, root: [{ t: 'folder', id: 'tf', name: 'Year 1', collapsed: false, children: [{ t: 'item', name: 'Bereshit — Aliyah 1' }] }] })
     },
-    rows: ['settings:default'],
+    rows: ['favorite:Bereshit — Aliyah 1', 'settings:default'],
     expand: `openSettingsAtPanel('cloud');`,
     urlKeep: 'parsha=Bereshit&v=1:1',
     // E. the chosen translation stays chosen when this book's list does not offer it: a substitute is shown, never saved

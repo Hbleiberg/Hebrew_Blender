@@ -280,6 +280,8 @@ function buildDeviceA(D) {
     parshahKey: 'bereshit', layout: 'stacked', translationVersion: 'The Holy Scriptures: A New Translation (JPS 1917)', hebFontSize: 2.0, translitFontSize: 1.1, englishFontSize: 1.1,
     karaokeStyle: 'outline', karaokeFollow: 'translit', handoutFontSize: 'xl', ttsRate: 1.0, karaokeRate: 1.2, translitStyle: 'sbl', clickAction: 'read',
     lastPos: { readingKey: 'bereshit', verse: '1:3', ts: 1700000000000 }, karaokeBarCollapsed: true, panelsCollapsed: { 'torah.settings.panel_copy': true }, loopVerse: '1:2' }));
+  s.hebrewTorahTrainer_favorites = J({ 'Bereshit — Aliyah 1': { v: 1, ref: { kind: 'parsha', parshahKey: 'Bereshit', scope: 'parsha-aliyah-1' }, color: '#e69f00', ts: 1700000000000 }, 'Shavuot — Day 1': { v: 1, ref: { kind: 'holiday', holidayKey: 'shavuot-1' }, color: '#0072b2', ts: 1700000001000, settings: { layout: 'stacked', showTranslit: true } } });
+  s.hebrewTorahTrainer_favoritesFolders = J({ v: 1, root: [{ t: 'folder', id: 'tf', name: 'Year 1', collapsed: false, children: [{ t: 'folder', id: 'tf1', name: 'Fall', collapsed: false, children: [{ t: 'item', name: 'Bereshit — Aliyah 1' }] }] }, { t: 'item', name: 'Shavuot — Day 1' }] });
   s.hebrewFlashCards_settings = J(mutate('hebrewFlashCards_settings', base('hebrewFlashCards_settings'), { mode: 1, cardCount: 12, selectedLetters: ['א', 'ב', 'ג'], selectedVowels: ['a', 'patah'], ttsRate: 1.25 }));
   s.hebrewFlashCards_presets = J({ 'Deck A': { settings: { mode: 2, cardCount: 12 }, order: 1700000000000 }, 'Deck B': { settings: { mode: 1, cardCount: 8 }, order: 1700000001000 } });
   s.hebrewFlashCards_presetsFolders = J({ v: 1, root: [{ t: 'folder', id: 'fa', name: 'Fall', collapsed: false, children: [{ t: 'folder', id: 'fa1', name: 'Week 1', collapsed: false, children: [{ t: 'item', name: 'Deck A' }] }] }, { t: 'item', name: 'Deck B' }] });
@@ -315,7 +317,7 @@ function buildDeviceA(D) {
   return s;
 }
 const withSession = (s) => Object.assign({}, s, { [AUTH_KEY]: J(SESSION), ivritSuite_accountCache: J({ email: 'teacher@example.org', name: 'Test Teacher' }), ivritSuite_syncMeta: J({ v: 1, users: {}, welcomed: { [UID]: '2026-09-14T00:00:00.000Z' } }) });
-const EXPECTED_ROWS = { Suite: 2, TropeTutor: 2, TorahTrainer: 1, FlashCards: 8, Worksheet: 4, Dictionary: 2, Dashboard: 8 };   // 27 rows, five of them folder trees
+const EXPECTED_ROWS = { Suite: 2, TropeTutor: 2, TorahTrainer: 4, FlashCards: 8, Worksheet: 4, Dictionary: 2, Dashboard: 8 };   // 30 rows, six of them folder trees
 // A font the teacher made: it lives in IndexedDB, not localStorage, so the dump-and-classify pass below
 // cannot see it — it is seeded on A and looked for on B by name.
 const FONT_NAME = 'Morah Handwriting', FONT_B64 = 'AAEAAAALAIAAAwAwT1MvMg==';
@@ -378,7 +380,7 @@ try {
     cloud.rows.forEach(r => { byTool[r.tool] = (byTool[r.tool] || 0) + 1; });
     check('2: an empty account offered Upload everything; the run named no skipped row', s0.lines.length >= 7 && !/skipped|דולגו|Stopped|נעצר/.test(s.status), JSON.stringify({ lines: s0.lines, status: s.status }));
     const countsMatch = Object.keys(EXPECTED_ROWS).every(t => byTool[t] === EXPECTED_ROWS[t]) && Object.keys(byTool).length === Object.keys(EXPECTED_ROWS).length;
-    check('2: the cloud holds exactly the expected rows per tool (27, five of them folder trees)', countsMatch && cloud.rows.length === 27, JSON.stringify(byTool));
+    check('2: the cloud holds exactly the expected rows per tool (30, six of them folder trees)', countsMatch && cloud.rows.length === 30, JSON.stringify(byTool));
     await page.screenshot({ path: path.join(SHOTS, '2-A-uploaded.png') });
     dumpA = await dump(page);
     errA.push(...errors);

@@ -265,6 +265,9 @@
     // torah_trainer.html — one settings blob; the drawer/karaoke-bar layout and the reading position
     // (lastPos carries a timestamp on every scroll, which would keep the row "newer" forever) stay per device
     { tool: 'TorahTrainer', kind: 'settings', lsKey: 'hebrewTorahTrainer_settings', shape: 'single', merge: 'assign', omit: ['*Collapsed', 'lastPos', 'loopVerse'], ivritKey: 'torahTrainerSettings', label: 'shared.cloud.kind_settings' },
+    // Favorite readings (the Favorites tab): one row per favorite, plus the folder tree the page merges with ftMergeTrees.
+    { tool: 'TorahTrainer', kind: 'favorite', lsKey: 'hebrewTorahTrainer_favorites', shape: 'map', merge: 'item', ivritKey: 'torahTrainerFavorites', label: 'shared.cloud.kind_favorite' },
+    { tool: 'TorahTrainer', kind: 'favoriteFolders', lsKey: 'hebrewTorahTrainer_favoritesFolders', shape: 'tree', merge: 'page', follows: 'favorite', ivritKey: 'torahTrainerFavoriteFolders' },
     // flash_cards.html — decks (the page calls them presets) and their folders, the live settings, the best
     // streak, and one row per student profile — a teacher's choice to upload (privacy.legal.* says so) —
     // with the profile folders; the page supplies the tree and profile merges

@@ -804,20 +804,28 @@ Design: `docs/tropepatterns.md` → G.
 inside; an unchecked radio is neither end of the loop), Escape from the page's global keydown handler, focus
 back to the opener on close, the shared `sidebar-resize` handle `#settingsResize` and the drawer's own dark
 toggle — but nothing inside it collapses any more: the collapsible `.panel`s behind Expand all / Collapse all
-became **six tabs of flat sections**, the Trope Tutor's Settings-tab idiom inside a drawer.
+became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom inside a drawer, with Favorites
+(saved readings) first.
 
-- **The tab strip.** `.tt-tabs` is a `role="tablist"` (`torah.tabs.aria`) of six `role="tab"` buttons —
-  `TT_TAB_IDS`: `text` / `colors` / `audio` / `calendar` / `share` / `more` → `#ttTabText` … `#ttTabMore` —
-  each an inline SVG from the shared header-icons set (book, palette, music, calendar, link, gear) over its
-  label on a `.hi-lbl` span keyed `torah.tabs.<name>` (the `data-i18n` stays on the span, never the button:
-  `applyStaticI18n` would replace the SVG); the page's own `.settings-modal .tt-tab` rule stacks icon above
-  label (0.7rem), `.hi-btn` still supplying the alignment. Each tab `aria-controls` one `.tt-tabpanel`
+- **The tab strip.** `.tt-tabs` is a `role="tablist"` (`torah.tabs.aria`) of seven `role="tab"` buttons —
+  `TT_TAB_IDS`: `favorites` / `text` / `colors` / `audio` / `calendar` / `share` / `more` → `#ttTabFavorites` …
+  `#ttTabMore` — each an inline SVG from the shared header-icons set (star, book, palette, music, calendar,
+  link, gear; the star, `hi-star`, is a snippet of the set that so far lives only here — markup, the
+  header-icons CSS block is untouched) over its label on a `.hi-lbl` span keyed `torah.tabs.<name>` (the
+  `data-i18n` stays on the span, never the button: `applyStaticI18n` would replace the SVG); the page's own
+  `.settings-modal .tt-tab` rule stacks icon above label (0.7rem), `.hi-btn` still supplying the alignment.
+  Seven labels share the strip, so `.tt-tabs` is a container (`container-type:inline-size`) and two
+  `@container` steps placed *after* the base `.tt-tab` rule (same specificity — source order decides) shrink
+  the label to 0.6rem when the strip is 345px or narrower and 0.58rem at 318px or narrower: the drawer is
+  resized by hand, so a viewport query would be the wrong lever, and a browser without container queries
+  keeps the ellipsis. Each tab `aria-controls` one `.tt-tabpanel`
   (`#ttTabPanel<Name>`, `role="tabpanel"`, `aria-labelledby` its tab, `hidden` unless selected).
 - **A section** is a flat `.tt-set` carrying `data-set="<key>"` under a `h3.tt-set-title` — serif over a
   hairline rule, the tutor's `.tu-set-title` idiom, `tabindex="-1"` so it takes programmatic focus without
   joining the Tab loop — keyed by the old `torah.settings.panel_*` keys (the handout's heading is
   `torah.handout.title`, `#ttHandoutTitle`); a sub-block inside one is a `.tt-set-sub` (Display's *Font
-  sizes*). The twenty sections by tab (`TT_SECTION_TAB`):
+  sizes*). The twenty-one sections by tab (`TT_SECTION_TAB`):
+  - **Favorites** — `favorites` (Favorite readings; *Favorites* below).
   - **Text** — `display` (Display: the Layout row first — the four `ttLayout` radios, Side by side / Interlinear /
     Page view / Trope staff, a `.form-row.tt-color-row` holding a `.radio-group.tt-color-list`, the Colors tab's
     wrap-whole idiom, so a group that does not fit beside its label drops whole to the next line — then the
@@ -845,8 +853,9 @@ became **six tabs of flat sections**, the Trope Tutor's Settings-tab idiom insid
   - **More** — `cloud` (Cloud saves, `#cloudSavesPanel`), `about` (About & FAQ), `reset` (Reset).
 - **One writer, two openers.** `setSettingsTab(name)` is the only writer of tab state — `aria-selected`,
   the roving `tabindex` (the selected tab alone is in the Tab sequence), `hidden` on every tab panel, and
-  `.settings-body` scrolled to the top; an unknown name reads `text`. `openSettings()` calls it with
-  `'text'` before `syncFormToSettings()`: **the drawer always opens on Text** — no tab memory, no new key.
+  `.settings-body` scrolled to the top; an unknown name reads `favorites`. `openSettings()` calls it with
+  `'favorites'` before `syncFormToSettings()`: **the drawer always opens on Favorites** — no tab memory, no
+  new key.
   `openSettingsAtPanel(key)` keeps its name: it opens the drawer, maps the section key through
   `TT_SECTION_TAB`, scrolls the section to the top of the body and focuses its heading, so the next Tab
   enters the section's controls. Its callers: the Copy bar's *Copy options…* (`'copy'`), the cloud module's
@@ -871,6 +880,75 @@ became **six tabs of flat sections**, the Trope Tutor's Settings-tab idiom insid
   the former `#ttHandoutBar`, same ids, plus Print handout (`printHandout`); `syncFormToSettings` calls
   `syncHandoutForm()`, so the section is synced on every open, reset and cloud re-read, and `cloudReread`
   no longer calls it itself.
+- **Favorites** (the `FAVORITES — saved readings` block in the script). A favorite is a reading a teacher
+  comes back to — a parsha, an aliyah, a haftarah, a holiday reading or a verse range — saved under a name,
+  with a color, optionally with the look it was saved in. The tab holds the *Save current selection as
+  favorite* button (`#ttFavAddBtn`, the `hi-plus` glyph) and the list `#ttFavList`.
+  - **Store.** `hebrewTorahTrainer_favorites` (`FAV_KEY`) is a flat map `{ [name]: { v:1, ref, color, ts,
+    settings? } }` — the name is the identity, as in every preset store of the suite — and
+    `hebrewTorahTrainer_favoritesFolders` (`FAV_TREE_KEY`) is its folder tree, owned by the shared folder-tree
+    block, which this page now carries (JS + CSS, byte-identical with the other carriers). `color` is one of
+    `FAV_PALETTE` (the dashboard's Okabe–Ito preset palette, eight colors; `favColorOf` falls back to grey on
+    anything that is not a six-digit hex). `ref` is one of the three forms a practice link carries, never
+    `readingCycle` or `triennialYear` (those are how this device reads, not what it reads):
+    `{kind:'parsha', parshahKey, scope}` (scope `parsha-full`, `parsha-aliyah-1…7` or `parsha-haftarah`),
+    `{kind:'holiday', holidayKey}` (one of `HOLIDAY_READINGS`, whole) or `{kind:'ref', customRef, holidayKey?}`
+    (a verse range; the holiday key only while the range sits inside that reading). `favoriteRefNow()` derives
+    it from `settings` (the loaded reading, never the Copy bar's selection) and returns null when nothing is
+    loaded — the Save button then only toasts `torah.fav.none_loaded`. `settings` (optional) is the
+    `LINK_DISPLAY` vocabulary — exactly what *Include my settings* puts in a link — captured by
+    `favoriteSettingsNow()` only when the popup's checkbox is ticked: a look whose coloring switch is off is
+    dropped (`LINK_LOOK_SWITCH`), and a My Font is refused by `LINK_DISPLAY.hebFont`, which the popup's
+    summary line names (`linkFontLeftOut`, `torah.fav.font_left_out`).
+  - **The save popup** `#ttFavDialog` (+ `#ttFavBackdrop`) is a sibling of `#settingsModal` in `<body>`, on
+    purpose: z 110/120 over the drawer's 100 (below the tour and the toast), with its own Tab trap
+    (`_favDialogKey`) so the drawer's trap never sees its keys, and Escape stopped there so the drawer's
+    document-level handler does not also close the drawer. Its fields: the reading's label
+    (`currentRangeLabel`, else `resolveRef().label`, else the stored form's label), Name (prefilled with that
+    label; Enter anywhere but a button or select saves), Folder (a `<select>` of `ftPaths` — the block's own
+    "(top level)" / path labels — and a chosen folder files the new item straight into it through
+    `ftFolderArray`, because `syncTree` would otherwise append the new name at the root), eight swatches
+    (`buildFavSwatches`; the default is the first palette color no favorite uses yet, then round-robin —
+    `favNextFreeColor`, the dashboard's `assignPresetColors` idea), the *Also save my display settings*
+    checkbox with its summary line (`#ttFavSummary`, layout / translit / translation / font, plus the
+    left-out font), and the inline note `#ttFavNote` (`aria-live`, `aria-disabled` on Save) for an empty or
+    duplicate name — never an `alert`. The opener gets focus back on close (else `#ttFavAddBtn`).
+  - **The list.** `renderFavorites()` mounts the shared component — `mountFolderTree({ treeKey: FAV_TREE_KEY,
+    container: '#ttFavList', noun: 'favorite', listItemNames, buildItemRow })` — so folders, drag-drop, the
+    Move ▾ menu and folder CRUD are the block's. Each row's fragment: the color dot (`.tt-fav-dot`, a button
+    with a 24px hit box — a press cycles the palette, `recolorFavorite`), Open (`openFavorite`), Rename
+    (the pencil, `renameFavorite`: a `prompt`, the map re-keyed in place so the list keeps its order,
+    `_ftRenameNode` keeping the item in its folder), Duplicate (⧉, `ftDuplicateName` + `ftInsertAfter`) and
+    Delete (`hi-close`, after a `confirm`). The dot comes after the name in DOM order (the block owns the
+    row) and is placed between the drag handle and the name by CSS `order`, so the block stays
+    byte-identical; `'favorite'` is not one of the block's nouns, so its generic empty placeholder is hidden
+    by CSS and the page's own `#ttFavEmpty` note speaks instead. `renderFavorites` runs from `applyI18n`
+    (the first paint on `I18n.ready`, then every language switch — the buttons are `I18n.t`'d) and from the
+    cloud module's `onLocalChanged` for the two favorites kinds; it re-reads its own keys, so a download or
+    an import needs nothing else.
+  - **Opening one** (`openFavorite(name)`) re-validates the stored `ref` with the deep-link reader's own
+    gates — `parshiyotData` by `en`, the scope regex `/^parsha-(full|aliyah-[1-7]|haftarah)$/`, `holidayByKey`,
+    `parseSharedRef`, `refWithin` — and toasts `torah.fav.stale` when the reading no longer resolves. Then,
+    when the favorite carries `settings`, the snapshot lands **first** as a real saved change, never a link
+    view: `linkViewEnd()`, each field through its `LINK_DISPLAY` check into `settings` (a deep copy — the
+    color pickers edit the maps in place), then `syncFormToSettings`, `setHebFont`, both color-picker inits,
+    `applyTropeColors`, `applyDisplayClasses` (the `cloudReread` repaint tail). After that the reading writes
+    the same fields the `?parsha=` / `?holiday=` / `?ref=` branches write (a range seeds `parshahKey` only
+    when the device has none, through `parshaContainingRef`), then `saveSettings(); syncParshaSelect();
+    fetchAndRender(); closeSettings()` and a `torah.fav.opened` toast. `clearLoop()` runs before either.
+  - **Delete and reset.** Deleting a favorite deliberately does **not** call `IvritSaves.forgetRow`: with its
+    sync memory kept, the next listing shows *Deleted on this device → Delete from your account / Bring it
+    back*; forgetting would make the listing silently download the row again. `resetAllSettings` leaves both
+    favorites keys alone (they are not settings).
+  - **Where they travel.** Two `IVRIT_SYNC_REGISTRY` rows — `favorite` (map / item, `ivritKey`
+    `torahTrainerFavorites`, label `shared.cloud.kind_favorite`) and `favoriteFolders` (tree / page, follows
+    `favorite`, `torahTrainerFavoriteFolders`) — with `merges: { favoriteFolders: ftMergeTrees }` passed to
+    this page's `IvritSaves.attach` (*Cloud saves* below); no migration was needed (`TorahTrainer` is already
+    in `saves.tool`'s CHECK and `kind` is free text). The AllTools file on `index.html` carries both keys
+    (`ivritSafeAssign` merge for the map, `ftImportTree(key, incoming, false)` for the tree), its inventory
+    counts `favorites`, and its cloud `merges` map names `TorahTrainer: { favoriteFolders: ftMergeTrees }`; the
+    Torah Trainer still has no `IVRIT_CFG` of its own, so favorites travel only through AllTools and the
+    account. `privacy.legal.*` names "favorite Torah readings" in both its local and account segments.
 - **The toolbar and the Copy bar.** `.tt-controls` above the reading holds what a teacher changes in front
   of a class and nothing else: the Parsha row — the ‹ › week-step buttons (`#ttWeekPrev` / `#ttWeekNext` →
   `stepParsha`) around `#parshaSelect`, *Jump to this week's parsha* as an icon-only button (`#ttJumpWeekTop`
@@ -1120,6 +1198,11 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   English for a passage, the substitute (JPS 1917, else the first safe version) lives in `_versionFallback`,
   `effectiveVersion()` is what every `fetchSefariaText` call and the Version box / footer show, and the stored
   choice travels through a sync untouched. The fallback is cleared on a book change and by a new choice.
+- **The Torah Trainer's favorites are two rows beside the settings blob** — `favorite` (one row per saved
+  reading) and `favoriteFolders` (its tree, merged through the page's `merges: { favoriteFolders: ftMergeTrees }`).
+  `onLocalChanged(kind)` branches on the kind: the two favorites kinds only re-render the list
+  (`renderFavorites`, which re-reads its keys); everything else takes the handout-guarded `cloudReread`
+  below. Deleting a favorite keeps its sync memory on purpose (*Settings drawer → Favorites*).
 - **A download during the handout print override waits.** `onLocalChanged` sets `_pendingCloudReread` while
   `_handoutActive` (the module's flush is a no-op then, so the download stays in the store) and `_handoutExit`
   runs `cloudReread()` — the `resetAllSettings()` sequence plus `syncParshaSelect` and the fallback reset
@@ -1136,8 +1219,9 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   back losslessly — a reset never overwrites the account's copy by itself. The confirms say so while signed in
   (`*.confirm.reset_*_cloud`).
 - By design: `?parsha=` / `?holiday=` / `?ref=` deep links persist the reading and travel (a bookmark on one
-  device is the next device's starting point); a `?ref=` range seeds `parshahKey` only when the device has
-  none, so a teacher's own week survives opening a colleague's link; `lastPos` and `loopVerse` stay per
-  device (omitted); the Trope merge
+  device is the next device's starting point, and a favorite is the durable form of the same reading); a
+  `?ref=` range seeds `parshahKey` only when the device has none, so a teacher's own week survives opening a
+  colleague's link; `lastPos` and `loopVerse` stay per device (omitted — the cross-device memory of *what* to
+  read is a favorite, not the scroll position); the Trope merge
   maxes `w` as well as `r` (mastery can read lower after a lossless merge, never higher than either side);
   `progress.v` is maxed and then forced to the current schema version.
