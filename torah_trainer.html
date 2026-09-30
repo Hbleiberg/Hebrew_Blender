@@ -372,6 +372,9 @@ body.dark .tt-ctrl select, body.dark .tt-ctrl input[type="number"], body.dark .t
   background:var(--navy-deep); color:var(--text);
 }
 .tt-ctrl select { min-width:110px; max-width:100%; }
+.tt-custom { flex-wrap:wrap; }        /* on a phone the verse boxes and Go drop to a second line instead of crushing the select */
+.tt-custom select { min-width:96px; }  /* "Deuteronomy" fits; the 110px floor is the parsha picker's */
+.tt-custom input[type="number"] { padding-inline:6px; }
 .tt-ctrl select:focus, .tt-ctrl input:focus { outline:2px solid var(--gold); outline-offset:0; }
 .tt-stack-toggles { display:inline-flex; flex-direction:column; gap:4px; align-items:stretch; }
 .tt-stack-toggles .row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
@@ -2106,6 +2109,25 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <option value="parsha-haftarah" data-i18n="torah.schedule.scope_haftarah">Haftarah</option>
     </select>
   </span>
+  <!-- Custom range (moved back from the Calendar tab): any Torah verses, one compact group. prefillCustomPicker seeds
+       Book and Chapter from the current reading after every reading change (syncParshaSelect); Go loads the range
+       through applyCustomRange. The chapter and verse boxes carry aria-labels (their visible text is a placeholder). -->
+  <span class="tt-ctrl tt-custom">
+    <label for="ttCustomBook" data-i18n="torah.custom.range_label">Custom:</label>
+    <select id="ttCustomBook" onchange="customBookChanged()" title="Book" data-i18n-title="torah.custom.book_label">
+      <option value="Genesis" data-i18n="torah.custom.book_genesis">Genesis</option>
+      <option value="Exodus" data-i18n="torah.custom.book_exodus">Exodus</option>
+      <option value="Leviticus" data-i18n="torah.custom.book_leviticus">Leviticus</option>
+      <option value="Numbers" data-i18n="torah.custom.book_numbers">Numbers</option>
+      <option value="Deuteronomy" data-i18n="torah.custom.book_deuteronomy">Deuteronomy</option>
+    </select>
+    <input type="number" id="ttCustomChapter" min="1" max="50" step="1" value="1" placeholder="ch." data-i18n-placeholder="torah.custom.chapter_ph" aria-label="Chapter" data-i18n-aria-label="torah.custom.chapter_label" title="Chapter" data-i18n-title="torah.custom.chapter_label" style="width:58px;">
+    <span aria-hidden="true" style="color:var(--muted);">:</span>
+    <input type="number" id="ttCustomVStart" min="1" step="1" placeholder="from" data-i18n-placeholder="torah.custom.verse_from_ph" aria-label="First verse" data-i18n-aria-label="torah.custom.verse_from_aria" style="width:62px;">
+    <span aria-hidden="true" style="color:var(--muted);">–</span>
+    <input type="number" id="ttCustomVEnd" min="1" step="1" placeholder="to" data-i18n-placeholder="torah.custom.verse_to_ph" aria-label="Last verse" data-i18n-aria-label="torah.custom.verse_to_aria" style="width:62px;">
+    <button class="btn btn-xs" onclick="applyCustomRange()" type="button" data-i18n="torah.custom.go_button">Go</button>
+  </span>
   <!-- The two reveal switches a teacher flips in front of a class: mirrors of the Text tab's Show transliteration /
        Show translation rows (one setting, two controls — the audio bar's sliders mirror the Audio tab's the same way).
        setShowTranslit / setShowTranslation are the writers; syncShowSwitches keeps both pairs in step. -->
@@ -2640,36 +2662,6 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_holiday">Holiday Torah readings</h3>
         <!-- Built once by buildHolidayPicker() from HOLIDAY_READINGS (syncFormToSettings); syncHolidayPickerState marks the loaded one. -->
         <div id="ttHolidayPicker" class="tt-holiday-list" role="group" aria-label="Holiday Torah Readings" data-i18n-aria-label="torah.controls.holiday_group_label"></div>
-      </div>
-      <div class="tt-set" data-set="custom">
-        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_custom">Custom range</h3>
-        <!-- Any Torah verses (was the toolbar's Custom range… bar): prefillCustomPicker seeds Book and Chapter from the
-             current reading on every drawer open; Go loads the range through applyCustomRange. -->
-        <div class="form-row">
-          <label for="ttCustomBook" data-i18n="torah.custom.book_label">Book</label>
-          <select id="ttCustomBook" onchange="customBookChanged()">
-          <option value="Genesis" data-i18n="torah.custom.book_genesis">Genesis</option>
-          <option value="Exodus" data-i18n="torah.custom.book_exodus">Exodus</option>
-          <option value="Leviticus" data-i18n="torah.custom.book_leviticus">Leviticus</option>
-          <option value="Numbers" data-i18n="torah.custom.book_numbers">Numbers</option>
-          <option value="Deuteronomy" data-i18n="torah.custom.book_deuteronomy">Deuteronomy</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label for="ttCustomChapter" data-i18n="torah.custom.chapter_label">Chapter</label>
-          <input type="number" id="ttCustomChapter" min="1" max="50" step="1" value="1" style="width:80px;">
-        </div>
-        <div class="form-row">
-          <label for="ttCustomVStart" data-i18n="torah.custom.verses_label">Verses</label>
-          <span style="display:inline-flex; align-items:center; gap:6px;">
-            <input type="number" id="ttCustomVStart" min="1" step="1" placeholder="from" data-i18n-placeholder="torah.custom.verse_from_ph" aria-label="First verse" data-i18n-aria-label="torah.custom.verse_from_aria" style="width:72px;">
-            <span style="color:var(--muted);">–</span>
-            <input type="number" id="ttCustomVEnd" min="1" step="1" placeholder="to" data-i18n-placeholder="torah.custom.verse_to_ph" aria-label="Last verse" data-i18n-aria-label="torah.custom.verse_to_aria" style="width:72px;">
-          </span>
-        </div>
-        <div class="form-row">
-          <button class="btn btn-xs" onclick="applyCustomRange()" type="button" data-i18n="torah.custom.go_button">Go</button>
-        </div>
       </div>
     </div>
     <div class="tt-tabpanel" id="ttTabPanelShare" role="tabpanel" aria-labelledby="ttTabShare" hidden>
@@ -7575,7 +7567,7 @@ const TT_SECTION_TAB = {
   display: 'text', font: 'text', translit: 'text', translation: 'text',
   vowel_color: 'colors', trope_color: 'colors',
   audio: 'audio', karaoke: 'audio', staff: 'audio',
-  schedule: 'calendar', lookup: 'calendar', holiday: 'calendar', custom: 'calendar',
+  schedule: 'calendar', lookup: 'calendar', holiday: 'calendar',
   share: 'share', copy: 'share', handout: 'share', print: 'share',
   cloud: 'more', about: 'more', reset: 'more'
 };
@@ -8493,7 +8485,6 @@ function syncFormToSettings() {
   syncPitchControls();
   document.getElementById('ttVersionWrap').style.display = settings.showTranslation ? '' : 'none';
   buildHolidayPicker(); syncHolidayPickerState();   // the Calendar tab's holiday list (built once) with the loaded reading marked
-  prefillCustomPicker();                            // the Calendar tab's Custom range seeds Book + Chapter from the current reading
 }
 function toggleColorOptionsVisibility(show) {
   document.getElementById('colorPickerList').style.display = show ? '' : 'none';
@@ -8909,6 +8900,7 @@ function syncParshaSelect() {
   }
   syncHolidayPickerState();
   syncWeekStepLabels();
+  prefillCustomPicker();   // the toolbar's Custom range follows the reading: Book + Chapter from what is on screen
 }
 /* ═══ Week-step buttons ═══
    "His reading is six weeks from now" was unanswerable from a 71-option dropdown with no dates
@@ -9098,6 +9090,7 @@ function prefillCustomPicker() {
   if (!book || !TORAH_BOOK_CHAPTERS[book]) return;                 // unknown/holiday context → leave the Genesis default
   const bookSel = document.getElementById('ttCustomBook');
   const chapIn = document.getElementById('ttCustomChapter');
+  if (!bookSel || !chapIn) return;
   bookSel.value = book;
   chapIn.max = TORAH_BOOK_CHAPTERS[book];
   if (chap >= 1 && chap <= TORAH_BOOK_CHAPTERS[book]) chapIn.value = chap;

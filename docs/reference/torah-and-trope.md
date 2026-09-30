@@ -845,10 +845,8 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
     readings: `#ttHolidayPicker`, a `.tt-holiday-list` of the seventeen `HOLIDAY_READINGS` buttons that
     `buildHolidayPicker()` builds once — `syncFormToSettings` calls it on every drawer open and it returns when
     the list is already built — and `syncHolidayPickerState()` marks the loaded one (`.active` + `aria-pressed`); a press goes
-    through `applyHolidayReading`, the same apply path as the parsha picker's holiday `<optgroup>`), `custom`
-    (Custom range: Book `#ttCustomBook`, Chapter `#ttCustomChapter`, Verses `#ttCustomVStart`–`#ttCustomVEnd`
-    and Go → `applyCustomRange()`; `prefillCustomPicker()` runs from `syncFormToSettings`, so Book and Chapter
-    are seeded from the current reading on every drawer open).
+    through `applyHolidayReading`, the same apply path as the parsha picker's holiday `<optgroup>`). The Custom
+    range is not here: it sits in the toolbar (below).
   - **Share** — `print` (Print), `share` (Practice link), `copy` (Copy verses), `handout` (Student handout);
     *The Share tab* below.
   - **More** — `cloud` (Cloud saves, `#cloudSavesPanel`), `about` (About & FAQ), `reset` (Reset).
@@ -959,8 +957,12 @@ became **seven tabs of flat sections**, the Trope Tutor's Settings-tab idiom ins
   `.tt-stack-toggles` pair). Those are mirrors of the Text tab's *Show transliteration* / *Show translation*
   rows — one setting shown twice, the way the audio bar's sliders mirror the Audio tab's: `setShowTranslit` /
   `setShowTranslation` are the only writers, and `syncShowSwitches()` (from `syncFormToSettings`) keeps both
-  pairs in step. Everything else the toolbar once held lives in the drawer — the Layout radios and the
-  Version list on the Text tab; the Holiday Torah readings and the Custom range on the Calendar tab; Print,
+  pairs in step. **The Custom range** (`.tt-ctrl.tt-custom`: Book `#ttCustomBook`, Chapter `#ttCustomChapter`,
+  Verses `#ttCustomVStart`–`#ttCustomVEnd` and Go → `applyCustomRange()`) is the toolbar's one compact group after
+  the Reading scope; `prefillCustomPicker()` runs from `syncParshaSelect`, so Book and Chapter follow the reading on
+  screen after every change (the chapter and verse boxes carry aria-labels, their visible text is a placeholder).
+  Everything else the toolbar once held lives in the drawer — the Layout radios and the
+  Version list on the Text tab; the Holiday Torah readings on the Calendar tab; Print,
   Student handout, Copy and Copy link + Include my settings on the Share tab — and the toolbar's Settings button
   (`#gearBtn`: the gear with its label, primary-styled at the inline end of the Parsha row — the header carries no
   gear any more, so the one door to everything else is in the row a teacher already looks at) is the drawer's one entry. Gone with them: the toolbar's own Share button `#ttShareOpenBtn`,
