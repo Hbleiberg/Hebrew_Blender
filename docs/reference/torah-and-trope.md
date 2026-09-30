@@ -639,7 +639,8 @@ re-syncs the controls from `settings`; every control saves on change. Print hide
 
 ## Trope staff (beta) — `torah_trainer.html`
 
-A fourth Layout (`settings.layout === 'staff'`, the radio beside Page view with the suite's `.beta-tag`): the
+A fourth Layout (`settings.layout === 'staff'`, the radio beside Page view on the Text tab's Layout row, with the
+suite's `.beta-tag`): the
 reading drawn on a music staff, a verse at a time, the words under their notes. Engine: `js/trope-staff.js`
 (above); data: `data/trope/trope_phrases.json`, fetched lazily on the first staff render with the **same `?v=`
 the tutor uses** (`STAFF_PHRASES_URL`; bump both together) through `ivritSafeParse` + `_phraseSetsFrom`.
@@ -716,14 +717,14 @@ Design: `docs/tropepatterns.md` → G.
   the reading, so every render on that path is bracketed by `genizaMarkOut` / `genizaMarkIn`. The handout's
   Large / Extra large sizes reach the text layouts only: the staff's words are measured and sized at the
   screen size.
-- **Words.** The Translit switch drives the Latin line here too: with it on, the cells are `tokenizeHebrew`'s
+- **Words.** The Translit switch (the Text tab's *Show transliteration*) drives the Latin line here too: with it on, the cells are `tokenizeHebrew`'s
   under-word cells (`.tt-wh` + `.tt-wtl`) whatever the placement radios say (a separate transliteration row
   would duplicate the `.tt-word[data-twi]` spans; the Transliteration section's note on the Text tab says so in this layout), so
   `body.translit-under` is on and `karaokeFollowEffective()` is `'hebrew'`. `staffWords` is the sub-choice under
   the switch — `'both'` (the Hebrew with its Latin line) or `'translit'` (the Latin line alone;
   `body.staff-words-translit` hides `.tt-wh`); a stored `'hebrew'` (the retired third choice) reads `'both'` and
   stays stored. A dead library falls back to the Hebrew with the existing chip, and the handout, which turns the
-  switch off, prints the Hebrew alone. The Translation switch adds the verse's translation under its systems
+  switch off, prints the Hebrew alone. The Translation switch (the Text tab's *Show translation*) adds the verse's translation under its systems
   (`.tt-verse-row > .tt-translation`, no row label, left-aligned to the notation, sized by `--tt-english-size`).
 - **Lazy SVG.** Layouts are computed for every verse at render (they place the words); each system's SVG is
   drawn by `staffEnsureSvg` when an `IntersectionObserver` sees it near the viewport, when the tune or the
@@ -810,23 +811,36 @@ became **six tabs of flat sections**, the Trope Tutor's Settings-tab idiom insid
   each an inline SVG from the shared header-icons set (book, palette, music, calendar, link, gear) over its
   label on a `.hi-lbl` span keyed `torah.tabs.<name>` (the `data-i18n` stays on the span, never the button:
   `applyStaticI18n` would replace the SVG); the page's own `.settings-modal .tt-tab` rule stacks icon above
-  label, `.hi-btn` still supplying the alignment. Each tab `aria-controls` one `.tt-tabpanel`
+  label (0.7rem), `.hi-btn` still supplying the alignment. Each tab `aria-controls` one `.tt-tabpanel`
   (`#ttTabPanel<Name>`, `role="tabpanel"`, `aria-labelledby` its tab, `hidden` unless selected).
 - **A section** is a flat `.tt-set` carrying `data-set="<key>"` under a `h3.tt-set-title` — serif over a
   hairline rule, the tutor's `.tu-set-title` idiom, `tabindex="-1"` so it takes programmatic focus without
   joining the Tab loop — keyed by the old `torah.settings.panel_*` keys (the handout's heading is
   `torah.handout.title`, `#ttHandoutTitle`); a sub-block inside one is a `.tt-set-sub` (Display's *Font
-  sizes*). The seventeen sections by tab (`TT_SECTION_TAB`):
-  - **Text** — `display` (Display: the show-toggles, the click action, the Font sizes sub-block), `font`
-    (Hebrew font), `translit` (Transliteration).
+  sizes*). The twenty sections by tab (`TT_SECTION_TAB`):
+  - **Text** — `display` (Display: the Layout row first — the four `ttLayout` radios, Side by side / Interlinear /
+    Page view / Trope staff, a `.form-row.tt-color-row` holding a `.radio-group.tt-color-list`, the Colors tab's
+    wrap-whole idiom, so a group that does not fit beside its label drops whole to the next line — then the
+    show-toggles, the click action, the Font sizes sub-block), `font` (Hebrew font), `translit` (Transliteration:
+    the *Show transliteration* switch `#ttShowTranslit` first, then the placement and scheme controls),
+    `translation` (Translation: the *Show translation* switch `#ttShowTranslation` and, only while it is on, the
+    version list `#ttVersionWrap` / `#ttVersionSelect`, stacked under its label because version titles run long;
+    `syncFormToSettings` and the switch write its `display`).
   - **Colors** — `vowel_color`, `trope_color` (the two lists of *Trope color coding* above).
   - **Audio** — `audio` (Audio speeds & pitch), `karaoke` (Karaoke highlighting: the Style and Follow groups
     that used to sit under Display's *Karaoke settings* sub-heading; the `h3` keeps `id="lblKaraokeHdr"`, so
     both groups' `aria-labelledby` still name it), `staff` (Trope staff, the BETA badge in the heading beside
     the `data-i18n` span — `openSettingsAtPanel('staff')` lands by `data-set`, so the split heading costs
     nothing).
-  - **Calendar** — `schedule` (Reading schedule), `lookup` (Torah portion lookup).
-  - **Share** — `share` (Practice link), `copy` (Copy verses), `handout` (Student handout), `print` (Print);
+  - **Calendar** — `schedule` (Reading schedule), `lookup` (Torah portion lookup), `holiday` (Holiday Torah
+    readings: `#ttHolidayPicker`, a `.tt-holiday-list` of the seventeen `HOLIDAY_READINGS` buttons that
+    `buildHolidayPicker()` builds once — `syncFormToSettings` calls it on every drawer open and it returns when
+    the list is already built — and `syncHolidayPickerState()` marks the loaded one (`.active` + `aria-pressed`); a press goes
+    through `applyHolidayReading`, the same apply path as the parsha picker's holiday `<optgroup>`), `custom`
+    (Custom range: Book `#ttCustomBook`, Chapter `#ttCustomChapter`, Verses `#ttCustomVStart`–`#ttCustomVEnd`
+    and Go → `applyCustomRange()`; `prefillCustomPicker()` runs from `syncFormToSettings`, so Book and Chapter
+    are seeded from the current reading on every drawer open).
+  - **Share** — `print` (Print), `share` (Practice link), `copy` (Copy verses), `handout` (Student handout);
     *The Share tab* below.
   - **More** — `cloud` (Cloud saves, `#cloudSavesPanel`), `about` (About & FAQ), `reset` (Reset).
 - **One writer, two openers.** `setSettingsTab(name)` is the only writer of tab state — `aria-selected`,
@@ -836,28 +850,49 @@ became **six tabs of flat sections**, the Trope Tutor's Settings-tab idiom insid
   `openSettingsAtPanel(key)` keeps its name: it opens the drawer, maps the section key through
   `TT_SECTION_TAB`, scrolls the section to the top of the body and focuses its heading, so the next Tab
   enters the section's controls. Its callers: the Copy bar's *Copy options…* (`'copy'`), the cloud module's
-  `open` (`'cloud'`, the header chip's *Cloud saves…* item), the toolbar's Share button (`'share'`) and
-  `scripts/smoke-tools.mjs` (`'cloud'`).
+  `open` (`'cloud'`, the header chip's *Cloud saves…* item) and `scripts/smoke-tools.mjs` (`'cloud'`); nothing
+  opens it at `'share'` any more — the Share tab is reached through the header gear (`#gearBtn` →
+  `openSettings()`) like every other tab.
 - **Keyboard.** The tablist's keydown handler is the Trope Tutor's: Left/Right move by **visual** direction
   (the strip mirrors in the Hebrew UI, so under `dir="rtl"` the keys swap), Home/End, wrapping, and moving
   focus activates the tab (automatic activation). Tab inside the drawer is the trap's.
-- **The Share tab.** *Practice link*: `#ttShareWrap` holds Copy link (`#ttShareBtn` → `copyPracticeLink`)
+- **The Share tab**, in order: *Print* first — Print this reading → `printReading()`. *Practice link*: `#ttShareWrap` holds Copy link (`#ttShareBtn` → `copyPracticeLink`)
   and the Include my settings switch (`#ttShareSettings` → `settings.shareIncludeDisplay`); `syncShareBtn`,
   re-run per render, hides the wrap and shows the `#ttShareNone` note exactly when `practiceLinkURL()` is
-  null. *Copy verses*: a *Select verses to copy…* launcher (`openCopyBarFromDrawer()`: closes the drawer —
-  verse selection needs the reading clickable and the drawer is modal — opens the inline `#ttCopyBar`
-  through `toggleCopyBar` if it is closed, scrolls it into view and focuses `#ttCopyBulkCb`) followed by the
-  copy-format options, which `syncFormToSettings` syncs (`syncCopyForm` owns only the bar's own state).
-  *Student handout*: every control of the former `#ttHandoutBar`, same ids, plus Print handout
-  (`printHandout`); `syncFormToSettings` calls `syncHandoutForm()`, so the section is synced on every open,
-  reset and cloud re-read, and `cloudReread` no longer calls it itself. *Print*: Print this reading →
-  `printReading()`.
-- **The toolbar and the Copy bar.** Print, Student handout, Copy and Copy link + Include my settings left
-  the toolbar; one `#ttShareOpenBtn` *Share* (the `hi-link` glyph, `torah.share.open_button`) opens the drawer
-  on the Share tab. `#ttHandoutBar` and `toggleHandoutBar()` are gone. `#ttCopyBar` stays on the page (it is
-  the selection UI), with *Copy options…* → `openSettingsAtPanel('copy')` and its own Close button
-  (`closeCopyBar()`: closes through `toggleCopyBar`, which still owns `copyBulkRemember` and the bulk mode,
-  then hands focus to `#ttShareOpenBtn` rather than dropping it on `<body>`).
+  null. *Copy verses*: a *Select verses to copy…* launcher (`openCopyBarFromDrawer()`: in projector mode —
+  `body.fullscreen`, which hides the toolbar and the bars under it — it refuses with the
+  `torah.copy.fullscreen_note` toast and stays in the drawer, since it would otherwise open a bar nobody can
+  see and arm verse selection on the projected reading; otherwise it closes the drawer — verse selection
+  needs the reading clickable and the drawer is modal — opens the inline `#ttCopyBar` through
+  `toggleCopyBar` if it is closed, scrolls it into view and focuses `#ttCopyBulkCb`) followed by the
+  copy-format options, which `syncFormToSettings` syncs (`syncCopyForm` owns only the bar's own state); the
+  three pill rows (Nikkud, Cantillation, Layout) carry the color lists' `.tt-color-row` / `.tt-color-list`
+  classes, so a group that does not fit beside its label drops whole. *Student handout*: every control of
+  the former `#ttHandoutBar`, same ids, plus Print handout (`printHandout`); `syncFormToSettings` calls
+  `syncHandoutForm()`, so the section is synced on every open, reset and cloud re-read, and `cloudReread`
+  no longer calls it itself.
+- **The toolbar and the Copy bar.** `.tt-controls` above the reading holds what a teacher changes in front
+  of a class and nothing else: the Parsha row — the ‹ › week-step buttons (`#ttWeekPrev` / `#ttWeekNext` →
+  `stepParsha`) around `#parshaSelect`, *Jump to this week's parsha* as an icon-only button (`#ttJumpWeekTop`
+  → `goToCurrentParshah`; the calendar glyph, its name on `title` + `aria-label` from the same key; the
+  full-text button stays on the Calendar tab) and the Reading scope `#scopeSelect` — plus the two **reveal
+  switches**, *Translit* and *Translation* (`#ttShowTranslitBar` / `#ttShowTranslationBar`, the stacked
+  `.tt-stack-toggles` pair). Those are mirrors of the Text tab's *Show transliteration* / *Show translation*
+  rows — one setting shown twice, the way the audio bar's sliders mirror the Audio tab's: `setShowTranslit` /
+  `setShowTranslation` are the only writers, and `syncShowSwitches()` (from `syncFormToSettings`) keeps both
+  pairs in step. Everything else the toolbar once held lives in the drawer — the Layout radios and the
+  Version list on the Text tab; the Holiday Torah readings and the Custom range on the Calendar tab; Print,
+  Student handout, Copy and Copy link + Include my settings on the Share tab — and the header gear
+  (`#gearBtn`) is the drawer's one entry. Gone with them: the toolbar's own Share button `#ttShareOpenBtn`,
+  `#ttHandoutBar` / `toggleHandoutBar()`, the inline holiday strip's `#ttHolidayBtn` / `toggleHolidayPicker()`
+  and the `#ttCustomPicker` bar with `toggleCustomPicker()` (the fullscreen and print hide-lists no longer
+  name it). The tour's third step therefore points at `#ttJumpWeekTop`, its text naming the two switches
+  beside it and sending the reader to the Text tab for layout and the rest, as the About tab's how-to step 2
+  and the JSON-LD how-to do.
+  `#ttCopyBar` stays on the page (it is the selection UI), with *Copy options…* → `openSettingsAtPanel('copy')`
+  and its own Close button (`closeCopyBar()`: closes through `toggleCopyBar`, which still owns
+  `copyBulkRemember` and the bulk mode, then hands focus to the header gear `#gearBtn` — the way back to the
+  Share tab — rather than dropping it on `<body>`).
 - **Retired.** The panel-collapse memory block, `PANEL_MEM_CFG`, `expandAllMenus` / `collapseAllMenus`,
   `syncPanelTitleAria` and `panelKeyOf` are gone, and `panelsCollapsed` left `DEFAULTS`: an older blob's map
   rides along unread through `ivritSafeAssign`, as on the Trope Tutor, and the cloud row's `'*Collapsed'`
@@ -1027,8 +1062,8 @@ chrome). An RTL sweep must not "fix" the pin.
 
 ## Practice link — the sender's look (`?s=`, the link view)
 
-`torah_trainer.html`'s Copy link (`copyPracticeLink`, in the settings drawer's Share tab, which the toolbar's
-Share button opens; the readable-param half is in `shared-components.md` → *Share links*) has an **Include my
+`torah_trainer.html`'s Copy link (`copyPracticeLink`, in the settings drawer's Share tab, reached through the
+header gear; the readable-param half is in `shared-components.md` → *Share links*) has an **Include my
 settings** switch under it in that tab (`#ttShareSettings` → `settings.shareIncludeDisplay`, remembered and
 synced with the blob).
 

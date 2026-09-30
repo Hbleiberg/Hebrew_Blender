@@ -376,12 +376,13 @@ do the in-page **control buttons**: play, pause, stop, reset / restore-default, 
 and the music note on the chant buttons, and the **action buttons**: copy, copy-link, print, save, download,
 upload, send and page, and the **dashboard's board controls**: the fullscreen quick strip (Settings, Timer, Pick,
 Text, Video, Blank, Intermission), the student picker's Pick One / Make Groups pair (in the sidebar and in the strip's pick
-popup) and the board's edit pencil, and the **Torah Trainer's picker controls**: Holiday Torah Readings
-(a calendar), Share (a link — the one toolbar button, which opens the settings drawer on its Share tab), the
-trope-colour chip (a palette), the settings drawer's heading gear — the gear the dashboard's drawer
-heading and the Trope Tutor's Settings tab carry too — and that drawer's six tab glyphs (book, palette,
-music, calendar, link, gear: icon above label through the page's own `.tt-tab` rule, `.hi-btn` still
-supplying the alignment).
+popup) and the board's edit pencil, and the **Torah Trainer's picker controls**: the trope-colour chip (a
+palette), the settings drawer's heading gear — the gear the dashboard's drawer heading and the Trope Tutor's
+Settings tab carry too — and that drawer's six tab glyphs (book, palette, music, calendar, link, gear: icon
+above label through the page's own `.tt-tab` rule, `.hi-btn` still supplying the alignment). The toolbar
+above that page's reading holds no glyph button any more: its Holiday Torah Readings (calendar) and Share
+(link) buttons moved into the drawer, so the calendar glyph is the Calendar tab's and the link glyph the
+Share tab's (and its Copy link's), and the header gear is the drawer's entry.
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
 `account`, `404`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
@@ -404,8 +405,8 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   `hi-pause`, `hi-stop`, `hi-reset`, `hi-retry`, `hi-loop`, `hi-sound` and `hi-music`, and the action family
   `hi-copy`, `hi-link`, `hi-print`, `hi-save`, `hi-download`, `hi-upload`, `hi-send` and `hi-page`, and the dashboard
   family `hi-timer`, `hi-dice`, `hi-group`, `hi-pencil`, `hi-video` and `hi-intermission` (the Blank/Video
-  screen with two pause bars — symmetric, so it needs no RTL flip), plus `hi-calendar` (a festival
-  reading on the Torah Trainer, the dashboard's calendar import) and `hi-palette` (turning colour coding on) — the strip's Settings and Blank reuse `hi-gear` and
+  screen with two pause bars — symmetric, so it needs no RTL flip), plus `hi-calendar` (the Torah
+  Trainer's Calendar tab, the dashboard's calendar import) and `hi-palette` (turning colour coding on) — the strip's Settings and Blank reuse `hi-gear` and
   `hi-blank`, the Torah Trainer's former toolbar Student handout button reused `hi-page` (the handout now
   lives in its drawer's Share tab, whose Print handout carries `hi-print`, so that page holds no `hi-page`
   any more), and the generator's **Generate Worksheet** reuses it — `hi-page` was already a lined sheet,
@@ -565,8 +566,8 @@ Writing a link **never navigates**; loading a link **never clobbers** the user's
   carried can reach Sefaria; anything it cannot rebuild is `null` and the link is ignored in
   silence. `?holiday=` may ride alongside `?ref=` to keep a narrowed holiday's name, and supplies it
   only while `refWithin` says the range really sits inside that reading. Copy link and its **Include my
-  settings** switch live in the settings drawer's Share tab (*Practice link* section), which the toolbar's
-  one Share button (`#ttShareOpenBtn` → `openSettingsAtPanel('share')`) opens; `syncShareBtn` HIDES the
+  settings** switch live in the settings drawer's Share tab (*Practice link* section), reached through the
+  header gear — the toolbar above the reading holds no Share button; `syncShareBtn` HIDES the
   link rows (`#ttShareWrap`, never disables them) and shows the tab's `#ttShareNone` note when there is no
   shareable reading at all. The switch (remembered in the settings blob) adds a `?s=` beside the readable
   params: the display

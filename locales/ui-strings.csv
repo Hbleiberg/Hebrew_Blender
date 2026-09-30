@@ -3841,7 +3841,7 @@ torah.about.faq_q7,Is it free?,האם זה חינמי?,FAQ question,
 torah.about.faq_q8,Can I copy the Hebrew text out of the reader?,אפשר להעתיק את הטקסט העברי מהקורא?,FAQ question,REVIEW: HE draft
 torah.about.faq_summary,Frequently Asked Questions,שאלות נפוצות,accordion summary,
 torah.about.howto_1,"Pick a parsha from the top dropdown (defaults to this week's). The Reading dropdown shows each aliyah's verse range, and 🎵 marks readings with chanted audio.","בחרו פרשה מהתפריט העליון (ברירת המחדל היא פרשת השבוע). תפריט הקריאה מציג את טווח הפסוקים של כל עלייה, ו-🎵 מסמן קריאות עם שמע בטעמים.",howto step,
-torah.about.howto_2,"On the settings drawer's Text tab, switch transliteration and translation on and choose a layout: side by side, interlinear, page view or the Trope staff.","בלשונית הטקסט של מגירת ההגדרות הפעילו תעתיק ותרגום ובחרו פריסה: זה לצד זה, בין־שורתי, תצוגת עמוד או חמשת הטעמים.",howto step,
+torah.about.howto_2,"Switch transliteration and translation on from the toolbar or the settings drawer's Text tab, where you also choose a layout: side by side, interlinear, page view or the Trope staff.","הפעילו תעתיק ותרגום מסרגל הכלים או מלשונית הטקסט של מגירת ההגדרות, שבה בוחרים גם פריסה: זה לצד זה, בין־שורתי, תצוגת עמוד או חמשת הטעמים.",howto step,
 torah.about.howto_3,"Customize the Hebrew font, vowel coloring, and translit scheme on this drawer's Text and Colors tabs.","התאימו את הגופן העברי, צביעת התנועות וסגנון התעתיק בלשוניות הטקסט והצבעים של המגירה הזו.",howto step,
 torah.about.howto_4,Enable Karaoke and pick an aliyah from the Reading dropdown to chant along. Use 🔁 Loop on any verse to repeat it hands-free for practice.,הפעילו קריוקי ובחרו עלייה מתפריט הקריאה כדי לשיר יחד. השתמשו ב-🔁 לולאה על כל פסוק כדי לחזור עליו אוטומטית לתרגול.,howto step,
 torah.about.howto_5,"On a full parsha, use the aliyah jump chips at the top to skip around, and the Resume chip to pick up where you left off.","בפרשה מלאה, השתמשו בתגיות הקפיצה לעליות שלמעלה כדי לדלג, ובתגית ההמשך כדי להמשיך מהמקום שבו הפסקתם.",howto step,
@@ -3999,6 +3999,8 @@ torah.controls.scope_aria,Reading scope,היקף הקריאה,scope select aria-
 torah.controls.scope_holiday_note,"Reading scope applies to weekly parshiyot, not holiday readings.","היקף הקריאה חל על פרשות השבוע, לא על קריאות התורה לחגים.",scope select title while a holiday/custom reading is active,title only
 torah.controls.translation_toggle,Show translation,הצגת תרגום,switch at the top of the Text tab's Translation section (was the toolbar's Translation toggle),
 torah.controls.translit_toggle,Show transliteration,הצגת תעתיק,switch at the top of the Text tab's Transliteration section (was the toolbar's Translit toggle),
+torah.controls.translit_short,Translit,תעתיק,toolbar mirror of the Text tab's Show transliteration switch (short: it sits in the Parsha row),
+torah.controls.translation_short,Translation,תרגום,toolbar mirror of the Text tab's Show translation switch (short: it sits in the Parsha row),
 torah.controls.version_label,Version,גרסה,Translation section label for the version list (shown while the translation is on),
 torah.controls.version_loading,Loading…,טוען…,select placeholder option,
 torah.custom.book_deuteronomy,Deuteronomy,דברים,book option,glyph-name
@@ -4116,7 +4118,7 @@ torah.reading.aliyah_inline,✦ Aliyah {n},✦ עלייה {n},Inline aliyah mark
 torah.reading.aliyah_divider,Aliyah {n} · {label},עלייה {n} · {label},Aliyah divider heading (page/interlinear view),{n} numeric; {label} is the aliyah name/range content
 torah.schedule.diaspora,Diaspora,תפוצות,radio label,
 torah.schedule.israel,Israel,ישראל,radio label,
-torah.schedule.jump_this_week,Jump to this week's parsha,קפיצה לפרשת השבוע,button,
+torah.schedule.jump_this_week,Jump to this week's parsha,קפיצה לפרשת השבוע,Calendar tab button label; also the toolbar's icon-only Jump button (title + aria-label),
 torah.schedule.schedule_label,Calendar,לוח שנה,settings label (Diaspora / Israel),
 torah.schedule.schedule_tip,Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'.,לוחות הקריאה של התפוצות וישראל נבדלים במשך כמה שבועות בכל מחזור (כשיום טוב חל בשבת). משפיע על הפרשה הנבחרת כ'פרשת השבוע'.,tooltip,
 torah.schedule.scope_aliyah,Aliyah {n},עלייה {n},scope option,do-not-translate {n}
@@ -4252,7 +4254,7 @@ torah.tour.s1_body,Pick any parsha — it starts on this week's automatically.,�
 torah.tour.s1_title,Pick a parsha,בחרו פרשה,tour step title,
 torah.tour.s2_body,"Read the whole parsha, one aliyah, or the haftarah. 🎵 means chanted audio is available.","קראו את הפרשה כולה, עלייה אחת, או את ההפטרה. 🎵 מציין ששמע בטעמים זמין.",tour step body,
 torah.tour.s2_title,Reading scope,היקף הקריאה,tour step title,
-torah.tour.s3_body,"Jump back to this week's reading from anywhere. Layout, transliteration and translation live on the settings drawer's Text tab.","חזרו לקריאת השבוע מכל מקום. הפריסה, התעתיק והתרגום נמצאים בלשונית הטקסט של מגירת ההגדרות.",tour step body,
+torah.tour.s3_body,Jump back to this week's reading from anywhere; the two switches beside it reveal the transliteration and the translation. Layout and everything else live on the settings drawer's Text tab.,חזרו לקריאת השבוע מכל מקום; שני המתגים שלצדו חושפים את התעתיק ואת התרגום. הפריסה וכל השאר נמצאים בלשונית הטקסט של מגירת ההגדרות.,tour step body,
 torah.tour.s3_title,This week's parsha,פרשת השבוע,tour step title,
 torah.tour.s4_body,"Every verse can be read aloud, chanted with word-by-word highlighting, or looped for practice.","כל פסוק ניתן להקראה בקול, לשירה עם הדגשת מילה־אחר־מילה, או ללולאה לתרגול.",tour step body,
 torah.tour.s4_title,"Read, chant, or loop","הקראה, שירה או לולאה",tour step title,
