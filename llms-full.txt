@@ -187,7 +187,7 @@ Read the weekly Torah portion in Hebrew with toggleable transliteration, transla
 ### How to read the weekly Torah portion with Torah Trainer (about 3 minutes)
 
 1. **Pick a parsha** — Choose a parsha from the top dropdown. The page defaults to the current week's parsha based on the selected reading schedule.
-2. **Choose a layout** — Switch between side-by-side (Hebrew + translation columns) and interlinear (stacked rows per verse). Toggle transliteration and translation independently.
+2. **Choose a layout** — On the settings drawer's Text tab, choose a layout (side by side, interlinear, page view or the Trope staff) and switch transliteration and translation on independently.
 3. **Customize appearance** — Open settings to pick a Hebrew font, color-code nikkud per vowel, and choose a transliteration scheme (Modern Israeli, Ashkenazi, SBL, Brill, or Simple Stressed).
 4. **Listen and chant along** — Enable karaoke in settings, then pick an aliyah from the Reading dropdown. PocketTorah audio streams on demand and highlights each word as it's chanted.
 5. **Project fullscreen** — Click the fullscreen button to expand the reading area for SmartBoard projection or focused study.
