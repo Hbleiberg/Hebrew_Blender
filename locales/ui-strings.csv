@@ -1015,6 +1015,7 @@ dictionary.wordlist.copy_list_title,"Copy every word in this list, one per line,
 dictionary.wordlist.create_new,Create a new list,יצירת רשימה חדשה,save word-list modal section,
 dictionary.wordlist.delete,Delete,מחיקה,word-list card button,
 dictionary.wordlist.delete_confirm,"Delete the word list ""{name}""? This can't be undone.","למחוק את רשימת המילים ""{name}""? לא ניתן לבטל פעולה זו.",confirm dialog,mixed UI+content — do not translate {…}
+dictionary.wordlist.delete_confirm_cloud,"Delete the word list ""{name}""? You are signed in, so it is removed from your account and from every device. This can't be undone.","למחוק את רשימת המילים ""{name}""? אתם מחוברים, ולכן היא תוסר מהחשבון ומכל מכשיר. לא ניתן לבטל.",confirm() before deleting a word list while signed in,has {name}
 dictionary.wordlist.dropped_suffix,{count} skipped (200-word limit).,{count} דולגו (מגבלת 200 מילים).,save/merge status suffix,
 dictionary.wordlist.dup_name_suffix,(Another list already uses this name.),(רשימה אחרת כבר משתמשת בשם הזה.),save word-list status suffix,
 dictionary.wordlist.enter_name,Please enter a name for the list.,אנא הזינו שם לרשימה.,save word-list validation,
@@ -3919,7 +3920,7 @@ torah.color.scheme_reset,Reset,איפוס,vowel scheme button,
 torah.color.scheme_talam,TaL AM,תל-עם,vowel scheme button,
 torah.color.trope_reset,Reset,איפוס,trope scheme button,
 torah.confirm.reset_all,Reset all Torah Trainer settings to defaults?,לאפס את כל הגדרות מאמן התורה לברירת המחדל?,confirm dialog,
-torah.confirm.reset_all_cloud,Reset all Torah Trainer settings to defaults on this device? The copy in your account stays; the next sync asks which one to keep unless you delete it from Cloud saves.,לאפס את כל הגדרות מאמן התורה לברירת המחדל במכשיר הזה? העותק בחשבון נשאר; הסנכרון הבא ישאל איזה מהם לשמור אלא אם תמחקו אותו משמירות בענן.,confirm dialog while signed in,
+torah.confirm.reset_all_cloud,"Reset all Torah Trainer settings to defaults? You are signed in, so the reset is saved to your account and applies on every device.","לאפס את כל הגדרות מאמן התורה לברירת המחדל? אתם מחוברים, ולכן האיפוס נשמר בחשבון וחל בכל מכשיר.",confirm() before Reset all settings while signed in,
 torah.confirm.reset_trope_colors,Are you sure? This resets your custom trope-family colors to the defaults.,האם אתם בטוחים? פעולה זו מאפסת את צבעי משפחות הטעמים המותאמים אישית שלכם לברירת המחדל.,confirm dialog,
 torah.confirm.reset_vowel_colors,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים אישית שלכם עבור ערכות ברירת המחדל ותל-עם כאחד.,confirm dialog,
 torah.controls.print_title,Print this reading for students,הדפיסו את הקריאה עבור התלמידים,title of the Share tab's Print this reading button,
@@ -4174,7 +4175,7 @@ torah.settings.close_aria,Close settings,סגירת ההגדרות,close button 
 torah.settings.close_title,Close,סגירה,close button title,
 torah.settings.color_for_aria,Color for {name},צבע עבור {name},vowel/trope color-picker input aria,aria-label only; {name} is the vowel/trope name (content) — do not translate {name}
 torah.settings.panel_about,About & FAQ,אודות ושאלות נפוצות,section heading (More tab),
-torah.settings.panel_cloud,Cloud saves,שמירות בענן,section heading (More tab; hosts the shared cloud-saves panel #cloudSavesPanel),
+torah.settings.panel_cloud,Your account,החשבון שלכם,section heading (More tab; hosts the shared account status line #cloudSavesPanel),
 torah.settings.panel_audio,Audio speeds & pitch,מהירויות שמע וגובה צליל,section heading (Audio tab),
 torah.settings.panel_copy,Copy verses,העתקת פסוקים,section heading (Share tab): the Select-verses launcher + the copy format options,
 torah.settings.panel_display,Display,תצוגה,section heading (Text tab),
@@ -4267,6 +4268,7 @@ torah.fav.recolor_title,Change color,שינוי צבע,favorite row: the color d
 torah.fav.duplicate_title,Duplicate,שכפול,favorite row button title (⧉),aria-label only
 torah.fav.delete_title,Delete,מחיקה,favorite row button title (× icon),aria-label only
 torah.fav.delete_confirm,"Delete the favorite ""{name}""?","למחוק את המועדף ""{name}""?",confirm() before deleting a favorite,mixed UI+content; do not translate {…}
+torah.fav.delete_confirm_cloud,"Delete the favorite ""{name}""? You are signed in, so it is removed from your account and from every device.","למחוק את המועדף ""{name}""? אתם מחוברים, ולכן הוא יוסר מהחשבון ומכל מכשיר.",confirm() before deleting a favorite while signed in,has {name}
 torah.status.aliyah_audio_unavailable,Audio for aliyah {n} is not available in PocketTorah.,השמע לעלייה {n} אינו זמין ב-PocketTorah.,karaoke status,do-not-translate {n}
 torah.status.audio_basename_missing,Audio basename missing in manifest.,שם קובץ השמע חסר במניפסט.,karaoke status,
 torah.status.audio_load_failed,Couldn't load the chanting audio. Check your connection — some school networks block it.,לא ניתן היה לטעון את שמע הקריאה. בדקו את החיבור — רשתות בית ספר חוסמות אותו לעיתים.,karaoke status + toast when the MP3 fails to load,
@@ -4354,9 +4356,9 @@ torah.a11y.skip_to_reading,Skip to the reading,דילוג לקריאה,Skip-link
 trope.about.body,"Trope Tutor teaches the Torah cantillation marks with real chanted examples mined from <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"">PocketTorah</a> recordings (CC BY-SA 4.0) and Sefaria's Hebrew text. New here? Press Tour in the header. Companion reader: <a href=""torah_trainer.html"">Torah Trainer</a>.","מאמן הטעמים מלמד את טעמי המקרא של התורה עם דוגמאות מושרות אמיתיות שנלקטו מהקלטות <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"">PocketTorah</a> (CC BY-SA 4.0) ומהטקסט העברי של Sefaria. חדשים כאן? לחצו על סיור בכותרת. קורא משלים: <a href=""torah_trainer.html"">מאמן התורה</a>.",about panel prose,html; keep the two <a> links
 trope.about.reset_all,Reset all Trope Tutor settings,איפוס כל הגדרות מאמן הטעמים,button,leading-emoji
 trope.confirm.reset_all,Reset all Trope Tutor settings to defaults?,לאפס את כל הגדרות מאמן הטעמים לברירת המחדל?,confirm dialog,
-trope.confirm.reset_all_cloud,Reset all Trope Tutor settings to defaults on this device? The copy in your account stays; the next sync asks which one to keep unless you delete it from Cloud saves.,לאפס את כל הגדרות מאמן הטעמים לברירת המחדל במכשיר הזה? העותק בחשבון נשאר; הסנכרון הבא ישאל איזה מהם לשמור אלא אם תמחקו אותו משמירות בענן.,confirm dialog while signed in,
+trope.confirm.reset_all_cloud,"Reset all Trope Tutor settings to defaults? You are signed in, so the reset is saved to your account and applies on every device.","לאפס את כל הגדרות מדריך הטעמים לברירת המחדל? אתם מחוברים, ולכן האיפוס נשמר בחשבון וחל בכל מכשיר.",confirm() before Reset all settings while signed in,
 trope.confirm.reset_progress,Reset your per-trope mastery and personal-best streak? This cannot be undone.,לאפס את השליטה בכל טעם ואת רצף השיא האישי? לא ניתן לבטל פעולה זו.,confirm dialog,
-trope.confirm.reset_progress_cloud,"Reset your per-trope mastery and personal-best streak on this device? The copy in your account stays, and the next sync merges that mastery back in unless you delete it from Cloud saves.","לאפס את השליטה בכל טעם ואת רצף השיא האישי במכשיר הזה? העותק בחשבון נשאר, והסנכרון הבא ימזג את השליטה הזו בחזרה אלא אם תמחקו אותו משמירות בענן.",confirm dialog while signed in (the account copy is merged back by the next sync),
+trope.confirm.reset_progress_cloud,"Reset your per-trope mastery and personal-best streak? You are signed in, so the reset is saved to your account and applies on every device; practice on another device that has not yet loaded the reset is dropped. This cannot be undone.","לאפס את השליטה בטעמים ואת רצף השיא? אתם מחוברים, ולכן האיפוס נשמר בחשבון וחל בכל מכשיר; תרגול במכשיר אחר שטרם טען את האיפוס יימחק. לא ניתן לבטל.",confirm() before Reset progress while signed in,
 trope.drill.back_to_learn,Back to Learn,חזרה ללימוד,button,
 trope.drill.choices_aria,Answer choices,אפשרויות תשובה,choices group aria,aria-label only
 trope.drill.choose_again,choose again to answer,בחרו שוב כדי לענות,melody choice subtext,
@@ -4622,7 +4624,7 @@ trope.progress.reset_button,Reset mastery & personal best,איפוס שליטה 
 trope.progress.summary,{n} of {total} tropes attempted · personal best streak {pb} 🔥,{n} מתוך {total} טעמים נוסו · רצף שיא אישי {pb} 🔥,progress summary,do-not-translate {n}/{total}/{pb}
 trope.settings.heb_size,Hebrew size,גודל עברית,slider label,
 trope.settings.panel_about,About,אודות,Settings tab group heading,
-trope.settings.panel_cloud,Cloud saves,שמירות בענן,Settings tab group heading (hosts the shared cloud-saves panel),
+trope.settings.panel_cloud,Your account,החשבון שלכם,Settings tab group heading (hosts the shared account status line),
 trope.settings.panel_drill,Drill,תרגול,Settings tab group heading,
 trope.settings.panel_font,Hebrew Font,גופן עברי,Settings tab group heading,
 trope.settings.panel_names,Names & Tradition,שמות ומסורת,Settings tab group heading,

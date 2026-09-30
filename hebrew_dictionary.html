@@ -2291,7 +2291,8 @@ function wlRenderManagerInto(root) {
       input.focus(); input.select();
     }, '', 'rename');
     btn(I18n.t('dictionary.wordlist.delete'), () => {
-      if (!confirm(I18n.t('dictionary.wordlist.delete_confirm', { name: list.name }))) return;
+      const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
+      if (!confirm(I18n.t(signedIn ? 'dictionary.wordlist.delete_confirm_cloud' : 'dictionary.wordlist.delete_confirm', { name: list.name }))) return;
       wlDeleteList(id);
       wlRefreshManager();   // the row is gone: the focus goes to the close button
     }, 'color:var(--danger-text);', 'delete');

@@ -1547,15 +1547,16 @@ function loadProgress() {
       if (p.tropes && typeof p.tropes === 'object') ivritSafeAssign(progress.tropes, p.tropes);
       if (p.families && typeof p.families === 'object') ivritSafeAssign(progress.families, p.families);
       progress.pbStreak = parseInt(p.pbStreak, 10) || 0;
+      // The reset watermark (resetProgress): the account's merge treats mastery older than it as gone, so it
+      // must survive every re-read and go up with the blob.
+      if (Number.isFinite(p.resetAt) && p.resetAt > 0) progress.resetAt = p.resetAt; else delete progress.resetAt;
     }
   } catch (e) {}
 }
 function resetAllSettings() {
-  const signedIn = !!(window.IvritAccount && typeof IvritAccount.user === 'function' && IvritAccount.user());
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
   if (!confirm(I18n.t(signedIn ? 'trope.confirm.reset_all_cloud' : 'trope.confirm.reset_all'))) return;
-  // A deliberate reset: the module forgets what this device last synced, so the next sync asks which
-  // settings to keep instead of sending the reset up as "newer on this device".
-  if (signedIn && window.IvritSaves && typeof IvritSaves.forgetRow === 'function') IvritSaves.forgetRow('TropeTutor', 'settings');
+  // Signed in, the reset is a write like any other: it reaches the account and every device (the confirm says so).
   localStorage.removeItem(STORAGE_KEY);
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   dropMelodyParam();   // a reset is back to defaults, a link's per-visit melody included
@@ -1568,12 +1569,12 @@ function resetAllSettings() {
   updateDrillStart();
 }
 function resetProgress() {
-  const signedIn = !!(window.IvritAccount && typeof IvritAccount.user === 'function' && IvritAccount.user());
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
   if (!confirm(I18n.t(signedIn ? 'trope.confirm.reset_progress_cloud' : 'trope.confirm.reset_progress'))) return;
-  // Forgotten by the module too: the next sync then merges the account's mastery back in (a lossless
-  // merge) instead of sending the zeros up as "newer on this device".
-  if (signedIn && window.IvritSaves && typeof IvritSaves.forgetRow === 'function') IvritSaves.forgetRow('TropeTutor', 'progress');
+  // The watermark: the account's lossless merge (max per trope) would otherwise bring the old mastery straight
+  // back from another device; with resetAt, mastery older than the reset counts as gone, wherever it lives.
   progress = JSON.parse(JSON.stringify(PROGRESS_DEFAULTS));
+  progress.resetAt = Date.now();
   saveProgress();
   renderLearn();
   updateDrillStart();
@@ -4249,8 +4250,7 @@ function initCloudSaves() {
   window.addEventListener('ivritsuite:fonts', () => { try { refreshMyFonts(); } catch (e) {} });
   IvritSaves.attach({
     tool: 'TropeTutor',
-    panel: '#cloudSavesPanel',
-    title: false,                 // the Settings group's own heading is the title
+    status: '#cloudSavesPanel',
     flush: saveSettingsFlush,     // a pending debounced save lands before the module reads the key
     onLocalChanged: function (kind) {
       if (kind === 'settings') {
@@ -4269,11 +4269,6 @@ function initCloudSaves() {
       try { renderLearn(); } finally { _i18nRerender = false; }
       renderPhrasesIfShown();
       updateDrillStart();
-    },
-    open: function () {         // the header chip's "Cloud saves…" item
-      openSettings();
-      const group = document.getElementById('setCloud');
-      if (group) group.scrollIntoView({ block: 'start' });
     }
   });
 }

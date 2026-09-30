@@ -1179,6 +1179,9 @@ function tropeProgressMerge(incoming, replace) {
   if (!incoming || typeof incoming !== 'object') return;
   const base = replace ? {} : ivritSafeParse(localStorage.getItem('hebrewTropeTutor_progress') || '{}');
   const out = { v: 1, tropes: {}, families: {}, pbStreak: 0 };
+  // The Trope Tutor's reset watermark rides along (the newest of the two): the account's merge drops mastery older than it.
+  const wm = Math.max(Number(base && base.resetAt) || 0, Number(incoming.resetAt) || 0);
+  if (wm > 0) out.resetAt = wm;
   for (const src of [base, incoming]) {
     if (!src || typeof src !== 'object') continue;
     const tr = src.tropes;

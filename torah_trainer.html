@@ -3055,11 +3055,9 @@ function _sliderNum(val, sliderId, dflt) {
   return sl ? Math.min(parseFloat(sl.max), Math.max(parseFloat(sl.min), n)) : n;
 }
 function resetAllSettings() {
-  const signedIn = !!(window.IvritAccount && typeof IvritAccount.user === 'function' && IvritAccount.user());
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
   if (!confirm(I18n.t(signedIn ? 'torah.confirm.reset_all_cloud' : 'torah.confirm.reset_all'))) return;
-  // A deliberate reset: the module forgets what this device last synced, so the next sync asks which
-  // settings to keep instead of sending the reset up as "newer on this device".
-  if (signedIn && window.IvritSaves && typeof IvritSaves.forgetRow === 'function') IvritSaves.forgetRow('TorahTrainer', 'settings');
+  // Signed in, the reset is a write like any other: it reaches the account and every device (the confirm says so).
   linkViewEnd();     // a practice link's display settings go with everything else
   localStorage.removeItem(STORAGE_KEY);   // favorites (FAV_KEY, FAV_TREE_KEY) deliberately stay: they are the teacher's content, not settings
   settings = JSON.parse(JSON.stringify(DEFAULTS));
@@ -7988,9 +7986,8 @@ function _ftRenameNode(treeKey, oldName, newName) {
      { kind:'ref',     customRef, holidayKey? }   a verse range (holidayKey only while the range sits inside it)
    `settings` (optional) is the LINK_DISPLAY vocabulary — exactly what "Include my settings" puts in a link — captured
    only when the teacher ticks the box in the save popup. Opening a favorite is a real change (saved), never a link
-   view. Deleting one is per item and deliberately does NOT call IvritSaves.forgetRow: with its sync memory kept the
-   module offers "Deleted on this device → Delete from your account / Bring it back"; without it the next listing
-   would quietly download the row again. Reset all settings leaves favorites alone.
+   view. Deleting one is per item; signed in, the deletion reaches the account at the next write-through and the
+   favorite leaves every device at its next load (the confirm says so). Reset all settings leaves favorites alone.
    Both keys ride the AllTools export (index.html) and the account (two IVRIT_SYNC_REGISTRY rows; the tree merges
    through the block's ftMergeTrees, passed to IvritSaves.attach as `merges`). */
 const FAV_PALETTE = ['#e69f00', '#56b4e9', '#009e73', '#f0e442', '#0072b2', '#d55e00', '#cc79a7', '#000000'];   // the dashboard's preset palette (Okabe–Ito)
@@ -8305,9 +8302,10 @@ function duplicateFavorite(name) {
 function deleteFavorite(name) {
   const map = readFavorites();
   if (!map[name]) return;
-  if (!confirm(I18n.t('torah.fav.delete_confirm', { name }))) return;
+  const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
+  if (!confirm(I18n.t(signedIn ? 'torah.fav.delete_confirm_cloud' : 'torah.fav.delete_confirm', { name }))) return;
   delete map[name];
-  writeFavorites(map);   // no IvritSaves.forgetRow here — see the section note
+  writeFavorites(map);   // signed in, the write-through hook sends the deletion up — see the section note
   renderFavorites();
 }
 
@@ -10323,9 +10321,9 @@ function initCloudSaves() {
   window.addEventListener('ivritsuite:fonts', () => { try { refreshMyFonts(); } catch (e) {} });
   IvritSaves.attach({
     tool: 'TorahTrainer',
-    panel: '#cloudSavesPanel',
-    title: false,                 // the More tab's Cloud saves section heading is the heading
+    status: '#cloudSavesPanel',
     flush: saveSettingsFlush,     // a pending debounced save lands before the module reads the key
+    paused: () => _handoutActive, // a handout print's override is not the teacher's settings
     // While the handout print override is up the stored blob is not what is on screen: the re-read waits
     // for _handoutExit (the module's flush is a no-op meanwhile, so the download stays in the store).
     onLocalChanged: function (kind) {
@@ -10333,8 +10331,7 @@ function initCloudSaves() {
       if (_handoutActive) { _pendingCloudReread = true; return; }
       cloudReread();
     },
-    merges: { favoriteFolders: ftMergeTrees },   // the folder tree's pure merge (the shared block's)
-    open: function () { openSettingsAtPanel('cloud'); }   // the header chip's "Cloud saves…" item
+    merges: { favoriteFolders: ftMergeTrees }    // the folder tree's pure merge (the shared block's)
   });
 }
 
