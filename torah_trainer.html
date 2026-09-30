@@ -102,8 +102,8 @@
     { "@type": "Question", "name": "Where do the Hebrew text and English translations come from?", "acceptedAnswer": { "@type": "Answer", "text": "Sefaria's public API. The translation dropdown is populated automatically and defaults to JPS 1985 when available." } },
     { "@type": "Question", "name": "Can I read without nikkud or cantillation marks?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The settings drawer has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). The cantillation strip uses Unicode range U+0591-U+05AF and leaves nikkud intact." } },
     { "@type": "Question", "name": "Can it color-code the Torah trope (cantillation) families?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Trope color coding highlights or underlines each word in the color of its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings." } },
-    { "@type": "Question", "name": "Does it work for both diaspora and Israel reading schedules?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The default is diaspora; set Calendar to Israel under Reading schedule to switch. \"Jump to this week's parsha\" opens this week's reading, which the page works out from the Hebrew calendar itself (only a few festival Shabbatot ask Sefaria's calendar). Reading cycle, in the same panel, switches between the full, triennial and Monday/Thursday readings." } },
-    { "@type": "Question", "name": "Can I copy the Hebrew text out of the reader?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Copy panel in the Settings drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting." } },
+    { "@type": "Question", "name": "Does it work for both diaspora and Israel reading schedules?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The default is diaspora; open the Calendar tab of the settings drawer and, under Reading schedule, set the Diaspora / Israel choice to Israel. \"Jump to this week's parsha\" opens this week's reading, which the page works out from the Hebrew calendar itself (only a few festival Shabbatot ask Sefaria's calendar). Reading cycle, in the same section, switches between the full, triennial and Monday/Thursday readings." } },
+    { "@type": "Question", "name": "Can I copy the Hebrew text out of the reader?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Share tab of the settings drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting." } },
     { "@type": "Question", "name": "Is the Torah Trainer free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0." } }
   ]
 }
@@ -355,10 +355,9 @@ body.dark .tt-controls { background:var(--navy-deep); }
      viewport on a phone — two-dimensional scrolling, WCAG 1.4.10. */
   min-width:0;
 }
-/* [hidden] must beat .tt-ctrl's inline-flex — the same trap as #ttCopyBulkPanel and
-   .tt-jumpnav above; without this the share button stays visible when it cannot act. */
+/* The Share tab's practice-link rows (syncShareBtn hides them when no link can be made and shows
+   #ttShareNone instead): kept explicit so no later display rule can show a button that cannot act. */
 #ttShareWrap[hidden] { display:none; }
-.tt-share-opt { display:inline-flex; align-items:center; margin-inline-start:4px; }
 .tt-ctrl label { font-weight:600; color:var(--text); white-space:nowrap; }
 .tt-ctrl select, .tt-ctrl input[type="number"], .tt-ctrl input[type="text"] {
   border:1px solid var(--border); background:var(--white); color:var(--text);
@@ -439,8 +438,8 @@ body.fullscreen .tt-hh-link { display:none; }
    0.68rem line — the same 25px ::after touch floor the verse chips carry (WCAG 2.5.8), invisible. */
 .tt-shem-chip, .tt-notice-chip { position:relative; }
 .tt-shem-chip::after, .tt-notice-chip::after { content:''; position:absolute; inset-inline:0; inset-block:-3px; }
-/* Handout-bar שם-dependent rows: .tt-ctrl's inline-flex would beat the hidden
-   attribute (same trap as .tt-trope-legend[hidden]) — make hidden win. */
+/* The handout section's conditional rows (Share tab): make hidden win over .form-row's flex
+   (same trap as .tt-trope-legend[hidden]). */
 #ttHandoutShemNote[hidden], #ttHandoutGenizaRow[hidden], #ttHandoutSelRow[hidden] { display:none; }
 #ttHandoutGenizaRow label[for="ttHandoutGeniza"] { white-space:normal; }
 .tt-handout-shem-note { font-size:0.72rem; font-weight:600; color:var(--navy); max-width:420px; white-space:normal; }
@@ -485,7 +484,7 @@ body.dark .tt-handout-shem-note { color:var(--gold-light); }
 .tt-ref-hdr .tt-chantall { background:var(--navy); color:var(--gold-light); }
 .tt-ref-hdr .tt-chantall:hover { background:#2a3a60; }
 body.dark .tt-ref-hdr .tt-chantall { background:#0a0f1c; }
-body.dark .tt-ref-hdr .tt-chantall:hover { background:var(--navy); }   /* one step up from #0a0f1c, this page's panel-title dark hover; the dark override outranks :hover — pattern dark-override-outranks-hover */
+body.dark .tt-ref-hdr .tt-chantall:hover { background:var(--navy); }   /* one step up from #0a0f1c, the former collapse-bar dark hover; the dark override outranks :hover — pattern dark-override-outranks-hover */
 
 /* Interlinear: stacked rows per verse */
 .tt-verse {
@@ -991,7 +990,7 @@ body.trope-underline-fallback .tt-trope-swatch { background:var(--tt-sw-line); }
    are the reading's own .tt-word spans, so the karaoke styles, the vowel and trope colours, hover and the
    rover apply as everywhere else. The SVG's classes are js/trope-staff.js's (tu-pstaff, tu-pn, tu-pbar). ── */
 .beta-tag { font-size:0.7rem; background:var(--gold); color:var(--navy); padding:1px 5px; border-radius:3px; font-weight:700; letter-spacing:0.05em; vertical-align:middle; }   /* the suite's Beta badge (flash_cards.html) */
-.radio-group label .beta-tag, .panel-title .beta-tag { font-size:0.58rem; padding:0 4px; }
+.radio-group label .beta-tag { font-size:0.58rem; padding:0 4px; }
 .tt-staff-rows { direction:ltr; inline-size:100%; }
 /* A system's box is its natural width on screen and the wrap width on paper (renderStaffView; --tt-sys-w is the
    SVG's share of it), and a box wider than its container — a wide wrap on a narrow sheet, a viewport shrunk under
@@ -1245,25 +1244,33 @@ body.dark .settings-header { background:var(--navy-deep); }
 #drawerDarkBtn { font-size:1rem; }
 .settings-body { flex:1; overflow-y:auto; padding:16px; }
 
-/* ───── Panel ───── */
-.panel { background:var(--cream); border:1px solid var(--border); border-radius:8px; margin-bottom:14px; overflow:hidden; }
-body.dark .panel { background:var(--navy-deep); }
-.panel:last-child { margin-bottom:0; }
-.panel-title {
-  background:var(--navy); color:#fff;
-  font-family:'Libre Baskerville',serif; font-size:0.72rem;
-  letter-spacing:0.1em; text-transform:uppercase;
-  padding:9px 14px; cursor:pointer; user-select:none;
-  display:flex; justify-content:space-between; align-items:center;
-}
-body.dark .panel-title { background:#0a0f1c; }
-.panel-title::after { content:'▾'; color:var(--gold-light); font-size:1rem; transition:transform 0.2s; flex-shrink:0; }
-.panel.collapsed .panel-title::after { transform:rotate(-90deg); }
-.panel-title:hover { background:#24345c; }   /* the suite's navy-control hover (contact/resources/FM primary); a collapse bar had no hover state (S317 → F S328) */
-body.dark .panel-title:hover { background:var(--navy); }   /* one step up from the dark bar's #0a0f1c */
-.panel-body { padding:14px; }
-.panel-body details > summary:hover { text-decoration:underline; }   /* FAQ / How-To rows: the Font Maker footer's hover idiom — inline styles carry no hover */
-.panel.collapsed .panel-body { display:none; }
+/* ───── Drawer tabs (APG tablist; icon above label so six fit the 380px drawer and a 92vw phone) ───── */
+.tt-tabs { display:flex; flex-shrink:0; background:var(--cream); border-block-end:1px solid var(--border); padding-inline:4px; }
+body.dark .tt-tabs { background:var(--navy-deep); }
+.settings-modal .tt-tab {                       /* (0,2,0) beats .hi-btn's row layout */
+  flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  padding-block:8px 6px; padding-inline:2px; margin:0; border:none; border-block-end:3px solid transparent; border-radius:0;
+  background:transparent; color:var(--muted); font:inherit; font-size:0.64rem; font-weight:700; line-height:1.1; cursor:pointer;
+}                                               /* no transition — nothing to neutralize under reduced motion */
+.settings-modal .tt-tab .hi { width:16px; height:16px; }
+.settings-modal .tt-tab .hi-lbl { max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.settings-modal .tt-tab:hover { color:var(--gold-text); }
+.settings-modal .tt-tab[aria-selected="true"] { background:var(--white); color:var(--text); border-block-end-color:var(--gold); }
+body.dark .settings-modal .tt-tab { color:#99a2b8; }            /* the page's dark radio-label literal: 4.9:1 on the dark track */
+body.dark .settings-modal .tt-tab[aria-selected="true"] { color:var(--text); }
+.settings-modal .tt-tab:focus-visible { outline:2px solid var(--gold); outline-offset:-2px; }
+.tt-tabpanel[hidden] { display:none; }
+
+/* ───── Sections: a serif heading over a hairline rule (the Trope Tutor's .tu-set-title); flat, nothing collapses ───── */
+.tt-set + .tt-set { margin-block-start:22px; }
+.tt-set-title { font-family:'Libre Baskerville',serif; font-size:0.84rem; font-weight:400; letter-spacing:0.02em; color:var(--navy); padding-block-end:4px; border-block-end:1px solid var(--border); margin:0 0 12px; display:flex; align-items:center; gap:6px; }
+body.dark .tt-set-title { color:var(--gold-light); }
+.tt-set-title:focus { outline:none; }            /* openSettingsAtPanel's programmatic target */
+.tt-set-title:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.tt-set-title .beta-tag { font-size:0.58rem; padding:0 4px; }
+.tt-set-sub { font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-block:12px 6px; padding-block-start:12px; border-block-start:1px solid var(--border); }
+.tt-set-note { font-size:0.72rem; color:var(--muted); line-height:1.4; }
+.tt-set details > summary:hover { text-decoration:underline; }   /* FAQ / How-To rows: the Font Maker footer's hover idiom — inline styles carry no hover */
 
 /* ───── Form rows + toggle ───── */
 .form-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:10px; }
@@ -1318,11 +1325,11 @@ body.dark .radio-group label { color:#99a2b8; }
    the tab order, and the vowel and trope color lists replaced keyboard-operable switches. */
 .radio-group input { position:absolute; opacity:0; width:1px; height:1px; margin:0; pointer-events:none; }
 .radio-group input:focus-visible + label { outline:2px solid var(--gold); outline-offset:1px; }
-/* The drawer's two color lists. A choice never breaks mid-label. The vowel list's four choices
-   sit in a 2×2 block: in English they need about 321px of the default drawer's 317px row (less
-   still beside a classic scrollbar), and a row that breaks leaves one choice alone on a second
-   line. The trope list's three fit one line, except in English with the drawer dragged to its
-   320px minimum, where they wrap two and one. */
+/* The Colors tab's two lists. A choice never breaks mid-label. The vowel list's four choices
+   sit in a 2×2 block: in English they need about 321px, and a row that breaks leaves one choice
+   alone on a second line. Measured in the tabbed drawer (no panel padding any more): the section
+   row is 347px at the default 380px width and 287px at the 320px minimum, where the English
+   trope list (273px wide) still fits one line. */
 .tt-color-list label { white-space:nowrap; }
 /* Its row label keeps its natural width (the row rule's flex:1 starts it at zero), so a list
    that does not fit beside it drops to the next line instead of squeezing the label to one
@@ -1540,8 +1547,8 @@ body.fs-idle #fsExitBtn:not(:focus-visible) { opacity: 0; pointer-events: none; 
 
 /* ── Fullscreen presentation toolbar ──────────────────────────────────────────
    Fullscreen is the projector mode and was the one place nothing could be changed:
-   `body.fullscreen` hides header / .tt-controls / footer above, and #gearBtn — the
-   ONLY caller of openSettings() in this file — lives inside that hidden header. So
+   `body.fullscreen` hides header / .tt-controls / footer above, and #gearBtn, the
+   header's caller of openSettings(), lives inside that hidden header. So
    the drawer, and with it every font-size slider, had no route in; the teacher's
    only option was Exit → adjust → re-enter, in front of the class.
    A−/A+ only WORK because S180 removed the literal font-size from this block (see
@@ -1902,12 +1909,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }
   .tour-spot { transition: none !important; }
   .tt-hint-toast { transition: none !important; }
-  /* Drawer slide and panel-collapse caret: snap instead of animating.
+  /* Drawer slide: snap instead of animating.
      The backdrop travels WITH the drawer, so it has to snap too — neutralizing only the modal
      left a 0.25s opacity fade behind. Both other carriers of this drawer already group the pair
      (classroom_dashboard, trope_tutor). */
   .settings-modal, .settings-backdrop { transition: none !important; }
-  .panel-title::after { transition: none !important; }
   /* Karaoke highlight + audio-bar caret: snap the color/transform change. */
   .tt-word, .tt-audio-bar .tt-audio-collapse { transition: none !important; }
   /* Toggle-switch knob: snap the slide (its transition is now transform-only). */
@@ -2052,19 +2058,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
             aria-expanded="false" aria-controls="ttHolidayPicker"><svg class="hi hi-sm hi-calendar" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="5.4" width="17.6" height="15.2" rx="2.2"/><path d="M3.2 10.2h17.6"/><path d="M8.2 3v4.4M15.8 3v4.4"/><circle cx="12" cy="15.6" r="1.7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="torah.controls.holiday_group_label">Holiday Torah Readings</span></button>
   </span>
   <span class="tt-ctrl">
-    <button id="ttPrintBtn" class="btn btn-xs btn-secondary hi-btn" onclick="printReading()" type="button" data-i18n-title="torah.controls.print_title" title="Print this reading for students"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="torah.controls.print_button">Print</span></button>
-  </span>
-  <span class="tt-ctrl">
-    <button id="ttHandoutBtn" class="btn btn-xs btn-secondary hi-btn" onclick="toggleHandoutBar()" type="button" aria-expanded="false" aria-controls="ttHandoutBar" data-i18n-title="torah.handout.button_title" title="Print a clean Hebrew-only handout for students"><svg class="hi hi-sm hi-page" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3H7a2.2 2.2 0 0 0-2.2 2.2v13.6A2.2 2.2 0 0 0 7 21h10a2.2 2.2 0 0 0 2.2-2.2V8.7z"/><path d="M13.5 3v5.7h5.7"/><path d="M8.6 13h6.8M8.6 16.6h4.6"/></svg><span class="hi-lbl" data-i18n="torah.handout.button">Student handout</span></button>
-  </span>
-  <span class="tt-ctrl">
-    <button id="ttCopyBtn" class="btn btn-xs btn-secondary hi-btn" onclick="toggleCopyBar()" type="button" aria-expanded="false" aria-controls="ttCopyBar" data-i18n-title="torah.copy.button_title" title="Copy verses to the clipboard — one verse or a selection"><svg class="hi hi-sm hi-copy" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2.2"/><path d="M15.5 5.5v-.8a2.2 2.2 0 0 0-2.2-2.2H6.2A2.2 2.2 0 0 0 4 4.7v7.1a2.2 2.2 0 0 0 2.2 2.2H5"/></svg><span class="hi-lbl" data-i18n="torah.copy.button">Copy</span></button>
-  </span>
-  <span class="tt-ctrl" id="ttShareWrap" hidden>
-    <button id="ttShareBtn" class="btn btn-xs btn-secondary hi-btn" onclick="copyPracticeLink(this)" type="button"><svg class="hi hi-sm hi-link" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 13.7a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.7 1.7"/><path d="M13.7 10.3a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.7-1.7"/></svg><span class="hi-lbl" data-i18n="torah.share.button">Copy link</span></button>
-    <!-- Remembered; when on, the link also carries the sender's look as ?s= (see LINK VIEW). -->
-    <label for="ttShareSettings" class="tt-share-opt"><span id="lblShareSettings" data-i18n="torah.share.include_settings">Include my settings</span> <span class="tip-wrap" data-i18n-tip="torah.share.include_settings_tip" data-tip="Adds your font, text sizes, vowel and trope color coding, and what the reading shows (nikkud, trope marks, transliteration and where it sits, translation, layout, and the trope staff's words, key, voice and note names) to the link. Whoever opens it sees the reading your way, and can keep those settings or go back to their own."><i class="tip-icon">?</i></span></label>
-    <label class="toggle"><input type="checkbox" id="ttShareSettings" aria-labelledby="lblShareSettings"><span class="slider"></span></label>
+    <button id="ttShareOpenBtn" class="btn btn-xs btn-secondary hi-btn" onclick="openSettingsAtPanel('share')" type="button"
+            title="Share, copy or print this reading" data-i18n-title="torah.share.open_title"><svg class="hi hi-sm hi-link" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 13.7a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.7 1.7"/><path d="M13.7 10.3a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.7-1.7"/></svg><span class="hi-lbl" data-i18n="torah.share.open_button">Share</span></button>
   </span>
 </div>
 
@@ -2094,47 +2089,10 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <button class="btn btn-xs" onclick="applyCustomRange()" type="button" data-i18n="torah.custom.go_button">Go</button>
 </div>
 
-<!-- Student handout: options bar (same inline-disclosure pattern as #ttCustomPicker).
+<!-- Copy verses: the inline selection bar. Opened from the Share tab's "Select verses to copy…"
+     (verse selection needs the reading clickable, and the settings drawer is modal) and closed by its
+     own Close button; what a copy CONTAINS is decided in the drawer's Share tab (Copy options…).
      Print-hidden automatically via the .tt-controls entry in the print chrome hide-list. -->
-<div id="ttHandoutBar" class="tt-controls" style="display:none;border-top:1px dashed var(--border);" role="group" aria-labelledby="ttHandoutTitle">
-  <span class="tt-ctrl"><strong id="ttHandoutTitle" data-i18n="torah.handout.title">Student handout</strong></span>
-  <span class="tt-ctrl">
-    <label for="ttHandoutHideNikkud" data-i18n="torah.handout.hide_nikkud">Hide nikkud (vowels)</label>
-    <label class="toggle"><input type="checkbox" id="ttHandoutHideNikkud"><span class="slider"></span></label>
-  </span>
-  <span class="tt-ctrl">
-    <label for="ttHandoutHideTeamim" data-i18n="torah.handout.hide_teamim">Hide cantillation (trope)</label>
-    <label class="toggle"><input type="checkbox" id="ttHandoutHideTeamim"><span class="slider"></span></label>
-  </span>
-  <span class="tt-ctrl">
-    <label for="ttHandoutHideNums" data-i18n="torah.handout.hide_nums">Hide verse numbers</label>
-    <label class="toggle"><input type="checkbox" id="ttHandoutHideNums"><span class="slider"></span></label>
-  </span>
-  <span class="tt-ctrl">
-    <label id="lblHandoutSize" data-i18n="torah.handout.font_size">Font size:</label>
-    <span class="radio-group" role="group" aria-labelledby="lblHandoutSize">
-      <input type="radio" name="ttHandoutSize" id="hsNormal" value="normal"><label for="hsNormal" data-i18n="torah.handout.size_normal">Normal</label>
-      <input type="radio" name="ttHandoutSize" id="hsLarge" value="large"><label for="hsLarge" data-i18n="torah.handout.size_large">Large</label>
-      <input type="radio" name="ttHandoutSize" id="hsXL" value="xl"><label for="hsXL" data-i18n="torah.handout.size_xl">Extra large</label>
-    </span>
-  </span>
-  <span class="tt-ctrl" id="ttHandoutSelRow" hidden>
-    <label for="ttHandoutSelectedOnly" data-i18n="torah.handout.selected_only">Print only the selected verses</label>
-    <label class="toggle"><input type="checkbox" id="ttHandoutSelectedOnly"><span class="slider"></span></label>
-    <span id="ttHandoutSelCount" style="color:var(--muted);font-size:0.85em;"></span>
-  </span>
-  <span class="tt-ctrl" id="ttHandoutGenizaRow" hidden>
-    <label for="ttHandoutGeniza" data-i18n="torah.handout.geniza_check">Add a לגניזה marker to the printed page</label>
-    <label class="toggle"><input type="checkbox" id="ttHandoutGeniza"><span class="slider"></span></label>
-  </span>
-  <span class="tt-ctrl tt-handout-shem-note" id="ttHandoutShemNote" hidden data-i18n="torah.handout.shem_note">This reading contains שם ה׳ — printed pages traditionally go to geniza, not the trash.</span>
-  <button class="btn btn-xs hi-btn" onclick="printHandout()" type="button"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="torah.handout.print_button">Print handout</span></button>
-  <button class="btn btn-xs btn-secondary" onclick="toggleHandoutBar()" type="button" data-i18n="torah.handout.cancel">Cancel</button>
-</div>
-
-<!-- Copy verses: options bar (same inline-disclosure pattern as #ttHandoutBar).
-     Print-hidden automatically via the .tt-controls entry in the print chrome hide-list.
-     Independent of the handout bar (siblings — both may be open). -->
 <div id="ttCopyBar" class="tt-controls" style="display:none;border-top:1px dashed var(--border);" role="group" aria-labelledby="ttCopyTitle">
   <span class="tt-ctrl"><strong id="ttCopyTitle" data-i18n="torah.copy.title">Copy verses</strong></span>
   <button class="btn btn-xs btn-secondary" onclick="openSettingsAtPanel('copy')" type="button"
@@ -2144,6 +2102,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
     <label for="ttCopyBulkCb" data-i18n="torah.copy.bulk_mode">Select verses</label>
     <label class="toggle"><input type="checkbox" id="ttCopyBulkCb"><span class="slider"></span></label>
   </span>
+  <button class="btn btn-xs btn-secondary" onclick="closeCopyBar()" type="button" data-i18n="torah.copy.close">Close</button>
   <span id="ttCopyBulkPanel" hidden>
     <span class="tt-copy-hintline" data-i18n="torah.copy.bulk_hint">While Select verses is on, clicking a verse selects it (instead of playing its words).</span>
     <span class="tt-ctrl" id="ttCopyCount" role="status" aria-live="polite" dir="auto">0 selected</span>
@@ -2299,16 +2258,22 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
       <button class="settings-close" onclick="closeSettings()" title="Close" data-i18n-title="torah.settings.close_title" aria-label="Close settings" data-i18n-aria-label="torah.settings.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     </div>
   </div>
+  <!-- Six tabs of flat sections (nothing collapses; the panel-collapse memory this page carried is retired —
+       an older blob's panelsCollapsed rides along unread, as on the Trope Tutor). The drawer always opens
+       on Text (setSettingsTab in openSettings); openSettingsAtPanel(key) picks a tab + section by data-set.
+       Icons: the shared header-icons set; the label keeps its data-i18n on the .hi-lbl span. -->
+  <div class="tt-tabs" role="tablist" aria-label="Settings sections" data-i18n-aria-label="torah.tabs.aria">
+    <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabText" aria-controls="ttTabPanelText" aria-selected="true" tabindex="0" onclick="setSettingsTab('text')"><svg class="hi hi-sm hi-book" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.2v12.4"/><path d="M12 7.2S10 5.4 6 5.4a18 18 0 0 0-2.4.2v12.6A18 18 0 0 1 6 18c4 0 6 1.6 6 1.6s2-1.6 6-1.6a18 18 0 0 1 2.4.2V5.6A18 18 0 0 0 18 5.4c-4 0-6 1.8-6 1.8Z"/></svg><span class="hi-lbl" data-i18n="torah.tabs.text">Text</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabColors" aria-controls="ttTabPanelColors" aria-selected="false" tabindex="-1" onclick="setSettingsTab('colors')"><svg class="hi hi-sm hi-palette" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2a8.8 8.8 0 0 0 0 17.6c1.3 0 2.3-1 2.3-2.2 0-.6-.2-1.1-.6-1.5-.3-.4-.5-.8-.5-1.3 0-1.2 1-2.2 2.3-2.2h1.5a4.7 4.7 0 0 0 4.7-4.7c0-3.4-4.1-5.7-9.7-5.7Z"/><circle cx="7.5" cy="12.8" r="1.15" fill="currentColor" stroke="none"/><circle cx="9.2" cy="8.5" r="1.15" fill="currentColor" stroke="none"/><circle cx="13.8" cy="7.7" r="1.15" fill="currentColor" stroke="none"/><circle cx="17.2" cy="10.7" r="1.15" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="torah.tabs.colors">Colors</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabAudio" aria-controls="ttTabPanelAudio" aria-selected="false" tabindex="-1" onclick="setSettingsTab('audio')"><svg class="hi hi-sm hi-music" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17.5V5.2l10-2v12.3"/><ellipse cx="6.4" cy="17.8" rx="2.7" ry="2.3" fill="currentColor"/><ellipse cx="16.4" cy="15.5" rx="2.7" ry="2.3" fill="currentColor"/></svg><span class="hi-lbl" data-i18n="torah.tabs.audio">Audio</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabCalendar" aria-controls="ttTabPanelCalendar" aria-selected="false" tabindex="-1" onclick="setSettingsTab('calendar')"><svg class="hi hi-sm hi-calendar" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="5.4" width="17.6" height="15.2" rx="2.2"/><path d="M3.2 10.2h17.6"/><path d="M8.2 3v4.4M15.8 3v4.4"/><circle cx="12" cy="15.6" r="1.7" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="torah.tabs.calendar">Calendar</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabShare" aria-controls="ttTabPanelShare" aria-selected="false" tabindex="-1" onclick="setSettingsTab('share')"><svg class="hi hi-sm hi-link" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 13.7a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.7 1.7"/><path d="M13.7 10.3a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.7-1.7"/></svg><span class="hi-lbl" data-i18n="torah.tabs.share">Share</span></button>
+    <button type="button" class="tt-tab hi-btn" role="tab" id="ttTabMore" aria-controls="ttTabPanelMore" aria-selected="false" tabindex="-1" onclick="setSettingsTab('more')"><svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg><span class="hi-lbl" data-i18n="torah.tabs.more">More</span></button>
+  </div>
   <div class="settings-body">
-
-    <div style="display:flex; gap:6px; margin-bottom:14px;">
-      <button class="btn btn-xs btn-secondary" style="flex:1;" onclick="expandAllMenus()" data-i18n="torah.settings.expand_all">Expand all menus</button>
-      <button class="btn btn-xs btn-secondary" style="flex:1;" onclick="collapseAllMenus()" data-i18n="torah.settings.collapse_all">Collapse all menus</button>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title" data-i18n="torah.settings.panel_display">Display</div>
-      <div class="panel-body">
+    <div class="tt-tabpanel" id="ttTabPanelText" role="tabpanel" aria-labelledby="ttTabText">
+      <div class="tt-set" data-set="display">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_display">Display</h3>
         <div class="form-row">
           <label><span id="lblShowCantillation" data-i18n="torah.display.show_cantillation">Show cantillation marks (te'amim)</span> <span class="tip-wrap" data-i18n-tip="torah.display.show_cantillation_tip" data-tip="Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels)."><i class="tip-icon">?</i></span></label>
           <label class="toggle"><input type="checkbox" id="optShowCantillation" aria-labelledby="lblShowCantillation"><span class="slider"></span></label>
@@ -2324,8 +2289,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
             <input type="radio" name="optClickAction" id="caRead"  value="read"><label for="caRead" data-i18n="torah.display.click_read">Read</label>
           </span>
         </div>
-        <hr style="border:none; border-top:1px solid var(--border); margin:12px 0 8px;">
-        <div style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;" data-i18n="torah.display.font_sizes_header">Font sizes</div>
+        <div class="tt-set-sub" data-i18n="torah.display.font_sizes_header">Font sizes</div>
         <div class="slider-row">
           <label for="optHebSize" data-i18n="torah.display.size_hebrew">Hebrew</label>
           <input type="range" id="optHebSize" min="0.7" max="3.5" step="0.05" value="1.5">
@@ -2344,8 +2308,126 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <span class="sval" id="optEnglishSizeVal">0.95rem</span>
           <button class="sreset" onclick="resetFontSize('english')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
-        <hr style="border:none; border-top:1px solid var(--border); margin:12px 0 8px;">
-        <div id="lblKaraokeHdr" style="font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;" data-i18n="torah.display.karaoke_header">Karaoke settings</div>
+      </div>
+      <div class="tt-set" data-set="font">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_font">Hebrew font</h3>
+        <div class="font-options" id="fontOptions"></div>
+        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
+      </div>
+      <div class="tt-set" data-set="translit">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_translit">Transliteration</h3>
+        <div class="form-row">
+          <label id="lblTranslitPlace" data-i18n="torah.trans.place_label">Show it</label>
+          <span class="radio-group" role="group" aria-labelledby="lblTranslitPlace">
+            <input type="radio" name="optTranslitPlace" id="tpRow"  value="row"><label for="tpRow" data-i18n="torah.trans.place_row">Own line</label>
+            <input type="radio" name="optTranslitPlace" id="tpWord" value="word"><label for="tpWord" data-i18n="torah.trans.place_word">Under each word</label>
+          </span>
+        </div>
+        <div id="tpStaffNote" style="font-size:0.7rem;color:var(--muted);margin-top:4px;margin-bottom:10px;line-height:1.4;" data-i18n="torah.trans.place_staff_note" hidden>In the Trope staff layout the transliteration always sits under each word; the Trope staff section's Words choice (Audio tab) says whether the Hebrew shows with it.</div>
+        <div class="form-row">
+          <label for="optTranslitStyle" data-i18n="torah.trans.style_label">Style</label>
+          <select id="optTranslitStyle">
+            <option value="modernIsraeli" data-i18n="torah.trans.style_modern">Modern Israeli [DEFAULT]</option>
+            <option value="ashkenazi" data-i18n="torah.trans.style_ashkenazi">Ashkenazi</option>
+            <option value="sbl" data-i18n="torah.trans.style_sbl">SBL Academic</option>
+            <option value="brill" data-i18n="torah.trans.style_brill">Brill Academic</option>
+            <option value="simpleStressed" data-i18n="torah.trans.style_simple">Simple stressed</option>
+          </select>
+        </div>
+        <div id="optTranslitStatus" style="font-size:0.72rem;color:var(--muted);"></div>
+      </div>
+    </div>
+    <div class="tt-tabpanel" id="ttTabPanelColors" role="tabpanel" aria-labelledby="ttTabColors" hidden>
+      <div class="tt-set" data-set="vowel_color">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_vowel_color">Vowel color coding</h3>
+        <!-- One list is both the on/off switch and the look: No highlight writes colorCodeNikkud:false
+             and keeps colorCodingMode (wireSettingsForm). The list drops under its label, end-aligned
+             (the dashboard's Date format idiom), as a 2×2 block (.tt-color-grid). -->
+        <div class="form-row tt-color-row" style="flex-wrap:wrap;">
+          <label id="lblColorCode" data-i18n="torah.color.code_nikkud">Color-code nikkud</label>
+          <span class="radio-group tt-color-list tt-color-grid" role="group" aria-labelledby="lblColorCode" style="margin-inline-start:auto;">
+            <input type="radio" name="optColorMode" id="cmNone" value="none"><label for="cmNone" data-i18n="torah.color.mode_none">No highlight</label>
+            <input type="radio" name="optColorMode" id="cmLetter" value="letter"><label for="cmLetter" data-i18n="torah.color.mode_letter">Letter</label>
+            <input type="radio" name="optColorMode" id="cmHighlight" value="highlight"><label for="cmHighlight" data-i18n="torah.color.mode_highlight">Highlight</label>
+            <input type="radio" name="optColorMode" id="cmUnderline" value="underline"><label for="cmUnderline" data-i18n="torah.color.mode_underline">Underline</label>
+          </span>
+        </div>
+        <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
+        <div class="form-row vowel-scheme-row" id="colorResetRow" style="display:none;">
+          <button class="vowel-scheme-btn active" id="vowelSchemeDefault" aria-pressed="true" onclick="setVowelScheme('default')" type="button" data-i18n="torah.color.scheme_default">Default</button>
+          <button class="vowel-scheme-btn" id="vowelSchemeTalAm" aria-pressed="false" onclick="setVowelScheme('talam')" type="button" data-i18n="torah.color.scheme_talam">TaL AM</button>
+          <button class="vowel-scheme-btn" onclick="resetNikudColors()" type="button" data-i18n="torah.color.scheme_reset">Reset</button>
+        </div>
+      </div>
+      <div class="tt-set" data-set="trope_color">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_trope_color">Trope color coding</h3>
+        <!-- Same shape as the vowel list: No highlight writes colorCodeTrope:false and keeps tropeCodingMode. -->
+        <div class="form-row tt-color-row" style="flex-wrap:wrap;">
+          <label><span id="lblColorCodeTrope" data-i18n="torah.color.code_trope">Color-code trope families</span> <span class="tip-wrap" data-i18n-tip="torah.color.code_trope_tip" data-tip="Colors each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. Highlight tints the word; Underline draws a colored line under it. When vowel coloring is in Letter or Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
+          <span class="radio-group tt-color-list" role="group" aria-labelledby="lblColorCodeTrope" style="margin-inline-start:auto;">
+            <input type="radio" name="optTropeMode" id="tmNone" value="none"><label for="tmNone" data-i18n="torah.color.mode_none">No highlight</label>
+            <input type="radio" name="optTropeMode" id="tmHighlight" value="highlight"><label for="tmHighlight" data-i18n="torah.color.mode_highlight">Highlight</label>
+            <input type="radio" name="optTropeMode" id="tmUnderline" value="underline"><label for="tmUnderline" data-i18n="torah.color.mode_underline">Underline</label>
+          </span>
+        </div>
+        <div class="color-pick-list" id="tropeColorPickerList" style="display:none;"></div>
+        <div class="form-row vowel-scheme-row" id="tropeResetRow" style="display:none;">
+          <button class="vowel-scheme-btn" onclick="resetTropeColors()" type="button" data-i18n="torah.color.trope_reset">Reset</button>
+        </div>
+      </div>
+    </div>
+    <div class="tt-tabpanel" id="ttTabPanelAudio" role="tabpanel" aria-labelledby="ttTabAudio" hidden>
+      <div class="tt-set" data-set="audio">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_audio">Audio speeds &amp; pitch</h3>
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.45;" data-i18n-html="torah.audio.speeds_intro">
+          Click <strong>🔊 Read</strong> on any verse for browser TTS in Hebrew, or <strong>🎵 Chant</strong> to stream PocketTorah's recording with real-time word highlighting. These sliders mirror the ones in the audio bar at the bottom of the page.
+        </div>
+        <div class="slider-row">
+          <label for="optKaraokeRate" data-i18n="torah.audio.speed_chant">Chant</label>
+          <input type="range" id="optKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0">
+          <span class="sval" id="optKaraokeRateVal">1.00×</span>
+          <button class="sreset" onclick="resetKaraokeRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div class="slider-row">
+          <label for="optKaraokePitch"><span id="optKaraokePitchLbl" data-i18n="torah.audio.pitch_label">Pitch</span>
+            <span class="tip-wrap" data-i18n-tip="torah.audio.pitch_tip" data-tip="Moves the chant up or down in half-steps so it sits in your voice. Speed and word highlighting stay as they are. The first change loads a small audio module."><i class="tip-icon">?</i></span>
+          </label>
+          <input type="range" id="optKaraokePitch" min="-12" max="12" step="1" value="0" aria-labelledby="optKaraokePitchLbl">
+          <span class="sval" id="optKaraokePitchVal">0</span>
+          <button class="sreset" onclick="resetKaraokePitch()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div id="optPitchStatus" role="status" aria-live="polite" style="font-size:0.7rem;color:var(--muted);margin-top:-4px;margin-bottom:8px;line-height:1.4;" hidden></div>
+        <div class="slider-row">
+          <label for="optTTSRate" data-i18n="torah.audio.speed_read">Read</label>
+          <input type="range" id="optTTSRate" min="0.5" max="1.5" step="0.05" value="0.75">
+          <span class="sval" id="optTTSRateVal">0.75×</span>
+          <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div class="form-row" style="margin-top:8px;">
+          <label for="optLoopPause"><span data-i18n="torah.audio.loop_pause_label">Pause between repeats</span>
+            <span class="tip-wrap" data-i18n-tip="torah.audio.loop_pause_tip" data-tip="When you loop a verse (🔁), wait this long before repeating it — handy for practicing along."><i class="tip-icon">?</i></span>
+          </label>
+          <select id="optLoopPause">
+            <option value="0" data-i18n="torah.audio.loop_pause_none">None</option>
+            <option value="500" data-i18n="torah.audio.loop_pause_half">0.5 seconds</option>
+            <option value="1000" data-i18n="torah.audio.loop_pause_1">1 second</option>
+            <option value="2000" data-i18n="torah.audio.loop_pause_2">2 seconds</option>
+          </select>
+        </div>
+        <div id="optTTSStatus" style="font-size:0.7rem;color:var(--muted);margin-top:6px;"></div>
+        <div id="optKaraokeStatus" style="font-size:0.7rem;color:var(--muted);margin-top:4px;"></div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:10px;line-height:1.4;" data-i18n="torah.audio.recording_credit">Chant recordings: PocketTorah, Spiro (Conservative) melody.</div>
+        <div style="font-size:0.65rem;color:var(--muted);margin-top:6px;line-height:1.4;">
+          Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz,
+          <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener" style="color:var(--gold-text);">PocketTorah</a>,
+          <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" style="color:var(--gold-text);">CC&nbsp;BY-SA&nbsp;4.0</a>.
+        </div>
+      </div>
+      <!-- Karaoke highlighting (was the Display panel's "Karaoke settings" sub-block): the two groups take this
+           heading into their names — a bare "Style" with its Highlight choice would sound like the vowel and
+           trope color lists to a screen reader. -->
+      <div class="tt-set" data-set="karaoke">
+        <h3 class="tt-set-title" tabindex="-1" id="lblKaraokeHdr" data-i18n="torah.settings.panel_karaoke">Karaoke highlighting</h3>
         <!-- The two karaoke groups take this heading into their names: a bare "Style" with its Highlight
              choice would sound like the vowel and trope color lists to a screen reader. -->
         <div class="form-row">
@@ -2368,14 +2450,139 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
         <div id="kfUnderNote" style="font-size:0.7rem;color:var(--muted);margin-top:4px;line-height:1.4;" data-i18n="torah.display.follow_under_note" hidden>With the transliteration under each word, the highlight follows the Hebrew word and its transliteration moves with it.</div>
         <div id="kfStaffNote" style="font-size:0.7rem;color:var(--muted);margin-top:4px;line-height:1.4;" data-i18n="torah.staff.follow_note" hidden>In the Trope staff layout the highlight follows each word under its notes; the transliteration, when shown, moves with it.</div>
       </div>
+      <div class="tt-set" data-set="staff">
+        <h3 class="tt-set-title" tabindex="-1"><span data-i18n="torah.settings.panel_staff">Trope staff</span> <span class="beta-tag" data-i18n="shared.badge.beta">BETA</span></h3>
+        <!-- The Trope staff layout (a Layout choice): what sits under the notes while the Translit switch is on (the
+             Hebrew with its Latin line, or the Latin line alone), the key the staff is drawn in and the tune moved by,
+             the voice (Low voices: the 8 under the clef, the tune an octave down), the note names and the tune's speed.
+             All but the speed travel in a practice link (how the reading looks); the speed never does (it syncs with the
+             account's settings like karaokeRate). -->
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.melody_credit">Staff melody: Avery/Binder (Reform), the year-round and High Holiday charts. The Haftarah staff is a beta rendering.</div>
+        <div class="form-row">
+          <label id="lblStaffWords" data-i18n="torah.staff.words_label">Words</label>
+          <span class="radio-group" role="group" aria-labelledby="lblStaffWords" aria-describedby="staffWordsNote" style="margin-inline-start:auto;">
+            <input type="radio" name="optStaffWords" id="swBoth" value="both"><label for="swBoth" data-i18n="torah.staff.words_both">Hebrew + transliteration</label>
+            <input type="radio" name="optStaffWords" id="swTranslit" value="translit"><label for="swTranslit" data-i18n="torah.staff.words_translit">Transliteration only</label>
+          </span>
+        </div>
+        <div id="staffWordsNote" style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.words_note">Applies while the Translit switch is on.</div>
+        <div class="form-row">
+          <label><span id="lblStaffDir" data-i18n="torah.staff.dir_label">Direction</span> <span class="tip-wrap" data-i18n-tip="torah.staff.dir_tip" data-tip="Left to right is standard notation. Right to left mirrors the staff so the notes run in the Hebrew's reading order, as some Hebrew music is printed: the clef sits at the right and the words read under their notes from right to left."><i class="tip-icon">?</i></span></label>
+          <span class="radio-group" role="group" aria-labelledby="lblStaffDir" style="margin-inline-start:auto;">
+            <input type="radio" name="optStaffDir" id="sdLtr" value="ltr"><label for="sdLtr" data-i18n="torah.staff.dir_ltr">Left to right</label>
+            <input type="radio" name="optStaffDir" id="sdRtl" value="rtl"><label for="sdRtl" data-i18n="torah.staff.dir_rtl">Right to left</label>
+          </span>
+        </div>
+        <div class="slider-row">
+          <label for="optStaffShift"><span id="optStaffShiftLbl" data-i18n="torah.staff.key_label">Key</span>
+            <span class="tip-wrap" data-i18n-tip="torah.staff.key_tip" data-tip="Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody); the Haftarah tune is written in D minor, with F major's one flat."><i class="tip-icon">?</i></span>
+          </label>
+          <input type="range" id="optStaffShift" min="-6" max="6" step="1" value="0" aria-labelledby="optStaffShiftLbl">
+          <span class="sval" id="optStaffShiftVal" dir="ltr">0</span>
+          <button class="sreset" onclick="resetStaffShift()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div id="optStaffShiftNote" style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;"></div>
+        <div class="form-row">
+          <label id="lblStaffVoice" data-i18n="torah.staff.voice_label">Voice</label>
+          <span class="radio-group" role="group" aria-labelledby="lblStaffVoice" style="margin-inline-start:auto;">
+            <input type="radio" name="optStaffVoice" id="svHigh" value="high"><label for="svHigh" data-i18n="torah.staff.voice_high">High voices</label>
+            <input type="radio" name="optStaffVoice" id="svLow" value="low"><label for="svLow" data-i18n="torah.staff.voice_low">Low voices</label>
+          </span>
+        </div>
+        <div class="form-row">
+          <label id="lblStaffNames" data-i18n="torah.staff.names_label">Note names</label>
+          <span class="radio-group" role="group" aria-labelledby="lblStaffNames" style="margin-inline-start:auto;">
+            <input type="radio" name="optStaffNames" id="snOff" value="off"><label for="snOff" data-i18n="torah.staff.names_off">Off</label>
+            <input type="radio" name="optStaffNames" id="snLetters" value="letters"><label for="snLetters" data-i18n="torah.staff.names_letters">A B C</label>
+            <input type="radio" name="optStaffNames" id="snSolfa" value="solfa"><label for="snSolfa" data-i18n="torah.staff.names_solfa">Do re mi</label>
+          </span>
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.names_note">Writes a name under every note. Do re mi starts from the note the key is named after, so the names stay the same in any key.</div>
+        <div class="slider-row">
+          <label for="optStaffTuneRate" data-i18n="torah.staff.tune_speed_label">Tune speed</label>
+          <input type="range" id="optStaffTuneRate" min="0.5" max="1.5" step="0.05" value="1.0">
+          <span class="sval" id="optStaffTuneRateVal" dir="ltr">1.00×</span>
+          <button class="sreset" onclick="resetStaffTuneRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);line-height:1.45;" data-i18n="torah.staff.beta_note">Beta: each word's figure follows the printed cantillation chart. Where the chart prints no figure for a word's context the nearest one is used, and each word sits whole under its notes (no syllable placement yet).</div>
+      </div>
     </div>
-
-    <!-- Copy: everything that decides what the 📋 button and Copy All put on the clipboard.
-         The Copy bar below the reading owns only verse SELECTION now; format lives here so
-         one place answers "what will a copy contain?". -->
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="torah.settings.panel_copy">Copy</div>
-      <div class="panel-body">
+    <div class="tt-tabpanel" id="ttTabPanelCalendar" role="tabpanel" aria-labelledby="ttTabCalendar" hidden>
+      <div class="tt-set" data-set="schedule">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_schedule">Reading schedule</h3>
+        <div class="form-row">
+          <label><span id="lblSchedule" data-i18n="torah.schedule.schedule_label">Calendar</span> <span class="tip-wrap" data-i18n-tip="torah.schedule.schedule_tip" data-tip="Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'."><i class="tip-icon">?</i></span></label>
+          <span class="radio-group" role="group" aria-labelledby="lblSchedule">
+            <input type="radio" name="optSchedule" id="schedDiaspora" value="diaspora"><label for="schedDiaspora" data-i18n="torah.schedule.diaspora">Diaspora</label>
+            <input type="radio" name="optSchedule" id="schedIsrael" value="israel"><label for="schedIsrael" data-i18n="torah.schedule.israel">Israel</label>
+          </span>
+        </div>
+        <!-- The reading cycle: which division of the parasha the Reading picker offers. Full is the annual
+             reading (PocketTorah's aliyot); Triennial the three-year division (data/leyning/triennial.json,
+             the year from the calendar unless chosen below); Weekday the Monday/Thursday reading (the coming
+             parasha's first aliyah in three, data/leyning/weekday.json). Neither choice travels in a practice
+             link — the schedule never does — and both ride the settings blob like the calendar. -->
+        <div class="form-row">
+          <label><span id="lblCycle" data-i18n="torah.schedule.cycle_label">Reading cycle</span> <span class="tip-wrap" data-i18n-tip="torah.schedule.cycle_tip" data-tip="Full: the whole parasha in its seven aliyot, as read on Shabbat morning. Triennial: the three-year division used in many Conservative congregations (a third of the parasha each year, in seven aliyot). Weekday: the Monday, Thursday and Shabbat-afternoon reading — the coming parasha's first aliyah, in three."><i class="tip-icon">?</i></span></label>
+          <span class="radio-group" role="group" aria-labelledby="lblCycle">
+            <input type="radio" name="optCycle" id="cycFull" value="full"><label for="cycFull" data-i18n="torah.schedule.cycle_full">Full (annual)</label>
+            <input type="radio" name="optCycle" id="cycTriennial" value="triennial"><label for="cycTriennial" data-i18n="torah.schedule.cycle_triennial">Triennial</label>
+            <input type="radio" name="optCycle" id="cycWeekday" value="weekday"><label for="cycWeekday" data-i18n="torah.schedule.cycle_weekday">Weekday (Mon/Thu)</label>
+          </span>
+        </div>
+        <div class="form-row" id="triYearRow" hidden>
+          <label id="lblTriYear" data-i18n="torah.schedule.triyear_label">Triennial year</label>
+          <span class="radio-group" role="group" aria-labelledby="lblTriYear" style="margin-inline-start:auto;">
+            <input type="radio" name="optTriYear" id="tyAuto" value="auto"><label for="tyAuto" data-i18n="torah.schedule.triyear_auto">Auto</label>
+            <input type="radio" name="optTriYear" id="ty1" value="1"><label for="ty1">1</label>
+            <input type="radio" name="optTriYear" id="ty2" value="2"><label for="ty2">2</label>
+            <input type="radio" name="optTriYear" id="ty3" value="3"><label for="ty3">3</label>
+          </span>
+        </div>
+        <div id="cycleNote" style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" aria-live="polite"></div>
+        <div class="form-row">
+          <button class="btn btn-xs btn-secondary" onclick="goToCurrentParshah()" type="button" data-i18n="torah.schedule.jump_this_week">Jump to this week's parsha</button>
+        </div>
+      </div>
+      <div class="tt-set" data-set="lookup">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_lookup">Torah portion lookup</h3>
+        <!-- Any date, past or future → the Shabbat on or after it and what it reads, from js/hebrew-calendar.js on
+             the calendar chosen in Reading schedule (no network). Nothing here is stored: the date belongs to the
+             visit. Open loads the parasha (a doubled week's first; the picker's › reaches the second) or, on a
+             festival Shabbat with a reading in HOLIDAY_READINGS, that reading. -->
+        <div class="form-row">
+          <label for="lookupDate"><span data-i18n="torah.lookup.date_label">Date</span> <span class="tip-wrap" data-i18n-tip="torah.lookup.date_tip" data-tip="Any date, past or future: the reading of the Shabbat on or after it, on the calendar chosen under Reading schedule (Diaspora or Israel)."><i class="tip-icon">?</i></span></label>
+          <input type="date" id="lookupDate" min="1900-01-01" max="2200-12-31">
+        </div>
+        <div id="lookupResult" aria-live="polite" style="font-size:0.82rem;line-height:1.5;margin-bottom:10px;"></div>
+        <div class="form-row" id="lookupOpenRow" hidden>
+          <button class="btn btn-xs btn-secondary" id="lookupOpenBtn" type="button" data-i18n="torah.lookup.open">Open this reading</button>
+        </div>
+      </div>
+    </div>
+    <div class="tt-tabpanel" id="ttTabPanelShare" role="tabpanel" aria-labelledby="ttTabShare" hidden>
+      <div class="tt-set" data-set="share">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_share">Practice link</h3>
+        <div id="ttShareWrap" hidden>
+          <div class="form-row">
+            <button id="ttShareBtn" class="btn btn-xs btn-secondary hi-btn" onclick="copyPracticeLink(this)" type="button"><svg class="hi hi-sm hi-link" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 13.7a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.7 1.7"/><path d="M13.7 10.3a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.7-1.7"/></svg><span class="hi-lbl" data-i18n="torah.share.button">Copy link</span></button>
+          </div>
+          <!-- Remembered; when on, the link also carries the sender's look as ?s= (see LINK VIEW). -->
+          <div class="form-row">
+            <label for="ttShareSettings"><span id="lblShareSettings" data-i18n="torah.share.include_settings">Include my settings</span> <span class="tip-wrap" data-i18n-tip="torah.share.include_settings_tip" data-tip="Adds your font, text sizes, vowel and trope color coding, and what the reading shows (nikkud, trope marks, transliteration and where it sits, translation, layout, and the trope staff's words, key, voice and note names) to the link. Whoever opens it sees the reading your way, and can keep those settings or go back to their own."><i class="tip-icon">?</i></span></label>
+            <label class="toggle"><input type="checkbox" id="ttShareSettings" aria-labelledby="lblShareSettings"><span class="slider"></span></label>
+          </div>
+        </div>
+        <div id="ttShareNone" class="tt-set-note" data-i18n="torah.share.none_note" hidden>Nothing to share yet — pick a parsha, a holiday reading or a custom range and a link to it appears here.</div>
+      </div>
+      <!-- Copy verses: the launcher opens the inline Copy bar under the toolbar (verse SELECTION needs the
+           reading clickable, and this drawer is modal); everything that decides what the 📋 button and
+           Copy All put on the clipboard lives here, so one place answers "what will a copy contain?". -->
+      <div class="tt-set" data-set="copy">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_copy">Copy verses</h3>
+        <div class="form-row">
+          <button class="btn btn-xs btn-secondary hi-btn" onclick="openCopyBarFromDrawer()" type="button"><svg class="hi hi-sm hi-copy" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2.2"/><path d="M15.5 5.5v-.8a2.2 2.2 0 0 0-2.2-2.2H6.2A2.2 2.2 0 0 0 4 4.7v7.1a2.2 2.2 0 0 0 2.2 2.2H5"/></svg><span class="hi-lbl" data-i18n="torah.copy.select_verses_button">Select verses to copy…</span></button>
+        </div>
         <div class="form-row">
           <label for="ttCopyIncRef" data-i18n="torah.copy.inc_ref">Include verse numbers</label>
           <label class="toggle"><input type="checkbox" id="ttCopyIncRef"><span class="slider"></span></label>
@@ -2433,262 +2640,67 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <label class="toggle"><input type="checkbox" id="ttCopyBulkRemember" aria-labelledby="lblCopyBulkRemember"><span class="slider"></span></label>
         </div>
       </div>
-    </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="torah.settings.panel_schedule">Reading schedule</div>
-      <div class="panel-body">
+      <div class="tt-set" data-set="handout">
+        <h3 class="tt-set-title" id="ttHandoutTitle" tabindex="-1" data-i18n="torah.handout.title">Student handout</h3>
         <div class="form-row">
-          <label><span id="lblSchedule" data-i18n="torah.schedule.schedule_label">Calendar</span> <span class="tip-wrap" data-i18n-tip="torah.schedule.schedule_tip" data-tip="Diaspora and Israel reading schedules diverge for several weeks per cycle (when a Yom Tov falls on Shabbat). Affects which parsha is selected as 'this week'."><i class="tip-icon">?</i></span></label>
-          <span class="radio-group" role="group" aria-labelledby="lblSchedule">
-            <input type="radio" name="optSchedule" id="schedDiaspora" value="diaspora"><label for="schedDiaspora" data-i18n="torah.schedule.diaspora">Diaspora</label>
-            <input type="radio" name="optSchedule" id="schedIsrael" value="israel"><label for="schedIsrael" data-i18n="torah.schedule.israel">Israel</label>
+          <label for="ttHandoutHideNikkud" data-i18n="torah.handout.hide_nikkud">Hide nikkud (vowels)</label>
+          <label class="toggle"><input type="checkbox" id="ttHandoutHideNikkud"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label for="ttHandoutHideTeamim" data-i18n="torah.handout.hide_teamim">Hide cantillation (trope)</label>
+          <label class="toggle"><input type="checkbox" id="ttHandoutHideTeamim"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label for="ttHandoutHideNums" data-i18n="torah.handout.hide_nums">Hide verse numbers</label>
+          <label class="toggle"><input type="checkbox" id="ttHandoutHideNums"><span class="slider"></span></label>
+        </div>
+        <div class="form-row">
+          <label id="lblHandoutSize" data-i18n="torah.handout.font_size">Font size</label>
+          <span class="radio-group" role="group" aria-labelledby="lblHandoutSize">
+            <input type="radio" name="ttHandoutSize" id="hsNormal" value="normal"><label for="hsNormal" data-i18n="torah.handout.size_normal">Normal</label>
+            <input type="radio" name="ttHandoutSize" id="hsLarge" value="large"><label for="hsLarge" data-i18n="torah.handout.size_large">Large</label>
+            <input type="radio" name="ttHandoutSize" id="hsXL" value="xl"><label for="hsXL" data-i18n="torah.handout.size_xl">Extra large</label>
           </span>
         </div>
-        <!-- The reading cycle: which division of the parasha the Reading picker offers. Full is the annual
-             reading (PocketTorah's aliyot); Triennial the three-year division (data/leyning/triennial.json,
-             the year from the calendar unless chosen below); Weekday the Monday/Thursday reading (the coming
-             parasha's first aliyah in three, data/leyning/weekday.json). Neither choice travels in a practice
-             link — the schedule never does — and both ride the settings blob like the calendar. -->
-        <div class="form-row">
-          <label><span id="lblCycle" data-i18n="torah.schedule.cycle_label">Reading cycle</span> <span class="tip-wrap" data-i18n-tip="torah.schedule.cycle_tip" data-tip="Full: the whole parasha in its seven aliyot, as read on Shabbat morning. Triennial: the three-year division used in many Conservative congregations (a third of the parasha each year, in seven aliyot). Weekday: the Monday, Thursday and Shabbat-afternoon reading — the coming parasha's first aliyah, in three."><i class="tip-icon">?</i></span></label>
-          <span class="radio-group" role="group" aria-labelledby="lblCycle">
-            <input type="radio" name="optCycle" id="cycFull" value="full"><label for="cycFull" data-i18n="torah.schedule.cycle_full">Full (annual)</label>
-            <input type="radio" name="optCycle" id="cycTriennial" value="triennial"><label for="cycTriennial" data-i18n="torah.schedule.cycle_triennial">Triennial</label>
-            <input type="radio" name="optCycle" id="cycWeekday" value="weekday"><label for="cycWeekday" data-i18n="torah.schedule.cycle_weekday">Weekday (Mon/Thu)</label>
-          </span>
+        <div class="form-row" id="ttHandoutSelRow" hidden>
+          <label for="ttHandoutSelectedOnly" data-i18n="torah.handout.selected_only">Print only the selected verses</label>
+          <span id="ttHandoutSelCount" style="color:var(--muted);font-size:0.85em;"></span>
+          <label class="toggle"><input type="checkbox" id="ttHandoutSelectedOnly"><span class="slider"></span></label>
         </div>
-        <div class="form-row" id="triYearRow" hidden>
-          <label id="lblTriYear" data-i18n="torah.schedule.triyear_label">Triennial year</label>
-          <span class="radio-group" role="group" aria-labelledby="lblTriYear" style="margin-inline-start:auto;">
-            <input type="radio" name="optTriYear" id="tyAuto" value="auto"><label for="tyAuto" data-i18n="torah.schedule.triyear_auto">Auto</label>
-            <input type="radio" name="optTriYear" id="ty1" value="1"><label for="ty1">1</label>
-            <input type="radio" name="optTriYear" id="ty2" value="2"><label for="ty2">2</label>
-            <input type="radio" name="optTriYear" id="ty3" value="3"><label for="ty3">3</label>
-          </span>
+        <div class="form-row" id="ttHandoutGenizaRow" hidden>
+          <label for="ttHandoutGeniza" data-i18n="torah.handout.geniza_check">Add a לגניזה marker to the printed page</label>
+          <label class="toggle"><input type="checkbox" id="ttHandoutGeniza"><span class="slider"></span></label>
         </div>
-        <div id="cycleNote" style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" aria-live="polite"></div>
+        <div class="tt-handout-shem-note" id="ttHandoutShemNote" hidden data-i18n="torah.handout.shem_note">This reading contains שם ה׳ — printed pages traditionally go to geniza, not the trash.</div>
         <div class="form-row">
-          <button class="btn btn-xs btn-secondary" onclick="goToCurrentParshah()" type="button" data-i18n="torah.schedule.jump_this_week">Jump to this week's parsha</button>
+          <button class="btn btn-xs hi-btn" onclick="printHandout()" type="button"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="torah.handout.print_button">Print handout</span></button>
+        </div>
+      </div>
+      <div class="tt-set" data-set="print">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_print">Print</h3>
+        <div class="form-row">
+          <button class="btn btn-xs btn-secondary hi-btn" onclick="printReading()" type="button" title="Print this reading for students" data-i18n-title="torah.controls.print_title"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span class="hi-lbl" data-i18n="torah.settings.print_reading">Print this reading</span></button>
         </div>
       </div>
     </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="torah.settings.panel_lookup">Torah portion lookup</div>
-      <div class="panel-body">
-        <!-- Any date, past or future → the Shabbat on or after it and what it reads, from js/hebrew-calendar.js on
-             the calendar chosen in Reading schedule (no network). Nothing here is stored: the date belongs to the
-             visit. Open loads the parasha (a doubled week's first; the picker's › reaches the second) or, on a
-             festival Shabbat with a reading in HOLIDAY_READINGS, that reading. -->
-        <div class="form-row">
-          <label for="lookupDate"><span data-i18n="torah.lookup.date_label">Date</span> <span class="tip-wrap" data-i18n-tip="torah.lookup.date_tip" data-tip="Any date, past or future: the reading of the Shabbat on or after it, on the calendar chosen under Reading schedule (Diaspora or Israel)."><i class="tip-icon">?</i></span></label>
-          <input type="date" id="lookupDate" min="1900-01-01" max="2200-12-31">
-        </div>
-        <div id="lookupResult" aria-live="polite" style="font-size:0.82rem;line-height:1.5;margin-bottom:10px;"></div>
-        <div class="form-row" id="lookupOpenRow" hidden>
-          <button class="btn btn-xs btn-secondary" id="lookupOpenBtn" type="button" data-i18n="torah.lookup.open">Open this reading</button>
-        </div>
+    <div class="tt-tabpanel" id="ttTabPanelMore" role="tabpanel" aria-labelledby="ttTabMore" hidden>
+      <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into #cloudSavesPanel; see initCloudSaves() -->
+      <div class="tt-set" data-set="cloud">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_cloud">Cloud saves</h3>
+        <div id="cloudSavesPanel"></div>
       </div>
-    </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="torah.settings.panel_font">Hebrew font</div>
-      <div class="panel-body">
-        <div class="font-options" id="fontOptions"></div>
-        <label title="Add a .ttf, .otf, or .woff/.woff2 font to My Fonts" data-i18n-title="shared.fonts.upload_title" style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:0.78rem;color:var(--gold-text);cursor:pointer;border:1px dashed var(--border);border-radius:6px;padding:6px 11px;width:fit-content;"><svg class="hi hi-sm hi-upload" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.2V4"/><path d="M7.6 8.4 12 4l4.4 4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="shared.fonts.upload_label">Upload your own font?</span><input type="file" accept=".ttf,.otf,.woff,.woff2" class="vh-file" onchange="onUploadFontPick(this)"></label>
-      </div>
-    </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="torah.settings.panel_vowel_color">Vowel color coding</div>
-      <div class="panel-body">
-        <!-- One list is both the on/off switch and the look: No highlight writes colorCodeNikkud:false
-             and keeps colorCodingMode (wireSettingsForm). The list drops under its label, end-aligned
-             (the dashboard's Date format idiom), as a 2×2 block (.tt-color-grid). -->
-        <div class="form-row tt-color-row" style="flex-wrap:wrap;">
-          <label id="lblColorCode" data-i18n="torah.color.code_nikkud">Color-code nikkud</label>
-          <span class="radio-group tt-color-list tt-color-grid" role="group" aria-labelledby="lblColorCode" style="margin-inline-start:auto;">
-            <input type="radio" name="optColorMode" id="cmNone" value="none"><label for="cmNone" data-i18n="torah.color.mode_none">No highlight</label>
-            <input type="radio" name="optColorMode" id="cmLetter" value="letter"><label for="cmLetter" data-i18n="torah.color.mode_letter">Letter</label>
-            <input type="radio" name="optColorMode" id="cmHighlight" value="highlight"><label for="cmHighlight" data-i18n="torah.color.mode_highlight">Highlight</label>
-            <input type="radio" name="optColorMode" id="cmUnderline" value="underline"><label for="cmUnderline" data-i18n="torah.color.mode_underline">Underline</label>
-          </span>
-        </div>
-        <div class="color-pick-list" id="colorPickerList" style="display:none;"></div>
-        <div class="form-row vowel-scheme-row" id="colorResetRow" style="display:none;">
-          <button class="vowel-scheme-btn active" id="vowelSchemeDefault" aria-pressed="true" onclick="setVowelScheme('default')" type="button" data-i18n="torah.color.scheme_default">Default</button>
-          <button class="vowel-scheme-btn" id="vowelSchemeTalAm" aria-pressed="false" onclick="setVowelScheme('talam')" type="button" data-i18n="torah.color.scheme_talam">TaL AM</button>
-          <button class="vowel-scheme-btn" onclick="resetNikudColors()" type="button" data-i18n="torah.color.scheme_reset">Reset</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="torah.settings.panel_trope_color">Trope color coding</div>
-      <div class="panel-body">
-        <!-- Same shape as the vowel list: No highlight writes colorCodeTrope:false and keeps tropeCodingMode. -->
-        <div class="form-row tt-color-row" style="flex-wrap:wrap;">
-          <label><span id="lblColorCodeTrope" data-i18n="torah.color.code_trope">Color-code trope families</span> <span class="tip-wrap" data-i18n-tip="torah.color.code_trope_tip" data-tip="Colors each word by its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. Highlight tints the word; Underline draws a colored line under it. When vowel coloring is in Letter or Highlight mode, trope shows as an underline instead."><i class="tip-icon">?</i></span></label>
-          <span class="radio-group tt-color-list" role="group" aria-labelledby="lblColorCodeTrope" style="margin-inline-start:auto;">
-            <input type="radio" name="optTropeMode" id="tmNone" value="none"><label for="tmNone" data-i18n="torah.color.mode_none">No highlight</label>
-            <input type="radio" name="optTropeMode" id="tmHighlight" value="highlight"><label for="tmHighlight" data-i18n="torah.color.mode_highlight">Highlight</label>
-            <input type="radio" name="optTropeMode" id="tmUnderline" value="underline"><label for="tmUnderline" data-i18n="torah.color.mode_underline">Underline</label>
-          </span>
-        </div>
-        <div class="color-pick-list" id="tropeColorPickerList" style="display:none;"></div>
-        <div class="form-row vowel-scheme-row" id="tropeResetRow" style="display:none;">
-          <button class="vowel-scheme-btn" onclick="resetTropeColors()" type="button" data-i18n="torah.color.trope_reset">Reset</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title"><span data-i18n="torah.settings.panel_staff">Trope staff</span> <span class="beta-tag" data-i18n="shared.badge.beta">BETA</span></div>
-      <div class="panel-body">
-        <!-- The Trope staff layout (a Layout choice): what sits under the notes while the Translit switch is on (the
-             Hebrew with its Latin line, or the Latin line alone), the key the staff is drawn in and the tune moved by,
-             the voice (Low voices: the 8 under the clef, the tune an octave down), the note names and the tune's speed.
-             All but the speed travel in a practice link (how the reading looks); the speed never does (it syncs with the
-             account's settings like karaokeRate). -->
-        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.melody_credit">Staff melody: Avery/Binder (Reform), the year-round and High Holiday charts. The Haftarah staff is a beta rendering.</div>
-        <div class="form-row">
-          <label id="lblStaffWords" data-i18n="torah.staff.words_label">Words</label>
-          <span class="radio-group" role="group" aria-labelledby="lblStaffWords" aria-describedby="staffWordsNote" style="margin-inline-start:auto;">
-            <input type="radio" name="optStaffWords" id="swBoth" value="both"><label for="swBoth" data-i18n="torah.staff.words_both">Hebrew + transliteration</label>
-            <input type="radio" name="optStaffWords" id="swTranslit" value="translit"><label for="swTranslit" data-i18n="torah.staff.words_translit">Transliteration only</label>
-          </span>
-        </div>
-        <div id="staffWordsNote" style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.words_note">Applies while the Translit switch is on.</div>
-        <div class="form-row">
-          <label><span id="lblStaffDir" data-i18n="torah.staff.dir_label">Direction</span> <span class="tip-wrap" data-i18n-tip="torah.staff.dir_tip" data-tip="Left to right is standard notation. Right to left mirrors the staff so the notes run in the Hebrew's reading order, as some Hebrew music is printed: the clef sits at the right and the words read under their notes from right to left."><i class="tip-icon">?</i></span></label>
-          <span class="radio-group" role="group" aria-labelledby="lblStaffDir" style="margin-inline-start:auto;">
-            <input type="radio" name="optStaffDir" id="sdLtr" value="ltr"><label for="sdLtr" data-i18n="torah.staff.dir_ltr">Left to right</label>
-            <input type="radio" name="optStaffDir" id="sdRtl" value="rtl"><label for="sdRtl" data-i18n="torah.staff.dir_rtl">Right to left</label>
-          </span>
-        </div>
-        <div class="slider-row">
-          <label for="optStaffShift"><span id="optStaffShiftLbl" data-i18n="torah.staff.key_label">Key</span>
-            <span class="tip-wrap" data-i18n-tip="torah.staff.key_tip" data-tip="Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody); the Haftarah tune is written in D minor, with F major's one flat."><i class="tip-icon">?</i></span>
-          </label>
-          <input type="range" id="optStaffShift" min="-6" max="6" step="1" value="0" aria-labelledby="optStaffShiftLbl">
-          <span class="sval" id="optStaffShiftVal" dir="ltr">0</span>
-          <button class="sreset" onclick="resetStaffShift()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-        </div>
-        <div id="optStaffShiftNote" style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;"></div>
-        <div class="form-row">
-          <label id="lblStaffVoice" data-i18n="torah.staff.voice_label">Voice</label>
-          <span class="radio-group" role="group" aria-labelledby="lblStaffVoice" style="margin-inline-start:auto;">
-            <input type="radio" name="optStaffVoice" id="svHigh" value="high"><label for="svHigh" data-i18n="torah.staff.voice_high">High voices</label>
-            <input type="radio" name="optStaffVoice" id="svLow" value="low"><label for="svLow" data-i18n="torah.staff.voice_low">Low voices</label>
-          </span>
-        </div>
-        <div class="form-row">
-          <label id="lblStaffNames" data-i18n="torah.staff.names_label">Note names</label>
-          <span class="radio-group" role="group" aria-labelledby="lblStaffNames" style="margin-inline-start:auto;">
-            <input type="radio" name="optStaffNames" id="snOff" value="off"><label for="snOff" data-i18n="torah.staff.names_off">Off</label>
-            <input type="radio" name="optStaffNames" id="snLetters" value="letters"><label for="snLetters" data-i18n="torah.staff.names_letters">A B C</label>
-            <input type="radio" name="optStaffNames" id="snSolfa" value="solfa"><label for="snSolfa" data-i18n="torah.staff.names_solfa">Do re mi</label>
-          </span>
-        </div>
-        <div style="font-size:0.72rem;color:var(--muted);margin-top:-4px;margin-bottom:10px;line-height:1.4;" data-i18n="torah.staff.names_note">Writes a name under every note. Do re mi starts from the note the key is named after, so the names stay the same in any key.</div>
-        <div class="slider-row">
-          <label for="optStaffTuneRate" data-i18n="torah.staff.tune_speed_label">Tune speed</label>
-          <input type="range" id="optStaffTuneRate" min="0.5" max="1.5" step="0.05" value="1.0">
-          <span class="sval" id="optStaffTuneRateVal" dir="ltr">1.00×</span>
-          <button class="sreset" onclick="resetStaffTuneRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-        </div>
-        <div style="font-size:0.72rem;color:var(--muted);line-height:1.45;" data-i18n="torah.staff.beta_note">Beta: each word's figure follows the printed cantillation chart. Where the chart prints no figure for a word's context the nearest one is used, and each word sits whole under its notes (no syllable placement yet).</div>
-      </div>
-    </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="torah.settings.panel_translit">Transliteration</div>
-      <div class="panel-body">
-        <div class="form-row">
-          <label id="lblTranslitPlace" data-i18n="torah.trans.place_label">Show it</label>
-          <span class="radio-group" role="group" aria-labelledby="lblTranslitPlace">
-            <input type="radio" name="optTranslitPlace" id="tpRow"  value="row"><label for="tpRow" data-i18n="torah.trans.place_row">Own line</label>
-            <input type="radio" name="optTranslitPlace" id="tpWord" value="word"><label for="tpWord" data-i18n="torah.trans.place_word">Under each word</label>
-          </span>
-        </div>
-        <div id="tpStaffNote" style="font-size:0.7rem;color:var(--muted);margin-top:4px;margin-bottom:10px;line-height:1.4;" data-i18n="torah.trans.place_staff_note" hidden>In the Trope staff layout the transliteration always sits under each word; the Trope staff panel's Words choice says whether the Hebrew shows with it.</div>
-        <div class="form-row">
-          <label for="optTranslitStyle" data-i18n="torah.trans.style_label">Style</label>
-          <select id="optTranslitStyle">
-            <option value="modernIsraeli" data-i18n="torah.trans.style_modern">Modern Israeli [DEFAULT]</option>
-            <option value="ashkenazi" data-i18n="torah.trans.style_ashkenazi">Ashkenazi</option>
-            <option value="sbl" data-i18n="torah.trans.style_sbl">SBL Academic</option>
-            <option value="brill" data-i18n="torah.trans.style_brill">Brill Academic</option>
-            <option value="simpleStressed" data-i18n="torah.trans.style_simple">Simple stressed</option>
-          </select>
-        </div>
-        <div id="optTranslitStatus" style="font-size:0.72rem;color:var(--muted);"></div>
-      </div>
-    </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="torah.settings.panel_audio">Audio speeds &amp; pitch</div>
-      <div class="panel-body">
-        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:10px;line-height:1.45;" data-i18n-html="torah.audio.speeds_intro">
-          Click <strong>🔊 Read</strong> on any verse for browser TTS in Hebrew, or <strong>🎵 Chant</strong> to stream PocketTorah's recording with real-time word highlighting. These sliders mirror the ones in the audio bar at the bottom of the page.
-        </div>
-        <div class="slider-row">
-          <label for="optKaraokeRate" data-i18n="torah.audio.speed_chant">Chant</label>
-          <input type="range" id="optKaraokeRate" min="0.5" max="1.5" step="0.05" value="1.0">
-          <span class="sval" id="optKaraokeRateVal">1.00×</span>
-          <button class="sreset" onclick="resetKaraokeRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-        </div>
-        <div class="slider-row">
-          <label for="optKaraokePitch"><span id="optKaraokePitchLbl" data-i18n="torah.audio.pitch_label">Pitch</span>
-            <span class="tip-wrap" data-i18n-tip="torah.audio.pitch_tip" data-tip="Moves the chant up or down in half-steps so it sits in your voice. Speed and word highlighting stay as they are. The first change loads a small audio module."><i class="tip-icon">?</i></span>
-          </label>
-          <input type="range" id="optKaraokePitch" min="-12" max="12" step="1" value="0" aria-labelledby="optKaraokePitchLbl">
-          <span class="sval" id="optKaraokePitchVal">0</span>
-          <button class="sreset" onclick="resetKaraokePitch()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-        </div>
-        <div id="optPitchStatus" role="status" aria-live="polite" style="font-size:0.7rem;color:var(--muted);margin-top:-4px;margin-bottom:8px;line-height:1.4;" hidden></div>
-        <div class="slider-row">
-          <label for="optTTSRate" data-i18n="torah.audio.speed_read">Read</label>
-          <input type="range" id="optTTSRate" min="0.5" max="1.5" step="0.05" value="0.75">
-          <span class="sval" id="optTTSRateVal">0.75×</span>
-          <button class="sreset" onclick="resetTTSRate()" type="button" title="Restore default" aria-label="Restore default" data-i18n-aria-label="torah.display.restore_default" data-i18n-title="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
-        </div>
-        <div class="form-row" style="margin-top:8px;">
-          <label for="optLoopPause"><span data-i18n="torah.audio.loop_pause_label">Pause between repeats</span>
-            <span class="tip-wrap" data-i18n-tip="torah.audio.loop_pause_tip" data-tip="When you loop a verse (🔁), wait this long before repeating it — handy for practicing along."><i class="tip-icon">?</i></span>
-          </label>
-          <select id="optLoopPause">
-            <option value="0" data-i18n="torah.audio.loop_pause_none">None</option>
-            <option value="500" data-i18n="torah.audio.loop_pause_half">0.5 seconds</option>
-            <option value="1000" data-i18n="torah.audio.loop_pause_1">1 second</option>
-            <option value="2000" data-i18n="torah.audio.loop_pause_2">2 seconds</option>
-          </select>
-        </div>
-        <div id="optTTSStatus" style="font-size:0.7rem;color:var(--muted);margin-top:6px;"></div>
-        <div id="optKaraokeStatus" style="font-size:0.7rem;color:var(--muted);margin-top:4px;"></div>
-        <div style="font-size:0.72rem;color:var(--muted);margin-top:10px;line-height:1.4;" data-i18n="torah.audio.recording_credit">Chant recordings: PocketTorah, Spiro (Conservative) melody.</div>
-        <div style="font-size:0.65rem;color:var(--muted);margin-top:6px;line-height:1.4;">
-          Cantillation audio © Russel Neiss &amp; Rabbi Charlie Schwartz,
-          <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener" style="color:var(--gold-text);">PocketTorah</a>,
-          <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" style="color:var(--gold-text);">CC&nbsp;BY-SA&nbsp;4.0</a>.
-        </div>
-      </div>
-    </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="torah.settings.panel_about">About &amp; FAQ</div>
-      <div class="panel-body">
+      <div class="tt-set" data-set="about">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_about">About &amp; FAQ</h3>
         <details style="margin:0 0 10px;">
           <summary style="cursor:pointer;font-weight:600;font-size:0.85rem;padding:4px 0;" data-i18n="torah.about.faq_summary">Frequently Asked Questions</summary>
           <div style="padding:4px 0;">
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q1">What is the Torah Trainer?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a1">A free Hebrew Torah reader. Pick a parsha and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, prose TTS, and chanted-audio karaoke that highlights words in time with the recording. When you are done reading, copy the passage out as formatted text or print it as a classroom sheet.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q2">Does it include chanted-audio karaoke?</summary><p data-i18n-html="torah.about.faq_a2" style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);">Yes. <a href="https://github.com/rneiss/PocketTorah" target="_blank" rel="noopener" style="color:var(--gold-text);">PocketTorah</a>'s recordings of all 54 parshiyot and haftarot stream on demand, with word-level highlighting synchronized to the audio. Adjust playback speed without re-fetching.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q3">Where do the Hebrew texts and translations come from?</summary><p data-i18n-html="torah.about.faq_a3" style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);"><a href="https://www.sefaria.org" target="_blank" rel="noopener" style="color:var(--gold-text);">Sefaria</a>'s public API. The translation dropdown defaults to JPS 1985 when available; pick any other version from the same dropdown.</p></details>
-            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q4">Can I hide nikkud or cantillation marks?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a4">Yes. The Display panel has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). They can be hidden independently.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q4">Can I hide nikkud or cantillation marks?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a4">Yes. The Text tab of the settings drawer has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). They can be hidden independently.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q5">Can it color-code the Torah trope (cantillation) families?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a5">Yes. Trope color coding highlights or underlines each word in the color of its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings.</p></details>
-            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q6">Diaspora or Israel schedule?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a6">The default is diaspora; set Calendar to Israel under Reading schedule to switch. "Jump to this week's parsha" opens this week's reading, which the page works out from the Hebrew calendar itself (only a few festival Shabbatot ask Sefaria's calendar). Reading cycle, in the same panel, switches between the full, triennial and Monday/Thursday readings.</p></details>
-            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q8">Can I copy the Hebrew text out of the reader?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a8">Yes. The Copy panel in the Settings drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q6">Diaspora or Israel schedule?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a6">The default is diaspora; open the Calendar tab of the settings drawer and, under Reading schedule, set the Diaspora / Israel choice to Israel. "Jump to this week's parsha" opens this week's reading, which the page works out from the Hebrew calendar itself (only a few festival Shabbatot ask Sefaria's calendar). Reading cycle, in the same section, switches between the full, triennial and Monday/Thursday readings.</p></details>
+            <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q8">Can I copy the Hebrew text out of the reader?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a8">Yes. The Share tab of the settings drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting.</p></details>
             <details style="margin:6px 0;"><summary style="cursor:pointer;font-weight:600;font-size:0.8rem;padding:3px 0;" data-i18n="torah.about.faq_q7">Is it free?</summary><p style="margin:4px 0 8px;font-size:0.8rem;line-height:1.5;color:var(--muted);" data-i18n="torah.about.faq_a7">Yes. Materials incorporating PocketTorah audio are licensed CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0.</p></details>
           </div>
         </details>
@@ -2697,7 +2709,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           <ol style="padding:6px 0 4px;padding-inline-start:20px;margin:0;font-size:0.8rem;line-height:1.5;color:var(--muted);">
             <li data-i18n="torah.about.howto_1">Pick a parsha from the top dropdown (defaults to this week's). The Reading dropdown shows each aliyah's verse range, and 🎵 marks readings with chanted audio.</li>
             <li data-i18n="torah.about.howto_2">Toggle Translit and Translation; choose Side-by-side or Interlinear layout.</li>
-            <li data-i18n="torah.about.howto_3">Customize the Hebrew font, vowel coloring, and translit scheme in this drawer.</li>
+            <li data-i18n="torah.about.howto_3">Customize the Hebrew font, vowel coloring, and translit scheme on this drawer's Text and Colors tabs.</li>
             <li data-i18n="torah.about.howto_4">Enable Karaoke and pick an aliyah from the Reading dropdown to chant along. Use 🔁 Loop on any verse to repeat it hands-free for practice.</li>
             <li data-i18n="torah.about.howto_5">On a full parsha, use the aliyah jump chips at the top to skip around, and the Resume chip to pick up where you left off.</li>
             <li data-i18n="torah.about.howto_6">Click the fullscreen button to project to a SmartBoard.</li>
@@ -2705,21 +2717,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
           </ol>
         </details>
       </div>
-    </div>
-
-    <!-- Cloud saves (optional accounts): the shared js/ivrit-saves.js panel renders into the body; see initCloudSaves() -->
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="torah.settings.panel_cloud">Cloud saves</div>
-      <div class="panel-body" id="cloudSavesPanel"></div>
-    </div>
-
-    <div class="panel collapsed">
-      <div class="panel-title" data-i18n="torah.settings.panel_reset">Reset</div>
-      <div class="panel-body">
+      <div class="tt-set" data-set="reset">
+        <h3 class="tt-set-title" tabindex="-1" data-i18n="torah.settings.panel_reset">Reset</h3>
         <button class="btn btn-xs btn-secondary hi-btn" onclick="resetAllSettings()" type="button"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg><span class="hi-lbl" data-i18n="torah.settings.reset_all">Reset all Torah Trainer settings</span></button>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -2810,7 +2812,6 @@ const DEFAULTS = {
   loopPauseMs: 0,            // silence between verse-loop repeats (0/500/1000/2000 ms)
   loopVerse: null,           // last-looped verse "C:V" — re-armed (never auto-played) on the next visit
   karaokeBarCollapsed: false,
-  panelsCollapsed: null,       // settings-drawer per-panel collapse map {key: bool}; null = markup defaults
   karaokeStyle: 'highlight',   // 'highlight' | 'outline' | 'underline' | 'none'
   karaokeFollow: 'hebrew',     // 'hebrew' | 'translit'
   // Student handout (print-flow options; the transient print override itself is never persisted)
@@ -2934,7 +2935,6 @@ function resetAllSettings() {
   linkViewEnd();     // a practice link's display settings go with everything else
   localStorage.removeItem(STORAGE_KEY);
   settings = JSON.parse(JSON.stringify(DEFAULTS));
-  panelMemApply();   // panelsCollapsed is null again — back to the markup defaults
   syncFormToSettings();
   setHebFont(settings.hebFont);
   initColorPickers();
@@ -4250,8 +4250,8 @@ function detectShem(verses) {
   }
   return false;
 }
-// Sync the שם-dependent handout-bar rows (notice + geniza-marker opt-in).
-// Null-safe so it can run before the handout bar exists in the DOM.
+// Sync the שם-dependent handout rows in the drawer's Share tab (notice + geniza-marker opt-in).
+// Null-safe so it can run before the drawer's markup is on the page.
 function updateHandoutShemUI() {
   const note = document.getElementById('ttHandoutShemNote');
   const row  = document.getElementById('ttHandoutGenizaRow');
@@ -7427,67 +7427,35 @@ function maybeEnsureTranslit() {
 /* ══════════════════════════════════════════════════════
    SETTINGS DRAWER + FORM SYNC
    ══════════════════════════════════════════════════════ */
-function syncPanelTitleAria() {
-  document.querySelectorAll('.panel-title').forEach(t => {
-    if (t.getAttribute('role') === 'button') t.setAttribute('aria-expanded', t.parentElement.classList.contains('collapsed') ? 'false' : 'true');
-  });
-}
-function expandAllMenus()   { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.remove('collapsed')); syncPanelTitleAria(); panelMemSave(); }
-function collapseAllMenus() { document.querySelectorAll('#settingsModal .panel').forEach(p => p.classList.add('collapsed')); syncPanelTitleAria(); panelMemSave(); }
-const PANEL_MEM_CFG = {
-  scope: '#settingsModal .panel-title',
-  // Maps written before the shared engine keyed panels by the tail of the data-i18n key alone;
-  // widen those on read so a teacher's saved layout survives the move to full-key identity.
-  read() {
-    const m = settings.panelsCollapsed;
-    if (!m || typeof m !== 'object') return null;
-    const out = {};
-    Object.keys(m).forEach(k => { out[k.includes('.') ? k : 'torah.settings.panel_' + k] = m[k]; });
-    return out;
-  },
-  write(map) { settings.panelsCollapsed = map; saveSettings(); },
-  afterApply() { syncPanelTitleAria(); }
+/* ── Drawer tabs (APG tablist) ──
+   Six tabs of flat sections; nothing collapses, so this page carries no panel-collapse memory any more
+   (an older blob's panelsCollapsed rides along unread through ivritSafeAssign, and the cloud row's
+   '*Collapsed' omit still covers karaokeBarCollapsed). setSettingsTab is the one writer of tab state;
+   the drawer always opens on Text (no tab memory — see openSettings), and openSettingsAtPanel(key)
+   lands on a section by its data-set key. */
+const TT_TAB_IDS = { text: 'ttTabText', colors: 'ttTabColors', audio: 'ttTabAudio', calendar: 'ttTabCalendar', share: 'ttTabShare', more: 'ttTabMore' };
+// Section key → tab. The keys are the old panel keys, so openSettingsAtPanel's callers — the Copy bar's
+// "Copy options…" ('copy'), IvritSaves.attach's open ('cloud'), the toolbar's Share ('share') — and
+// scripts/smoke-tools.mjs keep working.
+const TT_SECTION_TAB = {
+  display: 'text', font: 'text', translit: 'text',
+  vowel_color: 'colors', trope_color: 'colors',
+  audio: 'audio', karaoke: 'audio', staff: 'audio',
+  schedule: 'calendar', lookup: 'calendar',
+  share: 'share', copy: 'share', handout: 'share', print: 'share',
+  cloud: 'more', about: 'more', reset: 'more'
 };
-/* ═══════════ IvritSuite panel-collapse memory (shared, identical across pages) ═══════════
-   Remembers which panels the teacher left open, so a drawer that was tidied once stays tidy on
-   the next visit. A panel is keyed by the data-i18n key on its title: language-independent,
-   unique per panel, and already present on every collapsible title in the suite — so there are
-   no ids to invent or keep in sync. WHERE the map is stored is per-page and lives in
-   PANEL_MEM_CFG (the settings blob on tools that have one, a dedicated key on the rest); this
-   engine never touches localStorage itself. A panel whose key is absent from the stored map
-   keeps its markup default, so a panel added in a later release opens or closes per its own
-   markup instead of inheriting whatever a neighbour happened to be doing. */
-const PANEL_MEM_DEFAULTS = {};   // markup defaults, captured once before the first restore
-function panelMemTitles() { return document.querySelectorAll(PANEL_MEM_CFG.scope); }
-function panelMemSave() {
-  const map = {};
-  panelMemTitles().forEach(t => {
-    const p = t.closest('.panel'), k = t.dataset.i18n;
-    if (p && k) map[k] = p.classList.contains('collapsed');
-  });
-  PANEL_MEM_CFG.write(map);
+function setSettingsTab(name) {
+  if (!Object.prototype.hasOwnProperty.call(TT_TAB_IDS, name)) name = 'text';
+  for (const n of Object.keys(TT_TAB_IDS)) {
+    const on = n === name, tab = document.getElementById(TT_TAB_IDS[n]);
+    tab.setAttribute('aria-selected', on ? 'true' : 'false');
+    tab.tabIndex = on ? 0 : -1;   // roving tabindex: only the selected tab sits in the Tab sequence; arrows move between tabs
+    document.getElementById(tab.getAttribute('aria-controls')).hidden = !on;
+  }
+  const body = document.querySelector('#settingsModal .settings-body');
+  if (body) body.scrollTop = 0;
 }
-function panelMemApply() {
-  panelMemTitles().forEach(t => {
-    const p = t.closest('.panel'), k = t.dataset.i18n;
-    if (p && k && !(k in PANEL_MEM_DEFAULTS)) PANEL_MEM_DEFAULTS[k] = p.classList.contains('collapsed');
-  });
-  const map = PANEL_MEM_CFG.read();
-  panelMemTitles().forEach(t => {
-    const p = t.closest('.panel'), k = t.dataset.i18n;
-    if (!p || !k) return;
-    let collapsed = PANEL_MEM_DEFAULTS[k];
-    if (map && typeof map === 'object' && Object.prototype.hasOwnProperty.call(map, k)) collapsed = !!map[k];
-    if (collapsed !== undefined) p.classList.toggle('collapsed', collapsed);
-  });
-  if (PANEL_MEM_CFG.afterApply) PANEL_MEM_CFG.afterApply();
-}
-/* ═══════════ end shared: panel-collapse memory ═══════════ */
-
-/* Drawer panels have no ids — openSettingsAtPanel addresses one by the tail of its title's
-   data-i18n key (torah.settings.panel_<key>). The open/closed map itself is kept by the shared
-   panel-collapse engine above, which uses the full key. */
-function panelKeyOf(t) { return (t.dataset.i18n || '').replace('torah.settings.panel_', ''); }
 
 /* ═══ shared: sidebar-resize ═════════════════════════════════════════════════
    Drag/keyboard-resizable panel widths — in-flow sidebars, settings drawers,
@@ -7637,7 +7605,7 @@ function _settingsTrapKey(e) {
   // An unchecked radio is not a Tab stop (Tab enters its group at the checked one), so it can
   // be neither end of the loop.
   const focusables = [...modal.querySelectorAll('button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])')]
-    .filter(el => el.offsetParent !== null && !el.disabled && !(el.type === 'radio' && !el.checked));
+    .filter(el => el.offsetParent !== null && !el.disabled && el.tabIndex !== -1 && !(el.type === 'radio' && !el.checked));
   if (!focusables.length) return;
   const first = focusables[0], last = focusables[focusables.length - 1];
   if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -7649,6 +7617,7 @@ function openSettings() {
   const modal = document.getElementById('settingsModal');
   modal.classList.add('open');
   modal.addEventListener('keydown', _settingsTrapKey);
+  setSettingsTab('text');   // no tab memory: every open starts on Text (before the sync, so the body is at the top before anything is measured)
   syncFormToSettings();
   const c = modal.querySelector('.settings-close:not(#drawerDarkBtn)'); if (c) c.focus();
 }
@@ -7689,7 +7658,7 @@ function syncFormToSettings() {
   document.getElementById('kfTranslit').checked  = kf === 'translit';
   document.getElementById('kfBoth').checked      = kf === 'both';
   applyKaraokeAppearance();
-  // Copy panel. ?? not || — copyBlankLines is legitimately 0, and `|| 0` would be a no-op
+  // Copy verses section (Share tab). ?? not || — copyBlankLines is legitimately 0, and `|| 0` would be a no-op
   // today but the wrong habit for the next numeric option added here.
   document.getElementById('ttCopyIncRef').checked      = !!settings.copyIncludeRef;
   document.getElementById('ttCopyIncTrans').checked    = !!settings.copyIncludeTrans;
@@ -7710,6 +7679,7 @@ function syncFormToSettings() {
   document.getElementById('ttCopyColorCoding').checked  = !!settings.copyColorCoding;
   document.getElementById('ttCopyBulkRemember').checked = !!settings.copyBulkRemember;
   document.getElementById('ttShareSettings').checked    = !!settings.shareIncludeDisplay;
+  syncHandoutForm();   // the handout section is in the drawer (Share tab): synced on every open, reset and cloud re-read
   updateCopyTextarea();
   // schedule radio
   const sd = document.getElementById('schedDiaspora');
@@ -8047,20 +8017,23 @@ function wireSettingsForm() {
     saveSettings();
     fetchAndRender();
   });
-  // Panel collapse — keyboard-operable (was click-only divs): role=button + Enter/Space + aria-expanded.
-  document.querySelectorAll('.panel-title').forEach(t => {
-    t.tabIndex = 0;
-    t.setAttribute('role', 'button');
-    t.setAttribute('aria-expanded', t.parentElement.classList.contains('collapsed') ? 'false' : 'true');
-    const toggle = () => {
-      t.parentElement.classList.toggle('collapsed');
-      t.setAttribute('aria-expanded', t.parentElement.classList.contains('collapsed') ? 'false' : 'true');
-      panelMemSave();
-    };
-    t.addEventListener('click', toggle);
-    t.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+  // Drawer tabs (APG tablist): Left/Right by VISUAL direction (the strip mirrors in RTL), Home/End, wrap;
+  // moving focus activates (automatic activation) — the Trope Tutor's handler.
+  document.querySelector('#settingsModal .tt-tabs').addEventListener('keydown', e => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+    e.preventDefault();
+    const tabs = Object.values(TT_TAB_IDS).map(id => document.getElementById(id));
+    const cur = tabs.indexOf(document.activeElement);
+    let next;
+    if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = tabs.length - 1;
+    else {
+      const fwd = (document.documentElement.dir === 'rtl') ? (e.key === 'ArrowLeft') : (e.key === 'ArrowRight');
+      next = cur === -1 ? 0 : (cur + (fwd ? 1 : tabs.length - 1)) % tabs.length;
+    }
+    tabs[next].focus();
+    tabs[next].click();
   });
-  panelMemApply();   // restore the teacher's saved open/closed drawer panels
   // Fullscreen bar: any pointer activity reveals it; hovering or tabbing into it pins it open.
   const _fsBarReveal = () => { if (document.body.classList.contains('fullscreen')) showFsBar(); };
   document.addEventListener('pointermove', _fsBarReveal, { passive: true });
@@ -8074,7 +8047,7 @@ function wireSettingsForm() {
   }
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveSettingsFlush(); });
   window.addEventListener('pagehide', saveSettingsFlush);   // leaving the page → flush the debounced save
-  // Student handout bar options → persisted handout* fields
+  // Student handout section (Share tab) → persisted handout* fields
   document.getElementById('ttHandoutHideNikkud').addEventListener('change', e => {
     settings.handoutHideNikkud = e.target.checked; saveSettings();
   });
@@ -8689,14 +8662,6 @@ function printHandout() {
   // if a truncated snapshot is ever reported, move the primary restore there).
   try { window.print(); } finally { _handoutExit(); }
 }
-function toggleHandoutBar() {
-  const el = document.getElementById('ttHandoutBar');
-  const opening = el.style.display === 'none';
-  el.style.display = opening ? '' : 'none';
-  const btn = document.getElementById('ttHandoutBtn');
-  if (btn) btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
-  if (opening) syncHandoutForm();
-}
 function syncHandoutForm() {
   document.getElementById('ttHandoutHideNikkud').checked = !!settings.handoutHideNikkud;
   document.getElementById('ttHandoutHideTeamim').checked = !!settings.handoutHideTeamim;
@@ -8724,7 +8689,7 @@ function syncHandoutSelRow() {
 /* ── Copy verses: per-verse 📋 button + bulk select-and-copy ──
    Mirrors hebrew_dictionary.html's bulk-copy pattern (pure builder, body-class
    mode, Set of keys, verse-order output). Format prefs live in the settings
-   drawer's Copy panel (copyIncludeRef/Trans/Translit/Heading, copyNikkud,
+   drawer's Share tab, Copy verses section (copyIncludeRef/Trans/Translit/Heading, copyNikkud,
    copyTeamim, copyLayout, copyBlankLines, copyColorCoding); bulk mode +
    selection are session-only unless copyBulkRemember is on.
    Copied Hebrew keeps the original Tetragrammaton — replaceTetragrammaton is
@@ -9270,8 +9235,6 @@ function toggleCopyBar() {
   const el = document.getElementById('ttCopyBar');
   const opening = el.style.display === 'none';
   el.style.display = opening ? '' : 'none';
-  const btn = document.getElementById('ttCopyBtn');
-  if (btn) btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
   if (opening) {
     // copyBulkRemember: the teacher who selects verses every session shouldn't have to
     // re-tick Select verses each time the bar opens. Any selection kept from the last close
@@ -9292,25 +9255,45 @@ function toggleCopyBar() {
     toggleBulkSelectMode(false, !!settings.copyBulkRemember);
   }
 }
-// Owns only the bar's own state now — the three format toggles moved to the settings
-// drawer's Copy panel and are synced by syncFormToSettings(), so exactly one function
+// Owns only the bar's own state — the format toggles live in the settings drawer's Share tab
+// (Copy verses section) and are synced by syncFormToSettings(), so exactly one function
 // writes each control.
 function syncCopyForm() {
   document.getElementById('ttCopyBulkCb').checked = ttBulkMode;
   _setCopyAllNote(null);
   updateCopyTextarea();
 }
-// Open the settings drawer with a given panel expanded and scrolled into view. Panels have
-// no ids — they are addressed by the tail of their title's data-i18n key, same as panelKeyOf.
+// Open the drawer on the tab that holds a section and bring the section to the top of the body; focus
+// lands on its heading (tabindex=-1, outside the Tab loop) so the next Tab enters the section's controls.
 function openSettingsAtPanel(key) {
   openSettings();
-  const title = [...document.querySelectorAll('#settingsModal .panel-title')]
-    .find(t => panelKeyOf(t) === key);
-  if (!title) return;
-  title.parentElement.classList.remove('collapsed');
-  syncPanelTitleAria();
-  panelMemSave();
-  title.scrollIntoView({ block: 'start' });
+  if (!Object.prototype.hasOwnProperty.call(TT_SECTION_TAB, key)) return;
+  setSettingsTab(TT_SECTION_TAB[key]);
+  const sec = document.querySelector('#settingsModal .tt-set[data-set="' + key + '"]');
+  if (!sec) return;
+  sec.scrollIntoView({ block: 'start' });
+  const h = sec.querySelector('.tt-set-title');
+  if (h) h.focus({ preventScroll: true });
+}
+// Share tab → the inline Copy bar. Verse selection needs the reading clickable and the drawer is modal,
+// so the drawer closes first; toggleCopyBar keeps owning the bar (copyBulkRemember and the rest).
+function openCopyBarFromDrawer() {
+  closeSettings();
+  const bar = document.getElementById('ttCopyBar');
+  if (!bar) return;
+  if (bar.style.display === 'none') toggleCopyBar();
+  const reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  bar.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+  const cb = document.getElementById('ttCopyBulkCb');
+  if (cb) cb.focus({ preventScroll: true });
+}
+// The bar's own Close (the toolbar toggle is gone). The button hides itself, so focus is handed to the
+// toolbar's Share button rather than dropping to <body>.
+function closeCopyBar() {
+  const bar = document.getElementById('ttCopyBar');
+  if (bar && bar.style.display !== 'none') toggleCopyBar();
+  const b = document.getElementById('ttShareOpenBtn');
+  if (b) b.focus();
 }
 async function goToCurrentParshah() {
   // The local calendar first (js/hebrew-calendar.js: no network, any week); a doubled week opens its first
@@ -9565,15 +9548,14 @@ document.addEventListener('DOMContentLoaded', init);
    old blob straight back. The sequence is resetAllSettings() plus the two steps it skips
    (syncParshaSelect for a changed reading, the parsha/holiday select). ── */
 // Re-read the settings key the cloud module wrote and repaint everything rendered from it — the
-// resetAllSettings() sequence plus the parsha box, the handout bar and the version fallback.
+// resetAllSettings() sequence plus the parsha box and the version fallback (syncFormToSettings re-syncs
+// the handout section too).
 function cloudReread() {
   linkViewEnd();   // the stored settings are what the reader asked for now, not a practice link's
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   loadSettings();
   _versionFallback = null;
-  panelMemApply();
   syncFormToSettings();
-  syncHandoutForm();
   setHebFont(settings.hebFont);
   initColorPickers();
   initTropeColorPickers();
@@ -9597,7 +9579,7 @@ function initCloudSaves() {
   IvritSaves.attach({
     tool: 'TorahTrainer',
     panel: '#cloudSavesPanel',
-    title: false,                 // the drawer panel's own title is the heading
+    title: false,                 // the More tab's Cloud saves section heading is the heading
     flush: saveSettingsFlush,     // a pending debounced save lands before the module reads the key
     // While the handout print override is up the stored blob is not what is on screen: the re-read waits
     // for _handoutExit (the module's flush is a no-op meanwhile, so the download stays in the store).
@@ -10022,10 +10004,14 @@ function practiceLinkURL() {
   return prettyLinkURL(u);
 }
 // Hidden rather than disabled when there is nothing to share: a dead-looking live button is the
-// paper-cut this pass kept finding, and a control that cannot act should not be offered.
+// paper-cut this pass kept finding, and a control that cannot act should not be offered — the Share
+// tab's note (#ttShareNone) says why instead.
 function syncShareBtn() {
+  const can = !!practiceLinkURL();
   const wrap = document.getElementById('ttShareWrap');
-  if (wrap) wrap.hidden = !practiceLinkURL();
+  if (wrap) wrap.hidden = !can;
+  const none = document.getElementById('ttShareNone');
+  if (none) none.hidden = can;
 }
 function copyPracticeLink(btn) {
   let url = practiceLinkURL();

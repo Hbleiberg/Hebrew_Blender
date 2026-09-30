@@ -3826,11 +3826,11 @@ terms.section.warranties_heading,7. Disclaimer of Warranties,7. כתב ויתו�
 torah.about.faq_a1,"A free Hebrew Torah reader. Pick a parsha and read it with optional transliteration, English translation, per-vowel color coding, cantillation strip, prose TTS, and chanted-audio karaoke that highlights words in time with the recording. When you are done reading, copy the passage out as formatted text or print it as a classroom sheet.","קורא תורה עברי חינמי. בחרו פרשה וקראו אותה עם תעתיק אופציונלי, תרגום לאנגלית, צביעת ניקוד לפי תנועה, רצועת טעמים, הקראה קולית, וקריוקי בטעמים שמדגיש מילים בזמן אמת עם ההקלטה. בסיום הקריאה אפשר להעתיק את הקטע כטקסט מעוצב או להדפיס אותו כדף לכיתה.",FAQ answer,REVIEW: HE draft of the added sentence
 torah.about.faq_a2,"Yes. <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);"">PocketTorah</a>'s recordings of all 54 parshiyot and haftarot stream on demand, with word-level highlighting synchronized to the audio. Adjust playback speed without re-fetching.","כן. ההקלטות של <a href=""https://github.com/rneiss/PocketTorah"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);"">PocketTorah</a> של כל 54 הפרשיות וההפטרות מוזרמות לפי דרישה, עם הדגשה ברמת המילה המסונכרנת לשמע. אפשר לכוונן את מהירות ההשמעה בלי לטעון מחדש.",FAQ answer,html; contains an <a> link — preserve the tag
 torah.about.faq_a3,"<a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);"">Sefaria</a>'s public API. The translation dropdown defaults to JPS 1985 when available; pick any other version from the same dropdown.","ה-API הציבורי של <a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);"">Sefaria</a>. תפריט התרגומים מוגדר כברירת מחדל ל-JPS 1985 כשהוא זמין; בחרו כל גרסה אחרת מאותו תפריט.",FAQ answer,html; contains an <a> link — preserve the tag
-torah.about.faq_a4,Yes. The Display panel has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). They can be hidden independently.,כן. בלוח התצוגה יש מתגים נפרדים לניקוד ולטעמי המקרא. אפשר להסתיר כל אחד מהם בנפרד.,FAQ answer,
+torah.about.faq_a4,Yes. The Text tab of the settings drawer has separate toggles for nikkud (vowel points) and cantillation marks (te'amim). They can be hidden independently.,כן. בלשונית הטקסט שבמגירת ההגדרות יש מתגים נפרדים לניקוד ולטעמי המקרא. אפשר להסתיר כל אחד מהם בנפרד.,FAQ answer,
 torah.about.faq_a5,"Yes. Trope color coding highlights or underlines each word in the color of its cantillation clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — with a legend above the reading. It composes with vowel color coding, keeps working when the cantillation marks themselves are hidden, and each family's color is customizable in settings.","כן. צביעת הטעמים צובעת כל מילה לפי משפחת הטעם שלה — סוף פסוק, אתנחתא, זקף קטון, סגול, רביע, גרש וטעמים נדירים — עם מקרא מעל הקריאה. היא משתלבת עם צביעת הניקוד, ממשיכה לעבוד גם כשהטעמים עצמם מוסתרים, וצבע כל משפחה ניתן להתאמה בהגדרות.",FAQ answer,
-torah.about.faq_a6,"The default is diaspora; set Calendar to Israel under Reading schedule to switch. ""Jump to this week's parsha"" opens this week's reading, which the page works out from the Hebrew calendar itself (only a few festival Shabbatot ask Sefaria's calendar). Reading cycle, in the same panel, switches between the full, triennial and Monday/Thursday readings.","ברירת המחדל היא תפוצות; כדי לעבור לישראל בחרו ""ישראל"" ב""לוח שנה"" שתחת ""לוח קריאה"". ""קפיצה לפרשת השבוע"" פותחת את קריאת השבוע, שהדף מחשב בעצמו לפי הלוח העברי (רק בשבתות חג אחדות הוא פונה ללוח השנה של Sefaria). ""מחזור קריאה"" שבאותה חלונית עובר בין הקריאה המלאה, התלת-שנתית וקריאת ימי ב׳ וה׳.",FAQ answer,
+torah.about.faq_a6,"The default is diaspora; open the Calendar tab of the settings drawer and, under Reading schedule, set the Diaspora / Israel choice to Israel. ""Jump to this week's parsha"" opens this week's reading, which the page works out from the Hebrew calendar itself (only a few festival Shabbatot ask Sefaria's calendar). Reading cycle, in the same section, switches between the full, triennial and Monday/Thursday readings.","ברירת המחדל היא תפוצות; כדי לעבור לישראל פתחו את לשונית לוח השנה שבמגירת ההגדרות, ותחת ""לוח קריאה"" העבירו את הבחירה תפוצות / ישראל ל""ישראל"". ""קפיצה לפרשת השבוע"" פותחת את קריאת השבוע, שהדף מחשב בעצמו לפי הלוח העברי (רק בשבתות חג אחדות הוא פונה ללוח השנה של Sefaria). ""מחזור קריאה"" שבאותו חלק עובר בין הקריאה המלאה, התלת-שנתית וקריאת ימי ב׳ וה׳.",FAQ answer,
 torah.about.faq_a7,Yes. Materials incorporating PocketTorah audio are licensed CC BY-SA 4.0; other IvritSuite content is CC BY-NC-SA 4.0.,כן. חומרים הכוללים שמע של PocketTorah מורשים תחת CC BY-SA 4.0; שאר תוכן IvritSuite מורשה תחת CC BY-NC-SA 4.0.,FAQ answer,
-torah.about.faq_a8,"Yes. The Copy panel in the Settings drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting.","כן. לוח ההעתקה שבמגירת ההגדרות מעתיק את הקטע כטקסט מעוצב, עם צבעי הניקוד והטעמים, כך שההדבקה ל-Google Docs, ל-Word או ל-Pages שומרת עליהם. אפשר להעתיק פסוק אחד, לבחור כמה, או להקליד טווח פסוקים, ולבחור מה נכלל — ניקוד, טעמי המקרא, תעתיק, תרגום, מספרי פסוקים או שורות ריקות לכתיבה.",FAQ answer,REVIEW: HE draft
+torah.about.faq_a8,"Yes. The Share tab of the settings drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting.","כן. לשונית השיתוף שבמגירת ההגדרות מעתיקה את הקטע כטקסט מעוצב, עם צבעי הניקוד והטעמים, כך שההדבקה ל-Google Docs, ל-Word או ל-Pages שומרת עליהם. אפשר להעתיק פסוק אחד, לבחור כמה, או להקליד טווח פסוקים, ולבחור מה נכלל — ניקוד, טעמי המקרא, תעתיק, תרגום, מספרי פסוקים או שורות ריקות לכתיבה.",FAQ answer,REVIEW: HE draft
 torah.about.faq_q1,What is the Torah Trainer?,מהו מאמן התורה?,FAQ question,
 torah.about.faq_q2,Does it include chanted-audio karaoke?,האם הוא כולל קריוקי בטעמים?,FAQ question,
 torah.about.faq_q3,Where do the Hebrew texts and translations come from?,מהיכן מגיעים הטקסטים בעברית והתרגומים?,FAQ question,
@@ -3842,7 +3842,7 @@ torah.about.faq_q8,Can I copy the Hebrew text out of the reader?,אפשר להע
 torah.about.faq_summary,Frequently Asked Questions,שאלות נפוצות,accordion summary,
 torah.about.howto_1,"Pick a parsha from the top dropdown (defaults to this week's). The Reading dropdown shows each aliyah's verse range, and 🎵 marks readings with chanted audio.","בחרו פרשה מהתפריט העליון (ברירת המחדל היא פרשת השבוע). תפריט הקריאה מציג את טווח הפסוקים של כל עלייה, ו-🎵 מסמן קריאות עם שמע בטעמים.",howto step,
 torah.about.howto_2,Toggle Translit and Translation; choose Side-by-side or Interlinear layout.,הפעילו תעתיק ותרגום; בחרו פריסה זה־לצד־זה או בין־שורתית.,howto step,
-torah.about.howto_3,"Customize the Hebrew font, vowel coloring, and translit scheme in this drawer.","התאימו את הגופן העברי, צביעת התנועות וסגנון התעתיק במגירה הזו.",howto step,
+torah.about.howto_3,"Customize the Hebrew font, vowel coloring, and translit scheme on this drawer's Text and Colors tabs.","התאימו את הגופן העברי, צביעת התנועות וסגנון התעתיק בלשוניות הטקסט והצבעים של המגירה הזו.",howto step,
 torah.about.howto_4,Enable Karaoke and pick an aliyah from the Reading dropdown to chant along. Use 🔁 Loop on any verse to repeat it hands-free for practice.,הפעילו קריוקי ובחרו עלייה מתפריט הקריאה כדי לשיר יחד. השתמשו ב-🔁 לולאה על כל פסוק כדי לחזור עליו אוטומטית לתרגול.,howto step,
 torah.about.howto_5,"On a full parsha, use the aliyah jump chips at the top to skip around, and the Resume chip to pick up where you left off.","בפרשה מלאה, השתמשו בתגיות הקפיצה לעליות שלמעלה כדי לדלג, ובתגית ההמשך כדי להמשיך מהמקום שבו הפסקתם.",howto step,
 torah.about.howto_6,Click the fullscreen button to project to a SmartBoard.,לחצו על כפתור המסך המלא כדי להקרין ללוח חכם.,howto step,
@@ -3905,30 +3905,29 @@ torah.confirm.reset_all_cloud,Reset all Torah Trainer settings to defaults on th
 torah.confirm.reset_trope_colors,Are you sure? This resets your custom trope-family colors to the defaults.,האם אתם בטוחים? פעולה זו מאפסת את צבעי משפחות הטעמים המותאמים אישית שלכם לברירת המחדל.,confirm dialog,
 torah.confirm.reset_vowel_colors,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים אישית שלכם עבור ערכות ברירת המחדל ותל-עם כאחד.,confirm dialog,
 torah.controls.custom_range_button,Custom range…,טווח מותאם…,button,
-torah.controls.print_button,Print,הדפסה,button,leading-emoji
-torah.controls.print_title,Print this reading for students,הדפיסו את הקריאה עבור התלמידים,button title,
+torah.controls.print_title,Print this reading for students,הדפיסו את הקריאה עבור התלמידים,title of the Share tab's Print this reading button,
 torah.controls.print_need_reading,Load a parsha first to print.,טענו פרשה קודם כדי להדפיס.,toast,
 torah.shem.chip_label,שם ה׳,שם ה׳,chip in the reading header when a divine name is detected,pinned Hebrew in both languages by design
 torah.shem.chip_tip,"This reading contains God's name. A printed page traditionally requires geniza (respectful storage), not disposal.",הקריאה כוללת שם קדוש. דף מודפס טעון גניזה — נהוג שלא להשליכו לאשפה.,accessible tooltip on the שם ה׳ chip,
-torah.handout.button,Student handout,דף לתלמיד,top-bar button next to Print,leading-emoji
-torah.handout.button_title,Print a clean Hebrew-only handout for students,הדפסת דף נקי לתלמידים — עברית בלבד,button title,
-torah.handout.title,Student handout,דף לתלמיד,handout options bar title,
+torah.handout.title,Student handout,דף לתלמיד,section heading (Share tab); was the handout bar title,
 torah.handout.hide_nikkud,Hide nikkud (vowels),הסתרת ניקוד (תנועות),handout option toggle,
 torah.handout.hide_teamim,Hide cantillation (trope),הסתרת טעמי המקרא,"handout option toggle; with Hide nikkud too = a scroll-style (tikkun) column",
 torah.handout.hide_nums,Hide verse numbers,הסתרת מספרי פסוקים,handout option toggle,
-torah.handout.font_size,Font size:,גודל גופן:,handout option label,
+torah.handout.font_size,Font size,גודל גופן,handout option label,
 torah.handout.size_normal,Normal,רגיל,font-size radio (= current screen size),
 torah.handout.size_large,Large,גדול,font-size radio (2.2rem; the default),
 torah.handout.size_xl,Extra large,גדול במיוחד,font-size radio (2.8rem),
-torah.handout.print_button,Print handout,הדפסת הדף,handout bar primary button,leading-emoji
-torah.handout.cancel,Cancel,ביטול,handout bar close button,
-torah.handout.shem_note,"This reading contains שם ה׳ — printed pages traditionally go to geniza, not the trash.",הקריאה כוללת שם ה׳ — דפים מודפסים נהוג להביא לגניזה ולא להשליכם לאשפה.,notice in handout bar when a divine name is detected,שם ה׳ pinned Hebrew in both languages
+torah.handout.print_button,Print handout,הדפסת הדף,handout section primary button,leading-emoji
+torah.handout.shem_note,"This reading contains שם ה׳ — printed pages traditionally go to geniza, not the trash.",הקריאה כוללת שם ה׳ — דפים מודפסים נהוג להביא לגניזה ולא להשליכם לאשפה.,notice in handout section when a divine name is detected,שם ה׳ pinned Hebrew in both languages
 torah.handout.geniza_check,Add a לגניזה marker to the printed page,הוספת סימון לגניזה בתחתית הדף המודפס,handout option toggle (shown only when a divine name is detected),לגניזה pinned Hebrew in both languages
 torah.handout.selected_only,Print only the selected verses,הדפסת הפסוקים שנבחרו בלבד,handout option toggle (row shown only while the Copy bar holds a selection; the count beside it reuses torah.copy.bulk_count),
-torah.share.button,Copy link,העתקת קישור,top-bar button that copies a link to the current reading,leading-emoji
+torah.share.open_button,Share,שיתוף,top-bar button that opens the settings drawer on its Share tab,svg-icon-in-markup
+torah.share.open_title,"Share, copy or print this reading","שיתוף, העתקה או הדפסה של הקריאה",button title,
+torah.share.none_note,"Nothing to share yet — pick a parsha, a holiday reading or a custom range and a link to it appears here.","אין עדיין מה לשתף — בחרו פרשה, קריאת חג או טווח מותאם, וקישור אליהם יופיע כאן.",note in the Share tab while no practice link can be made,
+torah.share.button,Copy link,העתקת קישור,Share tab button that copies the practice link,leading-emoji
 torah.share.copied_range,Link copied — {ref},הקישור הועתק — {ref},toast after copying a practice link narrowed to a verse range,mixed UI+content — do not translate {…}
 torah.share.copied_span,"Link copied — a link holds one range, so it opens all of {ref}, including verses you did not tick.","הקישור הועתק — קישור מכיל טווח אחד, ולכן הוא פותח את כל {ref}, כולל פסוקים שלא סומנו.",toast when a selection with gaps in it had to be widened to its full span,mixed UI+content — do not translate {…}
-torah.share.include_settings,Include my settings,כולל ההגדרות שלי,"toggle beside Copy link — the link also carries the sender's display settings (font, colors, what shows) as ?s=",
+torah.share.include_settings,Include my settings,כולל ההגדרות שלי,toggle under Copy link in the Share tab,
 torah.share.include_settings_tip,"Adds your font, text sizes, vowel and trope color coding, and what the reading shows (nikkud, trope marks, transliteration and where it sits, translation, layout, and the trope staff's words, key, voice and note names) to the link. Whoever opens it sees the reading your way, and can keep those settings or go back to their own.","מוסיף לקישור את הגופן, גודלי הטקסט, צביעת התנועות והטעמים ומה שהקריאה מציגה (ניקוד, טעמים, תעתיק ומיקומו, תרגום, פריסה, ומילות חמשת הטעמים, הסולם, הקול ושמות התווים שלה). מי שפותח אותו רואה את הקריאה כמו אצלכם, ויכול לשמור את ההגדרות האלה או לחזור להגדרות שלו.",tooltip,
 torah.share.with_settings,Your display settings are included.,הגדרות התצוגה שלכם כלולות בקישור.,second line of the Copy link toast when Include my settings is on,
 torah.share.with_settings_no_font,"Your display settings are included, but not your own font ""{font}"" — a link can't carry it, so the reading opens in the standard font.","הגדרות התצוגה שלכם כלולות בקישור, אבל לא הגופן האישי ""{font}"" — קישור לא יכול להעביר אותו, ולכן הקריאה תיפתח בגופן הרגיל.",second toast line when the chosen font is a My Font (stored on this device only),do-not-translate {font}
@@ -3937,9 +3936,9 @@ torah.share.view_keep,Keep these settings,שמירת ההגדרות האלה,but
 torah.share.view_revert,Use my settings,חזרה להגדרות שלי,button on the link note — back to the reader's own settings,
 torah.share.view_kept,These settings are yours now.,ההגדרות האלה שמורות עכשיו אצלכם.,toast after Keep these settings,
 torah.share.view_reverted,Back to your own settings.,חזרתם להגדרות שלכם.,toast after Use my settings,
-torah.copy.button,Copy,העתקה,top-bar button next to Student handout,leading-emoji
-torah.copy.button_title,Copy verses to the clipboard — one verse or a selection,העתקת פסוקים ללוח — פסוק אחד או בחירה,button title,
+torah.copy.select_verses_button,Select verses to copy…,בחירת פסוקים להעתקה…,Share tab button that closes the drawer and opens the inline Copy bar,svg-icon-in-markup
 torah.copy.title,Copy verses,העתקת פסוקים,copy options bar title,
+torah.copy.close,Close,סגירה,Copy bar close button,
 torah.copy.inc_ref,Include verse numbers,כולל מספרי פסוקים,copy option toggle,
 torah.copy.inc_trans,Include translation,כולל תרגום,copy option toggle,
 torah.copy.inc_translit,Include transliteration,כולל תעתיק,copy option toggle,
@@ -3961,7 +3960,7 @@ torah.copy.range_added_some.other,Added {count} verses. Skipped {refs} — not i
 torah.copy.range_already,Those verses are already selected.,הפסוקים האלה כבר נבחרו.,range picker result note when nothing new was added,
 torah.copy.range_no_match,Not in this reading: {refs},לא בקריאה זו: {refs},range picker result note when nothing matched,
 torah.copy.range_no_reading,Load a reading first.,יש לטעון קריאה קודם.,range picker note when no reading is loaded,
-torah.copy.options_link,Copy options…,אפשרויות העתקה…,copy bar button that opens the settings drawer's Copy panel,
+torah.copy.options_link,Copy options…,אפשרויות העתקה…,copy bar button that opens the drawer's Share tab at Copy verses,
 torah.copy.options_link_title,"Choose what a copy contains — marks, transliteration, translation, colors","בחירת מה כוללת העתקה — סימנים, תעתיק, תרגום וצבעים",button title,
 torah.copy.none_selected,Select at least one verse first.,יש לבחור לפחות פסוק אחד.,inline reason shown when Copy All is pressed with an empty selection,
 torah.copy.rich_preview_note,Colors are added when you paste — this preview shows the plain text.,הצבעים נוספים בהדבקה — התצוגה המקדימה מציגה את הטקסט הרגיל.,note under the copy preview textarea while Copy color coding is on,
@@ -4027,8 +4026,7 @@ torah.display.follow_label,Follow,מעקב,settings label,
 torah.display.follow_translit,Translit,תעתיק,radio label,
 torah.display.follow_under_note,"With the transliteration under each word, the highlight follows the Hebrew word and its transliteration moves with it.","כשהתעתיק מתחת לכל מילה, ההדגשה עוקבת אחרי המילה העברית והתעתיק שלה נע יחד איתה.",note under the Follow radios (shown only while the transliteration sits under each word),
 torah.display.font_default_tag,[DEFAULT],[ברירת מחדל],font picker default marker,
-torah.display.font_sizes_header,Font sizes,גודלי גופן,settings subheader,
-torah.display.karaoke_header,Karaoke settings,הגדרות קריוקי,settings subheader,
+torah.display.font_sizes_header,Font sizes,גודלי גופן,sub-heading in the Text tab's Display section (.tt-set-sub),
 torah.display.show_cantillation,Show cantillation marks (te'amim),הצגת טעמי המקרא,settings label,
 torah.display.show_cantillation_tip,Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels).,טעמי המקרא (מעל ומתחת לאותיות) מציינים את מנגינת הטעמים. כבו כדי לראות ניקוד בלבד.,tooltip,
 torah.display.show_nikkud,Show nikkud (vowels),הצגת ניקוד,settings label,
@@ -4154,16 +4152,15 @@ torah.schedule.label_triennial,Triennial year {n},שנה תלת-שנתית {n},r
 torah.schedule.label_weekday,Weekday reading,קריאת ימי חול,reading label part (status line),
 torah.settings.close_aria,Close settings,סגירת ההגדרות,close button aria,aria-label only
 torah.settings.close_title,Close,סגירה,close button title,
-torah.settings.collapse_all,Collapse all menus,כיווץ כל התפריטים,button,
 torah.settings.color_for_aria,Color for {name},צבע עבור {name},vowel/trope color-picker input aria,aria-label only; {name} is the vowel/trope name (content) — do not translate {name}
-torah.settings.expand_all,Expand all menus,הרחבת כל התפריטים,button,
-torah.settings.panel_about,About & FAQ,אודות ושאלות נפוצות,panel title,
-torah.settings.panel_cloud,Cloud saves,שמירות בענן,settings drawer panel title (hosts the shared cloud-saves panel),
-torah.settings.panel_audio,Audio speeds & pitch,מהירויות שמע וגובה צליל,panel title,
-torah.settings.panel_copy,Copy,העתקה,panel title,
-torah.settings.panel_display,Display,תצוגה,panel title,
-torah.settings.panel_font,Hebrew font,גופן עברי,panel title,
-torah.settings.panel_lookup,Torah portion lookup,איתור פרשת השבוע,settings drawer panel title (panel-collapse memory key),
+torah.settings.panel_about,About & FAQ,אודות ושאלות נפוצות,section heading (More tab),
+torah.settings.panel_cloud,Cloud saves,שמירות בענן,section heading (More tab; hosts the shared cloud-saves panel #cloudSavesPanel),
+torah.settings.panel_audio,Audio speeds & pitch,מהירויות שמע וגובה צליל,section heading (Audio tab),
+torah.settings.panel_copy,Copy verses,העתקת פסוקים,section heading (Share tab): the Select-verses launcher + the copy format options,
+torah.settings.panel_display,Display,תצוגה,section heading (Text tab),
+torah.settings.panel_font,Hebrew font,גופן עברי,section heading (Text tab),
+torah.settings.panel_karaoke,Karaoke highlighting,הדגשת קריוקי,section heading (Audio tab); the karaoke Style and Follow groups take it into their names,
+torah.settings.panel_lookup,Torah portion lookup,איתור פרשת השבוע,section heading (Calendar tab),
 torah.lookup.date_label,Date,תאריך,settings label,
 torah.lookup.date_tip,"Any date, past or future: the reading of the Shabbat on or after it, on the calendar chosen under Reading schedule (Diaspora or Israel).","כל תאריך, בעבר או בעתיד: הקריאה של השבת שבו או שאחריו, לפי הלוח שנבחר בלוח הקריאה (תפוצות או ישראל).",tooltip,
 torah.lookup.empty,Pick a date to see its parasha.,בחרו תאריך כדי לראות את פרשת השבוע שלו.,result line while the date field is empty,
@@ -4198,13 +4195,23 @@ torah.lookup.holiday_chol_hamoed_pesach,Shabbat Chol HaMoed Pesach,שבת חול
 torah.lookup.holiday_shavuot,Shavuot,שבועות,festival name,
 torah.lookup.triennial_year,Triennial cycle: year {n},מחזור תלת-שנתי: שנה {n},result line while the Triennial cycle is chosen,do-not-translate {n}
 torah.lookup.open,Open this reading,פתיחת הקריאה,button,
-torah.settings.panel_reset,Reset,איפוס,panel title,
-torah.settings.panel_schedule,Reading schedule,לוח קריאה,panel title,
-torah.settings.panel_translit,Transliteration,תעתיק,panel title,
-torah.settings.panel_trope_color,Trope color coding,צביעת טעמים,panel title,
-torah.settings.panel_vowel_color,Vowel color coding,צביעת תנועות,panel title,
+torah.settings.panel_print,Print,הדפסה,section heading (Share tab),
+torah.settings.panel_reset,Reset,איפוס,section heading (More tab),
+torah.settings.panel_schedule,Reading schedule,לוח קריאה,section heading (Calendar tab),
+torah.settings.panel_share,Practice link,קישור לתרגול,section heading (Share tab),
+torah.settings.panel_translit,Transliteration,תעתיק,section heading (Text tab),
+torah.settings.panel_trope_color,Trope color coding,צביעת טעמים,section heading (Colors tab),
+torah.settings.panel_vowel_color,Vowel color coding,צביעת תנועות,section heading (Colors tab),
+torah.settings.print_reading,Print this reading,הדפסת הקריאה,button in the Share tab's Print section,svg-icon-in-markup
 torah.settings.reset_all,Reset all Torah Trainer settings,איפוס כל הגדרות מאמן התורה,button,leading-emoji
 torah.settings.title,Torah Trainer Settings,הגדרות מאמן התורה,settings drawer header,leading-emoji
+torah.tabs.aria,Settings sections,חלקי ההגדרות,settings drawer tablist aria,aria-label only
+torah.tabs.text,Text,טקסט,settings drawer tab label (book icon in the markup),svg-icon-in-markup; keep short — six tabs share a 380px drawer
+torah.tabs.colors,Colors,צבעים,settings drawer tab label (palette icon in the markup),svg-icon-in-markup; keep short
+torah.tabs.audio,Audio,שמע,"settings drawer tab label (music icon in the markup): speeds & pitch, karaoke highlighting, the Trope staff",svg-icon-in-markup; keep short
+torah.tabs.calendar,Calendar,לוח שנה,settings drawer tab label (calendar icon in the markup),svg-icon-in-markup; keep short
+torah.tabs.share,Share,שיתוף,"settings drawer tab label (link icon in the markup): practice link, copy verses, student handout, print",svg-icon-in-markup; keep short
+torah.tabs.more,More,עוד,"settings drawer tab label (gear icon in the markup): cloud saves, about & FAQ, reset",svg-icon-in-markup; keep short
 torah.status.aliyah_audio_unavailable,Audio for aliyah {n} is not available in PocketTorah.,השמע לעלייה {n} אינו זמין ב-PocketTorah.,karaoke status,do-not-translate {n}
 torah.status.audio_basename_missing,Audio basename missing in manifest.,שם קובץ השמע חסר במניפסט.,karaoke status,
 torah.status.audio_load_failed,Couldn't load the chanting audio. Check your connection — some school networks block it.,לא ניתן היה לטעון את שמע הקריאה. בדקו את החיבור — רשתות בית ספר חוסמות אותו לעיתים.,karaoke status + toast when the MP3 fails to load,
@@ -4250,7 +4257,7 @@ torah.tour.s4_body,"Every verse can be read aloud, chanted with word-by-word hig
 torah.tour.s4_title,"Read, chant, or loop","הקראה, שירה או לולאה",tour step title,
 torah.tour.s5_body,Click any Hebrew word to chant from exactly that spot.,לחצו על מילה עברית כלשהי כדי לשיר בדיוק מאותה נקודה.,tour step body,
 torah.tour.s5_title,The text itself,הטקסט עצמו,tour step title,
-torah.tour.s6_body,"Fonts, vowel colors, transliteration styles, and speeds live here.","גופנים, צבעי תנועות, סגנונות תעתיק ומהירויות נמצאים כאן.",tour step body,
+torah.tour.s6_body,"Six tabs: Text, Colors, Audio, Calendar, Share (links, copying and printing) and More.","שש לשוניות: טקסט, צבעים, שמע, לוח שנה, שיתוף (קישורים, העתקה והדפסה) ועוד.",tour step body,
 torah.tour.s6_title,Settings,הגדרות,tour step title,
 torah.tour.reading_loading,Loading the reading…,טוען את הקריאה…,tour step shown while the Sefaria reading is still streaming in,
 torah.trans.footer_line,"Translation: <em>{version}</em> · {license} (via <a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"">Sefaria</a>)","תרגום: <em>{version}</em> · {license} (דרך <a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"">Sefaria</a>)",footer translation line,html; keep <em>/<a>; do-not-translate {version}/{license}
@@ -5963,12 +5970,12 @@ shared.cloud.error_project_limit,Your account has reached its limit of 25 font p
 shared.cloud.error_project_too_big,This project is too big for your account (20 MB after compression).,הפרויקט הזה גדול מדי עבור החשבון (20 MB אחרי דחיסה).,Error line when a packed Font Maker project exceeds the bucket cap,shared; cloud
 shared.badge.beta,BETA,בטא,beta badge beside a feature name (Torah Trainer: the Trope staff layout choice + its settings panel),keep short; uppercase in English
 torah.controls.layout_staff,Trope staff,חמשת הטעמים,Layout radio label (beta) — the reading drawn on a music staff,
-torah.settings.panel_staff,Trope staff,חמשת הטעמים,settings drawer panel title (panel-collapse memory key); a BETA badge follows it,
+torah.settings.panel_staff,Trope staff,חמשת הטעמים,section heading (Audio tab); a BETA badge follows it,
 torah.staff.words_label,Words,מילים,staff panel: what sits under the notes while the Translit switch is on (radio group label),
 torah.staff.words_translit,Transliteration only,תעתיק בלבד,staff panel Words choice (the Latin line alone; the Hebrew is hidden),
 torah.staff.words_both,Hebrew + transliteration,עברית + תעתיק,staff panel Words choice (Hebrew with the transliteration under it),
 torah.staff.words_note,Applies while the Translit switch is on.,חל כשמתג התעתיק דולק.,note under the staff panel's Words radios,
-torah.trans.place_staff_note,In the Trope staff layout the transliteration always sits under each word; the Trope staff panel's Words choice says whether the Hebrew shows with it.,בפריסת חמשת הטעמים התעתיק יושב תמיד מתחת לכל מילה; בחירת המילים בלוח חמשת הטעמים קובעת אם העברית מוצגת איתו.,note under the transliteration placement radios; shown only in the Trope staff layout,
+torah.trans.place_staff_note,In the Trope staff layout the transliteration always sits under each word; the Trope staff section's Words choice (Audio tab) says whether the Hebrew shows with it.,בפריסת חמשת הטעמים התעתיק יושב תמיד מתחת לכל מילה; בחירת המילים בחלק חמשת הטעמים (לשונית השמע) קובעת אם העברית מוצגת איתו.,note under the transliteration placement radios; shown only in the Trope staff layout,
 torah.staff.key_label,Key,סולם,staff panel key slider label,
 torah.staff.key_tip,"Draws the staff in a higher or lower key and moves the tune with it, in half steps, so it sits in your voice. The printed chart is in A major (C major for the High Holiday melody); the Haftarah tune is written in D minor, with F major's one flat.","מצייר את החמשה בסולם גבוה או נמוך יותר ומזיז איתה את המנגינה, בחצאי טונים, כדי שתתאים לקול שלכם. הטבלה המודפסת היא בלָה מז'ור (דוֹ מז'ור למנגינת הימים הנוראים); מנגינת ההפטרה כתובה ברֶה מינור, עם הבֶּמול היחיד של פָה מז'ור.",tooltip,
 torah.staff.voice_label,Voice,קול,staff panel voice radio group label,

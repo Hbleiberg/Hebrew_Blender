@@ -104,7 +104,7 @@ every read with the **strict `TROPE_HEX6_RE`** (`#rrggbb` only, not the looser `
 imported blobs are untrusted, AND the value takes an appended `59` alpha suffix and seeds
 `<input type=color>`, both of which require the 6-digit form).
 
-- **The drawer's two color panels are one list each, and the list is the on/off switch.** Vowel
+- **The Colors tab's two sections are one list each, and the list is the on/off switch.** Vowel
   color coding is No highlight · Letter · Highlight · Underline (radios `optColorMode`), trope
   color coding No highlight · Highlight · Underline (`optTropeMode`). No highlight writes
   `colorCodeNikkud` / `colorCodeTrope` = `false` and keeps the stored mode (the "Color-code the
@@ -118,14 +118,15 @@ imported blobs are untrusted, AND the value takes an appended `59` alpha suffix 
   `applyNikkudColors` draws it. Turning vowel coloring on or off re-renders (the `.nik` spans
   exist only while it is on); every other change is a var/class swap. Layout: each list drops
   under its label when it does not fit beside it, no choice breaks mid-label, and the vowel list
-  is a 2×2 block (`.tt-color-grid`), because its four English choices need about 321px of the
-  default drawer's 317px row. The page's
+  is a 2×2 block (`.tt-color-grid`), because its four English choices need about 321px, more than the
+  section's row offers at the default drawer width. The page's
   `.radio-group` radios are visually hidden but focusable (the Trope Tutor's rule, with
   `position:relative` on the group so they scroll with the drawer), so the lists stay
   keyboard-operable like the switches they replaced; the drawer's focus trap skips unchecked
   radios. Every `.radio-group` on the page is a `role="group"` named by `aria-labelledby` from its
-  visible label; the two karaoke groups also take the *Karaoke settings* heading, so their
-  Highlight does not sound like the color lists'.
+  visible label; the two karaoke groups also take the *Karaoke highlighting* section heading
+  (`torah.settings.panel_karaoke`, `#lblKaraokeHdr`, on the Audio tab), so their Highlight does not sound
+  like the color lists'.
 
 - **Taxonomy**: `TROPE_CHAR_TO_FAMILY` maps codepoints to 7 families (`sofpasuk`, `etnachta`,
   `katon`, `segol`, `revia`, `geresh`, `rare`; ordered defs in `TROPE_COLOR_DEFS` — the single
@@ -717,7 +718,7 @@ Design: `docs/tropepatterns.md` → G.
   screen size.
 - **Words.** The Translit switch drives the Latin line here too: with it on, the cells are `tokenizeHebrew`'s
   under-word cells (`.tt-wh` + `.tt-wtl`) whatever the placement radios say (a separate transliteration row
-  would duplicate the `.tt-word[data-twi]` spans; the Transliteration panel's note says so in this layout), so
+  would duplicate the `.tt-word[data-twi]` spans; the Transliteration section's note on the Text tab says so in this layout), so
   `body.translit-under` is on and `karaokeFollowEffective()` is `'hebrew'`. `staffWords` is the sub-choice under
   the switch — `'both'` (the Hebrew with its Latin line) or `'translit'` (the Latin line alone;
   `body.staff-words-translit` hides `.tt-wh`); a stored `'hebrew'` (the retired third choice) reads `'both'` and
@@ -752,12 +753,12 @@ Design: `docs/tropepatterns.md` → G.
 - **Settings** (`DEFAULTS`, clamped in `loadSettings`, read through `staffWordsKey` / `staffShiftVal` /
   `staffVoiceKey` / `staffNoteNamesKey` / `staffRateVal`; one writer each: `setStaffShift`, `setStaffVoice`,
   `setStaffNoteNames`, the Words radios, `setStaffTuneRate` (the drawer's slider, the audio bar's Tune row and
-  the reset); `syncStaffControls` the read-only half, also from `applyI18n`): the drawer's *Trope staff* panel — Words, Key (−6…+6; the readout names the key with the
+  the reset); `syncStaffControls` the read-only half, also from `applyI18n`): the drawer's *Trope staff* section on the Audio tab — Words, Key (−6…+6; the readout names the key with the
   tutor's `trope.key.*` strings), Voice, Note names, Tune speed. Words, key, voice and note names ride the
   practice link (`LINK_DISPLAY`); the speed syncs in the blob like `karaokeRate` and never travels. The systems are pinned `direction:ltr` in both UIs (notation), and the
   rover's arrows follow the notation there (`onReadingKeydown` flips `delta`) — unless the Direction below is Right to left.
 - **Direction** (`staffDir`: `'ltr'` or `'rtl'`, read through `staffDirKey()`; an unknown stored value reads left to right
-  and stays stored; one writer `setStaffDir`; the Direction radios in the panel; it rides the practice link). Right to
+  and stays stored; one writer `setStaffDir`; the Direction radios in the section; it rides the practice link). Right to
   left is the mirror image, the Hebrew's reading order, as some Hebrew music is printed: `renderStaffView` marks each
   system `.is-rtl`, `staffEnsureSvg` passes `rtl: true` to `renderPhraseStaff`, and the engine draws the row as usual
   inside a `<g class="tu-rtl" transform="matrix(-1 0 0 1 W 0)">` that reflects it about the row's middle, then turns
@@ -772,7 +773,8 @@ Design: `docs/tropepatterns.md` → G.
 - **The melodies' names.** The maintainer identifies the transcribed charts as the Avery/Binder (Reform) melody (the
   year-round and High Holiday charts; the Haftarah rows stay a beta rendering) and PocketTorah's recordings as the
   Spiro (Conservative) melody. Both pages say so where the staffs and the recordings are: the Trainer's Trope staff
-  panel (`torah.staff.melody_credit`), Audio panel (`torah.audio.recording_credit`), audio-bar credit
+  section (`torah.staff.melody_credit`) and Audio speeds & pitch section (`torah.audio.recording_credit`), both on
+  the drawer's Audio tab, audio-bar credit
   (`torah.audio.recording_melody`) and High Holiday recording chip; the tutor's Learn intro, key-bar caption
   (`#tuKeyCredit`, `trope.key.melody_credit`, hidden by `syncTuneControls` on the Haftarah melody), Melody and
   tradition notes, example play buttons, FAQ and footer credit. The repo holds no other source for either name.
@@ -788,16 +790,85 @@ Design: `docs/tropepatterns.md` → G.
   the reading, follow at the next `renderText`).
   The names are `--muted`, gold while their note sounds (the tune's `.is-sounding`) or is chanted (`.is-hl`), and
   print muted; the SVG stays hidden from assistive tech, so no spoken list is built.
-- **Known beta limits** (said in the panel's note): a word sits whole under its figure (no syllable
+- **Known beta limits** (said in the section's note): a word sits whole under its figure (no syllable
   placement); a context the chart never prints takes the nearest figure; a triplet or slur cut at a
   figure's edge draws by value; a sheet narrower than the print wrap (portrait, wide margins) prints the
   staff smaller than the chosen size, uniformly.
 
 ---
 
+## Settings drawer (`torah_trainer.html`)
+
+`#settingsModal` is still the overlay it was — `#settingsBackdrop`, the `_settingsTrapKey` focus trap (Tab wraps
+inside; an unchecked radio is neither end of the loop), Escape from the page's global keydown handler, focus
+back to the opener on close, the shared `sidebar-resize` handle `#settingsResize` and the drawer's own dark
+toggle — but nothing inside it collapses any more: the collapsible `.panel`s behind Expand all / Collapse all
+became **six tabs of flat sections**, the Trope Tutor's Settings-tab idiom inside a drawer.
+
+- **The tab strip.** `.tt-tabs` is a `role="tablist"` (`torah.tabs.aria`) of six `role="tab"` buttons —
+  `TT_TAB_IDS`: `text` / `colors` / `audio` / `calendar` / `share` / `more` → `#ttTabText` … `#ttTabMore` —
+  each an inline SVG from the shared header-icons set (book, palette, music, calendar, link, gear) over its
+  label on a `.hi-lbl` span keyed `torah.tabs.<name>` (the `data-i18n` stays on the span, never the button:
+  `applyStaticI18n` would replace the SVG); the page's own `.settings-modal .tt-tab` rule stacks icon above
+  label, `.hi-btn` still supplying the alignment. Each tab `aria-controls` one `.tt-tabpanel`
+  (`#ttTabPanel<Name>`, `role="tabpanel"`, `aria-labelledby` its tab, `hidden` unless selected).
+- **A section** is a flat `.tt-set` carrying `data-set="<key>"` under a `h3.tt-set-title` — serif over a
+  hairline rule, the tutor's `.tu-set-title` idiom, `tabindex="-1"` so it takes programmatic focus without
+  joining the Tab loop — keyed by the old `torah.settings.panel_*` keys (the handout's heading is
+  `torah.handout.title`, `#ttHandoutTitle`); a sub-block inside one is a `.tt-set-sub` (Display's *Font
+  sizes*). The seventeen sections by tab (`TT_SECTION_TAB`):
+  - **Text** — `display` (Display: the show-toggles, the click action, the Font sizes sub-block), `font`
+    (Hebrew font), `translit` (Transliteration).
+  - **Colors** — `vowel_color`, `trope_color` (the two lists of *Trope color coding* above).
+  - **Audio** — `audio` (Audio speeds & pitch), `karaoke` (Karaoke highlighting: the Style and Follow groups
+    that used to sit under Display's *Karaoke settings* sub-heading; the `h3` keeps `id="lblKaraokeHdr"`, so
+    both groups' `aria-labelledby` still name it), `staff` (Trope staff, the BETA badge in the heading beside
+    the `data-i18n` span — `openSettingsAtPanel('staff')` lands by `data-set`, so the split heading costs
+    nothing).
+  - **Calendar** — `schedule` (Reading schedule), `lookup` (Torah portion lookup).
+  - **Share** — `share` (Practice link), `copy` (Copy verses), `handout` (Student handout), `print` (Print);
+    *The Share tab* below.
+  - **More** — `cloud` (Cloud saves, `#cloudSavesPanel`), `about` (About & FAQ), `reset` (Reset).
+- **One writer, two openers.** `setSettingsTab(name)` is the only writer of tab state — `aria-selected`,
+  the roving `tabindex` (the selected tab alone is in the Tab sequence), `hidden` on every tab panel, and
+  `.settings-body` scrolled to the top; an unknown name reads `text`. `openSettings()` calls it with
+  `'text'` before `syncFormToSettings()`: **the drawer always opens on Text** — no tab memory, no new key.
+  `openSettingsAtPanel(key)` keeps its name: it opens the drawer, maps the section key through
+  `TT_SECTION_TAB`, scrolls the section to the top of the body and focuses its heading, so the next Tab
+  enters the section's controls. Its callers: the Copy bar's *Copy options…* (`'copy'`), the cloud module's
+  `open` (`'cloud'`, the header chip's *Cloud saves…* item), the toolbar's Share button (`'share'`) and
+  `scripts/smoke-tools.mjs` (`'cloud'`).
+- **Keyboard.** The tablist's keydown handler is the Trope Tutor's: Left/Right move by **visual** direction
+  (the strip mirrors in the Hebrew UI, so under `dir="rtl"` the keys swap), Home/End, wrapping, and moving
+  focus activates the tab (automatic activation). Tab inside the drawer is the trap's.
+- **The Share tab.** *Practice link*: `#ttShareWrap` holds Copy link (`#ttShareBtn` → `copyPracticeLink`)
+  and the Include my settings switch (`#ttShareSettings` → `settings.shareIncludeDisplay`); `syncShareBtn`,
+  re-run per render, hides the wrap and shows the `#ttShareNone` note exactly when `practiceLinkURL()` is
+  null. *Copy verses*: a *Select verses to copy…* launcher (`openCopyBarFromDrawer()`: closes the drawer —
+  verse selection needs the reading clickable and the drawer is modal — opens the inline `#ttCopyBar`
+  through `toggleCopyBar` if it is closed, scrolls it into view and focuses `#ttCopyBulkCb`) followed by the
+  copy-format options, which `syncFormToSettings` syncs (`syncCopyForm` owns only the bar's own state).
+  *Student handout*: every control of the former `#ttHandoutBar`, same ids, plus Print handout
+  (`printHandout`); `syncFormToSettings` calls `syncHandoutForm()`, so the section is synced on every open,
+  reset and cloud re-read, and `cloudReread` no longer calls it itself. *Print*: Print this reading →
+  `printReading()`.
+- **The toolbar and the Copy bar.** Print, Student handout, Copy and Copy link + Include my settings left
+  the toolbar; one `#ttShareOpenBtn` *Share* (the `hi-link` glyph, `torah.share.open_button`) opens the drawer
+  on the Share tab. `#ttHandoutBar` and `toggleHandoutBar()` are gone. `#ttCopyBar` stays on the page (it is
+  the selection UI), with *Copy options…* → `openSettingsAtPanel('copy')` and its own Close button
+  (`closeCopyBar()`: closes through `toggleCopyBar`, which still owns `copyBulkRemember` and the bulk mode,
+  then hands focus to `#ttShareOpenBtn` rather than dropping it on `<body>`).
+- **Retired.** The panel-collapse memory block, `PANEL_MEM_CFG`, `expandAllMenus` / `collapseAllMenus`,
+  `syncPanelTitleAria` and `panelKeyOf` are gone, and `panelsCollapsed` left `DEFAULTS`: an older blob's map
+  rides along unread through `ivritSafeAssign`, as on the Trope Tutor, and the cloud row's `'*Collapsed'`
+  omit in `js/ivrit-saves.js` is unchanged (it still covers `karaokeBarCollapsed`, the audio bar's own
+  state).
+
+---
+
 ## Reading schedule, reading cycle & portion lookup (`torah_trainer.html`)
 
-The drawer's *Reading schedule* panel holds the calendar (`settings.schedule`, `'diaspora'` | `'israel'`), the
+The drawer's *Reading schedule* section (Calendar tab) holds the calendar (`settings.schedule`, `'diaspora'` | `'israel'`), the
 reading cycle (`settings.readingCycle`, `'full'` | `'triennial'` | `'weekday'`, read through `cycleKey()`: an unknown
 stored value reads Full and stays stored) and the triennial year (`settings.triennialYear`, `'auto'` | 1 | 2 | 3,
 `triYearKey()`). All three ride the settings blob (sync, AllTools, reset) and none rides a practice link.
@@ -836,7 +907,7 @@ stored value reads Full and stays stored) and the triennial year (`settings.trie
   by `scripts/build-leyning-data.mjs` from `@hebcal/leyning` and `@hebcal/triennial` (BSD-2-Clause; the license
   sits beside them and the builder pins the versions), keyed by parasha number, fetched `?v=1` the first time a
   non-Full cycle is chosen (`loadLeyningData` / `ensureLeyningData`; the full aliyot stand in until they land,
-  the panel's note says loading or failed with Try again). `aliyahLookup(parshahEn, cycle)` returns the cycle's
+  the section's note says loading or failed with Try again). `aliyahLookup(parshahEn, cycle)` returns the cycle's
   aliyot (`cycle` defaults to `cycleKey()`; **every audio caller asks for `'full'`** — PocketTorah's files are
   the full-kriyah aliyot whatever the cycle); `resolveRef` builds the Full-reading range from the cycle's first
   and last aliyah and marks the result `overlay: true` with `aliyahNum: null`. The triennial year:
@@ -844,7 +915,7 @@ stored value reads Full and stays stored) and the triennial year (`settings.trie
   (`((hyear − 5744) mod 3) + 1`) unless chosen by hand, and for a sometimes-doubled parasha the cycle's
   Together/Separate pattern (`HebCal.doubledPattern`) — a together year reads the combined entry's `Y.n`, a
   separate year the single's `<letter>.n` where the letter is the combined entry's `patterns[pattern]` (`'Y'`
-  for never-doubled and `TTT`), `@hebcal/triennial`'s own rule; the panel's note names the year and, in a
+  for never-doubled and `TTT`), `@hebcal/triennial`'s own rule; the section's note names the year and, in a
   together year, the partner. The Weekday cycle offers aliyot 1–3 and no haftarah: `clampScopeToCycle()` (run
   before every resolve) sends any other stored scope, a link's included, back to the whole reading, and
   `updateScopeSelectState` hides the options (`cycleAliyahMax()` also bounds the fullscreen stepper).
@@ -857,7 +928,7 @@ stored value reads Full and stays stored) and the triennial year (`settings.trie
   (`chantAllState.stopsAtRange`, which the timeupdate stop turns into `stopChantAll`); a holiday reading keeps
   its old navigate-away chain. `readingKey()` adds the cycle (and a triennial range) so `lastPos` never crosses
   cycles.
-- **Torah portion lookup** is the next panel: a date field (today by default; never stored) → `lookupRender()`
+- **Torah portion lookup** is the Calendar tab's second section: a date field (today by default; never stored) → `lookupRender()`
   writes the Shabbat's civil date (`toLocaleDateString` in the UI's language) and Hebrew date (`torah.lookup.hebdate`
   with the 14 `torah.lookup.month_*` keys), the parasha (`torah.lookup.parsha`, a doubled week joined and noted)
   or the festival (`torah.lookup.holiday_*`, the day for Pesach, Sukkot, Shavuot and Rosh Hashanah) on the chosen
@@ -956,9 +1027,10 @@ chrome). An RTL sweep must not "fix" the pin.
 
 ## Practice link — the sender's look (`?s=`, the link view)
 
-`torah_trainer.html`'s Copy link (`copyPracticeLink`; the readable-param half is in
-`shared-components.md` → *Share links*) has an **Include my settings** switch beside it
-(`#ttShareSettings` → `settings.shareIncludeDisplay`, remembered and synced with the blob).
+`torah_trainer.html`'s Copy link (`copyPracticeLink`, in the settings drawer's Share tab, which the toolbar's
+Share button opens; the readable-param half is in `shared-components.md` → *Share links*) has an **Include my
+settings** switch under it in that tab (`#ttShareSettings` → `settings.shareIncludeDisplay`, remembered and
+synced with the blob).
 
 - **What travels.** `LINK_DISPLAY` is the one list of carried keys, each with the check a value must
   pass: layout, the four show-toggles (nikkud, te'amim, transliteration, translation), the
@@ -1014,8 +1086,8 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   choice travels through a sync untouched. The fallback is cleared on a book change and by a new choice.
 - **A download during the handout print override waits.** `onLocalChanged` sets `_pendingCloudReread` while
   `_handoutActive` (the module's flush is a no-op then, so the download stays in the store) and `_handoutExit`
-  runs `cloudReread()` — the `resetAllSettings()` sequence plus `syncParshaSelect`, `syncHandoutForm` and the
-  fallback reset — afterwards. The Trope Tutor's hook also rebuilds the drill-scope box (`buildDrillScopeSel`),
+  runs `cloudReread()` — the `resetAllSettings()` sequence plus `syncParshaSelect` and the fallback reset
+  (`syncFormToSettings` re-syncs the handout section too) — afterwards. The Trope Tutor's hook also rebuilds the drill-scope box (`buildDrillScopeSel`),
   which is otherwise built once at init.
 - **A practice link's look never reaches the account.** While a link view is up, every write (the module's
   `flush` included) stores the reader's own display values, so opening a link cannot make the settings row read

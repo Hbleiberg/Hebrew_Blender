@@ -377,9 +377,11 @@ and the music note on the chant buttons, and the **action buttons**: copy, copy-
 upload, send and page, and the **dashboard's board controls**: the fullscreen quick strip (Settings, Timer, Pick,
 Text, Video, Blank, Intermission), the student picker's Pick One / Make Groups pair (in the sidebar and in the strip's pick
 popup) and the board's edit pencil, and the **Torah Trainer's picker controls**: Holiday Torah Readings
-(a calendar), Student handout (the page glyph the flash cards' worksheet handoff already carries), the
-trope-colour chip (a palette) and the settings drawer's heading gear — the gear the dashboard's drawer
-heading and the Trope Tutor's Settings tab carry too.
+(a calendar), Share (a link — the one toolbar button, which opens the settings drawer on its Share tab), the
+trope-colour chip (a palette), the settings drawer's heading gear — the gear the dashboard's drawer
+heading and the Trope Tutor's Settings tab carry too — and that drawer's six tab glyphs (book, palette,
+music, calendar, link, gear: icon above label through the page's own `.tt-tab` rule, `.hi-btn` still
+supplying the alignment).
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
 `account`, `404`; the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
@@ -396,16 +398,18 @@ Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_das
   literal `×` that were all doing this one job), `hi-trash` (destroy — deliberately NOT the same picture as
   close, because a teacher's only backup may be behind it), `hi-plus`, `hi-bookmark` (save for later: it
   replaced `★`, `⭑` and the browser-bookmark `🔖`), `hi-cloud`, `hi-keyboard`, `hi-search`, `hi-warning`,
-  `hi-undo` / `hi-redo`, `hi-up` / `hi-down`, `hi-book`, `hi-folder` / `hi-folder-plus` and `hi-move` —
+  `hi-undo` / `hi-redo`, `hi-up` / `hi-down`, `hi-book` (now also on `torah_trainer.html`, its drawer's Text
+  tab, copied verbatim from the Trope Tutor), `hi-folder` / `hi-folder-plus` and `hi-move` —
   plus the control family `hi-play`,
   `hi-pause`, `hi-stop`, `hi-reset`, `hi-retry`, `hi-loop`, `hi-sound` and `hi-music`, and the action family
   `hi-copy`, `hi-link`, `hi-print`, `hi-save`, `hi-download`, `hi-upload`, `hi-send` and `hi-page`, and the dashboard
   family `hi-timer`, `hi-dice`, `hi-group`, `hi-pencil`, `hi-video` and `hi-intermission` (the Blank/Video
   screen with two pause bars — symmetric, so it needs no RTL flip), plus `hi-calendar` (a festival
   reading on the Torah Trainer, the dashboard's calendar import) and `hi-palette` (turning colour coding on) — the strip's Settings and Blank reuse `hi-gear` and
-  `hi-blank`, the Torah Trainer's handout reuses `hi-page`, and so does the generator's **Generate
-  Worksheet** — `hi-page` was already a lined sheet, which is exactly what that button produces, so it took
-  the existing glyph instead of gaining a near-twin. One action keeps one picture wherever it appears. A glyph lives only on the pages that use it; what must match byte-for-byte is each snippet
+  `hi-blank`, the Torah Trainer's former toolbar Student handout button reused `hi-page` (the handout now
+  lives in its drawer's Share tab, whose Print handout carries `hi-print`, so that page holds no `hi-page`
+  any more), and the generator's **Generate Worksheet** reuses it — `hi-page` was already a lined sheet,
+  which is exactly what that button produces, so it took the existing glyph instead of gaining a near-twin. One action keeps one picture wherever it appears. A glyph lives only on the pages that use it; what must match byte-for-byte is each snippet
   wherever it *does* appear. **`hi-move` (the folder tree's Move-to row button) was chosen against two
   alternatives — an arrow entering a folder, and an arrow meeting a bar — and the diagonal won partly
   because it needs no mirroring**: a sideways "move it over there" arrow reads backwards in the mirrored
@@ -560,9 +564,12 @@ Writing a link **never navigates**; loading a link **never clobbers** the user's
   from parsed integers plus a book that must be a key of `TORAH_BOOK_CHAPTERS`, so nothing the URL
   carried can reach Sefaria; anything it cannot rebuild is `null` and the link is ignored in
   silence. `?holiday=` may ride alongside `?ref=` to keep a narrowed holiday's name, and supplies it
-  only while `refWithin` says the range really sits inside that reading. `syncShareBtn` HIDES the
-  button (never disables it) when there is no shareable reading at all. Its **Include my settings**
-  switch (remembered in the settings blob) adds a `?s=` beside the readable params: the display
+  only while `refWithin` says the range really sits inside that reading. Copy link and its **Include my
+  settings** switch live in the settings drawer's Share tab (*Practice link* section), which the toolbar's
+  one Share button (`#ttShareOpenBtn` → `openSettingsAtPanel('share')`) opens; `syncShareBtn` HIDES the
+  link rows (`#ttShareWrap`, never disables them) and shows the tab's `#ttShareNone` note when there is no
+  shareable reading at all. The switch (remembered in the settings blob) adds a `?s=` beside the readable
+  params: the display
   settings as a versioned diff against `DEFAULTS`, validated at both ends by one table
   (`LINK_DISPLAY`). The reading stays readable; `?s=` only says how it looks. With no presets to
   protect, the page's clobber guard is a **link view** — the sender's look on screen, the reader's
@@ -689,7 +696,9 @@ touch-primary tools get gesture equivalents; every new interactive element must 
   not a shortcut. Nothing there is a key a user must be told about. Beyond that,
   `trope_tutor.html` applies APG-standard **widget** keyboard operability: roving arrow-key nav
   on its `role="tablist"` plus `aria-pressed`/`role="radiogroup"` toggles — an application of the
-  keyboard-operability rule below, not a documented shortcut needing a `<kbd>` hint.
+  keyboard-operability rule below, not a documented shortcut needing a `<kbd>` hint; `torah_trainer.html`'s
+  settings-drawer tablist (`.tt-tabs`) carries the same handler beside its rover — Left/Right by visual
+  direction, Home/End, wrap, automatic activation.
   **No tool currently ships touch-gesture equivalents** (no `touchstart`/swipe handlers anywhere —
   Flash Cards flips on plain tap).
 - **Rule:** any new shortcut is shown as a `<kbd>` hint (and registered in the cheat sheet on the one tool
@@ -717,7 +726,7 @@ whose text is majority-English (e.g. mixed `<option>` labels). Verify: `document
 A teacher who collapses the panels they don't use should not have to do it again next lesson. Every
 collapsible `.panel` remembers its open/closed state across visits, via one `═══`-marked shared block
 (`/* ═══ IvritSuite panel-collapse memory ═══ */ … /* ═══ end shared: panel-collapse memory ═══ */`),
-byte-identical across all five carriers (sha-verify when you touch it) — copy it, don't
+byte-identical across all four carriers (sha-verify when you touch it) — copy it, don't
 rewrite it. It exposes `panelMemSave()` / `panelMemApply()` and depends only on a per-page
 **`PANEL_MEM_CFG`** (the `IVRIT_CFG` pattern):
 ```js
@@ -734,15 +743,16 @@ const PANEL_MEM_CFG = {
 - **A key absent from the stored map keeps that panel's markup default** (captured once, pre-restore, in
   `PANEL_MEM_DEFAULTS`) — so a panel added in a later release opens or closes per its own markup instead
   of inheriting a neighbour's state. This is why the engine never treats "missing" as "expanded".
-- **Where the map lives is per-page, and the engine never touches localStorage itself.** Tools with a
-  settings blob keep it there as `settings.panelsCollapsed` (dashboard, torah — so it rides the
+- **Where the map lives is per-page, and the engine never touches localStorage itself.** The dashboard,
+  the one carrier with a settings blob, keeps it there as `settings.panelsCollapsed` (so it rides the
   existing AllTools entry for free); the other three use a dedicated `hebrew<Tool>_panels` key, read via
   `ivritSafeParse` and registered in all five AllTools sites.
-- **Implemented on:** all five collapse carriers — `torah_trainer.html` (the origin, later converged onto the shared block, with a read-side migration for its
-  older bare-tail keys), `classroom_dashboard.html`,
-  `hebrew_blend_generator.html`, `flash_cards.html`, `hebrew_dictionary.html`. (The Trope Tutor left the
-  list when its Settings became a flat tab in the Font Maker's layout; an old `panelsCollapsed` in its
-  settings blob is simply carried along unread.) Sub-section headers
+- **Implemented on:** all four collapse carriers — `classroom_dashboard.html`,
+  `hebrew_blend_generator.html`, `flash_cards.html`, `hebrew_dictionary.html`. (The Trope Tutor and the
+  Torah Trainer left the list when their settings became flat tabs — the Tutor's in the Font Maker's layout,
+  the Trainer's inside its drawer, though the Trainer was the block's origin; an old `panelsCollapsed` in
+  either settings blob is simply carried along unread, and the Trainer's cloud row still omits
+  `*Collapsed`.) Sub-section headers
   (`.sub-section-hdr`, `.adv-section-title`, `.pos-sec-hdr`, `.rw-section-header`) are **not** covered —
   only `.panel`.
 - **Rule:** a new tool with collapsible panels ships this block + its `PANEL_MEM_CFG`, calls

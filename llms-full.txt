@@ -217,11 +217,11 @@ Yes. Trope color coding highlights or underlines each word in the color of its c
 
 **Does it work for both diaspora and Israel reading schedules?**
 
-Yes. The default is diaspora; set Calendar to Israel under Reading schedule to switch. "Jump to this week's parsha" opens this week's reading, which the page works out from the Hebrew calendar itself (only a few festival Shabbatot ask Sefaria's calendar). Reading cycle, in the same panel, switches between the full, triennial and Monday/Thursday readings.
+Yes. The default is diaspora; open the Calendar tab of the settings drawer and, under Reading schedule, set the Diaspora / Israel choice to Israel. "Jump to this week's parsha" opens this week's reading, which the page works out from the Hebrew calendar itself (only a few festival Shabbatot ask Sefaria's calendar). Reading cycle, in the same section, switches between the full, triennial and Monday/Thursday readings.
 
 **Can I copy the Hebrew text out of the reader?**
 
-Yes. The Copy panel in the Settings drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting.
+Yes. The Share tab of the settings drawer copies the passage as rich text, keeping the vowel and trope colors, so it pastes into Google Docs, Word, or Pages. Copy one verse, select several, or type a verse range, and choose what travels with it — nikkud, cantillation marks, transliteration, translation, verse numbers, or blank lines for handwriting.
 
 **Is the Torah Trainer free?**
 
