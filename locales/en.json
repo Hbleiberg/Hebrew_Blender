@@ -5023,7 +5023,6 @@
   "torah.staff.tune_speed_label": "Tune speed",
   "torah.staff.verse_tune": "Tune",
   "torah.staff.verse_tune_aria": "Play the tune of verse {verseRef}",
-  "torah.staff.verse_tune_stop_aria": "Stop the tune of verse {verseRef}",
   "torah.staff.voice_high": "High voices",
   "torah.staff.voice_label": "Voice",
   "torah.staff.voice_low": "Low voices",

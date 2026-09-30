@@ -737,6 +737,9 @@ Design: `docs/tropepatterns.md` → G.
   karaoke style. `stopStaffTune()` is the one exit and is called wherever another sound starts (`speakVerse`,
   `chantVerse`, `startLoop`, both seeks, `chantHolidayWord`, Read all, Chant all, `toggleAudioPlay`, the
   element's `onplay`), by `renderText`, the handout and `beforeprint`; `staffStopOthers()` is the reverse.
+  The verse's Tune is a toggle: `aria-pressed` says it is playing and its name stays "Play the tune of verse
+  …" (the icon turns to stop). *Play tune* is not one: like *Chant all* it carries no `aria-pressed`, and its
+  label says what a press does (*Play tune* / *Stop tune*).
 - **Chant** is untouched: `paintKaraokeIdx` additionally calls `staffPaintPiece(twi, on)`, which lights
   `.is-hl` on every `.tu-pn` / `.tu-pbar` of the unit(s) of the sung piece's cell (`_staffUnitsByTwi`,
   rebuilt by `staffAfterRender`) — the whole figure, by section; `clearKaraokeHighlight` clears it. In a

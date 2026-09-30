@@ -5090,8 +5090,9 @@ function staffHeaderChipsHTML(layout) {
   }
   return '';
 }
-function staffTuneAllButtonHTML() {   // renderText stops any tune first, so the button is always born unpressed
-  return `<button class="tt-readall tt-tuneall hi-btn" id="ttTuneAllBtn" onclick="staffTuneAll()" type="button" aria-pressed="false">${ICON_PLAY_SM}${esc(I18n.t('torah.staff.tune_all'))}</button>`;
+function staffTuneAllButtonHTML() {   // renderText stops any tune first, so the button is always born "Play tune"
+  // Like Chant all beside it, no aria-pressed: its name says what a press does ("Play tune" / "Stop tune").
+  return `<button class="tt-readall tt-tuneall hi-btn" id="ttTuneAllBtn" onclick="staffTuneAll()" type="button">${ICON_PLAY_SM}${esc(I18n.t('torah.staff.tune_all'))}</button>`;
 }
 // The layout: renderInterlinear's verse shell (so every consumer of [data-vk] / .tt-verse-buttons is
 // unchanged) plus a Tune button, then the systems. A system names its verse in data-svk (with data-sys, its
@@ -5274,14 +5275,14 @@ function _staffClearPlayback() {
   document.querySelectorAll('#ttReading .tt-staff-sys svg.is-playing').forEach(x => x.classList.remove('is-playing'));
   _staffUnlightWords();
   const btn = _staffTuneBtn(_staffVk);
-  if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-pressed', 'false'); btn.innerHTML = ICON_PLAY_SM + esc(I18n.t('torah.staff.verse_tune')); btn.setAttribute('aria-label', I18n.t('torah.staff.verse_tune_aria', { verseRef: _staffVk })); }
+  if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-pressed', 'false'); btn.innerHTML = ICON_PLAY_SM + esc(I18n.t('torah.staff.verse_tune')); }
   _staffVk = null;
 }
 function stopStaffTune() {
   _staffClearPlayback();
   _staffAll = false; _staffQueue = null;
   const all = document.getElementById('ttTuneAllBtn');
-  if (all) { all.classList.remove('active'); all.setAttribute('aria-pressed', 'false'); all.innerHTML = ICON_PLAY_SM + esc(I18n.t('torah.staff.tune_all')); }
+  if (all) { all.classList.remove('active'); all.innerHTML = ICON_PLAY_SM + esc(I18n.t('torah.staff.tune_all')); }
   if (_staffRelayoutPending) { _staffRelayoutPending = false; staffRelayoutSoon(true); }
 }
 function _staffLight(vk, k, i) {
@@ -5358,7 +5359,8 @@ function _staffStart(vk, onEnd) {
   for (const l of wordLights) _staffTimers.push(setTimeout(() => _staffLightWord(vk, l.k, l.ui), Math.round((l.at + 0.05) * 1000)));
   _staffTimers.push(setTimeout(() => { if (onEnd) onEnd(); else stopStaffTune(); }, Math.round((at + 0.05) * 1000) + 120));
   const btn = _staffTuneBtn(vk);
-  if (btn) { btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true'); btn.innerHTML = ICON_STOP + esc(I18n.t('torah.staff.verse_tune')); btn.setAttribute('aria-label', I18n.t('torah.staff.verse_tune_stop_aria', { verseRef: vk })); }
+  // The name stays "Play the tune of verse …" (set at render): aria-pressed alone says it is playing.
+  if (btn) { btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true'); btn.innerHTML = ICON_STOP + esc(I18n.t('torah.staff.verse_tune')); }
   return true;
 }
 function staffTune(vk) {   // the verse's Tune button: pressed again, it stops
@@ -5383,7 +5385,7 @@ function staffTuneAll() {
   if (!vks.length) return;
   _staffAll = true; _staffQueue = vks;
   const all = document.getElementById('ttTuneAllBtn');
-  if (all) { all.classList.add('active'); all.setAttribute('aria-pressed', 'true'); all.innerHTML = ICON_STOP + esc(I18n.t('torah.staff.tune_all_stop')); }
+  if (all) { all.classList.add('active'); all.innerHTML = ICON_STOP + esc(I18n.t('torah.staff.tune_all_stop')); }
   _staffNext();
 }
 /* ── Chant: the recording's highlight (paintKaraokeIdx) also lights the whole figure of the word being sung —

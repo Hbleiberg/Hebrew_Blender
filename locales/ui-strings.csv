@@ -5991,8 +5991,7 @@ torah.audio.recording_melody,Spiro (Conservative) melody,מנגינת שפירו
 trope.key.melody_credit,Avery/Binder (Reform) melody,מנגינת אייברי/בינדר (רפורמי),key bar caption naming the staffs' source (hidden on the Haftarah melody),
 trope.footer.recording_melody,Spiro (Conservative) melody,מנגינת שפירו (קונסרבטיבי),footer credit: appended after the CC link,
 torah.staff.verse_tune,Tune,מנגינה,verse button: play this verse's figures as tones (beside Read / Chant),keep short
-torah.staff.verse_tune_aria,Play the tune of verse {verseRef},נגינת המנגינה של פסוק {verseRef},aria-label of the verse Tune button,"{verseRef} is ""1:1"""
-torah.staff.verse_tune_stop_aria,Stop the tune of verse {verseRef},עצירת המנגינה של פסוק {verseRef},aria-label of the verse Tune button while it plays,"{verseRef} is ""1:1"""
+torah.staff.verse_tune_aria,Play the tune of verse {verseRef},נגינת המנגינה של פסוק {verseRef},"aria-label of the verse Tune button (one name while idle and playing; aria-pressed carries the state)","{verseRef} is ""1:1"""
 torah.staff.tune_all,Play tune,נגינת המנגינה,reading header button: the tune of every verse in turn (beside Chant all),
 torah.staff.tune_all_stop,Stop tune,עצירת המנגינה,reading header button while the tune plays,
 torah.staff.loading_chip,Loading the staff…,החמשה נטענת…,reading header chip while the melody file loads,
