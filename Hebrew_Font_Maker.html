@@ -4493,7 +4493,7 @@ const ICON_WARN_SM = '<svg class="hi hi-sm hi-warning" viewBox="0 0 24 24" width
 const ICON_PENCIL_SM = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
 const ICON_GEAR_SM = '<svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg>';
 const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
-const FONT_MAKER_VERSION = '5.56';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.57';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -4736,6 +4736,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.57</strong> &mdash; <strong>Your work is safer around signing in and out.</strong> Signing out of your IvritSuite account now finishes saving first: the copy in this browser is completed and a project kept in your account receives your last changes before the sign-out, and the page is no longer reloaded (signing out in another tab no longer reloads the Font Maker either). If the browser closes while your account copy still has changes waiting, <span class="ui">Continue where you left off</span> picks the saving up again. A save to this browser that is asked for while another is still being written is no longer skipped, so the very last edit before you close the tab is kept. Removing a font from <span class="ui">My Fonts</span> while signed in now says that it also leaves your account, and a removal made while the page is still connecting is no longer lost. While you are signed in, <span class="ui">My Fonts</span> and your suite-wide preferences (language and dark mode) now come from your account here too.</li>
       <li><strong>v5.56</strong> &mdash; <strong>Samaritan vowel signs and marks.</strong> Beside the <span class="ui">Samaritan</span> tab a new <span class="ui">Samaritan marks</span> tab carries the block&rsquo;s 21 combining marks &mdash; the vowel signs, the dagesh and the other marks. Each attaches above its letter at the letter&rsquo;s start, middle or end (the three columns of the Hebrew Square Samaritan face), placed on a new <span class="ui">Place Marks</span> step of every Samaritan letter, sized by its own slider, printed on its own template, and brought across from a font that draws them &mdash; with the font&rsquo;s own positions. Marks you leave blank stay out of the font, and <span class="ui">QA Check</span> gets a <span class="ui">Samaritan marks</span> tab that checks every drawn mark, and any two marks from different columns, on each Samaritan letter. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.55</strong> &mdash; <strong>Samaritan letters.</strong> A new <span class="ui">Add Samaritan letters</span> switch in <span class="ui">Settings</span> (and in both wizards) opens a <span class="ui">Samaritan</span> tab: the 22 letters, the three vowels written as spacing letters rather than as marks, and the fifteen punctuation marks, each group on its own. This is the hand of the Samaritan Pentateuch &mdash; the branch of the old Hebrew letters that never gave way to the square script, and is still written today. It sits beside your square Hebrew at its own Unicode code points, so one font can show both. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab right to left, the way the script reads &mdash; print a one-page practice sheet, and see them in <span class="ui">Preview PDF</span>. One <span class="ui">Starting Font</span>, Hebrew Square Samaritan, now brings its Samaritan letters across with it instead of leaving them behind. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.54</strong> &mdash; <strong>Capitals and lowercase are no longer the same height.</strong> The Font Maker only ever had one top line, which suited Hebrew because Hebrew is caseless &mdash; but it meant a capital <span class="ui">O</span> and a lowercase <span class="ui">o</span> were drawn, traced and exported at exactly the same size. Latin and Cyrillic now get the three lines they need &mdash; a <strong>cap height</strong>, an <strong>x-height</strong> and an <strong>ascender</strong> &mdash; beside the descender they already had. The faint reference letter on the canvas is sized once per font instead of being stretched to the top line for every glyph, so it finally shows each letter&rsquo;s true proportion; lamed now rises above alef too. The letters that leave the body band are marked, including the Phoenician and Aramaic ones that hang below the line. Exported fonts now declare their cap height and x-height, which they never did. <strong>Nothing you have already drawn is changed.</strong> <span style="color:var(--muted);">(September 2026)</span></li>
@@ -4886,7 +4887,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_55','v5_54','v5_53','v5_52','v5_51','v5_50','v5_49','v5_48','v5_47','v5_46','v5_45','v5_44','v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_56','v5_55','v5_54','v5_53','v5_52','v5_51','v5_50','v5_49','v5_48','v5_47','v5_46','v5_45','v5_44','v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4899,7 +4900,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_56';
+  const CUR_KEY = 'fontmaker.changelog.v5_57';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -20688,7 +20689,7 @@ async function downloadMyFont(name) {
 }
 function deleteMyFontUI(name) {
   askModal(I18n.t('fontmaker.modals.remove_font_title'),
-    I18n.t('fontmaker.modals.remove_font_body', {name: '<b>' + esc(name) + '</b>'}),
+    I18n.t((window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) ? 'fontmaker.modals.remove_font_body_cloud' : 'fontmaker.modals.remove_font_body', {name: '<b>' + esc(name) + '</b>'}),
     [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' }, { label: I18n.t('fontmaker.modals.remove'), onClick: async () => { try { await deleteUserFont(name); if (window.IvritSaves && window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession()) IvritSaves.fontDeleted(name); } catch (e) { console.error(e); } if (_myFontsOpen) renderMyFontsList(); } }]);
 }
 async function saveCurrentToMyFonts(bytes) {
@@ -22190,6 +22191,26 @@ function fmCloudReset() {   // a project was loaded or created: forget the previ
   fmCloudPipRender();
 }
 function fmCloudArm() { if (!project || !project.cloudId || _cloudPaused) return; clearTimeout(_cloudTimer); _cloudTimer = setTimeout(fmCloudAutosave, CLOUD_AUTOSAVE_MS); }
+// "Continue where you left off" restored a snapshot taken while this cloud project had changes the account had not
+// received (the tab closed or the teacher signed out inside the autosave window, or offline): the save resumes —
+// at once when signed in, else at the next sign-in. fmCloudWrite's revision check still catches a newer account copy.
+function fmCloudResumeAfterRestore(rec) {
+  if (!project || !project.cloudId || !rec || rec.cloudClean !== false) return;
+  _cloudDirty = true; fmCloudArm(); fmCloudPipRender();
+}
+// Signing out in this tab (the account chip, the name step's Sign out instead, deleting the account): the last
+// edits are made safe first. The local snapshot finishes (it is asynchronous: gzip, then IndexedDB), and a cloud
+// project with changes the account has not received is saved to it — not when the account is being deleted
+// (keepLocal), which would put a project back into an account that is going away. Bounded by the account
+// module's per-hook timeout; anything that does not finish stays in the snapshot and resumes later.
+async function fmWaitWhile(test, ms) { const end = Date.now() + ms; while (test() && Date.now() < end) await new Promise(r => setTimeout(r, 50)); }
+async function fmBeforeSignOut(uid, opts) {
+  clearTimeout(_cloudTimer);
+  if (project && _projectDirty) { clearTimeout(_autosaveTimer); await fmWaitWhile(() => _autosaveInFlight, 4000); await autosaveNow(); await fmWaitWhile(() => _autosaveInFlight, 4000); }
+  if ((opts && opts.keepLocal) || !project || !project.cloudId || _cloudPaused || navigator.onLine === false) return;
+  await fmWaitWhile(() => _cloudBusy, 6000);
+  if (_cloudDirty && !_cloudBusy) await fmCloudWrite('auto');
+}
 async function fmCloudAutosave() {
   if (!project || !project.cloudId || _cloudPaused || _cloudBusy || !_cloudDirty) return;
   if (!fmCloudUser() || navigator.onLine === false) return;   // retried by the next change or the online event
@@ -22551,16 +22572,25 @@ function autosaveDiscard() {   // user explicitly starts over → drop the conti
   autosaveClear();
   try { localStorage.removeItem('hebrewFontMaker_autosave'); } catch (e) {}
 }
+// One snapshot at a time; a request while one is being written is not dropped: the writer runs once more when it
+// finishes, so the newest edit always reaches the snapshot (a close right after an edit would otherwise lose it).
+let _autosaveAgain = false;
 async function autosaveNow() {
-  if (!project || _autosaveInFlight) return;
+  if (!project) return;
+  if (_autosaveInFlight) { _autosaveAgain = true; return; }
   _autosaveInFlight = true;
   try {
-    const json = JSON.stringify(project);
-    if (typeof indexedDB === 'undefined' || typeof CompressionStream === 'undefined') throw new Error('no IDB/gzip');
-    const blob = await gzipBlob(json);                       // full project incl. images, gzipped
-    await autosavePut({ id: 'current', savedAt: new Date().toISOString(), gz: await blob.arrayBuffer(), cloudRev: (project.cloudRev || null), cloudClean: !_cloudDirty });   // cloudRev/cloudClean: lets a cloud Open reuse this snapshot
-  } catch (e) {   // private mode / no IndexedDB → stripped localStorage slot (outlines survive, images don't)
-    try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch (_) {}
+    do {
+      _autosaveAgain = false;
+      try {
+        const json = JSON.stringify(project);
+        if (typeof indexedDB === 'undefined' || typeof CompressionStream === 'undefined') throw new Error('no IDB/gzip');
+        const blob = await gzipBlob(json);                       // full project incl. images, gzipped
+        await autosavePut({ id: 'current', savedAt: new Date().toISOString(), gz: await blob.arrayBuffer(), cloudRev: (project.cloudRev || null), cloudClean: !_cloudDirty });   // cloudRev/cloudClean: lets a cloud Open reuse this snapshot
+      } catch (e) {   // private mode / no IndexedDB → stripped localStorage slot (outlines survive, images don't)
+        try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch (_) {}
+      }
+    } while (_autosaveAgain && project);
   } finally { _autosaveInFlight = false; }
 }
 // Flush a pending debounced autosave while the page is still alive (tab hidden / closing) so the last
@@ -22607,7 +22637,7 @@ function _bootLaunchPrompt(data, rec, stripped) {
     I18n.t('fontmaker.modals.continue_body', {time: `<b>${_autosaveRelTime((rec && rec.savedAt) || data.savedAt)}</b>`})
     + (stripped ? '<br><span class="warn">' + I18n.t('fontmaker.modals.continue_stripped') + '</span>' : '')
     + '<br><span style="color:var(--muted);font-size:0.82rem;">' + I18n.t('fontmaker.modals.continue_untouched') + '</span>',
-    [ { label: I18n.t('fontmaker.modals.continue'), onClick: async () => { if (await applyProjectData(data)) status(I18n.t('fontmaker.status.reopened_recent')); } },
+    [ { label: I18n.t('fontmaker.modals.continue'), onClick: async () => { if (await applyProjectData(data)) { status(I18n.t('fontmaker.status.reopened_recent')); fmCloudResumeAfterRestore(rec); } } },
       { label: I18n.t('fontmaker.modals.start_fresh'), cls: 'ghost', onClick: () => { autosaveDiscard(); wizardOpen('gate'); } } ]);
 }
 /* ── ?start=<id> deep link (partner starting fonts — see CLAUDE.md: Starting Fonts) ──
@@ -22663,7 +22693,7 @@ async function osStartBoot(id, data, rec, stripped) {
     I18n.t('fontmaker.osfont.boot_pick_body', {font: '<b>' + esc(ctx.entry.displayName) + '</b>', time: '<b>' + _autosaveRelTime((rec && rec.savedAt) || data.savedAt) + '</b>'})
     + '<br><span style="color:var(--muted);font-size:0.82rem;">' + I18n.t('fontmaker.osfont.boot_pick_note') + '</span>',
     [ { label: I18n.t('fontmaker.osfont.boot_open_font', {font: ctx.entry.displayName}), onClick: () => { autosaveDiscard(); wizardOpen('osfont'); } },
-      { label: I18n.t('fontmaker.modals.continue'), cls: 'ghost', onClick: async () => { _osStartCtx = null; if (await applyProjectData(data)) status(I18n.t('fontmaker.status.reopened_recent')); } } ]);
+      { label: I18n.t('fontmaker.modals.continue'), cls: 'ghost', onClick: async () => { _osStartCtx = null; if (await applyProjectData(data)) { status(I18n.t('fontmaker.status.reopened_recent')); fmCloudResumeAfterRestore(rec); } } } ]);
 }
 /* Draw-mode strokes arrive from disk like everything else — via ivritSafeParse, but shape/size are
    still untrusted. Hard caps + finite-only + clamps; anything malformed degrades to null (no strokes). */
@@ -23840,6 +23870,12 @@ function init() {
   // Cloud projects: retry a pending cloud save when the connection returns; keep the badge in step with sign-in.
   window.addEventListener('online', () => { if (_cloudDirty) fmCloudArm(); });
   if (window.IvritAccount && typeof IvritAccount.onChange === 'function') IvritAccount.onChange(u => { if (!u) clearTimeout(_cloudTimer); else if (_cloudDirty) fmCloudArm(); fmCloudPipRender(); });
+  if (window.IvritAccount && typeof IvritAccount.onSignOut === 'function') IvritAccount.onSignOut(fmBeforeSignOut);
+  // A suite-wide preference from the account landed: follow the theme now (the module switches the language itself).
+  window.addEventListener('ivritsuite:prefs', () => {
+    const want = localStorage.getItem('hebrewBlender_darkMode');
+    if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark();
+  });
   // Suite-wide preferences and My Fonts live in the account too: attaching Suite hydrates them on a signed-in load (no status host here).
   if (window.IvritSaves && typeof IvritSaves.attach === 'function') { try { IvritSaves.attach({ tool: 'Suite' }); } catch (e) { console.warn(e); } }
   // Defer the restore prompt until translations have loaded — window.I18n exists by DOMContentLoaded,
