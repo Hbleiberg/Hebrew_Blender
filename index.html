@@ -1420,8 +1420,10 @@ function copyIEText() {
   const ta = document.getElementById('ieTextarea');
   if (!ta.value) { alert(I18n.t('home.alltools.copy_err_empty')); return; }
   const btn = document.getElementById('ieCopyBtn');
-  navigator.clipboard.writeText(ta.value).catch(() => { ta.select(); document.execCommand('copy'); });
-  btn.textContent = I18n.t('home.alltools.copy_done'); setTimeout(() => btn.textContent = I18n.t('home.alltools.copy_reset'), 1800);
+  const done = () => { btn.textContent = I18n.t('home.alltools.copy_done'); setTimeout(() => btn.textContent = I18n.t('home.alltools.copy_reset'), 1800); };
+  // Claimed only once a route copied (the dictionary's dictCopyText): a refused copy leaves the text selected to copy by hand.
+  const viaSelect = () => { ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} if (ok) done(); };
+  if (navigator.clipboard) navigator.clipboard.writeText(ta.value).then(done, viaSelect); else viaSelect();
 }
 
 // The first erase gate is a dialog rather than a confirm() because the warning ADVISES a backup
