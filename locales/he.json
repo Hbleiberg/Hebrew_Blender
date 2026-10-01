@@ -4348,6 +4348,8 @@
   "shared.cloud.status_saving": "שומר…",
   "shared.cloud.tool_suite": "IvritSuite",
   "shared.cloud.unavailable": "שמירות בענן אינן זמינות כרגע. השמירות המקומיות ממשיכות לעבוד.",
+  "shared.cloud.upgrade_added.one": "פריט אחד מהמכשיר הזה נוסף לחשבון שלכם.",
+  "shared.cloud.upgrade_added.other": "{n} פריטים מהמכשיר הזה נוספו לחשבון שלכם.",
   "shared.corpus.retry_button": "נסו שוב",
   "shared.darkmode.label_dark": "כהה",
   "shared.darkmode.label_light": "בהיר",

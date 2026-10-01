@@ -4348,6 +4348,8 @@
   "shared.cloud.status_saving": "Saving…",
   "shared.cloud.tool_suite": "IvritSuite",
   "shared.cloud.unavailable": "Cloud saves are unavailable right now. Your local saves still work.",
+  "shared.cloud.upgrade_added.one": "1 item from this device was added to your account.",
+  "shared.cloud.upgrade_added.other": "{n} items from this device were added to your account.",
   "shared.corpus.retry_button": "Try again",
   "shared.darkmode.label_dark": "Dark",
   "shared.darkmode.label_light": "Light",

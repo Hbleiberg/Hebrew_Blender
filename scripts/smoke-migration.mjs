@@ -49,8 +49,12 @@
  *  10. The v1-memory upgrade: a device carrying the old module's ivritSuite_syncMeta remembers a row it deleted
  *      locally since, a row the account has since lost, and a settings blob edited after the remembered hash —
  *      the first hydration deletes nothing on either side (the first is downloaded again, the second goes up
- *      through the card), the edited blob goes up as a PATCH rather than being reverted, and the v1 hint is
- *      consumed for every row now remembered under v2.
+ *      by itself, with no card: the previous site knew this account here), the edited blob goes up as a PATCH
+ *      rather than being reverted, and the v1 hint is consumed for every row now remembered under v2.
+ *  11. Signed out when the update arrives, then signed in again on a device the previous site knew: no card, the
+ *      unsynced presets and practice go up by themselves and the status line says so; a copy the old "Delete from
+ *      cloud" kept stays here, held back; after a button sign-out, work made signed out gets the usual card (the
+ *      automatic add runs once); control: a device the previous site never knew for this account still asks.
  *
  * Every scenario ends with 0 pageerror. Run from the repo root:
  *   node scripts/smoke-migration.mjs --sdk path/to/supabase.js [--port 8084]
@@ -768,8 +772,8 @@ try {
     const legacy = ((m2.legacy || {})[UID]) || {};
     const v2 = ((m2.users || {})[UID]) || {};
     const has = (o, ...p) => p.reduce((x, k) => (x && typeof x === 'object' && Object.prototype.hasOwnProperty.call(x, k)) ? x[k] : undefined, o) !== undefined;
-    check('10: the first hydrate deleted nothing on either side: the row deleted here under the old model came down again, the row the account lost went up through the card (never removed here)',
-      !writes.some(w => w.startsWith('DELETE')) && same(local.presets, ['Old preset', 'Review', 'Week 1']) && writes.includes('POST Worksheet/preset/Old preset') && !!card && card.lines.some(l => /1$/.test(l.trim())) && !!cloud.find('preset', 'Old preset', 'Worksheet') && !!cloud.find('preset', 'Review', 'Worksheet'),
+    check('10: the first hydrate deleted nothing on either side: the row deleted here under the old model came down again, the row the account lost went up by itself — no card, the previous site knew this account here (never removed here)',
+      !writes.some(w => w.startsWith('DELETE')) && same(local.presets, ['Old preset', 'Review', 'Week 1']) && writes.includes('POST Worksheet/preset/Old preset') && !card && (await page.evaluate(() => window.__cards)) === 0 && !!cloud.find('preset', 'Old preset', 'Worksheet') && !!cloud.find('preset', 'Review', 'Worksheet'),
       JSON.stringify({ writes, local, card }));
     const tropeNow = cloud.find('settings', 'default', 'TropeTutor');
     check('10: the settings blob edited here after the remembered hash went up as a PATCH (the v1 hint said "newer here"), not reverted', writes.includes('PATCH TropeTutor/settings/default') && tropeNow.data.tradition === edited.tradition && local.tradition === edited.tradition, JSON.stringify({ cloud: tropeNow.data.tradition, local: local.tradition, wanted: edited.tradition, writes }));
@@ -777,6 +781,52 @@ try {
     check('10: 0 pageerrors on the upgrading device', errD.length === 0, errD.join(' | '));
     await page.close();
     await ctxD.close();
+  }
+  // ---- 11. an account the previous site knew on this device: its unsynced work goes up once, by itself ----------
+  {
+    const c11 = new FakeCloud([]);
+    const at = '2026-09-10T08:00:00.000Z';
+    const keptHere = { selectedLetters: ['ק'], selectedVowels: ['kamatz'], pageSize: 'letter' };
+    const v1 = { v: 1, welcomed: { [UID]: at }, users: { [UID]: { Worksheet: { preset: { 'Kept here': { deletedCloud: true, h: hashOf(keptHere), at } } } } } };
+    const presets = { 'Lesson A': { selectedLetters: ['א'], selectedVowels: ['patach'], pageSize: 'letter' }, 'Lesson B': { selectedLetters: ['ב'], selectedVowels: ['segol'], pageSize: 'letter' }, 'Kept here': keptHere };
+    const progress = { v: 1, tropes: { etnachta: { r: 4, w: 1 } }, families: {}, pbStreak: 2 };
+    // signed out when the update arrives (the session ended); the teacher signs in again afterwards
+    const ctxE = await openContext(browser, c11, { ivritSuite_syncMeta: J(v1), hebrewBlender_presets: J(presets), hebrewTropeTutor_progress: J(progress) }, { name: 'E' });
+    const pre = await openPage(ctxE, 'index.html', { anonymous: true });
+    await signInHere(pre.page);
+    await pre.page.close();
+    const from = c11.log.length;
+    const { page, errors } = await openPage(ctxE, 'index.html', {});
+    const writes = c11.writesSince(from).map(FakeCloud.label);
+    const cards = await page.evaluate(() => window.__cards);
+    const st = await statusOf(page, '#cloudStatus');
+    const m2 = await meta2(page);
+    const local = await page.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}')).sort());
+    check('11: signing in again after the update on a device the previous site knew: no card, the unsynced presets and practice went up by themselves, and the status line says so',
+      cards === 0 && writes.includes('POST Worksheet/preset/Lesson A') && writes.includes('POST Worksheet/preset/Lesson B') && !!c11.find('progress', 'default', 'TropeTutor') && !writes.some(w => w.startsWith('DELETE')) && !!st && /were added to your account/.test(st.text) && !!(m2.upgraded || {})[UID],
+      JSON.stringify({ cards, writes, st, upgraded: (m2.upgraded || {})[UID] }));
+    check("11: the copy the previous site's \"Delete from cloud\" kept on this device stays here and is not sent up", local.includes('Kept here') && !c11.find('preset', 'Kept here', 'Worksheet') && typeof (((m2.noUpload || {})[UID]) || {})['Worksheet/preset/Kept here'] === 'string', JSON.stringify({ local, noUpload: (m2.noUpload || {})[UID] }));
+    // later: signed out with the button, a preset made while signed out, signed in again — the card asks as usual
+    await page.evaluate(() => IvritAccount.signOut());
+    await page.close();
+    const p2 = await openPage(ctxE, 'index.html', { anonymous: true });
+    await p2.page.evaluate(() => { const p = JSON.parse(localStorage.getItem('hebrewBlender_presets') || '{}'); p['Made signed out'] = { selectedLetters: ['ג'], selectedVowels: ['tzere'], pageSize: 'letter' }; localStorage.setItem('hebrewBlender_presets', JSON.stringify(p)); });
+    await signInHere(p2.page);
+    await p2.page.close();
+    const from2 = c11.log.length;
+    const again = await openPage(ctxE, 'index.html', { card: 'add' });
+    const writes2 = c11.writesSince(from2).map(FakeCloud.label);
+    check('11: once it has run, a later sign-in with work made while signed out gets the usual card (it ran only once; it also lists the kept-here copy, now the teacher’s choice), and Add sends that work up', !!again.card && again.card.lines.some(l => /Presets: 2$/.test(l.trim())) && writes2.includes('POST Worksheet/preset/Made signed out'), JSON.stringify({ card: again.card, writes2 }));
+    check('11: 0 pageerrors', errors.length === 0 && pre.errors.length === 0 && p2.errors.length === 0 && again.errors.length === 0, errors.concat(pre.errors, p2.errors, again.errors).join(' | '));
+    await again.page.close();
+    await ctxE.close();
+    // control: a device where the previous site never knew this account still asks
+    const c11b = new FakeCloud([]);
+    const ctxF = await openContext(browser, c11b, withSession({ ivritSuite_syncMeta: J({ v: 1, welcomed: { 'someone-else': at }, users: {} }), hebrewBlender_presets: J({ 'Lesson A': presets['Lesson A'] }) }), { name: 'F' });
+    const ctl = await openPage(ctxF, 'index.html', { card: 'add' });
+    check('11: control — on a device the previous site never knew this account, the card still asks first', !!ctl.card && ctl.errors.length === 0, JSON.stringify({ card: ctl.card, errors: ctl.errors }));
+    await ctl.page.close();
+    await ctxF.close();
   }
   const profileCalls = cloud.log.filter(e => e.table === 'profiles').length, unexpected = cloud.log.filter(e => e.unexpected).map(e => e.m + ' ' + e.path);
   console.log('  fake cloud: ' + cloud.log.length + ' requests, ' + profileCalls + ' to the missing profiles table' + (unexpected.length ? ', unexpected: ' + unexpected.join(', ') : ''));

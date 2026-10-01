@@ -978,6 +978,15 @@
     var st = stampsAll(), m = metaAll();
     return pick(isPlainObject(st.users) ? st.users[uid] : null) || pick(isPlainObject(m.legacy) ? m.legacy[uid] : null);
   }
+  // The previous site (the old module) knew this account on this device: its memory key still names the uid — `welcomed`
+  // (its welcome screen was shown) or `users` (a sync or a listing ran). Read from the old key itself: the v2 move drops
+  // `welcomed`, and the `legacy` hint is consumed row by row.
+  function oldModuleKnew(uid) {
+    var st = stampsAll();
+    return !!uid && st.v === 1 && ((isPlainObject(st.welcomed) && !!st.welcomed[uid]) || (isPlainObject(st.users) && isPlainObject(st.users[uid])));
+  }
+  function upgradedAt(uid) { var m = metaAll(); return (isPlainObject(m.upgraded) && m.upgraded[uid]) || null; }
+  function markUpgraded(uid) { var m = metaAll(); if (!isPlainObject(m.upgraded)) m.upgraded = {}; m.upgraded[uid] = now(); metaSave(m); }
   function binFor(owner, tool) {
     var u = binAll().users[owner];
     if (!isPlainObject(u)) return [];
@@ -1962,6 +1971,7 @@
     if (isPlainObject(m.noUpload)) delete m.noUpload[uid];
     if (isPlainObject(m.stripped)) delete m.stripped[uid];
     if (isPlainObject(m.dismissed)) delete m.dismissed[uid];
+    if (isPlainObject(m.upgraded)) delete m.upgraded[uid];
     metaSave(m);
     delete firstHydrationDone[uid];
     if (lsGet(BASE_KEY) !== null) { var b = baseAll(); if (hasOwn(b.users, uid)) { delete b.users[uid]; baseSave(b); } }
@@ -2218,8 +2228,22 @@
         listTools.forEach(function (tool) {
           byTool[tool].rows.forEach(function (r) { if (hydrateActionFor(r, true) === 'extra') extras.push({ tool: tool, row: r }); });
         });
-        if (!extras.length) { markHydrated(uid); firstHydrationDone[uid] = true; return null; }
-        return openCard(uid, extras).then(function (choice) {
+        // An account the previous site knew on this device (it was signed in here before this version): what this device
+        // holds is that teacher's own work from before, so it goes into the account at once — no card — and only once
+        // per account per device (`upgraded`); later sign-ins ask as usual. A copy the old site's "Delete from cloud"
+        // kept here stays here, held back, as that site promised.
+        var auto = oldModuleKnew(uid) && !upgradedAt(uid);
+        if (!extras.length) { if (auto) markUpgraded(uid); markHydrated(uid); firstHydrationDone[uid] = true; return null; }
+        var chosen = auto ? Promise.resolve('auto') : openCard(uid, extras);
+        return chosen.then(function (choice) {
+          if (choice === 'auto') {
+            var added = 0;
+            return seqMap(extras, function (x) {
+              var v1 = v1Tombstone(uid, x.tool, x.row.kind, x.row.name);
+              if (v1 && x.row.local && v1.h === x.row.local.hash) { holdBack(uid, x.tool, x.row.kind, x.row.name, x.row.local.hash); return Promise.resolve(); }
+              return actUpload(x.tool, x.row).then(function () { res.done++; added++; }, function (err) { if (!isRowError(err)) throw err; noteSkip(res, x.row, err); });
+            }).then(function () { res.upgradeAdded = added; markUpgraded(uid); });   // marked once it ran through: an interrupted run is repeated at the next load
+          }
           if (choice === 'add') {
             return seqMap(extras, function (x) {
               return actUpload(x.tool, x.row).then(function () { res.done++; }, function (err) { if (!isRowError(err)) throw err; noteSkip(res, x.row, err); });
@@ -2277,6 +2301,12 @@
         }
       } else {
         var tail = r.fontFull.length ? t('shared.cloud.status_font_full', '"{name}" was not added here: My Fonts is full.', { name: r.fontFull.join(', ') }) : '';
+        if (r.upgradeAdded) {   // the one automatic add for an account the previous site knew: said once, on the line and as a toast
+          var up = t(r.upgradeAdded === 1 ? 'shared.cloud.upgrade_added.one' : 'shared.cloud.upgrade_added.other',
+            r.upgradeAdded === 1 ? '1 item from this device was added to your account.' : '{n} items from this device were added to your account.', { n: r.upgradeAdded });
+          tail = tail ? up + ' ' + tail : up;
+          if (typeof window.showAppToast === 'function') { try { window.showAppToast(up, 6000); } catch (e) {} }
+        }
         var skipped = r.skips.length ? r.skips.map(function (s) { return t('shared.cloud.status_error_row', 'Couldn\'t save "{name}": {why}', { name: s.name, why: s.why }); }).join(' ') : '';
         tools.forEach(function (tool) { if (skipped) setStatus(tool, 'error_row', skipped); else setStatus(tool, 'saved', { when: newestUpdatedAt(tool), note: tail }); });
       }
