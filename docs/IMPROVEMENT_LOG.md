@@ -8,10 +8,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
-- [ ] P4 (**NEW S442 Pass F**) | Hebrew_Font_Maker.html | **Two inputs mark focus without a ring**: `.anc-xy input:focus` (a `--gold` border, `outline:none`) and `.me-piece-row .me-coord:focus-within` (a 25% gold glow), both under 3:1 on light; give them the `--focus-ring` outline. | found S442
-
-- [ ] P4 (**NEW S442 Pass F**) | torah_trainer.html | **`.tt-fav-dot`'s focus ring is a `box-shadow` of `--gold`** (2.6:1 on cream), outside the `--focus-ring` token the page's outlines now use. | found S442
-
 - [ ] P3 (**S440 H, gate 2**) | hebrew_dictionary.html | **A theme saved over 200 words drops its A→Z tail** (Animals loses fox, octopus, chicken…). | found S440
 
 - [ ] P3 (**S440 H, gate 2**) | hebrew_dictionary.html | **"Words from this root" calls the word's letters its root** on 9,321 words (findings S440). | found S440
@@ -33,8 +29,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S432 L — gate 2**) | index.html | **The hub's og:/twitter:description name every tool but the Font Maker.** | found S432
 
 - [ ] P4 (**NEW S433 K — gate 2, the maintainer's call**) | torah_trainer.html | **The 17 holiday readings keep English names in the Hebrew UI** ("Passover — Day 1 — Exodus 12:21-51" on the drawer's buttons, the picker's optgroup and the reading header) while the new date lookup names the same holidays in Hebrew (`torah.lookup.holiday_*`); `buildHolidayPicker` calls reading names content. | found …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [ ] P4 (**NEW S433 K — for E**) | dashboard, flash, generator, torah, trope | **The `#cloudSavesPanel` comment still names a panel**; it hosts the status line now. | found S433
 
 - [ ] P4 (**S430 A — the maintainer's call**) | torah_trainer.html | **The reading header keeps "Aliyah {n}" English in the Hebrew UI** beside a translated cycle label (also the copy heading, the handout). | found S430
 
@@ -244,6 +238,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-01 | (S443 close-out) | branch/deploy note | **S443 = pass B (the console, all 17 pages) + 4 fixes, continuing draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, v910 on the branch, FM 5.58, SDK 2.116.0, 0001–0003 live, `db/functions` and the keep-alive file untouched since `d514f84`, keep-alive scheduled run green 10-01). sw v910→v911. FM: no bump (a CSS ring, no feature). …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-01 | `2d89c022` | dashboard, flash, generator, torah, trope | (S443; S433 K's) **The `#cloudSavesPanel` comment names the status line it hosts.** Comment only. | verified: each page 0 errors, the same status line as HEAD (1 child, same text); check-inline-js clean.
+
+- [x] 2026-10-01 | `1c320ae8` | torah_trainer.html | (S443; S442's; ring-below-3-on-light) **A favourite's colour dot shows the `--focus-ring` outline on keyboard focus**; hover keeps its gold halo. | verified: a real favourite, Tab from Add, HEAD control: light 2.75→4.35:1, dark 8.73 unchanged, not clipped; EN 1280 / HE 800 × light/dark, 0 errors.
+
+- [x] 2026-10-01 | `e05b25d1` | Hebrew_Font_Maker.html | (S443; S442's; ring-below-3-on-light) **`.anc-xy input:focus` and `.me-coord:focus-within` draw the `--focus-ring` outline** (were a border only / a 25% glow). | verified: real clicks under the page's CSS, HEAD control: light none / 1.17–1.26 → 3.09–4.35:1, dark 1.49–1.51 → 6.17–7.16:1; 4 cells, 0 errors.
+
+- [x] 2026-10-01 | `2c66dfb6` | js/ivrit-saves.js | (S443 B; NEW) **`attach()` no longer warns that the virtual Suite prefs row is upload-only** (every Font Maker and account-page load logged it; the downloadable check and the reference already exempt `virtual`). | verified: HEAD 1 warning per load on both pages, fix 0; a TorahTrainer attach without a hook still warns on both trees; the four …[full text: IMPROVEMENT_ARCHIVE.md]
+
 - [x] 2026-10-01 | (S442 close-out) | branch/deploy note | **S442 = pass F (the keyboard focus ring, all 14 pages + the 3 shared modules) + 4 fixes, continuing draft PR #303 (unmerged).** DRIFT: none (main `43570d4`, v909, FM 5.58, SDK 2.116.0, 0003 live, keep-alive green 10-01). sw v909→v910. FM: no bump (a CSS token, no feature). Gates: none asked. Scripts: check-i18n, check-inline-js clean; …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [x] 2026-10-01 | `57e774db` | hebrew_blend_generator.html, flash_cards.html, storage-and-backup.md | (S442; S434's split) **The uncalled `makeSortable()` removed from both pages; the reference stops teaching it.** | verified: grep finds only the definitions; both pages 0 errors EN light 1280 / HE dark 800; the generator's presets still render with folder-tree handles; check-inline-js clean
@@ -284,19 +288,11 @@ _(none)_
 
 - [x] 2026-10-01 | `13095c8e` | classroom_dashboard.html | (S439 I; NEW) **The projected clock reads "6:04 PM", not "PM 6:04", in the Hebrew UI** (`dir="ltr"` on `#currentTime`). | verified: glyph-rect probe, HEAD reversed 8/8 HE cells → 0, EN 0; centred 32/32
 
-- [x] 2026-10-01 | (S438 close-out) | branch/deploy note | **S438 = pass D (`classroom_dashboard.html`, first D since S325; clean) + 4 backlog fixes, continuing draft PR #303 (`claude/nice-mayer-bzr3d9`, base `43570d4`, unmerged).** DRIFT: none. sw v905→v906 (flash, torah, dashboard, dictionary). FM: no bump (untouched). Gates: none asked. Handoff correction: S437 named F stalest; D (S424) was.
-
-- [x] 2026-10-01 | `ec5594e7` | hebrew_dictionary.html | (S438; the 09-28 P4) **Switching to Emojis or Shoresh leaves a loaded Word List behind.** | verified: real clicks + HE switch, HEAD "2 מילים" 4/4 → the mode's line 4/4
-
-- [x] 2026-10-01 | `d09b6c7e` | classroom_dashboard.html | (S438; S409's P4, the dashboard half) **The dead `.preset-item.drag-over` rule goes.** | verified: writer census 0; Presets tab 4 cells, 0 pageerrors
-
-- [x] 2026-10-01 | `947b452d` | torah_trainer.html | (S438; S422's (1); physical-property-that-never-mirrors) **The jump bar's readout and the audio credit sit at the row's end in Hebrew.** | verified: geometry, HE gap 557–1037 / 169px → 0 in 5/5
-
-- [x] 2026-10-01 | `6aab861f` | flash_cards.html | (S438; S423's P4) **A plain print leaves out the drill's key hints and the results buttons.** | verified: pdftotext 4/4 → 0/4; results 2 pages → 1
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-01 | **S443** | iters: 1 pass (**B**) + 4 fixes = **5** | tools: shared ×1 (ivrit-saves), FM, torah, dashboard, flash, generator, trope (comment) | patterns fixed: ring-below-3-on-light ×2 | pass run: B | SW: v910→v911
 
 - 2026-10-01 | **S442** | iters: 1 pass (**F**) + 4 fixes = **5** | tools: all 14 pages (one CSS token each), shared ×3 (i18n, ivrit-account, ivrit-saves), torah, generator, flash | patterns fixed: ring-below-3-on-light ×2 (NEW), tip-name-joins-its-field's-name ×1 | pass run: F | SW: v909→v910
 
@@ -336,15 +332,13 @@ _(none)_
 
 - 2026-09-28 | **S424** | iters: 1 pass (**D**) + 4 fixes = **5** (full budget) | tools: torah ×2, flash ×2 | patterns fixed: — | pass run: D | SW: v866→v867
 
-- 2026-09-27 | **S423** | iters: 1 pass (**G**) + 4 fixes = **5** (full budget) | tools: flash ×2, torah ×2 | patterns fixed: visible-label-missing-from-the-accessible-name ×1 | pass run: G | SW: v865→v866
-
 ### Tool coverage (last-touched date per tool)
 
-- **S442 (2026-10-01):** every root page (the `--focus-ring` token), js/i18n.js, js/ivrit-account.js, js/ivrit-saves.js, torah, generator, flash, shared-components.md, storage-and-backup.md (**S442**; **C-next** C S312 trope; **H-next** H S305 resources); trope, dictionary, dashboard, resources (S441); index (S437); account (S433); terms (S432); licences, README, ops.md, font-maker.md (S431)
+- **S443 (2026-10-01):** js/ivrit-saves.js, Hebrew_Font_Maker.html, torah, dashboard, flash, generator, trope (**S443**; **C-next** C S312 trope; **H-next** H S305 resources); **S442:** every root page (the `--focus-ring` token), js/i18n.js, js/ivrit-account.js, js/ivrit-saves.js, torah, generator, flash, shared-components.md, storage-and-backup.md (**S442**; **C-next** C S312 trope; **H-next** H S305 resources); trope, dictionary, dashboard, resources (S441); index (S437); account (S433); terms (S432); licences, README, ops.md, font-maker.md …[full text: IMPROVEMENT_ARCHIVE.md]
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
-- **`ring-below-3-on-light`** (NEW S442; FIXED on 14 pages `91fede71` + 3 modules `a46342c1`): ACTIVE, streak 0. A focus outline drawn in `--gold` (2.1–2.75:1 on the light surfaces). Detection: `grep -n ':focus' *.html | grep 'solid var(--gold)'` = 0 outside border/box-shadow …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`ring-below-3-on-light`** (NEW S442; FIXED on 14 pages `91fede71` + 3 modules `a46342c1`; S443 the last two non-outline rings, FM `e05b25d1` + torah's fav dot `1c320ae8`): ACTIVE, streak 0. A focus outline drawn in `--gold` (2.1–2.75:1 on the light surfaces). Detection: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`tip-escape-drops-focus`** (NEW S441; all 5 carriers FIXED `97c54dfb`): ACTIVE, streak 0. A keyboard tooltip whose Escape calls `blur()` drops the focus to the body, and an unstopped Escape closes the drawer under it. Detection (scratchpad `c441/v2.mjs`): Tab onto a visible …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -636,7 +630,7 @@ _(none)_
 
 - I first-load & empty-state: 2026-10-01 (**S439 — 33rd I, first since S425 (136 commits). Gates clean on 34 virgin cells behind 7 plants; census = S425's; 0 SDK requests; the torah date lookup right on 10 dates. FOUND + …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- B console/error audit: 2026-09-29 (**S429 — 33rd B. 136 loads, 68 interactions, 12 delta scenarios, all controlled: 0 pageerrors. FOUND the trope tabs' overflow (P3, `3b0bebd`) + 2 forgetful panels (P4).**)
+- B console/error audit: 2026-10-01 (**S443 — 34th B (S429 → 116 commits: the cloud-first saves rewrite, torah's drawer/Favorites/cycles/lookup, the dashboard's 7-tab drawer + Intermission, FM 5.58). 4 controls (planted throw/error/warn/404/alert fire, clean twins 0); 68 load cells + 34 interaction cells + 3 delta arms × 2: 0 pageerrors, 0 failed/4xx, 0 dialogs, 0 overflow. FOUND + FIXED the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - J metrics-informed: never run — SKIP in rotation until the impact-metrics dashboard/Worker is live (not live)
 
@@ -648,4 +642,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-10-01 (**S442 — the keyboard focus ring on all 14 pages + the 3 shared modules' injected rings: a real-Tab walk (EN light/dark 1280, HE light/dark 800 on 6), ring colour and contrast against its surface, transitions disabled; HEAD as the control (58 light stops under 3:1, 0 dark). FIXED `91fede71` (the `--focus-ring` token), `a46342c1` (modules); logged 2 P4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-**Next session (S443):** **BRANCH/PR: S435–S442 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v910**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: B (S429), then A (S430), E (S431); O stays blocked. ⚑ Strongest untaken: the dictionary's theme cap (P3, gate 2), the bingo preview at 800 (P3, layout), the `.mobile-fab` readers (P4). ⚑ A new ring rule uses `var(--focus-ring)`, never `var(--gold)` (shared-components.md §7).
+**Next session (S444):** **BRANCH/PR: S435–S443 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v911**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: A (S430), then E (S431), L (S432); O stays blocked. ⚑ Strongest untaken: the dictionary's theme cap (P3, gate 2), the bingo preview at 800 (P3, layout), the `.mobile-fab` readers (P4). ⚑ A new ring rule uses `var(--focus-ring)`, never `var(--gold)` (shared-components.md §7).
