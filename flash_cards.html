@@ -5074,38 +5074,6 @@ function mountFolderTree(cfg){
 }
 /* ═══ end folder-tree component ═══ */
 
-function makeSortable(list, onChange) {
-  let dragEl = null;
-  list.addEventListener('dragstart', e => {
-    const li = e.target.closest('.preset-item');
-    if (!li) return;
-    dragEl = li;
-    li.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
-  });
-  list.addEventListener('dragover', e => {
-    e.preventDefault();
-    const after = getDragAfter(list, e.clientY);
-    if (!dragEl) return;
-    if (after == null) list.appendChild(dragEl);
-    else list.insertBefore(dragEl, after);
-  });
-  list.addEventListener('dragend', () => {
-    if (!dragEl) return;
-    dragEl.classList.remove('dragging');
-    dragEl = null;
-    if (onChange) onChange();
-  });
-  function getDragAfter(container, y) {
-    const els = [...container.querySelectorAll('.preset-item:not(.dragging)')];
-    return els.reduce((closest, child) => {
-      const box = child.getBoundingClientRect();
-      const offset = y - box.top - box.height / 2;
-      if (offset < 0 && offset > closest.offset) return { offset, el: child };
-      return closest;
-    }, { offset: -Infinity }).el;
-  }
-}
 
 /* Backup */
 function exportPresets() {

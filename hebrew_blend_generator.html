@@ -5754,36 +5754,6 @@ function mountFolderTree(cfg){
 }
 /* ═══ end folder-tree component ═══ */
 
-function makeSortable(listEl, getKeys, reorderFn) {
-  let dragSrc = null;
-  listEl.querySelectorAll('.preset-item').forEach(item => {
-    item.addEventListener('dragstart', e => {
-      dragSrc = item;
-      item.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    item.addEventListener('dragend', () => {
-      item.classList.remove('dragging');
-      listEl.querySelectorAll('.preset-item').forEach(i => i.classList.remove('drag-over'));
-    });
-    item.addEventListener('dragover', e => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      listEl.querySelectorAll('.preset-item').forEach(i => i.classList.remove('drag-over'));
-      if (item !== dragSrc) item.classList.add('drag-over');
-    });
-    item.addEventListener('drop', e => {
-      e.preventDefault();
-      if (!dragSrc || dragSrc === item) return;
-      const keys = getKeys();
-      const fromIdx = [...listEl.querySelectorAll('.preset-item')].indexOf(dragSrc);
-      const toIdx   = [...listEl.querySelectorAll('.preset-item')].indexOf(item);
-      const reordered = [...keys];
-      reordered.splice(toIdx, 0, reordered.splice(fromIdx, 1)[0]);
-      reorderFn(reordered);
-    });
-  });
-}
 
 function renderPresets() {
   mountFolderTree({
