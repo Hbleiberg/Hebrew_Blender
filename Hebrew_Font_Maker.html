@@ -191,7 +191,7 @@ body.dark .hi-sun{display:inline-block;}
 <style>
   :root {
     --navy: #1a2744;
-    --gold: #c9922a;
+    --gold: #c9922a; --focus-ring: #a0701c;
     --gold-text: #7f5a13;   /* readable gold for small text on light surfaces (WCAG ≥4.5:1) */
     --gold-light: #f0d080;
     --cream: #fdf8ef;
@@ -207,7 +207,7 @@ body.dark .hi-sun{display:inline-block;}
   }
   html.dark-early body, body.dark {
     --navy: #1a2744;
-    --gold: #e0a832;
+    --gold: #e0a832; --focus-ring: var(--gold);
     --gold-text: var(--gold);
     --gold-light: #f5d97a;
     --cream: #161c2a;
@@ -238,7 +238,7 @@ body.dark .hi-sun{display:inline-block;}
     border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
     text-decoration:none;
   }
-  .skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
+  .skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
   header {
     display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap;
     background: var(--navy); color: #fff;
@@ -367,7 +367,7 @@ body.dark .hi-sun{display:inline-block;}
   .mode-btn { flex: 1; padding: 6px 4px; border: none; background: var(--white); color: var(--text); font-family: inherit; font-size: 0.76rem; cursor: pointer; font-weight: 600; }
   .mode-btn.active { background: var(--navy); color: #fff; }
   body.dark .mode-btn.active { background: #2a4070; }
-  .mode-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }   /* parity with .npnl-mode-btn */
+  .mode-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }   /* parity with .npnl-mode-btn */
   .mode-btn:hover:not(.active) { background: var(--warm-gray); }   /* hover feedback on the unselected segments (S313 pass F); the generator's chip idiom */
   body.dark .mode-btn:hover:not(.active) { background: rgba(255,255,255,0.06); }   /* dark --warm-gray equals the dark --white surface, so it needs its own value */
   /* vertical stack variant — used when the option labels are long (e.g. the sidebar "Add Letters" panel) */
@@ -551,7 +551,7 @@ body.dark .hi-sun{display:inline-block;}
                font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 8.5px; line-height: 1; letter-spacing: -0.03em; cursor: pointer; pointer-events: auto; }
   .rl-corner.static { cursor: default; pointer-events: none; }
   .rl-corner:hover { background: var(--warm-gray); color: var(--text); }
-  .rl-corner:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+  .rl-corner:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
   /* cursor position marker — moved with transform on pointermove (cheap), never re-rendered with the ticks */
   .rl-cursor { position: absolute; background: var(--gold); pointer-events: none; opacity: 0; }
   .rl-h .rl-cursor { left: 0; top: 0; bottom: 0; width: 1px; }   /* explicit left/top: with them auto, static position (below the full-height svg) wins and the transform lands past the overflow clip */
@@ -680,7 +680,7 @@ body.dark .hi-sun{display:inline-block;}
   .npnl-mode-btn + .npnl-mode-btn { border-inline-start: 1px solid var(--border); }
   .npnl-mode-btn.active { background: var(--navy); color: #fff; }
   .npnl-mode-btn.active:hover { background: var(--navy); }
-  .npnl-mode-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+  .npnl-mode-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
   /* contextual zone — min-height reserves the tallest state so the panel never jumps */
   .npnl-ctx { min-height: 104px; display: flex; flex-direction: column; gap: 6px; align-items: stretch; }   /* = measured height of the tallest (selection) state, so switching states never shifts the panel (readout line moved to #nodeStatus) */
   /* selection state: 2-column grid — pairs share the 1fr column, Retract/Delete share the auto column */
@@ -716,7 +716,7 @@ body.dark .hi-sun{display:inline-block;}
   .npnl-disc summary::-webkit-details-marker { display: none; }
   .npnl-disc summary::before { content: '▸'; color: var(--muted); font-size: 0.7rem; transition: transform 0.15s; }
   .npnl-disc[open] > summary::before { transform: rotate(90deg); }
-  .npnl-disc summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .npnl-disc summary:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
   /* tip line + help */
   .npnl-tip { display: flex; align-items: flex-start; gap: 8px; margin-top: 10px; }
   .npnl-tip .hint { flex: 1; }
@@ -915,7 +915,7 @@ body.dark .hi-sun{display:inline-block;}
   .wiz-seg input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
   .wiz-seg label { padding: 6px 16px; font-size: 0.8rem; cursor: pointer; background: var(--white); }
   .wiz-seg input:checked + label { background: var(--navy); color: #fff; }
-  .wiz-seg input:focus-visible + label { outline: 2px solid var(--gold); outline-offset: -2px; }
+  .wiz-seg input:focus-visible + label { outline: 2px solid var(--focus-ring); outline-offset: -2px; }
   .wiz-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .wiz-tile { position: relative; display: flex; flex-direction: column; }
   .wiz-tile input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
@@ -923,11 +923,11 @@ body.dark .hi-sun{display:inline-block;}
   .wiz-tile label { cursor: pointer; transition: border-color 0.15s, background 0.15s; }
   .wiz-tile label:hover { border-color: var(--gold); }
   .wiz-tile input:checked + label { border-color: var(--gold); background: rgba(201,146,42,0.09); }
-  .wiz-tile input:focus-visible + label { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .wiz-tile input:focus-visible + label { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
   .wiz-tile-desc { font-size: 0.71rem; color: var(--muted); line-height: 1.4; }
   .wiz-tile-link { background: none; border: none; padding: 0; margin: 6px 12px 0; align-self: start; font: inherit; font-size: 0.71rem; color: var(--gold); font-weight: 700; cursor: pointer; text-decoration: underline; }
   .wiz-tile-link:hover { filter: brightness(1.1); }
-  .wiz-tile-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
+  .wiz-tile-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 3px; }
   .wiz-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
   .wiz-foot .mbtns { margin-top: 0; margin-inline-start: auto; }
   .wiz-note { font-size: 0.74rem; color: var(--muted); }
@@ -980,7 +980,7 @@ body.dark .hi-sun{display:inline-block;}
   .os-pick-card { display: flex; flex-direction: column; gap: 4px; border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px; background: var(--white); color: var(--text); text-align: start; font: inherit; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
   .os-pick-card[hidden] { display: none; }
   .os-pick-card:hover { border-color: var(--gold); }
-  .os-pick-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .os-pick-card:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
   .os-pick-card[aria-busy="true"] { opacity: 0.6; cursor: progress; }
   .os-pick-sample { font-family: 'Frank Ruhl Libre', 'IvritSuite Taamim', serif; font-size: 1.7rem; line-height: 1.6; min-block-size: 2.8em; display: flex; align-items: center; justify-content: center; overflow-wrap: anywhere; text-align: center; }
   .os-pick-card.is-loading .os-pick-sample { color: var(--muted); }   /* fallback face until the real one lands */
@@ -1015,20 +1015,20 @@ body.dark .hi-sun{display:inline-block;}
   .next-hint:empty { display: none; }
   .hint-link { background: none; border: none; padding: 0; margin: 0; font: inherit; color: var(--gold-text); font-weight: 700; cursor: pointer; text-decoration: underline; }
   .hint-link:hover { filter: brightness(1.1); }
-  .hint-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
+  .hint-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 3px; }
   #unfinishedBtn { padding-block: 3px; }   /* alone in its row, so a 24px+ target; inline .hint-links stay text-sized */
   /* Shared focus-visible ring for the custom controls (suite standard: 2px gold).
      .mode-btn is deliberately NOT in this list: its segments fill a .mode-toggle that is
      overflow:hidden, so an OUTSET ring is clipped away entirely -- measured at 0 gold pixels in
      both themes at 1280 and 800. It keeps its own rule above, outline-offset:-2px, the same
      inset .npnl-mode-btn uses for the same reason. Adding it back here re-hides the ring. */
-  .ltile:focus-visible, .wtab:focus-visible, .ctab:focus-visible, .tbtn:focus-visible, .ctl-btn:focus-visible, .hbtn:focus-visible, .brush-tile:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .ltile:focus-visible, .wtab:focus-visible, .ctab:focus-visible, .tbtn:focus-visible, .ctl-btn:focus-visible, .hbtn:focus-visible, .brush-tile:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
   /* ── Clickable letter chips in the export-warning modals ── */
   .lchip-wrap { max-height: 46vh; overflow: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5px 8px; margin-top: 12px; }
   .lchip { display: flex; align-items: center; gap: 8px; padding: 5px 9px; border: 1px solid var(--border); border-radius: 6px; background: var(--cream); color: var(--text); cursor: pointer; font: inherit; font-size: 0.82rem; text-align: start; }
   .lchip:hover { border-color: var(--gold); background: var(--warm-gray); }
-  .lchip:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .lchip:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
   .lchip-glyph { font-size: 1.3rem; line-height: 1; min-width: 22px; text-align: center; direction: rtl; }
   .lchip-name { color: var(--muted); }
 
@@ -1282,7 +1282,7 @@ body.dark .hi-sun{display:inline-block;}
   .cloud-pip[data-state="unsaved"] .engine-dot { background: var(--muted); }
   .cloud-pip[data-state="error"] { color: #b3261e; }
   .cloud-pip[data-state="error"] .engine-dot { background: #b3261e; }
-  .cloud-pip:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .cloud-pip:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
   /* Fullscreen (matches torah_trainer.html / classroom_dashboard.html) */
   body.fullscreen header, body.fullscreen footer { display: none; }

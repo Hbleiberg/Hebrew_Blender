@@ -159,7 +159,7 @@
   :root {
     --navy: #1a2744;
     --navy-deep: #0d1220;
-    --gold: #c9922a;
+    --gold: #c9922a; --focus-ring: #a0701c;
     --gold-text: #7f5a13;   /* readable gold for small text on light surfaces (WCAG ≥4.5:1); brand --gold stays for borders/stars */
     --gold-light: #f0d080;
     --cream: #fdf8ef;
@@ -189,7 +189,7 @@
   html.dark-early body,
   body.dark {
     --navy: #1a2744;
-    --gold: #e0a832;
+    --gold: #e0a832; --focus-ring: var(--gold);
     --gold-text: var(--gold);   /* dark gold already passes on dark surfaces */
     --gold-light: #f5d97a;
     --cream: #161c2a;
@@ -227,7 +227,7 @@
     border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
     text-decoration:none;
   }
-  .skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
+  .skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
   header {
     background: var(--navy);
     color: #fff;
@@ -449,7 +449,7 @@
     flex-shrink: 0;
   }
   .pmv-btn:hover:not(:disabled) { background: var(--gold-light); }
-  .pmv-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .pmv-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
   .pmv-btn:disabled { opacity: 0.35; cursor: default; }
   body.dark .pmv-row { background: #161c2a; }
   body.dark .pmv-btn { background: #1e2535; color: #dde4f0; }
@@ -623,7 +623,7 @@
   .tts-tappable .day-main:focus-visible,
   .tts-tappable .day-badge:focus-visible,
   .weather-tts-on .weather-label:focus-visible,
-  .weather-tts-on .weather-descriptor:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+  .weather-tts-on .weather-descriptor:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 4px; }
 
   /* ───── Center: date/time ───── */
   .dash-center {
@@ -697,7 +697,7 @@
      no use on a smartboard. The hint is static text, so the reduced-motion block below (which kills the
      .done flash outright) leaves it as the one remaining visual cue. */
   #timerCol.ringing .timer-display { cursor: pointer; align-self: stretch; text-align: center; }
-  #timerCol.ringing .timer-display:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; border-radius: 6px; }
+  #timerCol.ringing .timer-display:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 4px; border-radius: 6px; }
   .timer-stop-hint { font-size: 0.8rem; color: var(--muted); user-select: none; text-align: center; }
   body.dark .timer-stop-hint { color: #99a2b8; }
   #timerCol.running { animation: timerPulse 2s ease-in-out infinite; }
@@ -956,7 +956,7 @@
 .sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
 .sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
 .sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
-.sbr-split:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:-1px;}
+.sbr-split:focus-visible{outline:2px solid var(--focus-ring,var(--gold,#c9922a));outline-offset:-1px;}
 /* placement variants — the block styles the handle, the page positions it: */
 .sbr-flex{flex:0 0 7px;align-self:stretch;position:relative;margin-inline-start:-3px;}   /* in-flow seam between a sidebar and its main column */
 .sbr-abs{position:absolute;top:0;bottom:0;width:9px;}                                    /* edge handle (drawers, rails); page CSS sets the inset */
@@ -1062,7 +1062,7 @@
   .settings-modal .tt-tab[aria-selected="true"] { background:var(--white); color:var(--text); border-block-end-color:var(--gold); }
   body.dark .settings-modal .tt-tab { color:#99a2b8; }            /* the page's dark radio-label literal, as on the Trainer */
   body.dark .settings-modal .tt-tab[aria-selected="true"] { color:var(--text); }
-  .settings-modal .tt-tab:focus-visible { outline:2px solid var(--gold); outline-offset:-2px; }
+  .settings-modal .tt-tab:focus-visible { outline:2px solid var(--focus-ring); outline-offset:-2px; }
   .tt-tabpanel[hidden] { display:none; }
   /* Seven labels share ~53px each at the default width (measured headless in the fallback font: "Calendar" needs 48px at
      0.7rem, "מזג אוויר" 45px, so the tabs carry no side padding), ~47px on a 360px phone (92vw drawer, a 330px strip) and
@@ -1078,7 +1078,7 @@
   .tt-set-title { font-family:'Libre Baskerville',serif; font-size:0.84rem; font-weight:400; letter-spacing:0.02em; color:var(--navy); padding-block-end:4px; border-block-end:1px solid var(--border); margin:0; margin-block-end:12px; display:flex; align-items:center; gap:6px; }
   body.dark .tt-set-title { color:var(--gold-light); }
   .tt-set-title:focus { outline:none; }            /* openSettingsAtPanel's programmatic target */
-  .tt-set-title:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+  .tt-set-title:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
   .tt-set-title .beta-tag { font-size:0.58rem; padding:0 4px; }
   .tt-set-sub { font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-block:12px 6px; padding-block-start:12px; border-block-start:1px solid var(--border); }
   .tt-set-note { font-size:0.72rem; color:var(--muted); line-height:1.4; }
@@ -1253,7 +1253,7 @@
   input:checked + .slider { background: var(--gold); }
   input:checked + .slider::before { transform: translateX(16px); }
   /* The real checkbox is zero-size/transparent, so ring the visible slider on keyboard focus. */
-  input:focus-visible + .slider { outline: 2px solid var(--gold); outline-offset: 2px; }
+  input:focus-visible + .slider { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
   /* ───── Radio group ───── */
   .radio-group {
@@ -1925,13 +1925,13 @@ body.dark #appToast { background: #0a0f1c; }
    input from the tab order, making the uploader mouse-only. The input is now visually hidden
    but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
 .vh-file { position:absolute; width:1px; height:1px; opacity:0; }
-label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
+label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline-offset:2px; }
 
 /* Generic keyboard-focus fallback — a consistent gold ring on buttons/links that
    lack their own :focus-visible rule (the scoped component rules above win by
    specificity). Matches the suite's outline convention; keyboard-only (mouse
    clicks don't trigger :focus-visible), so nothing changes on pointer use. */
-button:focus-visible, a:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+button:focus-visible, a:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 
 @media (prefers-reduced-motion: reduce) {
     /* Suite baseline: neutralize EVERY transition/animation, not only the ones enumerated below —

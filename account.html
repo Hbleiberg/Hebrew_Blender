@@ -98,12 +98,12 @@
 </script>
 <style>
 :root {
-  --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
+  --navy:#1a2744;--gold:#c9922a;--focus-ring:#a0701c;--gold-light:#f0d080;--cream:#fdf8ef;
   --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
   --gold-text:#7f5a13;--gold-text-hover:#5c4010;--danger-text:#b3261e;--danger-bg:#fdecec;--danger-border:#e5a5a5;
 }
 html.dark-early body,body.dark {
-  --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
+  --navy:#1a2744;--gold:#e0a832;--focus-ring:var(--gold);--gold-light:#f5d97a;--cream:#161c2a;
   --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;--gold-text:var(--gold);--gold-text-hover:var(--gold-light);
   --danger-text:#ff9c94;--danger-bg:#3a1f1f;--danger-border:#6b3434;
 }
@@ -118,7 +118,7 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--
   border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
   text-decoration:none;
 }
-.skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
+.skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
 header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
 header .star{font-size:32px;color:var(--gold);}
 header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
@@ -142,7 +142,7 @@ main a:hover{color:var(--gold-text-hover);}
 /* deleteNow() focuses #acctGone so the result is announced; without this it takes the UA's default
    1px black ring, which is off-token here and near-invisible on the dark surface. Same gold as every
    other ring on the page. :focus-visible, so a teacher who clicked with a mouse sees no ring at all. */
-#acctGone:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+#acctGone:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
 .muted{color:var(--muted);}
 .note{font-size:0.88rem;color:var(--muted);margin-bottom:12px;line-height:1.55;}
 .status{margin-top:10px;font-size:0.9rem;color:var(--muted);min-height:1.3em;overflow-wrap:anywhere;}
@@ -155,12 +155,12 @@ main a:hover{color:var(--gold-text-hover);}
 .field{margin-block:10px 8px;}
 .field label{display:block;font-size:0.82rem;font-weight:600;margin-bottom:5px;}
 .field input{width:100%;max-width:420px;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);padding:9px 10px;font-family:inherit;font-size:0.95rem;}
-.field input:focus{outline:2px solid var(--gold);outline-offset:1px;}
+.field input:focus{outline:2px solid var(--focus-ring);outline-offset:1px;}
 .check{display:flex;align-items:flex-start;gap:8px;margin-block:10px;font-size:0.92rem;line-height:1.5;}
 .check input{margin-block-start:4px;flex-shrink:0;}
 .btn{background:var(--navy);color:#fff;border:1px solid transparent;border-radius:8px;padding:10px 20px;font-family:inherit;font-size:0.95rem;font-weight:600;cursor:pointer;transition:background 0.15s;margin-inline-end:8px;margin-block:4px;}
 .btn:hover{background:#24345c;}
-.btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+.btn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
 .btn[aria-disabled="true"]{opacity:0.55;cursor:default;}
 /* Three buttons here spend real time locked: #dlBtn until the listing arrives, #delGo until the
    checkbox and the typed address both match, #delCancel while the deletion is in flight. The
@@ -197,7 +197,7 @@ body.dark .btn.ghost[aria-disabled="true"]:hover{background:transparent;}
 body.dark .btn.danger:hover{background:#bb4a41;}
 .link-btn{background:none;border:0;padding:0 2px;color:var(--gold-text);font:inherit;font-size:0.85rem;text-decoration:underline;cursor:pointer;}
 .link-btn:hover{color:var(--gold-text-hover);}
-.link-btn:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
+.link-btn:focus-visible{outline:2px solid var(--focus-ring);outline-offset:1px;}
 #holdsList{list-style:none;margin:0 0 8px;padding:0;}
 /* An address has no break opportunity and a saved item's name is any 120 characters, so on a phone a long
    school address or an unbroken preset name ran past its tile and scrolled the page sideways — at 320px

@@ -332,7 +332,7 @@ body.dark .hi-sun{display:inline-block;}
   --navy: #1a2a47;
   --navy-deep: #11192c;
   --navy-soft: #2a3d60;
-  --gold: #c9a24a;
+  --gold: #c9a24a; --focus-ring: #a0701c;
   --gold-text: #7f5a13;   /* readable gold for small text on light surfaces (WCAG ≥4.5:1) */
   --gold-light: #e9c97a;
   --white: #ffffff;
@@ -366,7 +366,7 @@ body.dark {
   --navy: #0f1626;
   --navy-deep: #060a14;
   --navy-soft: #1c2740;
-  --gold: #d6b25a;
+  --gold: #d6b25a; --focus-ring: var(--gold);
   --gold-text: var(--gold);
   --gold-light: #f0d586;
   --white: #1a2236;
@@ -412,7 +412,7 @@ input, select, textarea, button { font-family: inherit; color: inherit; }
   border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
   text-decoration:none;
 }
-.skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
+.skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
 .app-header {
   position: sticky; top: 0; z-index: 50;
   background: var(--navy);
@@ -622,7 +622,7 @@ body.dark .slider::before { background: #d8dde9; }
 /* RTL: the knob rests at the inline-start (right edge) and must slide the other way when checked. */
 [dir="rtl"] .switch input:checked + .slider::before { transform: translateX(-20px); }
 /* The real checkbox is zero-size/transparent, so ring the visible slider on keyboard focus. */
-.switch input:focus-visible + .slider { outline: 2px solid var(--gold); outline-offset: 2px; }
+.switch input:focus-visible + .slider { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .switch.sm { width: 34px; height: 20px; }
 .switch.sm .slider::before { width: 14px; height: 14px; inset-inline-start: 3px; top: 3px; }
 .switch.sm input:checked + .slider::before { transform: translateX(14px); }
@@ -795,7 +795,7 @@ body.dark .slider::before { background: #d8dde9; }
 .count-custom::-webkit-outer-spin-button,
 .count-custom::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .count-custom::placeholder { color: var(--muted); font-weight: 500; }
-.count-custom:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.count-custom:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
 .count-custom.active { background: var(--navy); color: var(--gold-light); border-color: var(--navy); }
 .count-custom.active::placeholder { color: var(--gold-light); }
 
@@ -1080,7 +1080,7 @@ body.dark #appToast { background: #0a0f1c; }
    but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
 .vh { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
 .vh-file { position:absolute; width:1px; height:1px; opacity:0; }
-label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
+label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline-offset:2px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

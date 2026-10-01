@@ -80,7 +80,7 @@
 </script>
 <style>
 :root {
-  --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
+  --navy:#1a2744;--gold:#c9922a;--focus-ring:#a0701c;--gold-light:#f0d080;--cream:#fdf8ef;
   --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
   --gold-text:#7f5a13;   /* readable gold for small text on light surfaces (WCAG ≥4.5:1) */
   /* 404 hero. Dark mode makes the star the BRIGHTEST element (12.23:1) against numerals at
@@ -93,7 +93,7 @@
   --hero-star:#7f5a13;   /* 5.88:1 on cream — the emphasis, as in dark */
 }
 html.dark-early body,body.dark {
-  --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
+  --navy:#1a2744;--gold:#e0a832;--focus-ring:var(--gold);--gold-light:#f5d97a;--cream:#161c2a;
   --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;--gold-text:var(--gold);--hero-num:var(--gold);--hero-star:var(--gold-light);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -106,7 +106,7 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--
   border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
   text-decoration:none;
 }
-.skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
+.skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
 header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
 header .star{font-size:32px;color:var(--gold);flex-shrink:0;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.8rem;letter-spacing:0.01em;}

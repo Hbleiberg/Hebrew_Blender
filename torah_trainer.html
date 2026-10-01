@@ -270,7 +270,7 @@ body.dark .hi-sun{display:inline-block;}
 /* ───── Design tokens (lifted from classroom_dashboard.html:94-133) ───── */
 :root {
   --navy:#1a2744; --navy-deep:#0d1220;
-  --gold:#c9922a; --gold-light:#f0d080; --gold-text:#7f5a13;
+  --gold:#c9922a; --focus-ring:#a0701c; --gold-light:#f0d080; --gold-text:#7f5a13;
   --cream:#fdf8ef; --warm-gray:#e8e0d0;
   --text:#1a2744; --muted:#6b6050;
   --border:#c8bfa8; --white:#ffffff;
@@ -280,7 +280,7 @@ body.dark .hi-sun{display:inline-block;}
   --shadow-lg:0 12px 32px rgba(26,39,68,0.12);
 }
 html.dark-early body, body.dark {
-  --navy:#1a2744; --gold:#e0a832; --gold-light:#f5d97a; --gold-text:var(--gold);
+  --navy:#1a2744; --gold:#e0a832; --focus-ring:var(--gold); --gold-light:#f5d97a; --gold-text:var(--gold);
   --cream:#161c2a; --warm-gray:#1e2535;
   --text:#dde4f0; --muted:#8a94a8;
   --border:#2a3349; --white:#1e2535;
@@ -307,7 +307,7 @@ body {
   border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
   text-decoration:none;
 }
-.skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
+.skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
 header {
   background:var(--navy); color:#fff;
   padding:14px 28px;
@@ -376,7 +376,7 @@ body.dark .tt-ctrl select, body.dark .tt-ctrl input[type="number"], body.dark .t
 .tt-custom[hidden] { display:none; }  /* [hidden] must beat the inline-flex rule (the #triYearRow trap) */
 .tt-custom select { min-width:96px; }  /* "Deuteronomy" fits; the 110px floor is the parsha picker's */
 .tt-custom input[type="number"] { padding-inline:6px; }
-.tt-ctrl select:focus, .tt-ctrl input:focus { outline:2px solid var(--gold); outline-offset:0; }
+.tt-ctrl select:focus, .tt-ctrl input:focus { outline:2px solid var(--focus-ring); outline-offset:0; }
 .tt-stack-toggles { display:inline-flex; flex-direction:column; gap:4px; align-items:stretch; }
 .tt-stack-toggles .row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
 .tt-stack-toggles label:not(.toggle) { font-weight:600; font-size:0.78rem; }
@@ -437,7 +437,7 @@ body.dark .tt-notice-chip { color:var(--muted); background:rgba(255,255,255,0.06
   color:var(--gold-text); text-decoration:none;
 }
 .tt-hh-link:hover { text-decoration:underline; }
-.tt-hh-link:focus-visible { outline:2px solid var(--gold); outline-offset:2px; border-radius:3px; }
+.tt-hh-link:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:3px; }
 body.fullscreen .tt-hh-link { display:none; }
 /* Both chips are tap targets (bindTip: tabindex + role=button) that paint 19px tall at their
    0.68rem line — the same 25px ::after touch floor the verse chips carry (WCAG 2.5.8), invisible. */
@@ -762,7 +762,7 @@ body.fullscreen .tt-jumpnav { padding-right:84px; }   /* clear the fullscreen ex
 body.tt-karaoke-active .tt-hint-toast { bottom:var(--tt-audio-h, 96px); }
 body.dark .tt-hint-toast { background:#0a0f1c; }
 /* Accessible tooltip trigger: focus ring for keyboard users. */
-.tip-wrap:focus-visible { outline:2px solid var(--gold); outline-offset:2px; border-radius:50%; }
+.tip-wrap:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:50%; }
 
 /* Side-by-side layout: 2 or 3 columns. ltr pins the column ORDER, as a bilingual Chumash does in either
    language: the translation first on the left, the Hebrew last on the right (in the Hebrew UI the grid used
@@ -868,7 +868,7 @@ body.dark .tt-word:hover {
   background:rgba(224,168,50,0.22);
   box-shadow:0 0 0 2px rgba(224,168,50,0.55);
 }
-.tt-word:focus-visible { outline:2px solid var(--gold); outline-offset:1px; }
+.tt-word:focus-visible { outline:2px solid var(--focus-ring); outline-offset:1px; }
 
 /* ───── Transliteration under each word (settings.translitPlacement === 'word') ─────
    tokenizeHebrew makes each .tt-word a two-item cell: <span class="tt-wh">Hebrew</span> over
@@ -983,7 +983,7 @@ body.dark .tt-trope-legend { background:var(--navy-deep); }
 .tt-trope-chip { display:inline-flex; align-items:center; gap:5px; min-height:30px; cursor:help; border-radius:5px; padding-inline:3px; }
 .tt-trope-chip:hover { background:var(--warm-gray); }
 body.dark .tt-trope-chip:hover { background:rgba(255,255,255,0.07); }
-.tt-trope-chip:focus-visible { outline:2px solid var(--gold); outline-offset:1px; }
+.tt-trope-chip:focus-visible { outline:2px solid var(--focus-ring); outline-offset:1px; }
 /* Sample mark on its alef carrier — the family's "what does this look like" cue. */
 .tt-trope-glyph { font-family:var(--heb-font); font-size:1.15rem; line-height:1; flex-shrink:0; }
 .tt-trope-swatch { width:14px; height:14px; border-radius:4px; border:1px solid var(--border); flex-shrink:0; background:var(--tt-sw-bg); }
@@ -1218,7 +1218,7 @@ body.layout-staff .tt-audio-bar .tt-audio-rates .row.tt-audio-tune { display:fle
 .sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
 .sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
 .sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
-.sbr-split:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:-1px;}
+.sbr-split:focus-visible{outline:2px solid var(--focus-ring,var(--gold,#c9922a));outline-offset:-1px;}
 /* placement variants — the block styles the handle, the page positions it: */
 .sbr-flex{flex:0 0 7px;align-self:stretch;position:relative;margin-inline-start:-3px;}   /* in-flow seam between a sidebar and its main column */
 .sbr-abs{position:absolute;top:0;bottom:0;width:9px;}                                    /* edge handle (drawers, rails); page CSS sets the inset */
@@ -1264,7 +1264,7 @@ body.dark .tt-tabs { background:var(--navy-deep); }
 .settings-modal .tt-tab[aria-selected="true"] { background:var(--white); color:var(--text); border-block-end-color:var(--gold); }
 body.dark .settings-modal .tt-tab { color:#99a2b8; }            /* the page's dark radio-label literal: 4.9:1 on the dark track */
 body.dark .settings-modal .tt-tab[aria-selected="true"] { color:var(--text); }
-.settings-modal .tt-tab:focus-visible { outline:2px solid var(--gold); outline-offset:-2px; }
+.settings-modal .tt-tab:focus-visible { outline:2px solid var(--focus-ring); outline-offset:-2px; }
 .tt-tabpanel[hidden] { display:none; }
 /* Seven labels share ~53px each at the default width (measured: "Favorites" needs 50px at 0.7rem, so the tabs carry no
    side padding), ~46px on a 360px phone (92vw drawer) and ~44px at the 320px minimum the resize handle allows — a
@@ -1278,7 +1278,7 @@ body.dark .settings-modal .tt-tab[aria-selected="true"] { color:var(--text); }
 .tt-set-title { font-family:'Libre Baskerville',serif; font-size:0.84rem; font-weight:400; letter-spacing:0.02em; color:var(--navy); padding-block-end:4px; border-block-end:1px solid var(--border); margin:0; margin-block-end:12px; display:flex; align-items:center; gap:6px; }
 body.dark .tt-set-title { color:var(--gold-light); }
 .tt-set-title:focus { outline:none; }            /* openSettingsAtPanel's programmatic target */
-.tt-set-title:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.tt-set-title:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 .tt-set-title .beta-tag { font-size:0.58rem; padding:0 4px; }
 .tt-set-sub { font-size:0.66rem; color:var(--muted); font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-block:12px 6px; padding-block-start:12px; border-block-start:1px solid var(--border); }
 .tt-set-note { font-size:0.72rem; color:var(--muted); line-height:1.4; }
@@ -1384,7 +1384,7 @@ body.dark .form-row input[type="date"] { color-scheme: dark; }   /* the picker's
 input:checked + .slider { background:var(--gold); }
 input:checked + .slider::before { transform:translateX(16px); }
 /* The real checkbox is zero-size/transparent, so ring the visible slider on keyboard focus. */
-input:focus-visible + .slider { outline:2px solid var(--gold); outline-offset:2px; }
+input:focus-visible + .slider { outline:2px solid var(--focus-ring); outline-offset:2px; }
 
 /* ───── Radio group (lifted from classroom_dashboard.html:680-705) ───── */
 .radio-group {
@@ -1408,7 +1408,7 @@ body.dark .radio-group label { color:#99a2b8; }
 /* Visually hidden but focusable (the Trope Tutor's rule): display:none dropped every radio from
    the tab order, and the vowel and trope color lists replaced keyboard-operable switches. */
 .radio-group input { position:absolute; opacity:0; width:1px; height:1px; margin:0; pointer-events:none; }
-.radio-group input:focus-visible + label { outline:2px solid var(--gold); outline-offset:1px; }
+.radio-group input:focus-visible + label { outline:2px solid var(--focus-ring); outline-offset:1px; }
 /* The Colors tab's two lists — and, by the same classes, the Layout row and the three copy-format
    pill rows: a group that does not fit beside its label drops whole to the next line. A choice never breaks mid-label. The vowel list's four choices
    sit in a 2×2 block: in English they need about 321px, and a row that breaks leaves one choice
@@ -1677,7 +1677,7 @@ body.fullscreen #ttFsBar.visible .tt-fs-plate { pointer-events: auto; }
   cursor: pointer; transition: background 0.15s, border-color 0.15s;
 }
 .tt-fs-btn:hover { background: rgba(255,255,255,0.2); border-color: var(--gold); }
-.tt-fs-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.tt-fs-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 /* aria-disabled, never the `disabled` attribute — that would drop the button out of the tab
    order and the stated reason could never be read. Same convention (and value) as
    #ttCopyAllBtn[aria-disabled="true"] above. This opacity is NOT the anti-pattern the header
@@ -1973,7 +1973,7 @@ body.fullscreen .tt-hint-toast { bottom: calc(var(--tt-audio-h, 96px) + 90px); }
    input from the tab order, making the uploader mouse-only. The input is now visually hidden
    but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
 .vh-file { position:absolute; width:1px; height:1px; opacity:0; }
-label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
+label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline-offset:2px; }
 
 @media (prefers-reduced-motion: reduce) {
   /* Suite baseline: neutralize EVERY transition/animation, not only the ones enumerated below —

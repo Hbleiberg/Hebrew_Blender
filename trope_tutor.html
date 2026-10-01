@@ -169,7 +169,7 @@ body.dark .hi-sun{display:inline-block;}
 /* ───── Design tokens (lifted from classroom_dashboard.html:94-133) ───── */
 :root {
   --navy:#1a2744; --navy-deep:#0d1220;
-  --gold:#c9922a; --gold-light:#f0d080;
+  --gold:#c9922a; --focus-ring:#a0701c; --gold-light:#f0d080;
   --gold-text:#7f5a13;   /* readable gold for small TEXT on light surfaces (6.2:1 white / 4.7:1 warm-gray) — brand --gold stays for borders/buttons/stars */
   --cream:#fdf8ef; --warm-gray:#e8e0d0;
   --text:#1a2744; --muted:#6b6050;
@@ -181,7 +181,7 @@ body.dark .hi-sun{display:inline-block;}
   --shadow-lg:0 12px 32px rgba(26,39,68,0.12);
 }
 html.dark-early body, body.dark {
-  --navy:#1a2744; --gold:#e0a832; --gold-light:#f5d97a;
+  --navy:#1a2744; --gold:#e0a832; --focus-ring:var(--gold); --gold-light:#f5d97a;
   --gold-text:var(--gold);   /* dark gold already passes on the dark surfaces (7.2–8.7:1) */
   --cream:#161c2a; --warm-gray:#1e2535;
   --text:#dde4f0; --muted:#8a94a8;
@@ -208,7 +208,7 @@ body {
   border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
   text-decoration:none;
 }
-.skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
+.skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
 header {
   background:var(--navy); color:#fff;
   padding:14px 28px;
@@ -264,7 +264,7 @@ body.fs-idle #fsBtn:not(:focus-visible) { opacity:0; pointer-events:none; }
 .tu-tab:hover { color:var(--gold-text); }
 .tu-tab[aria-selected="true"] { background:var(--white); color:var(--text); border-color:var(--gold); border-bottom:2px solid var(--white); margin-bottom:-1px; }
 body.dark .tu-tab[aria-selected="true"] { border-bottom-color:var(--white); }
-.tu-tab:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.tu-tab:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 
 .tu-page {
   flex:1; padding:0 24px 26px; max-width:1100px; width:100%; margin:0 auto;
@@ -299,7 +299,7 @@ body.dark .tu-status.error { color:#ff6666; }
 }
 .tu-chip:hover { border-color:var(--gold); }
 .tu-chip.active { background:var(--warm-gray); border-color:var(--gold); }
-.tu-chip:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.tu-chip:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 .tu-chip .visited { color:var(--gold-text); font-weight:700; }
 .tu-chip.fam-sofpasuk { border-inline-start-color:var(--trope-sofpasuk-line); }
 .tu-chip.fam-etnachta { border-inline-start-color:var(--trope-etnachta-line); }
@@ -435,7 +435,7 @@ body.dark .tu-pcard { background:#131a29; }
   background:transparent; color:var(--text); cursor:pointer; min-block-size:30px; transition:border-color 0.15s, background-color 0.15s;
 }
 .tu-pchip:hover, .tu-pchip:focus-visible { border-color:var(--gold); background:var(--warm-gray); }
-.tu-pchip:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.tu-pchip:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 body.dark .tu-pchip:hover, body.dark .tu-pchip:focus-visible { background:#1d2638; }
 .tu-pchip.is-static { cursor:default; }
 .tu-pchip.is-static:hover { border-color:var(--border); background:transparent; }
@@ -448,7 +448,7 @@ body.dark .tu-pchip:hover, body.dark .tu-pchip:focus-visible { background:#1d263
 .tu-pchip.fam-geresh   { border-inline-start-color:var(--trope-geresh-line); }
 .tu-pchip.fam-rare     { border-inline-start-color:var(--trope-rare-line); }
 .tu-pstaff-wrap { overflow-x:auto; padding:2px 0 4px; border-radius:8px; }
-.tu-pstaff-wrap:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.tu-pstaff-wrap:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 .tu-pstaff { display:block; color:var(--text); }
 .tu-pstaff .tu-pbar { fill:var(--border); }
 .tu-pstaff .tu-pbar.fam-sofpasuk { fill:var(--trope-sofpasuk-line); }
@@ -522,7 +522,7 @@ body.dark .tu-qglyph { background:var(--navy-deep); }
 }
 body.dark .tu-choice { background:var(--navy-deep); }
 .tu-choice:hover:not(:disabled) { border-color:var(--gold); }
-.tu-choice:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.tu-choice:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 .tu-choice:disabled { cursor:default; }
 .tu-choice .c-glyph { font-family:var(--heb-font); font-size:calc(var(--tu-heb-size) * 0.85); line-height:1.1; direction:rtl; }
 .tu-choice .c-sub { font-size:0.7rem; color:var(--muted); font-weight:600; }
@@ -554,7 +554,7 @@ body.dark .tu-feedback .no { color:#ff6666; }
   border:1px solid var(--border); background:var(--white); color:var(--text);
   padding:5px 8px; border-radius:5px; font:inherit; font-size:0.82rem; min-height:30px; max-width:100%;
 }
-.tu-scope-row select:focus { outline:2px solid var(--gold); outline-offset:0; }
+.tu-scope-row select:focus { outline:2px solid var(--focus-ring); outline-offset:0; }
 body.dark .tu-scope-row select { background:var(--navy-deep); color:var(--text); }
 .tu-pb-banner { font-size:0.95rem; font-weight:700; color:var(--gold-text); margin:4px 0 10px; }
 .tu-note { font-size:0.82rem; color:var(--muted); margin-top:10px; min-height:1.4em; }
@@ -605,7 +605,7 @@ body.dark .tu-review { background:#131a29; }
   background:var(--white); min-width:74px;
   font:inherit; color:inherit; appearance:none; cursor:pointer;
 }
-.tu-mcell:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+.tu-mcell:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; }
 .tu-mcell:hover { border-color:var(--gold); }
 body.dark .tu-mcell { background:var(--navy-deep); }
 .tu-mcell .m-glyph { font-family:var(--heb-font); font-size:1.25rem; line-height:1.1; direction:rtl; }
@@ -669,7 +669,7 @@ body.dark .btn-secondary[aria-disabled="true"]:hover, body.dark .btn-secondary:d
 }
 input:checked + .slider { background:var(--gold); }
 input:checked + .slider::before { transform:translateX(16px); }
-input:focus-visible + .slider { outline:2px solid var(--gold); outline-offset:2px; }
+input:focus-visible + .slider { outline:2px solid var(--focus-ring); outline-offset:2px; }
 
 .radio-group {
   display:inline-flex; gap:3px; background:var(--warm-gray);
@@ -680,7 +680,7 @@ body.dark .radio-group label { color:#99a2b8; }
 /* Visually hidden but focusable — display:none would drop the radios from the tab
    order and make the tradition toggle keyboard-inoperable. */
 .radio-group input { position:absolute; opacity:0; width:1px; height:1px; margin:0; pointer-events:none; }
-.radio-group input:focus-visible + label { outline:2px solid var(--gold); outline-offset:1px; }
+.radio-group input:focus-visible + label { outline:2px solid var(--focus-ring); outline-offset:1px; }
 .radio-group label {
   text-align:center; padding:4px 10px; border-radius:3px;
   font-size:0.78rem; cursor:pointer; font-weight:600; color:var(--muted);
@@ -750,7 +750,7 @@ body.dark .font-opt.active .font-opt-preview { color:var(--gold-light); }
 
 /* ───── Tooltip (house pattern) ───── */
 .tip-wrap { display:inline-flex; align-items:center; }
-.tip-wrap:focus-visible { outline:2px solid var(--gold); outline-offset:2px; border-radius:50%; }
+.tip-wrap:focus-visible { outline:2px solid var(--focus-ring); outline-offset:2px; border-radius:50%; }
 .tip-icon {
   display:inline-flex; align-items:center; justify-content:center;
   width:15px; height:15px; border-radius:50%;
@@ -980,7 +980,7 @@ footer .footer-credits { display:flex; flex-wrap:wrap; gap:14px 24px; justify-co
    but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
 .vh-file { position:absolute; width:1px; height:1px; opacity:0; }
 .vh { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
-label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
+label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline-offset:2px; }
 
 @media (prefers-reduced-motion: reduce) {
   .pulse-attn { animation: none !important; box-shadow: 0 0 0 3px rgba(201,146,42,0.6) !important; }

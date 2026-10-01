@@ -311,7 +311,7 @@ body.dark .hi-sun{display:inline-block;}
 </script>
 <style>
 :root {
-  --navy:#1a2744;--navy-deep:#0d1220;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
+  --navy:#1a2744;--navy-deep:#0d1220;--gold:#c9922a;--focus-ring:#a0701c;--gold-light:#f0d080;--cream:#fdf8ef;
   --gold-text:#7f5a13;   /* darker gold for small gold TEXT on light bg — meets WCAG 4.5:1 where --gold (#c9922a ≈2.5:1) fails; NOT the suite --gold */
   --danger-text:#a93226; /* danger/error text — theme-aware where literal #c0392b fails dark (and is marginal on warm-gray light) */
   --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
@@ -321,7 +321,7 @@ body.dark .hi-sun{display:inline-block;}
   --heb-font-size: 2rem;
 }
 html.dark-early body,body.dark {
-  --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
+  --navy:#1a2744;--gold:#e0a832;--focus-ring:var(--gold);--gold-light:#f5d97a;--cream:#161c2a;
   --gold-text:var(--gold);   /* dark theme: --gold #e0a832 already ≈8:1, no darkening needed */
   --danger-text:#ff8a75;
   --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;
@@ -338,7 +338,7 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--
   border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
   text-decoration:none;
 }
-.skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
+.skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
 header{background:var(--navy);color:#fff;padding:18px 32px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);flex-shrink:0;}
 header .star{font-size:28px;color:var(--gold);flex-shrink:0;}
 header h1{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
@@ -368,7 +368,7 @@ header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px
 .sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
 .sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
 .sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
-.sbr-split:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:-1px;}
+.sbr-split:focus-visible{outline:2px solid var(--focus-ring,var(--gold,#c9922a));outline-offset:-1px;}
 /* placement variants — the block styles the handle, the page positions it: */
 .sbr-flex{flex:0 0 7px;align-self:stretch;position:relative;margin-inline-start:-3px;}   /* in-flow seam between a sidebar and its main column */
 .sbr-abs{position:absolute;top:0;bottom:0;width:9px;}                                    /* edge handle (drawers, rails); page CSS sets the inset */
@@ -391,7 +391,7 @@ header .hright{margin-inline-start:auto;display:flex;align-items:center;gap:10px
 .search-row{position:relative;}
 .search-wrap input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);outline:none;box-sizing:border-box;}
 .search-wrap input:focus{border-color:var(--gold);}
-.search-wrap input:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
+.search-wrap input:focus-visible{outline:2px solid var(--focus-ring);outline-offset:1px;}
 .search-wrap input::placeholder{color:var(--muted);}
 /* Section 4: clear-search button (all widths) */
 .search-clear{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;border:none;background:var(--warm-gray);color:var(--muted);font-size:0.72rem;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;} /* 24px WCAG floor (touch-target haul) — glyph size unchanged; fits centered in the ~34px input */
@@ -547,8 +547,8 @@ body.fullscreen .app{height:100vh;min-height:unset;}
 .wl-active-exit:hover{border-color:var(--gold);background:var(--gold);color:var(--navy);}
 /* Print header — never on screen; fillPrintHead() fills it on beforeprint and the print block shows it. */
 #printHead{display:none;}
-.fchip-body:focus-visible,.fchip-x:focus-visible,.fchip-reset:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
-.sort-sel:focus-visible,.dict-tool-btn:focus-visible,.word-card:focus-visible,.emoji-card:focus-visible,.lpt:focus-visible,.panel-title:focus-visible,.adv-section-title:focus-visible,.pos-sec-hdr:focus-visible,.shoresh-patterns-title:focus-visible,.shoresh-pat.filled:focus-visible,.emoji-cat-arrow:focus-visible,.vowel-group-section div[role="button"]:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
+.fchip-body:focus-visible,.fchip-x:focus-visible,.fchip-reset:focus-visible{outline:2px solid var(--focus-ring);outline-offset:1px;}
+.sort-sel:focus-visible,.dict-tool-btn:focus-visible,.word-card:focus-visible,.emoji-card:focus-visible,.lpt:focus-visible,.panel-title:focus-visible,.adv-section-title:focus-visible,.pos-sec-hdr:focus-visible,.shoresh-patterns-title:focus-visible,.shoresh-pat.filled:focus-visible,.emoji-cat-arrow:focus-visible,.vowel-group-section div[role="button"]:focus-visible{outline:2px solid var(--focus-ring);outline-offset:1px;}
 .fchip-reset{font-size:0.74rem;background:var(--navy);color:#fff;border:1px solid var(--navy);border-radius:14px;padding:4px 11px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;}
 .fchip-reset:hover{background:#2a3a6a;}
 body.dark .fchip-reset{background:var(--navy-deep);}
@@ -688,7 +688,7 @@ body.dict-audio-on .ec-speak{display:inline-flex;}
    dictionary deliberately uses in light mode is preserved. (S285 Pass C) */
 body.dark .tip-icon{color:var(--navy);}
 .tip-wrap:focus-visible{outline:none;}
-.tip-wrap:focus-visible .tip-icon{outline:2px solid var(--gold);outline-offset:1px;}
+.tip-wrap:focus-visible .tip-icon{outline:2px solid var(--focus-ring);outline-offset:1px;}
 #tipFloat{display:none;position:fixed;background:var(--navy);color:#fff;font-size:0.72rem;font-weight:400;line-height:1.45;padding:6px 9px;border-radius:6px;max-width:220px;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,0.3);pointer-events:none;}
 body.dark #tipFloat{background:#0a0f1c;}
   /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary; self-contained incl. reduced-motion) ═══ */
@@ -793,7 +793,7 @@ body.dark .tour-card{background:var(--cream);}
 }
 #resultsEnd:focus { outline:none; }
 .vh-file { position:absolute; width:1px; height:1px; opacity:0; }
-label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
+label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline-offset:2px; }
 
 @media (prefers-reduced-motion: reduce){
   /* Suite baseline: neutralize EVERY transition/animation, not only the ones enumerated below —
@@ -907,7 +907,7 @@ footer details > summary:hover{text-decoration:underline;}   /* FAQ / How-To row
     padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
     background: var(--white); color: var(--text); outline: none; }
   #shoreshInput:focus { border-color: var(--gold); }
-  #shoreshInput:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+  #shoreshInput:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
   .shoresh-lookup-btn { background: var(--navy); color: var(--gold-light); border: none;
     border-radius: 8px; padding: 0 18px; font-family: 'Source Sans 3', sans-serif;
     font-size: 0.85rem; cursor: pointer; }

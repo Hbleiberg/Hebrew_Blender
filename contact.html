@@ -106,7 +106,7 @@
 </script>
 <style>
 :root {
-  --navy:#1a2744;--gold:#c9922a;--gold-light:#f0d080;--cream:#fdf8ef;
+  --navy:#1a2744;--gold:#c9922a;--focus-ring:#a0701c;--gold-light:#f0d080;--cream:#fdf8ef;
   --warm-gray:#e8e0d0;--text:#1a2744;--muted:#6b6050;--border:#c8bfa8;--white:#ffffff;
   --gold-text:#7f5a13;   /* readable gold for small text on light surfaces (WCAG ≥4.5:1) */
   --gold-text-hover:#5c4010;  /* hover DARKENS on a light ground. This used to be --gold-light,
@@ -114,7 +114,7 @@
      unreadable in light mode only. Dark mode keeps --gold-light (12.23:1) below. */
 }
 html.dark-early body,body.dark {
-  --navy:#1a2744;--gold:#e0a832;--gold-light:#f5d97a;--cream:#161c2a;
+  --navy:#1a2744;--gold:#e0a832;--focus-ring:var(--gold);--gold-light:#f5d97a;--cream:#161c2a;
   --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;--gold-text:var(--gold);--gold-text-hover:var(--gold-light);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -127,7 +127,7 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--
   border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
   text-decoration:none;
 }
-.skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
+.skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
 header{background:var(--navy);color:#fff;padding:22px 40px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);}
 header .star{font-size:32px;color:var(--gold);}
 header .brand-title{font-family:'Libre Baskerville',serif;font-size:1.5rem;letter-spacing:0.01em;}
@@ -156,7 +156,7 @@ main strong{font-weight:700;}
 .field{margin-bottom:14px;}
 .field label{display:block;font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:5px;}
 .field input,.field textarea{width:100%;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);padding:10px;font-family:inherit;font-size:0.95rem;}
-.field input:focus,.field textarea:focus{outline:2px solid var(--gold);outline-offset:1px;}
+.field input:focus,.field textarea:focus{outline:2px solid var(--focus-ring);outline-offset:1px;}
 .field textarea{min-height:130px;resize:vertical;}
 .btn-primary{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:11px 22px;font-family:inherit;font-size:0.95rem;font-weight:600;cursor:pointer;transition:background 0.15s,transform 0.05s;}
 .btn-primary:hover{background:#24345c;}

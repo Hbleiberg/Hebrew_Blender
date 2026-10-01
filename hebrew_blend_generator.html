@@ -322,7 +322,7 @@ body.dark .hi-sun{display:inline-block;}
 <style>
   :root {
     --navy: #1a2744;
-    --gold: #c9922a;
+    --gold: #c9922a; --focus-ring: #a0701c;
     --gold-text: #7f5a13;   /* readable gold for small text on light surfaces (WCAG ≥4.5:1); brand --gold stays for borders/stars */
     --gold-light: #f0d080;
     --cream: #fdf8ef;
@@ -340,7 +340,7 @@ body.dark .hi-sun{display:inline-block;}
   html.dark-early body,
   body.dark {
     --navy: #1a2744;
-    --gold: #e0a832;
+    --gold: #e0a832; --focus-ring: var(--gold);
     --gold-text: var(--gold);   /* dark gold already passes on dark surfaces */
     --gold-light: #f5d97a;
     --cream: #161c2a;
@@ -427,7 +427,7 @@ body.dark .hi-sun{display:inline-block;}
     border-radius:0 0 6px 6px; font-size:0.8rem; font-weight:600;
     text-decoration:none;
   }
-  .skip-link:focus { top:0; outline:2px solid var(--gold); outline-offset:2px; }
+  .skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
   header {
     background: var(--navy);
     color: var(--white);
@@ -571,7 +571,7 @@ body.dark .hi-sun{display:inline-block;}
     color: var(--text);
     cursor: pointer;
   }
-  select:focus, input[type="number"]:focus { outline: 2px solid var(--gold); }
+  select:focus, input[type="number"]:focus { outline: 2px solid var(--focus-ring); }
   input[type="number"] { width: 64px; text-align: center; }
 
   /* Toggle switch */
@@ -611,7 +611,7 @@ body.dark .hi-sun{display:inline-block;}
   /* RTL: these scaled toggles anchor to their inline-end edge (left in RTL), not the physical right. */
   [dir="rtl"] .toggle[style*="transform-origin:right"] { transform-origin: left center !important; }
   /* The real checkbox is zero-size/transparent, so ring the visible slider on keyboard focus. */
-  .toggle input:focus-visible + .slider { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .toggle input:focus-visible + .slider { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
   /* Vowel selector */
   .vowel-grid {
@@ -1194,7 +1194,7 @@ body.dark .hi-sun{display:inline-block;}
 .sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
 .sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
 .sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
-.sbr-split:focus-visible{outline:2px solid var(--gold,#c9922a);outline-offset:-1px;}
+.sbr-split:focus-visible{outline:2px solid var(--focus-ring,var(--gold,#c9922a));outline-offset:-1px;}
 /* placement variants — the block styles the handle, the page positions it: */
 .sbr-flex{flex:0 0 7px;align-self:stretch;position:relative;margin-inline-start:-3px;}   /* in-flow seam between a sidebar and its main column */
 .sbr-abs{position:absolute;top:0;bottom:0;width:9px;}                                    /* edge handle (drawers, rails); page CSS sets the inset */
@@ -1643,7 +1643,7 @@ body.dark .hi-sun{display:inline-block;}
   .tooltip-wrap.tooltip-open .tooltip-box { display: block; }
   /* Tap/keyboard-opened tooltips are interactive & JS-positioned */
   .tooltip-wrap.tooltip-open .tooltip-box { pointer-events: auto; }
-  .tooltip-wrap:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .tooltip-wrap:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
   /* When JS clamps the box to the viewport it sets a left-anchored position;
      this class stops the default centering transform from fighting it. */
   .tooltip-wrap.tooltip-box-clamped .tooltip-box { transform: none; }
@@ -2166,7 +2166,7 @@ body.dark #appToast { background: #0a0f1c; }
    input from the tab order, making the uploader mouse-only. The input is now visually hidden
    but FOCUSABLE — Enter/Space opens the picker — and the wrapping label shows the ring. */
 .vh-file { position:absolute; width:1px; height:1px; opacity:0; }
-label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offset:2px; }
+label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline-offset:2px; }
 
 @media (prefers-reduced-motion: reduce) {
     /* Suite baseline: neutralize EVERY transition/animation, not only the ones enumerated below —
