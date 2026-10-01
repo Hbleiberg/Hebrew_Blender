@@ -1471,7 +1471,13 @@ async function eraseAllSettings() {
   for (;;) {
     const act = await ivritAskErase();
     if (!act) return;
-    if (act === 'backup') { ivritSaveFile(); continue; }   // the download starts; the question comes back
+    if (act === 'backup') {   // the download starts; the question comes back
+      ivritSaveFile();
+      // the copies kept for the account (earlier settings, other versions, the recovery bin) are not in that file: each
+      // goes as its own .ivrit (Erase All removes them with the rest)
+      try { if (window.IvritSaves && typeof IvritSaves.downloadKept === 'function') IvritSaves.downloadKept(); } catch (e) {}
+      continue;
+    }
     break;
   }
   const signedIn = !!(window.IvritAccount && typeof IvritAccount.hasStoredSession === 'function' && IvritAccount.hasStoredSession());
@@ -1934,9 +1940,11 @@ async function ivritRestore(text, sourceName) {
   // one drop. Say the one true thing before asking anything.
   if (payload.tool && payload.tool !== IVRIT_CFG.tool) { alert(I18n.t('home.alltools.no_data_alert')); return; }
   // partial: an account's copies only (per-device settings are not in it) — 'fill': what is missing here is added,
-  // nothing this device already holds is replaced (a backup is older than what it is restored over)
-  const partial = payload.partial === true;
-  const mode = partial ? 'fill' : await ivritAskMode();
+  // nothing this device already holds is replaced (a backup is older than what it is restored over). kept: a version
+  // the status line kept for download (the settings a sign-in or a conflict replaced) — restoring it is the point, so
+  // it merges over what is here, never a Replace.
+  const kept = payload.kept === true, partial = payload.partial === true && !kept;
+  const mode = kept ? 'merge' : partial ? 'fill' : await ivritAskMode();
   if (!mode) return;
   let applied;
   try { applied = await IVRIT_CFG.apply(payload.data || {}, mode); }

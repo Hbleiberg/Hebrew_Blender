@@ -7015,9 +7015,11 @@ async function ivritRestore(text, sourceName) {
     if (!confirm(I18n.t('shared.ivrit.tool_mismatch_confirm', { tool: payload.tool, tool2: IVRIT_CFG.tool }))) return;
   }
   // partial: an account's copies only (per-device settings are not in it) — 'fill': what is missing here is added,
-  // nothing this device already holds is replaced (a backup is older than what it is restored over)
-  const partial = payload.partial === true;
-  const mode = partial ? 'fill' : await ivritAskMode();
+  // nothing this device already holds is replaced (a backup is older than what it is restored over). kept: a version
+  // the status line kept for download (the settings a sign-in or a conflict replaced) — restoring it is the point, so
+  // it merges over what is here, never a Replace.
+  const kept = payload.kept === true, partial = payload.partial === true && !kept;
+  const mode = kept ? 'merge' : partial ? 'fill' : await ivritAskMode();
   if (!mode) return;
   let applied;
   try { applied = await IVRIT_CFG.apply(payload.data || {}, mode); }

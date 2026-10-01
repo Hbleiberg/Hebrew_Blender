@@ -95,8 +95,8 @@
  *  D18. A session that ended by itself, then an older copy of a preset restored signed out: the next sign-in
  *      keeps both copies, in the account and on the device (the account's newer copy is never overwritten); a class
  *      list restored one student short merges.
- *  D19. Two devices change the same setting: the later change is kept in the account, and the other version stays on
- *      the device that merged, named on its status line and downloadable.
+ *  D19. Two devices change the same setting: the account's value stays, and the merging device's own version is kept on
+ *      that device, named on its status line and downloadable (no clocks decide it).
  *  D20. A hidden background tab another tab has written since does not replay its older copy when it hydrates in
  *      the background: the other tab's new location reaches the account.
  *  D21. A row deleted elsewhere between two listing pages (server capped at 3 rows a page): the short listing is
@@ -115,6 +115,19 @@
  *      backup has and leaves the newer same-named preset alone, here and in the account.
  *  D28. An old-module tab's Delete from cloud (the copy on this device stays): the next new-module load keeps the
  *      copy, does not send it up again, and does not put it in the recovery bin.
+ *  D29. The account deleted on this device: the copies kept for it (earlier settings, the recovery bin) become this
+ *      device's own and are shown on the status line signed out, with their Download.
+ *  D30. A setting changed while signed out after a button sign-out is kept for download when the account's settings
+ *      land at the next sign-in; once dismissed, sign-ins with nothing changed keep no new copy.
+ *  D31. Trope practice done signed out after a button sign-out merges with the account's at the next sign-in, under
+ *      an old reset watermark.
+ *  D32. A nearly full storage: with no merge base to drop, an edit stays here (not reverted), nothing loops and the
+ *      status line says why; with one, the base is dropped and the edit goes up.
+ *  D33. A preset too big for the account, saved after the hydration, is counted by pendingSignOut.
+ *  D34. A first sign-in whose suite-wide preferences differ keeps this device's (nikud colours, keyboard) for download.
+ *  D35. A preset edited while a hydration that would remove it (deleted elsewhere) runs stays with the edit, out of
+ *      the bin, and goes up again.
+ *  D36. A font deleted while the DELETE could not be sent, then saved again with the same bytes: no DELETE is sent later.
  *
  * Every scenario asserts 0 pageerrors. Run from the repo root:
  *   node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
@@ -1189,7 +1202,8 @@ try {
     const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
     const d = await dashState(page);
     const rep = await lsJSON(page, 'ivritSuite_replaced');
-    const kept = rep && rep.users && rep.users[UID] && rep.users[UID]['Dashboard/settings/default'];
+    const keptOf = (u) => (u ? u[Object.keys(u).find(k => k.startsWith('Dashboard/settings/default#signin@'))] : null) || null;
+    const kept = keptOf(rep && rep.users && rep.users[UID]);
     const note = () => page.evaluate(() => { const n = document.querySelector('#cloudSavesPanel .ivsav-replaced'); return n ? { text: n.textContent, buttons: [...n.querySelectorAll('button')].map(b => b.textContent) } : null; });
     const n1 = await note();
     check("D9: the account's settings landed and ivritSuite_replaced keeps the device's own (projected: no per-device field)", d.location === 'Atlanta, GA' && !!kept && !!kept.value && kept.value.location === 'Boston, MA' && !('rosters' in kept.value) && !('zoomLevel' in kept.value), JSON.stringify({ local: d.location, kept: kept && { tool: kept.tool, kind: kept.kind, location: kept.value && kept.value.location, keys: kept.value && Object.keys(kept.value).length } }));
@@ -1432,8 +1446,9 @@ try {
     await A.page.evaluate(() => { document.getElementById('locationInput').value = 'Eilat'; updateLocation(); });
     const okA = await settled(A.page, DASH_TOOLS, 10000);
     const kept = await A.page.evaluate((UID) => (((JSON.parse(localStorage.getItem('ivritSuite_replaced') || 'null') || {}).users || {})[UID] || {}), UID);
-    const stash = kept['Dashboard/settings/default#both'] || null, atSignIn = kept['Dashboard/settings/default'] || null;
-    check('D19: both devices changed the location; the later change (device A) is in the account and the other version (Haifa) is kept on device A', okB && okA && row.data.location === 'Eilat' && !!stash && stash.why === 'both' && stash.value.location === 'Haifa' && reqs(cloud, from, 'DELETE').length === 0, JSON.stringify({ okB, okA, location: row.data.location, stash: stash && { why: stash.why, location: stash.value.location }, calls: methods(cloud, from) }));
+    const stash = kept[Object.keys(kept).find(k => k.startsWith('Dashboard/settings/default#both'))] || null, atSignIn = kept[Object.keys(kept).find(k => k.startsWith('Dashboard/settings/default#signin@'))] || null;
+    const aLoc = await A.page.evaluate(() => JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}').location);
+    check("D19: both devices changed the location; the account's value (Haifa) stays, here too, and device A's own version (Eilat) is kept on device A", okB && okA && row.data.location === 'Haifa' && aLoc === 'Haifa' && !!stash && stash.why === 'both' && stash.value.location === 'Eilat' && reqs(cloud, from, 'DELETE').length === 0, JSON.stringify({ okB, okA, location: row.data.location, stash: stash && { why: stash.why, location: stash.value.location }, calls: methods(cloud, from) }));
     check("D19: the copy of device A's own settings kept at its first sign-in (Boston) is still there beside it", !!atSignIn && atSignIn.why === 'signin' && atSignIn.value.location === 'Boston, MA', JSON.stringify(atSignIn && { why: atSignIn.why, location: atSignIn.value.location }));
     await A.page.evaluate(() => { const h = document.getElementById('cloudSavesPanel'); let n = h; while (n) { if (n.classList) n.classList.remove('collapsed'); n = n.parentElement; } });
     const note = await A.page.evaluate(() => { const b = document.querySelector('#cloudSavesPanel .ivsav-replaced[data-why="both"]'); return b ? b.innerText : null; });
@@ -1442,7 +1457,16 @@ try {
       const [dl] = await Promise.all([A.page.waitForEvent('download', { timeout: 8000 }).catch(() => null), A.page.evaluate(() => document.querySelector('#cloudSavesPanel .ivsav-replaced[data-why="both"] button').click())]);
       if (dl) { const fp = await dl.path(); file = { name: dl.suggestedFilename(), text: fp ? fs.readFileSync(fp, 'utf8') : '' }; }
     }
-    check("D19: device A's status line names it and its Download holds the other version", !!note && /changed on this device and on another one/.test(note) && !!file && /_settings_other_version_/.test(file.name) && file.text.includes('Haifa'), JSON.stringify({ note, file: file && { name: file.name, haifa: file.text.includes('Haifa') } }));
+    check("D19: device A's status line names it and its Download holds device A's version", !!note && /changed on this device and on another one/.test(note) && !!file && /_settings_other_version_/.test(file.name) && file.text.includes('Eilat'), JSON.stringify({ note, file: file && { name: file.name, eilat: file.text.includes('Eilat') } }));
+    // a second conflict on the same row before the first version was downloaded or dismissed: kept beside it
+    await B.page.reload({ waitUntil: 'domcontentloaded' }); await waitSignedIn(B.page); await settled(B.page, DASH_TOOLS);
+    await B.page.evaluate(() => { document.getElementById('locationInput').value = 'Tel Aviv'; updateLocation(); });
+    const okB2 = await settled(B.page, DASH_TOOLS);
+    await A.page.evaluate(() => { document.getElementById('locationInput').value = 'Akko'; updateLocation(); });
+    const okA2 = await settled(A.page, DASH_TOOLS, 10000);
+    const kept2 = await A.page.evaluate((UID) => (((JSON.parse(localStorage.getItem('ivritSuite_replaced') || 'null') || {}).users || {})[UID] || {}), UID);
+    const both2 = Object.keys(kept2).filter(k => k.startsWith('Dashboard/settings/default#both')).map(k => kept2[k].value.location).sort();
+    check('D19: a second conflict on the same setting keeps its own version (Akko) beside the first (Eilat); neither replaces the other', okB2 && okA2 && row.data.location === 'Tel Aviv' && both2.join('|') === 'Akko|Eilat', JSON.stringify({ okB2, okA2, location: row.data.location, both2 }));
     check('D19: 0 pageerrors on both devices', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
     await ctxA.close(); await ctxB.close();
   }
@@ -1607,7 +1631,7 @@ try {
     const ok = await settled(page, DASH_TOOLS, HYDRATE_MS);
     const presets = (await lsJSON(page, 'hebrewDashboard_presets')) || {};
     const bin = (((await lsJSON(page, 'ivritSuite_removedByAccount')) || {}).users || {})[UID] || {};
-    const kept = bin['Dashboard/preset/Morning'];
+    const kept = bin[Object.keys(bin).find(k => k.startsWith('Dashboard/preset/Morning@'))];
     check('D26: the preset the account no longer lists left the device, and a copy of it is in the recovery bin', landed && ok && !presets.Morning && !!kept && canonJson(kept.value) === canonJson(morning), JSON.stringify({ landed, ok, presets: Object.keys(presets), kept: kept && kept.name }));
     await page.evaluate(() => { const h = document.getElementById('cloudSavesPanel'); let n = h; while (n) { if (n.classList) n.classList.remove('collapsed'); n = n.parentElement; } });
     const note = await page.evaluate(() => { const b = document.querySelector('#cloudSavesPanel .ivsav-replaced[data-why="removed"]'); return b ? b.innerText : null; });
@@ -1662,8 +1686,202 @@ try {
     const presets = (await lsJSON(page, 'hebrewDashboard_presets')) || {};
     const bin = (((await lsJSON(page, 'ivritSuite_removedByAccount')) || {}).users || {})[UID] || {};
     const sent = cloud.log.some(e => e.m === 'POST' && e.body && (Array.isArray(e.body) ? e.body : [e.body]).some(b => b.kind === 'preset' && b.name === 'Morning'));
-    check("D28: the preset an old-module tab deleted from the account only (\"the copy on this device stays\") stays on the device, is not sent up again, and is not put in the recovery bin", ok && !!presets.Morning && !sent && !cloud.find('preset', 'Morning') && !bin['Dashboard/preset/Morning'], JSON.stringify({ ok, presets: Object.keys(presets), sent, bin: Object.keys(bin) }));
+    check("D28: the preset an old-module tab deleted from the account only (\"the copy on this device stays\") stays on the device, is not sent up again, and is not put in the recovery bin", ok && !!presets.Morning && !sent && !cloud.find('preset', 'Morning') && !Object.keys(bin).some(k => k.startsWith('Dashboard/preset/Morning')), JSON.stringify({ ok, presets: Object.keys(presets), sent, bin: Object.keys(bin) }));
     check('D28: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D29. the account deleted on this device: the copies kept for it stay, as this device's, shown signed out ----
+  if (want('D29')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const at = '2026-09-30T08:00:00.000Z';
+    const rep = { v: 1, users: { [UID]: { ['Dashboard/settings/default#signin@' + at]: { tool: 'Dashboard', kind: 'settings', name: 'default', at, why: 'signin', value: { location: 'Boston, MA' } } } } };
+    const bin = { v: 1, users: { [UID]: { ['Dashboard/preset/Evening@' + at]: { tool: 'Dashboard', kind: 'preset', name: 'Evening', label: 'Evening', at, value: { headerLang: 'he', showTimer: false } } } } };
+    const ctx = await openContext(browser, cloud, SEED({ extra: { ivritSuite_replaced: JSON.stringify(rep), ivritSuite_removedByAccount: JSON.stringify(bin) } }));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    await page.evaluate((UID) => IvritSaves.forgetUser(UID), UID);   // what account.html's deletion does
+    const users = async (k) => (((await lsJSON(page, k)) || {}).users) || {};
+    const r2 = await users('ivritSuite_replaced'), b2 = await users('ivritSuite_removedByAccount');
+    const dev = (u) => Object.values(u._device || {});
+    check("D29: deleting the account keeps the copies kept for it (the device's earlier settings, the recovery bin) as this device's own; none dropped", !r2[UID] && !b2[UID] && dev(r2).some(x => x.value && x.value.location === 'Boston, MA') && dev(b2).some(x => x.name === 'Evening'), JSON.stringify({ r2: Object.keys(r2), b2: Object.keys(b2) }));
+    // the account is gone: this browser is signed out, and the notes are there for whoever uses it
+    await page.evaluate((k) => localStorage.removeItem(k), AUTH_KEY);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'anonymous', null, { timeout: HYDRATE_MS }).catch(() => {});
+    await page.waitForTimeout(800);
+    const boxes = await page.evaluate(() => [...document.querySelectorAll('#cloudSavesPanel .ivsav-replaced')].map(b => b.getAttribute('data-why')).sort());
+    let file = null;
+    if (boxes.includes('removed')) {
+      const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 8000 }).catch(() => null), page.evaluate(() => document.querySelector('#cloudSavesPanel .ivsav-replaced[data-why="removed"] button').click())]);
+      if (dl) { const fp = await dl.path(); file = fp ? fs.readFileSync(fp, 'utf8') : ''; }
+    }
+    check('D29: signed out, the status line shows both notes, and the bin\'s Download holds the item', boxes.join('|') === 'removed|signin' && !!file && file.includes('Evening'), JSON.stringify({ boxes, file: !!file }));
+    check('D29: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D30. settings changed while signed out after a button sign-out are kept when the account's land at the next sign-in ----
+  if (want('D30')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const ctx = await openContext(browser, cloud, SEED({}));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    const keptCopies = async () => { const u = (((await lsJSON(page, 'ivritSuite_replaced')) || {}).users || {})[UID] || {}; return Object.keys(u).filter(k => k.startsWith('Dashboard/settings/default#signin@')).map(k => u[k].value.location); };
+    const loc0 = (await dashState(page)).location;
+    const out1 = await clickSignOut(page);
+    await page.evaluate(() => { document.getElementById('locationInput').value = 'Eilat'; updateLocation(); });   // signed out: a week of work here
+    await page.waitForTimeout(400);
+    const signedOutLoc = JSON.parse((await ls(page, 'hebrewDashboard_settings')) || '{}').location;
+    await setSession(page);
+    await page.reload({ waitUntil: 'domcontentloaded' }); await waitSignedIn(page);
+    const ok1 = await settled(page, DASH_TOOLS);
+    const after = await dashState(page), kept1 = await keptCopies();
+    const note1 = await page.evaluate(() => { const b = document.querySelector('#cloudSavesPanel .ivsav-replaced[data-why="signin"]'); return b ? b.innerText : null; });
+    check("D30: signed in again, the account's settings land (its location) and the location set while signed out (Eilat) is kept for download, named on the status line", loc0 === 'Atlanta, GA' && out1 && signedOutLoc === 'Eilat' && ok1 && after.location === 'Atlanta, GA' && kept1.includes('Eilat') && !!note1, JSON.stringify({ loc0, out1, signedOutLoc, ok1, location: after.location, kept1, note1: !!note1 }));
+    // Dismiss, then two more sign-out / sign-in rounds with no edit: whatever the page writes on its own is kept at most
+    // once, and once dismissed it never comes back
+    const dismiss = () => page.evaluate(() => { const b = [...document.querySelectorAll('#cloudSavesPanel .ivsav-replaced[data-why="signin"] button')].pop(); if (b) b.click(); return !!b; });
+    await dismiss();
+    const round = async () => { await clickSignOut(page); await page.waitForTimeout(600); await setSession(page); await page.reload({ waitUntil: 'domcontentloaded' }); await waitSignedIn(page); return settled(page, DASH_TOOLS); };
+    const ok2 = await round(); await dismiss();
+    const ok3 = await round();
+    const kept3 = await keptCopies();
+    check('D30: after a dismiss, a sign-out and sign-in with nothing changed while signed out keeps no new copy (no note at every sign-in)', ok2 && ok3 && kept3.length === 0, JSON.stringify({ ok2, ok3, kept3 }));
+    check('D30: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D31. Trope practice done signed out after a button sign-out survives the next sign-in, under an old reset ----
+  if (want('D31')) {
+    const reset = 1759000000000;
+    const cloud = new FakeCloud([{ tool: 'TropeTutor', kind: 'progress', name: 'default', data: { v: 1, resetAt: reset, tropes: { etnachta: { r: 2, w: 0 } }, families: {}, pbStreak: 1 } }]);
+    const TT = ['TropeTutor', 'Suite'];
+    const ctx = await openContext(browser, cloud, SEED({}));
+    const { page, errors } = await openPage(ctx, 'trope_tutor.html', { tools: TT });
+    const landed = await lsJSON(page, 'hebrewTropeTutor_progress');
+    const out = await clickSignOut(page);
+    const gone = await ls(page, 'hebrewTropeTutor_progress');
+    await page.evaluate(() => { progress.tropes.sofpasuk = { r: 7, w: 1 }; progress.pbStreak = 5; saveProgress(); });   // practice, signed out
+    await setSession(page);
+    await page.reload({ waitUntil: 'domcontentloaded' }); await waitSignedIn(page);
+    const ok = await settled(page, TT);
+    const local = await lsJSON(page, 'hebrewTropeTutor_progress'), row = cloud.find('progress', 'default', 'TropeTutor');
+    const good = (p) => !!p && ((p.tropes || {}).sofpasuk || {}).r === 7 && ((p.tropes || {}).etnachta || {}).r === 2 && p.pbStreak === 5 && p.resetAt === reset;
+    check('D31: the practice done signed out (sofpasuk 7, streak 5) is merged with the account\'s, here and in the account; the old reset watermark stays', !!landed && landed.resetAt === reset && out && gone === null && ok && good(local) && good(row && row.data), JSON.stringify({ out, gone, ok, local, row: row && row.data }));
+    check('D31: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D32. a nearly full storage: nothing reverts, nothing loops; a dispensable merge base makes room ----
+  if (want('D32')) {
+    // Fills this origin's storage with a filler key until only `free` characters are left (Font Maker Recents in real life).
+    const fill = (page, free) => page.evaluate((free) => {
+      localStorage.removeItem('__fill');
+      let lo = 0, hi = 6000000;
+      while (lo < hi) { const mid = Math.ceil((lo + hi) / 2); try { localStorage.setItem('__fill', 'x'.repeat(mid)); lo = mid; } catch (e) { hi = mid - 1; } }
+      localStorage.setItem('__fill', 'x'.repeat(Math.max(0, lo - free)));
+      return lo;
+    }, free);
+    for (const withBase of [false, true]) {
+      const cloud = new FakeCloud(CLOUD_ROWS().filter(r => r.kind === 'settings'));
+      const row = cloud.find('settings', 'default');
+      const device = Object.assign({}, DEVICE_SETTINGS, row.data);   // the page's whole blob holding the account's settings, never remembered here
+      const extra = { hebrewDashboard_settings: JSON.stringify(device) };
+      if (withBase) extra.ivritSuite_syncBase = JSON.stringify({ v: 1, users: { [UID]: { 'Dashboard/old/default': { h: 'x', text: 'y'.repeat(4000) } } } });
+      const ctx = await openContext(browser, cloud, SEED({ extra }));
+      // a first visit that cannot reach the account: the page writes its own keys, nothing is remembered; then the
+      // storage fills up (Font Maker Recents in real life)
+      cloud.abortWhen = (url) => /\/rest\/v1\//.test(url.pathname);
+      const pre = await openPage(ctx, 'classroom_dashboard.html', { signedIn: false });
+      await pre.page.waitForTimeout(2500);
+      await fill(pre.page, Number(process.env.D32_FREE || 400));
+      await pre.page.close();
+      cloud.abortWhen = null;
+      const { page, errors } = await openPage(ctx, 'classroom_dashboard.html', { signedIn: false });
+      await page.waitForTimeout(3000);
+      const from = cloud.log.length;
+      await page.evaluate(() => { document.getElementById('locationInput').value = 'Eilat'; updateLocation(); });
+      await page.waitForTimeout(5000);
+      const loc = JSON.parse((await ls(page, 'hebrewDashboard_settings')) || '{}').location;
+      const calls = cloud.log.slice(from).filter(e => e.table === 'saves').length;
+      const st = await statusLine(page, '#cloudSavesPanel');
+      if (!withBase) {
+        check('D32: storage full and no merge base to drop: the location set here stays (not reverted to the account\'s), no request loop, the status line says storage is full', loc === 'Eilat' && calls <= 2 && row.data.location === 'Atlanta, GA' && !!st && /storage for this site is full/.test(st.text), JSON.stringify({ loc, calls, account: row.data.location, st }));
+      } else {
+        const base = await ls(page, 'ivritSuite_syncBase');
+        check('D32: storage full with a merge base: the base is dropped to make room, and the location goes up to the account', loc === 'Eilat' && base === null && row.data.location === 'Eilat' && calls <= 6, JSON.stringify({ loc, base: base && base.length, account: row.data.location, calls, st }));
+      }
+      check('D32 (' + (withBase ? 'base' : 'no base') + '): 0 pageerrors', errors.length === 0, errors.join(' | '));
+      await ctx.close();
+    }
+  }
+  // ---- D33. a too-big item refused by write-through after the hydration is counted by the sign-out and Erase confirms ----
+  if (want('D33')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const ctx = await openContext(browser, cloud, SEED({ device: true }));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    const before = await page.evaluate(() => IvritSaves.pendingSignOut().unsynced);
+    await page.evaluate(() => { const p = JSON.parse(localStorage.getItem('hebrewDashboard_presets') || '{}'); p.Huge = { headerLang: 'en', note: 'z'.repeat(1900000) }; localStorage.setItem('hebrewDashboard_presets', JSON.stringify(p)); });
+    await page.waitForTimeout(3500);
+    const ok = await settled(page, DASH_TOOLS);
+    const after = await page.evaluate(() => IvritSaves.pendingSignOut().unsynced);
+    check('D33: a preset too big for the account, saved after the hydration, is counted as not in the account (the confirms do not promise the account keeps it)', ok && after >= before + 1 && !cloud.find('preset', 'Huge'), JSON.stringify({ ok, before, after }));
+    check('D33: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D34. a first sign-in whose suite-wide preferences differ: the account's land and this device's are kept ----
+  if (want('D34')) {
+    const cloud = new FakeCloud([{ tool: 'Suite', kind: 'prefs', name: 'default', data: { dictNikudColors: { kamatz: '#abcdef' }, kbdLayout: 'qwerty' } }]);
+    const ctx = await openContext(browser, cloud, SEED({ extra: { hebrewDictionary_nikudColors: JSON.stringify({ kamatz: '#123456', patach: '#654321' }), hebrewBlender_kbdLayout: 'abc' } }));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    const kept = (((await lsJSON(page, 'ivritSuite_replaced')) || {}).users || {})[UID] || {};
+    const k = Object.keys(kept).find(x => x.startsWith('Suite/prefs/default#signin@'));
+    const colors = JSON.parse((await ls(page, 'hebrewDictionary_nikudColors')) || '{}');
+    check("D34: the account's preferences land, and this device's own (its nikud colours, keyboard layout) are kept for download", colors.kamatz === '#abcdef' && !!k && kept[k].value.dictNikudColors.kamatz === '#123456' && kept[k].value.kbdLayout === 'abc', JSON.stringify({ colors, kept: k && kept[k].value }));
+    check('D34: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D35. an item edited in this tab while a hydration that plans to remove it runs: the edit is kept ----
+  if (want('D35')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const gone = cloud.add({ tool: 'Dashboard', kind: 'preset', name: 'Evening', data: { headerLang: 'he', showTimer: false } });
+    const mem = memOf(gone);
+    cloud.rows = cloud.rows.filter(r => r !== gone);   // deleted on another device
+    const sched = cloud.find('schedule', '2026-2027');
+    const ctx = await openContext(browser, cloud, SEED({ device: true, memory: { Dashboard: { preset: { Evening: mem } } }, extra: { hebrewDashboard_presets: JSON.stringify({ Morning: cloud.find('preset', 'Morning').data, Evening: gone.data, Default: {} }) } }));
+    // the download of a schedule (the 'down' phase, before the removals) is held for 2.5 s: the teacher edits meanwhile
+    cloud.delayFor = (url, m) => (m === 'GET' && url.searchParams.get('id') === 'eq.' + sched.id && cloud.delayed === 0) ? 2500 : 0;
+    const page = await ctx.newPage();
+    const errors = []; page.on('pageerror', e => errors.push(String(e && e.message || e))); page.on('dialog', d => d.accept().catch(() => {}));
+    await page.goto(BASE + '/classroom_dashboard.html', { waitUntil: 'domcontentloaded' });
+    const held = await waitLog(() => cloud.delayed > 0, HYDRATE_MS);
+    await page.evaluate(() => { const p = JSON.parse(localStorage.getItem('hebrewDashboard_presets') || '{}'); p.Evening = { headerLang: 'he', showTimer: true, note: 'edited just now' }; localStorage.setItem('hebrewDashboard_presets', JSON.stringify(p)); });
+    const ok = await settled(page, DASH_TOOLS, HYDRATE_MS);
+    const presets = (await lsJSON(page, 'hebrewDashboard_presets')) || {};
+    const bin = (((await lsJSON(page, 'ivritSuite_removedByAccount')) || {}).users || {})[UID] || {};
+    check('D35: the preset edited during the hydration that would have removed it (deleted on another device) stays here with the edit, and is not moved to the recovery bin', held && ok && !!presets.Evening && presets.Evening.note === 'edited just now' && !Object.keys(bin).length, JSON.stringify({ held, ok, evening: presets.Evening, bin: Object.keys(bin) }));
+    await page.evaluate(() => IvritSaves._test.hydrate(['Dashboard']));
+    await settled(page, DASH_TOOLS);
+    const up = cloud.find('preset', 'Evening');
+    check('D35: the later edit wins: it goes up to the account again', !!up && up.data.note === 'edited just now', JSON.stringify(up && up.data));
+    check('D35: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D36. a font re-saved after its deletion could not be sent: the deletion is undone, never sent later ----
+  if (want('D36')) {
+    const cloud = new FakeCloud(WORKSHEET_ROWS().concat([FONT_ROW()]));
+    const ctx = await openContext(browser, cloud, SEED({}));
+    const { page, errors } = await openPage(ctx, 'index.html', { tools: [] });
+    await page.waitForFunction(() => listUserFonts().then(l => l.some(f => f.name === 'Morah Handwriting')), null, { timeout: 10000 }).catch(() => {});
+    cloud.abortWhen = (url, m) => m === 'DELETE';   // the deletion cannot be sent now
+    await page.evaluate(() => deleteMyFontFile('Morah Handwriting'));
+    await waitLog(() => cloud.log.some(e => e.m === 'DELETE' && e.aborted), 10000);
+    await sleep(300);
+    cloud.abortWhen = null;
+    const from = cloud.log.length;
+    await page.evaluate(async (b64) => { const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); await saveUserFont('Morah Handwriting', u, 'Morah Handwriting'); }, B64);   // the same file again
+    await sleep(1500);
+    await settled(page, ['Suite'], 10000);
+    await page.evaluate(() => IvritSaves._test.hydrate(['Suite']));
+    await settled(page, ['Suite'], 10000);
+    const memRec = ((((((await meta2(page)) || {}).users || {})[UID] || {}).Suite || {}).font || {})['Morah Handwriting'] || null;
+    check('D36: the font saved again (same bytes) stays in the account: no DELETE is sent later, the memory holds no deletion', reqs(cloud, from, 'DELETE').length === 0 && !!cloud.find('font', 'Morah Handwriting') && !!memRec && !memRec.deleted && (await fontsIn(page)).includes('Morah Handwriting'), JSON.stringify({ calls: methods(cloud, from), mem: memRec, fonts: await fontsIn(page) }));
+    check('D36: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
 } finally {

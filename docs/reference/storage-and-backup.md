@@ -116,8 +116,11 @@ export/import as a bug to fix, not a pattern to copy.
   merge) and `ivritSuite_replaced` (a settings version a merge did not keep — the device's own settings the
   account's copy replaced at a first sign-in, or the other side's version of a setting both changed — kept for
   download until dismissed) and `ivritSuite_removedByAccount` (the recovery bin: a copy of each item removed here
-  because the account no longer lists it, for 30 days or until dismissed); none of them ride export/import (a session must
-  never travel in a file, and sync memory is per device), and `eraseAllSettings` calls `IvritSaves.suspend()`
+  because the account no longer lists it, until dismissed; both kinds of copy become this device's own when the
+  account is gone, and are shown signed out too); none of them ride export/import (a session must never travel
+  in a file, and sync memory is per device) — the kept copies leave through their own status-line downloads, and
+  Erase All's *Back up first* downloads them after the AllTools file (`IvritSaves.downloadKept()`) — and
+  `eraseAllSettings` calls `IvritSaves.suspend()`
   right after its final confirm (so nothing it removes goes up as a deletion) and removes every `sb-` key plus
   the six `ivritSuite_*` keys — "erase" also means signed out on this device — then reloads when a session was
   there. Which of the keys above have an account copy is decided in one place, `IVRIT_SYNC_REGISTRY` in
