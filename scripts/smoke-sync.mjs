@@ -92,6 +92,17 @@
  *      locally and in the account.
  *  D17. A stale second tab at the sign-out: tab A's newer location stays in the account after the next sign-in,
  *      and tab B's own unsaved board text still goes up.
+ *  D18. A session that ended by itself, then an older copy of a preset restored signed out: the next sign-in
+ *      keeps both copies, in the account and on the device (the account's newer copy is never overwritten); a class
+ *      list restored one student short merges.
+ *  D19. Two devices change the same setting: the later change is kept in the account, and the other version stays on
+ *      the device that merged, named on its status line and downloadable.
+ *  D20. A hidden background tab another tab has written since does not replay its older copy when it hydrates in
+ *      the background: the other tab's new location reaches the account.
+ *  D21. A row deleted elsewhere between two listing pages (server capped at 3 rows a page): the short listing is
+ *      refused and nothing leaves the device; the next complete listing applies the deletion.
+ *  D22. The Dictionary's "use in generator" link (?wl=) opens Real Words from that list and leaves the remembered
+ *      setup alone, on the device and in the account.
  *
  * Every scenario asserts 0 pageerrors. Run from the repo root:
  *   node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
@@ -219,6 +230,8 @@ class FakeCloud {
       if (range) { from = Number(range[1]); to = Number(range[2]) + 1; }
       if (q.has('offset')) from = Number(q.get('offset'));
       if (q.has('limit')) to = from + Number(q.get('limit'));
+      if (this.maxRows) to = Math.min(to, from + this.maxRows);   // PostgREST's max-rows cap
+      entry.from = from; entry.total = rows.length;
       rows = rows.slice(from, to);
     } else if (m === 'POST') {
       const bodies = Array.isArray(entry.body) ? entry.body : [entry.body];
@@ -241,7 +254,10 @@ class FakeCloud {
       if (out.length !== 1) { entry.status = 406; return json(406, { code: 'PGRST116', details: 'The result contains ' + out.length + ' rows', hint: null, message: 'JSON object requested, multiple (or no) rows returned' }); }
       return json(entry.status, out[0]);
     }
-    return json(entry.status, out, m === 'GET' ? { 'content-range': (out.length ? '0-' + (out.length - 1) : '*') + '/*' } : null);
+    const counted = m === 'GET' && /count=exact/.test(headers.prefer || '');
+    const res = json(entry.status, out, m === 'GET' ? { 'content-range': (out.length ? entry.from + '-' + (entry.from + out.length - 1) : '*') + '/' + (counted ? entry.total : '*') } : null);
+    if (m === 'GET' && this.afterPage) this.afterPage(entry, q);
+    return res;
   }
 }
 
@@ -1352,6 +1368,135 @@ try {
     const local = (await lsJSON(B.page, 'hebrewDashboard_settings')) || {};
     check("D17: the next sign-in keeps tab A's newer location in the account and on the device (tab B's stale copy did not revert it), and tab B's typed board text reached the account", ok && row.data.location === 'Haifa' && local.location === 'Haifa' && row.data.dashTextHTML === '<div>from tab B</div>' && local.dashTextHTML === '<div>from tab B</div>' && reqs(cloud, from, 'DELETE').length === 0, JSON.stringify({ ok, cloud: { location: row.data.location, board: row.data.dashTextHTML }, local: { location: local.location, board: local.dashTextHTML }, calls: methods(cloud, from) }));
     check('D17: 0 pageerrors in both tabs', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
+    await ctx.close();
+  }
+  // ---- D18. the session ended by itself, then an older copy was restored signed out: the next sign-in keeps both ----
+  if (want('D18')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const row = cloud.find('preset', 'Morning');
+    const newer = JSON.parse(JSON.stringify(row.data)), older = { headerLang: 'he', showTimer: false };
+    const ctx = await openContext(browser, cloud, SEED({ device: true }));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    const landed = ((await lsJSON(page, 'hebrewDashboard_presets')) || {}).Morning;
+    // the session ends by itself (the stored session is gone at the next load), and the memory stays
+    await page.evaluate((k) => localStorage.removeItem(k), AUTH_KEY);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'anonymous', null, { timeout: HYDRATE_MS });
+    const memKept = (await memoryOf(page, 'Dashboard', 'preset')).includes('Morning');
+    // signed out, the device is its own: an older copy of the preset is restored over it (what a .ivrit Replace writes)
+    await page.evaluate((older) => {
+      const p = JSON.parse(localStorage.getItem('hebrewDashboard_presets') || '{}'); p.Morning = older; localStorage.setItem('hebrewDashboard_presets', JSON.stringify(p));
+      const st = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}');   // ...and an older class list, one student short
+      if (st.rosters && st.rosters.lap_0) { st.rosters.lap_0.names = ['Noa']; localStorage.setItem('hebrewDashboard_settings', JSON.stringify(st)); }
+    }, older);
+    const from = cloud.log.length;
+    await setSession(page);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitSignedIn(page);
+    const ok = await settled(page, DASH_TOOLS, HYDRATE_MS);
+    const local = (await lsJSON(page, 'hebrewDashboard_presets')) || {};
+    const presetRows = cloud.rows.filter(r => r.tool === 'Dashboard' && r.kind === 'preset');
+    const holds = (v) => presetRows.some(r => canonJson(r.data) === canonJson(v));
+    const localHolds = (v) => Object.values(local).some(x => canonJson(x) === canonJson(v));
+    check("D18: the account's preset landed, and the memory survived a session that ended by itself", canonJson(landed) === canonJson(newer) && memKept, JSON.stringify({ landed, memKept }));
+    check("D18: the next sign-in keeps both: the account still holds its newer copy beside the older one restored signed out, and so does the device", ok && holds(newer) && holds(older) && localHolds(newer) && localHolds(older) && reqs(cloud, from, 'DELETE').length === 0, JSON.stringify({ ok, cloud: presetRows.map(r => r.name + '=' + canonJson(r.data)), local: Object.keys(local), calls: methods(cloud, from) }));
+    const roster = cloud.find('roster', 'lap_0');
+    const localNames = (((((await lsJSON(page, 'hebrewDashboard_settings')) || {}).rosters || {}).lap_0) || { names: [] }).names || [];
+    check('D18: the class list restored one student short merged instead of overwriting: the account and the device still hold both students', ok && !!roster && ['Noa', 'Eitan'].every(n => (roster.data.names || []).includes(n)) && ['Noa', 'Eitan'].every(n => localNames.includes(n)), JSON.stringify({ ok, account: roster && roster.data.names, local: localNames, calls: methods(cloud, from) }));
+    check('D18: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D19. two devices change the same setting: one change is kept, the other version stays downloadable ----
+  if (want('D19')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const row = cloud.find('settings', 'default');
+    const ctxA = await openContext(browser, cloud, SEED({ device: true }));
+    const A = await openPage(ctxA, 'classroom_dashboard.html');
+    const ctxB = await openContext(browser, cloud, SEED({ device: true }));
+    const B = await openPage(ctxB, 'classroom_dashboard.html');
+    await B.page.evaluate(() => { document.getElementById('locationInput').value = 'Haifa'; updateLocation(); });
+    const okB = await settled(B.page, DASH_TOOLS);
+    const from = cloud.log.length;
+    await A.page.evaluate(() => { document.getElementById('locationInput').value = 'Eilat'; updateLocation(); });
+    const okA = await settled(A.page, DASH_TOOLS, 10000);
+    const kept = await A.page.evaluate((UID) => (((JSON.parse(localStorage.getItem('ivritSuite_replaced') || 'null') || {}).users || {})[UID] || {}), UID);
+    const stash = kept['Dashboard/settings/default#both'] || null, atSignIn = kept['Dashboard/settings/default'] || null;
+    check('D19: both devices changed the location; the later change (device A) is in the account and the other version (Haifa) is kept on device A', okB && okA && row.data.location === 'Eilat' && !!stash && stash.why === 'both' && stash.value.location === 'Haifa' && reqs(cloud, from, 'DELETE').length === 0, JSON.stringify({ okB, okA, location: row.data.location, stash: stash && { why: stash.why, location: stash.value.location }, calls: methods(cloud, from) }));
+    check("D19: the copy of device A's own settings kept at its first sign-in (Boston) is still there beside it", !!atSignIn && atSignIn.why === 'signin' && atSignIn.value.location === 'Boston, MA', JSON.stringify(atSignIn && { why: atSignIn.why, location: atSignIn.value.location }));
+    await A.page.evaluate(() => { const h = document.getElementById('cloudSavesPanel'); let n = h; while (n) { if (n.classList) n.classList.remove('collapsed'); n = n.parentElement; } });
+    const note = await A.page.evaluate(() => { const b = document.querySelector('#cloudSavesPanel .ivsav-replaced[data-why="both"]'); return b ? b.innerText : null; });
+    let file = null;
+    if (note) {
+      const [dl] = await Promise.all([A.page.waitForEvent('download', { timeout: 8000 }).catch(() => null), A.page.evaluate(() => document.querySelector('#cloudSavesPanel .ivsav-replaced[data-why="both"] button').click())]);
+      if (dl) { const fp = await dl.path(); file = { name: dl.suggestedFilename(), text: fp ? fs.readFileSync(fp, 'utf8') : '' }; }
+    }
+    check("D19: device A's status line names it and its Download holds the other version", !!note && /changed on this device and on another one/.test(note) && !!file && /_settings_other_version_/.test(file.name) && file.text.includes('Haifa'), JSON.stringify({ note, file: file && { name: file.name, haifa: file.text.includes('Haifa') } }));
+    check('D19: 0 pageerrors on both devices', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
+    await ctxA.close(); await ctxB.close();
+  }
+  // ---- D20. a hidden background tab does not replay its older copy over another tab's newer, not-yet-sent edit ----
+  if (want('D20')) {
+    const cloud = new FakeCloud(CLOUD_ROWS());
+    const row = cloud.find('settings', 'default');
+    const ctx = await openContext(browser, cloud, SEED({ device: true }));
+    const A = await openPage(ctx, 'classroom_dashboard.html');
+    const B = await openPage(ctx, 'classroom_dashboard.html');
+    // tab B goes to the background: hidden, it writes what it had then
+    await B.page.evaluate(() => { Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' }); document.dispatchEvent(new Event('visibilitychange')); });
+    await sleep(300);
+    // tab A changes the location; inside A's 2 s window tab B hydrates in the background (a retry, the network back)
+    await A.page.evaluate(() => { document.getElementById('locationInput').value = 'Haifa'; updateLocation(); });
+    await sleep(250);
+    await B.page.evaluate(() => IvritSaves.hydrate(['Dashboard']).catch(() => null));
+    const right = await B.page.evaluate(() => ({ inB: settings.location, store: JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}').location }));
+    check("D20: right after the hidden tab B's background hydration the device still holds tab A's new location (B's in-memory copy is the older one and was not written)", right.store === 'Haifa' && right.inB !== 'Haifa', JSON.stringify(right));
+    const okA = await settled(A.page, DASH_TOOLS, 10000);
+    await sleep(800);
+    const stored = (await lsJSON(A.page, 'hebrewDashboard_settings')) || {};
+    check("D20: tab A's new location reached the account and stays on the device; the hidden tab B did not write its older copy over it", okA && row.data.location === 'Haifa' && stored.location === 'Haifa', JSON.stringify({ okA, account: row.data.location, stored: stored.location, calls: methods(cloud, 0) }));
+    check('D20: 0 pageerrors in both tabs', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
+    await ctx.close();
+  }
+  // ---- D21. a row deleted elsewhere between two listing pages: the short listing is refused, nothing leaves the device ----
+  if (want('D21')) {
+    const extra = ['P1', 'P2', 'P3', 'P4'].map(n => ({ tool: 'Dashboard', kind: 'preset', name: n, data: { headerLang: 'en', label: n } }));
+    const cloud = new FakeCloud(CLOUD_ROWS().concat(extra));
+    cloud.maxRows = 3;
+    const ctx = await openContext(browser, cloud, SEED({ device: true }));
+    const { page, errors } = await openPage(ctx, 'classroom_dashboard.html');
+    const names = async () => Object.keys((await lsJSON(page, 'hebrewDashboard_presets')) || {}).sort();
+    const first = await names();
+    check('D21: with the server capped at 3 rows a page, every preset landed (the listing paged by its exact count)', ['Morning', 'P1', 'P2', 'P3', 'P4'].every(n => first.includes(n)), JSON.stringify({ first, pages: cloud.log.filter(e => e.m === 'GET' && e.table === 'saves' && /data_hash/.test(decodeURIComponent(e.search))).length }));
+    // the next load: right after the first listing page, another device deletes P1 (on that page), so the next page skips one row
+    cloud.afterPage = (entry, q) => { if (entry.from === 0 && /data_hash/.test(q.get('select') || '')) { cloud.afterPage = null; cloud.rows = cloud.rows.filter(r => !(r.kind === 'preset' && r.name === 'P1')); } };
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitSignedIn(page);
+    const failed = await page.waitForFunction(() => window.__ev && window.__ev.hydrated.length > 0 && IvritSaves._test.idle(), null, { timeout: HYDRATE_MS }).then(() => page.evaluate(() => window.__ev.hydrated.map(d => d.ok))).catch(() => null);
+    await sleep(500);
+    const second = await names();
+    check('D21: the short listing removed nothing from the device (every preset still here, P1 included) and the hydration reported failure', ['Morning', 'P1', 'P2', 'P3', 'P4'].every(n => second.includes(n)) && reqs(cloud, 0, 'DELETE').length === 0 && Array.isArray(failed) && failed.includes(false), JSON.stringify({ second, failed, calls: methods(cloud, 0).slice(-400) }));
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitSignedIn(page);
+    const ok3 = await settled(page, DASH_TOOLS, HYDRATE_MS);
+    const third = await names();
+    check('D21: the next complete listing applies the other device\'s deletion (P1 gone) and keeps every other preset', ok3 && !third.includes('P1') && ['Morning', 'P2', 'P3', 'P4'].every(n => third.includes(n)), JSON.stringify({ ok3, third }));
+    check('D21: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  // ---- D22. the Dictionary's "use in generator" link (?wl=) leaves the remembered setup alone, here and in the account ----
+  if (want('D22')) {
+    const mine = { wsTitle: 'MINE — my Tuesday setup' };
+    const dict = DICT_ROWS()[0];
+    const cloud = new FakeCloud(WORKSHEET_ROWS().concat(DICT_ROWS(), [{ tool: 'Worksheet', kind: 'lastState', name: 'default', data: mine }]));
+    const lastRow = cloud.find('lastState', 'default', 'Worksheet');
+    const lists = {}; DICT_ROWS().forEach(r => { lists[r.name] = r.data; });
+    const ctx = await openContext(browser, cloud, SEED({ extra: { hebrewBlender_lastState: JSON.stringify(mine), ivritSuite_wordLists: JSON.stringify({ v: 1, lists }) } }));
+    const { page, errors } = await openPage(ctx, 'hebrew_blend_generator.html?wl=' + encodeURIComponent(dict.name), { tools: GEN_TOOLS });
+    await sleep(2600);
+    const ok = await settled(page, GEN_TOOLS);
+    const view = await page.evaluate(() => ({ rw: typeof rwSource === 'string' ? rwSource : null, stored: JSON.parse(localStorage.getItem('hebrewBlender_lastState') || 'null') }));
+    check('D22: the ?wl= link opened Real Words from that list, and the remembered setup stayed the teacher\'s on the device and in the account (no PATCH of it)', ok && view.rw === 'lists' && !!view.stored && view.stored.wsTitle === mine.wsTitle && lastRow.data.wsTitle === mine.wsTitle && patchesSince(cloud, 0, lastRow.id).length === 0, JSON.stringify({ ok, view: { rw: view.rw, title: view.stored && view.stored.wsTitle }, account: lastRow.data.wsTitle, calls: methods(cloud, 0).slice(-300) }));
+    check('D22: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
 } finally {

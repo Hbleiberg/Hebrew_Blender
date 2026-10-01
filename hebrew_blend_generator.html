@@ -13859,9 +13859,11 @@ function restoreFromURL() {
       if (rwT) rwT.checked = true;
       selectedWordListIds = new Set([wlParam]);
       _urlSetupActive = true;
-      try { _urlSetupText = JSON.stringify(getSettings()); } catch (e) { _urlSetupText = null; }
       rwSource = 'lists';        // set before toggleRealWordsUI so its setRwSource(rwSource) skips the corpus load
       toggleRealWordsUI();       // enter Real-Words mode; setRwSource('lists') renders the picker (list pre-checked)
+      // the link's setup as generate() will read it (Real Words from this list): rememberSetup leaves the teacher's
+      // remembered setup alone until she changes a control
+      try { _urlSetupText = JSON.stringify(getSettings()); } catch (e) { _urlSetupText = null; }
       try { generate(); } catch(e) {}
       _stripShareParams();
       return;                    // ?wl= handled — skip ?s=

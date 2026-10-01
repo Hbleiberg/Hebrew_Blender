@@ -341,6 +341,7 @@
   var dirty = {};          // tool → kind → true: a page wrote that key since the last flush
   var timers = {};         // tool → the debounce timer
   var stale = {};          // tool → kind → true: another tab wrote that kind; hydrate before diffing
+  var hiddenFlushed = false;   // this tab was hidden and wrote what it had then; nothing is typed here until it is shown
   var seenNames = {};      // tool → kind → { name: hash (or true before it is known) } — each item as this tab last saw it
   var tabBase = {};        // tool → kind → { name: canonical JSON } — a settings row as this tab last saw it (its own merge base)
   var hookOn = false;      // write-through is armed (a signed-in hydration ran on this page)
@@ -827,30 +828,39 @@
       });
     } catch (e) {}
   }
-  function replacedFor(uid, tool) {
+  function replacedFor(uid, tool, why) {
     var u = replacedAll().users[uid];
     if (!isPlainObject(u)) return [];
-    return Object.keys(u).filter(function (k) { return isPlainObject(u[k]) && (!tool || u[k].tool === tool); }).map(function (k) { return u[k]; });
+    return Object.keys(u).filter(function (k) { return isPlainObject(u[k]) && (!tool || u[k].tool === tool) && (!why || replacedWhy(u[k]) === why); }).map(function (k) { return u[k]; });
   }
-  function replacedKeep(uid, entry, name, value) {
+  // `why`: 'signin' — the account's copy replaced this device's at a first sign-in (the device's kept); 'both' — this
+  // device and another changed the same setting, one change was kept and this is the other version.
+  function replacedKeep(uid, entry, name, value, why) {
     var text = canonJson(value);
     if (text.length > MAX_BYTES) return;
     var r = replacedAll(); if (!isPlainObject(r.users[uid])) r.users[uid] = {};
-    r.users[uid][baseKey(entry.tool, entry.kind, name)] = { tool: entry.tool, kind: entry.kind, name: name, at: now(), value: value };
+    var w = why === 'both' ? 'both' : 'signin';   // one slot per reason: a later conflict never overwrites the copy kept at a first sign-in
+    r.users[uid][baseKey(entry.tool, entry.kind, name) + (w === 'both' ? '#both' : '')] = { tool: entry.tool, kind: entry.kind, name: name, at: now(), why: w, value: value };
     replacedSave(r);
   }
-  function replacedDrop(uid, tool) {
+  function replacedWhy(x) { return x && x.why === 'both' ? 'both' : 'signin'; }
+  // A field-by-field merge dropped a value `side` had changed (against `base`): that side's version is the one to keep.
+  function lostFields(base, side, merged) {
+    var c = function (o, key) { return (isPlainObject(o) && hasOwn(o, key)) ? canonJson(o[key]) : '\u0000none'; };
+    return isPlainObject(side) && Object.keys(side).some(function (k) { return !badName(k) && c(side, k) !== c(base, k) && c(merged, k) !== c(side, k); });
+  }
+  function replacedDrop(uid, tool, why) {
     var r = replacedAll(), u = r.users[uid];
     if (!isPlainObject(u)) return;
-    Object.keys(u).forEach(function (k) { if (isPlainObject(u[k]) && u[k].tool === tool) delete u[k]; });
+    Object.keys(u).forEach(function (k) { if (isPlainObject(u[k]) && u[k].tool === tool && (!why || replacedWhy(u[k]) === why)) delete u[k]; });
     replacedSave(r);
   }
-  function replacedDownload(uid, tool) {
-    var list = replacedFor(uid, tool);
+  function replacedDownload(uid, tool, why) {
+    var list = replacedFor(uid, tool, why);
     if (!list.length) return;
     var rows = list.map(function (x) { return { tool: x.tool, kind: x.kind, name: x.name, data: x.value }; });
     var b = bundleFromRows(registryFor(tool), rows);
-    downloadJson({ _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', partial: true, savedAt: now(), data: b.data }, 'IvritSuite_' + tool + '_settings_before_sign_in_' + now().slice(0, 10) + '.ivrit');
+    downloadJson({ _ivritSuite: 1, format: 'ivrit-save', version: 1, tool: 'AllTools', partial: true, savedAt: now(), data: b.data }, 'IvritSuite_' + tool + (why === 'both' ? '_settings_other_version_' : '_settings_before_sign_in_') + now().slice(0, 10) + '.ivrit');
   }
   function hydratedAt(uid) { var m = metaAll(); return (isPlainObject(m.hydrated) && m.hydrated[uid]) || null; }
   function markHydrated(uid) { var m = metaAll(); if (!isPlainObject(m.hydrated)) m.hydrated = {}; m.hydrated[uid] = now(); metaSave(m); }
@@ -935,9 +945,11 @@
   // across tools, so the caller groups by it). No data: about 150 bytes per row.
   // The listing is the only signal that a row left the account, so it must be complete: the first page asks for the
   // exact count and paging goes on until that many rows arrived (a server whose page size is below PAGE_SIZE would
-  // otherwise end the listing early, and every row past it would read as deleted).
+  // otherwise end the listing early, and every row past it would read as deleted). Rows are kept once by id (a row
+  // inserted elsewhere between two pages shifts the next page by one), and a listing that still ends with fewer rows
+  // than that count (a row deleted elsewhere between two pages shifts one out of sight) is refused.
   function cloudList(toolOrTools) {
-    var many = Array.isArray(toolOrTools), all = [], total = null;
+    var many = Array.isArray(toolOrTools), all = [], total = null, ids = {};
     function page(from) {
       return withClient(function (c) {
         var q = c.from('saves').select(many ? 'tool, ' + ROW_COLS : ROW_COLS, from === 0 ? { count: 'exact' } : undefined);
@@ -948,8 +960,12 @@
         var rows = (res && res.rows) || [];
         if (from === 0 && res && typeof res.count === 'number') total = res.count;
         if (!many) rows.forEach(function (r) { r.tool = toolOrTools; });
-        all = all.concat(rows);
-        if (total !== null) return (rows.length && all.length < total) ? page(from + rows.length) : all;
+        rows.forEach(function (r) { var k = r && r.id ? String(r.id) : null; if (k && hasOwn(ids, k)) return; if (k) ids[k] = true; all.push(r); });
+        if (total !== null) {
+          if (rows.length && all.length < total) return page(from + rows.length);
+          if (all.length < total) throw makeError('listing_suspect', 'IvritSaves: the listing came back shorter than its count');
+          return all;
+        }
         return rows.length === PAGE_SIZE ? page(from + PAGE_SIZE) : all;
       });
     }
@@ -1251,7 +1267,14 @@
   function stillMe(uid) { var u = currentUser(); return !!u && u.id === uid; }
   function flushPage(tool) {
     var cfg = pages[tool];
+    if (staleWhileHidden(tool)) return;
     if (cfg && typeof cfg.flush === 'function') { try { cfg.flush(); } catch (e) { warn('flush failed:', e); } }
+  }
+  // A hidden tab wrote what it had when it was hidden. Once another tab has written this tool since, the hidden
+  // tab's in-memory copy is the older one: writing it again (a background hydration, a retry, closing the tab) would
+  // undo that tab's newer edit before it reached the account, so the module does not ask the page to write it.
+  function staleWhileHidden(tool) {
+    return hiddenFlushed && !!stale[tool] && Object.keys(stale[tool]).length > 0;
   }
   // Tells the page to re-read the key. Returns false when the page's hook threw: its in-memory copy is then
   // stale and would write back over what was just stored, so the caller must not remember the write.
@@ -1333,6 +1356,13 @@
       });
     });
   }
+  // A field-by-field merge where both sides changed the same setting keeps one value; the other side's version is kept
+  // for download behind the status-line note, so neither change is lost.
+  function keepLosingSide(uid, entry, name, base, mine, theirs, merged) {
+    if (entry.virtual) return;
+    if (lostFields(base, theirs, merged)) replacedKeep(uid, entry, name, theirs, 'both');
+    else if (lostFields(base, mine, merged)) replacedKeep(uid, entry, name, mine, 'both');
+  }
   // Both sides changed a settings row. With the base (the value both last agreed on) the row is merged field by field
   // (merge3): what only the other device changed lands here, what only this device changed goes up, and a field both
   // changed takes the side changed last (this device's last write of the kind against the other device's clock on
@@ -1347,17 +1377,19 @@
       return assertLocalAsPlanned(row, it).then(function () {
         if (!it) throw makeError('changed_here');
         var base = row.memory ? baseGet(uid, tool, row.kind, row.name) : null;
-        if (base && base.h === row.memory.h) {
-          var baseVal = null; try { baseVal = safeParse(base.text); } catch (e) { baseVal = null; }
-          if (isPlainObject(baseVal)) {
-            var st = stampsAll(), pw = isPlainObject(st.pageWrites) && isPlainObject(st.pageWrites[tool]) ? Number(st.pageWrites[tool][row.kind]) || 0 : 0;
-            var theirs = Date.parse(full.client_updated_at || '') || 0;
-            var merged3 = merge3(baseVal, project(row.entry, it.value), project(row.entry, full.data), pw > theirs);
-            return writeBothSides(tool, uid, row, restoreOmitted(row.entry, merged3, it.value), full);
-          }
-        }
-        var merged = safeAssign(clone(restoreOmitted(row.entry, full.data, it.value)), it.value);
-        return writeBothSides(tool, uid, row, merged, full);
+        var baseVal = null;
+        if (base && base.h === row.memory.h) { try { baseVal = safeParse(base.text); } catch (e) { baseVal = null; } }
+        var mine = project(row.entry, it.value), theirs = project(row.entry, full.data);
+        var preferLocal = true;   // no base (the old module's hint, or a base that could not be kept): this device's fields
+        if (isPlainObject(baseVal)) {   // a field both sides changed since the base takes the later change
+          var st = stampsAll(), pw = isPlainObject(st.pageWrites) && isPlainObject(st.pageWrites[tool]) ? Number(st.pageWrites[tool][row.kind]) || 0 : 0;
+          preferLocal = pw > (Date.parse(full.client_updated_at || '') || 0);
+        } else baseVal = {};
+        var merged3 = merge3(baseVal, mine, theirs, preferLocal);
+        return writeBothSides(tool, uid, row, restoreOmitted(row.entry, merged3, it.value), full).then(function (r) {
+          keepLosingSide(uid, row.entry, row.name, baseVal, mine, theirs, merged3);
+          return r;
+        });
       }).then(function () { return { action: 'upload', row: row }; });
     });
   }
@@ -1374,8 +1406,12 @@
         if (!it) throw makeError('changed_here');
         var baseVal = null; try { baseVal = safeParse(baseText || 'null'); } catch (e) { baseVal = null; }
         var focused = false; try { focused = !!document.hasFocus(); } catch (e) {}
-        var merged = merge3(isPlainObject(baseVal) ? baseVal : {}, project(row.entry, it.value), project(row.entry, full.data), focused);
-        return writeBothSides(tool, uid, row, restoreOmitted(row.entry, merged, it.value), full);
+        var b = isPlainObject(baseVal) ? baseVal : {}, mine = project(row.entry, it.value), theirs = project(row.entry, full.data);
+        var merged = merge3(b, mine, theirs, focused);
+        return writeBothSides(tool, uid, row, restoreOmitted(row.entry, merged, it.value), full).then(function (r) {
+          keepLosingSide(uid, row.entry, row.name, b, mine, theirs, merged);
+          return r;
+        });
       }).then(function () { return { action: 'merge', row: row }; });
     });
   }
@@ -1441,7 +1477,7 @@
         // untouched defaults or years of work — the module cannot tell), and the device's copy is kept for download.
         if (!row.memory && isPlainObject(local) && !row.entry.virtual && !takeStripped(uid, tool, row.kind, row.name)) {
           var mine = project(row.entry, local);
-          if (canonJson(mine) !== canonJson(project(row.entry, full.data))) replacedKeep(uid, row.entry, row.name, mine);
+          if (canonJson(mine) !== canonJson(project(row.entry, full.data))) replacedKeep(uid, row.entry, row.name, mine, 'signin');
         }
         return writeBothSides(tool, uid, row, merged, full);
       });
@@ -1716,13 +1752,15 @@
   //   local-only     a seed → nothing; with memory (the account lost it) → an item with the same hash goes here
   //                  too, a changed one or a single/scalar is re-inserted; no memory → first hydration: a device
   //                  extra (card) for items, fonts and progress/streak, else upload
-  //   cloud-changed  download; local-changed → upload
+  //   cloud-changed  download; local-changed → upload (on a first hydration an item keeps both and a mergeable
+  //                  row merges: the device was its own since, and its copy may be an older restore)
   //   conflict       item → keep both; settings → the account's fields on a row never synced here, this device's
   //                  afterwards; progress / rosters / word lists → the lossless merge; a seed → download
-  // `saw`: this tab saw the item present at its last hydrate or flush and the kind is not stale — the only case a
+  // `fresh`: this hydration began as a first one (the uploads run after the card with `first` off; the keep-both rule
+  // for a changed item still applies). `saw`: this tab saw the item present at its last hydrate or flush and the kind is not stale — the only case a
   // remembered row that is now absent here is a deletion made here. A tab that never saw it (another tab added it
   // after this tab's last read, or this tab's page rewrote the key from a stale in-memory copy) lands it again.
-  function hydrateActionFor(r, first, saw) {
+  function hydrateActionFor(r, first, saw, fresh) {
     var m = r.entry.merge, shape = r.entry.shape;
     if (r.state === 'synced' || r.state === 'none') return null;
     if (r.state === 'cloud-only') return r.downloadable ? 'download' : null;
@@ -1741,7 +1779,16 @@
       return 'upload';
     }
     if (r.state === 'cloud-changed') return r.downloadable ? 'download' : null;
-    if (r.state === 'local-changed') return 'upload';
+    if (r.state === 'local-changed') {
+      // after a signed-out period (a first hydration) this device's copy may be an older .ivrit restored while the
+      // device was its own: an item keeps the account's copy beside it, a class list, word list, student profile or
+      // progress merges losslessly — the account's newer copy is never overwritten
+      if ((first || fresh) && r.downloadable) {
+        if (m === 'item') return 'keepBoth';
+        if (r.mergeable) return 'merge';
+      }
+      return 'upload';
+    }
     if (r.state === 'conflict') {
       if (r.seed) return r.downloadable ? 'download' : null;
       if (m === 'item') return r.downloadable ? 'keepBoth' : 'keepMine';
@@ -1822,7 +1869,7 @@
   }
   function runPhase(tool, p, uid, first, phase, res) {
     var order = p.rows.filter(function (r) {
-      var a = actionFor(tool, r, first);
+      var a = actionFor(tool, r, first, res.first);
       if (!a || a === 'extra') return false;
       var down = (a === 'download');
       if (phase === 'down') return down;
@@ -1830,7 +1877,7 @@
       return true;
     });
     return seqMap(order, function (row) {
-      var action = actionFor(tool, row, first);
+      var action = actionFor(tool, row, first, res.first);
       if (action === 'upload' && !localItem(row.entry, row.name)) return Promise.resolve();   // gone meanwhile (folded into another item)
       if (action === 'upload' && !row.memory && row.local && heldBack(uid, tool, row.kind, row.name, row.local.hash)) return Promise.resolve();
       if (action === 'download' && tool === 'Suite' && row.kind === 'font') {   // My Fonts is full here: not even fetched (a font row can be ~2 MB), named on the hub
@@ -1883,8 +1930,8 @@
   // The hydration action, adjusted for this tab's view: when the device's memory of a row moved past what this tab
   // saw (another tab or device wrote it since), this tab's copy is not "changed here" — if this tab changed nothing
   // it takes the newer copy, if it did a settings row is merged against what this tab saw and an item keeps both.
-  function actionFor(tool, r, first) {
-    var a = hydrateActionFor(r, first, sawHere(tool, r));
+  function actionFor(tool, r, first, fresh) {
+    var a = hydrateActionFor(r, first, sawHere(tool, r), fresh);
     var seenH = seenHashOf(tool, r.kind, r.name);
     if (r.local && r.cloud && r.memory && seenH && seenH !== r.memory.h && (a === 'upload' || a === 'keepMine' || a === 'keepBoth' || a === 'useCloud')) {
       if (r.local.hash === seenH) return r.downloadable ? 'download' : null;
@@ -2053,7 +2100,17 @@
     (keyMap()[key] || []).forEach(function (e) {
       if (hydratedTools[e.tool] !== user.id) return;
       markDirty(e.tool, e.kind);
+      stampPageWrite(e);
     });
+  }
+  // The other tabs learn of a page write at once (not only when it is sent 2 s later), so a background tab never
+  // writes its older in-memory copy over it in between. Local only; at most one stamp per kind every 250 ms.
+  var lastPageStamp = {};
+  function stampPageWrite(entry) {
+    var k = entry.tool + '/' + entry.kind, t = Date.now();
+    if (lastPageStamp[k] && t - lastPageStamp[k] < 250) return;
+    lastPageStamp[k] = t;
+    stampWrite(entry, null, 'page');
   }
   function markDirty(tool, kind) {
     if (!dirty[tool]) dirty[tool] = {};
@@ -2348,13 +2405,17 @@
   function renderReplaced(root, tool) {
     var u = currentUser(); if (!u) return;
     var list = replacedFor(u.id, tool === 'Suite' ? null : tool);
-    var tools = [];
-    list.forEach(function (x) { if (tools.indexOf(x.tool) < 0) tools.push(x.tool); });
-    tools.forEach(function (tl) {
+    var groups = [];
+    list.forEach(function (x) { var g = { tool: x.tool, why: replacedWhy(x) }; if (!groups.some(function (o) { return o.tool === g.tool && o.why === g.why; })) groups.push(g); });
+    groups.forEach(function (g) {
+      var tl = g.tool, why = g.why;
       var box = el('div', 'ivsav-replaced');
-      box.appendChild(el('p', 'ivsav-note', t('shared.cloud.replaced_note', 'Your account\'s {tool} settings replaced the ones this device had before you signed in. This device\'s earlier settings are kept here until you dismiss this note.', { tool: toolName(tl) })));
-      box.appendChild(button(t('shared.cloud.replaced_download', 'Download the earlier settings (.ivrit)'), '', function () { replacedDownload(u.id, tl); }));
-      box.appendChild(button(t('shared.cloud.replaced_dismiss', 'Dismiss'), '', function () { replacedDrop(u.id, tl); renderAllStatuses(); }));
+      box.setAttribute('data-why', why);
+      box.appendChild(el('p', 'ivsav-note', why === 'both'
+        ? t('shared.cloud.both_note', '{tool} settings were changed on this device and on another one. Where both changed the same setting, one change was kept; the other version is kept here until you dismiss this note.', { tool: toolName(tl) })
+        : t('shared.cloud.replaced_note', 'Your account\'s {tool} settings replaced the ones this device had before you signed in. This device\'s earlier settings are kept here until you dismiss this note.', { tool: toolName(tl) })));
+      box.appendChild(button(why === 'both' ? t('shared.cloud.both_download', 'Download the other version (.ivrit)') : t('shared.cloud.replaced_download', 'Download the earlier settings (.ivrit)'), '', function () { replacedDownload(u.id, tl, why); }));
+      box.appendChild(button(t('shared.cloud.replaced_dismiss', 'Dismiss'), '', function () { replacedDrop(u.id, tl, why); renderAllStatuses(); }));
       root.appendChild(box);
     });
   }
@@ -2648,8 +2709,8 @@
     if (a && typeof a.onNameStep === 'function') a.onNameStep(function () { nameStepDone = true; if (nameStepWaiting) { var open = nameStepWaiting; nameStepWaiting = null; whenReady(open); } });
     try { seen = stampsOf(stampsAll()); } catch (e) {}
     window.addEventListener('storage', function (e) { if (e.key === META_KEY && e.newValue) recheckWrites(true); });
-    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') recheckWrites(); else finalFlushNow(); });
-    window.addEventListener('pageshow', function () { recheckWrites(); });
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { hiddenFlushed = false; recheckWrites(); } else { finalFlushNow(); hiddenFlushed = true; } });
+    window.addEventListener('pageshow', function () { if (document.visibilityState === 'visible') hiddenFlushed = false; recheckWrites(); });
     window.addEventListener('pagehide', finalFlushNow);
     window.addEventListener('online', function () {
       if (!currentUser()) return;
@@ -2672,6 +2733,7 @@
     var uid = currentUser().id;
     Object.keys(pages).forEach(function (tool) {
       var cfg = pages[tool]; if (!cfg || cfg.pulled) return;
+      if (staleWhileHidden(tool)) return;   // closing a background tab another tab has written since: nothing new here
       withSelfWrite(function () { try { if (typeof cfg.finalFlush === 'function') cfg.finalFlush(); else if (typeof cfg.flush === 'function') cfg.flush(); } catch (e) {} });
       if (hydratedTools[tool] === uid) registryFor(tool).forEach(function (e) { if (!e.virtual) { if (!dirty[tool]) dirty[tool] = {}; dirty[tool][e.kind] = true; } });
     });
@@ -2746,6 +2808,7 @@
       treeIsFlat: treeIsFlat, bundleFromRows: bundleFromRows, recheckWrites: recheckWrites, isRowError: isRowError, isConnectionError: isConnectionError,
       suitePrefs: SUITE_PREFS, userFonts: USER_FONTS, bytesToB64: bytesToB64, b64ToBytes: b64ToBytes, isUntouchedDefaultClass: isUntouchedDefaultClass, copyLabelFor: copyLabelFor,
       hydrateActionFor: hydrateActionFor, hydrate: function (tools) { return hydrate(tools); }, flush: flush, markDirty: markDirty, markHydrated: markHydrated, openCard: openCard, removeAccountCache: removeAccountCache, planTool: planTool,
+      tabState: function () { return { stale: JSON.parse(JSON.stringify(stale)), hiddenFlushed: hiddenFlushed }; },
       idle: function () { return !Object.keys(dirty).some(function (t2) { return Object.keys(dirty[t2] || {}).length > 0; }) && !Object.keys(busy).some(function (t2) { return busy[t2]; }) && !Object.keys(hydrating).some(function (t2) { return hydrating[t2]; }) && !Object.keys(pendingHydrate).length; },
       settled: function (tools) {
         var a = A(), st = a ? a.status() : 'unavailable';

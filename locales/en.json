@@ -4261,6 +4261,8 @@
   "shared.badge.beta": "BETA",
   "shared.cloud.acct_manage_link": "Manage your account: download everything or delete the account…",
   "shared.cloud.acct_no_cloud": "Nothing is saved in your account yet.",
+  "shared.cloud.both_download": "Download the other version (.ivrit)",
+  "shared.cloud.both_note": "{tool} settings were changed on this device and on another one. Where both changed the same setting, one change was kept; the other version is kept here until you dismiss this note.",
   "shared.cloud.card_saves_add": "Add to my account",
   "shared.cloud.card_saves_add_note": "An item named like one already in your account keeps both.",
   "shared.cloud.card_saves_download": "Download a backup (.ivrit)",

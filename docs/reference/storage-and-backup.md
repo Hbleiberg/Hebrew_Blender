@@ -113,8 +113,9 @@ export/import as a bug to fix, not a pattern to copy.
   settings rows and folder trees *Remove from this device* held back, and `held`, the suite-wide preference fields
   this device could not apply), `ivritSuite_syncMeta` (now only the write stamps other tabs re-read on and the
   sign-out broadcast), `ivritSuite_syncBase` (each settings row's last synced value, the base of a field-by-field
-  merge) and `ivritSuite_replaced` (a device's own settings the account's copy replaced at a first sign-in, kept
-  for download until dismissed); none of them ride export/import (a session must
+  merge) and `ivritSuite_replaced` (a settings version a merge did not keep — the device's own settings the
+  account's copy replaced at a first sign-in, or the other side's version of a setting both changed — kept for
+  download until dismissed); none of them ride export/import (a session must
   never travel in a file, and sync memory is per device), and `eraseAllSettings` calls `IvritSaves.suspend()`
   right after its final confirm (so nothing it removes goes up as a deletion) and removes every `sb-` key plus
   the six `ivritSuite_*` keys — "erase" also means signed out on this device — then reloads when a session was

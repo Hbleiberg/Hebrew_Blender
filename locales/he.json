@@ -4261,6 +4261,8 @@
   "shared.badge.beta": "בטא",
   "shared.cloud.acct_manage_link": "ניהול החשבון: הורדת הכול או מחיקת החשבון…",
   "shared.cloud.acct_no_cloud": "עדיין לא נשמר דבר בחשבון שלכם.",
+  "shared.cloud.both_download": "הורדת הגרסה האחרת (‎.ivrit‏)",
+  "shared.cloud.both_note": "הגדרות {tool} שונו גם במכשיר הזה וגם במכשיר אחר. במקום ששניהם שינו את אותה הגדרה נשמר שינוי אחד, והגרסה האחרת נשמרת כאן עד שתסגרו את ההודעה.",
   "shared.cloud.card_saves_add": "להוסיף לחשבון שלי",
   "shared.cloud.card_saves_add_note": "פריט ששמו כשם פריט שכבר בחשבון — שניהם נשמרים.",
   "shared.cloud.card_saves_download": "להוריד גיבוי (‎.ivrit‏)",
