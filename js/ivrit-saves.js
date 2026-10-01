@@ -3070,7 +3070,7 @@
     var bad = IVRIT_SYNC_REGISTRY.filter(function (e) { return e.tool === tool && validEntry(e); });
     bad.forEach(function (e) { warn('registry entry is invalid and ignored:', validEntry(e), e); });
     registryFor(tool).forEach(function (e) {
-      if (NEEDS_HOOK[e.shape] && typeof cfg.onLocalChanged !== 'function') warn('attach:', tool, e.kind, 'is upload-only: the page gave no onLocalChanged, so a download could be undone by its own in-memory state');
+      if (NEEDS_HOOK[e.shape] && !e.virtual && typeof cfg.onLocalChanged !== 'function') warn('attach:', tool, e.kind, 'is upload-only: the page gave no onLocalChanged, so a download could be undone by its own in-memory state');
     });
     if (cfg.panel && !cfg.status) { cfg.status = cfg.panel; warn('attach: `panel` is now `status`'); }
     if (cfg.open || cfg.deviceBackup || cfg.title !== undefined) warn('attach: `open`, `title` and `deviceBackup` are no longer used');
