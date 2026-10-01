@@ -3668,7 +3668,11 @@ function syncCycleControls() {
     note.textContent = I18n.t('torah.schedule.cycle_failed') + ' ';
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'btn btn-xs btn-secondary'; b.textContent = I18n.t('torah.schedule.cycle_retry');
-    b.addEventListener('click', () => { _leyningFailed = false; ensureLeyningData(); syncCycleControls(); });
+    b.addEventListener('click', () => {
+      _leyningFailed = false; ensureLeyningData(); syncCycleControls();
+      // The rebuild just removed this button: keep the focus in the panel, on the cycle the note belongs to.
+      const r = document.querySelector('input[name="optCycle"]:checked'); if (r) r.focus();
+    });
     note.appendChild(b);
     return;
   }
