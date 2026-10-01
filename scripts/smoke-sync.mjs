@@ -1757,14 +1757,16 @@ try {
     const { page, errors } = await openPage(ctx, 'trope_tutor.html', { tools: TT });
     const landed = await lsJSON(page, 'hebrewTropeTutor_progress');
     const out = await clickSignOut(page);
-    const gone = await ls(page, 'hebrewTropeTutor_progress');
+    // What the sign-out left, read before the reloaded page runs (as S1 and D6 do): the Learn tab's first render
+    // marks a family seen and saves a fresh progress, so a read after the reload races it.
+    const gone = (await lsAtLoad(page)).hebrewTropeTutor_progress;
     await page.evaluate(() => { progress.tropes.sofpasuk = { r: 7, w: 1 }; progress.pbStreak = 5; saveProgress(); });   // practice, signed out
     await setSession(page);
     await page.reload({ waitUntil: 'domcontentloaded' }); await waitSignedIn(page);
     const ok = await settled(page, TT);
     const local = await lsJSON(page, 'hebrewTropeTutor_progress'), row = cloud.find('progress', 'default', 'TropeTutor');
     const good = (p) => !!p && ((p.tropes || {}).sofpasuk || {}).r === 7 && ((p.tropes || {}).etnachta || {}).r === 2 && p.pbStreak === 5 && p.resetAt === reset;
-    check('D31: the practice done signed out (sofpasuk 7, streak 5) is merged with the account\'s, here and in the account; the old reset watermark stays', !!landed && landed.resetAt === reset && out && gone === null && ok && good(local) && good(row && row.data), JSON.stringify({ out, gone, ok, local, row: row && row.data }));
+    check('D31: the practice done signed out (sofpasuk 7, streak 5) is merged with the account\'s, here and in the account; the old reset watermark stays', !!landed && landed.resetAt === reset && out && gone === undefined && ok && good(local) && good(row && row.data), JSON.stringify({ out, gone, ok, local, row: row && row.data }));
     check('D31: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
