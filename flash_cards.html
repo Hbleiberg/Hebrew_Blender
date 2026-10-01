@@ -1251,6 +1251,8 @@ body.dark .ladder-strip-line { color: var(--gold-light); }
   #tourBtn, #fsBtn, #darkToggle, .i18n-select, #tipFloat, #appToast, #sheetMenu,
   #prevBtn, #flipBtn, #nextBtn, #endEarlyBtn, #fcSpeakBtn, #markYes, #markNo,
   .tour-spot, .tour-card, .overlay, details { display:none !important; }
+  /* The drill's keyboard hints and the results screen's actions are screen controls, inert ink on paper. */
+  .fc-kh-set, .results-savedeck, .results-actions { display:none !important; }
   /* A box-shadow is a DRAWING, not a background, so printBackground:false never drops it — the
      dark theme's .panel shadow (rgba(0,0,0,.4)) printed as a 7in slab of 40% black behind the
      results screen's auto-expanded per-card list. Shadows are a screen affordance with no paper
