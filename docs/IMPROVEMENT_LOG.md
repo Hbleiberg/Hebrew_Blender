@@ -8,6 +8,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 ## Candidates (prioritized, top = next)
 
+- [ ] P4 (**NEW S439 I; model `13095c8e`**) | classroom_dashboard.html | **Other en-US times in the Hebrew UI may read "PM 8:00" too**: the schedule preview, "Next … at {time}" and the Shabbat lines put `fmtClock` output in RTL runs (needs a seeded schedule to measure). | found S439
+
 - [ ] P4 (**NEW S437 G — gate 2, copy**) | index.html | **Import All Settings' confirm still says it "will overwrite your current dashboard settings and merge … presets and schedules"**; it merges every tool's data. | found S437
 
 - [ ] P3 (**NEW S436 M — layout, gate 3/4**) | hebrew_blend_generator.html | **The bingo preview is unreadable in a narrow window**: at 800px a 4-up card is ~120px and its blends overrun their cells (print/PDF fine since `141aa8f7`). | found S436
@@ -32,11 +34,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S428 Pass F — 7 carriers**) | index, dashboard, generator ×2, flash ×3 | **A copy both routes refused still says "Copied"** (`execCommand`'s answer ignored; model `dictCopyText`); the backup-textarea Copy buttons go unannounced. | found S428
 
-- [ ] P4 (**NEW S428**) | torah_trainer.html | **Colour-coded copy's rich fallback leaves the focus on `<body>`** (a framed page; HEAD too). | found S428
-
-- [ ] P4 (**NEW S429 B; NEW pattern**) | torah_trainer.html + hebrew_blend_generator.html | **Two panels forget their open/closed state on a reload** (torah "Trope staff", generator "Saved Presets"): their title keys sit on an inner span the panel memory never reads. | found S429
-
-- [ ] P4 (**NEW S427 Pass C — four small ones**) | hebrew_dictionary.html | **(1)** the emoji tree's ▾ 15×9 px, rows 21 px apart; **(2)** "♀ Feminine" 4.42:1 at 0.62rem; **(3)** Shoresh's empty tiles 2.79:1 / 3.13:1; **(4)** Enter in Save as Word List's name field does nothing. | found S427
+- [ ] P4 (**NEW S427 Pass C — (4) FIXED S439 `3f0408fc`**) | hebrew_dictionary.html | **(1)** the emoji tree's ▾ 15×9 px, rows 21 px apart; **(2)** "♀ Feminine" 4.42:1 at 0.62rem; **(3)** Shoresh's empty tiles 2.79:1 / 3.13:1. | found S427
 
 - [ ] P4 (**NEW S421 Pass P**) | classroom_dashboard.html | **The "Now showing {name} — the classes from your account are in the class list" switch runs on every signed-in load and credits the account even when it holds nothing**: with the pointer on the untouched default and a class this device made itself, the page switches to that class and says it came from the account …[full text: …[full …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -262,6 +260,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-10-01 | (S439 close-out) | branch/deploy note | **S439 = pass I (the whole suite, its 33rd; first since S425) + 4 fixes, continuing draft PR #303 (`claude/nice-mayer-bzr3d9`, base `43570d4`, unmerged).** DRIFT: none. sw v906→v907 (dashboard, generator, dictionary, torah). FM: no bump (untouched). Gates: none asked. Torah half of S429's panel candidate stale (its panels no longer …[full …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-10-01 | `947aa60d` | torah_trainer.html | (S439; S428's P4; button-focus-lost-to-its-own-rebuild) **Rich colour-coded copy gives the focus back.** | verified: real click, rich path counted; HEAD `<body>` 4/4 → the button 4/4
+
+- [x] 2026-10-01 | `3f0408fc` | hebrew_dictionary.html | (S439; S427's (4)) **Enter in Save as Word List's name field saves the list**. | verified: real Enter, HEAD 0 lists 4/4 → 1; IME Enter 0
+
+- [x] 2026-10-01 | `1ce9eabd` | hebrew_blend_generator.html | (S439; S429's P4; panel-title-keyed-on-an-inner-span) **The Saved Presets panel remembers being closed**. | verified: toggle + reload, HEAD reopened 4/4 → kept 4/4; keyed control kept in both
+
+- [x] 2026-10-01 | `13095c8e` | classroom_dashboard.html | (S439 I; NEW) **The projected clock reads "6:04 PM", not "PM 6:04", in the Hebrew UI** (`dir="ltr"` on `#currentTime`). | verified: glyph-rect probe, HEAD reversed 8/8 HE cells → 0, EN 0; centred 32/32
+
 - [x] 2026-10-01 | (S438 close-out) | branch/deploy note | **S438 = pass D (`classroom_dashboard.html`, first D since S325; clean) + 4 backlog fixes, continuing draft PR #303 (`claude/nice-mayer-bzr3d9`, base `43570d4`, unmerged).** DRIFT: none. sw v905→v906 (flash, torah, dashboard, dictionary). FM: no bump (untouched). Gates: none asked. Handoff correction: S437 named F stalest; D (S424) was.
 
 - [x] 2026-10-01 | `ec5594e7` | hebrew_dictionary.html | (S438; the 09-28 P4) **Switching to Emojis or Shoresh leaves a loaded Word List behind.** | verified: real clicks + HE switch, HEAD "2 מילים" 4/4 → the mode's line 4/4
@@ -275,6 +283,8 @@ _(none)_
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-10-01 | **S439** | iters: 1 pass (**I**) + 4 fixes = **5** | tools: dashboard, generator, dictionary, torah | patterns fixed: panel-title-keyed-on-an-inner-span ×1, button-focus-lost-to-its-own-rebuild ×1 | pass run: I | SW: v906→v907
 
 - 2026-10-01 | **S438** | iters: 1 pass (**D**) + 4 fixes = **5** | tools: flash, torah, dashboard, dictionary | patterns fixed: physical-property-that-never-mirrors ×1 | pass run: D | SW: v905→v906
 
@@ -314,11 +324,9 @@ _(none)_
 
 - 2026-09-25 | **S420** | iters: 1 pass (**N**) + 3 fixes = **4** | tools: index ×2, flash | patterns fixed: text-field-under-16px ×1, translated-key-exists-page-hardcodes-english ×1 (NEW install-banner-over-a-sheet's-bottom-controls ×1) | pass run: N | SW: v853→v854
 
-- 2026-09-25 | **S419** | iters: 1 pass (**K**) + 4 fixes = **5** | tools: FM, trope ×2, torah | patterns fixed: translated-key-exists-page-hardcodes-english ×2 | pass run: K | SW: v852→v853
-
 ### Tool coverage (last-touched date per tool)
 
-- **S438 (2026-10-01):** flash, torah (**S438**; torah **C-next** C S298); dashboard (**S438**; D S438); dictionary (**S438**; **H-next** H S292); index, resources (S437); generator (S436; M S436); js/ivrit-saves.js, account, trope (S433); terms (S432); licences, README, ops.md, font-maker.md (S431); js/ivrit-account.js (S429); manifest (S426); FM (S419; **D-next** FM S410 → generator S338); 404 (S418); **P-next** account.html; **G-next** torah (S324); **N-next** torah or dashboard; **M yet:** flash, terms.
+- **S439 (2026-10-01):** dashboard, generator, dictionary, torah (**S439**; **C-next** C S298 torah; **H-next** H S292 dictionary); flash (S438); index, resources (S437); js/ivrit-saves.js, account, trope (S433); terms (S432); licences, README, ops.md, font-maker.md (S431)
 
 ### Pattern health (per recurring pattern: last swept, hits that sweep, consecutive clean sweeps; detail in the sweep log below)
 
@@ -326,11 +334,11 @@ _(none)_
 
 - **`tip-name-joins-its-field's-name`** (NEW S430; torah ×3 + generator OPEN): ACTIVE, streak 0. A `<label>` holding a `.tip-wrap` names its field "… More information". Detection `a430/moreinfo.mjs` (AX tree, panels open, a planted control). Fix: `aria-labelledby` on the text …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- **`panel-title-keyed-on-an-inner-span`** (NEW S429; torah, generator open; S430: the lookup panel clean): ACTIVE, streak 0. Detection: a `.panel-title` with no own `data-i18n`, then toggle + reload.
+- **`panel-title-keyed-on-an-inner-span`** (NEW S429; S439 generator FIXED `1ce9eabd`, torah stale — no collapsing panels left): ACTIVE, streak 0. Detection: a `.panel-title` with no own `data-i18n`, then toggle + reload.
 
 - **`copy-claims-success-on-a-refused-clipboard`** (NEW S428; FIXED `bbd5f65`, `0d2a941`; 7 open): ACTIVE, streak 0. Detection `f428/copy.mjs`: sentinel, real click, 3 contexts.
 
-- **`button-focus-lost-to-its-own-rebuild`** (**S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, chips/Reset FIXED `cea92bf`; S434 torah's Try again `dfc25af8`; S437 the dictionary's empty-state buttons `c98070a5` and Add to Word List's close `cd41b928`**): …[full text: IMPROVEMENT_ARCHIVE.md]
+- **`button-focus-lost-to-its-own-rebuild`** (**S426 account `e091820`; S427 the dictionary's Word Lists `7a631f6`, chips/Reset FIXED `cea92bf`; S434 torah's Try again `dfc25af8`; S437 the dictionary's empty-state buttons `c98070a5` and Add to Word List's close `cd41b928`; S439 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - **`dark-literal-escapes-the-print-tokens`** (NEW S437 G; resources FIXED `5320a668`): ACTIVE, streak 0. Detection: PDFs dark vs light, ink per page (<200 at 40 dpi); a lighter dark sheet = a `body.dark` literal the print token reset misses. Exempt: active-state borders. S437: …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -606,7 +614,7 @@ _(none)_
 
 - D performance (one tool): 2026-10-01 (**S438 — `classroom_dashboard.html`, its 5th D (S325 → 94 commits). Cold 3× at 1×/4×, 14 real-click steps with longtask + event timing, 20-cycle hygiene after GC, a 10 s idle tick; the 300 ms click control fired every run. CLEAN: top load task 287–315 ms @4× (S325 648–781), no interaction ≥200 ms, keystrokes ≤32 ms @4×, idle 21 ms task / 10 s. D-next: …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- I first-load & empty-state: 2026-09-28 (**S425 — 32nd run, first since S411; the stalest runnable pass (O blocked). Delta `3bb0567..HEAD`: 116 commits, the trope Phrases tab, torah's pitch/under-word/link settings and the dashboard's Intermission landing outside the loop. Gates clean on 34 virgin cells behind 7 plants; census = S411's; 0 SDK/project requests (plant counted); tours 7/7 (plant …[full text: IMPROVEMENT_ARCHIVE.md]
+- I first-load & empty-state: 2026-10-01 (**S439 — 33rd I, first since S425 (136 commits). Gates clean on 34 virgin cells behind 7 plants; census = S425's; 0 SDK requests; the torah date lookup right on 10 dates. FOUND + …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - B console/error audit: 2026-09-29 (**S429 — 33rd B. 136 loads, 68 interactions, 12 delta scenarios, all controlled: 0 pageerrors. FOUND the trope tabs' overflow (P3, `3b0bebd`) + 2 forgetful panels (P4).**)
 
@@ -620,4 +628,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-09-29 (**S428 — the copy contract: 13 controls × direct / LMS frame / planted double failure, every zero controlled. FOUND 3 claiming over the old clipboard (P3, FIXED `bbd5f65`, `0d2a941`), 9 ignoring execCommand (2 fixed), 4 unannounced.**)
 
-**Next session (S439):** **BRANCH/PR: S435–S438 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v906**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: I (S425), then H (S426), C (S427); O stays blocked (the sandbox refuses the detector). ⚑ Strongest untaken: the bingo preview at 800 (P3, a layout question for the maintainer).
+**Next session (S440):** **BRANCH/PR: S435–S439 on `claude/nice-mayer-bzr3d9` → draft PR #303 (base `43570d4`). Open → CONTINUE; merged → restart from `origin/main`.** Closed at `sw.js` **v907**, FM **5.58**, SDK **2.116.0**; backend unchanged (0001–0003 live, delete-account v3 = repo source); email template `Live?` = no. ⚑ Stalest: H (S426), then C (S427), F (S428); O stays blocked. ⚑ Strongest untaken: the bingo preview at 800 (P3, a layout question for the maintainer).
