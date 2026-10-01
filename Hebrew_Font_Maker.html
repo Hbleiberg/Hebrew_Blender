@@ -4736,7 +4736,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v5.57</strong> &mdash; <strong>Your work is safer around signing in and out.</strong> Signing out of your IvritSuite account now finishes saving first: the copy in this browser is completed and a project kept in your account receives your last changes before the sign-out, and the page is no longer reloaded (signing out in another tab no longer reloads the Font Maker either). If the browser closes while your account copy still has changes waiting, <span class="ui">Continue where you left off</span> picks the saving up again. A save to this browser that is asked for while another is still being written is no longer skipped, so the very last edit before you close the tab is kept. Removing a font from <span class="ui">My Fonts</span> while signed in now says that it also leaves your account, and a removal made while the page is still connecting is no longer lost. While you are signed in, <span class="ui">My Fonts</span> and your suite-wide preferences (language and dark mode) now come from your account here too.</li>
+      <li><strong>v5.57</strong> &mdash; <strong>Your work is safer around signing in and out.</strong> Signing out of your IvritSuite account now finishes saving first: the copy in this browser is completed and a project kept in your account receives your last changes before the sign-out, and the page is no longer reloaded (signing out in another tab no longer reloads the Font Maker either). If the browser closes while your account copy still has changes waiting, <span class="ui">Continue where you left off</span> picks the saving up again. A save to this browser that is asked for while another is still being written is no longer skipped, so the very last edit before you close the tab is kept. Removing a font from <span class="ui">My Fonts</span> while signed in now says that it also leaves your account, and a removal made while the page is still connecting is no longer lost. An edit you make while a project is being saved to your account is no longer marked as saved before it is sent, and an automatic save never puts a project into the account of whoever signs in next on a shared browser. Continuing from this browser's backup copy without photos no longer replaces the photos of your account copy. While you are signed in, <span class="ui">My Fonts</span> and your suite-wide preferences (language and dark mode) now come from your account here too.</li>
       <li><strong>v5.56</strong> &mdash; <strong>Samaritan vowel signs and marks.</strong> Beside the <span class="ui">Samaritan</span> tab a new <span class="ui">Samaritan marks</span> tab carries the block&rsquo;s 21 combining marks &mdash; the vowel signs, the dagesh and the other marks. Each attaches above its letter at the letter&rsquo;s start, middle or end (the three columns of the Hebrew Square Samaritan face), placed on a new <span class="ui">Place Marks</span> step of every Samaritan letter, sized by its own slider, printed on its own template, and brought across from a font that draws them &mdash; with the font&rsquo;s own positions. Marks you leave blank stay out of the font, and <span class="ui">QA Check</span> gets a <span class="ui">Samaritan marks</span> tab that checks every drawn mark, and any two marks from different columns, on each Samaritan letter. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.55</strong> &mdash; <strong>Samaritan letters.</strong> A new <span class="ui">Add Samaritan letters</span> switch in <span class="ui">Settings</span> (and in both wizards) opens a <span class="ui">Samaritan</span> tab: the 22 letters, the three vowels written as spacing letters rather than as marks, and the fifteen punctuation marks, each group on its own. This is the hand of the Samaritan Pentateuch &mdash; the branch of the old Hebrew letters that never gave way to the square script, and is still written today. It sits beside your square Hebrew at its own Unicode code points, so one font can show both. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab right to left, the way the script reads &mdash; print a one-page practice sheet, and see them in <span class="ui">Preview PDF</span>. One <span class="ui">Starting Font</span>, Hebrew Square Samaritan, now brings its Samaritan letters across with it instead of leaving them behind. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.54</strong> &mdash; <strong>Capitals and lowercase are no longer the same height.</strong> The Font Maker only ever had one top line, which suited Hebrew because Hebrew is caseless &mdash; but it meant a capital <span class="ui">O</span> and a lowercase <span class="ui">o</span> were drawn, traced and exported at exactly the same size. Latin and Cyrillic now get the three lines they need &mdash; a <strong>cap height</strong>, an <strong>x-height</strong> and an <strong>ascender</strong> &mdash; beside the descender they already had. The faint reference letter on the canvas is sized once per font instead of being stretched to the top line for every glyph, so it finally shows each letter&rsquo;s true proportion; lamed now rises above alef too. The letters that leave the body band are marked, including the Phoenician and Aramaic ones that hang below the line. Exported fonts now declare their cap height and x-height, which they never did. <strong>Nothing you have already drawn is changed.</strong> <span style="color:var(--muted);">(September 2026)</span></li>
@@ -22019,6 +22019,7 @@ const CLOUD_PREFIX = 'cloud:';
 const CLOUD_AUTOSAVE_MS = 10000;
 const _cloudNames = new Map();   // data URL → {name, size, type, blob}: what this session uploaded or downloaded
 let _cloudBusy = false, _cloudDirty = false, _cloudTimer = 0, _cloudPaused = false, _cloudLastErr = null, _cloudSavedAt = null;
+let _cloudGen = 0;   // counts edits: an upload clears the dirty flag only when no edit arrived after it packed the project
 
 function fmFill(s, p) { return String(s).replace(/\{(\w+)\}/g, (m, k) => (p && Object.prototype.hasOwnProperty.call(p, k)) ? p[k] : m); }
 function _cT(k, fallback, p) {   // fontmaker.cloud.* with an English fallback (the _pT shape)
@@ -22209,7 +22210,7 @@ async function fmBeforeSignOut(uid, opts) {
   if (project && _projectDirty) { clearTimeout(_autosaveTimer); await fmWaitWhile(() => _autosaveInFlight, 4000); await autosaveNow(); await fmWaitWhile(() => _autosaveInFlight, 4000); }
   if ((opts && opts.keepLocal) || !project || !project.cloudId || _cloudPaused || navigator.onLine === false) return;
   await fmWaitWhile(() => _cloudBusy, 6000);
-  if (_cloudDirty && !_cloudBusy) await fmCloudWrite('auto');
+  if (_cloudDirty && !_cloudBusy) await fmCloudWrite('signout');   // quiet: a conflict waits for the next sign-in here
 }
 async function fmCloudAutosave() {
   if (!project || !project.cloudId || _cloudPaused || _cloudBusy || !_cloudDirty) return;
@@ -22229,20 +22230,25 @@ function fmCloudSave() {
     [{ label: _cT('first_btn', 'Save'), onClick: () => fmCloudWrite('new') },
      { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' }]);
 }
-// mode: 'new' | 'explicit' | 'auto' | 'overwrite' (the conflict dialog's choice: take the row as it is now)
+// mode: 'new' | 'explicit' | 'auto' | 'signout' (the sign-out hook: quiet, never a dialog) | 'overwrite' (the
+// conflict dialog's choice: take the row as it is now)
 async function fmCloudWrite(mode) {
   if (_cloudBusy || !project || !fmCloudUser()) return false;
   const target = project;   // a load during the upload must not receive this project's identity
-  const quiet = mode === 'auto';
+  const quiet = mode === 'auto' || mode === 'signout';
   _cloudBusy = true; _cloudLastErr = null; fmCloudPipRender();
   if (!quiet) { ipArm(0); status(_cT('phase_prepare', 'Preparing your project…'), true); }
   try {
     onMetaChange();
+    const gen = _cloudGen;   // read after the meta refresh, which counts as an edit itself
     let id = project.cloudId || null, expected = null;
     if (id) {
       const row = await IvritProjects.get(id);
-      if (!row) { id = null; }                                                   // deleted in the account meanwhile: save it anew
-      else if (mode !== 'overwrite' && project.cloudRev && row.updated_at !== project.cloudRev) { fmCloudConflict(row); return false; }
+      // Not visible to the account signed in now: deleted there, or another account's project left open on a shared
+      // computer (the page no longer reloads at a sign-out). An automatic save never re-creates it — that could put one
+      // teacher's project into the next teacher's account; the edits stay in this browser and an explicit save decides.
+      if (!row) { if (quiet) return false; id = null; }
+      else if (mode !== 'overwrite' && project.cloudRev && row.updated_at !== project.cloudRev) { if (mode === 'signout') return false; fmCloudConflict(row); return false; }
       else expected = row.updated_at;
     }
     const name = fmDerivedProjectName(project.font.familyName, project.font.reservedFontName, project.font.style);
@@ -22257,7 +22263,8 @@ async function fmCloudWrite(mode) {
         else if (p.phase === 'project') status(_cT('phase_project', 'Uploading project…'), true); } });
     if (project !== target) return true;
     project.cloudId = row.id; project.cloudRev = row.updated_at;   // identity, not content: the two writes outside udDo
-    _cloudDirty = false; _cloudPaused = false; _cloudSavedAt = new Date();
+    _cloudDirty = _cloudGen !== gen; _cloudPaused = false; _cloudSavedAt = new Date();   // an edit made during the upload is still to send
+    if (_cloudDirty) fmCloudArm();
     autosaveNow();   // the local snapshot now records the revision it matches
     if (!quiet) { pushRecentProject(project); status(_cT('saved_toast', 'Saved to your account')); }
     return true;
@@ -22558,7 +22565,7 @@ function autosaveClear()  { return _fmTx('readwrite', os => os.delete('current')
 let _projectDirty = false, _autosaveTimer = 0, _autosaveInFlight = false;
 function markDirty() {   // a real edit happened → flag unsaved + schedule a debounced autosave
   _projectDirty = true;
-  if (project && project.cloudId) { _cloudDirty = true; fmCloudArm(); fmCloudPipRender(); }
+  if (project && project.cloudId) { _cloudDirty = true; _cloudGen++; fmCloudArm(); fmCloudPipRender(); }
   clearTimeout(_autosaveTimer);
   _autosaveTimer = setTimeout(autosaveNow, 3000);
 }
@@ -22624,6 +22631,9 @@ async function maybeRestoreAutosave() {
   if (rec && rec.gz) { try { data = ivritSafeParse(await gunzipText(rec.gz)); } catch (e) { data = null; } }
   if (!data) {   // IndexedDB miss → try the stripped localStorage fallback
     try { const raw = localStorage.getItem('hebrewFontMaker_autosave'); if (raw) { data = ivritSafeParse(raw); stripped = true; } } catch (e) {}
+    // This copy has no photos: linked to the account it would save as "photos no longer used" and delete them there.
+    // It continues as a local project; the account's copy, photos and all, stays as it is (Load Project opens it).
+    if (stripped && data && typeof data === 'object') { delete data.cloudId; delete data.cloudRev; }
   }
   _launchDecided = true;
   if (_osStartId) { const id = _osStartId; _osStartId = null; osStartBoot(id, data, rec, stripped); return; }   // ?start= deep link

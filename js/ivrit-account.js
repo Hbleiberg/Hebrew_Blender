@@ -524,16 +524,16 @@
   // The hooks run first, while the token is still valid, so the saves module can flush what this device
   // changed in the last seconds and then remove the account's cached items; each is awaited, bounded, and a
   // failing hook never stops the sign-out. The device is signed out whether or not the server call succeeds.
+  // The hooks run side by side (the saves module's removal and the Font Maker's last save do not depend on each other),
+  // each bounded by SIGNOUT_HOOK_MS, so the session leaves the device within one budget, not the sum of them.
   function runSignOutHooks(uid, opts) {
-    return signOutHooks.reduce(function (chain, fn) {
-      return chain.then(function () {
-        return new Promise(function (resolve) {
-          var done = false, timer = setTimeout(function () { if (!done) { done = true; console.warn('[account] onSignOut hook timed out'); resolve(); } }, SIGNOUT_HOOK_MS);
-          Promise.resolve().then(function () { return fn(uid, opts); }).then(function () { if (!done) { done = true; clearTimeout(timer); resolve(); } },
-            function (e) { console.warn('[account] onSignOut hook failed:', e); if (!done) { done = true; clearTimeout(timer); resolve(); } });
-        });
+    return Promise.all(signOutHooks.map(function (fn) {
+      return new Promise(function (resolve) {
+        var done = false, timer = setTimeout(function () { if (!done) { done = true; console.warn('[account] onSignOut hook timed out'); resolve(); } }, SIGNOUT_HOOK_MS);
+        Promise.resolve().then(function () { return fn(uid, opts); }).then(function () { if (!done) { done = true; clearTimeout(timer); resolve(); } },
+          function (e) { console.warn('[account] onSignOut hook failed:', e); if (!done) { done = true; clearTimeout(timer); resolve(); } });
       });
-    }, Promise.resolve());
+    })).then(function () {});
   }
   function signOut(opts) {
     opts = opts || {};

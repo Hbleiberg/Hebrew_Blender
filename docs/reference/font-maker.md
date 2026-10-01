@@ -60,8 +60,13 @@ The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-save
   recipe / Not now, which pauses autosave), pack, gzip (rewrapped as `application/gzip`), `IvritProjects.save`
   with progress phases through `status()` inside `ipArm(0)`, then `cloudId`/`cloudRev` are set and a local
   `autosaveNow()` records the revision (`cloudRev` + `cloudClean` on the IndexedDB record). `markDirty()` also
-  sets `_cloudDirty` and arms a 10 s `fmCloudAutosave()` (skipped while signed out, offline, busy or paused;
-  an `online` event re-arms). The toolbar `#cloudPip` (Saved / Saving… / Unsaved / Couldn't save — click to
+  sets `_cloudDirty`, bumps the edit counter `_cloudGen` and arms a 10 s `fmCloudAutosave()` (skipped while signed
+  out, offline, busy or paused; an `online` event re-arms). A save marks the project clean only when no edit came
+  in while it uploaded (`_cloudGen` unchanged since the write started); otherwise it stays dirty and re-arms, so an
+  edit made during an upload is never recorded as saved. An automatic save (`'auto'`, `'signout'`) only ever updates
+  the row the project is linked to: when that row is not in the signed-in account (the project came from another
+  teacher's session on a shared browser, or the row was deleted), it does nothing — never an insert into the account
+  now signed in — and only an explicit Save makes a new row. The toolbar `#cloudPip` (Saved / Saving… / Unsaved / Couldn't save — click to
   retry) is shown only while the project has a `cloudId` and someone is signed in; `beforeunload` also warns
   while `_cloudDirty || _cloudBusy`. *Continue where you left off* (`_bootLaunchPrompt`, and the `?start=` boot's
   Continue) from a snapshot whose `cloudClean` is `false` — the tab closed, the teacher signed out inside the
@@ -87,9 +92,12 @@ The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-save
   `IvritAccount.onSignOut`, so the last edits are safe before the session goes — the cloud timer is cancelled,
   a dirty project's local snapshot finishes (it waits for one already in flight, runs `autosaveNow()` and waits
   for that one, up to 4 s each), and a cloud project with changes the account has not received is saved to it
-  (`fmCloudWrite('auto')`, after up to 6 s for a save already running) — except on a `keepLocal` sign-out (the account is gone or going: saving would
-  put a project back into it), while paused, or offline. The account module bounds the hook at 10 s; anything
-  unfinished stays in the snapshot and resumes later. The page is not reloaded after a sign-out
+  (`fmCloudWrite('signout')`, after up to 6 s for a save already running; a conflict found then raises no dialog
+  — the project stays dirty and the snapshot keeps it) — except on a `keepLocal` sign-out (the account is gone or
+  going: saving would put a project back into it), while paused, or offline. The account module runs every page's
+  hooks in parallel, each bounded at 10 s; anything unfinished stays in the snapshot and resumes later. *Continue*
+  from the image-stripped localStorage fallback (`hebrewFontMaker_autosave`) detaches the project from its cloud row
+  (`cloudId`/`cloudRev` dropped), so a save of that copy can never replace the account's copy and its photos. The page is not reloaded after a sign-out
   (`IvritSaves.needsReload()` is false on a page that attaches only `Suite`), so the open project stays —
   in this tab's own sign-out and when another tab signs out.
 - **The account's own rows**: the boot wiring calls `IvritSaves.attach({ tool: 'Suite' })`, so the suite-wide

@@ -85,7 +85,7 @@ function parseMultipart(buf, contentType) {   // the SDK sends a Blob upload as 
   return parts;
 }
 class FakeCloud {
-  constructor() { this.n = 0; this.log = []; this.tables = { font_projects: [], saves: [] }; this.objects = {}; this.fail413Once = false; }
+  constructor() { this.n = 0; this.log = []; this.tables = { font_projects: [], saves: [] }; this.objects = {}; this.fail413Once = false; this.rls = false; this.tokens = { x: UID }; this.users = { [UID]: SESSION.user }; this.holdUploads = 0; }
   stamp() { return new Date(Date.UTC(2026, 8, 15, 8, 0, 0) + (++this.n) * 1000).toISOString(); }
   freshRow(table, body) {
     const at = this.stamp();
@@ -100,12 +100,13 @@ class FakeCloud {
     Object.keys(this.objects).forEach(k => { const [b, ...rest] = k.split('|'); const key = rest.join('|'); if (b !== bucket) return; if (!key.startsWith(folder + '/')) return; const tail = key.slice(folder.length + 1); if (tail.includes('/')) return; out.push({ name: tail, obj: this.objects[k] }); });
     return out;
   }
-  handle(route) {
+  async handle(route) {
     const req = route.request(), url = new URL(req.url()), m = req.method();
+    const who = this.tokens[String(req.headers().authorization || '').replace(/^Bearer\s+/i, '')] || null;   // the signed-in user of this request
     const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'GET,POST,PATCH,PUT,DELETE,OPTIONS', 'access-control-expose-headers': '*' };
     const json = (status, body) => route.fulfill({ status, headers: Object.assign({ 'content-type': 'application/json; charset=utf-8' }, cors), body: JSON.stringify(body) });
     if (m === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
-    if (url.pathname.endsWith('/auth/v1/user')) return json(200, SESSION.user);
+    if (url.pathname.endsWith('/auth/v1/user')) return json(200, (who && this.users[who]) || SESSION.user);
     if (url.pathname.endsWith('/auth/v1/token')) return json(200, Object.assign({ expires_in: 3600 }, SESSION));
     if (url.pathname.endsWith('/auth/v1/logout')) { this.log.push({ m, kind: 'logout' }); return route.fulfill({ status: 204, headers: cors }); }
     // ---- Storage ----
@@ -121,6 +122,7 @@ class FakeCloud {
     }
     sm = /\/storage\/v1\/object\/([^/]+)\/(.+)$/.exec(url.pathname);
     if (sm && (m === 'POST' || m === 'PUT')) {
+      if (this.holdUploads) await new Promise(r => setTimeout(r, this.holdUploads));
       const bucket = sm[1], key = decodeURIComponent(sm[2]);
       const parts = parseMultipart(req.postDataBuffer() || Buffer.alloc(0), req.headers()['content-type']);
       const file = parts ? parts.find(p => p.filename !== undefined || p.name === '') : null;
@@ -159,15 +161,15 @@ class FakeCloud {
     const single = /vnd\.pgrst\.object/.test(req.headers().accept || '');
     const entry = { m, table, search: url.search, body: req.postData() ? JSON.parse(req.postData()) : null, status: 200 };
     this.log.push(entry);
-    let rows = this.tables[table].filter(match);
+    let rows = this.tables[table].filter(match).filter(r => !this.rls || r.user_id === who);   // as RLS: a row is visible to its owner only
     if (m === 'GET') {
       const order = (q.get('order') || '').split(',').filter(Boolean).map(s => { const [k, dir] = s.split('.'); return [k, dir === 'desc' ? -1 : 1]; });
       if (order.length) rows = rows.slice().sort((a, b) => { for (const [k, d] of order) { if (a[k] < b[k]) return -d; if (a[k] > b[k]) return d; } return 0; });
       const off = Number(q.get('offset') || 0);
       rows = rows.slice(off, q.has('limit') ? off + Number(q.get('limit')) : undefined);
     } else if (m === 'POST') {
-      if (table === 'font_projects' && this.tables.font_projects.some(r => r.name === entry.body.name)) return json(409, { code: '23505', message: 'duplicate key value violates unique constraint "font_projects_one_name"', details: null, hint: null });
-      const row = this.freshRow(table, entry.body); this.tables[table].push(row); rows = [row]; entry.status = 201;
+      if (table === 'font_projects' && this.tables.font_projects.some(r => r.name === entry.body.name && (!this.rls || r.user_id === who))) return json(409, { code: '23505', message: 'duplicate key value violates unique constraint "font_projects_one_name"', details: null, hint: null });
+      const row = this.freshRow(table, Object.assign({}, entry.body, this.rls && who ? { user_id: who } : {})); this.tables[table].push(row); rows = [row]; entry.status = 201;
     } else if (m === 'PATCH') {
       rows.forEach(r => { Object.assign(r, entry.body); r.updated_at = this.stamp(); });
     } else if (m === 'DELETE') {
@@ -523,6 +525,60 @@ try {
     check('12: Continue restored the edit and the account copy reads Unsaved again', /Continue/.test(clicked) && resumed.dirty === true && resumed.pip === 'unsaved' && resumed.adv === 777, JSON.stringify({ clicked, resumed }));
     check('12: the resumed cloud autosave updated the row with the edit', row.updated_at !== rev1 && !!packed && packed.letters.find(l => l.codepoint === '05D0').advance === 777, JSON.stringify({ rev1, now: row.updated_at }));
     check('12: 0 pageerrors', errors.length === 0 && e2.length === 0, errors.concat(e2).join(' | '));
+    await ctx.close();
+  }
+  // ---- 14. teacher A's unsent project continued by teacher B on the same browser: never saved into B's account ----
+  {
+    const c14 = new FakeCloud(); c14.rls = true;
+    const UID_B = '22222222-2222-4222-8222-222222222222';
+    const SESSION_B = { access_token: 'xB', refresh_token: 'yB', expires_at: 4102444800, token_type: 'bearer', user: { id: UID_B, email: 'b@example.org', user_metadata: { full_name: 'Teacher B' } } };
+    c14.tokens.xB = UID_B; c14.users[UID_B] = SESSION_B.user;
+    const ctx = await openContext(browser, c14, seedFor(true));
+    const { page, errors } = await openPage(ctx, { signedIn: true });
+    await page.evaluate(FIXTURE);
+    await page.evaluate(() => fmCloudWrite('new'));
+    const rowA = c14.tables.font_projects[0];
+    await page.evaluate(() => { udDo([{ t: 'item', kind: 'letter', cp: '05D0' }], 'smoke', () => { const l = project.letters.find(l => l.codepoint === '05D0'); l.advance = 999; }); clearTimeout(_cloudTimer); });
+    await page.evaluate(async () => { await autosaveNow(); while (_autosaveInFlight) await new Promise(r => setTimeout(r, 50)); });
+    await page.close();
+    const pB = await ctx.newPage();
+    const eB = [];
+    pB.on('pageerror', e => eB.push(String(e && e.message || e)));
+    await pB.goto(BASE + '/llms.txt', { waitUntil: 'domcontentloaded' });
+    await pB.evaluate(([k, v]) => { localStorage.setItem(k, v); localStorage.setItem('ivritSuite_accountCache', JSON.stringify({ email: 'b@example.org', name: 'Teacher B' })); }, [AUTH_KEY, JSON.stringify(SESSION_B)]);
+    await pB.goto(BASE + '/' + PAGE, { waitUntil: 'domcontentloaded' });
+    await pB.waitForFunction(() => window.IvritAccount && IvritAccount.status() === 'signed-in' && IvritAccount.user() && IvritAccount.user().email === 'b@example.org', null, { timeout: 25000 });
+    const clicked = await clickAsk(pB, '^Continue');
+    await pB.waitForFunction(() => project && project.cloudId, null, { timeout: 15000 }).catch(() => {});
+    await pB.evaluate(() => fmCloudAutosave());
+    await pB.waitForTimeout(800);
+    const bRows = c14.tables.font_projects.filter(r => r.user_id === UID_B);
+    const st = await pB.evaluate(async () => { const r = await autosaveGet(); return { dirty: _cloudDirty, cloudId: project && project.cloudId, snapClean: r ? r.cloudClean : null }; });
+    check("14: teacher B continuing teacher A's unsent project on the same browser put nothing into B's account; the edits stay in this browser for A", /Continue/.test(clicked) && bRows.length === 0 && st.dirty === true && st.cloudId === rowA.id && st.snapClean === false, JSON.stringify({ clicked, bRows: bRows.length, st }));
+    check('14: 0 pageerrors', errors.length === 0 && eB.length === 0, errors.concat(eB).join(' | '));
+    await ctx.close();
+  }
+  // ---- 15. an edit made while an upload runs is not marked saved: the next autosave sends it ----
+  {
+    const c15 = new FakeCloud();
+    const ctx = await openContext(browser, c15, seedFor(true));
+    const { page, errors } = await openPage(ctx, { signedIn: true });
+    await page.evaluate(FIXTURE);
+    await page.evaluate(() => fmCloudWrite('new'));
+    const row = c15.tables.font_projects[0];
+    await page.evaluate(() => { udDo([{ t: 'item', kind: 'letter', cp: '05D0' }], 'smoke', () => { const l = project.letters.find(l => l.codepoint === '05D0'); l.advance = 501; }); clearTimeout(_cloudTimer); });
+    c15.holdUploads = 1500;
+    const writing = page.evaluate(() => fmCloudWrite('auto'));
+    await page.waitForTimeout(500);   // the upload is under way
+    await page.evaluate(() => { udDo([{ t: 'item', kind: 'letter', cp: '05D0' }], 'smoke', () => { const l = project.letters.find(l => l.codepoint === '05D0'); l.advance = 502; }); clearTimeout(_cloudTimer); });
+    await writing;
+    c15.holdUploads = 0;
+    const st1 = await page.evaluate(() => ({ dirty: _cloudDirty }));
+    await page.evaluate(() => fmCloudAutosave());
+    const packed = (() => { const f = folderObjects(c15, 'font-projects', row.id); return f.length ? gunzipJson(f[f.length - 1].obj.bytes) : null; })();
+    const adv = packed && packed.letters.find(l => l.codepoint === '05D0').advance;
+    check('15: an edit made while the upload ran stayed unsaved, and the next autosave sent it to the account', st1.dirty === true && adv === 502, JSON.stringify({ st1, adv }));
+    check('15: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
   // ---- 13. My Fonts: a removal while the SDK has not loaded is remembered and sent at the next load -----------
