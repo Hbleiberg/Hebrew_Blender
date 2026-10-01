@@ -1264,6 +1264,7 @@ body.dark .hi-sun{display:inline-block;}
   /* A Recent row is the load button PLUS its own 🗑. A button can't nest inside a button, so the row is a
      flex wrapper and the two controls are siblings — that also keeps the trash out of the load hit area. */
   .load-menu-row { display: flex; align-items: center; gap: 2px; }
+  #loadMenuRecent { max-block-size: 45vh; overflow-y: auto; }   /* Recent has no cap: a long list scrolls */
   .load-menu-row .load-menu-item { flex: 1 1 auto; min-width: 0; }
   .load-menu-del { flex: 0 0 auto; background: none; border: none; border-radius: 6px; padding: 7px 8px;
     font-family: inherit; font-size: 0.82rem; line-height: 1; color: var(--muted); cursor: pointer; }
@@ -4493,7 +4494,7 @@ const ICON_WARN_SM = '<svg class="hi hi-sm hi-warning" viewBox="0 0 24 24" width
 const ICON_PENCIL_SM = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
 const ICON_GEAR_SM = '<svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg>';
 const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
-const FONT_MAKER_VERSION = '5.57';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.58';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -4736,6 +4737,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.58</strong> &mdash; <strong>Recent projects can no longer disappear.</strong> Projects you save in this browser now live in the Font Maker's own project storage instead of the small settings space, so the list has no limit of six: nothing leaves <span class="ui">Recent</span> unless you remove it with its trash button. If a save to this browser ever does not fit, the Font Maker says so instead of quietly dropping an older project to make room. Your existing Recent projects move over by themselves the first time you open this version.</li>
       <li><strong>v5.57</strong> &mdash; <strong>Your work is safer around signing in and out.</strong> Signing out of your IvritSuite account now finishes saving first: the copy in this browser is completed and a project kept in your account receives your last changes before the sign-out, and the page is no longer reloaded (signing out in another tab no longer reloads the Font Maker either). If the browser closes while your account copy still has changes waiting, <span class="ui">Continue where you left off</span> picks the saving up again. A save to this browser that is asked for while another is still being written is no longer skipped, so the very last edit before you close the tab is kept. Removing a font from <span class="ui">My Fonts</span> while signed in now says that it also leaves your account, and a removal made while the page is still connecting is no longer lost. An edit you make while a project is being saved to your account is no longer marked as saved before it is sent, and an automatic save never puts a project into the account of whoever signs in next on a shared browser. Continuing from this browser's backup copy without photos no longer replaces the photos of your account copy. While you are signed in, <span class="ui">My Fonts</span> and your suite-wide preferences (language and dark mode) now come from your account here too.</li>
       <li><strong>v5.56</strong> &mdash; <strong>Samaritan vowel signs and marks.</strong> Beside the <span class="ui">Samaritan</span> tab a new <span class="ui">Samaritan marks</span> tab carries the block&rsquo;s 21 combining marks &mdash; the vowel signs, the dagesh and the other marks. Each attaches above its letter at the letter&rsquo;s start, middle or end (the three columns of the Hebrew Square Samaritan face), placed on a new <span class="ui">Place Marks</span> step of every Samaritan letter, sized by its own slider, printed on its own template, and brought across from a font that draws them &mdash; with the font&rsquo;s own positions. Marks you leave blank stay out of the font, and <span class="ui">QA Check</span> gets a <span class="ui">Samaritan marks</span> tab that checks every drawn mark, and any two marks from different columns, on each Samaritan letter. <span style="color:var(--muted);">(September 2026)</span></li>
       <li><strong>v5.55</strong> &mdash; <strong>Samaritan letters.</strong> A new <span class="ui">Add Samaritan letters</span> switch in <span class="ui">Settings</span> (and in both wizards) opens a <span class="ui">Samaritan</span> tab: the 22 letters, the three vowels written as spacing letters rather than as marks, and the fifteen punctuation marks, each group on its own. This is the hand of the Samaritan Pentateuch &mdash; the branch of the old Hebrew letters that never gave way to the square script, and is still written today. It sits beside your square Hebrew at its own Unicode code points, so one font can show both. Draw or trace them like any letter &mdash; <span class="ui">Save &amp; stay</span> and <span class="ui">Save letter &amp; next</span> walk the tab right to left, the way the script reads &mdash; print a one-page practice sheet, and see them in <span class="ui">Preview PDF</span>. One <span class="ui">Starting Font</span>, Hebrew Square Samaritan, now brings its Samaritan letters across with it instead of leaving them behind. <span style="color:var(--muted);">(September 2026)</span></li>
@@ -4887,7 +4889,7 @@ function buildHelpTabs() {
 // Changelog version order (newest first) — the About tab renders one <li> per entry from the
 // fontmaker.changelog.* keys, so version history is translatable. On release, add the new key to the
 // CSV and prepend its token here (the static HELP_CONTENT.about is only the no-I18n fallback).
-const CHANGELOG_ORDER = ['v5_56','v5_55','v5_54','v5_53','v5_52','v5_51','v5_50','v5_49','v5_48','v5_47','v5_46','v5_45','v5_44','v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
+const CHANGELOG_ORDER = ['v5_57','v5_56','v5_55','v5_54','v5_53','v5_52','v5_51','v5_50','v5_49','v5_48','v5_47','v5_46','v5_45','v5_44','v5_43','v5_42','v5_41','v5_40','v5_39','v5_38','v5_37','v5_36','v5_35','v5_34','v5_33','v5_32','v5_31','v5_30','v5_29','v5_28','v5_27','v5_26','v5_25','v5_24','v5_23','v5_22','v5_21','v5_20','v5_19','v5_18','v5_17','v5_16','v5_15','v5_14','v5_13','v5_12','v5_11','v5_10','v5_9','v5_8','v5_7','v5_6','v5_5','v5_4','v5_3','v5_2','v5_1','v5_0','v4_29','v4_28','v4_27','v4_26','v4_25','v4_18','v4_17','v4_16','v4_15','v4_14','v4_12','v4_11','v4_10','v4_9','v4_8','v4_7','v4_6','v4_5','v4_4','v4_3','v4_2','v4_1','v4_0','v3_8','v3_7','v3_6','v3_5','v3_4','v3_3','v3_2','v3_1','v3_0','v2_9','v2_8','v2_7','v2_6','v2_5','v2_4','v2_3','v2_2','v2_1','v2_0','v1_9','v1_8','v1_7','v1_6','v1_5','v1_4','v1_3','v1_2','v1_1','v1_0'];
 // About-tab body built from i18n keys: intro + special thanks + a translatable changelog list.
 function buildAboutBody() {
   const T = (k, p) => I18n.t(k, p);
@@ -4900,7 +4902,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_57';
+  const CUR_KEY = 'fontmaker.changelog.v5_58';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'
@@ -21904,14 +21906,14 @@ async function saveToComputer() {
     downloadBlob(new Blob([json], { type: 'application/json' }), `${stamp}.json`);  // old-browser fallback
     status(I18n.t('fontmaker.status.project_saved_computer2'));
   }
-  pushRecentProject(project);   // also refresh the in-browser Recent list
+  pushRecentQuiet(project);   // also refresh the in-browser Recent list
   markClean();   // saved to a file → drop the unsaved-work breadcrumb
 }
 let _lastBrowserReminder = 0;
-function saveToBrowser() {
+async function saveToBrowser() {
   project.savedAt = new Date().toISOString();
   onMetaChange();
-  const ok = pushRecentProject(project);   // full project → this browser (reopen via Load Project ▾ → Recent)
+  const ok = await pushRecentProject(project);   // full project → this browser (reopen via Load Project ▾ → Recent)
   if (!ok) {
     askModal(I18n.t('fontmaker.modals.couldnt_save_browser_title'),
       I18n.t('fontmaker.modals.couldnt_save_browser_body'),
@@ -21939,7 +21941,7 @@ function fmDerivedProjectName(familyName, reservedFontName, style) {   // mirror
 }
 function fmUniqueCopyName(base, style) {                               // "X copy", "X copy 2", … not already in Recents
   const b = ((base || '').trim()) || 'My Hebrew Font';
-  const taken = new Set(getRecentProjects().map(r => r.name));
+  const taken = _recentNames;   // kept in step by every Recent read and save
   let n = b + ' copy', i = 1;
   while (taken.has(fmDerivedProjectName(n, n, style))) n = b + ' copy ' + (++i);
   return n;
@@ -21974,14 +21976,14 @@ function saveProjectAs() {
     if (fmDerivedProjectName(name, project.osFont ? project.font.reservedFontName : name, style) === original) name = name + ' copy';
     // 1) preserve the current font in Recents
     project.savedAt = new Date().toISOString();
-    pushRecentProject(project);
+    pushRecentQuiet(project);
     // 2) build the renamed copy (familyName === reservedFontName, like a fresh project's seed)
     const copy = JSON.parse(JSON.stringify(project));
     delete copy.cloudId; delete copy.cloudRev;   // a copy is a new project — it must not write over the original's account row
     copy.font.familyName = name;
     if (!copy.osFont) copy.font.reservedFontName = name;   // partner copies keep the upstream Reserved Font Names
     copy.savedAt = new Date().toISOString();
-    pushRecentProject(copy);
+    pushRecentQuiet(copy);
     // 3) switch the editor to the copy via the shared load path (image/SVG cache, undo reset, render, autosave)
     await applyProjectData(JSON.parse(JSON.stringify(copy)));
     status(I18n.t('fontmaker.status.saved_as', {name}));
@@ -22266,7 +22268,7 @@ async function fmCloudWrite(mode) {
     _cloudDirty = _cloudGen !== gen; _cloudPaused = false; _cloudSavedAt = new Date();   // an edit made during the upload is still to send
     if (_cloudDirty) fmCloudArm();
     autosaveNow();   // the local snapshot now records the revision it matches
-    if (!quiet) { pushRecentProject(project); status(_cT('saved_toast', 'Saved to your account')); }
+    if (!quiet) { status(_cT('saved_toast', 'Saved to your account')); pushRecentQuiet(project); }
     return true;
   } catch (e) {
     if (project === target) _cloudLastErr = e;
@@ -22285,13 +22287,13 @@ function fmCloudConflict(row) {
 async function fmCloudKeepBoth() {   // this copy becomes a new project (the Save as… recipe) and goes up under its own row
   const style = project.font.style, name = fmUniqueCopyName(project.font.familyName, style);
   project.savedAt = new Date().toISOString();
-  pushRecentProject(project);
+  pushRecentQuiet(project);
   const copy = JSON.parse(JSON.stringify(project));
   copy.font.familyName = name;
   if (!copy.osFont) copy.font.reservedFontName = name;
   copy.savedAt = new Date().toISOString();
   delete copy.cloudId; delete copy.cloudRev;
-  pushRecentProject(copy);
+  pushRecentQuiet(copy);
   if (await applyProjectData(JSON.parse(JSON.stringify(copy)))) { status(I18n.t('fontmaker.status.saved_as', { name })); fmCloudWrite('new'); }
 }
 async function fmCloudLocalCopy(id, rev) {   // the local snapshot of the same account revision, untouched since: no download needed
@@ -22423,57 +22425,118 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   if (document.getElementById('wizardOverlay')?.classList.contains('open')) { _wizardMode = null; aCloseModal('wizardOverlay'); }
   return true;
 }
-/* ── Recent projects: a local-only localStorage cache powering the "Load Project ▾" menu.
-   Full projects are large, so keep a small rolling list and evict oldest on quota overflow.
-   Like the autosave breadcrumb, this is NOT part of the portable .ivrit/AllTools backup. ── */
-const RECENT_KEY = 'hebrewFontMaker_recentProjects', MAX_RECENT = 6;
-// The stored value is untrusted (hand-edited, or written by an older build): anything but an array of
-// {name, data} objects used to throw out of toggleLoadMenu and leave the Load menu dead. Keep only the
-// well-shaped entries; pushRecentProject writes the cleaned list back.
-function getRecentProjects() {
+/* ── Recent projects: whole projects kept in this browser for the "Load Project ▾" menu. They live in the
+   Font Maker's own IndexedDB (database `hebrewFontMaker`: store `recent` {name, savedAt} for the menu, store
+   `recentData` {name, json} for the project), not in localStorage, whose few megabytes six photo projects
+   fill. A Recent row can be a project's only copy, so the list has no cap and nothing leaves it except
+   through its 🗑: a save that does not fit is refused and said, never made room for by dropping another
+   project. A browser without IndexedDB keeps the old localStorage list under the same rule. Like the
+   autosave, Recent is NOT part of the portable .ivrit/AllTools backup. ── */
+const RECENT_KEY = 'hebrewFontMaker_recentProjects';   // the old localStorage list: moved into IndexedDB, then removed
+const FM_RECENT_STORE = 'recent', FM_RECENT_DATA = 'recentData';
+let _recentNames = new Set();   // the names Recent holds, kept in step for fmUniqueCopyName (which is synchronous)
+// The old list is untrusted (hand-edited, or written by an older build): keep only well-shaped {name, data} rows.
+function legacyRecentList() {
   try { const v = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); return Array.isArray(v) ? v.filter(r => r && typeof r === 'object' && typeof r.name === 'string' && r.data && typeof r.data === 'object') : []; }
   catch (e) { return []; }
 }
-function pushRecentProject(p) {
-  let list = getRecentProjects();
-  // The style is part of the identity — a Bold project must not evict its Regular sibling from Recents.
+// A project's Recent identity is its derived name (see fmDerivedProjectName); the style is part of it, so a Bold
+// project never replaces its Regular sibling. `legacy` is the old doubled "X - X" form a row may still carry.
+function recentNameOf(p) {
   const base = (p.font && p.font.familyName) || 'Untitled', fam = base + ((p.font && p.font.style) === 'bold' ? ' Bold' : '');
   const res = (p.font && p.font.reservedFontName) || '';
-  // The wizard seeds reservedFontName = familyName, so the old `${fam} - ${res}` read "X - X" for every
-  // fresh project (S380 Pass H); the suffix now appears only for a Reserved Font Name that differs.
-  const name = (res && res !== base) ? `${fam} - ${res}` : fam;
-  const legacy = res ? `${fam} - ${res}` : null;                  // a row saved under the old doubled form is the same project
-  list = list.filter(r => r.name !== name && r.name !== legacy);  // newest copy of a name wins
-  list.unshift({ name, savedAt: p.savedAt || new Date().toISOString(), data: p });
-  if (list.length > MAX_RECENT) list = list.slice(0, MAX_RECENT);
-  while (list.length) {                                           // quota-safe: drop oldest until it fits
-    try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); return true; } catch (e) { list.pop(); }
+  return { name: (res && res !== base) ? `${fam} - ${res}` : fam, legacy: res ? `${fam} - ${res}` : null };
+}
+// Resolves true once IndexedDB holds Recent (the old list moved over, read back, then removed), false when this
+// browser cannot use it — then the old localStorage list stays the store, and a failed move is retried next load.
+let _recentIdb = null;
+function recentReady() { if (!_recentIdb) _recentIdb = recentMigrate(); return _recentIdb; }
+async function recentMigrate() {
+  if (typeof indexedDB === 'undefined') return false;
+  let meta;
+  try { meta = await _fmTxStores([FM_RECENT_STORE], 'readonly', tx => tx.objectStore(FM_RECENT_STORE).getAll()); } catch (e) { return false; }
+  const old = legacyRecentList();
+  if (!old.length) return true;
+  const have = new Map((meta || []).map(m => [m.name, String(m.savedAt || '')]));
+  const todo = old.filter(r => !(have.has(r.name) && have.get(r.name) >= String(r.savedAt || '')));   // a newer row already here wins
+  try {
+    if (todo.length) await _fmTxStores([FM_RECENT_STORE, FM_RECENT_DATA], 'readwrite', tx => {
+      todo.forEach(r => { tx.objectStore(FM_RECENT_DATA).put({ name: r.name, json: JSON.stringify(r.data) }); tx.objectStore(FM_RECENT_STORE).put({ name: r.name, savedAt: String(r.savedAt || '') }); });
+    });
+    const keys = new Set((await _fmTxStores([FM_RECENT_DATA], 'readonly', tx => tx.objectStore(FM_RECENT_DATA).getAllKeys())) || []);
+    if (old.every(r => keys.has(r.name))) { try { localStorage.removeItem(RECENT_KEY); } catch (e) {} }
+    return true;
+  } catch (e) { return false; }   // nothing removed: the old list stays the store this session
+}
+// [{name, savedAt}], newest first (the projects themselves are read only when one is opened).
+async function recentList() {
+  let list = null;
+  if (await recentReady()) {
+    try { list = ((await _fmTxStores([FM_RECENT_STORE], 'readonly', tx => tx.objectStore(FM_RECENT_STORE).getAll())) || []).filter(m => m && typeof m.name === 'string'); } catch (e) { list = null; }
   }
-  return false;                                                   // couldn't fit even on its own → leave any prior saves intact
+  if (!list) list = legacyRecentList().map(r => ({ name: r.name, savedAt: r.savedAt }));
+  list.sort((x, y) => String(y.savedAt || '').localeCompare(String(x.savedAt || '')));
+  _recentNames = new Set(list.map(m => m.name));
+  return list;
 }
-async function loadRecentProject(idx) {
-  const r = getRecentProjects()[idx]; if (!r) return;
-  if (await applyProjectData(JSON.parse(JSON.stringify(r.data)))) status(I18n.t('fontmaker.status.loaded_named', {name: r.name}));
+async function recentGet(name) {
+  if (await recentReady()) {
+    try { const r = await _fmTxStores([FM_RECENT_DATA], 'readonly', tx => tx.objectStore(FM_RECENT_DATA).get(name)); if (r && typeof r.json === 'string') return ivritSafeParse(r.json); } catch (e) {}
+  }
+  const r = legacyRecentList().find(x => x.name === name);
+  return r ? JSON.parse(JSON.stringify(r.data)) : null;
 }
-/* Drop one row from the Recent list. MAX_RECENT is 6 and pushRecentProject evicts the oldest, so without
-   this six experiments quietly push the real font out of the only in-browser copy there is. Identity is
-   name+savedAt rather than the row index: the confirm is async, and a save behind it reorders the list. */
+// Promise<boolean>. The project is serialized now, before anything awaits (a Save as… switches `project` right after).
+// The newest copy of a name replaces its earlier row; no other row is ever touched, and a refused write keeps them all.
+function pushRecentProject(p) {
+  const { name, legacy } = recentNameOf(p), savedAt = p.savedAt || new Date().toISOString();
+  let json; try { json = JSON.stringify(p); } catch (e) { return Promise.resolve(false); }
+  _recentNames.add(name);
+  return recentReady().then(idb => {
+    if (idb) return _fmTxStores([FM_RECENT_STORE, FM_RECENT_DATA], 'readwrite', tx => {
+      const m = tx.objectStore(FM_RECENT_STORE), d = tx.objectStore(FM_RECENT_DATA);
+      if (legacy && legacy !== name) { m.delete(legacy); d.delete(legacy); }
+      d.put({ name, json }); m.put({ name, savedAt });
+    }).then(() => true, () => false);
+    const list = legacyRecentList().filter(r => r.name !== name && r.name !== legacy);
+    list.unshift({ name, savedAt, data: JSON.parse(json) });
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+  });
+}
+// A save whose main copy went elsewhere (a file, the account, a Save as…): Recent is a convenience there, but a
+// refusal is still said rather than hidden.
+function pushRecentQuiet(p) {
+  const name = recentNameOf(p).name;
+  return pushRecentProject(p).then(ok => { if (!ok) status(I18n.t('fontmaker.status.recent_failed', { name })); return ok; });
+}
+async function loadRecentProject(name) {
+  const data = await recentGet(name); if (!data) return;
+  if (await applyProjectData(data)) status(I18n.t('fontmaker.status.loaded_named', { name }));
+}
+/* Drop one row from the Recent list — the only way a project leaves it. Identity is name+savedAt rather than the
+   row index: the confirm is async, and a save behind it may have replaced the row with a newer copy. */
 function removeRecentProject(name, savedAt) {
-  const list = getRecentProjects().filter(r => !(r.name === name && r.savedAt === savedAt));
-  try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+  return recentReady().then(idb => {
+    if (idb) return _fmTxStores([FM_RECENT_STORE, FM_RECENT_DATA], 'readwrite', tx => {
+      const m = tx.objectStore(FM_RECENT_STORE), g = m.get(name);
+      g.onsuccess = () => { if (g.result && g.result.savedAt === savedAt) { m.delete(name); tx.objectStore(FM_RECENT_DATA).delete(name); } };
+    }).then(() => true, () => false);
+    const list = legacyRecentList().filter(r => !(r.name === name && r.savedAt === savedAt));
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+  });
 }
-function removeRecentProjectUI(idx) {
-  const r = getRecentProjects()[idx]; if (!r) return;
+function removeRecentProjectUI(name, savedAt, idx) {
   // .load-menu sits at z-index 300, ABOVE #askOverlay (201): left open it would paint over its own
   // confirm. Close it, then put it back on either answer so a second stale row stays one click away.
   closeLoadMenu();
   askModal(I18n.t('fontmaker.modals.remove_recent_title'),
-    I18n.t('fontmaker.modals.remove_recent_body', { name: '<b>' + esc(r.name) + '</b>' }),
+    I18n.t('fontmaker.modals.remove_recent_body', { name: '<b>' + esc(name) + '</b>' }),
     [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost', onClick: () => reopenLoadMenu(idx) },
      { label: I18n.t('fontmaker.modals.remove'), onClick: () => {
-         const ok = removeRecentProject(r.name, r.savedAt);
-         status(I18n.t(ok ? 'fontmaker.status.removed_recent' : 'fontmaker.status.remove_recent_failed', { name: r.name }));
-         reopenLoadMenu(idx);
+         removeRecentProject(name, savedAt).then(ok => {
+           status(I18n.t(ok ? 'fontmaker.status.removed_recent' : 'fontmaker.status.remove_recent_failed', { name }));
+           reopenLoadMenu(idx);
+         });
        } }]);
 }
 /* "Load Project ▾" split menu: From computer… + the recent list */
@@ -22488,14 +22551,10 @@ function toggleLoadMenu(ev) {
 function openLoadMenu(anchor) {
   closeLoadMenu();
   _loadMenuAnchor = anchor;
-  const recents = getRecentProjects();
   const menu = document.createElement('div'); menu.id = 'loadMenu'; menu.className = 'load-menu';
   let h = `<button class="load-menu-item" onclick="closeLoadMenu();document.getElementById('projFile').click()">${ICON_FOLDER_SM}${_pT('load_from_computer', 'Load from computer…')}</button>
     <div class="load-menu-sep"></div><div class="load-menu-head">${_pT('load_recent', 'Recent')}</div>`;
-  h += recents.length
-    ? recents.map((r,i) => `<div class="load-menu-row"><button class="load-menu-item" onclick="closeLoadMenu();loadRecentProject(${i})"><span>${esc(r.name)}</span><span class="load-menu-date">${recentDate(r.savedAt)}</span></button>` +
-        `<button class="load-menu-del" onclick="removeRecentProjectUI(${i})" title="${esc(_pT('load_remove_title', 'Remove from Recent'))}" aria-label="${esc(_pT('load_remove_aria', 'Remove {name} from Recent', {name: r.name}))}"><svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg></button></div>`).join('')
-    : `<div class="load-menu-empty">${_pT('load_no_recent', 'No recent projects yet — save one first.')}</div>`;
+  h += `<div id="loadMenuRecent"><div class="load-menu-empty">${esc(_pT('load_recent_loading', 'Loading…'))}</div></div>`;
   h += fmCloudRecentNote();
   h += fmCloudLoadSection();
   menu.innerHTML = h;
@@ -22504,8 +22563,36 @@ function openLoadMenu(anchor) {
   menu.style.left = Math.max(6, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 8)) + 'px';
   menu.style.top = (rect.bottom + 4) + 'px';
   setTimeout(() => document.addEventListener('click', closeLoadMenu), 0);
-  fmCloudFillLoadMenu(menu);   // the "In your account" rows arrive asynchronously
+  menu._recentFilled = fmRecentFillLoadMenu(menu);   // Recent and "In your account" both arrive asynchronously
+  fmCloudFillLoadMenu(menu);
   return menu;
+}
+// The Recent rows, once the list is read — only into this very menu while it is still open. Names reach the page
+// through textContent and listeners, never through an inline handler.
+async function fmRecentFillLoadMenu(menu) {
+  const host = menu.querySelector('#loadMenuRecent'); if (!host) return;
+  let list = [];
+  try { list = await recentList(); } catch (e) { list = []; }
+  if (document.getElementById('loadMenu') !== menu || !host.isConnected) return;
+  host.innerHTML = '';
+  if (!list.length) { host.innerHTML = `<div class="load-menu-empty">${esc(_pT('load_no_recent', 'No recent projects yet — save one first.'))}</div>`; return; }
+  list.forEach((r, i) => {
+    const row = document.createElement('div'); row.className = 'load-menu-row';
+    const open = document.createElement('button'); open.className = 'load-menu-item';
+    const nm = document.createElement('span'); nm.textContent = r.name;
+    const dt = document.createElement('span'); dt.className = 'load-menu-date'; dt.textContent = recentDate(r.savedAt);
+    open.append(nm, dt);
+    open.addEventListener('click', () => { closeLoadMenu(); loadRecentProject(r.name); });
+    const del = document.createElement('button'); del.className = 'load-menu-del';
+    del.title = _pT('load_remove_title', 'Remove from Recent');
+    del.setAttribute('aria-label', _pT('load_remove_aria', 'Remove {name} from Recent', { name: r.name }));
+    del.innerHTML = '<svg class="hi hi-sm hi-trash" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.2a1.2 1.2 0 0 1 1.2-1.2h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5L17.5 7"/><path d="M10.4 10.6v6.4M13.6 10.6v6.4"/></svg>';
+    del.addEventListener('click', () => removeRecentProjectUI(r.name, r.savedAt, i));
+    row.append(open, del);
+    host.appendChild(row);
+  });
+  const a = _loadMenuAnchor;   // the filled menu may be wider: keep it on screen
+  if (a && a.isConnected) { const rect = a.getBoundingClientRect(); menu.style.left = Math.max(6, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 8)) + 'px'; }
 }
 function reopenLoadMenu(focusIdx) {
   const a = _loadMenuAnchor;
@@ -22513,9 +22600,12 @@ function reopenLoadMenu(focusIdx) {
   // "Open a project" after the wizard closed behind the confirm, the toolbar in fullscreen).
   if (!a || !a.isConnected || !a.getClientRects().length) return;
   const menu = openLoadMenu(a);
-  const dels = menu.querySelectorAll('.load-menu-del');   // land on the neighbouring row, so clearing several is Enter, Enter, Enter
-  const t = dels.length ? dels[Math.min(focusIdx, dels.length - 1)] : menu.querySelector('.load-menu-item');
-  if (t) t.focus();
+  Promise.resolve(menu._recentFilled).then(() => {
+    if (document.getElementById('loadMenu') !== menu) return;
+    const dels = menu.querySelectorAll('.load-menu-del');   // land on the neighbouring row, so clearing several is Enter, Enter, Enter
+    const t = dels.length ? dels[Math.min(focusIdx, dels.length - 1)] : menu.querySelector('.load-menu-item');
+    if (t) t.focus();
+  });
 }
 /* "Save Project ▾" split menu: Save Project… + Save as a copy… (reuses the .load-menu styling) */
 function closeSaveMenu() { const m = document.getElementById('saveMenu'); if (m) m.remove(); document.removeEventListener('click', closeSaveMenu); }
@@ -22542,22 +22632,32 @@ function toggleSaveMenu(ev) {
    (incl. source images) is gzipped and stored, so a reload before saving doesn't lose scans; it is
    offered back on the next visit via a prompt. Local-only; NOT part of the portable .hebrewfont. ── */
 const FM_DB = 'hebrewFontMaker', FM_AUTOSAVE_STORE = 'autosave';
+// Version 2 adds the Recent stores. Each connection closes after its transaction and on a version change, so a
+// newer tab's upgrade is never held up by this one; an upgrade an older tab blocks gives up after 4 s (the
+// autosave then uses its localStorage fallback and Recent its old list, until that tab is closed).
 function _fmOpenDB() {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(FM_DB, 1);
+    const req = indexedDB.open(FM_DB, 2);
+    let settled = false;
     req.onupgradeneeded = () => { const db = req.result;
-      if (!db.objectStoreNames.contains(FM_AUTOSAVE_STORE)) db.createObjectStore(FM_AUTOSAVE_STORE, { keyPath: 'id' }); };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+      if (!db.objectStoreNames.contains(FM_AUTOSAVE_STORE)) db.createObjectStore(FM_AUTOSAVE_STORE, { keyPath: 'id' });
+      if (!db.objectStoreNames.contains(FM_RECENT_STORE)) db.createObjectStore(FM_RECENT_STORE, { keyPath: 'name' });
+      if (!db.objectStoreNames.contains(FM_RECENT_DATA)) db.createObjectStore(FM_RECENT_DATA, { keyPath: 'name' }); };
+    req.onblocked = () => setTimeout(() => { if (!settled) { settled = true; reject(new Error('hebrewFontMaker: upgrade blocked by another tab')); } }, 4000);
+    req.onsuccess = () => { const db = req.result; db.onversionchange = () => db.close();
+      if (settled) { db.close(); return; } settled = true; resolve(db); };
+    req.onerror = () => { if (!settled) { settled = true; reject(req.error); } };
   });
 }
-function _fmTx(mode, fn) {
+function _fmTxStores(stores, mode, fn) {
   return _fmOpenDB().then(db => new Promise((resolve, reject) => {
-    const tx = db.transaction(FM_AUTOSAVE_STORE, mode), req = fn(tx.objectStore(FM_AUTOSAVE_STORE));
-    tx.oncomplete = () => resolve(req && req.result);
-    tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+    let tx, req;
+    try { tx = db.transaction(stores, mode); req = fn(tx); } catch (e) { db.close(); reject(e); return; }
+    tx.oncomplete = () => { db.close(); resolve(req && req.result); };
+    tx.onerror = () => { db.close(); reject(tx.error); }; tx.onabort = () => { db.close(); reject(tx.error); };
   }));
 }
+function _fmTx(mode, fn) { return _fmTxStores([FM_AUTOSAVE_STORE], mode, tx => fn(tx.objectStore(FM_AUTOSAVE_STORE))); }
 function autosavePut(rec) { return _fmTx('readwrite', os => os.put(rec)); }
 function autosaveGet()    { return _fmTx('readonly',  os => os.get('current')); }
 function autosaveClear()  { return _fmTx('readwrite', os => os.delete('current')).catch(() => {}); }
@@ -23892,6 +23992,7 @@ function init() {
   // but I18n.ready (the locale-JSON fetch) may not have resolved, so building the modal now would
   // render its labels as raw i18n keys (fontmaker.modals.continue_body, …).
   if (window.I18n) I18n.ready.then(maybeRestoreAutosave); else maybeRestoreAutosave();
+  recentList().catch(() => {});   // moves an old localStorage Recent list into IndexedDB, and learns the names Save as… avoids
   window.addEventListener('resize', wsOnWindowResize);   // re-clamp widths if the window shrinks
   onExportFormatChange();   // sync the Export button label to the format picker (browsers may restore its value on reload)
   // re-measure the template glyph once web fonts settle

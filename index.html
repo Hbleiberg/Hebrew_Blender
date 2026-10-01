@@ -1578,8 +1578,9 @@ async function eraseAllSettings() {
     // legacy cleanup: purge orphaned data from the removed community-impact feature
     'ivritsuite-impact-v1',
     'ivritsuite-impact-optout',
-    // deliberately NOT erased: hebrewFontMaker_autosave (+ the Font Maker's IndexedDB autosave) and
-    // hebrewFontMaker_recentProjects, which stores up to 6 FULL project payloads, not just names —
+    // deliberately NOT erased: hebrewFontMaker_autosave and the Font Maker's IndexedDB `hebrewFontMaker`
+    // (its autosave and its Recent list of FULL projects, plus hebrewFontMaker_recentProjects, the old
+    // localStorage list a browser without IndexedDB still uses) —
     // a settings erase must never wipe a teacher's in-progress font project; FM projects live
     // outside the AllTools payload and the .ivrit project file is their canonical save.
   ];

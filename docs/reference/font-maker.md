@@ -18,11 +18,15 @@ suffix). For multi-feature work, batch **one** combined bump + entry at the end 
 The Font Maker's **project data** is deliberately **NOT** in the index.html AllTools export/import/erase —
 it doesn't fit the presets model. Its keys are local-only: `hebrewFontMaker_uiPrefs` (workspace UI
 prefs JSON blob — read/modify/write via `wsReadPrefs()`; put new persistent UI prefs **here**, not in
-new bare keys), `hebrewFontMaker_tourDone`, `hebrewFontMaker_inputMode`, `hebrewFontMaker_recentProjects` (read through
-`getRecentProjects()`, which keeps only `{name: string, data: object}` members of an array — any other
-stored shape reads as empty and is rewritten on the next save),
-`hebrewFontMaker_mobileWarnDismissed`, `hebrewFontMaker_autosave` (image-stripped fallback). Primary
-autosave is **IndexedDB** db `hebrewFontMaker`, store `autosave` (gzip blob, id `'current'`), written by
+new bare keys), `hebrewFontMaker_tourDone`, `hebrewFontMaker_inputMode`,
+`hebrewFontMaker_mobileWarnDismissed`, `hebrewFontMaker_autosave` (image-stripped fallback), and
+`hebrewFontMaker_recentProjects` — the old Recent list, now only a browser without IndexedDB's store and the
+source of a one-time move (read through `legacyRecentList()`, which keeps only `{name: string, data: object}`
+members of an array). The **IndexedDB** db `hebrewFontMaker` (version 2) holds the primary autosave (store
+`autosave`, gzip blob, id `'current'`) and the Recent list (stores `recent` `{name, savedAt}` and `recentData`
+`{name, json}`, both keyed by the derived name). Every connection closes after its transaction and on a version
+change; an upgrade an older tab blocks gives up after 4 s, and the page then uses the localStorage fallbacks.
+The autosave is written by
 `autosaveNow()` one snapshot at a time: a request while one is being written is not dropped — the writer runs
 once more when it finishes (`_autosaveAgain`), so the newest edit always reaches the snapshot. Shared
 site-wide key it also reads: `hebrewBlender_darkMode`. **One AllTools exception:**
@@ -113,21 +117,34 @@ The page loads `/js/supabase-config.js`, `/js/ivrit-account.js`, `/js/ivrit-save
 
 ### "Load Project ▾" menu + the Recent list
 
+**The Recent list has no cap, and nothing leaves it except through its 🗑** (a Recent row can be a project's only
+copy). `pushRecentProject(p)` serializes the project at once, then writes both stores in one transaction — the newest
+copy of a derived name (`recentNameOf`, the style included) replaces its earlier row, the old doubled "X - X" name
+goes with it, and no other row is ever touched; it resolves `false` when the write is refused, and every row stays.
+`saveToBrowser()` shows its "couldn't save" modal on `false`; the other savers (To computer, Save as…, the account
+save, Keep both) go through `pushRecentQuiet`, which says so in a toast (`fontmaker.status.recent_failed`).
+`recentReady()` moves an old localStorage list into IndexedDB once (a newer row already there wins), reads every
+name back, and only then removes the key; a failure keeps the key and leaves the old list as the store for that
+load. `recentList()` reads only the `{name, savedAt}` rows (newest first) and keeps `_recentNames` in step for the
+synchronous `fmUniqueCopyName`; `recentGet(name)` reads one project through `ivritSafeParse`. A browser without
+IndexedDB keeps the old localStorage list under the same rule: no cap, a save that does not fit is refused.
+
 `toggleLoadMenu(ev)` only toggles; `openLoadMenu(anchor)` builds and positions the popup and is also
 what puts it back after a confirm, so the anchor it was hung off lives in `_loadMenuAnchor`. Two
 buttons call it: the toolbar's "Load Project ▾" and the wizard's "Open a project ▾".
 
-Each Recent row is a `.load-menu-row` flex wrapper holding the load button **and** a `.load-menu-del`
-🗑 as siblings — a button cannot nest inside a button, and keeping them apart also keeps the trash
-out of the load hit area. `removeRecentProjectUI(idx)` closes the menu **before** raising its
+The Recent rows arrive asynchronously (`fmRecentFillLoadMenu`, into `#loadMenuRecent`, which scrolls past 45vh,
+only while that very menu is open — the same rule as the account rows); names reach the page through
+`textContent` and the buttons through listeners. Each Recent row is a `.load-menu-row` flex wrapper holding the load
+button **and** a `.load-menu-del` 🗑 as siblings — a button cannot nest inside a button, and keeping them apart also
+keeps the trash out of the load hit area. `removeRecentProjectUI(name, savedAt, idx)` closes the menu **before** raising its
 `askModal`: `.load-menu` is `z-index: 300` and `#askOverlay` only `201`, so a menu left open paints
 over its own confirm. Either answer calls `reopenLoadMenu(idx)`, which re-anchors the menu (skipping
 it when the anchor is gone or off-screen) and focuses the neighbouring 🗑, so clearing several stale
-rows is Enter, Enter, Enter.
+rows is Enter, Enter, Enter (it waits for the Recent rows before focusing).
 
-`removeRecentProject(name, savedAt)` filters by **identity, not index** — the confirm is async, and a
-`saveToBrowser()` behind it unshifts a row and slides every index down one. It writes back the list
-`getRecentProjects()` already cleaned, so a malformed stored entry is dropped by the same write.
+`removeRecentProject(name, savedAt)` deletes by **identity, not index** — the confirm is async, and a save behind it
+may have replaced the row with a newer copy, which then stays.
 Nothing here touches `project`, so there is no `udDo`/`markDirty` — this is the local Recent cache,
 not project state.
 

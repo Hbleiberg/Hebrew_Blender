@@ -32,6 +32,11 @@
  *  13. My Fonts: removing a font while the SDK has not loaded (signed in, offline) marks the deletion in the sync
  *      memory and sends no request; the next signed-in load sends the DELETE and the font stays gone; the
  *      signed-in remove dialog says the font leaves the account.
+ *  14. Teacher A's unsent project continued by teacher B on the same browser is never saved into B's account.
+ *  15. An edit made while an upload runs is not marked saved: the next autosave sends it.
+ *  16. Recent lives in IndexedDB with no cap: an old localStorage list moves over whole (then the key goes),
+ *      eleven projects stay listed, a save still lands with localStorage full, the 🗑 removes only its row,
+ *      and a row opens its own project.
  *
  * Run from the repo root:  node scripts/smoke-fontmaker.mjs --sdk path/to/supabase.js [--port 8082]
  */
@@ -623,6 +628,52 @@ try {
     check('13: removed while the SDK could not load: gone here, no request, the memory marks it deleted', off.user === false && off.fonts.length === 0 && sentOffline === 0 && !!off.rec && off.rec.deleted === true, JSON.stringify({ off, sentOffline }));
     check('13: the next signed-in load sent the DELETE, the account row is gone and the font did not come back', dels.length === 1 && /updated_at=eq\./.test(dels[0].search) && c13.tables.saves.length === 0 && end.fonts.length === 0, JSON.stringify({ dels: dels.map(d => d.search), rows: c13.tables.saves.length, end }));
     check('13: 0 pageerrors', errors.length === 0 && e2.length === 0 && e3.length === 0, errors.concat(e2, e3).join(' | '));
+    await ctx.close();
+  }
+  // ---- 16. Recent: moved to IndexedDB whole, no cap, unaffected by a full localStorage ----
+  {
+    const ctx = await openContext(browser, null, seedFor(false));
+    const { page, errors } = await openPage(ctx);
+    // an older build's list: three whole projects in localStorage
+    const old = await page.evaluate(() => {
+      const mk = (n, i) => { const c = JSON.parse(JSON.stringify(project)); c.font.familyName = n; c.font.reservedFontName = n; c.savedAt = '2026-09-0' + (i + 1) + 'T10:00:00.000Z'; return { name: n, savedAt: c.savedAt, data: c }; };
+      const list = ['Old One', 'Old Two', 'Old Three'].map(mk);
+      localStorage.setItem('hebrewFontMaker_recentProjects', JSON.stringify(list));
+      return list.map(r => r.name + '@' + r.savedAt).sort();
+    });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => window.I18n && document.readyState !== 'loading', null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    await page.evaluate(() => document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open')));
+    const moved = await page.evaluate(async () => ({ key: localStorage.getItem('hebrewFontMaker_recentProjects'), list: (await recentList()).map(r => r.name + '@' + r.savedAt).sort() }));
+    check('16: the old localStorage Recent list moved into IndexedDB whole (names and dates kept), then its key was removed', moved.key === null && JSON.stringify(moved.list) === JSON.stringify(old), JSON.stringify(moved));
+    // eight more saves "In this browser": none pushes another out
+    for (let i = 1; i <= 8; i++) {
+      await page.evaluate(async (n) => { document.getElementById('familyName').value = n; document.getElementById('reservedName').value = n; await saveToBrowser(); document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open')); }, 'Mine ' + i);
+    }
+    const rows = () => page.evaluate(async () => { const a = document.querySelector('[onclick*="toggleLoadMenu"]'); const m = openLoadMenu(a); await m._recentFilled; const names = [...m.querySelectorAll('#loadMenuRecent .load-menu-item span:first-child')].map(s => s.textContent); closeLoadMenu(); return names; });
+    const r11 = await rows();
+    check('16: eleven Recent projects are all listed in Load Project ▾ (no limit of six)', r11.length === 11 && ['Old One', 'Old Two', 'Old Three', 'Mine 1', 'Mine 8'].every(n => r11.includes(n)), JSON.stringify(r11));
+    // localStorage full: a save "In this browser" still lands, with no "couldn't save" dialog
+    await page.evaluate(() => {
+      localStorage.removeItem('__fill'); let lo = 0, hi = 6000000;
+      while (lo < hi) { const mid = Math.ceil((lo + hi) / 2); try { localStorage.setItem('__fill', 'x'.repeat(mid)); lo = mid; } catch (e) { hi = mid - 1; } }
+      localStorage.setItem('__fill', 'x'.repeat(lo));
+    });
+    const full = await page.evaluate(async () => { document.getElementById('familyName').value = 'Mine Full'; document.getElementById('reservedName').value = 'Mine Full'; await saveToBrowser(); const o = document.getElementById('askOverlay'); const t = o && o.classList.contains('open') ? o.textContent : ''; document.querySelectorAll('.overlay.open').forEach(x => x.classList.remove('open')); return { refused: /Couldn't save in the browser/.test(t) }; });
+    await page.evaluate(() => localStorage.removeItem('__fill'));
+    const r12 = await rows();
+    check('16: with localStorage full, a save to this browser still lands in Recent', !full.refused && r12.length === 12 && r12.includes('Mine Full'), JSON.stringify({ full, r12 }));
+    // the 🗑 removes only its row; a row opens its own project
+    await page.evaluate(async () => { const a = document.querySelector('[onclick*="toggleLoadMenu"]'); const m = openLoadMenu(a); await m._recentFilled; const row = [...m.querySelectorAll('#loadMenuRecent .load-menu-row')].find(r => r.textContent.includes('Old Two')); row.querySelector('.load-menu-del').click(); });
+    await clickAsk(page, '^Remove');
+    await page.waitForTimeout(800);
+    const r11b = await rows();
+    await page.evaluate(async () => { const a = document.querySelector('[onclick*="toggleLoadMenu"]'); const m = openLoadMenu(a); await m._recentFilled; const row = [...m.querySelectorAll('#loadMenuRecent .load-menu-row')].find(r => r.textContent.includes('Old Three')); row.querySelector('.load-menu-item').click(); });
+    await page.waitForTimeout(1200);
+    const opened = await page.evaluate(() => project.font.familyName);
+    check("16: the trash button removed only 'Old Two'; clicking 'Old Three' opened that project", r11b.length === 11 && !r11b.includes('Old Two') && r11b.includes('Old One') && opened === 'Old Three', JSON.stringify({ r11b, opened }));
+    check('16: 0 pageerrors', errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
 } finally {
