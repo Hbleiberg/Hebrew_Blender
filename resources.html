@@ -225,7 +225,7 @@ body.dark .filter-btn.active{background:#2a3f6a;border-color:#4a6aaa;}
 
 /* ── Resource card ── */
 .resource-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:9px;transition:border-color 0.2s,box-shadow 0.15s,transform 0.15s;text-decoration:none;color:var(--text);}
-.resource-card:hover{border-color:var(--gold);box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.resource-card:hover,.resource-card:focus-visible{border-color:var(--gold);box-shadow:var(--shadow-md);transform:translateY(-2px);}
 .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
 .card-icon{font-size:1.6rem;line-height:1;flex-shrink:0;margin-top:1px;}
 .card-cat-badge{font-size:0.7rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:2px 9px;border-radius:10px;background:rgba(26,39,68,0.09);color:var(--navy);white-space:nowrap;}
@@ -241,12 +241,12 @@ body.dark .card-grade{color:var(--gold-light);}
    .75 reads 6.60 / 4.99 and hover still brightens it to full. */
 .card-link{display:inline-flex;align-items:center;gap:4px;font-size:0.76rem;font-weight:600;color:var(--navy);margin-top:2px;opacity:0.75;transition:opacity 0.15s;}
 body.dark .card-link{color:#aab8d8;}
-.resource-card:hover .card-link{opacity:1;}
-.resource-card:hover .card-link::after{transform:translateX(3px);}
+.resource-card:hover .card-link,.resource-card:focus-visible .card-link{opacity:1;}
+.resource-card:hover .card-link::after,.resource-card:focus-visible .card-link::after{transform:translateX(3px);}
 .card-link::after{content:'→';display:inline-block;transition:transform 0.15s;}
 /* RTL: the arrow glyph is not bidi-mirrored, so point and nudge it in reading direction */
 [dir="rtl"] .card-link::after{content:'←';}
-[dir="rtl"] .resource-card:hover .card-link::after{transform:translateX(-3px);}
+[dir="rtl"] .resource-card:hover .card-link::after,[dir="rtl"] .resource-card:focus-visible .card-link::after{transform:translateX(-3px);}
 
 /* ── Empty state ── */
 .empty-state{text-align:center;padding:60px 24px;color:var(--muted);}
@@ -433,9 +433,9 @@ body.dark #fontToast{background:#2a4070;}
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  .resource-card:hover { transform: none; }
-  .resource-card:hover .card-link::after { transform: none; }
-  [dir="rtl"] .resource-card:hover .card-link::after { transform: none; }
+  .resource-card:hover, .resource-card:focus-visible { transform: none; }
+  .resource-card:hover .card-link::after, .resource-card:focus-visible .card-link::after { transform: none; }
+  [dir="rtl"] .resource-card:hover .card-link::after, [dir="rtl"] .resource-card:focus-visible .card-link::after { transform: none; }
 }
 /* The chrome pages had no print stylesheet at all, so a dark-mode teacher printing one got the
    DARK tokens on paper. Measured over 24 real PDFs (S306 pass G): with background graphics on,
