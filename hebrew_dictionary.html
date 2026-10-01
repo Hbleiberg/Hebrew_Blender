@@ -3496,6 +3496,7 @@ function setSegActive(el, on) {
 
 function setDictMode(mode) {
   wlHideActiveBanner();  // switching modes leaves any active "Load as filter" view
+  wlFilterOverride = null;   // …and its list: a language switch would otherwise re-render it over Emojis / Shoresh
   if (mode === 'shoresh') {
     if (emojiMode) toggleEmojiMode(false);
     shoreshMode = true;
