@@ -2218,7 +2218,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--gold); outline-offse
   <!-- Trope-family legend — shown while trope color coding is on AND a reading is
        loaded (applyTropeColors). Chips are generated at init from TROPE_COLOR_DEFS
        so the family list lives in one place. -->
-  <div class="tt-trope-legend" id="ttTropeLegend" hidden>
+  <div class="tt-trope-legend" id="ttTropeLegend" tabindex="-1" hidden>
     <a class="tt-trope-link" id="ttTropeTutorLink" hidden data-i18n="torah.trope_legend.tutor_link">Learn the trope names →</a>
     <a class="tt-trope-link" id="ttTropeTutorLinkHH" hidden data-i18n="torah.trope_legend.tutor_link_hh">Learn the High Holiday trope →</a>
     <a class="tt-trope-link" id="ttTropeTutorLinkHaf" hidden data-i18n="torah.trope_legend.tutor_link_haf">Learn the Haftarah trope →</a>
@@ -4184,10 +4184,15 @@ function applyTropeColors() {
 // coloring is visible, the drawer's full controls are discoverable). It is the list's choice of
 // that look, so during a practice link's view it claims the same two settings a pick in the list does.
 function tropeChipEnable() {
+  const chip = document.getElementById('ttTropeChip');
+  const hadFocus = !!chip && document.activeElement === chip;
   settings.colorCodeTrope = true;
   linkViewClaim(['colorCodeTrope', 'tropeCodingMode']);
   syncTropeModeRadios();
   saveSettings(); applyTropeColors();
+  // The chip has just hidden itself; its focus goes to the legend that took its place, not the page top.
+  const legend = document.getElementById('ttTropeLegend');
+  if (hadFocus && legend && !legend.hidden) legend.focus({ preventScroll: true });
 }
 // Settings → the drawer's trope list, which is the on/off switch and the look in one: No
 // highlight while off, else the stored look. Read-only; the pickers show only while on.
