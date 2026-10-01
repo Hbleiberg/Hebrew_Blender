@@ -673,10 +673,10 @@ body.dark .hi-sun{display:inline-block;}
   }
   .btn-xs:hover:not([disabled]):not([aria-disabled="true"]) { background: var(--warm-gray); }
 
-  .color-mode-btn { flex:1; padding:4px 6px; font-size:0.72rem; border:none; background:var(--white); color:var(--muted); cursor:pointer; border-right:1px solid var(--border); font-family:inherit;
+  .color-mode-btn { flex:1; padding:4px 6px; font-size:0.72rem; border:none; background:var(--white); color:var(--muted); cursor:pointer; border-inline-end:1px solid var(--border); font-family:inherit;
     /* same 30px floor .btn-xs carries (S102) — these measured 20px */
     min-height:30px; display:inline-flex; align-items:center; justify-content:center; }
-  .color-mode-btn:last-child { border-right:none; }
+  .color-mode-btn:last-child { border-inline-end:none; }
   .color-mode-btn.active { background:var(--navy); color:var(--white); }
   body.dark .color-mode-btn { background:var(--white); color:var(--muted); }
   body.dark .color-mode-btn.active { background:#2a4070; color:#dde4f0; }
@@ -1548,6 +1548,11 @@ body.dark .hi-sun{display:inline-block;}
     border: 1px solid var(--border);
     border-radius: 6px;
     overflow: hidden;
+    /* Separators: a 1px gap that every button's 1px ring fills (the container clips the ring at its
+       edge). Direction-free, so the Hebrew UI keeps its lines; draws row lines in multi-row grids;
+       an empty last cell reads as a blank cell, not a block. Pattern physical-property-that-never-mirrors. */
+    gap: 1px;
+    background: var(--white);
   }
   .blend-type-btn {
     padding: 7px 4px;
@@ -1557,13 +1562,12 @@ body.dark .hi-sun{display:inline-block;}
     background: var(--white);
     color: var(--muted);
     border: none;
-    border-right: 1px solid var(--border);
+    box-shadow: 0 0 0 1px var(--border);
     cursor: pointer;
     transition: background 0.15s, color 0.15s, opacity 0.15s;
     text-align: center;
     line-height: 1.3;
   }
-  .blend-type-btn:last-child { border-right: none; }
   .blend-type-btn:hover { background: var(--warm-gray); color: var(--text); }
   .blend-type-btn.active { background: var(--navy); color: var(--white); }
   .blend-type-btn[disabled] { opacity: 0.4; cursor: not-allowed; }
@@ -1574,12 +1578,6 @@ body.dark .hi-sun{display:inline-block;}
      dark hover pair (.rw-drill-btn:hover). Pattern dark-hover-resolves-to-the-rest-colour (S313 lesson c). */
   body.dark .blend-type-btn:hover { background: #2a3349; color: #dde4f0; }
   body.dark .blend-type-btn[disabled]:hover { background: var(--white); }
-  /* Multi-row grid layouts (Worksheet Type) need a grid gap so row 1 and
-     row 2 are visually separated; the per-button border-right pattern only
-     handles single-row layouts. */
-  #worksheetTypeSelector { gap: 1px; background: var(--border); }
-  #worksheetTypeSelector .blend-type-btn { border-right: none; }
-  body.dark #worksheetTypeSelector { background: var(--border); }
   .tooltip-wrap {
     position: relative;
     display: inline-flex;
@@ -1679,12 +1677,11 @@ body.dark .hi-sun{display:inline-block;}
     background: var(--white);
     color: var(--muted);
     border: none;
-    border-right: 1px solid var(--border);
+    box-shadow: 0 0 0 1px var(--border); /* the separator — see .blend-type-selector */
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
     text-align: center;
   }
-  .rw-drill-btn:last-child { border-right: none; }
   .rw-drill-btn:hover { background: var(--warm-gray); color: var(--text); }
   .rw-drill-btn.active { background: var(--navy); color: var(--white); }
   /* ── REAL WORDS (cards & grid) — single source; an earlier duplicate block was consolidated here ── */
