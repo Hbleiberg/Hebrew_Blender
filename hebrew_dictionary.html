@@ -2117,6 +2117,8 @@ function wlOpenSaveModal() {
     useGenLink.style.display = 'block';
     nameIn.value = '';
   });
+  // Enter in the name field saves, as the Manager's rename field does (an IME composition keeps its Enter)
+  nameIn.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); createBtn.click(); } });
 
   _openWordModal(body);
   setTimeout(() => { try { nameIn.focus(); } catch (e) {} }, 0);
