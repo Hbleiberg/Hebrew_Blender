@@ -9271,7 +9271,8 @@ function _syncPanelHdrAria(panel) {
 }
 const PANEL_MEM_KEY = 'hebrewBlender_panels';
 const PANEL_MEM_CFG = {
-  scope: '.panel-title',
+  // Saved Presets keeps its key on an inner span (its title also holds a tip), so that span is its title here
+  scope: '.panel-title, .panel-title [data-i18n="worksheet.presets.panel_title"]',
   read() { try { return ivritSafeParse(localStorage.getItem(PANEL_MEM_KEY) || 'null'); } catch (e) { return null; } },
   write(map) { try { localStorage.setItem(PANEL_MEM_KEY, JSON.stringify(map)); } catch (e) {} },
   afterApply() { document.querySelectorAll('.panel').forEach(p => _syncPanelHdrAria(p)); }
