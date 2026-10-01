@@ -1257,9 +1257,9 @@
     var lower = String((err && err.message) || '').toLowerCase();
     if (code === 'quota') return t('shared.cloud.error_quota', 'There is no room left on this device to store that item.');
     if (code === 'kept_full') return t('shared.cloud.error_kept_full', 'There is no room on this device to keep a copy of the version it would replace, so nothing was replaced. Download or dismiss the copies kept here, then reload.');
-    if (code === 'changed') return t('shared.cloud.error_changed', 'That item changed a moment ago (here or in the cloud). The list was refreshed; choose again.');
-    if (code === 'changed_here') return t('shared.cloud.error_changed_here', 'That item changed on this device after the list was made. The list was refreshed; choose again.');
-    if (code === 'hook') return t('shared.cloud.error_hook', 'Downloaded, but this page could not show it. Reload the page, then choose again.');
+    if (code === 'changed') return t('shared.cloud.error_changed', 'That item changed a moment ago on another device. This page re-read your account; check the item and change it again if needed.');
+    if (code === 'changed_here') return t('shared.cloud.error_changed_here', 'That item changed on this device while it was being saved; it is saved again in a moment.');
+    if (code === 'hook') return t('shared.cloud.error_hook', 'Loaded from your account, but this page could not show it. Reload the page.');
     if (code === 'shape') return t('shared.cloud.error_shape', 'The cloud copy has an unexpected shape and was not written to this device.');
     if (code === 'no_merge') return t('shared.cloud.error_no_merge', 'This page cannot merge that item yet.');
     if (code === 'name') return t('shared.cloud.error_name', 'Names must be 1 to 120 characters.');
@@ -1274,7 +1274,7 @@
     if (code === 'project_too_big') return t('shared.cloud.error_project_too_big', 'This project is too big for your account (20 MB after compression).');
     if (code === '42501') return t('shared.cloud.error_not_allowed', 'The cloud refused this action.');
     if (code === 'signed_out' || code === 'PGRST301' || st === 401 || /jwt/.test(lower)) return t('shared.cloud.error_session', 'Your sign-in has expired. Sign in again.');
-    if (code === 'PGRST204' || code === 'PGRST205' || code === '42P01') return t('shared.cloud.error_not_setup', 'Cloud saves are not set up on the server yet.');
+    if (code === 'PGRST204' || code === 'PGRST205' || code === '42P01') return t('shared.cloud.error_not_setup', 'Accounts are not set up on the server yet.');
     if (code === 'offline' || code === 'blocked' || code === 'disabled' || /failed to fetch|networkerror|load failed|network request failed/.test(lower)) return t('shared.cloud.error_offline', 'The cloud is unreachable right now. Try again later.');
     return t('shared.cloud.error_generic', 'Something went wrong. Please try again.');
   }
@@ -1731,10 +1731,10 @@
   function copyLabelFor(entry, label) {
     var taken = {};
     localItems(entry).forEach(function (it) { if (isPlainObject(it.value) && typeof it.value[entry.nameField] === 'string') taken[it.value[entry.nameField]] = true; });
-    var base = t('shared.cloud.copy_suffix', '{name} (cloud copy)', { name: label });
+    var base = t('shared.cloud.copy_suffix', '{name} (from another device)', { name: label });
     if (!taken[base]) return base;
     for (var n = 2; n < 1000; n++) {
-      var c = t('shared.cloud.copy_suffix_n', '{name} (cloud copy {n})', { name: label, n: n });
+      var c = t('shared.cloud.copy_suffix_n', '{name} (from another device {n})', { name: label, n: n });
       if (!taken[c]) return c;
     }
     return base + ' ' + Date.now();
@@ -1750,10 +1750,10 @@
     var taken = {};
     localItems(entry).forEach(function (it) { taken[it.name] = true; });
     ((plans[tool] && plans[tool].rows) || []).forEach(function (r) { if (r.kind === entry.kind) taken[r.name] = true; });
-    var base = t('shared.cloud.copy_suffix', '{name} (cloud copy)', { name: name });
+    var base = t('shared.cloud.copy_suffix', '{name} (from another device)', { name: name });
     if (!taken[base]) return base;
     for (var n = 2; n < 1000; n++) {
-      var c = t('shared.cloud.copy_suffix_n', '{name} (cloud copy {n})', { name: name, n: n });
+      var c = t('shared.cloud.copy_suffix_n', '{name} (from another device {n})', { name: name, n: n });
       if (!taken[c]) return c;
     }
     return base + ' ' + Date.now();
