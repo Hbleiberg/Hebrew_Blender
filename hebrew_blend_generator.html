@@ -1636,7 +1636,12 @@ body.dark .hi-sun{display:inline-block;}
     border: 5px solid transparent;
     border-bottom-color: #1a2744;
   }
-  .tooltip-wrap:hover .tooltip-box,
+  /* Hover preview for a real pointer only. On a touch screen the tap lands as :hover first, and
+     this unclamped box (centred on the badge) can reach past the left edge — which in an RTL
+     page is scrollable overflow, so the page shifts, the badge leaves the finger, :hover drops,
+     the page snaps back, and the tap lands on the row instead (measured: Hebrew at 320px, the
+     Live-update badge flickering every frame). A tap opens the JS-clamped .tooltip-open box. */
+  @media (hover: hover) { .tooltip-wrap:hover .tooltip-box { display: block; } }
   .tooltip-wrap.tooltip-open .tooltip-box { display: block; }
   /* Tap/keyboard-opened tooltips are interactive & JS-positioned */
   .tooltip-wrap.tooltip-open .tooltip-box { pointer-events: auto; }
