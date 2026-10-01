@@ -11213,7 +11213,7 @@ async function onUploadEngFontPick(input){
       icon.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); openWrap === wrap ? hide() : show(wrap); });
       icon.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWrap === wrap ? hide() : show(wrap); }
-        else if (e.key === 'Escape') { hide(); icon.blur(); }
+        else if (e.key === 'Escape' && openWrap === wrap) { e.stopPropagation(); hide(); }   // closes only the bubble: the focus stays on the trigger and a drawer underneath stays open
       });
     }
     document.querySelectorAll('.tip-wrap').forEach(wire);

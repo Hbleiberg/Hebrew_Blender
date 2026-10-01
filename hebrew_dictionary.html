@@ -6307,7 +6307,7 @@ function dictActiveGroupCount() {
     wrap.addEventListener('blur', () => { ptrFocus = false; hide(); });
     wrap.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); isShown(wrap) ? hide() : show(wrap); }
-      else if (e.key === 'Escape') { hide(); wrap.blur(); }
+      else if (e.key === 'Escape' && isShown(wrap)) { e.stopPropagation(); hide(); }   // closes only the bubble: the focus stays on the trigger and a drawer underneath stays open
     });
   }
   window.bindTip = bindTip;

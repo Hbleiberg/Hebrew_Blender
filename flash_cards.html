@@ -4256,7 +4256,7 @@ function initPanelCollapse() {
     el.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); isShown(el) ? hide() : show(el); });
     el.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); isShown(el) ? hide() : show(el); }
-      else if (e.key === 'Escape') { hide(); el.blur(); }
+      else if (e.key === 'Escape' && isShown(el)) { e.stopPropagation(); hide(); }   // closes only the bubble: the focus stays on the trigger and a drawer underneath stays open
     });
   }
   document.querySelectorAll('.has-tip').forEach(bindTip);

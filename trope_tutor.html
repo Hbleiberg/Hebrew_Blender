@@ -4074,7 +4074,7 @@ function dismissToast() {
     wrap.addEventListener('blur', () => { ptrFocus = false; hide(wrap); });
     wrap.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); isShown(wrap) ? hide(wrap) : show(wrap); }
-      else if (e.key === 'Escape') { hide(wrap); wrap.blur(); }
+      else if (e.key === 'Escape' && isShown(wrap)) { e.stopPropagation(); hide(wrap); }   // closes only the bubble: the focus stays on the trigger and a drawer underneath stays open
     });
   }
   window.bindTip = bindTip;
