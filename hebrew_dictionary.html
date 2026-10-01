@@ -5946,9 +5946,12 @@ function _openWordModal(bodyEl) {
   const ov = document.getElementById('wordModal');
   const body = document.getElementById('wmBody');
   if (_modalKeyHandler) document.removeEventListener('keydown', _modalKeyHandler, true);   // opened from inside itself
+  // Read before the clear removes it. Opened from inside itself (a word's details → Add to Word List), the button
+  // pressed leaves with the old body, so the window's first opener stays the one a close returns to — never <body>.
+  const opener = document.activeElement;
+  if (!ov.classList.contains('open') || !_modalOpener) _modalOpener = opener;
   body.innerHTML = '';
   body.appendChild(bodyEl);
-  _modalOpener = document.activeElement;
   ov.classList.add('open');
   document.body.classList.add('wm-open');
   const close = document.getElementById('wmClose');
